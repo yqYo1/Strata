@@ -14,6 +14,24 @@ import resource_engine as r
 
 
 class SourceProofTests(unittest.TestCase):
+    def test_result_clocks_and_work_must_equal_the_verified_journal(self):
+        journal=[dict(workload='regular-code',request_sha256='a'*64,read_tokens=33000,
+            generated_tokens=1500,ok=True,client_interval=dict(request_begin_monotonic_ns=10,
+                first_output_monotonic_ns=20,request_end_monotonic_ns=30))]
+        import copy
+        official=[dict(copy.deepcopy(journal[0]),controller_eligible=True,reasoning_tokens=None)]
+        r.require_journal_binding(official,journal)
+        for variant in ('clock','input','output','identity','success','missing'):
+            with self.subTest(variant=variant):
+                changed=copy.deepcopy(official)
+                if variant=='clock':changed[0]['client_interval']['first_output_monotonic_ns']+=1
+                if variant=='input':changed[0]['read_tokens']+=1
+                if variant=='output':changed[0]['generated_tokens']+=1
+                if variant=='identity':changed[0]['request_sha256']='b'*64
+                if variant=='success':changed[0]['ok']=False
+                if variant=='missing':changed=[]
+                with self.assertRaises(RuntimeError):r.require_journal_binding(changed,journal)
+
     def test_relocation_requires_original_committed_reference_and_exact_bytes(self):
         with tempfile.TemporaryDirectory() as directory:
             root=Path(directory);native=root/'retained-strata';native.write_bytes(b'engine')

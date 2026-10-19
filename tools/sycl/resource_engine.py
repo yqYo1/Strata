@@ -26,6 +26,13 @@ sys.path.insert(0, str(READER.parent))
 import client_resources
 
 
+def require_journal_binding(requests, journal_rows):
+    # These two result-only fields do not supply clocks, work or success gates.
+    official=[{k:v for k,v in row.items() if k not in ('controller_eligible','reasoning_tokens')}
+              for row in requests]
+    guards.require(official==journal_rows, 'official work/client clocks differ from the verified journal')
+
+
 def source_proof(record):
     receipt = record['source_build_record']
     guards.require(generation.common.digest(receipt['path']) == receipt['sha256'], 'original source receipt changed')
@@ -144,7 +151,8 @@ def run():
         generation_result=json.loads(result.read_text())['results']['long_generation']
         rows=generation.collect_samples(generation_result);record['requests']=rows
         generation.require_complete_generation(generation_result,rows,('regular-code',))
-        journal,_=generation.journal_evidence(ROOT)
+        journal,journal_rows=generation.journal_evidence(ROOT)
+        require_journal_binding(rows,journal_rows)
         record['warmups']=generation.warmup_evidence(ROOT,journal)
         end=json.loads((ROOT/'engine-exit.json').read_text());record['native_exit']=end
         guards.require(entry['exit_code']==end['exit_code']==end['resource_collector_exit_code']==0,
@@ -172,10 +180,42 @@ def run():
     return 0 if record['passed'] else 1
 
 
+def summarize():
+    record=generation.committed(RESULT)
+    guards.require(record['complete'] and record['passed'] and record['ownership_closed'] and
+        not record['active'] and not record['fresh_faults'] and record['boot_unchanged'],
+        'closed successful execution required for strengthened resource admission')
+    path,=(ROOT/'bench').glob('*/results.json')
+    suite=json.loads(path.read_text())['results']['long_generation']
+    rows=generation.collect_samples(suite)
+    generation.require_complete_generation(suite,rows,('regular-code',))
+    journal,journal_rows=generation.journal_evidence(ROOT)
+    require_journal_binding(rows,journal_rows)
+    guards.require(rows==record['requests'] and generation.warmup_evidence(ROOT,journal)==record['warmups'],
+        'official samples or warmup evidence differ from the original execution receipt')
+    native=json.loads((ROOT/'engine-exit.json').read_text())
+    guards.require(native==record['native_exit'],'native closure receipt changed')
+    capture=ROOT/'client-resources.jsonl'
+    resources=client_resources.summarize_capture([json.loads(line) for line in capture.read_text().splitlines()],
+        native['native'],native['boot_id'],rows[0]['client_interval'])
+    guards.require(resources==record['resources'],'resource replay differs from original admitted values')
+    record['post_closure_admission']=dict(analyzer_source_commit=generation.git('rev-parse','HEAD').decode().strip(),
+        original_execution_receipt_commit=generation.git('log','-1','--format=%H','--',str(RESULT.relative_to(P))).decode().strip(),
+        official_result_sha256=generation.common.digest(path),capture_sha256=generation.common.digest(capture),
+        journal_bound_clocks_and_work=True,original_resources_reproduced=True,
+        original_execution_outcome_unchanged=True,GPU_executed=False)
+    record['resource_admission_qualified']=True
+    RESULT.write_text(json.dumps(record,indent=2)+'\n')
+    print(json.dumps(record['post_closure_admission']))
+    return 0
+
+
 def main():
-    parser=argparse.ArgumentParser(description=__doc__);parser.add_argument('action',choices=('prepare','run'));args=parser.parse_args()
+    parser=argparse.ArgumentParser(description=__doc__);parser.add_argument('action',choices=('prepare','run','summarize'));args=parser.parse_args()
     with (B/'owned-v0141-measurement.lock').open('a+') as lock:
-        fcntl.flock(lock,fcntl.LOCK_EX|fcntl.LOCK_NB);guards.no_model_owners([]);guards.driver_guard()
+        fcntl.flock(lock,fcntl.LOCK_EX|fcntl.LOCK_NB);guards.no_model_owners([])
+        if args.action=='summarize':return summarize()
+        guards.driver_guard()
         return prepare() if args.action=='prepare' else run()
 
 
