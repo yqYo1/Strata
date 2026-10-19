@@ -1426,9 +1426,9 @@ with one thread and1172.59/1178.44/1170.50ns with six; the medians are1115.99
 and1172.59ns. This includes both CPU-clock reads and bookkeeping/control costs.
 It is a local differential microbenchmark, not a production-overhead bound or
 evidence of a syscall/vDSO path. Do not linearly correct model wall time from it.
-No lighter-accounting rewrite is selected from these values. Next compare the
-retained old/new engines without observers on the same runtime, and collect
-bounded thread/resource attribution before selecting an inference optimization.
+No lighter-accounting rewrite is selected from these values. The same-runtime
+old/new comparison and first bounded resource observation below are closed;
+their results still do not identify a limiting hardware resource.
 Independent source/interpretation review found no calibration reuse blocker.
 The closed calibration export, standalone fixture and parser tests are retired;
 restore original source`227869de9` and its committed plan for a concrete new
@@ -1441,20 +1441,17 @@ The host pin occurs in `SessionLoopScratch::init`, not the pool constructor;
 Linux inheritance is a hypothesis for those later masks, not a demonstrated
 cause. Do not change affinity during an active comparison.
 Explicit runtime-baseline adoption remains pending and the shared qualified
-asset hashes remain unchanged. Keep the current8c5d799f engine and570b65dd
-fallback only for the next same-runtime observer-off old/new engine comparison;
-retire the extra after that decision, before another native build. The new
-single-workload selector does not replace the required strong/weak pair for adoption.
-Use `generation_engine.py prepare|run engine-compare [0..5]`, committing each
-prepared plan and closed result. The frozen order is old/new/new/old/old/new,
-with the unchanged official regular-code request and four warmups. Both arms
-remove CPU/wall/validation observers before native exec and preserve the safety
-settings. Original fallback inputs/recipe and both runtime checks bind the
-selected binaries. The diagnostic nonregression gate is new/old per-token
-latency geomean<=1.05 and maximum pair<=1.10 after request/work reconciliation;
-report individual samples and spread even if this gate fails. No inference
-optimization, runtime-baseline adoption or resource saturation follows from
-this single-workload comparison alone.
+asset hashes remain unchanged. The observer-off old/new comparison used the
+frozen old/new/new/old/old/new order, the unchanged official regular-code request
+and four warmups. Both arms removed CPU/wall/validation observers before native
+exec and preserved the safety settings. Original fallback inputs/recipe and
+both runtime checks bound the selected binaries. The prospective diagnostic gate
+was new/old per-token latency geomean<=1.05 and maximum pair<=1.10 after request/
+work reconciliation. This single workload does not replace the strong/weak pair
+required for adoption. The closed launcher/reducer is recoverable from original
+source`77f1ad644`; `generation_engine.py` now contains shared admission helpers
+only. No inference optimization, runtime-baseline adoption or resource saturation
+follows from this comparison alone.
 Independent source audit and native Luna-max review found no technical reuse
 blocker. Main closed the missing automatic warmup assertion at`77f1ad644`;
 all18 offline evidence tests passed. The final reducer checked all six original
@@ -1480,9 +1477,10 @@ two pairs exceed the unchanged1.10 maximum; the diagnostic nonregression gate
 fails. Old/new medians are13.1/11.8tok/s with sample SD0.954/1.629. Preserve
 all samples and the failed decision. Pair1 reverses the faster arm; these data
 do not establish a constant engine cost or a hardware bottleneck. Keep the old
-engine as the speed reference. The next bounded passive diagnostic will use it;
-consumer migration and extra-build retirement remain pending before another
-native build. No new inference optimization or runtime-baseline adoption follows.
+engine as the speed reference. It also completed the passive diagnostic below.
+The newer extra build has since been retired after source recovery and consumer
+migration; see the current [build decision](../bench/results/2026-10-15-pr6-recovery-audit/native-gdn-engine-build.json).
+No new inference optimization or runtime-baseline adoption follows.
 During process0, a read-only capability check of the owned native client's
 `/proc/<pid>/fdinfo` exposed xe `drm-cycles-ccs`, `drm-total-cycles-ccs` and
 memory residency fields on kernel7.0.0-38-generic. This is field availability,
@@ -1521,9 +1519,9 @@ a clean result. Exact client clocks divide observations before and after the
 first content/reasoning output. These are client windows, not native prefill/
 decode boundaries. The reducer replays raw cycles, checks the terminal and
 contained spans, and records the unsampled final edge without extrapolation.
-The immediate consumer is the committed900s/1s/32MiB collection plan, supervised
-inside the1800s/64MiB official benchmark budget. Source integration is under an
-independent Orca Luna audit; Main owns all tests and GPU work.
+The committed900s/1s/32MiB collection plan ran inside the1800s/64MiB official
+benchmark budget. The independent Orca Luna audit and native Luna-max review
+are completed; Main owned all tests and GPU work.
 The first live collection at`497311e01` then closed normally without a fresh GPU
 fault:33211 fresh inputs,2931 generated tokens and2105/2481 accepted drafts.
 Its8.5tok/s includes parameter validation, stage progress and the collector;
@@ -1552,6 +1550,17 @@ Actual unprivileged perf `cycles` and `task-clock` command probes at`dea283917`
 both exited1 with the access-limited diagnostic under`perf_event_paranoid=4`.
 This preserves the earlier VTune ptrace refusal as a separate result; no host
 permission was changed and model hardware counters remain unavailable.
+After the source and results became default-reachable through PR139, Main
+recovered and verified the newer build's9816 original source/dependency blobs,
+recipe and final artifact hashes before retirement. The closed extra build,
+resource/perf raw roots and consumed audit payloads were deleted:444 files,
+151385935 bytes, with a path/hash/reason manifest recorded before deletion.
+The selected old engine, its five original fixtures and source receipt remain;
+its9813-input admission passed again after deletion. The fresh-build fallback
+check now accepts the original hash-only fixture receipts while verifying the
+relocated sizes/hashes and exact fixture selection. Its updated regression test
+passed. Original execution, quality limits and failed performance gates remain
+unchanged; this closure adds no throughput gain.
 Recovered spans must fit the selected request interval. CPU ticks include
 polling, and a shared DRM client's counters are not exclusive process usage.
 Keep model quality,agent-session,physical262144/session/RESTORE and matched

@@ -100,7 +100,7 @@
     "cpu_clock_test",
     "pool_cpu_clock_test"
   ],
-  "retention_consumer": "Current comparison engine and requested fixtures: strata, sycl_moe_accum_test, sycl_moe_gu_swiglu_bench, sycl_moe_down_scatter_bench, sycl_expert_bank_test, file_expert_source_test, cpu_clock_test, pool_cpu_clock_test; select the validated generation and retire the extra after qualification/comparison closure.",
+  "retention_consumer": "The newer comparison generation is retired after its failed nonregression gate. Keep only retained_validation_reference as the selected opt-in speed and resource reference; a new candidate requires a fresh committed build plan.",
   "retained_validation_reference": {
     "source_commit": "396d0c91f301e0ac99b81d6641fdc435b95b4da9",
     "binary_origin_source_commit": "9b6db2661f6abb1ba560b466108cf60b2d594f4e",
@@ -150,7 +150,7 @@
       "decode-long-generation-current.json": "e77aab191dbe848776f4f4f678909d612dcefcfe"
     },
     "qualification": "Current opt-in engine passed component checks, repeated117K prefill and three independent long-generation processes without fresh GPU faults. Broad quality,physical262144/RESTORE and70tok/s remain unqualified.",
-    "consumer": "Fallback for immediate decode CPU observer native build, bounded runtime and observer-overhead qualification; select the validated generation and retire the extra at closure."
+    "consumer": "Selected opt-in speed reference for collector-only resource attribution and the next explicitly planned candidate comparison. Keep its five original fixtures and source receipt; review at that comparison closure. Broad quality,physical262144/session/RESTORE and70tok/s remain pending."
   },
   "legacy_provenance_exception": {
     "state": "Six obsolete unqualified native-product roots retired; original source/recipe gaps remain failures, not comparison generations.",
@@ -391,5 +391,26 @@
       "count": 5703,
       "aggregate_sha256": "5768eaea650c06eb022c9068784590a27400c2a577974c56750519edde859fe5"
     }
-  ]
+  ],
+  "retirement": {
+    "complete": true,
+    "completed_utc": "2026-10-19T14:06:05.064408+00:00",
+    "manifest_path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/closed-passive-capture-and-extra-engine-retirement-20261019.jsonl",
+    "manifest_sha256": "8967d86fde70e561cda7c7a8627730cdbce40cf58c276b9545d3c8a614bca31b",
+    "files": 356,
+    "bytes": 135356928,
+    "original_outcomes_unchanged": true,
+    "original_source_blobs_recovered_and_verified": 9816,
+    "original_recipe_recovered_and_verified": true,
+    "original_compile_database_verified": true,
+    "source_recovery_default_commit": "9a5fc5d1780a9c303295decee7a0f1603ad8c9ba",
+    "consumer_migration_source_commit": "cf658844eb4f81e2a9144a75c66e2f80c87a10fe",
+    "selection": "Keep source396d0c91f301 / engine570b65dd; retire source d50d3134 / engine8c5d799f after the original six-process gate failed. Do not reuse the newer provider/CPU fixtures as old-build qualification.",
+    "post_retirement_retained_reference_admission": {
+      "passed": true,
+      "source_inputs_recovered": 9813,
+      "original_five_fixtures_verified": true,
+      "GPU_executed": false
+    }
+  }
 }
