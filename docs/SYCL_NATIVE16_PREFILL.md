@@ -2114,6 +2114,15 @@ Main missed this guard in the first preflight. Do not disable the fast mixed
 scratch/staged-bank path merely to obtain an admission pass: inspect its direct
 allocation assumptions and introduce checked borrower bounds/lifetime before a
 new component/model plan. The original v1 root is closed and cannot be retried.
+The completed Orca source audit and native Luna-max review additionally found
+unchecked Alloc arithmetic and nontransactional relayout: GEMM is rebound and
+carve changes pointers/T before all allocations are known to fit. The next
+implementation needs a sealed checked layout and parent-loan generation with
+reader retirement; on failure preserve the old layout or poison it and keep
+the parent unavailable. Registered USM containment alone does not authorize
+a loan. Preserve the owned fast path and staged-bank rules, and qualify host,
+device, error and relayout behavior before another borrower model check. These
+are source findings, not an observed GPU fault or an implemented borrower route.
 CPU-math/RAM/GPU resource attribution remains unknown; physical262144/session/
 RESTORE, model quality and clean speed remain separate gates.
 Only a later qualified mechanism permits a
