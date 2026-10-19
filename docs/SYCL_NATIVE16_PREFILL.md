@@ -1267,7 +1267,7 @@ public-wrapper candidate measure the same host dispatch work at fallback
 shapes. Any corrected comparison needs a separately committed plan and evidence;
 the current failure and all individual timing samples remain in the
 [current component result](../bench/results/2026-10-15-pr6-recovery-audit/moe-down-scatter-current.json).
-The validated a576 engine and its same-build fixtures are hash-checked at
+The validated a576 engine and its same-build fixtures were hash-checked at
 `known-good-before-selective-down-v1` before reusing the build cache. The old1222
 fallback's9812 original source blobs and recipe were recovered before retirement.
 A bounded lookup of3074 local source files and2307 Git blobs found both old
@@ -1314,8 +1314,12 @@ geomean is0.953898926 (4.61% shorter), the worst shape ratio is1.020361103,
 and every selected large shape improves in each of the three process pairs.
 The unchanged component gate permits the117K model comparison; it establishes
 neither a whole-model gain nor adoption. The original v6 failure stays failed.
-Keep the a576 fallback and
-reuse the closed QSA build cache for this named next comparison. The dedicated
+The a576 fallback protected that fixture/model comparison. Its six executable
+copies were retired after the completed cohort selected the current qualified
+generation and both original source inventories/recipes were recovered from Git.
+Only its `source-build.json` remains for the current scoped bank/provider
+admission proof; preserve the selected current generation before the next
+native rebuild. The dedicated
 `bench_engine.py summarize-down` analyzer preserves the frozen>1.002 model
 criterion, while `summarize-source-view` keeps>1.005. It rechecks original
 component qualification, exact117489-token requests, six-process order, paired

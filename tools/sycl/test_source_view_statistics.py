@@ -14,7 +14,7 @@ sys.dont_write_bytecode = True
 from bench_engine import (FUSION_FIELDS, down_pair_statistics, expert_bank_reuse_scope,
                           compact_build_record, committed_engine_build, expert_bank_qualified_record,
                           recorded_files_unchanged,
-                          parse_counter_lines, qualified_build_source_matches,
+                          parse_counter_lines,
                           source_view_pair_statistics, validate_window_work)
 from build_engine import binary_origin_source
 
@@ -171,43 +171,6 @@ class BinaryIdentityTests(unittest.TestCase):
         previous=dict(passed=True,source_commit='old-native',binary=dict(sha256='same'))
         self.assertEqual(binary_origin_source(previous,'same','current'),'old-native')
         self.assertEqual(binary_origin_source(None,'new','current'),'current')
-
-
-class BuildQualificationTests(unittest.TestCase):
-    def setUp(self):
-        self.build = dict(source_commit='admission', binary_origin_source_commit='native',
-            complete=True, passed=True, ownership_closed=True, active=False, fixtures={'fixture': {}},
-            previous_output_comparison=dict(controller_only_admission=True,
-                native_and_recipe_inputs_match=True, engine_bytes_match=True,
-                fixture_bytes_match={'fixture': True}))
-
-    def test_exact_and_proved_native_origin(self):
-        self.assertTrue(qualified_build_source_matches('admission', self.build))
-        self.assertTrue(qualified_build_source_matches('native', self.build))
-        self.assertFalse(qualified_build_source_matches('nearby-revision', self.build))
-
-    def test_native_or_recipe_change_cannot_reuse_old_gate(self):
-        self.build['previous_output_comparison']['native_and_recipe_inputs_match'] = False
-        self.assertFalse(qualified_build_source_matches('native', self.build))
-
-    def test_binary_or_fixture_change_cannot_reuse_old_gate(self):
-        self.build['previous_output_comparison']['engine_bytes_match'] = False
-        self.assertFalse(qualified_build_source_matches('native', self.build))
-        self.build['previous_output_comparison']['engine_bytes_match'] = True
-        self.build['previous_output_comparison']['fixture_bytes_match']['fixture'] = False
-        self.assertFalse(qualified_build_source_matches('native', self.build))
-
-    def test_incomplete_fixture_proof_cannot_reuse_old_gate(self):
-        self.build['previous_output_comparison']['fixture_bytes_match'] = {}
-        self.assertFalse(qualified_build_source_matches('native', self.build))
-
-    def test_active_or_failed_build_cannot_qualify_either_revision(self):
-        self.build['active'] = True
-        self.assertFalse(qualified_build_source_matches('admission', self.build))
-        self.assertFalse(qualified_build_source_matches('native', self.build))
-        self.build['active'] = False
-        self.build['passed'] = False
-        self.assertFalse(qualified_build_source_matches('admission', self.build))
 
 
 class ExpertBankReuseTests(unittest.TestCase):
