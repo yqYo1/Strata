@@ -1,14 +1,14 @@
 {
-  "source_commit": "d20736c3629046c48512a20d5e673db06b585f20",
+  "source_commit": "cd81dcd133e7cf024b591201fda636b0129817e6",
   "binary": {
     "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/strata",
     "bytes": 22075256,
-    "sha256": "dd132d595d06f971238a6f4efbaab873678d98892b9381a9955dc396ffd4dbb4"
+    "sha256": "648f14bcc3c177a038520ec8d227ec70cd54825a62d779dd6bfeb71eaf73846a"
   },
   "fixtures": {
     "sycl_verifier_retirement_test": {
       "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/sycl_verifier_retirement_test",
-      "sha256": "db8a106834536960b4c0527f771447cce9723cd24bbae20c06870e00f85484f5"
+      "sha256": "f3288436b15a5022e5ae50b2352e945cd2bf29d341f944fe7663ff38f0b93711"
     },
     "sycl_submission_test": {
       "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/sycl_submission_test",
@@ -47,7 +47,7 @@
       ],
       "passed": true,
       "stdout_sha256": "dadad801d8022f3b40ad3bdab3e29f65fc13e1f61d60b219406f04e9881bb5be",
-      "stderr_sha256": "12c03431668efcd12091ca07987973f09f3a67048fe799725c046db1e03814dd"
+      "stderr_sha256": "7e425c811148849900caa73c43c8e8a641657c656a77510d53a9c9e01dd597ac"
     },
     {
       "command": [
@@ -55,6 +55,7 @@
       ],
       "cases": [
         "case=success expected_exit=0 markers=S PASS",
+        "case=empty expected_exit=0 markers=Z PASS",
         "case=partial expected_exit=0 markers=P PASS",
         "case=bounds expected_exit=0 markers=B PASS",
         "case=query expected_exit=0 markers=Q PASS",
@@ -62,8 +63,8 @@
         "case=copy-error expected_exit=1 markers=E PASS"
       ],
       "passed": true,
-      "stdout_sha256": "ac399df0c3752b60d33adc1a3988806edd3b639a478c040b990687b5a0835fa0",
-      "stderr_sha256": "850bda30865b260da82ebd09f92c82c0450a82212499f5b773196d6f88a9acd7"
+      "stdout_sha256": "2cf3a74991736ce17861a6c6ee813eea273703a030b98c7dd4a733935c4fddac",
+      "stderr_sha256": "8aaae9730054f914c7e82797bfd7887ffa3f32284f50a88f4bc5691d621b5d3f"
     }
   ],
   "complete": true,
@@ -73,7 +74,7 @@
   "model_quality_qualified": false,
   "nonresident_gpu_route_enabled": false,
   "consumer": "Prerequisite for an ordinary-Arena explicit-copy prototype. Retire normal traces after compact results are verified and committed.",
-  "gate": "Same-build submission10 cases and verifier6 isolated cases, checked owners and unchanged boot/runtime/source, no fresh GPU fault. Any failure blocks advancement.",
+  "gate": "Same-build submission10 cases and verifier7 isolated cases (including empty-batch ordering and failed-window reuse/output refusal), checked owners and unchanged boot/runtime/source, no fresh GPU fault. Any failure blocks advancement.",
   "limits": "Synthetic bounded copies and intentional host-only async failures. No invalid GPU address or stalled kernel. No model, physical262144/session/RESTORE or throughput qualification.",
   "ownership_closed": true,
   "fresh_faults": [],
@@ -85,5 +86,14 @@
     "device": "0xe20c",
     "kernel": "7.0.0-38-generic",
     "devcoredump": false
+  },
+  "source_audit": {
+    "audited_source_commit": "d20736c3629046c48512a20d5e673db06b585f20",
+    "report_sha256": "73606475c9b92f6bcd74f92e5ecf824b1889d9c387dd458cf09fe7d98ca6da4b",
+    "native_review_sha256": "76da7858f46ce5332e74bbdedeab70b5ce8bd973b1f908dfe0e5d0269b5a5d96",
+    "findings": "Submit/drain/query corrections hold. Existing callers abort on run failure; early flagB cannot bypass the checked SYCL segment barrier. Public failed-object reuse could expose stale state, a preexisting API contract gap. The follow-up latches failed copy submission and the strengthened partial case refuses run/commit/logits/logprobs/residual access; empty publication is deferred until drain. No new hang was observed or attributed to these public-API gaps.",
+    "correction_source_commit": "cd81dcd133e7cf024b591201fda636b0129817e6",
+    "worker_ownership_closed": true,
+    "limits": "Independent source review targets d207; Main reviewed the follow-up diff and executed its17 bounded cases. Ordinary-Arena route and model/performance gates remain separate."
   }
 }

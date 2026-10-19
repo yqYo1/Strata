@@ -1703,9 +1703,16 @@ public reuse and output refusal. Build with
 `python3 tools/sycl/build_engine.py rebuild-copy-safety`, commit the build result,
 then run the same check controller with its fresh v2 root. All17 cases, source/
 runtime/boot identity, ownership and fault checks must pass; the original16-case
-pass remains a result of the earlier source only. Native review of the audit
-and the revised checks are pending. These component results do not enable the
+pass remains a result of the earlier source only. Source`cd81dcd133e7` rebuilt
+successfully and all17 revised cases passed, with normal owned closure,
+unchanged source/runtime/boot and no fresh GPU fault. The separate native
+Luna-max review confirms that existing callers abort after run failure and
+earlyB cannot bypass the checked SYCL segment barrier; the public failed-object
+reuse gap was not a demonstrated current-caller or GPU-hang mechanism. The
+small follow-up closes that API gap. Its source and17-case result are distinct
+from the independent audit ofd207. These component results do not enable the
 ordinary-Arena route, establish model correctness/nonregression or add speed.
+Return to the bounded explicit-copy/CPU-share comparison next.
 
 A conditional complete-blob copy budget also constrains that candidate.
 With at most2 resident experts per layer, top10 routing and at most4 emitted
