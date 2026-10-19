@@ -126,6 +126,12 @@ add_library(strata_engine STATIC src/core/layer.cpp src/core/session.cpp src/cor
   src/core/conversation_snapshot.cpp src/core/conversation_state.cpp src/core/conversation_memory.cpp src/core/peer_experts.cpp)
 target_link_libraries(strata_engine PUBLIC strata_core strata_kernels strata_kernels_cpu)
 
+# Explicitly invoked production-verifier lifetime checks; never automatic GPU work.
+if(CMAKE_SYSTEM_NAME STREQUAL "Linux")
+  add_executable(sycl_verifier_retirement_test EXCLUDE_FROM_ALL tests/sycl/verifier_retirement.cpp)
+  target_link_libraries(sycl_verifier_retirement_test PRIVATE strata_engine)
+endif()
+
 set(MKL_LINK dynamic)
 set(MKL_THREADING sequential)
 find_package(MKL CONFIG REQUIRED)

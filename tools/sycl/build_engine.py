@@ -2,7 +2,7 @@
 """Build the current comparison engine from verified Git inputs; Main only.
 
 Uses the known-good engine's committed configure recipe, changing only the
-output directory. The decode observer build also enables its CPU-only tests.
+output directory. The explicit copy-safety build includes its bounded fixtures.
 No engine/GPU execution. An explicit rebuild reuses a closed comparison's cache
 only after verifying its original inputs from Git.
 """
@@ -175,11 +175,13 @@ def retain_current():
 
 def main():
     guards.require(len(sys.argv) == 1 or sys.argv[1:] in
-                   (['retain-current'], ['rebuild'], ['rebuild-attention'], ['rebuild-gemm'], ['rebuild-gdn'], ['rebuild-down'], ['rebuild-ordered'], ['rebuild-submission'], ['rebuild-gu'], ['rebuild-mixed'], ['rebuild-expert-bank']),
+                   (['retain-current'], ['build-copy-safety'], ['rebuild'], ['rebuild-attention'], ['rebuild-gemm'], ['rebuild-gdn'], ['rebuild-down'], ['rebuild-ordered'], ['rebuild-submission'], ['rebuild-gu'], ['rebuild-mixed'], ['rebuild-expert-bank']),
                    'use build_engine.py retain-current or a named rebuild mode')
-    rebuild = len(sys.argv) == 2
+    rebuild = len(sys.argv) == 2 and sys.argv[1] != 'build-copy-safety'
     attention = sys.argv[1:] == ['rebuild-attention']
     targets = ['strata']
+    if sys.argv[1:] == ['build-copy-safety']:
+        targets += ['sycl_verifier_retirement_test', 'sycl_submission_test']
     if attention:
         targets += ['sycl_qsa_bf16_late_flags_test', 'sycl_qsa_bf16_prefix_optimized_test',
                     'sycl_qsa_bf16_prefix_qcache_test', 'sycl_qsa_bf16_prefix_kvec4_test',
@@ -266,6 +268,7 @@ def main():
                           'tools/sycl/build_engine.py', 'tools/sycl/measurement_owner.py',
                           'tools/sycl/check_attention.py',
                           'tools/sycl/check_submission.py',
+                          'tools/sycl/check_verifier_retirement.py',
                           'tools/sycl/check_host_profile.py',
                           'tools/sycl/measure_gemm.py',
                           'tools/sycl/measure_gdn_columns.py',

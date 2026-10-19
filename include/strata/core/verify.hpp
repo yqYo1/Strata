@@ -252,6 +252,10 @@ private:
     cudaEvent_t work_done_ = nullptr;
     bool overlap_gpu_ = true, work_launched_ = false;
     cudaError_t work_status_ = cudaSuccess;
+    cudaError_t copy_submit_status_ = cudaSuccess;
+    size_t staging_blob_bytes_ = 0;
+    bool finish_expert_copies(std::string& err);
+    friend struct VerifierRetirementTestAccess;
     std::atomic<uint32_t> reached_{0};
     bool end_segment(int T, std::string& err, bool work = false);
     void launch_work();

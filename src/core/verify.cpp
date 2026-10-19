@@ -42,6 +42,7 @@
 
 #include <algorithm>
 #include <atomic>
+#include <cstdint>
 #include <map>
 #include <string>
 #include <thread>
@@ -53,6 +54,7 @@
 #include <cstring>
 #include <exception>
 #include <immintrin.h>
+#include <limits>
 
 namespace strata::core {
 namespace {
@@ -173,7 +175,10 @@ bool Verifier::drain_gpu_waits(int timeout_ms) {
     const Clock::time_point t0 = Clock::now();
     for (cudaStream_t s : {cs_, copy_}) {
         if (s == nullptr) continue;
-        while (cudaStreamQuery(s) == cudaErrorNotReady) {
+        for (;;) {
+            const cudaError_t status = cudaStreamQuery(s);
+            if (status == cudaSuccess) break;
+            if (status != cudaErrorNotReady) return false;
             if (ms_since(t0) > timeout_ms) return false;
             std::this_thread::sleep_for(std::chrono::milliseconds(1));
         }
@@ -343,10 +348,13 @@ Verifier::~Verifier() {
     g_verifiers.remove(this); // Wait for acquired callbacks before freeing any member.
 #ifdef STRATA_ENABLE_SYCL
     if(dense_retired_ || head_detached_)strata::sycl_backend::cleanup_fail_stop("verify teardown while head detached");
-    if(head_recapture_checked_) {
-        if(cs_ && cudaStreamSynchronize(cs_)!=cudaSuccess)strata::sycl_backend::cleanup_fail_stop("verify restored-head teardown compute drain");
-        if(copy_ && cudaStreamSynchronize(copy_)!=cudaSuccess)strata::sycl_backend::cleanup_fail_stop("verify restored-head teardown copy drain");
-        auto checked=[](cudaError_t status){if(status!=cudaSuccess)strata::sycl_backend::cleanup_fail_stop("verify restored-head checked owner teardown");};
+    {
+        // Every verifier owns borrowed graph/copy operands, including ordinary
+        // windows. A sticky runtime error can refuse synchronization; it does
+        // not authorize releasing those owners or returning from destruction.
+        if(cs_ && cudaStreamSynchronize(cs_)!=cudaSuccess)strata::sycl_backend::cleanup_fail_stop("verify teardown compute drain");
+        if(copy_ && cudaStreamSynchronize(copy_)!=cudaSuccess)strata::sycl_backend::cleanup_fail_stop("verify teardown copy drain");
+        auto checked=[](cudaError_t status){if(status!=cudaSuccess)strata::sycl_backend::cleanup_fail_stop("verify checked owner teardown");};
         for(auto e:exec_)if(e)checked(cudaGraphExecDestroy(e));
         for(auto& window:segments_)for(auto e:window)if(e)checked(cudaGraphExecDestroy(e));
         for(auto& window:work_)for(auto e:window)if(e)checked(cudaGraphExecDestroy(e));
@@ -393,6 +401,14 @@ bool Verifier::init(const WeightTable& wt, const ModelGeometry& g, SessionState&
     g_ = &g;
     ss_ = &ss;
     hits_ = hits;
+#ifdef STRATA_ENABLE_SYCL
+    const auto blob_bytes = strata::kernels::cpu::expert_layout().max_blob;
+    if (!blob_bytes || blob_bytes > std::numeric_limits<size_t>::max() / kStagingBlobs) {
+        err = "verify: invalid expert staging size";
+        return false;
+    }
+    staging_blob_bytes_ = static_cast<size_t>(blob_bytes);
+#endif
     head_ = head;
     max_t_ = max_t;
     sampling_.greedy = true;      // a fresh verifier samples greedily until set_sampling says otherwise
@@ -1492,6 +1508,7 @@ bool Verifier::run(int T, const int32_t* tokens, int64_t pos0, PoolMultiFn pool,
 #ifdef STRATA_ENABLE_SYCL
         work_launched_ = false;
         work_status_ = cudaSuccess;
+        copy_submit_status_ = cudaSuccess;
 #endif
         const int tb = gtb[grp], n = gte[grp] - gtb[grp];
         progress_at("verify window: the CPU experts of layer", l);
@@ -1524,11 +1541,6 @@ bool Verifier::run(int T, const int32_t* tokens, int64_t pos0, PoolMultiFn pool,
         // A pool without a publish callback still needs shared work and an
         // empty GPU plan. Its graph starts here, after the CPU callback.
         if (overlap_gpu_ && !work_launched_ && work_status_ == cudaSuccess) launch_work();
-        if (work_status_ != cudaSuccess) {
-            err = std::string("verify: shared/hit launch: ") + cudaGetErrorString(work_status_) +
-                  released_note(release_gpu_waits(5000));
-            return false;
-        }
 #endif
         if (!(test_stall && k + 1 == steps)) host_flag_raise(flag, want);
         ms_wait += std::chrono::duration<double, std::milli>(b - a).count();
@@ -1536,9 +1548,10 @@ bool Verifier::run(int T, const int32_t* tokens, int64_t pos0, PoolMultiFn pool,
 #ifdef STRATA_ENABLE_SYCL
         // DMA callbacks and staging sources must finish before the next graph
         // consumes them or the next CPU layer can reuse its transient storage.
-        const cudaError_t copies = cudaStreamSynchronize(copy_);
-        if (copies != cudaSuccess) {
-            err = std::string("verify: expert copies: ") + cudaGetErrorString(copies);
+        if (!finish_expert_copies(err)) return false;
+        if (work_status_ != cudaSuccess) {
+            err = std::string("verify: shared/hit launch: ") + cudaGetErrorString(work_status_) +
+                  released_note(release_gpu_waits(5000));
             return false;
         }
         if (released_.load() || (test_stall && k + 1 == steps)) {
@@ -1693,6 +1706,30 @@ void Verifier::raise_flag(uint32_t* flag, uint32_t value) {
 void Verifier::fetch_dma(void* ctx, const uint8_t* const* src, int n, size_t bytes) {
     Verifier* v = (Verifier*) ctx;
     const uint32_t want = v->cur_layer_ + 1;
+#ifdef STRATA_ENABLE_SYCL
+    if (v->copy_submit_status_ != cudaSuccess) return;
+    auto invalid = [&] { v->copy_submit_status_ = cudaErrorInvalidValue; };
+    if (n < 0 || n > v->sink_.staging_cap || n > kStagingBlobs) { invalid(); return; }
+    if (n == 0) { raise_flag(v->h_flagB_, want); return; }
+    if (!src || !bytes || !v->copy_ || !v->staging_ || !v->staging_blob_bytes_ ||
+        v->staging_blob_bytes_ > std::numeric_limits<size_t>::max() / kStagingBlobs ||
+        bytes > v->staging_blob_bytes_) { invalid(); return; }
+    const size_t capacity = kStagingBlobs * v->staging_blob_bytes_;
+    const auto base = reinterpret_cast<uintptr_t>(v->staging_);
+    const auto stage = static_cast<uintptr_t>(v->sink_.staging);
+    const auto offset = stage - base;
+    // bytes<=slot size and n<=slot count make the product bounded by capacity.
+    const size_t copied = static_cast<size_t>(n) * bytes;
+    if (offset > capacity || copied > capacity - offset) { invalid(); return; }
+    for (int i = 0; i < n; ++i) if (!src[i]) { invalid(); return; }
+    for (int i = 0; i < n; ++i) {
+        const auto status = cudaMemcpyAsync(reinterpret_cast<uint8_t*>(stage) + size_t(i) * bytes,
+                                             src[i], bytes, cudaMemcpyHostToDevice, v->copy_);
+        if (status != cudaSuccess) { v->copy_submit_status_ = status; return; }
+    }
+    // SYCL's next segment is gated by finish_expert_copies(), not a GPU spin
+    // on flag B. Do not queue a host task borrowing an embedded FlagSet.
+#else
     if (n <= 0) { raise_flag(v->h_flagB_, want); return; }
     uint8_t* stage = (uint8_t*) v->sink_.staging;                  // this group's half in a split window
     for (int i = 0; i < n; ++i) cudaMemcpyAsync(stage + (size_t) i * bytes, src[i], bytes, cudaMemcpyHostToDevice, v->copy_);
@@ -1700,7 +1737,23 @@ void Verifier::fetch_dma(void* ctx, const uint8_t* const* src, int n, size_t byt
     fs.flag = v->h_flagB_;
     fs.value = want;
     cudaLaunchHostFunc(v->copy_, [](void* p) { FlagSet* s = (FlagSet*) p; raise_flag(s->flag, s->value); }, &fs);
+#endif
 }
+
+#ifdef STRATA_ENABLE_SYCL
+bool Verifier::finish_expert_copies(std::string& err) {
+    // Drain even after an immediate submit error: earlier copies may still
+    // borrow provider memory. If a sticky error prevents proof, retain owners.
+    if (cudaStreamSynchronize(copy_) != cudaSuccess)
+        strata::sycl_backend::cleanup_fail_stop("verify expert copy retirement");
+    if (copy_submit_status_ != cudaSuccess) {
+        err = std::string("verify: expert copy submission: ") + cudaGetErrorString(copy_submit_status_);
+        return false;
+    }
+    raise_flag(h_flagB_, cur_layer_ + 1);
+    return true;
+}
+#endif
 
 void Verifier::publish_plan(void* ctx) {
     Verifier* v = (Verifier*) ctx;

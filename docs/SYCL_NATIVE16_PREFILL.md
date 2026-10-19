@@ -1664,6 +1664,29 @@ current fetch ignores submit errors, and a query error is not completion.
 The [reviewed source requirements](../bench/results/2026-10-15-pr6-recovery-audit/research-index.json)
 do not qualify enabling the route or predict a gain.
 
+The independent verifier correction checks every copy submission, refuses
+invalid staging extents and drains earlier copies even after a later submission
+fails. An error from a stream query no longer counts as completion. All SYCL
+verifier teardown now requires checked drains before releasing borrowed owners;
+if sticky runtime errors prevent that proof, the process stops with owners
+alive. The redundant queued flag callback is removed from the SYCL path.
+This change still leaves the ordinary-Arena nonresident GPU route closed.
+Before execution, the committed plan is to build with
+`python3 tools/sycl/build_engine.py build-copy-safety`, commit its build result,
+then run `python3 tools/sycl/check_verifier_retirement.py`. The prospective gate
+requires all ten existing submission cases plus six isolated production-verifier
+cases (valid copy, partial submission failure, bounds, query error, destructor
+failure and copy-drain failure), normal owned closure, unchanged source/runtime
+and no fresh GPU fault. The last two cases must exit1 before unwind or atexit;
+they inject only a host-task exception, never an invalid GPU address or stalled
+kernel. The small traced/validated check explicitly admits the already observed
+driver.16/libudev.18 diagnostic delta without changing the shared runtime
+baseline. Source changes, build receipt, small-check execution and any future
+model-route/performance decision remain separate gates. The source396 known-good
+engine and its five fixtures remain the fallback for this immediate comparison;
+the second generation must be selected or retired at qualification closure.
+Compilation and these new verifier cases are pending; this is no speed result.
+
 A conditional complete-blob copy budget also constrains that candidate.
 With at most2 resident experts per layer, top10 routing and at most4 emitted
 tokens/window, even identical routes and perfect acceptance require at least
