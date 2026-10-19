@@ -22,6 +22,13 @@ tree if restoring its original commit is sufficient. Do not retain a second
 source snapshot, progress backup, compressed copy, archive directory or bundle.
 Another obsolete file linking to it is not a current consumer.
 
+This also applies to rejected or superseded experiment code. Remove unused
+exports, build targets, command modes and fixtures when no named current
+consumer needs them, preserving independent correctness fixes. Keep their
+original source commits reachable so the experiment can be restored together
+with its recipe and results. A numerical pass alone does not make an unused
+performance prototype maintained production code.
+
 Before retaining a file, identify the decision, regression test, fault mechanism
 or concrete upcoming comparison that will use its information, and when to
 review that need again. Remove an obsolete index row instead of preserving an
@@ -69,6 +76,8 @@ Keep one current known-good engine build by default. Retain an additional
 baseline/candidate generation only for a named, imminent comparison; normally
 this means at most two generations. Record their consumer and remove the extra
 build when the comparison closes, rather than waiting for storage pressure.
+Known-good means that the applicable validation completed; the newest build or
+a successful compilation alone does not establish that qualification.
 Close in this order:
 
 1. Commit the useful results and their individual comparison samples.
