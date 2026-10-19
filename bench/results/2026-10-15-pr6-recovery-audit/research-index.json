@@ -2622,5 +2622,42 @@
       "files": 16,
       "bytes": 83528
     }
+  },
+  "xe2_register_spill_collection_scope": {
+    "classification": "knowledge collection",
+    "schedulable_now": false,
+    "status": "orca_collection_running",
+    "question": "Compare Xe2 register pressure, GRF modes, spills and subgroup/workgroup geometry in XMX GEMM and gather-heavy attention; identify compiler/ISA evidence and what register counts cannot establish. Compare primary SYCL/Intel/compiler sources and transferable non-LLM cases, without another roofline/profiler/tiling survey.",
+    "candidate_source": {
+      "commit": "5bbfb6dc8",
+      "source_sha256": {
+        "src/prefill/sycl/vllm_xe2/xe_gemm_bsd.hpp": "84fb1251c2f9f93bd7774fb2a5a6c928df9ac8e86d1c7f6cf1a6cec058403fa6",
+        "src/prefill/sycl/vllm_xe2/native16.cpp": "2a6b9b4532f9be50a2bb697cd120fc31f84d2c200fa5ed81f77d4b5f152af684",
+        "src/kernels/sycl/qsa_bf16_prefix.cpp": "4f9f815c9baae709f919f6d5ad1af04677c10d8c13c7597b3857cf81567ae192"
+      }
+    },
+    "prerequisite_evidence": "Independent knowledge collection needs no new metric or device run. Current hardware saturation is unqualified; existing source/ISA ceilings do not identify GRF/spill consequences. No implementation selection implied.",
+    "prior_scopes": [
+      "intel_tile_programming_collection_scope",
+      "resident_ceiling_methods_scope",
+      "moe_native16_traffic_scope",
+      "current_operation_ceiling_scope"
+    ],
+    "report_path": "/home/yayoi/.local/state/strata-sycl/artifact-retention-audit-20261018/research-wave-20261018/xe2-register-spill-methods.md",
+    "report_budget": {
+      "target_words": [
+        1200,
+        2000
+      ],
+      "maximum_bytes": 18432
+    },
+    "task_id": "task_30734bfcbf17",
+    "dispatch_id": "ctx_e8e47f6e2ea0",
+    "terminal_handle": "term_529cc5bd-5aeb-4880-990a-50700f58bf16",
+    "run_id": "run_fb41872974e9",
+    "collector_model_observed": "gpt-6-luna",
+    "worker_ownership_closed": false,
+    "consumer": "Native Luna-max review/index only on arrival; Main retrieves relevant sections for a later concrete register/spill question.",
+    "next_review": "After report settlement, native Codex gpt-6-luna max checks novelty/depth/source support and scope eligibility. No steering, GPU work or source edits."
   }
 }
