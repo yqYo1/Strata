@@ -4446,7 +4446,6 @@
   "ur_v2_explicit_event_construction_scope": {
     "classification": "decision support",
     "question": "Trace original UR-v2 explicit/implicit counter-event creation and safe submission-flush semantics after the documented NEO conversion override failed.",
-    "source_manifest": "/home/yayoi/orca/workspaces/Strata/sycl/.cache/strata-research/20261020/query-v6-followup-inputs.json",
     "report": "/home/yayoi/orca/workspaces/Strata/sycl/.cache/strata-research/20261020/ur-v2-explicit-event-construction-report.md",
     "report_budget_bytes": 14336,
     "schedulable_now": false,
@@ -4456,21 +4455,27 @@
         "evidence": "Committed v6 failure dc5d1bddf pins actual queue1/1/0 and1999034us query, source/no-fault/closed-owner evidence; immutable current-source manifest and clean unmodified Niko e88 evaluation source available."
       }
     ],
-    "status": "report_complete_worker_and_terminal_closed_native_review_pending",
+    "status": "native_reviewed_workers_and_terminals_closed",
     "consumer": "Current original event/query scheduling decision or required vanilla-upstream hardware-tuned benchmark plan; Main implements/tests.",
     "launch_limit": "Orca gpt-6-luna high, report-only; custom argv solely supplies report-writing sandbox and network permissions not expressible by worker-start. Operator owns terminal closure.",
-    "task_id": "task_20987523090d",
-    "terminal": "term_62f6b345-4a91-43ff-b228-a92d8f8ba9f0",
-    "terminal_incarnation": "0343bb09-43c2-433b-88cd-083ff22732dd",
-    "dispatch_id": "ctx_04fea81c3585",
     "worker_closed": true,
     "terminal_closed": true,
-    "report_sha256": "38d8fa3f7dd25fd4bb69a7719b8bdfcc575e653966be6fc306a28109c1599559"
+    "report_sha256": "38d8fa3f7dd25fd4bb69a7719b8bdfcc575e653966be6fc306a28109c1599559",
+    "native_review": {
+      "path": "/home/yayoi/orca/workspaces/Strata/sycl/.cache/strata-research/20261020/event-progress-and-vanilla-native-review.json",
+      "sha256": "d70664ec0ca0c1be80522965ef3405af06df7a15398d9e758abeb30ebeff3acb",
+      "main_read_original_body": false
+    },
+    "accepted_digest": "UR-v2 explicit event pooling and NEO implicit conversion are separate; no effective replacement control or production latency was established. Native-handle/pool/adapter identity capture is conditional on a source-accessible committed small plan and source correspondence. Do not infer a portable flush from cudaEventQuery.",
+    "source_reference": {
+      "commit": "dc5d1bddf065b99d90e8183b159352b913cbb75c",
+      "restorable_source_files": 12,
+      "upstream_commit": "e88ee39d1d6be6e3364183af3b39b62a7ed6f211"
+    }
   },
   "native_gate_hardware_progress_scope": {
     "classification": "decision support",
     "question": "Distinguish imported-gate hardware/queue blocking from query latency, and compare bounded test designs preserving the51+6ordering and lifetime invariants.",
-    "source_manifest": "/home/yayoi/orca/workspaces/Strata/sycl/.cache/strata-research/20261020/query-v6-followup-inputs.json",
     "report": "/home/yayoi/orca/workspaces/Strata/sycl/.cache/strata-research/20261020/native-gate-hardware-progress-report.md",
     "report_budget_bytes": 14336,
     "schedulable_now": false,
@@ -4480,18 +4485,34 @@
         "evidence": "Committed v6 failure dc5d1bddf pins actual queue1/1/0 and1999034us query, source/no-fault/closed-owner evidence; immutable current-source manifest and clean unmodified Niko e88 evaluation source available."
       }
     ],
-    "status": "dispatched_read_only_research",
+    "status": "native_reviewed_report_dispatch_failed_and_terminal_closed",
     "consumer": "Current original event/query scheduling decision or required vanilla-upstream hardware-tuned benchmark plan; Main implements/tests.",
     "launch_limit": "Orca gpt-6-luna high, report-only; custom argv solely supplies report-writing sandbox and network permissions not expressible by worker-start. Operator owns terminal closure.",
-    "task_id": "task_c452250f3a20",
-    "terminal": "term_245d4e7d-1344-4263-819b-e25be2e0c701",
-    "terminal_incarnation": "f1cbdf4a-96e0-401b-bcc1-208ef67cab79",
-    "dispatch_id": "ctx_8f6c11055361"
+    "worker_closed": true,
+    "terminal_closed": true,
+    "report_sha256": "385676be00ef1e23b86dec3eac2f02db229265132fff26f645f29bce3c856f44",
+    "lifecycle_issue": {
+      "outcome": "No accepted worker_done; preserve orchestration failure, not success.",
+      "evidence": "Exact provider transcript ends with the worker explicitly reporting rejected sender handles and no accepted lifecycle message. Source report exists, but existence does not settle the task.",
+      "resolution": "worker-abandon accepted, dispatchfailed/fenced; release no_owned_resource, exact idle/incarnation checked and operator-owned PTYclosed. No researcher was steered, no retry or forged completion.",
+      "transcript_excerpt_sha256": "217f1bc53db2ff17ca3182ff1213d5591c8a54e170d9ff8cc00f40e1d5aabca2"
+    },
+    "native_review": {
+      "path": "/home/yayoi/orca/workspaces/Strata/sycl/.cache/strata-research/20261020/native-gate-progress-native-review.json",
+      "sha256": "326b37d0f8dc1bff51b69c8dc3b818628e3646d7eafe9f4019bb600119842392",
+      "main_read_original_body": false
+    },
+    "accepted_digest": "Source review corrected v4/v6 timing confusion. No signal timestamp was collected, so lateSUCCESS cannot be called post-fallback completion evidence. FastSUCCESS strictly before the actual sole host signal would be positive; NOT_READY does not identify blocking cause. A new committed bounded no-gate/held-gate pair with joined query-thread and actual host signal timestamps is conditional, never model admission. The original worker settlement remains failed.",
+    "source_reference": {
+      "commit": "dc5d1bddf065b99d90e8183b159352b913cbb75c",
+      "restorable_source_files": 12,
+      "upstream_commit": "e88ee39d1d6be6e3364183af3b39b62a7ed6f211"
+    },
+    "closed_raw_retirement_reference": "native-event-gate-current.json::artifact_retirement"
   },
   "upstream_e88_hardware_tuned_bench_scope": {
     "classification": "decision support",
     "question": "Prepare a source-supported finite hardware-tuned benchmark plan for unmodified Niko e88, including actual Arc capabilities, long input, agent sessions and strong/weak MTP.",
-    "source_manifest": "/home/yayoi/orca/workspaces/Strata/sycl/.cache/strata-research/20261020/query-v6-followup-inputs.json",
     "report": "/home/yayoi/orca/workspaces/Strata/sycl/.cache/strata-research/20261020/upstream-e88-hardware-tuned-bench-report.md",
     "report_budget_bytes": 14336,
     "schedulable_now": false,
@@ -4501,15 +4522,22 @@
         "evidence": "Committed v6 failure dc5d1bddf pins actual queue1/1/0 and1999034us query, source/no-fault/closed-owner evidence; immutable current-source manifest and clean unmodified Niko e88 evaluation source available."
       }
     ],
-    "status": "report_complete_worker_and_terminal_closed_native_review_pending",
+    "status": "native_reviewed_workers_and_terminals_closed",
     "consumer": "Current original event/query scheduling decision or required vanilla-upstream hardware-tuned benchmark plan; Main implements/tests.",
     "launch_limit": "Orca gpt-6-luna high, report-only; custom argv solely supplies report-writing sandbox and network permissions not expressible by worker-start. Operator owns terminal closure.",
-    "task_id": "task_d0023f7c7fa7",
-    "terminal": "term_cae35578-b7c1-4dce-92e5-304b7444925e",
-    "terminal_incarnation": "88c0f595-7d81-49d0-ad69-b5bf8a93a255",
-    "dispatch_id": "ctx_d6b71d43ed8c",
     "worker_closed": true,
     "terminal_closed": true,
-    "report_sha256": "b63cb3d920b5bc8d671e32cbaec23b9cbf928749371f2bbba283880e3cd38379"
+    "report_sha256": "b63cb3d920b5bc8d671e32cbaec23b9cbf928749371f2bbba283880e3cd38379",
+    "native_review": {
+      "path": "/home/yayoi/orca/workspaces/Strata/sycl/.cache/strata-research/20261020/event-progress-and-vanilla-native-review.json",
+      "sha256": "d70664ec0ca0c1be80522965ef3405af06df7a15398d9e758abeb30ebeff3acb",
+      "main_read_original_body": false
+    },
+    "accepted_digest": "The actual e88 SYCL --prefill CHUNK requires --native. Freeze only supported/admitted arms after recovering the actual model/config and tiny route/API compatibility checks; vanilla performance remains unmeasured.",
+    "source_reference": {
+      "commit": "dc5d1bddf065b99d90e8183b159352b913cbb75c",
+      "restorable_source_files": 12,
+      "upstream_commit": "e88ee39d1d6be6e3364183af3b39b62a7ed6f211"
+    }
   }
 }
