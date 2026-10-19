@@ -29,6 +29,30 @@ WORK_KEYS = ('request_sha256', 'read_tokens', 'prompt_tokens', 'reused_tokens',
              'generated_tokens', 'drafts_offered', 'drafts_accepted')
 
 
+def check_prompts(config, environment):
+    # Match serve/server.py's actual tokenizer and template, without an optional
+    # transformers/tokenizers package or a model/GPU launch.
+    script = '''import json,sys
+from pathlib import Path
+sys.path.insert(0,sys.argv[1]);sys.path.insert(0,str(Path(sys.argv[1])/'tools'))
+from strata_tokenizer import Tokenizer
+from serve.frontend import ChatTemplate
+p=Path(sys.argv[2]);v=json.loads((p/'vocab.json').read_text());tokens=[None]*len(v)
+for text,index in v.items(): tokens[index]=text
+t=Tokenizer(tokens,(p/'merges.txt').read_text().split('\\n'),json.loads((p/'token_type.json').read_text()))
+template=ChatTemplate(p/'chat_template.jinja')
+questions=['Explain why a queue dependency must precede a GPU memory reuse.',
+           'Write a short Python function that sums a list of integers.']
+print(json.dumps([t.encode(template.render([dict(role='user',content=q)],enable_thinking=True),parse_special=True) for q in questions]))
+'''
+    prompts = json.loads(subprocess.check_output([
+        str(Path(environment['PATH'].split(':')[0])/'python'), '-c', script,
+        str(P), config['tokenizer']], env=environment, cwd=P, timeout=30, text=True))
+    guards.require(len(prompts) == 2 and all(p and all(type(x) is int and 0 <= x < 248320 for x in p)
+        for p in prompts), 'invalid generated qualification tokens')
+    return prompts
+
+
 def comparison_plan():
     return dict(order=list(ORDER), pairs=[[0, 1], [3, 2], [4, 5]],
         question='Does CPU expert-pool capacity affect critical-path generation on this configured MTP4 route?',
@@ -114,6 +138,14 @@ def prepare(stage, cohort):
     pins = gen.benchmark_pins(source)
     settings = gen.committed(gen.SETTINGS)
     guards.require(not root.exists(), 'never overwrite/retry a process root')
+    tokenizer_assets = {str(Path(base['config']['tokenizer'])/name):
+        gen.common.digest(Path(base['config']['tokenizer'])/name)
+        for name in ('vocab.json','merges.txt','token_type.json','chat_template.jinja')}
+    if not check:
+        guards.require(tokenizer_assets == previous['tokenizer_assets'] and
+            gen.common.digest(gen.SETTINGS) == previous['settings_sha256'],
+            'frozen tokenizer or shared settings changed between processes')
+    prompts = check_prompts(base['config'], base['environment']) if check else None
     root.mkdir(mode=0o700)
     for name in ('cache', 'tmp'): (root/name).mkdir()
     old_root = base['environment']['STRATA_MEASUREMENT_ROOT']
@@ -142,17 +174,7 @@ def prepare(stage, cohort):
     guards.require(gen.common.digest(root/'expert-profile.bin') == base['profile_sha256'], 'profile changed')
     (root/'config.json').write_text(json.dumps(config, indent=2)+'\n')
     if check:
-        tokenizer = Path(config['tokenizer'])/'tokenizer.json'
-        script = ('from tokenizers import Tokenizer; import json,sys; '
-                  't=Tokenizer.from_file(sys.argv[1]); '
-                  'print(json.dumps([t.encode(s).ids for s in '
-                  '["Explain why a queue dependency must precede a GPU memory reuse.",'
-                  '"Write a short Python function that sums a list of integers."]]))')
-        prompts = json.loads(subprocess.check_output([
-            str(Path(env['PATH'].split(':')[0])/'python'), '-c', script, str(tokenizer)], text=True))
-        guards.require(len(prompts) == 2 and all(p and all(type(x) is int and 0 <= x < 248320 for x in p)
-            for p in prompts), 'invalid generated qualification tokens')
-        record.update(check_prompts=prompts, tokenizer_sha256=gen.common.digest(tokenizer))
+        record['check_prompts'] = prompts
         command = [record['binary']['path'], '--serve', *flags]
     else:
         with socket.socket() as sock:
@@ -162,6 +184,7 @@ def prepare(stage, cohort):
             '--workload-id', gen.WORKLOAD_ID, '--fail-fast-engine-error', '--ready-timeout', '600',
             '--out', str(root/'bench'), '--long-generation-workload', 'regular-code']
     record.update(root=str(root), environment=env, config=config, command=command,
+        tokenizer_assets=tokenizer_assets,
         profile_sha256=base['profile_sha256'], config_sha256=gen.common.digest(root/'config.json'),
         settings_sha256=gen.common.digest(gen.SETTINGS), source_count=len(pins),
         source_aggregate_sha256=hashlib.sha256(json.dumps(pins, sort_keys=True).encode()).hexdigest(),
@@ -187,8 +210,8 @@ def run():
     guards.require(resources.source_proof(record) == record['original_native_inputs_recovered'], 'native proof changed')
     gen.runtime_assets_unchanged(record)
     check = record['stage'] == 'check'
-    if check:
-        guards.require(gen.common.digest(Path(record['config']['tokenizer'])/'tokenizer.json') == record['tokenizer_sha256'], 'tokenizer changed')
+    for name, expected in record['tokenizer_assets'].items():
+        guards.require(gen.common.digest(name) == expected, 'tokenizer asset changed: '+name)
     boot = Path('/proc/sys/kernel/random/boot_id').read_text().strip()
     before = subprocess.check_output(['journalctl','-k','-b','-n','0','--show-cursor','--no-pager'], text=True)
     cursor = next(x.split(': ',1)[1] for x in before.splitlines() if x.startswith('-- cursor: '))
@@ -268,7 +291,8 @@ def run():
         else:
             record['processes'].append({k: record.get(k) for k in ('cohort','workers','passed','ownership_closed',
                 'fresh_faults','warmups','native_identity','runtime_pool_confirmed','observer_records_absent')})
-            record['processes'][-1]['request'] = record.get('requests', [{}])[0]
+            requests = record.get('requests', [])
+            record['processes'][-1]['request'] = requests[0] if requests else {}
             if record['passed'] and record['cohort'] == 5:
                 try:
                     record['comparison_summary'] = summarize_processes(record['processes'])
