@@ -91,13 +91,14 @@ def committed(path):
     return json.loads(data)
 
 
-def benchmark_pins(revision):
+def benchmark_pins(revision, match_worktree=True):
     names = git('ls-tree', '-r', '--name-only', revision, '--', 'serve', 'tools', 'bench.sh').decode().splitlines()
     names = [n for n in names if n == 'bench.sh' or
              (n.endswith('.py') and not n.startswith('tools/hip/'))]
     pins = {}
     for name, data in blobs(P, revision, names):
-        guards.require((P / name).read_bytes() == data, 'uncommitted benchmark input: ' + name)
+        if match_worktree:
+            guards.require((P / name).read_bytes() == data, 'uncommitted benchmark input: ' + name)
         pins[name] = hashlib.sha256(data).hexdigest()
     return pins
 
@@ -163,6 +164,39 @@ def journal_evidence(root):
             rows.append(dict(row['sample'], workload=row['phase'].split('/', 1)[1],
                 run=row['run'], order=len(rows)))
     return journal, rows
+
+
+def warmup_reconciliation(entries, workloads=('regular-code',)):
+    """Require the actual official warmups, not just a successful final request."""
+    expected = [('warm-up/chat', None, 24, True), ('calibration', 200, 1, False),
+                ('calibration', 800, 1, False), ('warm-up/prompt', None, 8, True)]
+    expected += [('long-generation/' + name, 0, 16384, True) for name in workloads]
+    events = [row for row in entries if row['kind'] != 'identity']
+    guards.require(len(events) == 2 * len(expected), 'missing or extra official request events')
+    hashes = []
+    for i, (phase, run, maximum, thinking) in enumerate(expected):
+        start, result = events[2*i:2*i+2]
+        guards.require(start['kind'] == 'start' and result['kind'] == 'result' and
+            all(row.get('phase') == phase and row.get('run') == run and row.get('turn') is None
+                for row in (start, result)) and start.get('max_tokens') == maximum and
+            start.get('thinking') is thinking and result.get('request_index') == start['index'] and
+            result.get('sample', {}).get('ok') is True and
+            result['sample'].get('request_sha256') == start.get('request_sha256') and
+            re.fullmatch('[0-9a-f]{64}', start.get('request_sha256', '')) is not None,
+            'official warmup/request identity, order or success differs')
+        hashes.append(start['request_sha256'])
+    return dict(successful_warmups=4, successful_long_requests=len(workloads),
+                phase_order=[row[0] for row in expected], request_sha256=hashes)
+
+
+def warmup_evidence(root, expected_journal):
+    journal, _ = journal_evidence(root)
+    guards.require(journal['valid'] and journal['complete'] and journal == expected_journal,
+        'warmup journal is invalid, incomplete or differs from the closed receipt')
+    path, = (root / 'bench').glob('*/requests.jsonl')
+    entries = [json.loads(line) for line in path.read_text().splitlines()]
+    return dict(warmup_reconciliation(entries), journal_sha256=common.digest(path),
+                journal_state_sha256=common.digest(path.with_name('journal-state.json')))
 
 
 def cpu_check_qualification(build):
@@ -679,7 +713,7 @@ def overhead_statistics(records, engine_compare=False):
 def summarize_overhead(engine_compare=False):
     head = git('rev-parse', 'HEAD').decode().strip()
     current = committed(RESULT)
-    records, revision = [], head
+    records, revision, warmups = [], head, []
     for expected in reversed(range(len(OVERHEAD_ARMS))):
         record = json.loads(git('show', revision + ':' + str(RESULT.relative_to(P))))
         guards.require(record['mode'] == ('engine-compare' if engine_compare else 'cpu-overhead') and record['cohort'] == expected,
@@ -687,16 +721,27 @@ def summarize_overhead(engine_compare=False):
         link = record['preceding_generation_result']
         guards.require(hashlib.sha256(git('show', link['commit'] + ':' + link['path'])).hexdigest() ==
             link['sha256'], 'predecessor result differs from original committed bytes')
-        pins = benchmark_pins(record['source_commit'])
+        # Recover closed measurement inputs from their original Git objects.
+        # The later analyzer is pinned separately; launches still require the worktree.
+        pins = benchmark_pins(record['source_commit'], match_worktree=False)
         guards.require(len(pins) == record['source_count'] and
             hashlib.sha256(json.dumps(pins, sort_keys=True).encode()).hexdigest() ==
             record['source_aggregate_sha256'], 'original overhead benchmark inputs cannot be recovered')
         records.append((revision, record))
+        evidence = warmup_evidence(Path(record['environment']['STRATA_MEASUREMENT_ROOT']), record['request_journal'])
+        warmups.append(dict(cohort=record['cohort'], **evidence))
         revision = record['preceding_generation_result']['commit']
     records.reverse()
+    warmups.reverse()
+    guards.require(all({k: v for k, v in row.items() if k not in
+        ('cohort', 'journal_sha256', 'journal_state_sha256')} ==
+        {k: v for k, v in warmups[0].items() if k not in
+        ('cohort', 'journal_sha256', 'journal_state_sha256')} for row in warmups),
+        'official warmup/request recipes differ across processes')
     key = 'engine_comparison_summary' if engine_compare else 'observer_overhead_summary'
     current[key] = dict(analyzer_source_commit=head,
         **overhead_statistics(records, engine_compare), original_benchmark_inputs_recovered=len(pins),
+        warmup_reconciliation=warmups,
         GPU_executed=False, original_outcomes_unchanged=True)
     if not engine_compare:
         current['observer_overhead_qualified'] = current[key]['observed_overhead_gate_passed']
