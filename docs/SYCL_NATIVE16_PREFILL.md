@@ -1757,11 +1757,9 @@ At`3ef95537a398`, the rebuilt native provider17, submission10 and verifier8 case
 all passed, including the16 largest-size copies and byte/outer-guard checks.
 All owners closed normally; source/runtime/boot stayed unchanged and no fresh
 GPU fault appeared. Engine bytes remained those of`189e5163d`; only the fixture
-and controller were corrected. The positive grouped GPU model route is still
-unexecuted. Independent Orca producer/consumer review and native Luna-max review
-found no verified source blocker; grouped arithmetic/output qualification remains
-separate from the35 component cases. The next model check establishes execution
-and logical copy conservation, without claiming numerical/task quality.
+and controller were corrected. Independent Orca producer/consumer review and
+native Luna-max review found no verified source blocker; grouped arithmetic/output
+qualification remains separate from the35 component cases.
 The next bounded model gate uses `python3 tools/sycl/arena_copy.py prepare`,
 then a committed generated plan before `run`. It pins the current engine and
 all component bytes, recovers the original build inputs, hashes all model inputs
@@ -1776,6 +1774,16 @@ is admitted only for this named diagnostic, without updating the shared runtime.
 This check does not compare speed, numerical/task quality or physical262144/
 RESTORE. Long-generation strong/weak comparisons require their own committed
 order, repetitions and decision criteria after actual route admission.
+The frozen check on controller source`9feb1dbb1` then passed both requests:
+66/64 input tokens and16 generated tokens each. Actual mode0 GPU miss groups
+were1309/1534, with2684518400/3143577600 logical payload bytes respectively;
+all submitted blobs/bytes completed. CPU work remained positive in both requests.
+The native owner exited normally with unchanged boot and no fresh GPU fault.
+See the [compact route result and original frozen-plan reference](../bench/results/2026-10-15-pr6-recovery-audit/decode-arena-copy-current.json).
+This is execution/copy-conservation evidence, not native-output or task-quality
+qualification or a speed gain. Validate dispatched mixed-format expert outputs
+before advancing a long-generation candidate. Preserve the source396 fallback
+and default-off candidate for that imminent comparison.
 
 A conditional complete-blob copy budget also constrains that candidate.
 With at most2 resident experts per layer, top10 routing and at most4 emitted
