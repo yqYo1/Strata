@@ -56,6 +56,23 @@ float spacing(float x) {
   const uint16_t b=round_bf16(std::fabs(x));
   return load_bf16(uint16_t(b+1))-load_bf16(b);
 }
+#if defined(STRATA_QSA_COMPARE_PARALLEL_SUM)
+void parallel_output(const std::vector<uint16_t> &candidate,
+                     const std::vector<uint16_t> &reference) {
+  require(candidate.size()==reference.size(),"parallel output extent");
+  for (size_t i=0;i<candidate.size();++i) {
+    if (i<16 || i>=candidate.size()-16) {
+      require(candidate[i]==reference[i],"parallel output guard bits");continue;
+    }
+    const float a=load_bf16(candidate[i]),b=load_bf16(reference[i]);
+    require(std::isnan(a)==std::isnan(b),"parallel diagnostic classification");
+    if (std::isnan(b)) continue;
+    require(std::isfinite(a) && std::isfinite(b),"parallel output finite");
+    require(std::fabs(double(a)-b)<=double(spacing(b))+2e-6,
+            "parallel BF16 output budget");
+  }
+}
+#endif
 void gate(bool enabled,const char *phase) {
   if (!enabled) return;
   std::cout<<"QSA_BF16_READY "<<phase<<'\n';
@@ -140,13 +157,19 @@ void run(int cells,int cap,int queries,bool masked,bool extended,int live_cells=
     require(attention(dq.data(),pools,di.data(),ds.data(),cap,shape,
         out.data()+16,queries,{pages,pages},&rt->compute()),"BF16 matrix unavailable");
     rt->wait();
-#if defined(STRATA_QSA_COMPARE_PREFIX33)
+#if defined(STRATA_QSA_COMPARE_PREFIX33) || defined(STRATA_QSA_COMPARE_PARALLEL_SUM)
     // Compare every output bit, including NaN diagnostics, masks and guards.
     // Both calls use the same inputs; the second refreshes identical scratch.
     const auto candidate=out.get();out.put(sentinel);
+#if defined(STRATA_QSA_COMPARE_PARALLEL_SUM)
+    require(qsa_bf16_prefix_ordered_exp_batch(dq.data(),pools,di.data(),ds.data(),cap,shape,
+        out.data()+16,queries,{pages,pages},live_cells,scratch,&rt->compute()),"ordered reference unavailable");
+    rt->wait();const auto reference=out.get();parallel_output(candidate,reference);
+#else
     require(qsa_bf16_prefix_optimized_batch(dq.data(),pools,di.data(),ds.data(),cap,shape,
         out.data()+16,queries,{pages,pages},live_cells,scratch,&rt->compute()),"prefix33 reference unavailable");
     rt->wait();require(out.get()==candidate,"complete prefix33 bit identity");
+#endif
 #if defined(STRATA_QSA_COMPARE_PREFIX_STATE)
     // Capture both real and padded rows. The diagnostic specialization must
     // preserve the corresponding normal output, including NaNs and guards.
@@ -156,10 +179,21 @@ void run(int cells,int cap,int queries,bool masked,bool extended,int live_cells=
       for (bool ordered : {false,true}) {
         state.put(state_initial);out.put(sentinel);
         const QsaPrefixStateProbe probe{0,kv_head,head,state.data()+16};
+#if defined(STRATA_QSA_COMPARE_PARALLEL_SUM)
+        const bool admitted=ordered ? qsa_bf16_prefix_parallel_sum_probe_batch(
+            dq.data(),pools,di.data(),ds.data(),cap,shape,out.data()+16,queries,
+            {pages,pages},live_cells,scratch,probe,&rt->compute()) :
+          qsa_bf16_prefix_state_probe_batch(dq.data(),pools,di.data(),ds.data(),cap,shape,
+            out.data()+16,queries,{pages,pages},live_cells,scratch,true,probe,&rt->compute());
+        require(admitted,"parallel state probe admission");
+        rt->wait();require(out.get()==(ordered ? candidate : reference),
+            "state probe changed its own normal output");
+#else
         require(qsa_bf16_prefix_state_probe_batch(dq.data(),pools,di.data(),ds.data(),cap,shape,
             out.data()+16,queries,{pages,pages},live_cells,scratch,ordered,probe,&rt->compute()),
             "state probe admission");
         rt->wait();require(out.get()==candidate,"state probe changed final output");
+#endif
         const auto observed=state.get();
         for (size_t i=0;i<16;++i)
           require(observed[i]==state_guard && observed[observed.size()-16+i]==state_guard,"state guards");
@@ -168,10 +202,44 @@ void run(int cells,int cap,int queries,bool masked,bool extended,int live_cells=
         for (size_t i=used;i<state_values;++i)
           require(observed[16+i]==state_guard,"state capture wrote beyond selected width");
         if (!ordered) serial=observed;
-        else require(std::memcmp(serial.data(),observed.data(),observed.size()*sizeof(float))==0,
+        else {
+#if defined(STRATA_QSA_COMPARE_PARALLEL_SUM)
+          // Positive FP32 operands: any association of32 terms has at most31
+          // rounding steps. Do not assume a vendor-specific reduction tree.
+          constexpr double u=0x1p-24, gamma31=(31*u)/(1-31*u);
+          double normalizer_budget=0;
+          bool saw_positive=false;
+          for (size_t i=0;i<used;i+=4) {
+            const size_t at=16+i;
+            require(std::bit_cast<uint32_t>(serial[at])==std::bit_cast<uint32_t>(observed[at]) &&
+                std::bit_cast<uint32_t>(serial[at+1])==std::bit_cast<uint32_t>(observed[at+1]),
+                "parallel maximum/alpha bits");
+            const double a=observed[at+1], sn=serial[at+2], pn=observed[at+2],
+                         ss=serial[at+3], ps=observed[at+3];
+            require(std::isfinite(a) && a>=0 && a<=1 && std::isfinite(sn) && sn>=0 &&
+                    std::isfinite(pn) && pn>=0 && std::isfinite(ss) && ss>=0 &&
+                    std::isfinite(ps) && ps>=0,"parallel finite nonnegative state");
+            require((ss>0)==(ps>0),"parallel positive tile classification");
+            saw_positive |= ss>0;
+            require(saw_positive ? (sn>0 && pn>0) : (sn==0 && pn==0),
+                    "parallel empty/positive normalizer");
+            const double sum_budget=2*gamma31/(1-gamma31)*std::max(ss,ps)+
+                64*double(std::numeric_limits<float>::denorm_min());
+            require(std::fabs(ss-ps)<=sum_budget,"parallel tile sum bound");
+            normalizer_budget=a*normalizer_budget+sum_budget+
+                2*u/(1-u)*std::max(sn,pn)+2*double(std::numeric_limits<float>::denorm_min());
+            require(std::fabs(sn-pn)<=normalizer_budget,"parallel normalizer recurrence bound");
+          }
+#else
+          require(std::memcmp(serial.data(),observed.data(),observed.size()*sizeof(float))==0,
                      "online maximum/alpha/normalizer/sum FP32 bits differ");
+#endif
+        }
       }
     }
+#endif
+#if defined(STRATA_QSA_COMPARE_PARALLEL_SUM)
+    out.put(candidate);
 #endif
 #endif
   };
@@ -254,7 +322,7 @@ void run(int cells,int cap,int queries,bool masked,bool extended,int live_cells=
   }
   invoke();require(guarded()==y,"unchanged input repeat deterministic");immutable();
   if (extended) {
-#if defined(STRATA_QSA_COMPARE_PREFIX33)
+#if defined(STRATA_QSA_COMPARE_PREFIX33) || defined(STRATA_QSA_COMPARE_PARALLEL_SUM)
     // Explicit physical-page alias: reads remain valid even when two logical
     // pages refer to one physical page. Compare all candidate/reference bits.
     require(pages>1 && live_cells>1 && cap>32,"row-publication diagnostic geometry");
@@ -326,6 +394,14 @@ void run(int cells,int cap,int queries,bool masked,bool extended,int live_cells=
       catch (const std::invalid_argument &) { refused=true; }
       require(refused,"invalid state capture submitted work");
       require(guarded()==y,"state rejection changed output");
+#if defined(STRATA_QSA_COMPARE_PARALLEL_SUM)
+      refused=false;
+      try { (void)qsa_bf16_prefix_parallel_sum_probe_batch(dq.data(),pools,di.data(),ds.data(),cap,shape,
+          out.data()+16,queries,{pages,pages},live_cells,scratch,probe,&rt->compute()); }
+      catch (const std::invalid_argument &) { refused=true; }
+      require(refused,"invalid parallel state capture submitted work");
+      require(guarded()==y,"parallel state rejection changed output");
+#endif
     }
     { Buffer<float> tiny(1); Drain pending_tiny;
       bool refused=false;
@@ -333,8 +409,18 @@ void run(int cells,int cap,int queries,bool masked,bool extended,int live_cells=
           out.data()+16,queries,{pages,pages},live_cells,scratch,false,{0,0,0,tiny.data()},&rt->compute()); }
       catch (const std::invalid_argument &) { refused=true; }
       require(refused,"short state span submitted work");
+#if defined(STRATA_QSA_COMPARE_PARALLEL_SUM)
+      refused=false;
+      try { (void)qsa_bf16_prefix_parallel_sum_probe_batch(dq.data(),pools,di.data(),ds.data(),cap,shape,
+          out.data()+16,queries,{pages,pages},live_cells,scratch,{0,0,0,tiny.data()},&rt->compute()); }
+      catch (const std::invalid_argument &) { refused=true; }
+      require(refused,"short parallel state span submitted work");
+#endif
     }
     std::cout<<"case state_admission_rejections=9 status=PASS\n";
+#if defined(STRATA_QSA_COMPARE_PARALLEL_SUM)
+    std::cout<<"case parallel_state_admission_rejections=9 status=PASS\n";
+#endif
 #endif
     bool rejected=false;
     try { (void)attention(dq.data(),pools,di.data(),ds.data(),cap,shape,dq.data(),queries,{pages,pages},&rt->compute()); }
@@ -380,7 +466,14 @@ void run(int cells,int cap,int queries,bool masked,bool extended,int live_cells=
            <<" packed_guard_elements="<<PackedGuard<<" packed_k_mod8="<<reinterpret_cast<uintptr_t>(scratch.k)%8
            <<" packed_logical_prefix=PASS packed_guards=PASS guards=PASS inputs=PASS status=PASS\n";
 #if defined(STRATA_QSA_COMPARE_PREFIX_STATE)
+#if defined(STRATA_QSA_COMPARE_PARALLEL_SUM)
+  std::cout<<"case parallel_FP32_state_bound=PASS exact_max_alpha=PASS real_padded_heads=PASS state_guards=PASS cells="<<cells<<" cap="<<cap<<'\n';
+#else
   std::cout<<"case exact_FP32_online_state=PASS real_padded_heads=PASS state_guards=PASS cells="<<cells<<" cap="<<cap<<'\n';
+#endif
+#endif
+#if defined(STRATA_QSA_COMPARE_PARALLEL_SUM)
+  std::cout<<"case parallel_BF16_output_bound=PASS cells="<<cells<<" cap="<<cap<<" queries="<<queries<<'\n';
 #endif
 #if defined(STRATA_QSA_COMPARE_PREFIX33)
   std::cout<<"case exact_prefix33_bits=PASS cells="<<cells<<" cap="<<cap<<" queries="<<queries<<'\n';

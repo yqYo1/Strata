@@ -481,6 +481,21 @@ bool qsa_bf16_prefix_ordered_exp_batch(const uint16_t *query, const QsaAttnPools
   return prefix_batch_impl<Cells + 1, false, false, true, true, true, true>(query,
       pools, ids, steps, cap, shape, output, queries, bounds, live_cells, scratch, stream);
 }
+bool qsa_bf16_prefix_parallel_sum_batch(const uint16_t *query, const QsaAttnPools &pools,
+    const int32_t *ids, const int32_t *steps, int64_t cap, const QsaShapes &shape,
+    uint16_t *output, int64_t queries, const QsaPromptBf16Bounds &bounds,
+    int64_t live_cells, const QsaBf16PackedScratch &scratch, void *stream) {
+  return prefix_batch_impl<Cells + 1, false, true, true, true, true, false>(query,
+      pools, ids, steps, cap, shape, output, queries, bounds, live_cells, scratch, stream);
+}
+bool qsa_bf16_prefix_parallel_sum_probe_batch(const uint16_t *query, const QsaAttnPools &pools,
+    const int32_t *ids, const int32_t *steps, int64_t cap, const QsaShapes &shape,
+    uint16_t *output, int64_t queries, const QsaPromptBf16Bounds &bounds,
+    int64_t live_cells, const QsaBf16PackedScratch &scratch,
+    const QsaPrefixStateProbe &probe, void *stream) {
+  return prefix_batch_impl<Cells + 1, false, true, true, true, true, false, true>(query,
+      pools, ids, steps, cap, shape, output, queries, bounds, live_cells, scratch, stream, probe);
+}
 bool qsa_bf16_prefix_state_probe_batch(const uint16_t *query, const QsaAttnPools &pools,
     const int32_t *ids, const int32_t *steps, int64_t cap, const QsaShapes &shape,
     uint16_t *output, int64_t queries, const QsaPromptBf16Bounds &bounds,

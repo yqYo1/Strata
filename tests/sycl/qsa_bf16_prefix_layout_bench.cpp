@@ -19,7 +19,11 @@
 using namespace strata;
 using namespace strata::kernels;
 namespace {
-#if defined(STRATA_QSA_BENCH_ORDERED_EXP)
+#if defined(STRATA_QSA_BENCH_PARALLEL_SUM)
+constexpr auto baseline_attention=qsa_bf16_prefix_ordered_exp_batch;
+constexpr auto candidate_attention=qsa_bf16_prefix_parallel_sum_batch;
+constexpr const char *baseline_name="ordered_exp", *candidate_name="parallel_sum";
+#elif defined(STRATA_QSA_BENCH_ORDERED_EXP)
 constexpr auto baseline_attention=qsa_bf16_prefix_kvvec4_batch;
 constexpr auto candidate_attention=qsa_bf16_prefix_ordered_exp_batch;
 constexpr const char *baseline_name="kvvec4", *candidate_name="ordered_exp";
@@ -54,6 +58,25 @@ uint16_t bf16(float x) {
   return uint16_t((b+0x7fff+((b>>16)&1))>>16);
 }
 uint16_t half(float x) { return std::bit_cast<uint16_t>(_Float16(x)); }
+void compare_output(const std::vector<uint16_t> &actual,const std::vector<uint16_t> &reference) {
+#if defined(STRATA_QSA_BENCH_PARALLEL_SUM)
+  require(actual.size()==reference.size(),"parallel output extent");
+  for (size_t i=0;i<actual.size();++i) {
+    if (i<16 || i>=actual.size()-16) {
+      require(actual[i]==reference[i],"parallel output guard bits");continue;
+    }
+    const float a=std::bit_cast<float>(uint32_t(actual[i])<<16),
+                b=std::bit_cast<float>(uint32_t(reference[i])<<16);
+    const uint16_t bits=bf16(std::fabs(b));
+    const double ulp=std::bit_cast<float>(uint32_t(bits+1)<<16)-
+                     std::bit_cast<float>(uint32_t(bits)<<16);
+    require(std::isfinite(a) && std::isfinite(b) && std::fabs(double(a)-b)<=ulp+2e-6,
+            "parallel BF16 output budget");
+  }
+#else
+  require(actual==reference,"full-output bit comparison");
+#endif
+}
 void gate(bool enabled,const char *phase) {
   if (!enabled) return;
   std::cout<<"QSA_BF16_READY "<<phase<<'\n';require(std::cin.get()=='X',"Main gate token");
@@ -118,21 +141,33 @@ void run(int cells,int queries,int cap,bool clustered) {
     require(std::isfinite(std::bit_cast<float>(uint32_t(reference[i])<<16)),"baseline all finite");
   const std::array<int,2> variants{0,1};
   for (int variant:variants) {
-    invoke(variant);guards();require(out.get()==reference,"warm full-output bit comparison");
+    invoke(variant);guards();compare_output(out.get(),reference);
   }
   for (int round=0;round<6;++round) for (int index=0;index<2;++index) {
     const int variant=variants[(process_id+round+index)%2];const double ms=invoke(variant);
-    guards();require(out.get()==reference,"timed full-output bit comparison");
+    guards();compare_output(out.get(),reference);
     std::cout<<"sample process="<<process_id<<" cells="<<cells<<" queries="<<queries<<" cap="<<cap
         <<" pattern="<<(clustered ? "clustered" : "gather")<<" round="<<round
         <<" order="<<index<<" variant="<<variant<<" implementation="<<(variant ? candidate_name : baseline_name)
         <<" milliseconds="<<std::setprecision(12)<<ms
-        <<" compared="<<q.size()<<" exact_bits=PASS guards=PASS status=PASS\n";
+        <<" compared="<<q.size()
+#if defined(STRATA_QSA_BENCH_PARALLEL_SUM)
+        <<" BF16_output_bound=PASS"
+#else
+        <<" exact_bits=PASS"
+#endif
+        <<" guards=PASS status=PASS\n";
   }
   require(dq.get()==q && dk.get()==k && dv.get()==v && dks.get()==ks && dvs.get()==vs &&
       dt.get()==table && di.get()==ids && ds.get()==steps,"all inputs immutable");
   std::cout<<"case cells="<<cells<<" queries="<<queries<<" cap="<<cap
-      <<" pattern="<<(clustered ? "clustered" : "gather")<<" samples=12 full_bits=PASS guards=PASS inputs=PASS status=PASS\n";
+      <<" pattern="<<(clustered ? "clustered" : "gather")<<" samples=12"
+#if defined(STRATA_QSA_BENCH_PARALLEL_SUM)
+      <<" BF16_output_bound=PASS"
+#else
+      <<" full_bits=PASS"
+#endif
+      <<" guards=PASS inputs=PASS status=PASS\n";
 }
 }
 int main(int argc,char **argv) {
