@@ -40,7 +40,7 @@ def digest(path):
         return hashlib.file_digest(stream, 'sha256').hexdigest()
 
 
-def runtime_smoke():
+def runtime_smoke(old_engine=False):
     """Small native-protocol diagnostic; throughput evidence still uses bench.sh."""
     committed_source = git(P, 'show', 'HEAD:' + str(Path(__file__).relative_to(P)))
     guards.require(Path(__file__).read_bytes() == committed_source, 'commit smoke controller first')
@@ -52,9 +52,12 @@ def runtime_smoke():
     reference = json.loads(git(P, 'show', base['commit'] + ':' + base['path']))
     guards.require(reference['complete'] and reference['passed'] and reference['ownership_closed'],
                    'closed configuration reference required')
-    environment = {k: v.replace(reference['environment']['STRATA_MEASUREMENT_ROOT'], plan['output_root'])
+    run_root = plan['reference_output_root'] if old_engine else plan['output_root']
+    environment = {k: v.replace(reference['environment']['STRATA_MEASUREMENT_ROOT'], run_root)
                    for k, v in reference['environment'].items()}
     environment.update(plan['environment_overrides'])
+    if old_engine:
+        environment.pop('STRATA_DECODE_CPU_PROFILE', None)
     build = committed(INDEX.with_name('native-gdn-engine-build.json'))
     full = json.loads((B / 'main-native-gdn-engine/record.json').read_text())
     from bench_engine import compact_build_record
@@ -65,19 +68,38 @@ def runtime_smoke():
     for group in [full['project'], *full['dependencies']]:
         for name, expected in group['source_sha256'].items():
             guards.require(digest(Path(group['root']) / name) == expected, 'native smoke input changed: ' + name)
-    guards.require(build['binary']['sha256'] == plan['binary_sha256'] and
-                   digest(build['binary']['path']) == plan['binary_sha256'], 'native engine changed')
+    binary = build['retained_validation_reference']['binary'] if old_engine else build['binary']
+    if old_engine:
+        guards.require(binary['sha256'] == reference['binary']['sha256'], 'fallback differs from measured reference')
+    else:
+        guards.require(binary['sha256'] == plan['binary_sha256'], 'native engine changed')
+    guards.require(digest(binary['path']) == binary['sha256'], 'selected executable changed')
     settings = committed(P / 'tools/sycl/measurement_environment.json')
-    for name, item in settings['runtime_elfs'].items():
-        guards.require(digest(name) == item['sha256'], 'runtime asset changed: ' + name)
+    delta = plan.get('runtime_asset_delta', {})
+    guards.require(set(delta) <= set(settings['runtime_elfs']), 'unknown proposed runtime asset')
+
+    def runtime_assets_unchanged():
+        for name, item in settings['runtime_elfs'].items():
+            proposed = delta.get(name)
+            if proposed:
+                guards.require(proposed['qualified_sha256'] == item['sha256'], 'old runtime pin changed: ' + name)
+            expected = proposed['candidate_sha256'] if proposed else item['sha256']
+            guards.require(digest(name) == expected, 'runtime asset changed: ' + name)
+
+    runtime_assets_unchanged()
+    if delta and not old_engine:
+        qualified = scope['runtime_reference']
+        guards.require(qualified['passed'] and qualified['ownership_closed'] and
+                       qualified['runtime_asset_delta'] == delta,
+                       'new runtime needs a successful bounded old-engine reference first')
     profile = plan['expert_profile']
     guards.require(digest(profile['path']) == profile['sha256'], 'expert profile changed')
     args = reference['config']['args'].copy()
     args[args.index('--expert-profile') + 1] = profile['path']
-    command = [build['binary']['path'], *args]
+    command = [binary['path'], *args]
     guards.no_model_owners([])
     guards.driver_guard()
-    root = Path(plan['output_root'])
+    root = Path(run_root)
     guards.require(root.parent == B and not root.exists(), 'never overwrite/retry a runtime smoke root')
     root.mkdir(mode=0o700)
     for name in ('tmp', 'cache'):
@@ -86,7 +108,8 @@ def runtime_smoke():
     before = subprocess.check_output(['journalctl', '-k', '-b', '-n', '0', '--show-cursor', '--no-pager'], text=True)
     cursor = next(s.split(': ', 1)[1] for s in before.splitlines() if s.startswith('-- cursor: '))
     record = dict(source_commit=git(P, 'rev-parse', 'HEAD').decode().strip(),
-                  build_source_commit=build['source_commit'], binary=build['binary'], plan=plan,
+                  build_source_commit=build['retained_validation_reference']['source_commit'] if old_engine else build['source_commit'],
+                  binary=binary, plan=plan, reference_engine=old_engine, runtime_asset_delta=delta,
                   complete=False, passed=False, active=False, requests=[])
     owner = None
 
@@ -141,7 +164,8 @@ def runtime_smoke():
         guards.require(not re.search(r'UR_RESULT_ERROR_|ZE_RESULT_ERROR_|terminate called|retirement failed|Strata SYCL cleanup:', text),
                        'native runtime failure; inspect the original bounded diagnostic')
         observations = [json.loads(s.partition(': ')[2]) for s in text.splitlines() if s.startswith('strata decode cpu: ')]
-        guards.require(len(record['requests']) == len(plan['input_ids']) == len(observations),
+        guards.require(len(record['requests']) == len(plan['input_ids']) and
+                       len(observations) == (0 if old_engine else len(record['requests'])),
                        'attempted/completed/CPU-record counts do not reconcile')
         for request, observation in zip(record['requests'], observations):
             guards.require(observation['schema'] == 1 and all(observation.get(k) is True for k in
@@ -155,6 +179,7 @@ def runtime_smoke():
                 math.isfinite(observation['wall_through_commit_ms']) and observation['wall_through_commit_ms'] > 0,
                 'invalid or mismatched CPU observation')
         record['observations'] = observations
+        runtime_assets_unchanged()
         record['passed'] = True
     except BaseException as error:
         record['error'] = str(error)
@@ -175,9 +200,10 @@ def runtime_smoke():
         persist()
         compact = {k: v for k, v in record.items() if k not in ('plan', 'driver_after')}
         compact['GPU_executed'] = bool(owner.commands and owner.commands[0].get('pid'))
-        compact['limits'] = 'Two tiny native-protocol requests through final commit; tracing/CPU observation enabled. No performance, overhead, quality, IQ numerical, full-context or RESTORE qualification.'
-        scope['runtime_smoke'] = compact
-        scope['revised_candidate']['native_runtime_tested'] = compact['GPU_executed']
+        compact['limits'] = 'Two tiny native-protocol requests through final commit. Explicit runtime-delta diagnostic only; shared qualified runtime pins remain unchanged. No performance, overhead, quality, IQ numerical, long-context or RESTORE qualification.'
+        scope['runtime_reference' if old_engine else 'runtime_smoke'] = compact
+        if not old_engine:
+            scope['revised_candidate']['native_runtime_tested'] = compact['GPU_executed']
         INDEX.write_text(json.dumps(index, indent=2) + '\n')
     print(json.dumps({k: compact.get(k) for k in ('complete', 'passed', 'ownership_closed', 'error')}))
     return 0 if record['passed'] else 1
@@ -296,7 +322,9 @@ def run(native=False):
 
 
 if __name__ == '__main__':
-    guards.require(sys.argv[1:] in ([], ['native'], ['smoke']), 'use check_decode_cpu.py [native|smoke]')
+    guards.require(sys.argv[1:] in ([], ['native'], ['smoke'], ['runtime-reference']),
+                   'use check_decode_cpu.py [native|smoke|runtime-reference]')
     with (B / 'owned-v0141-measurement.lock').open('a+') as lock:
         fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
-        sys.exit(runtime_smoke() if sys.argv[1:] == ['smoke'] else run(native=sys.argv[1:] == ['native']))
+        sys.exit(runtime_smoke(old_engine=sys.argv[1:] == ['runtime-reference'])
+                 if sys.argv[1:] in (['smoke'], ['runtime-reference']) else run(native=sys.argv[1:] == ['native']))
