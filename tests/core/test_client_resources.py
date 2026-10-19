@@ -75,6 +75,17 @@ class ClientResourceTests(unittest.TestCase):
         self.assertEqual(intervals.update(absent),[])
         self.assertEqual(intervals.update(sample(500,1400))[0]['reason'],'baseline')
 
+    def test_delayed_busy_accounting_recovers_over_whole_valid_envelope(self):
+        intervals=r.CycleIntervals();intervals.update(sample())
+        for stamp,busy,total in ((10,300,1100),(20,350,1200)):
+            row=intervals.update(sample(busy,total,stamp=stamp))[0]
+            self.assertFalse(row['eligible']);self.assertNotIn('busy_fraction',row)
+        row=intervals.update(sample(400,1400,stamp=30))[0]
+        self.assertTrue(row['eligible']);self.assertEqual(row['busy_fraction'],.75)
+        self.assertEqual(row['busy_cycles'],300)
+        self.assertEqual(row['span_begin']['begin_monotonic_ns'],1)
+        self.assertEqual(row['recovered_samples'],2)
+
     def test_interval_rejects_changed_process_and_duplicate_client_engine(self):
         intervals=r.CycleIntervals();first=sample();intervals.update(first)
         first['target']['start_ticks']+=1

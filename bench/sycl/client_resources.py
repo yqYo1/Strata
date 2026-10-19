@@ -127,6 +127,11 @@ class CycleIntervals:
         self.previous = {}
         self.target = None
 
+    @staticmethod
+    def baseline(counter, stamp):
+        return dict(counter=dict(counter), stamp=stamp, recoveries=0,
+                    high_busy=counter['busy'], high_total=counter['total'])
+
     def update(self, sample):
         require(type(sample['begin_monotonic_ns']) is int and type(sample['end_monotonic_ns']) is int and
             0 <= sample['begin_monotonic_ns'] <= sample['end_monotonic_ns'], 'invalid observation timestamps')
@@ -148,10 +153,13 @@ class CycleIntervals:
                             'overlapping or backwards observation span')
                 if previous is None or current['capacity'] != previous['counter']['capacity']:
                     row['reason'] = 'baseline' if previous is None else 'capacity_changed'
-                    self.previous[key] = dict(counter=dict(current), stamp=stamp, recoveries=0)
-                elif current['busy'] < previous['counter']['busy'] or current['total'] <= previous['counter']['total']:
+                    self.previous[key] = self.baseline(current, stamp)
+                elif (current['busy'] < previous['high_busy'] or current['total'] < previous['high_total'] or
+                      current['total'] <= previous['counter']['total']):
                     row['reason'] = 'counter_below_high_water_or_nonadvancing_total'
                     previous['recoveries'] += 1
+                    previous['high_busy'] = max(previous['high_busy'], current['busy'])
+                    previous['high_total'] = max(previous['high_total'], current['total'])
                 else:
                     busy = current['busy'] - previous['counter']['busy']
                     total = current['total'] - previous['counter']['total']
@@ -159,9 +167,12 @@ class CycleIntervals:
                         span_begin=previous['stamp'], span_end=stamp, recovered_samples=previous['recoveries'])
                     if busy > total * current['capacity']:
                         row['reason'] = 'busy_delta_exceeds_engine_capacity'
+                        previous['recoveries'] += 1
+                        previous['high_busy'] = max(previous['high_busy'], current['busy'])
+                        previous['high_total'] = max(previous['high_total'], current['total'])
                     else:
                         row.update(eligible=True, busy_fraction=busy / (total * current['capacity']))
-                    self.previous[key] = dict(counter=dict(current), stamp=stamp, recoveries=0)
+                        self.previous[key] = self.baseline(current, stamp)
                 rows.append(row)
         self.previous = {k: v for k, v in self.previous.items() if k in seen}
         return rows
