@@ -1994,6 +1994,68 @@ profiling-off NOT_READY samples also do not identify a scheduling cause. A new
 committed no-gate/held-gate diagnostic with joined query-thread and actual signal
 timestamps is a possible next discriminator; production query cost and the
 complete57-case/model gates remain separate unresolved questions.
+The next production diagnostic uses `STRATA_SYCL_QUERY_PROFILE=1` on the
+existing default route. It times the complete compatibility query wrapper at
+resident launch/pool-return and early-PCIe launch/pool-return, without adding
+queries or changing their status handling, arithmetic, queue properties or
+safety environment. Counters reset after prefill and report four constant-size
+rows after decode; disabled calls read no clock. Wrapper wall time includes
+runtime checks, EventState locking and any completed-event wait, plus effects
+of clock readings. There is no event registry-map lookup in this wrapper.
+These four points exclude direct event queries elsewhere in decode; their sum
+is not total request query time, device service time, CPU arithmetic or proof
+of resource saturation. The new
+`check_verifier_retirement.py --query-profile` result requires the normal51
+cases plus an isolated real completed-event observer check. It does not modify
+the failed early57-case outcome or admit early/arena-copy execution. Next gates
+are a committed, bounded two-request default-route model check, followed by a
+separate32K+ thinking-enabled diagnostic and independent observer-overhead
+qualification. No throughput improvement or new model validation is established
+by adding the observer.
+The observer engine at source`ce8dd0e94` then passed all51 existing normal
+cases and the completed-event observer case. The six offline evidence/runtime
+admission tests passed at`8d4e53937`. Two earlier preparation refusals (unknown
+diagnostic mode, then receipt package labels compared with identity-only
+metadata) occurred before native launch and remain recorded in Git. The new
+controller admits only the exact same-build component-qualified runtime hashes;
+it does not relabel the mode or update the shared runtime baseline.
+The bounded normal-route model check subsequently completed both16-token
+thinking-template requests, with no fresh GPU fault and all owners closed.
+Resident launch queries were240/288 calls, all pending, with1.065699/0.973088ms
+wrapper intervals; their matching pool-return queries were all ready, with
+1.240609/1.513645ms. The second request's combined2.486733ms is about0.21% of
+its1185ms rounded decode time. The first request includes graph capture and is
+not a steady decode comparison. The four-point observer saw no2s query delay
+on these requests; short safety checks do not establish long-generation cost,
+observer overhead, a limiting hardware resource or a speed improvement.
+Use the separately committed official32K+ thinking-enabled regular-code
+diagnostic next, with only this narrow observer and the established validation/
+safety settings. Query intervals remain diagnostic until independent overhead
+qualification, and clean speed remains separate.
+That official diagnostic completed at controller source`06750114d`, native
+source`ce8dd0e94` and engine SHA256`51e97cbbd9d550d2c0d892bc2537faba5dfa07d6be25a202108865b0bd1d8307`.
+It processed33211 fresh inputs and2931 generated tokens, with2783 reasoning
+and5578 answer characters and2105/2481 accepted drafts. Four warmups and the
+timed request matched the official journal; all owners closed, boot unchanged
+and no fresh fault. The timed request made39744 queries at each resident point:
+launch150.074225ms (20ready/39724pending, max3.391505ms), pool-return354.337961ms
+(39713ready/31pending, max15.038424ms). Total504.412186ms is0.24208% of the
+208368ms rounded decode interval; both inactive PCIe categories remained zero.
+These four queries were not dominant in this observed production execution.
+The208368.1ms/14.1tok/s and651.3prefill tok/s include validation/progress and the
+query observer; they are diagnostic, not a new clean speed or overhead estimate.
+The run recorded1205698 unique CPU expert jobs,1556213 CPU entries and32107
+cache hits out of1588320 lookups (2.0% rounded). These are logical work counts,
+not measured DRAM or PCIe bytes, and do not distinguish CPU arithmetic from RAM.
+
+The next placement question corrects an earlier research assumption: the
+`prefill.reset()` before standalone token generation is outside `--serve`.
+Serve's `refill` returns lent cache slots without resetting the persistent
+owned `sp` workspace. The official benchmark uses serve, so the standalone
+reset does not establish spare decode VRAM. Review the existing borrowing path
+and actual variable-size cache/MTP/graph owners before a larger-cache trial;
+static sizes and the2% hit rate alone establish neither memory admission nor a
+speed gain. Keep context/session/RESTORE state and cached graph readers intact.
 Only a later qualified mechanism permits a
 fresh complete51+6-case plan. Preserve all pending-completion,
 untouched-output, payload/guard and owner-lifetime requirements under that plan.

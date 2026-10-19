@@ -1,0 +1,177 @@
+{
+  "source_commit": "ce8dd0e94c15238793d1149c0c72bd4685fdeb40",
+  "binary": {
+    "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/strata",
+    "bytes": 22083640,
+    "sha256": "51e97cbbd9d550d2c0d892bc2537faba5dfa07d6be25a202108865b0bd1d8307"
+  },
+  "fixtures": {
+    "sycl_verifier_retirement_test": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/sycl_verifier_retirement_test",
+      "sha256": "028766c54bb24193354f9b4700166d7fe6da5016a634a9f01e1b67651920dd77"
+    },
+    "sycl_submission_test": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/sycl_submission_test",
+      "sha256": "3582ff3453f0e757cb2f2ac20a194180dcb3553e15b65f0c174ae5ed1f20d0cd"
+    },
+    "file_expert_source_test": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/file_expert_source_test",
+      "sha256": "e7e06781856b10cd45fb5e5d281d2a18a34b7cf7b1756caf97ed9dea9226d950"
+    },
+    "sycl_mmvq_test": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/sycl_mmvq_test",
+      "sha256": "c320b9b6df08a52c2da2ca2c6eca49c1e37da8bca9a55556c0bf8b2fb718384d"
+    }
+  },
+  "environment_reference": "tools/sycl/measurement_environment.json",
+  "environment_sha256": "d4402591df50e80dc45a5ec9e4839c7a794888850b1473537b6f95179be5b03c",
+  "runtime_asset_delta": {
+    "/usr/lib/x86_64-linux-gnu/libze_intel_gpu.so.1.17.39395": {
+      "qualified_sha256": "dfa844e5afd8e8f74bf5ce9da3ea2837706d9116bc8efeaed90efba5acaf7b1c",
+      "candidate_sha256": "50adb6b727d027309039803033d41efeae4b248589ee363f321c0d538c7de3ff"
+    },
+    "/usr/lib/x86_64-linux-gnu/libudev.so.1.7.8": {
+      "qualified_sha256": "4298228175fa62a36af88b1afd4406cdd8b1bf166621f957d0dbbde45a698fe5",
+      "candidate_sha256": "0d6934adafb2ef3c640382440c14d6bd60f391e688c000796ffcea0c72849269"
+    }
+  },
+  "checks": [
+    {
+      "command": [
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/file_expert_source_test"
+      ],
+      "cases": [
+        "arena_copy_dispatch_test cases=17 native_variable_stride=PASS source_bounds=PASS grouping=PASS limits=PASS cpu_fallback=PASS alias_exclusion=PASS callbacks=PASS"
+      ],
+      "passed": true,
+      "stdout_sha256": "525c53f5832c332c7e503c860dcbcdaa77583c5ccba8ca187bb5bade0e6229dc",
+      "stderr_sha256": "96cd9605779b5c9cd8b24a55d4742becdedd168f603a9f10a07d15cd6a0aca90"
+    },
+    {
+      "command": [
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/sycl_submission_test",
+        "--submission"
+      ],
+      "cases": [
+        "case stream_copy_ordering=PASS",
+        "case explicit_stream_profiling=PASS",
+        "case default_stream_profiling=PASS",
+        "case queued_kernels=1 numerical=PASS guards=PASS event_timing=PASS kernel_profiling=PASS",
+        "case queued_kernels=119 numerical=PASS guards=PASS event_timing=PASS kernel_profiling=PASS",
+        "case queued_kernels=120 numerical=PASS guards=PASS event_timing=PASS kernel_profiling=PASS",
+        "case queued_kernels=121 numerical=PASS guards=PASS event_timing=PASS kernel_profiling=PASS",
+        "case queued_kernels=241 numerical=PASS guards=PASS event_timing=PASS kernel_profiling=PASS",
+        "case ordinary_host_roundtrips=3 status=PASS",
+        "case teardown=PASS"
+      ],
+      "passed": true,
+      "stdout_sha256": "dadad801d8022f3b40ad3bdab3e29f65fc13e1f61d60b219406f04e9881bb5be",
+      "stderr_sha256": "1f7657934de586b442b5a4ef46f85ead1b115df8b72c8519844307fa2e96dd5a"
+    },
+    {
+      "command": [
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/sycl_verifier_retirement_test"
+      ],
+      "cases": [
+        "case=success expected_exit=0 markers=S PASS",
+        "case=large expected_exit=0 markers=L PASS",
+        "case=empty expected_exit=0 markers=Z PASS",
+        "case=partial expected_exit=0 markers=P PASS",
+        "case=bounds expected_exit=0 markers=B PASS",
+        "case=query expected_exit=0 markers=Q PASS",
+        "case=destructor expected_exit=1 markers=D PASS",
+        "case=copy-error expected_exit=1 markers=E PASS"
+      ],
+      "passed": true,
+      "stdout_sha256": "148fbcc509e40ad207cfca2a47f0180d4a42c61ceee417648974ff573e3ba20c",
+      "stderr_sha256": "be2c0a17faa7eb4437400ce40274686ff61345adf66c205f3418e9bbd3fc9575"
+    },
+    {
+      "command": [
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/sycl_mmvq_test",
+        "--arena-grouped"
+      ],
+      "cases": [
+        "arena_grouped gu=18 down=20 window=1 groups=10 entries=10 separate_projection=PASS finite=PASS payload=PASS guards=PASS",
+        "arena_grouped gu=18 down=20 window=4 groups=16 entries=40 separate_projection=PASS finite=PASS payload=PASS guards=PASS",
+        "arena_grouped gu=18 down=42 window=1 groups=10 entries=10 separate_projection=PASS finite=PASS payload=PASS guards=PASS",
+        "arena_grouped gu=18 down=42 window=4 groups=16 entries=40 separate_projection=PASS finite=PASS payload=PASS guards=PASS",
+        "arena_grouped gu=21 down=20 window=1 groups=10 entries=10 separate_projection=PASS finite=PASS payload=PASS guards=PASS",
+        "arena_grouped gu=21 down=20 window=4 groups=16 entries=40 separate_projection=PASS finite=PASS payload=PASS guards=PASS",
+        "arena_grouped gu=21 down=42 window=1 groups=10 entries=10 separate_projection=PASS finite=PASS payload=PASS guards=PASS",
+        "arena_grouped gu=21 down=42 window=4 groups=16 entries=40 separate_projection=PASS finite=PASS payload=PASS guards=PASS",
+        "arena_grouped gu=22 down=20 window=1 groups=10 entries=10 separate_projection=PASS finite=PASS payload=PASS guards=PASS",
+        "arena_grouped gu=22 down=20 window=4 groups=16 entries=40 separate_projection=PASS finite=PASS payload=PASS guards=PASS",
+        "arena_grouped gu=22 down=42 window=1 groups=10 entries=10 separate_projection=PASS finite=PASS payload=PASS guards=PASS",
+        "arena_grouped gu=22 down=42 window=4 groups=16 entries=40 separate_projection=PASS finite=PASS payload=PASS guards=PASS",
+        "arena_grouped gu=23 down=20 window=1 groups=10 entries=10 separate_projection=PASS finite=PASS payload=PASS guards=PASS",
+        "arena_grouped gu=23 down=20 window=4 groups=16 entries=40 separate_projection=PASS finite=PASS payload=PASS guards=PASS",
+        "arena_grouped gu=23 down=42 window=1 groups=10 entries=10 separate_projection=PASS finite=PASS payload=PASS guards=PASS",
+        "arena_grouped gu=23 down=42 window=4 groups=16 entries=40 separate_projection=PASS finite=PASS payload=PASS guards=PASS"
+      ],
+      "passed": true,
+      "stdout_sha256": "9066714b8b575e061109b08415161365b8f2eb8e185bee2ba01f6499319eb79b",
+      "stderr_sha256": "d4df24e8529349894366d6770def4b85f6df8ecae93c48ec808492e3e0f6bed6"
+    },
+    {
+      "command": [
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/sycl_verifier_retirement_test",
+        "--query-profile"
+      ],
+      "cases": [
+        "case=profile expected_exit=0 markers=R PASS"
+      ],
+      "passed": true,
+      "stdout_sha256": "b167bcaa8392dc493f246a2849e21bdb809a66471d38bafdf7e058f01fdae03b",
+      "stderr_sha256": "2d2cb231cec5048223fe97708777920ccdc02cf6ef1339a59fc9149889c108c5"
+    }
+  ],
+  "complete": true,
+  "passed": true,
+  "active": false,
+  "model_performance_measured": false,
+  "previous_result_reference": {
+    "commit": "545578f6c940e7aec93e91f95d0752108bfb1960",
+    "path": "bench/results/2026-10-15-pr6-recovery-audit/verifier-copy-safety-current.json",
+    "sha256": "bf0acd306ff34cca920c656a5ca19927839f83bb1da5ec4914fcd18f605b976d",
+    "outcome": "Original v6 host-task gate failed after51 existing passes; this new finite-DMA plan does not change that outcome."
+  },
+  "per_fixture_budgets": {
+    "wall_seconds": 180,
+    "cpu_seconds": 600,
+    "rss_bytes": 4294967296,
+    "text_bytes": 67108864,
+    "total_bytes": 67108864
+  },
+  "model_quality_qualified": false,
+  "model_route_executed": false,
+  "ordinary_arena_copy_default_enabled": false,
+  "consumer": "Prerequisite for the default-route query observer tiny model check; normal51+observer only, never admission of early PCIe scheduling.",
+  "gate": "Same-build provider17, submission10, normal verifier retirement8, grouped arithmetic16 and one completed-event query observer case. Observer must preserve results, separate all four categories, conserve counts/times and leave counters zero when disabled/reset. Original failed early51+6 result stays unchanged. No early route, queue configuration or model/speed qualification.",
+  "limits": "The six early cases check real-queue synthetic ordering, replay, source retirement and refusal, not native projection equivalence or model overlap. Grouped component covers all seven current model GU/Down pairs plus supported IQ4_XS/Q2_0 at H2560/FF640, windows1/4, groups10/16 and entries10/40, using two distinct blobs repeated in metadata. The oracle shares native scalar projection primitives; it isolates copy/grouping from separate execution, not common-mode projection defects or model quality. No invalid GPU address, stalled kernel, model, physical262144/session/RESTORE or throughput qualification.",
+  "mode": "normal-route-query-profile-components",
+  "last_fixture": {
+    "name": "sycl_verifier_retirement_test",
+    "command": [
+      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/sycl_verifier_retirement_test",
+      "--query-profile"
+    ],
+    "exit_code": 0,
+    "ownership_closed": true,
+    "stdout_sha256": "b167bcaa8392dc493f246a2849e21bdb809a66471d38bafdf7e058f01fdae03b",
+    "stderr_sha256": "2d2cb231cec5048223fe97708777920ccdc02cf6ef1339a59fc9149889c108c5"
+  },
+  "grouped_copy_projection_contract_passed": true,
+  "query_profile_contract_passed": true,
+  "ownership_closed": true,
+  "fresh_faults": [],
+  "boot_unchanged": true,
+  "driver_after": {
+    "pci": "/sys/bus/pci/devices/0000:05:00.0",
+    "driver": "xe",
+    "vendor": "0x8086",
+    "device": "0xe20c",
+    "kernel": "7.0.0-38-generic",
+    "devcoredump": false
+  }
+}

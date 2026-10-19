@@ -6329,6 +6329,7 @@ int main(int argc, char** argv) {
             const auto copy0 = ver.expert_copy_stats();
             const auto early_pcie0 = ver.early_pcie_stats();
             const auto host_copy_groups0 = drive.d.host_layer_copy_groups;
+            ver.reset_query_profile();
 #endif
             const Clock::time_point d0 = Clock::now();
             // STRATA_DECODE_TIMING=1: where a request's decode time goes (one line per request)
@@ -6644,6 +6645,22 @@ int main(int argc, char** argv) {
                              (unsigned long long)(early.groups-early_pcie0.groups),
                              (unsigned long long)(early.ready_at_pool_return-early_pcie0.ready_at_pool_return),
                              (unsigned long long)(early.pending_at_pool_return-early_pcie0.pending_at_pool_return));
+            }
+            if (ver.query_profile_enabled()) {
+                const auto profile = ver.query_profile();
+                static constexpr const char* names[] = {
+                    "resident_launch", "resident_pool_return", "pcie_launch", "pcie_pool_return"};
+                static_assert(sizeof(names)/sizeof(names[0]) == profile.size());
+                for (size_t i = 0; i < profile.size(); ++i) {
+                    const auto& q = profile[i];
+                    std::fprintf(stderr, "strata serve: SYCL_EVENT_QUERY scope=decode wrapper_wall=1 kind=%s "
+                                         "calls=%llu ready=%llu pending=%llu errors=%llu clock_errors=%llu "
+                                         "wall_ns=%llu max_wall_ns=%llu\n", names[i],
+                                 (unsigned long long)q.calls, (unsigned long long)q.ready,
+                                 (unsigned long long)q.pending, (unsigned long long)q.errors,
+                                 (unsigned long long)q.clock_errors, (unsigned long long)q.wall_ns,
+                                 (unsigned long long)q.max_wall_ns);
+                }
             }
 #endif
             // the VRAM share of the experts the pool looked up while decoding;

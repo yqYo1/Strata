@@ -414,6 +414,9 @@ bool Verifier::init(const WeightTable& wt, const ModelGeometry& g, SessionState&
     ss_ = &ss;
     hits_ = hits;
 #ifdef STRATA_ENABLE_SYCL
+    const char* query_profile = std::getenv("STRATA_SYCL_QUERY_PROFILE");
+    query_profile_enabled_ = query_profile && std::strcmp(query_profile, "1") == 0;
+    reset_query_profile();
     const auto blob_bytes = strata::kernels::cpu::expert_layout().max_blob;
     if (!blob_bytes || blob_bytes > std::numeric_limits<size_t>::max() / kStagingBlobs) {
         err = "verify: invalid expert staging size";
@@ -1583,13 +1586,13 @@ bool Verifier::run(int T, const int32_t* tokens, int64_t pos0, PoolMultiFn pool,
                  h_ymiss_ + (size_t) tb * ss.k * g.n_embd, l);
 #ifdef STRATA_ENABLE_SYCL
         if (overlap_gpu_ && work_launched_ && work_status_ == cudaSuccess) {
-            const auto status = cudaEventQuery(work_done_);
+            const auto status = query_event(work_done_, QueryPoint::resident_pool_return);
             if (status == cudaSuccess) ++work_ready_at_pool_return;
             else if (status == cudaErrorNotReady) ++work_pending_at_pool_return;
             else work_status_ = status;
         }
         if (early_pcie_audit_ && pcie_launched_ && pcie_status_ == cudaSuccess) {
-            const auto status = cudaEventQuery(pcie_done_);
+            const auto status = query_event(pcie_done_, QueryPoint::pcie_pool_return);
             if (status == cudaSuccess) ++early_pcie_stats_.ready_at_pool_return;
             else if (status == cudaErrorNotReady) ++early_pcie_stats_.pending_at_pool_return;
             else pcie_status_ = status;
@@ -1864,6 +1867,27 @@ void Verifier::publish_plan(void* ctx) {
 }
 
 #ifdef STRATA_ENABLE_SYCL
+cudaError_t Verifier::query_event(cudaEvent_t event, QueryPoint point) {
+    // Preserve the existing call and status handling. Disabled observation
+    // reads no clock and writes no counters; it does not change queue policy.
+    if (!query_profile_enabled_) return cudaEventQuery(event);
+    const auto begin = std::chrono::steady_clock::now();
+    const auto status = cudaEventQuery(event);
+    const auto end = std::chrono::steady_clock::now();
+    auto& stats = query_profile_[static_cast<size_t>(point)];
+    ++stats.calls;
+    if (status == cudaSuccess) ++stats.ready;
+    else if (status == cudaErrorNotReady) ++stats.pending;
+    else ++stats.errors;
+    const auto ns = std::chrono::duration_cast<std::chrono::nanoseconds>(end - begin).count();
+    if (ns < 0) ++stats.clock_errors;
+    else {
+        stats.wall_ns += static_cast<uint64_t>(ns);
+        stats.max_wall_ns = std::max(stats.max_wall_ns, static_cast<uint64_t>(ns));
+    }
+    return status;
+}
+
 void Verifier::launch_pcie(int groups) {
     const size_t index = cur_layer_.load();
     if (!early_pcie_ || released_.load() || pcie_launched_ || !pcie_copy_recorded_ ||
@@ -1885,7 +1909,7 @@ void Verifier::launch_pcie(int groups) {
         pcie_launched_ = true;
         ++early_pcie_stats_.launches;
         early_pcie_stats_.groups += static_cast<uint64_t>(groups);
-        const auto status = cudaEventQuery(pcie_done_); // flush before CPU experts
+        const auto status = query_event(pcie_done_, QueryPoint::pcie_launch);
         if (status != cudaSuccess && status != cudaErrorNotReady) pcie_status_ = status;
     }
 }
@@ -1903,7 +1927,7 @@ void Verifier::launch_work() {
         work_[last_t_][index], cs_, work_done_);
     if (work_status_ == cudaSuccess) {
         work_launched_ = true;
-        const auto status = cudaEventQuery(work_done_); // start work before CPU rows
+        const auto status = query_event(work_done_, QueryPoint::resident_launch);
         if (status != cudaSuccess && status != cudaErrorNotReady) work_status_ = status;
     }
 }

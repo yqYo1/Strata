@@ -4,7 +4,9 @@
   "historical_index_path": "bench/results/2026-10-15-pr6-recovery-audit/research-index.json",
   "archive_lookup": "Read the pinned historical index and git grep that revision before repeating research. Retrieve selected old report sections only when their question is relevant; do not restore whole directories.",
   "main_reads_collection_bodies_on_arrival": false,
-  "active_reports": [],
+  "active_reports": [
+    "serve_cache_borrow_admission_scope"
+  ],
   "conditional_scope": {
     "schedulable_now": false,
     "question": "Localize one measured general GDN mismatch to one pinned framework rounding boundary.",
@@ -3930,7 +3932,8 @@
     },
     "ownership_closed": true,
     "report_sha256": "cbf8f12704eb2702e0ef50df93b4a5c277487b5d7aff8436b23a599eba0277aa",
-    "finding": "Mostly duplicates prior cache audit. With --no-prefill-borrow, prompt workspace resets before decode. Missing MTP/cache census proves no reclaimable budget. A future exact owner question must include actual MTP/cache implementations."
+    "finding": "Mostly duplicates prior cache audit. With --no-prefill-borrow, prompt workspace resets before decode. Missing MTP/cache census proves no reclaimable budget. A future exact owner question must include actual MTP/cache implementations.",
+    "serve_reset_correction": "Prior reset statement cited standalone generation only (current generate.cpp:6991). Production --serve calls refill at6128/6303 without sp.reset; owned prompt Impl/allocations persist. Do not infer free decode VRAM from the standalone reset. Current borrowed-cache admission/source review will verify the exact serve lifetimes."
   },
   "decode_copy_cpu_gpu_dag_scope": {
     "classification": "decision support",
@@ -3994,7 +3997,8 @@
       "bytes": 1701817,
       "source_files_recovered": 29,
       "source_commit": "ecda3c9ec4366211382cbf1ff11a3efd1c94fae6"
-    }
+    },
+    "serve_reset_correction": "Prior reset statement cited standalone generation only (current generate.cpp:6991). Production --serve calls refill at6128/6303 without sp.reset; owned prompt Impl/allocations persist. Do not infer free decode VRAM from the standalone reset. Current borrowed-cache admission/source review will verify the exact serve lifetimes."
   },
   "early_pcie_event_lifetime_source_scope": {
     "classification": "decision support",
@@ -4539,5 +4543,108 @@
       "restorable_source_files": 12,
       "upstream_commit": "e88ee39d1d6be6e3364183af3b39b62a7ed6f211"
     }
+  },
+  "production_query_observer_source_scope": {
+    "classification": "decision support",
+    "question": "Inspect current include/strata/core/verify.hpp, src/core/verify.cpp, src/program/generate.cpp and tests/sycl/verifier_retirement.cpp production query observer added at ce8dd0e94. Audit thread ownership, pool callback happens-before, request reset boundary, unchanged return/order/lifetime behavior, timing interpretation and fixture coverage. Compare a minimal useful long-model diagnostic and observer-overhead qualification without artificial held gates. Return concrete defects with line evidence or explicitly none; do not repeat old native gate cause speculation.",
+    "report": "/home/yayoi/orca/workspaces/Strata/sycl/.cache/strata-research/20261020/production-query-observer-source-review-report.md",
+    "report_budget_bytes": 16384,
+    "schedulable_now": false,
+    "prerequisites": [
+      {
+        "met": true,
+        "evidence": "Source ce8dd0e94 is committed; frozen production query observer exists, prior metadata checked. Original Niko e88 source available. No GPU/measurement required."
+      }
+    ],
+    "status": "native_reviewed_workers_and_terminals_closed",
+    "source_commit": "ce8dd0e94c15238793d1149c0c72bd4685fdeb40",
+    "worker_closed": true,
+    "terminal_closed": true,
+    "consumer": "Current production observer qualification or required host protocol port; cache-policy knowledge retrieved only for a concrete bandwidth optimization.",
+    "launch_limit": "Orca gpt-6-luna high; custom argv only for workspace-write report directory and network permission, unavailable in worker-start. Main owns operator PTY closure; researchers receive no steering.",
+    "report_sha256": "ec1b3740736821c93197c19478cf33f50c5425adb3cb99caf3d2bd4acafa69fb",
+    "native_review": {
+      "path": "/home/yayoi/orca/workspaces/Strata/sycl/.cache/strata-research/20261020/production-query-and-batch-native-review.json",
+      "sha256": "5c4b53eacc8cb46d4ef87a211bf049bdbf8b145c7e5b35fec70dfaca2d2e7096",
+      "main_read_original_body": false
+    },
+    "accepted_digest": "No source-level behavior defect found under serialized requests. Four query points only, runtime/event-state lock and ready-event wait, not total decode query time or GPU/CPU service. Component tests cover completed events; pending/error model behavior and overhead remain separate.",
+    "retrieval_review_point": "After current production query-cost/overhead decision; retrieve the protocol report before required native batch port, cache-policy report only before a measured cache-policy experiment."
+  },
+  "xe2_usm_cache_policy_collection_scope": {
+    "classification": "knowledge collection",
+    "question": "Collect original Intel Xe2/SYCL/Level Zero methods controlling USM kernel memory cache policy and streaming/non-temporal access, including practical compiler/accessor/LSC alternatives, legal support, correctness pitfalls and effects on small MoE mixed quantized matrix reads and repeated hidden-state reads. Distinguish from previously collected register-spill and TLB methods. Explain which changes can improve VRAM bandwidth/cache reuse on Arc B570 and which are inapplicable to current USM/ESIMD/SYCL patterns; no implementation or performance claims.",
+    "report": "/home/yayoi/orca/workspaces/Strata/sycl/.cache/strata-research/20261020/xe2-usm-cache-policy-methods-report.md",
+    "report_budget_bytes": 16384,
+    "schedulable_now": false,
+    "prerequisites": [
+      {
+        "met": true,
+        "evidence": "Source ce8dd0e94 is committed; frozen production query observer exists, prior metadata checked. Original Niko e88 source available. No GPU/measurement required."
+      }
+    ],
+    "status": "native_reviewed_workers_and_terminals_closed",
+    "source_commit": "ce8dd0e94c15238793d1149c0c72bd4685fdeb40",
+    "worker_closed": true,
+    "terminal_closed": true,
+    "consumer": "Conditional reference: retrieve for a concrete measured cache-policy or prefetch candidate, after target/compiler lowering is checked; review after the current production query-cost decision and prune if no concrete retrieval need remains.",
+    "launch_limit": "Orca gpt-6-luna high; custom argv only for workspace-write report directory and network permission, unavailable in worker-start. Main owns operator PTY closure; researchers receive no steering.",
+    "report_sha256": "8a0f608529c3373298c69112387f8655705eb93385c17150388901542164a0b4",
+    "native_review": {
+      "path": "/home/yayoi/orca/workspaces/Strata/sycl/.cache/strata-research/20261020/xe2-usm-cache-policy-native-review.json",
+      "sha256": "ecbdb14ab0f24dc3b5fc4848ad06ea4d08390d2f3b72b407951ce29d2f32b033",
+      "main_read_original_body": false
+    },
+    "accepted_digest": "Conditional distinct source reference. Four release links404, Khronos revision label mismatch, and some Level Zero/cache-control claims need direct evidence or qualification. No B570 support/performance or adoption established; retrieve only for a measured cache-policy question.",
+    "retrieval_review_point": "After current production query-cost/overhead decision; retrieve the protocol report before required native batch port, cache-policy report only before a measured cache-policy experiment."
+  },
+  "upstream_e88_generation_protocol_port_scope": {
+    "classification": "decision support",
+    "question": "Compare unmodified Niko e88 root generation BGEN/BGENI/BSTOP protocol with this fork actual Arc entrypoint src/program/generate.cpp and shared serve/server.py. Source reference /home/yayoi/ghq/github.com/Niko1221/Strata/.worktree/eval-upstream-e88ee39d. Prior host/API review already established missing functions; produce the next concrete minimal port design for these generation commands only, preserving cancellation, batching, sampler/cache ownership and existing GEN compatibility. Identify shared host code versus engine assumptions, state/queue lifetime boundaries and meaningful host/native tests. No model launch, code edits or port of inference math. Do not reissue the broad feature inventory.",
+    "report": "/home/yayoi/orca/workspaces/Strata/sycl/.cache/strata-research/20261020/upstream-e88-generation-protocol-port-plan-report.md",
+    "report_budget_bytes": 16384,
+    "schedulable_now": false,
+    "prerequisites": [
+      {
+        "met": true,
+        "evidence": "Source ce8dd0e94 is committed; frozen production query observer exists, prior metadata checked. Original Niko e88 source available. No GPU/measurement required."
+      }
+    ],
+    "status": "native_reviewed_workers_and_terminals_closed",
+    "source_commit": "ce8dd0e94c15238793d1149c0c72bd4685fdeb40",
+    "worker_closed": true,
+    "terminal_closed": true,
+    "consumer": "Current production observer qualification or required host protocol port; cache-policy knowledge retrieved only for a concrete bandwidth optimization.",
+    "launch_limit": "Orca gpt-6-luna high; custom argv only for workspace-write report directory and network permission, unavailable in worker-start. Main owns operator PTY closure; researchers receive no steering.",
+    "report_sha256": "04804a06da475150615f089d85c7a39f7d29cadad0192953c80547417b7b266e",
+    "native_review": {
+      "path": "/home/yayoi/orca/workspaces/Strata/sycl/.cache/strata-research/20261020/production-query-and-batch-native-review.json",
+      "sha256": "5c4b53eacc8cb46d4ef87a211bf049bdbf8b145c7e5b35fec70dfaca2d2e7096",
+      "main_read_original_body": false
+    },
+    "accepted_digest": "Shared Python slot state machine exists, but actual Arc entrypoint lacks native batch protocol and slot ownership. Pinned Niko SYCL migrated entrypoint also has batch commands; original root CUDA presence alone is not evidence. Port plan remains proposed and required functionality unfinished.",
+    "retrieval_review_point": "After current production query-cost/overhead decision; retrieve the protocol report before required native batch port, cache-policy report only before a measured cache-policy experiment."
+  },
+  "serve_cache_borrow_admission_scope": {
+    "classification": "decision support",
+    "question": "Evaluate existing SYCL serve borrowing to reuse persistent prompt workspace as larger decode expert cache, with actual variable slots and MTP/graph/restore lifetimes.",
+    "source_commit": "ce8dd0e94c15238793d1149c0c72bd4685fdeb40",
+    "report": "/home/yayoi/orca/workspaces/Strata/sycl/.cache/strata-research/20261020/serve-cache-borrow-admission-report.md",
+    "report_budget_bytes": 16384,
+    "schedulable_now": false,
+    "prerequisites": [
+      {
+        "met": true,
+        "evidence": "Closed33211input/2931output production query diagnostic;4query points0.2421%wall,128slot0.26GiB cache and2%hit. Actual source shows standalone-only reset, serve owns persistent buffers; concrete borrowing placement question selected."
+      }
+    ],
+    "status": "dispatched",
+    "task_id": "task_86f3153f84d5",
+    "dispatch_id": "ctx_1edb92666ef8",
+    "terminal_handle": "term_d17cdf42-be90-4aa9-a82a-0357bd3576e6",
+    "incarnation_id": "daadb5b0-d170-4e59-bc67-d36ff11cc845",
+    "worker_closed": false,
+    "terminal_closed": false,
+    "consumer": "Source safety/admission prerequisite for Main-owned static cache+borrowing diagnostic. Preserve long-v1/plan.json during this source task; no model admission from the report alone."
   }
 }
