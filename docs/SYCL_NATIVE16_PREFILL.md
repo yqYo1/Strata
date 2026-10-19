@@ -2074,11 +2074,48 @@ component root, with unchanged boot, all owners closed and no fresh GPU fault.
 The six offline evidence/runtime-admission tests also passed. The injected
 failures test the shared host publication helper and fake table snapshots;
 production call-site returns were source-reviewed, not model-fault-injected.
-Compilation and these component passes do not exercise actual borrowing. A later
-bounded serve check must prove a positive loan, two different rounded prompt
-layouts, same-slot refill and verification after refill before any32K+ cache
-comparison. Actual admission and CPU-math/RAM/GPU resource attribution remain
-unknown; physical262144/session/RESTORE and clean speed remain separate gates.
+Compilation and these component passes do not exercise actual borrowing.
+The next source check shares the exact sized/uniform tail calculation with ten
+host cases (boundaries, no-fit/overflow,128-slot floor and request rounding).
+A default-off single-GPU `STRATA_SYCL_CACHE_LOAN_AUDIT=1` checks the device
+residency table after lend/refill and compares every refilled and unlent-prefix
+resident expert against its immutable RAM bytes. It records actual loan bytes,
+chunk, offset and free VRAM without retaining tensor dumps. The helper, audit,
+fixture and controller are Main-authored from this fork's Strata path, with no
+external implementation or XeStrata source.
+The rebuild at native source`1dc52b068` reused the current cache and preserved
+the qualified fallback. Engine SHA256 is
+`2fce2d79fc5f6eebf8829b65d0de863d99d697a0c4c013ad9c25d28cae9fc917`.
+All normal51+observer1+publication9+tail10 cases passed in the fresh v3 root;
+ten offline evidence/runtime tests passed. All owned processes closed, no
+fresh driver fault occurred and boot/runtime remained unchanged. These are
+component/admission prerequisites, not a borrower model result.
+`tools/sycl/cache_borrow.py prepare` then freezes the1280-slot hypothesis,
+8194/257-token thinking-template inputs and qualified runtime/safety settings;
+commit its plan before `run`. It requires positive loans at two distinct
+rounded chunks/offsets, exact GPU maps and full resident payload agreement,
+same-slot refill, G1/T4 decode and configured MTP expert detach/restore. The
+readback audit is diagnostic work, not clean speed or a quality benchmark.
+The v1 check allocated1280 slots/2639104000bytes (about2.458GiB), and lent
+1115 slots from165 for chunk8192:2320512000bytes available versus2319958528
+required. The24576-entry device map matched the host, with477712384bytes free.
+It then refused before prefill math: `layer_major.inc` requires owned scratch
+for the mode10 mixed accumulator. No generated token, refill/payload check or
+decode qualification resulted. The supervisor terminated/reaped the exact
+owned child on ERR; its original `ownership_closed=false`/incomplete validation
+remain recorded, with separate confirmed process closure, no fresh driver fault
+and unchanged boot. This was a configuration guard refusal, not a GPU hang.
+The controller now observes a native ERR through a bounded natural exit,
+instead of raising inside Owner and immediately signaling the process. Eleven
+offline tests, including a real CPU-only child that emits ERR and exits1,
+passed at controller source`81662a525`; no second request or cleanup signal
+was sent and the child/session closed. This does not revise the v1 outcome.
+Main missed this guard in the first preflight. Do not disable the fast mixed
+scratch/staged-bank path merely to obtain an admission pass: inspect its direct
+allocation assumptions and introduce checked borrower bounds/lifetime before a
+new component/model plan. The original v1 root is closed and cannot be retried.
+CPU-math/RAM/GPU resource attribution remains unknown; physical262144/session/
+RESTORE, model quality and clean speed remain separate gates.
 Only a later qualified mechanism permits a
 fresh complete51+6-case plan. Preserve all pending-completion,
 untouched-output, payload/guard and owner-lifetime requirements under that plan.

@@ -184,7 +184,7 @@ def main():
     if sys.argv[1:] in (['build-copy-safety'], ['rebuild-copy-safety'], ['rebuild-arena-copy'], ['rebuild-event-gate']):
         targets += ['sycl_verifier_retirement_test', 'sycl_submission_test']
     if sys.argv[1:] in (['rebuild-arena-copy'],['rebuild-event-gate']):
-        targets += ['file_expert_source_test', 'sycl_mmvq_test', 'residency_publication_host_test']
+        targets += ['file_expert_source_test', 'sycl_mmvq_test', 'residency_publication_host_test', 'cache_tail_host_test']
     if event_gate:
         targets += ['sycl_host_event_gate_test']
     if attention:

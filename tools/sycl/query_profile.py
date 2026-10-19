@@ -1,17 +1,12 @@
 #!/usr/bin/env python3
-"""Main-owned default-route query observer safety check; no speed/quality claim.
+"""Shared same-build diagnostic admission and production-query evidence.
 
-Reuses Main-authored ownership/source/model gates from early_pcie.py.
-The failed early scheduling gate remains unchanged; this route disables it."""
-import argparse
-import copy
-import fcntl
+Closed tiny/long query launchers are archived at55265f9e3. The current bounded
+cache model check lives in cache_borrow.py; early scheduling stays unqualified."""
 import hashlib
 import json
 from pathlib import Path
 import re
-import shutil
-import subprocess
 import sys
 
 sys.dont_write_bytecode = True
@@ -23,8 +18,6 @@ from build_engine import blobs
 from check_verifier_retirement import DELTA
 
 P, B, A = gen.P, gen.B, gen.A
-ROOT = B / 'decode-query-profile-check-v2'
-RESULT = A / 'decode-query-profile-current.json'
 BUILD = A / 'native-gdn-engine-build.json'
 COMPONENT = A / 'decode-query-profile-component-current.json'
 BUILD_RECORD = B / 'main-native-gdn-engine/record.json'
@@ -37,7 +30,7 @@ def runtime_assets_unchanged(record):
     # by the same-build normal51+observer fixture; never relabel a mode to pass
     # generation_engine's independently scoped admission check.
     guards.require(record['mode'] in ('default-route-query-profile-check',
-        'default-route-query-profile-long'), 'unknown query diagnostic mode')
+        'default-route-query-profile-long','cache-borrow-check'), 'unknown query diagnostic mode')
     expected = {n:dict(qualified_sha256=v[0],candidate_sha256=v[1]) for n,v in DELTA.items()}
     component = gen.committed(COMPONENT)
     def identities(delta):
@@ -68,14 +61,15 @@ def current_build():
     guards.require(component['passed'] and component['complete'] and component['ownership_closed'] and
         not component['active'] and not component['fresh_faults'] and component['binary']==full['binary'] and
         component['fixtures']==full['fixtures'] and component['source_commit']==full['source_commit'] and
-        len(component['checks'])==6 and 'cases=17 native_variable_stride=PASS' in component['checks'][0]['cases'][0]
+        len(component['checks'])==7 and 'cases=17 native_variable_stride=PASS' in component['checks'][0]['cases'][0]
         and len(component['checks'][1]['cases'])==10 and len(component['checks'][2]['cases'])==8
         and len(component['checks'][3]['cases'])==16 and len(component['checks'][4]['cases'])==1
         and len(component['checks'][5]['cases'])==9 and component.get('residency_publication_contract_passed') is True
+        and len(component['checks'][6]['cases'])==10 and component.get('cache_tail_contract_passed') is True
         and component.get('grouped_copy_projection_contract_passed') is True
         and component.get('query_profile_contract_passed') is True
         and component.get('mode')=='normal-route-query-profile-components',
-        'matching passed normal51+observer+residency9 cases required before model preparation')
+        'matching passed normal51+observer1+residency9+tail10 required before model preparation')
     count = 0
     for source in [full['project'], *full['dependencies']]:
         recovered = {n:hashlib.sha256(data).hexdigest() for n,data in
@@ -114,168 +108,3 @@ def query_evidence(log, requests):
                 guards.require(q['calls']>0 and q['wall_ns']>0,'resident query observer not reached')
         groups.append(group)
     return groups
-
-
-def prepare():
-    full, count = current_build()
-    base = gen.committed(assets.RESULT)
-    guards.require(base['passed'] and base['complete'] and base['ownership_closed'] and
-        not base['active'] and not base['fresh_faults'] and base['comparison_summary']['decision']=='reduced_capacity_slower',
-        'closed capacity discriminator required')
-    previous = gen.committed(RESULT)
-    guards.require(previous['mode'] == 'default-route-query-profile-prepare-failure' and
-        previous['error'] == 'RuntimeError: proposed runtime is diagnostic-only' and
-        previous['ownership_closed'] and not previous['active'] and not previous['GPU_executed'] and
-        not ROOT.exists(), 'distinct root after the recorded pre-native admission failure required')
-    previous_reference = dict(commit=gen.git('rev-parse','HEAD').decode().strip(),
-        path=str(RESULT.relative_to(P)),sha256=gen.common.digest(RESULT))
-    runtime_assets_unchanged(dict(mode='default-route-query-profile-check',
-        runtime_asset_delta=base['runtime_asset_delta']))
-    revision = gen.git('rev-parse','HEAD').decode().strip()
-    pins = gen.benchmark_pins(revision)
-    settings = gen.committed(gen.SETTINGS)
-    config = copy.deepcopy(base['config'])
-    flags = config['args']
-    guards.require('--no-spec-split' in flags and flags[flags.index('--spec')+1]=='4',
-        'small query check requires the committed G1/T4 configuration')
-    flags[flags.index('--pool-workers')+1] = '5'
-    flags[flags.index('--pcie-frac')+1] = '0'
-    flags[flags.index('--expert-profile')+1] = str(ROOT/'expert-profile.bin')
-    config.update(log=str(ROOT/'engine.stderr'),env={})
-    prompts = assets.check_prompts(config,base['environment'])
-    # Reuse the committed original whole-model digests only after exact device,
-    # inode, size, mtime and ctime identity checks. This is not a new full hash.
-    model = assets.model_pins(config,base['model_assets'])
-    ROOT.mkdir(mode=0o700)
-    for name in ('cache','tmp'): (ROOT/name).mkdir()
-    old_root = base['environment']['STRATA_MEASUREMENT_ROOT']
-    env = {k:v.replace(old_root,str(ROOT)) for k,v in base['environment'].items()}
-    env.update(STRATA_SYCL_QUERY_PROFILE='1',STRATA_SYCL_VERIFY_ARENA_COPY='0',STRATA_SYCL_VERIFY_PCIE_EARLY='0',
-        STRATA_SYCL_VERIFY_PCIE_EARLY_AUDIT='0',UR_ENABLE_LAYERS='UR_LAYER_PARAMETER_VALIDATION',STRATA_TRACE='1')
-    env.update({k:v for k,v in settings['environment'].items() if k.startswith('UR_LOG_') and k!='UR_LOG_TRACING'})
-    for name in ('UR_L0_V2_FORCE_DISABLE_COPY_OFFLOAD','NEOReadDebugKeys','EnableDirectSubmission',
-                 'STRATA_SYCL_PREFILL_SAME_QUEUE'):
-        guards.require(env[name]==settings['environment'][name], 'qualified safety setting changed')
-    shutil.copyfile(P/'data/expert-profile.bin', ROOT/'expert-profile.bin')
-    guards.require(gen.common.digest(ROOT/'expert-profile.bin')==base['profile_sha256'], 'profile changed')
-    (ROOT/'config.json').write_text(json.dumps(config,indent=2)+'\n')
-    record = dict(mode='default-route-query-profile-check',source_commit=revision,build_source_commit=full['source_commit'],
-        previous_preparation_reference=previous_reference,
-        model_hash_reference=dict(commit=revision,path=str(assets.RESULT.relative_to(P)),
-            sha256=gen.common.digest(assets.RESULT),reuse='Original full digests, exact stat identities including ctime verified; no new full digest claim.'),
-        binary_origin_source_commit=full.get('binary_origin_source_commit',full['source_commit']),
-        binary=full['binary'],source_build_record=dict(path=str(BUILD_RECORD),sha256=gen.common.digest(BUILD_RECORD)),
-        original_build_inputs_recovered=count,component_result_sha256=gen.common.digest(COMPONENT),
-        runtime_asset_delta=base['runtime_asset_delta'],root=str(ROOT),environment=env,config=config,
-        command=[full['binary']['path'],'--serve',*flags],check_prompts=prompts,model_assets=model,
-        model_assets_fingerprint=assets.fingerprint(model),machine_identity=assets.machine_identity(),
-        tokenizer_assets={str(Path(config['tokenizer'])/name):gen.common.digest(Path(config['tokenizer'])/name)
-            for name in ('vocab.json','merges.txt','token_type.json','chat_template.jinja')},
-        source_count=len(pins),source_aggregate_sha256=assets.fingerprint(pins),
-        config_sha256=gen.common.digest(ROOT/'config.json'),profile_sha256=base['profile_sha256'],
-        settings_sha256=gen.common.digest(gen.SETTINGS),complete=False,passed=False,active=False,
-        model_quality_qualified=False,model_performance_measured=False,model_route_executed=False,small_requests=[],
-        budgets=dict(wall=900,cpu=54000,rss_cap=96<<30,text_cap=64<<20,file_cap=64<<20,total_cap=64<<20),
-        gate='One owned native process, two thinking-template questions,16 generated tokens each, G1/T4 configured and capture reached, pcie-frac0/pool5/arena-copy0/early0. Four query records per decode request: nonzero resident launch and pool-return calls/time, zero inactive PCIe counters, calls=ready+pending+errors, zero errors/clock failures, max<=sum. Zero copied expert bytes/groups, positive CPU jobs. No protocol/runtime/fresh-driver fault; unchanged source/model/tokenizer/runtime/boot. No automatic retry.',
-        limits='Tiny safety/actual-route check only. No task quality, speed comparison, physical PCIe bytes, saturation, physical262144/session/RESTORE or70tok/s qualification.',
-        consumer='Prerequisite for a separately committed32K+ thinking-enabled production query-cost diagnostic and independent overhead qualification. No early-route or speed admission. Retire successful raw logs after compact evidence is committed.')
-    runtime_assets_unchanged(record)
-    (ROOT/'plan.json').write_text(json.dumps(record,indent=2)+'\n')
-    RESULT.write_text(json.dumps(record,indent=2)+'\n')
-    print('Prepared bounded default-route query observer check; commit the exact generated plan before run.')
-
-
-def run():
-    record = gen.committed(RESULT)
-    guards.require(record==json.loads((ROOT/'plan.json').read_text()) and not record['complete'] and
-        not (ROOT/'record.json').exists(), 'fresh frozen plan required; no restart')
-    full,count = current_build()
-    guards.require(full['binary']==record['binary'] and count==record['original_build_inputs_recovered'] and
-        gen.common.digest(BUILD_RECORD)==record['source_build_record']['sha256'] and
-        gen.common.digest(COMPONENT)==record['component_result_sha256'], 'build/component proof changed')
-    pins = gen.benchmark_pins(record['source_commit'])
-    guards.require(len(pins)==record['source_count'] and assets.fingerprint(pins)==record['source_aggregate_sha256'],
-        'controller/benchmark inputs changed')
-    for path, expected in [(gen.SETTINGS,record['settings_sha256']),(ROOT/'config.json',record['config_sha256']),
-            (ROOT/'expert-profile.bin',record['profile_sha256']),*record['tokenizer_assets'].items()]:
-        guards.require(gen.common.digest(path)==expected,'input changed: '+str(path))
-    runtime_assets_unchanged(record)
-    guards.require(assets.model_pins(record['config'],record['model_assets'])==record['model_assets'] and
-        assets.machine_identity()==record['machine_identity'], 'frozen model/platform differs')
-    boot = Path('/proc/sys/kernel/random/boot_id').read_text().strip()
-    before = subprocess.check_output(['journalctl','-k','-b','-n','0','--show-cursor','--no-pager'],text=True)
-    cursor = next(x.split(': ',1)[1] for x in before.splitlines() if x.startswith('-- cursor: '))
-    owner = None
-    def persist():
-        record['active'] = bool(owner and owner.active is not None)
-        (ROOT/'record.json').write_text(json.dumps(dict(record,owned_commands=owner.commands if owner else []),indent=2)+'\n')
-    def interact(io,entry):
-        while not io.line().startswith('READY '): pass
-        for prompt in record['check_prompts']:
-            io.send(('GEN 16 '+','.join(map(str,prompt))+'\n').encode())
-            tokens=[]
-            while True:
-                line=io.line();guards.require(not line.startswith('ERR'),line)
-                if line.startswith('T '): tokens.append(int(line.split()[1]))
-                if line.startswith('DONE '):
-                    fields=line.split();guards.require(int(fields[1])==len(tokens) and len(tokens)==16 and
-                        fields[5] in ('length','stop','eos') and all(0<=x<248320 for x in tokens),'incomplete request')
-                    record['small_requests'].append(dict(done=line,input_tokens=len(prompt),generated=len(tokens),
-                        finish_reason=fields[5],output_sha256=assets.fingerprint(tokens)));break
-        io.send(b'QUIT\n');io.proc.stdin.close();io.exit(60)
-    owner=supervision.Owner(ROOT/'owned',persist)
-    try:
-        entry,_,err=owner.run('check',record['command'],record['environment'],P,interaction=interact,**record['budgets'])
-        record.update(complete=bool(supervision.closed(entry)),exit_code=entry.get('exit_code'))
-        guards.require(record['complete'] and entry['exit_code']==0,'owned command failed')
-        log=err.read_text(errors='replace');assets.verify_pool(log,5)
-        pattern=r'^strata serve: SYCL_EXPERT_COPY '+r' '.join(name+r'=(\d+)' for name in COPY_KEYS)+r'$'
-        rows=[dict(zip(COPY_KEYS,map(int,row))) for row in re.findall(pattern,log,re.M)]
-        record['copy_route_requests']=rows
-        guards.require(len(rows)==len(record['small_requests'])==2 and
-            all(f'captured the {n}-token window' in log for n in (1,4)) and
-            'ordinary-Arena copy enabled' not in log and 'early PCIe expert graph enabled' not in log,
-            'actual default route/requests missing')
-        headers=re.findall(r'^strata serve: prompt (\d+) tokens = (\d+) reused \+ (\d+) read'
-            r'[^\n]*, (\d+) generated[^\n]*$',log,re.M)
-        guards.require(len(headers)==2 and all(
-            tuple(map(int,header))==(len(prompt),0,len(prompt),request['generated'])
-            for header,prompt,request in zip(headers,record['check_prompts'],record['small_requests'])),
-            'native request input/output work does not match the owned protocol')
-        for row in rows:
-            guards.require(row['submitted_blobs']==row['completed_blobs']==row['host_view_groups']==row['gpu_miss_groups']==0
-                and row['submitted_bytes']==row['completed_bytes']==0 and row['cpu_unique_misses']>0 and row['cpu_entries']>0,
-                'default copy/CPU route conservation failed')
-        record['query_requests']=query_evidence(log,len(rows))
-        current_build()
-        guards.require(gen.benchmark_pins(record['source_commit'])==pins,'controller inputs changed during run')
-        runtime_assets_unchanged(record)
-        guards.require(assets.machine_identity()==record['machine_identity'] and
-            assets.model_pins(record['config'],record['model_assets'])==record['model_assets'],'model/platform changed')
-        record.update(passed=True,actual_default_route_confirmed=True,query_observer_reached=True,model_route_executed=True)
-    except BaseException as error:
-        record['error']=str(error)
-        path=ROOT/'owned/check.stderr'
-        if path.exists():record['error_excerpt']=path.read_text(errors='replace')[-4096:]
-    finally:
-        record['ownership_closed']=owner.active is None and all(supervision.closed(c) for c in owner.commands)
-        after=subprocess.check_output(['journalctl','-k','-b','--after-cursor',cursor,'--no-pager'],text=True)
-        record['fresh_faults']=[x for x in after.splitlines() if re.search(
-            r'(?i)(gpu.*(?:hang|fault|reset|wedg)|xe.*(?:error|fault|reset|timeout))',x)]
-        record['boot_unchanged']=boot==Path('/proc/sys/kernel/random/boot_id').read_text().strip()
-        try:record['driver_after']=guards.driver_guard()
-        except Exception as error:record.update(driver_guard_error=str(error),passed=False)
-        record['passed']=bool(record['passed'] and record['ownership_closed'] and record['boot_unchanged'] and not record['fresh_faults'])
-        persist();RESULT.write_text(json.dumps(record,indent=2)+'\n')
-    print(json.dumps({k:record.get(k) for k in ('complete','passed','ownership_closed','error')}))
-    return 0 if record['passed'] else 1
-
-
-def main():
-    parser=argparse.ArgumentParser(description=__doc__);parser.add_argument('action',choices=('prepare','run'));args=parser.parse_args()
-    with (B/'owned-v0141-measurement.lock').open('a+') as lock:
-        fcntl.flock(lock,fcntl.LOCK_EX|fcntl.LOCK_NB);guards.no_model_owners([]);guards.driver_guard()
-        return prepare() if args.action=='prepare' else run()
-
-
-if __name__=='__main__':sys.exit(main())
