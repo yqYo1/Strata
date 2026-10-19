@@ -181,10 +181,12 @@ public:
         std::lock_guard lock(state_->mutex);
         return state_->entered && !state_->open && !state_->expired;
     }
-    void release() {
+    bool release() {
         std::lock_guard lock(state_->mutex);
+        const bool was_held=state_->entered && !state_->open && !state_->expired;
         state_->open=true;
         state_->changed.notify_all();
+        return was_held;
     }
 };
 
@@ -291,7 +293,7 @@ void early_case(const std::string& mode) {
                 // and would release the gate only through its failure deadline.
                 require_untouched(probe_queue,result,bytes,probe.get());
                 need(gate->held(),"output probe consumed the copy gate deadline");
-                gate->release();
+                need(gate->release(),"copy gate expired before checked release");
             }
             check(Access::early_done(*verifier));
         } else {
