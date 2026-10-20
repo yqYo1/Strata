@@ -2502,11 +2502,14 @@ The earlier C11 build and numeric-enum parser failure remain failures in the
 [research index](../bench/results/2026-10-15-pr6-recovery-audit/research-index.json).
 At`df172f7e3`, all14 comparison tests pass, including same-PID/pre-model activation,
 clean absence, exact loan binding and failed-journal terminal evidence. The corrected
-source audit and native Luna-max review now accept the controller without another
-source fix. Commit that eligibility before preparing the one checked old-owned117K
-request. Only its actual passed receipt permits six clean processes, which separate
-first-use from three subsequent requests. No comparison process has launched; the
-1000tok/s target and broader correctness requirements remain unqualified.
+source audit and native Luna-max review accepted the controller without another
+source fix. The old-owned117K request then passed at the committed`fc118efc6` plan:
+all96 direct-owner retirements, same-nativePID3599067 activation before model work,
+24 thought tokens, native exit0 and complete owned closure, with a successful
+journal query and no matched fresh fault. Its126038.0ms /932.2tok/s is first-use
+validation evidence, not clean speed. Commit that result before the six clean
+processes, which separate first-use from three subsequent requests. The1000tok/s
+target and broader correctness requirements remain unqualified.
 
 For the separate earlier early-PCIe candidate, only a later qualified mechanism permits a
 fresh complete51+6-case plan. Preserve all pending-completion,
