@@ -2167,6 +2167,16 @@ scratch: parent-loan generation and all graph/MTP/cache-reader retirement,
 refill/publication and a new complete model plan remain required. Run the11
 offline controller tests separately after components. No new speed sample is
 claimed by this plan.
+The v5 build at96e6d9e81 completed (engine SHA256
+`968200f3d60abb265279eae8890041b89827b85dfd93017c095c00e91ebad5be`).
+Normal71+host22+device-smoke1 passed; the full child passed13 subcases and
+then failed its foreign-queue assertion. The fixture created that queue with
+default out-of-order properties, so queue_for rejects it before the intended
+context check; the combined assertion misleadingly prints "foreign queue
+admitted". The gate is failed/incomplete, retirement was not executed and no
+model is admitted. All owners closed, no fresh GPU fault occurred and the11
+offline tests passed. Keep this outcome; correct both foreign queue constructions
+and separate the assertions in a fresh committed plan after source review.
 Only a later qualified mechanism permits a
 fresh complete51+6-case plan. Preserve all pending-completion,
 untouched-output, payload/guard and owner-lifetime requirements under that plan.
