@@ -2607,6 +2607,48 @@ borrowed owners, normal closure and no fresh fault. This distinguishes tracing-l
 dispatch overhead, not full trace-output cost. Any speed claim needs a separate
 clean, repeated comparison. Do not coalesce drains from the old10.9s aggregate.
 
+The status-only engine at`3b4998f326` then passed all156 same-build safety checks
+and both frozen117K processes (controller`ad7191936`, plan`2402e8765`). Native
+exits/owned closure,96 status scopes, exact phase counts and CPU/wall/work/owner
+conservation passed, with no matched fresh fault. All141 benchmark inputs stayed
+fixed;15 model assets passed full SHA256 before preparation and after each native
+closure. Warning logging was identical; only requested UR tracing-layer presence
+differed. These are first-use, parameter-validated attribution samples.
+
+| Status observation | Trace layer absent | Trace layer requested |
+| --- | ---: | ---: |
+| Whole prompt, ms | 142083.1 | 126889.7 |
+| Status scope wall, s | 10.899999 | 10.900710 |
+| Copy enqueue wall, s | 10.886858 | 10.886816 |
+| Copy enqueue CPU, s | 10.824033 | 10.799420 |
+| Prechecks + queue/context CPU, s | 0.000379 | 0.000392 |
+| Unclassified main-thread wall, s | 30.264224 | 15.227134 |
+| Unclassified main-thread CPU, s | 10.204606 | 10.201809 |
+
+The status interval is concentrated inside `queue.memcpy`, before the separately
+tracked checked drain. Its internal runtime/device waiting is unresolved; calling
+it CPU arithmetic or pure4-byte PCIe service would be incorrect. The small precheck
+and context totals do not justify optimizing those paths. The whole-prompt spread
+is retained, including the slower sample. Its large unclassified wall difference
+with nearly unchanged CPU needs a separate source/measurement discriminator; the
+two observations do not establish tracing overhead, I/O, saturation or a speed
+regression against the clean subsequent-request baseline. The status and original
+Host regions are parallel views and must not be added.
+
+The [compact status result](../bench/results/2026-10-15-pr6-recovery-audit/prefill-status-current.json)
+keeps both samples and nine-phase partitions; the original generated environment,
+workloads and model identities are recoverable from the pinned plan. Native
+Luna-max curation supports one finite copy/queue discriminator: ordinary C++
+versus same-context USM-host destination, each idle versus verified-pending on
+the same in-order queue. Bound queue work and attempts; preserve checked drains,
+async errors and destination lifetime. A separately confirmed unclassified setup
+call allocates blocking staging with cudaHostAlloc; its measured contribution
+is unknown. Verify actual provider/view/staging flags before adding a narrow
+allocation timer. Neither source finding is an adopted speedup. The old fastest
+fallback and status-only candidate remain two generations pending that imminent
+artifact-selection check; no third engine build is admitted. Physical262144,
+session/RESTORE, long-generation quality and70tok/s remain pending.
+
 For the separate earlier early-PCIe candidate, only a later qualified mechanism permits a
 fresh complete51+6-case plan. Preserve all pending-completion,
 untouched-output, payload/guard and owner-lifetime requirements under that plan.
