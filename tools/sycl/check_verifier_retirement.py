@@ -39,7 +39,7 @@ def digest(path):
 def main():
     profile = sys.argv[1:] == ['--query-profile']
     guards.require(len(sys.argv) == 1 or profile, 'use no options or --query-profile; never retry a closed root')
-    root = B / 'decode-query-profile-component-v3' if profile else ROOT
+    root = B / 'decode-query-profile-component-v4' if profile else ROOT
     result = A / 'decode-query-profile-component-current.json' if profile else RESULT
     with (B / 'owned-v0141-measurement.lock').open('a+') as lock:
         fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
@@ -102,8 +102,8 @@ def main():
             limits='The six early cases check real-queue synthetic ordering, replay, source retirement and refusal, not native projection equivalence or model overlap. Grouped component covers all seven current model GU/Down pairs plus supported IQ4_XS/Q2_0 at H2560/FF640, windows1/4, groups10/16 and entries10/40, using two distinct blobs repeated in metadata. The oracle shares native scalar projection primitives; it isolates copy/grouping from separate execution, not common-mode projection defects or model quality. No invalid GPU address, stalled kernel, model, physical262144/session/RESTORE or throughput qualification.')
         if profile:
             record.update(mode='normal-route-query-profile-components', model_route_executed=False,
-                gate='Same-build provider17, submission10, normal verifier retirement8, grouped arithmetic16, query observer1, residency publication9 and cache tail10. Tail tests use exact sized/uniform bytes, boundary/no-fit/overflow, the128-slot floor and request rounding. Lend/refill failure at each fanout target stops publication; success preserves snapshots. Observer preserves results and count/time conservation. Original failed early51+6 stays unchanged. No early route, queue change or model/speed qualification.',
-                consumer='Prerequisite for the bounded single-GPU positive-borrow model check; normal51+observer1+publication9+tail10, never admission of early PCIe scheduling.')
+                gate='Same-build provider17, submission10, normal verifier retirement8, grouped arithmetic16, query observer1, residency publication9, cache tail10 and scratch layout15. Scratch cases cover checked byte/shape bounds and the actual layout-state guard, with host phase exceptions; they do not inject actual Prefill/GEMM/queue failures or qualify borrowed mode10. Original failed early51+6 stays unchanged. No early route, queue change or model/speed qualification.',
+                consumer='Prerequisite for the next checked parent-loan implementation; normal51+observer1+publication9+tail10+scratch15, never admission of early PCIe scheduling or borrowed mode10.')
         owner = None
 
         def persist():
@@ -123,6 +123,7 @@ def main():
             if profile:
                 fixtures.append(('residency-publication', 'residency_publication_host_test', []))
                 fixtures.append(('cache-tail', 'cache_tail_host_test', []))
+                fixtures.append(('prefill-scratch', 'prefill_scratch_host_test', []))
             for label, name, args in fixtures:
                 fixture = build['fixtures'][name]
                 command = [fixture['path'], *args]
@@ -139,6 +140,16 @@ def main():
                         not re.search('UR_RESULT_ERROR_|ZE_RESULT_ERROR_|terminate called|cleanup failed', stderr),
                         'Arena provider/planner contracts failed: ' + (stdout + stderr)[-8192:])
                     cases = [expected]
+                elif name == 'prefill_scratch_host_test':
+                    cases = [x for x in stdout.splitlines() if x.startswith('prefill_scratch ')]
+                    expected = [f'prefill_scratch case={name} status=PASS' for name in
+                        ('guard_alignment','shape_bounds','gemm_64mib','exact_capacity','payload_overflow',
+                         'guard_overflow','used_overflow','capacity_bounds','slack_overflow',
+                         'initial_layout','relayout_generation','failed_init','failed_relayout',
+                         'nested_update','failed_take_and_reset')]
+                    guards.require(cases == expected and 'prefill_scratch_fixture cases=15 status=PASS' in stdout,
+                        'scratch arithmetic/layout-state contract failed: '+(stdout+stderr)[-8192:])
+                    record['scratch_layout_contract_passed'] = True
                 elif name == 'cache_tail_host_test':
                     cases = [x for x in stdout.splitlines() if x.startswith('cache_tail ')]
                     expected = [f'cache_tail case={name} status=PASS' for name in

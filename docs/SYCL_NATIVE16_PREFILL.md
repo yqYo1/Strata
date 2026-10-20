@@ -2123,6 +2123,30 @@ the parent unavailable. Registered USM containment alone does not authorize
 a loan. Preserve the owned fast path and staged-bank rules, and qualify host,
 device, error and relayout behavior before another borrower model check. These
 are source findings, not an observed GPU fault or an implemented borrower route.
+The first implementation step checks Alloc's element/guard/alignment/cursor
+arithmetic and sizing slack, validates signed32 routing/page shape bounds, and
+stops all later takes after a failed allocation. Carve returns before making
+aliases from a failed prefix or treating a null borrowed region as owned.
+A shared layout-state guard marks init/rebinding in progress; any return or
+exception before commit poisons the instance. Public run, internal chunk run,
+draft-KV and chunk reporting cannot use that incomplete layout; reset/init is
+required. This is a poison-on-failure contract, not pointer rollback. Fifteen
+host cases exercise the actual arithmetic/state helpers, including injected
+host phase exceptions; real Prefill/GEMM/queue fault injection and checked
+parent ownership, graph retirement and loan/refill admission remain pending.
+The new helper and tests are Main-authored from this fork's allocation path.
+At native source`6a553b54b`, the engine and seven fixtures rebuilt successfully
+(engine SHA256`b6e870895ab0e3399626169f7da02e09d011e7c72110406afcc342884e65876e`).
+All86 prerequisite cases and11 offline tests passed in a fresh v4 root; every
+owner closed, boot remained unchanged and no fresh driver fault occurred.
+The owned-mode math was not changed, and the new engine has not run a model.
+The completed Orca Luna audit and native Luna-max review retained this owned
+route step. They found no supported-route defect, but malformed QSA metadata
+can overflow earlier sizing expressions; add shared primary/range/geometry
+preflight without rejecting valid split ordinals. Also make reset/destruction
+retirement checked: the existing release ignores stream-sync errors. Next add
+a small actual Prefill init/relayout failure fixture before parent-loan
+admission; helper-state exceptions alone do not exercise those paths.
 CPU-math/RAM/GPU resource attribution remains unknown; physical262144/session/
 RESTORE, model quality and clean speed remain separate gates.
 Only a later qualified mechanism permits a
