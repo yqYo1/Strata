@@ -63,14 +63,26 @@ def prepare():
         local=Path(path)
         if local.is_relative_to(P):
             guards.require(local.read_bytes()==git('show','HEAD:'+str(local.relative_to(P))), 'commit source first: '+path)
-    runtime_pins={p:v['sha256'] for p,v in settings['runtime_elfs'].items()}
+    admission_path=INDEX.with_name('cache-long-current.json')
+    admission=committed(admission_path)
+    guards.require(admission['passed'] and admission['ownership_closed'] and not admission['active'] and
+        admission['fresh_faults']==[], 'completed current-runtime admission required')
+    reference=admission['original_plan']; raw=git('show',reference['commit']+':'+reference['path'])
+    guards.require(hashlib.sha256(raw).hexdigest()==reference['sha256'],'admission original plan changed')
+    delta=json.loads(raw)['runtime_asset_delta']
+    guards.require(set(delta)<=set(settings['runtime_elfs']),'unknown runtime delta')
+    runtime_pins={}
+    for p,v in settings['runtime_elfs'].items():
+        if p in delta: guards.require(delta[p]['qualified_sha256']==v['sha256'],'original runtime baseline changed')
+        runtime_pins[p]=delta[p]['candidate_sha256'] if p in delta else v['sha256']
     for p,h in runtime_pins.items(): guards.require(digest(p)==h,'runtime changed: '+p)
     env.update(UR_LOG_TRACING='level:info;flush:info;output:file,'+str(ROOT/'trace.log'),
         UR_LOG_VALIDATION='level:warning;flush:warning;output:file,'+str(ROOT/'validation.log'),
         TMPDIR=str(ROOT/'tmp'),XDG_CACHE_HOME=str(ROOT/'cache'))
     plan=dict(source_commit=git('rev-parse','HEAD').decode().strip(),
         inputs={p:digest(p) for p in sorted(paths)},runtime_pins=runtime_pins,
-        settings_sha256=digest(SETTINGS),command=command,environment=env,
+        settings_sha256=digest(SETTINGS),runtime_admission=dict(result_sha256=digest(admission_path),original_plan=reference),
+        command=command,environment=env,
         root=str(ROOT),acceptance='Host probe only: successful init/teardown, INVALID_NULL_HANDLE46, unchanged version sentinel, trace of the null-platform API with that result and no device/enqueue/kernel call. Record validation logger bytes without requiring a message: exact installed null-check machine code returns silently. This does not qualify a later model process.',
         budgets=dict(wall=30,cpu=20,rss_cap=2<<30,text_cap=1<<20,file_cap=1<<20,total_cap=8<<20),
         executable_sha256=None,complete=False,passed=False,active=False,ownership_closed=False)
