@@ -23,7 +23,7 @@ B=Path('/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007')
 INDEX=P/'bench/results/2026-10-15-pr6-recovery-audit/research-index.json'
 SETTINGS=P/'tools/sycl/measurement_environment.json'
 SCOPE='UR_validation_activation_evidence_scope'
-ROOT=B/'ur-validation-canary-v1'
+ROOT=B/'ur-validation-canary-v2'
 SOURCE=P/'bench/sycl/ur_validation_canary.c'
 
 

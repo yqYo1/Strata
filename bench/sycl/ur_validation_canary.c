@@ -1,6 +1,7 @@
 /* Main-authored host-only UR diagnostic; repository LICENSE applies. */
 #define _GNU_SOURCE
 #include <dlfcn.h>
+#include <stdbool.h>
 #include <stdio.h>
 #include <unistd.h>
 #include <unified-runtime/ur_api.h>
