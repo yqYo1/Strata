@@ -20,6 +20,27 @@ def response(offered=1600, accepted=1200, generated=1152):
 
 
 class BenchmarkTest(unittest.TestCase):
+    def test_long_generation_gate_blocks_before_http_and_excludes_warmups(self):
+        events=[]
+        def gate(stage,phase,run):
+            events.append((stage,phase,run))
+            if stage=='begin':raise RuntimeError('small route not qualified')
+        suite=bench.Suite('http://localhost','',131072,1,True,long_generation_only=True,
+            want_long_generation=True,request_gate=gate)
+        with patch.object(bench,'chat',return_value=response()) as chat:
+            suite.request('warm-up/chat',None,None,[],24,True)
+            self.assertEqual(events,[])
+            with self.assertRaisesRegex(RuntimeError,'small route not qualified'):
+                suite.request('long-generation/regular-code',0,None,[],16384,True)
+            self.assertEqual(chat.call_count,1)
+        self.assertEqual(events,[('begin','long-generation/regular-code',0)])
+        events.clear()
+        suite.request_gate=lambda stage,phase,run:events.append(stage)
+        with patch.object(bench,'chat',side_effect=RuntimeError('stream failed')):
+            with self.assertRaisesRegex(RuntimeError,'stream failed'):
+                suite.request('long-generation/regular-code',0,None,[],16384,True)
+        self.assertEqual(events,['begin','end'])
+
     def test_profile_gates_exclude_warmup_and_wrap_complete_request(self):
         events=[]
         suite=bench.Suite('http://localhost','',131072,1,True,log=lambda _:None,prefill_only=True,

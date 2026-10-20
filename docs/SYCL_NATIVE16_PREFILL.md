@@ -2938,11 +2938,24 @@ inputs and its build plan,8698 compiler inputs,149 production-controller inputs
 and the current9836 native inputs/eight fixtures were checked before retirement.
 The four private closed window/model/analysis source files are retired to pushed
 `ed9368b3c`; maintained model qualification does not import them. The serialized
-cleanup plan now retires the complete production timeline, standalone window
+cleanup removed the complete production timeline, standalone window
 executable/compiler manifest and normal FP16-pilot output. Its path/hash/reason
-manifest and exact pending/deleted state are in the compact results. Installed
+manifest records156 files/294666727B. Post-cleanup native source/fixture
+admission passes. Installed
 profiling tools, both consumed model generations and14 older provenance holds
 are excluded. Cleanup does not establish new validation or hardware attribution.
+
+The maintained`tools/sycl/mtp_prefill.py prepare|run <cohort>` now owns the fresh
+six-process FP16-off/on order`0,1,1,0,0,1`. It uses the official thinking-enabled
+regular-code long-generation workload, four official warmups and one>=32K-input,
+>=1024-output request per process. The benchmark's existing optional owner gate
+also wraps long-generation-only requests; it blocks the long HTTP request until
+native ownership/environment and every warmup's draft-cell conservation pass.
+Observers match in both arms, including draft timing's entry synchronization.
+This is a diagnostic first-long-request comparison, not clean or subsequent-long
+performance. Compare PP independently, keep any draft-acceptance change as a
+candidate effect and do not require identical output. Weak-MTP, agent-session,
+clean speed, task quality and full-context qualification still precede adoption.
 
 The closed capability output and consumed decision-support report/transaction
 bodies are retired:43 external files/112835B, with a path/hash/reason manifest

@@ -441,8 +441,8 @@ class Suite:
                  want_long_generation=False, long_generation_only=False, journal=None, fail_fast_engine_error=False, workload_id=None, prefill_only=False, prefill_tokens=65536, generation_workload=None, request_gate=None):
         self.base, self.key, self.ctx, self.runs, self.think, self.log = base, key, ctx, runs, think, log
         self.prefill_only, self.prefill_tokens = prefill_only, prefill_tokens
-        if request_gate is not None and not prefill_only:
-            raise ValueError('request gates require prefill-only')
+        if request_gate is not None and not (prefill_only or long_generation_only):
+            raise ValueError('request gates require prefill-only or long-generation-only')
         self.request_gate=request_gate
         if prefill_only and (want_clients or want_long or want_long_generation or long_generation_only or quick):
             raise ValueError("prefill-only cannot be combined with other suite scopes")
@@ -476,7 +476,7 @@ class Suite:
             request_index = self.journal.append("start", phase, run, turn,
                 request_sha256=hashlib.sha256(payload).hexdigest(), max_tokens=max_tokens, thinking=think)
         try:
-            gated=self.request_gate is not None and phase=='prefill-only'
+            gated=self.request_gate is not None and (phase=='prefill-only' or phase.startswith('long-generation/'))
             if gated:self.request_gate('begin',phase,run)
             try:
                 raw = chat(self.base, self.key, messages, max_tokens, think, **kwargs)
@@ -1369,7 +1369,7 @@ def main(argv=None) -> int:
     ap.add_argument("--prefill-only", action="store_true", help="only one short warmup and fresh long prefill requests; thinking on, output capped at 24")
     ap.add_argument("--prefill-tokens", type=int, choices=PREFILL_TOKEN_CHOICES, default=None, help="minimum ACTUAL prompt/read tokens for --prefill-only (default 65536)")
     ap.add_argument('--profile-request-gates',action='store_true',
-                    help='diagnostic only: wait for owner acknowledgement before/after each long prefill request')
+                    help='diagnostic only: wait for owner acknowledgement around prefill-only or long-generation-only requests')
     ap.add_argument("--think", action="store_true", help="leave thinking on (the default suite turns it off)")
     ap.add_argument("--out", help="where to write the results folder (default: bench/results)")
     ap.add_argument("--compare", metavar="DIR", help="a results folder (or its results.json) to put beside this run")
@@ -1385,8 +1385,8 @@ def main(argv=None) -> int:
         ap.error("--fail-fast-engine-error cannot be combined with --clients")
     if a.prefill_tokens is not None and not a.prefill_only:
         ap.error("--prefill-tokens requires --prefill-only")
-    if a.profile_request_gates and not a.prefill_only:
-        ap.error('--profile-request-gates requires --prefill-only')
+    if a.profile_request_gates and not (a.prefill_only or a.long_generation_only):
+        ap.error('--profile-request-gates requires --prefill-only or --long-generation-only')
     if a.prefill_only and (a.clients or a.long or a.long_generation or a.long_generation_only or a.compare_only):
         ap.error("--prefill-only cannot be combined with other suite scopes or --compare-only")
     if a.prefill_only and a.runs<1:
