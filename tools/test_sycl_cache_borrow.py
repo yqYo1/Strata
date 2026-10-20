@@ -23,6 +23,24 @@ def log():
     return '\n'.join(result)+'\n'
 
 
+def owner_log():
+    result=[log().rstrip(),
+        'strata cache loan: phase=masked generation=1 chunk=8192 first=160 lent=1120 decode_ready=0']
+    for layer in range(48):
+        result += [f'strata MoE mixed owners: phase=entry layer={layer} first=0 rows=8193 '
+            'primary=0x10000 primary_bytes=41948160 region=0x30000000 region_bytes=1700000000 '
+            'tail=(nil) tail_offset=1700000000 tail_bytes=0 residual=0xa0000000 '
+            'residual_bytes=167792640 bo=0x96000000 queue=0x1234 direct_owners=0 previous_attention=checked_drain',
+            f'strata MoE cache loan: generation=1 layout_generation=2 layer={layer} first=0 rows=8193 '
+            'used=2200000000 capacity=2300000000',
+            f'strata MoE mixed owners: phase=retired layer={layer} first=0 rows=8193 '
+            'route_status=0 shared_HC=checked_drain callbacks=after_return']
+    result += ['strata cache loan: phase=ready generation=1 chunk=8192 first=160 lent=1120 decode_ready=1',
+        'strata cache loan: phase=masked generation=2 chunk=256 first=360 lent=920 decode_ready=0',
+        'strata cache loan: phase=ready generation=2 chunk=256 first=360 lent=920 decode_ready=1']
+    return '\n'.join(result)+'\n'
+
+
 class LoanEvidence(unittest.TestCase):
     def test_complete(self):
         result=c.loan_evidence(log())
@@ -46,6 +64,42 @@ class LoanEvidence(unittest.TestCase):
                       log().replace('first=360','first=160'),
                       log().replace('phase=after-restore','phase=wrong')):
             with self.subTest(value=value),self.assertRaises(RuntimeError):c.loan_evidence(value)
+
+
+class CheckedOwners(unittest.TestCase):
+    def check(self,value):
+        return c.checked_owner_evidence(value,c.loan_evidence(value))
+
+    def test_complete(self):
+        result=self.check(owner_log())
+        self.assertEqual(result['generations'],[1,2])
+        self.assertEqual(result['borrowed_ffn_entries'],48)
+        self.assertEqual(result['checked_retirements'],48)
+        self.assertEqual(result['decode_admission_transitions'],[0,1,0,1])
+
+    def test_missing_duplicate_or_malformed(self):
+        value=owner_log()
+        missing='strata cache loan: phase=ready generation=2 chunk=256 first=360 lent=920 decode_ready=1\n'
+        for bad in (value.replace(missing,''),value+missing,value+'strata MoE cache loan: malformed\n'):
+            with self.subTest(bad=bad),self.assertRaises(RuntimeError):self.check(bad)
+
+    def test_stale_generation_or_wrong_admission(self):
+        for old,new in (('generation=2 chunk=256','generation=1 chunk=256'),
+                ('layout_generation=2 layer=1 ','layout_generation=3 layer=1 '),
+                ('decode_ready=1','decode_ready=0'),
+                ('used=2200000000','used=2400000000'),
+                ('capacity=2300000000','capacity=2200000000')):
+            with self.subTest(old=old),self.assertRaises(RuntimeError):self.check(owner_log().replace(old,new,1))
+
+    def test_owned_or_incomplete_reordered_windows(self):
+        value=owner_log()
+        lines=value.splitlines()
+        a=next(i for i,line in enumerate(lines) if 'phase=retired layer=0 ' in line)
+        lines[a],lines[a+1]=lines[a+1],lines[a]
+        for bad in ('\n'.join(lines)+'\n',value.replace('direct_owners=0','direct_owners=1',1),
+                value.replace('phase=retired layer=47','phase=retired layer=46',1),
+                value.replace('primary_bytes=41948160','primary_bytes=41948159',1)):
+            with self.subTest(bad=bad),self.assertRaises(RuntimeError):self.check(bad)
 
 
 class RefusalClosure(unittest.TestCase):

@@ -2288,6 +2288,18 @@ cover sealed-used bounds, overflow and view overlap. Preserve the396 fallback
 and rebuild the closed comparison cache from committed inputs. The earlier
 standalone GCC mode/result is retired to commit5f1c06452; its same-build consumer
 has superseded it. This source step is still unbuilt and has no new model result.
+The independent Orca audit and native Luna-max curation found no source-supported
+defect in those three guards. This is bounded source acceptance: planner geometry
+is outside the ten reviewed files, and execution/math remain unqualified. The
+fresh v2 model controller requires that committed review, the complete same-build
+156-case result and the explicit checked-loan flag. It checks all48 borrowed FFN
+entries/retirements against one sealed generation, then actual decode admission
+after each successful refill. Its two thinking inputs8194/257 each request16
+generated tokens;8193 processed rows use only the primary mixed bank, so the full
+tail remains unqualified. The closed v1 refusal and its original failed outcome
+remain recoverable from the recorded Git reference; its separate process closure
+does not turn it into a pass. Commit and test the new evidence parser before
+building and preparing this prospective v2 plan. No new speed result is claimed.
 Only a later qualified mechanism permits a
 fresh complete51+6-case plan. Preserve all pending-completion,
 untouched-output, payload/guard and owner-lifetime requirements under that plan.
