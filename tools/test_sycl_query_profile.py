@@ -63,7 +63,7 @@ class RuntimeAdmission(unittest.TestCase):
             q.runtime_assets_unchanged(record)
 
     def test_exact_component_assets_and_both_diagnostic_modes(self):
-        for mode in ('default-route-query-profile-check','default-route-query-profile-long','cache-borrow-check'):
+        for mode in ('default-route-query-profile-check','default-route-query-profile-long','cache-borrow-check','cache-capacity-check'):
             self.admit(dict(mode=mode,runtime_asset_delta=self.delta))
         labeled=copy.deepcopy(self.delta)
         for item in labeled.values():item.update(package='label',candidate_version='version',upgrade_utc='time')

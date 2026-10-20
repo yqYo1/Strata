@@ -78,26 +78,28 @@ from decode. About 1K generated tokens is a starting observation window. Increas
 independent repetitions or length when variation still prevents a decision.
 Do not pool the original 24-token decode with this new workload.
 
-For the selected SYCL native16 engine, Main uses
-`tools/sycl/generation_engine.py prepare check`, commits the prepared result,
-then uses `run check`. The controller preserves the qualified runtime safety
-settings, validates parameters and records progress without a full API trace.
-It allows5400 wall seconds,54000 CPU seconds,96GiB owned-session RSS and64MiB
-raw output for the two16K-cap requests. A deadline or size stop is incomplete.
-It verifies the official request journal and preserves completed partial rows
-if the suite cannot close.
+For the checked SYCL cache-loan capacity admission, Main uses
+`python3 -B tools/sycl/cache_capacity.py prepare`, commits the generated plan,
+then uses `python3 -B tools/sycl/cache_capacity.py run`. Preparation requires
+the matching156-case component gate, the completed small model cycle and the
+curated source review. The single official process includes its four warmups
+and a32K+ input,1024+ output regular-code request, with thinking and an answer.
+Parameter validation, stage progress and full cache/map readback stay enabled;
+its elapsed times are diagnostic. Budgets are2400 wall seconds,54000 CPU
+seconds,96GiB owned-session RSS and64MiB raw output. Stop on the first error or
+budget limit; never retry the closed root.
 
-After an eligible check, `prepare clean N` and `run clean N` collect independent
-processes0,1,2 with observers off; commit every plan and result before advancing.
-Keep native inputs, controller, workloads and configuration frozen throughout.
-After committing process2, `summarize` recovers all four original receipts and
-checks matched request hashes, independent process identities and source pins.
-It reports all three clean samples and spread per workload, strong/weak
-acceptance separately from the70tok/s speed target, and excludes the diagnostic
-check from clean statistics. These are one request per workload per process
-after the standard client warmup/calibration, not repeated warm requests of the
-same workload. Source/plan commits precede execution; the controller does not
-build, retry an engine, adopt a default or qualify the broader model gates.
+Check actual mode10, all-GPU BF16 residuals, all48 borrowed FFNs and complete
+same-slot refill/decode publication. This primary-window check does not qualify
+full mixed-tail routing, clean speed, the strong/weak pair, agent-session, task
+quality or physical262144/session/RESTORE. Plan the later matched owned-small /
+borrowed-large clean comparison separately, including order, independent
+process repetitions, work/configuration matching and prefill nonregression.
+
+`generation_engine.py` is now a shared admission/evidence library, with no
+launcher CLI. Restore closed long-generation launchers and their original
+plans from Git when reproducing them; current compact decisions are in
+[the maintained prefill results](SYCL_NATIVE16_PREFILL.md).
 
 For later decode attribution, use a separate observer process after the frozen
 cohort. `STRATA_DECODE_TIMING` reports wall-clock regions: its CPU label includes
@@ -110,68 +112,16 @@ because device global-timer stamps are unsupported. GPU attribution needs a
 separately qualified profiling-event path outside capture. Leave both observer
 variables absent in clean processes; setting either to `0` still enables it.
 
-`STRATA_DECODE_CPU_PROFILE` is a separate opt-in Linux CPU observer under
-validation. Its CPU-only accounting tests pass, including all four tests from
-the compiled SYCL build. The bounded native request check passes with two
-completed requests and two valid observations; observer-overhead and long-generation attribution checks
-remain pending.
-It records thread CPU inside
-expert row tasks, native hidden quantization and selected verifier sync calls,
-plus whole worker/main/native-process CPU intervals. Worker task writes precede
-their existing completion publication; snapshots require completed dispatches
-and parked workers. No counter is added to the park loop. One JSON line per
-successfully completed request includes clock/counter failures, unexpected modes,
-quiescence and containment checks; error returns can have no line. A consumer
-must reconcile attempted, successful and failed requests and require one valid
-line for every successful request; a failed request or missing line is ineligible.
-Head-only sync counters support one verifier stage. A downstream stage, including
-a split on the same device, sets `single_stage=false` and `valid=false` rather
-than silently undercounting. An invalid observation cannot support attribution.
-The interval extends through the final commit wait. Job/quant/sync times are
-subsets of thread/process CPU, and CPU time includes stalls while scheduled.
-This observer does not measure physical RAM/PCIe traffic or GPU service and
-does not establish CPU arithmetic or RAM saturation. Before use require the
-clock negative cases, pool completion/output checks, bounded same-build small
-runtime check and an observer-overhead comparison. Keep it out of clean timing.
-
-The prepared CPU-only `cpu_clock_off/on` and `pool_cpu_clock_off/on` CTests
-run enablement arms in separate processes. The real-pool fixture uses finite
-synthetic Q8_0 inputs, serial full-output references, one/two-worker and
-two-worker host-off/on dispatches, sleep/wake repeats, single/multi-token
-and 97-expert batch boundaries. It additionally exercises the legacy Q2_0
-inline/split paths only when their required AVX512 features are present;
-those paths are explicitly unqualified on this Ryzen5600X. It checks task/quantization counts, clock errors
-and CPU subset containment, and reports actual host participation. This is
-accounting coverage, not IQ-kernel/model qualification or a speed benchmark.
-All four tests passed on Ryzen5600X at source`5f91e79ec`, with observed host
-participation in the enabled parallel-host arm. The new engine passed the bounded
-native request check on the explicitly proposed runtime assets at`69888d181`, with zero clock/counter errors. Observer
-overhead and longer workload attribution remain unqualified; see the current
-CPU observer entry in
-`bench/results/2026-10-15-pr6-recovery-audit/research-index.json`.
-
-`generation_engine.py prepare cpu-check`, followed by committing the plan and
-`run cpu-check`, uses the current observer build for both official long-output
-workloads. It requires the fresh same-build provider/full-bank checks and admits
-only the explicitly pinned proposed runtime files for this diagnostic, leaving
-the shared qualified hashes unchanged. It reconciles six CPU records against
-all four warmup/calibration requests and both long requests; only the two long
-observations remain in the compact result. Parameter validation, stage progress,
-CPU clocks and wall timing stay enabled. This does not qualify observer overhead,
-clean speed or a hardware bottleneck. The earlier clean baseline remains
-recoverable at commit`8fe6b1af6` from the same result path.
-
-`generation_engine.py prepare|run cpu-overhead N` uses the same observer engine
-and explicitly proposed runtime for six independent regular-code processes in
-the fixed off/on/on/off/off/on order. Commit each plan before execution and each
-outcome before preparing the next process. Both arms keep the qualified safety
-settings; only the complete CPU/wall/parameter-validation observer bundle changes.
-`summarize cpu-overhead` checks the original source/history chain, independent
-owners, matched configuration, request identity and bounded generation/MTP work
-before reporting three paired per-token latency ratios. The prospective observed
-overhead gate is geomean<=1.05 and every pair<=1.10; failed gates remain failures.
-This single-workload diagnostic does not qualify the strong/weak pair, physical
-hardware saturation, runtime-baseline adoption or the70tok/s target.
+The internal CPU-clock observer and its launchers were retired after their
+failed overhead/nonregression gates; they are historical evidence, not current
+benchmark commands. Their source remains recoverable at
+`d50d31347cc8505a40181db8308735bfa0058427`. The maintained
+[resource reader](../bench/sycl/client_resources.py), `resource_engine.py` and
+`cpu_capacity.py` retain the separate resource-observation and CPU-capacity
+methods. Their closed roots cannot be rerun; a new experiment needs its own
+committed plan and admission. Scheduled CPU includes stalls and polling, and
+GPU busy counters do not measure arithmetic efficiency, RAM bandwidth or
+physical PCIe traffic. Keep those unresolved quantities explicit.
 
 For a prefill-only screen, `bench.sh --prefill-only --prefill-tokens N` accepts
 32768,65536,98304 or131072 as the minimum **actual prompt and read tokens**.
