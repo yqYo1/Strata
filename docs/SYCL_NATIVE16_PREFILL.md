@@ -2821,8 +2821,22 @@ write`INTEL_LIBITTNOTIFY64`. This source finding is not a measured loader result
 Main has not loaded PTI into the model. Do not add a late PTI dlopen that changes
 the qualified environment. The next bounded candidate is the official Unitrace
 Level-Zero collector, with unrelated integrations disabled, all configuration
-fixed before target exec and the validation preload retained. Audit its launcher,
-collector and temporal-control behavior before any GPU qualification.
+fixed before target exec and the validation preload retained.
+
+The official Unitrace2.4.1 collector/CLI at`4b6d74294` is now built with L0 on
+and XPTI/ITT/OpenCL/OMP/MPI/Perfetto off. Source`09d650542` and plan`5bc84cf8b`
+pin331 official source files,457 compile dependencies and43 generated/header
+inputs. The earlier GCC program-lookup preparation failure remains in Git;
+no model or GPU workload ran. Direct preload can attach to named session
+control but cannot create it. The launcher-only overlay at`8fba6f3aa` therefore
+preserves explicit Sysman-off, reads the validation preload only for its target
+and prepends the collector for the intended reverse constructor order. Its
+build is closed; the collector itself is unchanged. The committed CPU-canary
+plan at`9df9f45f2` checks same-PID single-thread first UR initialization before
+the canary body and exact named-session removal. Independent source review is
+pending before execution. Loader success alone cannot qualify temporal gating,
+GPU timing, graph/queue coverage or32K+ production attribution. Both model
+engines, clean speed evidence and full-context/quality obligations are unchanged.
 
 The closed capability output and consumed decision-support report/transaction
 bodies are retired:43 external files/112835B, with a path/hash/reason manifest
