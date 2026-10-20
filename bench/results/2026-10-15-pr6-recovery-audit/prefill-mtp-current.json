@@ -392,8 +392,9 @@
       },
       {
         "command": "python3 -B tools/test_sycl_mtp_prefill.py",
-        "cases": 4,
-        "exit_code": 0
+        "cases": 5,
+        "exit_code": 0,
+        "source_commit": "abdc6d2ee"
       },
       {
         "command": "python3 -B tools/test_strata_bench_failfast.py",
@@ -401,6 +402,13 @@
         "exit_code": 0
       }
     ],
-    "limits": "Host gates, journal/error-path and comparison analysis only; native review/model comparison pending. No new numerical or speed qualification."
+    "limits": "Host gates/journal/error paths only. Native review held initial parser; Main fixed it at abdc6d2ee and five current admission/analysis tests pass, including malformed extra rows. Benchmark10+failfast7 unchanged from becc20982. No new native execution."
+  },
+  "comparison_native_review": {
+    "report_sha256": "9f5342b1c6762820c0e11298e7cdc3119df131d9fa3986bdcb3e7586ab77a261",
+    "reviewed_source": "becc20982",
+    "initial_disposition": "hold_until_draft_parser_fails_closed",
+    "main_resolution_commit": "abdc6d2ee",
+    "resolution": "Every prefixed draft-KV line now requires full syntax match before cell/request conservation. Negative cases before/after valid records pass. Aggregate summary failure also returns nonzero. Remaining reviewed gates coherent; no native inference changes."
   }
 }
