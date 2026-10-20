@@ -1181,7 +1181,7 @@
     "limits": "Static calls only; no timing attribution to SYCL, validation/tracing/loader, UR or driver is proved. Do not infer a driver wait from the measured whole getter."
   },
   "decision": "Execution/source/owner/guard/validation/fault checks pass; pending comparison remains ineligible0/12 in both pending cells. Keeping producer events is insufficient here. The timed pre-copy getter, rather than just fill submission, is material in this component. No clean speed, copied-byte bandwidth, model bottleneck or optimization adoption is qualified.",
-  "next_action": "Curate the two producer/profile reports with these new timings and exact ELF paths. First distinguish the status-query path and profiling observer before changing workload or drains. Any nonprofiling-queue or alternate progress-observation candidate requires its own source/plan and bounded qualification; preserve the old zero-pending outcomes.",
+  "next_action": "Prepare a separately committed bounded diagnostic of Runtime::make_queue(true/false) x UR tracing on/off, validation/safety fixed, using batches of status queries after checked event completion. Freeze repetitions, timer floor, ownership and output budgets. Preserve v2 zero-pending/ineligible result; do not enlarge fills, change production queue defaults or claim model speed/hardware saturation.",
   "original_full_record": {
     "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/status-copy-component-v2/run.json",
     "sha256": "5489ca289b141eed91dc8ad4dbaeeed07e7cd5fb4531f57463fb50cdcdfe0a8a",

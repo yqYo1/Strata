@@ -2687,9 +2687,16 @@ that it waits for GPU completion or identify the cost within the runtime stack.
 Read-only inspection of the exact qualified libsycl and UR-v2 ELF bytes finds
 the normal getter forwarding to urEventGetInfo and a status path calling
 zeEventQueryStatus. Static calls do not attribute the observed latency among
-SYCL, layers, loader, adapter and driver. Next curate the producer/profile
-reports with these new samples before choosing a separately qualified queue or
-progress-observation experiment. Do not enlarge the closed fill workload.
+SYCL, layers, loader, adapter and driver. Native Luna-max curation of both
+producer/profile reports accepts the v2 execution checks and preserves the
+failed pending eligibility. The next prospective diagnostic compares
+`Runtime::make_queue(true/false)` with UR tracing absent/present in separate
+processes, keeping validation and safety settings fixed. Use finite events
+after checked completion and timed status-query batches with a committed timer
+floor, repetitions and ownership/output budgets. This isolates queue-property
+and tracing effects at the call boundary, not runtime-layer cost or model speed.
+Production queue defaults and elapsed-time consumers remain unchanged. Do not
+enlarge the closed fill workload or add a stalled gate.
 The v1 executable/raw root was retired after recovering143 fixture/controller
 inputs and9836 original native inputs; its compact failed gate remains in Git.
 
