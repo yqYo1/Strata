@@ -37,10 +37,28 @@ def git(*args):
     return subprocess.check_output(['git',*args],cwd=P)
 
 
-def committed(path):
+def committed(path, keys=()):
+    """Require the consumed input to be committed, without freezing other research.
+
+    A scoped read returns only the checked subtree. Native source/runtime and
+    artifact checks still run in preload_qualification; unrelated research
+    lifecycle changes are not inputs to that qualification.
+    """
     raw=path.read_bytes()
-    guards.require(raw==git('show','HEAD:'+str(path.relative_to(P))),'commit exact input first: '+str(path))
-    return json.loads(raw)
+    original=git('show','HEAD:'+str(path.relative_to(P)))
+    message='commit exact input first: '+str(path)
+    if not keys:
+        guards.require(raw==original,message)
+        return json.loads(raw)
+    current,reference=json.loads(raw),json.loads(original)
+    for key in keys:
+        guards.require(isinstance(current,dict) and isinstance(reference,dict) and
+            key in current and key in reference,'missing committed input scope: '+str(path))
+        current,reference=current[key],reference[key]
+    # JSON comparison keeps bool/int/float distinct, unlike Python dict equality.
+    canonical=lambda value: json.dumps(value,sort_keys=True,separators=(',',':'),allow_nan=False)
+    guards.require(canonical(current)==canonical(reference),message+' / '+'.'.join(keys))
+    return current
 
 
 def preload_evidence(text,pid):
@@ -56,7 +74,7 @@ def preload_evidence(text,pid):
 
 
 def preload_qualification():
-    result=committed(INDEX)['UR_silent_validation_native_child_scope']['preload_component']
+    result=committed(INDEX,('UR_silent_validation_native_child_scope','preload_component'))
     guards.require(result['passed'] and result['ownership_closed'] and result['fresh_faults']==[] and
         result['provider_mismatch_stopped_before_body'],'completed preload component required')
     ref=result['original_plan'];raw=git('show',ref['commit']+':'+ref['path'])

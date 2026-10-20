@@ -2945,48 +2945,48 @@ admission passes. Installed
 profiling tools, both consumed model generations and14 older provenance holds
 are excluded. Cleanup does not establish new validation or hardware attribution.
 
-The maintained`tools/sycl/mtp_prefill.py prepare|run <cohort>` now owns the fresh
-six-process FP16-off/on order`0,1,1,0,0,1`. It uses the official thinking-enabled
-regular-code long-generation workload, four official warmups and one>=32K-input,
->=1024-output request per process. The benchmark's existing optional owner gate
-also wraps long-generation-only requests; it blocks the long HTTP request until
-native ownership/environment and every warmup's draft-cell conservation pass.
-Observers match in both arms, including draft timing's entry synchronization.
-This is a diagnostic first-long-request comparison, not clean or subsequent-long
-performance. Compare PP independently, keep any draft-acceptance change as a
-candidate effect and do not require identical output. Weak-MTP, agent-session,
-clean speed, task quality and full-context qualification still precede adoption.
+The matched MTP comparison froze six independent processes in off/on order
+`0,1,1,0,0,1`, using official thinking-enabled regular-code long generation.
+Each process had four official warmups and one fresh33210-token long request.
+Parameter validation, trace and draft timing matched in both arms; the timer's
+entry synchronization is an observer. These are diagnostic first-long-request
+samples, not clean speed or subsequent-long performance.
 
-The first independent off/on pair now closes with the same33210-token input
-and request hash. Q8/FP16 PP is643.9/690.6tok/s (native clocks:+7.26%); draft-KV
-batch timers total4552.4/313.2ms. Generated counts2913/3790 include thinking and
-5578/5564 answer characters. TG is10.1/8.6tok/s, with draft acceptance85.56/85.37%.
-Both processes pass native/owned closure, source/fixture/runtime/model checks and
-no fresh fault. This is one of three frozen pairs, not an adoption. The30.1%
-generation-length difference exceeds the declared5% decode comparison band;
-retain the slower TG reading without calling it noise or nonregression. Complete
-the remaining pairs unchanged. Diagnostic observers remain enabled; these TG
-readings are not comparable with the older14.6tok/s clean result.
-The second independent FP16 process closes at685.0PP/9.4TG, with322.9ms of
-draft-KV batch time. Its3790 generated tokens, answer/reasoning hashes,
-2725/3192 accepted drafts and logical expert counters match the first FP16
-process. All original process gates pass without a fresh fault; three of six
-processes have closed. Preserve the decode-time difference despite matching
-work, and finish the frozen comparison before selecting a clean follow-up.
-Final logical cache-hit ratios are9.8/10.6%, with GPU miss-copy counters zero
-under`pcie-frac0`. They do not measure RAM/PCIe bytes or establish a hardware
-ceiling; weighted expert bytes and CPU/GPU costs remain a separate attribution.
-The actual48-layer native layout has seven format pairs and1510400..2662400B
-per expert. Combining those bounds with unique CPU-job counters gives logical
-provider footprint bounds, not physical traffic. Per-layer/format job counts
-and complete CPU/GPU costs are still missing; the existing CPU scan and
-pool-capacity comparisons do not establish current model saturation.
-The next work-mix discriminator can inspect the existing`--dump-routing`
-callbacks rather than add another native build. Multirow records contain layer,
-IDs and placeholder weights; the footer counts callbacks, not row records.
-Before collection, bind request boundaries and static cache membership, then
-require reconstructed layer/group, lookup and unique-CPU-job totals to reconcile
-with the existing native counters. No routing collection has run for this plan.
+| Process | FP16 MTP | PP, tok/s | TG, tok/s | Generated | Admission |
+| --- | --- | ---: | ---: | ---: | --- |
+| 0 | off | 643.9 | 10.1 | 2913 | passed |
+| 1 | on | 690.6 | 8.6 | 3790 | passed |
+| 2 | on | 685.0 | 9.4 | 3790 | passed |
+| 3 | off | 632.6 | 9.4 | 2913 | failed |
+
+The fourth native process exits0, with a complete journal, owned closure and no
+fresh fault. Its final qualification fails because Main edited unrelated
+research dispatch metadata while`ur_validation.preload_qualification` required
+the entire research index to be committed. Preserve that failure and all four
+samples; processes4/5 are not run and the six-process performance decision is
+ineligible. Do not retry this root or retrospectively qualify it. Narrow the
+reader to its consumed preload-component subtree, test unrelated edits and
+changed/missing qualification fields, then commit a new comparison plan.
+Native source, runtime, preload artifact and fixture checks remain required.
+
+The first pair's7.26% PP increase is an observation, not adoption. Its30.1%
+generation-length difference exceeds the declared5% decode band. The two FP16
+processes match output/reasoning hashes,2725/3192 accepted drafts and logical
+expert counters despite different decode times. Keep slower samples without
+calling them noise. These TG readings are not comparable with older14.6tok/s
+clean samples. Weak-MTP, agent-session, quality, physical262144/session/RESTORE
+and separate clean evidence remain pending.
+
+Logical cache-hit ratios are9.8/10.6%, with zero GPU miss-copy counters under
+`pcie-frac0`. The actual48-layer native layout has seven format pairs and
+1510400..2662400B per expert. Combining that range with unique CPU-job counters
+gives logical provider-footprint bounds, not physical traffic or saturation.
+Per-layer/format job counts and complete CPU/GPU costs are still missing.
+The next work-mix discriminator can inspect existing`--dump-routing` callbacks
+rather than add a native build. Multirow records contain layer, IDs and
+placeholder weights; the footer counts callbacks, not row records. Bind request
+boundaries/cache membership and reconcile reconstructed layer/group, lookup and
+unique-CPU-job totals before using them. No such routing collection has run.
 
 The closed capability output and consumed decision-support report/transaction
 bodies are retired:43 external files/112835B, with a path/hash/reason manifest

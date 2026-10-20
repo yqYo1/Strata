@@ -1,12 +1,16 @@
 """Host-only admission/analysis checks for the current matched MTP comparison."""
 import copy
+import json
 from pathlib import Path
 import sys
+import tempfile
 import unittest
+from unittest import mock
 
 sys.dont_write_bytecode = True
 sys.path.insert(0, str(Path(__file__).resolve().parent/'sycl'))
 import mtp_prefill as mtp
+import ur_validation
 
 
 def sample(read=74, generated=24):
@@ -20,6 +24,31 @@ def log(cells=73, position=0, first=0, batch=73, read=74):
 
 
 class AdmissionTest(unittest.TestCase):
+    def test_unrelated_research_update_does_not_change_preload_input(self):
+        original=dict(probe=dict(preload=dict(passed=True,sha256='native')),research=dict(state='ready'))
+        with tempfile.TemporaryDirectory() as directory:
+            root=Path(directory); path=root/'index.json'
+            current=copy.deepcopy(original);current['research']['state']='running'
+            path.write_text(json.dumps(current))
+            with mock.patch.object(ur_validation,'P',root),mock.patch.object(ur_validation,'git',return_value=json.dumps(original).encode()):
+                self.assertEqual(ur_validation.committed(path,('probe','preload')),original['probe']['preload'])
+                # Whole-file consumers still reject an uncommitted input.
+                with self.assertRaises(RuntimeError):ur_validation.committed(path)
+
+    def test_scoped_preload_changes_and_missing_fields_still_fail_closed(self):
+        original=dict(probe=dict(preload=dict(passed=True,sha256='native')),research={})
+        with tempfile.TemporaryDirectory() as directory:
+            root=Path(directory);path=root/'index.json'
+            changes=[dict(passed=True,sha256='changed'),dict(passed=1,sha256='native'),
+                     dict(passed=True,sha256='native',extra=True),None]
+            for changed in changes:
+                current=copy.deepcopy(original)
+                if changed is None:del current['probe']['preload']
+                else:current['probe']['preload']=changed
+                path.write_text(json.dumps(current))
+                with self.subTest(changed=changed),mock.patch.object(ur_validation,'P',root),mock.patch.object(ur_validation,'git',return_value=json.dumps(original).encode()):
+                    with self.assertRaises(RuntimeError):ur_validation.committed(path,('probe','preload'))
+
     def test_warmup_requires_complete_cells_not_just_positive_batch(self):
         self.assertEqual(mtp.request_evidence(log(),[sample()])[0]['draft_cells'],73)
         # These all have a positive batch, but do not prove the same request.

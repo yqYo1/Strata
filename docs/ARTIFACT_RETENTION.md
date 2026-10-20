@@ -147,6 +147,12 @@ Controllers must check the pinned inputs, build record and actual executable
 before launch, and stop if evidence is missing or inconsistent. Scope this check
 to the complete measurement inputs; unrelated worktree edits need not be added
 to that commit. Do not update hashes to make an inconsistent run pass admission.
+Trace transitive qualification reads as well as the source fingerprint. A
+research index used for one committed qualification record must not silently
+make unrelated dispatch rows part of that record. A scoped reader must return
+only the verified subtree and reject changed, missing or type-altered evidence.
+Defer metadata edits until process closure when its reader still requires the
+whole file. Preserve a run already rejected by the old gate as failed.
 
 Keep the original native-source revision separate from a later controller-only
 admission revision. Reusing qualification requires proof that the relevant

@@ -412,7 +412,7 @@
     "resolution": "Every prefixed draft-KV line now requires full syntax match before cell/request conservation. Negative cases before/after valid records pass. Aggregate summary failure also returns nonzero. Remaining reviewed gates coherent; no native inference changes."
   },
   "comparison": {
-    "stage": "collecting",
+    "stage": "failed",
     "source_commit": "70d8c63c24c079a7922e7de14ba24bfb269843f5",
     "build_source_commit": "3b4998f326101fa913788fd368e1674b111dea03",
     "binary": {
@@ -1979,12 +1979,135 @@
           "source_log_sha256": "c17228f8bb0f411d89498f3ab73215979bac9aaa357aa0e48d565df990a36c04",
           "limits": "Final long-request producer counters, not physical RAM/PCIe bytes or hardware saturation. Weight formats/bytes and CPU/GPU costs require separate attribution."
         }
+      },
+      {
+        "cohort": 3,
+        "arm": 0,
+        "passed": false,
+        "ownership_closed": true,
+        "warmup_work": [
+          {
+            "read_tokens": 74,
+            "draft_cells": 73,
+            "batch_count": 1,
+            "batch_ms": 278.0
+          },
+          {
+            "read_tokens": 264,
+            "draft_cells": 263,
+            "batch_count": 1,
+            "batch_ms": 21.6
+          },
+          {
+            "read_tokens": 910,
+            "draft_cells": 909,
+            "batch_count": 1,
+            "batch_ms": 74.0
+          },
+          {
+            "read_tokens": 1068,
+            "draft_cells": 1067,
+            "batch_count": 1,
+            "batch_ms": 87.2
+          }
+        ],
+        "native": {
+          "pid": 863299,
+          "start_ticks": 88866972,
+          "sid": 863221
+        },
+        "successful_warmups": 4,
+        "effective_environment_verified": true,
+        "request": {
+          "acceptance_rate": 0.8555691554467564,
+          "agreement_eligible": true,
+          "client_interval": {
+            "first_output_monotonic_ns": 888860627670115,
+            "request_begin_monotonic_ns": 888807972543023,
+            "request_end_monotonic_ns": 889171580853568
+          },
+          "completion_includes_thinking": true,
+          "decode_ms": 311082.6,
+          "decode_tps": 9.4,
+          "decode_tps_source": "engine",
+          "drafts_accepted": 2097,
+          "drafts_offered": 2451,
+          "eligible": true,
+          "err": null,
+          "finish_reason": "stop",
+          "generated_tokens": 2913,
+          "generated_tokens_source": "usage",
+          "ineligible_reasons": [],
+          "ok": true,
+          "output_chars": 5578,
+          "output_sha256": "99ceca676fbc02b8d8ba5ba58310339f19d54d2898d5c3ed477eda65220515bf",
+          "prompt_ms": 52501.3,
+          "prompt_tokens": 33210,
+          "prompt_tps": 632.6,
+          "prompt_tps_source": "engine",
+          "read_tokens": 33210,
+          "reasoning_chars": 2666,
+          "reasoning_sha256": "b52478ff27827543920c6e53592098994bac27ad6e32a85cf4a0179e2785433d",
+          "request_sha256": "1f3abe00dea144b0e26d862f282e7b90833de131b4527662a4aca2542cda918a",
+          "reused_tokens": 0,
+          "speed_eligible": true,
+          "speed_ineligible_reasons": [],
+          "stream_complete": true,
+          "total_s": 363.608,
+          "truncated": false,
+          "ttft_s": 52.655,
+          "usage_generated_tokens": 2913,
+          "workload": "regular-code",
+          "run": 0,
+          "order": 0
+        },
+        "error": "RuntimeError('commit exact input first: /home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/research-index.json')",
+        "journal_recovery": {
+          "valid": true,
+          "complete": true,
+          "complete_prefix_rows": 11,
+          "last_sha256": "a36716ded7ad0e7d8acff92b80d5d4fd78581183ddd7f6d955ec28a4b813b73d",
+          "pending": [],
+          "errors": []
+        },
+        "fault_probe": {
+          "fresh_faults": [],
+          "boot_unchanged": true,
+          "driver_after": {
+            "pci": "/sys/bus/pci/devices/0000:05:00.0",
+            "driver": "xe",
+            "vendor": "0x8086",
+            "device": "0xe20c",
+            "kernel": "7.0.0-38-generic",
+            "devcoredump": false
+          }
+        },
+        "native_expert_work": {
+          "submitted_blobs": 0,
+          "submitted_bytes": 0,
+          "completed_blobs": 0,
+          "completed_bytes": 0,
+          "host_view_groups": 0,
+          "gpu_miss_groups": 0,
+          "cpu_unique_misses": 1114224,
+          "cpu_entries": 1415175,
+          "cache_hits": 153945,
+          "cache_lookups": 1569120,
+          "rounded_cache_hit_percent": 9.8,
+          "source_log_sha256": "8e04b3a8a2bac68da5d1a4e6a9ced25f03f274618ef000ad44505e2dd5afa19c",
+          "limits": "Final long-request producer counters, not physical RAM/PCIe bytes or hardware saturation. Weight formats/bytes and CPU/GPU costs require separate attribution."
+        },
+        "postclosure_native_exit": {
+          "exit_code": 0,
+          "source_receipt_sha256": "7913c6746fa54516c5207417b593f22f7101f385fafd9e48cff73360220d55ef",
+          "original_failed_admission_preserved": true
+        }
       }
     ],
     "active": false,
     "ownership_closed": true,
-    "passed": true,
-    "complete": false,
+    "passed": false,
+    "complete": true,
     "adoption_qualified": false,
     "budgets": {
       "wall": 2400,
@@ -2003,7 +2126,7 @@
       "prefill_ratio": 1.072558038944943,
       "decode_ratio": 0.8493612244791986,
       "generation_length_ratio": 1.3010641949879849,
-      "decision": "No adoption; frozen six-process cohort incomplete. First PP pair faster, TG reading slower, output length outside predeclared5% band; do not call decode nonregression or dismiss the slower reading as noise. Continue frozen remaining pairs unchanged."
+      "decision": "First pair only: PP faster, TG slower and output length outside declared5% band. Original six-process cohort subsequently stops on fourth-process metadata admission failure. Preserve original failure; no full-cohort screen, nonregression or adoption decision."
     },
     "logical_CPU_expert_budget": {
       "native_source_commit": "3b4998f326101fa913788fd368e1674b111dea03",
@@ -2061,6 +2184,17 @@
       "capacity_reference": "decode-cpu-capacity-current.json: source396d0c91f301e0ac99b81d6641fdc435b95b4da9, three one/five-worker emitted-token latency ratios1.684906/1.352426/1.247972, geomean1.416766. Source/placement differ from this current diagnostic; supports historical CPU-capacity sensitivity, not current arithmetic/RAM saturation.",
       "limits": "Provider footprint is not physical DRAM/PCIe traffic, code-issued loads or an achieved bandwidth. Complete non-MoE work, per-format/NT job mix, cache-line reuse and current critical-path CPU/GPU costs remain unmeasured. No hardware ceiling,70TG feasibility or adoption claim.",
       "consumer": "Choose a source-pinned CPU/RAM/placement discriminator after the frozen MTP cohort; review at its closure, before adding another byte-model survey."
+    },
+    "termination": {
+      "reason": "Post-run preload qualification read the entire research-index.json with ur_validation.committed. Main had uncommitted updates only in unrelated research dispatch scopes; the broad committedness guard rejected them after native/journal/route checks. This is an admission/bookkeeping failure, not a GPU fault or a completed six-process performance decision.",
+      "original_failure_preserved": true,
+      "completed_processes": 4,
+      "remaining_processes_not_run": [
+        4,
+        5
+      ],
+      "adoption_qualified": false,
+      "next_action": "Fix qualification to require the consumed preload-component subtree to match committed input while retaining all native/source/runtime/fixture gates. Test both unrelated edits and changed/missing qualification fields. Freeze a new matched comparison; never retry this root or relabel this failed cohort as passing."
     }
   }
 }

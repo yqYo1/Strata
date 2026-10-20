@@ -320,7 +320,13 @@ integration and testing.
 - Freeze the source, executable, helpers, fixtures, generated workloads and
   configuration pinned by an active measurement or A/B plan. Review planned
   edits against those inputs first; documentation outside the pinned inputs may
-  proceed. If an input must change, close the existing run honestly and commit
+  proceed. Include transitive qualification readers: a metadata file is not
+  independent merely because it is outside the benchmark source fingerprint.
+  Edit research metadata during a run only when its qualification reader
+  explicitly checks the consumed committed fields and isolates unrelated rows;
+  otherwise defer the edit until closure. Changes or missing fields in the
+  actual qualification evidence must still fail admission.
+  If an input must change, close the existing run honestly and commit
   a new plan before using it. Never update hashes to disguise a changed arm.
 - Set SYCL, Level Zero, driver, profiler and experiment environment variables in
   the native child's environment before `exec`. Keep the process environment
