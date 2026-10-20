@@ -529,5 +529,28 @@
     "device": "0xe20c",
     "kernel": "7.0.0-38-generic",
     "devcoredump": false
+  },
+  "post_closure_input_check": {
+    "original_collection_passed": false,
+    "original_error": "incomplete mixed owner/phase census",
+    "source_and_fixture_proof": true,
+    "benchmark_inputs_unchanged": 141,
+    "full_model_hashes_matched": 15,
+    "binary_sha256": "33452421e15ad5c5329921c3d12310fd77e198ce7f8af4aa9cb77c9d9d6bab97",
+    "source_commit": "e45e97367994e931be1d9e7b1f570a769c4151e0"
+  },
+  "reanalysis_plan": {
+    "original_failed_result_commit": "754481bfc",
+    "original_outcome_unchanged": true,
+    "native_execution_permitted": false,
+    "reason": "The controller incorrectly invoked the independent-buffer direct_owners1 parser for an admitted borrowed scratch lease, whose checked contract requires direct_owners0. Reanalyze existing closed bytes only; preserve original failure.",
+    "acceptance": "Use the existing borrowed-window ownership checks, with96 entry/loan/retired tuples, stable nonoverlapping typed spans, matching sealed generation/capacity, completed dense restoration and ready publication. Keep the existing exact workload, CPU/work conservation, GPU profile, client capture and restore-time checks. No clean speed, hardware saturation or adoption claim.",
+    "raw_sha256": {
+      "engine.stderr": "ab2547c8b6be1988635c8091650e347f14bf644c5d7e2e73680425a4710be960",
+      "engine-start.json": "864f12244e930298ccb2337074a268ae06a36ae89fab97e7aa9ac5a6d9ef1fb0",
+      "engine-exit.json": "48cacd1f171ac36e4c62d7a1d64e1e0dae7478a6804e2c06bb94233639ece367",
+      "client-resources.jsonl": "ed108bf4d3931d091e2ed99dadd9c42ce30ff84333d78d6614e9b2c72c43e6d5",
+      "post-closure-input-check.json": "187f05ed7cd0f49718f9545a737dfbc9ade42e2722c285f0c3260afb0e74ce41"
+    }
   }
 }

@@ -56,6 +56,32 @@ class Boundaries(unittest.TestCase):
             with self.subTest(text=text), self.assertRaises(RuntimeError): r.restore_intervals(text, 1124)
 
 
+class BorrowedOwnership(unittest.TestCase):
+    def evidence(self):
+        from test_sycl_cache_long import fixture
+        text = fixture()
+        text = text[text.index('strata cache loan: phase=masked generation=2'):]
+        loan = dict(first=128, lent=1128, chunk=8192, capacity=2329548800, need=2319958528)
+        return text, loan
+
+    def test_borrowed_zero_direct_owners_uses_checked_parent_lease(self):
+        text, loan = self.evidence()
+        proof = r.borrowed_owners(text, loan)
+        self.assertEqual(proof['checked_retirements'], 96)
+        self.assertTrue(proof['stable_nonoverlapping_typed_spans'])
+
+    def test_reject_changed_generation_alias_direct_owner_or_retirement(self):
+        text, loan = self.evidence()
+        for old, new in [('direct_owners=0', 'direct_owners=1'),
+                         ('parent_match=1', 'parent_match=0'),
+                         ('layout_generation=4 layer=1', 'layout_generation=5 layer=1'),
+                         ('bo=0x4000000000', 'bo=0x1000000000'),
+                         ('route_status=0', 'route_status=1'),
+                         ('phase=ready generation=2', 'phase=ready generation=3')]:
+            with self.subTest(old=old), self.assertRaises(RuntimeError):
+                r.borrowed_owners(text.replace(old, new, 1), loan)
+
+
 class Terminal(unittest.TestCase):
     def finish(self, journal, *, persist_error=False, boot='same', closed=True):
         with tempfile.TemporaryDirectory() as directory:

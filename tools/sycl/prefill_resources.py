@@ -90,11 +90,34 @@ def analyze(log, sample, loan):
     c.admission.cap.matches(r'strata MoE window configuration: requested_mode=10 effective_mode=10 maximum_rows=81920 mixed_fp16_bytes=0', part, 1)
     guards.require('effective_mode=2' not in log and 'strata loan audit:' not in log,
         'fallback or payload audit changes diagnostic work')
-    owners = gen.common.extract_mixed_owners(part, c.admission.WINDOWS, c.admission.TAIL_OFFSET)
+    owners = borrowed_owners(part, loan)
     profile = gen.common.extract_resource_profile(part, True, False, '', 4, c.admission.WINDOWS)
     result = gen.common.compact_host_resource_profile(profile)
-    result.update(restore_intervals(part, loan['lent']), direct_owner_retirements=owners['retired_windows'])
+    result.update(restore_intervals(part, loan['lent']), borrowed_owner_evidence=owners)
     return result
+
+
+def borrowed_owners(part, loan):
+    a = c.admission
+    masked, ready = a.records(part, 'strata cache loan', 2)
+    phase = masked[1]
+    generation = a.integer(phase, 'generation')
+    for (_, fields), expected, state in ((masked, 'masked', '0'), (ready, 'ready', '1')):
+        guards.require(fields['phase'] == expected and fields['decode_ready'] == state and
+            a.integer(fields, 'generation') == generation > 0 and
+            all(a.integer(fields, key) == loan[key] for key in ('chunk', 'first', 'lent')),
+            'borrowed lease publication differs')
+    dense = a.records(part, 'strata prefill dense', 3)
+    guards.require([(r['phase'], r['residency'], a.integer(r, 'activations')) for _, r in dense] ==
+        [('retired', 'Full', 0), ('bank', 'Bank', 0), ('restored', 'Full', 48)], 'dense owner restoration differs')
+    binding, = a.records(part, 'strata prefill cache binding', 1)
+    placement, = a.cap.matches(r'strata prefill: layer-major candidate, tokens=117488 [^\n]+', part, 1)
+    admitted, = a.records(part, 'strata MoE accumulator admission', 1)
+    guards.require(binding[1] == dict(generation=str(generation), parent_match='1', execution_distinct='1') and
+        masked[0] < dense[0][0] < dense[1][0] < admitted[0] < binding[0] < placement.start() <
+        dense[2][0] < ready[0], 'borrowed execution escaped checked parent lease')
+    return a.borrowed_window_owners(part, dict(loan, generation=generation), admitted[1],
+        placement.end(), dense[2][0])
 
 
 def prepare():
@@ -151,7 +174,7 @@ def prepare():
         resource_collection=dict(source=dict(path=str(READER), sha256=gen.common.digest(READER)), seconds=900, interval=.2),
         complete=False, passed=False, active=False, clean_speed_qualified=False,
         hardware_saturation_qualified=False, model_adoption_qualified=False,
-        prospective_gates='One native process; one successful short warmup then one fresh117489-input/24-output thinking request through bench.sh. Require same-PID/pre-model validation activation, exact1256/first132/lent1124 placement,96 direct-owner retirements, all planned jobs reconciled to completed issuer totals, complete v3 coarse/QSA and v4 disjoint host/wait accounting, complete dense restoration and separate outer expert refill, bound client collector coverage, unchanged source/runtime/assets and normal owned exit with no fresh fault. Stop on first failed gate; no retries.',
+        prospective_gates='One native process; one successful short warmup then one fresh117489-input/24-output thinking request through bench.sh. Require same-PID/pre-model validation activation, exact1256/first132/lent1124 placement,96 checked borrowed-owner retirements, all planned jobs reconciled to completed issuer totals, complete v3 coarse/QSA and v4 disjoint host/wait accounting, complete dense restoration and separate outer expert refill, bound client collector coverage, unchanged source/runtime/assets and normal owned exit with no fresh fault. Stop on first failed gate; no retries.',
         limits='Attribution only, not clean speed, observer overhead, sustained decode or model qualification. GPU queue intervals are nonexclusive; scheduled CPU includes polling. fdinfo reports engine cycles and memory residency, not physical PCIe/GDDR bytes. Physical bandwidth and matched BF16/FP16 GEMM ceilings remain unknown; no saturation claim.',
         retention='Keep compact work-conservation, aggregate host/queue/restore and client-cycle evidence. Raw96-window histograms/normal logs are temporary only through attribution validation and selection of a concrete matched-GEMM ceiling workload; retire at that boundary. Keep original outcomes and useful request sample; do not retain successful traces.',
         budgets=dict(wall=1800, cpu=54000, rss_cap=96 << 30, text_cap=64 << 20, file_cap=64 << 20, total_cap=64 << 20))
@@ -246,14 +269,67 @@ def run():
     return 0 if record['passed'] else 1
 
 
+def analyze_closed():
+    record = gen.committed(RESULT)
+    guards.require(record['complete'] and record['ownership_closed'] and not record['active'] and
+        record['passed'] is False and record['error'] == 'incomplete mixed owner/phase census' and
+        record['fresh_faults'] == [] and record['fault_probe_successful'] and not record.get('closed_analysis'),
+        'only the original closed parser failure may be reanalyzed; no native launch')
+    plan = record['reanalysis_plan']
+    guards.require(plan['native_execution_permitted'] is False and plan['original_outcome_unchanged'],
+        'record the separate analysis contract first')
+    for name, expected in plan['raw_sha256'].items():
+        guards.require(gen.common.digest(ROOT / name) == expected, 'closed capture changed: ' + name)
+    original = gen.benchmark_pins(record['source_commit'], match_worktree=False)
+    name = str(READER.relative_to(P))
+    original[name] = hashlib.sha256(gen.git('show', record['source_commit'] + ':' + name)).hexdigest()
+    guards.require(assets.fingerprint(original) == record['benchmark_fingerprint'], 'original source cannot be recovered')
+    changed = sorted(name for name, sha in original.items() if gen.common.digest(P / name) != sha)
+    guards.require(set(changed) <= {'tools/sycl/cache_long.py', 'tools/sycl/prefill_resources.py',
+        'tools/test_sycl_prefill_resources.py'}, 'unrelated measurement input changed')
+    current, proof, _, probe = prerequisite()
+    guards.require(current['binary'] == record['binary'] and assets.fingerprint(proof) == record['retained_build_proof_sha256'] and
+        probe == record['native_validation_probe'], 'native qualification changed')
+    check = record['post_closure_input_check']
+    guards.require(check == json.loads((ROOT / 'post-closure-input-check.json').read_text()) and
+        check['original_collection_passed'] is False and check['source_and_fixture_proof'] is True and
+        check['benchmark_inputs_unchanged'] == len(original) and check['full_model_hashes_matched'] == len(record['model_assets']) and
+        check['binary_sha256'] == record['binary']['sha256'] and check['source_commit'] == record['source_commit'],
+        'exact post-closure/pre-correction full input proof required')
+    gen.runtime_assets_unchanged(record)
+    guards.require(assets.machine_identity() == record['machine_identity'] and
+        assets.model_pins(record['config'], record['model_assets']) == record['model_assets'], 'platform/assets changed')
+    official, = (ROOT / 'bench').glob('*/results.json')
+    samples, _ = c.official(ROOT, json.loads(official.read_text()), 1)
+    guards.require(samples == record['requests'], 'original request differs')
+    native = json.loads((ROOT / 'engine-exit.json').read_text())
+    guards.require(native['exit_code'] == native['resource_collector_exit_code'] == 0 and
+        native['boot_id'] == c.read_boot() and native['binary'] == record['binary'], 'original native exit differs')
+    log = (ROOT / 'engine.stderr').read_text(errors='replace')
+    attribution = analyze(log, samples[0], record['admitted_long_loan'])
+    captures = [json.loads(line) for line in (ROOT / 'client-resources.jsonl').read_text().splitlines()]
+    clients = c.resources.client_resources.summarize_capture(captures, native['native'], native['boot_id'], samples[0]['client_interval'])
+    record['closed_analysis'] = dict(complete=True, attribution_checks_passed=True,
+        analyzer_source_commit=gen.git('rev-parse', 'HEAD').decode().strip(), changed_analysis_inputs=changed,
+        original_source_inputs_recovered=len(original), native_execution=False,
+        original_collection_passed=False, original_failure_preserved=True,
+        attribution=attribution, client_resources=clients,
+        validation_activation=c.activation(log, native['native']['pid'], probe),
+        limits='Post-closure correction of an incompatible ownership parser. Original execution receipt remains failed. These data attribute this observed request only; no clean speed, observer overhead, physical bandwidth, arithmetic saturation or model adoption qualification.')
+    RESULT.write_text(json.dumps(record, indent=2) + '\n')
+    print(json.dumps(dict(original_collection_passed=record['passed'],
+        closed_analysis_passed=True, expert_cache_refill_ms=attribution['expert_cache_refill_wall_ms'],
+        jobs=attribution['window_census']['jobs'], windows=attribution['window_census']['window_count'])))
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('action', choices=('prepare', 'run'))
+    parser.add_argument('action', choices=('prepare', 'run', 'analyze-closed'))
     args = parser.parse_args()
     with (B / 'owned-v0141-measurement.lock').open('a+') as lock:
         fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
         guards.no_model_owners([]); guards.driver_guard()
-        return run() if args.action == 'run' else prepare()
+        return run() if args.action == 'run' else analyze_closed() if args.action == 'analyze-closed' else prepare()
 
 
 if __name__ == '__main__': sys.exit(main())

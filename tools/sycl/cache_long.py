@@ -143,15 +143,29 @@ def mixed_evidence(log, sample):
         pub[0][0] < dense[0][0] < dense[1][0] < admission[0] < banks[0] < configuration.start() <
         binding[0] < placement.start() < dense[2][0] < pub[1][0],
         'dense/cache binding escaped loan')
+    borrowed_window_owners(text, cycle, admitted, placement.end(), dense[2][0])
+    return dict(completed_requests=2, exact_payload_and_map_cycles=2,
+        loan_generations=[r['generation'] for r in cycles], slots=SLOTS,
+        long_loan={k:v for k,v in cycle.items() if k != 'generation'},
+        actual_allocation_budget={k:integer(admitted,k) for k in
+            ('free_gpu_bytes','fixed_including_headroom_bytes','shared_arena_bytes')},
+        min_observed_free_bytes=min(r['min_observed_free_bytes'] for r in cycles),
+        prefill_rows=ROWS, residual_gpu_bytes=ROWS*20480, windows_per_layer=[list(w) for w in WINDOWS],
+        borrowed_ffn_entries=96, checked_retirements=96, dense_layers=48,
+        secondary_bank_windows=48, execution_cache_parent_checked=True, clean_speed_qualified=False)
+
+
+def borrowed_window_owners(text, cycle, admitted, begin_bound, end_bound):
+    """Check borrowed scratch leases; direct allocation ownership is a different route."""
     owners = records(text, 'strata MoE mixed owners', 192)
     loans = records(text, 'strata MoE cache loan', 96)
-    previous, epoch, used, pointers = placement.end(), None, None, None
+    previous, epoch, used, pointers = begin_bound, None, None, None
     for i, (layer, first, rows) in enumerate((l, f, n) for l in range(48) for f, n in WINDOWS):
         (ep, entry), (dp, done), (lp, loan) = owners[2*i], owners[2*i+1], loans[i]
         identity = (layer, first, rows)
         guards.require(entry['phase'] == 'entry' and done['phase'] == 'retired' and
             all(tuple(integer(r, k) for k in ('layer', 'first', 'rows')) == identity for r in (entry, done, loan)) and
-            previous < ep < lp < dp < dense[2][0] and
+            previous < ep < lp < dp < end_bound and
             entry['direct_owners'] == '0' and entry['previous_attention'] == 'checked_drain' and
             done['route_status'] == '0' and done['shared_HC'] == 'checked_drain' and done['callbacks'] == 'after_return',
             'missing, reordered or incorrectly retired FFN window')
@@ -181,15 +195,8 @@ def mixed_evidence(log, sample):
             tuple(integer(loan, k) for k in ('generation', 'layout_generation', 'used', 'capacity')) ==
             (cycle['generation'], epoch, used, cycle['capacity']), 'sealed loan extent/generation differs')
         previous = dp
-    return dict(completed_requests=2, exact_payload_and_map_cycles=2,
-        loan_generations=[r['generation'] for r in cycles], slots=SLOTS,
-        long_loan={k:v for k,v in cycle.items() if k != 'generation'},
-        actual_allocation_budget={k:integer(admitted,k) for k in
-            ('free_gpu_bytes','fixed_including_headroom_bytes','shared_arena_bytes')},
-        min_observed_free_bytes=min(r['min_observed_free_bytes'] for r in cycles),
-        prefill_rows=ROWS, residual_gpu_bytes=ROWS*20480, windows_per_layer=[list(w) for w in WINDOWS],
-        borrowed_ffn_entries=96, checked_retirements=96, dense_layers=48,
-        secondary_bank_windows=48, execution_cache_parent_checked=True, clean_speed_qualified=False)
+    return dict(borrowed_ffn_entries=96, checked_retirements=96, secondary_bank_windows=48,
+        layout_generation=epoch, used_bytes=used, stable_nonoverlapping_typed_spans=True)
 
 
 def official_evidence(root, result):
