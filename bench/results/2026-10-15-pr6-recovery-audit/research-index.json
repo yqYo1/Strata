@@ -4900,8 +4900,6 @@
       "src/kernels/cpu/iq_avx2.cpp": "80efab0bed11ddf3980c0d146101218efa061cf5304e39fc88d93e5e94a99136",
       "include/strata/kernels/cpu/native_expert.hpp": "45ccf6df8b4cc5b468a245a2ddee845e0b10ece14951a5a7ab7b6ffbca087e94"
     },
-    "report_path": "/home/yayoi/orca/workspaces/Strata/sycl/.cache/strata-research/20261020/cpu-roofline-protocol-report.md",
-    "report_budget_bytes": 16384,
     "worker_closed": true,
     "next_review": "Main implements and measures CPU-only calibration; then retain compact evidence and retire this temporary report.",
     "report_sha256": "e7d40b08aa8774222fc4338db15e8ca644c2f685d03fff18ecbdd9d13cfde05e",
@@ -4909,7 +4907,12 @@
     "curation_state": "native_luna_max_reviewed",
     "native_review_sha256": "0cb2ac022c98bb79061ff20af2f7c9ea418cea2df3ef9ce5362aeefd6e389efd",
     "review_digest": "Use actual production pool including specialized Q2_0 Down; H2560 FF640, seven pairs, NT1..4, hot/stream plus read scan. Existing parity target is CUDA/HIP-runtime-linked, unavailable in a SYCL-only CPU calibration. No CPU/RAM ceiling measured.",
-    "consumer": "Imminent Main-owned CPU expert/RAM calibration implementation."
+    "consumer": "Implemented CPU calibration source and prospective plan; protocol report retired after implementation.",
+    "raw_retirement": {
+      "manifest_sha256": "17d055b606f857b3d8670de56c8091279355a8eebda1d07738de47f3b21a5b91",
+      "manifest_path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/closed-cpu-calibration-prototypes-20261020.jsonl",
+      "consumer": "Compact findings in this index, committed source/plan and curated note where applicable; original raw no longer needed."
+    }
   },
   "cpu_lowbit_lut_methods_collection_scope": {
     "classification": "knowledge collection",
@@ -4943,7 +4946,12 @@
       "sha256": "26b4fafefe25d62b4d1596d5b4dbfaf90834d6e7cad3bf8a82effb4473e0112d"
     },
     "review_digest": "Substantive format/method/provenance findings beyond existing AVX2/multirow surveys; curated note keeps unique delta.",
-    "provenance_limit": "T-MAC root MIT, audit submodules/files; LUT-GEMM official repo Apache-2.0; current QIGen root has no LICENSE, paper methods only pending resolution. No code copied; ggml master layout refs are mutable."
+    "provenance_limit": "T-MAC root MIT, audit submodules/files; LUT-GEMM official repo Apache-2.0; current QIGen root has no LICENSE, paper methods only pending resolution. No code copied; ggml master layout refs are mutable.",
+    "raw_retirement": {
+      "manifest_sha256": "17d055b606f857b3d8670de56c8091279355a8eebda1d07738de47f3b21a5b91",
+      "manifest_path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/closed-cpu-calibration-prototypes-20261020.jsonl",
+      "consumer": "Compact findings in this index, committed source/plan and curated note where applicable; original raw no longer needed."
+    }
   },
   "sycl_host_transfer_preparation_collection_scope": {
     "classification": "knowledge collection",
@@ -4977,7 +4985,12 @@
       "sha256": "6deb9bedbecbef2a8f9e0520fe2e5b5fc14c51e0f0501a1d64ecb30d6a3a7182"
     },
     "review_digest": "Substantive current source-path delta beyond earlier host-DMA/staged-copy surveys; retain distilled path and gates only.",
-    "source_limit": "Arena view -> cache fill -> queue.memcpy/event; SYCL PinnedArena is ordinary RAM plus optional OS lock; arbitrary register unsupported; cudaHostAlloc is host USM. No proof of active runtime branch, physical H2D bytes or speed. Online docs aren't installed-runtime pins. No code copied."
+    "source_limit": "Arena view -> cache fill -> queue.memcpy/event; SYCL PinnedArena is ordinary RAM plus optional OS lock; arbitrary register unsupported; cudaHostAlloc is host USM. No proof of active runtime branch, physical H2D bytes or speed. Online docs aren't installed-runtime pins. No code copied.",
+    "raw_retirement": {
+      "manifest_sha256": "17d055b606f857b3d8670de56c8091279355a8eebda1d07738de47f3b21a5b91",
+      "manifest_path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/closed-cpu-calibration-prototypes-20261020.jsonl",
+      "consumer": "Compact findings in this index, committed source/plan and curated note where applicable; original raw no longer needed."
+    }
   },
   "implemented_cpu_roofline_admission_scope": {
     "classification": "decision support",
@@ -4996,10 +5009,8 @@
       "bench/results/2026-10-15-pr6-recovery-audit/cpu-roofline-plan.json": "de06ac51a496b6240de0ba8387881194ea4dd8533e002bed52e0999145e6664c"
     },
     "question": "Audit implemented CPU calibration: production dispatch, work/bytes, same-contract references, timing eligibility, pinning, hot/stream/scan, build/source and complete-matrix admission. Distinguish validity gaps from small optional instrumentation improvements; no methods re-survey.",
-    "report_path": "/home/yayoi/orca/workspaces/Strata/sycl/.cache/strata-research/20261020/implemented-cpu-roofline-audit.md",
-    "report_budget_bytes": 10240,
     "consumer": "Main CPU/RAM calibration validity decision before using its results",
-    "next_review": "Archive transaction/report after compact validity/failure evidence is committed. New fixed-duration matrix requires its own committed timing plan.",
+    "next_review": "Review new fixed-duration evidence at calibration closure; original six-job-boundary audit stays scoped to its pinned source.",
     "launch_reason": "Fresh implemented benchmark and prospective plan now exist; prior protocol report did not audit this source.",
     "worker_closed": true,
     "status": "reviewed_workers_closed",
@@ -5013,6 +5024,11 @@
     "report_sha256": "55c163e9561bf5a0d73e936cde8794932d5b50943daaf760f9a4b8a64802a22a",
     "report_bytes": 9214,
     "native_review_sha256": "4f7c35195fe94997b1d15bd5431ea2a662b404106b494da10e1a2116325f6f8b",
-    "review_digest": "Per-call activation quantization matches the declared six-job-call comparison; report conflated stream pass with one call. Scan/barriers and phase-wall versus aggregate-CPU limits remain. Original matrix separately failed its timing floor; no complete-matrix/saturation/model claim."
+    "review_digest": "Per-call activation quantization matches the declared six-job-call comparison; report conflated stream pass with one call. Scan/barriers and phase-wall versus aggregate-CPU limits remain. Original matrix separately failed its timing floor; no complete-matrix/saturation/model claim.",
+    "raw_retirement": {
+      "manifest_sha256": "17d055b606f857b3d8670de56c8091279355a8eebda1d07738de47f3b21a5b91",
+      "manifest_path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/closed-cpu-calibration-prototypes-20261020.jsonl",
+      "consumer": "Compact findings in this index, committed source/plan and curated note where applicable; original raw no longer needed."
+    }
   }
 }
