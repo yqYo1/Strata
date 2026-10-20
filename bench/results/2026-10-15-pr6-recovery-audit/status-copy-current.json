@@ -1,16 +1,16 @@
 {
-  "schema": "strata-status-copy-v2",
+  "schema": "strata-status-query-observer-v3",
   "previous_component": {
-    "commit": "7b8f3f5ab67ef3fd223c33196b405b2454489757",
+    "commit": "69f3886558757fd3fff140ff1a6a10a2624cf493",
     "path": "bench/results/2026-10-15-pr6-recovery-audit/status-copy-current.json",
-    "sha256": "0f867fcf2dbad322d4f3da97f6cdea361043c7040905bf040bef8081dae130de",
+    "sha256": "b0c884856237aaa33b109f7517261f7507cb4860df2737ad28bf00a4f37e1d92",
     "pending_comparison_qualified": false,
-    "outcome": "v1 executes safely but both pending cells observe0/12; no backlogged comparison."
+    "outcome": "v2 execution passes; both pending cells0/12; no pending comparison, model bottleneck or speedup qualified."
   },
-  "stage": "closed",
-  "source_commit": "7b8f3f5ab67ef3fd223c33196b405b2454489757",
+  "stage": "prepared",
+  "source_commit": "69f3886558757fd3fff140ff1a6a10a2624cf493",
   "source_count": 143,
-  "source_fingerprint": "b1b7bfc22a00dbb96ed1214328a96f1be947ef6cc4ffbea23631ffcc479fa3fe",
+  "source_fingerprint": "f41c77e514f512bc80ca3e9317eb245a0c830c71b4df40dad650c7276f14fa33",
   "native_source_commit": "3b4998f326101fa913788fd368e1674b111dea03",
   "native_inputs_recovered": 9836,
   "native_build_record_sha256": "76d9fa9e38c0c7e4ef2897f9ec731429db2a3d9d65c2412611c0c4ee1cf2a57f",
@@ -34,7 +34,7 @@
     "/home/yayoi/orca/workspaces/Strata/sycl/src/sycl/compat.cpp",
     "/home/yayoi/orca/workspaces/Strata/sycl/src/sycl/command_profile.cpp",
     "-o",
-    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/status-copy-component-v2/status_copy"
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/status-query-observer-v3/status_copy"
   ],
   "compile_environment": {
     "PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin:/usr/bin:/bin",
@@ -58,8 +58,8 @@
     "STRATA_SYCL_VERIFY_NATIVE_CAPTURE": "0",
     "STRATA_SYCL_PREFILL_SAME_QUEUE": "1",
     "STRATA_SYCL_PREFILL_NATIVE16": "bf16",
-    "XDG_CACHE_HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/status-copy-component-v2/cache",
-    "TMPDIR": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/status-copy-component-v2/tmp"
+    "XDG_CACHE_HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/status-query-observer-v3/cache",
+    "TMPDIR": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/status-query-observer-v3/tmp"
   },
   "native_environment": {
     "PATH": "/usr/bin:/bin",
@@ -82,8 +82,8 @@
     "UR_LOG_VALIDATION": "level:warning;flush:warning;output:stderr",
     "UR_LOG_LOADER": "level:warning;flush:warning;output:stderr",
     "UR_LOG_LEVEL_ZERO": "level:warning;flush:warning;output:stderr",
-    "TMPDIR": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/status-copy-component-v2/tmp",
-    "XDG_CACHE_HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/status-copy-component-v2/cache",
+    "TMPDIR": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/status-query-observer-v3/tmp",
+    "XDG_CACHE_HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/status-query-observer-v3/cache",
     "CUDA_MODULE_LOADING": "EAGER",
     "STRATA_SYCL_COMMAND_PROFILE": "0",
     "LD_PRELOAD": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/ur-validation-preload-v2/libstrata_ur_validation.so",
@@ -107,1085 +107,128 @@
     "retained_reference_until_exit": true,
     "runtime_teardown_qualified": false
   },
-  "cells": [
+  "expected_loaded_paths": [
+    "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libsycl.so.9.0.0-0",
+    "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_adapter_level_zero_v2.so.0.12.0",
+    "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_loader.so.0.12.0",
+    "/usr/lib/x86_64-linux-gnu/libze_intel_gpu.so.1.17.39395",
+    "/usr/lib/x86_64-linux-gnu/libze_loader.so.1.32.0"
+  ],
+  "smoke_cells": [
     [
-      "ordinary",
-      "idle"
+      "profiled",
+      "trace"
     ],
     [
-      "usm",
-      "pending"
-    ],
-    [
-      "ordinary",
-      "pending"
-    ],
-    [
-      "usm",
-      "idle"
+      "plain",
+      "trace"
     ]
   ],
-  "gates": "Four separate immutable-environment processes in fixed order;12 samples each. 4-byte production compat D2H, checked drain and sticky postcheck. Pending arm retains all8 fill events through checked drain, submits exactly8x128MiB fills and queries the last event immediately before copy. Record producer and query CPU/wall separately. A completed pre-query makes that sample ineligible; no retry/enlargement. Require exact phase counts, clocks/conservation, payload/guards, native exit0, owned closure, unchanged inputs and no fresh fault. Pending comparison requires all12 pending samples in each pending cell.",
+  "process_orders": [
+    [
+      [
+        "profiled",
+        "trace"
+      ],
+      [
+        "plain",
+        "trace"
+      ],
+      [
+        "plain",
+        "quiet"
+      ],
+      [
+        "profiled",
+        "quiet"
+      ]
+    ],
+    [
+      [
+        "profiled",
+        "quiet"
+      ],
+      [
+        "plain",
+        "quiet"
+      ],
+      [
+        "plain",
+        "trace"
+      ],
+      [
+        "profiled",
+        "trace"
+      ]
+    ],
+    [
+      [
+        "plain",
+        "quiet"
+      ],
+      [
+        "profiled",
+        "quiet"
+      ],
+      [
+        "profiled",
+        "trace"
+      ],
+      [
+        "plain",
+        "trace"
+      ]
+    ]
+  ],
+  "gates": "Two traced smoke processes first, then three fixed four-cell cohorts. Each measured process:4 rounds x4096 queries of a finite event AFTER checked queue completion. Exact complete counts and guarded payload required. Each batch must exceed20us wall and100x median128 clock-pair CPU/wall overhead. Below-floor batches remain ineligible, no adaptive enlargement/retry. Execution and timing eligibility are separate. Same-context in-order Runtime::make_queue profiling true/false, no production default change. Trace present/absent in separate immutable child environments; parameter validation/safety fixed. Exact provider maps, first-init helper, normal exit/owned closure/source/fault checks required.",
   "budgets": {
     "compile_wall_s": 240,
-    "native_cell_wall_s": 45,
+    "native_process_wall_s": 45,
     "text_bytes_per_command": 16777216,
     "total_raw_bytes": 67108864,
-    "device_bytes": 134217868,
-    "pending_logical_fill_bytes_per_cell": 12884901888
+    "device_bytes": 12,
+    "measured_processes": 12,
+    "samples": 48,
+    "queries_per_sample": 4096
   },
-  "limits": "Component source attribution only, with the same production runtime/compat source as3b4998. No model/engine rebuilt and no third engine generation. Pending observation can race completion before enqueue. Fine phase timings include clock overhead, so no microscopic speed/adoption claim. Requested fill bytes are not physical DRAM traffic.",
-  "retained_generations": "396 fastest fallback and3b4998 status engine remain unchanged. This finite production-source fixture is retired after its compact decision; no extra engine build. Review candidate-engine necessity at next native-plan freeze; default integration remains blocked.",
-  "retention": "Keep48 useful phase samples and eligibility/owner/fault/source result. Retire successful full traces, normal compiler output and this fixture build at decision closure after exact source/recipe recovery.",
-  "complete": true,
-  "passed": true,
+  "limits": "Completed-event host API overhead only. No pending-progress gate, model engine rebuild, speedup adoption or physical traffic/saturation claim. The cached/runtime path may differ from v2 fresh finite producer and the model copy enqueue path; record trace call counts rather than assume UR dispatch for every query. Separate further qualification required for queue-default/elapsed-time changes.",
+  "retained_generations": "396 fastest fallback and3b status engine unchanged; this standalone fixture replaces closed v2 after source/recipe/consumer retirement. No third engine generation.",
+  "retention": "Keep48 timing samples, eligibility, exact provider/API counts, source/recipe and owner/fault decision. Retire successful raw traces and standalone build after useful evidence and exact input recovery.",
+  "complete": false,
+  "passed": false,
   "active": false,
-  "GPU_executed": true,
+  "GPU_executed": false,
   "previous_fixture_retirement": {
-    "complete": true,
-    "files": 13,
-    "bytes": 684494,
-    "manifest": {
-      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/closed-status-copy-v1-20261021.jsonl",
-      "sha256": "1a666ca2702d1e4f85112a480606b50576be0618d1bea864b5966e8e27d6bd82"
+    "raw_logs": {
+      "files": 10,
+      "bytes": 401404,
+      "manifest": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/closed-status-copy-v2-logs-20261021.jsonl",
+      "sha256": "aae14ee03180d638616aecafa21f5a7902bf521153e80070709ebb0d2ad62e9a"
     },
-    "native_original_inputs_recovered": 9836,
-    "fixture_and_controller_original_inputs_recovered": 143,
-    "original_executable_sha256": "5743921137c1ee8077d6a6294c081ec2a6986e3d77c4ef21e359094ca764ba20",
-    "scope": "v1 standalone fixture and closed output only;396 fallback,3b status engine/eight fixtures and UR helper unchanged. Legacy holds remain separate."
-  },
-  "binary": {
-    "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/status-copy-component-v2/status_copy",
-    "bytes": 174968,
-    "sha256": "8cae40fa9fb361fdb9ed8d6a3e26ec2c187b4c000cdf2546e7d8627623d1253b"
-  },
-  "ownership_closed": true,
-  "cells_results": [
-    {
-      "cell": [
-        "ordinary",
-        "idle"
+    "remaining_hold": {
+      "paths": [
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/status-copy-component-v2/status_copy",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/status-copy-component-v2/build.json",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/status-copy-component-v2/run.json"
       ],
-      "samples": [
-        [
-          0,
-          true,
-          false,
-          false,
-          0.000105037,
-          0.000107742962427,
-          1.6761e-05,
-          1.67420366779e-05,
-          1.082e-06,
-          2.19407957047e-06,
-          7.21000000002e-07,
-          7.40983523428e-07
-        ],
-        [
-          1,
-          true,
-          false,
-          false,
-          0.000111009,
-          0.000114034977742,
-          1.6631e-05,
-          1.66209647432e-05,
-          9.71999999995e-07,
-          1.21199991554e-06,
-          7.12e-07,
-          7.10948370397e-07
-        ],
-        [
-          2,
-          true,
-          false,
-          false,
-          7.4319e-05,
-          0.000243820017204,
-          1.8164e-05,
-          1.81649811566e-05,
-          9.91999999998e-07,
-          1.25193037093e-06,
-          7.11e-07,
-          7.10948370397e-07
-        ],
-        [
-          3,
-          true,
-          false,
-          false,
-          9.3435e-05,
-          9.59619646892e-05,
-          1.3485e-05,
-          1.34849688038e-05,
-          8.12000000003e-07,
-          1.09197571874e-06,
-          5.61000000003e-07,
-          5.61005435884e-07
-        ],
-        [
-          4,
-          true,
-          false,
-          false,
-          9.1521e-05,
-          9.43379709497e-05,
-          1.3635e-05,
-          1.36259477586e-05,
-          8.00999999995e-07,
-          9.71020199358e-07,
-          5.50999999994e-07,
-          5.61005435884e-07
-        ],
-        [
-          5,
-          true,
-          false,
-          false,
-          9.1812e-05,
-          9.40880272537e-05,
-          1.3675e-05,
-          1.36659946293e-05,
-          8.22000000004e-07,
-          1.13202258945e-06,
-          5.61000000003e-07,
-          5.61005435884e-07
-        ],
-        [
-          6,
-          true,
-          false,
-          false,
-          7.989e-05,
-          0.000104126986116,
-          1.4216e-05,
-          1.42169883475e-05,
-          8.60999999998e-07,
-          1.09197571874e-06,
-          5.61000000003e-07,
-          5.61005435884e-07
-        ],
-        [
-          7,
-          true,
-          false,
-          false,
-          9.2745e-05,
-          9.48890810832e-05,
-          1.3525e-05,
-          1.35260634124e-05,
-          7.51e-07,
-          9.42032784224e-07,
-          5.51000000001e-07,
-          5.61005435884e-07
-        ],
-        [
-          8,
-          true,
-          false,
-          false,
-          9.4948e-05,
-          9.76040028036e-05,
-          1.3505e-05,
-          1.34949805215e-05,
-          8.21000000005e-07,
-          1.10198743641e-06,
-          5.61000000003e-07,
-          5.61005435884e-07
-        ],
-        [
-          9,
-          true,
-          false,
-          false,
-          0.00010142,
-          0.000104117090814,
-          1.7964e-05,
-          1.79540365934e-05,
-          7.72000000003e-07,
-          9.92091372609e-07,
-          5.61000000003e-07,
-          5.61936758459e-07
-        ],
-        [
-          10,
-          true,
-          false,
-          false,
-          0.000113453,
-          0.000187744968571,
-          2.3273e-05,
-          2.32240417972e-05,
-          8.22000000004e-07,
-          1.07300002128e-06,
-          5.50999999994e-07,
-          5.61005435884e-07
-        ],
-        [
-          11,
-          true,
-          false,
-          false,
-          9.8774e-05,
-          0.000100821023807,
-          1.8074e-05,
-          1.80640490726e-05,
-          7.81999999998e-07,
-          1.032021828e-06,
-          5.60999999996e-07,
-          5.71017153561e-07
-        ]
-      ],
-      "medians": {
-        "enqueue": {
-          "cpu_s": 9.41915e-05,
-          "wall_s": 0.0001024690573105
-        },
-        "observer": {
-          "cpu_s": 6.16000000002e-07,
-          "wall_s": 6.365007720884999e-07
-        },
-        "drain": {
-          "cpu_s": 1.54235e-05,
-          "wall_s": 1.541897654535e-05
-        },
-        "precheck": {
-          "cpu_s": 1.397e-06,
-          "wall_s": 1.42742646858e-06
-        },
-        "queue_context": {
-          "cpu_s": 1.34299999999e-06,
-          "wall_s": 1.3474491424899998e-06
-        },
-        "postcheck": {
-          "cpu_s": 6.10999999998e-07,
-          "wall_s": 6.1106402427e-07
-        },
-        "producer": {
-          "cpu_s": 8.215000000045e-07,
-          "wall_s": 1.09197571874e-06
-        },
-        "pending_query": {
-          "cpu_s": 5.61000000003e-07,
-          "wall_s": 5.61005435884e-07
-        }
-      },
-      "all_samples_eligible": true,
-      "pending_observations": 0,
-      "native_pid": 36015,
-      "validation_activation": {
-        "pid": 36015,
-        "loader": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_loader.so.0.12.0",
-        "first_init": true,
-        "dispatch_result": 46,
-        "output_untouched": true,
-        "runtime_teardown_qualified": false
-      },
-      "native_exit": 0,
-      "ownership_closed": true,
-      "sample_columns": [
-        "rep",
-        "eligible",
-        "pending_observed",
-        "last_complete_after_copy",
-        "enqueue_cpu_s",
-        "enqueue_wall_s",
-        "drain_cpu_s",
-        "drain_wall_s",
-        "producer_cpu_s",
-        "producer_wall_s",
-        "pending_query_cpu_s",
-        "pending_query_wall_s"
-      ],
-      "payload_guards_and_exact_phase_counts_passed": true
-    },
-    {
-      "cell": [
-        "usm",
-        "pending"
-      ],
-      "samples": [
-        [
-          0,
-          false,
-          false,
-          true,
-          4.9993e-05,
-          5.26299700141e-05,
-          6.8318e-05,
-          7.12650362402e-05,
-          0.000390252,
-          0.000391058041714,
-          0.003244143,
-          0.00324897596147
-        ],
-        [
-          1,
-          false,
-          false,
-          true,
-          4.5024e-05,
-          4.76299319416e-05,
-          5.7958e-05,
-          6.05039531365e-05,
-          0.000331954,
-          0.000350000918843,
-          0.003081097,
-          0.0030809789896
-        ],
-        [
-          2,
-          false,
-          false,
-          true,
-          6.6785e-05,
-          7.04730628058e-05,
-          6.4732e-05,
-          6.74179755151e-05,
-          0.000326441,
-          0.000343909021467,
-          0.002893616,
-          0.00289958703797
-        ],
-        [
-          3,
-          false,
-          false,
-          true,
-          4.7519e-05,
-          5.00450842083e-05,
-          4.9753e-05,
-          5.19379973412e-05,
-          0.000366628,
-          0.000386881059967,
-          0.00284251,
-          0.00284231896512
-        ],
-        [
-          4,
-          false,
-          false,
-          true,
-          4.1277e-05,
-          4.37020789832e-05,
-          5.1386e-05,
-          5.35110011697e-05,
-          0.00033136,
-          0.000348959001713,
-          0.00288001,
-          0.00287991994992
-        ],
-        [
-          5,
-          false,
-          false,
-          true,
-          4.8992e-05,
-          5.1417038776e-05,
-          6.6165e-05,
-          6.84690894559e-05,
-          0.000342733,
-          0.000360170030035,
-          0.00287478,
-          0.002874639933
-        ],
-        [
-          6,
-          false,
-          false,
-          true,
-          4.5947e-05,
-          4.82309842482e-05,
-          5.4452e-05,
-          5.65060181543e-05,
-          0.000343183,
-          0.000360340927728,
-          0.001675021,
-          0.00167494395282
-        ],
-        [
-          7,
-          false,
-          false,
-          true,
-          4.8541e-05,
-          5.08660450578e-05,
-          6.0373e-05,
-          6.24879030511e-05,
-          0.000345568,
-          0.000362665043212,
-          0.001574021,
-          0.00157387298532
-        ],
-        [
-          8,
-          false,
-          false,
-          true,
-          5.0274e-05,
-          5.25399809703e-05,
-          6.1064e-05,
-          6.33000163361e-05,
-          0.000349375,
-          0.000366571941413,
-          0.001567489,
-          0.00156732997857
-        ],
-        [
-          9,
-          false,
-          false,
-          true,
-          4.9412e-05,
-          5.15879364684e-05,
-          5.4653e-05,
-          5.67169627175e-05,
-          0.000358252,
-          0.000375338946469,
-          0.001568541,
-          0.00156843208242
-        ],
-        [
-          10,
-          false,
-          false,
-          true,
-          4.8451e-05,
-          5.06360083818e-05,
-          5.6666e-05,
-          5.87909016758e-05,
-          0.000364815,
-          0.000381901976652,
-          0.001552101,
-          0.00155205198098
-        ],
-        [
-          11,
-          false,
-          false,
-          true,
-          5.3902e-05,
-          5.61459455639e-05,
-          5.2217e-05,
-          5.43530331925e-05,
-          0.000406513,
-          0.000425674021244,
-          0.001521693,
-          0.00152153498493
-        ]
-      ],
-      "medians": {
-        "enqueue": {
-          "cpu_s": 4.87665e-05,
-          "wall_s": 5.11415419169e-05
-        },
-        "observer": {
-          "cpu_s": 6.10999999998e-07,
-          "wall_s": 6.30971044302e-07
-        },
-        "drain": {
-          "cpu_s": 5.7312e-05,
-          "wall_s": 5.964742740615e-05
-        },
-        "precheck": {
-          "cpu_s": 1.497500000005e-06,
-          "wall_s": 1.578067895025e-06
-        },
-        "queue_context": {
-          "cpu_s": 1.507500000005e-06,
-          "wall_s": 1.508044078945e-06
-        },
-        "postcheck": {
-          "cpu_s": 6.410000000065e-07,
-          "wall_s": 6.4104096964e-07
-        },
-        "producer": {
-          "cpu_s": 0.0003474715,
-          "wall_s": 0.0003646184923125
-        },
-        "pending_query": {
-          "cpu_s": 0.0022587655,
-          "wall_s": 0.0022586314589699997
-        }
-      },
-      "all_samples_eligible": false,
-      "pending_observations": 0,
-      "native_pid": 36141,
-      "validation_activation": {
-        "pid": 36141,
-        "loader": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_loader.so.0.12.0",
-        "first_init": true,
-        "dispatch_result": 46,
-        "output_untouched": true,
-        "runtime_teardown_qualified": false
-      },
-      "native_exit": 0,
-      "ownership_closed": true,
-      "sample_columns": [
-        "rep",
-        "eligible",
-        "pending_observed",
-        "last_complete_after_copy",
-        "enqueue_cpu_s",
-        "enqueue_wall_s",
-        "drain_cpu_s",
-        "drain_wall_s",
-        "producer_cpu_s",
-        "producer_wall_s",
-        "pending_query_cpu_s",
-        "pending_query_wall_s"
-      ],
-      "payload_guards_and_exact_phase_counts_passed": true
-    },
-    {
-      "cell": [
-        "ordinary",
-        "pending"
-      ],
-      "samples": [
-        [
-          0,
-          false,
-          false,
-          true,
-          0.000115526,
-          0.000119064003229,
-          1.9467e-05,
-          1.94570748135e-05,
-          0.000513311,
-          0.000565337948501,
-          0.00135482,
-          0.00135452800896
-        ],
-        [
-          1,
-          false,
-          false,
-          true,
-          0.000110597,
-          0.000113383983262,
-          2.3194e-05,
-          2.31839949265e-05,
-          0.000544981,
-          0.000575367012061,
-          0.001340183,
-          0.00133984093554
-        ],
-        [
-          2,
-          false,
-          false,
-          true,
-          0.000112852,
-          0.000116358976811,
-          1.9557e-05,
-          1.95470638573e-05,
-          0.000514766,
-          0.000566971022636,
-          0.001345242,
-          0.00134487997275
-        ],
-        [
-          3,
-          false,
-          false,
-          true,
-          0.000113742,
-          0.000117452000268,
-          2.5468e-05,
-          2.54680635408e-05,
-          0.000538509,
-          0.000565028050914,
-          0.001330885,
-          0.00133067299612
-        ],
-        [
-          4,
-          false,
-          false,
-          true,
-          0.000114725,
-          0.000118503929116,
-          2.7691e-05,
-          2.76929931715e-05,
-          0.000540724,
-          0.000567240989767,
-          0.001335203,
-          0.00133491097949
-        ],
-        [
-          5,
-          false,
-          false,
-          true,
-          9.3866e-05,
-          9.62410122156e-05,
-          1.3967e-05,
-          1.39659969136e-05,
-          0.000372158,
-          0.00038943591062,
-          0.00149869,
-          0.00149855006021
-        ],
-        [
-          6,
-          false,
-          false,
-          true,
-          9.4296e-05,
-          9.65520739555e-05,
-          1.3906e-05,
-          1.38960313052e-05,
-          0.000360668,
-          0.000377884018235,
-          0.001503439,
-          0.00150334998034
-        ],
-        [
-          7,
-          false,
-          false,
-          true,
-          9.1973e-05,
-          9.42179467529e-05,
-          1.3846e-05,
-          1.38459727168e-05,
-          0.000346049,
-          0.000362984952517,
-          0.001517766,
-          0.00151768594515
-        ],
-        [
-          8,
-          false,
-          false,
-          true,
-          9.9076e-05,
-          0.000101672019809,
-          1.4417e-05,
-          1.44169898704e-05,
-          0.000356749,
-          0.000373946037143,
-          0.001170364,
-          0.00151733600069
-        ],
-        [
-          9,
-          false,
-          false,
-          true,
-          9.583e-05,
-          0.000102754100226,
-          2.121e-05,
-          2.12100567296e-05,
-          0.000430046,
-          0.000472031999379,
-          0.001399124,
-          0.00139898306224
-        ],
-        [
-          10,
-          false,
-          false,
-          true,
-          0.000108343,
-          0.000111791072413,
-          1.5689e-05,
-          1.56690366566e-05,
-          0.000452417,
-          0.000479024020024,
-          0.001419021,
-          0.00141879997682
-        ],
-        [
-          11,
-          false,
-          false,
-          true,
-          8.3427e-05,
-          8.58020503074e-05,
-          2.662e-05,
-          2.66099814326e-05,
-          0.000376376,
-          0.000395406968892,
-          0.001472211,
-          0.00147209991701
-        ]
-      ],
-      "medians": {
-        "enqueue": {
-          "cpu_s": 0.0001037095,
-          "wall_s": 0.0001072725863195
-        },
-        "observer": {
-          "cpu_s": 6.60999999999e-07,
-          "wall_s": 6.610061973335e-07
-        },
-        "drain": {
-          "cpu_s": 1.9512e-05,
-          "wall_s": 1.95020693354e-05
-        },
-        "precheck": {
-          "cpu_s": 2.0289999999900003e-06,
-          "wall_s": 2.148910425605e-06
-        },
-        "queue_context": {
-          "cpu_s": 1.934e-06,
-          "wall_s": 1.923530362545e-06
-        },
-        "postcheck": {
-          "cpu_s": 6.959999999945e-07,
-          "wall_s": 7.014605216680001e-07
-        },
-        "producer": {
-          "cpu_s": 0.0004412315,
-          "wall_s": 0.00047552800970150004
-        },
-        "pending_query": {
-          "cpu_s": 0.0013769720000000002,
-          "wall_s": 0.00140889151953
-        }
-      },
-      "all_samples_eligible": false,
-      "pending_observations": 0,
-      "native_pid": 36267,
-      "validation_activation": {
-        "pid": 36267,
-        "loader": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_loader.so.0.12.0",
-        "first_init": true,
-        "dispatch_result": 46,
-        "output_untouched": true,
-        "runtime_teardown_qualified": false
-      },
-      "native_exit": 0,
-      "ownership_closed": true,
-      "sample_columns": [
-        "rep",
-        "eligible",
-        "pending_observed",
-        "last_complete_after_copy",
-        "enqueue_cpu_s",
-        "enqueue_wall_s",
-        "drain_cpu_s",
-        "drain_wall_s",
-        "producer_cpu_s",
-        "producer_wall_s",
-        "pending_query_cpu_s",
-        "pending_query_wall_s"
-      ],
-      "payload_guards_and_exact_phase_counts_passed": true
-    },
-    {
-      "cell": [
-        "usm",
-        "idle"
-      ],
-      "samples": [
-        [
-          0,
-          true,
-          false,
-          false,
-          4.28e-05,
-          4.50150109828e-05,
-          4.7869e-05,
-          4.97940927744e-05,
-          8.42000000001e-07,
-          1.68301630765e-06,
-          5.71000000005e-07,
-          5.71017153561e-07
-        ],
-        [
-          1,
-          true,
-          false,
-          false,
-          4.0807e-05,
-          4.32319939137e-05,
-          4.9102e-05,
-          5.10559184477e-05,
-          8.00999999995e-07,
-          1.032021828e-06,
-          5.71999999997e-07,
-          5.81028871238e-07
-        ],
-        [
-          2,
-          true,
-          false,
-          false,
-          4.0416e-05,
-          4.25709877163e-05,
-          4.6187e-05,
-          4.80700982735e-05,
-          7.91e-07,
-          1.01199839264e-06,
-          5.60999999996e-07,
-          5.71948476136e-07
-        ],
-        [
-          3,
-          true,
-          false,
-          false,
-          4.0465e-05,
-          4.26899641752e-05,
-          4.5926e-05,
-          4.78409929201e-05,
-          7.81000000005e-07,
-          1.01199839264e-06,
-          5.61000000003e-07,
-          5.61005435884e-07
-        ],
-        [
-          4,
-          true,
-          false,
-          false,
-          4.2449e-05,
-          4.4564018026e-05,
-          4.4624e-05,
-          4.64479671791e-05,
-          7.52e-07,
-          9.71951521933e-07,
-          5.61000000003e-07,
-          5.71017153561e-07
-        ],
-        [
-          5,
-          true,
-          false,
-          false,
-          4.0446e-05,
-          4.25609759986e-05,
-          4.1579e-05,
-          4.35119727626e-05,
-          7.82000000005e-07,
-          1.00210309029e-06,
-          5.51000000001e-07,
-          5.61936758459e-07
-        ],
-        [
-          6,
-          true,
-          false,
-          false,
-          4.0356e-05,
-          4.24600439146e-05,
-          4.1808e-05,
-          4.37230337411e-05,
-          7.52e-07,
-          9.62056219578e-07,
-          5.61000000003e-07,
-          5.61005435884e-07
-        ],
-        [
-          7,
-          true,
-          false,
-          false,
-          4.0707e-05,
-          4.27810009569e-05,
-          4.244e-05,
-          4.43139579147e-05,
-          7.70999999997e-07,
-          1.02201011032e-06,
-          5.61000000003e-07,
-          5.61005435884e-07
-        ],
-        [
-          8,
-          true,
-          false,
-          false,
-          4.4354e-05,
-          4.64380718768e-05,
-          5.1917e-05,
-          5.38220629096e-05,
-          7.91e-07,
-          9.91974957287e-07,
-          5.60999999996e-07,
-          5.61005435884e-07
-        ],
-        [
-          9,
-          true,
-          false,
-          false,
-          4.1699e-05,
-          4.37929993495e-05,
-          4.1138e-05,
-          4.30209329352e-05,
-          7.81000000005e-07,
-          1.00198667496e-06,
-          5.61000000003e-07,
-          5.71017153561e-07
-        ],
-        [
-          10,
-          true,
-          false,
-          false,
-          4.278e-05,
-          4.4955057092e-05,
-          5.0114e-05,
-          5.20379981026e-05,
-          7.91999999999e-07,
-          1.01199839264e-06,
-          5.60999999996e-07,
-          5.61005435884e-07
-        ],
-        [
-          11,
-          true,
-          false,
-          false,
-          4.2118e-05,
-          4.43330500275e-05,
-          4.5735e-05,
-          4.77799912915e-05,
-          8.11000000003e-07,
-          1.07195228338e-06,
-          5.61000000003e-07,
-          5.71017153561e-07
-        ]
-      ],
-      "medians": {
-        "enqueue": {
-          "cpu_s": 4.1253e-05,
-          "wall_s": 4.35124966316e-05
-        },
-        "observer": {
-          "cpu_s": 5.91000000001e-07,
-          "wall_s": 6.1106402427e-07
-        },
-        "drain": {
-          "cpu_s": 4.58305e-05,
-          "wall_s": 4.78104921058e-05
-        },
-        "precheck": {
-          "cpu_s": 1.322e-06,
-          "wall_s": 1.362001057715e-06
-        },
-        "queue_context": {
-          "cpu_s": 1.2870000000000001e-06,
-          "wall_s": 1.29296677187e-06
-        },
-        "postcheck": {
-          "cpu_s": 6.165000000015e-07,
-          "wall_s": 6.21075741947e-07
-        },
-        "producer": {
-          "cpu_s": 7.865000000025e-07,
-          "wall_s": 1.01199839264e-06
-        },
-        "pending_query": {
-          "cpu_s": 5.61000000003e-07,
-          "wall_s": 5.664769560099999e-07
-        }
-      },
-      "all_samples_eligible": true,
-      "pending_observations": 0,
-      "native_pid": 36339,
-      "validation_activation": {
-        "pid": 36339,
-        "loader": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_loader.so.0.12.0",
-        "first_init": true,
-        "dispatch_result": 46,
-        "output_untouched": true,
-        "runtime_teardown_qualified": false
-      },
-      "native_exit": 0,
-      "ownership_closed": true,
-      "sample_columns": [
-        "rep",
-        "eligible",
-        "pending_observed",
-        "last_complete_after_copy",
-        "enqueue_cpu_s",
-        "enqueue_wall_s",
-        "drain_cpu_s",
-        "drain_wall_s",
-        "producer_cpu_s",
-        "producer_wall_s",
-        "pending_query_cpu_s",
-        "pending_query_wall_s"
-      ],
-      "payload_guards_and_exact_phase_counts_passed": true
+      "reason": "Measured source7b8f3f5ab is not reachable from origin/main; preserve original source identities under the repository default-reachability policy before build retirement.",
+      "next_action": "Recheck default reachability at PR180 integration, recover exact original source/recipe, then retire this closed standalone fixture. No model route or live comparison depends on its executable.",
+      "default_rule_observed": "main ruleset24638744 allows squash only; a normal merge must preserve measured source identities. No settings change, history rewrite or admin bypass."
     }
-  ],
-  "pending_comparison_qualified": false,
-  "fresh_faults": [],
-  "boot_unchanged": true,
-  "driver_after": {
-    "pci": "/sys/bus/pci/devices/0000:05:00.0",
-    "driver": "xe",
-    "vendor": "0x8086",
-    "device": "0xe20c",
-    "kernel": "7.0.0-38-generic",
-    "devcoredump": false
   },
-  "producer_trace_evidence": {
-    "original_trace_sha256": "8b620695a1e3db05501eee2ec4588b6bb5139ff72276bdbd5dca980739a9e763",
-    "first_pending_window_api_sequence": [
-      "urEnqueueUSMFill",
-      "urDeviceGetGlobalTimestamps",
-      "urEnqueueUSMFill",
-      "urDeviceGetGlobalTimestamps",
-      "urEnqueueUSMFill",
-      "urDeviceGetGlobalTimestamps",
-      "urEnqueueUSMFill",
-      "urDeviceGetGlobalTimestamps",
-      "urEnqueueUSMFill",
-      "urDeviceGetGlobalTimestamps",
-      "urEnqueueUSMFill",
-      "urDeviceGetGlobalTimestamps",
-      "urEnqueueUSMFill",
-      "urDeviceGetGlobalTimestamps",
-      "urEnqueueUSMFill",
-      "urEventGetInfo",
-      "urDeviceGetGlobalTimestamps",
-      "urEnqueueUSMMemcpy",
-      "urEventRelease",
-      "urEventGetInfo",
-      "urQueueFinish"
+  "host_parser_checks": {
+    "source_commit": "69f3886558757fd3fff140ff1a6a10a2624cf493",
+    "valid_protocol": true,
+    "below_floor_preserved_ineligible": true,
+    "rejected": [
+      "duplicate repetition",
+      "lost completion",
+      "boolean count",
+      "nonfinite clock",
+      "mislabeled timer floor",
+      "wrong queue property",
+      "unclosed owner"
     ],
-    "selected_api_counts": {
-      "urEnqueueUSMFill": 97,
-      "urEnqueueUSMMemcpy": 86,
-      "urDeviceGetGlobalTimestamps": 183,
-      "urEventRelease": 183,
-      "urEventGetInfo": 24
-    },
-    "interpretation": "Retaining8 events removes releases between the first8 fills, but both pending cells remain0/12. A pre-copy query costs wall2.258631ms for USM and1.408892ms for ordinary; producer wall0.364618/0.475528ms. No source-backed claim that status query waits for GPU completion or that the hardware is saturated."
-  },
-  "offline_binary_path_check": {
-    "GPU_executed": false,
-    "assets": {
-      "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libsycl.so.9.0.0-0": "74243bafb2766fd1a038cf80fd62632b4aad9ecfdc0d3ce8711e4515a93d7008",
-      "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_adapter_level_zero_v2.so.0.12.0": "05bcafc4a0d45d33f957f16ffb4ba4776da675e79ade1121b93b94b8549335d8"
-    },
-    "method": "nm -S -C --defined-only and bounded objdump -d -C on exact qualified ELF bytes; no whole disassembly retained.",
-    "functions": {
-      "SYCL_event_status_get_info": {
-        "offset": "0x243df0",
-        "bytes": 304,
-        "normal_path": "urEventGetInfo@plt"
-      },
-      "UR_level_zero_EventGetInfo": {
-        "offset": "0x120790",
-        "bytes": 2209,
-        "status_path": "zeEventQueryStatus plus optional serialization/diagnostic branches"
-      }
-    },
-    "limits": "Static calls only; no timing attribution to SYCL, validation/tracing/loader, UR or driver is proved. Do not infer a driver wait from the measured whole getter."
-  },
-  "decision": "Execution/source/owner/guard/validation/fault checks pass; pending comparison remains ineligible0/12 in both pending cells. Keeping producer events is insufficient here. The timed pre-copy getter, rather than just fill submission, is material in this component. No clean speed, copied-byte bandwidth, model bottleneck or optimization adoption is qualified.",
-  "next_action": "Prepare a separately committed bounded diagnostic of Runtime::make_queue(true/false) x UR tracing on/off, validation/safety fixed, using batches of status queries after checked event completion. Freeze repetitions, timer floor, ownership and output budgets. Preserve v2 zero-pending/ineligible result; do not enlarge fills, change production queue defaults or claim model speed/hardware saturation.",
-  "original_full_record": {
-    "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/status-copy-component-v2/run.json",
-    "sha256": "5489ca289b141eed91dc8ad4dbaeeed07e7cd5fb4531f57463fb50cdcdfe0a8a",
-    "consumer": "Only through the current producer/profile source decision; keep compact48 samples and minimal first-window call evidence afterward."
-  },
-  "result_format": "Compact closed v2:48 individual enqueue/drain/producer/query samples, phase medians, failed pending eligibility, bounded static-path evidence; no full parser/trace archive."
+    "GPU_executed": false
+  }
 }
