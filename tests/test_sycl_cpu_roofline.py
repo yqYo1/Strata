@@ -12,6 +12,14 @@ import cpu_roofline as calibration
 
 
 class TimingEligibility(unittest.TestCase):
+    def test_full_count_cannot_hide_duplicate_or_missing_matrix_cell(self):
+        rows=[dict(pair=list(p),workers=w,mode=m,nt=t,scan_threads=None)
+              for p in calibration.PAIRS for w in (1,5) for m in ('hot','stream') for t in (1,2,3,4)]
+        rows += [dict(pair=None,workers=None,mode='scan',nt=0,scan_threads=n) for n in (1,6,12)]
+        calibration.require_matrix(rows)
+        rows[-1]=rows[0]
+        with self.assertRaises(RuntimeError):calibration.require_matrix(rows)
+
     def test_metadata_and_native_shards_have_separate_roots(self):
         with tempfile.TemporaryDirectory() as tmp:
             metadata=Path(tmp)/'native_experts.txt'

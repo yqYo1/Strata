@@ -21,7 +21,7 @@ import measurement_owner as owner
 
 P = Path(__file__).resolve().parents[2]
 B = Path('/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007')
-ROOT = B / 'cpu-roofline-v4'
+ROOT = B / 'cpu-roofline-v5'
 A = P / 'bench/results/2026-10-15-pr6-recovery-audit'
 PLAN = A / 'cpu-roofline-plan.json'
 RESULT = A / 'cpu-roofline-current.json'
@@ -160,7 +160,10 @@ def load_plan():
 
 
 def prepare():
-    need(not PLAN.exists() and not RESULT.exists() and not ROOT.exists(),'single-use root/plan already exists')
+    need(not PLAN.exists() and not ROOT.exists(),'single-use root/plan already exists')
+    if RESULT.exists():
+        prior=json.loads(RESULT.read_text())
+        need(not prior['passed'] and prior['ownership_closed'],'close original outcome before a new plan')
     revision=git(P,'rev-parse','HEAD').decode().strip()
     rows=formats()
     for r in rows:r['fixture_sha256']=fixture_hash(r)
@@ -176,7 +179,7 @@ def prepare():
             '-DCMAKE_CXX_COMPILER='+str(LLVM/'bin/clang++'),'-DSTRATA_GGML_DIR='+str(GGML)],
         build=['/usr/bin/cmake','--build',str(ROOT/'build'),'--target','cpu_roofline','--parallel','6'],
         protocol=dict(nt=[1,2,3,4],group=6,reps=5,minimum_sample_s=1,
-            pilot_target_s=1.3,under_floor='Keep all attempts; double iterations and repeat the whole five-sample cell once, then fail.',
+            fixed_minimum_target_s=1.3,under_floor='Terminal failure; no automatic retry. Whole passes until1.3s, maximum1000000 passes. Preflight per-pass clock cost must be below0.1% of fastest warm pass.',
             hot='Six distinct real expert blobs, 8.6–15.3 MiB including weights only.',
             stream='At least96 MiB of distinct real blobs; shuffled six-expert groups, no revisit per pass.',
             scan='256 MiB read-only checksum; persistent pinned1/6/12 threads.',
@@ -211,6 +214,14 @@ def summarize(rows):
     return cells
 
 
+def require_matrix(cells):
+    actual=[(tuple(c['pair']) if c['pair'] else None,c['workers'],c['mode'],c['nt'],c['scan_threads']) for c in cells]
+    expected={(pair,w,mode,nt,None) for pair in PAIRS for w in (1,5)
+              for mode in ('hot','stream') for nt in (1,2,3,4)}
+    expected|={(None,None,'scan',0,n) for n in (1,6,12)}
+    need(len(actual)==len(expected) and set(actual)==expected,'complete unique112+3 matrix required')
+
+
 def main():
     parser=argparse.ArgumentParser(description=__doc__);parser.add_argument('stage',choices=['prepare','build','check','measure'])
     args=parser.parse_args()
@@ -237,6 +248,7 @@ def main():
             need(owner.closed(entry),'measurement ownership did not close')
             need(entry['exit_code']==0,'calibration child failed: '+label)
             return entry
+        compact=None
         try:
             if args.stage=='build':
                 run('configure',plan['configure'],120);run('compile',plan['build'],600)
@@ -254,29 +266,34 @@ def main():
                     need(check['passed'] and not check['active'] and check['binary']==build['binary'] and check['plan_sha256']==digest(PLAN),'complete numerical gate required')
                 lookup={(r['gu'],r['down']):r for r in plan['formats']}
                 jobs=[(list((gu,dn)),w,None) for gu,dn,w in plan['order']]
-                if args.stage=='measure': jobs += [(None,None,n) for n in (1,6,12)]
+                if args.stage=='measure': jobs = [(None,None,n) for n in (1,6,12)] + jobs
                 for i,(pair,w,n) in enumerate(jobs):
                     argv=command(lookup[tuple(pair)],w,args.stage) if pair else [str(ROOT/'build/cpu_roofline'),'scan',','.join(map(str,plan['machine']['physical_cpus'] if n==6 else plan['machine']['affinity'][:n]))]
-                    label=f'cell-{i}';e=run(label,argv,180 if pair and args.stage=='measure' else 120)
+                    label=f'cell-{i}'
+                    wall=plan['budgets']['measure_child_s' if args.stage=='measure' else 'check_child_s'] if pair else plan['budgets']['scan_child_s']
+                    e=run(label,argv,wall)
                     lines=[json.loads(line) for line in (ROOT/'owned'/(args.stage+'-'+label+'.stdout')).read_text().splitlines()]
                     need(lines and lines[-1]==dict(kind='closed',passed=True),'missing native completion')
                     if pair:
-                        need(len([x for x in lines if x['kind']=='validation']) >=4,'four NT checks required')
+                        need({x['nt'] for x in lines if x['kind']=='validation'}=={1,2,3,4},'four distinct NT checks required')
                         placement=[x for x in lines if x['kind']=='placement']
                         need(len(placement)==1 and placement[0]['workers']==w and placement[0]['host_works']==(w==5),'production placement mismatch')
+                    else:need(all(x.get('threads')==n for x in lines if x['kind']=='sample'),'scan thread count mismatch')
                     state['results'].append(dict(pair=pair,workers=w,scan_threads=n,rows=lines,closed=True,exit_code=e['exit_code']))
                     persist();print('Closed '+args.stage+' '+str(i+1)+'/'+str(len(jobs)),flush=True)
                 if args.stage=='measure':
-                    cells=summarize(state['results']);need(len(cells)==115,'complete112+3 matrix required')
+                    cells=summarize(state['results']);require_matrix(cells)
                     compact=dict(schema='strata-cpu-roofline-result-v1',plan_sha256=digest(PLAN),plan_source_commit=plan['source']['revision'],
                         binary=state['binary'],GPU_executed=False,cells=cells,
                         validations=[dict(pair=r['pair'],workers=r['workers'],values=[x for x in r['rows'] if x['kind'] in ('validation','placement')]) for r in state['results'] if r['pair']],
                         hardware_saturation_qualified=False,model_quality_qualified=False,
                         physical_DRAM_traffic='unknown',limits=plan['protocol']['interpretation'])
-                    RESULT.write_text(json.dumps(compact,indent=2)+'\n')
             need(machine()==plan['machine'],'machine changed during stage')
             for path,v in plan['model_identity'].items():need(identity(path)==v,'model file changed during stage')
             state['passed']=True
+            if compact is not None:
+                compact.update(complete=True,passed=True,ownership_closed=True)
+                RESULT.write_text(json.dumps(compact,indent=2)+'\n')
         except BaseException as e:
             state['error']=str(e);raise
         finally:state['active']=False;persist()

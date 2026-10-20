@@ -179,28 +179,29 @@ struct Inputs {
     }
 };
 template<class F> void measure(F pass, uint64_t bytes, uint64_t visits, const std::string& fields, cpu::ExpertPool* pool=nullptr) {
-    pass(); const auto pilot_start=Clock::now(); for(int i=0;i<2;++i) pass();
-    uint64_t iterations=std::max<uint64_t>(1,static_cast<uint64_t>(std::ceil(1.3/(seconds(pilot_start)/2))));
-    require(iterations<=1000000,"timing iteration budget");
-    // Under-floor attempts stay in the record. Extend the entire cell once,
-    // prospectively; failure after that is terminal, never silently discarded.
-    for(int attempt=0;attempt<2;++attempt) {
-        bool eligible=true;
-        for(int r=0;r<reps;++r) {
-            const double gu=pool?pool->ms_multi_gu:0, q=pool?pool->ms_multi_q:0, down=pool?pool->ms_multi_down:0;
-            const auto c0=cpu_seconds(); const auto t0=Clock::now();
-            for(uint64_t i=0;i<iterations;++i) pass();
-            const double wall=seconds(t0), process_cpu=cpu_seconds()-c0; eligible &= wall>=1.;
-            std::cout<<"{\"kind\":\"sample\","<<fields<<",\"attempt\":"<<attempt<<",\"rep\":"<<r
-                <<",\"iterations\":"<<iterations<<",\"visits\":"<<visits*iterations
-                <<",\"requested_bytes\":"<<bytes*iterations<<",\"wall_s\":"<<wall<<",\"cpu_s\":"<<process_cpu;
-            if(pool) std::cout<<",\"gu_s\":"<<(pool->ms_multi_gu-gu)*.001<<",\"q_s\":"<<(pool->ms_multi_q-q)*.001<<",\"down_s\":"<<(pool->ms_multi_down-down)*.001;
-            std::cout<<"}"<<std::endl;
-        }
-        if(eligible) return;
-        iterations*=2;
+    pass();
+    double fastest=1e9;
+    for(int i=0;i<5;++i) { const auto t=Clock::now(); pass(); fastest=std::min(fastest,seconds(t)); }
+    const auto timer_start=Clock::now();
+    for(int i=0;i<10000;++i) { const auto t=Clock::now(); (void)t; }
+    const double timer_s=seconds(timer_start)/10000;
+    require(fastest>0 && timer_s/fastest<.001,"per-pass timer overhead exceeds0.1%");
+    std::cout<<"{\"kind\":\"timer_check\","<<fields<<",\"query_s\":"<<timer_s<<",\"fastest_pass_s\":"<<fastest<<"}"<<std::endl;
+    // Integer complete passes, fixed minimum time. An unusually slow pilot
+    // cannot select an undersized batch. Preserve the original >=1s gate.
+    for(int r=0;r<reps;++r) {
+        const double gu=pool?pool->ms_multi_gu:0, q=pool?pool->ms_multi_q:0, down=pool?pool->ms_multi_down:0;
+        const auto c0=cpu_seconds(); const auto t0=Clock::now();
+        uint64_t iterations=0; double elapsed;
+        do { pass(); ++iterations; elapsed=seconds(t0); } while(elapsed<1.3 && iterations<1000000);
+        const double wall=seconds(t0), process_cpu=cpu_seconds()-c0;
+        require(wall>=1.0 && iterations<1000000,"timing floor/iteration budget");
+        std::cout<<"{\"kind\":\"sample\","<<fields<<",\"attempt\":0,\"rep\":"<<r
+            <<",\"iterations\":"<<iterations<<",\"visits\":"<<visits*iterations
+            <<",\"requested_bytes\":"<<bytes*iterations<<",\"wall_s\":"<<wall<<",\"cpu_s\":"<<process_cpu;
+        if(pool) std::cout<<",\"gu_s\":"<<(pool->ms_multi_gu-gu)*.001<<",\"q_s\":"<<(pool->ms_multi_q-q)*.001<<",\"down_s\":"<<(pool->ms_multi_down-down)*.001;
+        std::cout<<"}"<<std::endl;
     }
-    throw std::runtime_error("timing floor failed after one whole-cell extension");
 }
 // Every loaded word contributes to a checksum. No stores to the measured
 // buffer; workers persist across timed passes. This is a sequential-read
