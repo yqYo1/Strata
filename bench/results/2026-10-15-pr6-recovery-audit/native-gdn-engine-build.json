@@ -1,5 +1,5 @@
 {
-  "source_commit": "0a385b3888c196f025b6362d5c29f70637ab4031",
+  "source_commit": "87ce707df2a3cfbdbf88f2753c50feef78fb1efe",
   "compiler": {
     "path": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin/clang++",
     "sha256": "1290881b4e12a5e002e5b0de0787f85328ee5fe19f253a54be1cdd97dc2f26eb"
@@ -80,14 +80,14 @@
   "production_selected": false,
   "model_quality_qualified": false,
   "replaces": {
-    "source_commit": "e9a3854c1ef26351595976e2530c0dce105693af",
+    "source_commit": "0a385b3888c196f025b6362d5c29f70637ab4031",
     "binary": {
-      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/known-good-396d0c91f301/strata",
-      "bytes": 22079288,
-      "sha256": "570b65ddfd88e3955b58634b361bb13e12a4bd713ac6e5ae396d47265a76fd46"
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/strata",
+      "bytes": 22123104,
+      "sha256": "60f09c471ff928c9e223bdf71ac249b96778ef233f0908fe0b39b618ab5e2434"
     },
-    "source_build_passed": false,
-    "retained_binary_source_commit": "396d0c91f301e0ac99b81d6641fdc435b95b4da9",
+    "source_build_passed": true,
+    "retained_binary_source_commit": "0a385b3888c196f025b6362d5c29f70637ab4031",
     "reason": "Closed unused comparison engine; original source/recipe recovered from Git. Reuse its cache for the immediate corrected build, not a retained old generation."
   },
   "targets": [
@@ -309,8 +309,8 @@
   },
   "binary": {
     "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/strata",
-    "bytes": 22123104,
-    "sha256": "60f09c471ff928c9e223bdf71ac249b96778ef233f0908fe0b39b618ab5e2434"
+    "bytes": 22127152,
+    "sha256": "02a61db21c50f5824f3af748ec6e89fbe05db04c7cacc0454c6b7c435d0e5bc6"
   },
   "compile_database_sha256": "abbbd93299e05cf26f53c0cc41ffc3600d2ed310d91c8c354df5ee6a0dbedbf3",
   "configured_compile_entries": 228,
@@ -341,21 +341,47 @@
     },
     "prefill_scratch_host_test": {
       "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/prefill_scratch_host_test",
-      "sha256": "a7d511497cebee48ef7e16791a50b43440d2963bbdf94dbbe02ca9747b5c4f70"
+      "sha256": "bdc207e4e2d6c132cf9df1b7b925beb0778d231d1b070e526e713e8a0394ebca"
     },
     "sycl_prefill_scratch_test": {
       "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/sycl_prefill_scratch_test",
-      "sha256": "39d7980177e826cb89763c060d9fbe66e79a0452671be9e5f14d683847361a20"
+      "sha256": "41667a7e2ec5404f6e74548bb155849fb2ac4cef75bfceac7db187da6aae2f84"
     }
   },
-  "binary_origin_source_commit": "0a385b3888c196f025b6362d5c29f70637ab4031",
+  "binary_origin_source_commit": "87ce707df2a3cfbdbf88f2753c50feef78fb1efe",
+  "previous_output_comparison": {
+    "changed_project_inputs": [
+      "include/strata/prefill/scratch_allocation.hpp",
+      "src/prefill/layer_major.inc",
+      "src/prefill/moe_window.inc",
+      "src/prefill/prefill.cpp",
+      "src/program/generate.cpp",
+      "tests/core/prefill_scratch_test.cpp",
+      "tools/sycl/check_mixed_scratch.py",
+      "tools/sycl/check_verifier_retirement.py"
+    ],
+    "native_and_recipe_inputs_match": false,
+    "engine_bytes_match": false,
+    "fixture_bytes_match": {
+      "sycl_verifier_retirement_test": true,
+      "sycl_submission_test": true,
+      "file_expert_source_test": true,
+      "sycl_mmvq_test": true,
+      "residency_publication_host_test": true,
+      "cache_tail_host_test": true,
+      "prefill_scratch_host_test": false,
+      "sycl_prefill_scratch_test": false
+    },
+    "controller_only_admission": false,
+    "interpretation": "A real configure/build invocation admits the recorded inputs after original source/recipe recovery. Identical engine bytes preserve their known source identity even after fixture edits; qualification reuse separately requires the relevant native/recipe/fixture proof. No new speed result is implied."
+  },
   "ownership_closed": true,
   "inputs": [
     {
       "root": "/home/yayoi/orca/workspaces/Strata/sycl",
-      "revision": "0a385b3888c196f025b6362d5c29f70637ab4031",
+      "revision": "87ce707df2a3cfbdbf88f2753c50feef78fb1efe",
       "count": 520,
-      "aggregate_sha256": "dcf93a11db64a2cad38e8ff309c0a32b45d50c64ad4594c7489a78c923c1ed85"
+      "aggregate_sha256": "e1ae944493e8df65f1ade82e25e9f3d9d59c071ec464f088c587d087477d36eb"
     },
     {
       "root": "/home/yayoi/ghq/github.com/ggml-org/llama.cpp/.worktree/dep-ggml-3cf-xe-e32-20261011",
