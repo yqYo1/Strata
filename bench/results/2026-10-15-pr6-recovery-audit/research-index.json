@@ -5833,6 +5833,40 @@
       "build_reference": "cpu-profiler-current.json::unitrace_build"
     },
     "artifact_retirement": "Consumed decision-support/transaction bodies retire under cpu-profiler-current.json::unitrace_recording_window.artifact_retirement. Earlier scope/closure evidence remains reachable at fefbd8744; substantive methods collection remains indexed for first production trace.",
-    "loader_probe_reference": "cpu-profiler-current.json::unitrace_loader_probe"
+    "loader_probe_reference": "cpu-profiler-current.json::unitrace_loader_probe",
+    "next_wave": [
+      {
+        "scope": "production-prefill-window-source-map",
+        "classification": "decision_support",
+        "schedulable_now": true,
+        "prerequisites": [
+          {
+            "met": true,
+            "evidence": "Qualified626990208/b4ce2f00c small recording window; current3b native and actual host/bench source available; prior topic index shared. No production data required for this source map or knowledge collection."
+          }
+        ],
+        "report": ".cache/strata-research/20261020/production-prefill-window-source-map.json",
+        "spec": ".cache/strata-research/20261020/production-prefill-window-source-map-spec.txt",
+        "report_budget_bytes": 16384,
+        "state": "scoped",
+        "consumer": "First32K+ production trace boundary/work reconciliation"
+      },
+      {
+        "scope": "device-driven-variable-gemm-dispatch",
+        "classification": "knowledge_collection",
+        "schedulable_now": true,
+        "prerequisites": [
+          {
+            "met": true,
+            "evidence": "Qualified626990208/b4ce2f00c small recording window; current3b native and actual host/bench source available; prior topic index shared. No production data required for this source map or knowledge collection."
+          }
+        ],
+        "report": ".cache/strata-research/20261020/device-driven-variable-gemm-dispatch.json",
+        "spec": ".cache/strata-research/20261020/device-driven-variable-gemm-dispatch-spec.txt",
+        "report_budget_bytes": 18432,
+        "state": "scoped",
+        "consumer": "Future measured launch/metadata bottleneck; Main retrieves only when a concrete implementation question requires it."
+      }
+    ]
   }
 }
