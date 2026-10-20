@@ -1,5 +1,5 @@
 {
-  "source_commit": "96e6d9e817aa1f8fd9d212befb388a636817f008",
+  "source_commit": "a51989adcd9715f6bdb1165080d0f178c9709140",
   "binary": {
     "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/strata",
     "bytes": 22097128,
@@ -36,7 +36,7 @@
     },
     "sycl_prefill_scratch_test": {
       "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/sycl_prefill_scratch_test",
-      "sha256": "4e0b77b3d7f4aab36bfe21fb1fe226e353619f924cfb67f7dc33b094ab578849"
+      "sha256": "721de16c117cb1d561206edd4275c6a2925b8e80b274b92021db734041b9a2a2"
     }
   },
   "environment_reference": "tools/sycl/measurement_environment.json",
@@ -88,7 +88,7 @@
       "exit_code": 0,
       "environment_delta": {},
       "stdout_sha256": "dadad801d8022f3b40ad3bdab3e29f65fc13e1f61d60b219406f04e9881bb5be",
-      "stderr_sha256": "4932bc085ca90ecf7ea7fa1a0334dc36f2b904a8427b494538ff35bc31113762"
+      "stderr_sha256": "49fbcd9f7720506a8adf2ba160e423edbade56f57a8ddb73a1d7542a74de1dfb"
     },
     {
       "command": [
@@ -109,7 +109,7 @@
       "exit_code": 0,
       "environment_delta": {},
       "stdout_sha256": "148fbcc509e40ad207cfca2a47f0180d4a42c61ceee417648974ff573e3ba20c",
-      "stderr_sha256": "5a5359d5dc7e26777f559ce3dc2964260446a8629e9e64452540f8fa81f69a3a"
+      "stderr_sha256": "6bd1a61e466fa91aa5f26964533557b7f870042a87f6ff7887540fc6bac2c6b6"
     },
     {
       "command": [
@@ -139,7 +139,7 @@
       "exit_code": 0,
       "environment_delta": {},
       "stdout_sha256": "9066714b8b575e061109b08415161365b8f2eb8e185bee2ba01f6499319eb79b",
-      "stderr_sha256": "0a303b13748730b4914e13ff0bf7f8f76c215ff3f260e0983e0399713d7fc7c5"
+      "stderr_sha256": "99dde1b04929f9b54056ebf7622434de345154f0ea28c48f17c57e18fa18fe23"
     },
     {
       "command": [
@@ -154,7 +154,7 @@
       "exit_code": 0,
       "environment_delta": {},
       "stdout_sha256": "b167bcaa8392dc493f246a2849e21bdb809a66471d38bafdf7e058f01fdae03b",
-      "stderr_sha256": "13252e13ddba88a23191cc80ada7f4bc829e0b0425d83eea448d4ad2f5af4118"
+      "stderr_sha256": "85bb23e56adbb0209114bfac16ca2b1dbce410b4a769b18971a75178fc0dcbd7"
     },
     {
       "command": [
@@ -258,15 +258,77 @@
         "STRATA_SYCL_PREFILL_NATIVE16_BACKEND": "vllm"
       },
       "stdout_sha256": "d042b38fc9217cd4924a04307023ebb05ed0884fee1497766748a19e407ce7e1",
-      "stderr_sha256": "d9eb3198aa2c82d4f003ae7812f9097d7f5c58e51a8d8dc6310d0f2df69ea7f8"
+      "stderr_sha256": "17d6c534ac775d3d1a4640ae9bda4dc73bc3cdc8a19a5993ccaff2ec43c42bba"
+    },
+    {
+      "command": [
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/sycl_prefill_scratch_test",
+        "--case",
+        "full"
+      ],
+      "cases": [
+        "prefill_scratch_device case=exact_init status=PASS",
+        "prefill_scratch_device case=moved_relayout status=PASS",
+        "prefill_scratch_device case=smaller_relayout status=PASS",
+        "prefill_scratch_device case=growth_refusal status=PASS",
+        "prefill_scratch_device case=one_byte_short_poison status=PASS",
+        "prefill_scratch_device case=poison_entries status=PASS",
+        "prefill_scratch_device case=reset_recovery status=PASS",
+        "prefill_scratch_device case=relayout_short_poison status=PASS",
+        "prefill_scratch_device case=gemm_init_refusal status=PASS",
+        "prefill_scratch_device case=gemm_rebind_refusal status=PASS",
+        "prefill_scratch_device case=malformed_qsa_refusal status=PASS",
+        "prefill_scratch_device case=parent_bounds_refusal status=PASS",
+        "prefill_scratch_device case=host_usm_refusal status=PASS",
+        "prefill_scratch_device case=foreign_queue_refusal status=PASS",
+        "prefill_scratch_device case=canary_and_retirement status=PASS"
+      ],
+      "passed": true,
+      "expected_exit": 0,
+      "exit_code": 0,
+      "environment_delta": {
+        "STRATA_SYCL_PREFILL_SCRATCH_ALIAS": "1",
+        "STRATA_PREFILL_MMQ": "0",
+        "STRATA_PREFILL_MOE_COMPACT_FP16": "1",
+        "STRATA_SYCL_PREFILL_NATIVE16": "bf16",
+        "STRATA_SYCL_PREFILL_NATIVE16_QSA": "1",
+        "STRATA_SYCL_PREFILL_GDN_CHUNK64": "0",
+        "STRATA_SYCL_PREFILL_NATIVE16_BACKEND": "vllm"
+      },
+      "stdout_sha256": "c6aa0631e20d25db9810637b1608220b0d3daab25d0fe18129572d835870cf3a",
+      "stderr_sha256": "ee448aac8ba0adb4521532fe42416122e1a9be816ac182cd7cb1a9d6c5128f58"
+    },
+    {
+      "command": [
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/sycl_prefill_scratch_test",
+        "--case",
+        "retirement"
+      ],
+      "cases": [
+        "prefill_scratch_device retirement=reset queue_domain_changed=1 owners_live=1 old_queue_drained=1 foreign_in_order=1 expected_exit=1 status=PASS"
+      ],
+      "passed": true,
+      "expected_exit": 1,
+      "exit_code": 1,
+      "environment_delta": {
+        "STRATA_SYCL_PREFILL_SCRATCH_ALIAS": "1",
+        "STRATA_PREFILL_MMQ": "0",
+        "STRATA_PREFILL_MOE_COMPACT_FP16": "1",
+        "STRATA_SYCL_PREFILL_NATIVE16": "bf16",
+        "STRATA_SYCL_PREFILL_NATIVE16_QSA": "1",
+        "STRATA_SYCL_PREFILL_GDN_CHUNK64": "0",
+        "STRATA_SYCL_PREFILL_NATIVE16_BACKEND": "vllm"
+      },
+      "stdout_sha256": "f59d9972eee23bdba254b31265746c0fe1c49c8c8d9165c5e277835bf8160eeb",
+      "stderr_sha256": "e51ea3bd58405836e3cb3c74661ac1a7263d7ff09d77796c73b508c7ffa09021"
     }
   ],
-  "complete": false,
-  "passed": false,
+  "complete": true,
+  "passed": true,
   "active": false,
   "model_performance_measured": false,
   "previous_result_reference": {
-    "commit": "d4579b44f154e5c74dbb38153adc5ad5c1e3f16b",
+    "commit": "1769fc9843afe6e5dadfefe16c038105d5fd0388",
     "path": "bench/results/2026-10-15-pr6-recovery-audit/verifier-copy-safety-current.json",
     "sha256": "bf0acd306ff34cca920c656a5ca19927839f83bb1da5ec4914fcd18f605b976d",
     "outcome": "Original v6 host-task gate failed after51 existing passes; this new finite-DMA plan does not change that outcome."
@@ -290,19 +352,20 @@
     "command": [
       "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/sycl_prefill_scratch_test",
       "--case",
-      "full"
+      "retirement"
     ],
     "exit_code": 1,
     "ownership_closed": true,
-    "stdout_sha256": "409cb91c8caa5caf258380685dde575682cc4ace209ea752532d8143778efa40",
-    "stderr_sha256": "5499b0a6d34b5d2a5c0f334c9e3a21ce685bb697606fd6d46f55f5be0e67e210"
+    "stdout_sha256": "f59d9972eee23bdba254b31265746c0fe1c49c8c8d9165c5e277835bf8160eeb",
+    "stderr_sha256": "e51ea3bd58405836e3cb3c74661ac1a7263d7ff09d77796c73b508c7ffa09021"
   },
   "grouped_copy_projection_contract_passed": true,
   "query_profile_contract_passed": true,
   "residency_publication_contract_passed": true,
   "cache_tail_contract_passed": true,
   "scratch_layout_contract_passed": true,
-  "error": "Actual Prefill full fixture failed at foreign_queue_refusal; original assertion: foreign queue admitted.",
+  "prefill_device_layout_contract_passed": true,
+  "prefill_reset_retirement_contract_passed": true,
   "ownership_closed": true,
   "fresh_faults": [],
   "boot_unchanged": true,
@@ -314,38 +377,17 @@
     "kernel": "7.0.0-38-generic",
     "devcoredump": false
   },
-  "partial_failed_fixture": {
-    "cases": [
-      "prefill_scratch_device case=exact_init status=PASS",
-      "prefill_scratch_device case=moved_relayout status=PASS",
-      "prefill_scratch_device case=smaller_relayout status=PASS",
-      "prefill_scratch_device case=growth_refusal status=PASS",
-      "prefill_scratch_device case=one_byte_short_poison status=PASS",
-      "prefill_scratch_device case=poison_entries status=PASS",
-      "prefill_scratch_device case=reset_recovery status=PASS",
-      "prefill_scratch_device case=relayout_short_poison status=PASS",
-      "prefill_scratch_device case=gemm_init_refusal status=PASS",
-      "prefill_scratch_device case=gemm_rebind_refusal status=PASS",
-      "prefill_scratch_device case=malformed_qsa_refusal status=PASS",
-      "prefill_scratch_device case=parent_bounds_refusal status=PASS",
-      "prefill_scratch_device case=host_usm_refusal status=PASS"
-    ],
-    "passed": false,
-    "footer_present": false,
-    "retirement_child_executed": false,
-    "diagnosis": "Harness constructed the foreign context queue without in_order. queue_for rejects it before the planned runtime-domain check; the combined assertion reports an ambiguous admitted message. Correct the fixture in a new committed plan/root, preserving this failed outcome."
-  },
-  "original_full_result": {
-    "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/decode-query-profile-component-v5/record.json",
-    "sha256": "b376d67e8f85d772270aadb8bd2730c0b0973b5c685e250e52a7fce7af9a3443",
-    "bytes": 57314
+  "previous_component_reference": {
+    "commit": "5d224d6b2",
+    "path": "bench/results/2026-10-15-pr6-recovery-audit/decode-query-profile-component-current.json",
+    "sha256": "3eccdd66985da3d5a39f07a42dbd970d93beb8d25b7a65ef5be8e3c034cecb40",
+    "outcome": "Failed/incomplete v5 foreign-queue harness;13 partial full cases; reset unrun. Unchanged original outcome."
   },
   "offline_evidence_tests": {
-    "source_commit": "96e6d9e817aa1f8fd9d212befb388a636817f008",
+    "source_commit": "a51989adcd9715f6bdb1165080d0f178c9709140",
     "command": "timeout 30s python3 -m unittest tools/test_sycl_query_profile.py tools/test_sycl_cache_borrow.py",
     "tests": 11,
     "passed": true,
-    "scope": "Offline controller/parser tests; no model or parent-loan qualification."
-  },
-  "next_action": "Keep native/controller source frozen until accepted Orca source review. Correct foreign queue construction/assertions and retirement injection in a fresh committed v6 plan; rebuild and run the complete gate. No retry of closed v5 or model launch."
+    "scope": "Offline admission/parser and CPU-only ERR/exit tests. No model or parent-loan qualification."
+  }
 }

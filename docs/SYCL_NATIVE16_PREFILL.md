@@ -2185,6 +2185,16 @@ same-domain stream completes before substitution. Separate actual init refusal
 from its runtime-domain reason, and require the reset child to print both setup
 checks before the expected context-error exit1. Preserve failed v5 through Git;
 neither this correction nor source review admits parent loans or model work.
+At sourcea51989adc, the corrected fixture rebuilt and all110 cases passed in
+the fresh v6 root. Both init context refusal and reset's actual context-error
+exit1 were reached; the latter stopped before owner release. All processes
+closed normally, boot remained unchanged, no fresh GPU fault occurred and the11
+offline tests passed. Engine bytes remain968200f3d60a from96e6d9e81; the changed
+fixture has its own newly built identity. Keep the shared QSA/checked teardown
+step, with borrowed mode10 still rejected. Next implement checked parent-loan
+generation, sealed interval/layout and complete cache-reader retirement, keeping
+loan bookkeeping until successful refill/publication. No new model or speed
+result follows from this gate, and physical262144/session/RESTORE remain open.
 Only a later qualified mechanism permits a
 fresh complete51+6-case plan. Preserve all pending-completion,
 untouched-output, payload/guard and owner-lifetime requirements under that plan.
