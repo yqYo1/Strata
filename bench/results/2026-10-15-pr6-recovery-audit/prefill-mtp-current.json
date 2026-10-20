@@ -1858,6 +1858,127 @@
           "source_log_sha256": "5687e6d105197199e2099e7d9484381ef1a9ce50902ada67af3d877d2f97249a",
           "limits": "Final long-request producer counters, not physical RAM/PCIe bytes or hardware saturation. Weight formats/bytes and CPU/GPU costs require separate attribution."
         }
+      },
+      {
+        "cohort": 2,
+        "arm": 1,
+        "passed": true,
+        "ownership_closed": true,
+        "warmup_work": [
+          {
+            "read_tokens": 74,
+            "draft_cells": 73,
+            "batch_count": 1,
+            "batch_ms": 7.4
+          },
+          {
+            "read_tokens": 264,
+            "draft_cells": 263,
+            "batch_count": 1,
+            "batch_ms": 3.5
+          },
+          {
+            "read_tokens": 910,
+            "draft_cells": 909,
+            "batch_count": 1,
+            "batch_ms": 15.0
+          },
+          {
+            "read_tokens": 1068,
+            "draft_cells": 1067,
+            "batch_count": 1,
+            "batch_ms": 15.9
+          }
+        ],
+        "native": {
+          "pid": 828062,
+          "start_ticks": 88788449,
+          "sid": 828018
+        },
+        "successful_warmups": 4,
+        "effective_environment_verified": true,
+        "request": {
+          "ok": true,
+          "err": null,
+          "ttft_s": 48.646,
+          "total_s": 452.907,
+          "prompt_tokens": 33210,
+          "reused_tokens": 0,
+          "read_tokens": 33210,
+          "generated_tokens": 3790,
+          "prompt_tps": 685.0,
+          "prompt_tps_source": "engine",
+          "decode_tps": 9.4,
+          "decode_tps_source": "engine",
+          "prompt_ms": 48481.8,
+          "decode_ms": 404401.7,
+          "drafts_offered": 3192,
+          "drafts_accepted": 2725,
+          "finish_reason": "stop",
+          "request_sha256": "1f3abe00dea144b0e26d862f282e7b90833de131b4527662a4aca2542cda918a",
+          "stream_complete": true,
+          "truncated": false,
+          "generated_tokens_source": "usage",
+          "client_interval": {
+            "request_begin_monotonic_ns": 888013899677163,
+            "first_output_monotonic_ns": 888062545346289,
+            "request_end_monotonic_ns": 888466806633922
+          },
+          "eligible": true,
+          "agreement_eligible": true,
+          "speed_eligible": true,
+          "speed_ineligible_reasons": [],
+          "ineligible_reasons": [],
+          "acceptance_rate": 0.8536967418546366,
+          "usage_generated_tokens": 3790,
+          "completion_includes_thinking": true,
+          "run": 0,
+          "order": 0,
+          "output_sha256": "e36c666647e5d179eff689d3ee30c7951fc6bdca4d1829ee283d14e4266092b7",
+          "reasoning_sha256": "1bc5ab8b02f5993b5bb8a348e01dbfeca35600a592053ef171ed04514b2e4507",
+          "output_chars": 5564,
+          "reasoning_chars": 4376,
+          "reasoning_tokens": null,
+          "workload": "regular-code",
+          "controller_eligible": true
+        },
+        "long_work": {
+          "read_tokens": 33210,
+          "draft_cells": 33209,
+          "batch_count": 5,
+          "batch_ms": 322.9
+        },
+        "actual_GPU_BF16_rows": 33209,
+        "actual_MoE_mode": 10,
+        "journal_valid": true,
+        "native_exit_code": 0,
+        "fault_probe": {
+          "fresh_faults": [],
+          "boot_unchanged": true,
+          "driver_after": {
+            "pci": "/sys/bus/pci/devices/0000:05:00.0",
+            "driver": "xe",
+            "vendor": "0x8086",
+            "device": "0xe20c",
+            "kernel": "7.0.0-38-generic",
+            "devcoredump": false
+          }
+        },
+        "native_expert_work": {
+          "submitted_blobs": 0,
+          "submitted_bytes": 0,
+          "completed_blobs": 0,
+          "completed_bytes": 0,
+          "host_view_groups": 0,
+          "gpu_miss_groups": 0,
+          "cpu_unique_misses": 1433629,
+          "cpu_entries": 1826276,
+          "cache_hits": 217084,
+          "cache_lookups": 2043360,
+          "rounded_cache_hit_percent": 10.6,
+          "source_log_sha256": "c17228f8bb0f411d89498f3ab73215979bac9aaa357aa0e48d565df990a36c04",
+          "limits": "Final long-request producer counters, not physical RAM/PCIe bytes or hardware saturation. Weight formats/bytes and CPU/GPU costs require separate attribution."
+        }
       }
     ],
     "active": false,
@@ -1883,6 +2004,63 @@
       "decode_ratio": 0.8493612244791986,
       "generation_length_ratio": 1.3010641949879849,
       "decision": "No adoption; frozen six-process cohort incomplete. First PP pair faster, TG reading slower, output length outside predeclared5% band; do not call decode nonregression or dismiss the slower reading as noise. Continue frozen remaining pairs unchanged."
+    },
+    "logical_CPU_expert_budget": {
+      "native_source_commit": "3b4998f326101fa913788fd368e1674b111dea03",
+      "layout": {
+        "path": "/home/yayoi/.local/share/strata-sycl/packs/qwen3.8-flash-next-iq3_s/native_experts.txt",
+        "sha256": "d9ac2dfa3ee63c55c9c6a6db26f72da0cec0ee41733f007e5cbbbba71617aa5d",
+        "layers": 48,
+        "format_groups": [
+          {
+            "gate_up": 18,
+            "down": 20,
+            "blob_bytes": 2176000,
+            "layers": 14
+          },
+          {
+            "gate_up": 22,
+            "down": 42,
+            "blob_bytes": 1510400,
+            "layers": 5
+          },
+          {
+            "gate_up": 22,
+            "down": 20,
+            "blob_bytes": 1971200,
+            "layers": 15
+          },
+          {
+            "gate_up": 18,
+            "down": 42,
+            "blob_bytes": 1715200,
+            "layers": 3
+          },
+          {
+            "gate_up": 21,
+            "down": 20,
+            "blob_bytes": 2329600,
+            "layers": 9
+          },
+          {
+            "gate_up": 21,
+            "down": 42,
+            "blob_bytes": 1868800,
+            "layers": 1
+          },
+          {
+            "gate_up": 23,
+            "down": 20,
+            "blob_bytes": 2662400,
+            "layers": 1
+          }
+        ]
+      },
+      "formula": "For each completed process, unique CPU jobs=cpu_unique_misses. Logical provider footprint bounds are jobs*[1510400,2662400] bytes; divide by generated_tokens for per-output bounds. cpu_entries/jobs is mean routed rows per unique job. Per-layer miss counts are absent, so do not substitute the layer-average blob size.",
+      "calibration_reference": "cpu-roofline-current.json: c24bfb62f44bf797319557e9e7c1b3264acc6d52; current pool.cpp/native_expert.cpp/pool.hpp unchanged by git diff. Historical coordinated6-thread scan achieved39.3515083656 logical GB/s; this is not an upper bound or measured model DRAM traffic.",
+      "capacity_reference": "decode-cpu-capacity-current.json: source396d0c91f301e0ac99b81d6641fdc435b95b4da9, three one/five-worker emitted-token latency ratios1.684906/1.352426/1.247972, geomean1.416766. Source/placement differ from this current diagnostic; supports historical CPU-capacity sensitivity, not current arithmetic/RAM saturation.",
+      "limits": "Provider footprint is not physical DRAM/PCIe traffic, code-issued loads or an achieved bandwidth. Complete non-MoE work, per-format/NT job mix, cache-line reuse and current critical-path CPU/GPU costs remain unmeasured. No hardware ceiling,70TG feasibility or adoption claim.",
+      "consumer": "Choose a source-pinned CPU/RAM/placement discriminator after the frozen MTP cohort; review at its closure, before adding another byte-model survey."
     }
   }
 }

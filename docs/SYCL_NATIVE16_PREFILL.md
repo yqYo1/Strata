@@ -2967,9 +2967,20 @@ generation-length difference exceeds the declared5% decode comparison band;
 retain the slower TG reading without calling it noise or nonregression. Complete
 the remaining pairs unchanged. Diagnostic observers remain enabled; these TG
 readings are not comparable with the older14.6tok/s clean result.
+The second independent FP16 process closes at685.0PP/9.4TG, with322.9ms of
+draft-KV batch time. Its3790 generated tokens, answer/reasoning hashes,
+2725/3192 accepted drafts and logical expert counters match the first FP16
+process. All original process gates pass without a fresh fault; three of six
+processes have closed. Preserve the decode-time difference despite matching
+work, and finish the frozen comparison before selecting a clean follow-up.
 Final logical cache-hit ratios are9.8/10.6%, with GPU miss-copy counters zero
 under`pcie-frac0`. They do not measure RAM/PCIe bytes or establish a hardware
 ceiling; weighted expert bytes and CPU/GPU costs remain a separate attribution.
+The actual48-layer native layout has seven format pairs and1510400..2662400B
+per expert. Combining those bounds with unique CPU-job counters gives logical
+provider footprint bounds, not physical traffic. Per-layer/format job counts
+and complete CPU/GPU costs are still missing; the existing CPU scan and
+pool-capacity comparisons do not establish current model saturation.
 
 The closed capability output and consumed decision-support report/transaction
 bodies are retired:43 external files/112835B, with a path/hash/reason manifest
