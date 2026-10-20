@@ -2216,7 +2216,12 @@ retains poisoned/refilling/in-transition loans without dereferencing a cache.
 Relayout rejects them before mutation, and release/reset fails before freeing
 owners. Uniform products, residency dimensions and sized-slot alignment/sums
 are checked; sized allocation uses real slot indices and keeps exact default
-payload lengths. These corrections and the37-case host fixture are unbuilt.
+payload lengths. Source`181043472` passed the37-case host-only fixture under
+GCC13.3 with warnings as errors:22 scratch/layout,10 loan-protocol and5 scoped
+writer cases. Both compiler/test processes closed normally. Exact source and
+compiler hashes, commands and budgets are retained in the
+[host result](../bench/results/2026-10-15-pr6-recovery-audit/prefill-cache-loan-host-current.json).
+This does not build or qualify the changed SYCL engine or actual cache tickets.
 The prospective generator/verifier connection is default-off under
 `STRATA_SYCL_CACHE_SCRATCH_LEASE=1`, restricted to the single-cache serve route.
 It closes decode admission, retires verifier/session/MTP readers before use and

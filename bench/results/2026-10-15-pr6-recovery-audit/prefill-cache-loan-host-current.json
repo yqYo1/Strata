@@ -1,0 +1,73 @@
+{
+  "source_commit": "18104347299791d9e52cc123f6ae2d122eb4636a",
+  "source_sha256": {
+    "include/strata/prefill/scratch_allocation.hpp": "51eb79c4af262c6cda862e30ba6d9bff16cb6c1c6b292df96bcd9b01b4f34d6a",
+    "include/strata/core/cache_scratch_lease.hpp": "71e0c67d49cacb055b51e54db34afe8d0533029413a72303bbec4ad0de92e494",
+    "tests/core/prefill_scratch_test.cpp": "154adedd17be14ac496a8616538965b9ace5cf9b27cf4552bb416f2660c56adc",
+    "tools/sycl/check_mixed_scratch.py": "21497c9f0bd0077656b4f664e3da2cf53deaf581f575c2edb74e18d94f3bad7a",
+    "tools/sycl/measurement_guards.py": "794e332c70aca0acadad4f26d0414548e023a02fd27b72ed78fc773674423ec8",
+    "tools/sycl/measurement_owner.py": "bddd0c5e5020e882ca3404679420faec11e820dabce2ed4c72ef82b4c9c0874a"
+  },
+  "environment": {
+    "PATH": "/usr/bin:/bin",
+    "LANG": "C.UTF-8",
+    "LC_ALL": "C.UTF-8",
+    "TMPDIR": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-cache-loan-host-v1/tmp"
+  },
+  "compiler": {
+    "path": "/usr/bin/g++",
+    "sha256": "1353e9bdd29a7295c7226bf6c63abccce056d8cac31f112e5cdbecc3f28c2769"
+  },
+  "commands": [
+    [
+      "/usr/bin/g++",
+      "-O2",
+      "-std=c++20",
+      "-Wall",
+      "-Wextra",
+      "-Werror",
+      "-I/home/yayoi/orca/workspaces/Strata/sycl/include",
+      "/home/yayoi/orca/workspaces/Strata/sycl/tests/core/prefill_scratch_test.cpp",
+      "-o",
+      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-cache-loan-host-v1/prefill_scratch_host_test"
+    ],
+    [
+      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-cache-loan-host-v1/prefill_scratch_host_test"
+    ]
+  ],
+  "expected_cases": 37,
+  "complete": true,
+  "passed": true,
+  "active": false,
+  "GPU_executed": false,
+  "budgets": {
+    "wall_per_command": 30,
+    "cpu_seconds": 60,
+    "rss_bytes": 1073741824,
+    "raw_text_bytes": 65536,
+    "total_bytes": 134217728
+  },
+  "consumer": "Actual engine same-build host fixture admission and pending source integration; retain standalone fixture until its source is reachable from fork main, then retire it with raw output.",
+  "limits": "Host state, interval and layout arithmetic only. No actual ExpertCache ticket, GPU, generator/verifier, model speed, quality or physical262144/RESTORE qualification.",
+  "checks": {
+    "scratch_geometry_and_layout_cases": 22,
+    "loan_protocol_cases": 10,
+    "scoped_writer_cases": 5,
+    "all_passed": true
+  },
+  "fixture": {
+    "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-cache-loan-host-v1/prefill_scratch_host_test",
+    "sha256": "4710b822191ec500df933571f46a166b52a972112ac5a2c8c9cff49c4afe25d1",
+    "bytes": 90264
+  },
+  "ownership_closed": true,
+  "next_action": "Complete actual ExpertCache/Prefill device and fail-stop cases plus independent integration review; new engine build and model gates are still pending.",
+  "artifact_retirement": {
+    "state": "planned_after_compact_result_commit",
+    "manifest": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/closed-prefill-cache-loan-host-v1-raw.jsonl",
+    "sha256": "896cdac2aed7dcbd297081ff404fe34a9993ece2d626f69765a73c1b212f7968",
+    "files": 5,
+    "bytes": 10875,
+    "standalone_fixture_retained": true
+  }
+}
