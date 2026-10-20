@@ -44,11 +44,13 @@ def committed(path):
 
 
 def preload_evidence(text,pid):
-    begin=re.findall(r'^strata UR validation: pid=(\d+) phase=begin loader=([^\n]+)$',text,re.M)
-    proof=re.findall(r'^strata UR validation: pid=(\d+) phase=before-main threads_before=1 preinit=1 config_create=0 layers_query=0 enable=0 init=0 config_release=0 checked=46 untouched=1 retained_ref=1$',text,re.M)
-    guards.require(len(begin)==len(proof)==1 and int(begin[0][0])==int(proof[0])==pid and
+    begin=list(re.finditer(r'^strata UR validation: pid=(\d+) phase=begin loader=([^\n]+)$',text,re.M))
+    # Pinned ur_api.h: UR_RESULT_ERROR_UNINITIALIZED=37, INVALID_NULL_HANDLE=46.
+    proof=list(re.finditer(r'^strata UR validation: pid=(\d+) phase=before-main threads_before=1 preinit=37 config_create=0 layers_query=0 enable=0 init=0 config_release=0 checked=46 untouched=1 retained_ref=1$',text,re.M))
+    guards.require(len(begin)==len(proof)==1 and int(begin[0][1])==int(proof[0][1])==pid and
+        begin[0].start()<proof[0].start() and
         'strata UR validation failure:' not in text,'native-child config/first-init proof missing')
-    return dict(pid=pid,loader=begin[0][1],threads_before=1,preinit=1,config_enabled=True,
+    return dict(pid=pid,loader=begin[0][2],threads_before=1,preinit=37,config_enabled=True,
         first_init=True,dispatch_result=46,output_untouched=True,retained_reference_until_exit=True,
         runtime_teardown_qualified=False)
 
@@ -188,7 +190,7 @@ def main():
     global ROOT,SCOPE,PRELOAD_MODE
     guards.require(len(sys.argv)==2 and sys.argv[1] in ('prepare','run','prepare-preload','run-preload'),'use prepare/run or prepare-preload/run-preload')
     if sys.argv[1].endswith('-preload'):
-        PRELOAD_MODE=True;ROOT=B/'ur-validation-preload-v1';SCOPE='UR_silent_validation_native_child_scope'
+        PRELOAD_MODE=True;ROOT=B/'ur-validation-preload-v2';SCOPE='UR_silent_validation_native_child_scope'
     with (B/'owned-v0141-measurement.lock').open('a+') as lock:
         fcntl.flock(lock,fcntl.LOCK_EX|fcntl.LOCK_NB); guards.no_model_owners([]); guards.driver_guard()
         return run() if sys.argv[1].startswith('run') else prepare()
