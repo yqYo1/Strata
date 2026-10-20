@@ -2352,6 +2352,17 @@ successful compiler output and consumed source-audit transactions were retired
 after committing the evidence: 121 files, 39114382 bytes. The compact
 model result records the path/hash/reason manifest. Current engine/eight fixtures,
 the396 fallback and14 separate legacy provenance holds remain.
+The official32K+ capacity admission is now maintained in
+`tools/sycl/cache_capacity.py`: four official warmups/calibrations and one
+thinking-enabled1024+ output request, with all five exact1280-slot refill/map
+cycles and48 actual long borrowed FFNs required. Its21 offline tests passed
+at3f4752335; native/controller review verified18 pins, and Main recovered9831
+build inputs and verified the engine/eight fixtures and runtime. The source
+report halved residual storage in its arithmetic; the correct BF16 extent
+is20480B/row, as used by the controller. Actual capacity is unresolved, with
+the512MiB admission headroom unchanged. Commit and inspect the effective
+131072-context/int8 KV/chunk8192 plan before its single diagnostic run;
+clean owned-small/borrowed-large timing remains a separate next comparison.
 Only a later qualified mechanism permits a
 fresh complete51+6-case plan. Preserve all pending-completion,
 untouched-output, payload/guard and owner-lifetime requirements under that plan.

@@ -4796,7 +4796,7 @@
   "cache_loan_long_context_capacity_scope": {
     "classification": "decision support",
     "question": "Audit actual checked1280-slot long-input capacity and official warmup/failure paths before first32K+ long-generation model check.",
-    "source_commit": "ffa3dc37cbb2e4ea9b2628962c1c940f798b9850",
+    "source_commit": "3f4752335b75dca66a79d017063a18501cb76fa7",
     "frozen_inputs": {
       "src/program/generate.cpp": "95637fc1d6f4e8546345ab0f369dbd381ef7e72a2bf926a5c74b57f87b990b1b",
       "src/prefill/layer_major.inc": "16303c6e0f5be1b5cbf40beeb4e3ac82de12caea397f25106cd5f66357484d2b",
@@ -4811,7 +4811,11 @@
       "include/strata/prefill/layer_major_plan.hpp": "67bc25500ae777bfb387944a2415325868602b9da82aa945464b64b0a2b8b9fd",
       "include/strata/prefill/moe_accum_plan.hpp": "1fa1618eaf96a6ec50bc948f7c6750fc33f463c702cfbf36cd57e928597ca1aa",
       "include/strata/prefill/scratch_allocation.hpp": "b7001b50bbf9576f750133047762f0dcf6a28c8b601a472a4503c3f2bf9290bd",
-      "include/strata/core/cache_scratch_lease.hpp": "71e0c67d49cacb055b51e54db34afe8d0533029413a72303bbec4ad0de92e494"
+      "include/strata/core/cache_scratch_lease.hpp": "71e0c67d49cacb055b51e54db34afe8d0533029413a72303bbec4ad0de92e494",
+      "tools/sycl/cache_capacity.py": "9d39d3851bfc634901d6b5fd6f984918c53f8f44337df7fd506b6cb2ab3252f5",
+      "tools/test_sycl_cache_capacity.py": "5ba58f1a5b80b27b2c721994509f4f5e29719e2568a37e2ef7810c72c22da1b1",
+      "tools/sycl/query_profile.py": "e4347ac16db8072c9361a1781791de2626853587896e92ac18ee2b163a0791b2",
+      "tools/test_sycl_query_profile.py": "10a7f53d47793037d790897973f54a5870edfbfb9400fe23fdb72f5653c4b186"
     },
     "schedulable_now": false,
     "prerequisites": [
@@ -4820,11 +4824,11 @@
         "evidence": "Bounded actual v3 passed at3be1371a2, all48 FFNs and two exact refill/decode cycles; original native inputs remain unchanged atffa3dc37c."
       }
     ],
-    "status": "completed_pending_native_review",
+    "status": "reviewed_ready_for_committed_plan",
     "report": "/home/yayoi/orca/workspaces/Strata/sycl/.cache/strata-research/20261020/cache-loan-long-context-capacity-report.md",
     "report_budget_bytes": 12288,
     "consumer": "Main first official32K+ capacity admission; compare with owned128-slot baseline.",
-    "next_review": "After bounded report and native Luna-max curation; no steering or new GPU work by worker.",
+    "next_review": "Prepare/inspect/commit/run the single diagnostic. Retire consumed report/transactions after compact evidence; a later clean comparison needs its own prospective order/repetitions.",
     "task_id": "task_9e313bd304a0",
     "dispatch_id": "ctx_1eb6c8ee235e",
     "terminal_handle": "term_8541bf16-9d16-476c-9682-f3e0b8524581",
@@ -4833,6 +4837,31 @@
     "launch_reason": "Custom workspace-write/network argv; operator-owned terminal requires verified closure after accepted settlement.",
     "report_sha256": "eadb44a9e76d55aa15091f6393faea547e48341570ecbc7654d692d7d49ca083",
     "report_bytes": 11842,
-    "closure_evidence": "Accepted succeeded ctx_1eb6c8ee235e; release no_owned_resource. Exact612c7d2e incarnation idle, operator close ptyKilled=true; delivery8942c3c368aa acknowledged."
+    "closure_evidence": "Accepted succeeded ctx_1eb6c8ee235e; release no_owned_resource. Exact612c7d2e incarnation idle, operator close ptyKilled=true; delivery8942c3c368aa acknowledged.",
+    "bounded_long_check_accepted": true,
+    "native_report_source_commit": "ffa3dc37cbb2e4ea9b2628962c1c940f798b9850",
+    "native_review": "/home/yayoi/orca/workspaces/Strata/sycl/.cache/strata-research/20261020/cache-loan-long-context-capacity-native-review.json",
+    "native_review_sha256": "c5ffb6b5d99cfd7eae92d3a5d38a19ccdd1aca701aa5ecffd7446d5662af9d8e",
+    "native_review_bytes": 5995,
+    "offline_evidence_gate": {
+      "source_commit": "3f4752335b75dca66a79d017063a18501cb76fa7",
+      "cases": 21,
+      "passed": true,
+      "GPU_executed": false,
+      "command": "python3 -B -m unittest tools/test_sycl_cache_capacity.py tools/test_sycl_query_profile.py tools/test_sycl_cache_borrow.py"
+    },
+    "same_build_admission": {
+      "passed": true,
+      "original_inputs_recovered": 9831,
+      "engine_and_eight_fixtures_verified": true,
+      "current_runtime_assets_verified": true,
+      "GPU_executed": false
+    },
+    "corrections": [
+      "Report halves residual bytes. Source has D=N*HC=2560*4=10240 elements/row; BF16 makes 20480 B/row, matching controller rows*20480. Correct totals for 32767/65535/117488/262143 rows: 671068160/1342156800/2406154240/5368688640 B.",
+      "With corrected residual, report arithmetic cannot establish capacity. ExpertBankPlan checks live free VRAM, allocation limit, bank/prefix/headroom and residual together; actual admission is unknown. The bounded probe remains a valid way to discover refusal.",
+      "min_observed_free_bytes is discrete lend/refill low-water evidence, not continuous peak VRAM."
+    ],
+    "operational_digest": "Curated report and current18 native/controller pins verified. Source supports one official32K+ primary-window capacity check with five exact refill/map cycles,48 long FFNs, failure process stop and unchanged safety flags. Report residual arithmetic is corrected to20480B/row; actual admission and continuous peak VRAM remain unknown. Main must inspect and commit the exact effective plan. No speed,quality,physical262144/session/RESTORE qualification."
   }
 }
