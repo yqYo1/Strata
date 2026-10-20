@@ -5318,7 +5318,15 @@
         "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/ur-validation-canary-v1",
         "error": "canary build failed",
         "native_probe_executed": false,
-        "reason": "C11 source omitted stdbool.h required by installed ur_api.h; compiler reported unknown bool. Closed build failure, not a device failure. Correct source and use a fresh v2 root."
+        "reason": "C11 source omitted stdbool.h required by installed ur_api.h; compiler reported unknown bool. Closed build failure, not a device failure. Correct source and use a fresh v2 root.",
+        "raw_retirement": {
+          "manifest": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/ur-canary-v1-closed-build-cleanup-20261020.jsonl",
+          "sha256": "805e4f1789f5ab1cd261efc2167e16fcefc8a7d65e780049058984940db20b46",
+          "files": 4,
+          "bytes": 50737,
+          "remaining_closed_sentinel_bytes": 240,
+          "outcome_unchanged": true
+        }
       }
     ],
     "host_canary_evidence": {
@@ -5342,12 +5350,13 @@
       "validation_log_bytes": 0,
       "plan_commit": "3794ecb50",
       "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/ur-validation-canary-v2",
-      "limits": "One independent host-only process; init/API/teardown,165Btrace, no platform/device/queue/enqueue/kernel. It does not prove activation in the retained model child. No speed orGPU model qualification."
+      "limits": "One independent host-only process; init/API/teardown,165Btrace, no platform/device/queue/enqueue/kernel. It does not prove activation in the retained model child. No speed orGPU model qualification.",
+      "retention": "Keep the165B trace and current small host fixture/source receipt for the active native-child bootstrap investigation; review at its source qualification. Two inference generations remain unchanged; no third inference engine built."
     }
   },
   "UR_silent_validation_native_child_scope": {
     "classification": "decision support",
-    "schedulable_now": true,
+    "schedulable_now": false,
     "worker_closed": false,
     "prerequisites": {
       "host_canary_passed": true,
@@ -5367,6 +5376,13 @@
       "bench/sycl/ur_validation_canary.c": "b215c140c562866ad144402283167cb7fcd8596538c88c20287fcad516af8728",
       "tools/sycl/ur_validation.py": "56a09a2e975eb47a79a48c98c74b197b7ab6bb6a585a7317362463536b2b783c",
       "tools/sycl/measurement_environment.json": "d4402591df50e80dc45a5ec9e4839c7a794888850b1473537b6f95179be5b03c"
-    }
+    },
+    "status": "orca_research_running",
+    "task_id": "task_b9865fa16375",
+    "dispatch_id": "ctx_e804d631ff52",
+    "terminal_handle": "term_ba54cf64-977d-469b-b2c4-92aa0093c429",
+    "incarnation_id": "3a2dbbe0-24e3-4442-a953-7e73a52a1b0d",
+    "launch_evidence": "Normal Orca worker-start confirmed effective codex/gpt-6-luna/high, then failed before task injection at the startup update prompt. Main skipped the update before research began, confirmed tui-idle, and explicitly retried the same failed task/terminal with --retry-of; ctx_e804d631ff52 reports input_accepted and turnStart=observed. No active worker steering or agent update.",
+    "startup_failure_dispatch": "ctx_cb5fa80d1005"
   }
 }
