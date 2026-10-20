@@ -5848,7 +5848,7 @@
         "report": ".cache/strata-research/20261020/production-prefill-window-source-map.json",
         "spec": ".cache/strata-research/20261020/production-prefill-window-source-map-spec.txt",
         "report_budget_bytes": 16384,
-        "state": "report delivered; native curation running; exact operator terminal closed",
+        "state": "Report delivered and natively curated; exact operator terminal closed; lifecycle settlement unconfirmed.",
         "consumer": "First32K+ production trace boundary/work reconciliation",
         "taskId": "task_9ab3300f626e",
         "dispatchId": "ctx_fea8e9ca1eeb",
@@ -5873,7 +5873,7 @@
         "report": ".cache/strata-research/20261020/device-driven-variable-gemm-dispatch.json",
         "spec": ".cache/strata-research/20261020/device-driven-variable-gemm-dispatch-spec.txt",
         "report_budget_bytes": 18432,
-        "state": "report delivered; native curation running; exact operator terminal closed",
+        "state": "Report delivered and natively curated; exact operator terminal closed; lifecycle settlement unconfirmed.",
         "consumer": "Future measured launch/metadata bottleneck; Main retrieves only when a concrete implementation question requires it.",
         "taskId": "task_ec461faf4498",
         "dispatchId": "ctx_3ce0fd8485a4",
@@ -5890,6 +5890,38 @@
       "sha256": "ba8e609dda501f05f874f2af1f13d77536f636506e60020b2426eeda91a0e70f",
       "decision": "Bounded source map substantive. Knowledge collection accepted as retrieval-only; Main has not read its body. Native-source map is current; benchmark/wrapper hashes predate changed source, now pinned independently. Current CPU wrapper gate passed; full production route/journal/host/loss analysis follows collection.",
       "next_scope_eligibility": "No duplicate source-map scope; actual production data required before trace-specific follow-up."
-    }
+    },
+    "closed_request_analysis_wave": [
+      {
+        "scope": "production-trace-qsa-byte-model",
+        "classification": "decision_support",
+        "schedulable_now": true,
+        "prerequisites": [
+          {
+            "met": true,
+            "evidence": "Closed collection at487645cbf: actual request/timeline+native source available; prior source-map scope curated, no duplicate."
+          }
+        ],
+        "report": ".cache/strata-research/20261020/production-trace-qsa-byte-model.json",
+        "spec": ".cache/strata-research/20261020/production-trace-qsa-byte-model-spec.txt",
+        "report_budget_bytes": 16384,
+        "state": "scoped; not dispatched"
+      },
+      {
+        "scope": "production-trace-collector-loss-contract",
+        "classification": "decision_support",
+        "schedulable_now": true,
+        "prerequisites": [
+          {
+            "met": true,
+            "evidence": "Closed collection at487645cbf: actual request/timeline+native source available; prior source-map scope curated, no duplicate."
+          }
+        ],
+        "report": ".cache/strata-research/20261020/production-trace-collector-loss-contract.json",
+        "spec": ".cache/strata-research/20261020/production-trace-collector-loss-contract-spec.txt",
+        "report_budget_bytes": 16384,
+        "state": "scoped; not dispatched"
+      }
+    ]
   }
 }
