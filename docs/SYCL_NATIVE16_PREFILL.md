@@ -2507,17 +2507,45 @@ source fix. The old-owned117K request then passed at the committed`fc118efc6` pl
 all96 direct-owner retirements, same-nativePID3599067 activation before model work,
 24 thought tokens, native exit0 and complete owned closure, with a successful
 journal query and no matched fresh fault. Its126038.0ms /932.2tok/s is first-use
-validation evidence, not clean speed. That result preceded the six clean
-processes, which separate first-use from three subsequent requests. Five processes
-now closed normally. The three old-owned128 process medians are1005.8/1004.2/1005.1
-tok/s (exact values in the [comparison result](../bench/results/2026-10-15-pr6-recovery-audit/cache-long-comparison-current.json));
-first-use values931.6/930.7/924.9 remain separate. Thus retained source`396d0c91f`
-meets the repeated117K-input1000 speed condition on this runtime. Current-borrowed
-medians are999.9/1000.1 so far; its final independent process is still required
-for the predeclared three-pair screen. All closed processes passed route, observer
-absence, ownership and fault checks. This is short-output prefill speed evidence;
-quality, sustained decode and physical262144/session/RESTORE/default qualification
-remain pending.
+validation evidence, not clean speed. All six clean processes subsequently
+closed in the frozen old/current/current/old/old/current order. Each had one
+short warmup and four fresh117489-token requests; three subsequent requests
+form each process median. Native exits, owned closure, actual placement,
+observer absence and journal probes passed, with no matched fresh fault. All15
+model assets passed complete SHA256 checks before collection and after the
+last process. Both native binaries and all138 benchmark inputs stayed fixed.
+
+| Independent pair | Old-owned128 median, tok/s | Current-borrowed1256 median, tok/s | Current/old |
+| --- | ---: | ---: | ---: |
+| 0, old first | 1005.8 | 999.9 | 0.994195 |
+| 1, current first | 1004.2 | 1000.1 | 0.995864 |
+| 2, old first | 1005.1 | 1000.3 | 0.995245 |
+
+All three ratios favor old-owned128; their geometric mean is0.995100913
+(**current0.4899% slower**). Neither prospective2% faster/slower screen passes;
+the nonregression gate passes. Do not dismiss the consistent direction as
+measured noise, or adopt the borrowed route as a prefill speedup. First-use
+values931.6/925.9/926.8/930.7/924.9/927.6 remain separate. Old source`396d0c91f`
+meets the repeated117K-input1000 speed condition. Current source`bb71e78db`
+has medians999.9/1000.1/1000.3 and misses its all-three-process1000 milestone.
+The [compact result](../bench/results/2026-10-15-pr6-recovery-audit/cache-long-comparison-current.json)
+retains all24 individual samples; its unchanged predeclared analyzer reproduces
+the same decision after redundant result fields are removed. This is route-level
+short-output prefill evidence: both engine revision and placement differ. All
+24 outputs end after thinking, with no answer. Quality, sustained decode, agent
+session, physical262144/session/RESTORE and default adoption remain pending.
+
+Keep old-owned128 as the measured fastest fallback. Current-borrowed1256 is
+retained only for the imminent117K resource attribution, then review which
+validated generation to keep before another build. Source inspection confirms
+expert payload refill reads the original host Arena and queues H2D copies; it
+does not save the production expert payload D2H. D2H/memcmp is loan-audit-only.
+The outer refill precedes prompt_ms but follows the internal NativeDense host
+restore interval. Measure that missing interval separately, reconcile actual
+planned-window/issuer jobs and disjoint CPU/wait regions, and collect only
+supported physical counters. Utilization, service percentages and requested
+bytes still do not establish the limiting hardware resource or a BF16/FP16
+compute ceiling.
 
 For the separate earlier early-PCIe candidate, only a later qualified mechanism permits a
 fresh complete51+6-case plan. Preserve all pending-completion,
