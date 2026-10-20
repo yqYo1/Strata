@@ -1,7 +1,7 @@
 {
   "mode": "engine-compare",
-  "stage": "check",
-  "cohort": null,
+  "stage": "clean",
+  "cohort": 0,
   "arm": 0,
   "source_commit": "bec57ee62ac8a78d7f02aacbba2da9045a2ef348",
   "build_source_commit": "396d0c91f301e0ac99b81d6641fdc435b95b4da9",
@@ -188,7 +188,7 @@
       "sid": 3599031
     }
   },
-  "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/retained-long-comparison-v1-check",
+  "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/retained-long-comparison-v1-0",
   "config": {
     "exe": "/home/yayoi/orca/workspaces/Strata/sycl/tools/sycl/engine_once.py",
     "args": [
@@ -205,7 +205,7 @@
       "--expert-cache",
       "128",
       "--expert-profile",
-      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/retained-long-comparison-v1-check/expert-profile.bin",
+      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/retained-long-comparison-v1-0/expert-profile.bin",
       "--expert-cache-per-layer",
       "--pool-workers",
       "5",
@@ -244,7 +244,7 @@
       "strata"
     ],
     "host": "127.0.0.1",
-    "log": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/retained-long-comparison-v1-check/engine.stderr",
+    "log": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/retained-long-comparison-v1-0/engine.stderr",
     "engine_silence_s": 480,
     "parallel": 1,
     "open_browser": false,
@@ -304,7 +304,7 @@
     "STRATA_SYCL_SELECT_CYCLIC": "0",
     "STRATA_SYCL_PROMPT_K_CELL_MAJOR": "0",
     "STRATA_SYCL_PROMPT_NATIVE_KV_MIN": "0",
-    "XDG_CACHE_HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/retained-long-comparison-v1-check/cache",
+    "XDG_CACHE_HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/retained-long-comparison-v1-0/cache",
     "STRATA_SYCL_PREFILL_NATIVE16": "bf16",
     "STRATA_SYCL_PREFILL_QSA_MATH": "bf16-prefix-ordered-exp",
     "STRATA_SYCL_PREFILL_NATIVE16_BACKEND": "vllm",
@@ -317,8 +317,8 @@
     "STRATA_SYCL_SCORE_HEAD_PARALLEL": "1",
     "STRATA_SYCL_PREFILL_SCORE_GEMM": "1",
     "STRATA_SYCL_PREFILL_COMMAND_PROFILE": "0",
-    "TMPDIR": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/retained-long-comparison-v1-check/tmp",
-    "STRATA_MEASUREMENT_ROOT": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/retained-long-comparison-v1-check",
+    "TMPDIR": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/retained-long-comparison-v1-0/tmp",
+    "STRATA_MEASUREMENT_ROOT": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/retained-long-comparison-v1-0",
     "ZES_ENABLE_SYSMAN": "0",
     "STRATA_SYCL_PREFILL_GDN_COLUMNS": "4",
     "STRATA_SYCL_PREFILL_GDN_CHUNK64": "0",
@@ -333,33 +333,28 @@
     "STRATA_SYCL_VERIFY_PCIE_EARLY": "0",
     "STRATA_SYCL_VERIFY_PCIE_EARLY_AUDIT": "0",
     "STRATA_SYCL_QUERY_PROFILE": "0",
-    "CUDA_MODULE_LOADING": "EAGER",
-    "UR_ENABLE_LAYERS": "UR_LAYER_PARAMETER_VALIDATION",
-    "STRATA_TRACE": "1",
-    "UR_LOG_VALIDATION": "level:warning;flush:warning;output:stderr",
-    "UR_LOG_LOADER": "level:warning;flush:warning;output:stderr",
-    "UR_LOG_LEVEL_ZERO": "level:warning;flush:warning;output:stderr"
+    "CUDA_MODULE_LOADING": "EAGER"
   },
   "command": [
     "/bin/sh",
     "/home/yayoi/orca/workspaces/Strata/sycl/bench.sh",
     "--config",
-    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/retained-long-comparison-v1-check/config.json",
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/retained-long-comparison-v1-0/config.json",
     "--port",
-    "41031",
+    "54167",
     "--prefill-only",
     "--prefill-tokens",
     "98304",
     "--think",
     "--runs",
-    "1",
+    "4",
     "--workload-id",
     "native_gdn_20261018",
     "--fail-fast-engine-error",
     "--ready-timeout",
     "600",
     "--out",
-    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/retained-long-comparison-v1-check/bench"
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/retained-long-comparison-v1-0/bench"
   ],
   "runtime_asset_delta": {
     "/usr/lib/x86_64-linux-gnu/libze_intel_gpu.so.1.17.39395": {
@@ -379,7 +374,7 @@
       "candidate_sha256": "0d6934adafb2ef3c640382440c14d6bd60f391e688c000796ffcea0c72849269"
     }
   },
-  "config_sha256": "d9e8a39da1d8a6918d38224c086018d36aef0c0ae99ce495c98fc477e74e337c",
+  "config_sha256": "4e7758cfc724a7f543d4af8b294ae6dfc1cfd2427ce47194c5cf3e1d858f4bbf",
   "profile_sha256": "8f59b4aa8873209dff11c11e37bcda9529a1335b724a1afeea37bf6388975baf",
   "settings_sha256": "d4402591df50e80dc45a5ec9e4839c7a794888850b1473537b6f95179be5b03c",
   "tokenizer_assets": {
@@ -570,8 +565,8 @@
   },
   "source_count": 138,
   "benchmark_fingerprint": "8f205dbc4c44e82f36784fb8c6a6421d66a2675df9ae3b3e3801d1cebcdffad4",
-  "complete": true,
-  "passed": true,
+  "complete": false,
+  "passed": false,
   "active": false,
   "adoption_qualified": false,
   "budgets": {
@@ -581,133 +576,5 @@
     "text_cap": 67108864,
     "file_cap": 67108864,
     "total_cap": 67108864
-  },
-  "native_validation_probe": {
-    "library": {
-      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/ur-validation-preload-v2/libstrata_ur_validation.so",
-      "sha256": "1d4e69d672d55fa0a126ae43b7b4743482cccca7e2f2bc22e0db2bfdad5bdc7c"
-    },
-    "loader": {
-      "path": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_loader.so.0.12.0",
-      "sha256": "bb6e1311850e4b1a924e42acae80c2b3610934625a4985aaa67967abe31356fc"
-    },
-    "component_source_commit": "f312b6691f508125db6cfc2580ca32a686ff2642",
-    "component_original_plan": {
-      "commit": "550c75f5fc954ee38b70230e32d2a48e12100d8a",
-      "path": "bench/results/2026-10-15-pr6-recovery-audit/research-index.json",
-      "sha256": "d12866b93c51e76a83e95638e66b6f6f4e0e33d779516a5fddecc178a6f8e10a"
-    },
-    "retained_reference_until_exit": true,
-    "runtime_teardown_qualified": false
-  },
-  "exit_code": 0,
-  "requests": [
-    {
-      "ok": true,
-      "err": null,
-      "ttft_s": 126.204,
-      "total_s": 127.895,
-      "prompt_tokens": 117489,
-      "reused_tokens": 0,
-      "read_tokens": 117489,
-      "generated_tokens": 24,
-      "prompt_tps": 932.2,
-      "prompt_tps_source": "engine",
-      "decode_tps": 13.4,
-      "decode_tps_source": "engine",
-      "prompt_ms": 126038.0,
-      "decode_ms": 1787.6,
-      "drafts_offered": 21,
-      "drafts_accepted": 16,
-      "finish_reason": "length",
-      "request_sha256": "26f08fd8364b5c4bce718617fe2aed42761d0a794e068b00532694adef78b3be",
-      "stream_complete": true,
-      "truncated": true,
-      "generated_tokens_source": "usage",
-      "client_interval": {
-        "request_begin_monotonic_ns": 851985420082134,
-        "first_output_monotonic_ns": 852111624329429,
-        "request_end_monotonic_ns": 852113315098418
-      },
-      "output_chars": 0,
-      "reasoning_chars": 121,
-      "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-      "reasoning_sha256": "0d786145d04b965534c72ea005fcccb9fb3a7e2552f6dda1bf32578d1916b8b2",
-      "eligible": true,
-      "eligibility_errors": [],
-      "requested_min_tokens": 98304,
-      "actual_prompt_tokens": 117489,
-      "actual_read_tokens": 117489,
-      "actual_reused_tokens": 0,
-      "prompt_count_source": "usage.prompt_tokens",
-      "read_count_source": "timings.prompt_n",
-      "reuse_counts_reported": {
-        "usage": 0,
-        "timings": 0
-      },
-      "thinking_requested": true,
-      "reasoning_observed": true,
-      "reasoning_tokens_reported": null,
-      "run": 0
-    }
-  ],
-  "request_journal": {
-    "successful_warmups": 1,
-    "successful_long_requests": 1,
-    "request_sha256": [
-      "6976dd85c26437117139f185ce0ac4da0ab9d1d4eb576dd2f9e252ae99d63f03",
-      "26f08fd8364b5c4bce718617fe2aed42761d0a794e068b00532694adef78b3be"
-    ],
-    "journal_sha256": "62ee8cafae8098b2a2b9f2e0deb51cffc7d30e3900a794a026716f36e1baa773",
-    "state_sha256": "67d3b2deb808a3f6fd7539e7a5209660a19c520e52e34d2fb35dcc8ae6babd40"
-  },
-  "route_evidence": {
-    "actual_route_checked": true,
-    "expert_cache_slots": 128,
-    "loan_first": null,
-    "loan_slots": 0,
-    "suffix_identity_basis": "Exact completed payload/map admission, unchanged profile and static per-layer cache; first=slots-lent.",
-    "residual_gpu_rows": 117488,
-    "mode": 10,
-    "windows_per_layer": [
-      [
-        0,
-        81920
-      ],
-      [
-        81920,
-        35568
-      ]
-    ],
-    "checked_direct_owner_retirements": 96,
-    "validation_activation": {
-      "pid": 3599067,
-      "loader": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_loader.so.0.12.0",
-      "threads_before": 1,
-      "preinit": 37,
-      "config_enabled": true,
-      "first_init": true,
-      "dispatch_result": 46,
-      "output_untouched": true,
-      "retained_reference_until_exit": true,
-      "runtime_teardown_qualified": false
-    }
-  },
-  "native_identity": {
-    "pid": 3599067,
-    "start_ticks": 85189107,
-    "sid": 3599031
-  },
-  "ownership_closed": true,
-  "fresh_faults": [],
-  "fault_probe_successful": true,
-  "boot_unchanged": true,
-  "driver_after": {
-    "pci": "/sys/bus/pci/devices/0000:05:00.0",
-    "driver": "xe",
-    "vendor": "0x8086",
-    "device": "0xe20c",
-    "kernel": "7.0.0-38-generic",
-    "devcoredump": false
   }
 }
