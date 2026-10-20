@@ -2501,10 +2501,12 @@ to its exact recorded hash; new tool regressions live outside the native snapsho
 The earlier C11 build and numeric-enum parser failure remain failures in the
 [research index](../bench/results/2026-10-15-pr6-recovery-audit/research-index.json).
 At`df172f7e3`, all14 comparison tests pass, including same-PID/pre-model activation,
-clean absence, exact loan binding and failed-journal terminal evidence. Obtain the
-corrected-source audit before the actual old-owned117K check, then the six clean
-processes. They separate first-use from three subsequent requests; neither the
-1000tok/s target nor broader correctness requirements have changed.
+clean absence, exact loan binding and failed-journal terminal evidence. The corrected
+source audit and native Luna-max review now accept the controller without another
+source fix. Commit that eligibility before preparing the one checked old-owned117K
+request. Only its actual passed receipt permits six clean processes, which separate
+first-use from three subsequent requests. No comparison process has launched; the
+1000tok/s target and broader correctness requirements remain unqualified.
 
 For the separate earlier early-PCIe candidate, only a later qualified mechanism permits a
 fresh complete51+6-case plan. Preserve all pending-completion,
