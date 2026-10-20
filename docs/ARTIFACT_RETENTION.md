@@ -38,8 +38,15 @@ revision. Keep the archive commit reachable; do not rewrite shared history.
 Preserve the original source commits referenced by retained measurements when
 integrating branches. Use a merge commit for such work and verify those commits
 are reachable from the fork's retained default branch before deleting their
-branches or recoverable build artifacts. A squash or rebase with equivalent
-files does not preserve the recorded commit identities.
+branches. A squash or rebase with equivalent files does not preserve the
+recorded commit identities.
+
+Build retirement does not need to wait for default-branch integration when the
+exact original source and recipe are recoverable from the pushed, retained
+`feature/sycl` branch. Verify that remote ref and the original input identities
+before deletion; keep the measured commits reachable until default integration.
+A blocked PR is not a reason to retain unused binaries or duplicate receipts.
+This does not relax source recovery, consumer checks or branch-retirement rules.
 
 Useful active content is normally:
 

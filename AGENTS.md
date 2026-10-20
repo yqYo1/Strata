@@ -491,7 +491,11 @@ Follow [docs/ARTIFACT_RETENTION.md](docs/ARTIFACT_RETENTION.md) for every measur
   Retrieve the recorded source/recipe from reachable Git history and compare it
   with the exact final build's source identities before deleting its last copy.
   Preserve original measured commits and referenced inputs through integration
-  into the fork default. A matching binary/receipt hash proves artifact continuity,
+  into the fork default. Build retirement may use exact inputs recovered from
+  the pushed, retained `feature/sycl` branch; verify its remote ref and keep the
+  measured commits reachable until default integration. A blocked PR alone
+  does not justify unused binaries. Branch retirement still requires the
+  integration checks above. A matching binary/receipt hash proves artifact continuity,
   not source recovery; a seed, similarly named or later build is not proof.
   Reconcile uncommitted measured inputs before removing their last source/build copy.
   If recovery remains unresolved, record a temporary provenance hold with exact
