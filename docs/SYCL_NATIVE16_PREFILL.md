@@ -2465,19 +2465,31 @@ Logical rates exclude extra table/scratch traffic. Actual per-format/NT job
 frequencies and model critical-path CPU time remain unknown. Keep the pure-kernel,
 six-job-call and model questions separate; no model speed or70tok/s follows.
 See [the individual samples and pinned plan](../bench/results/2026-10-15-pr6-recovery-audit/cpu-roofline-current.json).
-The next model work remains1256-slot117K borrowed-tail admission and the retained
-old-owned/current-borrowed long-input comparison; new CPU methods need a bounded
-component comparison before inference adoption. The retained396 engine/five
-fixtures and current engine/eight fixtures have been rechecked against9813/9831
-original recoverable inputs and the current runtime, without executing GPU work.
-The [117K admission controller](../tools/sycl/cache_long.py) checks all96 FFN
-windows and exact cache restoration; its16 offline tests passed after correcting
-the active plan end1059131904 versus the full arena allocation. Exact corrected
-source review and actual admission remain prerequisites. The
+The1256-slot117K route now passed the official bounded admission at controller
+source`f27e07e07`, using the unchanged`bb71e78db` engine. Its16 offline tests and
+exact source review preceded the run. The74-token warmup and fresh117489-token
+request completed both exact cache payload/map cycles, all96 FFN windows and
+retirements,48 secondary-bank windows, dense Full restoration and actual decode.
+All117488 BF16 residual rows occupied2406154240B on GPU. The actual parent loan
+started at slot132 and lent1124 slots:2321664000B versus2319958528B required.
+Live admission reported4298412032B free versus4206942336B fixed including512MiB
+allowance. The mixed tail starts at1059131904 inside the1180698624B arena,
+after its active plan prefix. Discrete lend/refill minimum free was128106496B;
+this is not a continuous peak. Native exit0, owned-session closure, unchanged
+full hashes for15 model assets and no matched fresh fault passed. The diagnostic
+request took127263.2ms (923.2tok/s), with24 thought tokens and no answer body.
+It does not qualify clean speed, sustained decode, quality or physical262144/
+session/RESTORE. See [the compact admission and original plan](../bench/results/2026-10-15-pr6-recovery-audit/cache-long-current.json).
+
+Next close the retained old-owned/current-borrowed long-input comparison before
+changing engine inputs. Both engines/five and eight fixtures were rechecked
+against9813/9831 recoverable original inputs. The
 [comparison controller](../tools/sycl/cache_long_compare.py) has seven passing
-offline checks and a pending source audit. It separates the first request from
-three subsequent requests in each of six processes, preserving all samples and
-the original1000tok/s target;24-token output does not qualify sustained decode.
+offline checks; source review requires positive validation-layer activation
+evidence, exact admitted loan identity and an unconditional terminal receipt
+when the final journal probe fails. Correct and review those gates before
+launch. Its six processes separate first-use from three subsequent requests;
+the1000tok/s target and broader correctness requirements remain unchanged.
 
 For the separate earlier early-PCIe candidate, only a later qualified mechanism permits a
 fresh complete51+6-case plan. Preserve all pending-completion,
