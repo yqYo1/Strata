@@ -199,5 +199,423 @@
     "legacy_provenance_holds": 14,
     "outcome_unchanged": true
   },
-  "helper_retirement": "Closed private capability prepare/run helpers removed from maintained script; exact controller/commands/source430aa601f and generated plan dae871acc remain reachable. No GPU-resource modes changed."
+  "helper_retirement": "Closed private capability prepare/run helpers removed from maintained script; exact controller/commands/source430aa601f and generated plan dae871acc remain reachable. No GPU-resource modes changed.",
+  "unitrace_build": {
+    "schema": "strata-unitrace-host-build-v1",
+    "stage": "failed",
+    "source_commit": "31e142594dced3397972462f950e8e639f5ba4c5",
+    "input_sha256": {
+      "tools/sycl/unitrace_profile.py": "f892e52bb7c4df12a3edba362ae61bd2f16ff0605bd69b5574d7c23407cf125d",
+      "tools/sycl/measurement_guards.py": "794e332c70aca0acadad4f26d0414548e023a02fd27b72ed78fc773674423ec8",
+      "tools/sycl/measurement_owner.py": "bddd0c5e5020e882ca3404679420faec11e820dabce2ed4c72ef82b4c9c0874a",
+      "tools/sycl/measurement_environment.json": "d4402591df50e80dc45a5ec9e4839c7a794888850b1473537b6f95179be5b03c"
+    },
+    "official_source": {
+      "files": 331,
+      "sha256": "a7e45170dde6a53882da8ea2cd002492c843b14486a0fd04d91231bcba3be886"
+    },
+    "official_revision": "4b6d74294cdc72766c00a9211fe2e4261ee94244",
+    "active": false,
+    "consumer": "Bounded L0 collector/UR-validation coexistence and graph/copy/fill qualification, then32K+ production service/submission trace.",
+    "retention": "One current profiler tool build, separate from model engines. Retire build logs and consumed generated inputs after qualification; keep source/recipe/hashes. No new model generation.",
+    "safety": "HOST BUILD ONLY. No unitrace/collector execution, GPU target, privileges, sysctl, driver reset or service change.",
+    "gpu_qualified": false,
+    "model_qualified": false,
+    "passed": false,
+    "environment": {
+      "PATH": "/usr/bin:/bin",
+      "LANG": "C",
+      "LC_ALL": "C",
+      "TMPDIR": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/unitrace-l0-4b6d742-v1/tmp",
+      "PYTHONDONTWRITEBYTECODE": "1"
+    },
+    "budgets": {
+      "wall_s_per_compile": 900,
+      "cpu_s_per_compile": 900,
+      "rss_bytes": 8589934592,
+      "text_bytes_per_command": 16777216,
+      "total_bytes": 536870912,
+      "file_bytes": 134217728
+    },
+    "headers": [
+      {
+        "path": "include/level_zero/ze_api.h",
+        "sha256": "095a0eb442ae21946f29147c209f270b93dd0eb5b12a2d0c67e5f4138b533712",
+        "origin": {
+          "repo": "/home/yayoi/ghq/github.com/oneapi-src/level-zero",
+          "revision": "d3b3efbdaa27a0aef9a9812cc8fa4260557c1e7c",
+          "path": "include/ze_api.h"
+        }
+      },
+      {
+        "path": "include/level_zero/zes_api.h",
+        "sha256": "7c31adb191736ee77fe518de488207c6c34920a22b5cef71320d99cbe9bd4044",
+        "origin": {
+          "repo": "/home/yayoi/ghq/github.com/oneapi-src/level-zero",
+          "revision": "d3b3efbdaa27a0aef9a9812cc8fa4260557c1e7c",
+          "path": "include/zes_api.h"
+        }
+      },
+      {
+        "path": "include/level_zero/zet_api.h",
+        "sha256": "14cd443591c430172aa1cea8e03d31b8049971f08f67b27722b8b99ea3b14b51",
+        "origin": {
+          "repo": "/home/yayoi/ghq/github.com/oneapi-src/level-zero",
+          "revision": "d3b3efbdaa27a0aef9a9812cc8fa4260557c1e7c",
+          "path": "include/zet_api.h"
+        }
+      },
+      {
+        "path": "include/level_zero/zer_api.h",
+        "sha256": "5109d95cdf158030df49203278b74dbd7d0f583ddf170d6e2760f969d5b442bf",
+        "origin": {
+          "repo": "/home/yayoi/ghq/github.com/oneapi-src/level-zero",
+          "revision": "d3b3efbdaa27a0aef9a9812cc8fa4260557c1e7c",
+          "path": "include/zer_api.h"
+        }
+      },
+      {
+        "path": "include/level_zero/layers/zel_tracing_api.h",
+        "sha256": "2e7901c786580268713eead3a80924d907df07776c69230655dbc08419b59e3b",
+        "origin": {
+          "repo": "/home/yayoi/ghq/github.com/oneapi-src/level-zero",
+          "revision": "d3b3efbdaa27a0aef9a9812cc8fa4260557c1e7c",
+          "path": "include/layers/zel_tracing_api.h"
+        }
+      },
+      {
+        "path": "include/level_zero/layers/zel_tracing_register_cb.h",
+        "sha256": "aee2cd264623ab05d58c5cd207db130dd618adc35cb90b38db343a033d4f4fa7",
+        "origin": {
+          "repo": "/home/yayoi/ghq/github.com/oneapi-src/level-zero",
+          "revision": "d3b3efbdaa27a0aef9a9812cc8fa4260557c1e7c",
+          "path": "include/layers/zel_tracing_register_cb.h"
+        }
+      },
+      {
+        "path": "include/CL/tracing_api.h",
+        "sha256": "506273476b4f9e898a8e69fc9c455e19c23ce8ad1060de0d6de7ae0019211432",
+        "origin": {
+          "repo": "/home/yayoi/ghq/github.com/intel/compute-runtime",
+          "revision": "050536ff3b6f830199ec99cff8ffcac3d804c40a",
+          "path": "opencl/source/tracing/tracing_api.h",
+          "transform": "get_compute_runtime_headers.py local tracing_types include"
+        }
+      },
+      {
+        "path": "include/CL/tracing_types.h",
+        "sha256": "62c412e31d639e204460eaaf6cef9f816b2a4e5b9a4261a8909da4604da8b2fa",
+        "origin": {
+          "repo": "/home/yayoi/ghq/github.com/intel/compute-runtime",
+          "revision": "050536ff3b6f830199ec99cff8ffcac3d804c40a",
+          "path": "opencl/source/tracing/tracing_types.h",
+          "transform": null
+        }
+      },
+      {
+        "path": "include/CL/cl_ext_private.h",
+        "sha256": "b536d1644d3f81f69117ffe801f0ed252c448758a2987fef98119223a6316a07",
+        "origin": {
+          "repo": "/home/yayoi/ghq/github.com/intel/compute-runtime",
+          "revision": "050536ff3b6f830199ec99cff8ffcac3d804c40a",
+          "path": "opencl/extensions/public/cl_ext_private.h"
+        }
+      },
+      {
+        "path": "include/level_zero/ze_stypes.h",
+        "sha256": "32e6ca50ecad5753bcc2ca9d908c192754346712ebee36f42a22e458b9e55a20",
+        "origin": {
+          "repo": "/home/yayoi/ghq/github.com/intel/compute-runtime",
+          "revision": "050536ff3b6f830199ec99cff8ffcac3d804c40a",
+          "path": "level_zero/include/level_zero/ze_stypes.h"
+        }
+      },
+      {
+        "path": "include/level_zero/ze_intel_gpu.h",
+        "sha256": "0b2c5cc79921f0b754d20f5336423c2e119a41c55c31052a301e0941ba157c69",
+        "origin": {
+          "repo": "/home/yayoi/ghq/github.com/intel/compute-runtime",
+          "revision": "050536ff3b6f830199ec99cff8ffcac3d804c40a",
+          "path": "level_zero/include/level_zero/ze_intel_gpu.h"
+        }
+      },
+      {
+        "path": "include/level_zero/driver_experimental/mcl_ext/zex_mutable_cmdlist_control_flow_ext.h",
+        "sha256": "884487ac8cbcba08c52fea23a3d24bbb07e1192efd844b03d9ee699bad7fe7d0",
+        "origin": {
+          "repo": "/home/yayoi/ghq/github.com/intel/compute-runtime",
+          "revision": "050536ff3b6f830199ec99cff8ffcac3d804c40a",
+          "path": "level_zero/include/level_zero/driver_experimental/mcl_ext/zex_mutable_cmdlist_control_flow_ext.h"
+        }
+      },
+      {
+        "path": "include/level_zero/driver_experimental/mcl_ext/zex_mutable_cmdlist_dispatch_ext.h",
+        "sha256": "abb858d29c4408d73483170c0ad277f77206a2d8eea258d45db4c3ba0e02ea8b",
+        "origin": {
+          "repo": "/home/yayoi/ghq/github.com/intel/compute-runtime",
+          "revision": "050536ff3b6f830199ec99cff8ffcac3d804c40a",
+          "path": "level_zero/include/level_zero/driver_experimental/mcl_ext/zex_mutable_cmdlist_dispatch_ext.h"
+        }
+      },
+      {
+        "path": "include/level_zero/driver_experimental/mcl_ext/zex_mutable_cmdlist_ext.h",
+        "sha256": "0cfa5905b4b66d9552f8373ce60918f7f9893b038f76dd60e422029e2b226481",
+        "origin": {
+          "repo": "/home/yayoi/ghq/github.com/intel/compute-runtime",
+          "revision": "050536ff3b6f830199ec99cff8ffcac3d804c40a",
+          "path": "level_zero/include/level_zero/driver_experimental/mcl_ext/zex_mutable_cmdlist_ext.h"
+        }
+      },
+      {
+        "path": "include/level_zero/driver_experimental/mcl_ext/zex_mutable_cmdlist_serialization_ext.h",
+        "sha256": "5aa1b97d9ff2103201cdd17e465419c1215e2b873ec2c638b6bfcd59e04fe56e",
+        "origin": {
+          "repo": "/home/yayoi/ghq/github.com/intel/compute-runtime",
+          "revision": "050536ff3b6f830199ec99cff8ffcac3d804c40a",
+          "path": "level_zero/include/level_zero/driver_experimental/mcl_ext/zex_mutable_cmdlist_serialization_ext.h"
+        }
+      },
+      {
+        "path": "include/level_zero/driver_experimental/mcl_ext/zex_mutable_cmdlist_temp_mem_ext.h",
+        "sha256": "d19c59cbd94a5b9ed427d77118b84d56d9465f891fee5fe3406e10a7f71bcb76",
+        "origin": {
+          "repo": "/home/yayoi/ghq/github.com/intel/compute-runtime",
+          "revision": "050536ff3b6f830199ec99cff8ffcac3d804c40a",
+          "path": "level_zero/include/level_zero/driver_experimental/mcl_ext/zex_mutable_cmdlist_temp_mem_ext.h"
+        }
+      },
+      {
+        "path": "include/level_zero/driver_experimental/mcl_ext/zex_mutable_cmdlist_variable_ext.h",
+        "sha256": "a838d4e0afe67021ef232579d5091d9a25dbb5e774c49c3bd65a10f0172482ea",
+        "origin": {
+          "repo": "/home/yayoi/ghq/github.com/intel/compute-runtime",
+          "revision": "050536ff3b6f830199ec99cff8ffcac3d804c40a",
+          "path": "level_zero/include/level_zero/driver_experimental/mcl_ext/zex_mutable_cmdlist_variable_ext.h"
+        }
+      },
+      {
+        "path": "include/level_zero/driver_experimental/mcl_ext/zex_mutable_cmdlist_variable_info_ext.h",
+        "sha256": "e7ea36dd5207843e52938136bb00f96334163495bc8cb2610dee17a18d7a1587",
+        "origin": {
+          "repo": "/home/yayoi/ghq/github.com/intel/compute-runtime",
+          "revision": "050536ff3b6f830199ec99cff8ffcac3d804c40a",
+          "path": "level_zero/include/level_zero/driver_experimental/mcl_ext/zex_mutable_cmdlist_variable_info_ext.h"
+        }
+      },
+      {
+        "path": "include/level_zero/driver_experimental/zex_api.h",
+        "sha256": "b73b4ac75861d6a2f31570c8a893577d7f0d2457c0a72f54c8851018de05ed68",
+        "origin": {
+          "repo": "/home/yayoi/ghq/github.com/intel/compute-runtime",
+          "revision": "050536ff3b6f830199ec99cff8ffcac3d804c40a",
+          "path": "level_zero/include/level_zero/driver_experimental/zex_api.h"
+        }
+      },
+      {
+        "path": "include/level_zero/driver_experimental/zex_cmdlist.h",
+        "sha256": "be8e73eb45bffbd64b3420e1de5bd06cd07f7f0c13047d66ab03d26d43498262",
+        "origin": {
+          "repo": "/home/yayoi/ghq/github.com/intel/compute-runtime",
+          "revision": "050536ff3b6f830199ec99cff8ffcac3d804c40a",
+          "path": "level_zero/include/level_zero/driver_experimental/zex_cmdlist.h"
+        }
+      },
+      {
+        "path": "include/level_zero/driver_experimental/zex_common.h",
+        "sha256": "20f2480045d40015706e437e6ab37d5eda3698883abe81a7e17c777885163e65",
+        "origin": {
+          "repo": "/home/yayoi/ghq/github.com/intel/compute-runtime",
+          "revision": "050536ff3b6f830199ec99cff8ffcac3d804c40a",
+          "path": "level_zero/include/level_zero/driver_experimental/zex_common.h"
+        }
+      },
+      {
+        "path": "include/level_zero/driver_experimental/zex_context.h",
+        "sha256": "0b6eb65f34eb726dfae54c1a0edb3b662acc01e36712298aa6f34ffc3ad46cfb",
+        "origin": {
+          "repo": "/home/yayoi/ghq/github.com/intel/compute-runtime",
+          "revision": "050536ff3b6f830199ec99cff8ffcac3d804c40a",
+          "path": "level_zero/include/level_zero/driver_experimental/zex_context.h"
+        }
+      },
+      {
+        "path": "include/level_zero/driver_experimental/zex_driver.h",
+        "sha256": "18331f6d4257d34641cf22fcc3b11c2272d6b01d1849e905e03c5b7570a1be91",
+        "origin": {
+          "repo": "/home/yayoi/ghq/github.com/intel/compute-runtime",
+          "revision": "050536ff3b6f830199ec99cff8ffcac3d804c40a",
+          "path": "level_zero/include/level_zero/driver_experimental/zex_driver.h"
+        }
+      },
+      {
+        "path": "include/level_zero/driver_experimental/zex_event.h",
+        "sha256": "cfa8bd77af416f1c6a8e4cbe474ee53452a2b5246df10a8cb626c1799a1e5ad2",
+        "origin": {
+          "repo": "/home/yayoi/ghq/github.com/intel/compute-runtime",
+          "revision": "050536ff3b6f830199ec99cff8ffcac3d804c40a",
+          "path": "level_zero/include/level_zero/driver_experimental/zex_event.h"
+        }
+      },
+      {
+        "path": "include/level_zero/driver_experimental/zex_graph.h",
+        "sha256": "9d6a7d1cbf582341f7157c6669c6bc35c1574f0c708506252da590673f476406",
+        "origin": {
+          "repo": "/home/yayoi/ghq/github.com/intel/compute-runtime",
+          "revision": "050536ff3b6f830199ec99cff8ffcac3d804c40a",
+          "path": "level_zero/include/level_zero/driver_experimental/zex_graph.h"
+        }
+      },
+      {
+        "path": "include/level_zero/driver_experimental/zex_memory.h",
+        "sha256": "22938f1c24ca7daa3c96546e6e9aa3aa2682f09b56377a8ff9a7a9dade368497",
+        "origin": {
+          "repo": "/home/yayoi/ghq/github.com/intel/compute-runtime",
+          "revision": "050536ff3b6f830199ec99cff8ffcac3d804c40a",
+          "path": "level_zero/include/level_zero/driver_experimental/zex_memory.h"
+        }
+      },
+      {
+        "path": "include/level_zero/driver_experimental/zex_module.h",
+        "sha256": "a630df4343999dc025a72cd50d16efad44669ccc37c6e26a0d6009216849c253",
+        "origin": {
+          "repo": "/home/yayoi/ghq/github.com/intel/compute-runtime",
+          "revision": "050536ff3b6f830199ec99cff8ffcac3d804c40a",
+          "path": "level_zero/include/level_zero/driver_experimental/zex_module.h"
+        }
+      },
+      {
+        "path": "include/level_zero/driver_experimental/zex_visit.h",
+        "sha256": "32dae511641d5f03d4139c2ff05e3949dc5d532ac26c794c4492d5a2cf1a962e",
+        "origin": {
+          "repo": "/home/yayoi/ghq/github.com/intel/compute-runtime",
+          "revision": "050536ff3b6f830199ec99cff8ffcac3d804c40a",
+          "path": "level_zero/include/level_zero/driver_experimental/zex_visit.h"
+        }
+      },
+      {
+        "path": "include/iga/iga.h",
+        "sha256": "548ea86e1b21e95effcbc09c6c2997a9d631722c6a0658852983164d53dcf290",
+        "origin": {
+          "url": "https://raw.githubusercontent.com/intel/intel-graphics-compiler/4ba3c2aaab4f189b143ef288bc3e75eb02ad6f82/visa/iga/IGALibrary/api/iga.h",
+          "revision": "4ba3c2aaab4f189b143ef288bc3e75eb02ad6f82"
+        }
+      },
+      {
+        "path": "include/iga/iga_types_ext.hpp",
+        "sha256": "92ca1c4dde27fd12386fde5cb40166a0684660fd4fec9bef75730eddef0ac8c8",
+        "origin": {
+          "url": "https://raw.githubusercontent.com/intel/intel-graphics-compiler/4ba3c2aaab4f189b143ef288bc3e75eb02ad6f82/visa/iga/IGALibrary/api/iga_types_ext.hpp",
+          "revision": "4ba3c2aaab4f189b143ef288bc3e75eb02ad6f82"
+        }
+      },
+      {
+        "path": "include/iga/iga_types_swsb.hpp",
+        "sha256": "7fbf52cb1c3e341cf2047ac450e134e051b91452846e1d2f232d7fcc146f9bfd",
+        "origin": {
+          "url": "https://raw.githubusercontent.com/intel/intel-graphics-compiler/4ba3c2aaab4f189b143ef288bc3e75eb02ad6f82/visa/iga/IGALibrary/api/iga_types_swsb.hpp",
+          "revision": "4ba3c2aaab4f189b143ef288bc3e75eb02ad6f82"
+        }
+      },
+      {
+        "path": "include/iga/iga_bxml_ops.hpp",
+        "sha256": "2ce275755202fca8b171b881b4d9fbc36abfd69c798de3e0247ff678c535d615",
+        "origin": {
+          "url": "https://raw.githubusercontent.com/intel/intel-graphics-compiler/4ba3c2aaab4f189b143ef288bc3e75eb02ad6f82/visa/iga/IGALibrary/api/iga_bxml_ops.hpp",
+          "revision": "4ba3c2aaab4f189b143ef288bc3e75eb02ad6f82"
+        }
+      },
+      {
+        "path": "include/iga/iga_bxml_enums.hpp",
+        "sha256": "c544209251a37821af25a83a7cc45cebbaccd425fff03f51c5b15363b026d2b6",
+        "origin": {
+          "url": "https://raw.githubusercontent.com/intel/intel-graphics-compiler/4ba3c2aaab4f189b143ef288bc3e75eb02ad6f82/visa/iga/IGALibrary/api/iga_bxml_enums.hpp",
+          "revision": "4ba3c2aaab4f189b143ef288bc3e75eb02ad6f82"
+        }
+      }
+    ],
+    "commands": {
+      "collector": [
+        "/usr/bin/g++",
+        "-std=c++17",
+        "-O3",
+        "-DNDEBUG",
+        "-fvisibility=default",
+        "-pthread",
+        "-DPTI_LEVEL_ZERO=1",
+        "-DCXX_STD_FILESYSTEM_EXPERIMENTAL=0",
+        "-DBUILD_WITH_L0=1",
+        "-DBUILD_WITH_XPTI=0",
+        "-DBUILD_WITH_ITT=0",
+        "-DBUILD_WITH_OPENCL=0",
+        "-DBUILD_WITH_OMP=0",
+        "-DBUILD_WITH_MPI=0",
+        "-DBUILD_WITH_PERFETTO=0",
+        "-I",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/unitrace-l0-4b6d742-v1/include",
+        "-I",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/unitrace-l0-4b6d742-v1/generated",
+        "-I",
+        "/home/yayoi/ghq/github.com/intel/pti-gpu/tools/unitrace",
+        "-I",
+        "/home/yayoi/ghq/github.com/intel/pti-gpu/tools/unitrace/src",
+        "-I",
+        "/home/yayoi/ghq/github.com/intel/pti-gpu/tools/unitrace/src/utils",
+        "-I",
+        "/home/yayoi/ghq/github.com/intel/pti-gpu/tools/unitrace/src/opencl",
+        "-I",
+        "/home/yayoi/ghq/github.com/intel/pti-gpu/tools/unitrace/src/levelzero",
+        "-I",
+        "/home/yayoi/ghq/github.com/intel/pti-gpu",
+        "-shared",
+        "-fPIC",
+        "/home/yayoi/ghq/github.com/intel/pti-gpu/tools/unitrace/src/tracer.cc",
+        "/home/yayoi/ghq/github.com/intel/pti-gpu/tools/unitrace/src/utils/logger_factory.cc",
+        "-ldl",
+        "-lrt",
+        "-o",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/unitrace-l0-4b6d742-v1/libunitrace_tool.so"
+      ],
+      "launcher": [
+        "/usr/bin/g++",
+        "-std=c++17",
+        "-O3",
+        "-DNDEBUG",
+        "-fvisibility=default",
+        "-pthread",
+        "-DPTI_LEVEL_ZERO=1",
+        "-DCXX_STD_FILESYSTEM_EXPERIMENTAL=0",
+        "-DBUILD_WITH_L0=1",
+        "-DBUILD_WITH_XPTI=0",
+        "-DBUILD_WITH_ITT=0",
+        "-DBUILD_WITH_OPENCL=0",
+        "-DBUILD_WITH_OMP=0",
+        "-DBUILD_WITH_MPI=0",
+        "-DBUILD_WITH_PERFETTO=0",
+        "-I",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/unitrace-l0-4b6d742-v1/include",
+        "-I",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/unitrace-l0-4b6d742-v1/generated",
+        "-I",
+        "/home/yayoi/ghq/github.com/intel/pti-gpu/tools/unitrace",
+        "-I",
+        "/home/yayoi/ghq/github.com/intel/pti-gpu/tools/unitrace/src",
+        "-I",
+        "/home/yayoi/ghq/github.com/intel/pti-gpu/tools/unitrace/src/utils",
+        "-I",
+        "/home/yayoi/ghq/github.com/intel/pti-gpu/tools/unitrace/src/opencl",
+        "-I",
+        "/home/yayoi/ghq/github.com/intel/pti-gpu/tools/unitrace/src/levelzero",
+        "-I",
+        "/home/yayoi/ghq/github.com/intel/pti-gpu",
+        "/home/yayoi/ghq/github.com/intel/pti-gpu/tools/unitrace/src/unitrace.cc",
+        "/home/yayoi/ghq/github.com/intel/pti-gpu/tools/unitrace/src/utils/logger_factory.cc",
+        "-ldl",
+        "-lrt",
+        "-o",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/unitrace-l0-4b6d742-v1/unitrace"
+      ]
+    },
+    "error": "RuntimeError('missing compile dependency')",
+    "ownership_closed": true
+  }
 }
