@@ -4892,19 +4892,48 @@
   },
   "staged_cache_parent_identity_scope": {
     "classification": "decision support",
-    "schedulable_now": false,
+    "schedulable_now": true,
     "question": "Review a pinned immutable-parent correction against all per-layer execution-cache substitutions, lease bind/entry/activation/retirement and long/short generator return paths; identify a regression that actually crosses the substitution.",
     "prerequisites": [
       {
         "met": true,
-        "evidence": "Fresh156 components passed; closed model v2 localized mutable m.cache identity mismatch before first borrowed FFN."
+        "evidence": "Closed v8 passed156 cases; actual model v2 refused a lease after mutable execution-cache substitution. Original failure remains unchanged."
       },
       {
-        "met": false,
-        "evidence": "Immutable-parent correction and an actual substitution regression are not yet committed/frozen."
+        "met": true,
+        "evidence": "Source3832efe2af93af6b39396ae304fd11dc195e4ade commits the original immutable-parent correction and actual-substitution model regression. Fourteen source/controller/fixture inputs are frozen for this audit."
       }
     ],
     "dispatch_prerequisite": "Main commits and freezes the proposed correction plus concrete regression inputs before dispatch; not a duplicate survey.",
-    "consumer": "Corrected model v3 admission; no speed or broad quality inference."
+    "consumer": "Corrected model v3 admission; no speed or broad quality inference.",
+    "status": "ready_for_source_review",
+    "source_commit": "3832efe2af93af6b39396ae304fd11dc195e4ade",
+    "frozen_inputs": {
+      "include/strata/prefill/scratch_allocation.hpp": "b7001b50bbf9576f750133047762f0dcf6a28c8b601a472a4503c3f2bf9290bd",
+      "include/strata/core/cache_scratch_lease.hpp": "71e0c67d49cacb055b51e54db34afe8d0533029413a72303bbec4ad0de92e494",
+      "include/strata/core/expert_cache.hpp": "6154808582efe409325c87756fb21e47aaca3c946e74ee442266c8fefa6bdaae",
+      "src/core/expert_cache.cpp": "fb7418457aeb1ea6416918a14fa734a301e1fe0d39d8fe7cbcb5633040434a46",
+      "include/strata/prefill/prefill.hpp": "49f2db4810f98080ed5992f2bb0eeafd707282661e04b72b472108b494ad56b8",
+      "src/prefill/prefill.cpp": "fce308b92d5e972eccd7ba363a965dc868b0c64ad564182c8d8ed4c6d4a2e707",
+      "src/prefill/layer_major.inc": "16303c6e0f5be1b5cbf40beeb4e3ac82de12caea397f25106cd5f66357484d2b",
+      "src/prefill/moe_window.inc": "5feba6a7d26729df806929ebc376ae48bd2b856f6ddfe29913bb672e7e598928",
+      "src/program/generate.cpp": "95637fc1d6f4e8546345ab0f369dbd381ef7e72a2bf926a5c74b57f87b990b1b",
+      "src/core/verify.cpp": "bcaa44dea05e089bbccea8465ab9e8fb908d79a604f2c53ed5869591486fafbd",
+      "include/strata/prefill/moe_accum_plan.hpp": "1fa1618eaf96a6ec50bc948f7c6750fc33f463c702cfbf36cd57e928597ca1aa",
+      "tests/sycl/prefill_scratch.cpp": "b6d239deb60a78e680ed2a00adb3d5d9928f535950ed43ca32f940b58eaf6742",
+      "tools/sycl/cache_borrow.py": "6037e7e96fb4d8e0b3d9cd8fa2faba822b0822b2d8b40f4268d094373a1dbc49",
+      "tools/test_sycl_cache_borrow.py": "31449f1cd698677facf179dc7d71047977f75419c06068895356765f04519da9"
+    },
+    "report": "/home/yayoi/orca/workspaces/Strata/sycl/.cache/strata-research/20261020/staged-cache-parent-identity-report.md",
+    "report_budget_bytes": 12288,
+    "bounded_model_source_review_accepted": false,
+    "offline_evidence_gate": {
+      "source_commit": "3832efe2af93af6b39396ae304fd11dc195e4ade",
+      "cases": 16,
+      "passed": true,
+      "GPU_executed": false,
+      "command": "python3 -B -m unittest tools/test_sycl_cache_borrow.py tools/test_sycl_query_profile.py"
+    },
+    "next_review": "Complete Orca audit and native Luna-max curation; Main runs fresh v9 156-case gate before preparing model v3. No speed/full-context qualification."
   }
 }

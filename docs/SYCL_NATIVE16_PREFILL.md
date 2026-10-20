@@ -2321,7 +2321,8 @@ substitution and all48 borrowed FFN entries/retirements, two complete refill/
 decode cycles and the original payload/map checks. Its offline parser rejects
 missing, duplicated or false substitution evidence. Use a fresh v9 156-case
 component plan, complete corrected-source review and a committed v3 model plan;
-never retry closed v2 or bypass the owner check. This correction is unbuilt and
+never retry closed v2 or bypass the owner check. Source`3832efe2a` passed all16
+offline evidence tests. This correction is unbuilt and
 unqualified. The default-off route stays unadopted, with no new speed result or
 full physical262144/session/RESTORE qualification.
 Only a later qualified mechanism permits a
