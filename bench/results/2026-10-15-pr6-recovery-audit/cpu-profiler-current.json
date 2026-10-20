@@ -3063,6 +3063,427 @@
         "result_bytes": 24576
       },
       "consumer": "Select matched hardware/operation references and next prefill optimization; retire raw trace after remaining source/loss/observer questions close."
+    },
+    "analysis": {
+      "native_executed": false,
+      "analysis_passed": true,
+      "complete_production_attribution_qualified": false,
+      "source_commit": "d4a993fb817e735bf937f7931d833cacd788815d",
+      "limits": "No native execution, timing comparison, hardware saturation, exact prefill-only boundary or full dependency/critical-path claim. Family names are source lookup groups. Requested copy bytes are not measured bus traffic. Host API wall time is not CPU time. Unions overlap across rows.",
+      "journal_binding": {
+        "request_sha256": "e423b155f89535f5b1747892e5c1d7390e2fb4058b0e37945abd7af0a22cf0c9",
+        "last_sha256": "64e0e43da8e4154e979c882f9302f7d5053f10917567e66a6943213bd79c0419",
+        "warmup_then_one_long_request": true
+      },
+      "native_route": {
+        "batched_tokens": 39262,
+        "chunk": 8192,
+        "residual_dtype": "bf16",
+        "residual_gpu_rows": 39262,
+        "layers": 48,
+        "chunks_per_layer": 5,
+        "ordered_route_restore_refill": true,
+        "diagnostic_lines": [
+          "561204:\t/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/strata: error: symbol lookup error: undefined symbol: zelLoaderTranslateHandle (fatal)"
+        ],
+        "source_loss_and_loader_review_pending": true
+      },
+      "host_gpu_inventory": {
+        "host_append_counts": {
+          "zeCommandListAppendMemoryFill": 380,
+          "zeCommandListAppendMemoryCopy": 22492,
+          "zeCommandListAppendBarrier": 3427,
+          "zeCommandListAppendLaunchKernelWithArguments": 145018,
+          "zeCommandListAppendLaunchKernel": 5951
+        },
+        "linked_gpu_counts": {
+          "zeCommandListAppendMemoryFill": 184,
+          "zeCommandListAppendMemoryCopy": 20951,
+          "zeCommandListAppendBarrier": 3427,
+          "zeCommandListAppendLaunchKernelWithArguments": 145018,
+          "zeCommandListImmediateAppendCommandListsExp": 37302
+        },
+        "unmatched_examples": [],
+        "all_gpu_parent_apis_matched": true,
+        "direct_append_counts_equal": false
+      },
+      "filtering": {
+        "excluded_other_host_pids": 0,
+        "excluded_native_host_outside": 0,
+        "gpu_outside_exact_window": 0,
+        "largest_gpu_edge_us": 0.0,
+        "declared_allowance_us": 1000
+      },
+      "first_output_conversion": {
+        "raw_us": 881762450752.1427,
+        "method": "linear paired-clock interpolation",
+        "maximum_pair_width_ns": 892,
+        "limit": "Clock interpolation error uncalibrated; first stream output is a prefill-dominated bound, not native prefill end."
+      },
+      "whole_request": {
+        "wall_us": 60842848.221069336,
+        "gpu_events": 206882,
+        "host_events": 493490,
+        "gpu_union_us": 46664844.89819336,
+        "kernel_union_us": 38496583.34411621,
+        "copy_union_us": 8133775.592285156,
+        "kernel_copy_overlap_us": 11.9918212890625,
+        "host_api_union_us": 43905905.26525879,
+        "host_api_during_gpu_empty_us": 5417049.504516602,
+        "gpu_empty_us": 14178003.322875977,
+        "families": {
+          "QSA_prefix_attention": {
+            "count": 120,
+            "service_sum_us": 8286499.017089844,
+            "requested_bytes": 0,
+            "service_union_us": 8286499.017089844
+          },
+          "copy_M2D": {
+            "count": 20354,
+            "service_sum_us": 7578292.546875,
+            "requested_bytes": 46236080900,
+            "service_union_us": 7578292.546875
+          },
+          "native16_other_dense": {
+            "count": 34468,
+            "service_sum_us": 4631469.9345703125,
+            "requested_bytes": 0,
+            "service_union_us": 4631469.9345703125
+          },
+          "native16_vector_metadata": {
+            "count": 53774,
+            "service_sum_us": 4227587.8271484375,
+            "requested_bytes": 0,
+            "service_union_us": 4227587.8271484375
+          },
+          "quantized_prompt_product": {
+            "count": 36,
+            "service_sum_us": 4173575.5083007812,
+            "requested_bytes": 0,
+            "service_union_us": 4173575.5083007812
+          },
+          "library_GEMM": {
+            "count": 4000,
+            "service_sum_us": 3201415.9575195312,
+            "requested_bytes": 0,
+            "service_union_us": 3201415.9575195312
+          },
+          "GDN_recurrence": {
+            "count": 180,
+            "service_sum_us": 2853886.9067382812,
+            "requested_bytes": 0,
+            "service_union_us": 2853886.9067382812
+          },
+          "unclassified_kernel": {
+            "count": 28836,
+            "service_sum_us": 2429246.6245117188,
+            "requested_bytes": 0,
+            "service_union_us": 2429246.6245117188
+          },
+          "parallel_IQ_dequant": {
+            "count": 28792,
+            "service_sum_us": 1936188.5922851562,
+            "requested_bytes": 0,
+            "service_union_us": 1936180.1262207031
+          },
+          "MoE_down_scatter": {
+            "count": 2514,
+            "service_sum_us": 1787462.70703125,
+            "requested_bytes": 0,
+            "service_union_us": 1787462.70703125
+          },
+          "MoE_GU_dequant": {
+            "count": 6403,
+            "service_sum_us": 1586545.4350585938,
+            "requested_bytes": 0,
+            "service_union_us": 1586545.4350585938
+          },
+          "MoE_GU_SwiGLU": {
+            "count": 2514,
+            "service_sum_us": 1417468.4624023438,
+            "requested_bytes": 0,
+            "service_union_us": 1417468.4624023438
+          },
+          "other_dequant": {
+            "count": 1265,
+            "service_sum_us": 1328703.7573242188,
+            "requested_bytes": 0,
+            "service_union_us": 1328703.7573242188
+          },
+          "copy_D2D": {
+            "count": 9369,
+            "service_sum_us": 479755.39111328125,
+            "requested_bytes": 77743161344,
+            "service_union_us": 479755.39111328125
+          },
+          "GDN_other": {
+            "count": 1116,
+            "service_sum_us": 400012.99267578125,
+            "requested_bytes": 0,
+            "service_union_us": 400012.99267578125
+          },
+          "QSA_other": {
+            "count": 8223,
+            "service_sum_us": 235519.4404296875,
+            "requested_bytes": 0,
+            "service_union_us": 235519.4404296875
+          },
+          "copy_H2D": {
+            "count": 5,
+            "service_sum_us": 62098.5390625,
+            "requested_bytes": 402042880,
+            "service_union_us": 62098.5390625
+          },
+          "fill": {
+            "count": 973,
+            "service_sum_us": 34157.7568359375,
+            "requested_bytes": 21493332164,
+            "service_union_us": 34157.7568359375
+          },
+          "copy_D2M": {
+            "count": 108,
+            "service_sum_us": 13629.115234375,
+            "requested_bytes": 75383280,
+            "service_union_us": 13629.115234375
+          },
+          "MoE_other": {
+            "count": 405,
+            "service_sum_us": 1029.89501953125,
+            "requested_bytes": 0,
+            "service_union_us": 1029.89501953125
+          },
+          "barrier": {
+            "count": 3427,
+            "service_sum_us": 340.30078125,
+            "requested_bytes": 0,
+            "service_union_us": 340.30078125
+          }
+        }
+      },
+      "before_first_output": {
+        "wall_us": 58702829.005737305,
+        "gpu_events": 172250,
+        "host_events": 463638,
+        "gpu_union_us": 45690254.994018555,
+        "kernel_union_us": 37531751.38671875,
+        "copy_union_us": 8126267.503417969,
+        "kernel_copy_overlap_us": 11.9918212890625,
+        "host_api_union_us": 43027607.60925293,
+        "host_api_during_gpu_empty_us": 5332067.949707031,
+        "gpu_empty_us": 13012574.01171875,
+        "families": {
+          "QSA_prefix_attention": {
+            "count": 120,
+            "service_sum_us": 8286499.017089844,
+            "requested_bytes": 0,
+            "service_union_us": 8286499.017089844
+          },
+          "copy_M2D": {
+            "count": 20354,
+            "service_sum_us": 7578292.546875,
+            "requested_bytes": 46236080900,
+            "service_union_us": 7578292.546875
+          },
+          "native16_other_dense": {
+            "count": 34468,
+            "service_sum_us": 4631469.9345703125,
+            "requested_bytes": 0,
+            "service_union_us": 4631469.9345703125
+          },
+          "native16_vector_metadata": {
+            "count": 53774,
+            "service_sum_us": 4227587.8271484375,
+            "requested_bytes": 0,
+            "service_union_us": 4227587.8271484375
+          },
+          "quantized_prompt_product": {
+            "count": 36,
+            "service_sum_us": 4173575.5083007812,
+            "requested_bytes": 0,
+            "service_union_us": 4173575.5083007812
+          },
+          "library_GEMM": {
+            "count": 4000,
+            "service_sum_us": 3201415.9575195312,
+            "requested_bytes": 0,
+            "service_union_us": 3201415.9575195312
+          },
+          "GDN_recurrence": {
+            "count": 180,
+            "service_sum_us": 2853886.9067382812,
+            "requested_bytes": 0,
+            "service_union_us": 2853886.9067382812
+          },
+          "parallel_IQ_dequant": {
+            "count": 28792,
+            "service_sum_us": 1936188.5922851562,
+            "requested_bytes": 0,
+            "service_union_us": 1936180.1262207031
+          },
+          "MoE_down_scatter": {
+            "count": 2514,
+            "service_sum_us": 1787462.70703125,
+            "requested_bytes": 0,
+            "service_union_us": 1787462.70703125
+          },
+          "MoE_GU_dequant": {
+            "count": 6403,
+            "service_sum_us": 1586545.4350585938,
+            "requested_bytes": 0,
+            "service_union_us": 1586545.4350585938
+          },
+          "unclassified_kernel": {
+            "count": 4841,
+            "service_sum_us": 1483768.8770751953,
+            "requested_bytes": 0,
+            "service_union_us": 1483768.8770751953
+          },
+          "MoE_GU_SwiGLU": {
+            "count": 2514,
+            "service_sum_us": 1417468.4624023438,
+            "requested_bytes": 0,
+            "service_union_us": 1417468.4624023438
+          },
+          "other_dequant": {
+            "count": 1265,
+            "service_sum_us": 1328703.7573242188,
+            "requested_bytes": 0,
+            "service_union_us": 1328703.7573242188
+          },
+          "copy_D2D": {
+            "count": 773,
+            "service_sum_us": 472247.30224609375,
+            "requested_bytes": 77733240832,
+            "service_union_us": 472247.30224609375
+          },
+          "GDN_other": {
+            "count": 584,
+            "service_sum_us": 390505.3876953125,
+            "requested_bytes": 0,
+            "service_union_us": 390505.3876953125
+          },
+          "QSA_other": {
+            "count": 7764,
+            "service_sum_us": 226609.72802734375,
+            "requested_bytes": 0,
+            "service_union_us": 226609.72802734375
+          },
+          "copy_H2D": {
+            "count": 5,
+            "service_sum_us": 62098.5390625,
+            "requested_bytes": 402042880,
+            "service_union_us": 62098.5390625
+          },
+          "fill": {
+            "count": 280,
+            "service_sum_us": 31907.89892578125,
+            "requested_bytes": 21285818564,
+            "service_union_us": 31907.89892578125
+          },
+          "copy_D2M": {
+            "count": 108,
+            "service_sum_us": 13629.115234375,
+            "requested_bytes": 75383280,
+            "service_union_us": 13629.115234375
+          },
+          "barrier": {
+            "count": 3427,
+            "service_sum_us": 340.30078125,
+            "requested_bytes": 0,
+            "service_union_us": 340.30078125
+          },
+          "MoE_other": {
+            "count": 48,
+            "service_sum_us": 93.00244140625,
+            "requested_bytes": 0,
+            "service_union_us": 93.00244140625
+          }
+        }
+      },
+      "after_first_output": {
+        "wall_us": 2140019.2153320312,
+        "gpu_events": 34633,
+        "host_events": 29852,
+        "gpu_union_us": 974589.9041748047,
+        "kernel_union_us": 964831.9573974609,
+        "copy_union_us": 7508.0888671875,
+        "kernel_copy_overlap_us": 0.0,
+        "host_api_union_us": 878297.6560058594,
+        "host_api_during_gpu_empty_us": 84981.55480957031,
+        "gpu_empty_us": 1165429.3111572266,
+        "families": {
+          "unclassified_kernel": {
+            "count": 23996,
+            "service_sum_us": 945477.7474365234,
+            "requested_bytes": 0,
+            "service_union_us": 945477.7474365234
+          },
+          "GDN_other": {
+            "count": 532,
+            "service_sum_us": 9507.60498046875,
+            "requested_bytes": 0,
+            "service_union_us": 9507.60498046875
+          },
+          "QSA_other": {
+            "count": 459,
+            "service_sum_us": 8909.71240234375,
+            "requested_bytes": 0,
+            "service_union_us": 8909.71240234375
+          },
+          "copy_D2D": {
+            "count": 8596,
+            "service_sum_us": 7508.0888671875,
+            "requested_bytes": 9920512,
+            "service_union_us": 7508.0888671875
+          },
+          "fill": {
+            "count": 693,
+            "service_sum_us": 2249.85791015625,
+            "requested_bytes": 207513600,
+            "service_union_us": 2249.85791015625
+          },
+          "MoE_other": {
+            "count": 357,
+            "service_sum_us": 936.892578125,
+            "requested_bytes": 0,
+            "service_union_us": 936.892578125
+          }
+        }
+      },
+      "largest_unclassified": [
+        {
+          "name": "strata::kernels::(anonymous namespace)::submit_topk<1>(sycl::_V1::queue&, float const*, int const*, long, long, long, int*, long)::{lambda(sycl::_V1::nd_item<1>)#1}[SIMD32 {256; 1; 1} {256; 1; 1}]",
+          "service_sum_us": 488319.64400000125
+        },
+        {
+          "name": "strata::kernels::(anonymous namespace)::conv(float const*, float*, float const*, float const*, float*, int, int, float, int, int, void*)::{lambda(sycl::_V1::handler&)#1}::operator()(sycl::_V1::handler&) const::{lambda(sycl::_V1::nd_item<1>)#1}[SIMD32 {655360; 1; 1} {128; 1; 1}]",
+          "service_sum_us": 363306.298
+        },
+        {
+          "name": "strata::kernels::(anonymous namespace)::append<1>(strata::kernels::(anonymous namespace)::Pools, int const*, int const*, long, long, float const*, float const*, strata::kernels::QsaShapes const&, void*, strata::kernels::KvHostPools, strata::kernels::KvHostPools)::{lambda(sycl::_V1::handler&)#1}::operator()(sycl::_V1::handler&) const::{lambda(sycl::_V1::nd_item<1>)#1}[SIMD32 {71680; 1; 1} {64; 1; 1}]",
+          "service_sum_us": 102393.64400000001
+        },
+        {
+          "name": "strata::kernels::(anonymous namespace)::launch<strata::kernels::(anonymous namespace)::Q6KTraits, 1, 4>(void const*, void const*, float*, int, int, int, void*)::{lambda(sycl::_V1::handler&)#1}::operator()(sycl::_V1::handler&) const::{lambda(sycl::_V1::nd_item<1>)#1}[SIMD32 {248320; 1; 1} {128; 1; 1}]",
+          "service_sum_us": 89142.289
+        },
+        {
+          "name": "strata::kernels::(anonymous namespace)::launch<strata::kernels::(anonymous namespace)::Q6KTraits, 1, 4>(void const*, void const*, float*, int, int, int, void*)::{lambda(sycl::_V1::handler&)#1}::operator()(sycl::_V1::handler&) const::{lambda(sycl::_V1::nd_item<1>)#1}[SIMD32 {2560; 1; 1} {128; 1; 1}]",
+          "service_sum_us": 85814.13600000001
+        },
+        {
+          "name": "strata::kernels::(anonymous namespace)::launch<strata::kernels::(anonymous namespace)::Q6KTraits, 1, 4>(void const*, void const*, float*, int, int, int, void*)::{lambda(sycl::_V1::handler&)#1}::operator()(sycl::_V1::handler&) const::{lambda(sycl::_V1::nd_item<1>)#1}[SIMD32 {10240; 1; 1} {128; 1; 1}]",
+          "service_sum_us": 85261.69300000001
+        },
+        {
+          "name": "strata::kernels::(anonymous namespace)::conv(float const*, float*, float const*, float const*, float*, int, int, float, int, int, void*)::{lambda(sycl::_V1::handler&)#1}::operator()(sycl::_V1::handler&) const::{lambda(sycl::_V1::nd_item<1>)#1}[SIMD32 {519520; 1; 1} {128; 1; 1}]",
+          "service_sum_us": 71927.58999999998
+        },
+        {
+          "name": "strata::kernels::(anonymous namespace)::launch<strata::kernels::(anonymous namespace)::Q6KTraits, 1, 4>(void const*, void const*, float*, int, int, int, void*)::{lambda(sycl::_V1::handler&)#1}::operator()(sycl::_V1::handler&) const::{lambda(sycl::_V1::nd_item<1>)#1}[SIMD32 {106299; 1; 1} {128; 1; 1}]",
+          "service_sum_us": 70755.094
+        }
+      ]
     }
   }
 }
