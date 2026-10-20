@@ -1330,7 +1330,7 @@
       "file_bytes": 33554432,
       "total_bytes": 67108864
     },
-    "retention": "Keep raw timelines/UR traces only until independent known-work, copy/fill/graph and correlation reconciliation closes;64MiB total. Commit compact counts/identities/gates and relevant timing summaries. No new model or fixture binary generation.",
+    "retention": "Raw known-work consumers closed after conserved-work analysis and qualified recording window; original failed status preserved in Git. Retirement manifest in unitrace_recording_window.",
     "active": false,
     "complete": false,
     "passed": false,
@@ -1671,7 +1671,7 @@
     "request_window_qualified": false,
     "full_critical_path_qualified": false,
     "decision": "Both fixed fixtures conserve every program kernel/copy/fill/barrier and requested byte after expanding graph captures. All62/606 main kernels have positive service within caller raw bounds. The61 graph APIs source exactly183 work nodes without individual host sinks; complete fixture numerical checks establish aggregate completion, not per-node host waits. Original strict sink-gate failures remain failed. Independent clock/source review and bounded recording-window qualification still precede32K+ production attribution.",
-    "retention": "Closed raw traces remain consumed by the active independent research/native review. Retire after that reconciliation and request-window plan;64MiB original budget, Main owner. Do not retain raw timelines merely because this analysis passed."
+    "retention": "Conserved counts/bytes and limits retained; raw traces/research consumed by qualified window. Retirement manifest in unitrace_recording_window; no change to original failed run."
   },
   "unitrace_recording_window": {
     "schema": "strata-profile-recording-window-v1",
@@ -2272,6 +2272,41 @@
     },
     "production_trace_ready": false,
     "full_critical_path_qualified": false,
-    "decision": "Two immutable fresh native processes execute606 kernels each with numerical guards. Paused records zero device work; external resume/pause at native ready/drained records exact606/53copy/1fill/20barrier inventory and requested bytes. Source/native/8698 compiler inputs and executable remain identical. All clock brackets, device/PCI/namespace checks, owned target/control closure, exact-session cleanup and driver/boot/fault gates pass. Qualification is the bounded fixed-fixture recording window only; original coverage attempts remain failed. Next: qualified32K+ production collection and service/submission/dependency reconciliation, with clean speed and broader model qualification separate."
+    "decision": "Two immutable fresh native processes execute606 kernels each with numerical guards. Paused records zero device work; external resume/pause at native ready/drained records exact606/53copy/1fill/20barrier inventory and requested bytes. Source/native/8698 compiler inputs and executable remain identical. All clock brackets, device/PCI/namespace checks, owned target/control closure, exact-session cleanup and driver/boot/fault gates pass. Qualification is the bounded fixed-fixture recording window only; original coverage attempts remain failed. Next: qualified32K+ production collection and service/submission/dependency reconciliation, with clean speed and broader model qualification separate.",
+    "artifact_retirement": {
+      "stage": "planned",
+      "manifest": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/closed-unitrace-window-and-known-work-20261021.jsonl",
+      "sha256": "15018c43259e2a88a783f758acc06a6122402c2e18aab36064837aef11575afc",
+      "files": 68,
+      "bytes": 8802706,
+      "original_sources_recovered": {
+        "unitrace-known-work-v1": {
+          "source_commit": "eb9aa2547e23d2cdf7b46ebb588415e9f673547e",
+          "controller_inputs": 19,
+          "original_outcome": "failed"
+        },
+        "unitrace-known-work-v2": {
+          "source_commit": "e54d9a168450c7fa0489d0b74c84ba943573960a",
+          "controller_inputs": 19,
+          "original_outcome": "failed"
+        },
+        "unitrace-recording-window-v1": {
+          "source_commit": "15ba9e825fcd4b5bb9de3d065209952e5708e802",
+          "controller_inputs": 21,
+          "original_outcome": "failed"
+        }
+      },
+      "current_native_inputs_recovered": 9836,
+      "compiler_inputs_verified": 8698,
+      "pushed_retained_feature_ref": "219d84f7c74c987d6a878a35f835cc6c370d5c95",
+      "retained_window_files": [
+        "profile_window",
+        "compiler-inputs.json"
+      ],
+      "next_consumer": "Actual32K+ production control/recording path; retire standalone fixture/manifest after that qualifies.",
+      "model_engines_unchanged": true,
+      "remaining_consumed_model_generations": 2,
+      "legacy_provenance_holds": 14
+    }
   }
 }
