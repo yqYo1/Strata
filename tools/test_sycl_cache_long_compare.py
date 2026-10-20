@@ -5,7 +5,9 @@ import json
 from pathlib import Path
 import sys
 import tempfile
+from types import SimpleNamespace
 import unittest
+from unittest.mock import patch
 
 sys.dont_write_bytecode=True
 sys.path.insert(0,str(Path(__file__).resolve().parent))
@@ -105,6 +107,63 @@ class Journal(unittest.TestCase):
                 root=Path(directory);result=self.evidence(root,4,extra)
                 if not extra: result['results']['prefill_only']['requests'][2]['generated_tokens']=23
                 with self.assertRaises(RuntimeError): c.official(root,result,4)
+
+
+class Placement(unittest.TestCase):
+    loan=dict(first=132,lent=1124,chunk=8192,capacity=2321664000,need=2319958528)
+    borrowed='strata generate: expert cache 1256 slots, fixture\nstrata serve: the prompt path borrows 1124 CUDA0 cache slots (2.16 GiB)\n'
+    owned='strata generate: expert cache 128 slots, fixture\nstrata serve: the prompt path allocates its own buffers (too few cache slots to borrow)\n'
+
+    def test_exact_admitted_suffix_and_owned_route(self):
+        self.assertEqual(c.cache_placement(self.borrowed,1,self.loan)['loan_first'],132)
+        self.assertEqual(c.cache_placement(self.owned,0,self.loan)['loan_slots'],0)
+
+    def test_reject_changed_or_ambiguous_loan(self):
+        variants=[(self.borrowed.replace('1124','1123'),self.loan),
+            (self.borrowed+self.borrowed.splitlines()[1]+'\n',self.loan),
+            (self.borrowed,self.loan|dict(first=131)),
+            (self.borrowed.replace('1256 slots','1255 slots'),self.loan),
+            (self.borrowed+self.owned.splitlines()[1]+'\n',self.loan)]
+        for text,loan in variants:
+            with self.subTest(loan=loan,text=text),self.assertRaises(RuntimeError): c.cache_placement(text,1,loan)
+
+
+class TerminalReceipt(unittest.TestCase):
+    def check(self,root,probe,*,boot='same',persist_error=False):
+        record=dict(complete=True,passed=True,stage='check',active=False,
+            route_evidence=dict(checked_direct_owner_retirements=96),native_identity=dict(pid=1,start_ticks=1))
+        owner=SimpleNamespace(active=None,commands=[])
+        def persist():
+            if persist_error: raise OSError('owner receipt unavailable')
+            (root/'owner.json').write_text(json.dumps(record))
+        with patch.object(c.subprocess,'check_output',side_effect=probe),patch.object(c,'read_boot',return_value=boot),\
+             patch.object(c.guards,'driver_guard',return_value={'checked':True}):
+            c.finalize(record,owner,'cursor','same',persist,root/'result.json')
+        return record,json.loads((root/'result.json').read_text())
+
+    def test_failed_or_timed_out_probe_keeps_unknown_faults_and_terminal_result(self):
+        for failure in (c.subprocess.CalledProcessError(1,['journalctl']),c.subprocess.TimeoutExpired(['journalctl'],15)):
+            with self.subTest(failure=type(failure).__name__),tempfile.TemporaryDirectory() as directory:
+                record,saved=self.check(Path(directory),failure)
+                self.assertFalse(record['passed']);self.assertTrue(saved['ownership_closed'])
+                self.assertIsNone(saved['fresh_faults']);self.assertFalse(saved['fault_probe_successful'])
+                self.assertIn('kernel_journal_probe_error',saved)
+                self.assertTrue(saved['complete'])
+
+    def test_normal_probe_and_changed_boot(self):
+        for boot in ('same','changed'):
+            with self.subTest(boot=boot),tempfile.TemporaryDirectory() as directory:
+                record,saved=self.check(Path(directory),lambda *a,**k:'',boot=boot)
+                self.assertEqual(saved['passed'],boot=='same')
+                self.assertEqual(saved['fresh_faults'],[])
+                self.assertTrue(saved['fault_probe_successful'])
+
+    def test_result_still_written_if_owner_receipt_fails(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root=Path(directory)
+            with self.assertRaises(OSError): self.check(root,lambda *a,**k:'',persist_error=True)
+            saved=json.loads((root/'result.json').read_text())
+            self.assertFalse(saved['passed']);self.assertIn('persistence_error',saved)
 
 
 if __name__=='__main__':unittest.main()

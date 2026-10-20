@@ -122,6 +122,33 @@ def qualification():
     return old,current,proof,original
 
 
+def admitted_loan():
+    result=gen.committed(admission.RESULT)
+    proof=result['long_capacity_evidence']; loan=proof['long_loan']
+    require(proof['slots'] == 1256 and proof['exact_payload_and_map_cycles'] == 2 and
+        all(type(loan[k]) is int for k in ('first','lent','chunk','capacity','need')) and
+        loan['chunk'] == 8192 and 128 <= loan['first'] < 1256 and
+        loan['first']+loan['lent'] == 1256 and loan['capacity'] >= loan['need'] > 0,
+        'exact occupied-suffix admission required')
+    return {k:loan[k] for k in ('first','lent','chunk','capacity','need')}
+
+
+def cache_placement(log,arm,loan):
+    slots=1256 if arm else 128
+    admission.cap.matches(r'strata generate: expert cache '+str(slots)+r' slots, [^\n]+',log,1)
+    counts=re.findall(r'^strata serve: the prompt path borrows (\d+) CUDA0 cache slots [^\n]+$',log,re.M)
+    owned='strata serve: the prompt path allocates its own buffers (too few cache slots to borrow)' in log
+    if arm:
+        require(loan['first']+loan['lent'] == slots and len(counts) == 1 and
+            int(counts[0]) == loan['lent'] and slots-int(counts[0]) == loan['first'] and not owned,
+            'actual borrowed suffix differs from exact admitted first/lent')
+    else:
+        require(not counts and owned,'actual owned scratch placement differs')
+    return dict(expert_cache_slots=slots,loan_first=loan['first'] if arm else None,
+        loan_slots=loan['lent'] if arm else 0,
+        suffix_identity_basis='Exact completed payload/map admission, unchanged profile and static per-layer cache; first=slots-lent.')
+
+
 def reviewed():
     row=gen.committed(admission.cap.borrowed.RESEARCH)[SCOPE]
     require(row.get('worker_closed') is True and row.get('clean_comparison_accepted') is True,
@@ -180,7 +207,7 @@ def official(root,result,count):
         journal_sha256=gen.common.digest(path),state_sha256=gen.common.digest(path.with_name('journal-state.json')))
 
 
-def native_evidence(log,samples,arm,check):
+def native_evidence(log,samples,arm,check,loan):
     headers=admission.cap.matches(r'strata serve: prompt (\d+) tokens = (\d+) reused \+ (\d+) read[^\n]*, (\d+) generated[^\n]*',log,len(samples)+1)
     require(0<int(headers[0][1])<32768 and int(headers[0][2]) == 0 and
         int(headers[0][1]) == int(headers[0][3]) and 1<=int(headers[0][4])<=24, 'native warmup differs')
@@ -190,11 +217,7 @@ def native_evidence(log,samples,arm,check):
     configurations=admission.cap.matches(r'strata MoE window configuration: requested_mode=10 effective_mode=10 maximum_rows=81920 mixed_fp16_bytes=0',log,len(samples))
     require('effective_mode=2' not in log and all(headers[i].end() < c.start() < p.start() < headers[i+1].start()
         for i,(c,p) in enumerate(zip(configurations,plans))), 'actual all-GPU route/window differs')
-    slots=1256 if arm else 128
-    admission.cap.matches(r'strata generate: expert cache '+str(slots)+r' slots, [^\n]+',log,1)
-    loan=re.findall(r'^strata serve: the prompt path borrows (\d+) CUDA0 cache slots [^\n]+$',log,re.M)
-    owned='strata serve: the prompt path allocates its own buffers (too few cache slots to borrow)' in log
-    require((len(loan) == 1 and 0<int(loan[0])<=1128 and not owned) if arm else (not loan and owned), 'actual cache/scratch placement differs')
+    placement=cache_placement(log,arm,loan)
     if check:
         require(arm == 0 and len(samples) == 1, 'only old-owned check is admitted here')
         gen.common.extract_mixed_owners(log,admission.WINDOWS,admission.TAIL_OFFSET)
@@ -207,12 +230,13 @@ def native_evidence(log,samples,arm,check):
     else:
         require(not any(x in log for x in ('strata trace:','strata prefill dense:','strata loan audit:',
             'strata MoE mixed owners:','SYCL_EVENT_QUERY','strata decode cpu:','strata decode timing:')), 'clean run emitted observer records')
-    return dict(actual_route_checked=True,expert_cache_slots=slots,residual_gpu_rows=117488,
+    return dict(actual_route_checked=True,**placement,residual_gpu_rows=117488,
         mode=10,windows_per_layer=[list(w) for w in admission.WINDOWS],checked_direct_owner_retirements=96 if check else None)
 
 
 def prepare(stage,cohort):
     check=stage == 'check'; old,current,proof,original=qualification(); review=reviewed()
+    loan=admitted_loan()
     if check:
         require(not RESULT.exists(), 'fresh comparison only; never retry')
         source=gen.git('rev-parse','HEAD').decode().strip(); processes=[]; previous=None
@@ -230,6 +254,9 @@ def prepare(stage,cohort):
     require(not root.exists(), 'existing/closed root; no retry')
     pins=gen.benchmark_pins(source); settings=gen.committed(gen.SETTINGS)
     config=copy.deepcopy(original['config']); flags=config['args']
+    require('--expert-cache-per-layer' in flags and all(flags.count(k) == 1 and
+        flags[flags.index(k)+1] == '0' for k in ('--adapt-swaps','--pcie-frac')),
+        'admitted static per-layer cache/profile route required')
     flags[flags.index('--expert-cache')+1]=str(1256 if arm else 128)
     flags[flags.index('--expert-profile')+1]=str(root/'expert-profile.bin')
     if not arm: flags.append('--no-prefill-borrow')
@@ -259,6 +286,7 @@ def prepare(stage,cohort):
     record=dict(mode='engine-compare',stage=stage,cohort=None if check else cohort,arm=arm,source_commit=source,
         build_source_commit=old['build_source_commit'] if not arm else current['source_commit'],binary=binary,
         retained_build_proof=proof,capacity_result_sha256=gen.common.digest(admission.RESULT),source_review=review,
+        admitted_long_loan=loan,
         plan=comparison_plan(),processes=processes,check_evidence=None if check else previous['check_evidence'],
         root=str(root),config=config,environment=env,command=command,
         runtime_asset_delta=original['runtime_asset_delta'],config_sha256=gen.common.digest(root/'config.json'),
@@ -278,6 +306,7 @@ def run():
         not (root/'record.json').exists(), 'fresh frozen plan required; no retry')
     old,current,proof,original=qualification()
     require(proof == record['retained_build_proof'] and reviewed() == record['source_review'] and
+        admitted_loan() == record['admitted_long_loan'] and
         record['binary'] == (old['binary'] if not record['arm'] else current['binary']) and
         gen.common.digest(admission.RESULT) == record['capacity_result_sha256'], 'build/admission changed')
     pins=gen.benchmark_pins(record['source_commit'])
@@ -308,7 +337,7 @@ def run():
         require(native['exit_code'] == 0 and native['boot_id'] == boot and native['binary'] == record['binary'] and
             native['args'] == ['--serve',*record['config']['args']] and 'resource_collector' not in native, 'native launch/closure differs')
         log=(root/'engine.stderr').read_text(errors='replace'); assets.verify_pool(log,5)
-        record['route_evidence']=native_evidence(log,samples,record['arm'],check)
+        record['route_evidence']=native_evidence(log,samples,record['arm'],check,record['admitted_long_loan'])
         _,_,after_proof,_=qualification()
         require(after_proof == proof and gen.benchmark_pins(record['source_commit']) == pins and
             assets.machine_identity() == record['machine_identity'], 'source/platform changed during run')
@@ -323,13 +352,32 @@ def run():
         for path in (root/'engine.stderr',root/'owned/bench.stderr'):
             if path.exists(): record['error_excerpt']=path.read_text(errors='replace')[-4096:]
     finally:
+        finalize(record,owner,cursor,boot,persist,RESULT)
+    print(json.dumps({k:record.get(k) for k in ('complete','passed','ownership_closed','error','comparison_summary')}))
+    return 0 if record['passed'] else 1
+
+
+def read_boot():
+    return Path('/proc/sys/kernel/random/boot_id').read_text().strip()
+
+
+def finalize(record,owner,cursor,boot,persist,result_path):
+    # Unknown fault evidence must never become a successful empty fault list.
+    record.update(ownership_closed=False,fresh_faults=None,fault_probe_successful=False,boot_unchanged=False)
+    try:
         record['ownership_closed']=owner.active is None and all(supervision.closed(c) for c in owner.commands)
-        after=subprocess.check_output(['journalctl','-k','-b','--after-cursor',cursor,'--no-pager'],text=True)
-        record['fresh_faults']=[x for x in after.splitlines() if re.search(r'(?i)(gpu.*(?:hang|fault|reset|wedg)|xe.*(?:error|fault|reset|timeout))',x)]
-        record['boot_unchanged']=boot == Path('/proc/sys/kernel/random/boot_id').read_text().strip()
+        try:
+            after=subprocess.check_output(['journalctl','-k','-b','--after-cursor',cursor,'--no-pager'],text=True,timeout=15)
+            record['fresh_faults']=[x for x in after.splitlines() if re.search(r'(?i)(gpu.*(?:hang|fault|reset|wedg)|xe.*(?:error|fault|reset|timeout))',x)]
+            record['fault_probe_successful']=True
+        except Exception as error:
+            record['kernel_journal_probe_error']=str(error)
+        try: record['boot_unchanged']=boot == read_boot()
+        except Exception as error: record['boot_probe_error']=str(error)
         try: record['driver_after']=guards.driver_guard()
-        except Exception as error: record.update(passed=False,driver_guard_error=str(error))
-        record['passed']=bool(record['passed'] and record['ownership_closed'] and record['boot_unchanged'] and not record['fresh_faults'])
+        except Exception as error: record['driver_guard_error']=str(error)
+        record['passed']=bool(record['passed'] and record['ownership_closed'] and record['boot_unchanged'] and
+            record['fault_probe_successful'] and record['fresh_faults'] == [] and 'driver_guard_error' not in record)
         if record['passed']:
             if record['stage'] == 'check':
                 record['check_evidence']=dict(passed=True,route_evidence=record['route_evidence'],native_identity=record['native_identity'])
@@ -342,9 +390,14 @@ def run():
                 if record['cohort'] == 5:
                     try: record['comparison_summary']=summarize(record['processes'])
                     except Exception as error: record.update(passed=False,error='Comparison eligibility: '+str(error))
-        persist(); RESULT.write_text(json.dumps(record,indent=2)+'\n')
-    print(json.dumps({k:record.get(k) for k in ('complete','passed','ownership_closed','error','comparison_summary')}))
-    return 0 if record['passed'] else 1
+    except BaseException as error:
+        record.update(passed=False,finalization_error=str(error))
+    finally:
+        try: persist()
+        except BaseException as error:
+            record.update(passed=False,persistence_error=str(error))
+            raise
+        finally: result_path.write_text(json.dumps(record,indent=2)+'\n')
 
 
 def main():
