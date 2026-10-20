@@ -2484,12 +2484,15 @@ session/RESTORE. See [the compact admission and original plan](../bench/results/
 Next close the retained old-owned/current-borrowed long-input comparison before
 changing engine inputs. Both engines/five and eight fixtures were rechecked
 against9813/9831 recoverable original inputs. The
-[comparison controller](../tools/sycl/cache_long_compare.py) has seven passing
-offline checks; source review requires positive validation-layer activation
-evidence, exact admitted loan identity and an unconditional terminal receipt
-when the final journal probe fails. Correct and review those gates before
-launch. Its six processes separate first-use from three subsequent requests;
-the1000tok/s target and broader correctness requirements remain unchanged.
+[comparison controller](../tools/sycl/cache_long_compare.py) now binds the exact
+admitted suffix (first132/lent1124) and persists a terminal failure with unknown
+fault evidence when the final journal probe fails. These controller-only changes
+at`f29c46bda` passed12 offline tests; they are not a new engine/GPU qualification.
+Positive validation-layer activation proof remains unresolved. The bounded Orca
+research returned and its exact worker terminal closed; native Luna-max review
+is in progress. Implement that guard and review the corrected source before
+launch. The planned six processes separate first-use from three subsequent
+requests; the1000tok/s target and broader correctness requirements remain unchanged.
 
 For the separate earlier early-PCIe candidate, only a later qualified mechanism permits a
 fresh complete51+6-case plan. Preserve all pending-completion,
