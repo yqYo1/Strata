@@ -5030,5 +5030,53 @@
       "manifest_path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/closed-cpu-calibration-prototypes-20261020.jsonl",
       "consumer": "Compact findings in this index, committed source/plan and curated note where applicable; original raw no longer needed."
     }
+  },
+  "nt1_IQ_exact_representation_methods_scope": {
+    "result_reference": {
+      "commit": "f03b8dc7a7f33e5dbe40178ae9d3be75784994fa",
+      "path": "bench/results/2026-10-15-pr6-recovery-audit/cpu-roofline-current.json",
+      "sha256": "4698aafbf7fcaae970cb5dcc3fed48df3d5f8ab5b2c34b946d570ff1f241beac"
+    },
+    "prerequisites": {
+      "complete115_cell_CPU_calibration": true,
+      "NT1_logical_job_lower_bound_measured": true,
+      "prior_curated_methods_available": true
+    },
+    "source_commit": "f03b8dc7a7f33e5dbe40178ae9d3be75784994fa",
+    "classification": "decision support",
+    "schedulable_now": true,
+    "worker_closed": false,
+    "report_budget_bytes": 16384,
+    "question": "For production IQ2_S/IQ3_XXS/IQ3_S NT1 GU on Zen3, derive exact decoded-level/mask/bitplane or bounded predecode layouts and compare table work, scale/rounding contract and extra bytes to measured hot/stream behavior. Do not repeat generic T-MAC/LUT surveys or settled tiny single-exact flag.",
+    "report_path": "/home/yayoi/orca/workspaces/Strata/sycl/.cache/strata-research/20261020/nt1-iq-exact-methods.md",
+    "consumer": "Main CPU component candidate design after the retained-engine117K comparison",
+    "next_review": "Native Luna-max review; no implementation adoption from report."
+  },
+  "existing_route_dump_CPU_mix_protocol_scope": {
+    "result_reference": {
+      "commit": "f03b8dc7a7f33e5dbe40178ae9d3be75784994fa",
+      "path": "bench/results/2026-10-15-pr6-recovery-audit/cpu-roofline-current.json",
+      "sha256": "4698aafbf7fcaae970cb5dcc3fed48df3d5f8ab5b2c34b946d570ff1f241beac"
+    },
+    "prerequisites": {
+      "complete115_cell_CPU_calibration": true,
+      "NT1_logical_job_lower_bound_measured": true,
+      "prior_curated_methods_available": true
+    },
+    "source_commit": "f03b8dc7a7f33e5dbe40178ae9d3be75784994fa",
+    "classification": "decision support",
+    "schedulable_now": true,
+    "worker_closed": false,
+    "report_budget_bytes": 16384,
+    "question": "Can existing --dump-routing plus static cache/profile and request evidence reconstruct exact CPU format/NT histograms? Audit framing, dynamic cache/adapt, fake serve weights, warmups/prefill and final-window conservation; give minimum bounded diagnostic/instrumentation if insufficient.",
+    "frozen_native_inputs": {
+      "src/program/generate.cpp": "95637fc1d6f4e8546345ab0f369dbd381ef7e72a2bf926a5c74b57f87b990b1b",
+      "src/core/expert_source.cpp": "87655233b30eb8de9227ce3e236735d332f701557af46e033a13f05c8f38b4ec",
+      "include/strata/core/expert_source.hpp": "3e0c332f0bf7fcbc1024bc14ac7f4af81f0d347ec9378c6484c7c289269d44c7",
+      "include/strata/kernels/cpu/pool.hpp": "177897a23a38f78f51545bc50a056d3cd8feb03c0b594a0026e66fab92cec07a"
+    },
+    "report_path": "/home/yayoi/orca/workspaces/Strata/sycl/.cache/strata-research/20261020/route-dump-cpu-mix-protocol.md",
+    "consumer": "Main bridge from CPU calibration to measured model critical path before kernel selection",
+    "next_review": "Native Luna-max review; Main exclusively implements and runs tests/model diagnostics."
   }
 }
