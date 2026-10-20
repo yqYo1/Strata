@@ -2417,6 +2417,15 @@ old-owned/current-borrowed long-input comparison on the current runtime. Review
 and retire the extra generation when that comparison closes; this32K cache-layout
 screen does not qualify the current engine's117K borrowed mixed tail. The14
 legacy provenance holds remain separate.
+The same borrowed-cache request records1424035 CPU entries over1120890
+unique CPU expert jobs: mean NT=1.27045027. Since each job has a positive
+integer token count, at least817745 jobs (72.9550%) have NT1:
+each NT2+ job consumes at least one of the303145 excess entries.
+`expert_pool_dispatch_multi` increments entries per CPU-routed row and misses
+by the number of distinct jobs; the request snapshots exclude prefill. This
+bound is on logical job count, not CPU time, physical traffic or the unknown
+per-format/NT histogram. Prioritize NT1 applicability when selecting a CPU
+method; high draft acceptance alone does not establish multi-token expert reuse.
 The next CPU/RAM discriminator is `tools/sycl/cpu_roofline.py`, with a CPU-only
 target under `bench/sycl/cpu_roofline`. It recompiles the production CPU sources
 and pinned ggml using the current official Intel LLVM toolchain and Zen3 flags;
