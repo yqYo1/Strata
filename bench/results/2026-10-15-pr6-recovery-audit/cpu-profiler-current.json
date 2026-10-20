@@ -3017,6 +3017,52 @@
         "kernel": "7.0.0-38-generic",
         "devcoredump": false
       }
+    },
+    "analysis_plan": {
+      "source_commit": "d4a993fb817e735bf937f7931d833cacd788815d",
+      "source_path": "tools/sycl/profile_analysis.py",
+      "source_sha256": "aec97d0884783fdc5d082a03abf873f14d62e6134350cc4fb9b423c3efb2e353",
+      "interpreter": {
+        "path": "/usr/bin/python3.12",
+        "sha256": "e50d468e8b0adfb05733f5b87b3cff34829c4a8c1aea50c865aa8bdfe4bb150f",
+        "version": "3.12.3 (main, Aug 31 2026, 10:18:26) [GCC 13.3.0]"
+      },
+      "collection_commit": "487645cbf84fb93c58e4cee6e1eb5e56a3195626",
+      "inputs": {
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/unitrace-production-32k-v1/record.json": {
+          "sha256": "fc35e8c0a9caf9a27a0c9d1dbfc03090f9caf3cb92feff68aeb77fa8288edfa5",
+          "bytes": 61840
+        },
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/unitrace-production-32k-v1/engine.stderr": {
+          "sha256": "dc02d706e65e2654bf4efa3ac78ffb9d248ea90a614bf58efd817d1da7209ef8",
+          "bytes": 442486
+        },
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/unitrace-production-32k-v1/trace/strata.561204.json": {
+          "sha256": "63651494e73056bdc404e1038f0b4ec64109d02a1396b4d4ba1c7faecf19c566",
+          "bytes": 266967750
+        },
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/unitrace-production-32k-v1/bench/2026-10-21-community-cpu-qwen3-8-flash-next-iq3-s-primary/results.json": {
+          "sha256": "b5cc308e62b454a16537705d21cb7f478b56db9465fa1225a6b7b81bae94e857",
+          "bytes": 15016
+        },
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/unitrace-production-32k-v1/bench/2026-10-21-community-cpu-qwen3-8-flash-next-iq3-s-primary/requests.jsonl": {
+          "sha256": "3ef72ec47639a8ca9c376b449f21a47e6f4d7348148620f2bb43a3ac0813a9d0",
+          "bytes": 5012
+        },
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/unitrace-production-32k-v1/bench/2026-10-21-community-cpu-qwen3-8-flash-next-iq3-s-primary/journal-state.json": {
+          "sha256": "c083ce39e6d06dc094dca4941771ff85755b49a990670729da2e5b8a5ac1eda1",
+          "bytes": 178
+        }
+      },
+      "gates": "Preserve collection outcome. Verify closed input hashes and journal chain/order/request binding, actual48-layer BF16 GPU-residual path and complete restoration, finite host/GPU intervals, native-PID/request filtering, per-record host-append links and direct-append inventory conservation. Retain edge/excluded counts. Categorize whole request and first-stream-output prefix separately; linear paired RAW/monotonic clock conversion. Source-supported collector loss limits remain an independent review gate.",
+      "limits": "No native execution, timing comparison, hardware saturation, exact prefill-only boundary or full dependency/critical-path claim. Family names are source lookup groups. Requested copy bytes are not measured bus traffic. Host API wall time is not CPU time. Unions overlap across rows.",
+      "budgets": {
+        "wall_seconds": 180,
+        "cpu_seconds": 120,
+        "address_space_bytes": 6442450944,
+        "result_bytes": 24576
+      },
+      "consumer": "Select matched hardware/operation references and next prefill optimization; retire raw trace after remaining source/loss/observer questions close."
     }
   }
 }
