@@ -46,6 +46,12 @@ def prerequisite():
     return current, proof, original, c.validation_probe(old)
 
 
+def require_observer_environment(env):
+    guards.require('LD_PRELOAD' not in env and
+        env.get('STRATA_PREFILL_LAYER_MAJOR_SHAPE_CENSUS', '0') == '0',
+        'private native preload and planned-window census required')
+
+
 def long_interval(log, sample):
     """Exclude the short warmup's intentionally incomplete NativeDense frame."""
     footers = list(re.finditer(r'^strata serve: prompt (\d+) tokens = (\d+) reused \+ (\d+) read[^\n]*, (\d+) generated[^\n]*', log, re.M))
@@ -110,8 +116,7 @@ def prepare():
     for k in ('UR_L0_V2_FORCE_DISABLE_COPY_OFFLOAD', 'NEOReadDebugKeys',
               'EnableDirectSubmission', 'STRATA_SYCL_PREFILL_SAME_QUEUE'):
         guards.require(env[k] == settings['environment'][k], 'qualified safety setting changed')
-    guards.require('LD_PRELOAD' not in env and 'STRATA_PREFILL_LAYER_MAJOR_SHAPE_CENSUS' not in env,
-        'private native preload and planned-window census required')
+    require_observer_environment(env)
     config = copy.deepcopy(original['config'])
     flags = config['args']
     guards.require(flags[flags.index('--expert-cache') + 1] == '1256' and

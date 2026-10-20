@@ -23,6 +23,12 @@ REFILL = 'strata trace: refilled 1124 slots on 1 stage(s) in 380.5 ms\n'
 
 
 class Boundaries(unittest.TestCase):
+    def test_disabled_legacy_census_is_not_an_enabled_observer(self):
+        r.require_observer_environment({})
+        r.require_observer_environment(dict(STRATA_PREFILL_LAYER_MAJOR_SHAPE_CENSUS='0'))
+        for env in (dict(STRATA_PREFILL_LAYER_MAJOR_SHAPE_CENSUS='1'), dict(LD_PRELOAD='anything')):
+            with self.subTest(env=env), self.assertRaises(RuntimeError): r.require_observer_environment(env)
+
     def test_warmup_incomplete_frame_does_not_qualify_or_invalidate_long_frame(self):
         warm_frame = DENSE.replace('complete=1', 'complete=0').replace('entry_done=1', 'entry_done=0')
         part = r.long_interval(warm_frame + WARM + DENSE + REFILL + LONG, dict(generated_tokens=24))
