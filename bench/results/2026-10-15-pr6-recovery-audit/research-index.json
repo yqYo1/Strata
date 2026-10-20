@@ -4906,8 +4906,8 @@
     ],
     "dispatch_prerequisite": "Main commits and freezes the proposed correction plus concrete regression inputs before dispatch; not a duplicate survey.",
     "consumer": "Corrected model v3 admission; no speed or broad quality inference.",
-    "status": "source_audit_completed_native_review_pending",
-    "source_commit": "3832efe2af93af6b39396ae304fd11dc195e4ade",
+    "status": "controller_followup_review_pending",
+    "source_commit": "57dfa220406bcce2568cdbd4012cd7efbd209bb7",
     "frozen_inputs": {
       "include/strata/prefill/scratch_allocation.hpp": "b7001b50bbf9576f750133047762f0dcf6a28c8b601a472a4503c3f2bf9290bd",
       "include/strata/core/cache_scratch_lease.hpp": "71e0c67d49cacb055b51e54db34afe8d0533029413a72303bbec4ad0de92e494",
@@ -4921,20 +4921,20 @@
       "src/core/verify.cpp": "bcaa44dea05e089bbccea8465ab9e8fb908d79a604f2c53ed5869591486fafbd",
       "include/strata/prefill/moe_accum_plan.hpp": "1fa1618eaf96a6ec50bc948f7c6750fc33f463c702cfbf36cd57e928597ca1aa",
       "tests/sycl/prefill_scratch.cpp": "b6d239deb60a78e680ed2a00adb3d5d9928f535950ed43ca32f940b58eaf6742",
-      "tools/sycl/cache_borrow.py": "6037e7e96fb4d8e0b3d9cd8fa2faba822b0822b2d8b40f4268d094373a1dbc49",
-      "tools/test_sycl_cache_borrow.py": "31449f1cd698677facf179dc7d71047977f75419c06068895356765f04519da9"
+      "tools/sycl/cache_borrow.py": "900a2364d19beea0e1fa3e3c657f980455d676363660c013f6ef9058eeb43450",
+      "tools/test_sycl_cache_borrow.py": "88558a331786b8fa3a78de9cd5876311492c97d0d17912187b7da728ff128d8c"
     },
     "report": "/home/yayoi/orca/workspaces/Strata/sycl/.cache/strata-research/20261020/staged-cache-parent-identity-report.md",
     "report_budget_bytes": 12288,
     "bounded_model_source_review_accepted": false,
     "offline_evidence_gate": {
-      "source_commit": "3832efe2af93af6b39396ae304fd11dc195e4ade",
-      "cases": 16,
+      "source_commit": "57dfa220406bcce2568cdbd4012cd7efbd209bb7",
+      "cases": 17,
       "passed": true,
       "GPU_executed": false,
       "command": "python3 -B -m unittest tools/test_sycl_cache_borrow.py tools/test_sycl_query_profile.py"
     },
-    "next_review": "Complete Orca audit and native Luna-max curation; Main runs fresh v9 156-case gate before preparing model v3. No speed/full-context qualification.",
+    "next_review": "Native controller-only follow-up checks all12 unchanged pins and the two changed evidence files, then Main verifies complete same-build admission and commits model v3 before running.",
     "task_id": "task_08d38fe2e144",
     "dispatch_id": "ctx_15d1953781c1",
     "terminal_handle": "term_4dec30a6-3baf-4e5f-a728-9b92b3b77060",
@@ -4944,6 +4944,28 @@
     "report_bytes": 6576,
     "report_sha256": "983f005698cf62abf0393a803cd30338fb6944d0c2eee583eb4d4d4ecf40e9ac",
     "closure_evidence": "Accepted completed ctx_15d1953781c1. worker-release returned no_owned_resource; exact incarnation abf2ba6e-ea17-4abe-be41-ee72bd3ed500 was idle, operator close returned ptyKilled=true, delivery acknowledged.",
-    "component_observation": "Built atbb71e78db; fresh v9 all156 semantic cases passed, ownership closed, unchanged boot and no fresh GPU fault. Small model v3 remains unexecuted."
+    "component_observation": "Built atbb71e78db; fresh v9 all156 semantic cases passed, ownership closed, unchanged boot and no fresh GPU fault. Small model v3 remains unexecuted.",
+    "source_review_reuse": {
+      "base_source_commit": "3832efe2af93af6b39396ae304fd11dc195e4ade",
+      "report_sha256": "983f005698cf62abf0393a803cd30338fb6944d0c2eee583eb4d4d4ecf40e9ac",
+      "base_native_review_path": "/home/yayoi/orca/workspaces/Strata/sycl/.cache/strata-research/20261020/staged-cache-parent-identity-native-review.json",
+      "base_native_review_sha256": "59f3adde3db28031a2e466b22b74b7817eafbe036f3eb47e7b0ef43dffa153ee",
+      "unchanged_inputs": 12,
+      "changed_controller_inputs": {
+        "tools/sycl/cache_borrow.py": {
+          "before": "6037e7e96fb4d8e0b3d9cd8fa2faba822b0822b2d8b40f4268d094373a1dbc49",
+          "after": "900a2364d19beea0e1fa3e3c657f980455d676363660c013f6ef9058eeb43450"
+        },
+        "tools/test_sycl_cache_borrow.py": {
+          "before": "31449f1cd698677facf179dc7d71047977f75419c06068895356765f04519da9",
+          "after": "88558a331786b8fa3a78de9cd5876311492c97d0d17912187b7da728ff128d8c"
+        }
+      },
+      "scope": "Original source audit and native curation cover unchanged parent/native path. New controller-only review must admit the stricter dense-phase evidence before v3; no hash refresh or native/GPU qualification claim."
+    },
+    "curation_corrections": [
+      "The previous digest build-source string included an accidental at prefix; actual build source is bb71e78db7b6a4930945a2d564ec6cd42d0ad245.",
+      "The short257-token request uses relayout chunk256 and processes256 rows. Dense phases are bound to its second masked/ready pair; final headers separately require actual input257 with zero reuse."
+    ]
   }
 }

@@ -2324,7 +2324,14 @@ component plan, complete corrected-source review and a committed v3 model plan;
 never retry closed v2 or bypass the owner check. Source`3832efe2a` passed all16
 offline evidence tests. Build`bb71e78db` passed all156 fresh v9 cases, with
 owners closed, unchanged boot and no fresh GPU fault. Model v3 remains
-unexecuted. The default-off route stays unadopted, with no new speed result or
+unexecuted. Its source audit and native curation support the parent correction,
+but found a short-residency evidence gap. Controller-only source`57dfa2204`
+now requires all six ordered dense phases inside their respective loans:48
+long-path activations before Full restoration, and Full residency with zero
+activations on the short256-row path. Its17 offline tests passed. No native
+input/fixture changed; a separate native review of this controller delta and
+same-build proof remain required before model v3. The default-off route stays
+unadopted, with no new speed result or
 full physical262144/session/RESTORE qualification.
 Only a later qualified mechanism permits a
 fresh complete51+6-case plan. Preserve all pending-completion,
