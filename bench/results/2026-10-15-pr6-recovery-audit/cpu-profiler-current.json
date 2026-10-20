@@ -1675,7 +1675,7 @@
   },
   "unitrace_recording_window": {
     "schema": "strata-profile-recording-window-v1",
-    "stage": "prepared",
+    "stage": "failed",
     "source_commit": "15ba9e825fcd4b5bb9de3d065209952e5708e802",
     "input_sha256": {
       "tools/sycl/bench_engine.py": "e5f588605ebc7799b54f8bf7df9ad2e363391375e50b788b9704a6b80887ca6b",
@@ -1807,6 +1807,20 @@
     "passed": false,
     "ownership_closed": true,
     "request_window_qualified": false,
-    "model_qualified": false
+    "model_qualified": false,
+    "error": "RuntimeError('window build failed: /home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/unitrace-recording-window-v1/build-owned/build.stderr')",
+    "build_failure": {
+      "exit_code": 1,
+      "error_lines": [
+        "/home/yayoi/orca/workspaces/Strata/sycl/bench/sycl/profile_window.cpp:62:50: error: no member named 'runtime_for' in namespace 'strata::sycl_backend'",
+        "   62 |         const auto runtime=strata::sycl_backend::runtime_for();",
+        "      |                                                  ^~~~~~~~~~~",
+        "1 error generated."
+      ],
+      "stderr_sha256": "02e5a3dd67e89e3e4c593a0a6bc6fb0862b6a37ab63762330ff1b161a37e5d54",
+      "native_executed": false,
+      "engine_generations_unchanged": true,
+      "next_action": "Add the missing maintained runtime header declaration; preserve this failed source/recipe, then commit a fresh build plan before retry."
+    }
   }
 }
