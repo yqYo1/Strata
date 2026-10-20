@@ -2149,6 +2149,52 @@ a small actual Prefill init/relayout failure fixture before parent-loan
 admission; helper-state exceptions alone do not exercise those paths.
 CPU-math/RAM/GPU resource attribution remains unknown; physical262144/session/
 RESTORE, model quality and clean speed remain separate gates.
+The next committed gate uses a shared QSA metadata/product preflight and checked
+Prefill retirement before freeing owners. Its new model-free SYCL fixture calls
+actual Prefill init/relayout/reset with a1024-cell session and256/128-row scratch.
+Freeze normal71+host22+device17 cases in a fresh v5 root: smoke capacity refusal
+first, then exact/moved/shrunk layouts, failed init/rebind poison, reset recovery,
+QSA/USM/context refusal and complete parent/guard readback. The final separate
+child changes a fully drained external queue's context; reset must exit1 before
+owner release. This tests host-domain synchronization rejection, not a device
+fault. Use the shared immutable safety/tracing environment with alias1,MMQ0,
+compactFP16,BF16,QSA1,GDN-chunk640,vLLM backend set before exec. Each child has
+180s wall/600s CPU/4GiB RSS and the job64MiB raw/artifact budget; stop on the first
+failure without resizing or retry. Pin the source/controller before rebuilding
+the current comparison cache; keep the396d0c91f301 fallback until the next model
+qualification selects a generation. These gates do not enable borrowed mixed
+scratch: parent-loan generation and all graph/MTP/cache-reader retirement,
+refill/publication and a new complete model plan remain required. Run the11
+offline controller tests separately after components. No new speed sample is
+claimed by this plan.
+The v5 build at96e6d9e81 completed (engine SHA256
+`968200f3d60abb265279eae8890041b89827b85dfd93017c095c00e91ebad5be`).
+Normal71+host22+device-smoke1 passed; the full child passed13 subcases and
+then failed its foreign-queue assertion. The fixture created that queue with
+default out-of-order properties, so queue_for rejects it before the intended
+context check; the combined assertion misleadingly prints "foreign queue
+admitted". The gate is failed/incomplete, retirement was not executed and no
+model is admitted. All owners closed, no fresh GPU fault occurred and the11
+offline tests passed. Keep this outcome; correct both foreign queue constructions
+and separate the assertions in a fresh committed plan after source review.
+Native Luna-max review corrected the report's overly broad coverage claim and
+approved the fixture-only correction. The new v6 plan keeps all110 cases,
+order, environments, budgets and stopping rules above. Both foreign queues must
+be explicitly in order and have a different context; verify the original
+same-domain stream completes before substitution. Separate actual init refusal
+from its runtime-domain reason, and require the reset child to print both setup
+checks before the expected context-error exit1. Preserve failed v5 through Git;
+neither this correction nor source review admits parent loans or model work.
+At sourcea51989adc, the corrected fixture rebuilt and all110 cases passed in
+the fresh v6 root. Both init context refusal and reset's actual context-error
+exit1 were reached; the latter stopped before owner release. All processes
+closed normally, boot remained unchanged, no fresh GPU fault occurred and the11
+offline tests passed. Engine bytes remain968200f3d60a from96e6d9e81; the changed
+fixture has its own newly built identity. Keep the shared QSA/checked teardown
+step, with borrowed mode10 still rejected. Next implement checked parent-loan
+generation, sealed interval/layout and complete cache-reader retirement, keeping
+loan bookkeeping until successful refill/publication. No new model or speed
+result follows from this gate, and physical262144/session/RESTORE remain open.
 Only a later qualified mechanism permits a
 fresh complete51+6-case plan. Preserve all pending-completion,
 untouched-output, payload/guard and owner-lifetime requirements under that plan.

@@ -1,9 +1,9 @@
 {
-  "source_commit": "6a553b54b36d11d6af913a79412f64e52daa3d06",
+  "source_commit": "a51989adcd9715f6bdb1165080d0f178c9709140",
   "binary": {
     "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/strata",
-    "bytes": 22092696,
-    "sha256": "b6e870895ab0e3399626169f7da02e09d011e7c72110406afcc342884e65876e"
+    "bytes": 22097128,
+    "sha256": "968200f3d60abb265279eae8890041b89827b85dfd93017c095c00e91ebad5be"
   },
   "fixtures": {
     "sycl_verifier_retirement_test": {
@@ -32,7 +32,11 @@
     },
     "prefill_scratch_host_test": {
       "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/prefill_scratch_host_test",
-      "sha256": "dd6d66e3e595934150ab0b7a1d3e254d77cb7eecfb83f0b02f2d00ffc70a0ff8"
+      "sha256": "2be6ce35f22430c26aac3a789c46805d61413e1cc5ce009f6080c22e1fcbe113"
+    },
+    "sycl_prefill_scratch_test": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/sycl_prefill_scratch_test",
+      "sha256": "721de16c117cb1d561206edd4275c6a2925b8e80b274b92021db734041b9a2a2"
     }
   },
   "environment_reference": "tools/sycl/measurement_environment.json",
@@ -56,6 +60,9 @@
         "arena_copy_dispatch_test cases=17 native_variable_stride=PASS source_bounds=PASS grouping=PASS limits=PASS cpu_fallback=PASS alias_exclusion=PASS callbacks=PASS"
       ],
       "passed": true,
+      "expected_exit": 0,
+      "exit_code": 0,
+      "environment_delta": {},
       "stdout_sha256": "525c53f5832c332c7e503c860dcbcdaa77583c5ccba8ca187bb5bade0e6229dc",
       "stderr_sha256": "96cd9605779b5c9cd8b24a55d4742becdedd168f603a9f10a07d15cd6a0aca90"
     },
@@ -77,8 +84,11 @@
         "case teardown=PASS"
       ],
       "passed": true,
+      "expected_exit": 0,
+      "exit_code": 0,
+      "environment_delta": {},
       "stdout_sha256": "dadad801d8022f3b40ad3bdab3e29f65fc13e1f61d60b219406f04e9881bb5be",
-      "stderr_sha256": "9f1de60cccc9c4067d46c4b186946e4289be8bb7041ecaf5fdc9bad32d0869d7"
+      "stderr_sha256": "49fbcd9f7720506a8adf2ba160e423edbade56f57a8ddb73a1d7542a74de1dfb"
     },
     {
       "command": [
@@ -95,8 +105,11 @@
         "case=copy-error expected_exit=1 markers=E PASS"
       ],
       "passed": true,
+      "expected_exit": 0,
+      "exit_code": 0,
+      "environment_delta": {},
       "stdout_sha256": "148fbcc509e40ad207cfca2a47f0180d4a42c61ceee417648974ff573e3ba20c",
-      "stderr_sha256": "48c3ef3c86bf911a2bae8d4540c38a06ce35569f96f0ae50889f8cf378617f02"
+      "stderr_sha256": "6bd1a61e466fa91aa5f26964533557b7f870042a87f6ff7887540fc6bac2c6b6"
     },
     {
       "command": [
@@ -122,8 +135,11 @@
         "arena_grouped gu=23 down=42 window=4 groups=16 entries=40 separate_projection=PASS finite=PASS payload=PASS guards=PASS"
       ],
       "passed": true,
+      "expected_exit": 0,
+      "exit_code": 0,
+      "environment_delta": {},
       "stdout_sha256": "9066714b8b575e061109b08415161365b8f2eb8e185bee2ba01f6499319eb79b",
-      "stderr_sha256": "635243f9de3a8482edf5298c2e2efccc67c130228ed56fef5873e0b21ebe597e"
+      "stderr_sha256": "99dde1b04929f9b54056ebf7622434de345154f0ea28c48f17c57e18fa18fe23"
     },
     {
       "command": [
@@ -134,8 +150,11 @@
         "case=profile expected_exit=0 markers=R PASS"
       ],
       "passed": true,
+      "expected_exit": 0,
+      "exit_code": 0,
+      "environment_delta": {},
       "stdout_sha256": "b167bcaa8392dc493f246a2849e21bdb809a66471d38bafdf7e058f01fdae03b",
-      "stderr_sha256": "16a22fa435d893b7826348b9303ddb6a3074cd4b1fa9b65dc9910003b7a71a00"
+      "stderr_sha256": "85bb23e56adbb0209114bfac16ca2b1dbce410b4a769b18971a75178fc0dcbd7"
     },
     {
       "command": [
@@ -153,6 +172,9 @@
         "residency_publication phase=empty status=PASS"
       ],
       "passed": true,
+      "expected_exit": 0,
+      "exit_code": 0,
+      "environment_delta": {},
       "stdout_sha256": "1a01d1d570a52f64dc0642bfcb02e99284e5d3569619caa6ae358cd493b722b0",
       "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
     },
@@ -173,6 +195,9 @@
         "cache_tail case=request_rounding status=PASS"
       ],
       "passed": true,
+      "expected_exit": 0,
+      "exit_code": 0,
+      "environment_delta": {},
       "stdout_sha256": "f2b3f585b2a14d48486b7aedfdf5ecc508ef6244b16e37bfb3e371d868f7365f",
       "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
     },
@@ -195,11 +220,107 @@
         "prefill_scratch case=failed_init status=PASS",
         "prefill_scratch case=failed_relayout status=PASS",
         "prefill_scratch case=nested_update status=PASS",
-        "prefill_scratch case=failed_take_and_reset status=PASS"
+        "prefill_scratch case=failed_take_and_reset status=PASS",
+        "prefill_scratch case=qsa_global_ordinal status=PASS",
+        "prefill_scratch case=qsa_resident_plan status=PASS",
+        "prefill_scratch case=qsa_stream_ring_formats status=PASS",
+        "prefill_scratch case=qsa_bad_metadata status=PASS",
+        "prefill_scratch case=qsa_product_overflow status=PASS",
+        "prefill_scratch case=qsa_block_overflow status=PASS",
+        "prefill_scratch case=qsa_tail_rounding status=PASS"
       ],
       "passed": true,
-      "stdout_sha256": "29a137e6666a5019e887e36bfcdbdba4863858d3b5670d191dee3d3d8b823a21",
+      "expected_exit": 0,
+      "exit_code": 0,
+      "environment_delta": {},
+      "stdout_sha256": "693602ed7c5528a656f26a90cfc5e971dfb3f08a89ac0a67f88728ad53f8672c",
       "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "command": [
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/sycl_prefill_scratch_test",
+        "--case",
+        "smoke"
+      ],
+      "cases": [
+        "prefill_scratch_device case=first_take_refusal status=PASS"
+      ],
+      "passed": true,
+      "expected_exit": 0,
+      "exit_code": 0,
+      "environment_delta": {
+        "STRATA_SYCL_PREFILL_SCRATCH_ALIAS": "1",
+        "STRATA_PREFILL_MMQ": "0",
+        "STRATA_PREFILL_MOE_COMPACT_FP16": "1",
+        "STRATA_SYCL_PREFILL_NATIVE16": "bf16",
+        "STRATA_SYCL_PREFILL_NATIVE16_QSA": "1",
+        "STRATA_SYCL_PREFILL_GDN_CHUNK64": "0",
+        "STRATA_SYCL_PREFILL_NATIVE16_BACKEND": "vllm"
+      },
+      "stdout_sha256": "d042b38fc9217cd4924a04307023ebb05ed0884fee1497766748a19e407ce7e1",
+      "stderr_sha256": "17d6c534ac775d3d1a4640ae9bda4dc73bc3cdc8a19a5993ccaff2ec43c42bba"
+    },
+    {
+      "command": [
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/sycl_prefill_scratch_test",
+        "--case",
+        "full"
+      ],
+      "cases": [
+        "prefill_scratch_device case=exact_init status=PASS",
+        "prefill_scratch_device case=moved_relayout status=PASS",
+        "prefill_scratch_device case=smaller_relayout status=PASS",
+        "prefill_scratch_device case=growth_refusal status=PASS",
+        "prefill_scratch_device case=one_byte_short_poison status=PASS",
+        "prefill_scratch_device case=poison_entries status=PASS",
+        "prefill_scratch_device case=reset_recovery status=PASS",
+        "prefill_scratch_device case=relayout_short_poison status=PASS",
+        "prefill_scratch_device case=gemm_init_refusal status=PASS",
+        "prefill_scratch_device case=gemm_rebind_refusal status=PASS",
+        "prefill_scratch_device case=malformed_qsa_refusal status=PASS",
+        "prefill_scratch_device case=parent_bounds_refusal status=PASS",
+        "prefill_scratch_device case=host_usm_refusal status=PASS",
+        "prefill_scratch_device case=foreign_queue_refusal status=PASS",
+        "prefill_scratch_device case=canary_and_retirement status=PASS"
+      ],
+      "passed": true,
+      "expected_exit": 0,
+      "exit_code": 0,
+      "environment_delta": {
+        "STRATA_SYCL_PREFILL_SCRATCH_ALIAS": "1",
+        "STRATA_PREFILL_MMQ": "0",
+        "STRATA_PREFILL_MOE_COMPACT_FP16": "1",
+        "STRATA_SYCL_PREFILL_NATIVE16": "bf16",
+        "STRATA_SYCL_PREFILL_NATIVE16_QSA": "1",
+        "STRATA_SYCL_PREFILL_GDN_CHUNK64": "0",
+        "STRATA_SYCL_PREFILL_NATIVE16_BACKEND": "vllm"
+      },
+      "stdout_sha256": "c6aa0631e20d25db9810637b1608220b0d3daab25d0fe18129572d835870cf3a",
+      "stderr_sha256": "ee448aac8ba0adb4521532fe42416122e1a9be816ac182cd7cb1a9d6c5128f58"
+    },
+    {
+      "command": [
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/sycl_prefill_scratch_test",
+        "--case",
+        "retirement"
+      ],
+      "cases": [
+        "prefill_scratch_device retirement=reset queue_domain_changed=1 owners_live=1 old_queue_drained=1 foreign_in_order=1 expected_exit=1 status=PASS"
+      ],
+      "passed": true,
+      "expected_exit": 1,
+      "exit_code": 1,
+      "environment_delta": {
+        "STRATA_SYCL_PREFILL_SCRATCH_ALIAS": "1",
+        "STRATA_PREFILL_MMQ": "0",
+        "STRATA_PREFILL_MOE_COMPACT_FP16": "1",
+        "STRATA_SYCL_PREFILL_NATIVE16": "bf16",
+        "STRATA_SYCL_PREFILL_NATIVE16_QSA": "1",
+        "STRATA_SYCL_PREFILL_GDN_CHUNK64": "0",
+        "STRATA_SYCL_PREFILL_NATIVE16_BACKEND": "vllm"
+      },
+      "stdout_sha256": "f59d9972eee23bdba254b31265746c0fe1c49c8c8d9165c5e277835bf8160eeb",
+      "stderr_sha256": "e51ea3bd58405836e3cb3c74661ac1a7263d7ff09d77796c73b508c7ffa09021"
     }
   ],
   "complete": true,
@@ -207,7 +328,7 @@
   "active": false,
   "model_performance_measured": false,
   "previous_result_reference": {
-    "commit": "fd47af59d813c18526f251f63ce62f0f935da056",
+    "commit": "1769fc9843afe6e5dadfefe16c038105d5fd0388",
     "path": "bench/results/2026-10-15-pr6-recovery-audit/verifier-copy-safety-current.json",
     "sha256": "bf0acd306ff34cca920c656a5ca19927839f83bb1da5ec4914fcd18f605b976d",
     "outcome": "Original v6 host-task gate failed after51 existing passes; this new finite-DMA plan does not change that outcome."
@@ -222,25 +343,29 @@
   "model_quality_qualified": false,
   "model_route_executed": false,
   "ordinary_arena_copy_default_enabled": false,
-  "consumer": "Prerequisite for the next checked parent-loan implementation; normal51+observer1+publication9+tail10+scratch15, never admission of early PCIe scheduling or borrowed mode10.",
-  "gate": "Same-build provider17, submission10, normal verifier retirement8, grouped arithmetic16, query observer1, residency publication9, cache tail10 and scratch layout15. Scratch cases cover checked byte/shape bounds and the actual layout-state guard, with host phase exceptions; they do not inject actual Prefill/GEMM/queue failures or qualify borrowed mode10. Original failed early51+6 stays unchanged. No early route, queue change or model/speed qualification.",
-  "limits": "The six early cases check real-queue synthetic ordering, replay, source retirement and refusal, not native projection equivalence or model overlap. Grouped component covers all seven current model GU/Down pairs plus supported IQ4_XS/Q2_0 at H2560/FF640, windows1/4, groups10/16 and entries10/40, using two distinct blobs repeated in metadata. The oracle shares native scalar projection primitives; it isolates copy/grouping from separate execution, not common-mode projection defects or model quality. No invalid GPU address, stalled kernel, model, physical262144/session/RESTORE or throughput qualification.",
+  "consumer": "Prerequisite for checked parent-loan implementation; these110 cases never admit early PCIe scheduling or borrowed mode10.",
+  "gate": "Same-build provider17, submission10, normal verifier retirement8, grouped arithmetic16, query observer1, residency publication9, cache tail10, scratch host22 and actual Prefill device1+15+retirement1. Run smoke before full and retirement. Require exact init/moved/shrunk layouts, growth refusal, allocation and GEMM failure poison, reset recovery, metadata/USM/queue-domain refusal, untouched parent bytes and guards. Retirement must exit1 at the failed synchronization with owners retained. Original failed early51+6 stays unchanged. Any failure stops without retry or model execution.",
+  "limits": "Actual Prefill init/relayout and reset failure paths, without model weights or inference. The reset case changes a fully drained external queue to another context, exercising host-domain synchronization rejection; it does not inject a GPU fault or asynchronous device exception. Parent-loan generation/global graph-reader retirement remain unimplemented. No model speed, task quality, physical262144/session/RESTORE qualification. Existing grouped arithmetic oracle shares scalar projection primitives.",
   "mode": "normal-route-query-profile-components",
   "last_fixture": {
-    "name": "prefill_scratch_host_test",
+    "name": "sycl_prefill_scratch_test",
     "command": [
-      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/prefill_scratch_host_test"
+      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/sycl_prefill_scratch_test",
+      "--case",
+      "retirement"
     ],
-    "exit_code": 0,
+    "exit_code": 1,
     "ownership_closed": true,
-    "stdout_sha256": "29a137e6666a5019e887e36bfcdbdba4863858d3b5670d191dee3d3d8b823a21",
-    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    "stdout_sha256": "f59d9972eee23bdba254b31265746c0fe1c49c8c8d9165c5e277835bf8160eeb",
+    "stderr_sha256": "e51ea3bd58405836e3cb3c74661ac1a7263d7ff09d77796c73b508c7ffa09021"
   },
   "grouped_copy_projection_contract_passed": true,
   "query_profile_contract_passed": true,
   "residency_publication_contract_passed": true,
   "cache_tail_contract_passed": true,
   "scratch_layout_contract_passed": true,
+  "prefill_device_layout_contract_passed": true,
+  "prefill_reset_retirement_contract_passed": true,
   "ownership_closed": true,
   "fresh_faults": [],
   "boot_unchanged": true,
@@ -253,32 +378,23 @@
     "devcoredump": false
   },
   "previous_component_reference": {
-    "commit": "fd47af59d",
+    "commit": "5d224d6b2",
     "path": "bench/results/2026-10-15-pr6-recovery-audit/decode-query-profile-component-current.json",
-    "sha256": "635574be6a7277f3de58f0f8bd9f2c6e6f6c7eacc965e6397d0cebeb9cf36fa1",
-    "outcome": "Passed71-case prerequisite atnative1dc; superseded by this exact native6a build and86 cases, not model qualification."
+    "sha256": "3eccdd66985da3d5a39f07a42dbd970d93beb8d25b7a65ef5be8e3c034cecb40",
+    "outcome": "Failed/incomplete v5 foreign-queue harness;13 partial full cases; reset unrun. Unchanged original outcome."
   },
   "offline_evidence_tests": {
-    "source_commit": "fd47af59d",
+    "source_commit": "a51989adcd9715f6bdb1165080d0f178c9709140",
     "command": "timeout 30s python3 -m unittest tools/test_sycl_query_profile.py tools/test_sycl_cache_borrow.py",
     "tests": 11,
     "passed": true,
-    "scope": "Offline evidence/runtime admission and real CPU-only ERR/exit child. Native model route remains unexecuted and borrowed mode10 is still refused."
+    "scope": "Offline admission/parser and CPU-only ERR/exit tests. No model or parent-loan qualification."
   },
   "same_build_admission": {
-    "source_commit": "6a550578b",
-    "source_blobs_recovered": 9829,
-    "fixture_identities_checked": 7,
+    "source_commit": "28df71b53",
+    "source_blobs_recovered": 9830,
+    "fixture_identities_checked": 8,
     "passed": true,
-    "scope": "query_profile.current_build recovered original Git inputs and matched native/recipe/executable/fixtures; read-only admission, not another native/GPU/model validation."
-  },
-  "artifact_retirement": {
-    "manifest_path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/closed-scratch-layout-components-20261020.jsonl",
-    "sha256": "3be0970d7d92ab573452740dcd906b251b588c74d993cb25ba430e6c3c9febe8",
-    "files": 37,
-    "bytes": 11514053,
-    "source_blobs_recovered": 9829,
-    "original_outcomes_unchanged": true,
-    "source_and_compact_results_reference": "2fc0e625c"
+    "scope": "Recovered original native/dependency Git blobs; current source/recipe/engine/all8 fixtures match the passed110-case build. Read-only evidence admission, not another native/GPU/model execution."
   }
 }

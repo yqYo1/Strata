@@ -39,7 +39,7 @@ def digest(path):
 def main():
     profile = sys.argv[1:] == ['--query-profile']
     guards.require(len(sys.argv) == 1 or profile, 'use no options or --query-profile; never retry a closed root')
-    root = B / 'decode-query-profile-component-v4' if profile else ROOT
+    root = B / 'decode-query-profile-component-v6' if profile else ROOT
     result = A / 'decode-query-profile-component-current.json' if profile else RESULT
     with (B / 'owned-v0141-measurement.lock').open('a+') as lock:
         fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
@@ -102,8 +102,9 @@ def main():
             limits='The six early cases check real-queue synthetic ordering, replay, source retirement and refusal, not native projection equivalence or model overlap. Grouped component covers all seven current model GU/Down pairs plus supported IQ4_XS/Q2_0 at H2560/FF640, windows1/4, groups10/16 and entries10/40, using two distinct blobs repeated in metadata. The oracle shares native scalar projection primitives; it isolates copy/grouping from separate execution, not common-mode projection defects or model quality. No invalid GPU address, stalled kernel, model, physical262144/session/RESTORE or throughput qualification.')
         if profile:
             record.update(mode='normal-route-query-profile-components', model_route_executed=False,
-                gate='Same-build provider17, submission10, normal verifier retirement8, grouped arithmetic16, query observer1, residency publication9, cache tail10 and scratch layout15. Scratch cases cover checked byte/shape bounds and the actual layout-state guard, with host phase exceptions; they do not inject actual Prefill/GEMM/queue failures or qualify borrowed mode10. Original failed early51+6 stays unchanged. No early route, queue change or model/speed qualification.',
-                consumer='Prerequisite for the next checked parent-loan implementation; normal51+observer1+publication9+tail10+scratch15, never admission of early PCIe scheduling or borrowed mode10.')
+                gate='Same-build provider17, submission10, normal verifier retirement8, grouped arithmetic16, query observer1, residency publication9, cache tail10, scratch host22 and actual Prefill device1+15+retirement1. Run smoke before full and retirement. Require exact init/moved/shrunk layouts, growth refusal, allocation and GEMM failure poison, reset recovery, metadata/USM/queue-domain refusal, untouched parent bytes and guards. Retirement must exit1 at the failed synchronization with owners retained. Original failed early51+6 stays unchanged. Any failure stops without retry or model execution.',
+                consumer='Prerequisite for checked parent-loan implementation; these110 cases never admit early PCIe scheduling or borrowed mode10.',
+                limits='Actual Prefill init/relayout and reset failure paths, without model weights or inference. The reset case changes a fully drained external queue to another context, exercising host-domain synchronization rejection; it does not inject a GPU fault or asynchronous device exception. Parent-loan generation/global graph-reader retirement remain unimplemented. No model speed, task quality, physical262144/session/RESTORE qualification. Existing grouped arithmetic oracle shares scalar projection primitives.')
         owner = None
 
         def persist():
@@ -124,15 +125,26 @@ def main():
                 fixtures.append(('residency-publication', 'residency_publication_host_test', []))
                 fixtures.append(('cache-tail', 'cache_tail_host_test', []))
                 fixtures.append(('prefill-scratch', 'prefill_scratch_host_test', []))
+                fixtures.extend(('prefill-device-'+mode, 'sycl_prefill_scratch_test', ['--case',mode])
+                    for mode in ('smoke','full','retirement'))
             for label, name, args in fixtures:
                 fixture = build['fixtures'][name]
                 command = [fixture['path'], *args]
-                entry, out, err = owner.run(label, command, env, P, wall=180, cpu=600,
+                child_env = env
+                delta = {}
+                retirement = name == 'sycl_prefill_scratch_test' and args == ['--case','retirement']
+                if name == 'sycl_prefill_scratch_test':
+                    delta = dict(STRATA_SYCL_PREFILL_SCRATCH_ALIAS='1',STRATA_PREFILL_MMQ='0',
+                        STRATA_PREFILL_MOE_COMPACT_FP16='1',STRATA_SYCL_PREFILL_NATIVE16='bf16',
+                        STRATA_SYCL_PREFILL_NATIVE16_QSA='1',STRATA_SYCL_PREFILL_GDN_CHUNK64='0',
+                        STRATA_SYCL_PREFILL_NATIVE16_BACKEND='vllm')
+                    child_env = dict(env,**delta)
+                entry, out, err = owner.run(label, command, child_env, P, wall=180, cpu=600,
                     rss_cap=4 << 30, file_cap=64 << 20, text_cap=64 << 20, total_cap=64 << 20)
                 stdout, stderr = out.read_text(errors='replace'), err.read_text(errors='replace')
                 record['last_fixture'] = dict(name=name,command=command,exit_code=entry.get('exit_code'),
                     ownership_closed=supervision.closed(entry),stdout_sha256=digest(out),stderr_sha256=digest(err))
-                guards.require(supervision.closed(entry) and entry.get('exit_code') == 0,
+                guards.require(supervision.closed(entry) and entry.get('exit_code') == (1 if retirement else 0),
                     'fixture failed: ' + (stdout + stderr)[-8192:])
                 if name == 'file_expert_source_test':
                     expected = 'arena_copy_dispatch_test cases=17 native_variable_stride=PASS source_bounds=PASS grouping=PASS limits=PASS cpu_fallback=PASS alias_exclusion=PASS callbacks=PASS'
@@ -146,10 +158,38 @@ def main():
                         ('guard_alignment','shape_bounds','gemm_64mib','exact_capacity','payload_overflow',
                          'guard_overflow','used_overflow','capacity_bounds','slack_overflow',
                          'initial_layout','relayout_generation','failed_init','failed_relayout',
-                         'nested_update','failed_take_and_reset')]
-                    guards.require(cases == expected and 'prefill_scratch_fixture cases=15 status=PASS' in stdout,
+                         'nested_update','failed_take_and_reset','qsa_global_ordinal','qsa_resident_plan',
+                         'qsa_stream_ring_formats','qsa_bad_metadata','qsa_product_overflow',
+                         'qsa_block_overflow','qsa_tail_rounding')]
+                    guards.require(cases == expected and 'prefill_scratch_fixture cases=22 status=PASS' in stdout,
                         'scratch arithmetic/layout-state contract failed: '+(stdout+stderr)[-8192:])
                     record['scratch_layout_contract_passed'] = True
+                elif name == 'sycl_prefill_scratch_test':
+                    if retirement:
+                        marker = 'prefill_scratch_device retirement=reset queue_domain_changed=1 owners_live=1 old_queue_drained=1 foreign_in_order=1'
+                        guards.require(stdout.count(marker)==1 and
+                            'prefill reset/destruction completion uncertain; retaining owners until process exit' in stderr and
+                            'Strata SYCL engine currently uses runtime device 0 context' in stderr and
+                            'UNEXPECTED_RETURN' not in stdout and 'prefill_scratch_device_complete=' not in stdout and
+                            'prefill scratch fixture:' not in stderr and
+                            not re.search('UR_RESULT_ERROR_|ZE_RESULT_ERROR_|terminate called',stderr),
+                            'Prefill reset did not fail before owner release: '+(stdout+stderr)[-8192:])
+                        cases = [marker+' expected_exit=1 status=PASS']
+                        record['prefill_reset_retirement_contract_passed'] = True
+                    else:
+                        mode = args[1]
+                        names = ('first_take_refusal',) if mode=='smoke' else (
+                            'exact_init','moved_relayout','smaller_relayout','growth_refusal',
+                            'one_byte_short_poison','poison_entries','reset_recovery','relayout_short_poison',
+                            'gemm_init_refusal','gemm_rebind_refusal','malformed_qsa_refusal',
+                            'parent_bounds_refusal','host_usm_refusal','foreign_queue_refusal','canary_and_retirement')
+                        cases = [x for x in stdout.splitlines() if x.startswith('prefill_scratch_device case=')]
+                        guards.require(cases == [f'prefill_scratch_device case={n} status=PASS' for n in names] and
+                            f'prefill_scratch_device_fixture mode={mode} cases={len(names)} status=PASS' in stdout and
+                            stdout.count('prefill_scratch_device_complete=1 model_PP=UNRUN')==1 and
+                            not re.search('UR_RESULT_ERROR_|ZE_RESULT_ERROR_|terminate called|cleanup failed|Strata SYCL cleanup:',stderr),
+                            'actual Prefill layout/failure contract failed: '+(stdout+stderr)[-8192:])
+                        if mode=='full': record['prefill_device_layout_contract_passed'] = True
                 elif name == 'cache_tail_host_test':
                     cases = [x for x in stdout.splitlines() if x.startswith('cache_tail ')]
                     expected = [f'cache_tail case={name} status=PASS' for name in
@@ -212,6 +252,8 @@ def main():
                         'staged grouped arithmetic failed: ' + (stdout + stderr)[-8192:])
                     record['grouped_copy_projection_contract_passed'] = True
                 record['checks'].append(dict(command=command, cases=cases, passed=True,
+                    expected_exit=1 if retirement else 0,exit_code=entry.get('exit_code'),
+                    environment_delta=delta,
                     stdout_sha256=digest(out), stderr_sha256=digest(err)))
             unchanged(); runtime_unchanged()
             record.update(complete=True, passed=True)
