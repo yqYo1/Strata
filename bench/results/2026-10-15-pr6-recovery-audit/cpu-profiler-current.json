@@ -1128,8 +1128,8 @@
   },
   "unitrace_gpu_coverage": {
     "schema": "strata-unitrace-known-work-v1",
-    "stage": "failed",
-    "source_commit": "eb9aa2547e23d2cdf7b46ebb588415e9f673547e",
+    "stage": "prepared",
+    "source_commit": "e54d9a168450c7fa0489d0b74c84ba943573960a",
     "input_sha256": {
       "tools/sycl/bench_engine.py": "e5f588605ebc7799b54f8bf7df9ad2e363391375e50b788b9704a6b80887ca6b",
       "tools/sycl/build_engine.py": "4ac433f6a48bff62b69e83e9be5019e213f1f57c5b6ddfed802a153df535f80e",
@@ -1149,7 +1149,7 @@
       "tools/sycl/unitrace_probe.py": "930a4a746ea363bd6d2949fce039e38b0d101d46da6e820e1993aa7b3db8c61e",
       "tools/sycl/unitrace_profile.py": "c87c9934f3ee2b5fa6e1dbcfa05689bb5f9a8c6cf178e23c716a4e3cb7c7cf27",
       "tools/sycl/ur_validation.py": "1ddf6a2aceb4d7b538d1d3ab2ef3093ec10bd90943c52e3397c832b61194bf39",
-      "tools/sycl/production_profile.py": "c3cfdb69995252b81fcfbb8c4357fdc6b41b3e1c8409727d465a3709cdbf66b0"
+      "tools/sycl/production_profile.py": "c4a76786ffd3fe3e5eb30f17554dc76bd4205ab91241e9176938a062124a7d1e"
     },
     "assets": {
       "collector": {
@@ -1203,7 +1203,7 @@
         "name": "submission",
         "mode": "--submission",
         "expected_kernels": 606,
-        "session": "StrataKnown2e031dee99f09b91a09cb645",
+        "session": "StrataKnown7b8b3acddb8092abd4e49401",
         "environment": {
           "PATH": "/usr/bin:/bin",
           "HOME": "/home/yayoi",
@@ -1221,23 +1221,24 @@
           "SYCL_CACHE_PERSISTENT": "0",
           "ZES_ENABLE_SYSMAN": "0",
           "UR_ENABLE_LAYERS": "UR_LAYER_TRACING,UR_LAYER_PARAMETER_VALIDATION",
-          "UR_LOG_TRACING": "level:info;flush:info;output:file,/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/unitrace-known-work-v1/submission/ur.log",
+          "UR_LOG_TRACING": "level:info;flush:info;output:file,/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/unitrace-known-work-v2/submission/ur.log",
           "UR_LOG_VALIDATION": "level:warning;flush:warning;output:stderr",
           "UR_LOG_LOADER": "level:warning;flush:warning;output:stderr",
           "UR_LOG_LEVEL_ZERO": "level:warning;flush:warning;output:stderr",
-          "TMPDIR": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/unitrace-known-work-v1/submission/tmp",
-          "XDG_CACHE_HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/unitrace-known-work-v1/submission/cache",
+          "TMPDIR": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/unitrace-known-work-v2/submission/tmp",
+          "XDG_CACHE_HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/unitrace-known-work-v2/submission/cache",
           "CUDA_MODULE_LOADING": "EAGER",
           "STRATA_UNITRACE_TARGET_PRELOAD": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/ur-validation-preload-v2/libstrata_ur_validation.so",
           "STRATA_UR_PROBE_EXPECTED_LOADER": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_loader.so.0.12.0",
           "LD_DEBUG": "libs",
           "UNITRACE_FollowChildProcess": "1",
-          "UNITRACE_TraceOutputDir": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/unitrace-known-work-v1/submission/trace"
+          "UNITRACE_TraceOutputDir": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/unitrace-known-work-v2/submission/trace",
+          "UNITRACE_SystemTime": "1"
         },
         "command": [
           "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/unitrace-session-owner-v1/unitrace",
           "--session",
-          "StrataKnown2e031dee99f09b91a09cb645",
+          "StrataKnown7b8b3acddb8092abd4e49401",
           "--host-timing",
           "--device-timing",
           "--chrome-kernel-logging",
@@ -1250,14 +1251,14 @@
         "stop_command": [
           "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/unitrace-session-owner-v1/unitrace",
           "--stop",
-          "StrataKnown2e031dee99f09b91a09cb645"
+          "StrataKnown7b8b3acddb8092abd4e49401"
         ]
       },
       {
         "name": "native-graphs",
         "mode": "--native",
         "expected_kernels": 62,
-        "session": "StrataKnown5a337eac83377bd3bdc1b408",
+        "session": "StrataKnown3f56afd31d26df985c829e11",
         "environment": {
           "PATH": "/usr/bin:/bin",
           "HOME": "/home/yayoi",
@@ -1275,23 +1276,24 @@
           "SYCL_CACHE_PERSISTENT": "0",
           "ZES_ENABLE_SYSMAN": "0",
           "UR_ENABLE_LAYERS": "UR_LAYER_TRACING,UR_LAYER_PARAMETER_VALIDATION",
-          "UR_LOG_TRACING": "level:info;flush:info;output:file,/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/unitrace-known-work-v1/native-graphs/ur.log",
+          "UR_LOG_TRACING": "level:info;flush:info;output:file,/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/unitrace-known-work-v2/native-graphs/ur.log",
           "UR_LOG_VALIDATION": "level:warning;flush:warning;output:stderr",
           "UR_LOG_LOADER": "level:warning;flush:warning;output:stderr",
           "UR_LOG_LEVEL_ZERO": "level:warning;flush:warning;output:stderr",
-          "TMPDIR": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/unitrace-known-work-v1/native-graphs/tmp",
-          "XDG_CACHE_HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/unitrace-known-work-v1/native-graphs/cache",
+          "TMPDIR": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/unitrace-known-work-v2/native-graphs/tmp",
+          "XDG_CACHE_HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/unitrace-known-work-v2/native-graphs/cache",
           "CUDA_MODULE_LOADING": "EAGER",
           "STRATA_UNITRACE_TARGET_PRELOAD": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/ur-validation-preload-v2/libstrata_ur_validation.so",
           "STRATA_UR_PROBE_EXPECTED_LOADER": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_loader.so.0.12.0",
           "LD_DEBUG": "libs",
           "UNITRACE_FollowChildProcess": "1",
-          "UNITRACE_TraceOutputDir": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/unitrace-known-work-v1/native-graphs/trace"
+          "UNITRACE_TraceOutputDir": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/unitrace-known-work-v2/native-graphs/trace",
+          "UNITRACE_SystemTime": "1"
         },
         "command": [
           "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/unitrace-session-owner-v1/unitrace",
           "--session",
-          "StrataKnown5a337eac83377bd3bdc1b408",
+          "StrataKnown3f56afd31d26df985c829e11",
           "--host-timing",
           "--device-timing",
           "--chrome-kernel-logging",
@@ -1304,11 +1306,18 @@
         "stop_command": [
           "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/unitrace-session-owner-v1/unitrace",
           "--stop",
-          "StrataKnown5a337eac83377bd3bdc1b408"
+          "StrataKnown3f56afd31d26df985c829e11"
         ]
       }
     ],
-    "gates": "Two fixed processes, submission then native graphs; stop on any source/owner/fault/fixture/count/timing/correlation failure. Use unchanged same-build3b fixture and9836 recovered inputs. Exact main-kernel counts606/62; numerical/guard/footer checks plus positive finite kernel service, GPU records inside native Unix-wall interval+/-1ms, unique device IDs and source/sink flow pair for each GPU event. Collect UR trace independently for later copy/fill/graph reconciliation. Single-thread first-UR-init, loader order and retention must still pass. Named sessions start resumed for whole-fixture coverage and are removed only after proven closure, including failures. No warm request-window, production observer or performance qualification follows from these checks.",
+    "previous_failed_plan": {
+      "commit": "e54d9a168450c7fa0489d0b74c84ba943573960a",
+      "path": "bench/results/2026-10-15-pr6-recovery-audit/cpu-profiler-current.json",
+      "sha256": "0f2d5068c68b7b0c42a274095a39254d95e843f20e27503ea500e992b0a0ac94",
+      "outcome": "V1 failed UTC containment/all-barrier-host-sink gates despite normal606-kernel execution, complete host sources and no fresh fault. New source-supported raw-clock domain and non-barrier sink criteria are prospective; old failure unchanged and graph still unrun."
+    },
+    "clock_domain": "UNITRACE_SystemTime=1 before target exec skips epoch conversion; compare against paired caller CLOCK_MONOTONIC_RAW nanoseconds. No epoch-offset correction, new collector/model binary or mutable environment.",
+    "gates": "Two fixed processes, submission then native graphs; stop on source/owner/fault/fixture/count/timing/correlation failure. Unchanged same-build3b fixture and9836 recovered inputs. Exact main-kernel counts606/62; numerical/guard/footer checks, positive finite kernel service and all GPU records within native caller CLOCK_MONOTONIC_RAW interval+/-1ms. Unique GPU IDs and exactly one host H2D source for every device record; one D2H host sink for each non-barrier record. Retain unsunk barriers explicitly, not as missing device work. Independently reconcile copy/fill/graph inventories and raw/device clock conversion before32K+ production. First-UR-init, loader order and retention still required. Named sessions start resumed and are removed only after proven closure, including failures. No warmed request-window, production observer or speed qualification follows.",
     "expected_source_work": {
       "submission": "1 initial + (1+119+120+121+241) queued +3 ordinary-host kernels =606.",
       "native_graphs": "1 initial +12 graph +24 segment +24 cross-queue +1 post-event-destroy replay =62; graph upload finalizes only."
@@ -1325,85 +1334,9 @@
     "active": false,
     "complete": false,
     "passed": false,
-    "ownership_closed": true,
+    "ownership_closed": false,
     "gpu_timing_qualified": false,
     "model_qualified": false,
-    "observations": [
-      {
-        "name": "submission",
-        "execution_passed": true,
-        "coverage_passed": false,
-        "session_removed": true,
-        "pid": 393533,
-        "preload_evidence": {
-          "pid": 393533,
-          "loader": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_loader.so.0.12.0",
-          "threads_before": 1,
-          "preinit": 37,
-          "config_enabled": true,
-          "first_init": true,
-          "dispatch_result": 46,
-          "output_untouched": true,
-          "retained_reference_until_exit": true,
-          "runtime_teardown_qualified": false
-        },
-        "native_unix_wall_ns": 328871989,
-        "fixture_footer": "fixture_status=PASS mode=submission",
-        "coverage": {
-          "timeline_sha256": "4812c0597063ecca1e002ed389330f397da2754bd2d980c217f0173e8b2cae91",
-          "timeline_bytes": 871548,
-          "gpu_events": 680,
-          "host_events": 2303,
-          "program_kernels": 606,
-          "expected_program_kernels": 606,
-          "gpu_names": {
-            "zeCommandListAppendBarrier": 20,
-            "zeCommandListAppendMemoryCopy(H2D)[1028]": 33,
-            "main::{lambda(sycl::_V1::id<1>)#1}[SIMD32 {1; 1; 1} {257; 1; 1}]": 1,
-            "zeCommandListAppendMemoryCopy(D2H)[1028]": 3,
-            "zeCommandListAppendMemoryFill(D)[1028]": 1,
-            "zeCommandListAppendMemoryCopy(D2D)[1028]": 1,
-            "zeCommandListAppendMemoryCopy(M2D)[1164]": 5,
-            "main::{lambda(sycl::_V1::id<1>)#2}[SIMD32 {1; 1; 1} {257; 1; 1}]": 602,
-            "zeCommandListAppendMemoryCopy(D2M)[1164]": 5,
-            "zeCommandListAppendMemoryCopy(M2D)[1028]": 3,
-            "main::{lambda(sycl::_V1::id<1>)#3}[SIMD32 {1; 1; 1} {257; 1; 1}]": 3,
-            "zeCommandListAppendMemoryCopy(D2M)[1028]": 3
-          },
-          "program_kernel_service_positive": true,
-          "zero_gpu_durations": 0,
-          "gpu_wall_clock_bounds": false,
-          "gpu_identifiers_unique": true,
-          "all_gpu_flow_pairs": false,
-          "gpu_union_us": 3588.0,
-          "program_kernel_union_us": 3193.75,
-          "known_work_coverage_passed": true,
-          "timing_qualified": false,
-          "correlation_qualified": false,
-          "limits": "Whole bounded fixture; all-device union is not physical saturation or a production critical path. Host/GPU clock containment alone does not qualify sub-millisecond queue-delay attribution. Copy/fill inventory and graph replay require the independent UR/native record reconciliation before production."
-        },
-        "fresh_faults": [],
-        "boot_unchanged": true,
-        "driver_after": {
-          "pci": "/sys/bus/pci/devices/0000:05:00.0",
-          "driver": "xe",
-          "vendor": "0x8086",
-          "device": "0xe20c",
-          "kernel": "7.0.0-38-generic",
-          "devcoredump": false
-        }
-      }
-    ],
-    "error": "RuntimeError('known-work timing/count/correlation gate failed')",
-    "fresh_faults": [],
-    "boot_unchanged": true,
-    "driver_after": {
-      "pci": "/sys/bus/pci/devices/0000:05:00.0",
-      "driver": "xe",
-      "vendor": "0x8086",
-      "device": "0xe20c",
-      "kernel": "7.0.0-38-generic",
-      "devcoredump": false
-    }
+    "observations": []
   }
 }
