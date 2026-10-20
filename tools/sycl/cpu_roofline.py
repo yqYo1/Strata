@@ -21,7 +21,7 @@ import measurement_owner as owner
 
 P = Path(__file__).resolve().parents[2]
 B = Path('/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007')
-ROOT = B / 'cpu-roofline-v1'
+ROOT = B / 'cpu-roofline-v2'
 A = P / 'bench/results/2026-10-15-pr6-recovery-audit'
 PLAN = A / 'cpu-roofline-plan.json'
 RESULT = A / 'cpu-roofline-current.json'
@@ -229,7 +229,8 @@ def main():
         stagepath=ROOT/(args.stage+'.json');need(not stagepath.exists(),'closed/active stage cannot retry')
         state=dict(stage=args.stage,source=plan['source'],plan_sha256=digest(PLAN),active=True,passed=False,commands=[])
         def persist():stagepath.write_text(json.dumps(state,indent=2)+'\n')
-        own=owner.Owner(ROOT,persist);state['commands']=own.commands;persist()
+        # Owner measures artifact_bytes(output.parent); keep that parent private.
+        own=owner.Owner(ROOT/'owned',persist);state['commands']=own.commands;persist()
         def run(label, argv, wall):
             entry,_,_=own.run(args.stage+'-'+label,argv,plan['environment'],P,wall=wall,text_cap=64<<20,
                 rss_cap=3<<30,total_cap=512<<20,cpu=600,file_cap=64<<20)
@@ -241,7 +242,7 @@ def main():
                 run('configure',plan['configure'],120);run('compile',plan['build'],600)
                 state['binary']=dict(path=str(ROOT/'build/cpu_roofline'),sha256=digest(ROOT/'build/cpu_roofline'))
                 run('linked-libraries',['/usr/bin/ldd',str(ROOT/'build/cpu_roofline')],20)
-                links=(ROOT/'build-linked-libraries.stdout').read_text()
+                links=(ROOT/'owned/build-linked-libraries.stdout').read_text()
                 need(not any(x in links.lower() for x in ('sycl','level_zero','cuda','amdhip','libze')),'GPU runtime linked')
             else:
                 build=json.loads((ROOT/'build.json').read_text());need(build['passed'] and not build['active'],'unqualified build')
@@ -257,7 +258,7 @@ def main():
                 for i,(pair,w,n) in enumerate(jobs):
                     argv=command(lookup[tuple(pair)],w,args.stage) if pair else [str(ROOT/'build/cpu_roofline'),'scan',','.join(map(str,plan['machine']['physical_cpus'] if n==6 else plan['machine']['affinity'][:n]))]
                     label=f'cell-{i}';e=run(label,argv,180 if pair and args.stage=='measure' else 120)
-                    lines=[json.loads(line) for line in (ROOT/(args.stage+'-'+label+'.stdout')).read_text().splitlines()]
+                    lines=[json.loads(line) for line in (ROOT/'owned'/(args.stage+'-'+label+'.stdout')).read_text().splitlines()]
                     need(lines and lines[-1]==dict(kind='closed',passed=True),'missing native completion')
                     if pair:
                         need(len([x for x in lines if x['kind']=='validation']) >=4,'four NT checks required')
