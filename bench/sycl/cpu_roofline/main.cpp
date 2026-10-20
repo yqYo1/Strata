@@ -1,5 +1,6 @@
 // Main-authored CPU calibration. Production math is linked, never copied.
 #include "strata/kernels/cpu/pool.hpp"
+#include "strata/kernels/cpu/expert_layout.hpp"
 #include "ggml.h"
 #include "ggml-cpu.h"
 

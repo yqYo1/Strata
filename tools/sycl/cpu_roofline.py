@@ -21,7 +21,7 @@ import measurement_owner as owner
 
 P = Path(__file__).resolve().parents[2]
 B = Path('/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007')
-ROOT = B / 'cpu-roofline-v2'
+ROOT = B / 'cpu-roofline-v3'
 A = P / 'bench/results/2026-10-15-pr6-recovery-audit'
 PLAN = A / 'cpu-roofline-plan.json'
 RESULT = A / 'cpu-roofline-current.json'
