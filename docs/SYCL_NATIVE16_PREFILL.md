@@ -2745,6 +2745,26 @@ default integration is blocked. Two still-consumed model engine generations
 remain;14 older provenance holds are separate. See the compact result's
 path/hash/reason manifest and recovery proof, rather than retaining raw output.
 
+The next v4 diagnostic measures the finite producer/copy/drain path without an
+explicit pre-copy event query. Four traced64KiB smoke cells precede three fixed
+four-cell validation-only cohorts: owned profiled/plain queue crossed with
+ordinary/USM-host destination. Keep eight128MiB fill events through the existing
+checked drain, separating producer,4-byte copy enqueue and drain CPU/wall with
+shared timing boundaries. One separate warmup plus six steady samples per
+process yields72 comparison samples. Whole and phase eligibility requires20us
+wall and100 times the128 clock-pair median CPU/wall cost. After drain, profiled
+events provide checked positive ordered service/summed-span aggregates; GPU
+clock eligibility remains distinct from host execution and timing eligibility.
+For each host kind compare plain/profiled whole-wall process medians; for each
+queue kind compare USM/ordinary. A mechanism screen requires all72 whole samples
+eligible, latency geomean<=0.95 and all three paired ratios<1. Moving time from
+enqueue into drain alone is no throughput gain. A passing screen permits a
+production-consumer audit/next candidate, not model adoption or a third engine.
+Keep the old pending-ineligible outcomes and use no adaptive work enlargement,
+stalled gate or production queue-default change. Requested fill bytes are not
+physical GDDR traffic. Exact source/recipe/controller inputs and process order
+must be committed before build/run under the existing finite budgets.
+
 For the separate earlier early-PCIe candidate, only a later qualified mechanism permits a
 fresh complete51+6-case plan. Preserve all pending-completion,
 untouched-output, payload/guard and owner-lifetime requirements under that plan.
