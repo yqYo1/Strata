@@ -2377,10 +2377,28 @@ clean owned128/borrowed1280 comparison is defined in `tools/sycl/cache_compare.p
 Its31 offline tests and independent source review passed at controller source
 `cba7b0a7c`; the owned32K parameter-validated check also closed normally with
 48 actual direct-owner FFNs,2931 generated tokens and no fresh fault. These
-checks admitted the frozen six-process comparison. Its first owned/borrowed
-pair closed normally, with no fresh fault and matched generation/MTP regime.
-Four independent processes remain; one pair does not establish a speed gain
-or adoption. Keep the source and comparison plan frozen through all six. See
+checks admitted the frozen six-process comparison. All six subsequently closed
+normally, with no fresh fault, matched generation/MTP regimes and unchanged
+full hashes for all15 model assets. Each process handled33211 fresh input
+tokens and2931/2932 thinking-plus-answer output tokens. The individual samples are:
+
+| Pair | Owned128 prefill / decode tok/s | Borrowed1280 prefill / decode tok/s |
+| --- | ---: | ---: |
+| 0 | 653.1 /14.1 | 647.6 /14.6 |
+| 1 | 644.9 /14.0 | 647.2 /14.6 |
+| 2 | 648.5 /14.2 | 647.3 /14.6 |
+
+All three exact-clock decode ratios favor borrowing:1.036040,1.040718,1.034376,
+geomean1.037041 (**+3.7041%**). This misses the prospective>5% faster screen;
+preserve its inconclusive/small-effect outcome rather than relaxing the gate.
+Prefill geomean0.997771 (**-0.2229%**) passes the separate nonregression gate,
+without a conclusive speed direction. Decode sample SD is0.05930tok/s owned
+and0.01546tok/s borrowed. Cache hits are2.0%/10.2%, with1205698/1120890 CPU
+miss jobs respectively; those counts do not establish physical RAM/PCIe traffic
+or saturation. Keep the default-off route for the planned1256-slot117K capacity
+follow-up, and calibrate mixed-format CPU work against RAM-read throughput
+before selecting another decode kernel change. Default adoption remains pending.
+See
 [the current comparison](../bench/results/2026-10-15-pr6-recovery-audit/cache-comparison-current.json).
 Broader quality, full mixed
 tail and physical262144/session/RESTORE remain unqualified. Closed successful
@@ -2389,8 +2407,13 @@ evidence is committed. The owned check and first clean pair retired217 files,
 38525713 bytes; the comparison's research-index entry records the path/hash/reason
 manifest and successful post-cleanup source/build admission. All9831 native
 inputs,131 benchmark inputs, the engine/eight fixtures and396 fallback remained
-verified; cleanup executed no GPU work. Current engine/fixtures and396 fallback remain for
-the imminent clean comparison;14 legacy provenance holds remain separate.
+verified; cleanup executed no GPU work. Current engine/eight fixtures remain
+for mixed-format CPU calibration and the1256-slot117K check. The396 engine/five
+fixtures remain the historical117K/long-generation reference for that explicit
+old-owned/current-borrowed long-input comparison on the current runtime. Review
+and retire the extra generation when that comparison closes; this32K cache-layout
+screen does not qualify the current engine's117K borrowed mixed tail. The14
+legacy provenance holds remain separate.
 Only a later qualified mechanism permits a
 fresh complete51+6-case plan. Preserve all pending-completion,
 untouched-output, payload/guard and owner-lifetime requirements under that plan.
