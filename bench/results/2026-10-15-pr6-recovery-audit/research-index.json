@@ -4,7 +4,9 @@
   "historical_index_path": "bench/results/2026-10-15-pr6-recovery-audit/research-index.json",
   "archive_lookup": "Read the pinned historical index and git grep that revision before repeating research. Retrieve selected old report sections only when their question is relevant; do not restore whole directories.",
   "main_reads_collection_bodies_on_arrival": false,
-  "active_reports": [],
+  "active_reports": [
+    "implemented_scratch_poison_source_scope"
+  ],
   "conditional_scope": {
     "schedulable_now": false,
     "question": "Localize one measured general GDN mismatch to one pinned framework rounding boundary.",
@@ -4729,5 +4731,29 @@
       "GEMM scratch payload is64MiB of FP16 elements, plus guard/alignment.",
       "Native model-process closure and the research-worker lifecycle are separate; the corrected curator review preserves the original failed controller closure field."
     ]
+  },
+  "implemented_scratch_poison_source_scope": {
+    "classification": "decision support",
+    "question": "Audit actual checked Alloc/layout poison implementation, call-site bounds and all entry/retry/reset paths before parent-loan work.",
+    "source_commit": "6a553b54b36d11d6af913a79412f64e52daa3d06",
+    "prerequisites": [
+      {
+        "met": true,
+        "evidence": "New Main-authored source committed at6a553b54b; previously reviewed contract is now implemented in arithmetic and poisoned-layout state, requiring review of actual controls rather than another proposal."
+      }
+    ],
+    "schedulable_now": false,
+    "status": "dispatched",
+    "report": "/home/yayoi/orca/workspaces/Strata/sycl/.cache/strata-research/20261020/implemented-scratch-poison-report.md",
+    "report_budget_bytes": 12288,
+    "consumer": "Main bounded source correction and next checked parent-loan implementation.",
+    "next_review": "Native Luna-max review after completion; keep only useful new findings and hashes.",
+    "worker_closed": false,
+    "terminal_closed": false,
+    "task_id": "task_6df57cf65350",
+    "dispatch_id": "ctx_e1dc31389521",
+    "terminal_handle": "term_2dfb8008-df33-49a0-82a5-5e8ab723f16c",
+    "incarnation_id": "8d97365f-8b81-4ea6-9bee-f6a7c4c6e1c7",
+    "launch_reason": "Custom workspace-write plus network argv; accepted dispatch injection leaves operator-owned PTY requiring separate exact idle closure after settlement."
   }
 }
