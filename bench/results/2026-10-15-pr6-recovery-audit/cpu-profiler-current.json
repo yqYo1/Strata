@@ -2316,7 +2316,7 @@
   },
   "unitrace_production_request": {
     "schema": "strata-unitrace-production-request-v1",
-    "stage": "prepared",
+    "stage": "preflight-passed",
     "source_commit": "f9f3d12c2a65192c6bf511edb794b5f4a311735c",
     "build_source_commit": "3b4998f326101fa913788fd368e1674b111dea03",
     "source_count": 149,
@@ -2695,6 +2695,60 @@
     "passed": false,
     "ownership_closed": true,
     "model_qualified": false,
-    "hardware_limiting_resource_known": false
+    "hardware_limiting_resource_known": false,
+    "preflight": {
+      "passed": true,
+      "session_removed": true,
+      "controls": [
+        {
+          "action": "stop",
+          "raw_before_ns": 881348473356646,
+          "raw_after_ns": 881348601268829
+        }
+      ],
+      "activation": {
+        "pid": 550958,
+        "loader": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_loader.so.0.12.0",
+        "threads_before": 1,
+        "preinit": 37,
+        "config_enabled": true,
+        "first_init": true,
+        "dispatch_result": 46,
+        "output_untouched": true,
+        "retained_reference_until_exit": true,
+        "runtime_teardown_qualified": false
+      },
+      "canary": {
+        "pid": 550958,
+        "initialized": 0,
+        "checked": 46,
+        "expected": 46,
+        "version": 4294967295,
+        "closed": 0
+      },
+      "fresh_faults": [],
+      "boot_unchanged": true,
+      "driver_after": {
+        "pci": "/sys/bus/pci/devices/0000:05:00.0",
+        "driver": "xe",
+        "vendor": "0x8086",
+        "device": "0xe20c",
+        "kernel": "7.0.0-38-generic",
+        "devcoredump": false
+      }
+    },
+    "source_review": {
+      "report_sha256": "ba8e609dda501f05f874f2af1f13d77536f636506e60020b2426eeda91a0e70f",
+      "digest": "Native Luna-max accepts bounded source-map/knowledge reviews. Map native hashes match; old benchmark/wrapper report hashes predate ce1a86dee, so actual149 committed input checks govern the new helper path. CPU-only wrapper is a separate passed ordered gate. Collection is whole fresh request, not complete production/prefill attribution."
+    },
+    "collection_passed_meaning": "Normal official whole-request collection, positive GPU records within RAW caller window with explicit+/-1ms allowance, unique device IDs/host sources and full owned/fault checks; does not establish complete attribution.",
+    "complete_production_attribution_qualified": false,
+    "post_collection_analysis_gates": [
+      "Verify actual native layer-major/native16 placement and complete prefill/restore/native marker sequence.",
+      "Bind official journal target request hash and sample with warmup/long order, fresh read count and thinking completion.",
+      "Validate native host event PID, request extent and actual+/-1ms boundary allowance; retain excluded/out-of-window evidence.",
+      "Check collector loss/overflow warnings and source-supported loss limits; absence of warnings alone is not full graph coverage.",
+      "Map exact observed kernel/copy families before selecting matched hardware references. Treat API/kernel sums as nonexclusive, with observer overhead unknown until matched comparison."
+    ]
   }
 }
