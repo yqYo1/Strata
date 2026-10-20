@@ -2281,13 +2281,15 @@ existing direct-owner check. FFN math, staging, phase/drain and subview checks
 stay unchanged. Trace records distinguish direct owners from parent loans and
 associate each borrowed FFN with its loan/layout generation; successful mask
 and refill publication record the actual decode admission state.
-Before a fresh model plan, require independent complete-source review and a
-new v8 normal75+host39+device17+loan20+fail-stop5 gate (156 cases), using the
-same qualified settings, budgets and no-retry rule. The two added host cases
-cover sealed-used bounds, overflow and view overlap. Preserve the396 fallback
-and rebuild the closed comparison cache from committed inputs. The earlier
+The v8 normal75+host39+device17+loan20+fail-stop5 gate (156 cases) passed on
+build source`87ce707df`, using the same qualified settings, budgets and no-retry
+rule. All owners closed, boot was unchanged and no fresh GPU fault occurred.
+The two added host cases cover sealed-used bounds, overflow and view overlap.
+The396 fallback remains protected. The earlier
 standalone GCC mode/result is retired to commit5f1c06452; its same-build consumer
-has superseded it. This source step is still unbuilt and has no new model result.
+has superseded it. The changed engine SHA256 is
+`02a61db21c50f5824f3af748ec6e89fbe05db04c7cacc0454c6b7c435d0e5bc6`.
+This component result still has no new model result.
 The independent Orca audit and native Luna-max curation found no source-supported
 defect in those three guards. This is bounded source acceptance: planner geometry
 is outside the ten reviewed files, and execution/math remain unqualified. The
@@ -2300,8 +2302,8 @@ tail remains unqualified. The closed v1 refusal and its original failed outcome
 remain recoverable from the recorded Git reference; its separate process closure
 does not turn it into a pass. Source`b5161eb1b` passed all15 offline controller
 tests, including missing/stale/reordered evidence and natural ERR-child closure.
-The new native source still needs rebuilding and156 component checks before
-preparing the prospective v2 model plan. No new speed result is claimed.
+Prepare the prospective v2 model plan only after the committed same-build proof.
+No new speed result is claimed.
 Only a later qualified mechanism permits a
 fresh complete51+6-case plan. Preserve all pending-completion,
 untouched-output, payload/guard and owner-lifetime requirements under that plan.
