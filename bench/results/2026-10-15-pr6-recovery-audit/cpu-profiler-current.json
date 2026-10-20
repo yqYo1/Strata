@@ -1524,5 +1524,153 @@
       "kernel": "7.0.0-38-generic",
       "devcoredump": false
     }
+  },
+  "unitrace_coverage_analysis": {
+    "schema": "strata-unitrace-closed-coverage-analysis-v1",
+    "source_commit": "63bd98618238defe4fa541c32639352445ad2f2e",
+    "input_sha256": {
+      "tools/sycl/bench_engine.py": "e5f588605ebc7799b54f8bf7df9ad2e363391375e50b788b9704a6b80887ca6b",
+      "tools/sycl/build_engine.py": "4ac433f6a48bff62b69e83e9be5019e213f1f57c5b6ddfed802a153df535f80e",
+      "tools/sycl/cache_borrow.py": "900a2364d19beea0e1fa3e3c657f980455d676363660c013f6ef9058eeb43450",
+      "tools/sycl/cache_capacity.py": "9d39d3851bfc634901d6b5fd6f984918c53f8f44337df7fd506b6cb2ab3252f5",
+      "tools/sycl/cache_long.py": "1113563f582bd01bfb7535f8b73d70bf92f8e336dbef60301a6de7f2c28c1548",
+      "tools/sycl/cache_long_compare.py": "e96f1fd77a50e3535e7b0ed545464811e334e2f3bd329cc870675916dd5de4af",
+      "tools/sycl/check_verifier_retirement.py": "09d9f4c13954e74ea46e4b59f08fb66b7349bb2342f33f2140090a4128fec818",
+      "tools/sycl/cpu_capacity.py": "685b981462cdf8e667f67bc844d8e522be84c776df57238327a4dad8dbbefa51",
+      "tools/sycl/generation_engine.py": "1f884753ac5bbf2d391b7d5ee91c03ce466245128e1b830792dd6ef2bb3fad7d",
+      "tools/sycl/measurement_environment.json": "d4402591df50e80dc45a5ec9e4839c7a794888850b1473537b6f95179be5b03c",
+      "tools/sycl/measurement_guards.py": "794e332c70aca0acadad4f26d0414548e023a02fd27b72ed78fc773674423ec8",
+      "tools/sycl/measurement_owner.py": "bddd0c5e5020e882ca3404679420faec11e820dabce2ed4c72ef82b4c9c0874a",
+      "tools/sycl/query_profile.py": "29639b013434462d2494e5bbff0ed5db149484dddb0da83d4f2fcf6c7323563e",
+      "tools/sycl/resource_engine.py": "9c08598793e724bfb7826e28c3d9c6b0cc425657f8ea1040de023cbb1e301301",
+      "tools/sycl/unitrace_launch.py": "4a60aad4cf869bc7d71e5f33e33959172c4f62ce532fff558aeec91ef1c67846",
+      "tools/sycl/unitrace_probe.py": "930a4a746ea363bd6d2949fce039e38b0d101d46da6e820e1993aa7b3db8c61e",
+      "tools/sycl/unitrace_profile.py": "c87c9934f3ee2b5fa6e1dbcfa05689bb5f9a8c6cf178e23c716a4e3cb7c7cf27",
+      "tools/sycl/ur_validation.py": "1ddf6a2aceb4d7b538d1d3ab2ef3093ec10bd90943c52e3397c832b61194bf39",
+      "tools/sycl/production_profile.py": "9fe255c9633d80fc13060fdfb6cf143d66f4b464bec8ee1a776b1f88e2d89918"
+    },
+    "original_measurement_source": "e54d9a168450c7fa0489d0b74c84ba943573960a",
+    "original_run_status": "failed",
+    "original_run_passed": false,
+    "original_result": {
+      "commit": "63bd98618238defe4fa541c32639352445ad2f2e",
+      "path": "bench/results/2026-10-15-pr6-recovery-audit/cpu-profiler-current.json",
+      "sha256": "3a6af8a982b1b4fbfd0c92e27c1a662f6e08a74ec8145f004975dd594900f296"
+    },
+    "native_executed": false,
+    "analysis_passed": true,
+    "known_fixture_service_coverage_qualified": true,
+    "rows": [
+      {
+        "name": "submission",
+        "timeline_sha256": "efd11a1cdce3e25e73f2c75a7518438ba8adec29b3a686c9d2bdcd96be21b526",
+        "UR_sha256": "ada220a816fcb7046cbc43e6eb78cb3bd1f6b3b650ade1e94ae17377da793322",
+        "inventory": {
+          "direct": {
+            "barrier": 20,
+            "copy": 53,
+            "copy_bytes": 55844,
+            "kernel": 606,
+            "fill": 1,
+            "fill_bytes": 1028
+          },
+          "replayed": {},
+          "expanded": {
+            "barrier": 20,
+            "copy": 53,
+            "copy_bytes": 55844,
+            "kernel": 606,
+            "fill": 1,
+            "fill_bytes": 1028
+          },
+          "templates": [],
+          "graph_replays": 0,
+          "capture_regions": 0
+        },
+        "device_inventory": {
+          "barrier": 20,
+          "copy": 53,
+          "copy_bytes": 55844,
+          "kernel": 606,
+          "fill": 1,
+          "fill_bytes": 1028
+        },
+        "program_kernels": 606,
+        "raw_clock_containment": true,
+        "positive_kernel_service": true,
+        "unique_device_ids": true,
+        "all_host_sources": true,
+        "unsunk_nonbarrier_records": 0,
+        "graph_api_groups": 0,
+        "graph_nonbarrier_sources_per_group": 0,
+        "unsunk_barrier_records": 1
+      },
+      {
+        "name": "native-graphs",
+        "timeline_sha256": "99af5eb21f1e5c8d96f37ae19a752d29dd4adc43367672b123a07d414c4462a5",
+        "UR_sha256": "31ecdd80fcabf5a21a2ea4c54ec9c384856d0160de9d3dc7cc7a742a85dcaa38",
+        "inventory": {
+          "direct": {
+            "barrier": 6,
+            "copy": 45,
+            "copy_bytes": 39085,
+            "kernel": 1,
+            "fill": 2,
+            "fill_bytes": 2056
+          },
+          "replayed": {
+            "copy": 122,
+            "copy_bytes": 125416,
+            "kernel": 61,
+            "barrier": 37
+          },
+          "expanded": {
+            "barrier": 43,
+            "copy": 167,
+            "copy_bytes": 164501,
+            "kernel": 62,
+            "fill": 2,
+            "fill_bytes": 2056
+          },
+          "templates": [
+            {
+              "copy": 2,
+              "copy_bytes": 2056,
+              "kernel": 1,
+              "barrier": 1
+            },
+            {
+              "copy": 2,
+              "copy_bytes": 2056,
+              "kernel": 1
+            }
+          ],
+          "graph_replays": 61,
+          "capture_regions": 2
+        },
+        "device_inventory": {
+          "barrier": 43,
+          "copy": 167,
+          "copy_bytes": 164501,
+          "kernel": 62,
+          "fill": 2,
+          "fill_bytes": 2056
+        },
+        "program_kernels": 62,
+        "raw_clock_containment": true,
+        "positive_kernel_service": true,
+        "unique_device_ids": true,
+        "all_host_sources": true,
+        "unsunk_nonbarrier_records": 183,
+        "graph_api_groups": 61,
+        "graph_nonbarrier_sources_per_group": 3,
+        "unsunk_barrier_records": 38
+      }
+    ],
+    "production_trace_ready": false,
+    "request_window_qualified": false,
+    "full_critical_path_qualified": false,
+    "decision": "Both fixed fixtures conserve every program kernel/copy/fill/barrier and requested byte after expanding graph captures. All62/606 main kernels have positive service within caller raw bounds. The61 graph APIs source exactly183 work nodes without individual host sinks; complete fixture numerical checks establish aggregate completion, not per-node host waits. Original strict sink-gate failures remain failed. Independent clock/source review and bounded recording-window qualification still precede32K+ production attribution.",
+    "retention": "Closed raw traces remain consumed by the active independent research/native review. Retire after that reconciliation and request-window plan;64MiB original budget, Main owner. Do not retain raw timelines merely because this analysis passed."
   }
 }
