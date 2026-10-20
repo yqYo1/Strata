@@ -22,6 +22,10 @@ gen, assets, guards, supervision = q.gen, q.assets, q.guards, q.supervision
 P, B, A = gen.P, gen.B, gen.A
 CAPACITY = A/'cache-capacity-current.json'
 RESULT = A/'cache-comparison-current.json'
+RESEARCH = A/'research-index.json'
+SCOPE = 'cache_capacity_clean_comparison_scope'
+REVIEW_INPUTS = ('tools/sycl/cache_compare.py','tools/test_sycl_cache_compare.py',
+                'tools/sycl/generation_engine.py')
 ORDER = (0,1,1,0,0,1)
 PAIRS = ((0,1),(3,2),(4,5))
 
@@ -146,8 +150,20 @@ def qualification():
     return full,count,cap,original
 
 
+def source_review():
+    row=gen.committed(RESEARCH)[SCOPE]
+    guards.require(row.get('clean_comparison_accepted') is True and row.get('worker_closed') is True and
+        set(row['frozen_inputs'])==set(REVIEW_INPUTS), 'closed independent comparison review required')
+    for name,sha in row['frozen_inputs'].items():
+        guards.require(gen.common.digest(P/name)==sha and
+            hashlib.sha256(gen.git('show',row['source_commit']+':'+name)).hexdigest()==sha,
+            'reviewed comparison source changed: '+name)
+    return {key:row[key] for key in ('source_commit','frozen_inputs','report_sha256','native_review_sha256')}
+
+
 def prepare(stage,cohort):
     check=stage=='check';full,count,cap,original=qualification()
+    review=None if check else source_review()
     if check:
         guards.require(not RESULT.exists(), 'fresh comparison only; never retry')
         source=gen.git('rev-parse','HEAD').decode().strip();processes=[];prior_check=None
@@ -202,7 +218,8 @@ def prepare(stage,cohort):
         config_sha256=gen.common.digest(root/'config.json'),profile_sha256=original['profile_sha256'],settings_sha256=gen.common.digest(gen.SETTINGS),
         model_assets=model,model_assets_fingerprint=assets.fingerprint(model),machine_identity=machine,
         runtime_asset_delta=original['runtime_asset_delta'],source_count=len(pins),source_aggregate_sha256=assets.fingerprint(pins),
-        processes=processes,check_evidence=prior_check,complete=False,passed=False,active=False,adoption_qualified=False,
+        processes=processes,check_evidence=prior_check,clean_source_review=review,
+        complete=False,passed=False,active=False,adoption_qualified=False,
         budgets=dict(wall=2400,cpu=54000,rss_cap=96<<30,text_cap=64<<20,file_cap=64<<20,total_cap=64<<20))
     gen.runtime_assets_unchanged(record)
     (root/'plan.json').write_text(json.dumps(record,indent=2)+'\n');RESULT.write_text(json.dumps(record,indent=2)+'\n')
@@ -216,6 +233,7 @@ def run():
     full,count,_,_=qualification()
     guards.require(full['binary']==record['binary'] and count==record['original_native_inputs_recovered'] and
         gen.common.digest(CAPACITY)==record['capacity_qualification_sha256'],'qualification changed')
+    if not check: guards.require(source_review()==record['clean_source_review'],'comparison review changed')
     pins=gen.benchmark_pins(record['source_commit'])
     guards.require(len(pins)==record['source_count'] and assets.fingerprint(pins)==record['source_aggregate_sha256'],'benchmark changed')
     for path,expected in [(gen.SETTINGS,record['settings_sha256']),(root/'config.json',record['config_sha256']),

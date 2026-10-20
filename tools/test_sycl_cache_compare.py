@@ -4,6 +4,7 @@ import copy
 from pathlib import Path
 import sys
 import unittest
+from unittest.mock import patch
 
 sys.dont_write_bytecode=True
 sys.path.insert(0,str(Path(__file__).resolve().parent/'sycl'))
@@ -48,6 +49,22 @@ def native_log(arm,check=False):
 
 
 class CacheComparison(unittest.TestCase):
+    def test_clean_source_review_requires_closed_worker_and_exact_source(self):
+        sha=c.hashlib.sha256(b'committed-source').hexdigest()
+        row=dict(clean_comparison_accepted=True,worker_closed=True,source_commit='review-source',
+            frozen_inputs={name:sha for name in c.REVIEW_INPUTS},report_sha256='report',native_review_sha256='curator')
+        with patch.object(c.gen,'committed',return_value={c.SCOPE:row}), \
+             patch.object(c.gen,'git',return_value=b'committed-source'), \
+             patch.object(c.gen.common,'digest',return_value=sha) as digest:
+            self.assertEqual(c.source_review()['source_commit'],'review-source')
+            row['worker_closed']=False
+            with self.assertRaises(RuntimeError):c.source_review()
+            row['worker_closed']=True
+            digest.return_value='changed'
+            with self.assertRaises(RuntimeError):c.source_review()
+            digest.return_value=sha;row['frozen_inputs'].pop(c.REVIEW_INPUTS[0])
+            with self.assertRaises(RuntimeError):c.source_review()
+
     def test_faster_decode_and_prefill_are_separate(self):
         values=rows();r=c.summarize(values)
         self.assertEqual(r['decode_decision'],'candidate_faster_screen')
