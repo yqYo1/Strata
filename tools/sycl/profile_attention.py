@@ -69,156 +69,137 @@ def emitted_resources(text, trace):
     return resources
 
 
-def cpu_smoke():
-    """Check unprivileged software stack sampling before profiling model CPU cost."""
-    root = B / 'cpu-software-profiler-smoke-v1'
+def capability_assets():
+    """Pin the installed64-bit collector, not just its small CLI launcher."""
+    root = VTUNE.resolve().parents[1]
+    names = sorted(p for folder in ('bin64', 'lib64') for p in (root / folder).rglob('*') if p.is_file())
+    guards.require(0 < len(names) < 16384, 'bounded installed collector asset set')
+    rows = [(str(p.relative_to(root)), digest(p)) for p in names]
+    value = hashlib.sha256(json.dumps(rows, separators=(',', ':')).encode()).hexdigest()
+    return dict(root=str(root), count=len(rows), sha256=value,
+                scope='Sorted relative-path/SHA256 pairs of all bin64/lib64 files, including resolved file symlinks; installed tool assets, not project build outputs.')
+
+
+def capabilities(action):
+    """Fresh version-qualified probes; no model, GPU target workload or privilege changes."""
+    root = B / 'profiler-capability-vtune-2026-6-v1'
     result = P / 'bench/results/2026-10-15-pr6-recovery-audit/cpu-profiler-current.json'
-    target = Path('/usr/bin/openssl')
     with (B / 'owned-v0141-measurement.lock').open('a+') as lock:
         fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
-        guards.no_model_owners([])
-        driver = guards.driver_guard()
-        guards.require(not root.exists(), 'inspect the existing CPU probe; no automatic retry')
+        guards.no_model_owners([]); driver = guards.driver_guard()
+        guards.require(not root.exists(), 'inspect existing capability job; no retry')
         revision = subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=P, text=True).strip()
-        pins = {}
-        for path in (Path(__file__).resolve(), P / 'tools/sycl/measurement_guards.py',
-                     P / 'tools/sycl/measurement_owner.py'):
-            name = str(path.relative_to(P))
-            data = subprocess.check_output(['git', 'show', revision + ':' + name], cwd=P)
-            guards.require(path.read_bytes() == data, 'uncommitted CPU probe input: ' + name)
-            pins[name] = hashlib.sha256(data).hexdigest()
-        root.mkdir(mode=0o700)
-        for name in ('tmp', 'cache', 'user'):
-            (root / name).mkdir()
-        env = dict(PATH='/usr/bin:/bin', HOME='/home/yayoi', LANG='C.UTF-8', LC_ALL='C.UTF-8',
-                   TMPDIR=str(root / 'tmp'), XDG_CACHE_HOME=str(root / 'cache'))
-        command = [str(VTUNE), '-collect', 'hotspots', '-knob', 'sampling-mode=sw',
-                   '-knob', 'enable-stack-collection=true', '-knob', 'stack-size=4096',
-                   '-knob', 'enable-characterization-insights=false', '-data-limit=16',
-                   '-user-data-dir', str(root / 'user'), '-result-dir', str(root / 'vtune'),
-                   '--', str(target), 'speed', '-seconds', '3', '-bytes', '16384', '-evp', 'sha256']
-        report_command = [str(VTUNE), '-report', 'hotspots', '-result-dir', str(root / 'vtune'),
-                          '-format', 'csv', '-csv-delimiter', 'tab', '-group-by', 'function', '-limit', '12']
-        record = dict(mode='cpu-smoke', source_commit=revision, input_sha256=pins,
-            command=command, report_command=report_command, environment=env, driver_before=driver,
-            profiler=dict(path=str(VTUNE.resolve()), sha256=digest(VTUNE),
-                version=subprocess.check_output([str(VTUNE), '--version'], text=True, timeout=15).strip()),
-            target=dict(path=str(target.resolve()), sha256=digest(target),
-                version=subprocess.check_output([str(target), 'version'], text=True, timeout=10).strip()),
-            purpose='Qualify CPU function/stack sampling for warmed16.63s unclassified host cost; no model speed or GPU hardware-counter result.',
-            consumer='Next Main-owned CPU profile of the warmed official long-prefill benchmark.',
-            budgets=dict(wall_s=180, cpu_s=180, rss_bytes=4 << 30, text_bytes=64 << 20,
-                file_bytes=128 << 20, total_bytes=256 << 20,
-                reason='Bounded VTune native metadata plus a16MiB collection limit; raw text remains capped at64MiB.'),
-            model_executed=False, cpu_sampling_qualified=False, GPU_hardware_metrics_qualified=False,
-            complete=False, passed=False, active=False)
-        boot = Path('/proc/sys/kernel/random/boot_id').read_text().strip()
-        journal = subprocess.check_output(['journalctl', '-k', '-b', '-n', '0', '--show-cursor', '--no-pager'], text=True)
-        cursor = next(x.split(': ', 1)[1] for x in journal.splitlines() if x.startswith('-- cursor: '))
-        owner = None
-
+        paths = ('tools/sycl/profile_attention.py', 'tools/sycl/measurement_guards.py',
+                 'tools/sycl/measurement_owner.py', 'tools/sycl/measurement_environment.json')
+        if action == 'prepare':
+            previous = result.read_bytes()
+            guards.require(previous == subprocess.check_output(['git', 'show', revision + ':' + str(result.relative_to(P))], cwd=P),
+                           'preserve committed previous capability outcome')
+            guards.require(RESULT.read_bytes() == subprocess.check_output(['git', 'show', revision + ':' + str(RESULT.relative_to(P))], cwd=P),
+                           'preserve previous GPU collector outcome')
+            old = json.loads(previous)
+            guards.require(old['complete'] and old['ownership_closed'] and not old['active'], 'previous capability job still open')
+            pins = {}
+            for name in paths:
+                data = subprocess.check_output(['git', 'show', revision + ':' + name], cwd=P)
+                guards.require(data == (P/name).read_bytes(), 'commit exact capability input: ' + name)
+                pins[name] = hashlib.sha256(data).hexdigest()
+            profiler = str(VTUNE.resolve())
+            guards.require(profiler == '/opt/intel/oneapi/vtune/2026.6/bin64/vtune', 'new profiler revision needs a new plan/root')
+            environment = dict(json.loads(SETTINGS.read_text())['environment'], TMPDIR=str(root/'tmp'),
+                XDG_CACHE_HOME=str(root/'cache'), UR_ENABLE_LAYERS='UR_LAYER_PARAMETER_VALIDATION')
+            base = [profiler, '-data-limit=16', '-user-data-dir', str(root/'user')]
+            cpu = base + ['-collect', 'hotspots', '-knob', 'sampling-mode=sw', '-knob', 'enable-stack-collection=true',
+                '-knob', 'stack-size=4096', '-knob', 'enable-characterization-insights=false',
+                '-result-dir', str(root/'cpu'), '--', '/usr/bin/openssl', 'speed', '-seconds', '3', '-bytes', '16384', '-evp', 'sha256']
+            report = [profiler, '-report', 'hotspots', '-result-dir', str(root/'cpu'), '-format', 'csv',
+                '-csv-delimiter', 'tab', '-group-by', 'function', '-limit', '12']
+            gpu = base + ['-collect', 'gpu-hotspots', '-result-dir', str(root/'gpu'), '--', '/usr/bin/true']
+            record = dict(schema='strata-profiler-capability-v2', stage='prepared', source_commit=revision,
+                previous=dict(commit=revision, path=str(result.relative_to(P)), sha256=hashlib.sha256(previous).hexdigest(),
+                    outcome='VTune2026.4 CPU ptrace refusal; perf cycles/task-clock denied. Preserve original failures in Git.'),
+                previous_gpu=dict(commit=revision, path=str(RESULT.relative_to(P)), sha256=digest(RESULT),
+                    outcome='VTune2026.4 GPU-hotspots rejected this Ryzen host; compiler metadata did not qualify hardware metrics.'),
+                input_sha256=pins, profiler=dict(path=profiler, sha256=digest(profiler), assets=capability_assets(),
+                    version=subprocess.check_output([profiler, '-version'], text=True, timeout=15).strip()),
+                targets={n:dict(path=n, sha256=digest(n)) for n in ('/usr/bin/openssl','/usr/bin/true')},
+                environment=environment, commands=dict(cpu_collect=cpu, cpu_report=report, gpu_launch_probe=gpu),
+                gates='Run CPU collect once; report only if collection exits0 and closes normally. Require positive finite CPU Time and actual OpenSSL/libcrypto samples for CPU qualification. Then independent GPU collector-launch probe on /usr/bin/true, which contains no GPU workload: exit0 never qualifies GPU timing/counters. Stop on source/asset/owner/budget/fault failure. No retry, permission/sysctl/driver reset or model execution.',
+                budgets=dict(wall_s_per_command=120, cpu_s_per_command=120, rss_bytes=4<<30, text_bytes_per_command=16<<20,
+                             file_bytes=128<<20, total_bytes=256<<20, raw_text_bytes=64<<20),
+                retention='Keep tool/source/environment identities, each capability outcome and compact refusal/sample evidence. Retire normal collector output after the current production-profile decision; preserve old failure via previous Git reference.',
+                model_executed=False, target_gpu_work=False, GPU_hardware_metrics_qualified=False,
+                CPU_sampling_qualified=False, GPU_collector_launch_probe_accepted=False,
+                passed_meaning='CPU sampling qualification plus GPU collector-launch acceptance; never GPU hardware-metric or model qualification.',
+                active=False, complete=False, passed=False)
+            result.write_text(json.dumps(record, indent=2)+'\n')
+            print(json.dumps(dict(stage='prepared', source_commit=revision, assets=record['profiler']['assets']['count'], model_executed=False)))
+            return 0
+        raw = result.read_bytes()
+        guards.require(raw == subprocess.check_output(['git','show','HEAD:'+str(result.relative_to(P))],cwd=P), 'commit generated capability plan first')
+        record = json.loads(raw)
+        guards.require(record['schema']=='strata-profiler-capability-v2' and record['stage']=='prepared', 'closed/mismatched plan; no retry')
+        def admission():
+            for name, sha in record['input_sha256'].items():
+                original = subprocess.check_output(['git','show',record['source_commit']+':'+name],cwd=P)
+                guards.require(hashlib.sha256(original).hexdigest()==sha and digest(P/name)==sha, 'capability input differs: '+name)
+            guards.require(str(VTUNE.resolve())==record['profiler']['path'] and digest(VTUNE)==record['profiler']['sha256'] and
+                           capability_assets()==record['profiler']['assets'], 'installed profiler changed')
+            for name, item in record['targets'].items(): guards.require(digest(name)==item['sha256'], 'target changed')
+        admission();root.mkdir(mode=0o700)
+        for name in ('tmp','cache','user'):(root/name).mkdir()
+        record.update(driver_before=driver, permissions={name:Path('/proc/sys',name).read_text().strip() for name in
+            ('kernel/yama/ptrace_scope','kernel/perf_event_paranoid','dev/xe/observation_paranoid')}, observations={})
+        boot=Path('/proc/sys/kernel/random/boot_id').read_text().strip()
+        journal=subprocess.check_output(['journalctl','-k','-b','-n','0','--show-cursor','--no-pager'],text=True,timeout=15)
+        cursor=next(x.split(': ',1)[1] for x in journal.splitlines() if x.startswith('-- cursor: '));owner=None
         def persist():
-            record['active'] = bool(owner and owner.active is not None)
-            (root / 'record.json').write_text(json.dumps(dict(record,
-                owned_commands=owner.commands if owner else []), indent=2) + '\n')
-
-        owner = supervision.Owner(root / 'owned', persist)
+            record['active']=bool(owner and owner.active is not None)
+            (root/'record.json').write_text(json.dumps(dict(record,owned_commands=owner.commands if owner else []),indent=2)+'\n')
+        owner=supervision.Owner(root/'owned',persist);persist()
         try:
-            for label, argv in (('collect', command), ('report', report_command)):
-                entry, out, err = owner.run(label, argv, env, P, wall=180, cpu=180,
-                    rss_cap=4 << 30, file_cap=128 << 20, text_cap=64 << 20, total_cap=256 << 20)
-                text = out.read_text(errors='replace')
-                diagnostics = err.read_text(errors='replace')
-                record['complete'] = supervision.closed(entry)
-                record[label] = dict(exit_code=entry.get('exit_code'), ownership_closed=supervision.closed(entry),
-                    diagnostics=[x for x in diagnostics.splitlines() if re.search(
-                        r'(?i)vtune:|error|warning|permission|unsupported|not supported|no data', x)][-32:])
-                guards.require(supervision.closed(entry) and entry.get('exit_code') == 0,
-                               label + ' failed: ' + diagnostics[-4096:])
-                if label == 'report':
-                    reader = csv.DictReader(io.StringIO(text), delimiter='\t')
-                    rows = list(reader)
-                    guards.require(reader.fieldnames and rows, 'missing CPU hotspot table')
-                    cpu_column = next((k for k in reader.fieldnames if 'CPU Time' in k), None)
-                    guards.require(cpu_column is not None, 'missing CPU Time column')
-                    times = [float(row[cpu_column]) for row in rows]
-                    guards.require(all(math.isfinite(v) and v >= 0 for v in times) and sum(times) > 0,
-                                   'no positive finite CPU samples')
-                    guards.require(any('libcrypto' in str(row).lower() or 'openssl' in str(row).lower()
-                                       for row in rows), 'target module samples missing')
-                    record['hotspots'] = dict(columns=reader.fieldnames, rows=rows,
-                        reported_CPU_time_sum_s=sum(times), limit='Top12 functions from a software-only capability probe, not model cost.')
-            record['passed'] = record['cpu_sampling_qualified'] = True
-        except BaseException as error:
-            record['error'] = str(error)
+            for label in ('cpu_collect','cpu_report','gpu_launch_probe'):
+                if label=='cpu_report' and record['observations']['cpu_collect']['exit_code']!=0: continue
+                guards.driver_guard()
+                entry,out,err=owner.run(label,record['commands'][label],record['environment'],P,wall=120,cpu=120,
+                    rss_cap=4<<30,text_cap=16<<20,file_cap=128<<20,total_cap=256<<20)
+                guards.require(supervision.closed(entry),'collector ownership/budget failed')
+                guards.driver_guard()
+                faults=subprocess.check_output(['journalctl','-k','-b','--after-cursor',cursor,'--no-pager'],text=True,timeout=15)
+                guards.require(not re.search(r'(?i)(gpu.*(?:hang|fault|reset|wedg)|xe.*(?:error|fault|reset|timeout))',faults), 'fresh fault; stop before another collector')
+                stdout,stderr=out.read_text(errors='replace'),err.read_text(errors='replace')
+                record['observations'][label]=dict(exit_code=entry.get('exit_code'),ownership_closed=True,
+                    diagnostics=[line for line in (stdout+'\n'+stderr).splitlines() if re.search(r'(?i)vtune:|error|warning|permission|unsupported|not supported|no data|ptrace',line)][-24:])
+                if label=='cpu_report' and entry.get('exit_code')==0:
+                    table=csv.DictReader(io.StringIO(stdout),delimiter='\t');rows=list(table)
+                    column=next((k for k in (table.fieldnames or []) if 'CPU Time' in k),None)
+                    if column and rows:
+                        times=[float(row[column]) for row in rows]
+                        qualified=all(math.isfinite(v) and v>=0 for v in times) and sum(times)>0 and any('libcrypto' in str(row).lower() or 'openssl' in str(row).lower() for row in rows)
+                        record['CPU_sampling_qualified']=bool(qualified)
+                        if qualified:record['cpu_hotspots']=dict(columns=table.fieldnames,rows=rows,reported_CPU_time_sum_s=sum(times),scope='Top12 software capability samples, not model CPU attribution.')
+                if label=='gpu_launch_probe':record['GPU_collector_launch_probe_accepted']=entry.get('exit_code')==0
+                persist()
+            admission();record.update(stage='closed',complete=True,execution_passed=True)
+        except BaseException as error:record['error']=str(error)
         finally:
-            record['ownership_closed'] = owner.active is None and all(supervision.closed(c) for c in owner.commands)
-            after = subprocess.check_output(['journalctl', '-k', '-b', '--after-cursor', cursor, '--no-pager'], text=True)
-            record['fresh_faults'] = [x for x in after.splitlines() if re.search(
-                r'(?i)(gpu.*(?:hang|fault|reset|wedg)|xe.*(?:error|fault|reset|timeout))', x)]
-            record['boot_unchanged'] = boot == Path('/proc/sys/kernel/random/boot_id').read_text().strip()
-            record['passed'] = bool(record['passed'] and record['ownership_closed'] and
-                                    record['boot_unchanged'] and not record['fresh_faults'])
-            record['cpu_sampling_qualified'] = record['passed']
-            persist()
-            result.write_text(json.dumps(record, indent=2) + '\n')
-        print(json.dumps({k: record.get(k) for k in
-            ('mode', 'passed', 'complete', 'cpu_sampling_qualified', 'ownership_closed', 'error')}))
-    return 0 if record['passed'] else 1
-
-
-def perf_smoke():
-    """Test actual perf event access without attaching or changing permissions."""
-    root=B/'cpu-perf-capability-v1'
-    result=P/'bench/results/2026-10-15-pr6-recovery-audit/cpu-profiler-current.json'
-    with (B/'owned-v0141-measurement.lock').open('a+') as lock:
-        fcntl.flock(lock,fcntl.LOCK_EX|fcntl.LOCK_NB);guards.no_model_owners([])
-        require_source=Path(__file__).read_bytes()
-        revision=subprocess.check_output(['git','rev-parse','HEAD'],cwd=P,text=True).strip()
-        guards.require(require_source==subprocess.check_output(['git','show',revision+':tools/sycl/profile_attention.py'],cwd=P),
-            'commit exact perf probe source first')
-        pins={}
-        for name in ('tools/sycl/profile_attention.py','tools/sycl/measurement_owner.py','tools/sycl/measurement_guards.py'):
-            data=subprocess.check_output(['git','show',revision+':'+name],cwd=P)
-            guards.require((P/name).read_bytes()==data,'uncommitted perf probe input: '+name)
-            pins[name]=hashlib.sha256(data).hexdigest()
-        original=result.read_bytes()
-        guards.require(original==subprocess.check_output(['git','show',revision+':'+str(result.relative_to(P))],cwd=P),
-            'commit the original profiler outcome first')
-        record=json.loads(original)
-        guards.require('perf_event_capability' not in record, 'closed event probe requires a new distinct committed plan')
-        guards.require(not root.exists(),'inspect existing perf capability result; no automatic retry')
-        root.mkdir(mode=0o700)
-        env=dict(PATH='/usr/bin:/bin',HOME='/home/yayoi',LANG='C.UTF-8',LC_ALL='C.UTF-8')
-        probe=dict(source_commit=revision,source_sha256=hashlib.sha256(require_source).hexdigest(),input_sha256=pins,
-            perf=dict(path='/usr/bin/perf',sha256=digest('/usr/bin/perf')),
-            target=dict(path='/usr/bin/true',sha256=digest('/usr/bin/true')),
-            perf_event_paranoid=Path('/proc/sys/kernel/perf_event_paranoid').read_text().strip(),
-            environment=env,complete=False,model_executed=False,model_hardware_counters_qualified=False,events=[])
-        owner=supervision.Owner(root/'owned')
-        for event in ('cycles','task-clock'):
-            command=['/usr/bin/perf','stat','--no-big-num','-x',';','-e',event,'--','/usr/bin/true']
-            entry,out,err=owner.run(event,command,env,P,wall=15,cpu=15,rss_cap=512<<20,
-                file_cap=256<<10,text_cap=256<<10,total_cap=1<<20)
-            probe['events'].append(dict(event=event,command=command,exit_code=entry.get('exit_code'),
-                ownership_closed=supervision.closed(entry),stderr_excerpt=err.read_text(errors='replace')[-2048:],
-                stdout_excerpt=out.read_text(errors='replace')[-512:]))
-        probe.update(complete=all(supervision.closed(c) for c in owner.commands),
-            ownership_closed=owner.active is None and all(supervision.closed(c) for c in owner.commands),
-            perf_event_paranoid_after=Path('/proc/sys/kernel/perf_event_paranoid').read_text().strip(),
-            limits='Event permission/command capability only; no attached process, model profile or hardware bottleneck. Preserve each requested event outcome; change no sysctl or privilege.')
-        record['perf_event_capability']=probe
-        (root/'record.json').write_text(json.dumps(dict(probe,owned_commands=owner.commands),indent=2)+'\n')
-        result.write_text(json.dumps(record,indent=2)+'\n')
-        print(json.dumps(probe))
-        return 0 if probe['complete'] and probe['ownership_closed'] else 1
+            record['ownership_closed']=owner.active is None and all(supervision.closed(e) for e in owner.commands)
+            try:
+                text=subprocess.check_output(['journalctl','-k','-b','--after-cursor',cursor,'--no-pager'],text=True,timeout=15)
+                record['fresh_faults']=[s for s in text.splitlines() if re.search(r'(?i)(gpu.*(?:hang|fault|reset|wedg)|xe.*(?:error|fault|reset|timeout))',s)]
+                record['boot_unchanged']=boot==Path('/proc/sys/kernel/random/boot_id').read_text().strip();record['driver_after']=guards.driver_guard()
+            except Exception as error:record['final_probe_error']=str(error)
+            record['execution_passed']=bool(record.get('execution_passed') and record['ownership_closed'] and record.get('fresh_faults')==[] and record.get('boot_unchanged') and 'final_probe_error' not in record)
+            record['passed']=bool(record['execution_passed'] and record['CPU_sampling_qualified'] and record['GPU_collector_launch_probe_accepted'])
+            record['decision']='A successful collector-launch probe on true is not GPU qualification. Use actual positive CPU samples only if qualified; otherwise retain refusal and select PTI/native instrumentation without changing permissions.'
+            persist();result.write_text(json.dumps(record,indent=2)+'\n')
+        print(json.dumps({k:record.get(k) for k in ('stage','complete','execution_passed','passed','CPU_sampling_qualified','GPU_collector_launch_probe_accepted','GPU_hardware_metrics_qualified','ownership_closed','error')}))
+        return 0 if record['execution_passed'] else 1
 
 
 def main():
-    if sys.argv[1:] == ['perf-smoke']:
-        return perf_smoke()
-    if sys.argv[1:] == ['cpu-smoke']:
-        return cpu_smoke()
+    if len(sys.argv)==2 and sys.argv[1] in ('capabilities-prepare','capabilities-run'):
+        return capabilities(sys.argv[1].split('-')[1])
     guards.require(len(sys.argv) == 2 and sys.argv[1] in ('smoke', 'resources', 'isa', 'overview', 'memory'),
                    'use profile_attention.py smoke|resources|isa|overview|memory')
     mode = sys.argv[1]

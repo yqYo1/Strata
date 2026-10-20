@@ -2798,6 +2798,18 @@ unused fixture/controller sources are also removed from the active tree and
 recoverable at`5f31f8882`. Both model engines remain unchanged; the two consumed
 model generations and14 legacy provenance holds remain separate.
 
+Installed-tool discovery now finds VTune2026.6 build633341 and PTI SDK1.2.0;
+their presence does not establish usable profiling. The older VTune2026.4 and
+perf refusals remain in the previous committed capability result. The maintained
+`profile_attention.py capabilities-prepare` / `capabilities-run` path first
+commits a generated recipe, source/collector/target hashes and environment.
+It checks CPU software samples with a three-second OpenSSL workload and probes
+GPU collector launch with`/usr/bin/true`. The latter has no GPU workload and
+cannot qualify GPU timing or counters even if it exits0. No model, privilege or
+driver-setting change belongs to this capability step. Independent read-only
+research audits the installed PTI View contract and actual production command-
+profile coverage while Main performs the serialized checks.
+
 For the separate earlier early-PCIe candidate, only a later qualified mechanism permits a
 fresh complete51+6-case plan. Preserve all pending-completion,
 untouched-output, payload/guard and owner-lifetime requirements under that plan.
