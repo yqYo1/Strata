@@ -2312,6 +2312,13 @@
       "retired_roots_absent": true,
       "retained_window_files_verified": true,
       "post_cleanup_native_compiler_executable_admission": true
+    },
+    "final_fixture_retirement": {
+      "stage": "prepared",
+      "shared_decision": "unitrace_production_request.artifact_retirement",
+      "group": "unitrace-recording-window-v2",
+      "files": 2,
+      "bytes": 1727048
     }
   },
   "unitrace_production_request": {
@@ -3940,6 +3947,38 @@
       },
       "limits": "No native execution, timing comparison, hardware saturation, exact prefill-only boundary or full dependency/critical-path claim. Family names are source lookup groups. Requested copy bytes are not measured bus traffic. Host API wall time is not CPU time. Unions overlap across rows.",
       "kernel_name_geometry": "First {x;y;z} is workgroup count; second is workgroup size. Product gives global work-items. SIMD is compiled kernel width."
+    },
+    "artifact_retirement": {
+      "stage": "prepared",
+      "manifest": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/closed-production-trace-mtp-pilot-20261021.jsonl",
+      "manifest_sha256": "9c9c5cb37913cd695b2b7bef20ad8306386617a29e9e176c182880996b1bbcf3",
+      "files": 156,
+      "bytes": 294666727,
+      "groups": {
+        "unitrace-production-32k-v1": {
+          "files": 86,
+          "bytes": 280264709
+        },
+        "unitrace-recording-window-v2": {
+          "files": 2,
+          "bytes": 1727048
+        },
+        "mtp-f16-prefill-v1": {
+          "files": 68,
+          "bytes": 12674970
+        }
+      },
+      "source_recovery": {
+        "pushed_source": "ed9368b3c4e88825578564527061da20ddec03d7",
+        "window_plan": "b4ce2f00c",
+        "window_source_inputs": 21,
+        "compiler_inputs_checked": 8698,
+        "production_source_inputs": 149,
+        "native_original_inputs": 9836,
+        "required_native_fixtures": 8,
+        "admission_checked_before_cleanup": true
+      },
+      "boundary": "All three runs terminal and owned processes closed; serialized global lock and no_model_owners check. Four private closed controllers/fixture have no surviving imports/native build inputs; recover from pushed ed9368b3c. Model builds, required fixtures, installed profiling tools and14 legacy provenance holds are excluded."
     }
   }
 }

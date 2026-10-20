@@ -2933,13 +2933,16 @@ preserves the actual samples and gates. Collector loss limits, the loader symbol
 diagnostic and observer overhead remain separate. Both model engines and clean
 speed samples are unchanged; physical262144/session/RESTORE, task quality and
 sustained decode remain pending.
-Consumed raw timelines, API/build logs and decision-support transactions are
-retired after original-source recovery and post-cleanup admission. Keep only
-the standalone window executable and compiler-input manifest until the closed
-production admission is decoupled from them, then retire both at that analysis
-boundary. The production timeline has one current consumer: the bounded
-service/submission attribution above. The two consumed model
-generations and14 older provenance holds remain separate.
+The production attribution and pilot consumers have closed. Original21 window
+inputs and its build plan,8698 compiler inputs,149 production-controller inputs
+and the current9836 native inputs/eight fixtures were checked before retirement.
+The four private closed window/model/analysis source files are retired to pushed
+`ed9368b3c`; maintained model qualification does not import them. The serialized
+cleanup plan now retires the complete production timeline, standalone window
+executable/compiler manifest and normal FP16-pilot output. Its path/hash/reason
+manifest and exact pending/deleted state are in the compact results. Installed
+profiling tools, both consumed model generations and14 older provenance holds
+are excluded. Cleanup does not establish new validation or hardware attribution.
 
 The closed capability output and consumed decision-support report/transaction
 bodies are retired:43 external files/112835B, with a path/hash/reason manifest
