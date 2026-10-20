@@ -4900,8 +4900,6 @@
       "src/kernels/cpu/iq_avx2.cpp": "80efab0bed11ddf3980c0d146101218efa061cf5304e39fc88d93e5e94a99136",
       "include/strata/kernels/cpu/native_expert.hpp": "45ccf6df8b4cc5b468a245a2ddee845e0b10ece14951a5a7ab7b6ffbca087e94"
     },
-    "report_path": "/home/yayoi/orca/workspaces/Strata/sycl/.cache/strata-research/20261020/cpu-roofline-protocol-report.md",
-    "report_budget_bytes": 16384,
     "worker_closed": true,
     "next_review": "Main implements and measures CPU-only calibration; then retain compact evidence and retire this temporary report.",
     "report_sha256": "e7d40b08aa8774222fc4338db15e8ca644c2f685d03fff18ecbdd9d13cfde05e",
@@ -4909,7 +4907,32 @@
     "curation_state": "native_luna_max_reviewed",
     "native_review_sha256": "0cb2ac022c98bb79061ff20af2f7c9ea418cea2df3ef9ce5362aeefd6e389efd",
     "review_digest": "Use actual production pool including specialized Q2_0 Down; H2560 FF640, seven pairs, NT1..4, hot/stream plus read scan. Existing parity target is CUDA/HIP-runtime-linked, unavailable in a SYCL-only CPU calibration. No CPU/RAM ceiling measured.",
-    "consumer": "Imminent Main-owned CPU expert/RAM calibration implementation."
+    "consumer": "Current CPU result and retained qualified fixture for the named NT1 IQ method/dispatch comparison.",
+    "raw_retirement": {
+      "manifest_sha256": "17d055b606f857b3d8670de56c8091279355a8eebda1d07738de47f3b21a5b91",
+      "manifest_path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/closed-cpu-calibration-prototypes-20261020.jsonl",
+      "consumer": "Compact findings in this index, committed source/plan and curated note where applicable; original raw no longer needed."
+    },
+    "calibration_reference": {
+      "commit": "cfe378e2ae96ea34fa0b7e7039ef3261ad1094f0",
+      "path": "bench/results/2026-10-15-pr6-recovery-audit/cpu-roofline-plan.json",
+      "sha256": "df8f674c9ebb8bc8546d0c35b9a087f367a13ce56482a255fcd8746f51a2c267"
+    },
+    "calibration_result_commit": "f03b8dc7a7f33e5dbe40178ae9d3be75784994fa",
+    "calibration_passed": true,
+    "calibration_raw_retirement": {
+      "manifest_path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/closed-cpu-roofline-v5-raw-20261020.jsonl",
+      "manifest_sha256": "7964604a0d16b38b86db75c568bfdd58a6474ab25826bc3c5e896935d86f6b74",
+      "retired_files": 131,
+      "retired_bytes": 8612417,
+      "compacted_stage_receipts": 3,
+      "retained_binary": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-roofline-v5/build/cpu_roofline",
+        "sha256": "ef1772e08a6857021dc3364a4d8b77bb4c5b9eb5f540dce68539387b1a7cb3b3"
+      },
+      "source_and_recipe_default_reachable": true,
+      "GPU_executed": false
+    }
   },
   "cpu_lowbit_lut_methods_collection_scope": {
     "classification": "knowledge collection",
@@ -4943,7 +4966,12 @@
       "sha256": "26b4fafefe25d62b4d1596d5b4dbfaf90834d6e7cad3bf8a82effb4473e0112d"
     },
     "review_digest": "Substantive format/method/provenance findings beyond existing AVX2/multirow surveys; curated note keeps unique delta.",
-    "provenance_limit": "T-MAC root MIT, audit submodules/files; LUT-GEMM official repo Apache-2.0; current QIGen root has no LICENSE, paper methods only pending resolution. No code copied; ggml master layout refs are mutable."
+    "provenance_limit": "T-MAC root MIT, audit submodules/files; LUT-GEMM official repo Apache-2.0; current QIGen root has no LICENSE, paper methods only pending resolution. No code copied; ggml master layout refs are mutable.",
+    "raw_retirement": {
+      "manifest_sha256": "17d055b606f857b3d8670de56c8091279355a8eebda1d07738de47f3b21a5b91",
+      "manifest_path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/closed-cpu-calibration-prototypes-20261020.jsonl",
+      "consumer": "Compact findings in this index, committed source/plan and curated note where applicable; original raw no longer needed."
+    }
   },
   "sycl_host_transfer_preparation_collection_scope": {
     "classification": "knowledge collection",
@@ -4977,7 +5005,12 @@
       "sha256": "6deb9bedbecbef2a8f9e0520fe2e5b5fc14c51e0f0501a1d64ecb30d6a3a7182"
     },
     "review_digest": "Substantive current source-path delta beyond earlier host-DMA/staged-copy surveys; retain distilled path and gates only.",
-    "source_limit": "Arena view -> cache fill -> queue.memcpy/event; SYCL PinnedArena is ordinary RAM plus optional OS lock; arbitrary register unsupported; cudaHostAlloc is host USM. No proof of active runtime branch, physical H2D bytes or speed. Online docs aren't installed-runtime pins. No code copied."
+    "source_limit": "Arena view -> cache fill -> queue.memcpy/event; SYCL PinnedArena is ordinary RAM plus optional OS lock; arbitrary register unsupported; cudaHostAlloc is host USM. No proof of active runtime branch, physical H2D bytes or speed. Online docs aren't installed-runtime pins. No code copied.",
+    "raw_retirement": {
+      "manifest_sha256": "17d055b606f857b3d8670de56c8091279355a8eebda1d07738de47f3b21a5b91",
+      "manifest_path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/closed-cpu-calibration-prototypes-20261020.jsonl",
+      "consumer": "Compact findings in this index, committed source/plan and curated note where applicable; original raw no longer needed."
+    }
   },
   "implemented_cpu_roofline_admission_scope": {
     "classification": "decision support",
@@ -4996,10 +5029,8 @@
       "bench/results/2026-10-15-pr6-recovery-audit/cpu-roofline-plan.json": "de06ac51a496b6240de0ba8387881194ea4dd8533e002bed52e0999145e6664c"
     },
     "question": "Audit implemented CPU calibration: production dispatch, work/bytes, same-contract references, timing eligibility, pinning, hot/stream/scan, build/source and complete-matrix admission. Distinguish validity gaps from small optional instrumentation improvements; no methods re-survey.",
-    "report_path": "/home/yayoi/orca/workspaces/Strata/sycl/.cache/strata-research/20261020/implemented-cpu-roofline-audit.md",
-    "report_budget_bytes": 10240,
     "consumer": "Main CPU/RAM calibration validity decision before using its results",
-    "next_review": "Archive transaction/report after compact validity/failure evidence is committed. New fixed-duration matrix requires its own committed timing plan.",
+    "next_review": "Review new fixed-duration evidence at calibration closure; original six-job-boundary audit stays scoped to its pinned source.",
     "launch_reason": "Fresh implemented benchmark and prospective plan now exist; prior protocol report did not audit this source.",
     "worker_closed": true,
     "status": "reviewed_workers_closed",
@@ -5013,6 +5044,71 @@
     "report_sha256": "55c163e9561bf5a0d73e936cde8794932d5b50943daaf760f9a4b8a64802a22a",
     "report_bytes": 9214,
     "native_review_sha256": "4f7c35195fe94997b1d15bd5431ea2a662b404106b494da10e1a2116325f6f8b",
-    "review_digest": "Per-call activation quantization matches the declared six-job-call comparison; report conflated stream pass with one call. Scan/barriers and phase-wall versus aggregate-CPU limits remain. Original matrix separately failed its timing floor; no complete-matrix/saturation/model claim."
+    "review_digest": "Per-call activation quantization matches the declared six-job-call comparison; report conflated stream pass with one call. Scan/barriers and phase-wall versus aggregate-CPU limits remain. Original matrix separately failed its timing floor; no complete-matrix/saturation/model claim.",
+    "raw_retirement": {
+      "manifest_sha256": "17d055b606f857b3d8670de56c8091279355a8eebda1d07738de47f3b21a5b91",
+      "manifest_path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/closed-cpu-calibration-prototypes-20261020.jsonl",
+      "consumer": "Compact findings in this index, committed source/plan and curated note where applicable; original raw no longer needed."
+    }
+  },
+  "nt1_IQ_exact_representation_methods_scope": {
+    "result_reference": {
+      "commit": "f03b8dc7a7f33e5dbe40178ae9d3be75784994fa",
+      "path": "bench/results/2026-10-15-pr6-recovery-audit/cpu-roofline-current.json",
+      "sha256": "4698aafbf7fcaae970cb5dcc3fed48df3d5f8ab5b2c34b946d570ff1f241beac"
+    },
+    "prerequisites": {
+      "complete115_cell_CPU_calibration": true,
+      "NT1_logical_job_lower_bound_measured": true,
+      "prior_curated_methods_available": true
+    },
+    "source_commit": "f03b8dc7a7f33e5dbe40178ae9d3be75784994fa",
+    "classification": "decision support",
+    "schedulable_now": false,
+    "worker_closed": false,
+    "report_budget_bytes": 16384,
+    "question": "For production IQ2_S/IQ3_XXS/IQ3_S NT1 GU on Zen3, derive exact decoded-level/mask/bitplane or bounded predecode layouts and compare table work, scale/rounding contract and extra bytes to measured hot/stream behavior. Do not repeat generic T-MAC/LUT surveys or settled tiny single-exact flag.",
+    "report_path": "/home/yayoi/orca/workspaces/Strata/sycl/.cache/strata-research/20261020/nt1-iq-exact-methods.md",
+    "consumer": "Main CPU component candidate design after the retained-engine117K comparison",
+    "next_review": "Native Luna-max review; no implementation adoption from report.",
+    "status": "dispatched",
+    "task_id": "task_0add196c4850",
+    "dispatch_id": "ctx_3d9a885c24a4",
+    "terminal_handle": "term_4103b5e4-235c-4a4e-b8e4-cc9d1f597f76",
+    "incarnation_id": "642775db-27d5-4e96-8e5b-d6fc0a4d45dd",
+    "launch_mode": "Orca custom workspace-write/network argv; worker-start on exact existing terminal; gpt-6-luna high. Report-only task scope."
+  },
+  "existing_route_dump_CPU_mix_protocol_scope": {
+    "result_reference": {
+      "commit": "f03b8dc7a7f33e5dbe40178ae9d3be75784994fa",
+      "path": "bench/results/2026-10-15-pr6-recovery-audit/cpu-roofline-current.json",
+      "sha256": "4698aafbf7fcaae970cb5dcc3fed48df3d5f8ab5b2c34b946d570ff1f241beac"
+    },
+    "prerequisites": {
+      "complete115_cell_CPU_calibration": true,
+      "NT1_logical_job_lower_bound_measured": true,
+      "prior_curated_methods_available": true
+    },
+    "source_commit": "f03b8dc7a7f33e5dbe40178ae9d3be75784994fa",
+    "classification": "decision support",
+    "schedulable_now": false,
+    "worker_closed": false,
+    "report_budget_bytes": 16384,
+    "question": "Can existing --dump-routing plus static cache/profile and request evidence reconstruct exact CPU format/NT histograms? Audit framing, dynamic cache/adapt, fake serve weights, warmups/prefill and final-window conservation; give minimum bounded diagnostic/instrumentation if insufficient.",
+    "frozen_native_inputs": {
+      "src/program/generate.cpp": "95637fc1d6f4e8546345ab0f369dbd381ef7e72a2bf926a5c74b57f87b990b1b",
+      "src/core/expert_source.cpp": "87655233b30eb8de9227ce3e236735d332f701557af46e033a13f05c8f38b4ec",
+      "include/strata/core/expert_source.hpp": "3e0c332f0bf7fcbc1024bc14ac7f4af81f0d347ec9378c6484c7c289269d44c7",
+      "include/strata/kernels/cpu/pool.hpp": "177897a23a38f78f51545bc50a056d3cd8feb03c0b594a0026e66fab92cec07a"
+    },
+    "report_path": "/home/yayoi/orca/workspaces/Strata/sycl/.cache/strata-research/20261020/route-dump-cpu-mix-protocol.md",
+    "consumer": "Main bridge from CPU calibration to measured model critical path before kernel selection",
+    "next_review": "Native Luna-max review; Main exclusively implements and runs tests/model diagnostics.",
+    "status": "dispatched",
+    "task_id": "task_278355c879a6",
+    "dispatch_id": "ctx_a5a710b87ad6",
+    "terminal_handle": "term_d532f5b9-e104-4c45-9ce8-d29e6c97753a",
+    "incarnation_id": "ce8b624f-b8a7-419c-bb45-fb7b0765c323",
+    "launch_mode": "Orca custom workspace-write/network argv; worker-start on exact existing terminal; gpt-6-luna high. Report-only task scope."
   }
 }

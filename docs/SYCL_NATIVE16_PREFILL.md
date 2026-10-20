@@ -2417,30 +2417,59 @@ old-owned/current-borrowed long-input comparison on the current runtime. Review
 and retire the extra generation when that comparison closes; this32K cache-layout
 screen does not qualify the current engine's117K borrowed mixed tail. The14
 legacy provenance holds remain separate.
-The next CPU/RAM discriminator is `tools/sycl/cpu_roofline.py`, with a CPU-only
-target under `bench/sycl/cpu_roofline`. It recompiles the production CPU sources
-and pinned ggml using the current official Intel LLVM toolchain and Zen3 flags;
-it does not reuse unrecorded archives or link a GPU runtime. Its committed plan
-covers all seven real-weight format pairs, NT1..4, six-expert groups, hot and
-96MiB+ streaming weights, one worker with a waiting host and five workers with
-host participation, plus a256MiB read scan on1/6/12 pinned threads. Each cell
-requires five1s+ samples. Same-input GU/Down20 comparisons against ggml and
-Down42 against an independent scalar dot with production FP32 ActQ scales,
-exact pool/serial results, finite outputs and external canaries precede timing;
-private pool scratch is not canary-instrumented. Requested byte rates are not
-physical DRAM traffic or proof of saturation. Prepare and commit the exact plan
-before build, then run the numerical check before measurement. At source
-`3d31b5c0673543b9774c5d34a6c6c77703a64375`, all56 cases (seven pairs, NT1..4,
-two worker placements) passed and all14 child owners closed normally. Maximum
-relative-L1 errors were6.52976e-8 GU and2.14853e-7 Down; pool/serial matched
-exactly. The separate Q2/ggml FP16-scale gap reached2.72877e-4; it is not a
-same-contract arithmetic error. The plan preserves the original failed
-supervision, compile and mismatched-reference attempts. Build executable SHA256
-is `bcd2307c25c27acfb5a160e2fb0223d343d47bb60fee5d83ff27fa280cf1dd17`;
-check-receipt SHA256 is `0518ca56437eb01903a6c7cd37bab76fea06359af1aeb991a1065b7dbf03004d`.
-Performance measurement remains pending; this fixture does not qualify a model
-speed, inference change or70tok/s.
-Only a later qualified mechanism permits a
+The same borrowed-cache request records1424035 CPU entries over1120890
+unique CPU expert jobs: mean NT=1.27045027. Since each job has a positive
+integer token count, at least817745 jobs (72.9550%) have NT1:
+each NT2+ job consumes at least one of the303145 excess entries.
+`expert_pool_dispatch_multi` increments entries per CPU-routed row and misses
+by the number of distinct jobs; the request snapshots exclude prefill. This
+bound is on logical job count, not CPU time, physical traffic or the unknown
+per-format/NT histogram. Prioritize NT1 applicability when selecting a CPU
+method; high draft acceptance alone does not establish multi-token expert reuse.
+The CPU-only discriminator `tools/sycl/cpu_roofline.py` now passed all115 cells
+and575 samples at source `c24bfb62f44bf797319557e9e7c1b3264acc6d52`, with the
+production CPU sources/pinned ggml and official Intel LLVM/Zen3 flags. All56
+real-weight numerical cases passed, with maximum relative-L1 errors6.52976e-8
+GU and2.14853e-7 Down, and exact pool/serial outputs. Down42 uses an independent
+scalar reference with production FP32 ActQ scales; its2.72877e-4 difference
+from ggml's FP16 activation scales is a separate contract diagnostic. Finite
+outputs and external canaries passed; private pool scratch is not instrumented.
+Every sample lasted at least1.300002841s; maximum clock-query/warm-pass ratio
+was9.93725e-5, below the prospective0.001 gate. Earlier495 timing samples and
+the failed timing-floor outcome remain at `cf098f72e`, unchanged; the replacement
+recollected the entire matrix rather than accepting partial original success.
+
+On Ryzen5 5600X (6 cores/12 threads,32MiB L3), the coordinated256MiB read scan
+achieved median32.40/39.35/30.96GB/s on1/6/12 pinned threads. It includes barriers
+and checksum and measures requested reads; it is not a physical DRAM counter or
+an upper bound for every access pattern. The six-compute-participant NT1 expert
+results are below. Each call handles six distinct experts. Hot uses8.6–15.3MiB;
+stream uses at least96MiB without revisiting a blob inside a pass.
+
+| GU / Down | Stream logical GB/s | Hot logical GB/s | Stream us/expert |
+| --- | ---: | ---: | ---: |
+| IQ3_XXS / IQ4_NL | 26.40 | 28.29 | 82.43 |
+| IQ3_XXS / Q2_0 | 22.14 | 22.77 | 77.47 |
+| IQ3_S / IQ4_NL | 22.95 | 25.12 | 101.49 |
+| IQ3_S / Q2_0 | 20.39 | 20.25 | 91.68 |
+| IQ2_S / IQ4_NL | 26.84 | 28.69 | 73.43 |
+| IQ2_S / Q2_0 | 21.14 | 22.19 | 71.45 |
+| IQ4_XS / IQ4_NL | 40.66 | 59.67 | 65.48 |
+
+IQ2/IQ3 hot/stream differences are about0–10%, while IQ4_XS gains about47%.
+This supports investigating NT1 low-bit GU/decode work in the former families;
+it does not establish whole-model CPU/RAM saturation. Blob bytes differ by
+format, so compare latency as well as byte rate. The GU pool phase occupies
+about70–81% of NT1 IQ2/IQ3 stream wall time, including its scheduling/waits.
+Logical rates exclude extra table/scratch traffic. Actual per-format/NT job
+frequencies and model critical-path CPU time remain unknown. Keep the pure-kernel,
+six-job-call and model questions separate; no model speed or70tok/s follows.
+See [the individual samples and pinned plan](../bench/results/2026-10-15-pr6-recovery-audit/cpu-roofline-current.json).
+The next model work remains1256-slot117K borrowed-tail admission and the retained
+old-owned/current-borrowed long-input comparison; new CPU methods need a bounded
+component comparison before inference adoption.
+
+For the separate earlier early-PCIe candidate, only a later qualified mechanism permits a
 fresh complete51+6-case plan. Preserve all pending-completion,
 untouched-output, payload/guard and owner-lifetime requirements under that plan.
 Model execution remains blocked until the complete57-case gate passes.
