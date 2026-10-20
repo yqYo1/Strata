@@ -616,7 +616,238 @@
       "native_plan_sha256": "4da37cd308af7b68d957da15873eb46068e1fe91334faa41bc4c7badd4117d35"
     }
   ],
-  "runs": [],
+  "runs": [
+    {
+      "arm": 0,
+      "complete": true,
+      "passed": true,
+      "active": false,
+      "exit_code": 0,
+      "sample": {
+        "ok": true,
+        "err": null,
+        "ttft_s": 142.272,
+        "total_s": 143.808,
+        "prompt_tokens": 117489,
+        "reused_tokens": 0,
+        "read_tokens": 117489,
+        "generated_tokens": 24,
+        "prompt_tps": 826.9,
+        "prompt_tps_source": "engine",
+        "decode_tps": 14.6,
+        "decode_tps_source": "engine",
+        "prompt_ms": 142083.1,
+        "decode_ms": 1646.7,
+        "drafts_offered": 21,
+        "drafts_accepted": 16,
+        "finish_reason": "length",
+        "request_sha256": "26f08fd8364b5c4bce718617fe2aed42761d0a794e068b00532694adef78b3be",
+        "stream_complete": true,
+        "truncated": true,
+        "generated_tokens_source": "usage",
+        "client_interval": {
+          "request_begin_monotonic_ns": 864031981138589,
+          "first_output_monotonic_ns": 864174253594695,
+          "request_end_monotonic_ns": 864175789134780
+        },
+        "output_chars": 0,
+        "reasoning_chars": 121,
+        "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "reasoning_sha256": "0d786145d04b965534c72ea005fcccb9fb3a7e2552f6dda1bf32578d1916b8b2",
+        "eligible": true,
+        "eligibility_errors": [],
+        "requested_min_tokens": 98304,
+        "actual_prompt_tokens": 117489,
+        "actual_read_tokens": 117489,
+        "actual_reused_tokens": 0,
+        "prompt_count_source": "usage.prompt_tokens",
+        "read_count_source": "timings.prompt_n",
+        "reuse_counts_reported": {
+          "usage": 0,
+          "timings": 0
+        },
+        "thinking_requested": true,
+        "reasoning_observed": true,
+        "reasoning_tokens_reported": null,
+        "run": 0
+      },
+      "native_identity": {
+        "pid": 4042238,
+        "start_ticks": 86393423,
+        "sid": 4042214
+      },
+      "validation_activation": {
+        "pid": 4042238,
+        "loader": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_loader.so.0.12.0",
+        "threads_before": 1,
+        "preinit": 37,
+        "config_enabled": true,
+        "first_init": true,
+        "dispatch_result": 46,
+        "output_untouched": true,
+        "retained_reference_until_exit": true,
+        "runtime_teardown_qualified": false
+      },
+      "attribution": {
+        "status": {
+          "scopes": 96,
+          "phases": {
+            "tag": {
+              "count": 96,
+              "cpu_s": 5.7761e-05,
+              "wall_s": 5.7706e-05,
+              "wait_cpu_s": 0.0,
+              "wait_wall_s": 0.0
+            },
+            "precheck": {
+              "count": 192,
+              "cpu_s": 0.000178911,
+              "wall_s": 0.000182965,
+              "wait_cpu_s": 0.0,
+              "wait_wall_s": 0.0
+            },
+            "queue_context": {
+              "count": 192,
+              "cpu_s": 0.000200489,
+              "wall_s": 0.000201434,
+              "wait_cpu_s": 0.0,
+              "wait_wall_s": 0.0
+            },
+            "enqueue": {
+              "count": 96,
+              "cpu_s": 10.82403328,
+              "wall_s": 10.88685777,
+              "wait_cpu_s": 0.0,
+              "wait_wall_s": 0.0
+            },
+            "observer": {
+              "count": 96,
+              "cpu_s": 6.5043e-05,
+              "wall_s": 6.7893e-05,
+              "wait_cpu_s": 0.0,
+              "wait_wall_s": 0.0
+            },
+            "drain": {
+              "count": 96,
+              "cpu_s": 0.011232344,
+              "wall_s": 0.011243981,
+              "wait_cpu_s": 0.011093559,
+              "wait_wall_s": 0.011097835
+            },
+            "postcheck": {
+              "count": 96,
+              "cpu_s": 6.5194e-05,
+              "wall_s": 6.5731e-05,
+              "wait_cpu_s": 0.0,
+              "wait_wall_s": 0.0
+            },
+            "after_drain": {
+              "count": 96,
+              "cpu_s": 6.5574e-05,
+              "wall_s": 6.6421e-05,
+              "wait_cpu_s": 0.0,
+              "wait_wall_s": 0.0
+            },
+            "branch": {
+              "count": 96,
+              "cpu_s": 5.827e-05,
+              "wall_s": 5.7665e-05,
+              "wait_cpu_s": 0.0,
+              "wait_wall_s": 0.0
+            }
+          },
+          "cpu_s": 10.837101985,
+          "wall_s": 10.899998929,
+          "unclassified_cpu_s": 0.001145119,
+          "unclassified_wall_s": 0.001197364,
+          "limits": "Nested wrapper partition; wait is a subset. Queue submission may itself block. Counts do not measure PCIe traffic or GPU arithmetic."
+        },
+        "cpu": {
+          "wall_s": 140.352935125,
+          "main_cpu_s": 119.171517642,
+          "wait_cpu_s": 78.935666555,
+          "wait_wall_s": 79.29607962,
+          "outside_wait_cpu_s": 40.235851087
+        },
+        "original_moe_status_region": {
+          "cpu_s": 10.836737388,
+          "wall_s": 10.899633362,
+          "outside_wait_cpu_s": 10.825643829,
+          "outside_wait_wall_s": 10.888535527
+        },
+        "work": {
+          "window_count": 96,
+          "jobs": 37353,
+          "routed_rows": 56394240,
+          "gu_nk": [
+            1280,
+            2560
+          ],
+          "down_nk": [
+            2560,
+            640
+          ],
+          "gu_down_storage": "bf16",
+          "hidden_storage": "fp16",
+          "requested_router_D2H_bytes": 225576960,
+          "requested_map_H2D_bytes": 451153920,
+          "all_job_row_and_expert_conservation_checks_passed": true,
+          "planned_matches_retired": true,
+          "limits": "Requested/logical metadata; not physical PCIe or VRAM traffic, occupancy or additive wall time.",
+          "window_rows_counts": [
+            [
+              35568,
+              48
+            ],
+            [
+              81920,
+              48
+            ]
+          ],
+          "job_size_groups": [
+            {
+              "min_rows": 1,
+              "max_rows": 2333,
+              "jobs": 29868,
+              "routed_rows": 7103790
+            },
+            {
+              "min_rows": 2334,
+              "max_rows": 8192,
+              "jobs": 7485,
+              "routed_rows": 49290450
+            }
+          ]
+        },
+        "owners": {
+          "borrowed_ffn_entries": 96,
+          "checked_retirements": 96,
+          "secondary_bank_windows": 48,
+          "layout_generation": 3,
+          "used_bytes": 2311569920,
+          "stable_nonoverlapping_typed_spans": true
+        },
+        "native_dense": {
+          "entry_ms": 395.608,
+          "run_ms": 140479.0,
+          "restore_ms": 816.337
+        },
+        "refill_ms": 387.9
+      },
+      "ownership_closed": true,
+      "fresh_faults": [],
+      "fault_probe_successful": true,
+      "boot_unchanged": true,
+      "driver_after": {
+        "pci": "/sys/bus/pci/devices/0000:05:00.0",
+        "driver": "xe",
+        "vendor": "0x8086",
+        "device": "0xe20c",
+        "kernel": "7.0.0-38-generic",
+        "devcoredump": false
+      }
+    }
+  ],
   "gates": "Two separate processes, absent/present UR tracing layer at warning logging only. Parameter validation and all runtime safety settings fixed before exec. Each process: one short batched warmup and one fresh117489-input/24-output thinking request. Require same-PID/pre-main validation,96 borrowed-owner retirements, all planned MoE work conserved, complete host/wait accounting,96 status scopes and exact disjoint phase counts, native exit0/owned closure, unchanged inputs and no fresh fault. Stop after any failure; no retry.",
   "limits": "Attribution only. Requested trace-layer presence is not a measurement of full trace-output cost. No clean throughput/quality/sustained decode/physical262144/session/RESTORE qualification; enqueue can block on device work. Physical PCIe/GDDR traffic and arithmetic ceilings stay unknown.",
   "retention": "After validation keep per-process status/host aggregates, request samples, work conservation and source/plan identity. Retire normal logs/raw receipts at the status decision; do not archive full profiles.",
