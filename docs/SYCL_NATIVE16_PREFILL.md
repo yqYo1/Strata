@@ -2329,8 +2329,9 @@ but found a short-residency evidence gap. Controller-only source`57dfa2204`
 now requires all six ordered dense phases inside their respective loans:48
 long-path activations before Full restoration, and Full residency with zero
 activations on the short256-row path. Its17 offline tests passed. No native
-input/fixture changed; a separate native review of this controller delta and
-same-build proof remain required before model v3. The default-off route stays
+input/fixture changed; same-build admission recovered9831 inputs and verified
+the engine/eight fixtures. A separate native review of this controller delta
+remains required before model v3. The default-off route stays
 unadopted, with no new speed result or
 full physical262144/session/RESTORE qualification.
 Only a later qualified mechanism permits a
