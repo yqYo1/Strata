@@ -2831,12 +2831,21 @@ no model or GPU workload ran. Direct preload can attach to named session
 control but cannot create it. The launcher-only overlay at`8fba6f3aa` therefore
 preserves explicit Sysman-off, reads the validation preload only for its target
 and prepends the collector for the intended reverse constructor order. Its
-build is closed; the collector itself is unchanged. The committed CPU-canary
-plan at`9df9f45f2` checks same-PID single-thread first UR initialization before
-the canary body and exact named-session removal. Independent source review is
-pending before execution. Loader success alone cannot qualify temporal gating,
-GPU timing, graph/queue coverage or32K+ production attribution. Both model
-engines, clean speed evidence and full-context/quality obligations are unchanged.
+build is closed; the collector itself is unchanged. Independent review requires
+a unique session, cleanup after proven target closure on failure and direct
+constructor/retention evidence; its claimed early Sysman override is corrected
+because the guarded setter covers that call too. CPU-probe source`1880b13d3`
+and plan`8113b69c6` then pass in native PID376891: validation init/first-UR-init
+proof precedes collector init and canary body, while collector fini follows
+canary completion. The exact session is removed, owners close normally and no
+fresh fault occurs. No GPU command or model runs. The compact result retains
+the seven ordered loader/validation lines. After original18 controller inputs
+and9836 native inputs are recovered,51 normal build/loader and consumed research
+files/173699B are retired. Current collector/header inputs and the methods
+collection remain consumed by the next GPU qualification. Loader success cannot
+qualify temporal gating, GPU timing, graph/queue coverage or32K+ production
+attribution. Both model engines, clean speed evidence and full-context/quality
+obligations are unchanged.
 
 The closed capability output and consumed decision-support report/transaction
 bodies are retired:43 external files/112835B, with a path/hash/reason manifest
