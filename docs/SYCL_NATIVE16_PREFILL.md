@@ -2907,12 +2907,29 @@ as60 attention passes and60 preparation passes across five actual shapes.
 The same follow-up identifies36 exact Q80Block`prompt_product` records taking
 4.174s. The existing MTP`draft_kv` path uses these Q8_1-activation integer dot
 products; its opt-in`STRATA_MTP_BATCH_F16=1` instead dequantizes Q8_0 weights
-and uses FP16 GEMM. The next bounded candidate validates that existing route,
-gating the long request on a successful small batched draft-KV warmup and actual
-native environment. It changes MTP KV numerics, not the main verifier math.
+and uses FP16 GEMM. The bounded diagnostic at controller`dbea9dd0e`, with
+plan`d21dd2d30`, now passes the existing route after a successful small batched
+draft-KV warmup and actual native-environment checks. It changes MTP KV
+numerics, not the verifier arithmetic for a fixed candidate window; draft
+candidates, acceptance and generated text can still change.
 GEMM scratch precedes the separate temporary region; source bounds and same-queue
-drains must remain intact. No clean speed, quality, acceptance or adoption claim
-comes from this diagnostic. Collector loss limits, the loader symbol-lookup
+drains remain intact in the reviewed path. The warmup processed73 draft-KV cells
+for74 read tokens. Its gate checked positive batching but omitted explicit cell
+conservation; the recorded73/73 cells do match. Add that check prospectively
+before another run rather than changing this diagnostic's original criteria.
+
+The long request reads39266 fresh tokens, with39265 batched residual rows, and
+generates24 thinking tokens without an answer. Instrumented PP is756.8tok/s;
+the five draft-KV batch timers total307.2ms. Native exit0, owned closure,
+original source/fixture/runtime/model checks and no fresh GPU fault all pass.
+This uses parameter validation, trace and draft timing, whose entry synchronize
+is an observer. Input and observers differ from the earlier672.4tok/s profile,
+so the two readings do not establish a speedup. No clean speed, quality,
+acceptance or adoption claim comes from this diagnostic. Next compare FP16 off/on
+with identical inputs and observers in repeated independent processes, then
+check sustained generation and MTP acceptance separately from prefill.
+The [compact diagnostic result](../bench/results/2026-10-15-pr6-recovery-audit/prefill-mtp-current.json)
+preserves the actual samples and gates. Collector loss limits, the loader symbol-lookup
 diagnostic and observer overhead remain separate. Both model engines and clean
 speed samples are unchanged; physical262144/session/RESTORE, task quality and
 sustained decode remain pending.

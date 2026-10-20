@@ -1,5 +1,5 @@
 {
-  "stage": "prepared",
+  "stage": "closed",
   "source_commit": "dbea9dd0e0361900f913a985635a8ac47e31b5a0",
   "build_source_commit": "3b4998f326101fa913788fd368e1674b111dea03",
   "binary": {
@@ -242,6 +242,136 @@
   "retention": "Keep useful request and route/closure/fault evidence. Retire normal logs after comparison. Two existing engine generations remain; no new binary.",
   "active": false,
   "ownership_closed": true,
-  "passed": false,
-  "adoption_qualified": false
+  "passed": true,
+  "adoption_qualified": false,
+  "small_warmup": {
+    "native": {
+      "pid": 651728,
+      "start_ticks": 88365099,
+      "sid": 651693
+    },
+    "request": {
+      "ok": true,
+      "err": null,
+      "stream_complete": true,
+      "prompt_tokens": 74,
+      "read_tokens": 74,
+      "reused_tokens": 0,
+      "generated_tokens": 24,
+      "finish_reason": "length",
+      "reasoning_chars": 113,
+      "output_chars": 0,
+      "request_sha256": "6976dd85c26437117139f185ce0ac4da0ab9d1d4eb576dd2f9e252ae99d63f03"
+    },
+    "batches": [
+      {
+        "cells": 73,
+        "position": 0,
+        "first_needed": 0,
+        "batch": 73
+      }
+    ],
+    "effective_F16_environment_verified": true
+  },
+  "request": {
+    "ok": true,
+    "err": null,
+    "stream_complete": true,
+    "ttft_s": 52.158,
+    "total_s": 53.666,
+    "read_tokens": 39266,
+    "reused_tokens": 0,
+    "generated_tokens": 24,
+    "prompt_tps": 756.8,
+    "prompt_ms": 51886.3,
+    "decode_tps": 13.7,
+    "decode_ms": 1755.9,
+    "drafts_offered": 21,
+    "drafts_accepted": 16,
+    "finish_reason": "length",
+    "request_sha256": "e4adfac5e5ffab439a36f5375d10ff881f5d676efcb413a0da38fd15f6502a87",
+    "output_chars": 0,
+    "reasoning_chars": 121,
+    "eligible": true,
+    "eligibility_errors": [],
+    "requested_min_tokens": 32768,
+    "thinking_requested": true,
+    "reasoning_observed": true
+  },
+  "batches": [
+    {
+      "cells": 8192,
+      "position": 0,
+      "first_needed": 6434,
+      "batch": 1758,
+      "batch_elapsed_ms": 17.4
+    },
+    {
+      "cells": 8192,
+      "position": 8192,
+      "first_needed": 8192,
+      "batch": 4672,
+      "batch_elapsed_ms": 76.4
+    },
+    {
+      "cells": 8192,
+      "position": 16384,
+      "first_needed": 16384,
+      "batch": 4672,
+      "batch_elapsed_ms": 76.2
+    },
+    {
+      "cells": 8192,
+      "position": 24576,
+      "first_needed": 24576,
+      "batch": 4672,
+      "batch_elapsed_ms": 76.1
+    },
+    {
+      "cells": 6497,
+      "position": 32768,
+      "first_needed": 32768,
+      "batch": 4672,
+      "batch_elapsed_ms": 61.1
+    }
+  ],
+  "journal": {
+    "valid": true,
+    "complete": true,
+    "complete_prefix_rows": 5,
+    "last_sha256": "2b67529717eb7d90f612757d97f275b8f74c3e8f021ebb936d96a4d86c4461be",
+    "pending": [],
+    "errors": []
+  },
+  "activation": {
+    "pid": 651728,
+    "loader": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_loader.so.0.12.0",
+    "threads_before": 1,
+    "preinit": 37,
+    "config_enabled": true,
+    "first_init": true,
+    "dispatch_result": 46,
+    "output_untouched": true,
+    "retained_reference_until_exit": true,
+    "runtime_teardown_qualified": false
+  },
+  "fault_probe": {
+    "fresh_faults": [],
+    "boot_unchanged": true,
+    "driver_after": {
+      "pci": "/sys/bus/pci/devices/0000:05:00.0",
+      "driver": "xe",
+      "vendor": "0x8086",
+      "device": "0xe20c",
+      "kernel": "7.0.0-38-generic",
+      "devcoredump": false
+    }
+  },
+  "native_exit_code": 0,
+  "batch_timing": {
+    "total_printed_ms": 307.2,
+    "source": "Existing STRATA_DRAFT_TIMING batch wall timers, rounded to0.1ms; diagnostic observer adds an entry stream synchronize. No matched speed claim."
+  },
+  "review_limits": "Small warmup gate checked positive batching but not explicit cell conservation; actual73/73 cells match. Add the check in a new committed plan before another run. Fixed-candidate verifier arithmetic unchanged, but MTP candidates/acceptance/generated text may change.",
+  "next_comparison": "FP16 off/on, identical fresh>=32K inputs, identical diagnostic observers, predeclared independent-process repetitions; sustained thinking+answer generation and MTP acceptance separate from PP. Clean performance, agent/session/RESTORE and physical262144 qualification remain pending."
 }
