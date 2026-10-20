@@ -39,7 +39,7 @@ def digest(path):
 def main():
     profile = sys.argv[1:] == ['--query-profile']
     guards.require(len(sys.argv) == 1 or profile, 'use no options or --query-profile; never retry a closed root')
-    root = B / 'decode-query-profile-component-v5' if profile else ROOT
+    root = B / 'decode-query-profile-component-v6' if profile else ROOT
     result = A / 'decode-query-profile-component-current.json' if profile else RESULT
     with (B / 'owned-v0141-measurement.lock').open('a+') as lock:
         fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
@@ -166,7 +166,7 @@ def main():
                     record['scratch_layout_contract_passed'] = True
                 elif name == 'sycl_prefill_scratch_test':
                     if retirement:
-                        marker = 'prefill_scratch_device retirement=reset queue_domain_changed=1 owners_live=1'
+                        marker = 'prefill_scratch_device retirement=reset queue_domain_changed=1 owners_live=1 old_queue_drained=1 foreign_in_order=1'
                         guards.require(stdout.count(marker)==1 and
                             'prefill reset/destruction completion uncertain; retaining owners until process exit' in stderr and
                             'Strata SYCL engine currently uses runtime device 0 context' in stderr and

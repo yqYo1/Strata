@@ -11,6 +11,7 @@
 #include <iostream>
 #include <stdexcept>
 #include <string>
+#include <utility>
 #include <vector>
 
 namespace {
@@ -114,13 +115,17 @@ void run(const std::string& mode) {
     }
     if (mode == "retirement") {
         Prefill p; need(init(p,session,weights,queue,a.data(),full,error), "retirement fixture init");
+        need(queue.get_context() == runtime->context(), "retirement origin context");
         check(cudaStreamSynchronize(&queue));
         // Controlled host-domain rejection, not a stalled/invalid GPU command.
         // The external queue object stays alive; no work remains on its old
         // value. Replacing it violates Prefill's queue-ownership contract.
         sycl::context other(runtime->device());
-        queue = sycl::queue(other, runtime->device());
-        std::cout << "prefill_scratch_device retirement=reset queue_domain_changed=1 owners_live=1\n" << std::flush;
+        sycl::queue foreign(other, runtime->device(), sycl::property::queue::in_order{});
+        need(foreign.get_context() != runtime->context() &&
+             foreign.has_property<sycl::property::queue::in_order>(), "retirement foreign queue setup");
+        queue = std::move(foreign);
+        std::cout << "prefill_scratch_device retirement=reset queue_domain_changed=1 owners_live=1 old_queue_drained=1 foreign_in_order=1\n" << std::flush;
         p.reset(); // must _Exit before releasing resources after failed sync
         std::cout << "prefill_scratch_device retirement=UNEXPECTED_RETURN\n" << std::flush;
         std::_Exit(99);
@@ -182,9 +187,14 @@ void run(const std::string& mode) {
         need(!init(p,session,weights,queue,host.data(),host.size(),error), "host USM admitted as scratch");
         poisoned(p); passed("host_usm_refusal");
         p.reset();
-        sycl::context other(runtime->device()); sycl::queue foreign(other,runtime->device());
-        need(!init(p,session,weights,foreign,a.data(),full,error) &&
-             error.find("runtime domain") != std::string::npos, "foreign queue admitted");
+        need(queue.get_context() == runtime->context(), "full origin context");
+        check(cudaStreamSynchronize(&queue));
+        sycl::context other(runtime->device());
+        sycl::queue foreign(other,runtime->device(),sycl::property::queue::in_order{});
+        need(foreign.get_context() != runtime->context() &&
+             foreign.has_property<sycl::property::queue::in_order>(), "full foreign queue setup");
+        need(!init(p,session,weights,foreign,a.data(),full,error), "foreign queue admitted");
+        need(error.find("runtime domain") != std::string::npos, "foreign queue refused for wrong reason");
         poisoned(p); passed("foreign_queue_refusal");
     }
     a.unchanged(); b.unchanged(); passed("canary_and_retirement");

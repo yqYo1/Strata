@@ -2177,6 +2177,14 @@ admitted". The gate is failed/incomplete, retirement was not executed and no
 model is admitted. All owners closed, no fresh GPU fault occurred and the11
 offline tests passed. Keep this outcome; correct both foreign queue constructions
 and separate the assertions in a fresh committed plan after source review.
+Native Luna-max review corrected the report's overly broad coverage claim and
+approved the fixture-only correction. The new v6 plan keeps all110 cases,
+order, environments, budgets and stopping rules above. Both foreign queues must
+be explicitly in order and have a different context; verify the original
+same-domain stream completes before substitution. Separate actual init refusal
+from its runtime-domain reason, and require the reset child to print both setup
+checks before the expected context-error exit1. Preserve failed v5 through Git;
+neither this correction nor source review admits parent loans or model work.
 Only a later qualified mechanism permits a
 fresh complete51+6-case plan. Preserve all pending-completion,
 untouched-output, payload/guard and owner-lifetime requirements under that plan.
