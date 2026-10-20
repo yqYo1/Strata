@@ -2140,8 +2140,13 @@ At native source`6a553b54b`, the engine and seven fixtures rebuilt successfully
 All86 prerequisite cases and11 offline tests passed in a fresh v4 root; every
 owner closed, boot remained unchanged and no fresh driver fault occurred.
 The owned-mode math was not changed, and the new engine has not run a model.
-A new Orca Luna review audits the actual implementation and its callers while
-Main keeps those native inputs frozen; checked parent-loan admission is next.
+The completed Orca Luna audit and native Luna-max review retained this owned
+route step. They found no supported-route defect, but malformed QSA metadata
+can overflow earlier sizing expressions; add shared primary/range/geometry
+preflight without rejecting valid split ordinals. Also make reset/destruction
+retirement checked: the existing release ignores stream-sync errors. Next add
+a small actual Prefill init/relayout failure fixture before parent-loan
+admission; helper-state exceptions alone do not exercise those paths.
 CPU-math/RAM/GPU resource attribution remains unknown; physical262144/session/
 RESTORE, model quality and clean speed remain separate gates.
 Only a later qualified mechanism permits a
