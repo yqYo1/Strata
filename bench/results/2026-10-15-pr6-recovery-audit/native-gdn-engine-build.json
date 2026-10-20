@@ -1,5 +1,5 @@
 {
-  "source_commit": "96e6d9e817aa1f8fd9d212befb388a636817f008",
+  "source_commit": "a51989adcd9715f6bdb1165080d0f178c9709140",
   "compiler": {
     "path": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin/clang++",
     "sha256": "1290881b4e12a5e002e5b0de0787f85328ee5fe19f253a54be1cdd97dc2f26eb"
@@ -80,14 +80,14 @@
   "production_selected": false,
   "model_quality_qualified": false,
   "replaces": {
-    "source_commit": "6a553b54b36d11d6af913a79412f64e52daa3d06",
+    "source_commit": "96e6d9e817aa1f8fd9d212befb388a636817f008",
     "binary": {
       "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/strata",
-      "bytes": 22092696,
-      "sha256": "b6e870895ab0e3399626169f7da02e09d011e7c72110406afcc342884e65876e"
+      "bytes": 22097128,
+      "sha256": "968200f3d60abb265279eae8890041b89827b85dfd93017c095c00e91ebad5be"
     },
     "source_build_passed": true,
-    "retained_binary_source_commit": "6a553b54b36d11d6af913a79412f64e52daa3d06",
+    "retained_binary_source_commit": "96e6d9e817aa1f8fd9d212befb388a636817f008",
     "reason": "Closed unused comparison engine; original source/recipe recovered from Git. Reuse its cache for the immediate corrected build, not a retained old generation."
   },
   "targets": [
@@ -345,22 +345,17 @@
     },
     "sycl_prefill_scratch_test": {
       "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/sycl_prefill_scratch_test",
-      "sha256": "4e0b77b3d7f4aab36bfe21fb1fe226e353619f924cfb67f7dc33b094ab578849"
+      "sha256": "721de16c117cb1d561206edd4275c6a2925b8e80b274b92021db734041b9a2a2"
     }
   },
   "binary_origin_source_commit": "96e6d9e817aa1f8fd9d212befb388a636817f008",
   "previous_output_comparison": {
     "changed_project_inputs": [
-      "cmake/sycl_backend.cmake",
-      "include/strata/prefill/scratch_allocation.hpp",
-      "src/prefill/prefill.cpp",
-      "tests/core/prefill_scratch_test.cpp",
       "tests/sycl/prefill_scratch.cpp",
-      "tools/sycl/build_engine.py",
       "tools/sycl/check_verifier_retirement.py"
     ],
     "native_and_recipe_inputs_match": false,
-    "engine_bytes_match": false,
+    "engine_bytes_match": true,
     "fixture_bytes_match": {
       "sycl_verifier_retirement_test": true,
       "sycl_submission_test": true,
@@ -368,7 +363,7 @@
       "sycl_mmvq_test": true,
       "residency_publication_host_test": true,
       "cache_tail_host_test": true,
-      "prefill_scratch_host_test": false,
+      "prefill_scratch_host_test": true,
       "sycl_prefill_scratch_test": false
     },
     "controller_only_admission": false,
@@ -378,9 +373,9 @@
   "inputs": [
     {
       "root": "/home/yayoi/orca/workspaces/Strata/sycl",
-      "revision": "96e6d9e817aa1f8fd9d212befb388a636817f008",
+      "revision": "a51989adcd9715f6bdb1165080d0f178c9709140",
       "count": 519,
-      "aggregate_sha256": "651b1cdb775bcbd46a97db336be5185abeacc0f30cdcc602448b1cfc04c4e87e"
+      "aggregate_sha256": "9c5888fa0c2ab46ef18a81a6f698d3b16d49ef950e2c335341a0beab9ec7d9fe"
     },
     {
       "root": "/home/yayoi/ghq/github.com/ggml-org/llama.cpp/.worktree/dep-ggml-3cf-xe-e32-20261011",
