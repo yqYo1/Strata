@@ -17,7 +17,7 @@ import unitrace_probe as probe
 
 tool = probe.tool
 P, B, RESULT = tool.P, tool.B, tool.RESULT
-ROOT = B/'unitrace-known-work-v1'
+ROOT = B/'unitrace-known-work-v2'
 
 
 def inputs(revision):
@@ -94,15 +94,19 @@ def coverage(cell,wall_begin,wall_end,native_pid):
     kernel_timing=all(e['dur']>0 for e in kernels)
     clock_bounds=all(wall_begin/1000-1000<=e['ts']<=e['ts']+e['dur']<=wall_end/1000+1000 for e in gpu)
     unique=all(identifiers) and len(set(identifiers))==len(identifiers)
-    correlated=all(sources[i]==sinks[i]==1 for i in identifiers)
+    source_complete=all(sources[i]==1 for i in identifiers)
+    required_sinks=[str(e['args']['id']) for e in gpu if e.get('name')!='zeCommandListAppendBarrier']
+    correlated=source_complete and all(sinks[i]==1 for i in required_sinks)
     return dict(timeline_sha256=tool.sha(raw),timeline_bytes=len(raw),gpu_events=len(gpu),host_events=len(host),
         program_kernels=len(kernels),expected_program_kernels=cell['expected_kernels'],gpu_names=dict(counts),
         program_kernel_service_positive=kernel_timing,zero_gpu_durations=sum(e['dur']==0 for e in gpu),
-        gpu_wall_clock_bounds=clock_bounds,gpu_identifiers_unique=unique,all_gpu_flow_pairs=correlated,
+        gpu_raw_clock_bounds=clock_bounds,gpu_identifiers_unique=unique,required_gpu_flow_pairs=correlated,
+        all_gpu_host_sources=source_complete,unsunk_barrier_ids=[str(e['args']['id']) for e in gpu
+            if e.get('name')=='zeCommandListAppendBarrier' and sinks[str(e['args']['id'])]!=1],
         gpu_union_us=union_us(gpu),program_kernel_union_us=union_us(kernels),
         known_work_coverage_passed=len(kernels)==cell['expected_kernels'],
         timing_qualified=kernel_timing and clock_bounds,correlation_qualified=unique and correlated,
-        limits='Whole bounded fixture; all-device union is not physical saturation or a production critical path. Host/GPU clock containment alone does not qualify sub-millisecond queue-delay attribution. Copy/fill inventory and graph replay require the independent UR/native record reconciliation before production.')
+        limits='Whole bounded fixture in source-supported SystemTime1/CLOCK_MONOTONIC_RAW domain; all-device union is not physical saturation or a production critical path. Containment alone does not qualify sub-millisecond queue-delay attribution. Every GPU event needs its actual host source; non-barrier work also needs its host sink. Unsunk barriers are retained explicitly, not called lost commands. Independent raw-clock and UR/native reconciliation precede production.')
 
 
 def main(action):
@@ -112,21 +116,28 @@ def main(action):
         container=json.loads(RESULT.read_text());record=container.get('unitrace_gpu_coverage')
         pinned=assets(container)
         if action=='prepare':
-            tool.guards.require(record is None and not ROOT.exists(),'inspect existing coverage job; no retry')
+            tool.guards.require(record and record['stage']=='failed' and record['ownership_closed'] and not record['active']
+                and record['source_commit'].startswith('eb9aa2547') and record['error']=="RuntimeError('known-work timing/count/correlation gate failed')"
+                and not ROOT.exists(),'only the diagnosed closed v1 clock/flow failure permits this new v2 plan')
             revision=tool.git(P,'rev-parse','HEAD').decode().strip();pins=inputs(revision)
+            previous=RESULT.read_bytes()
+            tool.guards.require(previous==tool.git(P,'show',revision+':'+str(RESULT.relative_to(P))),'commit original failed coverage first')
             ROOT.mkdir(mode=0o700);cells=[]
             for name,mode,count in (('submission','--submission',606),('native-graphs','--native',62)):
                 root=ROOT/name;root.mkdir()
                 for folder in ('tmp','cache','trace'):(root/folder).mkdir()
                 session='StrataKnown'+secrets.token_hex(12)
-                env=dict(container['unitrace_loader_probe']['environment'],TMPDIR=str(root/'tmp'),XDG_CACHE_HOME=str(root/'cache'),
+                env=dict(container['unitrace_loader_probe']['environment'],TMPDIR=str(root/'tmp'),XDG_CACHE_HOME=str(root/'cache'),UNITRACE_SystemTime='1',
                     UNITRACE_TraceOutputDir=str(root/'trace'),UR_LOG_TRACING='level:info;flush:info;output:file,'+str(root/'ur.log'))
                 command=[pinned['launcher']['path'],'--session',session,'--host-timing','--device-timing',
                     '--chrome-kernel-logging','--chrome-call-logging','--chrome-event-buffer-size','128',pinned['fixture']['path'],mode]
                 cells.append(dict(name=name,mode=mode,expected_kernels=count,session=session,environment=env,command=command,
                                   stop_command=[pinned['launcher']['path'],'--stop',session]))
             record=dict(schema='strata-unitrace-known-work-v1',stage='prepared',source_commit=revision,input_sha256=pins,assets=pinned,cells=cells,
-                gates='Two fixed processes, submission then native graphs; stop on any source/owner/fault/fixture/count/timing/correlation failure. Use unchanged same-build3b fixture and9836 recovered inputs. Exact main-kernel counts606/62; numerical/guard/footer checks plus positive finite kernel service, GPU records inside native Unix-wall interval+/-1ms, unique device IDs and source/sink flow pair for each GPU event. Collect UR trace independently for later copy/fill/graph reconciliation. Single-thread first-UR-init, loader order and retention must still pass. Named sessions start resumed for whole-fixture coverage and are removed only after proven closure, including failures. No warm request-window, production observer or performance qualification follows from these checks.',
+                previous_failed_plan=dict(commit=revision,path=str(RESULT.relative_to(P)),sha256=tool.sha(previous),
+                    outcome='V1 failed UTC containment/all-barrier-host-sink gates despite normal606-kernel execution, complete host sources and no fresh fault. New source-supported raw-clock domain and non-barrier sink criteria are prospective; old failure unchanged and graph still unrun.'),
+                clock_domain='UNITRACE_SystemTime=1 before target exec skips epoch conversion; compare against paired caller CLOCK_MONOTONIC_RAW nanoseconds. No epoch-offset correction, new collector/model binary or mutable environment.',
+                gates='Two fixed processes, submission then native graphs; stop on source/owner/fault/fixture/count/timing/correlation failure. Unchanged same-build3b fixture and9836 recovered inputs. Exact main-kernel counts606/62; numerical/guard/footer checks, positive finite kernel service and all GPU records within native caller CLOCK_MONOTONIC_RAW interval+/-1ms. Unique GPU IDs and exactly one host H2D source for every device record; one D2H host sink for each non-barrier record. Retain unsunk barriers explicitly, not as missing device work. Independently reconcile copy/fill/graph inventories and raw/device clock conversion before32K+ production. First-UR-init, loader order and retention still required. Named sessions start resumed and are removed only after proven closure, including failures. No warmed request-window, production observer or speed qualification follows.',
                 expected_source_work=dict(submission='1 initial + (1+119+120+121+241) queued +3 ordinary-host kernels =606.',
                     native_graphs='1 initial +12 graph +24 segment +24 cross-queue +1 post-event-destroy replay =62; graph upload finalizes only.'),
                 budgets=dict(wall_s_per_target=90,cpu_s=90,rss_bytes=4<<30,text_bytes_per_command=8<<20,file_bytes=32<<20,total_bytes=64<<20),
@@ -153,15 +164,16 @@ def main(action):
                 observation=dict(name=cell['name'],execution_passed=False,coverage_passed=False,session_removed=False)
                 record['observations'].append(observation)
                 try:
-                    begin=time.time_ns()
+                    begin=time.clock_gettime_ns(time.CLOCK_MONOTONIC_RAW)
                     entry,out,err=owner.run(cell['name'],cell['command'],cell['environment'],ROOT/cell['name'],wall=90,cpu=90,
                         rss_cap=4<<30,text_cap=8<<20,file_cap=32<<20,total_cap=64<<20)
-                    end=time.time_ns()
+                    end=time.clock_gettime_ns(time.CLOCK_MONOTONIC_RAW)
                     tool.guards.require(tool.supervision.closed(entry) and entry.get('exit_code')==0,'fixture exit/ownership failed')
                     proof=loader_order(err.read_text(),entry['pid'],pinned)
                     stdout=out.read_text();footer='fixture_status=PASS mode=submission' if cell['mode']=='--submission' else 'SYCL host adapter: events, profiling, graph replay, copies and lifecycle passed'
                     tool.guards.require(footer in stdout,'fixture correctness footer missing')
-                    observation.update(execution_passed=True,pid=entry['pid'],preload_evidence=proof,native_unix_wall_ns=end-begin,
+                    observation.update(execution_passed=True,pid=entry['pid'],preload_evidence=proof,native_raw_begin_ns=begin,
+                        native_raw_end_ns=end,native_raw_wall_ns=end-begin,
                         fixture_footer=footer,coverage=coverage(cell,begin,end,entry['pid']))
                     checks=observation['coverage'];observation['coverage_passed']=all(checks[k] for k in ('known_work_coverage_passed','timing_qualified','correlation_qualified'))
                     tool.guards.require(observation['coverage_passed'],'known-work timing/count/correlation gate failed')
