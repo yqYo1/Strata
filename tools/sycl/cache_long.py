@@ -25,7 +25,10 @@ RESULT = A / 'cache-long-current.json'
 SCOPE = 'cache_1256_long_mixed_admission_scope'
 ROWS, SLOTS, CACHE_BYTES = 117488, 1256, 2575206400
 WINDOWS = ((0, 81920), (81920, 35568))
-REGION, PRIMARY, TAIL = 1180698624, 335544320, 83886080
+TAIL_OFFSET, PRIMARY, TAIL = 1059131904, 335544320, 83886080
+LONG_PREFIXES = ('strata prefill: layer-major candidate,', 'strata MoE mixed banks:',
+    'strata MoE window configuration:', 'strata MoE accumulator admission:',
+    'strata MoE mixed owners:', 'strata MoE cache loan:', 'strata prefill cache binding:')
 
 
 def records(text, prefix, count):
@@ -92,11 +95,10 @@ def mixed_evidence(log, sample):
         'measured request/native header identity differs')
     segments = [log[:headers[0].start()], log[headers[0].end():headers[1].start()]]
     guards.require(not any(prefix in log[headers[-1].end():] for prefix in
-        ('strata loan audit:', 'strata cache loan:', 'strata MoE mixed owners:',
-         'strata MoE cache loan:', 'strata prefill cache binding:', 'strata prefill dense:')),
+        (*LONG_PREFIXES, 'strata loan audit:', 'strata cache loan:', 'strata prefill dense:')),
         'proof records outside completed requests')
-    guards.require('strata MoE mixed owners:' not in segments[0] and
-        'strata MoE cache loan:' not in segments[0], 'long-window proof leaked into short warmup')
+    guards.require(not any(prefix in segments[0] for prefix in LONG_PREFIXES),
+        'long-window proof leaked into short warmup/preamble')
     cycles, publications = [], []
     for text in segments:
         cycle, pub = loan_cycle(text)
@@ -104,15 +106,24 @@ def mixed_evidence(log, sample):
     guards.require(0 < cycles[0]['generation'] < cycles[1]['generation'] and
         cycles[1]['chunk'] == 8192, 'request generations/chunk differ')
     text, cycle, pub = segments[-1], cycles[-1], publications[-1]
+    for prefix in LONG_PREFIXES:
+        count=192 if prefix == 'strata MoE mixed owners:' else 96 if prefix == 'strata MoE cache loan:' else 1
+        guards.require(text.count(prefix) == count, 'extra/malformed long-request proof: '+prefix)
     placement, = cap.matches(r'strata prefill: layer-major candidate, tokens=(\d+) chunk=8192 residual_dtype=bf16 residual_element_bytes=2 residual_total=(\d+) residual_gpu_rows=(\d+) residual_gpu=(\d+) residual_host=0 residual_staging=0 layer_cache=1022361600; extra allocations, GPU headroom=536870912, RAM headroom=8589934592', text, 1)
     guards.require(tuple(map(int, placement.groups())) == (ROWS, ROWS*20480, ROWS, ROWS*20480),
         '117K all-GPU BF16 residual admission differs')
-    cap.matches(r'strata MoE window configuration: requested_mode=10 effective_mode=10 maximum_rows=81920 mixed_fp16_bytes=0', text, 1)
+    configuration, = cap.matches(r'strata MoE window configuration: requested_mode=10 effective_mode=10 maximum_rows=81920 mixed_fp16_bytes=0', text, 1)
     guards.require('effective_mode=2' not in text, 'fallback route is not admitted')
     banks, = records(text, 'strata MoE mixed banks', 1)
     guards.require(banks[1] == dict(storage='scratch', primary_bytes=str(PRIMARY), tail_bytes=str(TAIL),
-        tail_offset=str(REGION), extra_allocation_bytes='0', phase='FFN_only_after_attention_drain'),
+        tail_offset=str(TAIL_OFFSET), extra_allocation_bytes='0', phase='FFN_only_after_attention_drain'),
         'mixed tail backing differs')
+    admission, = records(text, 'strata MoE accumulator admission', 1)
+    admitted=admission[1]
+    guards.require(tuple(integer(admitted,k) for k in ('requested_mode','rows','gpu_prefix_rows','mixed_fp16_bytes')) ==
+        (10,81920,ROWS,PRIMARY+TAIL) and integer(admitted,'shared_arena_bytes') >= TAIL_OFFSET+TAIL and
+        integer(admitted,'free_gpu_bytes') >= integer(admitted,'fixed_including_headroom_bytes') >=
+        ROWS*20480+1022361600+536870912, 'actual accumulator allocation budget differs')
     dense = records(text, 'strata prefill dense', 3)
     guards.require([(r['phase'], r['residency'], integer(r, 'activations')) for _, r in dense] ==
         [('retired', 'Full', 0), ('bank', 'Bank', 0), ('restored', 'Full', 48)], 'dense restoration differs')
@@ -123,11 +134,12 @@ def mixed_evidence(log, sample):
         0 <= integer(r, 'free_bytes') <= integer(r, 'total_bytes') for _, r in dense), 'dense sizes/owners differ')
     binding, = records(text, 'strata prefill cache binding', 1)
     guards.require(binding[1] == dict(generation=str(cycle['generation']), parent_match='1', execution_distinct='1') and
-        pub[0][0] < dense[0][0] < dense[1][0] < binding[0] < dense[2][0] < pub[1][0],
+        pub[0][0] < dense[0][0] < dense[1][0] < admission[0] < banks[0] < configuration.start() <
+        binding[0] < placement.start() < dense[2][0] < pub[1][0],
         'dense/cache binding escaped loan')
     owners = records(text, 'strata MoE mixed owners', 192)
     loans = records(text, 'strata MoE cache loan', 96)
-    previous, epoch, used, pointers = binding[0], None, None, None
+    previous, epoch, used, pointers = placement.end(), None, None, None
     for i, (layer, first, rows) in enumerate((l, f, n) for l in range(48) for f, n in WINDOWS):
         (ep, entry), (dp, done), (lp, loan) = owners[2*i], owners[2*i+1], loans[i]
         identity = (layer, first, rows)
@@ -138,16 +150,20 @@ def mixed_evidence(log, sample):
             done['route_status'] == '0' and done['shared_HC'] == 'checked_drain' and done['callbacks'] == 'after_return',
             'missing, reordered or incorrectly retired FFN window')
         primary, tail = min(rows, 65536)*5120, max(0, rows-65536)*5120
-        guards.require(tuple(integer(entry, k) for k in ('primary_bytes', 'region_bytes', 'tail_offset', 'tail_bytes', 'residual_bytes')) ==
-            (primary, REGION, REGION, tail, rows*20480), 'mixed window byte extent differs')
+        guards.require(tuple(integer(entry, k) for k in ('primary_bytes', 'tail_offset', 'tail_bytes', 'residual_bytes')) ==
+            (primary, TAIL_OFFSET, tail, rows*20480) and
+            integer(entry,'region_bytes') == integer(admitted,'shared_arena_bytes') >= TAIL_OFFSET+TAIL,
+            'mixed window byte extent differs')
         addresses = tuple(address(entry, k) for k in ('primary', 'region', 'residual', 'bo', 'queue'))
         stable = (addresses[0], addresses[1], addresses[2]-first*20480, addresses[3], addresses[4])
         if pointers is None: pointers = stable
         guards.require(stable == pointers and all(x % 256 == 0 for x in addresses[:4]), 'mixed owners moved or are misaligned')
-        spans = [(addresses[0], primary), (addresses[1], REGION),
+        # The tail is inside the allocated region, after the live plan prefix.
+        # Comparing it against the full allocation would reject intentional aliasing.
+        spans = [(addresses[0], primary), (addresses[1], TAIL_OFFSET),
                  (addresses[2], rows*20480), (addresses[3], 8192*5120)]
         if tail:
-            guards.require(address(entry, 'tail') == addresses[1]+REGION, 'tail does not follow live arena planes')
+            guards.require(address(entry, 'tail') == addresses[1]+TAIL_OFFSET, 'tail does not follow live arena planes')
             spans.append((address(entry, 'tail'), tail))
         else:
             guards.require(entry['tail'] == '(nil)', 'unexpected second-window tail')
@@ -162,6 +178,8 @@ def mixed_evidence(log, sample):
     return dict(completed_requests=2, exact_payload_and_map_cycles=2,
         loan_generations=[r['generation'] for r in cycles], slots=SLOTS,
         long_loan={k:v for k,v in cycle.items() if k != 'generation'},
+        actual_allocation_budget={k:integer(admitted,k) for k in
+            ('free_gpu_bytes','fixed_including_headroom_bytes','shared_arena_bytes')},
         min_observed_free_bytes=min(r['min_observed_free_bytes'] for r in cycles),
         prefill_rows=ROWS, residual_gpu_bytes=ROWS*20480, windows_per_layer=[list(w) for w in WINDOWS],
         borrowed_ffn_entries=96, checked_retirements=96, dense_layers=48,
@@ -184,8 +202,22 @@ def official_evidence(root, result):
     journal, _ = gen.journal_evidence(root)
     path, = (root/'bench').glob('*/requests.jsonl')
     entries = [json.loads(line) for line in path.read_text().splitlines()]
-    events = [r for r in entries if r['kind'] != 'identity']
-    guards.require(journal['valid'] and journal['complete'] and len(events) == 4, 'incomplete request journal')
+    guards.require(journal['valid'] and journal['complete'] and len(entries) == 5 and
+        entries[0]['kind'] == 'identity' and entries[0]['phase'] == 'suite' and
+        all(r['kind'] != 'identity' for r in entries[1:]), 'incomplete/extra/misplaced journal identity')
+    identity, comparison = entries[0], result['comparison_identity']
+    from strata_bench import client_fingerprint
+    workload=dict(workload_id='native_gdn_20261018',nonce='native_gdn_20261018',nonce_policy='fixed-id')
+    guards.require(identity['mode'] == comparison['mode'] == 'prefill-only' and
+        identity['requested_runs'] == 1 and identity['thinking'] is comparison['thinking'] is True and
+        identity['context'] == comparison['context'] == result['machine']['context'] == 131072 and
+        identity['source'] == comparison['client'] == client_fingerprint() and
+        identity['workload'] == comparison['workload'] == result['params']['workload'] == workload and
+        identity['prefill_plan'] == comparison['prefill_plan'] and
+        all(cohort[k] == value for k,value in identity['prefill_plan'].items()) and
+        all(identity[k] == comparison[k] == result['machine'][k] for k in ('model','quant')),
+        'journal model/client/workload identity differs')
+    events=entries[1:]
     hashes = []
     for i, (phase, run) in enumerate((('warm-up/chat', None), ('prefill-only', 0))):
         start, end = events[2*i:2*i+2]

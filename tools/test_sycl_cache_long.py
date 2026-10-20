@@ -11,7 +11,7 @@ sys.dont_write_bytecode = True
 sys.path.insert(0,str(Path(__file__).resolve().parent))
 sys.path.insert(0,str(Path(__file__).resolve().parent/'sycl'))
 import cache_long as c
-from strata_bench import RequestJournal
+from strata_bench import RequestJournal, Suite, client_fingerprint
 
 SAMPLE = dict(run=0,actual_prompt_tokens=117489,actual_read_tokens=117489,actual_reused_tokens=0,
     generated_tokens=24,ok=True,eligible=True,stream_complete=True,thinking_requested=True,
@@ -32,15 +32,16 @@ def fixture():
             def dense(phase,residency,activations):
                 return f'strata prefill dense: phase={phase} residency={residency} activations={activations} full_bytes=2116951040 bank_bytes=50918400 snapshot_bytes=2116951040 overlay_rows=0 session_recapture=0 verifier=1 free_bytes=400000000 total_bytes=10666115072'
             lines.extend([dense('retired','Full',0),dense('bank','Bank',0),
-                'strata prefill: layer-major candidate, tokens=117488 chunk=8192 residual_dtype=bf16 residual_element_bytes=2 residual_total=2406154240 residual_gpu_rows=117488 residual_gpu=2406154240 residual_host=0 residual_staging=0 layer_cache=1022361600; extra allocations, GPU headroom=536870912, RAM headroom=8589934592',
+                'strata MoE accumulator admission: requested_mode=10 rows=81920 gpu_prefix_rows=117488 shared_arena_bytes=1180698624 free_gpu_bytes=4250000000 fixed_including_headroom_bytes=4206942336 mixed_fp16_bytes=419430400',
+                'strata MoE mixed banks: storage=scratch primary_bytes=335544320 tail_bytes=83886080 tail_offset=1059131904 extra_allocation_bytes=0 phase=FFN_only_after_attention_drain',
                 'strata MoE window configuration: requested_mode=10 effective_mode=10 maximum_rows=81920 mixed_fp16_bytes=0',
-                'strata MoE mixed banks: storage=scratch primary_bytes=335544320 tail_bytes=83886080 tail_offset=1180698624 extra_allocation_bytes=0 phase=FFN_only_after_attention_drain',
-                'strata prefill cache binding: generation=2 parent_match=1 execution_distinct=1'])
+                'strata prefill cache binding: generation=2 parent_match=1 execution_distinct=1',
+                'strata prefill: layer-major candidate, tokens=117488 chunk=8192 residual_dtype=bf16 residual_element_bytes=2 residual_total=2406154240 residual_gpu_rows=117488 residual_gpu=2406154240 residual_host=0 residual_staging=0 layer_cache=1022361600; extra allocations, GPU headroom=536870912, RAM headroom=8589934592'])
             for layer in range(48):
                 for firstrow,rows in c.WINDOWS:
                     tail=max(rows-65536,0)*5120
-                    pointer=hex(0x2000000000+c.REGION) if tail else '(nil)'
-                    lines.extend([f'strata MoE mixed owners: phase=entry layer={layer} first={firstrow} rows={rows} primary=0x1000000000 primary_bytes={min(rows,65536)*5120} region=0x2000000000 region_bytes=1180698624 tail={pointer} tail_offset=1180698624 tail_bytes={tail} residual={hex(0x3000000000+firstrow*20480)} residual_bytes={rows*20480} bo=0x4000000000 queue=0x5000000000 direct_owners=0 previous_attention=checked_drain',
+                    pointer=hex(0x2000000000+1059131904) if tail else '(nil)'
+                    lines.extend([f'strata MoE mixed owners: phase=entry layer={layer} first={firstrow} rows={rows} primary=0x1000000000 primary_bytes={min(rows,65536)*5120} region=0x2000000000 region_bytes=1180698624 tail={pointer} tail_offset=1059131904 tail_bytes={tail} residual={hex(0x3000000000+firstrow*20480)} residual_bytes={rows*20480} bo=0x4000000000 queue=0x5000000000 direct_owners=0 previous_attention=checked_drain',
                         f'strata MoE cache loan: generation=2 layout_generation=4 layer={layer} first={firstrow} rows={rows} used=2311569920 capacity=2329548800',
                         f'strata MoE mixed owners: phase=retired layer={layer} first={firstrow} rows={rows} route_status=0 shared_HC=checked_drain callbacks=after_return'])
             lines.append(dense('restored','Full',48))
@@ -69,6 +70,9 @@ class MixedEvidence(unittest.TestCase):
             ('parent_match=1','parent_match=0'),('direct_owners=0','direct_owners=1'),
             ('callbacks=after_return','callbacks=before_return'),('route_status=0','route_status=1'),
             ('residency=Full activations=48','residency=Full activations=47'),
+            ('tail_offset=1059131904','tail_offset=1180698624'),
+            ('region_bytes=1180698624','region_bytes=1059131904'),
+            ('free_gpu_bytes=4250000000','free_gpu_bytes=4206942335'),
             ('used=2311569920','used=18446744073709551616')]
         for before,after in edits:
             with self.subTest(before=before),self.assertRaises(RuntimeError):
@@ -92,6 +96,13 @@ class MixedEvidence(unittest.TestCase):
         text=text.replace(ready+'\n','').replace('strata prefill cache binding:',ready+'\nstrata prefill cache binding:')
         with self.assertRaises(RuntimeError): c.mixed_evidence(text,SAMPLE)
 
+    def test_reject_all_long_admission_markers_outside_long_request(self):
+        text=fixture()
+        for prefix in c.LONG_PREFIXES:
+            line=next(v for v in text.splitlines() if v.startswith(prefix))
+            for changed in (line+'\n'+text,text+line+'\n'):
+                with self.subTest(prefix=prefix),self.assertRaises(RuntimeError): c.mixed_evidence(changed,SAMPLE)
+
 
 class OfficialJournal(unittest.TestCase):
     def evidence(self, root, change=None):
@@ -99,8 +110,17 @@ class OfficialJournal(unittest.TestCase):
         sample=copy.deepcopy(SAMPLE)
         result=dict(params=dict(mode='prefill-only',runs=1,think=True,prefill_tokens=98304),complete=True,
             results=dict(failures=[],prefill_only=dict(complete=True,eligible_runs=1,requests=[sample],max_tokens=24,thinking_requested=True)))
+        suite=Suite('http://127.0.0.1:1',None,131072,1,True,prefill_only=True,prefill_tokens=98304,
+            workload_id='native_gdn_20261018')
+        plan=suite.prefill_plan(); model=dict(model='fixture-model',quant='IQ3_S',context=131072)
+        result['machine']=model
+        result['params']['workload']=suite.workload_identity()
+        result['comparison_identity']=dict(**model,mode='prefill-only',thinking=True,
+            workload=suite.workload_identity(),client=client_fingerprint(),prefill_plan=plan)
+        result['results']['prefill_only'].update(plan)
         journal=RequestJournal(directory,lambda value:value)
-        journal.append('identity','suite',mode='prefill-only')
+        journal.append('identity','suite',**model,mode='prefill-only',thinking=True,requested_runs=1,
+            workload=suite.workload_identity(),source=client_fingerprint(),prefill_plan=plan)
         for phase,run in (('warm-up/chat',None),('prefill-only',0)):
             start=journal.append('start',phase,run,request_sha256='a'*64,max_tokens=24,thinking=True)
             end={k:v for k,v in sample.items() if k != 'run'}
@@ -108,6 +128,22 @@ class OfficialJournal(unittest.TestCase):
             journal.append('result',phase,run,request_index=start,sample=end)
         journal.state(complete=True,terminal='complete')
         return result
+
+    def test_reject_extra_misplaced_or_changed_identity(self):
+        for mutation in ('extra','source','model','workload'):
+            with self.subTest(mutation=mutation),tempfile.TemporaryDirectory() as directory:
+                root=Path(directory); result=self.evidence(root)
+                if mutation == 'extra':
+                    # Rebuild with the real writer so the extra row's chain/state stay valid.
+                    path=root/'bench'/'one'
+                    writer=RequestJournal(path,lambda value:value)
+                    entries=[json.loads(v) for v in (path/'requests.jsonl').read_text().splitlines()]
+                    writer.index=len(entries);writer.previous=entries[-1]['sha256']
+                    writer.append('identity','suite');writer.state(complete=True,terminal='complete')
+                elif mutation == 'source': result['comparison_identity']['client']={}
+                elif mutation == 'model': result['machine']['model']='different'
+                else: result['params']['workload']={}
+                with self.assertRaises(RuntimeError): c.official_evidence(root,result)
 
     def test_actual_hash_chained_journal(self):
         with tempfile.TemporaryDirectory() as directory:
