@@ -14,7 +14,7 @@ import measurement_owner as supervision
 
 P = Path(__file__).resolve().parents[2]
 B = Path('/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007')
-ROOT = B / 'unitrace-l0-4b6d742-v1'
+ROOT = B / 'unitrace-l0-4b6d742-v2'
 PTI = Path('/home/yayoi/ghq/github.com/intel/pti-gpu')
 REV = '4b6d74294cdc72766c00a9211fe2e4261ee94244'
 L0 = Path('/home/yayoi/ghq/github.com/oneapi-src/level-zero')
@@ -127,7 +127,9 @@ def dependency_files(build, run):
             guards.require('\\' not in body, 'unexpected escaped dependency path')
             paths.update(Path(name).resolve() for name in body.split())
     tool_names = ['/usr/bin/g++', '/usr/bin/as', '/usr/bin/ld', '/usr/bin/python3', '/usr/lib/x86_64-linux-gnu/libc.so.6']
-    for name in ('cc1plus', 'collect2', 'crtbeginS.o', 'crtendS.o', 'libstdc++.so', 'libgcc_s.so'):
+    for name in ('cc1plus', 'collect2'):
+        tool_names.append(subprocess.check_output(['/usr/bin/g++', '-print-prog-name='+name], text=True).strip())
+    for name in ('crtbeginS.o', 'crtendS.o', 'libstdc++.so', 'libgcc_s.so'):
         tool_names.append(subprocess.check_output(['/usr/bin/g++', '-print-file-name='+name], text=True).strip())
     paths.update(Path(name).resolve() for name in tool_names)
     guards.require(all(path.is_file() for path in paths), 'missing compile dependency')
@@ -156,13 +158,20 @@ def main(action):
         guards.require(container['complete'] and container['ownership_closed'] and not container['active'], 'capability probe not closed')
         record = container.get('unitrace_build')
         if action == 'prepare':
-            guards.require(record is None and not ROOT.exists(), 'inspect existing collector root/plan, never retry blindly')
+            guards.require(record and record['stage']=='failed' and record['ownership_closed'] and not record['active']
+                and record['source_commit'].startswith('31e142594')
+                and record['error']=="RuntimeError('missing compile dependency')" and not ROOT.exists(),
+                'only the closed, diagnosed v1 compiler program-name failure permits this new v2 plan')
             revision = git(P, 'rev-parse', 'HEAD').decode().strip()
+            previous = RESULT.read_bytes()
+            guards.require(previous==git(P,'show',revision+':'+str(RESULT.relative_to(P))), 'commit original failed attempt first')
             inputs = source_inputs(revision)
             official = official_source()
             ROOT.mkdir(mode=0o700);(ROOT/'generated').mkdir();(ROOT/'tmp').mkdir()
             record = dict(schema='strata-unitrace-host-build-v1', stage='preparing', source_commit=revision,
                 input_sha256=inputs, official_source=official, official_revision=REV, active=False,
+                previous_attempt=dict(commit=revision, path=str(RESULT.relative_to(P)), sha256=sha(previous),
+                    outcome='Closed v1 preprocessing passed; program lookup incorrectly used -print-file-name for cc1plus/collect2. No native target compilation or GPU execution. New v2 uses -print-prog-name; original failure unchanged.'),
                 consumer='Bounded L0 collector/UR-validation coexistence and graph/copy/fill qualification, then32K+ production service/submission trace.',
                 retention='One current profiler tool build, separate from model engines. Retire build logs and consumed generated inputs after qualification; keep source/recipe/hashes. No new model generation.',
                 safety='HOST BUILD ONLY. No unitrace/collector execution, GPU target, privileges, sysctl, driver reset or service change.',
