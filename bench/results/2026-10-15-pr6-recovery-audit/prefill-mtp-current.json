@@ -380,5 +380,27 @@
     "group": "mtp-f16-prefill-v1",
     "files": 68,
     "bytes": 12674970
+  },
+  "comparison_host_checks": {
+    "source_commit": "becc20982",
+    "native_execution": false,
+    "tests": [
+      {
+        "command": "python3 -B tools/test_strata_bench.py",
+        "cases": 10,
+        "exit_code": 0
+      },
+      {
+        "command": "python3 -B tools/test_sycl_mtp_prefill.py",
+        "cases": 4,
+        "exit_code": 0
+      },
+      {
+        "command": "python3 -B tools/test_strata_bench_failfast.py",
+        "cases": 7,
+        "exit_code": 0
+      }
+    ],
+    "limits": "Host gates, journal/error-path and comparison analysis only; native review/model comparison pending. No new numerical or speed qualification."
   }
 }
