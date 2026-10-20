@@ -904,7 +904,14 @@
       "urEventRelease"
     ],
     "observed_status": "All24 pre-copy pending queries across both pending cells returned complete.",
-    "limits": "Per-command UR global timestamps and event releases appear between fills. This is call order, not call timing or proof of synchronization. Retaining all8 fill events and timing producer/query separately is a prospective falsifier; neither cause nor real bandwidth is established."
+    "limits": "Per-command UR global timestamps and event releases appear between fills. This is call order, not call timing or proof of synchronization. Retaining all8 fill events and timing producer/query separately is a prospective falsifier; neither cause nor real bandwidth is established.",
+    "usm_pending_api_counts": {
+      "urEnqueueUSMFill": 97,
+      "urEnqueueUSMMemcpy": 86,
+      "urDeviceGetGlobalTimestamps": 183,
+      "urEventRelease": 183,
+      "urEventGetInfo": 24
+    }
   },
   "decision": "Native execution/guards/ownership/runtime/source/fault gates pass. The pending comparison fails eligibility:0/12 pending observations in each pending cell. No backlogged-queue or host-USM optimization claim. Idle enqueue medians99.56us ordinary/54.27us USM include full tracing and profiling overhead; do not treat their difference as clean speed.",
   "next_action": "Freeze a new separately sourced component keeping all8 fill events alive through drain and measuring fill submission plus pending-query CPU/wall. Keep the same finite8x128MiB work,12samples and qualified queue/env; no enlargement/retry of this closed plan. If it still misses pending, preserve that result and resolve the producer/query behavior before another workload.",

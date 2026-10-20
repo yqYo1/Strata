@@ -93,8 +93,9 @@ int main(int argc, char** argv) {
         ck(cudaMemcpyAsync(host, device, sizeof warm, cudaMemcpyDeviceToHost, stream));
         ck(cudaStreamSynchronize(stream));
         need(host->before == left && host->value == warm.value && host->after == right, "warmup payload/guards");
-        std::printf("{\"type\":\"begin\",\"schema\":1,\"host\":\"%s\",\"queue\":\"%s\","
-            "\"samples\":%d,\"copy_bytes\":4,\"backlog_fills\":%d,\"fill_bytes\":%zu} \n",
+        std::printf("{\"type\":\"begin\",\"schema\":2,\"host\":\"%s\",\"queue\":\"%s\","
+            "\"samples\":%d,\"copy_bytes\":4,\"backlog_fills\":%d,\"fill_bytes\":%zu,"
+            "\"retain_fill_events_through_drain\":true} \n",
             argv[1], argv[2], samples, pending ? fills : 0, bytes);
         std::fflush(stdout);
         for (int rep = 0; rep < samples; ++rep) {
@@ -103,16 +104,21 @@ int main(int argc, char** argv) {
             ck(cudaMemcpyAsync(device, &input, sizeof input, cudaMemcpyHostToDevice, stream));
             ck(cudaStreamSynchronize(stream)); // source remains alive through checked completion
             sycl::event last;
+            std::array<sycl::event, fills> retained;
+            const auto producer_begin = hp::stamp();
             if (pending)
                 for (int f = 0; f < fills; ++f)
-                    last = device_call([&] { return stream->memset(backlog + 64, 0x30 + rep, bytes); });
+                    retained[f] = device_call([&] { return stream->memset(backlog + 64, 0x30 + rep, bytes); });
+            const auto producer_end = hp::stamp();
+            if (pending) last = retained.back();
             hp::State state;
             need(hp::active == nullptr, "unexpected outer CPU profile");
             hp::active = &state;
             bool observed_pending = false, complete_after_copy = false;
-            hp::Stamp queried, copy_begin;
+            hp::Stamp query_begin, queried, copy_begin;
             {
                 hp::StatusScope scope;
+                query_begin = hp::stamp();
                 if (pending) observed_pending = device_call([&] { return last.get_info<sycl::info::event::command_execution_status>(); }) !=
                     sycl::info::event_command_status::complete;
                 queried = hp::stamp();
@@ -125,7 +131,10 @@ int main(int argc, char** argv) {
             }
             hp::active = nullptr;
             validate(state);
-            need(queried.valid && copy_begin.valid && hp::duration(copy_begin.wall - queried.wall), "clock unavailable");
+            need(producer_begin.valid && producer_end.valid && query_begin.valid && queried.valid &&
+                copy_begin.valid && hp::duration(copy_begin.wall - queried.wall) &&
+                hp::duration(producer_end.wall - producer_begin.wall) && hp::duration(producer_end.cpu - producer_begin.cpu) &&
+                hp::duration(queried.wall - query_begin.wall) && hp::duration(queried.cpu - query_begin.cpu), "clock unavailable");
             need(host->before == left && host->value == input.value && host->after == right, "status payload/host guards");
             Envelope check{};
             std::array<uint8_t, 64> before{}, after{};
@@ -146,10 +155,12 @@ int main(int argc, char** argv) {
             }
             std::printf("{\"type\":\"sample\",\"rep\":%d,\"eligible\":%s,"
                 "\"pending_observed\":%s,\"last_complete_after_copy\":%s,"
-                "\"query_to_copy_wall_s\":%.12g,\"scope_cpu_s\":%.12g,\"scope_wall_s\":%.12g",
+                "\"query_to_copy_wall_s\":%.12g,\"scope_cpu_s\":%.12g,\"scope_wall_s\":%.12g,"
+                "\"producer_cpu_s\":%.12g,\"producer_wall_s\":%.12g,\"pending_query_cpu_s\":%.12g,\"pending_query_wall_s\":%.12g",
                 rep, !pending || observed_pending ? "true" : "false", observed_pending ? "true" : "false",
                 complete_after_copy ? "true" : "false", copy_begin.wall - queried.wall,
-                state.status_scope_cpu, state.status_scope_wall);
+                state.status_scope_cpu, state.status_scope_wall, producer_end.cpu - producer_begin.cpu,
+                producer_end.wall - producer_begin.wall, queried.cpu - query_begin.cpu, queried.wall - query_begin.wall);
             timing("enqueue", state, hp::status_enqueue);
             timing("observer", state, hp::status_observer);
             timing("drain", state, hp::status_drain);

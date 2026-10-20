@@ -21,7 +21,7 @@ import ur_validation as validation
 
 gen, guards, supervision = q.gen, q.guards, q.supervision
 P, B, A = q.P, q.B, q.A
-ROOT = B / 'status-copy-component-v1'
+ROOT = B / 'status-copy-component-v2'
 RESULT = A / 'status-copy-current.json'
 FIXTURE = 'bench/sycl/status_copy.cpp'
 CELLS = [('ordinary', 'idle'), ('usm', 'pending'), ('ordinary', 'pending'), ('usm', 'idle')]
@@ -70,7 +70,16 @@ def admission(record):
 
 
 def prepare():
-    guards.require(not RESULT.exists() and not ROOT.exists(), 'inspect prior job; no retry')
+    guards.require(not ROOT.exists(), 'inspect prior job; no retry')
+    previous = gen.committed(RESULT)
+    guards.require(previous['stage']=='closed' and previous['complete'] and previous['passed'] and
+        previous['ownership_closed'] and previous['fresh_faults']==[] and not previous['active'],
+        'preserve the closed prior component before a distinct source experiment')
+    previous_raw=gen.git('show','HEAD:'+str(RESULT.relative_to(P)))
+    previous_ref=dict(commit=gen.git('rev-parse','HEAD').decode().strip(),
+        path=str(RESULT.relative_to(P)),sha256=hashlib.sha256(previous_raw).hexdigest(),
+        pending_comparison_qualified=previous['pending_comparison_qualified'],
+        outcome='v1 executes safely but both pending cells observe0/12; no backlogged comparison.')
     full, count = q.current_build()
     settings = runtime_check()
     source = gen.git('rev-parse', 'HEAD').decode().strip()
@@ -92,13 +101,13 @@ def prepare():
         '-I' + str(P / 'include'), '-I' + str(P / 'include/strata/sycl/compat'),
         str(P / FIXTURE), *[str(P / ('src/sycl/' + name + '.cpp'))
             for name in ('runtime', 'compat', 'command_profile')], '-o', str(executable)]
-    record = dict(schema='strata-status-copy-v1', stage='prepared', source_commit=source,
+    record = dict(schema='strata-status-copy-v2', previous_component=previous_ref, stage='prepared', source_commit=source,
         source_count=len(pins), source_fingerprint=q.assets.fingerprint(pins),
         native_source_commit=full['source_commit'], native_inputs_recovered=count,
         native_build_record_sha256=digest(q.BUILD_RECORD), compiler=compiler,
         settings_sha256=digest(gen.SETTINGS), compile_argv=command, compile_environment=env,
         native_environment=native, validation_probe=probe, cells=CELLS,
-        gates='Four separate immutable-environment processes in fixed order;12 samples each. 4-byte production compat D2H, checked drain and sticky postcheck. Pending arm submits exactly8x128MiB fills and queries the last event immediately before copy. A completed pre-query makes that sample ineligible; no retry/enlargement. Require exact phase counts, clocks/conservation, payload/guards, native exit0, owned closure, unchanged inputs and no fresh fault. Pending comparison requires all12 pending samples in each pending cell.',
+        gates='Four separate immutable-environment processes in fixed order;12 samples each. 4-byte production compat D2H, checked drain and sticky postcheck. Pending arm retains all8 fill events through checked drain, submits exactly8x128MiB fills and queries the last event immediately before copy. Record producer and query CPU/wall separately. A completed pre-query makes that sample ineligible; no retry/enlargement. Require exact phase counts, clocks/conservation, payload/guards, native exit0, owned closure, unchanged inputs and no fresh fault. Pending comparison requires all12 pending samples in each pending cell.',
         budgets=dict(compile_wall_s=240, native_cell_wall_s=45, text_bytes_per_command=16 << 20,
             total_raw_bytes=64 << 20, device_bytes=134217868,
             pending_logical_fill_bytes_per_cell=12 * 8 * (128 << 20)),
@@ -108,41 +117,6 @@ def prepare():
         complete=False, passed=False, active=False, GPU_executed=False)
     RESULT.write_text(json.dumps(record, indent=2) + '\n')
     print(json.dumps(dict(prepared=True, source=source, source_count=len(pins), GPU_executed=False)))
-
-
-def amend():
-    """Correct controller/config before the first native exec; reuse exact bytes.
-
-    Preserve original build identity. This cannot reopen an attempted GPU run.
-    """
-    record = gen.committed(RESULT)
-    guards.require(not record.get('controller_only_amendment') and record['stage']=='built' and record['passed'] and record['ownership_closed'] and
-        not record['GPU_executed'] and not (ROOT/'run.json').exists(), 'amend only before first native attempt')
-    original = gen.git('show', 'HEAD:' + str(RESULT.relative_to(P)))
-    oldpins=gen.benchmark_pins(record['source_commit'],match_worktree=False)
-    oldpins[FIXTURE]=hashlib.sha256(gen.git('show',record['source_commit']+':'+FIXTURE)).hexdigest()
-    guards.require(len(oldpins)==record['source_count'] and q.assets.fingerprint(oldpins)==record['source_fingerprint'],
-        'original controller/fixture inputs not recovered')
-    for path,sha in oldpins.items():
-        if path != 'tools/sycl/status_copy.py':
-            guards.require(digest(P/path)==sha,'amend changed a non-controller input: '+path)
-    full,count=q.current_build()
-    guards.require(full['source_commit']==record['native_source_commit'] and count==record['native_inputs_recovered'] and
-        digest(q.BUILD_RECORD)==record['native_build_record_sha256'] and
-        digest(record['binary']['path'])==record['binary']['sha256'], 'compiled source/executable changed')
-    built=json.loads((ROOT/'build.json').read_text())
-    guards.require(built['passed'] and built['ownership_closed'] and built['binary']==record['binary'] and
-        built['compile_argv']==record['compile_argv'], 'original closed compile receipt differs')
-    source=gen.git('rev-parse','HEAD').decode().strip(); pins=inputs(source)
-    record['original_built_plan']=dict(commit=source,path=str(RESULT.relative_to(P)),sha256=hashlib.sha256(original).hexdigest())
-    record['compile_source_commit']=built['source_commit']
-    record.update(source_commit=source,source_count=len(pins),source_fingerprint=q.assets.fingerprint(pins))
-    record['native_environment']['STRATA_UR_PROBE_EXPECTED_LOADER']=record['validation_probe']['loader']['path']
-    record['controller_only_amendment']='Before any native attempt: configure required loader-provider variable, enforce pre-exec configuration and emitted loader equality. All other benchmark/fixture inputs,9836 native inputs, compiler recipe and actual executable remain exact. Original compilation source/receipt preserved; no rebuild or retry.'
-    record['original_compile_record_sha256']=digest(ROOT/'build.json')
-    admission(record)
-    RESULT.write_text(json.dumps(record,indent=2)+'\n')
-    print(json.dumps(dict(amended_before_native_exec=True,binary_unchanged=True,source=source,GPU_executed=False)))
 
 
 def execute(build):
@@ -190,8 +164,8 @@ def execute(build):
                     text_cap=16 << 20, file_cap=16 << 20, total_cap=64 << 20)
                 guards.require(supervision.closed(entry) and entry.get('exit_code') == 0, 'cell failed: ' + err.read_text()[-4096:])
                 rows = [json.loads(line) for line in out.read_text().splitlines()]
-                guards.require(len(rows) == 14 and rows[0] == dict(type='begin',schema=1,
-                    host=cell[0],queue=cell[1],samples=12,copy_bytes=4,
+                guards.require(len(rows) == 14 and rows[0] == dict(type='begin',schema=2,
+                    host=cell[0],queue=cell[1],samples=12,copy_bytes=4,retain_fill_events_through_drain=True,
                     backlog_fills=8 if cell[1]=='pending' else 0,fill_bytes=128 << 20) and rows[-1] ==
                     dict(type='end', passed=True, samples=12, owners_closed=True), 'missing/ambiguous protocol')
                 samples = rows[1:-1]
@@ -200,7 +174,7 @@ def execute(build):
                 for sample in samples:
                     guards.require(sample['eligible'] == (cell[1]=='idle' or sample['pending_observed']) and
                         all(math.isfinite(sample[k]) and sample[k]>=0 for k in
-                            ('query_to_copy_wall_s','scope_cpu_s','scope_wall_s')), 'invalid eligibility/clock')
+                            ('query_to_copy_wall_s','scope_cpu_s','scope_wall_s','producer_cpu_s','producer_wall_s','pending_query_cpu_s','pending_query_wall_s')), 'invalid eligibility/clock')
                     for name in ('enqueue','observer','drain','precheck','queue_context','postcheck'):
                         row=sample[name]
                         guards.require(row['calls']==(2 if name in ('precheck','queue_context') else 1) and
@@ -216,6 +190,9 @@ def execute(build):
                 summary = {name:dict(cpu_s=statistics.median(x[name]['cpu_s'] for x in samples),
                     wall_s=statistics.median(x[name]['wall_s'] for x in samples))
                     for name in ('enqueue','observer','drain','precheck','queue_context','postcheck')}
+                summary.update({name:dict(cpu_s=statistics.median(x[name+'_cpu_s'] for x in samples),
+                    wall_s=statistics.median(x[name+'_wall_s'] for x in samples))
+                    for name in ('producer','pending_query')})
                 record['cells_results'].append(dict(cell=cell, samples=samples, medians=summary,
                     all_samples_eligible=qualified, pending_observations=sum(x['pending_observed'] for x in samples),
                     native_pid=entry['pid'], validation_activation=proof, native_exit=entry['exit_code'], ownership_closed=True))
@@ -246,14 +223,13 @@ def execute(build):
 
 def main():
     parser=argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('action',choices=('prepare','build','amend','run'))
+    parser.add_argument('action',choices=('prepare','build','run'))
     action=parser.parse_args().action
     with (B / 'owned-v0141-measurement.lock').open('a+') as lock:
         fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
         guards.no_model_owners([])
         guards.driver_guard()
         if action=='prepare': return prepare()
-        if action=='amend': return amend()
         return execute(action=='build')
 
 
