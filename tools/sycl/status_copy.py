@@ -63,6 +63,10 @@ def admission(record):
     runtime_check()
     guards.require(digest(gen.SETTINGS) == record['settings_sha256'] and
         validation.preload_qualification() == record['validation_probe'], 'runtime/helper proof changed')
+    guards.require(record['native_environment'].get('STRATA_UR_PROBE_EXPECTED_LOADER') ==
+        record['validation_probe']['loader']['path'] and
+        record['native_environment'].get('LD_PRELOAD') == record['validation_probe']['library']['path'],
+        'configure exact native-child validation provider before execution')
 
 
 def prepare():
@@ -81,6 +85,7 @@ def prepare():
         CUDA_MODULE_LOADING='EAGER', STRATA_SYCL_COMMAND_PROFILE='0')
     probe = validation.preload_qualification()
     native['LD_PRELOAD'] = probe['library']['path']
+    native['STRATA_UR_PROBE_EXPECTED_LOADER'] = probe['loader']['path']
     executable = ROOT / 'status_copy'
     command = [compiler['path'], '-O3', '-DNDEBUG', '-std=c++20', '-fsycl',
         '-fsycl-id-queries-range=size_t', '-DSTRATA_ENABLE_SYCL=1',
@@ -103,6 +108,41 @@ def prepare():
         complete=False, passed=False, active=False, GPU_executed=False)
     RESULT.write_text(json.dumps(record, indent=2) + '\n')
     print(json.dumps(dict(prepared=True, source=source, source_count=len(pins), GPU_executed=False)))
+
+
+def amend():
+    """Correct controller/config before the first native exec; reuse exact bytes.
+
+    Preserve original build identity. This cannot reopen an attempted GPU run.
+    """
+    record = gen.committed(RESULT)
+    guards.require(not record.get('controller_only_amendment') and record['stage']=='built' and record['passed'] and record['ownership_closed'] and
+        not record['GPU_executed'] and not (ROOT/'run.json').exists(), 'amend only before first native attempt')
+    original = gen.git('show', 'HEAD:' + str(RESULT.relative_to(P)))
+    oldpins=gen.benchmark_pins(record['source_commit'],match_worktree=False)
+    oldpins[FIXTURE]=hashlib.sha256(gen.git('show',record['source_commit']+':'+FIXTURE)).hexdigest()
+    guards.require(len(oldpins)==record['source_count'] and q.assets.fingerprint(oldpins)==record['source_fingerprint'],
+        'original controller/fixture inputs not recovered')
+    for path,sha in oldpins.items():
+        if path != 'tools/sycl/status_copy.py':
+            guards.require(digest(P/path)==sha,'amend changed a non-controller input: '+path)
+    full,count=q.current_build()
+    guards.require(full['source_commit']==record['native_source_commit'] and count==record['native_inputs_recovered'] and
+        digest(q.BUILD_RECORD)==record['native_build_record_sha256'] and
+        digest(record['binary']['path'])==record['binary']['sha256'], 'compiled source/executable changed')
+    built=json.loads((ROOT/'build.json').read_text())
+    guards.require(built['passed'] and built['ownership_closed'] and built['binary']==record['binary'] and
+        built['compile_argv']==record['compile_argv'], 'original closed compile receipt differs')
+    source=gen.git('rev-parse','HEAD').decode().strip(); pins=inputs(source)
+    record['original_built_plan']=dict(commit=source,path=str(RESULT.relative_to(P)),sha256=hashlib.sha256(original).hexdigest())
+    record['compile_source_commit']=built['source_commit']
+    record.update(source_commit=source,source_count=len(pins),source_fingerprint=q.assets.fingerprint(pins))
+    record['native_environment']['STRATA_UR_PROBE_EXPECTED_LOADER']=record['validation_probe']['loader']['path']
+    record['controller_only_amendment']='Before any native attempt: configure required loader-provider variable, enforce pre-exec configuration and emitted loader equality. All other benchmark/fixture inputs,9836 native inputs, compiler recipe and actual executable remain exact. Original compilation source/receipt preserved; no rebuild or retry.'
+    record['original_compile_record_sha256']=digest(ROOT/'build.json')
+    admission(record)
+    RESULT.write_text(json.dumps(record,indent=2)+'\n')
+    print(json.dumps(dict(amended_before_native_exec=True,binary_unchanged=True,source=source,GPU_executed=False)))
 
 
 def execute(build):
@@ -169,7 +209,8 @@ def execute(build):
                             row['wait_cpu_s']<=row['cpu_s'] and row['wait_wall_s']<=row['wall_s'], 'invalid phase')
                 log = err.read_text()
                 proof = validation.preload_evidence(log, entry['pid'])
-                guards.require('UR_LAYER_PARAMETER_VALIDATION' in record['native_environment']['UR_ENABLE_LAYERS'] and
+                guards.require(proof['loader']==record['validation_probe']['loader']['path'] and
+                    'UR_LAYER_PARAMETER_VALIDATION' in record['native_environment']['UR_ENABLE_LAYERS'] and
                     'strata UR validation failure:' not in log, 'validation activation/error')
                 qualified = all(x['eligible'] for x in samples)
                 summary = {name:dict(cpu_s=statistics.median(x[name]['cpu_s'] for x in samples),
@@ -205,13 +246,15 @@ def execute(build):
 
 def main():
     parser=argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('action',choices=('prepare','build','run'))
+    parser.add_argument('action',choices=('prepare','build','amend','run'))
     action=parser.parse_args().action
     with (B / 'owned-v0141-measurement.lock').open('a+') as lock:
         fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
         guards.no_model_owners([])
         guards.driver_guard()
-        return prepare() if action=='prepare' else execute(action=='build')
+        if action=='prepare': return prepare()
+        if action=='amend': return amend()
+        return execute(action=='build')
 
 
 if __name__=='__main__': sys.exit(main())
