@@ -99,7 +99,7 @@ class OfficialJournal(unittest.TestCase):
         sample=copy.deepcopy(SAMPLE)
         result=dict(params=dict(mode='prefill-only',runs=1,think=True,prefill_tokens=98304),complete=True,
             results=dict(failures=[],prefill_only=dict(complete=True,eligible_runs=1,requests=[sample],max_tokens=24,thinking_requested=True)))
-        journal=RequestJournal(directory,{})
+        journal=RequestJournal(directory,lambda value:value)
         journal.append('identity','suite',mode='prefill-only')
         for phase,run in (('warm-up/chat',None),('prefill-only',0)):
             start=journal.append('start',phase,run,request_sha256='a'*64,max_tokens=24,thinking=True)

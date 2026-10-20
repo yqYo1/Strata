@@ -91,6 +91,12 @@ def mixed_evidence(log, sample):
         int(headers[0][1]) == int(headers[0][3]) and 1 <= int(headers[0][4]) <= 24,
         'measured request/native header identity differs')
     segments = [log[:headers[0].start()], log[headers[0].end():headers[1].start()]]
+    guards.require(not any(prefix in log[headers[-1].end():] for prefix in
+        ('strata loan audit:', 'strata cache loan:', 'strata MoE mixed owners:',
+         'strata MoE cache loan:', 'strata prefill cache binding:', 'strata prefill dense:')),
+        'proof records outside completed requests')
+    guards.require('strata MoE mixed owners:' not in segments[0] and
+        'strata MoE cache loan:' not in segments[0], 'long-window proof leaked into short warmup')
     cycles, publications = [], []
     for text in segments:
         cycle, pub = loan_cycle(text)
