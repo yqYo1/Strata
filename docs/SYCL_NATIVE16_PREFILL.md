@@ -2384,9 +2384,12 @@ or adoption. Keep the source and comparison plan frozen through all six. See
 [the current comparison](../bench/results/2026-10-15-pr6-recovery-audit/cache-comparison-current.json).
 Broader quality, full mixed
 tail and physical262144/session/RESTORE remain unqualified. Closed successful
-raw/JIT and consumed source-audit transactions were retired after recording
-the result: 76 files, 12933318 bytes, with the manifest in the
-compact capacity result. Current engine/fixtures and396 fallback remain for
+raw/JIT and consumed source-audit transactions are retired after their compact
+evidence is committed. The owned check and first clean pair retired217 files,
+38525713 bytes; the comparison's research-index entry records the path/hash/reason
+manifest and successful post-cleanup source/build admission. All9831 native
+inputs,131 benchmark inputs, the engine/eight fixtures and396 fallback remained
+verified; cleanup executed no GPU work. Current engine/fixtures and396 fallback remain for
 the imminent clean comparison;14 legacy provenance holds remain separate.
 Only a later qualified mechanism permits a
 fresh complete51+6-case plan. Preserve all pending-completion,
