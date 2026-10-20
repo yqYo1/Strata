@@ -2535,17 +2535,47 @@ short-output prefill evidence: both engine revision and placement differ. All
 24 outputs end after thinking, with no answer. Quality, sustained decode, agent
 session, physical262144/session/RESTORE and default adoption remain pending.
 
-Keep old-owned128 as the measured fastest fallback. Current-borrowed1256 is
-retained only for the imminent117K resource attribution, then review which
-validated generation to keep before another build. Source inspection confirms
+Keep old-owned128 as the measured fastest fallback. The named current-borrowed1256
+resource attribution is now closed. Select one validated generation and retire
+the extra before another build; the retained comparison is not a standing build
+archive. Source inspection confirms
 expert payload refill reads the original host Arena and queues H2D copies; it
 does not save the production expert payload D2H. D2H/memcmp is loan-audit-only.
 The outer refill precedes prompt_ms but follows the internal NativeDense host
-restore interval. Measure that missing interval separately, reconcile actual
-planned-window/issuer jobs and disjoint CPU/wait regions, and collect only
-supported physical counters. Utilization, service percentages and requested
-bytes still do not establish the limiting hardware resource or a BF16/FP16
-compute ceiling.
+restore interval.
+
+The unchanged current build then processed one parameter-validated117489-input
+request:127198ms,24 thought tokens, native/collector exit0, complete owned closure
+and no matched fresh fault. All15 model hashes and141 benchmark inputs match
+before/after. The first controller failed because it used the independent-buffer
+`direct_owners=1` parser for a borrowed lease. Preserve that failed receipt.
+A separate closed-log analysis at`eaeba9e6c` uses the existing borrowed-owner
+checks, including96 entry/loan/retirement tuples, stable nonoverlapping spans,
+sealed generations and ready publication. Its8 controller and12 admission
+regressions pass, as do the analysis's profile/client/ownership checks. It runs
+no new native process and does not relabel the original controller success.
+See [the compact attribution](../bench/results/2026-10-15-pr6-recovery-audit/prefill-resources-current.json).
+
+The outer1124-slot expert refill is388.3ms, **0.3053%** of the observed prompt
+wall time; it is not the dominant interval in this diagnostic. NativeDense's
+nonexclusive entry/run/restore clocks are388.342/125598/819.103ms. The coarse
+queue intervals are QSA44428.9ms, MoE37869.3ms and GDN25180.9ms; QSA attention
+alone is30763.8ms and selection7688.98ms. These intervals include submission
+gaps and are not additive GPU-only service. The125.472s CPU-accounting interval
+contains119.335s main-thread CPU, of which78.872s is inside GPU waits and40.463s
+outside. The MoE status region accounts for10.871s outside-wait wall; grouping
+is0.245s. Status includes the copy/check/wrapper path, not pure transfer or CPU
+math. Parameter validation and profiling remain enabled, with no matched clean
+observer-overhead estimate.
+
+All96 planned windows conserve to37353 completed jobs and56394240 routed rows.
+7485 large fused jobs account for49290450 rows;29868 smaller jobs for7103790.
+Associated CCS busy cycles are91.83% during the observed pre-output client
+window; this is activity, not arithmetic efficiency. Next inspect the actual
+QSA shapes and the complete status-copy/check call path, and choose matched
+GPU memory/arithmetic references. Physical PCIe/GDDR traffic and compatible
+sustainable ceilings remain unknown. Neither these observations nor requested
+bytes establish a limiting hardware resource, clean speedup or model adoption.
 
 For the separate earlier early-PCIe candidate, only a later qualified mechanism permits a
 fresh complete51+6-case plan. Preserve all pending-completion,
