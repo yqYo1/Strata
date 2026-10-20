@@ -2649,6 +2649,31 @@ fallback and status-only candidate remain two generations pending that imminent
 artifact-selection check; no third engine build is admitted. Physical262144,
 session/RESTORE, long-generation quality and70tok/s remain pending.
 
+The finite production-source copy fixture then completed all four processes
+with native exit0, exact guard/payload/phase checks, same-child parameter
+validation, fixed inputs, closed owners and no matched fresh fault. The compiled
+fixture is source13c30d0c0; controller2f4e25238 and plan161a70f4d correct
+the required loader-provider environment before the first native attempt,
+without rebuilding or relabeling the executable.
+
+| Component cell | Enqueue wall median, us | Drain wall median, us | Pending before copy |
+| --- | ---: | ---: | ---: |
+| Ordinary host, idle | 99.558 | 14.558 | Not requested |
+| USM host, pending requested | 46.427 | 61.636 | 0/12 |
+| Ordinary host, pending requested | 82.827 | 17.583 | 0/12 |
+| USM host, idle | 54.273 | 60.960 | Not requested |
+
+**The pending comparison is ineligible**, despite successful execution. All
+pre-copy queries found completion after eight128MiB fills. Full tracing and
+profiling remain enabled; these microsecond values do not qualify clean speed
+or explain the model's10.9s enqueue aggregate. The first producer trace has UR
+global-timestamp queries and event releases between fills, but lacks their
+individual durations. Next keep all eight events alive through checked drain
+and measure producer/query CPU and wall separately, with the same fixed work
+and a new committed plan. Do not enlarge or retry the closed workload. The
+[compact component result](../bench/results/2026-10-15-pr6-recovery-audit/status-copy-current.json)
+keeps all48 useful enqueue/drain samples and the failed eligibility gate.
+
 For the separate earlier early-PCIe candidate, only a later qualified mechanism permits a
 fresh complete51+6-case plan. Preserve all pending-completion,
 untouched-output, payload/guard and owner-lifetime requirements under that plan.
