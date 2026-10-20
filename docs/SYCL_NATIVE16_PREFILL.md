@@ -2405,7 +2405,10 @@ tail and physical262144/session/RESTORE remain unqualified. Closed successful
 raw/JIT and consumed source-audit transactions are retired after their compact
 evidence is committed. The owned check and first clean pair retired217 files,
 38525713 bytes; the comparison's research-index entry records the path/hash/reason
-manifest and successful post-cleanup source/build admission. All9831 native
+manifest and successful post-cleanup source/build admission. The remaining four
+clean roots then retired280 files,51307063 bytes, with the second manifest in
+the same index entry. All seven comparison/check roots are closed and empty;
+their individual samples and decisions remain in Git. All9831 native
 inputs,131 benchmark inputs, the engine/eight fixtures and396 fallback remained
 verified; cleanup executed no GPU work. Current engine/eight fixtures remain
 for mixed-format CPU calibration and the1256-slot117K check. The396 engine/five
