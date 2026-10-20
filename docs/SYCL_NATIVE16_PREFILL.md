@@ -2311,11 +2311,19 @@ uses that mutable pointer as the original loan's parent identity. This wrongly
 rejects the valid parent ticket. No borrowed FFN, refill or generated token was
 completed. Native exit1 and ownership closed normally; boot was unchanged and
 no fresh GPU fault occurred. Preserve this failed result. The earlier source
-audit missed the dynamic identity coupling. Next retain the immutable parent
-separately from the execution cache, add a regression crossing that substitution,
-review the complete corrected path, then use fresh component/model plans. Never
-retry closed v2 or bypass the owner check. The default-off route is unadopted;
-there is no new speed result or full physical262144/session/RESTORE qualification.
+audit missed the dynamic identity coupling. The next original source correction
+keeps the parent supplied to init separate from the execution cache. All lease
+checks, activation and retirement use that parent; binding also requires the
+ordinary parent cache to be active. The actual per-layer cache substitution
+immediately rechecks the lease before inference, with a trace identifying the
+distinct execution cache. The prospective v3 model gate requires this actual
+substitution and all48 borrowed FFN entries/retirements, two complete refill/
+decode cycles and the original payload/map checks. Its offline parser rejects
+missing, duplicated or false substitution evidence. Use a fresh v9 156-case
+component plan, complete corrected-source review and a committed v3 model plan;
+never retry closed v2 or bypass the owner check. This correction is unbuilt and
+unqualified. The default-off route stays unadopted, with no new speed result or
+full physical262144/session/RESTORE qualification.
 Only a later qualified mechanism permits a
 fresh complete51+6-case plan. Preserve all pending-completion,
 untouched-output, payload/guard and owner-lifetime requirements under that plan.

@@ -714,6 +714,10 @@ bool Prefill::run_layer_major(const int64_t* tokens, int64_t n, int64_t pos0, st
     }
     m.cache = &layer_cache;
     m.host_res = residency.data();
+    if (!m.cache_scratch_entry(err)) return false;
+    if (m.cache_scratch_lease && std::getenv("STRATA_TRACE"))
+        std::fprintf(stderr,"strata prefill cache binding: generation=%llu parent_match=1 execution_distinct=%d\n",
+            (unsigned long long)m.cache_scratch_lease.generation(), int(m.cache != m.cache_scratch_parent));
     if (requested_slots)
         std::fprintf(stderr, "strata MoE expert bank: requested_slots=%lld effective_slots=%lld staged=%d host_slab_bytes=%llu device_bytes=%llu residual_gpu_rows=%lld allocation_limit_bytes=%llu general_map=private_scratch_never_published\n",
             (long long)requested_slots, (long long)bank_plan.slots, int(bank_plan.staged()),

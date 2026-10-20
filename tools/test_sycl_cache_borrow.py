@@ -25,7 +25,8 @@ def log():
 
 def owner_log():
     result=[log().rstrip(),
-        'strata cache loan: phase=masked generation=1 chunk=8192 first=160 lent=1120 decode_ready=0']
+        'strata cache loan: phase=masked generation=1 chunk=8192 first=160 lent=1120 decode_ready=0',
+        'strata prefill cache binding: generation=1 parent_match=1 execution_distinct=1']
     for layer in range(48):
         result += [f'strata MoE mixed owners: phase=entry layer={layer} first=0 rows=8193 '
             'primary=0x10000 primary_bytes=41948160 region=0x30000000 region_bytes=1700000000 '
@@ -76,6 +77,15 @@ class CheckedOwners(unittest.TestCase):
         self.assertEqual(result['borrowed_ffn_entries'],48)
         self.assertEqual(result['checked_retirements'],48)
         self.assertEqual(result['decode_admission_transitions'],[0,1,0,1])
+        self.assertEqual(result['execution_cache_substitutions_checked'],1)
+
+    def test_missing_or_false_execution_cache_substitution(self):
+        line='strata prefill cache binding: generation=1 parent_match=1 execution_distinct=1\n'
+        for value in (owner_log().replace(line,''),owner_log()+line,
+                owner_log().replace('parent_match=1','parent_match=0',1),
+                owner_log().replace('execution_distinct=1','execution_distinct=0',1),
+                owner_log().replace(line,line.replace('generation=1','generation=2'))):
+            with self.subTest(value=value),self.assertRaises(RuntimeError):self.check(value)
 
     def test_missing_duplicate_or_malformed(self):
         value=owner_log()

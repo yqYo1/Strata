@@ -74,7 +74,8 @@ public:
 #ifdef STRATA_ENABLE_SYCL
     // The generator must retain the parent and keep decode admission closed
     // through refill/publication. Binding seals this layout generation; it
-    // does not imply global reader retirement or activate the loan.
+    // does not imply global reader retirement or activate the loan. The parent
+    // supplied to init stays the owner when layer-major replaces its execution cache.
     bool bind_cache_scratch_lease(const core::CacheScratchLease& lease, std::string& err);
     bool has_cache_scratch_lease() const;
     bool activate_cache_scratch_lease(const std::function<bool()>& retire_all_readers, std::string& err);

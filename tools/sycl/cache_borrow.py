@@ -16,9 +16,10 @@ import query_profile as q
 
 gen, assets, guards, supervision = q.gen, q.assets, q.guards, q.supervision
 P, B, A = q.P, q.B, q.A
-ROOT = B / 'cache-borrow-check-v2'
+ROOT = B / 'cache-borrow-check-v3'
 RESULT = A / 'cache-borrow-current.json'
 RESEARCH = A / 'research-index.json'
+REVIEW_SCOPE = 'staged_cache_parent_identity_scope'
 PROMPT_LENGTHS = (8194, 257)
 
 
@@ -98,6 +99,12 @@ def checked_owner_evidence(log, loan_checks):
             masked[6]=='0' and ready[6]=='1', 'loan identity/decode admission differs')
         generations.append(int(masked[2]))
     guards.require(generations[1]>generations[0], 'loan generation was reused')
+    bindings=list(re.finditer(
+        r'^strata prefill cache binding: generation=(\d+) parent_match=1 execution_distinct=1$',log,re.M))
+    guards.require(len(bindings)==log.count('strata prefill cache binding:')==1 and
+        int(bindings[0][1])==generations[0] and
+        publications[0].start()<bindings[0].start()<publications[1].start(),
+        'actual execution-cache substitution did not retain the parent owner')
     windows=list(re.finditer(
         r'^strata MoE cache loan: generation=(\d+) layout_generation=(\d+) layer=(\d+) '
         r'first=(\d+) rows=(\d+) used=(\d+) capacity=(\d+)$', log, re.M))
@@ -118,7 +125,7 @@ def checked_owner_evidence(log, loan_checks):
     guards.require(generation==generations[0] and layout_generation>0 and
         0<used<=capacity==loan_checks['layouts'][0]['bytes'], 'invalid sealed loan extent')
     rows=PROMPT_LENGTHS[0]-1
-    previous=publications[0].start()
+    previous=bindings[0].start()
     region_bytes=int(entries[0][5])
     for layer,(window,entry,done) in enumerate(zip(windows,entries,retired)):
         guards.require(tuple(map(int,window.groups()))==
@@ -130,16 +137,17 @@ def checked_owner_evidence(log, loan_checks):
             'borrowed FFN identity/span/retirement order differs')
         previous=done.start()
     return dict(generations=generations,layout_generation=layout_generation,
-        decode_admission_transitions=[0,1,0,1],borrowed_ffn_entries=48,checked_retirements=48,
+        decode_admission_transitions=[0,1,0,1],execution_cache_substitutions_checked=1,
+        borrowed_ffn_entries=48,checked_retirements=48,
         prefill_rows=rows,used_bytes=used,capacity_bytes=capacity,
         primary_bytes=rows*2560*2,region_bytes=region_bytes,tail_bytes=0,
         limits='8193-row mixed path and256-row short path only; the full mixed tail and long-input speed are unqualified.')
 
 
 def source_review():
-    row=gen.committed(RESEARCH)['borrowed_mixed_integration_source_scope']
+    row=gen.committed(RESEARCH)[REVIEW_SCOPE]
     guards.require(row.get('bounded_model_source_review_accepted') is True and
-        row.get('worker_closed') is True and len(row['frozen_inputs'])==10 and
+        row.get('worker_closed') is True and len(row['frozen_inputs'])==14 and
         all(re.fullmatch(r'[0-9a-f]{64}',row[k]) for k in ('native_review_sha256','report_sha256')),
         'accepted independent source review and closed worker required')
     for name,expected in row['frozen_inputs'].items():
@@ -237,7 +245,7 @@ def prepare():
         settings_sha256=gen.common.digest(gen.SETTINGS),complete=False,passed=False,active=False,
         model_quality_qualified=False,model_performance_measured=False,model_route_executed=False,small_requests=[],
         budgets=dict(wall=900,cpu=54000,rss_cap=96<<30,text_cap=64<<20,file_cap=64<<20,total_cap=64<<20),
-        gate='One process;1280 actual slots; two thinking-template requests8194/257 with16 generated tokens each. Positive tail loans at distinct chunks/offsets; all48 mixed FFNs use the first sealed loan with checked retirement; actual decode admission closes at each mask and opens after each refill. GPU residency equals host after each lend/refill; full resident payload including unlent prefix equals immutable RAM; same slots restored; configured MTP detach/restore once; G1/T4 reached; no protocol/runtime/fresh-driver fault; source/model/runtime/boot unchanged. No retry.',
+        gate='One process;1280 actual slots; two thinking-template requests8194/257 with16 generated tokens each. Positive tail loans at distinct chunks/offsets; actual layer-cache substitution retains the checked original parent; all48 mixed FFNs use the first sealed loan with checked retirement; actual decode admission closes at each mask and opens after each refill. GPU residency equals host after each lend/refill; full resident payload including unlent prefix equals immutable RAM; same slots restored; configured MTP detach/restore once; G1/T4 reached; no protocol/runtime/fresh-driver fault; source/model/runtime/boot unchanged. No retry.',
         limits='Diagnostic admission only. Readback audit adds work; no clean speed, task quality, hardware saturation, full physical262144/session/RESTORE or70tok/s qualification.',
         consumer='Prerequisite for matched owned/borrowed capacity and32K+ long-generation comparisons. Retire successful raw output after compact evidence is committed.')
     (ROOT/'plan.json').write_text(json.dumps(record,indent=2)+'\n')
