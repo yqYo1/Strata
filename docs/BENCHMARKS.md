@@ -96,24 +96,17 @@ quality or physical262144/session/RESTORE. Plan the later matched owned-small /
 borrowed-large clean comparison separately, including order, independent
 process repetitions, work/configuration matching and prefill nonregression.
 
-The current matched capacity comparison uses
-`python3 -B tools/sycl/cache_compare.py prepare check`, commit, then
-`python3 -B tools/sycl/cache_compare.py run`. This first validates the owned
-128-slot route on the same official32K+ workload. After the independent source
-review and successful check, prepare and commit each clean process with
-`python3 -B tools/sycl/cache_compare.py prepare clean N`, then `run`, for
-`N=0..5`. The frozen order is owned128,borrowed1280,borrowed1280,owned128,
-owned128,borrowed1280, with pairs0/1,3/2,4/5. Each process has its own four
-official warmups and one thinking-enabled long generation. Keep the native
-build, model, benchmark sources and other settings frozen across all six;
-remove observers while preserving the qualified runtime safety settings.
-The controller checks actual all-GPU BF16/mode10 dispatch and records logical
-cache hits/misses. It compares exact per-token clocks, allows small generation
-differences and checks MTP acceptance before a decode decision. Prefill uses
-the identical fresh input independently of the decode regime. Read the committed
-plan for the fixed decision thresholds and stopping rules. This is a mechanism
-screen; weak-MTP, agent-session, quality and physical262144/session/RESTORE
-qualification remain separate. Closed roots must never be retried.
+The owned128/borrowed1280 capacity comparison is closed. Its
+[compact result](../bench/results/2026-10-15-pr6-recovery-audit/cache-comparison-current.json)
+keeps all six independent samples, common evidence and arm-specific route
+counts. Restore controller source`cba7b0a7c` and the recorded plan revisions
+for its exact recipe; closed roots must never be retried. Merge common process
+evidence and request fields with each sample, and attach its arm's route,
+to replay the unchanged `summarize` decision. Main verified that reconstruction
+matches the original result exactly. The+3.7041% decode geomean misses the
+prospective>5% screen; prefill separately passes nonregression. Further1256-slot
+capacity work requires a fresh committed plan. Weak-MTP, agent-session, quality
+and physical262144/session/RESTORE qualification remain separate.
 
 `generation_engine.py` is now a shared admission/evidence library, with no
 launcher CLI. Restore closed long-generation launchers and their original
