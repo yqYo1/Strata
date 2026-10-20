@@ -5612,5 +5612,61 @@
       "manifest_sha256": "98c5eb3a700ead88c8af748a00acdef0ad656794fc118b81580b1c311d403a66",
       "source_and_decision_history": "ec29f121fc2f298b81b4a69baa9b1237799c3b91:bench/results/2026-10-15-pr6-recovery-audit/research-index.json"
     }
+  },
+  "prefill_resource_followup_wave": {
+    "source_commit": "4e475ae9df2e8e7ce8b940f2613ee52a647d77ec",
+    "started_at": "2026-10-20T16:08:08.728023+00:00",
+    "run": "run_fb41872974e9",
+    "workers": [
+      {
+        "scope": "QSA geometry, memory/arithmetic and algorithms",
+        "classification": "decision_support",
+        "task": "task_931549314817",
+        "dispatch": "ctx_39fe7734d034",
+        "terminal": "term_03195111-0875-4b82-b5ee-7c685f4d491c",
+        "report": ".cache/strata-research/20261020/qsa-resource-followup.json",
+        "report_budget_bytes": 16384,
+        "state": "input_accepted_turn_started",
+        "model": "gpt-6-luna",
+        "effort": "high",
+        "model_evidence": "Explicit per-process CLI arguments and observed GPT-6-Luna high TUI before Task injection; Orca reused-terminal launch preferences are null.",
+        "terminal_owner": "Main-created existing terminal; after accepted settlement release Dispatch and close only this exact terminal if it has no new owner."
+      },
+      {
+        "scope": "MoE status wrapper CPU/wait and observer attribution",
+        "classification": "decision_support",
+        "task": "task_47164e753842",
+        "dispatch": "ctx_b271b71bb4fd",
+        "terminal": "term_e6087cc8-1cc1-47b7-a5ae-0b08db84ff33",
+        "report": ".cache/strata-research/20261020/status-path-resource-followup.json",
+        "report_budget_bytes": 16384,
+        "state": "input_accepted_turn_started",
+        "model": "gpt-6-luna",
+        "effort": "high",
+        "model_evidence": "Explicit per-process CLI arguments and observed GPT-6-Luna high TUI before Task injection; Orca reused-terminal launch preferences are null.",
+        "terminal_owner": "Main-created existing terminal; after accepted settlement release Dispatch and close only this exact terminal if it has no new owner."
+      },
+      {
+        "scope": "Actual precision/shape MoE resource reference",
+        "classification": "decision_support",
+        "task": "task_1a68936fab7e",
+        "dispatch": "ctx_c0912f4ce93c",
+        "terminal": "term_6b5bd6f1-f878-4b83-8251-42e5667aa958",
+        "report": ".cache/strata-research/20261020/moe-ceiling-resource-followup.json",
+        "report_budget_bytes": 16384,
+        "state": "input_accepted_turn_started",
+        "model": "gpt-6-luna",
+        "effort": "high",
+        "model_evidence": "Explicit per-process CLI arguments and observed GPT-6-Luna high TUI before Task injection; Orca reused-terminal launch preferences are null.",
+        "terminal_owner": "Main-created existing terminal; after accepted settlement release Dispatch and close only this exact terminal if it has no new owner."
+      }
+    ],
+    "read_only": true,
+    "main_owns_tests_and_gpu": true,
+    "do_not_steer": true,
+    "curation": "When actual reports return and worker settlement is verified, native Codex gpt-6-luna max curates them; Main reads only its short digest.",
+    "startup": "Normal worker-start first failed before Task execution on the Codex updater prompt; failed terminal was released. These three are normal workspace-write/never-approval Codex processes in Orca terminals, using only a per-process check_for_update_on_startup=false override. User-wide settings unchanged.",
+    "startup_reference": "https://developers.openai.com/codex/config-reference",
+    "next_review": "At settlement verify report hashes and ownership, curate, release each Dispatch and retire consumed startup/spec/receipt output. Keep no duplicate reports."
   }
 }
