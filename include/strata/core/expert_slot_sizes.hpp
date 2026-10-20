@@ -1,5 +1,6 @@
 #pragma once
 #include <algorithm>
+#include <cstddef>
 #include <cstdint>
 #include <limits>
 #include <stdexcept>
@@ -46,6 +47,24 @@ inline int64_t prefill_request_chunk(int64_t tokens, int64_t maximum) {
     if (tokens <= 0 || maximum <= 0) return 0;
     const int64_t rounded = tokens > INT64_MAX - 255 ? tokens : ((tokens + 255) / 256) * 256;
     return std::min(maximum, rounded);
+}
+
+// Before minting a positive-mask loan, retain an occupied tail even when a
+// short request's minimal interval lies above the last resident slot. Widening
+// only moves the start toward floor, so it cannot reduce available capacity.
+// -1 means no borrowable resident: refuse/fall back before changing ownership.
+inline int32_t occupied_expert_tail_first(int32_t floor, int32_t proposed, int64_t slots,
+                                         const int32_t* resident, size_t count) {
+    if (slots<=0 || slots>INT32_MAX || floor<0 || proposed<floor || proposed>=slots ||
+        (count && !resident))
+        throw std::invalid_argument("invalid occupied expert tail interval");
+    int32_t highest=-1;
+    for (size_t i=0;i<count;++i) {
+        const auto slot=resident[i];
+        if (slot < -1 || slot>=slots) throw std::invalid_argument("invalid expert residency slot");
+        if (slot>=floor) highest=std::max(highest,slot);
+    }
+    return highest<floor ? -1 : std::min(proposed,highest);
 }
 
 // Match ExpertCache::layer_slot_range: equal counts, remainder on the last

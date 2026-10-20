@@ -6290,8 +6290,21 @@ int main(int argc, char** argv) {
                         if (!refill_one(p, e)) return false;
                     }
                     const strata::core::OnDevice on(p.dev);
-                    const int32_t first = std::max<int32_t>(p.first, (int32_t) (p.cache->slots() - part_slots(p, want)));
+                    int32_t first = std::max<int32_t>(p.first, (int32_t) (p.cache->slots() - part_slots(p, want)));
 #ifdef STRATA_ENABLE_SYCL
+                    std::vector<std::pair<int32_t,int32_t>> checked_lent;
+                    if (cache_scratch_lease_enabled && !loan_call([&] {
+                        const auto begin=size_t(p.lb*g.n_expert), count=size_t((p.le-p.lb)*g.n_expert);
+                        first=strata::core::occupied_expert_tail_first(p.first,first,p.cache->slots(),
+                            host_res.data()+begin,count);
+                        if (first<0) { e="cache scratch lease: no occupied borrowable tail; parent unchanged"; return false; }
+                        for (size_t i=begin;i<begin+count;++i)
+                            if (host_res[i]>=first) checked_lent.emplace_back(int32_t(i),host_res[i]);
+                        if (checked_lent.empty() || part_bytes(p,first)<strata::prefill::Prefill::bytes_needed(g,*p.ses,want)) {
+                            e="cache scratch lease: preflight mask/capacity failed; parent unchanged"; return false;
+                        }
+                        return true;
+                    },e)) return false;
                     if (cache_scratch_lease_enabled && !loan_call([&] {
                         p.lease = p.cache->prepare_scratch_loan(first); return true;
                     },e)) return false;
@@ -6302,6 +6315,11 @@ int main(int argc, char** argv) {
                     }
 #ifdef STRATA_ENABLE_SYCL
                     if (cache_scratch_lease_enabled && !p.sp->bind_cache_scratch_lease(p.lease,e)) return false;
+                    if (cache_scratch_lease_enabled) {
+                        p.lent=std::move(checked_lent); // fully allocated before preparing the parent
+                        for (const auto& row:p.lent) host_res[size_t(row.first)]=strata::core::kNotResident;
+                        any=true;
+                    } else {
 #endif
                     for (int64_t l = p.lb; l < p.le; ++l)              // THIS participant's layers only
                         for (int64_t ex = 0; ex < g.n_expert; ++ex) {
@@ -6312,11 +6330,11 @@ int main(int argc, char** argv) {
                                 any = true;
                             }
                         }
+#ifdef STRATA_ENABLE_SYCL
+                    }
+#endif
                     p.lent_chunk = want;
 #ifdef STRATA_ENABLE_SYCL
-                    if (cache_scratch_lease_enabled && p.lent.empty()) {
-                        e = "cache scratch lease requires positively masked resident slots"; return false;
-                    }
                     if (loan_audit) {
                         const auto bytes = part_bytes(p, first);
                         const auto need = strata::prefill::Prefill::bytes_needed(g, *p.ses, want);

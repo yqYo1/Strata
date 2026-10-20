@@ -2230,6 +2230,31 @@ publication. Short borrowed chunks retain full dense weights. This connection
 still needs independent complete-source review and actual ticket/device/error
 tests. Existing owned-only mixed-mode guards continue to reject borrowed mode10;
 no model execution, new speed or full-context qualification is claimed.
+The next fresh v7 component plan commits154 checks before rebuilding:
+normal75 (including14 tail/preflight cases),host37,existing device17,actual
+cache-loan20 and five fail-stop children.
+The new model-free fixture uses actual ExpertCache tickets and Prefill layouts,
+a1024-cell session,256/128 rows,128 prefix slots of256B and1MiB tail slots
+(at most513MiB device parent). It checks exact resident payload/map restoration,
+a moved smaller second generation, an empty resident-tail cycle, cache reopen
+epoch refusal and prepared/used/refilling/poisoned reset plus pending parent
+close. GPU work is bounded memset/copy/readback; no invalid address or hung
+kernel is injected. The existing small traced check runs first. Each child keeps
+the qualified immutable environment and180s/600CPU-s/4GiB-RSS/64MiB output
+budgets; any failure closes the gate without retry. Preserve the396d0c91f301
+fallback and rebuild only the closed comparison cache. Complete source review
+and generator/model qualification remain separate from these prospective tests.
+The completed source audit/native curation confirmed a conditional short-tail
+setup gap, without evidence that a model request triggered it. Main now selects
+an occupied interval and preallocates the exact masked rows before preparing
+the parent. A short request widens its tail only toward the validated lower
+bound; if no borrowable resident exists, rejection leaves the parent unchanged.
+Four host cases cover exact/widened/prefix-only/invalid maps. The device fixture
+also checks that an empty-tail preflight leaves decode admission open; it then
+exercises the lower-level capability on that empty tail independently of the
+generator positive-mask policy. The review mistakenly carried the old57-case
+early-PCIe gate into its next-step text; use this154-case cache-loan gate instead.
+The failed early-PCIe route stays disabled and separate.
 Only a later qualified mechanism permits a
 fresh complete51+6-case plan. Preserve all pending-completion,
 untouched-output, payload/guard and owner-lifetime requirements under that plan.

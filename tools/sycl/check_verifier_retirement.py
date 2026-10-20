@@ -19,6 +19,15 @@ ROOT = B / 'verifier-copy-safety-v7'
 A = P / 'bench/results/2026-10-15-pr6-recovery-audit'
 SETTINGS = P / 'tools/sycl/measurement_environment.json'
 RESULT = A / 'verifier-copy-safety-current.json'
+LOAN_FAILURES = {'loan-release-prepared':'prepared', 'loan-release-used':'used',
+    'loan-release-refilling':'refilling', 'loan-release-poisoned':'poisoned', 'loan-parent-close':'prepared'}
+LOAN_CASES = ('cache_geometry_refusal','sized_payload_initialization','reader_prepare_exclusion',
+    'tracked_prefill_entry_refusal','owner_and_interval_capability','foreign_ticket_refusal',
+    'prepared_layout_retention','mask_publication_liveness','checked_queue_retirement',
+    'exclusive_write_protection','borrowed_overwrite_prefix_guard','used_decode_refusal',
+    'refill_interval_guard','refill_exact_slots_and_payload','publication_reentry_refusal',
+    'ready_reader_reopened','moved_smaller_next_generation','empty_resident_tail_cycle',
+    'reopened_owner_epoch_refusal','closed_epoch_refusal')
 # Separately admitted diagnostic assets, unchanged from the closed CPU cohort.
 # This does not refresh the qualified shared runtime or permit long model work.
 DELTA = {
@@ -39,7 +48,7 @@ def digest(path):
 def main():
     profile = sys.argv[1:] == ['--query-profile']
     guards.require(len(sys.argv) == 1 or profile, 'use no options or --query-profile; never retry a closed root')
-    root = B / 'decode-query-profile-component-v6' if profile else ROOT
+    root = B / 'decode-query-profile-component-v7' if profile else ROOT
     result = A / 'decode-query-profile-component-current.json' if profile else RESULT
     with (B / 'owned-v0141-measurement.lock').open('a+') as lock:
         fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
@@ -78,11 +87,12 @@ def main():
                 guards.require(digest(name) == expected, 'runtime asset changed: ' + name)
 
         runtime_unchanged()
-        previous = subprocess.check_output(['git', 'show', 'HEAD:' + str(RESULT.relative_to(P))], cwd=P)
-        guards.require(previous == RESULT.read_bytes(), 'commit the prior component outcome first')
+        previous = subprocess.check_output(['git', 'show', 'HEAD:' + str(result.relative_to(P))], cwd=P)
+        guards.require(previous == result.read_bytes(), 'commit the prior component outcome first')
         previous_reference = dict(commit=subprocess.check_output(['git','rev-parse','HEAD'],cwd=P,text=True).strip(),
-            path=str(RESULT.relative_to(P)),sha256=hashlib.sha256(previous).hexdigest(),
-            outcome='Original v6 host-task gate failed after51 existing passes; this new finite-DMA plan does not change that outcome.')
+            path=str(result.relative_to(P)),sha256=hashlib.sha256(previous).hexdigest(),
+            outcome=('Closed v6 passed110 prerequisite cases, without a cache loan.' if profile else
+                'Original v6 host-task gate failed after51 existing passes; this new finite-DMA plan does not change that outcome.'))
         guards.require(not root.exists(), 'inspect/close the existing owned check; no automatic retry')
         root.mkdir(mode=0o700)
         for name in ('tmp', 'cache'): (root / name).mkdir()
@@ -102,9 +112,9 @@ def main():
             limits='The six early cases check real-queue synthetic ordering, replay, source retirement and refusal, not native projection equivalence or model overlap. Grouped component covers all seven current model GU/Down pairs plus supported IQ4_XS/Q2_0 at H2560/FF640, windows1/4, groups10/16 and entries10/40, using two distinct blobs repeated in metadata. The oracle shares native scalar projection primitives; it isolates copy/grouping from separate execution, not common-mode projection defects or model quality. No invalid GPU address, stalled kernel, model, physical262144/session/RESTORE or throughput qualification.')
         if profile:
             record.update(mode='normal-route-query-profile-components', model_route_executed=False,
-                gate='Same-build provider17, submission10, normal verifier retirement8, grouped arithmetic16, query observer1, residency publication9, cache tail10, scratch host22 and actual Prefill device1+15+retirement1. Run smoke before full and retirement. Require exact init/moved/shrunk layouts, growth refusal, allocation and GEMM failure poison, reset recovery, metadata/USM/queue-domain refusal, untouched parent bytes and guards. Retirement must exit1 at the failed synchronization with owners retained. Original failed early51+6 stays unchanged. Any failure stops without retry or model execution.',
-                consumer='Prerequisite for checked parent-loan implementation; these110 cases never admit early PCIe scheduling or borrowed mode10.',
-                limits='Actual Prefill init/relayout and reset failure paths, without model weights or inference. The reset case changes a fully drained external queue to another context, exercising host-domain synchronization rejection; it does not inject a GPU fault or asynchronous device exception. Parent-loan generation/global graph-reader retirement remain unimplemented. No model speed, task quality, physical262144/session/RESTORE qualification. Existing grouped arithmetic oracle shares scalar projection primitives.')
+                gate='Same-build normal75 including14 tail/occupied-preflight cases, scratch host37, actual Prefill device1+15+retirement1, actual cache-loan20 and5 expected fail-stop children:154 checks. Smoke first; stop on any failure, no resize/retry. Cache loan uses sized256B prefix128 and1MiB tail slots, at most513MiB device parent,1024-cell session and256/128-row Prefill. Require exact payload/map restoration, moved second generation, empty resident-tail cycle, reopened owner epoch refusal, no writer/decode admission while masked/used/refilling/publishing, and exit1 before reset/close releases pending owners. Keep all prior arithmetic/layout/queue-domain/guard checks. Original failed early51+6 stays unchanged.',
+                consumer='Component prerequisite for checked cache borrowing; does not admit early PCIe scheduling or a borrowed mode10 model route.',
+                limits='Actual ExpertCache tickets and Prefill binding/relayout/reset, with bounded GPU overwrite/refill/map copies but no model weights/inference. The explicit queue drain does not exercise generator session/verifier/MTP graph retirement. Expected failure children inject host protocol/publication refusal, not GPU faults. Global integration source review and full model cycle remain required. No speed, task quality, physical262144/session/RESTORE qualification. Grouped arithmetic oracle shares scalar projection primitives.')
         owner = None
 
         def persist():
@@ -126,13 +136,15 @@ def main():
                 fixtures.append(('cache-tail', 'cache_tail_host_test', []))
                 fixtures.append(('prefill-scratch', 'prefill_scratch_host_test', []))
                 fixtures.extend(('prefill-device-'+mode, 'sycl_prefill_scratch_test', ['--case',mode])
-                    for mode in ('smoke','full','retirement'))
+                    for mode in ('smoke','full','retirement','loan',*LOAN_FAILURES))
             for label, name, args in fixtures:
                 fixture = build['fixtures'][name]
                 command = [fixture['path'], *args]
                 child_env = env
                 delta = {}
                 retirement = name == 'sycl_prefill_scratch_test' and args == ['--case','retirement']
+                loan_failure = name == 'sycl_prefill_scratch_test' and args[1] in LOAN_FAILURES
+                expected_exit = 1 if retirement or loan_failure else 0
                 if name == 'sycl_prefill_scratch_test':
                     delta = dict(STRATA_SYCL_PREFILL_SCRATCH_ALIAS='1',STRATA_PREFILL_MMQ='0',
                         STRATA_PREFILL_MOE_COMPACT_FP16='1',STRATA_SYCL_PREFILL_NATIVE16='bf16',
@@ -144,7 +156,7 @@ def main():
                 stdout, stderr = out.read_text(errors='replace'), err.read_text(errors='replace')
                 record['last_fixture'] = dict(name=name,command=command,exit_code=entry.get('exit_code'),
                     ownership_closed=supervision.closed(entry),stdout_sha256=digest(out),stderr_sha256=digest(err))
-                guards.require(supervision.closed(entry) and entry.get('exit_code') == (1 if retirement else 0),
+                guards.require(supervision.closed(entry) and entry.get('exit_code') == expected_exit,
                     'fixture failed: ' + (stdout + stderr)[-8192:])
                 if name == 'file_expert_source_test':
                     expected = 'arena_copy_dispatch_test cases=17 native_variable_stride=PASS source_bounds=PASS grouping=PASS limits=PASS cpu_fallback=PASS alias_exclusion=PASS callbacks=PASS'
@@ -160,12 +172,37 @@ def main():
                          'initial_layout','relayout_generation','failed_init','failed_relayout',
                          'nested_update','failed_take_and_reset','qsa_global_ordinal','qsa_resident_plan',
                          'qsa_stream_ring_formats','qsa_bad_metadata','qsa_product_overflow',
-                         'qsa_block_overflow','qsa_tail_rounding')]
-                    guards.require(cases == expected and 'prefill_scratch_fixture cases=22 status=PASS' in stdout,
+                         'qsa_block_overflow','qsa_tail_rounding','loan_cycle','loan_bounds','loan_read_admission',
+                         'loan_stale_generation','loan_wrong_order','loan_callback_false','loan_callback_throw',
+                         'loan_nested_transition','loan_poison_during_callback','loan_reuse_masked_range',
+                         'loan_writer_admission','loan_writer_refill_interval','loan_writer_publication',
+                         'loan_writer_exception','loan_writer_each_phase')]
+                    guards.require(cases == expected and 'prefill_scratch_fixture cases=37 status=PASS' in stdout,
                         'scratch arithmetic/layout-state contract failed: '+(stdout+stderr)[-8192:])
                     record['scratch_layout_contract_passed'] = True
                 elif name == 'sycl_prefill_scratch_test':
-                    if retirement:
+                    if loan_failure:
+                        mode = args[1]
+                        marker = f'prefill_cache_loan retirement={mode} phase={LOAN_FAILURES[mode]} owners_live=1'
+                        refusal = ('cache scratch parent closed before verified retirement/refill' if mode=='loan-parent-close'
+                                   else 'prefill release before cache loan refill/publication')
+                        guards.require(stdout.count(marker)==1 and
+                            f'Strata SYCL cleanup: {refusal}; retaining owners until process exit' in stderr and
+                            'UNEXPECTED_RETURN' not in stdout and 'prefill_scratch_device_complete=' not in stdout and
+                            'fixture:' not in stderr and
+                            not re.search('UR_RESULT_ERROR_|ZE_RESULT_ERROR_|terminate called',stderr),
+                            'pending cache loan did not stop before owner release: '+(stdout+stderr)[-8192:])
+                        cases = [marker+' expected_exit=1 status=PASS']
+                        record.setdefault('cache_loan_fail_stop_cases',[]).append(mode)
+                    elif args[1]=='loan':
+                        cases = [x for x in stdout.splitlines() if x.startswith('prefill_scratch_device case=')]
+                        guards.require(cases == [f'prefill_scratch_device case={n} status=PASS' for n in LOAN_CASES] and
+                            stdout.count('prefill_cache_loan_fixture cases=20 cycles=3 model_PP=UNRUN status=PASS')==1 and
+                            stdout.count('prefill_scratch_device_complete=1 model_PP=UNRUN')==1 and
+                            not re.search('UR_RESULT_ERROR_|ZE_RESULT_ERROR_|terminate called|Strata SYCL cleanup:',stderr),
+                            'actual cache ticket/refill contract failed: '+(stdout+stderr)[-8192:])
+                        record['cache_scratch_loan_contract_passed'] = True
+                    elif retirement:
                         marker = 'prefill_scratch_device retirement=reset queue_domain_changed=1 owners_live=1 old_queue_drained=1 foreign_in_order=1'
                         guards.require(stdout.count(marker)==1 and
                             'prefill reset/destruction completion uncertain; retaining owners until process exit' in stderr and
@@ -194,8 +231,9 @@ def main():
                     cases = [x for x in stdout.splitlines() if x.startswith('cache_tail ')]
                     expected = [f'cache_tail case={name} status=PASS' for name in
                         ('sized_boundary','sized_cross_boundary','sized_all','zero_need','no_fit',
-                         'uniform_boundary','layer_tail_floor','bounds','invalid_layout','request_rounding')]
-                    guards.require(cases == expected and 'cache_tail_fixture cases=10 status=PASS' in stdout,
+                         'uniform_boundary','layer_tail_floor','bounds','invalid_layout','request_rounding',
+                         'occupied_exact_tail','occupied_widened_tail','occupied_prefix_only','occupied_invalid')]
+                    guards.require(cases == expected and 'cache_tail_fixture cases=14 status=PASS' in stdout,
                         'cache tail contract failed: '+(stdout+stderr)[-8192:])
                     record['cache_tail_contract_passed'] = True
                 elif name == 'residency_publication_host_test':
@@ -252,9 +290,13 @@ def main():
                         'staged grouped arithmetic failed: ' + (stdout + stderr)[-8192:])
                     record['grouped_copy_projection_contract_passed'] = True
                 record['checks'].append(dict(command=command, cases=cases, passed=True,
-                    expected_exit=1 if retirement else 0,exit_code=entry.get('exit_code'),
+                    expected_exit=expected_exit,exit_code=entry.get('exit_code'),
                     environment_delta=delta,
                     stdout_sha256=digest(out), stderr_sha256=digest(err)))
+            if profile:
+                guards.require(record.get('cache_scratch_loan_contract_passed') and
+                    record.get('cache_loan_fail_stop_cases') == list(LOAN_FAILURES), 'incomplete actual loan/error gates')
+                record['cache_scratch_loan_fail_stop_contract_passed'] = True
             unchanged(); runtime_unchanged()
             record.update(complete=True, passed=True)
         except BaseException as error:
