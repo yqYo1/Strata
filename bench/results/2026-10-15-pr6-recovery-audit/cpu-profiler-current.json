@@ -1128,7 +1128,7 @@
   },
   "unitrace_gpu_coverage": {
     "schema": "strata-unitrace-known-work-v1",
-    "stage": "prepared",
+    "stage": "failed",
     "source_commit": "eb9aa2547e23d2cdf7b46ebb588415e9f673547e",
     "input_sha256": {
       "tools/sycl/bench_engine.py": "e5f588605ebc7799b54f8bf7df9ad2e363391375e50b788b9704a6b80887ca6b",
@@ -1325,9 +1325,85 @@
     "active": false,
     "complete": false,
     "passed": false,
-    "ownership_closed": false,
+    "ownership_closed": true,
     "gpu_timing_qualified": false,
     "model_qualified": false,
-    "observations": []
+    "observations": [
+      {
+        "name": "submission",
+        "execution_passed": true,
+        "coverage_passed": false,
+        "session_removed": true,
+        "pid": 393533,
+        "preload_evidence": {
+          "pid": 393533,
+          "loader": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_loader.so.0.12.0",
+          "threads_before": 1,
+          "preinit": 37,
+          "config_enabled": true,
+          "first_init": true,
+          "dispatch_result": 46,
+          "output_untouched": true,
+          "retained_reference_until_exit": true,
+          "runtime_teardown_qualified": false
+        },
+        "native_unix_wall_ns": 328871989,
+        "fixture_footer": "fixture_status=PASS mode=submission",
+        "coverage": {
+          "timeline_sha256": "4812c0597063ecca1e002ed389330f397da2754bd2d980c217f0173e8b2cae91",
+          "timeline_bytes": 871548,
+          "gpu_events": 680,
+          "host_events": 2303,
+          "program_kernels": 606,
+          "expected_program_kernels": 606,
+          "gpu_names": {
+            "zeCommandListAppendBarrier": 20,
+            "zeCommandListAppendMemoryCopy(H2D)[1028]": 33,
+            "main::{lambda(sycl::_V1::id<1>)#1}[SIMD32 {1; 1; 1} {257; 1; 1}]": 1,
+            "zeCommandListAppendMemoryCopy(D2H)[1028]": 3,
+            "zeCommandListAppendMemoryFill(D)[1028]": 1,
+            "zeCommandListAppendMemoryCopy(D2D)[1028]": 1,
+            "zeCommandListAppendMemoryCopy(M2D)[1164]": 5,
+            "main::{lambda(sycl::_V1::id<1>)#2}[SIMD32 {1; 1; 1} {257; 1; 1}]": 602,
+            "zeCommandListAppendMemoryCopy(D2M)[1164]": 5,
+            "zeCommandListAppendMemoryCopy(M2D)[1028]": 3,
+            "main::{lambda(sycl::_V1::id<1>)#3}[SIMD32 {1; 1; 1} {257; 1; 1}]": 3,
+            "zeCommandListAppendMemoryCopy(D2M)[1028]": 3
+          },
+          "program_kernel_service_positive": true,
+          "zero_gpu_durations": 0,
+          "gpu_wall_clock_bounds": false,
+          "gpu_identifiers_unique": true,
+          "all_gpu_flow_pairs": false,
+          "gpu_union_us": 3588.0,
+          "program_kernel_union_us": 3193.75,
+          "known_work_coverage_passed": true,
+          "timing_qualified": false,
+          "correlation_qualified": false,
+          "limits": "Whole bounded fixture; all-device union is not physical saturation or a production critical path. Host/GPU clock containment alone does not qualify sub-millisecond queue-delay attribution. Copy/fill inventory and graph replay require the independent UR/native record reconciliation before production."
+        },
+        "fresh_faults": [],
+        "boot_unchanged": true,
+        "driver_after": {
+          "pci": "/sys/bus/pci/devices/0000:05:00.0",
+          "driver": "xe",
+          "vendor": "0x8086",
+          "device": "0xe20c",
+          "kernel": "7.0.0-38-generic",
+          "devcoredump": false
+        }
+      }
+    ],
+    "error": "RuntimeError('known-work timing/count/correlation gate failed')",
+    "fresh_faults": [],
+    "boot_unchanged": true,
+    "driver_after": {
+      "pci": "/sys/bus/pci/devices/0000:05:00.0",
+      "driver": "xe",
+      "vendor": "0x8086",
+      "device": "0xe20c",
+      "kernel": "7.0.0-38-generic",
+      "devcoredump": false
+    }
   }
 }
