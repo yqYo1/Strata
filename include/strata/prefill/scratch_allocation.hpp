@@ -7,6 +7,52 @@
 
 namespace strata::prefill::detail {
 
+inline uint64_t scratch_product(uint64_t a, uint64_t b) {
+    if (b && a > std::numeric_limits<uint64_t>::max() / b)
+        throw std::overflow_error("prefill scratch: dimension product overflow");
+    return a * b;
+}
+
+inline int64_t scratch_qsa_primary(int64_t layers, int64_t interval,
+        bool has_states, int64_t first, int64_t count) {
+    constexpr int64_t limit = std::numeric_limits<int32_t>::max();
+    if (layers <= 0 || layers > limit || interval <= 0 || interval > layers)
+        throw std::invalid_argument("prefill scratch: invalid QSA layer geometry");
+    const int64_t total = layers / interval;
+    // first is GLOBAL, whereas count is the initialized range's length.
+    if (!has_states || first < 0 || first >= total || count <= 0 || count > total - first)
+        throw std::invalid_argument("prefill scratch: invalid primary QSA range");
+    return first;
+}
+
+struct ScratchQsaPlan {
+    uint64_t max_blocks, rows, values, scales, q4_bytes;
+};
+
+inline ScratchQsaPlan scratch_qsa_plan(int64_t cells, int64_t state_cells,
+        int64_t pages, int64_t slots, int mode, int64_t heads, int64_t dimension,
+        int64_t page_size, int64_t index_block, bool q8, bool q4, bool hybrid) {
+    constexpr int64_t limit = std::numeric_limits<int32_t>::max();
+    if (cells <= 0 || cells > limit || state_cells != cells || heads <= 0 || heads > limit ||
+        dimension <= 0 || dimension > limit || dimension % 4 || page_size <= 0 ||
+        index_block <= 0 || pages <= 0 || pages > limit || slots <= 0 || slots > pages ||
+        mode < 0 || mode > 2 || int(q8) + int(q4) + int(hybrid) > 1)
+        throw std::invalid_argument("prefill scratch: invalid QSA size metadata");
+    const int64_t expected_pages = (cells - 1) / page_size + 1;
+    if (pages != expected_pages || (mode == 0 ? slots != pages : slots >= pages) ||
+        (hybrid && mode != 0) || ((q8 || hybrid) && dimension % 64) ||
+        ((q4 || hybrid) && dimension % 128))
+        throw std::invalid_argument("prefill scratch: inconsistent QSA storage geometry");
+    const uint64_t blocks = uint64_t(cells / index_block) + 2;
+    if (blocks > uint64_t(limit))
+        throw std::overflow_error("prefill scratch: QSA index block count overflow");
+    const uint64_t rows = scratch_product(scratch_product(uint64_t(pages), uint64_t(heads)), uint64_t(page_size));
+    const uint64_t values = scratch_product(rows, uint64_t(dimension));
+    (void)scratch_product(values, 2); // FP16 byte payload before Alloc's take
+    return {blocks, rows, values, scratch_product(rows, uint64_t(dimension / 64)),
+        scratch_product(rows, scratch_product(uint64_t(dimension / 128), 144))};
+}
+
 // Existing routing/page tables use signed32 indices. Validate before callers
 // form T*expert_count or T*page_count, not only inside the final byte take.
 inline uint64_t scratch_rows(int64_t chunk, int64_t experts, int64_t cells, int64_t routes) {

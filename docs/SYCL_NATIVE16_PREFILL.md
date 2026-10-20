@@ -2149,6 +2149,24 @@ a small actual Prefill init/relayout failure fixture before parent-loan
 admission; helper-state exceptions alone do not exercise those paths.
 CPU-math/RAM/GPU resource attribution remains unknown; physical262144/session/
 RESTORE, model quality and clean speed remain separate gates.
+The next committed gate uses a shared QSA metadata/product preflight and checked
+Prefill retirement before freeing owners. Its new model-free SYCL fixture calls
+actual Prefill init/relayout/reset with a1024-cell session and256/128-row scratch.
+Freeze normal71+host22+device17 cases in a fresh v5 root: smoke capacity refusal
+first, then exact/moved/shrunk layouts, failed init/rebind poison, reset recovery,
+QSA/USM/context refusal and complete parent/guard readback. The final separate
+child changes a fully drained external queue's context; reset must exit1 before
+owner release. This tests host-domain synchronization rejection, not a device
+fault. Use the shared immutable safety/tracing environment with alias1,MMQ0,
+compactFP16,BF16,QSA1,GDN-chunk640,vLLM backend set before exec. Each child has
+180s wall/600s CPU/4GiB RSS and the job64MiB raw/artifact budget; stop on the first
+failure without resizing or retry. Pin the source/controller before rebuilding
+the current comparison cache; keep the396d0c91f301 fallback until the next model
+qualification selects a generation. These gates do not enable borrowed mixed
+scratch: parent-loan generation and all graph/MTP/cache-reader retirement,
+refill/publication and a new complete model plan remain required. Run the11
+offline controller tests separately after components. No new speed sample is
+claimed by this plan.
 Only a later qualified mechanism permits a
 fresh complete51+6-case plan. Preserve all pending-completion,
 untouched-output, payload/guard and owner-lifetime requirements under that plan.

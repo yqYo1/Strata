@@ -100,16 +100,61 @@ void test(const std::string& name) {
         });
         need(!old.ready() && old.generation() == 1);
         pd::ScratchLayoutState fresh; ready(fresh); need(!old.ready());
+    } else if (name == "qsa_global_ordinal") {
+        need(pd::scratch_qsa_primary(48, 4, true, 0, 12) == 0);
+        need(pd::scratch_qsa_primary(48, 4, true, 11, 1) == 11);
+        rejects([] { (void)pd::scratch_qsa_primary(48, 4, false, 0, 12); });
+        rejects([] { (void)pd::scratch_qsa_primary(48, 4, true, 12, 1); });
+        rejects([] { (void)pd::scratch_qsa_primary(48, 4, true, 11, 2); });
+        rejects([] { (void)pd::scratch_qsa_primary(48, 0, true, 0, 12); });
+    } else if (name == "qsa_resident_plan") {
+        const auto p = pd::scratch_qsa_plan(262144,262144,65536,65536,0,2,256,4,4,true,false,false);
+        need(p.max_blocks == 65538 && p.rows == 524288 && p.values == 134217728 &&
+            p.scales == 2097152 && p.q4_bytes == 150994944);
+    } else if (name == "qsa_stream_ring_formats") {
+        for (int mode : {1,2}) for (bool q4 : {false,true}) {
+            const auto p = pd::scratch_qsa_plan(262144,262144,65536,512,mode,2,256,4,4,!q4,q4,false);
+            need(p.rows == 524288);
+        }
+        need(pd::scratch_qsa_plan(1024,1024,256,256,0,2,256,4,4,false,false,true).values == 524288);
+        rejects([] { (void)pd::scratch_qsa_plan(1024,1024,256,128,1,2,256,4,4,false,false,true); });
+    } else if (name == "qsa_bad_metadata") {
+        rejects([] { (void)pd::scratch_qsa_plan(1024,1023,256,256,0,2,256,4,4,true,false,false); });
+        rejects([] { (void)pd::scratch_qsa_plan(1024,1024,255,255,0,2,256,4,4,true,false,false); });
+        rejects([] { (void)pd::scratch_qsa_plan(1024,1024,256,128,0,2,256,4,4,true,false,false); });
+        rejects([] { (void)pd::scratch_qsa_plan(1024,1024,256,256,1,2,256,4,4,true,false,false); });
+        rejects([] { (void)pd::scratch_qsa_plan(1024,1024,256,257,0,2,256,4,4,true,false,false); });
+        rejects([] { (void)pd::scratch_qsa_plan(1024,1024,256,256,3,2,256,4,4,true,false,false); });
+        rejects([] { (void)pd::scratch_qsa_plan(1024,1024,256,256,0,2,252,4,4,true,false,false); });
+        rejects([] { (void)pd::scratch_qsa_plan(1024,1024,256,256,0,2,192,4,4,false,true,false); });
+        rejects([] { (void)pd::scratch_qsa_plan(1024,1024,256,256,0,2,256,4,4,true,true,false); });
+    } else if (name == "qsa_product_overflow") {
+        rejects([] { (void)pd::scratch_product(maximum,2); });
+        rejects([] {
+            constexpr auto m = std::numeric_limits<int32_t>::max();
+            (void)pd::scratch_qsa_plan(m,m,m,m,0,m,m-3,1,4,false,false,false);
+        });
+    } else if (name == "qsa_block_overflow") {
+        rejects([] {
+            constexpr auto m = std::numeric_limits<int32_t>::max();
+            (void)pd::scratch_qsa_plan(m,m,m,m,0,2,256,1,1,true,false,false);
+        });
+    } else if (name == "qsa_tail_rounding") {
+        const auto p = pd::scratch_qsa_plan(1025,1025,257,257,0,2,256,4,4,true,false,false);
+        need(p.rows == 2056 && p.max_blocks == 258);
+        rejects([] { (void)pd::scratch_qsa_plan(0,0,0,0,0,2,256,4,4,true,false,false); });
     } else throw std::runtime_error("unknown case");
 }
 }
 int main() try {
     constexpr std::array names = {"guard_alignment", "shape_bounds", "gemm_64mib", "exact_capacity", "payload_overflow",
         "guard_overflow", "used_overflow", "capacity_bounds", "slack_overflow", "initial_layout",
-        "relayout_generation", "failed_init", "failed_relayout", "nested_update", "failed_take_and_reset"};
+        "relayout_generation", "failed_init", "failed_relayout", "nested_update", "failed_take_and_reset",
+        "qsa_global_ordinal", "qsa_resident_plan", "qsa_stream_ring_formats", "qsa_bad_metadata",
+        "qsa_product_overflow", "qsa_block_overflow", "qsa_tail_rounding"};
     for (const auto* name : names) {
         test(name); std::cout << "prefill_scratch case=" << name << " status=PASS\n";
     }
-    std::cout << "prefill_scratch_fixture cases=15 status=PASS\n";
+    std::cout << "prefill_scratch_fixture cases=22 status=PASS\n";
     return 0;
 } catch (const std::exception& error) { std::cerr << error.what() << '\n'; return 1; }

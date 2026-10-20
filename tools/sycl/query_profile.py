@@ -61,16 +61,20 @@ def current_build():
     guards.require(component['passed'] and component['complete'] and component['ownership_closed'] and
         not component['active'] and not component['fresh_faults'] and component['binary']==full['binary'] and
         component['fixtures']==full['fixtures'] and component['source_commit']==full['source_commit'] and
-        len(component['checks'])==8 and 'cases=17 native_variable_stride=PASS' in component['checks'][0]['cases'][0]
+        len(component['checks'])==11 and 'cases=17 native_variable_stride=PASS' in component['checks'][0]['cases'][0]
         and len(component['checks'][1]['cases'])==10 and len(component['checks'][2]['cases'])==8
         and len(component['checks'][3]['cases'])==16 and len(component['checks'][4]['cases'])==1
         and len(component['checks'][5]['cases'])==9 and component.get('residency_publication_contract_passed') is True
         and len(component['checks'][6]['cases'])==10 and component.get('cache_tail_contract_passed') is True
-        and len(component['checks'][7]['cases'])==15 and component.get('scratch_layout_contract_passed') is True
+        and len(component['checks'][7]['cases'])==22 and component.get('scratch_layout_contract_passed') is True
+        and len(component['checks'][8]['cases'])==1 and len(component['checks'][9]['cases'])==15
+        and len(component['checks'][10]['cases'])==1 and component['checks'][10].get('exit_code')==1
+        and component.get('prefill_device_layout_contract_passed') is True
+        and component.get('prefill_reset_retirement_contract_passed') is True
         and component.get('grouped_copy_projection_contract_passed') is True
         and component.get('query_profile_contract_passed') is True
         and component.get('mode')=='normal-route-query-profile-components',
-        'matching passed normal51+observer1+residency9+tail10+scratch15 required before model preparation')
+        'matching passed normal51+observer1+residency9+tail10+scratch22+device17 required before model preparation')
     count = 0
     for source in [full['project'], *full['dependencies']]:
         recovered = {n:hashlib.sha256(data).hexdigest() for n,data in

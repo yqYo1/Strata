@@ -38,6 +38,7 @@
 #include <stdexcept>
 #if defined(STRATA_ENABLE_SYCL)
 #include "strata/sycl/launch.hpp"
+#include "strata/sycl/checked_cleanup.hpp"
 #include "strata/sycl/cpu_wait_profile.hpp"
 #include "strata/prefill/native16.hpp"
 #include "strata/prefill/moe_window_routes.hpp"
@@ -641,6 +642,32 @@ struct Prefill::Impl {
 
 namespace {
 // the staging pool of a streamed session: every page of one layer (same sequence in init and bytes_needed)
+detail::ScratchQsaPlan preflight_qsa(const core::ModelGeometry& g, const core::SessionState& ss) {
+    const int64_t primary = detail::scratch_qsa_primary(g.n_layers, g.qsa_interval,
+        ss.qsa_states != nullptr, ss.qsa_ord0, ss.qsa_alloc);
+    const auto& q = ss.qsa_states[primary];
+    const auto s = strata::kernels::qsa_real_shapes();
+    if (g.n_head != s.n_head || g.n_head_kv != s.n_head_kv || g.head_dim != s.head_dim ||
+        g.idx_q_heads != s.idx_n_head || g.idx_key_dim != s.idx_dim)
+        throw std::invalid_argument("prefill scratch: QSA geometry differs from fixed scratch tensors");
+    const auto plan = detail::scratch_qsa_plan(ss.max_cells, q.max_cells, q.n_pages, q.n_slots,
+        q.kv_mode, g.n_head_kv, g.head_dim, s.page_size, s.idx_block, q.kv_int8, q.kv_q4, q.kv_hybrid);
+    if (!q.page_table)
+        throw std::invalid_argument("prefill scratch: missing QSA page table");
+    const bool device_present = q.kv_hybrid ? q.k_q && q.k_scale && q.v_q4 :
+        q.kv_q4 ? q.k_q4 && q.v_q4 :
+        q.kv_int8 ? q.k_q && q.v_q && q.k_scale && q.v_scale : q.k_pool && q.v_pool;
+    const auto& h = q.host;
+    const bool host_present = q.kv_q4 ? h.k_q4 && h.v_q4 :
+        q.kv_int8 ? h.k_q && h.v_q && h.k_scale && h.v_scale : h.k_pool && h.v_pool;
+    if (!device_present || (q.kv_mode != 0 && !host_present))
+        throw std::invalid_argument("prefill scratch: missing QSA storage for its format/mode");
+    if (q.kv_mode == 1 && (q.map.page_table != q.page_table || q.map.n_blocks != q.n_pages ||
+        q.map.n_slots != q.n_slots || !q.map.slot_block || !q.map.slot_stamp || !q.map.slot_ref ||
+        !q.map.miss_block || !q.map.miss_slot || !q.map.ctl))
+        throw std::invalid_argument("prefill scratch: incomplete QSA streaming map");
+    return plan;
+}
 // STRATA_KV_STAGE_OWN (A/B only): the staging pool gets its own allocation instead of borrowed expert slots, so a
 // streamed run lends the prompt path exactly the slots a resident one does (a lent expert runs on the CPU, which
 // rounds differently: without this an A/B compares two expert placements as well as two KV placements)
@@ -653,18 +680,23 @@ void take_stage(Alloc& o_borrowed, const core::SessionState& ss, const strata::k
     Alloc own;
     own.owned = o_borrowed.owned;
     Alloc& o = stage_own() ? own : o_borrowed;
-    const size_t rows = (size_t) q0.n_pages * s.n_head_kv * s.page_size;
+    const size_t rows = size_t(detail::scratch_product(detail::scratch_product(
+        uint64_t(q0.n_pages), uint64_t(s.n_head_kv)), uint64_t(s.page_size)));
     if (q0.kv_q4) {
-        st.k_q4 = o.take<uint8_t>(rows * strata::kernels::kv_q4_bytes_per_head((int) s.head_dim), ok);
-        st.v_q4 = o.take<uint8_t>(rows * strata::kernels::kv_q4_bytes_per_head((int) s.head_dim), ok);
+        const size_t bytes = size_t(detail::scratch_product(rows, strata::kernels::kv_q4_bytes_per_head((int) s.head_dim)));
+        st.k_q4 = o.take<uint8_t>(bytes, ok);
+        st.v_q4 = o.take<uint8_t>(bytes, ok);
     } else if (q0.kv_int8) {
-        st.k_q = o.take<int8_t>(rows * s.head_dim, ok);
-        st.v_q = o.take<int8_t>(rows * s.head_dim, ok);
-        st.k_scale = o.take<uint16_t>(rows * (s.head_dim / 64), ok);
-        st.v_scale = o.take<uint16_t>(rows * (s.head_dim / 64), ok);
+        const size_t values = size_t(detail::scratch_product(rows, uint64_t(s.head_dim)));
+        const size_t scales = size_t(detail::scratch_product(rows, uint64_t(s.head_dim / 64)));
+        st.k_q = o.take<int8_t>(values, ok);
+        st.v_q = o.take<int8_t>(values, ok);
+        st.k_scale = o.take<uint16_t>(scales, ok);
+        st.v_scale = o.take<uint16_t>(scales, ok);
     } else {
-        st.k_pool = o.take<uint16_t>(rows * s.head_dim, ok);
-        st.v_pool = o.take<uint16_t>(rows * s.head_dim, ok);
+        const size_t values = size_t(detail::scratch_product(rows, uint64_t(s.head_dim)));
+        st.k_pool = o.take<uint16_t>(values, ok);
+        st.v_pool = o.take<uint16_t>(values, ok);
     }
 }
 strata::kernels::QsaAttnPools pools_of(const strata::kernels::KvHostPools& h, const int32_t* table) {
@@ -687,8 +719,23 @@ void Prefill::reset() {
 
 void Prefill::release() {
     if (!impl_) return;
+#if defined(STRATA_ENABLE_SYCL)
+    strata::sycl_backend::checked_cleanup([&] {
+        const auto drain = [](cudaStream_t queue, const char* role) {
+            if (!queue) return;
+            const auto status = cudaStreamSynchronize(queue);
+            if (status != cudaSuccess) {
+                std::fprintf(stderr, "prefill: %s synchronization failed: %s\n", role, cudaGetErrorString(status));
+                throw std::runtime_error("prefill scratch retirement failed");
+            }
+        };
+        drain(impl_->cs, "compute");
+        if (impl_->copy != impl_->cs) drain(impl_->copy, "copy");
+    }, [] {}, "prefill reset/destruction completion uncertain");
+#else
     if (impl_->cs) cudaStreamSynchronize(impl_->cs);
     if (impl_->copy) cudaStreamSynchronize(impl_->copy);
+#endif
     for (int i = 0; i < RING_MAX; ++i) {
         if (impl_->copied[i]) cudaEventDestroy(impl_->copied[i]);
         if (impl_->used[i]) cudaEventDestroy(impl_->used[i]);
@@ -896,7 +943,10 @@ bool Prefill::init(const core::WeightTable& wt, const core::ModelGeometry& g, co
     Impl& m = *impl_;
     detail::ScratchLayoutState::Update layout(m.scratch_layout, true);
     if (!layout.started()) { err = "prefill: init requires reset scratch layout"; return false; }
-    try { (void) detail::scratch_rows(chunk, g.n_expert, ss.max_cells, K); }
+    try {
+        (void) detail::scratch_rows(chunk, g.n_expert, ss.max_cells, K);
+        (void) preflight_qsa(g, ss);
+    }
     catch (const std::exception& e) { err = e.what(); return false; }
     const int alias_mode = scratch_alias_mode();
     if (alias_mode < 0) {
@@ -909,9 +959,14 @@ bool Prefill::init(const core::WeightTable& wt, const core::ModelGeometry& g, co
         return false;
     }
 #if defined(STRATA_ENABLE_SYCL)
-    if (alias_mode) {
-        if (!stream) { err = "prefill scratch alias: requires an explicit in-order queue"; return false; }
-        try { (void) strata::sycl_backend::queue_for(stream); }
+    {
+        if (alias_mode && !stream) { err = "prefill scratch alias: requires an explicit in-order queue"; return false; }
+        try {
+            auto& q = strata::sycl_backend::queue_for(stream);
+            auto runtime = strata::sycl_backend::runtime_for();
+            if (q.get_context() != runtime->context() || q.get_device() != runtime->device())
+                throw std::invalid_argument("prefill: queue differs from engine runtime domain");
+        }
         catch (const std::exception& e) { err = e.what(); return false; }
     }
 #endif
@@ -922,6 +977,12 @@ bool Prefill::init(const core::WeightTable& wt, const core::ModelGeometry& g, co
     if (g.n_embd != N || g.hc != HC || g.hc_lr != LR || g.n_expert < 1 || ss.k != K) {
         err = "prefill: geometry differs from the artifact's"; return false;
     }
+#if defined(STRATA_ENABLE_SYCL)
+    if (borrow) try {
+        strata::sycl_backend::validate_device_span(borrow, size_t(borrow_bytes),
+            strata::sycl_backend::queue_for(m.cs));
+    } catch (const std::exception& e) { err = e.what(); return false; }
+#endif
     cudaGetDevice(&m.device);
     if (stage_le_ < 0) stage_le_ = g.n_layers;
     if (stage_lb_ < 0 || stage_lb_ >= stage_le_ || stage_le_ > g.n_layers || (stage_le_ < g.n_layers) != (next_ != nullptr)) {
@@ -938,7 +999,8 @@ bool Prefill::init(const core::WeightTable& wt, const core::ModelGeometry& g, co
             err = std::string("prefill: the token id buffer (") + cudaGetErrorString(e) + ")";
             return false;
         }
-        m.owned.push_back(m.tok_dev);
+        try { m.owned.push_back(m.tok_dev); }
+        catch (...) { (void) cudaFree(m.tok_dev); m.tok_dev = nullptr; throw; }
         m.tok_host.resize((size_t) chunk);
     }
 #if defined(STRATA_ENABLE_SYCL)
@@ -1009,11 +1071,13 @@ bool Prefill::init(const core::WeightTable& wt, const core::ModelGeometry& g, co
         const int64_t pages = ss.qsa_states[ss.qsa_primary()].n_pages;
         std::vector<int32_t> ident((size_t) pages);
         for (int64_t i = 0; i < pages; ++i) ident[(size_t) i] = (int32_t) i;
-        if (cudaMalloc((void**) &m.ident_table, ident.size() * 4) != cudaSuccess ||
-            cudaMemcpy(m.ident_table, ident.data(), ident.size() * 4, cudaMemcpyHostToDevice) != cudaSuccess)
-            ok = false;
-        else
-            m.owned.push_back(m.ident_table);
+        if (cudaMalloc((void**) &m.ident_table, ident.size() * 4) != cudaSuccess) ok = false;
+        else {
+            try { m.owned.push_back(m.ident_table); }
+            catch (...) { (void) cudaFree(m.ident_table); m.ident_table = nullptr; throw; }
+            if (cudaMemcpy(m.ident_table, ident.data(), ident.size() * 4, cudaMemcpyHostToDevice) != cudaSuccess)
+                ok = false;
+        }
     }
     if (!ok) { err = "prefill: host buffers or events for a chunk of " + std::to_string(chunk) + " tokens"; return false; }
     Alloc o;
@@ -1065,7 +1129,7 @@ bool Prefill::carve(size_t T, void* alloc) {
     s.n_head = g.n_head; s.n_head_kv = g.n_head_kv; s.head_dim = g.head_dim; s.idx_n_head = g.idx_q_heads;
     s.idx_dim = g.idx_key_dim;
     m.cap = strata::kernels::qsa_selection_width(strata::kernels::kTopkMaxCells, s);
-    m.max_blocks = ss.qsa_states[ss.qsa_primary()].max_cells / s.idx_block + 2;
+    m.max_blocks = int64_t(preflight_qsa(g, ss).max_blocks);
     {
         // one region for the attention half's and the MoE half's scratch (see gdn_set_bytes)
         const bool fz = fused_layout(T, m.src != nullptr);
@@ -1182,6 +1246,12 @@ bool Prefill::relayout(int64_t chunk, void* borrow, uint64_t borrow_bytes, std::
     // until checked retirement/reset; no later run may use its mixed fields.
     detail::ScratchLayoutState::Update layout(m.scratch_layout, false);
     if (!layout.started()) { err = "prefill: scratch layout generation unavailable"; return false; }
+#if defined(STRATA_ENABLE_SYCL)
+    try {
+        strata::sycl_backend::validate_device_span(borrow, size_t(borrow_bytes),
+            strata::sycl_backend::queue_for(m.cs));
+    } catch (const std::exception& e) { err = e.what(); return false; }
+#endif
     if (cudaStreamSynchronize(m.cs) != cudaSuccess || cudaStreamSynchronize(m.copy) != cudaSuccess) {
         err = "prefill: relayout: the stream failed";
         return false;
@@ -1494,6 +1564,7 @@ double Prefill::pinned_share() { return g_pinned_share; }
 
 uint64_t Prefill::bytes_needed(const core::ModelGeometry& g, const core::SessionState& ss, int64_t chunk) {
     (void) detail::scratch_rows(chunk, g.n_expert, ss.max_cells, K);
+    const auto qsa_plan = preflight_qsa(g, ss);
     const int alias_mode = scratch_alias_mode();
     if (alias_mode < 0)
         throw std::invalid_argument("prefill: STRATA_SYCL_PREFILL_SCRATCH_ALIAS requires exact 0 or SYCL-only 1");
@@ -1520,7 +1591,7 @@ uint64_t Prefill::bytes_needed(const core::ModelGeometry& g, const core::Session
     s.n_head = g.n_head; s.n_head_kv = g.n_head_kv; s.head_dim = g.head_dim; s.idx_n_head = g.idx_q_heads;
     s.idx_dim = g.idx_key_dim;
     const int64_t cap = strata::kernels::qsa_selection_width(strata::kernels::kTopkMaxCells, s);
-    const int64_t max_blocks = ss.qsa_states[ss.qsa_primary()].max_cells / s.idx_block + 2;
+    const int64_t max_blocks = int64_t(qsa_plan.max_blocks);
     o.take<uint8_t>((size_t) std::max({gdn_set_bytes(T), qsa_set_bytes(T, cap, max_blocks, 256, 32, s),
                                        moe_set_bytes(T, g.n_expert, fused_layout(T, true))}), ok);
     for (int i = 0; i < DQ; ++i) { o.take<uint16_t>(1280 * 2560, ok); o.take<uint16_t>(2560 * 640, ok); }
