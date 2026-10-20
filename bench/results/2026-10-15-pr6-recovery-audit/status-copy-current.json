@@ -229,7 +229,8 @@
   "binary": {
     "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/status-copy-pipeline-v4/status_copy",
     "bytes": 184968,
-    "sha256": "e78ce6f47befa69909221c1e2ad1a36d37212285a05e05bc050149e254f4a912"
+    "sha256": "e78ce6f47befa69909221c1e2ad1a36d37212285a05e05bc050149e254f4a912",
+    "retired": true
   },
   "ownership_closed": true,
   "cells_results": [
@@ -3009,5 +3010,31 @@
     "quiet_api_calls": "Unobserved: full trace absent, not evidence of zero UR calls."
   },
   "decision": "All execution/whole-timing/profiled-GPU-clock checks passed, no fresh fault. All four predeclared component mechanism screens failed; no queue default, host destination or model route adopted. Ordinary-host copy enqueue contains almost all prior fill service, while USM shifts that wait into the following checked drain. This establishes the effect in this finite fill fixture, not a quantitative model attribution or faster inference.",
-  "next_action": "End status-query/copy microbenchmark series. Identify usable installed GPU profiling/counter capabilities, then measure actual production kernel service versus host submission/dependencies on the qualified117K route. Audit coverage/tags before enabling existing command profiling; unavailable PCIe/GDDR/XMX ceilings remain unknown. Preserve clean fallback, two consumed model generations and14 separate legacy provenance holds."
+  "next_action": "End status-query/copy microbenchmark series. Identify usable installed GPU profiling/counter capabilities, then measure actual production kernel service versus host submission/dependencies on the qualified117K route. Audit coverage/tags before enabling existing command profiling; unavailable PCIe/GDDR/XMX ceilings remain unknown. Preserve clean fallback, two consumed model generations and14 separate legacy provenance holds.",
+  "source_retirement": {
+    "paths": [
+      "bench/sycl/status_copy.cpp",
+      "tools/sycl/status_copy.py"
+    ],
+    "recover_commit": "5f31f8882db69eff1acd86f7b753aae568f2f6d6",
+    "reason": "Finite-copy series closed without a passing optimization screen; no maintained caller, build target or imminent comparison consumes this fixture/controller. Restore original source/recipe from Git if a new concrete question arises."
+  },
+  "artifact_retirement": {
+    "manifest": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/closed-status-copy-pipeline-v4-and-research-20261021.jsonl",
+    "sha256": "1eabda3976aa9631dce8c36e3eb705cbcef1a129590d79bb7de56e0e861f52ff",
+    "files": 60,
+    "bytes": 741980,
+    "fixture_inputs_recovered": 143,
+    "native_inputs_recovered": 9836,
+    "original_plan_commit": "bb1dab6d991677b9f0ff68b45ce77065bc42e1c0",
+    "original_build_commit": "5301a62fca03fbdff63f1685d2e5e4c04eb41698",
+    "pushed_retained_feature_ref": "bfabb97a681873b6f7cc6583ee4d5beb8a493d57",
+    "exact_compile_argv_environment_compiler_and_binary_verified": true,
+    "remaining_model_generations": 2,
+    "model_engines_unchanged": true,
+    "legacy_provenance_holds": 14,
+    "root_absent_after_deletion": true,
+    "worker_terminals_absent_before_deletion": true,
+    "outcome_unchanged": true
+  }
 }

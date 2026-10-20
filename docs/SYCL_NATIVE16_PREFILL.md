@@ -2790,10 +2790,13 @@ destination change. End this status-copy microbenchmark series and move to
 actual production GPU-service/submission/dependency coverage, checking installed
 profiler/counter capability and missing command-profile tags first. Clean model
 speed, physical262144/session/RESTORE and sustained decode qualification are
-unchanged. The compact result retains all72 steady samples and12 warmups;
-normal output and this unused standalone build are pending source-verified
-retirement at this boundary. The two consumed model generations and14 legacy
-provenance holds remain separate.
+unchanged. The compact result retains all72 steady samples and12 warmups.
+After recovering143 fixture/controller inputs,9836 native inputs and the exact
+original compiler recipe from pushed retained history, Main retired60 external
+files/741980B, including this unused build and consumed research output. Its
+unused fixture/controller sources are also removed from the active tree and
+recoverable at`5f31f8882`. Both model engines remain unchanged; the two consumed
+model generations and14 legacy provenance holds remain separate.
 
 For the separate earlier early-PCIe candidate, only a later qualified mechanism permits a
 fresh complete51+6-case plan. Preserve all pending-completion,
