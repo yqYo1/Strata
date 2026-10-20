@@ -99,11 +99,29 @@ def checked_owner_evidence(log, loan_checks):
             masked[6]=='0' and ready[6]=='1', 'loan identity/decode admission differs')
         generations.append(int(masked[2]))
     guards.require(generations[1]>generations[0], 'loan generation was reused')
+    dense=list(re.finditer(
+        r'^strata prefill dense: phase=(retired|bank|restored|cache-loan) residency=(Full|Bank) '
+        r'activations=(\d+) full_bytes=(\d+) bank_bytes=(\d+) snapshot_bytes=(\d+) '
+        r'overlay_rows=0 session_recapture=0 verifier=1 free_bytes=(\d+) total_bytes=(\d+)$',log,re.M))
+    expected_dense=[('retired','Full',0),('bank','Bank',0),('restored','Full',48),
+                    ('retired','Full',0),('cache-loan','Full',0),('restored','Full',0)]
+    guards.require(len(dense)==log.count('strata prefill dense:')==6 and
+        [(m[1],m[2],int(m[3])) for m in dense]==expected_dense,
+        'long bank/short Full dense residency was not observed')
+    full_bytes,bank_bytes,snapshot_bytes=map(int,dense[0].groups()[3:6])
+    guards.require(full_bytes==snapshot_bytes>bank_bytes>0 and all(
+        tuple(map(int,m.groups()[3:6]))==(full_bytes,bank_bytes,snapshot_bytes) and
+        0<=int(m[7])<=int(m[8]) and int(m[8])==int(dense[0][8])>0 for m in dense),
+        'dense owner sizes or memory observation differs')
+    for i in range(2):
+        a,b,c=dense[3*i:3*i+3]
+        guards.require(publications[2*i].start()<a.start()<b.start()<c.start()<publications[2*i+1].start(),
+            'dense residency observation is outside its request loan')
     bindings=list(re.finditer(
         r'^strata prefill cache binding: generation=(\d+) parent_match=1 execution_distinct=1$',log,re.M))
     guards.require(len(bindings)==log.count('strata prefill cache binding:')==1 and
         int(bindings[0][1])==generations[0] and
-        publications[0].start()<bindings[0].start()<publications[1].start(),
+        dense[1].start()<bindings[0].start()<dense[2].start(),
         'actual execution-cache substitution did not retain the parent owner')
     windows=list(re.finditer(
         r'^strata MoE cache loan: generation=(\d+) layout_generation=(\d+) layer=(\d+) '
@@ -133,11 +151,13 @@ def checked_owner_evidence(log, loan_checks):
             tuple(map(int,entry.groups()[:3]))==tuple(map(int,done.groups()))==(layer,0,rows) and
             int(entry[4])==rows*2560*2 and int(entry[5])==region_bytes>0 and
             int(entry[6])<=region_bytes and int(entry[7])==0 and int(entry[8])==rows*10240*2 and
-            previous<entry.start()<window.start()<done.start()<publications[1].start(),
+            previous<entry.start()<window.start()<done.start()<dense[2].start(),
             'borrowed FFN identity/span/retirement order differs')
         previous=done.start()
     return dict(generations=generations,layout_generation=layout_generation,
         decode_admission_transitions=[0,1,0,1],execution_cache_substitutions_checked=1,
+        short_full_dense_residency_observed=True,long_dense_layer_activations=48,
+        full_dense_weight_bytes=full_bytes,bank_dense_weight_bytes=bank_bytes,
         borrowed_ffn_entries=48,checked_retirements=48,
         prefill_rows=rows,used_bytes=used,capacity_bytes=capacity,
         primary_bytes=rows*2560*2,region_bytes=region_bytes,tail_bytes=0,
@@ -245,7 +265,7 @@ def prepare():
         settings_sha256=gen.common.digest(gen.SETTINGS),complete=False,passed=False,active=False,
         model_quality_qualified=False,model_performance_measured=False,model_route_executed=False,small_requests=[],
         budgets=dict(wall=900,cpu=54000,rss_cap=96<<30,text_cap=64<<20,file_cap=64<<20,total_cap=64<<20),
-        gate='One process;1280 actual slots; two thinking-template requests8194/257 with16 generated tokens each. Positive tail loans at distinct chunks/offsets; actual layer-cache substitution retains the checked original parent; all48 mixed FFNs use the first sealed loan with checked retirement; actual decode admission closes at each mask and opens after each refill. GPU residency equals host after each lend/refill; full resident payload including unlent prefix equals immutable RAM; same slots restored; configured MTP detach/restore once; G1/T4 reached; no protocol/runtime/fresh-driver fault; source/model/runtime/boot unchanged. No retry.',
+        gate='One process;1280 actual slots; two thinking-template requests8194/257 with16 generated tokens each. Positive tail loans at distinct chunks/offsets; actual layer-cache substitution retains the checked original parent; all48 mixed FFNs retire before Full dense restoration with48 layer activations; short request observes Full dense residency and zero layer activations. Every dense phase belongs to its loan; actual decode admission closes at each mask and opens after each refill. GPU residency equals host after each lend/refill; full resident payload including unlent prefix equals immutable RAM; same slots restored; configured MTP detach/restore once; G1/T4 reached; no protocol/runtime/fresh-driver fault; source/model/runtime/boot unchanged. No retry.',
         limits='Diagnostic admission only. Readback audit adds work; no clean speed, task quality, hardware saturation, full physical262144/session/RESTORE or70tok/s qualification.',
         consumer='Prerequisite for matched owned/borrowed capacity and32K+ long-generation comparisons. Retire successful raw output after compact evidence is committed.')
     (ROOT/'plan.json').write_text(json.dumps(record,indent=2)+'\n')

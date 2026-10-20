@@ -24,8 +24,13 @@ def log():
 
 
 def owner_log():
+    def dense(phase,residency,activations):
+        return f'strata prefill dense: phase={phase} residency={residency} activations={activations} '+\
+            'full_bytes=2116951040 bank_bytes=50918400 snapshot_bytes=2116951040 '+\
+            'overlay_rows=0 session_recapture=0 verifier=1 free_bytes=100000000 total_bytes=11000000000'
     result=[log().rstrip(),
         'strata cache loan: phase=masked generation=1 chunk=8192 first=160 lent=1120 decode_ready=0',
+        dense('retired','Full',0),dense('bank','Bank',0),
         'strata prefill cache binding: generation=1 parent_match=1 execution_distinct=1']
     for layer in range(48):
         result += [f'strata MoE mixed owners: phase=entry layer={layer} first=0 rows=8193 '
@@ -36,8 +41,10 @@ def owner_log():
             'used=2200000000 capacity=2300000000',
             f'strata MoE mixed owners: phase=retired layer={layer} first=0 rows=8193 '
             'route_status=0 shared_HC=checked_drain callbacks=after_return']
-    result += ['strata cache loan: phase=ready generation=1 chunk=8192 first=160 lent=1120 decode_ready=1',
+    result += [dense('restored','Full',48),
+        'strata cache loan: phase=ready generation=1 chunk=8192 first=160 lent=1120 decode_ready=1',
         'strata cache loan: phase=masked generation=2 chunk=256 first=360 lent=920 decode_ready=0',
+        dense('retired','Full',0),dense('cache-loan','Full',0),dense('restored','Full',0),
         'strata cache loan: phase=ready generation=2 chunk=256 first=360 lent=920 decode_ready=1']
     return '\n'.join(result)+'\n'
 
@@ -78,6 +85,27 @@ class CheckedOwners(unittest.TestCase):
         self.assertEqual(result['checked_retirements'],48)
         self.assertEqual(result['decode_admission_transitions'],[0,1,0,1])
         self.assertEqual(result['execution_cache_substitutions_checked'],1)
+        self.assertTrue(result['short_full_dense_residency_observed'])
+        self.assertEqual(result['long_dense_layer_activations'],48)
+
+    def test_short_full_dense_residency_and_restore_are_required(self):
+        for old,new in (('phase=cache-loan residency=Full','phase=cache-loan residency=Bank'),
+                ('phase=cache-loan residency=Full activations=0','phase=cache-loan residency=Full activations=1'),
+                ('phase=restored residency=Full activations=48','phase=restored residency=Full activations=47'),
+                ('snapshot_bytes=2116951040','snapshot_bytes=2116951041'),
+                ('overlay_rows=0','overlay_rows=1'),('verifier=1','verifier=0')):
+            with self.subTest(old=old),self.assertRaises(RuntimeError):self.check(owner_log().replace(old,new,1))
+        lines=owner_log().splitlines()
+        short=next(x for x in lines if 'phase=cache-loan residency=' in x)
+        lines.remove(short)
+        for value in ('\n'.join(lines)+'\n','\n'.join(lines+[short])+'\n',owner_log()+short+'\n'):
+            with self.subTest(value=value),self.assertRaises(RuntimeError):self.check(value)
+        lines=owner_log().splitlines()
+        restored=next(x for x in lines if 'phase=restored residency=Full activations=48' in x)
+        lines.remove(restored)
+        at=next(i for i,x in enumerate(lines) if 'strata prefill cache binding:' in x)
+        lines.insert(at+1,restored)
+        with self.assertRaises(RuntimeError):self.check('\n'.join(lines)+'\n')
 
     def test_missing_or_false_execution_cache_substitution(self):
         line='strata prefill cache binding: generation=1 parent_match=1 execution_distinct=1\n'
