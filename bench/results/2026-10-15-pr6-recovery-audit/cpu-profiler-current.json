@@ -1675,8 +1675,8 @@
   },
   "unitrace_recording_window": {
     "schema": "strata-profile-recording-window-v1",
-    "stage": "failed",
-    "source_commit": "15ba9e825fcd4b5bb9de3d065209952e5708e802",
+    "stage": "prepared",
+    "source_commit": "6269902082bfb811ca237bf45faf07e3152898ea",
     "input_sha256": {
       "tools/sycl/bench_engine.py": "e5f588605ebc7799b54f8bf7df9ad2e363391375e50b788b9704a6b80887ca6b",
       "tools/sycl/build_engine.py": "4ac433f6a48bff62b69e83e9be5019e213f1f57c5b6ddfed802a153df535f80e",
@@ -1697,8 +1697,14 @@
       "tools/sycl/unitrace_profile.py": "c87c9934f3ee2b5fa6e1dbcfa05689bb5f9a8c6cf178e23c716a4e3cb7c7cf27",
       "tools/sycl/ur_validation.py": "1ddf6a2aceb4d7b538d1d3ab2ef3093ec10bd90943c52e3397c832b61194bf39",
       "tools/sycl/production_profile.py": "9fe255c9633d80fc13060fdfb6cf143d66f4b464bec8ee1a776b1f88e2d89918",
-      "tools/sycl/profile_window.py": "0b810388b72b6024d4ea668fbde8c398ed58155dbde13f4acbcee28b3e57aa65",
-      "bench/sycl/profile_window.cpp": "a67d755b60cd3d752be2334cc30f4923494df9a4d536f9c5ca8904a05b1ddb38"
+      "tools/sycl/profile_window.py": "e17d8f49da697c8e79f92e50878ea4a7d8db1256b9b29ce7c740ab2f25e8a74f",
+      "bench/sycl/profile_window.cpp": "6a9946b4d993ebc6dd0d67543ebc13fc91dd68646a21d49738516235668e2bec"
+    },
+    "previous_failed_build": {
+      "commit": "6269902082bfb811ca237bf45faf07e3152898ea",
+      "path": "bench/results/2026-10-15-pr6-recovery-audit/cpu-profiler-current.json",
+      "sha256": "be5ca0ce3ce03e016144dae6e24a511b4d87e8940ac30bc11130bd4f60094e63",
+      "outcome": "Source15ba fixture compilation failed before any native/GPU execution: missing maintained runtime declaration. Original failure stays failed; this plan adds its header and prospective source/device/failure-closure checks."
     },
     "assets": {
       "collector": {
@@ -1746,9 +1752,16 @@
       "sha256": "1290881b4e12a5e002e5b0de0787f85328ee5fe19f253a54be1cdd97dc2f26eb"
     },
     "compiler_inputs": {
-      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/unitrace-recording-window-v1/compiler-inputs.json",
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/unitrace-recording-window-v2/compiler-inputs.json",
       "files": 8698,
       "sha256": "40b4467052d275114cf7f3c243b12862cdb2fa893d8f658100d1d88c3a544dc1"
+    },
+    "native_compile_inputs": {
+      "tests/sycl/compat.cpp": "1040611974c4454c28d327f4f21a94d4e6cbc034f49a15560634886a5fb51994",
+      "src/sycl/runtime.cpp": "e6c20e148bc7ceec250ad9a58ddfc851c1476aaab3d68982d2aee2897e572b83",
+      "src/sycl/compat.cpp": "06f254e5c8636f73bee4ff810ce1e551186fe72498f6bb98fc4e95eb6cddec8f",
+      "src/sycl/command_profile.cpp": "480139608ebad117634cfe98a4e30c12926757ef026f23da3e66b7c78f6adf2b",
+      "include/strata/sycl/runtime.hpp": "a0e0687886e09c50922d01f7023ba3b51e8ac2dbe43f461a798ba82438b2a074"
     },
     "command": [
       "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin/clang++",
@@ -1766,7 +1779,7 @@
       "/home/yayoi/orca/workspaces/Strata/sycl/src/sycl/command_profile.cpp",
       "/usr/lib/x86_64-linux-gnu/libze_loader.so",
       "-o",
-      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/unitrace-recording-window-v1/profile_window"
+      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/unitrace-recording-window-v2/profile_window"
     ],
     "build_environment": {
       "PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin:/usr/bin:/bin",
@@ -1790,8 +1803,8 @@
       "STRATA_SYCL_VERIFY_NATIVE_CAPTURE": "0",
       "STRATA_SYCL_PREFILL_SAME_QUEUE": "1",
       "STRATA_SYCL_PREFILL_NATIVE16": "bf16",
-      "XDG_CACHE_HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/unitrace-recording-window-v1/cache",
-      "TMPDIR": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/unitrace-recording-window-v1/tmp"
+      "XDG_CACHE_HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/unitrace-recording-window-v2/cache",
+      "TMPDIR": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/unitrace-recording-window-v2/tmp"
     },
     "gates": "One new standalone fixture, not a model engine. Wrapper includes original maintained compat test and adds bounded stdin gates before/after its complete main body, plus LevelZero device timer properties and four paired-clock brackets at each boundary. Native get-properties/global-timestamps calls add no kernel/copy/fill work. Build exact committed recipe, then commit executable identity before preparing two fresh processes: paused-throughout then resume-after-ready/pause-after-drained. Both execute606 kernels/numerical guards; expected recorded kernels0/606. Separate owned CPU control commands mutate only the unique session shared memory; target environment remains immutable. All control/target processes, constructor proof and fault/boot checks must close; no model yet.",
     "retention": "Current standalone recording-window qualification; retire executable and build outputs after the model control path is qualified, retaining recoverable source/recipe and compact control/coverage evidence.",
@@ -1807,20 +1820,6 @@
     "passed": false,
     "ownership_closed": true,
     "request_window_qualified": false,
-    "model_qualified": false,
-    "error": "RuntimeError('window build failed: /home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/unitrace-recording-window-v1/build-owned/build.stderr')",
-    "build_failure": {
-      "exit_code": 1,
-      "error_lines": [
-        "/home/yayoi/orca/workspaces/Strata/sycl/bench/sycl/profile_window.cpp:62:50: error: no member named 'runtime_for' in namespace 'strata::sycl_backend'",
-        "   62 |         const auto runtime=strata::sycl_backend::runtime_for();",
-        "      |                                                  ^~~~~~~~~~~",
-        "1 error generated."
-      ],
-      "stderr_sha256": "02e5a3dd67e89e3e4c593a0a6bc6fb0862b6a37ab63762330ff1b161a37e5d54",
-      "native_executed": false,
-      "engine_generations_unchanged": true,
-      "next_action": "Add the missing maintained runtime header declaration; preserve this failed source/recipe, then commit a fresh build plan before retry."
-    }
+    "model_qualified": false
   }
 }
