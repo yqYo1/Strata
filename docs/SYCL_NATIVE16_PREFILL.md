@@ -2981,6 +2981,12 @@ per expert. Combining those bounds with unique CPU-job counters gives logical
 provider footprint bounds, not physical traffic. Per-layer/format job counts
 and complete CPU/GPU costs are still missing; the existing CPU scan and
 pool-capacity comparisons do not establish current model saturation.
+The next work-mix discriminator can inspect the existing`--dump-routing`
+callbacks rather than add another native build. Multirow records contain layer,
+IDs and placeholder weights; the footer counts callbacks, not row records.
+Before collection, bind request boundaries and static cache membership, then
+require reconstructed layer/group, lookup and unique-CPU-job totals to reconcile
+with the existing native counters. No routing collection has run for this plan.
 
 The closed capability output and consumed decision-support report/transaction
 bodies are retired:43 external files/112835B, with a path/hash/reason manifest
