@@ -1,0 +1,136 @@
+{
+  "schema": "strata-status-copy-v1",
+  "stage": "prepared",
+  "source_commit": "13c30d0c0d2b3323af15a443ef8a59326feef869",
+  "source_count": 143,
+  "source_fingerprint": "ab16e94a73faddc3992687e063f2357c16ae8313744607b6e0563dc6b2b75561",
+  "native_source_commit": "3b4998f326101fa913788fd368e1674b111dea03",
+  "native_inputs_recovered": 9836,
+  "native_build_record_sha256": "76d9fa9e38c0c7e4ef2897f9ec731429db2a3d9d65c2412611c0c4ee1cf2a57f",
+  "compiler": {
+    "path": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin/clang++",
+    "sha256": "1290881b4e12a5e002e5b0de0787f85328ee5fe19f253a54be1cdd97dc2f26eb"
+  },
+  "settings_sha256": "d4402591df50e80dc45a5ec9e4839c7a794888850b1473537b6f95179be5b03c",
+  "compile_argv": [
+    "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin/clang++",
+    "-O3",
+    "-DNDEBUG",
+    "-std=c++20",
+    "-fsycl",
+    "-fsycl-id-queries-range=size_t",
+    "-DSTRATA_ENABLE_SYCL=1",
+    "-I/home/yayoi/orca/workspaces/Strata/sycl/include",
+    "-I/home/yayoi/orca/workspaces/Strata/sycl/include/strata/sycl/compat",
+    "/home/yayoi/orca/workspaces/Strata/sycl/bench/sycl/status_copy.cpp",
+    "/home/yayoi/orca/workspaces/Strata/sycl/src/sycl/runtime.cpp",
+    "/home/yayoi/orca/workspaces/Strata/sycl/src/sycl/compat.cpp",
+    "/home/yayoi/orca/workspaces/Strata/sycl/src/sycl/command_profile.cpp",
+    "-o",
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/status-copy-component-v1/status_copy"
+  ],
+  "compile_environment": {
+    "PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin:/usr/bin:/bin",
+    "HOME": "/home/yayoi",
+    "LANG": "C.UTF-8",
+    "LC_ALL": "C.UTF-8",
+    "PYTHONDONTWRITEBYTECODE": "1",
+    "LD_LIBRARY_PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib:/opt/intel/oneapi/mkl/2026.1/lib",
+    "MKLROOT": "/opt/intel/oneapi/mkl/2026.1",
+    "OMP_NUM_THREADS": "1",
+    "GIT_TERMINAL_PROMPT": "0",
+    "GIT_SSH_COMMAND": "ssh -oBatchMode=yes",
+    "CPLUS_INCLUDE_PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/include",
+    "PIP_CONFIG_FILE": "/dev/null",
+    "ONEAPI_DEVICE_SELECTOR": "level_zero:gpu",
+    "UR_ADAPTERS_FORCE_LOAD": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_adapter_level_zero_v2.so.0",
+    "SYCL_CACHE_PERSISTENT": "0",
+    "NEOReadDebugKeys": "1",
+    "EnableDirectSubmission": "0",
+    "UR_L0_V2_FORCE_DISABLE_COPY_OFFLOAD": "1",
+    "STRATA_SYCL_VERIFY_NATIVE_CAPTURE": "0",
+    "STRATA_SYCL_PREFILL_SAME_QUEUE": "1",
+    "STRATA_SYCL_PREFILL_NATIVE16": "bf16",
+    "XDG_CACHE_HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/status-copy-component-v1/cache",
+    "TMPDIR": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/status-copy-component-v1/tmp"
+  },
+  "native_environment": {
+    "PATH": "/usr/bin:/bin",
+    "HOME": "/home/yayoi",
+    "LANG": "C.UTF-8",
+    "LC_ALL": "C.UTF-8",
+    "PYTHONDONTWRITEBYTECODE": "1",
+    "LD_LIBRARY_PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib:/opt/intel/oneapi/mkl/2026.1/lib",
+    "ONEAPI_DEVICE_SELECTOR": "level_zero:gpu",
+    "UR_ADAPTERS_FORCE_LOAD": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_adapter_level_zero_v2.so.0",
+    "UR_L0_V2_FORCE_DISABLE_COPY_OFFLOAD": "1",
+    "NEOReadDebugKeys": "1",
+    "EnableDirectSubmission": "0",
+    "STRATA_SYCL_PREFILL_SAME_QUEUE": "1",
+    "STRATA_SYCL_VERIFY_NATIVE_CAPTURE": "0",
+    "SYCL_CACHE_PERSISTENT": "0",
+    "ZES_ENABLE_SYSMAN": "0",
+    "UR_ENABLE_LAYERS": "UR_LAYER_TRACING,UR_LAYER_PARAMETER_VALIDATION",
+    "UR_LOG_TRACING": "level:info;flush:info;output:stderr",
+    "UR_LOG_VALIDATION": "level:warning;flush:warning;output:stderr",
+    "UR_LOG_LOADER": "level:warning;flush:warning;output:stderr",
+    "UR_LOG_LEVEL_ZERO": "level:warning;flush:warning;output:stderr",
+    "TMPDIR": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/status-copy-component-v1/tmp",
+    "XDG_CACHE_HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/status-copy-component-v1/cache",
+    "CUDA_MODULE_LOADING": "EAGER",
+    "STRATA_SYCL_COMMAND_PROFILE": "0",
+    "LD_PRELOAD": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/ur-validation-preload-v2/libstrata_ur_validation.so"
+  },
+  "validation_probe": {
+    "library": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/ur-validation-preload-v2/libstrata_ur_validation.so",
+      "sha256": "1d4e69d672d55fa0a126ae43b7b4743482cccca7e2f2bc22e0db2bfdad5bdc7c"
+    },
+    "loader": {
+      "path": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_loader.so.0.12.0",
+      "sha256": "bb6e1311850e4b1a924e42acae80c2b3610934625a4985aaa67967abe31356fc"
+    },
+    "component_source_commit": "f312b6691f508125db6cfc2580ca32a686ff2642",
+    "component_original_plan": {
+      "commit": "550c75f5fc954ee38b70230e32d2a48e12100d8a",
+      "path": "bench/results/2026-10-15-pr6-recovery-audit/research-index.json",
+      "sha256": "d12866b93c51e76a83e95638e66b6f6f4e0e33d779516a5fddecc178a6f8e10a"
+    },
+    "retained_reference_until_exit": true,
+    "runtime_teardown_qualified": false
+  },
+  "cells": [
+    [
+      "ordinary",
+      "idle"
+    ],
+    [
+      "usm",
+      "pending"
+    ],
+    [
+      "ordinary",
+      "pending"
+    ],
+    [
+      "usm",
+      "idle"
+    ]
+  ],
+  "gates": "Four separate immutable-environment processes in fixed order;12 samples each. 4-byte production compat D2H, checked drain and sticky postcheck. Pending arm submits exactly8x128MiB fills and queries the last event immediately before copy. A completed pre-query makes that sample ineligible; no retry/enlargement. Require exact phase counts, clocks/conservation, payload/guards, native exit0, owned closure, unchanged inputs and no fresh fault. Pending comparison requires all12 pending samples in each pending cell.",
+  "budgets": {
+    "compile_wall_s": 240,
+    "native_cell_wall_s": 45,
+    "text_bytes_per_command": 16777216,
+    "total_raw_bytes": 67108864,
+    "device_bytes": 134217868,
+    "pending_logical_fill_bytes_per_cell": 12884901888
+  },
+  "limits": "Component source attribution only, with the same production runtime/compat source as3b4998. No model/engine rebuilt and no third engine generation. Pending observation can race completion before enqueue. Fine phase timings include clock overhead, so no microscopic speed/adoption claim. Requested fill bytes are not physical DRAM traffic.",
+  "retained_generations": "396 fastest fallback and3b4998 status engine remain unchanged. This finite production-source fixture is retired after its compact decision; no extra engine build. Review candidate-engine necessity at next native-plan freeze; default integration remains blocked.",
+  "retention": "Keep48 useful phase samples and eligibility/owner/fault/source result. Retire successful full traces, normal compiler output and this fixture build at decision closure after exact source/recipe recovery.",
+  "complete": false,
+  "passed": false,
+  "active": false,
+  "GPU_executed": false
+}
