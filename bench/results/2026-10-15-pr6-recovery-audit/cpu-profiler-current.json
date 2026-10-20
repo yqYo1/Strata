@@ -202,7 +202,7 @@
   "helper_retirement": "Closed private capability prepare/run helpers removed from maintained script; exact controller/commands/source430aa601f and generated plan dae871acc remain reachable. No GPU-resource modes changed.",
   "unitrace_build": {
     "schema": "strata-unitrace-host-build-v1",
-    "stage": "prepared",
+    "stage": "built",
     "source_commit": "09d650542c9455454516f6ebbc4597f69ec72502",
     "input_sha256": {
       "tools/sycl/unitrace_profile.py": "c87c9934f3ee2b5fa6e1dbcfa05689bb5f9a8c6cf178e23c716a4e3cb7c7cf27",
@@ -227,7 +227,7 @@
     "safety": "HOST BUILD ONLY. No unitrace/collector execution, GPU target, privileges, sysctl, driver reset or service change.",
     "gpu_qualified": false,
     "model_qualified": false,
-    "passed": false,
+    "passed": true,
     "environment": {
       "PATH": "/usr/bin:/bin",
       "LANG": "C",
@@ -801,6 +801,18 @@
         "sha256": "634d84934df389d233a45ac7c8dece8b71552d1f06f2cab725f3190009aa915e"
       }
     ],
-    "ownership_closed": true
+    "ownership_closed": true,
+    "artifacts": {
+      "libunitrace_tool.so": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/unitrace-l0-4b6d742-v2/libunitrace_tool.so",
+        "sha256": "5a5123569afec5e1da12e98967955686d753ce28ae8d42b96ec565b52ec4d1e5",
+        "bytes": 2328576
+      },
+      "unitrace": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/unitrace-l0-4b6d742-v2/unitrace",
+        "sha256": "706eed8ecd319cf159b68cbb467fcf33d61a758d8c8f36f96375d592e281a4a5",
+        "bytes": 512976
+      }
+    }
   }
 }
