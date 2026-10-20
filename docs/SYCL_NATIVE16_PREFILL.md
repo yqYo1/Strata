@@ -2359,10 +2359,22 @@ cycles and48 actual long borrowed FFNs required. Its21 offline tests passed
 at3f4752335; native/controller review verified18 pins, and Main recovered9831
 build inputs and verified the engine/eight fixtures and runtime. The source
 report halved residual storage in its arithmetic; the correct BF16 extent
-is20480B/row, as used by the controller. Actual capacity is unresolved, with
-the512MiB admission headroom unchanged. Commit and inspect the effective
-131072-context/int8 KV/chunk8192 plan before its single diagnostic run;
-clean owned-small/borrowed-large timing remains a separate next comparison.
+is20480B/row, as used by the controller. The512MiB admission headroom remains
+unchanged. The committed official check passed
+all four warmups and a33211-input/2932-output thinking request:48 actual FFNs,
+five exact1280-slot payload/map refills and normal native exit0, with no fresh
+fault. Its680140800B residual stayed fully on GPU in mode10. The observed
+long-allocation free budget was4185026560B versus2307657440B fixed including
+the512MiB allowance. The discrete pre-release low-water was14786560B; the long
+refill observation was102322176B. Neither is continuous peak memory.
+Diagnostic638.5 prefill/11.6 decode tok/s and85.03% draft acceptance are kept
+as one observed request, without a clean gain or regression claim. Logical
+decode cache hit rate was10.2%; remaining1120890 CPU miss jobs do not measure
+RAM/PCIe traffic. Corrected117488-row arithmetic is21915776B above the observed
+33K free budget.1256 slots would save63897600B while still lending enough for
+chunk8192, but its117K admission and speed are unmeasured. Plan the independent
+clean owned-small/borrowed-large comparison next; broader quality, full mixed
+tail and physical262144/session/RESTORE remain unqualified.
 Only a later qualified mechanism permits a
 fresh complete51+6-case plan. Preserve all pending-completion,
 untouched-output, payload/guard and owner-lifetime requirements under that plan.
