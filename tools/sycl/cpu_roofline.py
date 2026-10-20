@@ -26,6 +26,7 @@ A = P / 'bench/results/2026-10-15-pr6-recovery-audit'
 PLAN = A / 'cpu-roofline-plan.json'
 RESULT = A / 'cpu-roofline-current.json'
 METADATA = Path('/home/yayoi/.local/share/strata-sycl/packs/qwen3.8-flash-next-iq3_s/native_experts.txt')
+NATIVE_DIR = Path('/home/yayoi/.local/share/strata-sycl/models/qwen3.8-flash-next-iq3_s/IQ3_S')
 GGML = Path('/home/yayoi/ghq/github.com/ggml-org/llama.cpp/.worktree/dep-ggml-3cf-xe-e32-20261011')
 GGML_REV = '3cf03257f219afbe7334045ff7c6a06ac68c627d'
 LLVM = Path('/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install')
@@ -83,8 +84,8 @@ def identity(path):
                 mtime_ns=s.st_mtime_ns,ctime_ns=s.st_ctime_ns)
 
 
-def formats():
-    lines=METADATA.read_text().splitlines()
+def formats(metadata=METADATA, native_dir=NATIVE_DIR):
+    lines=metadata.read_text().splitlines()
     first=lines[0].split('absolute offsets in ')[1].split(',')[0]
     rows={}; counts={}
     for line in lines:
@@ -93,7 +94,7 @@ def formats():
         counts[key]=counts.get(key,0)+1
         if key in rows: continue
         need(key in PAIRS,'unexpected model type pair')
-        shard=METADATA.parent/(f[8] if len(f)==9 else first)
+        shard=native_dir/(f[8] if len(f)==9 else first)
         gbytes=SIZES[gu]*640; dbytes=(180 if dn==42 else 360)*2560
         need(2*gbytes+dbytes==n,'metadata geometry mismatch')
         count=6*math.ceil(math.ceil((96<<20)/n)/6)

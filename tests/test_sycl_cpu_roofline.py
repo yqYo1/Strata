@@ -3,6 +3,7 @@ import copy
 import importlib.util
 from pathlib import Path
 import sys
+import tempfile
 import unittest
 
 sys.dont_write_bytecode=True
@@ -11,6 +12,20 @@ import cpu_roofline as calibration
 
 
 class TimingEligibility(unittest.TestCase):
+    def test_metadata_and_native_shards_have_separate_roots(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            metadata=Path(tmp)/'native_experts.txt'
+            lines=['# absolute offsets in first.gguf, or in the named shard']
+            for (gu,dn),count in calibration.PAIRS.items():
+                n=2*calibration.SIZES[gu]*640+(180 if dn==42 else 360)*2560
+                lines += [f'{i} {gu} {dn} 0 {n} 0 0 0' for i in range(count)]
+            metadata.write_text('\n'.join(lines))
+            native_dir=Path(tmp)/'models'
+            rows=calibration.formats(metadata,native_dir)
+            self.assertEqual(len(rows),7)
+            self.assertTrue(all(Path(r['shard']).parent==native_dir for r in rows))
+            self.assertTrue(all(r['experts']*r['blob_bytes']>=96<<20 for r in rows))
+
     def row(self):
         return dict(pair=[18,20],workers=5,closed=True,exit_code=0,rows=[
             dict(kind='sample',mode='hot',nt=3,attempt=0,rep=i,iterations=10,
