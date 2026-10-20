@@ -5142,9 +5142,9 @@
       "tools/test_sycl_cache_long.py": "4bb8fa390607b9e3fe264cce78f65f59133415e8ddf7eec3a7323bc10405aa6c"
     },
     "prior_source_review_scope": "cache_loan_long_context_capacity_scope",
-    "schedulable_now": true,
+    "schedulable_now": false,
     "worker_closed": false,
-    "status": "eligible_source_audit_before_model",
+    "status": "active_orca_source_audit",
     "report_budget_bytes": 12288,
     "report_path": "/home/yayoi/orca/workspaces/Strata/sycl/.cache/strata-research/20261020/cache-1256-long-source-audit.md",
     "question": "Audit1256-slot117K actual admission with96 mixed FFN windows: total/single-allocation budgets,81920+35568 extents, secondary-bank bounds, sealed parent loan, dense/verifier restoration, exact payload/map audits, official one-warmup prefill-only journal, immutable inputs and no-retry owner closure. Identify concrete unsafe execution or false-qualification risks; do not repeat generic capacity math.",
@@ -5155,7 +5155,7 @@
       "cases": 12,
       "passed": true,
       "GPU_executed": false,
-      "command": "flock -n /home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/owned-v0141-measurement.lock timeout60s python3 -B -m unittest tools/test_sycl_cache_long.py tools/test_sycl_cache_capacity.py"
+      "command": "flock -n /home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/owned-v0141-measurement.lock timeout 60s python3 -B -m unittest tools/test_sycl_cache_long.py tools/test_sycl_cache_capacity.py"
     },
     "prior_offline_failures": [
       {
@@ -5167,6 +5167,11 @@
         "outcome": "Twelve tests ran: one false-acceptance failure (duplicate proof after final header) and four journal-fixture errors (wrong redactor type). Corrected at current source; noGPU/model."
       }
     ],
-    "retention": "Temporary source audit; keep only corrections/gate/identities in this index after review and consumer closure. No automatic report archive."
+    "retention": "Temporary source audit; keep only corrections/gate/identities in this index after review and consumer closure. No automatic report archive.",
+    "task_id": "task_1120f93997e9",
+    "dispatch_id": "ctx_42c597ae5edc",
+    "terminal_handle": "term_14d0cea5-e644-4341-80fe-684eec255206",
+    "incarnation_id": "6f7bddf1-6d99-4ba6-bf95-7bc1ef0ab351",
+    "launch_mode": "Orca custom workspace-write/network argv, gpt-6-luna high; worker-start observed turnStart on exact existing terminal."
   }
 }
