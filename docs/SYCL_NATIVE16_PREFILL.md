@@ -2488,16 +2488,23 @@ against9813/9831 recoverable original inputs. The
 admitted suffix (first132/lent1124) and persists a terminal failure with unknown
 fault evidence when the final journal probe fails. These controller-only changes
 at`f29c46bda` passed12 offline tests; they are not a new engine/GPU qualification.
-Positive validation-layer activation in the retained model child remains unresolved.
-The isolated host-only probe at`bde2932b2` passed: successful loader init/teardown,
-null-platform result46 with unchanged valid output, and165B of API trace without
-platform/device/queue/enqueue/kernel calls. The dedicated validation log was empty;
-the exact installed validation function returns silently on this path. The earlier
-C11 build failed before native execution and remains a failure. Neither this
-separate process nor an environment request proves the later model child's layer.
-Resolve supported native-child bootstrap, then review the corrected source before
-launch. The planned six processes separate first-use from three subsequent
-requests; the1000tok/s target and broader correctness requirements remain unchanged.
+The qualified diagnostic preload now establishes same-process public config and
+first-init evidence in the unchanged retained396 binary, before its`--help` body.
+The330B host trace, wrong-provider stop125 and retained native165B trace passed;
+all owned processes closed without a fresh fault. Config enable/init/release return0,
+UNINITIALIZED is37 and the checked null-platform dispatch returns46. Its dedicated
+validation logger is silent. One diagnostic loader reference remains until process
+exit, so ordinary runtime teardown is not qualified by this helper. The wrapper
+injects it only in the native child, and EAGER is set before exec to skip the
+retained main's late environment write. The original core-test fixture was restored
+to its exact recorded hash; new tool regressions live outside the native snapshot.
+The earlier C11 build and numeric-enum parser failure remain failures in the
+[research index](../bench/results/2026-10-15-pr6-recovery-audit/research-index.json).
+At`df172f7e3`, all14 comparison tests pass, including same-PID/pre-model activation,
+clean absence, exact loan binding and failed-journal terminal evidence. Obtain the
+corrected-source audit before the actual old-owned117K check, then the six clean
+processes. They separate first-use from three subsequent requests; neither the
+1000tok/s target nor broader correctness requirements have changed.
 
 For the separate earlier early-PCIe candidate, only a later qualified mechanism permits a
 fresh complete51+6-case plan. Preserve all pending-completion,
