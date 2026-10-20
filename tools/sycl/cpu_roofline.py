@@ -21,7 +21,7 @@ import measurement_owner as owner
 
 P = Path(__file__).resolve().parents[2]
 B = Path('/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007')
-ROOT = B / 'cpu-roofline-v3'
+ROOT = B / 'cpu-roofline-v4'
 A = P / 'bench/results/2026-10-15-pr6-recovery-audit'
 PLAN = A / 'cpu-roofline-plan.json'
 RESULT = A / 'cpu-roofline-current.json'
@@ -181,7 +181,7 @@ def prepare():
             stream='At least96 MiB of distinct real blobs; shuffled six-expert groups, no revisit per pass.',
             scan='256 MiB read-only checksum; persistent pinned1/6/12 threads.',
             workers='1 worker + noncomputing waiting host; or production5 workers + computing host. Host wait CPU is included.',
-            validation='Before/after each NT cell: same-input GU and Down rel-L1<=1e-5 vs ggml; pool exact vs serial same-route. Finite outputs and external buffer canaries; private pool scratch is not instrumented.',
+            validation='Before/after each NT cell: GU and Down20 rel-L1<=1e-5 vs same-input ggml; Down42 <=1e-5 vs independent scalar dot with production ActQ float scales. GGML Q8_0 half-scale gap is diagnostic only. Pool exact vs serial same-route. Finite outputs and external canaries; private pool scratch is not instrumented.',
             gate='Require all14 checks, all112 five-sample expert cells and3 scan cells; keep failures/under-floor attempts. No automatic run retry.',
             interpretation='Hot/stream and1/6-compute-thread scaling identify sensitivity. Requested byte rates and scan are not physical DRAM traffic, saturation proof, model speed or70tok/s evidence.'),
         budgets=dict(build_wall_s=600,check_child_s=120,measure_child_s=180,scan_child_s=40,

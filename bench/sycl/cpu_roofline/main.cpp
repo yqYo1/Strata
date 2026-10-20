@@ -104,10 +104,10 @@ struct Inputs {
     }
     // Outside timing: check GU and Down separately against ggml's same-input
     // vec_dot, then the complete production pool against the serial same route.
-    std::array<double,3> validate(cpu::ExpertPool& pool, int nt) {
+    std::array<double,4> validate(cpu::ExpertPool& pool, int nt) {
         quant(nt); for (auto& j:jobs) j.nt=nt;
         pool.run_split_multi_native(fmt,jobs.data(),group);
-        double gu_error=0,down_error=0,pool_error=0;
+        double gu_error=0,down_error=0,pool_error=0,q2_ggml_gap=0;
         for (int e=0;e<group;++e) {
             Buffer ff(4*cpu::FF*sizeof(float)), out(4*cpu::H*sizeof(float));
             std::array<std::unique_ptr<Buffer>,4> hq;
@@ -137,19 +137,45 @@ struct Inputs {
             if (fmt.d_type==42) cpu::q2_rows_any(blobs[e]->data()+fmt.down_off,fmt.d_row,cpu::FF/64,a2p,nt,op,0,cpu::H);
             else cpu::native_down_rows(fmt,blobs[e]->data(),hp,nt,op,0,cpu::H);
             const auto dotd=ggml_get_type_traits_cpu(static_cast<ggml_type>(fmt.d_type))->vec_dot;
-            double dn=0,dd=0,pn=0,pd=0;
+            double dn=0,dd=0,pn=0,pd=0,ggn=0,ggd=0;
             for (int t=0;t<nt;++t) for (int r=0;r<cpu::H;++r) {
                 float want=0; dotd(cpu::FF,&want,0,blobs[e]->data()+fmt.down_off+r*fmt.d_row,0,hp[t],0,1);
                 require(std::isfinite(want) && std::isfinite(op[t][r]),"nonfinite Down reference");
-                dn+=std::abs(double(op[t][r])-want); dd+=std::abs(double(want));
+                double same_contract=want;
+                if(fmt.d_type==42) {
+                    // Q2_0's production ActQ retains FLOAT scales. GGML Q8_0
+                    // stores HALF scales, so it is a different quantization
+                    // contract. Independent scalar dot, same ActQ codes/scales;
+                    // no vector unpack/reduction or production dot is reused.
+                    same_contract=0;
+                    const uint8_t* row=blobs[e]->data()+fmt.down_off+r*fmt.d_row;
+                    for(int b=0;b<cpu::FF/64;++b) {
+                        ggml_fp16_t wh;std::memcpy(&wh,row+b*18,2);
+                        const double scale=ggml_fp16_to_fp32(wh);
+                        for(int half=0;half<2;++half) {
+                            int sum=0;
+                            for(int j=0;j<32;++j) {
+                                const int i=half*32+j;
+                                const int code=((row[b*18+2+i/4]>>(2*(i%4)))&3)-1;
+                                sum+=code*int(a2[t].q[b*64+i]);
+                            }
+                            same_contract+=scale*double(a2[t].scale[2*b+half])*sum;
+                        }
+                    }
+                    ggn+=std::abs(double(op[t][r])-want);ggd+=std::abs(double(want));
+                }
+                dn+=std::abs(double(op[t][r])-same_contract); dd+=std::abs(same_contract);
                 pn+=std::abs(double(jobs[e].out[t][r])-op[t][r]); pd+=std::abs(double(op[t][r]));
             }
             down_error=std::max(down_error,dn/(dd+1e-30)); pool_error=std::max(pool_error,pn/(pd+1e-30));
+            q2_ggml_gap=std::max(q2_ggml_gap,ggn/(ggd+1e-30));
             ff.check(); out.check(); for(int t=0;t<nt;++t) hq[t]->check();
         }
         check(group,nt);
+        if(!(gu_error<=1e-5 && down_error<=1e-5 && pool_error==0))
+            std::cerr<<"GU="<<gu_error<<" Down="<<down_error<<" pool="<<pool_error<<" Q2/GGML-scale-gap="<<q2_ggml_gap<<std::endl;
         require(gu_error<=1e-5 && down_error<=1e-5 && pool_error==0, "numerical calibration gate");
-        return {gu_error,down_error,pool_error};
+        return {gu_error,down_error,pool_error,q2_ggml_gap};
     }
 };
 template<class F> void measure(F pass, uint64_t bytes, uint64_t visits, const std::string& fields, cpu::ExpertPool* pool=nullptr) {
@@ -227,7 +253,7 @@ int main(int argc,char** argv) try {
         for(int i=0;i<workers;++i) std::cout<<(i?",":"")<<topo.worker_cores[i]; std::cout<<"]}"<<std::endl;
         for(int nt=1;nt<=4;++nt) {
             const auto v=input.validate(pool,nt);
-            std::cout<<"{\"kind\":\"validation\",\"nt\":"<<nt<<",\"gu_rel_l1\":"<<v[0]<<",\"down_rel_l1\":"<<v[1]<<",\"pool_rel_l1\":"<<v[2]<<",\"finite_canaries\":true}"<<std::endl;
+            std::cout<<"{\"kind\":\"validation\",\"nt\":"<<nt<<",\"gu_rel_l1\":"<<v[0]<<",\"down_rel_l1\":"<<v[1]<<",\"pool_rel_l1\":"<<v[2]<<",\"q2_ggml_scale_gap\":"<<v[3]<<",\"finite_canaries\":true}"<<std::endl;
         }
         std::vector<std::pair<int,bool>> cells;
         for(int nt=1;nt<=4;++nt) for(bool stream:{false,true}) cells.emplace_back(nt,stream);
