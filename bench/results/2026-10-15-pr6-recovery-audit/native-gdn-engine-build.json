@@ -101,7 +101,7 @@
     "prefill_scratch_host_test",
     "sycl_prefill_scratch_test"
   ],
-  "retention_consumer": "Current comparison engine and requested fixtures: strata, sycl_verifier_retirement_test, sycl_submission_test, file_expert_source_test, sycl_mmvq_test, residency_publication_host_test, cache_tail_host_test, prefill_scratch_host_test, sycl_prefill_scratch_test; select the validated generation and retire the extra after qualification/comparison closure.",
+  "retention_consumer": "Closed extra generation awaiting this bounded retirement; no further native execution.",
   "retained_validation_reference": {
     "source_commit": "396d0c91f301e0ac99b81d6641fdc435b95b4da9",
     "binary_origin_source_commit": "9b6db2661f6abb1ba560b466108cf60b2d594f4e",
@@ -151,7 +151,7 @@
       "decode-long-generation-current.json": "e77aab191dbe848776f4f4f678909d612dcefcfe"
     },
     "qualification": "Current opt-in engine passed component checks, repeated117K prefill and three independent long-generation processes without fresh GPU faults. Broad quality,physical262144/RESTORE and70tok/s remain unqualified.",
-    "consumer": "Qualified117K/long-generation fallback and imminent matched comparison of owned small cache against checked borrowed larger cache on the current engine. Select retained generation after long-input/long-generation comparison;14 legacy provenance holds remain separate."
+    "consumer": "Selected fastest validated117K prefill/long-generation fallback; next candidate is the bounded status-wrapper diagnostic. Physical262144/session/RESTORE and broader quality remain pending."
   },
   "legacy_provenance_exception": {
     "state": "Six obsolete unqualified native-product roots retired; original source/recipe gaps remain failures, not comparison generations.",
@@ -391,5 +391,13 @@
       "count": 5703,
       "aggregate_sha256": "5768eaea650c06eb022c9068784590a27400c2a577974c56750519edde859fe5"
     }
-  ]
+  ],
+  "retirement": {
+    "complete": false,
+    "planned": true,
+    "reason": "The six-process comparison and one117K attribution are closed. Keep the faster qualified396d0c91 generation and retire this extra before a new status-attribution build.",
+    "source_recovery_required": true,
+    "consumers": "query_profile.current_build now refuses retirement before reading artifacts; bench_engine already refuses retired candidates. Closed cache launchers are not reopened.",
+    "review_point": "Verify original9831 inputs, recipe, engine/eight fixtures, default reachability and ownership under the shared lock; then delete the closed build root with a hash manifest."
+  }
 }

@@ -54,6 +54,8 @@ def runtime_assets_unchanged(record):
 
 def current_build():
     compact, component = gen.committed(BUILD), gen.committed(COMPONENT)
+    guards.require(not compact.get('retirement'),
+        'comparison build retired; build and qualify the next candidate before model preparation')
     full = json.loads(BUILD_RECORD.read_text())
     guards.require(full['passed'] and full['complete'] and full['ownership_closed'] and
         not full['active'] and all(full[k] == compact[k] for k in

@@ -48,6 +48,13 @@ class QueryEvidence(unittest.TestCase):
 
 
 class RuntimeAdmission(unittest.TestCase):
+    def test_retired_build_refused_before_reading_deleted_artifacts(self):
+        with mock.patch.object(q.gen, 'committed', side_effect=[
+                {'retirement': {'complete': True}}, {}]), \
+             mock.patch.object(Path, 'read_text', side_effect=AssertionError('retired artifact read')):
+            with self.assertRaisesRegex(RuntimeError, 'comparison build retired'):
+                q.current_build()
+
     def setUp(self):
         self.delta={n:dict(qualified_sha256=v[0],candidate_sha256=v[1]) for n,v in q.DELTA.items()}
         self.component=dict(passed=True,complete=True,ownership_closed=True,active=False,
