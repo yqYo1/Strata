@@ -4978,5 +4978,28 @@
     },
     "review_digest": "Substantive current source-path delta beyond earlier host-DMA/staged-copy surveys; retain distilled path and gates only.",
     "source_limit": "Arena view -> cache fill -> queue.memcpy/event; SYCL PinnedArena is ordinary RAM plus optional OS lock; arbitrary register unsupported; cudaHostAlloc is host USM. No proof of active runtime branch, physical H2D bytes or speed. Online docs aren't installed-runtime pins. No code copied."
+  },
+  "implemented_cpu_roofline_admission_scope": {
+    "classification": "decision support",
+    "source_commit": "5e6d45034",
+    "schedulable_now": true,
+    "prerequisites": {
+      "implemented_source_committed": true,
+      "CPU_only_build_passed": true,
+      "all56_same_contract_checks_passed": true
+    },
+    "frozen_inputs": {
+      "bench/sycl/cpu_roofline/main.cpp": "0339933c4fae1b3d96ab7cd92cf49136a1d933d10a4dd8e4816e02790f099301",
+      "bench/sycl/cpu_roofline/CMakeLists.txt": "e3d686bcd6a3559f0417734ba858cdba497ea60759ce64bcd1eedef02b8b1717",
+      "tools/sycl/cpu_roofline.py": "0dd0d6fdd0794d8a065aecbb67536af1230e4f28e541a31409c86f4081584944",
+      "tests/test_sycl_cpu_roofline.py": "328902576d604a44c816332483e3a70e03a8d5e115a4193c11c96060ca3e6040",
+      "bench/results/2026-10-15-pr6-recovery-audit/cpu-roofline-plan.json": "de06ac51a496b6240de0ba8387881194ea4dd8533e002bed52e0999145e6664c"
+    },
+    "question": "Audit implemented CPU calibration: production dispatch, work/bytes, same-contract references, timing eligibility, pinning, hot/stream/scan, build/source and complete-matrix admission. Distinguish validity gaps from small optional instrumentation improvements; no methods re-survey.",
+    "report_path": "/home/yayoi/orca/workspaces/Strata/sycl/.cache/strata-research/20261020/implemented-cpu-roofline-audit.md",
+    "report_budget_bytes": 10240,
+    "consumer": "Main CPU/RAM calibration validity decision before using its results",
+    "next_review": "After actual worker_done, native Luna-max review; Main gets short digest, owns tests. No steering.",
+    "launch_reason": "Fresh implemented benchmark and prospective plan now exist; prior protocol report did not audit this source."
   }
 }
