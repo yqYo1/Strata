@@ -65,7 +65,7 @@ class Comparison(unittest.TestCase):
         for key,value in [('request_sha256','different'),('actual_reused_tokens',1),('actual_read_tokens',117488),
             ('prompt_ms',float('nan')),('prompt_ms',0),('prompt_ms',True),('eligible',False),('generated_tokens',25)]:
             cases=rows();cases[1]['requests'][2][key]=value
-                with self.subTest(key=key,value=value),self.assertRaises(RuntimeError): c.summarize(cases)
+            with self.subTest(key=key,value=value),self.assertRaises(RuntimeError): c.summarize(cases)
 
 
 class Journal(unittest.TestCase):
