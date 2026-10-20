@@ -101,7 +101,7 @@
     "prefill_scratch_host_test",
     "sycl_prefill_scratch_test"
   ],
-  "retention_consumer": "Closed extra generation awaiting this bounded retirement; no further native execution.",
+  "retention_consumer": "Retired closed candidate; rebuild from original committed source/recipe only for a named comparison.",
   "retained_validation_reference": {
     "source_commit": "396d0c91f301e0ac99b81d6641fdc435b95b4da9",
     "binary_origin_source_commit": "9b6db2661f6abb1ba560b466108cf60b2d594f4e",
@@ -393,11 +393,43 @@
     }
   ],
   "retirement": {
-    "complete": false,
-    "planned": true,
-    "reason": "The six-process comparison and one117K attribution are closed. Keep the faster qualified396d0c91 generation and retire this extra before a new status-attribution build.",
-    "source_recovery_required": true,
-    "consumers": "query_profile.current_build now refuses retirement before reading artifacts; bench_engine already refuses retired candidates. Closed cache launchers are not reopened.",
-    "review_point": "Verify original9831 inputs, recipe, engine/eight fixtures, default reachability and ownership under the shared lock; then delete the closed build root with a hash manifest."
+    "complete": true,
+    "manifest": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/closed-borrowed-build-and-research-transactions-20261021.jsonl",
+    "manifest_sha256": "2f7d67a513b6c0fba9542a338bcaf8ff6be3a81d7639ea1fc395cebf69257e60",
+    "files": 197,
+    "bytes": 162893807,
+    "source_inputs_recovered": 9831,
+    "source_identities": [
+      {
+        "root": "/home/yayoi/orca/workspaces/Strata/sycl",
+        "revision": "bb71e78db7b6a4930945a2d564ec6cd42d0ad245",
+        "count": 520,
+        "aggregate_sha256": "101af6c845428c0720e6222ee79859312347dc48665ca904168e30a5c1ed1c71"
+      },
+      {
+        "root": "/home/yayoi/ghq/github.com/ggml-org/llama.cpp/.worktree/dep-ggml-3cf-xe-e32-20261011",
+        "revision": "3cf03257f219afbe7334045ff7c6a06ac68c627d",
+        "count": 3608,
+        "aggregate_sha256": "322862d213ed722d6500da0b58a1b7fffff53aa0de77d7f2e8ba685c653a0d9f"
+      },
+      {
+        "root": "/home/yayoi/ghq/github.com/intel/sycl-tla/.worktree/strata-native16-87f",
+        "revision": "87f6850680a580654b9ea2c80dbc01aeb36ad231",
+        "count": 5703,
+        "aggregate_sha256": "5768eaea650c06eb022c9068784590a27400c2a577974c56750519edde859fe5"
+      }
+    ],
+    "original_full_receipt_sha256": "65d6226860d8c9d81377612043451d07343b630bfcf2f585c4356c1e34f676a2",
+    "original_recipe_recovered": true,
+    "source_commits_default_reachable": true,
+    "engine_and_eight_fixtures_verified": true,
+    "selected_generation": "396d0c91f301e0ac99b81d6641fdc435b95b4da9",
+    "qualified_engine_generations": 1,
+    "consumer_refusal_verified": true,
+    "original_measurement_outcomes_unchanged": true,
+    "historical_metadata_delta": [
+      "retained_validation_reference.consumer"
+    ],
+    "reason": "The six-process comparison and one117K attribution are closed. Keep the faster qualified396d0c91 generation and retire this extra before a new status-attribution build."
   }
 }

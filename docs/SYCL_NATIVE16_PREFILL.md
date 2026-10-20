@@ -2536,9 +2536,14 @@ short-output prefill evidence: both engine revision and placement differ. All
 session, physical262144/session/RESTORE and default adoption remain pending.
 
 Keep old-owned128 as the measured fastest fallback. The named current-borrowed1256
-resource attribution is now closed. Select one validated generation and retire
-the extra before another build; the retained comparison is not a standing build
-archive. Source inspection confirms
+resource attribution is now closed. Main recovered the extra build's9831 exact
+original inputs and recipe, verified its engine/eight fixtures and both source
+commits' default reachability, then retired197 files/162893807B including consumed
+research dispatch transactions. One qualified engine generation remains;14 legacy
+provenance holds are separate. The fallback's original inputs and required bytes
+passed again after deletion. Retired-candidate model admission stops before
+reading deleted artifacts; its7 offline query tests pass. See the existing build
+and comparison results for the path/hash/reason manifest. Source inspection confirms
 expert payload refill reads the original host Arena and queues H2D copies; it
 does not save the production expert payload D2H. D2H/memcmp is loan-audit-only.
 The outer refill precedes prompt_ms but follows the internal NativeDense host
