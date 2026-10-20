@@ -533,6 +533,27 @@ struct Prefill::Impl {
     int64_t T = 0, T_max = 0;
     bool borrowed = false;
     detail::ScratchLayoutState scratch_layout;
+#ifdef STRATA_ENABLE_SYCL
+    core::CacheScratchLease cache_scratch_lease;
+    void* borrowed_base = nullptr;
+    uint64_t borrowed_capacity = 0, borrowed_used = 0, borrowed_layout_generation = 0;
+    uint64_t lease_layout_generation = 0;
+    bool cache_scratch_authorized() const {
+        return borrowed && scratch_layout.ready() && borrowed_used && borrowed_used <= borrowed_capacity &&
+            borrowed_layout_generation == scratch_layout.generation() &&
+            lease_layout_generation == scratch_layout.generation() &&
+            cache_scratch_lease.contains(cache, borrowed_base, borrowed_capacity);
+    }
+    bool cache_scratch_entry(std::string& error) const {
+        if (cache_scratch_lease && !cache_scratch_authorized()) {
+            error = "prefill: stale/inactive cache scratch loan or changed layout generation"; return false;
+        }
+        if (borrowed && cache && cache->scratch_tracking_enabled() && !cache_scratch_lease) {
+            error = "prefill: tracked cache scratch requires an explicit parent lease"; return false;
+        }
+        return true;
+    }
+#endif
     bool scratch_alias = false; // fixed at init, independent of request geometry
     cudaStream_t cs = nullptr, copy = nullptr;
     Gemm gemm;
@@ -1095,6 +1116,10 @@ bool Prefill::init(const core::WeightTable& wt, const core::ModelGeometry& g, co
         return false;
     }
     layout.commit();
+#ifdef STRATA_ENABLE_SYCL
+    m.borrowed_base = borrow; m.borrowed_capacity = borrow_bytes; m.borrowed_used = o.used;
+    m.borrowed_layout_generation = m.scratch_layout.generation();
+#endif
     return true;
 }
 
@@ -1269,10 +1294,54 @@ bool Prefill::relayout(int64_t chunk, void* borrow, uint64_t borrow_bytes, std::
         return false;
     }
     layout.commit();
+#ifdef STRATA_ENABLE_SYCL
+    m.borrowed_base = borrow; m.borrowed_capacity = borrow_bytes; m.borrowed_used = o.used;
+    m.borrowed_layout_generation = m.scratch_layout.generation();
+#endif
     return true;
 }
 
 int64_t Prefill::chunk() const { return impl_->scratch_layout.ready() ? impl_->T : 0; }
+
+#ifdef STRATA_ENABLE_SYCL
+bool Prefill::bind_cache_scratch_lease(const core::CacheScratchLease& lease, std::string& err) {
+    Impl& m = *impl_;
+    if (!m.borrowed || !m.scratch_layout.ready() || !m.cache || !m.cs || m.copy != m.cs ||
+        !m.scratch_alias || !m.borrowed_used || m.borrowed_used > m.borrowed_capacity ||
+        m.borrowed_layout_generation != m.scratch_layout.generation() ||
+        !lease.contains(m.cache, m.borrowed_base, m.borrowed_capacity, false)) {
+        err = "prefill: cache lease does not cover the sealed layout/owner/queue"; return false;
+    }
+    m.cache_scratch_lease = lease;
+    m.lease_layout_generation = m.scratch_layout.generation();
+    return true;
+}
+bool Prefill::has_cache_scratch_lease() const { return impl_ && bool(impl_->cache_scratch_lease); }
+bool Prefill::activate_cache_scratch_lease(const std::function<bool()>& retire, std::string& err) {
+    Impl& m = *impl_;
+    if (!m.cache || !m.scratch_layout.ready() ||
+        m.lease_layout_generation != m.scratch_layout.generation() ||
+        !m.cache_scratch_lease.contains(m.cache, m.borrowed_base, m.borrowed_capacity, false)) {
+        err = "prefill: cache scratch activation requires the bound current layout"; return false;
+    }
+    try { return m.cache->activate_scratch_loan(m.cache_scratch_lease, retire); }
+    catch (const std::exception& e) { err = e.what(); return false; }
+}
+bool Prefill::retire_cache_scratch_lease(std::string& err) {
+    Impl& m = *impl_;
+    if (!m.cache || !m.cache_scratch_lease || !m.cache_scratch_authorized()) {
+        err = "prefill: cache scratch retirement requires the active current layout"; return false;
+    }
+    try {
+        return m.cache->retire_scratch_loan(m.cache_scratch_lease, [&] {
+            if (cudaStreamSynchronize(m.cs) != cudaSuccess ||
+                (m.copy != m.cs && cudaStreamSynchronize(m.copy) != cudaSuccess))
+                strata::sycl_backend::cleanup_fail_stop("cache scratch borrower completion uncertain");
+            return true;
+        });
+    } catch (const std::exception& e) { err = e.what(); return false; }
+}
+#endif
 
 bool Prefill::draft_kv(core::MtpDrafter& mtp, const float* R_rows, const int32_t* next_tokens, int64_t n, int64_t cell0,
                        std::string& err) {
@@ -1280,6 +1349,9 @@ bool Prefill::draft_kv(core::MtpDrafter& mtp, const float* R_rows, const int32_t
     if (!m.scratch_layout.ready()) {
         err = "prefill: scratch layout unavailable; reset and initialize again"; return false;
     }
+#ifdef STRATA_ENABLE_SYCL
+    if (!m.cache_scratch_entry(err)) return false;
+#endif
     static const bool off = [] { const char* v = std::getenv("STRATA_MTP_BATCH"); return v != nullptr && v[0] == '0'; }();
     // A ring (KV streaming: the drafter's window, page p in slot p % n_slots over a host copy) takes the same appends
     // with its own page table and host copy, as a streamed main layer does; the cells written are those the window can
@@ -1896,6 +1968,9 @@ bool Prefill::run_impl(const int64_t* tokens, int64_t n, int64_t pos0, std::stri
     if (!m.scratch_layout.ready()) {
         err = "prefill: scratch layout unavailable; reset and initialize again"; return false;
     }
+#ifdef STRATA_ENABLE_SYCL
+    if (!m.cache_scratch_entry(err)) return false;
+#endif
     if (m.scratch_alias && (core::peer_portable() || m.pp ||
                             (!m.layer_major_active && (stage_lb_ != 0 || stage_le_ != m.g->n_layers)) ||
                             next_ || hand_in_ || m.copy != m.cs)) {

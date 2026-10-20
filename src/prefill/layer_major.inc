@@ -4,6 +4,9 @@ bool Prefill::run(const int64_t* tokens, int64_t n, int64_t pos0, std::string& e
     if (!impl_ || !impl_->scratch_layout.ready()) {
         err = "prefill: scratch layout unavailable; reset and initialize again"; return false;
     }
+#ifdef STRATA_ENABLE_SYCL
+    if (!impl_->cache_scratch_entry(err)) return false;
+#endif
     const char* requested = std::getenv("STRATA_PREFILL_LAYER_MAJOR");
     const char* phase_switch = std::getenv("STRATA_PREFILL_PHASE_AUDIT");
     if (phase_switch && std::strcmp(phase_switch, "1") == 0 &&

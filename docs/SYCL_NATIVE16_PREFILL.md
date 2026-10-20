@@ -2195,6 +2195,18 @@ step, with borrowed mode10 still rejected. Next implement checked parent-loan
 generation, sealed interval/layout and complete cache-reader retirement, keeping
 loan bookkeeping until successful refill/publication. No new model or speed
 result follows from this gate, and physical262144/session/RESTORE remain open.
+The next Main-authored source step represents the parent cache, exact loan
+interval, nonrepeating generation, decode host-reader admission and masked/use/
+refill/publication phases. Only ExpertCache mints a loan capability; USM
+registration alone cannot mint one. Prefill binds it to its checked carve's
+base/capacity/used extent and layout generation, and rejects stale/inactive
+capabilities at run/chunk/draft entry. Checked borrower retirement and parent
+close keep owners live on uncertain completion. This is an implementation
+step, still unbuilt/unqualified: generator/verifier integration, actual global
+reader retirement, refill/publication conservation and host/device/error gates
+remain required before borrowed mode10 can run. The original owned fast guards
+remain in force until those call sites supply the complete contract. All new
+ownership code is original project work, with no XeStrata implementation input.
 Only a later qualified mechanism permits a
 fresh complete51+6-case plan. Preserve all pending-completion,
 untouched-output, payload/guard and owner-lifetime requirements under that plan.

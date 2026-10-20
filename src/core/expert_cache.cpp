@@ -9,6 +9,9 @@
 #include <limits>
 #include <utility>
 #include <cstring>
+#ifdef STRATA_ENABLE_SYCL
+#include "strata/sycl/checked_cleanup.hpp"
+#endif
 
 namespace strata::core {
 
@@ -286,6 +289,16 @@ bool ExpertCache::open_sized(const std::vector<int64_t>& slot_bytes, int64_t n_l
 }
 
 void ExpertCache::close() {
+#ifdef STRATA_ENABLE_SYCL
+    if (scratch_state_) {
+        strata::sycl_backend::checked_cleanup([&] {
+            // Refuse the close before waiting/freeing when the loan is live.
+            scratch_state_->close();
+            if (cudaDeviceSynchronize() != cudaSuccess)
+                throw std::runtime_error("cache scratch: parent completion unknown");
+        }, [] {}, "cache scratch parent closed before verified retirement/refill");
+    }
+#endif
 #if defined(STRATA_USE_HIP) || defined(STRATA_ENABLE_SYCL)
     if (blocking_staging_) (void) cudaFreeHost(blocking_staging_);
     blocking_staging_ = nullptr;
@@ -293,7 +306,13 @@ void ExpertCache::close() {
 #endif
     off_.clear();
     if (base_ != nullptr) {
-        cudaFree(base_);
+        const auto released = cudaFree(base_);
+#ifdef STRATA_ENABLE_SYCL
+        if (scratch_state_ && released != cudaSuccess)
+            strata::sycl_backend::cleanup_fail_stop("cache scratch parent free failed");
+#else
+        (void) released;
+#endif
         base_ = nullptr;
     }
     residency_.clear();
@@ -305,7 +324,26 @@ void ExpertCache::close() {
     fills_ = 0;
     admitted_ = 0;
     layer_next_.clear();
+#ifdef STRATA_ENABLE_SYCL
+    scratch_state_.reset();
+#endif
 }
+
+#ifdef STRATA_ENABLE_SYCL
+void ExpertCache::enable_scratch_loan_tracking() {
+    if (!base_ || bytes() <= 0) throw std::logic_error("cache scratch: missing parent allocation");
+    if (!scratch_state_) scratch_state_ = std::make_shared<detail::CacheScratchState>(this, base_, uint64_t(bytes()));
+}
+CacheScratchLease ExpertCache::prepare_scratch_loan(int32_t first_slot) {
+    if (!scratch_state_ || first_slot < 128 || first_slot >= slots_)
+        throw std::invalid_argument("cache scratch: loan requires enabled parent and128-slot prefix");
+    const uint64_t offset = off_.empty() ? uint64_t(first_slot) * uint64_t(blob_) : off_[size_t(first_slot)];
+    const uint64_t total = uint64_t(bytes());
+    if (offset >= total) throw std::invalid_argument("cache scratch: tail outside parent");
+    const auto generation = scratch_state_->prepare(offset, total - offset);
+    return CacheScratchLease(scratch_state_, generation);
+}
+#endif
 
 /// R4.2g.  Layer `l` owns `[l*q, (l+1)*q)` with `q = slots_ / n_layers_`; the LAST layer takes whatever is
 /// left over, so the ranges always cover `0..slots_` exactly and no slot is orphaned by the division.
@@ -356,6 +394,9 @@ const uint8_t* ExpertCache::device_slot(int32_t slot) const {
 }
 
 bool ExpertCache::fill_slot(int32_t slot, const uint8_t* host_blob, void* stream, std::string& err, int64_t bytes) {
+#ifdef STRATA_ENABLE_SYCL
+    if (!scratch_fill_allowed(err)) return false;
+#endif
     const size_t n = (size_t) (bytes > 0 && bytes <= blob_ ? bytes : blob_);
     uint8_t* dst = device_slot(slot);
     if (dst == nullptr) {
@@ -378,6 +419,9 @@ bool ExpertCache::fill_slot(int32_t slot, const uint8_t* host_blob, void* stream
 }
 
 bool ExpertCache::fill_slot_blocking(int32_t slot, const uint8_t* host_blob, std::string& err, int64_t bytes) {
+#ifdef STRATA_ENABLE_SYCL
+    if (!scratch_fill_allowed(err)) return false;
+#endif
     const size_t n = (size_t) (bytes > 0 && bytes <= blob_ ? bytes : blob_);
     uint8_t* dst = device_slot(slot);
     if (dst == nullptr) {
@@ -409,6 +453,9 @@ bool ExpertCache::fill_slot_blocking(int32_t slot, const uint8_t* host_blob, std
 }
 
 bool ExpertCache::fill_slot_queued(int32_t slot, const uint8_t* host_blob, std::string& err, int64_t bytes) {
+#ifdef STRATA_ENABLE_SYCL
+    if (!scratch_fill_allowed(err)) return false;
+#endif
     const size_t n = (size_t) (bytes > 0 && bytes <= blob_ ? bytes : blob_);
     uint8_t* dst = device_slot(slot);
     if (dst == nullptr || host_blob == nullptr) {
