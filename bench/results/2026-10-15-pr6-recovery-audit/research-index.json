@@ -5708,11 +5708,18 @@
     },
     "current_component": {
       "path": "bench/results/2026-10-15-pr6-recovery-audit/status-copy-current.json",
-      "source_commit": "69f3886558757fd3fff140ff1a6a10a2624cf493",
-      "smokes_passed": 2,
+      "source_commit": "5f31f8882db69eff1acd86f7b753aae568f2f6d6",
+      "plan_commit": "bb1dab6d991677b9f0ff68b45ce77065bc42e1c0",
+      "build_commit": "5301a62fca03fbdff63f1685d2e5e4c04eb41698",
+      "smokes_passed": 4,
       "processes": 12,
-      "samples": 48,
-      "pending_gates_unchanged": "v1/v2 both0/12; archived original failures remain in Git."
+      "steady_samples": 72,
+      "separate_warmups": 12,
+      "execution_and_timing_passed": true,
+      "mechanism_screens_passed": 0,
+      "decision": "No queue/destination/model adoption. Ordinary enqueue versus USM drain moves recorded wait without consistent whole-path gain. End this finite-copy series; actual model service/submission/dependencies remain to measure.",
+      "pending_gates_unchanged": "v1/v2 both0/12; original pending failures and v3 completed-query outcome remain in previous_component Git lineage.",
+      "retirement": "Unused standalone root and consumed report/transaction output pending exact-source/recipe and active-consumer checks."
     },
     "current_reports": [
       {
@@ -5724,53 +5731,48 @@
         "main_read_body_on_arrival": false
       },
       {
-        "path": ".cache/strata-research/20261020/sycl-profiled-queue-overhead-collection.json",
-        "sha256": "eba010291ef7795e1ec67635725d20b5ffc7dec7c20dee14366f1e2142f3b304",
-        "bytes": 16077,
-        "classification": "knowledge_collection",
-        "consumer": "Next finite producer/copy/profiling decision; retrieve only timestamp/observer methods needed there; retire afterward if redundant.",
-        "main_read_body_on_arrival": false
-      },
-      {
         "path": ".cache/strata-research/20261020/hybrid-prefill-working-set-collection.json",
         "sha256": "d4b18d6c7194732fa3d5809627ad9746f529534068a4acd3f88dc3d34ede22f1",
         "bytes": 17684,
         "classification": "knowledge_collection",
         "consumer": "Next concrete full-context/chunk/residency decision; retrieve relevant live-range terms only after pinning upstream source bytes.",
-        "main_read_body_on_arrival": false
+        "main_read_body_on_arrival": false,
+        "limits": "Useful integrated GDN/QSA/MoE working-set/lifetime terms, no Strata measurement/adoption evidence. Upstream references are mutable; open PR38180 guard is not deployed behavior. Pin actual source bytes before using any implementation."
       }
     ],
     "latest_closed_workers": [
       {
-        "scope": "status-query-v3-source-audit",
-        "report_sha256": "dacf3d7a1fdd41167366cea18290562521825dd90b2b02a37a98ad2786b1921d",
-        "report_bytes": 9935,
-        "task": "task_28608c3d9cc9",
-        "dispatch": "ctx_3712758effe7",
-        "state": "file_delivered_curated_dispatch_abandoned_terminal_closed",
+        "scope": "finite-copy-pipeline-source-audit-v4",
+        "report_sha256": "9768c25672f15115b40dd729a64b4c0b68ed052aa4b414bd3adb2f6b21f85adc",
+        "report_bytes": 9634,
+        "task": "task_91e26a517897",
+        "dispatch": "ctx_cc1a434d46fb",
+        "lifecycle": "Exact provider transcript and DONE turn observed; no accepted worker_done. Explicitly fenced with processAction=none, then closed only Main-created external terminal after matching incarnation; ptyKilled=true. Report delivery is not orchestration success.",
+        "state": "file_delivered_native_curated_dispatch_abandoned_terminal_closed",
         "model": "gpt-6-luna",
         "effort": "high",
-        "lifecycle": "Source-exact final assistant and fresh providerDONE observed; no accepted worker_done. Dispatch abandoned with no process action, then exact Main-created terminal closed; live absence verified. No RPC-failure cause or Orca success inferred."
+        "report_retirement": "Pending this closed component decision; useful corrections retained here."
       },
       {
-        "scope": "hybrid-prefill-working-set-collection",
-        "report_sha256": "d4b18d6c7194732fa3d5809627ad9746f529534068a4acd3f88dc3d34ede22f1",
-        "report_bytes": 17684,
-        "task": "task_be3e8a20ac96",
-        "dispatch": "ctx_4b98e0d9b1aa",
-        "state": "file_delivered_curated_dispatch_abandoned_terminal_closed",
+        "scope": "prefill-stream-timing-obligations-v4",
+        "report_sha256": "eae5e830715c080cce54b748531f0bc8ed1a3729d7246cd8fe69da75c861c112",
+        "report_bytes": 11444,
+        "task": "task_876e6642e46c",
+        "dispatch": "ctx_462a6d957bdd",
+        "lifecycle": "Exact provider transcript and DONE turn observed; no accepted worker_done. Explicitly fenced with processAction=none, then closed only Main-created external terminal after matching incarnation; ptyKilled=true. Report delivery is not orchestration success.",
+        "state": "file_delivered_native_curated_dispatch_abandoned_terminal_closed",
         "model": "gpt-6-luna",
         "effort": "high",
-        "lifecycle": "Source-exact final assistant and fresh providerDONE observed; no accepted worker_done. Dispatch abandoned with no process action, then exact Main-created terminal closed; live absence verified. No RPC-failure cause or Orca success inferred."
+        "report_retirement": "Pending this closed component decision; useful corrections retained here."
       }
     ],
     "curation": {
       "model": "gpt-6-luna",
       "effort": "max",
-      "review_sha256": "613da70fde02a23cdeeb77a737eaa86ae4acda9341cd0cbd60b334bbdeee167e",
+      "review_sha256": "628d4071ae8004ab477a403d45db222fe935d5696e417e4c0c0f7dbbd458b3af",
       "main_read_original_reports": false,
-      "source_decision": "No source blocker. Prepared-to-built hash change is exactly the committed derived build state; no source/recipe/order/environment change. All subsequent14 native processes now pass.",
-      "collection_correction": "Useful integrated GDN/QSA/MoE working-set/lifetime terms, no Strata measurement/adoption evidence. Upstream references are mutable; open PR38180 guard is not deployed behavior. Pin actual source bytes before using any implementation.",
+      "source_decision": "No blocker to unchanged frozen v4; all16 native processes subsequently pass. Execution/timing success does not override four failed mechanism screens.",
+      "source_correction": "Stream-report blockers describe evidence limits/Orca availability, not current v4 execution blockers. Before production policy change, trace borrowed queue caller and all transitive timestamp consumers.",
       "next_scope": {
         "name": "strata_prefill_candidate_live_ranges_source_audit",
         "classification": "decision_support",
@@ -5782,84 +5784,11 @@
         ],
         "exclude": "No status repeat, isolated QSA/MoE survey, build/test/GPU/profiler/process work, or performance/adoption claim.",
         "consumer": "Next frozen long-prefill chunk/layer-residency comparison."
-      }
+      },
+      "report_retirement": "Pending source-verified artifact retirement; no continuing body consumer after this decision."
     },
     "allocation_correction": "Actual source-view/staged flags bypass file CV wait; fresh open still allocates unused2662400B blocking host staging. A timer there alone misses reached VRAM queries and large allocations; no measured cause established.",
-    "retention": "Retire consumed source audit/review/dispatch bodies at this closed decision. Keep only these three knowledge references for their named next consumers; remove stale paths after deletion. Main reads short native digests; research is not adoption.",
-    "active_wave": [
-      {
-        "scope": "finite-copy-pipeline-source-audit-v4",
-        "classification": "decision_support",
-        "schedulable_now": false,
-        "prerequisite": "Fixture/controller committed at5f31f8882; generated recipe and8 negative host-parser checks prepared. New fixed integrated-work question preserves old pending failures.",
-        "source_commit": "5f31f8882db69eff1acd86f7b753aae568f2f6d6",
-        "report": ".cache/strata-research/20261020/finite-copy-pipeline-source-audit-v4.json",
-        "report_budget_bytes": 16384,
-        "state": "native_reviewed_main_execution_pending",
-        "question": "Audit new finite producer/copy/checked-drain ordering, ownership/bounds/guards/async errors, immutable process factors and full latency criterion; post-drain GPU timing and independent host/GPU eligibility. No re-survey of old pending gate.",
-        "immutable_plan_fields": [
-          "budgets",
-          "comparison_gate",
-          "compile_argv",
-          "compile_environment",
-          "compiler",
-          "expected_loaded_paths",
-          "gates",
-          "host_parser_checks",
-          "limits",
-          "native_build_record_sha256",
-          "native_environment",
-          "native_inputs_recovered",
-          "native_source_commit",
-          "previous_component",
-          "process_orders",
-          "retained_generations",
-          "retention",
-          "schema",
-          "settings_sha256",
-          "smoke_cells",
-          "source_commit",
-          "source_count",
-          "source_fingerprint",
-          "validation_probe"
-        ],
-        "immutable_plan_sha256": "814e1266a99b22f08e6a1b15a990afad0bab7db4e60e9ca42754095d2da774c2",
-        "consumer": "Before Main GPU execution; native Luna-max curation first; retire source audit after component decision.",
-        "report_sha256": "9768c25672f15115b40dd729a64b4c0b68ed052aa4b414bd3adb2f6b21f85adc",
-        "report_bytes": 9634,
-        "task": "task_91e26a517897",
-        "dispatch": "ctx_cc1a434d46fb",
-        "terminal": "term_f867a0bc-f4a7-41ba-8968-a22178c72bfb",
-        "lifecycle": "Exact provider transcript and DONE turn observed; no accepted worker_done. Explicitly fenced with processAction=none, then closed only Main-created external terminal after matching incarnation; ptyKilled=true. Report delivery is not orchestration success."
-      },
-      {
-        "scope": "prefill-stream-timing-obligations-v4",
-        "classification": "decision_support",
-        "schedulable_now": false,
-        "prerequisite": "Current production source3b4998 remains unchanged and v3 traced profile queues add9 global-timestamp calls for9 memory commands. Actual clean117K plan0c8e11e9cd2b98881432bea62c249004f927bf0b has SAME_QUEUE=1,MOE_WINDOW=10,native16=vllm/BF16,QSA=bf16-prefix-ordered-exp and layer-major/command/CPU-wait observers disabled.",
-        "source_commit": "3b4998f326101fa913788fd368e1674b111dea03",
-        "report": ".cache/strata-research/20261020/prefill-stream-timing-obligations-v4.json",
-        "report_budget_bytes": 16384,
-        "state": "native_reviewed_conditional_consumer",
-        "question": "Map actual long-prefill cs stream creation/aliases, all event timestamp consumers and sync-only events under the exact clean flags. Compare safe profiling policies and required functional/graph/error gates before any factory/default change. No measured benefit claim.",
-        "consumer": "If v4 profiling mechanism screen passes, choose narrow production candidate; otherwise retain only essential nonduplicated correction at next source decision and retire body.",
-        "report_sha256": "eae5e830715c080cce54b748531f0bc8ed1a3729d7246cd8fe69da75c861c112",
-        "report_bytes": 11444,
-        "task": "task_876e6642e46c",
-        "dispatch": "ctx_462a6d957bdd",
-        "terminal": "term_018c58c5-6dfb-4bca-b661-c239d6302f09",
-        "lifecycle": "Exact provider transcript and DONE turn observed; no accepted worker_done. Explicitly fenced with processAction=none, then closed only Main-created external terminal after matching incarnation; ptyKilled=true. Report delivery is not orchestration success."
-      }
-    ],
-    "active_wave_review": {
-      "path": ".cache/strata-research/20261020/finite-copy-v4-and-stream-native-review.json",
-      "sha256": "628d4071ae8004ab477a403d45db222fe935d5696e417e4c0c0f7dbbd458b3af",
-      "bytes": 6868,
-      "reviewer": "native Codex gpt-6-luna max",
-      "decision": "No blocker to unchanged committed v4. Four traced smokes must pass before12 fixed measurement processes;72 whole timings and paired mechanism screens remain independent of model adoption.",
-      "correction": "Stream-report blockers describe evidence limits/Orca availability, not current v4 execution blockers. Before production policy change, trace borrowed queue caller and all transitive timestamp consumers.",
-      "next_scope": "No new schedulable scope until v4 screen; queue-policy audit remains conditional.",
-      "retention": "Current decision support only; retire reports and review after component/source decision unless concrete follow-up needs actual body."
-    }
+    "retention": "Keep only the two knowledge references for named counter/working-set consumers. Retire finite-copy/stream source audits, native review, expired profiled-queue collection and all closed dispatch transaction files after source recovery. No source/report body becomes adopted optimization.",
+    "next_main_action": "Discover actual installed profiler/counter capability and choose bounded production-service/submission coverage. Do not launch another status-query/copy survey or infer model gain from moved wait. Before research dispatch, pin the concrete production observation question and prerequisites."
   }
 }

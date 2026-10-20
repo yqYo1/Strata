@@ -2745,7 +2745,7 @@ default integration is blocked. Two still-consumed model engine generations
 remain;14 older provenance holds are separate. See the compact result's
 path/hash/reason manifest and recovery proof, rather than retaining raw output.
 
-The next v4 diagnostic measures the finite producer/copy/drain path without an
+The v4 diagnostic measures the finite producer/copy/drain path without an
 explicit pre-copy event query. Four traced64KiB smoke cells precede three fixed
 four-cell validation-only cohorts: owned profiled/plain queue crossed with
 ordinary/USM-host destination. Keep eight128MiB fill events through the existing
@@ -2762,8 +2762,38 @@ enqueue into drain alone is no throughput gain. A passing screen permits a
 production-consumer audit/next candidate, not model adoption or a third engine.
 Keep the old pending-ineligible outcomes and use no adaptive work enlargement,
 stalled gate or production queue-default change. Requested fill bytes are not
-physical GDDR traffic. Exact source/recipe/controller inputs and process order
-must be committed before build/run under the existing finite budgets.
+physical GDDR traffic. Source/recipe/controller inputs and process order were
+committed before build/run under the existing finite budgets.
+
+Source`5f31f8882`, plan`bb1dab6d9` and build`5301a62fc` then close all four
+smokes and12 measurement processes normally, with72 eligible steady samples,
+12 separate warmups, qualified profiled GPU intervals and no fresh fault.
+None of the four predeclared mechanism screens passes:
+
+| Whole-wall comparison | Three paired ratios | Geometric mean |
+| --- | --- | ---: |
+| Plain/profiled, ordinary host | 0.684332,1.007210,1.032128 | 0.892703 |
+| Plain/profiled, USM host | 1.072523,1.039981,0.974924 | 1.028334 |
+| USM/ordinary, plain queue | 1.036191,1.008676,0.959860 | 1.001075 |
+| USM/ordinary, profiled queue | 0.661150,0.976891,1.016180 | 0.869038 |
+
+The first ordinary/profiled process has a3.243ms whole median; later process
+medians range2.006..2.300ms. Ordinary-host enqueue medians are1.943..3.162ms,
+followed by sub-floor2.4..4.5us drains. USM enqueue medians are sub-floor
+10.5..11.3us, followed by1.917..2.216ms drains. Thus the API boundary changes
+where waiting is recorded without a consistent whole-path improvement. The
+profiled fill-service medians1.947..3.114ms support queued GPU work as relevant
+to this fixture's elapsed time; they do not quantify the model's10.9s interval
+or establish physical bandwidth, arithmetic saturation or a model speedup.
+Keep every paired ratio and the below-floor phase flags. Adopt no queue or
+destination change. End this status-copy microbenchmark series and move to
+actual production GPU-service/submission/dependency coverage, checking installed
+profiler/counter capability and missing command-profile tags first. Clean model
+speed, physical262144/session/RESTORE and sustained decode qualification are
+unchanged. The compact result retains all72 steady samples and12 warmups;
+normal output and this unused standalone build are pending source-verified
+retirement at this boundary. The two consumed model generations and14 legacy
+provenance holds remain separate.
 
 For the separate earlier early-PCIe candidate, only a later qualified mechanism permits a
 fresh complete51+6-case plan. Preserve all pending-completion,
