@@ -2737,6 +2737,13 @@ committed plan and fixed work. Keep the old pending failures intact. Native
 Luna-max curation confirms the source contract; its working-set collection is
 retrieval-only, with mutable upstream pins and an open guard PR kept distinct
 from deployed behavior. The compact result preserves all48 CPU/wall samples.
+Both closed standalone roots and consumed audit/dispatch output are now retired:
+74 files/24408964B, after independently recovering each fixture's143 inputs,
+the9836 native inputs and its exact original compiler recipe from Git. The
+pushed retained feature branch preserves the original measured commits while
+default integration is blocked. Two still-consumed model engine generations
+remain;14 older provenance holds are separate. See the compact result's
+path/hash/reason manifest and recovery proof, rather than retaining raw output.
 
 For the separate earlier early-PCIe candidate, only a later qualified mechanism permits a
 fresh complete51+6-case plan. Preserve all pending-completion,

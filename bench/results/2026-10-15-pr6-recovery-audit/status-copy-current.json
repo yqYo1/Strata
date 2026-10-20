@@ -32,7 +32,8 @@
   "binary": {
     "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/status-query-observer-v3/status_copy",
     "bytes": 172560,
-    "sha256": "942cfb8a729e51129f27c25afb9f1798cd8116b0ae161b29b405c4d9ff63925f"
+    "sha256": "942cfb8a729e51129f27c25afb9f1798cd8116b0ae161b29b405c4d9ff63925f",
+    "retired": true
   },
   "raw_run_sha256": "6390e6f5f69805bef6a94369104bdb5505deff2aa2341f05a4474f68c6cd42d3",
   "previous_component": {
@@ -50,14 +51,9 @@
       "sha256": "aae14ee03180d638616aecafa21f5a7902bf521153e80070709ebb0d2ad62e9a"
     },
     "remaining_hold": {
-      "paths": [
-        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/status-copy-component-v2/status_copy",
-        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/status-copy-component-v2/build.json",
-        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/status-copy-component-v2/run.json"
-      ],
-      "reason": "Measured source7b8f3f5ab is not reachable from origin/main; preserve original source identities under the repository default-reachability policy before build retirement.",
-      "next_action": "Recheck default reachability at PR180 integration, recover exact original source/recipe, then retire this closed standalone fixture. No model route or live comparison depends on its executable.",
-      "default_rule_observed": "main ruleset24638744 allows squash only; a normal merge must preserve measured source identities. No settings change, history rewrite or admin bypass."
+      "resolved": true,
+      "reason": "Original inputs/recipes recovered and measured commits verified on pushed retained feature/sycl under clarified build-retirement policy; v2 root retired.",
+      "manifest_sha256": "729d4abc9a4e046528703010060b48994032c8e703ad2862ceb1d989f4aa98e1"
     }
   },
   "host_parser_checks": {
@@ -588,5 +584,58 @@
   "decision": "All execution/source/provider/guard/owner/fault gates and48 timer gates pass. Completed status queries cost wall18.29..25.15ns without tracing and11.75..12.16us with full tracing, using independent process medians. This cannot by itself explain v2 fresh-getter1.4..2.3ms or model enqueue10.9s. No consistent all-pair queue-property latency gain, production default change, layer attribution, physical traffic/ceiling, model speedup or adoption is qualified.",
   "next_action": "Measure the bounded finite producer + copy + checked drain path without a pre-copy status query, against the same fixed work. Separate producer/enqueue/drain and profiling effects; preserve v1/v2 pending-ineligible outcomes. Freeze a new source/plan before execution; do not claim pending eligibility from a changed criterion or retry larger fills.",
   "limits": "Quiet trace counts are zero because output/layer is absent; they do not prove UR dispatch is bypassed. Validation remains enabled. Completed-event batches differ from fresh producer and model queue backlog; no hardware saturation or model throughput measurement. Model math, queue defaults, event elapsed-time consumers and both retained engines are unchanged.",
-  "retention": "48 useful CPU/wall samples plus per-process clocks/API counts and pinned source/recipe. Original plans/older components in reachable Git. Closed standalone roots/raw output retire after exact input/recipe recovery; keep only two currently consumed engine generations, with14 legacy provenance holds separate."
+  "retention": "48 useful CPU/wall samples plus per-process clocks/API counts and pinned source/recipe. Original plans/older components in reachable Git. Closed standalone roots/raw output retire after exact input/recipe recovery; keep only two currently consumed engine generations, with14 legacy provenance holds separate.",
+  "artifact_retirement": {
+    "complete": true,
+    "files": 74,
+    "bytes": 24408964,
+    "manifest": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/closed-status-observer-components-and-reviews-20261021.jsonl",
+    "manifest_sha256": "729d4abc9a4e046528703010060b48994032c8e703ad2862ceb1d989f4aa98e1",
+    "source_recipe_recovery": [
+      {
+        "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/status-copy-component-v2",
+        "source_commit": "7b8f3f5ab67ef3fd223c33196b405b2454489757",
+        "plan_commit": "59af47a05",
+        "plan_sha256": "2a38e940ac7910674b6f00d8f3aa260ac2657f36ee3efaae3e6b91db14f06e6f",
+        "fixture_inputs_recovered": 143,
+        "native_inputs_recovered": 9836,
+        "compiled_translation_units": [
+          "bench/sycl/status_copy.cpp",
+          "src/sycl/runtime.cpp",
+          "src/sycl/compat.cpp",
+          "src/sycl/command_profile.cpp"
+        ],
+        "compiler_sha256": "1290881b4e12a5e002e5b0de0787f85328ee5fe19f253a54be1cdd97dc2f26eb",
+        "binary_sha256": "8cae40fa9fb361fdb9ed8d6a3e26ec2c187b4c000cdf2546e7d8627623d1253b",
+        "files": 3,
+        "bytes": 303741
+      },
+      {
+        "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/status-query-observer-v3",
+        "source_commit": "69f3886558757fd3fff140ff1a6a10a2624cf493",
+        "plan_commit": "73a659f19",
+        "plan_sha256": "e6548041809483849e65fdf757ccd5c3f621687a11c2f65fa69eff716224c9e0",
+        "fixture_inputs_recovered": 143,
+        "native_inputs_recovered": 9836,
+        "compiled_translation_units": [
+          "bench/sycl/status_copy.cpp",
+          "src/sycl/runtime.cpp",
+          "src/sycl/compat.cpp",
+          "src/sycl/command_profile.cpp"
+        ],
+        "compiler_sha256": "1290881b4e12a5e002e5b0de0787f85328ee5fe19f253a54be1cdd97dc2f26eb",
+        "binary_sha256": "942cfb8a729e51129f27c25afb9f1798cd8116b0ae161b29b405c4d9ff63925f",
+        "files": 33,
+        "bytes": 23945226
+      }
+    ],
+    "verified_remote_branch": "feature/sycl",
+    "verified_remote_commit": "76a3c96bb533512e7b7029905a8b23b302b762c7",
+    "policy_commit": "c2e2b2733",
+    "retired_standalone_roots": 2,
+    "retained_engine_generations": 2,
+    "legacy_provenance_holds": 14,
+    "skipped_transaction_stems": [],
+    "limits": "Scoped retirement, not global legacy cleanup. Retained model engines and same-build safety fixtures unchanged; original measured commits remain on pushed feature/sycl pending default integration."
+  }
 }
