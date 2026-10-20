@@ -71,6 +71,15 @@ public:
     /// Failure after retirement/rebinding starts invalidates the layout: reset/init before reuse.
     bool relayout(int64_t chunk, void* borrow, uint64_t borrow_bytes, std::string& err);
     int64_t chunk() const;
+#ifdef STRATA_ENABLE_SYCL
+    // The generator must retain the parent and keep decode admission closed
+    // through refill/publication. Binding seals this layout generation; it
+    // does not imply global reader retirement or activate the loan.
+    bool bind_cache_scratch_lease(const core::CacheScratchLease& lease, std::string& err);
+    bool has_cache_scratch_lease() const;
+    bool activate_cache_scratch_lease(const std::function<bool()>& retire_all_readers, std::string& err);
+    bool retire_cache_scratch_lease(std::string& err);
+#endif
 
     /// The share of the streamed experts' bytes DMA-able straight from pinned RAM (1 = all).  Sizes the streamed
     /// ring (a big one only pays when the copy engine, not the host copies, is the limit); set before bytes_needed.

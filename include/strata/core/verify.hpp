@@ -42,6 +42,7 @@
 namespace strata::core {
 
 class NativeHead;
+class ExpertCache;
 
 /// The CPU pool for a window: x_f (n_tok, n_embd), ids (n_tok, k) -> out (n_tok * k, n_embd), hit rows zeroed.
 using PoolMultiFn = void (*)(void* user, const float* x_f, const int32_t* ids, int64_t n_tok, int64_t k, float* out,
@@ -53,6 +54,9 @@ struct VerifyHits {
     const uint64_t* slot_off = nullptr;   ///< E-6: host per-slot offsets when slots differ in size (null: slot * blob)
     int64_t n_slots = 0;                  ///< E-6: how many (for the device copy)
     int64_t blob = 0;
+#ifdef STRATA_ENABLE_SYCL
+    const ExpertCache* cache_owner = nullptr; ///< explicit parent admission; default path unchanged
+#endif
 };
 
 class NativeDense;

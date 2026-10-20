@@ -2195,6 +2195,84 @@ step, with borrowed mode10 still rejected. Next implement checked parent-loan
 generation, sealed interval/layout and complete cache-reader retirement, keeping
 loan bookkeeping until successful refill/publication. No new model or speed
 result follows from this gate, and physical262144/session/RESTORE remain open.
+The next Main-authored source step represents the parent cache, exact loan
+interval, nonrepeating generation, decode host-reader admission and masked/use/
+refill/publication phases. Only ExpertCache mints a loan capability; USM
+registration alone cannot mint one. Prefill binds it to its checked carve's
+base/capacity/used extent and layout generation, and rejects stale/inactive
+capabilities at run/chunk/draft entry. Checked borrower retirement and parent
+close keep owners live on uncertain completion. This is an implementation
+step, still unbuilt/unqualified: generator/verifier integration, actual global
+reader retirement, refill/publication conservation and host/device/error gates
+remain required before borrowed mode10 can run. The original owned fast guards
+remain in force until those call sites supply the complete contract. All new
+ownership code is original project work, with no XeStrata implementation input.
+The independent Orca audit and native Luna-max review confirmed a fill-admission
+race and missing pending-loan checks in that first source step. Main replaced
+the Boolean fill check with a scoped, single-writer reservation held through
+the final enqueue. Prepare, close and phase transitions refuse active writers;
+refill writers are restricted to the loan interval. The ticket's pending query
+retains poisoned/refilling/in-transition loans without dereferencing a cache.
+Relayout rejects them before mutation, and release/reset fails before freeing
+owners. Uniform products, residency dimensions and sized-slot alignment/sums
+are checked; sized allocation uses real slot indices and keeps exact default
+payload lengths. Source`181043472` passed the37-case host-only fixture under
+GCC13.3 with warnings as errors:22 scratch/layout,10 loan-protocol and5 scoped
+writer cases. Both compiler/test processes closed normally. Exact source and
+compiler hashes, commands and budgets are retained in the
+[host result](../bench/results/2026-10-15-pr6-recovery-audit/prefill-cache-loan-host-current.json).
+This does not build or qualify the changed SYCL engine or actual cache tickets.
+The prospective generator/verifier connection is default-off under
+`STRATA_SYCL_CACHE_SCRATCH_LEASE=1`, restricted to the single-cache serve route.
+It closes decode admission, retires verifier/session/MTP readers before use and
+keeps the exact lent rows/slots through refill completion and checked residency
+publication. Short borrowed chunks retain full dense weights. This connection
+still needs independent complete-source review and actual ticket/device/error
+tests. Existing owned-only mixed-mode guards continue to reject borrowed mode10;
+no model execution, new speed or full-context qualification is claimed.
+The next fresh v7 component plan commits154 checks before rebuilding:
+normal75 (including14 tail/preflight cases),host37,existing device17,actual
+cache-loan20 and five fail-stop children.
+The new model-free fixture uses actual ExpertCache tickets and Prefill layouts,
+a1024-cell session,256/128 rows,128 prefix slots of256B and1MiB tail slots
+(at most513MiB device parent). It checks exact resident payload/map restoration,
+a moved smaller second generation, an empty resident-tail cycle, cache reopen
+epoch refusal and prepared/used/refilling/poisoned reset plus pending parent
+close. GPU work is bounded memset/copy/readback; no invalid address or hung
+kernel is injected. The existing small traced check runs first. Each child keeps
+the qualified immutable environment and180s/600CPU-s/4GiB-RSS/64MiB output
+budgets; any failure closes the gate without retry. Preserve the396d0c91f301
+fallback and rebuild only the closed comparison cache. Complete source review
+and generator/model qualification remain separate from these prospective tests.
+The completed source audit/native curation confirmed a conditional short-tail
+setup gap, without evidence that a model request triggered it. Main now selects
+an occupied interval and preallocates the exact masked rows before preparing
+the parent. A short request widens its tail only toward the validated lower
+bound; if no borrowable resident exists, rejection leaves the parent unchanged.
+Four host cases cover exact/widened/prefix-only/invalid maps. The device fixture
+also checks that an empty-tail preflight leaves decode admission open; it then
+exercises the lower-level capability on that empty tail independently of the
+generator positive-mask policy. The review mistakenly carried the old57-case
+early-PCIe gate into its next-step text; use this154-case cache-loan gate instead.
+The failed early-PCIe route stays disabled and separate.
+The first native build at`e9a3854c1` stopped before GPU/test execution:
+Clang's warnings-as-errors rejected two existing PfPart aggregate initializers
+after adding the lease field without an explicit default member initializer.
+The failed receipt and closed ownership remain recorded. Set that field's
+default to`{}` and commit the source before a corrected build of the same
+prospective v7 gate; no test outcome or qualification is reused from this failure.
+The corrected source`0a385b388` built successfully (engine SHA256
+`60f09c471ff928c9e223bdf71ac249b96778ef233f0908fe0b39b618ab5e2434`).
+All154 v7 checks and11 offline tests passed. The provider's single summary
+marker represents17 cases, so the138 emitted case markers are not the case
+total. All owned processes closed, boot was unchanged and no fresh GPU fault
+occurred. Actual cache overwrite/same-slot refill/map restoration, moved and
+reopened tickets, the empty resident-tail capability and five pending-owner
+fail-stop paths passed. Keep the source-reviewed preflight and ownership step.
+Next connect the checked parent capability to all three existing mixed-scratch
+owner guards without changing the fast staged-bank path, then qualify the full
+generator/model cycle. These component results do not qualify model math,
+performance, task quality,physical262144/session/RESTORE or global graph execution.
 Only a later qualified mechanism permits a
 fresh complete51+6-case plan. Preserve all pending-completion,
 untouched-output, payload/guard and owner-lifetime requirements under that plan.

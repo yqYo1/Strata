@@ -266,7 +266,13 @@ bool run_prompt_with_native_dense_phase(NativeDensePhase& phase,
         bool supported,strata::core::NativeHead& head,strata::core::Verifier* verifier,cudaStream_t main_cs,
         const int64_t* tokens,int64_t n,int64_t pos0,std::string& err) {
     auto run=[&](){return run_prompt_with_mtp_experts(prompt,mtp,supported,head,verifier,main_cs,tokens,n,pos0,err);};
-    if(!phase.enabled || prompt.chunk()<=0 || n<=prompt.chunk()) return run();
+    const bool release_dense = prompt.chunk()>0 && n>prompt.chunk();
+#ifdef STRATA_ENABLE_SYCL
+    const bool cache_loan = prompt.has_cache_scratch_lease();
+#else
+    const bool cache_loan = false;
+#endif
+    if(!phase.enabled || prompt.chunk()<=0 || (!release_dense && !cache_loan)) return run();
 #ifndef STRATA_ENABLE_SYCL
     err="prefill dense bank requires SYCL"; return false;
 #else
@@ -307,6 +313,7 @@ bool run_prompt_with_native_dense_phase(NativeDensePhase& phase,
     auto fatal=[&](const char* why) noexcept {
         host_profile.emit(true); // fatal exits cannot run the ordinary scope summary
         std::fprintf(stderr,"prefill dense bank: %s; stopping with owners live\n",why);
+        if(cache_loan) strata::sycl_backend::cleanup_fail_stop(why);
         std::fflush(stderr); std::abort();
     };
     const char* lm=std::getenv("STRATA_PREFILL_LAYER_MAJOR");
@@ -327,7 +334,7 @@ bool run_prompt_with_native_dense_phase(NativeDensePhase& phase,
     if(phase.occupied.test_and_set()) {err="prefill dense bank: request already owns transaction";return false;}
     struct Exclusion {NativeDensePhase& p;~Exclusion(){p.occupied.clear();}} exclusion{phase};
     const bool recapture=phase.graphs->captured;
-    bool retired=false;
+    bool retired=false, cache_loan_active=false;
     int64_t activated_layers=0;
     const bool trace_dense=std::getenv("STRATA_TRACE")!=nullptr;
     auto observe=[&](const char* state) noexcept {
@@ -345,16 +352,16 @@ bool run_prompt_with_native_dense_phase(NativeDensePhase& phase,
         std::fflush(stderr);
     };
     struct Reservations {
-        NativeDensePhase& phase;bool& retired;
+        NativeDensePhase& phase;bool& retired;bool release_dense;
         ~Reservations() noexcept {
-            if(!retired && phase.canonical) {
+            if(release_dense && !retired && phase.canonical) {
                 phase.dense->cancel_prepared_bank();phase.canonical->cancel_prepared();
             }
         }
-    } reservations{phase,retired};
+    } reservations{phase,retired,release_dense};
     // Prepare BOTH destinations with original full owners/publications alive.
     // No graph reader is retired and no owner is withdrawn on confirmed OOM.
-    if(phase.canonical) {
+    if(phase.canonical && release_dense) {
         if(!phase.canonical->prepare(main_cs,err) || !phase.dense->prepare_layer_bank(err)) return false;
     }
 
@@ -373,11 +380,16 @@ bool run_prompt_with_native_dense_phase(NativeDensePhase& phase,
         if(!retired) return;
         host_profile.restore_begin();
         drain();
+        if(cache_loan_active) {
+            std::string e;
+            if(!prompt.retire_cache_scratch_lease(e)) fatal("cache borrower retirement rejected");
+            cache_loan_active=false;
+        }
         prompt.activate_native_dense_layer={};
         std::string e;
         if(phase.dense->residency()==strata::core::NativeDense::Residency::Bank &&
            !phase.dense->restore_full(main_cs,{true},e)) fatal("full restore failed; decode prohibited");
-        if(phase.canonical) {
+        if(phase.canonical && release_dense) {
             using State=strata::core::CanonicalDenseBank::State;
             if(phase.canonical->state()==State::Bank && !phase.canonical->restore_full(main_cs,e))
                 fatal("canonical full restore failed; both owner sets retained and decode prohibited");
@@ -385,7 +397,7 @@ bool run_prompt_with_native_dense_phase(NativeDensePhase& phase,
             phase.dense->cancel_prepared_bank();
             if(!phase.canonical->bind_ple(ple,e)) fatal("full canonical PLE rebind failed");
         }
-        if(native_ple) {
+        if(native_ple && release_dense) {
             const auto* key=rebind_ple();
             if(!key || !key->native_data || !key->native_q8_1) fatal("restored PLE publication absent");
             ple.key_native_data=key->native_data;ple.key_native_type=key->native_type;ple.key_native_q8_1=key->native_q8_1;
@@ -399,7 +411,7 @@ bool run_prompt_with_native_dense_phase(NativeDensePhase& phase,
         host_profile.restore_end();
     };
     struct Restore {decltype(restore)& f;~Restore() noexcept {f();}} rollback{restore};
-    try {
+    auto retire_readers=[&]() -> bool {
         drain();
         try {
             if(verifier && !verifier->retire_prefill_dense(err)) fatal("prepared verifier retirement rejected");
@@ -409,26 +421,40 @@ bool run_prompt_with_native_dense_phase(NativeDensePhase& phase,
             retired=true;
         } catch(...) { fatal("graph retirement threw; completion unknown"); }
         observe("retired");
-        // Withdraw the separate PLE native publication before releasing owners.
-        if(native_ple) {ple.key_native_data=nullptr;ple.key_native_q8_1=nullptr;ple.key_native_type=-1;}
-        if(!phase.dense->enter_layer_bank({true},err)) return false;
-        if(phase.canonical) {
-            phase.canonical->enter();
-            if(!phase.canonical->bind_ple(ple,err)) fatal("persistent canonical PLE rebind failed");
-        }
-        host_profile.entry_end();
-        observe("bank");
-        prompt.activate_native_dense_layer=[&](int64_t layer,void* stream,
-                const strata::core::LayerView::Overlay*& overlay,std::string& e) {
-            drain(); // callback synchronously returned; its own queue is checked
-            if(!phase.dense->activate_layer(int(layer),stream,{true},e)) return false;
-            ++activated_layers;
+        return true;
+    };
+    try {
+        if(cache_loan) {
+            if(!prompt.activate_cache_scratch_lease(retire_readers,err)) return false;
+            cache_loan_active=true;
+        } else (void)retire_readers();
+        if(release_dense) {
+            // Withdraw the separate PLE native publication before releasing owners.
+            if(native_ple) {ple.key_native_data=nullptr;ple.key_native_q8_1=nullptr;ple.key_native_type=-1;}
+            if(!phase.dense->enter_layer_bank({true},err)) return false;
             if(phase.canonical) {
-                if(!phase.canonical->activate(int(layer),stream,phase.dense->layer_view(),e)) return false;
-                overlay=&phase.canonical->view();
-            } else overlay=&phase.dense->layer_view();
-            return true;
-        };
+                phase.canonical->enter();
+                if(!phase.canonical->bind_ple(ple,err)) fatal("persistent canonical PLE rebind failed");
+            }
+            host_profile.entry_end();
+            observe("bank");
+            prompt.activate_native_dense_layer=[&](int64_t layer,void* stream,
+                    const strata::core::LayerView::Overlay*& overlay,std::string& e) {
+                drain(); // callback synchronously returned; its own queue is checked
+                if(!phase.dense->activate_layer(int(layer),stream,{true},e)) return false;
+                ++activated_layers;
+                if(phase.canonical) {
+                    if(!phase.canonical->activate(int(layer),stream,phase.dense->layer_view(),e)) return false;
+                    overlay=&phase.canonical->view();
+                } else overlay=&phase.dense->layer_view();
+                return true;
+            };
+        } else {
+            // Short borrowed chunks retain the full dense weights: their
+            // existing run_impl does not consume layer-bank callbacks.
+            host_profile.entry_end();
+            observe("cache-loan");
+        }
         host_profile.run_begin();
         const bool ok=run();
         host_profile.run_end(ok);
@@ -2456,6 +2482,19 @@ int main(int argc, char** argv) {
     }
     const char* dense_bank_switch=std::getenv("STRATA_PREFILL_NATIVE_DENSE_BANK");
     const bool native_dense_bank_enabled=dense_bank_switch && !std::strcmp(dense_bank_switch,"1");
+#ifdef STRATA_ENABLE_SYCL
+    const char* cache_lease_switch = std::getenv("STRATA_SYCL_CACHE_SCRATCH_LEASE");
+    if (cache_lease_switch && std::strcmp(cache_lease_switch,"0") && std::strcmp(cache_lease_switch,"1")) {
+        std::fprintf(stderr,"cache scratch lease requires exact0 or1\n"); return 2;
+    }
+    const bool cache_scratch_lease_enabled = cache_lease_switch && !std::strcmp(cache_lease_switch,"1");
+    if (cache_scratch_lease_enabled && (!o.serve || !native_dense_bank_enabled || !native_pack ||
+        !o.no_token_graph || o.no_prefill_borrow || o.spec != 4 || o.vision || o.gpu_stages ||
+        multi_gpu || !o.layer_split.empty() || o.peer_device >= 0 ||
+        std::any_of(o.expert_cache_remote.begin(),o.expert_cache_remote.end(),[](auto n){return n>0;}))) {
+        std::fprintf(stderr,"cache scratch lease requires serve, native dense bank, profiled borrowing, MTP4 and one GPU without token graphs/vision/remote experts\n"); return 2;
+    }
+#endif
     const char* canonical_bank_switch=std::getenv("STRATA_PREFILL_CANONICAL_DENSE_BANK");
     const bool canonical_dense_bank_enabled=canonical_bank_switch && !std::strcmp(canonical_bank_switch,"1");
 #ifndef STRATA_ENABLE_SYCL
@@ -4731,6 +4770,9 @@ int main(int argc, char** argv) {
             int32_t first_now = -1;        // where its buffers are laid out now
             int64_t lent_chunk = 0;
             std::vector<std::pair<int32_t, int32_t>> lent;
+#ifdef STRATA_ENABLE_SYCL
+            strata::core::CacheScratchLease lease{};
+#endif
         };
         auto part_slots = [&](const PfPart& p, int64_t c) -> int64_t {
             const uint64_t need = strata::prefill::Prefill::bytes_needed(g, *p.ses, c);
@@ -5107,6 +5149,15 @@ int main(int argc, char** argv) {
         }
         strata::core::Verifier ver;
         strata::core::VerifyHits vh;
+#ifdef STRATA_ENABLE_SYCL
+        if (cache_scratch_lease_enabled) {
+            if (!any_loan || pf_parts.size()!=1 || pf_parts[0].cache!=&xcache || pf_parts[0].first<128) {
+                std::fprintf(stderr,"cache scratch lease requires a positive single-cache tail loan\n"); return 2;
+            }
+            xcache.enable_scratch_loan_tracking();
+            vh.cache_owner = &xcache;
+        }
+#endif
         vh.d_res = thits.d_res;
         vh.cache_base = thits.cache_base;
         vh.blob = thits.blob;
@@ -6125,9 +6176,20 @@ int main(int argc, char** argv) {
             // through its own cache and its own device - a slot refilled into the wrong cache would leave that
             // stage's cache holding an expert it does not own, which is silent and produces plausible tokens.
             // (split in two halves so a layer split can queue every stage's copies before it waits for any: #340)
+#ifdef STRATA_ENABLE_SYCL
+            auto loan_call = [](auto&& operation, std::string& e) -> bool {
+                try { return operation(); }
+                catch (const std::exception& failure) { e = failure.what(); return false; }
+            };
+#endif
             auto refill_issue = [&](PfPart& p, std::string& e) -> bool {
                 tr("refill start", (long long) p.lent.size());
                 const strata::core::OnDevice on(p.dev);
+#ifdef STRATA_ENABLE_SYCL
+                if (cache_scratch_lease_enabled && !loan_call([&] {
+                    p.cache->begin_scratch_refill(p.lease); return true;
+                },e)) return false;
+#endif
                 for (const auto& [i, slot] : p.lent) {   // D-4: queued, one wait (STRATA_REFILL_BLOCKING=1: each)
                     const uint8_t* b = srcp->blob(i / g.n_expert, i % g.n_expert);
                     const int64_t nb = (int64_t) strata::kernels::cpu::expert_layout().blob_bytes(i / g.n_expert);
@@ -6143,14 +6205,29 @@ int main(int argc, char** argv) {
                 if (!p.cache->sync_queued(e)) return false;
 #ifdef STRATA_ENABLE_SYCL
                 if (!audit_refilled(p, e)) return false;
+                if (!cache_scratch_lease_enabled) {
 #endif
                 p.lent.clear();
                 p.lent_chunk = 0;
+#ifdef STRATA_ENABLE_SYCL
+                }
+#endif
                 return true;
             };
             auto refill_one = [&](PfPart& p, std::string& e) -> bool {
                 if (p.lent.empty()) return true;
-                return refill_issue(p, e) && refill_wait(p, e);
+                if (!refill_issue(p, e) || !refill_wait(p, e)) return false;
+#ifdef STRATA_ENABLE_SYCL
+                if (cache_scratch_lease_enabled) {
+                    if (!loan_call([&] { return p.cache->publish_scratch_refill(p.lease, [&] {
+                        return res_upload("serve checked cache refill", e) && audit_residency("refill", e);
+                    }); },e)) return false;
+                    // Keep the exact rows/slots through every transfer, drain
+                    // and publication. A partial failure never loses this map.
+                    p.lent.clear(); p.lent_chunk = 0; p.lease = {};
+                }
+#endif
+                return true;
             };
             // #340: with several stages every stage's copies go out first (each card on its own link), then each is
             // waited for - the same copies into the same slots, so the same cache; one stage: refill_one exactly.
@@ -6170,9 +6247,13 @@ int main(int argc, char** argv) {
                     for (PfPart& p : pf_parts)
                         if (!p.lent.empty() && !refill_one(p, e)) return false;
                 }
+#ifdef STRATA_ENABLE_SYCL
+                if (!cache_scratch_lease_enabled) {
+#endif
                 if (n_parts > 0 && !res_upload("serve cache refill", e)) return false;
 #ifdef STRATA_ENABLE_SYCL
                 if (n_parts > 0 && !audit_residency("refill", e)) return false;
+                }
 #endif
                 if (trace && n_parts > 0) {
                     std::fprintf(stderr, "strata trace: refilled %lld slots on %lld stage(s) in %.1f ms\n",
@@ -6209,11 +6290,37 @@ int main(int argc, char** argv) {
                         if (!refill_one(p, e)) return false;
                     }
                     const strata::core::OnDevice on(p.dev);
-                    const int32_t first = std::max<int32_t>(p.first, (int32_t) (p.cache->slots() - part_slots(p, want)));
+                    int32_t first = std::max<int32_t>(p.first, (int32_t) (p.cache->slots() - part_slots(p, want)));
+#ifdef STRATA_ENABLE_SYCL
+                    std::vector<std::pair<int32_t,int32_t>> checked_lent;
+                    if (cache_scratch_lease_enabled && !loan_call([&] {
+                        const auto begin=size_t(p.lb*g.n_expert), count=size_t((p.le-p.lb)*g.n_expert);
+                        first=strata::core::occupied_expert_tail_first(p.first,first,p.cache->slots(),
+                            host_res.data()+begin,count);
+                        if (first<0) { e="cache scratch lease: no occupied borrowable tail; parent unchanged"; return false; }
+                        for (size_t i=begin;i<begin+count;++i)
+                            if (host_res[i]>=first) checked_lent.emplace_back(int32_t(i),host_res[i]);
+                        if (checked_lent.empty() || part_bytes(p,first)<strata::prefill::Prefill::bytes_needed(g,*p.ses,want)) {
+                            e="cache scratch lease: preflight mask/capacity failed; parent unchanged"; return false;
+                        }
+                        return true;
+                    },e)) return false;
+                    if (cache_scratch_lease_enabled && !loan_call([&] {
+                        p.lease = p.cache->prepare_scratch_loan(first); return true;
+                    },e)) return false;
+#endif
                     if (want != p.sp->chunk() || first != p.first_now) {
                         if (!p.sp->relayout(want, p.cache->device_slot(first), part_bytes(p, first), e)) return false;
                         p.first_now = first;
                     }
+#ifdef STRATA_ENABLE_SYCL
+                    if (cache_scratch_lease_enabled && !p.sp->bind_cache_scratch_lease(p.lease,e)) return false;
+                    if (cache_scratch_lease_enabled) {
+                        p.lent=std::move(checked_lent); // fully allocated before preparing the parent
+                        for (const auto& row:p.lent) host_res[size_t(row.first)]=strata::core::kNotResident;
+                        any=true;
+                    } else {
+#endif
                     for (int64_t l = p.lb; l < p.le; ++l)              // THIS participant's layers only
                         for (int64_t ex = 0; ex < g.n_expert; ++ex) {
                             const size_t i = (size_t) (l * g.n_expert + ex);
@@ -6223,6 +6330,9 @@ int main(int argc, char** argv) {
                                 any = true;
                             }
                         }
+#ifdef STRATA_ENABLE_SYCL
+                    }
+#endif
                     p.lent_chunk = want;
 #ifdef STRATA_ENABLE_SYCL
                     if (loan_audit) {
@@ -6244,9 +6354,21 @@ int main(int argc, char** argv) {
                     }
 #endif
                 }
+#ifdef STRATA_ENABLE_SYCL
+                if (any && cache_scratch_lease_enabled) {
+                    auto& p = pf_parts.front();
+                    // cudaMemcpy's checked wait_all completes prior registered
+                    // queues before changing their table. Decode admission is
+                    // already closed; graph retirement precedes scratch use.
+                    if (!loan_call([&] { return p.cache->mask_scratch_loan(p.lease,[&] {
+                        return res_upload("serve checked cache lend",e) && audit_residency("lend",e);
+                    }); },e)) return false;
+                } else {
+#endif
                 if (any && !res_upload("serve cache lend", e)) return false;
 #ifdef STRATA_ENABLE_SYCL
                 if (any && !audit_residency("lend", e)) return false;
+                }
 #endif
                 if (trace) {
                     int64_t n_lent = 0;

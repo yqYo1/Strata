@@ -49,5 +49,28 @@ int main() {
                 prefill_request_chunk(257,8192)==512 && prefill_request_chunk(8193,8192)==8192 &&
                 prefill_request_chunk(INT64_MAX,8192)==8192 && prefill_request_chunk(0,8192)==0);
     });
-    std::puts("cache_tail_fixture cases=10 status=PASS");
+    using strata::core::occupied_expert_tail_first;
+    test("occupied_exact_tail", [] {
+        const int32_t rows[]={0,127,132,-1,240};
+        require(occupied_expert_tail_first(128,220,512,rows,5)==220);
+    });
+    test("occupied_widened_tail", [] {
+        const int32_t rows[]={0,127,132,-1,131};
+        const auto first=occupied_expert_tail_first(128,500,512,rows,5);
+        const ExpertCacheTail tail(512,512*1024,nullptr,1024);
+        require(first==132 && tail.bytes_from(first)>=tail.bytes_from(500));
+    });
+    test("occupied_prefix_only", [] {
+        const int32_t rows[]={0,127,-1,-1};
+        require(occupied_expert_tail_first(128,500,512,rows,4)==-1 &&
+                occupied_expert_tail_first(128,500,512,nullptr,0)==-1);
+    });
+    test("occupied_invalid", [] {
+        for (int32_t slot:{-2,512}) rejects([&]{(void)occupied_expert_tail_first(128,500,512,&slot,1);});
+        rejects([]{(void)occupied_expert_tail_first(-1,500,512,nullptr,0);});
+        rejects([]{(void)occupied_expert_tail_first(128,127,512,nullptr,0);});
+        rejects([]{(void)occupied_expert_tail_first(128,512,512,nullptr,0);});
+        rejects([]{(void)occupied_expert_tail_first(128,500,512,nullptr,1);});
+    });
+    std::puts("cache_tail_fixture cases=14 status=PASS");
 }

@@ -1,10 +1,12 @@
 // Original Strata host contracts; repository LICENSE applies.
 #include "strata/prefill/scratch_allocation.hpp"
+#include "strata/core/cache_scratch_lease.hpp"
 #include <array>
 #include <iostream>
 #include <limits>
 #include <stdexcept>
 #include <string>
+#include <vector>
 
 namespace {
 namespace pd = strata::prefill::detail;
@@ -20,7 +22,129 @@ void ready(pd::ScratchLayoutState& state) {
     need(update.started() && !state.ready()); update.commit();
     need(state.ready() && state.generation() == 1);
 }
+void loan_test(const std::string& name) {
+    using State = strata::core::detail::CacheScratchState;
+    using Phase = State::Phase;
+    int parent = 0;
+    auto state = std::make_shared<State>(&parent, reinterpret_cast<void*>(0x1000), 0x4000);
+    auto to_used = [&] {
+        const auto g=state->prepare(256,8192);
+        need(state->mask(g,[]{return true;})); need(state->activate(g,[]{return true;}));
+        need(state->retire(g,[]{return true;})); return g;
+    };
+    if (name=="loan_cycle") {
+        std::vector<int> order;
+        const auto g=state->prepare(256,8192); need(g==1 && !state->readable());
+        rejects([&]{(void)state->read();}); rejects([&]{state->close();});
+        need(state->mask(g,[&]{order.push_back(1);return true;}));
+        need(state->activate(g,[&]{order.push_back(2);return true;}));
+        need(state->retire(g,[&]{order.push_back(3);return true;}));
+        need(state->phase()==Phase::used && !state->readable());
+        state->begin_refill(g); need(!state->readable());
+        need(state->publish_refilled(g,[&]{order.push_back(4);return true;}));
+        need(state->readable() && order==std::vector<int>({1,2,3,4})); state->close();
+        need(state->phase()==Phase::closed); rejects([&]{(void)state->read();});
+    } else if(name=="loan_bounds") {
+        for(auto [at,bytes]:std::array<std::pair<uint64_t,uint64_t>,5>{{{0,0},{1,256},{0x4000,1},{256,0x4000},{maximum,1}}})
+            rejects([&]{(void)state->prepare(at,bytes);});
+        need(state->readable());
+        rejects([&]{(void)std::make_shared<State>(&parent,reinterpret_cast<void*>(maximum-255),256);});
+        rejects([&]{(void)std::make_shared<State>(nullptr,reinterpret_cast<void*>(0x1000),256);});
+        rejects([&]{(void)std::make_shared<State>(&parent,nullptr,256);});
+        need(state->prepare(0,0x4000)==1);
+    } else if(name=="loan_read_admission") {
+        { auto reader=state->read(); auto moved=std::move(reader);
+          rejects([&]{(void)state->prepare(256,8192);}); rejects([&]{state->close();}); }
+        const auto g=state->prepare(256,8192); rejects([&]{(void)state->read();});
+        need(state->mask(g,[]{return true;})); rejects([&]{(void)state->read();});
+    } else if(name=="loan_stale_generation") {
+        const auto g=to_used(); state->begin_refill(g); need(state->publish_refilled(g,[]{return true;}));
+        const auto next=state->prepare(512,8192); need(next==g+1);
+        int calls=0; rejects([&]{state->mask(g,[&]{++calls;return true;});});
+        rejects([&]{state->mask(0,[&]{++calls;return true;});});
+        need(calls==0 && state->phase()==Phase::prepared);
+    } else if(name=="loan_wrong_order") {
+        const auto g=state->prepare(256,8192); int calls=0;
+        rejects([&]{state->activate(g,[&]{++calls;return true;});});
+        rejects([&]{state->begin_refill(g);});
+        rejects([&]{state->publish_refilled(g,[&]{++calls;return true;});});
+        need(state->mask(g,[]{return true;})); need(state->activate(g,[]{return true;}));
+        rejects([&]{state->begin_refill(g);}); need(calls==0 && state->phase()==Phase::exclusive);
+    } else if(name=="loan_callback_false" || name=="loan_callback_throw") {
+        for(int fail=0;fail<4;++fail) {
+            auto s=std::make_shared<State>(&parent,reinterpret_cast<void*>(0x1000),0x4000);
+            const auto g=s->prepare(256,8192); int stage=0;
+            auto callback=[&] {
+                const bool bad=stage++==fail;
+                if(bad && name=="loan_callback_throw") throw std::runtime_error("injected phase error");
+                return !bad;
+            };
+            auto run=[&] {
+                if(!s->mask(g,callback) || !s->activate(g,callback) || !s->retire(g,callback))return false;
+                s->begin_refill(g); return s->publish_refilled(g,callback);
+            };
+            if(name=="loan_callback_throw") rejects(run); else need(!run());
+            need(s->phase()==Phase::poisoned && !s->readable());
+            rejects([&]{(void)s->read();}); rejects([&]{s->close();});
+        }
+    } else if(name=="loan_nested_transition") {
+        const auto g=state->prepare(256,8192); int nested=0;
+        need(state->mask(g,[&] {
+            rejects([&]{state->mask(g,[&]{++nested;return true;});}); return true;
+        }));
+        need(nested==0 && state->phase()==Phase::masked);
+    } else if(name=="loan_poison_during_callback") {
+        const auto g=state->prepare(256,8192);
+        rejects([&]{state->mask(g,[&]{state->poison();return true;});});
+        need(state->phase()==Phase::poisoned && !state->readable());
+    } else if(name=="loan_reuse_masked_range") {
+        const auto g=to_used(); need(state->activate(g,[]{return true;}));
+        need(state->retire(g,[]{return true;})); need(!state->readable());
+        state->begin_refill(g); need(state->publish_refilled(g,[]{return true;})); need(state->readable());
+    } else if(name=="loan_writer_admission") {
+        { auto writer=state->write(reinterpret_cast<void*>(0x1100),256);
+          auto moved=std::move(writer);
+          rejects([&]{(void)state->prepare(256,8192);}); rejects([&]{state->close();});
+          rejects([&]{(void)state->write(reinterpret_cast<void*>(0x1200),256);}); }
+        need(state->prepare(256,8192)==1);
+        rejects([&]{(void)state->write(reinterpret_cast<void*>(0x1100),256);});
+    } else if(name=="loan_writer_refill_interval") {
+        const auto g=to_used(); state->begin_refill(g);
+        for(auto [at,bytes]:std::array<std::pair<uintptr_t,uint64_t>,5>{{
+            {0x1000,256},{0x3100,1},{0x1100,8193},{0x1100,0},{maximum-255,512}}})
+            rejects([&]{(void)state->write(reinterpret_cast<void*>(at),bytes);});
+        { auto writer=state->write(reinterpret_cast<void*>(0x1100),8192); }
+        need(state->publish_refilled(g,[]{return true;}));
+    } else if(name=="loan_writer_publication") {
+        const auto g=to_used(); state->begin_refill(g); int calls=0;
+        { auto writer=state->write(reinterpret_cast<void*>(0x1100),256);
+          rejects([&]{state->publish_refilled(g,[&]{++calls;return true;});}); }
+        need(calls==0 && state->phase()==Phase::refilling);
+        need(state->publish_refilled(g,[&] {
+            ++calls;
+            rejects([&]{(void)state->write(reinterpret_cast<void*>(0x1100),256);});
+            rejects([&]{(void)state->read();}); rejects([&]{state->close();}); return true;
+        }));
+        need(calls==1 && state->readable());
+    } else if(name=="loan_writer_exception") {
+        rejects([&]{auto writer=state->write(reinterpret_cast<void*>(0x1100),256);
+                    throw std::runtime_error("injected fill failure");});
+        const auto g=state->prepare(256,8192); need(g==1);
+        need(state->mask(g,[]{return true;})); need(state->activate(g,[]{return true;}));
+    } else if(name=="loan_writer_each_phase") {
+        const auto no_write=[&]{rejects([&]{(void)state->write(reinterpret_cast<void*>(0x1100),256);});};
+        const auto g=state->prepare(256,8192); no_write();
+        need(state->mask(g,[&]{no_write();return true;})); no_write();
+        need(state->activate(g,[&]{no_write();return true;})); no_write();
+        need(state->retire(g,[&]{no_write();return true;})); no_write();
+        state->poison(); no_write();
+        auto closed=std::make_shared<State>(&parent,reinterpret_cast<void*>(0x1000),0x4000);
+        closed->close(); rejects([&]{(void)closed->write(reinterpret_cast<void*>(0x1100),256);});
+        need(!strata::core::CacheScratchLease{}.pending());
+    } else throw std::runtime_error("unknown loan case");
+}
 void test(const std::string& name) {
+    if (name.rfind("loan_",0)==0) { loan_test(name); return; }
     if (name == "guard_alignment") {
         for (uint64_t n : {0ull, 1ull, 63ull, 64ull, 255ull, 256ull, 257ull, 8192ull}) {
             const auto r = pd::reserve_scratch(0, n, 4);
@@ -151,10 +275,14 @@ int main() try {
         "guard_overflow", "used_overflow", "capacity_bounds", "slack_overflow", "initial_layout",
         "relayout_generation", "failed_init", "failed_relayout", "nested_update", "failed_take_and_reset",
         "qsa_global_ordinal", "qsa_resident_plan", "qsa_stream_ring_formats", "qsa_bad_metadata",
-        "qsa_product_overflow", "qsa_block_overflow", "qsa_tail_rounding"};
+        "qsa_product_overflow", "qsa_block_overflow", "qsa_tail_rounding",
+        "loan_cycle","loan_bounds","loan_read_admission","loan_stale_generation","loan_wrong_order",
+        "loan_callback_false","loan_callback_throw","loan_nested_transition","loan_poison_during_callback",
+        "loan_reuse_masked_range","loan_writer_admission","loan_writer_refill_interval",
+        "loan_writer_publication","loan_writer_exception","loan_writer_each_phase"};
     for (const auto* name : names) {
         test(name); std::cout << "prefill_scratch case=" << name << " status=PASS\n";
     }
-    std::cout << "prefill_scratch_fixture cases=22 status=PASS\n";
+    std::cout << "prefill_scratch_fixture cases=37 status=PASS\n";
     return 0;
 } catch (const std::exception& error) { std::cerr << error.what() << '\n'; return 1; }

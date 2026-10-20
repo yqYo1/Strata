@@ -28,8 +28,12 @@
 
 #include <cstddef>
 #include <cstdint>
+#include <optional>
 #include <string>
 #include <vector>
+#ifdef STRATA_ENABLE_SYCL
+#include "strata/core/cache_scratch_lease.hpp"
+#endif
 
 namespace strata::core {
 
@@ -97,6 +101,33 @@ public:
     void close();
 
     bool valid() const { return base_ != nullptr; }
+#ifdef STRATA_ENABLE_SYCL
+    // Enable at the serialized generator boundary before binding any readers.
+    // Opening a cache is not itself permission to borrow its allocation.
+    void enable_scratch_loan_tracking();
+    bool scratch_tracking_enabled() const { return bool(scratch_state_); }
+    bool decode_ready() const { return !scratch_state_ || scratch_state_->readable(); }
+    detail::CacheScratchState::Reader scratch_reader() const {
+        if (!scratch_state_) throw std::logic_error("cache scratch: reader tracking was not enabled");
+        return scratch_state_->read();
+    }
+    CacheScratchLease prepare_scratch_loan(int32_t first_slot);
+    template<class Publish> bool mask_scratch_loan(const CacheScratchLease& lease, Publish&& publish) const {
+        return scratch_state(lease).mask(lease.generation(), std::forward<Publish>(publish));
+    }
+    template<class Retire> bool activate_scratch_loan(const CacheScratchLease& lease, Retire&& retire) const {
+        return scratch_state(lease).activate(lease.generation(), std::forward<Retire>(retire));
+    }
+    template<class Drain> bool retire_scratch_loan(const CacheScratchLease& lease, Drain&& drain) const {
+        return scratch_state(lease).retire(lease.generation(), std::forward<Drain>(drain));
+    }
+    void begin_scratch_refill(const CacheScratchLease& lease) const {
+        scratch_state(lease).begin_refill(lease.generation());
+    }
+    template<class Complete> bool publish_scratch_refill(const CacheScratchLease& lease, Complete&& complete) const {
+        return scratch_state(lease).publish_refilled(lease.generation(), std::forward<Complete>(complete));
+    }
+#endif
     int64_t slots() const { return slots_; }
     /// Slots actually claimed.  Not the same as `slots()` - the cache does not evict, so a run that routes
     /// fewer distinct experts than there are slots leaves the rest empty.
@@ -163,8 +194,25 @@ public:
     int64_t fills() const { return fills_; }
 
 private:
+#ifdef STRATA_ENABLE_SYCL
+    std::shared_ptr<detail::CacheScratchState> scratch_state_;
+    detail::CacheScratchState& scratch_state(const CacheScratchLease& lease) const {
+        if (!scratch_state_ || lease.state_.get() != scratch_state_.get())
+            throw std::logic_error("cache scratch: ticket belongs to another cache");
+        return *scratch_state_;
+    }
+    bool scratch_fill_reserve(int32_t slot, size_t bytes,
+                              std::optional<detail::CacheScratchState::Writer>& writer, std::string& err) const {
+        if (!scratch_state_) return true;
+        try { writer.emplace(scratch_state_->write(device_slot(slot), bytes)); }
+        catch (const std::exception& e) { err = e.what(); return false; }
+        return true;
+    }
+#endif
+    bool fill_extent(int32_t slot, int64_t requested, size_t& bytes, std::string& err) const;
     bool open_impl(int64_t n_slots, int64_t n_layers, int64_t n_expert, int64_t blob_bytes,
-                   std::string& err, bool initialize);
+                   std::string& err, bool initialize, std::vector<uint64_t> offsets = {},
+                   std::vector<int64_t> slot_sizes = {});
 #if defined(STRATA_USE_HIP) || defined(STRATA_ENABLE_SYCL)
     bool ensure_blocking_staging(std::size_t bytes, std::string& err);
     uint8_t* blocking_staging_ = nullptr;
@@ -183,6 +231,7 @@ private:
     bool per_layer_ = false;
     std::vector<int32_t> layer_next_;   ///< [n_layers] -> that layer's next free slot
     std::vector<uint64_t> off_;         ///< plan v0.3 P6: slot offsets (slots + 1 entries) when sized
+    std::vector<int64_t> slot_sizes_;   ///< exact payload sizes, excluding per-slot alignment padding
     int64_t admitted_ = 0;
 };
 
