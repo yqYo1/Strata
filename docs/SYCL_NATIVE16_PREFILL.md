@@ -2372,8 +2372,17 @@ as one observed request, without a clean gain or regression claim. Logical
 decode cache hit rate was10.2%; remaining1120890 CPU miss jobs do not measure
 RAM/PCIe traffic. Corrected117488-row arithmetic is21915776B above the observed
 33K free budget.1256 slots would save63897600B while still lending enough for
-chunk8192, but its117K admission and speed are unmeasured. Plan the independent
-clean owned-small/borrowed-large comparison next; broader quality, full mixed
+chunk8192, but its117K admission and speed are unmeasured. The independent
+clean owned128/borrowed1280 comparison is defined in `tools/sycl/cache_compare.py`.
+Its31 offline tests and independent source review passed at controller source
+`cba7b0a7c`; the owned32K parameter-validated check also closed normally with
+48 actual direct-owner FFNs,2931 generated tokens and no fresh fault. These
+checks admitted the frozen six-process comparison. Its first owned/borrowed
+pair closed normally, with no fresh fault and matched generation/MTP regime.
+Four independent processes remain; one pair does not establish a speed gain
+or adoption. Keep the source and comparison plan frozen through all six. See
+[the current comparison](../bench/results/2026-10-15-pr6-recovery-audit/cache-comparison-current.json).
+Broader quality, full mixed
 tail and physical262144/session/RESTORE remain unqualified. Closed successful
 raw/JIT and consumed source-audit transactions were retired after recording
 the result: 76 files, 12933318 bytes, with the manifest in the

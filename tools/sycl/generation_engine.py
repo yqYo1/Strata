@@ -144,7 +144,7 @@ def warmup_evidence(root, expected_journal):
 
 def runtime_assets_unchanged(record):
     delta = record.get('runtime_asset_delta', {})
-    guards.require(not delta or record['mode'] in ('cpu-check', 'cpu-overhead', 'engine-compare', 'client-resources', 'pool-capacity', 'arena-copy-check', 'arena-generation-check', 'arena-generation-screen', 'early-pcie-check', 'early-generation-check', 'early-generation-screen'), 'proposed runtime is diagnostic-only')
+    guards.require(not delta or record['mode'] in ('cpu-check', 'cpu-overhead', 'engine-compare', 'client-resources', 'pool-capacity', 'arena-copy-check', 'arena-generation-check', 'arena-generation-screen', 'early-pcie-check', 'early-generation-check', 'early-generation-screen', 'cache-owned-check', 'cache-capacity-clean'), 'proposed runtime is diagnostic-only')
     settings = json.loads(SETTINGS.read_text())
     guards.require(set(delta) <= set(settings['runtime_elfs']), 'unknown proposed runtime asset')
     for name, item in settings['runtime_elfs'].items():
