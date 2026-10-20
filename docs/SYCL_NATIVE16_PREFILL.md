@@ -2800,15 +2800,14 @@ model generations and14 legacy provenance holds remain separate.
 
 Installed-tool discovery now finds VTune2026.6 build633341 and PTI SDK1.2.0;
 their presence does not establish usable profiling. The older VTune2026.4 and
-perf refusals remain in the previous committed capability result. The maintained
-`profile_attention.py capabilities-prepare` / `capabilities-run` path first
-commits a generated recipe, source/collector/target hashes and environment.
-It checks CPU software samples with a three-second OpenSSL workload and probes
-GPU collector launch with`/usr/bin/true`. The latter has no GPU workload and
-cannot qualify GPU timing or counters even if it exits0. No model, privilege or
-driver-setting change belongs to this capability step. Independent read-only
+perf refusals remain in the previous committed capability result. The controller
+at`430aa601f` and generated plan at`dae871acc` pin source, collector, target and
+environment before collection. They check CPU software samples with a three-
+second OpenSSL workload and GPU collector launch with`/usr/bin/true`. The latter
+has no GPU workload and cannot qualify GPU timing or counters even if it exits0.
+Neither probe changes permissions or driver settings. Independent read-only
 research audits the installed PTI View contract and actual production command-
-profile coverage while Main performs the serialized checks.
+profile coverage alongside the serialized checks.
 
 Both VTune2026.6 probes then close normally but fail their capability gates:
 CPU collection exits1 under ptrace_scope1; GPU-hotspots exits1 because this
@@ -2824,6 +2823,16 @@ the qualified environment. The next bounded candidate is the official Unitrace
 Level-Zero collector, with unrelated integrations disabled, all configuration
 fixed before target exec and the validation preload retained. Audit its launcher,
 collector and temporal-control behavior before any GPU qualification.
+
+The closed capability output and consumed decision-support report/transaction
+bodies are retired:43 external files/112835B, with a path/hash/reason manifest
+in the compact capability result. All four original controller inputs,676
+collector assets and the generated plan were checked before deletion. The
+private capability CLI modes and unused imports are removed; existing attention
+collection modes remain. Original source and plan stay reachable from pushed
+`feature/sycl`. Both model engines are unchanged, with two current consumers and
+14 separate legacy provenance holds. This cleanup changes no failed capability
+gate and establishes neither a production observer nor a speed improvement.
 
 For the separate earlier early-PCIe candidate, only a later qualified mechanism permits a
 fresh complete51+6-case plan. Preserve all pending-completion,
