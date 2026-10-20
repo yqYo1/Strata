@@ -2347,7 +2347,11 @@ the checked larger cache against the owned small cache using official32K+ input
 and long generation, with prospective repetition/order and clean processes.
 The first input processed8193 rows and used only the primary mixed bank;
 tail routing, clean speed, task quality,physical262144/session/RESTORE remain
-unqualified. The default-off route stays unadopted for general use.
+unqualified. The default-off route stays unadopted for general use. Closed v9/v3 raw, JIT,
+successful compiler output and consumed source-audit transactions were retired
+after committing the evidence: 121 files, 39114382 bytes. The compact
+model result records the path/hash/reason manifest. Current engine/eight fixtures,
+the396 fallback and14 separate legacy provenance holds remain.
 Only a later qualified mechanism permits a
 fresh complete51+6-case plan. Preserve all pending-completion,
 untouched-output, payload/guard and owner-lifetime requirements under that plan.
