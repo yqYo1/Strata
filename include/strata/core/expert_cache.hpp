@@ -28,6 +28,7 @@
 
 #include <cstddef>
 #include <cstdint>
+#include <optional>
 #include <string>
 #include <vector>
 #ifdef STRATA_ENABLE_SYCL
@@ -200,15 +201,18 @@ private:
             throw std::logic_error("cache scratch: ticket belongs to another cache");
         return *scratch_state_;
     }
-    bool scratch_fill_allowed(std::string& err) const {
-        if (scratch_state_ && !scratch_state_->fill_allowed()) {
-            err = "cache scratch: fill prohibited until checked borrower retirement"; return false;
-        }
+    bool scratch_fill_reserve(int32_t slot, size_t bytes,
+                              std::optional<detail::CacheScratchState::Writer>& writer, std::string& err) const {
+        if (!scratch_state_) return true;
+        try { writer.emplace(scratch_state_->write(device_slot(slot), bytes)); }
+        catch (const std::exception& e) { err = e.what(); return false; }
         return true;
     }
 #endif
+    bool fill_extent(int32_t slot, int64_t requested, size_t& bytes, std::string& err) const;
     bool open_impl(int64_t n_slots, int64_t n_layers, int64_t n_expert, int64_t blob_bytes,
-                   std::string& err, bool initialize);
+                   std::string& err, bool initialize, std::vector<uint64_t> offsets = {},
+                   std::vector<int64_t> slot_sizes = {});
 #if defined(STRATA_USE_HIP) || defined(STRATA_ENABLE_SYCL)
     bool ensure_blocking_staging(std::size_t bytes, std::string& err);
     uint8_t* blocking_staging_ = nullptr;
@@ -227,6 +231,7 @@ private:
     bool per_layer_ = false;
     std::vector<int32_t> layer_next_;   ///< [n_layers] -> that layer's next free slot
     std::vector<uint64_t> off_;         ///< plan v0.3 P6: slot offsets (slots + 1 entries) when sized
+    std::vector<int64_t> slot_sizes_;   ///< exact payload sizes, excluding per-slot alignment padding
     int64_t admitted_ = 0;
 };
 

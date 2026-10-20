@@ -8,6 +8,8 @@
 #include "strata/core/native_head.hpp"
 #ifdef STRATA_ENABLE_SYCL
 #include "strata/sycl/checked_cleanup.hpp"
+#include "strata/core/expert_cache.hpp"
+#include <optional>
 #endif
 #include "strata/core/on_device.hpp"
 #include "strata/core/peer_experts.hpp"
@@ -62,6 +64,14 @@ namespace {
 constexpr float EPS = 1e-6f;
 using Clock = std::chrono::steady_clock;
 double ms_since(Clock::time_point t) { return std::chrono::duration<double, std::milli>(Clock::now() - t).count(); }
+#ifdef STRATA_ENABLE_SYCL
+using CacheReader = std::optional<detail::CacheScratchState::Reader>;
+bool enter_cache_reader(const VerifyHits& hits, CacheReader& guard, std::string& err) {
+    if (!hits.cache_owner) return true;
+    try { guard.emplace(hits.cache_owner->scratch_reader()); return true; }
+    catch (const std::exception& e) { err = e.what(); return false; }
+}
+#endif
 cudaError_t begin_verify_capture(cudaStream_t stream, int window_size) {
 #ifdef STRATA_ENABLE_SYCL
     // Short windows save recording storage. Keep larger windows and the
@@ -407,6 +417,13 @@ bool Verifier::init(const WeightTable& wt, const ModelGeometry& g, SessionState&
                     const NativeHead* head, int max_t, std::string& err) {
     if(released_.load()){err="verify: failed or released verifier; restart the engine";return false;}
     if(dense_retired_ || head_detached_){err="verify: init while head detached";return false;}
+#ifdef STRATA_ENABLE_SYCL
+    if (hits.cache_owner && (!hits.cache_owner->scratch_tracking_enabled() || !hits.cache_owner->decode_ready() ||
+        hits.cache_base != hits.cache_owner->device_slot(0) || hits.n_slots != hits.cache_owner->slots() ||
+        hits.slot_off != hits.cache_owner->slot_offsets())) {
+        err = "verify: tracked cache owner/base/offsets/admission mismatch"; return false;
+    }
+#endif
     cudaGetDevice(&device_);   // a layer split's stage on another GPU: its streams, graphs and buffers live there
     strata::kernels::fused_gr_check();   // once per card: which bitwise-equal hyper-connection read runs there
     wt_ = &wt;
@@ -1449,6 +1466,10 @@ bool Verifier::run(int T, const int32_t* tokens, int64_t pos0, PoolMultiFn pool,
     using namespace strata::kernels;
     const OnDevice on_device(device_);
     if(dense_retired_ || head_detached_){err="verify: run while head detached";return false;}
+#ifdef STRATA_ENABLE_SYCL
+    CacheReader cache_reader;
+    if (!enter_cache_reader(hits_, cache_reader, err)) return false;
+#endif
     if (T < 1 || T > max_t_) { err = "verify: window size out of range"; return false; }
     if (released_.load()) { err = "verify: an earlier window failed or was released; restart the engine"; return false; }
     const ModelGeometry& g = *g_;
@@ -1937,6 +1958,10 @@ bool Verifier::window_logprobs(const int32_t* targets, int T, int64_t pos0, int3
                                std::string& err) {
     if(released_.load()){err="verify: failed or released verifier has no valid output";return false;}
     if(dense_retired_ || head_detached_){err="verify: logits while head detached";return false;}
+#ifdef STRATA_ENABLE_SYCL
+    CacheReader cache_reader;
+    if (!enter_cache_reader(hits_, cache_reader, err)) return false;
+#endif
     if (next_ != nullptr) return next_->window_logprobs(targets, T, pos0, extra_id, out, err);
     const OnDevice on_device(device_);
     if (head_logits_ == nullptr || n_vocab_ <= 0 || T <= 0 || targets == nullptr || out == nullptr) {
@@ -1997,6 +2022,10 @@ void Verifier::set_commit_async(bool on) { g_commit_async = on && std::getenv("S
 bool Verifier::commit(int n_keep, std::string& err) {
     if(released_.load()){err="verify: failed or released verifier cannot commit";return false;}
     if(dense_retired_ || head_detached_){err="verify: commit while head detached";return false;}
+#ifdef STRATA_ENABLE_SYCL
+    CacheReader cache_reader;
+    if (!enter_cache_reader(hits_, cache_reader, err)) return false;
+#endif
     const OnDevice on_device(device_);
     if (n_keep < 1 || n_keep > last_t_) { err = "verify: commit count out of range"; return false; }
     const Clock::time_point t0 = Clock::now();
@@ -2046,6 +2075,11 @@ bool Verifier::wait_commit(std::string& err) {
 bool Verifier::copy_logits(int t, float* host) const {
     if(released_.load())return false;
     if(dense_retired_ || head_detached_)return false;
+#ifdef STRATA_ENABLE_SYCL
+    CacheReader cache_reader;
+    std::string cache_error;
+    if (!enter_cache_reader(hits_, cache_reader, cache_error)) return false;
+#endif
     if (next_ != nullptr) return next_->copy_logits(t, host);   // a layer split: the head is on the last stage
     if (head_logits_ == nullptr || host == nullptr || t < 0 || n_vocab_ <= 0) return false;
     return cudaMemcpy(host, head_logits_ + (size_t) t * (size_t) n_vocab_, (size_t) n_vocab_ * sizeof(float),

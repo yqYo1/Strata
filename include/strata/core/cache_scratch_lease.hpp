@@ -22,6 +22,9 @@ public:
     uint64_t generation() const noexcept { return generation_; }
     bool contains(const void* owner, const void* pointer, uint64_t bytes,
                   bool require_exclusive = true) const;
+    // Liveness is independent of access permission: refilling, poisoned and
+    // in-transition loans still retain their owners. No raw cache is accessed.
+    bool pending() const;
 private:
     friend class ExpertCache;
     friend class detail::CacheScratchState;
@@ -61,6 +64,19 @@ public:
         explicit Reader(std::shared_ptr<CacheScratchState> state) : state_(std::move(state)) {}
         std::shared_ptr<CacheScratchState> state_;
     };
+    class Writer {
+    public:
+        Writer() = default;
+        Writer(Writer&& other) noexcept : state_(std::move(other.state_)) {}
+        Writer& operator=(Writer&&) = delete;
+        Writer(const Writer&) = delete;
+        Writer& operator=(const Writer&) = delete;
+        ~Writer() { if (state_) state_->end_write(); }
+    private:
+        friend class CacheScratchState;
+        explicit Writer(std::shared_ptr<CacheScratchState> state) : state_(std::move(state)) {}
+        std::shared_ptr<CacheScratchState> state_;
+    };
     Reader read() {
         auto self = shared_from_this();
         std::lock_guard lock(mutex_);
@@ -72,9 +88,26 @@ public:
     bool readable() const { std::lock_guard lock(mutex_); return phase_ == Phase::ready; }
     Phase phase() const { std::lock_guard lock(mutex_); return phase_; }
 
+    // Retain through the final enqueue, including staging and counters. The
+    // caller still owes queue completion before mask/use/close; this is host
+    // admission, not an assertion that an asynchronous transfer completed.
+    Writer write(const void* pointer, uint64_t bytes) {
+        auto self = shared_from_this();
+        std::lock_guard lock(mutex_);
+        if (transition_active_ || writers_ || (phase_ != Phase::ready && phase_ != Phase::refilling))
+            throw std::logic_error("cache scratch: fill overlaps a writer, loan or publication");
+        const auto offset = phase_ == Phase::refilling ? offset_ : 0;
+        const auto length = phase_ == Phase::refilling ? length_ : bytes_;
+        if (!span_contains(base_ + offset, length, pointer, bytes))
+            throw std::invalid_argument("cache scratch: fill outside its parent/refill interval");
+        ++writers_;
+        return Writer(std::move(self));
+    }
+
     uint64_t prepare(uint64_t offset, uint64_t bytes) {
         std::lock_guard lock(mutex_);
-        if (phase_ != Phase::ready || readers_ || generation_ == std::numeric_limits<uint64_t>::max())
+        if (phase_ != Phase::ready || transition_active_ || readers_ || writers_ ||
+            generation_ == std::numeric_limits<uint64_t>::max())
             throw std::logic_error("cache scratch: parent busy or generation exhausted");
         if (!bytes || offset > bytes_ || bytes > bytes_ - offset || (base_ + offset) % 256)
             throw std::invalid_argument("cache scratch: invalid/alignment-exceeding loan interval");
@@ -100,7 +133,8 @@ public:
     }
     void begin_refill(uint64_t generation) {
         std::lock_guard lock(mutex_); require(generation);
-        if (phase_ != Phase::used || transition_active_) throw std::logic_error("cache scratch: refill before checked retirement");
+        if (phase_ != Phase::used || transition_active_ || writers_)
+            throw std::logic_error("cache scratch: refill before checked retirement");
         phase_ = Phase::refilling;
     }
     template<class Complete> bool publish_refilled(uint64_t generation, Complete&& complete) {
@@ -109,14 +143,10 @@ public:
     void poison() { std::lock_guard lock(mutex_); if (phase_ != Phase::closed) phase_ = Phase::poisoned; }
     void close() {
         std::lock_guard lock(mutex_);
-        if (phase_ != Phase::ready || readers_)
+        if (phase_ != Phase::ready || transition_active_ || readers_ || writers_)
             throw std::logic_error("cache scratch: parent close before reader/loan retirement and refill");
         phase_ = Phase::closed;
     }
-    bool fill_allowed() const {
-        std::lock_guard lock(mutex_); return phase_ == Phase::ready || phase_ == Phase::refilling;
-    }
-
 private:
     friend class ::strata::core::CacheScratchLease;
     const void* const owner_;
@@ -124,7 +154,7 @@ private:
     const uint64_t bytes_;
     mutable std::mutex mutex_;
     Phase phase_ = Phase::ready;
-    uint64_t generation_ = 0, offset_ = 0, length_ = 0, readers_ = 0;
+    uint64_t generation_ = 0, offset_ = 0, length_ = 0, readers_ = 0, writers_ = 0;
     bool transition_active_ = false;
     void require(uint64_t generation) const {
         if (!generation || generation != generation_)
@@ -135,10 +165,24 @@ private:
         if (!readers_) std::terminate();
         --readers_;
     }
+    void end_write() noexcept {
+        std::lock_guard lock(mutex_);
+        if (writers_ != 1) std::terminate();
+        --writers_;
+    }
+    static bool span_contains(uintptr_t begin, uint64_t length, const void* pointer, uint64_t bytes) {
+        const auto address = reinterpret_cast<uintptr_t>(pointer);
+        return bytes && address >= begin && address - begin <= length && bytes <= length - (address - begin);
+    }
+    bool pending(const CacheScratchLease& lease) const {
+        std::lock_guard lock(mutex_);
+        return lease.state_.get() == this && lease.generation_ == generation_ && generation_ &&
+            (transition_active_ || (phase_ != Phase::ready && phase_ != Phase::closed));
+    }
     template<class Callback> bool transition(uint64_t generation, Phase from, Phase to,
                                             Callback&& callback) {
         { std::lock_guard lock(mutex_); require(generation);
-          if (phase_ != from || transition_active_)
+          if (phase_ != from || transition_active_ || readers_ || writers_)
               throw std::logic_error("cache scratch: invalid or nested transition");
           transition_active_ = true; }
         // Do not hold mutex_ around GPU waits or callbacks. Admission stays
@@ -161,9 +205,7 @@ private:
             transition_active_ || (exclusive ? phase_ != Phase::exclusive :
                 (phase_ != Phase::prepared && phase_ != Phase::masked && phase_ != Phase::exclusive && phase_ != Phase::used)))
             return false;
-        const auto address = reinterpret_cast<uintptr_t>(pointer);
-        const auto begin = base_ + offset_;
-        return bytes && address >= begin && address - begin <= length_ && bytes <= length_ - (address - begin);
+        return span_contains(base_ + offset_, length_, pointer, bytes);
     }
 };
 } // namespace detail
@@ -172,4 +214,5 @@ inline bool CacheScratchLease::contains(const void* owner, const void* pointer, 
                                        bool require_exclusive) const {
     return state_ && state_->contains(*this, owner, pointer, bytes, require_exclusive);
 }
+inline bool CacheScratchLease::pending() const { return state_ && state_->pending(*this); }
 } // namespace strata::core

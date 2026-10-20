@@ -2207,6 +2207,24 @@ reader retirement, refill/publication conservation and host/device/error gates
 remain required before borrowed mode10 can run. The original owned fast guards
 remain in force until those call sites supply the complete contract. All new
 ownership code is original project work, with no XeStrata implementation input.
+The independent Orca audit and native Luna-max review confirmed a fill-admission
+race and missing pending-loan checks in that first source step. Main replaced
+the Boolean fill check with a scoped, single-writer reservation held through
+the final enqueue. Prepare, close and phase transitions refuse active writers;
+refill writers are restricted to the loan interval. The ticket's pending query
+retains poisoned/refilling/in-transition loans without dereferencing a cache.
+Relayout rejects them before mutation, and release/reset fails before freeing
+owners. Uniform products, residency dimensions and sized-slot alignment/sums
+are checked; sized allocation uses real slot indices and keeps exact default
+payload lengths. These corrections and the37-case host fixture are unbuilt.
+The prospective generator/verifier connection is default-off under
+`STRATA_SYCL_CACHE_SCRATCH_LEASE=1`, restricted to the single-cache serve route.
+It closes decode admission, retires verifier/session/MTP readers before use and
+keeps the exact lent rows/slots through refill completion and checked residency
+publication. Short borrowed chunks retain full dense weights. This connection
+still needs independent complete-source review and actual ticket/device/error
+tests. Existing owned-only mixed-mode guards continue to reject borrowed mode10;
+no model execution, new speed or full-context qualification is claimed.
 Only a later qualified mechanism permits a
 fresh complete51+6-case plan. Preserve all pending-completion,
 untouched-output, payload/guard and owner-lifetime requirements under that plan.

@@ -181,10 +181,11 @@ bool ExpertCache::open_uninitialized(int64_t n_slots, int64_t n_layers, int64_t 
 }
 
 bool ExpertCache::open_impl(int64_t n_slots, int64_t n_layers, int64_t n_expert, int64_t blob_bytes,
-                            std::string& err, bool initialize) {
+                            std::string& err, bool initialize, std::vector<uint64_t> offsets,
+                            std::vector<int64_t> slot_sizes) {
     close();
-    if (n_slots <= 0) {
-        err = "ExpertCache: n_slots must be positive";
+    if (n_slots <= 0 || n_slots > std::numeric_limits<int32_t>::max()) {
+        err = "ExpertCache: n_slots must fit a positive int32 slot index";
         return false;
     }
     if (n_layers <= 0 || n_expert <= 0 || blob_bytes <= 0) {
@@ -192,7 +193,19 @@ bool ExpertCache::open_impl(int64_t n_slots, int64_t n_layers, int64_t n_expert,
         return false;
     }
 
-    const uint64_t want = (uint64_t) n_slots * (uint64_t) blob_bytes;
+    const uint64_t limit = std::min<uint64_t>(std::numeric_limits<int64_t>::max(),
+                                              std::numeric_limits<size_t>::max());
+    if ((offsets.empty() && uint64_t(n_slots) > limit / uint64_t(blob_bytes)) ||
+        (!offsets.empty() && (offsets.size() != size_t(n_slots) + 1 ||
+                             slot_sizes.size() != size_t(n_slots) || offsets.back() > limit))) {
+        err = "ExpertCache: slot arena geometry overflows its byte representation"; return false;
+    }
+    if (uint64_t(n_layers) > limit / uint64_t(n_expert) ||
+        uint64_t(n_layers) * uint64_t(n_expert) > residency_.max_size() ||
+        uint64_t(n_layers) > layer_next_.max_size()) {
+        err = "ExpertCache: residency geometry overflows its host representation"; return false;
+    }
+    const uint64_t want = offsets.empty() ? uint64_t(n_slots) * uint64_t(blob_bytes) : offsets.back();
 
     // ---- **THE ALLOCATION IS CHECKED AGAINST THE CARD, NOT AGAINST THE REQUEST.**
     //
@@ -236,6 +249,8 @@ bool ExpertCache::open_impl(int64_t n_slots, int64_t n_layers, int64_t n_expert,
     n_layers_ = n_layers;
     n_expert_ = n_expert;
     blob_ = blob_bytes;
+    off_ = std::move(offsets);
+    slot_sizes_ = std::move(slot_sizes);
 #if defined(STRATA_USE_HIP) || defined(STRATA_ENABLE_SYCL)
     if (!ensure_blocking_staging((std::size_t) blob_, err)) {
         close();
@@ -259,33 +274,29 @@ bool ExpertCache::open_impl(int64_t n_slots, int64_t n_layers, int64_t n_expert,
 bool ExpertCache::open_sized(const std::vector<int64_t>& slot_bytes, int64_t n_layers, int64_t n_expert,
                              std::string& err) {
     if (slot_bytes.empty()) { err = "ExpertCache: no slots"; return false; }
+    if (slot_bytes.size() > size_t(std::numeric_limits<int32_t>::max())) {
+        err = "ExpertCache: sized slot count exceeds int32 indices"; return false;
+    }
+    const uint64_t limit = std::min<uint64_t>(std::numeric_limits<int64_t>::max(),
+                                              std::numeric_limits<size_t>::max());
     int64_t mx = 0;
     std::vector<uint64_t> off(slot_bytes.size() + 1, 0);
     for (size_t i = 0; i < slot_bytes.size(); ++i) {
         // 256-byte aligned slots, so every blob starts where the kernels' vector loads expect it
-        off[i + 1] = off[i] + ((uint64_t) slot_bytes[i] + 255) / 256 * 256;
+        if (slot_bytes[i] <= 0 || uint64_t(slot_bytes[i]) > limit - 255) {
+            err = "ExpertCache: nonpositive or overflowing sized slot payload"; return false;
+        }
+        const auto aligned = (uint64_t(slot_bytes[i]) + 255) / 256 * 256;
+        if (aligned > limit - off[i]) {
+            err = "ExpertCache: sized slot arena sum overflows"; return false;
+        }
+        off[i + 1] = off[i] + aligned;
         mx = slot_bytes[i] > mx ? slot_bytes[i] : mx;
     }
-    // one allocation of the summed size, through the uniform path's checks: n "slots" of 1 byte
-    if (!open((int64_t) off.back(), n_layers, n_expert, 1, err)) return false;
-    slots_ = (int64_t) slot_bytes.size();
-    blob_ = mx;
-    off_ = std::move(off);
-#if defined(STRATA_USE_HIP) || defined(STRATA_ENABLE_SYCL)
-    if (!ensure_blocking_staging((std::size_t) blob_, err)) {
-        close();
-        return false;
-    }
-#endif
-    // #369: each layer's cursor at the bottom of its own range, as open() seeds it - open() above ran on byte-sized
-    // "slots", so its seeds are not slot indices
-    layer_next_.assign((size_t) (n_layers > 0 ? n_layers : 0), 0);
-    for (int64_t l = 0; l < n_layers; ++l) {
-        int64_t lo = 0, hi = 0;
-        layer_slot_range(l, lo, hi);
-        layer_next_[(size_t) l] = (int32_t) lo;
-    }
-    return true;
+    // Keep real slot indices throughout allocation; a multi-GiB byte arena is
+    // not a cache with billions of one-byte slots or int32 cursor seeds.
+    return open_impl(int64_t(slot_bytes.size()), n_layers, n_expert, mx, err, true,
+                     std::move(off), slot_bytes);
 }
 
 void ExpertCache::close() {
@@ -305,6 +316,7 @@ void ExpertCache::close() {
     blocking_staging_bytes_ = 0;
 #endif
     off_.clear();
+    slot_sizes_.clear();
     if (base_ != nullptr) {
         const auto released = cudaFree(base_);
 #ifdef STRATA_ENABLE_SYCL
@@ -337,6 +349,10 @@ void ExpertCache::enable_scratch_loan_tracking() {
 CacheScratchLease ExpertCache::prepare_scratch_loan(int32_t first_slot) {
     if (!scratch_state_ || first_slot < 128 || first_slot >= slots_)
         throw std::invalid_argument("cache scratch: loan requires enabled parent and128-slot prefix");
+    if (!base_ || bytes() <= 0 || blob_ <= 0 ||
+        (!off_.empty() && off_.size() != size_t(slots_) + 1) ||
+        (off_.empty() && uint64_t(first_slot) > uint64_t(bytes()) / uint64_t(blob_)))
+        throw std::invalid_argument("cache scratch: invalid parent geometry");
     const uint64_t offset = off_.empty() ? uint64_t(first_slot) * uint64_t(blob_) : off_[size_t(first_slot)];
     const uint64_t total = uint64_t(bytes());
     if (offset >= total) throw std::invalid_argument("cache scratch: tail outside parent");
@@ -394,10 +410,12 @@ const uint8_t* ExpertCache::device_slot(int32_t slot) const {
 }
 
 bool ExpertCache::fill_slot(int32_t slot, const uint8_t* host_blob, void* stream, std::string& err, int64_t bytes) {
+    size_t n = 0;
+    if (!fill_extent(slot, bytes, n, err)) return false;
 #ifdef STRATA_ENABLE_SYCL
-    if (!scratch_fill_allowed(err)) return false;
+    std::optional<detail::CacheScratchState::Writer> writer;
+    if (!scratch_fill_reserve(slot, n, writer, err)) return false;
 #endif
-    const size_t n = (size_t) (bytes > 0 && bytes <= blob_ ? bytes : blob_);
     uint8_t* dst = device_slot(slot);
     if (dst == nullptr) {
         err = "ExpertCache::fill_slot: slot " + std::to_string(slot) + " is outside 0.." +
@@ -419,10 +437,12 @@ bool ExpertCache::fill_slot(int32_t slot, const uint8_t* host_blob, void* stream
 }
 
 bool ExpertCache::fill_slot_blocking(int32_t slot, const uint8_t* host_blob, std::string& err, int64_t bytes) {
+    size_t n = 0;
+    if (!fill_extent(slot, bytes, n, err)) return false;
 #ifdef STRATA_ENABLE_SYCL
-    if (!scratch_fill_allowed(err)) return false;
+    std::optional<detail::CacheScratchState::Writer> writer;
+    if (!scratch_fill_reserve(slot, n, writer, err)) return false;
 #endif
-    const size_t n = (size_t) (bytes > 0 && bytes <= blob_ ? bytes : blob_);
     uint8_t* dst = device_slot(slot);
     if (dst == nullptr) {
         err = "ExpertCache::fill_slot_blocking: slot outside the arena";
@@ -453,10 +473,12 @@ bool ExpertCache::fill_slot_blocking(int32_t slot, const uint8_t* host_blob, std
 }
 
 bool ExpertCache::fill_slot_queued(int32_t slot, const uint8_t* host_blob, std::string& err, int64_t bytes) {
+    size_t n = 0;
+    if (!fill_extent(slot, bytes, n, err)) return false;
 #ifdef STRATA_ENABLE_SYCL
-    if (!scratch_fill_allowed(err)) return false;
+    std::optional<detail::CacheScratchState::Writer> writer;
+    if (!scratch_fill_reserve(slot, n, writer, err)) return false;
 #endif
-    const size_t n = (size_t) (bytes > 0 && bytes <= blob_ ? bytes : blob_);
     uint8_t* dst = device_slot(slot);
     if (dst == nullptr || host_blob == nullptr) {
         err = dst == nullptr ? "ExpertCache::fill_slot_queued: slot outside the arena"
@@ -481,8 +503,25 @@ bool ExpertCache::sync_queued(std::string& err) {
     return true;
 }
 
+bool ExpertCache::fill_extent(int32_t slot, int64_t requested, size_t& bytes, std::string& err) const {
+    if (!base_ || slot < 0 || slot >= slots_ || requested < 0) {
+        err = "ExpertCache: invalid slot or negative payload size"; return false;
+    }
+    const int64_t payload = slot_sizes_.empty() ? blob_ : slot_sizes_[size_t(slot)];
+    const int64_t count = requested ? requested : payload;
+    const auto capacity = off_.empty() ? uint64_t(blob_) : off_[size_t(slot) + 1] - off_[size_t(slot)];
+    if (count <= 0 || count > blob_ || uint64_t(count) > capacity) {
+        err = "ExpertCache: payload exceeds this slot's extent"; return false;
+    }
+    bytes = size_t(count); return true;
+}
+
 bool ExpertCache::verify_slot(int32_t slot, const uint8_t* host_blob, std::string& err, int64_t bytes) {
-    const int64_t nb = bytes > 0 && bytes <= blob_ ? bytes : blob_;
+    size_t nb = 0;
+    if (!fill_extent(slot, bytes, nb, err) || !host_blob) {
+        if (!host_blob) err = "ExpertCache::verify_slot: the host blob is null";
+        return false;
+    }
     const uint8_t* src = device_slot(slot);
     if (src == nullptr) {
         err = "ExpertCache::verify_slot: slot outside the arena";

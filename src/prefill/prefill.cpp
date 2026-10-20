@@ -741,6 +741,8 @@ void Prefill::reset() {
 void Prefill::release() {
     if (!impl_) return;
 #if defined(STRATA_ENABLE_SYCL)
+    if (impl_->cache_scratch_lease.pending())
+        strata::sycl_backend::cleanup_fail_stop("prefill release before cache loan refill/publication");
     strata::sycl_backend::checked_cleanup([&] {
         const auto drain = [](cudaStream_t queue, const char* role) {
             if (!queue) return;
@@ -1255,6 +1257,11 @@ bool Prefill::carve(size_t T, void* alloc) {
 
 bool Prefill::relayout(int64_t chunk, void* borrow, uint64_t borrow_bytes, std::string& err) {
     Impl& m = *impl_;
+#ifdef STRATA_ENABLE_SYCL
+    if (m.cache_scratch_lease.pending()) {
+        err = "prefill: relayout prohibited until cache loan refill/publication"; return false;
+    }
+#endif
     if (!m.scratch_layout.ready()) {
         err = "prefill: scratch layout unavailable; reset and initialize again"; return false;
     }
@@ -1306,6 +1313,9 @@ int64_t Prefill::chunk() const { return impl_->scratch_layout.ready() ? impl_->T
 #ifdef STRATA_ENABLE_SYCL
 bool Prefill::bind_cache_scratch_lease(const core::CacheScratchLease& lease, std::string& err) {
     Impl& m = *impl_;
+    if (m.cache_scratch_lease.pending()) {
+        err = "prefill: cannot replace a pending cache scratch loan"; return false;
+    }
     if (!m.borrowed || !m.scratch_layout.ready() || !m.cache || !m.cs || m.copy != m.cs ||
         !m.scratch_alias || !m.borrowed_used || m.borrowed_used > m.borrowed_capacity ||
         m.borrowed_layout_generation != m.scratch_layout.generation() ||
