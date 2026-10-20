@@ -2674,6 +2674,25 @@ and a new committed plan. Do not enlarge or retry the closed workload. The
 [compact component result](../bench/results/2026-10-15-pr6-recovery-audit/status-copy-current.json)
 keeps all48 useful enqueue/drain samples and the failed eligibility gate.
 
+The separately committed retained-event v2 (source7b8f3f5ab, plan59af47a05,
+buildd9650897f) also passes all four bounded native processes and guards,
+source/owner/validation checks and no-fresh-fault probes. Retaining all8 events
+removes the releases between fills in the first traced producer window, but
+both pending cells still observe0/12. The comparison remains **ineligible**.
+For USM/ordinary pending cells, median producer wall is0.364618/0.475528ms
+and pre-copy getter wall2.258631/1.408892ms (thread CPU2.258766/1.376972ms).
+The getter is a material component interval; these measurements do not prove
+that it waits for GPU completion or identify the cost within the runtime stack.
+
+Read-only inspection of the exact qualified libsycl and UR-v2 ELF bytes finds
+the normal getter forwarding to urEventGetInfo and a status path calling
+zeEventQueryStatus. Static calls do not attribute the observed latency among
+SYCL, layers, loader, adapter and driver. Next curate the producer/profile
+reports with these new samples before choosing a separately qualified queue or
+progress-observation experiment. Do not enlarge the closed fill workload.
+The v1 executable/raw root was retired after recovering143 fixture/controller
+inputs and9836 original native inputs; its compact failed gate remains in Git.
+
 For the separate earlier early-PCIe candidate, only a later qualified mechanism permits a
 fresh complete51+6-case plan. Preserve all pending-completion,
 untouched-output, payload/guard and owner-lifetime requirements under that plan.
