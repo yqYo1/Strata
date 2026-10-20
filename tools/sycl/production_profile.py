@@ -109,12 +109,118 @@ def coverage(cell,wall_begin,wall_end,native_pid):
         limits='Whole bounded fixture in source-supported SystemTime1/CLOCK_MONOTONIC_RAW domain; all-device union is not physical saturation or a production critical path. Containment alone does not qualify sub-millisecond queue-delay attribution. Every GPU event needs its actual host source; non-barrier work also needs its host sink. Unsunk barriers are retained explicitly, not called lost commands. Independent raw-clock and UR/native reconciliation precede production.')
 
 
+def ur_inventory(text):
+    """Expand captured operations by actual graph replays, rather than counting capture twice."""
+    captures={};graphs={};executables={};direct=collections.Counter();replayed=collections.Counter();calls=collections.Counter()
+    graph_replays=0
+    for line in text.splitlines():
+        match=re.search(r'<--- (ur\w+)\((.*)\) -> UR_RESULT_SUCCESS;',line)
+        if not match:continue
+        name,args=match.groups();calls[name]+=1
+        def handle(field):
+            found=re.search(r'\.'+field+r' = (0x[0-9a-f]+)',args)
+            tool.guards.require(found is not None,'missing UR handle '+field)
+            return found[1]
+        if name=='urQueueBeginCaptureIntoGraphExp':
+            queue,graph=handle('hQueue'),handle('hGraph')
+            tool.guards.require(queue not in captures,'nested capture unexpected')
+            captures[queue]=graph;graphs[graph]=collections.Counter()
+        elif name=='urQueueEndGraphCaptureExp':
+            tool.guards.require(captures.pop(handle('hQueue'),None) is not None,'unknown capture end')
+        elif name=='urGraphInstantiateGraphExp':
+            output=re.search(r'\.phExecGraph = 0x[0-9a-f]+ \((0x[0-9a-f]+)\)',args)
+            tool.guards.require(output is not None and handle('hGraph') in graphs,'unknown graph instantiate')
+            executables[output[1]]=graphs[handle('hGraph')].copy()
+        elif name=='urEnqueueGraphExp':
+            executable=handle('hGraph');tool.guards.require(executable in executables,'unknown graph replay')
+            replayed.update(executables[executable]);graph_replays+=1
+        elif name.startswith('urEnqueueKernelLaunch') or name in ('urEnqueueUSMMemcpy','urEnqueueUSMFill',
+                'urEnqueueEventsWaitWithBarrier','urEnqueueEventsWaitWithBarrierExt'):
+            kind='kernel' if name.startswith('urEnqueueKernelLaunch') else 'copy' if name=='urEnqueueUSMMemcpy' else 'fill' if name=='urEnqueueUSMFill' else 'barrier'
+            size=re.search(r'\.size = (\d+)',args) if kind in ('copy','fill') else None
+            tool.guards.require(kind not in ('copy','fill') or size is not None,'missing UR requested byte count')
+            values=collections.Counter({kind:1})
+            if size:values[kind+'_bytes']=int(size[1])
+            queue=handle('hQueue')
+            (graphs[captures[queue]] if queue in captures else direct).update(values)
+    tool.guards.require(not captures,'unterminated capture')
+    return dict(direct=dict(direct),replayed=dict(replayed),expanded=dict(direct+replayed),
+        templates=[dict(v) for v in graphs.values()],graph_replays=graph_replays,
+        capture_regions=calls['urQueueBeginCaptureIntoGraphExp'])
+
+
+def analyse(container,record,pinned):
+    """Separate closed-data contract analysis; original failed run is never relabeled."""
+    tool.guards.require(record['stage']=='failed' and record['ownership_closed'] and not record['active']
+        and record['fresh_faults']==[] and record['boot_unchanged'] and len(record['observations'])==2,
+        'closed two-process raw-domain evidence required')
+    tool.guards.require('unitrace_coverage_analysis' not in container,'inspect existing analysis; no overwrite')
+    revision=tool.git(P,'rev-parse','HEAD').decode().strip();pins=inputs(revision)
+    tool.guards.require(RESULT.read_bytes()==tool.git(P,'show',revision+':'+str(RESULT.relative_to(P))),
+        'commit original failed run before closed-data analysis')
+    for name,expected in record['input_sha256'].items():
+        original=tool.git(P,'show',record['source_commit']+':'+name)
+        tool.guards.require(tool.sha(original)==expected,'original measurement source unrecoverable')
+    tool.guards.require(pinned==record['assets'],'measurement artifacts changed')
+    rows=[]
+    for cell,observation in zip(record['cells'],record['observations'],strict=True):
+        tool.guards.require(observation['execution_passed'] and observation['session_removed'] and
+            observation['fresh_faults']==[],'fixture execution not qualified')
+        check=coverage(cell,observation['native_raw_begin_ns'],observation['native_raw_end_ns'],observation['pid'])
+        tool.guards.require(check['timeline_sha256']==observation['coverage']['timeline_sha256'] and
+            check['known_work_coverage_passed'] and check['timing_qualified'] and check['gpu_identifiers_unique']
+            and check['all_gpu_host_sources'],'frozen timing/source/count gate failed')
+        path=ROOT/cell['name']/'ur.log';raw=path.read_bytes();inventory=ur_inventory(raw.decode())
+        actual=collections.Counter()
+        for name,count in check['gpu_names'].items():
+            kind='kernel' if 'main' in name else 'copy' if name.startswith('zeCommandListAppendMemoryCopy') else 'fill' if name.startswith('zeCommandListAppendMemoryFill') else 'barrier' if name=='zeCommandListAppendBarrier' else None
+            tool.guards.require(kind is not None,'unclassified device command')
+            actual[kind]+=count
+            if kind in ('copy','fill'):
+                size=re.search(r'\[(\d+)\]$',name);tool.guards.require(size is not None,'unclassified requested bytes')
+                actual[kind+'_bytes']+=int(size[1])*count
+        tool.guards.require(dict(actual)==inventory['expanded'],'UR expanded commands/bytes differ from device records')
+        timeline=next((ROOT/cell['name']/'trace').glob('*.json'));events=json.loads(timeline.read_text())['traceEvents']
+        gpu=[e for e in events if e.get('cat')=='gpu_op' and e.get('ph')=='X']
+        sources={str(e['id']):e for e in events if e.get('pid')==observation['pid'] and e.get('ph')=='s' and e.get('cat','').startswith('Flow_H2D_')}
+        sinks={str(e['id']):e for e in events if e.get('pid')==observation['pid'] and e.get('ph')=='t' and e.get('cat','').startswith('Flow_D2H_')}
+        graph_api=[e for e in events if e.get('cat')=='cpu_op' and e.get('ph')=='X' and e.get('name') in
+                   ('zeCommandListAppendGraphExt','zeCommandListAppendGraphExp')]
+        missing=[e for e in gpu if e['name']!='zeCommandListAppendBarrier' and str(e['args']['id']) not in sinks]
+        associations=collections.Counter()
+        for event in missing:
+            source=sources[str(event['args']['id'])]['ts']
+            matches=[i for i,g in enumerate(graph_api) if g['ts']<=source<=g['ts']+g['dur']]
+            tool.guards.require(len(matches)==1,'unsunk non-barrier work not uniquely associated with a graph API')
+            associations[matches[0]]+=1
+        tool.guards.require(len(graph_api)==inventory['graph_replays'] and
+            (not graph_api or len(associations)==len(graph_api) and set(associations.values())=={3}),
+            'known three-work-node graph association failed')
+        rows.append(dict(name=cell['name'],timeline_sha256=check['timeline_sha256'],UR_sha256=tool.sha(raw),
+            inventory=inventory,device_inventory=dict(actual),program_kernels=check['program_kernels'],
+            raw_clock_containment=True,positive_kernel_service=True,unique_device_ids=True,all_host_sources=True,
+            unsunk_nonbarrier_records=len(missing),graph_api_groups=len(graph_api),
+            graph_nonbarrier_sources_per_group=3 if graph_api else 0,unsunk_barrier_records=len(check['unsunk_barrier_ids'])))
+    analysis=dict(schema='strata-unitrace-closed-coverage-analysis-v1',source_commit=revision,input_sha256=pins,
+        original_measurement_source=record['source_commit'],original_run_status=record['stage'],original_run_passed=record['passed'],
+        original_result=dict(commit=revision,path=str(RESULT.relative_to(P)),sha256=tool.sha(RESULT.read_bytes())),
+        native_executed=False,analysis_passed=True,known_fixture_service_coverage_qualified=True,rows=rows,
+        production_trace_ready=False,request_window_qualified=False,full_critical_path_qualified=False,
+        decision='Both fixed fixtures conserve every program kernel/copy/fill/barrier and requested byte after expanding graph captures. All62/606 main kernels have positive service within caller raw bounds. The61 graph APIs source exactly183 work nodes without individual host sinks; complete fixture numerical checks establish aggregate completion, not per-node host waits. Original strict sink-gate failures remain failed. Independent clock/source review and bounded recording-window qualification still precede32K+ production attribution.',
+        retention='Closed raw traces remain consumed by the active independent research/native review. Retire after that reconciliation and request-window plan;64MiB original budget, Main owner. Do not retain raw timelines merely because this analysis passed.')
+    container['unitrace_coverage_analysis']=analysis;RESULT.write_text(json.dumps(container,indent=2,ensure_ascii=False)+'\n')
+    print(json.dumps(dict(analysis_passed=True,native_executed=False,production_trace_ready=False,
+        inventory=[r['device_inventory'] for r in rows])))
+    return 0
+
+
 def main(action):
     with (B/'owned-v0141-measurement.lock').open('a+') as lock:
         fcntl.flock(lock,fcntl.LOCK_EX|fcntl.LOCK_NB)
         tool.guards.no_model_owners([])
         container=json.loads(RESULT.read_text());record=container.get('unitrace_gpu_coverage')
         pinned=assets(container)
+        if action=='analyse':return analyse(container,record,pinned)
         if action=='prepare':
             tool.guards.require(record and record['stage']=='failed' and record['ownership_closed'] and not record['active']
                 and record['source_commit'].startswith('eb9aa2547') and record['error']=="RuntimeError('known-work timing/count/correlation gate failed')"
@@ -202,5 +308,5 @@ def main(action):
 
 
 if __name__=='__main__':
-    tool.guards.require(len(sys.argv)==2 and sys.argv[1] in ('prepare','run'),'use production_profile.py prepare|run')
+    tool.guards.require(len(sys.argv)==2 and sys.argv[1] in ('prepare','run','analyse'),'use production_profile.py prepare|run|analyse')
     raise SystemExit(main(sys.argv[1]))
