@@ -2873,15 +2873,35 @@ graph completion edges. Native and control commands close normally, exact
 sessions are removed and no fresh fault occurs. The initial missing-header
 compile failure remains in Git at`aef9e43f6`; it executed no GPU work.
 
-Next collect a bounded32K+ production request using the qualified control path,
-then reconcile actual production service/submission/dependencies. Small-fixture
-window success alone does not qualify a model trace or limiting hardware
-resource. Both model engines and clean speed samples are unchanged;
-physical262144/session/RESTORE, task quality and sustained decode remain pending.
+The production controller at`f9f3d12c2`, with plan`982592026`, now closes one
+official`bench.sh` request through this control path. The updated target wrapper
+first passes a CPU-only constructor/validation/retention canary; nine benchmark
+host tests pass too. Recording remains paused through loading and warmup. The
+long request reads39263 fresh tokens, reuses none and generates24 thinking
+tokens without an answer. Its instrumented prompt rate is672.4tok/s; this is
+neither a clean speed comparison nor sustained decode or quality evidence.
+Native PID561204 exits0, owned processes close, the exact session is removed,
+all15 model hashes match before/after and no fresh driver fault occurs.
+
+The266967750-byte timeline contains206882 GPU records, including172646 kernels,
+and493490 host API records. Every recorded GPU operation has a unique ID and
+native host source, the B570 PCI lane and containment within the controlled
+whole-request RAW interval with the declared1ms allowance. This passes the
+collection gate only. Complete production attribution remains unqualified:
+reconcile actual native route/prefill/restoration markers and journal binding,
+filter host events by native PID and request bounds, investigate loss/overflow
+limits and edge records, then map kernel/copy families to matched hardware
+references. The loader symbol-lookup diagnostic also needs source
+classification before treating the log as wholly understood. Service sums or
+GPU activity alone do not establish the limiting resource. Both model engines
+and clean speed samples are unchanged; physical262144/session/RESTORE, task
+quality and sustained decode remain pending.
 Consumed raw timelines, API/build logs and decision-support transactions are
 retired after original-source recovery and post-cleanup admission. Keep only
-the standalone window executable and compiler-input manifest for the imminent
-production control-path qualification, then retire them. The two consumed model
+the standalone window executable and compiler-input manifest until the closed
+production admission is decoupled from them, then retire both at that analysis
+boundary. The production timeline has one current consumer: the bounded
+service/submission attribution above. The two consumed model
 generations and14 older provenance holds remain separate.
 
 The closed capability output and consumed decision-support report/transaction
