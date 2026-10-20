@@ -921,7 +921,7 @@
   "unitrace_loader_probe": {
     "schema": "strata-unitrace-loader-probe-v1",
     "stage": "prepared",
-    "source_commit": "c407208b05fd957765f50d7d2dacce4c58ddc57e",
+    "source_commit": "1880b13d3785d596a995a55fec745f8b4a2cb8cb",
     "input_sha256": {
       "tools/sycl/bench_engine.py": "e5f588605ebc7799b54f8bf7df9ad2e363391375e50b788b9704a6b80887ca6b",
       "tools/sycl/build_engine.py": "4ac433f6a48bff62b69e83e9be5019e213f1f57c5b6ddfed802a153df535f80e",
@@ -938,7 +938,7 @@
       "tools/sycl/query_profile.py": "29639b013434462d2494e5bbff0ed5db149484dddb0da83d4f2fcf6c7323563e",
       "tools/sycl/resource_engine.py": "9c08598793e724bfb7826e28c3d9c6b0cc425657f8ea1040de023cbb1e301301",
       "tools/sycl/unitrace_launch.py": "4a60aad4cf869bc7d71e5f33e33959172c4f62ce532fff558aeec91ef1c67846",
-      "tools/sycl/unitrace_probe.py": "067a723fc167f62c55ad883529f11e3cb670c27bd60727888f740bb66f337ec8",
+      "tools/sycl/unitrace_probe.py": "930a4a746ea363bd6d2949fce039e38b0d101d46da6e820e1993aa7b3db8c61e",
       "tools/sycl/unitrace_profile.py": "c87c9934f3ee2b5fa6e1dbcfa05689bb5f9a8c6cf178e23c716a4e3cb7c7cf27",
       "tools/sycl/ur_validation.py": "1ddf6a2aceb4d7b538d1d3ab2ef3093ec10bd90943c52e3397c832b61194bf39"
     },
@@ -983,6 +983,12 @@
         "sha256": "226b4556ab4d2ffd3850dcb8c7d905379bc353b72685b46e291cdda95dce78ac"
       }
     },
+    "previous_unexecuted_plan": {
+      "commit": "1880b13d3785d596a995a55fec745f8b4a2cb8cb",
+      "path": "bench/results/2026-10-15-pr6-recovery-audit/cpu-profiler-current.json",
+      "sha256": "54708b66be77da70cb3c63e56a8e2240e7355505600153c3fb7588bdc5a76587",
+      "outcome": "V1 superseded before any execution after independent review: add unique session, failure-path cleanup and direct constructor/retention evidence. Original unrun outcome unchanged."
+    },
     "environment": {
       "PATH": "/usr/bin:/bin",
       "HOME": "/home/yayoi",
@@ -1000,22 +1006,23 @@
       "SYCL_CACHE_PERSISTENT": "0",
       "ZES_ENABLE_SYSMAN": "0",
       "UR_ENABLE_LAYERS": "UR_LAYER_TRACING,UR_LAYER_PARAMETER_VALIDATION",
-      "UR_LOG_TRACING": "level:info;flush:info;output:file,/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/unitrace-target-loader-v1/ur.log",
+      "UR_LOG_TRACING": "level:info;flush:info;output:file,/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/unitrace-target-loader-v2/ur.log",
       "UR_LOG_VALIDATION": "level:warning;flush:warning;output:stderr",
       "UR_LOG_LOADER": "level:warning;flush:warning;output:stderr",
       "UR_LOG_LEVEL_ZERO": "level:warning;flush:warning;output:stderr",
-      "TMPDIR": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/unitrace-target-loader-v1/tmp",
-      "XDG_CACHE_HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/unitrace-target-loader-v1/cache",
+      "TMPDIR": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/unitrace-target-loader-v2/tmp",
+      "XDG_CACHE_HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/unitrace-target-loader-v2/cache",
       "CUDA_MODULE_LOADING": "EAGER",
       "STRATA_UNITRACE_TARGET_PRELOAD": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/ur-validation-preload-v2/libstrata_ur_validation.so",
       "STRATA_UR_PROBE_EXPECTED_LOADER": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_loader.so.0.12.0",
+      "LD_DEBUG": "libs",
       "UNITRACE_FollowChildProcess": "1",
-      "UNITRACE_TraceOutputDir": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/unitrace-target-loader-v1/trace"
+      "UNITRACE_TraceOutputDir": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/unitrace-target-loader-v2/trace"
     },
     "command": [
       "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/unitrace-session-owner-v1/unitrace",
       "--session",
-      "StrataTargetLoaderV1",
+      "StrataLoader1e55b65e5418dd91b5325d25",
       "--start-paused",
       "--host-timing",
       "--device-timing",
@@ -1027,10 +1034,10 @@
     "stop_command": [
       "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/unitrace-session-owner-v1/unitrace",
       "--stop",
-      "StrataTargetLoaderV1"
+      "StrataLoader1e55b65e5418dd91b5325d25"
     ],
-    "session": "StrataTargetLoaderV1",
-    "gates": "Independent source/plan review first. One launcher creates paused session and execs original CPU-only UR canary. Same-PID preload must prove single-thread first UR init and checked validation before body; canary init/check/close must succeed. All processes close normally; successful journal and boot checks find no fresh fault. Stop/unlink only this exact named session after target closure; no metric/KMD/Sysman/XPTI/ITT mode. Collector may enumerate LevelZero devices but no target/GPU commands or model. Success qualifies loader coexistence only, not GPU timing, temporal gating, graph/queue coverage or32K+ production.",
+    "session": "StrataLoader1e55b65e5418dd91b5325d25",
+    "gates": "Independent review f35cc9ba4 required corrections applied. One launcher creates a unique paused session and execs original CPU-only UR canary. Same-PID preload proves single-thread first UR init and validation before body. LD_DEBUG libs must show validation init/proof before collector init, then canary begin/end before collector fini. Canary init/check/close succeeds. All processes close normally; journal/boot checks find no fresh fault. Finally stop/unlink only this exact session after proven target closure, including failure paths; leave unknown/live owners untouched. No result-dir, device/metric selection, KMD, Sysman, XPTI or ITT option. Collector may enumerate LevelZero devices but no target/GPU commands or model. Loader success does not qualify GPU timing, temporal gating, graph/queue coverage or32K+ production.",
     "retention": "Retire normal API trace and build/loader output after recording same-PID proof and next GPU smoke plan. Keep one distinct failure excerpt if unresolved.",
     "budgets": {
       "wall_s": 60,
