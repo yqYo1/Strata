@@ -25,6 +25,8 @@ SETTINGS=P/'tools/sycl/measurement_environment.json'
 SCOPE='UR_validation_activation_evidence_scope'
 ROOT=B/'ur-validation-canary-v2'
 SOURCE=P/'bench/sycl/ur_validation_canary.c'
+PRELOAD_SOURCE=P/'bench/sycl/ur_validation_preload.c'
+PRELOAD_MODE=False
 
 
 def digest(path):
@@ -41,6 +43,16 @@ def committed(path):
     return json.loads(raw)
 
 
+def preload_evidence(text,pid):
+    begin=re.findall(r'^strata UR validation: pid=(\d+) phase=begin loader=([^\n]+)$',text,re.M)
+    proof=re.findall(r'^strata UR validation: pid=(\d+) phase=before-main threads_before=1 preinit=1 config_create=0 layers_query=0 enable=0 init=0 config_release=0 checked=46 untouched=1 retained_ref=1$',text,re.M)
+    guards.require(len(begin)==len(proof)==1 and int(begin[0][0])==int(proof[0])==pid and
+        'strata UR validation failure:' not in text,'native-child config/first-init proof missing')
+    return dict(pid=pid,loader=begin[0][1],threads_before=1,preinit=1,config_enabled=True,
+        first_init=True,dispatch_result=46,output_untouched=True,retained_reference_until_exit=True,
+        runtime_teardown_qualified=False)
+
+
 def prepare():
     guards.require(not ROOT.exists(),'fresh canary only; no retry')
     settings=committed(SETTINGS); index=committed(INDEX)
@@ -51,8 +63,11 @@ def prepare():
         '-I'+str(install/'include'),str(SOURCE),'-L'+str(install/'lib'),
         '-Wl,-rpath,'+str(install/'lib'),'-lur_loader','-ldl','-o',str(ROOT/'canary')]
     # Preprocessing resolves the actual installed dependency headers before build.
-    dependencies=subprocess.check_output([*command[:7],'-M',str(SOURCE)],text=True,timeout=15)
-    headers=shlex.split(dependencies.replace('\\\n',' '))[1:]
+    sources=[SOURCE]+([PRELOAD_SOURCE] if PRELOAD_MODE else [])
+    headers=[]
+    for source in sources:
+        dependencies=subprocess.check_output([*command[:7],'-M',str(source)],text=True,timeout=15)
+        headers.extend(shlex.split(dependencies.replace('\\\n',' '))[1:])
     paths={str(Path(p).resolve()) for p in headers}
     paths.update((str(compiler),str(Path(sys.executable).resolve()),str(Path(__file__).resolve())))
     for name in ('cc1','as','ld'):
@@ -79,13 +94,24 @@ def prepare():
     env.update(UR_LOG_TRACING='level:info;flush:info;output:file,'+str(ROOT/'trace.log'),
         UR_LOG_VALIDATION='level:warning;flush:warning;output:file,'+str(ROOT/'validation.log'),
         TMPDIR=str(ROOT/'tmp'),XDG_CACHE_HOME=str(ROOT/'cache'))
+    library=ROOT/'libstrata_ur_validation.so'
+    commands=[command]
+    native_env=dict(env)
+    if PRELOAD_MODE:
+        commands.append([*command[:7],'-fPIC','-shared',str(PRELOAD_SOURCE),
+            '-L'+str(install/'lib'),'-Wl,-rpath,'+str(install/'lib'),'-lur_loader','-ldl','-o',str(library)])
+        loader,=(p for p in runtime_pins if Path(p).name.startswith('libur_loader.so.'))
+        native_env.update(LD_PRELOAD=str(library),STRATA_UR_PROBE_EXPECTED_LOADER=loader)
     plan=dict(source_commit=git('rev-parse','HEAD').decode().strip(),
         inputs={p:digest(p) for p in sorted(paths)},runtime_pins=runtime_pins,
         settings_sha256=digest(SETTINGS),runtime_admission=dict(result_sha256=digest(admission_path),original_plan=reference),
-        command=command,environment=env,
+        command=command,build_commands=commands,environment=env,native_environment=native_env,
+        preload_mode=PRELOAD_MODE,
         root=str(ROOT),acceptance='Host probe only: successful init/teardown, INVALID_NULL_HANDLE46, unchanged version sentinel, trace of the null-platform API with that result and no device/enqueue/kernel call. Record validation logger bytes without requiring a message: exact installed null-check machine code returns silently. This does not qualify a later model process.',
         budgets=dict(wall=30,cpu=20,rss_cap=2<<30,text_cap=1<<20,file_cap=1<<20,total_cap=8<<20),
         executable_sha256=None,complete=False,passed=False,active=False,ownership_closed=False)
+    if PRELOAD_MODE:
+        plan['acceptance']='Fresh host-only process, no model/device/queue/enqueue. Preload provider matches pinned loader; single thread and UNINITIALIZED before config, successful config create/available-layer query/enable/first init/release, expected46 with unchanged output, same-PID before-main receipt. Original canary body succeeds after its own additional init/teardown. No exit-handler teardown in preload: one diagnostic reference remains until process exit. A separate wrong-provider process must exit125 before body/UR initialization. No later model activation or ordinary runtime-teardown qualification.'
     ROOT.mkdir(mode=0o700)
     for name in ('tmp','cache'): (ROOT/name).mkdir()
     index[SCOPE]['canary_plan']=plan
@@ -108,10 +134,13 @@ def run():
         (ROOT/'record.json').write_text(json.dumps(dict(record,commands=owner.commands if owner else []),indent=2)+'\n')
     owner=supervision.Owner(ROOT/'owned',persist)
     try:
-        entry,_,_=owner.run('build',plan['command'],plan['environment'],P,**plan['budgets'])
-        guards.require(supervision.closed(entry) and entry['exit_code']==0,'canary build failed')
+        for i,command in enumerate(plan['build_commands']):
+            entry,_,_=owner.run('build'+str(i),command,plan['environment'],P,**plan['budgets'])
+            guards.require(supervision.closed(entry) and entry['exit_code']==0,'canary build failed')
         record['executable_sha256']=digest(ROOT/'canary')
-        entry,_,_=owner.run('canary',[str(ROOT/'canary')],plan['environment'],P,**plan['budgets'])
+        if plan['preload_mode']:
+            record['library']=dict(path=str(ROOT/'libstrata_ur_validation.so'),sha256=digest(ROOT/'libstrata_ur_validation.so'))
+        entry,_,_=owner.run('canary',[str(ROOT/'canary')],plan['native_environment'],P,**plan['budgets'])
         record['complete']=supervision.closed(entry)
         guards.require(record['complete'] and entry['exit_code']==0,'canary process failed')
         result=json.loads((ROOT/'owned/canary.stdout').read_text())
@@ -124,6 +153,17 @@ def run():
             not re.search(r'ur(?:Enqueue|Kernel|Queue|Device|PlatformGet\()',trace),'trace missing or unexpected device work')
         diagnostic=ROOT/'validation.log'
         record['validation_log_bytes']=diagnostic.stat().st_size if diagnostic.exists() else 0
+        if plan['preload_mode']:
+            text=(ROOT/'owned/canary.stderr').read_text()
+            record['preload_evidence']=preload_evidence(text,result['pid'])
+            guards.require(record['preload_evidence']['loader']==plan['native_environment']['STRATA_UR_PROBE_EXPECTED_LOADER'] and
+                text.index('phase=before-main')<text.index('strata UR canary begin'), 'proof must precede main body')
+            bad_env=dict(plan['native_environment'],STRATA_UR_PROBE_EXPECTED_LOADER='/invalid-strata-probe-provider')
+            bad,_,_=owner.run('provider-mismatch',[str(ROOT/'canary')],bad_env,P,**plan['budgets'])
+            guards.require(supervision.closed(bad) and bad['exit_code']==125 and
+                (ROOT/'owned/provider-mismatch.stdout').stat().st_size==0 and
+                'unexpected loader provider' in (ROOT/'owned/provider-mismatch.stderr').read_text(), 'wrong-provider guard did not stop before body')
+            record['provider_mismatch_stopped_before_body']=True
         record['host_probe_accepted']=True
     except BaseException as error: record['error']=str(error)
     finally:
@@ -145,10 +185,13 @@ def run():
 
 
 def main():
-    guards.require(len(sys.argv)==2 and sys.argv[1] in ('prepare','run'),'use prepare or run')
+    global ROOT,SCOPE,PRELOAD_MODE
+    guards.require(len(sys.argv)==2 and sys.argv[1] in ('prepare','run','prepare-preload','run-preload'),'use prepare/run or prepare-preload/run-preload')
+    if sys.argv[1].endswith('-preload'):
+        PRELOAD_MODE=True;ROOT=B/'ur-validation-preload-v1';SCOPE='UR_silent_validation_native_child_scope'
     with (B/'owned-v0141-measurement.lock').open('a+') as lock:
         fcntl.flock(lock,fcntl.LOCK_EX|fcntl.LOCK_NB); guards.no_model_owners([]); guards.driver_guard()
-        return run() if sys.argv[1]=='run' else prepare()
+        return run() if sys.argv[1].startswith('run') else prepare()
 
 
 if __name__=='__main__': sys.exit(main())
