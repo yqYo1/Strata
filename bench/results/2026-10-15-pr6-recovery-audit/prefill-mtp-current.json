@@ -1721,6 +1721,142 @@
             "kernel": "7.0.0-38-generic",
             "devcoredump": false
           }
+        },
+        "native_expert_work": {
+          "submitted_blobs": 0,
+          "submitted_bytes": 0,
+          "completed_blobs": 0,
+          "completed_bytes": 0,
+          "host_view_groups": 0,
+          "gpu_miss_groups": 0,
+          "cpu_unique_misses": 1114224,
+          "cpu_entries": 1415175,
+          "cache_hits": 153945,
+          "cache_lookups": 1569120,
+          "rounded_cache_hit_percent": 9.8,
+          "source_log_sha256": "df990753ef98f3dc33b3c5e1834a295232d415bcc504a5e9ec7539cac3ed824b",
+          "limits": "Final long-request producer counters, not physical RAM/PCIe bytes or hardware saturation. Weight formats/bytes and CPU/GPU costs require separate attribution."
+        }
+      },
+      {
+        "cohort": 1,
+        "arm": 1,
+        "passed": true,
+        "ownership_closed": true,
+        "warmup_work": [
+          {
+            "read_tokens": 74,
+            "draft_cells": 73,
+            "batch_count": 1,
+            "batch_ms": 7.5
+          },
+          {
+            "read_tokens": 264,
+            "draft_cells": 263,
+            "batch_count": 1,
+            "batch_ms": 3.5
+          },
+          {
+            "read_tokens": 910,
+            "draft_cells": 909,
+            "batch_count": 1,
+            "batch_ms": 13.9
+          },
+          {
+            "read_tokens": 1068,
+            "draft_cells": 1067,
+            "batch_count": 1,
+            "batch_ms": 15.4
+          }
+        ],
+        "native": {
+          "pid": 777747,
+          "start_ticks": 88650060,
+          "sid": 777718
+        },
+        "successful_warmups": 4,
+        "effective_environment_verified": true,
+        "request": {
+          "ok": true,
+          "err": null,
+          "ttft_s": 48.237,
+          "total_s": 491.079,
+          "prompt_tokens": 33210,
+          "reused_tokens": 0,
+          "read_tokens": 33210,
+          "generated_tokens": 3790,
+          "prompt_tps": 690.6,
+          "prompt_tps_source": "engine",
+          "decode_tps": 8.6,
+          "decode_tps_source": "engine",
+          "prompt_ms": 48088.4,
+          "decode_ms": 442968.4,
+          "drafts_offered": 3192,
+          "drafts_accepted": 2725,
+          "finish_reason": "stop",
+          "request_sha256": "1f3abe00dea144b0e26d862f282e7b90833de131b4527662a4aca2542cda918a",
+          "stream_complete": true,
+          "truncated": false,
+          "generated_tokens_source": "usage",
+          "client_interval": {
+            "request_begin_monotonic_ns": 886635373299472,
+            "first_output_monotonic_ns": 886683610563997,
+            "request_end_monotonic_ns": 887126452858809
+          },
+          "eligible": true,
+          "agreement_eligible": true,
+          "speed_eligible": true,
+          "speed_ineligible_reasons": [],
+          "ineligible_reasons": [],
+          "acceptance_rate": 0.8536967418546366,
+          "usage_generated_tokens": 3790,
+          "completion_includes_thinking": true,
+          "run": 0,
+          "order": 0,
+          "output_sha256": "e36c666647e5d179eff689d3ee30c7951fc6bdca4d1829ee283d14e4266092b7",
+          "reasoning_sha256": "1bc5ab8b02f5993b5bb8a348e01dbfeca35600a592053ef171ed04514b2e4507",
+          "output_chars": 5564,
+          "reasoning_chars": 4376,
+          "reasoning_tokens": null,
+          "workload": "regular-code",
+          "controller_eligible": true
+        },
+        "long_work": {
+          "read_tokens": 33210,
+          "draft_cells": 33209,
+          "batch_count": 5,
+          "batch_ms": 313.2
+        },
+        "actual_GPU_BF16_rows": 33209,
+        "actual_MoE_mode": 10,
+        "journal_valid": true,
+        "native_exit_code": 0,
+        "fault_probe": {
+          "fresh_faults": [],
+          "boot_unchanged": true,
+          "driver_after": {
+            "pci": "/sys/bus/pci/devices/0000:05:00.0",
+            "driver": "xe",
+            "vendor": "0x8086",
+            "device": "0xe20c",
+            "kernel": "7.0.0-38-generic",
+            "devcoredump": false
+          }
+        },
+        "native_expert_work": {
+          "submitted_blobs": 0,
+          "submitted_bytes": 0,
+          "completed_blobs": 0,
+          "completed_bytes": 0,
+          "host_view_groups": 0,
+          "gpu_miss_groups": 0,
+          "cpu_unique_misses": 1433629,
+          "cpu_entries": 1826276,
+          "cache_hits": 217084,
+          "cache_lookups": 2043360,
+          "rounded_cache_hit_percent": 10.6,
+          "source_log_sha256": "5687e6d105197199e2099e7d9484381ef1a9ce50902ada67af3d877d2f97249a",
+          "limits": "Final long-request producer counters, not physical RAM/PCIe bytes or hardware saturation. Weight formats/bytes and CPU/GPU costs require separate attribution."
         }
       }
     ],
@@ -1737,6 +1873,16 @@
       "file_cap": 67108864,
       "total_cap": 134217728
     },
-    "retention": "Keep individual samples, per-request work/route checks, source/plan/environment and decision. After closure retire normal raw output/caches. Existing native generations/fixtures remain; no rebuild."
+    "retention": "Keep individual samples, per-request work/route checks, source/plan/environment and decision. After closure retire normal raw output/caches. Existing native generations/fixtures remain; no rebuild.",
+    "first_pair_observation": {
+      "processes": [
+        0,
+        1
+      ],
+      "prefill_ratio": 1.072558038944943,
+      "decode_ratio": 0.8493612244791986,
+      "generation_length_ratio": 1.3010641949879849,
+      "decision": "No adoption; frozen six-process cohort incomplete. First PP pair faster, TG reading slower, output length outside predeclared5% band; do not call decode nonregression or dismiss the slower reading as noise. Continue frozen remaining pairs unchanged."
+    }
   }
 }
