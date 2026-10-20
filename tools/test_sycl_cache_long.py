@@ -8,6 +8,7 @@ import tempfile
 import unittest
 
 sys.dont_write_bytecode = True
+sys.path.insert(0,str(Path(__file__).resolve().parent))
 sys.path.insert(0,str(Path(__file__).resolve().parent/'sycl'))
 import cache_long as c
 from strata_bench import RequestJournal
