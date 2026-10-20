@@ -1,5 +1,5 @@
 {
-  "source_commit": "a51989adcd9715f6bdb1165080d0f178c9709140",
+  "source_commit": "e9a3854c1ef26351595976e2530c0dce105693af",
   "compiler": {
     "path": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin/clang++",
     "sha256": "1290881b4e12a5e002e5b0de0787f85328ee5fe19f253a54be1cdd97dc2f26eb"
@@ -73,21 +73,21 @@
     "path": "bench/results/2026-10-15-pr6-recovery-audit/qsa-score-gemm-entry-engine-build-v2.json",
     "sha256": "9b7734387f0fc56f36afe9d7bca75e5f0bedcef479271e982025abe1d4334a1a"
   },
-  "complete": true,
-  "passed": true,
+  "complete": false,
+  "passed": false,
   "active": false,
   "GPU_executed": false,
   "production_selected": false,
   "model_quality_qualified": false,
   "replaces": {
-    "source_commit": "96e6d9e817aa1f8fd9d212befb388a636817f008",
+    "source_commit": "a51989adcd9715f6bdb1165080d0f178c9709140",
     "binary": {
       "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/strata",
       "bytes": 22097128,
       "sha256": "968200f3d60abb265279eae8890041b89827b85dfd93017c095c00e91ebad5be"
     },
     "source_build_passed": true,
-    "retained_binary_source_commit": "96e6d9e817aa1f8fd9d212befb388a636817f008",
+    "retained_binary_source_commit": "a51989adcd9715f6bdb1165080d0f178c9709140",
     "reason": "Closed unused comparison engine; original source/recipe recovered from Git. Reuse its cache for the immediate corrected build, not a retained old generation."
   },
   "targets": [
@@ -307,75 +307,14 @@
       "next_review": "At selective Down comparison closure, review these remaining unique provenance receipts/source against realistic retrieval need; retire redundant transaction details without claiming source recovery."
     }
   },
-  "binary": {
-    "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/strata",
-    "bytes": 22097128,
-    "sha256": "968200f3d60abb265279eae8890041b89827b85dfd93017c095c00e91ebad5be"
-  },
-  "compile_database_sha256": "abbbd93299e05cf26f53c0cc41ffc3600d2ed310d91c8c354df5ee6a0dbedbf3",
-  "configured_compile_entries": 228,
-  "fixtures": {
-    "sycl_verifier_retirement_test": {
-      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/sycl_verifier_retirement_test",
-      "sha256": "028766c54bb24193354f9b4700166d7fe6da5016a634a9f01e1b67651920dd77"
-    },
-    "sycl_submission_test": {
-      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/sycl_submission_test",
-      "sha256": "3582ff3453f0e757cb2f2ac20a194180dcb3553e15b65f0c174ae5ed1f20d0cd"
-    },
-    "file_expert_source_test": {
-      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/file_expert_source_test",
-      "sha256": "e7e06781856b10cd45fb5e5d281d2a18a34b7cf7b1756caf97ed9dea9226d950"
-    },
-    "sycl_mmvq_test": {
-      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/sycl_mmvq_test",
-      "sha256": "c320b9b6df08a52c2da2ca2c6eca49c1e37da8bca9a55556c0bf8b2fb718384d"
-    },
-    "residency_publication_host_test": {
-      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/residency_publication_host_test",
-      "sha256": "7583677b558b9263501a447c0bfbcdf587c5e5cdbfe5d624ef5560035761e0fb"
-    },
-    "cache_tail_host_test": {
-      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/cache_tail_host_test",
-      "sha256": "e458ae29db1a8d9704c5bc5dcddfbb9ab619531e3a3a8233844cc006746ed3dd"
-    },
-    "prefill_scratch_host_test": {
-      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/prefill_scratch_host_test",
-      "sha256": "2be6ce35f22430c26aac3a789c46805d61413e1cc5ce009f6080c22e1fcbe113"
-    },
-    "sycl_prefill_scratch_test": {
-      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/sycl_prefill_scratch_test",
-      "sha256": "721de16c117cb1d561206edd4275c6a2925b8e80b274b92021db734041b9a2a2"
-    }
-  },
-  "binary_origin_source_commit": "96e6d9e817aa1f8fd9d212befb388a636817f008",
-  "previous_output_comparison": {
-    "changed_project_inputs": [
-      "tests/sycl/prefill_scratch.cpp",
-      "tools/sycl/check_verifier_retirement.py"
-    ],
-    "native_and_recipe_inputs_match": false,
-    "engine_bytes_match": true,
-    "fixture_bytes_match": {
-      "sycl_verifier_retirement_test": true,
-      "sycl_submission_test": true,
-      "file_expert_source_test": true,
-      "sycl_mmvq_test": true,
-      "residency_publication_host_test": true,
-      "cache_tail_host_test": true,
-      "prefill_scratch_host_test": true,
-      "sycl_prefill_scratch_test": false
-    },
-    "controller_only_admission": false,
-    "interpretation": "A real configure/build invocation admits the recorded inputs after original source/recipe recovery. Identical engine bytes preserve their known source identity even after fixture edits; qualification reuse separately requires the relevant native/recipe/fixture proof. No new speed result is implied."
-  },
+  "error": "compile-link failed: [1/21] Building CXX object CMakeFiles/cache_tail_host_test.dir/tests/core/cache_tail_test.cpp.o\n[2/21] Linking CXX executable cache_tail_host_test\n[3/21] Building CXX object CMakeFiles/prefill_scratch_host_test.dir/tests/core/prefill_scratch_test.cpp.o\n[4/21] Linking CXX executable prefill_scratch_host_test\n[5/21] Building CXX object CMakeFiles/strata_engine.dir/src/core/expert_cache.cpp.o\n[6/21] Building CXX object CMakeFiles/strata_engine.dir/src/core/remote_experts.cpp.o\n[7/21] Building CXX object CMakeFiles/strata_engine.dir/src/core/expert_source.cpp.o\n[8/21] Building CXX object CMakeFiles/strata_engine.dir/src/core/verify.cpp.o\n[9/21] Building CXX object CMakeFiles/strata_engine.dir/src/core/peer_experts.cpp.o\n[10/21] Building CXX object CMakeFiles/strata_engine.dir/src/core/mtp.cpp.o\n[11/21] Linking CXX static library libstrata_engine.a\n[12/21] Building CXX object CMakeFiles/sycl_verifier_retirement_test.dir/tests/sycl/verifier_retirement.cpp.o\n[13/21] Building CXX object CMakeFiles/strata.dir/src/program/generate.cpp.o\nFAILED: CMakeFiles/strata.dir/src/program/generate.cpp.o \n/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin/clang++ -DSTRATA_ENABLE_SYCL=1 -DSTRATA_NATIVE_EXPERTS=1 -DSTRATA_VERSION=\\\"0.1.38\\\" -I/home/yayoi/orca/workspaces/Strata/sycl/include -I/home/yayoi/orca/workspaces/Strata/sycl/include/strata/sycl/compat -I/home/yayoi/ghq/github.com/ggml-org/llama.cpp/.worktree/dep-ggml-3cf-xe-e32-20261011/ggml/src/../include -isystem /opt/intel/oneapi/mkl/2026.1/include -O3 -DNDEBUG -std=c++20 -fsycl -fsycl-id-queries-range=size_t -Wall -Wextra -Werror -DMKL_ILP64 -MD -MT CMakeFiles/strata.dir/src/program/generate.cpp.o -MF CMakeFiles/strata.dir/src/program/generate.cpp.o.d -o CMakeFiles/strata.dir/src/program/generate.cpp.o -c /home/yayoi/orca/workspaces/Strata/sycl/src/program/generate.cpp\n/home/yayoi/orca/workspaces/Strata/sycl/src/program/generate.cpp:4854:110: error: missing field 'lease' initializer [-Werror,-Wmissing-field-initializers]\n 4854 |             pf_parts.push_back({&xcache, &ss, &sp, -1, 0, multi_gpu ? split_at[0] : g.n_layers, -1, -1, 0, {}});\n      |                                                                                                              ^\n/home/yayoi/orca/workspaces/Strata/sycl/src/program/generate.cpp:4856:105: error: missing field 'lease' initializer [-Werror,-Wmissing-field-initializers]\n 4856 |                 pf_parts.push_back({&st->cache, &st->ss, &st->sp, st->dev, st->lb, st->le, -1, -1, 0, {}});\n      |                                                                                                         ^\n2 errors generated.\n[14/21] Building CXX object CMakeFiles/sycl_prefill_scratch_test.dir/tests/sycl/prefill_scratch.cpp.o\n[15/21] Building CXX object CMakeFiles/strata_prefill.dir/src/prefill/prefill.cpp.o\n[16/21] Linking CXX executable sycl_verifier_retirement_test\nninja: build stopped: subcommand failed.\n",
   "ownership_closed": true,
   "inputs": [
     {
       "root": "/home/yayoi/orca/workspaces/Strata/sycl",
-      "revision": "a51989adcd9715f6bdb1165080d0f178c9709140",
-      "count": 519,
-      "aggregate_sha256": "9c5888fa0c2ab46ef18a81a6f698d3b16d49ef950e2c335341a0beab9ec7d9fe"
+      "revision": "e9a3854c1ef26351595976e2530c0dce105693af",
+      "count": 520,
+      "aggregate_sha256": "2a36cec92f56facd77596edc3c98c70d7336161dd1b5833d66c2a7836a70c0a5"
     },
     {
       "root": "/home/yayoi/ghq/github.com/ggml-org/llama.cpp/.worktree/dep-ggml-3cf-xe-e32-20261011",
@@ -389,10 +328,5 @@
       "count": 5703,
       "aggregate_sha256": "5768eaea650c06eb022c9068784590a27400c2a577974c56750519edde859fe5"
     }
-  ],
-  "closed_build_log_retirement": {
-    "manifest_path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/closed-qsa-prefill-retirement-components-20261020.jsonl",
-    "sha256": "275bd2cc4e20d56e4dea5aca459387dd1d88866a3d30b9901d2ae938d1cf8f50",
-    "consumer": "Current full receipt, engine,8 fixtures and qualified fallback remain; closed successful build text has no current consumer."
-  }
+  ]
 }
