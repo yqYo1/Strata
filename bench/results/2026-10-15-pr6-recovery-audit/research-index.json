@@ -5070,17 +5070,24 @@
     "question": "For production IQ2_S/IQ3_XXS/IQ3_S NT1 GU on Zen3, derive exact decoded-level/mask/bitplane or bounded predecode layouts and compare table work, scale/rounding contract and extra bytes to measured hot/stream behavior. Do not repeat generic T-MAC/LUT surveys or settled tiny single-exact flag.",
     "report_path": "/home/yayoi/orca/workspaces/Strata/sycl/.cache/strata-research/20261020/nt1-iq-exact-methods.md",
     "consumer": "Main CPU component candidate design after the retained-engine117K comparison",
-    "next_review": "Native Luna-max review; no implementation adoption from report.",
-    "status": "settled_pending_native_curation",
+    "next_review": "After retained old-owned/current-borrowed117K comparison; preserve engine inputs until closure. Then implement corrected host-only census before production CPU candidate selection.",
+    "status": "curated_proposal_pending_117K_comparison_and_census",
     "task_id": "task_0add196c4850",
     "dispatch_id": "ctx_3d9a885c24a4",
     "terminal_handle": "term_4103b5e4-235c-4a4e-b8e4-cc9d1f597f76",
     "incarnation_id": "642775db-27d5-4e96-8e5b-d6fc0a4d45dd",
     "launch_mode": "Orca custom workspace-write/network argv; worker-start on exact existing terminal; gpt-6-luna high. Report-only task scope.",
     "terminal_closed": true,
-    "curation_state": "pending_native_luna_max",
+    "curation_state": "native_luna_max_complete",
     "report_bytes": 13365,
-    "report_sha256": "81d0ae440afe48b1a876511e1c837f3cb2ecc3221248a0e6c1662c7cb26723f6"
+    "report_sha256": "81d0ae440afe48b1a876511e1c837f3cb2ecc3221248a0e6c1662c7cb26723f6",
+    "native_review_sha256": "8c2bd7a37fc2cf9f291ab5ff35e083aef30d6c0d8cfbe4fbc158c38cdf825873",
+    "retrieval_sections": [
+      "Two exact representations to test",
+      "First experiment and gates"
+    ],
+    "retention": "Temporary report for the named component/protocol implementation consumer. Distill accepted details into maintained source/results and retire report and transaction files when consumed.",
+    "operational_digest": "Pinned ggml algebra verified. IQ2_S=8+17*M25+35*M43; IQ3_XXS affine bitplanes require +2 at level62; IQ3_S=1+2*b0+4*b1+8*b2. Correct IQ2_S full GU bytes537395200 (512.5MiB), expansion ratio3.12195; H2560 four-value activation tables20KiB/token. IQ3_S indices need charged grid decode/mask extraction or explicit512-entry index-to-bitplane table. After census establishes actual IQ3_S NT1 relevance, compare row-pair GU with exact integer sums, bitwise initial scale/FMA contract, bounds/canaries and setup-inclusive hot/stream latency. No candidate or model speedup measured."
   },
   "existing_route_dump_CPU_mix_protocol_scope": {
     "result_reference": {
@@ -5107,16 +5114,24 @@
     },
     "report_path": "/home/yayoi/orca/workspaces/Strata/sycl/.cache/strata-research/20261020/route-dump-cpu-mix-protocol.md",
     "consumer": "Main bridge from CPU calibration to measured model critical path before kernel selection",
-    "next_review": "Native Luna-max review; Main exclusively implements and runs tests/model diagnostics.",
-    "status": "settled_pending_native_curation",
+    "next_review": "After retained old-owned/current-borrowed117K comparison; preserve engine inputs until closure. Then implement corrected host-only census before production CPU candidate selection.",
+    "status": "curated_proposal_pending_117K_comparison_and_census",
     "task_id": "task_278355c879a6",
     "dispatch_id": "ctx_a5a710b87ad6",
     "terminal_handle": "term_d532f5b9-e104-4c45-9ce8-d29e6c97753a",
     "incarnation_id": "ce8b624f-b8a7-419c-bb45-fb7b0765c323",
     "launch_mode": "Orca custom workspace-write/network argv; worker-start on exact existing terminal; gpt-6-luna high. Report-only task scope.",
     "terminal_closed": true,
-    "curation_state": "pending_native_luna_max",
+    "curation_state": "native_luna_max_complete",
     "report_bytes": 14973,
-    "report_sha256": "075d00afc4d44ab1a4788a128ddcbfd079b458d01ffc20bcf5a74b2b70f93ca0"
+    "report_sha256": "075d00afc4d44ab1a4788a128ddcbfd079b458d01ffc20bcf5a74b2b70f93ca0",
+    "native_review_sha256": "8c2bd7a37fc2cf9f291ab5ff35e083aef30d6c0d8cfbe4fbc158c38cdf825873",
+    "retrieval_sections": [
+      "Decision",
+      "Minimum host-only evidence change",
+      "Prospective bounded diagnostic and acceptance"
+    ],
+    "retention": "Temporary report for the named component/protocol implementation consumer. Distill accepted details into maintained source/results and retire report and transaction files when consumed.",
+    "operational_digest": "Existing routing dump lacks request/phase/window/callback/cache-generation framing and cannot prove exact CPU format/NT census. Count ExpertJobMulti.nt after final CPU grouping, separately from callback n_tok. Checked uint64 host-local per-dispatch bins merged by serialized request owner must conserve jobs/entries against same-scope multi_misses/multi_entries. Record format and cache membership/loan/restore identity; reject overflow, failed/incomplete callbacks or mismatch. Do not share worker bins or assume TLS=request. Single-GPU/no-peer/no-remote/pcie-frac0 conservation is narrower than universal kind2 semantics. No model bottleneck or speedup established."
   }
 }
