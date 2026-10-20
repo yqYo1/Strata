@@ -2417,6 +2417,29 @@ old-owned/current-borrowed long-input comparison on the current runtime. Review
 and retire the extra generation when that comparison closes; this32K cache-layout
 screen does not qualify the current engine's117K borrowed mixed tail. The14
 legacy provenance holds remain separate.
+The next CPU/RAM discriminator is `tools/sycl/cpu_roofline.py`, with a CPU-only
+target under `bench/sycl/cpu_roofline`. It recompiles the production CPU sources
+and pinned ggml using the current official Intel LLVM toolchain and Zen3 flags;
+it does not reuse unrecorded archives or link a GPU runtime. Its committed plan
+covers all seven real-weight format pairs, NT1..4, six-expert groups, hot and
+96MiB+ streaming weights, one worker with a waiting host and five workers with
+host participation, plus a256MiB read scan on1/6/12 pinned threads. Each cell
+requires five1s+ samples. Same-input GU/Down20 comparisons against ggml and
+Down42 against an independent scalar dot with production FP32 ActQ scales,
+exact pool/serial results, finite outputs and external canaries precede timing;
+private pool scratch is not canary-instrumented. Requested byte rates are not
+physical DRAM traffic or proof of saturation. Prepare and commit the exact plan
+before build, then run the numerical check before measurement. At source
+`3d31b5c0673543b9774c5d34a6c6c77703a64375`, all56 cases (seven pairs, NT1..4,
+two worker placements) passed and all14 child owners closed normally. Maximum
+relative-L1 errors were6.52976e-8 GU and2.14853e-7 Down; pool/serial matched
+exactly. The separate Q2/ggml FP16-scale gap reached2.72877e-4; it is not a
+same-contract arithmetic error. The plan preserves the original failed
+supervision, compile and mismatched-reference attempts. Build executable SHA256
+is `bcd2307c25c27acfb5a160e2fb0223d343d47bb60fee5d83ff27fa280cf1dd17`;
+check-receipt SHA256 is `0518ca56437eb01903a6c7cd37bab76fea06359af1aeb991a1065b7dbf03004d`.
+Performance measurement remains pending; this fixture does not qualify a model
+speed, inference change or70tok/s.
 Only a later qualified mechanism permits a
 fresh complete51+6-case plan. Preserve all pending-completion,
 untouched-output, payload/guard and owner-lifetime requirements under that plan.
