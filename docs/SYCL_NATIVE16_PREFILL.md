@@ -2302,8 +2302,20 @@ tail remains unqualified. The closed v1 refusal and its original failed outcome
 remain recoverable from the recorded Git reference; its separate process closure
 does not turn it into a pass. Source`b5161eb1b` passed all15 offline controller
 tests, including missing/stale/reordered evidence and natural ERR-child closure.
-Prepare the prospective v2 model plan only after the committed same-build proof.
-No new speed result is claimed.
+The same-build proof recovered9831 original inputs and verified the engine and
+all eight fixtures before the committed v2 model plan ran. That model check
+failed: the first loan was masked and mode10 setup reached layer0, then run_impl
+refused a stale/inactive owner. The source path replaces `m.cache` with the
+private per-layer execution cache before run_impl; the new span helper also
+uses that mutable pointer as the original loan's parent identity. This wrongly
+rejects the valid parent ticket. No borrowed FFN, refill or generated token was
+completed. Native exit1 and ownership closed normally; boot was unchanged and
+no fresh GPU fault occurred. Preserve this failed result. The earlier source
+audit missed the dynamic identity coupling. Next retain the immutable parent
+separately from the execution cache, add a regression crossing that substitution,
+review the complete corrected path, then use fresh component/model plans. Never
+retry closed v2 or bypass the owner check. The default-off route is unadopted;
+there is no new speed result or full physical262144/session/RESTORE qualification.
 Only a later qualified mechanism permits a
 fresh complete51+6-case plan. Preserve all pending-completion,
 untouched-output, payload/guard and owner-lifetime requirements under that plan.
