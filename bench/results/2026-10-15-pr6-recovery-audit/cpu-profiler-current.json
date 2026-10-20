@@ -1,181 +1,144 @@
 {
-  "mode": "cpu-smoke",
-  "source_commit": "d9a7952fdd6956c257082985be0ac8a6e0c0d800",
-  "input_sha256": {
-    "tools/sycl/profile_attention.py": "8a6724bee76dababd392c9f82e4c572ce014e928d76e346eec8de4a1bbb3f341",
-    "tools/sycl/measurement_guards.py": "794e332c70aca0acadad4f26d0414548e023a02fd27b72ed78fc773674423ec8",
-    "tools/sycl/measurement_owner.py": "bddd0c5e5020e882ca3404679420faec11e820dabce2ed4c72ef82b4c9c0874a"
+  "schema": "strata-profiler-capability-v2",
+  "stage": "prepared",
+  "source_commit": "430aa601fb0353635bfb25bb9e7c08ba233b456f",
+  "previous": {
+    "commit": "430aa601fb0353635bfb25bb9e7c08ba233b456f",
+    "path": "bench/results/2026-10-15-pr6-recovery-audit/cpu-profiler-current.json",
+    "sha256": "0f262480ade560920deb83a643a1b06eb80bae736cf5060d07a67e8f4214c8c5",
+    "outcome": "VTune2026.4 CPU ptrace refusal; perf cycles/task-clock denied. Preserve original failures in Git."
   },
-  "command": [
-    "/opt/intel/oneapi/vtune/latest/bin64/vtune",
-    "-collect",
-    "hotspots",
-    "-knob",
-    "sampling-mode=sw",
-    "-knob",
-    "enable-stack-collection=true",
-    "-knob",
-    "stack-size=4096",
-    "-knob",
-    "enable-characterization-insights=false",
-    "-data-limit=16",
-    "-user-data-dir",
-    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-software-profiler-smoke-v1/user",
-    "-result-dir",
-    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-software-profiler-smoke-v1/vtune",
-    "--",
-    "/usr/bin/openssl",
-    "speed",
-    "-seconds",
-    "3",
-    "-bytes",
-    "16384",
-    "-evp",
-    "sha256"
-  ],
-  "report_command": [
-    "/opt/intel/oneapi/vtune/latest/bin64/vtune",
-    "-report",
-    "hotspots",
-    "-result-dir",
-    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-software-profiler-smoke-v1/vtune",
-    "-format",
-    "csv",
-    "-csv-delimiter",
-    "tab",
-    "-group-by",
-    "function",
-    "-limit",
-    "12"
-  ],
+  "previous_gpu": {
+    "commit": "430aa601fb0353635bfb25bb9e7c08ba233b456f",
+    "path": "bench/results/2026-10-15-pr6-recovery-audit/qsa-hardware-profile-current.json",
+    "sha256": "dd27f6a3420569f4a0fb300d20122768b133d17c7dd3c8ce870c1657548bc4af",
+    "outcome": "VTune2026.4 GPU-hotspots rejected this Ryzen host; compiler metadata did not qualify hardware metrics."
+  },
+  "input_sha256": {
+    "tools/sycl/profile_attention.py": "00993c4ffead66399569df92ea0049a742848e2e35d953e874322fc797c939de",
+    "tools/sycl/measurement_guards.py": "794e332c70aca0acadad4f26d0414548e023a02fd27b72ed78fc773674423ec8",
+    "tools/sycl/measurement_owner.py": "bddd0c5e5020e882ca3404679420faec11e820dabce2ed4c72ef82b4c9c0874a",
+    "tools/sycl/measurement_environment.json": "d4402591df50e80dc45a5ec9e4839c7a794888850b1473537b6f95179be5b03c"
+  },
+  "profiler": {
+    "path": "/opt/intel/oneapi/vtune/2026.6/bin64/vtune",
+    "sha256": "d30d84070973db8da5f5f0a0cb9c13cdc3215812f183609147cfb553d61e9fb9",
+    "assets": {
+      "root": "/opt/intel/oneapi/vtune/2026.6",
+      "count": 676,
+      "sha256": "de2cc02853fcc70374b0c453af3374e5894b4f0f76626aff1784ff62e8eecb2c",
+      "scope": "Sorted relative-path/SHA256 pairs of all bin64/lib64 files, including resolved file symlinks; installed tool assets, not project build outputs."
+    },
+    "version": "Intel(R) VTune(TM) Profiler 2026.6.0 (build 633341) Command Line Tool\nCopyright (C) 2009 Intel Corporation. All rights reserved."
+  },
+  "targets": {
+    "/usr/bin/openssl": {
+      "path": "/usr/bin/openssl",
+      "sha256": "b4f547c0f16272d1cc7f870330a6f2c243710c335e7a99c734ff7a0c6fdb2503"
+    },
+    "/usr/bin/true": {
+      "path": "/usr/bin/true",
+      "sha256": "8a63c98320173f79e263115e10cefc170155e47d1fd4b5a70e4429d2699cae28"
+    }
+  },
   "environment": {
     "PATH": "/usr/bin:/bin",
     "HOME": "/home/yayoi",
     "LANG": "C.UTF-8",
     "LC_ALL": "C.UTF-8",
-    "TMPDIR": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-software-profiler-smoke-v1/tmp",
-    "XDG_CACHE_HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-software-profiler-smoke-v1/cache"
+    "PYTHONDONTWRITEBYTECODE": "1",
+    "LD_LIBRARY_PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib:/opt/intel/oneapi/mkl/2026.1/lib",
+    "ONEAPI_DEVICE_SELECTOR": "level_zero:gpu",
+    "UR_ADAPTERS_FORCE_LOAD": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_adapter_level_zero_v2.so.0",
+    "UR_L0_V2_FORCE_DISABLE_COPY_OFFLOAD": "1",
+    "NEOReadDebugKeys": "1",
+    "EnableDirectSubmission": "0",
+    "STRATA_SYCL_PREFILL_SAME_QUEUE": "1",
+    "STRATA_SYCL_VERIFY_NATIVE_CAPTURE": "0",
+    "SYCL_CACHE_PERSISTENT": "0",
+    "ZES_ENABLE_SYSMAN": "0",
+    "UR_ENABLE_LAYERS": "UR_LAYER_PARAMETER_VALIDATION",
+    "UR_LOG_TRACING": "level:info;flush:info;output:stderr",
+    "UR_LOG_VALIDATION": "level:warning;flush:warning;output:stderr",
+    "UR_LOG_LOADER": "level:warning;flush:warning;output:stderr",
+    "UR_LOG_LEVEL_ZERO": "level:warning;flush:warning;output:stderr",
+    "TMPDIR": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/profiler-capability-vtune-2026-6-v1/tmp",
+    "XDG_CACHE_HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/profiler-capability-vtune-2026-6-v1/cache"
   },
-  "driver_before": {
-    "pci": "/sys/bus/pci/devices/0000:05:00.0",
-    "driver": "xe",
-    "vendor": "0x8086",
-    "device": "0xe20c",
-    "kernel": "7.0.0-38-generic",
-    "devcoredump": false
-  },
-  "profiler": {
-    "path": "/opt/intel/oneapi/vtune/2026.4/bin64/vtune",
-    "sha256": "7987d63d0e8ed24fdad6572d8f0873e709831463d202a7fb71c59b6709e9a05d",
-    "version": "Intel(R) VTune(TM) Profiler 2026.4.0 (build 632893) Command Line Tool\nCopyright (C) 2009 Intel Corporation. All rights reserved."
-  },
-  "target": {
-    "path": "/usr/bin/openssl",
-    "sha256": "b4f547c0f16272d1cc7f870330a6f2c243710c335e7a99c734ff7a0c6fdb2503",
-    "version": "OpenSSL 3.0.13 30 Jan 2024 (Library: OpenSSL 3.0.13 30 Jan 2024)"
-  },
-  "purpose": "Qualify CPU function/stack sampling for warmed16.63s unclassified host cost; no model speed or GPU hardware-counter result.",
-  "consumer": "Next Main-owned CPU profile of the warmed official long-prefill benchmark.",
-  "budgets": {
-    "wall_s": 180,
-    "cpu_s": 180,
-    "rss_bytes": 4294967296,
-    "text_bytes": 67108864,
-    "file_bytes": 134217728,
-    "total_bytes": 268435456,
-    "reason": "Bounded VTune native metadata plus a16MiB collection limit; raw text remains capped at64MiB."
-  },
-  "model_executed": false,
-  "cpu_sampling_qualified": false,
-  "GPU_hardware_metrics_qualified": false,
-  "complete": true,
-  "passed": false,
-  "active": false,
-  "collect": {
-    "exit_code": 1,
-    "ownership_closed": true,
-    "diagnostics": [
-      "vtune: Error: Cannot start data collection because the scope of ptrace system call is limited. To enable profiling, please set /proc/sys/kernel/yama/ptrace_scope to 0. To make this change permanent, set kernel.yama.ptrace_scope to 0 in /etc/sysctl.d/10-ptrace.conf and reboot the machine."
+  "commands": {
+    "cpu_collect": [
+      "/opt/intel/oneapi/vtune/2026.6/bin64/vtune",
+      "-data-limit=16",
+      "-user-data-dir",
+      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/profiler-capability-vtune-2026-6-v1/user",
+      "-collect",
+      "hotspots",
+      "-knob",
+      "sampling-mode=sw",
+      "-knob",
+      "enable-stack-collection=true",
+      "-knob",
+      "stack-size=4096",
+      "-knob",
+      "enable-characterization-insights=false",
+      "-result-dir",
+      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/profiler-capability-vtune-2026-6-v1/cpu",
+      "--",
+      "/usr/bin/openssl",
+      "speed",
+      "-seconds",
+      "3",
+      "-bytes",
+      "16384",
+      "-evp",
+      "sha256"
+    ],
+    "cpu_report": [
+      "/opt/intel/oneapi/vtune/2026.6/bin64/vtune",
+      "-report",
+      "hotspots",
+      "-result-dir",
+      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/profiler-capability-vtune-2026-6-v1/cpu",
+      "-format",
+      "csv",
+      "-csv-delimiter",
+      "tab",
+      "-group-by",
+      "function",
+      "-limit",
+      "12"
+    ],
+    "gpu_launch_probe": [
+      "/opt/intel/oneapi/vtune/2026.6/bin64/vtune",
+      "-data-limit=16",
+      "-user-data-dir",
+      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/profiler-capability-vtune-2026-6-v1/user",
+      "-collect",
+      "gpu-hotspots",
+      "-result-dir",
+      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/profiler-capability-vtune-2026-6-v1/gpu",
+      "--",
+      "/usr/bin/true"
     ]
   },
-  "error": "collect failed: vtune: Error: Cannot start data collection because the scope of ptrace system call is limited. To enable profiling, please set /proc/sys/kernel/yama/ptrace_scope to 0. To make this change permanent, set kernel.yama.ptrace_scope to 0 in /etc/sysctl.d/10-ptrace.conf and reboot the machine.\n",
-  "ownership_closed": true,
-  "fresh_faults": [],
-  "boot_unchanged": true,
-  "ptrace_scope_after": "1",
-  "decision": "Software collector refused launch under the observed ptrace policy; keep this failed qualification. Next use explicit existing CPU timing regions, without a profiler-permission change.",
-  "perf_event_capability": {
-    "source_commit": "dea28391704ef5b4bdfc2cc67745ced4a92d8a06",
-    "source_sha256": "7d653d3821588181123ab418cb8c306b7e191b7dff9bbd389f3946b4bc7f2ff1",
-    "perf": {
-      "path": "/usr/bin/perf",
-      "sha256": "2d0953085bf720a25efbe24f853e97d27b1f12f18a398255ff82cbafde254dad"
-    },
-    "target": {
-      "path": "/usr/bin/true",
-      "sha256": "8a63c98320173f79e263115e10cefc170155e47d1fd4b5a70e4429d2699cae28"
-    },
-    "perf_event_paranoid": "4",
-    "environment": {
-      "PATH": "/usr/bin:/bin",
-      "HOME": "/home/yayoi",
-      "LANG": "C.UTF-8",
-      "LC_ALL": "C.UTF-8"
-    },
-    "complete": true,
-    "model_executed": false,
-    "model_hardware_counters_qualified": false,
-    "events": [
-      {
-        "event": "cycles",
-        "command": [
-          "/usr/bin/perf",
-          "stat",
-          "--no-big-num",
-          "-x",
-          ";",
-          "-e",
-          "cycles",
-          "--",
-          "/usr/bin/true"
-        ],
-        "exit_code": 1,
-        "ownership_closed": true,
-        "stderr_excerpt": "Error:\nNo supported events found.\nAccess to performance monitoring and observability operations is limited.",
-        "stdout_excerpt": ""
-      },
-      {
-        "event": "task-clock",
-        "command": [
-          "/usr/bin/perf",
-          "stat",
-          "--no-big-num",
-          "-x",
-          ";",
-          "-e",
-          "task-clock",
-          "--",
-          "/usr/bin/true"
-        ],
-        "exit_code": 1,
-        "ownership_closed": true,
-        "stderr_excerpt": "Error:\nNo supported events found.\nAccess to performance monitoring and observability operations is limited.",
-        "stdout_excerpt": ""
-      }
-    ],
-    "ownership_closed": true,
-    "perf_event_paranoid_after": "4",
-    "limits": "Event permission/command capability only; no attached process, model profile or hardware bottleneck. Preserve each requested event outcome; change no sysctl or privilege.",
-    "decision": "Both actual event command probes refused access under perf_event_paranoid4. Keep model hardware counters unknown; change no host permissions. Use bounded passive/source attribution while identifying an independent CPU/RAM measurement.",
-    "artifact_retirement": {
-      "complete": true,
-      "completed_utc": "2026-10-19T14:06:05.064408+00:00",
-      "manifest_path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/closed-passive-capture-and-extra-engine-retirement-20261019.jsonl",
-      "manifest_sha256": "8967d86fde70e561cda7c7a8627730cdbce40cf58c276b9545d3c8a614bca31b",
-      "files": 5,
-      "bytes": 8645,
-      "original_outcomes_unchanged": true,
-      "consumer": "Both actual event command failures and relevant diagnostic lines are retained in this result; raw capability logs have no remaining consumer."
-    }
-  }
+  "gates": "Run CPU collect once; report only if collection exits0 and closes normally. Require positive finite CPU Time and actual OpenSSL/libcrypto samples for CPU qualification. Then independent GPU collector-launch probe on /usr/bin/true, which contains no GPU workload: exit0 never qualifies GPU timing/counters. Stop on source/asset/owner/budget/fault failure. No retry, permission/sysctl/driver reset or model execution.",
+  "budgets": {
+    "wall_s_per_command": 120,
+    "cpu_s_per_command": 120,
+    "rss_bytes": 4294967296,
+    "text_bytes_per_command": 16777216,
+    "file_bytes": 134217728,
+    "total_bytes": 268435456,
+    "raw_text_bytes": 67108864
+  },
+  "retention": "Keep tool/source/environment identities, each capability outcome and compact refusal/sample evidence. Retire normal collector output after the current production-profile decision; preserve old failure via previous Git reference.",
+  "model_executed": false,
+  "target_gpu_work": false,
+  "GPU_hardware_metrics_qualified": false,
+  "CPU_sampling_qualified": false,
+  "GPU_collector_launch_probe_accepted": false,
+  "passed_meaning": "CPU sampling qualification plus GPU collector-launch acceptance; never GPU hardware-metric or model qualification.",
+  "active": false,
+  "complete": false,
+  "passed": false
 }
