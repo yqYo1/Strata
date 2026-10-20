@@ -412,7 +412,7 @@
     "resolution": "Every prefixed draft-KV line now requires full syntax match before cell/request conservation. Negative cases before/after valid records pass. Aggregate summary failure also returns nonzero. Remaining reviewed gates coherent; no native inference changes."
   },
   "comparison": {
-    "stage": "prepared",
+    "stage": "collecting",
     "source_commit": "70d8c63c24c079a7922e7de14ba24bfb269843f5",
     "build_source_commit": "3b4998f326101fa913788fd368e1674b111dea03",
     "binary": {
@@ -1616,10 +1616,117 @@
       }
     ],
     "invariant_signature": "b9114f17aab48fa951dc90546a15cdc79d94576e1374c3446e9df069da1d899f",
-    "processes": [],
+    "processes": [
+      {
+        "cohort": 0,
+        "arm": 0,
+        "passed": true,
+        "ownership_closed": true,
+        "warmup_work": [
+          {
+            "read_tokens": 74,
+            "draft_cells": 73,
+            "batch_count": 1,
+            "batch_ms": 250.0
+          },
+          {
+            "read_tokens": 264,
+            "draft_cells": 263,
+            "batch_count": 1,
+            "batch_ms": 21.5
+          },
+          {
+            "read_tokens": 910,
+            "draft_cells": 909,
+            "batch_count": 1,
+            "batch_ms": 74.5
+          },
+          {
+            "read_tokens": 1068,
+            "draft_cells": 1067,
+            "batch_count": 1,
+            "batch_ms": 87.1
+          }
+        ],
+        "native": {
+          "pid": 750723,
+          "start_ticks": 88585210,
+          "sid": 750690
+        },
+        "successful_warmups": 4,
+        "effective_environment_verified": true,
+        "request": {
+          "ok": true,
+          "err": null,
+          "ttft_s": 51.695,
+          "total_s": 340.781,
+          "prompt_tokens": 33210,
+          "reused_tokens": 0,
+          "read_tokens": 33210,
+          "generated_tokens": 2913,
+          "prompt_tps": 643.9,
+          "prompt_tps_source": "engine",
+          "decode_tps": 10.1,
+          "decode_tps_source": "engine",
+          "prompt_ms": 51577.6,
+          "decode_ms": 289178.8,
+          "drafts_offered": 2451,
+          "drafts_accepted": 2097,
+          "finish_reason": "stop",
+          "request_sha256": "1f3abe00dea144b0e26d862f282e7b90833de131b4527662a4aca2542cda918a",
+          "stream_complete": true,
+          "truncated": false,
+          "generated_tokens_source": "usage",
+          "client_interval": {
+            "request_begin_monotonic_ns": 885976051391356,
+            "first_output_monotonic_ns": 886027746028486,
+            "request_end_monotonic_ns": 886316832055407
+          },
+          "eligible": true,
+          "agreement_eligible": true,
+          "speed_eligible": true,
+          "speed_ineligible_reasons": [],
+          "ineligible_reasons": [],
+          "acceptance_rate": 0.8555691554467564,
+          "usage_generated_tokens": 2913,
+          "completion_includes_thinking": true,
+          "run": 0,
+          "order": 0,
+          "output_sha256": "99ceca676fbc02b8d8ba5ba58310339f19d54d2898d5c3ed477eda65220515bf",
+          "reasoning_sha256": "b52478ff27827543920c6e53592098994bac27ad6e32a85cf4a0179e2785433d",
+          "output_chars": 5578,
+          "reasoning_chars": 2666,
+          "reasoning_tokens": null,
+          "workload": "regular-code",
+          "controller_eligible": true
+        },
+        "long_work": {
+          "read_tokens": 33210,
+          "draft_cells": 33209,
+          "batch_count": 5,
+          "batch_ms": 4552.4
+        },
+        "actual_GPU_BF16_rows": 33209,
+        "actual_MoE_mode": 10,
+        "journal_valid": true,
+        "native_exit_code": 0,
+        "fault_probe": {
+          "fresh_faults": [],
+          "boot_unchanged": true,
+          "driver_after": {
+            "pci": "/sys/bus/pci/devices/0000:05:00.0",
+            "driver": "xe",
+            "vendor": "0x8086",
+            "device": "0xe20c",
+            "kernel": "7.0.0-38-generic",
+            "devcoredump": false
+          }
+        }
+      }
+    ],
     "active": false,
     "ownership_closed": true,
-    "passed": false,
+    "passed": true,
     "complete": false,
     "adoption_qualified": false,
     "budgets": {
