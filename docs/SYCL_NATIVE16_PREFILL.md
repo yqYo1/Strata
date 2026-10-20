@@ -2471,7 +2471,7 @@ component comparison before inference adoption. The retained396 engine/five
 fixtures and current engine/eight fixtures have been rechecked against9813/9831
 original recoverable inputs and the current runtime, without executing GPU work.
 The [117K admission controller](../tools/sycl/cache_long.py) checks all96 FFN
-windows and exact cache restoration; its14 offline tests passed after correcting
+windows and exact cache restoration; its16 offline tests passed after correcting
 the active plan end1059131904 versus the full arena allocation. Exact corrected
 source review and actual admission remain prerequisites. The
 [comparison controller](../tools/sycl/cache_long_compare.py) has seven passing
