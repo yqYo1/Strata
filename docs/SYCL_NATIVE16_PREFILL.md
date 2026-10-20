@@ -2298,8 +2298,10 @@ after each successful refill. Its two thinking inputs8194/257 each request16
 generated tokens;8193 processed rows use only the primary mixed bank, so the full
 tail remains unqualified. The closed v1 refusal and its original failed outcome
 remain recoverable from the recorded Git reference; its separate process closure
-does not turn it into a pass. Commit and test the new evidence parser before
-building and preparing this prospective v2 plan. No new speed result is claimed.
+does not turn it into a pass. Source`b5161eb1b` passed all15 offline controller
+tests, including missing/stale/reordered evidence and natural ERR-child closure.
+The new native source still needs rebuilding and156 component checks before
+preparing the prospective v2 model plan. No new speed result is claimed.
 Only a later qualified mechanism permits a
 fresh complete51+6-case plan. Preserve all pending-completion,
 untouched-output, payload/guard and owner-lifetime requirements under that plan.

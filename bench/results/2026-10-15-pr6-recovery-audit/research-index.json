@@ -4881,6 +4881,15 @@
     "bounded_model_source_review_accepted": true,
     "operational_digest": "No source-supported defect in the three guards. Source-only acceptance; fresh156 v8 cases and actual two-request model admission remain required.",
     "review_limit": "Planner geometry is outside this ten-file review. Full build inputs pin that unchanged planner; this review does not qualify math, model execution, speed,physical262144/session/RESTORE.",
-    "closure_evidence": "Exact completed ctx_5e4db3240d1c succeeded; worker-release reported no_owned_resource. Verified incarnation c1274eb0-7b6c-4680-9fc0-22ae076f3cb1 and tui-idle before operator terminal close returned ptyKilled=true; delivery acknowledged."
+    "closure_evidence": "Exact completed ctx_5e4db3240d1c succeeded; worker-release reported no_owned_resource. Verified incarnation c1274eb0-7b6c-4680-9fc0-22ae076f3cb1 and tui-idle before operator terminal close returned ptyKilled=true; delivery acknowledged.",
+    "offline_evidence_gate": {
+      "source_commit": "b5161eb1bdd3d2b3d08d5dfc746d32a535c06412",
+      "command": "python3 -B -m unittest tools/test_sycl_cache_borrow.py tools/test_sycl_query_profile.py",
+      "cases": 15,
+      "passed": true,
+      "exit_code": 0,
+      "GPU_executed": false,
+      "scope": "Reject missing/duplicated/stale loan evidence, wrong admission, owned mislabel, reordered/incomplete FFNs and invalid spans; explicit ERR child exits naturally without signals or a second request."
+    }
   }
 }
