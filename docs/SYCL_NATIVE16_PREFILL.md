@@ -2467,7 +2467,17 @@ six-job-call and model questions separate; no model speed or70tok/s follows.
 See [the individual samples and pinned plan](../bench/results/2026-10-15-pr6-recovery-audit/cpu-roofline-current.json).
 The next model work remains1256-slot117K borrowed-tail admission and the retained
 old-owned/current-borrowed long-input comparison; new CPU methods need a bounded
-component comparison before inference adoption.
+component comparison before inference adoption. The retained396 engine/five
+fixtures and current engine/eight fixtures have been rechecked against9813/9831
+original recoverable inputs and the current runtime, without executing GPU work.
+The [117K admission controller](../tools/sycl/cache_long.py) checks all96 FFN
+windows and exact cache restoration; its14 offline tests passed after correcting
+the active plan end1059131904 versus the full arena allocation. Exact corrected
+source review and actual admission remain prerequisites. The
+[comparison controller](../tools/sycl/cache_long_compare.py) has seven passing
+offline checks and a pending source audit. It separates the first request from
+three subsequent requests in each of six processes, preserving all samples and
+the original1000tok/s target;24-token output does not qualify sustained decode.
 
 For the separate earlier early-PCIe candidate, only a later qualified mechanism permits a
 fresh complete51+6-case plan. Preserve all pending-completion,
