@@ -2507,9 +2507,17 @@ source fix. The old-owned117K request then passed at the committed`fc118efc6` pl
 all96 direct-owner retirements, same-nativePID3599067 activation before model work,
 24 thought tokens, native exit0 and complete owned closure, with a successful
 journal query and no matched fresh fault. Its126038.0ms /932.2tok/s is first-use
-validation evidence, not clean speed. Commit that result before the six clean
-processes, which separate first-use from three subsequent requests. The1000tok/s
-target and broader correctness requirements remain unqualified.
+validation evidence, not clean speed. That result preceded the six clean
+processes, which separate first-use from three subsequent requests. Five processes
+now closed normally. The three old-owned128 process medians are1005.8/1004.2/1005.1
+tok/s (exact values in the [comparison result](../bench/results/2026-10-15-pr6-recovery-audit/cache-long-comparison-current.json));
+first-use values931.6/930.7/924.9 remain separate. Thus retained source`396d0c91f`
+meets the repeated117K-input1000 speed condition on this runtime. Current-borrowed
+medians are999.9/1000.1 so far; its final independent process is still required
+for the predeclared three-pair screen. All closed processes passed route, observer
+absence, ownership and fault checks. This is short-output prefill speed evidence;
+quality, sustained decode and physical262144/session/RESTORE/default qualification
+remain pending.
 
 For the separate earlier early-PCIe candidate, only a later qualified mechanism permits a
 fresh complete51+6-case plan. Preserve all pending-completion,
