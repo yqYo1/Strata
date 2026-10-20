@@ -5141,15 +5141,13 @@
       "tools/sycl/cache_long.py": "6b095e3564bd1b8c6b394d0727c2bb1e1178e9e0aeafb6704676bf1fab4f9cee",
       "tools/test_sycl_cache_long.py": "b449678273b793e08fdabbd0ca744956c5dfc250ad86427758dbf7c4db1fb9a3"
     },
-    "prior_source_review_scope": "cache_loan_long_context_capacity_scope",
     "schedulable_now": false,
     "worker_closed": true,
+    "terminal_closed": true,
     "status": "official_117K_mixed_admission_passed_pending_clean_comparison",
-    "report_budget_bytes": 12288,
-    "report_path": "/home/yayoi/orca/workspaces/Strata/sycl/.cache/strata-research/20261020/cache-1256-long-source-audit.md",
-    "question": "Audit1256-slot117K actual admission with96 mixed FFN windows: total/single-allocation budgets,81920+35568 extents, secondary-bank bounds, sealed parent loan, dense/verifier restoration, exact payload/map audits, official one-warmup prefill-only journal, immutable inputs and no-retry owner closure. Identify concrete unsafe execution or false-qualification risks; do not repeat generic capacity math.",
-    "consumer": "Main must qualify the117K borrowed tail before the retained old-owned/current-borrowed clean long-input comparison; no engine rebuild before closure.",
-    "next_review": "Correct the separate reviewed clean-comparison controller, check old-owned117K route, then run the frozen independent-process comparison. Retire the extra engine after closure.",
+    "bounded_117K_check_accepted": true,
+    "report_sha256": "8c4dde80fb4cf7d4edb46e134f88d9a38515805ce57ac4376339d9245ac2894f",
+    "native_review_sha256": "e1d91f1a791a056aaa77ff3eed90508f6afe67325271510617fc1d1dee31ab6d",
     "offline_evidence_gate": {
       "source_commit": "f27e07e07bd178ead4aee94825736386cbc7ba83",
       "cases": 16,
@@ -5157,67 +5155,41 @@
       "GPU_executed": false,
       "command": "flock -n /home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/owned-v0141-measurement.lock timeout 60s python3 -B -m unittest tools/test_sycl_cache_long.py tools/test_sycl_cache_capacity.py"
     },
-    "prior_offline_failures": [
-      {
-        "source_commit": "d542c196f84c00187399c42c8870f3ed34f0a09f",
-        "outcome": "Import error in new test module; four existing capacity tests passed. NoGPU/model."
-      },
-      {
-        "source_commit": "40e4e61c4ef86b49b3e24aeac394965deb26e222",
-        "outcome": "Twelve tests ran: one false-acceptance failure (duplicate proof after final header) and four journal-fixture errors (wrong redactor type). Corrected at current source; noGPU/model."
-      }
-    ],
-    "retention": "Temporary source audit; keep only corrections/gate/identities in this index after review and consumer closure. No automatic report archive.",
-    "task_id": "task_1120f93997e9",
-    "dispatch_id": "ctx_42c597ae5edc",
-    "terminal_handle": "term_14d0cea5-e644-4341-80fe-684eec255206",
-    "incarnation_id": "6f7bddf1-6d99-4ba6-bf95-7bc1ef0ab351",
-    "launch_mode": "Orca custom workspace-write/network argv, gpt-6-luna high; worker-start observed turnStart on exact existing terminal.",
-    "terminal_closed": true,
-    "report_bytes": 7930,
-    "report_sha256": "8c4dde80fb4cf7d4edb46e134f88d9a38515805ce57ac4376339d9245ac2894f",
-    "curation_state": "native_luna_max_complete",
-    "retained_engine_source_recheck": {
-      "old_original_inputs_recovered": 9813,
-      "old_fixtures_verified": 5,
-      "current_original_inputs_recovered": 9831,
-      "current_fixtures_verified": 8,
-      "runtime_unchanged": true,
-      "GPU_executed": false,
-      "scope": "Existing qualification/artifact reuse; no new native GPU validation."
-    },
-    "initial_controller_review": {
-      "source_commit": "eb8bda02cf1cbc681e8cbcd281ff839de8070b4e",
-      "frozen_inputs": {
-        "tools/sycl/cache_long.py": "90d46ebb3b489b7cb9f11d04ca9f40eb5d41e90006f851407e392186ea8cb133",
-        "tools/test_sycl_cache_long.py": "4bb8fa390607b9e3fe264cce78f65f59133415e8ddf7eec3a7323bc10405aa6c"
-      },
-      "native_review_sha256": "6b06e1eb7dd81f2695b9ff02e1d3d8ca20db3ca6df8e0068ff93cd51de1b7cb7",
-      "launch_eligible": false,
-      "findings": [
-        "Tail offset is active plan end1059131904, not the whole allocated region1180698624; tail is inside region after live planes.",
-        "Require one leading journal identity and bind model/client/workload/plan fields.",
-        "Reject all long admission/owner markers outside their declared request; enforce actual print order."
-      ]
-    },
-    "bounded_117K_check_accepted": true,
-    "operational_digest": "Official thinking warmup74 tokens and fresh117489-input/24-thought-output request passed. Actual1256-slot parent lent1124 slots from132,2321664000B>=2319958528B required; exact all-slot payload/map restored twice. All117488 BF16 GPU residual rows (2406154240B),96 FFN windows/retirements and48 secondary-bank windows; dense Full restored. Free4298412032B vs fixed4206942336B including512MiB allowance. Native exit0, owners closed,15 full model hashes before/after match, no matched fresh fault. Diagnostic923.2 PP; no clean speed, sustained decode/answer, adoption or262K/session/RESTORE claim.",
-    "corrected_prefix_review": {
-      "source_commit": "67e9909266707c48b19633ca6be62e92c19790ba",
-      "frozen_inputs": {
-        "tools/sycl/cache_long.py": "20b4ee278923bd4f5cc4ab0625bc065c0ab21b29498e8969a4ba235f508a14ef",
-        "tools/test_sycl_cache_long.py": "4550133649e3aea73a1ae99fdc51844ae960b6c8c18f192dd148ba41fe2125c5"
-      },
-      "native_review_sha256": "a87362d73253262b569577b0e1142af4258d59620926b5515687b374d9974d99",
-      "launch_eligible": false,
-      "accepted": "Tail/journal/count/order/budget corrections accepted.",
-      "remaining": "Reviewer required explicit batched warm-up precondition. Actual pinned seed already uses short-read0; new source asserts that in both prepare/run and binds warmup<=256/chunk256."
-    },
-    "native_review_sha256": "e1d91f1a791a056aaa77ff3eed90508f6afe67325271510617fc1d1dee31ab6d",
-    "result_path": "bench/results/2026-10-15-pr6-recovery-audit/cache-long-current.json",
-    "native_exit_code": 0,
     "model_admission_passed": true,
-    "model_quality_qualified": false
+    "model_quality_qualified": false,
+    "result_reference": {
+      "commit": "2f177a061973e2156ff086bae4f6451f27a441d9",
+      "path": "bench/results/2026-10-15-pr6-recovery-audit/cache-long-current.json",
+      "note": "Initial compact result; current result adds raw-retirement evidence only."
+    },
+    "operational_digest": "Official thinking74-token warmup and fresh117489-input/24-thought-token request passed.1256-slot payload/map restored twice;117488 GPU BF16 rows,96 FFN retirements and dense Full restore. Native0, owners closed,15 model hashes stable and no matched fresh fault. Diagnostic923.2 PP, no clean gain or sustained-decode/quality/262K/session/RESTORE claim.",
+    "consumer": "Passed admission for imminent retained396-owned128/current-borrowed1256 long-input comparison. Keep both engine generations until that comparison closes.",
+    "next_review": "Correct and source-qualify the separate comparison controller, then check old-owned route and collect the frozen clean processes. No engine input changes before closure.",
+    "historical_source_review_reference": {
+      "commit": "2f177a061973e2156ff086bae4f6451f27a441d9",
+      "path": "bench/results/2026-10-15-pr6-recovery-audit/research-index.json"
+    },
+    "raw_payloads_retired": true,
+    "raw_retirement": {
+      "manifest": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/closed-117K-admission-and-research-transactions-20261020.jsonl",
+      "sha256": "6bfbaca16b7a181dd180983e0b87608f710623b663ad86398d4866bf3ace400b",
+      "files": 105,
+      "bytes": 13044809,
+      "admission_files": 70,
+      "consumed_research_and_PR_files": 35,
+      "closed_admission_root_empty": true,
+      "compact_result_commit": "2f177a061973e2156ff086bae4f6451f27a441d9",
+      "original_outcomes_unchanged": true,
+      "post_cleanup_admission": {
+        "passed": true,
+        "old_original_inputs_recovered": 9813,
+        "current_original_inputs_recovered": 9831,
+        "old_fixtures_verified": 5,
+        "current_fixtures_verified": 8,
+        "capacity_original_plan_recovered": true,
+        "GPU_executed": false
+      }
+    }
   },
   "retained_117K_clean_comparison_scope": {
     "classification": "decision support",
@@ -5228,13 +5200,13 @@
     },
     "schedulable_now": false,
     "worker_closed": true,
-    "status": "curated_corrections_deferred_until_active_admission_closes",
+    "status": "admission_passed_pending_comparison_controller_corrections",
     "report_budget_bytes": 12288,
     "report_path": "/home/yayoi/orca/workspaces/Strata/sycl/.cache/strata-research/20261020/retained-117K-comparison-source-audit.md",
     "question": "Audit new retained396-owned128/current-borrowed1256 comparison controller: exact retained source/recipe/fixtures, long admission prerequisites, old checked96-window trial, frozen six-process/four-request workload, request journal/native route evidence, observer-free speed, paired statistics, bounded ownership/fault/summary failure paths.",
     "execution_prerequisites": "1256-slot117K admission must actually pass before prepare-check; source audit is not permission to bypass it.",
     "consumer": "Main runs retained-engine117K comparison before changing engine inputs or selecting CPU methods.",
-    "next_review": "Do not edit frozen benchmark inputs while the current1256-slot117K admission is preparing/running. After that run closes, correct the three confirmed comparison gaps, verify old fixture lineage, commit/test/review changed source, then prepare checked/clean plans only if actual admission passed.",
+    "next_review": "The1256-slot117K admission passed and closed; benchmark inputs may now change under a new committed source/plan. Correct activation proof, exact admitted first132/lent1124 binding and unconditional failed-probe terminal receipt, then test/review before preparing the old-owned check. Retire the extra engine after comparison closure.",
     "offline_evidence_gate": {
       "source_commit": "010d662a68a902ed4ab37619f0badffc6380a87e",
       "cases": 7,
@@ -5270,6 +5242,16 @@
     },
     "clean_comparison_accepted": false,
     "native_review_sha256": "a0e8eb21085f71f642d89435f25055c44503ca70987632495b547c32cf59ad42",
-    "operational_digest": "Native review confirms three comparison-controller gaps: positive validation-layer activation evidence in old checked process, exact candidate loan identity against admitted first/lent, and unconditional terminal receipt when post-run journal probe fails (fault evidence unknown, never empty). Old fixture lineage needs exact pinned Git retention proof; no present mismatch established. Generic fault-regex counterexample lacked evidence. Seven offline tests do not cover these gaps. No comparison/model speed measured."
+    "operational_digest": "Native review confirms three comparison-controller gaps: positive validation-layer activation evidence in old checked process, exact candidate loan identity against admitted first/lent, and unconditional terminal receipt when post-run journal probe fails (fault evidence unknown, never empty). Old fixture lineage needs exact pinned Git retention proof; no present mismatch established. Generic fault-regex counterexample lacked evidence. Seven offline tests do not cover these gaps. No comparison/model speed measured.",
+    "old_fixture_lineage_check": {
+      "passed": true,
+      "exact_key_set_and_original_SHA256_match": true,
+      "retained_file_sizes_and_basenames_match": true,
+      "fixtures": 5,
+      "original_source_receipt_sha256": "8779b7630658308aed00ad38cfef38c023f7d5875a7154f1d141b2c6f445d221",
+      "retained_reference_commit": "12e0ac0a2ceaed3090cf8797690dd5da13016136",
+      "limits": "Original fixture schema has path/SHA only; an initial size-key query raised KeyError. Corrected verification binds exact original hashes to the retained mapping and checks its recorded sizes against actual files. No fixture mismatch, input refresh orGPU work.",
+      "conclusion": "Conditional lineage concern resolved for the exact pinned receipts; their hashes are already frozen by retained_build_proof."
+    }
   }
 }
