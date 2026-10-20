@@ -31,6 +31,12 @@ LONG_PREFIXES = ('strata prefill: layer-major candidate,', 'strata MoE mixed ban
     'strata MoE mixed owners:', 'strata MoE cache loan:', 'strata prefill cache binding:')
 
 
+def require_batched_warmup(config):
+    flags=config['args']
+    guards.require(flags.count('--short-read') == 1 and flags.index('--short-read')+1 < len(flags) and
+        flags[flags.index('--short-read')+1] == '0', 'warmup must use the explicitly batched short-read0 route')
+
+
 def records(text, prefix, count):
     found = []
     for match in re.finditer(r'^'+re.escape(prefix)+r': (.+)$', text, re.M):
@@ -90,7 +96,7 @@ def mixed_evidence(log, sample):
     guards.require(tuple(map(int, headers[-1].groups())) ==
         (ROWS+1, 0, ROWS+1, sample['generated_tokens']) and
         sample['actual_prompt_tokens'] == sample['actual_read_tokens'] == ROWS+1 and
-        0 < int(headers[0][1]) < 32768 and int(headers[0][2]) == 0 and
+        0 < int(headers[0][1]) <= 256 and int(headers[0][2]) == 0 and
         int(headers[0][1]) == int(headers[0][3]) and 1 <= int(headers[0][4]) <= 24,
         'measured request/native header identity differs')
     segments = [log[:headers[0].start()], log[headers[0].end():headers[1].start()]]
@@ -104,7 +110,7 @@ def mixed_evidence(log, sample):
         cycle, pub = loan_cycle(text)
         cycles.append(cycle); publications.append(pub)
     guards.require(0 < cycles[0]['generation'] < cycles[1]['generation'] and
-        cycles[1]['chunk'] == 8192, 'request generations/chunk differ')
+        cycles[0]['chunk'] == 256 and cycles[1]['chunk'] == 8192, 'request generations/chunk differ')
     text, cycle, pub = segments[-1], cycles[-1], publications[-1]
     for prefix in LONG_PREFIXES:
         count=192 if prefix == 'strata MoE mixed owners:' else 96 if prefix == 'strata MoE cache loan:' else 1
@@ -263,6 +269,7 @@ def prepare():
         all(flags[flags.index(k)+1] == v for k,v in (('--max-context','131072'), ('--kv','int8'),
             ('--kv-resident','131072'), ('--prefill','8192'), ('--adapt-swaps','0'))), 'seed placement changed')
     flags.remove('--no-prefill-borrow'); config.update(log=str(ROOT/'engine.stderr'), env={})
+    require_batched_warmup(config)
     old_root = seed['environment']['STRATA_MEASUREMENT_ROOT']
     env = {k:v.replace(old_root,str(ROOT)) for k,v in seed['environment'].items()}
     guards.require(not any(k == 'STRATA_TRACE' or k == 'UR_ENABLE_LAYERS' or k.startswith('UR_LOG_') for k in env), 'seed has observers')
@@ -311,6 +318,7 @@ def run():
     record = gen.committed(RESULT)
     guards.require(record == json.loads((ROOT/'plan.json').read_text()) and not record['complete'] and
         not (ROOT/'record.json').exists(), 'fresh committed plan required; never retry')
+    require_batched_warmup(record['config'])
     full, count = q.current_build()
     guards.require(full['binary'] == record['binary'] and count == record['original_native_inputs_recovered'] and
         gen.common.digest(q.BUILD_RECORD) == record['source_build_record']['sha256'] and

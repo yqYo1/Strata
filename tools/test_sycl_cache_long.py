@@ -52,6 +52,18 @@ def fixture():
 
 
 class MixedEvidence(unittest.TestCase):
+    def test_batched_warmup_config_is_explicit(self):
+        c.require_batched_warmup(dict(args=['--short-read','0']))
+        for flags in ([],['--short-read'],['--short-read','64'],['--short-read','0','--short-read','64']):
+            with self.subTest(flags=flags),self.assertRaises(RuntimeError): c.require_batched_warmup(dict(args=flags))
+
+    def test_short_window_route_or_oversized_warmup_is_rejected(self):
+        text=fixture()
+        end=text.index('strata serve: prompt 100')
+        no_loan=text[end:]
+        for changed in (no_loan,text.replace('prompt 100 tokens = 0 reused + 100 read','prompt 257 tokens = 0 reused + 257 read')):
+            with self.assertRaises(RuntimeError): c.mixed_evidence(changed,SAMPLE)
+
     def test_full_two_bank_sequence(self):
         proof=c.mixed_evidence(fixture(),SAMPLE)
         self.assertEqual(proof['checked_retirements'],96)
