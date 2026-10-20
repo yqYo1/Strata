@@ -4771,7 +4771,7 @@ int main(int argc, char** argv) {
             int64_t lent_chunk = 0;
             std::vector<std::pair<int32_t, int32_t>> lent;
 #ifdef STRATA_ENABLE_SYCL
-            strata::core::CacheScratchLease lease;
+            strata::core::CacheScratchLease lease{};
 #endif
         };
         auto part_slots = [&](const PfPart& p, int64_t c) -> int64_t {

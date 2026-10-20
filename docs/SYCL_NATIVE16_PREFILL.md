@@ -2255,6 +2255,12 @@ exercises the lower-level capability on that empty tail independently of the
 generator positive-mask policy. The review mistakenly carried the old57-case
 early-PCIe gate into its next-step text; use this154-case cache-loan gate instead.
 The failed early-PCIe route stays disabled and separate.
+The first native build at`e9a3854c1` stopped before GPU/test execution:
+Clang's warnings-as-errors rejected two existing PfPart aggregate initializers
+after adding the lease field without an explicit default member initializer.
+The failed receipt and closed ownership remain recorded. Set that field's
+default to`{}` and commit the source before a corrected build of the same
+prospective v7 gate; no test outcome or qualification is reused from this failure.
 Only a later qualified mechanism permits a
 fresh complete51+6-case plan. Preserve all pending-completion,
 untouched-output, payload/guard and owner-lifetime requirements under that plan.
