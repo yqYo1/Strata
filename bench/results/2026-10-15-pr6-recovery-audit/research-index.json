@@ -4818,7 +4818,7 @@
       "tools/test_sycl_cache_compare.py": "4816e5054995e4958774bf7558f0a452e6e9d6fd9f19f1b886ea871d1a45c5ad",
       "tools/sycl/generation_engine.py": "1f884753ac5bbf2d391b7d5ee91c03ce466245128e1b830792dd6ef2bb3fad7d"
     },
-    "schedulable_now": true,
+    "schedulable_now": false,
     "prerequisites": {
       "committed_comparison_source": true,
       "offline_tests_passed": 31,
@@ -4828,10 +4828,32 @@
     },
     "report_path": "/home/yayoi/orca/workspaces/Strata/sycl/.cache/strata-research/20261020/cache-capacity-clean-comparison-report.md",
     "report_budget_bytes": 16384,
-    "worker_closed": false,
-    "clean_comparison_accepted": false,
+    "worker_closed": true,
+    "clean_comparison_accepted": true,
     "question": "Audit the new six-process owned128 versus checked-borrowed1280 comparison for immutable matching, actual timed route with observers absent, generation/MTP variation and independent prefill/decode decisions. Identify concrete invalidation risks before clean execution.",
     "previous_scope": "cache_loan_long_context_capacity_scope",
-    "next_review": "Native Luna-max curation after accepted worker_done, then Main checks frozen inputs before clean timing; no default adoption."
+    "next_review": "Complete the owned parameter-validated check and all six clean processes with frozen inputs. Interpret execution success separately from prefill/decode decisions; retire consumed reports at cohort closure.",
+    "report_sha256": "6af4ce8460a454129a3ee951a764e77411d89235eab276399dfe3d59e8b97b37",
+    "native_review_sha256": "ceff79b987bf5ad663c28a1552df1dfd1418888ef2c2e91e0bd8d43dad63c0e2",
+    "offline_evidence_gate": {
+      "source_commit": "cba7b0a7c255ea9a7e113ead57b87a22cb373439",
+      "cases": 31,
+      "passed": true,
+      "GPU_executed": false,
+      "command": "python3 -B -m unittest tools/test_sycl_cache_compare.py tools/test_sycl_cache_capacity.py tools/test_sycl_query_profile.py tools/test_sycl_cache_borrow.py"
+    },
+    "corrections": [
+      "The frozen pairs include two owned-first pairs and one borrowed-first pair. Say chronology is represented in both directions, not exactly balanced; this is a temporal-drift caveat, not a blocker under the predeclared all-pairs thresholds."
+    ],
+    "operational_digest": "Controller/source pins match the indexed scope and actual files. The route, ownership, request-journal, timing, fail-closed and separate prefill/decode gates support the planned screen; an inconclusive result stays inconclusive and adoption_qualified remains false.",
+    "next_scope": {
+      "schedulable_now": false,
+      "recommendation": "Dispatch no new research scope from this audit. Close the clean cohort first and select follow-up work from its separate prefill/decode decisions and measured limiting resource.",
+      "prerequisites_for_reassessment": [
+        "A closed six-process cohort with original samples and comparison summary.",
+        "A concrete unresolved mechanism or attribution question not answered by the current source audit."
+      ],
+      "evidence": "The current clean-comparison scope is schedulable after its owned-check and review prerequisites; no new follow-up question is established before its result."
+    }
   }
 }
