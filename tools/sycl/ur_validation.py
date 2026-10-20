@@ -55,6 +55,43 @@ def preload_evidence(text,pid):
         runtime_teardown_qualified=False)
 
 
+def preload_qualification():
+    result=committed(INDEX)['UR_silent_validation_native_child_scope']['preload_component']
+    guards.require(result['passed'] and result['ownership_closed'] and result['fresh_faults']==[] and
+        result['provider_mismatch_stopped_before_body'],'completed preload component required')
+    ref=result['original_plan'];raw=git('show',ref['commit']+':'+ref['path'])
+    guards.require(hashlib.sha256(raw).hexdigest()==ref['sha256'],'original preload plan changed')
+    original=json.loads(raw)['UR_silent_validation_native_child_scope']['canary_plan']
+    guards.require(original['source_commit']==result['source_commit'],'preload source identity differs')
+    for p,h in original['inputs'].items():
+        path=Path(p)
+        if path.is_relative_to(P):
+            guards.require(hashlib.sha256(git('show',result['source_commit']+':'+str(path.relative_to(P)))).hexdigest()==h,
+                'original preload input unrecoverable: '+p)
+            if path.suffix!='.c': continue  # A later controller does not relabel native input.
+        guards.require(digest(path)==h,'preload native input changed: '+p)
+    for p,h in original['runtime_pins'].items():guards.require(digest(p)==h,'preload runtime changed: '+p)
+    for artifact in (result['library'],result['canary']):
+        guards.require(digest(artifact['path'])==artifact['sha256'],'preload fixture bytes changed')
+    loader=result['preload_evidence']['loader']
+    return dict(library=result['library'],loader=dict(path=loader,sha256=original['runtime_pins'][loader]),
+        component_source_commit=result['source_commit'],component_original_plan=result['original_plan'],
+        retained_reference_until_exit=True,runtime_teardown_qualified=False)
+
+
+def finish(record,owner,cursor,boot):
+    record.update(ownership_closed=owner.active is None and all(supervision.closed(c) for c in owner.commands),
+        fresh_faults=None,boot_unchanged=False)
+    try:
+        text=subprocess.check_output(['journalctl','-k','-b','--after-cursor',cursor,'--no-pager'],text=True,timeout=15)
+        record['fresh_faults']=[x for x in text.splitlines() if re.search(r'(?i)(gpu.*(?:hang|fault|reset|wedg)|xe.*(?:error|fault|reset|timeout))',x)]
+        record['driver_after']=guards.driver_guard()
+        record['boot_unchanged']=boot==Path('/proc/sys/kernel/random/boot_id').read_text().strip()
+    except Exception as error: record['final_probe_error']=str(error)
+    record['passed']=bool(record.get('host_probe_accepted') and record['ownership_closed'] and
+        record['boot_unchanged'] and record['fresh_faults']==[] and 'final_probe_error' not in record)
+
+
 def prepare():
     guards.require(not ROOT.exists(),'fresh canary only; no retry')
     settings=committed(SETTINGS); index=committed(INDEX)
@@ -169,16 +206,7 @@ def run():
         record['host_probe_accepted']=True
     except BaseException as error: record['error']=str(error)
     finally:
-        record['ownership_closed']=owner.active is None and all(supervision.closed(c) for c in owner.commands)
-        record['fresh_faults']=None
-        try:
-            text=subprocess.check_output(['journalctl','-k','-b','--after-cursor',cursor,'--no-pager'],text=True,timeout=15)
-            record['fresh_faults']=[x for x in text.splitlines() if re.search(r'(?i)(gpu.*(?:hang|fault|reset|wedg)|xe.*(?:error|fault|reset|timeout))',x)]
-            record['driver_after']=guards.driver_guard()
-        except Exception as error: record['final_probe_error']=str(error)
-        record['boot_unchanged']=boot==Path('/proc/sys/kernel/random/boot_id').read_text().strip()
-        record['passed']=bool(record.get('host_probe_accepted') and record['ownership_closed'] and
-            record['boot_unchanged'] and record['fresh_faults']==[] and 'final_probe_error' not in record)
+        finish(record,owner,cursor,boot)
         persist()
         index[SCOPE]['canary_plan']=record
         INDEX.write_text(json.dumps(index,ensure_ascii=False,indent=2)+'\n')
@@ -186,13 +214,82 @@ def run():
     return 0 if record['passed'] else 1
 
 
+def prepare_native():
+    import cache_long_compare as comparison
+    index=committed(INDEX);probe=preload_qualification()
+    old,_,proof,original=comparison.qualification()
+    root=B/'ur-validation-retained-help-v1';guards.require(not root.exists(),'fresh native help only')
+    source=git('rev-parse','HEAD').decode().strip();pins=comparison.gen.benchmark_pins(source)
+    env={k:v.replace(original['root'],str(root)) for k,v in original['environment'].items()}
+    env.update(STRATA_MEASUREMENT_ROOT=str(root),CUDA_MODULE_LOADING='EAGER',
+        UR_ENABLE_LAYERS='UR_LAYER_TRACING,UR_LAYER_PARAMETER_VALIDATION',
+        UR_LOG_TRACING='level:info;flush:info;output:file,'+str(root/'trace.log'),
+        UR_LOG_VALIDATION='level:warning;flush:warning;output:file,'+str(root/'validation.log'))
+    guards.require('LD_PRELOAD' not in env,'preload belongs only to the final native child')
+    plan=dict(source_commit=source,binary=old['binary'],build_source_commit=old['build_source_commit'],
+        retained_build_proof=proof,native_validation_probe=probe,root=str(root),environment=env,
+        benchmark_fingerprint=comparison.assets.fingerprint(pins),
+        command=[sys.executable,'-B',str(P/'tools/sycl/engine_once.py'),'--help'],
+        acceptance='Actual unchanged retained396 binary --help only. Probe receipt must have its native PID, first-init config and provider evidence, before any model stage. No model request/device/queue/enqueue; no speed or ordinary teardown claim.',
+        budgets=dict(wall=30,cpu=20,rss_cap=2<<30,text_cap=1<<20,file_cap=1<<20,total_cap=8<<20),
+        complete=False,passed=False,active=False,ownership_closed=False)
+    root.mkdir(mode=0o700)
+    for name in ('tmp','cache'):(root/name).mkdir()
+    (root/'plan.json').write_text(json.dumps(plan,indent=2)+'\n')
+    index['UR_silent_validation_native_child_scope']['native_plan']=plan
+    INDEX.write_text(json.dumps(index,ensure_ascii=False,indent=2)+'\n')
+    print('Prepared actual retained --help probe; commit exact plan before run.')
+
+
+def run_native():
+    import cache_long_compare as comparison
+    scope='UR_silent_validation_native_child_scope';index=committed(INDEX)
+    record=index[scope]['native_plan'];root=Path(record['root'])
+    guards.require(record==json.loads((root/'plan.json').read_text()) and not (root/'record.json').exists(),'fresh frozen native-help plan required')
+    old,_,proof,_=comparison.qualification()
+    guards.require(old['binary']==record['binary'] and proof==record['retained_build_proof'] and
+        preload_qualification()==record['native_validation_probe'] and
+        comparison.assets.fingerprint(comparison.gen.benchmark_pins(record['source_commit']))==record['benchmark_fingerprint'],
+        'native help source/fixtures changed')
+    boot=Path('/proc/sys/kernel/random/boot_id').read_text().strip()
+    text=subprocess.check_output(['journalctl','-k','-b','-n','0','--show-cursor','--no-pager'],text=True,timeout=15)
+    cursor=next(x.split(': ',1)[1] for x in text.splitlines() if x.startswith('-- cursor: '))
+    owner=None
+    def persist():
+        record['active']=bool(owner and owner.active is not None)
+        (root/'record.json').write_text(json.dumps(dict(record,commands=owner.commands if owner else []),indent=2)+'\n')
+    owner=supervision.Owner(root/'owned',persist)
+    try:
+        entry,_,_=owner.run('help',record['command'],record['environment'],P,**record['budgets'])
+        record['complete']=supervision.closed(entry)
+        guards.require(record['complete'] and entry['exit_code']==0,'retained native help failed')
+        native=json.loads((root/'engine-exit.json').read_text())
+        guards.require(native['exit_code']==0 and native['args']==['--help'] and native['binary']==record['binary'] and
+            native['native_validation_probe']==record['native_validation_probe'],'retained native identity differs')
+        log=(root/'owned/help.stderr').read_text(errors='replace')
+        record['native_identity']=native['native'];record['preload_evidence']=preload_evidence(log,native['native']['pid'])
+        trace=(root/'trace.log').read_text(errors='replace')
+        guards.require(record['preload_evidence']['loader']==record['native_validation_probe']['loader']['path'] and
+            not re.search(r'ur(?:Enqueue|Kernel|Queue|Device|PlatformGet\()',trace) and
+            'UR_RESULT_ERROR_INVALID_NULL_HANDLE' in trace and
+            not re.search(r'^strata (?:generate: expert cache|serve: prompt|trace:)',log,re.M),'unexpected model/device work')
+        record.update(trace_bytes=len(trace.encode()),trace_sha256=digest(root/'trace.log'),host_probe_accepted=True)
+    except BaseException as error:record['error']=str(error)
+    finally:
+        finish(record,owner,cursor,boot);persist();index[scope]['native_plan']=record
+        INDEX.write_text(json.dumps(index,ensure_ascii=False,indent=2)+'\n')
+    print(json.dumps({k:record.get(k) for k in ('complete','passed','error','preload_evidence')}))
+    return 0 if record['passed'] else 1
+
+
 def main():
     global ROOT,SCOPE,PRELOAD_MODE
-    guards.require(len(sys.argv)==2 and sys.argv[1] in ('prepare','run','prepare-preload','run-preload'),'use prepare/run or prepare-preload/run-preload')
+    guards.require(len(sys.argv)==2 and sys.argv[1] in ('prepare','run','prepare-preload','run-preload','prepare-native','run-native'),'use prepare/run with optional -preload or -native')
     if sys.argv[1].endswith('-preload'):
         PRELOAD_MODE=True;ROOT=B/'ur-validation-preload-v2';SCOPE='UR_silent_validation_native_child_scope'
     with (B/'owned-v0141-measurement.lock').open('a+') as lock:
         fcntl.flock(lock,fcntl.LOCK_EX|fcntl.LOCK_NB); guards.no_model_owners([]); guards.driver_guard()
+        if sys.argv[1].endswith('-native'):return run_native() if sys.argv[1].startswith('run') else prepare_native()
         return run() if sys.argv[1].startswith('run') else prepare()
 
 

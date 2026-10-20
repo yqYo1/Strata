@@ -13,6 +13,21 @@ def identity(pid):
     return dict(pid=pid, start_ticks=int(fields[19]), sid=int(fields[3]))
 
 
+def native_environment(plan, parent):
+    environment=dict(parent)
+    probe=plan.get('native_validation_probe')
+    if probe is not None:
+        if environment.get('LD_PRELOAD') or environment.get('CUDA_MODULE_LOADING') != 'EAGER':
+            raise RuntimeError('probe requires private native preload and immutable startup environment')
+        for artifact in (probe['library'],probe['loader']):
+            with Path(artifact['path']).open('rb') as stream:
+                if hashlib.file_digest(stream,'sha256').hexdigest() != artifact['sha256']:
+                    raise RuntimeError('validation probe/provider changed')
+        environment.update(LD_PRELOAD=probe['library']['path'],
+            STRATA_UR_PROBE_EXPECTED_LOADER=str(Path(probe['loader']['path']).resolve()))
+    return environment
+
+
 def main():
     root = Path(os.environ['STRATA_MEASUREMENT_ROOT'])
     plan = json.loads((root / 'plan.json').read_text())
@@ -25,7 +40,10 @@ def main():
     # A server restart must fail before another native process/GPU launch.
     with (root / 'launch.json').open('x') as stream:
         json.dump(claim, stream)
-    child = subprocess.Popen([binary['path'], *sys.argv[1:]], env=dict(os.environ))
+    environment=native_environment(plan,os.environ)
+    if 'native_validation_probe' in plan:
+        claim['native_validation_probe']=plan['native_validation_probe']
+    child = subprocess.Popen([binary['path'], *sys.argv[1:]], env=environment)
     claim['native'] = identity(child.pid)
     (root / 'engine-start.json').write_text(json.dumps(claim) + '\n')
     collector = None
