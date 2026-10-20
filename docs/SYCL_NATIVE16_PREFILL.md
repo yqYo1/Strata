@@ -2488,9 +2488,14 @@ against9813/9831 recoverable original inputs. The
 admitted suffix (first132/lent1124) and persists a terminal failure with unknown
 fault evidence when the final journal probe fails. These controller-only changes
 at`f29c46bda` passed12 offline tests; they are not a new engine/GPU qualification.
-Positive validation-layer activation proof remains unresolved. The bounded Orca
-research returned and its exact worker terminal closed; native Luna-max review
-is in progress. Implement that guard and review the corrected source before
+Positive validation-layer activation in the retained model child remains unresolved.
+The isolated host-only probe at`bde2932b2` passed: successful loader init/teardown,
+null-platform result46 with unchanged valid output, and165B of API trace without
+platform/device/queue/enqueue/kernel calls. The dedicated validation log was empty;
+the exact installed validation function returns silently on this path. The earlier
+C11 build failed before native execution and remains a failure. Neither this
+separate process nor an environment request proves the later model child's layer.
+Resolve supported native-child bootstrap, then review the corrected source before
 launch. The planned six processes separate first-use from three subsequent
 requests; the1000tok/s target and broader correctness requirements remain unchanged.
 
