@@ -5818,6 +5818,46 @@
       "unclassified_correction": "Fresh ExpertCache open_impl unconditionally allocates blocking staging through cudaHostAlloc outside Host/Wait; actual async route does not establish that allocation as the measured cause. CacheScratchState::write admits/throws under a mutex, without producer/reader waits. Direct copy_blob does not take staged_blob CV wait.",
       "main_measurement_update": "Curator received provisional run1 prompt126889.9ms and pending residual. Authoritative closed result is126889.7ms; run1 unclassified CPU10.201808904s/wall15.227133805s. Original review receipt is unchanged. Further narrow allocation timing needs actual provider/view/staging flags first.",
       "review_point": "At finite copy/queue plan freeze; retire consumed source maps/review transactions once useful pins and decision are preserved."
-    }
+    },
+    "component_review_wave": [
+      {
+        "scope": "finite-status-copy-source-audit",
+        "classification": "decision_support",
+        "schedulable_now": true,
+        "prerequisite": "Committed finite copy plan ce208cec3 and actual closed117K provider/view/staging flags now available.",
+        "source_commit": "13c30d0c0d2b3323af15a443ef8a59326feef869",
+        "report": ".cache/strata-research/20261020/finite-status-copy-source-audit.json",
+        "report_budget_bytes": 12288,
+        "terminal": "term_6110382a-1987-449c-819b-fc77611eb309",
+        "incarnation": "32330ec5-b9b9-4d74-9565-833b0e724b4e",
+        "dispatch_receipt": ".cache/strata-research/20261020/finite-status-copy-source-audit-dispatch.json",
+        "model": "gpt-6-luna",
+        "effort": "high",
+        "model_evidence": "Explicit startup flags and observed GPT-6-Luna high before Task.",
+        "state": "turn_started",
+        "consumer": "Main finite copy/queue decision or one actual-route allocation timer; native Luna-max review first. Retire consumed source audit after decision.",
+        "task": "task_9bce3098ff66",
+        "dispatch": "ctx_23f96a02a5f8"
+      },
+      {
+        "scope": "prefill-allocation-effective-route",
+        "classification": "decision_support",
+        "schedulable_now": true,
+        "prerequisite": "Committed finite copy plan ce208cec3 and actual closed117K provider/view/staging flags now available.",
+        "source_commit": "13c30d0c0d2b3323af15a443ef8a59326feef869",
+        "report": ".cache/strata-research/20261020/prefill-allocation-effective-route.json",
+        "report_budget_bytes": 12288,
+        "terminal": "term_38b3c174-a91d-493f-9dd5-30f090339e1a",
+        "incarnation": "b83e7848-48b4-4bae-980d-f71cced49b53",
+        "dispatch_receipt": ".cache/strata-research/20261020/prefill-allocation-effective-route-dispatch.json",
+        "model": "gpt-6-luna",
+        "effort": "high",
+        "model_evidence": "Explicit startup flags and observed GPT-6-Luna high before Task.",
+        "state": "turn_started",
+        "consumer": "Main finite copy/queue decision or one actual-route allocation timer; native Luna-max review first. Retire consumed source audit after decision.",
+        "task": "task_9c690bfe6c59",
+        "dispatch": "ctx_7a79bdd32876"
+      }
+    ]
   }
 }
