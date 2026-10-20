@@ -1,7 +1,7 @@
 {
   "mode": "cache-capacity-clean",
   "stage": "clean",
-  "cohort": 1,
+  "cohort": 2,
   "arm": 1,
   "source_commit": "cba7b0a7c255ea9a7e113ead57b87a22cb373439",
   "build_source_commit": "bb71e78db7b6a4930945a2d564ec6cd42d0ad245",
@@ -22,7 +22,7 @@
     "path": "bench/results/2026-10-15-pr6-recovery-audit/cache-capacity-current.json",
     "sha256": "3d8d533c4c2db5627842b79c9fe330df966328192e224af12a55f6e7e99c8c0a"
   },
-  "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cache-comparison-v1-1",
+  "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cache-comparison-v1-2",
   "config": {
     "exe": "/home/yayoi/orca/workspaces/Strata/sycl/tools/sycl/engine_once.py",
     "args": [
@@ -39,7 +39,7 @@
       "--expert-cache",
       "1280",
       "--expert-profile",
-      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cache-comparison-v1-1/expert-profile.bin",
+      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cache-comparison-v1-2/expert-profile.bin",
       "--expert-cache-per-layer",
       "--pool-workers",
       "5",
@@ -77,7 +77,7 @@
       "strata"
     ],
     "host": "127.0.0.1",
-    "log": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cache-comparison-v1-1/engine.stderr",
+    "log": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cache-comparison-v1-2/engine.stderr",
     "engine_silence_s": 480,
     "parallel": 1,
     "open_browser": false,
@@ -137,7 +137,7 @@
     "STRATA_SYCL_SELECT_CYCLIC": "0",
     "STRATA_SYCL_PROMPT_K_CELL_MAJOR": "0",
     "STRATA_SYCL_PROMPT_NATIVE_KV_MIN": "0",
-    "XDG_CACHE_HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cache-comparison-v1-1/cache",
+    "XDG_CACHE_HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cache-comparison-v1-2/cache",
     "STRATA_SYCL_PREFILL_NATIVE16": "bf16",
     "STRATA_SYCL_PREFILL_QSA_MATH": "bf16-prefix-ordered-exp",
     "STRATA_SYCL_PREFILL_NATIVE16_BACKEND": "vllm",
@@ -150,8 +150,8 @@
     "STRATA_SYCL_SCORE_HEAD_PARALLEL": "1",
     "STRATA_SYCL_PREFILL_SCORE_GEMM": "1",
     "STRATA_SYCL_PREFILL_COMMAND_PROFILE": "0",
-    "TMPDIR": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cache-comparison-v1-1/tmp",
-    "STRATA_MEASUREMENT_ROOT": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cache-comparison-v1-1",
+    "TMPDIR": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cache-comparison-v1-2/tmp",
+    "STRATA_MEASUREMENT_ROOT": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cache-comparison-v1-2",
     "ZES_ENABLE_SYSMAN": "0",
     "STRATA_SYCL_PREFILL_GDN_COLUMNS": "4",
     "STRATA_SYCL_PREFILL_GDN_CHUNK64": "0",
@@ -171,9 +171,9 @@
     "/bin/sh",
     "/home/yayoi/orca/workspaces/Strata/sycl/bench.sh",
     "--config",
-    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cache-comparison-v1-1/config.json",
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cache-comparison-v1-2/config.json",
     "--port",
-    "60355",
+    "59913",
     "--long-generation-only",
     "--long-generation-workload",
     "regular-code",
@@ -186,7 +186,7 @@
     "--ready-timeout",
     "600",
     "--out",
-    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cache-comparison-v1-1/bench"
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cache-comparison-v1-2/bench"
   ],
   "invariant_signature": "6fe54f90fc3f2912870051691800fa4d334f77bc06e060960c05727ce1d39a10",
   "plan": {
@@ -222,7 +222,7 @@
     "decisions": "Use exact native ms clocks per actual generated/read token. Decode faster only if every candidate/base throughput ratio>1 and geomean>1.05; slower only if every ratio<1 and geomean<1/1.05. Prefill faster/slower screens use the same all-pair rule with1.02 and1/1.02. Otherwise inconclusive. Prefill compares identical fresh inputs independently of decode generation/MTP regime. Its nonregression requires geomean>=0.98 and each ratio>=0.95; no prefill/decode tradeoff adoption. Keep all samples and spreads. No automatic extra repeats or retry; a new cohort plan is needed after a failed/ineligible result.",
     "limits": "A strong-workload mechanism screen, not an isolated kernel/resource ceiling or adoption. Weak-MTP,agent-session,quality,physical262144/session/RESTORE and sustained70tok/s remain open. CPU/RAM/PCIe traffic is not measured by logical miss counts."
   },
-  "config_sha256": "bd7d86ad37f0119f89da34dd2e7a7a13d116f21a09af1b6c2581b27e83325b0f",
+  "config_sha256": "0c97415389f06367e5c4eaa7b7e8d1c7b1e65729f7ff1c3d7b69353ee2ce120f",
   "profile_sha256": "8f59b4aa8873209dff11c11e37bcda9529a1335b724a1afeea37bf6388975baf",
   "settings_sha256": "d4402591df50e80dc45a5ec9e4839c7a794888850b1473537b6f95179be5b03c",
   "model_assets": {
@@ -618,8 +618,8 @@
     "report_sha256": "6af4ce8460a454129a3ee951a764e77411d89235eab276399dfe3d59e8b97b37",
     "native_review_sha256": "ceff79b987bf5ad663c28a1552df1dfd1418888ef2c2e91e0bd8d43dad63c0e2"
   },
-  "complete": true,
-  "passed": true,
+  "complete": false,
+  "passed": false,
   "active": false,
   "adoption_qualified": false,
   "budgets": {
@@ -629,102 +629,5 @@
     "text_cap": 67108864,
     "file_cap": 67108864,
     "total_cap": 67108864
-  },
-  "exit_code": 0,
-  "requests": [
-    {
-      "ok": true,
-      "err": null,
-      "ttft_s": 51.396,
-      "total_s": 251.789,
-      "prompt_tokens": 33211,
-      "reused_tokens": 0,
-      "read_tokens": 33211,
-      "generated_tokens": 2932,
-      "prompt_tps": 647.6,
-      "prompt_tps_source": "engine",
-      "decode_tps": 14.6,
-      "decode_tps_source": "engine",
-      "prompt_ms": 51281.1,
-      "decode_ms": 200486.1,
-      "drafts_offered": 2478,
-      "drafts_accepted": 2107,
-      "finish_reason": "stop",
-      "request_sha256": "424eb61e3b88f19275143af9fa65f3fe2aac566d32c6d6407120ca10cf0654b9",
-      "stream_complete": true,
-      "truncated": false,
-      "generated_tokens_source": "usage",
-      "client_interval": {
-        "request_begin_monotonic_ns": 831345599418244,
-        "first_output_monotonic_ns": 831396995804615,
-        "request_end_monotonic_ns": 831597389040314
-      },
-      "eligible": true,
-      "agreement_eligible": true,
-      "speed_eligible": true,
-      "speed_ineligible_reasons": [],
-      "ineligible_reasons": [],
-      "acceptance_rate": 0.8502824858757062,
-      "usage_generated_tokens": 2932,
-      "completion_includes_thinking": true,
-      "run": 0,
-      "order": 0,
-      "output_sha256": "99ceca676fbc02b8d8ba5ba58310339f19d54d2898d5c3ed477eda65220515bf",
-      "reasoning_sha256": "7df79ac0fb64f6d2b6d2edf98360389f0735362ba19ac4a2611402cb2ef77831",
-      "output_chars": 5578,
-      "reasoning_chars": 2677,
-      "reasoning_tokens": null,
-      "workload": "regular-code",
-      "controller_eligible": true
-    }
-  ],
-  "warmups": {
-    "successful_warmups": 4,
-    "successful_long_requests": 1,
-    "phase_order": [
-      "warm-up/chat",
-      "calibration",
-      "calibration",
-      "warm-up/prompt",
-      "long-generation/regular-code"
-    ],
-    "request_sha256": [
-      "6976dd85c26437117139f185ce0ac4da0ab9d1d4eb576dd2f9e252ae99d63f03",
-      "48af7fbebcd5728e30cb2d9a1077477a8bba53ac3af17ee75e8450380ed2e346",
-      "3f92f8a68c7c71cec1f50355d30fb97744f44099673e8de1dabd46d12a61d7b6",
-      "f0d7df4ffaaf67dbf3ae26f8d77f0811d2bed00bbd2ed92912fd9d0649347eae",
-      "424eb61e3b88f19275143af9fa65f3fe2aac566d32c6d6407120ca10cf0654b9"
-    ],
-    "journal_sha256": "0576098f9bb912cf6cbc1cdd797062b26fd4e972c10a59ea239da04656238b45",
-    "journal_state_sha256": "1bfd97026e929868fe550b42e0a7cd44bbef1ebcf454130bbb560422a22a59ea"
-  },
-  "route_evidence": {
-    "actual_mode": 10,
-    "gpu_residual_rows": 33210,
-    "expert_cache_slots": 1280,
-    "scratch": "checked-borrowed",
-    "cache_hits": 162365,
-    "cache_lookups": 1586400,
-    "rounded_hit_percent": 10.2,
-    "cpu_unique_miss_jobs": 1120890,
-    "cpu_entries": 1424035,
-    "limits": "Runtime mode10/residual/placement logs plus unchanged checked entry gates and complete generation. Clean runs omit per-FFN/readback audits; full audit was qualified separately. Logical counts are not physical traffic."
-  },
-  "native_identity": {
-    "pid": 2824647,
-    "start_ticks": 83122528,
-    "sid": 2824625
-  },
-  "observer_records_absent": true,
-  "ownership_closed": true,
-  "fresh_faults": [],
-  "boot_unchanged": true,
-  "driver_after": {
-    "pci": "/sys/bus/pci/devices/0000:05:00.0",
-    "driver": "xe",
-    "vendor": "0x8086",
-    "device": "0xe20c",
-    "kernel": "7.0.0-38-generic",
-    "devcoredump": false
   }
 }
