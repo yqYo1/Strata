@@ -21,6 +21,7 @@ import sys
 sys.dont_write_bytecode=True
 import cache_long as admission
 import resource_engine as resources
+import ur_validation as validation
 
 from measurement_guards import require
 
@@ -160,6 +161,28 @@ def reviewed():
     return {k:row[k] for k in ('source_commit','frozen_inputs','report_sha256','native_review_sha256')}
 
 
+def validation_probe(old):
+    row=gen.committed(validation.INDEX)['UR_silent_validation_native_child_scope']['native_help_result']
+    probe=validation.preload_qualification()
+    require(row['passed'] and row['ownership_closed'] and row['fresh_faults']==[] and
+        row['binary']==old['binary'] and row['build_source_commit']==old['build_source_commit'] and
+        row['args']==['--help'] and row['native_validation_probe']==probe and
+        row['preload_evidence']['pid']==row['native_identity']['pid'] and
+        row['preload_evidence']['first_init'] is True,'qualified retained-child activation probe required')
+    return probe
+
+
+def activation(log,pid,probe):
+    if probe is None:
+        require('strata UR validation' not in log,'clean process emitted validation-probe records')
+        return None
+    proof=validation.preload_evidence(log,pid)
+    model=re.search(r'^strata generate: [^\n]+',log,re.M)
+    require(proof['loader']==probe['loader']['path'] and model is not None and
+        log.index('phase=before-main')<model.start(),'same-child activation must precede model work')
+    return proof
+
+
 def official(root,result,count):
     require(result['params']['mode'] == 'prefill-only' and result['params']['runs'] == count and
         result['params']['think'] is True and result['params']['prefill_tokens'] == 98304 and
@@ -207,7 +230,9 @@ def official(root,result,count):
         journal_sha256=gen.common.digest(path),state_sha256=gen.common.digest(path.with_name('journal-state.json')))
 
 
-def native_evidence(log,samples,arm,check,loan):
+def native_evidence(log,samples,arm,check,loan,pid,probe):
+    require(check == (probe is not None),'checked/clean probe route differs')
+    layer=activation(log,pid,probe)
     headers=admission.cap.matches(r'strata serve: prompt (\d+) tokens = (\d+) reused \+ (\d+) read[^\n]*, (\d+) generated[^\n]*',log,len(samples)+1)
     require(0<int(headers[0][1])<32768 and int(headers[0][2]) == 0 and
         int(headers[0][1]) == int(headers[0][3]) and 1<=int(headers[0][4])<=24, 'native warmup differs')
@@ -231,7 +256,8 @@ def native_evidence(log,samples,arm,check,loan):
         require(not any(x in log for x in ('strata trace:','strata prefill dense:','strata loan audit:',
             'strata MoE mixed owners:','SYCL_EVENT_QUERY','strata decode cpu:','strata decode timing:')), 'clean run emitted observer records')
     return dict(actual_route_checked=True,**placement,residual_gpu_rows=117488,
-        mode=10,windows_per_layer=[list(w) for w in admission.WINDOWS],checked_direct_owner_retirements=96 if check else None)
+        mode=10,windows_per_layer=[list(w) for w in admission.WINDOWS],checked_direct_owner_retirements=96 if check else None,
+        validation_activation=layer)
 
 
 def prepare(stage,cohort):
@@ -263,7 +289,8 @@ def prepare(stage,cohort):
     config.update(log=str(root/'engine.stderr'),env={})
     env={k:v.replace(original['root'],str(root)) for k,v in original['environment'].items()
         if k != 'STRATA_TRACE' and k != 'UR_ENABLE_LAYERS' and not k.startswith('UR_LOG_')}
-    env.update(STRATA_SYCL_CACHE_SCRATCH_LEASE=str(arm),STRATA_SYCL_CACHE_LOAN_AUDIT='0')
+    env.update(STRATA_SYCL_CACHE_SCRATCH_LEASE=str(arm),STRATA_SYCL_CACHE_LOAN_AUDIT='0',CUDA_MODULE_LOADING='EAGER')
+    require('LD_PRELOAD' not in env,'probe must be injected only into final native child')
     for k in ('UR_L0_V2_FORCE_DISABLE_COPY_OFFLOAD','NEOReadDebugKeys','EnableDirectSubmission','STRATA_SYCL_PREFILL_SAME_QUEUE'):
         require(env[k] == settings['environment'][k], 'qualified safety setting changed')
     if check:
@@ -295,6 +322,7 @@ def prepare(stage,cohort):
         machine_identity=machine,source_count=len(pins),benchmark_fingerprint=assets.fingerprint(pins),
         complete=False,passed=False,active=False,adoption_qualified=False,
         budgets=dict(wall=2400,cpu=54000,rss_cap=96<<30,text_cap=64<<20,file_cap=64<<20,total_cap=64<<20))
+    if check: record['native_validation_probe']=validation_probe(old)
     gen.runtime_assets_unchanged(record)
     (root/'plan.json').write_text(json.dumps(record,indent=2)+'\n'); RESULT.write_text(json.dumps(record,indent=2)+'\n')
     print('Prepared '+stage+'; commit exact plan before run.')
@@ -309,6 +337,8 @@ def run():
         admitted_loan() == record['admitted_long_loan'] and
         record['binary'] == (old['binary'] if not record['arm'] else current['binary']) and
         gen.common.digest(admission.RESULT) == record['capacity_result_sha256'], 'build/admission changed')
+    require(record.get('native_validation_probe')==(validation_probe(old) if record['stage']=='check' else None),
+        'native validation probe changed')
     pins=gen.benchmark_pins(record['source_commit'])
     require(len(pins) == record['source_count'] and assets.fingerprint(pins) == record['benchmark_fingerprint'], 'benchmark source changed')
     for path,expected in [(gen.SETTINGS,record['settings_sha256']),(root/'config.json',record['config_sha256']),
@@ -335,9 +365,11 @@ def run():
         record.update(requests=samples,request_journal=journal)
         native=json.loads((root/'engine-exit.json').read_text())
         require(native['exit_code'] == 0 and native['boot_id'] == boot and native['binary'] == record['binary'] and
-            native['args'] == ['--serve',*record['config']['args']] and 'resource_collector' not in native, 'native launch/closure differs')
+            native['args'] == ['--serve',*record['config']['args']] and 'resource_collector' not in native and
+            native.get('native_validation_probe')==record.get('native_validation_probe'), 'native launch/closure differs')
         log=(root/'engine.stderr').read_text(errors='replace'); assets.verify_pool(log,5)
-        record['route_evidence']=native_evidence(log,samples,record['arm'],check,record['admitted_long_loan'])
+        record['route_evidence']=native_evidence(log,samples,record['arm'],check,record['admitted_long_loan'],
+            native['native']['pid'],record.get('native_validation_probe'))
         _,_,after_proof,_=qualification()
         require(after_proof == proof and gen.benchmark_pins(record['source_commit']) == pins and
             assets.machine_identity() == record['machine_identity'], 'source/platform changed during run')

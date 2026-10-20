@@ -128,6 +128,24 @@ class Placement(unittest.TestCase):
             with self.subTest(loan=loan,text=text),self.assertRaises(RuntimeError): c.cache_placement(text,1,loan)
 
 
+class Activation(unittest.TestCase):
+    begin='strata UR validation: pid=17 phase=begin loader=/pinned/loader\n'
+    proof='strata UR validation: pid=17 phase=before-main threads_before=1 preinit=37 config_create=0 layers_query=0 enable=0 init=0 config_release=0 checked=46 untouched=1 retained_ref=1\n'
+    model='strata generate: model-start fixture\n'
+    probe=dict(loader=dict(path='/pinned/loader'))
+
+    def test_same_native_child_before_model_and_clean_absence(self):
+        self.assertTrue(c.activation(self.begin+self.proof+self.model,17,self.probe)['first_init'])
+        self.assertIsNone(c.activation(self.model,17,None))
+
+    def test_reject_late_mixed_or_unexpected_proof(self):
+        for text,pid,probe in ((self.begin+self.proof+self.model,18,self.probe),
+            (self.model+self.begin+self.proof,17,self.probe),
+            (self.begin+self.proof+self.model,17,None),
+            (self.begin+self.proof+self.model,17,dict(loader=dict(path='/another-loader')))):
+            with self.subTest(pid=pid,probe=probe),self.assertRaises(RuntimeError):c.activation(text,pid,probe)
+
+
 class TerminalReceipt(unittest.TestCase):
     def check(self,root,probe,*,boot='same',persist_error=False):
         record=dict(complete=True,passed=True,stage='check',active=False,
