@@ -5297,7 +5297,7 @@
       "qualified_helper_fixtures_retained": 2
     },
     "resource_attribution_diagnostic": {
-      "state": "source_committed_preparation_guard_corrected_before_any_native_launch",
+      "state": "prepared_plan_pending_commit_and_one_native_launch",
       "controller": "tools/sycl/prefill_resources.py",
       "tests": "tools/test_sycl_prefill_resources.py",
       "engine_source_commit": "bb71e78db7b6a4930945a2d564ec6cd42d0ad245",
@@ -5322,7 +5322,12 @@
         "report_produced": false,
         "source_review_performed": false
       },
-      "next_action": "Complete Main source review and six offline controller regressions; commit generated117K attribution plan before the single native launch. External audit did not run and supplies no qualification."
+      "next_action": "Commit exact generated plan, then execute one owned117K parameter-validated resource diagnostic. Preserve any failed gates and distinguish observer timing from clean speed.",
+      "controller_source_commit": "e45e97367994e931be1d9e7b1f570a769c4151e0",
+      "offline_tests_passed": 6,
+      "external_audit_qualified": false,
+      "main_source_review_complete": true,
+      "model_assets_fully_hashed_before_prepare": 15
     }
   },
   "UR_validation_activation_evidence_scope": {
