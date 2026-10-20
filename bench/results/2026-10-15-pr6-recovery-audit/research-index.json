@@ -4792,5 +4792,38 @@
     },
     "next_review": "Review the actual32K+ long-generation capacity result; commission a new source audit only for a concrete changed mechanism.",
     "raw_payloads_retired": true
+  },
+  "cache_loan_long_context_capacity_scope": {
+    "classification": "decision support",
+    "question": "Audit actual checked1280-slot long-input capacity and official warmup/failure paths before first32K+ long-generation model check.",
+    "source_commit": "ffa3dc37cbb2e4ea9b2628962c1c940f798b9850",
+    "frozen_inputs": {
+      "src/program/generate.cpp": "95637fc1d6f4e8546345ab0f369dbd381ef7e72a2bf926a5c74b57f87b990b1b",
+      "src/prefill/layer_major.inc": "16303c6e0f5be1b5cbf40beeb4e3ac82de12caea397f25106cd5f66357484d2b",
+      "src/prefill/moe_window.inc": "5feba6a7d26729df806929ebc376ae48bd2b856f6ddfe29913bb672e7e598928",
+      "src/prefill/prefill.cpp": "fce308b92d5e972eccd7ba363a965dc868b0c64ad564182c8d8ed4c6d4a2e707",
+      "src/core/expert_cache.cpp": "fb7418457aeb1ea6416918a14fa734a301e1fe0d39d8fe7cbcb5633040434a46",
+      "src/core/session.cpp": "4c1aa246e568f96b40b9f9e16000e1f1dc6d75c99168cb26baef56a43b4e4bce",
+      "src/core/verify.cpp": "bcaa44dea05e089bbccea8465ab9e8fb908d79a604f2c53ed5869591486fafbd",
+      "src/core/native_dense.cpp": "4424972f8bd8c1f0e71ea360140a6cd3c56ed6a5533d1354bdbcdbc13d387d42",
+      "include/strata/core/native_dense_bank_policy.hpp": "c3e37260e0cc60bcacb65ec31e3aea08c285debd23fe9239b36fc8af542cb40f",
+      "include/strata/prefill/expert_bank_plan.hpp": "1c3b9157f64c4e1c3aede95017ba17ad3c10d433946b5efa25d0c073c5f8c3a9",
+      "include/strata/prefill/layer_major_plan.hpp": "67bc25500ae777bfb387944a2415325868602b9da82aa945464b64b0a2b8b9fd",
+      "include/strata/prefill/moe_accum_plan.hpp": "1fa1618eaf96a6ec50bc948f7c6750fc33f463c702cfbf36cd57e928597ca1aa",
+      "include/strata/prefill/scratch_allocation.hpp": "b7001b50bbf9576f750133047762f0dcf6a28c8b601a472a4503c3f2bf9290bd",
+      "include/strata/core/cache_scratch_lease.hpp": "71e0c67d49cacb055b51e54db34afe8d0533029413a72303bbec4ad0de92e494"
+    },
+    "schedulable_now": true,
+    "prerequisites": [
+      {
+        "met": true,
+        "evidence": "Bounded actual v3 passed at3be1371a2, all48 FFNs and two exact refill/decode cycles; original native inputs remain unchanged atffa3dc37c."
+      }
+    ],
+    "status": "eligible_pending_dispatch",
+    "report": "/home/yayoi/orca/workspaces/Strata/sycl/.cache/strata-research/20261020/cache-loan-long-context-capacity-report.md",
+    "report_budget_bytes": 12288,
+    "consumer": "Main first official32K+ capacity admission; compare with owned128-slot baseline.",
+    "next_review": "After bounded report and native Luna-max curation; no steering or new GPU work by worker."
   }
 }
