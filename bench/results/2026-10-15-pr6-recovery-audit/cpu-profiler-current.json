@@ -1,6 +1,6 @@
 {
   "schema": "strata-profiler-capability-v2",
-  "stage": "prepared",
+  "stage": "closed",
   "source_commit": "430aa601fb0353635bfb25bb9e7c08ba233b456f",
   "previous": {
     "commit": "430aa601fb0353635bfb25bb9e7c08ba233b456f",
@@ -139,6 +139,49 @@
   "GPU_collector_launch_probe_accepted": false,
   "passed_meaning": "CPU sampling qualification plus GPU collector-launch acceptance; never GPU hardware-metric or model qualification.",
   "active": false,
-  "complete": false,
-  "passed": false
+  "complete": true,
+  "passed": false,
+  "driver_before": {
+    "pci": "/sys/bus/pci/devices/0000:05:00.0",
+    "driver": "xe",
+    "vendor": "0x8086",
+    "device": "0xe20c",
+    "kernel": "7.0.0-38-generic",
+    "devcoredump": false
+  },
+  "permissions": {
+    "kernel/yama/ptrace_scope": "1",
+    "kernel/perf_event_paranoid": "4",
+    "dev/xe/observation_paranoid": "1"
+  },
+  "observations": {
+    "cpu_collect": {
+      "exit_code": 1,
+      "ownership_closed": true,
+      "diagnostics": [
+        "vtune: Error: Cannot start data collection because the scope of ptrace system call is limited. To enable profiling, please set /proc/sys/kernel/yama/ptrace_scope to 0. To make this change permanent, set kernel.yama.ptrace_scope to 0 in /etc/sysctl.d/10-ptrace.conf and reboot the machine."
+      ]
+    },
+    "gpu_launch_probe": {
+      "exit_code": 1,
+      "ownership_closed": true,
+      "diagnostics": [
+        "vtune: Error: This analysis type is not applicable to the system because VTune Profiler cannot recognize the processor. If this is an old Intel processor, please refer to the minimum hardware requirements in the release note. If this is a new Intel processor, please check for an updated version of VTune Profiler. If this is an unreleased Intel processor, please contact Online Service Center for an NDA product package.",
+        "vtune: Error: This analysis type is not applicable to the current machine microarchitecture."
+      ]
+    }
+  },
+  "execution_passed": true,
+  "ownership_closed": true,
+  "fresh_faults": [],
+  "boot_unchanged": true,
+  "driver_after": {
+    "pci": "/sys/bus/pci/devices/0000:05:00.0",
+    "driver": "xe",
+    "vendor": "0x8086",
+    "device": "0xe20c",
+    "kernel": "7.0.0-38-generic",
+    "devcoredump": false
+  },
+  "decision": "VTune2026.6 build633341 still refuses CPU sampling under ptrace_scope1 and GPU-hotspots on this Ryzen host. Both probes closed normally; no model or target GPU work and no fresh fault. Keep original2026.4/perf refusals via pinned previous refs. Next qualify PTI View/non-counter production activity recording without permission changes."
 }

@@ -2810,6 +2810,21 @@ driver-setting change belongs to this capability step. Independent read-only
 research audits the installed PTI View contract and actual production command-
 profile coverage while Main performs the serialized checks.
 
+Both VTune2026.6 probes then close normally but fail their capability gates:
+CPU collection exits1 under ptrace_scope1; GPU-hotspots exits1 because this
+Ryzen microarchitecture is unsupported. No model/target GPU work, permission
+change or fresh fault is observed. Matching PTI source is now recovered from
+official commit`fdc44f65ccfc4c75f951a8f01b1ef9326223aaaf`; five public headers
+match the installed1.2 bytes. Its`xpti_adapter.cc` initializer writes XPTI and
+UR environment variables when no foreign subscriber is detected, including
+replacing`UR_ENABLE_LAYERS` with tracing alone. The ITT initializer can also
+write`INTEL_LIBITTNOTIFY64`. This source finding is not a measured loader result:
+Main has not loaded PTI into the model. Do not add a late PTI dlopen that changes
+the qualified environment. The next bounded candidate is the official Unitrace
+Level-Zero collector, with unrelated integrations disabled, all configuration
+fixed before target exec and the validation preload retained. Audit its launcher,
+collector and temporal-control behavior before any GPU qualification.
+
 For the separate earlier early-PCIe candidate, only a later qualified mechanism permits a
 fresh complete51+6-case plan. Preserve all pending-completion,
 untouched-output, payload/guard and owner-lifetime requirements under that plan.

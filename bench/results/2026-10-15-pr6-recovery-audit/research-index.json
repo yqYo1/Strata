@@ -5799,27 +5799,56 @@
     "active_wave": [
       {
         "scope": "pti12-production-trace-contract",
-        "schedulable_now": true,
+        "schedulable_now": false,
         "prerequisite": "Installed PTI1.2.0 headers commitfdc44f65ccfc4c75f951a8f01b1ef9326223aaaf and libpti_view.so.1.2.0 SHAe97002ae60484ca7a126833852e63d56c91f3b151c2a8b39c6b448f4cf93f6c9 found. Need non-counter device/kernel/copy timeline covering unchanged production runtime, independently of VTune availability.",
         "question": "Compare PTI1.2 View buffered GPU kernel/copy/fill and host API/sync tracing for this pinned LevelZero-v2/SYCL stack: initialization, immutable environment, timestamp/correlation semantics, multi-queue/graph coverage, callback ownership/flush/teardown, fixed memory/output bounds and interference with validation/preload safety. Distinguish actual installed API from newer docs and hardware-counter privileges. Recommend smallest bounded qualification and reject misleading attribution.",
         "report": ".cache/strata-research/20261020/pti12-production-trace-contract.json",
         "report_budget_bytes": 18432,
         "classification": "decision_support",
-        "state": "planned",
-        "consumer": "Choose concrete non-counter production profiling implementation if new VTune capability refuses; retire after that source decision."
+        "state": "report_delivered_native_curated",
+        "consumer": "Choose concrete non-counter production profiling implementation if new VTune capability refuses; retire after that source decision.",
+        "report_sha256": "c8ed5e4154c988d59c18f1c8029686d3af5a74f4cb6f9d43962f0e36eaa6c4e8",
+        "report_bytes": 14440,
+        "task": "task_2ceb4824cf2b",
+        "dispatch": "ctx_e4c370bd0e53",
+        "lifecycle": "Exact final assistant and providerDONE observed. Both report runtime_unavailable on final inbox/completion transport; no accepted worker_done. Explicitly fenced with no process action, then exact Main-created external terminal closed after matching incarnation. Report delivery is not orchestration success."
       },
       {
         "scope": "production-command-profile-coverage",
-        "schedulable_now": true,
+        "schedulable_now": false,
         "prerequisite": "Actual native3b build and9836 source inputs revalidated, v4 closed no gain. Existing Trace selects MoE first windows only and source rejects unexpected_stream_or_tag; direct enabling is not yet qualified.",
         "question": "Audit actual clean117K native16 BF16/vllm,layer-major,MoE-window10 SAME_QUEUE path against existing command_profile hooks. Map observed/unobserved kernels/copies, frame/layer/tag and capacity coverage, selected service vs total GPU/critical-path limits, timestamp invalidation, host submission and async retirement. Compare smallest safe production-service instrumentation extension versus PTI fallback; no code implementation or speed claims.",
         "report": ".cache/strata-research/20261020/production-command-profile-coverage.json",
         "report_budget_bytes": 18432,
         "classification": "decision_support",
-        "state": "planned",
-        "consumer": "Bound Main production timing patch/plan; retire source audit after that decision."
+        "state": "report_delivered_native_curated",
+        "consumer": "Bound Main production timing patch/plan; retire source audit after that decision.",
+        "report_sha256": "2c6dffa8fbd9170993b4c076a8d42aa97ef907107c912ab9bd83d395859de2c5",
+        "report_bytes": 12947,
+        "task": "task_2962bf2205fa",
+        "dispatch": "ctx_aee0b8b2f306",
+        "lifecycle": "Exact final assistant and providerDONE observed. Both report runtime_unavailable on final inbox/completion transport; no accepted worker_done. Explicitly fenced with no process action, then exact Main-created external terminal closed after matching incarnation. Report delivery is not orchestration success."
       }
     ],
-    "constraints": "Report-only Orca Luna high; no Git/build/test/GPU/profiler/process work, no XeStrata implementation derivation. Native Luna max reviews returned reports. Main continues serialized capability work; profile_attention.py may change outside frozen native audit scope."
+    "constraints": "Report-only Orca Luna high; no Git/build/test/GPU/profiler/process work, no XeStrata implementation derivation. Native Luna max reviews returned reports. Main continues serialized capability work; profile_attention.py may change outside frozen native audit scope.",
+    "curation": {
+      "path": ".cache/strata-research/20261020/production-profile-contracts-native-review.json",
+      "sha256": "bbd0bc1337a1a84399d2c911584320772b25f4a57b355330bf6e95ef84b9dd60",
+      "bytes": 8969,
+      "model": "native Codex gpt-6-luna max",
+      "main_read_full_reports": false,
+      "digest": "Header claims valid for installed1.2; callbacks/thread/loss/lifecycle/coverage still need bounded qualification. Source audit matches native3b except one-character SHA typo for expert_bank_upload.hpp; actual file matches commit. Existing sampled MoE timing does not cover fullprefill. No obvious host capability-helper blocker; actual VTune checks failed honestly.",
+      "retention": "Decision-support bodies consumed at PTI/native observer source choice; retire after that decision. No new engine generation or model qualification."
+    },
+    "next_action": "Implement/build the official Unitrace4b6d74294cdc72766c00a9211fe2e4261ee94244 non-counter LevelZero collector with XPTI/ITT/OpenCL/OMP/MPI/Perfetto off. Audit direct collector/pre-exec configuration versus launcher unconditional Sysman enabling, disable mutable-environment ITT/follow-child paths, and qualify original UR validation preload coexistence before any model run. No production observer yet qualified.",
+    "matching_pti_source": {
+      "root": "/home/yayoi/ghq/github.com/intel/pti-gpu",
+      "revision": "fdc44f65ccfc4c75f951a8f01b1ef9326223aaaf",
+      "origin": "https://github.com/intel/pti-gpu",
+      "license": "MIT",
+      "public_headers_matching_installed_bytes": 5,
+      "verification": "GitHub exact commit verified and fetched into the existing ghq clone; compare pti.h,pti_view.h,pti_callback.h,pti_driver_levelzero_api_ids.h,pti_runtime_sycl_api_ids.h with installed1.2. Default mirror remains clean master. Header/build-commit match does not establish independently reproduced SDK binary.",
+      "startup_constraint": "sdk/src/xpti_adapter.cc:GlobalSyclInitializer::Initialize overwrites XPTI settings and UR_ENABLE_LAYERS=UR_LAYER_TRACING when subscriber is absent or recognized as PTI. Pre-setting its own subscriber does not bypass this. sdk/src/itt/itt_lib_env.h may set INTEL_LIBITTNOTIFY64 when absent. libpti_view1.2 imports setenv. No SDK/model load tested; do not treat this as a GPU fault."
+    }
   }
 }
