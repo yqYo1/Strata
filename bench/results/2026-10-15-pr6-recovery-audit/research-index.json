@@ -5849,6 +5849,54 @@
       "public_headers_matching_installed_bytes": 5,
       "verification": "GitHub exact commit verified and fetched into the existing ghq clone; compare pti.h,pti_view.h,pti_callback.h,pti_driver_levelzero_api_ids.h,pti_runtime_sycl_api_ids.h with installed1.2. Default mirror remains clean master. Header/build-commit match does not establish independently reproduced SDK binary.",
       "startup_constraint": "sdk/src/xpti_adapter.cc:GlobalSyclInitializer::Initialize overwrites XPTI settings and UR_ENABLE_LAYERS=UR_LAYER_TRACING when subscriber is absent or recognized as PTI. Pre-setting its own subscriber does not bypass this. sdk/src/itt/itt_lib_env.h may set INTEL_LIBITTNOTIFY64 when absent. libpti_view1.2 imports setenv. No SDK/model load tested; do not treat this as a GPU fault."
-    }
+    },
+    "unitrace_candidate": {
+      "root": "/home/yayoi/ghq/github.com/intel/pti-gpu",
+      "revision": "4b6d74294cdc72766c00a9211fe2e4261ee94244",
+      "license": "MIT",
+      "build_flags": {
+        "BUILD_WITH_L0": "1",
+        "BUILD_WITH_XPTI": "0",
+        "BUILD_WITH_ITT": "0",
+        "BUILD_WITH_OPENCL": "0",
+        "BUILD_WITH_OMP": "0",
+        "BUILD_WITH_MPI": "0",
+        "BUILD_WITH_PERFETTO": "0"
+      },
+      "question": "Actual production kernel/copy service, host API submission/waits and dependencies on unchanged native3b; no hardware saturation or inference adoption claim.",
+      "launch_constraint": "unitrace.cc launcher unconditionally enables Sysman. Audit direct libunitrace_tool preload with all options fixed before native exec instead; retain exact UR validation preload and qualifiedZES_ENABLE_SYSMAN=0/copy-offload/direct-submission settings. Native tracer follow-child=0 mutates LD_PRELOAD after Create, so require UNITRACE_FollowChildProcess=1. ITT pause/resume/stop mutates PTI_ENABLE_COLLECTION: compile ITT off and use documented out-of-application session control, after source/coverage qualification.",
+      "headers": {
+        "level_zero": "v1.32.0; resolve exact commit before compile",
+        "compute_runtime": "050536ff3b6f830199ec99cff8ffcac3d804c40a",
+        "iga": "4ba3c2aaab4f189b143ef288bc3e75eb02ad6f82, only if CLI/control binary built"
+      },
+      "acquisition": "Use existing ghq clones for Intel PTI, Intel compute-runtime and oneapi-src/level-zero. Do not let upstream header-fetch scripts clone repositories inside disposable build output; prepare their exact files from pinned ghq history and commit hashes before compile.",
+      "next_bounded_step": "Commit build controller and complete source/generated-header/compiler/dependency/environment recipe before building. Independent source audit before any GPU execution. Then tiny known kernel/copy/fill/checked-drain and graph/queue coverage with tracing/validation, ownership/fault/clock/loss gates before32K+ model collection.",
+      "qualification": "NOT_BUILT_NOT_RUN"
+    },
+    "next_wave": [
+      {
+        "scope": "unitrace-l0-collector-contract",
+        "classification": "decision_support",
+        "schedulable_now": true,
+        "prerequisite": "Main selected official4b6d74294cdc72766c00a9211fe2e4261ee94244 standalone Unitrace, existing ghq worktree clean at that revision. Exact non-counter build flags and startup/control constraints recorded in unitrace_candidate; installed VTune2026.6 capability checks closed false. Native3b source unchanged.",
+        "question": "Audit non-counter LevelZero-only Unitrace collector lifecycle and actual source-supported direct pre-exec preload/session control. Check all target env mutations, validation preload/init order, metric/Sysman exclusions, follow-child and ITT paths, GPU event lifetime/completion/graphs/queue identities/error/fault handling, timing domains/record loss and memory/file bounds. Identify blockers and smallest bounded known-work and graph/correlation qualification before actual32K+ production request. No build/GPU/implementation or speed claim.",
+        "report": ".cache/strata-research/20261020/unitrace-l0-collector-contract.json",
+        "report_budget_bytes": 18432,
+        "state": "planned",
+        "consumer": "Before first Unittrace collector GPU smoke; Main source/build/qualification plan."
+      },
+      {
+        "scope": "gpu-trace-critical-path-methods",
+        "classification": "knowledge_collection",
+        "schedulable_now": true,
+        "prerequisite": "Concrete upcoming observer: official Unitrace4b6d L0 non-counter trace, fixed native3b one-model process on B570. Need methods to interpret temporal request-bounded multi-queue GPU/API records without treating service share as saturation. This methods comparison requires no existing local trace.",
+        "question": "Compare defensible critical-path/dependency and resource-demand analysis methods from GPU/HPC/non-LLM profiling papers and original official technical documentation. Address clock/correlation and missing-edge limits, interval unions versus sums, host submission/ready starvation versus completed polling, copies and compute overlap, trace clipping/censored work, perturbation and repeatability, and what additional resource ceilings/counters distinguish PCIe/VRAM/arithmetic bottlenecks. Map to planned Unitrace/SYCL records, derive useful bounds and reject misleading conclusions. Do not repeat generic batching/status-query surveys or claim Strata results.",
+        "report": ".cache/strata-research/20261020/gpu-trace-critical-path-methods.json",
+        "report_budget_bytes": 20480,
+        "state": "planned",
+        "consumer": "Retrieve only relevant method sections at first production trace interpretation; native Luna-max reviews scope/depth first, Main does not read body on arrival."
+      }
+    ]
   }
 }
