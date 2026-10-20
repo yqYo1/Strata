@@ -2261,6 +2261,18 @@ after adding the lease field without an explicit default member initializer.
 The failed receipt and closed ownership remain recorded. Set that field's
 default to`{}` and commit the source before a corrected build of the same
 prospective v7 gate; no test outcome or qualification is reused from this failure.
+The corrected source`0a385b388` built successfully (engine SHA256
+`60f09c471ff928c9e223bdf71ac249b96778ef233f0908fe0b39b618ab5e2434`).
+All154 v7 checks and11 offline tests passed. The provider's single summary
+marker represents17 cases, so the138 emitted case markers are not the case
+total. All owned processes closed, boot was unchanged and no fresh GPU fault
+occurred. Actual cache overwrite/same-slot refill/map restoration, moved and
+reopened tickets, the empty resident-tail capability and five pending-owner
+fail-stop paths passed. Keep the source-reviewed preflight and ownership step.
+Next connect the checked parent capability to all three existing mixed-scratch
+owner guards without changing the fast staged-bank path, then qualify the full
+generator/model cycle. These component results do not qualify model math,
+performance, task quality,physical262144/session/RESTORE or global graph execution.
 Only a later qualified mechanism permits a
 fresh complete51+6-case plan. Preserve all pending-completion,
 untouched-output, payload/guard and owner-lifetime requirements under that plan.
