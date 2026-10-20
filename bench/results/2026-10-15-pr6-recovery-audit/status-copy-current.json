@@ -1,9 +1,9 @@
 {
   "schema": "strata-status-copy-v1",
   "stage": "built",
-  "source_commit": "13c30d0c0d2b3323af15a443ef8a59326feef869",
+  "source_commit": "2f4e2523873b7eb01874989d5c742f1d4fe3f757",
   "source_count": 143,
-  "source_fingerprint": "ab16e94a73faddc3992687e063f2357c16ae8313744607b6e0563dc6b2b75561",
+  "source_fingerprint": "9b729acd367cafe84751a1f271e6ce0e939252e19ad76ab8a6ccb499640d8ab2",
   "native_source_commit": "3b4998f326101fa913788fd368e1674b111dea03",
   "native_inputs_recovered": 9836,
   "native_build_record_sha256": "76d9fa9e38c0c7e4ef2897f9ec731429db2a3d9d65c2412611c0c4ee1cf2a57f",
@@ -79,7 +79,8 @@
     "XDG_CACHE_HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/status-copy-component-v1/cache",
     "CUDA_MODULE_LOADING": "EAGER",
     "STRATA_SYCL_COMMAND_PROFILE": "0",
-    "LD_PRELOAD": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/ur-validation-preload-v2/libstrata_ur_validation.so"
+    "LD_PRELOAD": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/ur-validation-preload-v2/libstrata_ur_validation.so",
+    "STRATA_UR_PROBE_EXPECTED_LOADER": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_loader.so.0.12.0"
   },
   "validation_probe": {
     "library": {
@@ -138,5 +139,13 @@
     "bytes": 174904,
     "sha256": "5743921137c1ee8077d6a6294c081ec2a6986e3d77c4ef21e359094ca764ba20"
   },
-  "ownership_closed": true
+  "ownership_closed": true,
+  "original_built_plan": {
+    "commit": "2f4e2523873b7eb01874989d5c742f1d4fe3f757",
+    "path": "bench/results/2026-10-15-pr6-recovery-audit/status-copy-current.json",
+    "sha256": "4e5ae10e64a7a5bb465a812a87a4022c6dcfd3655f46f128eb17d91eae9ff9b7"
+  },
+  "compile_source_commit": "13c30d0c0d2b3323af15a443ef8a59326feef869",
+  "controller_only_amendment": "Before any native attempt: configure required loader-provider variable, enforce pre-exec configuration and emitted loader equality. All other benchmark/fixture inputs,9836 native inputs, compiler recipe and actual executable remain exact. Original compilation source/receipt preserved; no rebuild or retry.",
+  "original_compile_record_sha256": "369ec34f075c71679e43e548539a5e3bd9d92a254d8c7d08a9caedaae03a145e"
 }
