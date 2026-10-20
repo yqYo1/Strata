@@ -2878,6 +2878,11 @@ then reconcile actual production service/submission/dependencies. Small-fixture
 window success alone does not qualify a model trace or limiting hardware
 resource. Both model engines and clean speed samples are unchanged;
 physical262144/session/RESTORE, task quality and sustained decode remain pending.
+Consumed raw timelines, API/build logs and decision-support transactions are
+retired after original-source recovery and post-cleanup admission. Keep only
+the standalone window executable and compiler-input manifest for the imminent
+production control-path qualification, then retire them. The two consumed model
+generations and14 older provenance holds remain separate.
 
 The closed capability output and consumed decision-support report/transaction
 bodies are retired:43 external files/112835B, with a path/hash/reason manifest
