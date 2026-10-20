@@ -35,6 +35,13 @@ class AdmissionTest(unittest.TestCase):
         with self.assertRaises(RuntimeError):
             mtp.request_evidence(log(cells=72)+log(cells=74),[sample(),sample()])
 
+    def test_malformed_extra_records_cannot_hide_behind_conserved_cells(self):
+        for extra in ('strata draft kv: malformed\n',
+                      'strata draft kv: 1 cells from 73 (first needed 73), batch 64: drafter idle NaN ms, the batches 1.0 ms, all 1.0 ms\n'):
+            for text in (extra+log(),log()+extra):
+                with self.subTest(text=text),self.assertRaises(RuntimeError):
+                    mtp.request_evidence(text,[sample()])
+
     def test_only_arm_and_private_root_may_change(self):
         def plan(root,arm):
             return dict(root=root,config=dict(args=['--pack','/same','--expert-profile',root+'/expert-profile.bin']),

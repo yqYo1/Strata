@@ -43,9 +43,15 @@ def digest(path):
 def draft_rows(text):
     pattern = (r'strata draft kv: (\d+) cells from (\d+) \(first needed (\d+)\), batch (\d+): '
                r'drafter idle ([\d.]+) ms, the batches ([\d.]+) ms, all ([\d.]+) ms')
+    parsed = []
+    for line in text.splitlines():
+        if not line.startswith('strata draft kv'): continue
+        match = re.fullmatch(pattern, line)
+        guards.require(match is not None, 'malformed draft-KV record')
+        parsed.append(match.groups())
     return [dict(cells=int(n), position=int(pos), first_needed=int(first), batch=int(batch),
                  idle_ms=float(idle), batch_ms=float(batch_ms), all_ms=float(all_ms))
-            for n, pos, first, batch, idle, batch_ms, all_ms in re.findall(pattern, text)]
+            for n, pos, first, batch, idle, batch_ms, all_ms in parsed]
 
 
 def request_evidence(text, samples):
@@ -288,8 +294,9 @@ def run(cohort):
         try: record['summary'] = summarize(record['processes'])
         except Exception as error: record.update(passed=False, stage='failed', summary_error=repr(error))
     persist(); RESULT.write_text(json.dumps(container, ensure_ascii=False, indent=2)+'\n')
-    print(json.dumps(dict(cohort=cohort, arm=plan['arm'], passed=row['passed'], ownership_closed=row['ownership_closed'], error=row.get('error'))))
-    return 0 if row['passed'] else 1
+    print(json.dumps(dict(cohort=cohort, arm=plan['arm'], passed=record['passed'], process_passed=row['passed'],
+        ownership_closed=row['ownership_closed'], error=row.get('error', record.get('summary_error')))))
+    return 0 if record['passed'] else 1
 
 
 def main():
