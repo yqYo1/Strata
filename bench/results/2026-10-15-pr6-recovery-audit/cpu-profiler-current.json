@@ -3537,6 +3537,409 @@
         "path": "tools/unitrace/src/levelzero/ze_collector.h",
         "sha256": "a28f6564ac1318c73dc36d4ad31d1929516d0b6f2710bfb3ff5327f3da38e834"
       }
+    },
+    "detail": {
+      "source_commit": "79f9e821ce15ee708a88e9a3955be9bee3cda9df",
+      "native_executed": false,
+      "passed": true,
+      "api_empty_interval_leaders": [
+        {
+          "name": "zeModuleCreate",
+          "count": 26,
+          "api_union_us": 4041061.475830078,
+          "api_during_gpu_empty_us": 3977025.7705078125
+        },
+        {
+          "name": "zeCommandListAppendMemoryCopy",
+          "count": 21240,
+          "api_union_us": 8598741.073120117,
+          "api_during_gpu_empty_us": 534627.6336669922
+        },
+        {
+          "name": "zeContextMakeMemoryResident",
+          "count": 298,
+          "api_union_us": 401039.04833984375,
+          "api_during_gpu_empty_us": 401039.04833984375
+        },
+        {
+          "name": "zeCommandListHostSynchronize",
+          "count": 4659,
+          "api_union_us": 27017149.51965332,
+          "api_during_gpu_empty_us": 189374.3612060547
+        },
+        {
+          "name": "zeCommandListAppendLaunchKernelWithArguments",
+          "count": 145018,
+          "api_union_us": 2776555.5494384766,
+          "api_during_gpu_empty_us": 150769.19458007812
+        },
+        {
+          "name": "zeMemFreeExt",
+          "count": 299,
+          "api_union_us": 31530.283081054688,
+          "api_during_gpu_empty_us": 31530.283081054688
+        },
+        {
+          "name": "zeEventQueryKernelTimestamp",
+          "count": 3422,
+          "api_union_us": 16287.691772460938,
+          "api_during_gpu_empty_us": 16287.691772460938
+        },
+        {
+          "name": "zeCommandListAppendBarrier",
+          "count": 3427,
+          "api_union_us": 37977.76770019531,
+          "api_during_gpu_empty_us": 7765.30126953125
+        },
+        {
+          "name": "zeEventHostSynchronize",
+          "count": 9053,
+          "api_union_us": 47005.59411621094,
+          "api_during_gpu_empty_us": 6160.3753662109375
+        },
+        {
+          "name": "zeCommandListAppendLaunchKernel",
+          "count": 2392,
+          "api_union_us": 3642.2294921875,
+          "api_during_gpu_empty_us": 3642.2294921875
+        },
+        {
+          "name": "zeMemAllocDevice",
+          "count": 298,
+          "api_union_us": 3477.771240234375,
+          "api_during_gpu_empty_us": 3473.188232421875
+        },
+        {
+          "name": "zeKernelSuggestGroupSize",
+          "count": 96757,
+          "api_union_us": 31024.131958007812,
+          "api_during_gpu_empty_us": 2189.860595703125
+        }
+      ],
+      "largest_observed_gpu_empty_intervals": [
+        {
+          "begin_offset_us": 1513793.4479980469,
+          "duration_us": 3202144.4580078125,
+          "intersecting_apis": [
+            {
+              "name": "zeCommandListAppendMemoryCopy",
+              "overlap_us": 1136.027099609375
+            }
+          ]
+        },
+        {
+          "begin_offset_us": 8598351.387084961,
+          "duration_us": 3003179.0959472656,
+          "intersecting_apis": [
+            {
+              "name": "zeModuleCreate",
+              "overlap_us": 3002024.2600097656
+            },
+            {
+              "name": "zeCommandListAppendLaunchKernelWithArguments",
+              "overlap_us": 635.572021484375
+            },
+            {
+              "name": "zeKernelCreate",
+              "overlap_us": 9.218017578125
+            }
+          ]
+        },
+        {
+          "begin_offset_us": 4822890.783081055,
+          "duration_us": 1051273.1899414062,
+          "intersecting_apis": [
+            {
+              "name": "zeCommandListAppendMemoryCopy",
+              "overlap_us": 61.56494140625
+            }
+          ]
+        },
+        {
+          "begin_offset_us": 8141977.96105957,
+          "duration_us": 456212.9060058594,
+          "intersecting_apis": [
+            {
+              "name": "zeModuleCreate",
+              "overlap_us": 455424.0139160156
+            },
+            {
+              "name": "zeCommandListAppendLaunchKernelWithArguments",
+              "overlap_us": 473.3280029296875
+            },
+            {
+              "name": "zeKernelCreate",
+              "overlap_us": 5.5400390625
+            }
+          ]
+        },
+        {
+          "begin_offset_us": 5982026.946044922,
+          "duration_us": 385508.1999511719,
+          "intersecting_apis": [
+            {
+              "name": "zeCommandListAppendMemoryCopy",
+              "overlap_us": 49.383056640625
+            }
+          ]
+        },
+        {
+          "begin_offset_us": 74074.54907226562,
+          "duration_us": 384319.09997558594,
+          "intersecting_apis": [
+            {
+              "name": "zeContextMakeMemoryResident",
+              "overlap_us": 334571.40100097656
+            },
+            {
+              "name": "zeMemFreeExt",
+              "overlap_us": 29969.507080078125
+            },
+            {
+              "name": "zeCommandListHostSynchronize",
+              "overlap_us": 396.82275390625
+            }
+          ]
+        },
+        {
+          "begin_offset_us": 480438.39208984375,
+          "duration_us": 206480.4189453125,
+          "intersecting_apis": [
+            {
+              "name": "zeModuleCreate",
+              "overlap_us": 205869.93090820312
+            },
+            {
+              "name": "zeCommandListAppendLaunchKernelWithArguments",
+              "overlap_us": 300.1729736328125
+            },
+            {
+              "name": "zeKernelCreate",
+              "overlap_us": 6.501953125
+            }
+          ]
+        },
+        {
+          "begin_offset_us": 7825450.564086914,
+          "duration_us": 172252.0389404297,
+          "intersecting_apis": [
+            {
+              "name": "zeModuleCreate",
+              "overlap_us": 171737.3299560547
+            },
+            {
+              "name": "zeCommandListAppendLaunchKernelWithArguments",
+              "overlap_us": 47.0780029296875
+            },
+            {
+              "name": "zeKernelCreate",
+              "overlap_us": 5.7900390625
+            }
+          ]
+        }
+      ],
+      "exact_qsa_and_prompt_shapes": [
+        {
+          "name": "strata::kernels::prefix_batch_impl<33, false, false, true, true, true, true, false>(unsigned short const*, strata::kernels::QsaAttnPools const&, int const*, int const*, long, strata::kernels::QsaShapes const&, unsigned short*, long, strata::kernels::QsaPromptBf16Bounds const&, long, strata::kernels::QsaBf16PackedScratch const&, void*, strata::kernels::QsaPrefixStateProbe)::{lambda(sycl::_V1::handler&)#1}::operator()(sycl::_V1::handler&) const::{lambda(sycl::_V1::nd_item<1>)#1}[SIMD16 {16384; 1; 1} {128; 1; 1}]",
+          "count": 48,
+          "service_sum_us": 6800509.358,
+          "host_parents": {
+            "zeCommandListAppendLaunchKernelWithArguments": 48
+          },
+          "first_begin_offset_us": 11601530.483032227,
+          "last_end_offset_us": 51921839.692993164
+        },
+        {
+          "name": "strata::kernels::(anonymous namespace)::prompt_product<strata::kernels::(anonymous namespace)::SmallTraits<strata::kernels::(anonymous namespace)::Q80Block, 8> >(strata::kernels::NativeMmq, sycl::_V1::queue&)::{lambda(sycl::_V1::handler&)#1}::operator()(sycl::_V1::handler&) const::{lambda(sycl::_V1::nd_item<1>)#1}[SIMD32 {5734400; 1; 1} {128; 1; 1}]",
+          "count": 4,
+          "service_sum_us": 1953196.1439999999,
+          "host_parents": {
+            "zeCommandListAppendLaunchKernelWithArguments": 4
+          },
+          "first_begin_offset_us": 52793266.96899414,
+          "last_end_offset_us": 56726777.86804199
+        },
+        {
+          "name": "strata::kernels::prefix_batch_impl<33, false, false, true, true, true, true, false>(unsigned short const*, strata::kernels::QsaAttnPools const&, int const*, int const*, long, strata::kernels::QsaShapes const&, unsigned short*, long, strata::kernels::QsaPromptBf16Bounds const&, long, strata::kernels::QsaBf16PackedScratch const&, void*, strata::kernels::QsaPrefixStateProbe)::{lambda(sycl::_V1::handler&)#1}::operator()(sycl::_V1::handler&) const::{lambda(sycl::_V1::nd_item<1>)#1}[SIMD16 {12988; 1; 1} {128; 1; 1}]",
+          "count": 12,
+          "service_sum_us": 1469427.6009999998,
+          "host_parents": {
+            "zeCommandListAppendLaunchKernelWithArguments": 12
+          },
+          "first_begin_offset_us": 12434637.288085938,
+          "last_end_offset_us": 52106899.2310791
+        },
+        {
+          "name": "strata::kernels::(anonymous namespace)::prompt_product<strata::kernels::(anonymous namespace)::SmallTraits<strata::kernels::(anonymous namespace)::Q80Block, 8> >(strata::kernels::NativeMmq, sycl::_V1::queue&)::{lambda(sycl::_V1::handler&)#1}::operator()(sycl::_V1::handler&) const::{lambda(sycl::_V1::nd_item<1>)#1}[SIMD32 {4751360; 1; 1} {128; 1; 1}]",
+          "count": 3,
+          "service_sum_us": 1213327.082,
+          "host_parents": {
+            "zeCommandListAppendLaunchKernelWithArguments": 3
+          },
+          "first_begin_offset_us": 53402852.15307617,
+          "last_end_offset_us": 56108091.49499512
+        },
+        {
+          "name": "strata::kernels::(anonymous namespace)::prompt_product<strata::kernels::(anonymous namespace)::SmallTraits<strata::kernels::(anonymous namespace)::Q80Block, 8> >(strata::kernels::NativeMmq, sycl::_V1::queue&)::{lambda(sycl::_V1::handler&)#1}::operator()(sycl::_V1::handler&) const::{lambda(sycl::_V1::nd_item<1>)#1}[SIMD32 {1433600; 1; 1} {128; 1; 1}]",
+          "count": 4,
+          "service_sum_us": 254515.83099999998,
+          "host_parents": {
+            "zeCommandListAppendLaunchKernelWithArguments": 4
+          },
+          "first_begin_offset_us": 52716939.795043945,
+          "last_end_offset_us": 56225804.82507324
+        },
+        {
+          "name": "strata::kernels::(anonymous namespace)::prompt_product<strata::kernels::(anonymous namespace)::SmallTraits<strata::kernels::(anonymous namespace)::Q80Block, 8> >(strata::kernels::NativeMmq, sycl::_V1::queue&)::{lambda(sycl::_V1::handler&)#1}::operator()(sycl::_V1::handler&) const::{lambda(sycl::_V1::nd_item<1>)#1}[SIMD32 {2577920; 1; 1} {128; 1; 1}]",
+          "count": 1,
+          "service_sum_us": 209643.958,
+          "host_parents": {
+            "zeCommandListAppendLaunchKernelWithArguments": 1
+          },
+          "first_begin_offset_us": 56819919.244018555,
+          "last_end_offset_us": 57029563.20202637
+        },
+        {
+          "name": "strata::kernels::(anonymous namespace)::prompt_product<strata::kernels::(anonymous namespace)::SmallTraits<strata::kernels::(anonymous namespace)::Q80Block, 8> >(strata::kernels::NativeMmq, sycl::_V1::queue&)::{lambda(sycl::_V1::handler&)#1}::operator()(sycl::_V1::handler&) const::{lambda(sycl::_V1::nd_item<1>)#1}[SIMD32 {2255360; 1; 1} {128; 1; 1}]",
+          "count": 1,
+          "service_sum_us": 176707.916,
+          "host_parents": {
+            "zeCommandListAppendLaunchKernelWithArguments": 1
+          },
+          "first_begin_offset_us": 52510963.713012695,
+          "last_end_offset_us": 52687671.62902832
+        },
+        {
+          "name": "strata::kernels::(anonymous namespace)::prompt_product<strata::kernels::(anonymous namespace)::SmallTraits<strata::kernels::(anonymous namespace)::Q80Block, 8> >(strata::kernels::NativeMmq, sycl::_V1::queue&)::{lambda(sycl::_V1::handler&)#1}::operator()(sycl::_V1::handler&) const::{lambda(sycl::_V1::nd_item<1>)#1}[SIMD32 {1187840; 1; 1} {128; 1; 1}]",
+          "count": 3,
+          "service_sum_us": 141974.27,
+          "host_parents": {
+            "zeCommandListAppendLaunchKernelWithArguments": 3
+          },
+          "first_begin_offset_us": 53345004.82800293,
+          "last_end_offset_us": 55693124.185058594
+        },
+        {
+          "name": "strata::kernels::(anonymous namespace)::prompt_product<strata::kernels::(anonymous namespace)::SmallTraits<strata::kernels::(anonymous namespace)::Q80Block, 8> >(strata::kernels::NativeMmq, sycl::_V1::queue&)::{lambda(sycl::_V1::handler&)#1}::operator()(sycl::_V1::handler&) const::{lambda(sycl::_V1::nd_item<1>)#1}[SIMD32 {286720; 1; 1} {128; 1; 1}]",
+          "count": 8,
+          "service_sum_us": 100739.997,
+          "host_parents": {
+            "zeCommandListAppendLaunchKernelWithArguments": 8
+          },
+          "first_begin_offset_us": 53289887.23803711,
+          "last_end_offset_us": 56762961.432006836
+        },
+        {
+          "name": "strata::kernels::(anonymous namespace)::prompt_product<strata::kernels::(anonymous namespace)::SmallTraits<strata::kernels::(anonymous namespace)::Q80Block, 8> >(strata::kernels::NativeMmq, sycl::_V1::queue&)::{lambda(sycl::_V1::handler&)#1}::operator()(sycl::_V1::handler&) const::{lambda(sycl::_V1::nd_item<1>)#1}[SIMD32 {237568; 1; 1} {128; 1; 1}]",
+          "count": 6,
+          "service_sum_us": 56280.935999999994,
+          "host_parents": {
+            "zeCommandListAppendLaunchKernelWithArguments": 6
+          },
+          "first_begin_offset_us": 53814191.350097656,
+          "last_end_offset_us": 56135955.98400879
+        },
+        {
+          "name": "strata::kernels::(anonymous namespace)::prompt_product<strata::kernels::(anonymous namespace)::SmallTraits<strata::kernels::(anonymous namespace)::Q80Block, 8> >(strata::kernels::NativeMmq, sycl::_V1::queue&)::{lambda(sycl::_V1::handler&)#1}::operator()(sycl::_V1::handler&) const::{lambda(sycl::_V1::nd_item<1>)#1}[SIMD32 {645120; 1; 1} {128; 1; 1}]",
+          "count": 1,
+          "service_sum_us": 25666.354,
+          "host_parents": {
+            "zeCommandListAppendLaunchKernelWithArguments": 1
+          },
+          "first_begin_offset_us": 56788506.97399902,
+          "last_end_offset_us": 56814173.32800293
+        },
+        {
+          "name": "strata::kernels::(anonymous namespace)::prompt_product<strata::kernels::(anonymous namespace)::SmallTraits<strata::kernels::(anonymous namespace)::Q80Block, 8> >(strata::kernels::NativeMmq, sycl::_V1::queue&)::{lambda(sycl::_V1::handler&)#1}::operator()(sycl::_V1::handler&) const::{lambda(sycl::_V1::nd_item<1>)#1}[SIMD32 {565760; 1; 1} {128; 1; 1}]",
+          "count": 1,
+          "service_sum_us": 22453.333,
+          "host_parents": {
+            "zeCommandListAppendLaunchKernelWithArguments": 1
+          },
+          "first_begin_offset_us": 52483475.67907715,
+          "last_end_offset_us": 52505929.01208496
+        },
+        {
+          "name": "strata::kernels::(anonymous namespace)::prompt_product<strata::kernels::(anonymous namespace)::SmallTraits<strata::kernels::(anonymous namespace)::Q80Block, 8> >(strata::kernels::NativeMmq, sycl::_V1::queue&)::{lambda(sycl::_V1::handler&)#1}::operator()(sycl::_V1::handler&) const::{lambda(sycl::_V1::nd_item<1>)#1}[SIMD32 {129024; 1; 1} {128; 1; 1}]",
+          "count": 2,
+          "service_sum_us": 10169.479,
+          "host_parents": {
+            "zeCommandListAppendLaunchKernelWithArguments": 2
+          },
+          "first_begin_offset_us": 57033199.89001465,
+          "last_end_offset_us": 57044556.71899414
+        },
+        {
+          "name": "strata::kernels::(anonymous namespace)::prompt_product<strata::kernels::(anonymous namespace)::SmallTraits<strata::kernels::(anonymous namespace)::Q80Block, 8> >(strata::kernels::NativeMmq, sycl::_V1::queue&)::{lambda(sycl::_V1::handler&)#1}::operator()(sycl::_V1::handler&) const::{lambda(sycl::_V1::nd_item<1>)#1}[SIMD32 {113152; 1; 1} {128; 1; 1}]",
+          "count": 2,
+          "service_sum_us": 8900.207999999999,
+          "host_parents": {
+            "zeCommandListAppendLaunchKernelWithArguments": 2
+          },
+          "first_begin_offset_us": 52690991.317993164,
+          "last_end_offset_us": 52700932.96105957
+        },
+        {
+          "name": "strata::kernels::prefix_batch_impl<33, false, false, true, true, true, true, false>(unsigned short const*, strata::kernels::QsaAttnPools const&, int const*, int const*, long, strata::kernels::QsaShapes const&, unsigned short*, long, strata::kernels::QsaPromptBf16Bounds const&, long, strata::kernels::QsaBf16PackedScratch const&, void*, strata::kernels::QsaPrefixStateProbe)::{lambda(sycl::_V1::nd_item<1>)#1}[SIMD32 {78528; 1; 1} {64; 1; 1}]",
+          "count": 12,
+          "service_sum_us": 5334.0560000000005,
+          "host_parents": {
+            "zeCommandListAppendLaunchKernelWithArguments": 12
+          },
+          "first_begin_offset_us": 12434187.608032227,
+          "last_end_offset_us": 51986583.061035156
+        },
+        {
+          "name": "strata::kernels::prefix_batch_impl<33, false, false, true, true, true, true, false>(unsigned short const*, strata::kernels::QsaAttnPools const&, int const*, int const*, long, strata::kernels::QsaShapes const&, unsigned short*, long, strata::kernels::QsaPromptBf16Bounds const&, long, strata::kernels::QsaBf16PackedScratch const&, void*, strata::kernels::QsaPrefixStateProbe)::{lambda(sycl::_V1::nd_item<1>)#1}[SIMD32 {65536; 1; 1} {64; 1; 1}]",
+          "count": 12,
+          "service_sum_us": 4424.577,
+          "host_parents": {
+            "zeCommandListAppendLaunchKernelWithArguments": 12
+          },
+          "first_begin_offset_us": 12220960.231079102,
+          "last_end_offset_us": 51773131.463012695
+        },
+        {
+          "name": "strata::kernels::prefix_batch_impl<33, false, false, true, true, true, true, false>(unsigned short const*, strata::kernels::QsaAttnPools const&, int const*, int const*, long, strata::kernels::QsaShapes const&, unsigned short*, long, strata::kernels::QsaPromptBf16Bounds const&, long, strata::kernels::QsaBf16PackedScratch const&, void*, strata::kernels::QsaPrefixStateProbe)::{lambda(sycl::_V1::nd_item<1>)#1}[SIMD32 {49152; 1; 1} {64; 1; 1}]",
+          "count": 12,
+          "service_sum_us": 3330.412,
+          "host_parents": {
+            "zeCommandListAppendLaunchKernelWithArguments": 12
+          },
+          "first_begin_offset_us": 12007870.25805664,
+          "last_end_offset_us": 51557007.97399902
+        },
+        {
+          "name": "strata::kernels::prefix_batch_impl<33, false, false, true, true, true, true, false>(unsigned short const*, strata::kernels::QsaAttnPools const&, int const*, int const*, long, strata::kernels::QsaShapes const&, unsigned short*, long, strata::kernels::QsaPromptBf16Bounds const&, long, strata::kernels::QsaBf16PackedScratch const&, void*, strata::kernels::QsaPrefixStateProbe)::{lambda(sycl::_V1::nd_item<1>)#1}[SIMD32 {32768; 1; 1} {64; 1; 1}]",
+          "count": 12,
+          "service_sum_us": 2243.6409999999996,
+          "host_parents": {
+            "zeCommandListAppendLaunchKernelWithArguments": 12
+          },
+          "first_begin_offset_us": 11801442.358032227,
+          "last_end_offset_us": 51350298.61706543
+        },
+        {
+          "name": "strata::kernels::prefix_batch_impl<33, false, false, true, true, true, true, false>(unsigned short const*, strata::kernels::QsaAttnPools const&, int const*, int const*, long, strata::kernels::QsaShapes const&, unsigned short*, long, strata::kernels::QsaPromptBf16Bounds const&, long, strata::kernels::QsaBf16PackedScratch const&, void*, strata::kernels::QsaPrefixStateProbe)::{lambda(sycl::_V1::nd_item<1>)#1}[SIMD32 {16384; 1; 1} {64; 1; 1}]",
+          "count": 12,
+          "service_sum_us": 1229.371,
+          "host_parents": {
+            "zeCommandListAppendLaunchKernelWithArguments": 12
+          },
+          "first_begin_offset_us": 8598190.86706543,
+          "last_end_offset_us": 51168521.09106445
+        }
+      ],
+      "graph_append_linked_gpu_families": {
+        "unclassified_kernel": 2145,
+        "GDN_other": 44,
+        "fill": 96,
+        "MoE_other": 48,
+        "copy_D2D": 289,
+        "QSA_other": 48
+      },
+      "limits": "No native execution, timing comparison, hardware saturation, exact prefill-only boundary or full dependency/critical-path claim. Family names are source lookup groups. Requested copy bytes are not measured bus traffic. Host API wall time is not CPU time. Unions overlap across rows.",
+      "kernel_name_geometry": "First {x;y;z} is workgroup count; second is workgroup size. Product gives global work-items. SIMD is compiled kernel width."
     }
   }
 }

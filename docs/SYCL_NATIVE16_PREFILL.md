@@ -2887,15 +2887,35 @@ The266967750-byte timeline contains206882 GPU records, including172646 kernels,
 and493490 host API records. Every recorded GPU operation has a unique ID and
 native host source, the B570 PCI lane and containment within the controlled
 whole-request RAW interval with the declared1ms allowance. This passes the
-collection gate only. Complete production attribution remains unqualified:
-reconcile actual native route/prefill/restoration markers and journal binding,
-filter host events by native PID and request bounds, investigate loss/overflow
-limits and edge records, then map kernel/copy families to matched hardware
-references. The loader symbol-lookup diagnostic also needs source
-classification before treating the log as wholly understood. Service sums or
-GPU activity alone do not establish the limiting resource. Both model engines
-and clean speed samples are unchanged; physical262144/session/RESTORE, task
-quality and sustained decode remain pending.
+collection gate only. Closed-data analysis at`d4a993fb8` now binds the official
+journal/sample, verifies all48 BF16 GPU-residual layers/five chunks and ordered
+restoration, filters host events by native PID and request extent and finds no
+GPU event outside the exact controlled window. Every GPU record has a host API
+parent, but direct append counts differ because graph replay expands commands;
+complete capture/dependencies and hardware saturation remain unqualified.
+
+Before first stream output, the observed58.703s interval contains45.690s of
+GPU service, including8.126s of copies, with only12us of kernel/copy overlap.
+Observed GPU-empty time is13.013s. API wall intervals intersect5.332s of that
+empty time; follow-up`79f9e821c` attributes3.977s to`zeModuleCreate`, rather
+than proving CPU arithmetic or submission is the steady bottleneck. Kernel
+name geometry is workgroup count then group size, as official
+`ze_collector.h:GetZeKernelCommandName` shows. The first QSA source report's
+global-work-item interpretation is invalid. All120 prefix records reconcile
+as60 attention passes and60 preparation passes across five actual shapes.
+
+The same follow-up identifies36 exact Q80Block`prompt_product` records taking
+4.174s. The existing MTP`draft_kv` path uses these Q8_1-activation integer dot
+products; its opt-in`STRATA_MTP_BATCH_F16=1` instead dequantizes Q8_0 weights
+and uses FP16 GEMM. The next bounded candidate validates that existing route,
+gating the long request on a successful small batched draft-KV warmup and actual
+native environment. It changes MTP KV numerics, not the main verifier math.
+GEMM scratch precedes the separate temporary region; source bounds and same-queue
+drains must remain intact. No clean speed, quality, acceptance or adoption claim
+comes from this diagnostic. Collector loss limits, the loader symbol-lookup
+diagnostic and observer overhead remain separate. Both model engines and clean
+speed samples are unchanged; physical262144/session/RESTORE, task quality and
+sustained decode remain pending.
 Consumed raw timelines, API/build logs and decision-support transactions are
 retired after original-source recovery and post-cleanup admission. Keep only
 the standalone window executable and compiler-input manifest until the closed
