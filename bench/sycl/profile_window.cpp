@@ -6,11 +6,14 @@
 
 #include <chrono>
 #include <cerrno>
+#include <iomanip>
+#include <sstream>
 #include <poll.h>
 #include <time.h>
 #include <unistd.h>
 #include <level_zero/ze_api.h>
 #include <sycl/ext/oneapi/backend/level_zero.hpp>
+#include "strata/sycl/runtime.hpp"
 
 namespace {
 uint64_t raw_ns() {
@@ -67,7 +70,11 @@ int main(int argc,char** argv) {
             !properties.timestampValidBits || properties.timestampValidBits>64 ||
             !properties.kernelTimestampValidBits || properties.kernelTimestampValidBits>64)
             throw std::runtime_error("profile window timer properties");
-        std::cout << "profile_timer {\"frequency_hz\":" << properties.timerResolution
+        std::ostringstream uuid;
+        for (const auto byte:properties.uuid.id) uuid << std::hex << std::setfill('0') << std::setw(2) << unsigned(byte);
+        std::cout << "profile_timer {\"vendor_id\":" << properties.vendorId
+                  << ",\"device_id\":" << properties.deviceId << ",\"uuid\":\"" << uuid.str()
+                  << "\",\"frequency_hz\":" << properties.timerResolution
                   << ",\"timestamp_bits\":" << properties.timestampValidBits
                   << ",\"kernel_timestamp_bits\":" << properties.kernelTimestampValidBits << "}\n";
         clock_samples("ready",device);

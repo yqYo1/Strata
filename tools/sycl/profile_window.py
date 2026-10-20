@@ -20,7 +20,7 @@ import production_profile as production
 probe=production.probe
 tool=probe.tool
 P,B,RESULT=tool.P,tool.B,tool.RESULT
-ROOT=B/'unitrace-recording-window-v1'
+ROOT=B/'unitrace-recording-window-v2'
 SOURCE='bench/sycl/profile_window.cpp'
 
 
@@ -52,7 +52,14 @@ def compiler_manifest(compiler):
 
 def admission(record,container):
     tool.guards.require(inputs(record['source_commit'])==record['input_sha256'],'window source changed')
+    # pin_assets -> query_profile.current_build recovers and compares every
+    # original project/dependency input, including the included compat test,
+    # all three compiled runtime sources and their maintained project headers.
     tool.guards.require(probe.pin_assets(container)==record['assets'],'window runtime/native/tool assets changed')
+    project=json.loads((B/'main-native-gdn-engine/record.json').read_text())['project']
+    for name,expected in record['native_compile_inputs'].items():
+        tool.guards.require(project['source_sha256'][name]==expected and file_sha(P/name)==expected,
+                            'direct native compile input changed: '+name)
     path=ROOT/'compiler-inputs.json'
     tool.guards.require(file_sha(path)==record['compiler_inputs']['sha256'],'compiler manifest changed')
     rows=json.loads(path.read_text());tool.guards.require(len(rows)==record['compiler_inputs']['files'],'compiler input count changed')
@@ -65,13 +72,20 @@ def state(path,expected):
     tool.guards.require(len(raw)==1024 and struct.unpack_from('=i',raw)[0]==expected,'exact session state differs')
 
 
-def clock_evidence(stdout):
+def ended(entry):
+    return bool(entry and entry.get('direct_child_reaped') and entry.get('session_empty')
+        and entry.get('ownership_status')=='observed' and not entry.get('survivors'))
+
+
+def clock_evidence(stdout,driver):
     timers=[json.loads(line.removeprefix('profile_timer ')) for line in stdout.splitlines() if line.startswith('profile_timer ')]
     samples=[json.loads(line.removeprefix('profile_clock ')) for line in stdout.splitlines() if line.startswith('profile_clock ')]
     tool.guards.require(len(timers)==1 and len(samples)==8,'complete timer/clock samples required')
     timer=timers[0]
     tool.guards.require(timer['frequency_hz']>0 and all(0<timer[k]<=64 for k in ('timestamp_bits','kernel_timestamp_bits')),
                         'invalid timer properties')
+    tool.guards.require(timer['vendor_id']==int(driver['vendor'],16) and timer['device_id']==int(driver['device'],16)
+        and re.fullmatch(r'[0-9a-f]{32}',timer['uuid']) and timer['uuid']!='0'*32,'selected device identity differs')
     phases={}
     for phase in ('ready','drained'):
         rows=[s for s in samples if s['phase']==phase]
@@ -84,7 +98,7 @@ def clock_evidence(stdout):
         limits='Caller brackets bound the paired-host samples, not every collector conversion or graph edge. No sub-millisecond queue-delay or full critical-path accuracy claim.')
 
 
-def trace_evidence(root,expected,begin,end,pid):
+def trace_evidence(root,expected,begin,end,pid,driver):
     files=sorted((root/'trace').rglob('*.json'))
     tool.guards.require(len(files)<=1,'unexpected multiple trace files')
     events=[];identity=None
@@ -92,6 +106,16 @@ def trace_evidence(root,expected,begin,end,pid):
         raw=files[0].read_bytes();identity=dict(sha256=tool.sha(raw),bytes=len(raw))
         value=json.loads(raw);events=value['traceEvents'] if isinstance(value,dict) else value
     gpu=[e for e in events if e.get('ph')=='X' and e.get('cat')=='gpu_op']
+    pci=re.fullmatch(r'([0-9a-f]+):([0-9a-f]+):([0-9a-f]+)\.([0-9a-f]+)',Path(driver['pci']).name)
+    tool.guards.require(pci is not None,'invalid expected PCI identity')
+    address=tuple(int(x,16) for x in pci.groups())
+    device_names={e['pid']:e.get('args',{}).get('name','') for e in events if e.get('ph')=='M' and e.get('name')=='process_name'}
+    lanes={}
+    for gpu_pid in {e['pid'] for e in gpu}:
+        label=device_names.get(gpu_pid,'');match=re.search(r'\] ([0-9a-f]+):([0-9a-f]+):([0-9a-f]+):([0-9a-f]+) #\d+$',label)
+        tool.guards.require(label.startswith('DEVICE<') and match and tuple(int(x,16) for x in match.groups())==address,
+                            'device event lane differs from expected PCI target')
+        lanes[str(gpu_pid)]=label
     kernels=[e for e in gpu if 'main' in e.get('name','')]
     tool.guards.require(len(kernels)==expected,'recording state leaked or lost known kernels')
     actual=collections.Counter();sources=collections.Counter(str(e.get('id','')) for e in events
@@ -115,7 +139,7 @@ def trace_evidence(root,expected,begin,end,pid):
     tool.guards.require(dict(actual)==expected_inventory,'recorded work/bytes do not match controlled fixture')
     return dict(timeline=identity,program_kernels=len(kernels),device_inventory=dict(actual),
         gpu_union_us=production.union_us(gpu),program_kernel_union_us=production.union_us(kernels),
-        host_sources_complete=True,raw_window_contained=True)
+        device_lanes=lanes,host_sources_complete=True,raw_window_contained=True)
 
 
 def check(container,record):
@@ -186,28 +210,31 @@ def check(container,record):
                 inventory=production.ur_inventory((root/'ur.log').read_text())
                 expected=dict(kernel=606,copy=53,copy_bytes=55844,fill=1,fill_bytes=1028,barrier=20)
                 tool.guards.require(inventory['expanded']==expected and inventory['graph_replays']==0,'actual GPU command inventory differs')
-                observation.update(clock=clock_evidence(stdout),UR_sha256=file_sha(root/'ur.log'),
+                observation.update(clock=clock_evidence(stdout,record['driver_before']),UR_sha256=file_sha(root/'ur.log'),
                     executed_inventory=inventory['expanded'],coverage=trace_evidence(root,cell['expected_kernels'],
-                        observation['release_raw_ns'],observation['drained_raw_ns'],entry['pid']),execution_passed=True)
+                        observation['release_raw_ns'],observation['drained_raw_ns'],entry['pid'],record['driver_before']),execution_passed=True)
                 observation['passed']=True
             finally:
-                if entry and tool.supervision.closed(entry) and target_owner.active is None and control_owner.active is None:
-                    if session.exists():control('stop')
-                    observation['session_removed']=not session.exists()
-                else:observation['cleanup_pending']='Target/control closure unproven; leave exact session untouched.'
+                try:
+                    if ended(entry) and target_owner.active is None and control_owner.active is None and all(ended(e) for e in control_owner.commands):
+                        if session.exists():control('stop')
+                        observation['session_removed']=not session.exists()
+                    else:observation['cleanup_pending']='Target/control closure unproven; leave exact session untouched.'
+                except Exception as error:observation['cleanup_error']=repr(error)
                 observation.update(production.fault_evidence(cursor,boot));persist()
             tool.guards.require(observation['passed'] and observation['session_removed'] and observation['fresh_faults']==[]
-                and observation['boot_unchanged'],'window/session/fault gate failed; stop before next process')
+                and observation['boot_unchanged'] and observation['driver_after']==record['driver_before'],
+                'window/session/fault/driver gate failed; stop before next process')
         admission(record,container)
         record.update(stage='closed',passed=True,request_window_qualified=True)
     except BaseException as error:record.update(stage='failed',passed=False,error=repr(error))
     finally:
-        record['ownership_closed']=all(o.active is None and all(tool.supervision.closed(e) for e in o.commands)
+        record['ownership_closed']=all(o.active is None and all(ended(e) for e in o.commands)
             for o in (target_owner,control_owner))
         try:record.update(production.fault_evidence(cursor,boot))
         except Exception as error:record['final_probe_error']=repr(error)
         record['passed']=bool(record['passed'] and record['ownership_closed'] and record.get('fresh_faults')==[]
-            and record.get('boot_unchanged') and 'final_probe_error' not in record)
+            and record.get('boot_unchanged') and record.get('driver_after')==record['driver_before'] and 'final_probe_error' not in record)
         record['request_window_qualified']=record['passed']
         persist();container['unitrace_recording_window']=record
         RESULT.write_text(json.dumps(container,indent=2,ensure_ascii=False)+'\n')
@@ -220,7 +247,12 @@ def main(action):
         fcntl.flock(lock,fcntl.LOCK_EX|fcntl.LOCK_NB);tool.guards.no_model_owners([])
         container=json.loads(RESULT.read_text());record=container.get('unitrace_recording_window')
         if action=='prepare':
-            tool.guards.require(record is None and not ROOT.exists(),'inspect existing window; no blind retry')
+            tool.guards.require(record and record['stage']=='failed' and record['ownership_closed'] and not record['active']
+                and record['source_commit'].startswith('15ba9e825') and record['build_failure']['native_executed'] is False
+                and "no member named 'runtime_for'" in '\n'.join(record['build_failure']['error_lines']) and not ROOT.exists(),
+                'only the diagnosed closed missing-header build permits a fresh v2 plan')
+            original=RESULT.read_bytes()
+            tool.guards.require(original==tool.git(P,'show','HEAD:'+str(RESULT.relative_to(P))),'commit original failed build first')
             analysis=container['unitrace_coverage_analysis']
             tool.guards.require(analysis['analysis_passed'] and analysis['known_fixture_service_coverage_qualified']
                 and not analysis['native_executed'],'closed known-work service reconciliation required')
@@ -235,7 +267,11 @@ def main(action):
                 *[str(P/'src/sycl'/(name+'.cpp')) for name in ('runtime','compat','command_profile')],
                 '/usr/lib/x86_64-linux-gnu/libze_loader.so','-o',str(ROOT/'profile_window')]
             record=dict(schema='strata-profile-recording-window-v1',stage='prepared',source_commit=revision,input_sha256=pins,
+                previous_failed_build=dict(commit=revision,path=str(RESULT.relative_to(P)),sha256=tool.sha(original),
+                    outcome='Source15ba fixture compilation failed before any native/GPU execution: missing maintained runtime declaration. Original failure stays failed; this plan adds its header and prospective source/device/failure-closure checks.'),
                 assets=pinned,compiler=compiler,compiler_inputs=dict(path=str(manifest),files=len(rows),sha256=file_sha(manifest)),
+                native_compile_inputs={name:full['project']['source_sha256'][name] for name in ('tests/sycl/compat.cpp',
+                    'src/sycl/runtime.cpp','src/sycl/compat.cpp','src/sycl/command_profile.cpp','include/strata/sycl/runtime.hpp')},
                 command=command,build_environment=dict(full['environment'],TMPDIR=str(ROOT/'tmp'),XDG_CACHE_HOME=str(ROOT/'cache')),
                 gates='One new standalone fixture, not a model engine. Wrapper includes original maintained compat test and adds bounded stdin gates before/after its complete main body, plus LevelZero device timer properties and four paired-clock brackets at each boundary. Native get-properties/global-timestamps calls add no kernel/copy/fill work. Build exact committed recipe, then commit executable identity before preparing two fresh processes: paused-throughout then resume-after-ready/pause-after-drained. Both execute606 kernels/numerical guards; expected recorded kernels0/606. Separate owned CPU control commands mutate only the unique session shared memory; target environment remains immutable. All control/target processes, constructor proof and fault/boot checks must close; no model yet.',
                 retention='Current standalone recording-window qualification; retire executable and build outputs after the model control path is qualified, retaining recoverable source/recipe and compact control/coverage evidence.',
@@ -261,7 +297,7 @@ def main(action):
                     '--chrome-kernel-logging','--chrome-call-logging','--chrome-event-buffer-size','128',record['binary']['path'],'--submission']
                 cells.append(dict(name=name,expected_kernels=count,session=session,environment=env,command=command))
             record.update(stage='check-prepared',passed=False,check=dict(cells=cells,
-                gates='Two fixed fresh native processes execute unchanged606-kernel/53-copy/1-fill/20-barrier fixture and numerical guards. Paused-throughout records zero GPU work. Window resumes only at native READY, pauses only after native DRAINED, records exact inventory and requested bytes with positive main-kernel service. Every event must lie between release/drained raw clocks+/-1ms with unique ID/host source. Native and caller must share observed time namespace. Four paired-clock brackets before and after; all host samples inside native raw bracket and minimum width per phase<=100us; record frequency/valid bits and tick quantum. These bounds do not qualify sub-millisecond queue delays or graph critical paths. Stop exact sessions only after native/control closure. Fault, boot, constructor/retention and post-input checks required. Stop after first failure; no model execution.',
+                gates='Two fixed fresh native processes execute unchanged606-kernel/53-copy/1-fill/20-barrier fixture and numerical guards. Paused-throughout records zero GPU work. Window resumes only at native READY, pauses only after native DRAINED, records exact inventory and requested bytes with positive main-kernel service. Every event must lie between release/drained raw clocks+/-1ms with unique ID/host source and a metadata device lane matching expected PCI. Selected native device vendor/device IDs must match the driver guard, with nonzero UUID recorded; before/after driver identity must agree. Native and caller must share observed time namespace. Four paired-clock brackets before and after; all host samples inside native raw bracket and minimum width per phase<=100us; record frequency/valid bits and tick quantum. These bounds do not qualify sub-millisecond queue delays or graph critical paths. Stop exact sessions only after native/control closure, including failed execution; failure remains failed. Fault, boot, constructor/retention and post-input checks required. Stop after first failure; no model execution.',
                 wall_s_per_target=90,wall_s_per_control=15,raw_text_budget_bytes=64<<20,total_budget_bytes=128<<20))
             container['unitrace_recording_window']=record;RESULT.write_text(json.dumps(container,indent=2,ensure_ascii=False)+'\n')
             print('Prepared fixed paused/window GPU check; commit before run.');return 0
