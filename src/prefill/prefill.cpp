@@ -23,6 +23,7 @@
 #include "strata/kernels/qsa_prompt_attn.hpp"
 #include "strata/kernels/qsa_select.hpp"
 #include "strata/prefill/gemm.hpp"
+#include "strata/prefill/scratch_allocation.hpp"
 #include "strata/prefill/moe_fused.hpp"
 #include "strata/prefill/moe_fused_iq.hpp"
 #include "strata/prefill/moe_mmq.hpp"
@@ -224,18 +225,28 @@ struct Alloc {
     bool count_only = false;
     std::vector<void*>* owned = nullptr;
     template <typename T> T* take(size_t n, bool& ok) {
-        const uint64_t bytes = ((uint64_t) n * sizeof(T) + 256 + 255) & ~255ull;
-        if (count_only) { used += bytes; return nullptr; }
+        if (!ok) return nullptr;
+        detail::ScratchReservation reservation;
+        try {
+            reservation = detail::reserve_scratch(used, n, sizeof(T), base ? cap : UINT64_MAX);
+        } catch (const std::exception&) {
+            ok = false;
+            if (count_only) throw; // never return an undercounted layout
+            return nullptr;
+        }
+        const uint64_t bytes = reservation.bytes;
+        if (count_only) { used = reservation.next; return nullptr; }
         if (base != nullptr) {
-            if (used + bytes > cap) { ok = false; return nullptr; }
             T* p = (T*) (base + used);
-            used += bytes;
+            used = reservation.next;
             return p;
         }
+        if (!owned) { ok = false; return nullptr; }
         void* p = nullptr;
         if (cudaMalloc(&p, bytes) != cudaSuccess) { ok = false; return nullptr; }
-        owned->push_back(p);
-        used += bytes;
+        try { owned->push_back(p); }
+        catch (...) { (void) cudaFree(p); throw; }
+        used = reservation.next;
         return (T*) p;
     }
 };
@@ -520,6 +531,7 @@ struct Prefill::Impl {
     const int32_t* host_res = nullptr;
     int64_t T = 0, T_max = 0;
     bool borrowed = false;
+    detail::ScratchLayoutState scratch_layout;
     bool scratch_alias = false; // fixed at init, independent of request geometry
     cudaStream_t cs = nullptr, copy = nullptr;
     Gemm gemm;
@@ -881,12 +893,16 @@ int prefill_fallback_attn_layout() {
 bool Prefill::init(const core::WeightTable& wt, const core::ModelGeometry& g, core::SessionState& ss,
                    core::ExpertSource* src, const core::ExpertCache* cache, const int32_t* host_res, int64_t chunk,
                    void* stream, std::string& err, void* borrow, uint64_t borrow_bytes) {
+    Impl& m = *impl_;
+    detail::ScratchLayoutState::Update layout(m.scratch_layout, true);
+    if (!layout.started()) { err = "prefill: init requires reset scratch layout"; return false; }
+    try { (void) detail::scratch_rows(chunk, g.n_expert, ss.max_cells, K); }
+    catch (const std::exception& e) { err = e.what(); return false; }
     const int alias_mode = scratch_alias_mode();
     if (alias_mode < 0) {
         err = "prefill: STRATA_SYCL_PREFILL_SCRATCH_ALIAS requires exact 0 or SYCL-only 1";
         return false;
     }
-    Impl& m = *impl_;
     if (alias_mode && (core::peer_portable() || m.pp || stage_lb_ != 0 || next_ ||
                        (stage_le_ >= 0 && stage_le_ != g.n_layers))) {
         err = "prefill scratch alias: requires one GPU and the full unsplit model";
@@ -1014,6 +1030,7 @@ bool Prefill::init(const core::WeightTable& wt, const core::ModelGeometry& g, co
         err = "prefill: device buffers for a chunk of " + std::to_string(chunk) + " tokens do not fit";
         return false;
     }
+    layout.commit();
     return true;
 }
 
@@ -1026,6 +1043,7 @@ bool Prefill::carve(size_t T, void* alloc) {
     core::SessionState& ss = *m.ss;
     bool ok = true;
     const ScratchPrefix p = take_scratch_prefix(o, T, m.scratch_alias, ok);
+    if (!ok) return false; // no aliases or null-pointer arithmetic after a failed take
     m.emb = p.emb; m.R = p.R; m.xn = p.xn; m.grs = p.grs;
     m.xn16 = p.xn16; m.lo = p.lo; m.lo16 = p.lo16;
     m.gated = p.gated; m.inj = p.inj; m.mixed = p.mixed;
@@ -1055,6 +1073,7 @@ bool Prefill::carve(size_t T, void* alloc) {
         const uint64_t region = std::max({gdn_set_bytes(T), qsa_set_bytes(T, m.cap, m.max_blocks, m.sel_batch,
                                                                            m.attn_batch, s), moe_set_bytes(T, m.g->n_expert, fz)});
         uint8_t* base = o.take<uint8_t>((size_t) region, ok);
+        if (!ok || !base) return false; // never reinterpret a failed borrowed region as owned
         m.region = base;
         m.region_bytes = region;
         Alloc a;
@@ -1147,6 +1166,9 @@ bool Prefill::carve(size_t T, void* alloc) {
 
 bool Prefill::relayout(int64_t chunk, void* borrow, uint64_t borrow_bytes, std::string& err) {
     Impl& m = *impl_;
+    if (!m.scratch_layout.ready()) {
+        err = "prefill: scratch layout unavailable; reset and initialize again"; return false;
+    }
     if (m.scratch_alias && (core::peer_portable() || m.pp || stage_lb_ != 0 ||
                             stage_le_ != m.g->n_layers || next_ || hand_in_ || m.copy != m.cs)) {
         err = "prefill scratch alias: relayout requires the original unsplit topology"; return false;
@@ -1155,6 +1177,11 @@ bool Prefill::relayout(int64_t chunk, void* borrow, uint64_t borrow_bytes, std::
         err = "prefill: relayout needs borrowed buffers and a chunk of at most " + std::to_string(m.T_max);
         return false;
     }
+    // From the first retirement attempt through every take and GEMM rebind,
+    // failure/exception poisons the partially changed layout. Owners survive
+    // until checked retirement/reset; no later run may use its mixed fields.
+    detail::ScratchLayoutState::Update layout(m.scratch_layout, false);
+    if (!layout.started()) { err = "prefill: scratch layout generation unavailable"; return false; }
     if (cudaStreamSynchronize(m.cs) != cudaSuccess || cudaStreamSynchronize(m.copy) != cudaSuccess) {
         err = "prefill: relayout: the stream failed";
         return false;
@@ -1171,14 +1198,18 @@ bool Prefill::relayout(int64_t chunk, void* borrow, uint64_t borrow_bytes, std::
         err = "prefill: device buffers for a chunk of " + std::to_string(chunk) + " tokens do not fit";
         return false;
     }
+    layout.commit();
     return true;
 }
 
-int64_t Prefill::chunk() const { return impl_->T; }
+int64_t Prefill::chunk() const { return impl_->scratch_layout.ready() ? impl_->T : 0; }
 
 bool Prefill::draft_kv(core::MtpDrafter& mtp, const float* R_rows, const int32_t* next_tokens, int64_t n, int64_t cell0,
                        std::string& err) {
     Impl& m = *impl_;
+    if (!m.scratch_layout.ready()) {
+        err = "prefill: scratch layout unavailable; reset and initialize again"; return false;
+    }
     static const bool off = [] { const char* v = std::getenv("STRATA_MTP_BATCH"); return v != nullptr && v[0] == '0'; }();
     // A ring (KV streaming: the drafter's window, page p in slot p % n_slots over a host copy) takes the same appends
     // with its own page table and host copy, as a streamed main layer does; the cells written are those the window can
@@ -1462,6 +1493,7 @@ void Prefill::set_ring_override(int slots) { g_ring_override = slots > 0 ? slots
 double Prefill::pinned_share() { return g_pinned_share; }
 
 uint64_t Prefill::bytes_needed(const core::ModelGeometry& g, const core::SessionState& ss, int64_t chunk) {
+    (void) detail::scratch_rows(chunk, g.n_expert, ss.max_cells, K);
     const int alias_mode = scratch_alias_mode();
     if (alias_mode < 0)
         throw std::invalid_argument("prefill: STRATA_SYCL_PREFILL_SCRATCH_ALIAS requires exact 0 or SYCL-only 1");
@@ -1504,7 +1536,7 @@ uint64_t Prefill::bytes_needed(const core::ModelGeometry& g, const core::Session
     f((size_t) strata::kernels::NG_HC_DIM);
     strata::kernels::KvHostPools stage;
     take_stage(o, ss, s, stage, ok);
-    return o.used + (8u << 20);   // alignment slack
+    return detail::scratch_with_slack(o.used, 8u << 20);
 }
 
 namespace {
@@ -1790,6 +1822,9 @@ struct PeTimer {
 bool Prefill::run_impl(const int64_t* tokens, int64_t n, int64_t pos0, std::string& err) {
     err.clear();
     Impl& m = *impl_;
+    if (!m.scratch_layout.ready()) {
+        err = "prefill: scratch layout unavailable; reset and initialize again"; return false;
+    }
     if (m.scratch_alias && (core::peer_portable() || m.pp ||
                             (!m.layer_major_active && (stage_lb_ != 0 || stage_le_ != m.g->n_layers)) ||
                             next_ || hand_in_ || m.copy != m.cs)) {

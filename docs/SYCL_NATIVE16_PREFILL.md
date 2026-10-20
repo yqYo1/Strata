@@ -2123,6 +2123,18 @@ the parent unavailable. Registered USM containment alone does not authorize
 a loan. Preserve the owned fast path and staged-bank rules, and qualify host,
 device, error and relayout behavior before another borrower model check. These
 are source findings, not an observed GPU fault or an implemented borrower route.
+The first implementation step checks Alloc's element/guard/alignment/cursor
+arithmetic and sizing slack, validates signed32 routing/page shape bounds, and
+stops all later takes after a failed allocation. Carve returns before making
+aliases from a failed prefix or treating a null borrowed region as owned.
+A shared layout-state guard marks init/rebinding in progress; any return or
+exception before commit poisons the instance. Public run, internal chunk run,
+draft-KV and chunk reporting cannot use that incomplete layout; reset/init is
+required. This is a poison-on-failure contract, not pointer rollback. Fifteen
+host cases exercise the actual arithmetic/state helpers, including injected
+host phase exceptions; real Prefill/GEMM/queue fault injection and checked
+parent ownership, graph retirement and loan/refill admission remain pending.
+The new helper and tests are Main-authored from this fork's allocation path.
 CPU-math/RAM/GPU resource attribution remains unknown; physical262144/session/
 RESTORE, model quality and clean speed remain separate gates.
 Only a later qualified mechanism permits a
