@@ -4809,5 +4809,29 @@
       "commit": "a5c74901f",
       "path": "bench/results/2026-10-15-pr6-recovery-audit/research-index.json"
     }
+  },
+  "cache_capacity_clean_comparison_scope": {
+    "classification": "decision support",
+    "source_commit": "cba7b0a7c255ea9a7e113ead57b87a22cb373439",
+    "frozen_inputs": {
+      "tools/sycl/cache_compare.py": "b676d9a466262f5bd6b444280feaeaf6b1475d3e196c52237569ee874244f1eb",
+      "tools/test_sycl_cache_compare.py": "4816e5054995e4958774bf7558f0a452e6e9d6fd9f19f1b886ea871d1a45c5ad",
+      "tools/sycl/generation_engine.py": "1f884753ac5bbf2d391b7d5ee91c03ce466245128e1b830792dd6ef2bb3fad7d"
+    },
+    "schedulable_now": true,
+    "prerequisites": {
+      "committed_comparison_source": true,
+      "offline_tests_passed": 31,
+      "matching_native156_gate": true,
+      "official32K_borrowed_capacity_passed": true,
+      "owned_parameter_validated_check": "Main preparing independently; must pass before clean timing"
+    },
+    "report_path": "/home/yayoi/orca/workspaces/Strata/sycl/.cache/strata-research/20261020/cache-capacity-clean-comparison-report.md",
+    "report_budget_bytes": 16384,
+    "worker_closed": false,
+    "clean_comparison_accepted": false,
+    "question": "Audit the new six-process owned128 versus checked-borrowed1280 comparison for immutable matching, actual timed route with observers absent, generation/MTP variation and independent prefill/decode decisions. Identify concrete invalidation risks before clean execution.",
+    "previous_scope": "cache_loan_long_context_capacity_scope",
+    "next_review": "Native Luna-max curation after accepted worker_done, then Main checks frozen inputs before clean timing; no default adoption."
   }
 }
