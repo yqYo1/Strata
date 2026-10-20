@@ -43,7 +43,27 @@ def main():
     environment=native_environment(plan,os.environ)
     if 'native_validation_probe' in plan:
         claim['native_validation_probe']=plan['native_validation_probe']
-    child = subprocess.Popen([binary['path'], *sys.argv[1:]], env=environment)
+    command=[binary['path'],*sys.argv[1:]]
+    profiling=plan.get('native_profile')
+    if profiling is not None:
+        if not plan.get('native_validation_probe') or environment.get('ZES_ENABLE_SYSMAN')!='0':
+            raise RuntimeError('profile requires qualified target validation and Sysman-off')
+        for artifact in (profiling['launcher'],profiling['collector']):
+            with Path(artifact['path']).open('rb') as stream:
+                if hashlib.file_digest(stream,'sha256').hexdigest()!=artifact['sha256']:
+                    raise RuntimeError('profile launcher/collector changed')
+        environment['STRATA_UNITRACE_TARGET_PRELOAD']=environment.pop('LD_PRELOAD')
+        allowed={'UNITRACE_SystemTime','UNITRACE_TraceOutputDir','UNITRACE_FollowChildProcess','LD_DEBUG'}
+        if set(profiling['environment'])-allowed or profiling['environment'].get('UNITRACE_SystemTime')!='1':
+            raise RuntimeError('unsupported profile environment override')
+        environment.update(profiling['environment'])
+        if 'LD_PRELOAD' in environment:
+            raise RuntimeError('profile launcher must not preload target libraries')
+        command=[profiling['launcher']['path'],'--session',profiling['session'],'--start-paused',
+                 '--host-timing','--device-timing','--chrome-kernel-logging','--chrome-call-logging',
+                 '--chrome-event-buffer-size','128',*command]
+        claim['native_profile']=profiling
+    child = subprocess.Popen(command, env=environment)
     claim['native'] = identity(child.pid)
     (root / 'engine-start.json').write_text(json.dumps(claim) + '\n')
     collector = None

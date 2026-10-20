@@ -20,6 +20,36 @@ def response(offered=1600, accepted=1200, generated=1152):
 
 
 class BenchmarkTest(unittest.TestCase):
+    def test_profile_gates_exclude_warmup_and_wrap_complete_request(self):
+        events=[]
+        suite=bench.Suite('http://localhost','',131072,1,True,log=lambda _:None,prefill_only=True,
+            prefill_tokens=32768,request_gate=lambda stage,phase,run:events.append(stage))
+        def reply(*args,**kwargs):
+            events.append('http-complete')
+            return response(generated=24)
+        with patch.object(bench,'chat',side_effect=reply):
+            suite.request('chat/warmup',0,None,[{'role':'user','content':'short'}],24,True)
+            self.assertEqual(events,['http-complete']);events.clear()
+            suite.request('prefill-only',0,None,[{'role':'user','content':'long'}],24,True)
+        self.assertEqual(events,['begin','http-complete','end'])
+
+    def test_profile_begin_failure_never_sends_http_and_failure_still_ends(self):
+        events=[]
+        def gate(stage,phase,run):
+            events.append(stage)
+            if stage=='begin':raise RuntimeError('owner unavailable')
+        suite=bench.Suite('http://localhost','',131072,1,True,prefill_only=True,request_gate=gate)
+        with patch.object(bench,'chat') as chat:
+            with self.assertRaisesRegex(RuntimeError,'owner unavailable'):
+                suite.request('prefill-only',0,None,[],24,True)
+            chat.assert_not_called()
+        self.assertEqual(events,['begin'])
+        events.clear();suite.request_gate=lambda stage,phase,run:events.append(stage)
+        with patch.object(bench,'chat',side_effect=RuntimeError('stream failure')):
+            with self.assertRaisesRegex(RuntimeError,'stream failure'):
+                suite.request('prefill-only',0,None,[],24,True)
+        self.assertEqual(events,['begin','end'])
+
     def test_larger_prefill_checks_context_before_sending_and_keeps_actual_counts(self):
         for minimum in (98304, 131072):
             required = minimum * 5 // 4 + 24 + 256

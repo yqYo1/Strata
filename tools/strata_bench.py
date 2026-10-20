@@ -36,6 +36,7 @@ import json
 import os
 import platform
 import re
+import select
 import shutil
 import socket
 import statistics
@@ -418,11 +419,31 @@ def prefill_eligibility(raw, row, minimum, context):
             "reasoning_tokens_reported":(usage.get("completion_tokens_details") or {}).get("reasoning_tokens")}
 
 
+def profile_request_gate(stage, phase, run):
+    """Bounded diagnostic handshake; the owner controls its profiler session."""
+    print('STRATA_PROFILE_GATE '+json.dumps(dict(stage=stage,phase=phase,run=run)),flush=True)
+    deadline=time.monotonic()+30
+    command=bytearray()
+    while True:
+        remaining=deadline-time.monotonic()
+        if remaining<=0 or not select.select([sys.stdin.fileno()],[],[],remaining)[0]:
+            raise RuntimeError('profile request gate deadline')
+        byte=os.read(sys.stdin.fileno(),1)
+        if not byte:raise RuntimeError('profile request gate EOF')
+        if byte==b'\n':break
+        if len(command)>=16:raise RuntimeError('profile request gate command extent')
+        command.extend(byte)
+    if command!=b'continue':raise RuntimeError('profile request gate command')
+
+
 class Suite:
     def __init__(self, base, key, ctx, runs, think, log=print, want_clients=0, want_long=False, quick=False,
-                 want_long_generation=False, long_generation_only=False, journal=None, fail_fast_engine_error=False, workload_id=None, prefill_only=False, prefill_tokens=65536, generation_workload=None):
+                 want_long_generation=False, long_generation_only=False, journal=None, fail_fast_engine_error=False, workload_id=None, prefill_only=False, prefill_tokens=65536, generation_workload=None, request_gate=None):
         self.base, self.key, self.ctx, self.runs, self.think, self.log = base, key, ctx, runs, think, log
         self.prefill_only, self.prefill_tokens = prefill_only, prefill_tokens
+        if request_gate is not None and not prefill_only:
+            raise ValueError('request gates require prefill-only')
+        self.request_gate=request_gate
         if prefill_only and (want_clients or want_long or want_long_generation or long_generation_only or quick):
             raise ValueError("prefill-only cannot be combined with other suite scopes")
         if prefill_tokens not in PREFILL_TOKEN_CHOICES:
@@ -455,7 +476,12 @@ class Suite:
             request_index = self.journal.append("start", phase, run, turn,
                 request_sha256=hashlib.sha256(payload).hexdigest(), max_tokens=max_tokens, thinking=think)
         try:
-            raw = chat(self.base, self.key, messages, max_tokens, think, **kwargs)
+            gated=self.request_gate is not None and phase=='prefill-only'
+            if gated:self.request_gate('begin',phase,run)
+            try:
+                raw = chat(self.base, self.key, messages, max_tokens, think, **kwargs)
+            finally:
+                if gated:self.request_gate('end',phase,run)
         except BaseException as error:
             if self.journal:
                 self.journal.append("interrupted", phase, run, turn, request_index=request_index, error=repr(error)[:300])
@@ -1342,6 +1368,8 @@ def main(argv=None) -> int:
                     help="select one diagnostic workload with --long-generation-only; does not qualify the MTP pair")
     ap.add_argument("--prefill-only", action="store_true", help="only one short warmup and fresh long prefill requests; thinking on, output capped at 24")
     ap.add_argument("--prefill-tokens", type=int, choices=PREFILL_TOKEN_CHOICES, default=None, help="minimum ACTUAL prompt/read tokens for --prefill-only (default 65536)")
+    ap.add_argument('--profile-request-gates',action='store_true',
+                    help='diagnostic only: wait for owner acknowledgement before/after each long prefill request')
     ap.add_argument("--think", action="store_true", help="leave thinking on (the default suite turns it off)")
     ap.add_argument("--out", help="where to write the results folder (default: bench/results)")
     ap.add_argument("--compare", metavar="DIR", help="a results folder (or its results.json) to put beside this run")
@@ -1357,6 +1385,8 @@ def main(argv=None) -> int:
         ap.error("--fail-fast-engine-error cannot be combined with --clients")
     if a.prefill_tokens is not None and not a.prefill_only:
         ap.error("--prefill-tokens requires --prefill-only")
+    if a.profile_request_gates and not a.prefill_only:
+        ap.error('--profile-request-gates requires --prefill-only')
     if a.prefill_only and (a.clients or a.long or a.long_generation or a.long_generation_only or a.compare_only):
         ap.error("--prefill-only cannot be combined with other suite scopes or --compare-only")
     if a.prefill_only and a.runs<1:
@@ -1426,7 +1456,8 @@ def main(argv=None) -> int:
                       long_generation_only=a.long_generation_only, journal=journal,
                       fail_fast_engine_error=a.fail_fast_engine_error, workload_id=a.workload_id,
                       prefill_only=a.prefill_only, prefill_tokens=a.prefill_tokens,
-                      generation_workload=a.long_generation_workload)
+                      generation_workload=a.long_generation_workload,
+                      request_gate=profile_request_gate if a.profile_request_gates else None)
         journal.append("identity", "suite", source=client_fingerprint(),
                        model=pre.get("model"), quant=pre.get("quant"), context=pre.get("context"),
                        thinking=a.think, long_generation_thinking=long_generation.THINKING,
