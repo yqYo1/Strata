@@ -2847,6 +2847,26 @@ qualify temporal gating, GPU timing, graph/queue coverage or32K+ production
 attribution. Both model engines, clean speed evidence and full-context/quality
 obligations are unchanged.
 
+GPU coverage now has two closed attempts. The first fails UTC containment and
+host-flow gates despite recording all606 submission kernels. The prospective
+raw-clock attempt at`e54d9a168`, plan`3fbc13928`, records606 submission and62
+native-graph kernels, with normal numerical checks, owned closure and no fresh
+fault. Its strict graph host-sink gate still fails; preserve both failed runs.
+The separate closed-data analysis at`63bd98618` conserves every kernel, copy,
+fill, barrier and requested byte after expanding captured graphs by actual
+replays. All61 graph append APIs account for their183 unsunk non-barrier nodes.
+This establishes fixed-fixture service-record coverage, not complete graph
+completion edges, a production critical path or a speed improvement.
+
+Before32K+ production collection, qualify a small recording window: execute
+the same known fixture once while paused and once between external resume/pause
+commands at native ready/drained boundaries. Check actual executed versus
+recorded work, exact-session cleanup after closure, same caller/target time
+namespace, bracketed raw-host/device timestamps and device timer properties.
+The Main-authored wrapper/controller are under review and have not been built
+or executed. Both model engines and their clean speed samples are unchanged;
+physical262144/session/RESTORE, task quality and sustained decode remain pending.
+
 The closed capability output and consumed decision-support report/transaction
 bodies are retired:43 external files/112835B, with a path/hash/reason manifest
 in the compact capability result. All four original controller inputs,676
