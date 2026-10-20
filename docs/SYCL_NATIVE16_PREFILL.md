@@ -2714,6 +2714,30 @@ path. The finite45s process/64MiB raw-text budgets and comparison order are
 frozen before execution. This is host API attribution, not a production queue
 change or proof of the earlier fresh-event/model enqueue mechanism.
 
+Source69f388655, plan73a659f19 and buildd1233a6ba then pass the two traced
+smoke checks and all12 fixed processes:48/48 timing batches are eligible,
+with complete payload/guards, exact providers/validation, normal owned exits,
+unchanged source and no fresh fault. Independent process medians are:
+
+| Queue / observer | Completed-query wall medians, us/query |
+| --- | ---: |
+| Profiled / full trace | 11.748614,11.980574,11.894657 |
+| Plain / full trace | 11.981615,12.162145,11.801724 |
+| Plain / validation only | 0.024876,0.022764,0.022788 |
+| Profiled / validation only | 0.019462,0.025150,0.018291 |
+
+Each traced process records16388 UR event-info calls; profiling adds9 global
+timestamp calls for4 fills and5 copies, not one per status query. Quiet counts
+are unobserved, not proof of bypassed UR dispatch. The completed-query cost
+does not explain v2's1.4..2.3ms fresh-getter interval or the model's10.9s enqueue
+aggregate. Profiling does not give a consistent all-pair latency direction;
+no production queue default or model route is changed. Next isolate the finite
+producer/copy/checked-drain path without a pre-copy status query, with a fresh
+committed plan and fixed work. Keep the old pending failures intact. Native
+Luna-max curation confirms the source contract; its working-set collection is
+retrieval-only, with mutable upstream pins and an open guard PR kept distinct
+from deployed behavior. The compact result preserves all48 CPU/wall samples.
+
 For the separate earlier early-PCIe candidate, only a later qualified mechanism permits a
 fresh complete51+6-case plan. Preserve all pending-completion,
 untouched-output, payload/guard and owner-lifetime requirements under that plan.
