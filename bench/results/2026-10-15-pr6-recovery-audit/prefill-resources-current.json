@@ -426,7 +426,7 @@
     "seconds": 900,
     "interval": 0.2
   },
-  "complete": false,
+  "complete": true,
   "passed": false,
   "active": false,
   "clean_speed_qualified": false,
@@ -442,5 +442,92 @@
     "text_cap": 67108864,
     "file_cap": 67108864,
     "total_cap": 67108864
+  },
+  "exit_code": 0,
+  "requests": [
+    {
+      "ok": true,
+      "err": null,
+      "ttft_s": 127.384,
+      "total_s": 128.969,
+      "prompt_tokens": 117489,
+      "reused_tokens": 0,
+      "read_tokens": 117489,
+      "generated_tokens": 24,
+      "prompt_tps": 923.7,
+      "prompt_tps_source": "engine",
+      "decode_tps": 14.2,
+      "decode_tps_source": "engine",
+      "prompt_ms": 127197.8,
+      "decode_ms": 1687.4,
+      "drafts_offered": 21,
+      "drafts_accepted": 16,
+      "finish_reason": "length",
+      "request_sha256": "26f08fd8364b5c4bce718617fe2aed42761d0a794e068b00532694adef78b3be",
+      "stream_complete": true,
+      "truncated": true,
+      "generated_tokens_source": "usage",
+      "client_interval": {
+        "request_begin_monotonic_ns": 860210741088003,
+        "first_output_monotonic_ns": 860338124889086,
+        "request_end_monotonic_ns": 860339710079806
+      },
+      "output_chars": 0,
+      "reasoning_chars": 121,
+      "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "reasoning_sha256": "0d786145d04b965534c72ea005fcccb9fb3a7e2552f6dda1bf32578d1916b8b2",
+      "eligible": true,
+      "eligibility_errors": [],
+      "requested_min_tokens": 98304,
+      "actual_prompt_tokens": 117489,
+      "actual_read_tokens": 117489,
+      "actual_reused_tokens": 0,
+      "prompt_count_source": "usage.prompt_tokens",
+      "read_count_source": "timings.prompt_n",
+      "reuse_counts_reported": {
+        "usage": 0,
+        "timings": 0
+      },
+      "thinking_requested": true,
+      "reasoning_observed": true,
+      "reasoning_tokens_reported": null,
+      "run": 0
+    }
+  ],
+  "request_journal": {
+    "successful_warmups": 1,
+    "successful_long_requests": 1,
+    "request_sha256": [
+      "6976dd85c26437117139f185ce0ac4da0ab9d1d4eb576dd2f9e252ae99d63f03",
+      "26f08fd8364b5c4bce718617fe2aed42761d0a794e068b00532694adef78b3be"
+    ],
+    "journal_sha256": "5226148c14a948709ffdafdb939d3a8cc72deb321c91537ba62919baf91ee78a",
+    "state_sha256": "3b6748bc27196328f4aebbbcadd30cd278597071fa4ab72237b9476c9415804c"
+  },
+  "validation_activation": {
+    "pid": 3889663,
+    "loader": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_loader.so.0.12.0",
+    "threads_before": 1,
+    "preinit": 37,
+    "config_enabled": true,
+    "first_init": true,
+    "dispatch_result": 46,
+    "output_untouched": true,
+    "retained_reference_until_exit": true,
+    "runtime_teardown_qualified": false
+  },
+  "error": "incomplete mixed owner/phase census",
+  "error_excerpt": "hts_cpu_s=0.002702798 moe_job_weights_wall_s=0.002887832 moe_job_weights_outside_wait_cpu_s=0.002702798 moe_job_weights_outside_wait_wall_s=0.002887832 moe_dequant_gu_count=33225 moe_dequant_gu_throws=0 moe_dequant_gu_cpu_s=1.748496559 moe_dequant_gu_wall_s=1.815091288 moe_dequant_gu_outside_wait_cpu_s=1.748496559 moe_dequant_gu_outside_wait_wall_s=1.815091288 moe_dequant_down_count=33225 moe_dequant_down_throws=0 moe_dequant_down_cpu_s=1.740605649 moe_dequant_down_wall_s=1.804462617 moe_dequant_down_outside_wait_cpu_s=1.740605649 moe_dequant_down_outside_wait_wall_s=1.804462617 moe_gather_count=37353 moe_gather_throws=0 moe_gather_cpu_s=2.135602869 moe_gather_wall_s=2.208512838 moe_gather_outside_wait_cpu_s=2.135602869 moe_gather_outside_wait_wall_s=2.208512838 moe_swiglu_count=29868 moe_swiglu_throws=0 moe_swiglu_cpu_s=1.681079091 moe_swiglu_wall_s=1.742518577 moe_swiglu_outside_wait_cpu_s=1.681079091 moe_swiglu_outside_wait_wall_s=1.742518577 moe_accumulate_count=29868 moe_accumulate_throws=0 moe_accumulate_cpu_s=1.715200549 moe_accumulate_wall_s=1.777440128 moe_accumulate_outside_wait_cpu_s=1.715200549 moe_accumulate_outside_wait_wall_s=1.777440128 moe_status_count=96 moe_status_throws=0 moe_status_cpu_s=10.842812784 moe_status_wall_s=10.882813619 moe_status_outside_wait_cpu_s=10.831481781 moe_status_outside_wait_wall_s=10.871445113\nstrata mtp: prompt expert phase=after-prompt-before-restore free_bytes=4294934528 total_bytes=10666115072\nstrata mtp: expert source original=0 bytes=707788800 source=owned-RAM\nstrata mtp: experts restored bytes=707788800, cumulative detach=1.170 ms reload=123.850 ms decode graph recapture=0.000 ms (lazy, later captures accumulate)\nstrata mtp: prompt expert phase=after-restore free_bytes=3587137536 total_bytes=10666115072\nstrata prefill dense: phase=restored residency=Full activations=48 full_bytes=2116951040 bank_bytes=50918400 snapshot_bytes=2116951040 overlay_rows=0 session_recapture=0 verifier=1 free_bytes=131960832 total_bytes=10666115072\nstrata native dense host profile: v=2 complete=1 outcome=success entry_ms=388.342 run_ms=125598 restore_ms=819.103 entry_done=1 run_returned=1 restored=1 intervals=NONEXCLUSIVE entry_scope=boundary_entry_through_Bank run_scope=MTP_release_prompt_callbacks_MTP_restore restore_scope=restore_drain_through_owner_PLE_graph_verifier_restore outer_startup_snapshot_unmeasured=1\nstrata trace: read 117488 tokens (batched) in 126805.2 ms\nstrata trace: refill start 1124 -1\nstrata cache loan: phase=ready generation=2 chunk=8192 first=132 lent=1124 decode_ready=1\nstrata trace: refilled 1124 slots on 1 stage(s) in 388.3 ms\nstrata trace: prompt done (slots refilled) -1 -1\nstrata trace: window 117488 1\nstrata verify: captured the 1-token window in 49 event-completed segments\nstrata verify: capture 1 tokens 10.421 ms, free VRAM 124.8 MiB\nstrata verify: 48 shared/hit graphs can overlap CPU experts\nstrata mtp: expert decode recapture kind=round coupled=0 ok=1 ms=0.617 cumulative_ms=0.617\nstrata mtp: expert decode recapture kind=step coupled=0 ok=1 ms=0.396 cumulative_ms=1.013\nstrata mtp: expert decode recapture kind=step coupled=0 ok=1 ms=0.362 cumulative_ms=1.375\nstrata trace: window 117489 4\nstrata verify: captured the 4-token window in 49 event-completed segments\nstrata verify: capture 4 tokens 15.875 ms, free VRAM 124.7 MiB\nstrata verify: 48 shared/hit graphs can overlap CPU experts\nstrata mtp: expert decode recapture kind=round coupled=0 ok=1 ms=0.700 cumulative_ms=2.075\nstrata trace: window 117493 4\nstrata trace: window 117496 4\nstrata trace: window 117497 4\nstrata trace: window 117501 4\nstrata trace: window 117504 4\nstrata trace: window 117508 4\nstrata serve: prompt 117489 tokens = 0 reused + 117489 read in 127198 ms (923.7 tok/s), 24 generated in 1687 ms (14.2 tok/s), drafts accepted 16 of 21, 0 checkpoints\nstrata serve: SYCL_EXPERT_COPY submitted_blobs=0 submitted_bytes=0 completed_blobs=0 completed_bytes=0 host_view_groups=0 gpu_miss_groups=0 cpu_unique_misses=7732 cpu_entries=10539\nstrata serve: decode expert cache hit rate: 24.3% (3381 hits / 13920 lookups)\n",
+  "ownership_closed": true,
+  "fresh_faults": [],
+  "fault_probe_successful": true,
+  "boot_unchanged": true,
+  "driver_after": {
+    "pci": "/sys/bus/pci/devices/0000:05:00.0",
+    "driver": "xe",
+    "vendor": "0x8086",
+    "device": "0xe20c",
+    "kernel": "7.0.0-38-generic",
+    "devcoredump": false
   }
 }
