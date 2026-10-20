@@ -814,5 +814,92 @@
         "bytes": 512976
       }
     }
+  },
+  "unitrace_session_owner": {
+    "schema": "strata-unitrace-session-owner-v1",
+    "stage": "prepared",
+    "source_commit": "8fba6f3aaa22578bf0b7a3ae0cc945b6d3de89c9",
+    "input_sha256": {
+      "tools/sycl/unitrace_launch.py": "4a60aad4cf869bc7d71e5f33e33959172c4f62ce532fff558aeec91ef1c67846",
+      "tools/sycl/unitrace_profile.py": "c87c9934f3ee2b5fa6e1dbcfa05689bb5f9a8c6cf178e23c716a4e3cb7c7cf27",
+      "tools/sycl/measurement_guards.py": "794e332c70aca0acadad4f26d0414548e023a02fd27b72ed78fc773674423ec8",
+      "tools/sycl/measurement_owner.py": "bddd0c5e5020e882ca3404679420faec11e820dabce2ed4c72ef82b4c9c0874a",
+      "tools/sycl/measurement_environment.json": "d4402591df50e80dc45a5ec9e4839c7a794888850b1473537b6f95179be5b03c"
+    },
+    "generated_source_sha256": "d033ab839454e1779689062f3932ceba830ebac4fe5504a06068078818e6be1f",
+    "command": [
+      "/usr/bin/g++",
+      "-std=c++17",
+      "-O3",
+      "-DNDEBUG",
+      "-fvisibility=default",
+      "-pthread",
+      "-DPTI_LEVEL_ZERO=1",
+      "-DCXX_STD_FILESYSTEM_EXPERIMENTAL=0",
+      "-DBUILD_WITH_L0=1",
+      "-DBUILD_WITH_XPTI=0",
+      "-DBUILD_WITH_ITT=0",
+      "-DBUILD_WITH_OPENCL=0",
+      "-DBUILD_WITH_OMP=0",
+      "-DBUILD_WITH_MPI=0",
+      "-DBUILD_WITH_PERFETTO=0",
+      "-I",
+      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/unitrace-l0-4b6d742-v2/include",
+      "-I",
+      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/unitrace-l0-4b6d742-v2/generated",
+      "-I",
+      "/home/yayoi/ghq/github.com/intel/pti-gpu/tools/unitrace",
+      "-I",
+      "/home/yayoi/ghq/github.com/intel/pti-gpu/tools/unitrace/src",
+      "-I",
+      "/home/yayoi/ghq/github.com/intel/pti-gpu/tools/unitrace/src/utils",
+      "-I",
+      "/home/yayoi/ghq/github.com/intel/pti-gpu/tools/unitrace/src/opencl",
+      "-I",
+      "/home/yayoi/ghq/github.com/intel/pti-gpu/tools/unitrace/src/levelzero",
+      "-I",
+      "/home/yayoi/ghq/github.com/intel/pti-gpu",
+      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/unitrace-session-owner-v1/unitrace.cc",
+      "/home/yayoi/ghq/github.com/intel/pti-gpu/tools/unitrace/src/utils/logger_factory.cc",
+      "-ldl",
+      "-lrt",
+      "-o",
+      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/unitrace-session-owner-v1/unitrace"
+    ],
+    "official_revision": "4b6d74294cdc72766c00a9211fe2e4261ee94244",
+    "collector": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/unitrace-l0-4b6d742-v2/libunitrace_tool.so",
+      "sha256": "5a5123569afec5e1da12e98967955686d753ce28ae8d42b96ec565b52ec4d1e5",
+      "bytes": 2328576
+    },
+    "environment": {
+      "PATH": "/usr/bin:/bin",
+      "LANG": "C",
+      "LC_ALL": "C",
+      "TMPDIR": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/unitrace-session-owner-v1/tmp",
+      "PYTHONDONTWRITEBYTECODE": "1"
+    },
+    "provenance": "Local launcher-only changes to MIT Intel PTI4b6d742, preserving the official header/copyright. Collector unchanged. No XeStrata source.",
+    "changes": [
+      "Respect explicit ZES_ENABLE_SYSMAN=0 in the pre-exec launcher.",
+      "Read target validation preload from STRATA_UNITRACE_TARGET_PRELOAD; launcher itself must have no LD_PRELOAD.",
+      "Prepend collector before target validation library in LD_PRELOAD; actual constructor order/first-init proof still requires a bounded probe."
+    ],
+    "constraints": "Non-counter LevelZero only; XPTI/ITT/OpenCL/OMP/MPI/Perfetto off. No metric/Sysman/KMD request. All target environment fixed before exec; FollowChildProcess=1. Named session uses original launcher/control code, no new in-target mutation or IPC implementation.",
+    "consumer": "Independent source/control-owner audit, then CPU loader/validation probe and known-work GPU/graph qualification before32K+ request-bounded production trace.",
+    "retention": "One current collector plus this imminent launcher candidate; retire superseded CLI and normal output after qualification. Two model generations unchanged.",
+    "budgets": {
+      "wall_s": 900,
+      "cpu_s": 900,
+      "rss_bytes": 8589934592,
+      "text_bytes": 16777216,
+      "file_bytes": 134217728,
+      "total_bytes": 268435456
+    },
+    "passed": false,
+    "active": false,
+    "ownership_closed": true,
+    "gpu_qualified": false,
+    "model_qualified": false
   }
 }
