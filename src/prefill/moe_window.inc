@@ -269,17 +269,29 @@ bool Prefill::run_moe_accum_window(int64_t layer, int64_t first_row, int64_t row
     // The host status destination belongs to the outer checked lease, even if DMA fails.
     owner.status_observed = ~uint32_t(0);
     {
-        hp::Host host(hp::moe_status);
-        auto tag = command_trace.tag(cp::Kind::status, -1, 0, rows);
-        if (cudaMemcpyAsync(&owner.status_observed, status, sizeof(uint32_t), cudaMemcpyDeviceToHost, m.cs) != cudaSuccess ||
-            cudaStreamSynchronize(m.cs) != cudaSuccess) {
-            err = "prefill MoE accumulator: status readback/drain"; return false;
+        hp::StatusScope status_profile;
+        {
+            hp::Host host(hp::moe_status);
+            auto tag = [&] {
+                hp::StatusPart part(hp::status_tag);
+                return command_trace.tag(cp::Kind::status, -1, 0, rows);
+            }();
+            if (cudaMemcpyAsync(&owner.status_observed, status, sizeof(uint32_t), cudaMemcpyDeviceToHost, m.cs) != cudaSuccess ||
+                cudaStreamSynchronize(m.cs) != cudaSuccess) {
+                err = "prefill MoE accumulator: status readback/drain"; return false;
+            }
         }
+        // Existing drain retires selected expert events before shared work.
+        {
+            hp::StatusPart part(hp::status_after_drain);
+            command_trace.after_checked_drain();
+        }
+        {
+            hp::StatusPart part(hp::status_branch);
+            if (owner.status_observed) { err = "prefill MoE accumulator: invalid device route map"; return false; }
+        }
+        status_profile.complete();
     }
-    // Existing status drain retires all selected expert events. Stop sampling
-    // before the shared-expert/final-write phase; no extra drain or GPU work.
-    command_trace.after_checked_drain();
-    if (owner.status_observed) { err = "prefill MoE accumulator: invalid device route map"; return false; }
     for (int64_t at = 0; at < rows; at += m.T) {
         if (should_stop && should_stop()) { err = "cancelled"; return false; }
         const int64_t count = std::min(m.T, rows - at);

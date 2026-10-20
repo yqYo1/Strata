@@ -63,9 +63,14 @@ cudaError_t fail(cudaError_t code, std::string message) {
   detail = std::move(message);
   return code;
 }
-template <class F> cudaError_t attempt(F body) {
+template <bool status_profile = false, class F> cudaError_t attempt(F body) {
   try {
-    runtime_for()->check();
+    if constexpr (status_profile) {
+      cpu_wait_profile::StatusPart part(cpu_wait_profile::status_precheck);
+      runtime_for()->check();
+    } else {
+      runtime_for()->check();
+    }
     body();
     return cudaSuccess;
   } catch (const std::bad_alloc &e) {
@@ -254,11 +259,21 @@ cudaError_t cudaHostGetDevicePointer(void **out, void *ptr, unsigned flags) {
 }
 cudaError_t cudaMemcpyAsync(void *dst, const void *src, size_t bytes,
                             cudaMemcpyKind, cudaStream_t st) {
-  return attempt([&] {
+  return attempt<true>([&] {
     require(!bytes || (dst && src), "null copy pointer");
     if (bytes) {
-      auto event = queue(st).memcpy(dst, src, bytes);
-      strata::sycl_backend::command_profile::observe(st, event);
+      auto& q = [&]() -> sycl::queue& {
+        cpu_wait_profile::StatusPart part(cpu_wait_profile::status_queue);
+        return queue(st);
+      }();
+      auto event = [&] {
+        cpu_wait_profile::StatusPart part(cpu_wait_profile::status_enqueue);
+        return q.memcpy(dst, src, bytes);
+      }();
+      {
+        cpu_wait_profile::StatusPart part(cpu_wait_profile::status_observer);
+        strata::sycl_backend::command_profile::observe(st, event);
+      }
     }
   });
 }
@@ -332,11 +347,19 @@ cudaError_t cudaStreamDestroy(cudaStream_t st) {
   });
 }
 cudaError_t cudaStreamSynchronize(cudaStream_t st) {
-  return attempt([&] {
-    { auto& wait_queue = queue(st);
+  return attempt<true>([&] {
+    auto& wait_queue = [&]() -> sycl::queue& {
+      cpu_wait_profile::StatusPart part(cpu_wait_profile::status_queue);
+      return queue(st);
+    }();
+    {
+      cpu_wait_profile::StatusPart part(cpu_wait_profile::status_drain);
       strata::sycl_backend::cpu_wait_profile::blocking(
           strata::sycl_backend::cpu_wait_profile::compat_queue, [&] { wait_queue.wait_and_throw(); }); }
-    runtime_for()->check();
+    {
+      cpu_wait_profile::StatusPart part(cpu_wait_profile::status_postcheck);
+      runtime_for()->check();
+    }
   });
 }
 cudaError_t cudaStreamQuery(cudaStream_t st) {

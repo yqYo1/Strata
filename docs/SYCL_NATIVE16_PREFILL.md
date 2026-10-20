@@ -2582,6 +2582,31 @@ GPU memory/arithmetic references. Physical PCIe/GDDR traffic and compatible
 sustainable ceilings remain unknown. Neither these observations nor requested
 bytes establish a limiting hardware resource, clean speedup or model adoption.
 
+The next status-wrapper diagnostic is independently authored here under the
+repository license. It adds a nested partition of the existing MoE status region:
+tag, two runtime prechecks, two queue/context lookups, copy enqueue, event observer,
+checked drain, sticky-error postcheck, observer retirement and the status branch.
+Each phase records calling-thread CPU/wall and its existing explicit-wait subset;
+the remainder is kept unclassified. Existing per-window drains, asynchronous-error
+delivery, status destination ownership and the shared-expert execution order stay
+in place. No new SYCL command, allocation or process-environment mutation is added.
+Disabled CPU profiling leaves this observer inactive. This is attribution code,
+not an inference optimization.
+
+First commit and run the ten CPU fixture cases and malformed-profile rejection
+gates using `check_host_profile.py`'s new finite v2 root. Then build exactly the
+engine and eight existing safety fixtures with `build_engine.py build-status-profile`,
+preserving the selected396 fallback. Run the existing156 bounded safety checks
+at the new `--status-profile` root before preparing a model plan. The subsequent
+prospective discriminator is two separate117K diagnostic processes with parameter
+validation and all safety settings fixed: UR tracing layer absent/present, warning
+logging only, with the same native status partition. Full API history stays off.
+Freeze exact generated inputs before either run; stop on any failed gate. Require
+96 complete status scopes and exact phase counts/partition conservation, checked
+borrowed owners, normal closure and no fresh fault. This distinguishes tracing-layer
+dispatch overhead, not full trace-output cost. Any speed claim needs a separate
+clean, repeated comparison. Do not coalesce drains from the old10.9s aggregate.
+
 For the separate earlier early-PCIe candidate, only a later qualified mechanism permits a
 fresh complete51+6-case plan. Preserve all pending-completion,
 untouched-output, payload/guard and owner-lifetime requirements under that plan.

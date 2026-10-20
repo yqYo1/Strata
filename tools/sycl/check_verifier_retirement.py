@@ -46,9 +46,10 @@ def digest(path):
 
 
 def main():
-    profile = sys.argv[1:] == ['--query-profile']
-    guards.require(len(sys.argv) == 1 or profile, 'use no options or --query-profile; never retry a closed root')
-    root = B / 'decode-query-profile-component-v9' if profile else ROOT
+    status = sys.argv[1:] == ['--status-profile']
+    profile = status or sys.argv[1:] == ['--query-profile']
+    guards.require(len(sys.argv) == 1 or profile, 'use no options, --query-profile or --status-profile; never retry a closed root')
+    root = B / ('prefill-status-profile-component-v1' if status else 'decode-query-profile-component-v9') if profile else ROOT
     result = A / 'decode-query-profile-component-current.json' if profile else RESULT
     with (B / 'owned-v0141-measurement.lock').open('a+') as lock:
         fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)

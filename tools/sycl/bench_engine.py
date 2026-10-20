@@ -237,6 +237,38 @@ CPU_HOST_BASE = ('source_copy', 'host_group', 'gemm_submit', 'route_exchange',
     'residual_store_host', 'residual_store_device')
 CPU_HOST_MOE = ('moe_map_upload', 'moe_job_weights', 'moe_dequant_gu',
     'moe_dequant_down', 'moe_gather', 'moe_swiglu', 'moe_accumulate', 'moe_status')
+CPU_STATUS_NAMES = ('tag', 'precheck', 'queue_context', 'enqueue', 'observer',
+    'drain', 'postcheck', 'after_drain', 'branch')
+
+
+def extract_status_observer(log, scopes, counts):
+    prefix = 'strata prefill status: '
+    lines = [x for x in log.splitlines() if x.startswith(prefix)]
+    guards.require(len(lines) == 1, 'missing or duplicate status observer')
+    tokens = lines[0][len(prefix):].split()
+    guards.require(all(x.count('=') == 1 for x in tokens), 'malformed status observer')
+    fields = dict(x.split('=', 1) for x in tokens)
+    guards.require(len(fields) == len(tokens) and fields['version'] == '1' and
+        fields['available'] == fields['complete'] == '1' and
+        fields['open_scopes'] == fields['open_parts'] == '0' and
+        int(fields['scopes']) == int(fields['completed']) == scopes,
+        'incomplete status accounting')
+    guards.require(set(counts) == set(CPU_STATUS_NAMES), 'complete expected status counts required')
+    phases = {}
+    for name in CPU_STATUS_NAMES:
+        guards.require(int(fields[name+'_count']) == counts[name] and fields[name+'_throws'] == '0',
+            'status call/exception count differs: '+name)
+        row = {key: float(fields[name+'_'+key]) for key in ('cpu_s','wall_s','wait_cpu_s','wait_wall_s')}
+        guards.require(all(math.isfinite(v) and v >= 0 for v in row.values()) and
+            row['wait_cpu_s'] <= row['cpu_s']+2e-9 and row['wait_wall_s'] <= row['wall_s']+2e-9,
+            'invalid status phase partition')
+        phases[name] = dict(count=counts[name], **row)
+    totals = {k:float(fields[k]) for k in ('cpu_s','wall_s','unclassified_cpu_s','unclassified_wall_s')}
+    guards.require(all(math.isfinite(v) and v >= 0 for v in totals.values()) and all(
+        abs(sum(row[k] for row in phases.values()) + totals['unclassified_'+k] - totals[k]) < 1e-7
+        for k in ('cpu_s','wall_s')), 'status phases do not conserve')
+    return dict(scopes=scopes, phases=phases, **totals,
+        limits='Nested wrapper partition; wait is a subset. Queue submission may itself block. Counts do not measure PCIe traffic or GPU arithmetic.')
 
 
 def split_long_request_logs(log, count):

@@ -175,15 +175,15 @@ def retain_current():
 
 def main():
     guards.require(len(sys.argv) == 1 or sys.argv[1:] in
-                   (['retain-current'], ['build-copy-safety'], ['rebuild-copy-safety'], ['rebuild-arena-copy'], ['rebuild-event-gate'], ['rebuild'], ['rebuild-attention'], ['rebuild-gemm'], ['rebuild-gdn'], ['rebuild-down'], ['rebuild-ordered'], ['rebuild-submission'], ['rebuild-gu'], ['rebuild-mixed'], ['rebuild-expert-bank']),
+                   (['retain-current'], ['build-copy-safety'], ['build-status-profile'], ['rebuild-copy-safety'], ['rebuild-arena-copy'], ['rebuild-event-gate'], ['rebuild'], ['rebuild-attention'], ['rebuild-gemm'], ['rebuild-gdn'], ['rebuild-down'], ['rebuild-ordered'], ['rebuild-submission'], ['rebuild-gu'], ['rebuild-mixed'], ['rebuild-expert-bank']),
                    'use build_engine.py retain-current or a named rebuild mode')
-    rebuild = len(sys.argv) == 2 and sys.argv[1] != 'build-copy-safety'
+    rebuild = len(sys.argv) == 2 and sys.argv[1] not in ('build-copy-safety', 'build-status-profile')
     attention = sys.argv[1:] == ['rebuild-attention']
     targets = ['strata']
     event_gate=sys.argv[1:]==['rebuild-event-gate']
-    if sys.argv[1:] in (['build-copy-safety'], ['rebuild-copy-safety'], ['rebuild-arena-copy'], ['rebuild-event-gate']):
+    if sys.argv[1:] in (['build-copy-safety'], ['build-status-profile'], ['rebuild-copy-safety'], ['rebuild-arena-copy'], ['rebuild-event-gate']):
         targets += ['sycl_verifier_retirement_test', 'sycl_submission_test']
-    if sys.argv[1:] in (['rebuild-arena-copy'],['rebuild-event-gate']):
+    if sys.argv[1:] in (['build-status-profile'], ['rebuild-arena-copy'],['rebuild-event-gate']):
         targets += ['file_expert_source_test', 'sycl_mmvq_test', 'residency_publication_host_test', 'cache_tail_host_test', 'prefill_scratch_host_test', 'sycl_prefill_scratch_test']
     if event_gate:
         targets += ['sycl_host_event_gate_test']

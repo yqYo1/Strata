@@ -15,7 +15,7 @@ import measurement_owner as supervision
 
 P = Path(__file__).resolve().parents[2]
 B = Path('/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007')
-ROOT = B / 'host-profile-cpu-v1'
+ROOT = B / 'host-profile-cpu-v2'
 RESULT = P / 'bench/results/2026-10-15-pr6-recovery-audit/prefill-host-cpu-current.json'
 
 
@@ -69,17 +69,23 @@ def main():
             record['binary'] = dict(path=str(executable), sha256=digest(executable))
             text = err.read_text()
             pieces = re.split(r'(?m)^cpu fixture case: (\w+)\n', text)
-            guards.require(not pieces[0] and len(pieces) == 13, 'unexpected CPU fixture case framing')
+            guards.require(not pieces[0] and len(pieces) == 21, 'unexpected CPU fixture case framing')
             cases = dict(zip(pieces[1::2], pieces[2::2]))
             guards.require(list(cases) == ['disabled', 'valid', 'exception', 'nested_host',
-                                          'host_inside_wait', 'nested_scope'], 'missing/duplicate fixture cases')
+                                          'host_inside_wait', 'nested_scope', 'status_nested_scope',
+                                          'status_nested_part', 'status_part_inside_wait', 'status_exception'],
+                           'missing/duplicate fixture cases')
             guards.require(not cases['disabled'], 'disabled scope emitted output')
             valid = bench.extract_cpu_observers(cases['valid'], 4)
+            status_counts = dict.fromkeys(bench.CPU_STATUS_NAMES, 0)
+            status_counts.update(precheck=1, drain=1)
+            status = bench.extract_status_observer(cases['valid'], 1, status_counts)
             guards.require(all(valid['host'][name + '_count'] == '1' for name in
                                bench.CPU_HOST_BASE + bench.CPU_HOST_MOE), 'fixture region count mismatch')
             guards.require('fixture_status=PASS' in out.read_text(), 'missing CPU fixture success')
             rejected = []
-            for name in ('exception', 'nested_host', 'host_inside_wait', 'nested_scope'):
+            for name in ('exception', 'nested_host', 'host_inside_wait', 'nested_scope',
+                         'status_nested_scope', 'status_nested_part', 'status_part_inside_wait', 'status_exception'):
                 try:
                     bench.extract_cpu_observers(cases[name], 4)
                 except (RuntimeError, KeyError, ValueError):
@@ -99,9 +105,22 @@ def main():
                     rejected.append(name)
                 else:
                     raise RuntimeError('invalid profile mutation accepted: ' + name)
+            for name, text in {
+                'status_duplicate': cases['valid'] + next(x+'\n' for x in cases['valid'].splitlines()
+                    if x.startswith('strata prefill status:')),
+                'status_missing_call': cases['valid'].replace('precheck_count=1', 'precheck_count=0'),
+                'status_bad_partition': cases['valid'].replace('drain_wait_cpu_s=', 'drain_wait_cpu_s=999'),
+                'status_incomplete': cases['valid'].replace('scopes=1 completed=1', 'scopes=1 completed=0'),
+            }.items():
+                try:
+                    bench.extract_status_observer(text, 1, status_counts)
+                except (RuntimeError, KeyError, ValueError):
+                    rejected.append(name)
+                else:
+                    raise RuntimeError('invalid status profile accepted: '+name)
             for name, expected in pins.items():
                 guards.require(digest(P / name) == expected, 'CPU input changed during test: ' + name)
-            record.update(complete=True, passed=True, valid_profile=valid,
+            record.update(complete=True, passed=True, valid_profile=valid, status_partition=status,
                           cases=list(cases), rejected_profiles=rejected,
                           limits='CPU observer lifetime/accounting only; no GPU arithmetic, model quality or performance qualification.')
         except BaseException as error:
