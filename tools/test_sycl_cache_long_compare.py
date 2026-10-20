@@ -1,13 +1,17 @@
 #!/usr/bin/env python3
 """False-adoption guards for independent117K retained-engine process pairs."""
 import copy
+import json
 from pathlib import Path
 import sys
+import tempfile
 import unittest
 
 sys.dont_write_bytecode=True
+sys.path.insert(0,str(Path(__file__).resolve().parent))
 sys.path.insert(0,str(Path(__file__).resolve().parent/'sycl'))
 import cache_long_compare as c
+from strata_bench import RequestJournal, Suite, client_fingerprint
 
 
 def rows(factor=1.04):
@@ -61,7 +65,46 @@ class Comparison(unittest.TestCase):
         for key,value in [('request_sha256','different'),('actual_reused_tokens',1),('actual_read_tokens',117488),
             ('prompt_ms',float('nan')),('prompt_ms',0),('prompt_ms',True),('eligible',False),('generated_tokens',25)]:
             cases=rows();cases[1]['requests'][2][key]=value
-            with self.subTest(key=key,value=value),self.assertRaises(RuntimeError): c.summarize(cases)
+                with self.subTest(key=key,value=value),self.assertRaises(RuntimeError): c.summarize(cases)
+
+
+class Journal(unittest.TestCase):
+    def evidence(self,root,count,wrong_identity=False):
+        directory=root/'bench'/'one';directory.mkdir(parents=True)
+        suite=Suite('http://127.0.0.1:1',None,131072,count,True,prefill_only=True,prefill_tokens=98304,
+            workload_id='native_gdn_20261018')
+        plan=suite.prefill_plan();model=dict(model='fixture',quant='IQ3_S',context=131072)
+        samples=copy.deepcopy(rows()[0]['requests'][:count])
+        result=dict(params=dict(mode='prefill-only',runs=count,think=True,prefill_tokens=98304,
+            workload=suite.workload_identity()),complete=True,machine=model,
+            comparison_identity=dict(**model,mode='prefill-only',thinking=True,workload=suite.workload_identity(),
+                client=client_fingerprint(),prefill_plan=plan),
+            results=dict(failures=[],prefill_only=dict(**plan,requests=samples,complete=True,eligible_runs=count)))
+        journal=RequestJournal(directory,lambda value:value)
+        journal.append('identity','suite',**model,mode='prefill-only',thinking=True,requested_runs=count,
+            workload=suite.workload_identity(),source=client_fingerprint(),prefill_plan=plan)
+        for phase,run in [('warm-up/chat',None),*(('prefill-only',i) for i in range(count))]:
+            sample={k:v for k,v in samples[run or 0].items() if k != 'run'}
+            start=journal.append('start',phase,run,max_tokens=24,thinking=True,request_sha256=sample['request_sha256'])
+            journal.append('result',phase,run,request_index=start,sample=sample)
+        if wrong_identity: journal.append('identity','suite')
+        journal.state(complete=True,terminal='complete')
+        return result
+
+    def test_one_and_four_request_journals(self):
+        for count in (1,4):
+            with self.subTest(count=count),tempfile.TemporaryDirectory() as directory:
+                root=Path(directory);result=self.evidence(root,count)
+                samples,proof=c.official(root,result,count)
+                self.assertEqual(len(samples),count)
+                self.assertEqual(proof['successful_long_requests'],count)
+
+    def test_reject_hash_valid_extra_identity_or_changed_body(self):
+        for extra in (True,False):
+            with self.subTest(extra=extra),tempfile.TemporaryDirectory() as directory:
+                root=Path(directory);result=self.evidence(root,4,extra)
+                if not extra: result['results']['prefill_only']['requests'][2]['generated_tokens']=23
+                with self.assertRaises(RuntimeError): c.official(root,result,4)
 
 
 if __name__=='__main__':unittest.main()
