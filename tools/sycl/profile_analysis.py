@@ -38,15 +38,18 @@ def original():
 
 
 def closed(record):
-    require({k: v for k, v in record.items() if k not in ('analysis_plan', 'analysis')} == original(),
+    require({k: v for k, v in record.items() if k not in ('analysis_plan', 'analysis', 'detail_plan', 'detail')} == original(),
             'original collection outcome changed')
     require(record['passed'] and not record['active'] and record['ownership_closed']
             and record['model_observation']['session_removed'], 'closed successful collection required')
 
 
-def prepare(container, record):
+def prepare(container, record, detail=False):
     closed(record)
-    require('analysis_plan' not in record, 'inspect existing analysis; never blind retry')
+    key = 'detail_plan' if detail else 'analysis_plan'
+    require(key not in record, 'inspect existing analysis; never blind retry')
+    if detail:
+        require(record['analysis']['analysis_passed'], 'closed first analysis required')
     source = git('rev-parse', 'HEAD').decode().strip()
     relative = str(Path(__file__).resolve().relative_to(P))
     require(git('show', source + ':' + relative) == Path(__file__).read_bytes(), 'commit analyser first')
@@ -58,13 +61,21 @@ def prepare(container, record):
     pinned = {str(path): dict(sha256=sha(path), bytes=path.stat().st_size) for path in files}
     timeline = next(path for path in files if path.parent.name == 'trace')
     require(pinned[str(timeline)]['sha256'] == record['capture']['timeline_sha256'], 'timeline differs')
-    record['analysis_plan'] = dict(source_commit=source, source_path=relative, source_sha256=sha(__file__),
+    record[key] = dict(source_commit=source, source_path=relative, source_sha256=sha(__file__),
         interpreter=dict(path=str(Path(sys.executable).resolve()), sha256=sha(sys.executable), version=sys.version),
         collection_commit=COLLECTION, inputs=pinned,
         gates='Preserve collection outcome. Verify closed input hashes and journal chain/order/request binding, actual48-layer BF16 GPU-residual path and complete restoration, finite host/GPU intervals, native-PID/request filtering, per-record host-append links and direct-append inventory conservation. Retain edge/excluded counts. Categorize whole request and first-stream-output prefix separately; linear paired RAW/monotonic clock conversion. Source-supported collector loss limits remain an independent review gate.',
         limits='No native execution, timing comparison, hardware saturation, exact prefill-only boundary or full dependency/critical-path claim. Family names are source lookup groups. Requested copy bytes are not measured bus traffic. Host API wall time is not CPU time. Unions overlap across rows.',
         budgets=dict(wall_seconds=180, cpu_seconds=120, address_space_bytes=6 << 30, result_bytes=24 << 10),
         consumer='Select matched hardware/operation references and next prefill optimization; retire raw trace after remaining source/loss/observer questions close.')
+    if detail:
+        record[key]['gates'] = 'Preserve successful original collection and first analysis. Pin closed inputs. Compute API wall intervals inside observed GPU-empty spans; no CPU cost/causality claim. Inventory every QSA-prefix and prompt_product exact instantiation/launch shape, first-output position and native host parent. Keep graph-replay work links separate from direct appends. First brace in Unitrace kernel names is workgroup COUNT, second is workgroup SIZE (official ze_collector.h GetZeKernelCommandName); do not interpret the first as global work-items.'
+        record[key]['first_analysis_sha256'] = hashlib.sha256(json.dumps(record['analysis'], sort_keys=True).encode()).hexdigest()
+        repo = Path('/home/yayoi/ghq/github.com/intel/pti-gpu')
+        path = 'tools/unitrace/src/levelzero/ze_collector.h'
+        revision = '4b6d74294cdc72766c00a9211fe2e4261ee94244'
+        require(subprocess.check_output(['git', '-C', str(repo), 'show', revision + ':' + path], timeout=20) == (repo / path).read_bytes(), 'geometry source differs from collector revision')
+        record[key]['geometry_source'] = dict(repo=str(repo), revision=revision, path=path, sha256=sha(repo / path))
     RESULT.write_text(json.dumps(container, indent=2, ensure_ascii=False) + '\n')
     print(json.dumps(dict(stage='analysis-prepared', source_commit=source, input_files=len(files))))
 
@@ -274,17 +285,80 @@ def analyse(container, record):
     return 0 if result['analysis_passed'] else 1
 
 
+def detail(container, record):
+    closed(record)
+    require('detail' not in record, 'inspect existing detail result')
+    plan = record['detail_plan']
+    require(RESULT.read_bytes() == git('show', 'HEAD:' + str(RESULT.relative_to(P))), 'commit detail plan first')
+    require(sha(__file__) == plan['source_sha256'] and git('show', plan['source_commit'] + ':' + plan['source_path']) == Path(__file__).read_bytes(), 'detail source changed')
+    require(hashlib.sha256(json.dumps(record['analysis'], sort_keys=True).encode()).hexdigest() == plan['first_analysis_sha256'], 'first analysis changed')
+    geometry = plan['geometry_source']
+    require(sha(Path(geometry['repo']) / geometry['path']) == geometry['sha256'], 'collector geometry source changed')
+    for path, pin in plan['inputs'].items():
+        require(Path(path).stat().st_size == pin['bytes'] and sha(path) == pin['sha256'], 'detail input changed')
+    events = json.loads(next((ROOT / 'trace').glob('*.json')).read_text())['traceEvents']
+    begin = record['request_raw_begin_ns'] / 1000
+    end = record['analysis']['first_output_conversion']['raw_us']
+    native = record['native_identity']['pid']
+    gpu = [e for e in events if e.get('ph') == 'X' and e.get('cat') == 'gpu_op' and e['ts'] < end and e['ts'] + e['dur'] > begin]
+    host = [e for e in events if e.get('ph') == 'X' and e.get('cat') == 'cpu_op' and e['pid'] == native]
+    occupied = merged(interval(e, begin, end) for e in gpu)
+    apis = collections.defaultdict(list)
+    parents = {(e['tid'], e['ts']): e['name'] for e in host}
+    flows = {str(e['id']): e for e in events if e.get('ph') == 's' and e.get('pid') == native and e.get('cat', '').startswith('Flow_H2D_')}
+    for e in host:
+        if e['ts'] < end and e['ts'] + e['dur'] > begin: apis[e['name']].append(interval(e, begin, end))
+    api_rows = []
+    for name, spans in apis.items():
+        union = length(spans)
+        api_rows.append(dict(name=name, count=len(spans), api_union_us=union,
+            api_during_gpu_empty_us=union - intersection(spans, occupied)))
+    api_rows.sort(key=lambda row: row['api_during_gpu_empty_us'], reverse=True)
+    gaps = []; at = begin
+    for lo, hi in occupied:
+        if lo > at: gaps.append((at, lo))
+        at = max(at, hi)
+    if at < end: gaps.append((at, end))
+    gap_rows = []
+    for lo, hi in sorted(gaps, key=lambda span: span[1] - span[0], reverse=True)[:8]:
+        overlap = sorted(((name, intersection(spans, [(lo, hi)])) for name, spans in apis.items()), key=lambda row: row[1], reverse=True)
+        gap_rows.append(dict(begin_offset_us=lo - begin, duration_us=hi - lo,
+            intersecting_apis=[dict(name=name, overlap_us=value) for name, value in overlap[:3] if value > 0]))
+    shapes = {}
+    replay = collections.Counter()
+    for e in gpu:
+        source = flows[str(e['args']['id'])]; parent = parents[source['tid'], source['ts']]
+        if parent == 'zeCommandListImmediateAppendCommandListsExp': replay[family(e['name'])] += 1
+        if 'prompt_product<' not in e['name'] and 'prefix_batch_impl<' not in e['name']: continue
+        row = shapes.setdefault(e['name'], dict(count=0, service_sum_us=0.0, host_parents=collections.Counter(),
+            first_begin_offset_us=e['ts'] - begin, last_end_offset_us=0.0))
+        row['count'] += 1; row['service_sum_us'] += e['dur']; row['host_parents'][parent] += 1
+        row['last_end_offset_us'] = max(row['last_end_offset_us'], e['ts'] + e['dur'] - begin)
+    result = dict(source_commit=plan['source_commit'], native_executed=False, passed=True,
+        api_empty_interval_leaders=api_rows[:12], largest_observed_gpu_empty_intervals=gap_rows,
+        exact_qsa_and_prompt_shapes=[dict(name=name, **row) for name, row in sorted(shapes.items(), key=lambda pair: pair[1]['service_sum_us'], reverse=True)],
+        graph_append_linked_gpu_families=dict(replay), limits=plan['limits'],
+        kernel_name_geometry='First {x;y;z} is workgroup count; second is workgroup size. Product gives global work-items. SIMD is compiled kernel width.')
+    require(len(json.dumps(result).encode()) <= plan['budgets']['result_bytes'], 'detail result budget exceeded')
+    record['detail'] = result
+    RESULT.write_text(json.dumps(container, indent=2, ensure_ascii=False) + '\n')
+    print(json.dumps(dict(detail_passed=True, exact_shapes=len(shapes), native_executed=False)))
+    return 0
+
+
 def main():
-    require(len(sys.argv) == 2 and sys.argv[1] in ('prepare', 'analyse'), 'use profile_analysis.py prepare|analyse')
+    require(len(sys.argv) == 2 and sys.argv[1] in ('prepare', 'analyse', 'detail-prepare', 'detail'), 'use profile_analysis.py prepare|analyse|detail-prepare|detail')
     resource.setrlimit(resource.RLIMIT_AS, (6 << 30, 6 << 30))
     resource.setrlimit(resource.RLIMIT_CPU, (120, 120))
     signal.alarm(180)
     with (B / 'owned-v0141-measurement.lock').open('a+') as lock:
         fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
         container = json.loads(RESULT.read_text()); record = container['unitrace_production_request']
-        if sys.argv[1] == 'prepare':
-            prepare(container, record)
+        if sys.argv[1] in ('prepare', 'detail-prepare'):
+            prepare(container, record, detail=sys.argv[1] == 'detail-prepare')
             return 0
+        if sys.argv[1] == 'detail':
+            return detail(container, record)
         return analyse(container, record)
 
 
