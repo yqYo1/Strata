@@ -1675,7 +1675,7 @@
   },
   "unitrace_recording_window": {
     "schema": "strata-profile-recording-window-v1",
-    "stage": "check-prepared",
+    "stage": "closed",
     "source_commit": "6269902082bfb811ca237bf45faf07e3152898ea",
     "input_sha256": {
       "tools/sycl/bench_engine.py": "e5f588605ebc7799b54f8bf7df9ad2e363391375e50b788b9704a6b80887ca6b",
@@ -1817,9 +1817,9 @@
       "total_bytes": 134217728
     },
     "active": false,
-    "passed": false,
+    "passed": true,
     "ownership_closed": true,
-    "request_window_qualified": false,
+    "request_window_qualified": true,
     "model_qualified": false,
     "binary": {
       "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/unitrace-recording-window-v2/profile_window",
@@ -1933,12 +1933,345 @@
       "wall_s_per_target": 90,
       "wall_s_per_control": 15,
       "raw_text_budget_bytes": 67108864,
-      "total_budget_bytes": 134217728
+      "total_budget_bytes": 134217728,
+      "observations": [
+        {
+          "name": "paused",
+          "passed": true,
+          "session_removed": true,
+          "controls": [
+            {
+              "action": "stop",
+              "raw_before_ns": 879882380342548,
+              "raw_after_ns": 879882489137341,
+              "expected_state": null
+            }
+          ],
+          "pid": 492388,
+          "time_namespace": "time:[4026531834]",
+          "time_offsets": "monotonic           0         0\nboottime            0         0\n",
+          "ready_raw_ns": 879882147373522,
+          "release_raw_ns": 879882147892134,
+          "drained_raw_ns": 879882266324440,
+          "preload_evidence": {
+            "pid": 492388,
+            "loader": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_loader.so.0.12.0",
+            "threads_before": 1,
+            "preinit": 37,
+            "config_enabled": true,
+            "first_init": true,
+            "dispatch_result": 46,
+            "output_untouched": true,
+            "retained_reference_until_exit": true,
+            "runtime_teardown_qualified": false
+          },
+          "clock": {
+            "properties": {
+              "vendor_id": 32902,
+              "device_id": 57868,
+              "uuid": "86800ce2000000000500000000000000",
+              "frequency_hz": 19200000,
+              "timestamp_bits": 64,
+              "kernel_timestamp_bits": 64
+            },
+            "tick_quantum_ns": 52.083333333333336,
+            "phases": {
+              "ready": {
+                "samples": [
+                  {
+                    "phase": "ready",
+                    "before_ns": 879882147222318,
+                    "host_ns": 879882147280207,
+                    "device_ticks": 16893610948611,
+                    "after_ns": 879882147294293
+                  },
+                  {
+                    "phase": "ready",
+                    "before_ns": 879882147295586,
+                    "host_ns": 879882147307528,
+                    "device_ticks": 16893610949134,
+                    "after_ns": 879882147320813
+                  },
+                  {
+                    "phase": "ready",
+                    "before_ns": 879882147321264,
+                    "host_ns": 879882147332775,
+                    "device_ticks": 16893610949619,
+                    "after_ns": 879882147345710
+                  },
+                  {
+                    "phase": "ready",
+                    "before_ns": 879882147346100,
+                    "host_ns": 879882147357632,
+                    "device_ticks": 16893610950096,
+                    "after_ns": 879882147370807
+                  }
+                ],
+                "best_bracket_ns": 24446,
+                "worst_bracket_ns": 71975
+              },
+              "drained": {
+                "samples": [
+                  {
+                    "phase": "drained",
+                    "before_ns": 879882266153239,
+                    "host_ns": 879882266204485,
+                    "device_ticks": 16893613231869,
+                    "after_ns": 879882266217971
+                  },
+                  {
+                    "phase": "drained",
+                    "before_ns": 879882266225244,
+                    "host_ns": 879882266236305,
+                    "device_ticks": 16893613232479,
+                    "after_ns": 879882266249239
+                  },
+                  {
+                    "phase": "drained",
+                    "before_ns": 879882266255551,
+                    "host_ns": 879882266266462,
+                    "device_ticks": 16893613233059,
+                    "after_ns": 879882266283463
+                  },
+                  {
+                    "phase": "drained",
+                    "before_ns": 879882266290276,
+                    "host_ns": 879882266301237,
+                    "device_ticks": 16893613233726,
+                    "after_ns": 879882266314091
+                  }
+                ],
+                "best_bracket_ns": 23815,
+                "worst_bracket_ns": 64732
+              }
+            },
+            "limits": "Caller brackets bound the paired-host samples, not every collector conversion or graph edge. No sub-millisecond queue-delay or full critical-path accuracy claim."
+          },
+          "UR_sha256": "376767f670d4a254f1438c16c4217896e4a382aa26e4de3cb63cca989bf45286",
+          "executed_inventory": {
+            "barrier": 20,
+            "copy": 53,
+            "copy_bytes": 55844,
+            "kernel": 606,
+            "fill": 1,
+            "fill_bytes": 1028
+          },
+          "coverage": {
+            "timeline": null,
+            "program_kernels": 0,
+            "device_inventory": {},
+            "gpu_union_us": 0.0,
+            "program_kernel_union_us": 0.0,
+            "device_lanes": {},
+            "host_sources_complete": true,
+            "raw_window_contained": true
+          },
+          "execution_passed": true,
+          "fresh_faults": [],
+          "boot_unchanged": true,
+          "driver_after": {
+            "pci": "/sys/bus/pci/devices/0000:05:00.0",
+            "driver": "xe",
+            "vendor": "0x8086",
+            "device": "0xe20c",
+            "kernel": "7.0.0-38-generic",
+            "devcoredump": false
+          }
+        },
+        {
+          "name": "window",
+          "passed": true,
+          "session_removed": true,
+          "controls": [
+            {
+              "action": "resume",
+              "raw_before_ns": 879882549058651,
+              "raw_after_ns": 879882656103442,
+              "expected_state": 0
+            },
+            {
+              "action": "pause",
+              "raw_before_ns": 879882822475369,
+              "raw_after_ns": 879882929638713,
+              "expected_state": 1
+            },
+            {
+              "action": "stop",
+              "raw_before_ns": 879883051062729,
+              "raw_after_ns": 879883158479978,
+              "expected_state": null
+            }
+          ],
+          "pid": 492414,
+          "time_namespace": "time:[4026531834]",
+          "time_offsets": "monotonic           0         0\nboottime            0         0\n",
+          "ready_raw_ns": 879882548719576,
+          "release_raw_ns": 879882656140111,
+          "drained_raw_ns": 879882822379279,
+          "preload_evidence": {
+            "pid": 492414,
+            "loader": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_loader.so.0.12.0",
+            "threads_before": 1,
+            "preinit": 37,
+            "config_enabled": true,
+            "first_init": true,
+            "dispatch_result": 46,
+            "output_untouched": true,
+            "retained_reference_until_exit": true,
+            "runtime_teardown_qualified": false
+          },
+          "clock": {
+            "properties": {
+              "vendor_id": 32902,
+              "device_id": 57868,
+              "uuid": "86800ce2000000000500000000000000",
+              "frequency_hz": 19200000,
+              "timestamp_bits": 64,
+              "kernel_timestamp_bits": 64
+            },
+            "tick_quantum_ns": 52.083333333333336,
+            "phases": {
+              "ready": {
+                "samples": [
+                  {
+                    "phase": "ready",
+                    "before_ns": 879882548577539,
+                    "host_ns": 879882548628745,
+                    "device_ticks": 16893618654210,
+                    "after_ns": 879882548642130
+                  },
+                  {
+                    "phase": "ready",
+                    "before_ns": 879882548643393,
+                    "host_ns": 879882548654874,
+                    "device_ticks": 16893618654711,
+                    "after_ns": 879882548668009
+                  },
+                  {
+                    "phase": "ready",
+                    "before_ns": 879882548668410,
+                    "host_ns": 879882548679651,
+                    "device_ticks": 16893618655186,
+                    "after_ns": 879882548692705
+                  },
+                  {
+                    "phase": "ready",
+                    "before_ns": 879882548693026,
+                    "host_ns": 879882548704197,
+                    "device_ticks": 16893618655657,
+                    "after_ns": 879882548717211
+                  }
+                ],
+                "best_bracket_ns": 24185,
+                "worst_bracket_ns": 64591
+              },
+              "drained": {
+                "samples": [
+                  {
+                    "phase": "drained",
+                    "before_ns": 879882822110876,
+                    "host_ns": 879882822159908,
+                    "device_ticks": 16893623905808,
+                    "after_ns": 879882822173253
+                  },
+                  {
+                    "phase": "drained",
+                    "before_ns": 879882822180667,
+                    "host_ns": 879882822191617,
+                    "device_ticks": 16893623906417,
+                    "after_ns": 879882822204551
+                  },
+                  {
+                    "phase": "drained",
+                    "before_ns": 879882822211304,
+                    "host_ns": 879882822222225,
+                    "device_ticks": 16893623907004,
+                    "after_ns": 879882822235069
+                  },
+                  {
+                    "phase": "drained",
+                    "before_ns": 879882822241891,
+                    "host_ns": 879882822252762,
+                    "device_ticks": 16893623907591,
+                    "after_ns": 879882822368108
+                  }
+                ],
+                "best_bracket_ns": 23765,
+                "worst_bracket_ns": 126217
+              }
+            },
+            "limits": "Caller brackets bound the paired-host samples, not every collector conversion or graph edge. No sub-millisecond queue-delay or full critical-path accuracy claim."
+          },
+          "UR_sha256": "a7745095f95b242171f93c2b4d02c0a93e5969944cf204a24c7d291515bf1e00",
+          "executed_inventory": {
+            "barrier": 20,
+            "copy": 53,
+            "copy_bytes": 55844,
+            "kernel": 606,
+            "fill": 1,
+            "fill_bytes": 1028
+          },
+          "coverage": {
+            "timeline": {
+              "sha256": "d336f6dd5e770ed2b80ae4697b5574a2e3e794e2c0f5b97b9656137c47a3603e",
+              "bytes": 859259
+            },
+            "program_kernels": 606,
+            "device_inventory": {
+              "barrier": 20,
+              "copy": 53,
+              "copy_bytes": 55844,
+              "kernel": 606,
+              "fill": 1,
+              "fill_bytes": 1028
+            },
+            "gpu_union_us": 3423.3466796875,
+            "program_kernel_union_us": 3023.47607421875,
+            "device_lanes": {
+              "4279210047": "DEVICE<jitakusaba01>[Intel(R) Arc(TM) B570 Graphics] 0:5:0:0 #0"
+            },
+            "host_sources_complete": true,
+            "raw_window_contained": true
+          },
+          "execution_passed": true,
+          "fresh_faults": [],
+          "boot_unchanged": true,
+          "driver_after": {
+            "pci": "/sys/bus/pci/devices/0000:05:00.0",
+            "driver": "xe",
+            "vendor": "0x8086",
+            "device": "0xe20c",
+            "kernel": "7.0.0-38-generic",
+            "devcoredump": false
+          }
+        }
+      ]
     },
     "source_review": {
       "report_sha256": "aa5b6907e9baf55c7bb00d99ffa22df8b7aba5f6a4462f249a6a50d526f05b88",
       "source_hashes_match": true,
       "decision": "Native Luna-max accepts the transitive native-source admission and device/timing gates. Main confirmed original compile inputs via query_profile.current_build. The reported stale failed-state blocker is superseded by actual committed failed evidence aef9e43f6, fresh plan92ba47e30 and successful build25c46c30b; original failure remains failed. This checks source/plan only, not native recording-window qualification."
-    }
+    },
+    "driver_before": {
+      "pci": "/sys/bus/pci/devices/0000:05:00.0",
+      "driver": "xe",
+      "vendor": "0x8086",
+      "device": "0xe20c",
+      "kernel": "7.0.0-38-generic",
+      "devcoredump": false
+    },
+    "fresh_faults": [],
+    "boot_unchanged": true,
+    "driver_after": {
+      "pci": "/sys/bus/pci/devices/0000:05:00.0",
+      "driver": "xe",
+      "vendor": "0x8086",
+      "device": "0xe20c",
+      "kernel": "7.0.0-38-generic",
+      "devcoredump": false
+    },
+    "production_trace_ready": false,
+    "full_critical_path_qualified": false,
+    "decision": "Two immutable fresh native processes execute606 kernels each with numerical guards. Paused records zero device work; external resume/pause at native ready/drained records exact606/53copy/1fill/20barrier inventory and requested bytes. Source/native/8698 compiler inputs and executable remain identical. All clock brackets, device/PCI/namespace checks, owned target/control closure, exact-session cleanup and driver/boot/fault gates pass. Qualification is the bounded fixed-fixture recording window only; original coverage attempts remain failed. Next: qualified32K+ production collection and service/submission/dependency reconciliation, with clean speed and broader model qualification separate."
   }
 }

@@ -2858,13 +2858,25 @@ replays. All61 graph append APIs account for their183 unsunk non-barrier nodes.
 This establishes fixed-fixture service-record coverage, not complete graph
 completion edges, a production critical path or a speed improvement.
 
-Before32K+ production collection, qualify a small recording window: execute
-the same known fixture once while paused and once between external resume/pause
-commands at native ready/drained boundaries. Check actual executed versus
-recorded work, exact-session cleanup after closure, same caller/target time
-namespace, bracketed raw-host/device timestamps and device timer properties.
-The Main-authored wrapper/controller are under review and have not been built
-or executed. Both model engines and their clean speed samples are unchanged;
+The Main-authored recording-window wrapper/controller at`626990208`, with
+check plan`b4ce2f00c`, now passes two fresh processes. Both execute all606 kernels
+and numerical guards; paused-throughout records no GPU work, while external
+resume at ready/pause after drain records606 kernels,53 copies/55844 requested
+bytes, one1028-byte fill and20 barriers. All records have unique IDs, host
+sources, positive kernel service and containment within the controlled raw
+window. The selected device IDs/UUID and trace PCI lane identify B570; caller
+and target share the observed time namespace. Paired-host samples lie inside
+all raw-clock brackets, with best widths23.765..24.446us per phase; the worst
+single bracket is126.217us. The device reports19.2MHz and64-bit global/kernel
+timestamps. These observations do not establish nanosecond accuracy or complete
+graph completion edges. Native and control commands close normally, exact
+sessions are removed and no fresh fault occurs. The initial missing-header
+compile failure remains in Git at`aef9e43f6`; it executed no GPU work.
+
+Next collect a bounded32K+ production request using the qualified control path,
+then reconcile actual production service/submission/dependencies. Small-fixture
+window success alone does not qualify a model trace or limiting hardware
+resource. Both model engines and clean speed samples are unchanged;
 physical262144/session/RESTORE, task quality and sustained decode remain pending.
 
 The closed capability output and consumed decision-support report/transaction
