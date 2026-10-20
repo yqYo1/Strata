@@ -1,14 +1,14 @@
 {
   "mode": "engine-compare",
   "stage": "clean",
-  "cohort": 0,
-  "arm": 0,
+  "cohort": 1,
+  "arm": 1,
   "source_commit": "bec57ee62ac8a78d7f02aacbba2da9045a2ef348",
-  "build_source_commit": "396d0c91f301e0ac99b81d6641fdc435b95b4da9",
+  "build_source_commit": "bb71e78db7b6a4930945a2d564ec6cd42d0ad245",
   "binary": {
-    "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/known-good-396d0c91f301/strata",
-    "bytes": 22079288,
-    "sha256": "570b65ddfd88e3955b58634b361bb13e12a4bd713ac6e5ae396d47265a76fd46"
+    "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/strata",
+    "bytes": 22127264,
+    "sha256": "33452421e15ad5c5329921c3d12310fd77e198ce7f8af4aa9cb77c9d9d6bab97"
   },
   "retained_build_proof": {
     "old_original_inputs_recovered": 9813,
@@ -413,7 +413,7 @@
       "sid": 3599031
     }
   },
-  "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/retained-long-comparison-v1-0",
+  "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/retained-long-comparison-v1-1",
   "config": {
     "exe": "/home/yayoi/orca/workspaces/Strata/sycl/tools/sycl/engine_once.py",
     "args": [
@@ -428,9 +428,9 @@
       "--kv-resident",
       "131072",
       "--expert-cache",
-      "128",
+      "1256",
       "--expert-profile",
-      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/retained-long-comparison-v1-0/expert-profile.bin",
+      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/retained-long-comparison-v1-1/expert-profile.bin",
       "--expert-cache-per-layer",
       "--pool-workers",
       "5",
@@ -459,8 +459,7 @@
       "--vram-reserve-mib",
       "700",
       "--no-coupled-draft",
-      "--no-token-graph",
-      "--no-prefill-borrow"
+      "--no-token-graph"
     ],
     "cwd": "/home/yayoi/orca/workspaces/Strata/sycl",
     "tokenizer": "/home/yayoi/.local/share/strata-sycl/packs/qwen3.8-flash-next-iq3_s/tokenizer",
@@ -469,7 +468,7 @@
       "strata"
     ],
     "host": "127.0.0.1",
-    "log": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/retained-long-comparison-v1-0/engine.stderr",
+    "log": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/retained-long-comparison-v1-1/engine.stderr",
     "engine_silence_s": 480,
     "parallel": 1,
     "open_browser": false,
@@ -529,7 +528,7 @@
     "STRATA_SYCL_SELECT_CYCLIC": "0",
     "STRATA_SYCL_PROMPT_K_CELL_MAJOR": "0",
     "STRATA_SYCL_PROMPT_NATIVE_KV_MIN": "0",
-    "XDG_CACHE_HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/retained-long-comparison-v1-0/cache",
+    "XDG_CACHE_HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/retained-long-comparison-v1-1/cache",
     "STRATA_SYCL_PREFILL_NATIVE16": "bf16",
     "STRATA_SYCL_PREFILL_QSA_MATH": "bf16-prefix-ordered-exp",
     "STRATA_SYCL_PREFILL_NATIVE16_BACKEND": "vllm",
@@ -542,8 +541,8 @@
     "STRATA_SYCL_SCORE_HEAD_PARALLEL": "1",
     "STRATA_SYCL_PREFILL_SCORE_GEMM": "1",
     "STRATA_SYCL_PREFILL_COMMAND_PROFILE": "0",
-    "TMPDIR": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/retained-long-comparison-v1-0/tmp",
-    "STRATA_MEASUREMENT_ROOT": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/retained-long-comparison-v1-0",
+    "TMPDIR": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/retained-long-comparison-v1-1/tmp",
+    "STRATA_MEASUREMENT_ROOT": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/retained-long-comparison-v1-1",
     "ZES_ENABLE_SYSMAN": "0",
     "STRATA_SYCL_PREFILL_GDN_COLUMNS": "4",
     "STRATA_SYCL_PREFILL_GDN_CHUNK64": "0",
@@ -552,7 +551,7 @@
     "STRATA_SYCL_PREFILL_DOWN_SCATTER": "large",
     "STRATA_SYCL_PREFILL_MIXED_SCRATCH": "1",
     "STRATA_SYCL_PREFILL_EXPERT_BANK_SLOTS": "384",
-    "STRATA_SYCL_CACHE_SCRATCH_LEASE": "0",
+    "STRATA_SYCL_CACHE_SCRATCH_LEASE": "1",
     "STRATA_SYCL_CACHE_LOAN_AUDIT": "0",
     "STRATA_SYCL_VERIFY_ARENA_COPY": "0",
     "STRATA_SYCL_VERIFY_PCIE_EARLY": "0",
@@ -564,9 +563,9 @@
     "/bin/sh",
     "/home/yayoi/orca/workspaces/Strata/sycl/bench.sh",
     "--config",
-    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/retained-long-comparison-v1-0/config.json",
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/retained-long-comparison-v1-1/config.json",
     "--port",
-    "54167",
+    "58981",
     "--prefill-only",
     "--prefill-tokens",
     "98304",
@@ -579,7 +578,7 @@
     "--ready-timeout",
     "600",
     "--out",
-    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/retained-long-comparison-v1-0/bench"
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/retained-long-comparison-v1-1/bench"
   ],
   "runtime_asset_delta": {
     "/usr/lib/x86_64-linux-gnu/libze_intel_gpu.so.1.17.39395": {
@@ -599,7 +598,7 @@
       "candidate_sha256": "0d6934adafb2ef3c640382440c14d6bd60f391e688c000796ffcea0c72849269"
     }
   },
-  "config_sha256": "4e7758cfc724a7f543d4af8b294ae6dfc1cfd2427ce47194c5cf3e1d858f4bbf",
+  "config_sha256": "a58489597d41b6c2828f9cadf445cd5eb248f2b5ec37b1725572ef72dff3652b",
   "profile_sha256": "8f59b4aa8873209dff11c11e37bcda9529a1335b724a1afeea37bf6388975baf",
   "settings_sha256": "d4402591df50e80dc45a5ec9e4839c7a794888850b1473537b6f95179be5b03c",
   "tokenizer_assets": {
@@ -790,8 +789,8 @@
   },
   "source_count": 138,
   "benchmark_fingerprint": "8f205dbc4c44e82f36784fb8c6a6421d66a2675df9ae3b3e3801d1cebcdffad4",
-  "complete": true,
-  "passed": true,
+  "complete": false,
+  "passed": false,
   "active": false,
   "adoption_qualified": false,
   "budgets": {
@@ -801,251 +800,5 @@
     "text_cap": 67108864,
     "file_cap": 67108864,
     "total_cap": 67108864
-  },
-  "exit_code": 0,
-  "requests": [
-    {
-      "ok": true,
-      "err": null,
-      "ttft_s": 126.291,
-      "total_s": 128.022,
-      "prompt_tokens": 117489,
-      "reused_tokens": 0,
-      "read_tokens": 117489,
-      "generated_tokens": 24,
-      "prompt_tps": 931.6,
-      "prompt_tps_source": "engine",
-      "decode_tps": 13.1,
-      "decode_tps_source": "engine",
-      "prompt_ms": 126115.2,
-      "decode_ms": 1832.1,
-      "drafts_offered": 21,
-      "drafts_accepted": 16,
-      "finish_reason": "length",
-      "request_sha256": "26f08fd8364b5c4bce718617fe2aed42761d0a794e068b00532694adef78b3be",
-      "stream_complete": true,
-      "truncated": true,
-      "generated_tokens_source": "usage",
-      "client_interval": {
-        "request_begin_monotonic_ns": 852428005946894,
-        "first_output_monotonic_ns": 852554297063965,
-        "request_end_monotonic_ns": 852556028788826
-      },
-      "output_chars": 0,
-      "reasoning_chars": 121,
-      "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-      "reasoning_sha256": "0d786145d04b965534c72ea005fcccb9fb3a7e2552f6dda1bf32578d1916b8b2",
-      "eligible": true,
-      "eligibility_errors": [],
-      "requested_min_tokens": 98304,
-      "actual_prompt_tokens": 117489,
-      "actual_read_tokens": 117489,
-      "actual_reused_tokens": 0,
-      "prompt_count_source": "usage.prompt_tokens",
-      "read_count_source": "timings.prompt_n",
-      "reuse_counts_reported": {
-        "usage": 0,
-        "timings": 0
-      },
-      "thinking_requested": true,
-      "reasoning_observed": true,
-      "reasoning_tokens_reported": null,
-      "run": 0
-    },
-    {
-      "ok": true,
-      "err": null,
-      "ttft_s": 116.979,
-      "total_s": 118.684,
-      "prompt_tokens": 117489,
-      "reused_tokens": 0,
-      "read_tokens": 117489,
-      "generated_tokens": 24,
-      "prompt_tps": 1005.8,
-      "prompt_tps_source": "engine",
-      "decode_tps": 13.3,
-      "decode_tps_source": "engine",
-      "prompt_ms": 116815.7,
-      "decode_ms": 1806.0,
-      "drafts_offered": 21,
-      "drafts_accepted": 16,
-      "finish_reason": "length",
-      "request_sha256": "fd3ad8ad7033776ad749b22e62e910e5f47e3f7664705f48d9f1fe7349b65515",
-      "stream_complete": true,
-      "truncated": true,
-      "generated_tokens_source": "usage",
-      "client_interval": {
-        "request_begin_monotonic_ns": 852556059376411,
-        "first_output_monotonic_ns": 852673038236403,
-        "request_end_monotonic_ns": 852674743517949
-      },
-      "output_chars": 0,
-      "reasoning_chars": 121,
-      "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-      "reasoning_sha256": "0d786145d04b965534c72ea005fcccb9fb3a7e2552f6dda1bf32578d1916b8b2",
-      "eligible": true,
-      "eligibility_errors": [],
-      "requested_min_tokens": 98304,
-      "actual_prompt_tokens": 117489,
-      "actual_read_tokens": 117489,
-      "actual_reused_tokens": 0,
-      "prompt_count_source": "usage.prompt_tokens",
-      "read_count_source": "timings.prompt_n",
-      "reuse_counts_reported": {
-        "usage": 0,
-        "timings": 0
-      },
-      "thinking_requested": true,
-      "reasoning_observed": true,
-      "reasoning_tokens_reported": null,
-      "run": 1
-    },
-    {
-      "ok": true,
-      "err": null,
-      "ttft_s": 116.975,
-      "total_s": 118.627,
-      "prompt_tokens": 117489,
-      "reused_tokens": 0,
-      "read_tokens": 117489,
-      "generated_tokens": 24,
-      "prompt_tps": 1005.8,
-      "prompt_tps_source": "engine",
-      "decode_tps": 13.7,
-      "decode_tps_source": "engine",
-      "prompt_ms": 116813.9,
-      "decode_ms": 1751.1,
-      "drafts_offered": 21,
-      "drafts_accepted": 16,
-      "finish_reason": "length",
-      "request_sha256": "daabbef4775c3fbdbfd832339d80a5ae2f91025b66df79b92fb8f6905f33b041",
-      "stream_complete": true,
-      "truncated": true,
-      "generated_tokens_source": "usage",
-      "client_interval": {
-        "request_begin_monotonic_ns": 852674774051799,
-        "first_output_monotonic_ns": 852791749463902,
-        "request_end_monotonic_ns": 852793401706207
-      },
-      "output_chars": 0,
-      "reasoning_chars": 121,
-      "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-      "reasoning_sha256": "0d786145d04b965534c72ea005fcccb9fb3a7e2552f6dda1bf32578d1916b8b2",
-      "eligible": true,
-      "eligibility_errors": [],
-      "requested_min_tokens": 98304,
-      "actual_prompt_tokens": 117489,
-      "actual_read_tokens": 117489,
-      "actual_reused_tokens": 0,
-      "prompt_count_source": "usage.prompt_tokens",
-      "read_count_source": "timings.prompt_n",
-      "reuse_counts_reported": {
-        "usage": 0,
-        "timings": 0
-      },
-      "thinking_requested": true,
-      "reasoning_observed": true,
-      "reasoning_tokens_reported": null,
-      "run": 2
-    },
-    {
-      "ok": true,
-      "err": null,
-      "ttft_s": 117.021,
-      "total_s": 118.705,
-      "prompt_tokens": 117489,
-      "reused_tokens": 0,
-      "read_tokens": 117489,
-      "generated_tokens": 24,
-      "prompt_tps": 1005.4,
-      "prompt_tps_source": "engine",
-      "decode_tps": 13.4,
-      "decode_tps_source": "engine",
-      "prompt_ms": 116857.7,
-      "decode_ms": 1784.8,
-      "drafts_offered": 21,
-      "drafts_accepted": 16,
-      "finish_reason": "length",
-      "request_sha256": "8669c9ebe2747b1fc2d7c4806eeb66025c919981d81c51cfdbd64ba3ec3cc2b1",
-      "stream_complete": true,
-      "truncated": true,
-      "generated_tokens_source": "usage",
-      "client_interval": {
-        "request_begin_monotonic_ns": 852793432951253,
-        "first_output_monotonic_ns": 852910454327904,
-        "request_end_monotonic_ns": 852912138823458
-      },
-      "output_chars": 0,
-      "reasoning_chars": 121,
-      "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-      "reasoning_sha256": "0d786145d04b965534c72ea005fcccb9fb3a7e2552f6dda1bf32578d1916b8b2",
-      "eligible": true,
-      "eligibility_errors": [],
-      "requested_min_tokens": 98304,
-      "actual_prompt_tokens": 117489,
-      "actual_read_tokens": 117489,
-      "actual_reused_tokens": 0,
-      "prompt_count_source": "usage.prompt_tokens",
-      "read_count_source": "timings.prompt_n",
-      "reuse_counts_reported": {
-        "usage": 0,
-        "timings": 0
-      },
-      "thinking_requested": true,
-      "reasoning_observed": true,
-      "reasoning_tokens_reported": null,
-      "run": 3
-    }
-  ],
-  "request_journal": {
-    "successful_warmups": 1,
-    "successful_long_requests": 4,
-    "request_sha256": [
-      "6976dd85c26437117139f185ce0ac4da0ab9d1d4eb576dd2f9e252ae99d63f03",
-      "26f08fd8364b5c4bce718617fe2aed42761d0a794e068b00532694adef78b3be",
-      "fd3ad8ad7033776ad749b22e62e910e5f47e3f7664705f48d9f1fe7349b65515",
-      "daabbef4775c3fbdbfd832339d80a5ae2f91025b66df79b92fb8f6905f33b041",
-      "8669c9ebe2747b1fc2d7c4806eeb66025c919981d81c51cfdbd64ba3ec3cc2b1"
-    ],
-    "journal_sha256": "776290a074ebe0543e2f5735b7ed724d27a22bf5bd30c31c1d45325ad5f8b126",
-    "state_sha256": "e099c8754633fa2072d5b0e67dac3ba271c8db0e71a28b925d3d4749efc5a6b5"
-  },
-  "route_evidence": {
-    "actual_route_checked": true,
-    "expert_cache_slots": 128,
-    "loan_first": null,
-    "loan_slots": 0,
-    "suffix_identity_basis": "Exact completed payload/map admission, unchanged profile and static per-layer cache; first=slots-lent.",
-    "residual_gpu_rows": 117488,
-    "mode": 10,
-    "windows_per_layer": [
-      [
-        0,
-        81920
-      ],
-      [
-        81920,
-        35568
-      ]
-    ],
-    "checked_direct_owner_retirements": null,
-    "validation_activation": null
-  },
-  "native_identity": {
-    "pid": 3615382,
-    "start_ticks": 85233044,
-    "sid": 3615358
-  },
-  "ownership_closed": true,
-  "fresh_faults": [],
-  "fault_probe_successful": true,
-  "boot_unchanged": true,
-  "driver_after": {
-    "pci": "/sys/bus/pci/devices/0000:05:00.0",
-    "driver": "xe",
-    "vendor": "0x8086",
-    "device": "0xe20c",
-    "kernel": "7.0.0-38-generic",
-    "devcoredump": false
   }
 }
