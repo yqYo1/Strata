@@ -2135,6 +2135,13 @@ host cases exercise the actual arithmetic/state helpers, including injected
 host phase exceptions; real Prefill/GEMM/queue fault injection and checked
 parent ownership, graph retirement and loan/refill admission remain pending.
 The new helper and tests are Main-authored from this fork's allocation path.
+At native source`6a553b54b`, the engine and seven fixtures rebuilt successfully
+(engine SHA256`b6e870895ab0e3399626169f7da02e09d011e7c72110406afcc342884e65876e`).
+All86 prerequisite cases and11 offline tests passed in a fresh v4 root; every
+owner closed, boot remained unchanged and no fresh driver fault occurred.
+The owned-mode math was not changed, and the new engine has not run a model.
+A new Orca Luna review audits the actual implementation and its callers while
+Main keeps those native inputs frozen; checked parent-loan admission is next.
 CPU-math/RAM/GPU resource attribution remains unknown; physical262144/session/
 RESTORE, model quality and clean speed remain separate gates.
 Only a later qualified mechanism permits a
