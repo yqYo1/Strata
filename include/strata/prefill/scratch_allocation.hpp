@@ -7,6 +7,19 @@
 
 namespace strata::prefill::detail {
 
+inline bool scratch_span_inside(const void* base, uint64_t used, const void* pointer, uint64_t bytes) {
+    const auto begin=reinterpret_cast<uintptr_t>(base), address=reinterpret_cast<uintptr_t>(pointer);
+    return begin && address && bytes && used<=std::numeric_limits<uintptr_t>::max()-begin &&
+        address>=begin && address-begin<=used && bytes<=used-(address-begin);
+}
+
+inline bool scratch_spans_disjoint(const void* a, uint64_t an, const void* b, uint64_t bn) {
+    const auto aa=reinterpret_cast<uintptr_t>(a), bb=reinterpret_cast<uintptr_t>(b);
+    if (!aa || !bb || !an || !bn || an>std::numeric_limits<uintptr_t>::max()-aa ||
+        bn>std::numeric_limits<uintptr_t>::max()-bb) return false;
+    return aa<=bb ? an<=bb-aa : bn<=aa-bb;
+}
+
 inline uint64_t scratch_product(uint64_t a, uint64_t b) {
     if (b && a > std::numeric_limits<uint64_t>::max() / b)
         throw std::overflow_error("prefill scratch: dimension product overflow");

@@ -538,11 +538,32 @@ struct Prefill::Impl {
     void* borrowed_base = nullptr;
     uint64_t borrowed_capacity = 0, borrowed_used = 0, borrowed_layout_generation = 0;
     uint64_t lease_layout_generation = 0;
+    bool cache_scratch_layout_covered(const core::CacheScratchLease& lease, bool exclusive) const {
+        if (!borrowed || !scratch_layout.ready() || !scratch_alias || !cs || copy!=cs || T<=0 ||
+            !borrowed_used || borrowed_used>borrowed_capacity ||
+            borrowed_layout_generation!=scratch_layout.generation() ||
+            uint64_t(T)>std::numeric_limits<uint64_t>::max()/(D*4) ||
+            !lease.contains(cache,borrowed_base,borrowed_capacity,exclusive)) return false;
+        const auto r_bytes=uint64_t(T)*D*4, emb_bytes=uint64_t(T)*N*4;
+        const auto covered=[&](const void* pointer,uint64_t bytes) {
+            return detail::scratch_span_inside(borrowed_base,borrowed_used,pointer,bytes) &&
+                lease.contains(cache,pointer,bytes,exclusive);
+        };
+        return covered(R,r_bytes) && covered(region,region_bytes) && covered(emb,emb_bytes) &&
+            detail::scratch_spans_disjoint(R,r_bytes,region,region_bytes) &&
+            detail::scratch_spans_disjoint(R,r_bytes,emb,emb_bytes) &&
+            detail::scratch_spans_disjoint(region,region_bytes,emb,emb_bytes);
+    }
     bool cache_scratch_authorized() const {
-        return borrowed && scratch_layout.ready() && borrowed_used && borrowed_used <= borrowed_capacity &&
-            borrowed_layout_generation == scratch_layout.generation() &&
-            lease_layout_generation == scratch_layout.generation() &&
-            cache_scratch_lease.contains(cache, borrowed_base, borrowed_capacity);
+        return lease_layout_generation==scratch_layout.generation() &&
+            cache_scratch_layout_covered(cache_scratch_lease,true);
+    }
+    bool mixed_scratch_owners_ready() const {
+        if (borrowed) return cache_scratch_authorized();
+        const auto owns=[&](const void* pointer) {
+            return std::find(owned.begin(),owned.end(),pointer)!=owned.end();
+        };
+        return owns(R) && owns(region) && owns(emb);
     }
     bool cache_scratch_entry(std::string& error) const {
         if (cache_scratch_lease && !cache_scratch_authorized()) {
@@ -1317,9 +1338,7 @@ bool Prefill::bind_cache_scratch_lease(const core::CacheScratchLease& lease, std
         err = "prefill: cannot replace a pending cache scratch loan"; return false;
     }
     if (!m.borrowed || !m.scratch_layout.ready() || !m.cache || !m.cs || m.copy != m.cs ||
-        !m.scratch_alias || !m.borrowed_used || m.borrowed_used > m.borrowed_capacity ||
-        m.borrowed_layout_generation != m.scratch_layout.generation() ||
-        !lease.contains(m.cache, m.borrowed_base, m.borrowed_capacity, false)) {
+        !m.scratch_alias || !m.cache_scratch_layout_covered(lease,false)) {
         err = "prefill: cache lease does not cover the sealed layout/owner/queue"; return false;
     }
     m.cache_scratch_lease = lease;
@@ -1331,7 +1350,7 @@ bool Prefill::activate_cache_scratch_lease(const std::function<bool()>& retire, 
     Impl& m = *impl_;
     if (!m.cache || !m.scratch_layout.ready() ||
         m.lease_layout_generation != m.scratch_layout.generation() ||
-        !m.cache_scratch_lease.contains(m.cache, m.borrowed_base, m.borrowed_capacity, false)) {
+        !m.cache_scratch_layout_covered(m.cache_scratch_lease,false)) {
         err = "prefill: cache scratch activation requires the bound current layout"; return false;
     }
     try { return m.cache->activate_scratch_loan(m.cache_scratch_lease, retire); }

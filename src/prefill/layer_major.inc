@@ -65,8 +65,8 @@ bool Prefill::run_layer_major(const int64_t* tokens, int64_t n, int64_t pos0, st
     const bool window_on = window_requested && !requires_prefix_checkpoints;
     const bool scratch_mixed_on = moe_scratch_mixed_requested();
     if (scratch_mixed_on && (!window_on || window_requested != 10 || !native16_on ||
-        m.T != 8192 || !m.scratch_alias || m.borrowed || m.copy != m.cs)) {
-        err = "prefill mixed scratch: requires mode10 native16, owned chunk8192 scratch and one queue";
+        m.T != 8192 || !m.scratch_alias || !m.mixed_scratch_owners_ready() || m.copy != m.cs)) {
+        err = "prefill mixed scratch: requires mode10 native16, checked chunk8192 owners and one queue";
         return false;
     }
     const bool command_profile_on = sycl_backend::command_profile::requested();
@@ -333,13 +333,10 @@ bool Prefill::run_layer_major(const int64_t* tokens, int64_t n, int64_t pos0, st
             (unsigned long long)fixed, (unsigned long long)bytes);
         if (fixed <= free_gpu && (scratch_mixed_on || bytes <= free_gpu - fixed)) {
             if (scratch_mixed_on) {
-                // These are independently owned persistent scratch allocations,
-                // idle only inside the FFN helper after its attention drain.
-                auto owns = [&](const void* pointer) {
-                    return std::find(m.owned.begin(), m.owned.end(), pointer) != m.owned.end();
-                };
-                if (!owns(m.R) || !owns(m.region) || !owns(m.emb)) {
-                    err = "prefill mixed scratch: direct Prefill owners required"; return false;
+                // Direct owners or the active sealed parent loan. The same
+                // views remain idle only after the FFN's attention drain.
+                if (!m.mixed_scratch_owners_ready()) {
+                    err = "prefill mixed scratch: current checked owners required"; return false;
                 }
                 borrowed_mixed_plan = detail::MoeAccumPlan::make_scratch_borrowed(count,
                     detail::layer_major_mul(uint64_t(m.T), D * 4), m.region_bytes);

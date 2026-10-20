@@ -6222,6 +6222,10 @@ int main(int argc, char** argv) {
                     if (!loan_call([&] { return p.cache->publish_scratch_refill(p.lease, [&] {
                         return res_upload("serve checked cache refill", e) && audit_residency("refill", e);
                     }); },e)) return false;
+                    if (trace)
+                        std::fprintf(stderr,"strata cache loan: phase=ready generation=%llu chunk=%lld first=%d lent=%zu decode_ready=%d\n",
+                            (unsigned long long)p.lease.generation(),(long long)p.lent_chunk,p.first_now,
+                            p.lent.size(),int(p.cache->decode_ready()));
                     // Keep the exact rows/slots through every transfer, drain
                     // and publication. A partial failure never loses this map.
                     p.lent.clear(); p.lent_chunk = 0; p.lease = {};
@@ -6363,6 +6367,10 @@ int main(int argc, char** argv) {
                     if (!loan_call([&] { return p.cache->mask_scratch_loan(p.lease,[&] {
                         return res_upload("serve checked cache lend",e) && audit_residency("lend",e);
                     }); },e)) return false;
+                    if (trace)
+                        std::fprintf(stderr,"strata cache loan: phase=masked generation=%llu chunk=%lld first=%d lent=%zu decode_ready=%d\n",
+                            (unsigned long long)p.lease.generation(),(long long)p.lent_chunk,p.first_now,
+                            p.lent.size(),int(p.cache->decode_ready()));
                 } else {
 #endif
                 if (any && !res_upload("serve cache lend", e)) return false;
