@@ -2374,7 +2374,11 @@ RAM/PCIe traffic. Corrected117488-row arithmetic is21915776B above the observed
 33K free budget.1256 slots would save63897600B while still lending enough for
 chunk8192, but its117K admission and speed are unmeasured. Plan the independent
 clean owned-small/borrowed-large comparison next; broader quality, full mixed
-tail and physical262144/session/RESTORE remain unqualified.
+tail and physical262144/session/RESTORE remain unqualified. Closed successful
+raw/JIT and consumed source-audit transactions were retired after recording
+the result: 76 files, 12933318 bytes, with the manifest in the
+compact capacity result. Current engine/fixtures and396 fallback remain for
+the imminent clean comparison;14 legacy provenance holds remain separate.
 Only a later qualified mechanism permits a
 fresh complete51+6-case plan. Preserve all pending-completion,
 untouched-output, payload/guard and owner-lifetime requirements under that plan.
