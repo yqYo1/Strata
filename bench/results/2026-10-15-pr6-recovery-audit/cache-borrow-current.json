@@ -1,20 +1,23 @@
 {
   "mode": "cache-borrow-check",
-  "source_commit": "f6da1eb55aeea2dd6aeb851627b0512930fe6ec6",
-  "build_source_commit": "87ce707df2a3cfbdbf88f2753c50feef78fb1efe",
+  "source_commit": "51253c959ffbb7c4aef127f01e8b8d4159ad0c73",
+  "build_source_commit": "bb71e78db7b6a4930945a2d564ec6cd42d0ad245",
   "binary": {
     "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/strata",
-    "bytes": 22127152,
-    "sha256": "02a61db21c50f5824f3af748ec6e89fbe05db04c7cacc0454c6b7c435d0e5bc6"
+    "bytes": 22127264,
+    "sha256": "33452421e15ad5c5329921c3d12310fd77e198ce7f8af4aa9cb77c9d9d6bab97"
   },
+  "source_build_record": {
+    "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/record.json",
+    "sha256": "65d6226860d8c9d81377612043451d07343b630bfcf2f585c4356c1e34f676a2"
+  },
+  "component_result_sha256": "4e293a0bedc18110e55dd98df5e08673cc62df02191ef6c6f988a7ed22889c5f",
+  "original_build_inputs_recovered": 9831,
   "complete": true,
-  "passed": false,
+  "passed": true,
   "active": false,
   "ownership_closed": true,
-  "exit_code": 1,
-  "native_ready": true,
-  "native_error": "ERR prefill: stale/inactive cache scratch loan or changed layout generation",
-  "error": "ERR prefill: stale/inactive cache scratch loan or changed layout generation",
+  "exit_code": 0,
   "boot_unchanged": true,
   "fresh_faults": [],
   "driver_after": {
@@ -25,53 +28,156 @@
     "kernel": "7.0.0-38-generic",
     "devcoredump": false
   },
-  "model_route_executed": false,
+  "model_route_executed": true,
   "model_quality_qualified": false,
   "model_performance_measured": false,
-  "small_requests": [],
-  "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cache-borrow-check-v2",
+  "loan_checks": {
+    "layouts": [
+      {
+        "chunk": 8192,
+        "first": 165,
+        "slots": 1280,
+        "bytes": 2320512000,
+        "need": 2319958528,
+        "lent": 1115
+      },
+      {
+        "chunk": 256,
+        "first": 1183,
+        "slots": 1280,
+        "bytes": 241280000,
+        "need": 240304384,
+        "lent": 97
+      }
+    ],
+    "tables": [
+      {
+        "phase": "lend",
+        "entries": 24576,
+        "free_bytes": 477712384,
+        "total_bytes": 10666115072
+      },
+      {
+        "phase": "refill",
+        "entries": 24576,
+        "free_bytes": 151470080,
+        "total_bytes": 10666115072
+      },
+      {
+        "phase": "lend",
+        "entries": 24576,
+        "free_bytes": 147935232,
+        "total_bytes": 10666115072
+      },
+      {
+        "phase": "refill",
+        "entries": 24576,
+        "free_bytes": 138100736,
+        "total_bytes": 10666115072
+      }
+    ],
+    "payloads": [
+      {
+        "rows": 1280,
+        "bytes": 2639104000,
+        "lent": 1115
+      },
+      {
+        "rows": 1280,
+        "bytes": 2639104000,
+        "lent": 97
+      }
+    ],
+    "mtp_phases": [
+      "before-detach",
+      "after-detach",
+      "after-prompt-before-restore",
+      "after-restore"
+    ]
+  },
+  "checked_owner_evidence": {
+    "generations": [
+      1,
+      2
+    ],
+    "layout_generation": 1,
+    "decode_admission_transitions": [
+      0,
+      1,
+      0,
+      1
+    ],
+    "execution_cache_substitutions_checked": 1,
+    "short_full_dense_residency_observed": true,
+    "long_dense_layer_activations": 48,
+    "full_dense_weight_bytes": 2116951040,
+    "bank_dense_weight_bytes": 50918400,
+    "borrowed_ffn_entries": 48,
+    "checked_retirements": 48,
+    "prefill_rows": 8193,
+    "used_bytes": 2311569920,
+    "capacity_bytes": 2320512000,
+    "primary_bytes": 41948160,
+    "region_bytes": 1180698624,
+    "tail_bytes": 0,
+    "limits": "8193-row mixed path and256-row short path only; the full mixed tail and long-input speed are unqualified."
+  },
+  "previous_result_reference": {
+    "commit": "51253c959ffbb7c4aef127f01e8b8d4159ad0c73",
+    "path": "bench/results/2026-10-15-pr6-recovery-audit/cache-borrow-current.json",
+    "sha256": "f9a34244907672bc2cf1bc010d810c75a1fa90178d30ae45259071795842ad76",
+    "original_outcome": {
+      "source_commit": "f6da1eb55aeea2dd6aeb851627b0512930fe6ec6",
+      "complete": true,
+      "passed": false,
+      "ownership_closed": true
+    },
+    "process_closure_verified": true
+  },
+  "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cache-borrow-check-v3",
   "closed_no_retry": true,
   "original_plan": {
-    "commit": "c874604a44a48fcee2415f709595d254c58d582b",
+    "commit": "761707efc8f608450140125b674d5426844049cf",
     "path": "bench/results/2026-10-15-pr6-recovery-audit/cache-borrow-current.json",
-    "sha256": "9dbfb7959d4dd6c51907322507f60054a8d8784a6402c645ae0db5f280993b42"
+    "sha256": "d0f887802953c9cc8a3043a1042b5a6d0a3dc84a0dbb66b6768a4428363a31d1"
   },
-  "model_observation": {
-    "requested_inputs": [
-      8194,
-      257
-    ],
-    "requested_output_each": 16,
-    "completed_requests": 0,
-    "generated_tokens": 0,
-    "layer_major_setup_reached": true,
-    "borrowed_ffn_entries": 0,
-    "refill_payload_audits": 0,
-    "first_mask": "generation=1 chunk=8192 first=165 lent=1115 decode_ready=0",
-    "first_loan_bytes": 2320512000,
-    "first_need_bytes": 2319958528
+  "small_requests": [
+    {
+      "input_tokens": 8194,
+      "generated": 16
+    },
+    {
+      "input_tokens": 257,
+      "generated": 16
+    }
+  ],
+  "native_capture_windows": [
+    1,
+    4
+  ],
+  "thinking_template": true,
+  "source_review": {
+    "source_commit": "57dfa220406bcce2568cdbd4012cd7efbd209bb7",
+    "native_review_sha256": "afcde8239268114eb24896a5608cff7f656b37feb62a65bcdc3f6b48725bd272",
+    "report_sha256": "983f005698cf62abf0393a803cd30338fb6944d0c2eee583eb4d4d4ecf40e9ac",
+    "input_count": 14
   },
-  "source_supported_cause": {
-    "status": "localized from log and actual call path; correction not implemented",
-    "owner_check": "src/prefill/prefill.cpp:541-559 uses mutable m.cache as parent identity",
-    "mutation": "src/prefill/layer_major.inc:715 replaces m.cache with private layer_cache before run_impl at947",
-    "effect": "run_impl entry compares the original parent lease against the private execution cache and correctly refuses the wrong owner; no borrowed FFN ran",
-    "next_action": "Preserve immutable parent owner separately from per-layer execution cache; add a regression for the real swap, independent source review, fresh156 gate and a new v3 model plan. Never retry v2 or bypass contains."
-  },
-  "diagnostic": {
-    "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cache-borrow-check-v2/owner-refusal.txt",
-    "bytes": 1171,
-    "sha256": "4e3c0a4f36ea9f66ce0fe04f9a5934c04be7804e9f711af070c35aff816eb169",
-    "consumer": "Immediate parent-owner/execution-cache separation and its regression; retire after a successful fresh corrected model cycle."
-  },
-  "decision": "Failed model admission; no throughput/task-quality/full physical262144/session/RESTORE qualification. Default-off route stays unadopted.",
+  "decision": "Bounded parent-owner, actual private-cache substitution,48 FFNs, two exact refill/publication/decode cycles passed. Retain the original parent correction; this is not throughput or broad model adoption.",
+  "next_action": "Official bench.sh parameter-validated32K+ input/long-generation comparison of owned small cache versus checked borrowed larger cache. Plan repetition/order and clean observers prospectively; record peak/free VRAM and leave256K physical/session/RESTORE gates open.",
+  "limits": "8194/257 thinking inputs,16 output tokens each. Short Full is observed NativeDense state,not a dense-weight payload checksum or complete physical-residency proof. Mixed primary only:tail_bytes=0. No clean speed,task-quality,hardware-saturation,physical262144/session/RESTORE or70tok/s qualification.",
   "artifact_retirement": {
-    "complete": true,
-    "manifest": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/closed-mixed-loan-v2-20261020.jsonl",
-    "manifest_sha256": "1ea219b95d210266011ccfe240eac29f745ee3b058df32787dcf3c75e914269c",
-    "files": 69,
-    "bytes": 31103649,
-    "source_reachable_from_main": "d472bfe512ee0c269d0d333ad4019ea43be42812",
-    "scope": "Closed v8/v2 output, superseded v1 refusal, current compiler logs and settled worker/PR paperwork. Current engine/eight fixtures,396 fallback and1171-byte distinct refusal retained;14 legacy provenance holds and two source-review references remain separate."
+    "manifest": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/closed-parent-cache-v3-20261020.jsonl",
+    "manifest_sha256": "53b493a6093f14be5a30973e656f6e7559de5283648333814f8e752b66bed8c9",
+    "files": 121,
+    "bytes": 39114382,
+    "retained": "Current engine/eight fixtures/build receipt and396 fallback for imminent owned-small/borrowed-large32K+ long-generation comparison;14 legacy provenance holds remain separate.",
+    "original_results_unchanged": true,
+    "post_cleanup_admission": {
+      "passed": true,
+      "original_inputs_recovered": 9831,
+      "engine_and_eight_fixtures_verified": true,
+      "source_review_pins_verified": 14,
+      "GPU_executed": false
+    }
   }
 }

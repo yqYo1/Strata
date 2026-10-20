@@ -48,7 +48,7 @@ def digest(path):
 def main():
     profile = sys.argv[1:] == ['--query-profile']
     guards.require(len(sys.argv) == 1 or profile, 'use no options or --query-profile; never retry a closed root')
-    root = B / 'decode-query-profile-component-v8' if profile else ROOT
+    root = B / 'decode-query-profile-component-v9' if profile else ROOT
     result = A / 'decode-query-profile-component-current.json' if profile else RESULT
     with (B / 'owned-v0141-measurement.lock').open('a+') as lock:
         fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
@@ -91,7 +91,7 @@ def main():
         guards.require(previous == result.read_bytes(), 'commit the prior component outcome first')
         previous_reference = dict(commit=subprocess.check_output(['git','rev-parse','HEAD'],cwd=P,text=True).strip(),
             path=str(result.relative_to(P)),sha256=hashlib.sha256(previous).hexdigest(),
-            outcome=('Closed v7 passed154 cases, including actual cache loans and pending-owner refusal.' if profile else
+            outcome=('Closed v8 passed156 cases. Model v2 then refused the mutable execution-cache owner; this does not change either outcome.' if profile else
                 'Original v6 host-task gate failed after51 existing passes; this new finite-DMA plan does not change that outcome.'))
         guards.require(not root.exists(), 'inspect/close the existing owned check; no automatic retry')
         root.mkdir(mode=0o700)

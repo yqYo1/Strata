@@ -2289,7 +2289,7 @@ The396 fallback remains protected. The earlier
 standalone GCC mode/result is retired to commit5f1c06452; its same-build consumer
 has superseded it. The changed engine SHA256 is
 `02a61db21c50f5824f3af748ec6e89fbe05db04c7cacc0454c6b7c435d0e5bc6`.
-This component result still has no new model result.
+Component passes alone did not establish model qualification; v2's outcome is below.
 The independent Orca audit and native Luna-max curation found no source-supported
 defect in those three guards. This is bounded source acceptance: planner geometry
 is outside the ten reviewed files, and execution/math remain unqualified. The
@@ -2311,11 +2311,47 @@ uses that mutable pointer as the original loan's parent identity. This wrongly
 rejects the valid parent ticket. No borrowed FFN, refill or generated token was
 completed. Native exit1 and ownership closed normally; boot was unchanged and
 no fresh GPU fault occurred. Preserve this failed result. The earlier source
-audit missed the dynamic identity coupling. Next retain the immutable parent
-separately from the execution cache, add a regression crossing that substitution,
-review the complete corrected path, then use fresh component/model plans. Never
-retry closed v2 or bypass the owner check. The default-off route is unadopted;
-there is no new speed result or full physical262144/session/RESTORE qualification.
+audit missed the dynamic identity coupling. The original source correction
+keeps the parent supplied to init separate from the execution cache. All lease
+checks, activation and retirement use that parent; binding also requires the
+ordinary parent cache to be active. The actual per-layer cache substitution
+immediately rechecks the lease before inference, with a trace identifying the
+distinct execution cache. The v3 model gate requires this actual
+substitution and all48 borrowed FFN entries/retirements, two complete refill/
+decode cycles and the original payload/map checks. Its offline parser rejects
+missing, duplicated or false substitution evidence. Use a fresh v9 156-case
+component plan, complete corrected-source review and a committed v3 model plan;
+never retry closed v2 or bypass the owner check. Source`3832efe2a` passed all16
+offline evidence tests. Build`bb71e78db` passed all156 fresh v9 cases, with
+owners closed, unchanged boot and no fresh GPU fault. Its source audit and
+native curation support the parent correction,
+but found a short-residency evidence gap. Controller-only source`57dfa2204`
+now requires all six ordered dense phases inside their respective loans:48
+long-path activations before Full restoration, and Full residency with zero
+activations on the short256-row path. Its17 offline tests passed. No native
+input/fixture changed; same-build admission recovered9831 inputs and verified
+the engine/eight fixtures. A separate native review accepted this controller
+delta and all14 final pins, including12 unchanged inputs. The fresh v3 plan was
+committed before its single model execution.
+The committed v3 check passed: actual private-cache substitution preserved the
+parent, all48 borrowed FFNs retired, both full1280-slot payloads and24576-entry
+maps matched after same-slot refill, and both requests generated16 tokens.
+The first1115-slot loan covered2320512000B; the smaller97-slot loan covered
+241280000B at chunk256. Decode admission followed0/1/0/1. The short path observed
+Full dense state with zero layer activations; the long path restored Full after48.
+Exit0, ownership closure, unchanged boot and no fresh GPU fault were confirmed.
+Keep the parent correction. Free VRAM at the four lend/refill observations was
+477712384/151470080/147935232/138100736B: the larger decode cache leaves little
+headroom, so capacity and longer generation still need measurement. Next compare
+the checked larger cache against the owned small cache using official32K+ input
+and long generation, with prospective repetition/order and clean processes.
+The first input processed8193 rows and used only the primary mixed bank;
+tail routing, clean speed, task quality,physical262144/session/RESTORE remain
+unqualified. The default-off route stays unadopted for general use. Closed v9/v3 raw, JIT,
+successful compiler output and consumed source-audit transactions were retired
+after committing the evidence: 121 files, 39114382 bytes. The compact
+model result records the path/hash/reason manifest. Current engine/eight fixtures,
+the396 fallback and14 separate legacy provenance holds remain.
 Only a later qualified mechanism permits a
 fresh complete51+6-case plan. Preserve all pending-completion,
 untouched-output, payload/guard and owner-lifetime requirements under that plan.

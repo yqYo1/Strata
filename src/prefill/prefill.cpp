@@ -534,6 +534,9 @@ struct Prefill::Impl {
     bool borrowed = false;
     detail::ScratchLayoutState scratch_layout;
 #ifdef STRATA_ENABLE_SYCL
+    // The layer-major pass replaces cache with its private execution bank.
+    // The original allocation owner stays fixed from init until reset.
+    const core::ExpertCache* cache_scratch_parent = nullptr;
     core::CacheScratchLease cache_scratch_lease;
     void* borrowed_base = nullptr;
     uint64_t borrowed_capacity = 0, borrowed_used = 0, borrowed_layout_generation = 0;
@@ -543,11 +546,12 @@ struct Prefill::Impl {
             !borrowed_used || borrowed_used>borrowed_capacity ||
             borrowed_layout_generation!=scratch_layout.generation() ||
             uint64_t(T)>std::numeric_limits<uint64_t>::max()/(D*4) ||
-            !lease.contains(cache,borrowed_base,borrowed_capacity,exclusive)) return false;
+            !cache_scratch_parent ||
+            !lease.contains(cache_scratch_parent,borrowed_base,borrowed_capacity,exclusive)) return false;
         const auto r_bytes=uint64_t(T)*D*4, emb_bytes=uint64_t(T)*N*4;
         const auto covered=[&](const void* pointer,uint64_t bytes) {
             return detail::scratch_span_inside(borrowed_base,borrowed_used,pointer,bytes) &&
-                lease.contains(cache,pointer,bytes,exclusive);
+                lease.contains(cache_scratch_parent,pointer,bytes,exclusive);
         };
         return covered(R,r_bytes) && covered(region,region_bytes) && covered(emb,emb_bytes) &&
             detail::scratch_spans_disjoint(R,r_bytes,region,region_bytes) &&
@@ -569,7 +573,8 @@ struct Prefill::Impl {
         if (cache_scratch_lease && !cache_scratch_authorized()) {
             error = "prefill: stale/inactive cache scratch loan or changed layout generation"; return false;
         }
-        if (borrowed && cache && cache->scratch_tracking_enabled() && !cache_scratch_lease) {
+        if (borrowed && cache_scratch_parent && cache_scratch_parent->scratch_tracking_enabled() &&
+            !cache_scratch_lease) {
             error = "prefill: tracked cache scratch requires an explicit parent lease"; return false;
         }
         return true;
@@ -1017,6 +1022,9 @@ bool Prefill::init(const core::WeightTable& wt, const core::ModelGeometry& g, co
     m.scratch_alias = alias_mode == 1;
     (void) prefill_fallback_attn_layout();
     m.wt = &wt; m.g = &g; m.ss = &ss; m.src = src; m.cache = cache; m.host_res = host_res;
+#ifdef STRATA_ENABLE_SYCL
+    m.cache_scratch_parent = cache;
+#endif
     m.T = chunk; m.cs = (cudaStream_t) stream; m.stats = &stats_;
     if (g.n_embd != N || g.hc != HC || g.hc_lr != LR || g.n_expert < 1 || ss.k != K) {
         err = "prefill: geometry differs from the artifact's"; return false;
@@ -1337,7 +1345,8 @@ bool Prefill::bind_cache_scratch_lease(const core::CacheScratchLease& lease, std
     if (m.cache_scratch_lease.pending()) {
         err = "prefill: cannot replace a pending cache scratch loan"; return false;
     }
-    if (!m.borrowed || !m.scratch_layout.ready() || !m.cache || !m.cs || m.copy != m.cs ||
+    if (!m.borrowed || !m.scratch_layout.ready() || !m.cache_scratch_parent ||
+        m.cache != m.cache_scratch_parent || !m.cs || m.copy != m.cs ||
         !m.scratch_alias || !m.cache_scratch_layout_covered(lease,false)) {
         err = "prefill: cache lease does not cover the sealed layout/owner/queue"; return false;
     }
@@ -1348,21 +1357,21 @@ bool Prefill::bind_cache_scratch_lease(const core::CacheScratchLease& lease, std
 bool Prefill::has_cache_scratch_lease() const { return impl_ && bool(impl_->cache_scratch_lease); }
 bool Prefill::activate_cache_scratch_lease(const std::function<bool()>& retire, std::string& err) {
     Impl& m = *impl_;
-    if (!m.cache || !m.scratch_layout.ready() ||
+    if (!m.cache_scratch_parent || !m.scratch_layout.ready() ||
         m.lease_layout_generation != m.scratch_layout.generation() ||
         !m.cache_scratch_layout_covered(m.cache_scratch_lease,false)) {
         err = "prefill: cache scratch activation requires the bound current layout"; return false;
     }
-    try { return m.cache->activate_scratch_loan(m.cache_scratch_lease, retire); }
+    try { return m.cache_scratch_parent->activate_scratch_loan(m.cache_scratch_lease, retire); }
     catch (const std::exception& e) { err = e.what(); return false; }
 }
 bool Prefill::retire_cache_scratch_lease(std::string& err) {
     Impl& m = *impl_;
-    if (!m.cache || !m.cache_scratch_lease || !m.cache_scratch_authorized()) {
+    if (!m.cache_scratch_parent || !m.cache_scratch_lease || !m.cache_scratch_authorized()) {
         err = "prefill: cache scratch retirement requires the active current layout"; return false;
     }
     try {
-        return m.cache->retire_scratch_loan(m.cache_scratch_lease, [&] {
+        return m.cache_scratch_parent->retire_scratch_loan(m.cache_scratch_lease, [&] {
             if (cudaStreamSynchronize(m.cs) != cudaSuccess ||
                 (m.copy != m.cs && cudaStreamSynchronize(m.copy) != cudaSuccess))
                 strata::sycl_backend::cleanup_fail_stop("cache scratch borrower completion uncertain");
