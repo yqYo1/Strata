@@ -2352,6 +2352,33 @@ successful compiler output and consumed source-audit transactions were retired
 after committing the evidence: 121 files, 39114382 bytes. The compact
 model result records the path/hash/reason manifest. Current engine/eight fixtures,
 the396 fallback and14 separate legacy provenance holds remain.
+The official32K+ capacity admission is now maintained in
+`tools/sycl/cache_capacity.py`: four official warmups/calibrations and one
+thinking-enabled1024+ output request, with all five exact1280-slot refill/map
+cycles and48 actual long borrowed FFNs required. Its21 offline tests passed
+at3f4752335; native/controller review verified18 pins, and Main recovered9831
+build inputs and verified the engine/eight fixtures and runtime. The source
+report halved residual storage in its arithmetic; the correct BF16 extent
+is20480B/row, as used by the controller. The512MiB admission headroom remains
+unchanged. The committed official check passed
+all four warmups and a33211-input/2932-output thinking request:48 actual FFNs,
+five exact1280-slot payload/map refills and normal native exit0, with no fresh
+fault. Its680140800B residual stayed fully on GPU in mode10. The observed
+long-allocation free budget was4185026560B versus2307657440B fixed including
+the512MiB allowance. The discrete pre-release low-water was14786560B; the long
+refill observation was102322176B. Neither is continuous peak memory.
+Diagnostic638.5 prefill/11.6 decode tok/s and85.03% draft acceptance are kept
+as one observed request, without a clean gain or regression claim. Logical
+decode cache hit rate was10.2%; remaining1120890 CPU miss jobs do not measure
+RAM/PCIe traffic. Corrected117488-row arithmetic is21915776B above the observed
+33K free budget.1256 slots would save63897600B while still lending enough for
+chunk8192, but its117K admission and speed are unmeasured. Plan the independent
+clean owned-small/borrowed-large comparison next; broader quality, full mixed
+tail and physical262144/session/RESTORE remain unqualified. Closed successful
+raw/JIT and consumed source-audit transactions were retired after recording
+the result: 76 files, 12933318 bytes, with the manifest in the
+compact capacity result. Current engine/fixtures and396 fallback remain for
+the imminent clean comparison;14 legacy provenance holds remain separate.
 Only a later qualified mechanism permits a
 fresh complete51+6-case plan. Preserve all pending-completion,
 untouched-output, payload/guard and owner-lifetime requirements under that plan.

@@ -4752,45 +4752,62 @@
       "reason": "Useful findings and exact source identity are committed; all proposed core corrections are implemented and device-tested."
     }
   },
-  "staged_cache_parent_identity_scope": {
+  "cache_loan_long_context_capacity_scope": {
     "classification": "decision support",
-    "schedulable_now": false,
-    "status": "bounded_model_passed_pending_long_comparison",
-    "source_commit": "57dfa220406bcce2568cdbd4012cd7efbd209bb7",
+    "source_commit": "3f4752335b75dca66a79d017063a18501cb76fa7",
     "frozen_inputs": {
-      "include/strata/prefill/scratch_allocation.hpp": "b7001b50bbf9576f750133047762f0dcf6a28c8b601a472a4503c3f2bf9290bd",
-      "include/strata/core/cache_scratch_lease.hpp": "71e0c67d49cacb055b51e54db34afe8d0533029413a72303bbec4ad0de92e494",
-      "include/strata/core/expert_cache.hpp": "6154808582efe409325c87756fb21e47aaca3c946e74ee442266c8fefa6bdaae",
-      "src/core/expert_cache.cpp": "fb7418457aeb1ea6416918a14fa734a301e1fe0d39d8fe7cbcb5633040434a46",
-      "include/strata/prefill/prefill.hpp": "49f2db4810f98080ed5992f2bb0eeafd707282661e04b72b472108b494ad56b8",
-      "src/prefill/prefill.cpp": "fce308b92d5e972eccd7ba363a965dc868b0c64ad564182c8d8ed4c6d4a2e707",
+      "src/program/generate.cpp": "95637fc1d6f4e8546345ab0f369dbd381ef7e72a2bf926a5c74b57f87b990b1b",
       "src/prefill/layer_major.inc": "16303c6e0f5be1b5cbf40beeb4e3ac82de12caea397f25106cd5f66357484d2b",
       "src/prefill/moe_window.inc": "5feba6a7d26729df806929ebc376ae48bd2b856f6ddfe29913bb672e7e598928",
-      "src/program/generate.cpp": "95637fc1d6f4e8546345ab0f369dbd381ef7e72a2bf926a5c74b57f87b990b1b",
+      "src/prefill/prefill.cpp": "fce308b92d5e972eccd7ba363a965dc868b0c64ad564182c8d8ed4c6d4a2e707",
+      "src/core/expert_cache.cpp": "fb7418457aeb1ea6416918a14fa734a301e1fe0d39d8fe7cbcb5633040434a46",
+      "src/core/session.cpp": "4c1aa246e568f96b40b9f9e16000e1f1dc6d75c99168cb26baef56a43b4e4bce",
       "src/core/verify.cpp": "bcaa44dea05e089bbccea8465ab9e8fb908d79a604f2c53ed5869591486fafbd",
+      "src/core/native_dense.cpp": "4424972f8bd8c1f0e71ea360140a6cd3c56ed6a5533d1354bdbcdbc13d387d42",
+      "include/strata/core/native_dense_bank_policy.hpp": "c3e37260e0cc60bcacb65ec31e3aea08c285debd23fe9239b36fc8af542cb40f",
+      "include/strata/prefill/expert_bank_plan.hpp": "1c3b9157f64c4e1c3aede95017ba17ad3c10d433946b5efa25d0c073c5f8c3a9",
+      "include/strata/prefill/layer_major_plan.hpp": "67bc25500ae777bfb387944a2415325868602b9da82aa945464b64b0a2b8b9fd",
       "include/strata/prefill/moe_accum_plan.hpp": "1fa1618eaf96a6ec50bc948f7c6750fc33f463c702cfbf36cd57e928597ca1aa",
-      "tests/sycl/prefill_scratch.cpp": "b6d239deb60a78e680ed2a00adb3d5d9928f535950ed43ca32f940b58eaf6742",
-      "tools/sycl/cache_borrow.py": "900a2364d19beea0e1fa3e3c657f980455d676363660c013f6ef9058eeb43450",
-      "tools/test_sycl_cache_borrow.py": "88558a331786b8fa3a78de9cd5876311492c97d0d17912187b7da728ff128d8c"
+      "include/strata/prefill/scratch_allocation.hpp": "b7001b50bbf9576f750133047762f0dcf6a28c8b601a472a4503c3f2bf9290bd",
+      "include/strata/core/cache_scratch_lease.hpp": "71e0c67d49cacb055b51e54db34afe8d0533029413a72303bbec4ad0de92e494",
+      "tools/sycl/cache_capacity.py": "9d39d3851bfc634901d6b5fd6f984918c53f8f44337df7fd506b6cb2ab3252f5",
+      "tools/test_sycl_cache_capacity.py": "5ba58f1a5b80b27b2c721994509f4f5e29719e2568a37e2ef7810c72c22da1b1",
+      "tools/sycl/query_profile.py": "e4347ac16db8072c9361a1781791de2626853587896e92ac18ee2b163a0791b2",
+      "tools/test_sycl_query_profile.py": "10a7f53d47793037d790897973f54a5870edfbfb9400fe23fdb72f5653c4b186"
     },
-    "bounded_model_source_review_accepted": true,
+    "schedulable_now": false,
+    "status": "official32K_capacity_passed_pending_clean_comparison",
+    "consumer": "Passed bounded capacity and source pins for the imminent matched clean owned128/borrowed1280 comparison.",
+    "next_review": "Plan and evaluate the matched independent-process clean owned128/borrowed1280 comparison.1256-slot117K capacity remains conditional arithmetic; commission further research only from a concrete remaining mechanism or comparison result.",
     "worker_closed": true,
-    "report_sha256": "983f005698cf62abf0393a803cd30338fb6944d0c2eee583eb4d4d4ecf40e9ac",
-    "native_review_sha256": "afcde8239268114eb24896a5608cff7f656b37feb62a65bcdc3f6b48725bd272",
+    "report_sha256": "eadb44a9e76d55aa15091f6393faea547e48341570ecbc7654d692d7d49ca083",
+    "bounded_long_check_accepted": true,
+    "native_report_source_commit": "ffa3dc37cbb2e4ea9b2628962c1c940f798b9850",
+    "native_review_sha256": "c5ffb6b5d99cfd7eae92d3a5d38a19ccdd1aca701aa5ecffd7446d5662af9d8e",
     "offline_evidence_gate": {
-      "source_commit": "57dfa220406bcce2568cdbd4012cd7efbd209bb7",
-      "cases": 17,
+      "source_commit": "3f4752335b75dca66a79d017063a18501cb76fa7",
+      "cases": 21,
       "passed": true,
       "GPU_executed": false,
-      "command": "python3 -B -m unittest tools/test_sycl_cache_borrow.py tools/test_sycl_query_profile.py"
+      "command": "python3 -B -m unittest tools/test_sycl_cache_capacity.py tools/test_sycl_query_profile.py tools/test_sycl_cache_borrow.py"
     },
-    "operational_digest": "Source parent identity correction,156 v9 and17 offline checks,9831-input/eight-fixture proof and actual v3 all passed. One real private-cache substitution,48 ordered borrowed FFNs, two complete payload/map refills and16 outputs/request; short Full state observed. Normal exit0, owners closed, unchanged boot, no fresh fault. No speed/quality/full physical262144/session/RESTORE qualification.",
-    "consumer": "Source acceptance and passed bounded model evidence for imminent owned-small/borrowed-large32K+ comparison; no speed or broad quality qualification.",
+    "same_build_admission": {
+      "passed": true,
+      "original_inputs_recovered": 9831,
+      "engine_and_eight_fixtures_verified": true,
+      "current_runtime_assets_verified": true,
+      "GPU_executed": false
+    },
+    "corrections": [
+      "Report halves residual bytes. Source has D=N*HC=2560*4=10240 elements/row; BF16 makes 20480 B/row, matching controller rows*20480. Correct totals for 32767/65535/117488/262143 rows: 671068160/1342156800/2406154240/5368688640 B.",
+      "With corrected residual, report arithmetic cannot establish capacity. ExpertBankPlan checks live free VRAM, allocation limit, bank/prefix/headroom and residual together; actual admission was unknown at source-review time. The bounded probe remains a valid way to discover refusal.",
+      "min_observed_free_bytes is discrete lend/refill low-water evidence, not continuous peak VRAM."
+    ],
+    "operational_digest": "One official process passed all four warmups and33,211-input/2,932-output thinking request; all48 borrowed FFNs, five exact payload/map refill cycles, normal exit0 and no fresh fault. Residual680140800B fully on GPU, mode10. One diagnostic sample638.5 PP/11.6 decode; no speed-gain claim. Discrete minimum free14786560B before phase release; long allocation admitted with4185026560B free versus2307657440B fixed including512MiB allowance. Full physical262144/session/RESTORE and broader quality remain open.",
+    "raw_payloads_retired": true,
     "history_reference": {
-      "commit": "3be1371a2",
+      "commit": "a5c74901f",
       "path": "bench/results/2026-10-15-pr6-recovery-audit/research-index.json"
-    },
-    "next_review": "Review the actual32K+ long-generation capacity result; commission a new source audit only for a concrete changed mechanism.",
-    "raw_payloads_retired": true
+    }
   }
 }

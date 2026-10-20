@@ -30,7 +30,7 @@ def runtime_assets_unchanged(record):
     # by the same-build normal51+observer fixture; never relabel a mode to pass
     # generation_engine's independently scoped admission check.
     guards.require(record['mode'] in ('default-route-query-profile-check',
-        'default-route-query-profile-long','cache-borrow-check'), 'unknown query diagnostic mode')
+        'default-route-query-profile-long','cache-borrow-check','cache-capacity-check'), 'unknown query diagnostic mode')
     expected = {n:dict(qualified_sha256=v[0],candidate_sha256=v[1]) for n,v in DELTA.items()}
     component = gen.committed(COMPONENT)
     def identities(delta):

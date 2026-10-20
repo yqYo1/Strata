@@ -1,0 +1,186 @@
+{
+  "mode": "cache-capacity-check",
+  "source_commit": "5c703084783c4936eb2e5b2ae0c0ea55eaf7c35b",
+  "build_source_commit": "bb71e78db7b6a4930945a2d564ec6cd42d0ad245",
+  "binary": {
+    "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/strata",
+    "bytes": 22127264,
+    "sha256": "33452421e15ad5c5329921c3d12310fd77e198ce7f8af4aa9cb77c9d9d6bab97"
+  },
+  "source_build_record": {
+    "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/record.json",
+    "sha256": "65d6226860d8c9d81377612043451d07343b630bfcf2f585c4356c1e34f676a2"
+  },
+  "original_native_inputs_recovered": 9831,
+  "component_result_sha256": "4e293a0bedc18110e55dd98df5e08673cc62df02191ef6c6f988a7ed22889c5f",
+  "tiny_model_reference": {
+    "commit": "5c703084783c4936eb2e5b2ae0c0ea55eaf7c35b",
+    "path": "bench/results/2026-10-15-pr6-recovery-audit/cache-borrow-current.json",
+    "sha256": "b1c2f78289bbcb62f378f4c0d552012a6645c77f1fb6c091a7a5c97031727598"
+  },
+  "complete": true,
+  "passed": true,
+  "active": false,
+  "ownership_closed": true,
+  "exit_code": 0,
+  "boot_unchanged": true,
+  "fresh_faults": [],
+  "driver_after": {
+    "pci": "/sys/bus/pci/devices/0000:05:00.0",
+    "driver": "xe",
+    "vendor": "0x8086",
+    "device": "0xe20c",
+    "kernel": "7.0.0-38-generic",
+    "devcoredump": false
+  },
+  "native_identity": {
+    "pid": 2324140,
+    "start_ticks": 81557318,
+    "sid": 2324117
+  },
+  "long_capacity_evidence": {
+    "completed_requests": 5,
+    "loan_generations": [
+      1,
+      2,
+      3,
+      4,
+      5
+    ],
+    "exact_payload_and_map_cycles": 5,
+    "min_observed_free_bytes": 14786560,
+    "prefill_rows": 33210,
+    "residual_gpu_bytes": 680140800,
+    "borrowed_ffn_entries": 48,
+    "checked_retirements": 48,
+    "dense_layers": 48,
+    "execution_cache_parent_checked": true,
+    "primary_only": true,
+    "clean_speed_qualified": false
+  },
+  "model_assets_fingerprint": "32d552dc1fb0ad6594425e8bd39f35049f896afe5775b0f7abf751110a11333e",
+  "source_count": 129,
+  "source_aggregate_sha256": "797e4f37e053dc99ce91100133892658b9edae40ad79d28e014d166222b82974",
+  "original_plan": {
+    "commit": "5b2f08090c058a9dcf550a610206e909130b5de2",
+    "path": "bench/results/2026-10-15-pr6-recovery-audit/cache-capacity-current.json",
+    "sha256": "3d8d533c4c2db5627842b79c9fe330df966328192e224af12a55f6e7e99c8c0a"
+  },
+  "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cache-capacity-check-v1",
+  "closed_no_retry": true,
+  "clean_speed_qualified": false,
+  "model_quality_qualified": false,
+  "physical262144_session_RESTORE_qualified": false,
+  "source_review": {
+    "source_commit": "3f4752335b75dca66a79d017063a18501cb76fa7",
+    "native_review_sha256": "c5ffb6b5d99cfd7eae92d3a5d38a19ccdd1aca701aa5ecffd7446d5662af9d8e",
+    "report_sha256": "eadb44a9e76d55aa15091f6393faea547e48341570ecbc7654d692d7d49ca083",
+    "input_count": 18
+  },
+  "full_model_hashes_before_and_after_match": true,
+  "models_match_prior_v3_and_pool_capacity_qualification": true,
+  "warmups": {
+    "successful": 4,
+    "input_tokens": [
+      74,
+      263,
+      909,
+      1068
+    ]
+  },
+  "request": {
+    "request_sha256": "424eb61e3b88f19275143af9fa65f3fe2aac566d32c6d6407120ca10cf0654b9",
+    "prompt_tokens": 33211,
+    "read_tokens": 33211,
+    "reused_tokens": 0,
+    "generated_tokens": 2932,
+    "prompt_ms": 52014.9,
+    "prompt_tps": 638.5,
+    "decode_ms": 252361.8,
+    "decode_tps": 11.6,
+    "total_s": 304.398,
+    "drafts_offered": 2478,
+    "drafts_accepted": 2107,
+    "acceptance_rate": 0.8502824858757062,
+    "finish_reason": "stop",
+    "stream_complete": true,
+    "eligible": true,
+    "completion_includes_thinking": true,
+    "output_chars": 5578,
+    "reasoning_chars": 2677
+  },
+  "long_memory": {
+    "dense_phase_free_bytes": [
+      {
+        "phase": "retired",
+        "free_bytes": 1394044928
+      },
+      {
+        "phase": "bank",
+        "free_bytes": 3477233664
+      },
+      {
+        "phase": "restored",
+        "free_bytes": 121528320
+      }
+    ],
+    "admission": {
+      "rows": 33210,
+      "gpu_prefix_rows": 33210,
+      "shared_arena_bytes": 1180698624,
+      "observed_free_bytes": 4185026560,
+      "fixed_including_512MiB_headroom_bytes": 2307657440,
+      "mixed_primary_bytes": 170035200
+    },
+    "lend_refill_free_bytes": [
+      {
+        "phase": "lend",
+        "free_bytes": 14786560
+      },
+      {
+        "phase": "refill",
+        "free_bytes": 102322176
+      }
+    ],
+    "continuous_peak_vram_measured": false
+  },
+  "decode_work": {
+    "cache_hits": 162365,
+    "cache_lookups": 1586400,
+    "rounded_hit_percent": 10.2,
+    "cpu_unique_miss_jobs": 1120890,
+    "cpu_entries": 1424035,
+    "physical_RAM_PCIe_bytes_measured": false
+  },
+  "conditional_117K_capacity": {
+    "observed_33K_free_bytes": 4185026560,
+    "computed_117488_row_fixed_bytes": 4206942336,
+    "conditional_shortfall_bytes": 21915776,
+    "alternative1256_cache_bytes": 2575206400,
+    "saved_vs1280_bytes": 63897600,
+    "available_tail_after128_prefix_bytes": 2329548800,
+    "required_chunk8192_bytes": 2319958528,
+    "conditional_margin_bytes": 41981824,
+    "limits": "Source/metadata arithmetic only. Assumes the observed33K pre-allocation free memory remains available at117K; not actual117K admission or throughput.1256 preserves the48-layer26-slot base and changes only the last-layer remainder; no changed configuration was run."
+  },
+  "decision": "Official32K+ bounded borrowed-cache capacity/ownership cycle passed, including48 actual FFNs, five exact1280-slot payload/map refill cycles and2932 generated tokens. This admits planning a clean matched comparison; it does not establish a speed gain or default adoption.",
+  "next_action": "Commit prospective matched owned128-slot/borrowed1280-slot clean32K+ comparison with independent repetitions and separate prefill/decode decisions. Use the observed117K capacity cliff to prospectively evaluate1256 slots if retaining full-GPU117K prefill; do not claim an unmeasured fit. Strong/weak, agent-session,quality and full physical262144/session/RESTORE remain open.",
+  "limits": "Parameter validation, STRATA_TRACE and full cache readback enabled;638.5 PP/11.6 decode are diagnostic samples, not clean comparison. One strong-MTP workload only; primary mixed bank/tail0. Discrete VRAM low-water observations are not continuous peak usage or saturation. CPU miss jobs/entries are logical counts, not physical traffic.",
+  "artifact_retirement": {
+    "manifest": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/closed-cache-capacity-v1-20261020.jsonl",
+    "manifest_sha256": "cab62e29997eb7c3f891fb56745a2542e774ea4a0eb0ce0aa087edeb4e9c59cb",
+    "files": 76,
+    "bytes": 12933318,
+    "original_outcome_unchanged": true,
+    "retained": "Current engine/eight fixtures/source-build receipt and396 fallback for the imminent clean capacity comparison;14 legacy provenance holds remain separate.",
+    "post_cleanup_admission": {
+      "passed": true,
+      "original_native_inputs_recovered": 9831,
+      "original_recipe_recovered": true,
+      "engine_and_eight_fixtures_verified": true,
+      "review_pins_verified": 18,
+      "benchmark_inputs_verified": 129,
+      "GPU_executed": false
+    }
+  }
+}
