@@ -920,7 +920,7 @@
   },
   "unitrace_loader_probe": {
     "schema": "strata-unitrace-loader-probe-v1",
-    "stage": "prepared",
+    "stage": "closed",
     "source_commit": "1880b13d3785d596a995a55fec745f8b4a2cb8cb",
     "input_sha256": {
       "tools/sycl/bench_engine.py": "e5f588605ebc7799b54f8bf7df9ad2e363391375e50b788b9704a6b80887ca6b",
@@ -1048,10 +1048,66 @@
       "total_bytes": 67108864
     },
     "active": false,
-    "complete": false,
-    "passed": false,
+    "complete": true,
+    "passed": true,
     "gpu_work": false,
     "gpu_qualified": false,
-    "model_qualified": false
+    "model_qualified": false,
+    "driver_before": {
+      "pci": "/sys/bus/pci/devices/0000:05:00.0",
+      "driver": "xe",
+      "vendor": "0x8086",
+      "device": "0xe20c",
+      "kernel": "7.0.0-38-generic",
+      "devcoredump": false
+    },
+    "preload_evidence": {
+      "pid": 376891,
+      "loader": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_loader.so.0.12.0",
+      "threads_before": 1,
+      "preinit": 37,
+      "config_enabled": true,
+      "first_init": true,
+      "dispatch_result": 46,
+      "output_untouched": true,
+      "retained_reference_until_exit": true,
+      "runtime_teardown_qualified": false
+    },
+    "canary": {
+      "pid": 376891,
+      "initialized": 0,
+      "checked": 46,
+      "expected": 46,
+      "version": 4294967295,
+      "closed": 0
+    },
+    "target_closed": true,
+    "loader_order_verified": true,
+    "collector_retained_to_exit": true,
+    "session_removed": true,
+    "ownership_closed": true,
+    "fresh_faults": [],
+    "boot_unchanged": true,
+    "driver_after": {
+      "pci": "/sys/bus/pci/devices/0000:05:00.0",
+      "driver": "xe",
+      "vendor": "0x8086",
+      "device": "0xe20c",
+      "kernel": "7.0.0-38-generic",
+      "devcoredump": false
+    },
+    "loader_sequence_evidence": {
+      "original_stderr_sha256": "dcdff36dd18c9348118c1e5dbcd3d46848a0eefdce5536696b94b85dd9a04608",
+      "ordered_lines": [
+        "376891:\tcalling init: /home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/ur-validation-preload-v2/libstrata_ur_validation.so",
+        "strata UR validation: pid=376891 phase=before-main threads_before=1 preinit=37 config_create=0 layers_query=0 enable=0 init=0 config_release=0 checked=46 untouched=1 retained_ref=1",
+        "376891:\tcalling init: /home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/unitrace-session-owner-v1/libunitrace_tool.so",
+        "strata UR canary begin pid=376891 loader=/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_loader.so.0",
+        "strata UR canary end pid=376891",
+        "376891:\tcalling fini: /home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/unitrace-session-owner-v1/libunitrace_tool.so [0]",
+        "376891:\tcalling fini: /home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/ur-validation-preload-v2/libstrata_ur_validation.so [0]"
+      ],
+      "scope": "Original same-PID loader/validation/canary order; no GPU command, queue/graph or request-window qualification."
+    }
   }
 }
