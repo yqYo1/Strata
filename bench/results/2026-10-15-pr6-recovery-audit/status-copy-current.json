@@ -1,641 +1,229 @@
 {
-  "schema": "strata-status-query-observer-v3",
-  "result_format": "compact-closed-v1",
-  "stage": "closed",
-  "complete": true,
-  "passed": true,
-  "active": false,
-  "GPU_executed": true,
-  "ownership_closed": true,
-  "diagnostic_timing_qualified": true,
-  "fresh_faults": [],
-  "boot_unchanged": true,
-  "driver_after": {
-    "pci": "/sys/bus/pci/devices/0000:05:00.0",
-    "driver": "xe",
-    "vendor": "0x8086",
-    "device": "0xe20c",
-    "kernel": "7.0.0-38-generic",
-    "devcoredump": false
+  "schema": "strata-status-copy-pipeline-v4",
+  "previous_component": {
+    "commit": "5f31f8882db69eff1acd86f7b753aae568f2f6d6",
+    "path": "bench/results/2026-10-15-pr6-recovery-audit/status-copy-current.json",
+    "sha256": "e6a0f2fd1f7eb8239f8fd3609d78d839b6ce04664eed30e64c7e1b2ca1e21d94",
+    "outcome": "v3 completed-event cost18.29..25.15ns quiet,11.75..12.16us full trace; no model/queue adoption. Original v1/v2 pending failures remain in its Git lineage."
   },
-  "source_commit": "69f3886558757fd3fff140ff1a6a10a2624cf493",
+  "stage": "prepared",
+  "source_commit": "5f31f8882db69eff1acd86f7b753aae568f2f6d6",
   "source_count": 143,
-  "source_fingerprint": "f41c77e514f512bc80ca3e9317eb245a0c830c71b4df40dad650c7276f14fa33",
+  "source_fingerprint": "c038110bd9fce16370a963fd9df7b2cff810c6e32e4c3f98fb6ab55e9a7b7a42",
   "native_source_commit": "3b4998f326101fa913788fd368e1674b111dea03",
   "native_inputs_recovered": 9836,
   "native_build_record_sha256": "76d9fa9e38c0c7e4ef2897f9ec731429db2a3d9d65c2412611c0c4ee1cf2a57f",
-  "original_plan": {
-    "commit": "73a659f19",
-    "path": "bench/results/2026-10-15-pr6-recovery-audit/status-copy-current.json",
-    "sha256": "e6548041809483849e65fdf757ccd5c3f621687a11c2f65fa69eff716224c9e0"
+  "compiler": {
+    "path": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin/clang++",
+    "sha256": "1290881b4e12a5e002e5b0de0787f85328ee5fe19f253a54be1cdd97dc2f26eb"
   },
-  "binary": {
-    "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/status-query-observer-v3/status_copy",
-    "bytes": 172560,
-    "sha256": "942cfb8a729e51129f27c25afb9f1798cd8116b0ae161b29b405c4d9ff63925f",
-    "retired": true
+  "settings_sha256": "d4402591df50e80dc45a5ec9e4839c7a794888850b1473537b6f95179be5b03c",
+  "compile_argv": [
+    "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin/clang++",
+    "-O3",
+    "-DNDEBUG",
+    "-std=c++20",
+    "-fsycl",
+    "-fsycl-id-queries-range=size_t",
+    "-DSTRATA_ENABLE_SYCL=1",
+    "-I/home/yayoi/orca/workspaces/Strata/sycl/include",
+    "-I/home/yayoi/orca/workspaces/Strata/sycl/include/strata/sycl/compat",
+    "/home/yayoi/orca/workspaces/Strata/sycl/bench/sycl/status_copy.cpp",
+    "/home/yayoi/orca/workspaces/Strata/sycl/src/sycl/runtime.cpp",
+    "/home/yayoi/orca/workspaces/Strata/sycl/src/sycl/compat.cpp",
+    "/home/yayoi/orca/workspaces/Strata/sycl/src/sycl/command_profile.cpp",
+    "-o",
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/status-copy-pipeline-v4/status_copy"
+  ],
+  "compile_environment": {
+    "PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin:/usr/bin:/bin",
+    "HOME": "/home/yayoi",
+    "LANG": "C.UTF-8",
+    "LC_ALL": "C.UTF-8",
+    "PYTHONDONTWRITEBYTECODE": "1",
+    "LD_LIBRARY_PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib:/opt/intel/oneapi/mkl/2026.1/lib",
+    "MKLROOT": "/opt/intel/oneapi/mkl/2026.1",
+    "OMP_NUM_THREADS": "1",
+    "GIT_TERMINAL_PROMPT": "0",
+    "GIT_SSH_COMMAND": "ssh -oBatchMode=yes",
+    "CPLUS_INCLUDE_PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/include",
+    "PIP_CONFIG_FILE": "/dev/null",
+    "ONEAPI_DEVICE_SELECTOR": "level_zero:gpu",
+    "UR_ADAPTERS_FORCE_LOAD": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_adapter_level_zero_v2.so.0",
+    "SYCL_CACHE_PERSISTENT": "0",
+    "NEOReadDebugKeys": "1",
+    "EnableDirectSubmission": "0",
+    "UR_L0_V2_FORCE_DISABLE_COPY_OFFLOAD": "1",
+    "STRATA_SYCL_VERIFY_NATIVE_CAPTURE": "0",
+    "STRATA_SYCL_PREFILL_SAME_QUEUE": "1",
+    "STRATA_SYCL_PREFILL_NATIVE16": "bf16",
+    "XDG_CACHE_HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/status-copy-pipeline-v4/cache",
+    "TMPDIR": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/status-copy-pipeline-v4/tmp"
   },
-  "raw_run_sha256": "6390e6f5f69805bef6a94369104bdb5505deff2aa2341f05a4474f68c6cd42d3",
-  "previous_component": {
-    "commit": "69f3886558757fd3fff140ff1a6a10a2624cf493",
-    "path": "bench/results/2026-10-15-pr6-recovery-audit/status-copy-current.json",
-    "sha256": "b0c884856237aaa33b109f7517261f7507cb4860df2737ad28bf00a4f37e1d92",
-    "pending_comparison_qualified": false,
-    "outcome": "v2 execution passes; both pending cells0/12; no pending comparison, model bottleneck or speedup qualified."
+  "native_environment": {
+    "PATH": "/usr/bin:/bin",
+    "HOME": "/home/yayoi",
+    "LANG": "C.UTF-8",
+    "LC_ALL": "C.UTF-8",
+    "PYTHONDONTWRITEBYTECODE": "1",
+    "LD_LIBRARY_PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib:/opt/intel/oneapi/mkl/2026.1/lib",
+    "ONEAPI_DEVICE_SELECTOR": "level_zero:gpu",
+    "UR_ADAPTERS_FORCE_LOAD": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_adapter_level_zero_v2.so.0",
+    "UR_L0_V2_FORCE_DISABLE_COPY_OFFLOAD": "1",
+    "NEOReadDebugKeys": "1",
+    "EnableDirectSubmission": "0",
+    "STRATA_SYCL_PREFILL_SAME_QUEUE": "1",
+    "STRATA_SYCL_VERIFY_NATIVE_CAPTURE": "0",
+    "SYCL_CACHE_PERSISTENT": "0",
+    "ZES_ENABLE_SYSMAN": "0",
+    "UR_ENABLE_LAYERS": "UR_LAYER_TRACING,UR_LAYER_PARAMETER_VALIDATION",
+    "UR_LOG_TRACING": "level:info;flush:info;output:stderr",
+    "UR_LOG_VALIDATION": "level:warning;flush:warning;output:stderr",
+    "UR_LOG_LOADER": "level:warning;flush:warning;output:stderr",
+    "UR_LOG_LEVEL_ZERO": "level:warning;flush:warning;output:stderr",
+    "TMPDIR": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/status-copy-pipeline-v4/tmp",
+    "XDG_CACHE_HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/status-copy-pipeline-v4/cache",
+    "CUDA_MODULE_LOADING": "EAGER",
+    "STRATA_SYCL_COMMAND_PROFILE": "0",
+    "LD_PRELOAD": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/ur-validation-preload-v2/libstrata_ur_validation.so",
+    "STRATA_UR_PROBE_EXPECTED_LOADER": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_loader.so.0.12.0"
   },
-  "previous_fixture_retirement": {
-    "raw_logs": {
-      "files": 10,
-      "bytes": 401404,
-      "manifest": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/closed-status-copy-v2-logs-20261021.jsonl",
-      "sha256": "aae14ee03180d638616aecafa21f5a7902bf521153e80070709ebb0d2ad62e9a"
+  "validation_probe": {
+    "library": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/ur-validation-preload-v2/libstrata_ur_validation.so",
+      "sha256": "1d4e69d672d55fa0a126ae43b7b4743482cccca7e2f2bc22e0db2bfdad5bdc7c"
     },
-    "remaining_hold": {
-      "resolved": true,
-      "reason": "Original inputs/recipes recovered and measured commits verified on pushed retained feature/sycl under clarified build-retirement policy; v2 root retired.",
-      "manifest_sha256": "729d4abc9a4e046528703010060b48994032c8e703ad2862ceb1d989f4aa98e1"
-    }
+    "loader": {
+      "path": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_loader.so.0.12.0",
+      "sha256": "bb6e1311850e4b1a924e42acae80c2b3610934625a4985aaa67967abe31356fc"
+    },
+    "component_source_commit": "f312b6691f508125db6cfc2580ca32a686ff2642",
+    "component_original_plan": {
+      "commit": "550c75f5fc954ee38b70230e32d2a48e12100d8a",
+      "path": "bench/results/2026-10-15-pr6-recovery-audit/research-index.json",
+      "sha256": "d12866b93c51e76a83e95638e66b6f6f4e0e33d779516a5fddecc178a6f8e10a"
+    },
+    "retained_reference_until_exit": true,
+    "runtime_teardown_qualified": false
   },
+  "expected_loaded_paths": [
+    "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libsycl.so.9.0.0-0",
+    "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_adapter_level_zero_v2.so.0.12.0",
+    "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_loader.so.0.12.0",
+    "/usr/lib/x86_64-linux-gnu/libze_intel_gpu.so.1.17.39395",
+    "/usr/lib/x86_64-linux-gnu/libze_loader.so.1.32.0"
+  ],
+  "smoke_cells": [
+    [
+      "profiled",
+      "ordinary"
+    ],
+    [
+      "plain",
+      "usm"
+    ],
+    [
+      "plain",
+      "ordinary"
+    ],
+    [
+      "profiled",
+      "usm"
+    ]
+  ],
+  "process_orders": [
+    [
+      [
+        "profiled",
+        "ordinary"
+      ],
+      [
+        "plain",
+        "usm"
+      ],
+      [
+        "plain",
+        "ordinary"
+      ],
+      [
+        "profiled",
+        "usm"
+      ]
+    ],
+    [
+      [
+        "profiled",
+        "usm"
+      ],
+      [
+        "plain",
+        "ordinary"
+      ],
+      [
+        "plain",
+        "usm"
+      ],
+      [
+        "profiled",
+        "ordinary"
+      ]
+    ],
+    [
+      [
+        "plain",
+        "ordinary"
+      ],
+      [
+        "profiled",
+        "usm"
+      ],
+      [
+        "profiled",
+        "ordinary"
+      ],
+      [
+        "plain",
+        "usm"
+      ]
+    ]
+  ],
+  "gates": "Four traced smoke cells first,8x64KiB fills each. Then three fixed four-cell validation-only cohorts: profile true/false x ordinary/USM-host destination. Each process has one separate warmup and6 samples of exactly8x128MiB fills,4-byte production compat D2H and checked drain. Retain all8 events, no explicit status/profiling query before copy. Record disjoint producer/enqueue/drain CPU/wall and whole; exact counts/guards, input/recipe/provider/first-init proof, native exit/owner/fault/boot checks. Whole/phase timing eligible only at>=20us wall and>=100x median128 clock-pair CPU/wall costs. Preserve below-floor phases as ineligible; no work enlargement/retry. Profiled events queried after drain only, positive ordered resolution-qualified GPU intervals with checked sum/span and span<=whole+max(1us,8xresolution); GPU eligibility separate from host execution.",
+  "comparison_gate": "Use six steady samples per process median, three cohort ratios per comparison; warmups separate. For each host kind, plain/profiled whole-wall geomean<=0.95 and all3 ratios<1 qualifies profiling-cost mechanism screen. For each queue kind, USM/ordinary same rule qualifies destination mechanism screen. Require all72 whole-timing samples eligible. These screens permit only a production-consumer audit/next source candidate, not a model adoption or third engine build. Moving time from enqueue into drain alone is not a throughput gain.",
+  "budgets": {
+    "compile_wall_s": 240,
+    "native_process_wall_s": 45,
+    "text_bytes_per_command": 16777216,
+    "total_raw_bytes": 67108864,
+    "device_bytes": 134217868,
+    "measured_processes": 12,
+    "steady_samples": 72,
+    "warmup_samples": 12,
+    "smoke_processes": 4,
+    "logical_fill_bytes_per_sample": 1073741824
+  },
+  "limits": "Finite producer/copy/drain source attribution only. No verified-pending claim or relaxed old pending gate. Requested fill bytes are not physical GDDR traffic/bandwidth. Profiled GPU intervals do not establish arithmetic saturation or model critical-path time. Quiet API counts are unobserved. No production queue default/math/elapsed-time consumer change.",
+  "retained_generations": "396 fastest fallback and3b qualified status engine remain unchanged; both consumed by next model/source qualification. Closed standalone v2/v3 roots already retired; no third engine generation.",
+  "retention": "Keep72 useful steady samples,12 separate warmups, clocks, GPU aggregates, component comparison/source/owner/fault decisions. Retire normal raw output and standalone root after compact evidence, exact source/recipe recovery and consumer closure.",
+  "complete": false,
+  "passed": false,
+  "active": false,
+  "GPU_executed": false,
   "host_parser_checks": {
-    "source_commit": "69f3886558757fd3fff140ff1a6a10a2624cf493",
+    "source_commit": "5f31f8882db69eff1acd86f7b753aae568f2f6d6",
     "valid_protocol": true,
-    "below_floor_preserved_ineligible": true,
+    "warmup_separate": true,
+    "below_floor_and_zero_preserved_ineligible": true,
+    "zero_denominators_do_not_adopt": true,
     "rejected": [
+      "lost event",
       "duplicate repetition",
-      "lost completion",
-      "boolean count",
       "nonfinite clock",
-      "mislabeled timer floor",
-      "wrong queue property",
+      "phase conservation",
+      "boolean count",
+      "GPU boolean duration",
+      "timing flag type",
       "unclosed owner"
     ],
     "GPU_executed": false
-  },
-  "sample_columns": [
-    "cpu_s",
-    "wall_s"
-  ],
-  "queries_per_sample": 4096,
-  "rounds_per_process": 4,
-  "measured_queries": 196608,
-  "all_status_counts_and_guards_passed": true,
-  "all_samples_timing_eligible": true,
-  "processes": [
-    {
-      "cohort": 0,
-      "order_index": 0,
-      "cell": [
-        "profiled",
-        "trace"
-      ],
-      "clock_pair_cpu_s": 7.20999999999e-07,
-      "clock_pair_wall_s": 7.20960088074e-07,
-      "samples": [
-        [
-          0.048468475,
-          0.048646602896
-        ],
-        [
-          0.047531338,
-          0.0475980399642
-        ],
-        [
-          0.047432211,
-          0.0475670520682
-        ],
-        [
-          0.049239708,
-          0.0532648350345
-        ]
-      ],
-      "median_cpu_us_per_query": 11.718727172851562,
-      "median_wall_us_per_query": 11.748613630395507,
-      "api_counts": {
-        "urEventGetInfo": 16388,
-        "urDeviceGetGlobalTimestamps": 9,
-        "urEventRelease": 9,
-        "urQueueFinish": 20,
-        "urEnqueueUSMFill": 4,
-        "urEnqueueUSMMemcpy": 5
-      },
-      "native_pid": 134114
-    },
-    {
-      "cohort": 0,
-      "order_index": 1,
-      "cell": [
-        "plain",
-        "trace"
-      ],
-      "clock_pair_cpu_s": 5.61e-07,
-      "clock_pair_wall_s": 5.61005435884e-07,
-      "samples": [
-        [
-          0.048889144,
-          0.0515971960267
-        ],
-        [
-          0.049634261,
-          0.0497244920116
-        ],
-        [
-          0.047629552,
-          0.0484288940206
-        ],
-        [
-          0.047649386,
-          0.0483415490016
-        ]
-      ],
-      "median_cpu_us_per_query": 11.784488525390625,
-      "median_wall_us_per_query": 11.98161450588379,
-      "api_counts": {
-        "urEventGetInfo": 16388,
-        "urDeviceGetGlobalTimestamps": 0,
-        "urEventRelease": 9,
-        "urQueueFinish": 20,
-        "urEnqueueUSMFill": 4,
-        "urEnqueueUSMMemcpy": 5
-      },
-      "native_pid": 134195
-    },
-    {
-      "cohort": 0,
-      "order_index": 2,
-      "cell": [
-        "plain",
-        "quiet"
-      ],
-      "clock_pair_cpu_s": 7.20999999999e-07,
-      "clock_pair_wall_s": 7.11064785719e-07,
-      "samples": [
-        [
-          9.7252e-05,
-          9.78939933702e-05
-        ],
-        [
-          9.1681e-05,
-          0.00010588997975
-        ],
-        [
-          9.104e-05,
-          0.000106520019472
-        ],
-        [
-          9.0269e-05,
-          9.05509805307e-05
-        ]
-      ],
-      "median_cpu_us_per_query": 0.0223048095703125,
-      "median_wall_us_per_query": 0.024875973281274416,
-      "api_counts": {
-        "urEventGetInfo": 0,
-        "urDeviceGetGlobalTimestamps": 0,
-        "urEventRelease": 0,
-        "urQueueFinish": 0,
-        "urEnqueueUSMFill": 0,
-        "urEnqueueUSMMemcpy": 0
-      },
-      "native_pid": 134282
-    },
-    {
-      "cohort": 0,
-      "order_index": 3,
-      "cell": [
-        "profiled",
-        "quiet"
-      ],
-      "clock_pair_cpu_s": 7.11e-07,
-      "clock_pair_wall_s": 7.11064785719e-07,
-      "samples": [
-        [
-          8.6983e-05,
-          8.7324064225e-05
-        ],
-        [
-          8.002e-05,
-          8.01810529083e-05
-        ],
-        [
-          7.9078e-05,
-          7.92490318418e-05
-        ],
-        [
-          7.8777e-05,
-          7.89490295574e-05
-        ]
-      ],
-      "median_cpu_us_per_query": 0.019421142578125,
-      "median_wall_us_per_query": 0.019461680267346192,
-      "api_counts": {
-        "urEventGetInfo": 0,
-        "urDeviceGetGlobalTimestamps": 0,
-        "urEventRelease": 0,
-        "urQueueFinish": 0,
-        "urEnqueueUSMFill": 0,
-        "urEnqueueUSMMemcpy": 0
-      },
-      "native_pid": 134355
-    },
-    {
-      "cohort": 1,
-      "order_index": 0,
-      "cell": [
-        "profiled",
-        "quiet"
-      ],
-      "clock_pair_cpu_s": 7.20999999999e-07,
-      "clock_pair_wall_s": 7.20960088074e-07,
-      "samples": [
-        [
-          9.582e-05,
-          9.61209880188e-05
-        ],
-        [
-          0.000104396,
-          0.000104557024315
-        ],
-        [
-          0.000103043,
-          0.000103194033727
-        ],
-        [
-          8.9017e-05,
-          0.000102833029814
-        ]
-      ],
-      "median_cpu_us_per_query": 0.0242752685546875,
-      "median_wall_us_per_query": 0.025149788029907225,
-      "api_counts": {
-        "urEventGetInfo": 0,
-        "urDeviceGetGlobalTimestamps": 0,
-        "urEventRelease": 0,
-        "urQueueFinish": 0,
-        "urEnqueueUSMFill": 0,
-        "urEnqueueUSMMemcpy": 0
-      },
-      "native_pid": 134425
-    },
-    {
-      "cohort": 1,
-      "order_index": 1,
-      "cell": [
-        "plain",
-        "quiet"
-      ],
-      "clock_pair_cpu_s": 6.71000000001e-07,
-      "clock_pair_wall_s": 6.7101791501e-07,
-      "samples": [
-        [
-          9.1181e-05,
-          9.14219999686e-05
-        ],
-        [
-          8.9899e-05,
-          9.00700688362e-05
-        ],
-        [
-          0.00010168,
-          0.000101741985418
-        ],
-        [
-          9.5009e-05,
-          9.50579997152e-05
-        ]
-      ],
-      "median_cpu_us_per_query": 0.022728271484375,
-      "median_wall_us_per_query": 0.022763671836401364,
-      "api_counts": {
-        "urEventGetInfo": 0,
-        "urDeviceGetGlobalTimestamps": 0,
-        "urEventRelease": 0,
-        "urQueueFinish": 0,
-        "urEnqueueUSMFill": 0,
-        "urEnqueueUSMMemcpy": 0
-      },
-      "native_pid": 134513
-    },
-    {
-      "cohort": 1,
-      "order_index": 2,
-      "cell": [
-        "plain",
-        "trace"
-      ],
-      "clock_pair_cpu_s": 5.70999999998e-07,
-      "clock_pair_wall_s": 5.70900738239e-07,
-      "samples": [
-        [
-          0.050501135,
-          0.0505604860373
-        ],
-        [
-          0.0521722,
-          0.0523654429708
-        ],
-        [
-          0.048911696,
-          0.0490718049696
-        ],
-        [
-          0.048115382,
-          0.0485506240511
-        ]
-      ],
-      "median_cpu_us_per_query": 12.135355346679688,
-      "median_wall_us_per_query": 12.162144898303222,
-      "api_counts": {
-        "urEventGetInfo": 16388,
-        "urDeviceGetGlobalTimestamps": 0,
-        "urEventRelease": 9,
-        "urQueueFinish": 20,
-        "urEnqueueUSMFill": 4,
-        "urEnqueueUSMMemcpy": 5
-      },
-      "native_pid": 134580
-    },
-    {
-      "cohort": 1,
-      "order_index": 3,
-      "cell": [
-        "profiled",
-        "trace"
-      ],
-      "clock_pair_cpu_s": 7.01999999998e-07,
-      "clock_pair_wall_s": 7.01984390616e-07,
-      "samples": [
-        [
-          0.049270177,
-          0.0500119850039
-        ],
-        [
-          0.048361725,
-          0.0485246150056
-        ],
-        [
-          0.048079546,
-          0.0480924919248
-        ],
-        [
-          0.048582219,
-          0.0496202469803
-        ]
-      ],
-      "median_cpu_us_per_query": 11.8339775390625,
-      "median_wall_us_per_query": 11.980573972888184,
-      "api_counts": {
-        "urEventGetInfo": 16388,
-        "urDeviceGetGlobalTimestamps": 9,
-        "urEventRelease": 9,
-        "urQueueFinish": 20,
-        "urEnqueueUSMFill": 4,
-        "urEnqueueUSMMemcpy": 5
-      },
-      "native_pid": 134662
-    },
-    {
-      "cohort": 2,
-      "order_index": 0,
-      "cell": [
-        "plain",
-        "quiet"
-      ],
-      "clock_pair_cpu_s": 6.71000000001e-07,
-      "clock_pair_wall_s": 6.61006197333e-07,
-      "samples": [
-        [
-          9.4067e-05,
-          9.42869810387e-05
-        ],
-        [
-          9.2293e-05,
-          9.23940679058e-05
-        ],
-        [
-          8.8957e-05,
-          8.9098000899e-05
-        ],
-        [
-          0.000103204,
-          0.000103474943899
-        ]
-      ],
-      "median_cpu_us_per_query": 0.0227490234375,
-      "median_wall_us_per_query": 0.02278821398248291,
-      "api_counts": {
-        "urEventGetInfo": 0,
-        "urDeviceGetGlobalTimestamps": 0,
-        "urEventRelease": 0,
-        "urQueueFinish": 0,
-        "urEnqueueUSMFill": 0,
-        "urEnqueueUSMMemcpy": 0
-      },
-      "native_pid": 134750
-    },
-    {
-      "cohort": 2,
-      "order_index": 1,
-      "cell": [
-        "profiled",
-        "quiet"
-      ],
-      "clock_pair_cpu_s": 7.12e-07,
-      "clock_pair_wall_s": 7.11064785719e-07,
-      "samples": [
-        [
-          8.7725e-05,
-          8.80460720509e-05
-        ],
-        [
-          7.4801e-05,
-          7.49609898776e-05
-        ],
-        [
-          7.478e-05,
-          7.48810125515e-05
-        ],
-        [
-          7.476e-05,
-          7.48710008338e-05
-        ]
-      ],
-      "median_cpu_us_per_query": 0.018259399414062502,
-      "median_wall_us_per_query": 0.018291260062145997,
-      "api_counts": {
-        "urEventGetInfo": 0,
-        "urDeviceGetGlobalTimestamps": 0,
-        "urEventRelease": 0,
-        "urQueueFinish": 0,
-        "urEnqueueUSMFill": 0,
-        "urEnqueueUSMMemcpy": 0
-      },
-      "native_pid": 134823
-    },
-    {
-      "cohort": 2,
-      "order_index": 2,
-      "cell": [
-        "profiled",
-        "trace"
-      ],
-      "clock_pair_cpu_s": 7.115e-07,
-      "clock_pair_wall_s": 7.11064785719e-07,
-      "samples": [
-        [
-          0.050940982,
-          0.0509986520046
-        ],
-        [
-          0.049246884,
-          0.0493467630586
-        ],
-        [
-          0.048093852,
-          0.0480942659779
-        ],
-        [
-          0.047679696,
-          0.0476801160257
-        ]
-      ],
-      "median_cpu_us_per_query": 11.8824140625,
-      "median_wall_us_per_query": 11.894656864807128,
-      "api_counts": {
-        "urEventGetInfo": 16388,
-        "urDeviceGetGlobalTimestamps": 9,
-        "urEventRelease": 9,
-        "urQueueFinish": 20,
-        "urEnqueueUSMFill": 4,
-        "urEnqueueUSMMemcpy": 5
-      },
-      "native_pid": 134896
-    },
-    {
-      "cohort": 2,
-      "order_index": 3,
-      "cell": [
-        "plain",
-        "trace"
-      ],
-      "clock_pair_cpu_s": 7.40999999999e-07,
-      "clock_pair_wall_s": 7.32019543648e-07,
-      "samples": [
-        [
-          0.049247987,
-          0.0492610220099
-        ],
-        [
-          0.047647525,
-          0.047671340988
-        ],
-        [
-          0.048998249,
-          0.0490083859768
-        ],
-        [
-          0.047635353,
-          0.0476356730796
-        ]
-      ],
-      "median_cpu_us_per_query": 11.797579833984376,
-      "median_wall_us_per_query": 11.801724483007813,
-      "api_counts": {
-        "urEventGetInfo": 16388,
-        "urDeviceGetGlobalTimestamps": 0,
-        "urEventRelease": 9,
-        "urQueueFinish": 20,
-        "urEnqueueUSMFill": 4,
-        "urEnqueueUSMMemcpy": 5
-      },
-      "native_pid": 134975
-    }
-  ],
-  "smoke_checks": {
-    "cells": [
-      [
-        "profiled",
-        "trace"
-      ],
-      [
-        "plain",
-        "trace"
-      ]
-    ],
-    "passed": 2,
-    "queries_per_cell": 16,
-    "native_pids": [
-      133966,
-      134042
-    ],
-    "providers_and_ownership_passed": true
-  },
-  "validation": {
-    "all14_before_main_preload_proofs_passed": true,
-    "loaded_providers_all_match": [
-      "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libsycl.so.9.0.0-0",
-      "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_adapter_level_zero_v2.so.0.12.0",
-      "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_loader.so.0.12.0",
-      "/usr/lib/x86_64-linux-gnu/libze_intel_gpu.so.1.17.39395",
-      "/usr/lib/x86_64-linux-gnu/libze_loader.so.1.32.0"
-    ],
-    "trace_presence_checked_from_USM_fill": true,
-    "qualified_safety_settings_unchanged": true
-  },
-  "decision": "All execution/source/provider/guard/owner/fault gates and48 timer gates pass. Completed status queries cost wall18.29..25.15ns without tracing and11.75..12.16us with full tracing, using independent process medians. This cannot by itself explain v2 fresh-getter1.4..2.3ms or model enqueue10.9s. No consistent all-pair queue-property latency gain, production default change, layer attribution, physical traffic/ceiling, model speedup or adoption is qualified.",
-  "next_action": "Measure the bounded finite producer + copy + checked drain path without a pre-copy status query, against the same fixed work. Separate producer/enqueue/drain and profiling effects; preserve v1/v2 pending-ineligible outcomes. Freeze a new source/plan before execution; do not claim pending eligibility from a changed criterion or retry larger fills.",
-  "limits": "Quiet trace counts are zero because output/layer is absent; they do not prove UR dispatch is bypassed. Validation remains enabled. Completed-event batches differ from fresh producer and model queue backlog; no hardware saturation or model throughput measurement. Model math, queue defaults, event elapsed-time consumers and both retained engines are unchanged.",
-  "retention": "48 useful CPU/wall samples plus per-process clocks/API counts and pinned source/recipe. Original plans/older components in reachable Git. Closed standalone roots/raw output retire after exact input/recipe recovery; keep only two currently consumed engine generations, with14 legacy provenance holds separate.",
-  "artifact_retirement": {
-    "complete": true,
-    "files": 74,
-    "bytes": 24408964,
-    "manifest": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/closed-status-observer-components-and-reviews-20261021.jsonl",
-    "manifest_sha256": "729d4abc9a4e046528703010060b48994032c8e703ad2862ceb1d989f4aa98e1",
-    "source_recipe_recovery": [
-      {
-        "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/status-copy-component-v2",
-        "source_commit": "7b8f3f5ab67ef3fd223c33196b405b2454489757",
-        "plan_commit": "59af47a05",
-        "plan_sha256": "2a38e940ac7910674b6f00d8f3aa260ac2657f36ee3efaae3e6b91db14f06e6f",
-        "fixture_inputs_recovered": 143,
-        "native_inputs_recovered": 9836,
-        "compiled_translation_units": [
-          "bench/sycl/status_copy.cpp",
-          "src/sycl/runtime.cpp",
-          "src/sycl/compat.cpp",
-          "src/sycl/command_profile.cpp"
-        ],
-        "compiler_sha256": "1290881b4e12a5e002e5b0de0787f85328ee5fe19f253a54be1cdd97dc2f26eb",
-        "binary_sha256": "8cae40fa9fb361fdb9ed8d6a3e26ec2c187b4c000cdf2546e7d8627623d1253b",
-        "files": 3,
-        "bytes": 303741
-      },
-      {
-        "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/status-query-observer-v3",
-        "source_commit": "69f3886558757fd3fff140ff1a6a10a2624cf493",
-        "plan_commit": "73a659f19",
-        "plan_sha256": "e6548041809483849e65fdf757ccd5c3f621687a11c2f65fa69eff716224c9e0",
-        "fixture_inputs_recovered": 143,
-        "native_inputs_recovered": 9836,
-        "compiled_translation_units": [
-          "bench/sycl/status_copy.cpp",
-          "src/sycl/runtime.cpp",
-          "src/sycl/compat.cpp",
-          "src/sycl/command_profile.cpp"
-        ],
-        "compiler_sha256": "1290881b4e12a5e002e5b0de0787f85328ee5fe19f253a54be1cdd97dc2f26eb",
-        "binary_sha256": "942cfb8a729e51129f27c25afb9f1798cd8116b0ae161b29b405c4d9ff63925f",
-        "files": 33,
-        "bytes": 23945226
-      }
-    ],
-    "verified_remote_branch": "feature/sycl",
-    "verified_remote_commit": "76a3c96bb533512e7b7029905a8b23b302b762c7",
-    "policy_commit": "c2e2b2733",
-    "retired_standalone_roots": 2,
-    "retained_engine_generations": 2,
-    "legacy_provenance_holds": 14,
-    "skipped_transaction_stems": [],
-    "limits": "Scoped retirement, not global legacy cleanup. Retained model engines and same-build safety fixtures unchanged; original measured commits remain on pushed feature/sycl pending default integration."
   }
 }
