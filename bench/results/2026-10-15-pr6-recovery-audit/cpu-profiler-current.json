@@ -3484,6 +3484,59 @@
           "service_sum_us": 70755.094
         }
       ]
+    },
+    "detail_plan": {
+      "source_commit": "79f9e821ce15ee708a88e9a3955be9bee3cda9df",
+      "source_path": "tools/sycl/profile_analysis.py",
+      "source_sha256": "7f767e8277e645e99e0f2146717242310427f390493ef2b773f828e7c4645bc8",
+      "interpreter": {
+        "path": "/usr/bin/python3.12",
+        "sha256": "e50d468e8b0adfb05733f5b87b3cff34829c4a8c1aea50c865aa8bdfe4bb150f",
+        "version": "3.12.3 (main, Aug 31 2026, 10:18:26) [GCC 13.3.0]"
+      },
+      "collection_commit": "487645cbf84fb93c58e4cee6e1eb5e56a3195626",
+      "inputs": {
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/unitrace-production-32k-v1/record.json": {
+          "sha256": "fc35e8c0a9caf9a27a0c9d1dbfc03090f9caf3cb92feff68aeb77fa8288edfa5",
+          "bytes": 61840
+        },
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/unitrace-production-32k-v1/engine.stderr": {
+          "sha256": "dc02d706e65e2654bf4efa3ac78ffb9d248ea90a614bf58efd817d1da7209ef8",
+          "bytes": 442486
+        },
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/unitrace-production-32k-v1/trace/strata.561204.json": {
+          "sha256": "63651494e73056bdc404e1038f0b4ec64109d02a1396b4d4ba1c7faecf19c566",
+          "bytes": 266967750
+        },
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/unitrace-production-32k-v1/bench/2026-10-21-community-cpu-qwen3-8-flash-next-iq3-s-primary/results.json": {
+          "sha256": "b5cc308e62b454a16537705d21cb7f478b56db9465fa1225a6b7b81bae94e857",
+          "bytes": 15016
+        },
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/unitrace-production-32k-v1/bench/2026-10-21-community-cpu-qwen3-8-flash-next-iq3-s-primary/requests.jsonl": {
+          "sha256": "3ef72ec47639a8ca9c376b449f21a47e6f4d7348148620f2bb43a3ac0813a9d0",
+          "bytes": 5012
+        },
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/unitrace-production-32k-v1/bench/2026-10-21-community-cpu-qwen3-8-flash-next-iq3-s-primary/journal-state.json": {
+          "sha256": "c083ce39e6d06dc094dca4941771ff85755b49a990670729da2e5b8a5ac1eda1",
+          "bytes": 178
+        }
+      },
+      "gates": "Preserve successful original collection and first analysis. Pin closed inputs. Compute API wall intervals inside observed GPU-empty spans; no CPU cost/causality claim. Inventory every QSA-prefix and prompt_product exact instantiation/launch shape, first-output position and native host parent. Keep graph-replay work links separate from direct appends. First brace in Unitrace kernel names is workgroup COUNT, second is workgroup SIZE (official ze_collector.h GetZeKernelCommandName); do not interpret the first as global work-items.",
+      "limits": "No native execution, timing comparison, hardware saturation, exact prefill-only boundary or full dependency/critical-path claim. Family names are source lookup groups. Requested copy bytes are not measured bus traffic. Host API wall time is not CPU time. Unions overlap across rows.",
+      "budgets": {
+        "wall_seconds": 180,
+        "cpu_seconds": 120,
+        "address_space_bytes": 6442450944,
+        "result_bytes": 24576
+      },
+      "consumer": "Select matched hardware/operation references and next prefill optimization; retire raw trace after remaining source/loss/observer questions close.",
+      "first_analysis_sha256": "94e8f485cc49d8e2f83b84ec131ce91cd37e52cb50697a0ff06be901f583f622",
+      "geometry_source": {
+        "repo": "/home/yayoi/ghq/github.com/intel/pti-gpu",
+        "revision": "4b6d74294cdc72766c00a9211fe2e4261ee94244",
+        "path": "tools/unitrace/src/levelzero/ze_collector.h",
+        "sha256": "a28f6564ac1318c73dc36d4ad31d1929516d0b6f2710bfb3ff5327f3da38e834"
+      }
     }
   }
 }
