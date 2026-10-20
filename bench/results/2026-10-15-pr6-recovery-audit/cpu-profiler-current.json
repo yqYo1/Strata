@@ -1675,7 +1675,7 @@
   },
   "unitrace_recording_window": {
     "schema": "strata-profile-recording-window-v1",
-    "stage": "built",
+    "stage": "check-prepared",
     "source_commit": "6269902082bfb811ca237bf45faf07e3152898ea",
     "input_sha256": {
       "tools/sycl/bench_engine.py": "e5f588605ebc7799b54f8bf7df9ad2e363391375e50b788b9704a6b80887ca6b",
@@ -1817,7 +1817,7 @@
       "total_bytes": 134217728
     },
     "active": false,
-    "passed": true,
+    "passed": false,
     "ownership_closed": true,
     "request_window_qualified": false,
     "model_qualified": false,
@@ -1825,6 +1825,120 @@
       "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/unitrace-recording-window-v2/profile_window",
       "sha256": "2b5ac3014a947e2331437de2d242fe97dbc167a6414223492c6b8e290bcfdf9e",
       "bytes": 280112
+    },
+    "check": {
+      "cells": [
+        {
+          "name": "paused",
+          "expected_kernels": 0,
+          "session": "StrataWindow944b65ee23e76b938902117d",
+          "environment": {
+            "PATH": "/usr/bin:/bin",
+            "HOME": "/home/yayoi",
+            "LANG": "C.UTF-8",
+            "LC_ALL": "C.UTF-8",
+            "PYTHONDONTWRITEBYTECODE": "1",
+            "LD_LIBRARY_PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib:/opt/intel/oneapi/mkl/2026.1/lib",
+            "ONEAPI_DEVICE_SELECTOR": "level_zero:gpu",
+            "UR_ADAPTERS_FORCE_LOAD": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_adapter_level_zero_v2.so.0",
+            "UR_L0_V2_FORCE_DISABLE_COPY_OFFLOAD": "1",
+            "NEOReadDebugKeys": "1",
+            "EnableDirectSubmission": "0",
+            "STRATA_SYCL_PREFILL_SAME_QUEUE": "1",
+            "STRATA_SYCL_VERIFY_NATIVE_CAPTURE": "0",
+            "SYCL_CACHE_PERSISTENT": "0",
+            "ZES_ENABLE_SYSMAN": "0",
+            "UR_ENABLE_LAYERS": "UR_LAYER_TRACING,UR_LAYER_PARAMETER_VALIDATION",
+            "UR_LOG_TRACING": "level:info;flush:info;output:file,/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/unitrace-recording-window-v2/paused/ur.log",
+            "UR_LOG_VALIDATION": "level:warning;flush:warning;output:stderr",
+            "UR_LOG_LOADER": "level:warning;flush:warning;output:stderr",
+            "UR_LOG_LEVEL_ZERO": "level:warning;flush:warning;output:stderr",
+            "TMPDIR": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/unitrace-recording-window-v2/paused/tmp",
+            "XDG_CACHE_HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/unitrace-recording-window-v2/paused/cache",
+            "CUDA_MODULE_LOADING": "EAGER",
+            "STRATA_UNITRACE_TARGET_PRELOAD": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/ur-validation-preload-v2/libstrata_ur_validation.so",
+            "STRATA_UR_PROBE_EXPECTED_LOADER": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_loader.so.0.12.0",
+            "LD_DEBUG": "libs",
+            "UNITRACE_FollowChildProcess": "1",
+            "UNITRACE_TraceOutputDir": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/unitrace-recording-window-v2/paused/trace",
+            "UNITRACE_SystemTime": "1"
+          },
+          "command": [
+            "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/unitrace-session-owner-v1/unitrace",
+            "--session",
+            "StrataWindow944b65ee23e76b938902117d",
+            "--start-paused",
+            "--host-timing",
+            "--device-timing",
+            "--chrome-kernel-logging",
+            "--chrome-call-logging",
+            "--chrome-event-buffer-size",
+            "128",
+            "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/unitrace-recording-window-v2/profile_window",
+            "--submission"
+          ]
+        },
+        {
+          "name": "window",
+          "expected_kernels": 606,
+          "session": "StrataWindowcd1ab21151d4ffce921f459c",
+          "environment": {
+            "PATH": "/usr/bin:/bin",
+            "HOME": "/home/yayoi",
+            "LANG": "C.UTF-8",
+            "LC_ALL": "C.UTF-8",
+            "PYTHONDONTWRITEBYTECODE": "1",
+            "LD_LIBRARY_PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib:/opt/intel/oneapi/mkl/2026.1/lib",
+            "ONEAPI_DEVICE_SELECTOR": "level_zero:gpu",
+            "UR_ADAPTERS_FORCE_LOAD": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_adapter_level_zero_v2.so.0",
+            "UR_L0_V2_FORCE_DISABLE_COPY_OFFLOAD": "1",
+            "NEOReadDebugKeys": "1",
+            "EnableDirectSubmission": "0",
+            "STRATA_SYCL_PREFILL_SAME_QUEUE": "1",
+            "STRATA_SYCL_VERIFY_NATIVE_CAPTURE": "0",
+            "SYCL_CACHE_PERSISTENT": "0",
+            "ZES_ENABLE_SYSMAN": "0",
+            "UR_ENABLE_LAYERS": "UR_LAYER_TRACING,UR_LAYER_PARAMETER_VALIDATION",
+            "UR_LOG_TRACING": "level:info;flush:info;output:file,/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/unitrace-recording-window-v2/window/ur.log",
+            "UR_LOG_VALIDATION": "level:warning;flush:warning;output:stderr",
+            "UR_LOG_LOADER": "level:warning;flush:warning;output:stderr",
+            "UR_LOG_LEVEL_ZERO": "level:warning;flush:warning;output:stderr",
+            "TMPDIR": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/unitrace-recording-window-v2/window/tmp",
+            "XDG_CACHE_HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/unitrace-recording-window-v2/window/cache",
+            "CUDA_MODULE_LOADING": "EAGER",
+            "STRATA_UNITRACE_TARGET_PRELOAD": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/ur-validation-preload-v2/libstrata_ur_validation.so",
+            "STRATA_UR_PROBE_EXPECTED_LOADER": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_loader.so.0.12.0",
+            "LD_DEBUG": "libs",
+            "UNITRACE_FollowChildProcess": "1",
+            "UNITRACE_TraceOutputDir": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/unitrace-recording-window-v2/window/trace",
+            "UNITRACE_SystemTime": "1"
+          },
+          "command": [
+            "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/unitrace-session-owner-v1/unitrace",
+            "--session",
+            "StrataWindowcd1ab21151d4ffce921f459c",
+            "--start-paused",
+            "--host-timing",
+            "--device-timing",
+            "--chrome-kernel-logging",
+            "--chrome-call-logging",
+            "--chrome-event-buffer-size",
+            "128",
+            "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/unitrace-recording-window-v2/profile_window",
+            "--submission"
+          ]
+        }
+      ],
+      "gates": "Two fixed fresh native processes execute unchanged606-kernel/53-copy/1-fill/20-barrier fixture and numerical guards. Paused-throughout records zero GPU work. Window resumes only at native READY, pauses only after native DRAINED, records exact inventory and requested bytes with positive main-kernel service. Every event must lie between release/drained raw clocks+/-1ms with unique ID/host source and a metadata device lane matching expected PCI. Selected native device vendor/device IDs must match the driver guard, with nonzero UUID recorded; before/after driver identity must agree. Native and caller must share observed time namespace. Four paired-clock brackets before and after; all host samples inside native raw bracket and minimum width per phase<=100us; record frequency/valid bits and tick quantum. These bounds do not qualify sub-millisecond queue delays or graph critical paths. Stop exact sessions only after native/control closure, including failed execution; failure remains failed. Fault, boot, constructor/retention and post-input checks required. Stop after first failure; no model execution.",
+      "wall_s_per_target": 90,
+      "wall_s_per_control": 15,
+      "raw_text_budget_bytes": 67108864,
+      "total_budget_bytes": 134217728
+    },
+    "source_review": {
+      "report_sha256": "aa5b6907e9baf55c7bb00d99ffa22df8b7aba5f6a4462f249a6a50d526f05b88",
+      "source_hashes_match": true,
+      "decision": "Native Luna-max accepts the transitive native-source admission and device/timing gates. Main confirmed original compile inputs via query_profile.current_build. The reported stale failed-state blocker is superseded by actual committed failed evidence aef9e43f6, fresh plan92ba47e30 and successful build25c46c30b; original failure remains failed. This checks source/plan only, not native recording-window qualification."
     }
   }
 }
