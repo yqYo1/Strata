@@ -2700,6 +2700,20 @@ enlarge the closed fill workload or add a stalled gate.
 The v1 executable/raw root was retired after recovering143 fixture/controller
 inputs and9836 original native inputs; its compact failed gate remains in Git.
 
+The completed-event v3 fixture uses the unchanged production Runtime/compat
+sources and an explicitly owned factory queue. Two traced smoke processes
+(profiled/plain) precede three fixed four-cell cohorts: profiled/plain crossed
+with tracing present/absent, validation and safety fixed. Each measured process
+has four batches of4096 queries after a checked queue drain, retaining the
+event and guarded12-byte device envelope through use. Require complete status,
+exact payload/guards, provider mappings, first-init validation and normal owned
+closure. Each timing batch must reach20us wall and100 times the median128
+clock-pair CPU/wall overhead; a shorter batch stays ineligible without retry.
+Record actual UR call counts because completed-event queries may use a cached
+path. The finite45s process/64MiB raw-text budgets and comparison order are
+frozen before execution. This is host API attribution, not a production queue
+change or proof of the earlier fresh-event/model enqueue mechanism.
+
 For the separate earlier early-PCIe candidate, only a later qualified mechanism permits a
 fresh complete51+6-case plan. Preserve all pending-completion,
 untouched-output, payload/guard and owner-lifetime requirements under that plan.

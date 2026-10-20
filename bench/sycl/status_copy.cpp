@@ -1,182 +1,135 @@
-// Authored for Strata; repository LICENSE applies. Component attribution only.
-// Use the unchanged production compatibility library, not a second copy path.
+// Authored for Strata; repository LICENSE applies. Diagnostic only.
+// Compare completed-event queries; do not change production queue defaults.
 #include <cuda_runtime.h>
 #include "strata/sycl/cpu_wait_profile.hpp"
 #include "strata/sycl/runtime.hpp"
+#include <algorithm>
 #include <array>
 #include <cstdint>
 #include <cstdio>
 #include <cstdlib>
-#include <memory>
+#include <fstream>
+#include <set>
 #include <stdexcept>
 #include <string>
 
 namespace hp = strata::sycl_backend::cpu_wait_profile;
 using strata::sycl_backend::runtime_for;
-constexpr size_t bytes = 128ull << 20;
-constexpr int fills = 8, samples = 12;
+constexpr int rounds = 4, queries = 4096, clock_pairs = 128;
+constexpr uint32_t left = 0x17ab8932, right = 0x695de410;
 struct Envelope { uint32_t before, value, after; };
 static_assert(sizeof(Envelope) == 12);
-constexpr uint32_t left = 0x17ab8932, right = 0x695de410;
 
 [[noreturn]] void fail(const char* reason) noexcept {
-    std::fprintf(stderr, "status copy fail-stop: %s\n", reason);
+    std::fprintf(stderr, "status query fail-stop: %s\n", reason);
     std::fflush(stderr);
     std::_Exit(1);
 }
-void need(bool value, const char* reason) {
-    if (!value) fail(reason);
-}
-void ck(cudaError_t error) {
-    if (error != cudaSuccess) fail(cudaGetErrorString(error));
-}
+void need(bool value, const char* reason) { if (!value) fail(reason); }
+void ck(cudaError_t error) { if (error != cudaSuccess) fail(cudaGetErrorString(error)); }
 template<class Function> auto device_call(Function function) {
-    // Catch at the call boundary, before the caller's in-flight buffers unwind.
+    // Fail at the call boundary, before caller-owned device/host data unwind.
     try { return function(); }
     catch (const std::exception& error) { fail(error.what()); }
     catch (...) { fail("unknown SYCL exception"); }
 }
-void timing(const char* name, const hp::State& s, hp::StatusKind kind) {
-    std::printf(",\"%s\":{\"calls\":%llu,\"cpu_s\":%.12g,\"wall_s\":%.12g,"
-        "\"wait_cpu_s\":%.12g,\"wait_wall_s\":%.12g}", name,
-        s.status_calls[kind], s.status_cpu[kind], s.status_wall[kind],
-        s.status_wait_cpu[kind], s.status_wait_wall[kind]);
+void elapsed(hp::Stamp begin, hp::Stamp end) {
+    need(begin.valid && end.valid && hp::duration(end.cpu - begin.cpu) &&
+        hp::duration(end.wall - begin.wall), "clock unavailable");
 }
-void validate(const hp::State& s) {
-    need(!s.invalid && !s.depth && !s.host_depth && !s.status_depth && !s.status_part_depth &&
-        s.status_scopes == 1 && s.status_completed == 1, "incomplete status accounting");
-    double cpu = 0, wall = 0;
-    for (int k = 0; k < hp::status_kinds; ++k) {
-        const unsigned expected = k == hp::status_precheck || k == hp::status_queue ? 2 :
-            k == hp::status_enqueue || k == hp::status_observer ||
-            k == hp::status_drain || k == hp::status_postcheck ? 1 : 0;
-        need(s.status_calls[k] == expected && !s.status_throws[k] &&
-            hp::duration(s.status_cpu[k]) && hp::duration(s.status_wall[k]) &&
-            hp::duration(s.status_wait_cpu[k]) && hp::duration(s.status_wait_wall[k]) &&
-            s.status_wait_cpu[k] <= s.status_cpu[k] &&
-            s.status_wait_wall[k] <= s.status_wall[k], "invalid status phase");
-        cpu += s.status_cpu[k]; wall += s.status_wall[k];
+void loaded_paths() {
+    std::ifstream maps("/proc/self/maps");
+    need(bool(maps), "loaded maps unavailable");
+    std::set<std::string> paths;
+    std::string line;
+    while (std::getline(maps, line)) {
+        auto offset = line.find('/');
+        if (offset == std::string::npos) continue;
+        auto path = line.substr(offset);
+        if (path.find("/libsycl.so") != std::string::npos ||
+            path.find("/libur_loader.so") != std::string::npos ||
+            path.find("/libur_adapter_level_zero_v2.so") != std::string::npos ||
+            path.find("/libze_loader.so") != std::string::npos ||
+            path.find("/libze_intel_gpu.so") != std::string::npos) paths.insert(path);
     }
-    need(hp::duration(s.status_scope_cpu) && hp::duration(s.status_scope_wall) &&
-        cpu <= s.status_scope_cpu + 1e-7 && wall <= s.status_scope_wall + 1e-7,
-        "status partition not conserved");
+    need(!maps.bad() && paths.size() == 5, "missing/ambiguous runtime providers");
+    for (const auto& path : paths)
+        std::fprintf(stderr, "status query loaded: %s\n", path.c_str());
+    std::fflush(stderr);
 }
 
 int main(int argc, char** argv) {
-    // Explicit arguments prevent a default GPU run. Environment is never changed.
+    // No default GPU execution, runtime environment mutation or stalled gates.
     if (argc != 3) return 2;
-    const bool usm = std::string(argv[1]) == "usm";
-    const bool pending = std::string(argv[2]) == "pending";
-    if ((!usm && std::string(argv[1]) != "ordinary") ||
-        (!pending && std::string(argv[2]) != "idle")) return 2;
-    // Exception handling fail-stops while every owner is still alive. No buffer
-    // destructor unwinds through an unproven device completion.
+    const bool profiling = std::string(argv[1]) == "profiled";
+    const bool smoke = std::string(argv[2]) == "smoke";
+    if ((!profiling && std::string(argv[1]) != "plain") ||
+        (!smoke && std::string(argv[2]) != "measure")) return 2;
     try {
         auto runtime = device_call([] { return runtime_for(); });
-        cudaStream_t stream{};
-        ck(cudaStreamCreate(&stream));
-        need(stream->get_context() == runtime->context() &&
-            stream->get_device() == runtime->device() &&
-            stream->has_property<sycl::property::queue::in_order>() &&
-            stream->has_property<sycl::property::queue::enable_profiling>(), "queue domain/properties");
-        auto ordinary = std::make_unique<Envelope>();
-        Envelope *host = ordinary.get(), *device{};
-        if (usm) ck(cudaMallocHost(reinterpret_cast<void**>(&host), sizeof(Envelope)));
+        auto queue = device_call([&] { return runtime->make_queue(profiling); });
+        need(queue.get_context() == runtime->context() && queue.get_device() == runtime->device() &&
+            queue.has_property<sycl::property::queue::in_order>() &&
+            queue.has_property<sycl::property::queue::enable_profiling>() == profiling,
+            "queue domain/properties");
+        // This queue is locally owned, not registered with cudaStreamCreate.
+        // Use checked compat drain, but never cudaStreamDestroy(&queue).
+        Envelope *device{}, input{left, 0, right}, output{};
         ck(cudaMalloc(reinterpret_cast<void**>(&device), sizeof(Envelope)));
-        uint8_t* backlog{};
-        ck(cudaMalloc(reinterpret_cast<void**>(&backlog), bytes + 128));
-        need(sycl::get_pointer_type(host, runtime->context()) ==
-            (usm ? sycl::usm::alloc::host : sycl::usm::alloc::unknown), "host pointer domain");
-        ck(cudaMemsetAsync(backlog, 0x57, bytes + 128, stream));
-        const Envelope warm{left, 0xa5197b31, right};
-        ck(cudaMemcpyAsync(device, &warm, sizeof warm, cudaMemcpyHostToDevice, stream));
-        ck(cudaMemcpyAsync(host, device, sizeof warm, cudaMemcpyDeviceToHost, stream));
-        ck(cudaStreamSynchronize(stream));
-        need(host->before == left && host->value == warm.value && host->after == right, "warmup payload/guards");
-        std::printf("{\"type\":\"begin\",\"schema\":2,\"host\":\"%s\",\"queue\":\"%s\","
-            "\"samples\":%d,\"copy_bytes\":4,\"backlog_fills\":%d,\"fill_bytes\":%zu,"
-            "\"retain_fill_events_through_drain\":true} \n",
-            argv[1], argv[2], samples, pending ? fills : 0, bytes);
+        ck(cudaMemcpyAsync(device, &input, sizeof input, cudaMemcpyHostToDevice, &queue));
+        ck(cudaStreamSynchronize(&queue));
+        loaded_paths();
+        std::array<double, clock_pairs> cpu{}, wall{};
+        for (int i = 0; i < clock_pairs; ++i) {
+            const auto begin = hp::stamp(), end = hp::stamp();
+            elapsed(begin, end);
+            cpu[i] = end.cpu - begin.cpu; wall[i] = end.wall - begin.wall;
+        }
+        std::sort(cpu.begin(), cpu.end()); std::sort(wall.begin(), wall.end());
+        const double clock_cpu = (cpu[63] + cpu[64]) / 2;
+        const double clock_wall = (wall[63] + wall[64]) / 2;
+        const int batch_rounds = smoke ? 1 : rounds, batch_queries = smoke ? 16 : queries;
+        std::printf("{\"type\":\"begin\",\"schema\":3,\"profiling\":%s,\"mode\":\"%s\","
+            "\"rounds\":%d,\"queries_per_batch\":%d,\"completed_before_batch\":true,"
+            "\"clock_pair_cpu_s\":%.12g,\"clock_pair_wall_s\":%.12g}\n",
+            profiling ? "true" : "false", argv[2], batch_rounds, batch_queries, clock_cpu, clock_wall);
         std::fflush(stdout);
-        for (int rep = 0; rep < samples; ++rep) {
-            const Envelope input{left, uint32_t(0x417d9000 + rep), right};
-            *host = Envelope{left, 0xdeadbeef, right};
-            ck(cudaMemcpyAsync(device, &input, sizeof input, cudaMemcpyHostToDevice, stream));
-            ck(cudaStreamSynchronize(stream)); // source remains alive through checked completion
-            sycl::event last;
-            std::array<sycl::event, fills> retained;
-            const auto producer_begin = hp::stamp();
-            if (pending)
-                for (int f = 0; f < fills; ++f)
-                    retained[f] = device_call([&] { return stream->memset(backlog + 64, 0x30 + rep, bytes); });
-            const auto producer_end = hp::stamp();
-            if (pending) last = retained.back();
-            hp::State state;
-            need(hp::active == nullptr, "unexpected outer CPU profile");
-            hp::active = &state;
-            bool observed_pending = false, complete_after_copy = false;
-            hp::Stamp query_begin, queried, copy_begin;
-            {
-                hp::StatusScope scope;
-                query_begin = hp::stamp();
-                if (pending) observed_pending = device_call([&] { return last.get_info<sycl::info::event::command_execution_status>(); }) !=
+        for (int rep = 0; rep < batch_rounds; ++rep) {
+            // Finite 4-byte producer only. The event stays alive through query
+            // batches and the final checked queue drain. No pending gate.
+            auto event = device_call([&] { return queue.memset(&device->value, 0x31 + rep, sizeof(uint32_t)); });
+            ck(cudaStreamSynchronize(&queue));
+            need(device_call([&] { return event.get_info<sycl::info::event::command_execution_status>(); }) ==
+                sycl::info::event_command_status::complete, "incomplete seed event");
+            unsigned completed = 0;
+            const auto begin = hp::stamp();
+            for (int i = 0; i < batch_queries; ++i)
+                completed += device_call([&] { return event.get_info<sycl::info::event::command_execution_status>(); }) ==
                     sycl::info::event_command_status::complete;
-                queried = hp::stamp();
-                copy_begin = hp::stamp();
-                ck(cudaMemcpyAsync(&host->value, &device->value, sizeof(uint32_t), cudaMemcpyDeviceToHost, stream));
-                if (pending) complete_after_copy = device_call([&] { return last.get_info<sycl::info::event::command_execution_status>(); }) ==
-                    sycl::info::event_command_status::complete;
-                ck(cudaStreamSynchronize(stream)); // preserves async error delivery and destination ownership
-                scope.complete();
-            }
-            hp::active = nullptr;
-            validate(state);
-            need(producer_begin.valid && producer_end.valid && query_begin.valid && queried.valid &&
-                copy_begin.valid && hp::duration(copy_begin.wall - queried.wall) &&
-                hp::duration(producer_end.wall - producer_begin.wall) && hp::duration(producer_end.cpu - producer_begin.cpu) &&
-                hp::duration(queried.wall - query_begin.wall) && hp::duration(queried.cpu - query_begin.cpu), "clock unavailable");
-            need(host->before == left && host->value == input.value && host->after == right, "status payload/host guards");
-            Envelope check{};
-            std::array<uint8_t, 64> before{}, after{};
-            ck(cudaMemcpyAsync(&check, device, sizeof check, cudaMemcpyDeviceToHost, stream));
-            ck(cudaMemcpyAsync(before.data(), backlog, before.size(), cudaMemcpyDeviceToHost, stream));
-            ck(cudaMemcpyAsync(after.data(), backlog + 64 + bytes, after.size(), cudaMemcpyDeviceToHost, stream));
-            ck(cudaStreamSynchronize(stream));
-            need(check.before == left && check.value == input.value && check.after == right, "device guards");
-            for (auto value : before) need(value == 0x57, "backlog prefix guard");
-            for (auto value : after) need(value == 0x57, "backlog suffix guard");
-            // Also verify the final finite fill completed; these probes are not timed.
-            if (pending) {
-                uint8_t first = 0, final = 0;
-                ck(cudaMemcpyAsync(&first, backlog + 64, 1, cudaMemcpyDeviceToHost, stream));
-                ck(cudaMemcpyAsync(&final, backlog + 63 + bytes, 1, cudaMemcpyDeviceToHost, stream));
-                ck(cudaStreamSynchronize(stream));
-                need(first == uint8_t(0x30 + rep) && final == first, "backlog fill endpoints");
-            }
-            std::printf("{\"type\":\"sample\",\"rep\":%d,\"eligible\":%s,"
-                "\"pending_observed\":%s,\"last_complete_after_copy\":%s,"
-                "\"query_to_copy_wall_s\":%.12g,\"scope_cpu_s\":%.12g,\"scope_wall_s\":%.12g,"
-                "\"producer_cpu_s\":%.12g,\"producer_wall_s\":%.12g,\"pending_query_cpu_s\":%.12g,\"pending_query_wall_s\":%.12g",
-                rep, !pending || observed_pending ? "true" : "false", observed_pending ? "true" : "false",
-                complete_after_copy ? "true" : "false", copy_begin.wall - queried.wall,
-                state.status_scope_cpu, state.status_scope_wall, producer_end.cpu - producer_begin.cpu,
-                producer_end.wall - producer_begin.wall, queried.cpu - query_begin.cpu, queried.wall - query_begin.wall);
-            timing("enqueue", state, hp::status_enqueue);
-            timing("observer", state, hp::status_observer);
-            timing("drain", state, hp::status_drain);
-            timing("precheck", state, hp::status_precheck);
-            timing("queue_context", state, hp::status_queue);
-            timing("postcheck", state, hp::status_postcheck);
-            std::puts(",\"payload_and_guards_passed\":true}");
+            const auto end = hp::stamp();
+            elapsed(begin, end);
+            need(completed == unsigned(batch_queries), "completed-event status regression");
+            ck(cudaStreamSynchronize(&queue));
+            ck(cudaMemcpyAsync(&output, device, sizeof output, cudaMemcpyDeviceToHost, &queue));
+            ck(cudaStreamSynchronize(&queue));
+            const auto byte = uint32_t(0x31 + rep);
+            need(output.before == left && output.after == right && output.value == byte * 0x01010101u,
+                "payload/guard verification");
+            const bool eligible = !smoke && end.wall - begin.wall >= 20e-6 &&
+                end.wall - begin.wall >= 100 * clock_wall && end.cpu - begin.cpu >= 100 * clock_cpu;
+            std::printf("{\"type\":\"sample\",\"rep\":%d,\"queries\":%d,\"completed\":%u,"
+                "\"cpu_s\":%.12g,\"wall_s\":%.12g,\"timing_eligible\":%s,\"payload_and_guards_passed\":true}\n",
+                rep, batch_queries, completed, end.cpu - begin.cpu, end.wall - begin.wall,
+                eligible ? "true" : "false");
             std::fflush(stdout);
         }
-        ck(cudaStreamSynchronize(stream));
-        ck(cudaFree(backlog)); ck(cudaFree(device));
-        if (usm) ck(cudaFreeHost(host));
-        ck(cudaStreamDestroy(stream));
-        std::puts("{\"type\":\"end\",\"passed\":true,\"samples\":12,\"owners_closed\":true}");
+        ck(cudaStreamSynchronize(&queue));
+        ck(cudaFree(device));
+        // Explicitly finish the local queue before its destructor. Runtime
+        // default queues and sticky errors are also drained before normal exit.
+        device_call([&] { runtime->wait(); });
+        std::puts("{\"type\":\"end\",\"passed\":true,\"owners_closed\":true}");
         return 0;
-    } catch (const std::exception& error) {
-        fail(error.what());
-    }
+    } catch (const std::exception& error) { fail(error.what()); }
+    catch (...) { fail("unknown top-level exception"); }
 }
