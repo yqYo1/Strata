@@ -4903,10 +4903,13 @@
     "report_path": "/home/yayoi/orca/workspaces/Strata/sycl/.cache/strata-research/20261020/cpu-roofline-protocol-report.md",
     "report_budget_bytes": 16384,
     "worker_closed": true,
-    "next_review": "Native Codex gpt-6-luna max curation after accepted worker_done; Main reads only the short operational/retrieval digest. Main owns implementation/testing.",
+    "next_review": "Main implements and measures CPU-only calibration; then retain compact evidence and retire this temporary report.",
     "report_sha256": "e7d40b08aa8774222fc4338db15e8ca644c2f685d03fff18ecbdd9d13cfde05e",
     "report_bytes": 14877,
-    "curation_state": "pending_native_luna_max"
+    "curation_state": "native_luna_max_reviewed",
+    "native_review_sha256": "0cb2ac022c98bb79061ff20af2f7c9ea418cea2df3ef9ce5362aeefd6e389efd",
+    "review_digest": "Use actual production pool including specialized Q2_0 Down; H2560 FF640, seven pairs, NT1..4, hot/stream plus read scan. Existing parity target is CUDA/HIP-runtime-linked, unavailable in a SYCL-only CPU calibration. No CPU/RAM ceiling measured.",
+    "consumer": "Imminent Main-owned CPU expert/RAM calibration implementation."
   },
   "cpu_lowbit_lut_methods_collection_scope": {
     "classification": "knowledge collection",
@@ -4928,13 +4931,19 @@
       "src/kernels/cpu/iq_avx2.cpp": "80efab0bed11ddf3980c0d146101218efa061cf5304e39fc88d93e5e94a99136",
       "include/strata/kernels/cpu/native_expert.hpp": "45ccf6df8b4cc5b468a245a2ddee845e0b10ece14951a5a7ab7b6ffbca087e94"
     },
-    "report_path": "/home/yayoi/orca/workspaces/Strata/sycl/.cache/strata-research/20261020/cpu-lowbit-lut-report.md",
-    "report_budget_bytes": 20480,
     "worker_closed": true,
-    "next_review": "Native Codex gpt-6-luna max curation after accepted worker_done; Main reads only the short operational/retrieval digest. Main owns implementation/testing.",
+    "next_review": "Retrieve for a concrete implementation question; no new scope before calibration creates an eligible question.",
     "report_sha256": "ab3565d72393f495ac39c7f78ed79a5d7cbd2200043d32d30749781ea1ea0940",
     "report_bytes": 13715,
-    "curation_state": "pending_native_luna_max"
+    "curation_state": "native_luna_max_reviewed",
+    "native_review_sha256": "0cb2ac022c98bb79061ff20af2f7c9ea418cea2df3ef9ce5362aeefd6e389efd",
+    "curated_note": {
+      "path": "docs/research/cpu-lowbit-lut.md",
+      "bytes": 4230,
+      "sha256": "26b4fafefe25d62b4d1596d5b4dbfaf90834d6e7cad3bf8a82effb4473e0112d"
+    },
+    "review_digest": "Substantive format/method/provenance findings beyond existing AVX2/multirow surveys; curated note keeps unique delta.",
+    "provenance_limit": "T-MAC root MIT, audit submodules/files; LUT-GEMM official repo Apache-2.0; current QIGen root has no LICENSE, paper methods only pending resolution. No code copied; ggml master layout refs are mutable."
   },
   "sycl_host_transfer_preparation_collection_scope": {
     "classification": "knowledge collection",
@@ -4956,12 +4965,18 @@
       "src/kernels/cpu/iq_avx2.cpp": "80efab0bed11ddf3980c0d146101218efa061cf5304e39fc88d93e5e94a99136",
       "include/strata/kernels/cpu/native_expert.hpp": "45ccf6df8b4cc5b468a245a2ddee845e0b10ece14951a5a7ab7b6ffbca087e94"
     },
-    "report_path": "/home/yayoi/orca/workspaces/Strata/sycl/.cache/strata-research/20261020/sycl-host-transfer-report.md",
-    "report_budget_bytes": 20480,
     "worker_closed": true,
-    "next_review": "Native Codex gpt-6-luna max curation after accepted worker_done; Main reads only the short operational/retrieval digest. Main owns implementation/testing.",
+    "next_review": "Retrieve for a concrete implementation question; no new scope before calibration creates an eligible question.",
     "report_sha256": "a537fc0aa6a6f84c1959e4beb09edaed5d7b62689e02be5b99619bba54344529",
     "report_bytes": 14870,
-    "curation_state": "pending_native_luna_max"
+    "curation_state": "native_luna_max_reviewed",
+    "native_review_sha256": "0cb2ac022c98bb79061ff20af2f7c9ea418cea2df3ef9ce5362aeefd6e389efd",
+    "curated_note": {
+      "path": "docs/research/sycl-host-transfer-preparation.md",
+      "bytes": 4497,
+      "sha256": "6deb9bedbecbef2a8f9e0520fe2e5b5fc14c51e0f0501a1d64ecb30d6a3a7182"
+    },
+    "review_digest": "Substantive current source-path delta beyond earlier host-DMA/staged-copy surveys; retain distilled path and gates only.",
+    "source_limit": "Arena view -> cache fill -> queue.memcpy/event; SYCL PinnedArena is ordinary RAM plus optional OS lock; arbitrary register unsupported; cudaHostAlloc is host USM. No proof of active runtime branch, physical H2D bytes or speed. Online docs aren't installed-runtime pins. No code copied."
   }
 }
