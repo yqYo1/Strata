@@ -5136,23 +5136,23 @@
   },
   "cache_1256_long_mixed_admission_scope": {
     "classification": "decision support",
-    "source_commit": "eb8bda02cf1cbc681e8cbcd281ff839de8070b4e",
+    "source_commit": "67e9909266707c48b19633ca6be62e92c19790ba",
     "frozen_inputs": {
-      "tools/sycl/cache_long.py": "90d46ebb3b489b7cb9f11d04ca9f40eb5d41e90006f851407e392186ea8cb133",
-      "tools/test_sycl_cache_long.py": "4bb8fa390607b9e3fe264cce78f65f59133415e8ddf7eec3a7323bc10405aa6c"
+      "tools/sycl/cache_long.py": "20b4ee278923bd4f5cc4ab0625bc065c0ab21b29498e8969a4ba235f508a14ef",
+      "tools/test_sycl_cache_long.py": "4550133649e3aea73a1ae99fdc51844ae960b6c8c18f192dd148ba41fe2125c5"
     },
     "prior_source_review_scope": "cache_loan_long_context_capacity_scope",
     "schedulable_now": false,
     "worker_closed": true,
-    "status": "settled_pending_native_curation",
+    "status": "corrected_pending_exact_source_curation",
     "report_budget_bytes": 12288,
     "report_path": "/home/yayoi/orca/workspaces/Strata/sycl/.cache/strata-research/20261020/cache-1256-long-source-audit.md",
     "question": "Audit1256-slot117K actual admission with96 mixed FFN windows: total/single-allocation budgets,81920+35568 extents, secondary-bank bounds, sealed parent loan, dense/verifier restoration, exact payload/map audits, official one-warmup prefill-only journal, immutable inputs and no-retry owner closure. Identify concrete unsafe execution or false-qualification risks; do not repeat generic capacity math.",
     "consumer": "Main must qualify the117K borrowed tail before the retained old-owned/current-borrowed clean long-input comparison; no engine rebuild before closure.",
     "next_review": "Native Luna-max curates returned report, then Main corrects any blocker before preparing a committed model plan.",
     "offline_evidence_gate": {
-      "source_commit": "eb8bda02cf1cbc681e8cbcd281ff839de8070b4e",
-      "cases": 12,
+      "source_commit": "67e9909266707c48b19633ca6be62e92c19790ba",
+      "cases": 14,
       "passed": true,
       "GPU_executed": false,
       "command": "flock -n /home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/owned-v0141-measurement.lock timeout 60s python3 -B -m unittest tools/test_sycl_cache_long.py tools/test_sycl_cache_capacity.py"
@@ -5176,7 +5176,7 @@
     "terminal_closed": true,
     "report_bytes": 7930,
     "report_sha256": "8c4dde80fb4cf7d4edb46e134f88d9a38515805ce57ac4376339d9245ac2894f",
-    "curation_state": "active_native_luna_max",
+    "curation_state": "pending_corrected_native_luna_max",
     "retained_engine_source_recheck": {
       "old_original_inputs_recovered": 9813,
       "old_fixtures_verified": 5,
@@ -5185,6 +5185,22 @@
       "runtime_unchanged": true,
       "GPU_executed": false,
       "scope": "Existing qualification/artifact reuse; no new native GPU validation."
-    }
+    },
+    "initial_controller_review": {
+      "source_commit": "eb8bda02cf1cbc681e8cbcd281ff839de8070b4e",
+      "frozen_inputs": {
+        "tools/sycl/cache_long.py": "90d46ebb3b489b7cb9f11d04ca9f40eb5d41e90006f851407e392186ea8cb133",
+        "tools/test_sycl_cache_long.py": "4bb8fa390607b9e3fe264cce78f65f59133415e8ddf7eec3a7323bc10405aa6c"
+      },
+      "native_review_sha256": "6b06e1eb7dd81f2695b9ff02e1d3d8ca20db3ca6df8e0068ff93cd51de1b7cb7",
+      "launch_eligible": false,
+      "findings": [
+        "Tail offset is active plan end1059131904, not the whole allocated region1180698624; tail is inside region after live planes.",
+        "Require one leading journal identity and bind model/client/workload/plan fields.",
+        "Reject all long admission/owner markers outside their declared request; enforce actual print order."
+      ]
+    },
+    "bounded_117K_check_accepted": false,
+    "operational_digest": "Original12 offline passes did not establish launch eligibility: native review found deterministic parser false rejection and journal/scope gaps, with no additional native safety defect. Main corrected tail containment/offset, actual admission order/budget and complete journal identity; fourteen offline tests now pass. Exact corrected-source review and a committed one-shot plan still required beforeGPU."
   }
 }
