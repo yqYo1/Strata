@@ -3,6 +3,7 @@
 import argparse
 import copy
 import fcntl
+import hashlib
 import json
 from pathlib import Path
 import re
@@ -15,8 +16,9 @@ import query_profile as q
 
 gen, assets, guards, supervision = q.gen, q.assets, q.guards, q.supervision
 P, B, A = q.P, q.B, q.A
-ROOT = B / 'cache-borrow-check-v1'
+ROOT = B / 'cache-borrow-check-v2'
 RESULT = A / 'cache-borrow-current.json'
+RESEARCH = A / 'research-index.json'
 PROMPT_LENGTHS = (8194, 257)
 
 
@@ -80,6 +82,86 @@ def loan_evidence(log):
     return dict(layouts=layouts,tables=tables,payloads=payloads,mtp_phases=phases)
 
 
+def checked_owner_evidence(log, loan_checks):
+    """Require the actual borrowed FFN and successful publication sequence."""
+    publications = list(re.finditer(
+        r'^strata cache loan: phase=(masked|ready) generation=(\d+) chunk=(\d+) '
+        r'first=(\d+) lent=(\d+) decode_ready=([01])$', log, re.M))
+    guards.require(len(publications)==log.count('strata cache loan:')==4 and
+        [m[1] for m in publications]==['masked','ready','masked','ready'],
+        'missing/ambiguous cache-loan publications')
+    generations=[]
+    for i,layout in enumerate(loan_checks['layouts']):
+        masked,ready=publications[2*i:2*i+2]
+        guards.require(masked.groups()[1:5]==ready.groups()[1:5] and int(masked[2])>0 and
+            tuple(map(int,masked.groups()[2:5]))==(layout['chunk'],layout['first'],layout['lent']) and
+            masked[6]=='0' and ready[6]=='1', 'loan identity/decode admission differs')
+        generations.append(int(masked[2]))
+    guards.require(generations[1]>generations[0], 'loan generation was reused')
+    windows=list(re.finditer(
+        r'^strata MoE cache loan: generation=(\d+) layout_generation=(\d+) layer=(\d+) '
+        r'first=(\d+) rows=(\d+) used=(\d+) capacity=(\d+)$', log, re.M))
+    ptr=r'0x[0-9a-fA-F]+'
+    entries=list(re.finditer(
+        r'^strata MoE mixed owners: phase=entry layer=(\d+) first=(\d+) rows=(\d+) '
+        r'primary='+ptr+r' primary_bytes=(\d+) region='+ptr+r' region_bytes=(\d+) '
+        r'tail=(?:'+ptr+r'|\(nil\)) tail_offset=(\d+) tail_bytes=(\d+) residual='+ptr+
+        r' residual_bytes=(\d+) bo='+ptr+r' queue='+ptr+
+        r' direct_owners=0 previous_attention=checked_drain$', log, re.M))
+    retired=list(re.finditer(
+        r'^strata MoE mixed owners: phase=retired layer=(\d+) first=(\d+) rows=(\d+) '
+        r'route_status=0 shared_HC=checked_drain callbacks=after_return$', log, re.M))
+    guards.require(len(windows)==log.count('strata MoE cache loan:')==len(entries)==len(retired)==48 and
+        log.count('strata MoE mixed owners:')==96, 'missing/ambiguous borrowed FFN windows')
+    first=tuple(map(int,windows[0].groups()))
+    generation,layout_generation,_,_,_,used,capacity=first
+    guards.require(generation==generations[0] and layout_generation>0 and
+        0<used<=capacity==loan_checks['layouts'][0]['bytes'], 'invalid sealed loan extent')
+    rows=PROMPT_LENGTHS[0]-1
+    previous=publications[0].start()
+    region_bytes=int(entries[0][5])
+    for layer,(window,entry,done) in enumerate(zip(windows,entries,retired)):
+        guards.require(tuple(map(int,window.groups()))==
+            (generation,layout_generation,layer,0,rows,used,capacity) and
+            tuple(map(int,entry.groups()[:3]))==tuple(map(int,done.groups()))==(layer,0,rows) and
+            int(entry[4])==rows*2560*2 and int(entry[5])==region_bytes>0 and
+            int(entry[6])<=region_bytes and int(entry[7])==0 and int(entry[8])==rows*10240*2 and
+            previous<entry.start()<window.start()<done.start()<publications[1].start(),
+            'borrowed FFN identity/span/retirement order differs')
+        previous=done.start()
+    return dict(generations=generations,layout_generation=layout_generation,
+        decode_admission_transitions=[0,1,0,1],borrowed_ffn_entries=48,checked_retirements=48,
+        prefill_rows=rows,used_bytes=used,capacity_bytes=capacity,
+        primary_bytes=rows*2560*2,region_bytes=region_bytes,tail_bytes=0,
+        limits='8193-row mixed path and256-row short path only; the full mixed tail and long-input speed are unqualified.')
+
+
+def source_review():
+    row=gen.committed(RESEARCH)['borrowed_mixed_integration_source_scope']
+    guards.require(row.get('bounded_model_source_review_accepted') is True and
+        row.get('worker_closed') is True and len(row['frozen_inputs'])==10 and
+        all(re.fullmatch(r'[0-9a-f]{64}',row[k]) for k in ('native_review_sha256','report_sha256')),
+        'accepted independent source review and closed worker required')
+    for name,expected in row['frozen_inputs'].items():
+        guards.require(gen.common.digest(P/name)==expected and
+            hashlib.sha256(gen.git('show',row['source_commit']+':'+name)).hexdigest()==expected,
+            'reviewed native source changed: '+name)
+    return {k:row[k] for k in ('source_commit','frozen_inputs','native_review_sha256','report_sha256')}
+
+
+def previous_result_reference():
+    old=gen.committed(RESULT)
+    closure=old.get('post_run_process_closure',{})
+    guards.require(not old['active'] and (old['ownership_closed'] or
+        (closure.get('verified') is True and closure.get('direct_child_reaped') is True and
+         closure.get('session_empty') is True and closure.get('survivors')==0)),
+        'previous model process closure is unresolved')
+    return dict(commit=gen.git('rev-parse','HEAD').decode().strip(),
+        path=str(RESULT.relative_to(P)),sha256=gen.common.digest(RESULT),
+        original_outcome={k:old[k] for k in ('source_commit','complete','passed','ownership_closed')},
+        process_closure_verified=True)
+
+
 def interact_requests(io, entry, record, values):
     while not io.line().startswith('READY '): pass
     record['native_identity']={k:entry['direct_identity'][k] for k in ('pid','start_ticks','sid')}
@@ -108,7 +190,9 @@ def prepare():
     full, count = q.current_build()
     base = gen.committed(assets.RESULT)
     guards.require(base['passed'] and base['ownership_closed'] and not base['active'] and
-        not base['fresh_faults'] and not ROOT.exists() and not RESULT.exists(), 'closed baseline/fresh root required')
+        not base['fresh_faults'] and not ROOT.exists(), 'closed baseline/fresh root required')
+    review=source_review()
+    previous=previous_result_reference()
     revision = gen.git('rev-parse','HEAD').decode().strip()
     pins = gen.benchmark_pins(revision)
     settings = gen.committed(gen.SETTINGS)
@@ -123,6 +207,7 @@ def prepare():
     old_root = base['environment']['STRATA_MEASUREMENT_ROOT']
     env = {k:v.replace(old_root,str(ROOT)) for k,v in base['environment'].items()}
     env.update(STRATA_SYCL_QUERY_PROFILE='0',STRATA_SYCL_CACHE_LOAN_AUDIT='1',
+        STRATA_SYCL_CACHE_SCRATCH_LEASE='1',
         STRATA_SYCL_VERIFY_ARENA_COPY='0',STRATA_SYCL_VERIFY_PCIE_EARLY='0',
         STRATA_SYCL_VERIFY_PCIE_EARLY_AUDIT='0',UR_ENABLE_LAYERS='UR_LAYER_PARAMETER_VALIDATION',STRATA_TRACE='1')
     env.update({k:v for k,v in settings['environment'].items() if k.startswith('UR_LOG_') and k!='UR_LOG_TRACING'})
@@ -138,6 +223,7 @@ def prepare():
     guards.require(gen.common.digest(ROOT/'expert-profile.bin')==base['profile_sha256'],'profile changed')
     (ROOT/'config.json').write_text(json.dumps(config,indent=2)+'\n')
     record = dict(mode='cache-borrow-check',source_commit=revision,build_source_commit=full['source_commit'],
+        source_review=review,previous_result_reference=previous,
         binary=full['binary'],source_build_record=dict(path=str(q.BUILD_RECORD),sha256=gen.common.digest(q.BUILD_RECORD)),
         original_build_inputs_recovered=count,component_result_sha256=gen.common.digest(q.COMPONENT),
         runtime_asset_delta=base['runtime_asset_delta'],root=str(ROOT),environment=env,config=config,
@@ -151,7 +237,7 @@ def prepare():
         settings_sha256=gen.common.digest(gen.SETTINGS),complete=False,passed=False,active=False,
         model_quality_qualified=False,model_performance_measured=False,model_route_executed=False,small_requests=[],
         budgets=dict(wall=900,cpu=54000,rss_cap=96<<30,text_cap=64<<20,file_cap=64<<20,total_cap=64<<20),
-        gate='One process;1280 actual slots; two thinking-template requests8194/257 with16 generated tokens each. Positive tail loans at distinct chunks/offsets; GPU residency equals host after each lend/refill; full resident payload including unlent prefix equals immutable RAM; same slots restored; configured MTP detach/restore once; G1/T4 reached; no protocol/runtime/fresh-driver fault; source/model/runtime/boot unchanged. No retry.',
+        gate='One process;1280 actual slots; two thinking-template requests8194/257 with16 generated tokens each. Positive tail loans at distinct chunks/offsets; all48 mixed FFNs use the first sealed loan with checked retirement; actual decode admission closes at each mask and opens after each refill. GPU residency equals host after each lend/refill; full resident payload including unlent prefix equals immutable RAM; same slots restored; configured MTP detach/restore once; G1/T4 reached; no protocol/runtime/fresh-driver fault; source/model/runtime/boot unchanged. No retry.',
         limits='Diagnostic admission only. Readback audit adds work; no clean speed, task quality, hardware saturation, full physical262144/session/RESTORE or70tok/s qualification.',
         consumer='Prerequisite for matched owned/borrowed capacity and32K+ long-generation comparisons. Retire successful raw output after compact evidence is committed.')
     (ROOT/'plan.json').write_text(json.dumps(record,indent=2)+'\n')
@@ -164,6 +250,9 @@ def run():
     guards.require(record==json.loads((ROOT/'plan.json').read_text()) and not record['complete'] and
         not (ROOT/'record.json').exists(),'fresh frozen plan required; no retry')
     full,count = q.current_build()
+    guards.require(source_review()==record['source_review'] and
+        record['environment'].get('STRATA_SYCL_CACHE_SCRATCH_LEASE')=='1',
+        'reviewed checked-loan route changed')
     guards.require(full['binary']==record['binary'] and count==record['original_build_inputs_recovered'] and
         gen.common.digest(q.BUILD_RECORD)==record['source_build_record']['sha256'] and
         gen.common.digest(q.COMPONENT)==record['component_result_sha256'],'build/component evidence changed')
@@ -200,6 +289,7 @@ def run():
         guards.require([tuple(map(int,row)) for row in headers]==[(n,0,n,16) for n in PROMPT_LENGTHS] and
             all(f'captured the {n}-token window' in log for n in (1,4)), 'request/capture evidence differs')
         record['loan_checks']=loan_evidence(log)
+        record['checked_owner_evidence']=checked_owner_evidence(log,record['loan_checks'])
         q.current_build();q.runtime_assets_unchanged(record)
         guards.require(gen.benchmark_pins(record['source_commit'])==pins and
             assets.model_pins(record['config'],record['model_assets'])==record['model_assets'] and

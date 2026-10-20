@@ -31,10 +31,7 @@ bool Prefill::run_moe_accum_window(int64_t layer, int64_t first_row, int64_t row
                                  {bo, size_t(m.T * N * 2)}}, {{residual, size_t(bytes)}});
     auto* mixed_tail = plan.tail_bytes ? owner.mixed_tail : nullptr;
     if (owner.scratch_mixed) {
-        auto owns = [&](const void* pointer) {
-            return std::find(m.owned.begin(), m.owned.end(), pointer) != m.owned.end();
-        };
-        if (m.borrowed || !owns(m.R) || !owns(m.region) || !owns(m.emb) ||
+        if (!m.mixed_scratch_owners_ready() ||
             mixed != reinterpret_cast<uint16_t*>(m.R) ||
             owner.mixed_bytes > detail::layer_major_mul(uint64_t(m.T), D * 4) ||
             owner.mixed_tail_offset < plan.region_bytes || owner.mixed_tail_offset > m.region_bytes ||
@@ -49,13 +46,18 @@ bool Prefill::run_moe_accum_window(int64_t layer, int64_t first_row, int64_t row
                  {bo, size_t(m.T * N * 2)}, {residual, size_t(bytes)}});
         }
         if (std::getenv("STRATA_TRACE"))
-            std::fprintf(stderr, "strata MoE mixed owners: phase=entry layer=%lld first=%lld rows=%lld primary=%p primary_bytes=%llu region=%p region_bytes=%llu tail=%p tail_offset=%llu tail_bytes=%llu residual=%p residual_bytes=%llu bo=%p queue=%p direct_owners=1 previous_attention=checked_drain\n",
+            std::fprintf(stderr, "strata MoE mixed owners: phase=entry layer=%lld first=%lld rows=%lld primary=%p primary_bytes=%llu region=%p region_bytes=%llu tail=%p tail_offset=%llu tail_bytes=%llu residual=%p residual_bytes=%llu bo=%p queue=%p direct_owners=%d previous_attention=checked_drain\n",
                 (long long)layer, (long long)first_row, (long long)rows,
                 static_cast<void*>(mixed), (unsigned long long)plan.primary_bytes,
                 static_cast<void*>(m.region), (unsigned long long)m.region_bytes,
                 static_cast<void*>(mixed_tail), (unsigned long long)owner.mixed_tail_offset,
                 (unsigned long long)plan.tail_bytes, static_cast<void*>(residual),
-                (unsigned long long)bytes, static_cast<void*>(bo), m.cs);
+                (unsigned long long)bytes, static_cast<void*>(bo), m.cs, int(!m.borrowed));
+        if (m.borrowed && std::getenv("STRATA_TRACE"))
+            std::fprintf(stderr,"strata MoE cache loan: generation=%llu layout_generation=%llu layer=%lld first=%lld rows=%lld used=%llu capacity=%llu\n",
+                (unsigned long long)m.cache_scratch_lease.generation(),
+                (unsigned long long)m.lease_layout_generation,(long long)layer,(long long)first_row,(long long)rows,
+                (unsigned long long)m.borrowed_used,(unsigned long long)m.borrowed_capacity);
     }
     auto mixed_piece = [&](int64_t at, int64_t count) {
         const auto span = plan.mixed_piece(at, count);

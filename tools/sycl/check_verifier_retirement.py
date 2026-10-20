@@ -48,7 +48,7 @@ def digest(path):
 def main():
     profile = sys.argv[1:] == ['--query-profile']
     guards.require(len(sys.argv) == 1 or profile, 'use no options or --query-profile; never retry a closed root')
-    root = B / 'decode-query-profile-component-v7' if profile else ROOT
+    root = B / 'decode-query-profile-component-v8' if profile else ROOT
     result = A / 'decode-query-profile-component-current.json' if profile else RESULT
     with (B / 'owned-v0141-measurement.lock').open('a+') as lock:
         fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
@@ -91,7 +91,7 @@ def main():
         guards.require(previous == result.read_bytes(), 'commit the prior component outcome first')
         previous_reference = dict(commit=subprocess.check_output(['git','rev-parse','HEAD'],cwd=P,text=True).strip(),
             path=str(result.relative_to(P)),sha256=hashlib.sha256(previous).hexdigest(),
-            outcome=('Closed v6 passed110 prerequisite cases, without a cache loan.' if profile else
+            outcome=('Closed v7 passed154 cases, including actual cache loans and pending-owner refusal.' if profile else
                 'Original v6 host-task gate failed after51 existing passes; this new finite-DMA plan does not change that outcome.'))
         guards.require(not root.exists(), 'inspect/close the existing owned check; no automatic retry')
         root.mkdir(mode=0o700)
@@ -112,7 +112,7 @@ def main():
             limits='The six early cases check real-queue synthetic ordering, replay, source retirement and refusal, not native projection equivalence or model overlap. Grouped component covers all seven current model GU/Down pairs plus supported IQ4_XS/Q2_0 at H2560/FF640, windows1/4, groups10/16 and entries10/40, using two distinct blobs repeated in metadata. The oracle shares native scalar projection primitives; it isolates copy/grouping from separate execution, not common-mode projection defects or model quality. No invalid GPU address, stalled kernel, model, physical262144/session/RESTORE or throughput qualification.')
         if profile:
             record.update(mode='normal-route-query-profile-components', model_route_executed=False,
-                gate='Same-build normal75 including14 tail/occupied-preflight cases, scratch host37, actual Prefill device1+15+retirement1, actual cache-loan20 and5 expected fail-stop children:154 checks. Smoke first; stop on any failure, no resize/retry. Cache loan uses sized256B prefix128 and1MiB tail slots, at most513MiB device parent,1024-cell session and256/128-row Prefill. Require exact payload/map restoration, moved second generation, empty resident-tail cycle, reopened owner epoch refusal, no writer/decode admission while masked/used/refilling/publishing, and exit1 before reset/close releases pending owners. Keep all prior arithmetic/layout/queue-domain/guard checks. Original failed early51+6 stays unchanged.',
+                gate='Same-build normal75 including14 tail/occupied-preflight cases, scratch host39, actual Prefill device1+15+retirement1, actual cache-loan20 and5 expected fail-stop children:156 checks. Smoke first; stop on any failure, no resize/retry. Cache loan uses sized256B prefix128 and1MiB tail slots, at most513MiB device parent,1024-cell session and256/128-row Prefill. Require exact payload/map restoration, moved second generation, empty resident-tail cycle, reopened owner epoch refusal, no writer/decode admission while masked/used/refilling/publishing, and exit1 before reset/close releases pending owners. Keep all prior arithmetic/layout/queue-domain/guard checks. Original failed early51+6 stays unchanged.',
                 consumer='Component prerequisite for checked cache borrowing; does not admit early PCIe scheduling or a borrowed mode10 model route.',
                 limits='Actual ExpertCache tickets and Prefill binding/relayout/reset, with bounded GPU overwrite/refill/map copies but no model weights/inference. The explicit queue drain does not exercise generator session/verifier/MTP graph retirement. Expected failure children inject host protocol/publication refusal, not GPU faults. Global integration source review and full model cycle remain required. No speed, task quality, physical262144/session/RESTORE qualification. Grouped arithmetic oracle shares scalar projection primitives.')
         owner = None
@@ -172,12 +172,13 @@ def main():
                          'initial_layout','relayout_generation','failed_init','failed_relayout',
                          'nested_update','failed_take_and_reset','qsa_global_ordinal','qsa_resident_plan',
                          'qsa_stream_ring_formats','qsa_bad_metadata','qsa_product_overflow',
-                         'qsa_block_overflow','qsa_tail_rounding','loan_cycle','loan_bounds','loan_read_admission',
+                         'qsa_block_overflow','qsa_tail_rounding','borrowed_used_extent',
+                         'borrowed_view_disjointness','loan_cycle','loan_bounds','loan_read_admission',
                          'loan_stale_generation','loan_wrong_order','loan_callback_false','loan_callback_throw',
                          'loan_nested_transition','loan_poison_during_callback','loan_reuse_masked_range',
                          'loan_writer_admission','loan_writer_refill_interval','loan_writer_publication',
                          'loan_writer_exception','loan_writer_each_phase')]
-                    guards.require(cases == expected and 'prefill_scratch_fixture cases=37 status=PASS' in stdout,
+                    guards.require(cases == expected and 'prefill_scratch_fixture cases=39 status=PASS' in stdout,
                         'scratch arithmetic/layout-state contract failed: '+(stdout+stderr)[-8192:])
                     record['scratch_layout_contract_passed'] = True
                 elif name == 'sycl_prefill_scratch_test':

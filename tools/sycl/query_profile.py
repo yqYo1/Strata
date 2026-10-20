@@ -66,7 +66,7 @@ def current_build():
         and len(component['checks'][3]['cases'])==16 and len(component['checks'][4]['cases'])==1
         and len(component['checks'][5]['cases'])==9 and component.get('residency_publication_contract_passed') is True
         and len(component['checks'][6]['cases'])==14 and component.get('cache_tail_contract_passed') is True
-        and len(component['checks'][7]['cases'])==37 and component.get('scratch_layout_contract_passed') is True
+        and len(component['checks'][7]['cases'])==39 and component.get('scratch_layout_contract_passed') is True
         and len(component['checks'][8]['cases'])==1 and len(component['checks'][9]['cases'])==15
         and len(component['checks'][10]['cases'])==1 and component['checks'][10].get('exit_code')==1
         and component.get('prefill_device_layout_contract_passed') is True
@@ -79,7 +79,7 @@ def current_build():
         and component.get('grouped_copy_projection_contract_passed') is True
         and component.get('query_profile_contract_passed') is True
         and component.get('mode')=='normal-route-query-profile-components',
-        'matching passed normal75+scratch37+device17+loan20+fail-stop5 required before model preparation')
+        'matching passed normal75+scratch39+device17+loan20+fail-stop5 required before model preparation')
     count = 0
     for source in [full['project'], *full['dependencies']]:
         recovered = {n:hashlib.sha256(data).hexdigest() for n,data in

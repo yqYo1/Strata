@@ -2220,7 +2220,7 @@ payload lengths. Source`181043472` passed the37-case host-only fixture under
 GCC13.3 with warnings as errors:22 scratch/layout,10 loan-protocol and5 scoped
 writer cases. Both compiler/test processes closed normally. Exact source and
 compiler hashes, commands and budgets are retained in the
-[host result](../bench/results/2026-10-15-pr6-recovery-audit/prefill-cache-loan-host-current.json).
+[archived host result](https://github.com/yqYo1/Strata/blob/5f1c06452cd2c13c0d64bf67ca8a870a52b76065/bench/results/2026-10-15-pr6-recovery-audit/prefill-cache-loan-host-current.json).
 This does not build or qualify the changed SYCL engine or actual cache tickets.
 The prospective generator/verifier connection is default-off under
 `STRATA_SYCL_CACHE_SCRATCH_LEASE=1`, restricted to the single-cache serve route.
@@ -2273,6 +2273,49 @@ Next connect the checked parent capability to all three existing mixed-scratch
 owner guards without changing the fast staged-bank path, then qualify the full
 generator/model cycle. These component results do not qualify model math,
 performance, task quality,physical262144/session/RESTORE or global graph execution.
+The next source step connects the same active parent capability to all three
+mixed-scratch owner checks. Bind and execution now also check that the complete
+R,region and embedding spans fit the sealed used extent and are pairwise
+disjoint; parent capacity alone is insufficient. Owned allocations retain their
+existing direct-owner check. FFN math, staging, phase/drain and subview checks
+stay unchanged. Trace records distinguish direct owners from parent loans and
+associate each borrowed FFN with its loan/layout generation; successful mask
+and refill publication record the actual decode admission state.
+The v8 normal75+host39+device17+loan20+fail-stop5 gate (156 cases) passed on
+build source`87ce707df`, using the same qualified settings, budgets and no-retry
+rule. All owners closed, boot was unchanged and no fresh GPU fault occurred.
+The two added host cases cover sealed-used bounds, overflow and view overlap.
+The396 fallback remains protected. The earlier
+standalone GCC mode/result is retired to commit5f1c06452; its same-build consumer
+has superseded it. The changed engine SHA256 is
+`02a61db21c50f5824f3af748ec6e89fbe05db04c7cacc0454c6b7c435d0e5bc6`.
+This component result still has no new model result.
+The independent Orca audit and native Luna-max curation found no source-supported
+defect in those three guards. This is bounded source acceptance: planner geometry
+is outside the ten reviewed files, and execution/math remain unqualified. The
+fresh v2 model controller requires that committed review, the complete same-build
+156-case result and the explicit checked-loan flag. It checks all48 borrowed FFN
+entries/retirements against one sealed generation, then actual decode admission
+after each successful refill. Its two thinking inputs8194/257 each request16
+generated tokens;8193 processed rows use only the primary mixed bank, so the full
+tail remains unqualified. The closed v1 refusal and its original failed outcome
+remain recoverable from the recorded Git reference; its separate process closure
+does not turn it into a pass. Source`b5161eb1b` passed all15 offline controller
+tests, including missing/stale/reordered evidence and natural ERR-child closure.
+The same-build proof recovered9831 original inputs and verified the engine and
+all eight fixtures before the committed v2 model plan ran. That model check
+failed: the first loan was masked and mode10 setup reached layer0, then run_impl
+refused a stale/inactive owner. The source path replaces `m.cache` with the
+private per-layer execution cache before run_impl; the new span helper also
+uses that mutable pointer as the original loan's parent identity. This wrongly
+rejects the valid parent ticket. No borrowed FFN, refill or generated token was
+completed. Native exit1 and ownership closed normally; boot was unchanged and
+no fresh GPU fault occurred. Preserve this failed result. The earlier source
+audit missed the dynamic identity coupling. Next retain the immutable parent
+separately from the execution cache, add a regression crossing that substitution,
+review the complete corrected path, then use fresh component/model plans. Never
+retry closed v2 or bypass the owner check. The default-off route is unadopted;
+there is no new speed result or full physical262144/session/RESTORE qualification.
 Only a later qualified mechanism permits a
 fresh complete51+6-case plan. Preserve all pending-completion,
 untouched-output, payload/guard and owner-lifetime requirements under that plan.

@@ -1,9 +1,9 @@
 {
-  "source_commit": "0a385b3888c196f025b6362d5c29f70637ab4031",
+  "source_commit": "87ce707df2a3cfbdbf88f2753c50feef78fb1efe",
   "binary": {
     "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/strata",
-    "bytes": 22123104,
-    "sha256": "60f09c471ff928c9e223bdf71ac249b96778ef233f0908fe0b39b618ab5e2434"
+    "bytes": 22127152,
+    "sha256": "02a61db21c50f5824f3af748ec6e89fbe05db04c7cacc0454c6b7c435d0e5bc6"
   },
   "fixtures": {
     "sycl_verifier_retirement_test": {
@@ -32,11 +32,11 @@
     },
     "prefill_scratch_host_test": {
       "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/prefill_scratch_host_test",
-      "sha256": "a7d511497cebee48ef7e16791a50b43440d2963bbdf94dbbe02ca9747b5c4f70"
+      "sha256": "bdc207e4e2d6c132cf9df1b7b925beb0778d231d1b070e526e713e8a0394ebca"
     },
     "sycl_prefill_scratch_test": {
       "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/sycl_prefill_scratch_test",
-      "sha256": "39d7980177e826cb89763c060d9fbe66e79a0452671be9e5f14d683847361a20"
+      "sha256": "41667a7e2ec5404f6e74548bb155849fb2ac4cef75bfceac7db187da6aae2f84"
     }
   },
   "environment_reference": "tools/sycl/measurement_environment.json",
@@ -88,7 +88,7 @@
       "exit_code": 0,
       "environment_delta": {},
       "stdout_sha256": "dadad801d8022f3b40ad3bdab3e29f65fc13e1f61d60b219406f04e9881bb5be",
-      "stderr_sha256": "331a859f71ba09ac8551439f8968c7a162bbe89ce63092915ebdc15ddd087398"
+      "stderr_sha256": "c915d816443ab4840d8cf3b424a3294360c56eabd67680c67911e0ae38efeab0"
     },
     {
       "command": [
@@ -109,7 +109,7 @@
       "exit_code": 0,
       "environment_delta": {},
       "stdout_sha256": "148fbcc509e40ad207cfca2a47f0180d4a42c61ceee417648974ff573e3ba20c",
-      "stderr_sha256": "10f4d6aa71161229bdb88f481df5202be4b611546153c3f2b56405cf861e87f4"
+      "stderr_sha256": "ca7193b43af0320494f4b3e16beef84ed4dbc763fbd4b4b7be13edc947b2dfe3"
     },
     {
       "command": [
@@ -139,7 +139,7 @@
       "exit_code": 0,
       "environment_delta": {},
       "stdout_sha256": "9066714b8b575e061109b08415161365b8f2eb8e185bee2ba01f6499319eb79b",
-      "stderr_sha256": "6190653ca13b7579a115059ff1af943dfaee0863ffef53152da05b331bd5045c"
+      "stderr_sha256": "0923566bf4d019c93b4a914fa7bc112339f5d1a8e1997e79be3db931c786d5f9"
     },
     {
       "command": [
@@ -154,7 +154,7 @@
       "exit_code": 0,
       "environment_delta": {},
       "stdout_sha256": "b167bcaa8392dc493f246a2849e21bdb809a66471d38bafdf7e058f01fdae03b",
-      "stderr_sha256": "509288a927176e5631739f7b4527bd43c744999c6f504480b28365b16c70d4f2"
+      "stderr_sha256": "77d004bcf2ff59b521b4a6612f4cc8f5fb4d62d763cd23fc8f51510cf9eada11"
     },
     {
       "command": [
@@ -232,6 +232,8 @@
         "prefill_scratch case=qsa_product_overflow status=PASS",
         "prefill_scratch case=qsa_block_overflow status=PASS",
         "prefill_scratch case=qsa_tail_rounding status=PASS",
+        "prefill_scratch case=borrowed_used_extent status=PASS",
+        "prefill_scratch case=borrowed_view_disjointness status=PASS",
         "prefill_scratch case=loan_cycle status=PASS",
         "prefill_scratch case=loan_bounds status=PASS",
         "prefill_scratch case=loan_read_admission status=PASS",
@@ -252,7 +254,7 @@
       "expected_exit": 0,
       "exit_code": 0,
       "environment_delta": {},
-      "stdout_sha256": "3b63832faac04a771c0652dd9af1b5a72244d66a5b10d5ab94e8cf1a098ac3b6",
+      "stdout_sha256": "352f4f042fff4a560a9a0166e3f70874c782f5c0137c3bd538669a6c3c2f41f0",
       "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
     },
     {
@@ -277,7 +279,7 @@
         "STRATA_SYCL_PREFILL_NATIVE16_BACKEND": "vllm"
       },
       "stdout_sha256": "d042b38fc9217cd4924a04307023ebb05ed0884fee1497766748a19e407ce7e1",
-      "stderr_sha256": "6bd9f0558716457b7346a82a5949acbf78adadd2f7c5db0a228229643100574a"
+      "stderr_sha256": "b99f59fe8fdbb7045693f7233a7867f8f89c8385e159706b7689e28e6f78cb86"
     },
     {
       "command": [
@@ -315,7 +317,7 @@
         "STRATA_SYCL_PREFILL_NATIVE16_BACKEND": "vllm"
       },
       "stdout_sha256": "c6aa0631e20d25db9810637b1608220b0d3daab25d0fe18129572d835870cf3a",
-      "stderr_sha256": "aa01d31d1169d5da0c9380d0d4d0781f8f659edf264fa2a7feb1a5e3730dce2c"
+      "stderr_sha256": "07180a565bc8233b0468cf60b79edec78e9bf6fa056e29c1237410680e70ce97"
     },
     {
       "command": [
@@ -339,7 +341,7 @@
         "STRATA_SYCL_PREFILL_NATIVE16_BACKEND": "vllm"
       },
       "stdout_sha256": "f59d9972eee23bdba254b31265746c0fe1c49c8c8d9165c5e277835bf8160eeb",
-      "stderr_sha256": "baf7e17fc6074c4c12f06f51c25f5006eeca7880fd21379b0ee17135cc8968f2"
+      "stderr_sha256": "48f09acb1f496ae5075b89998febec8ac6d4434b672c70370e4c14d2683994b2"
     },
     {
       "command": [
@@ -382,7 +384,7 @@
         "STRATA_SYCL_PREFILL_NATIVE16_BACKEND": "vllm"
       },
       "stdout_sha256": "9011e813ea98f45cfaab4704c351461f020681fa483a85806848e0dd4c9c290c",
-      "stderr_sha256": "42fb4f5a7247b8b92a57e420794bf49ac8f7458d828e30dca62e7b2190e7fa14"
+      "stderr_sha256": "4efaafe295357fb26721ca9b5812c4fa95f8b0c8791ccdf8d2606b8baea8599c"
     },
     {
       "command": [
@@ -406,7 +408,7 @@
         "STRATA_SYCL_PREFILL_NATIVE16_BACKEND": "vllm"
       },
       "stdout_sha256": "a3d7cb992ad096e19a0e0e6612f7782ff45aa3ffe6f50e928c18131b2eba2d99",
-      "stderr_sha256": "70d82270222cb21e634ad82c35f1237a0a9d64b520d68223f53570e011193dd6"
+      "stderr_sha256": "3d4ea0d0700370a8dd6b01d193d8dfa68664c6d2b0520f78f32638d50660c3e3"
     },
     {
       "command": [
@@ -430,7 +432,7 @@
         "STRATA_SYCL_PREFILL_NATIVE16_BACKEND": "vllm"
       },
       "stdout_sha256": "2224ece41e56dcb06892e652bf3fd1a0dac5babc03a27f5b481ffd72454fc365",
-      "stderr_sha256": "883de5f42d8166d4fba43f3c387862f0fb399a415269bbba24f9abcb47adb447"
+      "stderr_sha256": "72aa2fd73d8c22a5fc31a08b6c890763aee5960d0cecb2fc88376aa20219a641"
     },
     {
       "command": [
@@ -454,7 +456,7 @@
         "STRATA_SYCL_PREFILL_NATIVE16_BACKEND": "vllm"
       },
       "stdout_sha256": "9cbabf6e5d7d41f4a176da669aac425968be16f00c8ea1b4f030a8582b558812",
-      "stderr_sha256": "87f63ec413727165b4da3784635548f3cb55afd5b56a596ca21713551295b1fe"
+      "stderr_sha256": "88f2a608c7a9f3a2d7acfd2ec3d3223cc6de6559d3a5425387b88bf5807c052d"
     },
     {
       "command": [
@@ -478,7 +480,7 @@
         "STRATA_SYCL_PREFILL_NATIVE16_BACKEND": "vllm"
       },
       "stdout_sha256": "2a47e52daf7aec7ac964a7d2d18b888a29d953e07b99f176cacc39d83e0daadc",
-      "stderr_sha256": "b6e5a39d70460723d5838338f46e68841f43ae3d958bae37b0948669cd8fed68"
+      "stderr_sha256": "59aa57e9bf0f8de6e425041d6e9e978e1857dc72c845008625c4eac4c9ba37b2"
     },
     {
       "command": [
@@ -502,7 +504,7 @@
         "STRATA_SYCL_PREFILL_NATIVE16_BACKEND": "vllm"
       },
       "stdout_sha256": "51c308f50c13aba9c36a130fe571f3fc9c745983d59fb0a580247c0e97ab331c",
-      "stderr_sha256": "b8cbedad5ee24acf189fbd3fd7fd709c5eae8d181601f028b47c2a747a933103"
+      "stderr_sha256": "3e108d61908389ff6fd7a0329032c08efd570a675089ec50a4793d602b08bebd"
     }
   ],
   "complete": true,
@@ -510,10 +512,10 @@
   "active": false,
   "model_performance_measured": false,
   "previous_result_reference": {
-    "commit": "aa677ecd7be6f5f0a9fef55e43fa1a7126c974a6",
+    "commit": "b654405ee4f6556d838fae54a4f809c130a2931e",
     "path": "bench/results/2026-10-15-pr6-recovery-audit/decode-query-profile-component-current.json",
-    "sha256": "7e5aba8c5e51b0af343272d203e01675ef00d3eabc8eddbb06d3568b60d872b4",
-    "outcome": "Closed v6 passed110 prerequisite cases, without a cache loan."
+    "sha256": "3c76ba70fc99e5d2cf56184e5680df44dc0a6895ade4af5b81f548b25cb3f0a7",
+    "outcome": "Closed v7 passed154 cases, including actual cache loans and pending-owner refusal."
   },
   "per_fixture_budgets": {
     "wall_seconds": 180,
@@ -526,7 +528,7 @@
   "model_route_executed": false,
   "ordinary_arena_copy_default_enabled": false,
   "consumer": "Component prerequisite for checked cache borrowing; does not admit early PCIe scheduling or a borrowed mode10 model route.",
-  "gate": "Same-build normal75 including14 tail/occupied-preflight cases, scratch host37, actual Prefill device1+15+retirement1, actual cache-loan20 and5 expected fail-stop children:154 checks. Smoke first; stop on any failure, no resize/retry. Cache loan uses sized256B prefix128 and1MiB tail slots, at most513MiB device parent,1024-cell session and256/128-row Prefill. Require exact payload/map restoration, moved second generation, empty resident-tail cycle, reopened owner epoch refusal, no writer/decode admission while masked/used/refilling/publishing, and exit1 before reset/close releases pending owners. Keep all prior arithmetic/layout/queue-domain/guard checks. Original failed early51+6 stays unchanged.",
+  "gate": "Same-build normal75 including14 tail/occupied-preflight cases, scratch host39, actual Prefill device1+15+retirement1, actual cache-loan20 and5 expected fail-stop children:156 checks. Smoke first; stop on any failure, no resize/retry. Cache loan uses sized256B prefix128 and1MiB tail slots, at most513MiB device parent,1024-cell session and256/128-row Prefill. Require exact payload/map restoration, moved second generation, empty resident-tail cycle, reopened owner epoch refusal, no writer/decode admission while masked/used/refilling/publishing, and exit1 before reset/close releases pending owners. Keep all prior arithmetic/layout/queue-domain/guard checks. Original failed early51+6 stays unchanged.",
   "limits": "Actual ExpertCache tickets and Prefill binding/relayout/reset, with bounded GPU overwrite/refill/map copies but no model weights/inference. The explicit queue drain does not exercise generator session/verifier/MTP graph retirement. Expected failure children inject host protocol/publication refusal, not GPU faults. Global integration source review and full model cycle remain required. No speed, task quality, physical262144/session/RESTORE qualification. Grouped arithmetic oracle shares scalar projection primitives.",
   "mode": "normal-route-query-profile-components",
   "last_fixture": {
@@ -539,7 +541,7 @@
     "exit_code": 1,
     "ownership_closed": true,
     "stdout_sha256": "51c308f50c13aba9c36a130fe571f3fc9c745983d59fb0a580247c0e97ab331c",
-    "stderr_sha256": "b8cbedad5ee24acf189fbd3fd7fd709c5eae8d181601f028b47c2a747a933103"
+    "stderr_sha256": "3e108d61908389ff6fd7a0329032c08efd570a675089ec50a4793d602b08bebd"
   },
   "grouped_copy_projection_contract_passed": true,
   "query_profile_contract_passed": true,
@@ -568,34 +570,13 @@
     "kernel": "7.0.0-38-generic",
     "devcoredump": false
   },
-  "validation_cases": 154,
-  "case_markers": 138,
+  "validation_cases": 156,
+  "case_markers": 140,
   "provider_aggregate_cases": 17,
-  "offline_evidence_tests": {
-    "command": [
-      "python3",
-      "-m",
-      "unittest",
-      "tools/test_sycl_query_profile.py",
-      "tools/test_sycl_cache_borrow.py"
-    ],
-    "tests": 11,
-    "passed": true,
-    "GPU_executed": false
-  },
   "same_build_admission": {
     "passed": true,
     "original_source_blobs_recovered": 9831,
     "engine_and_all_required_fixtures_verified": true,
-    "scope": "Current native/controller inputs, original recipe and compiled engine/eight fixtures match the committed component result. No model qualification follows."
-  },
-  "artifact_retirement": {
-    "complete": true,
-    "manifest": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/closed-cache-loan-components-20261020.jsonl",
-    "manifest_sha256": "91ee7611abd0924bbc759a6d3ef4e9adc9da4d784f6021808d30a3870b023a91",
-    "files": 63,
-    "bytes": 26338164,
-    "source_reachable_from_main": "95114f4c8b0fafdb2da484e6275b3c733a546361",
-    "scope": "Closed v7, two compiler transactions, consumed capability review/worker paperwork and superseded standalone host fixture. Current engine/eight fixtures and396 fallback retained;14 legacy provenance holds unchanged. Other owner/generator decision reports remain for the imminent borrowed mixed/model integration."
+    "scope": "Current native inputs, original recipe, engine/eight fixtures and reviewed ten-file source match the committed156-case result. No model qualification follows."
   }
 }

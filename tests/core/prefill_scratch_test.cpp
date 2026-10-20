@@ -145,7 +145,22 @@ void loan_test(const std::string& name) {
 }
 void test(const std::string& name) {
     if (name.rfind("loan_",0)==0) { loan_test(name); return; }
-    if (name == "guard_alignment") {
+    if (name == "borrowed_used_extent") {
+        const auto pointer=[](uintptr_t n){return reinterpret_cast<void*>(n);};
+        need(pd::scratch_span_inside(pointer(0x1000),0x2000,pointer(0x1000),0x2000));
+        need(pd::scratch_span_inside(pointer(0x1000),0x2000,pointer(0x2fff),1));
+        need(!pd::scratch_span_inside(pointer(0x1000),0x2000,pointer(0x3000),1));
+        need(!pd::scratch_span_inside(pointer(0x1000),0x2000,pointer(0x0fff),1));
+        need(!pd::scratch_span_inside(pointer(maximum-255),256,pointer(maximum-255),1));
+        need(!pd::scratch_span_inside(pointer(0x1000),0x2000,pointer(0x1100),0));
+    } else if (name == "borrowed_view_disjointness") {
+        const auto a=reinterpret_cast<void*>(0x1000), b=reinterpret_cast<void*>(0x1100);
+        need(pd::scratch_spans_disjoint(a,256,b,256) && pd::scratch_spans_disjoint(b,256,a,256));
+        need(!pd::scratch_spans_disjoint(a,257,b,256) && !pd::scratch_spans_disjoint(b,256,a,257));
+        need(!pd::scratch_spans_disjoint(a,256,a,256));
+        need(!pd::scratch_spans_disjoint(a,0,b,256) && !pd::scratch_spans_disjoint(nullptr,1,b,256));
+        need(!pd::scratch_spans_disjoint(reinterpret_cast<void*>(maximum-255),256,a,256));
+    } else if (name == "guard_alignment") {
         for (uint64_t n : {0ull, 1ull, 63ull, 64ull, 255ull, 256ull, 257ull, 8192ull}) {
             const auto r = pd::reserve_scratch(0, n, 4);
             need(r.bytes == ((n * 4 + 511) & ~uint64_t(255)) && r.next == r.bytes);
@@ -276,6 +291,7 @@ int main() try {
         "relayout_generation", "failed_init", "failed_relayout", "nested_update", "failed_take_and_reset",
         "qsa_global_ordinal", "qsa_resident_plan", "qsa_stream_ring_formats", "qsa_bad_metadata",
         "qsa_product_overflow", "qsa_block_overflow", "qsa_tail_rounding",
+        "borrowed_used_extent","borrowed_view_disjointness",
         "loan_cycle","loan_bounds","loan_read_admission","loan_stale_generation","loan_wrong_order",
         "loan_callback_false","loan_callback_throw","loan_nested_transition","loan_poison_during_callback",
         "loan_reuse_masked_range","loan_writer_admission","loan_writer_refill_interval",
@@ -283,6 +299,6 @@ int main() try {
     for (const auto* name : names) {
         test(name); std::cout << "prefill_scratch case=" << name << " status=PASS\n";
     }
-    std::cout << "prefill_scratch_fixture cases=37 status=PASS\n";
+    std::cout << "prefill_scratch_fixture cases=39 status=PASS\n";
     return 0;
 } catch (const std::exception& error) { std::cerr << error.what() << '\n'; return 1; }
