@@ -82,14 +82,8 @@ def runtime_assets_unchanged(record):
         guards.require(gen.common.digest(name) == sha, 'runtime asset changed: '+name)
 
 
-def current_build():
-    compact, component = gen.committed(BUILD), gen.committed(COMPONENT)
-    guards.require(not compact.get('retirement'),
-        'comparison build retired; build and qualify the next candidate before model preparation')
-    full = json.loads(BUILD_RECORD.read_text())
-    guards.require(full['passed'] and full['complete'] and full['ownership_closed'] and
-        not full['active'] and all(full[k] == compact[k] for k in
-        ('source_commit','binary','fixtures','compiler','configure_argv')), 'closed committed build required')
+def component_evidence(full, component):
+    """Validate same-build fixture coverage without reading mutable native inputs."""
     guards.require(component['passed'] and component['complete'] and component['ownership_closed'] and
         not component['active'] and not component['fresh_faults'] and component['binary']==full['binary'] and
         component['fixtures']==full['fixtures'] and component['source_commit']==full['source_commit'] and
@@ -118,6 +112,18 @@ def current_build():
             component.get('cpu_work_census_dispatch_contract_passed') is True and
             len(component['checks'][17]['cases']) == 15 and component['checks'][17]['exit_code'] == 0,
             'same-build CPU census ownership/framing and actual dispatcher contracts required')
+    return len(component['checks'])
+
+
+def current_build():
+    compact, component = gen.committed(BUILD), gen.committed(COMPONENT)
+    guards.require(not compact.get('retirement'),
+        'comparison build retired; build and qualify the next candidate before model preparation')
+    full = json.loads(BUILD_RECORD.read_text())
+    guards.require(full['passed'] and full['complete'] and full['ownership_closed'] and
+        not full['active'] and all(full[k] == compact[k] for k in
+        ('source_commit','binary','fixtures','compiler','configure_argv')), 'closed committed build required')
+    component_evidence(full, component)
     count = 0
     for source in [full['project'], *full['dependencies']]:
         recovered = {n:hashlib.sha256(data).hexdigest() for n,data in

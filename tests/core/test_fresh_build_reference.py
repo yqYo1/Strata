@@ -178,4 +178,80 @@ class PackedRetentionTests(unittest.TestCase):
                     b.packed_model_evidence(build, component, prefill, generation)
 
 
+class CensusRetentionTests(unittest.TestCase):
+    """Retain the actual census build without relabeling old clean speed evidence."""
+    def setUp(self):
+        root = Path(__file__).resolve().parents[2]
+        def original(name):
+            path = 'bench/results/2026-10-15-pr6-recovery-audit/' + name
+            return subprocess.check_output(['git','-C',str(root),'show','dd9f1635c:'+path])
+        self.build = json.loads(original('native-gdn-engine-build.json'))
+        raw = original('decode-query-profile-component-current.json')
+        self.component = json.loads(raw)
+        self.census = json.loads(original('cpu-work-census-current.json'))
+        self.hashes = ('f2ea644ca6b26aa8b0a7e03c4df022b44f92c8e932c5eee6e4561b52331c0a92',
+            hashlib.sha256(raw).hexdigest())
+
+    def evidence(self, build=None, component=None, census=None, hashes=None):
+        return b.census_model_evidence(build or self.build, component or self.component,
+            census or self.census, *(hashes or self.hashes))
+
+    def test_actual_census_is_execution_retention_only(self):
+        scope = self.evidence()
+        self.assertEqual(scope['component_groups'],18)
+        self.assertEqual(scope['generation_read_tokens'],[33214,33288])
+        self.assertEqual(scope['original_inputs_recovered'],9838)
+        for k in ('clean117K_speed_qualified','sustained_decode_speed_qualified',
+                  'hardware_saturation_qualified','model_adoption_qualified'):
+            self.assertIs(scope[k],False)
+
+    def test_reject_mismatched_build_component_and_receipts(self):
+        for variant in ('source','binary','fixture','component','host','group','boot','build_hash','component_hash'):
+            with self.subTest(variant=variant):
+                build, component = copy.deepcopy((self.build,self.component)); hashes = list(self.hashes)
+                if variant=='source':build['source_commit']='another'
+                if variant=='binary':build['binary']['sha256']='wrong'
+                if variant=='fixture':build['fixtures']['cpu_work_census_host_test']['sha256']='wrong'
+                if variant=='component':component['cpu_work_census_dispatch_contract_passed']=False
+                if variant=='host':build['cpu_census_host_contract']['ownership_closed']=False
+                if variant=='group':component['checks'][0]['passed']=False
+                if variant=='boot':component['boot_unchanged']=False
+                if variant=='build_hash':hashes[0]='wrong'
+                if variant=='component_hash':hashes[1]='wrong'
+                with self.assertRaises((RuntimeError,KeyError)):
+                    self.evidence(build=build,component=component,hashes=hashes)
+
+    def test_reject_unclosed_or_incomplete_model_bank_and_warmup(self):
+        for variant in ('active','owner','exit','fault','probe','bank_fixture','bank_fault','bank_case',
+                        'warmup','request_hash','missing_request'):
+            with self.subTest(variant=variant):
+                c = copy.deepcopy(self.census)
+                if variant=='active':c['active']=True
+                if variant=='owner':c['ownership_closed']=False
+                if variant=='exit':c['native_exit_code']=1
+                if variant=='fault':c['fresh_faults']=['fault']
+                if variant=='probe':c['fault_probe_successful']=False
+                if variant=='bank_fixture':c['bank']['checks'][0]['fixture']['sha256']='wrong'
+                if variant=='bank_fault':c['bank']['fresh_faults']=['fault']
+                if variant=='bank_case':c['bank']['checks'][0]['cases'].pop()
+                if variant=='warmup':c['warmups']['successful_warmups']=3
+                if variant=='request_hash':c['warmups']['request_sha256'][-1]='wrong'
+                if variant=='missing_request':c['requests'].pop()
+                with self.assertRaises((RuntimeError,KeyError)):self.evidence(census=c)
+
+    def test_reject_short_incomplete_thought_only_and_wrong_restored_route(self):
+        for variant in ('short','reused','thought_only','no_thinking','truncated','GPU_rows','cache','bank_route'):
+            with self.subTest(variant=variant):
+                c = copy.deepcopy(self.census); sample, route = c['requests'][0], c['routes'][0]
+                if variant=='short':sample['read_tokens']=sample['prompt_tokens']=1024
+                if variant=='reused':sample['reused_tokens']=1
+                if variant=='thought_only':sample['output_chars']=0
+                if variant=='no_thinking':sample['reasoning_chars']=0
+                if variant=='truncated':sample['truncated']=True
+                if variant=='GPU_rows':route['actual_GPU_BF16_rows']-=1
+                if variant=='cache':route['cache_payload_and_map_match']=False
+                if variant=='bank_route':route['private_bank']['actual_private_layers']=47
+                with self.assertRaises((RuntimeError,KeyError)):self.evidence(census=c)
+
+
 if __name__=='__main__':unittest.main()

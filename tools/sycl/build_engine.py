@@ -224,6 +224,63 @@ def packed_model_evidence(build, component, prefill, generation):
         model_adoption_qualified=False)
 
 
+def census_model_evidence(build, component, census, build_record_sha256, component_sha256):
+    """Retain the census-qualified build, without borrowing earlier speed claims."""
+    from query_profile import component_evidence
+    from generation_engine import sample_eligible
+    groups = component_evidence(build, component)
+    guards.require(component.get('boot_unchanged') is True and
+        all(r.get('passed') is True and r.get('exit_code') == r.get('expected_exit')
+            for r in component['checks']), 'closed same-build fixture outcomes required')
+    host = build['cpu_census_host_contract']
+    guards.require(host['passed'] is True and host['ownership_closed'] is True and
+        host['exit_code'] == 0 and host['cases'] == 15 and
+        host['fixture_sha256'] == build['fixtures']['cpu_work_census_host_test']['sha256'],
+        'same-build census host contract required')
+    guards.require(census.get('passed') is True and census.get('complete') is True and
+        census.get('ownership_closed') is True and not census.get('active', False) and
+        census.get('stage') == 'closed' and census.get('build_source_commit') == build['source_commit'] and
+        census.get('binary') == build['binary'] and census.get('native_exit_code') == 0 and
+        census.get('boot_unchanged') is True and census.get('fault_probe_successful') is True and
+        census.get('fresh_faults') == [] and census.get('effective_environment_verified') is True,
+        'closed same-build census native/owner/fault evidence required')
+    proof = census['qualification']
+    guards.require(proof['build_receipt_sha256'] == build_record_sha256 and
+        proof['shared_component_sha256'] == component_sha256 and
+        type(proof['original_inputs_recovered']) is int and proof['original_inputs_recovered'] > 0,
+        'census qualification receipt identity differs')
+    bank = census['bank']
+    guards.require(bank['passed'] is True and bank['complete'] is True and bank['ownership_closed'] is True and
+        not bank['active'] and bank['boot_unchanged'] is True and bank['fault_probe_successful'] is True and
+        bank['fresh_faults'] == [] and [len(r['cases'])for r in bank['checks']] == [2,3] and
+        [r['mode']for r in bank['checks']] == ['packed-smoke','packed-validate'] and
+        all(r['passed'] is True and r['exit_code'] == 0 and r['cases'] and
+            r['fixture'] == build['fixtures']['sycl_expert_bank_test'] for r in bank['checks']),
+        'closed same-build packed-bank qualification required')
+    warmups = census['warmups']
+    samples, routes = census['requests'], census['routes']
+    guards.require(warmups['valid'] is True and warmups['successful_warmups'] == 4 and
+        warmups['successful_long_requests'] == 2 and warmups['phase_order'] ==
+        ['warm-up/chat','calibration','calibration','warm-up/prompt',
+         'long-generation/regular-code','long-generation/varied-prose'] and
+        len(warmups['request_sha256']) == 6 and len(samples) == len(routes) == 2 and
+        [r['workload']for r in samples] == ['regular-code','varied-prose'] and
+        [r['request_sha256']for r in samples] == warmups['request_sha256'][4:],
+        'complete official warmup/request binding required')
+    for sample, route in zip(samples, routes):
+        guards.require(sample_eligible(sample) and sample.get('truncated') is False and
+            route['actual_GPU_BF16_rows'] == sample['read_tokens']-1 and
+            route['actual_MoE_mode'] == 10 and route['restored_dense_layers'] == 48 and
+            route['cache_payload_and_map_match'] is True and
+            route['private_bank']['actual_private_layers'] == 48,
+            'complete thinking/answer and actual restored route required')
+    return dict(component_groups=groups,official_warmups=4,current_long_generation_requests=2,
+        generation_read_tokens=[r['read_tokens']for r in samples],
+        original_inputs_recovered=proof['original_inputs_recovered'],
+        clean117K_speed_qualified=False,sustained_decode_speed_qualified=False,
+        hardware_saturation_qualified=False,model_adoption_qualified=False)
+
+
 def retain_current():
     """Preserve the validated generation before a native cache is overwritten."""
     raw = RESULT.read_bytes()
@@ -236,21 +293,32 @@ def retain_current():
                    old['source_commit'] == compact['source_commit'] and old['binary'] == compact['binary'],
                    'current validated build identity/ownership differs')
     evidence, observations = {}, {}
-    for name in ('decode-query-profile-component-current.json',
-                 'prefill-packed-bank-speed-current.json', 'generation-reference-current.json'):
+    census_build = 'cpu_work_census_host_test' in old['fixtures']
+    names = ('decode-query-profile-component-current.json',) + (
+        ('cpu-work-census-current.json',) if census_build else
+        ('prefill-packed-bank-speed-current.json', 'generation-reference-current.json'))
+    for name in names:
         path = RESULT.with_name(name)
         value = json.loads(path.read_bytes())
         guards.require(path.read_bytes() == git(P, 'show', 'HEAD:' + str(path.relative_to(P))),
                        'commit exact current model evidence: ' + name)
         observations[name] = value
         evidence[name] = git(P, 'log', '-1', '--format=%H', '--', str(path.relative_to(P))).decode().strip()
-    scope = packed_model_evidence(old, observations['decode-query-profile-component-current.json'],
-        observations['prefill-packed-bank-speed-current.json'], observations['generation-reference-current.json'])
+    if census_build:
+        scope = census_model_evidence(old, observations['decode-query-profile-component-current.json'],
+            observations['cpu-work-census-current.json'], digest(full_path), digest(RESULT.with_name(names[0])))
+        qualification = 'Same-build18 fixture groups and two33K thinking-generation census requests closed without fresh faults. This is execution/retention qualification,not clean117K or sustained decode speed,task quality,agent sessions,physical262144/RESTORE or model adoption.'
+    else:
+        scope = packed_model_evidence(old, observations['decode-query-profile-component-current.json'],
+            observations['prefill-packed-bank-speed-current.json'], observations['generation-reference-current.json'])
+        qualification = 'Same-build component/fixture/source checks, six clean117K processes and the current arm of the two-engine33K thinking-generation pilot closed without fresh faults. A pilot does not qualify sustained decode speed,task quality,agent sessions,physical262144/RESTORE or model adoption.'
     recovered = 0
     for source in [old['project'], *old['dependencies']]:
         for name, data in blobs(Path(source['root']), source['revision'], source['source_sha256']):
             guards.require(hashlib.sha256(data).hexdigest() == source['source_sha256'][name], 'original source not recovered')
             recovered += 1
+    if census_build:
+        guards.require(recovered == scope['original_inputs_recovered'], 'census original-input count differs')
     recipe = old['recipe_reference']
     guards.require(hashlib.sha256(git(Path(old['project']['root']), 'show',
                    old['project']['revision'] + ':' + recipe['path'])).hexdigest() == recipe['sha256'],
@@ -279,8 +347,8 @@ def retain_current():
         source_build_record=dict(path=str(receipt), sha256=digest(receipt)), recipe_reference=recipe,
         original_source_blobs_recovered_and_verified=recovered, model_evidence_commits=evidence,
         model_evidence_scope=scope,
-        qualification='Same-build component/fixture/source checks, six clean117K processes and the current arm of the two-engine33K thinking-generation pilot closed without fresh faults. A pilot does not qualify sustained decode speed,task quality,agent sessions,physical262144/RESTORE or model adoption.',
-        consumer='Fallback for the imminent direct CPU-job census build and component/model qualification; select the validated generation and retire the extra at comparison closure.')
+        qualification=qualification,
+        consumer='Fallback for the imminent IQ2 pair inference build and same-build component/model qualification; select the validated generation and retire the extra at comparison closure.')
     RESULT.write_text(json.dumps(compact, indent=2) + '\n')
     print(json.dumps(dict(retained_source=old['source_commit'], artifacts=len(original), recovered_inputs=recovered,
                          fallback=str(target), GPU_executed=False)))
