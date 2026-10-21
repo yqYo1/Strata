@@ -3008,7 +3008,8 @@ fallback0 as a placement change. Ten host tests include all four real warmup
 marker/footer pairs; replay against the actual closed stderr also passes.
 Markers establish nominal callback coverage, not internal needed rows or kernel
 batch size. The fresh six-process plan is committed at`f038a0f34`; no old samples
-enter it. Five processes now pass with33208 fresh input tokens in both arms:
+enter it. All six independent processes now pass with33208 fresh input tokens
+and the same request hash in both arms:
 
 | Process | FP16 MTP | PP, tok/s | TG, tok/s | Generated | Accepted/offered | TTFT, s |
 | --- | --- | ---: | ---: | ---: | --- | ---: |
@@ -3017,28 +3018,36 @@ enter it. Five processes now pass with33208 fresh input tokens in both arms:
 | 2 | on | 694.6 | 14.2 | 3318 | 2347/2916 | 47.929 |
 | 3 | off | 634.9 | 9.2 | 3900 | 2787/3342 | 52.484 |
 | 4 | off | 637.2 | 10.9 | 3900 | 2787/3342 | 52.321 |
+| 5 | on | 699.8 | 12.9 | 3318 | 2347/2916 | 47.596 |
 
-All five have answers and thinking, four warmups, five ring callback spans, the
-all-GPU BF16/mode10 prompt route, valid journals, native exit0, owned closure,
-source admission and no fresh fault. The first-pair raw-clock PP ratio is1.096054;
-TG is0.816328, generation length0.850769 and total wall1.021319. Retain the slower
-decode result. Its generation length violates the prospective5% band, so the
-decode decision is inconclusive_generation_length. These are first-long-request
-minimal-marker samples; one independent process remains. Neither adoption nor
-zero observer cost is established. Broader quality/weak-MTP/agent/physical262144
-and session/RESTORE gates remain pending. Processes1/2 have identical answer and
-thinking hashes,3318 generated tokens,2347/2916 acceptance and logical expert
-counts, yet their raw decode rates differ20.2551%. This establishes time variation
-with matching logical work; its cause remains unmeasured. Preserve both samples
-and the original paired plan rather than dismissing the slower reading. Q8
-processes0/3 also match answer/thinking/acceptance and logical expert work, but
-decode falls14.5 to9.2tok/s (raw-clock rate ratio0.636998). The slower result stays
-in the cohort; the cause of this time variation remains unresolved. Process4
-returns637.2PP/10.9TG with the same Q8 text and work. All five target-prefill
-completion markers conserve19397 expert uploads/39629260800 requested H2D bytes,
-zero permanent hits and identical GU/Down job totals. These are logical bytes,
-not measured PCIe traffic. This input has one FFN accumulation window; packed
-capacity alone cannot save cross-window reloads here.
+Each process has an answer and thinking, four warmups, five ring callback spans,
+the all-GPU BF16/mode10 prompt route, a valid journal, native exit0, closed owners
+and no fresh fault. Original controller/native/fixture inputs and all15 model
+assets pass the final checks. These are first-long-request minimal-marker
+samples, not subsequent-long steady state or proof of zero observer cost.
+
+The three raw-clock PP ratios are1.096054,1.093921,1.098182; geomean1.096051
+(**9.6051%**). The frozen prefill faster screen passes. Medians are637.2Q8 and
+699.8FP16, with sample SD3.7873/4.7089tok/s. This33208-input result does not reach
+1000tok/s. TG medians are10.9/12.9, ranges9.2..14.5/11.8..14.2. Its paired ratios
+0.816328,1.541097,1.181395 have mixed directions; generation ratios0.850769 all
+violate the prospective5% band, and decode nonregression fails. The1.141204 TG
+geomean therefore does not establish faster decode. Acceptance falls83.3932%
+to80.4870%, still above the declared60% strong-MTP criterion. Same-arm answer,
+thinking, acceptance and logical-work counts match despite large timing spread;
+its cause remains unresolved. Preserve every reading and keep FP16 unadopted.
+Broader task quality/weak-MTP/agent/physical262144/session/RESTORE and70TG remain
+pending; Q8 MTP stays the baseline for the next independent prefill candidate.
+
+All six target-prefill completion markers conserve19397 expert uploads and
+39629260800 requested H2D bytes, zero permanent hits and identical GU/Down job
+totals. These are logical bytes, not measured PCIe traffic. This input has one
+FFN accumulation window, so packed capacity alone cannot save cross-window
+reloads here. The next reviewed candidate concerns a private layer-local layout
+within the existing bank allocation, with demand-preserving copy coalescing as
+a separate mechanism. Qualify its stride/slot/consumer and checked layer-drain
+contract before execution; test cross-window reuse on multi-window long input.
+No new allocation, implementation or throughput gain is established yet.
 
 Source inspection binds the native expert footer to deltas taken immediately
 before the target verifier loop, after prompt prefill. For Q8/FP16 respectively,
