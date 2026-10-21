@@ -2968,10 +2968,13 @@ ineligible. Do not retry this root or retrospectively qualify it.
 Source`4d4792007` narrows the reader to its consumed preload-component subtree;
 seven host tests pass, including unrelated edits and changed/missing/type-altered
 qualification fields. Original9836 native inputs, eight fixtures, engine and
-preload qualification pass again without new GPU execution. A new matched
-comparison plan is still required; the original cohort remains failed. Its full
+preload qualification pass again without new GPU execution. The original cohort
+remains failed and cannot supply the new comparison. Its full
 source/plans/evidence remain reachable at`b62f673a7`; the maintained result keeps
-the four useful individual samples and original rejection.
+the four useful individual samples and original rejection. The closed raw root
+is retired after147 original controller inputs and pushed ancestry were checked:
+282 files/51589605B, with a path/hash/reason manifest in the compact result.
+Both consumed native generations and required fixtures remain.
 
 The first pair's7.26% PP increase is an observation, not adoption. Its30.1%
 generation-length difference exceeds the declared5% decode band. The two FP16
@@ -2990,9 +2993,10 @@ with exact8192/tail cell coverage per request, including all four warmups. Sourc
 review finds no added GPU wait in that marker and excludes the heavy restore
 verification branch through prompt-cache0/conversation-cache-mib0. This is
 minimal-marker timing, not proof of zero observer cost or an inner kernel.
-The prior failed samples cannot enter this cohort. Commit and test the controller,
-then commit its fresh generated plan before GPU execution. Decode still uses the
-prospective5% generation-length band; changed output remains an effect, never an
+The prior failed samples cannot enter this cohort. Controller`dc8805e94` passes
+nine host tests; its fresh six-process plan has been generated after full model,
+native/fixture/runtime and configuration checks. Commit that plan before GPU
+execution. Decode still uses the prospective5% generation-length band; changed output remains an effect, never an
 excluded sample. Broader quality/weak-MTP/agent/full-context gates remain pending.
 
 Logical cache-hit ratios are9.8/10.6%, with zero GPU miss-copy counters under
