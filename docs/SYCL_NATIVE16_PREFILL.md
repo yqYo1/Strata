@@ -18,7 +18,9 @@ and repeated decode performance, resolve the coupling, and keep the restoration
 unqualified until it is fixed. New IQ2 and MTP model cohorts remain deferred
 during this restoration. Controller `acc1abd4b` prepares the matched117K
 baseline on the current phase-scoped build; its four host launch/evidence-refusal
-tests passed. No baseline model process has launched yet.
+tests and the same-build packed smoke/validate gates (two/three cases) passed.
+The checked117K process is next; restoration and decode preservation remain
+unqualified.
 
 The current B570 speed reference uses fresh inputs of117489 tokens and separates
 the first long request from later requests in each independent process.
