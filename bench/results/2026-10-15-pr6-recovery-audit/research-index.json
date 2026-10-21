@@ -3568,24 +3568,35 @@
       "https://github.com/oneapi-src/level-zero-spec/blob/v1.17.24/scripts/core/event.yml"
     ],
     "implementation_scope": {
-      "state": "Six-process comparison closed with failed prefill nonregression gate; source-only MTP observer/controller integrated into feature/sycl, uncompiled/untested.",
+      "state": "MTP observer/controller integrated into feature/sycl; 19 host-only retention/controller tests passed. Native observer remains uncompiled/unrun.",
       "branch": "yqYo1/mtp-graph-observer",
       "path": "/home/yayoi/orca/workspaces/Strata/mtp-graph-observer",
       "base_revision": "ab740ff134b7ee716dea8226f5899da42c6f57e5",
       "reason": "The frozen six-process comparison has closed. The isolated source is now integrated without squashing; original source commits remain reachable.",
-      "next": "Run retained-evidence/controller tests; commit the explicit archive reference/consumer in the compact current build record; run retain-current to preserve engine+ten fixtures BEFORE overwriting ROOT; then bounded graph fixture profile-off/on with pinned compiler/adapter/driver and qualified safety settings, applicable same-build safety/numerical gates, and a committed MTP model observer plan. Retire the unmeasured source-only child after integration is pushed.",
+      "next": "Run retain-current to preserve engine+ten fixtures BEFORE overwriting ROOT; then pin the new build recipe/compiler/adapter/driver and run bounded graph fixture profile-off/on using qualified safety settings, applicable same-build safety/numerical gates, and a committed MTP model observer plan. Retire the unmeasured source-only child after integration is pushed.",
       "retirement": "Retire this unmeasured source-only branch/worktree after integration into feature/sycl; original commits remain reachable. Measurements and default integration stay on feature/sycl through PR180.",
       "limits": "No new runtime safety setting,native recording,graph timing capability,performance or model qualification is established.",
       "source_commit": "0b39c726fcb1ad1d78daa92c5108d3310adcc04c",
       "retention_controller_source_commit": "e7c12403b9eb7f6a448d16a2ce6992dcb4e43373",
-      "retention_record_fields_to_commit_after_cohort": {
-        "retention_model_reference": {
-          "commit": "bedfdf312fe3cf28842c78263f1e5b69cdf5ec5c",
-          "path": "bench/results/2026-10-15-pr6-recovery-audit/iq2-pair-model-current.json",
-          "sha256": "336a926be0252d3c6f1ebddaafd6a227ac2af82042099ee534b4bb6d97879255"
-        },
-        "retention_consumer": "Fallback for imminent MTP host/graph observer build and bounded graph/engine validation; retain the current validated6c engine and ten same-build fixtures until replacement validation selects a generation."
-      }
+      "host_validation": {
+        "source_commit": "42e85080905f1335a133b5402698bdb49ba5ea20",
+        "tests": [
+          {
+            "command": "python3 -B tests/core/test_fresh_build_reference.py",
+            "cases": 15,
+            "passed": true
+          },
+          {
+            "command": "python3 -B tools/test_sycl_generation_compare.py",
+            "cases": 4,
+            "passed": true
+          }
+        ],
+        "serialized": true,
+        "GPU_executed": false,
+        "limits": "Host receipt/refusal and collection-path contracts only; not native compilation, GPU support, model correctness, timing or performance qualification."
+      },
+      "retention_record_path": "bench/results/2026-10-15-pr6-recovery-audit/native-gdn-engine-build.json"
     },
     "source_safety_audit": {
       "classification": "decision support",

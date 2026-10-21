@@ -49,7 +49,9 @@ comparison. Source/metadata research proceeded during this diagnostic;
 independent background CPU/I/O interference was not separately quantified.
 
 Main's MTP observer source at `0b39c726f` and retention-controller
-migration at `e7c12403b` are integrated into `feature/sycl` but uncompiled/untested.
+migration at `e7c12403b` are integrated into `feature/sycl`. All19 host-only
+retention/controller tests passed at `42e850809`; native observer code remains
+uncompiled and unrun.
 Preserve the validated6c engine and
 its ten fixtures using the exact same-build model archive, then perform bounded
 graph support and applicable engine checks. Graph clocks are nonadditive
