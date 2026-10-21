@@ -167,6 +167,20 @@ is1.001788. Both complete pairs favor the candidate,but the final frozen pair
 and sustained-decode qualification remain pending;short24-token output cannot
 establish decode independence.
 
+The separate `canonical_decode.py` controller prepares the next six-process
+comparison only after the clean prefill gate passes. It uses the same retained
+and candidate packages,1256 slots and immutable environments,with the official
+version4 thinking-on code/prose workloads in each process. Its prospective
+preservation screen requires all three exact-TG pair ratios>=1 independently
+for each workload,and strong/weak observed MTP acceptance in every sample of
+both arms. Any decline leaves preservation unqualified;there is no permitted
+prefill/decode tradeoff or assertion of statistically proven zero effect.
+It checks complete journals,native request extents and reported GPU BF16/mode10
+routes. Exact payload restoration belongs to the preceding checked model
+admission;clean runs do not claim unlogged copy or payload measurements.
+This reader does not consume closed prefill cohorts' generated configurations.
+The new controller and seven host test groups are not yet execution-qualified.
+
 
 The current B570 speed reference uses fresh inputs of117489 tokens and separates
 the first long request from later requests in each independent process.
