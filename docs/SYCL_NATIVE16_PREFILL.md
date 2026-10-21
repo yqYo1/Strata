@@ -3085,7 +3085,8 @@ fallback. Small traced GPU byte-reader tests precede actual-size transition,
 padding/tail, immutable-source, private-map and unwind checks. CPU source
 `cf8ae547a` passes all seven format plans, two layers of full512-expert scans
 per format and19 new rejection checks, retaining the original18 ticket checks.
-Native compilation, GPU execution and model throughput remain unverified. This targets
+Native build`44eac4cc0` then compiles the engine and nine fixtures successfully;
+GPU execution and model throughput remain unverified. This targets
 the observed expert-upload service, not a proven physical PCIe saturation;
 cross-window copy reduction needs the multi-window117K model test with Q8 MTP.
 
