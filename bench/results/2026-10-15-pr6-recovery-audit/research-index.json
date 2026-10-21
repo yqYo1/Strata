@@ -6826,5 +6826,73 @@
       "reason": "Completed code review; committed digest, limits and exact input revision supply the current comparison. Full review has no remaining consumer.",
       "deleted": true
     }
+  },
+  "host_dma_cpu_expert_contention_methods_scope": {
+    "id": "host-dma-cpu-expert-contention-methods-20261021",
+    "classification": "knowledge collection",
+    "model": "gpt-6-luna",
+    "schedulable_now": true,
+    "main_reads_body_on_arrival": false,
+    "question": "Compare primary-source methods from non-LLM GPU/ASIC/HPC workloads for managing host-memory interference when irregular CPU quantized-expert kernels read weights while discrete-GPU DMA reads host buffers. Assess arbitration/overlap mechanisms such as transfer burst/chunk pacing, CPU worker/affinity control, memory-bandwidth QoS/fairness and locality-aware scheduling. Distinguish physical host-DRAM traffic, CPU-cache traffic, requested payload and critical-path time; assess transferability to one NUMA Linux host with Ryzen 5600X and Arc B570, including counterevidence. Do not repeat pinning/page-layout, direct-versus-packed preparation or generic double-buffer/queue-graph surveys; do not assume the active cohort uses DMA or claim local speed/saturation.",
+    "report_path": ".cache/strata-research/20261021/host-dma-cpu-expert-contention-methods.md",
+    "report_budget": {
+      "target_words": [
+        1400,
+        2200
+      ],
+      "maximum_bytes": 22528
+    },
+    "prerequisites": [
+      {
+        "evidence": "Source audits show multirow CPU work and a possible ordinary-Arena mode-0 path enqueuing DMA during the CPU callback; this does not prove the active cohort route.",
+        "met": true
+      },
+      {
+        "evidence": "Logical expert footprint is 0.774322/1.086338 GB per emitted token; physical traffic is unknown.",
+        "met": true
+      },
+      {
+        "evidence": "Indexed host-DMA, SYCL-transfer, PCIe-counter and out-of-core scopes define exclusions; this literature collection needs no new counter.",
+        "met": true
+      }
+    ],
+    "prior_scope_ids": [
+      "host_dma_source_preparation_collection_scope",
+      "sycl_host_transfer_preparation_collection_scope",
+      "decode_copy_cpu_gpu_dag_scope",
+      "out_of_core_sycl_hpc_scheduling_scope",
+      "staged_copy_resource_contract_scope",
+      "forced_compute_copy_overlap_collection_scope",
+      "b570_pcie_wire_byte_measurement_methods_scope"
+    ],
+    "nonduplication": "Focus on active contention control/fair progress for CPU weight reads concurrent with DMA. Exclude source packing/pinning/page-size advice, wrapper tracing, dependency/event/lifetime audits, copy-engine selection and PCIe wire-byte metrology. Do not change qualified runtime safety settings.",
+    "consumer": "Retrieve only if a later qualifying decode receipt puts CPU expert work and DMA on the critical path; review at first concrete source/experiment decision after cohort closure and retire if unused.",
+    "report_requirements": "Use primary sources; compare mechanisms, assumptions, failure regimes and transferability; identify evidence needed for a bounded local test and state method limits. Write only the named report, no code or local measurements.",
+    "policy_revision": "d5d9c90374daf195ab0e375c40f318f654cacb4f",
+    "context_revision": "d5d9c90374daf195ab0e375c40f318f654cacb4f",
+    "status": "eligible_not_dispatched",
+    "worker_closed": false,
+    "library_review": {
+      "model": "gpt-6-luna",
+      "reasoning": "max",
+      "worker_closed": true,
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/next-decode-work-research-scopes-20261021.json",
+      "sha256": "dbb51d22ef11e2649fce09bbc25ce56eaeeeafcfabf9736293e51c5b98f8109a",
+      "bytes": 6918,
+      "digest": "Six relevant sections already cover expert batching,small-row CPU reuse and cost-aware speculative depth. One distinct knowledge gap is active host-memory interference control; active-cohort DMA is not proved. No duplicate MTP survey.",
+      "review_point": "Retire consumed scope-calibration report after this admission and citation metadata are committed at the next serialized process closure."
+    },
+    "deferred_other_scope": {
+      "id": "cost-aware-speculative-target-verification-depth",
+      "classification": "decision support",
+      "schedulable_now": false,
+      "reason": "Cascade already covers cost-aware depth and the verifier audit covers batching. A new report now would duplicate coverage or only report missing dynamic data.",
+      "reconsider_after": [
+        "Frozen cohort closes with committed receipts.",
+        "Qualified thinking-enabled >=1K-token generations exist for MTP-friendly and MTP-weak cases.",
+        "Receipts include accepted-prefix and emitted/accepted counts, per-group/window expert union, provider/cache hits/misses, CPU-pool work/waits, requested transfer/waits, draft/verify and rollback costs."
+      ],
+      "carry_forward": "Keep MTP chain/window implementation and provenance holds unchanged; this review clears none."
+    }
   }
 }
