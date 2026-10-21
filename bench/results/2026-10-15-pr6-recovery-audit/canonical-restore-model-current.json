@@ -10,7 +10,16 @@
   "previous_attempt": {
     "commit": "9555a7bd2",
     "path": "bench/results/2026-10-15-pr6-recovery-audit/canonical-restore-model-current.json",
-    "reason": "Closed failed parser scope:three warmup plus three long-request dense records were mistaken for three whole-process records. The original sample and failure remain unchanged in Git. Fresh two-arm evidence uses the committed corrected parser;no replacement in the original cohort."
+    "reason": "Closed failed parser scope:three warmup plus three long-request dense records were mistaken for three whole-process records. The original sample and failure remain unchanged in Git. Fresh two-arm evidence uses the committed corrected parser;no replacement in the original cohort.",
+    "diagnostic": {
+      "original_status": "failed",
+      "original_error": "missing/extra strata prefill dense",
+      "warmup_dense_records": 3,
+      "long_dense_records": 3,
+      "old_whole_process_expected": 3,
+      "engine_stderr_sha256": "52a39e9d0bdf4202e3e109b792fcd02d4cfac08c7bb4e49ac4dfcb9d1c4f5b9b",
+      "complete_native_requests": 2
+    }
   },
   "native_inputs_recovered": 9862,
   "build_sha256": "c28cf86bd85929145d267318e8f390967d84c5f12d5a72b268455aee4b0fe77c",
@@ -1237,5 +1246,23 @@
     "no_fresh_faults": true,
     "interpretation": "Two separate checked first-use requests prove actual1/23-copy dispatch and exact current1256-slot/48-layer restoration under117K pressure. About166ms canonical wrapper reduction agrees with the component mechanism,but one observed pair is not repeated clean speed,sustained decode independence,task/agent quality,physical262144/session/RESTORE or adoption.",
     "next_action": "Freeze repeated clean prefill and sustained-decode comparisons. Include retained6e40 baseline to expose any package-level decode impact from the intervening observer/copy build,besides the same-native copy schedule discriminator. Current decode implementation/settings/1256-slot placement remain fixed;any impact is a separation defect."
+  },
+  "normal_output_retirement": {
+    "manifest": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/closed-canonical-model-support-20261022.jsonl",
+    "sha256": "be1dfa1f431b8e117d22d501be49a8eeb0286c4d56480a60868893a1e58ec09d",
+    "files": 221,
+    "bytes": 39243457,
+    "verified_absent": true,
+    "retained_generated_inputs": [
+      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/canonical-restore-model-check-v2/0/config.json",
+      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/canonical-restore-model-check-v2/0/expert-profile.bin",
+      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/canonical-restore-model-check-v2/0/plan.json",
+      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/canonical-restore-model-check-v2/1/config.json",
+      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/canonical-restore-model-check-v2/1/expert-profile.bin",
+      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/canonical-restore-model-check-v2/1/plan.json"
+    ],
+    "retained_input_consumer": "Six small config/plan/profile files remain for c.current admission proof through the next frozen comparison;review and retire after that comparison closes.",
+    "build_generations_unchanged": true,
+    "original_failed_status_preserved_at": "9555a7bd2"
   }
 }
