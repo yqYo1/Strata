@@ -182,7 +182,7 @@
     },
     "retention": "Keep compact individual samples and current decision. Auxiliary CPU binary/build only for this exact comparison; retire closed raw/build after source/recipe recovery and result commit. Current known-good engine/ten fixtures stay untouched."
   },
-  "stage": "built",
+  "stage": "checked",
   "passed": true,
   "complete": true,
   "active": false,
@@ -193,5 +193,15 @@
     "sha256": "1f466f98ff47abc00e52d38c60d72e03f3f6aa8a850fd3a06757a0d314e0fa58",
     "bytes": 2044056
   },
-  "ownership_closed": true
+  "ownership_closed": true,
+  "check_evidence": [
+    {
+      "kind": "contract",
+      "integer_cases": 1048576,
+      "row_dots": 1280,
+      "GU_rows_per_method": 634,
+      "valid_extreme_Q8_checked": true,
+      "passed": true
+    }
+  ]
 }
