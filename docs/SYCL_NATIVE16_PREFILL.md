@@ -3366,19 +3366,28 @@ prose (observed410.52s). Hot/stream figures are projections from six-job calls,
 not matched production batches, physical RAM bandwidth or a hardware ceiling.
 CPU kernel sources are unchanged between the calibration and census builds.
 IQ2_S contributes42.01%/43.06% of NT1 jobs and39.91%/40.27% of observed pool
-wall in code/prose. This updates the pre-census IQ3_S-first proposal: next
-compare exact IQ2_S NT1 level masks with the existing direct-codebook helper,
-charging the20KiB/token activation subset table and all setup. Require exact
-integer/scales/FMA and GU/SwiGLU output parity, repeated hot/stream improvement,
-then a five-worker production-path comparison at the observed job counts.
-No CPU kernel candidate or model speedup is qualified yet.
+wall in code/prose. This updates the pre-census IQ3_S-first priority.
+The exact IQ2_S NT1 subset component at source`ef58ccb55` passes1048576 signed
+integer cases,1280 padded synthetic row dots and96 real experts' GU/SwiGLU bits.
+Three independent processes and108 setup-inclusive hot/stream samples reject
+both candidates: scalar int16-table latency is4.66153 times the current direct
+helper, and AVX2 int32 gather5.24602 times. All six process/access medians
+regress. The original samples,prospective gate and outcome are recoverable at
+`8d186fc98:bench/results/2026-10-15-pr6-recovery-audit/cpu-iq2-current.json`.
+No production-pool,engine or model trial follows this negative result.
+The next distinct mechanism keeps direct codebook arithmetic and fuses gate/up
+to share activation loads and loop control, preserving integer lanes and FP32
+FMA/reduction order. No CPU kernel candidate or model speedup is qualified yet.
 After committing the model result at`e6552e380`, Main replays both censuses
 against the raw records, recovers the fallback's9836 original inputs and recipe,
 selects the validated`63af639ac` engine/ten fixtures and retires the extra
 generation plus closed successful diagnostic output:134files/129680745B.
 The current compact result records the path/hash/reason manifest. The CPU
-calibration fixture remains for the imminent IQ2_S comparison; legacy source
-recovery exceptions remain separate.
+calibration fixture was retained through the imminent IQ2_S comparison.
+After its rejection, Main also recovers32 candidate and29 calibration project
+inputs,1376 ggml inputs and both recipes, then retires both closed auxiliary
+builds and consumed decision reports:89files/13071478B. Compact individual
+samples remain in Git; legacy source recovery exceptions remain separate.
 
 The14 old worktree proposal/metadata paths are also reviewed before rebuilding.
 Available unique partial failed-GDN source/recipes are archived at`228b85f13`

@@ -1511,5 +1511,16 @@
     ]
   ],
   "performance_gate_passed": false,
-  "decision": "Reject both exact subset candidates: setup-inclusive paired GU/SwiGLU latency geomeans4.66153x (int16 scalar) and5.24602x (int32 gather) versus the linked current direct helper. All six process/access medians regress for each method despite bitwise parity. No production-pool, engine or model trial. Next distinct mechanism: fuse the existing direct gate/up dots to share activation loads and loop control; preserve exact integer lanes and float reduction."
+  "decision": "Reject both exact subset candidates: setup-inclusive paired GU/SwiGLU latency geomeans4.66153x (int16 scalar) and5.24602x (int32 gather) versus the linked current direct helper. All six process/access medians regress for each method despite bitwise parity. No production-pool, engine or model trial. Next distinct mechanism: fuse the existing direct gate/up dots to share activation loads and loop control; preserve exact integer lanes and float reduction.",
+  "artifact_retirement": {
+    "files": 89,
+    "bytes": 13071478,
+    "manifest": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/closed-cpu-iq2-subset-20261021.jsonl",
+    "manifest_sha256": "bee06e48f5a0a1b3d3368a3dfa4c3e24252c8cdff7579200502e7cb1ec276afd",
+    "evidence_commit": "8d186fc98",
+    "candidate_source_inputs_recovered": 32,
+    "calibration_source_inputs_recovered": 29,
+    "ggml_source_inputs_recovered": 1376,
+    "original_recipes_recovered": true
+  }
 }

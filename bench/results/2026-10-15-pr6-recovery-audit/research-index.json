@@ -5158,10 +5158,9 @@
     "worker_closed": true,
     "report_budget_bytes": 16384,
     "question": "For production IQ2_S/IQ3_XXS/IQ3_S NT1 GU on Zen3, derive exact decoded-level/mask/bitplane or bounded predecode layouts and compare table work, scale/rounding contract and extra bytes to measured hot/stream behavior. Do not repeat generic T-MAC/LUT surveys or settled tiny single-exact flag.",
-    "report_path": "/home/yayoi/orca/workspaces/Strata/sycl/.cache/strata-research/20261020/nt1-iq-exact-methods.md",
-    "consumer": "Main bounded IQ2_S NT1 exact level-mask component design and setup-inclusive comparison",
-    "next_review": "At component implementation, record needed algebra/provenance/gates in maintained source and retire the consumed report after its concrete consumer ends.",
-    "status": "actual_two_case_mix_selects_IQ2_S_NT1_component",
+    "consumer": "Closed; use the committed component result and source for a concrete regression question.",
+    "next_review": "No literature repeat; Main tests the distinct direct gate/up fusion mechanism.",
+    "status": "IQ2_subset_component_rejected_exact_but_4_66x_to_5_25x_slower",
     "task_id": "task_0add196c4850",
     "dispatch_id": "ctx_3d9a885c24a4",
     "terminal_handle": "term_4103b5e4-235c-4a4e-b8e4-cc9d1f597f76",
@@ -5176,7 +5175,7 @@
       "Two exact representations to test",
       "First experiment and gates"
     ],
-    "retention": "Temporary report for the named component/protocol implementation consumer. Distill accepted details into maintained source/results and retire report and transaction files when consumed.",
+    "retention": "Consumed report retired after useful algebra,source corrections and implemented numerical/measurement contracts were recorded in Git.",
     "operational_digest": "Pinned ggml algebra verified. IQ2_S=8+17*M25+35*M43; IQ3_XXS affine bitplanes require +2 at level62; IQ3_S=1+2*b0+4*b1+8*b2. Correct IQ2_S full GU bytes537395200 (512.5MiB), expansion ratio3.12195; H2560 four-value activation tables20KiB/token. IQ3_S indices need charged grid decode/mask extraction or explicit512-entry index-to-bitplane table. After census establishes actual IQ3_S NT1 relevance, compare row-pair GU with exact integer sums, bitwise initial scale/FMA contract, bounds/canaries and setup-inclusive hot/stream latency. No candidate or model speedup measured.",
     "latest_actual_mix_review": {
       "sha256": "9063abf1fa8d3136581515f3b26a7cf4e5e42d94908275e830cdf49e02658be2",
@@ -5184,7 +5183,8 @@
       "new_research_scopes_eligible": 0,
       "census_path": "bench/results/2026-10-15-pr6-recovery-audit/cpu-work-census-current.json",
       "digest": "Both long cases closed without fault: NT1 jobs77.24%/67.40%; IQ2_S42.01%/43.06% of NT1 jobs and39.91%/40.27% of observed pool wall. Select setup-inclusive IQ2_S NT1 exact level masks versus current direct helper, then production GU/SwiGLU at actual batch sizes. CPU/RAM saturation remains unknown; no model speedup proven."
-    }
+    },
+    "transaction_retirement": "cpu-iq2-current.json::artifact_retirement"
   },
   "existing_route_dump_CPU_mix_protocol_scope": {
     "result_reference": {
@@ -5210,9 +5210,8 @@
       "include/strata/core/expert_source.hpp": "3e0c332f0bf7fcbc1024bc14ac7f4af81f0d347ec9378c6484c7c289269d44c7",
       "include/strata/kernels/cpu/pool.hpp": "177897a23a38f78f51545bc50a056d3cd8feb03c0b594a0026e66fab92cec07a"
     },
-    "report_path": "/home/yayoi/orca/workspaces/Strata/sycl/.cache/strata-research/20261020/route-dump-cpu-mix-protocol.md",
     "consumer": "Main bridge from CPU calibration to measured model critical path before kernel selection",
-    "next_review": "Exact census and clock conservation passed in both thinking-enabled long cases. Retire consumed protocol/raw transaction output after compact result commit; next implement the IQ2_S NT1 bounded CPU comparison.",
+    "next_review": "No literature repeat; Main tests the distinct direct gate/up fusion mechanism.",
     "status": "implemented_component_and_two_case_model_census_passed",
     "task_id": "task_278355c879a6",
     "dispatch_id": "ctx_a5a710b87ad6",
@@ -5229,7 +5228,7 @@
       "Minimum host-only evidence change",
       "Prospective bounded diagnostic and acceptance"
     ],
-    "retention": "Temporary report for the named component/protocol implementation consumer. Distill accepted details into maintained source/results and retire report and transaction files when consumed.",
+    "retention": "Consumed report retired after useful algebra,source corrections and implemented numerical/measurement contracts were recorded in Git.",
     "operational_digest": "Existing routing dump lacks request/phase/window/callback/cache-generation framing and cannot prove exact CPU format/NT census. Count ExpertJobMulti.nt after final CPU grouping, separately from callback n_tok. Checked uint64 host-local per-dispatch bins merged by serialized request owner must conserve jobs/entries against same-scope multi_misses/multi_entries. Record format and cache membership/loan/restore identity; reject overflow, failed/incomplete callbacks or mismatch. Do not share worker bins or assume TLS=request. Single-GPU/no-peer/no-remote/pcie-frac0 conservation is narrower than universal kind2 semantics. No model bottleneck or speedup established.",
     "selected_implementation": "Final actual CPU job grouping/dispatch counters: actual ExpertJobMulti.nt,GU/Down/runtime shape and route kind; checked fixed bins and explicit serialized request/window owner. Do not use unframed route records or TLS as request identity. Conserve every completed window/callback and CPU jobs/entries against existing same-scope native footers. Keep prompt/warmups/target scope separate; no tensor capture or extra CPU/GPU transfer.",
     "latest_resource_review": {
@@ -5254,7 +5253,8 @@
       "path": "bench/results/2026-10-15-pr6-recovery-audit/cpu-work-census-current.json",
       "native_source_commit": "63af639ac70fcc63c3a33594b1fba02efc78bb86",
       "controller_source_commit": "386ef54e8a6824c49e7d53a3c5bca79a193d8f44"
-    }
+    },
+    "transaction_retirement": "cpu-iq2-current.json::artifact_retirement"
   },
   "cache_1256_long_mixed_admission_scope": {
     "classification": "decision support",
