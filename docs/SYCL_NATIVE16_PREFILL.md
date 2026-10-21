@@ -106,6 +106,15 @@ model gain is established. Keep the final drain and publication before prompt
 completion, preserve current decode settings/placement, and require repeated
 sustained decode and handoff checks. See the
 [closed copy comparison](../bench/results/2026-10-15-pr6-recovery-audit/large-copy-current.json).
+Main's original scheduler passed eight host boundary/refusal groups. The
+production candidate is default-off under the immutable
+`STRATA_SYCL_PREFILL_CANONICAL_CHUNK64=1` setting. It changes only the canonical
+restore submission schedule, retaining its source/destination owners and one
+final checked drain before publication. The optional
+`STRATA_SYCL_PREFILL_CANONICAL_RESTORE_AUDIT=1` line records actual copied bytes,
+chunk and successful submission count after canonical bank retirement.
+The native build and device/model/handoff/decode gates remain pending.
+
 
 The current B570 speed reference uses fresh inputs of117489 tokens and separates
 the first long request from later requests in each independent process.

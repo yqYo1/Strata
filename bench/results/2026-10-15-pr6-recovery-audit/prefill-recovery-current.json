@@ -2912,5 +2912,24 @@
       "total_bytes": 16777216
     },
     "acceptance": "Eight groups: zero rejection,one byte,exact chunk,tail,multiple chunks,real1538035200B extent23 spans,SIZE_MAX and refusal stops after exact successful prefix. Preserve no publication/drain/release in helper. All pass and owned processes close; no retry."
+  },
+  "canonical_restore_chunk_host_result": {
+    "source_commit": "e207ff4e7b7216099fd4ea33d8183914ac37f32d",
+    "passed": true,
+    "cases": 8,
+    "GPU_executed": false,
+    "ownership_closed": true,
+    "binary_sha256": "7947992dcd1796515d24b9e275cb8ebaa6012eb242e412e4e72b98744b29807c"
+  },
+  "canonical_restore_chunk_integration": {
+    "default_enabled": false,
+    "source": "Main original repository-MIT implementation,based only on this fork current canonical bank and the committed copy screen. No external source copied.",
+    "callsite": "CanonicalDenseBank::restore_full,called only from NativeDensePhase::restore around long prefill. src/program/generate.cpp and all decode math/scheduling unchanged.",
+    "candidate_flag": "STRATA_SYCL_PREFILL_CANONICAL_CHUNK64=0|1,immutable native process setting",
+    "route_evidence": "STRATA_SYCL_PREFILL_CANONICAL_RESTORE_AUDIT=1 prints actual successful copy count/bytes/chunk after bank publication and pool retirement,without adding a GPU operation. Graph/verifier resume stays in its existing caller.",
+    "invariants": "Same source and destination owners,in-order queue,allocation,bounds,one final checked drain before publication,PLE rebind and graph/verifier resume; no new retained source or cache placement.",
+    "next_build": "python3 -B tools/sycl/build_engine.py rebuild-canonical-restore",
+    "next_gates": "Eight same-build host groups,existing15 census+24 phase+11 observer host cases and18 engine safety groups; traced2MiB and validated64MiB+17 device payload/guard cases; real full1.538GB canonical ownership fixture off/on; then prospectively frozen checked117K/clean repeated prefill+sustained decode comparison.",
+    "limits": "Implementation not built or device/model qualified. Do not adopt from standalone copy screen or host contract. Current decode configuration1256 fixed; decode impact is a separation defect. Physical262144/session/RESTORE remains pending."
   }
 }

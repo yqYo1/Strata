@@ -3,6 +3,7 @@
 #include "strata/core/native_dense.hpp"
 #include "strata/core/native_dense_bank_policy.hpp"
 #include "strata/core/canonical_bank_policy.hpp"
+#include "strata/core/canonical_restore_copy.hpp"
 #include "strata/kernels/ple.hpp"
 #include <cuda_runtime.h>
 #include <array>
@@ -132,10 +133,21 @@ public:
     } catch(const std::exception& e) {err=e.what();return false;}
     bool restore_full(void* stream,std::string& err) {
         if(state_!=State::Bank || !stream || !validate(true)) stop("restore canonical identity/state");
+        // These immutable process options affect this long-prefill handoff
+        // only. Decode's weights, cache, graph and kernels are unchanged.
+        static const bool chunked=option("STRATA_SYCL_PREFILL_CANONICAL_CHUNK64");
+        static const bool audit=option("STRATA_SYCL_PREFILL_CANONICAL_RESTORE_AUDIT");
         auto queue=static_cast<cudaStream_t>(stream);checked(cudaStreamSynchronize(queue),"restore canonical readers");
         void* next=nullptr;if(!allocate(next,snapshot_.bytes.size(),err)) return false;
-        checked(cudaMemcpyAsync(next,snapshot_.bytes.data(),snapshot_.bytes.size(),cudaMemcpyHostToDevice,queue),"restore original engine bytes submit");
+        size_t copies=0;
+        if(!detail::submit_canonical_restore(snapshot_.bytes.size(),chunked,
+            [&](size_t at,size_t n) {
+                checked(cudaMemcpyAsync(static_cast<uint8_t*>(next)+at,
+                    snapshot_.bytes.data()+at,n,cudaMemcpyHostToDevice,queue),"restore original engine bytes submit");
+                return true;
+            },copies)) stop("restore canonical copy schedule");
         checked(cudaStreamSynchronize(queue),"restore original engine bytes completion");
+        restore_copies_=copies;restore_chunk_=chunked?detail::canonical_restore_chunk_bytes:0;audit_restore_=audit;
         if(!validate(true)) stop("restore canonical prepublication identity");
         for(auto& [name,row]:snapshot_.rows) {
             auto ref=row.original;ref.data=static_cast<uint8_t*>(next)+row.offset;table_->table_.at(name)=ref;row.original=ref;
@@ -148,6 +160,8 @@ public:
         if(state_!=State::RestoredPending || !validate(false)) stop("finish canonical restore identity");
         checked(cudaFree(bank_),"retire restored canonical bank");checked(cudaFree(persistent_),"retire restored canonical pool");
         bank_=persistent_=nullptr;persistent_view_.clear();state_=State::Full;
+        if(audit_restore_) std::fprintf(stderr,"strata canonical restore: phase=bank_full bytes=%llu copies=%zu chunk=%zu\n",
+            (unsigned long long)snapshot_.bytes.size(),restore_copies_,restore_chunk_);
     }
     bool bind_ple(strata::kernels::PleWeights& w,std::string& err) const {
         if(!table_ || (state_!=State::Bank && state_!=State::RestoredPending && state_!=State::Full)) {err="canonical PLE bind state";return false;}
@@ -176,7 +190,14 @@ private:
     std::array<std::map<std::string,uint64_t>,48> offsets_;
     std::map<std::string,uint64_t> persistent_offsets_;
     Overlay persistent_view_,view_;
+    size_t restore_copies_=0,restore_chunk_=0;bool audit_restore_=false;
     [[noreturn]] static void stop(const char* op) {std::fprintf(stderr,"canonical dense bank: %s; owners retained\n",op);std::fflush(stderr);std::abort();}
+    static bool option(const char* name) {
+        const char* value=std::getenv(name);
+        if(!value || !std::strcmp(value,"0")) return false;
+        if(!std::strcmp(value,"1")) return true;
+        stop("invalid canonical prefill option; expected0 or1");
+    }
     static void checked(cudaError_t status,const char* op) {if(status!=cudaSuccess) stop(op);}
     static bool allocate(void*& out,uint64_t bytes,std::string& err) {
         out=nullptr;const auto status=cudaMalloc(&out,size_t(bytes));
