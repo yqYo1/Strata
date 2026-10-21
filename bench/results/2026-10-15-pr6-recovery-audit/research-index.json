@@ -6230,7 +6230,7 @@
     },
     "current_1256_route_workmix_contract": {
       "classification": "decision_support",
-      "stage": "report_returned_review_running",
+      "stage": "curated",
       "schedulable_now": false,
       "question": "Source-pinned reconstruction contract for existing dump-routing under the current1256-slot static per-layer cache: callback/row/window/request boundaries, CPU unique expert jobs by layer/format/NT, GPU hits/misses and reconciliation with native counters. Identify missing fields before any bounded trace; no performance or physical-traffic claim.",
       "prerequisites_met": [
@@ -6250,7 +6250,42 @@
       "report_sha256": "a107c93f73aed0b094658f99b55a047ffcbe65914ff2bf14ce996a383c316c6c",
       "report_bytes": 13965,
       "ownership_closed": true,
-      "completion_note": "Final assistant turn observed; no accepted worker settlement because runtime RPC was unavailable. Orchestration fenced, exact Main-created terminal incarnation closed; no active worker remains. Native Luna-max review pending."
+      "review": {
+        "path": ".cache/strata-research/20261020/current-route-contract-native-review.json",
+        "sha256": "8f7e0847367c1d6beb5685d4da28458e26f5c6efc6a165af27c568a3e056cc4d",
+        "verdict": "ACCEPT_WITH_CORRECTIONS"
+      },
+      "source_corrections": [
+        "The supplied working revision8ed1b89fb preceded metadata-only c92533aaa; checked native source hashes match.",
+        "T<=4 is specific to suffix-draft0; full acceptance includes the target bonus within the T target rows. MTP work remains separate.",
+        "Multi-row placeholder zero weights are not router weights; preserve record-kind distinctions.",
+        "Profile-unavailable premise came from a retired pilot path. Main verified current data/profile copy and reconstructed expected1256-slot membership; preserve original report and this correction."
+      ],
+      "profile_binding": {
+        "profile_path": "data/expert-profile.bin",
+        "profile_bytes": 196632,
+        "profile_sha256": "8f59b4aa8873209dff11c11e37bcda9529a1335b724a1afeea37bf6388975baf",
+        "ranking_pairs": 24576,
+        "unique_pairs": 24576,
+        "version": 1,
+        "geometry": [
+          48,
+          512
+        ],
+        "requested_slots": 1256,
+        "quota": "26 for layers0..46,34 for layer47",
+        "expected_membership_sha256": "26c8987edae3ea565a031ac2688e47dd97640980038658efe7e1d3527df43b23",
+        "membership_encoding": "int32 little-endian layer,expert pairs in physical-slot order,1256pairs/10048bytes",
+        "startup_prefilled": 1256,
+        "startup_slot0_verified": true,
+        "source_sha256": {
+          "src/core/expert_cache.cpp": "fb7418457aeb1ea6416918a14fa734a301e1fe0d39d8fe7cbcb5633040434a46",
+          "src/program/generate.cpp": "95637fc1d6f4e8546345ab0f369dbd381ef7e72a2bf926a5c74b57f87b990b1b"
+        },
+        "limits": "Expected static membership from the actual pinned profile plus source and successful fill, not GPU readback of every slot or measured physical traffic. Old report inspected the retired pilot profile path; current v2 copy is present with the same pinned hash."
+      },
+      "consolidate_after_consumption": "existing_route_dump_CPU_mix_protocol_scope",
+      "limits": "No physical RAM/PCIe bytes or hardware saturation claim. Bind actual request/window/callback and counter scopes before collection. No new follow-on scope eligible during the frozen comparison."
     }
   }
 }

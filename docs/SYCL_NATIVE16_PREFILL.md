@@ -3041,6 +3041,17 @@ rather than add a native build. Multirow records contain layer, IDs and
 placeholder weights; the footer counts callbacks, not row records. Bind request
 boundaries/cache membership and reconcile reconstructed layer/group, lookup and
 unique-CPU-job totals before using them. No such routing collection has run.
+The current196632B profile is present and pinned (SHA`8f59b4aa...8975baf`);
+source admission reproduces1256 expected resident pairs,26 per layer0..46 and34
+in layer47. The first admitted model process fills1256/1256 and verifies slot0.
+The canonical slot-order membership hash and source pins are in the research
+index's`current_1256_route_workmix_contract`. This is expected static membership,
+not full GPU readback or measured physical traffic. The report's missing-profile
+premise used the retired pilot path; use`comparison.plans[0]` for the current
+configuration, rather than the result's historical top-level pilot config.
+The source contract adds current-route detail but overlaps the existing CPU-mix
+protocol; consolidate those entries after consumption instead of retaining two
+parallel general audits.
 
 The closed capability output and consumed decision-support report/transaction
 bodies are retired:43 external files/112835B, with a path/hash/reason manifest
