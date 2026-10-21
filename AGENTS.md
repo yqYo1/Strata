@@ -231,10 +231,18 @@ integration and testing.
   existing fork implementation. Measure unmodified upstream without local
   patches, including a configuration tuned for this hardware; default settings
   alone are insufficient. A prefill gain does not justify a decode regression.
-  Conversely, assess a decode improvement independently of prefill. When a
-  shared dispatcher can affect both, keep the existing prefill implementation
-  and select the candidate only for decode through an explicit phase/job policy;
-  do not mutate process environment variables between phases. Verify the actual
+  Conversely, assess a decode improvement independently of prefill. Design,
+  tune and select independent prefill and decode execution paths by default,
+  including kernels, scheduling and placement. Identical current implementations
+  are coincidental selections, not a reason to couple the paths. Share inference
+  processing only when a matched measurement demonstrates that sharing is faster
+  than independent paths; record the benefiting shapes/phases and retain separate
+  selection outside that scope. Existing shared processing without this evidence
+  is a legacy arrangement to audit, not a qualified design decision.
+  When isolating a candidate in a legacy shared dispatcher, keep the existing
+  prefill implementation and use an explicit phase/job policy for decode. This
+  containment does not establish that sharing is faster. Do not mutate process
+  environment variables between phases. Verify the actual
   call paths before attributing a regression. A failed whole-process comparison
   remains failed, but does not permanently reject a separately scoped component;
   commit a new phase-specific plan and criteria before gathering new evidence.

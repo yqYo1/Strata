@@ -2,6 +2,14 @@
 
 ## Current measured state
 
+Design, tune and select independent prefill and decode execution paths by
+default. This includes kernels, scheduling and placement. If both
+select the same implementation, that is an incidental result of their separate
+decisions. Shared inference processing requires a matched measurement showing
+that it is faster than independent paths for the recorded shapes/phases.
+Existing sharing without that evidence remains a legacy arrangement to audit;
+phase containment alone does not establish a sharing benefit.
+
 The current B570 speed reference uses fresh inputs of117489 tokens and separates
 the first long request from later requests in each independent process.
 Three packed-bank process medians for the later requests are
@@ -47,9 +55,16 @@ The long layer-major GPU prefill does not call the CPU IQ2 producer. Its server
 prompt clock ends after cache refill, before the last-token verification and
 decode window loop. The source therefore does not establish that IQ2 pairing
 caused the first prefill slowdown. The shared CPU verifier path can also read
-short/window prompts; it needs an explicit per-batch decode policy so those
-prefill calls keep the reference even when decode selects the candidate.
-Do not switch process environment variables at the phase boundary.
+short/window prompts. Source `6e40afc1b` now copies an explicit phase into each
+synchronous CPU batch: prefill keeps the reference and only decode can select
+the default-off IQ2 candidate. Request/token scopes restore the prior phase on
+exit, including errors, without changing process environment variables.
+The new engine and twelve fixtures compiled. Separate pair-off/on CPU children
+passed twelve cases each: two formats, NT1/NT2, prefill/decode/prefill sequencing,
+actual pair-row dispatch, identical output bits, guards and scope restoration.
+The fifteen-case CPU census host contract also passed. These are build/CPU
+component checks, not new model speed, GPU-route or adoption evidence. The
+legacy shared CPU dispatcher is contained, not justified as the final architecture.
 
 The final baseline/candidate pair measured code PP 636.6/636.3 and TG
 14.5/14.8, and prose PP 761.0/745.1 and TG 9.3/9.5 tok/s. Each code request
@@ -69,8 +84,9 @@ The validated6c engine and ten fixtures are preserved and hash-checked after
 recovering 9845 original inputs from Git. The unmeasured child branch/worktree
 is retired. The prepared three-process weak-prose plan was closed before
 any model launch after the phase-specific adoption clarification. Its packed
-smoke/validate gates passed; they remain component evidence. Next, isolate IQ2
-dispatch to decode, then resume MTP attribution with a newly qualified plan.
+smoke/validate gates passed; they remain component evidence. Next, qualify the
+new decode selection and compare it under a prospective decode-specific plan,
+then resume MTP attribution with a newly qualified plan.
 Graph clocks are nonadditive first-to-last-node
 envelopes; hardware service and saturation remain unknown.
 
