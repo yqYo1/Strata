@@ -6296,8 +6296,8 @@
     },
     "layer_local_compact_expert_bank_copy_contract": {
       "classification": "decision_support",
-      "stage": "eligible",
-      "schedulable_now": true,
+      "stage": "dispatched",
+      "schedulable_now": false,
       "question": "Can a private layer-local packed stride within the existing1022361600B expert bank, together with demand-preserving bulk/coalesced uploads, reduce transfer/submission work without extra VRAM, queue changes, loss of checked owner lifetime or numerical-route changes? Compare alternatives and identify necessary source/measurement gates, not implementation.",
       "prerequisites_met": [
         "Current native3b uses fixed maximum stride2662400B and384 slots; source confirms demand-ordered stage_expert_bank plus individual fill_slot copies on the same in-order queue.",
@@ -6327,7 +6327,16 @@
       "report_budget_bytes": 18432,
       "consumer": "Main next prefill candidate selection after the frozen MTP cohort closes.",
       "review_point": "At source-contract review before committing any candidate; retire full report after necessary decisions/corrections are recorded.",
-      "limits": "No changed source, allocation, benchmark plan or running process. Capacity arithmetic does not prove DMA reduction; avoid unconditional eager uploads of unused experts."
+      "limits": "No changed source, allocation, benchmark plan or running process. Capacity arithmetic does not prove DMA reduction; avoid unconditional eager uploads of unused experts.",
+      "eligible_at_dispatch": true,
+      "task": "task_a24b5dd75967",
+      "dispatch": "ctx_cfb00e1af17a",
+      "terminal": "term_ec830115-69a8-43c5-8c75-6214fcc9bab9",
+      "terminal_incarnation": "3079a2b6-05e1-4881-a283-c4182bb32f93",
+      "ownership_closed": false,
+      "model": "gpt-6-luna",
+      "effort": "high",
+      "model_evidence": "Main-created workspace-write custom argv; actual GPT-6-Luna high TUI observed before task injection. Worker-start input accepted and turn observed. No active steering."
     }
   }
 }
