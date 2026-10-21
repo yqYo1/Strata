@@ -134,9 +134,12 @@ The bounded profile-off/on graph fixture passed numerical/guard, event-provenanc
 two-replay clock and checked teardown gates with no fresh faults. Same-build
 eighteen-group engine checks also passed. Model execution and timing remain
 unqualified.
-The validated6c engine and ten fixtures are preserved and hash-checked after
-recovering 9845 original inputs from Git. The unmeasured child branch/worktree
-is retired. The prepared three-process weak-prose plan was closed before
+The superseded6c fallback was retired after its9845 original inputs and recipe
+were recovered and its MTP replacement consumer closed. The current6e40 engine
+and twelve fixtures are now preserved and hash-checked, with9853 original
+inputs recovered, for the prefill-transition observer build. Its retained
+qualification is checked and three clean117K processes with24 output tokens,
+not sustained decode. The unmeasured child branch/worktree is retired. The prepared three-process weak-prose plan was closed before
 any model launch after the phase-specific adoption clarification. Its packed
 smoke/validate gates passed; they remain component evidence. Next, qualify the
 new decode selection and compare it under a prospective decode-specific plan,
