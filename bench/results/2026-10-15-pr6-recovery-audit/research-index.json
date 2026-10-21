@@ -6689,11 +6689,15 @@
       "model": "gpt-6-luna",
       "reasoning": "max",
       "worker_closed": true,
-      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/mtp-research-review-20261021.json",
       "sha256": "5b1cd3709b2afe25fbc950361c030879a2d0775775d50f1d954b346a41980526",
       "bytes": 8315,
       "main_read_scope": "Short operational digest, correction/eligibility/retention metadata only; no collection-report body",
-      "source_pin_correction": "Review header typo corrected; Main verifies actual source against the original scope map. No timing or adoption claim."
+      "source_pin_correction": "Review header typo corrected; Main verifies actual source against the original scope map. No timing or adoption claim.",
+      "raw_retirement_manifest": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/closed-iq2-comparison-0-20261021.jsonl",
+        "sha256": "1b1f97d9f2b28bf47839545762e9fbf98bda7b13e4b8ffce725465acaa8c9250"
+      },
+      "full_review_retired": true
     },
     "followup": {
       "scope": "mtp_zero_floor_chain_scheduling_followup",
@@ -6710,7 +6714,11 @@
       "met": true,
       "result": "bench/results/2026-10-15-pr6-recovery-audit/prefill-packed-bank-speed-current.json",
       "limit": "Repeated >600 long-prefill milestone only; broader model gates stay open."
-    }
+    },
+    "source_license_corrections": [
+      "The reviewed SGLang GitHub guide link returned404. Use https://docs.sglang.ai/advanced_features/speculative_decoding.html for configured steps/tree verification; it does not establish reranking.",
+      "CUDA Graph documentation establishes CUDA behavior only,not the SYCL capture/drain contract. No XeStrata derivation was found by this review; no external implementation was adopted."
+    ]
   },
   "mtp_attention_window_catchup_methods_scope": {
     "policy_revision": "f7a42ebb947598f4127e3bb4e3bb01bccf042a85",
@@ -6769,11 +6777,15 @@
       "model": "gpt-6-luna",
       "reasoning": "max",
       "worker_closed": true,
-      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/mtp-research-review-20261021.json",
       "sha256": "5b1cd3709b2afe25fbc950361c030879a2d0775775d50f1d954b346a41980526",
       "bytes": 8315,
       "main_read_scope": "Short operational digest, correction/eligibility/retention metadata only; no collection-report body",
-      "source_pin_correction": "Review header typo corrected; Main verifies actual source against the original scope map. No timing or adoption claim."
+      "source_pin_correction": "Review header typo corrected; Main verifies actual source against the original scope map. No timing or adoption claim.",
+      "raw_retirement_manifest": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/closed-iq2-comparison-0-20261021.jsonl",
+        "sha256": "1b1f97d9f2b28bf47839545762e9fbf98bda7b13e4b8ffce725465acaa8c9250"
+      },
+      "full_review_retired": true
     },
     "followup": {
       "scope": "mtp_attention_window_or_catchup_followup",
@@ -6789,7 +6801,11 @@
       "met": true,
       "result": "bench/results/2026-10-15-pr6-recovery-audit/prefill-packed-bank-speed-current.json",
       "limit": "Repeated >600 long-prefill milestone only; broader model gates stay open."
-    }
+    },
+    "source_license_corrections": [
+      "Windowed-MTP is one preprint rather than independent replication. Its patch provenance/license remains unreviewed; do not reuse implementation without separate immutable-source/license review.",
+      "Official SGLang Ascend settings are platform-specific. The cited issue47602 is a user report,not a causal local performance result. Official vLLM metrics distinguish draft acceptance from bonus-inclusive mean acceptance."
+    ]
   },
   "iq2_pair_comparison_review": {
     "classification": "decision support",
