@@ -6944,5 +6944,73 @@
       "manifest_sha256": "10958f4228ec886de49ca118bde9d70a29428929d56bde81c14f79773a98ae3e",
       "decision": "Useful correction, citation/license limits and retrieval conditions preserved; full scope-calibration and review bodies have no remaining consumer."
     }
+  },
+  "mtp_single_row_dense_qsa_decode_methods_scope": {
+    "id": "mtp_single_row_dense_qsa_decode_methods-20261021",
+    "classification": "knowledge collection",
+    "status": "eligible_not_dispatched",
+    "schedulable_now": true,
+    "main_reads_body_on_arrival": false,
+    "question": "At source-confirmed SYCL MTP shape NH=24/NKV=2/HD=256, G=12 and cap up to 32768, compare current paged-KV dense scan (64-cell split plus second merge) with production K8V8 decode, GQA KV reuse, split-KV/FlashDecode reduction and launch-shape methods in immutable vLLM-XPU, SGLang or other primary sources. Assess quantization/cache/reduction/launch fit for one query row and long history, including counterevidence.",
+    "exclusions": [
+      "MTP window/catch-up/state validity or broad speculative-depth surveys.",
+      "Generic SYCL graph/event timing and long-prefill QSA/softmax.",
+      "Assumed bottleneck, speed prediction, adoption recommendation or required physical counters.",
+      "No code copying; pin provenance/licenses. XeStrata excluded as implementation source."
+    ],
+    "report_path": ".cache/strata-research/20261021/mtp-dense-qsa-decode-methods.md",
+    "report_budget": {
+      "target_words": [
+        1400,
+        2200
+      ],
+      "maximum_bytes": 22528
+    },
+    "model": "gpt-6-luna",
+    "reasoning": "high",
+    "scope_review": {
+      "model": "gpt-6-luna",
+      "reasoning": "max",
+      "worker_closed": true,
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/mtp-dense-attention-scope-review-20261021.json",
+      "bytes": 5940,
+      "sha256": "4b58a061e8b54db1a9177724b106476f76e0ef6d329c8efeb9f6ad31dfc9aca4",
+      "digest": "The five requested index rows and two directly linked MTP references do not compare single-row MTP qsa_decode_attn_batch with production vLLM-XPU/SGLang decode methods. MTP coverage is window/catch-up; QSA reports are long-prefill schedules; graph coverage is timing; adjacent MTP reports cover expert reuse or CPU kernels. Local decode already groups 12 Q heads per KV head and splits 64-cell chunks before a second merge. Actual source geometry is N=2560, NH=24, NKV=2, HD=256; q_proj=12288 includes Q and gate. No bottleneck, speed or adoption gate is cleared; MTP safety/provenance holds remain open."
+    },
+    "shape_correction": "Do not infer 96Q/8KV/64 from projection widths: q_proj is NH*2*HD (query plus gate); source uses NH=24, NKV=2, HD=256.",
+    "source_kernel": "MTP full forward requires T=1 and calls qsa_decode_attn_batch(nq=T). SYCL decode_attention.cpp fixes HD=256, G=12, CHUNK=64, WG=256; each group handles one KV head, its 12 Q heads and 64 cells. A second kernel merges per-chunk max/sum/weighted-V. cap=32768 gives 512 chunks and 1024 partial groups for one row.",
+    "source_sha256": {
+      "src/core/mtp.cpp": "04cb9d86e2861877263dd2177fce893bd0dd7b17c045594292ee6d6625d09c1f",
+      "include/strata/core/mtp.hpp": "397d8951d0e366efc003d6b080b641e2af0565d252227d48d239706700c310b2",
+      "src/core/verify.cpp": "bcaa44dea05e089bbccea8465ab9e8fb908d79a604f2c53ed5869591486fafbd",
+      "src/sycl/compat.cpp": "06f254e5c8636f73bee4ff810ce1e551186fe72498f6bb98fc4e95eb6cddec8f",
+      "src/kernels/sycl/decode_attention.cpp": "ecbe949d2b93386ad47580d7211fae73b12539d35f6b5e6c4b39fa829201c59e",
+      "src/program/generate.cpp": "74ad4e820f5b5674b1cc59d034b402eeb1dbea98bf323cc1320b91f9b1cd5fee"
+    },
+    "route_context": {
+      "source_commit": "f393d13798bedef66eefef15aa5008446208a330",
+      "native_admission": "6c7f7f36d4dfa7d773af1d4da7a4d92676270632",
+      "receipt_sha256": "bd53ccfcbbd94418dcc36deb964bd726118e36da51c9edfb7dd5bbe38c48416f",
+      "configuration": "Frozen config uses --kv int8, --max-context/--kv-resident131072 and no --mtp-window override; source default is32768. These are configuration/source facts, not per-kernel profiling or physical traffic."
+    },
+    "prerequisites": [
+      {
+        "met": true,
+        "evidence": "Current MTP/verify/SYCL sources match immutable indexed pins and the closed same-native receipt is committed."
+      },
+      {
+        "met": true,
+        "evidence": "Native report review finds a distinct decode-kernel methods gap; existing coverage is window/catch-up, timing, long-prefill QSA or CPU experts."
+      },
+      {
+        "met": true,
+        "evidence": "Knowledge collection needs no new local experiment or physical counter and does not select an optimization."
+      }
+    ],
+    "consumer": "Retrieve relevant sections only after MTP phase attribution selects a concrete decode attention or merge question; review after that source/experiment decision and retire unused body.",
+    "review_point": "Before any component choice or implementation proposal.",
+    "historical_pin_limit": "Current qsa_bf16_prefix.cpp SHA differs from historical QSA report pins; treat those reports as prefill design context.",
+    "holds_unchanged": "No optimization selected; preserve MTP chain/window, state/RESTORE, physical-context and provenance holds.",
+    "policy_revision": "6c157826b"
   }
 }
