@@ -6830,32 +6830,84 @@
   "host_dma_cpu_expert_contention_methods_scope": {
     "id": "host-dma-cpu-expert-contention-methods-20261021",
     "classification": "knowledge collection",
-    "model": "gpt-6-luna",
-    "schedulable_now": true,
-    "main_reads_body_on_arrival": false,
-    "question": "Compare primary-source methods from non-LLM GPU/ASIC/HPC workloads for managing host-memory interference when irregular CPU quantized-expert kernels read weights while discrete-GPU DMA reads host buffers. Assess arbitration/overlap mechanisms such as transfer burst/chunk pacing, CPU worker/affinity control, memory-bandwidth QoS/fairness and locality-aware scheduling. Distinguish physical host-DRAM traffic, CPU-cache traffic, requested payload and critical-path time; assess transferability to one NUMA Linux host with Ryzen 5600X and Arc B570, including counterevidence. Do not repeat pinning/page-layout, direct-versus-packed preparation or generic double-buffer/queue-graph surveys; do not assume the active cohort uses DMA or claim local speed/saturation.",
+    "status": "native_review_completed_with_required_index_correction",
+    "question": "Host-memory interference control for concurrent irregular CPU expert reads and discrete-GPU H2D: burst pacing, worker concurrency, bandwidth QoS and fair progress; not source packing or generic copy pipelines.",
     "report_path": ".cache/strata-research/20261021/host-dma-cpu-expert-contention-methods.md",
-    "report_budget": {
-      "target_words": [
-        1400,
-        2200
-      ],
-      "maximum_bytes": 22528
+    "report_sha256": "9db9e21dcda001e2d02ea33da77f36b1ce95ca3bb39da5f7c9ec7a673c3b5540",
+    "report_bytes": 14335,
+    "main_reads_body_on_arrival": false,
+    "model": "gpt-6-luna",
+    "worker_closed": true,
+    "terminal_closed": true,
+    "review": {
+      "model": "gpt-6-luna",
+      "reasoning": "max",
+      "worker_closed": true,
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/host-dma-contention-review-20261021.json",
+      "sha256": "4921a89a7e004371b2e9c03c2b99f6ee12bbdb697511b43859e4e1cfa75da7f3",
+      "bytes": 6181,
+      "verdict": "accept_with_one_required_wording_correction",
+      "policy_revision": "d5d9c90374daf195ab0e375c40f318f654cacb4f",
+      "scope_admission_revision": "76bcc36ce",
+      "digest": "Useful conditional reference on burst pacing, worker concurrency and platform QoS. Keep requested/cache/physical traffic and critical-path time separate. No active-cohort DMA, contention, speed, saturation or adoption is proven. Required correction: do not make physical-counter evidence a gate; require actual route, CPU-read/H2D overlap and critical-path relevance, while allowing counters to remain unknown. Citations and provenance checked; FairDRAM is a CC BY 4.0 preprint, not a code license; no code or XeStrata used. Retain only for a post-cohort concrete decision; no follow-up scope now. Review clears no MTP chain/window holds."
     },
-    "prerequisites": [
+    "correction_for_retrieval": [
+      "Reconcile the conclusion's requirement for 'physical-traffic evidence' with the later test plan, which correctly allows physical counters to be unknown. A later test should require a verified route, observed independent CPU expert reads and H2D overlap, and evidence that they affect token critical-path latency; physical DRAM/PCIe counters are useful when available but must not be an eligibility gate or inferred from requested bytes."
+    ],
+    "citation_license_limits": [
       {
-        "evidence": "Source audits show multirow CPU work and a possible ordinary-Arena mode-0 path enqueuing DMA during the CPU callback; this does not prove the active cohort route.",
-        "met": true
+        "source": "https://doi.org/10.1145/3712031.3712324",
+        "claim_checked": "HPCAsia 2025: PCIe contention across A100 MIG; report limits transferability."
       },
       {
-        "evidence": "Logical expert footprint is 0.774322/1.086338 GB per emitted token; physical traffic is unknown.",
-        "met": true
+        "source": "https://docs.kernel.org/arch/x86/resctrl.html",
+        "claim_checked": "resctrl feature exposure is model/platform dependent."
       },
       {
-        "evidence": "Indexed host-DMA, SYCL-transfer, PCIe-counter and out-of-core scopes define exclusions; this literature collection needs no new counter.",
-        "met": true
+        "source": "https://docs.amd.com/api/khub/documents/VuNrmUG_yfhPVgGYcFlkZg/content",
+        "claim_checked": "AMD PQoS document covers EPYC 9004/9005 only."
+      },
+      {
+        "source": "https://www.amd.com/en/products/processors/desktops/ryzen/5000-series/amd-ryzen-5-5600x.html",
+        "claim_checked": "Official 5600X page: 6 cores/12 threads, Zen 3."
+      },
+      {
+        "source": "https://arxiv.org/abs/1712.08738",
+        "claim_checked": "BWLOCK++ uses CPU throttling on integrated Tegra."
+      },
+      {
+        "source": "https://doi.org/10.21203/rs.3.rs-10072493/v1",
+        "claim_checked": "June 2026 preprint: FairDRAM/Ramulator synthetic traces; paper marked CC BY 4.0."
+      },
+      {
+        "source": "https://man7.org/linux/man-pages/man1/perf-c2c.1.html",
+        "claim_checked": "Zen 3 unsupported; C2C/HITM tool, not DRAM-byte meter."
       }
     ],
+    "retention": {
+      "classification": "knowledge collection",
+      "tags": [
+        "host-memory",
+        "DMA",
+        "CPU-expert-reads",
+        "contention-control",
+        "burst-pacing",
+        "worker-concurrency",
+        "QoS"
+      ],
+      "consumer": "Retrieve only at the first post-cohort source or experiment decision if a qualifying decode receipt establishes CPU expert reads and independent H2D on the token critical path.",
+      "review_point": "After cohort closure and only if that concrete decision exists; otherwise retire the full report and keep only its compact correction/provenance metadata. Do not retain a duplicate review body.",
+      "scope_eligibility": {
+        "schedulable_now": false,
+        "reason": "No further research is justified while the route and contention are unverified; current report already provides candidate mechanisms and their limits.",
+        "prerequisites_to_reconsider": [
+          "Frozen cohort is closed and its receipts are committed.",
+          "A qualifying receipt identifies the actual dispatch/provider route and observed independent H2D/CPU expert-read overlap on the token critical path.",
+          "A concrete unresolved mechanism question remains after retrieving this report. Physical counters may remain unknown when unsupported; requested bytes alone do not satisfy the prerequisite."
+        ]
+      }
+    },
+    "schedulable_now": false,
     "prior_scope_ids": [
       "host_dma_source_preparation_collection_scope",
       "sycl_host_transfer_preparation_collection_scope",
@@ -6865,13 +6917,6 @@
       "forced_compute_copy_overlap_collection_scope",
       "b570_pcie_wire_byte_measurement_methods_scope"
     ],
-    "nonduplication": "Focus on active contention control/fair progress for CPU weight reads concurrent with DMA. Exclude source packing/pinning/page-size advice, wrapper tracing, dependency/event/lifetime audits, copy-engine selection and PCIe wire-byte metrology. Do not change qualified runtime safety settings.",
-    "consumer": "Retrieve only if a later qualifying decode receipt puts CPU expert work and DMA on the critical path; review at first concrete source/experiment decision after cohort closure and retire if unused.",
-    "report_requirements": "Use primary sources; compare mechanisms, assumptions, failure regimes and transferability; identify evidence needed for a bounded local test and state method limits. Write only the named report, no code or local measurements.",
-    "policy_revision": "d5d9c90374daf195ab0e375c40f318f654cacb4f",
-    "context_revision": "d5d9c90374daf195ab0e375c40f318f654cacb4f",
-    "status": "eligible_not_dispatched",
-    "worker_closed": false,
     "library_review": {
       "model": "gpt-6-luna",
       "reasoning": "max",
@@ -6893,6 +6938,7 @@
         "Receipts include accepted-prefix and emitted/accepted counts, per-group/window expert union, provider/cache hits/misses, CPU-pool work/waits, requested transfer/waits, draft/verify and rollback costs."
       ],
       "carry_forward": "Keep MTP chain/window implementation and provenance holds unchanged; this review clears none."
-    }
+    },
+    "holds_unchanged": "No local contention, speed, saturation or implementation adoption is established. All MTP chain/window provenance and safety holds remain open."
   }
 }
