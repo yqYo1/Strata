@@ -3394,7 +3394,7 @@ actual affinity evidence; its environment is fixed before exec. Thread-local
 registration identifies threads,never requests. No inference engine has been
 rebuilt or model route qualified by this source connection.
 The [current full-pool result](../bench/results/2026-10-15-pr6-recovery-audit/cpu-iq2-current.json)
-uses source`9e7708938` and committed plan`d460175d2`, with both22/20 and22/42,
+uses source`47de83c92` and committed plan`50a445328`, with both22/20 and22/42,
 five workers plus the host,
 28-job NT counts22/5/1/0 and24-job counts16/5/2/1. Repeat uses24/28 distinct
 blobs; stream uses168 without reuse per pass. Neither repeat set is claimed to
@@ -3403,16 +3403,18 @@ actual NT1 pair dispatch,six-core participation and minimum timing duration.
 Sixty producer-contract cases per check process and all full outputs pass;
 all eight9,461,760B captures have SHA256
 `6877ca0e7cac9f29cd8881a87d4f17836077e316b9fb763ba463d553b9ca2ad3`.
-Full-pool latency ratios are0.921348 for IQ2_S/IQ4_NL and0.910649 for
-IQ2_S/Q2_0:7.87% and8.94% less time. Both pass their separate prospective
+Full-pool latency ratios are0.911505 for IQ2_S/IQ4_NL and0.927087 for
+IQ2_S/Q2_0:8.85% and7.29% less time. Both pass their separate prospective
 3% gates,including all per-cell and independent-process nonregression checks.
 The failed first compile is preserved at`62d068c73`; the corrected source and
 fresh plan do not relabel or retry that attempt. This permits an inference
-rebuild,not model adoption. A subsequent configuration audit finds that this
-pool comparison uses`STRATA_IQ_SINGLE_EXACT=1` while the actual model census
-uses0. Preserve this valid result within its declared scope; require a fresh
-pool comparison with0 in both arms before a model trial. No model execution
-has used the new producer yet.
+rebuild,not model adoption. The previous comparison at`18836f101` used
+`STRATA_IQ_SINGLE_EXACT=1` while the actual model census uses0. Its result
+remains valid within that scope. This fresh comparison fixes0 in both arms and
+resolves that advancement hold without rewriting the old result.
+No model execution has used the new producer yet. Optional drained,request-bound
+IQ2 audit snapshots are committed for the observed two-workload model pilot;
+seven host reader tests reject framing,identity,dispatch and counter failures.
 Physical CPU/RAM saturation and whole-model speed gains remain unmeasured.
 Closed CPU component builds,tensor captures and consumed review reports are
 retired after original source/recipe recovery; individual samples and deletion
