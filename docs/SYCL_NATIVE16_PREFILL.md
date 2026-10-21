@@ -3002,19 +3002,20 @@ is not released; cohorts1..5 are not run. Owner cleanup terminates the attempt,
 with an anchored empty-session scan, direct-child reap and no original identities
 remaining. Its original observation/ownership failure fields remain unchanged;
 no natural native exit or speed sample is claimed. No fresh GPU fault is found.
-The original failed plan/result is recoverable at`b29ece914`. The prospective
-controller uses a fresh v2 root and requires the actual mode2 ring, rejecting a
-fully-resident fallback0 as a placement change. A regression fixture reproduces
-all four real warmup marker/footer pairs. Markers establish nominal callback
-coverage, not the internal needed-row range or kernel batch size. Commit and
-run host tests plus a replay against the closed actual stderr, then generate
-and commit the new plan before another GPU attempt. Controller`28bb3ea73` now
-passes10 host tests and replay against the actual closed stderr: all four ring
-markers conserve their request cells. The fresh v2 plan has been generated;
-its order, workload, observers and decision thresholds remain prospective. Decode still uses the
-prospective5% generation-length band; changed output remains an effect, never
-an excluded sample. Broader quality/weak-MTP/agent/full-context gates remain
-pending.
+The original failed plan/result is recoverable at`b29ece914`. Current controller
+`28bb3ea73` uses a fresh v2 root and requires mode2, rejecting a fully-resident
+fallback0 as a placement change. Ten host tests include all four real warmup
+marker/footer pairs; replay against the actual closed stderr also passes.
+Markers establish nominal callback coverage, not internal needed rows or kernel
+batch size. The fresh six-process plan is committed at`f038a0f34`; no old samples
+enter it and no new long speed sample has returned. Decode keeps its prospective
+5% generation-length band; changed output is an effect, never an excluded sample.
+Broader quality/weak-MTP/agent/full-context gates remain pending.
+After original147 controller inputs, generated plans, pushed ancestry and live
+dependencies were checked, the closed rejected root's74files/13318721B and13
+consumed research transactions/23444B were retired with a path/hash/reason
+manifest. Failed status, the real regression fixture/replay, reviewed method
+reports, required native fixtures and both consumed engines remain intact.
 
 A source follow-up rejects the suspected late prompt-bound optimization:
 `generate.cpp` already sets the current prompt length before reading. With the
