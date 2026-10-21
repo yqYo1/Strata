@@ -102,100 +102,7 @@
     "sycl_prefill_scratch_test",
     "sycl_expert_bank_test"
   ],
-  "retention_consumer": "Current comparison engine and requested fixtures: strata, sycl_verifier_retirement_test, sycl_submission_test, file_expert_source_test, sycl_mmvq_test, residency_publication_host_test, cache_tail_host_test, prefill_scratch_host_test, sycl_prefill_scratch_test, sycl_expert_bank_test; select the validated generation and retire the extra after qualification/comparison closure.",
-  "retained_validation_reference": {
-    "source_commit": "3b4998f326101fa913788fd368e1674b111dea03",
-    "binary_origin_source_commit": "3b4998f326101fa913788fd368e1674b111dea03",
-    "binary": {
-      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/known-good-3b4998f32610/strata",
-      "bytes": 22131792,
-      "sha256": "226b4556ab4d2ffd3850dcb8c7d905379bc353b72685b46e291cdda95dce78ac"
-    },
-    "fixtures": {
-      "sycl_verifier_retirement_test": {
-        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/known-good-3b4998f32610/sycl_verifier_retirement_test",
-        "bytes": 16535376,
-        "sha256": "930efea31426f158631f74b779bfcf5ed1f858e831b06b190c937f6e89bbcd85"
-      },
-      "sycl_submission_test": {
-        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/known-good-3b4998f32610/sycl_submission_test",
-        "bytes": 266816,
-        "sha256": "665e8f9497049c7201cca372282d8d72d5bf057b8ab0ffb876bbe851930855cd"
-      },
-      "file_expert_source_test": {
-        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/known-good-3b4998f32610/file_expert_source_test",
-        "bytes": 14552288,
-        "sha256": "13b97528fd3cfa6e59f7685f04873d097663df05733da8edfdfd6d979a5aa8c6"
-      },
-      "sycl_mmvq_test": {
-        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/known-good-3b4998f32610/sycl_mmvq_test",
-        "bytes": 11900928,
-        "sha256": "ed4737cef1cfa876ec20528f0fb1904c8b87f594b842308d1f789d4096ef2eea"
-      },
-      "residency_publication_host_test": {
-        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/known-good-3b4998f32610/residency_publication_host_test",
-        "bytes": 21136,
-        "sha256": "7583677b558b9263501a447c0bfbcdf587c5e5cdbfe5d624ef5560035761e0fb"
-      },
-      "cache_tail_host_test": {
-        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/known-good-3b4998f32610/cache_tail_host_test",
-        "bytes": 22808,
-        "sha256": "3e0e46a57a8a53dd4d163b7ae2b1faacdf2c0a680ad360f21cd0e1f55068a626"
-      },
-      "prefill_scratch_host_test": {
-        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/known-good-3b4998f32610/prefill_scratch_host_test",
-        "bytes": 76808,
-        "sha256": "bdc207e4e2d6c132cf9df1b7b925beb0778d231d1b070e526e713e8a0394ebca"
-      },
-      "sycl_prefill_scratch_test": {
-        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/known-good-3b4998f32610/sycl_prefill_scratch_test",
-        "bytes": 21175184,
-        "sha256": "6a9af317b8068984aa6d4c1470af39fcd68b9cfbd08b20721cc2be34a996b704"
-      }
-    },
-    "source_build_record": {
-      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/known-good-3b4998f32610/source-build.json",
-      "sha256": "76d9fa9e38c0c7e4ef2897f9ec731429db2a3d9d65c2412611c0c4ee1cf2a57f"
-    },
-    "recipe_reference": {
-      "path": "bench/results/2026-10-15-pr6-recovery-audit/qsa-score-gemm-entry-engine-build-v2.json",
-      "sha256": "9b7734387f0fc56f36afe9d7bca75e5f0bedcef479271e982025abe1d4334a1a"
-    },
-    "original_source_blobs_recovered_and_verified": 9836,
-    "model_evidence_commits": {
-      "prefill-status-current.json": "1aa88578889538c16bf46539e9770ed77d2616e6",
-      "prefill-mtp-current.json": "a196a02904c8924c3de43057bd880ad197c863b8"
-    },
-    "model_evidence_scope": {
-      "prefill_observations": 2,
-      "long_generation_processes": 6,
-      "prefill_kind": "instrumented117K execution, not clean speed",
-      "prefill_read_tokens": [
-        117489
-      ],
-      "generation_kind": "minimal-marker long generation",
-      "generation_read_tokens": [
-        33208
-      ],
-      "clean117K_speed_qualified": false,
-      "model_adoption_qualified": false
-    },
-    "qualification": "Same-build fixture/source checks, two instrumented117K executions and six minimal-marker33K long-generation processes closed without fresh faults. Clean117K speed,task quality,physical262144/RESTORE and70tok/s remain unqualified.",
-    "consumer": "Fallback for the next dedicated long-prefill candidate and its component/model qualification; select the validated generation and retire the extra at comparison closure.",
-    "retention_controller_commit": "77396f090",
-    "host_validation": {
-      "tests": 8,
-      "passed": true,
-      "GPU_executed": false,
-      "commands": [
-        "python3 -B tests/core/test_fresh_build_reference.py",
-        "python3 -B tests/core/test_resource_engine.py"
-      ],
-      "serialization": "owned-v0141-measurement.lock with empty same-UID model/fixture owner scan",
-      "actual_model_evidence_admitted": true,
-      "retained_engine_and_eight_fixtures_hashes_matched": true
-    }
-  },
+  "retention_consumer": "Only current e062 native/ac904 build engine and nine fixtures retained for the bounded current-engine decode resource diagnostic; review at closure. Broad model adoption remains pending.",
   "legacy_provenance_exception": {
     "state": "Six obsolete unqualified native-product roots retired; original source/recipe gaps remain failures, not comparison generations.",
     "observed_engine_and_fixture_paths": 41,
@@ -436,5 +343,16 @@
       "count": 5703,
       "aggregate_sha256": "5768eaea650c06eb022c9068784590a27400c2a577974c56750519edde859fe5"
     }
-  ]
+  ],
+  "retired_validation_reference": {
+    "source_commit": "3b4998f326101fa913788fd368e1674b111dea03",
+    "binary_sha256": "226b4556ab4d2ffd3850dcb8c7d905379bc353b72685b46e291cdda95dce78ac",
+    "archive_commit": "751c818021e29dc8e0685f64e54958fd5183f2f9",
+    "archive_path": "bench/results/2026-10-15-pr6-recovery-audit/native-gdn-engine-build.json",
+    "retirement": {
+      "complete": true,
+      "evidence": "generation-reference-current.json::raw_retirement",
+      "remaining_consumer": null
+    }
+  }
 }

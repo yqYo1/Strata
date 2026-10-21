@@ -3250,10 +3250,13 @@ or proof of CPU/RAM saturation. Zero requested target-expert copy bytes under
 pcie0 does not imply zero activation/routing or other PCIe transfers.
 
 Select the currente062 engine/nine fixtures for the next bounded resource
-attribution diagnostic. The retained3b comparison consumer has ended; retire
-its engine/eight fixtures and successful raw cohort output after committing
-this evidence and verifying original source/recipe recovery and live dependencies.
-Actual retirement remains pending until the recorded deletion check completes.
+attribution diagnostic. After committing the samples and recovering the exact
+9836 old native inputs and original recipe/compiler/environment from`751c81802`,
+Main retires the3b engine/eight fixtures, source receipt, successful cohort raw
+logs/JIT and completed scope-review transaction:152files/114331335B. The deletion
+manifest is pinned in the compact generation result; original outcomes remain
+unchanged. Only the selected engine/nine fixtures remain for this comparison.
+The14 legacy provenance holds remain separate, pending before any new build.
 The prepared source-only resource diagnostic adds existing decode stage timing
 and passive CPU/DRM counters to one current regular-code request; it has not yet
 run. Its41 host checks pass. The first real admission stopped before native
