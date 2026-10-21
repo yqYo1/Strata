@@ -3389,8 +3389,21 @@ uses part0 and repeated sign bytes; synthetic full rows and real experts cover
 broader layouts. Before running, commit the full-pool comparator, timing floor,
 repetitions and acceptance rule, then prove actual dispatch and five-worker plus
 computing-host participation. Keep mixed-NT strong/weak representatives distinct
-from measured model MTP acceptance. The new checked producer is an unqualified
-source proposal, with no engine dispatch/build connection yet.
+from measured model MTP acceptance. The checked producer is now connected to
+the CPU build and dispatcher under default-off`STRATA_IQ2_PAIR=1`, after the
+existing multi-row dispatch. It only replaces IQ2_S NT1 on the supported Zen3
+target; other types,NT2+ and Down keep their existing paths. Byte spans,
+alignment and nonoverlapping storage are checked before producer writes.
+`STRATA_IQ2_PAIR_AUDIT=1` adds optional per-thread dispatch/work counters and
+actual affinity evidence; its environment is fixed before exec. Thread-local
+registration identifies threads,never requests. No inference engine has been
+rebuilt or model route qualified by this source connection.
+The next full-pool plan uses both22/20 and22/42, five workers plus the host,
+28-job NT counts22/5/1/0 and24-job counts16/5/2/1. Repeat uses24/28 distinct
+blobs; stream uses168 without reuse per pass. Neither repeat set is claimed to
+fit L3. The committed plan must precede CPU-only build/check/measure; it decides
+Down formats separately and requires actual timed work on six pinned threads,
+unchanged full outputs,minimum timing duration and independent process pairs.
 After committing the winning component, Main recovers its32 project and1376
 ggml inputs/recipe and retires81 successful raw/build files (8457665B). Only
 the2044056B auxiliary executable remains for the imminent producer parity/code

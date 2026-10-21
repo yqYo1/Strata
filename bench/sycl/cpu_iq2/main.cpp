@@ -1,218 +1,168 @@
-// Main-authored component, repository MIT license. No engine dispatch changes.
-// Format/codebook and reference: pinned ggml 3cf03257f219afbe7334045ff7c6a06ac68c627d
-// (MIT, third_party/ggml/LICENSE). The existing direct-codebook helper is linked.
-// Fused direct gate/up comparison; no XeStrata implementation input.
+// Main-owned production-pool IQ2_S NT1 comparison, repository MIT license.
+// Math comes only from linked Strata/ggml producers. No copied XeStrata code.
+#include "strata/kernels/cpu/pool.hpp"
 #include "strata/kernels/cpu/iq_avx2.hpp"
+#include "strata/kernels/cpu/iq2_pair_avx2.hpp"
 #include "ggml.h"
 #include "ggml-cpu.h"
 #define GGML_COMMON_DECL_CPP
-#define GGML_COMMON_IMPL_CPP
 #include "ggml-common.h"
 #include <algorithm>
 #include <array>
 #include <chrono>
 #include <cmath>
 #include <cstring>
+#include <cstdlib>
 #include <fcntl.h>
+#include <fstream>
 #include <iomanip>
-#include <immintrin.h>
 #include <iostream>
+#include <limits>
+#include <memory>
 #include <numeric>
 #include <random>
-#include <sched.h>
+#include <set>
 #include <stdexcept>
-#include <string>
 #include <sys/resource.h>
 #include <sys/stat.h>
+#include <sys/syscall.h>
 #include <unistd.h>
-#include <vector>
 
-namespace {
-constexpr int H=2560, FF=640, count=96, guard=64;
+namespace cpu=strata::kernels::cpu;
 using Clock=std::chrono::steady_clock;
-void need(bool b,const char* s) { if(!b) throw std::runtime_error(s); }
-double elapsed(Clock::time_point t) { return std::chrono::duration<double>(Clock::now()-t).count(); }
-double cpu_time() { rusage r{};need(!getrusage(RUSAGE_SELF,&r),"rusage");return r.ru_utime.tv_sec+r.ru_utime.tv_usec*1e-6+r.ru_stime.tv_sec+r.ru_stime.tv_usec*1e-6; }
-struct Guarded {
+constexpr int H=2560, FF=640, count=168, guard=64;
+void need(bool b,const char* m){if(!b)throw std::runtime_error(m);}
+double seconds(Clock::time_point t){return std::chrono::duration<double>(Clock::now()-t).count();}
+double cpu_seconds(){rusage r{};need(!getrusage(RUSAGE_SELF,&r),"rusage");return r.ru_utime.tv_sec+r.ru_utime.tv_usec*1e-6+r.ru_stime.tv_sec+r.ru_stime.tv_usec*1e-6;}
+uint64_t hash(const uint8_t* p,size_t n){uint64_t h=14695981039346656037ull;for(size_t i=0;i<n;++i){h^=p[i];h*=1099511628211ull;}return h;}
+struct Buffer{
     std::vector<uint8_t> raw;size_t n;
-    explicit Guarded(size_t bytes):raw(bytes+2*guard,0xa7),n(bytes){}
+    explicit Buffer(size_t bytes):raw(bytes+2*guard,0xa7),n(bytes){}
     uint8_t* data(){return raw.data()+guard;}
-    void check()const {for(int i=0;i<guard;++i)need(raw[i]==0xa7&&raw[guard+n+i]==0xa7,"canary");}
+    void check()const{for(int i=0;i<guard;++i)need(raw[i]==0xa7&&raw[guard+n+i]==0xa7,"canary");}
+    void poison(){std::fill(raw.begin(),raw.end(),0xa7);}
 };
-// Direct decode adapted from existing iq_single_avx2.cpp.
-// Copyright (c) 2023-2026 The ggml authors; MIT, third_party/ggml/LICENSE.
-__m256i scales(const block_iq2_s& x) {
-    uint64_t a;std::memcpy(&a,x.scales,8);
-    const auto v=_mm_set_epi64x(a>>4,a);
-    return _mm256_cvtepi8_epi16(_mm_add_epi8(_mm_slli_epi16(_mm_and_si128(v,_mm_set1_epi8(15)),1),_mm_set1_epi8(1)));
+void read_exact(int fd,uint8_t* p,size_t n,uint64_t off){
+    struct stat s{};need(!fstat(fd,&s)&&off<=uint64_t(s.st_size)&&n<=uint64_t(s.st_size)-off,"model extent");
+    while(n){auto k=pread(fd,p,n,off);need(k>0,"model read");p+=k;n-=k;off+=k;}
 }
-__m256i half(const block_iq2_s& x,int p,__m256i q8,__m256i scale) {
-    const uint8_t* q=x.qs+p*4;const unsigned h=x.qh[p];
-    const auto grid=_mm256_set_epi64x(iq2s_grid[q[3]|((h<<2)&0x300)],iq2s_grid[q[2]|((h<<4)&0x300)],
-        iq2s_grid[q[1]|((h<<6)&0x300)],iq2s_grid[q[0]|((h<<8)&0x300)]);
-    alignas(32) static const uint8_t sm[32]={0,0,0,0,0,0,0,0,1,1,1,1,1,1,1,1,2,2,2,2,2,2,2,2,3,3,3,3,3,3,3,3};
-    alignas(32) static const uint8_t bm[32]={1,2,4,8,16,32,64,128,1,2,4,8,16,32,64,128,1,2,4,8,16,32,64,128,1,2,4,8,16,32,64,128};
-    uint32_t sign;std::memcpy(&sign,x.qs+32+p*4,4);
-    const auto bits=_mm256_load_si256(reinterpret_cast<const __m256i*>(bm));
-    const auto expanded=_mm256_and_si256(_mm256_shuffle_epi8(_mm256_set1_epi32(sign),_mm256_load_si256(reinterpret_cast<const __m256i*>(sm))),bits);
-    const auto neg=_mm256_cmpeq_epi8(expanded,bits);
-    const auto signed_q8=_mm256_sub_epi8(_mm256_xor_si256(neg,q8),neg);
-    const auto values=_mm256_maddubs_epi16(grid,signed_q8);
-    const auto sc=_mm256_shuffle_epi8(scale,_mm256_set1_epi16(0x0100+0x0202*p));
-    return _mm256_madd_epi16(values,sc);
-}
-float reduce(__m256 a) {
-    __m128 v=_mm_add_ps(_mm256_extractf128_ps(a,1),_mm256_castps256_ps128(a));
-    v=_mm_add_ps(v,_mm_movehl_ps(v,v));v=_mm_add_ss(v,_mm_movehdup_ps(v));return _mm_cvtss_f32(v);
-}
-template<bool Expanded> __attribute__((noinline)) void pair_dot(const block_iq2_s* g,const block_iq2_s* u,
-    const block_q8_K* y,int n,float& gout,float& uout) {
-    __m256 ga=_mm256_setzero_ps(),ua=_mm256_setzero_ps();
-    for(int b=0;b<n/256;++b) {
-        __m256i gi=_mm256_setzero_si256(),ui=_mm256_setzero_si256();
-        const auto gs=scales(g[b]),us=scales(u[b]);
-        const auto part=[&](int p){
-            const auto act=_mm256_loadu_si256(reinterpret_cast<const __m256i*>(y[b].qs+32*p));
-            gi=_mm256_add_epi32(gi,half(g[b],p,act,gs));ui=_mm256_add_epi32(ui,half(u[b],p,act,us));
-        };
-        if constexpr(Expanded) {
-            #pragma clang loop unroll(full)
-            for(int p=0;p<8;++p)part(p);
-        } else {
-            #pragma clang loop unroll(disable)
-            for(int p=0;p<8;++p)part(p);
+struct Inputs{
+    cpu::NativeFmt f;std::vector<Buffer> blobs,output;std::vector<uint64_t> hashes;
+    std::array<Buffer,4> acts{Buffer(4096),Buffer(4096),Buffer(4096),Buffer(4096)};
+    std::array<std::array<float,H>,4> x{};std::array<uint64_t,4> act_hash{};
+    Inputs(const std::string& shard,int down,uint64_t go,uint64_t up,uint64_t dn,size_t bytes){
+        std::string err;need(cpu::native_fmt(22,down,H,FF,f,err),err.c_str());need(f.bytes==bytes,"model format");
+        int fd=open(shard.c_str(),O_RDONLY|O_CLOEXEC);need(fd>=0,"model open");
+        for(int e=0;e<count;++e){
+            blobs.emplace_back(f.bytes);output.emplace_back(4*H*sizeof(float));auto* p=blobs.back().data();
+            read_exact(fd,p,f.up_off,go+e*f.up_off);read_exact(fd,p+f.up_off,f.up_off,up+e*f.up_off);
+            const size_t dbytes=f.bytes-f.down_off;read_exact(fd,p+f.down_off,dbytes,dn+e*dbytes);hashes.push_back(hash(p,f.bytes));
         }
-        const float gd=_mm_cvtss_f32(_mm_cvtph_ps(_mm_cvtsi32_si128(g[b].d)))*y[b].d;
-        const float ud=_mm_cvtss_f32(_mm_cvtph_ps(_mm_cvtsi32_si128(u[b].d)))*y[b].d;
-        ga=_mm256_fmadd_ps(_mm256_set1_ps(gd),_mm256_cvtepi32_ps(gi),ga);
-        ua=_mm256_fmadd_ps(_mm256_set1_ps(ud),_mm256_cvtepi32_ps(ui),ua);
+        close(fd);uint32_t seed=20261021;
+        for(int t=0;t<4;++t){for(float& v:x[t]){seed=1664525u*seed+1013904223u;v=(int(seed>>8)-8388608)*0x1p-23f;}cpu::native_quant_act(f,x[t].data(),acts[t].data());act_hash[t]=hash(acts[t].data(),acts[t].n);}
     }
-    gout=.125f*reduce(ga);uout=.125f*reduce(ua);
-}
-template<bool Expanded> __attribute__((noinline)) void gu(const uint8_t* blob,size_t stride,size_t up,
-    const block_q8_K* y,float* out,int r0,int r1) {
-    need(r0>=0&&r1>=r0&&r1<=FF&&stride>=size_t(H/256)*sizeof(block_iq2_s),"GU span");
-    for(int r=r0;r<r1;++r) {
-        float g,u;pair_dot<Expanded>(reinterpret_cast<const block_iq2_s*>(blob+r*stride),
-            reinterpret_cast<const block_iq2_s*>(blob+up+r*stride),y,H,g,u);
-        out[r]=(g/(1.f+std::exp(-g)))*u;
-    }
-}
-bool bits(float a,float b){return std::memcmp(&a,&b,sizeof a)==0;}
-uint64_t checksum(const uint8_t* p,size_t n) {
-    uint64_t h=14695981039346656037ull;for(size_t i=0;i<n;++i){h^=p[i];h*=1099511628211ull;}return h;
-}
-float oracle_dot(int n,const void* x,const void* y) {
-    float v=0;ggml_get_type_traits_cpu(GGML_TYPE_IQ2_S)->vec_dot(n,&v,0,x,0,y,0,1);return v;
-}
-void contract() {
-    block_q8_K y{};y.d=.0009765625f;block_iq2_s x{};uint64_t cases=0;
-    for(int pattern=0;pattern<4;++pattern) {
-        for(int j=0;j<256;++j)y.qs[j]=pattern==0?127:pattern==1?-127:pattern==2?(j%2?127:-127):int((j*73)%255)-127;
-        for(unsigned id=0;id<1024;++id)for(unsigned sign=0;sign<256;++sign) {
-            x.qh[0]=uint8_t((id>>8)*85);x.scales[0]=0;
-            for(int j=0;j<4;++j){x.qs[j]=id&255;x.qs[32+j]=sign;}
-            int actual[8];_mm256_storeu_si256(reinterpret_cast<__m256i*>(actual),half(x,0,
-                _mm256_loadu_si256(reinterpret_cast<const __m256i*>(y.qs)),scales(x)));
-            for(int j=0;j<8;++j) {
-                int want=0;for(int k=0;k<4;++k)want+=int((iq2s_grid[id]>>(8*((j%2)*4+k)))&255)*
-                    ((sign&(1<<((j%2)*4+k)))?-1:1)*int(y.qs[j*4+k]);
-                need(actual[j]==want,"exact signed four-lane integer dot");
-            }
-            ++cases;
-        }
-    }
-    constexpr size_t stride=H/256*sizeof(block_iq2_s)+4,up=stride*FF+16;
-    Guarded weights(up+stride*FF),out(FF*sizeof(float));
-    std::array<block_q8_K,H/256> a{};std::array<float,FF> ref{};
-    uint32_t state=20261021;auto rnd=[&](){state=1664525u*state+1013904223u;return state;};
-    for(int b=0;b<H/256;++b){a[b].d=(b%2?1:-1)*.0009765625f;for(auto& v:a[b].qs)v=int(rnd()%255)-127;}
-    for(int side=0;side<2;++side)for(int r=0;r<FF;++r)for(int b=0;b<H/256;++b) {
-        auto* w=reinterpret_cast<block_iq2_s*>(weights.data()+side*up+r*stride)+b;
-        auto* raw=reinterpret_cast<uint8_t*>(w);for(size_t k=0;k<sizeof(*w);++k)raw[k]=rnd()>>24;
-        w->d=ggml_fp32_to_fp16((r%5==0?0.f:r%5==1?-.0625f:r%5==2?0x1p-24f:.0625f));
-    }
-    for(int r=0;r<FF;++r) {
-        const auto* g=reinterpret_cast<const block_iq2_s*>(weights.data()+r*stride);
-        const auto* u=reinterpret_cast<const block_iq2_s*>(weights.data()+up+r*stride);
-        const float wg=oracle_dot(H,g,a.data()),wu=oracle_dot(H,u,a.data());float ag,au;
-        pair_dot<false>(g,u,a.data(),H,ag,au);need(bits(ag,wg)&&bits(au,wu),"loop scale/FMA/tree bits");
-        pair_dot<true>(g,u,a.data(),H,ag,au);need(bits(ag,wg)&&bits(au,wu),"expanded scale/FMA/tree bits");
-    }
-    need(strata::kernels::cpu::iq256_single_gu_rows(22,weights.data(),stride,up,H,a.data(),ref.data(),3,FF-3),"direct helper unavailable");
-    for(int method=1;method<=2;++method) {
-        std::fill(out.raw.begin(),out.raw.end(),0xa7);float* dst=reinterpret_cast<float*>(out.data());
-        if(method==1)gu<false>(weights.data(),stride,up,a.data(),dst,3,FF-3);else gu<true>(weights.data(),stride,up,a.data(),dst,3,FF-3);
-        for(int r=3;r<FF-3;++r)need(bits(dst[r],ref[r])&&std::isfinite(dst[r]),"GU/SwiGLU bits");
-        for(int r=0;r<3*int(sizeof(float));++r)need(out.data()[r]==0xa7&&out.data()[(FF-3)*sizeof(float)+r]==0xa7,"outside row span");out.check();
-    }
-    weights.check();std::cout<<"{\"kind\":\"contract\",\"integer_cases\":"<<cases<<",\"row_dots\":1280,\"GU_rows_per_method\":634,\"valid_extreme_Q8_checked\":true,\"passed\":true}"<<std::endl;
-}
-struct Inputs {
-    std::vector<Guarded> weights;std::array<block_q8_K,H/256> act{};
-    std::array<std::array<float,FF>,count> expected{},out{};
-    std::array<uint64_t,count> input_hash{};std::array<block_q8_K,H/256> original_act{};
-    Inputs(const char* path,uint64_t gate,uint64_t up,size_t bytes) {
-        need(bytes==size_t(H/256)*sizeof(block_iq2_s)*FF,"real GU geometry");
-        const int fd=open(path,O_RDONLY|O_CLOEXEC);need(fd>=0,"open shard");struct stat st{};need(!fstat(fd,&st),"shard stat");
-        for(int e=0;e<count;++e) {
-            weights.emplace_back(2*bytes);
-            for(int side=0;side<2;++side) {
-                const uint64_t off=(side?up:gate)+uint64_t(e)*bytes;need(off<=uint64_t(st.st_size)&&bytes<=uint64_t(st.st_size)-off,"shard slice");
-                size_t done=0;while(done<bytes){auto n=pread(fd,weights.back().data()+side*bytes+done,bytes-done,off+done);need(n>0,"shard short read");done+=n;}
-            }
-        }
-        close(fd);std::array<float,H> f{};uint32_t state=20261021;
-        for(auto& x:f){state=1664525u*state+1013904223u;x=(int(state>>8)-8388608)*0x1p-23f;}
-        ggml_get_type_traits_cpu(GGML_TYPE_Q8_K)->from_float(f.data(),act.data(),H);
-        original_act=act;
-        for(int e=0;e<count;++e){input_hash[e]=checksum(weights[e].data(),2*bytes);call(0,e);expected[e]=out[e];}
-    }
-    __attribute__((noinline)) void call(int method,int e) {
-        const auto* p=weights[e].data();constexpr size_t row=H/256*sizeof(block_iq2_s),up=row*FF;
-        if(method==0)need(strata::kernels::cpu::iq256_single_gu_rows(22,p,row,up,H,act.data(),out[e].data(),0,FF),"direct helper unavailable");
-        else if(method==1)gu<false>(p,row,up,act.data(),out[e].data(),0,FF);
-        else gu<true>(p,row,up,act.data(),out[e].data(),0,FF);
-        asm volatile(""::"r"(out[e].data()):"memory");
-    }
-    void validate() {
-        for(int m=0;m<3;++m)for(int e=0;e<count;++e){call(m,e);need(!std::memcmp(out[e].data(),expected[e].data(),sizeof(out[e])),"real GU bits");for(float x:out[e])need(std::isfinite(x),"real output finite");weights[e].check();}
-        for(int e=0;e<count;++e)need(checksum(weights[e].data(),weights[e].n)==input_hash[e],"weight immutability");
-        need(!std::memcmp(act.data(),original_act.data(),sizeof act),"activation immutability");
-    }
+    void check(){for(int e=0;e<count;++e){blobs[e].check();output[e].check();need(hash(blobs[e].data(),f.bytes)==hashes[e],"weight mutation");}for(int t=0;t<4;++t){acts[t].check();need(hash(acts[t].data(),acts[t].n)==act_hash[t],"activation mutation");}}
 };
-void perf(Inputs& in,int process) {
-    double fastest=1e6;
-    for(int m=0;m<3;++m){auto t=Clock::now();for(int e=0;e<6;++e)in.call(m,e);fastest=std::min(fastest,elapsed(t));}
-    auto t=Clock::now();for(int j=0;j<10000;++j){auto now=Clock::now();asm volatile(""::"r"(&now):"memory");}
-    const double clock_s=elapsed(t)/10000;need(clock_s<fastest*.001,"per-pass clock overhead");
-    std::cout<<"{\"kind\":\"clock\",\"per_call_s\":"<<clock_s<<",\"fastest_warm_pass_s\":"<<fastest<<"}"<<std::endl;
-    std::mt19937 rng(20261021+process);std::array<int,count> experts{};std::iota(experts.begin(),experts.end(),0);
-    std::shuffle(experts.begin(),experts.end(),rng);
-    volatile double checksum=0;
-    for(int round=0;round<6;++round)for(int mode=0;mode<2;++mode) {
-        std::array<int,3> order{0,1,2};std::rotate(order.begin(),order.begin()+(round+process)%3,order.end());
-        for(int m:order) {
-            const int n=mode?count:6;uint64_t passes=0;const double before=cpu_time();auto start=Clock::now();double wall=0;
-            do {for(int j=0;j<n;++j)in.call(m,mode?experts[j]:j);++passes;wall=elapsed(start);}while(wall<.35&&passes<1000000);
-            const double cpu=cpu_time()-before;need(wall>=.25&&passes<1000000,"sample floor/bound");
-            checksum=checksum+in.out[mode?experts[0]:0][0];
-            std::cout<<"{\"kind\":\"sample\",\"process\":"<<process<<",\"round\":"<<round<<",\"mode\":"<<mode<<",\"method\":"<<m
-                <<",\"passes\":"<<passes<<",\"experts\":"<<n<<",\"wall_s\":"<<wall<<",\"cpu_s\":"<<cpu<<"}"<<std::endl;
+using Jobs=std::vector<cpu::ExpertJobMulti>;
+struct Schedule{
+    int n,entries,ones;std::vector<int> nt,order;std::vector<Jobs> stream;Jobs repeat;
+    Schedule(Inputs& in,int mix):n(mix?24:28),entries(mix?36:35),ones(mix?16:22){
+        nt.assign(ones,1);nt.insert(nt.end(),5,2);nt.insert(nt.end(),mix?2:1,3);if(mix)nt.push_back(4);
+        need(int(nt.size())==n&&std::accumulate(nt.begin(),nt.end(),0)==entries,"NT mixture");
+        std::mt19937 rng(20261021+mix);std::shuffle(nt.begin(),nt.end(),rng);order.resize(count);std::iota(order.begin(),order.end(),0);std::shuffle(order.begin(),order.end(),rng);
+        auto make=[&](const std::vector<int>& ids,int at){Jobs v(n);for(int j=0;j<n;++j){const int e=ids[at+j];v[j].blob=in.blobs[e].data();v[j].nt=nt[j];for(int t=0;t<nt[j];++t){v[j].nact[t]=in.acts[(e+t)%4].data();v[j].out[t]=reinterpret_cast<float*>(in.output[e].data())+t*H;}}return v;};
+        for(int at=0;at<count;at+=n)stream.push_back(make(order,at));std::vector<int> seq(count);std::iota(seq.begin(),seq.end(),0);repeat=make(seq,0);
+    }
+    void run(cpu::ExpertPool& pool,const cpu::NativeFmt& f,int access){if(access)for(auto& b:stream)pool.run_split_multi_native(f,b.data(),n);else pool.run_split_multi_native(f,repeat.data(),n);}
+};
+unsigned producer_contract(Inputs& in){
+    auto f=in.f;const auto* blob=in.blobs[0].data();auto* act=in.acts[0].data();std::array<float,FF+2> ref{},out{};unsigned cases=0;
+    // Independent direct helper reference, rather than the selected dispatcher.
+    for(auto bounds:{std::pair{0,FF},std::pair{3,FF-3},std::pair{FF-1,FF},std::pair{FF/2,FF/2}}){
+        ref.fill(123);out=ref;need(cpu::iq256_single_gu_rows(22,blob,f.gu_row,f.up_off,H,act,ref.data()+1,bounds.first,bounds.second),"direct reference");
+        need(cpu::iq2_pair_gu_rows(f,blob,act,out.data()+1,bounds.first,bounds.second),"producer unavailable");need(!std::memcmp(ref.data(),out.data(),sizeof ref),"producer/row canary bits");++cases;
+    }
+    std::vector<cpu::NativeFmt> bad;auto add=[&](auto change){auto v=f;change(v);bad.push_back(v);};
+    add([](auto& v){v.gu_type=18;});add([](auto& v){v.gu_act=8;});add([](auto& v){v.n_embd=256;});add([](auto& v){v.n_ff=639;});
+    add([](auto& v){--v.act_bytes;});add([](auto& v){v.gu_row=819;});add([](auto& v){v.gu_row=821;});add([](auto& v){v.gu_row=std::numeric_limits<size_t>::max();});
+    add([](auto& v){v.up_off=0;});add([](auto& v){++v.up_off;});add([](auto& v){v.up_off=v.bytes+2;});add([](auto& v){v.bytes=v.down_off-1;});add([](auto& v){--v.down_off;});
+    for(auto& v:bad){out.fill(123);const auto before=out;need(!cpu::iq2_pair_gu_rows(v,blob,act,out.data()+1,0,1)&&out==before,"malformed format mutated output");++cases;}
+    for(auto r:{std::pair{-1,1},std::pair{0,641},std::pair{2,1}}){out.fill(123);auto before=out;need(!cpu::iq2_pair_gu_rows(f,blob,act,out.data()+1,r.first,r.second)&&out==before,"invalid rows");++cases;}
+    for(int variant=0;variant<6;++variant){
+        auto* w=blob;const void* a=act;float* o=out.data()+1;
+        if(variant==0)w=nullptr;if(variant==1)a=nullptr;if(variant==2)o=nullptr;if(variant==3)w=blob+1;if(variant==4)a=act+1;if(variant==5)o=reinterpret_cast<float*>(reinterpret_cast<uint8_t*>(o)+1);
+        out.fill(123);auto before=out;need(!cpu::iq2_pair_gu_rows(f,w,a,o,0,1)&&out==before,"null/alignment rejection");++cases;
+    }
+    need(!cpu::iq2_pair_gu_rows(f,blob,act,reinterpret_cast<float*>(const_cast<uint8_t*>(blob)),0,1),"output/weight overlap");++cases;
+    need(!cpu::iq2_pair_gu_rows(f,blob,act,reinterpret_cast<float*>(act),0,1),"output/act overlap");++cases;
+    need(!cpu::iq2_pair_gu_rows(f,blob,blob,out.data()+1,0,1),"act/weight overlap");++cases;
+    // Positive padded-stride/blob-gap case, with the same complete GU reference.
+    auto padded=f;padded.gu_row+=4;padded.up_off=padded.gu_row*FF+16;padded.down_off=padded.up_off+padded.gu_row*FF+16;padded.bytes=padded.down_off+(f.bytes-f.down_off);Buffer w(padded.bytes);
+    for(int r=0;r<FF;++r){std::memcpy(w.data()+r*padded.gu_row,blob+r*f.gu_row,f.gu_row);std::memcpy(w.data()+padded.up_off+r*padded.gu_row,blob+f.up_off+r*f.gu_row,f.gu_row);}
+    ref.fill(123);out=ref;need(cpu::iq256_single_gu_rows(22,w.data(),padded.gu_row,padded.up_off,H,act,ref.data()+1,0,FF),"padded reference");
+    need(cpu::iq2_pair_gu_rows(padded,w.data(),act,out.data()+1,0,FF)&&!std::memcmp(ref.data(),out.data(),sizeof ref),"padded producer");++cases;w.check();in.check();return cases;
+}
+void serial(const cpu::NativeFmt& f,const cpu::ExpertJobMulti& job,float* expected){
+    std::array<std::array<float,FF>,4> hidden{};std::array<Buffer,4> hq{Buffer(1024),Buffer(1024),Buffer(1024),Buffer(1024)};std::array<cpu::ActQ,4> a2{};
+    float* fp[4];const void* hp[4];const cpu::ActQ* a2p[4];float* op[4];
+    for(int t=0;t<job.nt;++t){fp[t]=hidden[t].data();hp[t]=hq[t].data();a2p[t]=&a2[t];op[t]=expected+t*H;}
+    if(job.nt==1)need(cpu::iq256_single_gu_rows(22,job.blob,f.gu_row,f.up_off,H,job.nact[0],fp[0],0,FF),"serial direct helper");
+    else cpu::native_gu_rows(f,job.blob,job.nact,job.nt,fp,0,FF);
+    for(int t=0;t<job.nt;++t){if(f.d_type==42)cpu::act_quant_any(fp[t],FF,a2[t]);else cpu::native_quant_h(f,fp[t],hq[t].data());}
+    if(f.d_type==42)cpu::q2_rows_any(job.blob+f.down_off,f.d_row,FF/64,a2p,job.nt,op,0,H);else cpu::native_down_rows(f,job.blob,hp,job.nt,op,0,H);
+}
+void validate(cpu::ExpertPool& pool,Inputs& in,Schedule& s,std::ofstream* capture){
+    for(auto& out:in.output)out.poison();std::vector<std::array<float,4*H>> expected(count);
+    // Reference/output identity is attached to each actual job pointer, not pool order.
+    for(auto& batch:s.stream){
+        for(auto& job:batch){int e=-1;for(int i=0;i<count;++i)if(job.out[0]==reinterpret_cast<float*>(in.output[i].data())){e=i;break;}need(e>=0,"job output identity");serial(in.f,job,expected[e].data());}
+        pool.run_split_multi_native(in.f,batch.data(),s.n);
+        for(auto& job:batch){int e=-1;for(int i=0;i<count;++i)if(job.out[0]==reinterpret_cast<float*>(in.output[i].data())){e=i;break;}
+            need(!std::memcmp(job.out[0],expected[e].data(),job.nt*H*sizeof(float)),"complete pool output bits");
+            for(int t=0;t<job.nt;++t)for(int r=0;r<H;++r)need(std::isfinite(job.out[t][r]),"pool finite output");
+            for(size_t k=job.nt*H*sizeof(float);k<in.output[e].n;++k)need(in.output[e].data()[k]==0xa7,"inactive token output");
+            if(capture)capture->write(reinterpret_cast<const char*>(job.out[0]),job.nt*H*sizeof(float));
         }
     }
-    need(std::isfinite(checksum),"checksum");
+    in.check();need(!capture||bool(*capture),"capture write");
 }
-} // namespace
-int main(int argc,char** argv) {
-    try {
-        std::cout<<std::setprecision(17);need(argc==8,"mode shard gate up gu_bytes process cpu");
-        const std::string mode=argv[1];need(mode=="check"||mode=="perf","mode");
-        cpu_set_t cpus;CPU_ZERO(&cpus);const int core=std::stoi(argv[7]);need(core>=0&&core<CPU_SETSIZE,"cpu id");CPU_SET(core,&cpus);need(!sched_setaffinity(0,sizeof cpus,&cpus),"affinity");
-        ggml_cpu_init();if(mode=="check")contract();
-        Inputs input(argv[2],std::stoull(argv[3]),std::stoull(argv[4]),std::stoull(argv[5]));input.validate();
-        std::cout<<"{\"kind\":\"real_validation\",\"experts\":96,\"methods\":3,\"rows_per_method\":61440,\"bitwise\":true}"<<std::endl;
-        if(mode=="perf")perf(input,std::stoi(argv[6]));input.validate();
+struct Delta{uint64_t rows=0,nt1=0,pair=0,calls=0,min_rows=std::numeric_limits<uint64_t>::max();};
+Delta delta(const cpu::Iq2GuAudit& before,const cpu::Iq2GuAudit& after,uint64_t calls,const Schedule& s,bool paired){
+    need(before.enabled&&after.enabled&&!before.overflow&&!after.overflow&&before.size==6&&after.size==6,"audit six threads");Delta d;
+    for(unsigned i=0;i<6;++i){const auto& a=before.threads[i];const auto& b=after.threads[i];need(a.tid==b.tid&&a.cpu==b.cpu&&b.pinned&&b.row_ops>=a.row_ops&&b.nt1_rows>=a.nt1_rows&&b.pair_rows>=a.pair_rows&&b.calls>=a.calls,"thread audit changed/overflow");
+        uint64_t rows=b.row_ops-a.row_ops;need(rows>0,"thread performed no GU math");d.rows+=rows;d.nt1+=b.nt1_rows-a.nt1_rows;d.pair+=b.pair_rows-a.pair_rows;d.calls+=b.calls-a.calls;d.min_rows=std::min(d.min_rows,rows);}
+    need(d.rows==calls*FF*s.entries&&d.nt1==calls*FF*s.ones&&d.pair==(paired?d.nt1:0),"actual route/work conservation");
+    need(d.calls==calls*uint64_t(s.n+18-std::gcd(s.n,18)),"actual callback conservation");return d;
+}
+void timing(cpu::ExpertPool& pool,Inputs& in,Schedule& s,int mix,int arm,int process){
+    for(int access=0;access<2;++access){
+        auto start=Clock::now();s.run(pool,in.f,access);const double warm=seconds(start);start=Clock::now();for(int j=0;j<10000;++j){auto now=Clock::now();asm volatile(""::"r"(&now):"memory");}const double timer=seconds(start)/10000;need(timer<warm*.001,"per-pass timer overhead");
+        for(int rep=0;rep<6;++rep){
+            const auto before=cpu::iq2_gu_audit_snapshot();const double gu0=pool.ms_multi_gu,q0=pool.ms_multi_q,d0=pool.ms_multi_down,pcpu=cpu_seconds();start=Clock::now();uint64_t passes=0;double wall=0;
+            do{s.run(pool,in.f,access);++passes;wall=seconds(start);}while(wall<.35&&passes<1000000);
+            const double cpu=cpu_seconds()-pcpu;need(wall>=.25&&passes<1000000,"timing floor/bound");const uint64_t calls=passes*(access?s.stream.size():1);auto work=delta(before,cpu::iq2_gu_audit_snapshot(),calls,s,arm);
+            std::cout<<"{\"kind\":\"sample\",\"process\":"<<process<<",\"arm\":"<<arm<<",\"down\":"<<in.f.d_type<<",\"mixture\":"<<mix<<",\"access\":"<<access<<",\"rep\":"<<rep<<",\"passes\":"<<passes<<",\"batch_calls\":"<<calls<<",\"wall_s\":"<<wall<<",\"cpu_s\":"<<cpu<<",\"GU_s\":"<<(pool.ms_multi_gu-gu0)/1000<<",\"quant_s\":"<<(pool.ms_multi_q-q0)/1000<<",\"Down_s\":"<<(pool.ms_multi_down-d0)/1000<<",\"row_ops\":"<<work.rows<<",\"NT1_rows\":"<<work.nt1<<",\"paired_rows\":"<<work.pair<<",\"min_thread_rows\":"<<work.min_rows<<",\"timer_s\":"<<timer<<",\"warm_pass_s\":"<<warm<<"}"<<std::endl;
+        }
+    }
+}
+int main(int argc,char** argv){
+    try{
+        need(argc==6,"mode fixture capture arm process");const std::string mode=argv[1];need(mode=="check"||mode=="perf","mode");const int arm=std::stoi(argv[4]),process=std::stoi(argv[5]);need(arm==0||arm==1,"arm");
+        const char* flag=std::getenv("STRATA_IQ2_PAIR");need(bool(flag&&std::atoi(flag))==bool(arm),"startup arm differs");
+        auto cores=cpu::physical_cores(false);need(cores.size()==6,"six physical cores");cpu::ExpertPool pool(5,true,true);need(pool.workers()==5&&pool.host_works(),"pool placement");need(cpu::pin_current_thread(cores[0])>0,"pin host");
+        std::ifstream spec(argv[2]);need(bool(spec),"fixture open");std::vector<std::unique_ptr<Inputs>> forms;
+        std::string shard;int down,experts;uint64_t go,up,dn,bytes;
+        while(spec>>shard>>down>>go>>up>>dn>>bytes>>experts){need(experts==count&&(down==20||down==42),"fixture fields");forms.push_back(std::make_unique<Inputs>(shard,down,go,up,dn,bytes));}
+        need(spec.eof()&&forms.size()==2&&forms[0]->f.d_type==20&&forms[1]->f.d_type==42,"fixture complete");
+        unsigned contracts=0;if(mode=="check")for(auto& in:forms)contracts+=producer_contract(*in);
+        for(auto& in:forms)for(int mix=0;mix<2;++mix){Schedule s(*in,mix);validate(pool,*in,s,nullptr);}
+        const auto initial=cpu::iq2_gu_audit_snapshot();need(initial.enabled&&!initial.overflow&&initial.size==6,"audit startup");uint64_t nt1=0,paired=0;for(const auto& t:initial.threads){nt1+=t.nt1_rows;paired+=t.pair_rows;}need(nt1>0&&paired==(arm?nt1:0),"initial actual route");std::set<int> actual_cores;std::set<uint64_t> tids;
+        std::cout<<"{\"kind\":\"placement\",\"workers\":5,\"host_works\":true,\"host_tid\":"<<syscall(SYS_gettid)<<",\"threads\":[";
+        for(unsigned i=0;i<6;++i){const auto& t=initial.threads[i];need(t.tid&&t.pinned&&t.row_ops>0,"thread math/pinning");actual_cores.insert(t.cpu);tids.insert(t.tid);if(i)std::cout<<",";std::cout<<"["<<t.tid<<","<<t.cpu<<"]";}std::cout<<"]}"<<std::endl;
+        need(actual_cores==std::set<int>(cores.begin(),cores.end())&&tids.size()==6&&tids.count(syscall(SYS_gettid)),"actual six distinct cores/threads");
+        if(mode=="perf")for(auto& in:forms)for(int mix=0;mix<2;++mix){Schedule s(*in,mix);timing(pool,*in,s,mix,arm,process);}
+        std::ofstream capture(argv[3],std::ios::binary);need(bool(capture),"capture open");for(auto& in:forms)for(int mix=0;mix<2;++mix){Schedule s(*in,mix);validate(pool,*in,s,&capture);}capture.close();need(bool(capture),"capture close");
+        std::cout<<"{\"kind\":\"validation\",\"contract_cases\":"<<contracts<<",\"experts_per_format\":168,\"formats\":2,\"mixtures\":2,\"bitwise\":true,\"passed\":true}"<<std::endl;
         std::cout<<"{\"kind\":\"closed\",\"passed\":true}"<<std::endl;return 0;
     }catch(const std::exception& e){std::cerr<<e.what()<<std::endl;return 1;}
 }

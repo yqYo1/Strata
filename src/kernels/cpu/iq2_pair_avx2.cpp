@@ -5,6 +5,7 @@
 #include "strata/kernels/cpu/native_expert.hpp"
 #include <cmath>
 #include <cstring>
+#include <limits>
 #if defined(__clang__) && (defined(__znver3__) || defined(__znver3))
 #include <immintrin.h>
 #define GGML_COMMON_DECL_CPP
@@ -73,6 +74,13 @@ bool iq2_pair_gu_rows(const NativeFmt& f, const uint8_t* blob, const void* act,
     if(f.up_off<gate_bytes || f.up_off>f.bytes || gate_bytes>f.bytes-f.up_off ||
        f.down_off<f.up_off+gate_bytes || f.down_off>f.bytes)
         return false;
+    const auto w=reinterpret_cast<uintptr_t>(blob),a0=reinterpret_cast<uintptr_t>(act),o=reinterpret_cast<uintptr_t>(ff);
+    constexpr size_t output_bytes=rows*sizeof(float);
+    const auto max=std::numeric_limits<uintptr_t>::max();
+    if(f.bytes>max-w || f.act_bytes>max-a0 || output_bytes>max-o ||
+       (w<a0+f.act_bytes&&a0<w+f.bytes) ||
+       (w<o+output_bytes&&o<w+f.bytes) ||
+       (a0<o+output_bytes&&o<a0+f.act_bytes))return false;
     const auto* a=static_cast<const block_q8_K*>(act);
     for(int r=r0;r<r1;++r) {
         const auto* g=reinterpret_cast<const block_iq2_s*>(blob+size_t(r)*f.gu_row);
