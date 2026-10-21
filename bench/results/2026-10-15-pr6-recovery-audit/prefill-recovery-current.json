@@ -2930,12 +2930,98 @@
     "invariants": "Same source and destination owners,in-order queue,allocation,bounds,one final checked drain before publication,PLE rebind and graph/verifier resume; no new retained source or cache placement.",
     "next_build": "python3 -B tools/sycl/build_engine.py rebuild-canonical-restore",
     "next_gates": "Eight same-build host groups,existing15 census+24 phase+11 observer host cases and18 engine safety groups; traced2MiB and validated64MiB+17 device payload/guard cases; real full1.538GB canonical ownership fixture off/on; then prospectively frozen checked117K/clean repeated prefill+sustained decode comparison.",
-    "limits": "Compilation and same-build host gates pass. No device/model qualification or adoption. Current decode configuration1256 fixed; decode impact is a separation defect. Physical262144/session/RESTORE remains pending.",
+    "limits": "Build/host/shared18 groups/helper/full canonical owner gates pass. Current decode config1256 fixed; repeated end-to-end prefill and sustained decode still required. Physical262144/session/RESTORE unqualified.",
     "build": {
       "source_commit": "362c16aad19cb00dc158c03a279e6c28cc8cc7d3",
       "binary_sha256": "af0aeb605b756e1ef007bb13cf3bd74b0ec632d3db5608f620232d80e496701b",
       "fixtures": 18,
       "passed": true
+    },
+    "device_gate": {
+      "source_commit": "362c16aad19cb00dc158c03a279e6c28cc8cc7d3",
+      "result": "bench/results/2026-10-15-pr6-recovery-audit/canonical-restore-current.json",
+      "passed": true,
+      "helper_cases": 4,
+      "canonical_arms": 2,
+      "canonical_bytes": 1538035200,
+      "copies": [
+        1,
+        23
+      ],
+      "ownership_closed": true,
+      "fresh_faults": [],
+      "model_assets_rechecked": 15,
+      "limits": "Full real-weight fixture,not inference or near-full VRAM. No prefill speed,decode independence or physical262144/session/RESTORE qualification."
     }
+  },
+  "large_copy_phase_analysis": {
+    "source_result": "bench/results/2026-10-15-pr6-recovery-audit/large-copy-current.json",
+    "arms": [
+      {
+        "source": "vector",
+        "chunk": 0,
+        "processes": 3,
+        "subsequent_samples": 15,
+        "phase_medians_s": {
+          "wall_s": 0.419430627,
+          "cpu_s": 0.419376757,
+          "stage_wall_s": 1.483e-06,
+          "stage_cpu_s": 7.61e-07,
+          "submit_wall_s": 0.059731609,
+          "submit_cpu_s": 0.059721918,
+          "drain_wall_s": 0.35961495,
+          "drain_cpu_s": 0.359555356
+        }
+      },
+      {
+        "source": "vector",
+        "chunk": 67108864,
+        "processes": 3,
+        "subsequent_samples": 15,
+        "phase_medians_s": {
+          "wall_s": 0.253397414,
+          "cpu_s": 0.250784362,
+          "stage_wall_s": 1.513e-06,
+          "stage_cpu_s": 7.72e-07,
+          "submit_wall_s": 0.150224288,
+          "submit_cpu_s": 0.148582709,
+          "drain_wall_s": 0.1032474,
+          "drain_cpu_s": 0.103224831
+        }
+      },
+      {
+        "source": "host-usm",
+        "chunk": 0,
+        "processes": 3,
+        "subsequent_samples": 15,
+        "phase_medians_s": {
+          "wall_s": 0.236152161,
+          "cpu_s": 0.23611577,
+          "stage_wall_s": 1.463e-06,
+          "stage_cpu_s": 7.61e-07,
+          "submit_wall_s": 2.3885e-05,
+          "submit_cpu_s": 2.2092e-05,
+          "drain_wall_s": 0.23612486,
+          "drain_cpu_s": 0.236093448
+        }
+      },
+      {
+        "source": "stage",
+        "chunk": 0,
+        "processes": 3,
+        "subsequent_samples": 15,
+        "phase_medians_s": {
+          "wall_s": 0.31609877,
+          "cpu_s": 0.315352452,
+          "stage_wall_s": 0.079816528,
+          "stage_cpu_s": 0.079613005,
+          "submit_wall_s": 7.2226e-05,
+          "submit_cpu_s": 6.7217e-05,
+          "drain_wall_s": 0.23625041,
+          "drain_cpu_s": 0.236071024
+        }
+      }
+    ],
+    "interpretation": "Chunking increases submission wall about60to150ms while reducing final drain360to103ms. Thread CPU in final drain closely tracks wall; busy CPU here is polling/wait accounting,not demonstrated model arithmetic. Separate phase medians are not additive conserved samples. Runtime-internal work remains unclassified. Physical bus bytes,GPU service and hardware saturation remain unknown. Stage host memcpy adds about80ms on subsequent copies; first touch is separate."
   }
 }

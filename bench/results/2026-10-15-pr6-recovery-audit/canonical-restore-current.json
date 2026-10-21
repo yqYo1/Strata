@@ -1,5 +1,5 @@
 {
-  "stage": "prepared",
+  "stage": "closed",
   "source_commit": "da8bdf0c6ef9bf1711c64d2141d5a6da612b6a27",
   "native_source": "362c16aad19cb00dc158c03a279e6c28cc8cc7d3",
   "binary": {
@@ -212,5 +212,95 @@
     "limits": "No performance/adoption gate. Low-memory helper and full-weight owner fixture do not reproduce near-full model VRAM,expert-cache handoff,sustained decode or physical262144/session/RESTORE. Those require separate prospective plans with current1256 decode layout fixed.",
     "retention": "Keep per-case source/route/inventory/payload/guard/owner/fault outcome. Retire normal full traces/cache/receipts after verified committed closure."
   },
-  "result": null
+  "result": {
+    "passed": true,
+    "complete": true,
+    "checks": [
+      {
+        "mode": "small",
+        "passed": true,
+        "fixture_sha256": "d18f92c990731a403acb94c7d44d7df626af3bfc87146db599d3b8672af37ec2",
+        "output_excerpt": "canonical restore copy device: chunk64=0 bytes=2097152 copies=1 payload=1 guards=1\ncanonical restore copy device: chunk64=1 bytes=2097152 copies=1 payload=1 guards=1\ncanonical restore copy device: cases=2 passed=1 owners_retired=1\n",
+        "exit_code": 0,
+        "ownership_closed": true,
+        "command": [
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/sycl_canonical_restore_copy_test",
+          "--small"
+        ],
+        "cases": 2,
+        "bytes": 2097152,
+        "copies": [
+          1,
+          1
+        ],
+        "payload_and_guards_match": true,
+        "UR_trace_calls": 80
+      },
+      {
+        "mode": "tail",
+        "passed": true,
+        "fixture_sha256": "d18f92c990731a403acb94c7d44d7df626af3bfc87146db599d3b8672af37ec2",
+        "output_excerpt": "canonical restore copy device: chunk64=0 bytes=67108881 copies=1 payload=1 guards=1\ncanonical restore copy device: chunk64=1 bytes=67108881 copies=2 payload=1 guards=1\ncanonical restore copy device: cases=2 passed=1 owners_retired=1\n",
+        "exit_code": 0,
+        "ownership_closed": true,
+        "command": [
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/sycl_canonical_restore_copy_test"
+        ],
+        "cases": 2,
+        "bytes": 67108881,
+        "copies": [
+          1,
+          2
+        ],
+        "payload_and_guards_match": true
+      },
+      {
+        "mode": "canonical-off",
+        "passed": true,
+        "fixture_sha256": "969cc11e53a57fbb8c462158368debca1c4ab627fc8c11e689b82e3bc0672e1e",
+        "output_excerpt": "COMPONENT_ONLY canonical=1538035200 bank=32284672 persistent=82821120 rows=777; no model/runtime-quality claim\n",
+        "exit_code": 0,
+        "ownership_closed": true,
+        "command": [
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/sycl_canonical_dense_bank_test",
+          "/home/yayoi/.local/share/strata-sycl/packs/qwen3.8-flash-next-iq3_s",
+          "/home/yayoi/.local/share/strata-sycl/models/qwen3.8-flash-next-iq3_s/IQ3_S/Qwen3.8-Flash-Next-GSQ-RCO-IQ3_S-00001-of-00002.gguf",
+          "/home/yayoi/.local/share/strata-sycl/models/qwen3.8-flash-next-iq3_s/IQ3_S/Qwen3.8-Flash-Next-GSQ-RCO-IQ3_S-00002-of-00002.gguf"
+        ],
+        "canonical_bytes": 1538035200,
+        "bank_bytes": 32284672,
+        "persistent_bytes": 82821120,
+        "rows": 777,
+        "copies": 1,
+        "chunk": 0,
+        "fixture_payload_metadata_PLE_checks": true
+      },
+      {
+        "mode": "canonical-on",
+        "passed": true,
+        "fixture_sha256": "969cc11e53a57fbb8c462158368debca1c4ab627fc8c11e689b82e3bc0672e1e",
+        "output_excerpt": "COMPONENT_ONLY canonical=1538035200 bank=32284672 persistent=82821120 rows=777; no model/runtime-quality claim\n",
+        "exit_code": 0,
+        "ownership_closed": true,
+        "command": [
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/sycl_canonical_dense_bank_test",
+          "/home/yayoi/.local/share/strata-sycl/packs/qwen3.8-flash-next-iq3_s",
+          "/home/yayoi/.local/share/strata-sycl/models/qwen3.8-flash-next-iq3_s/IQ3_S/Qwen3.8-Flash-Next-GSQ-RCO-IQ3_S-00001-of-00002.gguf",
+          "/home/yayoi/.local/share/strata-sycl/models/qwen3.8-flash-next-iq3_s/IQ3_S/Qwen3.8-Flash-Next-GSQ-RCO-IQ3_S-00002-of-00002.gguf"
+        ],
+        "canonical_bytes": 1538035200,
+        "bank_bytes": 32284672,
+        "persistent_bytes": 82821120,
+        "rows": 777,
+        "copies": 23,
+        "chunk": 67108864,
+        "fixture_payload_metadata_PLE_checks": true
+      }
+    ],
+    "active": false,
+    "ownership_closed": true,
+    "fault_probe_successful": true,
+    "fresh_faults": [],
+    "boot_unchanged": true
+  }
 }

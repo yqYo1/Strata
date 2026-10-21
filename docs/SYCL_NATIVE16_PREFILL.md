@@ -114,8 +114,13 @@ final checked drain before publication. The optional
 `STRATA_SYCL_PREFILL_CANONICAL_RESTORE_AUDIT=1` line records actual copied bytes,
 chunk and successful submission count after canonical bank retirement.
 The native build passed, including its eight new host scheduler groups and
-existing15 census,24 phase and11 observer host cases. Device/model/handoff
-and sustained-decode gates remain pending.
+existing15 census,24 phase and11 observer host cases. All18 shared device
+groups then passed. The small/tail helper cases and separate actual canonical
+owner off/on children passed full payload/metadata/48-layer/PLE restoration,
+with actual1/23 copies,unchanged15 model assets and no fresh fault. This
+fixture has no inference/expert-cache load and does not establish near-full
+VRAM admission. Model speed,handoff,sustained decode and physical-context
+qualification remain pending.
 
 
 The current B570 speed reference uses fresh inputs of117489 tokens and separates
