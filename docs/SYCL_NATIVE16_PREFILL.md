@@ -3113,8 +3113,16 @@ and recipe match`e0623d4f7`. The new117K controller uses two independent off/on
 processes with Q8 MTP, checking the actual private layouts, both accumulation
 windows, request journals, immutable inputs, decode/cache/dense restoration
 and completed logical upload totals. Its diagnostic output cannot qualify
-clean throughput. Freeze and execute that plan before a separate repeated
-clean-speed comparison. This targets
+clean throughput. The first baseline process completes its117489-input/24-output
+request (diagnostic920.7 PP), native exit0 and no fresh driver fault, but the
+new controller then calls a nonexistent`generation_engine.native_end` helper.
+The original comparison remains failed/incomplete; the packed-on arm is not
+launched. Main replaces that call with an explicit start/exit receipt and
+binary/argument/boot/probe/owned-session identity check, adds an offline
+closed-benchmark collection regression, and requires a fresh v2 off/on plan.
+The observed baseline speed is not clean-speed or candidate-gain evidence.
+Execute the new committed plan before a separate repeated clean-speed
+comparison. This targets
 the observed expert-upload service, not a proven physical PCIe saturation;
 cross-window copy reduction needs the multi-window117K model test with Q8 MTP.
 After committing the component results, Main recovers22 original component

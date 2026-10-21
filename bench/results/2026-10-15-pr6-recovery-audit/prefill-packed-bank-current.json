@@ -1,7 +1,7 @@
 {
   "mode": "cache-capacity-check",
   "diagnostic": "packed-expert-bank117K",
-  "stage": "prepared",
+  "stage": "closed",
   "source_commit": "b97b17f0c70546e678c33a0ac081b94a4380ef99",
   "build_source_commit": "ac904ae09858ba9d101cd368bd31f07c0cb2dcb8",
   "binary": {
@@ -241,7 +241,50 @@
       ]
     }
   ],
-  "processes": [],
+  "processes": [
+    {
+      "arm": 0,
+      "passed": false,
+      "complete": false,
+      "active": false,
+      "error": "module 'generation_engine' has no attribute 'native_end'",
+      "error_excerpt": "post-benchmark result collection: AttributeError: generation_engine.native_end does not exist",
+      "ownership_closed": true,
+      "fresh_faults": [],
+      "boot_unchanged": true,
+      "driver_after": {
+        "pci": "/sys/bus/pci/devices/0000:05:00.0",
+        "driver": "xe",
+        "vendor": "0x8086",
+        "device": "0xe20c",
+        "kernel": "7.0.0-38-generic",
+        "devcoredump": false
+      },
+      "unqualified_observation": {
+        "official_bench_exit_code": 0,
+        "native_exit_code": 0,
+        "sample": {
+          "actual_prompt_tokens": 117489,
+          "actual_read_tokens": 117489,
+          "actual_reused_tokens": 0,
+          "generated_tokens": 24,
+          "prompt_tps": 920.7,
+          "prompt_tps_source": "engine",
+          "prompt_ms": 127607.7,
+          "decode_tps": 14.0,
+          "decode_ms": 1716.0,
+          "ttft_s": 127.782,
+          "drafts_offered": 21,
+          "drafts_accepted": 16,
+          "request_sha256": "26f08fd8364b5c4bce718617fe2aed42761d0a794e068b00532694adef78b3be",
+          "stream_complete": true,
+          "thinking_requested": true,
+          "reasoning_observed": true
+        },
+        "reason": "Observed request only; native identity,route/restoration and post-run model hash gates were not completed. Original failed/incomplete status is preserved."
+      }
+    }
+  ],
   "runtime_asset_delta": {
     "/usr/lib/x86_64-linux-gnu/libze_intel_gpu.so.1.17.39395": {
       "package": "libze-intel-gpu1:amd64",
@@ -450,7 +493,7 @@
   "model_adoption_qualified": false,
   "gate": "Two independent processes,off then on; identical same-build Q8-MTP117489-input/24-output thinking workload. Require one short warmup,96 checked borrowed FFN retirements,two windows per48 layers,exact decode-cache/dense restoration,all-GPU BF16 rows,48 checked private layouts only when on,complete upload totals,native exit0 and no fresh fault. Stop after any failure; no retry. Work screen requires fewer requested H2D bytes with equal logical expert lookups; diagnostics cannot qualify speed.",
   "limits": "Short thinking output checks restoration only; no sustained decode,task quality,agent-session,physical262144/session/RESTORE or clean-speed qualification. Requested bytes are not wire traffic or saturation.",
-  "retention": "Keep per-arm samples,compact route/work/fault/provenance and decision. Retire successful logs/JIT after closure; no tensors or full API history.",
+  "retention": "Keep compact original failure,sample and immutable plan in Git. Raw v1 is temporarily consumed by offline postprocessing regression validation; review and retire after that check and failure commit, before replacement model execution.",
   "budgets": {
     "wall": 1800,
     "cpu": 54000,

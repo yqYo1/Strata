@@ -19,7 +19,7 @@ import cache_long_compare as evidence
 
 q, gen, assets, guards, supervision = admission.q, admission.gen, admission.assets, admission.guards, admission.supervision
 P, B, A = admission.P, admission.B, admission.A
-ROOT = B/'packed-expert-bank-model-v1'
+ROOT = B/'packed-expert-bank-model-v2'
 RESULT = A/'prefill-packed-bank-current.json'
 BANK = A/'moe-expert-bank-current.json'
 ORIGINAL_BUILD = 'b62a63744'
@@ -79,6 +79,33 @@ def environment(original, plan):
     return env
 
 
+def native_end(root, record, plan, boot, leader):
+    start=json.loads((root/'engine-start.json').read_text())
+    end=json.loads((root/'engine-exit.json').read_text())
+    guards.require(end==dict(start,exit_code=0) and start['boot_id']==boot and
+        start['binary']==record['binary'] and start['args']==['--serve',*plan['config']['args']] and
+        start.get('native_validation_probe')==record['native_validation_probe'] and
+        not {'resource_collector','native_profile'}&set(start), 'native identity/closure differs')
+    for key in ('native','wrapper'):
+        identity=start[key]
+        guards.require(set(identity)=={'pid','start_ticks','sid'} and
+            all(type(v) is int and v>0 for v in identity.values()) and identity['sid']==leader,
+            'native ownership identity differs')
+    guards.require(start['native']['pid']!=start['wrapper']['pid'], 'native/wrapper identity aliases')
+    return end
+
+
+def superseded_attempt():
+    if not RESULT.exists():return None
+    old=gen.committed(RESULT)
+    guards.require(old['stage']=='closed' and not old['passed'] and not old['active'] and
+        old['ownership_closed'] and old['processes'] and
+        all(not r['passed'] and not r['active'] and r['ownership_closed'] for r in old['processes']) and
+        all(Path(p['root']).parent!=ROOT for p in old['plans']), 'prior comparison is not a closed failed attempt')
+    return dict(commit=gen.git('rev-parse','HEAD').decode().strip(),path=str(RESULT.relative_to(P)),
+        sha256=gen.common.digest(RESULT),original_status='failed; never retroactively qualified')
+
+
 def current(record, full_models=False):
     full, proof = qualification()
     guards.require(full['binary']==record['binary'] and proof==record['qualification'], 'qualification changed')
@@ -96,7 +123,8 @@ def current(record, full_models=False):
 
 
 def prepare():
-    guards.require(not ROOT.exists() and not RESULT.exists(),'fresh packed model plan required')
+    guards.require(not ROOT.exists(),'fresh packed model plan required')
+    previous=superseded_attempt()
     full,proof=qualification();original,ref=seed.original_plan()
     source=gen.git('rev-parse','HEAD').decode().strip();pins=gen.benchmark_pins(source)
     probe=evidence.validation.preload_qualification()
@@ -137,6 +165,7 @@ def prepare():
         limits='Short thinking output checks restoration only; no sustained decode,task quality,agent-session,physical262144/session/RESTORE or clean-speed qualification. Requested bytes are not wire traffic or saturation.',
         retention='Keep per-arm samples,compact route/work/fault/provenance and decision. Retire successful logs/JIT after closure; no tensors or full API history.',
         budgets=dict(wall=1800,cpu=54000,rss_cap=96<<30,text_cap=64<<20,file_cap=64<<20,total_cap=64<<20))
+    if previous:record['superseded_attempt']=previous
     current(record,full_models=True)
     (ROOT/'plan.json').write_text(json.dumps(record,indent=2)+'\n');RESULT.write_text(json.dumps(record,indent=2)+'\n')
     print('Prepared off/on117K diagnostic; commit the exact plan before run.')
@@ -166,7 +195,9 @@ def run():
         guards.require(supervision.closed(entry) and entry.get('exit_code')==0,'owned official benchmark failed')
         path,=(root/'bench').glob('*/results.json')
         sample,journal_proof=admission.official_evidence(root,json.loads(path.read_text()))
-        native=gen.native_end(root);log=(root/'engine.stderr').read_text(errors='replace');assets.verify_pool(log,5)
+        row.update(sample=sample,journal=journal_proof)
+        native=native_end(root,record,plan,boot,entry['pid'])
+        log=(root/'engine.stderr').read_text(errors='replace');assets.verify_pool(log,5)
         guards.require(not re.search(r'UR_RESULT_ERROR_|ZE_RESULT_ERROR_|terminate called|retirement failed|Strata SYCL cleanup:',log),'native runtime failure')
         headers=list(re.finditer(r'^strata serve: prompt \d+ tokens = [^\n]+$',log,re.M))
         guards.require(len(headers)==2,'warmup/long request binding missing')
