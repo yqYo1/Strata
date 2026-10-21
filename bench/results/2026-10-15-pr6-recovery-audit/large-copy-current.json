@@ -1,0 +1,187 @@
+{
+  "stage": "prepared",
+  "source_commit": "f15cec2620038952e9134097bb4f9086e62f7cf7",
+  "native_source": "c72d1c963c81251b53ca4d5fbbf3c092a2f9d3b9",
+  "native_inputs_recovered": 9858,
+  "fixture": {
+    "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/sycl_large_h2d_bench",
+    "sha256": "cb0896362e96404a2e218f2112af53cd7a0579a50a16c1101dfc7b335d97580d"
+  },
+  "build_sha256": "c9fbde5490f2f320613c8710201c29a69fcb85288bbeb8ca78c1cd768614ab0e",
+  "component_sha256": "b8ba605d4a3790cf87da027fe72514f628fb1c8632c56feaa4f802c414e3fb11",
+  "settings_sha256": "d4402591df50e80dc45a5ec9e4839c7a794888850b1473537b6f95179be5b03c",
+  "machine": {
+    "boot_id": "cfda0b6a-7c13-4fe2-bdf5-8f9202770840",
+    "device": {
+      "pci": "/sys/bus/pci/devices/0000:05:00.0",
+      "driver": "xe",
+      "vendor": "0x8086",
+      "device": "0xe20c",
+      "kernel": "7.0.0-38-generic",
+      "devcoredump": false
+    },
+    "guarded_runtime_sha256": "2c3a74d4e12b576218cbafc80adda3452a6ae1c22f1cfbf88f1ec32094621a8e"
+  },
+  "controller_fingerprint": "0803924f8ec8f6f8755ddf052a9ed2af3f8d4bc2142eb8594759c4ace42ff2a0",
+  "parser_host": {
+    "source_commit": "9ac868b8e8b2fd1bba1b4a3c2ad33ef5b6f47bd3",
+    "command": [
+      "/usr/bin/python3",
+      "-B",
+      "tests/core/test_large_copy.py"
+    ],
+    "tests": 4,
+    "passed": true,
+    "ownership_closed": true,
+    "controller_sha256": "11180e5c978b77deef329bb09133d124e3ec3fba245b2f27db0b096292123b51",
+    "test_sha256": "2f1c4f73e07c399fa983a7e3c84180a8041a38cf6291bf8421d01b81923dadb6",
+    "environment": {
+      "PATH": "/usr/bin:/bin",
+      "LANG": "C.UTF-8",
+      "PYTHONDONTWRITEBYTECODE": "1"
+    },
+    "budgets": {
+      "wall_s": 30,
+      "cpu_s": 30,
+      "rss_bytes": 1073741824,
+      "text_bytes": 1048576,
+      "total_bytes": 4194304
+    },
+    "GPU_executed": false
+  },
+  "plan": {
+    "bytes": 1538035200,
+    "source_chunk_order": [
+      [
+        [
+          "vector",
+          0
+        ],
+        [
+          "host-usm",
+          0
+        ],
+        [
+          "stage",
+          0
+        ],
+        [
+          "stage",
+          67108864
+        ],
+        [
+          "host-usm",
+          67108864
+        ],
+        [
+          "vector",
+          67108864
+        ],
+        [
+          "vector",
+          268435456
+        ],
+        [
+          "host-usm",
+          268435456
+        ],
+        [
+          "stage",
+          268435456
+        ]
+      ],
+      [
+        [
+          "stage",
+          268435456
+        ],
+        [
+          "host-usm",
+          268435456
+        ],
+        [
+          "vector",
+          268435456
+        ],
+        [
+          "vector",
+          67108864
+        ],
+        [
+          "host-usm",
+          67108864
+        ],
+        [
+          "stage",
+          67108864
+        ],
+        [
+          "stage",
+          0
+        ],
+        [
+          "host-usm",
+          0
+        ],
+        [
+          "vector",
+          0
+        ]
+      ],
+      [
+        [
+          "stage",
+          67108864
+        ],
+        [
+          "host-usm",
+          67108864
+        ],
+        [
+          "vector",
+          67108864
+        ],
+        [
+          "vector",
+          268435456
+        ],
+        [
+          "host-usm",
+          268435456
+        ],
+        [
+          "stage",
+          268435456
+        ],
+        [
+          "vector",
+          0
+        ],
+        [
+          "host-usm",
+          0
+        ],
+        [
+          "stage",
+          0
+        ]
+      ]
+    ],
+    "samples_per_process": 6,
+    "qualification": "Six traced2MiB children (three source kinds,whole/1MiB),then nine parameter-validated full-size children (one sample/configuration). Stop before clean timing on any failure.",
+    "comparison": "Three fixed clean cohorts,9 independent native processes each. Record first copy separately and five subsequent samples/process. Reset and full guard/payload readback outside each timed copy. Staging includes its full std::memcpy. Allocations/source construction outside timing; setup clocks retained. First-copy means post-initialization,not driver cold start. Full readback may perturb later samples; source kind also bundles pointer alignment/import behavior. No model or device-memory-pressure simulation.",
+    "timing": "Every full timed sample>=100ms;1000-pair maximum stamp overhead<=1ms and<=1% of each sample. No retries/replaced samples. Failure preserves extracted samples and closes the experiment.",
+    "selection": "Compare each alternative to vector whole within each cohort. Require every cohort throughput ratio>=1.02 and geometric mean>=1.05. Select largest eligible geomean for a separate model-specific plan only. No clean speed-based early stopping.",
+    "budgets": {
+      "wall_s": 180,
+      "cpu_s": 600,
+      "rss_bytes": 12884901888,
+      "text_bytes": 67108864,
+      "total_bytes": 67108864
+    },
+    "retention": "Keep individual source/shape/phase samples,setup/timer/alignment,source/runtime and fault/owner outcomes. Retire successful full traces and frozen metadata after verified committed closure. Preserve6e40 fallback; overwrite only the recoverable comparison cache."
+  },
+  "qualification": null,
+  "runs": [],
+  "decision": null
+}
