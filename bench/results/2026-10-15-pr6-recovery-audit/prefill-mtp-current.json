@@ -2194,7 +2194,27 @@
         5
       ],
       "adoption_qualified": false,
-      "next_action": "Fix qualification to require the consumed preload-component subtree to match committed input while retaining all native/source/runtime/fixture gates. Test both unrelated edits and changed/missing qualification fields. Freeze a new matched comparison; never retry this root or relabel this failed cohort as passing."
+      "next_action": "Fix qualification to require the consumed preload-component subtree to match committed input while retaining all native/source/runtime/fixture gates. Test both unrelated edits and changed/missing qualification fields. Freeze a new matched comparison; never retry this root or relabel this failed cohort as passing.",
+      "admission_fix": {
+        "source_commit": "4d4792007",
+        "host_tests": {
+          "command": "python3 -B tools/test_sycl_mtp_prefill.py",
+          "passed": 7,
+          "scope": "Unrelated research edits accepted only for scoped reader; whole-file consumers and changed, missing or type-altered preload qualification still rejected, plus existing MTP conservation/parser/analysis gates."
+        },
+        "native_source_commit": "3b4998f326101fa913788fd368e1674b111dea03",
+        "native_sha256": "226b4556ab4d2ffd3850dcb8c7d905379bc353b72685b46e291cdda95dce78ac",
+        "original_native_inputs_recovered": 9836,
+        "required_fixtures": 8,
+        "postfix_qualification_passed": true,
+        "new_GPU_execution": false,
+        "original_cohort_still_failed": true,
+        "UR_regressions": {
+          "command": "python3 -B tools/test_sycl_ur_validation.py",
+          "passed": 3,
+          "scope": "Pinned UR enums, PID/order/duplicate failures and native-only preload environment/hash checks."
+        }
+      }
     }
   }
 }

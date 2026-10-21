@@ -6059,26 +6059,11 @@
       "scope": "sycl_moe_gemm_row_tail_lane_utilization_collection",
       "classification": "knowledge_collection",
       "schedulable_now": false,
-      "state": "Report delivered; native Luna-max curation pending",
       "question": "For the current native16 MoE GEMM row dimension T/M on Xe2, compare partial-row handling within one fixed kernel variant: guarded/predicated rows, padding to the full row tile, and a dedicated narrow-tail kernel. Derive tradeoffs in inactive SIMD lanes, extra data movement/scratch, alignment, subgroup/work-group participation, reduction semantics, and launch cost. Use transferable non-LLM small-M dense GEMM and sparse/finite-element examples alongside primary Intel/SYCL sources. Map only static properties of Strata's current native16 MoE GEMM that matter to applicability; do not claim the path sees costly tails or propose code changes. Compare when each option wins and loses, preserve bounds/numerical contracts, and name the minimum future evidence that would justify a bounded comparison. Reconcile the actual runtime-selected vLLM Xe2 backend and fused GU/Down calls; the own joint-matrix path is rejected for speed and must not be mistaken for production.",
-      "prerequisite_evidence": [
-        {
-          "met": true,
-          "evidence": "Read-only source paths exist: src/prefill/sycl/gemm16.cpp and src/prefill/sycl/moe_mmq.cpp. gemm16.cpp accepts positive T without a multiple-of-tile restriction while requiring N and K multiples of 16, so the row-edge mapping is a concrete source question. Actual production T remainders and performance cost are not established and are explicitly outside this collection's claim."
-        },
-        {
-          "met": true,
-          "evidence": "The report directory .cache/strata-research/20261020 exists. The comparison can be answered from current source, official SYCL/Intel documentation, and primary GPU papers or original technical blogs; it needs no build, test, GPU run, trace, profiler, hardware counter, or unbuilt code."
-        }
-      ],
-      "closest_prior_scope_ids": [
-        "production_profile_scopes.next_wave[1] (device-driven-variable-gemm-dispatch)",
-        "moe_indexed_gemm_a_scope",
-        "xe2_register_spill_collection_scope",
-        "native16_full_context_session_gate_source_audit",
-        "gpu_moe_routing_collection_scope",
-        "prefill_resource_followup_wave.workers[0] (QSA geometry, memory/arithmetic and algorithms)"
-      ],
+      "report": ".cache/strata-research/20261020/sycl-moe-gemm-row-tail-lane-utilization-collection.json",
+      "report_budget_bytes": 18432,
+      "consumer": "Main's next source-pinned long-prefill shape decision, if full-context and quality gates pass and the selected native16 MoE GEMM has a partial T/M row tile. Retrieve only the matching method section.",
+      "review_point": "At that comparison's selection or closure. If source reconciliation shows no relevant partial tile or Main selects no such candidate, retire the report from the active library after review.",
       "native_source_commit": "3b4998f326101fa913788fd368e1674b111dea03",
       "source_sha256": {
         "src/prefill/sycl/gemm16.cpp": "9e25396467e1e130a636931bc81c1d29261f420ecb36545c3dba087fe30ac467",
@@ -6086,38 +6071,24 @@
         "src/prefill/sycl/vllm_xe2/native16.hpp": "e8cb0ade560d37f0ff7ab6f1a0e9debdf25f6af1f36463799f0c02b15e4610b7",
         "src/prefill/sycl/moe_mmq.cpp": "403dccf14f3a632f3cb5a6b7ecbaaf7dcfae5f0c3fbf875dae2789b6f85978f8"
       },
-      "report": ".cache/strata-research/20261020/sycl-moe-gemm-row-tail-lane-utilization-collection.json",
-      "report_budget_bytes": 18432,
-      "consumer": "Main's next source-pinned long-prefill shape decision, if full-context and quality gates pass and the selected native16 MoE GEMM has a partial T/M row tile. Retrieve only the matching method section.",
-      "review_point": "At that comparison's selection or closure. If source reconciliation shows no relevant partial tile or Main selects no such candidate, retire the report from the active library after review.",
-      "eligibility_review_sha256": "160e2ebe73862e2d1bb3f77d66d0e5c7d098f1b83d6bc0d78c9b5867b7459535",
-      "limits": "Use official Intel/SYCL material and primary non-LLM GPU papers or original technical blogs; report sources, applicability, and counterevidence. Do not use XeStrata code, helpers, tests, or proposals. Do not claim Strata performance, hardware saturation, or adoption from literature or static source alone.",
-      "taskId": "task_ba286a5bd7cd",
-      "dispatchId": "ctx_f330871363b9",
-      "terminal": "term_91031019-708f-4167-9cc0-22bf24bc55d3",
-      "incarnation": "3eeaf7aa-c4db-44f7-a6c8-29322dc99c7b",
-      "source_policy_revision": "e11a3c5fb",
-      "model": "GPT-6-Luna high verified at startup",
-      "operator_owns_terminal": true,
       "report_bytes": 14373,
       "report_sha256": "7b318cb4f362ac4a8ff08fb94185d39ec9676b4bdbba88ba64a3ed1674558c02",
       "worker_closed": true,
       "terminal_closed": true,
       "accepted_worker_done": false,
-      "native_review_report": ".cache/strata-research/20261020/row-tail-native-review.json",
-      "native_review_agent": "/root/curate_row_tail_collection_20261021",
-      "ownership": "Final assistant turn/activity done observed; sandbox Orca unavailable. Dispatch abandoned with no process action; Main closed its exact operator-created incarnation. No accepted lifecycle completion or release claimed."
+      "state": "Native Luna-max accepted conditional reference; retrieval only",
+      "native_review": {
+        "path": ".cache/strata-research/20261020/row-tail-native-review.json",
+        "sha256": "b34d855bf4b39dd4dc142b51927c9e76116145bd99bee6922aa025144ce8e495"
+      },
+      "corrections": "Keep variable-GEMM dispatch as an adjacent distinct scope; cite paper arXiv1501.00324v1 and SYCL-TLA release0.9.3. P100 example does not isolate launch latency.",
+      "retrieval_condition": "Source-pinned shape decision with relevant measured M-tail distribution; full-context and quality gates remain open. No local tail-cost, saturation, gain or adoption claim; no new broad scope schedulable."
     },
     "fpga_cgra_asic_loop_nest_dataflow_collection": {
       "scope": "fpga_cgra_asic_loop_nest_dataflow_collection",
       "classification": "knowledge_collection",
       "schedulable_now": false,
-      "state": "Orca GPT-6-Luna high collection running",
       "question": "Compare weight-, output- and row-stationary loop mappings with wavefront, temporal-blocked and systolic schedules on FPGA/CGRA/ASIC accelerators under fixed small local-memory budgets and externally streamed weights. Use one dense expert-like GEMM and non-LLM convolution, stencil or finite-element examples to account for operand reuse, partial-sum storage, forwarding, buffering, external bytes and spill/reload. State when each wins and counterexamples when weights fit, outputs dominate, reuse is absent, or the external stream dominates. Map only loop-order/residency ideas to Strata's layer/expert path; distinguish spatial-array hardware from B570 GPU programming.",
-      "prerequisites": [
-        "src/prefill/moe_window.inc, src/prefill/sycl/moe_fused.cpp and src/prefill/sycl/gemm16.cpp exist as a concrete workload context; no measured bottleneck is needed.",
-        "The report directory .cache/strata-research/20261020 exists. Primary architecture papers and official docs can answer this without GPU work, counters, traces, builds or code."
-      ],
       "closest_prior_scopes": [
         {
           "id": "intel_tile_programming_collection_scope",
@@ -6132,37 +6103,39 @@
           "boundary": "Covers discrete-GPU ownership, pipelining, batching and memory pressure, not spatial-array loop nests. Exclude its host-pipeline/overlap survey."
         }
       ],
-      "source_scope": "Include original row-stationary/loop-nest mapping work such as Eyeriss and Timeloop/MAESTRO, plus primary FPGA/CGRA/systolic architecture docs. No code reuse.",
       "report": ".cache/strata-research/20261020/fpga-cgra-asic-loop-nest-dataflow-collection.json",
       "report_budget_bytes": 18432,
       "consumer": "Future Main-owned long-prefill layer/expert residency or RAM-stream-versus-retention decision, if selected after its capacity and transfer evidence is reviewed.",
       "review_point": "At that placement/dataflow decision; prune if it is not used by a selected candidate.",
-      "expected_novelty": "A fixed-capacity spatial/temporal mapping comparison with external weight streams, beyond current Intel GPU tiling and discrete-GPU scheduling references.",
       "native_source_commit": "3b4998f326101fa913788fd368e1674b111dea03",
       "source_sha256": {
         "src/prefill/moe_window.inc": "080d28eeb5fedb539857fb7979d0e5afbf1f72b2688d8eebcbbc680078356cb9",
         "src/prefill/sycl/moe_fused.cpp": "6321199ee8213ee1ff2b370929e7bc723e078d13e30a3b4ecb56fe8a3c03b438",
         "src/prefill/sycl/gemm16.cpp": "9e25396467e1e130a636931bc81c1d29261f420ecb36545c3dba087fe30ac467"
       },
-      "eligibility_review_sha256": "7d87540b4e434f6989602b2410891dfd26ca6800a0f273764d3f75e94df593bb",
-      "taskId": "task_1b57659af253",
-      "dispatchId": "ctx_868b8f569707",
-      "terminal": "term_e7be5068-b65a-4023-bd3f-db0dbb446a70",
-      "incarnation": "ee949ffc-a638-4651-a64c-9f5b97839780",
       "source_policy_revision": "02affe9e7",
-      "model": "GPT-6-Luna high verified at startup",
-      "operator_owns_terminal": true
+      "report_bytes": 17814,
+      "report_sha256": "c83247cb9ba1ba99cf26fa0e14e7f0fa078fccea308f1f15d2ff4d7a9fdd6e1b",
+      "worker_closed": true,
+      "terminal_closed": true,
+      "accepted_worker_done": false,
+      "state": "Native Luna-max accepted conditional reference; retrieval only",
+      "native_review": {
+        "path": ".cache/strata-research/20261020/accelerator-collections-native-review.json",
+        "sha256": "c82bb54a15079bdbeaefa7891cf4ebb7ef55e7cf1bb7c6594e22ab068a30ac01"
+      },
+      "source_corrections": [
+        "The Timeloop paper is ISPASS 2019, not ISCA 2019; its DOI is 10.1109/ISPASS.2019.00042, not the malformed 10.1145/3307650.332221… entry. The official Timeloop citation page confirms venue/pages; use https://doi.org/10.1109/ISPASS.2019.00042.",
+        "The cited Eyeriss PDF URL under people.csail.mit.edu/emer/media/papers/ returned 404 in this review. Its title and ISCA 2016 identity are correct; replace the stale PDF URL with the current official publication page https://eyeriss.mit.edu/energy.html or its current linked PDF."
+      ],
+      "retrieval_condition": "Actual vLLM Xe2/BF16 measured placement/residency decision; spatial-array methods are not GPU implementation evidence.",
+      "limits": "No local speed, saturation, bottleneck or adoption claim. No code reused or relicensing implied; later reuse requires provenance/license check. No fresh scope recommended."
     },
     "accelerator_nonllm_codebook_access_reuse_collection": {
       "scope": "accelerator_nonllm_codebook_access_reuse_collection",
       "classification": "knowledge_collection",
       "schedulable_now": false,
-      "state": "Orca GPT-6-Luna high collection running",
       "question": "For non-LLM accelerator workloads with packed dictionary/codebook-coded matrix values, compare decoding indices on each use, cooperatively staging/reusing table entries per tile, replicating small tables across lanes/compute units, and predecoding bounded tiles before repeated products. Account for index/table traffic, decode work, local storage/ports, reuse distance, replication, setup and expanded-tile costs. Use examples such as product-quantized search and compressed sparse/image/scientific kernels; include counterexamples when each code is consumed once, tables exceed local storage, gathers serialize or expansion defeats compression. Relate only the data-access problem to Strata's quantized expert path; do not review new quantizers or claim local gain.",
-      "prerequisites": [
-        "src/prefill/sycl/moe_fused.cpp and src/prefill/sycl/moe_mmq.cpp exist; the former has IQ2/IQ3 grid and IQ4 lookup accesses, anchoring applicability without proving reuse or cost.",
-        "The report directory exists and the comparison is answerable from original non-LLM papers/official docs plus static source; no benchmark, trace, counter or implementation is required."
-      ],
       "closest_prior_scopes": [
         {
           "id": "cpu_lowbit_lut_methods_collection_scope",
@@ -6189,25 +6162,29 @@
           "boundary": "Covers generic USM cache policy; the new question excludes cache-policy tuning and focuses on encoded indices/table mapping."
         }
       ],
-      "source_scope": "Use original non-LLM sources such as product-quantized search and compressed sparse/image/scientific kernels. Existing CPU LUT note is retrieval context only; no external code reuse.",
       "report": ".cache/strata-research/20261020/accelerator-codebook-access-reuse-collection.json",
       "report_budget_bytes": 18432,
       "consumer": "Conditional reference if Main later selects a source-pinned quantized expert decode, table-staging or representation-access candidate.",
       "review_point": "At selection or rejection of that data-path candidate; prune if no decision uses the report.",
-      "expected_novelty": "Non-LLM accelerator evidence about encoded-index, codebook and compressed-weight movement/reuse, beyond CPU LUT algebra, precision surveys, activation gathers and generic cache policy.",
       "native_source_commit": "3b4998f326101fa913788fd368e1674b111dea03",
       "source_sha256": {
         "src/prefill/sycl/moe_fused.cpp": "6321199ee8213ee1ff2b370929e7bc723e078d13e30a3b4ecb56fe8a3c03b438",
         "src/prefill/sycl/moe_mmq.cpp": "403dccf14f3a632f3cb5a6b7ecbaaf7dcfae5f0c3fbf875dae2789b6f85978f8"
       },
-      "eligibility_review_sha256": "7d87540b4e434f6989602b2410891dfd26ca6800a0f273764d3f75e94df593bb",
-      "taskId": "task_85c2527969fb",
-      "dispatchId": "ctx_b80998fad199",
-      "terminal": "term_565e8921-edeb-466d-83cd-57aaceebc342",
-      "incarnation": "474a7d75-acac-49de-821f-9bb801d965f6",
       "source_policy_revision": "02affe9e7",
-      "model": "GPT-6-Luna high verified at startup",
-      "operator_owns_terminal": true
+      "report_bytes": 18181,
+      "report_sha256": "977d7c10a8c45f57d7027f906458e4b720a50ec1f230cae51ec678ec72367390",
+      "worker_closed": true,
+      "terminal_closed": true,
+      "accepted_worker_done": false,
+      "state": "Native Luna-max accepted conditional reference; retrieval only",
+      "native_review": {
+        "path": ".cache/strata-research/20261020/accelerator-collections-native-review.json",
+        "sha256": "c82bb54a15079bdbeaefa7891cf4ebb7ef55e7cf1bb7c6594e22ab068a30ac01"
+      },
+      "source_corrections": [],
+      "retrieval_condition": "Selected source-pinned quantized expert access/reuse candidate; fixed representation, not new quantizer or generic cache policy.",
+      "limits": "No local speed, saturation, bottleneck or adoption claim. No code reused or relicensing implied; later reuse requires provenance/license check. No fresh scope recommended."
     }
   }
 }

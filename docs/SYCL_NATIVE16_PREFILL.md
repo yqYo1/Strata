@@ -2964,10 +2964,12 @@ fresh fault. Its final qualification fails because Main edited unrelated
 research dispatch metadata while`ur_validation.preload_qualification` required
 the entire research index to be committed. Preserve that failure and all four
 samples; processes4/5 are not run and the six-process performance decision is
-ineligible. Do not retry this root or retrospectively qualify it. Narrow the
-reader to its consumed preload-component subtree, test unrelated edits and
-changed/missing qualification fields, then commit a new comparison plan.
-Native source, runtime, preload artifact and fixture checks remain required.
+ineligible. Do not retry this root or retrospectively qualify it.
+Source`4d4792007` narrows the reader to its consumed preload-component subtree;
+seven host tests pass, including unrelated edits and changed/missing/type-altered
+qualification fields. Original9836 native inputs, eight fixtures, engine and
+preload qualification pass again without new GPU execution. A new matched
+comparison plan is still required; the original cohort remains failed.
 
 The first pair's7.26% PP increase is an observation, not adoption. Its30.1%
 generation-length difference exceeds the declared5% decode band. The two FP16
