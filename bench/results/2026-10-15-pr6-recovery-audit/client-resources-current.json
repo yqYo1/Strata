@@ -1,6 +1,6 @@
 {
   "mode": "engine-compare",
-  "stage": "prepared",
+  "stage": "closed",
   "source_commit": "68f1664298c5b01a3d517e820eb2769207e7db27",
   "build_source_commit": "ac904ae09858ba9d101cd368bd31f07c0cb2dcb8",
   "binary": {
@@ -447,5 +447,126 @@
     "text_cap": 67108864,
     "file_cap": 67108864,
     "total_cap": 67108864
+  },
+  "native_identity": {
+    "pid": 1960292,
+    "start_ticks": 91788935,
+    "sid": 1960263
+  },
+  "effective_environment_verified": true,
+  "requests": [
+    {
+      "ok": true,
+      "err": null,
+      "ttft_s": 52.722,
+      "total_s": 301.138,
+      "prompt_tokens": 33214,
+      "reused_tokens": 0,
+      "read_tokens": 33214,
+      "generated_tokens": 3611,
+      "prompt_tps": 631.4,
+      "prompt_tps_source": "engine",
+      "decode_tps": 14.5,
+      "decode_tps_source": "engine",
+      "prompt_ms": 52601.2,
+      "decode_ms": 248508.4,
+      "drafts_offered": 3102,
+      "drafts_accepted": 2578,
+      "finish_reason": "stop",
+      "request_sha256": "b0a065720a5eb86fa2d3f84d6371e35da774b4ea144d022608d49b80c227cba1",
+      "stream_complete": true,
+      "truncated": false,
+      "generated_tokens_source": "usage",
+      "client_interval": {
+        "request_begin_monotonic_ns": 918012159636453,
+        "first_output_monotonic_ns": 918064882058555,
+        "request_end_monotonic_ns": 918313298115024
+      },
+      "eligible": true,
+      "agreement_eligible": true,
+      "speed_eligible": true,
+      "speed_ineligible_reasons": [],
+      "ineligible_reasons": [],
+      "acceptance_rate": 0.8310767246937459,
+      "usage_generated_tokens": 3611,
+      "completion_includes_thinking": true,
+      "run": 0,
+      "order": 0,
+      "output_sha256": "5b7ae0f207d7804bc693ebde382f1a762c43f477fd01483939648d004cfaf971",
+      "reasoning_sha256": "8daeec41f22d90c32c1c1c5c3cfe4486a9ee6d65fa7ffe8857bfe980c02d411e",
+      "output_chars": 5496,
+      "reasoning_chars": 4368,
+      "reasoning_tokens": null,
+      "workload": "regular-code",
+      "controller_eligible": true
+    }
+  ],
+  "warmups": {
+    "successful_warmups": 4,
+    "successful_long_requests": 1,
+    "phase_order": [
+      "warm-up/chat",
+      "calibration",
+      "calibration",
+      "warm-up/prompt",
+      "long-generation/regular-code"
+    ],
+    "request_sha256": [
+      "6976dd85c26437117139f185ce0ac4da0ab9d1d4eb576dd2f9e252ae99d63f03",
+      "d53e3c2e317b3f08b3b3c48aa391fd7c6bd7e451a3176a85b9b4763f7d85fdf3",
+      "7980bd89f91dbcfd84166ee8ea45c5d77888ee349ccee71596c073a2ed4790a0",
+      "cfe052d03f13fa28f83f44331156d873212064c85036a8652c6eab4a2d7380a5",
+      "b0a065720a5eb86fa2d3f84d6371e35da774b4ea144d022608d49b80c227cba1"
+    ],
+    "valid": true,
+    "journal_sha256": "cd86cf138f0c4ea405394889361b1ee69f9b14d6c41f602c465fd72988353fdc"
+  },
+  "native_exit_code": 0,
+  "resource_collector_exit_code": 0,
+  "route": {
+    "actual_GPU_BF16_rows": 33213,
+    "actual_MoE_mode": 10,
+    "draft_work": {
+      "read_tokens": 33214,
+      "draft_cells": 33213,
+      "batch_count": 5,
+      "path": "batched",
+      "mode": 2
+    },
+    "private_bank": {
+      "actual_private_layers": 48,
+      "stride_layers": {
+        "2176000": 14,
+        "1510400": 5,
+        "1971200": 15,
+        "1715200": 3,
+        "2329600": 9,
+        "1868800": 1,
+        "2662400": 1
+      },
+      "requested_work": {
+        "uploads": 19397,
+        "requested_H2D_bytes": 39622784000,
+        "permanent_hits": 0,
+        "permanent_slots": 314,
+        "total_slots": 384
+      },
+      "physical_PCIe_traffic_measured": false
+    },
+    "restored_dense_layers": 48,
+    "cache_payload_and_map_match": true,
+    "loan_generation": 5
+  },
+  "error": "rounded decode clocks/work do not bind to completed request",
+  "fresh_faults": [],
+  "fault_probe_successful": true,
+  "boot_unchanged": true,
+  "postclosure_analysis": {
+    "status": "pending",
+    "original_execution_outcome_unchanged": true,
+    "failure": "The controller compared a two-decimal ms/window line with one-decimal DONE total using only the former rounding allowance. One-window warmup prints126.05 ms/window versus126.0 ms DONE; this is within the documented output quantization, not a new GPU failure.",
+    "source_contract": "src/program/generate.cpp:6656 two-decimal average and :6794 one-decimal DONE; serve/server.py preserves DONE decode_ms.",
+    "next": "Commit corrected host reader and quantization regression test, then replay the existing closed capture and complete after-model hashes. No new GPU execution or timing-sample replacement.",
+    "raw_consumer": "Main post-closure timing and proc/DRM replay only; current64MiB budget, retire after verified extraction."
   }
 }

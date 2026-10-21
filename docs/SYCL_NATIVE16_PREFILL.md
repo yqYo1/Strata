@@ -3257,9 +3257,17 @@ logs/JIT and completed scope-review transaction:152files/114331335B. The deletio
 manifest is pinned in the compact generation result; original outcomes remain
 unchanged. Only the selected engine/nine fixtures remain for this comparison.
 The14 legacy provenance holds remain separate, pending before any new build.
-The prepared source-only resource diagnostic adds existing decode stage timing
-and passive CPU/DRM counters to one current regular-code request; it has not yet
-run. Its41 host checks pass. The first real admission stopped before native
+The source-only resource diagnostic runs existing decode stage timing and passive
+CPU/DRM counters on one current regular-code request, with no native rebuild.
+The native and collector exit0, owners close and no fresh fault is observed,
+but original controller collection fails its rounded-clock reader. The source
+prints DONE totals to0.1ms and timing averages to0.01ms/window; a one-window
+warmup's126.0ms/126.05ms pair exceeds the reader's incorrect0.00501ms bound.
+Preserve this failed outcome; fix the host reader against both documented print
+resolutions and replay the existing capture, including model post-hashes, before
+qualifying attribution. No GPU rerun is required for that parser correction.
+
+Its41 initial host checks pass. The earlier real admission stopped before native
 launch because the historical build inventory includes the updated Python
 resource-gate test. Admit only that named committed host-only test, record both
 hashes and its revision, and keep every native input/artifact check exact; do
@@ -3267,8 +3275,8 @@ not refresh the original build receipt. At`9c323c437`, nine follow-up host check
 pass; actual admission recovers9836 native inputs and matches all10 current
 artifacts. Both original generation arms replay their official/request/route/
 work/native-closure gates;151 controller and9836 retained native inputs recover.
-CPU arithmetic, RAM bandwidth and GPU wait costs remain unresolved; the
-diagnostic is not a clean throughput comparison.
+CPU arithmetic, RAM bandwidth and GPU wait costs remain unresolved; this
+resource diagnostic is not a clean throughput comparison.
 Generic native-end and draft-work readers now live in`generation_engine.py`.
 The closed packed model/clean launchers and their retired-run-only tests are
 removed; source and original reducer remain recoverable at`6213f0325d807b5eaf319bbf8096c9337f5402bd`.
