@@ -3412,9 +3412,12 @@ rebuild,not model adoption. The previous comparison at`18836f101` used
 `STRATA_IQ_SINGLE_EXACT=1` while the actual model census uses0. Its result
 remains valid within that scope. This fresh comparison fixes0 in both arms and
 resolves that advancement hold without rewriting the old result.
-No model execution has used the new producer yet. Optional drained,request-bound
-IQ2 audit snapshots are committed for the observed two-workload model pilot;
-seven host reader tests reject framing,identity,dispatch and counter failures.
+No model execution has used the new producer yet. The`6c7f7f36d` candidate
+passes18 same-build safety groups with9845 recovered inputs and no fresh GPU
+fault. Its native byte origin is`b0b39c0e1`; the later controller-only build
+preserves engine and fixture hashes. Optional drained,request-bound IQ2 audit
+snapshots are ready for the observed two-workload model pilot; seven host reader
+tests reject framing,identity,dispatch and counter failures.
 Physical CPU/RAM saturation and whole-model speed gains remain unmeasured.
 Closed CPU component builds,tensor captures and consumed review reports are
 retired after original source/recipe recovery; individual samples and deletion
