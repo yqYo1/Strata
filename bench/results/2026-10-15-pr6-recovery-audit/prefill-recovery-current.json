@@ -1719,5 +1719,39 @@
     "consumer_closed": true,
     "kept": "Empty single-use root; all13 individual measured requests and execution/route/fault evidence in Git.",
     "current_original_inputs_verified": 9853
+  },
+  "next_profile_host_plan": {
+    "scope": "Original Main-authored prefill transition observer; host-only contracts before integration. No GPU/engine changes or speed claim.",
+    "compiler": "/nix/store/2msw5nclhpsm80z65dqmjiv8kkras989-clang-wrapper-21.1.8/bin/clang++",
+    "compiler_version": "clang version 21.1.8",
+    "compile": [
+      "c++",
+      "-std=c++20",
+      "-O2",
+      "-fno-fast-math",
+      "-ffp-contract=off",
+      "-pthread",
+      "-Iinclude",
+      "tests/core/prefill_transition_profile_test.cpp",
+      "-o",
+      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-transition-host-v1/profile_test"
+    ],
+    "run": [
+      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-transition-host-v1/profile_test"
+    ],
+    "inputs": {
+      "include/strata/sycl/prefill_transition_profile.hpp": "d11b50732f8c52d7c1ba3a1968b6702dc40c24e7201bde827199193583c63d1b",
+      "include/strata/sycl/cpu_wait_profile.hpp": "fa0744ef84d8ac979d09ef457905318ce1331eb210a9c87da17ad6f949b7f35b",
+      "tests/core/prefill_transition_profile_test.cpp": "525199417340387d7ae97eb0d7ed8183d5b2acaf254fc870f4ba0292099fec76"
+    },
+    "environment": "Inherited host compiler environment; no SYCL runtime is linked or initialized. Record effective compiler process environment digest in external receipt.",
+    "limits": {
+      "compile_wall_s": 120,
+      "run_wall_s": 30,
+      "rss_bytes": 2147483648,
+      "text_bytes": 1048576,
+      "total_bytes": 16777216
+    },
+    "acceptance": "All11 cases pass: off,valid conservation/TLS,idempotence,nested parts,part inside wait,escaped/caught wait exception,nested scopes,existing observer,open part,overflow,emission. Any invalid accounting fails availability; exceptions prevent complete. No retries."
   }
 }
