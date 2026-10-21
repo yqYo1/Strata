@@ -3155,6 +3155,10 @@ Full model digests bracket the cohort; inventory,inode,size,mtime and ctime are
 checked before/after each process. Commit generated configuration and the full
 frozen plan before running. These short outputs cannot qualify decode or model
 adoption; numerical/task and physical262144/session/RESTORE remain separate.
+Five offline tests pass for the clean environment,real shared route reader,
+request bounds,work/owner refusal and separate speed/target decisions. Same-build
+qualification recovers9836 original native inputs and verifies the current
+engine/nine fixtures; this is controller validation,not a new GPU execution.
 This targets
 the observed expert-upload service, not a proven physical PCIe saturation;
 cross-window copy reduction needs the multi-window117K model test with Q8 MTP.
