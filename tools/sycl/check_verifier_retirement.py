@@ -51,7 +51,6 @@ def main():
     profile = status or census or sys.argv[1:] == ['--query-profile']
     guards.require(len(sys.argv) == 1 or profile, 'use no options, --query-profile, --cpu-census or --status-profile; never retry a closed root')
     root = B / ('prefill-status-profile-component-v2' if status else 'decode-query-profile-component-v9') if profile else ROOT
-    if census: root = B / 'decode-cpu-census-component-v1'
     result = A / 'decode-query-profile-component-current.json' if profile else RESULT
     with (B / 'owned-v0141-measurement.lock').open('a+') as lock:
         fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
@@ -62,6 +61,8 @@ def main():
         guards.require(committed == build_path.read_bytes(), 'commit the exact build result first')
         compact = json.loads(committed)
         build = json.loads((ENGINE / 'record.json').read_text())
+        if census:
+            root = B / ('decode-cpu-census-component-' + build['source_commit'][:12])
         guards.require(build['passed'] and build['complete'] and build['ownership_closed'] and
             not build['active'] and all(build[k] == compact[k] for k in
             ('source_commit', 'binary', 'fixtures', 'targets', 'configure_argv', 'compiler')),
