@@ -3159,6 +3159,14 @@ Five offline tests pass for the clean environment,real shared route reader,
 request bounds,work/owner refusal and separate speed/target decisions. Same-build
 qualification recovers9836 original native inputs and verifies the current
 engine/nine fixtures; this is controller validation,not a new GPU execution.
+After recovering149 controller and9836 native inputs, Main retires the closed
+paired diagnostic's141 normal-output/JIT/configuration files (26289776B).
+All19 current/fallback native artifacts remain hash-matched. Only40839B of
+conserved aggregate MoE job sizes remain outside Git for the named next
+matched-GEMM ceiling fixture,with a131072B budget and review at clean-cohort
+closure; remove it if that fixture is not selected. Full layers/traces are not
+retained. Clean admission consumes the compact paired result and retained
+engine/fixtures,not the deleted diagnostic root.
 This targets
 the observed expert-upload service, not a proven physical PCIe saturation;
 cross-window copy reduction needs the multi-window117K model test with Q8 MTP.
