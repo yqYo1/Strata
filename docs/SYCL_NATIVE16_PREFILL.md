@@ -120,7 +120,11 @@ owner off/on children passed full payload/metadata/48-layer/PLE restoration,
 with actual1/23 copies,unchanged15 model assets and no fresh fault. This
 fixture has no inference/expert-cache load and does not establish near-full
 VRAM admission. Model speed,handoff,sustained decode and physical-context
-qualification remain pending.
+qualification remain pending. `canonical_model.py` next admits two checked117K
+processes with flag0/1,identical current decode settings and the same observed
+accounting. Its four host route/refusal/environment tests passed. These two
+first-use runs cannot qualify speed or sustained decode; freeze the repeated
+clean comparison only after this actual-model memory/state admission closes.
 
 
 The current B570 speed reference uses fresh inputs of117489 tokens and separates
