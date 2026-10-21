@@ -19,8 +19,11 @@ unqualified until it is fixed. New IQ2 and MTP model cohorts remain deferred
 during this restoration. Controller `acc1abd4b` prepares the matched117K
 baseline on the current phase-scoped build; its four host launch/evidence-refusal
 tests and the same-build packed smoke/validate gates (two/three cases) passed.
-The checked117K process is next; restoration and decode preservation remain
-unqualified.
+The checked117K request passed at924.3tok/s, with normal native exit,
+exact cache payload/map restoration, all48 dense layers restored, unchanged
+model hashes and no fresh fault. This first-use diagnostic is observer-charged.
+Three clean processes are next; restoration and sustained decode preservation
+remain unqualified.
 
 The current B570 speed reference uses fresh inputs of117489 tokens and separates
 the first long request from later requests in each independent process.
