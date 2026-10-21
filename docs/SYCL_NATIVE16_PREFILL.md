@@ -22,11 +22,29 @@ tests and the same-build packed smoke/validate gates (two/three cases) passed.
 The checked117K request passed at924.3tok/s, with normal native exit,
 exact cache payload/map restoration, all48 dense layers restored, unchanged
 model hashes and no fresh fault. This first-use diagnostic is observer-charged.
-Two clean processes passed with subsequent medians of1002.146/1002.180tok/s
-(first-long929.7/929.9), matching the earlier packed1256-slot readings. One
-clean process remains. The old-owned128 fastest configuration and current1256-slot
-decode placement differ; restoration and sustained decode preservation remain
-unqualified.
+All three clean processes passed with subsequent medians of
+1002.146/1002.182/1002.584 tok/s (nine individual subsequent samples span
+1001.932–1002.666). Their first-long readings are929.738/929.915/903.454;
+keep the slower third first-use result without dismissing it as noise. Every
+request read117489 tokens and generated24 thinking tokens. All processes
+closed normally with unchanged model hashes and no fresh faults. This
+reproduces the earlier packed1256-slot steady readings, but does not establish
+restoration or sustained decode preservation. See the
+[closed baseline](../bench/results/2026-10-15-pr6-recovery-audit/prefill-recovery-current.json).
+
+The older owned128-slot configuration recorded subsequent medians of
+1005.8/1004.2/1005.1, with different source and decode placement. Do not lower
+the present1256-slot decode cache to reproduce that whole configuration.
+The next question is prefill-to-decode transition cost: measure disjoint wall
+and thread CPU time for allocation/free, transfer submission, completion waits,
+publication and cache refill before choosing an overlap or allocation change.
+The older attributed run reported388.3ms of expert refill outside the native
+dense region and819.1ms in dense restore. These are charged wrapper intervals,
+not PCIe/GPU service or proof of a removable delay. Native dense restoration
+already batches copies with one final wait. Preserve completion/publication
+before the prompt timer ends; moving work into decode is not an improvement.
+Restoration remains unqualified until repeated sustained decode and state-handoff
+checks establish independence.
 
 The current B570 speed reference uses fresh inputs of117489 tokens and separates
 the first long request from later requests in each independent process.
