@@ -7641,7 +7641,7 @@ int main(int argc, char** argv) {
         // generated token and the MTP's first cell); otherwise the token loop already did that.
         bool first_window = native_pack;
 #ifdef STRATA_ENABLE_SYCL
-        auto mtp_observation = mtp.observe_draft_request(1);
+        auto mtp_observation = mtp.observe_draft_request(1, true);
 #endif
         if (use_mtp && !first_window &&
             !mtp.draft_first(o.spec, ss.R, x, p - 1, drafts.data(), err, dprob.data(), (float) o.spec_min_p)) {

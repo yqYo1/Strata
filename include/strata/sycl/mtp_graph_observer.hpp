@@ -30,6 +30,7 @@ private:
         bool valid = false, queue_delay_valid = false;
     };
     bool enabled_ = false, profiled_ = false, open_ = false, consumed_ = false, invalid_ = false;
+    bool request_override_ = false;
     std::uint64_t request_ = 5, skip_ = 8, limit_ = max_windows, seen_ = 0, windows_ = 0;
     std::uint64_t completed_ = 0, failed_ = 0, replayed_ = 0, valid_clocks_ = 0, queue_clocks_ = 0;
     std::uint64_t envelope_ns_ = 0, last_end_ = 0, raw_count_ = 0;
@@ -57,9 +58,10 @@ private:
             !cpu_wait_profile::duration(b.cpu - a.cpu)) { invalid_ = true; return false; }
         out.wall += b.wall - a.wall; out.cpu += b.cpu - a.cpu; return true;
     }
-    bool begin(std::uint64_t request) noexcept {
+    bool begin(std::uint64_t request, bool single_request) noexcept {
         if (!enabled_) return false;
         if (open_) { invalid_ = true; return false; }
+        if (single_request && !request_override_ && !consumed_) request_ = 1;
         if (request != request_ || consumed_) return false;
         consumed_ = true; open_ = true;
         return true;
@@ -115,11 +117,15 @@ public:
         if (std::strcmp(mode, "host") != 0 && std::strcmp(mode, "graph") != 0) {
             err = "mtp observer: mode must be host or graph"; return false;
         }
+#if !defined(__linux__)
+        err = "mtp observer: calling-thread CPU attribution requires Linux"; return false;
+#endif
         if (!number("STRATA_SYCL_MTP_OBSERVER_REQUEST", request_, 1, 1000000) ||
             !number("STRATA_SYCL_MTP_OBSERVER_SKIP", skip_, 0, 1000000) ||
             !number("STRATA_SYCL_MTP_OBSERVER_WINDOWS", limit_, 1, max_windows)) {
             err = "mtp observer: invalid request/skip/windows budget"; return false;
         }
+        request_override_ = std::getenv("STRATA_SYCL_MTP_OBSERVER_REQUEST") != nullptr;
         enabled_ = true; profiled_ = std::strcmp(mode, "graph") == 0; return true;
     }
     bool enabled() const noexcept { return enabled_; }
@@ -127,13 +133,14 @@ public:
     class Request {
         MtpGraphObserver* owner_;
     public:
-        Request(MtpGraphObserver& o, std::uint64_t id) noexcept : owner_(o.begin(id) ? &o : nullptr) {}
+        Request(MtpGraphObserver& o, std::uint64_t id, bool single_request) noexcept
+            : owner_(o.begin(id, single_request) ? &o : nullptr) {}
         Request(const Request&) = delete;
         Request& operator=(const Request&) = delete;
         void finish(bool complete) noexcept { if (owner_) { owner_->end(complete); owner_ = nullptr; } }
         ~Request() noexcept { finish(false); }
     };
-    Request request(std::uint64_t id) noexcept { return Request(*this, id); }
+    Request request(std::uint64_t id, bool single_request = false) noexcept { return Request(*this, id, single_request); }
     class Window {
         MtpGraphObserver* o_ = nullptr;
         Stamp begin_{};

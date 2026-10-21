@@ -115,7 +115,9 @@ public:
     int64_t rounds = 0;
 #ifdef STRATA_ENABLE_SYCL
     // Explicit request lifetime; destruction on an error emits incomplete data.
-    auto observe_draft_request(uint64_t id) noexcept { return graph_observer_.request(id); }
+    auto observe_draft_request(uint64_t id, bool single_request = false) noexcept {
+        return graph_observer_.request(id, single_request);
+    }
 #endif
 
     /// E-9: the prompt path computes this layer's prompt K/V in batches (Prefill::draft_kv): its tensors, its K/V

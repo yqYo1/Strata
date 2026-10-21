@@ -133,12 +133,13 @@ KV writes or existing round/step order. Profiling can change graph optimization
 throughout the process, including outside the sampled windows. This is not a
 clean speed measurement or an optimization adoption.
 
-The request selector defaults to 5 (the first long-generation request after the
-four benchmark warm-ups). `STRATA_SYCL_MTP_OBSERVER_REQUEST` selects another
-positive request sequence, independent of CPU census/audit settings; CLI uses
-request 1. `STRATA_SYCL_MTP_OBSERVER_SKIP` defaults to 8 draft calls and
+The server request selector defaults to 5 (the first long-generation request
+after the four benchmark warm-ups); the single-request CLI defaults to 1.
+`STRATA_SYCL_MTP_OBSERVER_REQUEST` explicitly overrides either default,
+independent of CPU census/audit settings, without mutating the environment.
+`STRATA_SYCL_MTP_OBSERVER_SKIP` defaults to 8 draft calls and
 `STRATA_SYCL_MTP_OBSERVER_WINDOWS` defaults to 64, with a hard maximum of 64.
-One selected request per process may emit at most 41 lines: a summary, eight
+One selected request per process may emit at most 41 observer records: a summary, eight
 phase aggregates and the first 32 raw graph-clock tuples. The omitted-tuple
 count is explicit. This bounds query/output work; the external job deadline
 must still supervise a driver call that does not return.
@@ -151,8 +152,9 @@ it is not automatically classified as CPU arithmetic. The outer scope is each
 `draft_first()` residual staging and differs from the legacy `ms_draft` clock,
 which starts after round capture. Invalid clocks, overlapping regions,
 exceptions, incomplete requests and insufficient windows are not a complete
-profile. Thread CPU time excludes runtime/helper threads and is not CPU
-saturation evidence.
+profile. Calling-thread CPU time excludes runtime/helper threads and is not CPU
+saturation evidence. Non-Linux thread CPU attribution is unsupported; enabling
+the diagnostic there is rejected during load, before MTP GPU allocations.
 
 Graph timestamps are queried only after checked completion, with no additional
 marker or wait. Partial tuples and status are retained; unsupported/invalid
