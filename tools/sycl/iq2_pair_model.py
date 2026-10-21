@@ -88,12 +88,15 @@ def prepare():
     ROOT.mkdir(mode=0o700);MODEL.mkdir()
     for name in ('cache','tmp'):(MODEL/name).mkdir()
     config=copy.deepcopy(reference['config']);old_root=str(Path(config['log']).parent)
+    original_profile=config['args'][config['args'].index('--expert-profile')+1]
     config['args'][config['args'].index('--expert-profile')+1]=str(MODEL/'expert-profile.bin')
     config.update(log=str(MODEL/'engine.stderr'),env={})
     env={k:v.replace(old_root,str(MODEL))for k,v in reference['environment'].items()}
     env.update(STRATA_IQ_SINGLE_EXACT='0',STRATA_IQ2_PAIR='1',STRATA_IQ2_PAIR_AUDIT='1',
         STRATA_CPU_WORK_CENSUS='1',STRATA_DECODE_TIMING='1')
     shutil.copyfile(P/'data/expert-profile.bin',MODEL/'expert-profile.bin')
+    guards.require(gen.common.digest(MODEL/'expert-profile.bin')==reference['generated_inputs'][original_profile],
+        'IQ2 expert profile differs from the closed model baseline')
     write(MODEL/'config.json',config);write(MODEL/'plan.json',dict(binary=full['binary'],native_validation_probe=None))
     with socket.socket()as sock:
         sock.bind(('127.0.0.1',0));port=sock.getsockname()[1]
