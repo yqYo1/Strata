@@ -451,13 +451,14 @@ def retain_current():
 
 def main():
     guards.require(len(sys.argv) == 1 or sys.argv[1:] in
-                   (['retain-current'], ['build-copy-safety'], ['build-status-profile'], ['rebuild-copy-safety'], ['rebuild-arena-copy'], ['rebuild-event-gate'], ['rebuild'], ['rebuild-attention'], ['rebuild-gemm'], ['rebuild-gdn'], ['rebuild-down'], ['rebuild-ordered'], ['rebuild-submission'], ['rebuild-gu'], ['rebuild-mixed'], ['rebuild-expert-bank'], ['rebuild-packed-bank'], ['rebuild-cpu-census'], ['rebuild-mtp-observer'], ['rebuild-prefill-transition']),
+                   (['retain-current'], ['build-copy-safety'], ['build-status-profile'], ['rebuild-copy-safety'], ['rebuild-arena-copy'], ['rebuild-event-gate'], ['rebuild'], ['rebuild-attention'], ['rebuild-gemm'], ['rebuild-gdn'], ['rebuild-down'], ['rebuild-ordered'], ['rebuild-submission'], ['rebuild-gu'], ['rebuild-mixed'], ['rebuild-expert-bank'], ['rebuild-packed-bank'], ['rebuild-cpu-census'], ['rebuild-mtp-observer'], ['rebuild-prefill-transition'], ['rebuild-large-copy']),
                    'use build_engine.py retain-current or a named rebuild mode')
     rebuild = len(sys.argv) == 2 and sys.argv[1] not in ('build-copy-safety', 'build-status-profile')
     attention = sys.argv[1:] == ['rebuild-attention']
     targets = ['strata']
     event_gate=sys.argv[1:]==['rebuild-event-gate']
-    transition = sys.argv[1:] == ['rebuild-prefill-transition']
+    large_copy = sys.argv[1:] == ['rebuild-large-copy']
+    transition = large_copy or sys.argv[1:] == ['rebuild-prefill-transition']
     observer = transition or sys.argv[1:] == ['rebuild-mtp-observer']
     census = observer or sys.argv[1:] == ['rebuild-cpu-census']
     if census or sys.argv[1:] in (['build-copy-safety'], ['build-status-profile'], ['rebuild-copy-safety'], ['rebuild-arena-copy'], ['rebuild-event-gate'], ['rebuild-packed-bank']):
@@ -498,6 +499,8 @@ def main():
         targets += ['sycl_graph_envelope_test', 'iq2_phase_host_test']
     if transition:
         targets += ['prefill_transition_host_test','sycl_native_dense_bank_test']
+    if large_copy:
+        targets += ['sycl_large_h2d_bench']
     with (B / 'owned-v0141-measurement.lock').open('a+') as lock:
         fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
         guards.no_model_owners([])
