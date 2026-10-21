@@ -3111,6 +3111,12 @@ Next require the shared same-build safety suite and a separately committed
 117K model work/clean-speed comparison. This targets
 the observed expert-upload service, not a proven physical PCIe saturation;
 cross-window copy reduction needs the multi-window117K model test with Q8 MTP.
+After committing the component results, Main recovers22 original component
+inputs and the CPU compile recipe, then retires15 closed output/CPU-fixture
+files (433524B), including the successful full API trace. The compact result
+retains its trace-presence/hash evidence and the deletion manifest. Current
+candidate engine/nine fixtures and fallback3b/eight fixtures all match their
+hashes after cleanup;14 older provenance holds remain separate.
 
 Source inspection binds the native expert footer to deltas taken immediately
 before the target verifier loop, after prompt prefill. For Q8/FP16 respectively,
