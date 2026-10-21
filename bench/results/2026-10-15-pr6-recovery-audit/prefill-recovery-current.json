@@ -2839,5 +2839,31 @@
     },
     "environment": "Explicit minimal PATH,LANG and PYTHONDONTWRITEBYTECODE; no inherited application credentials.",
     "acceptance": "Four tests pass, normal exit, complete observation, child reaped and session empty. No retry in the same root. Previous budget-invalid result remains failed."
+  },
+  "large_copy_parser_host": {
+    "source_commit": "9ac868b8e8b2fd1bba1b4a3c2ad33ef5b6f47bd3",
+    "command": [
+      "/usr/bin/python3",
+      "-B",
+      "tests/core/test_large_copy.py"
+    ],
+    "tests": 4,
+    "passed": true,
+    "ownership_closed": true,
+    "controller_sha256": "11180e5c978b77deef329bb09133d124e3ec3fba245b2f27db0b096292123b51",
+    "test_sha256": "2f1c4f73e07c399fa983a7e3c84180a8041a38cf6291bf8421d01b81923dadb6",
+    "environment": {
+      "PATH": "/usr/bin:/bin",
+      "LANG": "C.UTF-8",
+      "PYTHONDONTWRITEBYTECODE": "1"
+    },
+    "budgets": {
+      "wall_s": 30,
+      "cpu_s": 30,
+      "rss_bytes": 1073741824,
+      "text_bytes": 1048576,
+      "total_bytes": 4194304
+    },
+    "GPU_executed": false
   }
 }
