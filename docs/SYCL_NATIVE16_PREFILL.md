@@ -54,8 +54,8 @@ queue work, wait, pointer publication or scheduling change. Native-owner entry
 excludes the earlier graph/borrower retirement and canonical preparation;
 dense restore includes canonical/PLE and graph/verifier resume. Preserve the
 existing version2 outer diagnostic for that wider boundary. Logical byte counts
-are requested payloads, not bus measurements. The standalone11-case host contract and the new build's11 observer/24 phase
-cases plus18 shared engine groups passed. Four independent device children
+are requested payloads, not bus measurements. The standalone11-case host
+contract and the new build's11 observer/24 phase cases plus18 shared engine groups passed. Four independent device children
 then passed packed smoke/validate and real300-matrix,48-layer owner/payload
 checks with the observer off/on and two restoration cycles. One observed117K
 model request closed normally at923.483tok/s with24 thinking tokens, unchanged
@@ -81,8 +81,9 @@ model's observed131960832bytes free after restore remain unmeasured.
 The reviewed handoff alternatives add no speed evidence. Current dense/PLE
 restoration and graph recapture precede queued cache refill/table upload.
 A free waits before deallocation, but that alone does not establish whether
-already submitted GPU work overlaps while the host waits. The remaining eligible research is the large-copy source/granularity contract
-and discriminating benchmark, not another general handoff or graph survey.
+already submitted GPU work overlaps while the host waits. The remaining
+eligible research concerns the large-copy source/granularity contract and its
+discriminating benchmark.
 
 The current B570 speed reference uses fresh inputs of117489 tokens and separates
 the first long request from later requests in each independent process.
