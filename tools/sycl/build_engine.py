@@ -385,13 +385,14 @@ def retain_current():
 
 def main():
     guards.require(len(sys.argv) == 1 or sys.argv[1:] in
-                   (['retain-current'], ['build-copy-safety'], ['build-status-profile'], ['rebuild-copy-safety'], ['rebuild-arena-copy'], ['rebuild-event-gate'], ['rebuild'], ['rebuild-attention'], ['rebuild-gemm'], ['rebuild-gdn'], ['rebuild-down'], ['rebuild-ordered'], ['rebuild-submission'], ['rebuild-gu'], ['rebuild-mixed'], ['rebuild-expert-bank'], ['rebuild-packed-bank'], ['rebuild-cpu-census']),
+                   (['retain-current'], ['build-copy-safety'], ['build-status-profile'], ['rebuild-copy-safety'], ['rebuild-arena-copy'], ['rebuild-event-gate'], ['rebuild'], ['rebuild-attention'], ['rebuild-gemm'], ['rebuild-gdn'], ['rebuild-down'], ['rebuild-ordered'], ['rebuild-submission'], ['rebuild-gu'], ['rebuild-mixed'], ['rebuild-expert-bank'], ['rebuild-packed-bank'], ['rebuild-cpu-census'], ['rebuild-mtp-observer']),
                    'use build_engine.py retain-current or a named rebuild mode')
     rebuild = len(sys.argv) == 2 and sys.argv[1] not in ('build-copy-safety', 'build-status-profile')
     attention = sys.argv[1:] == ['rebuild-attention']
     targets = ['strata']
     event_gate=sys.argv[1:]==['rebuild-event-gate']
-    census = sys.argv[1:] == ['rebuild-cpu-census']
+    observer = sys.argv[1:] == ['rebuild-mtp-observer']
+    census = observer or sys.argv[1:] == ['rebuild-cpu-census']
     if census or sys.argv[1:] in (['build-copy-safety'], ['build-status-profile'], ['rebuild-copy-safety'], ['rebuild-arena-copy'], ['rebuild-event-gate'], ['rebuild-packed-bank']):
         targets += ['sycl_verifier_retirement_test', 'sycl_submission_test']
     if census or sys.argv[1:] in (['build-status-profile'], ['rebuild-arena-copy'],['rebuild-event-gate'], ['rebuild-packed-bank']):
@@ -426,6 +427,8 @@ def main():
         targets += ['sycl_expert_bank_test']
     if census:
         targets += ['cpu_work_census_host_test']
+    if observer:
+        targets += ['sycl_graph_envelope_test']
     with (B / 'owned-v0141-measurement.lock').open('a+') as lock:
         fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
         guards.no_model_owners([])
@@ -491,6 +494,8 @@ def main():
                           'tools/sycl/check_verifier_retirement.py',
                           'tools/sycl/check_event_gate.py',
                           'tools/sycl/check_host_profile.py',
+                          'tools/sycl/check_mtp_observer.py',
+                          'tools/sycl/ur_validation.py',
                           'tools/sycl/measure_gemm.py',
                           'tools/sycl/measure_gdn_columns.py',
                           'tools/sycl/measure_down_scatter.py',
@@ -515,6 +520,11 @@ def main():
                 Path('/usr/include/level_zero/ze_api.h'),
                 compiler.parent.parent/'include/sycl/ext/oneapi/backend/level_zero.hpp',
                 compiler.parent.parent/'include/sycl/ext/oneapi/backend/level_zero_ownership.hpp')}
+        if observer:
+            headers = compiler.parent.parent/'include/sycl/ext/oneapi/experimental'
+            external_headers = {str(path):digest(path) for path in
+                [headers/'graph.hpp', *sorted((headers/'graph').glob('*.hpp'))]}
+            guards.require(len(external_headers) > 1, 'installed graph headers required')
         ROOT.mkdir(mode=0o700, exist_ok=rebuild)
         for name in ('tmp', 'cache'):
             (ROOT / name).mkdir(exist_ok=rebuild)
@@ -534,8 +544,11 @@ def main():
         if external_headers:
             record['fixture_external_headers']=external_headers
             record['fixture_external_header_origin']=dict(level_zero='libze-dev installed v1.17-r1.17.24 header',
-                sycl='Installed original Intel LLVM v7.1.1 compiler headers; no XeStrata application source',
+                sycl='Installed original Intel LLVM compiler headers; no XeStrata application source',
+                compiler_version=subprocess.check_output([str(compiler),'--version'],text=True,timeout=10).strip(),
                 packages=subprocess.check_output(['dpkg-query','-W','-f=${Package} ${Version}\n','libze-dev','libze1'],text=True).splitlines())
+            if observer:
+                record['fixture_external_header_origin'].pop('level_zero')
         if retained_reference:
             record['retained_validation_reference'] = retained_reference
         if legacy_exception:
