@@ -52,9 +52,10 @@ Main's MTP observer source at `0b39c726f` and retention-controller
 migration at `e7c12403b` are integrated into `feature/sycl`. All19 host-only
 retention/controller tests passed at `42e850809`; native observer code remains
 uncompiled and unrun.
-Preserve the validated6c engine and
-its ten fixtures using the exact same-build model archive, then perform bounded
-graph support and applicable engine checks. Graph clocks are nonadditive
+The validated6c engine and ten fixtures are preserved and hash-checked against
+the exact same-build model archive; 9845 original inputs were recovered from
+Git. The unmeasured child branch/worktree is retired. Next, pin the observer
+build and perform bounded graph support and applicable engine checks. Graph clocks are nonadditive
 first-to-last-node envelopes; hardware service and saturation remain unknown.
 
 A post-hoc mechanism check limits what this IQ2 component can explain. In the
