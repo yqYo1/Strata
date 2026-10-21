@@ -3260,7 +3260,10 @@ run. Its41 host checks pass. The first real admission stopped before native
 launch because the historical build inventory includes the updated Python
 resource-gate test. Admit only that named committed host-only test, record both
 hashes and its revision, and keep every native input/artifact check exact; do
-not refresh the original build receipt. Follow-up validation remains pending.
+not refresh the original build receipt. At`9c323c437`, nine follow-up host checks
+pass; actual admission recovers9836 native inputs and matches all10 current
+artifacts. Both original generation arms replay their official/request/route/
+work/native-closure gates;151 controller and9836 retained native inputs recover.
 CPU arithmetic, RAM bandwidth and GPU wait costs remain unresolved; the
 diagnostic is not a clean throughput comparison.
 Generic native-end and draft-work readers now live in`generation_engine.py`.
