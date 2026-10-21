@@ -6501,6 +6501,8 @@ int main(int argc, char** argv) {
             }
             tr("prompt done (slots refilled)");
             const double prompt_ms = std::chrono::duration<double, std::milli>(Clock::now() - r0).count();
+            strata::kernels::cpu::NativeGuPhaseScope native_decode_phase(
+                drive.d.native_gu_phase, strata::kernels::cpu::NativeGuPhase::Decode);
             std::printf("REUSED %lld\n", (long long) resume);   // the prompt is read; the first window comes next
             std::fflush(stdout);
             // the verify windows: the first holds the last prompt token alone
@@ -7260,6 +7262,9 @@ int main(int argc, char** argv) {
             std::fprintf(stderr, "strata generate: ran out of context at position %lld\n", (long long) pos);
             return 2;
         }
+        strata::kernels::cpu::NativeGuPhaseScope native_token_phase(drive.d.native_gu_phase,
+            pos >= n_prompt - 1 ? strata::kernels::cpu::NativeGuPhase::Decode
+                                : strata::kernels::cpu::NativeGuPhase::Prefill);
         // **THE TOKEN TIMER STARTS HERE, BEFORE ANY OF THE TOKEN'S WORK (A7).**  It used to start after
         // `put_input`/`embed_row`, which excluded the embedding and the PLE window advance from the reported
         // rate, and it stopped before the NaN scan, the logits dump and the sampler.  The published tok/s
@@ -7640,6 +7645,8 @@ int main(int argc, char** argv) {
         // plan v0.3 P6: with a native pack the first window is the last prompt token alone (it produces the first
         // generated token and the MTP's first cell); otherwise the token loop already did that.
         bool first_window = native_pack;
+        strata::kernels::cpu::NativeGuPhaseScope native_spec_phase(
+            drive.d.native_gu_phase, strata::kernels::cpu::NativeGuPhase::Decode);
 #ifdef STRATA_ENABLE_SYCL
         auto mtp_observation = mtp.observe_draft_request(1, true);
 #endif

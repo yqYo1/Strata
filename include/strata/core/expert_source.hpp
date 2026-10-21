@@ -228,6 +228,9 @@ struct GpuPlanSink {
 struct NativeHitGraphs;
 #endif
 struct ExpertDispatch {
+    // Prompt/window reads keep the baseline CPU producer. Generation enters a
+    // host-owned scope after prefill; each pool batch copies this selection.
+    strata::kernels::cpu::NativeGuPhase native_gu_phase = strata::kernels::cpu::NativeGuPhase::Prefill;
     strata::kernels::cpu::ExpertPool* pool = nullptr;
     ExpertSource* src = nullptr;
     RouterLookahead* lookahead = nullptr;   ///< CS-T: warms the next layer's predicted file-tier experts

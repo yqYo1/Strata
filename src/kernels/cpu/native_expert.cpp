@@ -148,7 +148,7 @@ void native_quant_h(const NativeFmt& f, const float* h, void* dst) {
 }
 
 void native_gu_rows(const NativeFmt& f, const uint8_t* blob, const void* const* act, int nt, float* const* ff,
-                    int r0, int r1) {
+                    int r0, int r1, NativeGuPhase phase) {
     GuAuditScope audit(f,nt,r0,r1);
     // the multi-token kernels decode the weights once for all tokens: 2.0-2.4x ggml-cpu at three tokens, no faster
     // at one (all are bound by the codebook lookups, ~5 GB/s per core), measured by native_expert_parity.  AVX-512
@@ -188,7 +188,7 @@ void native_gu_rows(const NativeFmt& f, const uint8_t* blob, const void* const* 
     // Environment remains immutable after startup; existing MT dispatch above
     // and STRATA_NO_IQ256 retain their precedence.
     static const bool iq2_pair=[] {const char* v=std::getenv("STRATA_IQ2_PAIR");return v&&v[0]=='1'&&v[1]=='\0';}();
-    if(iq2_pair&&avx2&&!cpu512&&nt==1&&iq2_pair_gu_rows(f,blob,act[0],ff[0],r0,r1)) {
+    if(phase==NativeGuPhase::Decode&&iq2_pair&&avx2&&!cpu512&&nt==1&&iq2_pair_gu_rows(f,blob,act[0],ff[0],r0,r1)) {
         audit.paired=true;
         return;
     }

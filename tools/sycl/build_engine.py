@@ -428,7 +428,7 @@ def main():
     if census:
         targets += ['cpu_work_census_host_test']
     if observer:
-        targets += ['sycl_graph_envelope_test']
+        targets += ['sycl_graph_envelope_test', 'iq2_phase_host_test']
     with (B / 'owned-v0141-measurement.lock').open('a+') as lock:
         fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
         guards.no_model_owners([])
@@ -567,14 +567,19 @@ def main():
             commands = [('configure', argv)]
             if census:
                 commands += [('compile-host-contract', ['/usr/bin/cmake', '--build', str(ROOT/'build'),
-                    '--target', 'cpu_work_census_host_test', '-j', '4']),
+                    '--target', 'cpu_work_census_host_test', *(['iq2_phase_host_test'] if observer else []), '-j', '4']),
                     ('host-contract', [str(ROOT/'build/cpu_work_census_host_test')])]
+            if observer:
+                commands += [('phase-host-'+str(arm), [str(ROOT/'build/iq2_phase_host_test'),'--pair='+str(arm)])
+                             for arm in (0,1)]
             commands.append(('compile-link', ['/usr/bin/cmake', '--build', str(ROOT / 'build'),
                 '--target', *targets, '-j', '4']))
             for label, command in commands:
                 host_contract = label == 'host-contract'
-                entry, out, err = owner.run(label, command, env, P,
-                    wall=30 if host_contract else 1800, cpu=60 if host_contract else 7200,
+                phase_contract = label.startswith('phase-host-')
+                child_env = dict(env, STRATA_IQ2_PAIR=label[-1], STRATA_IQ2_PAIR_AUDIT='1', STRATA_IQ_SINGLE_EXACT='0') if phase_contract else env
+                entry, out, err = owner.run(label, command, child_env, P,
+                    wall=30 if host_contract or phase_contract else 1800, cpu=60 if host_contract or phase_contract else 7200,
                     rss_cap=12 << 30, file_cap=256 << 20, text_cap=64 << 20, total_cap=4 << 30)
                 guards.require(supervision.closed(entry) and entry.get('exit_code') == 0,
                                label + ' failed: ' + (err.read_text(errors='replace') +
@@ -587,6 +592,13 @@ def main():
                     record['cpu_census_host_contract'] = dict(cases=15, passed=True,
                         exit_code=0, ownership_closed=True, fixture_sha256=digest(command[0]),
                         stdout_sha256=digest(out), stderr_sha256=digest(err), GPU_executed=False)
+                if phase_contract:
+                    guards.require(out.read_text().strip() == 'iq2_phase_scope cases=12 pair='+label[-1]+
+                        ' prefill_pair_rows=0 decode_dispatch=PASS NT2_reference=PASS bits=PASS guards=PASS scope_restore=PASS',
+                        'incomplete per-phase CPU dispatch contract')
+                    record.setdefault('cpu_phase_host_contract', []).append(dict(arm=int(label[-1]),cases=12,
+                        passed=True,ownership_closed=True,GPU_executed=False,fixture_sha256=digest(command[0]),
+                        stdout_sha256=digest(out),stderr_sha256=digest(err)))
             # Detect input changes made while compilation was in progress.
             for source in [project, *dependencies]:
                 for name, expected in source['source_sha256'].items():

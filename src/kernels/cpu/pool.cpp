@@ -555,7 +555,7 @@ void ExpertPool::drain(int id, ExpertScratch& scratch, uint32_t epoch) {
                 } else if (mode_ == 5) {
                     float* ff[MAXT];
                     for (int t = 0; t < mjobs_[e].nt; ++t) ff[t] = sb.ff[t];
-                    native_gu_rows(*nfmt_, mjobs_[e].blob, mjobs_[e].nact, mjobs_[e].nt, ff, r0, r1);
+                    native_gu_rows(*nfmt_, mjobs_[e].blob, mjobs_[e].nact, mjobs_[e].nt, ff, r0, r1, native_gu_phase_);
                 } else if (nfmt_->d_type == 42) {
                     // Q2_0 down: q2_rows_any selects AVX-512 or AVX2 on the current CPU.
                     const ActQ* a2[MAXT];
@@ -660,7 +660,7 @@ void ExpertPool::run_split_multi(ExpertJobMulti* jobs, int n) {
     ms_drain_ += std::chrono::duration<double, std::milli>(std::chrono::steady_clock::now() - t0).count();
 }
 
-void ExpertPool::run_split_multi_native(const NativeFmt& f, ExpertJobMulti* jobs, int n) {
+void ExpertPool::run_split_multi_native(const NativeFmt& f, ExpertJobMulti* jobs, int n, NativeGuPhase phase) {
     if (n <= 0) return;
     const auto t0 = std::chrono::steady_clock::now();
     // more distinct experts than buffers: run them in batches
@@ -668,6 +668,9 @@ void ExpertPool::run_split_multi_native(const NativeFmt& f, ExpertJobMulti* jobs
         const int nb = (std::min)(kMaxSplitMulti, n - b0);
         mjobs_ = jobs + b0;
         nfmt_ = &f;
+        // Published by the same run_phase release/acquire protocol as mjobs_
+        // and nfmt_; unchanged until every worker has parked on return.
+        native_gu_phase_ = phase;
         const int threads = n_ + (host_works_ ? 1 : 0);
         mtasks_ = 3 * threads;
         mrows_ = (int64_t) nb * FF;

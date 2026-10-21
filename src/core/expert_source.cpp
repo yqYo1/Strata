@@ -2113,7 +2113,7 @@ void expert_pool_dispatch_multi(ExpertDispatch& d, const float* x_f, const int32
     if (native) {
         // Native jobs borrow dispatch-owned buffers. Do not unwind them if completion throws.
         try {
-            d.pool->run_split_multi_native(lay.fmt[(size_t) d.layers], d.jobs_multi.data(), njobs);
+            d.pool->run_split_multi_native(lay.fmt[(size_t) d.layers], d.jobs_multi.data(), njobs, d.native_gu_phase);
         } catch (...) {
             std::fprintf(stderr, "strata: native expert pool failed before completion; retaining owners and aborting\n");
             strata::core::release_gpu_waits(stderr);
