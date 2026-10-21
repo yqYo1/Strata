@@ -23,7 +23,7 @@ and [current model comparison](../bench/results/2026-10-15-pr6-recovery-audit/iq
 The original observed pilot remains at commit`bedfdf312`; the repeated
 comparison's controller pins and validates that Git record directly.
 
-Four of the six planned same-binary processes have closed normally, with no
+Five of the six planned same-binary processes have closed normally, with no
 fresh driver fault. The first baseline/candidate pair measured code generation
 at14.6/14.8 tok/s and prose at9.4/9.5 tok/s. The code request's prefill fell
 from637.4 to484.7 tok/s (52104.8 to68521.9ms for33214 fresh tokens); prose
@@ -38,6 +38,18 @@ baseline has now closed at code PP 637.2 / TG 14.4 and prose PP 761.0 / TG 9.4.
 The second pair's candidate/base decode ratios are 1.01668/1.01084 from actual
 tokens and engine milliseconds. All three pairs are still required; the first
 pair's prefill regression remains in the result and its prospective gate.
+The third baseline process measured code PP 636.6 / TG 14.5 and prose
+PP 761.0 / TG 9.3 tok/s, with the same fresh/generated-token counts and observed
+MTP acceptance classes. Its model asset hashes and all process/fault gates
+passed. The last candidate process remains; the first-pair prefill gate is
+still binding and no clean-comparison or model-adoption decision is established.
+
+Main's isolated `yqYo1/mtp-graph-observer` source at `3550c84b1` now connects a
+bounded request-scoped host/graph observer, while `b399f08ed` invalidates stale
+graph-clock provenance after failed event reuse. Both are uncompiled/untested
+source and remain outside this frozen comparison. Integrate into `feature/sycl`
+only after all six processes close, then preserve the current validated build
+before bounded graph support and applicable engine validation.
 
 A post-hoc mechanism check limits what this IQ2 component can explain. In the
 closed baseline, its two format bins account for 18.69%/17.81% of total decode
