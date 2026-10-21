@@ -14,7 +14,7 @@ import measurement_guards as guards
 import measurement_owner as owner
 
 P, B = base.P, base.B
-ROOT = B/'cpu-iq2-pool-v1'
+ROOT = B/'cpu-iq2-pool-v2'
 RESULT = base.A/'cpu-iq2-current.json'
 PREFIXES = (*base.PREFIXES, 'bench/sycl/cpu_iq2', 'tools/sycl/cpu_iq2.py',
     'tools/sycl/measurement_guards.py', 'tests/core/test_cpu_iq2.py')
@@ -37,9 +37,29 @@ def prepare():
     base.need(not ROOT.exists(), 'single-use pool root exists')
     prior = json.loads(RESULT.read_text())
     base.need(RESULT.read_bytes() == base.git(P,'show','HEAD:'+str(RESULT.relative_to(P))) and
-        prior['stage']=='closed' and prior['passed'] and prior['ownership_closed'] and prior['performance_gate_passed'],
-        'commit completed component before pool plan')
-    base.need(base.digest(prior['binary']['path']) == prior['binary']['sha256'], 'retained component changed')
+        prior.get('ownership_closed') and not prior.get('active'), 'commit closed predecessor before pool plan')
+    predecessor_commit = base.git(P,'log','-1','--format=%H','--',str(RESULT.relative_to(P))).decode().strip()
+    previous_attempt = None
+    if prior['schema']=='strata-iq2-pool-v1':
+        # A changed source/root is a new experiment, never a retry or relabel of a failed stage.
+        base.need(prior['stage']=='failed' and not prior['passed'] and not prior['complete'] and
+            not prior['GPU_executed'] and 'binary' not in prior and
+            prior.get('failure',{}).get('phase')=='compile' and
+            prior['failure'].get('fixture_executed') is False, 'only closed pre-execution compile failure may seed this plan')
+        base.need(Path(prior['plan']['fixture']['path']).parent != ROOT,
+            'new experiment requires a different output root')
+        previous_component=prior['plan']['previous_component']
+        previous_attempt=dict(commit=predecessor_commit,path=str(RESULT.relative_to(P)),
+            source=prior['plan']['source'],stage='failed',passed=False,error=prior['error'],
+            failure=prior['failure'],plan_review=prior['plan_review'])
+    else:
+        base.need(prior['stage']=='closed' and prior['passed'] and prior['performance_gate_passed'],
+            'completed successful component required')
+        previous_component=dict(commit=predecessor_commit,path=str(RESULT.relative_to(P)),
+            source=prior['plan']['source'],binary=prior['binary'],
+            consumer='Producer parity/code-generation comparison through this pool gate; retire at closure.')
+    base.need(base.digest(previous_component['binary']['path']) == previous_component['binary']['sha256'],
+        'retained component changed')
     revision = base.git(P,'rev-parse','HEAD').decode().strip()
     forms = [r for r in base.formats() if r['gu']==22]
     for row in forms:
@@ -48,7 +68,7 @@ def prepare():
     base.need(all(not any(c.isspace() for c in r['shard']) for r in forms),'fixture path whitespace')
     ROOT.mkdir();fixture=ROOT/'inputs.txt';fixture.write_text(text)
     plan = dict(source=base.source_pin(P,revision,PREFIXES),ggml=base.source_pin(base.GGML,base.GGML_REV,('ggml',)),
-        tools={str(Path(x).resolve()):base.digest(x) for x in (base.LLVM/'bin/clang',base.LLVM/'bin/clang++','/usr/bin/cmake','/usr/bin/ninja')},
+        tools={str(Path(x).resolve()):base.digest(x) for x in (base.LLVM/'bin/clang',base.LLVM/'bin/clang++','/usr/bin/cmake','/usr/bin/ninja',sys.executable)},
         environment=dict(base.environment(),STRATA_IQ_SINGLE_EXACT='1',STRATA_IQ_MT_MIN='2',STRATA_IQ2_PAIR_AUDIT='1'),
         machine=base.machine(),formats=forms,metadata_sha256=base.digest(base.METADATA),
         model_identity={r['shard']:base.identity(r['shard']) for r in forms},
@@ -73,9 +93,7 @@ def prepare():
         budgets=dict(owned_total_bytes=256<<20,per_file_bytes=64<<20,root_bytes=512<<20,rss_bytes=3<<30,
             child_wall_seconds=180,child_cpu_seconds=1200,build_wall_seconds=600,build_cpu_seconds=3600,
             capture_consumer='Eight bounded9.46MB temporary tensors prove full-output equality across both check and six performance processes; retire all after compact hashes/comparisons are committed.'),
-        previous_component=dict(commit=base.git(P,'log','-1','--format=%H','--',str(RESULT.relative_to(P))).decode().strip(),
-            path=str(RESULT.relative_to(P)),source=prior['plan']['source'],binary=prior['binary'],
-            consumer='Producer parity/code-generation comparison through this pool gate; retire at closure.'),
+        previous_component=previous_component,previous_attempt=previous_attempt,
         input_scope_note='Current fingerprint explicitly includes measurement_guards.py. The earlier32-source screen did not inventory that helper; do not retroactively expand its original receipt. This independent pool trial requalifies the producer and all current controls.',
         retention='Keep useful individual samples,format decisions,output hashes,work conservation and minimal thread placement. Current63af inference engine/ten fixtures stay untouched. Retire closed tensors/raw/builds and prior auxiliary at pool-gate closure after recovering original Git inputs/recipes.')
     dump(RESULT,dict(schema='strata-iq2-pool-v1',plan=plan,stage='prepared',passed=False,complete=False,active=False,
@@ -184,6 +202,7 @@ def execute(stage):
                 record['decisions']=reduce_samples(samples);record['sample_columns']=COLUMNS
                 record['samples']=[[s[k]for k in COLUMNS]for s in samples]
                 record['performance_gate_passed']=any(d['performance_gate_passed']for d in record['decisions'])
+                record['eligible_down_formats']=[d['down']for d in record['decisions']if d['performance_gate_passed']]
         load();state.update(passed=True,complete=True)
     except BaseException as error:
         state['error']=str(error)

@@ -1,6 +1,7 @@
 // Main-owned production-pool IQ2_S NT1 comparison, repository MIT license.
 // Math comes only from linked Strata/ggml producers. No copied XeStrata code.
 #include "strata/kernels/cpu/pool.hpp"
+#include "strata/kernels/cpu/expert_layout.hpp"
 #include "strata/kernels/cpu/iq_avx2.hpp"
 #include "strata/kernels/cpu/iq2_pair_avx2.hpp"
 #include "ggml.h"
