@@ -159,8 +159,11 @@ retained clean process passed:902.784tok/s first use,then1002.267/1002.598/
 931.774tok/s first use,then1004.194/1004.182/1004.213tok/s
 (median1004.194). Both closed normally without a fresh fault. This first pair's
 0.159% difference does not complete the prospective three-pair screen.
-The remaining four frozen processes and sustained-decode qualification are
-still pending;short24-token output cannot establish decode independence.
+The second candidate process also passed:930.777tok/s first use,then
+1004.162/1004.610/1003.903tok/s (median1004.162),with normal closure and no
+fresh fault. Its paired baseline has not run yet. The remaining three frozen
+processes and sustained-decode qualification are still pending;short24-token
+output cannot establish decode independence.
 
 
 The current B570 speed reference uses fresh inputs of117489 tokens and separates
