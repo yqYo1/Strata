@@ -99,6 +99,17 @@ those waits also requires preserving mapped inputs, NaN/probability stopping,
 KV state and checked owner retirement. The indexed chain/window reviews retain
 those holds; this budget clears none of them.
 
+The current single-GPU residual handoff is a device-to-device path: the caller
+binds `ver.final_R_all()` to MTP, `Verifier::R_` is carved from a `cudaMalloc`
+arena, and the SYCL compatibility allocator uses `sycl::malloc_device`.
+MTP's `Rin_` is another device-arena slice. `copy_from_mapped` is an elementwise
+GPU copy here; its name does not establish a host source. At T=4, HC=4 and
+N=2560 this moves 163840 logical bytes within device memory, rather than a
+hidden-state round trip through RAM. Mapped token/step/output records and any
+KV host backup remain separate paths; this source audit is not a measurement
+of total PCIe traffic. The residual owner remains valid through the serial
+draft completion before the next verifier run.
+
 ## Tensor storage and precision
 
 `STRATA_SYCL_PREFILL_NATIVE16=bf16` selects an experimental kernel path only
