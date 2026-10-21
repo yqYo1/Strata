@@ -174,10 +174,15 @@ def decode_timing_evidence(text, samples):
     work=decode_work_evidence(text,samples);result=[]
     for values,row,w in zip(rows,samples,work):
         windows=int(values[0]);v=dict(zip(labels,map(float,values[1:])))
+        # generate.cpp prints this average with %.2f, but DONE (and the API
+        # decode_ms) with %.1f. Compare the two rounding intervals in total ms;
+        # the DONE quantum matters especially for one-window warmups.
+        clock_error_ms=abs(v['total']*windows-row['decode_ms'])
+        clock_rounding_ms=.005*windows+.05
         guards.require(windows==w['target_windows'] and all(math.isfinite(x) and x>=0 for x in v.values()) and
             abs(v['average_T']-w['target_rows']/windows)<=.00501 and
             abs(v['tokens_per_window']-row['generated_tokens']/windows)<=.00501 and
-            abs(v['total']-row['decode_ms']/windows)<=.00501 and
+            clock_error_ms<=clock_rounding_ms+1e-8 and
             abs(v['CPU_experts']-w['cpu_unique_jobs']/(windows*48))<=.00501 and
             abs(v['CPU_entries']-w['cpu_entries']/(windows*48))<=.00501 and
             abs(v['VRAM_hits']-(w['target_rows']*48*10-w['cpu_entries'])/(windows*48))<=.00501 and v['PCIe']==0,
@@ -187,6 +192,8 @@ def decode_timing_evidence(text, samples):
         guards.require(residual>=-.025 and nested>=-.025,'rounded timing scopes overcount their parents')
         result.append(dict(windows=windows,ms_per_window=v,outer_residual_ms_per_window=residual,
             host_nested_residual_ms_per_window=nested,work=w,
+            clock_binding=dict(absolute_total_difference_ms=clock_error_ms,
+                rounding_bound_ms=clock_rounding_ms,average_quantum_ms=.01,DONE_total_quantum_ms=.1),
             limits='Existing two-decimal host wall clocks include firstT1. Parent/child fields are nested,not additive hardware costs. CPU_pool_run includes pool scheduling/waits; GPU_reach_wait is a host wait,not device arithmetic time. Residuals preserve rounding sign; no clean speed or hardware saturation claim.'))
     return result
 

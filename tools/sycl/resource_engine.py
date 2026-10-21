@@ -192,6 +192,35 @@ def prepare():
     print('Prepared current-engine resource diagnostic; commit exact plan before run.')
 
 
+def closed_evidence(record, closed, entry, boot):
+    """Replay actual closed files; callers separately prove source/assets/fault gates."""
+    _, _, comparison=modules()
+    evidence={}
+    paths=list((ROOT/'bench').glob('*/results.json'))
+    guards.require(supervision.closed(entry) and entry.get('exit_code')==0 and len(paths)==1,'owned official benchmark failed')
+    result=json.loads(paths[0].read_text())
+    rows,journal,events=comparison.official(ROOT,result,workloads=('regular-code',))
+    evidence['requests']=rows
+    guards.require(result['complete'] and not result['results']['failures'] and rows[0]['request_sha256']==
+        closed['processes'][1]['requests'][0]['request_sha256'],'incomplete suite or changed request body')
+    evidence['warmups']=journal
+    native=generation.native_end(ROOT,record,dict(config=record['config']),boot,entry['pid'])
+    guards.require(record.get('native_identity')==native['native'] and record.get('effective_environment_verified') is True,
+        'native identity differs from the admitted long-request handshake')
+    evidence.update(native_exit_code=native['exit_code'],resource_collector_exit_code=native['resource_collector_exit_code'])
+    path,=(ROOT/'bench').glob('*/requests.jsonl');events=[json.loads(x) for x in path.read_text().splitlines()]
+    text=(ROOT/'engine.stderr').read_text(errors='replace')
+    evidence['route']=comparison.native_routes(text,events,1,workloads=('regular-code',))[0]
+    all_rows=[e['sample'] for e in events if e['kind']=='result']
+    evidence['decode_timing']=generation.decode_timing_evidence(text,all_rows)[-1]
+    capture=ROOT/'client-resources.jsonl';samples=[json.loads(x) for x in capture.read_text().splitlines()]
+    evidence['resources']=client_resources.summarize_capture(samples,native['native'],boot,rows[0]['client_interval'])
+    evidence['collector_read_spans']=collection_read_spans(samples[1:-1],rows[0]['client_interval'])
+    evidence['evidence_sha256']={p.name:generation.common.digest(p) for p in
+        (paths[0],path,capture,ROOT/'engine-start.json',ROOT/'engine-exit.json',ROOT/'engine.stderr')}
+    return evidence
+
+
 def run():
     import select
     import time
@@ -241,29 +270,7 @@ def run():
     owner=supervision.Owner(ROOT/'owned',persist)
     try:
         entry,_,_=owner.run('bench',record['command'],record['environment'],P,interaction=interact,**record['budgets'])
-        paths=list((ROOT/'bench').glob('*/results.json'))
-        if paths:
-            result=json.loads(paths[0].read_text());record['requests']=generation.collect_samples(result['results'].get('long_generation',{}))
-        guards.require(supervision.closed(entry) and entry.get('exit_code')==0 and len(paths)==1,'owned official benchmark failed')
-        rows,journal,events=comparison.official(ROOT,result,workloads=('regular-code',))
-        record['requests']=rows
-        guards.require(result['complete'] and not result['results']['failures'] and rows[0]['request_sha256']==
-            closed['processes'][1]['requests'][0]['request_sha256'],'incomplete suite or changed request body')
-        record['warmups']=journal
-        native=generation.native_end(ROOT,record,dict(config=record['config']),boot,entry['pid'])
-        guards.require(record.get('native_identity')==native['native'] and record.get('effective_environment_verified') is True,
-            'native identity differs from the admitted long-request handshake')
-        record.update(native_exit_code=native['exit_code'],resource_collector_exit_code=native['resource_collector_exit_code'])
-        path,=(ROOT/'bench').glob('*/requests.jsonl');events=[json.loads(x) for x in path.read_text().splitlines()]
-        text=(ROOT/'engine.stderr').read_text(errors='replace')
-        record['route']=comparison.native_routes(text,events,1,workloads=('regular-code',))[0]
-        all_rows=[e['sample'] for e in events if e['kind']=='result']
-        record['decode_timing']=generation.decode_timing_evidence(text,all_rows)[-1]
-        capture=ROOT/'client-resources.jsonl';samples=[json.loads(x) for x in capture.read_text().splitlines()]
-        record['resources']=client_resources.summarize_capture(samples,native['native'],boot,rows[0]['client_interval'])
-        record['collector_read_spans']=collection_read_spans(samples[1:-1],rows[0]['client_interval'])
-        record['evidence_sha256']={p.name:generation.common.digest(p) for p in
-            (paths[0],path,capture,ROOT/'engine-start.json',ROOT/'engine-exit.json',ROOT/'engine.stderr')}
+        record.update(closed_evidence(record,closed,entry,boot))
         current(record,full_models=True)
         record.update(passed=True,complete=True)
     except BaseException as error:

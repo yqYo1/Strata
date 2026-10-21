@@ -160,6 +160,28 @@ class DecodeWorkTimingTests(unittest.TestCase):
         with self.assertRaises(RuntimeError):g.decode_timing_evidence(text+text,[row])
         with self.assertRaises(RuntimeError):g.decode_timing_evidence(text.replace('strata decode timing:','missing:'),[row])
 
+    def test_actual_one_window_DONE_and_average_print_quantization(self):
+        row=dict(prompt_tokens=260,reused_tokens=0,read_tokens=260,generated_tokens=1,
+            drafts_accepted=0,drafts_offered=0,decode_ms=126.0)
+        text=('strata trace: window 259 1\n'
+            'strata decode timing: 1 windows, avg T 1.00, 1.00 tokens/window, 126.05 ms/window = '
+            'verify 125.99 (GPU-reach wait 40.85 + per-layer host 50.55 [plan 2.02 actq 0.13 jobs 0.04 '
+            'CPU 48.01] + stage 6.92) + commit/emit 0.05 + draft 0.00; per layer-window: CPU experts '
+            '8.25 (8.25 entries), VRAM hits 1.75, PCIe 0.00\n'
+            'strata serve: prompt 260 tokens = 0 reused + 260 read in 6483 ms (40.1 tok/s), '
+            '1 generated in 126 ms (7.9 tok/s), drafts accepted 0 of 0, 0 checkpoints\n'
+            'strata serve: SYCL_EXPERT_COPY submitted_blobs=0 submitted_bytes=0 completed_blobs=0 '
+            'completed_bytes=0 host_view_groups=0 gpu_miss_groups=0 cpu_unique_misses=396 cpu_entries=396\n')
+        result=g.decode_timing_evidence(text,[row])[0]
+        self.assertAlmostEqual(result['clock_binding']['absolute_total_difference_ms'],.05)
+        with self.assertRaises(RuntimeError):
+            g.decode_timing_evidence(text.replace('126.05 ms/window','126.06 ms/window'),[row])
+        with self.assertRaises(RuntimeError):
+            g.decode_timing_evidence(text,[dict(row,decode_ms=125.9)])
+        # The one-decimal request quantum is not a per-window blanket tolerance.
+        text,row=self.fixture()
+        with self.assertRaises(RuntimeError):g.decode_timing_evidence(text,[dict(row,decode_ms=40.1)])
+
 
 class ArenaScreenTests(unittest.TestCase):
     def test_actual_copy_footer_conservation_and_request_binding(self):
