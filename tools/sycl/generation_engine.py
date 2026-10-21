@@ -46,6 +46,55 @@ def benchmark_pins(revision, match_worktree=True):
     return pins
 
 
+def native_end(root, record, plan, boot, leader):
+    start=json.loads((root/'engine-start.json').read_text())
+    end=json.loads((root/'engine-exit.json').read_text())
+    guards.require(type(end.get('exit_code')) is int and end==dict(start,exit_code=0) and start['boot_id']==boot and
+        start['binary']==record['binary'] and start['args']==['--serve',*plan['config']['args']] and
+        start.get('native_validation_probe')==record['native_validation_probe'] and
+        not {'resource_collector','native_profile'}&set(start), 'native identity/closure differs')
+    for key in ('native','wrapper'):
+        identity=start[key]
+        guards.require(set(identity)=={'pid','start_ticks','sid'} and
+            all(type(v) is int and v>0 for v in identity.values()) and identity['sid']==leader,
+            'native ownership identity differs')
+    guards.require(start['native']['pid']!=start['wrapper']['pid'], 'native/wrapper identity aliases')
+    return end
+
+
+def draft_rows(text):
+    guards.require(not re.search(r'^strata (?:draft kv|serve: SNAPSHOT_VERIFY)', text, re.M),
+                   'unexpected timer or snapshot-restore observer')
+    pattern = r'strata serve: DRAFT_PREFILL path=(batched|token) mode=(-?\d+) cells=(\d+)'
+    parsed = []
+    for line in text.splitlines():
+        if not line.startswith('strata serve: DRAFT_PREFILL'): continue
+        match = re.fullmatch(pattern, line)
+        guards.require(match is not None, 'malformed draft-KV marker')
+        parsed.append(match.groups())
+    return [dict(path=path, mode=int(mode), cells=int(cells)) for path, mode, cells in parsed]
+
+
+def request_evidence(text, samples):
+    """Bind draft work to every native request, including all four warmups."""
+    headers = list(re.finditer(r'^strata serve: prompt (\d+) tokens = (\d+) reused \+ (\d+) read[^\n]*, (\d+) generated[^\n]*$', text, re.M))
+    guards.require(len(headers) == len(samples), 'missing/extra native request footer')
+    previous = 0; evidence = []
+    for header, sample in zip(headers, samples):
+        guards.require(tuple(map(int, header.groups())) == (sample['prompt_tokens'], sample['reused_tokens'],
+            sample['read_tokens'], sample['generated_tokens']) and sample['reused_tokens'] == 0,
+            'native/journal request binding differs')
+        rows = draft_rows(text[previous:header.start()]); cells = sample['read_tokens'] - 1
+        expected = [8192] * (cells // 8192) + ([cells % 8192] if cells % 8192 else [])
+        guards.require(rows and all(r['path'] == 'batched' and r['mode'] == 2 for r in rows)
+            and [r['cells'] for r in rows] == expected, 'draft-KV marker route/chunks do not conserve request')
+        evidence.append(dict(read_tokens=sample['read_tokens'], draft_cells=sum(r['cells'] for r in rows),
+            batch_count=len(rows), path='batched', mode=2))
+        previous = header.end()
+    guards.require(not draft_rows(text[previous:]), 'unbound trailing draft batch')
+    return evidence
+
+
 def sample_eligible(row):
     """Independently reject mislabeled short, incomplete or unclocked samples."""
     def integer(key, minimum):

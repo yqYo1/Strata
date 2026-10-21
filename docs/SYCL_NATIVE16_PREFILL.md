@@ -3201,6 +3201,20 @@ closed research transactions:425files/76769421B. All19 current/fallback native
 artifacts remain hash-matched. The compact result keeps all24 PP clocks and
 the same reducer decision; unused parser aliases,short decode rates and normal
 probe details remain recoverable from`da23ad440` rather than the active file.
+The next maintained`tools/sycl/generation_compare.py` diagnostic uses the retained3b
+and currente062 engines without rebuilding. Each process runs both official
+32K-input long-generation cases with thinking, a16384 output allowance and
+four official warmups. It prospectively requires actual answer/output bounds,
+MTP batched-ring work, GPU BF16/mode10 placement, dense/cache restoration,
+source/runtime/model binding, native closure and no fresh fault. One sample per
+case/arm is a pilot, not a speed/nonregression or strong/weak classification.
+Generic native-end and draft-work readers now live in`generation_engine.py`.
+The closed packed model/clean launchers and their retired-run-only tests are
+removed; source and original reducer remain recoverable at`6213f0325d807b5eaf319bbf8096c9337f5402bd`.
+The shared packed source/layout evidence and its negative tests remain for this
+immediate consumer. No new native validation or throughput gain follows from
+this controller change;14 legacy provenance holds remain pending before any build.
+
 Main also applies the reviewed geometry formula to the retained117K histogram:
 554.378TFLOP useful GU/Down work versus564.569TFLOP with source tile padding
 (+1.8383%). This is not an instruction count or hardware ceiling; the exact

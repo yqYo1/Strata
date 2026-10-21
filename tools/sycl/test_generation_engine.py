@@ -1,6 +1,10 @@
 #!/usr/bin/env python3
 """Offline negative evidence gates for the real long-generation controller."""
 import copy
+import json
+from pathlib import Path
+import tempfile
+import generation_engine as g
 import unittest
 from generation_engine import collect_samples, require_complete_generation, sample_eligible
 
@@ -59,6 +63,39 @@ class EvidenceTests(unittest.TestCase):
         generation['workloads']['varied-prose']['requests'][0]['order'] = 0
         with self.assertRaises(RuntimeError):
             require_complete_generation(generation, collect_samples(generation))
+
+
+class NativeClosureEvidence(unittest.TestCase):
+    def claim(self):
+        return dict(binary={'sha256':'a'*64},args=['--serve','--spec','4'],boot_id='boot',
+            native_validation_probe={'sha256':'b'*64},
+            wrapper=dict(pid=43,start_ticks=100,sid=42),native=dict(pid=44,start_ticks=101,sid=42))
+
+    def test_native_exit_identity_and_observer_refusals(self):
+        for variant in ('valid','no_probe','failed','boolean_exit','binary','boot','args','probe','collector','profile','leader','ticks','alias','end_identity'):
+            with self.subTest(variant=variant),tempfile.TemporaryDirectory() as tmp:
+                root=Path(tmp);claim=self.claim()
+                record=dict(binary=copy.deepcopy(claim['binary']),native_validation_probe=copy.deepcopy(claim['native_validation_probe']))
+                plan={'config':{'args':['--spec','4']}}
+                if variant=='no_probe':claim['native_validation_probe']=record['native_validation_probe']=None
+                if variant=='binary':claim['binary']['sha256']='c'*64
+                if variant=='boot':claim['boot_id']='other'
+                if variant=='args':claim['args'].append('--other')
+                if variant=='probe':claim['native_validation_probe']={}
+                if variant=='collector':claim['resource_collector']={}
+                if variant=='profile':claim['native_profile']={}
+                if variant=='leader':claim['native']['sid']=99
+                if variant=='ticks':claim['native']['start_ticks']=True
+                if variant=='alias':claim['native']['pid']=claim['wrapper']['pid']
+                end=dict(copy.deepcopy(claim),exit_code=1 if variant=='failed' else 0)
+                if variant=='end_identity':end['native']['pid']=55
+                if variant=='boolean_exit':end['exit_code']=False
+                (root/'engine-start.json').write_text(json.dumps(claim))
+                (root/'engine-exit.json').write_text(json.dumps(end))
+                if variant in ('valid','no_probe'):self.assertEqual(g.native_end(root,record,plan,'boot',42),end)
+                else:
+                    with self.assertRaises(RuntimeError):g.native_end(root,record,plan,'boot',42)
+
 
 
 class ArenaScreenTests(unittest.TestCase):

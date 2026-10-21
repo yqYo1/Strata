@@ -46,37 +46,8 @@ def digest(path):
         return hashlib.file_digest(stream, 'sha256').hexdigest()
 
 
-def draft_rows(text):
-    guards.require(not re.search(r'^strata (?:draft kv|serve: SNAPSHOT_VERIFY)', text, re.M),
-                   'unexpected timer or snapshot-restore observer')
-    pattern = r'strata serve: DRAFT_PREFILL path=(batched|token) mode=(-?\d+) cells=(\d+)'
-    parsed = []
-    for line in text.splitlines():
-        if not line.startswith('strata serve: DRAFT_PREFILL'): continue
-        match = re.fullmatch(pattern, line)
-        guards.require(match is not None, 'malformed draft-KV marker')
-        parsed.append(match.groups())
-    return [dict(path=path, mode=int(mode), cells=int(cells)) for path, mode, cells in parsed]
-
-
-def request_evidence(text, samples):
-    """Bind draft work to every native request, including all four warmups."""
-    headers = list(re.finditer(r'^strata serve: prompt (\d+) tokens = (\d+) reused \+ (\d+) read[^\n]*, (\d+) generated[^\n]*$', text, re.M))
-    guards.require(len(headers) == len(samples), 'missing/extra native request footer')
-    previous = 0; evidence = []
-    for header, sample in zip(headers, samples):
-        guards.require(tuple(map(int, header.groups())) == (sample['prompt_tokens'], sample['reused_tokens'],
-            sample['read_tokens'], sample['generated_tokens']) and sample['reused_tokens'] == 0,
-            'native/journal request binding differs')
-        rows = draft_rows(text[previous:header.start()]); cells = sample['read_tokens'] - 1
-        expected = [8192] * (cells // 8192) + ([cells % 8192] if cells % 8192 else [])
-        guards.require(rows and all(r['path'] == 'batched' and r['mode'] == DRAFT_RING_MODE for r in rows)
-            and [r['cells'] for r in rows] == expected, 'draft-KV marker route/chunks do not conserve request')
-        evidence.append(dict(read_tokens=sample['read_tokens'], draft_cells=sum(r['cells'] for r in rows),
-            batch_count=len(rows), path='batched', mode=DRAFT_RING_MODE))
-        previous = header.end()
-    guards.require(not draft_rows(text[previous:]), 'unbound trailing draft batch')
-    return evidence
+draft_rows = gen.draft_rows
+request_evidence = gen.request_evidence
 
 
 def require_environment(actual, expected):
