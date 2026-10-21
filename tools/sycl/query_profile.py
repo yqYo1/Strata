@@ -23,6 +23,34 @@ COMPONENT = A / 'decode-query-profile-component-current.json'
 BUILD_RECORD = B / 'main-native-gdn-engine/record.json'
 COPY_KEYS = ('submitted_blobs','submitted_bytes','completed_blobs','completed_bytes',
              'host_view_groups','gpu_miss_groups','cpu_unique_misses','cpu_entries')
+HOST_GATE_TESTS = frozenset({'tests/core/test_resource_engine.py'})
+
+
+def worktree_input_matches(source, name, expected):
+    """Keep native inputs exact; admit only the named, committed Python gate test.
+
+    This test is inventoried by the historical build but neither compiled nor
+    executed by its CMake recipe. Its controller-only update does not relabel
+    the original source receipt, engine or same-build fixture qualification.
+    """
+    actual = gen.common.digest(Path(source['root']) / name)
+    if actual == expected:
+        return True
+    return (Path(source['root']) == P and name in HOST_GATE_TESTS and
+        hashlib.sha256(gen.git('show', 'HEAD:' + name)).hexdigest() == actual)
+
+
+def host_gate_test_updates(full):
+    source = full['project']
+    changes = []
+    for name in sorted(HOST_GATE_TESTS & source['source_sha256'].keys()):
+        expected = source['source_sha256'][name]
+        actual = gen.common.digest(Path(source['root']) / name)
+        if actual != expected:
+            guards.require(worktree_input_matches(source, name, expected), 'uncommitted host gate test: ' + name)
+            changes.append(dict(path=name, build_input_sha256=expected, committed_sha256=actual,
+                source_commit=gen.git('log', '-1', '--format=%H', '--', name).decode().strip()))
+    return changes
 
 
 def runtime_assets_unchanged(record):
@@ -90,7 +118,7 @@ def current_build():
             blobs(Path(source['root']),source['revision'],source['source_sha256'])}
         guards.require(recovered==source['source_sha256'], 'original build inputs not recoverable')
         for name, expected in recovered.items():
-            guards.require(gen.common.digest(Path(source['root'])/name)==expected, 'native build input changed: '+name)
+            guards.require(worktree_input_matches(source,name,expected), 'native build input changed: '+name)
         count += len(recovered)
     for item in [full['binary'],*full['fixtures'].values()]:
         guards.require(gen.common.digest(item['path'])==item['sha256'], 'compiled artifact changed')

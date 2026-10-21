@@ -33,10 +33,14 @@ def qualification():
         not gen.git('diff','--name-only',old['source_commit'],full['source_commit'],'--',
                     'src','include','cmake','CMakeLists.txt','third_party','bench/sycl'),
         'packed component native/recipe/fixture identity changed')
-    return full, dict(original_inputs_recovered=count, source_build_sha256=gen.common.digest(q.BUILD_RECORD),
+    proof = dict(original_inputs_recovered=count, source_build_sha256=gen.common.digest(q.BUILD_RECORD),
         shared_component_sha256=gen.common.digest(q.COMPONENT), packed_component_sha256=gen.common.digest(BANK),
         original_packed_build=dict(commit=ORIGINAL_BUILD,path=str(q.BUILD.relative_to(P)),sha256=hashlib.sha256(old_raw).hexdigest()),
         native_origin_source_commit=old['source_commit'], controller_only_native_reuse=True)
+    updates = q.host_gate_test_updates(full)
+    if updates:
+        proof['controller_only_host_test_updates'] = updates
+    return full, proof
 
 
 def geometry(log, arm):

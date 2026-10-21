@@ -3256,8 +3256,13 @@ this evidence and verifying original source/recipe recovery and live dependencie
 Actual retirement remains pending until the recorded deletion check completes.
 The prepared source-only resource diagnostic adds existing decode stage timing
 and passive CPU/DRM counters to one current regular-code request; it has not yet
-run. Its41 host checks pass. CPU arithmetic, RAM bandwidth and GPU wait costs
-remain unresolved; the diagnostic is not a clean throughput comparison.
+run. Its41 host checks pass. The first real admission stopped before native
+launch because the historical build inventory includes the updated Python
+resource-gate test. Admit only that named committed host-only test, record both
+hashes and its revision, and keep every native input/artifact check exact; do
+not refresh the original build receipt. Follow-up validation remains pending.
+CPU arithmetic, RAM bandwidth and GPU wait costs remain unresolved; the
+diagnostic is not a clean throughput comparison.
 Generic native-end and draft-work readers now live in`generation_engine.py`.
 The closed packed model/clean launchers and their retired-run-only tests are
 removed; source and original reducer remain recoverable at`6213f0325d807b5eaf319bbf8096c9337f5402bd`.

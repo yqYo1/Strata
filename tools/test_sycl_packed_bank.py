@@ -60,9 +60,28 @@ class NativeReuseEvidence(unittest.TestCase):
                 def git(*args):return json.dumps(old).encode() if args[0]=='show' else diff
                 with patch.object(p.q,'current_build',return_value=(full,9836)),patch.object(p.gen,'committed',return_value={'packed_gpu':value}), \
                      patch.object(p.gen,'git',side_effect=git),patch.object(p.gen.common,'digest',return_value='digest'):
-                    if variant=='valid':self.assertEqual(p.qualification()[0],full)
+                    if variant=='valid':
+                        with patch.object(p.q,'host_gate_test_updates',return_value=[]):
+                            self.assertEqual(p.qualification()[0],full)
                     else:
                         with self.assertRaises(RuntimeError):p.qualification()
+
+
+class BuildInputIdentity(unittest.TestCase):
+    def test_only_the_named_committed_host_test_can_differ(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root=Path(directory);name='tests/core/test_resource_engine.py'
+            path=root/name;path.parent.mkdir(parents=True);path.write_bytes(b'new committed test')
+            source=dict(root=str(root));old='0'*64
+            with patch.object(p.q,'P',root),patch.object(p.q.gen,'git',return_value=path.read_bytes()):
+                self.assertTrue(p.q.worktree_input_matches(source,name,old))
+                with patch.object(p.q.gen,'git',return_value=b'different committed test'):
+                    self.assertFalse(p.q.worktree_input_matches(source,name,old))
+                for other in ('tests/core/other_test.py','src/native.cpp','CMakeLists.txt'):
+                    target=root/other;target.parent.mkdir(parents=True,exist_ok=True);target.write_bytes(path.read_bytes())
+                    self.assertFalse(p.q.worktree_input_matches(source,other,old))
+            with patch.object(p.q,'P',root/'other-project'):
+                self.assertFalse(p.q.worktree_input_matches(source,name,old))
 
 
 if __name__=='__main__':unittest.main()
