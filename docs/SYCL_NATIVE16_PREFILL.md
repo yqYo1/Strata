@@ -43,6 +43,8 @@ PP 761.0 / TG 9.3 tok/s, with the same fresh/generated-token counts and observed
 MTP acceptance classes. Its model asset hashes and all process/fault gates
 passed. The last candidate process remains; the first-pair prefill gate is
 still binding and no clean-comparison or model-adoption decision is established.
+The first code prefill ratio already fails the frozen every-pair minimum of
+0.95; later successful samples cannot remove that failed gate.
 
 Main's isolated `yqYo1/mtp-graph-observer` source at `3550c84b1` now connects a
 bounded request-scoped host/graph observer, while `b399f08ed` invalidates stale
