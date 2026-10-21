@@ -1,5 +1,5 @@
 {
-  "stage": "prepared",
+  "stage": "closed",
   "source_commit": "1e3975c66317f60f537fcdd71e185b7352d25ce0",
   "native_source": "362c16aad19cb00dc158c03a279e6c28cc8cc7d3",
   "binary": {
@@ -446,7 +446,352 @@
       ]
     }
   ],
-  "processes": [],
+  "processes": [
+    {
+      "arm": 0,
+      "passed": false,
+      "complete": false,
+      "active": false,
+      "requests": [
+        {
+          "ok": true,
+          "err": null,
+          "ttft_s": 127.755,
+          "total_s": 129.31,
+          "prompt_tokens": 117489,
+          "reused_tokens": 0,
+          "read_tokens": 117489,
+          "generated_tokens": 24,
+          "prompt_tps": 920.8,
+          "prompt_tps_source": "engine",
+          "decode_tps": 14.6,
+          "decode_tps_source": "engine",
+          "prompt_ms": 127588.2,
+          "decode_ms": 1648.3,
+          "drafts_offered": 21,
+          "drafts_accepted": 16,
+          "finish_reason": "length",
+          "request_sha256": "26f08fd8364b5c4bce718617fe2aed42761d0a794e068b00532694adef78b3be",
+          "stream_complete": true,
+          "truncated": true,
+          "generated_tokens_source": "usage",
+          "client_interval": {
+            "request_begin_monotonic_ns": 969223237634270,
+            "first_output_monotonic_ns": 969350992408812,
+            "request_end_monotonic_ns": 969352548181874
+          },
+          "output_chars": 0,
+          "reasoning_chars": 121,
+          "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "reasoning_sha256": "0d786145d04b965534c72ea005fcccb9fb3a7e2552f6dda1bf32578d1916b8b2",
+          "eligible": true,
+          "eligibility_errors": [],
+          "requested_min_tokens": 98304,
+          "actual_prompt_tokens": 117489,
+          "actual_read_tokens": 117489,
+          "actual_reused_tokens": 0,
+          "prompt_count_source": "usage.prompt_tokens",
+          "read_count_source": "timings.prompt_n",
+          "reuse_counts_reported": {
+            "usage": 0,
+            "timings": 0
+          },
+          "thinking_requested": true,
+          "reasoning_observed": true,
+          "reasoning_tokens_reported": null,
+          "run": 0
+        }
+      ],
+      "journal": {
+        "successful_warmups": 1,
+        "successful_long_requests": 1,
+        "request_sha256": [
+          "6976dd85c26437117139f185ce0ac4da0ab9d1d4eb576dd2f9e252ae99d63f03",
+          "26f08fd8364b5c4bce718617fe2aed42761d0a794e068b00532694adef78b3be"
+        ],
+        "journal_sha256": "ef39157b050bcce42e81f0dd56eda7b45d9588244c0276534086ecfd110ca9bd",
+        "state_sha256": "663f4934081df5412212f012ec37daadb9d36ad19ad1df83b23de5f8d496a32d"
+      },
+      "route": {
+        "completed_requests": 2,
+        "exact_payload_and_map_cycles": 2,
+        "loan_generations": [
+          1,
+          2
+        ],
+        "slots": 1256,
+        "long_loan": {
+          "chunk": 8192,
+          "first": 132,
+          "lent": 1124,
+          "capacity": 2321664000,
+          "need": 2319958528,
+          "min_observed_free_bytes": 128106496
+        },
+        "actual_allocation_budget": {
+          "free_gpu_bytes": 4298412032,
+          "fixed_including_headroom_bytes": 4206942336,
+          "shared_arena_bytes": 1180698624
+        },
+        "min_observed_free_bytes": 128106496,
+        "prefill_rows": 117488,
+        "residual_gpu_bytes": 2406154240,
+        "windows_per_layer": [
+          [
+            0,
+            81920
+          ],
+          [
+            81920,
+            35568
+          ]
+        ],
+        "borrowed_ffn_entries": 96,
+        "checked_retirements": 96,
+        "dense_layers": 48,
+        "secondary_bank_windows": 48,
+        "execution_cache_parent_checked": true,
+        "clean_speed_qualified": false
+      },
+      "canonical_restore": {
+        "bytes": 1538035200,
+        "copies": 1,
+        "chunk": 0,
+        "between_warmup_and_long_prompt_footer": true
+      },
+      "profiles": [
+        {
+          "scope": "dense_restore",
+          "wall_s": 0.000515961,
+          "thread_cpu_s": 0.000241534,
+          "wait_wall_s": 5.871e-06,
+          "wait_cpu_s": 5.821e-06,
+          "other_wall_s": 0.000381988,
+          "other_cpu_s": 0.000107863,
+          "parts": {
+            "retire": {
+              "calls": 1,
+              "wall_s": 1.2023e-05,
+              "thread_cpu_s": 1.1682e-05,
+              "wait_wall_s": 5.871e-06,
+              "wait_cpu_s": 5.821e-06
+            },
+            "canonical": {
+              "calls": 1,
+              "wall_s": 8.82e-07,
+              "thread_cpu_s": 8.62e-07,
+              "wait_wall_s": 0.0,
+              "wait_cpu_s": 0.0
+            },
+            "graph_resume": {
+              "calls": 1,
+              "wall_s": 0.000121068,
+              "thread_cpu_s": 0.000121127,
+              "wait_wall_s": 0.0,
+              "wait_cpu_s": 0.0
+            }
+          }
+        },
+        {
+          "scope": "cache_refill",
+          "wall_s": 0.736354225,
+          "thread_cpu_s": 0.731011955,
+          "wait_wall_s": 0.023601026,
+          "wait_cpu_s": 0.02334314,
+          "other_wall_s": 1.4298e-05,
+          "other_cpu_s": 1.3234e-05,
+          "parts": {
+            "submit": {
+              "calls": 1,
+              "items": 101,
+              "logical_bytes": 242611200,
+              "wall_s": 0.032607097,
+              "thread_cpu_s": 0.03203616,
+              "wait_wall_s": 0.0,
+              "wait_cpu_s": 0.0
+            },
+            "drain": {
+              "calls": 1,
+              "wall_s": 0.702953453,
+              "thread_cpu_s": 0.698683196,
+              "wait_wall_s": 0.023539509,
+              "wait_cpu_s": 0.023281634
+            },
+            "publish": {
+              "calls": 1,
+              "wall_s": 0.000779377,
+              "thread_cpu_s": 0.000279365,
+              "wait_wall_s": 6.1517e-05,
+              "wait_cpu_s": 6.1506e-05
+            }
+          }
+        },
+        {
+          "scope": "native_owner_entry",
+          "wall_s": 0.033539724,
+          "thread_cpu_s": 0.011969756,
+          "wait_wall_s": 0.002787578,
+          "wait_cpu_s": 0.002791064,
+          "other_wall_s": 6.172e-06,
+          "other_cpu_s": 4.87e-06,
+          "parts": {
+            "preflight": {
+              "calls": 1,
+              "wall_s": 0.000131017,
+              "thread_cpu_s": 0.000131066,
+              "wait_wall_s": 0.0,
+              "wait_cpu_s": 0.0
+            },
+            "allocate": {
+              "calls": 1,
+              "wall_s": 3.748e-05,
+              "thread_cpu_s": 3.751e-05,
+              "wait_wall_s": 0.0,
+              "wait_cpu_s": 0.0
+            },
+            "publish": {
+              "calls": 1,
+              "items": 300,
+              "wall_s": 3.4014e-05,
+              "thread_cpu_s": 3.4033e-05,
+              "wait_wall_s": 0.0,
+              "wait_cpu_s": 0.0
+            },
+            "release": {
+              "calls": 1,
+              "items": 300,
+              "logical_bytes": 2116951040,
+              "wall_s": 0.033331041,
+              "thread_cpu_s": 0.011762277,
+              "wait_wall_s": 0.002787578,
+              "wait_cpu_s": 0.002791064
+            }
+          }
+        },
+        {
+          "scope": "dense_restore",
+          "wall_s": 0.818039116,
+          "thread_cpu_s": 0.780600061,
+          "wait_wall_s": 0.462113878,
+          "wait_cpu_s": 0.461484024,
+          "other_wall_s": 7.6134e-05,
+          "other_cpu_s": 7.3167e-05,
+          "parts": {
+            "preflight": {
+              "calls": 1,
+              "wall_s": 0.000165511,
+              "thread_cpu_s": 0.000165811,
+              "wait_wall_s": 0.0,
+              "wait_cpu_s": 0.0
+            },
+            "retire": {
+              "calls": 2,
+              "wall_s": 1.9197e-05,
+              "thread_cpu_s": 1.9115e-05,
+              "wait_wall_s": 1.0039e-05,
+              "wait_cpu_s": 1.0159e-05
+            },
+            "allocate": {
+              "calls": 1,
+              "items": 300,
+              "logical_bytes": 2116951040,
+              "wall_s": 0.034611906,
+              "thread_cpu_s": 0.013397898,
+              "wait_wall_s": 0.0,
+              "wait_cpu_s": 0.0
+            },
+            "submit": {
+              "calls": 1,
+              "items": 300,
+              "logical_bytes": 2116951040,
+              "wall_s": 0.249104124,
+              "thread_cpu_s": 0.242758249,
+              "wait_wall_s": 0.0,
+              "wait_cpu_s": 0.0
+            },
+            "drain": {
+              "calls": 1,
+              "wall_s": 0.101752938,
+              "thread_cpu_s": 0.101661267,
+              "wait_wall_s": 0.101749863,
+              "wait_cpu_s": 0.101658562
+            },
+            "publish": {
+              "calls": 1,
+              "items": 300,
+              "wall_s": 0.000162366,
+              "thread_cpu_s": 0.000162445,
+              "wait_wall_s": 0.0,
+              "wait_cpu_s": 0.0
+            },
+            "release": {
+              "calls": 1,
+              "items": 1,
+              "logical_bytes": 50918400,
+              "wall_s": 0.000259849,
+              "thread_cpu_s": 0.000117531,
+              "wait_wall_s": 1.4345e-05,
+              "wait_cpu_s": 1.4356e-05
+            },
+            "canonical": {
+              "calls": 1,
+              "wall_s": 0.431822199,
+              "thread_cpu_s": 0.422179676,
+              "wait_wall_s": 0.360339631,
+              "wait_cpu_s": 0.359800947
+            },
+            "graph_resume": {
+              "calls": 1,
+              "wall_s": 6.4892e-05,
+              "thread_cpu_s": 6.4902e-05,
+              "wait_wall_s": 0.0,
+              "wait_cpu_s": 0.0
+            }
+          }
+        },
+        {
+          "scope": "cache_refill",
+          "wall_s": 1.087218561,
+          "thread_cpu_s": 1.076524338,
+          "wait_wall_s": 0.128165953,
+          "wait_cpu_s": 0.127786877,
+          "other_wall_s": 1.7114e-05,
+          "other_cpu_s": 1.6092e-05,
+          "parts": {
+            "submit": {
+              "calls": 1,
+              "items": 1124,
+              "logical_bytes": 2321664000,
+              "wall_s": 0.276337995,
+              "thread_cpu_s": 0.270571946,
+              "wait_wall_s": 0.0,
+              "wait_cpu_s": 0.0
+            },
+            "drain": {
+              "calls": 1,
+              "wall_s": 0.810632197,
+              "thread_cpu_s": 0.805709624,
+              "wait_wall_s": 0.128104188,
+              "wait_cpu_s": 0.127725192
+            },
+            "publish": {
+              "calls": 1,
+              "wall_s": 0.000231255,
+              "thread_cpu_s": 0.000226676,
+              "wait_wall_s": 6.1765e-05,
+              "wait_cpu_s": 6.1685e-05
+            }
+          }
+        }
+      ],
+      "error": "missing/extra strata prefill dense",
+      "error_excerpt": "d_cpu_s=0.000117531 wait_wall_s=0.000014345 wait_cpu_s=0.000014356 outside_wait_wall_s=0.000245504 outside_wait_cpu_s=0.000103175\nstrata prefill transition part: v=1 scope=dense_restore kind=canonical calls=1 items=0 logical_bytes=0 throws=0 wall_s=0.431822199 thread_cpu_s=0.422179676 wait_wall_s=0.360339631 wait_cpu_s=0.359800947 outside_wait_wall_s=0.071482568 outside_wait_cpu_s=0.062378729\nstrata prefill transition part: v=1 scope=dense_restore kind=graph_resume calls=1 items=0 logical_bytes=0 throws=0 wall_s=0.000064892 thread_cpu_s=0.000064902 wait_wall_s=0.000000000 wait_cpu_s=0.000000000 outside_wait_wall_s=0.000064892 outside_wait_cpu_s=0.000064902\nstrata native dense host profile: v=2 complete=1 outcome=success entry_ms=407.724 run_ms=125270 restore_ms=818.036 entry_done=1 run_returned=1 restored=1 intervals=NONEXCLUSIVE entry_scope=boundary_entry_through_Bank run_scope=MTP_release_prompt_callbacks_MTP_restore restore_scope=restore_drain_through_owner_PLE_graph_verifier_restore outer_startup_snapshot_unmeasured=1\nstrata trace: read 117488 tokens (batched) in 126496.0 ms\nstrata trace: refill start 1124 -1\nstrata loan audit: phase=payload rows=1256 bytes=2575206400 lent=1124 same_slots=1 payload_match=1\nstrata loan audit: phase=refill table_entries=24576 table_match=1 free_bytes=131948544 total_bytes=10666115072\nstrata cache loan: phase=ready generation=2 chunk=8192 first=132 lent=1124 decode_ready=1\nstrata trace: refilled 1124 slots on 1 stage(s) in 1087.2 ms\nstrata prefill transition: v=1 scope=cache_refill available=1 complete=1 wall_s=1.087218561 thread_cpu_s=1.076524338 wait_wall_s=0.128165953 wait_cpu_s=0.127786877 other_wall_s=0.000017114 other_cpu_s=0.000016092 open_parts=0 wait_errors=0 parts_disjoint=1 waits_nested=1 units=charged_wrapper_intervals logical_bytes_not_bus_traffic=1\nstrata prefill transition part: v=1 scope=cache_refill kind=submit calls=1 items=1124 logical_bytes=2321664000 throws=0 wall_s=0.276337995 thread_cpu_s=0.270571946 wait_wall_s=0.000000000 wait_cpu_s=0.000000000 outside_wait_wall_s=0.276337995 outside_wait_cpu_s=0.270571946\nstrata prefill transition part: v=1 scope=cache_refill kind=drain calls=1 items=0 logical_bytes=0 throws=0 wall_s=0.810632197 thread_cpu_s=0.805709624 wait_wall_s=0.128104188 wait_cpu_s=0.127725192 outside_wait_wall_s=0.682528009 outside_wait_cpu_s=0.677984432\nstrata prefill transition part: v=1 scope=cache_refill kind=publish calls=1 items=0 logical_bytes=0 throws=0 wall_s=0.000231255 thread_cpu_s=0.000226676 wait_wall_s=0.000061765 wait_cpu_s=0.000061685 outside_wait_wall_s=0.000169490 outside_wait_cpu_s=0.000164991\nstrata trace: prompt done (slots refilled) -1 -1\nstrata trace: window 117488 1\nstrata verify: captured the 1-token window in 49 event-completed segments\nstrata verify: capture 1 tokens 10.161 ms, free VRAM 125.8 MiB\nstrata verify: 48 shared/hit graphs can overlap CPU experts\nstrata mtp: expert decode recapture kind=round coupled=0 ok=1 ms=0.585 cumulative_ms=0.585\nstrata mtp: expert decode recapture kind=step coupled=0 ok=1 ms=0.534 cumulative_ms=1.119\nstrata mtp: expert decode recapture kind=step coupled=0 ok=1 ms=0.406 cumulative_ms=1.525\nstrata trace: window 117489 4\nstrata verify: captured the 4-token window in 49 event-completed segments\nstrata verify: capture 4 tokens 16.780 ms, free VRAM 125.7 MiB\nstrata verify: 48 shared/hit graphs can overlap CPU experts\nstrata mtp: expert decode recapture kind=round coupled=0 ok=1 ms=0.657 cumulative_ms=2.182\nstrata trace: window 117493 4\nstrata trace: window 117496 4\nstrata trace: window 117497 4\nstrata trace: window 117501 4\nstrata trace: window 117504 4\nstrata trace: window 117508 4\nstrata serve: prompt 117489 tokens = 0 reused + 117489 read in 127588 ms (920.8 tok/s), 24 generated in 1648 ms (14.6 tok/s), drafts accepted 16 of 21, 0 checkpoints\nstrata serve: SYCL_EXPERT_COPY submitted_blobs=0 submitted_bytes=0 completed_blobs=0 completed_bytes=0 host_view_groups=0 gpu_miss_groups=0 cpu_unique_misses=7732 cpu_entries=10539\nstrata serve: decode expert cache hit rate: 24.3% (3381 hits / 13920 lookups)\n",
+      "ownership_closed": true,
+      "fault_probe_successful": true,
+      "fresh_faults": [],
+      "boot_unchanged": true
+    }
+  ],
   "plan": {
     "order": [
       0,
