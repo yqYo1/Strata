@@ -2155,6 +2155,136 @@
           "scope": "Request-local deltas captured immediately before the target verifier loop (generate.cpp:6515-6539), after layer-major prompt prefill; includes the initial T=1 target row and later T=4 windows. CPU unique jobs are distinct per layer/window, not process-global unique experts. Does not count separate MTP computation or measure physical RAM/PCIe traffic.",
           "conservation": "CPU routed entries + resident hits = lookups = target_rows * 48 layers * 10 experts; target_rows = 1 + 4 * (drafts_offered / 3), specific to spec4/suffix-draft0 with full windows."
         }
+      },
+      {
+        "cohort": 2,
+        "arm": 1,
+        "passed": true,
+        "ownership_closed": true,
+        "warmup_work": [
+          {
+            "read_tokens": 74,
+            "draft_cells": 73,
+            "batch_count": 1,
+            "path": "batched",
+            "mode": 2
+          },
+          {
+            "read_tokens": 266,
+            "draft_cells": 265,
+            "batch_count": 1,
+            "path": "batched",
+            "mode": 2
+          },
+          {
+            "read_tokens": 912,
+            "draft_cells": 911,
+            "batch_count": 1,
+            "path": "batched",
+            "mode": 2
+          },
+          {
+            "read_tokens": 1069,
+            "draft_cells": 1068,
+            "batch_count": 1,
+            "path": "batched",
+            "mode": 2
+          }
+        ],
+        "native": {
+          "pid": 1070598,
+          "start_ticks": 89397086,
+          "sid": 1070573
+        },
+        "successful_warmups": 4,
+        "effective_environment_verified": true,
+        "request": {
+          "ok": true,
+          "err": null,
+          "ttft_s": 47.929,
+          "total_s": 281.429,
+          "prompt_tokens": 33208,
+          "reused_tokens": 0,
+          "read_tokens": 33208,
+          "generated_tokens": 3318,
+          "prompt_tps": 694.6,
+          "prompt_tps_source": "engine",
+          "decode_tps": 14.2,
+          "decode_tps_source": "engine",
+          "prompt_ms": 47810.4,
+          "decode_ms": 233596.6,
+          "drafts_offered": 2916,
+          "drafts_accepted": 2347,
+          "finish_reason": "stop",
+          "request_sha256": "f6f850b9f6c3791c528318dd9b654946b7cc86cc0d7df69220c648e43f213ac8",
+          "stream_complete": true,
+          "truncated": false,
+          "generated_tokens_source": "usage",
+          "client_interval": {
+            "request_begin_monotonic_ns": 894087542078763,
+            "first_output_monotonic_ns": 894135471313852,
+            "request_end_monotonic_ns": 894368971545911
+          },
+          "eligible": true,
+          "agreement_eligible": true,
+          "speed_eligible": true,
+          "speed_ineligible_reasons": [],
+          "ineligible_reasons": [],
+          "acceptance_rate": 0.8048696844993142,
+          "usage_generated_tokens": 3318,
+          "completion_includes_thinking": true,
+          "run": 0,
+          "order": 0,
+          "output_sha256": "99ceca676fbc02b8d8ba5ba58310339f19d54d2898d5c3ed477eda65220515bf",
+          "reasoning_sha256": "b87f557ebbceb04aec9d1789c3ecf80d5b301ad6e758fab88a330861ac1318e9",
+          "output_chars": 5578,
+          "reasoning_chars": 4041,
+          "reasoning_tokens": null,
+          "workload": "regular-code",
+          "controller_eligible": true
+        },
+        "long_work": {
+          "read_tokens": 33208,
+          "draft_cells": 33207,
+          "batch_count": 5,
+          "path": "batched",
+          "mode": 2
+        },
+        "actual_GPU_BF16_rows": 33207,
+        "actual_MoE_mode": 10,
+        "journal_valid": true,
+        "native_exit_code": 0,
+        "fault_probe": {
+          "fresh_faults": [],
+          "boot_unchanged": true,
+          "driver_after": {
+            "pci": "/sys/bus/pci/devices/0000:05:00.0",
+            "driver": "xe",
+            "vendor": "0x8086",
+            "device": "0xe20c",
+            "kernel": "7.0.0-38-generic",
+            "devcoredump": false
+          }
+        },
+        "native_footer_work_counters": {
+          "values": {
+            "submitted_blobs": 0,
+            "submitted_bytes": 0,
+            "completed_blobs": 0,
+            "completed_bytes": 0,
+            "host_view_groups": 0,
+            "gpu_miss_groups": 0,
+            "cpu_unique_misses": 1281981,
+            "cpu_entries": 1656916
+          },
+          "resident_hits": 209804,
+          "lookups": 1866720,
+          "target_rows": 3889,
+          "stderr_sha256": "9b63c7000d2e123f22f993be3ef761dca771ca6efb0d2a19f0715d11d797f670",
+          "footer_line": 110,
+          "scope": "Request-local deltas captured immediately before the target verifier loop (generate.cpp:6515-6539), after layer-major prompt prefill; includes the initial T=1 target row and later T=4 windows. CPU unique jobs are distinct per layer/window, not process-global unique experts. Does not count separate MTP computation or measure physical RAM/PCIe traffic.",
+          "conservation": "CPU routed entries + resident hits = lookups = target_rows * 48 layers * 10 experts; target_rows = 1 + 4 * (drafts_offered / 3), specific to spec4/suffix-draft0 with full windows."
+        }
       }
     ],
     "active": false,
@@ -2230,6 +2360,16 @@
       "acceptance_change": -0.0290620928795009,
       "decision": "One pair only; prefill increase is provisional. Decode is inconclusive_generation_length under the frozen5% band; retain the slower reading. Four independent processes remain, no adoption.",
       "limits": "Changed acceptance/output can change target work. Logical counters and wall rates do not establish CPU/RAM/GPU/PCIe saturation."
+    },
+    "same_arm_variation": {
+      "processes": [
+        1,
+        2
+      ],
+      "same_answer_thinking_and_acceptance": true,
+      "same_logical_work_counters": true,
+      "second_over_first_decode_rate": 1.2025508932921112,
+      "limit": "Independent FP16 processes differ20.2551% in decode rate despite matching text/counts; source of time variation is unmeasured. Preserve both; do not label away the slower result or change the frozen paired plan."
     }
   }
 }

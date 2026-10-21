@@ -3008,22 +3008,27 @@ fallback0 as a placement change. Ten host tests include all four real warmup
 marker/footer pairs; replay against the actual closed stderr also passes.
 Markers establish nominal callback coverage, not internal needed rows or kernel
 batch size. The fresh six-process plan is committed at`f038a0f34`; no old samples
-enter it. Its first matched pair now passes with33208 fresh input tokens in both arms:
+enter it. Three processes now pass with33208 fresh input tokens in both arms:
 
 | Process | FP16 MTP | PP, tok/s | TG, tok/s | Generated | Accepted/offered | TTFT, s |
 | --- | --- | ---: | ---: | ---: | --- | ---: |
 | 0 | off | 642.3 | 14.5 | 3900 | 2787/3342 | 51.816 |
 | 1 | on | 704.0 | 11.8 | 3318 | 2347/2916 | 47.289 |
+| 2 | on | 694.6 | 14.2 | 3318 | 2347/2916 | 47.929 |
 
-Both have answers and thinking, four warmups, five ring callback spans, the
+All three have answers and thinking, four warmups, five ring callback spans, the
 all-GPU BF16/mode10 prompt route, valid journals, native exit0, owned closure,
 source admission and no fresh fault. The first-pair raw-clock PP ratio is1.096054;
 TG is0.816328, generation length0.850769 and total wall1.021319. Retain the slower
 decode result. Its generation length violates the prospective5% band, so the
 decode decision is inconclusive_generation_length. These are first-long-request
-minimal-marker samples; four independent processes remain. Neither adoption nor
+minimal-marker samples; three independent processes remain. Neither adoption nor
 zero observer cost is established. Broader quality/weak-MTP/agent/physical262144
-and session/RESTORE gates remain pending.
+and session/RESTORE gates remain pending. Processes1/2 have identical answer and
+thinking hashes,3318 generated tokens,2347/2916 acceptance and logical expert
+counts, yet their raw decode rates differ20.2551%. This establishes time variation
+with matching logical work; its cause remains unmeasured. Preserve both samples
+and the original paired plan rather than dismissing the slower reading.
 
 Source inspection binds the native expert footer to deltas taken immediately
 before the target verifier loop, after prompt prefill. For Q8/FP16 respectively,
