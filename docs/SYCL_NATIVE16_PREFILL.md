@@ -3218,14 +3218,46 @@ packed source/layout, new collection path, retained-build and resource gates.
 The new path exercises the actual shared native-end reader and rejects fresh
 faults; the archive-backed check selects the original nested MTP comparison.
 These are host checks, not new GPU validation.
-The retained3b arm of the [frozen generation reference](../bench/results/2026-10-15-pr6-recovery-audit/generation-reference-current.json)
-is closed: regular-code reads33214 fresh tokens and generates3611 at12.3tok/s
-(2578/3102 accepted); varied-prose reads33288 and generates8638 at9.3tok/s
-(4660/11931). Both have thinking and answer body, matched native/draft/GPU
-route/cache restoration, native exit0, closed owners and no fresh fault.
-The observed83.11%/39.06% lie in the requested bands, but one sample cannot
-qualify the MTP pair, speed/nonregression, task quality or adoption. Currente062
-is still pending; keep both native generations for that exact second arm.
+Both arms of the [frozen generation reference](../bench/results/2026-10-15-pr6-recovery-audit/generation-reference-current.json)
+are closed. Each process runs both workloads with thinking enabled, fresh input
+and an actual answer body:
+
+| Engine | Workload | Read tokens | Generated tokens | PP tok/s | Decode tok/s | Accepted/offered |
+| --- | --- | ---: | ---: | ---: | ---: | ---: |
+| Retained3b | regular-code | 33214 | 3611 | 635.9 | 12.3 | 2578/3102 |
+| Currente062 | regular-code | 33214 | 3611 | 635.2 | 14.4 | 2578/3102 |
+| Retained3b | varied-prose | 33288 | 8638 | 761.5 | 9.3 | 4660/11931 |
+| Currente062 | varied-prose | 33288 | 8638 | 745.1 | 9.3 | 4660/11931 |
+
+All four requests pass the native/draft/GPU-route/cache-restoration gates.
+Both native exits are0, owners are closed, full hashes of all15 model files
+match before/after the cohort and no fresh fault is observed. The observed
+83.11%/39.06% acceptance falls in the requested bands in both arms. One sample
+per case/arm, with diagnostic observers, does not qualify MTP classification,
+a speed/nonregression decision, task quality, agent sessions, physical262144,
+RESTORE or model adoption. Preserve the lower prose PP and the single-sample
+code decode difference without attributing either to a proven implementation gain.
+
+Post-closure replay at`974c45c67` binds existing trace windows and native decode
+footers to the actual requests; no new GPU execution follows from this analysis.
+Both engines perform the same logical decode work. Code has1370846 CPU unique
+expert jobs for3611 emitted tokens (379.63/token); prose has4605780 for8638
+(533.20/token). At least70.75%/49.03% of those jobs have one input row, from
+`max(0,2*jobs-entries)`. Prose requires1.842 target rows/emitted token versus
+1.146 for code. These counts include the initial one-row verifier and speculative
+verification, exclude separate MTP work, and are not physical DRAM/PCIe traffic
+or proof of CPU/RAM saturation. Zero requested target-expert copy bytes under
+pcie0 does not imply zero activation/routing or other PCIe transfers.
+
+Select the currente062 engine/nine fixtures for the next bounded resource
+attribution diagnostic. The retained3b comparison consumer has ended; retire
+its engine/eight fixtures and successful raw cohort output after committing
+this evidence and verifying original source/recipe recovery and live dependencies.
+Actual retirement remains pending until the recorded deletion check completes.
+The prepared source-only resource diagnostic adds existing decode stage timing
+and passive CPU/DRM counters to one current regular-code request; it has not yet
+run. Its41 host checks pass. CPU arithmetic, RAM bandwidth and GPU wait costs
+remain unresolved; the diagnostic is not a clean throughput comparison.
 Generic native-end and draft-work readers now live in`generation_engine.py`.
 The closed packed model/clean launchers and their retired-run-only tests are
 removed; source and original reducer remain recoverable at`6213f0325d807b5eaf319bbf8096c9337f5402bd`.
