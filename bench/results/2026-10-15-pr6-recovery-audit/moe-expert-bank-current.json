@@ -123,5 +123,13 @@
       "sha256": "7d12264da26f4c089c9f2c20a16cc95f1c4e98587022a2feca3b243e8f1a70c3"
     },
     "next_action": "Commit revised controller and test it; rebuild from its exact input revision, then start a separate v2 root. Preserve this failed admission. Shared baseline hashes stay unchanged."
+  },
+  "runtime_admission_host_tests": {
+    "source_commit": "e0623d4f73e7909d68406ce3addca1fc0b3e348a",
+    "command": "python3 -B tools/test_sycl_query_profile.py",
+    "tests": 7,
+    "passed": true,
+    "GPU_executed": false,
+    "scope": "Exact known asset delta, passed component and scoped diagnostic modes; original failed GPU admission remains failed."
   }
 }

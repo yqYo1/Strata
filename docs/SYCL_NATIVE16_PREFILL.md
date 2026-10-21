@@ -3093,8 +3093,9 @@ the exact assets against the passed3b component result without changing the
 shared baseline hashes, using a fresh v2 root. Native Luna-max report review
 accepts the private layout with targeted followups: all-layer stride preflight,
 full-length copy coverage and rejected-enqueue nonpublication/checked unwind.
-Main adds those gates before the next build. GPU execution and model throughput
-remain unverified. This targets
+Main adds those gates; seven runtime-admission host tests pass and amended
+native build`e0623d4f7` compiles the engine/nine fixtures. GPU execution and model
+throughput remain unverified. This targets
 the observed expert-upload service, not a proven physical PCIe saturation;
 cross-window copy reduction needs the multi-window117K model test with Q8 MTP.
 
