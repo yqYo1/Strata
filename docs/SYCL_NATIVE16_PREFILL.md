@@ -46,6 +46,23 @@ before the prompt timer ends; moving work into decode is not an improvement.
 Restoration remains unqualified until repeated sustained decode and state-handoff
 checks establish independence.
 
+Main's original default-off `STRATA_PREFILL_TRANSITION_PROFILE=1` observer
+partitions native-owner entry, dense restoration and server cache refill into
+wall/thread-CPU regions. Called compatibility/runtime waits are nested
+subintervals; subtract them to distinguish host work from polling. It adds no
+queue work, wait, pointer publication or scheduling change. Native-owner entry
+excludes the earlier graph/borrower retirement and canonical preparation;
+dense restore includes canonical/PLE and graph/verifier resume. Preserve the
+existing version2 outer diagnostic for that wider boundary. Logical byte counts
+are requested payloads, not bus measurements. The standalone11-case host
+contract passed; production integration requires a new build and same-build
+component/device qualification before collecting a long model profile.
+The reviewed handoff alternatives add no speed evidence. Current dense/PLE
+restoration and graph recapture precede queued cache refill/table upload.
+A free waits before deallocation, but that alone does not establish whether
+already submitted GPU work overlaps while the host waits. No new handoff
+research is eligible until this disjoint attribution is available.
+
 The current B570 speed reference uses fresh inputs of117489 tokens and separates
 the first long request from later requests in each independent process.
 Three packed-bank process medians for the later requests are
