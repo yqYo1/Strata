@@ -5,6 +5,7 @@ import hashlib
 import json
 from pathlib import Path
 import sys
+import subprocess
 import tempfile
 import unittest
 from unittest.mock import patch
@@ -133,6 +134,48 @@ class RetainedModelEvidenceTests(unittest.TestCase):
                 if variant == 'truncated': sample['truncated'] = True
                 with self.assertRaises(RuntimeError):
                     b.retained_model_evidence(self.build, self.prefill, value)
+
+
+class PackedRetentionTests(unittest.TestCase):
+    """The original current generation remains recoverable after later rebuilds."""
+    def setUp(self):
+        root = Path(__file__).resolve().parents[2]
+        def original(name):
+            path = 'bench/results/2026-10-15-pr6-recovery-audit/' + name
+            return json.loads(subprocess.check_output(['git', '-C', str(root), 'show',
+                '385c7953de2e0a2fac49b5a016b7c78e39ec4610:' + path]))
+        self.values = [original(n) for n in ('native-gdn-engine-build.json',
+            'decode-query-profile-component-current.json', 'prefill-packed-bank-speed-current.json',
+            'generation-reference-current.json')]
+
+    def test_actual_current_evidence_is_retention_only(self):
+        scope = b.packed_model_evidence(*self.values)
+        self.assertEqual(scope['prefill_requests'], 24)
+        self.assertEqual(scope['current_long_generation_requests'], 2)
+        self.assertFalse(scope['sustained_decode_speed_qualified'])
+        self.assertFalse(scope['model_adoption_qualified'])
+
+    def test_reject_wrong_generation_incomplete_work_or_fault(self):
+        for variant in ('component', 'prefill_source', 'fixture', 'owner', 'fault', 'short',
+                        'reused', 'missing_process', 'wrong_pilot', 'no_answer', 'route', 'journal'):
+            with self.subTest(variant=variant):
+                build, component, prefill, generation = copy.deepcopy(self.values)
+                row = prefill['processes'][0]
+                pilot = generation['processes'][1]
+                if variant == 'component': component['source_commit'] = 'another-native'
+                if variant == 'prefill_source': row['build_source_commit'] = 'another-native'
+                if variant == 'fixture': component['fixtures'] = {}
+                if variant == 'owner': row['ownership_closed'] = False
+                if variant == 'fault': row['fresh_faults'] = ['fault']
+                if variant == 'short': row['requests'][0]['actual_read_tokens'] = 100
+                if variant == 'reused': row['requests'][0]['actual_reused_tokens'] = 1
+                if variant == 'missing_process': prefill['processes'].pop()
+                if variant == 'wrong_pilot': pilot['binary_sha256'] = 'retired-binary'
+                if variant == 'no_answer': pilot['requests'][0]['output_chars'] = 0
+                if variant == 'route': pilot['routes'][0]['cache_payload_and_map_match'] = False
+                if variant == 'journal': pilot['journal']['valid'] = False
+                with self.assertRaises(RuntimeError):
+                    b.packed_model_evidence(build, component, prefill, generation)
 
 
 if __name__=='__main__':unittest.main()

@@ -165,6 +165,64 @@ def retained_model_evidence(build, prefill, generation):
                 clean117K_speed_qualified=False, model_adoption_qualified=False)
 
 
+def packed_model_evidence(build, component, prefill, generation):
+    """Bind the retained packed generation, never the retired 3b model reports.
+
+    Original receipts and executable hashes supply qualification continuity;
+    the source/recipe recovery and all fixture bytes are checked by the caller.
+    This is retention admission, not promotion of pilot speed or model quality.
+    """
+    for value in (component, prefill, generation):
+        guards.require(value.get('passed') is True and value.get('complete') is True and
+            value.get('ownership_closed') is True and not value.get('active', False),
+            'closed component/prefill/generation evidence required')
+    guards.require(component['source_commit'] == build['source_commit'] and
+        component['binary'] == build['binary'] and component['fixtures'] == build['fixtures'] and
+        component['fresh_faults'] == [] and
+        prefill['build_source_commit'] == build['source_commit'] and prefill['binary'] == build['binary'] and
+        generation['stage'] == prefill['stage'] == 'closed', 'same-build packed qualification required')
+    rows = prefill['processes']
+    guards.require(len(rows) == 6 and [r['arm'] for r in rows] == [0, 1, 1, 0, 0, 1],
+        'closed six-process prefill cohort required')
+    for row in rows:
+        guards.require(row['passed'] and row['complete'] and row['ownership_closed'] and not row['active'] and
+            row['native_exit_code'] == 0 and row['fresh_faults'] == [] and row['fault_probe_successful'] and
+            row['boot_unchanged'] and row['actual_route_checked'] and row['observer_records_absent'] and
+            row['build_source_commit'] == build['source_commit'] and
+            row['binary_sha256'] == build['binary']['sha256'] and len(row['requests']) == 4,
+            'prefill native/route/fault identity differs')
+        for sample in row['requests']:
+            guards.require(sample['ok'] and sample['eligible'] and sample['stream_complete'] and
+                sample['actual_read_tokens'] >= 117489 and
+                sample['actual_prompt_tokens'] == sample['actual_read_tokens'] and sample['actual_reused_tokens'] == 0,
+                'complete fresh117K prefill required')
+    candidates = [r for r in generation['processes'] if
+        r['build_source_commit'] == build['source_commit'] and r['binary_sha256'] == build['binary']['sha256']]
+    guards.require(len(generation['processes']) == 2 and len(candidates) == 1,
+        'unambiguous same-build generation pilot required')
+    row, = candidates
+    guards.require(row['passed'] and row['complete'] and row['ownership_closed'] and not row['active'] and
+        row['native_exit_code'] == 0 and row['fresh_faults'] == [] and row['fault_probe_successful'] and
+        row['boot_unchanged'] and row['effective_environment_verified'] and row['journal']['valid'] and
+        len(row['requests']) == len(row['routes']) == 2 and
+        [r['workload'] for r in row['requests']] == ['regular-code', 'varied-prose'],
+        'same-build generation/route/owner/fault evidence required')
+    for sample, route in zip(row['requests'], row['routes']):
+        guards.require(sample['ok'] and sample['eligible'] and sample['stream_complete'] and
+            sample['read_tokens'] >= 32768 and sample['prompt_tokens'] == sample['read_tokens'] and
+            sample['reused_tokens'] == 0 and sample['generated_tokens'] >= 1024 and
+            sample['generated_tokens_source'] == 'usage' and sample['completion_includes_thinking'] and
+            sample['reasoning_chars'] > 0 and sample['output_chars'] >= 512 and
+            route['actual_MoE_mode'] == 10 and route['restored_dense_layers'] == 48 and
+            route['cache_payload_and_map_match'] and route['private_bank']['actual_private_layers'] == 48,
+            'complete thinking/answer/restored-route pilot required')
+    return dict(prefill_processes=6, prefill_requests=24, current_long_generation_requests=2,
+        prefill_read_tokens=sorted({s['actual_read_tokens'] for r in rows for s in r['requests']}),
+        generation_read_tokens=[s['read_tokens'] for s in row['requests']],
+        clean117K_speed_observed=True, sustained_decode_speed_qualified=False,
+        model_adoption_qualified=False)
+
+
 def retain_current():
     """Preserve the validated generation before a native cache is overwritten."""
     raw = RESULT.read_bytes()
@@ -177,15 +235,16 @@ def retain_current():
                    old['source_commit'] == compact['source_commit'] and old['binary'] == compact['binary'],
                    'current validated build identity/ownership differs')
     evidence, observations = {}, {}
-    for name in ('prefill-status-current.json', 'prefill-mtp-current.json'):
+    for name in ('decode-query-profile-component-current.json',
+                 'prefill-packed-bank-speed-current.json', 'generation-reference-current.json'):
         path = RESULT.with_name(name)
         value = json.loads(path.read_bytes())
         guards.require(path.read_bytes() == git(P, 'show', 'HEAD:' + str(path.relative_to(P))),
                        'commit exact current model evidence: ' + name)
         observations[name] = value
         evidence[name] = git(P, 'log', '-1', '--format=%H', '--', str(path.relative_to(P))).decode().strip()
-    scope = retained_model_evidence(old, observations['prefill-status-current.json'],
-                                    observations['prefill-mtp-current.json']['comparison'])
+    scope = packed_model_evidence(old, observations['decode-query-profile-component-current.json'],
+        observations['prefill-packed-bank-speed-current.json'], observations['generation-reference-current.json'])
     recovered = 0
     for source in [old['project'], *old['dependencies']]:
         for name, data in blobs(Path(source['root']), source['revision'], source['source_sha256']):
@@ -219,8 +278,8 @@ def retain_current():
         source_build_record=dict(path=str(receipt), sha256=digest(receipt)), recipe_reference=recipe,
         original_source_blobs_recovered_and_verified=recovered, model_evidence_commits=evidence,
         model_evidence_scope=scope,
-        qualification='Same-build fixture/source checks, two instrumented117K executions and six minimal-marker33K long-generation processes closed without fresh faults. Clean117K speed,task quality,physical262144/RESTORE and70tok/s remain unqualified.',
-        consumer='Fallback for the next dedicated long-prefill candidate and its component/model qualification; select the validated generation and retire the extra at comparison closure.')
+        qualification='Same-build component/fixture/source checks, six clean117K processes and the current arm of the two-engine33K thinking-generation pilot closed without fresh faults. A pilot does not qualify sustained decode speed,task quality,agent sessions,physical262144/RESTORE or model adoption.',
+        consumer='Fallback for the imminent direct CPU-job census build and component/model qualification; select the validated generation and retire the extra at comparison closure.')
     RESULT.write_text(json.dumps(compact, indent=2) + '\n')
     print(json.dumps(dict(retained_source=old['source_commit'], artifacts=len(original), recovered_inputs=recovered,
                          fallback=str(target), GPU_executed=False)))
