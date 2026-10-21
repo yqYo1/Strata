@@ -14,7 +14,7 @@ import measurement_guards as guards
 import measurement_owner as owner
 
 P, B = base.P, base.B
-ROOT = B/'cpu-iq2-pool-v2'
+ROOT = B/'cpu-iq2-pool-v3'
 RESULT = base.A/'cpu-iq2-current.json'
 PREFIXES = (*base.PREFIXES, 'bench/sycl/cpu_iq2', 'tools/sycl/cpu_iq2.py',
     'tools/sycl/measurement_guards.py', 'tests/core/test_cpu_iq2.py')
@@ -39,27 +39,21 @@ def prepare():
     base.need(RESULT.read_bytes() == base.git(P,'show','HEAD:'+str(RESULT.relative_to(P))) and
         prior.get('ownership_closed') and not prior.get('active'), 'commit closed predecessor before pool plan')
     predecessor_commit = base.git(P,'log','-1','--format=%H','--',str(RESULT.relative_to(P))).decode().strip()
-    previous_attempt = None
-    if prior['schema']=='strata-iq2-pool-v1':
-        # A changed source/root is a new experiment, never a retry or relabel of a failed stage.
-        base.need(prior['stage']=='failed' and not prior['passed'] and not prior['complete'] and
-            not prior['GPU_executed'] and 'binary' not in prior and
-            prior.get('failure',{}).get('phase')=='compile' and
-            prior['failure'].get('fixture_executed') is False, 'only closed pre-execution compile failure may seed this plan')
-        base.need(Path(prior['plan']['fixture']['path']).parent != ROOT,
-            'new experiment requires a different output root')
-        previous_component=prior['plan']['previous_component']
-        previous_attempt=dict(commit=predecessor_commit,path=str(RESULT.relative_to(P)),
-            source=prior['plan']['source'],stage='failed',passed=False,error=prior['error'],
-            failure=prior['failure'],plan_review=prior['plan_review'])
-    else:
-        base.need(prior['stage']=='closed' and prior['passed'] and prior['performance_gate_passed'],
-            'completed successful component required')
-        previous_component=dict(commit=predecessor_commit,path=str(RESULT.relative_to(P)),
-            source=prior['plan']['source'],binary=prior['binary'],
-            consumer='Producer parity/code-generation comparison through this pool gate; retire at closure.')
-    base.need(base.digest(previous_component['binary']['path']) == previous_component['binary']['sha256'],
-        'retained component changed')
+    base.need(prior['schema']=='strata-iq2-pool-v1' and prior['stage']=='closed' and prior['passed'] and
+        prior['complete'] and prior['performance_gate_passed'] and prior['artifact_retirement']['complete'] and
+        prior['plan']['environment']['STRATA_IQ_SINGLE_EXACT']=='1' and
+        prior['advancement_hold']['model_single_exact']=='0', 'close and preserve the differently configured pool screen')
+    base.need(Path(prior['plan']['fixture']['path']).parent != ROOT, 'fresh pool root required')
+    model_path=base.A/'cpu-work-census-current.json';model=json.loads(model_path.read_text())
+    base.need(model_path.read_bytes()==base.git(P,'show','HEAD:'+str(model_path.relative_to(P))) and
+        model['passed'] and model['complete'] and model['ownership_closed'] and not model['active'] and
+        model['environment']['STRATA_IQ_SINGLE_EXACT']=='0' and
+        model['environment'].get('STRATA_IQ_MT_MIN','2')=='2', 'committed actual model baseline0 required')
+    model_baseline_reference=dict(commit=base.git(P,'log','-1','--format=%H','--',str(model_path.relative_to(P))).decode().strip(),
+        path=str(model_path.relative_to(P)),sha256=base.digest(model_path),single_exact='0',mt_min='2')
+    previous_comparison=dict(commit=predecessor_commit,path=str(RESULT.relative_to(P)),source=prior['plan']['source'],
+        single_exact='1',latency_geomeans={str(d['down']):d['geomean']for d in prior['decisions']},
+        limits='Valid prior configuration-specific pool screen; executable retired. This trial rebuilds and validates independently with the actual model baseline0.')
     revision = base.git(P,'rev-parse','HEAD').decode().strip()
     forms = [r for r in base.formats() if r['gu']==22]
     for row in forms:
@@ -69,7 +63,7 @@ def prepare():
     ROOT.mkdir();fixture=ROOT/'inputs.txt';fixture.write_text(text)
     plan = dict(source=base.source_pin(P,revision,PREFIXES),ggml=base.source_pin(base.GGML,base.GGML_REV,('ggml',)),
         tools={str(Path(x).resolve()):base.digest(x) for x in (base.LLVM/'bin/clang',base.LLVM/'bin/clang++','/usr/bin/cmake','/usr/bin/ninja',sys.executable)},
-        environment=dict(base.environment(),STRATA_IQ_SINGLE_EXACT='1',STRATA_IQ_MT_MIN='2',STRATA_IQ2_PAIR_AUDIT='1'),
+        environment=dict(base.environment(),STRATA_IQ_SINGLE_EXACT='0',STRATA_IQ_MT_MIN='2',STRATA_IQ2_PAIR_AUDIT='1'),
         machine=base.machine(),formats=forms,metadata_sha256=base.digest(base.METADATA),
         model_identity={r['shard']:base.identity(r['shard']) for r in forms},
         fixture=dict(path=str(fixture),text=text,sha256=base.digest(fixture)),
@@ -78,7 +72,7 @@ def prepare():
             '-DCMAKE_CXX_COMPILER='+str(base.LLVM/'bin/clang++'),'-DSTRATA_GGML_DIR='+str(base.GGML)],
         build=['/usr/bin/cmake','--build',str(ROOT/'build'),'--target','cpu_iq2_pool','--parallel','6'],
         order=ORDER,
-        protocol=dict(question='Does the expanded direct IQ2_S NT1 producer improve the actual five-worker+computing-host full pool?',
+        protocol=dict(question='Does the expanded direct IQ2_S NT1 producer improve the actual five-worker+computing-host pool with model SINGLE_EXACT=0?',
             arms='Same binary, startup STRATA_IQ2_PAIR=0 versus1 in separate owned processes. Other flags fixed before exec; no runtime environment mutation.',
             mixtures=[dict(jobs=28,NT_counts=[22,5,1,0],entries=35),dict(jobs=24,NT_counts=[16,5,2,1],entries=36)],
             scope='Representative rounded job mixtures derived from the exact closed code/prose census, not model MTP measurements. Types22/20 and22/42 are independent decisions. NT2-4,Down,pool scheduling and storage remain unchanged.',
@@ -93,9 +87,9 @@ def prepare():
         budgets=dict(owned_total_bytes=256<<20,per_file_bytes=64<<20,root_bytes=512<<20,rss_bytes=3<<30,
             child_wall_seconds=180,child_cpu_seconds=1200,build_wall_seconds=600,build_cpu_seconds=3600,
             capture_consumer='Eight bounded9.46MB temporary tensors prove full-output equality across both check and six performance processes; retire all after compact hashes/comparisons are committed.'),
-        previous_component=previous_component,previous_attempt=previous_attempt,
+        previous_comparison=previous_comparison,model_baseline_reference=model_baseline_reference,
         input_scope_note='Current fingerprint explicitly includes measurement_guards.py. The earlier32-source screen did not inventory that helper; do not retroactively expand its original receipt. This independent pool trial requalifies the producer and all current controls.',
-        retention='Keep useful individual samples,format decisions,output hashes,work conservation and minimal thread placement. Current63af inference engine/ten fixtures stay untouched. Retire closed tensors/raw/builds and prior auxiliary at pool-gate closure after recovering original Git inputs/recipes.')
+        retention='Keep useful individual samples,format decisions,output hashes,work conservation and minimal thread placement. Validated63af fallback stays untouched;526e is compile-only. Retire closed tensors/raw/auxiliary build at pool-gate closure after recovering original Git inputs/recipes.')
     dump(RESULT,dict(schema='strata-iq2-pool-v1',plan=plan,stage='prepared',passed=False,complete=False,active=False,
         GPU_executed=False,model_adoption_qualified=False))
     print('Prepared frozen full-pool comparison; commit before build.')
@@ -104,6 +98,9 @@ def prepare():
 def load():
     base.need(RESULT.read_bytes()==base.git(P,'show','HEAD:'+str(RESULT.relative_to(P))),'commit current stage first')
     value=json.loads(RESULT.read_text());p=value['plan']
+    reference=p['model_baseline_reference'];raw=(P/reference['path']).read_bytes()
+    base.need(base.digest(P/reference['path'])==reference['sha256'] and
+        raw==base.git(P,'show','HEAD:'+reference['path']),'actual model baseline reference drift')
     base.need(base.source_pin(P,p['source']['revision'],PREFIXES)==p['source'],'project source drift')
     base.need(base.source_pin(base.GGML,base.GGML_REV,('ggml',))==p['ggml'],'ggml drift')
     base.need(base.machine()==p['machine'] and all(base.digest(f)==h for f,h in p['tools'].items()),'machine/tool drift')
