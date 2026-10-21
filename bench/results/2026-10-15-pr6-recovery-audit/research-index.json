@@ -6296,7 +6296,7 @@
     },
     "layer_local_compact_expert_bank_copy_contract": {
       "classification": "decision_support",
-      "stage": "dispatched",
+      "stage": "returned_review_pending",
       "schedulable_now": false,
       "question": "Can a private layer-local packed stride within the existing1022361600B expert bank, together with demand-preserving bulk/coalesced uploads, reduce transfer/submission work without extra VRAM, queue changes, loss of checked owner lifetime or numerical-route changes? Compare alternatives and identify necessary source/measurement gates, not implementation.",
       "prerequisites_met": [
@@ -6333,10 +6333,13 @@
       "dispatch": "ctx_cfb00e1af17a",
       "terminal": "term_ec830115-69a8-43c5-8c75-6214fcc9bab9",
       "terminal_incarnation": "3079a2b6-05e1-4881-a283-c4182bb32f93",
-      "ownership_closed": false,
+      "ownership_closed": true,
       "model": "gpt-6-luna",
       "effort": "high",
-      "model_evidence": "Main-created workspace-write custom argv; actual GPT-6-Luna high TUI observed before task injection. Worker-start input accepted and turn observed. No active steering."
+      "model_evidence": "Main-created workspace-write custom argv; actual GPT-6-Luna high TUI observed before task injection. Worker-start input accepted and turn observed. No active steering.",
+      "report_sha256": "9bb05d3cdf58a141f5b430392e89dfa9a7ed8b2d9d94a1ef91664808167a1360",
+      "report_bytes": 16167,
+      "completion": "Exact final assistant and activity done observed; worker-side lifecycle send unconfirmed, no accepted settlement. Dispatch explicitly fenced abandoned; exact Main-created terminal incarnation closed. Native Luna-max review pending."
     }
   }
 }
