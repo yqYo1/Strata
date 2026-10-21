@@ -3321,7 +3321,7 @@ row-split route; adaptation, peer/remote and split-device routes are rejected.
 It does not infer a request from TLS or reconstruct unframed routing records.
 
 Before rebuilding, the original current engine and nine fixtures are retained
-at the committed `retained_validation_reference` in the existing build result.
+at the then-committed `retained_validation_reference` in the build result.
 All9836 original source inputs/recipe and ten copied artifacts were verified;
 seven host retention checks pass at`8a3ad20e3`. The immediate consumer is this
 census build and its component/model qualification, not indefinite extra storage.
@@ -3372,6 +3372,13 @@ charging the20KiB/token activation subset table and all setup. Require exact
 integer/scales/FMA and GU/SwiGLU output parity, repeated hot/stream improvement,
 then a five-worker production-path comparison at the observed job counts.
 No CPU kernel candidate or model speedup is qualified yet.
+After committing the model result at`e6552e380`, Main replays both censuses
+against the raw records, recovers the fallback's9836 original inputs and recipe,
+selects the validated`63af639ac` engine/ten fixtures and retires the extra
+generation plus closed successful diagnostic output:134files/129680745B.
+The current compact result records the path/hash/reason manifest. The CPU
+calibration fixture remains for the imminent IQ2_S comparison; legacy source
+recovery exceptions remain separate.
 
 The14 old worktree proposal/metadata paths are also reviewed before rebuilding.
 Available unique partial failed-GDN source/recipes are archived at`228b85f13`
