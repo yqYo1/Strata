@@ -277,7 +277,7 @@
     "input_scope_note": "Current fingerprint explicitly includes measurement_guards.py. The earlier32-source screen did not inventory that helper; do not retroactively expand its original receipt. This independent pool trial requalifies the producer and all current controls.",
     "retention": "Keep useful individual samples,format decisions,output hashes,work conservation and minimal thread placement. Current63af inference engine/ten fixtures stay untouched. Retire closed tensors/raw/builds and prior auxiliary at pool-gate closure after recovering original Git inputs/recipes."
   },
-  "stage": "prepared",
+  "stage": "failed",
   "passed": false,
   "complete": false,
   "active": false,
@@ -297,5 +297,27 @@
       "sha256": "e50d468e8b0adfb05733f5b87b3cff34829c4a8c1aea50c865aa8bdfe4bb150f",
       "version": "3.12.3 (main, Aug 31 2026, 10:18:26) [GCC 13.3.0]"
     }
+  },
+  "ownership_closed": true,
+  "error": "closed successful child required: compile",
+  "failure": {
+    "phase": "compile",
+    "fixture_executed": false,
+    "cause": "bench/sycl/cpu_iq2/main.cpp omitted strata/kernels/cpu/expert_layout.hpp, which declares act_quant_any and q2_rows_any. Library objects compiled; no component executable was produced.",
+    "excerpt": [
+      "main.cpp:111:52: error: no member named 'act_quant_any' in namespace 'strata::kernels::cpu'",
+      "main.cpp:112:26: error: no member named 'q2_rows_any' in namespace 'strata::kernels::cpu'"
+    ],
+    "next_action": "Commit the missing include and a fresh source-pinned plan/root; preserve this failed attempt in Git. No same-stage retry."
+  },
+  "plan_review": {
+    "framework": "native Codex",
+    "model": "gpt-6-luna",
+    "reasoning": "max",
+    "report_bytes": 5065,
+    "sha256": "fda1f83f6c85f36319669b057a529411028a22ed08ee9adf4bf44bd96e2af09b",
+    "source_commit": "82b390441ffff79ffadba2d8d75169ac6f0be51a",
+    "main_read_scope": "Final short digest plus report size/hash only.",
+    "decision": "No blocker to the frozen CPU comparison. Failed compile provides no qualification. Any later inference trial must use each matching Down-format decision; top-level any-format performance eligibility is insufficient."
   }
 }
