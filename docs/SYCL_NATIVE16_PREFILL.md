@@ -155,8 +155,12 @@ and route helpers. Clean copy selection is source-verified through the pinned
 launch chain and selector;with audit0 it has no per-process logged copy count.
 Actual1/23 counts belong to the preceding checked off/on requests. The first
 retained clean process passed:902.784tok/s first use,then1002.267/1002.598/
-1002.806tok/s (median1002.598),with normal closure and no fresh fault. All
-remaining frozen samples and sustained-decode qualification are still pending.
+1002.806tok/s (median1002.598). The first candidate process passed:
+931.774tok/s first use,then1004.194/1004.182/1004.213tok/s
+(median1004.194). Both closed normally without a fresh fault. This first pair's
+0.159% difference does not complete the prospective three-pair screen.
+The remaining four frozen processes and sustained-decode qualification are
+still pending;short24-token output cannot establish decode independence.
 
 
 The current B570 speed reference uses fresh inputs of117489 tokens and separates
