@@ -1,5 +1,5 @@
 {
-  "source_commit": "c72d1c963c81251b53ca4d5fbbf3c092a2f9d3b9",
+  "source_commit": "362c16aad19cb00dc158c03a279e6c28cc8cc7d3",
   "compiler": {
     "path": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin/clang++",
     "sha256": "1290881b4e12a5e002e5b0de0787f85328ee5fe19f253a54be1cdd97dc2f26eb"
@@ -80,14 +80,14 @@
   "production_selected": false,
   "model_quality_qualified": false,
   "replaces": {
-    "source_commit": "790391a47a877eeef717723a09f21596d3b7b1b4",
+    "source_commit": "c72d1c963c81251b53ca4d5fbbf3c092a2f9d3b9",
     "binary": {
       "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/strata",
       "bytes": 22199160,
       "sha256": "db466c0efb148da22b9c5cb2dc2953b9fac23756f2d9c7a744fc5f3448cc410a"
     },
     "source_build_passed": true,
-    "retained_binary_source_commit": "790391a47a877eeef717723a09f21596d3b7b1b4",
+    "retained_binary_source_commit": "c72d1c963c81251b53ca4d5fbbf3c092a2f9d3b9",
     "reason": "Closed unused comparison engine; original source/recipe recovered from Git. Reuse its cache for the immediate corrected build, not a retained old generation."
   },
   "targets": [
@@ -106,9 +106,12 @@
     "iq2_phase_host_test",
     "prefill_transition_host_test",
     "sycl_native_dense_bank_test",
-    "sycl_large_h2d_bench"
+    "sycl_large_h2d_bench",
+    "canonical_restore_copy_host_test",
+    "sycl_canonical_restore_copy_test",
+    "sycl_canonical_dense_bank_test"
   ],
-  "retention_consumer": "Current comparison engine and requested fixtures: strata, sycl_verifier_retirement_test, sycl_submission_test, file_expert_source_test, sycl_mmvq_test, residency_publication_host_test, cache_tail_host_test, prefill_scratch_host_test, sycl_prefill_scratch_test, sycl_expert_bank_test, cpu_work_census_host_test, sycl_graph_envelope_test, iq2_phase_host_test, prefill_transition_host_test, sycl_native_dense_bank_test, sycl_large_h2d_bench; select the validated generation and retire the extra after qualification/comparison closure.",
+  "retention_consumer": "Current comparison engine and requested fixtures: strata, sycl_verifier_retirement_test, sycl_submission_test, file_expert_source_test, sycl_mmvq_test, residency_publication_host_test, cache_tail_host_test, prefill_scratch_host_test, sycl_prefill_scratch_test, sycl_expert_bank_test, cpu_work_census_host_test, sycl_graph_envelope_test, iq2_phase_host_test, prefill_transition_host_test, sycl_native_dense_bank_test, sycl_large_h2d_bench, canonical_restore_copy_host_test, sycl_canonical_restore_copy_test, sycl_canonical_dense_bank_test; select the validated generation and retire the extra after qualification/comparison closure.",
   "fixture_external_headers": {
     "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/include/sycl/ext/oneapi/experimental/graph.hpp": "f7a91295612dab140b9b30a87875deaed39667ecda72562fa20070b6e54774e0",
     "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/include/sycl/ext/oneapi/experimental/graph/command_graph.hpp": "199964835c014cd9c4c83f21e2d8f622bb4c7e5d642de6a0401e8bef7ae7eeaa",
@@ -451,15 +454,25 @@
     "GPU_executed": false,
     "fixture_sha256": "6926720fae66eb2e92e11894deec3ce6d0fc73d9322dd3dd7f0d742c7e5270dd",
     "stdout_sha256": "a1432831821830d7360148bd6c94aa42739cb19b059a3b9e71f28cebd9cb4d6a",
-    "stderr_sha256": "9c4ca56365c70a81a91706721f4defdb8bd8568ceaa24541a55e33eb8e5914c6"
+    "stderr_sha256": "264e0196fa697433e55cd76bfdb6a8c821a55123d6d8b40d8a434ddcae086648"
+  },
+  "canonical_restore_host_contract": {
+    "cases": 8,
+    "passed": true,
+    "exit_code": 0,
+    "ownership_closed": true,
+    "GPU_executed": false,
+    "fixture_sha256": "2745a7f38a5624595bc2a2715b7390e45fe90e552bd8d27f77d4592c8523c988",
+    "stdout_sha256": "8452ac548ae720b3d9b2e9b6a1c856eaa0a2c852f4b0a19d0ee0b4c8692c5c12",
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
   },
   "binary": {
     "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/strata",
-    "bytes": 22199160,
-    "sha256": "db466c0efb148da22b9c5cb2dc2953b9fac23756f2d9c7a744fc5f3448cc410a"
+    "bytes": 22199736,
+    "sha256": "af0aeb605b756e1ef007bb13cf3bd74b0ec632d3db5608f620232d80e496701b"
   },
-  "compile_database_sha256": "ecd6f684a65bb07b5f6969b83c329566833fbf449d6e71e580e8c44c8c70fd1c",
-  "configured_compile_entries": 234,
+  "compile_database_sha256": "2ce007d1a4b6c677c9b729b4d770119fcf6aa7eed4812acdeaead0a860ce5724",
+  "configured_compile_entries": 236,
   "fixtures": {
     "sycl_verifier_retirement_test": {
       "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/sycl_verifier_retirement_test",
@@ -520,18 +533,33 @@
     "sycl_large_h2d_bench": {
       "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/sycl_large_h2d_bench",
       "sha256": "cb0896362e96404a2e218f2112af53cd7a0579a50a16c1101dfc7b335d97580d"
+    },
+    "canonical_restore_copy_host_test": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/canonical_restore_copy_host_test",
+      "sha256": "2745a7f38a5624595bc2a2715b7390e45fe90e552bd8d27f77d4592c8523c988"
+    },
+    "sycl_canonical_restore_copy_test": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/sycl_canonical_restore_copy_test",
+      "sha256": "d18f92c990731a403acb94c7d44d7df626af3bfc87146db599d3b8672af37ec2"
+    },
+    "sycl_canonical_dense_bank_test": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/sycl_canonical_dense_bank_test",
+      "sha256": "969cc11e53a57fbb8c462158368debca1c4ab627fc8c11e689b82e3bc0672e1e"
     }
   },
-  "binary_origin_source_commit": "790391a47a877eeef717723a09f21596d3b7b1b4",
+  "binary_origin_source_commit": "362c16aad19cb00dc158c03a279e6c28cc8cc7d3",
   "previous_output_comparison": {
     "changed_project_inputs": [
-      "bench/sycl/large_h2d.cpp",
       "cmake/sycl_backend.cmake",
-      "tests/core/test_prefill_transition.py",
+      "include/strata/core/canonical_dense_bank.hpp",
+      "include/strata/core/canonical_restore_copy.hpp",
+      "tests/core/canonical_restore_copy_test.cpp",
+      "tests/core/test_large_copy.py",
+      "tests/sycl/canonical_restore_copy.cpp",
       "tools/sycl/build_engine.py"
     ],
     "native_and_recipe_inputs_match": false,
-    "engine_bytes_match": true,
+    "engine_bytes_match": false,
     "fixture_bytes_match": {
       "sycl_verifier_retirement_test": true,
       "sycl_submission_test": true,
@@ -547,7 +575,10 @@
       "iq2_phase_host_test": true,
       "prefill_transition_host_test": true,
       "sycl_native_dense_bank_test": true,
-      "sycl_large_h2d_bench": false
+      "sycl_large_h2d_bench": true,
+      "canonical_restore_copy_host_test": false,
+      "sycl_canonical_restore_copy_test": false,
+      "sycl_canonical_dense_bank_test": false
     },
     "controller_only_admission": false,
     "interpretation": "A real configure/build invocation admits the recorded inputs after original source/recipe recovery. Identical engine bytes preserve their known source identity even after fixture edits; qualification reuse separately requires the relevant native/recipe/fixture proof. No new speed result is implied."
@@ -556,9 +587,9 @@
   "inputs": [
     {
       "root": "/home/yayoi/orca/workspaces/Strata/sycl",
-      "revision": "c72d1c963c81251b53ca4d5fbbf3c092a2f9d3b9",
-      "count": 547,
-      "aggregate_sha256": "cd5e6bbf4689565566562635e227f6a709ad5ffd48d430aafb8d574d081d93bf"
+      "revision": "362c16aad19cb00dc158c03a279e6c28cc8cc7d3",
+      "count": 551,
+      "aggregate_sha256": "f8c4a3f4ca433e7a6c40c5fd91005086fc4fc82b4ebc9de43d3421527552cbc5"
     },
     {
       "root": "/home/yayoi/ghq/github.com/ggml-org/llama.cpp/.worktree/dep-ggml-3cf-xe-e32-20261011",

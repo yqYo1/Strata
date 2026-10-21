@@ -113,7 +113,9 @@ restore submission schedule, retaining its source/destination owners and one
 final checked drain before publication. The optional
 `STRATA_SYCL_PREFILL_CANONICAL_RESTORE_AUDIT=1` line records actual copied bytes,
 chunk and successful submission count after canonical bank retirement.
-The native build and device/model/handoff/decode gates remain pending.
+The native build passed, including its eight new host scheduler groups and
+existing15 census,24 phase and11 observer host cases. Device/model/handoff
+and sustained-decode gates remain pending.
 
 
 The current B570 speed reference uses fresh inputs of117489 tokens and separates
