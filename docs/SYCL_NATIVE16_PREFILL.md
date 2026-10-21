@@ -36,6 +36,32 @@ candidate generation, agent-session, broad task quality and physical262144
 context/session/RESTORE qualification remain open. Component or source checks
 below do not close those model gates.
 
+The closed pilot also constrains the next decode architecture decision. Combine
+its measured per-format job counts with the blob sizes in the
+[closed census](../bench/results/2026-10-15-pr6-recovery-audit/cpu-work-census-current.json):
+`sum(blob_bytes * sum(jobs_NT)) / generated_tokens` counts one logical expert
+blob per grouped CPU job, including a multirow job only once. The pilot at
+`bedfdf312` has the same work counts and static formats. This covers target
+experts, excluding separate MTP work:
+
+| Workload | Generated tokens | Logical CPU expert GB/output token | Logical GB/s at70 tok/s |
+| --- | ---: | ---: | ---: |
+| regular-code | 3611 | 0.774322 | 54.203 |
+| varied-prose | 8638 | 1.086338 | 76.044 |
+
+If every such footprint required one DRAM read and the available read budget
+equalled the measured six-thread256MiB scan's39.35GB/s, these workloads would
+allow50.82/36.22tok/s before arithmetic and other costs. Fitting70tok/s into that
+budget would require27.4%/48.3% fewer DRAM bytes per output token. Alternatively,
+copying every current CPU job's full blob to the GPU over a hypothetical6GB/s
+payload link would allow only7.75/5.52tok/s under unchanged work and placement.
+These are conditional budgets, not measured traffic or hardware ceilings:
+cache reuse, repeated kernel reads, overlap and the scan's access pattern differ.
+IQ2 pairing preserves this logical weight footprint. Its instruction savings
+therefore need the current repeated model comparison; the larger target also
+requires investigating reuse, placement, verification work and MTP costs rather
+than assuming that faster CPU arithmetic or complete GPU miss offload suffices.
+
 ## Tensor storage and precision
 
 `STRATA_SYCL_PREFILL_NATIVE16=bf16` selects an experimental kernel path only
