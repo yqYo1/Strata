@@ -149,7 +149,14 @@ paired subsequent-median ratios>1 and their geometric mean>=1.0005. The
 1000 milestone requires all three candidate process medians>=1000. Neither
 screen permits adoption without repeated sustained decode and the remaining
 correctness gates. Full model hashes bracket the cohort;file identity guards
-run before and after each process.
+run before and after each process. The independent native Luna review
+found no source-level admission blocker after tracing the launch,model,fixture
+and route helpers. Clean copy selection is source-verified through the pinned
+launch chain and selector;with audit0 it has no per-process logged copy count.
+Actual1/23 counts belong to the preceding checked off/on requests. The first
+retained clean process passed:902.784tok/s first use,then1002.267/1002.598/
+1002.806tok/s (median1002.598),with normal closure and no fresh fault. All
+remaining frozen samples and sustained-decode qualification are still pending.
 
 
 The current B570 speed reference uses fresh inputs of117489 tokens and separates
