@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Finite Main-owned exact IQ2_S NT1 component. CPU only; no model dispatch."""
+"""Finite Main-owned fused direct IQ2_S NT1 component. CPU only; no model dispatch."""
 import argparse
 import fcntl
 import hashlib
@@ -15,7 +15,7 @@ import measurement_guards as guards
 import measurement_owner as owner
 
 P, B = base.P, base.B
-ROOT = B/'cpu-iq2-v1'
+ROOT = B/'cpu-iq2-pair-v1'
 RESULT = base.A/'cpu-iq2-current.json'
 PREFIXES = (*base.PREFIXES, 'bench/sycl/cpu_iq2', 'tools/sycl/cpu_iq2.py')
 
@@ -38,7 +38,10 @@ def gu_hash(row):
 
 
 def prepare():
-    base.need(not ROOT.exists() and not RESULT.exists(), 'single-use component plan/root exists')
+    base.need(not ROOT.exists(), 'single-use component root exists')
+    previous = json.loads(RESULT.read_text())
+    base.need(previous['stage']=='closed' and previous['ownership_closed'] and not previous['performance_gate_passed'] and previous.get('artifact_retirement'), 'close/retire previous comparison first')
+    previous_commit = base.git(P,'log','-1','--format=%H','--',str(RESULT.relative_to(P))).decode().strip()
     revision = base.git(P, 'rev-parse', 'HEAD').decode().strip()
     row = next(r for r in base.formats() if (r['gu'], r['down']) == (22, 20))
     row['experts'] = 96; row['GU_sha256'] = gu_hash(row); row.pop('down_offset')
@@ -51,22 +54,23 @@ def prepare():
             (base.LLVM/'bin/clang', base.LLVM/'bin/clang++', '/usr/bin/cmake', '/usr/bin/ninja')},
         environment=base.environment(), machine=base.machine(), format=row,
         metadata_sha256=base.digest(base.METADATA), model_identity=base.identity(row['shard']),
-        configure=config, build=['/usr/bin/cmake', '--build', str(ROOT/'build'), '--target', 'cpu_iq2_subset', '--parallel', '6'],
-        protocol=dict(question='Can exact IQ2_S NT1 level masks beat the current direct-codebook helper with activation setup charged?',
-            methods=['linked production iq256_single_gu_rows(type22)', 'int16 scalar signed-subset table20KiB', 'int32 AVX2 gather signed-subset table40KiB'],
-            algebra='T[m]=2*P[m]-P[15]. Four-lane dot=(17*T[M25 xor S]+35*T[M43 xor S]-68*T[S])/2. Even numerator, int32-safe; no approximate weights or reassociation of FP32 blocks.',
-            scope='Single pinned physical CPU, H2560/FF640, full GU/SwiGLU, NT1. Prepare activation table on every expert call in timing; no sharing credit across experts/chunks. Only GU; Down and production pool/model are later gates.',
-            access='Hot6 distinct actual GU pairs6MiB; stream96 distinct actual GU pairs100761600B (>96MiB), no repeat within pass. Includes map/index/table accesses and unchanged packed weights. 20/40KiB denotes table values; struct metadata/alignment is additional.',
-            numerical='First exhaustive4 activation patterns x1024 grids x256 signs, exact four-lane integer checks for both methods. Then1280 synthetic padded gate/up row dots match GGML bits, partial634 GU rows match current helper, zero/negative/subnormal finite scales and valid extreme Q8 codes. Reject invalid -128 production codes. All96 real experts match complete GU/SwiGLU bits, finite outputs/canaries, before and after performance.',
+        configure=config, build=['/usr/bin/cmake', '--build', str(ROOT/'build'), '--target', 'cpu_iq2_pair', '--parallel', '6'],
+        protocol=dict(question='Does direct gate/up fusion reduce NT1 activation-load/loop cost without changing arithmetic?',
+            methods=['linked production iq256_single_gu_rows(type22)', 'direct fused gate/up rolled8-part loop', 'direct fused gate/up fully expanded8 parts'],
+            mechanism='Same packed IQ2_S codebook/sign/scale arithmetic. Gate and up share each Q8 activation load and loop control; two FP32 accumulators retain the original eight integer lanes, per-block FMA and final tree. Compare rolled and expanded loops for register/instruction tradeoffs. No LUT or expanded weights.',
+            scope='Single pinned physical CPU, H2560/FF640, full GU/SwiGLU, NT1. Only GU; Down and production pool/model are later gates. No preprocessed activation table, weight conversion or hidden setup.',
+            access='Hot6 distinct actual GU pairs6MiB; stream96 distinct actual GU pairs100761600B (>96MiB), no repeat within pass. Same original packed weights and direct codebooks.',
+            numerical='First exhaustive4 valid activation patterns x1024 grids x256 signs, exact four-lane integer checks. Then1280 synthetic padded gate/up row dots match GGML bits for both variants, partial634 GU rows match current helper, zero/negative/subnormal finite scales and valid extreme Q8 codes. All96 real experts match complete GU/SwiGLU bits, finite outputs, immutable inputs and canaries before and after performance.',
             repetition='Three independent processes0,1,2; each six rounds hot then stream. Arm order rotates by round+process. Complete passes until0.35s; require>=0.25s; finite1000000-pass limit. No retries or duration changes after observation.',
             overhead='Per-pass steady-clock cost below0.1% of fastest warmed six-expert pass. Reference checks and model loading outside timing; all candidate activation setup inside.',
             performance_gate='For a candidate: all six process/access paired-median ratios<=1.0, and their geometric mean<=0.97. Ratios use wall per expert and within-round matching. Preserve all samples/spread. No isolated-dot speed substitute.',
             stop='First ownership/build/source/byte/numerical/timing failure closes the stage; no retry. Negative performance rejects this candidate, with no model run.',
             limits='Component only, no GPU execution, model throughput, hardware saturation, task quality or physical262144/RESTORE qualification. A winning method must next pass five-worker actual-batch production GU/SwiGLU and full-pool gates before any engine/model trial.'),
+        previous_comparison=dict(commit=previous_commit,path=str(RESULT.relative_to(P)),decision='Subset methods rejected at4.66153x/5.24602x; raw/build retired.'),
         retention='Keep compact individual samples and current decision. Auxiliary CPU binary/build only for this exact comparison; retire closed raw/build after source/recipe recovery and result commit. Current known-good engine/ten fixtures stay untouched.')
     dump(RESULT, dict(schema='strata-cpu-iq2-v1', plan=plan, stage='prepared', passed=False, complete=False,
         active=False, GPU_executed=False, model_adoption_qualified=False))
-    print('Prepared exact IQ2_S NT1 plan; commit before build.')
+    print('Prepared direct gate/up IQ2_S NT1 plan; commit before build.')
 
 
 def load():
@@ -118,7 +122,7 @@ def execute(stage):
     try:
         if stage == 'build':
             run('configure', plan['configure'],120);run('compile',plan['build'],600,3600)
-            binary = ROOT/'build/cpu_iq2_subset';record['binary'] = dict(path=str(binary),sha256=base.digest(binary),bytes=binary.stat().st_size)
+            binary = ROOT/'build/cpu_iq2_pair';record['binary'] = dict(path=str(binary),sha256=base.digest(binary),bytes=binary.stat().st_size)
             links,_ = run('ldd',['/usr/bin/ldd',str(binary)],20)
             base.need(not any(x in links.read_text().lower() for x in ('sycl','level_zero','cuda','amdhip','libze')), 'GPU runtime linked')
         else:
@@ -132,7 +136,7 @@ def execute(stage):
                 base.need(len(validation) == 1 and validation[0]['experts'] == 96 and validation[0]['bitwise'], 'real numerical gate')
                 if stage == 'check':
                     contracts = [v for v in rows if v['kind'] == 'contract']
-                    base.need(len(contracts) == 1 and contracts[0]['passed'] and contracts[0]['integer_cases'] == 1048576 and contracts[0]['row_dots'] == 1280 and contracts[0]['invalid_q8_rejected'], 'exhaustive numerical gate')
+                    base.need(len(contracts) == 1 and contracts[0]['passed'] and contracts[0]['integer_cases'] == 1048576 and contracts[0]['row_dots'] == 1280 and contracts[0]['valid_extreme_Q8_checked'], 'exhaustive numerical gate')
                     proof += contracts
                 else:
                     clocks = [v for v in rows if v['kind'] == 'clock'];base.need(len(clocks) == 1 and clocks[0]['per_call_s'] < clocks[0]['fastest_warm_pass_s']*.001, 'clock gate')
@@ -165,7 +169,7 @@ def main():
             if not proc.name.isdecimal():continue
             try:exe=(proc/'exe').resolve(strict=True)
             except (FileNotFoundError,ProcessLookupError,PermissionError):continue
-            base.need(exe.name not in ('cpu_iq2_subset','cpu_roofline'), 'existing CPU component owner '+proc.name)
+            base.need(exe.name not in ('cpu_iq2_pair','cpu_iq2_subset','cpu_roofline'), 'existing CPU component owner '+proc.name)
         return prepare() if args.stage == 'prepare' else execute(args.stage)
 
 

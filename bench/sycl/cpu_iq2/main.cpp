@@ -1,7 +1,7 @@
 // Main-authored component, repository MIT license. No engine dispatch changes.
 // Format/codebook and reference: pinned ggml 3cf03257f219afbe7334045ff7c6a06ac68c627d
 // (MIT, third_party/ggml/LICENSE). The existing direct-codebook helper is linked.
-// Independent exact level-mask algebra; no XeStrata implementation input.
+// Fused direct gate/up comparison; no XeStrata implementation input.
 #include "strata/kernels/cpu/iq_avx2.hpp"
 #include "ggml.h"
 #include "ggml-cpu.h"
@@ -39,86 +39,62 @@ struct Guarded {
     uint8_t* data(){return raw.data()+guard;}
     void check()const {for(int i=0;i<guard;++i)need(raw[i]==0xa7&&raw[guard+n+i]==0xa7,"canary");}
 };
-struct Masks {
-    std::array<uint16_t,1024> word{};
-    Masks() {
-        for(int i=0;i<1024;++i) for(int k=0;k<8;++k) {
-            const unsigned v=(iq2s_grid[i]>>(8*k))&255;
-            need(v==8||v==25||v==43,"IQ2 codebook levels");
-            word[i]|=uint16_t((v==25?1:0)<<(k%4+(k/4)*8));
-            word[i]|=uint16_t((v==43?1:0)<<(k%4+4+(k/4)*8));
-        }
-    }
-};
-const Masks masks;
-template<class T> struct alignas(64) Tables {
-    // T[m] = 2*P[m] - P[15], in [-508,508] for valid Q8_K codes.
-    // H2560: exactly20KiB int16 or40KiB int32. No padded gather/alias trick.
-    std::array<T,H/4*16> value{};int n=0;
-    __attribute__((noinline)) void prepare(const block_q8_K* y,int length) {
-        need(length>0&&length<=H&&length%256==0,"activation shape");n=length;
-        for(int b=0;b<n/256;++b) {
-            for(int k=0;k<256;++k) need(y[b].qs[k]!=-128,"invalid production Q8_K code -128");
-            for(int j=0;j<64;++j) for(int m=0;m<16;++m) {
-                int sum=0;for(int k=0;k<4;++k)sum+=(m&(1<<k)?1:-1)*int(y[b].qs[4*j+k]);
-                value[(b*64+j)*16+m]=T(sum);
-            }
-        }
-    }
-};
-int four(const int16_t* t,unsigned map,unsigned sign) {
-    // g=8+17*M25+35*M43. D_s(m)=(T[m xor s]-T[s])/2.
-    // Numerator is even; intermediates fit int32, including +/-127.
-    return (17*int(t[(map&15)^sign])+35*int(t[((map>>4)&15)^sign])-68*int(t[sign]))/2;
+// Direct decode adapted from existing iq_single_avx2.cpp.
+// Copyright (c) 2023-2026 The ggml authors; MIT, third_party/ggml/LICENSE.
+__m256i scales(const block_iq2_s& x) {
+    uint64_t a;std::memcpy(&a,x.scales,8);
+    const auto v=_mm_set_epi64x(a>>4,a);
+    return _mm256_cvtepi8_epi16(_mm_add_epi8(_mm_slli_epi16(_mm_and_si128(v,_mm_set1_epi8(15)),1),_mm_set1_epi8(1)));
 }
-template<class T> __m256i chunk(const block_iq2_s& x,const Tables<T>& t,int b,int part) {
-    int maps[8],signs[8];
-    for(int j=0;j<4;++j) {
-        const unsigned id=x.qs[part*4+j]|((unsigned(x.qh[part])>>(2*j)&3)<<8);
-        const unsigned m=masks.word[id],s=x.qs[32+part*4+j];
-        maps[2*j]=m&255;maps[2*j+1]=m>>8;signs[2*j]=s&15;signs[2*j+1]=s>>4;
-    }
-    const T* base=t.value.data()+(b*64+part*8)*16;
-    if constexpr(sizeof(T)==2) {
-        int out[8];for(int j=0;j<8;++j)out[j]=four(base+j*16,maps[j],signs[j]);
-        return _mm256_loadu_si256(reinterpret_cast<const __m256i*>(out));
-    } else {
-        const __m256i m=_mm256_loadu_si256(reinterpret_cast<const __m256i*>(maps));
-        const __m256i s=_mm256_loadu_si256(reinterpret_cast<const __m256i*>(signs));
-        const __m256i off=_mm256_setr_epi32(0,16,32,48,64,80,96,112),lo=_mm256_set1_epi32(15);
-        const auto a=_mm256_i32gather_epi32(base,_mm256_add_epi32(off,_mm256_xor_si256(s,_mm256_and_si256(m,lo))),4);
-        const auto c=_mm256_i32gather_epi32(base,_mm256_add_epi32(off,_mm256_xor_si256(s,_mm256_and_si256(_mm256_srli_epi32(m,4),lo))),4);
-        const auto z=_mm256_i32gather_epi32(base,_mm256_add_epi32(off,s),4);
-        return _mm256_srai_epi32(_mm256_sub_epi32(_mm256_add_epi32(_mm256_mullo_epi32(a,_mm256_set1_epi32(17)),
-            _mm256_mullo_epi32(c,_mm256_set1_epi32(35))),_mm256_mullo_epi32(z,_mm256_set1_epi32(68))),1);
-    }
+__m256i half(const block_iq2_s& x,int p,__m256i q8,__m256i scale) {
+    const uint8_t* q=x.qs+p*4;const unsigned h=x.qh[p];
+    const auto grid=_mm256_set_epi64x(iq2s_grid[q[3]|((h<<2)&0x300)],iq2s_grid[q[2]|((h<<4)&0x300)],
+        iq2s_grid[q[1]|((h<<6)&0x300)],iq2s_grid[q[0]|((h<<8)&0x300)]);
+    alignas(32) static const uint8_t sm[32]={0,0,0,0,0,0,0,0,1,1,1,1,1,1,1,1,2,2,2,2,2,2,2,2,3,3,3,3,3,3,3,3};
+    alignas(32) static const uint8_t bm[32]={1,2,4,8,16,32,64,128,1,2,4,8,16,32,64,128,1,2,4,8,16,32,64,128,1,2,4,8,16,32,64,128};
+    uint32_t sign;std::memcpy(&sign,x.qs+32+p*4,4);
+    const auto bits=_mm256_load_si256(reinterpret_cast<const __m256i*>(bm));
+    const auto expanded=_mm256_and_si256(_mm256_shuffle_epi8(_mm256_set1_epi32(sign),_mm256_load_si256(reinterpret_cast<const __m256i*>(sm))),bits);
+    const auto neg=_mm256_cmpeq_epi8(expanded,bits);
+    const auto signed_q8=_mm256_sub_epi8(_mm256_xor_si256(neg,q8),neg);
+    const auto values=_mm256_maddubs_epi16(grid,signed_q8);
+    const auto sc=_mm256_shuffle_epi8(scale,_mm256_set1_epi16(0x0100+0x0202*p));
+    return _mm256_madd_epi16(values,sc);
 }
 float reduce(__m256 a) {
     __m128 v=_mm_add_ps(_mm256_extractf128_ps(a,1),_mm256_castps256_ps128(a));
     v=_mm_add_ps(v,_mm_movehl_ps(v,v));v=_mm_add_ss(v,_mm_movehdup_ps(v));return _mm_cvtss_f32(v);
 }
-template<class T> float dot(const block_iq2_s* x,const block_q8_K* y,const Tables<T>& t) {
-    __m256 acc=_mm256_setzero_ps();
-    for(int b=0;b<t.n/256;++b) {
-        __m256i isum=_mm256_setzero_si256();
-        for(int p=0;p<8;++p) {
-            const unsigned sc=x[b].scales[p];
-            const auto scales=_mm256_setr_epi32(2*(sc&15)+1,2*(sc&15)+1,2*(sc&15)+1,2*(sc&15)+1,
-                2*(sc>>4)+1,2*(sc>>4)+1,2*(sc>>4)+1,2*(sc>>4)+1);
-            isum=_mm256_add_epi32(isum,_mm256_mullo_epi32(chunk(x[b],t,b,p),scales));
+template<bool Expanded> __attribute__((noinline)) void pair_dot(const block_iq2_s* g,const block_iq2_s* u,
+    const block_q8_K* y,int n,float& gout,float& uout) {
+    __m256 ga=_mm256_setzero_ps(),ua=_mm256_setzero_ps();
+    for(int b=0;b<n/256;++b) {
+        __m256i gi=_mm256_setzero_si256(),ui=_mm256_setzero_si256();
+        const auto gs=scales(g[b]),us=scales(u[b]);
+        const auto part=[&](int p){
+            const auto act=_mm256_loadu_si256(reinterpret_cast<const __m256i*>(y[b].qs+32*p));
+            gi=_mm256_add_epi32(gi,half(g[b],p,act,gs));ui=_mm256_add_epi32(ui,half(u[b],p,act,us));
+        };
+        if constexpr(Expanded) {
+            #pragma clang loop unroll(full)
+            for(int p=0;p<8;++p)part(p);
+        } else {
+            #pragma clang loop unroll(disable)
+            for(int p=0;p<8;++p)part(p);
         }
-        // Same eight integer lanes, per-block scale/FMA and final float tree as direct.
-        const float d=_mm_cvtss_f32(_mm_cvtph_ps(_mm_cvtsi32_si128(x[b].d)))*y[b].d;
-        acc=_mm256_fmadd_ps(_mm256_set1_ps(d),_mm256_cvtepi32_ps(isum),acc);
+        const float gd=_mm_cvtss_f32(_mm_cvtph_ps(_mm_cvtsi32_si128(g[b].d)))*y[b].d;
+        const float ud=_mm_cvtss_f32(_mm_cvtph_ps(_mm_cvtsi32_si128(u[b].d)))*y[b].d;
+        ga=_mm256_fmadd_ps(_mm256_set1_ps(gd),_mm256_cvtepi32_ps(gi),ga);
+        ua=_mm256_fmadd_ps(_mm256_set1_ps(ud),_mm256_cvtepi32_ps(ui),ua);
     }
-    return .125f*reduce(acc);
+    gout=.125f*reduce(ga);uout=.125f*reduce(ua);
 }
-template<class T> __attribute__((noinline)) void gu(const uint8_t* blob,size_t stride,size_t up,
-    const block_q8_K* y,const Tables<T>& table,float* out,int r0,int r1) {
-    need(r0>=0&&r1>=r0&&r1<=FF&&stride>=size_t(table.n/256)*sizeof(block_iq2_s),"GU span");
+template<bool Expanded> __attribute__((noinline)) void gu(const uint8_t* blob,size_t stride,size_t up,
+    const block_q8_K* y,float* out,int r0,int r1) {
+    need(r0>=0&&r1>=r0&&r1<=FF&&stride>=size_t(H/256)*sizeof(block_iq2_s),"GU span");
     for(int r=r0;r<r1;++r) {
-        const float g=dot(reinterpret_cast<const block_iq2_s*>(blob+r*stride),y,table);
-        const float u=dot(reinterpret_cast<const block_iq2_s*>(blob+up+r*stride),y,table);
+        float g,u;pair_dot<Expanded>(reinterpret_cast<const block_iq2_s*>(blob+r*stride),
+            reinterpret_cast<const block_iq2_s*>(blob+up+r*stride),y,H,g,u);
         out[r]=(g/(1.f+std::exp(-g)))*u;
     }
 }
@@ -130,29 +106,22 @@ float oracle_dot(int n,const void* x,const void* y) {
     float v=0;ggml_get_type_traits_cpu(GGML_TYPE_IQ2_S)->vec_dot(n,&v,0,x,0,y,0,1);return v;
 }
 void contract() {
-    block_q8_K y{};y.d=.0009765625f;
-    Tables<int16_t> t16;Tables<int32_t> t32;block_iq2_s x{};
-    uint64_t cases=0;
+    block_q8_K y{};y.d=.0009765625f;block_iq2_s x{};uint64_t cases=0;
     for(int pattern=0;pattern<4;++pattern) {
         for(int j=0;j<256;++j)y.qs[j]=pattern==0?127:pattern==1?-127:pattern==2?(j%2?127:-127):int((j*73)%255)-127;
-        t16.prepare(&y,256);t32.prepare(&y,256);
-        for(unsigned id=0;id<1024;++id)for(unsigned s=0;s<256;++s) {
-            x.qh[0]=uint8_t((id>>8)*85);
-            for(int j=0;j<4;++j){x.qs[j]=id&255;x.qs[32+j]=s;}
-            int actual16[8],actual32[8];_mm256_storeu_si256(reinterpret_cast<__m256i*>(actual16),chunk(x,t16,0,0));
-            _mm256_storeu_si256(reinterpret_cast<__m256i*>(actual32),chunk(x,t32,0,0));
+        for(unsigned id=0;id<1024;++id)for(unsigned sign=0;sign<256;++sign) {
+            x.qh[0]=uint8_t((id>>8)*85);x.scales[0]=0;
+            for(int j=0;j<4;++j){x.qs[j]=id&255;x.qs[32+j]=sign;}
+            int actual[8];_mm256_storeu_si256(reinterpret_cast<__m256i*>(actual),half(x,0,
+                _mm256_loadu_si256(reinterpret_cast<const __m256i*>(y.qs)),scales(x)));
             for(int j=0;j<8;++j) {
                 int want=0;for(int k=0;k<4;++k)want+=int((iq2s_grid[id]>>(8*((j%2)*4+k)))&255)*
-                    ((s&(1<<((j%2)*4+k)))?-1:1)*int(y.qs[j*4+k]);
-                need(actual16[j]==want&&actual32[j]==want,"exact signed four-lane integer dot");
+                    ((sign&(1<<((j%2)*4+k)))?-1:1)*int(y.qs[j*4+k]);
+                need(actual[j]==want,"exact signed four-lane integer dot");
             }
             ++cases;
         }
     }
-    y.qs[255]=-128;bool rejected=false;try{t16.prepare(&y,256);}catch(const std::runtime_error&){rejected=true;}need(rejected,"invalid activation rejection");
-    rejected=false;try{t32.prepare(&y,256);}catch(const std::runtime_error&){rejected=true;}need(rejected,"invalid gather activation rejection");
-    for(int length:{0,255,H+256}){rejected=false;try{t16.prepare(&y,length);}catch(const std::runtime_error&){rejected=true;}need(rejected,"invalid activation shape rejection");}
-    // Padded rows, all codebook indices/signs/scales, ten blocks and finite half scales.
     constexpr size_t stride=H/256*sizeof(block_iq2_s)+4,up=stride*FF+16;
     Guarded weights(up+stride*FF),out(FF*sizeof(float));
     std::array<block_q8_K,H/256> a{};std::array<float,FF> ref{};
@@ -163,24 +132,25 @@ void contract() {
         auto* raw=reinterpret_cast<uint8_t*>(w);for(size_t k=0;k<sizeof(*w);++k)raw[k]=rnd()>>24;
         w->d=ggml_fp32_to_fp16((r%5==0?0.f:r%5==1?-.0625f:r%5==2?0x1p-24f:.0625f));
     }
-    t16.prepare(a.data(),H);t32.prepare(a.data(),H);
-    for(int side=0;side<2;++side)for(int r=0;r<FF;++r) {
-        const auto* w=reinterpret_cast<const block_iq2_s*>(weights.data()+side*up+r*stride);
-        const float want=oracle_dot(H,w,a.data());need(bits(dot(w,a.data(),t16),want)&&bits(dot(w,a.data(),t32),want),"per-row float scale/FMA/tree bits");
+    for(int r=0;r<FF;++r) {
+        const auto* g=reinterpret_cast<const block_iq2_s*>(weights.data()+r*stride);
+        const auto* u=reinterpret_cast<const block_iq2_s*>(weights.data()+up+r*stride);
+        const float wg=oracle_dot(H,g,a.data()),wu=oracle_dot(H,u,a.data());float ag,au;
+        pair_dot<false>(g,u,a.data(),H,ag,au);need(bits(ag,wg)&&bits(au,wu),"loop scale/FMA/tree bits");
+        pair_dot<true>(g,u,a.data(),H,ag,au);need(bits(ag,wg)&&bits(au,wu),"expanded scale/FMA/tree bits");
     }
     need(strata::kernels::cpu::iq256_single_gu_rows(22,weights.data(),stride,up,H,a.data(),ref.data(),3,FF-3),"direct helper unavailable");
     for(int method=1;method<=2;++method) {
         std::fill(out.raw.begin(),out.raw.end(),0xa7);float* dst=reinterpret_cast<float*>(out.data());
-        if(method==1)gu(weights.data(),stride,up,a.data(),t16,dst,3,FF-3);else gu(weights.data(),stride,up,a.data(),t32,dst,3,FF-3);
+        if(method==1)gu<false>(weights.data(),stride,up,a.data(),dst,3,FF-3);else gu<true>(weights.data(),stride,up,a.data(),dst,3,FF-3);
         for(int r=3;r<FF-3;++r)need(bits(dst[r],ref[r])&&std::isfinite(dst[r]),"GU/SwiGLU bits");
         for(int r=0;r<3*int(sizeof(float));++r)need(out.data()[r]==0xa7&&out.data()[(FF-3)*sizeof(float)+r]==0xa7,"outside row span");out.check();
     }
-    weights.check();std::cout<<"{\"kind\":\"contract\",\"integer_cases\":"<<cases<<",\"row_dots\":1280,\"GU_rows_per_method\":634,\"invalid_q8_rejected\":true,\"passed\":true}"<<std::endl;
+    weights.check();std::cout<<"{\"kind\":\"contract\",\"integer_cases\":"<<cases<<",\"row_dots\":1280,\"GU_rows_per_method\":634,\"valid_extreme_Q8_checked\":true,\"passed\":true}"<<std::endl;
 }
 struct Inputs {
     std::vector<Guarded> weights;std::array<block_q8_K,H/256> act{};
     std::array<std::array<float,FF>,count> expected{},out{};
-    Tables<int16_t> t16;Tables<int32_t> t32;
     std::array<uint64_t,count> input_hash{};std::array<block_q8_K,H/256> original_act{};
     Inputs(const char* path,uint64_t gate,uint64_t up,size_t bytes) {
         need(bytes==size_t(H/256)*sizeof(block_iq2_s)*FF,"real GU geometry");
@@ -201,8 +171,8 @@ struct Inputs {
     __attribute__((noinline)) void call(int method,int e) {
         const auto* p=weights[e].data();constexpr size_t row=H/256*sizeof(block_iq2_s),up=row*FF;
         if(method==0)need(strata::kernels::cpu::iq256_single_gu_rows(22,p,row,up,H,act.data(),out[e].data(),0,FF),"direct helper unavailable");
-        else if(method==1){t16.prepare(act.data(),H);gu(p,row,up,act.data(),t16,out[e].data(),0,FF);}
-        else {t32.prepare(act.data(),H);gu(p,row,up,act.data(),t32,out[e].data(),0,FF);}
+        else if(method==1)gu<false>(p,row,up,act.data(),out[e].data(),0,FF);
+        else gu<true>(p,row,up,act.data(),out[e].data(),0,FF);
         asm volatile(""::"r"(out[e].data()):"memory");
     }
     void validate() {
