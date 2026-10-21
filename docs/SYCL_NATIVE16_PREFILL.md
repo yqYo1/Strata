@@ -3179,6 +3179,10 @@ H2D payload falls for every request. The first pair's subsequent-median ratio
 is1.0021672 (+0.2167%); one pair does not establish a gain or satisfy the three
 candidate-process target. Keep the cold-first difference unexplained and
 continue the committed off/on/on/off/off/on order without changing the plan.
+The second independent packed-on process also passes all gates: first-long
+929.0tok/s, subsequent1002.6/1001.6/1002.1tok/s, unrounded median1002.1059.
+Its four work/payload totals match the first packed-on process; its paired
+baseline is still pending, so no second paired speed decision is available.
 This targets
 the observed expert-upload service, not a proven physical PCIe saturation;
 cross-window copy reduction needs the multi-window117K model test with Q8 MTP.
