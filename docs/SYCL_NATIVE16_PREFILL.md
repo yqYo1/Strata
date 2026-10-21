@@ -3167,7 +3167,7 @@ matched-GEMM ceiling fixture,with a131072B budget and review at clean-cohort
 closure; remove it if that fixture is not selected. Full layers/traces are not
 retained. Clean admission consumes the compact paired result and retained
 engine/fixtures,not the deleted diagnostic root.
-Four of the six clean processes are closed. Each passes the native/request/work,
+Five of the six clean processes are closed. Each passes the native/request/work,
 observer-absence,owner,runtime/model-identity and fresh-fault gates:
 
 | Process | Packed | First-long tok/s | Median of three subsequent requests |
@@ -3176,12 +3176,13 @@ observer-absence,owner,runtime/model-identity and fresh-fault gates:
 | 1 | On | 929.917 | 1002.056 |
 | 2 | On | 928.963 | 1002.106 |
 | 3 | Off | 926.748 | 1000.209 |
+| 4 | Off | 927.347 | 999.525 |
 
 The two completed pairs conserve all four input bodies and logical MoE work;
 requested expert H2D bytes fall in every paired request. Their subsequent-median
 ratios are1.0021672 (+0.2167%) and1.0018969 (+0.1897%). The first-use gap remains
 unexplained. Neither a speed gain nor the all-three1000 target is qualified;
-the final off/on pair is still pending. Continue the frozen order and criteria.
+the final candidate process is still pending. Continue the frozen order and criteria.
 This targets
 the observed expert-upload service, not a proven physical PCIe saturation;
 cross-window copy reduction needs the multi-window117K model test with Q8 MTP.
