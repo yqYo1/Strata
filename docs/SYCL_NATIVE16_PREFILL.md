@@ -2984,20 +2984,29 @@ calling them noise. These TG readings are not comparable with older14.6tok/s
 clean samples. Weak-MTP, agent-session, quality, physical262144/session/RESTORE
 and separate clean evidence remain pending.
 
-The next controller prepares a fresh minimal-marker comparison, with six new
+Controller`dc8805e94` prepared a minimal-marker comparison with six new
 independent processes in the same off/on/on/off/off/on order and the same official
-thinking-enabled33210-token regular-code workload. Trace, draft timing, UR layers
+thinking-enabled>=32K regular-code workload. Trace, draft timing, UR layers
 and the private validation preload are absent; the qualified runtime safety
-settings remain. Existing`DRAFT_PREFILL` success markers prove batched mode0 work
+settings remain. Existing`DRAFT_PREFILL` success markers report batched work
 with exact8192/tail cell coverage per request, including all four warmups. Source
 review finds no added GPU wait in that marker and excludes the heavy restore
 verification branch through prompt-cache0/conversation-cache-mib0. This is
 minimal-marker timing, not proof of zero observer cost or an inner kernel.
-The prior failed samples cannot enter this cohort. Controller`dc8805e94` passes
-nine host tests; its fresh six-process plan has been generated after full model,
-native/fixture/runtime and configuration checks. Commit that plan before GPU
-execution. Decode still uses the prospective5% generation-length band; changed output remains an effect, never an
-excluded sample. Broader quality/weak-MTP/agent/full-context gates remain pending.
+The prior diagnostic samples cannot enter this cohort. Nine synthetic host tests
+passed, but the first native attempt fails its warmup gate: Main incorrectly
+required mode0. The actual four markers are mode2, with73/265/911/1068 cells for
+74/266/912/1069 read tokens. Source`QsaState::kv_mode` describes placement,
+not storage precision:2 is the MTP ring;0 is fully resident. The first long gate
+is not released; cohorts1..5 are not run. Owner cleanup terminates the attempt,
+with an anchored empty-session scan, direct-child reap and no original identities
+remaining. Its original observation/ownership failure fields remain unchanged;
+no natural native exit or speed sample is claimed. No fresh GPU fault is found.
+Preserve this failed plan/result, correct the source-based ring gate and test
+actual closed warmup output before another fresh plan. Decode still uses the
+prospective5% generation-length band; changed output remains an effect, never
+an excluded sample. Broader quality/weak-MTP/agent/full-context gates remain
+pending.
 
 Logical cache-hit ratios are9.8/10.6%, with zero GPU miss-copy counters under
 `pcie-frac0`. The actual48-layer native layout has seven format pairs and

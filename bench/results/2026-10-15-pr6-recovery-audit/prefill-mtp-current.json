@@ -623,7 +623,7 @@
     "disposition": "Source review accepts successful DRAFT_PREFILL markers without added GPU waits; disabled prompt/conversation caches exclude the heavy snapshot-restore branch. Fresh independent comparison required. No zero-observer or performance claim."
   },
   "comparison": {
-    "stage": "prepared",
+    "stage": "failed",
     "source_commit": "dc8805e946126aec737c75c723b262b4265283b1",
     "build_source_commit": "3b4998f326101fa913788fd368e1674b111dea03",
     "binary": {
@@ -1815,11 +1815,47 @@
       }
     ],
     "invariant_signature": "09b00f702ecd0319446ff127a9cb1de7eb32b1ed51feb1d78067eec5a3c92c81",
-    "processes": [],
+    "processes": [
+      {
+        "cohort": 0,
+        "arm": 0,
+        "passed": false,
+        "ownership_closed": false,
+        "error": "RuntimeError('owned official benchmark failed')",
+        "journal_recovery": {
+          "valid": true,
+          "complete": false,
+          "complete_prefix_rows": 10,
+          "last_sha256": "112026f8070fbdc30e5a9e53577cb6981df68b8f6011d9f4cd96cd18ec19e4c6",
+          "pending": [
+            {
+              "request_index": 9,
+              "phase": "long-generation/regular-code",
+              "run": 0,
+              "turn": null,
+              "request_sha256": "f6f850b9f6c3791c528318dd9b654946b7cc86cc0d7df69220c648e43f213ac8"
+            }
+          ],
+          "errors": []
+        },
+        "fault_probe": {
+          "fresh_faults": [],
+          "boot_unchanged": true,
+          "driver_after": {
+            "pci": "/sys/bus/pci/devices/0000:05:00.0",
+            "driver": "xe",
+            "vendor": "0x8086",
+            "device": "0xe20c",
+            "kernel": "7.0.0-38-generic",
+            "devcoredump": false
+          }
+        }
+      }
+    ],
     "active": false,
-    "ownership_closed": true,
+    "ownership_closed": false,
     "passed": false,
-    "complete": false,
+    "complete": true,
     "adoption_qualified": false,
     "budgets": {
       "wall": 2400,
@@ -1846,6 +1882,79 @@
         "test_timeout_seconds": 90,
         "no_model_owners_checked": true
       }
+    },
+    "termination": {
+      "reason": "Main incorrectly required draft KV mode0. QsaState.kv_mode denotes placement: mode2 is the MTP ring, independent of INT8 storage. Four warmups report batched mode2 and conserve cells; old gate rejected them before releasing the long-request gate.",
+      "original_failure_preserved": true,
+      "remaining_processes_not_run": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "completed_long_requests": 0,
+      "actual_warmups": [
+        {
+          "read_tokens": 74,
+          "generated_tokens": 24,
+          "path": "batched",
+          "mode": 2,
+          "cells": 73
+        },
+        {
+          "read_tokens": 266,
+          "generated_tokens": 1,
+          "path": "batched",
+          "mode": 2,
+          "cells": 265
+        },
+        {
+          "read_tokens": 912,
+          "generated_tokens": 1,
+          "path": "batched",
+          "mode": 2,
+          "cells": 911
+        },
+        {
+          "read_tokens": 1069,
+          "generated_tokens": 8,
+          "path": "batched",
+          "mode": 2,
+          "cells": 1068
+        }
+      ],
+      "owned_error": "RuntimeError('draft-KV marker route/chunks do not conserve request')",
+      "native_natural_exit_not_observed": true,
+      "physical_process_closure": {
+        "direct_child_reaped": true,
+        "anchored_final_session_empty": true,
+        "original_identities_absent": [
+          {
+            "pid": 963164,
+            "start_ticks": 89104203,
+            "original_identity_absent": true
+          },
+          {
+            "pid": 963186,
+            "start_ticks": 89104243,
+            "original_identity_absent": true
+          },
+          {
+            "pid": 963211,
+            "start_ticks": 89104335,
+            "original_identity_absent": true
+          },
+          {
+            "pid": 963218,
+            "start_ticks": 89104348,
+            "original_identity_absent": true
+          }
+        ]
+      },
+      "original_ownership_closed_field_preserved": false,
+      "stderr_sha256": "0c325415d86511a8721e90e550e9e98219cfd0aed9fc43d6170560af940691c0",
+      "next_action": "Commit the failed receipt. Audit ring mode and marker semantics, repair host gate prospectively, test actual closed warmup output without relabeling the run, then commit a fresh root/plan. Do not run remaining cohorts or retry this root."
     }
   }
 }

@@ -6187,110 +6187,46 @@
       "limits": "No local speed, saturation, bottleneck or adoption claim. No code reused or relicensing implied; later reuse requires provenance/license check. No fresh scope recommended."
     },
     "mtp_draft_quantization_acceptance_methods": {
-      "scope_id": "mtp_draft_quantization_acceptance_methods",
       "classification": "decision_support",
+      "stage": "curated",
       "schedulable_now": false,
-      "question": "Using original speculative-decoding/MTP papers and official framework documentation, compare how lossy draft-side MTP state (including Q8 versus FP16 prefill) changes proposal distributions and per-sequence acceptance, while target verification preserves or changes output-distribution guarantees. Relate proposal length, verifier batch cost, rejection correction/rollback, thinking/task mix, and acceptance distribution to useful end-to-end tokens per second. Compare aggregate acceptance with per-request accepted-prefix distributions, give counterexamples where a faster draft or higher mean acceptance loses overall, and specify the minimum fields for a later sustained long-generation comparison. Map only to Strata's current MTP candidate; do not change its active minimal-marker plan.",
-      "prerequisites_met": [
-        "The maintained prefill decision and src/prefill/prefill.cpp identify the current Q8_1-activation x Q8_0 draft-KV path and opt-in FP16 GEMM path; the document states draft candidates and acceptance can change.",
-        "Main checked b62f673a7 original comparison: four 33210-token diagnostic long-generation samples (2913/3790 generated, acceptance about85.4..85.6%), original cohort admission failed and not adopted. A fresh minimal-marker cohort is prepared. Literature/method research is independently answerable and must not alter that frozen plan."
-      ],
-      "exclude": "No source-call-chain audit, expert CPU/RAM offload or weight-reuse study, marker/observer design, local performance or quality claim, code, or retrospective change to the active comparison.",
-      "closest_existing_scopes": [
-        {
-          "id": "mtp-fp16-draft-kv-contract",
-          "boundary": "Exact Q8/FP16 draft-KV source, bounds, and numerical contract; not acceptance-aware end-to-end methods."
-        },
-        {
-          "id": "mtp-clean-observer-route-admission",
-          "boundary": "Minimal observer and route proof; do not repeat marker analysis."
-        },
-        {
-          "id": "speculative_moe_offload_reuse_collection_scope",
-          "boundary": "CPU/RAM/offloaded expert reuse and accepted-token throughput; exclude weight reuse and focus on draft quantization/acceptance methodology."
-        },
-        {
-          "id": "current_decode_mtp_verifier_reuse_source_audit",
-          "boundary": "Pinned source call-chain and counter census; this scope is external algorithm/method evidence only."
-        }
-      ],
-      "consumer": "After the current matched prefill comparison closes, prospective sustained-generation/acceptance methodology for FP16 versus Q8 MTP, assessed independently from prefill.",
-      "review_point": "At closure of that sustained-generation decision; prune if its accepted-token and distribution analysis adds no reusable criterion.",
       "report_path": ".cache/strata-research/20261020/mtp-speculative-acceptance-methods.md",
-      "report_budget_bytes": 16384,
-      "stage": "research_running",
-      "eligibility_review": {
-        "path": ".cache/strata-research/20261020/research-eligibility-next-wave2.json",
-        "sha256": "d25c18b4c85e2458ba590feea2f87bf7ec0aa221715b61e1a257933470310600",
-        "main_correction": "Scope selection metadata mistakenly described only the old24-token pilot. The current four diagnostic long-generation samples and failed-cohort status replace that premise; no gate/outcome changes."
+      "report_sha256": "4e9126a45b7b60c2efb935fcffb0dc8f390bb8de5cce14d3a27f6a7cb5bf3722",
+      "report_bytes": 11913,
+      "review": {
+        "path": ".cache/strata-research/20261020/mtp-pipeline-methods-native-review.json",
+        "sha256": "647fece5d5d49d62fbac5f0d3ddbdcf35ae79609190902af8c08696b952ca011",
+        "verdict": "ACCEPT_WITH_SMALL_CORRECTION"
       },
-      "duplicate_dispatch_prohibited": true,
-      "worker": {
-        "task_id": "task_54914a4e5442",
-        "dispatch_id": "ctx_6cd010c07fae",
-        "run_id": "run_fb41872974e9",
-        "terminal": "term_8a62c065-0a50-4b5c-a4a0-d6b3829c0f37",
-        "incarnation": "f0b43003-9bda-4923-99cb-a5786c5f93c7",
-        "runtime_id": "e9030fc3-f028-4352-a34d-eb9385c8d79e",
-        "model": "gpt-6-luna",
-        "effort": "high",
-        "startup_workspace_write_verified": true,
-        "turn_started": true,
-        "ownership_closed": false
-      }
+      "consumer": "Prospective sustained-generation Q8/FP16 MTP decision, only after the current matched prefill comparison closes.",
+      "review_point": "At that plan/decision closure; prune if its per-request acceptance and distribution criteria add no reusable gate.",
+      "source_corrections": [
+        "The displayed useful-tokens/s formula uses an undefined N and an ambiguous numerator. State simply that the adoption metric is useful emitted output tokens divided by total end-to-end wall time; accepted draft tokens plus the sampled correction or bonus token are emissions, with task answer/thinking counts reported separately where available. Keep the stylized speedup equation labeled as a model, not a measured metric.",
+        "The bibliography labels Leviathan et al. as arXiv v1, but the generic abs link currently resolves to v2. Pin https://arxiv.org/abs/2211.17192v1 or label the link as the current version."
+      ],
+      "ownership_closed": true,
+      "limits": "No local speed, hardware saturation or code adoption. Original report preserved with indexed corrections. Main did not read the knowledge-collection body; no fresh follow-on scope is currently eligible."
     },
     "xe2_xmx_in_kernel_load_compute_pipeline_methods": {
-      "scope_id": "xe2_xmx_in_kernel_load_compute_pipeline_methods",
       "classification": "knowledge_collection",
+      "stage": "curated",
       "schedulable_now": false,
-      "question": "For Xe2/SYCL XMX matrix kernels, compare direct loads, single-buffer execution, multi-stage software pipelines, workgroup-local staging with double buffering, and supported asynchronous-copy or matrix APIs. Use dense GEMM and non-LLM convolution examples to account for load/compute dependency, tile reuse, staging traffic, synchronization, register/local-memory pressure, occupancy, tails, precision, and shape-dependent break-even points. Identify which overlap is documented versus inferred and give counterexamples where staging or deeper pipelines lose. Map only static applicability to Strata's MTP Q8 and MoE GEMM loops; do not claim that the current path is supply-limited or faster.",
-      "prerequisites_met": [
-        "The current MTP Q8/FP16 entrypoint and the SYCL XMX kernel source exist in this checkout (src/prefill/prefill.cpp; src/kernels/sycl/native_mmq_xmx.cpp), providing a concrete optional retrieval target.",
-        "Official hardware/compiler documentation and primary GPU-kernel literature can compare pipeline mechanisms without local profiler counters, a selected implementation, or a GPU run; the report can state B570-specific evidence limits."
-      ],
-      "exclude": "No host transfer/queue overlap, generic tile-framework survey, GEMM shape-dispatch study, ASIC stationary-loop mapping, row-tail design, codebook reuse, code or performance claim.",
-      "closest_existing_scopes": [
-        {
-          "id": "intel_tile_programming_collection_scope",
-          "boundary": "Generic SyclKittens/Xe-Forge/TLA tile-programming comparison; retrieve only for background, do not repeat framework survey."
-        },
-        {
-          "id": "forced_compute_copy_overlap_collection_scope",
-          "boundary": "Host transfer/command-list overlap; this scope is within-kernel tile loading and compute."
-        },
-        {
-          "id": "xe2_register_spill_collection_scope",
-          "boundary": "GRF/spill evidence; use only as a resource-tradeoff limit, not another register survey."
-        },
-        {
-          "id": "device-driven-variable-gemm-dispatch",
-          "boundary": "Variable-shape/device-driven dispatch; no repetition of scheduling or metadata selection."
-        }
-      ],
-      "consumer": "Retrieve only if the current or next source-pinned MTP/MoE GEMM comparison leaves a concrete matrix-kernel follow-up; no preemptive implementation.",
-      "review_point": "When that comparison selects or rejects an intra-kernel pipeline candidate; retire if no such candidate is selected.",
       "report_path": ".cache/strata-research/20261020/xe2-xmx-load-compute-pipeline-methods.md",
-      "report_budget_bytes": 18432,
-      "stage": "research_running",
-      "eligibility_review": {
-        "path": ".cache/strata-research/20261020/research-eligibility-next-wave2.json",
-        "sha256": "d25c18b4c85e2458ba590feea2f87bf7ec0aa221715b61e1a257933470310600",
-        "main_correction": "Scope selection metadata mistakenly described only the old24-token pilot. The current four diagnostic long-generation samples and failed-cohort status replace that premise; no gate/outcome changes."
+      "report_sha256": "5fce736257c1120a158ec9bced6cfca899dc35d1fff0facb4da87008a87788b8",
+      "report_bytes": 16228,
+      "review": {
+        "path": ".cache/strata-research/20261020/mtp-pipeline-methods-native-review.json",
+        "sha256": "647fece5d5d49d62fbac5f0d3ddbdcf35ae79609190902af8c08696b952ca011",
+        "verdict": "ACCEPT_CONDITIONAL_REFERENCE"
       },
-      "duplicate_dispatch_prohibited": true,
-      "worker": {
-        "task_id": "task_6bd9a4f1c7fb",
-        "dispatch_id": "ctx_9ebe4abe2dff",
-        "run_id": "run_fb41872974e9",
-        "terminal": "term_911dd882-a924-47d9-81cd-5780c7703934",
-        "incarnation": "bb389341-8f7c-4ebf-9928-0ec2317f5640",
-        "runtime_id": "e9030fc3-f028-4352-a34d-eb9385c8d79e",
-        "model": "gpt-6-luna",
-        "effort": "high",
-        "startup_workspace_write_verified": true,
-        "turn_started": true,
-        "ownership_closed": false
-      }
+      "consumer": "Conditional retrieval only if a current or next source-pinned MTP/MoE GEMM decision selects a concrete within-kernel load/compute follow-up.",
+      "review_point": "When that candidate is selected or rejected; prune the report and row if no such candidate is selected.",
+      "source_corrections": [
+        "At retrieval, pin the Intel guide/compiler/extension versions, and pin the CUTLASS convolution repository commit; keep the older CUTLASS blog explicitly historical and CUDA-specific. No source correction changes the report's conditional verdict.",
+        "Before converting this reference into an experiment, require a source-pinned production entrypoint/specialization and exact generated-code plus workload-shape evidence; preserve operand and accumulation precision, and measure clean production-path throughput separately from attribution."
+      ],
+      "ownership_closed": true,
+      "limits": "No local speed, hardware saturation or code adoption. Original report preserved with indexed corrections. Main did not read the knowledge-collection body; no fresh follow-on scope is currently eligible."
     }
   }
 }
