@@ -1,7 +1,7 @@
 {
   "mode": "cache-capacity-check",
   "diagnostic": "packed-expert-bank117K",
-  "stage": "partial",
+  "stage": "closed",
   "source_commit": "fdbcc5e6b5b169de2973534170f62e675e092d02",
   "build_source_commit": "ac904ae09858ba9d101cd368bd31f07c0cb2dcb8",
   "binary": {
@@ -431,6 +431,204 @@
           }
         ]
       }
+    },
+    {
+      "arm": 1,
+      "passed": true,
+      "complete": true,
+      "active": false,
+      "sample": {
+        "ok": true,
+        "err": null,
+        "ttft_s": 127.832,
+        "total_s": 129.424,
+        "prompt_tokens": 117489,
+        "reused_tokens": 0,
+        "read_tokens": 117489,
+        "generated_tokens": 24,
+        "prompt_tps": 920.3,
+        "prompt_tps_source": "engine",
+        "decode_tps": 14.2,
+        "decode_tps_source": "engine",
+        "prompt_ms": 127660.6,
+        "decode_ms": 1685.8,
+        "drafts_offered": 21,
+        "drafts_accepted": 16,
+        "finish_reason": "length",
+        "request_sha256": "26f08fd8364b5c4bce718617fe2aed42761d0a794e068b00532694adef78b3be",
+        "stream_complete": true,
+        "truncated": true,
+        "generated_tokens_source": "usage",
+        "client_interval": {
+          "request_begin_monotonic_ns": 903550009667164,
+          "first_output_monotonic_ns": 903677841533065,
+          "request_end_monotonic_ns": 903679434487232
+        },
+        "output_chars": 0,
+        "reasoning_chars": 121,
+        "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "reasoning_sha256": "0d786145d04b965534c72ea005fcccb9fb3a7e2552f6dda1bf32578d1916b8b2",
+        "eligible": true,
+        "eligibility_errors": [],
+        "requested_min_tokens": 98304,
+        "actual_prompt_tokens": 117489,
+        "actual_read_tokens": 117489,
+        "actual_reused_tokens": 0,
+        "prompt_count_source": "usage.prompt_tokens",
+        "read_count_source": "timings.prompt_n",
+        "reuse_counts_reported": {
+          "usage": 0,
+          "timings": 0
+        },
+        "thinking_requested": true,
+        "reasoning_observed": true,
+        "reasoning_tokens_reported": null,
+        "run": 0
+      },
+      "journal": {
+        "successful_warmups": 1,
+        "successful_long_requests": 1,
+        "request_sha256": [
+          "6976dd85c26437117139f185ce0ac4da0ab9d1d4eb576dd2f9e252ae99d63f03",
+          "26f08fd8364b5c4bce718617fe2aed42761d0a794e068b00532694adef78b3be"
+        ],
+        "journal_sha256": "6f08aa2f14fcee12f27858293f7973b05472e88d36d48062d8d8172e01830226",
+        "state_sha256": "2e7752b560c411202c4834e24ab408a92c3ec55454f597cedab8b76fa166c156"
+      },
+      "native": {
+        "pid": 1426532,
+        "start_ticks": 90344839,
+        "sid": 1426477
+      },
+      "native_exit_code": 0,
+      "validation_activation": {
+        "pid": 1426532,
+        "loader": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_loader.so.0.12.0",
+        "threads_before": 1,
+        "preinit": 37,
+        "config_enabled": true,
+        "first_init": true,
+        "dispatch_result": 46,
+        "output_untouched": true,
+        "retained_reference_until_exit": true,
+        "runtime_teardown_qualified": false
+      },
+      "capacity": {
+        "completed_requests": 2,
+        "exact_payload_and_map_cycles": 2,
+        "loan_generations": [
+          1,
+          2
+        ],
+        "slots": 1256,
+        "long_loan": {
+          "chunk": 8192,
+          "first": 132,
+          "lent": 1124,
+          "capacity": 2321664000,
+          "need": 2319958528,
+          "min_observed_free_bytes": 128118784
+        },
+        "actual_allocation_budget": {
+          "free_gpu_bytes": 4298424320,
+          "fixed_including_headroom_bytes": 4206942336,
+          "shared_arena_bytes": 1180698624
+        },
+        "min_observed_free_bytes": 128118784,
+        "prefill_rows": 117488,
+        "residual_gpu_bytes": 2406154240,
+        "windows_per_layer": [
+          [
+            0,
+            81920
+          ],
+          [
+            81920,
+            35568
+          ]
+        ],
+        "borrowed_ffn_entries": 96,
+        "checked_retirements": 96,
+        "dense_layers": 48,
+        "secondary_bank_windows": 48,
+        "execution_cache_parent_checked": true,
+        "clean_speed_qualified": false
+      },
+      "geometry": {
+        "actual_private_layers": 48,
+        "stride_layers": {
+          "2176000": 14,
+          "1510400": 5,
+          "1971200": 15,
+          "1715200": 3,
+          "2329600": 9,
+          "1868800": 1,
+          "2662400": 1
+        },
+        "requested_work": {
+          "uploads": 18937,
+          "requested_H2D_bytes": 38673152000,
+          "permanent_hits": 14288,
+          "permanent_slots": 267,
+          "total_slots": 384
+        },
+        "physical_PCIe_traffic_measured": false
+      },
+      "ownership_closed": true,
+      "fresh_faults": [],
+      "boot_unchanged": true,
+      "driver_after": {
+        "pci": "/sys/bus/pci/devices/0000:05:00.0",
+        "driver": "xe",
+        "vendor": "0x8086",
+        "device": "0xe20c",
+        "kernel": "7.0.0-38-generic",
+        "devcoredump": false
+      },
+      "additional_work_observation": {
+        "window_count": 96,
+        "jobs": 37353,
+        "routed_rows": 56394240,
+        "gu_nk": [
+          1280,
+          2560
+        ],
+        "down_nk": [
+          2560,
+          640
+        ],
+        "gu_down_storage": "bf16",
+        "hidden_storage": "fp16",
+        "requested_router_D2H_bytes": 225576960,
+        "requested_map_H2D_bytes": 451153920,
+        "all_job_row_and_expert_conservation_checks_passed": true,
+        "planned_matches_retired": true,
+        "limits": "Requested/logical metadata; not physical PCIe or VRAM traffic, occupancy or additive wall time.",
+        "window_rows_counts": [
+          [
+            35568,
+            48
+          ],
+          [
+            81920,
+            48
+          ]
+        ],
+        "job_size_groups": [
+          {
+            "min_rows": 1,
+            "max_rows": 2333,
+            "jobs": 29868,
+            "routed_rows": 7103790
+          },
+          {
+            "min_rows": 2334,
+            "max_rows": 8192,
+            "jobs": 7485,
+            "routed_rows": 49290450
+          }
+        ]
+      }
     }
   ],
   "runtime_asset_delta": {
@@ -633,8 +831,8 @@
   },
   "source_count": 149,
   "benchmark_fingerprint": "3673d860b72a090bc32db706c9cd4c42780ed21fd4cde278167b876fde9ac26b",
-  "complete": false,
-  "passed": false,
+  "complete": true,
+  "passed": true,
   "active": false,
   "ownership_closed": true,
   "clean_speed_qualified": false,
@@ -655,5 +853,17 @@
     "path": "bench/results/2026-10-15-pr6-recovery-audit/prefill-packed-bank-current.json",
     "sha256": "096209ce0c6270a81815ce9aa6f27acad9e9536c700a436d84fcdc7f0749c110",
     "original_status": "failed; never retroactively qualified"
+  },
+  "decision": {
+    "logical_lookups_conserved": true,
+    "requested_H2D_saved_bytes": 1429708800,
+    "work_screen_passed": true,
+    "speed_qualified": false,
+    "additional_conserved_MoE_work": true,
+    "requested_H2D_saved_fraction": 0.035651042630853905,
+    "transfer_only_time_at_observed_6GB_s": {
+      "seconds": 0.2382848,
+      "classification": "Reference calculation using achieved microbenchmark bandwidth; not a hard ceiling or measured critical-path gain."
+    }
   }
 }

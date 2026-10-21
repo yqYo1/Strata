@@ -3128,9 +3128,18 @@ The corrected frozen v2 plan then passes its baseline process:117489 input,
 H2D bytes with13594 permanent hits. It verifies96 borrowed retirements,two
 exact payload/map cycles,dense/cache restoration,native exit0,closed ownership,
 full model hashes before/after and no fresh fault. Its96-window census conserves
-37353 jobs and56394240 routed rows; the packed-on process remains pending.
-These observed baseline speeds are not clean-speed or candidate-gain evidence.
-Close the frozen off/on plan before a separate repeated clean-speed comparison.
+37353 jobs and56394240 routed rows. The packed-on process also passes all gates,
+including48 actual private layouts with the predicted seven-format layer census.
+Both arms conserve33225 logical expert lookups and identical37353 jobs,
+56394240 routed rows and GU/Down fusion totals. Uploads fall19631 to18937;
+requested H2D bytes fall40102860800 to38673152000, saving1429708800B (3.5651%).
+Both native processes exit0 with closed owners, unchanged full model hashes and
+no fresh fault. Their diagnostic PP is921.3/920.3tok/s; this is not speed-gain
+evidence. At the achieved6GB/s microbenchmark reference, the saved bytes alone
+represent0.2383s of copy service, not a hard ceiling or measured critical-path
+gain. The work screen passes, but neither clean speed nor model adoption is
+qualified. Use a separate matched six-process clean comparison, retaining
+first-long separately from three subsequent requests per process.
 This targets
 the observed expert-upload service, not a proven physical PCIe saturation;
 cross-window copy reduction needs the multi-window117K model test with Q8 MTP.
