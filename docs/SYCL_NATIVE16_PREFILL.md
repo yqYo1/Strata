@@ -3008,14 +3008,33 @@ fallback0 as a placement change. Ten host tests include all four real warmup
 marker/footer pairs; replay against the actual closed stderr also passes.
 Markers establish nominal callback coverage, not internal needed rows or kernel
 batch size. The fresh six-process plan is committed at`f038a0f34`; no old samples
-enter it. Its first Q8 process now passes:33208 fresh input,642.3PP,3900 generated
-at14.5TG,2787/3342 accepted drafts (83.3932%), with5496 answer/4752 thinking
-characters. Four warmups, five ring callback spans, all-GPU BF16/mode10 route,
-journal/native exit0/ownership/source and no-fresh-fault checks pass. This is one
-first-long-request minimal-marker sample; the FP16 arm and all repetitions remain
-pending, without a speedup/adoption or observer-overhead claim. Decode keeps its prospective
-5% generation-length band; changed output is an effect, never an excluded sample.
-Broader quality/weak-MTP/agent/full-context gates remain pending.
+enter it. Its first matched pair now passes with33208 fresh input tokens in both arms:
+
+| Process | FP16 MTP | PP, tok/s | TG, tok/s | Generated | Accepted/offered | TTFT, s |
+| --- | --- | ---: | ---: | ---: | --- | ---: |
+| 0 | off | 642.3 | 14.5 | 3900 | 2787/3342 | 51.816 |
+| 1 | on | 704.0 | 11.8 | 3318 | 2347/2916 | 47.289 |
+
+Both have answers and thinking, four warmups, five ring callback spans, the
+all-GPU BF16/mode10 prompt route, valid journals, native exit0, owned closure,
+source admission and no fresh fault. The first-pair raw-clock PP ratio is1.096054;
+TG is0.816328, generation length0.850769 and total wall1.021319. Retain the slower
+decode result. Its generation length violates the prospective5% band, so the
+decode decision is inconclusive_generation_length. These are first-long-request
+minimal-marker samples; four independent processes remain. Neither adoption nor
+zero observer cost is established. Broader quality/weak-MTP/agent/physical262144
+and session/RESTORE gates remain pending.
+
+Source inspection binds the native expert footer to deltas taken immediately
+before the target verifier loop, after prompt prefill. For Q8/FP16 respectively,
+CPU unique jobs are1483997/1281981, routed CPU entries1908954/1656916 and resident
+hits230406/209804. Entries plus hits equal2139360/1866720 lookups, exactly
+4457/3889 target rows times48 layers times10 experts. The row count also matches
+1+4*(offered/3), for this spec4/suffix-draft0 configuration. These include the
+initial one-row target window, exclude separate MTP computation and are logical
+work counts, not physical RAM traffic or saturation. The former process0 field
+at`5d3493678` accidentally selected its first warmup footer; the current result
+corrects its scope without changing the original speed/admission/fault outcomes.
 After original147 controller inputs, generated plans, pushed ancestry and live
 dependencies were checked, the closed rejected root's74files/13318721B and13
 consumed research transactions/23444B were retired with a path/hash/reason
