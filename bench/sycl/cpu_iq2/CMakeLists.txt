@@ -1,0 +1,11 @@
+cmake_minimum_required(VERSION 3.22)
+project(strata_cpu_iq2 LANGUAGES C CXX)
+set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+# Reuse the existing pinned production CPU/GGML build recipe unchanged.
+add_subdirectory("${CMAKE_CURRENT_LIST_DIR}/../cpu_roofline" cpu EXCLUDE_FROM_ALL)
+get_filename_component(STRATA_ROOT "${CMAKE_CURRENT_LIST_DIR}/../../.." ABSOLUTE)
+add_executable(cpu_iq2_subset main.cpp)
+target_include_directories(cpu_iq2_subset PRIVATE "${STRATA_ROOT}/third_party/ggml")
+target_compile_options(cpu_iq2_subset PRIVATE -march=znver3 -mtune=znver3 -mavx2 -mfma -mf16c)
+target_link_libraries(cpu_iq2_subset PRIVATE expert_cpu)
