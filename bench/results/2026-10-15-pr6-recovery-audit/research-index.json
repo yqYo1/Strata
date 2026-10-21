@@ -6948,26 +6948,12 @@
   "mtp_single_row_dense_qsa_decode_methods_scope": {
     "id": "mtp_single_row_dense_qsa_decode_methods-20261021",
     "classification": "knowledge collection",
-    "status": "eligible_not_dispatched",
-    "schedulable_now": true,
+    "status": "native_reviewed_partial_reference",
+    "schedulable_now": false,
     "main_reads_body_on_arrival": false,
     "question": "At source-confirmed SYCL MTP shape NH=24/NKV=2/HD=256, G=12 and cap up to 32768, compare current paged-KV dense scan (64-cell split plus second merge) with production K8V8 decode, GQA KV reuse, split-KV/FlashDecode reduction and launch-shape methods in immutable vLLM-XPU, SGLang or other primary sources. Assess quantization/cache/reduction/launch fit for one query row and long history, including counterevidence.",
-    "exclusions": [
-      "MTP window/catch-up/state validity or broad speculative-depth surveys.",
-      "Generic SYCL graph/event timing and long-prefill QSA/softmax.",
-      "Assumed bottleneck, speed prediction, adoption recommendation or required physical counters.",
-      "No code copying; pin provenance/licenses. XeStrata excluded as implementation source."
-    ],
     "report_path": ".cache/strata-research/20261021/mtp-dense-qsa-decode-methods.md",
-    "report_budget": {
-      "target_words": [
-        1400,
-        2200
-      ],
-      "maximum_bytes": 22528
-    },
     "model": "gpt-6-luna",
-    "reasoning": "high",
     "scope_review": {
       "model": "gpt-6-luna",
       "reasoning": "max",
@@ -6993,24 +6979,54 @@
       "receipt_sha256": "bd53ccfcbbd94418dcc36deb964bd726118e36da51c9edfb7dd5bbe38c48416f",
       "configuration": "Frozen config uses --kv int8, --max-context/--kv-resident131072 and no --mtp-window override; source default is32768. These are configuration/source facts, not per-kernel profiling or physical traffic."
     },
-    "prerequisites": [
-      {
-        "met": true,
-        "evidence": "Current MTP/verify/SYCL sources match immutable indexed pins and the closed same-native receipt is committed."
-      },
-      {
-        "met": true,
-        "evidence": "Native report review finds a distinct decode-kernel methods gap; existing coverage is window/catch-up, timing, long-prefill QSA or CPU experts."
-      },
-      {
-        "met": true,
-        "evidence": "Knowledge collection needs no new local experiment or physical counter and does not select an optimization."
-      }
-    ],
-    "consumer": "Retrieve relevant sections only after MTP phase attribution selects a concrete decode attention or merge question; review after that source/experiment decision and retire unused body.",
-    "review_point": "Before any component choice or implementation proposal.",
     "historical_pin_limit": "Current qsa_bf16_prefix.cpp SHA differs from historical QSA report pins; treat those reports as prefill design context.",
     "holds_unchanged": "No optimization selected; preserve MTP chain/window, state/RESTORE, physical-context and provenance holds.",
-    "policy_revision": "6c157826b"
+    "policy_revision": "6c157826b",
+    "worker_closed": true,
+    "terminal_closed": true,
+    "report_sha256": "e2802124919383e8de54db4b2156ee3d7a7e3c3483a9dd181bff4672d936d165",
+    "report_bytes": 11241,
+    "completion_outcome": "succeeded",
+    "native_review": {
+      "model": "gpt-6-luna",
+      "reasoning": "max",
+      "worker_closed": true,
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/mtp-dense-qsa-methods-native-review-20261021.json",
+      "bytes": 7324,
+      "sha256": "de01dac0ed8a0b6beb2fa0e6c93139cc97f78d98cd23c547ad8db482d7404fc8",
+      "verdict": "ACCEPT_FOR_INDEXED_RETRIEVAL_WITH_CORRECTIONS",
+      "digest": "Distinct, useful method reference. Local source confirms NH24/NKV2/HD256, G12, 64-cell split, existing 12-Q-per-KV reuse and second merge; source counts do not establish a bottleneck or speed. Prior reports cover MTP state/window, event timing or long-prefill QSA. Correction: no pinned external K8V8 implementation is analyzed; KIVI is a 2-bit paper. LightLLM's pinned Apache-2.0 sources support split/GQA comparison; SGLang/FlashInfer remain mutable or paper context. Retrieve only after attribution selects an attention or merge question. No adoption/qualification changes; holds remain open."
+    },
+    "corrections": [
+      "Material scope limit: local INT8 is described, but there is no pinned external production K8V8 decode implementation. KIVI is a 2-bit paper, not an 8-bit comparator. Index as partial; retrieve an exact implementation/config/dispatch and file license only if attribution selects that question.",
+      "SGLang's decode_attention.py is cited only as mutable-main corroboration, not an immutable pin. Current file confirms the exact LightLLM ancestry links and Apache-2.0 header. The pinned LightLLM stage files and same-commit Apache-2.0 LICENSE suffice for the algorithm reference; pin SGLang only if retrieved later.",
+      "No broken primary link found. Stanford CRFM page resolved in search, though direct open was unavailable in the browser tool."
+    ],
+    "citation_license_limits": {
+      "lightllm": {
+        "commit": "96353e868a840db4d103138caf15ed9dbea8c186",
+        "stage1": "https://github.com/ModelTC/LightLLM/blob/96353e868a840db4d103138caf15ed9dbea8c186/lightllm/models/deepseek2/triton_kernel/gqa_flash_decoding_stage1.py",
+        "stage2": "https://github.com/ModelTC/LightLLM/blob/96353e868a840db4d103138caf15ed9dbea8c186/lightllm/models/deepseek2/triton_kernel/gqa_flash_decoding_stage2.py",
+        "license": "Apache-2.0 at the same revision; immutable source pin verified."
+      },
+      "sglang_current_mutable": "https://github.com/sgl-project/sglang/blob/main/python/sglang/kernels/ops/attention/decode_attention.py (LightLLM pointers and Apache-2.0 header verified; mutable main).",
+      "primary_papers_blog": [
+        "https://crfm.stanford.edu/2023/10/12/flashdecoding — primary blog; method motivation only, no code/license claim.",
+        "https://arxiv.org/abs/2501.01005v1 — FlashInfer paper; load-balanced scheduling background, not implementation/license pin.",
+        "https://arxiv.org/abs/2402.02750v1 — KIVI paper; 2-bit K per-channel/V per-token claims only.",
+        "https://arxiv.org/abs/2311.01282v4 — FlashDecoding++ paper; unified-max method background only, no code license inferred."
+      ]
+    },
+    "retention": {
+      "decision": "Retain as indexed knowledge collection; Main does not read body on arrival.",
+      "consumer": "Retrieve relevant sections after MTP phase attribution selects a concrete decode-attention, K/V-format or merge question.",
+      "review_point": "After that source/experiment decision and before component choice/implementation proposal; preserve only useful metadata and retire unused report/review paperwork at a serialized closed-process boundary."
+    },
+    "followup": {
+      "schedulable_now": false,
+      "scope": null,
+      "reason": "No distinct follow-up before attribution and a concrete K8V8 or merge question; do not repeat the generic survey."
+    },
+    "coverage_limit": "No pinned external production K8V8 implementation was analyzed; KIVI is a 2-bit paper. This is a partial methods reference, not fulfillment of that comparator."
   }
 }
