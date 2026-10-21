@@ -2873,5 +2873,44 @@
     "bytes": 26629934,
     "source_recovered": 9858,
     "retained": "Known-good6e40afc1 plus currentc72d1 engine/fifteen fixtures for the imminent prefill restore comparison. No binary generation deleted. Research reports remain through active runtime-path research; its eight pinned inputs are unchanged."
+  },
+  "canonical_restore_chunk_host_plan": {
+    "scope": "Main original pure host copy scheduler; no production integration/GPU before this gate.",
+    "compiler": "/nix/store/2msw5nclhpsm80z65dqmjiv8kkras989-clang-wrapper-21.1.8/bin/clang++",
+    "compiler_version": "clang version 21.1.8",
+    "compiler_sha256": "821d1e767571f989b002f078bb5408a9cbf9ddaa159a33ae65947ed4fa80280d",
+    "compile": [
+      "/nix/store/2msw5nclhpsm80z65dqmjiv8kkras989-clang-wrapper-21.1.8/bin/clang++",
+      "-std=c++20",
+      "-O2",
+      "-Wall",
+      "-Wextra",
+      "-Werror",
+      "-pedantic",
+      "-Iinclude",
+      "tests/core/canonical_restore_copy_test.cpp",
+      "-o",
+      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/canonical-restore-copy-host-v1/test"
+    ],
+    "run": [
+      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/canonical-restore-copy-host-v1/test"
+    ],
+    "inputs": {
+      "include/strata/core/canonical_restore_copy.hpp": "37cdf20699fd52a388634da30060825e2b02ee1cebb67658c1b92b5320b56d68",
+      "tests/core/canonical_restore_copy_test.cpp": "5273b02a261c612c7f4beeb7048360ce21e1993cd889d9ceb01342092faf902d"
+    },
+    "environment": {
+      "PATH": "/home/yayoi/.nix-profile/bin:/usr/bin:/bin",
+      "LANG": "C.UTF-8"
+    },
+    "budgets": {
+      "compile_wall_s": 120,
+      "run_wall_s": 30,
+      "cpu_s": 120,
+      "rss_bytes": 1073741824,
+      "text_bytes": 1048576,
+      "total_bytes": 16777216
+    },
+    "acceptance": "Eight groups: zero rejection,one byte,exact chunk,tail,multiple chunks,real1538035200B extent23 spans,SIZE_MAX and refusal stops after exact successful prefix. Preserve no publication/drain/release in helper. All pass and owned processes close; no retry."
   }
 }
