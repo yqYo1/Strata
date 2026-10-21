@@ -2,9 +2,9 @@
   "schema": "strata-iq2-pool-v1",
   "plan": {
     "source": {
-      "revision": "82b390441ffff79ffadba2d8d75169ac6f0be51a",
+      "revision": "9e77089389fb2227d673c6b74b6103d542e7f513",
       "count": 36,
-      "aggregate_sha256": "114bc3e6817df58501202e219187b546223a6849d12ceab98ed1dda56b662c4d"
+      "aggregate_sha256": "f673431c7c2a80aec3015097ce7bbca0bdd1feaa8952afbc1bccfb558f0c9de3"
     },
     "ggml": {
       "revision": "3cf03257f219afbe7334045ff7c6a06ac68c627d",
@@ -160,7 +160,7 @@
       }
     },
     "fixture": {
-      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-iq2-pool-v1/inputs.txt",
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-iq2-pool-v2/inputs.txt",
       "text": "/home/yayoi/.local/share/strata-sycl/models/qwen3.8-flash-next-iq3_s/IQ3_S/Qwen3.8-Flash-Next-GSQ-RCO-IQ3_S-00001-of-00002.gguf 20 3491172096 3763417856 3018391296 1971200 168\n/home/yayoi/.local/share/strata-sycl/models/qwen3.8-flash-next-iq3_s/IQ3_S/Qwen3.8-Flash-Next-GSQ-RCO-IQ3_S-00001-of-00002.gguf 42 2340958080 2613152640 2104106880 1510400 168\n",
       "sha256": "6b76b43c3b14c4d2fcb7caf6a4b7f8687ca5f7ab0e83da0f654942298b521477"
     },
@@ -169,7 +169,7 @@
       "-S",
       "/home/yayoi/orca/workspaces/Strata/sycl/bench/sycl/cpu_iq2",
       "-B",
-      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-iq2-pool-v1/build",
+      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-iq2-pool-v2/build",
       "-G",
       "Ninja",
       "-DCMAKE_BUILD_TYPE=Release",
@@ -181,7 +181,7 @@
     "build": [
       "/usr/bin/cmake",
       "--build",
-      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-iq2-pool-v1/build",
+      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-iq2-pool-v2/build",
       "--target",
       "cpu_iq2_pool",
       "--parallel",
@@ -274,17 +274,49 @@
       },
       "consumer": "Producer parity/code-generation comparison through this pool gate; retire at closure."
     },
+    "previous_attempt": {
+      "commit": "62d068c73ce1ce1e953643414776155f20fc4a77",
+      "path": "bench/results/2026-10-15-pr6-recovery-audit/cpu-iq2-current.json",
+      "source": {
+        "revision": "82b390441ffff79ffadba2d8d75169ac6f0be51a",
+        "count": 36,
+        "aggregate_sha256": "114bc3e6817df58501202e219187b546223a6849d12ceab98ed1dda56b662c4d"
+      },
+      "stage": "failed",
+      "passed": false,
+      "error": "closed successful child required: compile",
+      "failure": {
+        "phase": "compile",
+        "fixture_executed": false,
+        "cause": "bench/sycl/cpu_iq2/main.cpp omitted strata/kernels/cpu/expert_layout.hpp, which declares act_quant_any and q2_rows_any. Library objects compiled; no component executable was produced.",
+        "excerpt": [
+          "main.cpp:111:52: error: no member named 'act_quant_any' in namespace 'strata::kernels::cpu'",
+          "main.cpp:112:26: error: no member named 'q2_rows_any' in namespace 'strata::kernels::cpu'"
+        ],
+        "next_action": "Commit the missing include and a fresh source-pinned plan/root; preserve this failed attempt in Git. No same-stage retry."
+      },
+      "plan_review": {
+        "framework": "native Codex",
+        "model": "gpt-6-luna",
+        "reasoning": "max",
+        "report_bytes": 5065,
+        "sha256": "fda1f83f6c85f36319669b057a529411028a22ed08ee9adf4bf44bd96e2af09b",
+        "source_commit": "82b390441ffff79ffadba2d8d75169ac6f0be51a",
+        "main_read_scope": "Final short digest plus report size/hash only.",
+        "decision": "No blocker to the frozen CPU comparison. Failed compile provides no qualification. Any later inference trial must use each matching Down-format decision; top-level any-format performance eligibility is insufficient."
+      }
+    },
     "input_scope_note": "Current fingerprint explicitly includes measurement_guards.py. The earlier32-source screen did not inventory that helper; do not retroactively expand its original receipt. This independent pool trial requalifies the producer and all current controls.",
     "retention": "Keep useful individual samples,format decisions,output hashes,work conservation and minimal thread placement. Current63af inference engine/ten fixtures stay untouched. Retire closed tensors/raw/builds and prior auxiliary at pool-gate closure after recovering original Git inputs/recipes."
   },
-  "stage": "failed",
+  "stage": "prepared",
   "passed": false,
   "complete": false,
   "active": false,
   "GPU_executed": false,
   "model_adoption_qualified": false,
   "host_reader_checks": {
-    "source_commit": "82b390441",
+    "source_commit": "9e77089389fb2227d673c6b74b6103d542e7f513",
     "command": [
       "python3",
       "-B",
@@ -297,27 +329,5 @@
       "sha256": "e50d468e8b0adfb05733f5b87b3cff34829c4a8c1aea50c865aa8bdfe4bb150f",
       "version": "3.12.3 (main, Aug 31 2026, 10:18:26) [GCC 13.3.0]"
     }
-  },
-  "ownership_closed": true,
-  "error": "closed successful child required: compile",
-  "failure": {
-    "phase": "compile",
-    "fixture_executed": false,
-    "cause": "bench/sycl/cpu_iq2/main.cpp omitted strata/kernels/cpu/expert_layout.hpp, which declares act_quant_any and q2_rows_any. Library objects compiled; no component executable was produced.",
-    "excerpt": [
-      "main.cpp:111:52: error: no member named 'act_quant_any' in namespace 'strata::kernels::cpu'",
-      "main.cpp:112:26: error: no member named 'q2_rows_any' in namespace 'strata::kernels::cpu'"
-    ],
-    "next_action": "Commit the missing include and a fresh source-pinned plan/root; preserve this failed attempt in Git. No same-stage retry."
-  },
-  "plan_review": {
-    "framework": "native Codex",
-    "model": "gpt-6-luna",
-    "reasoning": "max",
-    "report_bytes": 5065,
-    "sha256": "fda1f83f6c85f36319669b057a529411028a22ed08ee9adf4bf44bd96e2af09b",
-    "source_commit": "82b390441ffff79ffadba2d8d75169ac6f0be51a",
-    "main_read_scope": "Final short digest plus report size/hash only.",
-    "decision": "No blocker to the frozen CPU comparison. Failed compile provides no qualification. Any later inference trial must use each matching Down-format decision; top-level any-format performance eligibility is insufficient."
   }
 }
