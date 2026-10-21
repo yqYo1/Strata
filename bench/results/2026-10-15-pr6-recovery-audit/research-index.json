@@ -3536,11 +3536,14 @@
       "sha256": "30ceed4f056c67dbbd402c1d69509cc8c467c5c1bb18798c7b105f1811c5abde"
     },
     "native_review": {
-      "path": "/home/yayoi/.local/state/strata-sycl/artifact-retention-audit-20261018/research-wave-20261018/decode-sycl-graph-event-attribution-native-review.json",
       "bytes": 5592,
       "sha256": "40d02972ec2b02c69c61d6399c4d063c24b7985b6bb6683ad337344b7444b0cf",
       "verdict": "conditional_support_experiment_only",
-      "retire_after": "Retire this consumed full review at the next serialized process closure after its useful metadata is committed; retain the original decision-support report only for the named observer decision."
+      "raw_retired": true,
+      "raw_retirement_manifest": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/closed-iq2-comparison-3-20261021.jsonl",
+        "sha256": "a46c77ea241433274bfe1db231a8d2c2983d87b09b8ddcd874f44629cadce8c3"
+      }
     },
     "worker_ownership_closed": true,
     "digest": "Only a bounded support experiment is justified. Graph timestamps cover a first-to-last-node envelope, not arithmetic service. Retain each event before overwrite and query after checked completion/drain; unsupported queries remain unknown.",
@@ -3565,14 +3568,15 @@
       "https://github.com/oneapi-src/level-zero-spec/blob/v1.17.24/scripts/core/event.yml"
     ],
     "implementation_scope": {
-      "state": "Main source-only diagnostic implementation; uncompiled and unqualified",
+      "state": "Explicit graph-envelope API and bounded replay/ownership fixture committed; uncompiled/unqualified. Request-scoped MTP collector remains to implement.",
       "branch": "yqYo1/mtp-graph-observer",
       "path": "/home/yayoi/orca/workspaces/Strata/mtp-graph-observer",
       "base_revision": "ab740ff134b7ee716dea8226f5899da42c6f57e5",
       "reason": "Isolate native edits from the frozen six-process comparison in feature/sycl; no helper,dependency,source or executable in that comparison may change.",
       "next": "Finish explicit graph-envelope API,small replay/ownership fixture and bounded observer. Commit source; wait for all six comparison processes to close; integrate into feature/sycl before any build/test/GPU execution. Preserve current6c validated generation and update retention selector before another build.",
       "retirement": "Retire this unmeasured source-only branch/worktree after integration into feature/sycl; original commits remain reachable. Measurements and default integration stay on feature/sycl through PR180.",
-      "limits": "No new runtime safety setting,native recording,graph timing capability,performance or model qualification is established."
+      "limits": "No new runtime safety setting,native recording,graph timing capability,performance or model qualification is established.",
+      "source_commit": "77f6fe6b73dbef46d1331abcd70596fe567cae5d"
     }
   },
   "cpu_observer_overhead_methods_scope": {
