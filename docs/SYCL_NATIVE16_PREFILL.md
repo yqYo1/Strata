@@ -3408,7 +3408,11 @@ IQ2_S/Q2_0:7.87% and8.94% less time. Both pass their separate prospective
 3% gates,including all per-cell and independent-process nonregression checks.
 The failed first compile is preserved at`62d068c73`; the corrected source and
 fresh plan do not relabel or retry that attempt. This permits an inference
-rebuild and same-build safety/long-generation comparison,not model adoption.
+rebuild,not model adoption. A subsequent configuration audit finds that this
+pool comparison uses`STRATA_IQ_SINGLE_EXACT=1` while the actual model census
+uses0. Preserve this valid result within its declared scope; require a fresh
+pool comparison with0 in both arms before a model trial. No model execution
+has used the new producer yet.
 Physical CPU/RAM saturation and whole-model speed gains remain unmeasured.
 Closed CPU component builds,tensor captures and consumed review reports are
 retired after original source/recipe recovery; individual samples and deletion

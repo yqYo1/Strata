@@ -483,5 +483,18 @@
       "count": 5703,
       "aggregate_sha256": "5768eaea650c06eb022c9068784590a27400c2a577974c56750519edde859fe5"
     }
-  ]
+  ],
+  "iq2_evidence_reader_checks": {
+    "source_commit": "d34ccc0d0ed5fc71b6bdda21798338c2c3958d3f",
+    "command": [
+      "python3",
+      "-B",
+      "tests/core/test_iq2_pair_evidence.py"
+    ],
+    "tests": 7,
+    "passed": true,
+    "GPU_executed": false,
+    "scope": "Native/request identity,cumulative thread deltas,actual arm selection,physical-core participation,malformed/incomplete framing and counter overflow/regression."
+  },
+  "next_qualification": "Compile-only526e build,not a model-qualified replacement for63af. First repeat the CPU-pool comparison with actual model SINGLE_EXACT=0. If eligible,rebuild committed d34ccc0d0 decode audit footer and run same-build safety before model comparison."
 }
