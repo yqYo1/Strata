@@ -71,6 +71,30 @@ therefore need the current repeated model comparison; the larger target also
 requires investigating reuse, placement, verification work and MTP costs rather
 than assuming that faster CPU arithmetic or complete GPU miss offload suffices.
 
+The repeated comparison's closed baseline process also supplies a separate MTP
+budget. In `src/program/generate.cpp`, the request runs target verification,
+commit/emit and then `MtpDrafter::draft` before constructing the next window.
+The outer draft clock includes host work, graph submission, completion waits
+and charged observers; it is not GPU arithmetic service time.
+
+| Workload | Emitted tokens / windows | Draft ms/window | Whole-window budget at 70 tok/s | Draft-only conditional tok/s |
+| --- | ---: | ---: | ---: | ---: |
+| regular-code | 3611 / 1035 | 33.14 | 49.841 | 105.28 |
+| varied-prose | 8638 / 3978 | 33.05 | 31.021 | 65.70 |
+
+The last column is `emitted_tokens * 1000 / (windows * draft_ms)`. Holding
+the observed draft cost and emitted tokens per window fixed, CPU expert
+improvements alone cannot reach 70 tok/s on the prose case, even if target
+verification became free. This is a conditional serial budget, not a hardware
+ceiling or a clean throughput measurement. The printed draft mean has 0.01 ms
+resolution and includes the request's terminal window, which can skip drafting.
+After the frozen cohort, separate draft host submission/waits from attention,
+projections/MoE and head service before selecting a kernel or scheduling change.
+`MtpDrafter::draft` currently waits after the round and each chain step; removing
+those waits also requires preserving mapped inputs, NaN/probability stopping,
+KV state and checked owner retirement. The indexed chain/window reviews retain
+those holds; this budget clears none of them.
+
 ## Tensor storage and precision
 
 `STRATA_SYCL_PREFILL_NATIVE16=bf16` selects an experimental kernel path only
