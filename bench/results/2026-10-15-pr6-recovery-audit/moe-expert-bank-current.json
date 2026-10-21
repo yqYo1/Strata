@@ -203,19 +203,82 @@
           }
         ],
         "passed": true
+      },
+      {
+        "mode": "packed-validate",
+        "cases": [
+          {
+            "backing_slots": "384",
+            "backing_stride": "512",
+            "source_stride": "256",
+            "experts": "512",
+            "layers": "4",
+            "uploads": "2434",
+            "hits": "1662",
+            "consumers": "8192",
+            "unwind": "0",
+            "admission_rejections": "11",
+            "status": "0",
+            "full_copy": "0",
+            "immutable_slab": "PASS",
+            "guards": "PASS",
+            "private_map": "PASS",
+            "checked_drain": "PASS"
+          },
+          {
+            "backing_slots": "384",
+            "backing_stride": "2662400",
+            "source_stride": "2662400",
+            "experts": "512",
+            "layers": "3",
+            "uploads": "1709",
+            "hits": "1363",
+            "consumers": "6144",
+            "unwind": "0",
+            "admission_rejections": "11",
+            "status": "0",
+            "full_copy": "1",
+            "immutable_slab": "PASS",
+            "guards": "PASS",
+            "private_map": "PASS",
+            "checked_drain": "PASS"
+          },
+          {
+            "backing_slots": "384",
+            "backing_stride": "512",
+            "source_stride": "256",
+            "experts": "512",
+            "layers": "2",
+            "uploads": "10",
+            "hits": "0",
+            "consumers": "20",
+            "unwind": "2",
+            "admission_rejections": "11",
+            "status": "0",
+            "full_copy": "0",
+            "immutable_slab": "PASS",
+            "guards": "PASS",
+            "private_map": "PASS",
+            "checked_drain": "PASS"
+          }
+        ],
+        "passed": true
       }
     ],
     "limits": "Production upload helper/cache, synthetic byte readers, private maps and caller unwind only. No real provider enqueue fault injection, model arithmetic, speed, session rollback or physical262144/RESTORE qualification.",
-    "mode": "packed-smoke",
+    "mode": "packed-validate",
     "complete": true,
     "passed": true,
     "GPU_executed": true,
     "environment_reference": "tools/sycl/measurement_environment.json",
     "environment_overrides": {
+      "UR_ENABLE_LAYERS": "UR_LAYER_PARAMETER_VALIDATION",
       "TMPDIR": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/moe-packed-expert-bank-gpu-v2/tmp",
       "XDG_CACHE_HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/moe-packed-expert-bank-gpu-v2/cache"
     },
-    "removed_environment_keys": [],
+    "removed_environment_keys": [
+      "UR_LOG_TRACING"
+    ],
     "runtime_asset_delta": {
       "/usr/lib/x86_64-linux-gnu/libze_intel_gpu.so.1.17.39395": {
         "qualified_sha256": "dfa844e5afd8e8f74bf5ce9da3ea2837706d9116bc8efeaed90efba5acaf7b1c",
@@ -243,6 +306,15 @@
       "device": "0xe20c",
       "kernel": "7.0.0-38-generic",
       "devcoredump": false
-    }
+    },
+    "smoke_trace_evidence": {
+      "bytes": 341823,
+      "sha256": "6fa199438391bf339754c301037ae55aeddd35318bc8d37b481ee878f5bcab41",
+      "actual_UR_call_output_observed": true,
+      "level_zero_backend_observed": true,
+      "scope": "Trace presence only; no API count or overlap/saturation inference."
+    },
+    "gate": "Private expert-bank upload/layout component passes; model math, actual model work reduction, clean speed, task quality,physical262144/session/RESTORE remain unqualified.",
+    "next_action": "Qualify the current engine through the shared same-build safety suite, then freeze one117K model admission/work-accounting run and a separate matched clean Q8-MTP comparison. Keep current3b fallback and preserve original failed v1 admission."
   }
 }

@@ -3098,8 +3098,17 @@ native build`e0623d4f7` compiles the engine/nine fixtures. The v2 traced small G
 check passes two changing-layout cases (43/17 uploads/hits and10/0 on unwind),
 full-copy/guard/source/private-map checks, and one rejected-enqueue checked
 unwind without publication. Owners close with native exit0, unchanged boot and
-no fresh driver fault. Actual-size/512-full-fit GPU validation and model
-throughput remain unverified. This targets
+no fresh driver fault. Actual-size validation then passes: a512/384/256/512
+transition uses2434 uploads/1662 hits and8192 queued readers; the single
+1022361600-byte bank with1510400/2662400/2176000-byte strides uses1709 uploads,
+1363 hits and6144 readers. Exact-full-copy, all padding/unused-tail words,
+source immutability, private map, two-layer unwind and11 rejection checks per
+case pass. The synthetic failed-enqueue case confirms no mapping publication
+and checked retirement; it does not inject a real provider failure. Native
+exit0, closed ownership, unchanged assets/boot and no fresh fault hold. This
+qualifies the upload/layout component, not model arithmetic or throughput.
+Next require the shared same-build safety suite and a separately committed
+117K model work/clean-speed comparison. This targets
 the observed expert-upload service, not a proven physical PCIe saturation;
 cross-window copy reduction needs the multi-window117K model test with Q8 MTP.
 
