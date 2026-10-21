@@ -702,7 +702,7 @@
     }
   },
   "comparison": {
-    "stage": "prepared",
+    "stage": "collecting",
     "source_commit": "28bb3ea73c490204a8b8c939650b8015cd312020",
     "build_source_commit": "3b4998f326101fa913788fd368e1674b111dea03",
     "binary": {
@@ -1894,10 +1894,136 @@
       }
     ],
     "invariant_signature": "09b00f702ecd0319446ff127a9cb1de7eb32b1ed51feb1d78067eec5a3c92c81",
-    "processes": [],
+    "processes": [
+      {
+        "cohort": 0,
+        "arm": 0,
+        "passed": true,
+        "ownership_closed": true,
+        "warmup_work": [
+          {
+            "read_tokens": 74,
+            "draft_cells": 73,
+            "batch_count": 1,
+            "path": "batched",
+            "mode": 2
+          },
+          {
+            "read_tokens": 266,
+            "draft_cells": 265,
+            "batch_count": 1,
+            "path": "batched",
+            "mode": 2
+          },
+          {
+            "read_tokens": 912,
+            "draft_cells": 911,
+            "batch_count": 1,
+            "path": "batched",
+            "mode": 2
+          },
+          {
+            "read_tokens": 1069,
+            "draft_cells": 1068,
+            "batch_count": 1,
+            "path": "batched",
+            "mode": 2
+          }
+        ],
+        "native": {
+          "pid": 998454,
+          "start_ticks": 89199525,
+          "sid": 998431
+        },
+        "successful_warmups": 4,
+        "effective_environment_verified": true,
+        "request": {
+          "ok": true,
+          "err": null,
+          "ttft_s": 51.816,
+          "total_s": 321.263,
+          "prompt_tokens": 33208,
+          "reused_tokens": 0,
+          "read_tokens": 33208,
+          "generated_tokens": 3900,
+          "prompt_tps": 642.3,
+          "prompt_tps_source": "engine",
+          "decode_tps": 14.5,
+          "decode_tps_source": "engine",
+          "prompt_ms": 51700.3,
+          "decode_ms": 269539.7,
+          "drafts_offered": 3342,
+          "drafts_accepted": 2787,
+          "finish_reason": "stop",
+          "request_sha256": "f6f850b9f6c3791c528318dd9b654946b7cc86cc0d7df69220c648e43f213ac8",
+          "stream_complete": true,
+          "truncated": false,
+          "generated_tokens_source": "usage",
+          "client_interval": {
+            "request_begin_monotonic_ns": 892115871902126,
+            "first_output_monotonic_ns": 892167687731088,
+            "request_end_monotonic_ns": 892437134702971
+          },
+          "eligible": true,
+          "agreement_eligible": true,
+          "speed_eligible": true,
+          "speed_ineligible_reasons": [],
+          "ineligible_reasons": [],
+          "acceptance_rate": 0.8339317773788151,
+          "usage_generated_tokens": 3900,
+          "completion_includes_thinking": true,
+          "run": 0,
+          "order": 0,
+          "output_sha256": "5b7ae0f207d7804bc693ebde382f1a762c43f477fd01483939648d004cfaf971",
+          "reasoning_sha256": "05e720b14f3b900e97d3c9bdfe92a07955a90b180398eb7451e908dbb704a890",
+          "output_chars": 5496,
+          "reasoning_chars": 4752,
+          "reasoning_tokens": null,
+          "workload": "regular-code",
+          "controller_eligible": true
+        },
+        "long_work": {
+          "read_tokens": 33208,
+          "draft_cells": 33207,
+          "batch_count": 5,
+          "path": "batched",
+          "mode": 2
+        },
+        "actual_GPU_BF16_rows": 33207,
+        "actual_MoE_mode": 10,
+        "journal_valid": true,
+        "native_exit_code": 0,
+        "fault_probe": {
+          "fresh_faults": [],
+          "boot_unchanged": true,
+          "driver_after": {
+            "pci": "/sys/bus/pci/devices/0000:05:00.0",
+            "driver": "xe",
+            "vendor": "0x8086",
+            "device": "0xe20c",
+            "kernel": "7.0.0-38-generic",
+            "devcoredump": false
+          }
+        },
+        "native_footer_work_counters": {
+          "values": {
+            "submitted_blobs": 0,
+            "submitted_bytes": 0,
+            "completed_blobs": 0,
+            "completed_bytes": 0,
+            "host_view_groups": 0,
+            "gpu_miss_groups": 0,
+            "cpu_unique_misses": 7042,
+            "cpu_entries": 9855
+          },
+          "stderr_sha256": "405f9d56b777b7ce05e19b33d30d6d3db0d38d0173388c95f5b3de23544b56d2",
+          "scope": "Observed final native footer. Current routing contract review must prove reset/window accounting before treating these as per-output physical traffic; no new gate or saturation claim."
+        }
+      }
+    ],
     "active": false,
     "ownership_closed": true,
-    "passed": false,
+    "passed": true,
     "complete": false,
     "adoption_qualified": false,
     "budgets": {

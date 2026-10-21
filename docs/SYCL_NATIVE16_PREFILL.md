@@ -3008,7 +3008,12 @@ fallback0 as a placement change. Ten host tests include all four real warmup
 marker/footer pairs; replay against the actual closed stderr also passes.
 Markers establish nominal callback coverage, not internal needed rows or kernel
 batch size. The fresh six-process plan is committed at`f038a0f34`; no old samples
-enter it and no new long speed sample has returned. Decode keeps its prospective
+enter it. Its first Q8 process now passes:33208 fresh input,642.3PP,3900 generated
+at14.5TG,2787/3342 accepted drafts (83.3932%), with5496 answer/4752 thinking
+characters. Four warmups, five ring callback spans, all-GPU BF16/mode10 route,
+journal/native exit0/ownership/source and no-fresh-fault checks pass. This is one
+first-long-request minimal-marker sample; the FP16 arm and all repetitions remain
+pending, without a speedup/adoption or observer-overhead claim. Decode keeps its prospective
 5% generation-length band; changed output is an effect, never an excluded sample.
 Broader quality/weak-MTP/agent/full-context gates remain pending.
 After original147 controller inputs, generated plans, pushed ancestry and live
