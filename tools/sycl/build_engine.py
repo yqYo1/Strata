@@ -113,6 +113,58 @@ def fresh_retained_reference(compact):
     return reference
 
 
+def retained_model_evidence(build, prefill, generation):
+    """Same-build execution evidence; this does not qualify speed or adoption."""
+    for value in (prefill, generation):
+        guards.require(value.get('build_source_commit') == build['source_commit'] and
+                       value.get('binary') == build['binary'] and
+                       value.get('passed') is True and value.get('complete') is True and
+                       not value.get('active', False),
+                       'fallback model evidence belongs to another build or is incomplete')
+    runs = prefill.get('runs', [])
+    guards.require(len(runs) == 2 and prefill.get('full_model_hashes_matched') == 15,
+                   'two complete same-build prefill observations required')
+    for row in runs:
+        sample = row.get('sample', {})
+        guards.require(row.get('passed') is True and row.get('complete') is True and
+                       row.get('ownership_closed') is True and row.get('exit_code') == 0 and
+                       row.get('boot_unchanged') is True and
+                       row.get('fault_probe_successful') is True and row.get('fresh_faults') == [] and
+                       sample.get('ok') is True and sample.get('eligible') is True and
+                       sample.get('stream_complete') is True and
+                       type(sample.get('actual_read_tokens')) is int and
+                       sample['actual_read_tokens'] >= 117489 and
+                       sample.get('actual_prompt_tokens') == sample['actual_read_tokens'] and
+                       sample.get('actual_reused_tokens') == 0,
+                       'same-build117K execution/ownership/fault evidence is incomplete')
+    rows = generation.get('processes', [])
+    guards.require(generation.get('stage') == 'closed' and
+                   generation.get('ownership_closed') is True and len(rows) == 6,
+                   'closed six-process same-build generation evidence required')
+    for row in rows:
+        sample, fault = row.get('request', {}), row.get('fault_probe', {})
+        guards.require(row.get('passed') is True and row.get('ownership_closed') is True and
+                       row.get('native_exit_code') == 0 and fault.get('fresh_faults') == [] and
+                       fault.get('boot_unchanged') is True and
+                       row.get('journal_valid') is True and
+                       sample.get('ok') is True and sample.get('stream_complete') is True and
+                       sample.get('truncated') is False and
+                       type(sample.get('read_tokens')) is int and sample['read_tokens'] >= 32768 and
+                       sample.get('prompt_tokens') == sample['read_tokens'] and
+                       sample.get('reused_tokens') == 0 and
+                       type(sample.get('generated_tokens')) is int and sample['generated_tokens'] >= 1024 and
+                       sample.get('generated_tokens_source') == 'usage' and
+                       sample.get('completion_includes_thinking') is True and
+                       sample.get('output_chars', 0) >= 512 and sample.get('reasoning_chars', 0) > 0,
+                       'same-build sustained-generation/ownership/fault evidence is incomplete')
+    return dict(prefill_observations=len(runs), long_generation_processes=len(rows),
+                prefill_kind='instrumented117K execution, not clean speed',
+                prefill_read_tokens=sorted({row['sample']['actual_read_tokens'] for row in runs}),
+                generation_kind='minimal-marker long generation',
+                generation_read_tokens=sorted({row['request']['read_tokens'] for row in rows}),
+                clean117K_speed_qualified=False, model_adoption_qualified=False)
+
+
 def retain_current():
     """Preserve the validated generation before a native cache is overwritten."""
     raw = RESULT.read_bytes()
@@ -124,15 +176,16 @@ def retain_current():
     guards.require(old['passed'] and old['complete'] and old['ownership_closed'] and not old['active'] and
                    old['source_commit'] == compact['source_commit'] and old['binary'] == compact['binary'],
                    'current validated build identity/ownership differs')
-    evidence = {}
-    for name in ('prefill-long-input-current.json', 'decode-long-generation-current.json'):
+    evidence, observations = {}, {}
+    for name in ('prefill-status-current.json', 'prefill-mtp-current.json'):
         path = RESULT.with_name(name)
         value = json.loads(path.read_bytes())
-        guards.require(path.read_bytes() == git(P, 'show', 'HEAD:' + str(path.relative_to(P))) and
-                       value['passed'] and value['complete'] and value['ownership_closed'] and not value['active'] and
-                       value['binary']['sha256'] == old['binary']['sha256'] and not value['fresh_faults'],
-                       'closed current model evidence required: ' + name)
+        guards.require(path.read_bytes() == git(P, 'show', 'HEAD:' + str(path.relative_to(P))),
+                       'commit exact current model evidence: ' + name)
+        observations[name] = value
         evidence[name] = git(P, 'log', '-1', '--format=%H', '--', str(path.relative_to(P))).decode().strip()
+    scope = retained_model_evidence(old, observations['prefill-status-current.json'],
+                                    observations['prefill-mtp-current.json']['comparison'])
     recovered = 0
     for source in [old['project'], *old['dependencies']]:
         for name, data in blobs(Path(source['root']), source['revision'], source['source_sha256']):
@@ -165,8 +218,9 @@ def retain_current():
         binary=copies.pop('strata'), fixtures=copies,
         source_build_record=dict(path=str(receipt), sha256=digest(receipt)), recipe_reference=recipe,
         original_source_blobs_recovered_and_verified=recovered, model_evidence_commits=evidence,
-        qualification='Current opt-in engine passed component checks, repeated117K prefill and three independent long-generation processes without fresh GPU faults. Broad quality,physical262144/RESTORE and70tok/s remain unqualified.',
-        consumer='Fallback for immediate decode CPU observer native build, bounded runtime and observer-overhead qualification; select the validated generation and retire the extra at closure.')
+        model_evidence_scope=scope,
+        qualification='Same-build fixture/source checks, two instrumented117K executions and six minimal-marker33K long-generation processes closed without fresh faults. Clean117K speed,task quality,physical262144/RESTORE and70tok/s remain unqualified.',
+        consumer='Fallback for the next dedicated long-prefill candidate and its component/model qualification; select the validated generation and retire the extra at comparison closure.')
     RESULT.write_text(json.dumps(compact, indent=2) + '\n')
     print(json.dumps(dict(retained_source=old['source_commit'], artifacts=len(original), recovered_inputs=recovered,
                          fallback=str(target), GPU_executed=False)))
