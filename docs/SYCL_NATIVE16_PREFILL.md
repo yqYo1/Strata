@@ -53,10 +53,14 @@ The new engine and eleven fixtures compiled at `05223b559`; 25 host-only
 controller/refusal tests and the 15-case CPU census build contract passed.
 The bounded profile-off/on graph fixture passed numerical/guard, event-provenance,
 two-replay clock and checked teardown gates with no fresh faults. Same-build
-engine correctness and model timing remain unqualified.
+eighteen-group engine checks also passed. Model execution and timing remain
+unqualified.
 The validated6c engine and ten fixtures are preserved and hash-checked after
 recovering 9845 original inputs from Git. The unmeasured child branch/worktree
-is retired. Next, run the applicable same-build engine checks. Graph clocks are nonadditive first-to-last-node
+is retired. The committed controller now prepares three fresh weak-prose
+processes (observer off/host/graph), after a same-build packed-bank gate.
+This diagnostic keeps thinking and the official >=32K/1K workload; it does
+not qualify model adoption or an overhead bound. Graph clocks are nonadditive first-to-last-node
 envelopes; hardware service and saturation remain unknown.
 
 A post-hoc mechanism check limits what this IQ2 component can explain. In the
