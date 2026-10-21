@@ -48,9 +48,9 @@ Original samples and all rejected prefill measurements remain in the linked
 comparison. Source/metadata research proceeded during this diagnostic;
 independent background CPU/I/O interference was not separately quantified.
 
-Main's isolated MTP observer source at `0b39c726f` and retention-controller
-migration at `e7c12403b` are committed and pushed but uncompiled/untested.
-Integrate the child into `feature/sycl`, preserve the validated6c engine and
+Main's MTP observer source at `0b39c726f` and retention-controller
+migration at `e7c12403b` are integrated into `feature/sycl` but uncompiled/untested.
+Preserve the validated6c engine and
 its ten fixtures using the exact same-build model archive, then perform bounded
 graph support and applicable engine checks. Graph clocks are nonadditive
 first-to-last-node envelopes; hardware service and saturation remain unknown.
@@ -139,6 +139,60 @@ hidden-state round trip through RAM. Mapped token/step/output records and any
 KV host backup remain separate paths; this source audit is not a measurement
 of total PCIe traffic. The residual owner remains valid through the serial
 draft completion before the next verifier run.
+
+## MTP graph observer: source only, not qualified
+
+The default-off SYCL observer separates host wall and calling-thread CPU time
+for the draft round and chain steps. `STRATA_SYCL_MTP_OBSERVER=host` retains
+ordinary graph finalization; `graph` explicitly requests executable-graph
+profiling. Both use the same existing per-replay stream synchronization and
+retain the returned completion event before another replay can overwrite it.
+Neither mode removes the probability/NaN stopping check, mapped-record fence,
+KV writes or existing round/step order. Profiling can change graph optimization
+throughout the process, including outside the sampled windows. This is not a
+clean speed measurement or an optimization adoption.
+
+The server request selector defaults to 5 (the first long-generation request
+after the four benchmark warm-ups); the single-request CLI defaults to 1.
+`STRATA_SYCL_MTP_OBSERVER_REQUEST` explicitly overrides either default,
+independent of CPU census/audit settings, without mutating the environment.
+`STRATA_SYCL_MTP_OBSERVER_SKIP` defaults to 8 draft calls and
+`STRATA_SYCL_MTP_OBSERVER_WINDOWS` defaults to 64, with a hard maximum of 64.
+One selected request per process may emit at most 41 observer records: a summary, eight
+phase aggregates and the first 32 raw graph-clock tuples. The omitted-tuple
+count is explicit. This bounds query/output work; the external job deadline
+must still supervise a driver call that does not return.
+
+Capture, launch-wrapper, stream-drain-wrapper and timestamp-query intervals are
+disjoint host regions, split between round and chain. Remaining time includes
+mapped input preparation, output/probability reads, control and observer work;
+it is not automatically classified as CPU arithmetic. The outer scope is each
+`draft()` invocation, including capture and device switching. It excludes
+`draft_first()` residual staging and differs from the legacy `ms_draft` clock,
+which starts after round capture. Invalid clocks, overlapping regions,
+exceptions, incomplete requests and insufficient windows are not a complete
+profile. Calling-thread CPU time excludes runtime/helper threads and is not CPU
+saturation evidence. Non-Linux thread CPU attribution is unsupported; enabling
+the diagnostic there is rejected during load, before MTP GPU allocations.
+
+Graph timestamps are queried only after checked completion, with no additional
+marker or wait. Partial tuples and status are retained; unsupported/invalid
+clocks or a query exceeding one second stop the diagnostic without a retry.
+Start-to-end is the first-to-last-node envelope, including possible idle gaps
+and dependencies. It is nonadditive with the host intervals and does not measure
+arithmetic service, copy-engine service, occupancy, physical traffic or hardware
+saturation. A submit/start inversion invalidates queue delay alone when the
+positive envelope remains valid. Round/chain envelope sums are reported
+separately; internal captured event aliases are never used as node clocks.
+
+Before any model observer run, preserve the current validated engine and
+fixtures, pin the new recipe and
+build, then run the bounded graph-envelope fixture in separate profile-off/on
+processes using the qualified runtime safety settings. Unknown graph profiling
+support is not a pass. Applicable engine safety/numerical checks and a committed
+bounded model plan follow; compare fresh observer-off, host-only and profiled
+processes before drawing timing conclusions. No compilation, fixture execution,
+device support or model qualification has yet been established for this source.
 
 ## Tensor storage and precision
 

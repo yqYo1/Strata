@@ -281,6 +281,20 @@ def census_model_evidence(build, component, census, build_record_sha256, compone
         hardware_saturation_qualified=False,model_adoption_qualified=False)
 
 
+def archived_model_observation(reference):
+    """Recover an explicitly selected original model receipt, without fallback."""
+    guards.require(type(reference) is dict and set(reference) == {'commit', 'path', 'sha256'} and
+        all(type(reference[k]) is str for k in reference), 'explicit model receipt reference required')
+    revision, path, sha = (reference[k] for k in ('commit', 'path', 'sha256'))
+    guards.require(len(revision) == 40 and len(sha) == 64 and
+        all(c in '0123456789abcdef' for c in revision + sha) and
+        Path(path).parent == RESULT.relative_to(P).parent and Path(path).suffix == '.json',
+        'model receipt must pin an immutable commit, result path and SHA256')
+    raw = git(P, 'show', revision + ':' + path)
+    guards.require(hashlib.sha256(raw).hexdigest() == sha, 'original model receipt hash differs')
+    return json.loads(raw)
+
+
 def retain_current():
     """Preserve the validated generation before a native cache is overwritten."""
     raw = RESULT.read_bytes()
@@ -294,8 +308,19 @@ def retain_current():
                    'current validated build identity/ownership differs')
     evidence, observations = {}, {}
     census_build = 'cpu_work_census_host_test' in old['fixtures']
+    model_reference = compact.get('retention_model_reference')
+    model_name = None
+    if model_reference is not None:
+        guards.require(census_build and type(compact.get('retention_consumer')) is str and
+            bool(compact['retention_consumer'].strip()), 'named census-build retention consumer required')
+        # Validation rejects a missing/wrong archive rather than silently using
+        # the older census result at a reused filename/build directory.
+        selected = archived_model_observation(model_reference)
+        model_name = Path(model_reference['path']).name
+        observations[model_name] = selected
+        evidence[model_name] = model_reference['commit']
     names = ('decode-query-profile-component-current.json',) + (
-        ('cpu-work-census-current.json',) if census_build else
+        (() if model_reference is not None else ('cpu-work-census-current.json',)) if census_build else
         ('prefill-packed-bank-speed-current.json', 'generation-reference-current.json'))
     for name in names:
         path = RESULT.with_name(name)
@@ -306,7 +331,7 @@ def retain_current():
         evidence[name] = git(P, 'log', '-1', '--format=%H', '--', str(path.relative_to(P))).decode().strip()
     if census_build:
         scope = census_model_evidence(old, observations['decode-query-profile-component-current.json'],
-            observations['cpu-work-census-current.json'], digest(full_path), digest(RESULT.with_name(names[0])))
+            observations[model_name or 'cpu-work-census-current.json'], digest(full_path), digest(RESULT.with_name(names[0])))
         qualification = 'Same-build18 fixture groups and two33K thinking-generation census requests closed without fresh faults. This is execution/retention qualification,not clean117K or sustained decode speed,task quality,agent sessions,physical262144/RESTORE or model adoption.'
     else:
         scope = packed_model_evidence(old, observations['decode-query-profile-component-current.json'],
@@ -346,9 +371,12 @@ def retain_current():
         binary=copies.pop('strata'), fixtures=copies,
         source_build_record=dict(path=str(receipt), sha256=digest(receipt)), recipe_reference=recipe,
         original_source_blobs_recovered_and_verified=recovered, model_evidence_commits=evidence,
+        model_evidence_kind='census' if census_build else 'packed',
         model_evidence_scope=scope,
         qualification=qualification,
-        consumer='Fallback for the imminent IQ2 pair inference build and same-build component/model qualification; select the validated generation and retire the extra at comparison closure.')
+        consumer=compact.get('retention_consumer') or 'Fallback for the imminent IQ2 pair inference build and same-build component/model qualification; select the validated generation and retire the extra at comparison closure.')
+    if model_reference is not None:
+        compact['retained_validation_reference']['model_evidence_reference'] = model_reference
     RESULT.write_text(json.dumps(compact, indent=2) + '\n')
     print(json.dumps(dict(retained_source=old['source_commit'], artifacts=len(original), recovered_inputs=recovered,
                          fallback=str(target), GPU_executed=False)))
