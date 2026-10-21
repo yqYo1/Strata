@@ -147,7 +147,7 @@
       "candidate_path": "bench/results/2026-10-15-pr6-recovery-audit/own-qsa-kpitch-v1",
       "decision": "Reuse the existing source-audited pitch proposal after the current comparison; no new duplicate survey. Recheck immutable source/provenance and wire maintained API/tests before compiling.",
       "candidate": "Fixed score33,Cells32,WG128,SG16; K36/V260 shared tile needs9216 BF16 values,30272B requested local payload,34368B admission minimum. No hardware occupancy/bank map or performance result.",
-      "do_not_repeat": "Old global K span256 schedule regressed10.35–29.48%; span4 was mixed. These are separate from local pitch and must not be relabeled as pitch results."
+      "do_not_repeat": "Old global K span256 schedule regressed10.35\u201329.48%; span4 was mixed. These are separate from local pitch and must not be relabeled as pitch results."
     },
     "reviewed_base_source_sha256": "fa505d02e2b24f7cb6948033921fa697c8aeb58e6f4df6d873f13e5a7918e36b",
     "source_sha256": "c3ad8326f097050ff9ab1859e116f2cad3709a8464162143f752bc294cbe1e01",
@@ -208,7 +208,7 @@
         "bytes": 19144,
         "source_commit": "fbc7f56d7b0ddb5db5f3722ef33ca044c3f8a5c8",
         "reason": "Its conditional consumer is a selected-cell stable-reduction split. The closed QSA screen and pending pitch candidate select no split or reduction bottleneck.",
-        "retrieval_trigger": "Main measures and selects a split, and pins the reached SGLang/vLLM contract and same-input route. Resolve report’s unverified surrounding-source pin 2a5ba71b first; it has no Strata/B570 speed result."
+        "retrieval_trigger": "Main measures and selects a split, and pins the reached SGLang/vLLM contract and same-input route. Resolve report\u2019s unverified surrounding-source pin 2a5ba71b first; it has no Strata/B570 speed result."
       },
       {
         "path": "bench/results/2026-10-15-pr6-recovery-audit/research-matrix-register-reuse-20261018.md",
@@ -1463,8 +1463,8 @@
         "Retrieval map for a later concrete question"
       ],
       "paper_sections": [
-        "SyclKittens §§3.2–3.3 and Appendix D for operand layouts, subgroup prefetch and the measured ablation.",
-        "Xe-Forge §§IV–V, VI-A, VI-D–VI-E for search/validation workflow, hardware, baseline and kernel results."
+        "SyclKittens \u00a7\u00a73.2\u20133.3 and Appendix D for operand layouts, subgroup prefetch and the measured ablation.",
+        "Xe-Forge \u00a7\u00a7IV\u2013V, VI-A, VI-D\u2013VI-E for search/validation workflow, hardware, baseline and kernel results."
       ]
     }
   },
@@ -2187,7 +2187,7 @@
   },
   "sycl_command_submission_amortization_collection_scope": {
     "classification": "knowledge collection",
-    "question": "For repeated same-queue SYCL/oneAPI kernel and copy command streams, compare mechanisms that amortize host submission work: per-command submission, supported command batching/list execution, and replayable command graphs with parameter updates. Using official Khronos/Intel/Unified Runtime sources and transferable non-LLM SYCL/HPC examples, determine what each mechanism actually amortizes, how it handles dynamic pointers/maps/shapes, dependencies, asynchronous errors, capture restrictions and replay/update costs, and where measured benefits fail to transfer. Map applicability to Strata’s repeated GEMM/upload submit pattern without proposing code or claiming local performance.",
+    "question": "For repeated same-queue SYCL/oneAPI kernel and copy command streams, compare mechanisms that amortize host submission work: per-command submission, supported command batching/list execution, and replayable command graphs with parameter updates. Using official Khronos/Intel/Unified Runtime sources and transferable non-LLM SYCL/HPC examples, determine what each mechanism actually amortizes, how it handles dynamic pointers/maps/shapes, dependencies, asynchronous errors, capture restrictions and replay/update costs, and where measured benefits fail to transfer. Map applicability to Strata\u2019s repeated GEMM/upload submit pattern without proposing code or claiming local performance.",
     "schedulable_now": false,
     "status": "native_reviewed_retrieval_reference",
     "eligibility_review": {
@@ -3461,7 +3461,7 @@
       "source": "src/kernels/cpu/iq_single_avx2.cpp",
       "reference": "docs/SYCL_IMPLEMENTATION.md:2475",
       "prior_evidence_commit": "8063aacc6749d18089f7a53db5d3e47b745f348c",
-      "prior_scope": "Short128-token,512-context tests on this machine; IQ3_XXS/IQ2_S opt-in improved decode medians1.13–2.20%, later IQ3_S addition had about0.20% aggregate effect. Not current32K evidence.",
+      "prior_scope": "Short128-token,512-context tests on this machine; IQ3_XXS/IQ2_S opt-in improved decode medians1.13\u20132.20%, later IQ3_S addition had about0.20% aggregate effect. Not current32K evidence.",
       "provenance": "Main-authored Zen3 adaptation of MIT GGML x86 quants, dated2026-10-04 before XeStrata evaluation; no XeStrata source used by this proposal.",
       "current_build_observation": "Selected original recipe sets Clang and STRATA_CPU_ARCH=znver3; actual engine exports a371-byte iq256_single_gu_rows symbol. This does not prove invocation or current numerical/performance qualification.",
       "prerequisite": "Resolve CPU pool-capacity diagnostic and qualify exact production source/dispatch and applicable parity before a separate immutable flag0/1 long-generation comparison. Do not alter the current six-process plan.",
@@ -3473,7 +3473,7 @@
     "status": "reviewed_conditional_runtime_reference",
     "schedulable_now": false,
     "prerequisite_evidence": "Exact libze-intel-gpu1 package14 to16 and libudev17 to18 identities are retained in client-resources-current.json runtime_asset_delta; the original smoke plan is recoverable at9a5fc5d17. The byte-identical small bank fixture passed on proposed assets at db11be131. This is neither unchanged-runtime evidence nor a retrospective speed claim.",
-    "question": "Trace official release/package provenance of installed Intel compute-runtime26.31.39395.14→.16, identify relevant changes to Level Zero queues/events/host polling/graphs/USM and distinguish observed package changes from inferred fixes. Compare potential CPU submission/poll overhead and compatibility with this project pinned UR v2/compiler/IGC and qualified safety settings. Provide bounded follow-up checks, counterevidence and unresolved facts; no optimization without measured attribution.",
+    "question": "Trace official release/package provenance of installed Intel compute-runtime26.31.39395.14\u2192.16, identify relevant changes to Level Zero queues/events/host polling/graphs/USM and distinguish observed package changes from inferred fixes. Compare potential CPU submission/poll overhead and compatibility with this project pinned UR v2/compiler/IGC and qualified safety settings. Provide bounded follow-up checks, counterevidence and unresolved facts; no optimization without measured attribution.",
     "novelty": "Newly observed package transition after closed clean model cohort, not a repeat of historical GPU-hang or general SYCL submission surveys.",
     "report_path": "/home/yayoi/.local/state/strata-sycl/artifact-retention-audit-20261018/research-wave-20261018/level-zero-package-39395-16-runtime-delta-review.md",
     "report_budget_bytes": 12288,
@@ -3494,7 +3494,7 @@
     "native_review_bytes": 6138,
     "native_review_sha256": "a558a947568f8b699ba466f70bb0e8ade1c38fe860cc0572cc328403fc2f327c",
     "review_digest": {
-      "novelty": "Specific .14→.16 release/package provenance; decision support, not performance evidence.",
+      "novelty": "Specific .14\u2192.16 release/package provenance; decision support, not performance evidence.",
       "corrections": [
         "Upstream .16 tag changes kernels_bin as well as its IGC dependency metadata.",
         "Installed IGC, DPC++ and UR remain unchanged; do not infer a local IGC upgrade or speed/fault effect.",
@@ -5158,9 +5158,9 @@
     "worker_closed": true,
     "report_budget_bytes": 16384,
     "question": "For production IQ2_S/IQ3_XXS/IQ3_S NT1 GU on Zen3, derive exact decoded-level/mask/bitplane or bounded predecode layouts and compare table work, scale/rounding contract and extra bytes to measured hot/stream behavior. Do not repeat generic T-MAC/LUT surveys or settled tiny single-exact flag.",
-    "consumer": "Main default-off IQ2_S NT1 production integration and five-worker mixed-NT full-pool qualification",
-    "next_review": "Commit pool source,comparator,floor,repetitions,actual-dispatch/worker gates and acceptance before running. Retire the consumed review at plan closure. No new Orca scope until a pool result establishes a fresh limiter.",
-    "status": "direct_pair_component_passed_expanded_selected_pool_gate_pending",
+    "consumer": "Main source-pinned inference rebuild,same-build safety and matched clean thinking-generation comparison",
+    "next_review": "Use the closed288-sample pool result to review remaining evidence gaps. No further generic LUT survey; model safety/speed is the next adoption gate.",
+    "status": "full_pool_gate_passed_both_down_formats_inference_unqualified",
     "task_id": "task_0add196c4850",
     "dispatch_id": "ctx_3d9a885c24a4",
     "terminal_handle": "term_4103b5e4-235c-4a4e-b8e4-cc9d1f597f76",
@@ -5209,6 +5209,24 @@
         "digest": "Expanded candidate passes the component gate; advance only to default-off IQ2_S NT1 pool qualification. Freeze comparator/floors/repetitions/gates first; prove actual dispatch and5workers+host. Integer sweep is part0/repeated signs, with broader layouts checked by synthetic/real bits. Model MTP class needs actual acceptance.",
         "new_research_scopes_schedulable": 0
       }
+    },
+    "latest_pool_component": {
+      "source_commit": "9e77089389fb2227d673c6b74b6103d542e7f513",
+      "plan_commit": "d460175d2",
+      "result_path": "bench/results/2026-10-15-pr6-recovery-audit/cpu-iq2-current.json",
+      "individual_samples": 288,
+      "independent_processes": 6,
+      "latency_geomeans": {
+        "20": 0.9213478282652875,
+        "42": 0.9106485791261525
+      },
+      "eligible_down_formats": [
+        20,
+        42
+      ],
+      "actual_six_core_dispatch_verified": true,
+      "full_outputs_bitwise": true,
+      "model_adoption_qualified": false
     }
   },
   "existing_route_dump_CPU_mix_protocol_scope": {
@@ -6274,7 +6292,7 @@
         "sha256": "c82bb54a15079bdbeaefa7891cf4ebb7ef55e7cf1bb7c6594e22ab068a30ac01"
       },
       "source_corrections": [
-        "The Timeloop paper is ISPASS 2019, not ISCA 2019; its DOI is 10.1109/ISPASS.2019.00042, not the malformed 10.1145/3307650.332221… entry. The official Timeloop citation page confirms venue/pages; use https://doi.org/10.1109/ISPASS.2019.00042.",
+        "The Timeloop paper is ISPASS 2019, not ISCA 2019; its DOI is 10.1109/ISPASS.2019.00042, not the malformed 10.1145/3307650.332221\u2026 entry. The official Timeloop citation page confirms venue/pages; use https://doi.org/10.1109/ISPASS.2019.00042.",
         "The cited Eyeriss PDF URL under people.csail.mit.edu/emer/media/papers/ returned 404 in this review. Its title and ISCA 2016 identity are correct; replace the stale PDF URL with the current official publication page https://eyeriss.mit.edu/energy.html or its current linked PDF."
       ],
       "retrieval_condition": "Actual vLLM Xe2/BF16 measured placement/residency decision; spatial-array methods are not GPU implementation evidence.",

@@ -3382,14 +3382,9 @@ in three independent processes. Rolled-loop latency geomean is0.778435 and
 fully expanded0.728357 versus the existing direct helper; all six process/access
 medians improve. These are single-core GU/SwiGLU component measurements, not
 model throughput, production-pool gains or hardware saturation.
-The [current component result](../bench/results/2026-10-15-pr6-recovery-audit/cpu-iq2-current.json)
-selects the expanded version for the next default-off IQ2_S NT1 pool gate.
-Native Luna-max review accepts that advancement, noting that the integer sweep
-uses part0 and repeated sign bytes; synthetic full rows and real experts cover
-broader layouts. Before running, commit the full-pool comparator, timing floor,
-repetitions and acceptance rule, then prove actual dispatch and five-worker plus
-computing-host participation. Keep mixed-NT strong/weak representatives distinct
-from measured model MTP acceptance. The checked producer is now connected to
+The single-core result is recoverable at`69caeabd9`; its integer sweep uses
+part0 and repeated sign bytes,with full synthetic rows and real experts covering
+broader layouts. The checked producer is now connected to
 the CPU build and dispatcher under default-off`STRATA_IQ2_PAIR=1`, after the
 existing multi-row dispatch. It only replaces IQ2_S NT1 on the supported Zen3
 target; other types,NT2+ and Down keep their existing paths. Byte spans,
@@ -3398,16 +3393,23 @@ alignment and nonoverlapping storage are checked before producer writes.
 actual affinity evidence; its environment is fixed before exec. Thread-local
 registration identifies threads,never requests. No inference engine has been
 rebuilt or model route qualified by this source connection.
-The next full-pool plan uses both22/20 and22/42, five workers plus the host,
+The [current full-pool result](../bench/results/2026-10-15-pr6-recovery-audit/cpu-iq2-current.json)
+uses source`9e7708938` and committed plan`d460175d2`, with both22/20 and22/42,
+five workers plus the host,
 28-job NT counts22/5/1/0 and24-job counts16/5/2/1. Repeat uses24/28 distinct
 blobs; stream uses168 without reuse per pass. Neither repeat set is claimed to
-fit L3. The committed plan must precede CPU-only build/check/measure; it decides
-Down formats separately and requires actual timed work on six pinned threads,
-unchanged full outputs,minimum timing duration and independent process pairs.
-After committing the winning component, Main recovers its32 project and1376
-ggml inputs/recipe and retires81 successful raw/build files (8457665B). Only
-the2044056B auxiliary executable remains for the imminent producer parity/code
-generation comparison, with retirement review at the pool gate closure.
+fit L3. All288 samples in six independent processes pass work conservation,
+actual NT1 pair dispatch,six-core participation and minimum timing duration.
+Sixty producer-contract cases per check process and all full outputs pass;
+all eight9,461,760B captures have SHA256
+`6877ca0e7cac9f29cd8881a87d4f17836077e316b9fb763ba463d553b9ca2ad3`.
+Full-pool latency ratios are0.921348 for IQ2_S/IQ4_NL and0.910649 for
+IQ2_S/Q2_0:7.87% and8.94% less time. Both pass their separate prospective
+3% gates,including all per-cell and independent-process nonregression checks.
+The failed first compile is preserved at`62d068c73`; the corrected source and
+fresh plan do not relabel or retry that attempt. This permits an inference
+rebuild and same-build safety/long-generation comparison,not model adoption.
+Physical CPU/RAM saturation and whole-model speed gains remain unmeasured.
 After committing the model result at`e6552e380`, Main replays both censuses
 against the raw records, recovers the fallback's9836 original inputs and recipe,
 selects the validated`63af639ac` engine/ten fixtures and retires the extra
