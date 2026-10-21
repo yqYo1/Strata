@@ -3375,9 +3375,22 @@ helper, and AVX2 int32 gather5.24602 times. All six process/access medians
 regress. The original samples,prospective gate and outcome are recoverable at
 `8d186fc98:bench/results/2026-10-15-pr6-recovery-audit/cpu-iq2-current.json`.
 No production-pool,engine or model trial follows this negative result.
-The next distinct mechanism keeps direct codebook arithmetic and fuses gate/up
-to share activation loads and loop control, preserving integer lanes and FP32
-FMA/reduction order. No CPU kernel candidate or model speedup is qualified yet.
+The subsequent direct-fusion component at source`ad4f29ac9` shares gate/up
+activation loads and loop control while preserving integer lanes and FP32
+FMA/reduction order. Both variants pass the same numerical gates and108 samples
+in three independent processes. Rolled-loop latency geomean is0.778435 and
+fully expanded0.728357 versus the existing direct helper; all six process/access
+medians improve. These are single-core GU/SwiGLU component measurements, not
+model throughput, production-pool gains or hardware saturation.
+The [current component result](../bench/results/2026-10-15-pr6-recovery-audit/cpu-iq2-current.json)
+selects the expanded version for the next default-off IQ2_S NT1 pool gate.
+Native Luna-max review accepts that advancement, noting that the integer sweep
+uses part0 and repeated sign bytes; synthetic full rows and real experts cover
+broader layouts. Before running, commit the full-pool comparator, timing floor,
+repetitions and acceptance rule, then prove actual dispatch and five-worker plus
+computing-host participation. Keep mixed-NT strong/weak representatives distinct
+from measured model MTP acceptance. The new checked producer is an unqualified
+source proposal, with no engine dispatch/build connection yet.
 After committing the model result at`e6552e380`, Main replays both censuses
 against the raw records, recovers the fallback's9836 original inputs and recipe,
 selects the validated`63af639ac` engine/ten fixtures and retires the extra

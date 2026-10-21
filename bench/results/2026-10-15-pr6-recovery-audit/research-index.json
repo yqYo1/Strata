@@ -5158,9 +5158,9 @@
     "worker_closed": true,
     "report_budget_bytes": 16384,
     "question": "For production IQ2_S/IQ3_XXS/IQ3_S NT1 GU on Zen3, derive exact decoded-level/mask/bitplane or bounded predecode layouts and compare table work, scale/rounding contract and extra bytes to measured hot/stream behavior. Do not repeat generic T-MAC/LUT surveys or settled tiny single-exact flag.",
-    "consumer": "Closed; use the committed component result and source for a concrete regression question.",
-    "next_review": "No literature repeat; Main tests the distinct direct gate/up fusion mechanism.",
-    "status": "IQ2_subset_component_rejected_exact_but_4_66x_to_5_25x_slower",
+    "consumer": "Main default-off IQ2_S NT1 production integration and five-worker mixed-NT full-pool qualification",
+    "next_review": "Commit pool source,comparator,floor,repetitions,actual-dispatch/worker gates and acceptance before running. Retire the consumed review at plan closure. No new Orca scope until a pool result establishes a fresh limiter.",
+    "status": "direct_pair_component_passed_expanded_selected_pool_gate_pending",
     "task_id": "task_0add196c4850",
     "dispatch_id": "ctx_3d9a885c24a4",
     "terminal_handle": "term_4103b5e4-235c-4a4e-b8e4-cc9d1f597f76",
@@ -5184,7 +5184,32 @@
       "census_path": "bench/results/2026-10-15-pr6-recovery-audit/cpu-work-census-current.json",
       "digest": "Both long cases closed without fault: NT1 jobs77.24%/67.40%; IQ2_S42.01%/43.06% of NT1 jobs and39.91%/40.27% of observed pool wall. Select setup-inclusive IQ2_S NT1 exact level masks versus current direct helper, then production GU/SwiGLU at actual batch sizes. CPU/RAM saturation remains unknown; no model speedup proven."
     },
-    "transaction_retirement": "cpu-iq2-current.json::artifact_retirement"
+    "transaction_retirement": "cpu-iq2-current.json::artifact_retirement",
+    "latest_direct_pair_component": {
+      "source_commit": "ad4f29ac9da86ee8bd01617d02bf8c6693d59240",
+      "result_commit": "69caeabd9",
+      "result_path": "bench/results/2026-10-15-pr6-recovery-audit/cpu-iq2-current.json",
+      "rolled_latency_ratio": 0.7784349859289483,
+      "expanded_latency_ratio": 0.7283570730849123,
+      "independent_processes": 3,
+      "individual_samples": 108,
+      "bitwise_component_passed": true,
+      "production_pool_qualified": false,
+      "model_speedup_qualified": false,
+      "review": {
+        "framework": "native Codex",
+        "model": "gpt-6-luna",
+        "reasoning": "max",
+        "worker": "review_iq2_pair_component_20261021",
+        "worker_closed": true,
+        "path": ".cache/strata-research/20261021/iq2-direct-pair-component-review.json",
+        "bytes": 6824,
+        "sha256": "ff5e6b3b2978a74a27de1147ef164a856acc22143e57aaa2b9ccb29061ba1ed5",
+        "main_read_scope": "Final short operational digest and report metadata only.",
+        "digest": "Expanded candidate passes the component gate; advance only to default-off IQ2_S NT1 pool qualification. Freeze comparator/floors/repetitions/gates first; prove actual dispatch and5workers+host. Integer sweep is part0/repeated signs, with broader layouts checked by synthetic/real bits. Model MTP class needs actual acceptance.",
+        "new_research_scopes_schedulable": 0
+      }
+    }
   },
   "existing_route_dump_CPU_mix_protocol_scope": {
     "result_reference": {
