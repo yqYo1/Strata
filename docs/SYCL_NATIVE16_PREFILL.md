@@ -138,6 +138,18 @@ agent/task quality and physical262144/session/RESTORE remain unqualified.
 The next repeated performance comparison must also include the retained6e40
 baseline to detect package-level decode effects from the intervening
 observer/copy build;the same-native off/on discriminator alone cannot do that.
+`canonical_speed.py` now prepares six clean processes in baseline/candidate/
+candidate/baseline/baseline/candidate order,with four117K requests each. It
+compares retained6e40 against current362 with chunk64,holding1256 slots and
+all decode algorithm choices fixed. This explicitly replaces the earlier
+same-native clean-preview baseline with the retained package baseline before
+any clean sample is collected. Six host decision/refusal/environment groups
+passed. First use is separate;the candidate-faster screen requires all three
+paired subsequent-median ratios>1 and their geometric mean>=1.0005. The
+1000 milestone requires all three candidate process medians>=1000. Neither
+screen permits adoption without repeated sustained decode and the remaining
+correctness gates. Full model hashes bracket the cohort;file identity guards
+run before and after each process.
 
 
 The current B570 speed reference uses fresh inputs of117489 tokens and separates
