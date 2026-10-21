@@ -3107,8 +3107,14 @@ case pass. The synthetic failed-enqueue case confirms no mapping publication
 and checked retirement; it does not inject a real provider failure. Native
 exit0, closed ownership, unchanged assets/boot and no fresh fault hold. This
 qualifies the upload/layout component, not model arithmetic or throughput.
-Next require the shared same-build safety suite and a separately committed
-117K model work/clean-speed comparison. This targets
+The shared safety suite then passes156 checks on build`ac904ae09`. This is a
+controller-only rebuild: the engine and all nine fixture hashes, native inputs
+and recipe match`e0623d4f7`. The new117K controller uses two independent off/on
+processes with Q8 MTP, checking the actual private layouts, both accumulation
+windows, request journals, immutable inputs, decode/cache/dense restoration
+and completed logical upload totals. Its diagnostic output cannot qualify
+clean throughput. Freeze and execute that plan before a separate repeated
+clean-speed comparison. This targets
 the observed expert-upload service, not a proven physical PCIe saturation;
 cross-window copy reduction needs the multi-window117K model test with Q8 MTP.
 After committing the component results, Main recovers22 original component
