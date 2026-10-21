@@ -2528,6 +2528,9 @@ measured noise, or adopt the borrowed route as a prefill speedup. First-use
 values931.6/925.9/926.8/930.7/924.9/927.6 remain separate. Old source`396d0c91f`
 meets the repeated117K-input1000 speed condition. Current source`bb71e78db`
 has medians999.9/1000.1/1000.3 and misses its all-three-process1000 milestone.
+These clean readings belong to`bb71e78db`, not the later`3b4998f326` status
+instrumentation binary. The latter has instrumented117K execution evidence and
+the33K MTP comparison below; its clean117K rate remains unmeasured.
 The [compact result](../bench/results/2026-10-15-pr6-recovery-audit/cache-long-comparison-current.json)
 retains all24 individual samples; its unchanged predeclared analyzer reproduces
 the same decision after redundant result fields are removed. This is route-level
@@ -2535,8 +2538,11 @@ short-output prefill evidence: both engine revision and placement differ. All
 24 outputs end after thinking, with no answer. Quality, sustained decode, agent
 session, physical262144/session/RESTORE and default adoption remain pending.
 
-Keep old-owned128 as the measured fastest fallback. The named current-borrowed1256
-resource attribution is now closed. Main recovered the extra build's9831 exact
+Keep the old-owned128 measurements as the fastest recorded117K reference. Its
+executable is now retired after the closed MTP comparison and exact source/recipe
+recovery; retain its source receipt through the next candidate decision. Current3b
+is the bounded execution fallback, without a clean117K speed or adoption claim.
+The named current-borrowed1256 resource attribution is now closed. Main recovered the extra build's9831 exact
 original inputs and recipe, verified its engine/eight fixtures and both source
 commits' default reachability, then retired197 files/162893807B including consumed
 research dispatch transactions. One qualified engine generation remains;14 legacy
@@ -3048,6 +3054,13 @@ within the existing bank allocation, with demand-preserving copy coalescing as
 a separate mechanism. Qualify its stride/slot/consumer and checked layer-drain
 contract before execution; test cross-window reuse on multi-window long input.
 No new allocation, implementation or throughput gain is established yet.
+The closed raw root is retired after all147 controller inputs, six native/journal
+receipts and generated configuration bytes were checked:414files/76154934B.
+The unused396 executable (22079288B) is also retired after9813 original source
+inputs and its exact recipe were recovered. Its source receipt remains for
+possible reference reconstruction through the next packed-bank comparison.
+Current3b and its eight required fixtures pass post-cleanup source admission;
+this is not new GPU validation. The14 older provenance holds remain separate.
 
 Source inspection binds the native expert footer to deltas taken immediately
 before the target verifier loop, after prompt prefill. For Q8/FP16 respectively,
