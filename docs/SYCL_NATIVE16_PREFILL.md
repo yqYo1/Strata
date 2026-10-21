@@ -3391,6 +3391,10 @@ repetitions and acceptance rule, then prove actual dispatch and five-worker plus
 computing-host participation. Keep mixed-NT strong/weak representatives distinct
 from measured model MTP acceptance. The new checked producer is an unqualified
 source proposal, with no engine dispatch/build connection yet.
+After committing the winning component, Main recovers its32 project and1376
+ggml inputs/recipe and retires81 successful raw/build files (8457665B). Only
+the2044056B auxiliary executable remains for the imminent producer parity/code
+generation comparison, with retirement review at the pool gate closure.
 After committing the model result at`e6552e380`, Main replays both censuses
 against the raw records, recovers the fallback's9836 original inputs and recipe,
 selects the validated`63af639ac` engine/ten fixtures and retires the extra
