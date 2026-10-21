@@ -1762,5 +1762,16 @@
     "cases": 11,
     "GPU_executed": false,
     "scope": "Observer accounting only; not integrated engine, speed or model/decode qualification."
-  }
+  },
+  "retention_reader_host_checks": [
+    {
+      "source_commit": "0b68d2b8c80865791679e53cf0f157699181f47d",
+      "tests": 19,
+      "errors": 2,
+      "passed": false,
+      "ownership_closed": true,
+      "reason": "New recovery reader treated packed-case arrays as integer counts. Original baseline evidence unchanged; corrected reader requires actual case count and all guard/map/drain statuses.",
+      "GPU_executed": false
+    }
+  ]
 }

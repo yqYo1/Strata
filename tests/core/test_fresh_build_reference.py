@@ -372,7 +372,7 @@ class RecoveryRetentionTests(unittest.TestCase):
                 if variant=='thinking':sample['reasoning_observed']=False
                 if variant=='journal':row['journal']['request_sha256'][-1]='wrong'
                 if variant=='restore':r['processes'][0]['route']['exact_payload_and_map_cycles']=1
-                if variant=='bank':r['bank']['checks'][0]['cases']=0
+                if variant=='bank':r['bank']['checks'][0]['cases'].pop()
                 with self.assertRaises((KeyError,RuntimeError)):self.evidence(recovery=r)
 
     def test_archived_reader_requires_explicit_recovery_hash_and_identity(self):

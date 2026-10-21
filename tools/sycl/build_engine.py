@@ -303,8 +303,11 @@ def recovery_model_evidence(build, component, recovery, build_sha256, component_
     guards.require([r['mode'] for r in rows] == ['checked','clean-0','clean-1','clean-2'] and
         bank['passed'] and bank['complete'] and bank['ownership_closed'] and not bank['active'] and
         bank['boot_unchanged'] and bank['fault_probe_successful'] and bank['fresh_faults'] == [] and
-        [(r['mode'],r['cases'],r['passed']) for r in bank['checks']] ==
-            [('packed-smoke',2,True),('packed-validate',3,True)], 'closed packed/recovery cohort required')
+        [(r['mode'],len(r['cases']),r['passed']) for r in bank['checks']] ==
+            [('packed-smoke',2,True),('packed-validate',3,True)] and
+        all(c['status'] == '0' and all(c[k] == 'PASS' for k in
+            ('immutable_slab','guards','private_map','checked_drain'))
+            for r in bank['checks'] for c in r['cases']), 'closed packed/recovery cohort required')
     for i,row in enumerate(rows):
         samples = row['requests']; route = row['route']
         guards.require(row['passed'] and row['complete'] and row['ownership_closed'] and not row['active'] and
