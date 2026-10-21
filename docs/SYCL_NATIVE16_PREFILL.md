@@ -3167,6 +3167,11 @@ matched-GEMM ceiling fixture,with a131072B budget and review at clean-cohort
 closure; remove it if that fixture is not selected. Full layers/traces are not
 retained. Clean admission consumes the compact paired result and retained
 engine/fixtures,not the deleted diagnostic root.
+The first clean baseline process passes native/request/work/owner/runtime/model
+identity and fresh-fault gates. Its first-long PP is836.2tok/s; the subsequent
+three samples are999.7/1000.1/999.9tok/s (median about999.9). Keep the first-use
+gap unresolved; one process does not qualify reproducibility,the paired gain
+or the all-three1000 target. Continue the committed off/on/on/off/off/on order.
 This targets
 the observed expert-upload service, not a proven physical PCIe saturation;
 cross-window copy reduction needs the multi-window117K model test with Q8 MTP.
