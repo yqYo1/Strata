@@ -23,7 +23,7 @@ and [current model comparison](../bench/results/2026-10-15-pr6-recovery-audit/iq
 The original observed pilot remains at commit`bedfdf312`; the repeated
 comparison's controller pins and validates that Git record directly.
 
-Two of the six planned same-binary processes have closed normally, with no
+Three of the six planned same-binary processes have closed normally, with no
 fresh driver fault. The first baseline/candidate pair measured code generation
 at14.6/14.8 tok/s and prose at9.4/9.5 tok/s. The code request's prefill fell
 from637.4 to484.7 tok/s (52104.8 to68521.9ms for33214 fresh tokens); prose
@@ -31,6 +31,10 @@ prefill was761.4/761.1 tok/s. Preserve this large first-request regression in
 the comparison rather than discarding it as noise. These observer-charged
 samples do not yet establish a causal improvement or permit advancement;
 the frozen plan requires all three process pairs and separate prefill gates.
+The second candidate process measured code PP 638.0 / TG 14.7 and prose
+PP 760.7 / TG 9.5 tok/s. Its code prefill did not reproduce the first candidate's
+drop, but both samples remain in the prospective comparison. Its paired
+baseline is the next scheduled process, not the first baseline reused again.
 
 The observed IQ2 pilot completed both33K thinking-generation cases at14.8/9.5
 tok/s, with3611/8638 generated tokens. Its input, output/thinking hashes and
