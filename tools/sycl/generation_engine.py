@@ -47,18 +47,41 @@ def benchmark_pins(revision, match_worktree=True):
 
 
 def native_end(root, record, plan, boot, leader):
+    """Require the exact owned native exit, with only a declared passive reader."""
     start=json.loads((root/'engine-start.json').read_text())
     end=json.loads((root/'engine-exit.json').read_text())
-    guards.require(type(end.get('exit_code')) is int and end==dict(start,exit_code=0) and start['boot_id']==boot and
+    allowed={'binary','args','boot_id','native','wrapper','native_validation_probe'}
+    guards.require(set(start)<=allowed and start['boot_id']==boot and
         start['binary']==record['binary'] and start['args']==['--serve',*plan['config']['args']] and
-        start.get('native_validation_probe')==record['native_validation_probe'] and
-        not {'resource_collector','native_profile'}&set(start), 'native identity/closure differs')
+        start.get('native_validation_probe')==record['native_validation_probe'], 'native start identity differs')
+    identities=[]
     for key in ('native','wrapper'):
         identity=start[key]
         guards.require(set(identity)=={'pid','start_ticks','sid'} and
             all(type(v) is int and v>0 for v in identity.values()) and identity['sid']==leader,
             'native ownership identity differs')
-    guards.require(start['native']['pid']!=start['wrapper']['pid'], 'native/wrapper identity aliases')
+        identities.append(identity['pid'])
+    expected=dict(start,exit_code=0)
+    collection=record.get('resource_collection')
+    if collection is not None:
+        native_plan=json.loads((root/'plan.json').read_text())
+        guards.require(native_plan.get('resource_collection')==collection and
+            set(collection)=={'source','seconds','interval'} and
+            set(collection['source'])=={'path','sha256'} and
+            all(type(collection[k]) in (int,float) and math.isfinite(collection[k]) for k in ('seconds','interval')) and
+            0<collection['seconds']<=900 and .2<=collection['interval']<=10 and
+            common.digest(collection['source']['path'])==collection['source']['sha256'],
+            'passive collector differs from the frozen native plan')
+        identity=end['resource_collector']
+        guards.require(set(identity)=={'pid','start_ticks','sid'} and
+            all(type(v) is int and v>0 for v in identity.values()) and identity['sid']==leader and
+            identity['start_ticks']>=start['native']['start_ticks'] and
+            type(end.get('resource_collector_exit_code')) is int and end['resource_collector_exit_code']==0,
+            'passive collector ownership/exit differs')
+        identities.append(identity['pid'])
+        expected.update(resource_collector=identity,resource_collector_exit_code=0)
+    guards.require(len(set(identities))==len(identities) and type(end.get('exit_code')) is int and end==expected,
+        'native exit/observer identity differs')
     return end
 
 
@@ -93,6 +116,79 @@ def request_evidence(text, samples):
         previous = header.end()
     guards.require(not draft_rows(text[previous:]), 'unbound trailing draft batch')
     return evidence
+
+
+def decode_work_evidence(text, samples):
+    """Existing trace/footer counts: logical work, never physical RAM/PCIe traffic."""
+    headers=list(re.finditer(r'^strata serve: prompt (\d+) tokens = (\d+) reused \+ (\d+) read[^\n]*, '
+        r'(\d+) generated[^\n]*, drafts accepted (\d+) of (\d+),[^\n]*$',text,re.M))
+    guards.require(len(headers)==len(samples),'missing/extra decode work headers')
+    keys=('submitted_blobs','submitted_bytes','completed_blobs','completed_bytes','host_view_groups',
+          'gpu_miss_groups','cpu_unique_misses','cpu_entries')
+    pattern=r'^strata serve: SYCL_EXPERT_COPY '+r' '.join(k+r'=(\d+)' for k in keys)+r'$'
+    guards.require(len(re.findall(pattern,text,re.M))==len(samples),'missing/extra copy/work footer')
+    result=[];previous=0
+    for i,(header,row) in enumerate(zip(headers,samples)):
+        guards.require(tuple(map(int,header.groups()))==(row['prompt_tokens'],row['reused_tokens'],row['read_tokens'],
+            row['generated_tokens'],row['drafts_accepted'],row['drafts_offered']) and row['reused_tokens']==0,
+            'native/client decode work identity differs')
+        segment=text[previous:header.start()]
+        windows=[tuple(map(int,m)) for m in re.findall(r'^strata trace: window (\d+) (\d+)$',segment,re.M)]
+        guards.require(windows and windows[0]==(row['read_tokens']-1,1) and
+            all(t==4 for _,t in windows[1:]) and
+            all(1<=b[0]-a[0]<=a[1] for a,b in zip(windows,windows[1:])) and
+            sum(t-1 for _,t in windows)==row['drafts_offered'],'actual fixed-spec4 target windows differ')
+        tail=text[header.end():headers[i+1].start() if i+1<len(headers) else len(text)]
+        parsed=re.findall(pattern,tail,re.M)
+        guards.require(len(parsed)==1,'work footer escaped its completed request')
+        counters=dict(zip(keys,map(int,parsed[0])))
+        guards.require(all(counters[k]==0 for k in keys[:6]),'expert-copy route differs from admitted pcie0')
+        jobs,entries=counters['cpu_unique_misses'],counters['cpu_entries']
+        target_rows=sum(t for _,t in windows)
+        guards.require(0<jobs<=entries<=4*jobs and entries<=target_rows*48*10,'CPU job/entry conservation differs')
+        n=row['generated_tokens']
+        result.append(dict(target_windows=len(windows),target_rows=target_rows,emitted_tokens=n,
+            target_rows_per_emitted=target_rows/n,cpu_unique_jobs=jobs,cpu_entries=entries,
+            cpu_unique_jobs_per_emitted=jobs/n,minimum_NT1_jobs=max(0,2*jobs-entries),
+            minimum_NT1_job_fraction=max(0,2*jobs-entries)/jobs,
+            expert_copy_requested_bytes=counters['submitted_bytes'],
+            mathematical_dot_equivalent_ops=entries*9830400,
+            limits='Spec4,48 layers,top10,pcie0,no peer. NT1 bound is max(0,2*jobs-entries). Dot equivalents exclude decode/index/quant/nonlinear work and are not issued FP/integer instructions. Blob visits and expert-copy counters are not physical DRAM/PCIe bytes; no saturation or critical-path qualification.'))
+        previous=header.end()
+    return result
+
+
+def decode_timing_evidence(text, samples):
+    """Existing rounded host clocks; waits, nested scopes and GPU service stay distinct."""
+    labels=('average_T','tokens_per_window','total','verify','GPU_reach_wait','per_layer_host','plan',
+            'activation_quant','jobs','CPU_pool_run','stage','commit_emit','draft','CPU_experts',
+            'CPU_entries','VRAM_hits','PCIe')
+    f=r'(\d+(?:\.\d+)?)'
+    pattern=(r'^strata decode timing: (\d+) windows, avg T '+f+r', '+f+r' tokens/window, '+f+
+        r' ms/window = verify '+f+r' \(GPU-reach wait '+f+r' \+ per-layer host '+f+
+        r' \[plan '+f+r' actq '+f+r' jobs '+f+r' CPU '+f+r'\] \+ stage '+f+
+        r'\) \+ commit/emit '+f+r' \+ draft '+f+r'; per layer-window: CPU experts '+f+
+        r' \('+f+r' entries\), VRAM hits '+f+r', PCIe '+f+r'$')
+    rows=re.findall(pattern,text,re.M)
+    guards.require(len(rows)==len(samples)==text.count('strata decode timing:'),'missing/extra timing records')
+    work=decode_work_evidence(text,samples);result=[]
+    for values,row,w in zip(rows,samples,work):
+        windows=int(values[0]);v=dict(zip(labels,map(float,values[1:])))
+        guards.require(windows==w['target_windows'] and all(math.isfinite(x) and x>=0 for x in v.values()) and
+            abs(v['average_T']-w['target_rows']/windows)<=.00501 and
+            abs(v['tokens_per_window']-row['generated_tokens']/windows)<=.00501 and
+            abs(v['total']-row['decode_ms']/windows)<=.00501 and
+            abs(v['CPU_experts']-w['cpu_unique_jobs']/(windows*48))<=.00501 and
+            abs(v['CPU_entries']-w['cpu_entries']/(windows*48))<=.00501 and
+            abs(v['VRAM_hits']-(w['target_rows']*48*10-w['cpu_entries'])/(windows*48))<=.00501 and v['PCIe']==0,
+            'rounded decode clocks/work do not bind to completed request')
+        residual=v['total']-sum(v[k] for k in ('verify','commit_emit','draft'))
+        nested=v['per_layer_host']-sum(v[k] for k in ('plan','activation_quant','jobs','CPU_pool_run'))
+        guards.require(residual>=-.025 and nested>=-.025,'rounded timing scopes overcount their parents')
+        result.append(dict(windows=windows,ms_per_window=v,outer_residual_ms_per_window=residual,
+            host_nested_residual_ms_per_window=nested,work=w,
+            limits='Existing two-decimal host wall clocks include firstT1. Parent/child fields are nested,not additive hardware costs. CPU_pool_run includes pool scheduling/waits; GPU_reach_wait is a host wait,not device arithmetic time. Residuals preserve rounding sign; no clean speed or hardware saturation claim.'))
+    return result
 
 
 def sample_eligible(row):

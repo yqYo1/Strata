@@ -98,6 +98,69 @@ class NativeClosureEvidence(unittest.TestCase):
 
 
 
+class ResourceClosureTests(unittest.TestCase):
+    def test_only_declared_same_session_successful_passive_collector_is_accepted(self):
+        for variant in ('valid','undeclared','plan','source','sid','alias','failed','boolean_exit','boolean_budget','profile'):
+            with self.subTest(variant=variant),tempfile.TemporaryDirectory() as tmp:
+                root=Path(tmp);reader=root/'reader.py';reader.write_text('# passive reader\n')
+                collection=dict(source=dict(path=str(reader),sha256=g.common.digest(reader)),seconds=900,interval=1)
+                start=dict(binary={'sha256':'a'*64},args=['--serve','--spec','4'],boot_id='boot',native_validation_probe=None,
+                    wrapper=dict(pid=43,start_ticks=100,sid=42),native=dict(pid=44,start_ticks=101,sid=42))
+                end=dict(copy.deepcopy(start),exit_code=0,resource_collector=dict(pid=45,start_ticks=102,sid=42),resource_collector_exit_code=0)
+                record=dict(binary=start['binary'],native_validation_probe=None,resource_collection=collection)
+                if variant=='undeclared':del record['resource_collection']
+                if variant=='sid':end['resource_collector']['sid']=99
+                if variant=='alias':end['resource_collector']['pid']=44
+                if variant=='failed':end['resource_collector_exit_code']=1
+                if variant=='boolean_exit':end['resource_collector_exit_code']=False
+                if variant=='boolean_budget':collection['seconds']=True
+                if variant=='profile':start['native_profile']={}
+                (root/'engine-start.json').write_text(json.dumps(start));(root/'engine-exit.json').write_text(json.dumps(end))
+                (root/'plan.json').write_text(json.dumps({'resource_collection':{} if variant=='plan' else collection}))
+                if variant=='source':reader.write_text('# changed reader\n')
+                if variant=='valid':self.assertEqual(g.native_end(root,record,{'config':{'args':['--spec','4']}},'boot',42),end)
+                else:
+                    with self.assertRaises(RuntimeError):g.native_end(root,record,{'config':{'args':['--spec','4']}},'boot',42)
+
+
+class DecodeWorkTimingTests(unittest.TestCase):
+    def fixture(self):
+        row=dict(prompt_tokens=33000,reused_tokens=0,read_tokens=33000,generated_tokens=3,
+            drafts_accepted=1,drafts_offered=3,decode_ms=40)
+        text=('strata trace: window 32999 1\nstrata trace: window 33000 4\n'
+            'strata decode timing: 2 windows, avg T 2.50, 1.50 tokens/window, 20.00 ms/window = '
+            'verify 12.00 (GPU-reach wait 3.00 + per-layer host 7.00 [plan 1.00 actq 1.00 jobs 1.00 '
+            'CPU 4.00] + stage 2.00) + commit/emit 3.00 + draft 4.00; per layer-window: CPU experts '
+            '0.62 (0.83 entries), VRAM hits 24.17, PCIe 0.00\n'
+            'strata serve: prompt 33000 tokens = 0 reused + 33000 read in 10 ms (1 tok/s), '
+            '3 generated in 40 ms (75 tok/s), drafts accepted 1 of 3, 0 checkpoints\n'
+            'strata serve: SYCL_EXPERT_COPY submitted_blobs=0 submitted_bytes=0 completed_blobs=0 '
+            'completed_bytes=0 host_view_groups=0 gpu_miss_groups=0 cpu_unique_misses=60 cpu_entries=80\n')
+        return text,row
+
+    def test_counts_actual_target_rows_and_preserves_nested_rounding_residuals(self):
+        text,row=self.fixture();timing=g.decode_timing_evidence(text,[row])[0]
+        self.assertEqual(timing['work']['target_rows'],5)
+        self.assertEqual(timing['work']['minimum_NT1_jobs'],40)
+        self.assertEqual(timing['outer_residual_ms_per_window'],1)
+        self.assertEqual(timing['host_nested_residual_ms_per_window'],0)
+        # A tiny negative signed residual within the explicit print-rounding allowance stays visible.
+        text=text.replace('draft 4.00','draft 5.01')
+        self.assertLess(g.decode_timing_evidence(text,[row])[0]['outer_residual_ms_per_window'],0)
+
+    def test_rejects_work_cross_binding_unknown_copy_and_unconserved_clocks(self):
+        text,row=self.fixture()
+        edits=[('window 33000 4','window 33000 3'),('window 33000 4','window 40000 4'),
+            ('cpu_unique_misses=60','cpu_unique_misses=1'),('submitted_bytes=0','submitted_bytes=1'),
+            ('drafts accepted 1 of 3','drafts accepted 1 of 4'),('avg T 2.50','avg T 2.00'),
+            ('CPU experts 0.62','CPU experts 0.61'),('VRAM hits 24.17','VRAM hits 24.10'),
+            ('PCIe 0.00','PCIe 1.00'),('draft 4.00','draft 8.00'),('CPU 4.00','CPU 8.00')]
+        for a,b in edits:
+            with self.subTest(a=a),self.assertRaises(RuntimeError):g.decode_timing_evidence(text.replace(a,b),[row])
+        with self.assertRaises(RuntimeError):g.decode_timing_evidence(text+text,[row])
+        with self.assertRaises(RuntimeError):g.decode_timing_evidence(text.replace('strata decode timing:','missing:'),[row])
+
+
 class ArenaScreenTests(unittest.TestCase):
     def test_actual_copy_footer_conservation_and_request_binding(self):
         from arena_copy import copy_evidence

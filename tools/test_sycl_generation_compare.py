@@ -42,7 +42,7 @@ def fixture():
 
 class RetainedEvidenceTests(unittest.TestCase):
     def test_actual_archived_comparison_is_selected_instead_of_outer_pilot(self):
-        reference = c.gen.committed(c.bank.q.BUILD)['retained_validation_reference']
+        reference = json.loads(c.gen.git('show','f89f02c54fa469cac87ad679ac372d62887a8aa7:'+str(c.bank.q.BUILD.relative_to(c.P))))['retained_validation_reference']
         name = 'prefill-status-current.json'
         observed = json.loads(c.gen.git('show', reference['model_evidence_commits'][name]+':'+str((c.A/name).relative_to(c.P))))
         build = dict(source_commit=reference['source_commit'], binary=observed['binary'])
