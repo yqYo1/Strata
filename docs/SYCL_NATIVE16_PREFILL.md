@@ -3008,10 +3008,22 @@ fully-resident fallback0 as a placement change. A regression fixture reproduces
 all four real warmup marker/footer pairs. Markers establish nominal callback
 coverage, not the internal needed-row range or kernel batch size. Commit and
 run host tests plus a replay against the closed actual stderr, then generate
-and commit the new plan before another GPU attempt. Decode still uses the
+and commit the new plan before another GPU attempt. Controller`28bb3ea73` now
+passes10 host tests and replay against the actual closed stderr: all four ring
+markers conserve their request cells. The fresh v2 plan has been generated;
+its order, workload, observers and decision thresholds remain prospective. Decode still uses the
 prospective5% generation-length band; changed output remains an effect, never
 an excluded sample. Broader quality/weak-MTP/agent/full-context gates remain
 pending.
+
+A source follow-up rejects the suspected late prompt-bound optimization:
+`generate.cpp` already sets the current prompt length before reading. With the
+configured default32768-token MTP window and64-row guard, a fresh P-token prompt
+needs at most`min(P-1,32831)` draft-KV rows. `draft_kv` already skips earlier rows
+and whole chunks. The old33210-token diagnostic's first-needed378/needed32831
+therefore match the current request. This is source accounting, not measured
+inner work or a hardware ceiling. Do not scale that bounded MTP cost linearly
+with ever-longer inputs or claim another skip optimization.
 
 Logical cache-hit ratios are9.8/10.6%, with zero GPU miss-copy counters under
 `pcie-frac0`. The actual48-layer native layout has seven format pairs and
