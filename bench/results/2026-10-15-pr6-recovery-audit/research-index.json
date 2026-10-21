@@ -344,7 +344,101 @@
       "formula": "sum(job_count*ceil(M/tileM)*tileM);tileM=16 ifM<128 else128;both N andK dimensions fill their tile extents;2*(1280*2560+2560*640)FLOP/row",
       "limits": "Source/geometry accounting, not observed instruction or hardware-counter work; no compatible measured compute ceiling yet. Small-M jobs contain0.6273%logical arithmetic and total geometric padding adds only1.505%, so counts/padding alone do not explain the stage cost."
     },
-    "review_limit": "Prior report QSA source hash predates current kernel. Its verified MoE dimensions/370.174TFLOP remain relevant; do not reuse QSA code identity as current."
+    "review_limit": "Prior report QSA source hash predates current kernel. Its verified MoE dimensions/370.174TFLOP remain relevant; do not reuse QSA code identity as current.",
+    "native16_32k_117k_ledger": {
+      "classification": "decision_support",
+      "report_path": "/home/yayoi/orca/workspaces/Strata/sycl/.cache/strata-research/20261020/native16-long-prefill-work-ledger.json",
+      "report_sha256": "a35f20c9d0e4b8af72f815d50ca072c77bade9d60f60fdf9098ec562a1619591",
+      "report_bytes": 14213,
+      "review_status": "NEEDS_TARGETED_CORRECTION; original report unchanged",
+      "worker_outcome": "failed/cancelled; no accepted worker_done. Owner-fenced abandoned; exact terminal closed,ptyKilled=true,worker exited. No worker-release claimed.",
+      "review_path": "/home/yayoi/orca/workspaces/Strata/sycl/.cache/strata-research/20261020/work-ledger-curation-next-scopes.json",
+      "review_sha256": "afb4558b6f3d7bece6d85e8bc163ef1865d1ae793771177ae22ab6e8f96b1b35",
+      "native_commit": "e0623d4f73e7909d68406ce3addca1fc0b3e348a",
+      "main_verified_source_pins": {
+        "src/prefill/layer_major.inc": "f7db8923dc466239f44c820ac3f8e9edfdd209b239e6b91f0993adc595d7dcf1",
+        "src/prefill/prefill.cpp": "777e6d847ab6d83bc0a9103d6baabb7f4204ff23d34ce6c853eb1d7e68a11c37",
+        "src/prefill/sycl/gemm16.cpp": "9e25396467e1e130a636931bc81c1d29261f420ecb36545c3dba087fe30ac467",
+        "src/prefill/sycl/vllm_xe2/native16.cpp": "2a6b9b4532f9be50a2bb697cd120fc31f84d2c200fa5ed81f77d4b5f152af684",
+        "src/prefill/sycl/moe_fused.cpp": "6321199ee8213ee1ff2b370929e7bc723e078d13e30a3b4ecb56fe8a3c03b438",
+        "src/prefill/moe_window.inc": "f5a6d295c475e41ced6e43cde7032452806b7014b63f18f8fc7e472d449deb3b",
+        "src/kernels/sycl/fused_gdn.cpp": "70af09035947bbe99de512edb1a1c1c7374f8e2e0fb78a5629b3d460eea72e29"
+      },
+      "corrected_facts": {
+        "convention": "One FMA = 2 FLOPs. T=P-1; 33208-token input gives 33207 rows, and 117489 gives 117488. These are source-shape counts, not measured rate or hardware ceilings.",
+        "hc_projection": {
+          "geometry": "N=2560, HC=4, D=HC*N=10240, LR=320; two halves in each of 48 layers. Per half, down=[LR,D], up=[D,LR], inject=[HC,D].",
+          "flops_per_row": 1266155520,
+          "request_tflop": {
+            "T=33207": 42.04522635264,
+            "T=117488": 148.75807973376
+          }
+        },
+        "gdn_recurrence": {
+          "source_work_per_row": "36*(7*HV*S*S+9*HV*S), HV=48, S=128; the 9 terms count three partial-projection adds, three delta FLOPs (FMA plus multiply), and three output-merge adds per head-column.",
+          "flops_per_row": 200171520,
+          "request_tflop": {
+            "T=33207": 6.64709566464,
+            "T=117488": 23.51775154176
+          },
+          "excluded": "Normalization/reduction, exp/sigmoid, convolution, and projections remain separate."
+        },
+        "gdn_projections": {
+          "formula_per_row": "36*2*(10240*2560 + 6144*2560 + 2*48*2560 + 2560*6144)",
+          "flops_per_row": 4170055680,
+          "request_tflop": {
+            "T=33207": 138.47503896576,
+            "T=117488": 489.93150173184
+          },
+          "activation_boundary_bytes_per_row": 3737088,
+          "activation_boundary_bytes_per_request": {
+            "T=33207": 124097481216,
+            "T=117488": 439062994944
+          },
+          "byte_limit": "Activation inputs/outputs only at the four GDN projection calls; native GGUF weight-byte sizes are unknown without actual model tensor types. These logical bytes are not physical traffic."
+        },
+        "corrected_original_listed_partial": {
+          "components": "Original listed routed GU/Down, shared FFN, router projection, HC projections, QSA projections, QSA indexer projections, and GDN recurrence, with only the HC and recurrence corrections above; GDN projections are still reported separately.",
+          "request_tflop": {
+            "T=33207": 266.2306670592,
+            "T=117488": 941.9372003328
+          },
+          "limit": "Partial known-work subtotal; not total prompt arithmetic."
+        }
+      },
+      "next_scopes": [
+        {
+          "id": "current-native-117k-moe-job-tile-work-extension",
+          "classification": "decision_support",
+          "schedulable_now": false,
+          "question": "Extend the existing current-operation ceiling work with exact per-job useful and source-tile-padded GU/Down arithmetic for the conserved 117489-token job-M histogram. Reconcile the actual selected backend, M/N/K tile and fusion path from current source/config; distinguish useful FLOPs from source-implied padding. No timing, physical bytes, instructions, saturation, roofline rate, or adoption claim.",
+          "report_budget_bytes": 12288,
+          "prerequisites": [
+            {
+              "met": true,
+              "evidence": "Main-owned histogram /home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/packed-bank117K-moe-shape-input.json; 40839 bytes, SHA256 a6056d879716e678b1efb5554e52ba55f1fb874ed4e72fce3d92749aad5ee1dd; native_origin=e0623d4f73e7909d68406ce3addca1fc0b3e348a; 4550 positive bins, min M=1, max M=8192, frequencies sum to 37353 jobs and M-weighted rows sum to 56394240."
+            },
+            {
+              "met": true,
+              "evidence": "Current source hash pins above include vLLM/own GEMM dispatch and MoE shape paths; current-operation ceiling and row-tail metadata were checked for non-duplication."
+            },
+            {
+              "met": false,
+              "evidence": "Per Main, the new six-process clean comparison is still being prepared and has no clean speed samples. Close/review that cohort and pin its effective backend/tile/fusion configuration and executable/source identity first; re-use the histogram only if its route and job scope match."
+            }
+          ],
+          "consumer": "Main's upcoming current-native MoE GEMM arithmetic-work fixture, only if the closed clean cohort leaves this source-tile question decision-relevant.",
+          "review_point": "Reassess at clean-cohort closure before dispatch/build. If the selected route or measured limiter makes padding irrelevant, leave unscheduled and remove this proposal from the active index.",
+          "source_and_data_pins": {
+            "native_source": "e0623d4f73e7909d68406ce3addca1fc0b3e348a; source tree digest 13169ac8b4e31b718396aba4bfb268ea95258e90a1f91537bf8ff8fc9c77293b",
+            "histogram_source_commit": "fdbcc5e6b5b169de2973534170f62e675e092d02",
+            "histogram_sha256": "a6056d879716e678b1efb5554e52ba55f1fb874ed4e72fce3d92749aad5ee1dd"
+          },
+          "scope_limits": "No new generic roofline, variable-GEMM, or row-tail survey. Use only Strata source and pinned data; no XeStrata source or derived implementation proposal."
+        }
+      ],
+      "retention": "Source-work reference with explicit corrected HC/GDN values and unresolved physical-work limits. Retrieve only relevant sections for the current matched-ceiling question. Reassess the conditional tile-work scope and histogram at clean-cohort closure; do not dispatch it early."
+    }
   },
   "decode_vram_rebuild_scope": {
     "schedulable_now": false,
