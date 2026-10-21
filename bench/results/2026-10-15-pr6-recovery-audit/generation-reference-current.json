@@ -1,6 +1,6 @@
 {
   "mode": "engine-compare",
-  "stage": "prepared",
+  "stage": "collecting",
   "source_commit": "95cea638a835a48eb9c281f02267a44b01f6843b",
   "qualification": {
     "current": {
@@ -408,7 +408,172 @@
       ]
     }
   ],
-  "processes": [],
+  "processes": [
+    {
+      "arm": 0,
+      "passed": true,
+      "complete": true,
+      "native_exit_code": 0,
+      "active": false,
+      "native_identity": {
+        "pid": 1756825,
+        "start_ticks": 91183802,
+        "sid": 1756800
+      },
+      "effective_environment_verified": true,
+      "requests": [
+        {
+          "ok": true,
+          "ttft_s": 52.41,
+          "total_s": 346.479,
+          "prompt_tokens": 33214,
+          "reused_tokens": 0,
+          "read_tokens": 33214,
+          "generated_tokens": 3611,
+          "prompt_tps": 635.9,
+          "prompt_tps_source": "engine",
+          "decode_tps": 12.3,
+          "decode_tps_source": "engine",
+          "prompt_ms": 52228.9,
+          "decode_ms": 294227.5,
+          "drafts_offered": 3102,
+          "drafts_accepted": 2578,
+          "finish_reason": "stop",
+          "request_sha256": "b0a065720a5eb86fa2d3f84d6371e35da774b4ea144d022608d49b80c227cba1",
+          "stream_complete": true,
+          "generated_tokens_source": "usage",
+          "eligible": true,
+          "speed_eligible": true,
+          "acceptance_rate": 0.8310767246937459,
+          "usage_generated_tokens": 3611,
+          "completion_includes_thinking": true,
+          "run": 0,
+          "order": 0,
+          "output_chars": 5496,
+          "reasoning_chars": 4368,
+          "reasoning_tokens": null,
+          "workload": "regular-code",
+          "controller_eligible": true
+        },
+        {
+          "ok": true,
+          "ttft_s": 43.827,
+          "total_s": 976.817,
+          "prompt_tokens": 33288,
+          "reused_tokens": 0,
+          "read_tokens": 33288,
+          "generated_tokens": 8638,
+          "prompt_tps": 761.5,
+          "prompt_tps_source": "engine",
+          "decode_tps": 9.3,
+          "decode_tps_source": "engine",
+          "prompt_ms": 43714.7,
+          "decode_ms": 933080.3,
+          "drafts_offered": 11931,
+          "drafts_accepted": 4660,
+          "finish_reason": "stop",
+          "request_sha256": "c6d16c6adb19adf79de1cc29929ab71cab5433488ca2fda2dfcdad523bde56f4",
+          "stream_complete": true,
+          "generated_tokens_source": "usage",
+          "eligible": true,
+          "speed_eligible": true,
+          "acceptance_rate": 0.390579163523594,
+          "usage_generated_tokens": 8638,
+          "completion_includes_thinking": true,
+          "run": 0,
+          "order": 1,
+          "output_chars": 4452,
+          "reasoning_chars": 21300,
+          "reasoning_tokens": null,
+          "workload": "varied-prose",
+          "controller_eligible": true
+        }
+      ],
+      "journal": {
+        "successful_warmups": 4,
+        "successful_long_requests": 2,
+        "phase_order": [
+          "warm-up/chat",
+          "calibration",
+          "calibration",
+          "warm-up/prompt",
+          "long-generation/regular-code",
+          "long-generation/varied-prose"
+        ],
+        "request_sha256": [
+          "6976dd85c26437117139f185ce0ac4da0ab9d1d4eb576dd2f9e252ae99d63f03",
+          "d53e3c2e317b3f08b3b3c48aa391fd7c6bd7e451a3176a85b9b4763f7d85fdf3",
+          "7980bd89f91dbcfd84166ee8ea45c5d77888ee349ccee71596c073a2ed4790a0",
+          "cfe052d03f13fa28f83f44331156d873212064c85036a8652c6eab4a2d7380a5",
+          "b0a065720a5eb86fa2d3f84d6371e35da774b4ea144d022608d49b80c227cba1",
+          "c6d16c6adb19adf79de1cc29929ab71cab5433488ca2fda2dfcdad523bde56f4"
+        ],
+        "valid": true,
+        "journal_sha256": "829cefc8f99e8a113eefa24273fe7c4f31d7e200334184e77ef9e3fc841061e7"
+      },
+      "routes": [
+        {
+          "actual_GPU_BF16_rows": 33213,
+          "actual_MoE_mode": 10,
+          "draft_work": {
+            "read_tokens": 33214,
+            "draft_cells": 33213,
+            "batch_count": 5,
+            "path": "batched",
+            "mode": 2
+          },
+          "private_bank": {
+            "actual_private_layers": 0,
+            "stride_layers": {},
+            "requested_work": {
+              "uploads": 19397,
+              "requested_H2D_bytes": 39622784000,
+              "permanent_hits": 0,
+              "permanent_slots": 314,
+              "total_slots": 384
+            },
+            "physical_PCIe_traffic_measured": false
+          },
+          "restored_dense_layers": 48,
+          "cache_payload_and_map_match": true,
+          "loan_generation": 5
+        },
+        {
+          "actual_GPU_BF16_rows": 33287,
+          "actual_MoE_mode": 10,
+          "draft_work": {
+            "read_tokens": 33288,
+            "draft_cells": 33287,
+            "batch_count": 5,
+            "path": "batched",
+            "mode": 2
+          },
+          "private_bank": {
+            "actual_private_layers": 0,
+            "stride_layers": {},
+            "requested_work": {
+              "uploads": 19212,
+              "requested_H2D_bytes": 39273344000,
+              "permanent_hits": 0,
+              "permanent_slots": 307,
+              "total_slots": 384
+            },
+            "physical_PCIe_traffic_measured": false
+          },
+          "restored_dense_layers": 48,
+          "cache_payload_and_map_match": true,
+          "loan_generation": 6
+        }
+      ],
+      "binary_sha256": "226b4556ab4d2ffd3850dcb8c7d905379bc353b72685b46e291cdda95dce78ac",
+      "build_source_commit": "3b4998f326101fa913788fd368e1674b111dea03",
+      "ownership_closed": true,
+      "fresh_faults": [],
+      "fault_probe_successful": true,
+      "boot_unchanged": true,
+      "retained_evidence": "Keep individual engine/client clocks,actual usage/thinking/body/MTP/request identity and eligibility; omit unused parser aliases,normal errors and unused output hashes. Full per-process receipt remains temporary outside Git until comparison closure. Original outcome unchanged."
+    }
+  ],
   "plan": {
     "order": [
       "retained-3b-packed-off",

@@ -3218,6 +3218,14 @@ packed source/layout, new collection path, retained-build and resource gates.
 The new path exercises the actual shared native-end reader and rejects fresh
 faults; the archive-backed check selects the original nested MTP comparison.
 These are host checks, not new GPU validation.
+The retained3b arm of the [frozen generation reference](../bench/results/2026-10-15-pr6-recovery-audit/generation-reference-current.json)
+is closed: regular-code reads33214 fresh tokens and generates3611 at12.3tok/s
+(2578/3102 accepted); varied-prose reads33288 and generates8638 at9.3tok/s
+(4660/11931). Both have thinking and answer body, matched native/draft/GPU
+route/cache restoration, native exit0, closed owners and no fresh fault.
+The observed83.11%/39.06% lie in the requested bands, but one sample cannot
+qualify the MTP pair, speed/nonregression, task quality or adoption. Currente062
+is still pending; keep both native generations for that exact second arm.
 Generic native-end and draft-work readers now live in`generation_engine.py`.
 The closed packed model/clean launchers and their retired-run-only tests are
 removed; source and original reducer remain recoverable at`6213f0325d807b5eaf319bbf8096c9337f5402bd`.
