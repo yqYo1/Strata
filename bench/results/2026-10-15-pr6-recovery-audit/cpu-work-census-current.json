@@ -1,6 +1,6 @@
 {
   "mode": "engine-compare",
-  "stage": "prepared",
+  "stage": "model_prepared",
   "source_commit": "386ef54e8a6824c49e7d53a3c5bca79a193d8f44",
   "build_source_commit": "63af639ac70fcc63c3a33594b1fba02efc78bb86",
   "binary": {
@@ -416,5 +416,128 @@
     "text_cap": 67108864,
     "file_cap": 67108864,
     "total_cap": 67108864
+  },
+  "bank": {
+    "passed": true,
+    "complete": true,
+    "checks": [
+      {
+        "mode": "packed-smoke",
+        "cases": [
+          {
+            "backing_slots": "4",
+            "backing_stride": "512",
+            "source_stride": "256",
+            "experts": "10",
+            "layers": "3",
+            "uploads": "43",
+            "hits": "17",
+            "consumers": "120",
+            "unwind": "0",
+            "admission_rejections": "11",
+            "status": "0",
+            "full_copy": "1",
+            "immutable_slab": "PASS",
+            "guards": "PASS",
+            "private_map": "PASS",
+            "checked_drain": "PASS"
+          },
+          {
+            "backing_slots": "4",
+            "backing_stride": "512",
+            "source_stride": "256",
+            "experts": "10",
+            "layers": "2",
+            "uploads": "10",
+            "hits": "0",
+            "consumers": "20",
+            "unwind": "2",
+            "admission_rejections": "11",
+            "status": "0",
+            "full_copy": "0",
+            "immutable_slab": "PASS",
+            "guards": "PASS",
+            "private_map": "PASS",
+            "checked_drain": "PASS"
+          }
+        ],
+        "passed": true,
+        "fixture": {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/sycl_expert_bank_test",
+          "sha256": "befcc6842aa72a0cec5454afefdf7a99421c538a7f98acbadcb7629f51a9e242"
+        },
+        "exit_code": 0
+      },
+      {
+        "mode": "packed-validate",
+        "cases": [
+          {
+            "backing_slots": "384",
+            "backing_stride": "512",
+            "source_stride": "256",
+            "experts": "512",
+            "layers": "4",
+            "uploads": "2434",
+            "hits": "1662",
+            "consumers": "8192",
+            "unwind": "0",
+            "admission_rejections": "11",
+            "status": "0",
+            "full_copy": "0",
+            "immutable_slab": "PASS",
+            "guards": "PASS",
+            "private_map": "PASS",
+            "checked_drain": "PASS"
+          },
+          {
+            "backing_slots": "384",
+            "backing_stride": "2662400",
+            "source_stride": "2662400",
+            "experts": "512",
+            "layers": "3",
+            "uploads": "1709",
+            "hits": "1363",
+            "consumers": "6144",
+            "unwind": "0",
+            "admission_rejections": "11",
+            "status": "0",
+            "full_copy": "1",
+            "immutable_slab": "PASS",
+            "guards": "PASS",
+            "private_map": "PASS",
+            "checked_drain": "PASS"
+          },
+          {
+            "backing_slots": "384",
+            "backing_stride": "512",
+            "source_stride": "256",
+            "experts": "512",
+            "layers": "2",
+            "uploads": "10",
+            "hits": "0",
+            "consumers": "20",
+            "unwind": "2",
+            "admission_rejections": "11",
+            "status": "0",
+            "full_copy": "0",
+            "immutable_slab": "PASS",
+            "guards": "PASS",
+            "private_map": "PASS",
+            "checked_drain": "PASS"
+          }
+        ],
+        "passed": true,
+        "fixture": {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/sycl_expert_bank_test",
+          "sha256": "befcc6842aa72a0cec5454afefdf7a99421c538a7f98acbadcb7629f51a9e242"
+        },
+        "exit_code": 0
+      }
+    ],
+    "active": false,
+    "ownership_closed": true,
+    "fresh_faults": [],
+    "boot_unchanged": true,
+    "fault_probe_successful": true
   }
 }
