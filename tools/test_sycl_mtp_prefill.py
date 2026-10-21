@@ -17,7 +17,7 @@ def sample(read=74, generated=24):
     return dict(prompt_tokens=read, read_tokens=read, reused_tokens=0, generated_tokens=generated)
 
 
-def log(cells=73, path='batched', mode=0, read=74, chunks=None):
+def log(cells=73, path='batched', mode=2, read=74, chunks=None):
     return (''.join(f'strata serve: DRAFT_PREFILL path={path} mode={mode} cells={n}\n'
                    for n in (chunks if chunks is not None else [cells])) +
             f'strata serve: prompt {read} tokens = 0 reused + {read} read, 24 generated\n')
@@ -52,7 +52,7 @@ class AdmissionTest(unittest.TestCase):
     def test_warmup_requires_complete_cells_not_just_positive_batch(self):
         self.assertEqual(mtp.request_evidence(log(),[sample()])[0]['draft_cells'],73)
         # These all have a positive batch, but do not prove the same request.
-        for text in (log(cells=72),log(path='token'),log(mode=1),log(cells=0),
+        for text in (log(cells=72),log(path='token'),log(mode=0),log(mode=1),log(cells=0),
                      log()+log(),log().replace('0 reused','1 reused')):
             with self.subTest(text=text),self.assertRaises(RuntimeError):
                 mtp.request_evidence(text,[sample()])
@@ -79,6 +79,24 @@ class AdmissionTest(unittest.TestCase):
         for wrong in ([33209],[8191,8193,8192,8192,441],chunks+[1],chunks[:-1],chunks[:-1]+[440]):
             with self.subTest(chunks=wrong),self.assertRaises(RuntimeError):
                 mtp.request_evidence(log(read=33210,chunks=wrong),[sample(33210)])
+
+    def test_real_closed_warmups_require_ring_placement_independently_of_int8(self):
+        # Native marker/footer excerpts preserved at b29ece914, comparison.termination.
+        # The old synthetic fixture's mode0 was wrong:2 denotes the drafter ring.
+        text='''strata serve: DRAFT_PREFILL path=batched mode=2 cells=73
+strata serve: prompt 74 tokens = 0 reused + 74 read in 25323 ms (2.9 tok/s), 24 generated in 6442 ms (3.7 tok/s), drafts accepted 18 of 18, 0 checkpoints
+strata serve: DRAFT_PREFILL path=batched mode=2 cells=265
+strata serve: prompt 266 tokens = 0 reused + 266 read in 6050 ms (44.0 tok/s), 1 generated in 92 ms (10.9 tok/s), drafts accepted 0 of 0, 0 checkpoints
+strata serve: DRAFT_PREFILL path=batched mode=2 cells=911
+strata serve: prompt 912 tokens = 0 reused + 912 read in 7652 ms (119.2 tok/s), 1 generated in 92 ms (10.8 tok/s), drafts accepted 0 of 0, 0 checkpoints
+strata serve: DRAFT_PREFILL path=batched mode=2 cells=1068
+strata serve: prompt 1069 tokens = 0 reused + 1069 read in 8798 ms (121.5 tok/s), 8 generated in 545 ms (14.7 tok/s), drafts accepted 6 of 6, 0 checkpoints
+'''
+        samples=[sample(n,g) for n,g in [(74,24),(266,1),(912,1),(1069,8)]]
+        self.assertEqual([v['draft_cells'] for v in mtp.request_evidence(text,samples)],[73,265,911,1068])
+        for replacement in ['mode=0','mode=1','mode=3','mode=-1']:
+            with self.subTest(replacement=replacement),self.assertRaises(RuntimeError):
+                mtp.request_evidence(text.replace('mode=2',replacement,1),samples)
 
     def test_effective_environment_rejects_observer_reintroduction_and_safety_changes(self):
         env=dict(STRATA_MTP_BATCH_F16='0',STRATA_SNAPSHOT_VERIFY='1',STRATA_SYCL_PREFILL_SAME_QUEUE='1',

@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """Main-owned minimal-marker MTP comparison using the existing qualified engine.
 
-The original pilot is recoverable from dbea9dd0e and the failed diagnostic
-comparison from b62f673a7. Neither contributes samples to this fresh comparison.
+The pilot is recoverable from dbea9dd0e, failed diagnostic from b62f673a7 and
+rejected mode0 marker plan from b29ece914. None contributes comparison samples.
 """
 import argparse
 import copy
@@ -29,10 +29,14 @@ c = status.c
 gen, assets, guards, supervision = c.gen, c.assets, c.guards, c.supervision
 P, B, A = c.P, c.B, c.A
 RESULT = A / 'prefill-mtp-current.json'
-ROOT = B / 'mtp-f16-minimal-marker-v1'
+ROOT = B / 'mtp-f16-minimal-marker-v2'
 ORDER = (0, 1, 1, 0, 0, 1)
 PAIRS = ((0, 1), (3, 2), (4, 5))
 WORKLOAD = 'regular-code'
+# QsaState::kv_mode is placement, independently of kv_int8: layer.hpp documents
+# 2 as the drafter ring; mtp.cpp and layer.cpp::kv_plan select it for this window.
+# A fully-resident fallback (0) would change placement and is not this cohort.
+DRAFT_RING_MODE = 2
 ABSENT_OBSERVERS = ('STRATA_TRACE', 'STRATA_DRAFT_TIMING', 'UR_ENABLE_LAYERS',
                     'LD_PRELOAD', 'STRATA_UR_PROBE_EXPECTED_LOADER')
 
@@ -66,10 +70,10 @@ def request_evidence(text, samples):
             'native/journal request binding differs')
         rows = draft_rows(text[previous:header.start()]); cells = sample['read_tokens'] - 1
         expected = [8192] * (cells // 8192) + ([cells % 8192] if cells % 8192 else [])
-        guards.require(rows and all(r['path'] == 'batched' and r['mode'] == 0 for r in rows)
+        guards.require(rows and all(r['path'] == 'batched' and r['mode'] == DRAFT_RING_MODE for r in rows)
             and [r['cells'] for r in rows] == expected, 'draft-KV marker route/chunks do not conserve request')
         evidence.append(dict(read_tokens=sample['read_tokens'], draft_cells=sum(r['cells'] for r in rows),
-            batch_count=len(rows), path='batched', mode=0))
+            batch_count=len(rows), path='batched', mode=DRAFT_RING_MODE))
         previous = header.end()
     guards.require(not draft_rows(text[previous:]), 'unbound trailing draft batch')
     return evidence
@@ -87,9 +91,9 @@ def comparison_plan():
     return dict(order=list(ORDER), pairs=[list(p) for p in PAIRS], workload=WORKLOAD,
         question='Does existing FP16 GEMM for MTP prefill improve matched long-input PP without hurting sustained decode or draft acceptance?',
         constants='Same current3b native/eight fixtures, model/tokenizer/expert profile,131072 residentINT8 context,8192 prefill,1256 expert slots,5 CPU workers,spec4; official bench.sh long-generation-only regular-code, thinking enabled,16384 output allowance. Four official warmups then one fresh>=32K request per independent process. Only MTP_BATCH_F16 differs. SNAPSHOT_VERIFY emits one success marker per chunk without an added GPU wait; prompt-cache0/conversation-cache-mib0 exclude its heavy restore branch. Trace, draft timing, UR layers and private preload are absent. Qualified safety settings match.',
-        admission='Before each long HTTP dispatch require all four successful official warmups, native PID/SID/executable/effective environment, successful batched mode0 draft markers with exact8192/tail request-cell conservation, and no native errors. Final request must have>=1024 generated tokens including thought plus>=512 answer characters,>=256 offered drafts, complete journal/native/route/ownership/source/model/runtime/fault checks. Stop on first failure; never retry/discard. No old diagnostic samples enter this cohort.',
+        admission='Before each long HTTP dispatch require all four successful official warmups, native PID/SID/executable/effective environment, successful batched mode2 drafter-ring markers with exact8192/tail callback cell conservation, and no native errors. Mode denotes placement, not storage precision; reject a fully-resident fallback0 to preserve matched placement. Final request must have>=1024 generated tokens including thought plus>=512 answer characters,>=256 offered drafts, complete journal/native/route/ownership/source/model/runtime/fault checks. Stop on first failure; never retry/discard. No old diagnostic or rejected-marker samples enter this cohort.',
         decisions='All three prefill candidate/base ratios>1 and geomean>1.02 qualifies faster screen; all<1 and geomean<1/1.02 slower screen; otherwise inconclusive. Decode uses1.05 and1/1.05 with the same all-pair direction rule and generation-count ratios within1/1.05..1.05. Otherwise decode is inconclusive. Report acceptance change as candidate effect, never require equal acceptance or text. Nonregression is geomean>=0.98 and each ratio>=0.95 separately for PP and TG. Keep all samples/spreads. Strong-MTP classification requires all acceptance>=0.60. No automatic extra repeats or adoption.',
-        limits='Minimal-marker timing, not a zero-observer/overhead proof. Markers establish the batched family and cell coverage; fixed-source geometry/dispatch predicates establish the Q8/FP16 family, not an inner kernel or hardware saturation. Each sample is first long request after four warmups, not subsequent-long steady state. No comparison with old diagnostic TG establishes observer cost. Weak-MTP,agent-session,task quality,physical262144/session/RESTORE and70TG remain pending.')
+        limits='Minimal-marker timing, not a zero-observer/overhead proof. Markers establish the successful batched callback and nominal cell coverage; they do not expose inner r0/needed rows, batch size or kernel dispatch. Fixed-source geometry/dispatch predicates establish the Q8/FP16 family only for work actually needed. Each sample is first long request after four warmups, not subsequent-long steady state. No comparison with old diagnostic TG establishes observer cost or hardware saturation. Weak-MTP,agent-session,task quality,physical262144/session/RESTORE and70TG remain pending.')
 
 
 def invariant(plan):

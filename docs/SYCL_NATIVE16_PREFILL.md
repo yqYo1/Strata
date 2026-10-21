@@ -3002,8 +3002,13 @@ is not released; cohorts1..5 are not run. Owner cleanup terminates the attempt,
 with an anchored empty-session scan, direct-child reap and no original identities
 remaining. Its original observation/ownership failure fields remain unchanged;
 no natural native exit or speed sample is claimed. No fresh GPU fault is found.
-Preserve this failed plan/result, correct the source-based ring gate and test
-actual closed warmup output before another fresh plan. Decode still uses the
+The original failed plan/result is recoverable at`b29ece914`. The prospective
+controller uses a fresh v2 root and requires the actual mode2 ring, rejecting a
+fully-resident fallback0 as a placement change. A regression fixture reproduces
+all four real warmup marker/footer pairs. Markers establish nominal callback
+coverage, not the internal needed-row range or kernel batch size. Commit and
+run host tests plus a replay against the closed actual stderr, then generate
+and commit the new plan before another GPU attempt. Decode still uses the
 prospective5% generation-length band; changed output remains an effect, never
 an excluded sample. Broader quality/weak-MTP/agent/full-context gates remain
 pending.
