@@ -128,8 +128,16 @@ and three long-request dense observations as three whole-process records. That
 failed attempt remains at`9555a7bd2`; it is not a passed admission. The corrected
 controller separates both completed requests, rejects misplaced observations,
 and starts a separately committed fresh two-arm plan after seven host checks.
-These first-use runs cannot qualify speed or sustained decode; freeze the repeated
-clean comparison only after this actual-model memory/state admission closes.
+Both fresh checked117K arms now passed:924.207/925.045tok/s,with actual1/23
+copies,exact48-layer/cache restoration,unchanged model assets and no fresh
+fault. The canonical restore wrapper measured431.273/265.117ms (166.156ms
+less);dense restoration as a whole measured817.254/650.307ms. These are
+charged first-use wrapper clocks,not pure PCIe service or repeated clean speed.
+Both restored with about126MiB of free VRAM. Sustained decode independence,
+agent/task quality and physical262144/session/RESTORE remain unqualified.
+The next repeated performance comparison must also include the retained6e40
+baseline to detect package-level decode effects from the intervening
+observer/copy build;the same-native off/on discriminator alone cannot do that.
 
 
 The current B570 speed reference uses fresh inputs of117489 tokens and separates
