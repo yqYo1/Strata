@@ -3213,6 +3213,11 @@ a native process: its new reader selected the outer historical MTP diagnostic
 instead of the closed nested comparison. The corrected reader uses the original
 comparison and adds an archive-backed regression check; no original evidence
 or admission criterion is changed.
+At`95cea638a`,36 host checks pass across the generation reader, MTP marker,
+packed source/layout, new collection path, retained-build and resource gates.
+The new path exercises the actual shared native-end reader and rejects fresh
+faults; the archive-backed check selects the original nested MTP comparison.
+These are host checks, not new GPU validation.
 Generic native-end and draft-work readers now live in`generation_engine.py`.
 The closed packed model/clean launchers and their retired-run-only tests are
 removed; source and original reducer remain recoverable at`6213f0325d807b5eaf319bbf8096c9337f5402bd`.
