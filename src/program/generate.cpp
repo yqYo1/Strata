@@ -6094,9 +6094,8 @@ int main(int argc, char** argv) {
             // host copies and slots are always current (every writer writes both), so they need nothing
             if (resume > 0 && reread_to <= 0) mtp.kv_restore(resume);
             tr("request", n, geni ? 1 : 0);
-            if ((cpu_census_enabled || iq2_audit_enabled) &&
-                !strata::core::CpuWorkCensus::checked_add(census_request, 1)) {
-                std::printf("ERR CPU census request sequence overflow\n"); return 1;
+            if (!strata::core::CpuWorkCensus::checked_add(census_request, 1)) {
+                std::printf("ERR request sequence overflow\n"); return 1;
             }
             mtp.set_prompt_len(n);
             const int64_t read_from = reread_to > 0 ? 0 : resume;
@@ -6531,6 +6530,7 @@ int main(int argc, char** argv) {
             // decode clock; optional callback counters themselves remain charged.
             strata::kernels::cpu::Iq2GuAudit iq2_audit_begin;
             if (iq2_audit_enabled) iq2_audit_begin = strata::kernels::cpu::iq2_gu_audit_snapshot();
+            auto mtp_observation = mtp.observe_draft_request(census_request);
 #endif
             const Clock::time_point d0 = Clock::now();
             // STRATA_DECODE_TIMING=1: where a request's decode time goes (one line per request)
@@ -6691,6 +6691,7 @@ int main(int argc, char** argv) {
                 return 1;
             }
 #ifdef STRATA_ENABLE_SYCL
+            mtp_observation.finish(!cancelled && std::strcmp(finish, "cancel") != 0);
             if (iq2_audit_enabled) {
                 const auto iq2_audit_end = strata::kernels::cpu::iq2_gu_audit_snapshot();
                 // This prints existing host counters only, after the synchronous
@@ -7639,6 +7640,9 @@ int main(int argc, char** argv) {
         // plan v0.3 P6: with a native pack the first window is the last prompt token alone (it produces the first
         // generated token and the MTP's first cell); otherwise the token loop already did that.
         bool first_window = native_pack;
+#ifdef STRATA_ENABLE_SYCL
+        auto mtp_observation = mtp.observe_draft_request(1);
+#endif
         if (use_mtp && !first_window &&
             !mtp.draft_first(o.spec, ss.R, x, p - 1, drafts.data(), err, dprob.data(), (float) o.spec_min_p)) {
             std::fprintf(stderr, "strata generate: %s\n", err.c_str());
@@ -7839,6 +7843,9 @@ int main(int argc, char** argv) {
                         "pcie experts", (double) (drive.d.pcie_experts - pcie0) / (double) (rounds * g.n_layers),
                         drive.d.pcie_num);
         (void) pool_ms0;
+#ifdef STRATA_ENABLE_SYCL
+        mtp_observation.finish(true);
+#endif
         if (use_mtp && rounds > 0)
             std::printf("%-24s %.3f ms/round drafting (%lld rounds), MTP prompt %.1f ms, %.0f MiB of VRAM\n", "mtp",
                         mtp.ms_draft / (double) mtp.rounds, (long long) mtp.rounds, mtp.ms_prefill,

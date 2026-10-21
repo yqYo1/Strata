@@ -121,6 +121,58 @@ KV host backup remain separate paths; this source audit is not a measurement
 of total PCIe traffic. The residual owner remains valid through the serial
 draft completion before the next verifier run.
 
+## MTP graph observer: source only, not qualified
+
+The default-off SYCL observer separates host wall and calling-thread CPU time
+for the draft round and chain steps. `STRATA_SYCL_MTP_OBSERVER=host` retains
+ordinary graph finalization; `graph` explicitly requests executable-graph
+profiling. Both use the same existing per-replay stream synchronization and
+retain the returned completion event before another replay can overwrite it.
+Neither mode removes the probability/NaN stopping check, mapped-record fence,
+KV writes or existing round/step order. Profiling can change graph optimization
+throughout the process, including outside the sampled windows. This is not a
+clean speed measurement or an optimization adoption.
+
+The request selector defaults to 5 (the first long-generation request after the
+four benchmark warm-ups). `STRATA_SYCL_MTP_OBSERVER_REQUEST` selects another
+positive request sequence, independent of CPU census/audit settings; CLI uses
+request 1. `STRATA_SYCL_MTP_OBSERVER_SKIP` defaults to 8 draft calls and
+`STRATA_SYCL_MTP_OBSERVER_WINDOWS` defaults to 64, with a hard maximum of 64.
+One selected request per process may emit at most 41 lines: a summary, eight
+phase aggregates and the first 32 raw graph-clock tuples. The omitted-tuple
+count is explicit. This bounds query/output work; the external job deadline
+must still supervise a driver call that does not return.
+
+Capture, launch-wrapper, stream-drain-wrapper and timestamp-query intervals are
+disjoint host regions, split between round and chain. Remaining time includes
+mapped input preparation, output/probability reads, control and observer work;
+it is not automatically classified as CPU arithmetic. The outer scope is each
+`draft()` invocation, including capture and device switching. It excludes
+`draft_first()` residual staging and differs from the legacy `ms_draft` clock,
+which starts after round capture. Invalid clocks, overlapping regions,
+exceptions, incomplete requests and insufficient windows are not a complete
+profile. Thread CPU time excludes runtime/helper threads and is not CPU
+saturation evidence.
+
+Graph timestamps are queried only after checked completion, with no additional
+marker or wait. Partial tuples and status are retained; unsupported/invalid
+clocks or a query exceeding one second stop the diagnostic without a retry.
+Start-to-end is the first-to-last-node envelope, including possible idle gaps
+and dependencies. It is nonadditive with the host intervals and does not measure
+arithmetic service, copy-engine service, occupancy, physical traffic or hardware
+saturation. A submit/start inversion invalidates queue delay alone when the
+positive envelope remains valid. Round/chain envelope sums are reported
+separately; internal captured event aliases are never used as node clocks.
+
+Before any model observer run, integrate the source into `feature/sycl`,
+preserve the current validated engine and fixtures, pin the new recipe and
+build, then run the bounded graph-envelope fixture in separate profile-off/on
+processes using the qualified runtime safety settings. Unknown graph profiling
+support is not a pass. Applicable engine safety/numerical checks and a committed
+bounded model plan follow; compare fresh observer-off, host-only and profiled
+processes before drawing timing conclusions. No compilation, fixture execution,
+device support or model qualification has yet been established for this source.
+
 ## Tensor storage and precision
 
 `STRATA_SYCL_PREFILL_NATIVE16=bf16` selects an experimental kernel path only

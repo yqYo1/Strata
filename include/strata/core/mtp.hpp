@@ -24,6 +24,9 @@
 #include "strata/kernels/sampler.hpp"
 
 #include <cuda_runtime.h>
+#ifdef STRATA_ENABLE_SYCL
+#include "strata/sycl/mtp_graph_observer.hpp"
+#endif
 
 #include <array>
 #include <cstdint>
@@ -110,6 +113,10 @@ public:
 
     double ms_draft = 0, ms_prefill = 0;
     int64_t rounds = 0;
+#ifdef STRATA_ENABLE_SYCL
+    // Explicit request lifetime; destruction on an error emits incomplete data.
+    auto observe_draft_request(uint64_t id) noexcept { return graph_observer_.request(id); }
+#endif
 
     /// E-9: the prompt path computes this layer's prompt K/V in batches (Prefill::draft_kv): its tensors, its K/V
     /// state, the first cell a round can still read, its device, and a wait for its own stream.
@@ -125,6 +132,10 @@ public:
     }
 
 private:
+#ifdef STRATA_ENABLE_SYCL
+    strata::sycl_backend::MtpGraphObserver graph_observer_;
+    cudaEvent_t graph_observer_completion_ = nullptr;
+#endif
     bool head_prepared_=false,head_detached_=false,head_restored_=false;
     bool head_release_used_=false,head_owner_retired_=false,head_had_subset_=false,head_storage_released_=false;
     uint64_t head_release_bytes_=0,head_full_bytes_=0;
