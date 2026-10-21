@@ -179,7 +179,10 @@ It checks complete journals,native request extents and reported GPU BF16/mode10
 routes. Exact payload restoration belongs to the preceding checked model
 admission;clean runs do not claim unlogged copy or payload measurements.
 This reader does not consume closed prefill cohorts' generated configurations.
-The new controller and seven host test groups are not yet execution-qualified.
+All seven host groups passed at source`2da515523`,with normal ownership closure
+and no GPU execution. They reject short/unbound/reused evidence,wrong route or
+native/API clocks,counter mismatches and cross-workload compensation. The actual
+six-process long-generation cohort remains unprepared and unmeasured.
 
 
 The current B570 speed reference uses fresh inputs of117489 tokens and separates

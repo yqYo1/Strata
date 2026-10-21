@@ -1,0 +1,50 @@
+{
+  "stage": "host-checked",
+  "host": {
+    "source_commit": "2da515523c1a6417ef039bc19cd246911f58cb32",
+    "passed": true,
+    "tests": 7,
+    "GPU_executed": false,
+    "controller_sha256": "488321520ce322bdebeed4c942d99907b4f35044dd38a8dbc86edcea0b199a83",
+    "test_sha256": "ea9917fcd69c5c07aae0511d3e1b3468c480bd3b86928371e35439fd637980d4",
+    "ownership_closed": true
+  },
+  "plan": {
+    "order": [
+      0,
+      1,
+      1,
+      0,
+      0,
+      1
+    ],
+    "pairs": [
+      [
+        0,
+        1
+      ],
+      [
+        3,
+        2
+      ],
+      [
+        4,
+        5
+      ]
+    ],
+    "workloads": [
+      "regular-code",
+      "varied-prose"
+    ],
+    "question": "Does the prefill-only package preserve current sustained decode in both observed MTP regimes?",
+    "execution": "Six independent native processes,retained6e40/current362/current362/retained6e40/retained6e40/current362. Official bench.sh --long-generation-only --think --runs1,each with four official warmups then the two version4 long-generation workloads. Same fresh request bodies,>=32768 actual input,1024..16384 generated tokens including thinking,>=512 answer characters and>=256 offered drafts. No equal-output requirement.",
+    "constants": "Same1256-slot decode placement,131072 resident INT8 context,8192 prefill,5 workers+host,packed1,IQ2pair1,SINGLE_EXACT0,Q8 MTP,pcie0,adapt0,spec4,suffix0,caches0,no token graph/no coupled draft,no F16 MTP batch. Only native package and pre-exec prefill canonical chunk selector differ.",
+    "decision": "Repetition unit is one independent process per workload. Calculate exact achieved TG from actual completion tokens/engine decode_ms;retain printed TG separately. Conservative no-decline screen requires all three candidate/reference paired ratios>=1 for EACH workload. Any lower ratio leaves preservation unqualified;do not dismiss it as noise or permit a prefill/decode tradeoff. Confirm strong>=0.60 and weak<=0.40 acceptance in every sample of BOTH arms. This screen is not statistical proof of zero effect. TG70 requires every candidate workload sample>=70;passing preservation alone does not meet the goal.",
+    "admission": "Require the closed successful six-process clean prefill screen and its prospective performance gate,actual-model checked off/on state restoration,and recoverable same-build engine/fixtures for both packages. Pin all benchmark helpers,generated configuration,model/runtime,machine and immutable environment before launch. Verify original inputs and exact owned native exit.",
+    "route": "Bind all six native footers to the complete official journal. Require each long request to report full GPU BF16 residuals and mode10 with the correct row extent;verify1256-slot borrowed placement. Clean copy/MTP selections are source-verified through the pinned launch chain. Exact payload/map and dense restoration belong to the preceding checked model admission,not unlogged per-process measurements here.",
+    "models": "Full model hashes before the cohort and after process5;device/inode/size/mtime/ctime guards before and after every process. No model digest I/O during native execution.",
+    "stopping": "Stop on first source/model/runtime/configuration/journal/route/owner/fault/budget failure;never retry a root or replace a sample. Commit every closed outcome before the next process. Never stop early on speed or MTP acceptance.",
+    "limits": "No inference adoption,task-quality,agent-session,physical262144 or session/RESTORE qualification. No hardware arithmetic/RAM/PCIe saturation claim from TG or stage clocks. A demonstrated decode impact is a separation defect to fix.",
+    "retention": "Keep individual samples,source/configuration,actual route/journal/owner/fault outcomes and paired decisions. Retire successful raw output/JIT after committed closure;preserve attempt barriers while the cohort is active. Both native generations have this named immediate consumer;select and retire the extra only after comparison and provenance review."
+  }
+}
