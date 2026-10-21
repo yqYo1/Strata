@@ -41,6 +41,13 @@ def original(reference):
     return json.loads(raw)
 
 
+def retained_model_scope(full, reference):
+    observations = {name:json.loads(gen.git('show', commit+':'+str((A/name).relative_to(P))))
+        for name,commit in reference['model_evidence_commits'].items()}
+    return retained_model_evidence(full, observations['prefill-status-current.json'],
+                                   observations['prefill-mtp-current.json']['comparison'])
+
+
 def recover_retained(reference):
     receipt = reference['source_build_record']
     guards.require(gen.common.digest(receipt['path']) == receipt['sha256'], 'retained source receipt changed')
@@ -63,10 +70,7 @@ def recover_retained(reference):
     recipe = full['recipe_reference']
     guards.require(hashlib.sha256(gen.git('show', full['source_commit']+':'+recipe['path'])).hexdigest()
         == recipe['sha256'], 'retained recipe not recoverable')
-    observations = {name:json.loads(gen.git('show', commit+':'+str((A/name).relative_to(P))))
-        for name,commit in reference['model_evidence_commits'].items()}
-    scope = retained_model_evidence(full, observations['prefill-status-current.json'],
-                                   observations['prefill-mtp-current.json'])
+    scope = retained_model_scope(full, reference)
     guards.require(scope == reference['model_evidence_scope'] and
         gen.common.digest(full['compiler']['path']) == full['compiler']['sha256'], 'retained qualification/compiler changed')
     return dict(original_inputs_recovered=count, source_build_sha256=receipt['sha256'],

@@ -3208,6 +3208,11 @@ four official warmups. It prospectively requires actual answer/output bounds,
 MTP batched-ring work, GPU BF16/mode10 placement, dense/cache restoration,
 source/runtime/model binding, native closure and no fresh fault. One sample per
 case/arm is a pilot, not a speed/nonregression or strong/weak classification.
+The first preparation at`5e5bf9f7a` stopped before creating a run root or launching
+a native process: its new reader selected the outer historical MTP diagnostic
+instead of the closed nested comparison. The corrected reader uses the original
+comparison and adds an archive-backed regression check; no original evidence
+or admission criterion is changed.
 Generic native-end and draft-work readers now live in`generation_engine.py`.
 The closed packed model/clean launchers and their retired-run-only tests are
 removed; source and original reducer remain recoverable at`6213f0325d807b5eaf319bbf8096c9337f5402bd`.

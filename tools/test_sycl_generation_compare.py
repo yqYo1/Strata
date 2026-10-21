@@ -40,6 +40,15 @@ def fixture():
     return '\n'.join(lines)+'\n', events
 
 
+class RetainedEvidenceTests(unittest.TestCase):
+    def test_actual_archived_comparison_is_selected_instead_of_outer_pilot(self):
+        reference = c.gen.committed(c.bank.q.BUILD)['retained_validation_reference']
+        name = 'prefill-status-current.json'
+        observed = json.loads(c.gen.git('show', reference['model_evidence_commits'][name]+':'+str((c.A/name).relative_to(c.P))))
+        build = dict(source_commit=reference['source_commit'], binary=observed['binary'])
+        self.assertEqual(c.retained_model_scope(build, reference), reference['model_evidence_scope'])
+
+
 class RouteTests(unittest.TestCase):
     def test_binds_both_long_requests_and_restores_decode_state(self):
         text,events=fixture()
