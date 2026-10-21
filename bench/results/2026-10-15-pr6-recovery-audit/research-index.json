@@ -404,40 +404,30 @@
             "T=117488": 941.9372003328
           },
           "limit": "Partial known-work subtotal; not total prompt arithmetic."
+        },
+        "current117k_routed_gemm_geometry": {
+          "histogram_sha256": "a6056d879716e678b1efb5554e52ba55f1fb874ed4e72fce3d92749aad5ee1dd",
+          "scope": "Closed diagnostic first117489-token request; source e062,FP16 operands/weights,FP32 accumulation,BF16 output. Not an observed histogram for every clean request.",
+          "jobs": 37353,
+          "logical_rows": 56394240,
+          "source_tile_padded_rows": 57430944,
+          "logical_GEMM_FLOP": 554377936896000,
+          "source_tile_padded_GEMM_FLOP": 564569151897600,
+          "geometry_padding_percent": 1.8383154024240733,
+          "compact_M_lt128": {
+            "jobs": 20707,
+            "rows": 441955
+          },
+          "large_fused_M_ge2334": {
+            "jobs": 7485,
+            "rows": 49290450
+          },
+          "formula": "Sum frequency*ceil(M/tileM)*tileM;tileM16 forM<128,otherwise128. Both N/K fill tiles. GU+Down FLOP/row=2*(1280*2560+2560*640). Fused job/row counts match the admitted117K work footer.",
+          "limits": "Source/geometry counts only; exclude epilogues,dequant,normalization,nonlinear and attention work. Not observed instructions,physical traffic,saturation,or a measured ceiling."
         }
       },
-      "next_scopes": [
-        {
-          "id": "current-native-117k-moe-job-tile-work-extension",
-          "classification": "decision_support",
-          "schedulable_now": false,
-          "question": "Extend the existing current-operation ceiling work with exact per-job useful and source-tile-padded GU/Down arithmetic for the conserved 117489-token job-M histogram. Reconcile the actual selected backend, M/N/K tile and fusion path from current source/config; distinguish useful FLOPs from source-implied padding. No timing, physical bytes, instructions, saturation, roofline rate, or adoption claim.",
-          "report_budget_bytes": 12288,
-          "prerequisites": [
-            {
-              "met": true,
-              "evidence": "Main-owned histogram /home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/packed-bank117K-moe-shape-input.json; 40839 bytes, SHA256 a6056d879716e678b1efb5554e52ba55f1fb874ed4e72fce3d92749aad5ee1dd; native_origin=e0623d4f73e7909d68406ce3addca1fc0b3e348a; 4550 positive bins, min M=1, max M=8192, frequencies sum to 37353 jobs and M-weighted rows sum to 56394240."
-            },
-            {
-              "met": true,
-              "evidence": "Current source hash pins above include vLLM/own GEMM dispatch and MoE shape paths; current-operation ceiling and row-tail metadata were checked for non-duplication."
-            },
-            {
-              "met": false,
-              "evidence": "Per Main, the new six-process clean comparison is still being prepared and has no clean speed samples. Close/review that cohort and pin its effective backend/tile/fusion configuration and executable/source identity first; re-use the histogram only if its route and job scope match."
-            }
-          ],
-          "consumer": "Main's upcoming current-native MoE GEMM arithmetic-work fixture, only if the closed clean cohort leaves this source-tile question decision-relevant.",
-          "review_point": "Reassess at clean-cohort closure before dispatch/build. If the selected route or measured limiter makes padding irrelevant, leave unscheduled and remove this proposal from the active index.",
-          "source_and_data_pins": {
-            "native_source": "e0623d4f73e7909d68406ce3addca1fc0b3e348a; source tree digest 13169ac8b4e31b718396aba4bfb268ea95258e90a1f91537bf8ff8fc9c77293b",
-            "histogram_source_commit": "fdbcc5e6b5b169de2973534170f62e675e092d02",
-            "histogram_sha256": "a6056d879716e678b1efb5554e52ba55f1fb874ed4e72fce3d92749aad5ee1dd"
-          },
-          "scope_limits": "No new generic roofline, variable-GEMM, or row-tail survey. Use only Strata source and pinned data; no XeStrata source or derived implementation proposal."
-        }
-      ],
-      "retention": "Source-work reference with explicit corrected HC/GDN values and unresolved physical-work limits. Retrieve only relevant sections for the current matched-ceiling question. Reassess the conditional tile-work scope and histogram at clean-cohort closure; do not dispatch it early."
+      "retention": "Corrected source-work reference for current production-shaped GEMM service/ceiling work. The40839B histogram remains only for that named fixture; review at fixture-plan freeze or rejection. Source counts do not establish hardware rates.",
+      "tile_work_scope_resolution": "Main applied the already-reviewed source formula to the pinned current histogram after the six-process cohort closed. No new research session is needed just to calculate these counts; retire the conditional collection proposal."
     }
   },
   "decode_vram_rebuild_scope": {

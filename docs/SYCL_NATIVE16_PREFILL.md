@@ -3068,9 +3068,12 @@ rejection of an older source/binary at the same output path, incomplete owners,
 faults and insufficient input/output. All9836 original inputs and the recipe
 were recovered before copying the current engine/eight fixtures to external
 `known-good-3b4998f32610`; every artifact hash matches. This is the same retained
-generation, not a new native build or GPU validation. It is the fallback for
-the imminent packed-bank candidate. Clean117K speed, task quality and physical
-262144/session/RESTORE remain unqualified for3b.
+generation, not a new native build or GPU validation. It provided the fallback
+for the packed-bank candidate. After the clean cohort below, its remaining
+immediate consumer is a matched long-generation reference check with thinking
+and at least1K generated tokens before the next native build; retire the extra
+after selecting the validated generation. Clean117K speed,task quality and physical262144/session/RESTORE
+remain unqualified for3b.
 
 The next opt-in candidate,`STRATA_SYCL_PREFILL_EXPERT_BANK_PACKED=1`, uses a
 private per-layer view of the existing allocation. It does not change the
@@ -3190,9 +3193,18 @@ match across the cohort, all native exits are0 and no fresh fault is observed.
 The24-token outputs do not qualify sustained decode,task quality,weak-MTP/agent
 sessions,physical262144 or session/RESTORE. Model adoption remains unqualified;
 this result does not change the packed-bank opt-in default.
-This targets
-the observed expert-upload service, not a proven physical PCIe saturation;
-cross-window copy reduction needs the multi-window117K model test with Q8 MTP.
+This targets the observed expert-upload service, not proven physical PCIe
+saturation. Two-window117K work confirms fewer requested copies; actual physical
+traffic and critical-path copy service remain unknown. After recovering151
+controller and9836 native inputs, Main retires the six-process cohort and
+closed research transactions:425files/76769421B. All19 current/fallback native
+artifacts remain hash-matched. The compact result keeps all24 PP clocks and
+the same reducer decision; unused parser aliases,short decode rates and normal
+probe details remain recoverable from`da23ad440` rather than the active file.
+Main also applies the reviewed geometry formula to the retained117K histogram:
+554.378TFLOP useful GU/Down work versus564.569TFLOP with source tile padding
+(+1.8383%). This is not an instruction count or hardware ceiling; the exact
+histogram remains only for the named production-shaped GEMM fixture.
 After committing the component results, Main recovers22 original component
 inputs and the CPU compile recipe, then retires15 closed output/CPU-fixture
 files (433524B), including the successful full API trace. The compact result
