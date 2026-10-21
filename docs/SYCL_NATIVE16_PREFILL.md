@@ -166,6 +166,9 @@ then1002.370/1001.947/1002.434tok/s (median1002.370). This second pair's ratio
 is1.001788. Both complete pairs favor the candidate,but the final frozen pair
 and sustained-decode qualification remain pending;short24-token output cannot
 establish decode independence.
+The final retained process also passed:927.781tok/s first use and a
+1002.152tok/s subsequent median,with normal closure and no fresh fault.
+Only the final candidate process remains in this prefill cohort.
 
 The separate `canonical_decode.py` controller prepares the next six-process
 comparison only after the clean prefill gate passes. It uses the same retained
