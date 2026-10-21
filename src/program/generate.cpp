@@ -22,6 +22,7 @@
 #include "strata/core/conversation_memory.hpp"
 #include "strata/core/coupled_draft.hpp"
 #include "strata/core/expert_source.hpp"
+#include "strata/core/cpu_work_census.hpp"
 #include "strata/core/pinned.hpp"
 #include "strata/core/remote_experts.hpp"
 #include "strata/core/on_device.hpp"
@@ -5748,6 +5749,9 @@ int main(int argc, char** argv) {
         std::fflush(stdout);
         std::string line;
         int64_t rounds = 0;
+        const char* census_env = std::getenv("STRATA_CPU_WORK_CENSUS");
+        const bool cpu_census_enabled = census_env && std::strcmp(census_env, "1") == 0;
+        uint64_t census_request = 0;
         const int S = o.spec;
         const int S_mtp = o.mtp_max_t > 0 ? std::min(o.mtp_max_t, S) : S;   // the MTP's windows; suffixes go up to S
         if (S_mtp < S) mtp.set_max_drafts(S_mtp - 1);
@@ -6087,6 +6091,9 @@ int main(int argc, char** argv) {
             // host copies and slots are always current (every writer writes both), so they need nothing
             if (resume > 0 && reread_to <= 0) mtp.kv_restore(resume);
             tr("request", n, geni ? 1 : 0);
+            if (cpu_census_enabled && !strata::core::CpuWorkCensus::checked_add(census_request, 1)) {
+                std::printf("ERR CPU census request sequence overflow\n"); return 1;
+            }
             mtp.set_prompt_len(n);
             const int64_t read_from = reread_to > 0 ? 0 : resume;
             conversations.limit_reuse(read_from);
@@ -6530,6 +6537,29 @@ int main(int argc, char** argv) {
                                drive.d.pcie_experts};
             };
             const DecSnap ds0 = dec_snap();
+            // Only the post-refill decode phase owns these counters. The source
+            // callback is synchronous here; no pointer is captured by a graph,
+            // attached to a worker, or inferred from a thread-local request ID.
+            std::unique_ptr<strata::core::CpuWorkCensus> cpu_census;
+            if (cpu_census_enabled) {
+                const auto& layout = strata::kernels::cpu::expert_layout();
+                cpu_census = std::make_unique<strata::core::CpuWorkCensus>(census_request,
+                    (int)g.n_layers, (int)g.n_expert, drive.d.host_res,
+                    layout.native && layout.fmt.size() == (size_t)g.n_layers ? layout.fmt.data() : nullptr);
+                if (multi_gpu || !o.layer_split.empty() || peer.valid() || drive.d.remote_count ||
+                    !drive.d.usage.empty() || !drive.d.split_rows)
+                    cpu_census->invalidate("unsupported_route");
+                cpu_census->write_begin(stderr, n);
+                drive.d.cpu_work_census = cpu_census.get();
+            }
+            struct CpuCensusDetach {
+                strata::core::ExpertDispatch& dispatch;
+                strata::core::CpuWorkCensus* census;
+                ~CpuCensusDetach() {
+                    dispatch.cpu_work_census = nullptr;
+                    if (census && !census->closed()) census->abort(stderr);
+                }
+            } cpu_census_detach{drive.d, cpu_census.get()};
             double dt_run = 0, dt_commit = 0, dt_draft = 0;
             int64_t dec_windows = 0, dec_T = 0;
             const int64_t decode_hits0 = drive.d.cache_hits;
@@ -6581,12 +6611,14 @@ int main(int argc, char** argv) {
                                cudaMemcpyHostToDevice);
                 }
                 tr("window", p, T);
+                if (cpu_census) cpu_census->begin_window((uint64_t)dec_windows + 1, p, T);
                 const Clock::time_point tw0 = Clock::now();
                 if (!ver.run(T, window.data(), p, win_pool_fn, win_pool_user, outv.data(), err) || drive.d.failed) {
                     std::printf("ERR %s\n", drive.d.failed && drive.d.fail ? drive.d.fail : err.c_str());
                     return 1;
                 }
                 int a = 0;
+                if (cpu_census) cpu_census->end_window();
                 while (a < T - 1 && window[(size_t) a + 1] == outv[(size_t) a]) ++a;
                 if (from_sfx) { ++sfx_windows; sfx_drafts += T - 1; sfx_ok += a; }
                 const Clock::time_point tw1 = Clock::now();
@@ -6649,6 +6681,12 @@ int main(int argc, char** argv) {
             if (!ver.wait_commit(err)) {
                 std::printf("ERR %s\n", err.c_str());
                 return 1;
+            }
+            if (cpu_census) {
+                const DecSnap d1 = dec_snap();
+                cpu_census->finish(stderr, dec_windows, dec_T, d1.misses - ds0.misses,
+                    d1.entries - ds0.entries, d1.hits - ds0.hits, d1.pcie - ds0.pcie);
+                drive.d.cpu_work_census = nullptr;
             }
             if (dec_timing && dec_windows > 0) {
                 const DecSnap d1 = dec_snap();

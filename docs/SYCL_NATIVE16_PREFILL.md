@@ -3309,6 +3309,30 @@ closed resource capture/JIT and consumed review transaction:73files/15463239B.
 The compact result preserves both the original controller failure and the
 successful corrected post-closure analysis. The current engine/nine fixtures
 still match. The next source work is diagnostic counters, not a speedup claim.
+The selected implementation is now `CpuWorkCensus`, attached explicitly to the
+serialized request after prompt refill. `STRATA_CPU_WORK_CENSUS=1` is fixed
+before exec. It counts actual final `ExpertJobMulti.nt` after pool completion
+and before the job map is reset, with no new GPU readback, event, wait or math.
+The bounded snapshot records exact resident membership and runtime format;
+every callback checks unchanged slot mappings. Request/window/layer ordering,
+job-map/NT counts and existing decode footer deltas must conserve. Missing
+callbacks, unknown kinds, changed residency/format, wrong-thread use and uint64
+overflow invalidate the diagnostic. Zero-CPU windows still require callbacks.
+This first diagnostic supports the serialized native single-GPU static-cache
+row-split route; adaptation, peer/remote and split-device routes are rejected.
+It does not infer a request from TLS or reconstruct unframed routing records.
+
+Before rebuilding, the original current engine and nine fixtures are retained
+at the committed `retained_validation_reference` in the existing build result.
+All9836 original source inputs/recipe and ten copied artifacts were verified;
+seven host retention checks pass at`8a3ad20e3`. The immediate consumer is this
+census build and its component/model qualification, not indefinite extra storage.
+Build with `python3 -B tools/sycl/build_engine.py rebuild-cpu-census`; its bounded
+CPU-only contract runs before engine compilation. Then use the new finite
+`check_verifier_retirement.py --cpu-census` component gate (the existing suite,
+15 census host cases and14 actual dispatcher cases), the dedicated packed-bank
+gate and a small traced model check before any32K thinking-generation census.
+The counters and native route are pending validation; no new speed claim follows.
 The14 old worktree proposal/metadata paths are also reviewed before rebuilding.
 Available unique partial failed-GDN source/recipes are archived at`228b85f13`
 and removed from the active tree; missing original headers/fixture/v2 source

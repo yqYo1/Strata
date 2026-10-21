@@ -46,10 +46,12 @@ def digest(path):
 
 
 def main():
+    census = sys.argv[1:] == ['--cpu-census']
     status = sys.argv[1:] == ['--status-profile']
-    profile = status or sys.argv[1:] == ['--query-profile']
-    guards.require(len(sys.argv) == 1 or profile, 'use no options, --query-profile or --status-profile; never retry a closed root')
+    profile = status or census or sys.argv[1:] == ['--query-profile']
+    guards.require(len(sys.argv) == 1 or profile, 'use no options, --query-profile, --cpu-census or --status-profile; never retry a closed root')
     root = B / ('prefill-status-profile-component-v2' if status else 'decode-query-profile-component-v9') if profile else ROOT
+    if census: root = B / 'decode-cpu-census-component-v1'
     result = A / 'decode-query-profile-component-current.json' if profile else RESULT
     with (B / 'owned-v0141-measurement.lock').open('a+') as lock:
         fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
@@ -138,6 +140,8 @@ def main():
                 fixtures.append(('prefill-scratch', 'prefill_scratch_host_test', []))
                 fixtures.extend(('prefill-device-'+mode, 'sycl_prefill_scratch_test', ['--case',mode])
                     for mode in ('smoke','full','retirement','loan',*LOAN_FAILURES))
+            if census:
+                fixtures.append(('cpu-work-census', 'cpu_work_census_host_test', []))
             for label, name, args in fixtures:
                 fixture = build['fixtures'][name]
                 command = [fixture['path'], *args]
@@ -165,6 +169,16 @@ def main():
                         not re.search('UR_RESULT_ERROR_|ZE_RESULT_ERROR_|terminate called|cleanup failed', stderr),
                         'Arena provider/planner contracts failed: ' + (stdout + stderr)[-8192:])
                     cases = [expected]
+                    if census:
+                        guards.require('cpu_work_census_dispatch cases=14 status=PASS' in stdout,
+                            'actual dispatcher census contract missing')
+                        record['cpu_work_census_dispatch_contract_passed'] = True
+                elif name == 'cpu_work_census_host_test':
+                    cases = [x for x in stdout.splitlines() if x.startswith('cpu_work_census case=')]
+                    guards.require(len(cases) == 15 and all(x.endswith(' status=PASS') for x in cases) and
+                        'cpu_work_census_fixture cases=15 status=PASS' in stdout,
+                        'CPU work census ownership/framing/conservation contract failed')
+                    record['cpu_work_census_contract_passed'] = True
                 elif name == 'prefill_scratch_host_test':
                     cases = [x for x in stdout.splitlines() if x.startswith('prefill_scratch ')]
                     expected = [f'prefill_scratch case={name} status=PASS' for name in

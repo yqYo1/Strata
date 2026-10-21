@@ -3,7 +3,8 @@
 
 Uses the known-good engine's committed configure recipe, changing only the
 output directory. The explicit copy-safety build includes its bounded fixtures.
-No engine/GPU execution. An explicit rebuild reuses a closed comparison's cache
+No engine/GPU execution. The CPU-census mode runs its bounded host-only contract
+before compiling the engine. An explicit rebuild reuses a closed comparison's cache
 only after verifying its original inputs from Git.
 """
 import fcntl
@@ -288,15 +289,16 @@ def retain_current():
 
 def main():
     guards.require(len(sys.argv) == 1 or sys.argv[1:] in
-                   (['retain-current'], ['build-copy-safety'], ['build-status-profile'], ['rebuild-copy-safety'], ['rebuild-arena-copy'], ['rebuild-event-gate'], ['rebuild'], ['rebuild-attention'], ['rebuild-gemm'], ['rebuild-gdn'], ['rebuild-down'], ['rebuild-ordered'], ['rebuild-submission'], ['rebuild-gu'], ['rebuild-mixed'], ['rebuild-expert-bank'], ['rebuild-packed-bank']),
+                   (['retain-current'], ['build-copy-safety'], ['build-status-profile'], ['rebuild-copy-safety'], ['rebuild-arena-copy'], ['rebuild-event-gate'], ['rebuild'], ['rebuild-attention'], ['rebuild-gemm'], ['rebuild-gdn'], ['rebuild-down'], ['rebuild-ordered'], ['rebuild-submission'], ['rebuild-gu'], ['rebuild-mixed'], ['rebuild-expert-bank'], ['rebuild-packed-bank'], ['rebuild-cpu-census']),
                    'use build_engine.py retain-current or a named rebuild mode')
     rebuild = len(sys.argv) == 2 and sys.argv[1] not in ('build-copy-safety', 'build-status-profile')
     attention = sys.argv[1:] == ['rebuild-attention']
     targets = ['strata']
     event_gate=sys.argv[1:]==['rebuild-event-gate']
-    if sys.argv[1:] in (['build-copy-safety'], ['build-status-profile'], ['rebuild-copy-safety'], ['rebuild-arena-copy'], ['rebuild-event-gate'], ['rebuild-packed-bank']):
+    census = sys.argv[1:] == ['rebuild-cpu-census']
+    if census or sys.argv[1:] in (['build-copy-safety'], ['build-status-profile'], ['rebuild-copy-safety'], ['rebuild-arena-copy'], ['rebuild-event-gate'], ['rebuild-packed-bank']):
         targets += ['sycl_verifier_retirement_test', 'sycl_submission_test']
-    if sys.argv[1:] in (['build-status-profile'], ['rebuild-arena-copy'],['rebuild-event-gate'], ['rebuild-packed-bank']):
+    if census or sys.argv[1:] in (['build-status-profile'], ['rebuild-arena-copy'],['rebuild-event-gate'], ['rebuild-packed-bank']):
         targets += ['file_expert_source_test', 'sycl_mmvq_test', 'residency_publication_host_test', 'cache_tail_host_test', 'prefill_scratch_host_test', 'sycl_prefill_scratch_test']
     if event_gate:
         targets += ['sycl_host_event_gate_test']
@@ -324,8 +326,10 @@ def main():
         targets += ['sycl_moe_accum_test', 'sycl_moe_gu_swiglu_bench', 'sycl_moe_down_scatter_bench']
     if sys.argv[1:] == ['rebuild-expert-bank']:
         targets += ['sycl_expert_bank_test', 'file_expert_source_test']
-    if sys.argv[1:] == ['rebuild-packed-bank']:
+    if census or sys.argv[1:] == ['rebuild-packed-bank']:
         targets += ['sycl_expert_bank_test']
+    if census:
+        targets += ['cpu_work_census_host_test']
     with (B / 'owned-v0141-measurement.lock').open('a+') as lock:
         fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
         guards.no_model_owners([])
@@ -451,13 +455,29 @@ def main():
         owner = supervision.Owner(ROOT / ('owned-' + project['revision'][:12]), persist)
         persist()
         try:
-            for label, command in [('configure', argv), ('compile-link',
-                    ['/usr/bin/cmake', '--build', str(ROOT / 'build'), '--target', *targets, '-j', '4'])]:
-                entry, out, err = owner.run(label, command, env, P, wall=1800, cpu=7200,
+            commands = [('configure', argv)]
+            if census:
+                commands += [('compile-host-contract', ['/usr/bin/cmake', '--build', str(ROOT/'build'),
+                    '--target', 'cpu_work_census_host_test', '-j', '4']),
+                    ('host-contract', [str(ROOT/'build/cpu_work_census_host_test')])]
+            commands.append(('compile-link', ['/usr/bin/cmake', '--build', str(ROOT / 'build'),
+                '--target', *targets, '-j', '4']))
+            for label, command in commands:
+                host_contract = label == 'host-contract'
+                entry, out, err = owner.run(label, command, env, P,
+                    wall=30 if host_contract else 1800, cpu=60 if host_contract else 7200,
                     rss_cap=12 << 30, file_cap=256 << 20, text_cap=64 << 20, total_cap=4 << 30)
                 guards.require(supervision.closed(entry) and entry.get('exit_code') == 0,
                                label + ' failed: ' + (err.read_text(errors='replace') +
                                                       out.read_text(errors='replace'))[-8192:])
+                if host_contract:
+                    lines = out.read_text().splitlines()
+                    guards.require(len(lines) == 16 and
+                        all(x.startswith('cpu_work_census case=') and x.endswith(' status=PASS') for x in lines[:-1]) and
+                        lines[-1] == 'cpu_work_census_fixture cases=15 status=PASS', 'incomplete CPU census host contract')
+                    record['cpu_census_host_contract'] = dict(cases=15, passed=True,
+                        exit_code=0, ownership_closed=True, fixture_sha256=digest(command[0]),
+                        stdout_sha256=digest(out), stderr_sha256=digest(err), GPU_executed=False)
             # Detect input changes made while compilation was in progress.
             for source in [project, *dependencies]:
                 for name, expected in source['source_sha256'].items():

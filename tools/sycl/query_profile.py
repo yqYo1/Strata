@@ -93,7 +93,8 @@ def current_build():
     guards.require(component['passed'] and component['complete'] and component['ownership_closed'] and
         not component['active'] and not component['fresh_faults'] and component['binary']==full['binary'] and
         component['fixtures']==full['fixtures'] and component['source_commit']==full['source_commit'] and
-        len(component['checks'])==17 and 'cases=17 native_variable_stride=PASS' in component['checks'][0]['cases'][0]
+        len(component['checks'])==(18 if 'cpu_work_census_host_test' in full['fixtures'] else 17) and
+        'cases=17 native_variable_stride=PASS' in component['checks'][0]['cases'][0]
         and len(component['checks'][1]['cases'])==10 and len(component['checks'][2]['cases'])==8
         and len(component['checks'][3]['cases'])==16 and len(component['checks'][4]['cases'])==1
         and len(component['checks'][5]['cases'])==9 and component.get('residency_publication_contract_passed') is True
@@ -107,11 +108,16 @@ def current_build():
         and component.get('cache_loan_fail_stop_cases')==list(LOAN_FAILURES)
         and component.get('cache_scratch_loan_fail_stop_contract_passed') is True
         and all(len(c['cases'])==1 and c.get('exit_code')==c.get('expected_exit')==1
-                for c in component['checks'][12:])
+                for c in component['checks'][12:17])
         and component.get('grouped_copy_projection_contract_passed') is True
         and component.get('query_profile_contract_passed') is True
         and component.get('mode')=='normal-route-query-profile-components',
         'matching passed normal75+scratch39+device17+loan20+fail-stop5 required before model preparation')
+    if 'cpu_work_census_host_test' in full['fixtures']:
+        guards.require(component.get('cpu_work_census_contract_passed') is True and
+            component.get('cpu_work_census_dispatch_contract_passed') is True and
+            len(component['checks'][17]['cases']) == 15 and component['checks'][17]['exit_code'] == 0,
+            'same-build CPU census ownership/framing and actual dispatcher contracts required')
     count = 0
     for source in [full['project'], *full['dependencies']]:
         recovered = {n:hashlib.sha256(data).hexdigest() for n,data in
