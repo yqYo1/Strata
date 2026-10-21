@@ -2794,5 +2794,50 @@
       "current_and_retained_artifacts_unchanged": true,
       "kept": "Empty single-use roots; compact individual speed/phase samples and original source/configuration/fault results in Git. Current790 engine+14fixtures and6e40 baseline+12fixtures remain for the imminent copy-shape/candidate comparison; separate legacy source/recipe holds unchanged."
     }
+  },
+  "large_copy_parser_host_attempts": [
+    {
+      "source_commit": "8c16e31f3f8429b387528ed2f666a89485540630",
+      "command": [
+        "/usr/bin/python3",
+        "-B",
+        "tests/core/test_large_copy.py"
+      ],
+      "tests": 4,
+      "passed": false,
+      "ownership_closed": false,
+      "controller_sha256": "11180e5c978b77deef329bb09133d124e3ec3fba245b2f27db0b096292123b51",
+      "test_sha256": "2f1c4f73e07c399fa983a7e3c84180a8041a38cf6291bf8421d01b81923dadb6",
+      "environment_sha256": "ee5f544f30e207884125b0e271bb1af35e58f69d2c2bff754b39c5d13323a162",
+      "budgets": {
+        "wall_s": 30,
+        "cpu_s": 30,
+        "rss_bytes": 1073741824,
+        "text_bytes": 1048576,
+        "total_bytes": 4194304
+      },
+      "GPU_executed": false,
+      "reason": "Host tests reported four passes, but owner artifact accounting used the whole state directory because output was root instead of root/owned. Artifact cap invalidated the check. Exact child reaped and session empty; no GPU executed.",
+      "process_retired": true
+    }
+  ],
+  "large_copy_parser_host_plan": {
+    "root": "large-copy-host-v2",
+    "owner_output": "root/owned",
+    "command": [
+      "/usr/bin/python3",
+      "-B",
+      "tests/core/test_large_copy.py"
+    ],
+    "budgets": {
+      "wall_s": 30,
+      "cpu_s": 30,
+      "rss_bytes": 1073741824,
+      "text_bytes": 1048576,
+      "file_bytes": 1048576,
+      "total_bytes": 4194304
+    },
+    "environment": "Explicit minimal PATH,LANG and PYTHONDONTWRITEBYTECODE; no inherited application credentials.",
+    "acceptance": "Four tests pass, normal exit, complete observation, child reaped and session empty. No retry in the same root. Previous budget-invalid result remains failed."
   }
 }
