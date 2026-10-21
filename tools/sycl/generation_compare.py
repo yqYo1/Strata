@@ -24,7 +24,8 @@ import cpu_capacity as assets
 import packed_bank as bank
 import measurement_guards as guards
 import measurement_owner as supervision
-from build_engine import blobs, retained_model_evidence
+from build_engine import (blobs, retained_model_evidence, census_model_evidence,
+                          packed_model_evidence, archived_model_observation)
 
 P, B, A = gen.P, gen.B, gen.A
 ROOT = B/'generation-reference-v1'
@@ -42,8 +43,25 @@ def original(reference):
 
 
 def retained_model_scope(full, reference):
-    observations = {name:json.loads(gen.git('show', commit+':'+str((A/name).relative_to(P))))
+    raw = {name:gen.git('show', commit+':'+str((A/name).relative_to(P)))
         for name,commit in reference['model_evidence_commits'].items()}
+    observations = {name:json.loads(data) for name,data in raw.items()}
+    kind = reference.get('model_evidence_kind')
+    if kind == 'census':
+        selected = reference.get('model_evidence_reference')
+        name = 'cpu-work-census-current.json'
+        if selected is not None:
+            original = archived_model_observation(selected)
+            name = Path(selected['path']).name
+            guards.require(reference['model_evidence_commits'].get(name) == selected['commit'] and
+                observations.get(name) == original, 'retained selected model receipt differs')
+        component = 'decode-query-profile-component-current.json'
+        return census_model_evidence(full, observations[component], observations[name],
+            reference['source_build_record']['sha256'], hashlib.sha256(raw[component]).hexdigest())
+    if kind == 'packed':
+        return packed_model_evidence(full, observations['decode-query-profile-component-current.json'],
+            observations['prefill-packed-bank-speed-current.json'], observations['generation-reference-current.json'])
+    guards.require(kind is None, 'unknown retained model evidence kind')
     return retained_model_evidence(full, observations['prefill-status-current.json'],
                                    observations['prefill-mtp-current.json']['comparison'])
 

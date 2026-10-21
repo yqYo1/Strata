@@ -254,4 +254,65 @@ class CensusRetentionTests(unittest.TestCase):
                 with self.assertRaises((RuntimeError,KeyError)):self.evidence(census=c)
 
 
+class ArchivedCensusRetentionTests(unittest.TestCase):
+    """The current6c build cannot borrow the older census at a reused path."""
+    revision = 'bedfdf312fe3cf28842c78263f1e5b69cdf5ec5c'
+    prefix = 'bench/results/2026-10-15-pr6-recovery-audit/'
+
+    def setUp(self):
+        root = Path(__file__).resolve().parents[2]
+        self.raw = {name: subprocess.check_output(['git', '-C', str(root), 'show',
+            self.revision + ':' + self.prefix + name]) for name in
+            ('native-gdn-engine-build.json', 'decode-query-profile-component-current.json',
+             'iq2-pair-model-current.json', 'cpu-work-census-current.json')}
+        self.build = json.loads(self.raw['native-gdn-engine-build.json'])
+        self.pilot = json.loads(self.raw['iq2-pair-model-current.json'])
+        self.selected = dict(commit=self.revision, path=self.prefix + 'iq2-pair-model-current.json',
+            sha256=hashlib.sha256(self.raw['iq2-pair-model-current.json']).hexdigest())
+        self.reference = dict(model_evidence_kind='census', model_evidence_reference=self.selected,
+            model_evidence_commits={name:self.revision for name in
+                ('decode-query-profile-component-current.json', 'iq2-pair-model-current.json')},
+            source_build_record=dict(sha256=self.pilot['qualification']['build_receipt_sha256']))
+
+    def test_exact_archive_selects_current_build_without_promoting_speed(self):
+        import generation_compare as comparison
+        self.assertEqual(b.archived_model_observation(self.selected), self.pilot)
+        scope = comparison.retained_model_scope(self.build, self.reference)
+        self.assertEqual(self.build['source_commit'], '6c7f7f36d4dfa7d773af1d4da7a4d92676270632')
+        self.assertEqual(scope['original_inputs_recovered'], 9845)
+        self.assertEqual(scope['current_long_generation_requests'], 2)
+        self.assertFalse(scope['clean117K_speed_qualified'])
+        self.assertFalse(scope['model_adoption_qualified'])
+
+    def test_wrong_or_missing_archive_never_falls_back_to_current_filename(self):
+        for variant in ('hash', 'mutable_ref', 'outside_results', 'extra_field', 'missing'):
+            with self.subTest(variant=variant):
+                selected = copy.deepcopy(self.selected)
+                if variant == 'hash': selected['sha256'] = '0' * 64
+                if variant == 'mutable_ref': selected['commit'] = 'HEAD'
+                if variant == 'outside_results': selected['path'] = 'other/receipt.json'
+                if variant == 'extra_field': selected['fallback'] = 'cpu-work-census-current.json'
+                if variant == 'missing': selected.pop('sha256')
+                with self.assertRaises(RuntimeError): b.archived_model_observation(selected)
+
+    def test_reader_rejects_other_build_even_with_a_valid_original_hash(self):
+        import generation_compare as comparison
+        selected = dict(commit=self.revision, path=self.prefix + 'cpu-work-census-current.json',
+            sha256=hashlib.sha256(self.raw['cpu-work-census-current.json']).hexdigest())
+        reference = copy.deepcopy(self.reference)
+        reference['model_evidence_reference'] = selected
+        reference['model_evidence_commits'] = {name:self.revision for name in
+            ('decode-query-profile-component-current.json', 'cpu-work-census-current.json')}
+        with self.assertRaises(RuntimeError): comparison.retained_model_scope(self.build, reference)
+
+    def test_reader_rejects_unknown_kind_or_changed_source_receipt(self):
+        import generation_compare as comparison
+        for variant in ('kind', 'build_hash'):
+            with self.subTest(variant=variant):
+                reference = copy.deepcopy(self.reference)
+                if variant == 'kind': reference['model_evidence_kind'] = 'unknown'
+                if variant == 'build_hash': reference['source_build_record']['sha256'] = '0' * 64
+                with self.assertRaises(RuntimeError): comparison.retained_model_scope(self.build, reference)
+
+
 if __name__=='__main__':unittest.main()
