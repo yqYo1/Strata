@@ -281,6 +281,61 @@ def census_model_evidence(build, component, census, build_record_sha256, compone
         hardware_saturation_qualified=False,model_adoption_qualified=False)
 
 
+def recovery_model_evidence(build, component, recovery, build_sha256, component_sha256):
+    """Retain exact phase-scoped117K evidence, without inventing long decode."""
+    from query_profile import component_evidence
+    groups = component_evidence(build, component)
+    guards.require(component.get('boot_unchanged') is True and
+        all(r.get('passed') is True and r.get('exit_code') == r.get('expected_exit')
+            for r in component['checks']), 'closed same-build fixture outcomes required')
+    phases = build['cpu_phase_host_contract']
+    guards.require(len(phases) == 2 and [r['arm'] for r in phases] == [0,1] and
+        all(r['passed'] and r['ownership_closed'] and r['cases'] == 12 and
+            r['fixture_sha256'] == build['fixtures']['iq2_phase_host_test']['sha256'] for r in phases),
+        'same-build24 phase cases required')
+    proof = recovery['qualification']
+    guards.require(recovery['stage'] == 'closed' and recovery['binary'] == build['binary'] and
+        recovery['plan']['native_source'] == build['source_commit'] and
+        proof['build_sha256'] == build_sha256 and proof['component_sha256'] == component_sha256 and
+        type(proof['original_inputs_recovered']) is int and proof['original_inputs_recovered'] > 0 and
+        len(recovery['models']) == 15, 'closed same-build recovery provenance required')
+    rows = recovery['processes']; bank = recovery['bank']
+    guards.require([r['mode'] for r in rows] == ['checked','clean-0','clean-1','clean-2'] and
+        bank['passed'] and bank['complete'] and bank['ownership_closed'] and not bank['active'] and
+        bank['boot_unchanged'] and bank['fault_probe_successful'] and bank['fresh_faults'] == [] and
+        [(r['mode'],r['cases'],r['passed']) for r in bank['checks']] ==
+            [('packed-smoke',2,True),('packed-validate',3,True)], 'closed packed/recovery cohort required')
+    for i,row in enumerate(rows):
+        samples = row['requests']; route = row['route']
+        guards.require(row['passed'] and row['complete'] and row['ownership_closed'] and not row['active'] and
+            row['native_exit_code'] == 0 and row['boot_unchanged'] and row['fault_probe_successful'] and
+            row['fresh_faults'] == [] and len(samples) == (1 if i == 0 else 4) and
+            route['expert_cache_slots' if i else 'slots'] == 1256 and
+            row['journal']['successful_warmups'] == 1 and
+            row['journal']['successful_long_requests'] == len(samples) and
+            row['journal']['request_sha256'][1:] == [r['request_sha256'] for r in samples],
+            'same-placement recovery execution/owner/fault/request evidence required')
+        for sample in samples:
+            guards.require(sample['ok'] and sample['eligible'] and sample['stream_complete'] and
+                sample['actual_read_tokens'] == sample['actual_prompt_tokens'] == 117489 and
+                sample['actual_reused_tokens'] == 0 and sample['thinking_requested'] and
+                sample['reasoning_observed'] and sample['generated_tokens'] == 24,
+                'fresh117K short-thinking request evidence required')
+        if i:
+            guards.require(route['actual_route_checked'] and route['residual_gpu_rows'] == 117488 and
+                route['mode'] == 10, 'actual recovery GPU route required')
+        else:
+            guards.require(route['exact_payload_and_map_cycles'] == route['completed_requests'] == 2 and
+                route['dense_layers'] == 48 and route['prefill_rows'] == 117488 and
+                route['checked_retirements'] == route['borrowed_ffn_entries'] == 96 and
+                route['execution_cache_parent_checked'], 'checked cache/dense restoration required')
+    return dict(component_groups=groups,phase_host_cases=24,prefill_requests=13,
+        clean_prefill_processes=3,prefill_read_tokens=[117489],generated_tokens_per_request=24,
+        original_inputs_recovered=proof['original_inputs_recovered'],
+        clean117K_speed_observed=True,sustained_decode_speed_qualified=False,
+        hardware_saturation_qualified=False,model_adoption_qualified=False)
+
+
 def archived_model_observation(reference):
     """Recover an explicitly selected original model receipt, without fallback."""
     guards.require(type(reference) is dict and set(reference) == {'commit', 'path', 'sha256'} and
@@ -308,6 +363,8 @@ def retain_current():
                    'current validated build identity/ownership differs')
     evidence, observations = {}, {}
     census_build = 'cpu_work_census_host_test' in old['fixtures']
+    recovery_build = compact.get('retention_model_kind') == 'prefill-recovery'
+    guards.require(compact.get('retention_model_kind') in (None,'prefill-recovery'), 'unknown retention model kind')
     model_reference = compact.get('retention_model_reference')
     model_name = None
     if model_reference is not None:
@@ -329,7 +386,13 @@ def retain_current():
                        'commit exact current model evidence: ' + name)
         observations[name] = value
         evidence[name] = git(P, 'log', '-1', '--format=%H', '--', str(path.relative_to(P))).decode().strip()
-    if census_build:
+    if recovery_build:
+        guards.require(model_reference is not None and model_name == 'prefill-recovery-current.json',
+            'explicit committed recovery model reference required')
+        scope = recovery_model_evidence(old, observations['decode-query-profile-component-current.json'],
+            observations[model_name], digest(full_path), digest(RESULT.with_name(names[0])))
+        qualification = 'Same-build18 fixture groups,24 CPU phase cases and checked plus three clean117K processes passed with24 generated tokens/request. This is retention/execution evidence,not sustained decode,task quality,agent sessions,physical262144/RESTORE or model adoption.'
+    elif census_build:
         scope = census_model_evidence(old, observations['decode-query-profile-component-current.json'],
             observations[model_name or 'cpu-work-census-current.json'], digest(full_path), digest(RESULT.with_name(names[0])))
         qualification = 'Same-build18 fixture groups and two33K thinking-generation census requests closed without fresh faults. This is execution/retention qualification,not clean117K or sustained decode speed,task quality,agent sessions,physical262144/RESTORE or model adoption.'
@@ -371,7 +434,7 @@ def retain_current():
         binary=copies.pop('strata'), fixtures=copies,
         source_build_record=dict(path=str(receipt), sha256=digest(receipt)), recipe_reference=recipe,
         original_source_blobs_recovered_and_verified=recovered, model_evidence_commits=evidence,
-        model_evidence_kind='census' if census_build else 'packed',
+        model_evidence_kind='prefill-recovery' if recovery_build else ('census' if census_build else 'packed'),
         model_evidence_scope=scope,
         qualification=qualification,
         consumer=compact.get('retention_consumer') or 'Fallback for the imminent IQ2 pair inference build and same-build component/model qualification; select the validated generation and retire the extra at comparison closure.')

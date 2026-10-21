@@ -315,4 +315,85 @@ class ArchivedCensusRetentionTests(unittest.TestCase):
                 with self.assertRaises(RuntimeError): comparison.retained_model_scope(self.build, reference)
 
 
+class RecoveryRetentionTests(unittest.TestCase):
+    revision = '64efe12f0'
+    prefix = 'bench/results/2026-10-15-pr6-recovery-audit/'
+
+    def setUp(self):
+        root = Path(__file__).resolve().parents[2]
+        self.raw = {name: subprocess.check_output(['git','-C',str(root),'show',
+            self.revision+':'+self.prefix+name]) for name in
+            ('native-gdn-engine-build.json','decode-query-profile-component-current.json',
+             'prefill-recovery-current.json')}
+        self.build = json.loads(self.raw['native-gdn-engine-build.json'])
+        self.component = json.loads(self.raw['decode-query-profile-component-current.json'])
+        self.recovery = json.loads(self.raw['prefill-recovery-current.json'])
+        self.hashes = [self.recovery['qualification']['build_sha256'],
+            hashlib.sha256(self.raw['decode-query-profile-component-current.json']).hexdigest()]
+
+    def evidence(self, build=None, component=None, recovery=None, hashes=None):
+        return b.recovery_model_evidence(build or self.build,component or self.component,
+            recovery or self.recovery,*(hashes or self.hashes))
+
+    def test_exact_closed_baseline_preserves_its_short_decode_limit(self):
+        result = self.evidence()
+        self.assertEqual(result['prefill_requests'],13)
+        self.assertEqual(result['phase_host_cases'],24)
+        self.assertEqual(result['original_inputs_recovered'],9853)
+        self.assertTrue(result['clean117K_speed_observed'])
+        for key in ('sustained_decode_speed_qualified','hardware_saturation_qualified','model_adoption_qualified'):
+            self.assertFalse(result[key])
+
+    def test_refuse_wrong_build_fixture_phase_or_receipt(self):
+        for variant in ('source','binary','fixture','phase','component','build_hash','component_hash'):
+            with self.subTest(variant=variant):
+                build,component = copy.deepcopy((self.build,self.component)); hashes=list(self.hashes)
+                if variant=='source':build['source_commit']='wrong'
+                if variant=='binary':build['binary']['sha256']='wrong'
+                if variant=='fixture':build['fixtures']['iq2_phase_host_test']['sha256']='wrong'
+                if variant=='phase':build['cpu_phase_host_contract'][0]['ownership_closed']=False
+                if variant=='component':component['checks'][0]['passed']=False
+                if variant=='build_hash':hashes[0]='wrong'
+                if variant=='component_hash':hashes[1]='wrong'
+                with self.assertRaises((KeyError,RuntimeError)):self.evidence(build,component,hashes=hashes)
+
+    def test_refuse_partial_faulted_reused_or_changed_decode_route(self):
+        for variant in ('missing','owner','fault','probe','boot','cache','input','reuse','thinking','journal','restore','bank'):
+            with self.subTest(variant=variant):
+                r=copy.deepcopy(self.recovery); row=r['processes'][-1]; sample=row['requests'][0]
+                if variant=='missing':r['processes'].pop()
+                if variant=='owner':row['ownership_closed']=False
+                if variant=='fault':row['fresh_faults']=['fault']
+                if variant=='probe':row['fault_probe_successful']=False
+                if variant=='boot':row['boot_unchanged']=False
+                if variant=='cache':row['route']['expert_cache_slots']=128
+                if variant=='input':sample['actual_read_tokens']-=1
+                if variant=='reuse':sample['actual_reused_tokens']=1
+                if variant=='thinking':sample['reasoning_observed']=False
+                if variant=='journal':row['journal']['request_sha256'][-1]='wrong'
+                if variant=='restore':r['processes'][0]['route']['exact_payload_and_map_cycles']=1
+                if variant=='bank':r['bank']['checks'][0]['cases']=0
+                with self.assertRaises((KeyError,RuntimeError)):self.evidence(recovery=r)
+
+    def test_archived_reader_requires_explicit_recovery_hash_and_identity(self):
+        import generation_compare as comparison
+        revision = subprocess.check_output(['git','rev-parse',self.revision],text=True).strip()
+        selected=dict(commit=revision,path=self.prefix+'prefill-recovery-current.json',
+            sha256=hashlib.sha256(self.raw['prefill-recovery-current.json']).hexdigest())
+        reference=dict(model_evidence_kind='prefill-recovery',model_evidence_reference=selected,
+            model_evidence_commits={name:revision for name in
+                ('decode-query-profile-component-current.json','prefill-recovery-current.json')},
+            source_build_record=dict(sha256=self.hashes[0]))
+        self.assertEqual(comparison.retained_model_scope(self.build,reference),self.evidence())
+        for variant in ('hash','missing','build_hash','identity'):
+            with self.subTest(variant=variant):
+                v=copy.deepcopy(reference)
+                if variant=='hash':v['model_evidence_reference']['sha256']='0'*64
+                if variant=='missing':v.pop('model_evidence_reference')
+                if variant=='build_hash':v['source_build_record']['sha256']='wrong'
+                if variant=='identity':v['model_evidence_commits']['prefill-recovery-current.json']='wrong'
+                with self.assertRaises((KeyError,RuntimeError,subprocess.CalledProcessError)):
+                    comparison.retained_model_scope(self.build,v)
+
+
 if __name__=='__main__':unittest.main()

@@ -25,7 +25,7 @@ import packed_bank as bank
 import measurement_guards as guards
 import measurement_owner as supervision
 from build_engine import (blobs, retained_model_evidence, census_model_evidence,
-                          packed_model_evidence, archived_model_observation)
+                          packed_model_evidence, recovery_model_evidence, archived_model_observation)
 
 P, B, A = gen.P, gen.B, gen.A
 ROOT = B/'generation-reference-v1'
@@ -47,6 +47,16 @@ def retained_model_scope(full, reference):
         for name,commit in reference['model_evidence_commits'].items()}
     observations = {name:json.loads(data) for name,data in raw.items()}
     kind = reference.get('model_evidence_kind')
+    if kind == 'prefill-recovery':
+        selected = reference.get('model_evidence_reference')
+        original = archived_model_observation(selected)
+        name = Path(selected['path']).name
+        component = 'decode-query-profile-component-current.json'
+        guards.require(name == 'prefill-recovery-current.json' and
+            reference['model_evidence_commits'].get(name) == selected['commit'] and
+            observations.get(name) == original, 'retained recovery receipt differs')
+        return recovery_model_evidence(full, observations[component], original,
+            reference['source_build_record']['sha256'], hashlib.sha256(raw[component]).hexdigest())
     if kind == 'census':
         selected = reference.get('model_evidence_reference')
         name = 'cpu-work-census-current.json'
