@@ -6293,6 +6293,41 @@
         "manifest_sha256": "ee09d7318e10cf3fc4e44bb65d0f43127a8fe436448677a4784558c53d629868",
         "retained": "Current report/review/source corrections and cache-profile binding; worker was fenced abandoned and its exact created terminal closed, not accepted settlement."
       }
+    },
+    "layer_local_compact_expert_bank_copy_contract": {
+      "classification": "decision_support",
+      "stage": "eligible",
+      "schedulable_now": true,
+      "question": "Can a private layer-local packed stride within the existing1022361600B expert bank, together with demand-preserving bulk/coalesced uploads, reduce transfer/submission work without extra VRAM, queue changes, loss of checked owner lifetime or numerical-route changes? Compare alternatives and identify necessary source/measurement gates, not implementation.",
+      "prerequisites_met": [
+        "Current native3b uses fixed maximum stride2662400B and384 slots; source confirms demand-ordered stage_expert_bank plus individual fill_slot copies on the same in-order queue.",
+        "Seven current layout format groups imply capacity469/512/512/512/438/512/384 for the same byte budget. These are arithmetic capacities, not admitted layouts or a predicted traffic gain.",
+        "Existing production39263 profile has20354 M2D operations,46236080900 requested bytes and7.578293s aggregate service; no physical-traffic or saturation claim. Compact evidence remains in cpu-profiler-current.json::unitrace_production_request.analysis.before_first_output."
+      ],
+      "source_commit": "3b4998f326101fa913788fd368e1674b111dea03",
+      "rules_commit": "f16dcfdf3",
+      "source_sha256": {
+        "src/prefill/layer_major.inc": "16303c6e0f5be1b5cbf40beeb4e3ac82de12caea397f25106cd5f66357484d2b",
+        "src/prefill/moe_window.inc": "080d28eeb5fedb539857fb7979d0e5afbf1f72b2688d8eebcbbc680078356cb9",
+        "include/strata/prefill/expert_bank_plan.hpp": "1c3b9157f64c4e1c3aede95017ba17ad3c10d433946b5efa25d0c073c5f8c3a9",
+        "include/strata/prefill/expert_bank_upload.hpp": "3b81da8f15a89306cff9a46982d31fc10ad120a592cf7662c9c2c8b3a2fc7bfe",
+        "src/core/expert_cache.cpp": "fb7418457aeb1ea6416918a14fa734a301e1fe0d39d8fe7cbcb5633040434a46",
+        "include/strata/core/expert_cache.hpp": "6154808582efe409325c87756fb21e47aaca3c946e74ee442266c8fefa6bdaae",
+        "src/core/expert_source.cpp": "87655233b30eb8de9227ce3e236735d332f701557af46e033a13f05c8f38b4ec"
+      },
+      "previous_scopes": [
+        "bounded_expert_window_staging_scope",
+        "implemented_expert_bank_scope",
+        "immutable_arena_layer_view_candidate_scope",
+        "host_layer_slab_prefetch_contract_scope",
+        "forced_compute_copy_overlap_collection_scope"
+      ],
+      "novelty": "Per-layer packed geometry in the existing private bank plus copy granularity/demand preservation; prior bank capacity, source-view and double-slab/overlap work used fixed global stride. No new general bandwidth survey.",
+      "report_path": ".cache/strata-research/20261020/layer-local-compact-expert-bank-contract.md",
+      "report_budget_bytes": 18432,
+      "consumer": "Main next prefill candidate selection after the frozen MTP cohort closes.",
+      "review_point": "At source-contract review before committing any candidate; retire full report after necessary decisions/corrections are recorded.",
+      "limits": "No changed source, allocation, benchmark plan or running process. Capacity arithmetic does not prove DMA reduction; avoid unconditional eager uploads of unused experts."
     }
   }
 }
