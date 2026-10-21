@@ -3140,6 +3140,21 @@ represent0.2383s of copy service, not a hard ceiling or measured critical-path
 gain. The work screen passes, but neither clean speed nor model adoption is
 qualified. Use a separate matched six-process clean comparison, retaining
 first-long separately from three subsequent requests per process.
+`tools/sycl/packed_bank_compare.py` prepares that independent comparison:
+off/on/on/off/off/on, four fresh117489-input requests per process, Q8 MTP and
+identical native binary/cache placement. The prospective faster screen requires
+all three subsequent-median pair ratios>1 and geomean>1.02; the slower screen
+requires all<1 and geomean<1/1.02. Otherwise it is inconclusive. Nonregression
+requires geomean>=0.98 and every pair>=0.95. The1000 milestone separately
+requires all three candidate process medians>=1000tok/s. Stop after any input,
+request,route,work,owner,fault or budget failure; never retry a root. Each pair
+must conserve input bodies and completed MoE work and reduce requested expert
+H2D bytes. Native startup keeps the qualified safety settings; parameter
+validation,readbacks,profilers and trace observers are absent only for timing.
+Full model digests bracket the cohort; inventory,inode,size,mtime and ctime are
+checked before/after each process. Commit generated configuration and the full
+frozen plan before running. These short outputs cannot qualify decode or model
+adoption; numerical/task and physical262144/session/RESTORE remain separate.
 This targets
 the observed expert-upload service, not a proven physical PCIe saturation;
 cross-window copy reduction needs the multi-window117K model test with Q8 MTP.
