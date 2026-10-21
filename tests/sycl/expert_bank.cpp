@@ -123,9 +123,131 @@ void run(int capacity, size_t stride, int experts, unsigned layers, bool unwind,
         << " status=" << observed << " immutable_slab=PASS guards=PASS private_map=PASS checked_drain=PASS\n";
 }
 
+// Exercise the production private view through checked transitions in ONE
+// allocation. The source stride and destination stride deliberately differ.
+void run_private(int backing_slots, uint64_t backing_stride, int experts,
+                 const std::vector<uint64_t>& strides, uint64_t source_stride, bool unwind) {
+    auto runtime = sb::runtime_for();
+    auto& q = runtime->compute();
+    const uint64_t slab_bytes = 512 * source_stride;
+    std::vector<uint32_t> host(size_t(slab_bytes/4)+2*G,Guard);
+    auto* slab = reinterpret_cast<uint8_t*>(host.data()+G);
+    strata::core::ExpertCache cache;
+    std::string error;
+    if (!cache.open_uninitialized(backing_slots,1,512,int64_t(backing_stride),error))
+        throw std::runtime_error(error);
+    sb::Allocation status_owner(runtime,4,sb::MemoryKind::Device);
+    auto* status = status_owner.as<uint32_t>();
+    uint32_t observed = ~uint32_t(0);
+    uint64_t uploads=0,hits=0,consumers=0,expected_uploads=0,expected_hits=0;
+    unsigned drains=0,cancellations=0;
+    for (size_t layer=0;layer<strides.size();++layer) {
+        // The previous iteration's lease drained before rebinding these views
+        // or changing host source bytes. No layer allocation/reallocation.
+        pd::PrivateExpertBank bank(cache,strides[layer]);
+        const auto geometry=bank.layout();
+        pd::ExpertBankSlots slots(geometry.slots,geometry.full_fit());
+        const auto blob_bytes=std::min(source_stride,geometry.stride)-4;
+        const auto words=size_t(blob_bytes/4);
+        const auto generation=unsigned(layer+1);
+        for (int e=0;e<512;++e)
+            for (size_t i=0;i<size_t(source_stride/4);++i)
+                host[G+size_t(e)*size_t(source_stride/4)+i]=value(e,i,generation);
+        bool unwound=false;
+        try {
+            pd::DraftUploadGuard lease([&] {runtime->wait();++drains;return true;},
+                [] {sb::cleanup_fail_stop("private expert-bank retirement");});
+            lease.arm();
+            q.memset(cache.device_slot(0),0xa5,size_t(cache.bytes()));
+            q.memset(status,0,4);
+            for (int round=0;round<2;++round) for (int e=0;e<experts;++e) {
+                const auto ticket=pd::stage_private_expert_bank(slots,bank,slab,slab_bytes,
+                    blob_bytes,e,&q,source_stride);
+                uploads+=ticket.upload;hits+=!ticket.upload;
+                need(cache.slot_of(0,e)<0,"private map leaked into general cache");
+                const auto* blob=reinterpret_cast<const uint32_t*>(bank.device_slot(ticket.slot));
+                for (int job=0;job<2;++job) {
+                    const size_t global=(words+255)/256*256;
+                    q.parallel_for(sycl::nd_range<1>(global,256),[=](sycl::nd_item<1> item) {
+                        const size_t i=item.get_global_linear_id();
+                        const bool bad=i<words && blob[i]!=value(e,i,generation);
+                        const bool any=sycl::any_of_group(item.get_group(),bad);
+                        if (item.get_local_linear_id()==0 && any)
+                            sycl::atomic_ref<uint32_t,sycl::memory_order::relaxed,
+                                sycl::memory_scope::device,sycl::access::address_space::global_space>(*status).fetch_or(1);
+                    });
+                    ++consumers;
+                }
+                if (unwind && e==4) {
+                    q.memcpy(&observed,status,4);
+                    throw Stop{};
+                }
+            }
+            const auto* base=reinterpret_cast<const uint32_t*>(cache.device_slot(0));
+            // Check every padding word, including the unused backing tail.
+            q.parallel_for(sycl::range<1>(size_t(geometry.backing_bytes/4)),[=](sycl::id<1> item) {
+                const uint64_t at=uint64_t(item[0])*4;
+                if ((at>=geometry.used_bytes || at%geometry.stride>=blob_bytes) &&
+                    base[item[0]]!=Guard)
+                    sycl::atomic_ref<uint32_t,sycl::memory_order::relaxed,
+                        sycl::memory_scope::device,sycl::access::address_space::global_space>(*status).fetch_or(2);
+            });
+            q.memcpy(&observed,status,4);
+            runtime->wait();++drains;lease.retire();
+        } catch (const Stop&) {unwound=true;++cancellations;}
+        need(unwound==unwind && observed==0,"private bank reader/guard/unwind failed");
+        for (size_t i=0;i<G;++i)
+            need(host[i]==Guard && host[host.size()-1-i]==Guard,"private source guard changed");
+        for (int e=0;e<512;++e)
+            for (size_t i=0;i<size_t(source_stride/4);++i)
+                need(host[G+size_t(e)*size_t(source_stride/4)+i]==value(e,i,generation),"private immutable source changed");
+        const auto permanent=uint64_t(std::min(experts,geometry.slots-(geometry.full_fit()?0:1)));
+        expected_uploads+=2*uint64_t(experts)-permanent;expected_hits+=permanent;
+    }
+    if (!unwind) need(uploads==expected_uploads && hits==expected_hits,"private upload/reuse totals");
+    need(drains==strides.size() && cancellations==(unwind?strides.size():0),"private checked retirement count");
+    unsigned rejects=0;
+    auto reject=[&](auto action) {
+        bool caught=false;
+        try {action();} catch (const std::invalid_argument&) {caught=true;}
+        need(caught,"private invalid admission accepted");++rejects;
+    };
+    pd::PrivateExpertBank bank(cache,strides[0]);
+    pd::ExpertBankSlots slots(bank.layout().slots,bank.layout().full_fit());
+    reject([&] {pd::stage_private_expert_bank(slots,bank,slab,slab_bytes-1,4,0,&q,source_stride);});
+    reject([&] {pd::stage_private_expert_bank(slots,bank,slab,slab_bytes,bank.layout().stride+1,0,&q,source_stride);});
+    reject([&] {pd::stage_private_expert_bank(slots,bank,slab,slab_bytes,4,512,&q,source_stride);});
+    reject([&] {pd::stage_private_expert_bank(slots,bank,nullptr,slab_bytes,4,0,&q,source_stride);});
+    reject([&] {pd::stage_private_expert_bank(slots,bank,slab,slab_bytes,4,0,nullptr,source_stride);});
+    pd::ExpertBankSlots wrong(bank.layout().slots==1?2:1);
+    reject([&] {pd::stage_private_expert_bank(wrong,bank,slab,slab_bytes,4,0,&q,source_stride);});
+    sycl::queue foreign{sycl::context{runtime->device()},runtime->device(),sycl::property::queue::in_order{}};
+    reject([&] {pd::stage_private_expert_bank(slots,bank,slab,slab_bytes,4,0,&foreign,source_stride);});
+    reject([&] {pd::stage_private_expert_bank(slots,bank,slab,slab_bytes,4,0,&q,source_stride-4);});
+    reject([&] {(void)bank.device_slot(bank.layout().slots);});
+    cache.enable_scratch_loan_tracking();
+    reject([&] {(void)bank.device_slot(0);});
+    reject([&] {pd::PrivateExpertBank invalid(cache,strides[0]);});
+    runtime->wait();
+    std::cout<<"expert_bank_private_case backing_slots="<<backing_slots<<" backing_stride="<<backing_stride
+        <<" source_stride="<<source_stride<<" experts="<<experts<<" layers="<<strides.size()
+        <<" uploads="<<uploads<<" hits="<<hits<<" consumers="<<consumers<<" unwind="<<cancellations
+        <<" admission_rejections="<<rejects<<" status="<<observed
+        <<" immutable_slab=PASS guards=PASS private_map=PASS checked_drain=PASS\n";
+}
+
 int main(int argc, char** argv) try {
-    need(argc == 2 && (std::string(argv[1]) == "--smoke" || std::string(argv[1]) == "--validate"),
-        "use --smoke|--validate");
+    need(argc == 2 && (std::string(argv[1]) == "--smoke" || std::string(argv[1]) == "--validate" ||
+        std::string(argv[1]) == "--packed-smoke" || std::string(argv[1]) == "--packed-validate"),
+        "use --smoke|--validate|--packed-smoke|--packed-validate");
+    if (std::string(argv[1]) == "--packed-smoke") {
+        run_private(4,512,10,{256,512,256},256,false);
+        run_private(4,512,10,{256,512},256,true);
+    } else if (std::string(argv[1]) == "--packed-validate") {
+        run_private(384,512,512,{256,512,768,256},256,false);
+        run_private(384,2662400,512,{1510400,2662400,2176000},2662400,false);
+        run_private(384,512,512,{256,512},256,true);
+    } else
     if (std::string(argv[1]) == "--smoke") {
         run(4, 256, 6, 2, false);
         run(1, 256, 6, 1, false);

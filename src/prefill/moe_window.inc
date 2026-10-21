@@ -194,9 +194,15 @@ bool Prefill::run_moe_accum_window(int64_t layer, int64_t first_row, int64_t row
                     owner.expert_cache != m.cache)
                     throw std::invalid_argument("prefill expert bank: incomplete residual or queue contract");
                 hp::Host host(hp::upload_submit);
-                const auto ticket = detail::stage_expert_bank(*owner.expert_slots, *owner.expert_cache,
-                    owner.expert_slab, owner.expert_slab_bytes, owner.expert_stride,
-                    layout.blob_bytes(layer), job.expert, m.cs, owner.expert_source_stride);
+                if (owner.private_expert_bank && owner.private_expert_bank->owner() != m.cache)
+                    throw std::invalid_argument("prefill private expert bank: wrong backing cache");
+                const auto ticket = owner.private_expert_bank ?
+                    detail::stage_private_expert_bank(*owner.expert_slots, *owner.private_expert_bank,
+                        owner.expert_slab, owner.expert_slab_bytes, layout.blob_bytes(layer),
+                        job.expert, m.cs, owner.expert_source_stride) :
+                    detail::stage_expert_bank(*owner.expert_slots, *owner.expert_cache,
+                        owner.expert_slab, owner.expert_slab_bytes, owner.expert_stride,
+                        layout.blob_bytes(layer), job.expert, m.cs, owner.expert_source_stride);
                 slot = ticket.slot;
                 if (ticket.upload) {
                     ++owner.staged_uploads; ++stats_.experts_streamed;
@@ -204,7 +210,8 @@ bool Prefill::run_moe_accum_window(int64_t layer, int64_t first_row, int64_t row
                 } else ++owner.staged_hits;
             } else slot = m.host_res[size_t(layer * NE + job.expert)];
             if (slot < 0) { err = "prefill MoE accumulator: missing layer expert"; return false; }
-            const auto* blob = m.cache->device_slot(slot);
+            const auto* blob = owner.private_expert_bank ? owner.private_expert_bank->device_slot(slot) :
+                m.cache->device_slot(slot);
             sycl_backend::validate_device_span(blob, size_t(layout.blob_bytes(layer)), queue);
             sycl_backend::validate_device_span(m.dq_gu[0], size_t(2 * 640 * N * 2), queue);
             sycl_backend::validate_device_span(m.dq_d[0], size_t(N * 640 * 2), queue);

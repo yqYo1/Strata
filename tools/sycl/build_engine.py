@@ -229,15 +229,15 @@ def retain_current():
 
 def main():
     guards.require(len(sys.argv) == 1 or sys.argv[1:] in
-                   (['retain-current'], ['build-copy-safety'], ['build-status-profile'], ['rebuild-copy-safety'], ['rebuild-arena-copy'], ['rebuild-event-gate'], ['rebuild'], ['rebuild-attention'], ['rebuild-gemm'], ['rebuild-gdn'], ['rebuild-down'], ['rebuild-ordered'], ['rebuild-submission'], ['rebuild-gu'], ['rebuild-mixed'], ['rebuild-expert-bank']),
+                   (['retain-current'], ['build-copy-safety'], ['build-status-profile'], ['rebuild-copy-safety'], ['rebuild-arena-copy'], ['rebuild-event-gate'], ['rebuild'], ['rebuild-attention'], ['rebuild-gemm'], ['rebuild-gdn'], ['rebuild-down'], ['rebuild-ordered'], ['rebuild-submission'], ['rebuild-gu'], ['rebuild-mixed'], ['rebuild-expert-bank'], ['rebuild-packed-bank']),
                    'use build_engine.py retain-current or a named rebuild mode')
     rebuild = len(sys.argv) == 2 and sys.argv[1] not in ('build-copy-safety', 'build-status-profile')
     attention = sys.argv[1:] == ['rebuild-attention']
     targets = ['strata']
     event_gate=sys.argv[1:]==['rebuild-event-gate']
-    if sys.argv[1:] in (['build-copy-safety'], ['build-status-profile'], ['rebuild-copy-safety'], ['rebuild-arena-copy'], ['rebuild-event-gate']):
+    if sys.argv[1:] in (['build-copy-safety'], ['build-status-profile'], ['rebuild-copy-safety'], ['rebuild-arena-copy'], ['rebuild-event-gate'], ['rebuild-packed-bank']):
         targets += ['sycl_verifier_retirement_test', 'sycl_submission_test']
-    if sys.argv[1:] in (['build-status-profile'], ['rebuild-arena-copy'],['rebuild-event-gate']):
+    if sys.argv[1:] in (['build-status-profile'], ['rebuild-arena-copy'],['rebuild-event-gate'], ['rebuild-packed-bank']):
         targets += ['file_expert_source_test', 'sycl_mmvq_test', 'residency_publication_host_test', 'cache_tail_host_test', 'prefill_scratch_host_test', 'sycl_prefill_scratch_test']
     if event_gate:
         targets += ['sycl_host_event_gate_test']
@@ -265,6 +265,8 @@ def main():
         targets += ['sycl_moe_accum_test', 'sycl_moe_gu_swiglu_bench', 'sycl_moe_down_scatter_bench']
     if sys.argv[1:] == ['rebuild-expert-bank']:
         targets += ['sycl_expert_bank_test', 'file_expert_source_test']
+    if sys.argv[1:] == ['rebuild-packed-bank']:
+        targets += ['sycl_expert_bank_test']
     with (B / 'owned-v0141-measurement.lock').open('a+') as lock:
         fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
         guards.no_model_owners([])

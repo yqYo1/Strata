@@ -3072,6 +3072,21 @@ generation, not a new native build or GPU validation. It is the fallback for
 the imminent packed-bank candidate. Clean117K speed, task quality and physical
 262144/session/RESTORE remain unqualified for3b.
 
+The next opt-in candidate,`STRATA_SYCL_PREFILL_EXPERT_BANK_PACKED=1`, uses a
+private per-layer view of the existing allocation. It does not change the
+general decode cache layout or allocate another bank. The upload destination
+and dequantization consumer use the same checked private view. At physical512
+slots it explicitly admits512 permanent experts without a scratch slot;
+smaller views retain the existing single scratch policy. Rebinding follows
+the checked layer drain. Source and destination strides remain independent,
+including the owned maximum-stride slab fallback. Host tests cover all seven
+model formats and the unchanged partial-residual/short-tail/262144 planner
+fallback. Small traced GPU byte-reader tests precede actual-size transition,
+padding/tail, immutable-source, private-map and unwind checks. Compilation,
+component execution and model throughput are not yet established. This targets
+the observed expert-upload service, not a proven physical PCIe saturation;
+cross-window copy reduction needs the multi-window117K model test with Q8 MTP.
+
 Source inspection binds the native expert footer to deltas taken immediately
 before the target verifier loop, after prompt prefill. For Q8/FP16 respectively,
 CPU unique jobs are1483997/1281981, routed CPU entries1908954/1656916 and resident

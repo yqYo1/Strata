@@ -315,6 +315,12 @@ bool Prefill::run_layer_major(const int64_t* tokens, int64_t n, int64_t pos0, st
         residual_dtype, requested_slots,
         window_on && window_requested == 10 && native16_on && scratch_mixed_on);
     const auto& plan = bank_plan.residual;
+    const char* packed_option = std::getenv("STRATA_SYCL_PREFILL_EXPERT_BANK_PACKED");
+    if (packed_option && std::strcmp(packed_option, "0") != 0 && std::strcmp(packed_option, "1") != 0) {
+        err = "prefill packed expert bank: expected0 or1"; return false;
+    }
+    // The unchanged512-cache fallback also handles host tails and full context.
+    const bool packed_bank_on = bank_plan.staged() && packed_option && std::strcmp(packed_option, "1") == 0;
     const uint64_t cache_bytes = bank_plan.device_bytes;
     const uint64_t gpu_reserved = detail::layer_major_add(cache_bytes, other_reserved);
     // Keep residual placement fixed for the first comparison. Admit an owned
@@ -758,9 +764,25 @@ bool Prefill::run_layer_major(const int64_t* tokens, int64_t n, int64_t pos0, st
             std::fflush(stderr);
         }
         std::fill(residency.begin(), residency.end(), -1);
-        if (bank_plan.staged()) window_context->expert_slots->reset(); // previous layer checked above
         const auto load_start = Clock::now();
         const uint64_t bytes = layout.blob_bytes(layer);
+        if (bank_plan.staged()) {
+            // The previous layer's readers and copies retired through drain()
+            // above. Rebind host-only metadata inside the SAME allocation.
+            if (packed_bank_on) {
+                window_context->private_expert_bank.reset(new detail::PrivateExpertBank(layer_cache, bytes));
+                const auto& geometry = window_context->private_expert_bank->layout();
+                window_context->expert_slots.reset(new detail::ExpertBankSlots(geometry.slots, geometry.full_fit()));
+                window_context->expert_stride = geometry.stride;
+                if (std::getenv("STRATA_TRACE"))
+                    std::fprintf(stderr,"strata packed expert bank: layer=%lld slots=%d stride=%llu used_bytes=%llu backing_bytes=%llu full_fit=%d\n",
+                        (long long)layer, geometry.slots, (unsigned long long)geometry.stride,
+                        (unsigned long long)geometry.used_bytes, (unsigned long long)geometry.backing_bytes, int(geometry.full_fit()));
+            } else window_context->expert_slots->reset();
+            // Owned upload slabs retain the original maximum source stride;
+            // immutable source views below replace this with their own stride.
+            window_context->expert_source_stride = stride;
+        }
         // Legacy source_copy observer measures preparation in either arm; the
         // explicit source marker above distinguishes copying from a view.
         sycl_backend::cpu_wait_profile::Host source_copy_profile(sycl_backend::cpu_wait_profile::source_copy);
