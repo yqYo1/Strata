@@ -23,35 +23,37 @@ and [current model comparison](../bench/results/2026-10-15-pr6-recovery-audit/iq
 The original observed pilot remains at commit`bedfdf312`; the repeated
 comparison's controller pins and validates that Git record directly.
 
-Five of the six planned same-binary processes have closed normally, with no
-fresh driver fault. The first baseline/candidate pair measured code generation
-at14.6/14.8 tok/s and prose at9.4/9.5 tok/s. The code request's prefill fell
-from637.4 to484.7 tok/s (52104.8 to68521.9ms for33214 fresh tokens); prose
-prefill was761.4/761.1 tok/s. Preserve this large first-request regression in
-the comparison rather than discarding it as noise. These observer-charged
-samples do not yet establish a causal improvement or permit advancement;
-the frozen plan requires all three process pairs and separate prefill gates.
-The second candidate process measured code PP 638.0 / TG 14.7 and prose
-PP 760.7 / TG 9.5 tok/s. Its code prefill did not reproduce the first candidate's
-drop, but both samples remain in the prospective comparison. Its paired
-baseline has now closed at code PP 637.2 / TG 14.4 and prose PP 761.0 / TG 9.4.
-The second pair's candidate/base decode ratios are 1.01668/1.01084 from actual
-tokens and engine milliseconds. All three pairs are still required; the first
-pair's prefill regression remains in the result and its prospective gate.
-The third baseline process measured code PP 636.6 / TG 14.5 and prose
-PP 761.0 / TG 9.3 tok/s, with the same fresh/generated-token counts and observed
-MTP acceptance classes. Its model asset hashes and all process/fault gates
-passed. The last candidate process remains; the first-pair prefill gate is
-still binding and no clean-comparison or model-adoption decision is established.
-The first code prefill ratio already fails the frozen every-pair minimum of
-0.95; later successful samples cannot remove that failed gate.
+All six planned same-binary processes closed normally, with no fresh driver
+fault, and the prospective reducer agrees with the retained individual samples.
+Both decode workloads pass the faster-screen rule: paired candidate/base
+throughput ratios are 1.016474/1.016684/1.015472 for code and
+1.015337/1.010841/1.019018 for prose, with geometric means 1.016210/1.015060.
+These are observer-charged screens, not clean throughput or causal hardware
+attribution. MTP acceptance classes are confirmed in both arms at 83.11%/39.06%.
 
-Main's isolated `yqYo1/mtp-graph-observer` source at `3550c84b1` now connects a
-bounded request-scoped host/graph observer, while `b399f08ed` invalidates stale
-graph-clock provenance after failed event reuse. Both are uncompiled/untested
-source and remain outside this frozen comparison. Integrate into `feature/sycl`
-only after all six processes close, then preserve the current validated build
-before bounded graph support and applicable engine validation.
+The candidate does not qualify for a clean comparison or model adoption. The
+first code prefill fell from 637.4 to 484.7 tok/s (52104.8 to 68521.9 ms for
+33214 fresh tokens). All three code prefill ratios are
+0.760411/1.001320/0.999605: their geometric mean 0.913026 fails the 0.98
+minimum, and the first pair fails the every-pair minimum of 0.95. Keep this
+failed outcome; later samples do not erase it. Prose prefill's geometric mean
+0.992706 passes its separate nonregression gate. A successful process/overall
+`passed` flag denotes execution gates, not performance eligibility. The IQ2
+option remains off by default; no clean trial is authorized by this result.
+
+The final baseline/candidate pair measured code PP 636.6/636.3 and TG
+14.5/14.8, and prose PP 761.0/745.1 and TG 9.3/9.5 tok/s. Each code request
+read/generated 33214/3611 tokens, and each prose request 33288/8638 tokens.
+Original samples and all rejected prefill measurements remain in the linked
+comparison. Source/metadata research proceeded during this diagnostic;
+independent background CPU/I/O interference was not separately quantified.
+
+Main's isolated MTP observer source at `0b39c726f` and retention-controller
+migration at `e7c12403b` are committed and pushed but uncompiled/untested.
+Integrate the child into `feature/sycl`, preserve the validated6c engine and
+its ten fixtures using the exact same-build model archive, then perform bounded
+graph support and applicable engine checks. Graph clocks are nonadditive
+first-to-last-node envelopes; hardware service and saturation remain unknown.
 
 A post-hoc mechanism check limits what this IQ2 component can explain. In the
 closed baseline, its two format bins account for 18.69%/17.81% of total decode
