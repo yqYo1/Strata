@@ -3061,6 +3061,16 @@ inputs and its exact recipe were recovered. Its source receipt remains for
 possible reference reconstruction through the next packed-bank comparison.
 Current3b and its eight required fixtures pass post-cleanup source admission;
 this is not new GPU validation. The14 older provenance holds remain separate.
+Controller`77396f090` now binds fallback retention to the same-build status
+observations and closed six-process MTP result, rather than older engines'
+top-level long-input/generation records. Eight host tests pass, including
+rejection of an older source/binary at the same output path, incomplete owners,
+faults and insufficient input/output. All9836 original inputs and the recipe
+were recovered before copying the current engine/eight fixtures to external
+`known-good-3b4998f32610`; every artifact hash matches. This is the same retained
+generation, not a new native build or GPU validation. It is the fallback for
+the imminent packed-bank candidate. Clean117K speed, task quality and physical
+262144/session/RESTORE remain unqualified for3b.
 
 Source inspection binds the native expert footer to deltas taken immediately
 before the target verifier loop, after prompt prefill. For Q8/FP16 respectively,
