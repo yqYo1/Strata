@@ -19,7 +19,7 @@ using ExecGraph = ex::command_graph<ex::graph_state::executable>;
 struct EventState {
   std::mutex mutex;
   std::optional<sycl::event> event;
-  bool timing = true, captured = false;
+  bool timing = true, captured = false, profiled_graph = false;
 };
 struct Event {
   std::shared_ptr<EventState> state = std::make_shared<EventState>();
@@ -39,10 +39,14 @@ struct Graph {
 };
 struct GraphExec {
   ExecGraph value;
+  const bool profiled;
   std::vector<std::weak_ptr<EventState>> events;
   std::mutex mutex;
   std::optional<sycl::event> last;
-  explicit GraphExec(Graph &g) : value(g.value.finalize()), events(g.events) {}
+  explicit GraphExec(Graph &g, bool profile = false)
+      : value(g.value.finalize(profile
+            ? sycl::property_list{ex::property::graph::enable_profiling{}}
+            : sycl::property_list{})), profiled(profile), events(g.events) {}
 };
 namespace {
 thread_local cudaError_t last_error = cudaSuccess, detail_code = cudaSuccess;
@@ -404,6 +408,7 @@ cudaError_t cudaEventRecord(cudaEvent_t e, cudaStream_t st) {
       std::lock_guard elock(e->state->mutex);
       e->state->event = event;
       e->state->captured = captured;
+      e->state->profiled_graph = false;
     }
     if (captured)
       it->second.recording->events.push_back(e->state);
@@ -506,6 +511,15 @@ cudaError_t cudaGraphInstantiate(cudaGraphExec_t *out, cudaGraph_t graph,
                                  cudaGraphNode_t *, char *, size_t) {
   return cudaGraphInstantiate(out, graph, 0ull);
 }
+cudaError_t strata::sycl_backend::compat::graph_instantiate_profiled(
+    cudaGraphExec_t *out, cudaGraph_t graph) {
+  if (out) *out = nullptr;
+  return attempt([&] {
+    require(out && graph && !graph->native,
+            "profiled instantiate requires an ordinary non-native graph");
+    *out = new GraphExec(*graph, true);
+  });
+}
 static cudaError_t launch_graph(cudaGraphExec_t graph, cudaStream_t st,
                                cudaEvent_t completion) {
   return attempt([&] {
@@ -514,6 +528,9 @@ static cudaError_t launch_graph(cudaGraphExec_t graph, cudaStream_t st,
       require(!completion->state->timing,
               "graph completion requires a disabled-timing event");
     auto &q = queue(st);
+    require(!graph->profiled ||
+                q.has_property<sycl::property::queue::enable_profiling>(),
+            "profiled graph requires a profiling queue");
     if (completion) {
       std::lock_guard lock(registry_mutex);
       auto it = streams.find(&q);
@@ -531,11 +548,13 @@ static cudaError_t launch_graph(cudaGraphExec_t graph, cudaStream_t st,
       if (auto state = weak.lock()) {
         std::lock_guard elock(state->mutex);
         state->event = event;
+        state->profiled_graph = false; // captured aliases are not node clocks
       }
     if (completion) {
       std::lock_guard elock(completion->state->mutex);
       completion->state->event = event;
       completion->state->captured = false;
+      completion->state->profiled_graph = graph->profiled;
     }
   });
 }
@@ -547,6 +566,40 @@ cudaError_t strata::sycl_backend::compat::graph_launch_with_completion(
   if (!completion)
     return fail(cudaErrorInvalidValue, "null graph completion event");
   return launch_graph(graph, st, completion);
+}
+cudaError_t strata::sycl_backend::compat::graph_completion_timestamps(
+    cudaEvent_t completion, GraphEnvelopeTimestamps *out) {
+  if (out) *out = {};
+  cudaError_t status = cudaSuccess;
+  const auto result = attempt([&] {
+    require(completion && out, "invalid graph timestamp arguments");
+    std::optional<sycl::event> event;
+    {
+      std::lock_guard lock(completion->state->mutex);
+      require(!completion->state->captured,
+              "captured aliases are not graph completion timestamps");
+      if (!completion->state->profiled_graph) {
+        status = cudaErrorNotSupported;
+        return;
+      }
+      event = completion->state->event; // retain this replay before overwrite
+    }
+    require(event.has_value(), "unrecorded graph completion event");
+    if (event->get_info<sycl::info::event::command_execution_status>() !=
+        sycl::info::event_command_status::complete) {
+      status = cudaErrorNotReady;
+      return;
+    }
+    out->submit = event->get_profiling_info<sycl::info::event_profiling::command_submit>();
+    out->available_fields |= 1;
+    out->start = event->get_profiling_info<sycl::info::event_profiling::command_start>();
+    out->available_fields |= 2;
+    out->end = event->get_profiling_info<sycl::info::event_profiling::command_end>();
+    out->available_fields |= 4;
+    out->timer_resolution = runtime_for()->device().get_info<sycl::info::device::profiling_timer_resolution>();
+    runtime_for()->check();
+  });
+  return result == cudaSuccess ? status : result;
 }
 cudaError_t cudaGraphUpload(cudaGraphExec_t graph, cudaStream_t st) {
   return attempt([&] {
