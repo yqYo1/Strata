@@ -3410,16 +3410,13 @@ The failed first compile is preserved at`62d068c73`; the corrected source and
 fresh plan do not relabel or retry that attempt. This permits an inference
 rebuild and same-build safety/long-generation comparison,not model adoption.
 Physical CPU/RAM saturation and whole-model speed gains remain unmeasured.
-After committing the model result at`e6552e380`, Main replays both censuses
-against the raw records, recovers the fallback's9836 original inputs and recipe,
-selects the validated`63af639ac` engine/ten fixtures and retires the extra
-generation plus closed successful diagnostic output:134files/129680745B.
-The current compact result records the path/hash/reason manifest. The CPU
-calibration fixture was retained through the imminent IQ2_S comparison.
-After its rejection, Main also recovers32 candidate and29 calibration project
-inputs,1376 ggml inputs and both recipes, then retires both closed auxiliary
-builds and consumed decision reports:89files/13071478B. Compact individual
-samples remain in Git; legacy source recovery exceptions remain separate.
+Closed CPU component builds,tensor captures and consumed review reports are
+retired after original source/recipe recovery; individual samples and deletion
+evidence remain in the linked compact results and Git history. The validated
+`63af639ac` engine/ten fixtures are retained,with a hash-checked fallback for
+the imminent IQ2 pair inference rebuild. All9838 original inputs and the recipe
+were recovered. Eleven controller tests preserve same-build identity,owner,
+fault,thinking/output and route gates; this does not qualify new inference code.
 
 The14 old worktree proposal/metadata paths are also reviewed before rebuilding.
 Available unique partial failed-GDN source/recipes are archived at`228b85f13`
