@@ -1,0 +1,186 @@
+{
+  "schema": "strata-cpu-iq2-v1",
+  "plan": {
+    "source": {
+      "revision": "ef58ccb55769dea675d88a023a1b0170e8cda1cd",
+      "count": 32,
+      "aggregate_sha256": "94dee62241f1e060241b86a6adc2b850a3006878803b663947eafffc06a8416d"
+    },
+    "ggml": {
+      "revision": "3cf03257f219afbe7334045ff7c6a06ac68c627d",
+      "count": 1376,
+      "aggregate_sha256": "04cc6ab883190bdb3bbcfc3e3d62c630c7b147587b98379157ad768f9936c8d2"
+    },
+    "tools": {
+      "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin/clang-22": "1290881b4e12a5e002e5b0de0787f85328ee5fe19f253a54be1cdd97dc2f26eb",
+      "/usr/bin/cmake": "1c5227af4edd22d8d689def545e18ee458260c0fd579eba2187967f38817e638",
+      "/usr/bin/ninja": "5965527e09fe2b3787772aa4f711d6a36b393e7f2fcaa744a7a96c5a4ddf59cb"
+    },
+    "environment": {
+      "PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin:/usr/bin:/bin",
+      "LD_LIBRARY_PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib",
+      "HOME": "/home/yayoi",
+      "LANG": "C.UTF-8",
+      "LC_ALL": "C.UTF-8",
+      "OMP_NUM_THREADS": "1",
+      "PYTHONDONTWRITEBYTECODE": "1"
+    },
+    "machine": {
+      "boot_id": "cfda0b6a-7c13-4fe2-bdf5-8f9202770840",
+      "kernel": "7.0.0-38-generic",
+      "affinity": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11
+      ],
+      "topology": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          1,
+          0,
+          1
+        ],
+        [
+          2,
+          0,
+          2
+        ],
+        [
+          3,
+          0,
+          3
+        ],
+        [
+          4,
+          0,
+          4
+        ],
+        [
+          5,
+          0,
+          5
+        ],
+        [
+          6,
+          0,
+          0
+        ],
+        [
+          7,
+          0,
+          1
+        ],
+        [
+          8,
+          0,
+          2
+        ],
+        [
+          9,
+          0,
+          3
+        ],
+        [
+          10,
+          0,
+          4
+        ],
+        [
+          11,
+          0,
+          5
+        ]
+      ],
+      "physical_cpus": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "cpuinfo_sha256": "b76b714d9c601674e41e94536b65107b50ec8428fcf179057a3bb14a8b17cb87"
+    },
+    "format": {
+      "layer": 2,
+      "gu": 22,
+      "down": 20,
+      "blob_bytes": 1971200,
+      "gate": 3491172096,
+      "up": 3763417856,
+      "shard": "/home/yayoi/.local/share/strata-sycl/models/qwen3.8-flash-next-iq3_s/IQ3_S/Qwen3.8-Flash-Next-GSQ-RCO-IQ3_S-00001-of-00002.gguf",
+      "experts": 96,
+      "gu_bytes": 524800,
+      "down_bytes": 921600,
+      "GU_sha256": "dcca8e5998011b2b23a3e02ef91539233aeb99086d75172ffcaf8309176f3470"
+    },
+    "metadata_sha256": "d9ac2dfa3ee63c55c9c6a6db26f72da0cec0ee41733f007e5cbbbba71617aa5d",
+    "model_identity": {
+      "path": "/home/yayoi/.local/share/strata-sycl/models/qwen3.8-flash-next-iq3_s/IQ3_S/Qwen3.8-Flash-Next-GSQ-RCO-IQ3_S-00001-of-00002.gguf",
+      "dev": 40,
+      "ino": 2640848,
+      "bytes": 54817524224,
+      "mtime_ns": 1791009083688077826,
+      "ctime_ns": 1791009083692077878
+    },
+    "configure": [
+      "/usr/bin/cmake",
+      "-S",
+      "/home/yayoi/orca/workspaces/Strata/sycl/bench/sycl/cpu_iq2",
+      "-B",
+      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-iq2-v1/build",
+      "-G",
+      "Ninja",
+      "-DCMAKE_BUILD_TYPE=Release",
+      "-DCMAKE_C_COMPILER=/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin/clang",
+      "-DCMAKE_CXX_COMPILER=/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin/clang++",
+      "-DSTRATA_GGML_DIR=/home/yayoi/ghq/github.com/ggml-org/llama.cpp/.worktree/dep-ggml-3cf-xe-e32-20261011"
+    ],
+    "build": [
+      "/usr/bin/cmake",
+      "--build",
+      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-iq2-v1/build",
+      "--target",
+      "cpu_iq2_subset",
+      "--parallel",
+      "6"
+    ],
+    "protocol": {
+      "question": "Can exact IQ2_S NT1 level masks beat the current direct-codebook helper with activation setup charged?",
+      "methods": [
+        "linked production iq256_single_gu_rows(type22)",
+        "int16 scalar signed-subset table20KiB",
+        "int32 AVX2 gather signed-subset table40KiB"
+      ],
+      "algebra": "T[m]=2*P[m]-P[15]. Four-lane dot=(17*T[M25 xor S]+35*T[M43 xor S]-68*T[S])/2. Even numerator, int32-safe; no approximate weights or reassociation of FP32 blocks.",
+      "scope": "Single pinned physical CPU, H2560/FF640, full GU/SwiGLU, NT1. Prepare activation table on every expert call in timing; no sharing credit across experts/chunks. Only GU; Down and production pool/model are later gates.",
+      "access": "Hot6 distinct actual GU pairs6MiB; stream96 distinct actual GU pairs100761600B (>96MiB), no repeat within pass. Includes map/index/table accesses and unchanged packed weights. 20/40KiB denotes table values; struct metadata/alignment is additional.",
+      "numerical": "First exhaustive4 activation patterns x1024 grids x256 signs, exact four-lane integer checks for both methods. Then1280 synthetic padded gate/up row dots match GGML bits, partial634 GU rows match current helper, zero/negative/subnormal finite scales and valid extreme Q8 codes. Reject invalid -128 production codes. All96 real experts match complete GU/SwiGLU bits, finite outputs/canaries, before and after performance.",
+      "repetition": "Three independent processes0,1,2; each six rounds hot then stream. Arm order rotates by round+process. Complete passes until0.35s; require>=0.25s; finite1000000-pass limit. No retries or duration changes after observation.",
+      "overhead": "Per-pass steady-clock cost below0.1% of fastest warmed six-expert pass. Reference checks and model loading outside timing; all candidate activation setup inside.",
+      "performance_gate": "For a candidate: all six process/access paired-median ratios<=1.0, and their geometric mean<=0.97. Ratios use wall per expert and within-round matching. Preserve all samples/spread. No isolated-dot speed substitute.",
+      "stop": "First ownership/build/source/byte/numerical/timing failure closes the stage; no retry. Negative performance rejects this candidate, with no model run.",
+      "limits": "Component only, no GPU execution, model throughput, hardware saturation, task quality or physical262144/RESTORE qualification. A winning method must next pass five-worker actual-batch production GU/SwiGLU and full-pool gates before any engine/model trial."
+    },
+    "retention": "Keep compact individual samples and current decision. Auxiliary CPU binary/build only for this exact comparison; retire closed raw/build after source/recipe recovery and result commit. Current known-good engine/ten fixtures stay untouched."
+  },
+  "stage": "prepared",
+  "passed": false,
+  "complete": false,
+  "active": false,
+  "GPU_executed": false,
+  "model_adoption_qualified": false
+}
