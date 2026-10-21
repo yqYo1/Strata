@@ -36,6 +36,17 @@ PP 760.7 / TG 9.5 tok/s. Its code prefill did not reproduce the first candidate'
 drop, but both samples remain in the prospective comparison. Its paired
 baseline is the next scheduled process, not the first baseline reused again.
 
+A post-hoc mechanism check limits what this IQ2 component can explain. In the
+closed baseline, its two format bins account for 18.69%/17.81% of total decode
+wall time for code/prose. Apply the component latency ratios 0.911505/0.927087
+to those bins while holding other work and overlap fixed: with total decode
+time D and per-format pool time P, `D / (D - sum(P * (1 - ratio))) - 1` gives
+only about 1.61%/1.53% throughput improvement. This is a consistency calculation
+using rounded representative component mixtures and observed pool wall,
+including scheduling/waits; it is not a causal result, physical resource
+ceiling or new acceptance rule. It motivates wider work reduction and MTP
+investigation rather than extrapolating a component's 7–9% to the whole model.
+
 The observed IQ2 pilot completed both33K thinking-generation cases at14.8/9.5
 tok/s, with3611/8638 generated tokens. Its input, output/thinking hashes and
 work census match the prior14.5/9.3 tok/s diagnostic. These are single observed
