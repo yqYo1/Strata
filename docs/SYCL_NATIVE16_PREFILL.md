@@ -54,14 +54,35 @@ queue work, wait, pointer publication or scheduling change. Native-owner entry
 excludes the earlier graph/borrower retirement and canonical preparation;
 dense restore includes canonical/PLE and graph/verifier resume. Preserve the
 existing version2 outer diagnostic for that wider boundary. Logical byte counts
-are requested payloads, not bus measurements. The standalone11-case host
-contract passed; production integration requires a new build and same-build
-component/device qualification before collecting a long model profile.
+are requested payloads, not bus measurements. The standalone11-case host contract and the new build's11 observer/24 phase
+cases plus18 shared engine groups passed. Four independent device children
+then passed packed smoke/validate and real300-matrix,48-layer owner/payload
+checks with the observer off/on and two restoration cycles. One observed117K
+model request closed normally at923.483tok/s with24 thinking tokens, unchanged
+model hashes and no fresh faults. This is diagnostic timing, not a speed gain
+or sustained decode qualification.
+
+The long request's dense restore took817.534ms: native allocation33.600ms,
+native copy submission253.672ms, final native drain97.266ms, canonical
+restoration432.264ms and graph/verifier resume0.064ms. Cache refill took
+1078.937ms, including full resident-payload verification: its drain/audit
+wrapper took789.176ms. These are disjoint charged wrapper regions; instrumented
+waits are nested subintervals. Time outside those waits can still contain
+runtime-internal polling/staging. Do not interpret the refill total as PCIe
+service or submit CPU time as model arithmetic.
+
+Defer graph reuse, single-allocation ownership and refill overlap from this
+evidence. The next bounded question is large-copy source memory/granularity:
+canonical restore submits1538035200bytes once, versus2116951040bytes across
+300 native tensors. Measure this before changing restoration. The existing
+canonical fixture's persistent pool is only82821120bytes; keeping it on GPU
+cannot supply the whole arena by D2D. Bus traffic/service and effects of the
+model's observed131960832bytes free after restore remain unmeasured.
 The reviewed handoff alternatives add no speed evidence. Current dense/PLE
 restoration and graph recapture precede queued cache refill/table upload.
 A free waits before deallocation, but that alone does not establish whether
-already submitted GPU work overlaps while the host waits. No new handoff
-research is eligible until this disjoint attribution is available.
+already submitted GPU work overlaps while the host waits. The remaining eligible research is the large-copy source/granularity contract
+and discriminating benchmark, not another general handoff or graph survey.
 
 The current B570 speed reference uses fresh inputs of117489 tokens and separates
 the first long request from later requests in each independent process.

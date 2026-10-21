@@ -1804,7 +1804,7 @@
     "scope": "Reject malformed/incomplete,nonfinite,orphan/duplicate and nonconserving phase/wait records; no GPU/model qualification."
   },
   "transition_profile": {
-    "stage": "device-qualified",
+    "stage": "closed",
     "source_commit": "ede40cbe074747f928094211d1cd39506c5bc039",
     "native_source": "790391a47a877eeef717723a09f21596d3b7b1b4",
     "binary": {
@@ -2203,368 +2203,220 @@
           "passed": true,
           "profiles": [
             {
-              "v": "1",
               "scope": "native_owner_entry",
-              "available": "1",
-              "complete": "1",
               "wall_s": 0.05006637,
               "thread_cpu_s": 0.033175344,
               "wait_wall_s": 0.018978975,
               "wait_cpu_s": 0.019003778,
               "other_wall_s": 9.427e-06,
               "other_cpu_s": 5.941e-06,
-              "open_parts": "0",
-              "wait_errors": "0",
-              "parts_disjoint": "1",
-              "waits_nested": "1",
-              "units": "charged_wrapper_intervals",
-              "logical_bytes_not_bus_traffic": "1",
               "parts": {
                 "preflight": {
-                  "kind": "preflight",
                   "calls": 1,
-                  "items": 0,
-                  "logical_bytes": 0,
-                  "throws": 0,
                   "wall_s": 4.1338e-05,
                   "thread_cpu_s": 4.1278e-05,
                   "wait_wall_s": 0.0,
-                  "wait_cpu_s": 0.0,
-                  "outside_wait_wall_s": 4.1338e-05,
-                  "outside_wait_cpu_s": 4.1278e-05
+                  "wait_cpu_s": 0.0
                 },
                 "allocate": {
-                  "kind": "allocate",
                   "calls": 1,
-                  "items": 0,
-                  "logical_bytes": 0,
-                  "throws": 0,
                   "wall_s": 0.001225336,
                   "thread_cpu_s": 0.000534843,
                   "wait_wall_s": 0.0,
-                  "wait_cpu_s": 0.0,
-                  "outside_wait_wall_s": 0.001225336,
-                  "outside_wait_cpu_s": 0.000534843
+                  "wait_cpu_s": 0.0
                 },
                 "publish": {
-                  "kind": "publish",
                   "calls": 1,
-                  "items": 300,
-                  "logical_bytes": 0,
-                  "throws": 0,
                   "wall_s": 3.7962e-05,
                   "thread_cpu_s": 3.7971e-05,
                   "wait_wall_s": 0.0,
                   "wait_cpu_s": 0.0,
-                  "outside_wait_wall_s": 3.7962e-05,
-                  "outside_wait_cpu_s": 3.7971e-05
+                  "items": 300
                 },
                 "release": {
-                  "kind": "release",
                   "calls": 1,
-                  "items": 300,
-                  "logical_bytes": 2116951040,
-                  "throws": 0,
                   "wall_s": 0.048752307,
                   "thread_cpu_s": 0.032555311,
                   "wait_wall_s": 0.018978975,
                   "wait_cpu_s": 0.019003778,
-                  "outside_wait_wall_s": 0.029773332,
-                  "outside_wait_cpu_s": 0.013551533
+                  "items": 300,
+                  "logical_bytes": 2116951040
                 }
               }
             },
             {
-              "v": "1",
               "scope": "native_owner_restore",
-              "available": "1",
-              "complete": "1",
               "wall_s": 0.378781637,
               "thread_cpu_s": 0.35189222,
               "wait_wall_s": 0.072045465,
               "wait_cpu_s": 0.072041839,
               "other_wall_s": 1.019e-05,
               "other_cpu_s": 7.925e-06,
-              "open_parts": "0",
-              "wait_errors": "0",
-              "parts_disjoint": "1",
-              "waits_nested": "1",
-              "units": "charged_wrapper_intervals",
-              "logical_bytes_not_bus_traffic": "1",
               "parts": {
                 "preflight": {
-                  "kind": "preflight",
                   "calls": 1,
-                  "items": 0,
-                  "logical_bytes": 0,
-                  "throws": 0,
                   "wall_s": 0.000104336,
                   "thread_cpu_s": 0.000104326,
                   "wait_wall_s": 0.0,
-                  "wait_cpu_s": 0.0,
-                  "outside_wait_wall_s": 0.000104336,
-                  "outside_wait_cpu_s": 0.000104326
+                  "wait_cpu_s": 0.0
                 },
                 "retire": {
-                  "kind": "retire",
                   "calls": 1,
-                  "items": 0,
-                  "logical_bytes": 0,
-                  "throws": 0,
                   "wall_s": 1.603e-05,
                   "thread_cpu_s": 1.604e-05,
                   "wait_wall_s": 1.4448e-05,
-                  "wait_cpu_s": 1.4497e-05,
-                  "outside_wait_wall_s": 1.582e-06,
-                  "outside_wait_cpu_s": 1.543e-06
+                  "wait_cpu_s": 1.4497e-05
                 },
                 "allocate": {
-                  "kind": "allocate",
                   "calls": 1,
-                  "items": 300,
-                  "logical_bytes": 2116951040,
-                  "throws": 0,
                   "wall_s": 0.028593669,
                   "thread_cpu_s": 0.014975595,
                   "wait_wall_s": 0.0,
                   "wait_cpu_s": 0.0,
-                  "outside_wait_wall_s": 0.028593669,
-                  "outside_wait_cpu_s": 0.014975595
+                  "items": 300,
+                  "logical_bytes": 2116951040
                 },
                 "submit": {
-                  "kind": "submit",
                   "calls": 1,
-                  "items": 300,
-                  "logical_bytes": 2116951040,
-                  "throws": 0,
                   "wall_s": 0.277840607,
                   "thread_cpu_s": 0.264575606,
                   "wait_wall_s": 0.0,
                   "wait_cpu_s": 0.0,
-                  "outside_wait_wall_s": 0.277840607,
-                  "outside_wait_cpu_s": 0.264575606
+                  "items": 300,
+                  "logical_bytes": 2116951040
                 },
                 "drain": {
-                  "kind": "drain",
                   "calls": 1,
-                  "items": 0,
-                  "logical_bytes": 0,
-                  "throws": 0,
                   "wall_s": 0.07196385,
                   "thread_cpu_s": 0.071959664,
                   "wait_wall_s": 0.071961385,
-                  "wait_cpu_s": 0.07195749,
-                  "outside_wait_wall_s": 2.465e-06,
-                  "outside_wait_cpu_s": 2.174e-06
+                  "wait_cpu_s": 0.07195749
                 },
                 "publish": {
-                  "kind": "publish",
                   "calls": 1,
-                  "items": 300,
-                  "logical_bytes": 0,
-                  "throws": 0,
                   "wall_s": 0.000151064,
                   "thread_cpu_s": 0.000151113,
                   "wait_wall_s": 0.0,
                   "wait_cpu_s": 0.0,
-                  "outside_wait_wall_s": 0.000151064,
-                  "outside_wait_cpu_s": 0.000151113
+                  "items": 300
                 },
                 "release": {
-                  "kind": "release",
                   "calls": 1,
-                  "items": 1,
-                  "logical_bytes": 50918400,
-                  "throws": 0,
                   "wall_s": 0.000101891,
                   "thread_cpu_s": 0.000101951,
                   "wait_wall_s": 6.9632e-05,
                   "wait_cpu_s": 6.9852e-05,
-                  "outside_wait_wall_s": 3.2259e-05,
-                  "outside_wait_cpu_s": 3.2099e-05
+                  "items": 1,
+                  "logical_bytes": 50918400
                 }
               }
             },
             {
-              "v": "1",
               "scope": "native_owner_entry",
-              "available": "1",
-              "complete": "1",
               "wall_s": 0.042037334,
               "thread_cpu_s": 0.028929697,
               "wait_wall_s": 0.018956851,
               "wait_cpu_s": 0.018953171,
               "other_wall_s": 5.852e-06,
               "other_cpu_s": 4.746e-06,
-              "open_parts": "0",
-              "wait_errors": "0",
-              "parts_disjoint": "1",
-              "waits_nested": "1",
-              "units": "charged_wrapper_intervals",
-              "logical_bytes_not_bus_traffic": "1",
               "parts": {
                 "preflight": {
-                  "kind": "preflight",
                   "calls": 1,
-                  "items": 0,
-                  "logical_bytes": 0,
-                  "throws": 0,
                   "wall_s": 0.000115949,
                   "thread_cpu_s": 0.000115938,
                   "wait_wall_s": 0.0,
-                  "wait_cpu_s": 0.0,
-                  "outside_wait_wall_s": 0.000115949,
-                  "outside_wait_cpu_s": 0.000115938
+                  "wait_cpu_s": 0.0
                 },
                 "allocate": {
-                  "kind": "allocate",
                   "calls": 1,
-                  "items": 0,
-                  "logical_bytes": 0,
-                  "throws": 0,
                   "wall_s": 8.3457e-05,
                   "thread_cpu_s": 8.3577e-05,
                   "wait_wall_s": 0.0,
-                  "wait_cpu_s": 0.0,
-                  "outside_wait_wall_s": 8.3457e-05,
-                  "outside_wait_cpu_s": 8.3577e-05
+                  "wait_cpu_s": 0.0
                 },
                 "publish": {
-                  "kind": "publish",
                   "calls": 1,
-                  "items": 300,
-                  "logical_bytes": 0,
-                  "throws": 0,
                   "wall_s": 3.8071e-05,
                   "thread_cpu_s": 3.8092e-05,
                   "wait_wall_s": 0.0,
                   "wait_cpu_s": 0.0,
-                  "outside_wait_wall_s": 3.8071e-05,
-                  "outside_wait_cpu_s": 3.8092e-05
+                  "items": 300
                 },
                 "release": {
-                  "kind": "release",
                   "calls": 1,
-                  "items": 300,
-                  "logical_bytes": 2116951040,
-                  "throws": 0,
                   "wall_s": 0.041794005,
                   "thread_cpu_s": 0.028687344,
                   "wait_wall_s": 0.018956851,
                   "wait_cpu_s": 0.018953171,
-                  "outside_wait_wall_s": 0.022837154,
-                  "outside_wait_cpu_s": 0.009734173
+                  "items": 300,
+                  "logical_bytes": 2116951040
                 }
               }
             },
             {
-              "v": "1",
               "scope": "native_owner_restore",
-              "available": "1",
-              "complete": "1",
               "wall_s": 0.378755709,
               "thread_cpu_s": 0.356406001,
               "wait_wall_s": 0.103212967,
               "wait_cpu_s": 0.103004629,
               "other_wall_s": 8.896e-06,
               "other_cpu_s": 7.586e-06,
-              "open_parts": "0",
-              "wait_errors": "0",
-              "parts_disjoint": "1",
-              "waits_nested": "1",
-              "units": "charged_wrapper_intervals",
-              "logical_bytes_not_bus_traffic": "1",
               "parts": {
                 "preflight": {
-                  "kind": "preflight",
                   "calls": 1,
-                  "items": 0,
-                  "logical_bytes": 0,
-                  "throws": 0,
                   "wall_s": 0.000131257,
                   "thread_cpu_s": 0.000131316,
                   "wait_wall_s": 0.0,
-                  "wait_cpu_s": 0.0,
-                  "outside_wait_wall_s": 0.000131257,
-                  "outside_wait_cpu_s": 0.000131316
+                  "wait_cpu_s": 0.0
                 },
                 "retire": {
-                  "kind": "retire",
                   "calls": 1,
-                  "items": 0,
-                  "logical_bytes": 0,
-                  "throws": 0,
                   "wall_s": 1.6471e-05,
                   "thread_cpu_s": 1.6471e-05,
                   "wait_wall_s": 1.4378e-05,
-                  "wait_cpu_s": 1.4427e-05,
-                  "outside_wait_wall_s": 2.093e-06,
-                  "outside_wait_cpu_s": 2.044e-06
+                  "wait_cpu_s": 1.4427e-05
                 },
                 "allocate": {
-                  "kind": "allocate",
                   "calls": 1,
-                  "items": 300,
-                  "logical_bytes": 2116951040,
-                  "throws": 0,
                   "wall_s": 0.027612453,
                   "thread_cpu_s": 0.013664101,
                   "wait_wall_s": 0.0,
                   "wait_cpu_s": 0.0,
-                  "outside_wait_wall_s": 0.027612453,
-                  "outside_wait_cpu_s": 0.013664101
+                  "items": 300,
+                  "logical_bytes": 2116951040
                 },
                 "submit": {
-                  "kind": "submit",
                   "calls": 1,
-                  "items": 300,
-                  "logical_bytes": 2116951040,
-                  "throws": 0,
                   "wall_s": 0.247603787,
                   "thread_cpu_s": 0.239412492,
                   "wait_wall_s": 0.0,
                   "wait_cpu_s": 0.0,
-                  "outside_wait_wall_s": 0.247603787,
-                  "outside_wait_cpu_s": 0.239412492
+                  "items": 300,
+                  "logical_bytes": 2116951040
                 },
                 "drain": {
-                  "kind": "drain",
                   "calls": 1,
-                  "items": 0,
-                  "logical_bytes": 0,
-                  "throws": 0,
                   "wall_s": 0.103129377,
                   "thread_cpu_s": 0.10292046,
                   "wait_wall_s": 0.103126974,
-                  "wait_cpu_s": 0.102918387,
-                  "outside_wait_wall_s": 2.403e-06,
-                  "outside_wait_cpu_s": 2.073e-06
+                  "wait_cpu_s": 0.102918387
                 },
                 "publish": {
-                  "kind": "publish",
                   "calls": 1,
-                  "items": 300,
-                  "logical_bytes": 0,
-                  "throws": 0,
                   "wall_s": 0.00014854,
                   "thread_cpu_s": 0.000148588,
                   "wait_wall_s": 0.0,
                   "wait_cpu_s": 0.0,
-                  "outside_wait_wall_s": 0.00014854,
-                  "outside_wait_cpu_s": 0.000148588
+                  "items": 300
                 },
                 "release": {
-                  "kind": "release",
                   "calls": 1,
-                  "items": 1,
-                  "logical_bytes": 50918400,
-                  "throws": 0,
                   "wall_s": 0.000104928,
                   "thread_cpu_s": 0.000104987,
                   "wait_wall_s": 7.1615e-05,
                   "wait_cpu_s": 7.1815e-05,
-                  "outside_wait_wall_s": 3.3313e-05,
-                  "outside_wait_cpu_s": 3.3172e-05
+                  "items": 1,
+                  "logical_bytes": 50918400
                 }
               }
             }
@@ -2577,6 +2429,359 @@
       "fresh_faults": [],
       "boot_unchanged": true
     },
-    "model": null
+    "model": {
+      "passed": true,
+      "complete": true,
+      "active": false,
+      "requests": [
+        {
+          "ok": true,
+          "err": null,
+          "ttft_s": 127.383,
+          "total_s": 128.939,
+          "prompt_tokens": 117489,
+          "reused_tokens": 0,
+          "read_tokens": 117489,
+          "generated_tokens": 24,
+          "prompt_tps": 923.5,
+          "prompt_tps_source": "engine",
+          "decode_tps": 14.5,
+          "decode_tps_source": "engine",
+          "prompt_ms": 127223.8,
+          "decode_ms": 1649.8,
+          "drafts_offered": 21,
+          "drafts_accepted": 16,
+          "finish_reason": "length",
+          "request_sha256": "26f08fd8364b5c4bce718617fe2aed42761d0a794e068b00532694adef78b3be",
+          "stream_complete": true,
+          "truncated": true,
+          "generated_tokens_source": "usage",
+          "client_interval": {
+            "request_begin_monotonic_ns": 963519375232603,
+            "first_output_monotonic_ns": 963646758418602,
+            "request_end_monotonic_ns": 963648314794032
+          },
+          "output_chars": 0,
+          "reasoning_chars": 121,
+          "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "reasoning_sha256": "0d786145d04b965534c72ea005fcccb9fb3a7e2552f6dda1bf32578d1916b8b2",
+          "eligible": true,
+          "eligibility_errors": [],
+          "requested_min_tokens": 98304,
+          "actual_prompt_tokens": 117489,
+          "actual_read_tokens": 117489,
+          "actual_reused_tokens": 0,
+          "prompt_count_source": "usage.prompt_tokens",
+          "read_count_source": "timings.prompt_n",
+          "reuse_counts_reported": {
+            "usage": 0,
+            "timings": 0
+          },
+          "thinking_requested": true,
+          "reasoning_observed": true,
+          "reasoning_tokens_reported": null,
+          "run": 0
+        }
+      ],
+      "journal": {
+        "successful_warmups": 1,
+        "successful_long_requests": 1,
+        "request_sha256": [
+          "6976dd85c26437117139f185ce0ac4da0ab9d1d4eb576dd2f9e252ae99d63f03",
+          "26f08fd8364b5c4bce718617fe2aed42761d0a794e068b00532694adef78b3be"
+        ],
+        "journal_sha256": "c031a2333b5696be2bee57f2b62fa7fb8a3f7594aa6e3e570975203561bf54b3",
+        "state_sha256": "f8b0522f99091143315117c52ba3c7b2292bda1e1f32641d3506f6cb5c276d25"
+      },
+      "route": {
+        "completed_requests": 2,
+        "exact_payload_and_map_cycles": 2,
+        "loan_generations": [
+          1,
+          2
+        ],
+        "slots": 1256,
+        "long_loan": {
+          "chunk": 8192,
+          "first": 132,
+          "lent": 1124,
+          "capacity": 2321664000,
+          "need": 2319958528,
+          "min_observed_free_bytes": 128114688
+        },
+        "actual_allocation_budget": {
+          "free_gpu_bytes": 4298420224,
+          "fixed_including_headroom_bytes": 4206942336,
+          "shared_arena_bytes": 1180698624
+        },
+        "min_observed_free_bytes": 128114688,
+        "prefill_rows": 117488,
+        "residual_gpu_bytes": 2406154240,
+        "windows_per_layer": [
+          [
+            0,
+            81920
+          ],
+          [
+            81920,
+            35568
+          ]
+        ],
+        "borrowed_ffn_entries": 96,
+        "checked_retirements": 96,
+        "dense_layers": 48,
+        "secondary_bank_windows": 48,
+        "execution_cache_parent_checked": true,
+        "clean_speed_qualified": false
+      },
+      "profiles": [
+        {
+          "scope": "dense_restore",
+          "wall_s": 0.000415712,
+          "thread_cpu_s": 0.000219702,
+          "wait_wall_s": 6.442e-06,
+          "wait_cpu_s": 6.401e-06,
+          "other_wall_s": 0.000288372,
+          "other_cpu_s": 9.2673e-05,
+          "parts": {
+            "retire": {
+              "calls": 1,
+              "wall_s": 1.3004e-05,
+              "thread_cpu_s": 1.2664e-05,
+              "wait_wall_s": 6.442e-06,
+              "wait_cpu_s": 6.401e-06
+            },
+            "canonical": {
+              "calls": 1,
+              "wall_s": 9.62e-07,
+              "thread_cpu_s": 9.62e-07,
+              "wait_wall_s": 0.0,
+              "wait_cpu_s": 0.0
+            },
+            "graph_resume": {
+              "calls": 1,
+              "wall_s": 0.000113374,
+              "thread_cpu_s": 0.000113403,
+              "wait_wall_s": 0.0,
+              "wait_cpu_s": 0.0
+            }
+          }
+        },
+        {
+          "scope": "cache_refill",
+          "wall_s": 0.731349717,
+          "thread_cpu_s": 0.726524408,
+          "wait_wall_s": 0.023740048,
+          "wait_cpu_s": 0.023517734,
+          "other_wall_s": 1.4628e-05,
+          "other_cpu_s": 1.3446e-05,
+          "parts": {
+            "submit": {
+              "calls": 1,
+              "wall_s": 0.031182212,
+              "thread_cpu_s": 0.030513668,
+              "wait_wall_s": 0.0,
+              "wait_cpu_s": 0.0,
+              "items": 101,
+              "logical_bytes": 242611200
+            },
+            "drain": {
+              "calls": 1,
+              "wall_s": 0.699623611,
+              "thread_cpu_s": 0.695719362,
+              "wait_wall_s": 0.023679202,
+              "wait_cpu_s": 0.023456859
+            },
+            "publish": {
+              "calls": 1,
+              "wall_s": 0.000529266,
+              "thread_cpu_s": 0.000277932,
+              "wait_wall_s": 6.0846e-05,
+              "wait_cpu_s": 6.0875e-05
+            }
+          }
+        },
+        {
+          "scope": "native_owner_entry",
+          "wall_s": 0.034931768,
+          "thread_cpu_s": 0.01307027,
+          "wait_wall_s": 0.002873209,
+          "wait_cpu_s": 0.00286781,
+          "other_wall_s": 6.513e-06,
+          "other_cpu_s": 5.36e-06,
+          "parts": {
+            "preflight": {
+              "calls": 1,
+              "wall_s": 0.000130075,
+              "thread_cpu_s": 0.000130104,
+              "wait_wall_s": 0.0,
+              "wait_cpu_s": 0.0
+            },
+            "allocate": {
+              "calls": 1,
+              "wall_s": 3.3753e-05,
+              "thread_cpu_s": 3.3804e-05,
+              "wait_wall_s": 0.0,
+              "wait_cpu_s": 0.0
+            },
+            "publish": {
+              "calls": 1,
+              "wall_s": 3.214e-05,
+              "thread_cpu_s": 3.216e-05,
+              "wait_wall_s": 0.0,
+              "wait_cpu_s": 0.0,
+              "items": 300
+            },
+            "release": {
+              "calls": 1,
+              "wall_s": 0.034729287,
+              "thread_cpu_s": 0.012868842,
+              "wait_wall_s": 0.002873209,
+              "wait_cpu_s": 0.00286781,
+              "items": 300,
+              "logical_bytes": 2116951040
+            }
+          }
+        },
+        {
+          "scope": "dense_restore",
+          "wall_s": 0.81753426,
+          "thread_cpu_s": 0.771010659,
+          "wait_wall_s": 0.457080325,
+          "wait_cpu_s": 0.456882126,
+          "other_wall_s": 9.103e-05,
+          "other_cpu_s": 8.8795e-05,
+          "parts": {
+            "preflight": {
+              "calls": 1,
+              "wall_s": 0.000133371,
+              "thread_cpu_s": 0.000133441,
+              "wait_wall_s": 0.0,
+              "wait_cpu_s": 0.0
+            },
+            "retire": {
+              "calls": 2,
+              "wall_s": 1.1712e-05,
+              "thread_cpu_s": 1.1662e-05,
+              "wait_wall_s": 5.569e-06,
+              "wait_cpu_s": 5.59e-06
+            },
+            "allocate": {
+              "calls": 1,
+              "wall_s": 0.033600343,
+              "thread_cpu_s": 0.010962465,
+              "wait_wall_s": 0.0,
+              "wait_cpu_s": 0.0,
+              "items": 300,
+              "logical_bytes": 2116951040
+            },
+            "submit": {
+              "calls": 1,
+              "wall_s": 0.253671585,
+              "thread_cpu_s": 0.239078652,
+              "wait_wall_s": 0.0,
+              "wait_cpu_s": 0.0,
+              "items": 300,
+              "logical_bytes": 2116951040
+            },
+            "drain": {
+              "calls": 1,
+              "wall_s": 0.097265576,
+              "thread_cpu_s": 0.097213389,
+              "wait_wall_s": 0.0972625,
+              "wait_cpu_s": 0.097210714
+            },
+            "publish": {
+              "calls": 1,
+              "wall_s": 0.000168067,
+              "thread_cpu_s": 0.000168146,
+              "wait_wall_s": 0.0,
+              "wait_cpu_s": 0.0,
+              "items": 300
+            },
+            "release": {
+              "calls": 1,
+              "wall_s": 0.000264809,
+              "thread_cpu_s": 0.000115146,
+              "wait_wall_s": 1.3888e-05,
+              "wait_cpu_s": 1.3976e-05,
+              "items": 1,
+              "logical_bytes": 50918400
+            },
+            "canonical": {
+              "calls": 1,
+              "wall_s": 0.432263516,
+              "thread_cpu_s": 0.423174693,
+              "wait_wall_s": 0.359798368,
+              "wait_cpu_s": 0.359651846
+            },
+            "graph_resume": {
+              "calls": 1,
+              "wall_s": 6.4251e-05,
+              "thread_cpu_s": 6.427e-05,
+              "wait_wall_s": 0.0,
+              "wait_cpu_s": 0.0
+            }
+          }
+        },
+        {
+          "scope": "cache_refill",
+          "wall_s": 1.07893669,
+          "thread_cpu_s": 1.019698451,
+          "wait_wall_s": 0.112379023,
+          "wait_cpu_s": 0.112127764,
+          "other_wall_s": 1.7104e-05,
+          "other_cpu_s": 1.6141e-05,
+          "parts": {
+            "submit": {
+              "calls": 1,
+              "wall_s": 0.289504752,
+              "thread_cpu_s": 0.234481677,
+              "wait_wall_s": 0.0,
+              "wait_cpu_s": 0.0,
+              "items": 1124,
+              "logical_bytes": 2321664000
+            },
+            "drain": {
+              "calls": 1,
+              "wall_s": 0.789176185,
+              "thread_cpu_s": 0.784966655,
+              "wait_wall_s": 0.112317765,
+              "wait_cpu_s": 0.112066571
+            },
+            "publish": {
+              "calls": 1,
+              "wall_s": 0.000238649,
+              "thread_cpu_s": 0.000233978,
+              "wait_wall_s": 6.1257e-05,
+              "wait_cpu_s": 6.1193e-05
+            }
+          }
+        }
+      ],
+      "native_identity": {
+        "pid": 3612266,
+        "start_ticks": 96342065,
+        "sid": 3612240
+      },
+      "native_exit_code": 0,
+      "ownership_closed": true,
+      "fault_probe_successful": true,
+      "fresh_faults": [],
+      "boot_unchanged": true
+    },
+    "closed_analysis": {
+      "schema": "Validated v1 disjoint charged wrapper intervals,seconds. Wait clocks cover instrumented waits only; outside them may include internal runtime waits/staging. Omitted zero item/byte fields do not establish zero traffic. Per-part totals and waits retained; outside-wait values are derivable.",
+      "native_owner_device_gate": "Four independent children passed: packed smoke/validate and NativeDense off/on. Exact original payload and metadata for300 matrices/48 layers, two full enter/restore cycles; no fresh faults.",
+      "model_input_tokens": 117489,
+      "model_generated_tokens": 24,
+      "model_prompt_tok_s": 923.482870343442,
+      "model_result": "One parameter-validated and audited117K request closed normally; all model hashes matched and no fresh faults. Observer-charged first-use timing only; no speed adoption or sustained decode qualification.",
+      "diagnosis": "Dense restore817.534ms: native allocation33.600ms, native copy-submit wrapper253.672ms, final native drain97.266ms, canonical restore432.264ms, graph/verifier resume0.064ms. Cache refill1078.937ms includes full payload verification: submit289.505ms, drain/audit789.176ms, publication0.239ms. Do not assign all drain/audit time to PCIe or all submit CPU time to host arithmetic.",
+      "decision": "Do not implement graph reuse or a single native allocation from this profile: their observed wrapper budgets are too small to explain the main prefill time. Defer refill overlap until audit-free transfer attribution; both transfers share the PCIe link, so reordering alone cannot remove payload service.",
+      "next": "Compare actual large canonical snapshot H2D source-memory/transfer granularity in a bounded standalone benchmark before changing restore. Current canonical restore submits1538035200 bytes once; native restore submits2116951040 bytes across300 tensors. Hardware traffic/service and low-free-VRAM effects remain unknown. Preserve current decode math/settings/placement and require repeated long generation before restoration/adoption.",
+      "rejected_unmeasured_shortcut": "Canonical persistent capacity is only82821120 bytes in the existing target fixture census, versus1538035200 total arena bytes; it cannot supply the whole restore by device copy. These are source-census figures,not a new measured D2D gain.",
+      "pending": "Sustained current-decode nonregression,agent/long-thinking generation,physical262144/session/RESTORE and upstream functional/tuned-unmodified evaluation remain open."
+    }
   }
 }

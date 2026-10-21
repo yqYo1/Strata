@@ -7312,7 +7312,7 @@
   "prefill_restore_handoff_alternatives_20261022": {
     "classification": "decision support",
     "schedulable_now": false,
-    "state": "Native Luna max review accepted with corrections; Main implements attribution before selecting any optimization.",
+    "state": "Closed117K attribution passed; graph resume0.064ms and native allocation33.600ms do not support selecting those alternatives. Main selects source/copy-granularity investigation; overlap unqualified.",
     "prerequisites": {
       "closed_baseline_commit": "64efe12f0",
       "native_source": "6e40afc1beddd059ee518617f6c1efce1da14aca",
@@ -7361,6 +7361,28 @@
       ],
       "next_scope_schedulable_now": false,
       "prerequisite": "Main disjoint wall/thread-CPU attribution before another handoff research scope."
+    },
+    "attribution": {
+      "result": "bench/results/2026-10-15-pr6-recovery-audit/prefill-recovery-current.json#/transition_profile",
+      "native_source": "790391a47a877eeef717723a09f21596d3b7b1b4",
+      "model_passed": true,
+      "model_prompt_tok_s": 923.482870343442,
+      "dense_restore_ms": 817.53426,
+      "canonical_restore_ms": 432.264,
+      "cache_refill_audit_wrapper_ms": 789.176,
+      "limits": "Charged wrappers and explicit waits,not physical resource saturation or speed adoption."
     }
+  },
+  "canonical_restore_copy_shape_scope_20261022": {
+    "classification": "decision support",
+    "schedulable_now": true,
+    "state": "Eligible fresh scope; not dispatched.",
+    "prerequisites": "Closed same-build native owner off/on and checked117K attribution, current decode1256 fixed. The original handoff survey is reviewed; no need to repeat it.",
+    "question": "Compare single1.538GB pageable canonical snapshot H2D with chunked transfers and host-USM staging/retained sources under qualified SYCL/UR/Level Zero contracts. Explain internal blocking/staging versus explicit waits and how to isolate transfer size/source/VRAM-pressure effects. Design a bounded meaningful benchmark and counterevidence before any engine change.",
+    "observations": "Canonical charged432.264ms versus native allocation+submit+drain about384.5ms for2.117GB across300 tensors. Different byte volume/source geometry,not a causal bandwidth comparison. Canonical persistent pool82.8MB cannot replace1.538GB by D2D; refill789ms includes payload audit and is not pure service.",
+    "consumer": "Main standalone large-H2D benchmark and later prefill-only restore candidate, with current decode retained.",
+    "next_review": "After native Luna max curation and the standalone benchmark; keep all hardware ceilings/saturation unknown until measured.",
+    "native_source": "790391a47a877eeef717723a09f21596d3b7b1b4",
+    "prior_scope": "prefill_restore_handoff_alternatives_20261022"
   }
 }
