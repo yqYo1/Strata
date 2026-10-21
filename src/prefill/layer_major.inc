@@ -322,6 +322,9 @@ bool Prefill::run_layer_major(const int64_t* tokens, int64_t n, int64_t pos0, st
     // The unchanged512-cache fallback also handles host tails and full context.
     const bool packed_bank_on = bank_plan.staged() && packed_option && std::strcmp(packed_option, "1") == 0;
     const uint64_t cache_bytes = bank_plan.device_bytes;
+    if (packed_bank_on)
+        for (int64_t l = 0; l < g.n_layers; ++l)
+            (void)detail::ExpertBankLayout::packed(cache_bytes, layout.blob_bytes(l));
     const uint64_t gpu_reserved = detail::layer_major_add(cache_bytes, other_reserved);
     // Keep residual placement fixed for the first comparison. Admit an owned
     // FP16 mixed bank only from the remaining budget, retaining 512 MiB.

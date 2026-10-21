@@ -103,5 +103,25 @@
     "bytes": 30864,
     "sha256": "bc52639315e339914f9b3bbe7d8f5362a6df73646c65466189f2a4683b77c5e9"
   },
-  "ownership_closed": true
+  "ownership_closed": true,
+  "packed_gpu_admission_failure": {
+    "source_commit": "116f02974",
+    "build_source_commit": "44eac4cc02fe2af8af0fffcc3794cbde66f8a675",
+    "complete": false,
+    "passed": false,
+    "ownership_closed": true,
+    "GPU_executed": false,
+    "reason": "Original check stopped before Owner creation/native exec because its strict shared-runtime hash check did not consume the already-qualified Oct19 asset delta.",
+    "mismatched_shared_runtime_paths": [
+      "/usr/lib/x86_64-linux-gnu/libze_intel_gpu.so.1.17.39395",
+      "/usr/lib/x86_64-linux-gnu/libudev.so.1.7.8"
+    ],
+    "original_root": "moe-packed-expert-bank-gpu-v1; only empty cache/tmp directories created",
+    "qualified_runtime_reference": {
+      "commit": "ad7191936ba170fee9f8fed9c0272d74f7dbf0cc",
+      "path": "bench/results/2026-10-15-pr6-recovery-audit/decode-query-profile-component-current.json",
+      "sha256": "7d12264da26f4c089c9f2c20a16cc95f1c4e98587022a2feca3b243e8f1a70c3"
+    },
+    "next_action": "Commit revised controller and test it; rebuild from its exact input revision, then start a separate v2 root. Preserve this failed admission. Shared baseline hashes stay unchanged."
+  }
 }

@@ -126,7 +126,7 @@ void run(int capacity, size_t stride, int experts, unsigned layers, bool unwind,
 // Exercise the production private view through checked transitions in ONE
 // allocation. The source stride and destination stride deliberately differ.
 void run_private(int backing_slots, uint64_t backing_stride, int experts,
-                 const std::vector<uint64_t>& strides, uint64_t source_stride, bool unwind) {
+                 const std::vector<uint64_t>& strides, uint64_t source_stride, bool unwind, bool full_copy=false) {
     auto runtime = sb::runtime_for();
     auto& q = runtime->compute();
     const uint64_t slab_bytes = 512 * source_stride;
@@ -147,7 +147,7 @@ void run_private(int backing_slots, uint64_t backing_stride, int experts,
         pd::PrivateExpertBank bank(cache,strides[layer]);
         const auto geometry=bank.layout();
         pd::ExpertBankSlots slots(geometry.slots,geometry.full_fit());
-        const auto blob_bytes=std::min(source_stride,geometry.stride)-4;
+        const auto blob_bytes=std::min(source_stride,geometry.stride)-(full_copy?0:4);
         const auto words=size_t(blob_bytes/4);
         const auto generation=unsigned(layer+1);
         for (int e=0;e<512;++e)
@@ -232,8 +232,41 @@ void run_private(int backing_slots, uint64_t backing_stride, int experts,
     std::cout<<"expert_bank_private_case backing_slots="<<backing_slots<<" backing_stride="<<backing_stride
         <<" source_stride="<<source_stride<<" experts="<<experts<<" layers="<<strides.size()
         <<" uploads="<<uploads<<" hits="<<hits<<" consumers="<<consumers<<" unwind="<<cancellations
-        <<" admission_rejections="<<rejects<<" status="<<observed
+        <<" admission_rejections="<<rejects<<" status="<<observed<<" full_copy="<<int(full_copy)
         <<" immutable_slab=PASS guards=PASS private_map=PASS checked_drain=PASS\n";
+}
+
+void run_private_enqueue_failure() {
+    auto runtime=sb::runtime_for();auto& q=runtime->compute();
+    strata::core::ExpertCache cache;std::string error;
+    if (!cache.open_uninitialized(4,1,512,256,error)) throw std::runtime_error(error);
+    pd::PrivateExpertBank bank(cache,256);pd::ExpertBankSlots slots(4);
+    std::vector<uint8_t> slab(512*256,0x7b),observed(4*256,0);
+    unsigned attempts=0,drains=0;bool rejected=false,pending_rejected=false;
+    try {
+        pd::DraftUploadGuard lease([&] {runtime->wait();++drains;return true;},
+            [] {sb::cleanup_fail_stop("private enqueue rejection retirement");});
+        lease.arm();
+        q.memset(cache.device_slot(0),0xa5,4*256);
+        q.memcpy(observed.data(),cache.device_slot(0),observed.size());
+        try {
+            pd::stage_private_expert_bank_enqueue(slots,bank,slab.data(),slab.size(),256,0,&q,256,
+                [&](void* dst,const void* src,size_t bytes,void* stream) {
+                    need(dst==bank.device_slot(0) && src==slab.data() && bytes==256 && stream==&q,
+                        "wrong rejected upload arguments");
+                    ++attempts;return false; // no provider fault or device reset
+                });
+        } catch (const std::runtime_error& e) {
+            rejected=std::string(e.what())=="private expert bank upload enqueue failed";
+        }
+        need(rejected && slots.permanent_used()==0,"failed enqueue published a private mapping");
+        try {(void)slots.begin(0);} catch (const std::invalid_argument&) {pending_rejected=true;}
+        need(pending_rejected,"ambiguous upload was retryable");
+        throw Stop{}; // normal error unwind must retire already-queued work
+    } catch (const Stop&) {}
+    need(attempts==1 && drains==1 && std::all_of(observed.begin(),observed.end(),
+        [](uint8_t byte) {return byte==0xa5;}),"enqueue rejection failed checked retirement");
+    std::cout<<"expert_bank_private_enqueue_failure attempts=1 published=0 pending_rejected=PASS checked_drain=PASS\n";
 }
 
 int main(int argc, char** argv) try {
@@ -241,12 +274,14 @@ int main(int argc, char** argv) try {
         std::string(argv[1]) == "--packed-smoke" || std::string(argv[1]) == "--packed-validate"),
         "use --smoke|--validate|--packed-smoke|--packed-validate");
     if (std::string(argv[1]) == "--packed-smoke") {
-        run_private(4,512,10,{256,512,256},256,false);
+        run_private(4,512,10,{256,512,256},256,false,true);
         run_private(4,512,10,{256,512},256,true);
+        run_private_enqueue_failure();
     } else if (std::string(argv[1]) == "--packed-validate") {
         run_private(384,512,512,{256,512,768,256},256,false);
-        run_private(384,2662400,512,{1510400,2662400,2176000},2662400,false);
+        run_private(384,2662400,512,{1510400,2662400,2176000},2662400,false,true);
         run_private(384,512,512,{256,512},256,true);
+        run_private_enqueue_failure();
     } else
     if (std::string(argv[1]) == "--smoke") {
         run(4, 256, 6, 2, false);

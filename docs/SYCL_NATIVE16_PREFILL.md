@@ -3086,7 +3086,15 @@ padding/tail, immutable-source, private-map and unwind checks. CPU source
 `cf8ae547a` passes all seven format plans, two layers of full512-expert scans
 per format and19 new rejection checks, retaining the original18 ticket checks.
 Native build`44eac4cc0` then compiles the engine and nine fixtures successfully;
-GPU execution and model throughput remain unverified. This targets
+its first GPU attempt stops before native execution: the older bank controller
+does not consume the already-qualified Oct19 runtime asset delta. Preserve
+that failed admission in the compact result. The revised controller verifies
+the exact assets against the passed3b component result without changing the
+shared baseline hashes, using a fresh v2 root. Native Luna-max report review
+accepts the private layout with targeted followups: all-layer stride preflight,
+full-length copy coverage and rejected-enqueue nonpublication/checked unwind.
+Main adds those gates before the next build. GPU execution and model throughput
+remain unverified. This targets
 the observed expert-upload service, not a proven physical PCIe saturation;
 cross-window copy reduction needs the multi-window117K model test with Q8 MTP.
 

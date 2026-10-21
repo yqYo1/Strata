@@ -11,6 +11,7 @@ import sys
 sys.dont_write_bytecode = True
 import measurement_guards as guards
 import measurement_owner as supervision
+import query_profile as runtime
 
 P = Path(__file__).resolve().parents[2]
 B = Path('/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007')
@@ -27,7 +28,7 @@ def gpu_check(mode):
     packed = mode.startswith('packed-')
     smoke = mode.endswith('smoke')
     field = 'packed_gpu' if packed else 'gpu'
-    root = B/('moe-packed-expert-bank-gpu-v1' if packed else 'moe-expert-bank-gpu-v2')
+    root = B/('moe-packed-expert-bank-gpu-v2' if packed else 'moe-expert-bank-gpu-v2')
     with (B/'owned-v0141-measurement.lock').open('a+') as lock:
         fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
         guards.no_model_owners([])
@@ -51,6 +52,9 @@ def gpu_check(mode):
         guards.require(digest(provider_fixture['path'])==provider_fixture['sha256'], 'provider fixture changed')
         revision = subprocess.check_output(['git','rev-parse','HEAD'],cwd=P,text=True).strip()
         names = ('tools/sycl/check_expert_bank.py','tools/sycl/measurement_guards.py',
+            'tools/sycl/query_profile.py',
+            'tools/sycl/generation_engine.py','tools/sycl/bench_engine.py',
+            'tools/sycl/check_verifier_retirement.py','tools/sycl/build_engine.py',
             'tools/sycl/measurement_owner.py','tools/sycl/measurement_environment.json',
             'include/strata/prefill/expert_bank_upload.hpp','tests/sycl/expert_bank.cpp',
             'include/strata/core/expert_layer_view.hpp','include/strata/core/expert_source.hpp',
@@ -75,8 +79,14 @@ def gpu_check(mode):
                 gpu['source_sha256']==pins, 'same-source passed smoke required')
         guards.require(not (root/('owned-'+mode)).exists(), 'inspect existing GPU command')
         settings = json.loads((P/'tools/sycl/measurement_environment.json').read_text())
-        for name,item in settings['runtime_elfs'].items():
-            guards.require(digest(name)==item['sha256'], 'runtime changed: '+name)
+        runtime_evidence = runtime.gen.committed(runtime.COMPONENT) if packed else None
+        runtime_admission = dict(mode='packed-expert-bank-'+('smoke' if smoke else 'validate'),
+            runtime_asset_delta=runtime_evidence['runtime_asset_delta']) if packed else None
+        if packed:
+            runtime.runtime_assets_unchanged(runtime_admission)
+        else:
+            for name,item in settings['runtime_elfs'].items():
+                guards.require(digest(name)==item['sha256'], 'runtime changed: '+name)
         env = dict(settings['environment'],TMPDIR=str(root/'tmp'),XDG_CACHE_HOME=str(root/'cache'))
         if not smoke:
             env['UR_ENABLE_LAYERS'] = 'UR_LAYER_PARAMETER_VALIDATION'
@@ -89,6 +99,11 @@ def gpu_check(mode):
             environment_reference='tools/sycl/measurement_environment.json',
             environment_overrides={k:v for k,v in env.items() if settings['environment'].get(k)!=v},
             removed_environment_keys=[k for k in settings['environment'] if k not in env])
+        if packed:
+            gpu['runtime_asset_delta'] = runtime_admission['runtime_asset_delta']
+            gpu['runtime_reference'] = dict(path=str(runtime.COMPONENT.relative_to(P)),
+                sha256=digest(runtime.COMPONENT), source_commit=runtime_evidence['source_commit'],
+                scope='Existing passed component runtime identity; not qualification of this changed native route.')
         owner = None
 
         def persist():
@@ -116,6 +131,7 @@ def gpu_check(mode):
                 'GPU fixture failed: '+(stderr+stdout)[-5000:])
             cases = (check_packed_cases if packed else check_legacy_cases)(stdout,mode)
             gpu['checks'].append(dict(mode=mode,cases=cases,passed=True))
+            if packed: runtime.runtime_assets_unchanged(runtime_admission)
             guards.require(all(digest(P/n)==h for n,h in pins.items()), 'GPU-check inputs changed')
             gpu.update(complete=True,passed=True)
         except BaseException as error:
@@ -167,9 +183,13 @@ def check_packed_cases(stdout,mode):
     guards.require(len(cases)==len(expected) and 'expert_bank_fixture PASS' in stdout,
         'incomplete packed bank fixture cases')
     keys=('backing_slots','backing_stride','source_stride','experts','layers','uploads','hits','consumers','unwind')
-    for case,values in zip(cases,expected):
+    guards.require('expert_bank_private_enqueue_failure attempts=1 published=0 pending_rejected=PASS checked_drain=PASS' in stdout,
+        'missing private enqueue failure/unwind case')
+    full_copies = [1,0] if mode=='packed-smoke' else [0,1,0]
+    for case,values,full_copy in zip(cases,expected,full_copies):
         guards.require(tuple(int(case[k]) for k in keys)==values and
-            int(case['status'])==0 and int(case['admission_rejections'])==11 and all(
+            int(case['status'])==0 and int(case['admission_rejections'])==11 and
+            int(case['full_copy'])==full_copy and all(
             case[k]=='PASS' for k in ('immutable_slab','guards','private_map','checked_drain')),
             'wrong private bank case evidence: '+str(case))
     return cases

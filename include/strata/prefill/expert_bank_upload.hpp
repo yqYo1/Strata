@@ -37,9 +37,10 @@ private:
     ExpertBankLayout layout_;
 };
 
-inline ExpertBankSlots::Ticket stage_private_expert_bank(ExpertBankSlots& slots,
+template<class Enqueue>
+inline ExpertBankSlots::Ticket stage_private_expert_bank_enqueue(ExpertBankSlots& slots,
         const PrivateExpertBank& bank, const uint8_t* slab, uint64_t slab_bytes,
-        uint64_t blob_bytes, int32_t expert, void* stream, uint64_t source_stride) {
+        uint64_t blob_bytes, int32_t expert, void* stream, uint64_t source_stride, Enqueue&& enqueue) {
     const auto& layout = bank.layout();
     if (!stream || !slab || !blob_bytes || blob_bytes > layout.stride ||
         blob_bytes > source_stride || slots.slots() != layout.slots ||
@@ -56,12 +57,20 @@ inline ExpertBankSlots::Ticket stage_private_expert_bank(ExpertBankSlots& slots,
         const auto source_offset = layer_major_mul(uint64_t(expert), source_stride);
         if (source_offset > slab_bytes || blob_bytes > slab_bytes - source_offset)
             throw std::invalid_argument("private expert bank source offset mismatch");
-        if (cudaMemcpyAsync(bank.device_slot(ticket.slot), slab + size_t(source_offset),
-                size_t(blob_bytes), cudaMemcpyHostToDevice, static_cast<cudaStream_t>(stream)) != cudaSuccess)
+        if (!enqueue(bank.device_slot(ticket.slot), slab + size_t(source_offset), size_t(blob_bytes), stream))
             throw std::runtime_error("private expert bank upload enqueue failed");
         slots.queued(ticket); // accepted enqueue; same-queue readers precede any overwrite
     }
     return ticket;
+}
+
+inline ExpertBankSlots::Ticket stage_private_expert_bank(ExpertBankSlots& slots,
+        const PrivateExpertBank& bank, const uint8_t* slab, uint64_t slab_bytes,
+        uint64_t blob_bytes, int32_t expert, void* stream, uint64_t source_stride) {
+    return stage_private_expert_bank_enqueue(slots,bank,slab,slab_bytes,blob_bytes,expert,stream,source_stride,
+        [](void* dst, const void* src, size_t bytes, void* queue) {
+            return cudaMemcpyAsync(dst,src,bytes,cudaMemcpyHostToDevice,static_cast<cudaStream_t>(queue)) == cudaSuccess;
+        });
 }
 
 inline ExpertBankSlots::Ticket stage_expert_bank(ExpertBankSlots& slots,

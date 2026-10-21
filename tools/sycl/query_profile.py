@@ -27,10 +27,12 @@ COPY_KEYS = ('submitted_blobs','submitted_bytes','completed_blobs','completed_by
 
 def runtime_assets_unchanged(record):
     # Admit only these new diagnostic modes and the exact assets already used
-    # by the same-build normal51+observer fixture; never relabel a mode to pass
-    # generation_engine's independently scoped admission check.
+    # by the normal-route component fixture; never relabel a mode to pass
+    # generation_engine's independently scoped admission check. This checks
+    # runtime identities only; callers must qualify changed native code.
     guards.require(record['mode'] in ('default-route-query-profile-check',
-        'default-route-query-profile-long','cache-borrow-check','cache-capacity-check'), 'unknown query diagnostic mode')
+        'default-route-query-profile-long','cache-borrow-check','cache-capacity-check',
+        'packed-expert-bank-smoke','packed-expert-bank-validate'), 'unknown query diagnostic mode')
     expected = {n:dict(qualified_sha256=v[0],candidate_sha256=v[1]) for n,v in DELTA.items()}
     component = gen.committed(COMPONENT)
     def identities(delta):
