@@ -3332,7 +3332,20 @@ CPU-only contract runs before engine compilation. Then use the new finite
 `check_verifier_retirement.py --cpu-census` component gate (the existing suite,
 15 census host cases and14 actual dispatcher cases), the dedicated packed-bank
 gate and a small traced model check before any32K thinking-generation census.
-The counters and native route are pending validation; no new speed claim follows.
+At`63af639ac`, the build and15 CPU-only cases pass. The subsequent18 component
+groups pass, including14 real dispatcher census cases and all existing queue,
+arithmetic, scratch/cache restoration and expected fail-stop contracts; no fresh
+fault is observed. Actual source admission recovers9838 inputs and matches the
+engine and ten fixtures. Six reader checks at`3120b27d2` pass, including static
+profile/reverse-map admission, 64-bit membership word order, NT/format/clock
+conservation and refusal of incomplete or mismatched records. These are component
+results; model census and any new throughput claim remain pending.
+The next committed controller is `tools/sycl/cpu_census_engine.py`: prepare and
+commit its frozen plan, run `qualify` for fresh finite packed-bank checks, commit
+that result, then `run`. The official four warmups are the bounded traced/model
+gate before the first long request. Every warmup and prior long request must
+pass the new census before the next request is released. One process runs both
+thinking-enabled long-generation cases; it is a diagnostic, not clean speed.
 The14 old worktree proposal/metadata paths are also reviewed before rebuilding.
 Available unique partial failed-GDN source/recipes are archived at`228b85f13`
 and removed from the active tree; missing original headers/fixture/v2 source
