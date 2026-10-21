@@ -22,8 +22,11 @@ tests and the same-build packed smoke/validate gates (two/three cases) passed.
 The checked117K request passed at924.3tok/s, with normal native exit,
 exact cache payload/map restoration, all48 dense layers restored, unchanged
 model hashes and no fresh fault. This first-use diagnostic is observer-charged.
-Three clean processes are next; restoration and sustained decode preservation
-remain unqualified.
+The first clean process passed with a subsequent median of1002.14tok/s
+(first-long929.7), matching the earlier packed1256-slot readings. Two clean
+processes remain. The old-owned128 fastest configuration and current1256-slot
+decode placement differ; restoration and sustained decode preservation remain
+unqualified.
 
 The current B570 speed reference uses fresh inputs of117489 tokens and separates
 the first long request from later requests in each independent process.
