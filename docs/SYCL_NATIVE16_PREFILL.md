@@ -161,9 +161,11 @@ retained clean process passed:902.784tok/s first use,then1002.267/1002.598/
 0.159% difference does not complete the prospective three-pair screen.
 The second candidate process also passed:930.777tok/s first use,then
 1004.162/1004.610/1003.903tok/s (median1004.162),with normal closure and no
-fresh fault. Its paired baseline has not run yet. The remaining three frozen
-processes and sustained-decode qualification are still pending;short24-token
-output cannot establish decode independence.
+fresh fault. Its paired retained process then passed:928.643tok/s first use,
+then1002.370/1001.947/1002.434tok/s (median1002.370). This second pair's ratio
+is1.001788. Both complete pairs favor the candidate,but the final frozen pair
+and sustained-decode qualification remain pending;short24-token output cannot
+establish decode independence.
 
 
 The current B570 speed reference uses fresh inputs of117489 tokens and separates
