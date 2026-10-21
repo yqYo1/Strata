@@ -19,7 +19,9 @@ combinations' pool latency by8.85%/7.29%.
 These are component results, with actual dispatch and work conservation, not
 model speed gains. See the
 [component decision](../bench/results/2026-10-15-pr6-recovery-audit/cpu-iq2-current.json)
-and [observed model-pilot plan/result](../bench/results/2026-10-15-pr6-recovery-audit/iq2-pair-model-current.json).
+and [current model comparison](../bench/results/2026-10-15-pr6-recovery-audit/iq2-pair-model-current.json).
+The original observed pilot remains at commit`bedfdf312`; the repeated
+comparison's controller pins and validates that Git record directly.
 
 The observed IQ2 pilot completed both33K thinking-generation cases at14.8/9.5
 tok/s, with3611/8638 generated tokens. Its input, output/thinking hashes and

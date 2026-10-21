@@ -90,16 +90,20 @@ prospective>5% screen; prefill separately passes nonregression. Further1256-slot
 capacity work requires a fresh committed plan. Weak-MTP, agent-session, quality
 and physical262144/session/RESTORE qualification remain separate.
 
-The current IQ2 pair pilot uses `tools/sycl/iq2_pair_model.py` with a committed
-single-use plan, fresh same-build packed-smoke/packed-validate gates, four
-official warmups and both long-generation workloads. Its
+The observed IQ2 pilot is closed at commit`bedfdf312`; its launcher and full
+model outcome remain recoverable there. The current `iq2_pair_model.py prepare`
+creates a six-process comparison, followed by one `run` invocation per process.
+Commit its generated plan and each closed outcome before advancing. Its
 [current plan/result](../bench/results/2026-10-15-pr6-recovery-audit/iq2-pair-model-current.json)
-pins the actual-model CPU baseline, source/build identities and fixed pre-exec
-environment. Per-request native counters must conserve the target CPU work and
-prove the selected pair dispatch. Parameter validation, stage trace, work census
-and timing are charged observers: successful execution does not qualify clean
-speed or adoption. Never retry a closed stage or root. Repeated comparisons
-need their own committed arm order, eligibility and performance criteria.
+pins that original pilot, its same-build safety/bank gates and the actual CPU
+baseline. The order is PAIR0/1/1/0/0/1, with four official warmups and both
+thinking-on long-generation workloads in each process. Source, native binary,
+model/profile, placement, runtime and observer settings stay fixed; only the
+pre-exec pair flag changes. Per-request counters prove dispatch and target-work
+conservation. Judge prefill and decode separately using actual tokens and engine
+milliseconds; the frozen plan records repetition, performance and MTP-class
+gates. Validation, stage trace, census and clocks are charged observers. A pass
+does not qualify clean speed, saturation or adoption. Never retry a closed root.
 
 `generation_engine.py` is now a shared admission/evidence library, with no
 launcher CLI. Restore closed long-generation launchers and their original
