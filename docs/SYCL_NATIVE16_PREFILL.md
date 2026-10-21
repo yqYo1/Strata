@@ -21,10 +21,13 @@ model speed gains. See the
 [component decision](../bench/results/2026-10-15-pr6-recovery-audit/cpu-iq2-current.json)
 and [observed model-pilot plan/result](../bench/results/2026-10-15-pr6-recovery-audit/iq2-pair-model-current.json).
 
-The prior33K thinking-generation diagnostic measured14.5/9.3 tok/s for code/prose.
-CPU-pool wall intervals account for46.98%/44.38% of decode, including scheduling
-and waits; they do not establish CPU or RAM saturation. GPU-reach waits are
-dependency intervals, not arithmetic service. The
+The observed IQ2 pilot completed both33K thinking-generation cases at14.8/9.5
+tok/s, with3611/8638 generated tokens. Its input, output/thinking hashes and
+work census match the prior14.5/9.3 tok/s diagnostic. These are single observed
+processes on different native builds, not a causal speed comparison.
+Current CPU-pool wall intervals account for45.73%/43.19% of decode, including
+scheduling and waits; they do not establish CPU or RAM saturation. GPU-reach
+waits are dependency intervals, not arithmetic service. The
 [closed work census](../bench/results/2026-10-15-pr6-recovery-audit/cpu-work-census-current.json)
 records the remaining hardware questions. Sustained70 tok/s, clean repeated
 candidate generation, agent-session, broad task quality and physical262144
