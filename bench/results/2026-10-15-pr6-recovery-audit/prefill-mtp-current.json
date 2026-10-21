@@ -2415,6 +2415,136 @@
           "scope": "Request-local deltas captured immediately before the target verifier loop (generate.cpp:6515-6539), after layer-major prompt prefill; includes the initial T=1 target row and later T=4 windows. CPU unique jobs are distinct per layer/window, not process-global unique experts. Does not count separate MTP computation or measure physical RAM/PCIe traffic.",
           "conservation": "CPU routed entries + resident hits = lookups = target_rows * 48 layers * 10 experts; target_rows = 1 + 4 * (drafts_offered / 3), specific to spec4/suffix-draft0 with full windows."
         }
+      },
+      {
+        "cohort": 4,
+        "arm": 0,
+        "passed": true,
+        "ownership_closed": true,
+        "warmup_work": [
+          {
+            "read_tokens": 74,
+            "draft_cells": 73,
+            "batch_count": 1,
+            "path": "batched",
+            "mode": 2
+          },
+          {
+            "read_tokens": 266,
+            "draft_cells": 265,
+            "batch_count": 1,
+            "path": "batched",
+            "mode": 2
+          },
+          {
+            "read_tokens": 912,
+            "draft_cells": 911,
+            "batch_count": 1,
+            "path": "batched",
+            "mode": 2
+          },
+          {
+            "read_tokens": 1069,
+            "draft_cells": 1068,
+            "batch_count": 1,
+            "path": "batched",
+            "mode": 2
+          }
+        ],
+        "native": {
+          "pid": 1128814,
+          "start_ticks": 89542415,
+          "sid": 1128786
+        },
+        "successful_warmups": 4,
+        "effective_environment_verified": true,
+        "request": {
+          "ok": true,
+          "err": null,
+          "ttft_s": 52.321,
+          "total_s": 409.637,
+          "prompt_tokens": 33208,
+          "reused_tokens": 0,
+          "read_tokens": 33208,
+          "generated_tokens": 3900,
+          "prompt_tps": 637.2,
+          "prompt_tps_source": "engine",
+          "decode_tps": 10.9,
+          "decode_tps_source": "engine",
+          "prompt_ms": 52114.0,
+          "decode_ms": 357500.2,
+          "drafts_offered": 3342,
+          "drafts_accepted": 2787,
+          "finish_reason": "stop",
+          "request_sha256": "f6f850b9f6c3791c528318dd9b654946b7cc86cc0d7df69220c648e43f213ac8",
+          "stream_complete": true,
+          "truncated": false,
+          "generated_tokens_source": "usage",
+          "client_interval": {
+            "request_begin_monotonic_ns": 895564615297287,
+            "first_output_monotonic_ns": 895616936653014,
+            "request_end_monotonic_ns": 895974252738131
+          },
+          "eligible": true,
+          "agreement_eligible": true,
+          "speed_eligible": true,
+          "speed_ineligible_reasons": [],
+          "ineligible_reasons": [],
+          "acceptance_rate": 0.8339317773788151,
+          "usage_generated_tokens": 3900,
+          "completion_includes_thinking": true,
+          "run": 0,
+          "order": 0,
+          "output_sha256": "5b7ae0f207d7804bc693ebde382f1a762c43f477fd01483939648d004cfaf971",
+          "reasoning_sha256": "05e720b14f3b900e97d3c9bdfe92a07955a90b180398eb7451e908dbb704a890",
+          "output_chars": 5496,
+          "reasoning_chars": 4752,
+          "reasoning_tokens": null,
+          "workload": "regular-code",
+          "controller_eligible": true
+        },
+        "long_work": {
+          "read_tokens": 33208,
+          "draft_cells": 33207,
+          "batch_count": 5,
+          "path": "batched",
+          "mode": 2
+        },
+        "actual_GPU_BF16_rows": 33207,
+        "actual_MoE_mode": 10,
+        "journal_valid": true,
+        "native_exit_code": 0,
+        "fault_probe": {
+          "fresh_faults": [],
+          "boot_unchanged": true,
+          "driver_after": {
+            "pci": "/sys/bus/pci/devices/0000:05:00.0",
+            "driver": "xe",
+            "vendor": "0x8086",
+            "device": "0xe20c",
+            "kernel": "7.0.0-38-generic",
+            "devcoredump": false
+          }
+        },
+        "native_footer_work_counters": {
+          "values": {
+            "submitted_blobs": 0,
+            "submitted_bytes": 0,
+            "completed_blobs": 0,
+            "completed_bytes": 0,
+            "host_view_groups": 0,
+            "gpu_miss_groups": 0,
+            "cpu_unique_misses": 1483997,
+            "cpu_entries": 1908954
+          },
+          "resident_hits": 230406,
+          "lookups": 2139360,
+          "target_rows": 4457,
+          "stderr_sha256": "4fcae0855bd2bf407c39a1833cf9b952bbf05cecf9b80e1bb0df01a426088a31",
+          "footer_line": 110,
+          "scope": "Request-local deltas captured immediately before the target verifier loop (generate.cpp:6515-6539), after layer-major prompt prefill; includes the initial T=1 target row and later T=4 windows. CPU unique jobs are distinct per layer/window, not process-global unique experts. Does not count separate MTP computation or measure physical RAM/PCIe traffic.",
+          "conservation": "CPU routed entries + resident hits = lookups = target_rows * 48 layers * 10 experts; target_rows = 1 + 4 * (drafts_offered / 3), specific to spec4/suffix-draft0 with full windows."
+        }
       }
     ],
     "active": false,
@@ -2509,6 +2639,27 @@
       "same_answer_thinking_acceptance_and_logical_work": true,
       "second_over_first_decode_rate": 0.6369979623794078,
       "limit": "Marked time variation with identical logical work; do not discard the slower9.2TG result or attribute the cause to a hardware resource without scoped evidence. Two planned processes remain."
+    },
+    "prefill_logical_work_conservation": {
+      "verified_cohorts": [
+        0,
+        1,
+        2,
+        3,
+        4
+      ],
+      "staged_uploads": 19397,
+      "requested_expert_H2D_bytes": 39629260800,
+      "permanent_hits": 0,
+      "last_layer_permanent_slots": 313,
+      "physical_bank_slots": 384,
+      "GU_and_Down_each": {
+        "fused_jobs": 2106,
+        "fused_rows": 13023636,
+        "separate_jobs": 18215
+      },
+      "source": "layer_major.inc completion markers emitted after the checked final drain; byte/call counters are per request. Last-layer permanent count is not an all-layer occupancy measure.",
+      "limits": "Same actual target-prefill work across arms; not physical PCIe traffic, DMA service or hardware saturation. One FFN accumulation window, so no cross-window cache-reuse gain is available for this input."
     }
   }
 }
