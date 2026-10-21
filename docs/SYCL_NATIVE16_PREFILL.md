@@ -3167,22 +3167,21 @@ matched-GEMM ceiling fixture,with a131072B budget and review at clean-cohort
 closure; remove it if that fixture is not selected. Full layers/traces are not
 retained. Clean admission consumes the compact paired result and retained
 engine/fixtures,not the deleted diagnostic root.
-The first clean baseline process passes native/request/work/owner/runtime/model
-identity and fresh-fault gates. Its first-long PP is836.2tok/s; the subsequent
-three samples are999.7/1000.1/999.9tok/s (median about999.9). Keep the first-use
-gap unresolved; one process does not qualify reproducibility,the paired gain
-or the all-three1000 target. The first packed-on process then passes the same
-native/request/work/owner/runtime/model/fresh-fault gates, with first-long
-929.9tok/s and subsequent1001.9/1002.8/1002.1tok/s (unrounded median1002.0563).
-All four paired input bodies and logical MoE work match, and requested expert
-H2D payload falls for every request. The first pair's subsequent-median ratio
-is1.0021672 (+0.2167%); one pair does not establish a gain or satisfy the three
-candidate-process target. Keep the cold-first difference unexplained and
-continue the committed off/on/on/off/off/on order without changing the plan.
-The second independent packed-on process also passes all gates: first-long
-929.0tok/s, subsequent1002.6/1001.6/1002.1tok/s, unrounded median1002.1059.
-Its four work/payload totals match the first packed-on process; its paired
-baseline is still pending, so no second paired speed decision is available.
+Four of the six clean processes are closed. Each passes the native/request/work,
+observer-absence,owner,runtime/model-identity and fresh-fault gates:
+
+| Process | Packed | First-long tok/s | Median of three subsequent requests |
+| --- | --- | ---: | ---: |
+| 0 | Off | 836.176 | 999.889 |
+| 1 | On | 929.917 | 1002.056 |
+| 2 | On | 928.963 | 1002.106 |
+| 3 | Off | 926.748 | 1000.209 |
+
+The two completed pairs conserve all four input bodies and logical MoE work;
+requested expert H2D bytes fall in every paired request. Their subsequent-median
+ratios are1.0021672 (+0.2167%) and1.0018969 (+0.1897%). The first-use gap remains
+unexplained. Neither a speed gain nor the all-three1000 target is qualified;
+the final off/on pair is still pending. Continue the frozen order and criteria.
 This targets
 the observed expert-upload service, not a proven physical PCIe saturation;
 cross-window copy reduction needs the multi-window117K model test with Q8 MTP.
