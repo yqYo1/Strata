@@ -6299,7 +6299,15 @@
         "The bibliography labels Leviathan et al. as arXiv v1, but the generic abs link currently resolves to v2. Pin https://arxiv.org/abs/2211.17192v1 or label the link as the current version."
       ],
       "ownership_closed": true,
-      "limits": "No local speed, hardware saturation or code adoption. Original report preserved with indexed corrections. Main did not read the knowledge-collection body; no fresh follow-on scope is currently eligible."
+      "limits": "No local speed, hardware saturation or code adoption. Original report preserved with indexed corrections. Main did not read the knowledge-collection body; no fresh follow-on scope is currently eligible.",
+      "current_native_revalidation": {
+        "native_revision": "e0623d4f73e7909d68406ce3addca1fc0b3e348a",
+        "compared_with": "3b4998f326101fa913788fd368e1674b111dea03",
+        "main_source_check": "git diff across src/include changes only the five expert-bank/MoE paths; prefill.cpp adds only MoeWindowContext::private_expert_bank. STRATA_MTP_BATCH_F16 is still read only in Prefill::draft_kv; no relevant MTP native delta.",
+        "repeat_source_audit_schedulable_now": false,
+        "decision": "Native Luna-max eligibility review finds the indexed audit and closed six-process MTP comparison already cover this question. Do not dispatch a duplicate audit.",
+        "reconsider_when": "A concrete draft-KV/target-verifier contradiction or relevant native source change creates a new finite question. Generation differences alone are not a correctness failure."
+      }
     },
     "xe2_xmx_in_kernel_load_compute_pipeline_methods": {
       "classification": "knowledge_collection",

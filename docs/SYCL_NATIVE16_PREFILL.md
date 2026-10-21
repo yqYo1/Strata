@@ -3171,7 +3171,14 @@ The first clean baseline process passes native/request/work/owner/runtime/model
 identity and fresh-fault gates. Its first-long PP is836.2tok/s; the subsequent
 three samples are999.7/1000.1/999.9tok/s (median about999.9). Keep the first-use
 gap unresolved; one process does not qualify reproducibility,the paired gain
-or the all-three1000 target. Continue the committed off/on/on/off/off/on order.
+or the all-three1000 target. The first packed-on process then passes the same
+native/request/work/owner/runtime/model/fresh-fault gates, with first-long
+929.9tok/s and subsequent1001.9/1002.8/1002.1tok/s (unrounded median1002.0563).
+All four paired input bodies and logical MoE work match, and requested expert
+H2D payload falls for every request. The first pair's subsequent-median ratio
+is1.0021672 (+0.2167%); one pair does not establish a gain or satisfy the three
+candidate-process target. Keep the cold-first difference unexplained and
+continue the committed off/on/on/off/off/on order without changing the plan.
 This targets
 the observed expert-upload service, not a proven physical PCIe saturation;
 cross-window copy reduction needs the multi-window117K model test with Q8 MTP.
