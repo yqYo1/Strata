@@ -6830,7 +6830,7 @@
   "host_dma_cpu_expert_contention_methods_scope": {
     "id": "host-dma-cpu-expert-contention-methods-20261021",
     "classification": "knowledge collection",
-    "status": "native_review_completed_with_required_index_correction",
+    "status": "native_reviewed_conditional_reference",
     "question": "Host-memory interference control for concurrent irregular CPU expert reads and discrete-GPU H2D: burst pacing, worker concurrency, bandwidth QoS and fair progress; not source packing or generic copy pipelines.",
     "report_path": ".cache/strata-research/20261021/host-dma-cpu-expert-contention-methods.md",
     "report_sha256": "9db9e21dcda001e2d02ea33da77f36b1ce95ca3bb39da5f7c9ec7a673c3b5540",
@@ -6843,13 +6843,13 @@
       "model": "gpt-6-luna",
       "reasoning": "max",
       "worker_closed": true,
-      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/host-dma-contention-review-20261021.json",
       "sha256": "4921a89a7e004371b2e9c03c2b99f6ee12bbdb697511b43859e4e1cfa75da7f3",
       "bytes": 6181,
       "verdict": "accept_with_one_required_wording_correction",
       "policy_revision": "d5d9c90374daf195ab0e375c40f318f654cacb4f",
       "scope_admission_revision": "76bcc36ce",
-      "digest": "Useful conditional reference on burst pacing, worker concurrency and platform QoS. Keep requested/cache/physical traffic and critical-path time separate. No active-cohort DMA, contention, speed, saturation or adoption is proven. Required correction: do not make physical-counter evidence a gate; require actual route, CPU-read/H2D overlap and critical-path relevance, while allowing counters to remain unknown. Citations and provenance checked; FairDRAM is a CC BY 4.0 preprint, not a code license; no code or XeStrata used. Retain only for a post-cohort concrete decision; no follow-up scope now. Review clears no MTP chain/window holds."
+      "digest": "Useful conditional reference on burst pacing, worker concurrency and platform QoS. Keep requested/cache/physical traffic and critical-path time separate. No active-cohort DMA, contention, speed, saturation or adoption is proven. Required correction: do not make physical-counter evidence a gate; require actual route, CPU-read/H2D overlap and critical-path relevance, while allowing counters to remain unknown. Citations and provenance checked; FairDRAM is a CC BY 4.0 preprint, not a code license; no code or XeStrata used. Retain only for a post-cohort concrete decision; no follow-up scope now. Review clears no MTP chain/window holds.",
+      "raw_retired": true
     },
     "correction_for_retrieval": [
       "Reconcile the conclusion's requirement for 'physical-traffic evidence' with the later test plan, which correctly allows physical counters to be unknown. A later test should require a verified route, observed independent CPU expert reads and H2D overlap, and evidence that they affect token critical-path latency; physical DRAM/PCIe counters are useful when available but must not be an eligibility gate or inferred from requested bytes."
@@ -6921,11 +6921,10 @@
       "model": "gpt-6-luna",
       "reasoning": "max",
       "worker_closed": true,
-      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/next-decode-work-research-scopes-20261021.json",
       "sha256": "dbb51d22ef11e2649fce09bbc25ce56eaeeeafcfabf9736293e51c5b98f8109a",
       "bytes": 6918,
       "digest": "Six relevant sections already cover expert batching,small-row CPU reuse and cost-aware speculative depth. One distinct knowledge gap is active host-memory interference control; active-cohort DMA is not proved. No duplicate MTP survey.",
-      "review_point": "Retire consumed scope-calibration report after this admission and citation metadata are committed at the next serialized process closure."
+      "raw_retired": true
     },
     "deferred_other_scope": {
       "id": "cost-aware-speculative-target-verification-depth",
@@ -6939,6 +6938,11 @@
       ],
       "carry_forward": "Keep MTP chain/window implementation and provenance holds unchanged; this review clears none."
     },
-    "holds_unchanged": "No local contention, speed, saturation or implementation adoption is established. All MTP chain/window provenance and safety holds remain open."
+    "holds_unchanged": "No local contention, speed, saturation or implementation adoption is established. All MTP chain/window provenance and safety holds remain open.",
+    "consumed_reviews_retired": {
+      "manifest": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/closed-iq2-comparison-1-20261021.jsonl",
+      "manifest_sha256": "10958f4228ec886de49ca118bde9d70a29428929d56bde81c14f79773a98ae3e",
+      "decision": "Useful correction, citation/license limits and retrieval conditions preserved; full scope-calibration and review bodies have no remaining consumer."
+    }
   }
 }
