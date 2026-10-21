@@ -122,8 +122,13 @@ fixture has no inference/expert-cache load and does not establish near-full
 VRAM admission. Model speed,handoff,sustained decode and physical-context
 qualification remain pending. `canonical_model.py` next admits two checked117K
 processes with flag0/1,identical current decode settings and the same observed
-accounting. Its four host route/refusal/environment tests passed. These two
-first-use runs cannot qualify speed or sustained decode; freeze the repeated
+accounting. The first baseline request completed at920.845tok/s with normal
+closure and no fresh fault, but its controller failed by counting three warmup
+and three long-request dense observations as three whole-process records. That
+failed attempt remains at`9555a7bd2`; it is not a passed admission. The corrected
+controller separates both completed requests, rejects misplaced observations,
+and starts a separately committed fresh two-arm plan after seven host checks.
+These first-use runs cannot qualify speed or sustained decode; freeze the repeated
 clean comparison only after this actual-model memory/state admission closes.
 
 

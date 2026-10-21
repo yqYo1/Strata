@@ -3001,15 +3001,15 @@
       "tests/core/test_canonical_model.py"
     ],
     "inputs": {
-      "tools/sycl/canonical_model.py": "ef984016003b31f6496637de7c0b5458925ea6fde8f0c1899b30e1b4124052bb",
-      "tests/core/test_canonical_model.py": "0b43dfdce7c808b427a9babf810755e3f4d0d600676d36b3cff67cc4550b3884"
+      "tools/sycl/canonical_model.py": "41585e5b9d25d511439380f900520a96c64e511cdf737a5d3adfe4cbc5d0ce03",
+      "tests/core/test_canonical_model.py": "2c0a5ac3a2a3ba0b08ac9371381e48c282cfffd7406e161a0b2468c88f4c7441"
     },
     "environment": {
       "PATH": "/home/yayoi/.nix-profile/bin:/usr/bin:/bin",
       "LANG": "C.UTF-8",
       "PYTHONDONTWRITEBYTECODE": "1"
     },
-    "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/canonical-model-host-v1",
+    "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/canonical-model-host-v2",
     "budgets": {
       "wall_s": 30,
       "cpu_s": 30,
@@ -3017,15 +3017,6 @@
       "text_bytes": 1048576,
       "total_bytes": 4194304
     },
-    "acceptance": "Four groups:bind off/on actual copy routes to the measured prompt;reject wrong count/extent/chunk/state;reject missing/duplicate/out-of-request audit;immutable launch environments differ only in prefill chunk selector. Normal exit and complete owned closure required. No GPU execution or retry."
-  },
-  "canonical_model_host": {
-    "source_commit": "133d0154df473bb2e6f1067043ccc15aa178d85d",
-    "tests": 4,
-    "passed": true,
-    "ownership_closed": true,
-    "controller_sha256": "ef984016003b31f6496637de7c0b5458925ea6fde8f0c1899b30e1b4124052bb",
-    "test_sha256": "0b43dfdce7c808b427a9babf810755e3f4d0d600676d36b3cff67cc4550b3884",
-    "GPU_executed": false
+    "acceptance": "Seven groups:existing route/refusal/immutable-environment checks plus correct separation of three warmup and three long dense observations;reject missing,duplicate,out-of-request or wrong-phase records. Normal exit and complete owned closure required. No GPU execution or retry."
   }
 }

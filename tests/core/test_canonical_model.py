@@ -7,6 +7,27 @@ sys.path.insert(0,str(Path(__file__).resolve().parents[2]/'tools/sycl'))
 import canonical_model as c
 
 class Contract(unittest.TestCase):
+    def dense_text(self):
+        def row(phase,free):return f'strata prefill dense: phase={phase} free_bytes={free} total_bytes=100 full_bytes=90 bank_bytes=20\n'
+        return (''.join(row(p,10)for p in ('retired','cache-loan','restored'))+
+            'strata serve: prompt warmup\n'+
+            ''.join(row(p,30+i)for i,p in enumerate(('retired','bank','restored')))+
+            'strata serve: prompt long\n')
+    def test_dense_warmup_is_separate_from_long_request(self):
+        rows=c.dense_memory(self.dense_text())
+        self.assertEqual([r['phase']for r in rows],['retired','bank','restored'])
+        self.assertEqual([r['free_bytes']for r in rows],['30','31','32'])
+    def test_dense_missing_duplicate_or_outside_request_rejected(self):
+        rows=self.dense_text().splitlines(keepends=True)
+        for text in (''.join(rows[1:]),''.join(rows+[rows[0]]),
+                ''.join(rows[1:4]+[rows[0]]+rows[4:])):
+            with self.assertRaises(RuntimeError):c.dense_memory(text)
+    def test_dense_wrong_request_phase_or_missing_header_rejected(self):
+        text=self.dense_text()
+        for bad in (text.replace('phase=cache-loan','phase=bank'),
+                    text.replace('strata serve: prompt warmup\n',''),
+                    text.replace('phase=bank','phase=cache-loan')):
+            with self.assertRaises(RuntimeError):c.dense_memory(bad)
     def text(self,arm=1):
         return ('strata serve: prompt warmup\n'+
             f'strata canonical restore: phase=bank_full bytes=1538035200 copies={23 if arm else 1} chunk={67108864 if arm else 0}\n'+

@@ -16,9 +16,10 @@ import prefill_transition as observer
 base=gate.base
 gen,assets,guards,owner_lib=gate.gen,gate.assets,gate.guards,gate.owner_lib
 P,B,A=gate.P,gate.B,gate.A
-ROOT=B/'canonical-restore-model-check-v1'
+ROOT=B/'canonical-restore-model-check-v2'
 RESULT=A/'canonical-restore-model-current.json'
 BYTES=1538035200
+PREVIOUS='9555a7bd2'
 
 def write(path,value):path.write_text(json.dumps(value,indent=2)+'\n')
 
@@ -47,6 +48,21 @@ def compact_profiles(rows):
         result.append(s)
     return result
 
+def dense_memory(text):
+    # Each completed request owns three observations. Warmup also retires and
+    # restores readers, but keeps Full residency instead of entering the bank.
+    headers=list(re.finditer(r'^strata serve: prompt .*$',text,re.M))
+    guards.require(len(headers)==2,'dense observations need two completed requests')
+    a=base.history.admission
+    a.records(text,'strata prefill dense',6)
+    warm=a.records(text[:headers[0].start()],'strata prefill dense',3)
+    long=a.records(text[headers[0].end():headers[1].start()],'strata prefill dense',3)
+    guards.require([r['phase']for _,r in warm]==['retired','cache-loan','restored'] and
+        [r['phase']for _,r in long]==['retired','bank','restored'],
+        'dense observations escaped request phases')
+    return [{k:r[k]for k in ('phase','free_bytes','total_bytes','full_bytes','bank_bytes')}
+        for _,r in long]
+
 def current(record,full_models=False):
     full=gate.current(record,full_models)
     test='tests/core/test_canonical_model.py'
@@ -68,14 +84,21 @@ def current(record,full_models=False):
     return full
 
 def prepare():
-    guards.require(not ROOT.exists()and not RESULT.exists(),'fresh single-use canonical model check only')
+    guards.require(not ROOT.exists(),'fresh single-use canonical model check only')
+    previous=json.loads(gen.git('show',PREVIOUS+':'+str(RESULT.relative_to(P))))
+    guards.require(gen.committed(RESULT)==previous and previous['stage']=='closed' and
+        len(previous['processes'])==1 and not previous['processes'][0]['passed'] and
+        previous['processes'][0]['error']=='missing/extra strata prefill dense' and
+        previous['processes'][0]['ownership_closed'],'original failed attempt must stay archived')
     full,count=gate.q.current_build();setup=base.setup_reader.pilot();parent=gen.committed(base.RESULT)
     host=parent['canonical_model_host']
-    guards.require(host['passed']and host['ownership_closed']and host['tests']==4 and
+    guards.require(host['passed']and host['ownership_closed']and host['tests']==7 and
         host['controller_sha256']==gen.common.digest(Path(__file__))and
         host['test_sha256']==gen.common.digest(P/'tests/core/test_canonical_model.py'),'matching model-launch/route host tests required')
     source=gen.git('rev-parse','HEAD').decode().strip()
     record=dict(stage='prepared',source_commit=source,native_source=full['source_commit'],binary=full['binary'],
+        previous_attempt=dict(commit=PREVIOUS,path=str(RESULT.relative_to(P)),
+            reason='Closed failed parser scope:three warmup plus three long-request dense records were mistaken for three whole-process records. The original sample and failure remain unchanged in Git. Fresh two-arm evidence uses the committed corrected parser;no replacement in the original cohort.'),
         native_inputs_recovered=count,build_sha256=gen.common.digest(gate.q.BUILD_RECORD),
         component_sha256=gen.common.digest(gate.q.COMPONENT),settings_sha256=gen.common.digest(gen.SETTINGS),
         device_gate_sha256=gen.common.digest(gate.RESULT),controller_fingerprint=assets.fingerprint(gen.benchmark_pins(source)),
@@ -149,8 +172,7 @@ def run():
         guards.require([r['scope']for r in profiles]==['dense_restore','cache_refill','native_owner_entry','dense_restore','cache_refill'],
             'missing/extra transition accounting')
         row['profiles']=compact_profiles(profiles)
-        row['dense_memory']=[{k:r[k]for k in ('phase','free_bytes','total_bytes','full_bytes','bank_bytes')}
-            for _,r in base.history.admission.records(text,'strata prefill dense',3)]
+        row['dense_memory']=dense_memory(text)
         guards.require(samples[0]['request_sha256']==record['expected_request_sha256'],'matched request bytes changed')
         current(record,full_models=True)
         row.update(passed=True,complete=True,native_identity=native['native'],native_exit_code=0,
