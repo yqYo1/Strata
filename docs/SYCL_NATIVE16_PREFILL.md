@@ -31,7 +31,8 @@ throughput ratios are 1.016474/1.016684/1.015472 for code and
 These are observer-charged screens, not clean throughput or causal hardware
 attribution. MTP acceptance classes are confirmed in both arms at 83.11%/39.06%.
 
-The candidate does not qualify for a clean comparison or model adoption. The
+The candidate does not qualify under the original whole-process advancement
+rule. This does not reject a separately scoped decode implementation. The
 first code prefill fell from 637.4 to 484.7 tok/s (52104.8 to 68521.9 ms for
 33214 fresh tokens). All three code prefill ratios are
 0.760411/1.001320/0.999605: their geometric mean 0.913026 fails the 0.98
@@ -39,7 +40,16 @@ minimum, and the first pair fails the every-pair minimum of 0.95. Keep this
 failed outcome; later samples do not erase it. Prose prefill's geometric mean
 0.992706 passes its separate nonregression gate. A successful process/overall
 `passed` flag denotes execution gates, not performance eligibility. The IQ2
-option remains off by default; no clean trial is authorized by this result.
+option remains off by default. New phase-specific adoption criteria and
+evidence must be committed prospectively; keep this original failed outcome.
+
+The long layer-major GPU prefill does not call the CPU IQ2 producer. Its server
+prompt clock ends after cache refill, before the last-token verification and
+decode window loop. The source therefore does not establish that IQ2 pairing
+caused the first prefill slowdown. The shared CPU verifier path can also read
+short/window prompts; it needs an explicit per-batch decode policy so those
+prefill calls keep the reference even when decode selects the candidate.
+Do not switch process environment variables at the phase boundary.
 
 The final baseline/candidate pair measured code PP 636.6/636.3 and TG
 14.5/14.8, and prose PP 761.0/745.1 and TG 9.3/9.5 tok/s. Each code request
@@ -57,10 +67,11 @@ eighteen-group engine checks also passed. Model execution and timing remain
 unqualified.
 The validated6c engine and ten fixtures are preserved and hash-checked after
 recovering 9845 original inputs from Git. The unmeasured child branch/worktree
-is retired. The committed controller now prepares three fresh weak-prose
-processes (observer off/host/graph), after a same-build packed-bank gate.
-This diagnostic keeps thinking and the official >=32K/1K workload; it does
-not qualify model adoption or an overhead bound. Graph clocks are nonadditive first-to-last-node
+is retired. The prepared three-process weak-prose plan was closed before
+any model launch after the phase-specific adoption clarification. Its packed
+smoke/validate gates passed; they remain component evidence. Next, isolate IQ2
+dispatch to decode, then resume MTP attribution with a newly qualified plan.
+Graph clocks are nonadditive first-to-last-node
 envelopes; hardware service and saturation remain unknown.
 
 A post-hoc mechanism check limits what this IQ2 component can explain. In the

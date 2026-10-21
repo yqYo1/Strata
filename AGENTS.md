@@ -231,6 +231,13 @@ integration and testing.
   existing fork implementation. Measure unmodified upstream without local
   patches, including a configuration tuned for this hardware; default settings
   alone are insufficient. A prefill gain does not justify a decode regression.
+  Conversely, assess a decode improvement independently of prefill. When a
+  shared dispatcher can affect both, keep the existing prefill implementation
+  and select the candidate only for decode through an explicit phase/job policy;
+  do not mutate process environment variables between phases. Verify the actual
+  call paths before attributing a regression. A failed whole-process comparison
+  remains failed, but does not permanently reject a separately scoped component;
+  commit a new phase-specific plan and criteria before gathering new evidence.
   XeStrata remains excluded from implementation adoption even if its
   measurements are faster.
 - Trace the configured SYCL build's actual source resolver and entrypoint.
