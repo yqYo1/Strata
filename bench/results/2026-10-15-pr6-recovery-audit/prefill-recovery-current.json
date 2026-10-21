@@ -2993,5 +2993,30 @@
     "passed": true,
     "cases": 8,
     "current_proof": "native-gdn-engine-build.json canonical_restore_host_contract; original standalone recipe/result recoverable from archive commit."
+  },
+  "canonical_model_host_plan": {
+    "command": [
+      "/usr/bin/python3",
+      "-B",
+      "tests/core/test_canonical_model.py"
+    ],
+    "inputs": {
+      "tools/sycl/canonical_model.py": "ef984016003b31f6496637de7c0b5458925ea6fde8f0c1899b30e1b4124052bb",
+      "tests/core/test_canonical_model.py": "0b43dfdce7c808b427a9babf810755e3f4d0d600676d36b3cff67cc4550b3884"
+    },
+    "environment": {
+      "PATH": "/home/yayoi/.nix-profile/bin:/usr/bin:/bin",
+      "LANG": "C.UTF-8",
+      "PYTHONDONTWRITEBYTECODE": "1"
+    },
+    "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/canonical-model-host-v1",
+    "budgets": {
+      "wall_s": 30,
+      "cpu_s": 30,
+      "rss_bytes": 1073741824,
+      "text_bytes": 1048576,
+      "total_bytes": 4194304
+    },
+    "acceptance": "Four groups:bind off/on actual copy routes to the measured prompt;reject wrong count/extent/chunk/state;reject missing/duplicate/out-of-request audit;immutable launch environments differ only in prefill chunk selector. Normal exit and complete owned closure required. No GPU execution or retry."
   }
 }
