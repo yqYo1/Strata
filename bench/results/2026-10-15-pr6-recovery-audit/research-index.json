@@ -7328,7 +7328,7 @@
   "canonical_restore_copy_shape_scope_20261022": {
     "classification": "decision support",
     "schedulable_now": false,
-    "state": "Reviewed source-contract support; standalone benchmark gates pending.",
+    "state": "Closed component screen: all162 clean samples pass; host-USM whole selected,ordinary64MiB eligible for a separate implementation plan.",
     "prerequisites": "Closed same-build native owner off/on and checked117K attribution, current decode1256 fixed. The original handoff survey is reviewed; no need to repeat it.",
     "question": "Compare single1.538GB pageable canonical snapshot H2D with chunked transfers and host-USM staging/retained sources under qualified SYCL/UR/Level Zero contracts. Explain internal blocking/staging versus explicit waits and how to isolate transfer size/source/VRAM-pressure effects. Design a bounded meaningful benchmark and counterevidence before any engine change.",
     "observations": "Canonical charged432.264ms versus native allocation+submit+drain about384.5ms for2.117GB across300 tensors. Different byte volume/source geometry,not a causal bandwidth comparison. Canonical persistent pool82.8MB cannot replace1.538GB by D2D; refill789ms includes payload audit and is not pure service.",
@@ -7364,5 +7364,21 @@
       "verdict": "Accept with minor source/citation wording corrections",
       "digest": "Seven production-source hashes match. Host USM does not establish OS pinning. One in-order stream, immutable source through final drain, and included staging memcpy are required. First copy is post-initialization; full readback can perturb later copies. This unpressured component screen cannot establish model gain, physical bus traffic or GPU service."
     }
+  },
+  "large_H2D_runtime_path_discontinuity_scope_20261022": {
+    "classification": "decision support",
+    "schedulable_now": true,
+    "state": "Eligible; worker not started.",
+    "prerequisites": {
+      "evidence_commit": "5ead6c78a",
+      "result": "bench/results/2026-10-15-pr6-recovery-audit/large-copy-current.json",
+      "evidence": "Three closed cohorts: vector whole419.3..419.6ms,vector64MiB253.2..253.5ms,preinitialized host-USM236.1..236.2ms. All162 clean samples and ownership/fault checks pass."
+    },
+    "question": "Explain or bound the ordinary-pointer whole/chunk and host-USM path discontinuity using pinned Intel LLVM/UR Level Zero V2 and NEO sources/docs. Identify import/staging/cache/size thresholds and immutable-source/dependency/lifetime constraints for a prefill-only64MiB loop under real memory pressure. Separate sourced facts from hypotheses; no bus saturation inference or duplicate general transfer survey.",
+    "consumer": "Main original prefill-only canonical restoration candidate and its bounded qualification design.",
+    "report": ".cache/strata-research/20261022/large-copy-runtime-paths.md",
+    "report_budget_bytes": 16384,
+    "prior_scope": "canonical_restore_copy_shape_scope_20261022",
+    "next_review": "Native Luna max review after returned report; no model adoption from source research."
   }
 }

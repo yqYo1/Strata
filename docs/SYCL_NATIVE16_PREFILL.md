@@ -85,6 +85,28 @@ already submitted GPU work overlaps while the host waits. The remaining
 eligible research concerns the large-copy source/granularity contract and its
 discriminating benchmark.
 
+The standalone1538035200-byte production-API copy screen then passed six
+small traced children, nine full-size validation children and27 clean native
+processes/162 samples without a fresh fault. The three process medians were
+419.314/419.600/419.431ms for ordinary-vector whole copies,
+253.229/253.284/253.511ms for ordinary-vector64MiB chunks, and
+236.140/236.139/236.176ms for preinitialized host-USM whole copies.
+All alternatives pass the frozen component screen; its selected result remains
+host-USM whole (throughput-ratio geomean1.776181). These are requested-payload
+copy rates,not measured wire bandwidth or GPU service. The source/import
+mechanism and model memory-pressure effect remain unknown.
+
+The next model candidate is the eligible64MiB ordinary-vector shape, scoped
+only to prefill canonical restoration. It requires no new retained host buffer
+or source ownership. This engineering choice does not rewrite the component
+winner: host-USM needs separate setup/lifetime/RAM accounting. Its staged first
+copies were484..491ms versus419..421ms for vector whole. A166ms component
+saving once in a117s prompt would be about0.14% only if reproduced there; no
+model gain is established. Keep the final drain and publication before prompt
+completion, preserve current decode settings/placement, and require repeated
+sustained decode and handoff checks. See the
+[closed copy comparison](../bench/results/2026-10-15-pr6-recovery-audit/large-copy-current.json).
+
 The current B570 speed reference uses fresh inputs of117489 tokens and separates
 the first long request from later requests in each independent process.
 Three packed-bank process medians for the later requests are
