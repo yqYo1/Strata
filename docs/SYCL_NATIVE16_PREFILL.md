@@ -48,15 +48,15 @@ Original samples and all rejected prefill measurements remain in the linked
 comparison. Source/metadata research proceeded during this diagnostic;
 independent background CPU/I/O interference was not separately quantified.
 
-Main's MTP observer source at `0b39c726f` and retention-controller
-migration at `e7c12403b` are integrated into `feature/sycl`. All19 host-only
-retention/controller tests passed at `42e850809`; native observer code remains
-uncompiled and unrun.
-The validated6c engine and ten fixtures are preserved and hash-checked against
-the exact same-build model archive; 9845 original inputs were recovered from
-Git. The unmeasured child branch/worktree is retired. Next, pin the observer
-build and perform bounded graph support and applicable engine checks. Graph clocks are nonadditive
-first-to-last-node envelopes; hardware service and saturation remain unknown.
+Main's MTP observer source at `0b39c726f` is integrated into `feature/sycl`.
+The new engine and eleven fixtures compiled at `05223b559`; 25 host-only
+controller/refusal tests and the 15-case CPU census build contract passed.
+Observer GPU support, engine correctness and model timing remain unqualified.
+The validated6c engine and ten fixtures are preserved and hash-checked after
+recovering 9845 original inputs from Git. The unmeasured child branch/worktree
+is retired. Next, run the bounded graph support controller, then applicable
+same-build engine checks. Graph clocks are nonadditive first-to-last-node
+envelopes; hardware service and saturation remain unknown.
 
 A post-hoc mechanism check limits what this IQ2 component can explain. In the
 closed baseline, its two format bins account for 18.69%/17.81% of total decode
@@ -143,7 +143,7 @@ KV host backup remain separate paths; this source audit is not a measurement
 of total PCIe traffic. The residual owner remains valid through the serial
 draft completion before the next verifier run.
 
-## MTP graph observer: source only, not qualified
+## MTP graph observer: compiled, GPU checks pending
 
 The default-off SYCL observer separates host wall and calling-thread CPU time
 for the draft round and chain steps. `STRATA_SYCL_MTP_OBSERVER=host` retains
@@ -194,8 +194,8 @@ build, then run the bounded graph-envelope fixture in separate profile-off/on
 processes using the qualified runtime safety settings. Unknown graph profiling
 support is not a pass. Applicable engine safety/numerical checks and a committed
 bounded model plan follow; compare fresh observer-off, host-only and profiled
-processes before drawing timing conclusions. No compilation, fixture execution,
-device support or model qualification has yet been established for this source.
+processes before drawing timing conclusions. Compilation has passed. GPU fixture execution,
+device support and model qualification remain pending.
 
 ## Tensor storage and precision
 
