@@ -251,6 +251,8 @@ def run():
             closed['processes'][1]['requests'][0]['request_sha256'],'incomplete suite or changed request body')
         record['warmups']=journal
         native=generation.native_end(ROOT,record,dict(config=record['config']),boot,entry['pid'])
+        guards.require(record.get('native_identity')==native['native'] and record.get('effective_environment_verified') is True,
+            'native identity differs from the admitted long-request handshake')
         record.update(native_exit_code=native['exit_code'],resource_collector_exit_code=native['resource_collector_exit_code'])
         path,=(ROOT/'bench').glob('*/requests.jsonl');events=[json.loads(x) for x in path.read_text().splitlines()]
         text=(ROOT/'engine.stderr').read_text(errors='replace')

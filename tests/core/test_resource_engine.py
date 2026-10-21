@@ -139,7 +139,9 @@ class CurrentCollectionPathTests(unittest.TestCase):
                     active=None
                     commands=[]
                     def __init__(self,*a):pass
-                    def run(self,*a,**k):return {'exit_code':0,'pid':42},None,None
+                    def run(self,*a,**k):
+                        record.update(native_identity=start['native'],effective_environment_verified=True)
+                        return {'exit_code':0,'pid':42},None,None
                 with patch.object(r,'ROOT',root),patch.object(r,'RESULT',result_path), \
                      patch.object(r,'modules',return_value=(None,None,comparison)),patch.object(r,'current',return_value={'processes':[{}, {'requests':[row]}]}), \
                      patch.object(r.generation,'committed',return_value=record),patch.object(r.supervision,'Owner',Owner), \
