@@ -183,14 +183,14 @@ def prepare():
     print('Prepared two-process/two-workload diagnostic; commit exact plan before run.')
 
 
-def official(root, result):
+def official(root, result, workloads=WORKLOADS):
     suite = result['results']['long_generation']
     rows = gen.collect_samples(suite)
-    gen.require_complete_generation(suite, rows)
+    gen.require_complete_generation(suite, rows, workloads)
     guards.require(result['complete'] and not result['results']['failures'] and
         result['params']['runs'] == 1 and result['params']['think'] is True and
         result['params']['long_generation_only'] is True and
-        suite['selected_workloads'] == list(WORKLOADS) and not suite['diagnostic_subset'], 'official suite incomplete or subset')
+        suite['selected_workloads'] == list(workloads) and suite['diagnostic_subset'] is (len(workloads)==1), 'official suite incomplete or subset')
     journal, journal_rows = gen.journal_evidence(root)
     guards.require(journal['valid'] and journal['complete'], 'invalid/incomplete official journal')
     # The suite adds reasoning-token detail, run/order and the controller label.
@@ -198,7 +198,7 @@ def official(root, result):
     guards.require(normalized == journal_rows, 'official samples differ from journal')
     path, = (root/'bench').glob('*/requests.jsonl')
     events = [json.loads(line) for line in path.read_text().splitlines()]
-    warm = gen.warmup_reconciliation(events, WORKLOADS)
+    warm = gen.warmup_reconciliation(events, workloads)
     identity = events[0]; comparison = result['comparison_identity']
     from strata_bench import client_fingerprint
     workload = dict(workload_id=WORKLOAD_ID, nonce=WORKLOAD_ID, nonce_policy='fixed-id')
@@ -211,7 +211,7 @@ def official(root, result):
     return rows, dict(warm, valid=True, journal_sha256=gen.common.digest(path)), events
 
 
-def native_routes(text, events, arm):
+def native_routes(text, events, arm, workloads=WORKLOADS):
     assets.verify_pool(text, 5)
     samples = [e['sample'] for e in events if e['kind'] == 'result']
     draft = gen.request_evidence(text, samples)
@@ -236,7 +236,7 @@ def native_routes(text, events, arm):
         routes.append(dict(actual_GPU_BF16_rows=cells, actual_MoE_mode=10, draft_work=draft[i],
             private_bank=bank.geometry(segment, arm), restored_dense_layers=48,
             cache_payload_and_map_match=True, loan_generation=cycle['generation']))
-    guards.require(len(routes) == 2, 'missing long route')
+    guards.require(len(routes) == len(workloads), 'missing long route')
     return routes
 
 
