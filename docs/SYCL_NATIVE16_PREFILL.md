@@ -3120,9 +3120,18 @@ The original comparison remains failed/incomplete; the packed-on arm is not
 launched. Main replaces that call with an explicit start/exit receipt and
 binary/argument/boot/probe/owned-session identity check, adds an offline
 closed-benchmark collection regression, and requires a fresh v2 off/on plan.
-The observed baseline speed is not clean-speed or candidate-gain evidence.
-Execute the new committed plan before a separate repeated clean-speed
-comparison. This targets
+Five host regression tests and offline replay of the captured baseline pass;
+the failed v1 status remains in`fdbcc5e6b` and its74 normal-output files
+(13351468B) are retired after149 original controller inputs are recovered.
+The corrected frozen v2 plan then passes its baseline process:117489 input,
+24 thinking tokens, diagnostic921.3tok/s,19631 uploads and40102860800 requested
+H2D bytes with13594 permanent hits. It verifies96 borrowed retirements,two
+exact payload/map cycles,dense/cache restoration,native exit0,closed ownership,
+full model hashes before/after and no fresh fault. Its96-window census conserves
+37353 jobs and56394240 routed rows; the packed-on process remains pending.
+These observed baseline speeds are not clean-speed or candidate-gain evidence.
+Close the frozen off/on plan before a separate repeated clean-speed comparison.
+This targets
 the observed expert-upload service, not a proven physical PCIe saturation;
 cross-window copy reduction needs the multi-window117K model test with Q8 MTP.
 After committing the component results, Main recovers22 original component

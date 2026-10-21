@@ -1,7 +1,7 @@
 {
   "mode": "cache-capacity-check",
   "diagnostic": "packed-expert-bank117K",
-  "stage": "prepared",
+  "stage": "partial",
   "source_commit": "fdbcc5e6b5b169de2973534170f62e675e092d02",
   "build_source_commit": "ac904ae09858ba9d101cd368bd31f07c0cb2dcb8",
   "binary": {
@@ -241,7 +241,198 @@
       ]
     }
   ],
-  "processes": [],
+  "processes": [
+    {
+      "arm": 0,
+      "passed": true,
+      "complete": true,
+      "active": false,
+      "sample": {
+        "ok": true,
+        "err": null,
+        "ttft_s": 127.707,
+        "total_s": 129.249,
+        "prompt_tokens": 117489,
+        "reused_tokens": 0,
+        "read_tokens": 117489,
+        "generated_tokens": 24,
+        "prompt_tps": 921.3,
+        "prompt_tps_source": "engine",
+        "decode_tps": 14.5,
+        "decode_tps_source": "engine",
+        "prompt_ms": 127531.9,
+        "decode_ms": 1651.7,
+        "drafts_offered": 21,
+        "drafts_accepted": 16,
+        "finish_reason": "length",
+        "request_sha256": "26f08fd8364b5c4bce718617fe2aed42761d0a794e068b00532694adef78b3be",
+        "stream_complete": true,
+        "truncated": true,
+        "generated_tokens_source": "usage",
+        "client_interval": {
+          "request_begin_monotonic_ns": 902959345849527,
+          "first_output_monotonic_ns": 903087053266830,
+          "request_end_monotonic_ns": 903088595012475
+        },
+        "output_chars": 0,
+        "reasoning_chars": 121,
+        "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "reasoning_sha256": "0d786145d04b965534c72ea005fcccb9fb3a7e2552f6dda1bf32578d1916b8b2",
+        "eligible": true,
+        "eligibility_errors": [],
+        "requested_min_tokens": 98304,
+        "actual_prompt_tokens": 117489,
+        "actual_read_tokens": 117489,
+        "actual_reused_tokens": 0,
+        "prompt_count_source": "usage.prompt_tokens",
+        "read_count_source": "timings.prompt_n",
+        "reuse_counts_reported": {
+          "usage": 0,
+          "timings": 0
+        },
+        "thinking_requested": true,
+        "reasoning_observed": true,
+        "reasoning_tokens_reported": null,
+        "run": 0
+      },
+      "journal": {
+        "successful_warmups": 1,
+        "successful_long_requests": 1,
+        "request_sha256": [
+          "6976dd85c26437117139f185ce0ac4da0ab9d1d4eb576dd2f9e252ae99d63f03",
+          "26f08fd8364b5c4bce718617fe2aed42761d0a794e068b00532694adef78b3be"
+        ],
+        "journal_sha256": "9cb8601fc1b732c10e214dbb74c34e043fb14326381fe146899ca7476077cbeb",
+        "state_sha256": "ecebbe4b2e9f0d7cbff6b16ee5e785e291c8a6faf64212a9fee0279cb50f9f5f"
+      },
+      "native": {
+        "pid": 1400266,
+        "start_ticks": 90285535,
+        "sid": 1400242
+      },
+      "native_exit_code": 0,
+      "validation_activation": {
+        "pid": 1400266,
+        "loader": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_loader.so.0.12.0",
+        "threads_before": 1,
+        "preinit": 37,
+        "config_enabled": true,
+        "first_init": true,
+        "dispatch_result": 46,
+        "output_untouched": true,
+        "retained_reference_until_exit": true,
+        "runtime_teardown_qualified": false
+      },
+      "capacity": {
+        "completed_requests": 2,
+        "exact_payload_and_map_cycles": 2,
+        "loan_generations": [
+          1,
+          2
+        ],
+        "slots": 1256,
+        "long_loan": {
+          "chunk": 8192,
+          "first": 132,
+          "lent": 1124,
+          "capacity": 2321664000,
+          "need": 2319958528,
+          "min_observed_free_bytes": 128110592
+        },
+        "actual_allocation_budget": {
+          "free_gpu_bytes": 4298416128,
+          "fixed_including_headroom_bytes": 4206942336,
+          "shared_arena_bytes": 1180698624
+        },
+        "min_observed_free_bytes": 128110592,
+        "prefill_rows": 117488,
+        "residual_gpu_bytes": 2406154240,
+        "windows_per_layer": [
+          [
+            0,
+            81920
+          ],
+          [
+            81920,
+            35568
+          ]
+        ],
+        "borrowed_ffn_entries": 96,
+        "checked_retirements": 96,
+        "dense_layers": 48,
+        "secondary_bank_windows": 48,
+        "execution_cache_parent_checked": true,
+        "clean_speed_qualified": false
+      },
+      "geometry": {
+        "actual_private_layers": 0,
+        "stride_layers": {},
+        "requested_work": {
+          "uploads": 19631,
+          "requested_H2D_bytes": 40102860800,
+          "permanent_hits": 13594,
+          "permanent_slots": 267,
+          "total_slots": 384
+        },
+        "physical_PCIe_traffic_measured": false
+      },
+      "ownership_closed": true,
+      "fresh_faults": [],
+      "boot_unchanged": true,
+      "driver_after": {
+        "pci": "/sys/bus/pci/devices/0000:05:00.0",
+        "driver": "xe",
+        "vendor": "0x8086",
+        "device": "0xe20c",
+        "kernel": "7.0.0-38-generic",
+        "devcoredump": false
+      },
+      "additional_work_observation": {
+        "window_count": 96,
+        "jobs": 37353,
+        "routed_rows": 56394240,
+        "gu_nk": [
+          1280,
+          2560
+        ],
+        "down_nk": [
+          2560,
+          640
+        ],
+        "gu_down_storage": "bf16",
+        "hidden_storage": "fp16",
+        "requested_router_D2H_bytes": 225576960,
+        "requested_map_H2D_bytes": 451153920,
+        "all_job_row_and_expert_conservation_checks_passed": true,
+        "planned_matches_retired": true,
+        "limits": "Requested/logical metadata; not physical PCIe or VRAM traffic, occupancy or additive wall time.",
+        "window_rows_counts": [
+          [
+            35568,
+            48
+          ],
+          [
+            81920,
+            48
+          ]
+        ],
+        "job_size_groups": [
+          {
+            "min_rows": 1,
+            "max_rows": 2333,
+            "jobs": 29868,
+            "routed_rows": 7103790
+          },
+          {
+            "min_rows": 2334,
+            "max_rows": 8192,
+            "jobs": 7485,
+            "routed_rows": 49290450
+          }
+        ]
+      }
+    }
+  ],
   "runtime_asset_delta": {
     "/usr/lib/x86_64-linux-gnu/libze_intel_gpu.so.1.17.39395": {
       "package": "libze-intel-gpu1:amd64",
