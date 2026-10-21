@@ -62,8 +62,9 @@ exit, including errors, without changing process environment variables.
 The new engine and twelve fixtures compiled. Separate pair-off/on CPU children
 passed twelve cases each: two formats, NT1/NT2, prefill/decode/prefill sequencing,
 actual pair-row dispatch, identical output bits, guards and scope restoration.
-The fifteen-case CPU census host contract also passed. These are build/CPU
-component checks, not new model speed, GPU-route or adoption evidence. The
+The fifteen-case CPU census host contract and eighteen same-build engine
+groups also passed, with unchanged boot and no fresh driver faults. These are
+component checks, not new model speed, model-route or adoption evidence. The
 legacy shared CPU dispatcher is contained, not justified as the final architecture.
 
 The final baseline/candidate pair measured code PP 636.6/636.3 and TG

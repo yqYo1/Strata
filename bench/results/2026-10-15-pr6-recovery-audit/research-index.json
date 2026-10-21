@@ -3568,7 +3568,7 @@
       "https://github.com/oneapi-src/level-zero-spec/blob/v1.17.24/scripts/core/event.yml"
     ],
     "implementation_scope": {
-      "state": "Independent prefill/decode selection is the design default. Source6e40 confines the IQ2 candidate to decode batches; compilation and24 CPU phase cases passed. New same-build engine/model qualification is pending. The unstarted MTP plan remains closed.",
+      "state": "Independent prefill/decode selection is the design default. Source6e40 confines the IQ2 candidate to decode batches; compilation,24 CPU phase cases and18 same-build engine groups passed with no fresh faults. Model qualification is pending. The unstarted MTP plan remains closed.",
       "base_revision": "ab740ff134b7ee716dea8226f5899da42c6f57e5",
       "reason": "The frozen six-process comparison has closed. The isolated source is now integrated without squashing; original source commits remain reachable.",
       "next": "Qualify source6e40 and commit a new decode-specific comparison; assess decode independently and preserve the original whole-process failure. The legacy shared CPU dispatcher is contained, not justified by measured sharing benefit. Resume MTP attribution only with a new qualified plan and the reviewed failure-sample/order fixes.",
@@ -3625,7 +3625,9 @@
         "pair_on_cases": 12,
         "CPU_component_passed": true,
         "GPU_model_qualified": false,
-        "consumer": "Safety prerequisite for the new decode-only IQ2 comparison; review at model qualification."
+        "consumer": "Safety prerequisite for the new decode-only IQ2 comparison; review at model qualification.",
+        "engine_component_groups_passed": 18,
+        "fresh_faults": []
       }
     },
     "source_safety_audit": {
