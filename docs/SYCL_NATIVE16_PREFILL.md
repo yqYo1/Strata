@@ -3167,7 +3167,7 @@ matched-GEMM ceiling fixture,with a131072B budget and review at clean-cohort
 closure; remove it if that fixture is not selected. Full layers/traces are not
 retained. Clean admission consumes the compact paired result and retained
 engine/fixtures,not the deleted diagnostic root.
-Five of the six clean processes are closed. Each passes the native/request/work,
+All six clean processes are closed. Each passes the native/request/work,
 observer-absence,owner,runtime/model-identity and fresh-fault gates:
 
 | Process | Packed | First-long tok/s | Median of three subsequent requests |
@@ -3177,12 +3177,19 @@ observer-absence,owner,runtime/model-identity and fresh-fault gates:
 | 2 | On | 928.963 | 1002.106 |
 | 3 | Off | 926.748 | 1000.209 |
 | 4 | Off | 927.347 | 999.525 |
+| 5 | On | 927.958 | 1002.149 |
 
-The two completed pairs conserve all four input bodies and logical MoE work;
-requested expert H2D bytes fall in every paired request. Their subsequent-median
-ratios are1.0021672 (+0.2167%) and1.0018969 (+0.1897%). The first-use gap remains
-unexplained. Neither a speed gain nor the all-three1000 target is qualified;
-the final candidate process is still pending. Continue the frozen order and criteria.
+All three pairs conserve the four input bodies and logical MoE work; requested
+expert H2D bytes fall in every paired request. Subsequent-median ratios are
+1.0021672,1.0018969 and1.0026255; geomean1.0022298 (+0.2230%). Nonregression
+passes, but the prospective2% faster screen does not: the speed decision remains
+inconclusive/small effect. All three candidate medians exceed1000tok/s, meeting
+the prefill throughput milestone for subsequent fresh117K requests with Q8 MTP.
+Keep first-long separately; its gap remains unexplained. Full model digests
+match across the cohort, all native exits are0 and no fresh fault is observed.
+The24-token outputs do not qualify sustained decode,task quality,weak-MTP/agent
+sessions,physical262144 or session/RESTORE. Model adoption remains unqualified;
+this result does not change the packed-bank opt-in default.
 This targets
 the observed expert-upload service, not a proven physical PCIe saturation;
 cross-window copy reduction needs the multi-window117K model test with Q8 MTP.
