@@ -6958,10 +6958,10 @@
       "model": "gpt-6-luna",
       "reasoning": "max",
       "worker_closed": true,
-      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/mtp-dense-attention-scope-review-20261021.json",
       "bytes": 5940,
       "sha256": "4b58a061e8b54db1a9177724b106476f76e0ef6d329c8efeb9f6ad31dfc9aca4",
-      "digest": "The five requested index rows and two directly linked MTP references do not compare single-row MTP qsa_decode_attn_batch with production vLLM-XPU/SGLang decode methods. MTP coverage is window/catch-up; QSA reports are long-prefill schedules; graph coverage is timing; adjacent MTP reports cover expert reuse or CPU kernels. Local decode already groups 12 Q heads per KV head and splits 64-cell chunks before a second merge. Actual source geometry is N=2560, NH=24, NKV=2, HD=256; q_proj=12288 includes Q and gate. No bottleneck, speed or adoption gate is cleared; MTP safety/provenance holds remain open."
+      "digest": "The five requested index rows and two directly linked MTP references do not compare single-row MTP qsa_decode_attn_batch with production vLLM-XPU/SGLang decode methods. MTP coverage is window/catch-up; QSA reports are long-prefill schedules; graph coverage is timing; adjacent MTP reports cover expert reuse or CPU kernels. Local decode already groups 12 Q heads per KV head and splits 64-cell chunks before a second merge. Actual source geometry is N=2560, NH=24, NKV=2, HD=256; q_proj=12288 includes Q and gate. No bottleneck, speed or adoption gate is cleared; MTP safety/provenance holds remain open.",
+      "raw_retired": true
     },
     "shape_correction": "Do not infer 96Q/8KV/64 from projection widths: q_proj is NH*2*HD (query plus gate); source uses NH=24, NKV=2, HD=256.",
     "source_kernel": "MTP full forward requires T=1 and calls qsa_decode_attn_batch(nq=T). SYCL decode_attention.cpp fixes HD=256, G=12, CHUNK=64, WG=256; each group handles one KV head, its 12 Q heads and 64 cells. A second kernel merges per-chunk max/sum/weighted-V. cap=32768 gives 512 chunks and 1024 partial groups for one row.",
@@ -6991,11 +6991,11 @@
       "model": "gpt-6-luna",
       "reasoning": "max",
       "worker_closed": true,
-      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/mtp-dense-qsa-methods-native-review-20261021.json",
       "bytes": 7324,
       "sha256": "de01dac0ed8a0b6beb2fa0e6c93139cc97f78d98cd23c547ad8db482d7404fc8",
       "verdict": "ACCEPT_FOR_INDEXED_RETRIEVAL_WITH_CORRECTIONS",
-      "digest": "Distinct, useful method reference. Local source confirms NH24/NKV2/HD256, G12, 64-cell split, existing 12-Q-per-KV reuse and second merge; source counts do not establish a bottleneck or speed. Prior reports cover MTP state/window, event timing or long-prefill QSA. Correction: no pinned external K8V8 implementation is analyzed; KIVI is a 2-bit paper. LightLLM's pinned Apache-2.0 sources support split/GQA comparison; SGLang/FlashInfer remain mutable or paper context. Retrieve only after attribution selects an attention or merge question. No adoption/qualification changes; holds remain open."
+      "digest": "Distinct, useful method reference. Local source confirms NH24/NKV2/HD256, G12, 64-cell split, existing 12-Q-per-KV reuse and second merge; source counts do not establish a bottleneck or speed. Prior reports cover MTP state/window, event timing or long-prefill QSA. Correction: no pinned external K8V8 implementation is analyzed; KIVI is a 2-bit paper. LightLLM's pinned Apache-2.0 sources support split/GQA comparison; SGLang/FlashInfer remain mutable or paper context. Retrieve only after attribution selects an attention or merge question. No adoption/qualification changes; holds remain open.",
+      "raw_retired": true
     },
     "corrections": [
       "Material scope limit: local INT8 is described, but there is no pinned external production K8V8 decode implementation. KIVI is a 2-bit paper, not an 8-bit comparator. Index as partial; retrieve an exact implementation/config/dispatch and file license only if attribution selects that question.",
@@ -7027,6 +7027,14 @@
       "scope": null,
       "reason": "No distinct follow-up before attribution and a concrete K8V8 or merge question; do not repeat the generic survey."
     },
-    "coverage_limit": "No pinned external production K8V8 implementation was analyzed; KIVI is a 2-bit paper. This is a partial methods reference, not fulfillment of that comparator."
+    "coverage_limit": "No pinned external production K8V8 implementation was analyzed; KIVI is a 2-bit paper. This is a partial methods reference, not fulfillment of that comparator.",
+    "consumed_reviews_retired": {
+      "result_commit": "e5db5a64efa91bc4dbbe55be2a1f704a4d6af1a1",
+      "manifest": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/closed-mtp-decode-reviews-20261021.jsonl",
+      "manifest_sha256": "625c50e836b921d16af455fed587d4a4a1ab17317dc4b5df4fc40704675436ba",
+      "files_deleted": 2,
+      "bytes_retired": 13264,
+      "decision": "Compact metadata retained; full knowledge report remains only for its named post-attribution consumer. No source/build/fixture or active run was removed."
+    }
   }
 }
