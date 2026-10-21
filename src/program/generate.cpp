@@ -53,6 +53,7 @@
 #include "strata/core/prefill_head_scope.hpp"
 #ifdef STRATA_ENABLE_SYCL
 #include "strata/sycl/checked_cleanup.hpp"
+#include "strata/kernels/cpu/iq2_pair_avx2.hpp"
 #endif
 #include "strata/core/verify.hpp"
 #include "strata/core/mtp.hpp"
@@ -5751,6 +5752,8 @@ int main(int argc, char** argv) {
         int64_t rounds = 0;
         const char* census_env = std::getenv("STRATA_CPU_WORK_CENSUS");
         const bool cpu_census_enabled = census_env && std::strcmp(census_env, "1") == 0;
+        const char* iq2_audit_env = std::getenv("STRATA_IQ2_PAIR_AUDIT");
+        const bool iq2_audit_enabled = iq2_audit_env && std::strcmp(iq2_audit_env, "1") == 0;
         uint64_t census_request = 0;
         const int S = o.spec;
         const int S_mtp = o.mtp_max_t > 0 ? std::min(o.mtp_max_t, S) : S;   // the MTP's windows; suffixes go up to S
@@ -6091,7 +6094,8 @@ int main(int argc, char** argv) {
             // host copies and slots are always current (every writer writes both), so they need nothing
             if (resume > 0 && reread_to <= 0) mtp.kv_restore(resume);
             tr("request", n, geni ? 1 : 0);
-            if (cpu_census_enabled && !strata::core::CpuWorkCensus::checked_add(census_request, 1)) {
+            if ((cpu_census_enabled || iq2_audit_enabled) &&
+                !strata::core::CpuWorkCensus::checked_add(census_request, 1)) {
                 std::printf("ERR CPU census request sequence overflow\n"); return 1;
             }
             mtp.set_prompt_len(n);
@@ -6523,6 +6527,10 @@ int main(int argc, char** argv) {
             const auto early_pcie0 = ver.early_pcie_stats();
             const auto host_copy_groups0 = drive.d.host_layer_copy_groups;
             ver.reset_query_profile();
+            // The prior synchronous CPU pool has drained. Snapshot outside the
+            // decode clock; optional callback counters themselves remain charged.
+            strata::kernels::cpu::Iq2GuAudit iq2_audit_begin;
+            if (iq2_audit_enabled) iq2_audit_begin = strata::kernels::cpu::iq2_gu_audit_snapshot();
 #endif
             const Clock::time_point d0 = Clock::now();
             // STRATA_DECODE_TIMING=1: where a request's decode time goes (one line per request)
@@ -6682,6 +6690,27 @@ int main(int argc, char** argv) {
                 std::printf("ERR %s\n", err.c_str());
                 return 1;
             }
+#ifdef STRATA_ENABLE_SYCL
+            if (iq2_audit_enabled) {
+                const auto iq2_audit_end = strata::kernels::cpu::iq2_gu_audit_snapshot();
+                // This prints existing host counters only, after the synchronous
+                // pool and commit drain. It does not wait on or read the device.
+                auto write_audit = [&](const char* stage, const strata::kernels::cpu::Iq2GuAudit& a) {
+                    std::fprintf(stderr, "strata IQ2_GU_AUDIT stage=%s request=%llu enabled=%d overflow=%d threads=%u\n",
+                        stage, (unsigned long long)census_request, a.enabled, a.overflow, a.size);
+                    for (unsigned i = 0; i < a.size && i < a.threads.size(); ++i) {
+                        const auto& t = a.threads[i];
+                        std::fprintf(stderr, "strata IQ2_GU_THREAD stage=%s request=%llu slot=%u tid=%llu "
+                            "calls=%llu row_ops=%llu nt1_rows=%llu pair_rows=%llu cpu=%d pinned=%d\n",
+                            stage, (unsigned long long)census_request, i, (unsigned long long)t.tid,
+                            (unsigned long long)t.calls, (unsigned long long)t.row_ops,
+                            (unsigned long long)t.nt1_rows, (unsigned long long)t.pair_rows, t.cpu, t.pinned);
+                    }
+                };
+                write_audit("begin", iq2_audit_begin);
+                write_audit("end", iq2_audit_end);
+            }
+#endif
             if (cpu_census) {
                 const DecSnap d1 = dec_snap();
                 cpu_census->finish(stderr, dec_windows, dec_T, d1.misses - ds0.misses,

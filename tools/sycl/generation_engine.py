@@ -118,6 +118,72 @@ def request_evidence(text, samples):
     return evidence
 
 
+def iq2_pair_evidence(text, samples, arm, expected_cpus=None):
+    """Bind drained host counters to requests; observers remain charged to timing.
+
+    Registration identifies threads only. The request boundary is owned by the
+    synchronous driver, not inferred from TLS. This proves dispatch/work, not
+    clean speed or CPU/DRAM saturation.
+    """
+    guards.require(arm in (0,1), 'unknown IQ2 pair arm')
+    headers=list(re.finditer(r'^strata serve: prompt (\d+) tokens = (\d+) reused \+ (\d+) read[^\n]*, '
+        r'(\d+) generated[^\n]*$',text,re.M))
+    guards.require(len(headers)==len(samples),'IQ2 audit/native request extent')
+    header=re.compile(r'strata IQ2_GU_AUDIT stage=(begin|end) request=(\d+) enabled=(\d+) overflow=(\d+) threads=(\d+)')
+    thread=re.compile(r'strata IQ2_GU_THREAD stage=(begin|end) request=(\d+) slot=(\d+) tid=(\d+) '
+        r'calls=(\d+) row_ops=(\d+) nt1_rows=(\d+) pair_rows=(\d+) cpu=(-?\d+) pinned=(\d+)')
+    fields=('calls','row_ops','nt1_rows','pair_rows');limit=(1<<64)-1
+    result=[];previous=0
+    for request,(native,sample) in enumerate(zip(headers,samples),1):
+        guards.require(tuple(map(int,native.groups()))==(sample['prompt_tokens'],sample['reused_tokens'],
+            sample['read_tokens'],sample['generated_tokens']),'IQ2 audit/native sample binding')
+        lines=[s for s in text[previous:native.start()].splitlines() if s.startswith('strata IQ2_GU_')]
+        offset=0;snapshots=[]
+        for stage in ('begin','end'):
+            m=header.fullmatch(lines[offset]) if offset<len(lines) else None;offset+=1
+            guards.require(m is not None,'missing/malformed IQ2 audit snapshot')
+            phase,req,enabled,overflow,size=m.groups();size=int(size)
+            guards.require(phase==stage and int(req)==request and enabled=='1' and overflow=='0' and
+                0<=size<=64,'IQ2 audit phase/request/overflow')
+            snapshot=[]
+            for slot in range(size):
+                m=thread.fullmatch(lines[offset]) if offset<len(lines) else None;offset+=1
+                guards.require(m is not None,'missing/malformed IQ2 audit thread')
+                phase,req,index,tid,*counts,cpu,pinned=m.groups();values=dict(zip(fields,map(int,counts)))
+                guards.require(phase==stage and int(req)==request and int(index)==slot and
+                    0<int(tid)<=limit and int(cpu)>=0 and pinned in ('0','1') and
+                    all(0<=v<=limit for v in values.values()) and
+                    values['pair_rows']<=values['nt1_rows']<=values['row_ops'], 'IQ2 audit thread identity/bounds')
+                snapshot.append(dict(tid=int(tid),cpu=int(cpu),pinned=int(pinned),**values))
+            guards.require(len({t['tid']for t in snapshot})==len(snapshot),'duplicate IQ2 audit thread')
+            snapshots.append(snapshot)
+        before,after=snapshots
+        guards.require(offset==len(lines) and len(before)<=len(after),'extra IQ2 audit rows/lost thread')
+        totals=dict.fromkeys(fields,0);active=[]
+        for slot,end in enumerate(after):
+            begin=before[slot] if slot<len(before) else dict.fromkeys(fields,0)
+            if slot<len(before):
+                guards.require(all(begin[k]==end[k]for k in ('tid','cpu','pinned')),'IQ2 audit thread changed')
+            delta={k:end[k]-begin[k]for k in fields}
+            guards.require(all(v>=0 for v in delta.values()) and
+                delta['pair_rows']<=delta['nt1_rows']<=delta['row_ops'],'IQ2 audit counter regression/delta')
+            for k,v in delta.items():
+                totals[k]+=v;guards.require(totals[k]<=limit,'IQ2 audit aggregate overflow')
+            if delta['row_ops']>0:
+                guards.require(delta['calls']>0,'IQ2 audit work without callback');active.append(end)
+        guards.require(totals['pair_rows']==(totals['nt1_rows']if arm else 0),'IQ2 actual selected dispatch differs')
+        cpus=sorted(t['cpu']for t in active)
+        if expected_cpus is not None and sample['read_tokens']>=32768:
+            guards.require(totals['nt1_rows']>0 and cpus==sorted(expected_cpus) and
+                all(t['pinned']==1 for t in active),'IQ2 long request missing actual pinned work')
+        result.append(dict(request=request,**totals,active_threads=len(active),
+            pinned_threads=sum(t['pinned']for t in active),cpus=cpus))
+        previous=native.end()
+    guards.require(not any(s.startswith('strata IQ2_GU_')for s in text[previous:].splitlines()),
+        'unbound trailing IQ2 audit')
+    return result
+
+
 def decode_work_evidence(text, samples):
     """Existing trace/footer counts: logical work, never physical RAM/PCIe traffic."""
     headers=list(re.finditer(r'^strata serve: prompt (\d+) tokens = (\d+) reused \+ (\d+) read[^\n]*, '
