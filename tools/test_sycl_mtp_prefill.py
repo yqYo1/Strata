@@ -17,9 +17,9 @@ def sample(read=74, generated=24):
     return dict(prompt_tokens=read, read_tokens=read, reused_tokens=0, generated_tokens=generated)
 
 
-def log(cells=73, position=0, first=0, batch=73, read=74):
-    return (f'strata draft kv: {cells} cells from {position} (first needed {first}), batch {batch}: '
-            'drafter idle 0.0 ms, the batches 1.2 ms, all 1.2 ms\n'
+def log(cells=73, path='batched', mode=0, read=74, chunks=None):
+    return (''.join(f'strata serve: DRAFT_PREFILL path={path} mode={mode} cells={n}\n'
+                   for n in (chunks if chunks is not None else [cells])) +
             f'strata serve: prompt {read} tokens = 0 reused + {read} read, 24 generated\n')
 
 
@@ -52,7 +52,7 @@ class AdmissionTest(unittest.TestCase):
     def test_warmup_requires_complete_cells_not_just_positive_batch(self):
         self.assertEqual(mtp.request_evidence(log(),[sample()])[0]['draft_cells'],73)
         # These all have a positive batch, but do not prove the same request.
-        for text in (log(cells=72),log(position=1),log(first=73),log(batch=63),
+        for text in (log(cells=72),log(path='token'),log(mode=1),log(cells=0),
                      log()+log(),log().replace('0 reused','1 reused')):
             with self.subTest(text=text),self.assertRaises(RuntimeError):
                 mtp.request_evidence(text,[sample()])
@@ -65,11 +65,33 @@ class AdmissionTest(unittest.TestCase):
             mtp.request_evidence(log(cells=72)+log(cells=74),[sample(),sample()])
 
     def test_malformed_extra_records_cannot_hide_behind_conserved_cells(self):
-        for extra in ('strata draft kv: malformed\n',
-                      'strata draft kv: 1 cells from 73 (first needed 73), batch 64: drafter idle NaN ms, the batches 1.0 ms, all 1.0 ms\n'):
+        for extra in ('strata serve: DRAFT_PREFILL malformed\n',
+                      'strata serve: DRAFT_PREFILL path=batched mode=0 cells=1 trailing\n',
+                      'strata draft kv: unexpected timer\n',
+                      'strata serve: SNAPSHOT_VERIFY unexpected restore\n'):
             for text in (extra+log(),log()+extra):
                 with self.subTest(text=text),self.assertRaises(RuntimeError):
                     mtp.request_evidence(text,[sample()])
+
+    def test_long_request_requires_exact_chunks_and_tail(self):
+        chunks=[8192]*4+[441]
+        self.assertEqual(mtp.request_evidence(log(read=33210,chunks=chunks),[sample(33210)])[0]['draft_cells'],33209)
+        for wrong in ([33209],[8191,8193,8192,8192,441],chunks+[1],chunks[:-1],chunks[:-1]+[440]):
+            with self.subTest(chunks=wrong),self.assertRaises(RuntimeError):
+                mtp.request_evidence(log(read=33210,chunks=wrong),[sample(33210)])
+
+    def test_effective_environment_rejects_observer_reintroduction_and_safety_changes(self):
+        env=dict(STRATA_MTP_BATCH_F16='0',STRATA_SNAPSHOT_VERIFY='1',STRATA_SYCL_PREFILL_SAME_QUEUE='1',
+                 UR_L0_V2_FORCE_DISABLE_COPY_OFFLOAD='1',NEOReadDebugKeys='1',EnableDirectSubmission='0',ZES_ENABLE_SYSMAN='0')
+        actual={k.encode():v.encode() for k,v in env.items()}
+        mtp.require_environment(actual,env)
+        for key in mtp.ABSENT_OBSERVERS:
+            # Even value0 is forbidden: several observer switches use presence.
+            with self.subTest(key=key),self.assertRaises(RuntimeError):
+                mtp.require_environment(actual | {key.encode():b'0'},env)
+        for key in env:
+            changed=dict(actual);changed.pop(key.encode())
+            with self.subTest(missing=key),self.assertRaises(RuntimeError):mtp.require_environment(changed,env)
 
     def test_only_arm_and_private_root_may_change(self):
         def plan(root,arm):

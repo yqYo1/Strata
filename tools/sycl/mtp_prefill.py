@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
-"""Main-owned matched MTP draft-KV comparison using the existing qualified engine.
+"""Main-owned minimal-marker MTP comparison using the existing qualified engine.
 
-The original one-shot pilot is recoverable from dbea9dd0e. This controller uses
-fresh plans/processes; it never changes the pilot's original criteria or outcome.
+The original pilot is recoverable from dbea9dd0e and the failed diagnostic
+comparison from b62f673a7. Neither contributes samples to this fresh comparison.
 """
 import argparse
 import copy
@@ -29,10 +29,12 @@ c = status.c
 gen, assets, guards, supervision = c.gen, c.assets, c.guards, c.supervision
 P, B, A = c.P, c.B, c.A
 RESULT = A / 'prefill-mtp-current.json'
-ROOT = B / 'mtp-f16-comparison-v1'
+ROOT = B / 'mtp-f16-minimal-marker-v1'
 ORDER = (0, 1, 1, 0, 0, 1)
 PAIRS = ((0, 1), (3, 2), (4, 5))
 WORKLOAD = 'regular-code'
+ABSENT_OBSERVERS = ('STRATA_TRACE', 'STRATA_DRAFT_TIMING', 'UR_ENABLE_LAYERS',
+                    'LD_PRELOAD', 'STRATA_UR_PROBE_EXPECTED_LOADER')
 
 
 def digest(path):
@@ -41,17 +43,16 @@ def digest(path):
 
 
 def draft_rows(text):
-    pattern = (r'strata draft kv: (\d+) cells from (\d+) \(first needed (\d+)\), batch (\d+): '
-               r'drafter idle ([\d.]+) ms, the batches ([\d.]+) ms, all ([\d.]+) ms')
+    guards.require(not re.search(r'^strata (?:draft kv|serve: SNAPSHOT_VERIFY)', text, re.M),
+                   'unexpected timer or snapshot-restore observer')
+    pattern = r'strata serve: DRAFT_PREFILL path=(batched|token) mode=(-?\d+) cells=(\d+)'
     parsed = []
     for line in text.splitlines():
-        if not line.startswith('strata draft kv'): continue
+        if not line.startswith('strata serve: DRAFT_PREFILL'): continue
         match = re.fullmatch(pattern, line)
-        guards.require(match is not None, 'malformed draft-KV record')
+        guards.require(match is not None, 'malformed draft-KV marker')
         parsed.append(match.groups())
-    return [dict(cells=int(n), position=int(pos), first_needed=int(first), batch=int(batch),
-                 idle_ms=float(idle), batch_ms=float(batch_ms), all_ms=float(all_ms))
-            for n, pos, first, batch, idle, batch_ms, all_ms in parsed]
+    return [dict(path=path, mode=int(mode), cells=int(cells)) for path, mode, cells in parsed]
 
 
 def request_evidence(text, samples):
@@ -63,28 +64,32 @@ def request_evidence(text, samples):
         guards.require(tuple(map(int, header.groups())) == (sample['prompt_tokens'], sample['reused_tokens'],
             sample['read_tokens'], sample['generated_tokens']) and sample['reused_tokens'] == 0,
             'native/journal request binding differs')
-        rows = draft_rows(text[previous:header.start()]); position = 0
-        for row in rows:
-            guards.require(row['position'] == position and row['cells'] > 0 and row['batch'] >= 64
-                and row['position'] <= row['first_needed'] < row['position'] + row['cells']
-                and all(math.isfinite(row[k]) and row[k] >= 0 for k in ('idle_ms', 'batch_ms', 'all_ms')),
-                'invalid/missing batched draft-KV span')
-            position += row['cells']
-        guards.require(rows and position == sample['read_tokens'] - 1, 'draft-KV cells do not conserve request')
-        evidence.append(dict(read_tokens=sample['read_tokens'], draft_cells=position,
-            batch_count=len(rows), batch_ms=round(sum(row['batch_ms'] for row in rows), 4)))
+        rows = draft_rows(text[previous:header.start()]); cells = sample['read_tokens'] - 1
+        expected = [8192] * (cells // 8192) + ([cells % 8192] if cells % 8192 else [])
+        guards.require(rows and all(r['path'] == 'batched' and r['mode'] == 0 for r in rows)
+            and [r['cells'] for r in rows] == expected, 'draft-KV marker route/chunks do not conserve request')
+        evidence.append(dict(read_tokens=sample['read_tokens'], draft_cells=sum(r['cells'] for r in rows),
+            batch_count=len(rows), path='batched', mode=0))
         previous = header.end()
     guards.require(not draft_rows(text[previous:]), 'unbound trailing draft batch')
     return evidence
 
 
+def require_environment(actual, expected):
+    keys = ('STRATA_MTP_BATCH_F16', 'STRATA_SNAPSHOT_VERIFY', 'STRATA_SYCL_PREFILL_SAME_QUEUE',
+            'UR_L0_V2_FORCE_DISABLE_COPY_OFFLOAD', 'NEOReadDebugKeys', 'EnableDirectSubmission', 'ZES_ENABLE_SYSMAN')
+    guards.require(all(actual.get(k.encode()) == expected[k].encode() for k in keys)
+        and all(k not in expected and k.encode() not in actual for k in ABSENT_OBSERVERS),
+        'effective minimal-marker native environment differs')
+
+
 def comparison_plan():
     return dict(order=list(ORDER), pairs=[list(p) for p in PAIRS], workload=WORKLOAD,
         question='Does existing FP16 GEMM for MTP prefill improve matched long-input PP without hurting sustained decode or draft acceptance?',
-        constants='Same current3b native/eight fixtures, model/tokenizer/expert profile,131072 residentINT8 context,8192 prefill,1256 expert slots,5 CPU workers,spec4; official bench.sh long-generation-only regular-code, thinking enabled,16384 output allowance. Four official warmups then one fresh>=32K request per independent process. Only MTP_BATCH_F16 differs. Immutable validation/trace/draft-timing observers and qualified safety settings match.',
-        admission='Before each long HTTP dispatch require all four successful official warmups, native PID/SID/executable/effective environment, positive draft batching and exact per-request cell conservation, no native errors. This prospectively repairs the pilot gate. Final request must have>=1024 generated tokens including thought plus>=512 answer characters,>=256 offered drafts, complete journal/native/route/ownership/source/model/runtime/fault checks. Stop on first failure; never retry/discard.',
+        constants='Same current3b native/eight fixtures, model/tokenizer/expert profile,131072 residentINT8 context,8192 prefill,1256 expert slots,5 CPU workers,spec4; official bench.sh long-generation-only regular-code, thinking enabled,16384 output allowance. Four official warmups then one fresh>=32K request per independent process. Only MTP_BATCH_F16 differs. SNAPSHOT_VERIFY emits one success marker per chunk without an added GPU wait; prompt-cache0/conversation-cache-mib0 exclude its heavy restore branch. Trace, draft timing, UR layers and private preload are absent. Qualified safety settings match.',
+        admission='Before each long HTTP dispatch require all four successful official warmups, native PID/SID/executable/effective environment, successful batched mode0 draft markers with exact8192/tail request-cell conservation, and no native errors. Final request must have>=1024 generated tokens including thought plus>=512 answer characters,>=256 offered drafts, complete journal/native/route/ownership/source/model/runtime/fault checks. Stop on first failure; never retry/discard. No old diagnostic samples enter this cohort.',
         decisions='All three prefill candidate/base ratios>1 and geomean>1.02 qualifies faster screen; all<1 and geomean<1/1.02 slower screen; otherwise inconclusive. Decode uses1.05 and1/1.05 with the same all-pair direction rule and generation-count ratios within1/1.05..1.05. Otherwise decode is inconclusive. Report acceptance change as candidate effect, never require equal acceptance or text. Nonregression is geomean>=0.98 and each ratio>=0.95 separately for PP and TG. Keep all samples/spreads. Strong-MTP classification requires all acceptance>=0.60. No automatic extra repeats or adoption.',
-        limits='Matched diagnostic with parameter validation, trace and draft timer (entry synchronization), not clean speed or observer-overhead evidence. Each sample is first long request after four warmups, not subsequent-long steady state. Weak-MTP,agent-session,task quality,physical262144/session/RESTORE and70TG remain pending.')
+        limits='Minimal-marker timing, not a zero-observer/overhead proof. Markers establish the batched family and cell coverage; fixed-source geometry/dispatch predicates establish the Q8/FP16 family, not an inner kernel or hardware saturation. Each sample is first long request after four warmups, not subsequent-long steady state. No comparison with old diagnostic TG establishes observer cost. Weak-MTP,agent-session,task quality,physical262144/session/RESTORE and70TG remain pending.')
 
 
 def invariant(plan):
@@ -96,7 +101,7 @@ def invariant(plan):
 def current(record, full=False):
     build, proof, preload = status.qualification()
     guards.require(record['binary'] == build['binary'] and record['qualification'] == proof
-        and record['native_validation_probe'] == preload, 'native/preload qualification changed')
+        and record['qualification_preload_reference'] == preload, 'native/preload qualification changed')
     pins = gen.benchmark_pins(record['source_commit'])
     guards.require(assets.fingerprint(pins) == record['benchmark_fingerprint'], 'controller/benchmark input changed')
     original, reference = status.original_plan()
@@ -107,6 +112,9 @@ def current(record, full=False):
     for plan in record['plans']:
         guards.require(invariant(plan) == record['invariant_signature'], 'unexpected arm difference')
         for path, expected in plan['generated_inputs'].items(): guards.require(digest(path) == expected, 'generated input changed')
+        for flag in ('--prompt-cache', '--conversation-cache-mib'):
+            guards.require(plan['config']['args'][plan['config']['args'].index(flag)+1] == '0',
+                           'minimal marker requires disabled snapshot caches')
     guards.require(assets.machine_identity() == record['machine_identity'], 'machine changed')
 
 
@@ -126,30 +134,30 @@ def prepare():
         config['args'][config['args'].index('--expert-profile') + 1] = str(root / 'expert-profile.bin')
         config.update(log=str(root / 'engine.stderr'), env={})
         env = {k: v.replace(original['root'], str(root)) for k, v in original['environment'].items()}
-        env.update(STRATA_MEASUREMENT_ROOT=str(root), STRATA_MTP_BATCH_F16=str(arm), STRATA_DRAFT_TIMING='1',
-            STRATA_TRACE='1', UR_ENABLE_LAYERS='UR_LAYER_PARAMETER_VALIDATION',
+        for key in ABSENT_OBSERVERS: env.pop(key, None)
+        env.update(STRATA_MEASUREMENT_ROOT=str(root), STRATA_MTP_BATCH_F16=str(arm), STRATA_SNAPSHOT_VERIFY='1',
             UR_LOG_TRACING='level:warning;flush:warning;output:stderr', TMPDIR=str(root/'tmp'), XDG_CACHE_HOME=str(root/'cache'))
         for name in ('STRATA_PREFILL_LAYER_MAJOR_PROFILE', 'STRATA_PREFILL_CPU_WAIT_PROFILE',
                      'STRATA_SYCL_PREFILL_COMMAND_PROFILE', 'STRATA_PREFILL_LAYER_MAJOR_QSA_PROFILE',
                      'STRATA_PREFILL_LAYER_MAJOR_GDN_PROFILE'): env[name] = '0'
         for name in ('UR_L0_V2_FORCE_DISABLE_COPY_OFFLOAD', 'NEOReadDebugKeys', 'EnableDirectSubmission', 'STRATA_SYCL_PREFILL_SAME_QUEUE'):
             guards.require(env[name] == baseline[name], 'qualified safety changed')
-        guards.require('LD_PRELOAD' not in env and env['ZES_ENABLE_SYSMAN'] == '0', 'private validation/Sysman-off required')
+        require_environment({k.encode(): v.encode() for k, v in env.items()}, env)
         shutil.copyfile(P / 'data/expert-profile.bin', root / 'expert-profile.bin')
         guards.require(digest(root/'expert-profile.bin') == original['profile_sha256'], 'expert profile changed')
-        native = dict(binary=build['binary'], native_validation_probe=preload); generated = {}
+        native = dict(binary=build['binary']); generated = {}
         for path, body in ((root/'config.json', config), (root/'plan.json', native)):
             path.write_text(json.dumps(body, indent=2)+'\n'); generated[str(path)] = digest(path)
         generated[str(root/'expert-profile.bin')] = original['profile_sha256']
         with socket.socket() as sock: sock.bind(('127.0.0.1', 0)); port = sock.getsockname()[1]
         command = ['/bin/sh', str(P/'bench.sh'), '--config', str(root/'config.json'), '--port', str(port),
             '--long-generation-only', '--long-generation-workload', WORKLOAD, '--think', '--runs', '1',
-            '--profile-request-gates', '--workload-id', 'mtp_f16_matched_20261021', '--fail-fast-engine-error',
+            '--profile-request-gates', '--workload-id', 'mtp_f16_minimal_marker_20261021', '--fail-fast-engine-error',
             '--ready-timeout', '600', '--out', str(root/'bench')]
         plans.append(dict(cohort=cohort, arm=arm, root=str(root), config=config, environment=env,
             generated_inputs=generated, command=command))
     record = dict(stage='prepared', source_commit=source, build_source_commit=build['source_commit'],
-        binary=build['binary'], qualification=proof, native_validation_probe=preload,
+        binary=build['binary'], qualification=proof, qualification_preload_reference=preload,
         benchmark_fingerprint=assets.fingerprint(pins), original_configuration=reference, machine_identity=assets.machine_identity(),
         plan=comparison_plan(), plans=plans, invariant_signature=invariant(plans[0]), processes=[],
         active=False, ownership_closed=True, passed=False, complete=False, adoption_qualified=False,
@@ -210,9 +218,7 @@ def run(cohort):
                 guards.require(identity and identity['sid'] == leader['pid'] and identity['start_ticks'] == native['start_ticks']
                     and Path('/proc',str(native['pid']),'exe').resolve() == Path(record['binary']['path']).resolve(), 'native ownership differs')
                 actual = dict(part.split(b'=',1) for part in Path('/proc',str(native['pid']),'environ').read_bytes().split(b'\0') if b'=' in part)
-                keys = ('STRATA_MTP_BATCH_F16','STRATA_DRAFT_TIMING','STRATA_TRACE','STRATA_SYCL_PREFILL_SAME_QUEUE',
-                        'UR_L0_V2_FORCE_DISABLE_COPY_OFFLOAD','NEOReadDebugKeys','EnableDirectSubmission','UR_ENABLE_LAYERS','ZES_ENABLE_SYSMAN')
-                guards.require(all(actual.get(k.encode()) == env[k].encode() for k in keys), 'effective native environment differs')
+                require_environment(actual, env)
                 journal, = (root/'bench').glob('*/requests.jsonl')
                 events = [json.loads(line) for line in journal.read_text().splitlines()]
                 guards.require(len(events) == 10 and events[-1]['kind'] == 'start' and events[-1]['phase'] == 'long-generation/'+WORKLOAD, 'warmup/long-start journal extent differs')
@@ -252,8 +258,7 @@ def run(cohort):
         guards.require(native['exit_code'] == 0 and native['boot_id'] == boot and native['binary'] == record['binary']
             and native['native'] == row['native'] and native['args'] == ['--serve', *plan['config']['args']], 'native exit/command differs')
         text = (root/'engine.stderr').read_text(); assets.verify_pool(text, 5)
-        activation = c.validation.preload_evidence(text, native['native']['pid'])
-        guards.require(activation['loader'] == record['native_validation_probe']['loader']['path'], 'validation provider changed')
+        guards.require('native_validation_probe' not in native, 'unexpected timed validation preload')
         path, = (root/'bench').glob('*/requests.jsonl')
         events = [json.loads(line) for line in path.read_text().splitlines()]
         work = request_evidence(text, [e['sample'] for e in events if e['kind'] == 'result'])

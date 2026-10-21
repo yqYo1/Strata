@@ -2969,7 +2969,9 @@ Source`4d4792007` narrows the reader to its consumed preload-component subtree;
 seven host tests pass, including unrelated edits and changed/missing/type-altered
 qualification fields. Original9836 native inputs, eight fixtures, engine and
 preload qualification pass again without new GPU execution. A new matched
-comparison plan is still required; the original cohort remains failed.
+comparison plan is still required; the original cohort remains failed. Its full
+source/plans/evidence remain reachable at`b62f673a7`; the maintained result keeps
+the four useful individual samples and original rejection.
 
 The first pair's7.26% PP increase is an observation, not adoption. Its30.1%
 generation-length difference exceeds the declared5% decode band. The two FP16
@@ -2978,6 +2980,20 @@ expert counters despite different decode times. Keep slower samples without
 calling them noise. These TG readings are not comparable with older14.6tok/s
 clean samples. Weak-MTP, agent-session, quality, physical262144/session/RESTORE
 and separate clean evidence remain pending.
+
+The next controller prepares a fresh minimal-marker comparison, with six new
+independent processes in the same off/on/on/off/off/on order and the same official
+thinking-enabled33210-token regular-code workload. Trace, draft timing, UR layers
+and the private validation preload are absent; the qualified runtime safety
+settings remain. Existing`DRAFT_PREFILL` success markers prove batched mode0 work
+with exact8192/tail cell coverage per request, including all four warmups. Source
+review finds no added GPU wait in that marker and excludes the heavy restore
+verification branch through prompt-cache0/conversation-cache-mib0. This is
+minimal-marker timing, not proof of zero observer cost or an inner kernel.
+The prior failed samples cannot enter this cohort. Commit and test the controller,
+then commit its fresh generated plan before GPU execution. Decode still uses the
+prospective5% generation-length band; changed output remains an effect, never an
+excluded sample. Broader quality/weak-MTP/agent/full-context gates remain pending.
 
 Logical cache-hit ratios are9.8/10.6%, with zero GPU miss-copy counters under
 `pcie-frac0`. The actual48-layer native layout has seven format pairs and
