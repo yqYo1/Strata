@@ -3295,12 +3295,10 @@ scheduled CPU alone cannot be labeled useful expert math. The source's current
 SYCL mixed route separates graph segments instead of spinning on host flags.
 Passive read calls total0.66846s after first output, not a causal overhead bound.
 
-CPU arithmetic versus RAM bandwidth remains unresolved. Next obtain the actual
-CPU quantization-pair/NT job census at the final actual dispatcher, with explicit
-request/window ownership and conserved native counts, before selecting a CPU
-method from the compatible calibration. Existing unframed routing output is
-insufficient evidence; use the reviewed direct-counter contract and actual job
-NT rather than callback row count or TLS as request identity.
+CPU arithmetic versus RAM bandwidth remains unresolved. The direct dispatcher
+census below now supplies the actual quantization-pair/NT mix for selecting a
+bounded CPU comparison. Existing unframed routing output is insufficient;
+use actual job NT rather than callback row count or TLS as request identity.
 Current pcie0 requests no target-expert weight uploads; other bus traffic is
 still unknown. No clean speed, hardware-saturation or model-adoption claim
 follows from this diagnostic.
@@ -3308,7 +3306,7 @@ After recovering152 original controller and9836 native inputs, Main retires the
 closed resource capture/JIT and consumed review transaction:73files/15463239B.
 The compact result preserves both the original controller failure and the
 successful corrected post-closure analysis. The current engine/nine fixtures
-still match. The next source work is diagnostic counters, not a speedup claim.
+still match. The following counters improve attribution, not throughput.
 The selected implementation is now `CpuWorkCensus`, attached explicitly to the
 serialized request after prompt refill. `STRATA_CPU_WORK_CENSUS=1` is fixed
 before exec. It counts actual final `ExpertJobMulti.nt` after pool completion
@@ -3338,14 +3336,43 @@ arithmetic, scratch/cache restoration and expected fail-stop contracts; no fresh
 fault is observed. Actual source admission recovers9838 inputs and matches the
 engine and ten fixtures. Six reader checks at`3120b27d2` pass, including static
 profile/reverse-map admission, 64-bit membership word order, NT/format/clock
-conservation and refusal of incomplete or mismatched records. These are component
-results; model census and any new throughput claim remain pending.
-The next committed controller is `tools/sycl/cpu_census_engine.py`: prepare and
-commit its frozen plan, run `qualify` for fresh finite packed-bank checks, commit
-that result, then `run`. The official four warmups are the bounded traced/model
-gate before the first long request. Every warmup and prior long request must
-pass the new census before the next request is released. One process runs both
-thinking-enabled long-generation cases; it is a diagnostic, not clean speed.
+conservation and refusal of incomplete or mismatched records.
+
+The controller at`386ef54e8` and frozen plan at`b2c78fa48` subsequently passed
+fresh packed-bank checks, all four official warmups and both thinking-enabled
+long-generation cases. Every prior request's counters passed before the next
+was released. All9838 native inputs, eleven artifacts, controller inputs and
+fifteen model assets passed final admission; native exit was0, all owned
+processes closed and no fresh GPU fault occurred. The
+[current exact work result](../bench/results/2026-10-15-pr6-recovery-audit/cpu-work-census-current.json)
+preserves the two samples and seven format bins per case:
+
+| Workload | Fresh input | Generated | Diagnostic PP, tok/s | TG, tok/s | MTP accepted | NT1 CPU jobs | CPU-pool wall share |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
+| regular-code | 33214 | 3611 | 634.3 | 14.5 | 2578/3102 | 77.24% | 46.98% |
+| varied-prose | 33288 | 8638 | 746.4 | 9.3 | 4660/11931 | 67.40% | 44.38% |
+
+These include parameter validation, trace and counters; they are not clean
+speed or a new throughput gain. CPU pool time includes scheduling/waits.
+GPU-reach waits take about75ms/window and the separate MTP draft about33ms;
+those are host dependency intervals, not device arithmetic utilization. There
+are no requested target-expert PCIe uploads on this pcie0 route; other traffic
+is unknown. Physical262144, broader quality, agent-session and RESTORE
+qualification remain pending.
+
+The old CPU calibration projected through the exact format/NT counts gives
+112.66..119.42s pool wall for code (observed117.24s), and399.27..420.42s for
+prose (observed410.52s). Hot/stream figures are projections from six-job calls,
+not matched production batches, physical RAM bandwidth or a hardware ceiling.
+CPU kernel sources are unchanged between the calibration and census builds.
+IQ2_S contributes42.01%/43.06% of NT1 jobs and39.91%/40.27% of observed pool
+wall in code/prose. This updates the pre-census IQ3_S-first proposal: next
+compare exact IQ2_S NT1 level masks with the existing direct-codebook helper,
+charging the20KiB/token activation subset table and all setup. Require exact
+integer/scales/FMA and GU/SwiGLU output parity, repeated hot/stream improvement,
+then a five-worker production-path comparison at the observed job counts.
+No CPU kernel candidate or model speedup is qualified yet.
+
 The14 old worktree proposal/metadata paths are also reviewed before rebuilding.
 Available unique partial failed-GDN source/recipes are archived at`228b85f13`
 and removed from the active tree; missing original headers/fixture/v2 source

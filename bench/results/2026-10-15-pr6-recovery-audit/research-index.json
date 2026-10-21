@@ -5159,9 +5159,9 @@
     "report_budget_bytes": 16384,
     "question": "For production IQ2_S/IQ3_XXS/IQ3_S NT1 GU on Zen3, derive exact decoded-level/mask/bitplane or bounded predecode layouts and compare table work, scale/rounding contract and extra bytes to measured hot/stream behavior. Do not repeat generic T-MAC/LUT surveys or settled tiny single-exact flag.",
     "report_path": "/home/yayoi/orca/workspaces/Strata/sycl/.cache/strata-research/20261020/nt1-iq-exact-methods.md",
-    "consumer": "Main CPU component candidate design after the retained-engine117K comparison",
-    "next_review": "After retained old-owned/current-borrowed117K comparison; preserve engine inputs until closure. Then implement corrected host-only census before production CPU candidate selection.",
-    "status": "curated_proposal_pending_117K_comparison_and_census",
+    "consumer": "Main bounded IQ2_S NT1 exact level-mask component design and setup-inclusive comparison",
+    "next_review": "At component implementation, record needed algebra/provenance/gates in maintained source and retire the consumed report after its concrete consumer ends.",
+    "status": "actual_two_case_mix_selects_IQ2_S_NT1_component",
     "task_id": "task_0add196c4850",
     "dispatch_id": "ctx_3d9a885c24a4",
     "terminal_handle": "term_4103b5e4-235c-4a4e-b8e4-cc9d1f597f76",
@@ -5177,7 +5177,14 @@
       "First experiment and gates"
     ],
     "retention": "Temporary report for the named component/protocol implementation consumer. Distill accepted details into maintained source/results and retire report and transaction files when consumed.",
-    "operational_digest": "Pinned ggml algebra verified. IQ2_S=8+17*M25+35*M43; IQ3_XXS affine bitplanes require +2 at level62; IQ3_S=1+2*b0+4*b1+8*b2. Correct IQ2_S full GU bytes537395200 (512.5MiB), expansion ratio3.12195; H2560 four-value activation tables20KiB/token. IQ3_S indices need charged grid decode/mask extraction or explicit512-entry index-to-bitplane table. After census establishes actual IQ3_S NT1 relevance, compare row-pair GU with exact integer sums, bitwise initial scale/FMA contract, bounds/canaries and setup-inclusive hot/stream latency. No candidate or model speedup measured."
+    "operational_digest": "Pinned ggml algebra verified. IQ2_S=8+17*M25+35*M43; IQ3_XXS affine bitplanes require +2 at level62; IQ3_S=1+2*b0+4*b1+8*b2. Correct IQ2_S full GU bytes537395200 (512.5MiB), expansion ratio3.12195; H2560 four-value activation tables20KiB/token. IQ3_S indices need charged grid decode/mask extraction or explicit512-entry index-to-bitplane table. After census establishes actual IQ3_S NT1 relevance, compare row-pair GU with exact integer sums, bitwise initial scale/FMA contract, bounds/canaries and setup-inclusive hot/stream latency. No candidate or model speedup measured.",
+    "latest_actual_mix_review": {
+      "sha256": "9063abf1fa8d3136581515f3b26a7cf4e5e42d94908275e830cdf49e02658be2",
+      "model": "gpt-6-luna max",
+      "new_research_scopes_eligible": 0,
+      "census_path": "bench/results/2026-10-15-pr6-recovery-audit/cpu-work-census-current.json",
+      "digest": "Both long cases closed without fault: NT1 jobs77.24%/67.40%; IQ2_S42.01%/43.06% of NT1 jobs and39.91%/40.27% of observed pool wall. Select setup-inclusive IQ2_S NT1 exact level masks versus current direct helper, then production GU/SwiGLU at actual batch sizes. CPU/RAM saturation remains unknown; no model speedup proven."
+    }
   },
   "existing_route_dump_CPU_mix_protocol_scope": {
     "result_reference": {
@@ -5205,8 +5212,8 @@
     },
     "report_path": "/home/yayoi/orca/workspaces/Strata/sycl/.cache/strata-research/20261020/route-dump-cpu-mix-protocol.md",
     "consumer": "Main bridge from CPU calibration to measured model critical path before kernel selection",
-    "next_review": "Run the committed fresh bank and official warmup gates, then collect the two thinking-enabled model censuses. After exact mix/clock conservation, select compatible existing CPU methods and retire the consumed protocol report. No duplicate survey.",
-    "status": "implemented_component_validated_model_census_pending",
+    "next_review": "Exact census and clock conservation passed in both thinking-enabled long cases. Retire consumed protocol/raw transaction output after compact result commit; next implement the IQ2_S NT1 bounded CPU comparison.",
+    "status": "implemented_component_and_two_case_model_census_passed",
     "task_id": "task_278355c879a6",
     "dispatch_id": "ctx_a5a710b87ad6",
     "terminal_handle": "term_d532f5b9-e104-4c45-9ce8-d29e6c97753a",
@@ -5239,9 +5246,14 @@
       "actual_dispatcher_cases": 14,
       "shared_component_groups": 18,
       "reader_tests": 6,
-      "model_census_collected": false,
+      "model_census_collected": true,
       "source": "include/strata/core/cpu_work_census.hpp",
       "controller": "tools/sycl/cpu_census_engine.py"
+    },
+    "result_reference_current": {
+      "path": "bench/results/2026-10-15-pr6-recovery-audit/cpu-work-census-current.json",
+      "native_source_commit": "63af639ac70fcc63c3a33594b1fba02efc78bb86",
+      "controller_source_commit": "386ef54e8a6824c49e7d53a3c5bca79a193d8f44"
     }
   },
   "cache_1256_long_mixed_admission_scope": {
