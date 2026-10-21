@@ -3628,6 +3628,17 @@
         "consumer": "Safety prerequisite for the new decode-only IQ2 comparison; review at model qualification.",
         "engine_component_groups_passed": 18,
         "fresh_faults": []
+      },
+      "normal_output_retirement": {
+        "files": 139,
+        "bytes": 53630083,
+        "manifest": {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/closed-prefill-phase-support-20261022.jsonl",
+          "sha256": "363b8b51846c466470beea27f6d2d2a45eb21fc29d92b5212681cc6dc50b6b81"
+        },
+        "scope": "Closed05223/6e40 build output, successful graph/engine component traces, unstarted closed MTP generated plan/bank output, consumed source-audit transactions. Empty roots remain no-retry barriers.",
+        "preserved": "Current6e40 engine and12 fixtures plus current full build receipt; validated6c fallback and10 fixtures/source receipt.9853 current original inputs recovered and all artifact hashes verified before/after deletion.",
+        "remaining": "Legacy provenance holds in the existing build-retirement result and other older build-owned output remain for bounded review; this is not global retirement."
       }
     },
     "source_safety_audit": {
@@ -7202,7 +7213,6 @@
     "classification": "decision support",
     "schedulable_now": false,
     "eligibility": "New committed model controller2f240a0ab; graph fixture and eighteen native safety groups passed. No prior audit of this controller.",
-    "report": ".cache/strata-research/20261022/mtp-model-controller-source-audit.md",
     "source_sha256": {
       "tools/sycl/mtp_model_observer.py": "089ba3a71d45dcb95c6f2c76d8457372bc031dc3e6f22a223b6671d483485243",
       "tests/core/test_mtp_model_observer.py": "029cf53d7de54c0acc3944c22de825eed14aa6c5e965cdd1099cdac4eb79a7a3",
@@ -7229,19 +7239,38 @@
         "Window identifiers repeat across chain steps; check unique ordered (window,step) pairs instead of unique windows or fixed chain length.",
         "Extracted individual samples can be lost if a validator raises before row.update is evaluated. Store samples before validation; recover from results.json and reconcile requests.jsonl before retiring any failed future run. No model ran in the closed cohort, so no samples currently require recovery.",
         "MTP attribution needs a new qualified plan and actual consumer after decode selection work. The original IQ2 whole-process failure remains unchanged."
-      ]
+      ],
+      "raw_retired": true
     },
-    "next_review": "Before any fresh MTP model plan; fix the conditional evidence-preservation and raw-order checks first."
+    "next_review": "Before any fresh MTP model plan; fix the conditional evidence-preservation and raw-order checks first.",
+    "raw_retired": true,
+    "retirement_manifest": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/closed-prefill-phase-support-20261022.jsonl",
+      "sha256": "363b8b51846c466470beea27f6d2d2a45eb21fc29d92b5212681cc6dc50b6b81"
+    }
   },
   "prefill_fastest_restore_source_audit_20261022": {
     "classification": "decision support",
     "schedulable_now": true,
-    "state": "Ready for a new bounded source audit; no duplicate of the closed MTP audits.",
+    "state": "Orca Luna high worker running; Main independently prepares matched117K baseline.",
     "eligibility": "User requests fastest prefill restoration while preserving current decode. Exact396d/6e40 source delta and clean117K reference are available.",
     "inputs": "/home/yayoi/orca/workspaces/Strata/sycl/.cache/strata-research/20261022/prefill-fastest-source-inputs.json",
     "delta_sha256": "2c208a50c742c90bca8c42f87a9e11a976bb0dc914c70aa310492bf5192faccc",
     "report": ".cache/strata-research/20261022/prefill-fastest-restore-source-audit.md",
     "consumer": "Identify prefill-only source/configuration changes needed for fastest-route restoration, and decode/owner constraints; Main implements and tests.",
-    "next_review": "At restored prefill route selection; retain useful source distinctions and retire source snapshots/report transactions."
+    "next_review": "At restored prefill route selection; retain useful source distinctions and retire source snapshots/report transactions.",
+    "task": "task_2853fedcbef3",
+    "dispatch": "ctx_ae55d563e0e0",
+    "terminal": "term_3a320d54-f599-4f72-96fa-a1d93e120b35",
+    "model": "gpt-6-luna",
+    "effort": "high",
+    "worker_closed": false,
+    "baseline_controller": {
+      "source_commit": "acc1abd4b",
+      "host_contract_cases": 4,
+      "passed": true,
+      "model_executed": false,
+      "scope": "Same117K request hashes as fastest record; current decode algorithm flags and1256-slot placement fixed. New baseline diagnosis only; no restoration/adoption claim."
+    }
   }
 }
