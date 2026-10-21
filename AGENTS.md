@@ -242,7 +242,12 @@ integration and testing.
   When isolating a candidate in a legacy shared dispatcher, keep the existing
   prefill implementation and use an explicit phase/job policy for decode. This
   containment does not establish that sharing is faster. Do not mutate process
-  environment variables between phases. Verify the actual
+  environment variables between phases. For a prefill-only restoration or change,
+  preserve the current decode implementation, configuration and placement, and
+  verify its state handoff and repeated decode performance. A decode impact is a
+  separation defect to resolve, not an acceptable cost of faster prefill; do not
+  declare the restoration complete or adopt it while that defect remains.
+  Verify the actual
   call paths before attributing a regression. A failed whole-process comparison
   remains failed, but does not permanently reject a separately scoped component;
   commit a new phase-specific plan and criteria before gathering new evidence.

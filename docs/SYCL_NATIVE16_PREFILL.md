@@ -10,6 +10,14 @@ that it is faster than independent paths for the recorded shapes/phases.
 Existing sharing without that evidence remains a legacy arrangement to audit;
 phase containment alone does not establish a sharing benefit.
 
+The current priority is to restore the fastest recorded prefill path while
+preserving the present decode implementation, settings and placement. Recover
+the exact source/configuration and compare matched inputs, separating first-use
+and later requests. A decode impact is a separation defect: check state handoff
+and repeated decode performance, resolve the coupling, and keep the restoration
+unqualified until it is fixed. New IQ2 and MTP model cohorts remain deferred
+during this restoration.
+
 The current B570 speed reference uses fresh inputs of117489 tokens and separates
 the first long request from later requests in each independent process.
 Three packed-bank process medians for the later requests are
