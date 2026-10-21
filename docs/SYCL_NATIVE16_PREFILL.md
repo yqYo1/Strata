@@ -81,9 +81,9 @@ model's observed131960832bytes free after restore remain unmeasured.
 The reviewed handoff alternatives add no speed evidence. Current dense/PLE
 restoration and graph recapture precede queued cache refill/table upload.
 A free waits before deallocation, but that alone does not establish whether
-already submitted GPU work overlaps while the host waits. The remaining
-eligible research concerns the large-copy source/granularity contract and its
-discriminating benchmark.
+already submitted GPU work overlaps while the host waits. The following component screen measures that source/granularity question.
+Its runtime mechanism and real-model memory-pressure effects still need
+separate evidence.
 
 The standalone1538035200-byte production-API copy screen then passed six
 small traced children, nine full-size validation children and27 clean native
