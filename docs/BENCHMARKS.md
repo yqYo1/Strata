@@ -78,25 +78,7 @@ from decode. About 1K generated tokens is a starting observation window. Increas
 independent repetitions or length when variation still prevents a decision.
 Do not pool the original 24-token decode with this new workload.
 
-For the checked SYCL cache-loan capacity admission, Main uses
-`python3 -B tools/sycl/cache_capacity.py prepare`, commits the generated plan,
-then uses `python3 -B tools/sycl/cache_capacity.py run`. Preparation requires
-the matching156-case component gate, the completed small model cycle and the
-curated source review. The single official process includes its four warmups
-and a32K+ input,1024+ output regular-code request, with thinking and an answer.
-Parameter validation, stage progress and full cache/map readback stay enabled;
-its elapsed times are diagnostic. Budgets are2400 wall seconds,54000 CPU
-seconds,96GiB owned-session RSS and64MiB raw output. Stop on the first error or
-budget limit; never retry the closed root.
-
-Check actual mode10, all-GPU BF16 residuals, all48 borrowed FFNs and complete
-same-slot refill/decode publication. This primary-window check does not qualify
-full mixed-tail routing, clean speed, the strong/weak pair, agent-session, task
-quality or physical262144/session/RESTORE. Plan the later matched owned-small /
-borrowed-large clean comparison separately, including order, independent
-process repetitions, work/configuration matching and prefill nonregression.
-
-The owned128/borrowed1280 capacity comparison is closed. Its
+The owned128/borrowed1280 capacity admission and comparison are closed. Their
 [compact result](../bench/results/2026-10-15-pr6-recovery-audit/cache-comparison-current.json)
 keeps all six independent samples, common evidence and arm-specific route
 counts. Restore controller source`cba7b0a7c` and the recorded plan revisions
@@ -107,6 +89,17 @@ matches the original result exactly. The+3.7041% decode geomean misses the
 prospective>5% screen; prefill separately passes nonregression. Further1256-slot
 capacity work requires a fresh committed plan. Weak-MTP, agent-session, quality
 and physical262144/session/RESTORE qualification remain separate.
+
+The current IQ2 pair pilot uses `tools/sycl/iq2_pair_model.py` with a committed
+single-use plan, fresh same-build packed-smoke/packed-validate gates, four
+official warmups and both long-generation workloads. Its
+[current plan/result](../bench/results/2026-10-15-pr6-recovery-audit/iq2-pair-model-current.json)
+pins the actual-model CPU baseline, source/build identities and fixed pre-exec
+environment. Per-request native counters must conserve the target CPU work and
+prove the selected pair dispatch. Parameter validation, stage trace, work census
+and timing are charged observers: successful execution does not qualify clean
+speed or adoption. Never retry a closed stage or root. Repeated comparisons
+need their own committed arm order, eligibility and performance criteria.
 
 `generation_engine.py` is now a shared admission/evidence library, with no
 launcher CLI. Restore closed long-generation launchers and their original

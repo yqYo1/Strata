@@ -1,5 +1,38 @@
 # Native 16-bit long prefill
 
+## Current measured state
+
+The current B570 speed reference uses fresh inputs of117489 tokens and separates
+the first long request from later requests in each independent process.
+Three packed-bank process medians for the later requests are
+1002.056/1002.106/1002.149 tok/s; their first-long readings are
+929.917/928.963/927.958 tok/s. This meets the recorded1000 tok/s criterion for
+later-request medians only. The packed-bank layout's0.223% gain misses its
+prospective2% screen and remains opt-in. See the
+[individual samples and frozen comparison](../bench/results/2026-10-15-pr6-recovery-audit/prefill-packed-bank-speed-current.json).
+
+The next selected component is the default-off CPU IQ2_S NT1 gate/up pair
+producer. Its comparison matches the actual model baseline and uses
+`STRATA_IQ_SINGLE_EXACT=0` in both arms:288 samples across six independent
+processes preserve all output bits and reduce the two tested format
+combinations' pool latency by8.85%/7.29%.
+These are component results, with actual dispatch and work conservation, not
+model speed gains. See the
+[component decision](../bench/results/2026-10-15-pr6-recovery-audit/cpu-iq2-current.json)
+and [observed model-pilot plan/result](../bench/results/2026-10-15-pr6-recovery-audit/iq2-pair-model-current.json).
+
+The prior33K thinking-generation diagnostic measured14.5/9.3 tok/s for code/prose.
+CPU-pool wall intervals account for46.98%/44.38% of decode, including scheduling
+and waits; they do not establish CPU or RAM saturation. GPU-reach waits are
+dependency intervals, not arithmetic service. The
+[closed work census](../bench/results/2026-10-15-pr6-recovery-audit/cpu-work-census-current.json)
+records the remaining hardware questions. Sustained70 tok/s, clean repeated
+candidate generation, agent-session, broad task quality and physical262144
+context/session/RESTORE qualification remain open. Component or source checks
+below do not close those model gates.
+
+## Tensor storage and precision
+
 `STRATA_SYCL_PREFILL_NATIVE16=bf16` selects an experimental kernel path only
 inside long layer-major prefill. Short prefill and decode keep their existing
 FP32 route. Leave `STRATA_PREFILL_LAYER_MAJOR_R_DTYPE` unset, or set it to
