@@ -7308,5 +7308,37 @@
         "Current-source old-prefill selection requires actual VRAM admission with present1256-slot decode retained, plus handoff and repeated decode checks. Do not lower decode cache to reproduce the old whole configuration."
       ]
     }
+  },
+  "prefill_restore_handoff_alternatives_20261022": {
+    "classification": "decision support",
+    "schedulable_now": true,
+    "state": "eligible; not dispatched",
+    "prerequisites": {
+      "closed_baseline_commit": "64efe12f0",
+      "native_source": "6e40afc1beddd059ee518617f6c1efce1da14aca",
+      "clean_processes": 3,
+      "subsequent_medians_tok_s": [
+        1002.146072840237,
+        1002.1819757543085,
+        1002.5839219976414
+      ],
+      "current_decode": "1256 slots fixed; old fastest used128, not an admissible whole-config rollback"
+    },
+    "question": "Compare safe cache-refill overlap with dense restore/graph reconstruction versus reducing dense owner allocations, while preserving exact decode placement and publication. Establish called queue/wait/lifetime constraints and what measurements distinguish the alternatives; no implementation.",
+    "source_sha256": {
+      "src/program/generate.cpp": "7b313aaf56eb967f7318b253e58184d0a44dae51ad8a756a0a6b36b97319e4f1",
+      "src/core/native_dense.cpp": "4424972f8bd8c1f0e71ea360140a6cd3c56ed6a5533d1354bdbcdbc13d387d42",
+      "include/strata/core/native_dense.hpp": "0c263f02639ce96b0a805e88c15b2686d5c1809b601b403ac3eee2626cb0dea9",
+      "include/strata/core/canonical_dense_bank.hpp": "25f046a7899f5959a046348587c71d35b6211c9568494e77609ec7a30c5fc29a",
+      "src/core/expert_cache.cpp": "fb7418457aeb1ea6416918a14fa734a301e1fe0d39d8fe7cbcb5633040434a46",
+      "include/strata/core/expert_cache.hpp": "6154808582efe409325c87756fb21e47aaca3c946e74ee442266c8fefa6bdaae",
+      "src/sycl/compat.cpp": "214c721c5be036e4410b4eca4051e8df6157effb8e2e0f575a9d6915b2700bad",
+      "include/strata/sycl/launch.hpp": "4eb1888057ef6ae34f2bbb9d2545321061ee116659e54907047732544d589d95",
+      "src/sycl/runtime.cpp": "e6c20e148bc7ceec250ad9a58ddfc851c1476aaab3d68982d2aee2897e572b83"
+    },
+    "report": ".cache/strata-research/20261022/prefill-restore-handoff-alternatives.md",
+    "report_budget_bytes": 16384,
+    "consumer": "Main prefill transition attribution and subsequent bounded candidate selection",
+    "next_review": "After native Luna max report review and Main disjoint wall/thread-CPU attribution; retire report transactions when the route decision closes"
   }
 }
