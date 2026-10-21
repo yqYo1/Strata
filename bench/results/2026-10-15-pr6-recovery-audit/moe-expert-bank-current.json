@@ -1,12 +1,12 @@
 {
   "mode": "plan",
-  "source_commit": "8bd20575cc2eac28cb8b63fb6fab80821e17767d",
+  "source_commit": "cf8ae547a7bcd9fc188ce985d85561295cc2c16d",
   "source_sha256": {
-    "include/strata/prefill/expert_bank_plan.hpp": "1c3b9157f64c4e1c3aede95017ba17ad3c10d433946b5efa25d0c073c5f8c3a9",
+    "include/strata/prefill/expert_bank_plan.hpp": "7b3874a8eabd78fa48dac1902ce287f0954a23c98333de9424cd50ea80c7f156",
     "include/strata/core/expert_layer_view.hpp": "5b8c4a6c7a1a1d074fe35ed09c933c10b52e56e609eb86e5a4e7b506d0dc8c8f",
     "include/strata/prefill/layer_major_plan.hpp": "67bc25500ae777bfb387944a2415325868602b9da82aa945464b64b0a2b8b9fd",
-    "tests/expert_bank_plan.cpp": "fe62bff89008f7ab1d3acb1a160295651c27544c74ff01d3a5eaa16b00366179",
-    "tools/sycl/check_expert_bank.py": "f633b40f53b021dd9c2203a021cd8b8c7225c5cb30d5b3922371b521c6969555",
+    "tests/expert_bank_plan.cpp": "97c940f8975191dd8958d8eac9b1f2f8f31749fde904614c0fb264530fab6c19",
+    "tools/sycl/check_expert_bank.py": "95fff0b57551f297445730e56dba43a21261ab9c9a8043854930a61ddc1fdeef",
     "tools/sycl/measurement_guards.py": "794e332c70aca0acadad4f26d0414548e023a02fd27b72ed78fc773674423ec8",
     "tools/sycl/measurement_owner.py": "bddd0c5e5020e882ca3404679420faec11e820dabce2ed4c72ef82b4c9c0874a"
   },
@@ -27,15 +27,16 @@
         "resident_layer_view valid_cases=4 rejected_extents=10 PASS",
         "expert_bank_capacity full117488=GPU partial_request=preserved fallback262144=original exact_boundary=PASS short_tail_fallback_cases=3 single_alloc_limit_cases=4",
         "expert_bank_slots uploads=9 hits=3 negative_checks=18 PASS",
+        "expert_bank_packed formats=7 layers_each=2 full_fit512=PASS boundary=PASS negative_checks=19 PASS",
         "expert_bank_plan PASS GPU=UNRUN model=UNRUN physical262144_RESTORE=UNQUALIFIED"
       ]
     }
   ],
   "limits": "CPU capacity/state planning only. No owner/queue/DMA completion, GPU staging, model speed, physical262144 or RESTORE qualification.",
   "previous_result": {
-    "commit": "8bd20575cc2eac28cb8b63fb6fab80821e17767d",
+    "commit": "cf8ae547a7bcd9fc188ce985d85561295cc2c16d",
     "path": "bench/results/2026-10-15-pr6-recovery-audit/moe-expert-bank-current.json",
-    "source_commit": "cb74810ab2e7738d9c7c545727310a70c08c323f",
+    "source_commit": "8bd20575cc2eac28cb8b63fb6fab80821e17767d",
     "passed": true
   },
   "device_limits": {
@@ -98,278 +99,9 @@
     }
   },
   "binary": {
-    "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/moe-expert-bank-component-v4/plan-test",
-    "bytes": 26536,
-    "sha256": "6256f6af3add3278b3bdafbdd2c31b291f013c144f9c527ef57291902bec6587"
+    "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/moe-expert-bank-component-v5/plan-test",
+    "bytes": 30864,
+    "sha256": "bc52639315e339914f9b3bbe7d8f5362a6df73646c65466189f2a4683b77c5e9"
   },
-  "ownership_closed": true,
-  "gpu": {
-    "source_commit": "78a119cf7a4ab01cc0cb8342886d5ba182e544b2",
-    "source_sha256": {
-      "tools/sycl/check_expert_bank.py": "a06bff42d9d7478463eba1f30d83c7ba58b0c41f084b428f734a4e7afbe106aa",
-      "tools/sycl/measurement_guards.py": "794e332c70aca0acadad4f26d0414548e023a02fd27b72ed78fc773674423ec8",
-      "tools/sycl/measurement_owner.py": "bddd0c5e5020e882ca3404679420faec11e820dabce2ed4c72ef82b4c9c0874a",
-      "tools/sycl/measurement_environment.json": "d4402591df50e80dc45a5ec9e4839c7a794888850b1473537b6f95179be5b03c",
-      "include/strata/prefill/expert_bank_upload.hpp": "3b81da8f15a89306cff9a46982d31fc10ad120a592cf7662c9c2c8b3a2fc7bfe",
-      "tests/sycl/expert_bank.cpp": "c390ac3c9300be9126fa800151d7a6a7d8634b067f452b1a849a7a7afba82322",
-      "include/strata/core/expert_layer_view.hpp": "5b8c4a6c7a1a1d074fe35ed09c933c10b52e56e609eb86e5a4e7b506d0dc8c8f",
-      "include/strata/core/expert_source.hpp": "cf4b82b76adee8e4bc80173b280f511a04a01a43945c4814c50e8e5464f5aaa3",
-      "src/core/expert_source.cpp": "85fde09cdf17876157ae21ac2bcd5b4ad0aba8d43dc78f39ce3506a8c436e905",
-      "tests/core/file_expert_source_test.cpp": "787d8a49765bdba276c950844bc27965870349a91abb3be7f3da8e279296b393"
-    },
-    "build_source_commit": "a57611b9c52f5d1cf2f5281b3cc7eb4087b5cd12",
-    "fixture": {
-      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/sycl_expert_bank_test",
-      "sha256": "d57bab3a858a6ee4f75cd4b6083f465f31f0b9c5838756e37ae69ba201374f53"
-    },
-    "provider_fixture": {
-      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/file_expert_source_test",
-      "sha256": "b484ba5461f6b3de0deac892810580724ebc7237253ca5478368fb348e9b209e"
-    },
-    "CPU_gate_source": "8bd20575cc2eac28cb8b63fb6fab80821e17767d",
-    "checks": [
-      {
-        "mode": "smoke",
-        "cases": [
-          {
-            "slots": "4",
-            "stride": "256",
-            "experts": "6",
-            "source_stride": "256",
-            "layers": "2",
-            "uploads": "18",
-            "hits": "6",
-            "consumers": "48",
-            "unwind": "0",
-            "admission_rejections": "7",
-            "status": "0",
-            "immutable_slab": "PASS",
-            "guards": "PASS",
-            "private_map": "PASS",
-            "checked_drain": "PASS"
-          },
-          {
-            "slots": "1",
-            "stride": "256",
-            "experts": "6",
-            "source_stride": "256",
-            "layers": "1",
-            "uploads": "12",
-            "hits": "0",
-            "consumers": "24",
-            "unwind": "0",
-            "admission_rejections": "7",
-            "status": "0",
-            "immutable_slab": "PASS",
-            "guards": "PASS",
-            "private_map": "PASS",
-            "checked_drain": "PASS"
-          },
-          {
-            "slots": "4",
-            "stride": "256",
-            "experts": "6",
-            "source_stride": "256",
-            "layers": "1",
-            "uploads": "5",
-            "hits": "0",
-            "consumers": "10",
-            "unwind": "1",
-            "admission_rejections": "7",
-            "status": "0",
-            "immutable_slab": "PASS",
-            "guards": "PASS",
-            "private_map": "PASS",
-            "checked_drain": "PASS"
-          },
-          {
-            "slots": "4",
-            "stride": "512",
-            "experts": "6",
-            "source_stride": "256",
-            "layers": "2",
-            "uploads": "18",
-            "hits": "6",
-            "consumers": "48",
-            "unwind": "0",
-            "admission_rejections": "9",
-            "status": "0",
-            "immutable_slab": "PASS",
-            "guards": "PASS",
-            "private_map": "PASS",
-            "checked_drain": "PASS"
-          },
-          {
-            "slots": "1",
-            "stride": "512",
-            "experts": "6",
-            "source_stride": "256",
-            "layers": "1",
-            "uploads": "12",
-            "hits": "0",
-            "consumers": "24",
-            "unwind": "0",
-            "admission_rejections": "9",
-            "status": "0",
-            "immutable_slab": "PASS",
-            "guards": "PASS",
-            "private_map": "PASS",
-            "checked_drain": "PASS"
-          },
-          {
-            "slots": "4",
-            "stride": "512",
-            "experts": "6",
-            "source_stride": "256",
-            "layers": "1",
-            "uploads": "5",
-            "hits": "0",
-            "consumers": "10",
-            "unwind": "1",
-            "admission_rejections": "9",
-            "status": "0",
-            "immutable_slab": "PASS",
-            "guards": "PASS",
-            "private_map": "PASS",
-            "checked_drain": "PASS"
-          }
-        ],
-        "passed": true
-      },
-      {
-        "mode": "validate",
-        "cases": [
-          {
-            "slots": "383",
-            "stride": "256",
-            "experts": "512",
-            "source_stride": "256",
-            "layers": "1",
-            "uploads": "642",
-            "hits": "382",
-            "consumers": "2048",
-            "unwind": "0",
-            "admission_rejections": "7",
-            "status": "0",
-            "immutable_slab": "PASS",
-            "guards": "PASS",
-            "private_map": "PASS",
-            "checked_drain": "PASS"
-          },
-          {
-            "slots": "384",
-            "stride": "256",
-            "experts": "512",
-            "source_stride": "256",
-            "layers": "2",
-            "uploads": "1282",
-            "hits": "766",
-            "consumers": "4096",
-            "unwind": "0",
-            "admission_rejections": "7",
-            "status": "0",
-            "immutable_slab": "PASS",
-            "guards": "PASS",
-            "private_map": "PASS",
-            "checked_drain": "PASS"
-          },
-          {
-            "slots": "512",
-            "stride": "256",
-            "experts": "512",
-            "source_stride": "256",
-            "layers": "1",
-            "uploads": "513",
-            "hits": "511",
-            "consumers": "2048",
-            "unwind": "0",
-            "admission_rejections": "7",
-            "status": "0",
-            "immutable_slab": "PASS",
-            "guards": "PASS",
-            "private_map": "PASS",
-            "checked_drain": "PASS"
-          },
-          {
-            "slots": "384",
-            "stride": "2662400",
-            "experts": "512",
-            "source_stride": "2662400",
-            "layers": "1",
-            "uploads": "641",
-            "hits": "383",
-            "consumers": "2048",
-            "unwind": "0",
-            "admission_rejections": "7",
-            "status": "0",
-            "immutable_slab": "PASS",
-            "guards": "PASS",
-            "private_map": "PASS",
-            "checked_drain": "PASS"
-          },
-          {
-            "slots": "384",
-            "stride": "512",
-            "experts": "512",
-            "source_stride": "256",
-            "layers": "2",
-            "uploads": "1282",
-            "hits": "766",
-            "consumers": "4096",
-            "unwind": "0",
-            "admission_rejections": "9",
-            "status": "0",
-            "immutable_slab": "PASS",
-            "guards": "PASS",
-            "private_map": "PASS",
-            "checked_drain": "PASS"
-          },
-          {
-            "slots": "384",
-            "stride": "2662400",
-            "experts": "512",
-            "source_stride": "1382400",
-            "layers": "1",
-            "uploads": "641",
-            "hits": "383",
-            "consumers": "2048",
-            "unwind": "0",
-            "admission_rejections": "9",
-            "status": "0",
-            "immutable_slab": "PASS",
-            "guards": "PASS",
-            "private_map": "PASS",
-            "checked_drain": "PASS"
-          }
-        ],
-        "passed": true
-      }
-    ],
-    "limits": "Production upload helper/cache, synthetic byte readers, private maps and caller unwind only. No real provider enqueue fault injection, model arithmetic, speed, session rollback or physical262144/RESTORE qualification.",
-    "mode": "validate",
-    "complete": true,
-    "passed": true,
-    "GPU_executed": true,
-    "environment_reference": "tools/sycl/measurement_environment.json",
-    "environment_overrides": {
-      "UR_ENABLE_LAYERS": "UR_LAYER_PARAMETER_VALIDATION",
-      "TMPDIR": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/moe-expert-bank-gpu-v2/tmp",
-      "XDG_CACHE_HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/moe-expert-bank-gpu-v2/cache"
-    },
-    "removed_environment_keys": [
-      "UR_LOG_TRACING"
-    ],
-    "provider_checks_passed": true,
-    "ownership_closed": true,
-    "boot_unchanged": true,
-    "fresh_faults": [],
-    "driver_after": {
-      "pci": "/sys/bus/pci/devices/0000:05:00.0",
-      "driver": "xe",
-      "vendor": "0x8086",
-      "device": "0xe20c",
-      "kernel": "7.0.0-38-generic",
-      "devcoredump": false
-    }
-  }
+  "ownership_closed": true
 }
