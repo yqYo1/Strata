@@ -397,7 +397,7 @@ cudaError_t cudaEventDestroy(cudaEvent_t e) {
   return cudaSuccess;
 }
 cudaError_t cudaEventRecord(cudaEvent_t e, cudaStream_t st) {
-  return attempt([&] {
+  const auto result = attempt([&] {
     require(e, "null event");
     auto &q = queue(st);
     const auto event = q.ext_oneapi_submit_barrier();
@@ -413,6 +413,11 @@ cudaError_t cudaEventRecord(cudaEvent_t e, cudaStream_t st) {
     if (captured)
       it->second.recording->events.push_back(e->state);
   });
+  if (result != cudaSuccess && e) {
+    std::lock_guard lock(e->state->mutex);
+    e->state->profiled_graph = false;
+  }
+  return result;
 }
 cudaError_t cudaEventQuery(cudaEvent_t e) {
   bool ready = true;
@@ -565,7 +570,14 @@ cudaError_t strata::sycl_backend::compat::graph_launch_with_completion(
     cudaGraphExec_t graph, cudaStream_t st, cudaEvent_t completion) {
   if (!completion)
     return fail(cudaErrorInvalidValue, "null graph completion event");
-  return launch_graph(graph, st, completion);
+  const auto result = launch_graph(graph, st, completion);
+  if (result != cudaSuccess) {
+    // Preserve ordinary event/queue lifetime, but never expose the prior
+    // successful replay as diagnostic evidence for this failed recording.
+    std::lock_guard lock(completion->state->mutex);
+    completion->state->profiled_graph = false;
+  }
+  return result;
 }
 cudaError_t strata::sycl_backend::compat::graph_completion_timestamps(
     cudaEvent_t completion, GraphEnvelopeTimestamps *out) {

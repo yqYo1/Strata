@@ -130,6 +130,16 @@ int main(int argc, char** argv) {
       require(compat::graph_completion_timestamps(owner.internal, &alias) == cudaErrorInvalidValue,
               "captured internal alias exposed a node clock");
       (void)cudaGetLastError();
+      if (!replay) {
+        // Failed reuse must not expose the previous successful replay. The
+        // second replay then proves the handle can acquire fresh provenance.
+        require(compat::graph_launch_with_completion(nullptr, owner.stream, owner.done) == cudaErrorInvalidValue,
+                "null graph launch did not fail");
+        (void)cudaGetLastError();
+        compat::GraphEnvelopeTimestamps failed_reuse{};
+        require(compat::graph_completion_timestamps(owner.done, &failed_reuse) == cudaErrorNotSupported &&
+                    failed_reuse.available_fields == 0, "failed reuse exposed stale graph timestamps");
+      }
       if (unavailable) break; // no retry of unsupported/invalid graph profiling
     }
     // A completion handle recorded again as an ordinary event loses its graph
