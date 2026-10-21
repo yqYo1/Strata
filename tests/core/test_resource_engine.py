@@ -132,8 +132,8 @@ class CurrentCollectionPathTests(unittest.TestCase):
                 (root/'engine.stderr').write_text('')
                 (root/'client-resources.jsonl').write_text('{}\n{}\n')
                 (root/'bench'/'run'/'results.json').write_text(json.dumps({'complete':True,'results':{'failures':[]}}))
-                (root/'bench'/'run'/'requests.jsonl').write_text('{}\n')
                 row=dict(request_sha256='b'*64,client_interval={})
+                (root/'bench'/'run'/'requests.jsonl').write_text(json.dumps({'kind':'result','sample':row})+'\n')
                 comparison=SimpleNamespace(official=lambda *a,**k:([row],{'valid':True},[]),native_routes=lambda *a,**k:[{'mode':10}])
                 class Owner:
                     active=None
