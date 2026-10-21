@@ -83,6 +83,32 @@ def current(record,full_models=False):
         for name,sha in row['inputs'].items():guards.require(gen.common.digest(name)==sha,'generated model input changed')
     return full
 
+def host():
+    record=gen.committed(base.RESULT);plan=record['canonical_model_host_plan']
+    root=Path(plan['root']);guards.require(not root.exists(),'single-use host check only')
+    source=gen.git('rev-parse','HEAD').decode().strip()
+    for name,sha in plan['inputs'].items():
+        guards.require(gen.common.digest(P/name)==sha and
+            hashlib.sha256(gen.git('show',source+':'+name)).hexdigest()==sha,'host source drift')
+    root.mkdir(mode=0o700);row=dict(source_commit=source,tests=7,passed=False,GPU_executed=False)
+    owner=None
+    def persist():write(root/'record.json',dict(row,commands=owner.commands if owner else []))
+    owner=owner_lib.Owner(root/'owned',persist)
+    try:
+        entry,_,stderr=owner.run('host',plan['command'],plan['environment'],P,wall=30,cpu=30,
+            rss_cap=1<<30,text_cap=1<<20,file_cap=1<<20,total_cap=4<<20)
+        output=stderr.read_text()
+        guards.require(owner_lib.closed(entry)and entry['exit_code']==0 and
+            'Ran 7 tests' in output and output.rstrip().endswith('OK'),'host tests/owner failed')
+        row.update(passed=True,controller_sha256=plan['inputs']['tools/sycl/canonical_model.py'],
+            test_sha256=plan['inputs']['tests/core/test_canonical_model.py'])
+    except BaseException as error:row['error']=str(error)
+    finally:
+        row['ownership_closed']=owner.active is None and all(owner_lib.closed(e)for e in owner.commands)
+        row['passed']=row['passed']and row['ownership_closed'];persist()
+        record['canonical_model_host']=row;write(base.RESULT,record)
+    print(json.dumps(row));return 0 if row['passed']else 1
+
 def prepare():
     guards.require(not ROOT.exists(),'fresh single-use canonical model check only')
     previous=json.loads(gen.git('show',PREVIOUS+':'+str(RESULT.relative_to(P))))
@@ -190,8 +216,8 @@ def run():
     print(json.dumps({k:row.get(k)for k in ('arm','passed','complete','ownership_closed','error')}));return 0 if row['passed']else 1
 
 def main():
-    parser=argparse.ArgumentParser(description=__doc__);parser.add_argument('action',choices=('prepare','run'));args=parser.parse_args()
+    parser=argparse.ArgumentParser(description=__doc__);parser.add_argument('action',choices=('host','prepare','run'));args=parser.parse_args()
     with(B/'owned-v0141-measurement.lock').open('a+')as lock:
         fcntl.flock(lock,fcntl.LOCK_EX|fcntl.LOCK_NB);guards.no_model_owners([]);guards.driver_guard()
-        return prepare()if args.action=='prepare'else run()
+        return host()if args.action=='host'else prepare()if args.action=='prepare'else run()
 if __name__=='__main__':sys.exit(main())

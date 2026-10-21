@@ -3001,7 +3001,7 @@
       "tests/core/test_canonical_model.py"
     ],
     "inputs": {
-      "tools/sycl/canonical_model.py": "41585e5b9d25d511439380f900520a96c64e511cdf737a5d3adfe4cbc5d0ce03",
+      "tools/sycl/canonical_model.py": "dde799c1d23e6232cb880cd10faf95e3ec1b696acb102d9fd79e1d413e4c3793",
       "tests/core/test_canonical_model.py": "2c0a5ac3a2a3ba0b08ac9371381e48c282cfffd7406e161a0b2468c88f4c7441"
     },
     "environment": {
@@ -3009,7 +3009,7 @@
       "LANG": "C.UTF-8",
       "PYTHONDONTWRITEBYTECODE": "1"
     },
-    "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/canonical-model-host-v2",
+    "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/canonical-model-host-v3",
     "budgets": {
       "wall_s": 30,
       "cpu_s": 30,
@@ -3018,5 +3018,11 @@
       "total_bytes": 4194304
     },
     "acceptance": "Seven groups:existing route/refusal/immutable-environment checks plus correct separation of three warmup and three long dense observations;reject missing,duplicate,out-of-request or wrong-phase records. Normal exit and complete owned closure required. No GPU execution or retry."
+  },
+  "canonical_model_host_harness_failure": {
+    "source_commit": "e9fccdf7a",
+    "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/canonical-model-host-v2",
+    "error": "Inline host launcher treated returned stderr Path as text after the child completed. Seven tests printed OK but no closure receipt was persisted;not admitted. Use committed controller host mode in a new root.",
+    "GPU_executed": false
   }
 }
