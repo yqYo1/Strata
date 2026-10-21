@@ -217,6 +217,34 @@
       "commit": "bedfdf312fe3cf28842c78263f1e5b69cdf5ec5c",
       "path": "bench/results/2026-10-15-pr6-recovery-audit/iq2-pair-model-current.json",
       "sha256": "336a926be0252d3c6f1ebddaafd6a227ac2af82042099ee534b4bb6d97879255"
+    },
+    "retirement": {
+      "complete": true,
+      "source_recovery": {
+        "original_inputs_recovered": 9845,
+        "source_build_sha256": "20413ff76494a3651de670495bf27d317450d604eada28721a64ca11283bb2ff",
+        "model_evidence_scope": {
+          "component_groups": 18,
+          "official_warmups": 4,
+          "current_long_generation_requests": 2,
+          "generation_read_tokens": [
+            33214,
+            33288
+          ],
+          "original_inputs_recovered": 9845,
+          "clean117K_speed_qualified": false,
+          "sustained_decode_speed_qualified": false,
+          "hardware_saturation_qualified": false,
+          "model_adoption_qualified": false
+        },
+        "model_evidence_commits": {
+          "iq2-pair-model-current.json": "bedfdf312fe3cf28842c78263f1e5b69cdf5ec5c",
+          "decode-query-profile-component-current.json": "17f02c274442fa56ba9dbdadb4fa3a7e68015397"
+        }
+      },
+      "files": 12,
+      "bytes": 90033634,
+      "reason": "Named MTP replacement consumer ended; preserve current6e40 prefill scope instead before observer build."
     }
   },
   "legacy_provenance_exception": {
@@ -546,5 +574,16 @@
     "commit": "64efe12f005b6a518daa2ee1d0f0d2712baa325f",
     "path": "bench/results/2026-10-15-pr6-recovery-audit/prefill-recovery-current.json",
     "sha256": "9945b8234465e0c963732086eac0b10b081fb63ca3eb16db3daae27899eab7f2"
+  },
+  "prefill_transition_support_retirement": {
+    "files": 29,
+    "bytes": 123887811,
+    "manifest": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-transition-closed-support-20261022.jsonl",
+      "sha256": "698b1d3d771536692d4d0a9c706dbe3cb765c8511d7c253dde2588105b0b8715"
+    },
+    "old396d_fixture_inputs_recovered": 9813,
+    "old396d_fixtures_retired": 5,
+    "remaining_old396d_consumer": "Original source-build.json still read by historical provenance/CPU-capacity admission; no executable remains."
   }
 }
