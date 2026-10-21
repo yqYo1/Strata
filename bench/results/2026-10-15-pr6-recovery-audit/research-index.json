@@ -7312,7 +7312,7 @@
   "prefill_restore_handoff_alternatives_20261022": {
     "classification": "decision support",
     "schedulable_now": false,
-    "state": "Orca source audit settled successfully; native Luna max review in progress.",
+    "state": "Native Luna max review accepted with corrections; Main implements attribution before selecting any optimization.",
     "prerequisites": {
       "closed_baseline_commit": "64efe12f0",
       "native_source": "6e40afc1beddd059ee518617f6c1efce1da14aca",
@@ -7348,6 +7348,19 @@
     "worker_closed": true,
     "report_sha256": "31ab6fc9ff7e7bb8f1111f7916e3756b16a81523d896fa84d6f86304a5f87392",
     "report_bytes": 15557,
-    "lifecycle_outcome": "worker_done succeeded for exact task/dispatch; external terminal release reported none, then Main-owned terminal close confirmed ptyKilled=true and delivery ACK completed."
+    "lifecycle_outcome": "worker_done succeeded for exact task/dispatch; external terminal release reported none, then Main-owned terminal close confirmed ptyKilled=true and delivery ACK completed.",
+    "native_review": {
+      "sha256": "f6e5ca88b32aa0c0c2aa8f06f94dba37c8939c396dc218916f824dcb1e1f4d7e",
+      "bytes": 9269,
+      "model": "gpt-6-luna",
+      "effort": "max",
+      "digest": [
+        "Exact nine source hashes match; useful queue/wait/lifetime and A/B/C alternatives, not a speed/adoption result.",
+        "Current standalone order restores dense/PLE and recaptures graphs before queued cache refill/residency upload. Early host_res update is confined to queued refill.",
+        "cudaFree waits before deallocation; this does not prove no device overlap while the host waits. Graph retirement also depends on unindexed src/core/session.cpp."
+      ],
+      "next_scope_schedulable_now": false,
+      "prerequisite": "Main disjoint wall/thread-CPU attribution before another handoff research scope."
+    }
   }
 }
