@@ -131,5 +131,118 @@
     "passed": true,
     "GPU_executed": false,
     "scope": "Exact known asset delta, passed component and scoped diagnostic modes; original failed GPU admission remains failed."
+  },
+  "packed_gpu": {
+    "source_commit": "b62a63744a470a55d7ff9373c2c79c50f55295ae",
+    "source_sha256": {
+      "tools/sycl/check_expert_bank.py": "31896d82f9f948784720c13044938fd64d5445e5a28168c2ccd569e3cb769eee",
+      "tools/sycl/measurement_guards.py": "794e332c70aca0acadad4f26d0414548e023a02fd27b72ed78fc773674423ec8",
+      "tools/sycl/query_profile.py": "a628de1ea3bc405b367d5681ce5e43c6d837801a68c0a129abbee1d5e2563e34",
+      "tools/sycl/generation_engine.py": "1f884753ac5bbf2d391b7d5ee91c03ce466245128e1b830792dd6ef2bb3fad7d",
+      "tools/sycl/bench_engine.py": "e5f588605ebc7799b54f8bf7df9ad2e363391375e50b788b9704a6b80887ca6b",
+      "tools/sycl/check_verifier_retirement.py": "09d9f4c13954e74ea46e4b59f08fb66b7349bb2342f33f2140090a4128fec818",
+      "tools/sycl/build_engine.py": "5c5eb8988ae73318e297ea0d9742986a4ac345b14492db17cb4a356fc81beb6c",
+      "tools/sycl/measurement_owner.py": "bddd0c5e5020e882ca3404679420faec11e820dabce2ed4c72ef82b4c9c0874a",
+      "tools/sycl/measurement_environment.json": "d4402591df50e80dc45a5ec9e4839c7a794888850b1473537b6f95179be5b03c",
+      "include/strata/prefill/expert_bank_upload.hpp": "adeeaa140d138d5ba55050fbaec985fcf238b02468401d4caa2c7811e4bb341f",
+      "tests/sycl/expert_bank.cpp": "f4887a1c75a33a7f49ec65133c965282d4dda509590280c16301048405a7129d",
+      "include/strata/core/expert_layer_view.hpp": "5b8c4a6c7a1a1d074fe35ed09c933c10b52e56e609eb86e5a4e7b506d0dc8c8f",
+      "include/strata/core/expert_source.hpp": "3e0c332f0bf7fcbc1024bc14ac7f4af81f0d347ec9378c6484c7c289269d44c7",
+      "src/core/expert_source.cpp": "87655233b30eb8de9227ce3e236735d332f701557af46e033a13f05c8f38b4ec",
+      "tests/core/file_expert_source_test.cpp": "d39e3027d63f3ed1bb5a4cd56dfd57e6b28007646b9c5e6318482f242af49c5d"
+    },
+    "build_source_commit": "e0623d4f73e7909d68406ce3addca1fc0b3e348a",
+    "fixture": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/sycl_expert_bank_test",
+      "sha256": "befcc6842aa72a0cec5454afefdf7a99421c538a7f98acbadcb7629f51a9e242"
+    },
+    "provider_fixture": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/file_expert_source_test",
+      "sha256": "13b97528fd3cfa6e59f7685f04873d097663df05733da8edfdfd6d979a5aa8c6"
+    },
+    "CPU_gate_source": "cf8ae547a7bcd9fc188ce985d85561295cc2c16d",
+    "checks": [
+      {
+        "mode": "packed-smoke",
+        "cases": [
+          {
+            "backing_slots": "4",
+            "backing_stride": "512",
+            "source_stride": "256",
+            "experts": "10",
+            "layers": "3",
+            "uploads": "43",
+            "hits": "17",
+            "consumers": "120",
+            "unwind": "0",
+            "admission_rejections": "11",
+            "status": "0",
+            "full_copy": "1",
+            "immutable_slab": "PASS",
+            "guards": "PASS",
+            "private_map": "PASS",
+            "checked_drain": "PASS"
+          },
+          {
+            "backing_slots": "4",
+            "backing_stride": "512",
+            "source_stride": "256",
+            "experts": "10",
+            "layers": "2",
+            "uploads": "10",
+            "hits": "0",
+            "consumers": "20",
+            "unwind": "2",
+            "admission_rejections": "11",
+            "status": "0",
+            "full_copy": "0",
+            "immutable_slab": "PASS",
+            "guards": "PASS",
+            "private_map": "PASS",
+            "checked_drain": "PASS"
+          }
+        ],
+        "passed": true
+      }
+    ],
+    "limits": "Production upload helper/cache, synthetic byte readers, private maps and caller unwind only. No real provider enqueue fault injection, model arithmetic, speed, session rollback or physical262144/RESTORE qualification.",
+    "mode": "packed-smoke",
+    "complete": true,
+    "passed": true,
+    "GPU_executed": true,
+    "environment_reference": "tools/sycl/measurement_environment.json",
+    "environment_overrides": {
+      "TMPDIR": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/moe-packed-expert-bank-gpu-v2/tmp",
+      "XDG_CACHE_HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/moe-packed-expert-bank-gpu-v2/cache"
+    },
+    "removed_environment_keys": [],
+    "runtime_asset_delta": {
+      "/usr/lib/x86_64-linux-gnu/libze_intel_gpu.so.1.17.39395": {
+        "qualified_sha256": "dfa844e5afd8e8f74bf5ce9da3ea2837706d9116bc8efeaed90efba5acaf7b1c",
+        "candidate_sha256": "50adb6b727d027309039803033d41efeae4b248589ee363f321c0d538c7de3ff"
+      },
+      "/usr/lib/x86_64-linux-gnu/libudev.so.1.7.8": {
+        "qualified_sha256": "4298228175fa62a36af88b1afd4406cdd8b1bf166621f957d0dbbde45a698fe5",
+        "candidate_sha256": "0d6934adafb2ef3c640382440c14d6bd60f391e688c000796ffcea0c72849269"
+      }
+    },
+    "runtime_reference": {
+      "path": "bench/results/2026-10-15-pr6-recovery-audit/decode-query-profile-component-current.json",
+      "sha256": "7d12264da26f4c089c9f2c20a16cc95f1c4e98587022a2feca3b243e8f1a70c3",
+      "source_commit": "3b4998f326101fa913788fd368e1674b111dea03",
+      "scope": "Existing passed component runtime identity; not qualification of this changed native route."
+    },
+    "provider_checks_passed": true,
+    "ownership_closed": true,
+    "boot_unchanged": true,
+    "fresh_faults": [],
+    "driver_after": {
+      "pci": "/sys/bus/pci/devices/0000:05:00.0",
+      "driver": "xe",
+      "vendor": "0x8086",
+      "device": "0xe20c",
+      "kernel": "7.0.0-38-generic",
+      "devcoredump": false
+    }
   }
 }
