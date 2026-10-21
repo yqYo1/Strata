@@ -3296,11 +3296,27 @@ SYCL mixed route separates graph segments instead of spinning on host flags.
 Passive read calls total0.66846s after first output, not a causal overhead bound.
 
 CPU arithmetic versus RAM bandwidth remains unresolved. Next obtain the actual
-CPU quantization-pair/NT job census, bound to the static cache map and conserved
-native counts, before selecting a CPU method from the compatible calibration.
+CPU quantization-pair/NT job census at the final actual dispatcher, with explicit
+request/window ownership and conserved native counts, before selecting a CPU
+method from the compatible calibration. Existing unframed routing output is
+insufficient evidence; use the reviewed direct-counter contract and actual job
+NT rather than callback row count or TLS as request identity.
 Current pcie0 requests no target-expert weight uploads; other bus traffic is
 still unknown. No clean speed, hardware-saturation or model-adoption claim
 follows from this diagnostic.
+After recovering152 original controller and9836 native inputs, Main retires the
+closed resource capture/JIT and consumed review transaction:73files/15463239B.
+The compact result preserves both the original controller failure and the
+successful corrected post-closure analysis. The current engine/nine fixtures
+still match. The next source work is diagnostic counters, not a speedup claim.
+The14 old worktree proposal/metadata paths are also reviewed before rebuilding.
+Available unique partial failed-GDN source/recipes are archived at`228b85f13`
+and removed from the active tree; missing original headers/fixture/v2 source
+remain an explicit recovery failure, with no GPU/model performance claimed.
+Other unused proposal snapshots, metadata and duplicate failed-build reports
+are retired with path/hash/reason evidence in the current build result. The
+separate six legacy product/source-recovery exceptions retain their original
+receipts/unique evidence; they are not qualified comparison generations.
 Generic native-end and draft-work readers now live in`generation_engine.py`.
 The closed packed model/clean launchers and their retired-run-only tests are
 removed; source and original reducer remain recoverable at`6213f0325d807b5eaf319bbf8096c9337f5402bd`.
