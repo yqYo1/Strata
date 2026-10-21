@@ -3275,8 +3275,32 @@ not refresh the original build receipt. At`9c323c437`, nine follow-up host check
 pass; actual admission recovers9836 native inputs and matches all10 current
 artifacts. Both original generation arms replay their official/request/route/
 work/native-closure gates;151 controller and9836 retained native inputs recover.
-CPU arithmetic, RAM bandwidth and GPU wait costs remain unresolved; this
-resource diagnostic is not a clean throughput comparison.
+At`5a2a22dd5`,20 host checks pass, including the actual one-window quantization
+pair and refusal beyond either print interval. Post-closure replay preserves the
+original failed controller outcome at`8d3083970`; its separate analysis passes
+the official journal, all four warmups, route/work/native/collector/owner gates,
+152 original controller inputs,9836 native inputs and all15 model post-hashes.
+It executes no new GPU work. The actual long request generates3611 tokens at
+14.5tok/s with2578/3102 accepted; its diagnostic PP is631.4tok/s.
+
+Each of1035 target windows takes240.10ms:112.77ms inside the target CPU pool,
+75.02ms waiting for GPU reach,33.17ms MTP draft and19.14ms other outer work.
+These are host dependency scopes, not additive hardware service costs. The
+contained after-first-output interval has1294.72 CPU seconds over246.79135 wall
+seconds (5.2462 cores) and CCS busy fraction0.564849; before first output it has
+49.03 CPU seconds over52.13603 wall seconds (0.9404 cores), CCS0.825179.
+Scheduled CPU includes polling/stalls and CCS busy does not establish arithmetic
+or VRAM saturation. Default pool workers spin for20ms before sleeping; high
+scheduled CPU alone cannot be labeled useful expert math. The source's current
+SYCL mixed route separates graph segments instead of spinning on host flags.
+Passive read calls total0.66846s after first output, not a causal overhead bound.
+
+CPU arithmetic versus RAM bandwidth remains unresolved. Next obtain the actual
+CPU quantization-pair/NT job census, bound to the static cache map and conserved
+native counts, before selecting a CPU method from the compatible calibration.
+Current pcie0 requests no target-expert weight uploads; other bus traffic is
+still unknown. No clean speed, hardware-saturation or model-adoption claim
+follows from this diagnostic.
 Generic native-end and draft-work readers now live in`generation_engine.py`.
 The closed packed model/clean launchers and their retired-run-only tests are
 removed; source and original reducer remain recoverable at`6213f0325d807b5eaf319bbf8096c9337f5402bd`.

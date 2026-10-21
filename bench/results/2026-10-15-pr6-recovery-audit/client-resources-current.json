@@ -457,7 +457,6 @@
   "requests": [
     {
       "ok": true,
-      "err": null,
       "ttft_s": 52.722,
       "total_s": 301.138,
       "prompt_tokens": 33214,
@@ -475,25 +474,14 @@
       "finish_reason": "stop",
       "request_sha256": "b0a065720a5eb86fa2d3f84d6371e35da774b4ea144d022608d49b80c227cba1",
       "stream_complete": true,
-      "truncated": false,
       "generated_tokens_source": "usage",
-      "client_interval": {
-        "request_begin_monotonic_ns": 918012159636453,
-        "first_output_monotonic_ns": 918064882058555,
-        "request_end_monotonic_ns": 918313298115024
-      },
       "eligible": true,
-      "agreement_eligible": true,
       "speed_eligible": true,
-      "speed_ineligible_reasons": [],
-      "ineligible_reasons": [],
       "acceptance_rate": 0.8310767246937459,
       "usage_generated_tokens": 3611,
       "completion_includes_thinking": true,
       "run": 0,
       "order": 0,
-      "output_sha256": "5b7ae0f207d7804bc693ebde382f1a762c43f477fd01483939648d004cfaf971",
-      "reasoning_sha256": "8daeec41f22d90c32c1c1c5c3cfe4486a9ee6d65fa7ffe8857bfe980c02d411e",
       "output_chars": 5496,
       "reasoning_chars": 4368,
       "reasoning_tokens": null,
@@ -562,11 +550,233 @@
   "fault_probe_successful": true,
   "boot_unchanged": true,
   "postclosure_analysis": {
-    "status": "pending",
+    "status": "passed",
+    "source_commit": "5a2a22dd512a6abf128ba88902d4cb1826c008a3",
+    "original_failure_commit": "8d3083970",
     "original_execution_outcome_unchanged": true,
-    "failure": "The controller compared a two-decimal ms/window line with one-decimal DONE total using only the former rounding allowance. One-window warmup prints126.05 ms/window versus126.0 ms DONE; this is within the documented output quantization, not a new GPU failure.",
-    "source_contract": "src/program/generate.cpp:6656 two-decimal average and :6794 one-decimal DONE; serve/server.py preserves DONE decode_ms.",
-    "next": "Commit corrected host reader and quantization regression test, then replay the existing closed capture and complete after-model hashes. No new GPU execution or timing-sample replacement.",
-    "raw_consumer": "Main post-closure timing and proc/DRM replay only; current64MiB budget, retire after verified extraction."
+    "new_GPU_execution": false,
+    "method": "resource_engine.closed_evidence(record,closed_generation_pilot,original_owned_entry,original_boot); generation_engine.decode_timing_evidence replays all four warmups and the long request. Original source pins/generated inputs and native/fixtures recovered; runtime/platform/model post-hashes separately verified.",
+    "host_regression_checks": 20,
+    "controller_inputs_recovered": 152,
+    "native_inputs_recovered": 9836,
+    "after_model_hashes_match": true,
+    "native_and_collector_exit0": true,
+    "ownership_closed": true,
+    "fresh_faults": [],
+    "clock_contract": "DONE total quantum0.1ms and average quantum0.01ms/window; compare total difference against0.05+0.005*windows ms. Other clock/work/route/native/capture gates unchanged.",
+    "evidence": {
+      "decode_timing": {
+        "windows": 1035,
+        "ms_per_window": {
+          "average_T": 4.0,
+          "tokens_per_window": 3.49,
+          "total": 240.1,
+          "verify": 206.86,
+          "GPU_reach_wait": 75.02,
+          "per_layer_host": 115.18,
+          "plan": 1.48,
+          "activation_quant": 0.44,
+          "jobs": 0.09,
+          "CPU_pool_run": 112.77,
+          "stage": 2.21,
+          "commit_emit": 0.04,
+          "draft": 33.17,
+          "CPU_experts": 27.59,
+          "CPU_entries": 35.67,
+          "VRAM_hits": 4.31,
+          "PCIe": 0.0
+        },
+        "outer_residual_ms_per_window": 0.029999999999972715,
+        "host_nested_residual_ms_per_window": 0.4000000000000057,
+        "work": {
+          "target_windows": 1035,
+          "target_rows": 4137,
+          "emitted_tokens": 3611,
+          "target_rows_per_emitted": 1.1456660204929383,
+          "cpu_unique_jobs": 1370846,
+          "cpu_entries": 1771839,
+          "cpu_unique_jobs_per_emitted": 379.63057324840764,
+          "minimum_NT1_jobs": 969853,
+          "minimum_NT1_job_fraction": 0.70748501290444,
+          "expert_copy_requested_bytes": 0,
+          "mathematical_dot_equivalent_ops": 17417886105600,
+          "limits": "Spec4,48 layers,top10,pcie0,no peer. NT1 bound is max(0,2*jobs-entries). Dot equivalents exclude decode/index/quant/nonlinear work and are not issued FP/integer instructions. Blob visits and expert-copy counters are not physical DRAM/PCIe bytes; no saturation or critical-path qualification."
+        },
+        "clock_binding": {
+          "absolute_total_difference_ms": 4.899999999994179,
+          "rounding_bound_ms": 5.225,
+          "average_quantum_ms": 0.01,
+          "DONE_total_quantum_ms": 0.1
+        },
+        "limits": "Existing two-decimal host wall clocks include firstT1. Parent/child fields are nested,not additive hardware costs. CPU_pool_run includes pool scheduling/waits; GPU_reach_wait is a host wait,not device arithmetic time. Residuals preserve rounding sign; no clean speed or hardware saturation claim."
+      },
+      "resources": {
+        "collector_complete": true,
+        "request_coverage_verified": true,
+        "samples": 427,
+        "final_sample_to_response_end_seconds": 0.0,
+        "before_first_output": {
+          "window_begin_monotonic_ns": 918012159636453,
+          "window_end_monotonic_ns": 918064882058555,
+          "contained_CPU_wall_seconds": 52.13602593599999,
+          "process_cpu_seconds": 49.03,
+          "process_cpu_core_equivalents": 0.9404245743660474,
+          "top_scheduled_threads": [
+            {
+              "tid": 1960292,
+              "start_ticks": 91788935,
+              "cpu_ticks": 4694,
+              "observed_last_cpus": [
+                0
+              ],
+              "cpu_seconds": 46.94
+            }
+          ],
+          "unmatched_thread_intervals": 3,
+          "engines": [
+            {
+              "pci": "0000:05:00.0",
+              "client_id": 43666,
+              "engine": "ccs",
+              "eligible_intervals": 52,
+              "busy_cycles": 825975935,
+              "capacity_total_cycles": 1000965770,
+              "busy_fraction": 0.8251790018753589
+            }
+          ],
+          "other_observed_engines_zero_busy": [
+            "bcs",
+            "rcs",
+            "vcs",
+            "vecs"
+          ]
+        },
+        "after_first_output": {
+          "window_begin_monotonic_ns": 918064882058555,
+          "window_end_monotonic_ns": 918313298115024,
+          "contained_CPU_wall_seconds": 246.79135071350015,
+          "process_cpu_seconds": 1294.72,
+          "process_cpu_core_equivalents": 5.246213030792312,
+          "top_scheduled_threads": [
+            {
+              "tid": 1960292,
+              "start_ticks": 91788935,
+              "cpu_ticks": 23931,
+              "observed_last_cpus": [
+                0
+              ],
+              "cpu_seconds": 239.31
+            },
+            {
+              "tid": 1962149,
+              "start_ticks": 91794153,
+              "cpu_ticks": 21129,
+              "observed_last_cpus": [
+                5
+              ],
+              "cpu_seconds": 211.29
+            },
+            {
+              "tid": 1962145,
+              "start_ticks": 91794153,
+              "cpu_ticks": 21102,
+              "observed_last_cpus": [
+                1
+              ],
+              "cpu_seconds": 211.02
+            },
+            {
+              "tid": 1962146,
+              "start_ticks": 91794153,
+              "cpu_ticks": 21070,
+              "observed_last_cpus": [
+                2
+              ],
+              "cpu_seconds": 210.7
+            },
+            {
+              "tid": 1962148,
+              "start_ticks": 91794153,
+              "cpu_ticks": 21064,
+              "observed_last_cpus": [
+                4
+              ],
+              "cpu_seconds": 210.64
+            },
+            {
+              "tid": 1962147,
+              "start_ticks": 91794153,
+              "cpu_ticks": 21062,
+              "observed_last_cpus": [
+                3
+              ],
+              "cpu_seconds": 210.62
+            }
+          ],
+          "unmatched_thread_intervals": 0,
+          "engines": [
+            {
+              "pci": "0000:05:00.0",
+              "client_id": 43666,
+              "engine": "ccs",
+              "eligible_intervals": 246,
+              "busy_cycles": 2676350729,
+              "capacity_total_cycles": 4738168369,
+              "busy_fraction": 0.5648492245464146
+            }
+          ],
+          "other_observed_engines_zero_busy": [
+            "bcs",
+            "rcs",
+            "vcs",
+            "vecs"
+          ]
+        },
+        "limits": "Client observation windows, not native kernel-stage boundaries. Scheduled CPU includes polling/stalls. Associated DRM clients may be shared; cycle busy fraction is not arithmetic efficiency, VRAM bandwidth, physical PCIe traffic or hardware saturation."
+      },
+      "collector_read_spans": {
+        "before_first_output": {
+          "contained_calls": 53,
+          "sum_wall_seconds": 0.116469334,
+          "median_wall_seconds": 0.00211995,
+          "max_wall_seconds": 0.002756177,
+          "sum_fraction_of_client_window": 0.0022091043877815655
+        },
+        "after_first_output": {
+          "contained_calls": 247,
+          "sum_wall_seconds": 0.668463525,
+          "median_wall_seconds": 0.00269317,
+          "max_wall_seconds": 0.006952026,
+          "sum_fraction_of_client_window": 0.002690903053939341
+        }
+      },
+      "evidence_sha256": {
+        "results.json": "ef13f5d59f136d66601bd74532f0e5897c930a8ed21278c441eece9ce839283b",
+        "requests.jsonl": "cd86cf138f0c4ea405394889361b1ee69f9b14d6c41f602c465fd72988353fdc",
+        "client-resources.jsonl": "649e88faad4453c421da4d83d0e955f171f3e7e7f0ed4c22f0571dd72efb9de7",
+        "engine-start.json": "55b5210a406405a9879fef91ccba07053003a954e45471b97ae9bdf587a16756",
+        "engine-exit.json": "2c05c98eaafd1b175755a6a85f32e6c07a2ebd77ed40979361537688b15b3e5f",
+        "engine.stderr": "1d5496a2d39e269118d62093b5fb233ce8b968011b71e6ce48324cb0a3dfc481"
+      }
+    },
+    "hardware_saturation_qualified": false,
+    "clean_speed_qualified": false,
+    "model_adoption_qualified": false,
+    "raw_consumer": "Main compact resource interpretation and verified retirement at this boundary;64MiB cap. Original failed outcome remains false.",
+    "official_request_journal_route_and_native_identity_replayed": true,
+    "interpretation": {
+      "observed_request_decode_tps": 14.5,
+      "critical_host_scopes_ms_per_window": {
+        "target_CPU_pool": 112.77,
+        "GPU_reach_wait": 75.02,
+        "MTP_draft": 33.17,
+        "other": 19.14,
+        "total": 240.1
+      },
+      "scheduled_CPU_and_device_activity": "After first output:5.2462 process CPU core-equivalents andCCS busy0.564849. Native CPU-pool call covers about47% of window wall; scheduled CPU also includes worker/main polling and runtime work. CCS busy does not measure arithmetic/VRAM saturation. Parent/child clocks and overlapping device activity are not additive.",
+      "next": "Census actual CPU expert jobs by quantization pair andNT, conserving trace/window/native counts against the known static cache map, then compare compatible CPU calibration. Current PCIe0 has no requested target-expert upload; activation/routing and other bus traffic remain unmeasured. Native source changes require bounded resolution of14 legacy provenance holds before a new build.",
+      "limits": "No hardware-saturation,physical DRAM/PCIe ceiling,observer-overhead,clean speed/adoption,weak-MTP/agent/task-quality,physical262144 orRESTORE qualification."
+    },
+    "evidence_compaction": "Keep the individual long sample, rounded host/work/clock checks, contained process CPU/CCS aggregates, main/five high-CPU thread identities, source/model/owner/fault checks and next resource question. Omit duplicated official/native gates, minor auxiliary-thread rows, zero-engine detail and unused request parser aliases. Original failure preserved at8d3083970."
   }
 }
