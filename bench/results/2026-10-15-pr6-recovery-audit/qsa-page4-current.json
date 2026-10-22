@@ -641,7 +641,7 @@
     }
   ],
   "check_plan": {
-    "stage": "prepared",
+    "stage": "failed",
     "mode": "component",
     "source_commit": "98050a75256ab2086dace9e507db41e290011bd3",
     "controller_inputs": {
@@ -1376,6 +1376,40 @@
         "kernel": "7.0.0-38-generic",
         "devcoredump": false
       }
+    },
+    {
+      "mode": "component",
+      "source_commit": "98050a75256ab2086dace9e507db41e290011bd3",
+      "numerical_binary": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-page4-address-v1/numerical",
+        "sha256": "540b7c60302d2305c0edb563c1ed2bc113eb814a9ab62446c940485e42f2769e",
+        "bytes": 1585784
+      },
+      "passed": false,
+      "complete": false,
+      "active": false,
+      "ownership_closed": true,
+      "observations": [],
+      "error": "RuntimeError('numerical fixture did not close normally')",
+      "postchecks_complete": true,
+      "postcheck_errors": [],
+      "fresh_faults": [],
+      "boot_unchanged": true,
+      "driver_after": {
+        "pci": "/sys/bus/pci/devices/0000:05:00.0",
+        "driver": "xe",
+        "vendor": "0x8086",
+        "device": "0xe20c",
+        "kernel": "7.0.0-38-generic",
+        "devcoredump": false
+      }
     }
-  ]
+  ],
+  "fixture_failure_analysis": {
+    "status": "closed_failure_fixed_source_pending_newbuild",
+    "measured": "Original production baseline default@1 exits1 on first/later-tile invalidscale diagnostic. Ownerclosed,bootunchanged,freshfaultsnone. CandidatePage4wasnotexecutedbythisfullcohort;all6earlierPage4/Page7smokeprocessespassed.",
+    "cause": "Generatedmultipage fixture inheritedPage16diagnosticrow=(table[0]*KV+head)*Page+invalid_cell. ForPage1,cells97,pages97,table[0]=96,KV2,rows194,invalid_cell1:head0poisonsrow193(wronglogicalcell),head1computesrow194(onepastend of194-rowhostscalevector). This is host-testundefinedbehavior,not GPUkernel arithmetic evidence.",
+    "required_fix": "Resolve invalid_cell/Page through table[logical],then useinvalid_cell%Page. Checklogical/physical/row/scaleelementbounds beforewriting;retainallNaN/sticky/clearing and132componentcases,includingactualPage4full262144.",
+    "source_scope": "Fixonlygeneratedhostoracle. Preserveoriginalfailure,alltracedpasses,original6e40engine/12fixtures,compiledkernel math and0.95performancecriteria. Newcommittedsource/build/planandfullrequalificationrequired;do notcontinuefailedcohortorrefreshits hashes."
+  }
 }
