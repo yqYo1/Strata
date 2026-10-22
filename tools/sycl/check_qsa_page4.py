@@ -73,7 +73,16 @@ def admission(record,plan):
             'qualified collector/launcher/preload changed')
     # The original broad zero-division gate remains failed. Reuse only the
     # independently qualified exact compiled bytes and semantic IR proof.
-    codegen.admission(record)
+    item=record[codegen.KEY]
+    original=build.gen.git('show',item['source_commit']+':tools/sycl/qualify_qsa_page4.py')
+    guards.require(original==Path(codegen.__file__).read_bytes() and
+        hashlib.sha256(original).hexdigest()==item['controller_sha256'],
+        'original closed-data qualifier changed')
+    # JSON encodes tuple pairs as arrays. Compare the saved semantic proof
+    # without changing its source hashes, criteria or original failed gate.
+    normalized=json.loads(json.dumps(codegen.proof(record)))
+    guards.require(item['passed'] and item['complete'] and item['original_failure_preserved']
+        and normalized==item['IR_analysis'],'frozen Page4 semantic IR proof changed')
     guards.require(record['ownership_closed'] and not record['active'],'closed compiled artifacts required')
 
 
