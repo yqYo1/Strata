@@ -164,7 +164,9 @@ result records remaining consumers and actual deletion status.
 
 The next pilot uses the original profile and the window-ranked profile in two
 independent processes. Each runs the official thinking code/prose pair after
-four warmups. The deterministic generator preserves all original layer labels,
+four warmups. Source`7fd10a25c` passes19 host tests, including full generated
+profile/reverse-map/membership checks and refusal of either workload's failed
+gate. The deterministic generator preserves all original layer labels,
 all24576 unique pairs and the reverse map; each per-layer slot count and byte
 offset remains unchanged. Only a prospective reduction of at least5% in actual
 CPU logical bytes/verifier row, increased GPU entry fraction and no token-latency
