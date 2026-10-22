@@ -584,7 +584,7 @@
     "limits": "Both frontend modules retain division and matrix-loop representation. The loop hint survives as metadata in the candidate;actual JIT allocation/timing must decide. No hardware compute/PCIe/memory saturation claim."
   },
   "check_plan": {
-    "stage": "prepared",
+    "stage": "closed",
     "mode": "resources",
     "source_commit": "09907aea19e82e47689278db01542f5b96ecf93c",
     "controller_inputs": {
@@ -969,6 +969,299 @@
           "physical262144_component_addressed": true,
           "stdout_sha256": "9c3ac76d2b68b075ad15ad026d468078634599b3dc2b89a67e256d35c6133b86",
           "stderr_sha256": "4efaa9572c32a6d88dd7888a9fe924ddd8cb0f86795d11c30430659d61d46c8a"
+        }
+      ],
+      "postchecks_complete": true,
+      "postcheck_errors": [],
+      "fresh_faults": [],
+      "boot_unchanged": true,
+      "driver_after": {
+        "pci": "/sys/bus/pci/devices/0000:05:00.0",
+        "driver": "xe",
+        "vendor": "0x8086",
+        "device": "0xe20c",
+        "kernel": "7.0.0-38-generic",
+        "devcoredump": false
+      }
+    },
+    {
+      "mode": "resources",
+      "source_commit": "09907aea19e82e47689278db01542f5b96ecf93c",
+      "numerical_binary": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-qcache-unroll-v1/numerical",
+        "sha256": "e41c7798d4b977aa44a24e927398f1a35c13c4c1fea3ba0d1b6da7b8ebfc5536",
+        "bytes": 1585424
+      },
+      "passed": true,
+      "complete": true,
+      "active": false,
+      "ownership_closed": true,
+      "observations": [
+        {
+          "arm": "all",
+          "pid": 2656985,
+          "exit_code": 0,
+          "ownership_closed": true,
+          "validation": {
+            "pid": 2656985,
+            "loader": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_loader.so.0.12.0",
+            "threads_before": 1,
+            "preinit": 37,
+            "config_enabled": true,
+            "first_init": true,
+            "dispatch_result": 46,
+            "output_untouched": true,
+            "retained_reference_until_exit": true,
+            "runtime_teardown_qualified": false
+          },
+          "session_removed": true,
+          "timing": {
+            "clock_floor_ns": 20,
+            "samples": [
+              [
+                0,
+                97,
+                3,
+                33,
+                "gather",
+                0,
+                0,
+                0,
+                0.812288
+              ],
+              [
+                0,
+                97,
+                3,
+                33,
+                "gather",
+                0,
+                1,
+                1,
+                0.760842
+              ],
+              [
+                0,
+                97,
+                3,
+                33,
+                "gather",
+                0,
+                2,
+                2,
+                0.498909
+              ],
+              [
+                0,
+                97,
+                3,
+                33,
+                "gather",
+                1,
+                0,
+                1,
+                0.438755
+              ],
+              [
+                0,
+                97,
+                3,
+                33,
+                "gather",
+                1,
+                1,
+                2,
+                0.458633
+              ],
+              [
+                0,
+                97,
+                3,
+                33,
+                "gather",
+                1,
+                2,
+                0,
+                0.449846
+              ],
+              [
+                0,
+                97,
+                3,
+                33,
+                "gather",
+                2,
+                0,
+                2,
+                0.464765
+              ],
+              [
+                0,
+                97,
+                3,
+                33,
+                "gather",
+                2,
+                1,
+                0,
+                0.464273
+              ],
+              [
+                0,
+                97,
+                3,
+                33,
+                "gather",
+                2,
+                2,
+                1,
+                0.472308
+              ],
+              [
+                0,
+                97,
+                3,
+                33,
+                "gather",
+                3,
+                0,
+                0,
+                0.438875
+              ],
+              [
+                0,
+                97,
+                3,
+                33,
+                "gather",
+                3,
+                1,
+                1,
+                0.459474
+              ],
+              [
+                0,
+                97,
+                3,
+                33,
+                "gather",
+                3,
+                2,
+                2,
+                0.444927
+              ],
+              [
+                0,
+                97,
+                3,
+                33,
+                "gather",
+                4,
+                0,
+                1,
+                0.460246
+              ],
+              [
+                0,
+                97,
+                3,
+                33,
+                "gather",
+                4,
+                1,
+                2,
+                0.43557
+              ],
+              [
+                0,
+                97,
+                3,
+                33,
+                "gather",
+                4,
+                2,
+                0,
+                0.442333
+              ],
+              [
+                0,
+                97,
+                3,
+                33,
+                "gather",
+                5,
+                0,
+                2,
+                0.43572
+              ],
+              [
+                0,
+                97,
+                3,
+                33,
+                "gather",
+                5,
+                1,
+                0,
+                0.460306
+              ],
+              [
+                0,
+                97,
+                3,
+                33,
+                "gather",
+                5,
+                2,
+                1,
+                0.444386
+              ]
+            ]
+          },
+          "stdout_sha256": "4913b443e94d5d42740ea7524dfbc2fb992135f019b7d46db93b7e72985b9053",
+          "stderr_sha256": "4a15eb6c957d52058106824168ea80ac43d322351bfbcdf55a775984739f03f5",
+          "resources": {
+            "conserved_device_ns": 4036717,
+            "table_rows": 24,
+            "compute_calls": {
+              "0": 8,
+              "1": 7,
+              "2": 7
+            },
+            "properties": [
+              {
+                "arm": 0,
+                "compiled": "JIT",
+                "SIMD": 16,
+                "arguments": 18,
+                "raw_SLM": 32,
+                "private_memory_descriptor": 0,
+                "spill_memory_descriptor": 12480,
+                "GRF": 128
+              },
+              {
+                "arm": 1,
+                "compiled": "JIT",
+                "SIMD": 16,
+                "arguments": 18,
+                "raw_SLM": 32,
+                "private_memory_descriptor": 0,
+                "spill_memory_descriptor": 12480,
+                "GRF": 128
+              },
+              {
+                "arm": 2,
+                "compiled": "JIT",
+                "SIMD": 16,
+                "arguments": 18,
+                "raw_SLM": 32,
+                "private_memory_descriptor": 0,
+                "spill_memory_descriptor": 12480,
+                "GRF": 128
+              }
+            ],
+            "limits": "Allocation descriptors and summed service only;rawSLM units,actual spill traffic,occupancy,physical traffic and model/decode speed remain unmeasured."
+          }
         }
       ],
       "postchecks_complete": true,
