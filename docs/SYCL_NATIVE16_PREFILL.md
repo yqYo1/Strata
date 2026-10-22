@@ -170,7 +170,7 @@ thinking tokens. The independent-process results,in launch order,are:
 The three paired candidate/reference ratios are1.001591/1.001788/1.001214;
 their geometric mean is1.001531. The prospective faster-candidate and1000
 subsequent-median screens both pass. The smaller final gain and slower first-use
-values remain in the [complete individual samples and frozen plan](../bench/results/2026-10-15-pr6-recovery-audit/canonical-restore-speed-current.json).
+values remain in the [individual samples and archived frozen-input reference](../bench/results/2026-10-15-pr6-recovery-audit/canonical-restore-speed-current.json).
 This is a0.153% package gain on this workload,not a hardware-saturation result.
 Short24-token output does not establish decode independence or adoption.
 
@@ -186,6 +186,9 @@ It checks complete journals,native request extents and reported GPU BF16/mode10
 routes. Exact payload restoration belongs to the preceding checked model
 admission;clean runs do not claim unlogged copy or payload measurements.
 This reader does not consume closed prefill cohorts' generated configurations.
+That qualification passed unchanged before and after retiring the closed input
+copies,normal raw output and attempt barriers. Exact launch environments remain
+recoverable from the pinned`3f494507b`result;individual samples are unchanged.
 All seven host groups passed at source`2da515523`,with normal ownership closure
 and no GPU execution. They reject short/unbound/reused evidence,wrong route or
 native/API clocks,counter mismatches and cross-workload compensation. The actual
