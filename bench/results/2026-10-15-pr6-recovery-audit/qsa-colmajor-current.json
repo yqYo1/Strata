@@ -1,5 +1,5 @@
 {
-  "stage": "prepared",
+  "stage": "built",
   "base_native": "6e40afc1beddd059ee518617f6c1efce1da14aca",
   "generator": {
     "path": "tools/sycl/qsa_colmajor_sources.py",
@@ -709,9 +709,9 @@
     "file_bytes": 536870912,
     "total_bytes": 1073741824
   },
-  "build_status": "Prepared13-command recipe; commit exact inputs/plan before build.",
-  "passed": false,
-  "complete": false,
+  "build_status": "Compiled; GPU qualification not yet performed.",
+  "passed": true,
+  "complete": true,
   "retained_generations_review": {
     "selected_engine_and_same_build_fixtures": 13,
     "previous_auxiliary_root_absent": true,
@@ -728,5 +728,45 @@
     ],
     "hold_inventory_scope": "Actual .o/.a, strata and pr6_prefill_api paths in the remaining named legacy roots; not validated generations.",
     "separate_ownership_holds": "Six older Orca lifecycle holds remain unchanged in research-index.json; no evidence here closes them."
+  },
+  "binaries": {
+    "numerical": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-colmajor-v1/numerical",
+      "bytes": 1593880,
+      "sha256": "473198a6f51346fc3f617d50c65bd0da5ac28ddda3a3c3e3e5ae771ecac1c8d2"
+    },
+    "timing": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-colmajor-v1/timing",
+      "bytes": 1564896,
+      "sha256": "4acac7fb1eb47cd6797507dc79833598abe1282b0a9cbbf09d33f5fa998805dd"
+    }
+  },
+  "device_IR": {
+    "control": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-colmajor-v1/control.ll",
+      "sha256": "c2e067cfc9be417c699de9fe7a21fdd446e75a4ee525f971401b76a87eb32900"
+    },
+    "colmajor": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-colmajor-v1/colmajor.ll",
+      "sha256": "761b7cadb07e5f1cec109f36bc36fb20eeea4abf33e23478f0ebdaf2d7dc59d1"
+    }
+  },
+  "frontend_IR_finding": {
+    "candidate_QK_B": {
+      "layout_operand": 1,
+      "stride_BF16_elements": 256,
+      "address_space": 3
+    },
+    "control_QK_B": {
+      "layout_operand": 0,
+      "stride_BF16_elements": 32,
+      "address_space": 3
+    },
+    "both_PV_B": {
+      "layout_operand": 0,
+      "stride_BF16_elements": 256,
+      "address_space": 3
+    },
+    "scope": "Pinned LLVM IR retains the requested local-space QK layout discriminator and unchanged PV layout. IGC machine lowering, safety and speed are not established by frontend IR."
   }
 }
