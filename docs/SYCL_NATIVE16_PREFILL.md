@@ -78,7 +78,10 @@ job fractions and logical weight GB/s do not prove CPU, RAM, PCIe or GPU
 saturation. IQ2 pairing changed the relevant CPU work, so obtain a matched
 post-IQ2 resource profile before selecting the next optimization. Separate host
 compute/submission/waits, actual or explicitly unavailable bus/memory counters,
-and compatible-shape compute/bandwidth ceilings. The prior
+and compatible-shape compute/bandwidth ceilings. An actual`perf stat` attempt
+for task-clock/cycles/instructions/cache-misses exited1 under the current
+permissions; counter availability remains unknown and no settings were changed.
+The prior
 [work census](../bench/results/2026-10-15-pr6-recovery-audit/cpu-work-census-current.json)
 and [client-resource evidence](../bench/results/2026-10-15-pr6-recovery-audit/client-resources-current.json)
 are historical context, not current saturation measurements.
