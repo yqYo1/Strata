@@ -2,7 +2,8 @@
 
 ## Current measured state
 
-Prefill and decode select independent kernels, scheduling and placement. Shared
+Treat prefill and decode as independently selected kernels, scheduling and
+placement. Shared
 processing requires a matched measurement showing a benefit for the recorded
 phase and shapes. Legacy sharing remains an audit obligation. A prefill change
 that affects decode has a separation defect; a prefill gain cannot compensate
@@ -62,6 +63,15 @@ state. Bounded ELF inspection found equal main-stack reservations and equal
 inspected CPU GU symbol sizes, not machine-code equivalence or causal proof.
 Restoring the exact original package removes that rejected package from the
 continuation path; it does not establish a new speed or full-model qualification.
+
+The active SYCL build already compiles long prefill into `strata_prefill`, but
+`src/program/generate.cpp` controls both phases and their handoff. The rejected
+362 package changed that controller and `src/core/native_dense.cpp` as well as
+prefill-transition helpers. A separate prefill archive therefore does not prove
+complete isolation of the compiled decode path or its restored state. Future
+prefill changes must audit those shared boundaries and preserve decode through
+repeated matched measurements; do not label a changed controller or package
+prefill-only merely because its new code runs outside the decode loop.
 
 The default-off CPU IQ2 pair producer remains explicitly confined to decode;
 prefill retains its reference producer. Its component comparison preserves
@@ -221,9 +231,19 @@ previously qualified `UNITRACE_SystemTime=1` and kernel/call logging settings.
 V4 restores those settings before exec. This qualifies this small coverage method,
 not a model critical path or throughput improvement. The aggregate-only check
 also passed: verbose shapes conserve four versus ten program calls and the exact
-positive device-time totals, without a timeline. The next diagnostic uses that
-method on the unchanged original engine. Whole-process service includes loading,
-warmups, prefill and decode; it must not be called one phase's critical path.
+positive device-time totals, without a timeline.
+The first whole-model aggregate attempt is closed and failed. Its official
+33214-input/3611-output thinking request completed, with83.11% draft acceptance
+and verified restoration of48 dense layers and the cache payload/map. The
+collector printed its device total but did not finish the table before the
+benchmark exited; the owner then terminated the remaining native child. All
+owned processes are now gone, the exact session was removed and no fresh fault
+was recorded. The original strict closure failure remains failed. The collector's
+nested name-aggregation loop and the server's20-second wrapper shutdown need a
+bounded correction before another model profile. There is no complete kernel
+table, normal native exit or post-model full-hash check from this attempt.
+Whole-process service would include loading, warmups, prefill and decode; it
+must not be called one phase's critical path or clean speed.
 The original footer-read, paused-capture and older graph host-sink failures remain
 failed. See the [profiler coverage decision](../bench/results/2026-10-15-pr6-recovery-audit/cpu-profiler-current.json).
 
