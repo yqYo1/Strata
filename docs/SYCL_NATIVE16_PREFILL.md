@@ -391,10 +391,17 @@ geomeans are1.002039 versus production and1.002378 versus the namespace control;
 all aggregate shapes are slower and the prospective0.95/per-process gates fail.
 No model trial or adoption follows. The selected6e40 engine, decode configuration
 and1256-slot placement remain unchanged. The [compact comparison](../bench/results/2026-10-15-pr6-recovery-audit/qsa-fixed-heads-current.json)
-records the samples and limits. Retire its auxiliary build and unused probe
-helpers after original-input recovery. Before another source discriminator,
-check existing operand-staging evidence against the gather/clustered contrast;
-physical VRAM traffic/cache behavior and hardware saturation remain unknown.
+records the samples and limits. Original186 project inputs, five generated
+sources, thirteen commands and8700 SDK inputs were recovered before retirement.
+The auxiliary build, four unused probe files and settled research transactions
+are removed. The separate obsolete PR6 build was also retired after bounded
+final-input recovery proved unavailable; this does not qualify its binary or
+clear the independent primary-root hold. The combined path/hash/reason manifest
+records284 external/cache files and91918818 bytes deleted. All13 selected
+native assets match afterward; the user PR6 worktree is untouched. Before
+another source discriminator, consult the already rejected row-coalesced K
+staging evidence against the gather/clustered contrast. Physical VRAM traffic,
+cache behavior and hardware saturation remain unknown.
 
 Remaining model gates are repeated phase-preserving adoption evidence,
 agent-session and task quality, full physical262144 tokens including the final

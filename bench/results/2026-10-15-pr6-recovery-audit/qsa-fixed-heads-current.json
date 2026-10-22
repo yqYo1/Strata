@@ -3,28 +3,6 @@
   "source_commit": "dbb612d25d2c5e3ea5cc611b684bf56c2f5ed9a9",
   "base_native": "6e40afc1beddd059ee518617f6c1efce1da14aca",
   "question": "Fixed two padded-head iterations on generic-page production addressing, preserving original numerical order and GPU-local state. Is there a measured codegen and latency benefit?",
-  "binaries": {
-    "numerical": {
-      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-fixed-heads-v1/numerical",
-      "bytes": 1594016,
-      "sha256": "8f94e51f7bcb02b5995d3e3426f9a2e2c4385f06e21727014c6513fbe24d05c0"
-    },
-    "timing": {
-      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-fixed-heads-v1/timing",
-      "bytes": 1565024,
-      "sha256": "791a1f3b03870c069e389744e2b336201dab313a6eb3d33f7f6ab4aec313aa9b"
-    }
-  },
-  "device_IR": {
-    "control": {
-      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-fixed-heads-v1/control.ll",
-      "sha256": "ce5c508fffb3102d4519fa219e0d190295353a7325b4c3e506ee8e0635be1768"
-    },
-    "fixed-heads": {
-      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-fixed-heads-v1/fixed-heads.ll",
-      "sha256": "430bf367fd39898a675ea4db84a4018be3a09e5fde8b10eaddc96efd7e926307"
-    }
-  },
   "compiler": {
     "path": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin/clang++",
     "sha256": "1290881b4e12a5e002e5b0de0787f85328ee5fe19f253a54be1cdd97dc2f26eb"
@@ -43,7 +21,7 @@
     "next_question": "Current row-coalesced K staging was already rejected(+12.44/+27.98/+7.75%latency;research-index qsa_operand_staging_scope). Consult that evidence before another layout proposal. Gather/clustered contrast does not prove physical VRAM traffic/cache saturation;next source discriminator remains unselected."
   },
   "retirement": {
-    "complete": false,
+    "complete": true,
     "source_recovery": {
       "archive_commit": "30520793de39c222a0432a9fe359faaa7ea9b0b4",
       "archive_path": "bench/results/2026-10-15-pr6-recovery-audit/qsa-fixed-heads-current.json",
@@ -98,7 +76,13 @@
       }
     },
     "research_files": 14,
-    "selected_native_assets_preserved": 13
+    "selected_native_assets_preserved": 13,
+    "deleted_files": 284,
+    "deleted_bytes": 91918818,
+    "all_four_external_roots_absent": true,
+    "selected_native_assets_after": 13,
+    "tracked_probe_files_removed": 4,
+    "tracked_probe_archive": "30520793de39c222a0432a9fe359faaa7ea9b0b4"
   },
   "schema": "qsa-fixed-heads-closed-v1",
   "active": false,
@@ -2258,5 +2242,27 @@
     "fresh_faults": [],
     "driver": "xe7.0.0-38-generic/8086:e20c;no devcoredump"
   },
-  "remaining": "Componentrejectiononly;selectedmodel/decode unchanged. Physical262144model/session/RESTORE,quality,agent and70TG remain open."
+  "remaining": "Componentrejectiononly;selectedmodel/decode unchanged. Physical262144model/session/RESTORE,quality,agent and70TG remain open.",
+  "measured_binaries": {
+    "numerical": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-fixed-heads-v1/numerical",
+      "bytes": 1594016,
+      "sha256": "8f94e51f7bcb02b5995d3e3426f9a2e2c4385f06e21727014c6513fbe24d05c0"
+    },
+    "timing": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-fixed-heads-v1/timing",
+      "bytes": 1565024,
+      "sha256": "791a1f3b03870c069e389744e2b336201dab313a6eb3d33f7f6ab4aec313aa9b"
+    }
+  },
+  "measured_device_IR": {
+    "control": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-fixed-heads-v1/control.ll",
+      "sha256": "ce5c508fffb3102d4519fa219e0d190295353a7325b4c3e506ee8e0635be1768"
+    },
+    "fixed-heads": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-fixed-heads-v1/fixed-heads.ll",
+      "sha256": "430bf367fd39898a675ea4db84a4018be3a09e5fde8b10eaddc96efd7e926307"
+    }
+  }
 }
