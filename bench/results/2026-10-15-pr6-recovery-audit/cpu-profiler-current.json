@@ -4755,7 +4755,7 @@
     }
   },
   "unitrace_aggregation_host_v2": {
-    "stage": "prepared",
+    "stage": "closed",
     "source_commit": "8553a40bba7a68ce42a6aaa2a5314cb0d109d77f",
     "input_sha256": {
       "bench/sycl/collector_aggregation.cpp": "d9a3291961bdce3064f7e9ffb21aa14bdff07abbc4ceb3647e899888229c2ded",
@@ -4814,8 +4814,8 @@
       "-o",
       "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/unitrace-aggregation-host-v2/aggregation_fixture"
     ],
-    "complete": false,
-    "passed": false,
+    "complete": true,
+    "passed": true,
     "active": false,
     "ownership_closed": true,
     "retained_engine": {
@@ -4859,6 +4859,69 @@
         "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/unitrace-aggregation-host-v2/aggregate-candidate.inc",
         "sha256": "ed519d42448731eaecc991e2e0449ffac755e95092b16a7d2c3a0144bd1320ff"
       }
-    ]
+    ],
+    "binary": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/unitrace-aggregation-host-v2/aggregation_fixture",
+      "bytes": 60880,
+      "sha256": "697fce169f6592c17af93d92f9d3a5635ce43a3ccc1487eb573f8352f7bb1d16"
+    },
+    "samples": [
+      {
+        "index": 0,
+        "order": "reference,candidate",
+        "reference_ns": 347583342,
+        "candidate_ns": 806637,
+        "ratio": 0.002320700973063318
+      },
+      {
+        "index": 1,
+        "order": "candidate,reference",
+        "reference_ns": 338893102,
+        "candidate_ns": 651865,
+        "ratio": 0.0019235121522184302
+      },
+      {
+        "index": 2,
+        "order": "reference,candidate",
+        "reference_ns": 341766596,
+        "candidate_ns": 820002,
+        "ratio": 0.00239930411455425
+      },
+      {
+        "index": 3,
+        "order": "candidate,reference",
+        "reference_ns": 339146199,
+        "candidate_ns": 657647,
+        "ratio": 0.001939125374069134
+      },
+      {
+        "index": 4,
+        "order": "reference,candidate",
+        "reference_ns": 356571102,
+        "candidate_ns": 870327,
+        "ratio": 0.0024408231489269705
+      },
+      {
+        "index": 5,
+        "order": "candidate,reference",
+        "reference_ns": 353855615,
+        "candidate_ns": 661604,
+        "ratio": 0.0018697004426508818
+      },
+      {
+        "index": 6,
+        "order": "reference,candidate",
+        "reference_ns": 348668844,
+        "candidate_ns": 836323,
+        "ratio": 0.002398616952422626
+      }
+    ],
+    "clock_pair_ns": 20,
+    "equivalence_passed": true,
+    "name_lookup_counts": {
+      "reference": 2098176,
+      "candidate": 2048
+    },
+    "performance_gate_passed": true
   }
 }
