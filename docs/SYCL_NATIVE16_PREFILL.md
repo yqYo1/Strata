@@ -423,6 +423,11 @@ spill allocation descriptor10240 versus12480 does not establish actual spill
 traffic or a useful gain. Physical cache/memory/XMX attribution remains unknown.
 The selected6e40 engine, all12 same-build fixtures and the decode path remain
 unchanged. See the [compact comparison](../bench/results/2026-10-15-pr6-recovery-audit/qsa-colmajor-current.json).
+Original186 project inputs,five generated sources,thirteen commands and8700
+SDK inputs were recovered before retirement. All42 owned commands are closed.
+The rejected auxiliary generation and consumed report transactions are removed:
+144 files,20179599 bytes. All13 selected native assets still match;
+the separate primary provenance and older Orca ownership holds remain open.
 Use the reviewed matched counterfactual resource protocol for the next
 attribution decision before another layout variation; keep calibration separate
 from claims about physical traffic, hardware saturation and model speed.
