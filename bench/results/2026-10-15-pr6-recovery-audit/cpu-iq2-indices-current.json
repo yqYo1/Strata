@@ -1,5 +1,5 @@
 {
-  "stage": "build",
+  "stage": "check",
   "source_commit": "8ccdcb9c90052763012608fbe5ec6abb69ebf62e",
   "plan_sha256": "c17127f048f7cbdde16467d35009c4eec1f800b0465345a4338fec6bc6c807c3",
   "passed": true,
@@ -7,29 +7,25 @@
   "active": false,
   "ownership_closed": true,
   "GPU_executed": false,
-  "checks": [],
+  "checks": [
+    {
+      "index": 0,
+      "arm": 0,
+      "bitwise": true,
+      "capture_sha256": "8dfd2f7e577d83f2bf8f236260260325d223bfbf2e4599273f3a79245b120495",
+      "samples": []
+    },
+    {
+      "index": 1,
+      "arm": 1,
+      "bitwise": true,
+      "capture_sha256": "8dfd2f7e577d83f2bf8f236260260325d223bfbf2e4599273f3a79245b120495",
+      "samples": []
+    }
+  ],
   "binary": {
     "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-iq2-indices-v1/build/cpu_iq2_indices",
     "sha256": "d848473a0904ec59c2bb9f4d3a2f3059c6c4fd8d147734f6f95df0af852deef4",
     "bytes": 2538944
-  },
-  "compile_commands_sha256": "b8003afd4b577969a677a3854d57e0c1c0c631a9cd6cfd9702f9d4d0f67ffcf3",
-  "lowering": {
-    "pair_dot": {
-      "start": 4514240,
-      "bytes": 3220,
-      "gathers": 0,
-      "pdep": 0,
-      "calls": 0,
-      "vector_stack_accesses": 0
-    },
-    "indices_pair_dot": {
-      "start": 4250416,
-      "bytes": 2851,
-      "gathers": 0,
-      "pdep": 32,
-      "calls": 0,
-      "vector_stack_accesses": 0
-    }
   }
 }
