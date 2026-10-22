@@ -1,15 +1,93 @@
 {
-  "stage": "build",
+  "stage": "tiny",
   "source_commit": "b631992b69bfd150952656a411ac4dcc471762b6",
   "plan_sha256": "ea5bdfd6df7975a1981f6f582dcd3ed0946bc822030014393ad693fc30198d24",
   "passed": true,
   "complete": true,
   "active": false,
   "ownership_closed": true,
-  "checks": [],
+  "checks": [
+    {
+      "index": 0,
+      "profile": 0,
+      "device": {
+        "kind": "device",
+        "name": "Intel(R) Arc(TM) B570 Graphics",
+        "global_bytes": 10666115072
+      },
+      "reference": {
+        "kind": "reference",
+        "rows": 17,
+        "type": 14,
+        "N": 2560,
+        "NT": 1,
+        "weight_bytes": 35700,
+        "map_unique": true,
+        "Q8_1_bytes_equal": true,
+        "max_scaled_error": 9.57188241115e-09
+      },
+      "validated": true,
+      "graph_envelopes_ns": [],
+      "native_validation": {
+        "pid": 903872,
+        "loader": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_loader.so.0.12.0",
+        "threads_before": 1,
+        "preinit": 37,
+        "config_enabled": true,
+        "first_init": true,
+        "dispatch_result": 46,
+        "output_untouched": true,
+        "retained_reference_until_exit": true,
+        "runtime_teardown_qualified": false
+      },
+      "fresh_faults": [],
+      "boot_unchanged": true,
+      "fault_probe_successful": true
+    },
+    {
+      "index": 1,
+      "profile": 1,
+      "device": {
+        "kind": "device",
+        "name": "Intel(R) Arc(TM) B570 Graphics",
+        "global_bytes": 10666115072
+      },
+      "reference": {
+        "kind": "reference",
+        "rows": 17,
+        "type": 14,
+        "N": 2560,
+        "NT": 1,
+        "weight_bytes": 35700,
+        "map_unique": true,
+        "Q8_1_bytes_equal": true,
+        "max_scaled_error": 9.57188241115e-09
+      },
+      "validated": true,
+      "graph_envelopes_ns": [
+        37187,
+        37083
+      ],
+      "native_validation": {
+        "pid": 904170,
+        "loader": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_loader.so.0.12.0",
+        "threads_before": 1,
+        "preinit": 37,
+        "config_enabled": true,
+        "first_init": true,
+        "dispatch_result": 46,
+        "output_untouched": true,
+        "retained_reference_until_exit": true,
+        "runtime_teardown_qualified": false
+      },
+      "fresh_faults": [],
+      "boot_unchanged": true,
+      "fault_probe_successful": true
+    }
+  ],
   "binary": {
     "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/mtp-q6-head-v2/build/mtp_head",
     "sha256": "39a3dba82d1594987700a6987b1f2b4464d4cb84d6cb1d98bbba51205a71b930"
   },
-  "compile_commands_sha256": "fff10ebbb8c339f0b708f56ef3e74d236da67465ec6463a0abbf29e4167a81f1"
+  "fresh_faults": []
 }
