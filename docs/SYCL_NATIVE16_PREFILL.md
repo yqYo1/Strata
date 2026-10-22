@@ -190,16 +190,33 @@ remain conditional after their prior overhead failure. See the
 No speed improvement,observer-overhead bound or implementation adoption follows
 from this one observed process.
 
-The next committed controller uses that same native generation and canonical
-configuration for one official strong-code request, with MTP graph observation
-disabled. Existing decode timing, CPU work census and IQ2 dispatch records align
-with the passive proc/DRM collector. Registered IQ2 callback TIDs are matched to
-scheduled ticks on each side of first output; this counts active polling and
-other scheduled work as well as arithmetic, and excludes blocked waits. The
-900-second collector budget is suitable for the previously observed strong-code
-request, while the weak-prose request alone previously needed about902seconds.
-This is an attribution diagnostic, with no clean speed or saturation claim.
+The aligned strong-code diagnostic also closed normally:33214 fresh input and
+3611 generated tokens,thinking and an actual answer,MTP acceptance83.11%. All15
+model hashes matched;engine and collector exited0 with no fresh fault. Before
+first output the process scheduled0.945 CPU cores and its associated CCS cycle
+busy fraction was83.58%;the five registered pool workers recorded zero ticks.
+After first output it scheduled5.107 cores,almost all on the six registered
+IQ2 callback TIDs,while CCS cycle busy fraction was49.68%. These are client
+windows and scheduled/activity counters,not arithmetic or hardware saturation.
+
+Whole-request pool wall was144.995seconds. Even charging all six registered
+threads for that entire serialized pool interval cannot explain their contained
+1435.65 CPU-seconds:at least565 CPU-seconds occurred outside it. This includes
+polling/control/runtime and other work,not a measurement of kernel arithmetic.
+The source's20ms worker park-spin threshold reinforces the need to distinguish
+scheduled CPU from useful work. Actual NT1 jobs were77.24%,with27.59 unique CPU
+jobs per layer-window. The older six-job calibration is not this workload;
+check source/flags and actual working-set/NT mix before selecting CPU-codebook
+or RAM tuning. The observed12.8tok/s is diagnostic only,no clean comparison.
+See the [closed aligned resource diagnostic](../bench/results/2026-10-15-pr6-recovery-audit/client-resources-current.json).
 The earlier failed resource observation remains failed in its pinned Git history.
+
+Both model shards' actual metadata were inspected with the committed GGUF reader.
+`output.weight` is Q6_K,type14,shape2560x248320,521472000bytes;the startup Q5_K
+label is hard-coded. The106299-row draft subset corresponds to223227900weight
+bytes. This identifies the real head dispatch,not its service time or residency
+budget. A bounded source/shape-matched head calibration is a separate next
+discriminator;no precision or inference change has been adopted.
 
 ## Tensor storage and precision
 
