@@ -1,29 +1,15 @@
 {
-  "stage": "build",
-  "source_commit": "fcdbc907eeced75333a62d1a884e446a184ee18b",
-  "plan_sha256": "91c040276b2d5989da9f4980066c9c3b532cb1baf855b5a58bddbe81707683b4",
+  "stage": "prepared",
+  "source_commit": "b631992b69bfd150952656a411ac4dcc471762b6",
   "passed": false,
   "complete": false,
   "active": false,
   "ownership_closed": true,
-  "checks": [],
-  "error": "owned child failed configure",
-  "diagnostic": {
-    "cause": "clang++: error: unable to make temporary file: No such file or directory",
-    "mechanism": "Controller created the private command root but omitted the TMPDIR/cache subdirectories supplied in the compiler environment.",
-    "GPU_executed": false,
-    "original_failure_unchanged": true
-  },
-  "artifact_retirement": {
-    "complete": true,
-    "root_absent": true,
-    "original_recipes_recovered": true,
-    "source_inputs": 81,
-    "native_and_dependency_inputs": 9853,
-    "archive": "e29844b9c047687080979efb4fd5c02f2fb19ed6",
-    "manifest": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/mtp-q6-head-v1-configure-retirement-20261022.jsonl",
-    "manifest_sha256": "45444e2869db2afc4de0989cf235208ad2b8b5723e1402e0d50ae35c1d3fcd22",
-    "files": 11,
-    "bytes": 128484
+  "plan_sha256": "ea5bdfd6df7975a1981f6f582dcd3ed0946bc822030014393ad693fc30198d24",
+  "host_evidence_tests": {
+    "source_commit": "b631992b69bfd150952656a411ac4dcc471762b6",
+    "command": "python3 tests/core/test_mtp_head_calibration.py",
+    "tests": 3,
+    "exit_code": 0
   }
 }
