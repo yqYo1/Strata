@@ -385,10 +385,13 @@ for all page/bounds/oracle cases; the include alone was not candidate evidence.
 Padded internal state remains source reasoning, not an observed candidate
 capture. The [fresh comparison build](../bench/results/2026-10-15-pr6-recovery-audit/qsa-fixed-heads-current.json)
 fromdbb612d25/plan5be3b774e completed all13 commands normally, with186 committed
-project inputs and8700 SDK inputs pinned. No GPU validation or clean speed has
-run, and no engine/decode source changed. Next are the bounded traced checks,
-numerical/guard/physical-context cases and the prospective clean component gate
-before any model trial. Final integration still requires unchanged decode
+project inputs and8700 SDK inputs pinned. Twelve first-use traced processes
+now pass across three arms and Page1/4/7/16, with24 exact-output cases and
+normal ownership closure. Actual selected compute kernels launch23 times per
+process, with SIMD16/GRF128, spill descriptor12480 and20032 dynamic-local bytes.
+No fresh fault occurred; these descriptors establish neither speed nor hardware
+saturation. No engine/decode source changed. Next are132 full component cases,
+the resource check and the prospective clean component gate before any model trial. Final integration still requires unchanged decode
 placement/state and repeated decode speed.
 
 Remaining model gates are repeated phase-preserving adoption evidence,
