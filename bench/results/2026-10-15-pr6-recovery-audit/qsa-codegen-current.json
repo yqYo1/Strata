@@ -956,5 +956,14 @@
         "devcoredump": false
       }
     }
-  ]
+  ],
+  "static_analysis_plan": {
+    "capture_commit": "6ab472964",
+    "command": "python3 -B tools/sycl/analyze_qsa_codegen.py",
+    "question": "Compare static scratch spill/fill instruction annotations inside the exact zero-based 32-cell outer loop versus outside, using conservative LLVM-vISA ID correspondence. No timing or GPU execution.",
+    "method": "Verify all12 selected captured files and traced kernel names. Parse one LLVM kernel CFG, compute reachable dominators and natural loops, require unique zero-based i64 step32 loop with four FP32 v8 recurrence phis. Count annotated native scratch sends by inside/outside/ambiguous/unmapped/unreachable; retain unknowns. Compare default/control emitted dat sidecars only, without claiming loaded-code equivalence.",
+    "gates": "Fail on uncommitted analyzer/plan, changed original capture checks/files, ambiguous selected loop, missing/unsupported CFG terminator or unresolved edge. No edits to source/capture evidence; no dynamic bytes or causal/performance claim.",
+    "retained_fields": "Analyzer identity; compact per-arm IGC header values/declaration type counts, CFG/loop conservation counts and static spill/fill region counts. No raw instructions/IR/histogram corpus.",
+    "retirement": "Consume selected12 captures only until Main exact-loop analysis and native report review close, then retire auxiliary generation after original source/recipe recovery from pushed Git."
+  }
 }

@@ -9730,7 +9730,7 @@
   "gpu_uniform_address_lowering_methods_20261023": {
     "classification": "knowledge collection",
     "schedulable_now": false,
-    "status": "closed_native_review_pending",
+    "status": "reviewed_reference",
     "report_budget_bytes": 12288,
     "question": "Compare GPU subgroup-uniform versus varying integer/address values: compiler detection and scalar/vector allocation, rematerialization versus hoisted address live ranges, subgroup-sharing of row metadata and 64-bit pointer/index lowering. Use Intel IGC/DPC++/SYCL/LLVM primary sources plus original GPU/HPC cases. Explain correctness/collective/overflow constraints and why constant folding can change register pressure. No new broad GRF/unroll/tiling/roofline survey, implementation, or claim of local bottleneck.",
     "prior_scopes": [
@@ -9746,7 +9746,7 @@
     ],
     "report": "/home/yayoi/orca/workspaces/Strata/sycl/.cache/strata-research/20261023/uniform-address-lowering/report.md",
     "consumer": "Retrieval-only methods reference, nativeLuna/maxreviewonarrival; Mainkeepsbodyunreadunlesslaterconcretequestionrequiressections.",
-    "next_review": "Reviewdepth/overlap aftercompletion;retainonlysubstantiveabsentmethods. Mainownsnewexecuted-ISA collection andallGPUwork; do not duplicate it.",
+    "next_review": "At a concrete pinned-source uniformity/address-width question; no repeat generic survey. Main collection body remains unread.",
     "lifecycle": {
       "run": "run_432552edd149",
       "task": "task_1950186529cd",
@@ -9759,12 +9759,19 @@
     },
     "worker_ownership_closed": true,
     "report_sha256": "c5b2c2ba4e3bf395713401f06f09f60bc96f8acfcc25997ce143ff99668158b0",
-    "report_bytes": 11986
+    "report_bytes": 11986,
+    "retrieval_headings": [
+      "Uniformity, allocation and discriminators",
+      "Hoisting, rematerialization and subgroup sharing",
+      "Integer index width is not pointer width",
+      "Later source-specific comparison"
+    ],
+    "source_version_note": "Pin mutable LLVM/IGC documents to the installed release before use; methods are not local attribution."
   },
   "applied_qsa_codegen_spill_source_attribution_20261023": {
     "classification": "decision support",
-    "schedulable_now": true,
-    "status": "ready_for_orca_dispatch",
+    "schedulable_now": false,
+    "status": "reviewed_reference_pending_current_consumer_close",
     "report_budget_bytes": 12288,
     "question": "Read-only comparison of actual traced generic/control/Page4 GenISA, vISA and LLVM toattribute additional spill declarations/sends to source values and loop regions, distinguish compiler estimates from static code/dynamic costs, and recommend one bounded source discriminator with numerical/lifetime/256K constraints. No implementation or speedclaim.",
     "nonduplication": "Priorreports are generic methods or frontendIR only; new source54946de15/plan7ede andcapture currentresult give actual3executedimages, matchingpriorGRF/spill128/12480and22208. This is concreteappliedattribution, not a new genericGRF orconstantdivision survey.",
@@ -9774,6 +9781,19 @@
     ],
     "report": "/home/yayoi/orca/workspaces/Strata/sycl/.cache/strata-research/20261023/applied-codegen-spills/report.md",
     "next_review": "NativeCodexLuna/maxreviews finishedreport;Maincontinues ownanalysis withoutsteeringworker. RetainrawselectedfilesuntilthisauditandMaintargetedanalysisconsume them;thenretire.",
-    "consumer": "Specificnextprefillsource/attributiondecision, noautomaticmodeladoption."
+    "consumer": "Main exact-source CFG-to-static-scratch instruction attribution; captures/report retire when this consumer closes.",
+    "report_bytes": 8540,
+    "report_sha256": "af78621424cbd8f28b5cd6455d5c25bac2340293edb2e1d63beee8afdda5b6dc",
+    "worker_ownership_closed": true,
+    "lifecycle": {
+      "run": "run_432552edd149",
+      "task": "task_a6686cd5ddd7",
+      "dispatch": "ctx_774db7ccd598",
+      "terminal": "term_6ac65bd5-4056-4f09-923a-3177ac8ebd48",
+      "incarnation": "a300e348-6587-43a3-862b-508b3ceb3605",
+      "startup_model": "gpt-6-luna high",
+      "closure": "Succeededworker_doneaccepted;externalrelease retained;exactPTYkilled/disconnectedinsameincarnation;delivery84044387ca1facknowledged."
+    },
+    "review_digest": "NativeLuna/max verified selected12hashes,source-specificscope and static/dynamic limits. Page4 remainsrejected; no nextscopeeligible beforeMain exactCFGanalysiscloses."
   }
 }
