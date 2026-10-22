@@ -378,11 +378,18 @@ generic-page prefill source. Workgroup128 and required subgroup16 give eight
 subgroups; each owns exactly two of the16 padded head rows. The committed
 component-only constructor replaces the two variable-bound padded-head loops
 with two iterations, preserving arithmetic/order, real/padded-head masks,
-64-bit paging, barriers and the necessary subgroup<4 QK guard. It changes no
-engine/decode source and is not built or qualified. Main must freeze generated
-inputs and a new bounded plan, pass numerical/guard/physical-context cases and
-the prospective clean component gate before any model trial. Final integration
-still requires unchanged decode placement/state and repeated decode speed.
+64-bit paging, barriers and the necessary subgroup<4 QK guard. Independent
+source review confirms the loop mapping. Its material coverage finding is
+resolved by a maintained numerical harness that selects the actual candidate
+for all page/bounds/oracle cases; the include alone was not candidate evidence.
+Padded internal state remains source reasoning, not an observed candidate
+capture. The [fresh comparison build](../bench/results/2026-10-15-pr6-recovery-audit/qsa-fixed-heads-current.json)
+fromdbb612d25/plan5be3b774e completed all13 commands normally, with186 committed
+project inputs and8700 SDK inputs pinned. No GPU validation or clean speed has
+run, and no engine/decode source changed. Next are the bounded traced checks,
+numerical/guard/physical-context cases and the prospective clean component gate
+before any model trial. Final integration still requires unchanged decode
+placement/state and repeated decode speed.
 
 Remaining model gates are repeated phase-preserving adoption evidence,
 agent-session and task quality, full physical262144 tokens including the final

@@ -1,5 +1,5 @@
 {
-  "stage": "prepared",
+  "stage": "built",
   "source_commit": "dbb612d25d2c5e3ea5cc611b684bf56c2f5ed9a9",
   "generator": {
     "path": "tools/sycl/qsa_fixed_heads_sources.py",
@@ -31,7 +31,7 @@
   "original_fixture_source": "760d22dc3178903cdeb0316d349bce06c09a0ffc",
   "original_fixture_plan": "1ebecb46a",
   "question": "Fixed two padded-head iterations on generic-page production addressing, preserving original numerical order and GPU-local state. Is there a measured codegen and latency benefit?",
-  "build_status": "Prepared13-command recipe; commit exact inputs/plan before build.",
+  "build_status": "Compiled; GPU qualification not yet performed.",
   "prior_attribution": {
     "path": "bench/results/2026-10-15-pr6-recovery-audit/qsa-codegen-current.json",
     "commit": "02901e45dfbe87022986734fda6541282f2b991e",
@@ -69,7 +69,15 @@
       "No modeladvancement until numerical/resource/faultclosure andpredeclared162clean-sample latencygate pass. Source/fixtureextent doesnotqualifyfull262144model/session/RESTORE ordecodepreservation."
     ],
     "source_constructed": true,
-    "execution_qualified": false
+    "execution_qualified": false,
+    "transaction_retirement": {
+      "complete": true,
+      "files": 6,
+      "bytes": 42433,
+      "manifest": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-fixed-head-audit-retirement-20261023.jsonl",
+      "sha256": "196be45ca98e2ec9321a0edfdf148426ad162c62b754f54df3aa42b3e5878114",
+      "reason": "Findings consumed bycommittedcandidate-specificnumericalharness/prebuildplan; noexecutionqualificationimplied."
+    }
   },
   "inputs": {
     "bench/sycl/qsa_fixed_heads_numerical.cpp": "0d878fe130f781bf42100213d17f50ba9f2de4753408a3195e280dd02acc8014",
@@ -576,8 +584,8 @@
     "file_bytes": 536870912,
     "total_bytes": 1073741824
   },
-  "passed": false,
-  "complete": false,
+  "passed": true,
+  "complete": true,
   "retained_generations_review": {
     "selected_engine_and_same_build_fixtures": 13,
     "previous_auxiliary_root_absent": true,
@@ -602,5 +610,27 @@
     ],
     "hold_inventory_scope": "Actual .o/.a, strata and pr6_prefill_api paths in the two named legacy roots; not validated generations.",
     "separate_ownership_holds": "Six older Orca lifecycle holds remain unchanged in research-index.json; no evidence here closes them."
+  },
+  "binaries": {
+    "numerical": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-fixed-heads-v1/numerical",
+      "bytes": 1594016,
+      "sha256": "8f94e51f7bcb02b5995d3e3426f9a2e2c4385f06e21727014c6513fbe24d05c0"
+    },
+    "timing": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-fixed-heads-v1/timing",
+      "bytes": 1565024,
+      "sha256": "791a1f3b03870c069e389744e2b336201dab313a6eb3d33f7f6ab4aec313aa9b"
+    }
+  },
+  "device_IR": {
+    "control": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-fixed-heads-v1/control.ll",
+      "sha256": "ce5c508fffb3102d4519fa219e0d190295353a7325b4c3e506ee8e0635be1768"
+    },
+    "fixed-heads": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-fixed-heads-v1/fixed-heads.ll",
+      "sha256": "430bf367fd39898a675ea4db84a4018be3a09e5fde8b10eaddc96efd7e926307"
+    }
   }
 }
