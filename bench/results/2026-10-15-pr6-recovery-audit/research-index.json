@@ -8609,7 +8609,7 @@
   "mtp_q8_projection_gpu_methods_20261022": {
     "id": "mtp_q8_projection_gpu_methods_20261022",
     "classification": "knowledge collection",
-    "schedulable_now": true,
+    "schedulable_now": false,
     "report_budget_bytes": 12288,
     "question": "For source-confirmed Q8 MTP projection shapes, compare native packed GEMV/tiny GEMM, fused dequantize-multiply, and tiled/XMX-style paths. Track scales, activation format, accumulation/rounding, packing and launch costs; compare official Intel/SYCL, SGLang/vLLM, plus applicable non-LLM low-bit GEMV/GEMM or ASIC methods. Give regimes and counterexamples. Exclude Q6_K head expansion, offload, cache ranking and code proposals.",
     "novelty": "No indexed Q8 GPU-resident projection-method comparison; existing references cover generic GEMM, indexed-A access, traffic, offload and Q6_K head.",
@@ -8677,7 +8677,7 @@
   "mtp_mhc_small_operator_gpu_methods_20261022": {
     "id": "mtp_mhc_small_operator_gpu_methods_20261022",
     "classification": "knowledge collection",
-    "schedulable_now": true,
+    "schedulable_now": false,
     "report_budget_bytes": 12288,
     "question": "Resolve the exact mHC operation and numerical/state order from primary sources and pinned source, then compare standalone subgroup/tiny-matrix work, batched/tiled linear algebra, and producer/consumer fusion only where dependency and rounding order allow. Use non-LLM residual-mixing/recurrent/ASIC methods only when the operation matches. Compare synchronization, register/scratch costs and counterexamples; report ambiguity rather than guess. No code proposal.",
     "novelty": "No direct mHC operator-method collection is indexed; GDN scopes are execution analogies, not mHC semantics.",
@@ -8744,7 +8744,7 @@
   "mtp_s2_expert_gpu_compute_methods_20261022": {
     "id": "mtp_s2_expert_gpu_compute_methods_20261022",
     "classification": "knowledge collection",
-    "schedulable_now": true,
+    "schedulable_now": false,
     "report_budget_bytes": 12288,
     "question": "At source-confirmed S2 formats and low-row MTP shapes, compare expert-local GPU compute: per-expert GEMV/tiny GEMM versus grouped expert GEMM or compatible block-sparse tiles. Cover weight layout/decode, row reuse, occupancy, sync and numerical order; include official SGLang/vLLM/Intel and transferable non-LLM sparse/batched-linear-algebra methods plus padding/register/launch counterexamples. Exclude routing, indexed-A gather, cache/provider ranking, offload, down-scatter and code proposals.",
     "novelty": "Indexed MoE coverage focuses routing, gather, traffic, scatter, transfer or CPU scheduling; no scoped S2 GPU-resident expert-compute method comparison.",
@@ -8815,7 +8815,7 @@
   "graph_observer_collector_aggregation_shutdown_methods_20261023": {
     "id": "graph_observer_collector_aggregation_shutdown_methods_20261023",
     "classification": "knowledge collection",
-    "schedulable_now": true,
+    "schedulable_now": false,
     "report_budget_bytes": 12288,
     "question": "For a bounded multithreaded host collector that aggregates graph-observer records by request/window, compare per-thread SPSC buffers with owner merge, sharded fixed counters with epoch sealing, and bounded MPSC/locked aggregation. Focus loss/overflow detection, in-flight writer admission, seal-drain-merge ordering, late callbacks, exactly-once finalization, error/cancel handling and hot-path overhead. Use primary C++/Perfetto or other trace-system contracts and transferable non-LLM telemetry patterns; return invariants and counterexamples, no code patch or local performance claim.",
     "prerequisites_met": [
@@ -8899,7 +8899,7 @@
   "mtp_q8_cross_projection_activation_reuse_methods_20261023": {
     "id": "mtp_q8_cross_projection_activation_reuse_methods_20261023",
     "classification": "knowledge collection",
-    "schedulable_now": true,
+    "schedulable_now": false,
     "report_budget_bytes": 12288,
     "question": "Using the newly source-mapped Q8_0 MTP call sequence, determine which projection consumers truly share identical FP32 inputs and compare separate activation quantization/projection launches with shared Q8_1 packing, grouped multi-output GEMV/GEMM, or legal short fusion. Preserve the per-32 Q8_0/Q8_1 scale and FP32 accumulation contract; compare official SGLang/vLLM/Intel and substantive non-LLM multi-output linear-kernel methods, including cases where dependencies or distinct inputs make sharing impossible. No local cost estimate or code proposal.",
     "prerequisites_met": [
@@ -8984,7 +8984,7 @@
   "mtp_s2_packed_dot_mapping_methods_20261023": {
     "id": "mtp_s2_packed_dot_mapping_methods_20261023",
     "classification": "knowledge collection",
-    "schedulable_now": true,
+    "schedulable_now": false,
     "report_budget_bytes": 12288,
     "question": "For the source-pinned S2/Q2_0 weight codes × Q8_0 activations, compare GPU arithmetic mappings for packed-code decode and corrected signed-int dot: lane bit extraction/bit-plane or lookup methods, integer SIMD-dot sequences, and matrix-tile operand conversion where legal. Preserve per-64 weight/per-32 activation scale boundaries, FP32 FMA partials and reduction order; compare relevant Intel/SYCL and non-LLM low-bit GPU/ASIC methods with counterexamples. Exclude expert grouping, routing, cache/placement and down-scatter; no local performance claim or code proposal.",
     "prerequisites_met": [
@@ -9074,7 +9074,7 @@
   "mtp_compute_compute_dag_scheduling_methods_20261023": {
     "id": "mtp_compute_compute_dag_scheduling_methods_20261023",
     "classification": "knowledge collection",
-    "schedulable_now": true,
+    "schedulable_now": false,
     "report_budget_bytes": 12288,
     "question": "For the source-confirmed independent MTP Q/K/V and shared-expert gate/up products, compare separate dispatches on one in-order SYCL queue, independent compute queues/Level Zero command lists with event dependencies, and grouped multi-output dispatch. Use official SYCL/Unified Runtime/Level Zero contracts plus substantive non-LLM GPU/HPC DAG scheduling studies. Cover actual concurrency guarantees, event/order semantics, resource contention, shared-input cache limits, errors/lifetimes and cases where concurrency loses. Exclude kernel grouping internals already covered by the Q8 reuse report, command replay/submission amortization, and copy-compute overlap. Make no local timing, bottleneck or adoption claim and propose no code patch.",
     "prerequisites_met": [
@@ -9401,7 +9401,7 @@
       "A specific QSA hypothesis and workload/measurement boundary selected from the current attribution evidence."
     ],
     "scope_guidance": "Do not dispatch another broad counter catalogue. If candidates are absent or collection is blocked, make that the capability result and select another attribution method; if present, research only the supported collection mode and attribution limits needed for the chosen hypothesis.",
-    "status": "conditional_not_dispatched",
+    "status": "completed_as_b570_qsa_available_counter_selection_20261023",
     "source_review": ".cache/strata-research/20261023/qsa-counter-review.json"
   },
   "cooperative_matrix_iterative_fragment_lifetime_methods_20261023": {
@@ -9420,9 +9420,9 @@
       "Current ordered-exp GRF-only comparison preserves math and removes descriptor12480to0 butslows2.5..9.5% across3shapes;noadoption.",
       "Source-pinned current cached-query and FP32 accumulator arrays exist;methods survey needs no unavailable counter."
     ],
-    "status": "active_orca_collection",
+    "status": "reviewed_reference",
     "consumer": "Future source-specific QSA discriminator after current metric capability gate;Main stores collection body for retrieval andnative Luna/max reviewsdepth.",
-    "next_review": "After bounded completion,nativeLuna/max reviewsnovelty andsubstantive nextscope;Maincontinuesimplementation/measurement.",
+    "next_review": "Retrieve only for a concrete source-specific implementation question; no repeat broad survey or automatic implementation adoption.",
     "report": "/home/yayoi/orca/workspaces/Strata/sycl/.cache/strata-research/20261023/matrix-live-ranges/report.md",
     "main_read_policy": "NativeLuna/max first;Main leaves knowledge bodies unread until concrete implementation question.",
     "lifecycle": {
@@ -9433,7 +9433,20 @@
       "incarnation": "4e21607f-0f59-456f-9e78-f215e76d4aa8",
       "startup_model": "gpt-6-luna high",
       "input_accepted": true,
-      "turn_started": true
+      "turn_started": true,
+      "state": "succeeded_and_physically_closed",
+      "release": "external_terminal_retained_processAction_none",
+      "main_closed_verified_same_incarnation": true,
+      "delivery": "delivery_18a5b959aaaf acknowledged"
+    },
+    "report_bytes": 11626,
+    "report_sha256": "b32661c36ada34a76d32e806897916d0ce74fc49585969adb272efa2372e5714",
+    "active_report_body_unread_by_main": true,
+    "review": {
+      "path": "/home/yayoi/orca/workspaces/Strata/sycl/.cache/strata-research/20261023/resource-iteration-review.json",
+      "sha256": "d5b1c1ab22224febc265b8f01172c7b80f2e90bbaf7c05afa25172b926e7a6f9",
+      "bytes": 12051,
+      "disposition": "retain as retrieval-only reference, with shape clarification"
     }
   },
   "sparse_attention_interquery_kv_locality_scheduling_methods_20261023": {
@@ -9452,9 +9465,9 @@
       "Current same-body128GRF benchmark fixed8192queries/cap2051:117488-pool artificialgather median236.84ms versusclustered140.35ms;this is a locality hypothesis,not production distribution orhardware bottleneck proof.",
       "Current production source usesindependent2KV/query workgroups andseparateoutputrows;source contracts canbe compared withoutnew localmeasurements."
     ],
-    "status": "active_orca_collection",
+    "status": "reviewed_reference",
     "consumer": "Future source-specific QSA discriminator after current metric capability gate;Main stores collection body for retrieval andnative Luna/max reviewsdepth.",
-    "next_review": "After bounded completion,nativeLuna/max reviewsnovelty andsubstantive nextscope;Maincontinuesimplementation/measurement.",
+    "next_review": "Retrieve only for a concrete source-specific implementation question; no repeat broad survey or automatic implementation adoption.",
     "report": "/home/yayoi/orca/workspaces/Strata/sycl/.cache/strata-research/20261023/interquery-locality/report.md",
     "main_read_policy": "NativeLuna/max first;Main leaves knowledge bodies unread until concrete implementation question.",
     "lifecycle": {
@@ -9465,14 +9478,27 @@
       "incarnation": "08b3b38f-f2c7-409c-9b55-69658ee081d7",
       "startup_model": "gpt-6-luna high",
       "input_accepted": true,
-      "turn_started": true
+      "turn_started": true,
+      "state": "succeeded_and_physically_closed",
+      "release": "external_terminal_retained_processAction_none",
+      "main_closed_verified_same_incarnation": true,
+      "delivery": "delivery_18a5b959aaaf acknowledged"
+    },
+    "report_bytes": 11821,
+    "report_sha256": "7b4d5b0cc78c4845eaf1559a5ffeb368eaf47964921eb81117eedd000dc9d920",
+    "active_report_body_unread_by_main": true,
+    "review": {
+      "path": "/home/yayoi/orca/workspaces/Strata/sycl/.cache/strata-research/20261023/resource-iteration-review.json",
+      "sha256": "d5b1c1ab22224febc265b8f01172c7b80f2e90bbaf7c05afa25172b926e7a6f9",
+      "bytes": 12051,
+      "disposition": "retain as retrieval-only reference, with two factual clarifications"
     }
   },
   "b570_qsa_available_counter_selection_20261023": {
     "id": "b570_qsa_available_counter_selection_20261023",
     "classification": "decision support",
     "schedulable_now": false,
-    "status": "active_orca_collection",
+    "status": "reviewed_reference",
     "report_budget_bytes": 12288,
     "question": "Map the actual24B570 metric groups/1414member definitions to current QSA hypotheses(memory/cache,compute/XMX,occupancy/issue/synchronization). Select the smallest coherent event-based andfallback time-based group/mode whosereturned metric descriptions/types/units can distinguish hypotheses. Inspect official pinned PTI/LevelZero collection contracts,report validity flags andSYCL/graph/immediate-queue restrictions;identify minimum safe later collection gate withoutassuming observation_paranoid1 permitsactivation/query/streamer. No broad catalogue,no code or localmeasurement.",
     "prerequisite_evidence": [
@@ -9487,8 +9513,8 @@
     ],
     "nonduplication": "Use actualreturnedmembers for semantic selection andreport-validity/collectioncontracts;exclude another device-support catalogue,theoreticalroofline,PCiewirecounters or anewbenchmark. Actualcollectionpermission andkernelattribution stillunqualified.",
     "catalog": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/b570-metric-inventory-v1/run/owned/metrics.stdout",
-    "consumer": "Main next bounded QSA metriccollection qualification;report caninspect only currentstructuredcatalog andsource,not processes orprofilerexecution.",
-    "next_review": "NativeLuna/max reviewsreturnedreport beforeMain usesrelevant decisionsections.",
+    "consumer": "Later counter-selection retrieval only if collection conditions change; current setup closed with observation ioctl EACCES inside pool creation. No model counter collection is qualified.",
+    "next_review": "New externally changed collection conditions and a committed safe setup/command/readback plan; no group-switch retry under current permissions.",
     "report": "/home/yayoi/orca/workspaces/Strata/sycl/.cache/strata-research/20261023/counter-selection/report.md",
     "main_read_policy": "NativeLuna/max first;Main leaves knowledge bodies unread until concrete implementation question.",
     "lifecycle": {
@@ -9499,7 +9525,30 @@
       "incarnation": "be548173-3eb8-419a-8f1c-dceca8cd5b20",
       "startup_model": "gpt-6-luna high",
       "input_accepted": true,
-      "turn_started": true
-    }
+      "turn_started": true,
+      "state": "succeeded_and_physically_closed",
+      "release": "external_terminal_retained_processAction_none",
+      "main_closed_verified_same_incarnation": true,
+      "delivery": "delivery_18a5b959aaaf acknowledged"
+    },
+    "report_bytes": 12166,
+    "report_sha256": "13e38980162235db99f506cd3f9624d21435cc4467c8ebc2324b0a77184303e4",
+    "active_report_body_unread_by_main": true,
+    "review": {
+      "path": "/home/yayoi/orca/workspaces/Strata/sycl/.cache/strata-research/20261023/resource-iteration-review.json",
+      "sha256": "d5b1c1ab22224febc265b8f01172c7b80f2e90bbaf7c05afa25172b926e7a6f9",
+      "bytes": 12051,
+      "disposition": "Usable after corrected mode and validity mapping; setup failure remains unresolved.",
+      "required_corrections": [
+        "The report reverses the sampling flags: installed zet_api.h defines EVENT_BASED=1 and TIME_BASED=2. Thus its proposed groups 14/16 are time-based, not event-based. The event candidates are VectorEngineProfile 15 (82 members) then VectorEngineStalls 17 (54), separate domain-3 runs; 14/16 are the time-based counterparts.",
+        "The report also reverses validity metadata. Catalog event groups 3/15/17 carry ReportId, ReportsCount, ReportError, ReportLost, ReportInconsistent, ReportCtxSwitchLost, ReportWithoutWorkload, ReportContextMismatch and ReportQueryModeMismatch. Time groups 2/14/16 carry ReportReason and ContextIdValid. Map ReportReason encoding before relying on it; missing flags do not pass.",
+        "Keep ZE_RESULT_WARNING_DROPPED_DATA scoped to zetMetricStreamerReadData. It is not an event-query validity flag."
+      ],
+      "verified_semantics": [
+        "Frozen catalog SHA-256 50160ac42c10cd1bb621c3274b8daf0024fa0426b19595906b4e6a29f7f852e8 contains 24 groups and 1,414 definitions. Group 15 is VectorEngineProfile/domain 3/sampling 1/82 members; group 17 is VectorEngineStalls/domain 3/sampling 1/54. Time groups 14 and 16 have sampling 2 and 68/40 members.",
+        "XVE_INST_EXECUTED_XMX_BF16 is event/uint64/events counting BF16 XMX execution slots, separate from FP16/INT2/INT4/INT8 members; it is not an all-XMX aggregate, FLOP count or utilization. XVE_INST_ISSUED_ALL is broad decoded issue; XVE_THREADS_OCCUPANCY_ALL is a runtime thread-slot ratio. L3_READ counts 64-byte Device Cache read requests, L3_MISS counts misses, and GPU_MEMORY_BYTE_READ counts device-local-memory bytes. None alone establishes QSA-only traffic, external wire bytes or saturation."
+      ]
+    },
+    "catalog_retention": "Selection/review consumed raw catalog. Preserve selected metric semantics and24-group summary in metric-inventory-current.json; full1414-definition catalog may retire after source/recipe recovery."
   }
 }

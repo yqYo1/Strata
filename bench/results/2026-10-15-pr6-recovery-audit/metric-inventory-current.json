@@ -794,5 +794,151 @@
       ],
       "source_limit": "Compatible official source/header mapping is not proof of the installed MetricsLibrary or kernel implementation commit."
     }
+  },
+  "semantic_selection": {
+    "status": "catalog properties only; no collected values",
+    "event_groups": {
+      "VectorEngineProfile": 15,
+      "VectorEngineStalls": 17,
+      "ComputeBasic": 3
+    },
+    "time_counterparts": {
+      "VectorEngineProfile": 14,
+      "VectorEngineStalls": 16,
+      "ComputeBasic": 2
+    },
+    "sampling_flags": {
+      "EVENT_BASED": 1,
+      "TIME_BASED": 2
+    },
+    "domain": 3,
+    "event_validity_names": [
+      "ReportId",
+      "ReportsCount",
+      "ReportError",
+      "ReportLost",
+      "ReportInconsistent",
+      "ReportCtxSwitchLost",
+      "ReportWithoutWorkload",
+      "ReportContextMismatch",
+      "ReportQueryModeMismatch"
+    ],
+    "time_validity_names": [
+      "ReportReason",
+      "ContextIdValid"
+    ],
+    "selected_definitions": [
+      {
+        "kind": "metric",
+        "group": 15,
+        "metric": 29,
+        "name": "XVE_INST_EXECUTED_XMX_BF16",
+        "description": "Number of execution slots taken by BF16 XMX instructions",
+        "component": "Vector Engine",
+        "tier": 0,
+        "metric_type": 1,
+        "result_type": 1,
+        "units": "events"
+      },
+      {
+        "kind": "metric",
+        "group": 15,
+        "metric": 34,
+        "name": "XVE_INST_ISSUED_ALL",
+        "description": "Number of instructions issued (decoded) to any pipe",
+        "component": "Vector Engine",
+        "tier": 0,
+        "metric_type": 1,
+        "result_type": 1,
+        "units": "events"
+      },
+      {
+        "kind": "metric",
+        "group": 15,
+        "metric": 38,
+        "name": "XVE_THREADS_OCCUPANCY_ALL",
+        "description": "Percentage of thread slots occupied by ALL threads",
+        "component": "Vector Engine",
+        "tier": 0,
+        "metric_type": 0,
+        "result_type": 2,
+        "units": "percent"
+      },
+      {
+        "kind": "metric",
+        "group": 15,
+        "metric": 43,
+        "name": "L3_MISS",
+        "description": "Number of Device Cache accesses which miss in the Device Cache cache",
+        "component": "Device Cache",
+        "tier": 0,
+        "metric_type": 1,
+        "result_type": 1,
+        "units": "events"
+      },
+      {
+        "kind": "metric",
+        "group": 15,
+        "metric": 45,
+        "name": "L3_READ",
+        "description": "Number of Device Cache 64B read requests",
+        "component": "Device Cache",
+        "tier": 0,
+        "metric_type": 1,
+        "result_type": 1,
+        "units": "events"
+      },
+      {
+        "kind": "metric",
+        "group": 15,
+        "metric": 55,
+        "name": "GPU_MEMORY_BYTE_READ",
+        "description": "Number of device local memory (HBM, GDDR, LPDDR, etc.) read bytes",
+        "component": "Memory",
+        "tier": 0,
+        "metric_type": 1,
+        "result_type": 1,
+        "units": "bytes"
+      },
+      {
+        "kind": "metric",
+        "group": 17,
+        "metric": 10,
+        "name": "XVE_STALL_BARRIER",
+        "description": "Percentage of time in which XVE stalled, with at least one thread waiting for Gateway to write Notify register. Multiple stall reasons can qualify during the same cycle",
+        "component": "Vector Engine",
+        "tier": 0,
+        "metric_type": 0,
+        "result_type": 2,
+        "units": "percent"
+      },
+      {
+        "kind": "metric",
+        "group": 17,
+        "metric": 16,
+        "name": "XVE_STALL_SBID",
+        "description": "Percentage of time in which XVE stalled, with at least one thread waiting for Scoreboard token to be available. Multiple stall reasons can qualify during the same cycle",
+        "component": "Vector Engine",
+        "tier": 0,
+        "metric_type": 0,
+        "result_type": 2,
+        "units": "percent"
+      },
+      {
+        "kind": "metric",
+        "group": 17,
+        "metric": 17,
+        "name": "XVE_STALL_SENDWR",
+        "description": "Percentage of time in which XVE stalled, with at least one thread waiting for SEND message to be dispatched from XVE. Multiple stall reasons can qualify during the same cycle",
+        "component": "Vector Engine",
+        "tier": 0,
+        "metric_type": 0,
+        "result_type": 2,
+        "units": "percent"
+      }
+    ],
+    "limits": "BF16 XMX member counts execution slots, not FLOPs or utilization. Device-cache requests/device-local bytes are not PCIe wire traffic. All same-domain groups require separate qualified runs. Every validity member needs mapped semantics before report acceptance. Current collection setup is rejected; selections are future retrieval metadata only.",
+    "review_sha256": "d5b1c1ab22224febc265b8f01172c7b80f2e90bbaf7c05afa25172b926e7a6f9",
+    "raw_catalog_sha256": "50160ac42c10cd1bb621c3274b8daf0024fa0426b19595906b4e6a29f7f852e8"
   }
 }
