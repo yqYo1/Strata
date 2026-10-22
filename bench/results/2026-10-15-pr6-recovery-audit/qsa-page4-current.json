@@ -662,7 +662,7 @@
     "scope": "Earlier exactcase/count-independent parser revision replay only; prospective strict route totals are separately qualified by freshv2 native cohort."
   },
   "check_plan": {
-    "stage": "prepared",
+    "stage": "closed",
     "mode": "resources",
     "source_commit": "f183f4e978b8a70816ae2e0cf5cd2ab710de09ac",
     "controller_inputs": {
@@ -2442,6 +2442,299 @@
           },
           "stdout_sha256": "91bd9d7943f16bd8a7ac12eb627d5ca807c06cee3a9aa37d1c625ce9afb6b0dd",
           "stderr_sha256": "aef4f918c3e3e70aad62e34e0674b80cc973364f5d2c9769ebc15b0f9d5ccb40"
+        }
+      ],
+      "postchecks_complete": true,
+      "postcheck_errors": [],
+      "fresh_faults": [],
+      "boot_unchanged": true,
+      "driver_after": {
+        "pci": "/sys/bus/pci/devices/0000:05:00.0",
+        "driver": "xe",
+        "vendor": "0x8086",
+        "device": "0xe20c",
+        "kernel": "7.0.0-38-generic",
+        "devcoredump": false
+      }
+    },
+    {
+      "mode": "resources",
+      "source_commit": "f183f4e978b8a70816ae2e0cf5cd2ab710de09ac",
+      "numerical_binary": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-page4-address-v2/numerical",
+        "sha256": "5967e72210cf108a0b6d45d87d2e92ae1806a5a34331fe3860d3d2b7acedcf84",
+        "bytes": 1589880
+      },
+      "passed": true,
+      "complete": true,
+      "active": false,
+      "ownership_closed": true,
+      "observations": [
+        {
+          "arm": "all",
+          "pid": 2834288,
+          "exit_code": 0,
+          "ownership_closed": true,
+          "validation": {
+            "pid": 2834288,
+            "loader": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_loader.so.0.12.0",
+            "threads_before": 1,
+            "preinit": 37,
+            "config_enabled": true,
+            "first_init": true,
+            "dispatch_result": 46,
+            "output_untouched": true,
+            "retained_reference_until_exit": true,
+            "runtime_teardown_qualified": false
+          },
+          "session_removed": true,
+          "timing": {
+            "clock_floor_ns": 20,
+            "samples": [
+              [
+                0,
+                97,
+                3,
+                33,
+                "gather",
+                0,
+                0,
+                0,
+                0.705547
+              ],
+              [
+                0,
+                97,
+                3,
+                33,
+                "gather",
+                0,
+                1,
+                1,
+                0.822868
+              ],
+              [
+                0,
+                97,
+                3,
+                33,
+                "gather",
+                0,
+                2,
+                2,
+                0.445979
+              ],
+              [
+                0,
+                97,
+                3,
+                33,
+                "gather",
+                1,
+                0,
+                1,
+                0.469062
+              ],
+              [
+                0,
+                97,
+                3,
+                33,
+                "gather",
+                1,
+                1,
+                2,
+                0.472128
+              ],
+              [
+                0,
+                97,
+                3,
+                33,
+                "gather",
+                1,
+                2,
+                0,
+                0.466067
+              ],
+              [
+                0,
+                97,
+                3,
+                33,
+                "gather",
+                2,
+                0,
+                2,
+                0.432383
+              ],
+              [
+                0,
+                97,
+                3,
+                33,
+                "gather",
+                2,
+                1,
+                0,
+                0.466457
+              ],
+              [
+                0,
+                97,
+                3,
+                33,
+                "gather",
+                2,
+                2,
+                1,
+                0.433967
+              ],
+              [
+                0,
+                97,
+                3,
+                33,
+                "gather",
+                3,
+                0,
+                0,
+                0.456169
+              ],
+              [
+                0,
+                97,
+                3,
+                33,
+                "gather",
+                3,
+                1,
+                1,
+                0.468492
+              ],
+              [
+                0,
+                97,
+                3,
+                33,
+                "gather",
+                3,
+                2,
+                2,
+                0.460947
+              ],
+              [
+                0,
+                97,
+                3,
+                33,
+                "gather",
+                4,
+                0,
+                1,
+                0.438154
+              ],
+              [
+                0,
+                97,
+                3,
+                33,
+                "gather",
+                4,
+                1,
+                2,
+                0.46804
+              ],
+              [
+                0,
+                97,
+                3,
+                33,
+                "gather",
+                4,
+                2,
+                0,
+                0.436922
+              ],
+              [
+                0,
+                97,
+                3,
+                33,
+                "gather",
+                5,
+                0,
+                2,
+                0.556126
+              ],
+              [
+                0,
+                97,
+                3,
+                33,
+                "gather",
+                5,
+                1,
+                0,
+                0.439827
+              ],
+              [
+                0,
+                97,
+                3,
+                33,
+                "gather",
+                5,
+                2,
+                1,
+                0.442062
+              ]
+            ]
+          },
+          "stdout_sha256": "572ce71d0232f52603b62c8a35c0d7f40f503c248b64e7c70ce8e73099bc967e",
+          "stderr_sha256": "2e95f383a50f7472c8be2a90a3b27b97db85e7ca09da9d54dd0c0a726ab34a9c",
+          "resources": {
+            "conserved_device_ns": 3938366,
+            "table_rows": 24,
+            "compute_calls": {
+              "0": 8,
+              "1": 7,
+              "2": 7
+            },
+            "properties": [
+              {
+                "arm": 0,
+                "compiled": "JIT",
+                "SIMD": 16,
+                "arguments": 18,
+                "raw_SLM": 32,
+                "private_memory_descriptor": 0,
+                "spill_memory_descriptor": 12480,
+                "GRF": 128
+              },
+              {
+                "arm": 1,
+                "compiled": "JIT",
+                "SIMD": 16,
+                "arguments": 18,
+                "raw_SLM": 32,
+                "private_memory_descriptor": 0,
+                "spill_memory_descriptor": 12480,
+                "GRF": 128
+              },
+              {
+                "arm": 2,
+                "compiled": "JIT",
+                "SIMD": 16,
+                "arguments": 17,
+                "raw_SLM": 32,
+                "private_memory_descriptor": 0,
+                "spill_memory_descriptor": 22208,
+                "GRF": 128
+              }
+            ],
+            "limits": "Allocation descriptors and summed service only;rawSLM units,actual spill traffic,occupancy,physical traffic and model/decode speed remain unmeasured."
+          }
         }
       ],
       "postchecks_complete": true,
