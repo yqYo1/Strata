@@ -194,19 +194,24 @@ and no GPU execution. They reject short/unbound/reused evidence,wrong route or
 native/API clocks,counter mismatches and cross-workload compensation. The actual
 six-process long-generation cohort was prepared at source`289105442`,after
 all15 model assets were fully rehashed. Its frozen order is retained/current/
-current/retained/retained/current. The first retained-package process closed
-normally with no fresh fault and unchanged asset identities. Code read33214
-fresh tokens and generated3611 at14.771411tok/s;prose read33288 and generated8638
-at9.493949tok/s. Thinking was present in both,and their observed MTP acceptance
-was83.11%/39.06%. The first candidate process also closed normally,with the
-same placement and observed MTP classes and no fresh fault. Its code/prose
-decode readings are14.548306/9.506803tok/s,with paired ratios0.984896/1.001354.
-The first code ratio misses the prospective no-decline screen;do not accept
-that loss in exchange for prefill. The second candidate process also closed
-normally with unchanged asset identities and no fresh fault. Its code/prose
-readings are14.658382/9.493705tok/s,with the same observed MTP classes;its paired
-retained process has not run yet. Keep the remaining three planned processes
-and all original samples. The complete cohort summary remains pending. See the
+current/retained/retained/current. Four processes have closed normally,with
+unchanged asset identities and no fresh fault. Each code request read33214
+fresh tokens and generated3611;each prose request read33288 and generated8638.
+All include thinking and substantive
+answers,with observed MTP acceptance83.11%/39.06%. Exact decode readings are:
+
+| Process | Package | Code tok/s | Prose tok/s |
+| --- | --- | ---: | ---: |
+| 0 | retained6e40 | 14.771411 | 9.493949 |
+| 1 | current362 chunk64 | 14.548306 | 9.506803 |
+| 2 | current362 chunk64 | 14.658382 | 9.493705 |
+| 3 | retained6e40 | 14.764116 | 9.560474 |
+
+The first paired candidate/reference ratios are0.984896/1.001354 for code/prose;
+the second are0.992838/0.993016. Both code pairs and the second prose pair miss
+the prospective no-decline screen. Do not accept those losses in exchange for
+prefill. Keep the remaining two planned processes and every original sample;
+complete-cohort analysis and causal attribution remain pending. See the
 [current decode comparison](../bench/results/2026-10-15-pr6-recovery-audit/canonical-restore-decode-current.json).
 
 Future draft-length tuning needs separate handoff admission. The current
@@ -226,7 +231,11 @@ publication. The changed server refill calls are in prompt reading and its
 final handoff, before `prompt_ms` and the decode clock. The per-window decode
 loop does not call those refill or transition-observer wrappers. This is a
 source boundary check, not proof that restored state, runtime retention or the
-compiled package has no later effect. Decode preservation and its actual costs
+compiled package has no later effect. A bounded static read of the two pinned
+executables found `main` grows54 bytes,with the same prologue stack reservation.
+The inspected CPU GU entry sizes match and both move7296 bytes,retaining their
+64-byte offsets. Symbol sizes alone establish neither instruction equivalence
+nor the cause of the TG difference. Decode preservation and its actual costs
 remain separate questions for the completed comparison.
 
 

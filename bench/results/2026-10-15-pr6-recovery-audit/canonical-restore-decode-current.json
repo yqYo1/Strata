@@ -1313,6 +1313,233 @@
         "committed_result": "90bce966dda537a96418b5d7ad76d77b50045301",
         "kept": "Three frozen configuration/profile inputs plus17-byte attempt barrier;both native generations/fixtures retained for the three planned processes."
       }
+    },
+    {
+      "cohort": 3,
+      "arm": 0,
+      "passed": true,
+      "complete": true,
+      "requests": [
+        {
+          "ok": true,
+          "err": null,
+          "ttft_s": 51.474,
+          "total_s": 295.966,
+          "prompt_tokens": 33214,
+          "reused_tokens": 0,
+          "read_tokens": 33214,
+          "generated_tokens": 3611,
+          "prompt_tps": 646.6,
+          "prompt_tps_source": "engine",
+          "decode_tps": 14.8,
+          "decode_tps_source": "engine",
+          "prompt_ms": 51364.7,
+          "decode_ms": 244579.5,
+          "drafts_offered": 3102,
+          "drafts_accepted": 2578,
+          "finish_reason": "stop",
+          "request_sha256": "b0a065720a5eb86fa2d3f84d6371e35da774b4ea144d022608d49b80c227cba1",
+          "stream_complete": true,
+          "truncated": false,
+          "generated_tokens_source": "usage",
+          "client_interval": {
+            "request_begin_monotonic_ns": 982720654998704,
+            "first_output_monotonic_ns": 982772128527977,
+            "request_end_monotonic_ns": 983016621372785
+          },
+          "eligible": true,
+          "agreement_eligible": true,
+          "speed_eligible": true,
+          "speed_ineligible_reasons": [],
+          "ineligible_reasons": [],
+          "acceptance_rate": 0.8310767246937459,
+          "usage_generated_tokens": 3611,
+          "completion_includes_thinking": true,
+          "run": 0,
+          "order": 0,
+          "output_sha256": "5b7ae0f207d7804bc693ebde382f1a762c43f477fd01483939648d004cfaf971",
+          "reasoning_sha256": "8daeec41f22d90c32c1c1c5c3cfe4486a9ee6d65fa7ffe8857bfe980c02d411e",
+          "output_chars": 5496,
+          "reasoning_chars": 4368,
+          "reasoning_tokens": null,
+          "workload": "regular-code",
+          "controller_eligible": true
+        },
+        {
+          "ok": true,
+          "err": null,
+          "ttft_s": 43.179,
+          "total_s": 946.589,
+          "prompt_tokens": 33288,
+          "reused_tokens": 0,
+          "read_tokens": 33288,
+          "generated_tokens": 8638,
+          "prompt_tps": 773.3,
+          "prompt_tps_source": "engine",
+          "decode_tps": 9.6,
+          "decode_tps_source": "engine",
+          "prompt_ms": 43047.3,
+          "decode_ms": 903511.7,
+          "drafts_offered": 11931,
+          "drafts_accepted": 4660,
+          "finish_reason": "stop",
+          "request_sha256": "c6d16c6adb19adf79de1cc29929ab71cab5433488ca2fda2dfcdad523bde56f4",
+          "stream_complete": true,
+          "truncated": false,
+          "generated_tokens_source": "usage",
+          "client_interval": {
+            "request_begin_monotonic_ns": 983016632907241,
+            "first_output_monotonic_ns": 983059812304604,
+            "request_end_monotonic_ns": 983963222353283
+          },
+          "eligible": true,
+          "agreement_eligible": true,
+          "speed_eligible": true,
+          "speed_ineligible_reasons": [],
+          "ineligible_reasons": [],
+          "acceptance_rate": 0.390579163523594,
+          "usage_generated_tokens": 8638,
+          "completion_includes_thinking": true,
+          "run": 0,
+          "order": 1,
+          "output_sha256": "c8f13901e39c197d5020f290998ab2332dc695d93b32365cffa9ce85f743e983",
+          "reasoning_sha256": "5199dece9d887f8928a737a5470e1f470a75b0f6a7ca29ffd2e148f355d46c57",
+          "output_chars": 4452,
+          "reasoning_chars": 21300,
+          "reasoning_tokens": null,
+          "workload": "varied-prose",
+          "controller_eligible": true
+        }
+      ],
+      "journal": {
+        "successful_warmups": 4,
+        "successful_long_requests": 2,
+        "phase_order": [
+          "warm-up/chat",
+          "calibration",
+          "calibration",
+          "warm-up/prompt",
+          "long-generation/regular-code",
+          "long-generation/varied-prose"
+        ],
+        "request_sha256": [
+          "6976dd85c26437117139f185ce0ac4da0ab9d1d4eb576dd2f9e252ae99d63f03",
+          "d53e3c2e317b3f08b3b3c48aa391fd7c6bd7e451a3176a85b9b4763f7d85fdf3",
+          "7980bd89f91dbcfd84166ee8ea45c5d77888ee349ccee71596c073a2ed4790a0",
+          "cfe052d03f13fa28f83f44331156d873212064c85036a8652c6eab4a2d7380a5",
+          "b0a065720a5eb86fa2d3f84d6371e35da774b4ea144d022608d49b80c227cba1",
+          "c6d16c6adb19adf79de1cc29929ab71cab5433488ca2fda2dfcdad523bde56f4"
+        ],
+        "valid": true,
+        "journal_sha256": "7158a8e4440009e6aa0aaa4d59b9cc0c757ca1b6cb4e3992a477e82f82dfbdf3"
+      },
+      "route": {
+        "placement": {
+          "expert_cache_slots": 1256,
+          "loan_first": 132,
+          "loan_slots": 1124,
+          "suffix_identity_basis": "Exact completed payload/map admission, unchanged profile and static per-layer cache; first=slots-lent."
+        },
+        "requests": [
+          {
+            "actual_GPU_BF16_rows": 33213,
+            "reported_MoE_mode": 10,
+            "reported_maximum_rows": 33213,
+            "prompt_clock_difference_ms": 0.3000000000029104,
+            "decode_clock_difference_ms": 0.5,
+            "rounding_bound_ms": 0.55
+          },
+          {
+            "actual_GPU_BF16_rows": 33287,
+            "reported_MoE_mode": 10,
+            "reported_maximum_rows": 33287,
+            "prompt_clock_difference_ms": 0.3000000000029104,
+            "decode_clock_difference_ms": 0.30000000004656613,
+            "rounding_bound_ms": 0.55
+          }
+        ],
+        "restoration_proof": "preceding checked actual-model admission;not per-process payload logging"
+      },
+      "native_identity": {
+        "pid": 218127,
+        "start_ticks": 98260098,
+        "sid": 218096
+      },
+      "ownership_closed": true,
+      "fault_probe_successful": true,
+      "fresh_faults": [],
+      "boot_unchanged": true,
+      "posthoc_logged_capture_diagnostic": {
+        "selection": "Exploratory extraction after the first pair;not a predeclared gate or speed correction. Original decode clocks and eligibility remain unchanged.",
+        "basis": "Always-emitted native capture progress lines,partitioned by the same six verified request footers.",
+        "requests": [
+          {
+            "workload": "regular-code",
+            "verifier_capture_ms": {
+              "1": 9.934,
+              "4": 15.422
+            },
+            "MTP_capture_calls": 4,
+            "MTP_capture_total_ms": 2.115
+          },
+          {
+            "workload": "varied-prose",
+            "verifier_capture_ms": {
+              "1": 10.535,
+              "4": 15.361
+            },
+            "MTP_capture_calls": 4,
+            "MTP_capture_total_ms": 1.99
+          }
+        ],
+        "limits": "Charged capture wrappers,not GPU service or the complete first-window/launch/driver cost. Comparable baseline0 capture records were not retained;this does not attribute the observed code difference."
+      },
+      "posthoc_native_symbol_diagnostic": {
+        "selection": "Exploratory static read after process3 closed;not a prospective gate or speed correction.",
+        "packages": [
+          "retained6e40",
+          "current362"
+        ],
+        "binary_hashes_verified": true,
+        "method": "nm -S -C --defined-only on both pinned binaries;objdump -d --no-show-raw-insn --start-address=0x40c450 --stop-address=0x40c490 on both.",
+        "main": {
+          "entry": [
+            "0x40c450",
+            "0x40c450"
+          ],
+          "size_bytes": [
+            149867,
+            149921
+          ],
+          "prologue_stack_subtract": [
+            "0x1d280",
+            "0x1d280"
+          ]
+        },
+        "native_gu_rows": {
+          "entry": [
+            "0x6bdf60",
+            "0x6bfbe0"
+          ],
+          "size_bytes": [
+            2097,
+            2097
+          ]
+        },
+        "iq2_pair_gu_rows": {
+          "entry": [
+            "0x6f0cb0",
+            "0x6f2930"
+          ],
+          "size_bytes": [
+            531,
+            531
+          ]
+        },
+        "observation": "Main size grows54 bytes with the same prologue stack reservation. Both inspected CPU entries move7296 bytes,retaining their64-byte offsets;their symbol sizes match.",
+        "limits": "Three symbols and main prologue only;not a normalized whole-function comparison or proof of identical instructions,codegen-caused TG loss,or a limiting hardware resource. No executable was run or modified.",
+        "consumer": "Bounded package-isolation diagnosis after the full cohort;retire this detail if the package is rejected without further diagnosis."
+      }
     }
   ],
   "budgets": {
