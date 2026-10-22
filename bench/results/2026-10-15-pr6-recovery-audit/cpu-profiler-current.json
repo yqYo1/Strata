@@ -4148,7 +4148,7 @@
   },
   "unitrace_warmed_graph_window_v3": {
     "schema": "strata-unitrace-warmed-graph-window-v3",
-    "stage": "check-prepared",
+    "stage": "failed",
     "source_commit": "434891883b9c3be62a0e398c0c935ce26b123fa9",
     "input_sha256": {
       "tools/sycl/bench_engine.py": "e5f588605ebc7799b54f8bf7df9ad2e363391375e50b788b9704a6b80887ca6b",
@@ -4581,6 +4581,107 @@
           "UNITRACE_TraceOutputDir": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/unitrace-warmed-graph-window-v3/prefix-window/trace"
         }
       }
-    ]
+    ],
+    "driver_before": {
+      "pci": "/sys/bus/pci/devices/0000:05:00.0",
+      "driver": "xe",
+      "vendor": "0x8086",
+      "device": "0xe20c",
+      "kernel": "7.0.0-38-generic",
+      "devcoredump": false
+    },
+    "observations": [
+      {
+        "name": "smoke",
+        "passed": true,
+        "controls": [],
+        "launch_raw_ns": 1029694592978972,
+        "pid": 1994898,
+        "ready_raw_ns": 1029694694908510,
+        "release_raw_ns": 1029694695189327,
+        "drained_raw_ns": 1029694695637227,
+        "validation": {
+          "pid": 1994898,
+          "loader": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_loader.so.0.12.0",
+          "threads_before": 1,
+          "preinit": 37,
+          "config_enabled": true,
+          "first_init": true,
+          "dispatch_result": 46,
+          "output_untouched": true,
+          "retained_reference_until_exit": true,
+          "runtime_teardown_qualified": false
+        },
+        "loader_lookup_errors": [
+          "   1994898:\t/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/unitrace-warmed-graph-window-v1/graph_record_window: error: symbol lookup error: undefined symbol: zelLoaderTranslateHandle (fatal)",
+          "   1994898:\t/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/unitrace-warmed-graph-window-v1/graph_record_window: error: symbol lookup error: undefined symbol: zelSetDriverTeardown (fatal)"
+        ],
+        "inventory": {
+          "capture_regions": 1,
+          "graph_replays": 5,
+          "direct_kernels": 0,
+          "template": [
+            "_ZTSN12_GLOBAL__N_115RecordWindowAddE",
+            "_ZTSN12_GLOBAL__N_120RecordWindowMultiplyE"
+          ],
+          "executed_program_kernels": 10
+        },
+        "execution_passed": true,
+        "target_closed": true,
+        "session_removed": true
+      },
+      {
+        "name": "prefix-only",
+        "passed": false,
+        "controls": [
+          "pause",
+          "stop"
+        ],
+        "launch_raw_ns": 1029694804114204,
+        "pid": 1994916,
+        "ready_raw_ns": 1029694903813279,
+        "release_raw_ns": 1029695019576630,
+        "drained_raw_ns": 1029695020266143,
+        "validation": {
+          "pid": 1994916,
+          "loader": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_loader.so.0.12.0",
+          "threads_before": 1,
+          "preinit": 37,
+          "config_enabled": true,
+          "first_init": true,
+          "dispatch_result": 46,
+          "output_untouched": true,
+          "retained_reference_until_exit": true,
+          "runtime_teardown_qualified": false
+        },
+        "loader_lookup_errors": [
+          "   1994916:\t/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/unitrace-warmed-graph-window-v1/graph_record_window: error: symbol lookup error: undefined symbol: zelLoaderTranslateHandle (fatal)",
+          "   1994916:\t/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/unitrace-warmed-graph-window-v1/graph_record_window: error: symbol lookup error: undefined symbol: zelSetDriverTeardown (fatal)"
+        ],
+        "inventory": {
+          "capture_regions": 1,
+          "graph_replays": 5,
+          "direct_kernels": 0,
+          "template": [
+            "_ZTSN12_GLOBAL__N_115RecordWindowAddE",
+            "_ZTSN12_GLOBAL__N_120RecordWindowMultiplyE"
+          ],
+          "executed_program_kernels": 10
+        },
+        "target_closed": true,
+        "session_removed": true
+      }
+    ],
+    "error": "RuntimeError('program kernel outside its controlled raw-clock window +/-1ms')",
+    "fresh_faults": [],
+    "boot_unchanged": true,
+    "driver_after": {
+      "pci": "/sys/bus/pci/devices/0000:05:00.0",
+      "driver": "xe",
+      "vendor": "0x8086",
+      "device": "0xe20c",
+      "kernel": "7.0.0-38-generic",
+      "devcoredump": false
+    }
   }
 }
