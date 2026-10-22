@@ -1549,6 +1549,187 @@
         "committed_result": "c01adc3951e5be445b8034d41f500b5fb217b46f",
         "kept": "Three frozen configuration/profile inputs plus17-byte attempt barrier;both native generations/fixtures retained for the two planned processes."
       }
+    },
+    {
+      "cohort": 4,
+      "arm": 0,
+      "passed": true,
+      "complete": true,
+      "requests": [
+        {
+          "ok": true,
+          "err": null,
+          "ttft_s": 51.519,
+          "total_s": 293.471,
+          "prompt_tokens": 33214,
+          "reused_tokens": 0,
+          "read_tokens": 33214,
+          "generated_tokens": 3611,
+          "prompt_tps": 646.1,
+          "prompt_tps_source": "engine",
+          "decode_tps": 14.9,
+          "decode_tps_source": "engine",
+          "prompt_ms": 51404.3,
+          "decode_ms": 242044.3,
+          "drafts_offered": 3102,
+          "drafts_accepted": 2578,
+          "finish_reason": "stop",
+          "request_sha256": "b0a065720a5eb86fa2d3f84d6371e35da774b4ea144d022608d49b80c227cba1",
+          "stream_complete": true,
+          "truncated": false,
+          "generated_tokens_source": "usage",
+          "client_interval": {
+            "request_begin_monotonic_ns": 984494005080538,
+            "first_output_monotonic_ns": 984545524524366,
+            "request_end_monotonic_ns": 984787476394681
+          },
+          "eligible": true,
+          "agreement_eligible": true,
+          "speed_eligible": true,
+          "speed_ineligible_reasons": [],
+          "ineligible_reasons": [],
+          "acceptance_rate": 0.8310767246937459,
+          "usage_generated_tokens": 3611,
+          "completion_includes_thinking": true,
+          "run": 0,
+          "order": 0,
+          "output_sha256": "5b7ae0f207d7804bc693ebde382f1a762c43f477fd01483939648d004cfaf971",
+          "reasoning_sha256": "8daeec41f22d90c32c1c1c5c3cfe4486a9ee6d65fa7ffe8857bfe980c02d411e",
+          "output_chars": 5496,
+          "reasoning_chars": 4368,
+          "reasoning_tokens": null,
+          "workload": "regular-code",
+          "controller_eligible": true
+        },
+        {
+          "ok": true,
+          "err": null,
+          "ttft_s": 43.196,
+          "total_s": 945.932,
+          "prompt_tokens": 33288,
+          "reused_tokens": 0,
+          "read_tokens": 33288,
+          "generated_tokens": 8638,
+          "prompt_tps": 773.0,
+          "prompt_tps_source": "engine",
+          "decode_tps": 9.6,
+          "decode_tps_source": "engine",
+          "prompt_ms": 43061.8,
+          "decode_ms": 902847.2,
+          "drafts_offered": 11931,
+          "drafts_accepted": 4660,
+          "finish_reason": "stop",
+          "request_sha256": "c6d16c6adb19adf79de1cc29929ab71cab5433488ca2fda2dfcdad523bde56f4",
+          "stream_complete": true,
+          "truncated": false,
+          "generated_tokens_source": "usage",
+          "client_interval": {
+            "request_begin_monotonic_ns": 984787487280811,
+            "first_output_monotonic_ns": 984830683025881,
+            "request_end_monotonic_ns": 985733419542760
+          },
+          "eligible": true,
+          "agreement_eligible": true,
+          "speed_eligible": true,
+          "speed_ineligible_reasons": [],
+          "ineligible_reasons": [],
+          "acceptance_rate": 0.390579163523594,
+          "usage_generated_tokens": 8638,
+          "completion_includes_thinking": true,
+          "run": 0,
+          "order": 1,
+          "output_sha256": "c8f13901e39c197d5020f290998ab2332dc695d93b32365cffa9ce85f743e983",
+          "reasoning_sha256": "5199dece9d887f8928a737a5470e1f470a75b0f6a7ca29ffd2e148f355d46c57",
+          "output_chars": 4452,
+          "reasoning_chars": 21300,
+          "reasoning_tokens": null,
+          "workload": "varied-prose",
+          "controller_eligible": true
+        }
+      ],
+      "journal": {
+        "successful_warmups": 4,
+        "successful_long_requests": 2,
+        "phase_order": [
+          "warm-up/chat",
+          "calibration",
+          "calibration",
+          "warm-up/prompt",
+          "long-generation/regular-code",
+          "long-generation/varied-prose"
+        ],
+        "request_sha256": [
+          "6976dd85c26437117139f185ce0ac4da0ab9d1d4eb576dd2f9e252ae99d63f03",
+          "d53e3c2e317b3f08b3b3c48aa391fd7c6bd7e451a3176a85b9b4763f7d85fdf3",
+          "7980bd89f91dbcfd84166ee8ea45c5d77888ee349ccee71596c073a2ed4790a0",
+          "cfe052d03f13fa28f83f44331156d873212064c85036a8652c6eab4a2d7380a5",
+          "b0a065720a5eb86fa2d3f84d6371e35da774b4ea144d022608d49b80c227cba1",
+          "c6d16c6adb19adf79de1cc29929ab71cab5433488ca2fda2dfcdad523bde56f4"
+        ],
+        "valid": true,
+        "journal_sha256": "c9761fdda53116b3bbe09e6f5a67349499a01e544f62ff0ca3cc7c5840d17f23"
+      },
+      "route": {
+        "placement": {
+          "expert_cache_slots": 1256,
+          "loan_first": 132,
+          "loan_slots": 1124,
+          "suffix_identity_basis": "Exact completed payload/map admission, unchanged profile and static per-layer cache; first=slots-lent."
+        },
+        "requests": [
+          {
+            "actual_GPU_BF16_rows": 33213,
+            "reported_MoE_mode": 10,
+            "reported_maximum_rows": 33213,
+            "prompt_clock_difference_ms": 0.3000000000029104,
+            "decode_clock_difference_ms": 0.29999999998835847,
+            "rounding_bound_ms": 0.55
+          },
+          {
+            "actual_GPU_BF16_rows": 33287,
+            "reported_MoE_mode": 10,
+            "reported_maximum_rows": 33287,
+            "prompt_clock_difference_ms": 0.19999999999708962,
+            "decode_clock_difference_ms": 0.19999999995343387,
+            "rounding_bound_ms": 0.55
+          }
+        ],
+        "restoration_proof": "preceding checked actual-model admission;not per-process payload logging"
+      },
+      "native_identity": {
+        "pid": 278021,
+        "start_ticks": 98437441,
+        "sid": 277997
+      },
+      "ownership_closed": true,
+      "fault_probe_successful": true,
+      "fresh_faults": [],
+      "boot_unchanged": true,
+      "posthoc_logged_capture_diagnostic": {
+        "selection": "Exploratory extraction after the first pair;not a predeclared gate or speed correction. Original decode clocks and eligibility remain unchanged.",
+        "basis": "Always-emitted native capture progress lines,partitioned by the same six verified request footers.",
+        "requests": [
+          {
+            "workload": "regular-code",
+            "verifier_capture_ms": {
+              "1": 9.927,
+              "4": 15.074
+            },
+            "MTP_capture_calls": 4,
+            "MTP_capture_total_ms": 1.928
+          },
+          {
+            "workload": "varied-prose",
+            "verifier_capture_ms": {
+              "1": 11.173,
+              "4": 15.214
+            },
+            "MTP_capture_calls": 4,
+            "MTP_capture_total_ms": 1.866
+          }
+        ],
+        "limits": "Charged capture wrappers,not GPU service or the complete first-window/launch/driver cost. Comparable baseline0 capture records were not retained;this does not attribute the observed code difference."
+      }
     }
   ],
   "budgets": {

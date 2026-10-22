@@ -194,7 +194,7 @@ and no GPU execution. They reject short/unbound/reused evidence,wrong route or
 native/API clocks,counter mismatches and cross-workload compensation. The actual
 six-process long-generation cohort was prepared at source`289105442`,after
 all15 model assets were fully rehashed. Its frozen order is retained/current/
-current/retained/retained/current. Four processes have closed normally,with
+current/retained/retained/current. Five processes have closed normally,with
 unchanged asset identities and no fresh fault. Each code request read33214
 fresh tokens and generated3611;each prose request read33288 and generated8638.
 All include thinking and substantive
@@ -206,12 +206,16 @@ answers,with observed MTP acceptance83.11%/39.06%. Exact decode readings are:
 | 1 | current362 chunk64 | 14.548306 | 9.506803 |
 | 2 | current362 chunk64 | 14.658382 | 9.493705 |
 | 3 | retained6e40 | 14.764116 | 9.560474 |
+| 4 | retained6e40 | 14.918757 | 9.567510 |
 
 The first paired candidate/reference ratios are0.984896/1.001354 for code/prose;
 the second are0.992838/0.993016. Both code pairs and the second prose pair miss
 the prospective no-decline screen. Do not accept those losses in exchange for
-prefill. Keep the remaining two planned processes and every original sample;
-complete-cohort analysis and causal attribution remain pending. See the
+prefill. Keep the final planned candidate process and every original sample;
+complete-cohort analysis and causal attribution remain pending. Native observers
+are off,but background host work was not attributed;the package ratios alone
+do not identify the cause. This limitation does not change the failed
+no-decline outcomes. See the
 [current decode comparison](../bench/results/2026-10-15-pr6-recovery-audit/canonical-restore-decode-current.json).
 
 Future draft-length tuning needs separate handoff admission. The current
