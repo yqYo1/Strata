@@ -6869,6 +6869,22 @@
         ],
         "decision": "The largest26.04%whole-process family contains multiple projection widths;do not attribute its54.942s entirely to the MTP head. Exact n_in/ncols,phase/callsite binding,physical read bytes and hardware ceiling remain unknown from this table alone. No kernel change selected from the family percentage."
       }
+    },
+    "QSA_register_question": {
+      "observed": {
+        "compiled": "JIT",
+        "SIMD": 16,
+        "arguments": 18,
+        "SLM_reported_raw": 32,
+        "private_reported_raw": 0,
+        "spill_reported_raw": 12480,
+        "GRF": 128
+      },
+      "matching_geometries": 2,
+      "source": "PTI4b6d74294cdc72766c00a9211fe2e4261ee94244 ze_collector.h:5957-5967 copies zeKernelGetProperties fields;GRF from zex_kernel_register_file_size_exp_t",
+      "interpretation": "Compiler/driver allocation metadata only. Do not infer hot spill traffic,occupancy,wire bytes or saturation. SLM raw32 units remain unresolved. Current ordered-exp kernel differs from the older auto-GRF cached-Q test.",
+      "previous_rejection": "b82207709:qsa-attention-current.json automatic_grf_cached_query_summary:automatic256 cached-Q was12.65..16.65%slower,with changed functor source form and no emitted scratch in either arm. Preserve failure;do not rerun it.",
+      "next_comparison": "Only a new fixture using exact current ordered-exp body:default versus explicit128 versus explicit256,holding property-overload source form fixed between128/256. No inference engine/source/placement change. First verify current native inputs/13artifacts and compiler/build provenance,then traced small numerical/guard/ownership and full component checks before3independent rotated timing processes. Select a GPU-register/spill sensitivity mechanism only from these actual measurements;model adoption and decode preservation remain separate."
     }
   }
 }
