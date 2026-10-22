@@ -373,26 +373,28 @@ verified against pushed Git evidence before deletion. All13 selected native
 assets and the next comparison's five generated sources match afterward.
 The independent legacy provenance/lifecycle holds remain open.
 
-The next independent discriminator is fixed two-head iteration on the unchanged
-generic-page prefill source. Workgroup128 and required subgroup16 give eight
-subgroups; each owns exactly two of the16 padded head rows. The committed
-component-only constructor replaces the two variable-bound padded-head loops
-with two iterations, preserving arithmetic/order, real/padded-head masks,
-64-bit paging, barriers and the necessary subgroup<4 QK guard. Independent
-source review confirms the loop mapping. Its material coverage finding is
-resolved by a maintained numerical harness that selects the actual candidate
-for all page/bounds/oracle cases; the include alone was not candidate evidence.
-Padded internal state remains source reasoning, not an observed candidate
-capture. The [fresh comparison build](../bench/results/2026-10-15-pr6-recovery-audit/qsa-fixed-heads-current.json)
-fromdbb612d25/plan5be3b774e completed all13 commands normally, with186 committed
-project inputs and8700 SDK inputs pinned. Twelve first-use traced processes
-now pass across three arms and Page1/4/7/16, with24 exact-output cases and
-normal ownership closure. Actual selected compute kernels launch23 times per
-process, with SIMD16/GRF128, spill descriptor12480 and20032 dynamic-local bytes.
-No fresh fault occurred; these descriptors establish neither speed nor hardware
-saturation. No engine/decode source changed. Next are132 full component cases,
-the resource check and the prospective clean component gate before any model trial. Final integration still requires unchanged decode
-placement/state and repeated decode speed.
+The fixed two-head iteration discriminator is closed and rejected. Its Main-authored
+component overlay kept generic64-bit paging, arithmetic/order, masks, barriers
+and the subgroup<4 QK guard. It changed no engine/decode source. Twelve first-use
+traced processes across three arms and Page1/4/7/16 passed24 exact-output cases;
+the subsequent132 component cases passed guards, immutability, diagnostics and
+physical262144 addressing. Padded internal state remains source reasoning, not
+an observed capture. Resource qualification passed18 exact-bit samples with
+actual compute calls8/7/7. All three arms retain SIMD16/GRF128,18 arguments and
+spill descriptor12480; these descriptors establish neither dynamic traffic nor
+hardware saturation. One profiler launch was refused before target execution
+because its session name contained a hyphen. That failed outcome remains intact;
+a separately committed alphanumeric-name plan completed normally.
+
+Three clean processes produced162 individual samples. Candidate latency
+geomeans are1.002039 versus production and1.002378 versus the namespace control;
+all aggregate shapes are slower and the prospective0.95/per-process gates fail.
+No model trial or adoption follows. The selected6e40 engine, decode configuration
+and1256-slot placement remain unchanged. The [compact comparison](../bench/results/2026-10-15-pr6-recovery-audit/qsa-fixed-heads-current.json)
+records the samples and limits. Retire its auxiliary build and unused probe
+helpers after original-input recovery. Before another source discriminator,
+check existing operand-staging evidence against the gather/clustered contrast;
+physical VRAM traffic/cache behavior and hardware saturation remain unknown.
 
 Remaining model gates are repeated phase-preserving adoption evidence,
 agent-session and task quality, full physical262144 tokens including the final
