@@ -4662,5 +4662,112 @@
       "engine_unchanged": true,
       "retention": "One source-only proposal for the immediate collector correction. No candidate binary/header/source snapshot retained. Remove proposal from active tree if rejected; recover source from Git."
     }
+  },
+  "unitrace_aggregation_host": {
+    "stage": "prepared",
+    "source_commit": "ed093a2edc223944c9f754984946fd1c4cb1ddb3",
+    "input_sha256": {
+      "bench/sycl/collector_aggregation.cpp": "c85ccd5b69de0de0ac88584f3d74a0ff0548f024c1e2a1c9daf5dee098e8ec1a",
+      "tools/sycl/bench_engine.py": "e5f588605ebc7799b54f8bf7df9ad2e363391375e50b788b9704a6b80887ca6b",
+      "tools/sycl/build_engine.py": "8444783ab417378207ec89ad2bc3cf648480e20d9e77f06ebb3070c93e10b131",
+      "tools/sycl/cache_borrow.py": "900a2364d19beea0e1fa3e3c657f980455d676363660c013f6ef9058eeb43450",
+      "tools/sycl/cache_capacity.py": "9d39d3851bfc634901d6b5fd6f984918c53f8f44337df7fd506b6cb2ab3252f5",
+      "tools/sycl/cache_long.py": "1113563f582bd01bfb7535f8b73d70bf92f8e336dbef60301a6de7f2c28c1548",
+      "tools/sycl/check_collector_aggregation.py": "b567523b34aff5d8c534084bc0870eac87b92242fa044cd702c0749a69a6351a",
+      "tools/sycl/check_expert_bank.py": "31896d82f9f948784720c13044938fd64d5445e5a28168c2ccd569e3cb769eee",
+      "tools/sycl/check_verifier_retirement.py": "1896bf9dd31954bc1fb95c03e3b18679e280f4690a0b46679493b6d6c11c350e",
+      "tools/sycl/collector_aggregation.py": "6d923317410c15696f443e8135a3d22490e980967d6311f0c0cead07f72fdeba",
+      "tools/sycl/cpu_capacity.py": "685b981462cdf8e667f67bc844d8e522be84c776df57238327a4dad8dbbefa51",
+      "tools/sycl/cpu_census_engine.py": "40013d84a4b7a347c46efc6b7f99b7ea8f253b94c3ad217ea62c7b0dd6000d09",
+      "tools/sycl/cpu_iq2.py": "73aa915408be2d1641922fbbeb4047e135313ad257cdb7087a9545ccfe250b79",
+      "tools/sycl/cpu_roofline.py": "7f1ec28fa1537f6a860165e152b53f07fae3a9828cf2c119cb9bfabfcf19e161",
+      "tools/sycl/cpu_work_census.py": "37038e04a8192ca3d3e1a8a1790a65db22110737630a30be43db64899ee3d1c6",
+      "tools/sycl/generation_compare.py": "89eca5bc23bc7b45bbe441490ff2e7c324edf37cc002673118ce5ea9dd9bc4df",
+      "tools/sycl/generation_engine.py": "5986d8bda1e4d71ef64d8dd25a7f2e3781fd684466096b863b3fdb4a54cc689e",
+      "tools/sycl/iq2_pair_model.py": "618c3d8c6680ed2dcc3834c9aa6cbf9a67f97c4fc8c78fcdd5e5c83c583e0769",
+      "tools/sycl/measurement_environment.json": "d4402591df50e80dc45a5ec9e4839c7a794888850b1473537b6f95179be5b03c",
+      "tools/sycl/measurement_guards.py": "794e332c70aca0acadad4f26d0414548e023a02fd27b72ed78fc773674423ec8",
+      "tools/sycl/measurement_owner.py": "bddd0c5e5020e882ca3404679420faec11e820dabce2ed4c72ef82b4c9c0874a",
+      "tools/sycl/mtp_model_observer.py": "d08adf85cd4f644ec651ba6b598d7f431930aa6c8dbb6e7a08b941b2bf1ceeff",
+      "tools/sycl/packed_bank.py": "eee4e623697a2bf935339fddd51fc437359e0412dbfc1a903a46691aacc0235f",
+      "tools/sycl/query_profile.py": "7136a71790d412394fc1ae345af03efb6eaffa09065c49a3b4cffb10a21477d8",
+      "tools/sycl/resource_engine.py": "7ec369dfb1a908db55a5501a02a4e37b50522a6376e348c2ad1917f29b2b0446",
+      "tools/sycl/unitrace_profile.py": "c87c9934f3ee2b5fa6e1dbcfa05689bb5f9a8c6cf178e23c716a4e3cb7c7cf27"
+    },
+    "plan": {
+      "question": "Does indexing names preserve the actual PTI integer aggregation and remove its quadratic name lookup work?",
+      "provenance": "Original MIT Intel PTI4b6d742 method and proposed method extracted unchanged into the same own C++ harness; no LevelZero,SYCL,device or inference linked.",
+      "correctness": "80 cases over0/1/17/257/513 rows,colliding/unique names,verbose on/off,tiles/groups/memory,comma/quote names and unsigned overflow. Compare every surviving representative key,order and all6 fields; repeat aggregation for idempotence. Controlled naming stub is not production naming or its locks/demangling.",
+      "performance": "N2048 all-unique names: reference must call namingN(N+1)/2,candidateN. One unmeasured warm pair,then7 pairs alternating reference,candidate and candidate,reference; allocation/reset outside clocks. Every batch>=100us and>=1000 times the minimum positive128-pair clock calibration. Require every candidate/reference wall ratio<0.10 and median<0.05. Keep all7 samples; no speed-based stopping,retries or replacements.",
+      "limits": "CPU-only mechanism proxy,not actual collector shutdown,model-stage service,observer overhead or inference throughput. Next require actual collector build and4/10 graph/kernel/owner/fault qualification before another model plan.",
+      "retention": "Keep source/recipe/individual7 samples/equivalence and lookup counts. Retire successful compiler/test logs and this small host fixture after actual collector qualification; keep the original current collector and graph fixture unchanged. No new model generation."
+    },
+    "environment": {
+      "PATH": "/usr/bin:/bin",
+      "LANG": "C",
+      "LC_ALL": "C",
+      "PYTHONDONTWRITEBYTECODE": "1",
+      "TMPDIR": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/unitrace-aggregation-host-v1/tmp"
+    },
+    "command": [
+      "/usr/bin/g++",
+      "-std=c++17",
+      "-O2",
+      "-DNDEBUG",
+      "-Wall",
+      "-Wextra",
+      "-Werror",
+      "-I",
+      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/unitrace-aggregation-host-v1",
+      "/home/yayoi/orca/workspaces/Strata/sycl/bench/sycl/collector_aggregation.cpp",
+      "-o",
+      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/unitrace-aggregation-host-v1/aggregation_fixture"
+    ],
+    "complete": false,
+    "passed": false,
+    "active": false,
+    "ownership_closed": true,
+    "retained_engine": {
+      "source_commit": "6e40afc1beddd059ee518617f6c1efce1da14aca",
+      "binary": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/strata",
+        "bytes": 22190000,
+        "sha256": "22182f1a5e62e5f4259ce49a75ae44afbd988166ec79324816e499ff37ef60e4"
+      },
+      "inputs_recovered": 9853,
+      "required_artifacts": 13
+    },
+    "legacy_provenance_review": {
+      "reference": "bench/results/2026-10-15-pr6-recovery-audit/native-gdn-engine-build.json",
+      "unchanged": true,
+      "review_sha256": "f1e578bb4919e37dc024b57fa9845df4b733cb796b39e1d8d3a3fb3bb04696da",
+      "action": "No legacy generation overwritten or used as reference. Primary257/262 pins and PR6 final dependency/generated-command/ownership joins remain held explicitly; no new engine build."
+    },
+    "official_header_sha256": "a28f6564ac1318c73dc36d4ad31d1929516d0b6f2710bfb3ff5327f3da38e834",
+    "proposed_full_header_sha256": "be3341167402c89e8ecd9e141f0432fd3cc97a3a1de56572b51171c3a333640c",
+    "budgets": {
+      "compile_wall_s": 120,
+      "check_wall_s": 90,
+      "cpu_s": 120,
+      "rss_bytes": 2147483648,
+      "text_bytes": 2097152,
+      "file_bytes": 4194304,
+      "total_bytes": 16777216
+    },
+    "compiler_inputs": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/unitrace-aggregation-host-v1/compiler-inputs.json",
+      "files": 235,
+      "sha256": "c63eee261ab31fbed98a68e4242102330ff8b08cdcb77b92aef2083fd3fec073"
+    },
+    "generated": [
+      {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/unitrace-aggregation-host-v1/aggregate-original.inc",
+        "sha256": "bd2297edab2712144f6c7e76f61dfd1f797ffdf0d9e3eb28b96fc1efafc119df"
+      },
+      {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/unitrace-aggregation-host-v1/aggregate-candidate.inc",
+        "sha256": "ed519d42448731eaecc991e2e0449ffac755e95092b16a7d2c3a0144bd1320ff"
+      }
+    ]
   }
 }
