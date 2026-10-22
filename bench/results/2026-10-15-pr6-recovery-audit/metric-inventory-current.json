@@ -1,5 +1,5 @@
 {
-  "stage": "built",
+  "stage": "closed",
   "source_commit": "bef98679489677ad7106d44287cc2f08ddd362b2",
   "inputs": {
     "bench/sycl/metric_inventory.cpp": "0af141d3857863035703f0dad6653c392d7a1953028c8290fe7d7bb41e2d6317",
@@ -195,7 +195,310 @@
   "active": false,
   "ownership_closed": true,
   "inference_unchanged": true,
-  "observations": [],
+  "observations": [
+    {
+      "name": "device",
+      "exit_code": 0,
+      "owner_closed": true,
+      "summary": {
+        "kind": "summary",
+        "status": "success",
+        "complete": true,
+        "groups": 0,
+        "metrics": 0,
+        "GPU_commands": 0
+      },
+      "API_calls": 6,
+      "API_failures": [],
+      "mapped_ELFs": [
+        "/usr/lib/x86_64-linux-gnu/ld-linux-x86-64.so.2",
+        "/usr/lib/x86_64-linux-gnu/libc.so.6",
+        "/usr/lib/x86_64-linux-gnu/libdrm.so.2.134.0",
+        "/usr/lib/x86_64-linux-gnu/libgcc_s.so.1",
+        "/usr/lib/x86_64-linux-gnu/libigdgmm.so.12.10.0",
+        "/usr/lib/x86_64-linux-gnu/libigdml.so.1.0.231",
+        "/usr/lib/x86_64-linux-gnu/libm.so.6",
+        "/usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.33",
+        "/usr/lib/x86_64-linux-gnu/libz.so.1.3",
+        "/usr/lib/x86_64-linux-gnu/libze_intel_gpu.so.1.17.39395",
+        "/usr/lib/x86_64-linux-gnu/libze_loader.so.1.32.0",
+        "/usr/lib/x86_64-linux-gnu/libze_tracing_layer.so.1.32.0",
+        "/usr/lib/x86_64-linux-gnu/libze_validation_layer.so.1.32.0",
+        "/usr/lib/x86_64-linux-gnu/libzstd.so.1.5.5",
+        "/usr/local/lib/libigc.so.2.41.5+1788943183",
+        "/usr/local/lib/libigdfcl.so.2.41.5+1788943183",
+        "/usr/local/lib/libopencl-clang2.so.22.1"
+      ],
+      "groups": [],
+      "metric_members": 0,
+      "stdout": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/b570-metric-inventory-v1/run/owned/device.stdout",
+        "sha256": "90d7350dd925ba03ffadcde6c6a004d26c40be6000a4ae681bb85e24ae23a00a",
+        "bytes": 1786
+      },
+      "stderr_sha256": "e7e0825aade568333ab94d1ab9801e6a482288dfa53fa123a3f74e57545a8b64"
+    },
+    {
+      "name": "metrics",
+      "exit_code": 0,
+      "owner_closed": true,
+      "summary": {
+        "kind": "summary",
+        "status": "success",
+        "complete": true,
+        "groups": 24,
+        "metrics": 1414,
+        "GPU_commands": 0
+      },
+      "API_calls": 1494,
+      "API_failures": [],
+      "mapped_ELFs": [
+        "/usr/lib/x86_64-linux-gnu/ld-linux-x86-64.so.2",
+        "/usr/lib/x86_64-linux-gnu/libc.so.6",
+        "/usr/lib/x86_64-linux-gnu/libdrm.so.2.134.0",
+        "/usr/lib/x86_64-linux-gnu/libgcc_s.so.1",
+        "/usr/lib/x86_64-linux-gnu/libigdgmm.so.12.10.0",
+        "/usr/lib/x86_64-linux-gnu/libigdmd.so.1.16.188",
+        "/usr/lib/x86_64-linux-gnu/libigdml.so.1.0.231",
+        "/usr/lib/x86_64-linux-gnu/libm.so.6",
+        "/usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.33",
+        "/usr/lib/x86_64-linux-gnu/libz.so.1.3",
+        "/usr/lib/x86_64-linux-gnu/libze_intel_gpu.so.1.17.39395",
+        "/usr/lib/x86_64-linux-gnu/libze_loader.so.1.32.0",
+        "/usr/lib/x86_64-linux-gnu/libze_tracing_layer.so.1.32.0",
+        "/usr/lib/x86_64-linux-gnu/libze_validation_layer.so.1.32.0",
+        "/usr/lib/x86_64-linux-gnu/libzstd.so.1.5.5",
+        "/usr/local/lib/libigc.so.2.41.5+1788943183",
+        "/usr/local/lib/libigdfcl.so.2.41.5+1788943183",
+        "/usr/local/lib/libopencl-clang2.so.22.1"
+      ],
+      "groups": [
+        {
+          "kind": "group",
+          "group": 0,
+          "name": "RenderBasic",
+          "description": "RenderBasic",
+          "domain": 3,
+          "sampling": 2,
+          "metrics": 78
+        },
+        {
+          "kind": "group",
+          "group": 1,
+          "name": "RenderBasic",
+          "description": "RenderBasic",
+          "domain": 3,
+          "sampling": 1,
+          "metrics": 92
+        },
+        {
+          "kind": "group",
+          "group": 2,
+          "name": "ComputeBasic",
+          "description": "ComputeBasic",
+          "domain": 3,
+          "sampling": 2,
+          "metrics": 69
+        },
+        {
+          "kind": "group",
+          "group": 3,
+          "name": "ComputeBasic",
+          "description": "ComputeBasic",
+          "domain": 3,
+          "sampling": 1,
+          "metrics": 83
+        },
+        {
+          "kind": "group",
+          "group": 4,
+          "name": "DepthProfile",
+          "description": "DepthProfile",
+          "domain": 3,
+          "sampling": 2,
+          "metrics": 35
+        },
+        {
+          "kind": "group",
+          "group": 5,
+          "name": "DepthProfile",
+          "description": "DepthProfile",
+          "domain": 3,
+          "sampling": 1,
+          "metrics": 49
+        },
+        {
+          "kind": "group",
+          "group": 6,
+          "name": "DeviceCacheProfile",
+          "description": "DeviceCacheProfile",
+          "domain": 3,
+          "sampling": 2,
+          "metrics": 44
+        },
+        {
+          "kind": "group",
+          "group": 7,
+          "name": "DeviceCacheProfile",
+          "description": "DeviceCacheProfile",
+          "domain": 3,
+          "sampling": 1,
+          "metrics": 58
+        },
+        {
+          "kind": "group",
+          "group": 8,
+          "name": "MemoryProfile",
+          "description": "MemoryProfile",
+          "domain": 3,
+          "sampling": 2,
+          "metrics": 69
+        },
+        {
+          "kind": "group",
+          "group": 9,
+          "name": "MemoryProfile",
+          "description": "MemoryProfile",
+          "domain": 3,
+          "sampling": 1,
+          "metrics": 83
+        },
+        {
+          "kind": "group",
+          "group": 10,
+          "name": "RenderPipeProfile",
+          "description": "RenderPipeProfile",
+          "domain": 3,
+          "sampling": 2,
+          "metrics": 54
+        },
+        {
+          "kind": "group",
+          "group": 11,
+          "name": "RenderPipeProfile",
+          "description": "RenderPipeProfile",
+          "domain": 3,
+          "sampling": 1,
+          "metrics": 68
+        },
+        {
+          "kind": "group",
+          "group": 12,
+          "name": "RTProfile",
+          "description": "RTProfile",
+          "domain": 3,
+          "sampling": 2,
+          "metrics": 45
+        },
+        {
+          "kind": "group",
+          "group": 13,
+          "name": "RTProfile",
+          "description": "RTProfile",
+          "domain": 3,
+          "sampling": 1,
+          "metrics": 59
+        },
+        {
+          "kind": "group",
+          "group": 14,
+          "name": "VectorEngineProfile",
+          "description": "VectorEngineProfile",
+          "domain": 3,
+          "sampling": 2,
+          "metrics": 68
+        },
+        {
+          "kind": "group",
+          "group": 15,
+          "name": "VectorEngineProfile",
+          "description": "VectorEngineProfile",
+          "domain": 3,
+          "sampling": 1,
+          "metrics": 82
+        },
+        {
+          "kind": "group",
+          "group": 16,
+          "name": "VectorEngineStalls",
+          "description": "VectorEngineStalls",
+          "domain": 3,
+          "sampling": 2,
+          "metrics": 40
+        },
+        {
+          "kind": "group",
+          "group": 17,
+          "name": "VectorEngineStalls",
+          "description": "VectorEngineStalls",
+          "domain": 3,
+          "sampling": 1,
+          "metrics": 54
+        },
+        {
+          "kind": "group",
+          "group": 18,
+          "name": "XvePipelineRasterizationProfile",
+          "description": "XvePipelineRasterizationProfile",
+          "domain": 3,
+          "sampling": 2,
+          "metrics": 41
+        },
+        {
+          "kind": "group",
+          "group": 19,
+          "name": "XvePipelineRasterizationProfile",
+          "description": "XvePipelineRasterizationProfile",
+          "domain": 3,
+          "sampling": 1,
+          "metrics": 55
+        },
+        {
+          "kind": "group",
+          "group": 20,
+          "name": "XvePipelineRaytracingProfile",
+          "description": "XvePipelineRaytracingProfile",
+          "domain": 3,
+          "sampling": 2,
+          "metrics": 41
+        },
+        {
+          "kind": "group",
+          "group": 21,
+          "name": "XvePipelineRaytracingProfile",
+          "description": "XvePipelineRaytracingProfile",
+          "domain": 3,
+          "sampling": 1,
+          "metrics": 55
+        },
+        {
+          "kind": "group",
+          "group": 22,
+          "name": "TestOa",
+          "description": "TestOa",
+          "domain": 3,
+          "sampling": 2,
+          "metrics": 39
+        },
+        {
+          "kind": "group",
+          "group": 23,
+          "name": "TestOa",
+          "description": "TestOa",
+          "domain": 3,
+          "sampling": 1,
+          "metrics": 53
+        }
+      ],
+      "metric_members": 1414,
+      "stdout": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/b570-metric-inventory-v1/run/owned/metrics.stdout",
+        "sha256": "50160ac42c10cd1bb621c3274b8daf0024fa0426b19595906b4e6a29f7f852e8",
+        "bytes": 504256
+      },
+      "stderr_sha256": "6f41937ab448760cb9b29d20c7342482044c7cd6fa085f573da00ab7bbf30c00"
+    }
+  ],
   "binary": {
     "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/b570-metric-inventory-v1/inventory",
     "bytes": 31336,
@@ -210,5 +513,6 @@
     "kernel": "7.0.0-38-generic",
     "devcoredump": false
   },
-  "boot_unchanged": true
+  "boot_unchanged": true,
+  "metric_enumeration_succeeded": true
 }
