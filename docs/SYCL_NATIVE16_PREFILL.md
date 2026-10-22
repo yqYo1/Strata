@@ -341,9 +341,11 @@ route. All13 compiler/link/IR commands completed, but the original build gate
 failed before GPU execution: it required zero64-bit divisions in the entire
 module. Page4 eliminates the three variable page-size divisions; a preexisting
 signed workgroup-ID division by constant2 remains in both arms. Preserve that
-failure. A separately committed closed-IR reanalysis must verify this exact
-distinction and unchanged source/recipe/binary inputs before any GPU test;
-it cannot relabel the original gate or establish final ISA cost. Preserve
+failure. Separately committed closed-IR reanalysis verifies this exact
+distinction, both kernels, all13 normally closed compiler commands and unchanged
+source/recipe/dependency/binary inputs. It qualifies those compiled bytes for
+the next small test; it does not relabel the original gate or establish final
+ISA cost. Preserve
 numerical order and the exact selected decode
 implementation/configuration/1256-slot placement. The instruction-fetch methods
 report remains a retrieval-only reference, without a new generic research task.

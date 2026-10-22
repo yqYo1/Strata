@@ -563,5 +563,69 @@
       "i64_divisions": 1
     }
   },
-  "error": "RuntimeError('planned constant-divisor frontend transformation not established')"
+  "error": "RuntimeError('planned constant-divisor frontend transformation not established')",
+  "compiled_artifact_qualification": {
+    "source_commit": "00b1ab369317ecd69c7bd5fd56eedd711e45581b",
+    "controller_sha256": "7463b32bdee067486f066f456528760499f43ae413bd7a073d244b4ce1be57c6",
+    "passed": true,
+    "complete": true,
+    "original_failure_preserved": true,
+    "IR_analysis": {
+      "control": {
+        "kernels": 2,
+        "rows": [
+          {
+            "operation": "udiv",
+            "dividend": "%27",
+            "divisor": "%29",
+            "variable": true
+          },
+          {
+            "operation": "udiv",
+            "dividend": "%27",
+            "divisor": "%31",
+            "variable": true
+          },
+          {
+            "operation": "sdiv",
+            "dividend": "%52",
+            "divisor": "2",
+            "variable": false
+          },
+          {
+            "operation": "sdiv",
+            "dividend": "%216",
+            "divisor": "%217",
+            "variable": true
+          }
+        ],
+        "variable_divisors": 3,
+        "constants": [
+          [
+            "sdiv",
+            "2"
+          ]
+        ]
+      },
+      "page4": {
+        "kernels": 2,
+        "rows": [
+          {
+            "operation": "sdiv",
+            "dividend": "%49",
+            "divisor": "2",
+            "variable": false
+          }
+        ],
+        "variable_divisors": 0,
+        "constants": [
+          [
+            "sdiv",
+            "2"
+          ]
+        ]
+      }
+    },
+    "scope": "Frozen source/recipe/dependencies/finalbinary identities and all13normallyclosed compiler commands;three variable page-size i64divisors removed. Original whole-modulezero-divisor gate remainsfailed. Constant workgroupID/2 remainsinbotharms. No native rerun,recompilation,GPU validation,finalISA orspeed/model qualification."
+  }
 }
