@@ -90,6 +90,9 @@ def prepare():
     audit = prior['source_audit']
     guards.require(audit['review_complete'] and audit['prebuild_findings_resolved'],
         'record the independently reviewed source/coverage gates before preparing build')
+    closed = gen.committed(gen.A / 'qsa-codegen-current.json')
+    guards.require(closed['retirement']['complete'] and not (B / 'qsa-codegen-allocation-v1').exists(),
+        'retire the consumed auxiliary generation before another comparison build')
     revision = gen.git('rev-parse', 'HEAD').decode().strip()
     pins = inputs(revision)
     for name, body in proposal.generated(P).items():
@@ -127,6 +130,15 @@ def prepare():
         commands.append([compiler['path'], *flags, '-fsycl-device-only', '-S', '-emit-llvm',
             str(ROOT / (name + '.cpp')), '-o', str(ROOT / (name + '.ll'))])
     install = Path(compiler['path']).parents[1]
+    legacy = gen.committed(gen.A / 'native-gdn-engine-build.json')['legacy_provenance_exception']['additional_old_product_review']
+    holds = []
+    for row in legacy['bounded_review_roots']:
+        path = B / row['root']
+        products = [f for f in path.rglob('*') if f.is_file()
+            and (f.suffix in ('.o', '.a') or f.name in ('strata', 'pr6_prefill_api'))]
+        holds.append(dict(path=str(path), exists=path.exists(), selected_files=len(products),
+            selected_bytes=sum(f.stat().st_size for f in products), next_action=row['next_action'],
+            full_final_source_proof=False))
     record = dict(prior, stage='prepared', source_commit=revision, inputs=pins,
         retained_engine=full['binary'], native_qualification=proof, compiler=compiler,
         compiler_inputs=dict(path=str(manifest), sha256=sha(manifest), files=len(paths)), commands=commands,
@@ -135,6 +147,10 @@ def prepare():
         build_budgets=dict(wall_s=1800, per_command_wall_s=420, cpu_s=900, rss_bytes=12 << 30,
             text_bytes=8 << 20, file_bytes=512 << 20, total_bytes=1 << 30),
         build_status='Prepared13-command recipe; commit exact inputs/plan before build.', passed=False, complete=False)
+    record['retained_generations_review'] = dict(selected_engine_and_same_build_fixtures=13,
+        previous_auxiliary_root_absent=True, new_auxiliary_consumer='Immediate fixed-head numerical/codegen/clean comparison only; retire at closure.',
+        separate_legacy_holds=holds, hold_inventory_scope='Actual .o/.a, strata and pr6_prefill_api paths in the two named legacy roots; not validated generations.',
+        separate_ownership_holds='Six older Orca lifecycle holds remain unchanged in research-index.json; no evidence here closes them.')
     admission(record)
     write(ROOT / 'build-plan.json', record)
     write(RESULT, record)
