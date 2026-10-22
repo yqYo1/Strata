@@ -316,6 +316,11 @@ and per-process gates. No model trial or inference integration follows. The
 fixtures usePage16 and artificial locality, not production's Page4 distribution;
 physical-context model/session/RESTORE remains unqualified. See the
 [compact result](../bench/results/2026-10-15-pr6-recovery-audit/qsa-unroll-current.json).
+After original source/recipe recovery from pushed Git and consumer/owner checks,
+the four unused probe source/controller files and83 generated/transaction files
+(9877721 bytes) were retired. All13 selected native assets were hash-checked
+before and after retirement. Restore the rejected source only for a concrete
+comparison; the individual samples remain committed once.
 
 The next source-specific hypothesis is validatedPage4 logical-address
 specialization with the original generic fallback. Existing device IR retains
