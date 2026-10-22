@@ -36,12 +36,13 @@ int main(int argc, char** argv) {
   const int status = qsa_fixed_heads_reference_main(2, argv);
   const auto routes = strata::kernels::fixed_heads::route_counts();
   if (!status) {
-    // Includes the zero-query refusal's wrapper call, which must submit no GPU work.
+    // Includes the zero-query no-op's wrapper call, which must submit no GPU work.
     // There is no page-specific fallback in this candidate.
     if (index == 2) require(routes[0] > 0 && routes[1] == 0, "fixed-head numerical route");
     else require(routes[0] == 0 && routes[1] == 0, "control numerical route");
     std::cout << "fixed_heads_routes page=" << qsa_page_fixture_page
               << " fast=" << routes[0] << " generic=" << routes[1] << " status=PASS\n";
+    std::cout << "fixed_heads_scope real_output_oracle=selected_arm padded_state=source_mapping_only\n";
   }
   return status;
 }

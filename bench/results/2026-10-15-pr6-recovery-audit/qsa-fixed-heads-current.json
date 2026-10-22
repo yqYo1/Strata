@@ -53,5 +53,22 @@
   "active": false,
   "ownership_closed": true,
   "GPU_executed": false,
-  "model_adoption_qualified": false
+  "model_adoption_qualified": false,
+  "source_audit": {
+    "review_complete": true,
+    "prebuild_findings_resolved": true,
+    "report_sha256": "f8caeaf987f01adeb4938e6e776bd2d963be03bac1d168257497d9b90bb3cadb",
+    "native_review_sha256": "a7d24f6f388f4932ecfcfff430ac9d226dae7236ed82168697e344c2f9f71bd8",
+    "review_model": "native gpt-6-luna max",
+    "contract": "WG128/requiredSG16 yields8subgroups; both old andnew loops visit s,s+8 inthatorder. Originalpadding/FP32/BF16/collectives/barriers/paging unchanged; noengine/decode edit.",
+    "material_finding": "The generated numerical-reference.inc alone callsproduction. A committed maintained harness nowmacro-routes all qsa_bf16_prefix_batch invocations to explicitly selected default/control/fixed_heads,including bounds/refusals andzeroquerynoop; all4pages requirefreshactualroute andexecutedkernel proof. No numerical candidatecoverageisclaimedbeforeexecution.",
+    "resolution_source": "bench/sycl/qsa_fixed_heads_numerical.cpp (initialwiring5a9131684;scope/zeroquerycomment correctedbeforebuild)",
+    "qualification_requirements": [
+      "Fresh6traced numerical smallprocesses:3arms timesPage4/7,then3arms timesPage1/4/7/16 full11cases. Candidatewrapperroutes34/0 small and52/0 full,controls0/0,includingzeroquerynoop withnoGPUsubmission. Actualcandidatekernelname/calls mustmatch; hostcounts aloneare insufficient.",
+      "PreservePage1poisonprewritecheckedmapping/extentfix,duplicate/alias/firstlaterKVdiagnostics,independenttensor/exactrealoutputbits/guards/immutableinput andphysical262144 fixtureextent. Currentnonfinite setisNaNquery and+InfKVscales,not-Inf. Paddedinternalstatehas sourceequivalence only,no candidatecaptureclaim.",
+      "No modeladvancement until numerical/resource/faultclosure andpredeclared162clean-sample latencygate pass. Source/fixtureextent doesnotqualifyfull262144model/session/RESTORE ordecodepreservation."
+    ],
+    "source_constructed": true,
+    "execution_qualified": false
+  }
 }
