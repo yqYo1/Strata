@@ -266,6 +266,22 @@ required for any future prefill change.
 The original footer-read, paused-capture and older graph host-sink failures remain
 failed. See the [profiler coverage decision](../bench/results/2026-10-15-pr6-recovery-audit/cpu-profiler-current.json).
 
+The isolated current-QSA GRF comparison is closed and rejected. Source`b4beb8d53`
+kept the selected ordered-exp arithmetic and lifetimes unchanged: the default
+and explicit128-GRF controls both report spill allocation12480, while explicit256
+reports0. All three arms passed the two-case traced smoke and11-case independent
+tensor-oracle/component checks, including physical262144 addressing. Three clean
+processes supplied162 timing samples. Explicit256/default latency ratios were
+1.081840/1.094925/1.024861 for32768 gathered and117488 gathered/clustered pools;
+the geometric mean1.066770 is slower and fails the prospective0.95 gate.
+The explicit128 control gives the same decision. Removing a spill descriptor
+does not establish a throughput gain; occupancy and physical traffic remain
+unmeasured. There is no model trial or inference integration. The exact6e40
+prefill/decode package and1256-slot decode placement remain selected. Closed
+experiment helpers are recoverable from their source/plan commits rather than
+kept as unused active code; the [compact result](../bench/results/2026-10-15-pr6-recovery-audit/qsa-grf-current.json)
+retains all individual clean samples and the retirement decision.
+
 Remaining model gates are repeated phase-preserving adoption evidence,
 agent-session and task quality, full physical262144 tokens including the final
 slots and tail boundaries, prefill-to-decode/session/RESTORE, and70tok/s decode.
