@@ -325,9 +325,19 @@ comparison; the individual samples remain committed once.
 The next source-specific hypothesis is validatedPage4 logical-address
 specialization with the original generic fallback. Existing device IR retains
 runtime64-bit division, but neither final-ISA cost nor a limiting resource is
-proved. A future component must genuinely exercisePage4, including negative,
-missing,overflow/tail and final262144 boundaries; the oldPage16 case cannot
-qualify that fast path. Preserve numerical order and the exact selected decode
+proved. The isolated Main-authored component replaces page-size expressions
+with64-bit constant4 only behind the original caller's Page4 guard; non4 shapes
+return to the original generic wrapper. It preserves all arithmetic widths,
+checked sizing, logical scratch mapping and tensor math. Component-only host
+counters prove the selected route and are included in candidate wrapper timing.
+Smoke covers pages4/7; full cases cover1/4/7/16, including INT_MIN/MAX, missing,
+duplicate, page-boundary and actualPage4 final262144/tail positions. The oldPage16
+case cannot qualify this fast path. Commit source/generated plan before building
+with`build_qsa_page4.py`; `check_qsa_page4.py` gates smoke/component/resources
+before the Page4 three-process162-sample comparison. Require both latency
+geomeans<=0.95,no shape>1.05 and both large patterns improving against both
+controls in every process. This is unqualified component work, not a model
+route. Preserve numerical order and the exact selected decode
 implementation/configuration/1256-slot placement. The instruction-fetch methods
 report remains a retrieval-only reference, without a new generic research task.
 
