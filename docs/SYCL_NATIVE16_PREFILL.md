@@ -216,7 +216,8 @@ uses each of the seven observed format pairs and its NT1..4 marginal histogram,
 rounded into100 batches at6 and28 unique experts. It compares one computing
 worker with five workers plus the host,and repeated groups with at least128MiB
 of rotating weights. All loaded distinct experts must match serial production
-math at NT1..4,with inactive lanes and canaries checked,before timing. Each of
+math at uniform NT1..4 and heterogeneous-NT batches at the timed group size,
+with inactive lanes and canaries checked,before timing. Each of
 the56 expert cells retains five samples of at least one second;two read-only
 reference cells remain achieved rates rather than hardware upper bounds. This
 is an approximation of the measured marginal work,not a model trace or model

@@ -17,11 +17,13 @@ import measurement_owner as owner
 import query_profile as q
 
 P,B,A=gen.P,gen.B,gen.A
-ROOT=B/'cpu-decode-mix-v1'
+ROOT=B/'cpu-decode-mix-v2'
 PLAN=A/'cpu-roofline-plan.json'
 RESULT=A/'cpu-roofline-current.json'
 RESOURCE=A/'client-resources-current.json'
-PREFIXES=(*base.PREFIXES,'bench/sycl/cpu_decode_mix','tools/sycl/cpu_decode_mix.py','tests/core/test_cpu_decode_mix.py')
+# Pin the complete admission/helper module directory as well as CPU sources.
+# A later helper edit must not silently change the frozen calibration.
+PREFIXES=(*base.PREFIXES,'bench/sycl/cpu_decode_mix','tools/sycl','tests/core/test_cpu_decode_mix.py')
 
 
 def write(path,value):path.write_text(json.dumps(value,indent=2)+'\n')
@@ -47,15 +49,19 @@ def environment():
 
 
 def previous_fixture_retired(old):
-    # This older committed receipt predates the later `complete` retention key.
-    # Verify its actual deletion manifest and executable,never rewrite the receipt.
+    # Legacy single-binary receipts predate the `complete` retention key.
+    # Verify every executable against the actual manifest,never rewrite receipts.
     retired=old['artifact_retirement']
     guards.require(retired['original_recipes_recovered'] and
         base.digest(retired['manifest'])==retired['manifest_sha256'],'original calibration retirement evidence differs')
     rows=[json.loads(s) for s in Path(retired['manifest']).read_text().splitlines()]
-    matched=[r for r in rows if r['path']==old['binary']['path']]
-    guards.require(len(matched)==1 and matched[0]['sha256']==old['binary']['sha256'] and
-        not Path(old['binary']['path']).exists(),'original calibration executable not retired')
+    binaries=list(old['binaries'].values()) if 'binaries' in old else [old['binary']]
+    guards.require(binaries and len({b['path'] for b in binaries})==len(binaries),
+        'original calibration executable identities missing or duplicated')
+    for binary in binaries:
+        matched=[r for r in rows if r['path']==binary['path']]
+        guards.require(len(matched)==1 and matched[0]['sha256']==binary['sha256'] and
+            not Path(binary['path']).exists(),'original calibration executable not retired')
 
 
 def prepare():
@@ -78,7 +84,7 @@ def prepare():
         '-G','Ninja','-DCMAKE_BUILD_TYPE=Release','-DCMAKE_EXPORT_COMPILE_COMMANDS=ON',
         '-DCMAKE_C_COMPILER='+str(base.LLVM/'bin/clang'),
         '-DCMAKE_CXX_COMPILER='+str(base.LLVM/'bin/clang++'),'-DSTRATA_GGML_DIR='+str(base.GGML)]
-    plan=dict(schema='strata-cpu-decode-mix-v1',source=base.source_pin(P,revision,PREFIXES),
+    plan=dict(schema='strata-cpu-decode-mix-v2',source=base.source_pin(P,revision,PREFIXES),
         ggml=base.source_pin(base.GGML,base.GGML_REV,('ggml',)),qualification=proof,
         environment=environment(),machine=base.machine(),formats=rows,order=order,
         tools={str(Path(p).resolve()):base.digest(p) for p in
@@ -95,7 +101,7 @@ def prepare():
             reuse='Reuse the same distinct group of6 or28 real expert blobs.28-expert weights may exceed32MiB L3;do not label it cache-resident.',
             stream='Rotate distinct groups through at least128MiB. A pass has100 batches and may revisit the extent;requested blob visits are not physical RAM traffic.',
             scan='Existing read-only256MiB checksum fixture,persistent1/6 threads,five>=1s samples. An achieved read reference,not an arithmetic or DRAM upper bound.',
-            validation='Each loaded distinct expert at NT1..4:production pool bit-exact to serial production GU/quant/down,finite outputs,untouched inactive NT lanes,external canaries. Real distinct blobs detect job permutations. This is route consistency,not independent model/task validation.',
+            validation='Each loaded distinct expert at uniform NT1..4 and a heterogeneous-NT batch at the timed group size:production pool bit-exact to serial production GU/quant/down,finite outputs,untouched inactive NT lanes,external canaries. Mixed groups force NT1..4 coverage. Real distinct blobs detect job permutations. This is route consistency,not independent model/task validation.',
             observers='Native IQ2 pairing1,SINGLE_EXACT0,IQ2 audit0;fixed before process startup. Existing production pool subphase clocks only. No extra per-callback/thread clocks,no GPU runtime.',
             gates='All28 check children before measure. All56 expert cells and2 read cells with five individual eligible samples,actual placement/work/histogram conservation,normal ownership closure. Stop at first failure or budget,no sample replacement/retry.',
             interpretation='6/28 batches and reuse/stream change scheduling,cache and work together;thread scaling includes main quantization and waiting. Sensitivity may guide a later optimization;it does not establish arithmetic/RAM saturation,physical traffic,clean model speed or70tok/s.',
@@ -111,7 +117,7 @@ def prepare():
 
 def load():
     plan=gen.committed(PLAN)
-    guards.require(plan['schema']=='strata-cpu-decode-mix-v1' and
+    guards.require(plan['schema']=='strata-cpu-decode-mix-v2' and
         base.source_pin(P,plan['source']['revision'],PREFIXES)==plan['source'] and
         base.source_pin(base.GGML,base.GGML_REV,('ggml',))==plan['ggml'] and
         environment()==plan['environment'] and base.machine()==plan['machine'],'source/environment/platform drift')
@@ -157,7 +163,7 @@ def parse(lines,row,workers,group,stage):
     guards.require(work==[dict(kind='work',workers=workers,host_works=workers==5,group=group,batches=100,
         unique_stream_experts=count,blob_bytes=row['blob_bytes'],jobs_NT=expected_histogram(row['observed_jobs_NT'],group),phase='decode')],
         'actual calibration work/dispatch differs')
-    want=dict(kind='validation',distinct_experts=count,NT_mask=30,pool_serial_bits_equal=True,
+    want=dict(kind='validation',distinct_experts=count,NT_mask=30,pool_serial_bits_equal=True,mixed_NT_bits_equal=True,
         inactive_outputs_untouched=True,canaries=True)
     guards.require(valid==[want]*(3 if stage=='measure' else 1),'numerical/guard checks incomplete')
     samples=[r for r in lines if r['kind']=='sample'];timers=[r for r in lines if r['kind']=='timer']

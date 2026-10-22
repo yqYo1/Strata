@@ -144,21 +144,35 @@ struct Work {
         // Exercise every loaded expert with every NT, outside timed work. Unlike
         // identical blobs, distinct model experts detect job/index permutations.
         std::array<float,4*cpu::H> want{};
+        auto reset=[&](int e){
+            auto* words=reinterpret_cast<uint32_t*>(outputs[e]->data());
+            std::fill(words,words+4*cpu::H,unused);
+        };
+        auto compare=[&](int e){
+            const int n=jobs[e].nt;
+            serial(jobs[e],want.data());
+            need(std::memcmp(want.data(),outputs[e]->data(),n*cpu::H*sizeof(float))==0,"pool/serial bits");
+            const auto* words=reinterpret_cast<const uint32_t*>(outputs[e]->data());
+            for(int i=n*cpu::H;i<4*cpu::H;++i)need(words[i]==unused,"inactive NT output written");
+            for(int i=0;i<n*cpu::H;++i)need(std::isfinite(want[i]),"nonfinite output");
+        };
         for(int n=1;n<=4;++n){
-            for(int e=0;e<count;++e){jobs[e].nt=n;
-                auto* words=reinterpret_cast<uint32_t*>(outputs[e]->data());
-                std::fill(words,words+4*cpu::H,unused);}
+            for(int e=0;e<count;++e){jobs[e].nt=n;reset(e);}
             pool.run_split_multi_native(fmt,jobs.data(),count,cpu::NativeGuPhase::Decode);
-            for(int e=0;e<count;++e){
-                serial(jobs[e],want.data());
-                need(std::memcmp(want.data(),outputs[e]->data(),n*cpu::H*sizeof(float))==0,"pool/serial bits");
-                const auto* words=reinterpret_cast<const uint32_t*>(outputs[e]->data());
-                for(int i=n*cpu::H;i<4*cpu::H;++i)need(words[i]==unused,"inactive NT output written");
-                for(int i=0;i<n*cpu::H;++i)need(std::isfinite(want[i]),"nonfinite output");
+            for(int e=0;e<count;++e)compare(e);
+        }
+        // Validate the same group size as timing with heterogeneous NTs. Force
+        // NT1..4 into each group so sparse marginal bins cannot omit coverage.
+        for(int offset=0;offset<count;offset+=group){
+            for(int e=0;e<group;++e){
+                jobs[offset+e].nt=e<4?e+1:nt[(offset+e)%nt.size()];
+                reset(offset+e);
             }
+            pool.run_split_multi_native(fmt,jobs.data()+offset,group,cpu::NativeGuPhase::Decode);
+            for(int e=0;e<group;++e)compare(offset+e);
         }
         for(auto& w:weights)w->check();for(auto& o:outputs)o->check();for(auto& a:activations)a->check();
-        std::cout<<"{\"kind\":\"validation\",\"distinct_experts\":"<<count<<",\"NT_mask\":30,\"pool_serial_bits_equal\":true,\"inactive_outputs_untouched\":true,\"canaries\":true}"<<std::endl;
+        std::cout<<"{\"kind\":\"validation\",\"distinct_experts\":"<<count<<",\"NT_mask\":30,\"pool_serial_bits_equal\":true,\"mixed_NT_bits_equal\":true,\"inactive_outputs_untouched\":true,\"canaries\":true}"<<std::endl;
     }
 };
 int main(int argc,char** argv) try {
