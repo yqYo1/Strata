@@ -28,7 +28,7 @@ def divisions(path):
 def proof(record):
     build.admission(record,True)
     build.guards.require(record['stage']=='failed' and record['passed'] is False and record['complete'] is False
-        and record['ownership_closed'] and not record['active'] and not record['GPU_executed']
+        and record['ownership_closed'] and not record['active']
         and record['error']=="RuntimeError('planned constant-divisor frontend transformation not established')",
         'preserve exact original pre-GPU failed gate')
     original=json.loads((build.ROOT/'build-record.json').read_text())
@@ -36,6 +36,7 @@ def proof(record):
         build.guards.require(original[key]==record[key],'original compiled record changed: '+key)
     commands=original['owned_commands']
     build.guards.require(len(commands)==len(record['commands'])==13 and original['ownership_closed'] and not original['active']
+        and not original['GPU_executed']
         and all(build.supervision.closed(command) and command['exit_code']==0 for command in commands),
         'all original compiler/link/IR commands must have normally succeeded')
     result={}
@@ -60,7 +61,8 @@ def admission(record):
 
 def main():
     record=build.gen.committed(build.RESULT)
-    build.guards.require(KEY not in record,'one separately scoped frozen-data reanalysis;no blind retry')
+    build.guards.require(KEY not in record and not record['GPU_executed'],
+        'one separately scoped frozen-data reanalysis before GPU execution;no blind retry')
     revision=build.gen.git('rev-parse','HEAD').decode().strip()
     raw=build.gen.git('show',revision+':tools/sycl/qualify_qsa_page4.py')
     build.guards.require(raw==Path(__file__).read_bytes(),'commit exact qualifier before reanalysis')
