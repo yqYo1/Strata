@@ -16,8 +16,8 @@ import unitrace_profile as tool
 import query_profile as q
 
 P,B,RESULT=tool.P,tool.B,tool.RESULT
-ROOT=B/'unitrace-aggregation-host-v1'
-KEY='unitrace_aggregation_host'
+ROOT=B/'unitrace-aggregation-host-v2'
+KEY='unitrace_aggregation_host_v2'
 CPP=P/'bench/sycl/collector_aggregation.cpp'
 INPUTS=('tools/sycl/check_collector_aggregation.py','tools/sycl/collector_aggregation.py',
         'bench/sycl/collector_aggregation.cpp',*tool.INPUTS)
@@ -51,7 +51,7 @@ def pins(revision):
 def plan():
     return dict(question='Does indexing names preserve the actual PTI integer aggregation and remove its quadratic name lookup work?',
         provenance='Original MIT Intel PTI4b6d742 method and proposed method extracted unchanged into the same own C++ harness; no LevelZero,SYCL,device or inference linked.',
-        correctness='80 cases over0/1/17/257/513 rows,colliding/unique names,verbose on/off,tiles/groups/memory,comma/quote names and unsigned overflow. Compare every surviving representative key,order and all6 fields; repeat aggregation for idempotence. Controlled naming stub is not production naming or its locks/demangling.',
+        correctness='80 cases=2 deterministic independent seeds*5 sizes(0/1/17/257/513)*2 uniqueness*2 overflow*2 verbose. Include tiles/groups/memory and comma/quote names. Compare every surviving representative key,order and all6 fields; repeat aggregation for idempotence. Controlled naming stub is not production naming or its locks/demangling.',
         performance='N2048 all-unique names: reference must call namingN(N+1)/2,candidateN. One unmeasured warm pair,then7 pairs alternating reference,candidate and candidate,reference; allocation/reset outside clocks. Every batch>=100us and>=1000 times the minimum positive128-pair clock calibration. Require every candidate/reference wall ratio<0.10 and median<0.05. Keep all7 samples; no speed-based stopping,retries or replacements.',
         limits='CPU-only mechanism proxy,not actual collector shutdown,model-stage service,observer overhead or inference throughput. Next require actual collector build and4/10 graph/kernel/owner/fault qualification before another model plan.',
         retention='Keep source/recipe/individual7 samples/equivalence and lookup counts. Retire successful compiler/test logs and this small host fixture after actual collector qualification; keep the original current collector and graph fixture unchanged. No new model generation.')
@@ -71,6 +71,10 @@ def admission(record,binary=False):
 
 def prepare(container):
     tool.guards.require(KEY not in container and not ROOT.exists(),'fresh host fixture only; inspect prior ownership')
+    previous=container['unitrace_aggregation_host']
+    tool.guards.require(previous['stage']=='failed' and not previous['passed'] and previous['ownership_closed']
+        and previous['closed_fixture_evidence']['actual_cases']==40 and previous['closed_fixture_evidence']['planned_cases']==80
+        and previous['artifact_retirement']['complete'],'preserve/retire diagnosed40-case v1 failure first')
     revision=tool.git(P,'rev-parse','HEAD').decode().strip();inputs=pins(revision)
     full,count=q.current_build()
     retained=json.loads(q.BUILD.read_text())

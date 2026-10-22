@@ -60,8 +60,8 @@ void equal(const Stats& a,const Stats& b) {
   }
 }
 
-Stats input(size_t n,bool unique,bool overflow) {
-  Stats stats;std::mt19937_64 random(0x3ef2c41);
+Stats input(size_t n,bool unique,bool overflow,uint64_t seed=0x3ef2c41) {
+  Stats stats;std::mt19937_64 random(seed);
   base_names.assign(n+1,"");
   std::vector<size_t> order(n);
   for(size_t i=0;i<n;++i) order[i]=i+1;
@@ -102,9 +102,10 @@ template<class Collector> uint64_t timed(const Stats& original,Stats& result) {
 
 int main() try {
   unsigned cases=0;
-  for(size_t n:{size_t(0),size_t(1),size_t(17),size_t(257),size_t(513)})
+  for(uint64_t seed:{uint64_t(0x3ef2c41),uint64_t(0x9b4d763)})
+   for(size_t n:{size_t(0),size_t(1),size_t(17),size_t(257),size_t(513)})
     for(bool unique:{false,true}) for(bool overflow:{false,true}) for(bool detailed:{false,true}) {
-      auto source=input(n,unique,overflow),a=source,b=source;
+      auto source=input(n,unique,overflow,seed),a=source,b=source;
       apply<Reference>(a,detailed);
       require(apply<Candidate>(b,detailed)==n,"candidate name evaluations are not linear");
       equal(a,b);
