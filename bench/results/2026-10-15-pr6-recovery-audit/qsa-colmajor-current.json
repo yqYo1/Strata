@@ -46,7 +46,7 @@
     "Qcache_alias_lifetime": "Existing all-workgroup barrieraftercachedqueryload,beforeKoverwrite retained. Existing QK/PV and loopbarriers unchanged."
   },
   "engine_decode_changed": false,
-  "GPU_executed": false,
+  "GPU_executed": true,
   "model_adoption_qualified": false,
   "active": false,
   "ownership_closed": true,
@@ -770,7 +770,7 @@
     "scope": "Pinned LLVM IR retains the requested local-space QK layout discriminator and unchanged PV layout. IGC machine lowering, safety and speed are not established by frontend IR."
   },
   "check_plan": {
-    "stage": "prepared",
+    "stage": "closed",
     "mode": "smoke",
     "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-colmajor-v1/check-smoke",
     "source_commit": "55a89d3e5344fd2ec911533f013765bbd282f785",
@@ -1298,5 +1298,870 @@
         "session": null
       }
     ]
-  }
+  },
+  "checks": [
+    {
+      "mode": "smoke",
+      "source_commit": "55a89d3e5344fd2ec911533f013765bbd282f785",
+      "numerical_binary": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-colmajor-v1/numerical",
+        "bytes": 1593880,
+        "sha256": "473198a6f51346fc3f617d50c65bd0da5ac28ddda3a3c3e3e5ae771ecac1c8d2"
+      },
+      "passed": true,
+      "complete": true,
+      "active": false,
+      "ownership_closed": true,
+      "observations": [
+        {
+          "arm": "default@1",
+          "pid": 3186990,
+          "exit_code": 0,
+          "ownership_closed": true,
+          "validation": {
+            "pid": 3186990,
+            "loader": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_loader.so.0.12.0",
+            "threads_before": 1,
+            "preinit": 37,
+            "config_enabled": true,
+            "first_init": true,
+            "dispatch_result": 46,
+            "output_untouched": true,
+            "retained_reference_until_exit": true,
+            "runtime_teardown_qualified": false
+          },
+          "case_count": 2,
+          "case_identities": [
+            [
+              97,
+              33,
+              1,
+              0,
+              49
+            ],
+            [
+              97,
+              33,
+              3,
+              1,
+              71
+            ]
+          ],
+          "exact_prefix33_bits": true,
+          "page_size": 1,
+          "physical262144_component_addressed": false,
+          "route": {
+            "page": "1",
+            "fast": "0",
+            "generic": "0",
+            "status": "PASS"
+          },
+          "executed_compute": {
+            "variant": "default",
+            "kernel": "_ZTSZZN6strata7kernelsL17prefix_batch_implILi33ELb0ELb0ELb1ELb1ELb1ELb1ELb0EEEbPKtRKNS0_12QsaAttnPoolsEPKiS8_lRKNS0_9QsaShapesEPtlRKNS0_19QsaPromptBf16BoundsElRKNS0_20QsaBf16PackedScratchEPvNS0_19QsaPrefixStateProbeEENKUlRN4sycl3_V17handlerEE_clESO_EUlNSM_7nd_itemILi1EEEE_",
+            "launches": 23,
+            "dynamic_local_bytes": 20032,
+            "execution_env": {
+              "barrier_count": "1",
+              "grf_count": "128",
+              "has_4gb_buffers": "true",
+              "has_dpas": "true",
+              "has_no_stateless_write": "true",
+              "require_disable_eufusion": "true",
+              "indirect_stateless_count": "6",
+              "inline_data_payload_size": "32",
+              "offset_to_skip_per_thread_data_load": "192",
+              "simd_size": "16",
+              "slm_size": "32",
+              "spill_size": "12480",
+              "subgroup_independent_forward_progress": "true",
+              "eu_thread_count": "8"
+            },
+            "per_thread_memory_buffers": "- type:            scratch\n        usage:           single_space\n        size:            16384"
+          },
+          "stdout_sha256": "ce7877735b752f68cd97e7030a5a4cc59e6b7e3059c4ba606205df451d206e70",
+          "stderr_sha256": "efb9ff65be81d4d5144caf0b4dc1e78d94bbb798e85d3a1242a414433dced20e"
+        },
+        {
+          "arm": "control@1",
+          "pid": 3187305,
+          "exit_code": 0,
+          "ownership_closed": true,
+          "validation": {
+            "pid": 3187305,
+            "loader": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_loader.so.0.12.0",
+            "threads_before": 1,
+            "preinit": 37,
+            "config_enabled": true,
+            "first_init": true,
+            "dispatch_result": 46,
+            "output_untouched": true,
+            "retained_reference_until_exit": true,
+            "runtime_teardown_qualified": false
+          },
+          "case_count": 2,
+          "case_identities": [
+            [
+              97,
+              33,
+              1,
+              0,
+              49
+            ],
+            [
+              97,
+              33,
+              3,
+              1,
+              71
+            ]
+          ],
+          "exact_prefix33_bits": true,
+          "page_size": 1,
+          "physical262144_component_addressed": false,
+          "route": {
+            "page": "1",
+            "fast": "0",
+            "generic": "0",
+            "status": "PASS"
+          },
+          "executed_compute": {
+            "variant": "control",
+            "kernel": "_ZTSZZN6strata7kernels7controlL17prefix_batch_implILi33ELb0ELb0ELb1ELb1ELb1ELb1ELb0EEEbPKtRKNS0_12QsaAttnPoolsEPKiS9_lRKNS0_9QsaShapesEPtlRKNS0_19QsaPromptBf16BoundsElRKNS0_20QsaBf16PackedScratchEPvNS0_19QsaPrefixStateProbeEENKUlRN4sycl3_V17handlerEE_clESP_EUlNSN_7nd_itemILi1EEEE_",
+            "launches": 23,
+            "dynamic_local_bytes": 20032,
+            "execution_env": {
+              "barrier_count": "1",
+              "grf_count": "128",
+              "has_4gb_buffers": "true",
+              "has_dpas": "true",
+              "has_no_stateless_write": "true",
+              "require_disable_eufusion": "true",
+              "indirect_stateless_count": "6",
+              "inline_data_payload_size": "32",
+              "offset_to_skip_per_thread_data_load": "192",
+              "simd_size": "16",
+              "slm_size": "32",
+              "spill_size": "12480",
+              "subgroup_independent_forward_progress": "true",
+              "eu_thread_count": "8"
+            },
+            "per_thread_memory_buffers": "- type:            scratch\n        usage:           single_space\n        size:            16384"
+          },
+          "stdout_sha256": "876bb76b41c27c180e08e8f2560e2f98bb83279e418d20f4c61f3ab7d3c6de3e",
+          "stderr_sha256": "6372a1e0641dee6176bb212a2ccd54efe76a0ce8f945ae26d67ec7bda381ef40"
+        },
+        {
+          "arm": "colmajor@1",
+          "pid": 3187627,
+          "exit_code": 0,
+          "ownership_closed": true,
+          "validation": {
+            "pid": 3187627,
+            "loader": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_loader.so.0.12.0",
+            "threads_before": 1,
+            "preinit": 37,
+            "config_enabled": true,
+            "first_init": true,
+            "dispatch_result": 46,
+            "output_untouched": true,
+            "retained_reference_until_exit": true,
+            "runtime_teardown_qualified": false
+          },
+          "case_count": 2,
+          "case_identities": [
+            [
+              97,
+              33,
+              1,
+              0,
+              49
+            ],
+            [
+              97,
+              33,
+              3,
+              1,
+              71
+            ]
+          ],
+          "exact_prefix33_bits": true,
+          "page_size": 1,
+          "physical262144_component_addressed": false,
+          "route": {
+            "page": "1",
+            "fast": "34",
+            "generic": "0",
+            "status": "PASS"
+          },
+          "executed_compute": {
+            "variant": "colmajor",
+            "kernel": "_ZTSZZN6strata7kernels8colmajorL17prefix_batch_implILi33ELb0ELb0ELb1ELb1ELb1ELb1ELb0EEEbPKtRKNS0_12QsaAttnPoolsEPKiS9_lRKNS0_9QsaShapesEPtlRKNS0_19QsaPromptBf16BoundsElRKNS0_20QsaBf16PackedScratchEPvNS0_19QsaPrefixStateProbeEENKUlRN4sycl3_V17handlerEE_clESP_EUlNSN_7nd_itemILi1EEEE_",
+            "launches": 23,
+            "dynamic_local_bytes": 20032,
+            "execution_env": {
+              "barrier_count": "1",
+              "grf_count": "128",
+              "has_4gb_buffers": "true",
+              "has_dpas": "true",
+              "has_no_stateless_write": "true",
+              "require_disable_eufusion": "true",
+              "indirect_stateless_count": "6",
+              "inline_data_payload_size": "32",
+              "offset_to_skip_per_thread_data_load": "192",
+              "simd_size": "16",
+              "slm_size": "32",
+              "spill_size": "10240",
+              "subgroup_independent_forward_progress": "true",
+              "eu_thread_count": "8"
+            },
+            "per_thread_memory_buffers": "- type:            scratch\n        usage:           single_space\n        size:            16384"
+          },
+          "stdout_sha256": "76f63a53f32d1291c7315ec1f010def155556ebc649c168d745c05d1848db814",
+          "stderr_sha256": "b5b766d84162485b1189c078b7029523a1210a018b50d4b5580d988d38c9e486"
+        },
+        {
+          "arm": "default@4",
+          "pid": 3188064,
+          "exit_code": 0,
+          "ownership_closed": true,
+          "validation": {
+            "pid": 3188064,
+            "loader": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_loader.so.0.12.0",
+            "threads_before": 1,
+            "preinit": 37,
+            "config_enabled": true,
+            "first_init": true,
+            "dispatch_result": 46,
+            "output_untouched": true,
+            "retained_reference_until_exit": true,
+            "runtime_teardown_qualified": false
+          },
+          "case_count": 2,
+          "case_identities": [
+            [
+              97,
+              33,
+              1,
+              0,
+              49
+            ],
+            [
+              97,
+              33,
+              3,
+              1,
+              71
+            ]
+          ],
+          "exact_prefix33_bits": true,
+          "page_size": 4,
+          "physical262144_component_addressed": false,
+          "route": {
+            "page": "4",
+            "fast": "0",
+            "generic": "0",
+            "status": "PASS"
+          },
+          "executed_compute": {
+            "variant": "default",
+            "kernel": "_ZTSZZN6strata7kernelsL17prefix_batch_implILi33ELb0ELb0ELb1ELb1ELb1ELb1ELb0EEEbPKtRKNS0_12QsaAttnPoolsEPKiS8_lRKNS0_9QsaShapesEPtlRKNS0_19QsaPromptBf16BoundsElRKNS0_20QsaBf16PackedScratchEPvNS0_19QsaPrefixStateProbeEENKUlRN4sycl3_V17handlerEE_clESO_EUlNSM_7nd_itemILi1EEEE_",
+            "launches": 23,
+            "dynamic_local_bytes": 20032,
+            "execution_env": {
+              "barrier_count": "1",
+              "grf_count": "128",
+              "has_4gb_buffers": "true",
+              "has_dpas": "true",
+              "has_no_stateless_write": "true",
+              "require_disable_eufusion": "true",
+              "indirect_stateless_count": "6",
+              "inline_data_payload_size": "32",
+              "offset_to_skip_per_thread_data_load": "192",
+              "simd_size": "16",
+              "slm_size": "32",
+              "spill_size": "12480",
+              "subgroup_independent_forward_progress": "true",
+              "eu_thread_count": "8"
+            },
+            "per_thread_memory_buffers": "- type:            scratch\n        usage:           single_space\n        size:            16384"
+          },
+          "stdout_sha256": "768645ca103e1b36e905328dfbf03a35742a9bb7becf28dad5b873230fd66df1",
+          "stderr_sha256": "df292941665426dba323940d1434ebe2ecaf991ff6651ad010f6ce778851408d"
+        },
+        {
+          "arm": "control@4",
+          "pid": 3188383,
+          "exit_code": 0,
+          "ownership_closed": true,
+          "validation": {
+            "pid": 3188383,
+            "loader": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_loader.so.0.12.0",
+            "threads_before": 1,
+            "preinit": 37,
+            "config_enabled": true,
+            "first_init": true,
+            "dispatch_result": 46,
+            "output_untouched": true,
+            "retained_reference_until_exit": true,
+            "runtime_teardown_qualified": false
+          },
+          "case_count": 2,
+          "case_identities": [
+            [
+              97,
+              33,
+              1,
+              0,
+              49
+            ],
+            [
+              97,
+              33,
+              3,
+              1,
+              71
+            ]
+          ],
+          "exact_prefix33_bits": true,
+          "page_size": 4,
+          "physical262144_component_addressed": false,
+          "route": {
+            "page": "4",
+            "fast": "0",
+            "generic": "0",
+            "status": "PASS"
+          },
+          "executed_compute": {
+            "variant": "control",
+            "kernel": "_ZTSZZN6strata7kernels7controlL17prefix_batch_implILi33ELb0ELb0ELb1ELb1ELb1ELb1ELb0EEEbPKtRKNS0_12QsaAttnPoolsEPKiS9_lRKNS0_9QsaShapesEPtlRKNS0_19QsaPromptBf16BoundsElRKNS0_20QsaBf16PackedScratchEPvNS0_19QsaPrefixStateProbeEENKUlRN4sycl3_V17handlerEE_clESP_EUlNSN_7nd_itemILi1EEEE_",
+            "launches": 23,
+            "dynamic_local_bytes": 20032,
+            "execution_env": {
+              "barrier_count": "1",
+              "grf_count": "128",
+              "has_4gb_buffers": "true",
+              "has_dpas": "true",
+              "has_no_stateless_write": "true",
+              "require_disable_eufusion": "true",
+              "indirect_stateless_count": "6",
+              "inline_data_payload_size": "32",
+              "offset_to_skip_per_thread_data_load": "192",
+              "simd_size": "16",
+              "slm_size": "32",
+              "spill_size": "12480",
+              "subgroup_independent_forward_progress": "true",
+              "eu_thread_count": "8"
+            },
+            "per_thread_memory_buffers": "- type:            scratch\n        usage:           single_space\n        size:            16384"
+          },
+          "stdout_sha256": "6761faf6dd46e20854d97318f66888dfe476e7445f88faa2b153595c789f5648",
+          "stderr_sha256": "e07ddb89f48c6b18dd1f63b27445a02e6b6652e89e748dfafd5017da2899cef1"
+        },
+        {
+          "arm": "colmajor@4",
+          "pid": 3188841,
+          "exit_code": 0,
+          "ownership_closed": true,
+          "validation": {
+            "pid": 3188841,
+            "loader": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_loader.so.0.12.0",
+            "threads_before": 1,
+            "preinit": 37,
+            "config_enabled": true,
+            "first_init": true,
+            "dispatch_result": 46,
+            "output_untouched": true,
+            "retained_reference_until_exit": true,
+            "runtime_teardown_qualified": false
+          },
+          "case_count": 2,
+          "case_identities": [
+            [
+              97,
+              33,
+              1,
+              0,
+              49
+            ],
+            [
+              97,
+              33,
+              3,
+              1,
+              71
+            ]
+          ],
+          "exact_prefix33_bits": true,
+          "page_size": 4,
+          "physical262144_component_addressed": false,
+          "route": {
+            "page": "4",
+            "fast": "34",
+            "generic": "0",
+            "status": "PASS"
+          },
+          "executed_compute": {
+            "variant": "colmajor",
+            "kernel": "_ZTSZZN6strata7kernels8colmajorL17prefix_batch_implILi33ELb0ELb0ELb1ELb1ELb1ELb1ELb0EEEbPKtRKNS0_12QsaAttnPoolsEPKiS9_lRKNS0_9QsaShapesEPtlRKNS0_19QsaPromptBf16BoundsElRKNS0_20QsaBf16PackedScratchEPvNS0_19QsaPrefixStateProbeEENKUlRN4sycl3_V17handlerEE_clESP_EUlNSN_7nd_itemILi1EEEE_",
+            "launches": 23,
+            "dynamic_local_bytes": 20032,
+            "execution_env": {
+              "barrier_count": "1",
+              "grf_count": "128",
+              "has_4gb_buffers": "true",
+              "has_dpas": "true",
+              "has_no_stateless_write": "true",
+              "require_disable_eufusion": "true",
+              "indirect_stateless_count": "6",
+              "inline_data_payload_size": "32",
+              "offset_to_skip_per_thread_data_load": "192",
+              "simd_size": "16",
+              "slm_size": "32",
+              "spill_size": "10240",
+              "subgroup_independent_forward_progress": "true",
+              "eu_thread_count": "8"
+            },
+            "per_thread_memory_buffers": "- type:            scratch\n        usage:           single_space\n        size:            16384"
+          },
+          "stdout_sha256": "92b76ed044312aaa289ae79bc5c083d6d42ff017a5827066607dbd5c4f2117d5",
+          "stderr_sha256": "f7fe804a7362263a2bee2039a3fe44cd52db260179a688d01c9a5bc1a9d4ad9f"
+        },
+        {
+          "arm": "default@7",
+          "pid": 3189168,
+          "exit_code": 0,
+          "ownership_closed": true,
+          "validation": {
+            "pid": 3189168,
+            "loader": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_loader.so.0.12.0",
+            "threads_before": 1,
+            "preinit": 37,
+            "config_enabled": true,
+            "first_init": true,
+            "dispatch_result": 46,
+            "output_untouched": true,
+            "retained_reference_until_exit": true,
+            "runtime_teardown_qualified": false
+          },
+          "case_count": 2,
+          "case_identities": [
+            [
+              97,
+              33,
+              1,
+              0,
+              49
+            ],
+            [
+              97,
+              33,
+              3,
+              1,
+              71
+            ]
+          ],
+          "exact_prefix33_bits": true,
+          "page_size": 7,
+          "physical262144_component_addressed": false,
+          "route": {
+            "page": "7",
+            "fast": "0",
+            "generic": "0",
+            "status": "PASS"
+          },
+          "executed_compute": {
+            "variant": "default",
+            "kernel": "_ZTSZZN6strata7kernelsL17prefix_batch_implILi33ELb0ELb0ELb1ELb1ELb1ELb1ELb0EEEbPKtRKNS0_12QsaAttnPoolsEPKiS8_lRKNS0_9QsaShapesEPtlRKNS0_19QsaPromptBf16BoundsElRKNS0_20QsaBf16PackedScratchEPvNS0_19QsaPrefixStateProbeEENKUlRN4sycl3_V17handlerEE_clESO_EUlNSM_7nd_itemILi1EEEE_",
+            "launches": 23,
+            "dynamic_local_bytes": 20032,
+            "execution_env": {
+              "barrier_count": "1",
+              "grf_count": "128",
+              "has_4gb_buffers": "true",
+              "has_dpas": "true",
+              "has_no_stateless_write": "true",
+              "require_disable_eufusion": "true",
+              "indirect_stateless_count": "6",
+              "inline_data_payload_size": "32",
+              "offset_to_skip_per_thread_data_load": "192",
+              "simd_size": "16",
+              "slm_size": "32",
+              "spill_size": "12480",
+              "subgroup_independent_forward_progress": "true",
+              "eu_thread_count": "8"
+            },
+            "per_thread_memory_buffers": "- type:            scratch\n        usage:           single_space\n        size:            16384"
+          },
+          "stdout_sha256": "f750223422991200f81a393af665c1c67e4ce072eb87a71a25e471312afb7fbc",
+          "stderr_sha256": "cee9c9c48b787f300efa0829e7d52c08efd7c35fbe73f91e4ca23e3eeb1999ed"
+        },
+        {
+          "arm": "control@7",
+          "pid": 3189477,
+          "exit_code": 0,
+          "ownership_closed": true,
+          "validation": {
+            "pid": 3189477,
+            "loader": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_loader.so.0.12.0",
+            "threads_before": 1,
+            "preinit": 37,
+            "config_enabled": true,
+            "first_init": true,
+            "dispatch_result": 46,
+            "output_untouched": true,
+            "retained_reference_until_exit": true,
+            "runtime_teardown_qualified": false
+          },
+          "case_count": 2,
+          "case_identities": [
+            [
+              97,
+              33,
+              1,
+              0,
+              49
+            ],
+            [
+              97,
+              33,
+              3,
+              1,
+              71
+            ]
+          ],
+          "exact_prefix33_bits": true,
+          "page_size": 7,
+          "physical262144_component_addressed": false,
+          "route": {
+            "page": "7",
+            "fast": "0",
+            "generic": "0",
+            "status": "PASS"
+          },
+          "executed_compute": {
+            "variant": "control",
+            "kernel": "_ZTSZZN6strata7kernels7controlL17prefix_batch_implILi33ELb0ELb0ELb1ELb1ELb1ELb1ELb0EEEbPKtRKNS0_12QsaAttnPoolsEPKiS9_lRKNS0_9QsaShapesEPtlRKNS0_19QsaPromptBf16BoundsElRKNS0_20QsaBf16PackedScratchEPvNS0_19QsaPrefixStateProbeEENKUlRN4sycl3_V17handlerEE_clESP_EUlNSN_7nd_itemILi1EEEE_",
+            "launches": 23,
+            "dynamic_local_bytes": 20032,
+            "execution_env": {
+              "barrier_count": "1",
+              "grf_count": "128",
+              "has_4gb_buffers": "true",
+              "has_dpas": "true",
+              "has_no_stateless_write": "true",
+              "require_disable_eufusion": "true",
+              "indirect_stateless_count": "6",
+              "inline_data_payload_size": "32",
+              "offset_to_skip_per_thread_data_load": "192",
+              "simd_size": "16",
+              "slm_size": "32",
+              "spill_size": "12480",
+              "subgroup_independent_forward_progress": "true",
+              "eu_thread_count": "8"
+            },
+            "per_thread_memory_buffers": "- type:            scratch\n        usage:           single_space\n        size:            16384"
+          },
+          "stdout_sha256": "42a3bee8d70d1bfc7b972424bc68a3d6020568f3ab6cee718910d6855d379236",
+          "stderr_sha256": "1a91ca8c12ee9a83962a3ffa21565093d14d0221a22f911b49284d3649f68ced"
+        },
+        {
+          "arm": "colmajor@7",
+          "pid": 3189940,
+          "exit_code": 0,
+          "ownership_closed": true,
+          "validation": {
+            "pid": 3189940,
+            "loader": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_loader.so.0.12.0",
+            "threads_before": 1,
+            "preinit": 37,
+            "config_enabled": true,
+            "first_init": true,
+            "dispatch_result": 46,
+            "output_untouched": true,
+            "retained_reference_until_exit": true,
+            "runtime_teardown_qualified": false
+          },
+          "case_count": 2,
+          "case_identities": [
+            [
+              97,
+              33,
+              1,
+              0,
+              49
+            ],
+            [
+              97,
+              33,
+              3,
+              1,
+              71
+            ]
+          ],
+          "exact_prefix33_bits": true,
+          "page_size": 7,
+          "physical262144_component_addressed": false,
+          "route": {
+            "page": "7",
+            "fast": "34",
+            "generic": "0",
+            "status": "PASS"
+          },
+          "executed_compute": {
+            "variant": "colmajor",
+            "kernel": "_ZTSZZN6strata7kernels8colmajorL17prefix_batch_implILi33ELb0ELb0ELb1ELb1ELb1ELb1ELb0EEEbPKtRKNS0_12QsaAttnPoolsEPKiS9_lRKNS0_9QsaShapesEPtlRKNS0_19QsaPromptBf16BoundsElRKNS0_20QsaBf16PackedScratchEPvNS0_19QsaPrefixStateProbeEENKUlRN4sycl3_V17handlerEE_clESP_EUlNSN_7nd_itemILi1EEEE_",
+            "launches": 23,
+            "dynamic_local_bytes": 20032,
+            "execution_env": {
+              "barrier_count": "1",
+              "grf_count": "128",
+              "has_4gb_buffers": "true",
+              "has_dpas": "true",
+              "has_no_stateless_write": "true",
+              "require_disable_eufusion": "true",
+              "indirect_stateless_count": "6",
+              "inline_data_payload_size": "32",
+              "offset_to_skip_per_thread_data_load": "192",
+              "simd_size": "16",
+              "slm_size": "32",
+              "spill_size": "10240",
+              "subgroup_independent_forward_progress": "true",
+              "eu_thread_count": "8"
+            },
+            "per_thread_memory_buffers": "- type:            scratch\n        usage:           single_space\n        size:            16384"
+          },
+          "stdout_sha256": "3a7b0a2f5f6f4bfbe614778b888ae54d36cba8cd9d06cf679a270b3ad9279822",
+          "stderr_sha256": "75640cde74c17688a44e8478a7854447fd3ef81cdbd98ed0ece9cff272c46f82"
+        },
+        {
+          "arm": "default@16",
+          "pid": 3190272,
+          "exit_code": 0,
+          "ownership_closed": true,
+          "validation": {
+            "pid": 3190272,
+            "loader": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_loader.so.0.12.0",
+            "threads_before": 1,
+            "preinit": 37,
+            "config_enabled": true,
+            "first_init": true,
+            "dispatch_result": 46,
+            "output_untouched": true,
+            "retained_reference_until_exit": true,
+            "runtime_teardown_qualified": false
+          },
+          "case_count": 2,
+          "case_identities": [
+            [
+              97,
+              33,
+              1,
+              0,
+              49
+            ],
+            [
+              97,
+              33,
+              3,
+              1,
+              71
+            ]
+          ],
+          "exact_prefix33_bits": true,
+          "page_size": 16,
+          "physical262144_component_addressed": false,
+          "route": {
+            "page": "16",
+            "fast": "0",
+            "generic": "0",
+            "status": "PASS"
+          },
+          "executed_compute": {
+            "variant": "default",
+            "kernel": "_ZTSZZN6strata7kernelsL17prefix_batch_implILi33ELb0ELb0ELb1ELb1ELb1ELb1ELb0EEEbPKtRKNS0_12QsaAttnPoolsEPKiS8_lRKNS0_9QsaShapesEPtlRKNS0_19QsaPromptBf16BoundsElRKNS0_20QsaBf16PackedScratchEPvNS0_19QsaPrefixStateProbeEENKUlRN4sycl3_V17handlerEE_clESO_EUlNSM_7nd_itemILi1EEEE_",
+            "launches": 23,
+            "dynamic_local_bytes": 20032,
+            "execution_env": {
+              "barrier_count": "1",
+              "grf_count": "128",
+              "has_4gb_buffers": "true",
+              "has_dpas": "true",
+              "has_no_stateless_write": "true",
+              "require_disable_eufusion": "true",
+              "indirect_stateless_count": "6",
+              "inline_data_payload_size": "32",
+              "offset_to_skip_per_thread_data_load": "192",
+              "simd_size": "16",
+              "slm_size": "32",
+              "spill_size": "12480",
+              "subgroup_independent_forward_progress": "true",
+              "eu_thread_count": "8"
+            },
+            "per_thread_memory_buffers": "- type:            scratch\n        usage:           single_space\n        size:            16384"
+          },
+          "stdout_sha256": "c88a23aaa9a0ddefa1f944728f5238cbbf8b43b3660f5a9b30c279c355b133a3",
+          "stderr_sha256": "26d820c67496141cf2d13309a33715f9381f2b50e99d6aa41d22e5447dadb537"
+        },
+        {
+          "arm": "control@16",
+          "pid": 3190580,
+          "exit_code": 0,
+          "ownership_closed": true,
+          "validation": {
+            "pid": 3190580,
+            "loader": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_loader.so.0.12.0",
+            "threads_before": 1,
+            "preinit": 37,
+            "config_enabled": true,
+            "first_init": true,
+            "dispatch_result": 46,
+            "output_untouched": true,
+            "retained_reference_until_exit": true,
+            "runtime_teardown_qualified": false
+          },
+          "case_count": 2,
+          "case_identities": [
+            [
+              97,
+              33,
+              1,
+              0,
+              49
+            ],
+            [
+              97,
+              33,
+              3,
+              1,
+              71
+            ]
+          ],
+          "exact_prefix33_bits": true,
+          "page_size": 16,
+          "physical262144_component_addressed": false,
+          "route": {
+            "page": "16",
+            "fast": "0",
+            "generic": "0",
+            "status": "PASS"
+          },
+          "executed_compute": {
+            "variant": "control",
+            "kernel": "_ZTSZZN6strata7kernels7controlL17prefix_batch_implILi33ELb0ELb0ELb1ELb1ELb1ELb1ELb0EEEbPKtRKNS0_12QsaAttnPoolsEPKiS9_lRKNS0_9QsaShapesEPtlRKNS0_19QsaPromptBf16BoundsElRKNS0_20QsaBf16PackedScratchEPvNS0_19QsaPrefixStateProbeEENKUlRN4sycl3_V17handlerEE_clESP_EUlNSN_7nd_itemILi1EEEE_",
+            "launches": 23,
+            "dynamic_local_bytes": 20032,
+            "execution_env": {
+              "barrier_count": "1",
+              "grf_count": "128",
+              "has_4gb_buffers": "true",
+              "has_dpas": "true",
+              "has_no_stateless_write": "true",
+              "require_disable_eufusion": "true",
+              "indirect_stateless_count": "6",
+              "inline_data_payload_size": "32",
+              "offset_to_skip_per_thread_data_load": "192",
+              "simd_size": "16",
+              "slm_size": "32",
+              "spill_size": "12480",
+              "subgroup_independent_forward_progress": "true",
+              "eu_thread_count": "8"
+            },
+            "per_thread_memory_buffers": "- type:            scratch\n        usage:           single_space\n        size:            16384"
+          },
+          "stdout_sha256": "ca8cf7a14e5ab9ee3c474ae1b8e428efb21a3aa9481f54a101ab91cf054ab053",
+          "stderr_sha256": "2c8b671b19944fe5a19881e01a5a6e2ce64a056fa9dbac3603f57fb09ae82b84"
+        },
+        {
+          "arm": "colmajor@16",
+          "pid": 3190914,
+          "exit_code": 0,
+          "ownership_closed": true,
+          "validation": {
+            "pid": 3190914,
+            "loader": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_loader.so.0.12.0",
+            "threads_before": 1,
+            "preinit": 37,
+            "config_enabled": true,
+            "first_init": true,
+            "dispatch_result": 46,
+            "output_untouched": true,
+            "retained_reference_until_exit": true,
+            "runtime_teardown_qualified": false
+          },
+          "case_count": 2,
+          "case_identities": [
+            [
+              97,
+              33,
+              1,
+              0,
+              49
+            ],
+            [
+              97,
+              33,
+              3,
+              1,
+              71
+            ]
+          ],
+          "exact_prefix33_bits": true,
+          "page_size": 16,
+          "physical262144_component_addressed": false,
+          "route": {
+            "page": "16",
+            "fast": "34",
+            "generic": "0",
+            "status": "PASS"
+          },
+          "executed_compute": {
+            "variant": "colmajor",
+            "kernel": "_ZTSZZN6strata7kernels8colmajorL17prefix_batch_implILi33ELb0ELb0ELb1ELb1ELb1ELb1ELb0EEEbPKtRKNS0_12QsaAttnPoolsEPKiS9_lRKNS0_9QsaShapesEPtlRKNS0_19QsaPromptBf16BoundsElRKNS0_20QsaBf16PackedScratchEPvNS0_19QsaPrefixStateProbeEENKUlRN4sycl3_V17handlerEE_clESP_EUlNSN_7nd_itemILi1EEEE_",
+            "launches": 23,
+            "dynamic_local_bytes": 20032,
+            "execution_env": {
+              "barrier_count": "1",
+              "grf_count": "128",
+              "has_4gb_buffers": "true",
+              "has_dpas": "true",
+              "has_no_stateless_write": "true",
+              "require_disable_eufusion": "true",
+              "indirect_stateless_count": "6",
+              "inline_data_payload_size": "32",
+              "offset_to_skip_per_thread_data_load": "192",
+              "simd_size": "16",
+              "slm_size": "32",
+              "spill_size": "10240",
+              "subgroup_independent_forward_progress": "true",
+              "eu_thread_count": "8"
+            },
+            "per_thread_memory_buffers": "- type:            scratch\n        usage:           single_space\n        size:            16384"
+          },
+          "stdout_sha256": "b797663ae536bc3fe7e755e1d628ac1e9e0679b17166db24817547b8fcc2e4db",
+          "stderr_sha256": "9fd52ba519bc54f6d55cdfbf48477943e6cbfef7600fece28d36e87e48d1eb0d"
+        }
+      ],
+      "postchecks_complete": true,
+      "postcheck_errors": [],
+      "fresh_faults": [],
+      "boot_unchanged": true,
+      "driver_after": {
+        "pci": "/sys/bus/pci/devices/0000:05:00.0",
+        "driver": "xe",
+        "vendor": "0x8086",
+        "device": "0xe20c",
+        "kernel": "7.0.0-38-generic",
+        "devcoredump": false
+      },
+      "frozen_gate_verification": {
+        "processes": 12,
+        "numerical_cases": 24,
+        "selected_compute_launches_each": 23,
+        "all_expected_route_counts": true,
+        "fresh_faults": [],
+        "scope": "Small traced component only; model/decode unchanged and unqualified."
+      }
+    }
+  ]
 }
