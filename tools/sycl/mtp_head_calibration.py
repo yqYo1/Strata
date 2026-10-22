@@ -23,7 +23,7 @@ sys.path.insert(0,str(gen.P/'tools'))
 from gguf_reader import GGUFFile
 
 P,B,A=gen.P,gen.B,gen.A
-ROOT=B/'mtp-q6-head-v1'
+ROOT=B/'mtp-q6-head-v2'
 PLAN=A/'mtp-head-plan.json'
 RESULT=A/'mtp-head-current.json'
 # current_build separately recovers and checks all9853 original native/build
@@ -89,14 +89,26 @@ def environment(setup,label,traced=False,clean=False):
 
 
 def prepare():
-    guards.require(not ROOT.exists() and not PLAN.exists() and not RESULT.exists(),'fresh single-use head calibration required')
+    guards.require(not ROOT.exists(),'fresh single-use head calibration required')
+    previous=None
+    if RESULT.exists():
+        old=gen.committed(RESULT);retired=old.get('artifact_retirement',{})
+        guards.require(old['stage']=='build' and old['error']=='owned child failed configure' and
+            old['ownership_closed'] and not old['active'] and not old['passed'] and not old['checks'] and
+            old['diagnostic']['GPU_executed'] is False and retired.get('complete') and
+            retired.get('original_recipes_recovered') and not (B/'mtp-q6-head-v1').exists() and
+            source.digest(retired['manifest'])==retired['manifest_sha256'] and
+            source.digest(PLAN)==old['plan_sha256'],'close and retire the original refused build first')
+        previous=dict(commit=gen.git('log','-1','--format=%H','--',str(RESULT.relative_to(P))).decode().strip(),
+            path=str(RESULT.relative_to(P)),sha256=source.digest(RESULT),outcome='Configuration failed before GPU;original failure retained,source changed for a fresh plan.')
+    else:guards.require(not PLAN.exists(),'orphan plan requires reconciliation')
     native,setup,proof=qualification();head=head_input(setup);revision=gen.git('rev-parse','HEAD').decode().strip()
     configure=list(native['configure_argv']);configure[configure.index('-S')+1]=str(P/'bench/sycl/mtp_head');configure[configure.index('-B')+1]=str(ROOT/'build')
-    plan=dict(schema='strata-mtp-q6-head-v1',source=source.source_pin(P,revision,PREFIXES),qualification=proof,
+    plan=dict(schema='strata-mtp-q6-head-v2',source=source.source_pin(P,revision,PREFIXES),qualification=proof,previous_result=previous,
         head=head,machine=source.machine(),configure=configure,
         build=['/usr/bin/cmake','--build',str(ROOT/'build'),'--target','mtp_head','--parallel','6'],
         tools={str(Path(p).resolve()):source.digest(p) for p in (native['compiler']['path'],'/usr/bin/cmake','/usr/bin/ninja')},
-        environment={label:environment(setup,label,traced=label=='tiny',clean=label=='measure') for label in ('build','tiny','full','measure')},
+        environment={label:environment(setup,label,traced=label=='tiny',clean=label in ('build','measure')) for label in ('build','tiny','full','measure')},
         protocol=dict(question='Can the actual compressed Q6_K subset head explain a dominant fraction of the31.208ms/window MTP graph envelope?',
             route='Unchanged production native_quantize_q8_1 + native_mmvq(type14,N2560,rows106299,NT1),ordinary graph capture and per-replay checked drain. Small17-row check before full shape.',
             numerical='Full selected real GGUF rows in original draft-map order. Independently reproduce Q8_1 bytes;dequantized Q6_K double sum scaled error<=3e-6 for every row. Direct/graph output bits,input/scratch/weight/output guards before and after timing.',
@@ -112,12 +124,12 @@ def prepare():
 
 def load():
     plan=gen.committed(PLAN);native,setup,proof=qualification()
-    guards.require(plan['schema']=='strata-mtp-q6-head-v1' and proof==plan['qualification'] and
+    guards.require(plan['schema']=='strata-mtp-q6-head-v2' and proof==plan['qualification'] and
         source.source_pin(P,plan['source']['revision'],PREFIXES)==plan['source'] and
         head_input(setup)==plan['head'] and source.machine()==plan['machine'],'source/model/native/platform drift')
     for p,h in plan['tools'].items():guards.require(source.digest(p)==h,'compiler/tool drift')
     for label in ('build','tiny','full','measure'):
-        guards.require(environment(setup,label,traced=label=='tiny',clean=label=='measure')==plan['environment'][label],'environment drift')
+        guards.require(environment(setup,label,traced=label=='tiny',clean=label in ('build','measure'))==plan['environment'][label],'environment drift')
     return plan
 
 
@@ -151,6 +163,15 @@ def parse(lines,rows,profile,mode):
         max_query_s=max((t['query_s'] for t in clocks),default=0),timer_fraction=timers[0]['query_s']/timers[0]['fastest_replay_s'],samples=samples)
 
 
+def child_environment(plan,stage,label):
+    old=ROOT/'jobs'/stage;root=ROOT/'jobs'/(stage+'-'+label)
+    env={k:v.replace(str(old),str(root)) for k,v in plan['environment'][stage].items()}
+    for key in ('STRATA_MEASUREMENT_ROOT','TMPDIR','XDG_CACHE_HOME'):
+        path=Path(env[key]);guards.require(path.resolve().is_relative_to(root.resolve()),'private command directory escapes root')
+        path.mkdir(parents=True,exist_ok=True)
+    return env
+
+
 def run(stage):
     plan=load();gen.committed(RESULT);path=ROOT/(stage+'.json');guards.require(not path.exists(),'single-use stage;inspect original owner,never retry')
     r=dict(stage=stage,source_commit=plan['source']['revision'],plan_sha256=source.digest(PLAN),passed=False,complete=False,active=False,ownership_closed=True,checks=[])
@@ -158,8 +179,7 @@ def run(stage):
     def persist():r['active']=bool(own and own.active is not None);write(path,dict(r,commands=own.commands if own else []))
     own=owner.Owner(ROOT/'owned',persist)
     def execute(label,argv,wall):
-        old=ROOT/'jobs'/stage;root=ROOT/'jobs'/(stage+'-'+label);root.mkdir(parents=True,exist_ok=True)
-        env={k:v.replace(str(old),str(root)) for k,v in plan['environment'][stage].items()}
+        env=child_environment(plan,stage,label)
         entry,_,_=own.run(stage+'-'+label,argv,env,P,wall=wall,cpu=2400,
             rss_cap=plan['budgets']['RSS_bytes'],text_cap=64<<20,total_cap=2<<30,file_cap=(2<<30 if stage=='build' else 64<<20))
         guards.require(owner.closed(entry) and entry['exit_code']==0,'owned child failed '+label)

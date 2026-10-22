@@ -3,13 +3,29 @@
 import copy
 from pathlib import Path
 import sys
+import tempfile
 import unittest
+from unittest.mock import patch
 sys.dont_write_bytecode=True
 sys.path.insert(0,str(Path(__file__).resolve().parents[2]/'tools/sycl'))
 import mtp_head_calibration as h
 
 
 class EvidenceTests(unittest.TestCase):
+    def test_each_child_has_real_private_temp_and_cache_before_exec(self):
+        with tempfile.TemporaryDirectory() as tmp,patch.object(h,'ROOT',Path(tmp)/'head'):
+            old=h.ROOT/'jobs'/'build'
+            env=dict(STRATA_MEASUREMENT_ROOT=str(old),TMPDIR=str(old/'tmp'),XDG_CACHE_HOME=str(old/'cache'))
+            expected=dict(env)
+            plan=dict(environment={'build':env})
+            actual=h.child_environment(plan,'build','configure')
+            self.assertEqual(plan['environment']['build'],expected)
+            for key in env:self.assertTrue(Path(actual[key]).is_dir())
+            self.assertEqual(Path(actual['TMPDIR']),h.ROOT/'jobs'/'build-configure'/'tmp')
+            self.assertNotEqual(h.child_environment(plan,'build','compile')['TMPDIR'],actual['TMPDIR'])
+            plan['environment']['build']['TMPDIR']=str(Path(tmp)/'escape')
+            with self.assertRaises(RuntimeError):h.child_environment(plan,'build','escape')
+
     def fixture(self,profile=1,mode='measure'):
         rows=106299 if mode=='measure' else 17
         valid=dict(kind='validation',graph_direct_bits_equal=True,all_guards=True,inputs_unchanged=True)
