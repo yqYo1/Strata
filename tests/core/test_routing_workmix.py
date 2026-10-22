@@ -3,6 +3,7 @@ import copy
 import io
 from pathlib import Path
 import sys
+import struct
 import unittest
 
 sys.dont_write_bytecode = True
@@ -33,6 +34,7 @@ class RoutingWorkmixTests(unittest.TestCase):
         self.assertEqual(summary['cpu_jobs'],768)
         encoded = route.encode_counts(counts)
         self.assertEqual(encoded[:4],b'SRWC');self.assertEqual(len(encoded),393236)
+        self.assertEqual(route.read_counts(encoded),counts)
 
     def test_partial_reordered_ids_and_nonplaceholder_weights_rejected(self):
         data,w,m,f,e = fixture()
@@ -66,6 +68,30 @@ class RoutingWorkmixTests(unittest.TestCase):
             text.replace('strata trace: window 33213 1','strata trace: read 10 tokens (windows)\nstrata trace: window 33213 1')]
         for changed in changes:
             with self.subTest(changed=changed),self.assertRaises(RuntimeError):route.request_windows(changed,[sample])
+
+    def test_matrix_header_and_shape_refusal(self):
+        data,w,m,f,e=fixture();counts,_=route.decode(io.BytesIO(data),w,m,f,e)
+        raw=route.encode_counts(counts)
+        for wrong in [raw[:-1],raw+b'\0',b'BAD!'+raw[4:],raw[:4]+b'\2\0\0\0'+raw[8:]]:
+            with self.subTest(size=len(wrong)),self.assertRaises(RuntimeError):route.read_counts(wrong)
+
+    def test_window_frequency_differs_from_entries_with_equal_quotas(self):
+        profile=Path(__file__).resolve().parents[2]/'data/expert-profile.bin'
+        raw=profile.read_bytes();order=[e for l,e in struct.iter_unpack('<HH',raw[24:24+48*512*4]) if l==0]
+        counts=[[[0]*4 for _ in range(512)] for _ in range(48)]
+        for e in order[:25]:counts[0][e][0]=100
+        counts[0][order[25]][3]=5  # 20 entries, five unique callbacks
+        counts[0][order[26]][0]=10 # ten entries, ten unique callbacks
+        jobs=route.ranked_membership(counts,profile,'windows');entries=route.ranked_membership(counts,profile,'entries')
+        self.assertEqual(jobs[0].bit_count(),26);self.assertEqual(entries[0].bit_count(),26)
+        self.assertTrue(jobs[0]&(1<<order[26]));self.assertFalse(jobs[0]&(1<<order[25]))
+        self.assertTrue(entries[0]&(1<<order[25]));self.assertFalse(entries[0]&(1<<order[26]))
+
+    def test_counterfactual_reproduces_independently_bound_jobs_bytes_and_entries(self):
+        data,w,m,f,e=fixture();counts,_=route.decode(io.BytesIO(data),w,m,f,e)
+        predicted=route.counterfactual(counts,m,f)
+        for k in ['cpu_jobs','cpu_entries','vram_entries','jobs_NT','logical_job_blob_bytes']:
+            self.assertEqual(predicted[k],e[k])
 
 
 if __name__ == '__main__':unittest.main()

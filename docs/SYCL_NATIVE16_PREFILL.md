@@ -132,12 +132,29 @@ request footer. Combining these facts with a quiescent official request gate
 can establish callback boundaries without a rebuild; the route file alone
 cannot. Reader/controller source`063069d5d` passed ten host tests, including
 partial/reordered records, invalid IDs, placeholder weights, membership/format
-counter mismatches and missing phase/window frames. A separate one-process
-collection plan must conserve every provider/format/NT
-bin and exact byte spans, including all four warmups, before the long request.
-Keep only one393236-byte expert/window count matrix for the immediate offline
-static-cache decision. This is logical-work evidence, not CPU service, physical
-traffic, a speed improvement or adoption. No routing collection has run yet.
+counter mismatches and missing phase/window frames. Plan`9912c20d4` then passed
+the one-process collection: all five requests conserve every provider/format/NT
+bin and exact byte spans. The quiescent warmup prefix is152064 bytes; total
+routing is17626752 bytes. The SYCL verifier resumes its next segment only after
+the callback/file writer returns, so it cannot overwrite these IDs mid-write.
+The long request read33214 fresh/generated3611 tokens, with1035 windows/4137
+verifier rows and the original1370846 CPU jobs/2796077900800 logical bytes.
+Normal closure, all15 post-model hashes and no fresh fault were verified.
+This is logical-work evidence, not CPU service, physical traffic or clean speed.
+
+The [compact route result](../bench/results/2026-10-15-pr6-recovery-audit/routing-workmix-current.json)
+keeps individual measurements, exact framing checks and archive`56ccbbfd1`.
+Replay reencoded the393236-byte expert/window matrix exactly. The matrix is the
+sole raw consumer for an immediate offline comparison of shipped ranks,
+token-entry frequency and unique-window frequency, retaining each layer's26
+slots (last34), allocation and protected-prefix bytes. Stable original-rank
+ties make selection reproducible. Window frequency minimizes logical CPU blob
+visits on these captured routes; only a prospective>=5% reduction permits
+proposing a new model plan. Actual changed-residency routes, prefill/decode
+preservation, both MTP workloads, independent workload/agent/task/full physical
+context and RESTORE gates remain separate. Successful raw routes/logs/JIT and
+the one-use collector are retired after replay/source recovery; the compact
+result records remaining consumers and actual deletion status.
 
 The prior MTP draft wrapper was about33ms/window. At the observed emitted
 outputs/window, prose's conditional whole-window budget at70tok/s is about31ms.

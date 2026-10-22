@@ -6,6 +6,8 @@ request gates and the complete STRATA_TRACE/census. A route file alone has none
 of those guarantees. Counts below are logical work, not CPU service or bus bytes.
 """
 from collections import Counter
+import hashlib
+from pathlib import Path
 import re
 import struct
 
@@ -93,3 +95,83 @@ def encode_counts(counts):
     # Versioned little-endian header followed by layer/expert/NT1..4 uint32s.
     return struct.pack('<4s4I',b'SRWC',1,LAYERS,EXPERTS,4) + b''.join(
         struct.pack('<4I',*row) for layer in counts for row in layer)
+
+
+def read_counts(raw):
+    require(len(raw) == 393236 and struct.unpack_from('<4s4I',raw) == (b'SRWC',1,48,512,4),
+            'unsupported/incomplete expert-window matrix')
+    rows = list(struct.iter_unpack('<4I',raw[20:]))
+    return [[list(v) for v in rows[l*512:(l+1)*512]] for l in range(48)]
+
+
+def ranked_membership(counts, profile, by):
+    import cpu_work_census as census
+    require(by in ('windows','entries'),'unknown cache score')
+    quotas = [m.bit_count() for m in census.expected_membership(profile)]
+    raw = Path(profile).read_bytes(); order = [[] for _ in range(48)]
+    for l,e in struct.iter_unpack('<HH',raw[24:24+48*512*4]):order[l].append(e)
+    masks = []
+    for l in range(48):
+        def score(e):return sum(c*(n+1 if by=='entries' else 1) for n,c in enumerate(counts[l][e]))
+        # Stable sort retains original layer-local rank for equal observations.
+        chosen = sorted(order[l],key=lambda e:-score(e))[:quotas[l]]
+        masks.append(sum(1<<e for e in chosen))
+    return masks
+
+
+def counterfactual(counts, membership, formats):
+    jobs, cpu, gpu, weight_bytes = [0]*8,0,0,0
+    for l in range(48):
+        for e,row in enumerate(counts[l]):
+            entries = sum((n+1)*c for n,c in enumerate(row))
+            if membership[l] & (1<<e):gpu += entries
+            else:
+                cpu += entries;weight_bytes += sum(row)*formats[l][2]
+                for n,c in enumerate(row):jobs[n] += c
+    return dict(cpu_jobs=sum(jobs),cpu_entries=cpu,vram_entries=gpu,jobs_NT=jobs,
+        logical_job_blob_bytes=weight_bytes,
+        membership_sha256=hashlib.sha256(b''.join(m.to_bytes(64,'little') for m in membership)).hexdigest())
+
+
+def analyze(record, profile, manifest):
+    """Fixed-route counterfactual only; changed residency may change future IDs.
+
+    Compare original ranks, token-entry frequency and unique-window frequency
+    with the same per-layer quotas. Only the latter may propose a future model
+    plan, and only for a >=5% logical-byte reduction. That is not a speed gate.
+    """
+    import cpu_work_census as census
+    require(record['passed'] and record['complete'] and record['ownership_closed'] and
+        not record['active'],'closed qualified routing record required')
+    for name,path in (('profile',profile),('manifest',manifest)):
+        pin=record['rank_inputs'][name]
+        require(Path(path).resolve() == Path(pin['path']).resolve() and
+            hashlib.sha256(Path(path).read_bytes()).hexdigest() == pin['sha256'],'ranking input changed: '+name)
+    descriptor = record['per_expert_counts'];raw = Path(descriptor['path']).read_bytes()
+    require(len(raw) == descriptor['bytes'] and hashlib.sha256(raw).hexdigest() == descriptor['sha256'],
+        'expert count matrix changed')
+    counts, formats = read_counts(raw),census.manifest_formats(manifest)
+    expected = record['census']
+    require(all(sum((n+1)*c for row in layer for n,c in enumerate(row)) == expected['rows']*10
+        for layer in counts),'matrix layer/row conservation differs')
+    masks = census.expected_membership(profile); base = counterfactual(counts,masks,formats)
+    require(base['logical_job_blob_bytes'] > 0 and all(base[k] == expected[k] for k in base),'matrix/native census differs')
+    values = {}
+    for mode in ('entries','windows'):
+        chosen = ranked_membership(counts,profile,mode)
+        require([m.bit_count() for m in chosen] == [m.bit_count() for m in masks], 'cache quotas changed')
+        values[mode] = counterfactual(counts,chosen,formats)
+        values[mode]['logical_bytes_ratio'] = values[mode]['logical_job_blob_bytes']/base['logical_job_blob_bytes']
+        values[mode]['replaced_pairs'] = sum((a&~b).bit_count() for a,b in zip(masks,chosen))
+    require(values['windows']['logical_job_blob_bytes'] <= values['entries']['logical_job_blob_bytes'] and
+        values['windows']['logical_job_blob_bytes'] <= base['logical_job_blob_bytes'],
+        'window ranking violates fixed-quota minimum')
+    sizes = [(z+255)//256*256 for _,_,z in formats]
+    slots = [l for l,m in enumerate(masks) for _ in range(m.bit_count())]
+    allocation = sum(sizes[l] for l in slots);prefix = sum(sizes[l] for l in slots[:128])
+    return dict(kind='fixed-observed-route counterfactual;not model performance',baseline=base,rankings=values,
+        unchanged_geometry=dict(slots=len(slots),allocated_bytes=allocation,prefix128_bytes=prefix,
+            maximum_loan_bytes=allocation-prefix,actual_candidate_admission_qualified=False),
+        decision=dict(can_propose_new_model_plan=values['windows']['logical_bytes_ratio']<=.95,
+            prospective_logical_ratio_max=.95,clean_speed_qualified=False,adoption_qualified=False),
+        limits='Training request only;no per-expert CPU service or physical traffic measured. Changed CPU/GPU residency may alter future routes/output. Any pilot needs a new committed plan,actual admission,phase preservation and both MTP workloads;adoption also requires independent workloads/agent/task/full physical262144/session/RESTORE.')
