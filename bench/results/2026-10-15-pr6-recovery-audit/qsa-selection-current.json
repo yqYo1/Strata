@@ -1,5 +1,5 @@
 {
-  "stage": "prepared",
+  "stage": "closed_prelaunch",
   "mode": "engine-compare",
   "source_commit": "03034619a89f9190f28e19123f49d0efe34a4ce5",
   "build_source_commit": "6e40afc1beddd059ee518617f6c1efce1da14aca",
@@ -442,5 +442,20 @@
     "tests": 9,
     "passed": true,
     "scope": "Duplicate,future,negative,truncated/missing/reordered records and unused warmup padding;logical union reference. No GPU or model execution."
-  }
+  },
+  "GPU_executed": false,
+  "native_launch_permitted": false,
+  "original_plan": {
+    "commit": "a089a8496",
+    "path": "bench/results/2026-10-15-pr6-recovery-audit/qsa-selection-current.json",
+    "sha256": "037ef68913e7a6f4b2b19ceb24d09eb8a84fc32b093548590f43139caeb8cc22"
+  },
+  "prelaunch_refusal": {
+    "mechanism": "Existing native STRATA_QSA_DUMP ignores cudaMemcpyAsync and cudaStreamSynchronize return statuses. The SYCL compatibility bridge translates exceptions into error returns; a failed drain can leave work using a host vector that is then destroyed. Ignored file-write/close failures also require explicit failure propagation.",
+    "source": "src/prefill/prefill.cpp:2965",
+    "native_source": "6e40afc1beddd059ee518617f6c1efce1da14aca",
+    "evidence_scope": "Static source/contract defect,not an observed GPU failure or claim about previous hangs. Prepared capture never launched.",
+    "safety_action": "Close original capture plan without refreshing its pins. Add checked guarded readback and checked file output;qualify a separate diagnostic native build before re-planning. Keep current production engine/12fixtures/decode unchanged."
+  },
+  "next_action": "Finish native Luna/max report review. Prepare a checked-copy/lifetime/file-output helper and independently qualified native diagnostic overlay. Resolve the existing primary build provenance hold before another engine build; then commit a new capture plan. No rerun of this original plan."
 }

@@ -432,6 +432,15 @@ Use the reviewed matched counterfactual resource protocol for the next
 attribution decision before another layout variation; keep calibration separate
 from claims about physical traffic, hardware saturation and model speed.
 
+The next real-selection diagnostic is stopped before GPU launch. Its existing
+native dump hook ignores copy and synchronization errors; failed completion can
+release a still-live host vector. This is a source-contract finding, not an
+observed GPU fault. Nine host parser tests pass, but that does not qualify the
+native readback. The original prepared plan remains failed/closed in
+[the capture result](../bench/results/2026-10-15-pr6-recovery-audit/qsa-selection-current.json).
+A checked lifetime/file-output path and separate diagnostic native qualification
+are required before a new plan; selected6e40 and decode remain unchanged.
+
 Remaining model gates are repeated phase-preserving adoption evidence,
 agent-session and task quality, full physical262144 tokens including the final
 slots and tail boundaries, prefill-to-decode/session/RESTORE, and70tok/s decode.
