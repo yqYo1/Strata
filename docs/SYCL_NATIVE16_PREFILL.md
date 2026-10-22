@@ -325,9 +325,9 @@ advance from the kernel-only gain,discard slow samples or dismiss them as noise.
 Both arms have substantial variation,including unchanged Down;the largest
 within-cell max/min ratio is recorded with the
 [48 cell summaries and all240 archived samples](../bench/results/2026-10-15-pr6-recovery-audit/cpu-iq2-indices-pool-current.json).
-These data do not establish its cause or hardware saturation. The next bounded
-question is unchanged-policy baseline attribution of useful job CPU/wall,spin,
-CV wait and runnable delay where scheduler evidence is available.
+These data do not establish its cause or hardware saturation. The unchanged-policy
+baseline attribution below now separates job scopes from pool waits;the failed
+PDEP comparison remains rejected.
 
 Main recovered110 consumer/helper,1376 GGML and9853 native inputs before retiring
 109 auxiliary files/87507238B and the unused PDEP/pool source,fixture,controller,
@@ -338,6 +338,38 @@ ownership checks:four products/78510608B. Their unique TU sources,objects,header
 and receipts remain;missing final-link inputs are still a provenance failure.
 The two larger old-product receipt joins remain explicitly pending in the
 current build result;this is not global cleanup.
+
+The private unchanged-policy CPU observer at`e39d0d389` is now closed. All16
+preflight processes and32 timing processes passed numerical,phase,placement and
+accounting checks. The160 timing samples are at least1s;all96 observed thread
+lifetimes partition exactly into disjoint wall/CPU states. Both observed/raw
+ratios pass the prospective1.10 ceiling for each shape,phase and gap;the maximum
+is1.054948. This qualifies this fixture attribution,not a precise observer-cost
+estimate or a speedup. Nine shared CPU translation units have identical compiler
+arguments in both arms. Product code,20ms park-spin policy and the qualified
+engine remain unchanged.
+
+Across the observed root lifetimes,including two warm passes,continuous batches
+spend about75..83% of CPU time in GU/Down task scopes,14..20% in worker spin and
+2.3..4.9% in host completion waits. Task scopes include preparation,math and
+stalls;these percentages are neither hardware saturation nor additive model
+wall time. With an artificial40ms gap,worker spin consumes87.6..90.6% of CPU
+and about98.5..100.1 aggregate CPU-ms per batch,consistent with five workers'
+20ms policy. This controlled gap is not the actual model idle distribution and
+justifies no global waiting-policy change. Runnable delay remains unknown:
+scheduler statistics are0,perf_event_paranoid is4 and scheduler event-ID reads
+are denied. No system setting was changed. CV scope includes blocking,runnable
+delay,predicate checks and lock reacquisition,so it is not pure blocked sleep.
+
+The [compact state-attribution result](../bench/results/2026-10-15-pr6-recovery-audit/cpu-pool-states-current.json)
+retains all160 samples and per-thread state totals for the next resource-budget
+decision. Its next action relates the actual verifier format/job census to
+logical weight volume and compatible CPU/RAM calibration,before choosing another
+phase-specific optimization. Physical RAM/PCIe traffic,hardware ceilings and
+in-model idle distribution remain unmeasured. No production optimization or
+model trial is adopted. The earlier private-fixture affinity-initialization
+failure remains failed in`5c47879f0`;its94files/15146747B were retired after source
+recovery before building the corrected fixture.
 
 ## Tensor storage and precision
 
