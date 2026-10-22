@@ -246,6 +246,20 @@ bytes. This identifies the real head dispatch,not its service time or residency
 budget. A bounded source/shape-matched head calibration is a separate next
 discriminator;no precision or inference change has been adopted.
 
+The isolated`bench/sycl/mtp_head` consumer uses the unchanged production CMake
+resolver and Q8_1-quantize/Q6_K-MMVQ kernels. Its prospective sequence is a
+traced17-row check,full106299-row validation,then six ordinary/profiled graph
+processes in0/1/1/0/0/1 order. Every real selected row must pass the existing
+dequantized-Q6_K/Q8_1 reference bound;direct/graph bits,canaries and checked
+retirement must pass. Each process keeps five>=1s wall/CPU samples;profiled
+processes additionally keep64 qualified two-node head envelopes outside timing.
+The original source's ROWS1/WG128 Q6_K launch has uniform barrier participation,
+10 reduction blocks,384B local partials and bounded row/index arithmetic for
+this shape. Allocation owners outlive checked completion and graph retirement.
+Comparing three isolated head envelopes with31.208ms/window guides a subsequent
+decision;cache/interference and graph context prevent an in-model share claim.
+Only the auxiliary measurement build is created;the original engine is retained.
+
 ## Tensor storage and precision
 
 `STRATA_SYCL_PREFILL_NATIVE16=bf16` selects an experimental kernel path only
