@@ -306,13 +306,38 @@ latency,not a model decode gain or hardware-saturation proof. See the
 [compact samples and pinned full evidence](../bench/results/2026-10-15-pr6-recovery-audit/cpu-iq2-indices-current.json).
 
 After exact source/recipe recovery,Main retired107 auxiliary files/18268713B,
-normal logs and eight captures. Only the private candidate source remains for
-an imminent independently planned production-pool/dispatch comparison;the old
-fixture,controller,test and full plan are recoverable at`4176ff75a`. That next
-comparison must retain the current prefill producer,scope substitution explicitly
-to decode,and exercise actual NT1–4 dispatch and group sizes before a model
-trial is considered. The original6e40 engine+12fixtures,prefill/decode settings
-and1256-slot placement remain unchanged.
+normal logs and eight captures. That kernel fixture/controller/test/plan is
+recoverable at`4176ff75a`.
+
+The following production-pool comparison at`341d0d947` is closed and **does not
+permit advancement**. Both arms retain the original phase dispatcher,IQ2 pair
+flag,NT2–4 math,quantization,Down and five-workers-plus-host placement;only a
+private link-time pair substitution differs. Two numerical and six independent
+timing processes pass all60 producer contracts and complete pool outputs for
+168 experts x2 formats x2 rounded code/prose mixtures. Prefill performs zero
+wrapped calls/rows before and after timing;all decode NT1 rows reach the selected
+producer. All eight9461760-byte captures agree,and240 samples meet the1s floor.
+
+Candidate/reference full-pool latency geometric means are0.929106 for22/20 and
+0.979860 for22/42,but maximum ratios1.317091/1.413131 fail both independent
+prospective gates;the first Down42 process-pair mean1.021423 also fails. Do not
+advance from the kernel-only gain,discard slow samples or dismiss them as noise.
+Both arms have substantial variation,including unchanged Down;the largest
+within-cell max/min ratio is recorded with the
+[48 cell summaries and all240 archived samples](../bench/results/2026-10-15-pr6-recovery-audit/cpu-iq2-indices-pool-current.json).
+These data do not establish its cause or hardware saturation. The next bounded
+question is unchanged-policy baseline attribution of useful job CPU/wall,spin,
+CV wait and runnable delay where scheduler evidence is available.
+
+Main recovered110 consumer/helper,1376 GGML and9853 native inputs before retiring
+109 auxiliary files/87507238B and the unused PDEP/pool source,fixture,controller,
+test and plan. Original source/results remain at`4c9cf6e57`. The qualified6e40
+engine+12fixtures,prefill/decode settings and1256-slot placement remain unchanged.
+Two old unadopted linked variants were also retired after bounded provenance and
+ownership checks:four products/78510608B. Their unique TU sources,objects,headers
+and receipts remain;missing final-link inputs are still a provenance failure.
+The two larger old-product receipt joins remain explicitly pending in the
+current build result;this is not global cleanup.
 
 ## Tensor storage and precision
 

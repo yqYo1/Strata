@@ -145,7 +145,8 @@
       "files": 5,
       "bytes": 38738,
       "reason": "Closed kernel fixture/controller/test/full plan;restore from Git for reproduction. Only candidate.cpp retained for named imminent pool comparison;Git deletion diff gives paths/blob identities."
-    }
+    },
+    "remaining_candidate_retired_at_pool_closure": true
   },
   "schema": "strata-iq2-indices-closed-v1",
   "performance_gate_passed": true,
@@ -486,11 +487,16 @@
     "all_work_and_sample_gates_passed": true
   },
   "decision": "Both format-specific kernel-only performance gates pass. Full-unroll exact PDEP index construction reduces median-pair latency by13.06%/11.92%;all ratios<1. This permits a separate source-pinned production-pool plan only. No model adoption,precision change,critical-path share or hardware saturation claim. Native prefill/decode,configuration and1256-slot placement unchanged.",
-  "next_consumer": {
-    "source": "bench/sycl/cpu_iq2_indices/candidate.cpp",
-    "purpose": "Imminent private comparison through unchanged production ExpertPool/native_gu_rows dispatch,NT1-4 actual formats and group sizes. Link-time candidate substitution must preserve explicit decode phase and include identical wrapper cost in both arms;prefill must not reach the candidate. Commit exact fixture,source and independent plan before building. A kernel-only pass does not qualify this route.",
-    "review_point": "Next Main implementation boundary;remove this source if that pool comparison is cancelled or closed. Do not retain the old fixture/controller or auxiliary build."
-  },
-  "consumer": "Preserve exact positive component decision and its limits;use private candidate only for the named next production-pool comparison.",
-  "review_point": "At the next pool source/plan boundary and before any model route trial."
+  "consumer": "Historical exact-index kernel gain and its failed production-pool advancement. No active implementation consumer;recover original source/plan from Git for a concrete future question.",
+  "review_point": "Reconsider only after a new independently planned mechanism/shape question;all unused prototype source is retired.",
+  "consumer_outcome": {
+    "pool_result": "bench/results/2026-10-15-pr6-recovery-audit/cpu-iq2-indices-pool-current.json",
+    "source": "341d0d94768a9c089c75ea44258e56d86b754435",
+    "performance_gate_passed": false,
+    "latency_geomeans": [
+      0.9291064114825683,
+      0.9798596420870778
+    ],
+    "decision": "Both full-pool stability gates fail;kernel-only gain permits no inference advancement."
+  }
 }
