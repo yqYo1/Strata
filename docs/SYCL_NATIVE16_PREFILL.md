@@ -162,6 +162,17 @@ context and RESTORE gates remain separate. Successful raw routes/logs/JIT and
 the one-use collector are retired after replay/source recovery; the compact
 result records remaining consumers and actual deletion status.
 
+The next pilot uses the original profile and the window-ranked profile in two
+independent processes. Each runs the official thinking code/prose pair after
+four warmups. The deterministic generator preserves all original layer labels,
+all24576 unique pairs and the reverse map; each per-layer slot count and byte
+offset remains unchanged. Only a prospective reduction of at least5% in actual
+CPU logical bytes/verifier row, increased GPU entry fraction and no token-latency
+increase in **each** workload permits a later clean repeated plan. Native
+membership, all six loan/refill cycles, long8192/BF16/mode10/48-layer restoration,
+owned closure,15 model hashes and fresh-fault checks remain mandatory. This
+does not adopt a new cache profile or change the selected decode configuration.
+
 The prior MTP draft wrapper was about33ms/window. At the observed emitted
 outputs/window, prose's conditional whole-window budget at70tok/s is about31ms.
 This is a charged serial budget, not GPU service or a hardware ceiling. Attribute

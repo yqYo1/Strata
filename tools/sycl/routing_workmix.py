@@ -104,19 +104,43 @@ def read_counts(raw):
     return [[list(v) for v in rows[l*512:(l+1)*512]] for l in range(48)]
 
 
-def ranked_membership(counts, profile, by):
+def ranked_experts(counts, profile, by):
     import cpu_work_census as census
     require(by in ('windows','entries'),'unknown cache score')
-    quotas = [m.bit_count() for m in census.expected_membership(profile)]
+    census.expected_membership(profile)  # Validate the complete header/reverse map.
     raw = Path(profile).read_bytes(); order = [[] for _ in range(48)]
     for l,e in struct.iter_unpack('<HH',raw[24:24+48*512*4]):order[l].append(e)
-    masks = []
+    result = []
     for l in range(48):
         def score(e):return sum(c*(n+1 if by=='entries' else 1) for n,c in enumerate(counts[l][e]))
         # Stable sort retains original layer-local rank for equal observations.
-        chosen = sorted(order[l],key=lambda e:-score(e))[:quotas[l]]
-        masks.append(sum(1<<e for e in chosen))
-    return masks
+        result.append(sorted(order[l],key=lambda e:-score(e)))
+    return result
+
+
+def ranked_membership(counts, profile, by):
+    import cpu_work_census as census
+    quotas = [m.bit_count() for m in census.expected_membership(profile)]
+    return [sum(1<<e for e in order[:cap]) for order,cap in
+        zip(ranked_experts(counts,profile,by),quotas)]
+
+
+def window_profile(counts, profile):
+    """Change expert order only, preserving all original layer labels and bytes.
+
+    The native per-layer loader keeps its original quotas/physical slot order.
+    The complete reverse map is regenerated, including uncached experts.
+    """
+    # Also rejects malformed dimensions/counts before indexing or sorting them.
+    encode_counts(counts)
+    ranked = [iter(row) for row in ranked_experts(counts,profile,'windows')]
+    raw = Path(profile).read_bytes()
+    pairs = [(layer,next(ranked[layer])) for layer,_ in
+        struct.iter_unpack('<HH',raw[24:24+48*512*4])]
+    reverse = [0]*(48*512)
+    for index,(layer,expert) in enumerate(pairs):reverse[layer*512+expert] = index
+    return (raw[:24] + b''.join(struct.pack('<HH',*pair) for pair in pairs) +
+        struct.pack('<'+'i'*(48*512),*reverse))
 
 
 def counterfactual(counts, membership, formats):

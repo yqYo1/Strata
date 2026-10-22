@@ -4,6 +4,7 @@ import io
 from pathlib import Path
 import sys
 import struct
+import tempfile
 import unittest
 
 sys.dont_write_bytecode = True
@@ -92,6 +93,27 @@ class RoutingWorkmixTests(unittest.TestCase):
         predicted=route.counterfactual(counts,m,f)
         for k in ['cpu_jobs','cpu_entries','vram_entries','jobs_NT','logical_job_blob_bytes']:
             self.assertEqual(predicted[k],e[k])
+
+    def test_generated_profile_preserves_layer_labels_and_exact_candidate_membership(self):
+        import cpu_work_census as census
+        profile=Path(__file__).resolve().parents[2]/'data/expert-profile.bin'
+        data,w,m,f,e=fixture();counts,_=route.decode(io.BytesIO(data),w,m,f,e)
+        original=profile.read_bytes();generated=route.window_profile(counts,profile)
+        self.assertEqual(len(generated),len(original));self.assertEqual(generated[:24],original[:24])
+        old=list(struct.iter_unpack('<HH',original[24:24+48*512*4]))
+        new=list(struct.iter_unpack('<HH',generated[24:24+48*512*4]))
+        self.assertEqual([l for l,_ in old],[l for l,_ in new]);self.assertEqual(set(old),set(new))
+        with tempfile.TemporaryDirectory() as directory:
+            path=Path(directory)/'profile.bin';path.write_bytes(generated)
+            masks=census.expected_membership(path)
+        self.assertEqual(masks,route.ranked_membership(counts,profile,'windows'))
+        self.assertEqual([v.bit_count() for v in masks],[26]*47+[34])
+        self.assertEqual(generated,route.window_profile(counts,profile))
+
+    def test_zero_counts_are_byte_exact_original_with_stable_ties(self):
+        profile=Path(__file__).resolve().parents[2]/'data/expert-profile.bin'
+        counts=[[[0]*4 for _ in range(512)] for _ in range(48)]
+        self.assertEqual(route.window_profile(counts,profile),profile.read_bytes())
 
 
 if __name__ == '__main__':unittest.main()
