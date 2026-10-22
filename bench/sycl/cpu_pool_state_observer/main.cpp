@@ -10,6 +10,7 @@
 #include "ggml-common.h"
 #include <algorithm>
 #include <thread>
+#include <optional>
 #include "observer.hpp"
 #include <array>
 #include <chrono>
@@ -99,7 +100,7 @@ struct Sample {uint64_t passes,calls;double wall,cpu,gu,quant,down;Delta work;};
 void run_pass(cpu::ExpertPool& pool,Inputs& in,Schedule& schedule,cpu::NativeGuPhase phase,int gap_ms){
     for(auto& jobs:schedule.stream){pool.run_split_multi_native(in.f,jobs.data(),schedule.n,phase);if(gap_ms)std::this_thread::sleep_for(std::chrono::milliseconds(gap_ms));}
 }
-void emit_profile(uint64_t calls,cpu::NativeGuPhase phase){
+void emit_profile(uint64_t calls,cpu::NativeGuPhase phase,const std::vector<int>& physical){
 #if POOL_OBSERVED
     using namespace pool_observer;std::set<uint64_t> tids;std::set<int> cores;
     std::array<uint64_t,Kinds> entries{};const auto selected=phase_of(phase);
@@ -114,16 +115,16 @@ void emit_profile(uint64_t calls,cpu::NativeGuPhase phase){
         std::cout<<"{\"kind\":\"thread\",\"slot\":"<<i<<",\"tid\":"<<s.tid<<",\"core\":"<<s.core<<",\"life_wall_ns\":"<<wall<<",\"life_cpu_ns\":"<<cpu_ns<<",\"voluntary_switches\":"<<s.voluntary_end-s.voluntary_start<<",\"involuntary_switches\":"<<s.involuntary_end-s.involuntary_start<<",\"states\":[";
         bool first=true;for(int p=0;p<Phases;++p)for(int k=0;k<Kinds;++k){const auto& c=s.counters[p][k];if(!c.intervals)continue;if(!first)std::cout<<",";first=false;std::cout<<"["<<p<<","<<k<<","<<c.intervals<<","<<c.wall<<","<<c.cpu<<"]";}std::cout<<"]}"<<std::endl;
     }
-    const auto physical=cpu::physical_cores(false);need(tids.size()==6&&cores==std::set<int>(physical.begin(),physical.end()),"six physical observer threads");
+    need(tids.size()==6&&cores==std::set<int>(physical.begin(),physical.end()),"six physical observer threads");
     need(entries[GuTask]==18*calls&&entries[DownTask]==18*calls&&entries[Quant]==calls&&entries[WaitDone]==2*calls&&entries[WaitParked]==4*calls&&entries[OtherTask]==0,"observer task/phase entry conservation");
 #else
-    (void)calls;(void)phase;
+    (void)calls;(void)phase;(void)physical;
 #endif
 }
 int main(int argc,char** argv){try{
     need(argc==8,"mode fixture capture down mixture phase gap_ms");const std::string mode=argv[1];need(mode=="check"||mode=="measure","mode");const int selected_down=std::stoi(argv[4]),mix=std::stoi(argv[5]),selected_phase=std::stoi(argv[6]),gap=std::stoi(argv[7]);
     need((selected_down==20&&mix==0)||(selected_down==42&&mix==1),"bounded shape");need((selected_phase==0||selected_phase==1)&&(gap==0||gap==40),"bounded phase/gap");const auto phase=selected_phase?cpu::NativeGuPhase::Decode:cpu::NativeGuPhase::Prefill;
-    std::cout<<std::setprecision(17);const auto physical=cpu::physical_cores(false);need(physical.size()==6&&cpu::pin_current_thread(physical[0])>0,"pin host physical core");
+    std::cout<<std::setprecision(17);const auto physical=cpu::physical_cores(false);need(physical.size()==6,"six physical cores before pin");const auto inherited_affinity=cpu::pin_current_thread(physical[0]);need(inherited_affinity>0,"pin oracle host physical core");
     const char* pair=std::getenv("STRATA_IQ2_PAIR");need(pair&&std::strcmp(pair,"1")==0,"unchanged pair selection");
     std::ifstream spec(argv[2]);need(bool(spec),"fixture");std::string shard;int down,experts;uint64_t go,up,dn,bytes;std::unique_ptr<Inputs> in;unsigned formats=0;
     while(spec>>shard>>down>>go>>up>>dn>>bytes>>experts){need(experts==count&&(down==20||down==42),"format input");++formats;if(down==selected_down){need(!in,"duplicate format");in=std::make_unique<Inputs>(shard,down,go,up,dn,bytes);}}
@@ -135,9 +136,15 @@ int main(int argc,char** argv){try{
     std::vector<Sample> samples;samples.reserve(5);uint64_t total_calls=0;double warm_pass=0;
     {
 #if POOL_OBSERVED
-        pool_observer::Root host{5};
+        std::optional<pool_observer::Root> host;
 #endif
-        { cpu::ExpertPool pool(5,true,true);need(pool.workers()==5&&pool.host_works(),"unchanged pool configuration");
+        { // Topology discovery and workers must inherit the original allowed CPU mask.
+          cpu::restore_thread_affinity(inherited_affinity);need(cpu::physical_cores(false)==physical,"restore original topology before pool");
+          cpu::ExpertPool pool(5,true,true);need(pool.workers()==5&&pool.host_works(),"unchanged pool configuration");
+          need(cpu::pin_current_thread(physical[0])>0,"pin pool host physical core");
+#if POOL_OBSERVED
+          host.emplace(5);
+#endif
           run_pass(pool,*in,schedule,phase,gap);total_calls+=schedule.stream.size();
           const auto initial=cpu::iq2_gu_audit_snapshot();need(initial.enabled&&!initial.overflow&&initial.size==6,"six native audit threads");
           std::set<uint64_t> tids;std::set<int> cores;for(unsigned i=0;i<6;++i){const auto& t=initial.threads[i];need(t.tid&&t.pinned,"native pinned thread");tids.insert(t.tid);cores.insert(t.cpu);}need(tids.size()==6&&cores==std::set<int>(physical.begin(),physical.end()),"native physical placement");
@@ -149,7 +156,7 @@ int main(int argc,char** argv){try{
           }
         } // Stop/join all workers before any profile read.
     } // Close host ledger after the pool's stop/join protocol.
-    emit_profile(total_calls,phase);
+    emit_profile(total_calls,phase,physical);
     std::ofstream capture(argv[3],std::ios::binary);need(bool(capture),"capture");
     for(auto& batch:schedule.stream)for(auto& job:batch){int e=-1;for(int i=0;i<count;++i)if(job.out[0]==reinterpret_cast<float*>(in->output[i].data())){e=i;break;}need(e>=0,"output job identity");need(!std::memcmp(job.out[0],expected[e].data(),job.nt*H*sizeof(float)),"full pool output bits");for(int t=0;t<job.nt;++t)for(int r=0;r<H;++r)need(std::isfinite(job.out[t][r]),"finite pool output");for(size_t k=job.nt*H*sizeof(float);k<in->output[e].n;++k)need(in->output[e].data()[k]==0xa7,"inactive output");capture.write(reinterpret_cast<const char*>(job.out[0]),job.nt*H*sizeof(float));}
     capture.close();need(bool(capture),"capture close");in->check();
