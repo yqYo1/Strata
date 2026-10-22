@@ -404,15 +404,21 @@ staging evidence against the gather/clustered contrast. Physical VRAM traffic,
 cache behavior and hardware saturation remain unknown.
 
 
-The next source-only preparation separates QK's column-major B operand from
+The next component preparation separates QK's column-major B operand from
 PV's unchanged row-major B operand, storing K by logical cell and dimension.
 A reversible Main-authored overlay and the selected-arm numerical harness are
 prepared, with8192 unique in-bounds stores and matching logical matrix elements
 checked on the host. This is not compilation, GPU qualification or adoption.
 Generic API syntax does not prove installed BMG backend support; the official
 16-bit column-major test also carries an AMX-only comment and DG2 expected failure.
-Two report-only Orca Luna scopes investigate the installed layout contract and
-shared-memory methods while Main keeps the native engine unchanged. See the
+Two report-only Orca Luna scopes completed. Independent review found the
+compiler-matched matrix API permits this shape and layout; actual IGC lowering
+and B570 execution remain unqualified. The first build admission stopped on a
+mistyped review hash. A separate correction verifies the immutable source and
+selected-arm oracle binding, preserving the original refusal. The prospective
+three-process comparison requires at least5% aggregate latency improvement
+against both controls and improvement in every process/shape. Main keeps all13
+selected engine assets and the decode path unchanged. See the
 [pending component](../bench/results/2026-10-15-pr6-recovery-audit/qsa-colmajor-current.json).
 
 Remaining model gates are repeated phase-preserving adoption evidence,

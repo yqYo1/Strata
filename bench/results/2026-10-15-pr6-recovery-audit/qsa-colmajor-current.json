@@ -1,5 +1,5 @@
 {
-  "stage": "source_prepared_contract_pending",
+  "stage": "source_prepared",
   "base_native": "6e40afc1beddd059ee518617f6c1efce1da14aca",
   "generator": {
     "path": "tools/sycl/qsa_colmajor_sources.py",
@@ -51,7 +51,7 @@
   "active": false,
   "ownership_closed": true,
   "retention": "Five generated source inputs only for immediate contract review/qualification;no binary generation. If unsupported close/retire instead of adopting or renewing a generic hold. Selected13assets and separateprimary/Orca holds remain unchanged.",
-  "next_action": "Finish two report-only Orca scopes and nativeLuna/max review;record installedbackend contract findings before a committed build/qualification plan.",
+  "next_action": "Commit the bounded builder, source review correction and prospective gates, prepare/pin exact build recipe and dependencies, then compile. Small traced numerical check precedes all larger GPU runs.",
   "API_reference": {
     "official_spec": "https://github.com/intel/llvm/blob/fbccb466cc122c294a6c746dcf0d37e45ff70f3c/sycl/doc/extensions/experimental/sycl_ext_matrix/sycl_ext_oneapi_matrix.asciidoc",
     "local_reference_revision": "fbccb466cc122c294a6c746dcf0d37e45ff70f3c",
@@ -74,5 +74,117 @@
     "build_executed": false,
     "GPU_executed": false,
     "next_action": "Finished reviewer independently verifies original reviewed bytes and supplies separate correction;do not overwrite original review or refresh hashes to bypass admission."
+  },
+  "source_audit": {
+    "review_complete": true,
+    "prebuild_findings_resolved": true,
+    "review_revision": "d5e5a2324864d0513b668542d7b6db8b510c7546",
+    "original_review_sha256": "ba798d445f2218a2e188365510e96377783b4d1722346686882c393050845ecf",
+    "correction_sha256": "26920ffc8cc6056808fcea2a70b4927bf29536707af0cbb5c09008fe13ae9436",
+    "pin_correction": {
+      "revision": "d5e5a2324864d0513b668542d7b6db8b510c7546",
+      "current_head_at_correction": "b4e3b2dbfc4b1669e8b0667058a98bc3d207f366",
+      "source_path": "bench/sycl/qsa_colmajor_numerical.cpp",
+      "review_entered_sha256": "e28abf70dce02a82d61483e43ccf086f3f7e0e3511bc91501c3e7190bb10a59d",
+      "actual_d5_and_worktree_sha256": "e28abf70dce02a82d61483e43ccf086f3e7f0e3511bc91501c3e7190bb10a59d",
+      "d5_git_blob": "af9bcbf4df259d702565ac847e9fd19212c57c82",
+      "classification": "Transcription error in the review hash; immutable Git bytes and current bytes are identical, so no different source was reviewed."
+    },
+    "binding": "Pinned main maps colmajor to qsa_colmajor_functions()[2], whose header slot is colmajor::qsa_bf16_prefix_ordered_exp_batch. The macro-renamed call in numerical-reference.inc reaches that wrapper; route assertions require specialized_routes>0 and generic=0. The fixture also checks an independent BF16-operand/FP32-online scalar oracle and exact production prefix33 output bits.",
+    "installed_stack": {
+      "llvm": {
+        "version": "v7.1.0-pre",
+        "commit": "504366f4b82ff00bbac7b0c956635eed8bc599d8",
+        "executable_sha256": "1290881b4e12a5e002e5b0de0787f85328ee5fe19f253a54be1cdd97dc2f26eb"
+      },
+      "igc": {
+        "packages": [
+          "intel-igc-core-2 2.41.5",
+          "intel-igc-opencl-2 2.41.5"
+        ],
+        "recorded_loaded_library": "/usr/local/lib/libigc.so.2.41.5+1788943183",
+        "limit": "Release lists Battlemage support, not this joint_matrix layout's lowering."
+      },
+      "headers": {
+        "matrix-unified.hpp": "d76027407a09884b34879f5677b2efe1c634d6d058333d2fd83ecaa2b49a673e",
+        "matrix-unified-utils.hpp": "c4ec45d987a054e2e5ee7d51f2fbbabf2d4a50bff0b7d4124d5e01a1162f8e8a",
+        "matrix-intel.hpp": "524efda8771175ee9c271fc78fab547a4bf6e845ad471ac9d501375ff5834ccb"
+      },
+      "findings": [
+        "The compiler-matched spec permits row/col-major A and B and lists BMG G21/G31 BF16 A/B, FP32 accumulator/result, M<=8,N=16,K=16: the candidate's QK combination.",
+        "Installed headers map col_major to SPIR-V ColumnMajor and forward layout/stride. The generic load accepts local-space pointers; actual IGC local-load transformation is unknown.",
+        "BMG limits: stride*sizeof(T) multiple of 8 and <=2^24; base 4-byte aligned. Candidate stride=256 BF16=512 bytes; alignas(4) tile bases move by 16-cell/16-dimension multiples.",
+        "matrix_available checks subgroup 16, BF16/BF16/FP32/FP32 dimensions 8x16x16, and local-memory capacity; query has no layout field.",
+        "No IGC source, target JIT, emitted IR/ISA, SLM transactions, bank metric, or performance was inspected. IGC may rearrange or canonicalize the requested layout.",
+        "Intel LLVM issue #22926 reports BMG-G31 matrix-query failure on DPC++ 2025.3.3/runtime 26.05; Intel response calls that compiler old. Version-mismatched counterevidence, not a finding about installed v7.1.0-pre/IGC 2.41.5."
+      ],
+      "primary_sources": [
+        "https://github.com/intel/llvm/blob/504366f4b82ff00bbac7b0c956635eed8bc599d8/sycl/doc/extensions/experimental/sycl_ext_matrix/sycl_ext_oneapi_matrix.asciidoc",
+        "https://github.com/intel/intel-graphics-compiler/releases/tag/v2.41.5",
+        "https://github.com/intel/llvm/issues/22926"
+      ]
+    },
+    "review_scope": "Static source/API review only. Global address/value set unchanged; work-item assignment changes. Runtime lowering/safety/numerical/performance unqualified."
+  },
+  "qualification_plan": {
+    "trace_smoke": {
+      "processes": 12,
+      "arms": [
+        "default",
+        "control",
+        "colmajor"
+      ],
+      "pages": [
+        1,
+        4,
+        7,
+        16
+      ],
+      "cases_per_process": 2,
+      "expected_compute_launches": 23,
+      "candidate_route_counts": [
+        34,
+        0
+      ]
+    },
+    "parameter_validated": {
+      "processes": 12,
+      "cases_per_process": 11,
+      "candidate_route_counts": [
+        52,
+        0
+      ]
+    },
+    "resource": {
+      "exact_output_rows": 18,
+      "compute_launches_per_arm": [
+        8,
+        7,
+        7
+      ],
+      "subgroup": 16,
+      "require_positive_GRF_and_record_spill_local": true
+    },
+    "clean_timing": {
+      "independent_processes": 3,
+      "rotated_rounds": 6,
+      "arms": [
+        "default",
+        "control",
+        "colmajor"
+      ],
+      "shapes": [
+        "cap33_gathered",
+        "cap2051_gathered",
+        "cap2051_clustered"
+      ],
+      "samples": 162,
+      "queries": 8192,
+      "page": 4,
+      "minimum_batch_ms": 0.1,
+      "minimum_timer_floor_multiple": 1000,
+      "acceptance": "Latency GM <=0.95 against both production and namespace control; no aggregate shape ratio >1.05; each candidate per-process median strictly less than both controls for all three shapes. All other gates required. Do not revise criteria after observing results."
+    },
+    "phase_preservation": "Component-only separate executable; production engine and all13 assets remain unchanged. Before model integration preserve exact decode implementation/configuration/1256slots, handoff and repeated matched thinking-enabled strong/weakMTP generation. Any decode impact is a separation defect."
   }
 }
