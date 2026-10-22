@@ -650,10 +650,10 @@
     "change_from_initial_source_plan": "Extend6smallPage4/7processesto12foractualkernelproofonall4pagesbeforefullcases. Prospectiveonly,noearliercheckexistsoroutcomechanged."
   },
   "check_plan": {
-    "stage": "closed",
-    "mode": "resources",
-    "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-fixed-heads-v1/check-resources-v2",
-    "source_commit": "f7e90790414643374aa7833def0851d7d4108c37",
+    "stage": "prepared",
+    "mode": "perf",
+    "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-fixed-heads-v1/check-perf",
+    "source_commit": "08bec4c04f9b5e0fe51d9980b202f91678f802dd",
     "controller_inputs": {
       "tools/sycl/check_qsa_fixed_heads.py": "bd9e2a93d1515ba089e093fbf2f4ff89c486b2583398d401f29ed16b6cce2bf7",
       "tools/sycl/measure_down_scatter.py": "6d92d7212c7cad9bb7fdee6ef6877528b6240f990c7f74d032394933387ed2de",
@@ -723,7 +723,7 @@
       "retained_reference_until_exit": true,
       "runtime_teardown_qualified": false
     },
-    "gates": "fixed-head timing fixture verifies actualfast route on every invocation;3arms/22calls(default8,control/fixed-head each7). Require positive conserved table andexact3compute-family properties(SIMD16,WG128);all3args18afterunchangedgenericpaging. RecordactualdefaultGRF/private/spill/rawSLM,notoccupancy/hottraffic. SamePIDvalidation/exactbits/guards/immutability/normalclosure/sessionremoved/noFault;notcleanspeed/adoption.",
+    "gates": "3independentprocesses;6rotatedrounds;3shapes32768gather/117488gather/117488clustered;3arms;162samples. Queries8192,cap2051,Page4. Require eachtimedbatch>=.1ms and>=1000timerfloor. LatencyGM<=.95 vsdefault andnamespacecontrol,andallprocessratios<1; otherwiseclosewithoutmodeltrial. Componentpassesare not modeladoption.",
     "budgets": {
       "wall_s": 180,
       "cpu_s": 180,
@@ -734,7 +734,7 @@
     },
     "jobs": [
       {
-        "arm": "all",
+        "arm": "0",
         "environment": {
           "PATH": "/usr/bin:/bin",
           "HOME": "/home/yayoi",
@@ -751,62 +751,73 @@
           "STRATA_SYCL_VERIFY_NATIVE_CAPTURE": "0",
           "SYCL_CACHE_PERSISTENT": "0",
           "ZES_ENABLE_SYSMAN": "0",
-          "UR_ENABLE_LAYERS": "UR_LAYER_TRACING,UR_LAYER_PARAMETER_VALIDATION",
-          "UR_LOG_TRACING": "level:info;flush:info;output:stderr",
-          "UR_LOG_VALIDATION": "level:warning;flush:warning;output:stderr",
-          "UR_LOG_LOADER": "level:warning;flush:warning;output:stderr",
-          "UR_LOG_LEVEL_ZERO": "level:warning;flush:warning;output:stderr",
-          "TMPDIR": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-fixed-heads-v1/check-resources-v2/all/tmp",
-          "XDG_CACHE_HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-fixed-heads-v1/check-resources-v2/all/cache",
-          "STRATA_UR_PROBE_EXPECTED_LOADER": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_loader.so.0.12.0",
-          "STRATA_UNITRACE_TARGET_PRELOAD": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/ur-validation-preload-v2/libstrata_ur_validation.so",
-          "UNITRACE_FollowChildProcess": "1",
-          "UNITRACE_SystemTime": "1",
-          "UNITRACE_TraceOutputDir": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-fixed-heads-v1/check-resources-v2/all/trace"
+          "TMPDIR": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-fixed-heads-v1/check-perf/0/tmp",
+          "XDG_CACHE_HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-fixed-heads-v1/check-perf/0/cache"
         },
         "command": [
-          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/unitrace-indexed-collector-v1/unitrace",
-          "--session",
-          "StrataQsafixedheads488b7d8e768bc4e623c39f07",
-          "--device-timing",
-          "--verbose",
           "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-fixed-heads-v1/timing",
-          "--smoke",
+          "--component",
           "0"
         ],
-        "session": "StrataQsafixedheads488b7d8e768bc4e623c39f07"
-      }
-    ],
-    "collector_assets": {
-      "collector": {
-        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/unitrace-indexed-collector-v1/libunitrace_tool.so",
-        "bytes": 2329704,
-        "sha256": "e7626aedf7e5bdb983c74f9d3c2e00c52468756853afb69beb37c12b671a2f5c"
+        "session": null
       },
-      "launcher": {
-        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/unitrace-indexed-collector-v1/unitrace",
-        "bytes": 513168,
-        "sha256": "6faac1e74f18ce481581f3ed112611ec3e0a1f81eac7990b57b622f212294244"
+      {
+        "arm": "1",
+        "environment": {
+          "PATH": "/usr/bin:/bin",
+          "HOME": "/home/yayoi",
+          "LANG": "C.UTF-8",
+          "LC_ALL": "C.UTF-8",
+          "PYTHONDONTWRITEBYTECODE": "1",
+          "LD_LIBRARY_PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib:/opt/intel/oneapi/mkl/2026.1/lib",
+          "ONEAPI_DEVICE_SELECTOR": "level_zero:gpu",
+          "UR_ADAPTERS_FORCE_LOAD": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_adapter_level_zero_v2.so.0",
+          "UR_L0_V2_FORCE_DISABLE_COPY_OFFLOAD": "1",
+          "NEOReadDebugKeys": "1",
+          "EnableDirectSubmission": "0",
+          "STRATA_SYCL_PREFILL_SAME_QUEUE": "1",
+          "STRATA_SYCL_VERIFY_NATIVE_CAPTURE": "0",
+          "SYCL_CACHE_PERSISTENT": "0",
+          "ZES_ENABLE_SYSMAN": "0",
+          "TMPDIR": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-fixed-heads-v1/check-perf/1/tmp",
+          "XDG_CACHE_HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-fixed-heads-v1/check-perf/1/cache"
+        },
+        "command": [
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-fixed-heads-v1/timing",
+          "--component",
+          "1"
+        ],
+        "session": null
       },
-      "preload": {
-        "library": {
-          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/ur-validation-preload-v2/libstrata_ur_validation.so",
-          "sha256": "1d4e69d672d55fa0a126ae43b7b4743482cccca7e2f2bc22e0db2bfdad5bdc7c"
+      {
+        "arm": "2",
+        "environment": {
+          "PATH": "/usr/bin:/bin",
+          "HOME": "/home/yayoi",
+          "LANG": "C.UTF-8",
+          "LC_ALL": "C.UTF-8",
+          "PYTHONDONTWRITEBYTECODE": "1",
+          "LD_LIBRARY_PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib:/opt/intel/oneapi/mkl/2026.1/lib",
+          "ONEAPI_DEVICE_SELECTOR": "level_zero:gpu",
+          "UR_ADAPTERS_FORCE_LOAD": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_adapter_level_zero_v2.so.0",
+          "UR_L0_V2_FORCE_DISABLE_COPY_OFFLOAD": "1",
+          "NEOReadDebugKeys": "1",
+          "EnableDirectSubmission": "0",
+          "STRATA_SYCL_PREFILL_SAME_QUEUE": "1",
+          "STRATA_SYCL_VERIFY_NATIVE_CAPTURE": "0",
+          "SYCL_CACHE_PERSISTENT": "0",
+          "ZES_ENABLE_SYSMAN": "0",
+          "TMPDIR": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-fixed-heads-v1/check-perf/2/tmp",
+          "XDG_CACHE_HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-fixed-heads-v1/check-perf/2/cache"
         },
-        "loader": {
-          "path": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_loader.so.0.12.0",
-          "sha256": "bb6e1311850e4b1a924e42acae80c2b3610934625a4985aaa67967abe31356fc"
-        },
-        "component_source_commit": "f312b6691f508125db6cfc2580ca32a686ff2642",
-        "component_original_plan": {
-          "commit": "550c75f5fc954ee38b70230e32d2a48e12100d8a",
-          "path": "bench/results/2026-10-15-pr6-recovery-audit/research-index.json",
-          "sha256": "d12866b93c51e76a83e95638e66b6f6f4e0e33d779516a5fddecc178a6f8e10a"
-        },
-        "retained_reference_until_exit": true,
-        "runtime_teardown_qualified": false
+        "command": [
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-fixed-heads-v1/timing",
+          "--component",
+          "2"
+        ],
+        "session": null
       }
-    }
+    ]
   },
   "checks": [
     {
