@@ -9940,7 +9940,7 @@
   "qsa_counterfactual_resource_calibration_20261023": {
     "classification": "decision support",
     "schedulable_now": false,
-    "status": "active_orca_read_only",
+    "status": "reviewed_decision_support",
     "report_budget_bytes": 12288,
     "question": "Design defensible matched-shape, counter-free calibration experiments for the current QSA primitive: global gathered KV requests, SLM producer/consumer and BF16 joint_matrix QK/PV plus online softmax. Compare load-only/MMA-only/producer-only counterfactuals, compiler dead-code elimination prevention and dependency/occupancy changes, cache hot versus working-set cases, event versus wrapper timing, and exactly what each can or cannot bound. Propose a minimal discriminator sequence and stopping criteria, not code or another theoretical peak survey.",
     "nonduplication": "Current source and corrected33213-query work ledger are pinned; source-issued work and requested bytes over6.909s service do not establish physical traffic or saturation; local metric collection is unavailable. Earlier geometry and generic ceiling reports do not specify matched counterfactual validity.",
@@ -9948,8 +9948,8 @@
       "Current source and corrected33213-query work ledger are pinned; source-issued work and requested bytes over6.909s service do not establish physical traffic or saturation; local metric collection is unavailable. Earlier geometry and generic ceiling reports do not specify matched counterfactual validity."
     ],
     "report": "/home/yayoi/orca/workspaces/Strata/sycl/.cache/strata-research/20261023/qsa-counterfactual-calibration/report.md",
-    "consumer": "Review through the next resource-calibration selection; retain only a substantive reusable protocol or concrete current decision.",
-    "next_review": "Native Luna/max review after completion; Main keeps collection body unread.",
+    "consumer": "Main's next QSA resource-calibration selection; use only to form a committed bounded plan, not to infer a causal bottleneck.",
+    "next_review": "Retain through that selection. Afterward keep only the compact protocol/outcome in the existing result if used; otherwise retire the report after closure.",
     "rules_revision": "a9ef2c8048c7abd907fc04d87c4965fac8209685",
     "lifecycle": {
       "run": "run_432552edd149",
@@ -9959,13 +9959,28 @@
       "incarnation": "9d8acac1-323f-4897-8dd1-74ab35350659",
       "startup_model": "gpt-6-luna high",
       "turn_started": "observed",
-      "report_only_filesystem": true
+      "report_only_filesystem": true,
+      "closure": "Succeeded/accepted worker_done; external release/processAction none; exact Main-owned PTY closed/disconnected in same incarnation. delivery_37335bb77d1d acknowledged."
+    },
+    "sha256": "c8fd6b8fdad07c2e0b035f0a6777fb47cc4651886e6ca750fa0b47940153db44",
+    "report_bytes": 8811,
+    "worker_ownership_closed": true,
+    "review": {
+      "model": "native Codex gpt-6-luna max",
+      "sha256": "c8b8ffff89797ff96c816918df5e395c9ae0dc546b3311db7d0957104bc1e895",
+      "scope_depth": "Strong, finite protocol for QSA load/stage/matrix counterfactuals, DCE prevention, codegen/resource matching, cache treatment, wrapper versus event timing, and limits on inference.",
+      "corrections": [
+        "The cited official SYCL PDF URL currently resolves to SYCL 2020 revision 12, while the report labels it revision 11. Pin the intended revision or correct the label and verify the cited event semantics.",
+        "The Intel matrix-extension link is a mutable sycl branch, not an immutable provenance pin; retain as general navigation or pin the exact source revision before relying on a clause.",
+        "This is calibration decision support, not a runnable plan: before collection, commit exact inputs/arms and add the required timing-batch duration floor and timer-overhead eligibility checks."
+      ],
+      "disposition": "Retain through that selection. Afterward keep only the compact protocol/outcome in the existing result if used; otherwise retire the report after closure."
     }
   },
   "ragged_gqa_matrix_head_tile_methods_20261023": {
     "classification": "knowledge collection",
     "schedulable_now": false,
-    "status": "active_orca_read_only",
+    "status": "reviewed_retrieval_only",
     "report_budget_bytes": 14336,
     "question": "Compare matrix-tile mapping for ragged grouped-query attention head counts, especially12 query heads per KV head with native8-row BF16 matrix tiles: head padding versus fusing queries/heads, multi-query scheduling, masked tails and resource/lifetime costs. Use actual SGLang/vLLM/FlashInfer and transferable GPU/HPC designs, including original technical blogs/papers. Separate GQA prefill from decode, numerical order from storage rearrangement and source shape support from measured gains. Focus intra-tile head utilization and index correctness, not cross-workgroup cache locality or a generic attention survey. No implementation proposal is required.",
     "nonduplication": "Current source usesG12 and two8-row head tiles with4padded rows. Prior fixed-head loop candidate preserved those matrix tiles and missed speed gate; prior interquery-locality collection concerns cache scheduling, not ragged matrix-row packing. Source is present; no unavailable hardware counter is prerequisite.",
@@ -9973,8 +9988,8 @@
       "Current source usesG12 and two8-row head tiles with4padded rows. Prior fixed-head loop candidate preserved those matrix tiles and missed speed gate; prior interquery-locality collection concerns cache scheduling, not ragged matrix-row packing. Source is present; no unavailable hardware counter is prerequisite."
     ],
     "report": "/home/yayoi/orca/workspaces/Strata/sycl/.cache/strata-research/20261023/ragged-gqa-head-tiles/report.md",
-    "consumer": "Retrieval-only; review novelty before retention and retrieve only for a concrete future ragged-head mapping question.",
-    "next_review": "Native Luna/max review after completion; Main keeps collection body unread.",
+    "consumer": "Retrieval-only; Main keeps the report body unread until that trigger.",
+    "next_review": "Keep indexed only through the calibration decision and next mapping review; retire if no concrete mapping consumer is selected.",
     "rules_revision": "a9ef2c8048c7abd907fc04d87c4965fac8209685",
     "lifecycle": {
       "run": "run_432552edd149",
@@ -9984,7 +9999,29 @@
       "incarnation": "2b23b228-4627-444a-a342-fd00c791f633",
       "startup_model": "gpt-6-luna high",
       "turn_started": "observed",
-      "report_only_filesystem": true
+      "report_only_filesystem": true,
+      "closure": "Succeeded/accepted worker_done; external release/processAction none; exact Main-owned PTY closed/disconnected in same incarnation. delivery_37335bb77d1d acknowledged."
+    },
+    "sha256": "18b8a67b675aaf173c0d94c70e6defb5550187166222d1fd77321472c90500ed",
+    "report_bytes": 12141,
+    "worker_ownership_closed": true,
+    "review": {
+      "model": "native Codex gpt-6-luna max",
+      "sha256": "c8b8ffff89797ff96c816918df5e395c9ae0dc546b3311db7d0957104bc1e895",
+      "scope_depth": "Substantive, bounded source/design comparison with explicit phase, numerical, mapping, and measurement limits; no implementation or performance claim.",
+      "corrections": [
+        "Keep the mutable vLLM main source interface-only; pin an immutable revision before any version-specific claim or later use."
+      ],
+      "disposition": "Keep indexed only through the calibration decision and next mapping review; retire if no concrete mapping consumer is selected."
+    },
+    "retrieval_metadata": {
+      "tags": [
+        "ragged GQA head mapping",
+        "matrix row utilization",
+        "prefill/decode tiling",
+        "numerical-order preservation"
+      ],
+      "trigger": "Retrieve only if the current calibration or a later source decision makes the exact ragged-head mapping question actionable."
     }
   }
 }
