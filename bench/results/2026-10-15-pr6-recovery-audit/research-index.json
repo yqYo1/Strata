@@ -9808,8 +9808,8 @@
   },
   "qsa_matrix_operand_layout_contract_20261023": {
     "classification": "decision support",
-    "schedulable_now": true,
-    "status": "eligible",
+    "schedulable_now": false,
+    "status": "active_orca_read_only",
     "report_budget_bytes": 10240,
     "question": "Determine whether the installed Intel LLVM/IGC matrix contract supports a column-major BF16 B operand for this QSA QK stage, and compare it with current explicit transpose/packed layouts. Separate legal matrix layout, global read coalescing, local-store mapping and compiler transformation; identify a source-level discriminator or exact support blocker, not a code proposal.",
     "nonduplication": "Earlier row-coalesced K staging was12.44/27.98/7.75% slower; vector4 mapping is now production. GRF/unroll/Page4/fixed-head candidates are closed. This question concerns separate QK versus PV B operand layout and avoiding the transpose tradeoff, not another row-coalescing or register survey.",
@@ -9819,12 +9819,22 @@
     ],
     "report": "/home/yayoi/orca/workspaces/Strata/sycl/.cache/strata-research/20261023/matrix-operand-layout/report.md",
     "consumer": "Main next QSA layout decision after native Luna/max report review.",
-    "next_review": "On completion decide whether a legal distinct source discriminator exists; no automatic implementation or new GPU collection."
+    "next_review": "On completion decide whether a legal distinct source discriminator exists; no automatic implementation or new GPU collection.",
+    "lifecycle": {
+      "run": "run_432552edd149",
+      "task": "task_09fa872dc6f5",
+      "dispatch": "ctx_6f1bfd855999",
+      "terminal": "term_a9a3c075-e793-4b93-814c-1fd292c85f91",
+      "incarnation": "4fbecbae-bfc4-4261-97ac-f81fd196a4d3",
+      "startup_model": "gpt-6-luna high",
+      "turn_started": "observed",
+      "report_only_filesystem": true
+    }
   },
   "gpu_shared_memory_bank_layout_methods_20261023": {
     "classification": "knowledge collection",
-    "schedulable_now": true,
-    "status": "eligible",
+    "schedulable_now": false,
+    "status": "active_orca_read_only",
     "report_budget_bytes": 12288,
     "question": "Compare bank-aware shared/local memory layouts for16-bit GPU matrix operands and transpose workloads across Intel Xe2/SYCL and transferable GPU/HPC/ASIC designs: bank width/ports, SIMD address patterns, padding versus swizzling, typed/vector accesses, matrix-loader restrictions and synchronization. Use pinned primary sources plus original technical blogs/papers, distinguishing documented generation-specific facts from inferred mechanisms.",
     "nonduplication": "Index contains fragment live ranges, SWSB, uniform address lowering, interquery locality and a rejected QSA row-coalesced implementation, but no bank-layout methods collection. Focus shared-memory transaction/layout tradeoffs, not a general matrix/GRF/roofline or cache survey.",
@@ -9834,6 +9844,16 @@
     ],
     "report": "/home/yayoi/orca/workspaces/Strata/sycl/.cache/strata-research/20261023/shared-bank-layout/report.md",
     "consumer": "Retrieval-only reference for a future pinned-source local-memory layout or transpose question;Main keeps collection body unread.",
-    "next_review": "Native Luna/max novelty/scope review on completion; retrieve only relevant sections for a concrete later decision."
+    "next_review": "Native Luna/max novelty/scope review on completion; retrieve only relevant sections for a concrete later decision.",
+    "lifecycle": {
+      "run": "run_432552edd149",
+      "task": "task_6b97c6d63c50",
+      "dispatch": "ctx_b68129e0f883",
+      "terminal": "term_677f99b7-f0bd-4ea7-8cda-ed6d5f4968c3",
+      "incarnation": "c8927d52-867a-40e0-af8f-16542cc7f188",
+      "startup_model": "gpt-6-luna high",
+      "turn_started": "observed",
+      "report_only_filesystem": true
+    }
   }
 }
