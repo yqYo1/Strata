@@ -8142,5 +8142,68 @@
       "delivery_acknowledged": true,
       "verification": "worker-show: connected=false, observation exited/exactWorker=true, residualResources=[]; worker-list projection later said missing_status, but direct execution-host observation positively confirmed exit."
     }
+  },
+  "post_iq2_attribution_design_20261022": {
+    "classification": "decision support",
+    "schedulable_now": false,
+    "source_revision": "51620477363e87ecbc1921f37296d7bd59107d1f",
+    "state": "Report independently reviewed by native Luna/max; original Orca attempt failed settlement and was abandoned,not succeeded.",
+    "report": {
+      "path": ".cache/strata-research/20261022/post-iq2-attribution-design.md",
+      "bytes": 12194,
+      "sha256": "738afba491b1ad93f79693facaf5db0695a5e0cf027cc3c7bd228766a516e6dc"
+    },
+    "reviewer": "native Codex gpt-6-luna max",
+    "operational_digest": "Next CPU-resource discriminator is one coarse request aligned across existing decode timing,census,IQ2 worker TIDs and client-resource scheduled ticks/Xe cycles. Exact worker/caller CPU clocks are conditional,not automatically reinstated after their prior overhead failure. No hardware saturation,speed or adoption claim;7 pinned source inputs still match.",
+    "correction": "The report says sampled TID ticks include waits. /proc stat utime/stime are scheduled user/kernel CPU ticks: they include CPU-consuming polling and unrelated thread work, but exclude blocked wait time. Add a proc_pid_stat(5) citation if the report is revised: https://man7.org/linux/man-pages/man5/proc_pid_stat.5.html. No report edit made.",
+    "lifecycle": {
+      "run": "run_fb41872974e9",
+      "task": "task_f67b3f6d62bf",
+      "dispatch": "ctx_22d3618b3190",
+      "terminal": "term_677d43b7-44f6-4c44-a6d8-fab52af3a146",
+      "last_verified_at": "2026-10-22T04:31:47Z",
+      "outcome": "failed/abandoned; no accepted worker_done",
+      "detail": "no accepted delivery or acknowledgement; exact transcript is complete and ends with an assistant final message naming the report. It shows an attempted `orca orchestration send --type worker_done`, but the command returned no receipt/output; no later transcript records",
+      "terminal_state": "retained/connected; agent_status live; processAction none",
+      "receipt": "a98fe79b-0e93-4759-8c49-d8b12cae27f8",
+      "ownership_cleanup_pending": true
+    },
+    "retention": {
+      "consumer": "Next post-IQ2 resource-attribution decision after the current MTP graph diagnostic closes.",
+      "review_point": "At MTP-cohort closure,select whether the coarse aligned request is still needed;retire body after its question is consumed or superseded."
+    },
+    "limits": "Independent report review does not retroactively make the failed Orca Task succeed. No code copied/adapted; Main has not read the report body.",
+    "round_handoff": {
+      "path": ".cache/strata-research/20261022/resource-bench-methods-handoff.json",
+      "bytes": 3815,
+      "sha256": "cae14a96eda1ebbace3cd3f33b6d337ca604ead26135ce7865258124aeee4648",
+      "consumer": "Pending B ownership and model-safe cleanup boundary;retire transaction after essential state is indexed and GPU run closes."
+    }
+  },
+  "long_generation_benchmark_cost_methods_20261022": {
+    "classification": "knowledge collection",
+    "schedulable_now": false,
+    "source_revision": "51620477363e87ecbc1921f37296d7bd59107d1f",
+    "state": "Pending original Dispatch settlement; not accepted or reviewed.",
+    "report": {
+      "path": ".cache/strata-research/20261022/long-generation-benchmark-cost-methods.md",
+      "status": "unreviewed; Main must not read merely because a file exists"
+    },
+    "lifecycle": {
+      "run": "run_fb41872974e9",
+      "task": "task_e544754cd75a",
+      "dispatch": "ctx_d7c4077bec31",
+      "terminal": "term_8abb855b-4b7f-48bb-91f0-b92121e4b225",
+      "last_verified_at": "2026-10-22T04:31:47Z",
+      "worker_done_accepted": false,
+      "detail": "no accepted delivery or acknowledgement; exact transcript is complete but ends at the tool result of an attempted `orca orchestration send --type worker_done`, with no receipt/output or later assistant final turn",
+      "liveness": "live from agent_status; terminal connected; no reason field supplied; no positive final-turn/exit proof, so left pending without stop, abandon, release, or replacement",
+      "ownership_cleanup_pending": true
+    },
+    "retention": {
+      "consumer": "Resolve existing Task/terminal honestly,then native Luna/max review for a separately versioned cheaper >=32K/thinking/answer/>=1K benchmark pilot.",
+      "review_point": "Original lifecycle resolution and v4-to-new-protocol decision;closed v4 results/criteria remain unchanged."
+    },
+    "limits": "No duplicate,restart,worker steering,collection-body read,benchmark change or completed-round claim."
   }
 }
