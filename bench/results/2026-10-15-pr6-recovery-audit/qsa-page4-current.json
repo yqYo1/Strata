@@ -1,5 +1,5 @@
 {
-  "stage": "prepared",
+  "stage": "failed",
   "source_commit": "7134467319cd8eb7dd8987d547f63a0b5cd110fe",
   "input_sha256": {
     "bench/sycl/qsa_page4_numerical.cpp": "976fd88afab35d7bfdb7c794e6ee54e95ea7075eb7ac4e0852429c538cb89123",
@@ -534,5 +534,34 @@
   "passed": false,
   "complete": false,
   "GPU_executed": false,
-  "model_adoption_qualified": false
+  "model_adoption_qualified": false,
+  "binaries": {
+    "numerical": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-page4-address-v1/numerical",
+      "sha256": "540b7c60302d2305c0edb563c1ed2bc113eb814a9ab62446c940485e42f2769e",
+      "bytes": 1585784
+    },
+    "timing": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-page4-address-v1/timing",
+      "sha256": "b97398136ff83132311b47e9b866b83e53b9eb7070caf5b790481a97131d0585",
+      "bytes": 1564880
+    }
+  },
+  "device_IR": {
+    "control": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-page4-address-v1/control.ll",
+      "sha256": "12aee3460580deb44d4d7e1cb2413adbcab4e1c98baedd9d5d21e54a18f7dacf",
+      "bytes": 72122,
+      "kernels": 2,
+      "i64_divisions": 4
+    },
+    "page4": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-page4-address-v1/page4.ll",
+      "sha256": "5bdb1d01816c2ed966b1c4a77325d181456724acc144c579072a6e6a3a59bdc6",
+      "bytes": 71052,
+      "kernels": 2,
+      "i64_divisions": 1
+    }
+  },
+  "error": "RuntimeError('planned constant-divisor frontend transformation not established')"
 }

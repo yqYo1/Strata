@@ -337,7 +337,14 @@ with`build_qsa_page4.py`; `check_qsa_page4.py` gates smoke/component/resources
 before the Page4 three-process162-sample comparison. Require both latency
 geomeans<=0.95,no shape>1.05 and both large patterns improving against both
 controls in every process. This is unqualified component work, not a model
-route. Preserve numerical order and the exact selected decode
+route. All13 compiler/link/IR commands completed, but the original build gate
+failed before GPU execution: it required zero64-bit divisions in the entire
+module. Page4 eliminates the three variable page-size divisions; a preexisting
+signed workgroup-ID division by constant2 remains in both arms. Preserve that
+failure. A separately committed closed-IR reanalysis must verify this exact
+distinction and unchanged source/recipe/binary inputs before any GPU test;
+it cannot relabel the original gate or establish final ISA cost. Preserve
+numerical order and the exact selected decode
 implementation/configuration/1256-slot placement. The instruction-fetch methods
 report remains a retrieval-only reference, without a new generic research task.
 
