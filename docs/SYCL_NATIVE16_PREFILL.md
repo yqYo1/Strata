@@ -237,28 +237,35 @@ Full framing is recoverable at`1c450997a`. After recovering108 project/helper
 and1376 GGML inputs,Main retired the auxiliary build and raw output:
 195files/14029797B. The qualified6e40 engine+12fixtures and decode's implementation,
 configuration and1256 slots remain unchanged. The next decision distinguishes
-CPU GU work from the independently pending MTP-head service question.
+CPU GU instruction/lookup work from the independently calibrated MTP head.
 
 Both model shards' actual metadata were inspected with the committed GGUF reader.
 `output.weight` is Q6_K,type14,shape2560x248320,521472000bytes;the startup Q5_K
 label is hard-coded. The106299-row draft subset corresponds to223227900weight
-bytes. This identifies the real head dispatch,not its service time or residency
-budget. A bounded source/shape-matched head calibration is a separate next
-discriminator;no precision or inference change has been adopted.
+bytes. Metadata alone establishes neither service time nor a residency budget.
 
-The isolated`bench/sycl/mtp_head` consumer uses the unchanged production CMake
-resolver and Q8_1-quantize/Q6_K-MMVQ kernels. Its prospective sequence is a
-traced17-row check,full106299-row validation,then six ordinary/profiled graph
-processes in0/1/1/0/0/1 order. Every real selected row must pass the existing
-dequantized-Q6_K/Q8_1 reference bound;direct/graph bits,canaries and checked
-retirement must pass. Each process keeps five>=1s wall/CPU samples;profiled
-processes additionally keep64 qualified two-node head envelopes outside timing.
-The original source's ROWS1/WG128 Q6_K launch has uniform barrier participation,
-10 reduction blocks,384B local partials and bounded row/index arithmetic for
-this shape. Allocation owners outlive checked completion and graph retirement.
-Comparing three isolated head envelopes with31.208ms/window guides a subsequent
-decision;cache/interference and graph context prevent an in-model share claim.
-Only the auxiliary measurement build is created;the original engine is retained.
+The isolated production Q8_1-quantize/Q6_K-MMVQ calibration is now closed.
+Both traced17-row and full106299-row checks passed,including independent Q8_1
+bytes,dequantized-Q6_K reference errors,graph/direct bits,canaries and checked
+retirement. Six independent ordinary/profiled processes ran in0/1/1/0/0/1 order,
+each with five>=1s samples;the profiled processes retained64 envelopes each.
+The median of their envelope medians is3.387604ms/head. Three heads therefore
+give an isolated proxy of10.162812ms,32.56% of the prior31.208297ms MTP window.
+This meets neither the prospective below10% exclusion nor the at-least50%
+follow-up screen. It does not establish the in-model share:cache,interference,
+graph context and internal gaps differ. The full-check6.416/7.096ms first-use
+clocks stay separate from warmed timing. Nearly one process CPU core includes
+checked GPU waits and does not establish host arithmetic as the limiting work.
+No precision change,inference adoption or speed gain follows. See the
+[individual samples and decision](../bench/results/2026-10-15-pr6-recovery-audit/mtp-head-current.json).
+
+After recovering81 consumer/helper inputs plus9853 original native inputs,Main
+retired the auxiliary build and normal output:138files/101831039B. The closed
+fixture,controller,test and full plan are recoverable at`3fd3ada48`;no imminent
+head candidate needs them in the active tree. The qualified6e40 engine and all12
+fixtures remain unchanged. The next bounded source question is whether Zen3
+IQ2_S table gathers lower more efficiently than current scalar loads;prior IQ3
+gather prototypes are counterevidence,not proof of a gain for this workload.
 
 ## Tensor storage and precision
 

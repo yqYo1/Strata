@@ -591,5 +591,125 @@
     "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/mtp-q6-head-v2/build/mtp_head",
     "sha256": "39a3dba82d1594987700a6987b1f2b4464d4cb84d6cb1d98bbba51205a71b930"
   },
-  "fresh_faults": []
+  "fresh_faults": [],
+  "decision": {
+    "per_process": [
+      {
+        "index": 0,
+        "profile": 0,
+        "wall_ms_per_head_median": 3.4314699050131927,
+        "wall_ms_per_head_min": 3.4296900552631575,
+        "wall_ms_per_head_max": 3.433534540897098,
+        "cpu_core_equivalents_median": 0.9988096411007952,
+        "graph_envelope_ms_median": null
+      },
+      {
+        "index": 1,
+        "profile": 1,
+        "wall_ms_per_head_median": 3.435580997361478,
+        "wall_ms_per_head_min": 3.4326596833773086,
+        "wall_ms_per_head_max": 3.4903693217158174,
+        "cpu_core_equivalents_median": 0.9966193938430999,
+        "graph_envelope_ms_median": 3.387604
+      },
+      {
+        "index": 2,
+        "profile": 1,
+        "wall_ms_per_head_median": 3.43604007651715,
+        "wall_ms_per_head_min": 3.432543029023747,
+        "wall_ms_per_head_max": 3.4373867968337732,
+        "cpu_core_equivalents_median": 0.9972582196350862,
+        "graph_envelope_ms_median": 3.3878645
+      },
+      {
+        "index": 3,
+        "profile": 0,
+        "wall_ms_per_head_median": 3.4334079076517154,
+        "wall_ms_per_head_min": 3.4322743403693927,
+        "wall_ms_per_head_max": 3.4370276701846967,
+        "cpu_core_equivalents_median": 0.9990599911546724,
+        "graph_envelope_ms_median": null
+      },
+      {
+        "index": 4,
+        "profile": 0,
+        "wall_ms_per_head_median": 3.436874960422164,
+        "wall_ms_per_head_min": 3.4327687414248023,
+        "wall_ms_per_head_max": 3.4396856296296296,
+        "cpu_core_equivalents_median": 0.9929589440036294,
+        "graph_envelope_ms_median": null
+      },
+      {
+        "index": 5,
+        "profile": 1,
+        "wall_ms_per_head_median": 3.4329885171503958,
+        "wall_ms_per_head_min": 3.431289253298153,
+        "wall_ms_per_head_max": 3.4332471398416886,
+        "cpu_core_equivalents_median": 0.9990278934811814,
+        "graph_envelope_ms_median": 3.387396
+      }
+    ],
+    "median_profiled_envelope_ms": 3.387604,
+    "three_head_proxy_ms": 10.162812,
+    "prior_mtp_window_envelope_ms": 31.208297484375,
+    "isolated_proxy_fraction": 0.3256445503023097,
+    "screen": "Intermediate: neither the predeclared below10% exclusion nor at-least50% follow-up screen is met. No precision change or inference implementation adopted.",
+    "next": "CPU GU dominates the separately observed CPU pool more strongly;inspect the newly reviewed IQ2_S gather lowering before choosing a CPU-only discriminator. Preserve independent phase selection and the existing decode configuration/1256 slots.",
+    "limits": "Isolated production two-node graph envelope includes gaps and differs in cache/interference/graph context from in-model execution. Proxy is not an in-model critical share, GPU service, traffic, hardware saturation, speed gain or model qualification. Nearly one process CPU core includes checked GPU waits and is not proof of host arithmetic limitation.",
+    "first_use": "Full-shape validation clocks 7.095625/6.415729ms are distinct short first-use checks;do not pool with warmed timing."
+  },
+  "artifact_retirement": {
+    "complete": true,
+    "manifest": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/mtp-q6-head-v2-closed-raw-20261022.jsonl",
+    "manifest_sha256": "03a0186061f8c72448345d0b1f7cc5249c299a128479ba9b88603e125f0dad76",
+    "files": 138,
+    "bytes": 101831039,
+    "original_recipes_recovered": true,
+    "source_inputs": 81,
+    "original_native_inputs_recovered": 9853,
+    "archive": "3fd3ada48087a25bb92c2ae101e7a944ad43d716",
+    "owned_commands_closed": 12,
+    "root_absent": true,
+    "original_measurement_outcome_unchanged": true,
+    "retained_model_engine_and12fixtures_unchanged": true,
+    "retained_artifacts": 13,
+    "retained_artifact_bytes": 91462952,
+    "compile_commands_sha256": "fff10ebbb8c339f0b708f56ef3e74d236da67465ec6463a0abbf29e4167a81f1",
+    "tracked_source_retirement": {
+      "archive": "3fd3ada48087a25bb92c2ae101e7a944ad43d716",
+      "files": 5,
+      "bytes": 66683,
+      "reason": "Closed isolated calibration;no named imminent head candidate. Git deletion diff supplies exact paths/blob identities."
+    }
+  },
+  "plan_reference": {
+    "commit": "3fd3ada48087a25bb92c2ae101e7a944ad43d716",
+    "path": "bench/results/2026-10-15-pr6-recovery-audit/mtp-head-plan.json",
+    "sha256": "ea5bdfd6df7975a1981f6f582dcd3ed0946bc822030014393ad693fc30198d24",
+    "scope": "Original exact commands,compiler/dependencies,immutable environment,inputs and prospective gates;source revision remains b631992b69bfd150952656a411ac4dcc471762b6."
+  },
+  "head_input": {
+    "shard": "/home/yayoi/.local/share/strata-sycl/models/qwen3.8-flash-next-iq3_s/IQ3_S/Qwen3.8-Flash-Next-GSQ-RCO-IQ3_S-00001-of-00002.gguf",
+    "identity": {
+      "path": "/home/yayoi/.local/share/strata-sycl/models/qwen3.8-flash-next-iq3_s/IQ3_S/Qwen3.8-Flash-Next-GSQ-RCO-IQ3_S-00001-of-00002.gguf",
+      "dev": 40,
+      "ino": 2640848,
+      "bytes": 54817524224,
+      "mtime_ns": 1791009083688077826,
+      "ctime_ns": 1791009083692077878
+    },
+    "header_sha256": "d6932b90e1b001f706ee5c8a1aebbab3a8a6ae35892df2fb09af459add1140ef",
+    "offset": 11024384,
+    "type": 14,
+    "N": 2560,
+    "full_rows": 248320,
+    "rows": 106299,
+    "row_bytes": 2100,
+    "selected_bytes": 223227900,
+    "full_head_sha256": "26a6e4f162f6ff10641122c93c426efa343f84d73cde6e6b6dd16959d17ecedc",
+    "vocab": "/home/yayoi/.local/share/strata-sycl/mtp/rt/draft_vocab.bin",
+    "vocab_sha256": "b1e1d3a7a9e4bf862dcd5923ce661fb59bbd07907e594df5cf86a62ac235cb91"
+  },
+  "consumer": "Retained current decision on actual Q6_K MTP-head contribution;future head changes must retrieve this source/plan and qualify a new experiment.",
+  "review_point": "Revisit if an in-model MTP-head candidate is selected;no auxiliary build or source proposal retained for an unspecified comparison."
 }
