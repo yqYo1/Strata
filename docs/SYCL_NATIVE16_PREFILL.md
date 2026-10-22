@@ -198,8 +198,12 @@ current/retained/retained/current. The first retained-package process closed
 normally with no fresh fault and unchanged asset identities. Code read33214
 fresh tokens and generated3611 at14.771411tok/s;prose read33288 and generated8638
 at9.493949tok/s. Thinking was present in both,and their observed MTP acceptance
-was83.11%/39.06%. These are baseline samples only;the other five processes and
-all paired preservation decisions remain pending. See the
+was83.11%/39.06%. The first candidate process also closed normally,with the
+same placement and observed MTP classes and no fresh fault. Its code/prose
+decode readings are14.548306/9.506803tok/s,with paired ratios0.984896/1.001354.
+The first code ratio misses the prospective no-decline screen;do not accept
+that loss in exchange for prefill. Keep the remaining four planned processes
+and all original samples. The complete cohort summary remains pending. See the
 [current decode comparison](../bench/results/2026-10-15-pr6-recovery-audit/canonical-restore-decode-current.json).
 
 Future draft-length tuning needs separate handoff admission. The current
@@ -210,6 +214,14 @@ These guards delimit the tested support; they do not establish that another
 width is unsafe. Audit the owners, graph retirement and VRAM budget before
 extending admission, and preserve the prefill route when comparing decode
 widths. The current frozen comparison keeps both arms at MTP4.
+
+Source inspection of the split-copy handoff found no unconditional retained
+copy-event list in Strata's adapter. `cudaMemcpyAsync` keeps its returned event
+local; its command-profile hook retains events only in an enabled trace, which
+this comparison leaves disabled. The final stream drain still precedes pointer
+publication. This does not measure SYCL/runtime/driver retention or establish
+decode preservation; package code generation and actual decode costs remain
+separate questions for the completed comparison.
 
 
 The current B570 speed reference uses fresh inputs of117489 tokens and separates
