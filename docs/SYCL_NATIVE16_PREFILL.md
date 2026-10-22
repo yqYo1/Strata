@@ -202,6 +202,15 @@ was83.11%/39.06%. These are baseline samples only;the other five processes and
 all paired preservation decisions remain pending. See the
 [current decode comparison](../bench/results/2026-10-15-pr6-recovery-audit/canonical-restore-decode-current.json).
 
+Future draft-length tuning needs separate handoff admission. The current
+`generate.cpp` guards admit checked scratch loans and MTP expert release only
+with MTP4; `Verifier::can_release_prefill_head` also requires a four-token
+window. Changing `--spec` alone cannot reuse this qualified long-prefill route.
+These guards delimit the tested support; they do not establish that another
+width is unsafe. Audit the owners, graph retirement and VRAM budget before
+extending admission, and preserve the prefill route when comparing decode
+widths. The current frozen comparison keeps both arms at MTP4.
+
 
 The current B570 speed reference uses fresh inputs of117489 tokens and separates
 the first long request from later requests in each independent process.
