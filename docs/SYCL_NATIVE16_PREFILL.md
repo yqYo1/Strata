@@ -141,8 +141,8 @@ profile. Calling-thread CPU time excludes runtime/helper threads and is not CPU
 saturation evidence. Non-Linux thread CPU attribution is unsupported; enabling
 the diagnostic there is rejected during load, before MTP GPU allocations.
 
-Graph timestamps are queried only after checked completion, with no additional
-marker or wait. Partial tuples and status are retained; unsupported/invalid
+Graph timestamps are queried only after checked completion. The query adds no
+further marker or wait to the observer's completion wrapper. Partial tuples and status are retained; unsupported/invalid
 clocks or a query exceeding one second stop the diagnostic without a retry.
 Start-to-end is the first-to-last-node envelope, including possible idle gaps
 and dependencies. It is nonadditive with the host intervals and does not measure
@@ -151,14 +151,23 @@ saturation. A submit/start inversion invalidates queue delay alone when the
 positive envelope remains valid. Round/chain envelope sums are reported
 separately; internal captured event aliases are never used as node clocks.
 
-Before any model observer run, preserve the current validated engine and
-fixtures, pin the new recipe and
-build, then run the bounded graph-envelope fixture in separate profile-off/on
-processes using the qualified runtime safety settings. Unknown graph profiling
-support is not a pass. Applicable engine safety/numerical checks and a committed
-bounded model plan follow; compare fresh observer-off, host-only and profiled
-processes before drawing timing conclusions. Compilation and the tiny profile-off/on support fixture have passed. This
-does not qualify the engine, model timing, observer overhead or performance.
+The current v2 plan at`58c79131f` prepares one graph-observed weak-prose
+process on the exact restored6e40 engine, with1256 slots and IQ2 pairing enabled
+only in decode. All15 model assets were fully rehashed. Nine host admission,
+configuration and accounting tests passed. The original tiny off/on graph
+fixture is byte-identical; its compiler,recipe,dependencies and unchanged
+MTP/graph implementation were checked against pinned original Git receipts.
+Reuse is restricted to this reviewed native-source pair, not a general source
+exception or new GPU validation. Same-build packed smoke/validate must pass
+before model execution. The previous v1 plan remains closed with zero model
+processes in Git.
+
+This first one-process diagnostic can describe its charged host intervals and
+graph envelopes only. It establishes no observer-overhead bound, clean speed,
+speed improvement or adoption. A later observer-off/host/profiled comparison
+needs its own committed plan if overhead attribution becomes a concrete
+question. Unknown graph support, incomplete accounting or request failure is
+not a pass; preserve the original outcome and stop without retries.
 
 ## Tensor storage and precision
 
