@@ -146,10 +146,10 @@ def aggregate_evidence(text, root, expected):
         limits='Controlled initial+later aggregate counts/service only. Do not subtract times from different processes to infer window latency. Raw-clock/source coverage comes from separate recorded-prefix v4, not from this table; no model stage attribution, clean speed or saturation qualification.')
 
 
-def check(record, container):
+def check(record, container, *, root=ROOT, admission_check=admission):
     tool.guards.require(record['stage'] == 'check-prepared' and not record.get('observations'),
                         'fresh committed check plan required')
-    admission(record, container, True)
+    admission_check(record, container, True)
     boot = Path('/proc/sys/kernel/random/boot_id').read_text().strip()
     journal = subprocess.check_output(['journalctl', '-k', '-b', '-n', '0', '--show-cursor', '--no-pager'],
                                      text=True, timeout=15)
@@ -159,17 +159,17 @@ def check(record, container):
 
     def persist():
         record['active'] = any(owner and owner.active is not None for owner in (target, control))
-        (ROOT/'check-record.json').write_text(json.dumps(dict(record,
+        (root/'check-record.json').write_text(json.dumps(dict(record,
             target_commands=target.commands if target else [], control_commands=control.commands if control else []),
             indent=2) + '\n')
 
-    target = tool.supervision.Owner(ROOT/'target-owned', persist)
-    control = tool.supervision.Owner(ROOT/'control-owned', persist)
+    target = tool.supervision.Owner(root/'target-owned', persist)
+    control = tool.supervision.Owner(root/'control-owned', persist)
     record.update(stage='checking', observations=[], passed=False)
     persist()
     try:
         for cell in record['cells']:
-            root = ROOT/cell['name']
+            cell_root = root/cell['name']
             session = Path('/dev/shm/uctrl'+str(os.getuid())+'_'+cell['session']) if cell['session'] else None
             tool.guards.require(session is None or not session.exists(), 'preexisting session; inspect, no retry')
             row = dict(name=cell['name'], passed=False, controls=[])
@@ -179,7 +179,7 @@ def check(record, container):
             def change(action, expected=None):
                 result, _, _ = control.run(cell['name']+'-'+str(len(row['controls']))+'-'+action,
                     [record['assets']['launcher']['path'], '--'+action, cell['session']],
-                    cell['environment'], root, wall=15, cpu=15, rss_cap=2 << 30,
+                    cell['environment'], cell_root, wall=15, cpu=15, rss_cap=2 << 30,
                     text_cap=1 << 20, file_cap=16 << 20, total_cap=128 << 20)
                 tool.guards.require(tool.supervision.closed(result) and result['exit_code'] == 0, 'control failed')
                 if expected is not None:
@@ -216,7 +216,7 @@ def check(record, container):
 
             try:
                 row['launch_raw_ns'] = time.clock_gettime_ns(time.CLOCK_MONOTONIC_RAW)
-                entry, out, err = target.run(cell['name'], cell['command'], cell['environment'], root,
+                entry, out, err = target.run(cell['name'], cell['command'], cell['environment'], cell_root,
                     interaction=interact, wall=90, cpu=90, rss_cap=4 << 30, text_cap=8 << 20,
                     file_cap=32 << 20, total_cap=128 << 20)
                 tool.guards.require(tool.supervision.closed(entry) and entry['exit_code'] == 0, 'fixture exit/closure failed')
@@ -233,10 +233,10 @@ def check(record, container):
                 for line in lookup:
                     tool.guards.require(re.search(r'undefined symbol: (zelLoaderTranslateHandle|zelSetDriverTeardown) \(fatal\)$', line),
                                         'new loader symbol diagnostic')
-                inventory = command_buffer_inventory((root/'ur.log').read_text())
+                inventory = command_buffer_inventory((cell_root/'ur.log').read_text())
                 row['inventory'] = inventory
                 if session is not None:
-                    row['coverage'] = aggregate_evidence(stderr,root,cell['expected_kernels'])
+                    row['coverage'] = aggregate_evidence(stderr,cell_root,cell['expected_kernels'])
                     tool.guards.require(row['coverage']['qualified'], row['coverage'].get('failure','coverage failed'))
                 row['execution_passed'] = row['passed'] = True
             finally:
