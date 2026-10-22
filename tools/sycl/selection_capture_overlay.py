@@ -5,7 +5,11 @@ engine stay unchanged. Compile this source with -iquote <project>/src/prefill;
 the future pinned build recipe must record this substitution explicitly.
 """
 from pathlib import Path
+import hashlib
+import json
+import os
 import subprocess
+import sys
 
 BASE = '6e40afc1beddd059ee518617f6c1efce1da14aca'
 SOURCE = 'src/prefill/prefill.cpp'
@@ -42,3 +46,35 @@ def generated(project):
     if fixed.replace(added, include, 1).replace(after, before, 1) != text:
         raise ValueError('overlay changes another native source byte')
     return fixed.encode()
+
+
+def compile_source(plan_path, argv):
+    """CMake launcher: substitute exactly one TU in the diagnostic build only."""
+    plan = json.loads(Path(plan_path).read_text())
+    project = Path(plan['project']['root'])
+    compiler = plan['compiler']
+    digest = lambda p: hashlib.sha256(Path(p).read_bytes()).hexdigest()
+    if not argv or argv[0] != compiler['path'] or digest(argv[0]) != compiler['sha256']:
+        raise ValueError('diagnostic compiler identity differs')
+    overlay = plan['overlay']
+    if digest(__file__) != overlay['generator_sha256']:
+        raise ValueError('overlay launcher changed')
+    original = str(project / SOURCE)
+    if original in argv:
+        if argv.count(original) != 1 or '-c' not in argv:
+            raise ValueError('unexpected prefill compilation command')
+        target = Path(overlay['path'])
+        if target.read_bytes() != generated(project) or digest(target) != overlay['sha256']:
+            raise ValueError('generated prefill source changed')
+        argv = [str(target) if a == original else a for a in argv]
+        argv += ['-iquote', str(project / 'src/prefill')]
+        receipt = Path(plan['root']) / 'prefill-compile.json'
+        with receipt.open('x') as stream:
+            json.dump(dict(argv=argv, source_sha256=overlay['sha256']), stream, indent=2)
+    os.execv(argv[0], argv)
+
+
+if __name__ == '__main__':
+    if len(sys.argv) < 5 or sys.argv[1] != 'compile':
+        raise SystemExit('CMake launcher only: compile PLAN COMPILER ARG...')
+    compile_source(sys.argv[2], sys.argv[3:])
