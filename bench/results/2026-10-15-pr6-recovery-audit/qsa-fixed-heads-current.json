@@ -650,7 +650,7 @@
     "change_from_initial_source_plan": "Extend6smallPage4/7processesto12foractualkernelproofonall4pagesbeforefullcases. Prospectiveonly,noearliercheckexistsoroutcomechanged."
   },
   "check_plan": {
-    "stage": "prepared",
+    "stage": "failed",
     "mode": "resources",
     "source_commit": "15dbbc73732e32931af70e8e01262a759896ec2d",
     "controller_inputs": {
@@ -2997,6 +2997,41 @@
         "kernel": "7.0.0-38-generic",
         "devcoredump": false
       }
+    },
+    {
+      "mode": "resources",
+      "source_commit": "15dbbc73732e32931af70e8e01262a759896ec2d",
+      "numerical_binary": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-fixed-heads-v1/numerical",
+        "bytes": 1594016,
+        "sha256": "8f94e51f7bcb02b5995d3e3426f9a2e2c4385f06e21727014c6513fbe24d05c0"
+      },
+      "passed": false,
+      "complete": false,
+      "active": false,
+      "ownership_closed": true,
+      "observations": [],
+      "error": "RuntimeError('numerical fixture did not close normally')",
+      "postchecks_complete": true,
+      "postcheck_errors": [],
+      "fresh_faults": [],
+      "boot_unchanged": true,
+      "driver_after": {
+        "pci": "/sys/bus/pci/devices/0000:05:00.0",
+        "driver": "xe",
+        "vendor": "0x8086",
+        "device": "0xe20c",
+        "kernel": "7.0.0-38-generic",
+        "devcoredump": false
+      }
     }
-  ]
+  ],
+  "resource_launcher_failure": {
+    "outcome": "failed_prelaunch_cli_argument_refusal",
+    "diagnostic": "[ERROR] Invalid value for --session: StrataQsafixed-head56521f28a26d9058ce39d6eb\n[ERROR] Invalid command line",
+    "owned_record_sha256": "ad48361f70e83234ea6f91e2f003326226c323e0ce3a403f1f48a50d038793c0",
+    "target_executed": false,
+    "scope": "unitrace rejected nonalphanumeric session argument before target launch; no UR preload or timing output; normalprocessownershipclosed,no fresh GPUfault. Original failedreceipt/status preserved.",
+    "next_action": "Commit controller-only alphanumeric session correction and explicit replacement plan; retain original failed resource check. Same native source/binaries and original gates."
+  }
 }
