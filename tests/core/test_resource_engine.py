@@ -158,6 +158,21 @@ class CurrentCollectionPathTests(unittest.TestCase):
 
 
 class HistoricalNativeInputTests(unittest.TestCase):
+    def test_retention_controller_requires_the_reviewed_original_and_current_pair(self):
+        import query_profile as q
+        with tempfile.TemporaryDirectory() as tmp:
+            root=Path(tmp);name='tools/sycl/build_engine.py'
+            path=root/name;path.parent.mkdir(parents=True);path.write_bytes(b'reviewed retention controller')
+            original=hashlib.sha256(b'original controller').hexdigest()
+            actual=hashlib.sha256(path.read_bytes()).hexdigest()
+            with patch.object(q,'P',root),patch.object(q,'RETENTION_CONTROLLER_UPDATES',{name:(original,actual)}):
+                for variant in ('valid','wrong_original','uncommitted','unreviewed'):
+                    path.write_bytes(b'changed recipe' if variant=='unreviewed' else b'reviewed retention controller')
+                    committed=b'previous' if variant=='uncommitted' else path.read_bytes()
+                    expected='0'*64 if variant=='wrong_original' else original
+                    with self.subTest(variant=variant),patch.object(q.gen,'git',return_value=committed):
+                        self.assertEqual(q.worktree_input_matches(dict(root=str(root)),name,expected),variant=='valid')
+
     def test_only_named_committed_host_gate_updates_can_reuse_native_inputs(self):
         import query_profile as q
         with tempfile.TemporaryDirectory() as tmp:

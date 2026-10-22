@@ -650,7 +650,7 @@ def main():
                 guards.require(supervision.closed(entry) and entry.get('exit_code') == 0,
                                label + ' failed: ' + (err.read_text(errors='replace') +
                                                       out.read_text(errors='replace'))[-8192:])
-                if label == 'host-contract':
+                if host_contract:
                     lines = out.read_text().splitlines()
                     guards.require(len(lines) == 16 and
                         all(x.startswith('cpu_work_census case=') and x.endswith(' status=PASS') for x in lines[:-1]) and

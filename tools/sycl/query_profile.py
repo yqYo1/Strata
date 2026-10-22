@@ -25,10 +25,18 @@ COPY_KEYS = ('submitted_blobs','submitted_bytes','completed_blobs','completed_by
              'host_view_groups','gpu_miss_groups','cpu_unique_misses','cpu_entries')
 HOST_GATE_TESTS = frozenset({'tests/core/test_resource_engine.py',
                              'tests/core/test_fresh_build_reference.py'})
+# Reviewed6e40 -> retained-controller pair: only recovery evidence and fallback
+# selection change. Configure/build commands and native inputs remain identical.
+# A future edit, even committed, requires another review; this is not a general
+# build-recipe exception.
+RETENTION_CONTROLLER_UPDATES = {
+    'tools/sycl/build_engine.py': (
+        'f526f278a63848863142aab6b361a04e27b1f3d5c4c8bbd7075c2e3971289a5f',
+        '8444783ab417378207ec89ad2bc3cf648480e20d9e77f06ebb3070c93e10b131')}
 
 
 def worktree_input_matches(source, name, expected):
-    """Keep native inputs exact; admit only the named, committed Python gate tests.
+    """Keep native inputs exact; admit reviewed controller-only changes.
 
     These tests are inventoried by the historical build but neither compiled nor
     executed by its CMake recipe. Their controller-only updates do not relabel
@@ -37,7 +45,9 @@ def worktree_input_matches(source, name, expected):
     actual = gen.common.digest(Path(source['root']) / name)
     if actual == expected:
         return True
-    return (Path(source['root']) == P and name in HOST_GATE_TESTS and
+    controller = RETENTION_CONTROLLER_UPDATES.get(name)
+    allowed = name in HOST_GATE_TESTS or controller == (expected, actual)
+    return (Path(source['root']) == P and allowed and
         hashlib.sha256(gen.git('show', 'HEAD:' + name)).hexdigest() == actual)
 
 
