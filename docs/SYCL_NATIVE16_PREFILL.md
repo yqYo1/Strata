@@ -153,22 +153,26 @@ run before and after each process. The independent native Luna review
 found no source-level admission blocker after tracing the launch,model,fixture
 and route helpers. Clean copy selection is source-verified through the pinned
 launch chain and selector;with audit0 it has no per-process logged copy count.
-Actual1/23 counts belong to the preceding checked off/on requests. The first
-retained clean process passed:902.784tok/s first use,then1002.267/1002.598/
-1002.806tok/s (median1002.598). The first candidate process passed:
-931.774tok/s first use,then1004.194/1004.182/1004.213tok/s
-(median1004.194). Both closed normally without a fresh fault. This first pair's
-0.159% difference does not complete the prospective three-pair screen.
-The second candidate process also passed:930.777tok/s first use,then
-1004.162/1004.610/1003.903tok/s (median1004.162),with normal closure and no
-fresh fault. Its paired retained process then passed:928.643tok/s first use,
-then1002.370/1001.947/1002.434tok/s (median1002.370). This second pair's ratio
-is1.001788. Both complete pairs favor the candidate,but the final frozen pair
-and sustained-decode qualification remain pending;short24-token output cannot
-establish decode independence.
-The final retained process also passed:927.781tok/s first use and a
-1002.152tok/s subsequent median,with normal closure and no fresh fault.
-Only the final candidate process remains in this prefill cohort.
+Actual1/23 counts belong to the preceding checked off/on requests. All six
+clean processes and24 requests completed normally,with unchanged model hashes
+and no fresh fault. Each request read117489 fresh tokens and generated24
+thinking tokens. The independent-process results,in launch order,are:
+
+| Process | Package | First long request tok/s | Subsequent three-request median tok/s |
+| --- | --- | ---: | ---: |
+| 0 | retained6e40 | 902.784 | 1002.598 |
+| 1 | current362 chunk64 | 931.774 | 1004.194 |
+| 2 | current362 chunk64 | 930.777 | 1004.162 |
+| 3 | retained6e40 | 928.643 | 1002.370 |
+| 4 | retained6e40 | 927.781 | 1002.152 |
+| 5 | current362 chunk64 | 929.954 | 1003.369 |
+
+The three paired candidate/reference ratios are1.001591/1.001788/1.001214;
+their geometric mean is1.001531. The prospective faster-candidate and1000
+subsequent-median screens both pass. The smaller final gain and slower first-use
+values remain in the [complete individual samples and frozen plan](../bench/results/2026-10-15-pr6-recovery-audit/canonical-restore-speed-current.json).
+This is a0.153% package gain on this workload,not a hardware-saturation result.
+Short24-token output does not establish decode independence or adoption.
 
 The separate `canonical_decode.py` controller prepares the next six-process
 comparison only after the clean prefill gate passes. It uses the same retained
