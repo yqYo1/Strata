@@ -211,6 +211,18 @@ or RAM tuning. The observed12.8tok/s is diagnostic only,no clean comparison.
 See the [closed aligned resource diagnostic](../bench/results/2026-10-15-pr6-recovery-audit/client-resources-current.json).
 The earlier failed resource observation remains failed in its pinned Git history.
 
+The next CPU-only calibration links the unchanged production expert math. It
+uses each of the seven observed format pairs and its NT1..4 marginal histogram,
+rounded into100 batches at6 and28 unique experts. It compares one computing
+worker with five workers plus the host,and repeated groups with at least128MiB
+of rotating weights. All loaded distinct experts must match serial production
+math at NT1..4,with inactive lanes and canaries checked,before timing. Each of
+the56 expert cells retains five samples of at least one second;two read-only
+reference cells remain achieved rates rather than hardware upper bounds. This
+is an approximation of the measured marginal work,not a model trace or model
+throughput measurement. Keep the qualified6e40 engine+12fixtures;the extra
+CPU-only build retires after this calibration decision.
+
 Both model shards' actual metadata were inspected with the committed GGUF reader.
 `output.weight` is Q6_K,type14,shape2560x248320,521472000bytes;the startup Q5_K
 label is hard-coded. The106299-row draft subset corresponds to223227900weight
