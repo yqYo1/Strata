@@ -424,6 +424,62 @@
           },
           "formula": "Sum frequency*ceil(M/tileM)*tileM;tileM16 forM<128,otherwise128. Both N/K fill tiles. GU+Down FLOP/row=2*(1280*2560+2560*640). Fused job/row counts match the admitted117K work footer.",
           "limits": "Source/geometry counts only; exclude epilogues,dequant,normalization,nonlinear and attention work. Not observed instructions,physical traffic,saturation,or a measured ceiling."
+        },
+        "current6e40_qsa_prefix": {
+          "native_source": "6e40afc1beddd059ee518617f6c1efce1da14aca",
+          "source_scope": "Position-zero start;12 QSA layers,24 Q/2 KV heads,Dim256;selectedwidth=min(position+1,2051);32cell tiles and16padded heads perKV group. OneFMA=2FLOP.",
+          "formulas": {
+            "selected": "sum(min(position+1,2051))",
+            "tiles": "sum(ceil(selected_width/32)) per layer,one selected sequence before two KV groups",
+            "issued_flop": "tiles*2KV*2products*16paddedheads*32cells*256dim*2FLOP*12layers",
+            "logical_flop": "selected*24realheads*256dim*2products*2FLOP*12layers",
+            "requested_bytes": "selected*2KV*2tensors*256dim*2BF16bytes*12layers"
+          },
+          "samples_or_projections": [
+            {
+              "processed_rows": 33213,
+              "query_layer_instances": 398556,
+              "selected_cells_per_layer": 66017588,
+              "selected_query_layer_cells": 792211056,
+              "cell_tiles_per_layer": 2092285,
+              "issued_cell_slots_per_layer": 66953120,
+              "issued_padded_QK_PV_flops": 26327038033920,
+              "logical_QK_PV_flops": 19469378912256,
+              "requested_packed_KV_bytes": 1622448242688
+            },
+            {
+              "processed_rows": 117488,
+              "query_layer_instances": 1409856,
+              "selected_cells_per_layer": 238865613,
+              "selected_query_layer_cells": 2866387356,
+              "cell_tiles_per_layer": 7570160,
+              "issued_cell_slots_per_layer": 242245120,
+              "issued_padded_QK_PV_flops": 95254657105920,
+              "logical_QK_PV_flops": 70444335661056,
+              "requested_packed_KV_bytes": 5870361305088
+            }
+          ],
+          "measured_family": {
+            "fresh_input_tokens": 33214,
+            "processed_rows": 33213,
+            "calls": 60,
+            "shapes": [
+              [
+                8192,
+                48
+              ],
+              [
+                445,
+                12
+              ]
+            ],
+            "device_service_sum_ns": 6908788307,
+            "query_layer_instances": 398556,
+            "diagnostic_requested_bytes_per_service_GBs": 234.83832049740644,
+            "diagnostic_issued_flop_per_service_TFs": 3.8106592450148438
+          },
+          "limits": "Requested repeated loads and source-issued padded MMA geometry,not physical traffic or hardware-counter work. Device-service sum is not phase wall time.117488-row values are source projections,not an observed117Kprofile or hardware ceiling. Corrects original report typo400524 to398556 without changing its original outcome.",
+          "remaining_resource_evidence": "Compatible physical memory bytes/cache,matrix-active/issue and stall counters remain unavailable after recorded LevelZero event-query INVALID_ARGUMENT/EACCES. Do not repeat unchanged capability probes. A matched memory-only/MMA-only replay could constrain an access-pattern service question,not recover physical counters or prove whole-model saturation."
         }
       },
       "retention": "Corrected source-work reference for current production-shaped GEMM service/ceiling work. The40839B histogram remains only for that named fixture; review at fixture-plan freeze or rejection. Source counts do not establish hardware rates.",
