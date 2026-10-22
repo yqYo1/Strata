@@ -1410,6 +1410,30 @@
     "measured": "Original production baseline default@1 exits1 on first/later-tile invalidscale diagnostic. Ownerclosed,bootunchanged,freshfaultsnone. CandidatePage4wasnotexecutedbythisfullcohort;all6earlierPage4/Page7smokeprocessespassed.",
     "cause": "Generatedmultipage fixture inheritedPage16diagnosticrow=(table[0]*KV+head)*Page+invalid_cell. ForPage1,cells97,pages97,table[0]=96,KV2,rows194,invalid_cell1:head0poisonsrow193(wronglogicalcell),head1computesrow194(onepastend of194-rowhostscalevector). This is host-testundefinedbehavior,not GPUkernel arithmetic evidence.",
     "required_fix": "Resolve invalid_cell/Page through table[logical],then useinvalid_cell%Page. Checklogical/physical/row/scaleelementbounds beforewriting;retainallNaN/sticky/clearing and132componentcases,includingactualPage4full262144.",
-    "source_scope": "Fixonlygeneratedhostoracle. Preserveoriginalfailure,alltracedpasses,original6e40engine/12fixtures,compiledkernel math and0.95performancecriteria. Newcommittedsource/build/planandfullrequalificationrequired;do notcontinuefailedcohortorrefreshits hashes."
+    "source_scope": "Fixonlygeneratedhostoracle. Preserveoriginalfailure,alltracedpasses,original6e40engine/12fixtures,compiledkernel math and0.95performancecriteria. Newcommittedsource/build/planandfullrequalificationrequired;do notcontinuefailedcohortorrefreshits hashes.",
+    "native_exit_code": 1,
+    "native_error": "first/later-tile invalid scale diagnostic"
+  },
+  "retirement": {
+    "complete": true,
+    "manifest_path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-page4-address-v1-retirement-20261023.jsonl",
+    "manifest_sha256": "b8d5f19b90cd24e43202831f16c95b5452d2dcb8666a87acabe04e571a88e811",
+    "files": 65,
+    "bytes": 12070722,
+    "source_recovery": {
+      "source_commit": "7134467319cd8eb7dd8987d547f63a0b5cd110fe",
+      "recipe_plan_commit": "3d8660e92",
+      "project_inputs_recovered": 186,
+      "generated_inputs_recovered": 5,
+      "compiler_inputs_verified": 8700,
+      "original_binaries_verified": true,
+      "all_owned_jobs_closed": true,
+      "selected_native_assets_verified": 13,
+      "original_failures_preserved": true
+    },
+    "pushed_ref_checked": "e50eb012bfe4ec0a9f7b2c76ecb8298b980f247f",
+    "selected_native_assets_before": 13,
+    "consumer_ended": "Native review completed; failed v1 will not be rerun. Fresh v2 rebuild replaces changed host fixture; no source or binary reuse.",
+    "selected_native_assets_after": 13
   }
 }
