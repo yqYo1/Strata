@@ -192,7 +192,9 @@ recoverable from the pinned`3f494507b`result;individual samples are unchanged.
 All seven host groups passed at source`2da515523`,with normal ownership closure
 and no GPU execution. They reject short/unbound/reused evidence,wrong route or
 native/API clocks,counter mismatches and cross-workload compensation. The actual
-six-process long-generation cohort remains unprepared and unmeasured.
+six-process long-generation cohort is now prepared at source`289105442`,after
+all15 model assets were fully rehashed. Its frozen order is retained/current/
+current/retained/retained/current. No long-generation result is collected yet.
 
 
 The current B570 speed reference uses fresh inputs of117489 tokens and separates
