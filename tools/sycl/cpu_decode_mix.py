@@ -46,11 +46,23 @@ def environment():
         STRATA_IQ2_PAIR_AUDIT='0')
 
 
+def previous_fixture_retired(old):
+    # This older committed receipt predates the later `complete` retention key.
+    # Verify its actual deletion manifest and executable,never rewrite the receipt.
+    retired=old['artifact_retirement']
+    guards.require(retired['original_recipes_recovered'] and
+        base.digest(retired['manifest'])==retired['manifest_sha256'],'original calibration retirement evidence differs')
+    rows=[json.loads(s) for s in Path(retired['manifest']).read_text().splitlines()]
+    matched=[r for r in rows if r['path']==old['binary']['path']]
+    guards.require(len(matched)==1 and matched[0]['sha256']==old['binary']['sha256'] and
+        not Path(old['binary']['path']).exists(),'original calibration executable not retired')
+
+
 def prepare():
     guards.require(not ROOT.exists(),'fresh single-use calibration root required')
     old=gen.committed(RESULT)
-    guards.require(old['complete'] and old['passed'] and old['ownership_closed'] and
-        old['artifact_retirement']['complete'],'close/retire earlier calibration first')
+    guards.require(old['complete'] and old['passed'] and old['ownership_closed'],'close earlier calibration first')
+    previous_fixture_retired(old)
     resource,proof=qualification();rows=base.formats()
     lookup={(r['gu'],r['down']):r for r in resource['census']['format_bins']}
     for row in rows:

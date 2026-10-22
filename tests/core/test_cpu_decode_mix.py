@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 """Refuse incomplete or mislabeled current-work calibration evidence; no GPU."""
 import copy
+import json
+import tempfile
 from pathlib import Path
 import sys
 import unittest
@@ -26,6 +28,21 @@ class EvidenceTests(unittest.TestCase):
             lines.append(copy.deepcopy(valid))
         lines.append(dict(kind='closed',passed=True))
         return row,lines
+
+    def test_legacy_retirement_requires_real_manifest_and_absent_executable(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root=Path(tmp);binary=root/'retired';manifest=root/'manifest.jsonl'
+            manifest.write_text(json.dumps(dict(path=str(binary),sha256='original'))+'\n')
+            old=dict(binary=dict(path=str(binary),sha256='original'),artifact_retirement=dict(
+                original_recipes_recovered=True,manifest=str(manifest),manifest_sha256=mix.base.digest(manifest)))
+            mix.previous_fixture_retired(old)
+            for variant in ('present','wrong_hash','unrecovered'):
+                value=copy.deepcopy(old)
+                if variant=='present':binary.write_bytes(b'not retired')
+                if variant=='wrong_hash':value['artifact_retirement']['manifest_sha256']='0'*64
+                if variant=='unrecovered':value['artifact_retirement']['original_recipes_recovered']=False
+                with self.subTest(variant=variant),self.assertRaises(RuntimeError):mix.previous_fixture_retired(value)
+                binary.unlink(missing_ok=True)
 
     def test_known_histograms_and_integer_conservation(self):
         self.assertEqual(mix.expected_histogram([1,1,1,1],6),[150]*4)
