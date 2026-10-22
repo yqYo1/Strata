@@ -285,12 +285,34 @@ were retired:81files/11282866B and107files/18234266B. The rejected fixture,
 controller,test and full plan are recoverable at`f5eaccdd5`. All120 individual
 samples remain there;the active decision keeps24 process/cell medians and spread.
 Prefill,decode,1256-slot placement and the qualified engine+12fixtures remain
-unchanged. Native Luna/max found no distinct fresh CPU research scope:exact
+unchanged. Native Luna/max found no distinct fresh lookup-representation scope:exact
 compact lookup/mask/bitplane representations are covered by existing references,
 although no particular16-bit table layout has been measured. Retrieve the
 existing reference for a concrete implementation question. Per-worker pair-row
 counts are fairly even;the broader scheduling scope stays conditional on
 critical-path/imbalance evidence. No duplicate research task was dispatched.
+
+A distinct exact IQ2_S index-construction candidate at`8ccdcb9c9` passes its
+kernel-only screen. It replaces four scalar QS-byte reads and QH shifts with
+two BMI2 PDEP operations,while retaining full unrolling,the same1024-entry grid,
+integer/FP work and rounding order. The generated pair body is2851bytes versus
+3220,with32 PDEP and no gather,calls or vector stack accesses. Both check
+processes and all six timing processes match the independent reference bits for
+168 actual experts from each of two layers;all eight860160-byte captures agree.
+The120 samples are at least1.200029s. Candidate/reference latency geometric
+means are0.869354 for22/20 and0.880803 for22/42;every pair/access ratio is<1,
+so both prospective performance gates pass. This is13.06%/11.92% lower kernel
+latency,not a model decode gain or hardware-saturation proof. See the
+[compact samples and pinned full evidence](../bench/results/2026-10-15-pr6-recovery-audit/cpu-iq2-indices-current.json).
+
+After exact source/recipe recovery,Main retired107 auxiliary files/18268713B,
+normal logs and eight captures. Only the private candidate source remains for
+an imminent independently planned production-pool/dispatch comparison;the old
+fixture,controller,test and full plan are recoverable at`4176ff75a`. That next
+comparison must retain the current prefill producer,scope substitution explicitly
+to decode,and exercise actual NT1–4 dispatch and group sizes before a model
+trial is considered. The original6e40 engine+12fixtures,prefill/decode settings
+and1256-slot placement remain unchanged.
 
 ## Tensor storage and precision
 
