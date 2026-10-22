@@ -202,7 +202,10 @@ was83.11%/39.06%. The first candidate process also closed normally,with the
 same placement and observed MTP classes and no fresh fault. Its code/prose
 decode readings are14.548306/9.506803tok/s,with paired ratios0.984896/1.001354.
 The first code ratio misses the prospective no-decline screen;do not accept
-that loss in exchange for prefill. Keep the remaining four planned processes
+that loss in exchange for prefill. The second candidate process also closed
+normally with unchanged asset identities and no fresh fault. Its code/prose
+readings are14.658382/9.493705tok/s,with the same observed MTP classes;its paired
+retained process has not run yet. Keep the remaining three planned processes
 and all original samples. The complete cohort summary remains pending. See the
 [current decode comparison](../bench/results/2026-10-15-pr6-recovery-audit/canonical-restore-decode-current.json).
 
