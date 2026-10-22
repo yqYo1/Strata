@@ -336,8 +336,12 @@ engine+12fixtures,prefill/decode settings and1256-slot placement remain unchange
 Two old unadopted linked variants were also retired after bounded provenance and
 ownership checks:four products/78510608B. Their unique TU sources,objects,headers
 and receipts remain;missing final-link inputs are still a provenance failure.
-The two larger old-product receipt joins remain explicitly pending in the
-current build result;this is not global cleanup.
+Both larger old-product joins found receipts matching their exact final binaries.
+The262-file native project snapshot was recovered as257 original plus five later
+Git blobs;all221 PR6 project pins match their original revision. Dependency,
+quoted-header and ownership checks remain pending in the current build result.
+The PR6 source is outside feature ancestry;its user worktree/branch remains
+untouched. This is source recovery,not retroactive qualification or global cleanup.
 
 The private unchanged-policy CPU observer at`e39d0d389` is now closed. All16
 preflight processes and32 timing processes passed numerical,phase,placement and
@@ -362,14 +366,23 @@ are denied. No system setting was changed. CV scope includes blocking,runnable
 delay,predicate checks and lock reacquisition,so it is not pure blocked sleep.
 
 The [compact state-attribution result](../bench/results/2026-10-15-pr6-recovery-audit/cpu-pool-states-current.json)
-retains all160 samples and per-thread state totals for the next resource-budget
-decision. Its next action relates the actual verifier format/job census to
-logical weight volume and compatible CPU/RAM calibration,before choosing another
-phase-specific optimization. Physical RAM/PCIe traffic,hardware ceilings and
-in-model idle distribution remain unmeasured. No production optimization or
-model trial is adopted. The earlier private-fixture affinity-initialization
-failure remains failed in`5c47879f0`;its94files/15146747B were retired after source
-recovery before building the corrected fixture.
+retains all160 samples and per-process host/worker state totals;the96 individual
+thread ledgers remain at`a3af8eba8`. The actual code verifier census charges
+2796077900800bytes for one packed blob per unique CPU expert job:2.702GB/window
+and774.322MB/emitted token. At70tok/s,this conditional stream requires54.203GB/s.
+The attained256MiB read-reference rates29.403..30.642GB/s correspond to
+37.973..39.573tok/s under that assumption. They are not hardware ceilings or
+model speed bounds:cache reuse,repeated loads,other work and overlap differ.
+This motivates checking weight reuse,placement and compatible math/memory
+sensitivities rather than assuming polling removal alone reaches70. Physical
+RAM/PCIe traffic,hardware ceilings and in-model idle distribution remain
+unmeasured. No production optimization or model trial is adopted. The earlier
+private-fixture affinity-initialization failure remains failed in`5c47879f0`;its94files/15146747B were retired after source
+recovery before building the corrected fixture. After recovering113 helper/project,
+1376 GGML and9853 original native inputs,Main retired the corrected fixture
+build,captures and normal output:237files/129156391B. Its closed source,controller,
+test and plan are recoverable at`a3af8eba8`;the engine and12fixtures remain
+unchanged.
 
 ## Tensor storage and precision
 
