@@ -20,8 +20,8 @@ import production_profile as production
 probe = production.probe
 tool = probe.tool
 P, B, RESULT = tool.P, tool.B, tool.RESULT
-ROOT = B / 'unitrace-warmed-graph-window-v3'
-KEY = 'unitrace_warmed_graph_window_v3'
+ROOT = B / 'unitrace-warmed-graph-window-v4'
+KEY = 'unitrace_warmed_graph_window_v4'
 SOURCE = 'bench/sycl/graph_record_window.cpp'
 NATIVE = ('src/sycl/runtime.cpp', 'src/sycl/compat.cpp', 'src/sycl/command_profile.cpp')
 
@@ -299,12 +299,12 @@ def main(action):
         record = container.get(KEY)
         if action == 'prepare':
             tool.guards.require(record is None and not ROOT.exists(), 'inspect existing attempt; no overwrite')
-            prior = container['unitrace_warmed_graph_window_v2']
+            prior = container['unitrace_warmed_graph_window_v3']
             tool.guards.require(prior['stage'] == 'failed' and prior['ownership_closed'] and not prior['active']
                 and prior['fresh_faults'] == [] and prior['boot_unchanged']
-                and prior['closed_analysis']['actual_recorded_window_kernels'] == 0,
-                'closed paused-capture failure required')
-            archive = prior['archive']
+                and prior['error'] == "RuntimeError('program kernel outside its controlled raw-clock window +/-1ms')",
+                'closed clock-domain failure required')
+            archive = prior['original_build_archive']
             raw = tool.git(P,'show',archive['commit']+':'+archive['path'])
             tool.guards.require(tool.sha(raw) == archive['sha256'], 'original archive changed')
             original = json.loads(raw)
@@ -321,13 +321,16 @@ def main(action):
             pinned = assets(container)
             tool.guards.require(pinned == previous['assets'], 'original runtime/native/tool assets changed')
             ROOT.mkdir(mode=0o700)
-            record = dict(schema='strata-unitrace-warmed-graph-window-v3',stage='check-prepared',
+            record = dict(schema='strata-unitrace-warmed-graph-window-v4',stage='check-prepared',
                 source_commit=revision,input_sha256=pins,assets=pinned,compiler=build['compiler'],
                 binary_source_commit=build['source_commit'],binary=build['binary'],
                 compiler_inputs=build['compiler_inputs'],original_build_archive=archive,
                 loader_diagnostic_evidence=previous['loader_diagnostic_evidence'],
-                previous_attempt=dict(key='unitrace_warmed_graph_window_v2',archive=archive,
-                    outcome='Failed: capture while paused loses six later replay kernels. Unchanged.'),
+                previous_attempt=dict(key='unitrace_warmed_graph_window_v3',commit='99ee897a1',
+                    outcome='Failed clock-domain check: UNITRACE_SystemTime=1 and host-call/source logging were omitted. Native processes closed normally; original paused-capture and host-sink failures also remain failed.'),
+                qualified_collector_configuration_reference=dict(source_commit='6269902082bfb811ca237bf45faf07e3152898ea',
+                    result_key='unitrace_recording_window',SystemTime='1',chrome_logging=['kernel','call'],
+                    changes='Record initial capture/warm prefix, then pause/resume; fixture differs and requires this new coverage qualification.'),
                 reuse='No recompilation. Original187 non-controller inputs,recipe,compiler manifest and fixture binary unchanged.',
                 passed=False,complete=False,active=False,ownership_closed=True,
                 service_coverage_qualified=False,model_qualified=False,current_engine_untouched=True,
@@ -344,7 +347,7 @@ def main(action):
                 root.mkdir()
                 for folder in ('tmp','cache','trace'):
                     (root/folder).mkdir()
-                env = dict(base,TMPDIR=str(root/'tmp'),XDG_CACHE_HOME=str(root/'cache'),LD_DEBUG='libs',
+                env = dict(base,TMPDIR=str(root/'tmp'),XDG_CACHE_HOME=str(root/'cache'),LD_DEBUG='libs',UNITRACE_SystemTime='1',
                     STRATA_UR_PROBE_EXPECTED_LOADER=pinned['preload']['loader']['path'],
                     UR_LOG_TRACING='level:info;flush:info;output:file,'+str(root/'ur.log'))
                 session = 'StrataGraphPrefix'+secrets.token_hex(12) if expected is not None else None
@@ -353,7 +356,7 @@ def main(action):
                     env.update(STRATA_UNITRACE_TARGET_PRELOAD=pinned['preload']['library']['path'],
                         UNITRACE_FollowChildProcess='1',UNITRACE_TraceOutputDir=str(root/'trace'))
                     command = [pinned['launcher']['path'],'--session',session,
-                        '--host-timing','--device-timing','--chrome-device-logging','--chrome-event-buffer-size',
+                        '--host-timing','--device-timing','--chrome-kernel-logging','--chrome-call-logging','--chrome-event-buffer-size',
                         '128',*command]
                 else:
                     env['LD_PRELOAD'] = pinned['preload']['library']['path']
