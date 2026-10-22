@@ -3984,7 +3984,7 @@
   },
   "unitrace_warmed_graph_window": {
     "schema": "strata-unitrace-warmed-graph-window-v1",
-    "stage": "check-prepared",
+    "stage": "failed",
     "source_commit": "6f96f4b2052cf99447ed03d5cd44a851e3cf2917",
     "input_sha256": {
       "tools/sycl/bench_engine.py": "e5f588605ebc7799b54f8bf7df9ad2e363391375e50b788b9704a6b80887ca6b",
@@ -4256,7 +4256,7 @@
       "PYTHONDONTWRITEBYTECODE": "1"
     },
     "active": false,
-    "ownership_closed": true,
+    "ownership_closed": false,
     "passed": false,
     "complete": false,
     "service_coverage_qualified": false,
@@ -4427,6 +4427,38 @@
           "UNITRACE_TraceOutputDir": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/unitrace-warmed-graph-window-v1/window/trace"
         }
       }
-    ]
+    ],
+    "driver_before": {
+      "pci": "/sys/bus/pci/devices/0000:05:00.0",
+      "driver": "xe",
+      "vendor": "0x8086",
+      "device": "0xe20c",
+      "kernel": "7.0.0-38-generic",
+      "devcoredump": false
+    },
+    "observations": [
+      {
+        "name": "smoke",
+        "passed": false,
+        "controls": [],
+        "pid": 1937034,
+        "ready_raw_ns": 1028316217035475,
+        "release_raw_ns": 1028316217299460,
+        "drained_raw_ns": 1028316217743824,
+        "target_closed": false,
+        "session_removed": true
+      }
+    ],
+    "error": "RuntimeError('fixture exit/closure failed')",
+    "fresh_faults": [],
+    "boot_unchanged": true,
+    "driver_after": {
+      "pci": "/sys/bus/pci/devices/0000:05:00.0",
+      "driver": "xe",
+      "vendor": "0x8086",
+      "device": "0xe20c",
+      "kernel": "7.0.0-38-generic",
+      "devcoredump": false
+    }
   }
 }
