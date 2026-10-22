@@ -5097,7 +5097,7 @@
   },
   "unitrace_indexed_graph": {
     "schema": "strata-indexed-collector-graph-v1",
-    "stage": "check-prepared",
+    "stage": "closed",
     "source_commit": "baa1032ce46e740e5c8d13f86aeee54fd7c83fad",
     "input_sha256": {
       "tools/sycl/bench_engine.py": "e5f588605ebc7799b54f8bf7df9ad2e363391375e50b788b9704a6b80887ca6b",
@@ -5387,11 +5387,11 @@
       },
       "finding": "Installed loader exports both symbols. Actual driver performs nullable lookups and checks before indirect calls. Collector-off native nevertheless logs both probes with glibc fatal wording, then finishes numerical/guards/checked teardown and exits0. These two exact messages alone are not process-fatal or collector-source-loss evidence. Require all independent execution/coverage gates; other messages fail. Broader runtime teardown is not qualified."
     },
-    "passed": false,
-    "complete": false,
+    "passed": true,
+    "complete": true,
     "active": false,
     "ownership_closed": true,
-    "service_coverage_qualified": false,
+    "service_coverage_qualified": true,
     "model_qualified": false,
     "consumer": "Require actual counts/service/numerical/owner/validation gates before a new official whole-model aggregate plan. Earlier failed attempts stay failed.",
     "gates": "Same original fixture227680B and8697 compiler inputs,unchanged safety settings and ordinary graph recipe. Traced/validated no-collector smoke,then initially recorded construction+2 warm replays,stay-paused versus3 later resumed replays. Require4/10 verbose named calls,one1164-byte copy,no readback leakage,exact positive time sums,numerical/guards/checked teardown,normal closure,unique session removal and no fresh fault. Any failure stops; no timing subtraction or changed adoption threshold.",
@@ -5520,6 +5520,219 @@
           "UNITRACE_TraceOutputDir": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/unitrace-indexed-graph-v1/prefix-window/trace"
         }
       }
-    ]
+    ],
+    "driver_before": {
+      "pci": "/sys/bus/pci/devices/0000:05:00.0",
+      "driver": "xe",
+      "vendor": "0x8086",
+      "device": "0xe20c",
+      "kernel": "7.0.0-38-generic",
+      "devcoredump": false
+    },
+    "observations": [
+      {
+        "name": "smoke",
+        "passed": true,
+        "controls": [],
+        "launch_raw_ns": 1035805622092931,
+        "pid": 2237249,
+        "ready_raw_ns": 1035805720527595,
+        "release_raw_ns": 1035805720771242,
+        "drained_raw_ns": 1035805721209995,
+        "validation": {
+          "pid": 2237249,
+          "loader": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_loader.so.0.12.0",
+          "threads_before": 1,
+          "preinit": 37,
+          "config_enabled": true,
+          "first_init": true,
+          "dispatch_result": 46,
+          "output_untouched": true,
+          "retained_reference_until_exit": true,
+          "runtime_teardown_qualified": false
+        },
+        "loader_lookup_errors": [
+          "   2237249:\t/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/unitrace-warmed-graph-window-v1/graph_record_window: error: symbol lookup error: undefined symbol: zelLoaderTranslateHandle (fatal)",
+          "   2237249:\t/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/unitrace-warmed-graph-window-v1/graph_record_window: error: symbol lookup error: undefined symbol: zelSetDriverTeardown (fatal)"
+        ],
+        "inventory": {
+          "capture_regions": 1,
+          "graph_replays": 5,
+          "direct_kernels": 0,
+          "template": [
+            "_ZTSN12_GLOBAL__N_115RecordWindowAddE",
+            "_ZTSN12_GLOBAL__N_120RecordWindowMultiplyE"
+          ],
+          "executed_program_kernels": 10
+        },
+        "execution_passed": true,
+        "target_closed": true,
+        "session_removed": true
+      },
+      {
+        "name": "prefix-only",
+        "passed": true,
+        "controls": [
+          "pause",
+          "stop"
+        ],
+        "launch_raw_ns": 1035805828505506,
+        "pid": 2237263,
+        "ready_raw_ns": 1035806004896492,
+        "release_raw_ns": 1035806121411602,
+        "drained_raw_ns": 1035806122102217,
+        "validation": {
+          "pid": 2237263,
+          "loader": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_loader.so.0.12.0",
+          "threads_before": 1,
+          "preinit": 37,
+          "config_enabled": true,
+          "first_init": true,
+          "dispatch_result": 46,
+          "output_untouched": true,
+          "retained_reference_until_exit": true,
+          "runtime_teardown_qualified": false
+        },
+        "loader_lookup_errors": [
+          "   2237263:\t/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/unitrace-warmed-graph-window-v1/graph_record_window: error: symbol lookup error: undefined symbol: zelLoaderTranslateHandle (fatal)",
+          "   2237263:\t/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/unitrace-warmed-graph-window-v1/graph_record_window: error: symbol lookup error: undefined symbol: zelSetDriverTeardown (fatal)"
+        ],
+        "inventory": {
+          "capture_regions": 1,
+          "graph_replays": 5,
+          "direct_kernels": 0,
+          "template": [
+            "_ZTSN12_GLOBAL__N_115RecordWindowAddE",
+            "_ZTSN12_GLOBAL__N_120RecordWindowMultiplyE"
+          ],
+          "executed_program_kernels": 10
+        },
+        "coverage": {
+          "qualified": true,
+          "total_device_ns": 24477,
+          "rows": [
+            {
+              "name": "(anonymous namespace)::RecordWindowAdd[SIMD32 {1; 1; 1} {257; 1; 1}]",
+              "calls": 2,
+              "total_ns": 11458,
+              "average_ns": 5729,
+              "min_ns": 5104,
+              "max_ns": 6354
+            },
+            {
+              "name": "zeCommandListAppendMemoryCopy(M2D)[1164]",
+              "calls": 1,
+              "total_ns": 9791,
+              "average_ns": 9791,
+              "min_ns": 9791,
+              "max_ns": 9791
+            },
+            {
+              "name": "(anonymous namespace)::RecordWindowMultiply[SIMD32 {1; 1; 1} {257; 1; 1}]",
+              "calls": 2,
+              "total_ns": 3228,
+              "average_ns": 1614,
+              "min_ns": 1562,
+              "max_ns": 1666
+            }
+          ],
+          "program_calls": 4,
+          "expected_program_calls": 4,
+          "timeline_files": 0,
+          "limits": "Controlled initial+later aggregate counts/service only. Do not subtract times from different processes to infer window latency. Raw-clock/source coverage comes from separate recorded-prefix v4, not from this table; no model stage attribution, clean speed or saturation qualification."
+        },
+        "execution_passed": true,
+        "target_closed": true,
+        "session_removed": true
+      },
+      {
+        "name": "prefix-window",
+        "passed": true,
+        "controls": [
+          "pause",
+          "resume",
+          "pause",
+          "stop"
+        ],
+        "launch_raw_ns": 1035806348161586,
+        "pid": 2237289,
+        "ready_raw_ns": 1035806500250208,
+        "release_raw_ns": 1035806736801692,
+        "drained_raw_ns": 1035806764108471,
+        "validation": {
+          "pid": 2237289,
+          "loader": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_loader.so.0.12.0",
+          "threads_before": 1,
+          "preinit": 37,
+          "config_enabled": true,
+          "first_init": true,
+          "dispatch_result": 46,
+          "output_untouched": true,
+          "retained_reference_until_exit": true,
+          "runtime_teardown_qualified": false
+        },
+        "loader_lookup_errors": [
+          "   2237289:\t/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/unitrace-warmed-graph-window-v1/graph_record_window: error: symbol lookup error: undefined symbol: zelLoaderTranslateHandle (fatal)",
+          "   2237289:\t/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/unitrace-warmed-graph-window-v1/graph_record_window: error: symbol lookup error: undefined symbol: zelSetDriverTeardown (fatal)"
+        ],
+        "inventory": {
+          "capture_regions": 1,
+          "graph_replays": 5,
+          "direct_kernels": 0,
+          "template": [
+            "_ZTSN12_GLOBAL__N_115RecordWindowAddE",
+            "_ZTSN12_GLOBAL__N_120RecordWindowMultiplyE"
+          ],
+          "executed_program_kernels": 10
+        },
+        "coverage": {
+          "qualified": true,
+          "total_device_ns": 45621,
+          "rows": [
+            {
+              "name": "(anonymous namespace)::RecordWindowAdd[SIMD32 {1; 1; 1} {257; 1; 1}]",
+              "calls": 5,
+              "total_ns": 28228,
+              "average_ns": 5645,
+              "min_ns": 5104,
+              "max_ns": 6354
+            },
+            {
+              "name": "zeCommandListAppendMemoryCopy(M2D)[1164]",
+              "calls": 1,
+              "total_ns": 9687,
+              "average_ns": 9687,
+              "min_ns": 9687,
+              "max_ns": 9687
+            },
+            {
+              "name": "(anonymous namespace)::RecordWindowMultiply[SIMD32 {1; 1; 1} {257; 1; 1}]",
+              "calls": 5,
+              "total_ns": 7706,
+              "average_ns": 1541,
+              "min_ns": 1458,
+              "max_ns": 1562
+            }
+          ],
+          "program_calls": 10,
+          "expected_program_calls": 10,
+          "timeline_files": 0,
+          "limits": "Controlled initial+later aggregate counts/service only. Do not subtract times from different processes to infer window latency. Raw-clock/source coverage comes from separate recorded-prefix v4, not from this table; no model stage attribution, clean speed or saturation qualification."
+        },
+        "execution_passed": true,
+        "target_closed": true,
+        "session_removed": true
+      }
+    ],
+    "fresh_faults": [],
+    "boot_unchanged": true,
+    "driver_after": {
+      "pci": "/sys/bus/pci/devices/0000:05:00.0",
+      "driver": "xe",
+      "vendor": "0x8086",
+      "device": "0xe20c",
+      "kernel": "7.0.0-38-generic",
+      "devcoredump": false
+    }
   }
 }
