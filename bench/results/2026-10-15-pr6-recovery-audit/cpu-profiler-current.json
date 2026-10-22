@@ -6782,6 +6782,93 @@
       ],
       "passed": true,
       "tests": 6
+    },
+    "disposable_retirement": {
+      "manifest": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/closed-model-v2-jit-retirement-20261023.jsonl",
+      "sha256": "2dbef4cddfa334e20287cf154c2f97964c5c70e4f818468d9e63988c828c07a4",
+      "files": 55,
+      "bytes": 12510015,
+      "complete": true,
+      "frozen_raw_inputs_unchanged": true,
+      "remaining_consumer": "8474-row table/normal logs retained only through next source/shape attribution; current engine and all13artifacts retained. Legacy source-provenance holds unchanged."
+    },
+    "source_attribution": {
+      "native_source": "6e40afc1beddd059ee518617f6c1efce1da14aca",
+      "source_sha256": {
+        "src/kernels/sycl/native_mmvq.cpp": "0d1bb33524ebc91e398805085b5057e4d22f5da39831f976d4d1330932005b79",
+        "src/core/mtp.cpp": "7e98636191fa0b9c10d4a651c2148c1446dfb722c1536bda2be4d4f78e2e2af5"
+      },
+      "Q6K_launch_geometry": {
+        "source": "src/kernels/sycl/native_mmvq.cpp:913",
+        "proof": "launch<F,ROWS,NW> uses ceil(n_out/ROWS) workgroups andNW*32 locals;this family hasROWS1,NW4. Workgroup count therefore gives n_out. n_in andncols are runtime values,not encoded by this geometry.",
+        "rows": [
+          {
+            "output_rows": 248320,
+            "calls": 1047,
+            "total_ns": 12125329673,
+            "average_ns": 11581021,
+            "min_ns": 7856666,
+            "max_ns": 12619375
+          },
+          {
+            "output_rows": 2560,
+            "calls": 41880,
+            "total_ns": 11442801710,
+            "average_ns": 273228,
+            "min_ns": 187395,
+            "max_ns": 439687
+          },
+          {
+            "output_rows": 10240,
+            "calls": 23034,
+            "total_ns": 11319971106,
+            "average_ns": 491446,
+            "min_ns": 329791,
+            "max_ns": 784479
+          },
+          {
+            "output_rows": 106299,
+            "calls": 3126,
+            "total_ns": 10536333168,
+            "average_ns": 3370548,
+            "min_ns": 3363645,
+            "max_ns": 4551458
+          },
+          {
+            "output_rows": 6144,
+            "calls": 14658,
+            "total_ns": 4399765471,
+            "average_ns": 300161,
+            "min_ns": 199062,
+            "max_ns": 480104
+          },
+          {
+            "output_rows": 12288,
+            "calls": 5235,
+            "total_ns": 3066138888,
+            "average_ns": 585699,
+            "min_ns": 394062,
+            "max_ns": 659479
+          },
+          {
+            "output_rows": 640,
+            "calls": 27222,
+            "total_ns": 1263907159,
+            "average_ns": 46429,
+            "min_ns": 26666,
+            "max_ns": 77291
+          },
+          {
+            "output_rows": 512,
+            "calls": 21987,
+            "total_ns": 787845392,
+            "average_ns": 35832,
+            "min_ns": 22291,
+            "max_ns": 71041
+          }
+        ],
+        "decision": "The largest26.04%whole-process family contains multiple projection widths;do not attribute its54.942s entirely to the MTP head. Exact n_in/ncols,phase/callsite binding,physical read bytes and hardware ceiling remain unknown from this table alone. No kernel change selected from the family percentage."
+      }
     }
   }
 }
