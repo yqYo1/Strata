@@ -662,5 +662,77 @@
       "/usr/local/lib/libigdfcl.so.2.41.5+1788943183",
       "/usr/local/lib/libopencl-clang2.so.22.1"
     ]
+  },
+  "event_query_syscall_diagnostic": {
+    "stage": "prepared",
+    "source_commit": "40eec3185907af4ed5700a2bbbc53816ec78bd80",
+    "inputs": {
+      "bench/sycl/metric_inventory.cpp": "0af141d3857863035703f0dad6653c392d7a1953028c8290fe7d7bb41e2d6317",
+      "tools/sycl/metric_inventory.py": "77e3ccf4a1588a45b1bfbc9abcd6339267cd907b15c2333bf81d6426c2984b93",
+      "tools/sycl/measurement_owner.py": "bddd0c5e5020e882ca3404679420faec11e820dabce2ed4c72ef82b4c9c0874a",
+      "tools/sycl/measurement_guards.py": "794e332c70aca0acadad4f26d0414548e023a02fd27b72ed78fc773674423ec8",
+      "tools/sycl/measurement_environment.json": "d4402591df50e80dc45a5ec9e4839c7a794888850b1473537b6f95179be5b03c",
+      "bench/sycl/metric_query_setup.cpp": "18afb840111bd8c6e966dc730532dc5b1ab6de0ad9b5305b084bd90988f10150",
+      "tools/sycl/metric_query_diagnostic.py": "380b313c96394be57babb81ac8c533adcca7a5c651ed8b059fc0ca42eb047bdf"
+    },
+    "binary": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/b570-metric-query-setup-v1/query-setup",
+      "bytes": 44160,
+      "sha256": "a76d6cd9b48eb664c30b9c37c4c45bf9f955d2b6dc24150f02cfd61bc9576f9f"
+    },
+    "strace": {
+      "path": "/usr/bin/strace",
+      "sha256": "28f957c227012de0b18d1bd7fff2d396cb693ea60ed8013be68de071e84b5001"
+    },
+    "environment": {
+      "PATH": "/usr/bin:/bin",
+      "HOME": "/home/yayoi",
+      "LANG": "C.UTF-8",
+      "LC_ALL": "C.UTF-8",
+      "PYTHONDONTWRITEBYTECODE": "1",
+      "LD_LIBRARY_PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib:/opt/intel/oneapi/mkl/2026.1/lib",
+      "ONEAPI_DEVICE_SELECTOR": "level_zero:gpu",
+      "UR_ADAPTERS_FORCE_LOAD": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_adapter_level_zero_v2.so.0",
+      "UR_L0_V2_FORCE_DISABLE_COPY_OFFLOAD": "1",
+      "NEOReadDebugKeys": "1",
+      "EnableDirectSubmission": "0",
+      "STRATA_SYCL_PREFILL_SAME_QUEUE": "1",
+      "STRATA_SYCL_VERIFY_NATIVE_CAPTURE": "0",
+      "SYCL_CACHE_PERSISTENT": "0",
+      "ZES_ENABLE_SYSMAN": "0",
+      "UR_ENABLE_LAYERS": "UR_LAYER_TRACING,UR_LAYER_PARAMETER_VALIDATION",
+      "UR_LOG_TRACING": "level:info;flush:info;output:stderr",
+      "UR_LOG_VALIDATION": "level:warning;flush:warning;output:stderr",
+      "UR_LOG_LOADER": "level:warning;flush:warning;output:stderr",
+      "UR_LOG_LEVEL_ZERO": "level:warning;flush:warning;output:stderr",
+      "TMPDIR": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/b570-metric-query-diagnostic-v1/tmp",
+      "XDG_CACHE_HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/b570-metric-query-diagnostic-v1/cache",
+      "ZET_ENABLE_METRICS": "1",
+      "ZEL_ENABLE_LOADER_LOGGING": "1",
+      "ZEL_LOADER_LOG_CONSOLE": "1",
+      "ZEL_LOADER_LOGGING_LEVEL": "trace",
+      "ZEL_LOADER_LOGGING_ENABLE_SUCCESS_PRINT": "1",
+      "ZE_ENABLE_VALIDATION_LAYER": "1",
+      "ZE_ENABLE_PARAMETER_VALIDATION": "1"
+    },
+    "command": [
+      "/usr/bin/strace",
+      "-f",
+      "-ttt",
+      "-s",
+      "1024",
+      "-e",
+      "trace=execve,openat,ioctl,write",
+      "-o",
+      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/b570-metric-query-diagnostic-v1/syscalls.txt",
+      "--",
+      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/b570-metric-query-setup-v1/query-setup"
+    ],
+    "plan": "Original one-slot query setup returned0x78000004 despite valid zeroed descriptor/count1,event group andsuccessful activation. Compatible official NEO source can map metrics-library initialization/query creation/report-size failures to INVALID_ARGUMENT,so do not infer bad userarguments orpermissions. One separately committed strace ofunchanged original binary correlates libraryopen/ioctl results with APIprogress;no retryloop,no newqueue/commands/read/streamer orpermission change. Require originalapierror,normallyclosed context/deactivation/owner,nofault andpinnedELFs. Keepatmostone256KiB causallyrelevant diagnostic;retirefullsyscall/APIhistory afterbounded attribution.",
+    "passed": false,
+    "complete": false,
+    "active": false,
+    "ownership_closed": true,
+    "collection_qualified": false
   }
 }
