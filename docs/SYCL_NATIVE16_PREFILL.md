@@ -10,6 +10,15 @@ that it is faster than independent paths for the recorded shapes/phases.
 Existing sharing without that evidence remains a legacy arrangement to audit;
 phase containment alone does not establish a sharing benefit.
 
+The completed six-process retained6e40/current362-chunk64 comparison now rejects
+the candidate package for adoption. Its0.153% warm-prefill gain does not pay for
+the failed sustained-decode preservation screen: paired-ratio geometric means
+are0.990300 for code and0.999066 for prose. Keep retained6e40 as the measured
+continuation baseline with1256 decode slots. Restore its native sources and
+verify exact build/fixture reuse before the next model route;the rejected
+package remains temporarily available for that bounded provenance/source review.
+This does not qualify agent/task quality,physical262144/session/RESTORE orTG70.
+
 The current priority is to restore the fastest recorded prefill path while
 preserving the present decode implementation, settings and placement. Recover
 the exact source/configuration and compare matched inputs, separating first-use
@@ -194,8 +203,9 @@ and no GPU execution. They reject short/unbound/reused evidence,wrong route or
 native/API clocks,counter mismatches and cross-workload compensation. The actual
 six-process long-generation cohort was prepared at source`289105442`,after
 all15 model assets were fully rehashed. Its frozen order is retained/current/
-current/retained/retained/current. Five processes have closed normally,with
-unchanged asset identities and no fresh fault. Each code request read33214
+current/retained/retained/current. All six processes have closed normally,with
+unchanged asset identities,no fresh fault and all15 model hashes rechecked at
+cohort closure. Each code request read33214
 fresh tokens and generated3611;each prose request read33288 and generated8638.
 All include thinking and substantive
 answers,with observed MTP acceptance83.11%/39.06%. Exact decode readings are:
@@ -207,12 +217,15 @@ answers,with observed MTP acceptance83.11%/39.06%. Exact decode readings are:
 | 2 | current362 chunk64 | 14.658382 | 9.493705 |
 | 3 | retained6e40 | 14.764116 | 9.560474 |
 | 4 | retained6e40 | 14.918757 | 9.567510 |
+| 5 | current362 chunk64 | 14.817131 | 9.594849 |
 
-The first paired candidate/reference ratios are0.984896/1.001354 for code/prose;
-the second are0.992838/0.993016. Both code pairs and the second prose pair miss
-the prospective no-decline screen. Do not accept those losses in exchange for
-prefill. Keep the final planned candidate process and every original sample;
-complete-cohort analysis and causal attribution remain pending. Native observers
+The paired candidate/reference ratios are0.984896/1.001354,0.992838/0.993016
+and0.993188/1.002857 for code/prose. Their geometric means are0.990300/0.999066.
+Every code pair and the second prose pair miss the prospective no-decline
+screen;both observed MTP classes are confirmed in all samples. The candidate
+package is rejected for adoption despite passing the prefill screen,andTG70
+remains unmet. Keep every original individual sample. Causal attribution
+remains unresolved. Native observers
 are off,but background host work was not attributed;the package ratios alone
 do not identify the cause. This limitation does not change the failed
 no-decline outcomes. See the
