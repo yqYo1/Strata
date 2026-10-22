@@ -86,59 +86,48 @@ is historical context;the current
 [client-resource evidence](../bench/results/2026-10-15-pr6-recovery-audit/client-resources-current.json)
 bounds scheduled activity rather than hardware saturation.
 
-The same-native cache-placement v1 screen is closed on an admission failure,
-before any candidate model launch. Source `cc42131df` and plan `751b8c2b4`
-passed 18 host tests and two tiny traced GPU cases. Its baseline completed the
-official thinking regular-code subset: 33214 fresh input / 3611 generated,
-52135.0ms prefill / 242516.1ms decode, MTP acceptance 83.1077%. These are one
-observed process, not clean or repeated speed. Actual work remained 1035
-windows, 4137 verifier rows and 2796077900800 logical CPU job-blob bytes;
-logical visits do not establish physical traffic or saturation. All five
-loan/refill cycles, exact residency, IQ2/work conservation and the long GPU
-BF16/mode10/private-bank route passed; 48 dense layers were restored. The
-process closed normally, all 15 model hashes matched afterward and no fresh
-fault occurred. See the [current decision](../bench/results/2026-10-15-pr6-recovery-audit/cache-placement-current.json).
+The same-native cache-placement screens are closed without adoption. The v1
+candidate was never launched: its protected128-slot prefix left2308224000 bytes
+for a prefill loan,11734528 bytes below the actual8192-chunk need. Shrinking the
+prefill chunk would couple decode placement to prefill and was not permitted.
+The original failed screen remains at`eb20952da`.
 
-The actual 8192-chunk loan needs 2319958528 bytes. Global placement at the same
-or smaller total byte budget leaves only 2308224000 bytes after protecting
-128 slots: short by 11734528 bytes. Its chunk would therefore shrink, coupling
-decode placement to prefill. The original screen remains incomplete/failed;
-no candidate timing or prefill-preservation claim follows. Keeping the numeric
-1256 knob in global mode would instead increase the byte budget and is not an
-eligible comparison. The source also records a historical 2.97% global hit
-rate; the shipped ranks are not frequencies or proof of improvement.
+Source`b331bb311` and plan`c67f8cfc3` tested a stable ascending-size order only
+inside the original admitted global prefix. Twenty host tests and two tiny
+traced GPU cases passed. Baseline per-layer membership stayed identical; the
+global candidate kept1241 slots and2573849600 allocated bytes, below baseline's
+1256 slots/2575206400 bytes. Actual native admission, all five exact loan/refill
+cycles, GPU BF16/mode10/private-bank processing and48 dense-layer restoration
+passed in both arms, retaining the8192 prefill chunk.
 
-Source `b331bb311` adds a stable ascending-size order only inside the original
-admitted global prefix. The baseline's entire per-layer slot map and the
-candidate's expert membership/count/allocation stay identical. Twenty host
-tests pass, including full STRP encode/reverse-map round trips and these
-invariants. The generated profile SHA is
-`229738df5bf5e7b79a43fb91d12e0082293b2a39eac919b1e046bfc12932c89f`.
-Reproduce with `python3 -B tools/sycl/cache_placement.py --profile data/expert-profile.bin --manifest /home/yayoi/.local/share/strata-sycl/packs/qwen3.8-flash-next-iq3_s/native_experts.txt --protect-prefix`.
-
-| Offline layout | CLI cache argument | Actual slots | Allocated bytes | Protected128 bytes | Maximum loan bytes |
+| Observed process | Fresh input / generated | Prefill ms | Decode ms | CPU logical bytes / verifier row | GPU routed-entry fraction |
 | --- | ---: | ---: | ---: | ---: | ---: |
-| Current per-layer | 1256 | 1256 | 2575206400 | 245657600 | 2329548800 |
-| Original global prefix: cannot fit8192 | 967 | 1241 | 2573849600 | 265625600 | 2308224000 |
-| Reordered global prefix: proposed v2 | 967 | 1241 | 2573849600 | 199680000 | 2374169600 |
+| Per-layer | 33214 / 3611 | 52288.9 | 243283.6 | 675870897.0 | 10.7728% |
+| Reordered global | 33214 / 3088 | 52145.5 | 209351.3 | 682137499.4 | 11.2495% |
 
-The reordered prefix has 54211072 bytes above the measured need; this is an
-offline capacity proof, not native admission, correctness or speed. The v2
-controller requires a separately committed plan and fresh independent
-baseline/candidate processes before any advancement. It retains the original
-5% logical-bytes-per-verifier-row screen, increased GPU entry fraction and no
-observed token-latency increase; a pass only permits a later clean repeated
-comparison. Adoption still requires both MTP workloads, long prefill, task and
-physical-context gates. Current decode settings remain selected; no engine,
-runtime safety setting or model weight changed. Routed MTP experts already use
-the fixed S2 blob; Q8 dense matrices do not imply Q8 routed experts.
+The candidate increases logical bytes per verifier row0.9272%, missing the
+prospective5% reduction, and token latency0.6267%, missing the no-increase rule.
+**Do not advance to clean repetitions or adopt this placement.** These are one
+ordered diagnostic pair with observers, not clean speed or repeated performance.
+Thinking and substantive answers were present; output identity was not required.
+Both processes closed normally, all15 model hashes matched afterward and no
+fresh fault occurred. The
+[compact decision](../bench/results/2026-10-15-pr6-recovery-audit/cache-placement-current.json)
+retains individual samples and original full evidence at`71d0b6e63`.
 
-Before retiring the closed v1 root, all ten saved baseline evidence fields were
-replayed, all 164 original controller inputs and the prepared plan recovered,
-and all 9853 native inputs plus 13 required artifacts checked. The 79 raw/JIT
-files (13565676 bytes) were then retired with a path/hash/reason manifest.
-The full v1 result remains at `eb20952da`; the active result keeps only the
-individual request, admission decision, useful work checks and archive proof.
+Replay reproduced all ten evidence fields per arm; original164 controller and
+9853 native inputs,13 artifacts and the prepared plan were recovered/verified
+before retirement. Successful raw output/JIT/generated profiles and consumed
+retrieval reviews are retired after their compact evidence is committed. The
+closed placement planner/controller/tests are recoverable from`b331bb311`;
+they have no current execution consumer. Original1256-slot placement, engine,
+runtime safety settings and model weights remain selected. Routed MTP experts
+already use fixed S2 blobs; Q8 dense matrices do not imply Q8 routed experts.
+
+The next source question is whether existing routing callbacks can establish
+exact request, phase and verifier-window boundaries without a native rebuild.
+Aggregate hit counts alone cannot rank saved unique CPU jobs. Matching totals
+cannot substitute for the missing boundary proof; no routing collection has run.
 
 The prior MTP draft wrapper was about33ms/window. At the observed emitted
 outputs/window, prose's conditional whole-window budget at70tok/s is about31ms.
