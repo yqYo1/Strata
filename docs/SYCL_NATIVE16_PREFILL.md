@@ -192,9 +192,15 @@ recoverable from the pinned`3f494507b`result;individual samples are unchanged.
 All seven host groups passed at source`2da515523`,with normal ownership closure
 and no GPU execution. They reject short/unbound/reused evidence,wrong route or
 native/API clocks,counter mismatches and cross-workload compensation. The actual
-six-process long-generation cohort is now prepared at source`289105442`,after
+six-process long-generation cohort was prepared at source`289105442`,after
 all15 model assets were fully rehashed. Its frozen order is retained/current/
-current/retained/retained/current. No long-generation result is collected yet.
+current/retained/retained/current. The first retained-package process closed
+normally with no fresh fault and unchanged asset identities. Code read33214
+fresh tokens and generated3611 at14.771411tok/s;prose read33288 and generated8638
+at9.493949tok/s. Thinking was present in both,and their observed MTP acceptance
+was83.11%/39.06%. These are baseline samples only;the other five processes and
+all paired preservation decisions remain pending. See the
+[current decode comparison](../bench/results/2026-10-15-pr6-recovery-audit/canonical-restore-decode-current.json).
 
 
 The current B570 speed reference uses fresh inputs of117489 tokens and separates
