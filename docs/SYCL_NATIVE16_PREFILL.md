@@ -130,8 +130,10 @@ batched prefill without a Drive writer; the unsplit verifier calls layers0..47
 once synchronously per window. The route FILE is flushed before each native
 request footer. Combining these facts with a quiescent official request gate
 can establish callback boundaries without a rebuild; the route file alone
-cannot. New host reader/controller source and adversarial tests precede a
-separate one-process collection plan. It must conserve every provider/format/NT
+cannot. Reader/controller source`063069d5d` passed ten host tests, including
+partial/reordered records, invalid IDs, placeholder weights, membership/format
+counter mismatches and missing phase/window frames. A separate one-process
+collection plan must conserve every provider/format/NT
 bin and exact byte spans, including all four warmups, before the long request.
 Keep only one393236-byte expert/window count matrix for the immediate offline
 static-cache decision. This is logical-work evidence, not CPU service, physical
