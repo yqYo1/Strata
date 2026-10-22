@@ -144,36 +144,43 @@ This is logical-work evidence, not CPU service, physical traffic or clean speed.
 
 The [compact route result](../bench/results/2026-10-15-pr6-recovery-audit/routing-workmix-current.json)
 keeps individual measurements, exact framing checks and archive`56ccbbfd1`.
-Replay reencoded the393236-byte expert/window matrix exactly. The matrix is the
-sole raw consumer for an immediate offline comparison of shipped ranks,
-token-entry frequency and unique-window frequency, retaining each layer's26
-slots (last34), allocation and protected-prefix bytes. Stable original-rank
-ties make selection reproducible. Offline source`da840901b` passes13 host tests.
-On the fixed captured routes, token-entry ranking gives2235982208000 logical
-CPU bytes (ratio0.799685), while window ranking gives2222407116800
-(ratio0.794830, **20.5170% less** than shipped ranks). The latter changes1120
-resident pairs and reduces CPU jobs1370846 to1089991. It retains2575206400
-allocated/protected-prefix245657600 bytes and2329548800 maximum loan bytes.
-This clears only the prospective>=5% counterfactual gate for proposing a new
-model plan. It is not observed saved traffic or speed: changed residency may
-change subsequent routes and output. Actual changed-residency routes, prefill/decode
-preservation, both MTP workloads, independent workload/agent/task/full physical
-context and RESTORE gates remain separate. Successful raw routes/logs/JIT and
-the one-use collector are retired after replay/source recovery; the compact
-result records remaining consumers and actual deletion status.
+The offline fixed-route window ranking predicted20.5170% fewer logical CPU
+weight bytes while retaining each layer's26 slots (last34), allocation and
+protected-prefix bytes. This was a proposal gate, not measured saved traffic
+or speed. Source`7fd10a25c` passed19 host tests before its two-process official
+thinking code/prose pilot; plan`4f42434d2` fixed the comparison and stopping rules.
 
-The next pilot uses the original profile and the window-ranked profile in two
-independent processes. Each runs the official thinking code/prose pair after
-four warmups. Source`7fd10a25c` passes19 host tests, including full generated
-profile/reverse-map/membership checks and refusal of either workload's failed
-gate. The deterministic generator preserves all original layer labels,
-all24576 unique pairs and the reverse map; each per-layer slot count and byte
-offset remains unchanged. Only a prospective reduction of at least5% in actual
-CPU logical bytes/verifier row, increased GPU entry fraction and no token-latency
-increase in **each** workload permits a later clean repeated plan. Native
-membership, all six loan/refill cycles, long8192/BF16/mode10/48-layer restoration,
-owned closure,15 model hashes and fresh-fault checks remain mandatory. This
-does not adopt a new cache profile or change the selected decode configuration.
+The pilot is now closed and **rejected**. Each arm used the exact original6e40
+engine,1256 slots and unchanged per-layer byte offsets. Only expert membership
+changed. Both processes completed all four warmups and two long requests,
+verified all six loan/refill cycles and GPU BF16/mode10/private-bank/48-layer
+restoration, retained8192 prefill chunks, matched all15 model hashes afterward
+and produced no fresh fault.
+
+| Workload | Original generated / exact TG, tok/s | Ranked generated / exact TG, tok/s | Logical CPU bytes/verifier-row ratio | GPU entry fraction, original / ranked |
+| --- | ---: | ---: | ---: | ---: |
+| Code,33214 fresh input | 3611 /14.811 | 2869 /16.675 | 0.791099 | 10.773% /34.615% |
+| Prose,33288 fresh input | 8638 /9.495 | 11299 /9.378 | 1.044499 | 8.941% /5.401% |
+
+Code's CPU-pool wall decreases107.55 to86.03ms/window; prose increases99.28 to
+103.79ms. Token latency improves11.1810% for code but worsens1.2412% for prose.
+Prose also misses the required5% logical-work reduction and increased GPU entry
+fraction. Do not advance to clean repetitions or adopt this profile. MTP remains
+in both declared regimes (83.11%/86.40% code,39.06%/39.72% prose); generated text
+and length need not match. One ordered diagnostic pair establishes neither
+clean speed nor hardware saturation. The
+[compact decision](../bench/results/2026-10-15-pr6-recovery-audit/cache-window-rank-current.json)
+keeps all four samples and full archive`832285dfc`. Original native/default
+profile selection remains unchanged.
+
+Before retirement, Main replayed all12 official requests and their work,
+dispatch, timing, loan, route and ownership evidence; recovered164 controller
+and9853 native inputs,13 artifacts and the exact prepared plan. The rejected
+pilot's raw output/JIT/profiles, consumed retrieval review and393236-byte matrix
+were retired:144 external files/26912616 bytes. Its four unused controller,
+ranker and test files (44000 bytes) are recoverable at`7fd10a25c`. No raw matrix
+consumer remains. The selected engine and separate legacy provenance holds
+are unchanged.
 
 The prior MTP draft wrapper was about33ms/window. At the observed emitted
 outputs/window, prose's conditional whole-window budget at70tok/s is about31ms.
@@ -184,6 +191,18 @@ selecting an MTP change. The current residual handoff is device-to-device;
 records and KV host backup remain separate paths. MTP4 is the currently checked
 scratch-loan/expert-release route; another width requires its own owner, graph
 retirement and VRAM admission checks.
+
+The source audit confirms each replay submits one complete executable graph.
+Draft full-forward uses dense attention;
+KV-only prefill returns before that attention, experts and head. Its attention
+capacity is32768 cells; the32848-cell KV ring is a separate allocation. The
+split-attention merge recomputes the same rescaling coefficient across output
+dimensions, but its actual service contribution is unmeasured. Do not select a
+kernel change from operation counts alone. The reviewed Unitrace alternative
+could aggregate explicitly mapped graph-kernel service after current-runtime,
+warmed-graph coverage and loader/source-loss qualification; its earlier failed
+graph host-sink gate remains failed. Such service sums would still not establish
+critical-path wall, observer overhead or physical hardware saturation.
 
 Remaining model gates are repeated phase-preserving adoption evidence,
 agent-session and task quality, full physical262144 tokens including the final

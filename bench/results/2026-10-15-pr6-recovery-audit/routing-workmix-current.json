@@ -142,8 +142,9 @@
     "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/routing-workmix-v1/expert-window-counts.bin",
     "bytes": 393236,
     "sha256": "7926de15c5e5763bbe256ef9a420765642c2b2c528b64aacfe04b4a0132d367d",
-    "consumer": "Main immediate window-ranked per-layer cache pilot: deterministically generate and verify candidate profile,then frozen baseline/candidate official strong-code and weak-prose screens;retain only through that profile/heldout decision.",
-    "review_point": "At the next prospective pilot plan and again at its closure;retire if not used or if its cache candidate is rejected. Finite393236B budget;no full route trace remains."
+    "consumer": "Closed window-rank pilot rejected on weak-prose logical work and token latency;no remaining raw consumer.",
+    "review_point": "Consumer closed at 832285dfc83d93c64da8b9610e5d788230e71b8f",
+    "retired": true
   },
   "rank_inputs": {
     "profile": {
@@ -199,9 +200,33 @@
     },
     "files_deleted": 73,
     "bytes_deleted": 30604833,
-    "retained_files": 1,
-    "retained_bytes": 393236,
-    "consumer_update_commit": "da840901b092af11d7d0f00eb98e7606a6cef692"
+    "retained_files": 0,
+    "retained_bytes": 0,
+    "consumer_update_commit": "da840901b092af11d7d0f00eb98e7606a6cef692",
+    "remaining_matrix_retirement": {
+      "manifest": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cache-window-rank-v1-closed-retirement-20261022.jsonl",
+        "sha256": "fa4b3f4fbbeffdf05c1a10016c644686b4d72bec003aa81259ab47790ee5e4ed",
+        "files": 144,
+        "bytes": 26912616
+      },
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/routing-workmix-v1/expert-window-counts.bin",
+      "bytes": 393236,
+      "sha256": "7926de15c5e5763bbe256ef9a420765642c2b2c528b64aacfe04b4a0132d367d",
+      "consumer_closed": true
+    },
+    "ranker_source_retirement": {
+      "commit": "7fd10a25c35fe0878cf5f8fd90a324bd68d22412",
+      "paths": [
+        "tools/sycl/cache_window_rank_engine.py",
+        "tools/sycl/routing_workmix.py",
+        "tests/core/test_cache_window_rank_engine.py",
+        "tests/core/test_routing_workmix.py"
+      ],
+      "files": 4,
+      "bytes": 44000,
+      "reason": "Rejected single-use pilot and ranker have no current execution/fixture consumer;restore original measured source from Git for a separately planned new question."
+    }
   },
   "offline_analysis": {
     "source_commit": "da840901b092af11d7d0f00eb98e7606a6cef692",
