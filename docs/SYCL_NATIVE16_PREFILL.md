@@ -86,6 +86,25 @@ is historical context;the current
 [client-resource evidence](../bench/results/2026-10-15-pr6-recovery-audit/client-resources-current.json)
 bounds scheduled activity rather than hardware saturation.
 
+The next bounded decode-placement screen uses the existing ranked global
+cache route on the exact retained6e40 engine. First run the offline
+`tools/sycl/cache_placement.py` planner and its host admission tests. Compare
+the actual1256-slot per-layer byte budget with the global profile prefix under
+a same-or-smaller budget, including256-byte padding and the protected128-slot
+prefix. Keeping the numeric1256 knob in global mode would give a larger byte
+budget and is ineligible. The profile ranks are not access frequencies; neither
+slot count nor capacity predicts hits or speed. The existing cache source also
+records a historical2.97% hit rate for global admission, which is counterevidence
+to check rather than a reason to assume improvement. The offline calculation
+does not qualify a model route or adoption. Before a model run, commit a
+separate bounded plan covering actual free-memory admission, global membership,
+empty-layer behavior, variable offsets, loan/refill and graph bindings. Later
+performance adoption requires independent matched repetitions of both thinking
+long-generation workloads and unchanged long-prefill performance. The current
+decode configuration stays selected during this screen; no native source or
+runtime safety setting changes. Routed MTP experts already use the fixed S2
+blob; dense MTP matrices being Q8 does not imply Q8 routed experts.
+
 The prior MTP draft wrapper was about33ms/window. At the observed emitted
 outputs/window, prose's conditional whole-window budget at70tok/s is about31ms.
 This is a charged serial budget, not GPU service or a hardware ceiling. Attribute
