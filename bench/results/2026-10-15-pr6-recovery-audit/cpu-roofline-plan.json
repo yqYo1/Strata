@@ -1,9 +1,9 @@
 {
-  "schema": "strata-cpu-decode-mix-v1",
+  "schema": "strata-cpu-decode-mix-v2",
   "source": {
-    "revision": "dcf2e8483cdcdd32112926ab8d1acd9bf280ba08",
-    "count": 35,
-    "aggregate_sha256": "553e1fbfde9b11e0f1cca39be2118e58d8d69a0de943969231780f2540851fef"
+    "revision": "7725d3f838962bc4a5974c0ed77b882ddfd8da4c",
+    "count": 108,
+    "aggregate_sha256": "d38461501440c4e476ee8adaed10854c758a995caaea509114dde26ca6149440"
   },
   "ggml": {
     "revision": "3cf03257f219afbe7334045ff7c6a06ac68c627d",
@@ -452,16 +452,16 @@
     }
   },
   "previous_result": {
-    "commit": "b4024b61398543bf12c41b8a0ed392ed85148fc0",
+    "commit": "f8d608e58fdbec2e08f7728ac97092fc0a00d7d2",
     "path": "bench/results/2026-10-15-pr6-recovery-audit/cpu-roofline-current.json",
-    "sha256": "7a0aebb5d7b190472a3e92fc12aa605aff35b14e0b20f2217462ff34777678ca"
+    "sha256": "31c08f16ca50975891c6428f54bc10f529bf1e36c90a18c576a28e3611197b30"
   },
   "configure": [
     "/usr/bin/cmake",
     "-S",
     "/home/yayoi/orca/workspaces/Strata/sycl/bench/sycl/cpu_decode_mix",
     "-B",
-    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-decode-mix-v1/build",
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-decode-mix-v2/build",
     "-G",
     "Ninja",
     "-DCMAKE_BUILD_TYPE=Release",
@@ -473,7 +473,7 @@
   "build": [
     "/usr/bin/cmake",
     "--build",
-    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-decode-mix-v1/build",
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-decode-mix-v2/build",
     "--target",
     "cpu_decode_mix",
     "cpu_roofline",
@@ -503,7 +503,7 @@
     "reuse": "Reuse the same distinct group of6 or28 real expert blobs.28-expert weights may exceed32MiB L3;do not label it cache-resident.",
     "stream": "Rotate distinct groups through at least128MiB. A pass has100 batches and may revisit the extent;requested blob visits are not physical RAM traffic.",
     "scan": "Existing read-only256MiB checksum fixture,persistent1/6 threads,five>=1s samples. An achieved read reference,not an arithmetic or DRAM upper bound.",
-    "validation": "Each loaded distinct expert at NT1..4:production pool bit-exact to serial production GU/quant/down,finite outputs,untouched inactive NT lanes,external canaries. Real distinct blobs detect job permutations. This is route consistency,not independent model/task validation.",
+    "validation": "Each loaded distinct expert at uniform NT1..4 and a heterogeneous-NT batch at the timed group size:production pool bit-exact to serial production GU/quant/down,finite outputs,untouched inactive NT lanes,external canaries. Mixed groups force NT1..4 coverage. Real distinct blobs detect job permutations. This is route consistency,not independent model/task validation.",
     "observers": "Native IQ2 pairing1,SINGLE_EXACT0,IQ2 audit0;fixed before process startup. Existing production pool subphase clocks only. No extra per-callback/thread clocks,no GPU runtime.",
     "gates": "All28 check children before measure. All56 expert cells and2 read cells with five individual eligible samples,actual placement/work/histogram conservation,normal ownership closure. Stop at first failure or budget,no sample replacement/retry.",
     "interpretation": "6/28 batches and reuse/stream change scheduling,cache and work together;thread scaling includes main quantization and waiting. Sensitivity may guide a later optimization;it does not establish arithmetic/RAM saturation,physical traffic,clean model speed or70tok/s.",
