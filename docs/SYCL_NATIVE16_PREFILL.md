@@ -442,6 +442,9 @@ A Main-authored checked readback/file-output helper passes7 host fault-injection
 tests. A reversible native source overlay is prepared but not compiled or
 integrated. Its separate diagnostic qualification and explicit runtime-lineage
 binding are required before a new plan; selected6e40 and decode remain unchanged.
+The refused plan's four generated inputs were recovered from its pushed source
+and then removed with consumed research transactions:14 files,259820 bytes.
+Its original failed outcome remains in Git; no GPU capture or new native build ran.
 
 Remaining model gates are repeated phase-preserving adoption evidence,
 agent-session and task quality, full physical262144 tokens including the final
