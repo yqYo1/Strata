@@ -219,9 +219,12 @@ Source inspection of the split-copy handoff found no unconditional retained
 copy-event list in Strata's adapter. `cudaMemcpyAsync` keeps its returned event
 local; its command-profile hook retains events only in an enabled trace, which
 this comparison leaves disabled. The final stream drain still precedes pointer
-publication. This does not measure SYCL/runtime/driver retention or establish
-decode preservation; package code generation and actual decode costs remain
-separate questions for the completed comparison.
+publication. The changed server refill calls are in prompt reading and its
+final handoff, before `prompt_ms` and the decode clock. The per-window decode
+loop does not call those refill or transition-observer wrappers. This is a
+source boundary check, not proof that restored state, runtime retention or the
+compiled package has no later effect. Decode preservation and its actual costs
+remain separate questions for the completed comparison.
 
 
 The current B570 speed reference uses fresh inputs of117489 tokens and separates
