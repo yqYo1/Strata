@@ -28,8 +28,11 @@ controllers are removed; recover them at`44c7c919c`. Its build products and the
 duplicate fallback receipt were retired after source recovery and consumer
 checks. One qualified engine generation remains. The separate legacy
 source-provenance hold remains explicit in the build result; retiring this
-comparison does not resolve it. Preserve the selected fallback before any
-future rebuild.
+comparison does not resolve it. The separate primary product review has now
+closed:262 project inputs and the recipe recover, but final dependency and
+quoted-header identities remain unavailable. Its unused179 build files
+(153072851 bytes) are retired; the provenance failure and unique original
+receipt remain explicit. Preserve the selected fallback before any future rebuild.
 
 The completed clean prefill comparison used six independent processes in
 retained/candidate/candidate/retained/retained/candidate order, with four fresh
@@ -427,7 +430,8 @@ Original186 project inputs,five generated sources,thirteen commands and8700
 SDK inputs were recovered before retirement. All42 owned commands are closed.
 The rejected auxiliary generation and consumed report transactions are removed:
 144 files,20179599 bytes. All13 selected native assets still match;
-the separate primary provenance and older Orca ownership holds remain open.
+At that closure, the separate primary provenance and older Orca ownership holds
+remained open; the primary product retirement recorded above is now complete.
 Use the reviewed matched counterfactual resource protocol for the next
 attribution decision before another layout variation; keep calibration separate
 from claims about physical traffic, hardware saturation and model speed.
