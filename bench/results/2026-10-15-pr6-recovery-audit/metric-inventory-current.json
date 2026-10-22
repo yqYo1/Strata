@@ -516,7 +516,7 @@
   "boot_unchanged": true,
   "metric_enumeration_succeeded": true,
   "event_query_setup": {
-    "stage": "prepared",
+    "stage": "built",
     "source_commit": "9b4f065fb6317fa54e2a32ca037f9f7d94977431",
     "inputs": {
       "bench/sycl/metric_inventory.cpp": "0af141d3857863035703f0dad6653c392d7a1953028c8290fe7d7bb41e2d6317",
@@ -599,11 +599,26 @@
       "file_bytes": 33554432,
       "total_bytes": 100663296
     },
-    "passed": false,
-    "complete": false,
+    "passed": true,
+    "complete": true,
     "active": false,
     "ownership_closed": true,
     "collection_qualified": false,
-    "inference_unchanged": true
+    "inference_unchanged": true,
+    "binary": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/b570-metric-query-setup-v1/query-setup",
+      "bytes": 44160,
+      "sha256": "a76d6cd9b48eb664c30b9c37c4c45bf9f955d2b6dc24150f02cfd61bc9576f9f"
+    },
+    "fresh_faults": [],
+    "driver_after": {
+      "pci": "/sys/bus/pci/devices/0000:05:00.0",
+      "driver": "xe",
+      "vendor": "0x8086",
+      "device": "0xe20c",
+      "kernel": "7.0.0-38-generic",
+      "devcoredump": false
+    },
+    "boot_unchanged": true
   }
 }
