@@ -532,7 +532,7 @@
   "ownership_closed": true,
   "passed": true,
   "complete": true,
-  "GPU_executed": false,
+  "GPU_executed": true,
   "model_adoption_qualified": false,
   "binaries": {
     "numerical": {
@@ -584,7 +584,7 @@
     "limits": "Both frontend modules retain division and matrix-loop representation. The loop hint survives as metadata in the candidate;actual JIT allocation/timing must decide. No hardware compute/PCIe/memory saturation claim."
   },
   "check_plan": {
-    "stage": "prepared",
+    "stage": "closed",
     "mode": "smoke",
     "source_commit": "da76a18c77e0029f4bf2a6acadd4c56311533994",
     "controller_inputs": {
@@ -771,5 +771,115 @@
         "session": null
       }
     ]
-  }
+  },
+  "checks": [
+    {
+      "mode": "smoke",
+      "source_commit": "da76a18c77e0029f4bf2a6acadd4c56311533994",
+      "numerical_binary": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-qcache-unroll-v1/numerical",
+        "sha256": "e41c7798d4b977aa44a24e927398f1a35c13c4c1fea3ba0d1b6da7b8ebfc5536",
+        "bytes": 1585424
+      },
+      "passed": true,
+      "complete": true,
+      "active": false,
+      "ownership_closed": true,
+      "observations": [
+        {
+          "arm": "default",
+          "pid": 2638347,
+          "exit_code": 0,
+          "ownership_closed": true,
+          "validation": {
+            "pid": 2638347,
+            "loader": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_loader.so.0.12.0",
+            "threads_before": 1,
+            "preinit": 37,
+            "config_enabled": true,
+            "first_init": true,
+            "dispatch_result": 46,
+            "output_untouched": true,
+            "retained_reference_until_exit": true,
+            "runtime_teardown_qualified": false
+          },
+          "case_count": 2,
+          "cases": [
+            "case cells=97 live_cells=49 active_rows=128 cap=33 queries=1 masked=0 compared=6144 max_abs=0 max_budget_ratio=0 oracle=BF16_operands_FP32_online packed_guard_elements=17 packed_k_mod8=2 packed_logical_prefix=PASS packed_guards=PASS guards=PASS inputs=PASS status=PASS",
+            "case cells=97 live_cells=71 active_rows=160 cap=33 queries=3 masked=1 compared=18432 max_abs=0 max_budget_ratio=0 oracle=BF16_operands_FP32_online packed_guard_elements=17 packed_k_mod8=2 packed_logical_prefix=PASS packed_guards=PASS guards=PASS inputs=PASS status=PASS"
+          ],
+          "exact_prefix33_bits": true,
+          "physical262144_component_addressed": false,
+          "stdout_sha256": "5439174833c5aaa1a3174d79d348fe6fc006166ae52b06df1e7a5f71056e6410",
+          "stderr_sha256": "a3511f6bc725af0e303d82f4372d126546ddf55ad91cf25d222994f7fe007b8c"
+        },
+        {
+          "arm": "control",
+          "pid": 2638912,
+          "exit_code": 0,
+          "ownership_closed": true,
+          "validation": {
+            "pid": 2638912,
+            "loader": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_loader.so.0.12.0",
+            "threads_before": 1,
+            "preinit": 37,
+            "config_enabled": true,
+            "first_init": true,
+            "dispatch_result": 46,
+            "output_untouched": true,
+            "retained_reference_until_exit": true,
+            "runtime_teardown_qualified": false
+          },
+          "case_count": 2,
+          "cases": [
+            "case cells=97 live_cells=49 active_rows=128 cap=33 queries=1 masked=0 compared=6144 max_abs=0 max_budget_ratio=0 oracle=BF16_operands_FP32_online packed_guard_elements=17 packed_k_mod8=2 packed_logical_prefix=PASS packed_guards=PASS guards=PASS inputs=PASS status=PASS",
+            "case cells=97 live_cells=71 active_rows=160 cap=33 queries=3 masked=1 compared=18432 max_abs=0 max_budget_ratio=0 oracle=BF16_operands_FP32_online packed_guard_elements=17 packed_k_mod8=2 packed_logical_prefix=PASS packed_guards=PASS guards=PASS inputs=PASS status=PASS"
+          ],
+          "exact_prefix33_bits": true,
+          "physical262144_component_addressed": false,
+          "stdout_sha256": "7aaed68bbd098ea859a16cb30a7c4e7ae0eb786b58ab60000ce30309daaba924",
+          "stderr_sha256": "28285220a3da48c9df1740d5a6e2576e7f68499f80555725acdfe27ee5e18a5c"
+        },
+        {
+          "arm": "unroll",
+          "pid": 2639607,
+          "exit_code": 0,
+          "ownership_closed": true,
+          "validation": {
+            "pid": 2639607,
+            "loader": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_loader.so.0.12.0",
+            "threads_before": 1,
+            "preinit": 37,
+            "config_enabled": true,
+            "first_init": true,
+            "dispatch_result": 46,
+            "output_untouched": true,
+            "retained_reference_until_exit": true,
+            "runtime_teardown_qualified": false
+          },
+          "case_count": 2,
+          "cases": [
+            "case cells=97 live_cells=49 active_rows=128 cap=33 queries=1 masked=0 compared=6144 max_abs=0 max_budget_ratio=0 oracle=BF16_operands_FP32_online packed_guard_elements=17 packed_k_mod8=2 packed_logical_prefix=PASS packed_guards=PASS guards=PASS inputs=PASS status=PASS",
+            "case cells=97 live_cells=71 active_rows=160 cap=33 queries=3 masked=1 compared=18432 max_abs=0 max_budget_ratio=0 oracle=BF16_operands_FP32_online packed_guard_elements=17 packed_k_mod8=2 packed_logical_prefix=PASS packed_guards=PASS guards=PASS inputs=PASS status=PASS"
+          ],
+          "exact_prefix33_bits": true,
+          "physical262144_component_addressed": false,
+          "stdout_sha256": "4d4156e137ac147b931955ff77832a9e5cfc376e7bfd7a05b4ed4d6df843ee97",
+          "stderr_sha256": "687c264ce0d284d9852282b073f8a2aaaa77f58e3d4e2033968a4e737ff5b937"
+        }
+      ],
+      "postchecks_complete": true,
+      "postcheck_errors": [],
+      "fresh_faults": [],
+      "boot_unchanged": true,
+      "driver_after": {
+        "pci": "/sys/bus/pci/devices/0000:05:00.0",
+        "driver": "xe",
+        "vendor": "0x8086",
+        "device": "0xe20c",
+        "kernel": "7.0.0-38-generic",
+        "devcoredump": false
+      }
+    }
+  ]
 }
