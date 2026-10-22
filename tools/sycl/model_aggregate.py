@@ -23,11 +23,12 @@ import measurement_guards as guards
 import measurement_owner as supervision
 import unitrace_probe as probe
 import production_profile as production
+import check_indexed_collector as indexed
 from profile_aggregate import device_summary
 
 P, B, RESULT = probe.P, probe.B, probe.RESULT
-ROOT = B/'unitrace-model-aggregate-v1'
-KEY = 'native_model_aggregate'
+ROOT = B/'unitrace-model-aggregate-v2'
+KEY = 'native_model_aggregate_v2'
 
 
 def write(path, value):
@@ -35,18 +36,14 @@ def write(path, value):
 
 
 def profile_assets(container):
-    qualified = container['unitrace_graph_aggregate']
+    qualified = container['unitrace_indexed_graph']
     guards.require(qualified['passed'] and qualified['complete'] and qualified['ownership_closed']
         and not qualified['active'] and qualified['fresh_faults'] == [] and qualified['boot_unchanged']
         and qualified['service_coverage_qualified']
         and [r['coverage']['program_calls'] for r in qualified['observations'][1:]] == [4,10],
         'closed initial-construction aggregate qualification required')
-    archive = qualified['plan_archive']
-    raw = gen.git('show', archive['commit']+':'+archive['path'])
-    guards.require(hashlib.sha256(raw).hexdigest() == archive['sha256'], 'original collector plan changed')
-    pinned = json.loads(raw)['unitrace_graph_aggregate']['assets']
-    guards.require(probe.pin_assets(container) == pinned, 'collector/runtime/native assets changed')
-    return pinned
+    indexed.admission(qualified,container,True)
+    return qualified['assets']
 
 
 def environment(setup):
@@ -56,11 +53,11 @@ def environment(setup):
 def prospective_plan():
     return dict(question='Which verbose kernel shapes account for device service on the unchanged original6e40 route?',
         execution='One owned official bench.sh process: four warmups and the existing thinking-enabled regular-code request, >=32K fresh input and >=1024 generated tokens with a substantive answer. Original binary,1256-slot layout,8192 prefill,131072 resident INT8 context,5 workers,MTP4 and arithmetic settings unchanged.',
-        collection='Qualified target-only validation preload and unchanged PTI collector; device-timing+verbose from exec. Unique session,Sysman off,no counters,no timeline,no pause during graph capture or replay. All environment fixed before native exec.',
+        collection='Qualified target-only validation preload and indexed PTI collector,whose only source change is host name aggregation after collection. Actual80-case CPU equivalence and4/10 GPU replay coverage passed. Device-timing+verbose from exec; unique session,Sysman off,no counters,no timeline,no paused capture. Environment fixed before exec. Original server20-second native-wrapper grace and finite controller deadlines remain unchanged.',
         gates='Commit source/generated plan before launch; recover9853 native inputs and13 artifacts,controller closure,model/runtime and collector qualification. Verify actual native PID/start/SID/exe/environment and four completed warmups before dispatch. Require complete official stream,journal,answer,>=.60 draft acceptance,actual phase routes,all loan/refill and48-layer restoration,dispatch/work/clock conservation,validation constructor order,one complete positive device table with exact sum,normal native/owner/session closure,unchanged15 full model hashes and no fresh fault. First failure stops; no retry.',
         separation='No inference implementation,configuration,expert placement or phase selector changes. This diagnostic does not qualify a prefill-only change or decode preservation; repeated clean phase-preserving comparisons remain required.',
         interpretation='Whole-process summed service includes loading,warmups,prefill and decode. Verbose shapes can support source mapping but do not isolate phase time,overlap,critical-path wall,physical bus/memory traffic,hardware saturation or observer overhead. Unmapped/mixed shapes remain unknown.',
-        limits='One observed strong-MTP process only. No clean speed,weak-MTP/agent/task quality,full physical262144/session/RESTORE,adoption or70tok/s qualification.',
+        limits='One observed strong-MTP process only. Original v1 failed host aggregation/native shutdown remains failed. This new collector/plan must finish the actual table and normal native exit; host proxy speed alone was insufficient. No clean speed,weak-MTP/agent/task quality,full physical262144/session/RESTORE,adoption or70tok/s qualification.',
         retention='Keep compact individual request,conservation checks,top shape service plus source mappings/unknowns and exact identity/decision. Keep the aggregate table and normal logs only through source attribution/replay; retire after that consumer closes. No full API trace or kernel timeline.')
 
 
@@ -86,6 +83,11 @@ def current(record, full_models=False):
 
 def prepare(container):
     guards.require(KEY not in container and not ROOT.exists(), 'fresh single-use plan only; inspect prior owners')
+    previous=container['native_model_aggregate']
+    guards.require(previous['stage']=='closed' and not previous['passed'] and not previous['complete']
+        and previous['posthoc_closure']['all_owned_processes_reaped']
+        and previous['posthoc_closure']['exact_session_removed'] and previous['artifact_retirement']['complete'],
+        'preserve and physically close the diagnosed original v1 failure first')
     full, proof, setup = resource.qualification()
     pinned = profile_assets(container)
     revision = gen.git('rev-parse','HEAD').decode().strip()
