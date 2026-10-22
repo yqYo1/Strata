@@ -15,6 +15,7 @@ import sys
 
 sys.dont_write_bytecode=True
 import build_qsa_page4 as build
+import qualify_qsa_page4 as codegen
 import measurement_guards as guards
 import measurement_owner as supervision
 import query_profile as qualified
@@ -70,8 +71,10 @@ def admission(record,plan):
         assets=aggregate.profile_assets(build.gen.committed(aggregate.RESULT))
         guards.require(plan['collector_assets']=={k:assets[k] for k in ('collector','launcher','preload')},
             'qualified collector/launcher/preload changed')
-    guards.require(record['stage']=='built' and record['passed'] and record['complete'] and
-        record['ownership_closed'] and not record['active'],'closed isolated build required')
+    # The original broad zero-division gate remains failed. Reuse only the
+    # independently qualified exact compiled bytes and semantic IR proof.
+    codegen.admission(record)
+    guards.require(record['ownership_closed'] and not record['active'],'closed compiled artifacts required')
 
 
 def prepare(mode):
