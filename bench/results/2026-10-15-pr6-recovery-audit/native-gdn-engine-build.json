@@ -408,7 +408,7 @@
     "sha256": "9945b8234465e0c963732086eac0b10b081fb63ca3eb16db3daae27899eab7f2"
   },
   "native_source_restoration": {
-    "stage": "artifact_migration_pending",
+    "stage": "identity_reuse_verified",
     "selected_native_source": "6e40afc1beddd059ee518617f6c1efce1da14aca",
     "source_restoration_commit": "e88fa626c",
     "controller_admission_commit": "2e88dd6b7",
@@ -452,10 +452,14 @@
       "retirement_reason": "Closed candidate failed sustained decode preservation; no pending comparison needs its artifacts."
     },
     "external_retirement": {
-      "complete": false,
+      "complete": true,
       "manifest": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/rejected-canonical-generation-retirement-20261022.jsonl",
-      "planned_root_files": 221,
-      "planned_root_bytes": 191758325
+      "sha256": "3efb5d56657c6719cb67beffdf7ca9bfd0ddfa6ed7b2714eb0324b1b456b812f",
+      "files": 222,
+      "bytes": 193099889,
+      "candidate_root_retired": true,
+      "exact_original_artifacts_moved_not_rebuilt": true,
+      "duplicate_fallback_directory_retired": true
     },
     "tracked_prototype_retirement": {
       "archive_commit": "44c7c919cf48d28f827ffb43a7e31fa2bb2ab205",
@@ -463,6 +467,39 @@
       "files": 19,
       "bytes": 155924,
       "reason": "Closed rejected copy/transition experiments and dependent controllers; Git deletion diff supplies exact paths/blob hashes. Preserve independent provenance tests."
-    }
+    },
+    "artifact_migration_complete": true,
+    "required_artifacts_verified": 13,
+    "component_groups_reused": 18,
+    "qualification_reuse": {
+      "component_groups": 18,
+      "phase_host_cases": 24,
+      "prefill_requests": 13,
+      "clean_prefill_processes": 3,
+      "prefill_read_tokens": [
+        117489
+      ],
+      "generated_tokens_per_request": 24,
+      "original_inputs_recovered": 9853,
+      "clean117K_speed_observed": true,
+      "sustained_decode_speed_qualified": false,
+      "hardware_saturation_qualified": false,
+      "model_adoption_qualified": false
+    },
+    "host_gate_test_updates": [
+      {
+        "path": "tests/core/test_fresh_build_reference.py",
+        "build_input_sha256": "c70f2f43bafdf6147778ee740964e06bdfc9c261daccf03e425ec8a8b6162180",
+        "committed_sha256": "73faf0325b542e1136d5b93e80bbc6a6a5d35b9ba77115cb7d8434e5c3540905",
+        "source_commit": "c92d08b030197bd622137831d4f4f3bcfd181160"
+      },
+      {
+        "path": "tests/core/test_resource_engine.py",
+        "build_input_sha256": "40386927c7d0aad4e4f1d22254f941b33c6536aaff08ed3624288af489b7185e",
+        "committed_sha256": "5ab364577b104e9a86a8702ad4b1a0c90e4abab6c50cba281e95926dc40c4bdf",
+        "source_commit": "2e88dd6b72d5d18ee44a80b3d3d2891876692d24"
+      }
+    ],
+    "retained_qualified_generations": 1
   }
 }

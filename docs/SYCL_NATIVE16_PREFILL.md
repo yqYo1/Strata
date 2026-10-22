@@ -2,429 +2,106 @@
 
 ## Current measured state
 
-Design, tune and select independent prefill and decode execution paths by
-default. This includes kernels, scheduling and placement. If both
-select the same implementation, that is an incidental result of their separate
-decisions. Shared inference processing requires a matched measurement showing
-that it is faster than independent paths for the recorded shapes/phases.
-Existing sharing without that evidence remains a legacy arrangement to audit;
-phase containment alone does not establish a sharing benefit.
+Prefill and decode select independent kernels, scheduling and placement. Shared
+processing requires a matched measurement showing a benefit for the recorded
+phase and shapes. Legacy sharing remains an audit obligation. A prefill change
+that affects decode has a separation defect; a prefill gain cannot compensate
+for it. Preserve the current decode implementation, configuration and1256-slot
+placement while fixing the prefill path.
 
-The completed six-process retained6e40/current362-chunk64 comparison now rejects
-the candidate package for adoption. Its0.153% warm-prefill gain does not pay for
-the failed sustained-decode preservation screen: paired-ratio geometric means
-are0.990300 for code and0.999066 for prose. Keep retained6e40 as the measured
-continuation baseline with1256 decode slots. Its native sources are restored to the original6e40 inputs; exact retained
-engine/fixture restoration and provenance admission must close before another
-model route. The rejected package remains only until that serialized artifact
-selection closes. Preserve the independent Python provenance regression tests.
-This does not qualify agent/task quality,physical262144/session/RESTORE orTG70.
+The selected continuation build is the original phase-scoped
+`6e40afc1beddd059ee518617f6c1efce1da14aca`, restored to its original native
+sources and artifact paths. The engine and all12 required same-build fixtures
+match their original hashes. All9853 original project/dependency inputs and the
+recipe were recovered from Git. The original full build receipt and18-group
+component result were restored byte for byte. No recompilation or new GPU
+validation was needed. The only inventoried source differences are two
+uncompiled Python provenance tests and an explicitly reviewed retention-only
+controller change. Admission pins the controller's original/current hashes;
+future changes cannot silently reuse this exception. All26 host provenance and
+refusal tests passed. See the
+[build selection and identity proof](../bench/results/2026-10-15-pr6-recovery-audit/native-gdn-engine-build.json).
 
-The current priority is to restore the fastest recorded prefill path while
-preserving the present decode implementation, settings and placement. Recover
-the exact source/configuration and compare matched inputs, separating first-use
-and later requests. A decode impact is a separation defect: check state handoff
-and repeated decode performance, resolve the coupling, and keep the restoration
-unqualified until it is fixed. New IQ2 and MTP model cohorts remain deferred
-during this restoration. Controller `acc1abd4b` prepares the matched117K
-baseline on the current phase-scoped build; its four host launch/evidence-refusal
-tests and the same-build packed smoke/validate gates (two/three cases) passed.
-The checked117K request passed at924.3tok/s, with normal native exit,
-exact cache payload/map restoration, all48 dense layers restored, unchanged
-model hashes and no fresh fault. This first-use diagnostic is observer-charged.
-All three clean processes passed with subsequent medians of
-1002.146/1002.182/1002.584 tok/s (nine individual subsequent samples span
-1001.932–1002.666). Their first-long readings are929.738/929.915/903.454;
-keep the slower third first-use result without dismissing it as noise. Every
-request read117489 tokens and generated24 thinking tokens. All processes
-closed normally with unchanged model hashes and no fresh faults. This
-reproduces the earlier packed1256-slot steady readings, but does not establish
-restoration or sustained decode preservation. See the
-[closed baseline](../bench/results/2026-10-15-pr6-recovery-audit/prefill-recovery-current.json).
+The rejected362 package's copy/transition prototypes, unused targets, modes and
+controllers are removed; recover them at`44c7c919c`. Its build products and the
+duplicate fallback receipt were retired after source recovery and consumer
+checks. One qualified engine generation remains. The separate legacy
+source-provenance hold remains explicit in the build result; retiring this
+comparison does not resolve it. Preserve the selected fallback before any
+future rebuild.
 
-The older owned128-slot configuration recorded subsequent medians of
-1005.8/1004.2/1005.1, with different source and decode placement. Do not lower
-the present1256-slot decode cache to reproduce that whole configuration.
-The next question is prefill-to-decode transition cost: measure disjoint wall
-and thread CPU time for allocation/free, transfer submission, completion waits,
-publication and cache refill before choosing an overlap or allocation change.
-The older attributed run reported388.3ms of expert refill outside the native
-dense region and819.1ms in dense restore. These are charged wrapper intervals,
-not PCIe/GPU service or proof of a removable delay. Native dense restoration
-already batches copies with one final wait. Preserve completion/publication
-before the prompt timer ends; moving work into decode is not an improvement.
-Restoration remains unqualified until repeated sustained decode and state-handoff
-checks establish independence.
+The completed clean prefill comparison used six independent processes in
+retained/candidate/candidate/retained/retained/candidate order, with four fresh
+117489-token requests per process and thinking enabled. Subsequent three-request
+medians were1002.598/1002.370/1002.152tok/s for retained6e40 and
+1004.194/1004.162/1003.369tok/s for candidate362 chunk64. All three candidate
+paired ratios exceeded1; their geometric mean was1.001531 (+0.153%). Both
+packages therefore recorded repeated warm-prefill medians above1000 on this
+workload. First-long readings902.784..931.774tok/s remain separate. The
+24-token outputs qualify neither sustained decode nor task quality. All24
+requests closed normally, with unchanged15 model hashes and no fresh fault.
+See the [individual prefill samples](../bench/results/2026-10-15-pr6-recovery-audit/canonical-restore-speed-current.json).
 
-Main's original default-off `STRATA_PREFILL_TRANSITION_PROFILE=1` observer
-partitions native-owner entry, dense restoration and server cache refill into
-wall/thread-CPU regions. Called compatibility/runtime waits are nested
-subintervals; subtract them to distinguish host work from polling. It adds no
-queue work, wait, pointer publication or scheduling change. Native-owner entry
-excludes the earlier graph/borrower retirement and canonical preparation;
-dense restore includes canonical/PLE and graph/verifier resume. Preserve the
-existing version2 outer diagnostic for that wider boundary. Logical byte counts
-are requested payloads, not bus measurements. The standalone11-case host
-contract and the new build's11 observer/24 phase cases plus18 shared engine groups passed. Four independent device children
-then passed packed smoke/validate and real300-matrix,48-layer owner/payload
-checks with the observer off/on and two restoration cycles. One observed117K
-model request closed normally at923.483tok/s with24 thinking tokens, unchanged
-model hashes and no fresh faults. This is diagnostic timing, not a speed gain
-or sustained decode qualification.
+The subsequent six-process decode comparison **rejects candidate adoption**.
+Every code pair declined; the second prose pair also declined. Exact-TG
+paired-ratio geometric means are0.990300 for code (-0.970%) and0.999066 for
+prose (-0.093%). Both miss the prospective rule requiring every pair>=1 for
+each workload. Do not dismiss these outcomes as noise or change the rule
+afterward. Each code request read/generated33214/3611 tokens; each prose
+request33288/8638. Thinking and substantive answers were present, with observed
+MTP acceptance83.11%/39.06% in both arms. All six processes closed normally,
+with full model hashes rechecked and no fresh fault. Individual values,
+configuration and limitations remain in the
+[closed decode comparison](../bench/results/2026-10-15-pr6-recovery-audit/canonical-restore-decode-current.json).
 
-The long request's dense restore took817.534ms: native allocation33.600ms,
-native copy submission253.672ms, final native drain97.266ms, canonical
-restoration432.264ms and graph/verifier resume0.064ms. Cache refill took
-1078.937ms, including full resident-payload verification: its drain/audit
-wrapper took789.176ms. These are disjoint charged wrapper regions; instrumented
-waits are nested subintervals. Time outside those waits can still contain
-runtime-internal polling/staging. Do not interpret the refill total as PCIe
-service or submit CPU time as model arithmetic.
+The package comparison does not identify the cause of the decline. Native
+observers were disabled, but independent background host work was not attributed.
+The removed refill/transition wrappers were outside the per-window decode loop;
+that source boundary did not prove an unchanged compiled package or runtime
+state. Bounded ELF inspection found equal main-stack reservations and equal
+inspected CPU GU symbol sizes, not machine-code equivalence or causal proof.
+Restoring the exact original package removes that rejected package from the
+continuation path; it does not establish a new speed or full-model qualification.
 
-Defer graph reuse, single-allocation ownership and refill overlap from this
-evidence. The next bounded question is large-copy source memory/granularity:
-canonical restore submits1538035200bytes once, versus2116951040bytes across
-300 native tensors. Measure this before changing restoration. The existing
-canonical fixture's persistent pool is only82821120bytes; keeping it on GPU
-cannot supply the whole arena by D2D. Bus traffic/service and effects of the
-model's observed131960832bytes free after restore remain unmeasured.
-The reviewed handoff alternatives add no speed evidence. Current dense/PLE
-restoration and graph recapture precede queued cache refill/table upload.
-A free waits before deallocation, but that alone does not establish whether
-already submitted GPU work overlaps while the host waits. The following component screen measures that source/granularity question.
-Its runtime mechanism and real-model memory-pressure effects still need
-separate evidence.
+The default-off CPU IQ2 pair producer remains explicitly confined to decode;
+prefill retains its reference producer. Its component comparison preserves
+output bits and reduces the tested NT1 pool latencies by8.85%/7.29%. The old
+whole-process IQ2 advancement screen failed prefill preservation; that failure
+remains unchanged. The phase-scoped6e40 source contains that candidate without
+justifying legacy shared dispatch. See
+[IQ2 component evidence](../bench/results/2026-10-15-pr6-recovery-audit/cpu-iq2-current.json)
+and the [original model decision](../bench/results/2026-10-15-pr6-recovery-audit/iq2-pair-model-current.json).
 
-The standalone1538035200-byte production-API copy screen then passed six
-small traced children, nine full-size validation children and27 clean native
-processes/162 samples without a fresh fault. The three process medians were
-419.314/419.600/419.431ms for ordinary-vector whole copies,
-253.229/253.284/253.511ms for ordinary-vector64MiB chunks, and
-236.140/236.139/236.176ms for preinitialized host-USM whole copies.
-All alternatives pass the frozen component screen; its selected result remains
-host-USM whole (throughput-ratio geomean1.776181). These are requested-payload
-copy rates,not measured wire bandwidth or GPU service. The source/import
-mechanism and model memory-pressure effect remain unknown.
+The current limiting hardware resource remains **unattributed**. Older CPU-pool
+and GPU-wait intervals include scheduling, polling and overlap; GPU utilization,
+job fractions and logical weight GB/s do not prove CPU, RAM, PCIe or GPU
+saturation. IQ2 pairing changed the relevant CPU work, so obtain a matched
+post-IQ2 resource profile before selecting the next optimization. Separate host
+compute/submission/waits, actual or explicitly unavailable bus/memory counters,
+and compatible-shape compute/bandwidth ceilings. The prior
+[work census](../bench/results/2026-10-15-pr6-recovery-audit/cpu-work-census-current.json)
+and [client-resource evidence](../bench/results/2026-10-15-pr6-recovery-audit/client-resources-current.json)
+are historical context, not current saturation measurements.
 
-The next model candidate is the eligible64MiB ordinary-vector shape, scoped
-only to prefill canonical restoration. It requires no new retained host buffer
-or source ownership. This engineering choice does not rewrite the component
-winner: host-USM needs separate setup/lifetime/RAM accounting. Its staged first
-copies were484..491ms versus419..421ms for vector whole. A166ms component
-saving once in a117s prompt would be about0.14% only if reproduced there; no
-model gain is established. Keep the final drain and publication before prompt
-completion, preserve current decode settings/placement, and require repeated
-sustained decode and handoff checks. See the
-[closed copy comparison](../bench/results/2026-10-15-pr6-recovery-audit/large-copy-current.json).
-Main's original scheduler passed eight host boundary/refusal groups. The
-production candidate is default-off under the immutable
-`STRATA_SYCL_PREFILL_CANONICAL_CHUNK64=1` setting. It changes only the canonical
-restore submission schedule, retaining its source/destination owners and one
-final checked drain before publication. The optional
-`STRATA_SYCL_PREFILL_CANONICAL_RESTORE_AUDIT=1` line records actual copied bytes,
-chunk and successful submission count after canonical bank retirement.
-The native build passed, including its eight new host scheduler groups and
-existing15 census,24 phase and11 observer host cases. All18 shared device
-groups then passed. The small/tail helper cases and separate actual canonical
-owner off/on children passed full payload/metadata/48-layer/PLE restoration,
-with actual1/23 copies,unchanged15 model assets and no fresh fault. This
-fixture has no inference/expert-cache load and does not establish near-full
-VRAM admission. Model speed,handoff,sustained decode and physical-context
-qualification remain pending. `canonical_model.py` next admits two checked117K
-processes with flag0/1,identical current decode settings and the same observed
-accounting. The first baseline request completed at920.845tok/s with normal
-closure and no fresh fault, but its controller failed by counting three warmup
-and three long-request dense observations as three whole-process records. That
-failed attempt remains at`9555a7bd2`; it is not a passed admission. The corrected
-controller separates both completed requests, rejects misplaced observations,
-and starts a separately committed fresh two-arm plan after seven host checks.
-Both fresh checked117K arms now passed:924.207/925.045tok/s,with actual1/23
-copies,exact48-layer/cache restoration,unchanged model assets and no fresh
-fault. The canonical restore wrapper measured431.273/265.117ms (166.156ms
-less);dense restoration as a whole measured817.254/650.307ms. These are
-charged first-use wrapper clocks,not pure PCIe service or repeated clean speed.
-Both restored with about126MiB of free VRAM. Sustained decode independence,
-agent/task quality and physical262144/session/RESTORE remain unqualified.
-The next repeated performance comparison must also include the retained6e40
-baseline to detect package-level decode effects from the intervening
-observer/copy build;the same-native off/on discriminator alone cannot do that.
-`canonical_speed.py` now prepares six clean processes in baseline/candidate/
-candidate/baseline/baseline/candidate order,with four117K requests each. It
-compares retained6e40 against current362 with chunk64,holding1256 slots and
-all decode algorithm choices fixed. This explicitly replaces the earlier
-same-native clean-preview baseline with the retained package baseline before
-any clean sample is collected. Six host decision/refusal/environment groups
-passed. First use is separate;the candidate-faster screen requires all three
-paired subsequent-median ratios>1 and their geometric mean>=1.0005. The
-1000 milestone requires all three candidate process medians>=1000. Neither
-screen permits adoption without repeated sustained decode and the remaining
-correctness gates. Full model hashes bracket the cohort;file identity guards
-run before and after each process. The independent native Luna review
-found no source-level admission blocker after tracing the launch,model,fixture
-and route helpers. Clean copy selection is source-verified through the pinned
-launch chain and selector;with audit0 it has no per-process logged copy count.
-Actual1/23 counts belong to the preceding checked off/on requests. All six
-clean processes and24 requests completed normally,with unchanged model hashes
-and no fresh fault. Each request read117489 fresh tokens and generated24
-thinking tokens. The independent-process results,in launch order,are:
+The prior MTP draft wrapper was about33ms/window. At the observed emitted
+outputs/window, prose's conditional whole-window budget at70tok/s is about31ms.
+This is a charged serial budget, not GPU service or a hardware ceiling. Attribute
+draft host submission/waits and attention/projection/MoE/head costs before
+selecting an MTP change. The current residual handoff is device-to-device;
+`copy_from_mapped` does not imply a CPU hidden-state transfer. Mapped token
+records and KV host backup remain separate paths. MTP4 is the currently checked
+scratch-loan/expert-release route; another width requires its own owner, graph
+retirement and VRAM admission checks.
 
-| Process | Package | First long request tok/s | Subsequent three-request median tok/s |
-| --- | --- | ---: | ---: |
-| 0 | retained6e40 | 902.784 | 1002.598 |
-| 1 | current362 chunk64 | 931.774 | 1004.194 |
-| 2 | current362 chunk64 | 930.777 | 1004.162 |
-| 3 | retained6e40 | 928.643 | 1002.370 |
-| 4 | retained6e40 | 927.781 | 1002.152 |
-| 5 | current362 chunk64 | 929.954 | 1003.369 |
-
-The three paired candidate/reference ratios are1.001591/1.001788/1.001214;
-their geometric mean is1.001531. The prospective faster-candidate and1000
-subsequent-median screens both pass. The smaller final gain and slower first-use
-values remain in the [individual samples and archived frozen-input reference](../bench/results/2026-10-15-pr6-recovery-audit/canonical-restore-speed-current.json).
-This is a0.153% package gain on this workload,not a hardware-saturation result.
-Short24-token output does not establish decode independence or adoption.
-
-The separate `canonical_decode.py` controller prepares the next six-process
-comparison only after the clean prefill gate passes. It uses the same retained
-and candidate packages,1256 slots and immutable environments,with the official
-version4 thinking-on code/prose workloads in each process. Its prospective
-preservation screen requires all three exact-TG pair ratios>=1 independently
-for each workload,and strong/weak observed MTP acceptance in every sample of
-both arms. Any decline leaves preservation unqualified;there is no permitted
-prefill/decode tradeoff or assertion of statistically proven zero effect.
-It checks complete journals,native request extents and reported GPU BF16/mode10
-routes. Exact payload restoration belongs to the preceding checked model
-admission;clean runs do not claim unlogged copy or payload measurements.
-This reader does not consume closed prefill cohorts' generated configurations.
-That qualification passed unchanged before and after retiring the closed input
-copies,normal raw output and attempt barriers. Exact launch environments remain
-recoverable from the pinned`3f494507b`result;individual samples are unchanged.
-All seven host groups passed at source`2da515523`,with normal ownership closure
-and no GPU execution. They reject short/unbound/reused evidence,wrong route or
-native/API clocks,counter mismatches and cross-workload compensation. The actual
-six-process long-generation cohort was prepared at source`289105442`,after
-all15 model assets were fully rehashed. Its frozen order is retained/current/
-current/retained/retained/current. All six processes have closed normally,with
-unchanged asset identities,no fresh fault and all15 model hashes rechecked at
-cohort closure. Each code request read33214
-fresh tokens and generated3611;each prose request read33288 and generated8638.
-All include thinking and substantive
-answers,with observed MTP acceptance83.11%/39.06%. Exact decode readings are:
-
-| Process | Package | Code tok/s | Prose tok/s |
-| --- | --- | ---: | ---: |
-| 0 | retained6e40 | 14.771411 | 9.493949 |
-| 1 | current362 chunk64 | 14.548306 | 9.506803 |
-| 2 | current362 chunk64 | 14.658382 | 9.493705 |
-| 3 | retained6e40 | 14.764116 | 9.560474 |
-| 4 | retained6e40 | 14.918757 | 9.567510 |
-| 5 | current362 chunk64 | 14.817131 | 9.594849 |
-
-The paired candidate/reference ratios are0.984896/1.001354,0.992838/0.993016
-and0.993188/1.002857 for code/prose. Their geometric means are0.990300/0.999066.
-Every code pair and the second prose pair miss the prospective no-decline
-screen;both observed MTP classes are confirmed in all samples. The candidate
-package is rejected for adoption despite passing the prefill screen,andTG70
-remains unmet. Keep every original individual sample. Causal attribution
-remains unresolved. Native observers
-are off,but background host work was not attributed;the package ratios alone
-do not identify the cause. This limitation does not change the failed
-no-decline outcomes. See the
-[current decode comparison](../bench/results/2026-10-15-pr6-recovery-audit/canonical-restore-decode-current.json).
-
-Future draft-length tuning needs separate handoff admission. The current
-`generate.cpp` guards admit checked scratch loans and MTP expert release only
-with MTP4; `Verifier::can_release_prefill_head` also requires a four-token
-window. Changing `--spec` alone cannot reuse this qualified long-prefill route.
-These guards delimit the tested support; they do not establish that another
-width is unsafe. Audit the owners, graph retirement and VRAM budget before
-extending admission, and preserve the prefill route when comparing decode
-widths. The current frozen comparison keeps both arms at MTP4.
-
-Source inspection of the split-copy handoff found no unconditional retained
-copy-event list in Strata's adapter. `cudaMemcpyAsync` keeps its returned event
-local; its command-profile hook retains events only in an enabled trace, which
-this comparison leaves disabled. The final stream drain still precedes pointer
-publication. The changed server refill calls are in prompt reading and its
-final handoff, before `prompt_ms` and the decode clock. The per-window decode
-loop does not call those refill or transition-observer wrappers. This is a
-source boundary check, not proof that restored state, runtime retention or the
-compiled package has no later effect. A bounded static read of the two pinned
-executables found `main` grows54 bytes,with the same prologue stack reservation.
-The inspected CPU GU entry sizes match and both move7296 bytes,retaining their
-64-byte offsets. Symbol sizes alone establish neither instruction equivalence
-nor the cause of the TG difference. Decode preservation and its actual costs
-remain separate questions for the completed comparison.
-
-
-The current B570 speed reference uses fresh inputs of117489 tokens and separates
-the first long request from later requests in each independent process.
-Three packed-bank process medians for the later requests are
-1002.056/1002.106/1002.149 tok/s; their first-long readings are
-929.917/928.963/927.958 tok/s. This meets the recorded1000 tok/s criterion for
-later-request medians only. The packed-bank layout's0.223% gain misses its
-prospective2% screen and remains opt-in. See the
-[individual samples and frozen comparison](../bench/results/2026-10-15-pr6-recovery-audit/prefill-packed-bank-speed-current.json).
-
-The next selected component is the default-off CPU IQ2_S NT1 gate/up pair
-producer. Its comparison matches the actual model baseline and uses
-`STRATA_IQ_SINGLE_EXACT=0` in both arms:288 samples across six independent
-processes preserve all output bits and reduce the two tested format
-combinations' pool latency by8.85%/7.29%.
-These are component results, with actual dispatch and work conservation, not
-model speed gains. See the
-[component decision](../bench/results/2026-10-15-pr6-recovery-audit/cpu-iq2-current.json)
-and [current model comparison](../bench/results/2026-10-15-pr6-recovery-audit/iq2-pair-model-current.json).
-The original observed pilot remains at commit`bedfdf312`; the repeated
-comparison's controller pins and validates that Git record directly.
-
-All six planned same-binary processes closed normally, with no fresh driver
-fault, and the prospective reducer agrees with the retained individual samples.
-Both decode workloads pass the faster-screen rule: paired candidate/base
-throughput ratios are 1.016474/1.016684/1.015472 for code and
-1.015337/1.010841/1.019018 for prose, with geometric means 1.016210/1.015060.
-These are observer-charged screens, not clean throughput or causal hardware
-attribution. MTP acceptance classes are confirmed in both arms at 83.11%/39.06%.
-
-The candidate does not qualify under the original whole-process advancement
-rule. This does not reject a separately scoped decode implementation. The
-first code prefill fell from 637.4 to 484.7 tok/s (52104.8 to 68521.9 ms for
-33214 fresh tokens). All three code prefill ratios are
-0.760411/1.001320/0.999605: their geometric mean 0.913026 fails the 0.98
-minimum, and the first pair fails the every-pair minimum of 0.95. Keep this
-failed outcome; later samples do not erase it. Prose prefill's geometric mean
-0.992706 passes its separate nonregression gate. A successful process/overall
-`passed` flag denotes execution gates, not performance eligibility. The IQ2
-option remains off by default. New phase-specific adoption criteria and
-evidence must be committed prospectively; keep this original failed outcome.
-
-The long layer-major GPU prefill does not call the CPU IQ2 producer. Its server
-prompt clock ends after cache refill, before the last-token verification and
-decode window loop. The source therefore does not establish that IQ2 pairing
-caused the first prefill slowdown. The shared CPU verifier path can also read
-short/window prompts. Source `6e40afc1b` now copies an explicit phase into each
-synchronous CPU batch: prefill keeps the reference and only decode can select
-the default-off IQ2 candidate. Request/token scopes restore the prior phase on
-exit, including errors, without changing process environment variables.
-The new engine and twelve fixtures compiled. Separate pair-off/on CPU children
-passed twelve cases each: two formats, NT1/NT2, prefill/decode/prefill sequencing,
-actual pair-row dispatch, identical output bits, guards and scope restoration.
-The fifteen-case CPU census host contract and eighteen same-build engine
-groups also passed, with unchanged boot and no fresh driver faults. These are
-component checks, not new model speed, model-route or adoption evidence. The
-legacy shared CPU dispatcher is contained, not justified as the final architecture.
-
-The final baseline/candidate pair measured code PP 636.6/636.3 and TG
-14.5/14.8, and prose PP 761.0/745.1 and TG 9.3/9.5 tok/s. Each code request
-read/generated 33214/3611 tokens, and each prose request 33288/8638 tokens.
-Original samples and all rejected prefill measurements remain in the linked
-comparison. Source/metadata research proceeded during this diagnostic;
-independent background CPU/I/O interference was not separately quantified.
-
-Main's MTP observer source at `0b39c726f` is integrated into `feature/sycl`.
-The new engine and eleven fixtures compiled at `05223b559`; 25 host-only
-controller/refusal tests and the 15-case CPU census build contract passed.
-The bounded profile-off/on graph fixture passed numerical/guard, event-provenance,
-two-replay clock and checked teardown gates with no fresh faults. Same-build
-eighteen-group engine checks also passed. Model execution and timing remain
-unqualified.
-The superseded6c fallback was retired after its9845 original inputs and recipe
-were recovered and its MTP replacement consumer closed. The current6e40 engine
-and twelve fixtures are now preserved and hash-checked, with9853 original
-inputs recovered, for the prefill-transition observer build. Its retained
-qualification is checked and three clean117K processes with24 output tokens,
-not sustained decode. The unmeasured child branch/worktree is retired. The prepared three-process weak-prose plan was closed before
-any model launch after the phase-specific adoption clarification. Its packed
-smoke/validate gates passed; they remain component evidence. Next, qualify the
-new decode selection and compare it under a prospective decode-specific plan,
-then resume MTP attribution with a newly qualified plan.
-Graph clocks are nonadditive first-to-last-node
-envelopes; hardware service and saturation remain unknown.
-
-A post-hoc mechanism check limits what this IQ2 component can explain. In the
-closed baseline, its two format bins account for 18.69%/17.81% of total decode
-wall time for code/prose. Apply the component latency ratios 0.911505/0.927087
-to those bins while holding other work and overlap fixed: with total decode
-time D and per-format pool time P, `D / (D - sum(P * (1 - ratio))) - 1` gives
-only about 1.61%/1.53% throughput improvement. This is a consistency calculation
-using rounded representative component mixtures and observed pool wall,
-including scheduling/waits; it is not a causal result, physical resource
-ceiling or new acceptance rule. It motivates wider work reduction and MTP
-investigation rather than extrapolating a component's 7–9% to the whole model.
-
-The observed IQ2 pilot completed both33K thinking-generation cases at14.8/9.5
-tok/s, with3611/8638 generated tokens. Its input, output/thinking hashes and
-work census match the prior14.5/9.3 tok/s diagnostic. These are single observed
-processes on different native builds, not a causal speed comparison.
-Current CPU-pool wall intervals account for45.73%/43.19% of decode, including
-scheduling and waits; they do not establish CPU or RAM saturation. GPU-reach
-waits are dependency intervals, not arithmetic service. The
-[closed work census](../bench/results/2026-10-15-pr6-recovery-audit/cpu-work-census-current.json)
-records the remaining hardware questions. Sustained70 tok/s, clean repeated
-candidate generation, agent-session, broad task quality and physical262144
-context/session/RESTORE qualification remain open. Component or source checks
-below do not close those model gates.
-
-The closed pilot also constrains the next decode architecture decision. Combine
-its measured per-format job counts with the blob sizes in the
-[closed census](../bench/results/2026-10-15-pr6-recovery-audit/cpu-work-census-current.json):
-`sum(blob_bytes * sum(jobs_NT)) / generated_tokens` counts one logical expert
-blob per grouped CPU job, including a multirow job only once. The pilot at
-`bedfdf312` has the same work counts and static formats. This covers target
-experts, excluding separate MTP work:
-
-| Workload | Generated tokens | Logical CPU expert GB/output token | Logical GB/s at70 tok/s |
-| --- | ---: | ---: | ---: |
-| regular-code | 3611 | 0.774322 | 54.203 |
-| varied-prose | 8638 | 1.086338 | 76.044 |
-
-If every such footprint required one DRAM read and the available read budget
-equalled the measured six-thread256MiB scan's39.35GB/s, these workloads would
-allow50.82/36.22tok/s before arithmetic and other costs. Fitting70tok/s into that
-budget would require27.4%/48.3% fewer DRAM bytes per output token. Alternatively,
-copying every current CPU job's full blob to the GPU over a hypothetical6GB/s
-payload link would allow only7.75/5.52tok/s under unchanged work and placement.
-These are conditional budgets, not measured traffic or hardware ceilings:
-cache reuse, repeated kernel reads, overlap and the scan's access pattern differ.
-IQ2 pairing preserves this logical weight footprint. Its instruction savings
-therefore need the current repeated model comparison; the larger target also
-requires investigating reuse, placement, verification work and MTP costs rather
-than assuming that faster CPU arithmetic or complete GPU miss offload suffices.
-
-The repeated comparison's closed baseline process also supplies a separate MTP
-budget. In `src/program/generate.cpp`, the request runs target verification,
-commit/emit and then `MtpDrafter::draft` before constructing the next window.
-The outer draft clock includes host work, graph submission, completion waits
-and charged observers; it is not GPU arithmetic service time.
-
-| Workload | Emitted tokens / windows | Draft ms/window | Whole-window budget at 70 tok/s | Draft-only conditional tok/s |
-| --- | ---: | ---: | ---: | ---: |
-| regular-code | 3611 / 1035 | 33.14 | 49.841 | 105.28 |
-| varied-prose | 8638 / 3978 | 33.05 | 31.021 | 65.70 |
-
-The last column is `emitted_tokens * 1000 / (windows * draft_ms)`. Holding
-the observed draft cost and emitted tokens per window fixed, CPU expert
-improvements alone cannot reach 70 tok/s on the prose case, even if target
-verification became free. This is a conditional serial budget, not a hardware
-ceiling or a clean throughput measurement. The printed draft mean has 0.01 ms
-resolution and includes the request's terminal window, which can skip drafting.
-After the frozen cohort, separate draft host submission/waits from attention,
-projections/MoE and head service before selecting a kernel or scheduling change.
-`MtpDrafter::draft` currently waits after the round and each chain step; removing
-those waits also requires preserving mapped inputs, NaN/probability stopping,
-KV state and checked owner retirement. The indexed chain/window reviews retain
-those holds; this budget clears none of them.
-
-The current single-GPU residual handoff is a device-to-device path: the caller
-binds `ver.final_R_all()` to MTP, `Verifier::R_` is carved from a `cudaMalloc`
-arena, and the SYCL compatibility allocator uses `sycl::malloc_device`.
-MTP's `Rin_` is another device-arena slice. `copy_from_mapped` is an elementwise
-GPU copy here; its name does not establish a host source. At T=4, HC=4 and
-N=2560 this moves 163840 logical bytes within device memory, rather than a
-hidden-state round trip through RAM. Mapped token/step/output records and any
-KV host backup remain separate paths; this source audit is not a measurement
-of total PCIe traffic. The residual owner remains valid through the serial
-draft completion before the next verifier run.
+Remaining model gates are repeated phase-preserving adoption evidence,
+agent-session and task quality, full physical262144 tokens including the final
+slots and tail boundaries, prefill-to-decode/session/RESTORE, and70tok/s decode.
+The short-output117K proof does not close them. Niko011c9e60 functional imports
+and a hardware-tuned unmodified-upstream benchmark are still pending; curated
+coverage reports are not implemented ports. The last actual upstream check was
+2026-10-21T21:26:18Z; the next approximately48-hour check is due
+2026-10-23T21:26:18Z. PR180/default integration is blocked by the existing merge
+policy; original measured commits remain reachable on pushed`feature/sycl`.
 
 ## MTP graph observer: tiny support fixture passed, model checks pending
 
