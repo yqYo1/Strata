@@ -89,6 +89,24 @@ def membership(selected):
     return masks
 
 
+def reorder_cached_prefix(pairs, sizes, slots):
+    """Stable size order inside the admitted set; never change layer-local rank."""
+    require(len(sizes) == LAYERS and type(slots) is int and PREFIX < slots <= len(pairs),
+            'invalid protected-prefix geometry')
+    return sorted(pairs[:slots], key=lambda pair: aligned(sizes[pair[0]])) + pairs[slots:]
+
+
+def encode_profile(pairs):
+    count = LAYERS * EXPERTS
+    require(len(pairs) == len(set(pairs)) == count and
+            all(0 <= l < LAYERS and 0 <= e < EXPERTS for l, e in pairs), 'invalid complete profile')
+    reverse = [0] * count
+    for rank, (layer, expert) in enumerate(pairs):
+        reverse[layer * EXPERTS + expert] = rank
+    return (b'STRP' + struct.pack('<5I', 1, LAYERS, EXPERTS, count, count) +
+            b''.join(struct.pack('<HH', *pair) for pair in pairs) + struct.pack('<'+'i'*count, *reverse))
+
+
 def summary(selected, sizes):
     require(len(selected) > PREFIX, 'no positive loan after128-slot prefix')
     masks = membership(selected)
@@ -102,7 +120,7 @@ def summary(selected, sizes):
         slot_map_sha256=hashlib.sha256(b''.join(struct.pack('<HH', *p) for p in selected)).hexdigest())
 
 
-def plan(profile, manifest, slots=1256):
+def plan(profile, manifest, slots=1256, protect_prefix=False):
     pairs, rows = read_profile(profile), read_manifest(manifest)
     sizes = [row['blob_bytes'] for row in rows]
     base_pairs = per_layer(pairs, slots)
@@ -113,13 +131,20 @@ def plan(profile, manifest, slots=1256):
     require(0 < knob < (1 << 31), 'global cache argument exceeds native range')
     cap = knob * max(sizes)
     candidate_pairs = ranked(pairs, sizes, cap)
+    original_candidate = candidate_pairs
+    if protect_prefix:
+        pairs = reorder_cached_prefix(pairs, sizes, len(candidate_pairs))
+        candidate_pairs = ranked(pairs, sizes, cap)
+        require(membership(candidate_pairs) == membership(original_candidate) and
+                len(candidate_pairs) == len(original_candidate) and per_layer(pairs, slots) == base_pairs,
+                'prefix ordering changed cache membership or per-layer slot map')
     candidate = summary(candidate_pairs, sizes)
     require(candidate['allocated_bytes'] <= cap <= base['allocated_bytes'], 'budget exceeds baseline')
     next_size = (aligned(sizes[pairs[len(candidate_pairs)][0]])
                  if len(candidate_pairs) < len(pairs) else None)
     require(next_size is None or cap-candidate['allocated_bytes'] < next_size, 'prefix stop differs')
     a, b = set(base_pairs), set(candidate_pairs)
-    return dict(schema='strata-cache-placement-offline-v1',
+    result = dict(schema='strata-cache-placement-offline-v1',
         inputs={str(Path(p).resolve()): hashlib.sha256(Path(p).read_bytes()).hexdigest()
                 for p in (profile, manifest)},
         baseline=dict(base, expert_cache_argument=slots, per_layer=True),
@@ -131,6 +156,12 @@ def plan(profile, manifest, slots=1256):
                'Ranks are not frequencies. No predicted hit rate, physical traffic, speed or adoption. '
                'Different prefix128 bytes can change prefill loan capacity. '
                'Actual membership, payload refill, prefill and decode must be checked separately.')
+    if protect_prefix:
+        result['profile_generation'] = dict(algorithm='stable ascending aligned blob bytes inside original admitted prefix',
+            cached_prefix_slots=len(original_candidate), sha256=hashlib.sha256(encode_profile(pairs)).hexdigest(),
+            original_prefix128_bytes=summary(original_candidate, sizes)['prefix128_bytes'],
+            per_layer_slot_map_unchanged=True, global_membership_unchanged=True)
+    return result
 
 
 def main():
@@ -138,8 +169,9 @@ def main():
     parser.add_argument('--profile', type=Path, required=True)
     parser.add_argument('--manifest', type=Path, required=True)
     parser.add_argument('--slots', type=int, default=1256)
+    parser.add_argument('--protect-prefix', action='store_true')
     args = parser.parse_args()
-    print(json.dumps(plan(args.profile, args.manifest, args.slots), indent=2))
+    print(json.dumps(plan(args.profile, args.manifest, args.slots, args.protect_prefix), indent=2))
 
 
 if __name__ == '__main__':

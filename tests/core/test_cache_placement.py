@@ -77,6 +77,37 @@ class CachePlacementTests(unittest.TestCase):
                 path.write_text('\n'.join(changed)+'\n')
                 with self.assertRaises(ValueError): cache.read_manifest(path)
 
+    def test_prefix_order_preserves_membership_every_layer_rank_and_profile_roundtrip(self):
+        sizes = [257+(47-l)*16 for l in range(48)]
+        ordered = cache.reorder_cached_prefix(self.pairs,sizes,1241)
+        self.assertEqual(set(ordered[:1241]),set(self.pairs[:1241]))
+        self.assertEqual(ordered[1241:],self.pairs[1241:])
+        self.assertLessEqual(sum(cache.aligned(sizes[l]) for l,_ in ordered[:128]),
+                             sum(cache.aligned(sizes[l]) for l,_ in self.pairs[:128]))
+        for layer in range(48):
+            self.assertEqual([e for l,e in ordered if l==layer],[e for l,e in self.pairs if l==layer])
+        self.assertEqual(cache.per_layer(ordered,1256),cache.per_layer(self.pairs,1256))
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory)/'profile'
+            path.write_bytes(cache.encode_profile(ordered))
+            self.assertEqual(cache.read_profile(path),ordered)
+        for changed in (ordered[:-1],ordered+[ordered[0]],ordered[:-1]+[ordered[0]]):
+            with self.assertRaises(ValueError): cache.encode_profile(changed)
+
+    def test_ordered_budget_keeps_slots_and_adds_loan_capacity_without_changing_membership(self):
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory)/'manifest'
+            path.write_text('\n'.join(f'{l} 18 20 0 {257+(47-l)*16} 0 0 0' for l in range(48))+'\n')
+            before = cache.plan(self.profile,path)
+            after = cache.plan(self.profile,path,protect_prefix=True)
+            self.assertEqual(before['baseline'],after['baseline'])
+            for key in ('slots','allocated_bytes','membership_sha256','layer_slots','expert_cache_argument'):
+                self.assertEqual(before['candidate'][key],after['candidate'][key])
+            self.assertLessEqual(after['candidate']['prefix128_bytes'],before['candidate']['prefix128_bytes'])
+            self.assertEqual(after['candidate']['allocated_bytes'],
+                after['candidate']['maximum_loan_bytes']+after['candidate']['prefix128_bytes'])
+            self.assertTrue(after['profile_generation']['per_layer_slot_map_unchanged'])
+
 
 if __name__ == '__main__':
     unittest.main()

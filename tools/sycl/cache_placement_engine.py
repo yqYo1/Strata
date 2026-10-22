@@ -1,14 +1,12 @@
 #!/usr/bin/env python3
 """Main-owned, same-native cache-placement discriminator; no adoption or rebuild."""
 import argparse
-import copy
 import fcntl
 import hashlib
 import json
 from pathlib import Path
 import re
 import select
-import shutil
 import socket
 import subprocess
 import sys
@@ -24,8 +22,10 @@ from check_expert_bank import check_packed_cases
 assets, restored, comparison = resources.modules()
 guards, supervision = resources.guards, resources.supervision
 P, B, A = gen.P, gen.B, gen.A
-ROOT, RESULT = B/'cache-placement-v1', A/'cache-placement-current.json'
+ROOT, RESULT = B/'cache-placement-v2', A/'cache-placement-current.json'
 WORKLOADS = ('regular-code',)
+PREVIOUS_COMMIT = 'eb20952da4bde54018d1ec7e373ba7e3d390ea44'
+PREVIOUS_SHA256 = '0d41acf9ec37d4ccb858c03b56deff538ec407b00c704cc07003022f00857e74'
 
 
 def write(path, value):
@@ -34,10 +34,10 @@ def write(path, value):
 
 def prospective():
     return dict(order=['traced-packed-smoke', 'per-layer', 'global-ranked'],
-        question='Does existing global profile placement reduce actual target-verifier CPU logical weight visits at no larger packed allocation?',
+        question='Does existing global profile placement with a smaller protected byte prefix reduce actual target-verifier CPU logical weight visits at no larger packed allocation?',
         source_audit='Existing generate.cpp global prefix uses align256(blob_bytes) and open_sized;ExpertCache::admit assigns monotonic slots,with adapt-swaps0 no heterogeneous replacement. All48 layers occur in this prefix. device_slot/Drive/VerifyHits carry actual slot_offsets;Verifier::init checks owner/base/offsets/slot count. prepare_scratch_loan protects128 slots and uses actual offsets;payload/map snapshots and refill must match before decode. No kernel,collective,queue,graph implementation or environment mutation is introduced;component qualification covers sized slots and scratch owner lifetime.',
-        constants='Original6e40 engine and12 fixtures;unchanged model/profile/runtime/precision;131072 residentINT8 KV,8192 prefill,spec4,5workers,pcie0,adapt0,caches0. Only remove per-layer admission and replace cache1256 with the offline derived global knob. Immutable native environment;existing work/timing/IQ2/loan diagnostics;no passive collector.',
-        admission='Fresh single-use roots;commit controller,host tests and generated plan before execution. Recover9853 native inputs/recipe and exact13 artifacts,full model hashes before cohort and after each process. Small traced packed-bank fixture must pass first. Before long request verify4 official warmups,native PID/start/SID/executable/environment,exact cache slot count/policy and no native error. Bind all5 cache loan/refill cycles to exact offsets and membership;require GPU BF16 mode10/private-bank route and48 dense layers restored.',
+        constants='Original6e40 engine and12 fixtures;unchanged model/runtime/precision;131072 residentINT8 KV,8192 prefill,spec4,5workers,pcie0,adapt0,caches0. Both arms use a deterministically reordered profile: stable ascending blob size only inside original admitted prefix. Prove original per-layer slot map and global membership unchanged. Only remove per-layer admission and replace cache1256 with the offline derived global knob between arms. Immutable native environment;existing work/timing/IQ2/loan diagnostics;no passive collector.',
+        admission='Fresh v2 roots;original v1 admission failure remains closed/archived and its unused raw root retired. Commit controller,host tests and generated profile recipe/hash/plan before execution. Recover9853 native inputs/recipe and exact13 artifacts,full model hashes before cohort and after each model process,stat identities at other boundaries. Offline candidate maximum loan must cover v1 actual8192 need2319958528 bytes. Small traced packed-bank fixture must pass first. Before long request verify4 official warmups,native PID/start/SID/executable/environment,exact cache slot count/policy and no native error. Bind all5 cache loan/refill cycles to exact offsets and membership;require unchanged8192 chunk,GPU BF16 mode10/private-bank route and48 dense layers restored.',
         workload='Pinned official bench.sh,thinking-enabled regular-code subset,runs1,four warmups,>=32768 fresh input,>=1024 generated and substantive answer. Independent baseline then candidate processes. This diagnostic is not clean speed or repeated adoption evidence.',
         decision='Advance only with both complete/closed/fault-free processes and same request/read extent,strong observed MTP>=0.60. Candidate logical CPU job-blob bytes per actual verifier row must be <=0.95 of baseline,VRAM entry fraction must increase,and exact decode_ms/generated_tokens must not increase. Otherwise reject this screen;no retry or posthoc threshold change. Generated text need not match;changed work is recorded. A pass permits only a separately committed repeated clean comparison,not adoption.',
         retention='Keep2 individual long requests,compact logical work/NT bins,loan extent/restoration summaries,identities,fault/closure and decision. Retire successful raw API/polling/model logs andJIT after evidence replay. No tensors or full retained timeline.',
@@ -76,7 +76,8 @@ def current(record, full_models=False):
         assets.fingerprint(actual) == record['source_fingerprint'] and
         gen.common.digest(gen.SETTINGS) == record['settings_sha256'], 'source/settings changed')
     manifest = Path(setup['config']['args'][setup['config']['args'].index('--pack')+1])/'native_experts.txt'
-    guards.require(placement.plan(P/'data/expert-profile.bin', manifest) == record['geometry'],
+    guards.require(placement.plan(P/'data/expert-profile.bin', manifest, protect_prefix=True) == record['geometry'] and
+        record['geometry']['candidate']['maximum_loan_bytes'] >= record['required_prefill_bytes'] == 2319958528,
         'offline geometry/profile/manifest changed')
     for path, digest in record['generated_inputs'].items():
         guards.require(gen.common.digest(path) == digest, 'generated placement input changed: '+path)
@@ -92,19 +93,34 @@ def current(record, full_models=False):
 
 
 def prepare():
-    guards.require(not ROOT.exists() and not RESULT.exists(), 'single-use placement root;never retry')
+    guards.require(not ROOT.exists(), 'single-use v2 placement root;never retry')
+    previous = gen.committed(RESULT)
+    guards.require(previous['schema'] == 'strata-cache-placement-closed-v1' and previous['stage'] == 'closed' and
+        previous['archive']['commit'] == PREVIOUS_COMMIT and previous['archive']['sha256'] == PREVIOUS_SHA256 and
+        previous['candidate_admission']['native_launched'] is False and previous['artifact_retirement']['complete'] and
+        previous['ownership_closed'] and not previous['active'] and not (B/'cache-placement-v1').exists(),
+        'closed archived v1 admission failure and raw retirement required;no retry')
+    raw = gen.git('show', PREVIOUS_COMMIT+':'+str(RESULT.relative_to(P)))
+    guards.require(hashlib.sha256(raw).hexdigest() == PREVIOUS_SHA256, 'original v1 evidence changed')
     full, proof, setup = resources.qualification()
     source = gen.git('rev-parse', 'HEAD').decode().strip()
     sources = pins(source)
     manifest = Path(setup['config']['args'][setup['config']['args'].index('--pack')+1])/'native_experts.txt'
-    geometry = placement.plan(P/'data/expert-profile.bin', manifest)
+    geometry = placement.plan(P/'data/expert-profile.bin', manifest, protect_prefix=True)
+    required = previous['candidate_admission']['actual_required_prefill_bytes']
+    guards.require(geometry['candidate']['maximum_loan_bytes'] >= required == 2319958528, 'protected prefix still cannot preserve8192')
+    sizes = [row['blob_bytes'] for row in placement.read_manifest(manifest)]
+    pairs = placement.reorder_cached_prefix(placement.read_profile(P/'data/expert-profile.bin'),sizes,
+        geometry['profile_generation']['cached_prefix_slots'])
+    profile_bytes = placement.encode_profile(pairs)
+    guards.require(hashlib.sha256(profile_bytes).hexdigest() == geometry['profile_generation']['sha256'], 'generated profile differs')
     models = assets.model_pins(setup['config'], setup['model_assets'], full=True)
     ROOT.mkdir(mode=0o700)
     generated, plans = {}, []
     for i, name in enumerate(('per-layer', 'global-ranked')):
         root = ROOT/name; root.mkdir(mode=0o700)
         for part in ('tmp', 'cache'): (root/part).mkdir()
-        shutil.copyfile(P/'data/expert-profile.bin', root/'expert-profile.bin')
+        (root/'expert-profile.bin').write_bytes(profile_bytes)
         cfg, env = config(setup, root, i == 1, geometry), restored.environment(setup, root, '0')
         write(root/'config.json', cfg)
         write(root/'plan.json', dict(binary=full['binary'], native_validation_probe=None))
@@ -119,7 +135,8 @@ def prepare():
     smoke = ROOT/'smoke'; smoke.mkdir(mode=0o700)
     for part in ('tmp', 'cache'): (smoke/part).mkdir()
     env = dict(json.loads(gen.SETTINGS.read_text())['environment'], TMPDIR=str(smoke/'tmp'), XDG_CACHE_HOME=str(smoke/'cache'))
-    record = dict(schema='strata-cache-placement-model-v1', mode='engine-compare', stage='prepared',
+    record = dict(schema='strata-cache-placement-model-v2', mode='engine-compare', stage='prepared',
+        previous_screen=previous['archive'], required_prefill_bytes=required,
         source_commit=source, binary=full['binary'], build_source_commit=full['source_commit'], qualification=proof,
         plan=prospective(), geometry=geometry, model_assets=models, process_plans=plans, smoke_environment=env,
         source_count=len(sources), source_fingerprint=assets.fingerprint(sources),
@@ -255,6 +272,7 @@ def run():
     mutable = {'stage','smoke','processes','complete','passed','active','ownership_closed','decision'}
     guards.require({k:v for k,v in record.items() if k not in mutable} ==
         {k:v for k,v in frozen.items() if k not in mutable} and not record['active'] and record['ownership_closed'] and
+        record['schema'] == 'strata-cache-placement-model-v2' and record['stage'] in ('prepared','collecting') and
         not record['complete'] and all(r['passed'] for r in record['processes']), 'closed/changed/failed plan')
     smoke = record['smoke'] is None
     i = len(record['processes']); guards.require(smoke or i < 2, 'pair complete')
@@ -327,7 +345,7 @@ def run():
             guards.require(row.get('native_identity') == observed['native_identity'] and
                 row.get('effective_environment_verified') is True, 'native identity differs from warmup handshake')
             row.update(observed)
-        current(record,full_models=True)
+        current(record,full_models=not smoke)
         row.update(passed=True,complete=True)
     except BaseException as error:
         row['error'] = str(error)
