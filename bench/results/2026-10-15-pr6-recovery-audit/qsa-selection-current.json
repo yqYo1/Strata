@@ -457,5 +457,56 @@
     "evidence_scope": "Static source/contract defect,not an observed GPU failure or claim about previous hangs. Prepared capture never launched.",
     "safety_action": "Close original capture plan without refreshing its pins. Add checked guarded readback and checked file output;qualify a separate diagnostic native build before re-planning. Keep current production engine/12fixtures/decode unchanged."
   },
-  "next_action": "Finish native Luna/max report review. Prepare a checked-copy/lifetime/file-output helper and independently qualified native diagnostic overlay. Resolve the existing primary build provenance hold before another engine build; then commit a new capture plan. No rerun of this original plan."
+  "next_action": "Resolve the primary legacy final-input/ownership hold before another engine build. Pin a separate diagnostic native overlay recipe, bind runtime/native-exit lineage and a concrete data consumer, then build/qualify the guarded readback and create a new capture plan. The original prepared plan stays closed and unexecuted.",
+  "source_audit": {
+    "report_sha256": "4c327b433151ea7c8aea15add977af29cb6f38792b1f501641cbe2ced43eb1c8",
+    "report_bytes": 6354,
+    "review_sha256": "ff23bdc6f10794616a81e64d88faee91bbab8634d8ccf76aea37be00fe02dd65",
+    "review_bytes": 5686,
+    "review_model": "native Codex gpt-6-luna max",
+    "must_fix": "prefill.cpp ignores cudaMemcpyAsync and cudaStreamSynchronize return codes. compat attempt() catches exceptions and returns cudaError_t, so the hook cannot know readback completed before serializing. Check both and abort capture on failure.",
+    "file_io": "fopen/fwrite/fclose results are also ignored. Parser usually rejects missing/truncated records; check and surface these at the native boundary.",
+    "geometry": "Report correct: generate passes n_batched=n_prompt-1 at pos0=0; layer-major forwards that n to run_impl. For prompt=32768, native rows=32767 and final record=(24576,8191). Parser cells=prompt-1 yields the same last chunk for any remainder; the 32785 fixture checks (32768,16). cap=2051; active width=min(first+row+1,cap).",
+    "capture_launch_ready": false
+  },
+  "runtime_review_followup": {
+    "component_reference": {
+      "path": "bench/results/2026-10-15-pr6-recovery-audit/decode-query-profile-component-current.json",
+      "sha256": "8412bb2d5fffaba976ec0129afe9f3d0a0268a5ba9c4efbe89dff6eff28d46b1"
+    },
+    "same_runtime_delta_matches": true,
+    "same_private_native_probe_matches": true,
+    "observed_long_model_native_exit": 0,
+    "model_profile_original_failure": {
+      "commit": "292bbc4410d789b93165c336dd405e6185ea5a63",
+      "path": "bench/results/2026-10-15-pr6-recovery-audit/cpu-profiler-current.json",
+      "sha256": "cb628a244c652d46789a1458e303934e1dab36abf7708e1fca2607af73d2d302"
+    },
+    "separate_closed_analysis": {
+      "path": "bench/results/2026-10-15-pr6-recovery-audit/cpu-profiler-current.json",
+      "key": "native_model_aggregate_v2_reanalysis",
+      "canonical_sha256": "9d408613ae0d827b136ca973e4814559e4da7b6d1085e587787ea44c4ca42e6a"
+    },
+    "disposition": "These same runtime deltas and private probe already have passed component and observed long-model normal-exit evidence. The prepared capture controller did not explicitly bind this lineage; the replacement admission must bind it. Preserve original aggregate parser failure and preload runtime_teardown_qualified=false; normal process exit is not qualification of every adapter lifecycle API. No runtime setting changed or new GPU execution."
+  },
+  "guarded_readback_proposal": {
+    "helper": "include/strata/prefill/selection_dump.hpp",
+    "helper_and_test_commit": "97f3da41b",
+    "host_failure_tests": 7,
+    "host_tests_passed": true,
+    "host_compiler": {
+      "path": "/nix/store/2msw5nclhpsm80z65dqmjiv8kkras989-clang-wrapper-21.1.8/bin/clang++",
+      "sha256": "821d1e767571f989b002f078bb5408a9cbf9ddaa159a33ae65947ed4fa80280d"
+    },
+    "overlay_generator": "tools/sycl/selection_capture_overlay.py",
+    "overlay_source_commit": "d4bf313cf",
+    "generated_native_bytes": 249311,
+    "generated_native_sha256": "bd1b68f1187f8a54e239e70479cf3dfaabee61d39c5a056383d763fe6af9ad2d",
+    "generated_native_source_written": false,
+    "native_build_performed": false,
+    "native_integrated": false,
+    "production_source_or_decode_changed": false,
+    "required_recipe": "Explicitly substitute the generated prefill.cpp in a separate diagnostic build,with -iquote <project>/src/prefill and pinned helper/compiler/dependencies. Do not relabel it as unchanged6e40."
+  },
+  "retention_revision_for_replacement_plan": "Do not retain an extracted layer0 payload for a vague future design. Before capture,name a committed replay fixture/consumer and next review point;otherwise retire all raw IDs after compact analysis. No IDs have been captured."
 }

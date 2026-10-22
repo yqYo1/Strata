@@ -438,8 +438,10 @@ release a still-live host vector. This is a source-contract finding, not an
 observed GPU fault. Nine host parser tests pass, but that does not qualify the
 native readback. The original prepared plan remains failed/closed in
 [the capture result](../bench/results/2026-10-15-pr6-recovery-audit/qsa-selection-current.json).
-A checked lifetime/file-output path and separate diagnostic native qualification
-are required before a new plan; selected6e40 and decode remain unchanged.
+A Main-authored checked readback/file-output helper passes7 host fault-injection
+tests. A reversible native source overlay is prepared but not compiled or
+integrated. Its separate diagnostic qualification and explicit runtime-lineage
+binding are required before a new plan; selected6e40 and decode remain unchanged.
 
 Remaining model gates are repeated phase-preserving adoption evidence,
 agent-session and task quality, full physical262144 tokens including the final
