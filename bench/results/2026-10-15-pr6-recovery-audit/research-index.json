@@ -7874,6 +7874,52 @@
       "bytes": 14687,
       "all_paths_verified_absent": true,
       "consumer_check": "Both native managers completed;no substantive worker was launched by the smokes. Reference collection reports remain untouched."
+    },
+    "transport_preflight": {
+      "codex_cli": "0.162.1",
+      "runtime": "e9030fc3-f028-4352-a34d-eb9385c8d79e",
+      "metadata_pid": 6242,
+      "profile": "Named strata_report_only; base read-only,repository read,named report directory write,localhost/127.0.0.1 only. The exact Orca Unix socket allow entry is insufficient in this actual backend.",
+      "closed_outcomes": [
+        {
+          "canary": "v1",
+          "owner_closed": true,
+          "exit_code": 1,
+          "status": "runtime_unavailable",
+          "permission_scope": "original report-only profile"
+        },
+        {
+          "canary": "v2-baseline",
+          "owner_closed": true,
+          "exit_code": 1,
+          "status": "runtime_unavailable"
+        },
+        {
+          "canary": "v2-exact-socket",
+          "owner_closed": true,
+          "exit_code": 1,
+          "status": "runtime_unavailable"
+        },
+        {
+          "canary": "v3-visibility",
+          "owner_closed": true,
+          "exit_code": 0,
+          "status": "probe returned permission failure before socket connect",
+          "metadata_readable": true,
+          "endpoint_is_socket": true,
+          "metadata_pid_signal0_errno": 3,
+          "AF_UNIX_socket_constructor_errno": 1
+        }
+      ],
+      "interpretation": "Same metadata/endpoint visible,host app PID hidden in sandbox,AF_UNIX creation denied before connect. Generic runtime_unavailable does not establish app death or an auth failure. Exact Unix allowlist alone did not qualify lifecycle IPC.",
+      "next_action": "Native Luna/max operational review of installed backend/official permissions contract. Fix/prove scoped supported IPC before fresh Orca research dispatch; do not broaden protections or infer settlement.",
+      "six_existing_ownership_holds_unchanged": true,
+      "worker_reports_not_read_by_main": true,
+      "retired_environment_snapshot": {
+        "manifest": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/closed-ipc-record-retirement-20261023.jsonl",
+        "manifest_sha256": "cd7d54d7e9eda4425a8b3bde458cc47cbef8060af83161f007de261dbc9ead84",
+        "bytes": 9603
+      }
     }
   },
   "canonical_decode_admission_source_scope_20261022": {
