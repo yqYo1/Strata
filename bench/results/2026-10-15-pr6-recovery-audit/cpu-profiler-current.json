@@ -5737,7 +5737,7 @@
   },
   "native_model_aggregate_v2": {
     "mode": "engine-compare",
-    "stage": "prepared",
+    "stage": "closed",
     "source_commit": "fb9bbaf7b26755a75248dd21897824746864cc02",
     "build_source_commit": "6e40afc1beddd059ee518617f6c1efce1da14aca",
     "binary": {
@@ -6241,6 +6241,32 @@
     "ownership_closed": true,
     "clean_speed_qualified": false,
     "hardware_saturation_qualified": false,
-    "model_adoption_qualified": false
+    "model_adoption_qualified": false,
+    "driver_before": {
+      "pci": "/sys/bus/pci/devices/0000:05:00.0",
+      "driver": "xe",
+      "vendor": "0x8086",
+      "device": "0xe20c",
+      "kernel": "7.0.0-38-generic",
+      "devcoredump": false
+    },
+    "admitted_native": {
+      "pid": 2261345,
+      "start_ticks": 103639495,
+      "sid": 2261317
+    },
+    "error": "ValueError('invalid device table row: \"zeCommandListAppendBarrier\"')",
+    "session_stop_closed": true,
+    "session_removed": true,
+    "fresh_faults": [],
+    "boot_unchanged": true,
+    "driver_after": {
+      "pci": "/sys/bus/pci/devices/0000:05:00.0",
+      "driver": "xe",
+      "vendor": "0x8086",
+      "device": "0xe20c",
+      "kernel": "7.0.0-38-generic",
+      "devcoredump": false
+    }
   }
 }
