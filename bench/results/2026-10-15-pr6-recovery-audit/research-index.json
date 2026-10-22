@@ -7705,7 +7705,7 @@
   },
   "orca_research_lifecycle_20261022_luna": {
     "classification": "research management",
-    "state": "Both dispatches failed/abandoned;written reports do not establish accepted worker completion.",
+    "state": "Both original research dispatches failed/abandoned. A matching-coordinator follow-up accepted FAILED worker_done; a fresh success-smoke launch was then refused before any Task/worker creation.",
     "run": "run_a74350f376be",
     "runtime": "e9030fc3-f028-4352-a34d-eb9385c8d79e",
     "coordinator": "term_6fa66986-05e6-45f6-a306-795c4b511c3b",
@@ -7753,7 +7753,7 @@
     "accepted_delivery_acknowledged": true,
     "projection": "Failed rows remain retained/external with unverifiable liveness;all three exact owned PTYs reported ptyKilled=true.",
     "diagnosis": "Recorded sender-terminal ownership refusal;failed Run coordinator differs from injected worker-preamble coordinator (prior Main coordinator). Strong lead only;rejected caller identity is missing. CLI1.4.229/runtime1.4.219 skew is observed,not a proven cause.",
-    "next_action": "Before substantive dispatch,use the known Main coordinator and compare Run/preamble handles;require one disposable lifecycle smoke to receive accepted worker_done,then release/exact-PTY close/ack. On refusal stop dispatching;never forge sender/completion.",
+    "next_action": "Before another substantive research dispatch,resolve the selected Orca CLI/host launch incompatibility using documented capabilities without altering Main/user terminals. Use matching Run/preamble handles and external rendered model verification;do not require worker self-verification. A fresh successful lifecycle task still needs genuine worker_done plus release/exact-PTY closure/ack. Never forge sender/completion or retry failed Task roots.",
     "review_transactions": {
       "round": {
         "bytes": 10949,
@@ -7764,9 +7764,19 @@
         "bytes": 8078,
         "sha256": "7ac8f943bbe96ba3591246978ee99ead94c6fb7e5afdcbf3ea7f25e237321f73",
         "body_retired": true
+      },
+      "matching_smoke": {
+        "bytes": 4095,
+        "sha256": "dff8c5032745bbf113ba7f2b42e506d2a03938caf91cfe8bc8761d83b458b3ed",
+        "body_retired": false
+      },
+      "fresh_launch": {
+        "bytes": 3033,
+        "sha256": "63f6b8e15f29bf5df15adc031ab744665c2683dec64fe3fa3603c0dbca3bf5ea",
+        "body_retired": false
       }
     },
-    "next_review": "Before next research dispatch:legitimate lifecycle smoke under matching coordinator context. Two curated collection bodies remain for their conditional retrieval consumers.",
+    "next_review": "Next bounded Orca management diagnosis;Main continues the frozen native comparison. No active research workers remain.",
     "representative_refusal": {
       "exact_text": "This terminal is a Dispatch worker and cannot report as term_c9c0e8eb-ee1e-46c7-b23d-334571b3681f; run the command from the worker's own terminal.",
       "rejected_worker_done_request_id": "c60b2b05-070a-4642-9f9b-f89ee4c70127",
@@ -7789,6 +7799,28 @@
       "files": 4,
       "bytes": 29139,
       "verified_absent": true
+    },
+    "lifecycle_followup": {
+      "run": "run_fb41872974e9",
+      "coordinator": "term_6fbfd718-e3a2-46d8-ab62-73c36d2851a6",
+      "task": "task_3291b105559f",
+      "dispatch": "ctx_44ba86d1dd74",
+      "accepted_message": "msg_a62ad56832b2",
+      "accepted_outcome": "failed",
+      "marker_written": false,
+      "failure": "Worker could not self-verify model/effort;coordinator had rendered GPT-6-Luna high. Null custom-launch model fields alone do not prove a wrong model.",
+      "limits": "Matching Run/preamble received genuine worker_done,but the task failed. This does not prove the cause of the earlier sender-identity refusal.",
+      "closure": "Exact worker terminal positively exited after release/operator_close;sole delivery acknowledged,no active worker."
+    },
+    "fresh_launch_refusal": {
+      "requested": "codex gpt-6-luna high",
+      "command": "/home/yayoi/.nix-profile/bin/orca agent launch --agent codex --worktree current --model gpt-6-luna --effort high --json",
+      "error_code": "incompatible_runtime",
+      "exact_error": "This Orca host cannot honor CLI launch focus or background behavior. Update Orca on the execution host.",
+      "before_task_creation": true,
+      "worker_started": false,
+      "retry_attempted": false,
+      "limits": "This refusal is from the selected agent launch path;it does not establish that every Orca terminal launch method is unavailable. No host/runtime update or alternate launch was attempted."
     }
   }
 }
