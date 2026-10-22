@@ -961,10 +961,12 @@
     "capture_commit": "6ab472964",
     "command": "python3 -B tools/sycl/analyze_qsa_codegen.py",
     "question": "Compare static scratch spill/fill instruction annotations inside the exact zero-based 32-cell outer loop versus outside, using conservative LLVM-vISA ID correspondence. No timing or GPU execution.",
-    "method": "Verify all12 selected captured files and traced kernel names. Parse one LLVM kernel CFG, compute reachable dominators and natural loops, require unique zero-based i64 step32 loop with four FP32 v8 recurrence phis. Count annotated native scratch sends by inside/outside/ambiguous/unmapped/unreachable; retain unknowns. Compare default/control emitted dat sidecars only, without claiming loaded-code equivalence.",
-    "gates": "Fail on uncommitted analyzer/plan, changed original capture checks/files, ambiguous selected loop, missing/unsupported CFG terminator or unresolved edge. No edits to source/capture evidence; no dynamic bytes or causal/performance claim.",
-    "retained_fields": "Analyzer identity; compact per-arm IGC header values/declaration type counts, CFG/loop conservation counts and static spill/fill region counts. No raw instructions/IR/histogram corpus.",
-    "retirement": "Consume selected12 captures only until Main exact-loop analysis and native report review close, then retire auxiliary generation after original source/recipe recovery from pushed Git."
+    "method": "Verify all12 selected captured files and traced kernel names. Parse one LLVM kernel CFG; compute reachable dominators and natural loops; require unique zero-based i64+32 loop with four FP32 v8 recurrence phis. Classify native annotated scratch sends by LLVM origin, preserving unknowns. Separately parse final native BNNN predecessor/successor metadata, check reciprocity, and qualify the unique increment-ID i64+32 backedge. Count actual final-instruction loop placement, cross-check every scratch surface ss[a0.2] send is annotated and totals conserve. Count rf=r spilled declarations including aliases distinctly from flag declarations; raw types do not identify source tensors. Compare emitted dat sidecars only.",
+    "gates": "Commit analyzer/plan first; preserve original capture checks/files. Reject unresolved/unsupported CFG, nonreciprocal native edges, nonunique increment/loop or scratch conservation failure. Validate loop traversal excludes exit/unreachable blocks with a host self-check. No GPU execution or dynamic/causal/performance claim.",
+    "retained_fields": "Analyzer identity; compact per-arm IGC headers, spilled GPR declaration counts/types, LLVM-origin counts and final-native loop placement/conservation. No raw instruction corpus. Original first-pass result remains reachable in76e88e60d.",
+    "retirement": "Consume selected12 captures only until Main exact-loop analysis and native report review close, then retire auxiliary generation after original source/recipe recovery from pushed Git.",
+    "version": 2,
+    "first_pass_commit": "76e88e60d"
   },
   "static_analysis": {
     "analyzer_commit": "d103ae83a470076685ec2fa69f3eb6e6b69b16b7",

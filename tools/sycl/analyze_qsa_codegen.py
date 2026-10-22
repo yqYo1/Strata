@@ -30,6 +30,44 @@ def digest(data):
     return hashlib.sha256(data).hexdigest()
 
 
+def natural_loops(edges, entry):
+    predecessors = collections.defaultdict(set)
+    for block, targets in edges.items():
+        require(targets <= edges.keys(), 'unresolved CFG target')
+        for target in targets:
+            predecessors[target].add(block)
+    reached, todo = set(), [entry]
+    while todo:
+        block = todo.pop()
+        if block not in reached:
+            reached.add(block)
+            todo.extend(edges[block])
+    dominators = {b: ({b} if b == entry else set(reached)) for b in reached}
+    changed = True
+    while changed:
+        changed = False
+        for block in reached - {entry}:
+            incoming = predecessors[block] & reached
+            require(incoming, 'reachable block without predecessor')
+            new = {block} | set.intersection(*(dominators[p] for p in incoming))
+            if new != dominators[block]:
+                dominators[block] = new
+                changed = True
+    loops = collections.defaultdict(set)
+    for latch in reached:
+        for header in edges[latch]:
+            if header not in dominators[latch]:
+                continue
+            members, todo = {header}, [latch]
+            while todo:
+                block = todo.pop()
+                if block not in members:
+                    members.add(block)
+                    todo.extend(predecessors[block] & reached)
+            loops[header].update(members)
+    return reached, loops, predecessors
+
+
 def llvm_cfg(text):
     blocks = {'<entry>': []}
     current = '<entry>'
@@ -51,45 +89,14 @@ def llvm_cfg(text):
         elif line.strip() and not line.lstrip().startswith(';'):
             blocks[current].append((number, line))
     require(started, 'missing LLVM kernel')
-    edges, predecessors = {}, collections.defaultdict(set)
+    edges = {}
     for block, lines in blocks.items():
         terminators = [line.split(';', 1)[0].strip() for _, line in lines
                        if re.match(r'\s*(?:br|ret)\s', line)]
         require(len(terminators) == 1, 'expected one br/ret in ' + block)
         targets = set(re.findall(r'label %(' + LABEL + r')', terminators[0]))
-        require(targets <= blocks.keys(), 'unresolved branch target')
         edges[block] = targets
-        for target in targets:
-            predecessors[target].add(block)
-    reached, todo = set(), ['<entry>']
-    while todo:
-        block = todo.pop()
-        if block not in reached:
-            reached.add(block)
-            todo.extend(edges[block])
-    dominators = {b: ({b} if b == '<entry>' else set(reached)) for b in reached}
-    changed = True
-    while changed:
-        changed = False
-        for block in reached - {'<entry>'}:
-            incoming = predecessors[block] & reached
-            require(incoming, 'reachable block without predecessor')
-            new = {block} | set.intersection(*(dominators[p] for p in incoming))
-            if new != dominators[block]:
-                dominators[block] = new
-                changed = True
-    loops = collections.defaultdict(set)
-    for latch in reached:
-        for header in edges[latch]:
-            if header not in dominators[latch]:
-                continue
-            members, todo = {header}, [latch]
-            while todo:
-                block = todo.pop()
-                if block not in members:
-                    members.add(block)
-                    todo.extend(predecessors[block] & reached)
-            loops[header].update(members)
+    reached, loops, _ = natural_loops(edges, '<entry>')
     return blocks, reached, loops
 
 
@@ -102,21 +109,65 @@ def selected_loop(blocks, loops):
         for number, line in lines:
             match = re.search(r'(%' + LABEL + r') = add (?:nuw |nsw )*i64 (%' + LABEL + r'), 32(?:,|\s)', line)
             if match:
-                additions[match[1]] = (match[2], block, number)
+                additions[match[1]] = (match[2], block, number, int(re.search(r'; visa id: (\d+)', line)[1]))
     for header, members in loops.items():
         for number, line in blocks[header]:
             match = re.search(r'(%' + LABEL + r') = phi i64 \[ 0, %(' + LABEL + r') \], \[ (%' + LABEL + r'), %(' + LABEL + r') \]', line)
             if not match or match[3] not in additions:
                 continue
-            base, update_block, update_line = additions[match[3]]
+            base, update_block, update_line, update_id = additions[match[3]]
             if base != match[1] or update_block not in members or match[4] not in members or match[2] in members:
                 continue
             accumulators = sum(' = phi <8 x float> ' in value for _, value in blocks[header])
             if accumulators == 4:
                 candidates.append(dict(header=header, members=members, phi=match[1],
-                    phi_line=number, update_line=update_line, step=32, fp32_accumulator_phis=accumulators))
+                    phi_line=number, update_line=update_line, update_id=update_id, step=32, fp32_accumulator_phis=accumulators))
     require(len(candidates) == 1, 'selected-cell loop is not uniquely qualified')
     return candidates[0]
+
+
+def scratch_kind(line):
+    return 'spill' if 'spill to offset[' in line else 'fill' if 'fill from offset[' in line else None
+
+
+def native_attribution(asm, update_id):
+    blocks, edges, declared_preds = {}, {}, {}
+    current = None
+    for number, line in enumerate(asm.splitlines(), 1):
+        match = re.match(r'// (B\d+):.*Preds:\{([^}]*)\},\s+Succs:\{([^}]*)\}', line)
+        if match:
+            current = match[1]
+            require(current not in blocks, 'duplicate native block')
+            blocks[current] = []
+            declared_preds[current] = set(re.findall(r'B\d+', match[2]))
+            edges[current] = set(re.findall(r'B\d+', match[3]))
+        elif current is not None:
+            blocks[current].append((number, line))
+    require('B000' in blocks, 'missing native entry')
+    reached, loops, preds = natural_loops(edges, 'B000')
+    require(all(declared_preds[b] == preds[b] for b in blocks), 'native predecessor/successor mismatch')
+    updates = []
+    for block, lines in blocks.items():
+        for number, line in lines:
+            if re.search(r'\badd\s.*32:w\s.*; \$' + str(update_id) + r'$', line):
+                updates.append((block, number))
+    require(len(updates) == 1, 'native selected-cell increment not unique')
+    update_block, update_line = updates[0]
+    candidates = [(h, m) for h, m in loops.items() if update_block in m and h in edges[update_block]]
+    require(len(candidates) == 1, 'native outer-loop backedge not unique')
+    header, members = candidates[0]
+    counts = {kind: collections.Counter() for kind in ('spill', 'fill')}
+    for block, lines in blocks.items():
+        for _, line in lines:
+            kind = scratch_kind(line)
+            if kind:
+                counts[kind]['inside' if block in members else 'outside' if block in reached else 'unreachable'] += 1
+    scratch_sends = [line for line in asm.splitlines() if 'ss[a0.2]' in line and not line.startswith('//')]
+    require(all(scratch_kind(line) for line in scratch_sends), 'unannotated scratch-surface send')
+    require(sum(sum(c.values()) for c in counts.values()) == len(scratch_sends), 'scratch-send conservation failed')
+    return dict(blocks=len(blocks), reachable_blocks=len(reached), loop_header=header,
+        loop_blocks=len(members), update_block=update_block, update_line=update_line,
+        annotated_scratch_instructions={k: dict(total=sum(v.values()), regions=dict(sorted(v.items()))) for k, v in counts.items()})
 
 
 def analyze(asm, llvm):
@@ -130,7 +181,7 @@ def analyze(asm, llvm):
                 ids[int(match[1])].add(block)
     counts = {kind: collections.Counter() for kind in ('spill', 'fill')}
     for line in asm.splitlines():
-        kind = 'spill' if 'spill to offset[' in line else 'fill' if 'fill from offset[' in line else None
+        kind = scratch_kind(line)
         if kind is None:
             continue
         match = re.search(r';\s*\$(\d+)\s*$', line)
@@ -139,7 +190,7 @@ def analyze(asm, llvm):
         region = ('unmapped' if not mapped else 'unreachable' if not mapped <= reached
                   else 'inside' if inside == mapped else 'outside' if not inside else 'ambiguous')
         counts[kind][region] += 1
-    spilled = [line for line in asm.splitlines() if line.startswith('//.declare ') and '(spilled -> Scratch[' in line]
+    spilled = [line for line in asm.splitlines() if line.startswith('//.declare ') and ' rf=r ' in line and '(spilled' in line]
     types = collections.Counter(re.search(r'\btype=(\w+)', line)[1] for line in spilled)
     headers = {}
     for key in ('instCount', 'spill size', 'spill GRF est. ref count', 'spill flag store', 'spill flag load'):
@@ -150,10 +201,15 @@ def analyze(asm, llvm):
         llvm_blocks=len(blocks), reachable_blocks=len(reached), natural_loop_headers=len(loops),
         selected_loop={k: v for k, v in loop.items() if k != 'members'},
         selected_loop_blocks=len(loop['members']),
-        annotated_scratch_instructions={k: dict(total=sum(v.values()), regions=dict(sorted(v.items()))) for k, v in counts.items()})
+        llvm_origin_scratch_instructions={k: dict(total=sum(v.values()), regions=dict(sorted(v.items()))) for k, v in counts.items()},
+        native_cfg=native_attribution(asm, loop['update_id']))
 
 
 def main():
+    reached, loops, _ = natural_loops(dict(entry={'head'}, head={'body', 'exit'},
+        body={'head'}, exit=set(), unreachable={'unreachable'}), 'entry')
+    require(reached == {'entry', 'head', 'body', 'exit'} and dict(loops) == {'head': {'head', 'body'}},
+        'natural-loop/unreachable-block self-check failed')
     relative = str(Path(__file__).resolve().relative_to(P))
     revision = git('rev-parse', 'HEAD').decode().strip()
     require(git('show', revision + ':' + relative) == Path(__file__).read_bytes(), 'commit analyzer before execution')
@@ -163,7 +219,7 @@ def main():
     require(current['checks'] == original['checks'], 'do not alter original capture evidence')
     check = original['checks'][-1]
     require(check['passed'] and check['complete'] and check['ownership_closed'] and not check['active'] and check['fresh_faults'] == [], 'capture not qualified')
-    require(current['static_analysis_plan']['capture_commit'] == CAPTURE_COMMIT, 'unexpected analysis plan')
+    require(current['static_analysis_plan']['capture_commit'] == CAPTURE_COMMIT and current['static_analysis_plan']['version'] == 2, 'unexpected analysis plan')
     capture = check['capture']
     files = {}
     for entry in capture['selected_files']:
@@ -183,7 +239,7 @@ def main():
     dat = [files[str(Path(e['asm']['path']).with_suffix('.dat'))] for e in capture['executed']]
     current['static_analysis'] = dict(analyzer_commit=revision, analyzer_sha256=digest(Path(__file__).read_bytes()),
         arms=arms, default_control_dat_identical=dat[0] == dat[1],
-        limits='Static emitted annotations and CFG membership only. Shared visa IDs are not unique source-value provenance; inside does not imply every iteration/lane executes. Compiler estimates/flag counters are not observed traffic. No occupancy, causal attribution, speed or loaded-machine-code-equivalence claim.')
+        limits='Native CFG membership uses compiler-emitted BNNN predecessor/successor metadata and the selected-loop i64+32 backedge; LLVM-origin counts are separate. Neither implies every iteration/lane executes a static instruction. Shared visa IDs are not unique source-value provenance. rf=r spilled declarations include aliases; declaration types do not identify named tensors. Compiler estimates/flag counters are not observed traffic. No occupancy, causal attribution, speed or loaded-machine-code-equivalence claim.')
     RESULT.write_text(json.dumps(current, indent=2) + '\n')
     print(json.dumps(dict(analysis_complete=True, arms=arms, default_control_dat_identical=dat[0] == dat[1])))
 
