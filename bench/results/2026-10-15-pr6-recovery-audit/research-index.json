@@ -9553,9 +9553,9 @@
   "qsa_power_of_two_page_address_generation_20261023": {
     "id": "qsa_power_of_two_page_address_generation_20261023",
     "classification": "decision support",
-    "schedulable_now": true,
+    "schedulable_now": false,
     "report_budget_bytes": 12288,
-    "status": "eligible_not_dispatched",
+    "status": "active_orca_collection",
     "question": "For the current ordered-exp QSA publish_rows path, verify actual page_size and admitted index extents, then compare signed64 division/remainder, guarded power-of-two shift/mask, range-proven32-bit arithmetic and specialization constants/templates. Trace negative/missing/out-of-range cells,logical-to-physical mapping,all supported page sizes,overflow and final262144 boundaries. Compare primary Intel/SYCL compiler and serving/HPC indirect-address methods;identify a narrowly testable transformation and counterexamples without code or local execution.",
     "index_overlaps": [
       "current_qsa_prefix_work_geometry_audit_20261023",
@@ -9570,14 +9570,24 @@
     "report": "/home/yayoi/orca/workspaces/Strata/sycl/.cache/strata-research/20261023/page-address/report.md",
     "main_read_policy": "Native Codex gpt-6-luna max reviews first;Main reads only short digest and decision-support sections needed for a concrete question;knowledge body remains unread.",
     "consumer": "Future source-specific prefill decision or indexed transferable reference;no automatic implementation adoption.",
-    "next_review": "At bounded completion,nativeLuna/max checks novelty/depth/corrections before newscope;Main continues implementation/serialized tests."
+    "next_review": "At bounded completion,nativeLuna/max checks novelty/depth/corrections before newscope;Main continues implementation/serialized tests.",
+    "lifecycle": {
+      "run": "run_432552edd149",
+      "task": "task_7c287252d53b",
+      "dispatch": "ctx_23f4ae1a3a07",
+      "terminal": "term_5ce4508e-aa49-4795-a881-9fd01ea73014",
+      "incarnation": "4252ee4d-5cb8-4514-b275-c3a36526400a",
+      "startup_model": "gpt-6-luna high",
+      "input_accepted": true,
+      "turn_started": "observed"
+    }
   },
   "gpu_instruction_cache_unroll_dispatch_tradeoffs_20261023": {
     "id": "gpu_instruction_cache_unroll_dispatch_tradeoffs_20261023",
     "classification": "knowledge collection",
-    "schedulable_now": true,
+    "schedulable_now": false,
     "report_budget_bytes": 12288,
-    "status": "eligible_not_dispatched",
+    "status": "active_orca_collection",
     "question": "Compare GPU instruction-fetch/cache and code-footprint effects of full/partial unrolling,template specialization and large fused compute kernels,distinct from register pressure. Use primary Intel Xe/SYCL compiler documentation and original GPU/HPC/non-LLM papers or technical blogs,plus relevant serving-kernel examples. Explain code residency,branch/reconvergence,indirect calls,JIT kernel partitioning,front-end stalls and why source/IR size alone does not establish a bottleneck. Give applicability,measurement discriminators and counterexamples for iterative matrix kernels;no local measurements,code proposal or generic profiler catalogue.",
     "index_overlaps": [
       "cooperative_matrix_iterative_fragment_lifetime_methods_20261023",
@@ -9592,6 +9602,16 @@
     "report": "/home/yayoi/orca/workspaces/Strata/sycl/.cache/strata-research/20261023/instruction-cache/report.md",
     "main_read_policy": "Native Codex gpt-6-luna max reviews first;Main reads only short digest and decision-support sections needed for a concrete question;knowledge body remains unread.",
     "consumer": "Future source-specific prefill decision or indexed transferable reference;no automatic implementation adoption.",
-    "next_review": "At bounded completion,nativeLuna/max checks novelty/depth/corrections before newscope;Main continues implementation/serialized tests."
+    "next_review": "At bounded completion,nativeLuna/max checks novelty/depth/corrections before newscope;Main continues implementation/serialized tests.",
+    "lifecycle": {
+      "run": "run_432552edd149",
+      "task": "task_6612a5ffee9b",
+      "dispatch": "ctx_8d030eee7e88",
+      "terminal": "term_c6eab0dc-509a-48ac-9a54-10a3a5e09f69",
+      "incarnation": "59a4e76b-1bbd-4c86-9a84-70f936f32998",
+      "startup_model": "gpt-6-luna high",
+      "input_accepted": true,
+      "turn_started": "observed"
+    }
   }
 }

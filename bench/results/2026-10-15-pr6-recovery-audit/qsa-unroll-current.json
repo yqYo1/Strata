@@ -1,5 +1,5 @@
 {
-  "stage": "prepared",
+  "stage": "built",
   "source_commit": "b072267fae67176df75137c396aa5cdb9926111e",
   "input_sha256": {
     "bench/sycl/qsa_unroll_numerical.cpp": "93f4c79c0f5b8a50a714f79e830473cb6dbb0679b1d27ed97a87dc6db69d4a3e",
@@ -530,8 +530,57 @@
   },
   "active": false,
   "ownership_closed": true,
-  "passed": false,
-  "complete": false,
+  "passed": true,
+  "complete": true,
   "GPU_executed": false,
-  "model_adoption_qualified": false
+  "model_adoption_qualified": false,
+  "binaries": {
+    "numerical": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-qcache-unroll-v1/numerical",
+      "sha256": "e41c7798d4b977aa44a24e927398f1a35c13c4c1fea3ba0d1b6da7b8ebfc5536",
+      "bytes": 1585424
+    },
+    "timing": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-qcache-unroll-v1/timing",
+      "sha256": "1ff4808d00727c9a26a55a691b25e8ebf5092c9ba8d07444b47bbd4cfa60645e",
+      "bytes": 1568768
+    }
+  },
+  "device_IR": {
+    "control": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-qcache-unroll-v1/control.ll",
+      "sha256": "ccd14473ef16bff1a244b77829b02dcb4bb70ecf6eea0e1901b0dbfc72c9e338",
+      "bytes": 72122
+    },
+    "unroll": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-qcache-unroll-v1/unroll.ll",
+      "sha256": "48b5de34d9c8c6c84da6cff11a322367e50bcfed5c801b0fccbda7649fcfcd08",
+      "bytes": 72159
+    }
+  },
+  "device_IR_analysis": {
+    "method": "O3 device-only LLVM IR;extract define-to-closing-brace function text,normalize only known namespace mangling/text and remove numeric metadata attachments. Compare resulting instruction text;preserve originalIR hashes. This ignores loop metadata deliberately and is not final IGC ISA equivalence.",
+    "arms": {
+      "control": {
+        "bytes": 72122,
+        "sha256": "ccd14473ef16bff1a244b77829b02dcb4bb70ecf6eea0e1901b0dbfc72c9e338",
+        "spir_kernel_count": 2,
+        "normalized_instruction_sha256": "ef30791a52f045b40c044d2ee1d001f259adef41f3d40623f243f293db8fb12d",
+        "signed_i64_divisions": 2,
+        "unsigned_i64_divisions": 2,
+        "full_unroll_metadata": false
+      },
+      "unroll": {
+        "bytes": 72159,
+        "sha256": "48b5de34d9c8c6c84da6cff11a322367e50bcfed5c801b0fccbda7649fcfcd08",
+        "spir_kernel_count": 2,
+        "normalized_instruction_sha256": "ef30791a52f045b40c044d2ee1d001f259adef41f3d40623f243f293db8fb12d",
+        "signed_i64_divisions": 2,
+        "unsigned_i64_divisions": 2,
+        "full_unroll_metadata": true
+      }
+    },
+    "normalized_function_instructions_equal": true,
+    "limits": "Both frontend modules retain division and matrix-loop representation. The loop hint survives as metadata in the candidate;actual JIT allocation/timing must decide. No hardware compute/PCIe/memory saturation claim."
+  }
 }
