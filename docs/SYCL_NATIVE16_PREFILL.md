@@ -148,9 +148,15 @@ Replay reencoded the393236-byte expert/window matrix exactly. The matrix is the
 sole raw consumer for an immediate offline comparison of shipped ranks,
 token-entry frequency and unique-window frequency, retaining each layer's26
 slots (last34), allocation and protected-prefix bytes. Stable original-rank
-ties make selection reproducible. Window frequency minimizes logical CPU blob
-visits on these captured routes; only a prospective>=5% reduction permits
-proposing a new model plan. Actual changed-residency routes, prefill/decode
+ties make selection reproducible. Offline source`da840901b` passes13 host tests.
+On the fixed captured routes, token-entry ranking gives2235982208000 logical
+CPU bytes (ratio0.799685), while window ranking gives2222407116800
+(ratio0.794830, **20.5170% less** than shipped ranks). The latter changes1120
+resident pairs and reduces CPU jobs1370846 to1089991. It retains2575206400
+allocated/protected-prefix245657600 bytes and2329548800 maximum loan bytes.
+This clears only the prospective>=5% counterfactual gate for proposing a new
+model plan. It is not observed saved traffic or speed: changed residency may
+change subsequent routes and output. Actual changed-residency routes, prefill/decode
 preservation, both MTP workloads, independent workload/agent/task/full physical
 context and RESTORE gates remain separate. Successful raw routes/logs/JIT and
 the one-use collector are retired after replay/source recovery; the compact

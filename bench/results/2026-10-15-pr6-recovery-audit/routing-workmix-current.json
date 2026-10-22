@@ -197,5 +197,81 @@
       "bytes": 19751,
       "reason": "Closed successful one-process collector;no current execution consumer. Reuse the maintained reader for the immediate offline ranking question;recover original controller from Git for a separately planned collection."
     }
+  },
+  "offline_analysis": {
+    "source_commit": "da840901b092af11d7d0f00eb98e7606a6cef692",
+    "host_tests_passed": 13,
+    "kind": "fixed-observed-route counterfactual;not model performance",
+    "baseline": {
+      "cpu_jobs": 1370846,
+      "cpu_entries": 1771839,
+      "vram_entries": 213921,
+      "jobs_NT": [
+        1058797,
+        239280,
+        56594,
+        16175,
+        0,
+        0,
+        0,
+        0
+      ],
+      "logical_job_blob_bytes": 2796077900800,
+      "membership_sha256": "7be037be3ed62aedcd10a0a2556fb7d96480892c35e683dbb38b329dbf7fff43"
+    },
+    "rankings": {
+      "entries": {
+        "cpu_jobs": 1096918,
+        "cpu_entries": 1322280,
+        "vram_entries": 663480,
+        "jobs_NT": [
+          911741,
+          151040,
+          28089,
+          6048,
+          0,
+          0,
+          0,
+          0
+        ],
+        "logical_job_blob_bytes": 2235982208000,
+        "membership_sha256": "0e83b8c44230a20d5b2dc278ff6fa164c2b6ee37ea1f28cbede59d0d6762965f",
+        "logical_bytes_ratio": 0.7996852331475642,
+        "replaced_pairs": 1087
+      },
+      "windows": {
+        "cpu_jobs": 1089991,
+        "cpu_entries": 1335921,
+        "vram_entries": 649839,
+        "jobs_NT": [
+          893136,
+          156026,
+          32583,
+          8246,
+          0,
+          0,
+          0,
+          0
+        ],
+        "logical_job_blob_bytes": 2222407116800,
+        "membership_sha256": "6d9a49559f408f6a7137ecf51a5091f4d51ac96060757fc93837e01d6c610fc7",
+        "logical_bytes_ratio": 0.7948301855839338,
+        "replaced_pairs": 1120
+      }
+    },
+    "unchanged_geometry": {
+      "slots": 1256,
+      "allocated_bytes": 2575206400,
+      "prefix128_bytes": 245657600,
+      "maximum_loan_bytes": 2329548800,
+      "actual_candidate_admission_qualified": false
+    },
+    "decision": {
+      "can_propose_new_model_plan": true,
+      "prospective_logical_ratio_max": 0.95,
+      "clean_speed_qualified": false,
+      "adoption_qualified": false
+    },
+    "limits": "Training request only;no per-expert CPU service or physical traffic measured. Changed CPU/GPU residency may alter future routes/output. Any pilot needs a new committed plan,actual admission,phase preservation and both MTP workloads;adoption also requires independent workloads/agent/task/full physical262144/session/RESTORE."
   }
 }
