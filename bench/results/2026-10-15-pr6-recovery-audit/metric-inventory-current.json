@@ -514,5 +514,96 @@
     "devcoredump": false
   },
   "boot_unchanged": true,
-  "metric_enumeration_succeeded": true
+  "metric_enumeration_succeeded": true,
+  "event_query_setup": {
+    "stage": "prepared",
+    "source_commit": "9b4f065fb6317fa54e2a32ca037f9f7d94977431",
+    "inputs": {
+      "bench/sycl/metric_inventory.cpp": "0af141d3857863035703f0dad6653c392d7a1953028c8290fe7d7bb41e2d6317",
+      "tools/sycl/metric_inventory.py": "77e3ccf4a1588a45b1bfbc9abcd6339267cd907b15c2333bf81d6426c2984b93",
+      "tools/sycl/measurement_owner.py": "bddd0c5e5020e882ca3404679420faec11e820dabce2ed4c72ef82b4c9c0874a",
+      "tools/sycl/measurement_guards.py": "794e332c70aca0acadad4f26d0414548e023a02fd27b72ed78fc773674423ec8",
+      "tools/sycl/measurement_environment.json": "d4402591df50e80dc45a5ec9e4839c7a794888850b1473537b6f95179be5b03c",
+      "bench/sycl/metric_query_setup.cpp": "18afb840111bd8c6e966dc730532dc5b1ab6de0ad9b5305b084bd90988f10150",
+      "tools/sycl/metric_query_setup.py": "06e78c82217fe662af2b52d12c0b62221dd007195aec12f90bd4d1cc23d091b0"
+    },
+    "inventory_reference": {
+      "commit": "9b4f065fb6317fa54e2a32ca037f9f7d94977431",
+      "path": "bench/results/2026-10-15-pr6-recovery-audit/metric-inventory-current.json"
+    },
+    "catalog": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/b570-metric-inventory-v1/run/owned/metrics.stdout",
+      "sha256": "50160ac42c10cd1bb621c3274b8daf0024fa0426b19595906b4e6a29f7f852e8",
+      "bytes": 504256
+    },
+    "command": [
+      "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin/clang++",
+      "-std=c++20",
+      "-O2",
+      "-g0",
+      "-Wall",
+      "-Wextra",
+      "-Werror",
+      "/home/yayoi/orca/workspaces/Strata/sycl/bench/sycl/metric_query_setup.cpp",
+      "-lze_loader",
+      "-ldl",
+      "-o",
+      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/b570-metric-query-setup-v1/query-setup"
+    ],
+    "build_environment": {
+      "PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin:/usr/bin:/bin",
+      "LANG": "C",
+      "LC_ALL": "C",
+      "TMPDIR": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/b570-metric-query-setup-v1/tmp",
+      "LD_LIBRARY_PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib",
+      "PYTHONDONTWRITEBYTECODE": "1"
+    },
+    "environment": {
+      "PATH": "/usr/bin:/bin",
+      "HOME": "/home/yayoi",
+      "LANG": "C.UTF-8",
+      "LC_ALL": "C.UTF-8",
+      "PYTHONDONTWRITEBYTECODE": "1",
+      "LD_LIBRARY_PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib:/opt/intel/oneapi/mkl/2026.1/lib",
+      "ONEAPI_DEVICE_SELECTOR": "level_zero:gpu",
+      "UR_ADAPTERS_FORCE_LOAD": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_adapter_level_zero_v2.so.0",
+      "UR_L0_V2_FORCE_DISABLE_COPY_OFFLOAD": "1",
+      "NEOReadDebugKeys": "1",
+      "EnableDirectSubmission": "0",
+      "STRATA_SYCL_PREFILL_SAME_QUEUE": "1",
+      "STRATA_SYCL_VERIFY_NATIVE_CAPTURE": "0",
+      "SYCL_CACHE_PERSISTENT": "0",
+      "ZES_ENABLE_SYSMAN": "0",
+      "UR_ENABLE_LAYERS": "UR_LAYER_TRACING,UR_LAYER_PARAMETER_VALIDATION",
+      "UR_LOG_TRACING": "level:info;flush:info;output:stderr",
+      "UR_LOG_VALIDATION": "level:warning;flush:warning;output:stderr",
+      "UR_LOG_LOADER": "level:warning;flush:warning;output:stderr",
+      "UR_LOG_LEVEL_ZERO": "level:warning;flush:warning;output:stderr",
+      "TMPDIR": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/b570-metric-query-setup-v1/tmp",
+      "XDG_CACHE_HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/b570-metric-query-setup-v1/cache",
+      "ZET_ENABLE_METRICS": "1",
+      "ZEL_ENABLE_LOADER_LOGGING": "1",
+      "ZEL_LOADER_LOG_CONSOLE": "1",
+      "ZEL_LOADER_LOGGING_LEVEL": "trace",
+      "ZEL_LOADER_LOGGING_ENABLE_SUCCESS_PRINT": "1",
+      "ZE_ENABLE_VALIDATION_LAYER": "1",
+      "ZE_ENABLE_PARAMETER_VALIDATION": "1"
+    },
+    "plan": "Fresh owned context;uniqueE20C/ComputeBasic event group(domain3,83members),activate group,create one-slot PERFORMANCE query pool and one unused query,then query-destroy,pool-destroy,deactivate,context-destroy. Stop cleanup onfailed destroy,neverretire parent orretry. No queue/commandlist/deviceallocation API,noquerybegin/end/read,streamer,Sysman,permission change orworkload. API error remains a capability failure;setup success alone doesnotqualify collection/attribution/permissions atcommand submission. Layertrace/parameter validation fromexec;loadedassets pinned;normalowner closure andnofreshfault required.",
+    "budgets": {
+      "build_wall_s": 90,
+      "run_wall_s": 60,
+      "cpu_s": 120,
+      "text_bytes": 8388608,
+      "rss_bytes": 2147483648,
+      "file_bytes": 33554432,
+      "total_bytes": 100663296
+    },
+    "passed": false,
+    "complete": false,
+    "active": false,
+    "ownership_closed": true,
+    "collection_qualified": false,
+    "inference_unchanged": true
+  }
 }
