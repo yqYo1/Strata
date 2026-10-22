@@ -440,7 +440,7 @@
   "ownership_closed": true,
   "passed": true,
   "complete": true,
-  "GPU_executed": false,
+  "GPU_executed": true,
   "model_adoption_qualified": false,
   "binary": {
     "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-codegen-allocation-v1/fixture",
@@ -525,5 +525,53 @@
     "unresolved_holds": "native-gdn-engine-build.json:legacy_provenance_exception.additional_old_product_review; olderresearch-index ownershipholds remainunchanged",
     "next_legacy_action": "PR6 dependency receipt9709a316 is now recovered fromb1c0e1449; finish its final generated-command/dependency/ownership join. Primary build still needs exact final dependency/quoted-header/ownership proof. Do not renew the completed receipt search or clear either hold.",
     "full_legacy_provenance_recovered": false
-  }
+  },
+  "checks": [
+    {
+      "mode": "smoke",
+      "source_commit": "54946de15df53700936ea126c9f056cc5ffebb3f",
+      "binary": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-codegen-allocation-v1/fixture",
+        "sha256": "573a4f3d0dcca87be801f5e2e1575a00131264f6db0cec25e017f020744f5c8e",
+        "bytes": 1564880
+      },
+      "passed": true,
+      "complete": true,
+      "active": false,
+      "ownership_closed": true,
+      "validation": {
+        "pid": 2887614,
+        "loader": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_loader.so.0.12.0",
+        "threads_before": 1,
+        "preinit": 37,
+        "config_enabled": true,
+        "first_init": true,
+        "dispatch_result": 46,
+        "output_untouched": true,
+        "retained_reference_until_exit": true,
+        "runtime_teardown_qualified": false
+      },
+      "fixture": {
+        "samples": 18,
+        "compared_per_sample": 18432,
+        "fast_routes": 7,
+        "generic_routes": 0,
+        "exact_bits_guards_inputs": true
+      },
+      "stdout_sha256": "5b87eb26b8cf42713574f986271d047bca4a9b691faaa1af89dd28158b601162",
+      "stderr_sha256": "9c4546176751222d8ec3789ec9020f64ebdd80eb6b18ad13f96e02706ebd793c",
+      "postchecks_complete": true,
+      "postcheck_errors": [],
+      "fresh_faults": [],
+      "boot_unchanged": true,
+      "driver_after": {
+        "pci": "/sys/bus/pci/devices/0000:05:00.0",
+        "driver": "xe",
+        "vendor": "0x8086",
+        "device": "0xe20c",
+        "kernel": "7.0.0-38-generic",
+        "devcoredump": false
+      }
+    }
+  ]
 }
