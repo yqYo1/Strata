@@ -219,8 +219,11 @@ in this fixture. All numerical/guard/teardown, session/owner and fresh-fault gat
 passed. The intervening v3 clock-domain failure remains failed: Main omitted the
 previously qualified `UNITRACE_SystemTime=1` and kernel/call logging settings.
 V4 restores those settings before exec. This qualifies this small coverage method,
-not a model critical path or throughput improvement. Next check bounded verbose
-aggregate statistics for production profiling without a full request timeline.
+not a model critical path or throughput improvement. The aggregate-only check
+also passed: verbose shapes conserve four versus ten program calls and the exact
+positive device-time totals, without a timeline. The next diagnostic uses that
+method on the unchanged original engine. Whole-process service includes loading,
+warmups, prefill and decode; it must not be called one phase's critical path.
 The original footer-read, paused-capture and older graph host-sink failures remain
 failed. See the [profiler coverage decision](../bench/results/2026-10-15-pr6-recovery-audit/cpu-profiler-current.json).
 
