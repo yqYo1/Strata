@@ -4463,7 +4463,7 @@
   },
   "unitrace_warmed_graph_window_v2": {
     "schema": "strata-unitrace-warmed-graph-window-v2",
-    "stage": "check-prepared",
+    "stage": "failed",
     "source_commit": "f1f63b28619028cd02d57bdb173236b029bc7588",
     "input_sha256": {
       "tools/sycl/bench_engine.py": "e5f588605ebc7799b54f8bf7df9ad2e363391375e50b788b9704a6b80887ca6b",
@@ -4942,6 +4942,185 @@
           "UNITRACE_TraceOutputDir": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/unitrace-warmed-graph-window-v2/window/trace"
         }
       }
-    ]
+    ],
+    "driver_before": {
+      "pci": "/sys/bus/pci/devices/0000:05:00.0",
+      "driver": "xe",
+      "vendor": "0x8086",
+      "device": "0xe20c",
+      "kernel": "7.0.0-38-generic",
+      "devcoredump": false
+    },
+    "observations": [
+      {
+        "name": "smoke",
+        "passed": true,
+        "controls": [],
+        "pid": 1955847,
+        "ready_raw_ns": 1028748374749057,
+        "release_raw_ns": 1028748375037918,
+        "drained_raw_ns": 1028748375516105,
+        "validation": {
+          "pid": 1955847,
+          "loader": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_loader.so.0.12.0",
+          "threads_before": 1,
+          "preinit": 37,
+          "config_enabled": true,
+          "first_init": true,
+          "dispatch_result": 46,
+          "output_untouched": true,
+          "retained_reference_until_exit": true,
+          "runtime_teardown_qualified": false
+        },
+        "loader_lookup_errors": [
+          "   1955847:\t/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/unitrace-warmed-graph-window-v1/graph_record_window: error: symbol lookup error: undefined symbol: zelLoaderTranslateHandle (fatal)",
+          "   1955847:\t/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/unitrace-warmed-graph-window-v1/graph_record_window: error: symbol lookup error: undefined symbol: zelSetDriverTeardown (fatal)"
+        ],
+        "inventory": {
+          "capture_regions": 1,
+          "graph_replays": 5,
+          "direct_kernels": 0,
+          "template": [
+            "_ZTSN12_GLOBAL__N_115RecordWindowAddE",
+            "_ZTSN12_GLOBAL__N_120RecordWindowMultiplyE"
+          ],
+          "executed_program_kernels": 10
+        },
+        "execution_passed": true,
+        "target_closed": true,
+        "session_removed": true
+      },
+      {
+        "name": "paused",
+        "passed": true,
+        "controls": [
+          "stop"
+        ],
+        "pid": 1955866,
+        "ready_raw_ns": 1028748628583001,
+        "release_raw_ns": 1028748628754252,
+        "drained_raw_ns": 1028748629222771,
+        "validation": {
+          "pid": 1955866,
+          "loader": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_loader.so.0.12.0",
+          "threads_before": 1,
+          "preinit": 37,
+          "config_enabled": true,
+          "first_init": true,
+          "dispatch_result": 46,
+          "output_untouched": true,
+          "retained_reference_until_exit": true,
+          "runtime_teardown_qualified": false
+        },
+        "loader_lookup_errors": [
+          "   1955866:\t/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/unitrace-warmed-graph-window-v1/graph_record_window: error: symbol lookup error: undefined symbol: zelLoaderTranslateHandle (fatal)",
+          "   1955866:\t/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/unitrace-warmed-graph-window-v1/graph_record_window: error: symbol lookup error: undefined symbol: zelSetDriverTeardown (fatal)"
+        ],
+        "inventory": {
+          "capture_regions": 1,
+          "graph_replays": 5,
+          "direct_kernels": 0,
+          "template": [
+            "_ZTSN12_GLOBAL__N_115RecordWindowAddE",
+            "_ZTSN12_GLOBAL__N_120RecordWindowMultiplyE"
+          ],
+          "executed_program_kernels": 10
+        },
+        "coverage": {
+          "timeline": null,
+          "program_kernels": 0,
+          "names": {},
+          "kernel_service_us": 0,
+          "kernel_union_us": 0.0,
+          "unique_host_sources": true,
+          "unsunk_kernels": 0,
+          "raw_window_contained": true,
+          "limits": "Source/replay counts and service only. Does not clear the earlier failed graph host-sink gate, qualify critical path, observer overhead, model-stage mapping or hardware saturation."
+        },
+        "execution_passed": true,
+        "target_closed": true,
+        "session_removed": true
+      },
+      {
+        "name": "window",
+        "passed": false,
+        "controls": [
+          "resume",
+          "pause",
+          "stop"
+        ],
+        "pid": 1955887,
+        "ready_raw_ns": 1028748992573752,
+        "release_raw_ns": 1028749104211917,
+        "drained_raw_ns": 1028749147626993,
+        "validation": {
+          "pid": 1955887,
+          "loader": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_loader.so.0.12.0",
+          "threads_before": 1,
+          "preinit": 37,
+          "config_enabled": true,
+          "first_init": true,
+          "dispatch_result": 46,
+          "output_untouched": true,
+          "retained_reference_until_exit": true,
+          "runtime_teardown_qualified": false
+        },
+        "loader_lookup_errors": [
+          "   1955887:\t/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/unitrace-warmed-graph-window-v1/graph_record_window: error: symbol lookup error: undefined symbol: zelLoaderTranslateHandle (fatal)",
+          "   1955887:\t/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/unitrace-warmed-graph-window-v1/graph_record_window: error: symbol lookup error: undefined symbol: zelSetDriverTeardown (fatal)"
+        ],
+        "inventory": {
+          "capture_regions": 1,
+          "graph_replays": 5,
+          "direct_kernels": 0,
+          "template": [
+            "_ZTSN12_GLOBAL__N_115RecordWindowAddE",
+            "_ZTSN12_GLOBAL__N_120RecordWindowMultiplyE"
+          ],
+          "executed_program_kernels": 10
+        },
+        "target_closed": true,
+        "session_removed": true
+      }
+    ],
+    "error": "RuntimeError('warmed graph kernel loss or recording leakage')",
+    "fresh_faults": [],
+    "boot_unchanged": true,
+    "driver_after": {
+      "pci": "/sys/bus/pci/devices/0000:05:00.0",
+      "driver": "xe",
+      "vendor": "0x8086",
+      "device": "0xe20c",
+      "kernel": "7.0.0-38-generic",
+      "devcoredump": false
+    },
+    "closed_analysis": {
+      "native_exit_codes": [
+        0,
+        0,
+        0
+      ],
+      "all_native_numerical_guards_checked_teardown_passed": true,
+      "control_exit_codes": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "all_sessions_removed": true,
+      "expected_recorded_window_kernels": 6,
+      "actual_timeline_files": 0,
+      "actual_recorded_window_kernels": 0,
+      "UR_executed_program_kernels_per_process": 10,
+      "all_UR_templates": [
+        "RecordWindowAdd",
+        "RecordWindowMultiply"
+      ],
+      "failure_mechanism": "Current SYCL UR0.12 command-buffer graph was captured and warmed while collector paused. Resume recorded no timeline/kernels for the three known replays. Do not use this collection path for MTP stage attribution.",
+      "advance_to_model_profile": false,
+      "next_bounded_question": "Qualify recording the initial graph construction/two warm replays, then pausing and resuming later replays. Same tiny fixture/binary can test the workaround; no new model build. A new committed controller/plan is required.",
+      "old_graph_host_sink_failure_unchanged": true,
+      "speed_and_hardware_saturation_unmeasured": true
+    }
   }
 }

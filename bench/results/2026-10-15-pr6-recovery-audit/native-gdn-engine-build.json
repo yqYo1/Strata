@@ -326,7 +326,7 @@
           "selected_files": 113,
           "selected_bytes": 42689278,
           "finding": "Configure receipt and compile DB match;receipt explicitly leaves compile/link review pending despite later products. Source0d659b1 exists,not proof of final compiled inputs.",
-          "next_action": "Recover the exact9709a316 dependency receipt from Git and finish generated-command/dependency-input/ownership checks before retirement. The original221 project pins match0d659b1,which is outside feature ancestry;leave the user PR6 worktree/branch untouched and preserve referenced source before any branch retirement. Missing active path alone is not an unrecoverable-source finding.",
+          "next_action": "Exact9709a316 dependency receipt is recovered atb1c0e1449. Compare its vendor/GGML inputs and generated command/dependency identities with the final build-v4 receipt; close ownership before retirement. User PR6 branch/worktree remains untouched; no full final-input proof claimed.",
           "bounded_receipt_join": {
             "receipt": "main-pr6-harness-build-v4/record.json",
             "receipt_sha256": "b842d48054338673ca404d99ba0d39719bd6442e1ff3f7169682cf7079632d51",
@@ -339,12 +339,19 @@
             "source_commit_ancestor_of_feature": false,
             "dependency_receipt_missing_from_active_tree": "bench/results/2026-10-15-pr6-recovery-audit/own-pr6-dependency-preparation-v1.json",
             "dependency_receipt_sha256": "9709a3168804ef812073d71b75bdcb35af6a3b7cbe6e604061a2770812152fdd",
-            "full_final_input_proof": false
+            "full_final_input_proof": false,
+            "dependency_receipt_recovered": {
+              "commit": "b1c0e144988842e66773a71f96940973e5e8dbab",
+              "path": "bench/results/2026-10-15-pr6-recovery-audit/own-pr6-dependency-preparation-v1.json",
+              "sha256": "9709a3168804ef812073d71b75bdcb35af6a3b7cbe6e604061a2770812152fdd",
+              "bytes": 377046,
+              "scope": "49 historical vendor blobs and pinned GGML/cmake/LICENSE hashes; original preparation only, not final compile proof."
+            }
           }
         }
       ],
       "reviewer": "native Codex gpt-6-luna/max /root/review_cpu_gu_artifact_20261022",
-      "next_action": "Finish the two concrete dependency/ownership checks from the matched later receipts;no new search for a nearby seed or relabeling of old runs.",
+      "next_action": "PR6 dependency receipt9709a316 is now recovered fromb1c0e1449; finish its final generated-command/dependency/ownership join. Primary build still needs exact final dependency/quoted-header/ownership proof. Do not renew the completed receipt search or clear either hold.",
       "review_point": "Next Main retention pass:matched-receipt dependency/ownership closure,then product retirement or explicit unavailable-input failure;do not renew the previous receipt-join step.",
       "retired_by_this_audit": true,
       "selected_original_engine_and12fixtures_untouched": true,
@@ -355,9 +362,9 @@
         "artifact_retired": true
       },
       "bounded_source_recovery": {
-        "tu": "TU receipt hashes 5a9561ff\u2026/23abeff8\u2026 match; exact modified sources 905f4316\u2026/1cf7e911\u2026, objects 17ec1f52\u2026/5f16be55\u2026, command/flags and route/service headers c673382e\u2026/7d473f68\u2026 are retained. No TU source revision is recorded. Quoted includes mmq_resident_sort.hpp (2606 B, a9f3302e\u2026) and wmma_gemm.h (3556 B, 57bd2a9c\u2026) are only hash references; files are absent from both TU roots and the named non-Git source directory.",
-        "git": "Prior receipt 9fd762a1\u2026 resolves to commits 7c5ad75a45c7e188ecef7a947b49b829dc5c5710 and 7d0105f2a942ac72ca20fef69d4c2e7960653de3; both exist and are ancestors of HEAD. The former's prefill.cpp is baseline SHA-256 f6cbc4ac\u2026, not either modified source; both commits lack the two quoted include paths.",
-        "link": "Both linked receipts name the absent perf-sycl-decode-pool-phase-timing-v0141-20261009 build tree: generate.cpp.o, strata_engine/spec/kernels/core/kernels_cpu archives and ggml-cpu/base archives. Dependency hashes are not recorded. Retained base libstrata_prefill.a matches SHA-256 c296ca20\u2026 but cannot recover these link inputs.",
+        "tu": "TU receipt hashes 5a9561ff…/23abeff8… match; exact modified sources 905f4316…/1cf7e911…, objects 17ec1f52…/5f16be55…, command/flags and route/service headers c673382e…/7d473f68… are retained. No TU source revision is recorded. Quoted includes mmq_resident_sort.hpp (2606 B, a9f3302e…) and wmma_gemm.h (3556 B, 57bd2a9c…) are only hash references; files are absent from both TU roots and the named non-Git source directory.",
+        "git": "Prior receipt 9fd762a1… resolves to commits 7c5ad75a45c7e188ecef7a947b49b829dc5c5710 and 7d0105f2a942ac72ca20fef69d4c2e7960653de3; both exist and are ancestors of HEAD. The former's prefill.cpp is baseline SHA-256 f6cbc4ac…, not either modified source; both commits lack the two quoted include paths.",
+        "link": "Both linked receipts name the absent perf-sycl-decode-pool-phase-timing-v0141-20261009 build tree: generate.cpp.o, strata_engine/spec/kernels/core/kernels_cpu archives and ggml-cpu/base archives. Dependency hashes are not recorded. Retained base libstrata_prefill.a matches SHA-256 c296ca20… but cannot recover these link inputs.",
         "finding": "Full final-product input identities remain incomplete in the named records/pinned revisions. Main preserved all unique TU evidence and retired only four unused linked products after original job/boot and actual consumer checks. This does not resolve source qualification."
       },
       "product_retirement": {

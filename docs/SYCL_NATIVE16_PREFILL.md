@@ -204,6 +204,18 @@ warmed-graph coverage and loader/source-loss qualification; its earlier failed
 graph host-sink gate remains failed. Such service sums would still not establish
 critical-path wall, observer overhead or physical hardware saturation.
 
+The paused-capture qualification now rejects that recording method. The tiny
+fixture captured two named kernels, warmed twice and replayed three more times;
+all three native processes exited0 with correct values/guards/checked teardown.
+All control commands and owned sessions closed, with no fresh fault. The resumed
+collector nevertheless produced no timeline or kernels where six were required.
+Current UR0.12 uses command-buffer capture/replay; successful execution does not
+establish collector coverage. Do not profile the model through this method.
+Next qualify recording graph construction before later pause/resume, using the
+same tiny fixture and a new committed controller/plan. The original controller
+footer-read failure and older graph host-sink failure remain failed. See the
+[profiler coverage decision](../bench/results/2026-10-15-pr6-recovery-audit/cpu-profiler-current.json).
+
 Remaining model gates are repeated phase-preserving adoption evidence,
 agent-session and task quality, full physical262144 tokens including the final
 slots and tail boundaries, prefill-to-decode/session/RESTORE, and70tok/s decode.
