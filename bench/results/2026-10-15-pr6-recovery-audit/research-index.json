@@ -2771,6 +2771,12 @@
       "bytes": 12849314,
       "source_blobs_recovered": 9925,
       "original_outcomes_unchanged": true
+    },
+    "main_targeted_retrieval_20261023": {
+      "question": "Page4 constant-address clone has GRF128/spill22208 versusoriginal12480 and is1.1124%slower; find executed-ISA/live-range attribution methods before another optimization.",
+      "selected_sections": "13-33",
+      "full_body_read": false,
+      "new_local_claim": false
     }
   },
   "transient_moe_operand_quant_collection_scope": {
@@ -9668,6 +9674,12 @@
       "bytes": 11633,
       "sha256": "ae3809af1082a51426428d7e792e9b8cdb8832df172cceca420a53cda5a6d8dc",
       "disposition": "retain as retrieval-only reference; Main should not read the report body without a concrete question"
+    },
+    "main_targeted_retrieval_20261023": {
+      "question": "Page4 constant-address clone has GRF128/spill22208 versusoriginal12480 and is1.1124%slower; find executed-ISA/live-range attribution methods before another optimization.",
+      "selected_sections": "20-38",
+      "full_body_read": false,
+      "new_local_claim": false
     }
   },
   "applied_page4_qsa_contract_and_fixture_audit_20261023": {
@@ -9714,5 +9726,26 @@
       "manifest_path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-page4-address-v2-retirement-20261023.jsonl",
       "sha256": "ab67250992e7d62753e9c71f45dc582a8a1545909b123a5190d360c688f8a446"
     }
+  },
+  "gpu_uniform_address_lowering_methods_20261023": {
+    "classification": "knowledge collection",
+    "schedulable_now": true,
+    "status": "ready_for_orca_dispatch",
+    "report_budget_bytes": 12288,
+    "question": "Compare GPU subgroup-uniform versus varying integer/address values: compiler detection and scalar/vector allocation, rematerialization versus hoisted address live ranges, subgroup-sharing of row metadata and 64-bit pointer/index lowering. Use Intel IGC/DPC++/SYCL/LLVM primary sources plus original GPU/HPC cases. Explain correctness/collective/overflow constraints and why constant folding can change register pressure. No new broad GRF/unroll/tiling/roofline survey, implementation, or claim of local bottleneck.",
+    "prior_scopes": [
+      "xe2_register_spill_collection_scope",
+      "cooperative_matrix_iterative_fragment_lifetime_methods_20261023",
+      "qsa_power_of_two_page_address_generation_20261023",
+      "gpu_instruction_cache_unroll_dispatch_tradeoffs_20261023"
+    ],
+    "nonduplication": "Earlier register/fragment report covers tensor-fragment storage and generic GRF/reload tradeoffs. This scope concerns compiler uniformity and address/index dataflow/control across SIMD lanes, legal scalar-sharing and rematerialization, with concrete new Page4 resource evidence but no causal assumption.",
+    "prerequisite_evidence": [
+      "ClosedPage4v2 all132cases passed;3cleanprocesses162samples were1.1124%slower;namespacecontrol nearoriginal.",
+      "ActualJITGRF128/SIMD16:originalspill12480,constant4spill22208,args18to17. These descriptors are not dynamic traffic or causality. Source6e40 and exact760d generator are reachable; hardware metrics remain unqualified."
+    ],
+    "report": "/home/yayoi/orca/workspaces/Strata/sycl/.cache/strata-research/20261023/uniform-address-lowering/report.md",
+    "consumer": "Retrieval-only methods reference, nativeLuna/maxreviewonarrival; Mainkeepsbodyunreadunlesslaterconcretequestionrequiressections.",
+    "next_review": "Reviewdepth/overlap aftercompletion;retainonlysubstantiveabsentmethods. Mainownsnewexecuted-ISA collection andallGPUwork; do not duplicate it."
   }
 }
