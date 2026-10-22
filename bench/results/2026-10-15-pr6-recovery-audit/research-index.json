@@ -9939,8 +9939,8 @@
   },
   "qsa_counterfactual_resource_calibration_20261023": {
     "classification": "decision support",
-    "schedulable_now": true,
-    "status": "eligible_not_dispatched",
+    "schedulable_now": false,
+    "status": "active_orca_read_only",
     "report_budget_bytes": 12288,
     "question": "Design defensible matched-shape, counter-free calibration experiments for the current QSA primitive: global gathered KV requests, SLM producer/consumer and BF16 joint_matrix QK/PV plus online softmax. Compare load-only/MMA-only/producer-only counterfactuals, compiler dead-code elimination prevention and dependency/occupancy changes, cache hot versus working-set cases, event versus wrapper timing, and exactly what each can or cannot bound. Propose a minimal discriminator sequence and stopping criteria, not code or another theoretical peak survey.",
     "nonduplication": "Current source and corrected33213-query work ledger are pinned; source-issued work and requested bytes over6.909s service do not establish physical traffic or saturation; local metric collection is unavailable. Earlier geometry and generic ceiling reports do not specify matched counterfactual validity.",
@@ -9950,12 +9950,22 @@
     "report": "/home/yayoi/orca/workspaces/Strata/sycl/.cache/strata-research/20261023/qsa-counterfactual-calibration/report.md",
     "consumer": "Review through the next resource-calibration selection; retain only a substantive reusable protocol or concrete current decision.",
     "next_review": "Native Luna/max review after completion; Main keeps collection body unread.",
-    "rules_revision": "a9ef2c8048c7abd907fc04d87c4965fac8209685"
+    "rules_revision": "a9ef2c8048c7abd907fc04d87c4965fac8209685",
+    "lifecycle": {
+      "run": "run_432552edd149",
+      "task": "task_d37267e63611",
+      "dispatch": "ctx_88f8e25ed34b",
+      "terminal": "term_de5ac3c3-aef4-4ed7-adda-f80c9b920b8b",
+      "incarnation": "9d8acac1-323f-4897-8dd1-74ab35350659",
+      "startup_model": "gpt-6-luna high",
+      "turn_started": "observed",
+      "report_only_filesystem": true
+    }
   },
   "ragged_gqa_matrix_head_tile_methods_20261023": {
     "classification": "knowledge collection",
-    "schedulable_now": true,
-    "status": "eligible_not_dispatched",
+    "schedulable_now": false,
+    "status": "active_orca_read_only",
     "report_budget_bytes": 14336,
     "question": "Compare matrix-tile mapping for ragged grouped-query attention head counts, especially12 query heads per KV head with native8-row BF16 matrix tiles: head padding versus fusing queries/heads, multi-query scheduling, masked tails and resource/lifetime costs. Use actual SGLang/vLLM/FlashInfer and transferable GPU/HPC designs, including original technical blogs/papers. Separate GQA prefill from decode, numerical order from storage rearrangement and source shape support from measured gains. Focus intra-tile head utilization and index correctness, not cross-workgroup cache locality or a generic attention survey. No implementation proposal is required.",
     "nonduplication": "Current source usesG12 and two8-row head tiles with4padded rows. Prior fixed-head loop candidate preserved those matrix tiles and missed speed gate; prior interquery-locality collection concerns cache scheduling, not ragged matrix-row packing. Source is present; no unavailable hardware counter is prerequisite.",
@@ -9965,6 +9975,16 @@
     "report": "/home/yayoi/orca/workspaces/Strata/sycl/.cache/strata-research/20261023/ragged-gqa-head-tiles/report.md",
     "consumer": "Retrieval-only; review novelty before retention and retrieve only for a concrete future ragged-head mapping question.",
     "next_review": "Native Luna/max review after completion; Main keeps collection body unread.",
-    "rules_revision": "a9ef2c8048c7abd907fc04d87c4965fac8209685"
+    "rules_revision": "a9ef2c8048c7abd907fc04d87c4965fac8209685",
+    "lifecycle": {
+      "run": "run_432552edd149",
+      "task": "task_8243ab64e0fe",
+      "dispatch": "ctx_eb20f212242d",
+      "terminal": "term_23900dcc-19fd-4e30-a3f7-ffa08d775a5c",
+      "incarnation": "2b23b228-4627-444a-a342-fd00c791f633",
+      "startup_model": "gpt-6-luna high",
+      "turn_started": "observed",
+      "report_only_filesystem": true
+    }
   }
 }
