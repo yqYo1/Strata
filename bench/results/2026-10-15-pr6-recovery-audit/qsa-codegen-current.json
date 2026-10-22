@@ -614,6 +614,347 @@
         "kernel": "7.0.0-38-generic",
         "devcoredump": false
       }
+    },
+    {
+      "mode": "capture",
+      "source_commit": "54946de15df53700936ea126c9f056cc5ffebb3f",
+      "binary": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-codegen-allocation-v1/fixture",
+        "sha256": "573a4f3d0dcca87be801f5e2e1575a00131264f6db0cec25e017f020744f5c8e",
+        "bytes": 1564880
+      },
+      "passed": true,
+      "complete": true,
+      "active": false,
+      "ownership_closed": true,
+      "validation": {
+        "pid": 2901891,
+        "loader": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_loader.so.0.12.0",
+        "threads_before": 1,
+        "preinit": 37,
+        "config_enabled": true,
+        "first_init": true,
+        "dispatch_result": 46,
+        "output_untouched": true,
+        "retained_reference_until_exit": true,
+        "runtime_teardown_qualified": false
+      },
+      "fixture": {
+        "samples": 18,
+        "compared_per_sample": 18432,
+        "fast_routes": 7,
+        "generic_routes": 0,
+        "exact_bits_guards_inputs": true
+      },
+      "stdout_sha256": "4fb4f0f9a1c2afd1ebadb0a70491dd4ffc9de9cb30bf851885f7d31da12e5cec",
+      "stderr_sha256": "44bc9e438374ee204ba8a46fed285ba45b81ca80aa329c8296cf556b83b1d323",
+      "capture": {
+        "properties": [
+          {
+            "arm": 0,
+            "SIMD": 16,
+            "arguments": 18,
+            "raw_SLM": 32,
+            "private": 0,
+            "spill": 12480,
+            "GRF": 128
+          },
+          {
+            "arm": 1,
+            "SIMD": 16,
+            "arguments": 18,
+            "raw_SLM": 32,
+            "private": 0,
+            "spill": 12480,
+            "GRF": 128
+          },
+          {
+            "arm": 2,
+            "SIMD": 16,
+            "arguments": 17,
+            "raw_SLM": 32,
+            "private": 0,
+            "spill": 22208,
+            "GRF": 128
+          }
+        ],
+        "compute_calls": {
+          "0": 8,
+          "1": 7,
+          "2": 7
+        },
+        "conserved_device_ns": 3919931,
+        "executed": [
+          {
+            "kernel": "_ZTSZZN6strata7kernelsL17prefix_batch_implILi33ELb0ELb0ELb1ELb1ELb1ELb1ELb0EEEbPKtRKNS0_12QsaAttnPoolsEPKiS8_lRKNS0_9QsaShapesEPtlRKNS0_19QsaPromptBf16BoundsElRKNS0_20QsaBf16PackedScratchEPvNS0_19QsaPrefixStateProbeEENKUlRN4sycl3_V17handlerEE_clESO_EUlNSM_7nd_itemILi1EEEE_",
+            "execution_env": {
+              "barrier_count": "1",
+              "grf_count": "128",
+              "has_4gb_buffers": "true",
+              "has_dpas": "true",
+              "has_no_stateless_write": "true",
+              "require_disable_eufusion": "true",
+              "indirect_stateless_count": "6",
+              "inline_data_payload_size": "32",
+              "offset_to_skip_per_thread_data_load": "192",
+              "simd_size": "16",
+              "slm_size": "32",
+              "spill_size": "12480",
+              "subgroup_independent_forward_progress": "true",
+              "eu_thread_count": "8"
+            },
+            "per_thread_memory_buffers": "- type:            scratch\n        usage:           single_space\n        size:            16384",
+            "observed_launches": {
+              "launches": 8,
+              "local_arguments": [
+                {
+                  "index": 0,
+                  "bytes": 16384
+                },
+                {
+                  "index": 1,
+                  "bytes": 1024
+                },
+                {
+                  "index": 3,
+                  "bytes": 64
+                },
+                {
+                  "index": 4,
+                  "bytes": 64
+                },
+                {
+                  "index": 5,
+                  "bytes": 64
+                },
+                {
+                  "index": 13,
+                  "bytes": 256
+                },
+                {
+                  "index": 15,
+                  "bytes": 2112
+                },
+                {
+                  "index": 16,
+                  "bytes": 64
+                }
+              ],
+              "dynamic_local_bytes": 20032
+            },
+            "asm": {
+              "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-codegen-allocation-v1/capture/isa/OCL_asm7e3ea555cb721531_simd16_entry_0006.asm",
+              "sha256": "4c06b4e70c5128b531c99d3ff74ca65f7246a82544154891c217c020a0ba8a19",
+              "bytes": 915959
+            }
+          },
+          {
+            "kernel": "_ZTSZZN6strata7kernels7controlL17prefix_batch_implILi33ELb0ELb0ELb1ELb1ELb1ELb1ELb0EEEbPKtRKNS0_12QsaAttnPoolsEPKiS9_lRKNS0_9QsaShapesEPtlRKNS0_19QsaPromptBf16BoundsElRKNS0_20QsaBf16PackedScratchEPvNS0_19QsaPrefixStateProbeEENKUlRN4sycl3_V17handlerEE_clESP_EUlNSN_7nd_itemILi1EEEE_",
+            "execution_env": {
+              "barrier_count": "1",
+              "grf_count": "128",
+              "has_4gb_buffers": "true",
+              "has_dpas": "true",
+              "has_no_stateless_write": "true",
+              "require_disable_eufusion": "true",
+              "indirect_stateless_count": "6",
+              "inline_data_payload_size": "32",
+              "offset_to_skip_per_thread_data_load": "192",
+              "simd_size": "16",
+              "slm_size": "32",
+              "spill_size": "12480",
+              "subgroup_independent_forward_progress": "true",
+              "eu_thread_count": "8"
+            },
+            "per_thread_memory_buffers": "- type:            scratch\n        usage:           single_space\n        size:            16384",
+            "observed_launches": {
+              "launches": 7,
+              "local_arguments": [
+                {
+                  "index": 0,
+                  "bytes": 16384
+                },
+                {
+                  "index": 1,
+                  "bytes": 1024
+                },
+                {
+                  "index": 3,
+                  "bytes": 64
+                },
+                {
+                  "index": 4,
+                  "bytes": 64
+                },
+                {
+                  "index": 5,
+                  "bytes": 64
+                },
+                {
+                  "index": 13,
+                  "bytes": 256
+                },
+                {
+                  "index": 15,
+                  "bytes": 2112
+                },
+                {
+                  "index": 16,
+                  "bytes": 64
+                }
+              ],
+              "dynamic_local_bytes": 20032
+            },
+            "asm": {
+              "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-codegen-allocation-v1/capture/isa/OCL_asm3f1b303c0f729afa_simd16_entry_0001.asm",
+              "sha256": "13c5ad7ca1c79cd1c154d3b19a59e683e6d60911b06d1be983c5660b79e38ff1",
+              "bytes": 915965
+            }
+          },
+          {
+            "kernel": "_ZTSZZN6strata7kernels5page4L17prefix_batch_implILi33ELb0ELb0ELb1ELb1ELb1ELb1ELb0EEEbPKtRKNS0_12QsaAttnPoolsEPKiS9_lRKNS0_9QsaShapesEPtlRKNS0_19QsaPromptBf16BoundsElRKNS0_20QsaBf16PackedScratchEPvNS0_19QsaPrefixStateProbeEENKUlRN4sycl3_V17handlerEE_clESP_EUlNSN_7nd_itemILi1EEEE_",
+            "execution_env": {
+              "barrier_count": "1",
+              "grf_count": "128",
+              "has_4gb_buffers": "true",
+              "has_dpas": "true",
+              "has_no_stateless_write": "true",
+              "require_disable_eufusion": "true",
+              "indirect_stateless_count": "6",
+              "inline_data_payload_size": "32",
+              "offset_to_skip_per_thread_data_load": "192",
+              "simd_size": "16",
+              "slm_size": "32",
+              "spill_size": "22208",
+              "subgroup_independent_forward_progress": "true",
+              "eu_thread_count": "8"
+            },
+            "per_thread_memory_buffers": "- type:            scratch\n        usage:           single_space\n        size:            32768",
+            "observed_launches": {
+              "launches": 7,
+              "local_arguments": [
+                {
+                  "index": 0,
+                  "bytes": 16384
+                },
+                {
+                  "index": 1,
+                  "bytes": 1024
+                },
+                {
+                  "index": 3,
+                  "bytes": 64
+                },
+                {
+                  "index": 4,
+                  "bytes": 64
+                },
+                {
+                  "index": 5,
+                  "bytes": 64
+                },
+                {
+                  "index": 12,
+                  "bytes": 256
+                },
+                {
+                  "index": 14,
+                  "bytes": 2112
+                },
+                {
+                  "index": 15,
+                  "bytes": 64
+                }
+              ],
+              "dynamic_local_bytes": 20032
+            },
+            "asm": {
+              "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-codegen-allocation-v1/capture/isa/OCL_asm8d1e7d3855b14702_simd16_entry_0001.asm",
+              "sha256": "6ee560d4b29ab3e0e8cee1fe3a1ae4a00d6210824e5c0d628f1330d421b807c6",
+              "bytes": 919915
+            }
+          }
+        ],
+        "dump_files": 200,
+        "dump_bytes": 64009118,
+        "limits": "Static executed-image attribution only; observers alter timings. Spill allocation/static sends do not establish dynamic traffic/occupancy, critical path, clean speed or causal attribution.",
+        "selected_files": [
+          {
+            "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-codegen-allocation-v1/capture/isa/OCL_asm3f1b303c0f729afa_simd16_entry_0001.asm",
+            "sha256": "13c5ad7ca1c79cd1c154d3b19a59e683e6d60911b06d1be983c5660b79e38ff1",
+            "bytes": 915965
+          },
+          {
+            "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-codegen-allocation-v1/capture/isa/OCL_asm3f1b303c0f729afa_simd16_entry_0001.dat",
+            "sha256": "06fd318dd941d170f5cd035afb1df4003daa0bef601879e4c754bf06c11f241e",
+            "bytes": 71840
+          },
+          {
+            "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-codegen-allocation-v1/capture/isa/OCL_asm3f1b303c0f729afa_simd16_entry_0001.visa.ll",
+            "sha256": "cd6f940363ccfd6adbfa18119c36798baa73a46c668977b4c0ad78efcac57fe5",
+            "bytes": 478015
+          },
+          {
+            "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-codegen-allocation-v1/capture/isa/OCL_asm3f1b303c0f729afa_simd16_entry_0001.visaasm",
+            "sha256": "015e219818c2f1977b81a9319ae463b5c6be3dfd9efea642142d2bc45a66b9a1",
+            "bytes": 739022
+          },
+          {
+            "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-codegen-allocation-v1/capture/isa/OCL_asm7e3ea555cb721531_simd16_entry_0006.asm",
+            "sha256": "4c06b4e70c5128b531c99d3ff74ca65f7246a82544154891c217c020a0ba8a19",
+            "bytes": 915959
+          },
+          {
+            "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-codegen-allocation-v1/capture/isa/OCL_asm7e3ea555cb721531_simd16_entry_0006.dat",
+            "sha256": "b4aa402998ea5151383f1dfbd3f3a75d72216d86ace63488ca82aa5aec8ebe57",
+            "bytes": 71840
+          },
+          {
+            "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-codegen-allocation-v1/capture/isa/OCL_asm7e3ea555cb721531_simd16_entry_0006.visa.ll",
+            "sha256": "00248b2b4bec27a2469f2a6cca5515ab4b0f0bd1b3b419c7ca2ffaf4ebe9a671",
+            "bytes": 478007
+          },
+          {
+            "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-codegen-allocation-v1/capture/isa/OCL_asm7e3ea555cb721531_simd16_entry_0006.visaasm",
+            "sha256": "e2d439434996ac25a7ab49c9ba84308a8a3ad8528aa6ada3e5c7936d15039a49",
+            "bytes": 739015
+          },
+          {
+            "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-codegen-allocation-v1/capture/isa/OCL_asm8d1e7d3855b14702_simd16_entry_0001.asm",
+            "sha256": "6ee560d4b29ab3e0e8cee1fe3a1ae4a00d6210824e5c0d628f1330d421b807c6",
+            "bytes": 919915
+          },
+          {
+            "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-codegen-allocation-v1/capture/isa/OCL_asm8d1e7d3855b14702_simd16_entry_0001.dat",
+            "sha256": "409e359a5305f349f94fe687055c303930195cfc3cb98361932f897d3dfb8cf4",
+            "bytes": 70880
+          },
+          {
+            "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-codegen-allocation-v1/capture/isa/OCL_asm8d1e7d3855b14702_simd16_entry_0001.visa.ll",
+            "sha256": "c356a6ba38ea39cee4087d55718eb3f50f7f0ca9af4ddb86956eab3765cb84c1",
+            "bytes": 467543
+          },
+          {
+            "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-codegen-allocation-v1/capture/isa/OCL_asm8d1e7d3855b14702_simd16_entry_0001.visaasm",
+            "sha256": "90bf5287088d064ff33c5438413584f3b22816b25d0d0b9851889696c91a3154",
+            "bytes": 721495
+          }
+        ],
+        "unselected_dump_consumer": null,
+        "retention": "Only12executedcomputeasm/LLVM/vISA/datfiles consume currentattribution. Unselected/duplicateoutputs canretireaftermanifest;completecaptureoutcome remains unchanged."
+      },
+      "postchecks_complete": true,
+      "postcheck_errors": [],
+      "fresh_faults": [],
+      "boot_unchanged": true,
+      "driver_after": {
+        "pci": "/sys/bus/pci/devices/0000:05:00.0",
+        "driver": "xe",
+        "vendor": "0x8086",
+        "device": "0xe20c",
+        "kernel": "7.0.0-38-generic",
+        "devcoredump": false
+      }
     }
   ]
 }
