@@ -38,7 +38,21 @@ def inputs(revision):
 
 
 def runtime(record):
-    qualified.runtime_assets_unchanged(dict(mode='engine-compare',runtime_asset_delta=record['runtime_asset_delta']))
+    # Qualify this fixture's actual mode without posing as a model/query run.
+    identity=lambda delta:{n:{k:v[k] for k in ('qualified_sha256','candidate_sha256')} for n,v in delta.items()}
+    expected={n:dict(qualified_sha256=v[0],candidate_sha256=v[1]) for n,v in qualified.DELTA.items()}
+    component=build.gen.committed(qualified.COMPONENT)
+    guards.require(component['passed'] and component['complete'] and component['ownership_closed'] and
+        not component['active'] and component['fresh_faults']==[] and
+        identity(record['runtime_asset_delta'])==identity(component['runtime_asset_delta'])==expected,
+        'GRF runtime identities differ from the qualified native component')
+    settings=build.gen.committed(P/'tools/sycl/measurement_environment.json')
+    guards.require(set(expected)<=set(settings['runtime_elfs']),'unknown qualified runtime asset')
+    for path,item in settings['runtime_elfs'].items():
+        proposed=expected.get(path)
+        if proposed:guards.require(proposed['qualified_sha256']==item['sha256'],'original runtime baseline changed')
+        guards.require(build.digest(path)==(proposed['candidate_sha256'] if proposed else item['sha256']),
+            'GRF runtime asset changed: '+path)
     guards.require(validation.preload_qualification()==record['validation_preload'],'validation provider changed')
 
 
