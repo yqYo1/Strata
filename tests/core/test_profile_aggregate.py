@@ -51,5 +51,22 @@ class AggregateTests(unittest.TestCase):
                         'ns::Kernel<float, 16>[SIMD32 {1; 1; 1} {256; 1; 1}]')):
             with self.subTest(text=text),self.assertRaises(ValueError):device_summary(text)
 
+    def test_zero_barrier_minimum_preserves_positive_aggregate_and_sum(self):
+        barrier=TABLE.replace('zeCommandListAppendMemoryCopy(M2D)[1164]',
+            '"zeCommandListAppendBarrier"').replace(
+            '1, 20, 20.0, 20, 20, 20','2, 20, 20.0, 10, 0, 20')
+        result=device_summary(barrier)
+        self.assertEqual(result['rows'][1]['min_ns'],0)
+        self.assertEqual(result['rows'][1]['calls'],2)
+        self.assertEqual(sum(row['total_ns'] for row in result['rows']),100)
+        self.assertEqual(device_summary(barrier.replace('AppendBarrier',
+            'AppendMemoryRangesBarrier'))['total_device_ns'],100)
+        for bad in (barrier.replace('10, 0, 20','10, -1, 20'),
+                    barrier.replace('AppendBarrier','UnrecognizedCommand'),
+                    TABLE.replace('40, 30, 50','40, 0, 50'),
+                    barrier.replace('2, 20, 20.0, 10, 0, 20','2, 0, 0.0, 0, 0, 0'),
+                    barrier.replace('2, 20, 20.0, 10, 0, 20','2, 21, 20.0, 10, 0, 21')):
+            with self.subTest(text=bad),self.assertRaises(ValueError):device_summary(bad)
+
 
 if __name__=='__main__':unittest.main()

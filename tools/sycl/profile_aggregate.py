@@ -15,15 +15,20 @@ def device_summary(text):
         raise ValueError('one positive L0 total required')
     rows = []
     for line in body[0].splitlines():
-        # PTI writes demangled C++ names without CSV quoting. Numeric columns
-        # are fixed; a left split would lose templated kernel names.
+        # Numeric columns are fixed. Splitting from the right preserves PTI's
+        # quoted demangled names, including their template commas.
         parts = [p.strip() for p in line.rsplit(',', 6)]
         if len(parts) != 7 or parts[0] == 'Kernel':
             continue
         name = parts[0]
         calls, ns, avg, lo, hi = (int(parts[i]) for i in (1, 2, 4, 5, 6))
         percent = float(parts[3])
-        if not (name and calls > 0 and ns > 0 and 0 < lo <= avg <= hi and
+        # PTI CollectKernelCommandTimeStats records end-start verbatim, including
+        # zero for a barrier. Keep positive total/average and compute intervals;
+        # admit a zero minimum only for these explicit synchronization commands.
+        minimum_valid = lo > 0 or (lo == 0 and name.strip('"') in
+            ('zeCommandListAppendBarrier', 'zeCommandListAppendMemoryRangesBarrier'))
+        if not (name and calls > 0 and ns > 0 and avg > 0 and minimum_valid and lo <= avg <= hi and
                 avg == ns // calls and calls * lo <= ns <= calls * hi and
                 math.isfinite(percent) and 0 <= percent <= 100.0001):
             raise ValueError('invalid device table row: ' + name)
