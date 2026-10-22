@@ -446,5 +446,84 @@
     "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-codegen-allocation-v1/fixture",
     "sha256": "573a4f3d0dcca87be801f5e2e1575a00131264f6db0cec25e017f020744f5c8e",
     "bytes": 1564880
+  },
+  "check_plan": {
+    "mode": "smoke",
+    "source_commit": "54946de15df53700936ea126c9f056cc5ffebb3f",
+    "validation_preload": {
+      "library": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/ur-validation-preload-v2/libstrata_ur_validation.so",
+        "sha256": "1d4e69d672d55fa0a126ae43b7b4743482cccca7e2f2bc22e0db2bfdad5bdc7c"
+      },
+      "loader": {
+        "path": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_loader.so.0.12.0",
+        "sha256": "bb6e1311850e4b1a924e42acae80c2b3610934625a4985aaa67967abe31356fc"
+      },
+      "component_source_commit": "f312b6691f508125db6cfc2580ca32a686ff2642",
+      "component_original_plan": {
+        "commit": "550c75f5fc954ee38b70230e32d2a48e12100d8a",
+        "path": "bench/results/2026-10-15-pr6-recovery-audit/research-index.json",
+        "sha256": "d12866b93c51e76a83e95638e66b6f6f4e0e33d779516a5fddecc178a6f8e10a"
+      },
+      "retained_reference_until_exit": true,
+      "runtime_teardown_qualified": false
+    },
+    "environment": {
+      "PATH": "/usr/bin:/bin",
+      "HOME": "/home/yayoi",
+      "LANG": "C.UTF-8",
+      "LC_ALL": "C.UTF-8",
+      "PYTHONDONTWRITEBYTECODE": "1",
+      "LD_LIBRARY_PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib:/opt/intel/oneapi/mkl/2026.1/lib",
+      "ONEAPI_DEVICE_SELECTOR": "level_zero:gpu",
+      "UR_ADAPTERS_FORCE_LOAD": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_adapter_level_zero_v2.so.0",
+      "UR_L0_V2_FORCE_DISABLE_COPY_OFFLOAD": "1",
+      "NEOReadDebugKeys": "1",
+      "EnableDirectSubmission": "0",
+      "STRATA_SYCL_PREFILL_SAME_QUEUE": "1",
+      "STRATA_SYCL_VERIFY_NATIVE_CAPTURE": "0",
+      "SYCL_CACHE_PERSISTENT": "0",
+      "ZES_ENABLE_SYSMAN": "0",
+      "UR_ENABLE_LAYERS": "UR_LAYER_TRACING,UR_LAYER_PARAMETER_VALIDATION",
+      "UR_LOG_TRACING": "level:info;flush:info;output:stderr",
+      "UR_LOG_VALIDATION": "level:warning;flush:warning;output:stderr",
+      "UR_LOG_LOADER": "level:warning;flush:warning;output:stderr",
+      "UR_LOG_LEVEL_ZERO": "level:warning;flush:warning;output:stderr",
+      "TMPDIR": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-codegen-allocation-v1/smoke/tmp",
+      "XDG_CACHE_HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-codegen-allocation-v1/smoke/cache",
+      "LD_PRELOAD": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/ur-validation-preload-v2/libstrata_ur_validation.so",
+      "STRATA_UR_PROBE_EXPECTED_LOADER": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_loader.so.0.12.0"
+    },
+    "command": [
+      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-codegen-allocation-v1/fixture",
+      "--smoke",
+      "0"
+    ],
+    "session": null,
+    "budgets": {
+      "wall_s": 240,
+      "cpu_s": 480,
+      "rss_bytes": 6442450944,
+      "text_bytes": 16777216,
+      "file_bytes": 67108864,
+      "total_bytes": 134217728
+    }
+  },
+  "retained_generations_review": {
+    "selected_engine": "main-native-gdn-engine:13hashcheckedassets",
+    "auxiliary": "qsa-codegen-allocation-v1:immediateexecutedISAcomparisononly",
+    "retired_comparisons_absent": [
+      "qsa-page4-address-v1",
+      "qsa-page4-address-v2",
+      "qsa-qcache-unroll-v1",
+      "qsa-ordered-grf-v1"
+    ],
+    "legacy_unqualified_roots": {
+      "main-primary-native-build-root-v1": true,
+      "main-pr6-harness-configure-v6": true
+    },
+    "unresolved_holds": "native-gdn-engine-build.json:legacy_provenance_exception.additional_old_product_review; olderresearch-index ownershipholds remainunchanged",
+    "next_legacy_action": "PR6 dependency receipt9709a316 is now recovered fromb1c0e1449; finish its final generated-command/dependency/ownership join. Primary build still needs exact final dependency/quoted-header/ownership proof. Do not renew the completed receipt search or clear either hold.",
+    "full_legacy_provenance_recovered": false
   }
 }

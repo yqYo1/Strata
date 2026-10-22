@@ -358,6 +358,14 @@ The next evidence gap is why the constant-address version changes register
 allocation and generated instructions. Retrieve existing compiler/ISA methods
 for that question before proposing a new bounded test; neither the spill
 descriptor nor the earlier slower GRF256 screen establishes its cause.
+The current bounded [codegen attribution](../bench/results/2026-10-15-pr6-recovery-audit/qsa-codegen-current.json)
+reconstructs four exact generated sources from760d/1ebe into one auxiliary
+fixture, leaving the selected engine unchanged. Validate its small case before
+capturing executed-name-correlated ISA and allocation metadata with the
+[installed IGC2.41.5 dump flags](https://github.com/intel/intel-graphics-compiler/blob/v2.41.5/documentation/configuration_flags.md).
+Capture timings qualify no speed, and static spill code does not prove dynamic
+traffic or causality. Retire the auxiliary products after extracting the
+specific next source decision.
 
 Remaining model gates are repeated phase-preserving adoption evidence,
 agent-session and task quality, full physical262144 tokens including the final
