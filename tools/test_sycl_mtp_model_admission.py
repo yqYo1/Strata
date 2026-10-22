@@ -74,4 +74,35 @@ class GraphSupportReuseTests(unittest.TestCase):
             m.graph_support_evidence(self.full,self.support)
 
 
+class RestoredDiagnosticPlanTests(unittest.TestCase):
+    def test_graph_diagnostic_preserves_decode_and_runtime_safety(self):
+        root=Path('/new-profile')
+        safety=dict(UR_L0_V2_FORCE_DISABLE_COPY_OFFLOAD='1',NEOReadDebugKeys='1',
+                    EnableDirectSubmission='0',STRATA_SYCL_PREFILL_SAME_QUEUE='1')
+        setup=dict(environment=dict(safety,STRATA_MEASUREMENT_ROOT='/closed',
+            TMPDIR='/closed/tmp',STRATA_IQ2_PAIR='1',UR_LOG_TRACING='retired'))
+        with patch.object(m.gen,'committed',return_value={'environment':safety}):
+            env=m.environment(setup,root,'graph')
+        self.assertEqual({k:env[k] for k in safety},safety)
+        self.assertEqual(env['TMPDIR'],'/new-profile/tmp')
+        self.assertEqual(env['STRATA_IQ2_PAIR'],'1')
+        self.assertEqual(env['STRATA_SYCL_MTP_OBSERVER_REQUEST'],'5')
+        self.assertEqual(env['STRATA_SYCL_MTP_OBSERVER_WINDOWS'],'64')
+        self.assertEqual(env['UR_ENABLE_LAYERS'],'UR_LAYER_PARAMETER_VALIDATION')
+        self.assertNotIn('UR_LOG_TRACING',env)
+        self.assertNotIn('LD_PRELOAD',env)
+        self.assertEqual(m.plan()['modes'],['graph'])
+        self.assertIn('no observer-overhead bound',m.plan()['interpretation'])
+
+    def test_old_config_reconstruction_is_recursive_without_mutating_its_source(self):
+        config=dict(args=['--expert-profile','${RUN_ROOT}/expert-profile.bin'],
+                    log='${RUN_ROOT}/engine.stderr',parallel=1,env={})
+        original=copy.deepcopy(config)
+        changed=m.expand_root(config,Path('/restored'))
+        self.assertEqual(config,original)
+        self.assertEqual(changed['args'][1],'/restored/expert-profile.bin')
+        self.assertEqual(changed['log'],'/restored/engine.stderr')
+        self.assertEqual(changed['parallel'],1)
+
+
 if __name__=='__main__':unittest.main()

@@ -22,13 +22,16 @@ import iq2_pair_model as recipe
 import measurement_guards as guards
 import measurement_owner as supervision
 import query_profile as q
+from build_engine import archived_model_observation
 from check_expert_bank import check_packed_cases
 
 P, B, A = gen.P, gen.B, gen.A
-ROOT = B/'mtp-model-attribution-v1'
+ROOT = B/'mtp-model-attribution-v2'
 RESULT = A/'mtp-model-observer-current.json'
-MODES = ('0','host','graph')
+MODES = ('graph',)
 WORKLOADS = ('varied-prose',)
+DECODE_ARCHIVE = 'a8af3d7fa96a7713f2e516d2da3d7410956be015'
+DECODE_ARCHIVE_SHA256 = '7dda2bcefa6f7e54d568e6aa3d5226d5e0a7383f0b41efd7584093854d9547ca'
 GRAPH_ORIGIN = '1ccdfd6d4'
 GRAPH_ORIGIN_SHA256 = 'b63a49b6cfac9df92d5064f47c5ceafe944ce7e0cfbe080361051baab8c1a2a2'
 GRAPH_BUILD_SHA256 = '6ac902826311b0c8c7f334f480dd787114968713d5f33d5f9917eaf63a1736a6'
@@ -103,13 +106,50 @@ def observation(text, mode):
 
 
 def plan():
-    return dict(question='In the weak-MTP prose case, how much draft wall/CPU time is in capture, submission, drain, query and the outer graph envelope?',
+    return dict(question='On the exact restored6e40 IQ2-decode route, where does the weak-MTP draft wrapper spend64 selected windows: host capture/submission/drain/query/other versus graph execution envelope?',
         modes=list(MODES),workload='varied-prose',selector=5,skip=8,windows=64,
-        execution='Fresh process per mode, same qualified native binary; four official warmups then one thinking-on >=32K/1K long-generation workload through bench.sh. IQ2 pair remains0; census/audit remain matched. No environment mutation or retry.',
-        interpretation='One process per mode detects gross observer perturbation only; it does not give a statistical overhead bound or clean speed. Host regions are disjoint; graph envelopes are nonadditive and may include idle/dependencies. Keep first-use prefill separate. Do not infer arithmetic,VRAM,PCIe or CPU/RAM saturation.',
-        gate='Same-build eighteen groups and tiny off/on graph support, then same-build packed-smoke/validate. Require fresh native ownership/environment, four warmups, both actual model routes, full request/answer closure, weak acceptance<=.40, finite complete64-window accounting and no fresh fault. Failure closes the cohort; no dropped/replaced samples.',
-        scope='Weak-MTP attribution only; strong-MTP,agent/task quality,physical262144/session/RESTORE,model adoption and70tok/s remain open.',
-        retention='Retain three individual request/observer summaries and source/config/fault/decision evidence. Keep raw tuples only through the attribution decision; retire normal logs/JIT/transaction files after verified closure.')
+        execution='One fresh graph-observed process, four official warmups then official v4 weak-prose thinking-on >=32K fresh input,>=1024 generated tokens and a substantive answer. Same retained6e40 binary,1256 slots and MTP4. Explicit IQ2 decode1/prefill reference; no inference implementation change,environment mutation or retry.',
+        observers='Parameter validation,stage trace,existing CPU work census,IQ2 dispatch audit and decode timing. MTP graph observer adds its checked completion-event wrapper in the selected64 windows and requests profiled graph executables. These alter diagnostic work; native source and ordinary default-off route stay unchanged.',
+        interpretation='One diagnostic process only: no observer-overhead bound,clean speed,performance comparison or adoption. Host intervals are disjoint calling-thread wall/CPU; worker arithmetic,RAM and PCIe traffic remain unmeasured. Graph envelopes are nonadditive first-to-last node intervals,may contain idle/dependencies,and are not arithmetic service or hardware saturation.',
+        gate='Verify exact original sources,recipe,all13 artifacts,18-group engine qualification and identical tiny graph fixture continuity before preparation. Fresh same-build packed-smoke/validate precede the model. Require owned native/environment/four warmups,full journal/request/answer/native closure,weak acceptance<=.40,actual GPU BF16/mode10 restoration,current IQ2 dispatch/census conservation,complete64-window host/graph accounting,unchanged15 model assets and no fresh fault. Stop on first failure or budget; no replaced samples.',
+        scope='Weak-MTP diagnostic only; strong-MTP,agent/task quality,physical262144/session/RESTORE,model adoption,observer overhead and70tok/s remain open.',
+        retention='Keep one individual request,compact64-window host/graph/census/dispatch summaries and exact source/config/environment/fault decisions. Raw32 graph tuples/logs/JIT stay only through attribution and verification; retire after closure. Original zero-process v1 plan remains closed in Git.')
+
+
+def expand_root(value, root):
+    if isinstance(value,str): return value.replace('${RUN_ROOT}',str(root))
+    if isinstance(value,list): return [expand_root(v,root) for v in value]
+    if isinstance(value,dict): return {k:expand_root(v,root) for k,v in value.items()}
+    return value
+
+
+def original_setup():
+    """Recover the closed retained arm without reopening its retired run files."""
+    compact_path=A/'canonical-restore-decode-current.json'
+    closed=gen.committed(compact_path)
+    raw=gen.git('show',DECODE_ARCHIVE+':'+str(compact_path.relative_to(P)))
+    guards.require(hashlib.sha256(raw).hexdigest()==DECODE_ARCHIVE_SHA256 and
+        closed['schema']=='strata-canonical-decode-closed-v1' and closed['stage']=='closed' and
+        closed['archive']['commit']==DECODE_ARCHIVE and closed['full_model_hashes_matched_after_cohort']==15,
+        'closed canonical reference/archive required')
+    archive=json.loads(raw); selected=archive['plans'][0]
+    guards.require(len(archive['processes'])==6 and selected['arm']==0 and selected['cohort']==0 and
+        all(r['passed'] and r['complete'] and r['ownership_closed'] and not r['fresh_faults']
+            and r['boot_unchanged'] and r['fault_probe_successful'] for r in archive['processes']),
+        'complete closed reference cohort required; failed performance decision remains unchanged')
+    config=expand_root(closed['configuration'],selected['root'])
+    guards.require(hashlib.sha256((json.dumps(config,indent=2)+'\n').encode()).hexdigest()==
+        selected['inputs'][str(Path(selected['root'])/'config.json')], 'normalized reference configuration differs')
+    build=gen.committed(q.BUILD); model_reference=build['retention_model_reference']
+    recovery=archived_model_observation(model_reference)
+    guards.require(build['source_commit']==closed['native_sources'][0] and
+        all(build['binary'][k]==archive['binaries'][0][k] for k in ('bytes','sha256')) and
+        recovery['plan']['native_source']==build['source_commit'] and len(recovery['models'])==15,
+        'selected native/reference/model identities differ')
+    return dict(config=config,environment=selected['environment'],model_assets=recovery['models'],
+        runtime_asset_delta=gen.committed(q.COMPONENT)['runtime_asset_delta'],
+        reference=dict(commit=DECODE_ARCHIVE,path=str(compact_path.relative_to(P)),sha256=DECODE_ARCHIVE_SHA256,
+            compact_sha256=gen.common.digest(compact_path),model_reference=model_reference))
 
 
 def graph_support_evidence(full, support):
@@ -164,7 +204,15 @@ def qualification():
 
 
 def environment(setup, root, mode):
-    env = recipe.environment(setup,root,0)
+    env = recipe.environment(setup,root,1)
+    env.update(STRATA_CPU_WORK_CENSUS='1',STRATA_DECODE_TIMING='1',STRATA_IQ2_PAIR_AUDIT='1',
+        STRATA_TRACE='1',STRATA_SNAPSHOT_VERIFY='1',STRATA_SYCL_CACHE_LOAN_AUDIT='1',
+        UR_ENABLE_LAYERS='UR_LAYER_PARAMETER_VALIDATION')
+    for key in ('UR_LOG_VALIDATION','UR_LOG_LOADER','UR_LOG_LEVEL_ZERO'):
+        env[key]='level:warning;flush:warning;output:stderr'
+    env.pop('UR_LOG_TRACING',None)
+    for key in ('UR_L0_V2_FORCE_DISABLE_COPY_OFFLOAD','NEOReadDebugKeys','EnableDirectSubmission','STRATA_SYCL_PREFILL_SAME_QUEUE'):
+        guards.require(env[key]==gen.committed(gen.SETTINGS)['environment'][key], 'qualified safety setting changed')
     env.update(STRATA_SYCL_MTP_OBSERVER=mode,STRATA_SYCL_MTP_OBSERVER_REQUEST='5',
         STRATA_SYCL_MTP_OBSERVER_SKIP='8',STRATA_SYCL_MTP_OBSERVER_WINDOWS='64')
     return env
@@ -177,7 +225,8 @@ def current(record, full_models=False):
     guards.require(assets.fingerprint(recipe.source_pins(record['source_commit'])) == record['source_fingerprint'] and
         gen.common.digest(gen.SETTINGS) == record['settings_sha256'] and assets.machine_identity() == record['machine'],
         'MTP source/settings/platform changed')
-    setup = recipe.pilot()
+    setup = original_setup()
+    guards.require(record['setup_reference']==setup['reference'],'restored route reference changed')
     guards.require(assets.model_pins(setup['config'],record['models'],full=full_models) == record['models'],'model changed')
     for row in record['process_plans']:
         root = Path(row['root'])
@@ -189,8 +238,13 @@ def current(record, full_models=False):
 
 
 def prepare():
-    guards.require(not ROOT.exists() and not RESULT.exists(),'fresh MTP cohort only')
-    full,proof = qualification(); setup = recipe.pilot()
+    guards.require(not ROOT.exists(),'fresh MTP cohort only')
+    previous=gen.committed(RESULT)
+    guards.require(previous['stage']=='closed' and previous['processes']==[] and
+        bool(previous.get('closure_reason')),'only the closed zero-model v1 plan may be replaced')
+    previous_reference=dict(commit=gen.git('log','-1','--format=%H','--',str(RESULT.relative_to(P))).decode().strip(),
+        path=str(RESULT.relative_to(P)),sha256=gen.common.digest(RESULT))
+    full,proof = qualification(); setup = original_setup()
     source = gen.git('rev-parse','HEAD').decode().strip(); pins = recipe.source_pins(source)
     models = assets.model_pins(setup['config'],setup['model_assets'],full=True)
     ROOT.mkdir(mode=0o700); plans = []
@@ -205,7 +259,7 @@ def prepare():
         plans.append(dict(mode=mode,root=str(root),command=command,environment=environment(setup,root,mode),
             inputs={str(root/n):gen.common.digest(root/n) for n in ('config.json','plan.json','expert-profile.bin')}))
     record = dict(source_commit=source,binary=full['binary'],qualification=proof,plan=plan(),process_plans=plans,
-        models=models,source_fingerprint=assets.fingerprint(pins),machine=assets.machine_identity(),
+        models=models,setup_reference=setup['reference'],previous_result_reference=previous_reference,source_fingerprint=assets.fingerprint(pins),machine=assets.machine_identity(),
         settings_sha256=gen.common.digest(gen.SETTINGS),stage='prepared',processes=[],bank=None)
     current(record); write(ROOT/'frozen.json',record); write(RESULT,record)
 
@@ -217,7 +271,7 @@ def execute(action):
         'frozen MTP plan changed')
     bank = action == 'qualify'
     guards.require(record['stage'] == ('prepared' if bank else 'collecting') and
-        (bank or (record['bank']['passed'] and len(record['processes']) < 3 and all(r['passed'] for r in record['processes']))),
+        (bank or (record['bank']['passed'] and len(record['processes']) < len(MODES) and all(r['passed'] for r in record['processes']))),
         'wrong MTP stage; never retry a failed or completed attempt')
     selected = None if bank else record['process_plans'][len(record['processes'])]
     root = ROOT/'bank' if bank else Path(selected['root'])
@@ -283,9 +337,11 @@ def execute(action):
             guards.require(native['native'] == row['native_identity'] and samples[0]['acceptance_rate'] <= .40,'MTP native exit/class differs')
             text = (root/'engine.stderr').read_text(errors='replace')
             guards.require(not re.search(comparison.FAILURE,text),'MTP model error')
+            event_samples=[e['sample'] for e in events if e['kind']=='result']
+            audit,work,timing=recipe.work_evidence(text,event_samples,json.loads((root/'config.json').read_text()),1,root)
             row.update(mode=selected['mode'],requests=samples,warmups=journal,native_exit_code=native['exit_code'],
                 routes=comparison.native_routes(text,events,1,workloads=WORKLOADS),
-                timing=gen.decode_timing_evidence(text,[e['sample'] for e in events if e['kind']=='result'])[-1],
+                timing=timing[-1],iq2_dispatch=audit[-1],census=recipe.compact_work(work[-1:])[0],
                 observation=observation(text,selected['mode']))
         current(record,full_models=not bank); row.update(passed=True,complete=True)
     except BaseException as error: row['error'] = str(error)
@@ -298,7 +354,7 @@ def execute(action):
         persist()
         if bank: record['bank'] = row
         else: record['processes'].append(row)
-        record['stage'] = 'collecting' if row['passed'] and (bank or len(record['processes'])<3) else 'closed'
+        record['stage'] = 'collecting' if row['passed'] and (bank or len(record['processes'])<len(MODES)) else 'closed'
         write(RESULT,record)
     print(json.dumps({k:row.get(k) for k in ('mode','passed','complete','ownership_closed','error')}))
     return 0 if row['passed'] else 1
