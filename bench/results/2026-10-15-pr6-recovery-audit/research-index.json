@@ -8357,5 +8357,40 @@
       "files": 2,
       "bytes": 7720
     }
+  },
+  "cpu_pool_idle_wait_policy_methods_20261022": {
+    "classification": "decision support",
+    "schedulable_now": true,
+    "state": "Native Luna/max novelty/prerequisite review complete;not yet dispatched.",
+    "question": "Compare fixed 20ms spin/CV, immediate park, bounded adaptive policy for CPU residency, wake latency, runtime progress and CPU/GPU interaction; choose one independent prefill/decode policy and discriminator. Preserve lost-wakeup correctness; no phase env mutation.",
+    "report": ".cache/strata-research/20261022/cpu-pool-idle-wait-methods.md",
+    "report_budget_bytes": 12288,
+    "prerequisites_met": [
+      "Closed pinned result identifies worker TIDs and a large outside-pool CPU bound.",
+      "Pinned code has fixed 20ms policy, phase scope, and constructor-time test knob.",
+      "Prior indexed scopes do not compare phase-aware park policy."
+    ],
+    "trigger_result": {
+      "path": "bench/results/2026-10-15-pr6-recovery-audit/client-resources-current.json",
+      "sha256": "ae608777c52288b5e8803aef04a29bbbdd378598933d7c1f21a5b04a948e6672",
+      "observation": "Closed request: six registered workers used 1,435.65 scheduled CPU-s; 144.995s whole-request pool wall gives >=565.68 CPU-s outside run_split_multi_native. Worker pair rows are fairly even (46.66\u201348.46M)."
+    },
+    "review": {
+      "reviewer": "native Codex gpt-6-luna/max",
+      "sha256": "45e144d2155e71f2b058fd85fa1ba86b93d3f235359942abdddfd703e2641c36",
+      "summary": "Distinct from fixed-spin affinity,overlap-dependent DMA contention,task-assignment imbalance and SYCL submission surveys."
+    },
+    "later_gates": [
+      "Attribute spin/sleep time and wake-to-job by phase; parked != sleeping.",
+      "Matched same-native requests, keeping prefill baseline and decode candidate separate.",
+      "Report CPU/energy/thermal signals separately from critical-path latency; unavailable metrics remain unknown."
+    ],
+    "limits": "Ticks include polling/control/runtime or other work, not idle-spin attribution; no state-duration data. Clean speed and saturation unqualified. Requested H2D and reported PCIe bytes are zero.",
+    "counterevidence": [
+      "The CPU bound may be useful work or runtime polling, not spin.",
+      "No H2D contention, thermal impact, speedup, saturation, or model gain is established."
+    ],
+    "consumer": "One bounded policy/discriminator decision;no implementation or speed claim. Preserve independent phase paths;no environment mutation after runtime startup.",
+    "review_point": "At report delivery and before selecting any policy implementation;check original Orca ownership separately."
   }
 }
