@@ -65,6 +65,16 @@ std::array<uint64_t,2> route_counts() { return {specialized_routes,generic_route
     numerical=(project/'tests/sycl/qsa_bf16_prefix.cpp').read_text()
     numerical=replace_once(numerical,'constexpr int Heads=24,KV=2,Dim=256,Page=16;',
         'constexpr int Heads=24,KV=2,Dim=256; const int Page=qsa_page_fixture_page;')
+    numerical=replace_once(numerical,
+        '        const size_t row=(size_t(table[0])*KV+head)*Page+invalid_cell;\n        scales[row*4]=0x7c00;',
+        '''        const int logical=invalid_cell/Page;
+        require(logical>=0 && size_t(logical)<table.size(),"diagnostic logical page bounds");
+        const int physical=table[size_t(logical)];
+        require(physical>=0 && physical<pages,"diagnostic physical page bounds");
+        const size_t row=(size_t(physical)*KV+head)*Page+invalid_cell%Page;
+        require(row<size_t(rows),"diagnostic row bounds");
+        require(scales.size()>=4 && row<scales.size()/4,"diagnostic scale element bounds");
+        scales[row*4]=0x7c00;''')
     numerical=replace_once(numerical,'    if (cap>5) ids[b*cap+5]=-1;', '''    if (cap>5) ids[b*cap+5]=-1;
     if (cap>11) {
       ids[b*cap+2]=std::numeric_limits<int32_t>::min();
@@ -110,6 +120,10 @@ long long timer_floor_ns=0;'''+timing[end:]
     }
     require(timer_floor_ns<std::numeric_limits<long long>::max(),"clock calibration");
     std::cout<<"timer_floor_ns="<<timer_floor_ns<<'\\n';'''),
+        ('    rt->wait();rt.reset();gate(gated,"after-cleanup");',
+         '''    const auto routes=strata::kernels::page4::route_counts();
+    std::cout<<"page4_timing_routes fast="<<routes[0]<<" generic="<<routes[1]<<'\\n';
+    rt->wait();rt.reset();gate(gated,"after-cleanup");'''),
         ('else { run(78453,8192,33,false);run(78453,8192,2051,false);run(78453,8192,2051,true); }',
          'else { run(32768,8192,2051,false);run(117488,8192,2051,false);run(117488,8192,2051,true); }')]
     for before,after in edits:timing=replace_once(timing,before,after)

@@ -1,10 +1,11 @@
 #!/usr/bin/env python3
-"""Build an isolated current-QSA loop-hint discriminator; no engine rebuild."""
+"""Build an isolated current-QSA Page4 discriminator; no engine rebuild."""
 import ast
 import fcntl
 import hashlib
 import json
 from pathlib import Path
+import re
 import subprocess
 import sys
 import time
@@ -17,7 +18,7 @@ import measurement_guards as guards
 import measurement_owner as supervision
 
 P,B=gen.P,gen.B
-ROOT=B/'qsa-page4-address-v1'
+ROOT=B/'qsa-page4-address-v2'
 RESULT=gen.A/'qsa-page4-current.json'
 FIXTURE='bench/sycl/qsa_page4_numerical.cpp'
 
@@ -59,7 +60,7 @@ def experiment():
         mechanism='Current source/LLVM has2signed+2unsignedi64 divisions across pack/attention modules. Hardwarecountercollection is refused;divisioncriticality/finalISA remain unknown. Test constant page division/remainder strength reduction,not a claim of ALU/VRAM/PCIe saturation. Requested bytes,logical mappings and selected-cell order are unchanged.',
         arms='Original production ordered-exp; unchanged isolated namespacecontrol; Page4clone replacing only shape.page_size occurrences with int64_t{4},guardedby calleractualpage4 andotherwiseoriginalgenericfallback. All index/count/pointer arithmetic stays64bit/checked,no32bit narrowing,no matrix/unroll/precision/state/queue/SLM/GRF changes. Reversible overlay restores every original body byte. Component-only one-thread host route counters add candidate launch overhead and are included in wrapper timing.',
         provenance='Main-authored MIT source/fixture/controller from own b072267fa discriminator and ae125c373d7f06a831e64b4e545011b828f63e0e77276ce0b80f587b18400bf3 reviewedsourceaudit;no external implementation copied andnoXeStrata code. Native6e40engine+12fixtures,decodecode/config/1256slots untouched;noenginebuild/adoption.',
-        qualification='Compile2executables+deviceIRfirst. Require2kernels/module,controlintegerdivisionspresent,candidatezeroi64divisions;this is frontendnot finalISA. Smoke3arms*Page4andnonpower7*2cases;full3arms*pages1,4,7,16*11cases inclactualphysical262144lastslot/tail,INT_MIN/MAX,out-of-range/negative/duplicate/pageboundary IDs,missing/malformedpage andexistingrefusals. Independent tensororacle/exactbits/guards/immutability/ownedclosure/validatedfirstUR/noFault. CandidatePage4mustexecute specializedroute;otherpagesmustonlyusegenericfallback. Normalzeroqueryfallbackremains. Componentaddressingdoesnotqualifymodelfullcontext/session/RESTORE.',
+        qualification='Freshv2 fixeshostpoisonmapping via table[cell/Page] andcell%Page withprewritebounds;v1originalfailuresremaininGit. Compile2executables+deviceIRfirst. Require2kernels/module,control3variablei64divisors,candidate0variablei64divisors,bothretainonlysdivconstant2;frontendnotfinalISA. Smoke3arms*Page4andnonpower7*2cases;full3arms*pages1,4,7,16*11exactorderedcaseidentities inclactualphysical262144lastslot/tail,INT_MIN/MAX/out-of-range/negative/duplicate/pageboundary IDs,missing/malformedpage andexistingrefusals. Independenttensororacle/exactbits/guards/immutability/ownedclosure/validatedfirstUR/noFault. Parse actualfast/genericcounts,comparedoutputextent,activepackedrows andactualfullphysicalcase. Normalzeroqueryfallbackremains. Componentaddressingdoesnotqualifymodelfullcontext/session/RESTORE.',
         performance='After smoke/component/resources:Page4inall3arms.3independentcleanprocesses,6rotatedrounds,3arms,3artificialpatterns(32768/8192/2051gather;117488/8192/2051gatherandclustered),162samplesonce. Everyinvocationverifiescandidatefastincrement1/generic0 andcontrolsrouteunchanged outside timer;hostcounterincrementisinside candidatecall. Eachbatch>=100us and>=1000*positive128-pairclockfloor. AdvanceonlyifPage4/defaultandPage4/control latencygeomeans<=.95,no shape>1.05,andboth117488patternsbeatbothcontrolsineveryprocess. Failedgateforbidsmodeltrial;noafter-the-factrulechange.',
         limits='Wholewrapperincludesadmission,pack andcheckeddrain. Page4matchesproductiongranule,butartificiallocalityisnotproductiondistribution. Typedmathunchanged;finalISA,addresscriticalpath,physicaltraffic,saturation andcleanmodelgainunknown. Passingcomponentneedsnewlong-input/agent/thinkingfriendlyandweakgenerationplan preservingdecodehandoff/repeatedspeed beforeadoption.',
         retention='One known-goodnativegeneration remains. Auxiliarytwo-executablegeneration onlyforimmediatecomparison. Keepcompactprovenance,all162samples,correctness/fault/IR/resource decisions;retire consumedlogs,IR,generatedcopies,objects,binariesandunusedhelpersafterclosure. Carryolderprovenance/lifecycleholdsexplicitly.')
@@ -84,8 +85,23 @@ def admission(record,binary=False):
             guards.require(digest(artifact['path'])==artifact['sha256'],'Page4-address fixture bytes changed')
 
 
+def division_evidence(path):
+    text=Path(path).read_text();rows=[]
+    for line in text.splitlines():
+        match=re.match(r'\s*%\S+ = (sdiv|udiv) i64 ([^,]+), ([^,\s]+)',line)
+        if match:
+            op,lhs,rhs=match.groups()
+            rows.append(dict(operation=op,dividend=lhs,divisor=rhs,variable=rhs.startswith('%')))
+    return dict(kernels=sum(line.startswith('define ') and 'spir_kernel' in line for line in text.splitlines()),
+        rows=rows,variable_divisors=sum(row['variable'] for row in rows),
+        constants=[[row['operation'],row['divisor']] for row in rows if not row['variable']])
+
+
 def prepare():
-    guards.require(not RESULT.exists() and not ROOT.exists(),'fresh single-use Page4-address build only;inspect existing owner')
+    prior=gen.committed(RESULT)
+    guards.require(not ROOT.exists() and prior['stage']=='failed' and not prior['active']
+        and prior['ownership_closed'] and prior.get('retirement',{}).get('complete') is True,
+        'fresh v2 requires committed closed/retired v1; inspect existing owner')
     revision=gen.git('rev-parse','HEAD').decode().strip();pins=inputs(revision)
     full,proof,_=resource.qualification()
     prof=gen.committed(gen.A/'cpu-profiler-current.json')
@@ -122,6 +138,10 @@ def prepare():
             str(ROOT/(name+'.cpp')),'-o',str(ROOT/(name+'.ll'))])
     legacy=json.loads((gen.A/'native-gdn-engine-build.json').read_text())['legacy_provenance_exception']['additional_old_product_review']
     record=dict(stage='prepared',source_commit=revision,input_sha256=pins,plan=experiment(),
+        previous_closed_cohort=dict(result_commit=revision,source_commit=prior['source_commit'],
+            build_outcome=prior['error'],component_outcome=prior['checks'][1]['error'],
+            fixture_failure_analysis=prior['fixture_failure_analysis'],retirement=prior['retirement'],
+            smoke_processes_passed=6,full_component_passed=False,model_adoption_qualified=False),
         retained_engine=full['binary'],native_qualification=proof,generated=generated,compiler=compiler,
         compiler_inputs=dict(path=str(manifest),files=len(paths),sha256=digest(manifest)),commands=commands,
         build_environment=dict(PATH=str(install/'bin')+':/usr/bin:/bin',LANG='C',LC_ALL='C',TMPDIR=str(ROOT/'tmp'),
@@ -144,7 +164,7 @@ def build():
         record['active']=bool(owner and owner.active is not None)
         write(ROOT/'build-record.json',dict(record,owned_commands=owner.commands if owner else []))
     owner=supervision.Owner(ROOT/'build-owned',persist);deadline=time.monotonic()+record['budgets']['total_wall_s']
-    record['stage']='building';persist()
+    record.update(stage='building',ownership_closed=False);persist()
     try:
         b=record['budgets']
         for index,command in enumerate(record['commands']):
@@ -160,10 +180,9 @@ def build():
         record['device_IR']={name:dict(path=str(ROOT/(name+'.ll')),sha256=digest(ROOT/(name+'.ll')),
             bytes=(ROOT/(name+'.ll')).stat().st_size) for name in ('control','page4')}
         for name,item in record['device_IR'].items():
-            text=Path(item['path']).read_text()
-            item['kernels']=sum(line.startswith('define ') and 'spir_kernel' in line for line in text.splitlines())
-            item['i64_divisions']=text.count('sdiv i64')+text.count('udiv i64')
-            guards.require(item['kernels']==2 and (item['i64_divisions']==0 if name=='page4' else item['i64_divisions']==4),
+            item['division_analysis']=division_evidence(item['path']);proof=item['division_analysis']
+            guards.require(proof['kernels']==2 and proof['variable_divisors']==(0 if name=='page4' else 3)
+                and proof['constants']==[['sdiv','2']],
                 'planned constant-divisor frontend transformation not established')
 
     except BaseException as error:record.update(stage='failed',passed=False,complete=False,error=repr(error))

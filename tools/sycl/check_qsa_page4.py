@@ -15,7 +15,6 @@ import sys
 
 sys.dont_write_bytecode=True
 import build_qsa_page4 as build
-import qualify_qsa_page4 as codegen
 import measurement_guards as guards
 import measurement_owner as supervision
 import query_profile as qualified
@@ -71,19 +70,11 @@ def admission(record,plan):
         assets=aggregate.profile_assets(build.gen.committed(aggregate.RESULT))
         guards.require(plan['collector_assets']=={k:assets[k] for k in ('collector','launcher','preload')},
             'qualified collector/launcher/preload changed')
-    # The original broad zero-division gate remains failed. Reuse only the
-    # independently qualified exact compiled bytes and semantic IR proof.
-    item=record[codegen.KEY]
-    original=build.gen.git('show',item['source_commit']+':tools/sycl/qualify_qsa_page4.py')
-    guards.require(original==Path(codegen.__file__).read_bytes() and
-        hashlib.sha256(original).hexdigest()==item['controller_sha256'],
-        'original closed-data qualifier changed')
-    # JSON encodes tuple pairs as arrays. Compare the saved semantic proof
-    # without changing its source hashes, criteria or original failed gate.
-    normalized=json.loads(json.dumps(codegen.proof(record)))
-    guards.require(item['passed'] and item['complete'] and item['original_failure_preserved']
-        and normalized==item['IR_analysis'],'frozen Page4 semantic IR proof changed')
-    guards.require(record['ownership_closed'] and not record['active'],'closed compiled artifacts required')
+    guards.require(record['stage']=='built' and record['passed'] and record['complete']
+        and record['ownership_closed'] and not record['active'],'successful closed fresh v2 build required')
+    for name,item in record['device_IR'].items():
+        guards.require(build.digest(item['path'])==item['sha256']
+            and build.division_evidence(item['path'])==item['division_analysis'],'compiled semantic IR proof changed')
 
 
 def prepare(mode):
@@ -163,7 +154,43 @@ def timing_evidence(text,process,small):
     guards.require(seen==expected and sum(x.startswith('case cells=') and
         'samples=18 full_bits=PASS guards=PASS inputs=PASS status=PASS' in x for x in lines)==len(shapes)
         and sum(x.startswith('fixture_status=PASS ') for x in lines)==1,'incomplete timing fixture')
+    routes=[dict(token.split('=',1) for token in line.split()[1:])
+        for line in lines if line.startswith('page4_timing_routes ')]
+    guards.require(len(routes)==1 and int(routes[0]['fast'])==7*len(shapes)
+        and int(routes[0]['generic'])==0,'timing route total differs from actual timed/warm invocations')
     return dict(clock_floor_ns=floors[0],samples=samples)
+
+
+def numerical_evidence(lines,arm,small):
+    variant,page_text=arm.split('@');page=int(page_text)
+    expected=[(97,33,1,0,49),(97,33,3,1,71)]
+    if not small:
+        expected += [(2113,width,3,1,2113) for width in (1,17,31,32,63,65,2051)]
+        expected += [(262144,2051,1,0,262144),(262144,33,1,0,13)]
+    cases=[dict(token.split('=',1) for token in line.split()[1:])
+        for line in lines if line.startswith('case cells=')]
+    exact=[dict(token.split('=',1) for token in line.split()[1:])
+        for line in lines if line.startswith('case exact_prefix33_bits=')]
+    keys=('cells','cap','queries','masked','live_cells')
+    guards.require([tuple(int(row[k]) for k in keys) for row in cases]==expected
+        and len(exact)==len(expected),'missing/duplicate/reordered numerical case identity')
+    for row,bits,shape in zip(cases,exact,expected):
+        guards.require(int(row['page_size'])==page and int(row['compared'])==shape[2]*24*256
+            and int(row['active_rows'])==((shape[4]+page-1)//page)*2*page
+            and all(row[k]=='PASS' for k in ('packed_logical_prefix','packed_guards','guards','inputs','status'))
+            and bits['exact_prefix33_bits']=='PASS'
+            and tuple(int(bits[k]) for k in ('cells','cap','queries'))==shape[:3],
+            'numerical output extent, packed rows, guards or exact-bit identity mismatch')
+    guards.require('fixture_status=PASS model_quality=UNRUN model_PP=UNRUN physical262144_model=UNRUN faults=EXTERNAL_REQUIRED' in lines
+        and 'page4_control variant='+variant+' arithmetic=unchanged' in lines,'missing fixture/control footer')
+    routes=[dict(token.split('=',1) for token in line.split()[1:]) for line in lines if line.startswith('page4_routes ')]
+    guards.require(len(routes)==1 and routes[0]['status']=='PASS' and int(routes[0]['page'])==page,
+        'missing actual numerical route proof')
+    fast,generic=int(routes[0]['fast']),int(routes[0]['generic'])
+    guards.require((fast>0 and generic>0 if page==4 else fast==0 and generic>0) if variant=='page4'
+        else fast==generic==0,'actual numeric route counts do not match selected arm')
+    return dict(case_count=len(cases),case_identities=expected,exact_prefix33_bits=True,page_size=page,
+        physical262144_component_addressed=any(s[0]==s[4]==262144 for s in expected),route=routes[0])
 
 
 def resource_evidence(text):
@@ -268,20 +295,9 @@ def run(mode):
                     guards.require(not list((root/job['arm']/'trace').rglob('*.json')),'unexpected timeline')
                     item['resources']=resource_evidence(stderr)
                 result['observations'].append(item);persist();continue
-            count=2 if mode=='smoke' else 11
-            cases=[x for x in lines if x.startswith('case cells=')]
-            guards.require(len(cases)==count and all('status=PASS' in x for x in cases) and
-                sum(x.startswith('case exact_prefix33_bits=PASS') for x in lines)==count and
-                'fixture_status=PASS model_quality=UNRUN model_PP=UNRUN physical262144_model=UNRUN faults=EXTERNAL_REQUIRED' in lines
-                and 'page4_control variant='+job['arm'].split('@')[0]+' arithmetic=unchanged' in lines
-                and all(' page_size='+job['arm'].split('@')[1]+' ' in line for line in cases),'incomplete fixture cases')
-            routes=[dict(token.split('=',1) for token in line.split()[1:]) for line in lines if line.startswith('page4_routes ')]
-            guards.require(len(routes)==1 and routes[0]['status']=='PASS' and routes[0]['page']==job['arm'].split('@')[1],
-                'missing actual numerical route proof')
+            evidence=numerical_evidence(lines,job['arm'],mode=='smoke')
             result['observations'].append(dict(arm=job['arm'],pid=entry['pid'],exit_code=entry['exit_code'],
-                ownership_closed=True,validation=proof,case_count=count,cases=cases,
-                exact_prefix33_bits=True,physical262144_component_addressed=mode=='component',
-                page_size=int(job['arm'].split('@')[1]),route=routes[0],
+                ownership_closed=True,validation=proof,**evidence,
                 stdout_sha256=build.digest(out),stderr_sha256=build.digest(err)))
             persist()
         if mode=='perf':result['performance']=performance(result['observations'])

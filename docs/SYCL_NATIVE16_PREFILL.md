@@ -345,8 +345,22 @@ failure. Separately committed closed-IR reanalysis verifies this exact
 distinction, both kernels, all13 normally closed compiler commands and unchanged
 source/recipe/dependency/binary inputs. It qualifies those compiled bytes for
 the next small test; it does not relabel the original gate or establish final
-ISA cost. Preserve
-numerical order and the exact selected decode
+ISA cost. All six traced small Page4/Page7 processes passed. The full cohort
+then failed normally in its first original-baseline Page1 process: the host
+poison diagnostic assumed cells0/1 shared a page, and could write one row past
+the scale vector atPage1. No fresh GPU fault occurred; the candidate did not
+run in that cohort. Preserve this failure separately from the earlier IR gate
+and JSON tuple/list admission failure.
+
+The fresh v2 fixture resolves the poisoned cell through its actual logical
+page and offset, checking table, physical-page, row and scale-element bounds
+before writing. It leaves the canonical selected native fixture unchanged.
+The new build prospectively requires three variable i64 divisors in control,
+zero in Page4 and the same signed constant2 division in both. The controller
+also verifies all ordered case identities, output/packed extents and numeric
+route counts, rather than inferring full coverage from a case count.
+Repeat small, full-boundary and resource checks before any clean timing; v1
+passes do not qualify the changed fixture. Preserve numerical order and the exact selected decode
 implementation/configuration/1256-slot placement. The instruction-fetch methods
 report remains a retrieval-only reference, without a new generic research task.
 
