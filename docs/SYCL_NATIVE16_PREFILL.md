@@ -263,9 +263,34 @@ After recovering81 consumer/helper inputs plus9853 original native inputs,Main
 retired the auxiliary build and normal output:138files/101831039B. The closed
 fixture,controller,test and full plan are recoverable at`3fd3ada48`;no imminent
 head candidate needs them in the active tree. The qualified6e40 engine and all12
-fixtures remain unchanged. The next bounded source question is whether Zen3
-IQ2_S table gathers lower more efficiently than current scalar loads;prior IQ3
-gather prototypes are counterevidence,not proof of a gain for this workload.
+fixtures remain unchanged.
+
+The next CPU-only IQ2_S GU discriminator is also closed and rejected. The first
+full-unroll gather build generated34 vector stack accesses versus0 for the
+reference;its prospective lowering screen failed before fixture execution.
+A fresh constrained-unroll source at`c7d7ff3cf` eliminated those accesses and
+passed numerical/row/bounds checks for168 real experts from each of two layers.
+All eight complete output captures agree. Six independent timing processes in
+reference/candidate/candidate/reference/reference/candidate order produced120
+samples of at least one second,including six-expert reuse and168-expert streaming.
+Candidate/reference latency geometric means are1.423942 for22/20 and1.530215
+for22/42;every pair/access ratio is slower (1.326..1.622). Both independent
+performance gates fail. The candidate combines gather and constrained unrolling,
+so this does not attribute the slowdown to gather alone or establish hardware
+saturation. No production-pool or model trial is permitted by this result.
+See the [individual samples and exact archived protocol](../bench/results/2026-10-15-pr6-recovery-audit/cpu-iq2-gather-current.json).
+
+After source recovery,the two auxiliary builds,normal output and closed captures
+were retired:81files/11282866B and107files/18234266B. The rejected fixture,
+controller,test and full plan are recoverable at`f5eaccdd5`. All120 individual
+samples remain there;the active decision keeps24 process/cell medians and spread.
+Prefill,decode,1256-slot placement and the qualified engine+12fixtures remain
+unchanged. Native Luna/max found no distinct fresh CPU research scope:exact
+compact lookup/mask/bitplane representations are covered by existing references,
+although no particular16-bit table layout has been measured. Retrieve the
+existing reference for a concrete implementation question. Per-worker pair-row
+counts are fairly even;the broader scheduling scope stays conditional on
+critical-path/imbalance evidence. No duplicate research task was dispatched.
 
 ## Tensor storage and precision
 
