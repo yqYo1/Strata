@@ -29,6 +29,11 @@ ROOT = B/'mtp-model-attribution-v1'
 RESULT = A/'mtp-model-observer-current.json'
 MODES = ('0','host','graph')
 WORKLOADS = ('varied-prose',)
+GRAPH_ORIGIN = '1ccdfd6d4'
+GRAPH_ORIGIN_SHA256 = 'b63a49b6cfac9df92d5064f47c5ceafe944ce7e0cfbe080361051baab8c1a2a2'
+GRAPH_BUILD_SHA256 = '6ac902826311b0c8c7f334f480dd787114968713d5f33d5f9917eaf63a1736a6'
+GRAPH_REUSE_SOURCES = ('05223b55965c98fc82be660dbde3a5215027b5d9',
+                       '6e40afc1beddd059ee518617f6c1efce1da14aca')
 
 
 def write(path, value): path.write_text(json.dumps(value,indent=2)+'\n')
@@ -107,15 +112,55 @@ def plan():
         retention='Retain three individual request/observer summaries and source/config/fault/decision evidence. Keep raw tuples only through the attribution decision; retire normal logs/JIT/transaction files after verified closure.')
 
 
+def graph_support_evidence(full, support):
+    """Reuse the exact tested fixture across the reviewed CPU-phase-only change.
+
+    The engine is still admitted separately by current_build. This establishes
+    tiny graph-support continuity, never model profiling or observer overhead.
+    Other native revisions require their own support qualification.
+    """
+    guards.require(support['passed'] and support['complete'] and support['ownership_closed'] and
+        not support['active'] and support['boot_unchanged'] and support['fresh_faults'] == [] and
+        support['fixture'] == full['fixtures']['sycl_graph_envelope_test'] and
+        [(c['profile'],c['passed'],c['exit_code']) for c in support['checks']] ==
+            [(0,True,0),(1,True,0)], 'matching passed off/on graph fixture required')
+    if support['source_commit'] == full['source_commit']:
+        guards.require(support['build_record_sha256'] == gen.common.digest(q.BUILD_RECORD),
+            'same-source graph support build receipt differs')
+        return dict(kind='same-build', native_source=full['source_commit'])
+    guards.require((support['source_commit'],full['source_commit']) == GRAPH_REUSE_SOURCES,
+        'graph support reuse is limited to the reviewed CPU-phase source pair')
+    path=str((A/'mtp-graph-observer-current.json').relative_to(P))
+    raw=gen.git('show',GRAPH_ORIGIN+':'+path)
+    build_raw=gen.git('show',GRAPH_ORIGIN+':'+str(q.BUILD.relative_to(P)))
+    guards.require(hashlib.sha256(raw).hexdigest()==GRAPH_ORIGIN_SHA256 and
+        hashlib.sha256(build_raw).hexdigest()==GRAPH_BUILD_SHA256 and json.loads(raw)==support,
+        'original graph qualification/archive changed')
+    old=json.loads(build_raw)
+    guards.require(old['source_commit']==support['source_commit'] and
+        old['fixtures']['sycl_graph_envelope_test']==support['fixture'] and
+        all(old[k]==full[k] for k in ('compiler','configure_argv','recipe_reference','fixture_external_headers')) and
+        old['inputs'][1:]==[{k:s[k] for k in ('root','revision','count','aggregate_sha256')}
+                            for s in full['dependencies']], 'graph compiler/recipe/dependencies changed')
+    # The only native deltas in this exact pair implement CPU GU phase selection
+    # and its host fixture. These graph/MTP/device implementation inputs are exact.
+    guards.require(not gen.git('diff','--name-only',*GRAPH_REUSE_SOURCES,'--',
+        'src/core/mtp.cpp','include/strata/core/mtp.hpp','src/sycl','include/strata/sycl',
+        'src/kernels/sycl','include/strata/kernels/sycl','tests/sycl/graph_envelope.cpp'),
+        'MTP/graph implementation changed across support reuse')
+    return dict(kind='identical-fixture-reviewed-native-pair', original_commit=GRAPH_ORIGIN,
+        original_native_source=support['source_commit'], native_source=full['source_commit'],
+        fixture_sha256=support['fixture']['sha256'], graph_implementation_unchanged=True,
+        new_GPU_validation=False, model_profile_qualified=False)
+
+
 def qualification():
     full,count = q.current_build()
     support = gen.committed(A/'mtp-graph-observer-current.json')
-    guards.require(support['passed'] and support['complete'] and support['ownership_closed'] and
-        support['fresh_faults'] == [] and support['source_commit'] == full['source_commit'] and
-        support['fixture'] == full['fixtures']['sycl_graph_envelope_test'] and
-        support['build_record_sha256'] == gen.common.digest(q.BUILD_RECORD),'matching graph support required')
+    graph_proof=graph_support_evidence(full,support)
     return full,dict(original_inputs_recovered=count,build_sha256=gen.common.digest(q.BUILD_RECORD),
-        component_sha256=gen.common.digest(q.COMPONENT),graph_support_sha256=gen.common.digest(A/'mtp-graph-observer-current.json'))
+        component_sha256=gen.common.digest(q.COMPONENT),graph_support_sha256=gen.common.digest(A/'mtp-graph-observer-current.json'),
+        graph_support_reuse=graph_proof)
 
 
 def environment(setup, root, mode):
