@@ -516,7 +516,7 @@
   "boot_unchanged": true,
   "metric_enumeration_succeeded": true,
   "event_query_setup": {
-    "stage": "built",
+    "stage": "closed",
     "source_commit": "9b4f065fb6317fa54e2a32ca037f9f7d94977431",
     "inputs": {
       "bench/sycl/metric_inventory.cpp": "0af141d3857863035703f0dad6653c392d7a1953028c8290fe7d7bb41e2d6317",
@@ -619,6 +619,48 @@
       "kernel": "7.0.0-38-generic",
       "devcoredump": false
     },
-    "boot_unchanged": true
+    "boot_unchanged": true,
+    "setup_ready": false,
+    "summary": {
+      "kind": "summary",
+      "status": "api_error",
+      "last_api": "zetMetricQueryPoolCreate",
+      "result": 2013265924,
+      "objects_closed": true,
+      "GPU_commands": 0,
+      "collection_qualified": false
+    },
+    "API_calls": 37,
+    "API_failures": [
+      {
+        "kind": "return",
+        "api": "zetMetricQueryPoolCreate",
+        "result": 2013265924
+      }
+    ],
+    "native_exit_code": 3,
+    "stdout_sha256": "188baadac20a347a4d41c0832cf41b64247d93469310e9421fc2bbbbf3ff4617",
+    "stderr_sha256": "be9196edd173b593d001d64ac011b24c8e3ea9da553c6f6c223c1884b9394f3d",
+    "normal_object_closure": true,
+    "mapped_ELFs": [
+      "/usr/lib/x86_64-linux-gnu/ld-linux-x86-64.so.2",
+      "/usr/lib/x86_64-linux-gnu/libc.so.6",
+      "/usr/lib/x86_64-linux-gnu/libdrm.so.2.134.0",
+      "/usr/lib/x86_64-linux-gnu/libgcc_s.so.1",
+      "/usr/lib/x86_64-linux-gnu/libigdgmm.so.12.10.0",
+      "/usr/lib/x86_64-linux-gnu/libigdmd.so.1.16.188",
+      "/usr/lib/x86_64-linux-gnu/libigdml.so.1.0.231",
+      "/usr/lib/x86_64-linux-gnu/libm.so.6",
+      "/usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.33",
+      "/usr/lib/x86_64-linux-gnu/libz.so.1.3",
+      "/usr/lib/x86_64-linux-gnu/libze_intel_gpu.so.1.17.39395",
+      "/usr/lib/x86_64-linux-gnu/libze_loader.so.1.32.0",
+      "/usr/lib/x86_64-linux-gnu/libze_tracing_layer.so.1.32.0",
+      "/usr/lib/x86_64-linux-gnu/libze_validation_layer.so.1.32.0",
+      "/usr/lib/x86_64-linux-gnu/libzstd.so.1.5.5",
+      "/usr/local/lib/libigc.so.2.41.5+1788943183",
+      "/usr/local/lib/libigdfcl.so.2.41.5+1788943183",
+      "/usr/local/lib/libopencl-clang2.so.22.1"
+    ]
   }
 }
