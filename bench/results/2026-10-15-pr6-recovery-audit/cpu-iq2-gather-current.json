@@ -1,59 +1,10 @@
 {
-  "stage": "build",
-  "source_commit": "d3e700197ad93747326a065eccb213fa5a5775b9",
-  "plan_sha256": "429fec610cb44a4ee243faaa38a32de54cda8dfd1c990dc70f5fb32fb9aa12f5",
+  "stage": "prepared",
+  "source_commit": "c7d7ff3cf9e23ba83714fe9343114f5ad6477065",
+  "plan_sha256": "b5c3ca88fdab75be51f9b4abf27365f47b85db3a616bc750032190ce62b20cdf",
   "passed": false,
   "complete": false,
   "active": false,
   "ownership_closed": true,
-  "GPU_executed": false,
-  "checks": [],
-  "binary": {
-    "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-iq2-gather-v1/build/cpu_iq2_gather",
-    "sha256": "e003c40e1ba0b7b133617c769ec4c54cf858a0b9e94c7f64612603663b1a2ab8",
-    "bytes": 2526456
-  },
-  "compile_commands_sha256": "bebf71d35bdf66a544c12c09dabeaf507cb3719fcc6caac06a28387e8c57410b",
-  "lowering": {
-    "pair_dot": {
-      "start": 4508336,
-      "bytes": 3220,
-      "gathers": 0,
-      "calls": 0,
-      "vector_stack_accesses": 0
-    },
-    "gather_pair_dot": {
-      "start": 4245040,
-      "bytes": 2322,
-      "gathers": 16,
-      "calls": 0,
-      "vector_stack_accesses": 34
-    }
-  },
-  "error": "prospective lowering screen failed",
-  "diagnostic": {
-    "configuration_compilation_linkage_passed": true,
-    "fixture_executed": false,
-    "GPU_executed": false,
-    "original_error_unchanged": true,
-    "mechanism": "Full-unroll gather candidate hoists grid loads and spills vector temporaries:34 vector stack operand instructions versus0 in unchanged pair_dot.16 VPGATHERDQ instructions and zero calls are present. Static lowering screen fails before numerical/timing execution.",
-    "decision": "Reject this lowering under the original plan. Try constrained unrolling only under a new committed source/plan;do not weaken or rewrite the original gate.",
-    "retained_engine_decode_configuration_and1256_slots_unchanged": true
-  },
-  "artifact_retirement": {
-    "complete": true,
-    "manifest": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-iq2-gather-v1-lowering-retirement-20261022.jsonl",
-    "manifest_sha256": "5e5d89f0d4fef4a35cee47fe84fb021d56e828edf222e026bf898aa399b40c06",
-    "files": 81,
-    "bytes": 11282866,
-    "original_recipes_recovered": true,
-    "source_inputs": 110,
-    "ggml_inputs": 1376,
-    "original_native_inputs_recovered": 9853,
-    "archive": "b833fc6f2abe8416959a469aa5788cfdd6657533",
-    "owned_commands_closed": 6,
-    "root_absent": true,
-    "original_failed_outcome_unchanged": true,
-    "retained_engine_and12fixtures_unchanged": true
-  }
+  "GPU_executed": false
 }
