@@ -9200,10 +9200,10 @@
     "sha256": "05072ec3b4a047d4fedce19299b9b86bfca10fe215b18cd7b81baf79ab361724",
     "review": {
       "path": ".cache/strata-research/20261023/current-attribution-review.json",
-      "sha256": "b076ad37689b1a8b6553d5810520c26aeb7b386e138af9e7f17fc4eaa158d29c",
+      "sha256": "29e3afa1b0c86f8a861bd6632f4584fec52eacf9fb282a32eafed9463dc0e87a",
       "disposition": "accept_with_source_correction_and_provisional_lifecycle",
       "corrections": [
-        "Source correction: pinned PTI 4b6d742 v1 pti_view_record_kernel already includes _sycl_node_id, _sycl_queue_id and _sycl_invocation_id; v2 adds device_handle and engine_ordinal/index. Replace the report’s “v2 adds SYCL node, queue and invocation IDs” sentence. Actual backend emission still needs qualification.",
+        "Source correction: pinned PTI 4b6d742 pti_view_record_kernel v1 already includes _sycl_node_id, _sycl_queue_id and _sycl_invocation_id; v2 extends it with _device_handle, _engine_ordinal and _engine_index. Replace the report’s “v2 adds SYCL node, queue and invocation IDs” sentence. Actual backend emission still needs qualification.",
         "Checked Intel LLVM’s pinned design statement that naming is not fully stable, Khronos’s explicit non-unique/non-stable kernel_id name guarantee, Level Zero zeKernelGetName, and PTI external correlation APIs; they support the central method claims.",
         "Do not convert the suggested identity schema into evidence that the installed local collector emits every field. Report accurately notes PTI documentation is draft and local exact revision was not pinned."
       ],
@@ -9260,12 +9260,13 @@
     "sha256": "ad64dc864bc4dbd52da1cc636e023d85aa515ea78168feed70f80e6ee97b1c73",
     "review": {
       "path": ".cache/strata-research/20261023/current-attribution-review.json",
-      "sha256": "b076ad37689b1a8b6553d5810520c26aeb7b386e138af9e7f17fc4eaa158d29c",
+      "sha256": "29e3afa1b0c86f8a861bd6632f4584fec52eacf9fb282a32eafed9463dc0e87a",
       "disposition": "accept_with_one_arithmetic_correction",
       "corrections": [
         "Arithmetic typo: 8,192*48 + 445*12 is 398,556, not 400,524; this equals 33,213*12 layers. Other shape-derived width/tile/FLOP/requested-byte values were independently recomputed and match the report after rounding.",
         "Pinned source confirms width=min(n_kv, top_k+block-1), real shape (24 heads,2 KV heads,dim256,block4,top-k2048), kernel constants (Dim256,Heads12,Cells32,Workgroup128), FP32 matrix accumulator and cached-query local payload 20,036 bytes.",
-        "60 events / 6.909s =115.1ms per event; 1.622TB/6.909s and 26.327TFLOP/6.909s are diagnostic requested-byte/source-work ratios, not measured traffic or achieved hardware ceilings, as stated."
+        "60 events / 6.909s =115.1ms per event; 1.622TB/6.909s and 26.327TFLOP/6.909s are diagnostic requested-byte/source-work ratios, not measured traffic or achieved hardware ceilings, as stated.",
+        "Clarify that table tile/slot totals count the per-query selected-cell sequence once (per one KV-head group); source launches separate groups for both KV heads, which the issued-FLOP formula factors explicitly."
       ],
       "retrieval_sections": [
         "Call path, widths, and work",
@@ -9318,7 +9319,7 @@
     "sha256": "d381a23cfb6e302449e1d1e47eef1366610af45d0cfd1079fcc8b94cef27884c",
     "review": {
       "path": ".cache/strata-research/20261023/current-attribution-review.json",
-      "sha256": "b076ad37689b1a8b6553d5810520c26aeb7b386e138af9e7f17fc4eaa158d29c",
+      "sha256": "29e3afa1b0c86f8a861bd6632f4584fec52eacf9fb282a32eafed9463dc0e87a",
       "disposition": "accept_with_rounding_note",
       "corrections": [
         "Pinned PTI source maps ZE_MEMORY_TYPE_UNKNOWN/HOST/DEVICE/SHARED to M/H/D/S, queries both pointer classes, and preserves AppendMemoryCopy psize. PTI header defines MEMORY as unknown or user-allocated host memory; README says M is malloc/new and H is zeMemAllocHost.",
@@ -9335,7 +9336,7 @@
   "b570_qsa_resource_counter_capability_methods_20261023": {
     "id": "b570_qsa_resource_counter_capability_methods_20261023",
     "classification": "knowledge collection",
-    "schedulable_now": true,
+    "schedulable_now": false,
     "report_budget_bytes": 12288,
     "question": "Use primary versioned Intel sources to map which Level Zero Metrics Discovery/streamer/query and supported profiling-tool counters on Arc B570/Xe2 BMG could distinguish the selected QSA kernel’s actual memory/cache behavior, BF16 matrix activity, occupancy/register use and synchronization/issue stalls. Record device/driver/runtime/tool support, metric units/scope, permissions, sampling/replay limits and counters genuinely exposed on this SKU; separate documentation support from local availability and measured results. Return a bounded capability matrix and minimum later read-only local check; no profiler run, code, throughput/bottleneck claim or PCIe wire-byte investigation.",
     "prerequisites_met": [
@@ -9351,6 +9352,56 @@
     ],
     "nonduplication": "Exclude QSA work derivation, theoretical arithmetic ceilings, generic GRF/spill methods and PCIe wire counters; focus on versioned device-counter availability, meaning and coverage for the mapped QSA hypotheses.",
     "dispatch_note": "Current three report terminals are physically closed;six older holds remain. Main must check actual capacity before dispatch.",
-    "status": "eligible_not_dispatched"
+    "status": "reviewed_knowledge_collection",
+    "report": "/home/yayoi/orca/workspaces/Strata/sycl/.cache/strata-research/20261023/qsa-counters/report.md",
+    "main_read_policy": "Main reads only native Luna/max short review;collection body stays indexed until a concrete implementation question.",
+    "consumer": "A later local metric-capability gate and, only if it passes, selection of a bounded QSA attribution method.",
+    "lifecycle": {
+      "run": "run_432552edd149",
+      "task": "task_65c1009b298c",
+      "dispatch": "ctx_47c4777e2118",
+      "terminal": "term_2364d055-6f72-42c8-b50d-13851ed4064e",
+      "incarnation": "898d115c-31e0-4c8c-b293-0ac29a9f5562",
+      "startup_model": "gpt-6-luna high",
+      "input_accepted": true,
+      "turn_started": true,
+      "outcome": "succeeded",
+      "accepted_worker_done": true,
+      "delivery_acknowledged": "delivery_1a37712b0ba9",
+      "release": "retained/external_terminal/processActionnone;Main then closed own idle PTY",
+      "terminal_connected": false,
+      "physical_closure": "terminal-show confirmed same incarnation and connected=false;older six holds unchanged."
+    },
+    "bytes": 11916,
+    "sha256": "bc52ff5418bf643234221bd6a1291ee9586468d21fe060a67145bc2537855cd1",
+    "review": {
+      "path": ".cache/strata-research/20261023/qsa-counter-review.json",
+      "sha256": "930e14261910332a15a0318b361761a41f7bd35e26bf8ce2cdfd52376f4c04e9",
+      "status": "usable_with_corrections",
+      "retrieval_headings": [
+        "B570 support and version floor",
+        "Candidate QSA metric matrix",
+        "Modes, permissions and minimal local enumeration"
+      ],
+      "corrections": [
+        "Set ZET_ENABLE_METRICS=1 before zeInit in a separately bounded capability check.",
+        "Distinguish permission/API errors from successful enumeration with no matching counter.",
+        "Map property semantics rather than literally matching VTune labels.",
+        "Pin mutable Metrics Discovery andPTI sources before implementation."
+      ]
+    },
+    "next_review": "After the successful local inventory and the first decision on whether hardware counters can answer a concrete QSA question."
+  },
+  "qsa_counter_followup_collection_scope": {
+    "schedulable_now": false,
+    "candidate_scope": "After a successful read-only B570 inventory, decide whether a small event/query or streamer collection can discriminate one concrete QSA hypothesis with usable attribution and acceptable overhead.",
+    "prerequisites": [
+      "Successful Level Zero group/member enumeration with result codes and exact names, descriptions, types, units, domains, and sampling modes recorded.",
+      "Current driver, runtime, Metrics Discovery, VTune, and permission state captured without system changes.",
+      "A specific QSA hypothesis and workload/measurement boundary selected from the current attribution evidence."
+    ],
+    "scope_guidance": "Do not dispatch another broad counter catalogue. If candidates are absent or collection is blocked, make that the capability result and select another attribution method; if present, research only the supported collection mode and attribution limits needed for the chosen hypothesis.",
+    "status": "conditional_not_dispatched",
+    "source_review": ".cache/strata-research/20261023/qsa-counter-review.json"
   }
 }
