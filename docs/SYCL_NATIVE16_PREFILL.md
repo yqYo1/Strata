@@ -303,16 +303,28 @@ sources/controllers and28 generated/transaction files (3066914 bytes) were retir
 the compact API error, critical syscall lines, selected metric semantics and
 deletion manifest; the original13 engine/fixture artifacts remain unchanged.
 
-The next isolated discriminator changes only two cached-Q/QK loop hints to
-explicit full unrolling. An unchanged namespace control separates that hint
-from the isolated entrypoint. The original production kernel, numerical order,
-default GRF policy and all13 selected engine/fixture artifacts remain fixed.
-`build_qsa_unroll.py` prepares a source-pinned two-executable component build;
-`check_qsa_unroll.py` requires smoke, component and resource gates before three
-clean processes and162 samples. The prospective latency gate is0.95 against
-both controls, with no shape above1.05 and both large patterns improving in
-every process. This is compiler sensitivity, not an established hardware
-bottleneck or model adoption. A failed gate cannot advance to a model trial.
+The isolated cached-Q/QK full-unroll hint comparison is closed and rejected.
+Source`b072267fa` changes only two loop hints and includes an unchanged namespace
+control. All three arms pass2 traced small and11 independent tensor/guard/bounds
+cases, including physical262144 addressing. Actual JIT properties stay identical:
+GRF128,SIMD16,18 arguments,rawSLM32,private0 andspill12480. Frontend instructions
+match after namespace/metadata normalization; the hint survives as metadata,
+which does not establish final ISA equivalence. Three clean processes retain
+all162 individual samples. Candidate latency geomeans are0.999864 versus current
+production and1.000391 versus the namespace control, failing the prospective0.95
+and per-process gates. No model trial or inference integration follows. The
+fixtures usePage16 and artificial locality, not production's Page4 distribution;
+physical-context model/session/RESTORE remains unqualified. See the
+[compact result](../bench/results/2026-10-15-pr6-recovery-audit/qsa-unroll-current.json).
+
+The next source-specific hypothesis is validatedPage4 logical-address
+specialization with the original generic fallback. Existing device IR retains
+runtime64-bit division, but neither final-ISA cost nor a limiting resource is
+proved. A future component must genuinely exercisePage4, including negative,
+missing,overflow/tail and final262144 boundaries; the oldPage16 case cannot
+qualify that fast path. Preserve numerical order and the exact selected decode
+implementation/configuration/1256-slot placement. The instruction-fetch methods
+report remains a retrieval-only reference, without a new generic research task.
 
 Remaining model gates are repeated phase-preserving adoption evidence,
 agent-session and task quality, full physical262144 tokens including the final
