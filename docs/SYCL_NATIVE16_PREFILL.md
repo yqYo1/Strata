@@ -211,10 +211,18 @@ All control commands and owned sessions closed, with no fresh fault. The resumed
 collector nevertheless produced no timeline or kernels where six were required.
 Current UR0.12 uses command-buffer capture/replay; successful execution does not
 establish collector coverage. Do not profile the model through this method.
-Next qualify recording graph construction before later pause/resume, using the
-same tiny fixture and a new committed controller/plan. The original controller
-footer-read failure and older graph host-sink failure remain failed. See the
-[profiler coverage decision](../bench/results/2026-10-15-pr6-recovery-audit/cpu-profiler-current.json).
+The recorded-construction workaround now passes the tiny fixture: each process
+records four initial warm kernels, then staying paused records zero later kernels
+and resuming records exactly six. All kernel identities have unique host sources,
+positive raw-contained service and the expected PCI device; no kernel is unsunk
+in this fixture. All numerical/guard/teardown, session/owner and fresh-fault gates
+passed. The intervening v3 clock-domain failure remains failed: Main omitted the
+previously qualified `UNITRACE_SystemTime=1` and kernel/call logging settings.
+V4 restores those settings before exec. This qualifies this small coverage method,
+not a model critical path or throughput improvement. Next check bounded verbose
+aggregate statistics for production profiling without a full request timeline.
+The original footer-read, paused-capture and older graph host-sink failures remain
+failed. See the [profiler coverage decision](../bench/results/2026-10-15-pr6-recovery-audit/cpu-profiler-current.json).
 
 Remaining model gates are repeated phase-preserving adoption evidence,
 agent-session and task quality, full physical262144 tokens including the final
