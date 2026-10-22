@@ -1,5 +1,5 @@
 {
-  "stage": "prepared",
+  "stage": "built",
   "source_commit": "760d22dc3178903cdeb0316d349bce06c09a0ffc",
   "input_sha256": {
     "bench/sycl/qsa_page4_numerical.cpp": "976fd88afab35d7bfdb7c794e6ee54e95ea7075eb7ac4e0852429c538cb89123",
@@ -572,8 +572,93 @@
   },
   "active": false,
   "ownership_closed": true,
-  "passed": false,
-  "complete": false,
+  "passed": true,
+  "complete": true,
   "GPU_executed": false,
-  "model_adoption_qualified": false
+  "model_adoption_qualified": false,
+  "binaries": {
+    "numerical": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-page4-address-v2/numerical",
+      "sha256": "5967e72210cf108a0b6d45d87d2e92ae1806a5a34331fe3860d3d2b7acedcf84",
+      "bytes": 1589880
+    },
+    "timing": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-page4-address-v2/timing",
+      "sha256": "573a4f3d0dcca87be801f5e2e1575a00131264f6db0cec25e017f020744f5c8e",
+      "bytes": 1564880
+    }
+  },
+  "device_IR": {
+    "control": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-page4-address-v2/control.ll",
+      "sha256": "dee43747a47f18b0a81268b79320c199f6005148a8ee32adb9fbb90cf1584793",
+      "bytes": 72122,
+      "division_analysis": {
+        "kernels": 2,
+        "rows": [
+          {
+            "operation": "udiv",
+            "dividend": "%27",
+            "divisor": "%29",
+            "variable": true
+          },
+          {
+            "operation": "udiv",
+            "dividend": "%27",
+            "divisor": "%31",
+            "variable": true
+          },
+          {
+            "operation": "sdiv",
+            "dividend": "%52",
+            "divisor": "2",
+            "variable": false
+          },
+          {
+            "operation": "sdiv",
+            "dividend": "%216",
+            "divisor": "%217",
+            "variable": true
+          }
+        ],
+        "variable_divisors": 3,
+        "constants": [
+          [
+            "sdiv",
+            "2"
+          ]
+        ]
+      }
+    },
+    "page4": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-page4-address-v2/page4.ll",
+      "sha256": "abdbb8936f6adb946b9ef2de2049be0f318c49bc74e86925f9113a862f1ea9b7",
+      "bytes": 71052,
+      "division_analysis": {
+        "kernels": 2,
+        "rows": [
+          {
+            "operation": "sdiv",
+            "dividend": "%49",
+            "divisor": "2",
+            "variable": false
+          }
+        ],
+        "variable_divisors": 0,
+        "constants": [
+          [
+            "sdiv",
+            "2"
+          ]
+        ]
+      }
+    }
+  },
+  "controller_host_replay": {
+    "source_commit": "e50eb012bfe4ec0a9f7b2c76ecb8298b980f247f",
+    "closed_historical_smoke_passes": 6,
+    "missing_case_or_negative_route_refusals": 7,
+    "GPU_executed": false,
+    "scope": "Earlier exactcase/count-independent parser revision replay only; prospective strict route totals are separately qualified by freshv2 native cohort."
+  }
 }
