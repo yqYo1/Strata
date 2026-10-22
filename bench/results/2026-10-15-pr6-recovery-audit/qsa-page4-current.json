@@ -574,7 +574,7 @@
   "ownership_closed": true,
   "passed": true,
   "complete": true,
-  "GPU_executed": false,
+  "GPU_executed": true,
   "model_adoption_qualified": false,
   "binaries": {
     "numerical": {
@@ -662,7 +662,7 @@
     "scope": "Earlier exactcase/count-independent parser revision replay only; prospective strict route totals are separately qualified by freshv2 native cohort."
   },
   "check_plan": {
-    "stage": "prepared",
+    "stage": "closed",
     "mode": "smoke",
     "source_commit": "eedc461d4bafd1c2fd8c401c26fba58f1b79ceed",
     "controller_inputs": {
@@ -960,5 +960,310 @@
         "session": null
       }
     ]
-  }
+  },
+  "checks": [
+    {
+      "mode": "smoke",
+      "source_commit": "eedc461d4bafd1c2fd8c401c26fba58f1b79ceed",
+      "numerical_binary": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-page4-address-v2/numerical",
+        "sha256": "5967e72210cf108a0b6d45d87d2e92ae1806a5a34331fe3860d3d2b7acedcf84",
+        "bytes": 1589880
+      },
+      "passed": true,
+      "complete": true,
+      "active": false,
+      "ownership_closed": true,
+      "observations": [
+        {
+          "arm": "default@4",
+          "pid": 2809074,
+          "exit_code": 0,
+          "ownership_closed": true,
+          "validation": {
+            "pid": 2809074,
+            "loader": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_loader.so.0.12.0",
+            "threads_before": 1,
+            "preinit": 37,
+            "config_enabled": true,
+            "first_init": true,
+            "dispatch_result": 46,
+            "output_untouched": true,
+            "retained_reference_until_exit": true,
+            "runtime_teardown_qualified": false
+          },
+          "case_count": 2,
+          "case_identities": [
+            [
+              97,
+              33,
+              1,
+              0,
+              49
+            ],
+            [
+              97,
+              33,
+              3,
+              1,
+              71
+            ]
+          ],
+          "exact_prefix33_bits": true,
+          "page_size": 4,
+          "physical262144_component_addressed": false,
+          "route": {
+            "page": "4",
+            "fast": "0",
+            "generic": "0",
+            "status": "PASS"
+          },
+          "stdout_sha256": "b85ae7ef014257decc2c2c14098ea3a0eed0bafe966e65f74c5704c7bf1c1ca2",
+          "stderr_sha256": "12337e536657587203fcf782cd2402b5006dd1a1eeaf7801a36647057fab65e0"
+        },
+        {
+          "arm": "control@4",
+          "pid": 2809620,
+          "exit_code": 0,
+          "ownership_closed": true,
+          "validation": {
+            "pid": 2809620,
+            "loader": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_loader.so.0.12.0",
+            "threads_before": 1,
+            "preinit": 37,
+            "config_enabled": true,
+            "first_init": true,
+            "dispatch_result": 46,
+            "output_untouched": true,
+            "retained_reference_until_exit": true,
+            "runtime_teardown_qualified": false
+          },
+          "case_count": 2,
+          "case_identities": [
+            [
+              97,
+              33,
+              1,
+              0,
+              49
+            ],
+            [
+              97,
+              33,
+              3,
+              1,
+              71
+            ]
+          ],
+          "exact_prefix33_bits": true,
+          "page_size": 4,
+          "physical262144_component_addressed": false,
+          "route": {
+            "page": "4",
+            "fast": "0",
+            "generic": "0",
+            "status": "PASS"
+          },
+          "stdout_sha256": "e4cddba99cfe71878fecd4a165ecc336b5a0d96c0b2d592de64645a54229941c",
+          "stderr_sha256": "6e314dbe5adb3e41df17da2924d376f5bde0554d441514d958aac51f46745012"
+        },
+        {
+          "arm": "page4@4",
+          "pid": 2810415,
+          "exit_code": 0,
+          "ownership_closed": true,
+          "validation": {
+            "pid": 2810415,
+            "loader": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_loader.so.0.12.0",
+            "threads_before": 1,
+            "preinit": 37,
+            "config_enabled": true,
+            "first_init": true,
+            "dispatch_result": 46,
+            "output_untouched": true,
+            "retained_reference_until_exit": true,
+            "runtime_teardown_qualified": false
+          },
+          "case_count": 2,
+          "case_identities": [
+            [
+              97,
+              33,
+              1,
+              0,
+              49
+            ],
+            [
+              97,
+              33,
+              3,
+              1,
+              71
+            ]
+          ],
+          "exact_prefix33_bits": true,
+          "page_size": 4,
+          "physical262144_component_addressed": false,
+          "route": {
+            "page": "4",
+            "fast": "33",
+            "generic": "1",
+            "status": "PASS"
+          },
+          "stdout_sha256": "6c3c9f1085de65bebf55d8a30fbf1f8a764ea8ff4a6861f6d004d16b944612c0",
+          "stderr_sha256": "23ae4fc71f1e8ed75dc466ad982f085a897b5770c66d757ca36aa3267174517b"
+        },
+        {
+          "arm": "default@7",
+          "pid": 2811068,
+          "exit_code": 0,
+          "ownership_closed": true,
+          "validation": {
+            "pid": 2811068,
+            "loader": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_loader.so.0.12.0",
+            "threads_before": 1,
+            "preinit": 37,
+            "config_enabled": true,
+            "first_init": true,
+            "dispatch_result": 46,
+            "output_untouched": true,
+            "retained_reference_until_exit": true,
+            "runtime_teardown_qualified": false
+          },
+          "case_count": 2,
+          "case_identities": [
+            [
+              97,
+              33,
+              1,
+              0,
+              49
+            ],
+            [
+              97,
+              33,
+              3,
+              1,
+              71
+            ]
+          ],
+          "exact_prefix33_bits": true,
+          "page_size": 7,
+          "physical262144_component_addressed": false,
+          "route": {
+            "page": "7",
+            "fast": "0",
+            "generic": "0",
+            "status": "PASS"
+          },
+          "stdout_sha256": "72855a5227c6a293c6498e7b8dc6df986cd001f4dfc5468984b92ebeec88072b",
+          "stderr_sha256": "ecbb57c8b4a8acffcb798a7bbd4d4b7e37e3a308fcd5f810ffea4b10ea8455d9"
+        },
+        {
+          "arm": "control@7",
+          "pid": 2811943,
+          "exit_code": 0,
+          "ownership_closed": true,
+          "validation": {
+            "pid": 2811943,
+            "loader": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_loader.so.0.12.0",
+            "threads_before": 1,
+            "preinit": 37,
+            "config_enabled": true,
+            "first_init": true,
+            "dispatch_result": 46,
+            "output_untouched": true,
+            "retained_reference_until_exit": true,
+            "runtime_teardown_qualified": false
+          },
+          "case_count": 2,
+          "case_identities": [
+            [
+              97,
+              33,
+              1,
+              0,
+              49
+            ],
+            [
+              97,
+              33,
+              3,
+              1,
+              71
+            ]
+          ],
+          "exact_prefix33_bits": true,
+          "page_size": 7,
+          "physical262144_component_addressed": false,
+          "route": {
+            "page": "7",
+            "fast": "0",
+            "generic": "0",
+            "status": "PASS"
+          },
+          "stdout_sha256": "6b64c90039cc1bb236acac8f19c4c20e2058e64a0d193bde470e2a8b57329cf2",
+          "stderr_sha256": "31aadf805e7a8484e40680c04f0b316b19faff93a5a8fcd9385fc82502e815e4"
+        },
+        {
+          "arm": "page4@7",
+          "pid": 2812847,
+          "exit_code": 0,
+          "ownership_closed": true,
+          "validation": {
+            "pid": 2812847,
+            "loader": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_loader.so.0.12.0",
+            "threads_before": 1,
+            "preinit": 37,
+            "config_enabled": true,
+            "first_init": true,
+            "dispatch_result": 46,
+            "output_untouched": true,
+            "retained_reference_until_exit": true,
+            "runtime_teardown_qualified": false
+          },
+          "case_count": 2,
+          "case_identities": [
+            [
+              97,
+              33,
+              1,
+              0,
+              49
+            ],
+            [
+              97,
+              33,
+              3,
+              1,
+              71
+            ]
+          ],
+          "exact_prefix33_bits": true,
+          "page_size": 7,
+          "physical262144_component_addressed": false,
+          "route": {
+            "page": "7",
+            "fast": "0",
+            "generic": "34",
+            "status": "PASS"
+          },
+          "stdout_sha256": "aa88432d22a6ecf628e7f50711697f2bd2d6131209b55a6b112b268640f6d806",
+          "stderr_sha256": "56f1c148c04d338bc10b69594414da782e2b3a8a87c4ecab3558aa7c0a904f0f"
+        }
+      ],
+      "postchecks_complete": true,
+      "postcheck_errors": [],
+      "fresh_faults": [],
+      "boot_unchanged": true,
+      "driver_after": {
+        "pci": "/sys/bus/pci/devices/0000:05:00.0",
+        "driver": "xe",
+        "vendor": "0x8086",
+        "device": "0xe20c",
+        "kernel": "7.0.0-38-generic",
+        "devcoredump": false
+      }
+    }
+  ]
 }
