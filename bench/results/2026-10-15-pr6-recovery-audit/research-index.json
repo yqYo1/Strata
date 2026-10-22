@@ -9403,5 +9403,45 @@
     "scope_guidance": "Do not dispatch another broad counter catalogue. If candidates are absent or collection is blocked, make that the capability result and select another attribution method; if present, research only the supported collection mode and attribution limits needed for the chosen hypothesis.",
     "status": "conditional_not_dispatched",
     "source_review": ".cache/strata-research/20261023/qsa-counter-review.json"
+  },
+  "cooperative_matrix_iterative_fragment_lifetime_methods_20261023": {
+    "id": "cooperative_matrix_iterative_fragment_lifetime_methods_20261023",
+    "classification": "knowledge collection",
+    "schedulable_now": true,
+    "report_budget_bytes": 12288,
+    "question": "Compare register-resident reusable cooperative-matrix operand fragments across iterative GPU tiles with rematerialization/reload,shorter static fragment live ranges,and cache/SLM-backed alternatives. Explain compiler unrolling/scalar replacement/alias and accumulator-lifetime effects,occupancy/reuse/SLM tradeoffs,legal joint_matrix collective participation,and counterexamples from primary SYCL/Intel and substantive non-LLM GPU/HPC/ASIC work. Use current QSA as applicability context,not a code proposal or local performance claim.",
+    "index_overlaps": [
+      "xe2_register_spill_collection_scope",
+      "qsa_operand_staging_scope",
+      "qsa_cached_parallel_sum_contract_scope"
+    ],
+    "nonduplication": "Prior register survey covered descriptors/GRF andgeneric evidence;prior row-coalesced staging failed andKVvec4 isalreadyimplemented. This scope examines persistent matrix-operand live ranges and recomputation/reload tradeoffs across loops;exclude changingGRF mode,row-coalescing,exp approximations or another generic tiling/roofline survey.",
+    "prerequisite_evidence": [
+      "Current ordered-exp GRF-only comparison preserves math and removes descriptor12480to0 butslows2.5..9.5% across3shapes;noadoption.",
+      "Source-pinned current cached-query and FP32 accumulator arrays exist;methods survey needs no unavailable counter."
+    ],
+    "status": "eligible_not_dispatched",
+    "consumer": "Future source-specific QSA discriminator after current metric capability gate;Main stores collection body for retrieval andnative Luna/max reviewsdepth.",
+    "next_review": "After bounded completion,nativeLuna/max reviewsnovelty andsubstantive nextscope;Maincontinuesimplementation/measurement."
+  },
+  "sparse_attention_interquery_kv_locality_scheduling_methods_20261023": {
+    "id": "sparse_attention_interquery_kv_locality_scheduling_methods_20261023",
+    "classification": "knowledge collection",
+    "schedulable_now": true,
+    "report_budget_bytes": 12288,
+    "question": "For independent sparse-attention query workgroups reading overlapping selected KV sets,compare query/KV-head workgroup mapping,query clustering/tile scheduling and bounded device-side task permutation for cross-query cache locality. Cover sparse-attention serving and transferable non-LLM sparse/HPC GPU scheduling,hardware scheduling guarantees,working-set/reuse distance,permutation preparation/output restoration cost,and cases where locality changes reduce concurrency. Preserve within-query selected-cell/softmax arithmetic order and causal/invalid-row semantics;no code proposal or local speed claim.",
+    "index_overlaps": [
+      "qsa_operand_staging_scope",
+      "qsa_kv_cache_representation_long_context_scope",
+      "current_qsa_prefix_work_geometry_audit_20261023"
+    ],
+    "nonduplication": "Focus cross-query/workgroup scheduling andinterqueryKVreuse,not intra-group coalescing,KVquantization,sparseindexselection,MoEgrouping,prefetch-upload,GRF orsoftmax approximation. Contrast documented local launch order with actual guarantees;do not inferphysicaltraffic from syntheticpattern timings.",
+    "prerequisite_evidence": [
+      "Current same-body128GRF benchmark fixed8192queries/cap2051:117488-pool artificialgather median236.84ms versusclustered140.35ms;this is a locality hypothesis,not production distribution orhardware bottleneck proof.",
+      "Current production source usesindependent2KV/query workgroups andseparateoutputrows;source contracts canbe compared withoutnew localmeasurements."
+    ],
+    "status": "eligible_not_dispatched",
+    "consumer": "Future source-specific QSA discriminator after current metric capability gate;Main stores collection body for retrieval andnative Luna/max reviewsdepth.",
+    "next_review": "After bounded completion,nativeLuna/max reviewsnovelty andsubstantive nextscope;Maincontinuesimplementation/measurement."
   }
 }
