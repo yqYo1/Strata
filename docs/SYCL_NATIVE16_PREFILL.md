@@ -365,7 +365,13 @@ The three additional fills restore flag words before jumps whose IR conditions
 compare the hardware local-thread ID against4/16/8. This narrows one static
 difference to guard materialization; it does not attribute the entire extra
 allocation, prove execution frequency, dynamic traffic, occupancy or causality.
-Stop extending this attribution and retire its consumed auxiliary products.
+The consumed auxiliary generation, two closed probe helpers and settled
+research transactions are retired:256 external/cache files,69720631 bytes,
+with an explicit path/hash/reason manifest. Original199 source inputs, four
+generated sources, nine-command recipe and8700 SDK inputs were recovered or
+verified against pushed Git evidence before deletion. All13 selected native
+assets and the next comparison's five generated sources match afterward.
+The independent legacy provenance/lifecycle holds remain open.
 
 The next independent discriminator is fixed two-head iteration on the unchanged
 generic-page prefill source. Workgroup128 and required subgroup16 give eight
