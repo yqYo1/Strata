@@ -1,0 +1,57 @@
+{
+  "stage": "source_prepared",
+  "source_commit": "02901e45dfbe87022986734fda6541282f2b991e",
+  "generator": {
+    "path": "tools/sycl/qsa_fixed_heads_sources.py",
+    "sha256": "eca5c66f2a6a383f6f752496a6984dbd7e48a6e7077fed650ffe638191672d5a"
+  },
+  "generated": {
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-fixed-heads-v1/control.cpp": {
+      "sha256": "fb4718b57cf7714531ccb278ea10a240f5490df8ea7389a1b67aef0093f7f6fd",
+      "bytes": 25152
+    },
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-fixed-heads-v1/fixed-heads.cpp": {
+      "sha256": "126e3a88dbb00c9593d0746b377e15292e0eb1eb6f04f464af72927ec348399b",
+      "bytes": 25399
+    },
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-fixed-heads-v1/qsa-fixed_heads-variants.hpp": {
+      "sha256": "0e0a50622a0a7c38623a4cce964fc1866d6fd49394b4c7a7a2636c08515eb212",
+      "bytes": 1222
+    },
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-fixed-heads-v1/timing.cpp": {
+      "sha256": "3735648b0d728994d32703e490d6552751635f4e34a4f80bfc9a85eeae37c1dd",
+      "bytes": 8942
+    },
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-fixed-heads-v1/numerical-reference.inc": {
+      "sha256": "b20fc7981cdb17110a728e2f062a81591d17a8a70fe5880ba2ab67cc3b3af361",
+      "bytes": 23277
+    }
+  },
+  "base_native": "6e40afc1beddd059ee518617f6c1efce1da14aca",
+  "original_fixture_source": "760d22dc3178903cdeb0316d349bce06c09a0ffc",
+  "original_fixture_plan": "1ebecb46a",
+  "question": "Fixed two padded-head iterations on generic-page production addressing, preserving original numerical order and GPU-local state. Is there a measured codegen and latency benefit?",
+  "build_status": "Not built; a fresh committed exact native/SDK/recipe plan is required before compilation.",
+  "prior_attribution": {
+    "path": "bench/results/2026-10-15-pr6-recovery-audit/qsa-codegen-current.json",
+    "commit": "02901e45dfbe87022986734fda6541282f2b991e",
+    "decision": "Page4 remainsrejected; finalnative loop2spill+13fill vs2spill+16fill with3extraflagrestores. Not dynamic saturation/causality."
+  },
+  "comparison_plan": {
+    "arms": [
+      "default",
+      "namespace_control",
+      "fixed_heads"
+    ],
+    "smoke": "Qualified firstUR tracing+parameter validation,18exact-bit samples,actual3kernelname/callproof andfixed-head wrapperrouteconservation.",
+    "numerical": "Independent tensor/oracle/guards/input/bounds forPage1/4/7/16 incl97celltail,invalidmissingduplicate/mappedpages,diagnosticPage1fix,andphysical262144;retain64bitindices/fullcontextgate.",
+    "clean": "3independentprocesses;6rotatedrounds;3shapes32768gather/117488gather/117488clustered;3arms;162samples. Queries8192,cap2051,Page4. Require eachtimedbatch>=.1ms and>=1000timerfloor.",
+    "advancement": "LatencyGM<=.95 vsdefault andnamespacecontrol,andallprocessratios<1; otherwiseclosewithoutmodeltrial. Componentpassesare not modeladoption.",
+    "phase_isolation": "Noengine/decodeeditsforcomponent. Beforeintegration preserveexactdecodeimplementation/config1256slots andhandoff;verifyrepeatedmatcheddecodewithlongthinkinggeneration/MTPstrong+weak. Anyimpactis separationdefect."
+  },
+  "retention": "Only5generatedsourceinputs forimminentcomparison,nobinarygeneration. Atcomparisonclose commitusefulsamples thenrecoverexactsource/recipe frompushedGitandretireauxiliaryproducts. Existing13assetengine andseparateprovenanceholds unchanged.",
+  "active": false,
+  "ownership_closed": true,
+  "GPU_executed": false,
+  "model_adoption_qualified": false
+}
