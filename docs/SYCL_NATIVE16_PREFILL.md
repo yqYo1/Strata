@@ -238,12 +238,31 @@ and verified restoration of48 dense layers and the cache payload/map. The
 collector printed its device total but did not finish the table before the
 benchmark exited; the owner then terminated the remaining native child. All
 owned processes are now gone, the exact session was removed and no fresh fault
-was recorded. The original strict closure failure remains failed. The collector's
-nested name-aggregation loop and the server's20-second wrapper shutdown need a
-bounded correction before another model profile. There is no complete kernel
-table, normal native exit or post-model full-hash check from this attempt.
-Whole-process service would include loading, warmups, prefill and decode; it
-must not be called one phase's critical path or clean speed.
+was recorded. The original strict closure failure remains failed. There is no
+complete kernel table, normal native exit or post-model full-hash check from
+that attempt.
+
+The host-only indexed name aggregation passed80 equivalence cases, preserving
+representative keys, merge order and all six integer statistics. Its actual
+collector then passed the unchanged tiny GPU fixture's4/10 program-call checks,
+with numerical/guard/validation, normal shutdown, owner/session closure and no
+fresh fault. No inference binary or decode setting changed.
+The new whole-model diagnostic printed its complete8474-row table and exited
+normally, fixing the observed shutdown boundary without extending the original
+server grace. Its original outcome nevertheless remains failed: the parser
+rejected a barrier's minimum0ns, despite a positive3804112ns total over38160 calls.
+After six host parser tests, a separately committed closed-data replay passed
+all request/route/work/clock, validation/loader and table-conservation checks.
+All15 full model hashes matched afterward; no inference was rerun or failure
+relabeled. The table has174 kernel/command families,5672366 calls and
+211017537985ns summed service. The largest Q6_K family spans eight output shapes;
+its54942092567ns must not all be attributed to the MTP head.
+Whole-process service includes loading, warmups, prefill and decode; it is not
+one phase's critical path, physical traffic, saturation or clean speed.
+Keep the full table outside Git only through the next source/shape attribution;
+then retire its consumed raw output. Decode implementation, configuration and
+1256-slot placement remain selected, with repeated phase-preserving comparison
+required for any future prefill change.
 The original footer-read, paused-capture and older graph host-sink failures remain
 failed. See the [profiler coverage decision](../bench/results/2026-10-15-pr6-recovery-audit/cpu-profiler-current.json).
 
