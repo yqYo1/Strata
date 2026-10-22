@@ -1,0 +1,55 @@
+"""Collector table validation only; no GPU or native launch."""
+import sys
+from pathlib import Path
+import unittest
+
+sys.path.insert(0,str(Path(__file__).resolve().parents[2]/'tools/sycl'))
+from profile_aggregate import device_summary
+from engine_once import profile_command
+
+TABLE='''=== Device Timing Summary ===
+Total Device Time for L0 backend (ns): 100
+Kernel, Calls, Time (ns), Time (%), Average (ns), Min (ns), Max (ns)
+ns::Kernel<float, 16>[SIMD32 {1; 1; 1} {256; 1; 1}], 2, 80, 80.0, 40, 30, 50
+zeCommandListAppendMemoryCopy(M2D)[1164], 1, 20, 20.0, 20, 20, 20
+=== Kernel Properties ===
+'''
+
+
+class AggregateTests(unittest.TestCase):
+    def test_aggregate_records_graph_construction_without_a_timeline(self):
+        profile=dict(mode='aggregate',launcher=dict(path='/collector'),session='private')
+        native=['/native','--serve','--prefill','8192']
+        self.assertEqual(profile_command(profile,native),
+            ['/collector','--session','private','--device-timing','--verbose',*native])
+        self.assertEqual(native,['/native','--serve','--prefill','8192'])
+
+    def test_existing_trace_mode_keeps_its_exact_options(self):
+        profile=dict(launcher=dict(path='/collector'),session='private')
+        expected=['/collector','--session','private','--start-paused','--host-timing',
+            '--device-timing','--chrome-kernel-logging','--chrome-call-logging',
+            '--chrome-event-buffer-size','128','/native']
+        self.assertEqual(profile_command(profile,['/native']),expected)
+        self.assertEqual(profile_command(dict(profile,mode='trace'),['/native']),expected)
+
+    def test_unknown_mode_fails_before_native_launch(self):
+        with self.assertRaisesRegex(RuntimeError,'unsupported profile mode'):
+            profile_command(dict(mode='typo'),['/native'])
+
+    def test_template_comma_is_part_of_the_name(self):
+        result=device_summary(TABLE)
+        self.assertEqual(result['total_device_ns'],100)
+        self.assertTrue(result['rows'][0]['name'].startswith('ns::Kernel<float, 16>'))
+        self.assertEqual(result['rows'][0]['calls'],2)
+
+    def test_rejects_lost_rows_duplicate_names_and_invalid_clocks(self):
+        for text in (TABLE.replace('1, 20, 20.0, 20, 20, 20','1, 19, 20.0, 19, 19, 19'),
+                     TABLE.replace('2, 80, 80.0, 40, 30, 50','2, 80, 80.0, 39, 30, 50'),
+                     TABLE.replace('2, 80, 80.0, 40, 30, 50','2, 80, nan, 40, 30, 50'),
+                     TABLE.replace('=== Kernel Properties ===',''),TABLE+TABLE,
+                     TABLE.replace('zeCommandListAppendMemoryCopy(M2D)[1164]',
+                        'ns::Kernel<float, 16>[SIMD32 {1; 1; 1} {256; 1; 1}]')):
+            with self.subTest(text=text),self.assertRaises(ValueError):device_summary(text)
+
+
+if __name__=='__main__':unittest.main()

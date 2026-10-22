@@ -28,6 +28,20 @@ def native_environment(plan, parent):
     return environment
 
 
+def profile_command(profiling, command):
+    mode = profiling.get('mode', 'trace')
+    if mode == 'trace':
+        flags = ['--start-paused', '--host-timing', '--device-timing',
+                 '--chrome-kernel-logging', '--chrome-call-logging',
+                 '--chrome-event-buffer-size', '128']
+    elif mode == 'aggregate':
+        # Record from exec: paused graph construction can lose later replays.
+        flags = ['--device-timing', '--verbose']
+    else:
+        raise RuntimeError('unsupported profile mode: ' + str(mode))
+    return [profiling['launcher']['path'], '--session', profiling['session'], *flags, *command]
+
+
 def main():
     root = Path(os.environ['STRATA_MEASUREMENT_ROOT'])
     plan = json.loads((root / 'plan.json').read_text())
@@ -46,6 +60,7 @@ def main():
     command=[binary['path'],*sys.argv[1:]]
     profiling=plan.get('native_profile')
     if profiling is not None:
+        command=profile_command(profiling,command)
         if not plan.get('native_validation_probe') or environment.get('ZES_ENABLE_SYSMAN')!='0':
             raise RuntimeError('profile requires qualified target validation and Sysman-off')
         for artifact in (profiling['launcher'],profiling['collector']):
@@ -59,9 +74,6 @@ def main():
         environment.update(profiling['environment'])
         if 'LD_PRELOAD' in environment:
             raise RuntimeError('profile launcher must not preload target libraries')
-        command=[profiling['launcher']['path'],'--session',profiling['session'],'--start-paused',
-                 '--host-timing','--device-timing','--chrome-kernel-logging','--chrome-call-logging',
-                 '--chrome-event-buffer-size','128',*command]
         claim['native_profile']=profiling
     child = subprocess.Popen(command, env=environment)
     claim['native'] = identity(child.pid)
