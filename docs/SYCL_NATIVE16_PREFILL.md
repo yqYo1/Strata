@@ -86,47 +86,59 @@ is historical context;the current
 [client-resource evidence](../bench/results/2026-10-15-pr6-recovery-audit/client-resources-current.json)
 bounds scheduled activity rather than hardware saturation.
 
-The next bounded decode-placement screen uses the existing ranked global
-cache route on the exact retained 6e40 engine. First run the offline
-`tools/sycl/cache_placement.py` planner and its host admission tests. Compare
-the actual 1256-slot per-layer byte budget with the global profile prefix under
-a same-or-smaller budget, including 256-byte padding and the protected 128-slot
-prefix. Keeping the numeric 1256 knob in global mode would give a larger byte
-budget and is ineligible. The profile ranks are not access frequencies; neither
-slot count nor capacity predicts hits or speed. The existing cache source also
-records a historical 2.97% hit rate for global admission, which is counterevidence
-to check rather than a reason to assume improvement. The offline calculation
-does not qualify a model route or adoption. Before a model run, commit a
-separate bounded plan covering actual free-memory admission, global membership,
-empty-layer behavior, variable offsets, loan/refill and graph bindings. Later
-performance adoption requires independent matched repetitions of both thinking
-long-generation workloads and unchanged long-prefill performance. The current
-decode configuration stays selected during this screen; no native source or
-runtime safety setting changes. Routed MTP experts already use the fixed S2
-blob; dense MTP matrices being Q8 does not imply Q8 routed experts.
+The same-native cache-placement v1 screen is closed on an admission failure,
+before any candidate model launch. Source `cc42131df` and plan `751b8c2b4`
+passed 18 host tests and two tiny traced GPU cases. Its baseline completed the
+official thinking regular-code subset: 33214 fresh input / 3611 generated,
+52135.0ms prefill / 242516.1ms decode, MTP acceptance 83.1077%. These are one
+observed process, not clean or repeated speed. Actual work remained 1035
+windows, 4137 verifier rows and 2796077900800 logical CPU job-blob bytes;
+logical visits do not establish physical traffic or saturation. All five
+loan/refill cycles, exact residency, IQ2/work conservation and the long GPU
+BF16/mode10/private-bank route passed; 48 dense layers were restored. The
+process closed normally, all 15 model hashes matched afterward and no fresh
+fault occurred. See the [current decision](../bench/results/2026-10-15-pr6-recovery-audit/cache-placement-current.json).
 
-The offline screen at source `3032565ae06f5b5559472be81cb364261670d8c3`
-passed 7 planner tests and 6 existing census tests using `python3 -B`, including
-the actual shipped profile's exact per-layer membership. Profile SHA is
-`8f59b4aa8873209dff11c11e37bcda9529a1335b724a1afeea37bf6388975baf`;
-native manifest SHA is
-`d9ac2dfa3ee63c55c9c6a6db26f72da0cec0ee41733f007e5cbbbba71617aa5d`.
-Reproduce with `python3 -B tools/sycl/cache_placement.py --profile data/expert-profile.bin --manifest /home/yayoi/.local/share/strata-sycl/packs/qwen3.8-flash-next-iq3_s/native_experts.txt`.
+The actual 8192-chunk loan needs 2319958528 bytes. Global placement at the same
+or smaller total byte budget leaves only 2308224000 bytes after protecting
+128 slots: short by 11734528 bytes. Its chunk would therefore shrink, coupling
+decode placement to prefill. The original screen remains incomplete/failed;
+no candidate timing or prefill-preservation claim follows. Keeping the numeric
+1256 knob in global mode would instead increase the byte budget and is not an
+eligible comparison. The source also records a historical 2.97% global hit
+rate; the shipped ranks are not frequencies or proof of improvement.
+
+Source `b331bb311` adds a stable ascending-size order only inside the original
+admitted global prefix. The baseline's entire per-layer slot map and the
+candidate's expert membership/count/allocation stay identical. Twenty host
+tests pass, including full STRP encode/reverse-map round trips and these
+invariants. The generated profile SHA is
+`229738df5bf5e7b79a43fb91d12e0082293b2a39eac919b1e046bfc12932c89f`.
+Reproduce with `python3 -B tools/sycl/cache_placement.py --profile data/expert-profile.bin --manifest /home/yayoi/.local/share/strata-sycl/packs/qwen3.8-flash-next-iq3_s/native_experts.txt --protect-prefix`.
 
 | Offline layout | CLI cache argument | Actual slots | Allocated bytes | Protected128 bytes | Maximum loan bytes |
 | --- | ---: | ---: | ---: | ---: | ---: |
 | Current per-layer | 1256 | 1256 | 2575206400 | 245657600 | 2329548800 |
-| Global ranked prefix | 967 | 1241 | 2573849600 | 265625600 | 2308224000 |
+| Original global prefix: cannot fit8192 | 967 | 1241 | 2573849600 | 265625600 | 2308224000 |
+| Reordered global prefix: proposed v2 | 967 | 1241 | 2573849600 | 199680000 | 2374169600 |
 
-The candidate holds 1..49 experts per layer, with no empty layers; 1021 experts
-are common, 220 added and 235 removed. Its 1356800-byte smaller allocation still
-leaves 21324800 fewer bytes for prefill borrowing because the protected prefix
-is larger. This is a concrete placement coupling to resolve/check, not evidence
-of a measured prefill regression. Native admission, actual hits/work, speed,
-loan/refill and phase preservation remain untested for this candidate. The
-original 6e40 admission reader independently recovered 9853 inputs and rechecked
-the unchanged engine plus 12 fixture hashes after the offline screen. No GPU
-process or native rebuild was launched.
+The reordered prefix has 54211072 bytes above the measured need; this is an
+offline capacity proof, not native admission, correctness or speed. The v2
+controller requires a separately committed plan and fresh independent
+baseline/candidate processes before any advancement. It retains the original
+5% logical-bytes-per-verifier-row screen, increased GPU entry fraction and no
+observed token-latency increase; a pass only permits a later clean repeated
+comparison. Adoption still requires both MTP workloads, long prefill, task and
+physical-context gates. Current decode settings remain selected; no engine,
+runtime safety setting or model weight changed. Routed MTP experts already use
+the fixed S2 blob; Q8 dense matrices do not imply Q8 routed experts.
+
+Before retiring the closed v1 root, all ten saved baseline evidence fields were
+replayed, all 164 original controller inputs and the prepared plan recovered,
+and all 9853 native inputs plus 13 required artifacts checked. The 79 raw/JIT
+files (13565676 bytes) were then retired with a path/hash/reason manifest.
+The full v1 result remains at `eb20952da`; the active result keeps only the
+individual request, admission decision, useful work checks and archive proof.
 
 The prior MTP draft wrapper was about33ms/window. At the observed emitted
 outputs/window, prose's conditional whole-window budget at70tok/s is about31ms.
