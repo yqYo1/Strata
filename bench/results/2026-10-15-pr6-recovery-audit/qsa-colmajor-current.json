@@ -770,7 +770,7 @@
     "scope": "Pinned LLVM IR retains the requested local-space QK layout discriminator and unchanged PV layout. IGC machine lowering, safety and speed are not established by frontend IR."
   },
   "check_plan": {
-    "stage": "prepared",
+    "stage": "closed",
     "mode": "resources",
     "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-colmajor-v1/check-resources",
     "source_commit": "22881a96a0ec58999739a7501fcf087b9afe8bb0",
@@ -3142,6 +3142,299 @@
           0
         ],
         "scope": "Component addressing/numerical qualification only; not a262144-token model/session/RESTORE result."
+      }
+    },
+    {
+      "mode": "resources",
+      "source_commit": "22881a96a0ec58999739a7501fcf087b9afe8bb0",
+      "numerical_binary": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-colmajor-v1/numerical",
+        "bytes": 1593880,
+        "sha256": "473198a6f51346fc3f617d50c65bd0da5ac28ddda3a3c3e3e5ae771ecac1c8d2"
+      },
+      "passed": true,
+      "complete": true,
+      "active": false,
+      "ownership_closed": true,
+      "observations": [
+        {
+          "arm": "all",
+          "pid": 3214128,
+          "exit_code": 0,
+          "ownership_closed": true,
+          "validation": {
+            "pid": 3214128,
+            "loader": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_loader.so.0.12.0",
+            "threads_before": 1,
+            "preinit": 37,
+            "config_enabled": true,
+            "first_init": true,
+            "dispatch_result": 46,
+            "output_untouched": true,
+            "retained_reference_until_exit": true,
+            "runtime_teardown_qualified": false
+          },
+          "session_removed": true,
+          "timing": {
+            "clock_floor_ns": 20,
+            "samples": [
+              [
+                0,
+                97,
+                3,
+                33,
+                "gather",
+                0,
+                0,
+                0,
+                0.810625
+              ],
+              [
+                0,
+                97,
+                3,
+                33,
+                "gather",
+                0,
+                1,
+                1,
+                0.76004
+              ],
+              [
+                0,
+                97,
+                3,
+                33,
+                "gather",
+                0,
+                2,
+                2,
+                0.513857
+              ],
+              [
+                0,
+                97,
+                3,
+                33,
+                "gather",
+                1,
+                0,
+                1,
+                0.485824
+              ],
+              [
+                0,
+                97,
+                3,
+                33,
+                "gather",
+                1,
+                1,
+                2,
+                0.488819
+              ],
+              [
+                0,
+                97,
+                3,
+                33,
+                "gather",
+                1,
+                2,
+                0,
+                0.441561
+              ],
+              [
+                0,
+                97,
+                3,
+                33,
+                "gather",
+                2,
+                0,
+                2,
+                0.474081
+              ],
+              [
+                0,
+                97,
+                3,
+                33,
+                "gather",
+                2,
+                1,
+                0,
+                0.438485
+              ],
+              [
+                0,
+                97,
+                3,
+                33,
+                "gather",
+                2,
+                2,
+                1,
+                0.434467
+              ],
+              [
+                0,
+                97,
+                3,
+                33,
+                "gather",
+                3,
+                0,
+                0,
+                0.448975
+              ],
+              [
+                0,
+                97,
+                3,
+                33,
+                "gather",
+                3,
+                1,
+                1,
+                0.463462
+              ],
+              [
+                0,
+                97,
+                3,
+                33,
+                "gather",
+                3,
+                2,
+                2,
+                0.449806
+              ],
+              [
+                0,
+                97,
+                3,
+                33,
+                "gather",
+                4,
+                0,
+                1,
+                0.442001
+              ],
+              [
+                0,
+                97,
+                3,
+                33,
+                "gather",
+                4,
+                1,
+                2,
+                0.441501
+              ],
+              [
+                0,
+                97,
+                3,
+                33,
+                "gather",
+                4,
+                2,
+                0,
+                0.468972
+              ],
+              [
+                0,
+                97,
+                3,
+                33,
+                "gather",
+                5,
+                0,
+                2,
+                0.441771
+              ],
+              [
+                0,
+                97,
+                3,
+                33,
+                "gather",
+                5,
+                1,
+                0,
+                0.452531
+              ],
+              [
+                0,
+                97,
+                3,
+                33,
+                "gather",
+                5,
+                2,
+                1,
+                0.429928
+              ]
+            ]
+          },
+          "stdout_sha256": "0c4e6d6b97545e7aa5186423f123995af2d760a6febd0d6b6125768a9942930f",
+          "stderr_sha256": "f9b7cacf60b42a4cedd04c1290bbacd4d0883d4d8ea67fcbe779cd1632ce147b",
+          "resources": {
+            "conserved_device_ns": 3966800,
+            "table_rows": 24,
+            "compute_calls": {
+              "0": 8,
+              "2": 7,
+              "1": 7
+            },
+            "properties": [
+              {
+                "arm": 0,
+                "compiled": "JIT",
+                "SIMD": 16,
+                "arguments": 18,
+                "raw_SLM": 32,
+                "private_memory_descriptor": 0,
+                "spill_memory_descriptor": 12480,
+                "GRF": 128
+              },
+              {
+                "arm": 2,
+                "compiled": "JIT",
+                "SIMD": 16,
+                "arguments": 18,
+                "raw_SLM": 32,
+                "private_memory_descriptor": 0,
+                "spill_memory_descriptor": 10240,
+                "GRF": 128
+              },
+              {
+                "arm": 1,
+                "compiled": "JIT",
+                "SIMD": 16,
+                "arguments": 18,
+                "raw_SLM": 32,
+                "private_memory_descriptor": 0,
+                "spill_memory_descriptor": 12480,
+                "GRF": 128
+              }
+            ],
+            "limits": "Allocation descriptors and summed service only;rawSLM units,actual spill traffic,occupancy,physical traffic and model/decode speed remain unmeasured."
+          }
+        }
+      ],
+      "postchecks_complete": true,
+      "postcheck_errors": [],
+      "fresh_faults": [],
+      "boot_unchanged": true,
+      "driver_after": {
+        "pci": "/sys/bus/pci/devices/0000:05:00.0",
+        "driver": "xe",
+        "vendor": "0x8086",
+        "device": "0xe20c",
+        "kernel": "7.0.0-38-generic",
+        "devcoredump": false
       }
     }
   ]
