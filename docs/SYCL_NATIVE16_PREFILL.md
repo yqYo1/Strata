@@ -404,22 +404,28 @@ staging evidence against the gather/clustered contrast. Physical VRAM traffic,
 cache behavior and hardware saturation remain unknown.
 
 
-The next component preparation separates QK's column-major B operand from
-PV's unchanged row-major B operand, storing K by logical cell and dimension.
-A reversible Main-authored overlay and the selected-arm numerical harness are
-prepared, with8192 unique in-bounds stores and matching logical matrix elements
-checked on the host. This is not compilation, GPU qualification or adoption.
-Generic API syntax does not prove installed BMG backend support; the official
-16-bit column-major test also carries an AMX-only comment and DG2 expected failure.
-Two report-only Orca Luna scopes completed. Independent review found the
-compiler-matched matrix API permits this shape and layout; actual IGC lowering
-and B570 execution remain unqualified. The first build admission stopped on a
-mistyped review hash. A separate correction verifies the immutable source and
-selected-arm oracle binding, preserving the original refusal. The prospective
-three-process comparison requires at least5% aggregate latency improvement
-against both controls and improvement in every process/shape. Main keeps all13
-selected engine assets and the decode path unchanged. See the
-[pending component](../bench/results/2026-10-15-pr6-recovery-audit/qsa-colmajor-current.json).
+The isolated column-major QK comparison is closed without adoption. It kept
+PV row-major, operands and arithmetic order, generic64-bit paging, original
+padded-head loops, barriers and Q-cache lifetime. Compiler-matched API review
+supported a bounded build; the original mistyped review hash stopped admission
+and remains recorded with its separate immutable-source correction. Twelve
+traced processes passed24 numerical cases, then twelve parameter-validated
+processes passed132 cases including component addressing through the final
+262144 slot. No fresh fault occurred. These are component checks, not model
+capacity, session/RESTORE or decode qualification.
+
+Three clean processes produced162 samples. Candidate latency geometric means
+were1.262090 versus production and1.262010 versus the namespace control;
+32768 gather,117488 gather and117488 clustered ratios were1.278542,1.271500
+and1.236630 versus production. Every process/shape was slower than both
+controls. The prospective0.95 gate fails; no model trial follows. The smaller
+spill allocation descriptor10240 versus12480 does not establish actual spill
+traffic or a useful gain. Physical cache/memory/XMX attribution remains unknown.
+The selected6e40 engine, all12 same-build fixtures and the decode path remain
+unchanged. See the [compact comparison](../bench/results/2026-10-15-pr6-recovery-audit/qsa-colmajor-current.json).
+Use the reviewed matched counterfactual resource protocol for the next
+attribution decision before another layout variation; keep calibration separate
+from claims about physical traffic, hardware saturation and model speed.
 
 Remaining model gates are repeated phase-preserving adoption evidence,
 agent-session and task quality, full physical262144 tokens including the final
