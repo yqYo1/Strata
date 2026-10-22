@@ -169,6 +169,27 @@ needs its own committed plan if overhead attribution becomes a concrete
 question. Unknown graph support, incomplete accounting or request failure is
 not a pass; preserve the original outcome and stop without retries.
 
+The v2 process has now closed normally. It read33288 fresh tokens and generated
+8638, with thinking and an actual answer; MTP acceptance was39.06%. All15 model
+hashes matched and no fresh fault appeared. All64 selected windows and192 graph
+replays passed framing,clock and accounting checks. The sample averaged33.488ms
+of outer draft wall per window,including33.333ms in the checked stream-drain
+wrapper. Calling-thread CPU was32.620ms/window,with about99.56% inside that
+wrapper. The graph envelope averaged31.208ms/window:10.966ms per round and
+10.121ms per chain step. These overlapping clock domains must not be added.
+The drain wrapper includes runtime completion work/polling; its CPU use is not
+a measure of LLM arithmetic. Graph envelopes include dependencies and idle gaps,
+so they establish neither GPU arithmetic nor VRAM/PCIe saturation.
+
+The whole request separately reports97.11ms/window in CPU-pool wall and75.22ms
+in GPU-reach wait. These are not worker CPU or hardware service. The next
+resource discriminator is one aligned post-IQ2 request using the existing
+census,IQ2 TIDs and passive client-resource ticks/Xe cycles; exact worker clocks
+remain conditional after their prior overhead failure. See the
+[closed MTP diagnostic](../bench/results/2026-10-15-pr6-recovery-audit/mtp-model-observer-current.json).
+No speed improvement,observer-overhead bound or implementation adoption follows
+from this one observed process.
+
 ## Tensor storage and precision
 
 `STRATA_SYCL_PREFILL_NATIVE16=bf16` selects an experimental kernel path only
