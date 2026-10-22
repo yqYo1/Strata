@@ -72,19 +72,19 @@ justifying legacy shared dispatch. See
 [IQ2 component evidence](../bench/results/2026-10-15-pr6-recovery-audit/cpu-iq2-current.json)
 and the [original model decision](../bench/results/2026-10-15-pr6-recovery-audit/iq2-pair-model-current.json).
 
-The current limiting hardware resource remains **unattributed**. Older CPU-pool
-and GPU-wait intervals include scheduling, polling and overlap; GPU utilization,
-job fractions and logical weight GB/s do not prove CPU, RAM, PCIe or GPU
-saturation. IQ2 pairing changed the relevant CPU work, so obtain a matched
-post-IQ2 resource profile before selecting the next optimization. Separate host
-compute/submission/waits, actual or explicitly unavailable bus/memory counters,
-and compatible-shape compute/bandwidth ceilings. An actual`perf stat` attempt
-for task-clock/cycles/instructions/cache-misses exited1 under the current
-permissions; counter availability remains unknown and no settings were changed.
-The prior
+The limiting hardware resource remains **incompletely attributed**. The aligned
+post-IQ2 client profile and actual-mix CPU calibration below are now closed.
+CPU-pool and GPU-wait intervals include scheduling,polling and overlap;GPU
+utilization,job fractions and logical weight GB/s do not prove CPU,RAM,PCIe or
+GPU saturation. Keep host compute/submission/waits,physical bus/memory counters
+and compatible-shape compute/bandwidth ceilings distinct. An actual`perf stat`
+attempt for task-clock/cycles/instructions/cache-misses exited1 under the current
+permissions;these counters were not collected and no settings were changed.
+The earlier
 [work census](../bench/results/2026-10-15-pr6-recovery-audit/cpu-work-census-current.json)
-and [client-resource evidence](../bench/results/2026-10-15-pr6-recovery-audit/client-resources-current.json)
-are historical context, not current saturation measurements.
+is historical context;the current
+[client-resource evidence](../bench/results/2026-10-15-pr6-recovery-audit/client-resources-current.json)
+bounds scheduled activity rather than hardware saturation.
 
 The prior MTP draft wrapper was about33ms/window. At the observed emitted
 outputs/window, prose's conditional whole-window budget at70tok/s is about31ms.
@@ -211,18 +211,33 @@ or RAM tuning. The observed12.8tok/s is diagnostic only,no clean comparison.
 See the [closed aligned resource diagnostic](../bench/results/2026-10-15-pr6-recovery-audit/client-resources-current.json).
 The earlier failed resource observation remains failed in its pinned Git history.
 
-The next CPU-only calibration links the unchanged production expert math. It
-uses each of the seven observed format pairs and its NT1..4 marginal histogram,
-rounded into100 batches at6 and28 unique experts. It compares one computing
-worker with five workers plus the host,and repeated groups with at least128MiB
-of rotating weights. All loaded distinct experts must match serial production
-math at uniform NT1..4 and heterogeneous-NT batches at the timed group size,
-with inactive lanes and canaries checked,before timing. Each of
-the56 expert cells retains five samples of at least one second;two read-only
-reference cells remain achieved rates rather than hardware upper bounds. This
-is an approximation of the measured marginal work,not a model trace or model
-throughput measurement. Keep the qualified6e40 engine+12fixtures;the extra
-CPU-only build retires after this calibration decision.
+The CPU-only calibration at source`7725d3f83` links unchanged production expert
+math. It uses each of the seven observed format pairs and its NT1..4 marginal
+histogram,rounded into100 batches at6 and28 unique experts. All28 check children
+and28 timing children passed serial-production bit equality at uniform NT1..4
+and heterogeneous batches,finite outputs,inactive lanes,canaries and actual
+affinity/work checks. All56 expert cells retain five samples of at least one
+second;two read references retain another10 samples. No GPU work ran.
+
+For28-job streaming batches,one-to-six computing-thread speedup is2.694..4.102x.
+For six format pairs,the six-job streaming/reuse median latency ratio is
+1.014..1.098;IQ4_XS/IQ4_NL reaches1.563. GU accounts for65..81% of the28-job
+six-thread pool wall,including scheduling/waiting. Read-only median achieved
+rates are30.642GB/s at one thread and29.403GB/s at six. These sensitivities
+disfavor aggregate RAM bandwidth as a sufficient explanation;they do not
+establish instruction,lookup,cache-port or synchronization saturation. Two
+streaming cells have45.8% and48.2% max/min spread;fine comparisons need a fresh
+repeated plan,without replacing original samples. Marginal NT counts,synthetic
+finite activations and fixed6/28 batches approximate the request rather than
+replaying its complete trace. No model speed or adoption follows.
+
+The [compact CPU result](../bench/results/2026-10-15-pr6-recovery-audit/cpu-roofline-current.json)
+keeps all280 expert and10 read samples,resource sensitivities and limits.
+Full framing is recoverable at`1c450997a`. After recovering108 project/helper
+and1376 GGML inputs,Main retired the auxiliary build and raw output:
+195files/14029797B. The qualified6e40 engine+12fixtures and decode's implementation,
+configuration and1256 slots remain unchanged. The next decision distinguishes
+CPU GU work from the independently pending MTP-head service question.
 
 Both model shards' actual metadata were inspected with the committed GGUF reader.
 `output.weight` is Q6_K,type14,shape2560x248320,521472000bytes;the startup Q5_K
