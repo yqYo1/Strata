@@ -20,8 +20,8 @@ import production_profile as production
 probe = production.probe
 tool = probe.tool
 P, B, RESULT = tool.P, tool.B, tool.RESULT
-ROOT = B / 'unitrace-warmed-graph-window-v1'
-KEY = 'unitrace_warmed_graph_window'
+ROOT = B / 'unitrace-warmed-graph-window-v2'
+KEY = 'unitrace_warmed_graph_window_v2'
 SOURCE = 'bench/sycl/graph_record_window.cpp'
 NATIVE = ('src/sycl/runtime.cpp', 'src/sycl/compat.cpp', 'src/sycl/command_profile.cpp')
 
@@ -63,12 +63,14 @@ def assets(container):
 def admission(record, container, binary=False):
     tool.guards.require(inputs(record['source_commit']) == record['input_sha256'], 'source changed')
     tool.guards.require(assets(container) == record['assets'], 'runtime/native/collector assets changed')
-    manifest = ROOT/'compiler-inputs.json'
+    manifest = Path(record['compiler_inputs']['path'])
     tool.guards.require(digest(manifest) == record['compiler_inputs']['sha256'], 'compiler manifest changed')
     rows = json.loads(manifest.read_text())
     tool.guards.require(len(rows) == record['compiler_inputs']['files'], 'compiler manifest count changed')
     for row in rows:
         tool.guards.require(digest(row['path']) == row['sha256'], 'compiler/header changed: ' + row['path'])
+    for row in record.get('loader_diagnostic_evidence', {}).get('ELFs', []):
+        tool.guards.require(digest(row['path']) == row['sha256'], 'inspected loader/driver ELF changed')
     if binary:
         tool.guards.require(digest(record['binary']['path']) == record['binary']['sha256'], 'binary changed')
 
@@ -77,6 +79,52 @@ def session_state(path, expected):
     raw = path.read_bytes()
     tool.guards.require(len(raw) == 1024 and struct.unpack_from('=i', raw)[0] == expected,
                         'collector session state differs')
+
+
+def command_buffer_inventory(text):
+    """Reconcile this runtime's command-buffer API, including paused captures."""
+    buffers, finalized, kernels = {}, set(), {}
+    replays = direct = 0
+    for line in text.splitlines():
+        match = re.search(r'<--- (ur\w+)\((.*)\) -> UR_RESULT_SUCCESS;', line)
+        if not match:
+            continue
+        name, args = match.groups()
+        def handle(field, output=False):
+            pattern = r'\.'+field+r' = 0x[0-9a-f]+ \((0x[0-9a-f]+)\)' if output else r'\.'+field+r' = (0x[0-9a-f]+)'
+            found = re.search(pattern, args)
+            tool.guards.require(found is not None, 'missing UR handle: '+field)
+            return found[1]
+        if name == 'urKernelCreate':
+            symbol = re.search(r'\.pKernelName = 0x[0-9a-f]+ \(([^)]+)\)', args)
+            tool.guards.require(symbol is not None, 'missing kernel name')
+            kernels[handle('phKernel', True)] = symbol[1]
+        elif name == 'urCommandBufferCreateExp':
+            ident = handle('phCommandBuffer', True)
+            tool.guards.require(ident not in buffers, 'duplicate command buffer')
+            buffers[ident] = []
+        elif name == 'urCommandBufferAppendKernelLaunchExp':
+            ident = handle('hCommandBuffer')
+            tool.guards.require(ident in buffers and ident not in finalized, 'append outside capture')
+            buffers[ident].append(kernels[handle('hKernel')])
+        elif name == 'urCommandBufferFinalizeExp':
+            ident = handle('hCommandBuffer')
+            tool.guards.require(ident in buffers and ident not in finalized, 'invalid finalize')
+            finalized.add(ident)
+        elif name == 'urEnqueueCommandBufferExp':
+            tool.guards.require(handle('hCommandBuffer') in finalized, 'unfinalized replay')
+            replays += 1
+        elif name.startswith('urEnqueueKernelLaunch'):
+            direct += 1
+        elif name in ('urQueueBeginCaptureIntoGraphExp', 'urEnqueueGraphExp'):
+            raise RuntimeError('different UR graph API needs its own inventory contract')
+    tool.guards.require(len(buffers) == len(finalized) == 1 and replays == 5 and direct == 0,
+                        'capture/replay inventory differs')
+    names = next(iter(buffers.values()))
+    tool.guards.require(len(names) == 2 and 'RecordWindowAdd' in names[0]
+                        and 'RecordWindowMultiply' in names[1], 'captured program differs')
+    return dict(capture_regions=1, graph_replays=replays, direct_kernels=direct,
+                template=names, executed_program_kernels=replays*len(names))
 
 
 def trace_evidence(root, expected, begin, end, pid, driver):
@@ -191,6 +239,9 @@ def check(record, container):
                         session_state(session, 1)
                 io.send(b'continue\n')
                 io.proc.stdin.close()
+                footer = io.line(20)
+                tool.guards.require(footer == 'graph_window PASS warm_replays=2 window_replays=3 kernels_per_replay=2'
+                    ' numerical=PASS guards=PASS checked_teardown=PASS', 'numerical/owner footer differs')
                 io.exit(20)
 
             try:
@@ -203,15 +254,15 @@ def check(record, container):
                     ' numerical=PASS guards=PASS checked_teardown=PASS' in text, 'missing numerical/owner footer')
                 stderr = err.read_text()
                 row['validation'] = probe.validation.preload_evidence(stderr, entry['pid'])
-                # A dlsym error-looking line can be nonfatal; retain it and fail
-                # this new qualification until its actual origin is resolved.
                 lookup = [line for line in stderr.splitlines() if 'symbol lookup error' in line]
                 row['loader_lookup_errors'] = lookup
-                tool.guards.require(not lookup, 'unresolved loader symbol diagnostic')
-                inventory = production.ur_inventory((root/'ur.log').read_text())
-                tool.guards.require(inventory['graph_replays'] == 5 and inventory['capture_regions'] == 1
-                    and inventory['replayed'].get('kernel') == 10 and inventory['direct'].get('kernel', 0) == 0,
-                    'actual capture/replay inventory differs')
+                # Exact optional driver probes, inspected in the actual ELF;
+                # still require normal exit, validation, numerical and coverage
+                # gates. Any other lookup diagnostic stops this new attempt.
+                for line in lookup:
+                    tool.guards.require(re.search(r'undefined symbol: (zelLoaderTranslateHandle|zelSetDriverTeardown) \(fatal\)$', line),
+                                        'new loader symbol diagnostic')
+                inventory = command_buffer_inventory((root/'ur.log').read_text())
                 row['inventory'] = inventory
                 if session is not None:
                     row['coverage'] = trace_evidence(root, cell['expected_kernels'], row['release_raw_ns'],
@@ -251,30 +302,46 @@ def main(action):
         record = container.get(KEY)
         if action == 'prepare':
             tool.guards.require(record is None and not ROOT.exists(), 'inspect existing attempt; no overwrite')
+            previous = container['unitrace_warmed_graph_window']
+            tool.guards.require(previous['stage'] == 'failed' and not previous['active']
+                and previous['error'] == "RuntimeError('fixture exit/closure failed')"
+                and previous['fresh_faults'] == [] and previous['boot_unchanged'], 'closed original failure required')
+            original = json.loads((B/'unitrace-warmed-graph-window-v1/check-record.json').read_text())
+            tool.guards.require(len(original['target_commands']) == 1 and not original['control_commands'], 'unexpected old process count')
+            closed = original['target_commands'][0]
+            tool.guards.require(closed['direct_child_reaped'] and closed['session_empty'] and not closed['survivors']
+                and closed['exit_code'] == 0 and not closed['errors'] and not closed['cleanup']
+                and closed['error'] == "RuntimeError('unexpected trailing protocol')", 'physical old owner not closed')
+            now = tool.supervision.identity(closed['pid'])
+            tool.guards.require(now is None or now['start_ticks'] != closed['direct_identity']['start_ticks'],
+                                'original process identity still present')
             revision = tool.git(P, 'rev-parse', 'HEAD').decode().strip()
             pins = inputs(revision)
             pinned = assets(container)
-            current = json.loads((B/'main-native-gdn-engine/record.json').read_text())
-            compiler = current['compiler']
+            tool.guards.require(pinned == previous['assets'] and set(pins) == set(previous['input_sha256'])
+                and [n for n in pins if pins[n] != previous['input_sha256'][n]] == ['tools/sycl/graph_record_window.py'],
+                'reuse permits only the explicitly changed controller')
+            compiler = previous['compiler']
             tool.guards.require(digest(compiler['path']) == compiler['sha256'], 'compiler changed')
             ROOT.mkdir(mode=0o700)
             (ROOT/'tmp').mkdir()
-            manifest = ROOT/'compiler-inputs.json'
-            rows = compiler_inputs(compiler['path'])
-            manifest.write_text(json.dumps(rows, separators=(',', ':')) + '\n')
-            install = Path(compiler['path']).parents[1]
-            command = [compiler['path'], '-std=c++20', '-O2', '-g0', '-fsycl', '-fsycl-id-queries-range=size_t',
-                '-fno-fast-math', '-ffp-contract=off', '-DSTRATA_ENABLE_SYCL=1', '-I'+str(P/'include'),
-                '-I'+str(P/'include/strata/sycl/compat'), *[str(P/n) for n in NATIVE], str(P/SOURCE),
-                '-pthread', '-ldl', '-o', str(ROOT/'graph_record_window')]
-            env = dict(PATH=str(install/'bin')+':/usr/bin:/bin', LANG='C', LC_ALL='C', TMPDIR=str(ROOT/'tmp'),
-                       LD_LIBRARY_PATH=str(install/'lib'), PYTHONDONTWRITEBYTECODE='1')
             legacy = json.loads((P/'bench/results/2026-10-15-pr6-recovery-audit/native-gdn-engine-build.json').read_text())
             hold = legacy['legacy_provenance_exception']
-            record = dict(schema='strata-unitrace-warmed-graph-window-v1', stage='build-prepared',
+            record = dict(schema='strata-unitrace-warmed-graph-window-v2', stage='built',
                 source_commit=revision, input_sha256=pins, assets=pinned, compiler=compiler,
-                compiler_inputs=dict(path=str(manifest), sha256=digest(manifest), files=len(rows)),
-                command=command, build_environment=env, active=False, ownership_closed=True,
+                binary_source_commit=previous['source_commit'], binary=previous['binary'],
+                compiler_inputs=previous['compiler_inputs'], command=previous['command'],
+                build_environment=previous['build_environment'], active=False, ownership_closed=True,
+                previous_attempt=dict(commit='64bd64e23', key='unitrace_warmed_graph_window', outcome_unchanged=True,
+                    failure='Controller failed to consume final PASS line; native exit0, numerical/guards/teardown PASS, physically closed. No collector cells ran.'),
+                reuse='No recompilation. All187 non-controller inputs and original binary unchanged; new controller consumes footer and reconciles actual UR0.12 command-buffer API.',
+                loader_diagnostic_evidence=dict(
+                    ELFs=[dict(path=p, sha256=digest(p)) for p in
+                          ('/usr/lib/x86_64-linux-gnu/libze_intel_gpu.so.1', '/usr/lib/x86_64-linux-gnu/libze_loader.so.1')],
+                    actual_driver_offsets=dict(translate_string='0x9c9821', translate_lookup='0x17d03d..0x17d05c',
+                        translate_pointer='0x3b377a0', null_checks=['0x291f9a','0x2947b2','0x34e440','0x35188f','0x9bc86a'],
+                        teardown_string='0x9d657a', teardown_lookup='0x15e7a1..0x15e7c0', teardown_null_skip='0x15e7d3..0x15e7d8'),
+                    finding='Installed loader exports both symbols. Actual driver performs nullable lookups and checks before indirect calls. Collector-off native nevertheless logs both probes with glibc fatal wording, then finishes numerical/guards/checked teardown and exits0. These two exact messages alone are not process-fatal or collector-source-loss evidence. Require all independent execution/coverage gates; other messages fail. Broader runtime teardown is not qualified.'),
                 passed=False, complete=False, service_coverage_qualified=False, model_qualified=False,
                 current_engine_untouched=True,
                 consumer='Imminent MTP stage-service attribution, requiring paused capture and warmed replay coverage.',
@@ -285,6 +352,7 @@ def main(action):
                     retained=True, detail_keys=list(hold),
                     next_action='main-primary-native-build-root-v1: close final dependency/quoted-header and ownership proof using matched cpu-gu-reuse-v3 receipt and exact bab7bf063 overlay. main-pr6-harness-configure-v6: recover9709a316 dependency receipt from Git and close generated-command/dependency/ownership checks. Review at this tooling boundary; do not clear either hold. Preserve current engine and13artifacts.'),
                 provenance='Main-authored project fixture/controller; existing project graph owner and MIT Intel PTI collector only. Installed official Intel LLVM toolchain, no XeStrata application source.')
+            admission(record, container, True)
         else:
             tool.guards.require(record is not None and RESULT.read_bytes() == tool.git(P, 'show', 'HEAD:'+str(RESULT.relative_to(P))),
                                 'commit prepared state before action')
