@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 """Main-owned current-engine decode resource diagnostic; no new native build."""
 import argparse
-import copy
 import fcntl
 import hashlib
 import json
@@ -21,7 +20,7 @@ from build_engine import blobs
 
 P, B, A = generation.P, generation.B, generation.A
 RESULT = A / 'client-resources-current.json'
-ROOT = B / 'decode-current-resources-v1'
+ROOT = B / 'decode-current-resources-v2'
 READER = P / 'bench/sycl/client_resources.py'
 sys.path.insert(0, str(READER.parent))
 import client_resources
@@ -76,35 +75,94 @@ def source_proof(record):
 
 
 def modules():
-    # Lazy imports avoid the legacy cpu_capacity -> resource_engine import edge.
+    # Lazy imports avoid the cpu_capacity -> resource_engine source-proof edge.
     import cpu_capacity as assets
-    import packed_bank as bank
+    import mtp_model_observer as restored
     import generation_compare as comparison
-    return assets, bank, comparison
+    return assets, restored, comparison
 
 
 def qualification():
-    assets, bank, comparison = modules()
-    full, proof = bank.qualification()
-    closed = generation.committed(comparison.RESULT)
-    guards.require(closed['complete'] and closed['passed'] and closed['ownership_closed'] and
-        not closed['active'] and closed['stage']=='closed' and len(closed['processes'])==2,
-        'close both retained/current generation pilots before resource preparation')
-    selected=closed['processes'][1]
-    guards.require(selected['arm']==1 and selected['passed'] and selected['complete'] and
-        selected['ownership_closed'] and not selected['active'] and selected['native_exit_code']==0 and
-        selected['fault_probe_successful'] and selected['fresh_faults']==[] and selected['boot_unchanged'] and
-        selected['build_source_commit']==full['source_commit'] and selected['binary_sha256']==full['binary']['sha256'] and
-        all(r['passed'] and r['complete'] and r['ownership_closed'] and not r['active'] and
-            r['native_exit_code']==0 and r['fault_probe_successful'] and r['fresh_faults']==[] and r['boot_unchanged']
-            for r in closed['processes']) and closed['plans'][1]['binary']==full['binary'] and len(selected['requests'])==len(selected['routes'])==2 and
-        all(generation.sample_eligible(r) for r in selected['requests']) and
-        [r['workload'] for r in selected['requests']]==['regular-code','varied-prose'] and
-        selected['requests'][0]['acceptance_rate']>=.60 and
-        all(r['actual_MoE_mode']==10 and r['restored_dense_layers']==48 and r['cache_payload_and_map_match'] and
-            r['private_bank']['actual_private_layers']==48 for r in selected['routes']),
-        'same-build current generation/route/closure proof required')
-    return full, dict(native=proof, generation_reference_sha256=generation.common.digest(comparison.RESULT)), closed
+    import query_profile as q
+    _, restored, _ = modules()
+    full, count = q.current_build()
+    setup = restored.original_setup()
+    closed = generation.committed(restored.RESULT)
+    guards.require(closed['stage']=='closed' and closed['binary']==full['binary'] and
+        len(closed['processes'])==1, 'closed same-build MTP attribution required')
+    row=closed['processes'][0]
+    guards.require(row['passed'] and row['complete'] and row['ownership_closed'] and not row['active'] and
+        row['native_exit_code']==0 and row['fault_probe_successful'] and row['fresh_faults']==[] and
+        row['boot_unchanged'] and len(row['requests'])==len(row['routes'])==1 and
+        row['requests'][0]['workload']=='varied-prose' and generation.sample_eligible(row['requests'][0]) and
+        row['requests'][0]['acceptance_rate']<=.40 and
+        row['routes'][0]['actual_MoE_mode']==10 and row['routes'][0]['restored_dense_layers']==48 and
+        row['routes'][0]['cache_payload_and_map_match'] and
+        row['routes'][0]['private_bank']['actual_private_layers']==48 and
+        row['observation']['summary']['accounting_valid']==1,
+        'complete current-route closure/work/attribution proof required')
+    profile_path=str(Path(closed['process_plans'][0]['root'])/'expert-profile.bin')
+    archive=json.loads(generation.git('show',setup['reference']['commit']+':'+setup['reference']['path']))
+    setup=dict(setup,expert_profile_sha256=closed['process_plans'][0]['inputs'][profile_path],
+        request_sha256=archive['processes'][0]['requests'][0]['request_sha256'])
+    proof=dict(original_inputs_recovered=count,build_sha256=generation.common.digest(q.BUILD_RECORD),
+        component_sha256=generation.common.digest(q.COMPONENT),
+        mtp_reference_sha256=generation.common.digest(restored.RESULT),setup_reference=setup['reference'])
+    return full, proof, setup
+
+
+def environment(setup):
+    _, restored, _=modules()
+    env=restored.environment(setup,ROOT,'0')
+    guards.require(env['STRATA_CPU_WORK_CENSUS']==env['STRATA_IQ2_PAIR']==env['STRATA_IQ2_PAIR_AUDIT']=='1' and
+        env['STRATA_SYCL_MTP_OBSERVER']=='0','fixed post-IQ2 diagnostic environment')
+    return env
+
+
+def observed_iq2_threads(text, samples, client_interval, audit):
+    """Bind registered callback TIDs to scheduled ticks, never useful kernel time.
+
+    The existing work parser first validates every audit record and counter. This
+    adds identities dropped by its compact summary and matches full proc captures.
+    """
+    pattern=(r'^strata IQ2_GU_THREAD stage=(begin|end) request=5 slot=(\d+) tid=(\d+) '
+        r'calls=(\d+) row_ops=(\d+) nt1_rows=(\d+) pair_rows=(\d+) cpu=(-?\d+) pinned=(\d+)$')
+    fields=('calls','row_ops','nt1_rows','pair_rows')
+    snapshots={stage:{} for stage in ('begin','end')}
+    for stage,slot,tid,*tail in re.findall(pattern,text,re.M):
+        guards.require(int(tid) not in snapshots[stage], 'duplicate registered TID')
+        snapshots[stage][int(tid)]=dict(zip((*fields,'cpu','pinned'),map(int,tail)))
+    begin,end=snapshots['begin'],snapshots['end'];active=[]
+    for tid,final in end.items():
+        initial=begin.get(tid,dict.fromkeys(fields,0))
+        delta={k:final[k]-initial[k] for k in fields}
+        guards.require(all(v>=0 for v in delta.values()),'registered work regressed')
+        if delta['row_ops']:
+            active.append(dict(tid=tid,cpu=final['cpu'],pinned=final['pinned'],work=delta))
+    guards.require(len(active)==audit['active_threads'] and sorted(t['cpu'] for t in active)==audit['cpus'] and
+        sum(t['pinned'] for t in active)==audit['pinned_threads'] and
+        all(sum(t['work'][k] for t in active)==audit[k] for k in fields), 'registered callback work differs')
+    first,split,last=(client_interval[k] for k in
+        ('request_begin_monotonic_ns','first_output_monotonic_ns','request_end_monotonic_ns'))
+    ticks=samples[0]['ticks_per_second']
+    for label,lo,hi in [('before_first_output',first,split),('after_first_output',split,last)]:
+        pairs=[(a,b) for a,b in zip(samples,samples[1:]) if lo<=a['begin_monotonic_ns'] and b['end_monotonic_ns']<=hi]
+        guards.require(len(pairs)>=2,'registered TID sampling coverage missing')
+        for t in active:
+            total=0;starts=set()
+            for a,b in pairs:
+                rows=[]
+                for capture in (a,b):
+                    found=[r for r in capture['threads'] if r['tid']==t['tid']]
+                    guards.require(len(found)==1,'registered TID missing from contained CPU interval')
+                    rows.append(found[0]);starts.add(found[0]['start_ticks'])
+                delta=rows[1]['cpu_ticks']-rows[0]['cpu_ticks']
+                guards.require(delta>=0 and len(starts)==1,'registered TID reuse/counter regression')
+                total+=delta
+            if 'start_ticks' in t:guards.require(t['start_ticks']==next(iter(starts)),'registered TID reused across output boundary')
+            t['start_ticks']=next(iter(starts));t[label]=dict(contained_intervals=len(pairs),cpu_seconds=total/ticks)
+    return dict(threads=sorted(active,key=lambda t:t['tid']),
+        limits='Scheduled user/kernel CPU includes callback arithmetic,active polling and other work on these TIDs; excludes blocked waits. IQ2 counters identify registered workers,not the instructions responsible for CPU time. Client windows are not native phase boundaries.')
 
 
 def benchmark_pins(revision):
@@ -118,17 +176,17 @@ def benchmark_pins(revision):
 def prospective_plan():
     return dict(question='On the current qualified strong-MTP route, where does decode host wall time go, how much native CPU time is scheduled and how much request-contained CCS work is observed?',
         process_count=1, workload='regular-code', runs=1, collector_seconds=900, collector_interval=1,
-        constants='Currente062 native/ac904 build and nine fixtures; same model/profile,131072 resident INT8 context,8192 prefill,1256 slots,5 workers,pcie0,adapt0,spec4,suffix0,caches0,greedy,no token graph/no coupled draft,Q8 MTP. Official bench.sh thinking-enabled regular-code diagnostic subset with four warmups and >=32K fresh input,>=1024 generated tokens and >=512 answer characters. Same request body as the closed current pilot.',
-        observers='Existing STRATA_DECODE_TIMING=1 plus passive client_resources.py proc/fdinfo reader. Keep the qualified parameter-validation,stage-progress,minimal draft/cache-audit and all runtime safety settings. No private preload or native/codegen change. Environment fixed before exec.',
-        admission='Recover exact current native/dependencies/recipe/fixtures, original closed current pilot and source/controller/model/runtime inputs. Verify actual native PID/start/SID/executable/environment and four warmups before long dispatch. Require complete official stream/journal/engine clocks,MTP work and GPU BF16/mode10/cache restoration, exact declared passive collector/source/exit, wholly contained CPU/CCS spans before/after first output, recomputed intervals and rounded host-scope/work conservation. Stop after failure or budget; never retry.',
+        constants='Restored6e40 native and all12 same-build fixtures; same model/profile,131072 resident INT8 context,8192 prefill,1256 slots,5 workers,pcie0,adapt0,spec4,suffix0,caches0,greedy,no token graph/no coupled draft,Q8 MTP. Official bench.sh thinking-enabled regular-code diagnostic subset with four warmups and >=32K fresh input,>=1024 generated tokens and >=512 answer characters. Same official v4 strong-code request body as the closed canonical cohort.',
+        observers='Existing CPU_WORK_CENSUS1,IQ2_PAIR_AUDIT1,DECODE_TIMING1,MTP_OBSERVER0 plus passive client_resources.py proc/fdinfo reader. Keep the qualified parameter-validation,stage-progress,minimal draft/cache-audit and all runtime safety settings. No private preload or native/codegen change. Environment fixed before exec.',
+        admission='Recover exact current native/dependencies/recipe/fixtures, original closed canonical cohort and current MTP diagnostic and source/controller/model/runtime inputs. Verify actual native PID/start/SID/executable/environment and four warmups before long dispatch. Require complete official stream/journal/engine clocks,MTP work and GPU BF16/mode10/cache restoration, exact declared passive collector/source/exit, wholly contained CPU/CCS spans before/after first output, recomputed intervals and rounded host-scope/work conservation. Stop after failure or budget; never retry.',
         interpretation='Keep verify/commit/draft outer wall clocks separate from nested host/wait/pool clocks. CPU_pool_run includes scheduling/waits,not useful arithmetic alone. GPU-reach wait is not device compute time. Compare logical CPU jobs/entries/NT1 lower bound and dot equivalents with source-compatible CPU calibration only after checking source/flags/shape limits. CCS activity,scheduled CPU and requested copies do not prove arithmetic,DRAM or PCIe saturation.',
         limits='One observed strong-MTP request. No clean speed,observer-overhead,weak-MTP/agent/task quality,physical262144/session/RESTORE,adoption or70tok/s qualification. Missing hardware counters/ceilings remain unknown.',
-        retention='Keep one individual request,compact before/after-first-output CPU/CCS aggregates,rounded host-clock/work checks,actual config/environment/source/native/owner/fault identities and decision. Retire normal logs,full sample timeline and JIT after replay/coverage verification; no full API trace or tensor capture.')
+        retention='Keep one individual request,compact before/after-first-output CPU/CCS and registered-IQ2-TID aggregates,rounded host-clock/work checks,actual config/environment/source/native/owner/fault identities and decision. Retire normal logs,full sample timeline and JIT after replay/coverage verification; no full API trace or tensor capture.')
 
 
 def current(record, full_models=False):
-    assets, _, comparison=modules()
-    full, proof, closed=qualification()
+    assets, _, _=modules()
+    full, proof, setup=qualification()
     guards.require(full['binary']==record['binary'] and proof==record['qualification'] and
         prospective_plan()==record['plan'],'current native/generation qualification or prospective plan changed')
     pins=benchmark_pins(record['source_commit'])
@@ -136,35 +194,32 @@ def current(record, full_models=False):
         generation.common.digest(generation.SETTINGS)==record['settings_sha256'],'source/settings changed')
     for name,sha in record['generated_inputs'].items():
         guards.require(generation.common.digest(name)==sha,'generated diagnostic input changed: '+name)
-    expected={k:v.replace(closed['plans'][1]['root'],str(ROOT)) for k,v in closed['plans'][1]['environment'].items()}
-    expected['STRATA_DECODE_TIMING']='1'
-    guards.require(record['environment']==expected and assets.machine_identity()==record['machine_identity'] and
+    guards.require(record['config']==modules()[1].recipe.config(setup,ROOT) and
+        record['environment']==environment(setup) and assets.machine_identity()==record['machine_identity'] and
         assets.model_pins(record['config'],record['model_assets'],full=full_models)==record['model_assets'],
-        'immutable environment or model/platform changed')
+        'immutable configuration,environment or model/platform changed')
     generation.runtime_assets_unchanged(record)
-    return closed
+    return setup
 
 
 def prepare():
     assets, _, comparison=modules()
     guards.require(not ROOT.exists(),'single-use current resource root; no retry')
     previous=generation.committed(RESULT)
-    guards.require(previous['complete'] and previous['passed'] and previous['ownership_closed'] and not previous['active'] and
+    guards.require(previous['stage']=='closed' and previous['ownership_closed'] and not previous['active'] and
         previous.get('artifact_retirement',{}).get('complete') is True,
         'preserve/close original resource observation before replacement')
-    full,proof,closed=qualification()
-    selected=closed['plans'][1]
+    full,proof,setup=qualification()
     source=generation.git('rev-parse','HEAD').decode().strip();pins=benchmark_pins(source)
-    models=assets.model_pins(selected['config'],closed['model_assets'],full=True)
-    guards.require(selected['config']['cwd']==str(P),'prepare/run only in the primary worktree after integration')
+    models=assets.model_pins(setup['config'],setup['model_assets'],full=True)
+    guards.require(setup['config']['cwd']==str(P),'prepare/run only in the primary worktree after integration')
     ROOT.mkdir(mode=0o700)
     for name in ('cache','tmp'):(ROOT/name).mkdir()
-    config=copy.deepcopy(selected['config'])
-    config['args'][config['args'].index('--expert-profile')+1]=str(ROOT/'expert-profile.bin')
-    config.update(log=str(ROOT/'engine.stderr'),env={})
-    env={k:v.replace(selected['root'],str(ROOT)) for k,v in selected['environment'].items()}
-    env['STRATA_DECODE_TIMING']='1'
+    config=modules()[1].recipe.config(setup,ROOT)
+    env=environment(setup)
     shutil.copyfile(P/'data/expert-profile.bin',ROOT/'expert-profile.bin')
+    guards.require(generation.common.digest(ROOT/'expert-profile.bin')==setup['expert_profile_sha256'],
+        'profile copy changed')
     collection=dict(source=dict(path=str(READER),sha256=generation.common.digest(READER)),seconds=900,interval=1)
     (ROOT/'config.json').write_text(json.dumps(config,indent=2)+'\n')
     (ROOT/'plan.json').write_text(json.dumps(dict(binary=full['binary'],native_validation_probe=None,
@@ -181,7 +236,7 @@ def prepare():
             '--long-generation-only','--long-generation-workload','regular-code','--think','--runs','1',
             '--profile-request-gates','--workload-id',comparison.WORKLOAD_ID,'--fail-fast-engine-error',
             '--ready-timeout','600','--out',str(ROOT/'bench')],
-        runtime_asset_delta=closed['runtime_asset_delta'],model_assets=models,machine_identity=assets.machine_identity(),
+        runtime_asset_delta=setup['runtime_asset_delta'],model_assets=models,machine_identity=assets.machine_identity(),
         source_count=len(pins),benchmark_fingerprint=assets.fingerprint(pins),settings_sha256=generation.common.digest(generation.SETTINGS),
         complete=False,passed=False,active=False,ownership_closed=True,clean_speed_qualified=False,
         hardware_saturation_qualified=False,model_adoption_qualified=False,
@@ -192,17 +247,19 @@ def prepare():
     print('Prepared current-engine resource diagnostic; commit exact plan before run.')
 
 
-def closed_evidence(record, closed, entry, boot):
+def closed_evidence(record, setup, entry, boot):
     """Replay actual closed files; callers separately prove source/assets/fault gates."""
-    _, _, comparison=modules()
+    _, restored, comparison=modules()
     evidence={}
     paths=list((ROOT/'bench').glob('*/results.json'))
     guards.require(supervision.closed(entry) and entry.get('exit_code')==0 and len(paths)==1,'owned official benchmark failed')
     result=json.loads(paths[0].read_text())
     rows,journal,events=comparison.official(ROOT,result,workloads=('regular-code',))
     evidence['requests']=rows
-    guards.require(result['complete'] and not result['results']['failures'] and rows[0]['request_sha256']==
-        closed['processes'][1]['requests'][0]['request_sha256'],'incomplete suite or changed request body')
+    guards.require(result['complete'] and not result['results']['failures'] and rows[0]['acceptance_rate']>=.60 and
+        rows[0]['request_sha256']==setup['request_sha256'],
+        'incomplete suite or observed workload is not strong MTP')
+    require_journal_binding(rows,generation.journal_evidence(ROOT)[1])
     evidence['warmups']=journal
     native=generation.native_end(ROOT,record,dict(config=record['config']),boot,entry['pid'])
     guards.require(record.get('native_identity')==native['native'] and record.get('effective_environment_verified') is True,
@@ -212,9 +269,11 @@ def closed_evidence(record, closed, entry, boot):
     text=(ROOT/'engine.stderr').read_text(errors='replace')
     evidence['route']=comparison.native_routes(text,events,1,workloads=('regular-code',))[0]
     all_rows=[e['sample'] for e in events if e['kind']=='result']
-    evidence['decode_timing']=generation.decode_timing_evidence(text,all_rows)[-1]
+    paired,work,timing=restored.recipe.work_evidence(text,all_rows,record['config'],1,ROOT)
+    evidence.update(decode_timing=timing[-1],iq2_dispatch=paired[-1],census=restored.recipe.compact_work(work)[-1])
     capture=ROOT/'client-resources.jsonl';samples=[json.loads(x) for x in capture.read_text().splitlines()]
     evidence['resources']=client_resources.summarize_capture(samples,native['native'],boot,rows[0]['client_interval'])
+    evidence['registered_iq2_threads']=observed_iq2_threads(text,samples[1:-1],rows[0]['client_interval'],paired[-1])
     evidence['collector_read_spans']=collection_read_spans(samples[1:-1],rows[0]['client_interval'])
     evidence['evidence_sha256']={p.name:generation.common.digest(p) for p in
         (paths[0],path,capture,ROOT/'engine-start.json',ROOT/'engine-exit.json',ROOT/'engine.stderr')}
@@ -225,7 +284,7 @@ def run():
     import select
     import time
     assets, _, comparison=modules()
-    record=generation.committed(RESULT);closed=current(record)
+    record=generation.committed(RESULT);setup=current(record)
     guards.require(record==json.loads((ROOT/'diagnostic-plan.json').read_text()) and record['stage']=='prepared' and
         not record['active'] and not (ROOT/'record.json').exists() and not (ROOT/'launch.json').exists(),
         'fresh exact diagnostic only; inspect an existing owner instead of retrying')
@@ -270,7 +329,7 @@ def run():
     owner=supervision.Owner(ROOT/'owned',persist)
     try:
         entry,_,_=owner.run('bench',record['command'],record['environment'],P,interaction=interact,**record['budgets'])
-        record.update(closed_evidence(record,closed,entry,boot))
+        record.update(closed_evidence(record,setup,entry,boot))
         current(record,full_models=True)
         record.update(passed=True,complete=True)
     except BaseException as error:

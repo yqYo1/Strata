@@ -19,9 +19,9 @@ class SourceProofTests(unittest.TestCase):
             root=Path(tmp)
             with patch.object(r,'ROOT',root),patch.object(r,'modules',return_value=(None,None,None)):
                 with self.assertRaisesRegex(RuntimeError,'single-use'):r.prepare()
-            for changed in (dict(complete=False,passed=True,ownership_closed=True,active=False),
-                            dict(complete=True,passed=True,ownership_closed=True,active=True),
-                            dict(complete=True,passed=True,ownership_closed=True,active=False)):
+            for changed in (dict(stage='closed',complete=False,passed=False,ownership_closed=False,active=False),
+                            dict(stage='closed',complete=True,passed=True,ownership_closed=True,active=True),
+                            dict(stage='closed',complete=True,passed=True,ownership_closed=True,active=False)):
                 with self.subTest(changed=changed),patch.object(r,'ROOT',root/'fresh'), \
                      patch.object(r,'modules',return_value=(None,None,None)), \
                      patch.object(r.generation,'committed',return_value=changed),patch.object(r,'qualification') as q:
@@ -80,35 +80,72 @@ class CurrentQualificationTests(unittest.TestCase):
         from test_generation_engine import sample
         binary=dict(path='/current',sha256='a'*64)
         full=dict(source_commit='native',binary=binary)
-        requests=[dict(sample(),workload='regular-code'),dict(sample(),workload='varied-prose',order=1,acceptance_rate=.39,drafts_accepted=390)]
-        route=dict(actual_MoE_mode=10,restored_dense_layers=48,cache_payload_and_map_match=True,private_bank=dict(actual_private_layers=48))
-        row=dict(arm=1,passed=True,complete=True,ownership_closed=True,active=False,native_exit_code=0,
-            fault_probe_successful=True,fresh_faults=[],boot_unchanged=True,build_source_commit='native',binary_sha256=binary['sha256'],
-            requests=requests,routes=[route.copy(),route.copy()])
-        closed=dict(complete=True,passed=True,ownership_closed=True,active=False,stage='closed',processes=[row.copy(),row],
-            plans=[{},dict(binary=binary)])
-        return full,closed,SimpleNamespace(RESULT=Path('/reference'))
+        request=dict(sample(),workload='varied-prose',acceptance_rate=.39,drafts_accepted=390)
+        route=dict(actual_MoE_mode=10,restored_dense_layers=48,cache_payload_and_map_match=True,
+            private_bank=dict(actual_private_layers=48))
+        row=dict(passed=True,complete=True,ownership_closed=True,active=False,native_exit_code=0,
+            fault_probe_successful=True,fresh_faults=[],boot_unchanged=True,requests=[request],routes=[route],
+            observation=dict(summary=dict(accounting_valid=1)))
+        closed=dict(stage='closed',binary=binary,processes=[row],
+            process_plans=[dict(root='/retired',inputs={'/retired/expert-profile.bin':'profile'})])
+        return full,closed,SimpleNamespace(RESULT=Path('/reference'),
+            original_setup=lambda:dict(reference={'commit':'original','path':'canonical.json'}))
 
-    def test_only_closed_same_build_current_generation_can_be_profiled(self):
+    def test_only_closed_same_build_current_route_can_be_profiled(self):
         import copy
-        from types import SimpleNamespace
-        full,closed,comparison=self.fixture()
-        bank=SimpleNamespace(qualification=lambda:(full,{'source':'proof'}))
-        for variant in ('valid','not_closed','old_arm_fault','source','binary','owner','short','CPU_route','weak_code'):
-            value=copy.deepcopy(closed);current=value['processes'][1]
-            if variant=='not_closed':value['complete']=False
-            if variant=='old_arm_fault':value['processes'][0]['fresh_faults']=['fault']
-            if variant=='source':current['build_source_commit']='other'
-            if variant=='binary':current['binary_sha256']='b'*64
-            if variant=='owner':current['ownership_closed']=False
-            if variant=='short':current['requests'][0]['read_tokens']=10
-            if variant=='CPU_route':current['routes'][0]['actual_MoE_mode']=2
-            if variant=='weak_code':current['requests'][0].update(acceptance_rate=.4,drafts_accepted=400)
-            with self.subTest(variant=variant),patch.object(r,'modules',return_value=(None,bank,comparison)), \
-                 patch.object(r.generation,'committed',return_value=value),patch.object(r.generation.common,'digest',return_value='digest'):
+        import query_profile as q
+        full,closed,restored=self.fixture()
+        for variant in ('valid','not_closed','fault','binary','owner','short','CPU_route','accounting'):
+            value=copy.deepcopy(closed);row=value['processes'][0]
+            if variant=='not_closed':value['stage']='running'
+            if variant=='fault':row['fresh_faults']=['fault']
+            if variant=='binary':value['binary']['sha256']='b'*64
+            if variant=='owner':row['ownership_closed']=False
+            if variant=='short':row['requests'][0]['read_tokens']=10
+            if variant=='CPU_route':row['routes'][0]['actual_MoE_mode']=2
+            if variant=='accounting':row['observation']['summary']['accounting_valid']=0
+            with self.subTest(variant=variant),patch.object(r,'modules',return_value=(None,restored,None)), \
+                 patch.object(q,'current_build',return_value=(full,9853)), \
+                 patch.object(r.generation,'committed',return_value=value), \
+                 patch.object(r.generation,'git',return_value=json.dumps({'processes':[{'requests':[{'request_sha256':'a'*64}]}]}).encode()), \
+                 patch.object(r.generation.common,'digest',return_value='digest'):
                 if variant=='valid':self.assertEqual(r.qualification()[0],full)
                 else:
                     with self.assertRaises(RuntimeError):r.qualification()
+
+
+class RegisteredThreadTests(unittest.TestCase):
+    def fixture(self):
+        text='\n'.join('strata IQ2_GU_THREAD stage='+stage+' request=5 slot=0 tid=44 calls='+str(count)+
+            ' row_ops='+str(count)+' nt1_rows='+str(count)+' pair_rows='+str(count)+' cpu=2 pinned=1'
+            for stage,count in [('begin',10),('end',30)])
+        samples=[dict(begin_monotonic_ns=i*100,end_monotonic_ns=i*100+10,ticks_per_second=100,
+            threads=[dict(tid=44,start_ticks=5,cpu_ticks=i*10)]) for i in range(8)]
+        interval=dict(request_begin_monotonic_ns=0,first_output_monotonic_ns=350,request_end_monotonic_ns=800)
+        audit=dict(active_threads=1,pinned_threads=1,cpus=[2],calls=20,row_ops=20,nt1_rows=20,pair_rows=20)
+        return text,samples,interval,audit
+
+    def test_registered_work_and_scheduled_ticks_are_separate_bound_evidence(self):
+        text,samples,interval,audit=self.fixture()
+        result=r.observed_iq2_threads(text,samples,interval,audit)['threads'][0]
+        self.assertEqual(result['work']['row_ops'],20)
+        for phase in ('before_first_output','after_first_output'):
+            self.assertEqual(result[phase],dict(contained_intervals=3,cpu_seconds=.3))
+
+    def test_reject_missing_reused_regressed_and_unbound_threads(self):
+        for variant in ('missing','reuse','boundary_reuse','ticks','work','cpu','pin','coverage'):
+            text,samples,interval,audit=self.fixture()
+            if variant=='missing':samples[2]['threads']=[]
+            if variant=='reuse':samples[2]['threads'][0]['start_ticks']=6
+            if variant=='boundary_reuse':
+                for row in samples[4:]:row['threads'][0]['start_ticks']=6
+            if variant=='ticks':samples[2]['threads'][0]['cpu_ticks']=0
+            if variant=='work':audit['row_ops']+=1
+            if variant=='cpu':audit['cpus']=[3]
+            if variant=='pin':audit['pinned_threads']=0
+            if variant=='coverage':interval['first_output_monotonic_ns']=110
+            with self.subTest(variant=variant),self.assertRaises(RuntimeError):
+                r.observed_iq2_threads(text,samples,interval,audit)
 
 
 class CurrentCollectionPathTests(unittest.TestCase):
@@ -132,8 +169,9 @@ class CurrentCollectionPathTests(unittest.TestCase):
                 (root/'engine.stderr').write_text('')
                 (root/'client-resources.jsonl').write_text('{}\n{}\n')
                 (root/'bench'/'run'/'results.json').write_text(json.dumps({'complete':True,'results':{'failures':[]}}))
-                row=dict(request_sha256='b'*64,client_interval={})
+                row=dict(request_sha256='b'*64,client_interval={},acceptance_rate=.8)
                 (root/'bench'/'run'/'requests.jsonl').write_text(json.dumps({'kind':'result','sample':row})+'\n')
+                restored=SimpleNamespace(recipe=SimpleNamespace(work_evidence=lambda *a:([{}],[{}],[{'matched':True}]),compact_work=lambda w:w))
                 comparison=SimpleNamespace(official=lambda *a,**k:([row],{'valid':True},[]),native_routes=lambda *a,**k:[{'mode':10}])
                 class Owner:
                     active=None
@@ -143,10 +181,11 @@ class CurrentCollectionPathTests(unittest.TestCase):
                         record.update(native_identity=start['native'],effective_environment_verified=True)
                         return {'exit_code':0,'pid':42},None,None
                 with patch.object(r,'ROOT',root),patch.object(r,'RESULT',result_path), \
-                     patch.object(r,'modules',return_value=(None,None,comparison)),patch.object(r,'current',return_value={'processes':[{}, {'requests':[row]}]}), \
+                     patch.object(r,'modules',return_value=(None,restored,comparison)),patch.object(r,'current',return_value={'request_sha256':'b'*64}), \
                      patch.object(r.generation,'committed',return_value=record),patch.object(r.supervision,'Owner',Owner), \
                      patch.object(r.supervision,'closed',return_value=True),patch.object(r.subprocess,'check_output',side_effect=['-- cursor: x\n','']), \
-                     patch.object(r.generation,'decode_timing_evidence',return_value=[{'matched':True}]), \
+                     patch.object(r.generation,'journal_evidence',return_value=({},[row])), \
+                     patch.object(r,'observed_iq2_threads',return_value={'threads':[]}), \
                      patch.object(r.client_resources,'summarize_capture',return_value={'coverage':True}), \
                      patch.object(r,'collection_read_spans',return_value={}),patch.object(r.guards,'driver_guard'):
                     self.assertEqual(r.run(),1 if fail else 0)

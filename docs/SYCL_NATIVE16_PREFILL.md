@@ -6,7 +6,7 @@ Prefill and decode select independent kernels, scheduling and placement. Shared
 processing requires a matched measurement showing a benefit for the recorded
 phase and shapes. Legacy sharing remains an audit obligation. A prefill change
 that affects decode has a separation defect; a prefill gain cannot compensate
-for it. Preserve the current decode implementation, configuration and1256-slot
+for it. Preserve the current decode implementation, configuration and 1256-slot
 placement while fixing the prefill path.
 
 The selected continuation build is the original phase-scoped
@@ -106,7 +106,7 @@ coverage reports are not implemented ports. The last actual upstream check was
 2026-10-23T21:26:18Z. PR180/default integration is blocked by the existing merge
 policy; original measured commits remain reachable on pushed`feature/sycl`.
 
-## MTP graph observer: tiny support fixture passed, model checks pending
+## MTP graph observer: closed diagnostic, resource attribution next
 
 The default-off SYCL observer separates host wall and calling-thread CPU time
 for the draft round and chain steps. `STRATA_SYCL_MTP_OBSERVER=host` retains
@@ -189,6 +189,17 @@ remain conditional after their prior overhead failure. See the
 [closed MTP diagnostic](../bench/results/2026-10-15-pr6-recovery-audit/mtp-model-observer-current.json).
 No speed improvement,observer-overhead bound or implementation adoption follows
 from this one observed process.
+
+The next committed controller uses that same native generation and canonical
+configuration for one official strong-code request, with MTP graph observation
+disabled. Existing decode timing, CPU work census and IQ2 dispatch records align
+with the passive proc/DRM collector. Registered IQ2 callback TIDs are matched to
+scheduled ticks on each side of first output; this counts active polling and
+other scheduled work as well as arithmetic, and excludes blocked waits. The
+900-second collector budget is suitable for the previously observed strong-code
+request, while the weak-prose request alone previously needed about902seconds.
+This is an attribution diagnostic, with no clean speed or saturation claim.
+The earlier failed resource observation remains failed in its pinned Git history.
 
 ## Tensor storage and precision
 
