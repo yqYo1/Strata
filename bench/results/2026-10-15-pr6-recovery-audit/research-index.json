@@ -9088,7 +9088,7 @@
       "decode_sycl_graph_event_attribution_scope"
     ],
     "nonduplication": "Study compute-compute DAG execution and queue semantics, not activation packing, multi-output tiling, command replay, or copy overlap.",
-    "status": "accepted_completion_pending_native_review",
+    "status": "reviewed_conditional_reference",
     "report": "/home/yayoi/orca/workspaces/Strata/sycl/.cache/strata-research/20261023/lifecycle-canary/compute-compute-dag.md",
     "eligibility_evidence": "Native Luna/max review supplies exact same-input groups and source/public-contract prerequisites. Closed model-v2 offline reanalysis now passed8474rows/174families,all15hashes,noGPUrerun; original parser failure preserved. One externally verified Luna/high terminal will be reused; other two completed external terminals are closed by their Main owner. Sixolderholds unchanged.",
     "main_read_policy": "Main reads native Luna/max short review metadata; no report body on arrival.",
@@ -9126,10 +9126,109 @@
     "report_bytes": 10855,
     "report_sha256": "1a29c5f5eb098bf29989e6ea02d8e40739b52e8086022e7b0cee3ac295cbc149",
     "active_report_body_unread_by_main": true,
-    "native_review_pending": {
+    "review": {
+      "disposition": "accept_with_citation_and_level_zero_detail_corrections_as_conditional_reference",
+      "digest": "Substantive and source-specific survey of the MTP fan-out after shared packing: compares one in-order queue, one out-of-order queue, separate compute queues/Level Zero lists, and grouped dispatch. It correctly separates legal dependency ordering from guaranteed hardware concurrency, preserves K/V state and gate/up downstream joins, and covers lifetimes, errors, resource interference and cases where overlap loses. It claims no local timing, bottleneck or adoption result.",
+      "corrections_and_limits": [
+        "Bibliographic correction: the report attributes Characterizing Concurrency Mechanisms for NVIDIA GPUs under Deep Learning Workloads to Zhao et al. The cited 2021 Performance Evaluation paper is by Guin Gilman and Robert J. Walls (DOI 10.1016/j.peva.2021.102234). Its abstract supports the stated NVIDIA-specific limits; do not imply Intel/Xe2 transfer. Source: https://www.sciencedirect.com/science/article/pii/S0166531621000511.",
+        "Useful Level Zero detail to add to any later source/implementation note: the v1.19.12 Core guide says the queue index and queue-group numQueues express potential concurrency; different indices may launch/execute concurrently, while same-index queues launch sequentially but may execute concurrently. It still explicitly gives no guarantee of concurrent execution. This qualifies how the report's queue-group availability caveat should be applied. Source: https://oneapi-src.github.io/level-zero-spec/level-zero/latest/core/PROG.html.",
+        "Spot-check confirms the cited SYCL 2020 revision 12, UR Programming Guide and Level Zero Core semantics, plus the Gregg et al. HotPar paper's measured counterexample (39% of pairs faster; one over 3x slower). The UR guide is an unversioned current page and Level Zero uses a latest URL despite its displayed v1.19.12 label; the report records checked dates/identifiers. Preserve those limits and pin immutable docs before source-level implementation use.",
+        "The MTP source map is stated against 6e40. This review did not inspect Git or compare it with Main's model-v2 replay source; Main's source audit remains authoritative. No source code was reused or proposed; XeStrata remains excluded."
+      ],
+      "retrieval_tags": [
+        "MTP Q/K/V fan-out",
+        "shared expert gate/up",
+        "SYCL in-order versus out-of-order",
+        "UR cross-queue wait lists",
+        "Level Zero queue index and event lifetime",
+        "concurrency not guaranteed",
+        "GPU resource interference",
+        "no local performance claim"
+      ],
+      "retention": "Keep indexed as a conditional method reference through Main's MTP attribution and any concrete queue-scheduling decision. At that review, retain the compact dependency/queue-index/citation corrections and retire the body if no named implementation comparison needs it. The passed closed-data replay is not evidence that these kernels overlap or that scheduling is beneficial.",
       "reviewer": "native Codex gpt-6-luna/max",
-      "output": ".cache/strata-research/20261023/compute-dag-review.json",
-      "consumer": "Index short corrections/retrieval metadata and eligible next scopes;Main must not read collection body on arrival."
+      "proof": {
+        "path": ".cache/strata-research/20261023/compute-dag-review.json",
+        "bytes": 7624,
+        "sha256": "d96777c72b946383aa141e3d414f922cbe9c1e4e9e9a662ecf7ff053b84ee449"
+      }
     }
+  },
+  "gpu_jit_family_source_shape_attribution_methods_20261023": {
+    "id": "gpu_jit_family_source_shape_attribution_methods_20261023",
+    "classification": "knowledge collection",
+    "schedulable_now": true,
+    "report_budget_bytes": 12288,
+    "question": "For SYCL/Level Zero GPU traces whose aggregated JIT/kernel families span multiple launch geometries, compare documented ways to correlate family names and launch records with source call sites, logical tensor dimensions and inference phase. Cover compiler/JIT metadata, profiler/trace correlation and stable launch-site or phase annotations; analyze collisions from templates, JIT variants, wrapper kernels and graph replay, and what geometry alone cannot recover. Use official SYCL/Intel/Level Zero sources and transferable non-LLM HPC/GPU profiling methods. Do not inspect processes, run profilers, edit code, reanalyze raw rows or make a bottleneck claim.",
+    "prerequisite_evidence": [
+      "Main has a completed conserved 8,474-row/174-family replay and retained raw family table.",
+      "Main's source audit found eight output geometries in the largest Q6_K family but cannot infer n_in, ncols or phase from geometry; the 54.942 s aggregate is therefore not attributable wholesale to the MTP head.",
+      "This public-method survey needs no missing hardware counters and does not wait on another inference run."
+    ],
+    "index_overlaps": [
+      "mtp_q6_head_resource_design_20261022",
+      "decode_sycl_graph_event_attribution_scope",
+      "decode_work_and_byte_model_source_scope",
+      "neo_profiled_native_query_source_scope"
+    ],
+    "nonduplication": "Focus on mapping aggregated JIT families to call-site/shape/phase metadata. Exclude head calibration, logical work/byte derivation, graph timestamp support and native-query overhead.",
+    "consumer": "Main's next source/phase attribution of the retained model-v2 family table; use findings only to decide which families warrant a bounded follow-up.",
+    "status": "eligible_pending_startup",
+    "report": "/home/yayoi/orca/workspaces/Strata/sycl/.cache/strata-research/20261023/attribution-jit/report.md",
+    "main_read_policy": "Main reads native Luna/max short review metadata; no body on arrival.",
+    "native_source": "6e40afc1beddd059ee518617f6c1efce1da14aca",
+    "previous_index": "bench/results/2026-10-15-pr6-recovery-audit/research-index.json",
+    "current_evidence": "bench/results/2026-10-15-pr6-recovery-audit/cpu-profiler-current.json/native_model_aggregate_v2_reanalysis",
+    "next_review": "After accepted bounded completion,native Luna/max reviews sources,depth,novelty andnext eligible scope;Main continues serialized implementation/analysis."
+  },
+  "current_qsa_prefix_work_geometry_audit_20261023": {
+    "id": "current_qsa_prefix_work_geometry_audit_20261023",
+    "classification": "decision support",
+    "schedulable_now": true,
+    "report_budget_bytes": 12288,
+    "report": "/home/yayoi/orca/workspaces/Strata/sycl/.cache/strata-research/20261023/attribution-qsa/report.md",
+    "question": "Independently map the selected6e40 QSA ordered-exp prefix family to actual long-prefill callsites,query extents,selection-width evolution and fixed matrix tiling. Derive source-issued QK/PV FP32-accumulating BF16 MMA work,valid versus padded arithmetic,requested K/V global payload and SLM/barrier/reduction structure for the observed33213rows/12QSA layers/8192chunks. State what source plus60observed executions prove and do not prove about logical selected cells,phase,physical traffic,hardware bottleneck and any corresponding117489token projection. Identify the smallest compatible calibration that could distinguish memory versus matrix/instruction/synchronization limits;no implementation proposal.",
+    "prerequisite_evidence": [
+      "Closed conserved v2replay provides60prefix compute calls,48with8192queries and12with445queries,total6908788307ns.",
+      "Current compiled-native source is exact6e40; selection width/header,host step fill,production callsite and MMA kernel are available.",
+      "Existing current_operation_ceiling_scope/native16 ledger is marked targeted-correction-needed and predates this actual observed source/shape binding."
+    ],
+    "index_overlaps": [
+      "current_operation_ceiling_scope",
+      "qsa_cached_parallel_sum_contract_scope",
+      "qsa_operand_staging_scope"
+    ],
+    "nonduplication": "Do not repeat generic QSA method literature or old78K MoE FLOPs. Audit this exact source,completed32K profile and operation definitions;reuse/correct existing ledger only where still valid.",
+    "status": "eligible_pending_startup",
+    "main_read_policy": "Decision support:Main may retrieve relevant findings;native Luna/max reviews source/depth before integration.",
+    "native_source": "6e40afc1beddd059ee518617f6c1efce1da14aca",
+    "previous_index": "bench/results/2026-10-15-pr6-recovery-audit/research-index.json",
+    "current_evidence": "bench/results/2026-10-15-pr6-recovery-audit/cpu-profiler-current.json/native_model_aggregate_v2_reanalysis",
+    "next_review": "After accepted bounded completion,native Luna/max reviews sources,depth,novelty andnext eligible scope;Main continues serialized implementation/analysis."
+  },
+  "current_pti_transfer_label_payload_audit_20261023": {
+    "id": "current_pti_transfer_label_payload_audit_20261023",
+    "classification": "decision support",
+    "schedulable_now": true,
+    "report_budget_bytes": 12288,
+    "report": "/home/yayoi/orca/workspaces/Strata/sycl/.cache/strata-research/20261023/attribution-transfers/report.md",
+    "question": "Trace exact official PTI4b6d74294cdc72766c00a9211fe2e4261ee94244 H2D/M2D/D2H/D2D command-label and size semantics,then characterize the completed v2copy cohorts by calls/requested bytes/service from its validated structured table. Compare current sourceArena/privateexpert-bank/loan-refill/KV transfer callsites to these sizes. Mark ambiguous/mixed phase matches explicitly;explain whether M2D or mapped GPU reads can be equated to PCIe wire traffic and what remains unmeasured. Return compact conserved totals and a bounded attribution/calibration recommendation,not a new optimization or measurement.",
+    "prerequisite_evidence": [
+      "The original v2engine andbenchmark exited0;separate source-pinned replay conserves all8474rows/174families and keeps the structured table for this current source attribution.",
+      "Exact official collector source and original6e40 source/runtime qualification exist; no GPU execution or process inspection is needed.",
+      "Prior b570wire-byte method review explicitly leaves physical counters unsupported/unknown;new task is actual label/size/source matching,not another hardware-counter survey."
+    ],
+    "index_overlaps": [
+      "b570_pcie_wire_byte_measurement_methods_scope",
+      "decode_work_and_byte_model_source_scope",
+      "sycl_host_transfer_preparation_collection_scope"
+    ],
+    "nonduplication": "Use the actual current collector table and original source. Exclude generic PCIe capability surveys,cache-placement optimization and physical saturation claims.",
+    "status": "eligible_pending_startup",
+    "main_read_policy": "Decision support:Main may retrieve relevant findings;native Luna/max reviews source/depth before integration.",
+    "native_source": "6e40afc1beddd059ee518617f6c1efce1da14aca",
+    "previous_index": "bench/results/2026-10-15-pr6-recovery-audit/research-index.json",
+    "current_evidence": "bench/results/2026-10-15-pr6-recovery-audit/cpu-profiler-current.json/native_model_aggregate_v2_reanalysis",
+    "next_review": "After accepted bounded completion,native Luna/max reviews sources,depth,novelty andnext eligible scope;Main continues serialized implementation/analysis."
   }
 }
