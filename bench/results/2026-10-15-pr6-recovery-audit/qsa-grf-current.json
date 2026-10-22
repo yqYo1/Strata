@@ -512,7 +512,7 @@
     "reason": "Controller called query-mode-scoped runtime validator with engine-compare; refused unknown query diagnostic mode before creating check root or launching a native child. New controller verifies exact qualified runtime identities for its actual fixture mode; no mode relabeling or hash refresh."
   },
   "check_plan": {
-    "stage": "prepared",
+    "stage": "closed",
     "mode": "resources",
     "source_commit": "a2fbf491f006918ef029b15c68d05a7508236962",
     "controller_inputs": {
@@ -897,6 +897,299 @@
           "physical262144_component_addressed": true,
           "stdout_sha256": "42a0d93d92f578a2b9594eedec9a5aaca457665250129bb704f789056243c3c7",
           "stderr_sha256": "1eb1297dc8eda30e144125eca9242e52c855922713756ee3a8f97d4df0eaa468"
+        }
+      ],
+      "postchecks_complete": true,
+      "postcheck_errors": [],
+      "fresh_faults": [],
+      "boot_unchanged": true,
+      "driver_after": {
+        "pci": "/sys/bus/pci/devices/0000:05:00.0",
+        "driver": "xe",
+        "vendor": "0x8086",
+        "device": "0xe20c",
+        "kernel": "7.0.0-38-generic",
+        "devcoredump": false
+      }
+    },
+    {
+      "mode": "resources",
+      "source_commit": "a2fbf491f006918ef029b15c68d05a7508236962",
+      "numerical_binary": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-ordered-grf-v1/numerical",
+        "sha256": "0568890f4761e3692ee46a6c6b794bd80f0cdcdda93b7259bd384b05f50d99c5",
+        "bytes": 1585448
+      },
+      "passed": true,
+      "complete": true,
+      "active": false,
+      "ownership_closed": true,
+      "observations": [
+        {
+          "arm": "all",
+          "pid": 2468020,
+          "exit_code": 0,
+          "ownership_closed": true,
+          "validation": {
+            "pid": 2468020,
+            "loader": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_loader.so.0.12.0",
+            "threads_before": 1,
+            "preinit": 37,
+            "config_enabled": true,
+            "first_init": true,
+            "dispatch_result": 46,
+            "output_untouched": true,
+            "retained_reference_until_exit": true,
+            "runtime_teardown_qualified": false
+          },
+          "session_removed": true,
+          "timing": {
+            "clock_floor_ns": 20,
+            "samples": [
+              [
+                0,
+                97,
+                3,
+                33,
+                "gather",
+                0,
+                0,
+                0,
+                0.717703
+              ],
+              [
+                0,
+                97,
+                3,
+                33,
+                "gather",
+                0,
+                1,
+                1,
+                0.725818
+              ],
+              [
+                0,
+                97,
+                3,
+                33,
+                "gather",
+                0,
+                2,
+                2,
+                0.457993
+              ],
+              [
+                0,
+                97,
+                3,
+                33,
+                "gather",
+                1,
+                0,
+                1,
+                0.469545
+              ],
+              [
+                0,
+                97,
+                3,
+                33,
+                "gather",
+                1,
+                1,
+                2,
+                0.423949
+              ],
+              [
+                0,
+                97,
+                3,
+                33,
+                "gather",
+                1,
+                2,
+                0,
+                0.43495
+              ],
+              [
+                0,
+                97,
+                3,
+                33,
+                "gather",
+                2,
+                0,
+                2,
+                0.425412
+              ],
+              [
+                0,
+                97,
+                3,
+                33,
+                "gather",
+                2,
+                1,
+                0,
+                0.439909
+              ],
+              [
+                0,
+                97,
+                3,
+                33,
+                "gather",
+                2,
+                2,
+                1,
+                0.469555
+              ],
+              [
+                0,
+                97,
+                3,
+                33,
+                "gather",
+                3,
+                0,
+                0,
+                0.46132
+              ],
+              [
+                0,
+                97,
+                3,
+                33,
+                "gather",
+                3,
+                1,
+                1,
+                0.446812
+              ],
+              [
+                0,
+                97,
+                3,
+                33,
+                "gather",
+                3,
+                2,
+                2,
+                0.421815
+              ],
+              [
+                0,
+                97,
+                3,
+                33,
+                "gather",
+                4,
+                0,
+                1,
+                0.439398
+              ],
+              [
+                0,
+                97,
+                3,
+                33,
+                "gather",
+                4,
+                1,
+                2,
+                0.463965
+              ],
+              [
+                0,
+                97,
+                3,
+                33,
+                "gather",
+                4,
+                2,
+                0,
+                0.437424
+              ],
+              [
+                0,
+                97,
+                3,
+                33,
+                "gather",
+                5,
+                0,
+                2,
+                0.433127
+              ],
+              [
+                0,
+                97,
+                3,
+                33,
+                "gather",
+                5,
+                1,
+                0,
+                0.448275
+              ],
+              [
+                0,
+                97,
+                3,
+                33,
+                "gather",
+                5,
+                2,
+                1,
+                0.434038
+              ]
+            ]
+          },
+          "stdout_sha256": "8972776774bb29753cfb7f1b7311ef428e786aef37e1f9000bea5e75f2ee3039",
+          "stderr_sha256": "d086a2454e14aeffc3e23626c3e7acb84cfa7a55e9428324ede5a3418c4b730c",
+          "resources": {
+            "conserved_device_ns": 3934737,
+            "table_rows": 24,
+            "compute_calls": {
+              "0": 8,
+              "1": 7,
+              "2": 7
+            },
+            "properties": [
+              {
+                "arm": 0,
+                "compiled": "JIT",
+                "SIMD": 16,
+                "arguments": 18,
+                "raw_SLM": 32,
+                "private_memory_descriptor": 0,
+                "spill_memory_descriptor": 12480,
+                "GRF": 128
+              },
+              {
+                "arm": 1,
+                "compiled": "JIT",
+                "SIMD": 16,
+                "arguments": 18,
+                "raw_SLM": 32,
+                "private_memory_descriptor": 0,
+                "spill_memory_descriptor": 12480,
+                "GRF": 128
+              },
+              {
+                "arm": 2,
+                "compiled": "JIT",
+                "SIMD": 16,
+                "arguments": 18,
+                "raw_SLM": 32,
+                "private_memory_descriptor": 0,
+                "spill_memory_descriptor": 0,
+                "GRF": 256
+              }
+            ],
+            "limits": "Allocation descriptors and summed service only;rawSLM units,actual spill traffic,occupancy,physical traffic and model/decode speed remain unmeasured."
+          }
         }
       ],
       "postchecks_complete": true,
