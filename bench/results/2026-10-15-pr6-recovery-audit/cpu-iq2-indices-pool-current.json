@@ -1,17 +1,35 @@
 {
-  "stage": "prepared",
+  "stage": "build",
   "source_commit": "341d0d94768a9c089c75ea44258e56d86b754435",
   "plan_sha256": "266e91767e52cc99a4a58c1a9c7be543aa33cb6d09db0f2947dc89a5b757de15",
-  "passed": false,
-  "complete": false,
+  "passed": true,
+  "complete": true,
   "active": false,
   "ownership_closed": true,
   "GPU_executed": false,
-  "host_parser_tests": {
-    "source": "d9c544620",
-    "groups": 3,
-    "command": "flock -n B/owned-v0141-measurement.lock timeout 60s python3 -B tests/core/test_iq2_indices_pool.py",
-    "exit_code": 0,
-    "later_controller_delta": "341d0d947 changes tool/recipe pins only;parser/test bodies unchanged."
+  "checks": [],
+  "binary": {
+    "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-iq2-indices-pool-v1/build/cpu_iq2_indices_pool",
+    "sha256": "0554fe7081feee91aed119ea611555b976a0b62bb8bae270f818468869cd2be9",
+    "bytes": 2577776
+  },
+  "compile_commands_sha256": "cc9d6758763eded9fa5760703e28f00aa3440bde4005eec372947bebb763e7b5",
+  "lowering": {
+    "pair_dot": {
+      "start": 4548432,
+      "bytes": 3220,
+      "gathers": 0,
+      "pdep": 0,
+      "calls": 0,
+      "vector_stack_accesses": 0
+    },
+    "indices_pair_dot": {
+      "start": 4284608,
+      "bytes": 2851,
+      "gathers": 0,
+      "pdep": 32,
+      "calls": 0,
+      "vector_stack_accesses": 0
+    }
   }
 }
