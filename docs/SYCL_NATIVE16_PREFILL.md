@@ -303,6 +303,17 @@ sources/controllers and28 generated/transaction files (3066914 bytes) were retir
 the compact API error, critical syscall lines, selected metric semantics and
 deletion manifest; the original13 engine/fixture artifacts remain unchanged.
 
+The next isolated discriminator changes only two cached-Q/QK loop hints to
+explicit full unrolling. An unchanged namespace control separates that hint
+from the isolated entrypoint. The original production kernel, numerical order,
+default GRF policy and all13 selected engine/fixture artifacts remain fixed.
+`build_qsa_unroll.py` prepares a source-pinned two-executable component build;
+`check_qsa_unroll.py` requires smoke, component and resource gates before three
+clean processes and162 samples. The prospective latency gate is0.95 against
+both controls, with no shape above1.05 and both large patterns improving in
+every process. This is compiler sensitivity, not an established hardware
+bottleneck or model adoption. A failed gate cannot advance to a model trial.
+
 Remaining model gates are repeated phase-preserving adoption evidence,
 agent-session and task quality, full physical262144 tokens including the final
 slots and tail boundaries, prefill-to-decode/session/RESTORE, and70tok/s decode.
