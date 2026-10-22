@@ -350,8 +350,10 @@ candidate latency geomeans are1.011124 versus production and1.010766 versus the
 namespace control. Every shape is slower; the prospective0.95 and per-process
 gates fail. No model trial or inference integration follows. See the
 [compact result](../bench/results/2026-10-15-pr6-recovery-audit/qsa-page4-current.json).
-Closed probe helpers and generated products are retired after source/recipe
-recovery; restore their original Git revisions for a concrete new comparison.
+The five closed probe helpers and both generated generations are retired after
+source/recipe recovery:182 files,24906302 bytes, with path/hash/reason manifests.
+All13 selected native assets match before and after retirement. Restore the
+original Git revisions for a concrete new comparison.
 The next evidence gap is why the constant-address version changes register
 allocation and generated instructions. Retrieve existing compiler/ISA methods
 for that question before proposing a new bounded test; neither the spill
