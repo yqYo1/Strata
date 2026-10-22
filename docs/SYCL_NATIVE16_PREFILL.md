@@ -87,14 +87,14 @@ is historical context;the current
 bounds scheduled activity rather than hardware saturation.
 
 The next bounded decode-placement screen uses the existing ranked global
-cache route on the exact retained6e40 engine. First run the offline
+cache route on the exact retained 6e40 engine. First run the offline
 `tools/sycl/cache_placement.py` planner and its host admission tests. Compare
-the actual1256-slot per-layer byte budget with the global profile prefix under
-a same-or-smaller budget, including256-byte padding and the protected128-slot
-prefix. Keeping the numeric1256 knob in global mode would give a larger byte
+the actual 1256-slot per-layer byte budget with the global profile prefix under
+a same-or-smaller budget, including 256-byte padding and the protected 128-slot
+prefix. Keeping the numeric 1256 knob in global mode would give a larger byte
 budget and is ineligible. The profile ranks are not access frequencies; neither
 slot count nor capacity predicts hits or speed. The existing cache source also
-records a historical2.97% hit rate for global admission, which is counterevidence
+records a historical 2.97% hit rate for global admission, which is counterevidence
 to check rather than a reason to assume improvement. The offline calculation
 does not qualify a model route or adoption. Before a model run, commit a
 separate bounded plan covering actual free-memory admission, global membership,
@@ -104,6 +104,29 @@ long-generation workloads and unchanged long-prefill performance. The current
 decode configuration stays selected during this screen; no native source or
 runtime safety setting changes. Routed MTP experts already use the fixed S2
 blob; dense MTP matrices being Q8 does not imply Q8 routed experts.
+
+The offline screen at source `3032565ae06f5b5559472be81cb364261670d8c3`
+passed 7 planner tests and 6 existing census tests using `python3 -B`, including
+the actual shipped profile's exact per-layer membership. Profile SHA is
+`8f59b4aa8873209dff11c11e37bcda9529a1335b724a1afeea37bf6388975baf`;
+native manifest SHA is
+`d9ac2dfa3ee63c55c9c6a6db26f72da0cec0ee41733f007e5cbbbba71617aa5d`.
+Reproduce with `python3 -B tools/sycl/cache_placement.py --profile data/expert-profile.bin --manifest /home/yayoi/.local/share/strata-sycl/packs/qwen3.8-flash-next-iq3_s/native_experts.txt`.
+
+| Offline layout | CLI cache argument | Actual slots | Allocated bytes | Protected128 bytes | Maximum loan bytes |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| Current per-layer | 1256 | 1256 | 2575206400 | 245657600 | 2329548800 |
+| Global ranked prefix | 967 | 1241 | 2573849600 | 265625600 | 2308224000 |
+
+The candidate holds 1..49 experts per layer, with no empty layers; 1021 experts
+are common, 220 added and 235 removed. Its 1356800-byte smaller allocation still
+leaves 21324800 fewer bytes for prefill borrowing because the protected prefix
+is larger. This is a concrete placement coupling to resolve/check, not evidence
+of a measured prefill regression. Native admission, actual hits/work, speed,
+loan/refill and phase preservation remain untested for this candidate. The
+original 6e40 admission reader independently recovered 9853 inputs and rechecked
+the unchanged engine plus 12 fixture hashes after the offline screen. No GPU
+process or native rebuild was launched.
 
 The prior MTP draft wrapper was about33ms/window. At the observed emitted
 outputs/window, prose's conditional whole-window budget at70tok/s is about31ms.
