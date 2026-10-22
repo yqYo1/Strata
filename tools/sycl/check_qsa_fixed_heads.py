@@ -77,18 +77,49 @@ def admission(record,plan):
         guards.require(build.sha(item['path'])==item['sha256'],'compiled frontend IR identity changed')
 
 
+def qualifying_checks(record):
+    checks=record.get('checks',[])
+    replan=record.get('resource_launcher_replan')
+    if not replan:return checks
+    # One explicitly committed replacement of a launcher CLI refusal, never a
+    # retry of numerical/device failure or a change to the performance gates.
+    prior=json.loads(build.gen.git('show',replan['failure_commit']+':'+str(RESULT.relative_to(P))))
+    guards.require(record['checks'][:3]==prior['checks'] and len(prior['checks'])==3,
+        'original failed resource check or previous successes changed')
+    failed=prior['checks'][2];old_plan=prior['check_plan'];old_root=ROOT/'check-resources'
+    raw=(old_root/'record.json').read_bytes();owned=json.loads(raw)
+    guards.require(build.sha(old_root/'record.json')==replan['owned_record_sha256']==
+        prior['resource_launcher_failure']['owned_record_sha256'],'original launcher refusal receipt changed')
+    guards.require(old_plan['mode']=='resources' and old_plan['stage']=='failed' and
+        failed['mode']=='resources' and not failed['passed'] and not failed['complete'] and
+        failed['ownership_closed'] and not failed['active'] and failed['fresh_faults']==[] and
+        owned['ownership_closed'] and len(owned['owned_commands'])==1 and not owned['observations'],
+        'only the closed prelaunch CLI refusal can be replanned')
+    command=owned['owned_commands'][0];session=old_plan['jobs'][0]['session']
+    error=(old_root/'owned/all.stderr').read_text()
+    guards.require(error=='[ERROR] Invalid value for --session: '+session+'\n[ERROR] Invalid command line\n' and
+        command['exit_code']==1 and supervision.closed(command) and not command['errors'] and
+        not Path('/proc/'+str(command['pid'])).exists() and
+        not Path('/dev/shm/uctrl'+str(os.getuid())+'_'+session).exists(),
+        'launcher refusal/closure proof differs from the frozen failure')
+    return checks[:2]+checks[3:]
+
+
 def prepare(mode):
     record=build.gen.committed(RESULT)
-    guards.require('check_plan' not in record or record['check_plan']['stage']=='closed','previous check not closed')
-    checks=record.get('checks',[])
+    checks=qualifying_checks(record)
+    replacement=mode=='resources' and 'resource_launcher_replan' in record and len(checks)==2
+    guards.require('check_plan' not in record or record['check_plan']['stage']=='closed' or
+        (replacement and record['check_plan']['stage']=='failed'),'previous check not closed')
     sequence=('smoke','component','resources','perf');position=sequence.index(mode)
     guards.require(len(checks)==position and all(c['mode']==sequence[i] and c['passed'] and
         c['complete'] and c['ownership_closed'] and c['fresh_faults']==[] for i,c in enumerate(checks)),
         'require smoke,component,resources,perf in order; no retries')
-    root=ROOT/('check-'+mode);guards.require(not root.exists(),'inspect existing check owner; no replacement')
+    root=ROOT/('check-resources-v2' if replacement else 'check-'+mode)
+    guards.require(not root.exists(),'inspect existing check owner; no replacement')
     _,_,setup=build.resource.qualification()
     revision=build.gen.git('rev-parse','HEAD').decode().strip()
-    plan=dict(stage='prepared',mode=mode,source_commit=revision,controller_inputs=inputs(revision),
+    plan=dict(stage='prepared',mode=mode,root=str(root),source_commit=revision,controller_inputs=inputs(revision),
         runtime_asset_delta=setup['runtime_asset_delta'],validation_preload=validation.preload_qualification(),
         gates='Smoke3arms*pages1,4,7,16*2cases;component3arms*pages1,4,7,16*11cases. Require exact ordered bits,independent tensororacle,INT_MIN/MAX/negative/out-of-range/duplicate/pageboundary IDs,guards,immutability,refusals,fixed-headphysical262144lastslot/tail,andactualfixed-headwrapperrouteandexecutedkernelproof. SamePIDvalidatedfirstUR,normalclosureandnoFault. Notmodelcapacity/decodequalification.',
         budgets=dict(wall_s=180,cpu_s=180,rss_bytes=4<<30,text_bytes=16<<20,file_bytes=32<<20,total_bytes=192<<20),
@@ -116,7 +147,8 @@ def prepare(mode):
             env['UR_ENABLE_LAYERS']='UR_LAYER_PARAMETER_VALIDATION';env.pop('UR_LOG_TRACING',None)
         command=[record['binaries']['numerical']['path'],'--'+mode,*arm.split('@')];session=None
         if mode=='resources':
-            session='StrataQsafixed-head'+secrets.token_hex(12)
+            session='StrataQsafixedheads'+secrets.token_hex(12)
+            guards.require(re.fullmatch(r'[A-Za-z0-9]+',session) is not None,'unitrace session must be alphanumeric')
             (folder/'trace').mkdir()
             env.pop('LD_PRELOAD')
             env.update(STRATA_UNITRACE_TARGET_PRELOAD=plan['validation_preload']['library']['path'],
@@ -264,7 +296,8 @@ def performance(checks):
 
 
 def run(mode):
-    record=build.gen.committed(RESULT);plan=record['check_plan'];root=ROOT/('check-'+mode)
+    record=build.gen.committed(RESULT);plan=record['check_plan'];root=Path(plan['root'])
+    qualifying_checks(record)
     guards.require(plan['mode']==mode and plan['stage']=='prepared' and
         plan==json.loads((root/'plan.json').read_text()) and not (root/'record.json').exists(),
         'matching fresh committed check required; inspect existing receipt')
