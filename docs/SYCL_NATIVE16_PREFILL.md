@@ -322,47 +322,40 @@ the four unused probe source/controller files and83 generated/transaction files
 before and after retirement. Restore the rejected source only for a concrete
 comparison; the individual samples remain committed once.
 
-The next source-specific hypothesis is validatedPage4 logical-address
-specialization with the original generic fallback. Existing device IR retains
-runtime64-bit division, but neither final-ISA cost nor a limiting resource is
-proved. The isolated Main-authored component replaces page-size expressions
-with64-bit constant4 only behind the original caller's Page4 guard; non4 shapes
-return to the original generic wrapper. It preserves all arithmetic widths,
-checked sizing, logical scratch mapping and tensor math. Component-only host
-counters prove the selected route and are included in candidate wrapper timing.
-Smoke covers pages4/7; full cases cover1/4/7/16, including INT_MIN/MAX, missing,
-duplicate, page-boundary and actualPage4 final262144/tail positions. The oldPage16
-case cannot qualify this fast path. Commit source/generated plan before building
-with`build_qsa_page4.py`; `check_qsa_page4.py` gates smoke/component/resources
-before the Page4 three-process162-sample comparison. Require both latency
-geomeans<=0.95,no shape>1.05 and both large patterns improving against both
-controls in every process. This is unqualified component work, not a model
-route. All13 compiler/link/IR commands completed, but the original build gate
-failed before GPU execution: it required zero64-bit divisions in the entire
-module. Page4 eliminates the three variable page-size divisions; a preexisting
-signed workgroup-ID division by constant2 remains in both arms. Preserve that
-failure. Separately committed closed-IR reanalysis verifies this exact
-distinction, both kernels, all13 normally closed compiler commands and unchanged
-source/recipe/dependency/binary inputs. It qualifies those compiled bytes for
-the next small test; it does not relabel the original gate or establish final
-ISA cost. All six traced small Page4/Page7 processes passed. The full cohort
-then failed normally in its first original-baseline Page1 process: the host
-poison diagnostic assumed cells0/1 shared a page, and could write one row past
-the scale vector atPage1. No fresh GPU fault occurred; the candidate did not
-run in that cohort. Preserve this failure separately from the earlier IR gate
-and JSON tuple/list admission failure.
+The isolated Page4 address-specialization comparison is closed and rejected.
+The Main-authored overlay replaces page-size expressions with64-bit constant4
+only behind the caller's actual Page4 guard, retaining the original generic
+fallback and all checked extents, logical mapping and tensor math. Its host
+route counters are included in candidate wrapper timing. No engine source,
+selected executable, decode configuration or1256-slot placement changed.
 
-The fresh v2 fixture resolves the poisoned cell through its actual logical
-page and offset, checking table, physical-page, row and scale-element bounds
-before writing. It leaves the canonical selected native fixture unchanged.
-The new build prospectively requires three variable i64 divisors in control,
-zero in Page4 and the same signed constant2 division in both. The controller
-also verifies all ordered case identities, output/packed extents and numeric
-route counts, rather than inferring full coverage from a case count.
-Repeat small, full-boundary and resource checks before any clean timing; v1
-passes do not qualify the changed fixture. Preserve numerical order and the exact selected decode
-implementation/configuration/1256-slot placement. The instruction-fetch methods
-report remains a retrieval-only reference, without a new generic research task.
+Preserve three separate v1 failures: the overbroad zero-all-i64-division gate,
+the tuple/list serialization refusal before GPU execution, and the first
+baseline Page1 host-fixture failure. That fixture assumed cells0/1 shared a
+page and could write one row past its scale vector. Fresh v2 source`760d22dc3`
+and plan`1ebecb46a` resolve the cell through`table[cell/Page]` and`cell%Page`,
+checking table, physical-page, row and scale-element bounds before writing.
+Future variable-page fixtures must preserve this correction; the canonical
+selected fixed-Page16 fixture remains unchanged. All six traced small processes
+and132 exact-case component checks pass, including Page1/4/7/16 and actual
+physical262144 addressing/tails. Numerical route totals match34 small/52 full
+entries, including the one zero-query fallback. No fresh GPU fault occurred.
+
+Frontend IR removes three variable i64 divisors and retains one signed division
+by constant2 in both modules. Actual JIT properties retain SIMD16/GRF128 and
+rawSLM32; candidate arguments decrease18 to17, while the spill descriptor grows
+12480 to22208. These are allocation descriptors, not measured spill traffic,
+occupancy or causal proof. Three clean processes retain162 samples once:
+candidate latency geomeans are1.011124 versus production and1.010766 versus the
+namespace control. Every shape is slower; the prospective0.95 and per-process
+gates fail. No model trial or inference integration follows. See the
+[compact result](../bench/results/2026-10-15-pr6-recovery-audit/qsa-page4-current.json).
+Closed probe helpers and generated products are retired after source/recipe
+recovery; restore their original Git revisions for a concrete new comparison.
+The next evidence gap is why the constant-address version changes register
+allocation and generated instructions. Retrieve existing compiler/ISA methods
+for that question before proposing a new bounded test; neither the spill
+descriptor nor the earlier slower GRF256 screen establishes its cause.
 
 Remaining model gates are repeated phase-preserving adoption evidence,
 agent-session and task quality, full physical262144 tokens including the final
