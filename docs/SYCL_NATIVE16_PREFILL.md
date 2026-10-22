@@ -354,18 +354,29 @@ The five closed probe helpers and both generated generations are retired after
 source/recipe recovery:182 files,24906302 bytes, with path/hash/reason manifests.
 All13 selected native assets match before and after retirement. Restore the
 original Git revisions for a concrete new comparison.
-The next evidence gap is why the constant-address version changes register
-allocation and generated instructions. Retrieve existing compiler/ISA methods
-for that question before proposing a new bounded test; neither the spill
-descriptor nor the earlier slower GRF256 screen establishes its cause.
-The current bounded [codegen attribution](../bench/results/2026-10-15-pr6-recovery-audit/qsa-codegen-current.json)
-reconstructs four exact generated sources from760d/1ebe into one auxiliary
-fixture, leaving the selected engine unchanged. Validate its small case before
-capturing executed-name-correlated ISA and allocation metadata with the
-[installed IGC2.41.5 dump flags](https://github.com/intel/intel-graphics-compiler/blob/v2.41.5/documentation/configuration_flags.md).
-Capture timings qualify no speed, and static spill code does not prove dynamic
-traffic or causality. Retire the auxiliary products after extracting the
-specific next source decision.
+The bounded [codegen attribution](../bench/results/2026-10-15-pr6-recovery-audit/qsa-codegen-current.json)
+is closed. It reconstructed four exact generated sources from760d/1ebe into
+one auxiliary fixture, leaving the selected engine unchanged. Both the small
+validated smoke and executed-name-correlated IGC2.41.5 capture passed18 exact-bit
+samples with7fast/0generic candidate routes and no fresh fault. Capture timings
+qualify no speed. Actual native CFG metadata locates the32-cell outer loop:
+original/control have2 spill and13 fill instructions inside it; Page4 has2 and16.
+The three additional fills restore flag words before jumps whose IR conditions
+compare the hardware local-thread ID against4/16/8. This narrows one static
+difference to guard materialization; it does not attribute the entire extra
+allocation, prove execution frequency, dynamic traffic, occupancy or causality.
+Stop extending this attribution and retire its consumed auxiliary products.
+
+The next independent discriminator is fixed two-head iteration on the unchanged
+generic-page prefill source. Workgroup128 and required subgroup16 give eight
+subgroups; each owns exactly two of the16 padded head rows. The committed
+component-only constructor replaces the two variable-bound padded-head loops
+with two iterations, preserving arithmetic/order, real/padded-head masks,
+64-bit paging, barriers and the necessary subgroup<4 QK guard. It changes no
+engine/decode source and is not built or qualified. Main must freeze generated
+inputs and a new bounded plan, pass numerical/guard/physical-context cases and
+the prospective clean component gate before any model trial. Final integration
+still requires unchanged decode placement/state and repeated decode speed.
 
 Remaining model gates are repeated phase-preserving adoption evidence,
 agent-session and task quality, full physical262144 tokens including the final
