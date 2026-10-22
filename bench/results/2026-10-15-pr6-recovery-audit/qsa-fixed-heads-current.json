@@ -650,7 +650,7 @@
     "change_from_initial_source_plan": "Extend6smallPage4/7processesto12foractualkernelproofonall4pagesbeforefullcases. Prospectiveonly,noearliercheckexistsoroutcomechanged."
   },
   "check_plan": {
-    "stage": "prepared",
+    "stage": "closed",
     "mode": "resources",
     "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-fixed-heads-v1/check-resources-v2",
     "source_commit": "f7e90790414643374aa7833def0851d7d4108c37",
@@ -3013,6 +3013,299 @@
       "ownership_closed": true,
       "observations": [],
       "error": "RuntimeError('numerical fixture did not close normally')",
+      "postchecks_complete": true,
+      "postcheck_errors": [],
+      "fresh_faults": [],
+      "boot_unchanged": true,
+      "driver_after": {
+        "pci": "/sys/bus/pci/devices/0000:05:00.0",
+        "driver": "xe",
+        "vendor": "0x8086",
+        "device": "0xe20c",
+        "kernel": "7.0.0-38-generic",
+        "devcoredump": false
+      }
+    },
+    {
+      "mode": "resources",
+      "source_commit": "f7e90790414643374aa7833def0851d7d4108c37",
+      "numerical_binary": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-fixed-heads-v1/numerical",
+        "bytes": 1594016,
+        "sha256": "8f94e51f7bcb02b5995d3e3426f9a2e2c4385f06e21727014c6513fbe24d05c0"
+      },
+      "passed": true,
+      "complete": true,
+      "active": false,
+      "ownership_closed": true,
+      "observations": [
+        {
+          "arm": "all",
+          "pid": 3082481,
+          "exit_code": 0,
+          "ownership_closed": true,
+          "validation": {
+            "pid": 3082481,
+            "loader": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_loader.so.0.12.0",
+            "threads_before": 1,
+            "preinit": 37,
+            "config_enabled": true,
+            "first_init": true,
+            "dispatch_result": 46,
+            "output_untouched": true,
+            "retained_reference_until_exit": true,
+            "runtime_teardown_qualified": false
+          },
+          "session_removed": true,
+          "timing": {
+            "clock_floor_ns": 20,
+            "samples": [
+              [
+                0,
+                97,
+                3,
+                33,
+                "gather",
+                0,
+                0,
+                0,
+                0.70128
+              ],
+              [
+                0,
+                97,
+                3,
+                33,
+                "gather",
+                0,
+                1,
+                1,
+                0.715697
+              ],
+              [
+                0,
+                97,
+                3,
+                33,
+                "gather",
+                0,
+                2,
+                2,
+                0.446831
+              ],
+              [
+                0,
+                97,
+                3,
+                33,
+                "gather",
+                1,
+                0,
+                1,
+                0.444897
+              ],
+              [
+                0,
+                97,
+                3,
+                33,
+                "gather",
+                1,
+                1,
+                2,
+                0.437343
+              ],
+              [
+                0,
+                97,
+                3,
+                33,
+                "gather",
+                1,
+                2,
+                0,
+                0.445759
+              ],
+              [
+                0,
+                97,
+                3,
+                33,
+                "gather",
+                2,
+                0,
+                2,
+                0.437193
+              ],
+              [
+                0,
+                97,
+                3,
+                33,
+                "gather",
+                2,
+                1,
+                0,
+                0.434247
+              ],
+              [
+                0,
+                97,
+                3,
+                33,
+                "gather",
+                2,
+                2,
+                1,
+                0.445308
+              ],
+              [
+                0,
+                97,
+                3,
+                33,
+                "gather",
+                3,
+                0,
+                0,
+                0.439467
+              ],
+              [
+                0,
+                97,
+                3,
+                33,
+                "gather",
+                3,
+                1,
+                1,
+                0.434989
+              ],
+              [
+                0,
+                97,
+                3,
+                33,
+                "gather",
+                3,
+                2,
+                2,
+                0.440399
+              ],
+              [
+                0,
+                97,
+                3,
+                33,
+                "gather",
+                4,
+                0,
+                1,
+                0.438295
+              ],
+              [
+                0,
+                97,
+                3,
+                33,
+                "gather",
+                4,
+                1,
+                2,
+                0.443725
+              ],
+              [
+                0,
+                97,
+                3,
+                33,
+                "gather",
+                4,
+                2,
+                0,
+                0.440499
+              ],
+              [
+                0,
+                97,
+                3,
+                33,
+                "gather",
+                5,
+                0,
+                2,
+                0.440039
+              ],
+              [
+                0,
+                97,
+                3,
+                33,
+                "gather",
+                5,
+                1,
+                0,
+                0.438907
+              ],
+              [
+                0,
+                97,
+                3,
+                33,
+                "gather",
+                5,
+                2,
+                1,
+                0.440008
+              ]
+            ]
+          },
+          "stdout_sha256": "91034bc6964410e79edff6410fe36ac5ed34c6f45c3e9e8b14163a44c0063609",
+          "stderr_sha256": "6f90ec6718d19cd60be21a865743a89e5482055fa735ff1178d5c30132940683",
+          "resources": {
+            "conserved_device_ns": 3946700,
+            "table_rows": 24,
+            "compute_calls": {
+              "0": 8,
+              "1": 7,
+              "2": 7
+            },
+            "properties": [
+              {
+                "arm": 0,
+                "compiled": "JIT",
+                "SIMD": 16,
+                "arguments": 18,
+                "raw_SLM": 32,
+                "private_memory_descriptor": 0,
+                "spill_memory_descriptor": 12480,
+                "GRF": 128
+              },
+              {
+                "arm": 1,
+                "compiled": "JIT",
+                "SIMD": 16,
+                "arguments": 18,
+                "raw_SLM": 32,
+                "private_memory_descriptor": 0,
+                "spill_memory_descriptor": 12480,
+                "GRF": 128
+              },
+              {
+                "arm": 2,
+                "compiled": "JIT",
+                "SIMD": 16,
+                "arguments": 18,
+                "raw_SLM": 32,
+                "private_memory_descriptor": 0,
+                "spill_memory_descriptor": 12480,
+                "GRF": 128
+              }
+            ],
+            "limits": "Allocation descriptors and summed service only;rawSLM units,actual spill traffic,occupancy,physical traffic and model/decode speed remain unmeasured."
+          }
+        }
+      ],
       "postchecks_complete": true,
       "postcheck_errors": [],
       "fresh_faults": [],
