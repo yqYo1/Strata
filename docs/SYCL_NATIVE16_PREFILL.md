@@ -282,6 +282,22 @@ experiment helpers are recoverable from their source/plan commits rather than
 kept as unused active code; the [compact result](../bench/results/2026-10-15-pr6-recovery-audit/qsa-grf-current.json)
 retains all individual clean samples and the retirement decision.
 
+The bounded B570 metric capability investigation is closed. Separate immutable
+device-only and metrics-enabled processes enumerated24 groups and1414 member
+definitions with all1494 enabled-path API calls successful. Enumeration does
+not qualify collection. A fresh one-slot ComputeBasic event-query setup returned
+`0x78000004` (`INVALID_ARGUMENT`) from pool creation after successful context
+creation and activation. A separately planned syscall diagnostic of the unchanged
+binary found an observation ioctl returning `EACCES` during that call. Both
+processes cleared activation and destroyed the context normally, submitted no
+GPU commands and produced no fresh fault. Permission settings remain unchanged.
+The exact rejected observation operation and policy check remain unproven;
+the generic API error is not evidence of an invalid descriptor or unsupported
+device. Do not run model metric queries under this unqualified setup. Continue
+prefill tuning from existing timings and source/resource evidence; physical
+traffic and occupancy remain unknown. See the
+[capability result](../bench/results/2026-10-15-pr6-recovery-audit/metric-inventory-current.json).
+
 Remaining model gates are repeated phase-preserving adoption evidence,
 agent-session and task quality, full physical262144 tokens including the final
 slots and tail boundaries, prefill-to-decode/session/RESTORE, and70tok/s decode.

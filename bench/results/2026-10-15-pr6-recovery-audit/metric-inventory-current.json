@@ -664,7 +664,7 @@
     ]
   },
   "event_query_syscall_diagnostic": {
-    "stage": "prepared",
+    "stage": "closed",
     "source_commit": "40eec3185907af4ed5700a2bbbc53816ec78bd80",
     "inputs": {
       "bench/sycl/metric_inventory.cpp": "0af141d3857863035703f0dad6653c392d7a1953028c8290fe7d7bb41e2d6317",
@@ -729,10 +729,70 @@
       "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/b570-metric-query-setup-v1/query-setup"
     ],
     "plan": "Original one-slot query setup returned0x78000004 despite valid zeroed descriptor/count1,event group andsuccessful activation. Compatible official NEO source can map metrics-library initialization/query creation/report-size failures to INVALID_ARGUMENT,so do not infer bad userarguments orpermissions. One separately committed strace ofunchanged original binary correlates libraryopen/ioctl results with APIprogress;no retryloop,no newqueue/commands/read/streamer orpermission change. Require originalapierror,normallyclosed context/deactivation/owner,nofault andpinnedELFs. Keepatmostone256KiB causallyrelevant diagnostic;retirefullsyscall/APIhistory afterbounded attribution.",
-    "passed": false,
-    "complete": false,
+    "passed": true,
+    "complete": true,
     "active": false,
     "ownership_closed": true,
-    "collection_qualified": false
+    "collection_qualified": false,
+    "summary": {
+      "kind": "summary",
+      "status": "api_error",
+      "last_api": "zetMetricQueryPoolCreate",
+      "result": 2013265924,
+      "objects_closed": true,
+      "GPU_commands": 0,
+      "collection_qualified": false
+    },
+    "native_API_failures": [
+      {
+        "kind": "return",
+        "api": "zetMetricQueryPoolCreate",
+        "result": 2013265924
+      }
+    ],
+    "pool_syscall_window_lines": 111,
+    "pool_syscall_window_sha256": "a85818083f8a5707682113fb1bae1070caa0c665f7c129aae04d9d65802ddeb4",
+    "pool_failed_ioctls": [
+      "2586921 1792695377.071583 ioctl(3, DRM_IOCTL_I915_CMDBUFFER, 0x7ffd661a9610) = -1 EACCES (Permission denied)"
+    ],
+    "pool_failed_library_opens": [
+      "2586921 1792695377.070992 openat(AT_FDCWD, \"/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/b570-metric-query-setup-v1/iu.config\", O_RDONLY) = -1 ENOENT (No such file or directory)",
+      "2586921 1792695377.071530 openat(AT_FDCWD, \"/sys/class/drm/card1/metrics/2f01b241-7014-42a7-9eb6-a925cad3daba/id\", O_RDONLY) = -1 ENOENT (No such file or directory)",
+      "2586921 1792695377.071808 openat(AT_FDCWD, \"/sys/class/drm/card1/metrics/2f01b241-7014-42a7-9eb6-a925cad3daba/id\", O_RDONLY) = -1 ENOENT (No such file or directory)"
+    ],
+    "raw_trace": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/b570-metric-query-diagnostic-v1/syscalls.txt",
+      "sha256": "7823b735b8590224cf8ef6bbc19d341e1eb7b417055a4b8d1c24bf7fa1ffb152",
+      "bytes": 87235
+    },
+    "stdout_sha256": "188baadac20a347a4d41c0832cf41b64247d93469310e9421fc2bbbbf3ff4617",
+    "stderr_sha256": "20ff9c22e2d5f1a7021dbcaf152ac7d2a92000a0a8379cf18eda66fcde73016f",
+    "excerpt": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/b570-metric-query-diagnostic-v1/pool-window.txt",
+      "sha256": "a85818083f8a5707682113fb1bae1070caa0c665f7c129aae04d9d65802ddeb4",
+      "bytes": 8786
+    },
+    "fresh_faults": [],
+    "driver_after": {
+      "pci": "/sys/bus/pci/devices/0000:05:00.0",
+      "driver": "xe",
+      "vendor": "0x8086",
+      "device": "0xe20c",
+      "kernel": "7.0.0-38-generic",
+      "devcoredump": false
+    },
+    "boot_unchanged": true,
+    "interpretation": {
+      "measured": "During the unchanged one-slot pool-create call, the kernel returned EACCES on fd3, opened as /dev/dri/by-path/pci-0000:05:00.0-render. The API returned original0x78000004; no GPU commands were submitted and all context/metric objects closed normally.",
+      "ioctl_decoder": "strace labels this DRM_IOCTL_I915_CMDBUFFER. The running-kernel headers define both it and DRM_IOCTL_XE_OBSERVATION as write commands at0x4b with32-byte arguments on x86_64; the matching request number is0x4020644b. On this verified xe render fd, interpret it as an observation ioctl, not an i915 inference command.",
+      "limits": "The trace proves a permission-denied backend call inside pool setup, not which observation operation or LSM/sysctl check rejected it. Current observation_paranoid1/perf_event_paranoid4 remain unchanged. Missing optional iu.config and metric UUID sysfs paths are recorded separately; they do not prove a missing shared library.",
+      "decision": "Event-query collection is not qualified under current permissions. Do not launch unitrace metric-query on the model, retry another group, change permissions or treat this capability result as GPU saturation/throughput evidence. Close this investigation and continue independent prefill tuning using existing kernel timing and source/resource evidence.",
+      "compatible_sources": [
+        "intel/metrics-library@6faaeee013218d8491d3c5b21a184622b8d2ad87:instrumentation/metrics_library/traits/kernel_interface/linux/ml_io_control.h:CreateMetricSet/SendXeObservation",
+        "/usr/src/linux-headers-7.0.0-38-generic/include/uapi/drm/xe_drm.h:124,1646",
+        "/usr/src/linux-headers-7.0.0-38-generic/include/uapi/drm/i915_drm.h:501,568"
+      ],
+      "source_limit": "Compatible official source/header mapping is not proof of the installed MetricsLibrary or kernel implementation commit."
+    }
   }
 }
