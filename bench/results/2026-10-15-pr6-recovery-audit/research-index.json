@@ -9767,5 +9767,41 @@
       "Later source-specific comparison"
     ],
     "source_version_note": "Pin mutable LLVM/IGC documents to the installed release before use; methods are not local attribution."
+  },
+  "gpu_instruction_scoreboard_dependency_methods_20261023": {
+    "classification": "knowledge collection",
+    "report_budget_bytes": 12288,
+    "question": "Compare instruction-level scoreboard/dependency scheduling on Intel Xe2/Xe and transferable GPU/HPC designs: SWSB token/distance annotations, explicit sync.nop,DPAS/load/store issue dependencies,compiler scheduling/rematerialization choices,and when static sync annotations cannot predict stalls or latency. Use official pinned IGC/IGA/Intel ISA/optimization docs plus original technical blogs/papers. Explain correctness of hand scheduling and useful source-level discriminators without proposing code or a local bottleneck claim.",
+    "nonduplication": "Existing scopes coverGRF/spill,uniformaddress lowering,unroll/fetch,matrix fragment lifetime andqueue/DAGsubmission; indexhasnoSWSB/scoreboardinstruction-levelmethodsscope. Do not repeat those surveys. Fresh nativeISAloop attribution yielded scratchflag restores; it didnotattribute dependencyissue stalls.",
+    "prerequisite_evidence": [
+      "Existing exactnativeISA source/capture provenance isindexed inqsa-codegen-current.json;rawcapturesconsumed/retired,notneededforthismethodscollection.",
+      "Installed IGC2.41.5/f05f218e6f0b888823c5678e1f64e91e597ea2dc andXe2B570 provide concreteversion/hardwarecontext;hardwaremetrics remainunqualified."
+    ],
+    "report": "/home/yayoi/orca/workspaces/Strata/sycl/.cache/strata-research/20261023/instruction-scoreboard/report.md",
+    "consumer": "Retrieval-only methods knowledge forfutureconcrete source/dependencyquestion. Mainbodyunread; nativeLuna/max reviewonarrival.",
+    "next_review": "Reviewnovelty/depth aftercompletion;retainonlysubstantivenonduplicated methods. Noimplementation ornewGPUcollection followsautomatically.",
+    "schedulable_now": true,
+    "status": "ready_for_orca_dispatch"
+  },
+  "pr6_final_vendor_dependency_recovery_audit_20261023": {
+    "classification": "decision support",
+    "report_budget_bytes": 10240,
+    "question": "Use the already matched final PR6 build-v4 receipt and recovered exactdependency-preparation receipt to assess final vendor/GGML/generatedcommand/quoted-header identity for unusedlegacy products. Identify the exact remaining proof or prove nonrecoverability fromthese boundedinputs; no repeated broadreceiptsearch,codeadoption,tests,ownershipassertionordelete.",
+    "nonduplication": "Earlier Main/source recovery established221projectpins and foundexact9709receipt inb1c0e1449; unresolvedjoin isfinalvendor/dependency/commands,not receipt discovery. Do not repeatcompleted provenance searches or inferqualification from matchingbinaryhash.",
+    "prerequisite_evidence": [
+      "main-pr6-harness-build-v4/record.json exists andmatchesb842d480 pinnedreceipt;originalprojectsource0d659b126efc58763921a069a818f878259d54e4 wasrecovered earlierbutoutsidefeatureancestry.",
+      "Exact377046B dependencyreceipt restoredread-onlyfromb1c0e1449 withSHA9709a3168804ef812073d71b75bdcb35af6a3b7cbe6e604061a2770812152fdd;49vendorblobs+pinnedGGML/cmake/LICENSE preparationonly,not finalbuildproof."
+    ],
+    "input_snapshot": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/pr6-final-dependency-review-inputs-v1/dependency-preparation.json",
+      "sha256": "9709a3168804ef812073d71b75bdcb35af6a3b7cbe6e604061a2770812152fdd",
+      "origin_commit": "b1c0e1449",
+      "origin_path": "bench/results/2026-10-15-pr6-recovery-audit/own-pr6-dependency-preparation-v1.json"
+    },
+    "report": "/home/yayoi/orca/workspaces/Strata/sycl/.cache/strata-research/20261023/pr6-final-dependency-audit/report.md",
+    "consumer": "Main finalbounded provenance/retirementdecision forobsoletePR6buildproducts; separatefromselectedengine andfixed-headqualification.",
+    "next_review": "Atreportarrival delegateLuna/maxreview,thenMainresolvesactualownershipandretention. Noautomaticcleanuporqualification.",
+    "schedulable_now": true,
+    "status": "ready_for_orca_dispatch"
   }
 }
