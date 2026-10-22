@@ -1,74 +1,10 @@
 {
-  "stage": "check",
-  "source_commit": "4ac05411622d502870558185c49980059bac630f",
-  "plan_sha256": "b6b1c4a30d6a3fce7aa9730a0813c08e5bbae7b769558b290bb4ca28f44550c2",
+  "stage": "prepared",
+  "source_commit": "e39d0d3896c9df1500125b2d9da10b4891361e3c",
+  "plan_sha256": "c41ebc71ba214e166965cae530880e8a4768e0cb9501c56d6c6a7539da627711",
   "passed": false,
   "complete": false,
   "active": false,
   "ownership_closed": true,
-  "GPU_executed": false,
-  "checks": [],
-  "binaries": {
-    "0": {
-      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-pool-states-v1/build/pool_state_raw",
-      "sha256": "326a8a0a9cd9fae083bf2d559b0d7f8e147a08bf8abbe1958f3fb1821bd94bd9",
-      "bytes": 2527024
-    },
-    "1": {
-      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-pool-states-v1/build/pool_state_observed",
-      "sha256": "0b0a761e705c33d1e2f42f8e7d62e72a3465bd00ea1db481d89fd3614064edb5",
-      "bytes": 2540384
-    }
-  },
-  "error": "owned child failed 0",
-  "compile_commands_sha256": "f06e57919bfa40643c46ca8da9ec4d6443f7b13dcd60ea8de40ef2b8c958f314",
-  "host_admission_tests": {
-    "count": 8,
-    "passed": true
-  },
-  "failure": {
-    "case": [
-      20,
-      0,
-      0,
-      0
-    ],
-    "arm": "raw",
-    "exit_code": 1,
-    "stderr": "native physical placement",
-    "command": [
-      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-pool-states-v1/build/pool_state_raw",
-      "check",
-      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-pool-states-v1/inputs.txt",
-      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-pool-states-v1/check-0.bin",
-      "20",
-      "0",
-      "0",
-      "0"
-    ]
-  },
-  "diagnosis": {
-    "scope": "Main private fixture only; no production source change or GPU execution",
-    "mechanism": "Fixture pins host before constructing pool. Linux topology discovery reads current-thread affinity, so constructor sees only host core and workers inherit the narrowed mask. Emitter also incorrectly rediscovers topology after host pin. Source inspection identifies both fixture-order defects; no per-thread data were emitted.",
-    "action": "Preserve failed v1; new source/plan/root must restore original affinity for topology and worker creation, then pin host; use pre-pin topology for final observer placement. No timing samples qualify."
-  },
-  "artifact_retirement": {
-    "complete": true,
-    "manifest": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-pool-states-v1-closed-retirement-20261022.jsonl",
-    "sha256": "ed7fabfa66a2aea5bf757fc12cb3c471cddc7f105fce4f033fc15534e2630a70",
-    "files": 94,
-    "bytes": 15146747,
-    "source_recovered": {
-      "revision": "4ac05411622d502870558185c49980059bac630f",
-      "count": 113,
-      "aggregate_sha256": "03e8b80556319729c2ff31e3da183d1467e04846ce2e0818c90cdc3953f8028f"
-    },
-    "ggml_recovered": {
-      "revision": "3cf03257f219afbe7334045ff7c6a06ac68c627d",
-      "count": 1376,
-      "aggregate_sha256": "04cc6ab883190bdb3bbcfc3e3d62c630c7b147587b98379157ad768f9936c8d2"
-    },
-    "recipe_commit": "1a1e8c3a9",
-    "consumer": "none;failed v1 closed;corrected v2 requires new source and plan"
-  }
+  "GPU_executed": false
 }

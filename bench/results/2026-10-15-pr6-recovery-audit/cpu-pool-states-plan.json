@@ -1,9 +1,9 @@
 {
-  "schema": "strata-cpu-pool-states-v1",
+  "schema": "strata-cpu-pool-states-v2",
   "source": {
-    "revision": "4ac05411622d502870558185c49980059bac630f",
+    "revision": "e39d0d3896c9df1500125b2d9da10b4891361e3c",
     "count": 113,
-    "aggregate_sha256": "03e8b80556319729c2ff31e3da183d1467e04846ce2e0818c90cdc3953f8028f"
+    "aggregate_sha256": "bb9d1985752d3e5f39661f2732ebf5587c9c4581c24072bf03ac9a2ee6157dac"
   },
   "ggml": {
     "revision": "3cf03257f219afbe7334045ff7c6a06ac68c627d",
@@ -190,7 +190,7 @@
     "-S",
     "/home/yayoi/orca/workspaces/Strata/sycl/bench/sycl/cpu_pool_state_observer",
     "-B",
-    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-pool-states-v1/build",
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-pool-states-v2/build",
     "-G",
     "Ninja",
     "-DCMAKE_BUILD_TYPE=Release",
@@ -210,7 +210,7 @@
   "build": [
     "/usr/bin/cmake",
     "--build",
-    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-pool-states-v1/build",
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-pool-states-v2/build",
     "--target",
     "pool_state_raw",
     "pool_state_observed",
@@ -276,7 +276,7 @@
   "protocol": {
     "question": "Where does unchanged-policy CPU pool thread time go under the two prior slow/variable streaming cases?",
     "scope": "CPU-only diagnostic,not token throughput. Actual22/20 code mixture28jobs/35entries and22/42 prose24jobs/36entries,168 real experts. Stream all168 per pass. Explicit Prefill/Decode calls in separate processes. Controlled0/40ms idle after each batch exercises20ms spin/CV policy;gaps are workload probes,not a model-time distribution or policy treatment.",
-    "unchanged": "Keep original20ms policy,5 pinned workers+host,epoch/sleepers ordering,predicate wait,claims,stop/join,GU/quant/Down math and immutable startup environment. Raw library compiles original pool.cpp. Observed library differs only by the committed private observer insertions;other source/flags match. No product source or GPU build modification.",
+    "unchanged": "Keep original20ms policy,5 pinned workers+host,epoch/sleepers ordering,predicate wait,claims,stop/join,GU/quant/Down math and immutable startup environment. Restore inherited affinity for pool topology/worker creation,then pin host. Keep pre-pin topology for final placement check. Raw library compiles original pool.cpp. Observed library differs only by the committed private observer insertions;other source/flags match. No product source or GPU build modification.",
     "accounting": "One sole-writer slot per thread;read only after join. CLOCK_MONOTONIC and CLOCK_THREAD_CPUTIME_ID transitions partition full root lifetime into Control,Spin,CV-wait scope,GU-task,Down-task,host WaitParked/WaitDone,Quant and Other-task,by Unknown/Prefill/Decode. Idle and transition phases remainUnknown. Claimed native task scopes close before done release. No per-PAUSE counter. CV scope includes blocking,runnable delay,predicate/reacquisition;it is not pure sleep. Thread CPU also includes stalls/control. Context-switch counts bracket lifetime,not durations.",
     "coverage": "Per thread:closed,zero errors/depth,nonnegative intervals,exact wall/CPU sum conservation. Known task phases correct;idleUnknown. Across six distinct physical TIDs:18 GU+18Down tasks,1Quant,2WaitDone,4WaitParked per pool call including two warm passes;Other0. Original per-sample GU callback/weighted-row/NT1/pair audits conserve work and every thread does GU math. Full active outputs match independent NT1/direct and unchanged multi-row oracle;canaries,inactive tokens,input hashes.",
     "check": "All8cases x raw/observed (16 owned check processes),two warm passes only,no samples. Verify CV entered for40ms case. Complete output captures match per shape across phase/gap/arm. Check is not timing evidence.",
@@ -289,6 +289,14 @@
   "provenance": {
     "basis": "Main-authored hooks in original6e40 pool.cpp (MIT),Main CPU fixture/oracle. No XeStrata application code. Installed official compiler only.",
     "original_pool_sha256": "fb4832147382ee0eafa115f587903665819362d4a969e69999305b6546fd4adf",
+    "previous_diagnostic": {
+      "commit": "5c47879f0",
+      "result_sha256": "f03432293010eb285983e8839f04da53298206e2836ea6765bccad06c23b076a",
+      "plan_sha256": "b6b1c4a30d6a3fce7aa9730a0813c08e5bbae7b769558b290bb4ca28f44550c2",
+      "passed": false,
+      "retired": true,
+      "correction": "Restore inherited affinity before pool topology/worker creation;pin host afterward;use pre-pin topology at profile closure."
+    },
     "prior_comparator": {
       "path": "bench/results/2026-10-15-pr6-recovery-audit/cpu-iq2-indices-pool-current.json",
       "sha256": "b63d99e297ca9c95e631cc5488eeaf827f98ed7d67ed3568bc27d75b6f61f609"
