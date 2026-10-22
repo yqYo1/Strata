@@ -25,7 +25,8 @@
   "dependencies": {
     "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/b570-metric-inventory-v1/compiler-inputs.json",
     "sha256": "5cdf1a647648111b26159b441cff6082c4b7acaab051222ba3db275ebd1f37a2",
-    "files": 8700
+    "files": 8700,
+    "retired": true
   },
   "runtime_pins": {
     "/usr/lib/x86_64-linux-gnu/libz.so.1.3": "86200da370f20476a2507e9097a789b5ef97269b4ca8d5e164ad82dab9d99892",
@@ -494,7 +495,8 @@
       "stdout": {
         "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/b570-metric-inventory-v1/run/owned/metrics.stdout",
         "sha256": "50160ac42c10cd1bb621c3274b8daf0024fa0426b19595906b4e6a29f7f852e8",
-        "bytes": 504256
+        "bytes": 504256,
+        "retired": true
       },
       "stderr_sha256": "6f41937ab448760cb9b29d20c7342482044c7cd6fa085f573da00ab7bbf30c00"
     }
@@ -502,7 +504,8 @@
   "binary": {
     "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/b570-metric-inventory-v1/inventory",
     "bytes": 31336,
-    "sha256": "5417d3ab93dbe7465ee52a5e7b487d39dbf571d5021ce8eacb9bdf461ca8afae"
+    "sha256": "5417d3ab93dbe7465ee52a5e7b487d39dbf571d5021ce8eacb9bdf461ca8afae",
+    "retired": true
   },
   "fresh_faults": [],
   "driver_after": {
@@ -608,7 +611,8 @@
     "binary": {
       "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/b570-metric-query-setup-v1/query-setup",
       "bytes": 44160,
-      "sha256": "a76d6cd9b48eb664c30b9c37c4c45bf9f955d2b6dc24150f02cfd61bc9576f9f"
+      "sha256": "a76d6cd9b48eb664c30b9c37c4c45bf9f955d2b6dc24150f02cfd61bc9576f9f",
+      "retired": true
     },
     "fresh_faults": [],
     "driver_after": {
@@ -678,7 +682,8 @@
     "binary": {
       "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/b570-metric-query-setup-v1/query-setup",
       "bytes": 44160,
-      "sha256": "a76d6cd9b48eb664c30b9c37c4c45bf9f955d2b6dc24150f02cfd61bc9576f9f"
+      "sha256": "a76d6cd9b48eb664c30b9c37c4c45bf9f955d2b6dc24150f02cfd61bc9576f9f",
+      "retired": true
     },
     "strace": {
       "path": "/usr/bin/strace",
@@ -763,14 +768,16 @@
     "raw_trace": {
       "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/b570-metric-query-diagnostic-v1/syscalls.txt",
       "sha256": "7823b735b8590224cf8ef6bbc19d341e1eb7b417055a4b8d1c24bf7fa1ffb152",
-      "bytes": 87235
+      "bytes": 87235,
+      "retired": true
     },
     "stdout_sha256": "188baadac20a347a4d41c0832cf41b64247d93469310e9421fc2bbbbf3ff4617",
     "stderr_sha256": "20ff9c22e2d5f1a7021dbcaf152ac7d2a92000a0a8379cf18eda66fcde73016f",
     "excerpt": {
       "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/b570-metric-query-diagnostic-v1/pool-window.txt",
       "sha256": "a85818083f8a5707682113fb1bae1070caa0c665f7c129aae04d9d65802ddeb4",
-      "bytes": 8786
+      "bytes": 8786,
+      "retired": true
     },
     "fresh_faults": [],
     "driver_after": {
@@ -946,7 +953,7 @@
     "raw_catalog_sha256": "50160ac42c10cd1bb621c3274b8daf0024fa0426b19595906b4e6a29f7f852e8"
   },
   "retirement": {
-    "stage": "prepared",
+    "stage": "closed",
     "consumer_closed": "Inventory selection/native review and one-slot query error attribution closed; collection rejected under unchanged conditions. No native engine/fixture generation affected.",
     "source_recovery": [
       {
@@ -977,6 +984,17 @@
       "bytes": 3066914
     },
     "retained": "Compact original results,9 selected metric definitions and2 critical syscall lines;3 reports and corrected native review remain retrieval-only references.",
-    "next_action": "Commit decision,verify exactmanifest identities under Main ownership lock,retire listed files and five unused probe source/controller files. Leave current13engine artifacts andolderprovenance/lifecycle holds unchanged."
+    "next_action": "This capability investigation is closed. Resume source-specific prefill attribution/tuning with exact6e40 decode package/configuration/1256-slot placement preserved; do not retry counter setup under unchanged conditions. Legacy provenance/lifecycle holds remain explicit elsewhere.",
+    "deleted_files": 28,
+    "deleted_bytes": 3066914,
+    "verified_selected_engine_artifacts_before_after": 13,
+    "roots_absent": true,
+    "unused_probe_sources_retired": [
+      "bench/sycl/metric_inventory.cpp",
+      "bench/sycl/metric_query_setup.cpp",
+      "tools/sycl/metric_inventory.py",
+      "tools/sycl/metric_query_setup.py",
+      "tools/sycl/metric_query_diagnostic.py"
+    ]
   }
 }

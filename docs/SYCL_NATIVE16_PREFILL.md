@@ -297,6 +297,11 @@ device. Do not run model metric queries under this unqualified setup. Continue
 prefill tuning from existing timings and source/resource evidence; physical
 traffic and occupancy remain unknown. See the
 [capability result](../bench/results/2026-10-15-pr6-recovery-audit/metric-inventory-current.json).
+The selection review consumed the raw catalog. After recovering both probes'
+original source and recipes from pushed Git history, the unused probe
+sources/controllers and28 generated/transaction files (3066914 bytes) were retired. Keep
+the compact API error, critical syscall lines, selected metric semantics and
+deletion manifest; the original13 engine/fixture artifacts remain unchanged.
 
 Remaining model gates are repeated phase-preserving adoption evidence,
 agent-session and task quality, full physical262144 tokens including the final
