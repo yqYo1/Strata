@@ -4664,7 +4664,7 @@
     }
   },
   "unitrace_aggregation_host": {
-    "stage": "prepared",
+    "stage": "failed",
     "source_commit": "ed093a2edc223944c9f754984946fd1c4cb1ddb3",
     "input_sha256": {
       "bench/sycl/collector_aggregation.cpp": "c85ccd5b69de0de0ac88584f3d74a0ff0548f024c1e2a1c9daf5dee098e8ec1a",
@@ -4768,6 +4768,77 @@
         "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/unitrace-aggregation-host-v1/aggregate-candidate.inc",
         "sha256": "ed519d42448731eaecc991e2e0449ffac755e95092b16a7d2c3a0144bd1320ff"
       }
-    ]
+    ],
+    "binary": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/unitrace-aggregation-host-v1/aggregation_fixture",
+      "bytes": 60880,
+      "sha256": "06c69d1a02e78a8ab6dffad72e488dc832f5a23c199eab9a9b718eba81fb3dcf"
+    },
+    "error": "RuntimeError('host proof/footer differs')",
+    "closed_fixture_evidence": {
+      "actual_cases": 40,
+      "planned_cases": 80,
+      "native_footer_passed": true,
+      "native_exit_code": 0,
+      "representative_keys_and_all6_fields_passed": true,
+      "overflow_and_idempotence_passed": true,
+      "name_lookups": {
+        "reference": 2098176,
+        "candidate": 2048
+      },
+      "clock_pair_ns": 20,
+      "samples": [
+        {
+          "index": 0,
+          "order": "reference,candidate",
+          "reference_ns": 340321233,
+          "candidate_ns": 682382,
+          "ratio": 0.0020051114471602775
+        },
+        {
+          "index": 1,
+          "order": "candidate,reference",
+          "reference_ns": 338865047,
+          "candidate_ns": 635614,
+          "ratio": 0.0018757142574223654
+        },
+        {
+          "index": 2,
+          "order": "reference,candidate",
+          "reference_ns": 339252084,
+          "candidate_ns": 821384,
+          "ratio": 0.0024211612506999367
+        },
+        {
+          "index": 3,
+          "order": "candidate,reference",
+          "reference_ns": 340979191,
+          "candidate_ns": 660431,
+          "ratio": 0.0019368659948518676
+        },
+        {
+          "index": 4,
+          "order": "reference,candidate",
+          "reference_ns": 346884228,
+          "candidate_ns": 888560,
+          "ratio": 0.002561546268975942
+        },
+        {
+          "index": 5,
+          "order": "candidate,reference",
+          "reference_ns": 341280839,
+          "candidate_ns": 731916,
+          "ratio": 0.0021446149808603816
+        },
+        {
+          "index": 6,
+          "order": "reference,candidate",
+          "reference_ns": 336059639,
+          "candidate_ns": 831683,
+          "ratio": 0.002474807752798901
+        }
+      ],
+      "interpretation": "Original plan failed: source loop had5 sizes*2 uniqueness*2 overflow*2 verbose=40,not80. Native values/7 proxy samples passed their checks,but80-case gate not met. Preserve failure; add a second independently seeded dataset in a new committed plan/build. No collector/model/GPU advancement."
+    }
   }
 }
