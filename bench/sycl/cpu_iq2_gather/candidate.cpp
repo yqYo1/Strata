@@ -1,5 +1,5 @@
 // Private Main-authored gather discriminator from original6e40 iq2_pair_avx2.cpp.
-// Only grid-load construction and private symbol names differ; no production selection.
+// Grid loads, constrained p-loop unrolling and private symbols differ; no production selection.
 // Main-authored integration of the exact direct-pair component ad4f29ac9.
 // Repository MIT license. Component source/provenance and bit/performance gates
 // are preserved in cpu-iq2-current.json; this producer is not yet qualified.
@@ -54,7 +54,7 @@ __attribute__((noinline)) void gather_pair_dot(const block_iq2_s* g,const block_
             const auto act=_mm256_loadu_si256(reinterpret_cast<const __m256i*>(y[b].qs+32*p));
             gi=_mm256_add_epi32(gi,half(g[b],p,act,gs));ui=_mm256_add_epi32(ui,half(u[b],p,act,us));
         };
-        #pragma clang loop unroll(full)
+        #pragma clang loop unroll(disable)
         for(int p=0;p<8;++p)part(p);
         const float gd=_mm_cvtss_f32(_mm_cvtph_ps(_mm_cvtsi32_si128(g[b].d)))*y[b].d;
         const float ud=_mm_cvtss_f32(_mm_cvtph_ps(_mm_cvtsi32_si128(u[b].d)))*y[b].d;

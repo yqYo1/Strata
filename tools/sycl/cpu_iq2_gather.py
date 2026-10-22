@@ -15,7 +15,7 @@ import measurement_owner as owner
 import query_profile as q
 
 P,B,A=base.P,base.B,base.A
-ROOT=B/'cpu-iq2-gather-v1'
+ROOT=B/'cpu-iq2-gather-v2'
 PLAN=A/'cpu-iq2-gather-plan.json'
 RESULT=A/'cpu-iq2-gather-current.json'
 PREFIXES=(*base.PREFIXES,'tools/sycl','bench/sycl/cpu_iq2_gather','tests/core/test_cpu_iq2_gather.py')
@@ -29,23 +29,32 @@ def committed(path):
     return json.loads(raw)
 
 def prepare():
-    base.need(not ROOT.exists() and not PLAN.exists() and not RESULT.exists(),'fresh single-use experiment required')
+    base.need(not ROOT.exists(),'fresh single-use experiment required')
+    old=committed(RESULT);retired=old.get('artifact_retirement',{})
+    base.need(old['stage']=='build' and not old['passed'] and not old['complete'] and old['ownership_closed'] and not old['active'] and
+        old['error']=='prospective lowering screen failed' and not old['checks'] and old['diagnostic']['fixture_executed'] is False and
+        old['lowering']['gather_pair_dot']['gathers']==16 and old['lowering']['gather_pair_dot']['vector_stack_accesses']==34 and
+        retired.get('complete') and retired.get('original_recipes_recovered') and retired.get('owned_commands_closed')==6 and
+        not (B/'cpu-iq2-gather-v1').exists() and base.digest(retired['manifest'])==retired['manifest_sha256'] and
+        base.digest(PLAN)==old['plan_sha256'],'preserve the original failed lowering and source-recovered retirement first')
+    previous=dict(commit=base.git(P,'log','-1','--format=%H','--',str(RESULT.relative_to(P))).decode().strip(),
+        path=str(RESULT.relative_to(P)),sha256=base.digest(RESULT),plan_archive=retired['archive'],plan_sha256=old['plan_sha256'],outcome='Original full-unroll lowering screen failed before fixture execution;unchanged failed outcome,auxiliary build retired.')
     native,n=q.current_build();revision=base.git(P,'rev-parse','HEAD').decode().strip()
     forms=[r for r in base.formats() if r['gu']==22]
     for row in forms:row['experts']=168;row['fixture_sha256']=base.fixture_hash(row)
     fixture=''.join(f"{r['shard']} {r['down']} {r['gate']} {r['up']} {r['down_offset']} {r['blob_bytes']}\n" for r in forms)
     base.need(all(not any(c.isspace() for c in r['shard']) for r in forms),'fixture path whitespace')
-    plan=dict(schema='strata-iq2-gather-v1',source=base.source_pin(P,revision,PREFIXES),ggml=base.source_pin(base.GGML,base.GGML_REV,('ggml',)),
+    plan=dict(schema='strata-iq2-gather-v2',previous_result=previous,source=base.source_pin(P,revision,PREFIXES),ggml=base.source_pin(base.GGML,base.GGML_REV,('ggml',)),
         native_reference=dict(source=native['source_commit'],binary=native['binary'],inputs_recovered=n),
-        tools={str(Path(x).resolve()):base.digest(x) for x in (base.LLVM/'bin/clang',base.LLVM/'bin/clang++','/usr/bin/cmake','/usr/bin/ninja','/usr/bin/nm','/usr/bin/objdump','/usr/bin/ldd',sys.executable)},
+        tools={str(Path(x).resolve()):base.digest(x) for x in (base.LLVM/'bin/clang',base.LLVM/'bin/clang++',base.LLVM/'lib/clang/22/include/avx2intrin.h','/usr/bin/cmake','/usr/bin/ninja','/usr/bin/nm','/usr/bin/objdump','/usr/bin/ldd',sys.executable)},
         environment=base.environment(),machine=base.machine(),formats=forms,metadata_sha256=base.digest(base.METADATA),model_identity={r['shard']:base.identity(r['shard']) for r in forms},fixture_text=fixture,
         configure=['/usr/bin/cmake','-S',str(P/'bench/sycl/cpu_iq2_gather'),'-B',str(ROOT/'build'),'-G','Ninja','-DCMAKE_BUILD_TYPE=Release','-DCMAKE_EXPORT_COMPILE_COMMANDS=ON','-DCMAKE_C_COMPILER='+str(base.LLVM/'bin/clang'),'-DCMAKE_CXX_COMPILER='+str(base.LLVM/'bin/clang++'),'-DSTRATA_GGML_DIR='+str(base.GGML)],
         build=['/usr/bin/cmake','--build',str(ROOT/'build'),'--target','cpu_iq2_gather','--parallel','6'],
-        protocol=dict(question='Does vector index formation plus four-lane AVX2 QWORD gather reduce the current IQ2_S NT1 GU producer cost on Zen3?',
-            mechanism='Original pair producer is unchanged. Private candidate changes only grid-load construction and private symbol names,using the same1024-entry8192-byte ggml table;no expanded LUT,no weight conversion,no persistent model state change.',
+        protocol=dict(question='Does four-lane AVX2 QWORD gather with constrained p-loop unrolling reduce the current IQ2_S NT1 GU producer cost on Zen3?',
+            mechanism='Original pair producer is unchanged. Private candidate changes grid-load construction,p-loop unroll(full) to unroll(disable),and private symbols,using the same1024-entry8192-byte ggml table. This is a combined lookup/scheduling change;any gain cannot be attributed to gather alone. Integer/FP operation order and storage remain unchanged;no expanded LUT or weight conversion.',
             scope='Kernel-only actual iq2_pair_gu_rows versus private candidate,including identical guards,SiLU and output store. Single pinned physical computing core;no production dispatcher,pool,Down or NT2-4. This isolates lookup lowering before any proposed decode-only integration.',
             inputs='Two actual22/20 and22/42 format layers,168 experts each,H2560/FF640. Same four deterministic quantized activation rows. Reuse first6 shuffled experts versus stream168;GU active footprints6297600/176332800B are logical,not physical RAM traffic. Full fixture loading outside timing.',
-            codegen_gate='Before execution:original pair_dot has zero gathers;private gather_pair_dot has16 VPGATHERDQ instructions per unrolled block body,no calls and no vector stack accesses. Static counts do not prove dynamic uops or speed. A failed lowering screen permits no timing trial.',
+            codegen_gate='Before execution:original pair_dot has zero gathers;private gather_pair_dot has2 VPGATHERDQ instructions in the p-loop body (eight p iterations per256-weight block),no calls and no vector stack accesses. Static counts do not prove dynamic uops or speed. A failed lowering screen permits no timing trial.',
             numerical='Both arms independently match existing iq256_single_gu_rows output bits for every row/expert;finite outputs,partial/empty/tail rows,rejected metadata/null/alignment/extent,canaries and immutable inputs. Complete860160-byte final captures must match in two check and all six timing processes.',
             order=list(ORDER),samples_per_cell=5,sample_floor_s=1.0,target_s=1.2,max_passes=1000000,timer_fraction_cap=.001,
             timing='Six separate owned processes A/B/B/A/A/B;each both format layers and reuse/stream cells. Eight warm passes,then one timer-reference pass. Five full-pass batches>=1s per cell;timer probe outside samples and<0.1% warm pass. No added repetitions or retries after results.',
@@ -61,6 +70,7 @@ def prepare():
 
 def load():
     plan=committed(PLAN);native,n=q.current_build()
+    base.need(plan['schema']=='strata-iq2-gather-v2','wrong prospective plan')
     base.need(dict(source=native['source_commit'],binary=native['binary'],inputs_recovered=n)==plan['native_reference'],'retained native reference drift')
     base.need(base.source_pin(P,plan['source']['revision'],PREFIXES)==plan['source'] and base.source_pin(base.GGML,base.GGML_REV,('ggml',))==plan['ggml'],'source drift')
     base.need(base.machine()==plan['machine'] and base.environment()==plan['environment'] and base.digest(base.METADATA)==plan['metadata_sha256'],'machine/environment/metadata drift')
@@ -112,7 +122,7 @@ def execute(stage):
                 matches=re.findall(r'^([0-9a-f]+) ([0-9a-f]+) t .*::'+name+r'\(.*$',nm,re.M);base.need(len(matches)==1,'unique function '+name);start,size=(int(x,16) for x in matches[0]);asm,_=run(name,['/usr/bin/objdump','-d','--no-show-raw-insn',f'--start-address={start}',f'--stop-address={start+size}',str(binary)],20)
                 instructions=[m.group(1) for m in re.finditer(r'^\s*[0-9a-f]+:\s+(.*)$',asm,re.M)]
                 r['lowering'][name]=dict(start=start,bytes=size,gathers=sum(x.startswith('vpgatherdq ') for x in instructions),calls=sum(x.startswith('call') for x in instructions),vector_stack_accesses=sum(bool(re.match(r'v\w+\s',x) and re.search(r'%[xy]mm\d+',x) and re.search(r'\(%r(?:sp|bp)\)',x)) for x in instructions))
-            a,b=r['lowering']['pair_dot'],r['lowering']['gather_pair_dot'];base.need(a['gathers']==0 and b['gathers']==16 and b['calls']==0 and b['vector_stack_accesses']==0,'prospective lowering screen failed')
+            a,b=r['lowering']['pair_dot'],r['lowering']['gather_pair_dot'];base.need(a['gathers']==0 and b['gathers']==2 and b['calls']==0 and b['vector_stack_accesses']==0,'prospective lowering screen failed')
         else:
             built=json.loads((ROOT/'build.json').read_text());r['binary']=built['binary'];base.need(built['passed'] and built['complete'] and built['ownership_closed'] and base.digest(r['binary']['path'])==r['binary']['sha256'],'exact qualified component build required')
             expected_hash=previous['checks'][0]['capture_sha256'] if stage=='measure' else None
