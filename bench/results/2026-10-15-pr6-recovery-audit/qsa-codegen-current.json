@@ -965,5 +965,154 @@
     "gates": "Fail on uncommitted analyzer/plan, changed original capture checks/files, ambiguous selected loop, missing/unsupported CFG terminator or unresolved edge. No edits to source/capture evidence; no dynamic bytes or causal/performance claim.",
     "retained_fields": "Analyzer identity; compact per-arm IGC header values/declaration type counts, CFG/loop conservation counts and static spill/fill region counts. No raw instructions/IR/histogram corpus.",
     "retirement": "Consume selected12 captures only until Main exact-loop analysis and native report review close, then retire auxiliary generation after original source/recipe recovery from pushed Git."
+  },
+  "static_analysis": {
+    "analyzer_commit": "d103ae83a470076685ec2fa69f3eb6e6b69b16b7",
+    "analyzer_sha256": "2427b7e8df80ee2f073b41300853461b7c706adaa9207c19e823cea3f003de54",
+    "arms": [
+      {
+        "arm": 0,
+        "asm_sha256": "4c06b4e70c5128b531c99d3ff74ca65f7246a82544154891c217c020a0ba8a19",
+        "compiler_headers": {
+          "instCount": 4906,
+          "spill size": 12480,
+          "spill GRF est. ref count": 1526,
+          "spill flag store": 28,
+          "spill flag load": 36
+        },
+        "spilled_declarations": 195,
+        "declaration_types": {
+          "d": 23,
+          "w": 172
+        },
+        "llvm_blocks": 457,
+        "reachable_blocks": 457,
+        "natural_loop_headers": 5,
+        "selected_loop": {
+          "header": "840",
+          "phi": "%842",
+          "phi_line": 1034,
+          "update_line": 4114,
+          "step": 32,
+          "fp32_accumulator_phis": 4
+        },
+        "selected_loop_blocks": 63,
+        "annotated_scratch_instructions": {
+          "spill": {
+            "total": 19,
+            "regions": {
+              "inside": 2,
+              "outside": 15,
+              "unmapped": 2
+            }
+          },
+          "fill": {
+            "total": 22,
+            "regions": {
+              "inside": 10,
+              "outside": 7,
+              "unmapped": 5
+            }
+          }
+        }
+      },
+      {
+        "arm": 1,
+        "asm_sha256": "13c5ad7ca1c79cd1c154d3b19a59e683e6d60911b06d1be983c5660b79e38ff1",
+        "compiler_headers": {
+          "instCount": 4906,
+          "spill size": 12480,
+          "spill GRF est. ref count": 1526,
+          "spill flag store": 28,
+          "spill flag load": 36
+        },
+        "spilled_declarations": 195,
+        "declaration_types": {
+          "d": 23,
+          "w": 172
+        },
+        "llvm_blocks": 457,
+        "reachable_blocks": 457,
+        "natural_loop_headers": 5,
+        "selected_loop": {
+          "header": "840",
+          "phi": "%842",
+          "phi_line": 1034,
+          "update_line": 4114,
+          "step": 32,
+          "fp32_accumulator_phis": 4
+        },
+        "selected_loop_blocks": 63,
+        "annotated_scratch_instructions": {
+          "spill": {
+            "total": 19,
+            "regions": {
+              "inside": 2,
+              "outside": 15,
+              "unmapped": 2
+            }
+          },
+          "fill": {
+            "total": 22,
+            "regions": {
+              "inside": 10,
+              "outside": 7,
+              "unmapped": 5
+            }
+          }
+        }
+      },
+      {
+        "arm": 2,
+        "asm_sha256": "6ee560d4b29ab3e0e8cee1fe3a1ae4a00d6210824e5c0d628f1330d421b807c6",
+        "compiler_headers": {
+          "instCount": 4839,
+          "spill size": 22208,
+          "spill GRF est. ref count": 2731,
+          "spill flag store": 25,
+          "spill flag load": 33
+        },
+        "spilled_declarations": 347,
+        "declaration_types": {
+          "b": 1,
+          "d": 24,
+          "uw": 3,
+          "w": 319
+        },
+        "llvm_blocks": 445,
+        "reachable_blocks": 445,
+        "natural_loop_headers": 5,
+        "selected_loop": {
+          "header": "816",
+          "phi": "%818",
+          "phi_line": 1007,
+          "update_line": 3944,
+          "step": 32,
+          "fp32_accumulator_phis": 4
+        },
+        "selected_loop_blocks": 51,
+        "annotated_scratch_instructions": {
+          "spill": {
+            "total": 24,
+            "regions": {
+              "inside": 2,
+              "outside": 20,
+              "unmapped": 2
+            }
+          },
+          "fill": {
+            "total": 30,
+            "regions": {
+              "inside": 13,
+              "outside": 12,
+              "unmapped": 5
+            }
+          }
+        }
+      }
+    ],
+    "default_control_dat_identical": false,
+    "limits": "Static emitted annotations and CFG membership only. Shared visa IDs are not unique source-value provenance; inside does not imply every iteration/lane executes. Compiler estimates/flag counters are not observed traffic. No occupancy, causal attribution, speed or loaded-machine-code-equivalence claim.",
+    "interpretation": "regions classifies LLVM origin blocks sharing the instruction visa ID, not the actual placement of final native instructions. spilled_declarations counts only explicit Scratch-assigned declarations and excludes alias/flag-only annotations. The next offline native-CFG pass will check final placement; no dynamic claim."
   }
 }
