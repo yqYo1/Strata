@@ -157,4 +157,36 @@ class CurrentCollectionPathTests(unittest.TestCase):
                 else:self.assertTrue(saved['resources']['coverage'])
 
 
+class HistoricalNativeInputTests(unittest.TestCase):
+    def test_only_named_committed_host_gate_updates_can_reuse_native_inputs(self):
+        import query_profile as q
+        with tempfile.TemporaryDirectory() as tmp:
+            root=Path(tmp)
+            source=dict(root=str(root))
+            original=hashlib.sha256(b'original').hexdigest()
+            for name in sorted(q.HOST_GATE_TESTS):
+                path=root/name;path.parent.mkdir(parents=True,exist_ok=True)
+                path.write_bytes(b'new committed Python gate')
+                with self.subTest(name=name),patch.object(q,'P',root):
+                    with patch.object(q.gen,'git',return_value=path.read_bytes()):
+                        self.assertTrue(q.worktree_input_matches(source,name,original))
+                        full=dict(project=dict(source,source_sha256={name:original}))
+                        update=q.host_gate_test_updates(full)[0]
+                        self.assertEqual(update['build_input_sha256'],original)
+                        self.assertEqual(update['committed_sha256'],hashlib.sha256(path.read_bytes()).hexdigest())
+                    with patch.object(q.gen,'git',return_value=b'previous committed gate'):
+                        self.assertFalse(q.worktree_input_matches(source,name,original))
+                        with self.assertRaises(RuntimeError):q.host_gate_test_updates(full)
+                    other=root/'dependency';(other/name).parent.mkdir(parents=True,exist_ok=True)
+                    (other/name).write_bytes(path.read_bytes())
+                    self.assertFalse(q.worktree_input_matches(dict(root=str(other)),name,original))
+            for name in ('src/program/generate.cpp','tests/sycl/native_dense_bank.cpp',
+                         'tests/core/test_unlisted.py'):
+                path=root/name;path.parent.mkdir(parents=True,exist_ok=True)
+                path.write_bytes(b'changed native or unlisted source')
+                with self.subTest(name=name),patch.object(q,'P',root),patch.object(q.gen,'git',return_value=path.read_bytes()):
+                    self.assertFalse(q.worktree_input_matches(source,name,original))
+                    self.assertTrue(q.worktree_input_matches(source,name,hashlib.sha256(path.read_bytes()).hexdigest()))
+
+
 if __name__=='__main__':unittest.main()

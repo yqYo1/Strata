@@ -14,9 +14,10 @@ The completed six-process retained6e40/current362-chunk64 comparison now rejects
 the candidate package for adoption. Its0.153% warm-prefill gain does not pay for
 the failed sustained-decode preservation screen: paired-ratio geometric means
 are0.990300 for code and0.999066 for prose. Keep retained6e40 as the measured
-continuation baseline with1256 decode slots. Restore its native sources and
-verify exact build/fixture reuse before the next model route;the rejected
-package remains temporarily available for that bounded provenance/source review.
+continuation baseline with1256 decode slots. Its native sources are restored to the original6e40 inputs; exact retained
+engine/fixture restoration and provenance admission must close before another
+model route. The rejected package remains only until that serialized artifact
+selection closes. Preserve the independent Python provenance regression tests.
 This does not qualify agent/task quality,physical262144/session/RESTORE orTG70.
 
 The current priority is to restore the fastest recorded prefill path while

@@ -53,7 +53,6 @@
 #include "strata/core/prefill_head_scope.hpp"
 #ifdef STRATA_ENABLE_SYCL
 #include "strata/sycl/checked_cleanup.hpp"
-#include "strata/sycl/prefill_transition_profile.hpp"
 #include "strata/kernels/cpu/iq2_pair_avx2.hpp"
 #endif
 #include "strata/core/verify.hpp"
@@ -119,9 +118,6 @@
 #include <vector>
 
 namespace {
-#ifdef STRATA_ENABLE_SYCL
-namespace transition = strata::sycl_backend::prefill_transition_profile;
-#endif
 
 // The two real batched prompt call sites share this boundary. Prefill::run owns
 // layer-major residual/cache temporaries; its return (including cancel/error)
@@ -316,8 +312,6 @@ bool run_prompt_with_native_dense_phase(NativeDensePhase& phase,
     };
     const char* profile_switch=std::getenv("STRATA_PREFILL_LAYER_MAJOR_PROFILE");
     HostProfile host_profile(profile_switch && std::strcmp(profile_switch,"1")==0);
-    const char* transition_switch=std::getenv("STRATA_PREFILL_TRANSITION_PROFILE");
-    const bool transition_on=transition_switch && std::strcmp(transition_switch,"1")==0;
     auto fatal=[&](const char* why) noexcept {
         host_profile.emit(true); // fatal exits cannot run the ordinary scope summary
         std::fprintf(stderr,"prefill dense bank: %s; stopping with owners live\n",why);
@@ -386,48 +380,37 @@ bool run_prompt_with_native_dense_phase(NativeDensePhase& phase,
     const bool native_ple=ple.key_native_data!=nullptr;
     auto restore=[&]() noexcept {
         if(!retired) return;
-        transition::Scope transition_scope(transition_on,"dense_restore");
         host_profile.restore_begin();
-        {
-            transition::Part part(transition::retire);
-            drain();
-            if(cache_loan_active) {
-                std::string e;
-                if(!prompt.retire_cache_scratch_lease(e)) fatal("cache borrower retirement rejected");
-                cache_loan_active=false;
-            }
+        drain();
+        if(cache_loan_active) {
+            std::string e;
+            if(!prompt.retire_cache_scratch_lease(e)) fatal("cache borrower retirement rejected");
+            cache_loan_active=false;
         }
         prompt.activate_native_dense_layer={};
         std::string e;
         if(phase.dense->residency()==strata::core::NativeDense::Residency::Bank &&
            !phase.dense->restore_full(main_cs,{true},e)) fatal("full restore failed; decode prohibited");
-        {
-            transition::Part part(transition::canonical);
-            if(phase.canonical && release_dense) {
-                using State=strata::core::CanonicalDenseBank::State;
-                if(phase.canonical->state()==State::Bank && !phase.canonical->restore_full(main_cs,e))
-                    fatal("canonical full restore failed; both owner sets retained and decode prohibited");
-                if(phase.canonical->state()==State::Prepared) phase.canonical->cancel_prepared();
-                phase.dense->cancel_prepared_bank();
-                if(!phase.canonical->bind_ple(ple,e)) fatal("full canonical PLE rebind failed");
-            }
-            if(native_ple && release_dense) {
-                const auto* key=rebind_ple();
-                if(!key || !key->native_data || !key->native_q8_1) fatal("restored PLE publication absent");
-                ple.key_native_data=key->native_data;ple.key_native_type=key->native_type;ple.key_native_q8_1=key->native_q8_1;
-            }
-            if(phase.canonical && phase.canonical->state()==strata::core::CanonicalDenseBank::State::RestoredPending)
-                phase.canonical->finish_restore(); // PLE no longer points into persistent pool
+        if(phase.canonical && release_dense) {
+            using State=strata::core::CanonicalDenseBank::State;
+            if(phase.canonical->state()==State::Bank && !phase.canonical->restore_full(main_cs,e))
+                fatal("canonical full restore failed; both owner sets retained and decode prohibited");
+            if(phase.canonical->state()==State::Prepared) phase.canonical->cancel_prepared();
+            phase.dense->cancel_prepared_bank();
+            if(!phase.canonical->bind_ple(ple,e)) fatal("full canonical PLE rebind failed");
         }
-        {
-            transition::Part part(transition::graph_resume);
-            if(recapture && !phase.recapture(e)) fatal("session graph recapture failed; decode prohibited");
-            if(verifier && !verifier->resume_prefill_dense(*phase.dense,e)) fatal("verifier dense resume failed");
+        if(native_ple && release_dense) {
+            const auto* key=rebind_ple();
+            if(!key || !key->native_data || !key->native_q8_1) fatal("restored PLE publication absent");
+            ple.key_native_data=key->native_data;ple.key_native_type=key->native_type;ple.key_native_q8_1=key->native_q8_1;
         }
+        if(phase.canonical && phase.canonical->state()==strata::core::CanonicalDenseBank::State::RestoredPending)
+            phase.canonical->finish_restore(); // PLE no longer points into persistent pool
+        if(recapture && !phase.recapture(e)) fatal("session graph recapture failed; decode prohibited");
+        if(verifier && !verifier->resume_prefill_dense(*phase.dense,e)) fatal("verifier dense resume failed");
         retired=false;
         observe("restored");
         host_profile.restore_end();
-        transition_scope.emit(true);
     };
     struct Restore {decltype(restore)& f;~Restore() noexcept {f();}} rollback{restore};
     auto retire_readers=[&]() -> bool {
@@ -450,12 +433,7 @@ bool run_prompt_with_native_dense_phase(NativeDensePhase& phase,
         if(release_dense) {
             // Withdraw the separate PLE native publication before releasing owners.
             if(native_ple) {ple.key_native_data=nullptr;ple.key_native_q8_1=nullptr;ple.key_native_type=-1;}
-            {
-                transition::Scope entry_scope(transition_on,"native_owner_entry");
-                const bool entered=phase.dense->enter_layer_bank({true},err);
-                entry_scope.emit(entered);
-                if(!entered) return false;
-            }
+            if(!phase.dense->enter_layer_bank({true},err)) return false;
             if(phase.canonical) {
                 phase.canonical->enter();
                 if(!phase.canonical->bind_ple(ple,err)) fatal("persistent canonical PLE rebind failed");
@@ -6209,20 +6187,12 @@ int main(int argc, char** argv) {
             // stage's cache holding an expert it does not own, which is silent and produces plausible tokens.
             // (split in two halves so a layer split can queue every stage's copies before it waits for any: #340)
 #ifdef STRATA_ENABLE_SYCL
-            const char* refill_transition_switch=std::getenv("STRATA_PREFILL_TRANSITION_PROFILE");
-            const bool refill_transition_on=refill_transition_switch && !std::strcmp(refill_transition_switch,"1");
             auto loan_call = [](auto&& operation, std::string& e) -> bool {
                 try { return operation(); }
                 catch (const std::exception& failure) { e = failure.what(); return false; }
             };
 #endif
             auto refill_issue = [&](PfPart& p, std::string& e) -> bool {
-#ifdef STRATA_ENABLE_SYCL
-                uint64_t logical_bytes=0;
-                if(transition::active) for(const auto& [i,slot] : p.lent)
-                    logical_bytes+=strata::kernels::cpu::expert_layout().blob_bytes(i/g.n_expert);
-                transition::Part part(transition::submit,p.lent.size(),logical_bytes);
-#endif
                 tr("refill start", (long long) p.lent.size());
                 const strata::core::OnDevice on(p.dev);
 #ifdef STRATA_ENABLE_SYCL
@@ -6241,9 +6211,6 @@ int main(int argc, char** argv) {
                 return true;
             };
             auto refill_wait = [&](PfPart& p, std::string& e) -> bool {
-#ifdef STRATA_ENABLE_SYCL
-                transition::Part part(transition::drain);
-#endif
                 const strata::core::OnDevice on(p.dev);
                 if (!p.cache->sync_queued(e)) return false;
 #ifdef STRATA_ENABLE_SYCL
@@ -6262,7 +6229,6 @@ int main(int argc, char** argv) {
                 if (!refill_issue(p, e) || !refill_wait(p, e)) return false;
 #ifdef STRATA_ENABLE_SYCL
                 if (cache_scratch_lease_enabled) {
-                    transition::Part part(transition::publish);
                     if (!loan_call([&] { return p.cache->publish_scratch_refill(p.lease, [&] {
                         return res_upload("serve checked cache refill", e) && audit_residency("refill", e);
                     }); },e)) return false;
@@ -6282,9 +6248,6 @@ int main(int argc, char** argv) {
             // STRATA_REFILL_SERIAL=1: stage after stage, as 0.1.30/0.1.31.
             static const bool refill_serial = std::getenv("STRATA_REFILL_SERIAL") != nullptr;
             auto refill = [&](std::string& e) -> bool {
-#ifdef STRATA_ENABLE_SYCL
-                transition::Scope transition_scope(refill_transition_on,"cache_refill");
-#endif
                 const auto t_rf = Clock::now();
                 int64_t n_lent = 0, n_parts = 0;
                 for (PfPart& p : pf_parts)
@@ -6300,7 +6263,6 @@ int main(int argc, char** argv) {
                 }
 #ifdef STRATA_ENABLE_SYCL
                 if (!cache_scratch_lease_enabled) {
-                transition::Part part(transition::publish);
 #endif
                 if (n_parts > 0 && !res_upload("serve cache refill", e)) return false;
 #ifdef STRATA_ENABLE_SYCL
@@ -6313,9 +6275,6 @@ int main(int argc, char** argv) {
                                  std::chrono::duration<double, std::milli>(Clock::now() - t_rf).count());
                     std::fflush(stderr);
                 }
-#ifdef STRATA_ENABLE_SYCL
-                transition_scope.emit(true);
-#endif
                 return true;
             };
             // lend the slots `tokens` batched prompt tokens need: the prompt path's buffers for min(chunk, tokens

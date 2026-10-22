@@ -1,8 +1,7 @@
-// Production-linked owner/payload fixture. Link the selected native_dense.cpp and
+// Unexecuted production-linked fixture. Link the PROPOSED native_dense.cpp and
 // configured production SYCL gguf/weights/native_mmvq/runtime objects; no mock.
 // Usage: fixture PACK_DIR GGUF_SHARD [GGUF_SHARD ...]
 #include "strata/core/native_dense.hpp"
-#include "strata/sycl/prefill_transition_profile.hpp"
 #include "strata/core/weights.hpp"
 #include "strata/artifact/gguf_reader.hpp"
 #include "strata/kernels/native_mmvq.hpp"
@@ -132,18 +131,7 @@ static void run(const std::string& pack, const std::vector<std::string>& shards,
             require(native.layer_view().empty(),"OOM published bank view");
         }
 #endif
-        namespace tp=strata::sycl_backend::prefill_transition_profile;
-        const char* profile_switch=std::getenv("STRATA_PREFILL_TRANSITION_PROFILE");
-        const bool profile_on=profile_switch && !std::strcmp(profile_switch,"1");
-        auto enter=[&] {
-            tp::Scope scope(profile_on,"native_owner_entry");
-            const bool ok=native.enter_layer_bank(retired,err);scope.emit(ok);return ok;
-        };
-        auto restore=[&] {
-            tp::Scope scope(profile_on,"native_owner_restore");
-            const bool ok=native.restore_full(queue,retired,err);scope.emit(ok);return ok;
-        };
-        require(enter(), err);
+        require(native.enter_layer_bank(retired, err), err);
         require(native.residency() == NativeDense::Residency::Bank, "bank state");
         for (const auto& [name, ref] : original) {
             const auto* withdrawn = table.find(name);
@@ -168,7 +156,7 @@ static void run(const std::string& pack, const std::vector<std::string>& shards,
         }
         require(!native.restore_full(queue, {}, err), "restore without retirement accepted");
         require(native.residency() == NativeDense::Residency::Bank, "rejected restore changed state");
-        require(restore(), err);
+        require(native.restore_full(queue, retired, err), err);
         require(native.layer_view().empty() && native.residency() == NativeDense::Residency::Full,
                 "restore state/view");
         for (const auto& source : native.packed_sources()) {
@@ -176,8 +164,8 @@ static void run(const std::string& pack, const std::vector<std::string>& shards,
             metadata(ref, original.at(source.name)); payload(ref, source.packed, queue);
         }
         // Repeat catches stale original-owner validation after changed addresses.
-        require(enter(), err);
-        require(restore(), err);
+        require(native.enter_layer_bank(retired, err), err);
+        require(native.restore_full(queue, retired, err), err);
         gpu(cudaStreamSynchronize(queue));
         std::printf("PASS matrices=%zu layers=%zu snapshot=%llu bank=%llu\n", original.size(), layers.size(),
                     (unsigned long long)total, (unsigned long long)max_layer);

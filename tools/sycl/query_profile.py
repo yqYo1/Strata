@@ -23,14 +23,15 @@ COMPONENT = A / 'decode-query-profile-component-current.json'
 BUILD_RECORD = B / 'main-native-gdn-engine/record.json'
 COPY_KEYS = ('submitted_blobs','submitted_bytes','completed_blobs','completed_bytes',
              'host_view_groups','gpu_miss_groups','cpu_unique_misses','cpu_entries')
-HOST_GATE_TESTS = frozenset({'tests/core/test_resource_engine.py'})
+HOST_GATE_TESTS = frozenset({'tests/core/test_resource_engine.py',
+                             'tests/core/test_fresh_build_reference.py'})
 
 
 def worktree_input_matches(source, name, expected):
-    """Keep native inputs exact; admit only the named, committed Python gate test.
+    """Keep native inputs exact; admit only the named, committed Python gate tests.
 
-    This test is inventoried by the historical build but neither compiled nor
-    executed by its CMake recipe. Its controller-only update does not relabel
+    These tests are inventoried by the historical build but neither compiled nor
+    executed by its CMake recipe. Their controller-only updates do not relabel
     the original source receipt, engine or same-build fixture qualification.
     """
     actual = gen.common.digest(Path(source['root']) / name)

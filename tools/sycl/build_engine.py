@@ -451,16 +451,13 @@ def retain_current():
 
 def main():
     guards.require(len(sys.argv) == 1 or sys.argv[1:] in
-                   (['retain-current'], ['build-copy-safety'], ['build-status-profile'], ['rebuild-copy-safety'], ['rebuild-arena-copy'], ['rebuild-event-gate'], ['rebuild'], ['rebuild-attention'], ['rebuild-gemm'], ['rebuild-gdn'], ['rebuild-down'], ['rebuild-ordered'], ['rebuild-submission'], ['rebuild-gu'], ['rebuild-mixed'], ['rebuild-expert-bank'], ['rebuild-packed-bank'], ['rebuild-cpu-census'], ['rebuild-mtp-observer'], ['rebuild-prefill-transition'], ['rebuild-large-copy'], ['rebuild-canonical-restore']),
+                   (['retain-current'], ['build-copy-safety'], ['build-status-profile'], ['rebuild-copy-safety'], ['rebuild-arena-copy'], ['rebuild-event-gate'], ['rebuild'], ['rebuild-attention'], ['rebuild-gemm'], ['rebuild-gdn'], ['rebuild-down'], ['rebuild-ordered'], ['rebuild-submission'], ['rebuild-gu'], ['rebuild-mixed'], ['rebuild-expert-bank'], ['rebuild-packed-bank'], ['rebuild-cpu-census'], ['rebuild-mtp-observer']),
                    'use build_engine.py retain-current or a named rebuild mode')
     rebuild = len(sys.argv) == 2 and sys.argv[1] not in ('build-copy-safety', 'build-status-profile')
     attention = sys.argv[1:] == ['rebuild-attention']
     targets = ['strata']
     event_gate=sys.argv[1:]==['rebuild-event-gate']
-    canonical_restore = sys.argv[1:] == ['rebuild-canonical-restore']
-    large_copy = canonical_restore or sys.argv[1:] == ['rebuild-large-copy']
-    transition = large_copy or sys.argv[1:] == ['rebuild-prefill-transition']
-    observer = transition or sys.argv[1:] == ['rebuild-mtp-observer']
+    observer = sys.argv[1:] == ['rebuild-mtp-observer']
     census = observer or sys.argv[1:] == ['rebuild-cpu-census']
     if census or sys.argv[1:] in (['build-copy-safety'], ['build-status-profile'], ['rebuild-copy-safety'], ['rebuild-arena-copy'], ['rebuild-event-gate'], ['rebuild-packed-bank']):
         targets += ['sycl_verifier_retirement_test', 'sycl_submission_test']
@@ -498,12 +495,6 @@ def main():
         targets += ['cpu_work_census_host_test']
     if observer:
         targets += ['sycl_graph_envelope_test', 'iq2_phase_host_test']
-    if transition:
-        targets += ['prefill_transition_host_test','sycl_native_dense_bank_test']
-    if large_copy:
-        targets += ['sycl_large_h2d_bench']
-    if canonical_restore:
-        targets += ['canonical_restore_copy_host_test','sycl_canonical_restore_copy_test','sycl_canonical_dense_bank_test']
     with (B / 'owned-v0141-measurement.lock').open('a+') as lock:
         fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
         guards.no_model_owners([])
@@ -642,21 +633,15 @@ def main():
             commands = [('configure', argv)]
             if census:
                 commands += [('compile-host-contract', ['/usr/bin/cmake', '--build', str(ROOT/'build'),
-                    '--target', 'cpu_work_census_host_test', *(['iq2_phase_host_test'] if observer else []),
-                    *(['prefill_transition_host_test'] if transition else []),
-                    *(['canonical_restore_copy_host_test'] if canonical_restore else []), '-j', '4']),
+                    '--target', 'cpu_work_census_host_test', *(['iq2_phase_host_test'] if observer else []), '-j', '4']),
                     ('host-contract', [str(ROOT/'build/cpu_work_census_host_test')])]
             if observer:
                 commands += [('phase-host-'+str(arm), [str(ROOT/'build/iq2_phase_host_test'),'--pair='+str(arm)])
                              for arm in (0,1)]
-            if transition:
-                commands += [('transition-host', [str(ROOT/'build/prefill_transition_host_test')])]
-            if canonical_restore:
-                commands += [('canonical-restore-host', [str(ROOT/'build/canonical_restore_copy_host_test')])]
             commands.append(('compile-link', ['/usr/bin/cmake', '--build', str(ROOT / 'build'),
                 '--target', *targets, '-j', '4']))
             for label, command in commands:
-                host_contract = label in ('host-contract','transition-host','canonical-restore-host')
+                host_contract = label == 'host-contract'
                 phase_contract = label.startswith('phase-host-')
                 child_env = dict(env, STRATA_IQ2_PAIR=label[-1], STRATA_IQ2_PAIR_AUDIT='1', STRATA_IQ_SINGLE_EXACT='0') if phase_contract else env
                 entry, out, err = owner.run(label, command, child_env, P,
@@ -665,18 +650,6 @@ def main():
                 guards.require(supervision.closed(entry) and entry.get('exit_code') == 0,
                                label + ' failed: ' + (err.read_text(errors='replace') +
                                                       out.read_text(errors='replace'))[-8192:])
-                if label == 'canonical-restore-host':
-                    guards.require(out.read_text() == 'canonical restore copy host: cases=8 passed=1\n',
-                        'incomplete canonical restore scheduler host contract')
-                    record['canonical_restore_host_contract'] = dict(cases=8,passed=True,
-                        exit_code=0,ownership_closed=True,GPU_executed=False,fixture_sha256=digest(command[0]),
-                        stdout_sha256=digest(out),stderr_sha256=digest(err))
-                if label == 'transition-host':
-                    guards.require(out.read_text() == 'prefill transition host: cases=11 passed=1\n',
-                        'incomplete prefill transition observer host contract')
-                    record['prefill_transition_host_contract'] = dict(cases=11,passed=True,
-                        exit_code=0,ownership_closed=True,GPU_executed=False,fixture_sha256=digest(command[0]),
-                        stdout_sha256=digest(out),stderr_sha256=digest(err))
                 if label == 'host-contract':
                     lines = out.read_text().splitlines()
                     guards.require(len(lines) == 16 and

@@ -3,7 +3,6 @@
 #include "strata/core/weights.hpp"
 #include "strata/artifact/gguf_reader.hpp"
 #include "strata/kernels/native_mmvq.hpp"
-#include "strata/sycl/prefill_transition_profile.hpp"
 
 #include <cuda_runtime.h>
 #include <algorithm>
@@ -18,7 +17,6 @@
 #include <stdexcept>
 
 namespace strata::core {
-namespace transition = strata::sycl_backend::prefill_transition_profile;
 namespace {
 [[noreturn]] void bank_stop(const char* operation) noexcept;
 uint64_t packed_stride(uint64_t bytes) {
@@ -327,27 +325,18 @@ void NativeDense::cancel_prepared_bank() {
 }
 
 bool NativeDense::enter_layer_bank(ReaderRetirement retirement, std::string& err) {
-    {
-        transition::Part part(transition::preflight);
-        if (residency_ != Residency::Full || !retirement.all_readers_retired) {
-            err = "native dense: enter requires Full state and retired readers"; return false;
-        }
-        if (!validate_table(false, err)) return false;
+    if (residency_ != Residency::Full || !retirement.all_readers_retired) {
+        err = "native dense: enter requires Full state and retired readers"; return false;
     }
-    { transition::Part part(transition::allocate); if(!prepare_layer_bank(err)) return false; }
-    {
-        transition::Part part(transition::publish, sources_.size());
-        for (const auto& s : sources_) table_->table_.at(s.name) = withdrawn_ref(s.original);
-        residency_ = Residency::Bank;
-    }
+    if (!validate_table(false, err)) return false;
+    if(!prepare_layer_bank(err)) return false;
+    for (const auto& s : sources_) table_->table_.at(s.name) = withdrawn_ref(s.original);
+    residency_ = Residency::Bank;
     // Caller, not this component, proved graph/callback retirement. A global
     // device wait cannot replace that proof (a graph could be replayed later).
-    {
-        transition::Part part(transition::release, weights_.size(), bytes_);
-        for (auto& p : weights_) {
-            checked_bank(cudaFree(p), "release original packed owner");
-            p = nullptr;
-        }
+    for (auto& p : weights_) {
+        checked_bank(cudaFree(p), "release original packed owner");
+        p = nullptr;
     }
     return true;
 }
@@ -385,56 +374,41 @@ bool NativeDense::activate_layer(int layer, void* stream, ReaderRetirement retir
 }
 
 bool NativeDense::restore_full(void* stream, ReaderRetirement retirement, std::string& err) {
-    std::vector<void*> next;
-    {
-        transition::Part part(transition::preflight);
-        if (residency_ != Residency::Bank || !retirement.all_readers_retired || !stream) {
-            err = "native dense: restore requires Bank state, owned stream and retired view readers"; return false;
-        }
-        if (!validate_table(true, err)) bank_stop("restore table identity");
-        try { next.resize(sources_.size(), nullptr); }
-        catch (const std::exception& e) { err = e.what(); return false; }
+    if (residency_ != Residency::Bank || !retirement.all_readers_retired || !stream) {
+        err = "native dense: restore requires Bank state, owned stream and retired view readers"; return false;
     }
+    if (!validate_table(true, err)) bank_stop("restore table identity");
+    std::vector<void*> next;
+    try { next.resize(sources_.size(), nullptr); }
+    catch (const std::exception& e) { err = e.what(); return false; }
     auto queue = static_cast<cudaStream_t>(stream);
-    { transition::Part part(transition::retire);
-      checked_bank(cudaStreamSynchronize(queue), "restore retire bank readers"); }
+    checked_bank(cudaStreamSynchronize(queue), "restore retire bank readers");
     // Allocate full owners before changing bank/view. On OOM no table is
     // published and the prior bank remains valid/retryable.
-    {
-        transition::Part part(transition::allocate, next.size(), bytes_);
-        for (size_t i = 0; i < next.size(); ++i) {
-            auto status = cudaMalloc(&next[i], sources_[i].packed.size());
-            if (status != cudaSuccess) {
-                if (next[i] || status != cudaErrorMemoryAllocation) bank_stop("uncertain restore allocation failure");
-                for (auto p : next) if (p) checked_bank(cudaFree(p), "restore allocation rollback");
-                err = "native dense: full restore allocation failed; bank retained"; return false;
-            }
+    for (size_t i = 0; i < next.size(); ++i) {
+        auto status = cudaMalloc(&next[i], sources_[i].packed.size());
+        if (status != cudaSuccess) {
+            if (next[i] || status != cudaErrorMemoryAllocation) bank_stop("uncertain restore allocation failure");
+            for (auto p : next) if (p) checked_bank(cudaFree(p), "restore allocation rollback");
+            err = "native dense: full restore allocation failed; bank retained"; return false;
         }
     }
-    {
-        transition::Part part(transition::submit, next.size(), bytes_);
-        for (size_t i = 0; i < next.size(); ++i)
-            checked_bank(cudaMemcpyAsync(next[i], sources_[i].packed.data(), sources_[i].packed.size(),
-                         cudaMemcpyHostToDevice, queue), "restore H2D submit");
+    for (size_t i = 0; i < next.size(); ++i)
+        checked_bank(cudaMemcpyAsync(next[i], sources_[i].packed.data(), sources_[i].packed.size(),
+                     cudaMemcpyHostToDevice, queue), "restore H2D submit");
+    checked_bank(cudaStreamSynchronize(queue), "restore H2D completion");
+    if (!validate_table(true, err)) bank_stop("restore prepublication identity");
+    // No reader may run during this publication. Assignment of WeightRef and
+    // vector swap are non-allocating. The canonical pointer/metadata are exact.
+    for (size_t i = 0; i < next.size(); ++i) {
+        auto ref = sources_[i].original;
+        ref.native_data = next[i];
+        table_->table_.at(sources_[i].name) = ref;
+        sources_[i].original = ref;
     }
-    { transition::Part part(transition::drain);
-      checked_bank(cudaStreamSynchronize(queue), "restore H2D completion"); }
-    {
-        transition::Part part(transition::publish, next.size());
-        if (!validate_table(true, err)) bank_stop("restore prepublication identity");
-        // No reader may run during this publication. Assignment of WeightRef and
-        // vector swap are non-allocating. The canonical pointer/metadata are exact.
-        for (size_t i = 0; i < next.size(); ++i) {
-            auto ref = sources_[i].original;
-            ref.native_data = next[i];
-            table_->table_.at(sources_[i].name) = ref;
-            sources_[i].original = ref;
-        }
-        weights_.swap(next);
-        layer_view_.clear();
-    }
-    { transition::Part part(transition::release, 1, bank_bytes_);
-      checked_bank(cudaFree(bank_), "restore bank free"); }
+    weights_.swap(next);
+    layer_view_.clear();
+    checked_bank(cudaFree(bank_), "restore bank free");
     bank_ = nullptr;
     residency_ = Residency::Full;
     // Caller must recapture all graphs: restored addresses may have changed.
