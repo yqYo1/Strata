@@ -403,6 +403,18 @@ another source discriminator, consult the already rejected row-coalesced K
 staging evidence against the gather/clustered contrast. Physical VRAM traffic,
 cache behavior and hardware saturation remain unknown.
 
+
+The next source-only preparation separates QK's column-major B operand from
+PV's unchanged row-major B operand, storing K by logical cell and dimension.
+A reversible Main-authored overlay and the selected-arm numerical harness are
+prepared, with8192 unique in-bounds stores and matching logical matrix elements
+checked on the host. This is not compilation, GPU qualification or adoption.
+Generic API syntax does not prove installed BMG backend support; the official
+16-bit column-major test also carries an AMX-only comment and DG2 expected failure.
+Two report-only Orca Luna scopes investigate the installed layout contract and
+shared-memory methods while Main keeps the native engine unchanged. See the
+[pending component](../bench/results/2026-10-15-pr6-recovery-audit/qsa-colmajor-current.json).
+
 Remaining model gates are repeated phase-preserving adoption evidence,
 agent-session and task quality, full physical262144 tokens including the final
 slots and tail boundaries, prefill-to-decode/session/RESTORE, and70tok/s decode.

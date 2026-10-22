@@ -1,0 +1,67 @@
+{
+  "stage": "source_prepared_contract_pending",
+  "base_native": "6e40afc1beddd059ee518617f6c1efce1da14aca",
+  "generator": {
+    "path": "tools/sycl/qsa_colmajor_sources.py",
+    "sha256": "830d1dc215154b43b5801a380b869959d124d870ce30eadc1d2361bb040f318c"
+  },
+  "source_provenance": "Main-authored layout changes and own archived760dvariable-page fixtures;API semantics from installed Intel LLVM headers and official matrix extension. No external engine implementation copied.",
+  "question": "Can separate column-major QK B and unchanged row-major PV avoid K transpose/store tradeoff while preserving original operands,looporder and GPU-local state? Hardware/compiler support remains unqualified.",
+  "prior_evidence": {
+    "row_coalesced_K_rejected_at": "eb9b0469c",
+    "latency_increase_percent": [
+      12.43967550042897,
+      27.975547323363514,
+      7.748234521326203
+    ],
+    "fixed_heads_rejected_commit": "30520793d",
+    "latencyGM_vs_production": 1.0020392063859935
+  },
+  "generated": {
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-colmajor-v1/control.cpp": {
+      "sha256": "fb4718b57cf7714531ccb278ea10a240f5490df8ea7389a1b67aef0093f7f6fd",
+      "bytes": 25152
+    },
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-colmajor-v1/colmajor.cpp": {
+      "sha256": "a37447fe10cd5363f6fc54b7030ed3e826e79c1a92ddbfd2eeb5848785e9f726",
+      "bytes": 25456
+    },
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-colmajor-v1/qsa-colmajor-variants.hpp": {
+      "sha256": "54455cd783dc3ab64cc20963c218743b1f11190c48c5a7bed93aafa5ff6a89d7",
+      "bytes": 1213
+    },
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-colmajor-v1/timing.cpp": {
+      "sha256": "bf2ec3995d74a5500a64e47ded2e46aab8f05206d7492abc566f8d588c8901a3",
+      "bytes": 8923
+    },
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-colmajor-v1/numerical-reference.inc": {
+      "sha256": "b20fc7981cdb17110a728e2f062a81591d17a8a70fe5880ba2ab67cc3b3af361",
+      "bytes": 23277
+    }
+  },
+  "host_mapping_proof": {
+    "unique_writes": 8192,
+    "old_and_new_QK_logical_elements_equal": true,
+    "four_byte_base_and512byte_stride": "4bytealignedMatrixTile withstride256BF16;offset16cells/16dims retains4bytealignment. Actualbackend load lowering stillunqualified.",
+    "Qcache_alias_lifetime": "Existing all-workgroup barrieraftercachedqueryload,beforeKoverwrite retained. Existing QK/PV and loopbarriers unchanged."
+  },
+  "engine_decode_changed": false,
+  "GPU_executed": false,
+  "model_adoption_qualified": false,
+  "active": false,
+  "ownership_closed": true,
+  "retention": "Five generated source inputs only for immediate contract review/qualification;no binary generation. If unsupported close/retire instead of adopting or renewing a generic hold. Selected13assets and separateprimary/Orca holds remain unchanged.",
+  "next_action": "Finish two report-only Orca scopes and nativeLuna/max review;record installedbackend contract findings before a committed build/qualification plan.",
+  "API_reference": {
+    "official_spec": "https://github.com/intel/llvm/blob/fbccb466cc122c294a6c746dcf0d37e45ff70f3c/sycl/doc/extensions/experimental/sycl_ext_matrix/sycl_ext_oneapi_matrix.asciidoc",
+    "local_reference_revision": "fbccb466cc122c294a6c746dcf0d37e45ff70f3c",
+    "scope": "API allows column-major A/B anddefinesstride between columns;this source revision is not asserted to be the installed compiler revision.",
+    "installed_header_sha256": {
+      "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/include/sycl/ext/oneapi/matrix/matrix-unified.hpp": "d76027407a09884b34879f5677b2efe1c634d6d058333d2fd83ecaa2b49a673e",
+      "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/include/sycl/ext/oneapi/matrix/matrix-unified-utils.hpp": "c4ec45d987a054e2e5ee7d51f2fbbabf2d4a50bff0b7d4124d5e01a1162f8e8a",
+      "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/include/sycl/ext/oneapi/matrix/matrix-intel.hpp": "524efda8771175ee9c271fc78fab547a4bf6e845ad471ac9d501375ff5834ccb"
+    },
+    "counterevidence": "Official16bitcolmajorA/colmajorB test at this source revision says only AMX and XFAILs DG2. Do not infer BMG support from its presence. Installed IGC/LLVM contracts and eventual bounded execution remain required.",
+    "provenance": "Used API semantics and restrictions only;no official test implementation copied. New sources remain Main-authored under repository LICENSE."
+  }
+}
