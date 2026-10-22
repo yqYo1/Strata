@@ -182,13 +182,16 @@ def numerical_evidence(lines,arm,small):
             and tuple(int(bits[k]) for k in ('cells','cap','queries'))==shape[:3],
             'numerical output extent, packed rows, guards or exact-bit identity mismatch')
     guards.require('fixture_status=PASS model_quality=UNRUN model_PP=UNRUN physical262144_model=UNRUN faults=EXTERNAL_REQUIRED' in lines
-        and 'page4_control variant='+variant+' arithmetic=unchanged' in lines,'missing fixture/control footer')
+        and 'page4_control variant='+variant+' arithmetic=unchanged' in lines
+        and lines.count('case explicit_duplicate_ids=PASS aliased_physical_pages=PASS first_later_KV_diagnostics=PASS status=PASS')==1,
+        'missing fixture/control/extended-diagnostic footer')
     routes=[dict(token.split('=',1) for token in line.split()[1:]) for line in lines if line.startswith('page4_routes ')]
     guards.require(len(routes)==1 and routes[0]['status']=='PASS' and int(routes[0]['page'])==page,
         'missing actual numerical route proof')
     fast,generic=int(routes[0]['fast']),int(routes[0]['generic'])
-    guards.require((fast>0 and generic>0 if page==4 else fast==0 and generic>0) if variant=='page4'
-        else fast==generic==0,'actual numeric route counts do not match selected arm')
+    calls=34 if small else 52 # 34 for the two initial cases, then 2 per added case.
+    expected_routes=((calls-1,1) if page==4 else (0,calls)) if variant=='page4' else (0,0)
+    guards.require((fast,generic)==expected_routes,'actual numeric route counts do not match selected arm/cases')
     return dict(case_count=len(cases),case_identities=expected,exact_prefix33_bits=True,page_size=page,
         physical262144_component_addressed=any(s[0]==s[4]==262144 for s in expected),route=routes[0])
 
