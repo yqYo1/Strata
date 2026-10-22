@@ -26,7 +26,10 @@ P,B,A=gen.P,gen.B,gen.A
 ROOT=B/'mtp-q6-head-v1'
 PLAN=A/'mtp-head-plan.json'
 RESULT=A/'mtp-head-current.json'
-PREFIXES=('CMakeLists.txt','cmake','src','include','third_party','tools','bench/sycl/mtp_head','tests/core/test_mtp_head_calibration.py')
+# current_build separately recovers and checks all9853 original native/build
+# inputs,including both dependencies. Pin new consumer and transitive helpers
+# here; unrelated Windows/HIP files are not read by this build recipe.
+PREFIXES=('tools/sycl','tools/gguf_reader.py','bench/sycl/mtp_head','tests/core/test_mtp_head_calibration.py')
 ORDER=(0,1,1,0,0,1)
 
 
