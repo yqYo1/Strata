@@ -124,10 +124,18 @@ they have no current execution consumer. Original1256-slot placement, engine,
 runtime safety settings and model weights remain selected. Routed MTP experts
 already use fixed S2 blobs; Q8 dense matrices do not imply Q8 routed experts.
 
-The next source question is whether existing routing callbacks can establish
-exact request, phase and verifier-window boundaries without a native rebuild.
-Aggregate hit counts alone cannot rank saved unique CPU jobs. Matching totals
-cannot substitute for the missing boundary proof; no routing collection has run.
+Existing`STRATA_TRACE` supplies explicit request, prompt-done and window(T,
+position) frames. Main traced the exact6e40 serve loop: short-read0/cache0 uses
+batched prefill without a Drive writer; the unsplit verifier calls layers0..47
+once synchronously per window. The route FILE is flushed before each native
+request footer. Combining these facts with a quiescent official request gate
+can establish callback boundaries without a rebuild; the route file alone
+cannot. New host reader/controller source and adversarial tests precede a
+separate one-process collection plan. It must conserve every provider/format/NT
+bin and exact byte spans, including all four warmups, before the long request.
+Keep only one393236-byte expert/window count matrix for the immediate offline
+static-cache decision. This is logical-work evidence, not CPU service, physical
+traffic, a speed improvement or adoption. No routing collection has run yet.
 
 The prior MTP draft wrapper was about33ms/window. At the observed emitted
 outputs/window, prose's conditional whole-window budget at70tok/s is about31ms.
