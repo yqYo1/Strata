@@ -2627,7 +2627,7 @@
     ]
   },
   "snapshot_qsa_components": {
-    "stage": "smoke_closed",
+    "stage": "failed",
     "source_commit": "5a20040d6e6f27005eece9038e0b2ea72906faec",
     "input_sha256": {
       "include/strata/program/full_context_diagnostic.hpp": "d4abd9516913df9c0672adfea079e036223c8454ae79fadacd6f209432f04621",
@@ -2829,6 +2829,25 @@
           "devcoredump": false
         },
         "boot_unchanged": true
+      },
+      "restore-smoke": {
+        "passed": false,
+        "complete": false,
+        "ownership_closed": true,
+        "exit_code": 1,
+        "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stderr_sha256": "258be685e8581cfadca349d849882c39e917d47ee64e783b80f2da6f28b58650",
+        "error": "RuntimeError('fixture exit/ownership failed')",
+        "fresh_faults": [],
+        "driver_after": {
+          "pci": "/sys/bus/pci/devices/0000:05:00.0",
+          "driver": "xe",
+          "vendor": "0x8086",
+          "device": "0xe20c",
+          "kernel": "7.0.0-38-generic",
+          "devcoredump": false
+        },
+        "boot_unchanged": true
       }
     },
     "active": false,
@@ -2858,6 +2877,7 @@
     "physical262144_model_qualified": false,
     "decode_performance_qualified": false,
     "ordinary_runtime_teardown_qualified": false,
-    "snapshot_criteria": "Traced INT8 streamed-main/ring-draft restore smoke precedes the full snapshot suite. Require byte-exact main/draft payload and live GDN/PLE/indexer/spare-row checks,detect one-byte corruption in every independently stored domain and PLE token metadata without repairing state,and publish no partial verification success. Complete legacy snapshot growth/rewind/format checks too. These are synthetic component checks;near-cap model RESTORE,state handoff,task quality and repeated decode performance remain unqualified."
+    "snapshot_criteria": "Traced INT8 streamed-main/ring-draft restore smoke precedes the full snapshot suite. Require byte-exact main/draft payload and live GDN/PLE/indexer/spare-row checks,detect one-byte corruption in every independently stored domain and PLE token metadata without repairing state,and publish no partial verification success. Complete legacy snapshot growth/rewind/format checks too. These are synthetic component checks;near-cap model RESTORE,state handoff,task quality and repeated decode performance remain unqualified.",
+    "closure_decision": "Closed at original restore-smoke failure after host/streamed-smoke passes;no later component/model run. Native exit1,owned closure,no fresh fault. Investigate fixture corruption of draft idx_pooled,which include_index=false deliberately excludes;failure domain is not yet instrumented. Preserve original failure and full small trace until concrete source/trace discriminator."
   }
 }
