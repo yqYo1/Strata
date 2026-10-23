@@ -848,6 +848,12 @@ is removed and the128-slot floor remains. Existing callers keep the legacy
 layout by default. This changes shared dispatch and needs a fresh build,guarded
 layout checks,model state verification and repeated decode preservation before
 adoption. Source-only reasoning does not qualify the new route.
+The initial CPU budget and traced scratch smoke pass with normal closure and
+no fresh fault. Before further execution, source review corrected the short
+planner to compare against the actual initial tail capacity,which can be less
+than the128-slot-floor tail. The first cohort closes incomplete with its two
+individual passes intact. Reuse them only after unchanged fixture/input/runtime
+identities are proven for the corrected engine;the remaining gates are unrun.
 Detailed closed diagnostic plans and individual historical outcomes recover
 from`95e174255`;the current result retains their original statuses and archive
 references,with the live build/component/model qualifications. Successful model

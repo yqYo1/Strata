@@ -21,8 +21,8 @@ import measurement_owner as supervision
 P, B = build.P, build.B
 ROOT = B / 'full-context-native-v1'
 RESULT = source.RESULT
-KEY = 'native_prefill_layout_build'
-PREDECESSOR_KEY = 'native_snapshot_verify_v2_build'
+KEY = 'native_prefill_layout_v2_build'
+PREDECESSOR_KEY = 'native_prefill_layout_build'
 MACRO = '-DSTRATA_SYCL_FULL_CONTEXT_DIAGNOSTIC=1'
 PREFIXES = ['CMakeLists.txt', 'cmake', 'include', 'src', 'tests', 'third_party',
             'bench/sycl', 'tools/sycl/build_full_context.py', *source.INPUTS]
@@ -144,7 +144,7 @@ def prepare(container):
             receipt_sha256=build.digest(ENGINE_RECORD),inputs_recovered=True,
             source_groups=[dict(revision=s['revision'],count=s['count'],aggregate_sha256=s['aggregate_sha256'])
                 for s in [previous['project'],*previous['dependencies']]],
-            decision='Replace only the unselected a359 diagnostic after exact source/recipe recovery. Its eight inherited/actual component gates passed,but serve model v2 safely refused a4096 chunk incompatible with8192 mode10. Preserve those outcomes. The new default-off explicit layouts defer the long KV stage until decode retirement and keep short inputs on legacy chunk processing/decode weights. Original selected6e40 engine+12fixtures remain the validated fallback;all model/phase-performance/adoption gates remain pending.'),
+            decision='Replace only the unselected b9cd diagnostic after exact input/recipe recovery. Its host and traced layout-smoke gates passed;remaining component/model gates are unrun. Correct only the serve short-layout capacity predicate to price the actual initial tail (not just its128-slot floor). No library/kernel/fixture source changes;preserve individual evidence and retain selected6e40 engine+12fixtures.'),
         command=['/usr/bin/cmake','--build',str(ROOT/'build'),'--target',*TARGETS,'-j','4'],
         dependency_command=['/usr/bin/ninja','-C',str(ROOT/'build'),'-t','deps'],
         stage='prepared_streamed',passed=False,complete=False,active=False,ownership_closed=True,
@@ -178,7 +178,7 @@ def rebuild(container):
     def persist():
         record['active']=bool(owner and owner.active is not None)
         write(ENGINE_RECORD,dict(record,commands=owner.commands if owner else []))
-    owner=supervision.Owner(ROOT/'owned-prefill-layout-v1',persist)
+    owner=supervision.Owner(ROOT/'owned-prefill-layout-v2',persist)
     record['stage']='building_streamed';persist()
     try:
         b=record['budgets']

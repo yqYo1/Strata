@@ -6373,7 +6373,7 @@ int main(int argc, char** argv) {
                     // Keep short input on the decode weight layout. Its legacy
                     // scratch includes the KV stage and may use several chunks.
                     while (want >= 256 && std::any_of(pf_parts.begin(),pf_parts.end(),[&](const auto& p) {
-                        return p.first >= 0 && part_slots_for(p,want,request_layout)+128 > p.cache->slots();
+                        return p.first >= 0 && strata::prefill::Prefill::bytes_needed(g,*p.ses,want,request_layout) > part_bytes(p,p.first);
                     })) want /= 2;
                     if (want < 256) { e="prefill: short-path scratch does not fit unchanged decode cache"; return false; }
                 }
