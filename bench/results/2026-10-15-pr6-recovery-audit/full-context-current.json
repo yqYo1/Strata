@@ -3777,7 +3777,27 @@
     "reference_report": ".cache/strata-research/20261024/full-context-state-qualification/vram-owner-attribution.md",
     "source_review": ".cache/strata-research/20261024/full-context-state-qualification/vram-native-review.json",
     "retention_curation_sha256": "285169711bfaa384f035089055ad2b518be9f68a0efaf4f7b28950c3b72db9a7",
-    "older_report_retirement": "Content approved for retirement after compact carry-forward. Main will verify ownership and serialize deletion at next safe boundary;no old ownership holds are resolved by this content review."
+    "older_report_retirement": "Content approved for retirement after compact carry-forward. Main will verify ownership and serialize deletion at next safe boundary;no old ownership holds are resolved by this content review.",
+    "current_free_after_refill": {
+      "native_source_commit": "1cba8a2857891862f8ed4c534d8afee3b0aeaf98",
+      "engine_sha256": "590f8237e48139d96f77b9fd4c25ea18b1e701be147c52ecf75b7598c4284018",
+      "model_result_key": "model_state_v4",
+      "total_reported_bytes": 10666115072,
+      "per_request_reported_free_bytes": {
+        "small": [
+          2287861760,
+          116117504,
+          46448640
+        ],
+        "checkpoint": [
+          155095040,
+          15425536,
+          13983744
+        ]
+      },
+      "limits": "Validation/state-hash/snapshot/cache-loan observers enabled. Aggregate cudaMemGetInfo admission observations;owner attribution and physical residency remain unknown. Not clean speed or decode-impact evidence.",
+      "consumer": "Nonaligned long RESTORE admission and next bounded owner trace;retire when that ownership question closes."
+    }
   },
   "model_state_v2": {
     "stage": "failed",
@@ -7458,7 +7478,7 @@
     "scope": "Only exact six fixture bytes and their9 already-executed component gates are reused. Changed generator and diagnostic model behavior require new actual model gates. Original cohort statuses remain unchanged;no new GPU execution or speed result."
   },
   "model_state_v4": {
-    "stage": "small_closed",
+    "stage": "checkpoint_closed",
     "source_commit": "0a6da6f4bdb33fa83b65557d536c8d075d224225",
     "input_sha256": {
       "data/expert-profile.bin": "8f59b4aa8873209dff11c11e37bcda9529a1335b724a1afeea37bf6388975baf",
@@ -8490,6 +8510,229 @@
           "rows": 16384,
           "layers": 12,
           "chunks_per_layer": 2,
+          "pos0": 0,
+          "prefix_H2D_requested_bytes": 0
+        },
+        "fresh_faults": [],
+        "boot_unchanged": true,
+        "driver_after": {
+          "pci": "/sys/bus/pci/devices/0000:05:00.0",
+          "driver": "xe",
+          "vendor": "0x8086",
+          "device": "0xe20c",
+          "kernel": "7.0.0-38-generic",
+          "devcoredump": false
+        }
+      },
+      "checkpoint": {
+        "passed": true,
+        "complete": true,
+        "ownership_closed": true,
+        "info": {
+          "context": "262144",
+          "kv": "int8",
+          "kv_resident": "131072",
+          "expert_slots": "1256",
+          "spec": "4",
+          "mtp_max": "0",
+          "lookup": "0",
+          "pool_workers": "5",
+          "conversation_cache_mib": "8192",
+          "conversation_cache_slots": "2",
+          "conversation_cache_min_free_mib": "4096"
+        },
+        "requests": [
+          {
+            "generated": 1,
+            "prompt": 32769,
+            "finish": "length",
+            "accepted": 0,
+            "offered": 0,
+            "reused": 0,
+            "read": 32769,
+            "ids": [
+              271
+            ],
+            "publications": {
+              "count": 8,
+              "last": 32768,
+              "sha256": "70d0194f4518b544a9d04681889d8d90afabb509c60ba9c34d5f7629d606c18f"
+            },
+            "state_L": 32769,
+            "windows": 1,
+            "state_sha256": "34c744e0b933bef653cfe8f15546fd7cf93367a97442435d2569744615570e9d",
+            "ple_prev": "4095,0",
+            "draft_prefill": {
+              "rows": 32768,
+              "callbacks": 8,
+              "end": 32768,
+              "modes": [
+                2
+              ],
+              "paths": [
+                "batched"
+              ]
+            },
+            "decode_cache_restore": {
+              "slots": 1256,
+              "payload_bytes": 2575206400,
+              "lent": 704,
+              "same_slots": true,
+              "payload_match": true
+            },
+            "prefill_loan": {
+              "chunk": 4096,
+              "first": 552,
+              "capacity_bytes": 1513011200,
+              "needed_bytes": 1511835904
+            }
+          },
+          {
+            "generated": 1,
+            "prompt": 33,
+            "finish": "length",
+            "accepted": 0,
+            "offered": 0,
+            "reused": 0,
+            "read": 33,
+            "ids": [
+              104
+            ],
+            "publications": {
+              "count": 1,
+              "last": 32,
+              "sha256": "bb92d74f1bc9cdecef174885f4461ee391d54dcd2ad4a229c79c89543c2a6b92"
+            },
+            "state_L": 33,
+            "windows": 1,
+            "state_sha256": "c3125779a3d21a299d21d98d6b6534dca5a1ce6c1a74d837c902a032217b37c0",
+            "ple_prev": "159,160",
+            "draft_prefill": {
+              "rows": 32,
+              "callbacks": 1,
+              "end": 32,
+              "modes": [
+                2
+              ],
+              "paths": [
+                "token"
+              ]
+            },
+            "decode_cache_restore": {
+              "slots": 1256,
+              "payload_bytes": 2575206400,
+              "lent": 243,
+              "same_slots": true,
+              "payload_match": true
+            },
+            "prefill_loan": {
+              "chunk": 256,
+              "first": 1013,
+              "capacity_bytes": 551961600,
+              "needed_bytes": 550683904
+            }
+          },
+          {
+            "generated": 1,
+            "prompt": 16417,
+            "finish": "stop",
+            "accepted": 0,
+            "offered": 0,
+            "reused": 16384,
+            "read": 33,
+            "ids": [
+              248046
+            ],
+            "publications": {
+              "count": 1,
+              "last": 16416,
+              "sha256": "c48b7d5fcddbbb65c175a88230af46f20f0f1ac09cbc7f95ea8dcae00a71ed69"
+            },
+            "state_L": 16417,
+            "windows": 1,
+            "state_sha256": "a1527788407826d35cb0d188e237b0803574fad71b144b6d6e1452a8988169c1",
+            "ple_prev": "271,256",
+            "draft_prefill": {
+              "rows": 32,
+              "callbacks": 1,
+              "end": 16416,
+              "modes": [
+                2
+              ],
+              "paths": [
+                "token"
+              ]
+            },
+            "decode_cache_restore": {
+              "slots": 1256,
+              "payload_bytes": 2575206400,
+              "lent": 243,
+              "same_slots": true,
+              "payload_match": true
+            },
+            "prefill_loan": {
+              "chunk": 256,
+              "first": 1013,
+              "capacity_bytes": 551961600,
+              "needed_bytes": 550683904
+            }
+          }
+        ],
+        "exit_code": 0,
+        "activation": {
+          "pid": 2161239,
+          "loader": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_loader.so.0.12.0",
+          "threads_before": 1,
+          "preinit": 37,
+          "config_enabled": true,
+          "first_init": true,
+          "dispatch_result": 46,
+          "output_untouched": true,
+          "retained_reference_until_exit": true,
+          "runtime_teardown_qualified": false
+        },
+        "effective_prefill": [
+          {
+            "path": "chunk-major",
+            "dense_weights": "Full",
+            "stage": "borrowed"
+          },
+          {
+            "path": "chunk-major",
+            "dense_weights": "Full",
+            "stage": "borrowed"
+          },
+          {
+            "path": "chunk-major",
+            "dense_weights": "Full",
+            "stage": "borrowed"
+          }
+        ],
+        "restored_tokens": [
+          16384
+        ],
+        "restore_payloads": [
+          {
+            "draft": "3f9dab0f8cae501a",
+            "cells": "32772",
+            "mode": "2",
+            "source": "ram",
+            "resident": "32848",
+            "main": "22d10c286ab75926",
+            "main_layers": "12",
+            "main_bytes": "465624576",
+            "draft_bytes": "34607232",
+            "running": "b76adbafa291d17a",
+            "running_bytes": "118069304",
+            "upto": "32769",
+            "result": "PASS"
+          }
+        ],
+        "resume_kind": "checkpoint",
+        "initial_prefill": {
+          "rows": 32768,
+          "layers": 12,
+          "chunks_per_layer": 8,
           "pos0": 0,
           "prefix_H2D_requested_bytes": 0
         },
