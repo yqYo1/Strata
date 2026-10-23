@@ -225,10 +225,22 @@
       }
     ],
     "attention_ISA_byte_identical_to_prior": true,
-    "prior_evidence": "qsa-resource-calibration-timing-current.json production ISA",
+    "prior_evidence": {
+      "commit": "7adbbf7b0241e48da0dcfabf458e5a4e81138379",
+      "path": "bench/results/2026-10-15-pr6-recovery-audit/qsa-resource-calibration-timing-current.json",
+      "sha256": "66398664fa76ef22565d4a18d5014e2f731e8262d48507a74180a83094cd75f0",
+      "scope": "Earlier production ISA/current comparison used at admission;consumer now closed."
+    },
     "source_and_frontend_IR_unchanged": true,
     "same_attention_image_for_every_mask": true,
-    "limits": "Static resources/ISA and whole-wrapper mask sensitivity only;not cache hits,physical bytes,saturation or model performance."
+    "limits": "Static resources/ISA and whole-wrapper mask sensitivity only;not cache hits,physical bytes,saturation or model performance.",
+    "attention_resources": {
+      "SIMD": "16",
+      "GRF": "128",
+      "dynamic_SLM_bytes": 20032,
+      "spill_descriptor": "12480",
+      "raw_slm_size": "32"
+    }
   },
   "decision": "Strong same-code/equal-operand address sensitivity passes every prospective1.10 gate. Prioritize real selected-ID capture/replay and per-layer/chunk prefix-pack accounting before a query-order/locality implementation;do not repeat another unmotivated layout or broadGRF256 change. No engine/decode adoption.",
   "limits": [
@@ -259,6 +271,18 @@
     "elapsed_ns",
     "timer_pair_ns"
   ],
+  "source_recovery": {
+    "verified": true,
+    "remote_feature_sycl": "7adbbf7b0241e48da0dcfabf458e5a4e81138379",
+    "project_recipe_inputs": 186,
+    "exact_commands": 8,
+    "all13_build_smoke_and_timing_commands_normally_closed": true,
+    "SDK_inputs": 8700,
+    "SDK_manifest_sha256": "5cdf1a647648111b26159b441cff6082c4b7acaab051222ba3db275ebd1f37a2",
+    "SDK_manifest_recovery": "Original8697-file parent manifest at/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/unitrace-warmed-graph-window-v1/compiler-inputs.json plus four compiler -print-file-name link inputs,as in the exact sourcea509 build recipe;identical rows/hash verified.",
+    "selected13_assets_match": true,
+    "selected_original_inputs": 9853
+  },
   "samples": [
     [0,0,0,0,1416354831,20],
     [0,1,0,1,1788621290,20],
