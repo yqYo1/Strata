@@ -12,9 +12,9 @@ sys.dont_write_bytecode=True
 import check_full_context as gate
 
 P,B,RESULT=gate.P,gate.B,gate.RESULT
-ROOT=B/'prefill-layout-component-v1'
-KEY='prefill_layout_components'
-ORDER=('host','layout-smoke','layout','restore-smoke','component','resident','attention-smoke','attention-component','restore-component')
+ROOT=B/'prefill-layout-component-v2'
+KEY='prefill_layout_components_v2'
+ORDER=('layout','restore-smoke','component','resident','attention-smoke','attention-component','restore-component')
 INPUTS=sorted(set([*gate.INPUTS,'tools/sycl/check_streamed_qsa.py']))
 require=gate.native.guards.require
 digest=gate.native.build.digest
@@ -38,11 +38,33 @@ def prepare(container):
     require(engine['targets']==list(gate.native.TARGETS),
         'matching streamed same-build suite required')
     probe=gate.validation.preload_qualification()
-    previous=container['snapshot_qsa_components_v2']
-    require(previous['passed'] and previous['complete'] and previous['ownership_closed'] and
-        not previous['active'] and engine['predecessor']['inputs_recovered'] and
-        engine['predecessor']['source_commit']==previous['native_source_commit'],
-        'original component/source recovery differs')
+    previous=container['prefill_layout_components']
+    predecessor=container['native_prefill_layout_build']
+    require(previous['stage']=='closed_for_planner_correction' and not previous['passed'] and
+        not previous['active'] and previous['ownership_closed'] and engine['predecessor']['inputs_recovered'] and
+        previous['native_source_commit']==engine['predecessor']['source_commit']==predecessor['source_commit'] and
+        previous['binary']==engine['predecessor']['binary'] and previous['preload']==probe and
+        previous['boot']==Path('/proc/sys/kernel/random/boot_id').read_text().strip() and
+        previous['driver_before']==gate.native.guards.driver_guard(), 'closed original individual evidence required')
+    delta=set(gate.native.build.git(P,'diff','--name-only',previous['native_source_commit'],
+        engine['source_commit'],'--',*gate.native.PREFIXES).decode().splitlines())
+    dependencies=[{k:d[k] for k in ('root','revision','count','aggregate_sha256')}
+                  for d in engine['dependencies']]
+    require(delta=={'src/program/generate.cpp','tools/sycl/build_full_context.py'} and
+        all(engine[k]==predecessor[k] for k in ('compiler','sdk','tools','configure_argv','generated_expected')) and
+        dependencies==predecessor['sources'][1:], 'fixture inputs/recipe changed;do not inherit')
+    ninja=(gate.native.ROOT/'build/build.ninja').read_text()
+    require('build strata:' in ninja and 'CMakeFiles/strata.dir/src/program/generate.cpp.o' in
+        ninja[ninja.index('build strata:'):].split('\n\n',1)[0], 'generator must be executable-only input')
+    inherited={}
+    for mode in ('host','layout-smoke'):
+        outcome=previous['outcomes'][mode];fixture=previous['cases'][mode]['fixture']
+        require(outcome['passed'] and outcome['complete'] and outcome['ownership_closed'] and
+            outcome['fresh_faults']==[] and fixture in engine['fixtures'].values() and
+            digest(fixture['path'])==fixture['sha256'], 'changed/unqualified fixture: '+mode)
+        inherited[mode]=dict(result_key='prefill_layout_components',outcome=mode,
+            native_source_commit=previous['native_source_commit'],fixture=fixture,executed_in_this_cohort=False,
+            scope='Exact same fixture bytes,compiler/SDK/recipe/dependencies and runtime;only executable generator and build controller changed. No native engine/model qualification inherited.')
     revision=gate.native.build.git(P,'rev-parse','HEAD').decode().strip()
     pins=inputs(revision)
     for row in engine['fixtures'].values():require(digest(row['path'])==row['sha256'],'fixture changed')
@@ -74,10 +96,10 @@ def prepare(container):
         envs[mode]=env
     record=dict(stage='prepared',source_commit=revision,input_sha256=pins,
         native_source_commit=engine['source_commit'],binary=engine['binary'],cases=cases,environments=envs,
-        preload=probe,reused_unchanged_gates={},outcomes={},active=False,passed=False,complete=False,ownership_closed=True,
+        preload=probe,reused_unchanged_gates=inherited,outcomes={},active=False,passed=False,complete=False,ownership_closed=True,
         boot=Path('/proc/sys/kernel/random/boot_id').read_text().strip(),driver_before=gate.native.guards.driver_guard(),
         budgets=dict(wall_s=180,cpu_s=360,rss_bytes=6<<30,text_bytes=16<<20,file_bytes=16<<20,total_bytes=512<<20),
-        criteria='Run all nine new-cohort gates;no inherited execution. CPU budget first,then traced scratch-layout smoke,explicit long/short8192/256 layout rebinding with a3GiB device-parent cap and unchanged guard bytes,Q8 prefix byte-accounting proxy only (not actual physical model),traced snapshot smoke,4case streamed suite,resident numerical oracle,traced/full BF16 attention and full snapshot suite. Stage/host/resident parity,guards,input immutability,checked drains and negative domains remain required. Commit each result before next case. Same-child activation,normal owned exits,unchanged inputs/runtime/boot/driver and no fresh fault. Stop first failure;no retry or model/speed claim.',
+        criteria='Inherit only unchanged CPU budget and traced scratch smoke after exact fixture/input/runtime proof;original cohort remains incomplete. Run seven actual gates starting with explicit long/short8192/256 layout rebinding with a3GiB device-parent cap and unchanged guard bytes,Q8 prefix byte-accounting proxy only (not actual physical model),traced snapshot smoke,4case streamed suite,resident numerical oracle,traced/full BF16 attention and full snapshot suite. Stage/host/resident parity,guards,input immutability,checked drains and negative domains remain required. Commit each result before next case. Same-child activation,normal owned exits,unchanged inputs/runtime/boot/driver and no fresh fault. Stop first failure;no retry or model/speed claim.',
         retention='Retain compact individual case/activation/guard/fault/source decisions. Retire successful traces,JIT and duplicate receipts after closure;original selected13 assets remain untouched. New engine+same-build fixtures are the only unselected generation for imminent capacity-model validation.',
         model_adoption_qualified=False,physical262144_model_qualified=False,decode_performance_qualified=False,
         ordinary_runtime_teardown_qualified=False)

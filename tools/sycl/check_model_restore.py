@@ -78,7 +78,7 @@ def prepare(container):
             old['failure_resolution']['process_closure']['direct_child_reaped'] and
             old['failure_resolution']['process_closure']['current_exact_owned_identity_absent'],
             'original failed model run needs explicit forced ownership closure')
-    component = container['prefill_layout_components']
+    component = container['prefill_layout_components_v2']
     require(component['passed'] and component['complete'] and component['ownership_closed'] and
             not component['active'] and all(v['passed'] and not v['fresh_faults']
                 for v in component['outcomes'].values()) and
