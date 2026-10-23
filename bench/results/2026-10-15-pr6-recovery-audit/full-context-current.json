@@ -353,7 +353,7 @@
       "-DSYCL_TLA_SOURCE_DIR=/home/yayoi/ghq/github.com/intel/sycl-tla/.worktree/strata-native16-87f",
       "-DCMAKE_CXX_FLAGS:STRING=-DSTRATA_SYCL_FULL_CONTEXT_DIAGNOSTIC=1"
     ],
-    "stage": "prepared_link",
+    "stage": "closed_link",
     "configured_from": {
       "source_commit": "b4fec0dab56ee7fbae0cf8b07c18737e9faca77f",
       "receipt_sha256": "9dc69e63fa4bdf5ba2cfd21ae2922f32d8bc36d4a1dfafd50c241db8182de603",
@@ -379,10 +379,10 @@
     ],
     "active": false,
     "ownership_closed": true,
-    "passed": false,
-    "complete": false,
+    "passed": true,
+    "complete": true,
     "GPU_executed": false,
-    "native_engine_built": false,
+    "native_engine_built": true,
     "production_selected": false,
     "model_adoption_qualified": false,
     "physical262144_qualified": false,
@@ -401,6 +401,20 @@
       "files": 230,
       "sha256": "149850c8f3fe4779cedb36846899f98f9a9c5a92ecb9ee27e7beda422c87967e",
       "scope": "Installed MKL2026.1 include tree,two CMake config files,and four actual imported executable link libraries."
+    },
+    "binary": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/full-context-native-v1/build/strata",
+      "bytes": 22194056,
+      "sha256": "65067acdf14ef4059a35bf3c9cc64b74bd7798f745b6a44cd7b48dd983070419"
+    },
+    "actual_dependency_closure": {
+      "files": 1399,
+      "generated_files": 1,
+      "generated_sha256": {
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/full-context-native-v1/build/ggml/src/ggml-version.h": "9e45eee8391971371922f51b66925184609125d467c444744599f680b78edc92"
+      },
+      "uncovered_files": 0,
+      "uncovered": []
     },
     "sources": [
       {
@@ -422,5 +436,6 @@
         "aggregate_sha256": "5768eaea650c06eb022c9068784590a27400c2a577974c56750519edde859fe5"
       }
     ]
-  }
+  },
+  "record_scope": "Top-level source_commit/passed/complete/GPU/native-engine fields describe only the original134-case CPU source gate. Subsequent native_diagnostic,native_engine_build and native_cli stages have independent source/qualification fields."
 }
