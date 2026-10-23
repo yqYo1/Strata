@@ -865,9 +865,12 @@ agent-session and task quality,near-cap/tail boundaries,
 prefill-to-decode/session/RESTORE,failure-owner checks,and70tok/s decode.
 The short-output117K proof does not close them. Niko011c9e60 functional imports
 and a hardware-tuned unmodified-upstream benchmark are still pending; curated
-coverage reports are not implemented ports. The last actual upstream check was
-2026-10-21T21:26:18Z; the next approximately48-hour check is due
-2026-10-23T21:26:18Z. PR180/default integration is blocked by the existing merge
+coverage reports are not implemented ports. The latest actual upstream check at2026-10-23T21:29:32.552053+00:00 fetched
+`7ddc17a38` (`v0.2.3.1`),131 commits/294 paths beyond011c9e60.
+This is an update observation,not integration or performance qualification.
+Required functional ports through the new target and the hardware-tuned
+unmodified upstream benchmark remain pending. The next check is approximately
+2026-10-25T21:29:32.552053+00:00. PR180/default integration is blocked by the existing merge
 policy; original measured commits remain reachable on pushed`feature/sycl`.
 
 ## MTP graph observer: closed diagnostic, resource attribution next
