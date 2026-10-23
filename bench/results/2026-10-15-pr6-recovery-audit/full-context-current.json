@@ -1465,7 +1465,7 @@
     "ordinary_runtime_teardown_qualified": false
   },
   "model_capacity_v4": {
-    "stage": "short_closed",
+    "stage": "failed",
     "source_commit": "3ee79eaa742f142eacbbff91afe799ef9e7d7640",
     "input_sha256": {
       "data/expert-profile.bin": "8f59b4aa8873209dff11c11e37bcda9529a1335b724a1afeea37bf6388975baf",
@@ -1968,6 +1968,25 @@
           "devcoredump": false
         },
         "boot_unchanged": true
+      },
+      "full": {
+        "passed": false,
+        "complete": false,
+        "ownership_closed": true,
+        "exit_code": 1,
+        "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stderr_sha256": "c8684766fe5dc8964926b843ca314f9c16b8cdd4ba64f5d8efcf8b3ca47db4b4",
+        "error": "RuntimeError('native model exit/ownership failed')",
+        "fresh_faults": [],
+        "driver_after": {
+          "pci": "/sys/bus/pci/devices/0000:05:00.0",
+          "driver": "xe",
+          "vendor": "0x8086",
+          "device": "0xe20c",
+          "kernel": "7.0.0-38-generic",
+          "devcoredump": false
+        },
+        "boot_unchanged": true
       }
     },
     "boot": "cfda0b6a-7c13-4fe2-bdf5-8f9202770840",
@@ -1998,6 +2017,20 @@
     "question": "Can the independently built diagnostic execute the unchanged model route,then allocate/process all262144 physical input slots with fixed1256 decode slots and131072 resident INT8 KV? Host KV tail is allowed and must not be called all-VRAM residency.",
     "gate": "Run short once with16384 batched rows(two8192 chunks)+final prompt row and4 output IDs. The earlier one-chunk case exited0 but failed its declared layer-major route gate;it does not advance. Only after the new committed normal/validated/fault-free short closure run full once:262143 batched rows+final T1,zero outputs,exact checked final-commit marker. Require all12 actual streamed QSA layer traces,each with the complete batched row/chunk extent,checked drain,GPU_Q8 publication and zero requested prefix H2D bytes for fresh pos0=0;this is not measured PCIe traffic. Require BF16 residual allocation conservation,configured MoE10 with effective2 for no accumulation or10 for admitted accumulation,checked prompt release,unchanged sources/models/boot/driver and owned normal exit. Server-only scratch lease is0;the existing standalone lend/refill path remains enabled. This is a capacity check,not preservation of the serve allocation route. Stop first failure;no retry or speed decision.",
     "retention": "Keep exact plans,model hashes,individual completion/activation/fault/allocation results. Retire successful traces/JIT after verification. Diagnostic engine and full IDs remain only through imminent near-cap/RESTORE/owner checks;original selected13 assets stay untouched.",
-    "next_gate": "Near-cap/RESTORE/fault-owner,model/task and repeated decode-preservation comparisons. Full synthetic fill alone is not general physical-context qualification or throughput evidence."
+    "next_gate": "Near-cap/RESTORE/fault-owner,model/task and repeated decode-preservation comparisons. Full synthetic fill alone is not general physical-context qualification or throughput evidence.",
+    "posthoc_full_gate_diagnosis": {
+      "mechanism": "ExpertBankPlan fallback needs full512 bank when the residual cannot be entirely device-resident;requested BF16 QSA prefix also reserves both full-context dequantized tensors.",
+      "stderr_final": "prefill layer-major: original expert bank exceeds free GPU budget with headroom",
+      "free_gpu_bytes": 2039808000,
+      "full512_bank_bytes": 1363148800,
+      "headroom_bytes": 536870912,
+      "prefix_tensor_bytes": 268435456,
+      "prefix_pair_and_flags_bytes": 538968064,
+      "full_residual_bytes": 5368688640,
+      "layer_math_submitted": false,
+      "owners_restored": true,
+      "fix_scope": "Prefill-only selection between materialized BF16 prefix and existing on-demand BF16 attention. Preserve resident decode KV131072 and1256 slots;do not remove headroom or bypass capacity guard.",
+      "next_gate": "Prospectively qualify bounded memory-aware prefill selection;original full gate remains failed."
+    }
   }
 }
