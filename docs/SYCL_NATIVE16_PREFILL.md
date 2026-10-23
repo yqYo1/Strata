@@ -549,7 +549,8 @@ descriptors, and records successful prefix-pack submissions. Eight CPU
 normal/fault cases pass, including deliberate fail-stop exit73. The small17/33
 and full8192/2051 GPU readback cases now pass with exact tail bytes,source guards,
 invalid-geometry rejection,inherited-work drains,normal exits,private pre-main
-validation and no fresh fault. The [build result](../bench/results/2026-10-15-pr6-recovery-audit/qsa-locality-capture-build-current.json)
+validation and no fresh fault. The [readback result](../bench/results/2026-10-15-pr6-recovery-audit/qsa-locality-readback-current.json)
+keeps both cases and their original-plan reference. The [build result](../bench/results/2026-10-15-pr6-recovery-audit/qsa-locality-capture-build-current.json)
 pins the generated TU,541 project inputs,9311 dependency inputs and8700 SDK
 inputs. The original selected package and decode placement are unchanged.
 The source audit identifies paired append-file freshness/completion as a launch
@@ -558,8 +559,9 @@ destinations and a checked normal-exit completion record binding both hashes;
 the protocol review accepts those two completed synthetic scopes. The
 implemented replay consumer preserves whole-query operands and output ownership
 under natural,reverse and overlap-grouped enumeration,using synthetic Q/K/V with
-captured masks/steps. It compiles successfully. Its14-case host parser tests and traced synthetic
-replay smoke remain pending;actual-file provenance and host-check are separate
+captured masks/steps. It compiles successfully. Its14-case host parser tests pass,including
+short/mismatched pairs,causality,ordering,step fields and missing layers. The
+traced synthetic replay smoke remains pending;actual-file provenance and host-check are separate
 requirements before actual-mask execution. CPU order
 construction is excluded from this diagnostic and cannot justify model adoption.
 No actual-model capture is permitted before that consumer and readback qualify.
