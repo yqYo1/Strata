@@ -438,36 +438,40 @@ Use the reviewed matched counterfactual resource protocol for the next
 attribution decision before another layout variation; keep calibration separate
 from claims about physical traffic, hardware saturation and model speed.
 
-The next real-selection diagnostic is stopped before GPU launch. Its existing
-native dump hook ignores copy and synchronization errors; failed completion can
-release a still-live host vector. This is a source-contract finding, not an
-observed GPU fault. Nine host parser tests pass, but that does not qualify the
-native readback. The original prepared plan remains failed/closed in
-[the capture result](../bench/results/2026-10-15-pr6-recovery-audit/qsa-selection-current.json).
-A Main-authored checked readback/file-output helper passes7 host fault-injection
-tests. The separate diagnostic engine/runtime compile and link successfully at
-`663a4b275`; the first standalone fixture compile fails for a missing declaration
-header. That failure remains unchanged. The include-only correction and explicit
-fixture-only continuation compile successfully, preserving the native assets
-after proving the changed paths were outside their compile database.
-The traced17x33 and parameter-validated8192x2051 cases then pass exact payload,
-header,source guards and invalid-geometry no-submit checks. Both native processes
-exit normally, with the same-PID pre-main validation proof and no fresh fault.
-The largest payload is67207184 bytes. Runtime admission binds31 shared-library
-identities, the earlier component and a separately verified normal model exit;
-the original model parser failure remains failed. These are readback checks,
-not real-QSA semantics, a model trial, decode qualification or a speed gain.
-See the [checked readback evidence](../bench/results/2026-10-15-pr6-recovery-audit/qsa-selection-qualification-current.json).
-After verification,186 synthetic/transaction/intermediate files (141064053 bytes)
-are retired; selected6e40/12fixtures and the3 diagnostic assets still match.
-Keep only the additional diagnostic generation for one new real-selection
-capture,then retire it after analysis. Before retaining real IDs,name a committed
-replay consumer;otherwise delete them after compact analysis. The unsafe original
-capture remains unexecuted, and selected6e40/decode remain unchanged.
-The refused plan's four generated inputs were recovered from its pushed source
-and then removed with consumed research transactions:14 files,259820 bytes.
-Its original failed outcome remains in Git. At that prelaunch closure,no GPU
-capture or new native build had run.
+The real-selection diagnostic is closed successfully. The original unsafe
+readback plan remains unexecuted at`a45d9aafa`; its ignored copy/drain errors
+were a source-contract finding,not an observed GPU fault. A separate diagnostic
+engine at`663a4b275` uses checked readback/file output. Preserve its first
+standalone-fixture compile failure and include-only repair at`f64d40b88`.
+Two native small/full readback checks passed before the model run; their
+[original qualification](https://github.com/yqYo1/Strata/blob/41579947cdd580807799151cbbe67ef7b32be357/bench/results/2026-10-15-pr6-recovery-audit/qsa-selection-qualification-current.json)
+remains recoverable. Eleven host parser/controller tests and independent
+single-GPU/no-token-graph stream review supported the committed replacement plan.
+
+The official thinking-on request read39260 fresh tokens and generated24 thought
+tokens. All12 final-chunk records at first32768/count6491 validate159756492
+active IDs as unique,ascending,nonnegative and causal; unused padding is ignored.
+The actual GPU BF16/mode10/private48-layer route,1256-slot cache contents/map and
+48-layer dense restoration pass. The native process exits0; all15 model hashes
+match afterward,31 runtime identities match and no fresh fault occurs. The
+[compact result](../bench/results/2026-10-15-pr6-recovery-audit/qsa-selection-current.json)
+keeps the request,per-layer logical-union samples and proof limits.
+
+Across32 deterministic16-query samples per layer,the union contains27.39..40.16%
+of independent references,34.094% overall. This is a potential reuse mechanism,
+not measured cache hits,physical memory/PCIe traffic or a predicted speedup.
+The646213056-byte checked readback and observers make the56939.2ms prefill clock
+diagnostic only;24 thought tokens qualify neither task quality nor sustained
+decode. Selected6e40,its12 fixtures,decode settings and1256-slot placement remain
+unchanged. No inference candidate is adopted. Next use the reviewed
+production-matched gather/staging/matrix calibration before another layout
+variation;hardware saturation remains unresolved. Any subsequent prefill
+adoption still requires state-handoff checks and repeated matched decode.
+
+The raw IDs have no replay consumer. After compact evidence is committed and
+verified,retire the capture,successful traces,additional diagnostic generation
+and consumed source-audit transactions. Recover original project/dependency
+inputs,generated source and the exact recipe before deleting its build.
 
 Remaining model gates are repeated phase-preserving adoption evidence,
 agent-session and task quality, full physical262144 tokens including the final
