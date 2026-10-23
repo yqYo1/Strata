@@ -1,5 +1,5 @@
 {
-  "stage": "prepared",
+  "stage": "closed",
   "source_commit": "d51d49b7fd081d52430c8651f3417d0be045828c",
   "source_fingerprint": "fa78e25b8850426b30524e9512719cee04a8cb7173ca12263fe5e2f0b5dcc3ad",
   "build_source_commit": "f64d40b886cbc633dd2e5159115b6f70da5d5ca3",
@@ -121,7 +121,66 @@
     "small",
     "full"
   ],
-  "cases": [],
+  "cases": [
+    {
+      "mode": "small",
+      "native_identity": {
+        "pid": 3391592,
+        "state": "D",
+        "ppid": 3389337,
+        "pgid": 3391592,
+        "sid": 3391592,
+        "start_ticks": 106327539,
+        "rss_bytes": 131072
+      },
+      "exit_code": 0,
+      "payload_bytes": 2260,
+      "payload_sha256": "326a3a4e107473898ca6d148ae272299332bddcb7b46b09d52fd7017efb7c010",
+      "activation": {
+        "pid": 3391592,
+        "loader": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_loader.so.0.12.0",
+        "threads_before": 1,
+        "preinit": 37,
+        "config_enabled": true,
+        "first_init": true,
+        "dispatch_result": 46,
+        "output_untouched": true,
+        "retained_reference_until_exit": true,
+        "runtime_teardown_qualified": false
+      },
+      "exact_payload_and_guards": true,
+      "invalid_geometry_no_submit": true
+    },
+    {
+      "mode": "full",
+      "native_identity": {
+        "pid": 3392432,
+        "state": "R",
+        "ppid": 3389337,
+        "pgid": 3392432,
+        "sid": 3392432,
+        "start_ticks": 106329325,
+        "rss_bytes": 450560
+      },
+      "exit_code": 0,
+      "payload_bytes": 67207184,
+      "payload_sha256": "41165c1754874f5968706bc0fc838e948acfcad719032c1e35cd4916a4f255f4",
+      "activation": {
+        "pid": 3392432,
+        "loader": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_loader.so.0.12.0",
+        "threads_before": 1,
+        "preinit": 37,
+        "config_enabled": true,
+        "first_init": true,
+        "dispatch_result": 46,
+        "output_untouched": true,
+        "retained_reference_until_exit": true,
+        "runtime_teardown_qualified": false
+      },
+      "exact_payload_and_guards": true,
+      "invalid_geometry_no_submit": true
+    }
+  ],
   "prospective_gates": "Two fresh processes,small17x33 with full UR trace then8192x2051 with parameter validation. Exact payload/header and source guards,no invalid-geometry submission,checked normal teardown; same-PID pre-main validation,unchanged inputs/runtime/selected fallback,no fresh fault. First failure stops without retry. No model,physical-context,decode or speed qualification.",
   "budgets": {
     "wall": 90,
@@ -132,11 +191,24 @@
     "total_cap": 268435456
   },
   "retention": "Retire both synthetic payloads and successful API traces after recorded exact checks/hash/closure. Keep compact case evidence for one real-selection capture admission,then review diagnostic build retirement.",
-  "passed": false,
-  "complete": false,
+  "passed": true,
+  "complete": true,
   "active": false,
   "ownership_closed": true,
-  "GPU_executed": false,
+  "GPU_executed": true,
   "clean_speed_qualified": false,
-  "model_adoption_qualified": false
+  "model_adoption_qualified": false,
+  "native_launch_attempted": true,
+  "postchecks_complete": true,
+  "postcheck_errors": [],
+  "fresh_faults": [],
+  "boot_unchanged": true,
+  "driver_after": {
+    "pci": "/sys/bus/pci/devices/0000:05:00.0",
+    "driver": "xe",
+    "vendor": "0x8086",
+    "device": "0xe20c",
+    "kernel": "7.0.0-38-generic",
+    "devcoredump": false
+  }
 }
