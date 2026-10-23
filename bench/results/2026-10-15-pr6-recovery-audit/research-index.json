@@ -10295,5 +10295,43 @@
       }
     ],
     "accepted_scope": "No source-level stage-lifetime/counter-carve defect identified;short tail uses actual capacity;short-read0 supplies batched callbacks. Source review only,not model/state/performance qualification."
+  },
+  "checkpoint_compatible_prefill_source_20261024": {
+    "classification": "decision_support",
+    "status": "report_completed_native_review_pending",
+    "schedulable_now": false,
+    "source_commit": "56525aac5a7eca233196d8c311bf278e2dfcf223",
+    "native_source_commit": "be0d4e35b694783d3a8f0ad1803f0b12c578b76b",
+    "source_sha256": {
+      "src/program/generate.cpp": "9cee537ce0f10d609dab793ffb5dac35a97c8670baf8abb7dc591ead5ede987c",
+      "src/prefill/prefill.cpp": "942c352c4197b296313e54d63243b62dcfabfae1ab79d04b2893ba3aec6c6686",
+      "src/prefill/layer_major.inc": "a0019a68132c50d18805fcf3914a92eb326f9fa55a73d51e4bf85cc5d479afbb",
+      "include/strata/prefill/prefill.hpp": "8b7f2117b7eae566f4a527947f9f7c3855022ddaa282430713f7d60c8a246c83",
+      "src/core/native_dense.cpp": "4424972f8bd8c1f0e71ea360140a6cd3c56ed6a5533d1354bdbcdbc13d387d42"
+    },
+    "report": "/home/yayoi/orca/workspaces/Strata/sycl/.cache/strata-research/20261024/checkpoint-compatible-prefill/report.md",
+    "report_budget_bytes": 12288,
+    "prerequisites": [
+      {
+        "met": true,
+        "evidence": "Default prompt-cache-every16384 sets requires_prefix_checkpoints and disables dedicated layer-major;diagnostic every0/cache6 small model passes;checkpoint-enabled production route remains unqualified. Existing source audit did not compare compatible callback/sizing/lifetime alternatives."
+      }
+    ],
+    "next_review": "Native Luna-max review after report,then source decision before checkpoint-enabled production qualification;retire source-only audit after consumption.",
+    "model_observed": "GPT-6-Luna high",
+    "report_root_writable_at_launch": true,
+    "terminal": "term_8b534ecf-b804-4c46-9c32-f1b789a46428",
+    "incarnation": "05c040a7-497c-45e3-b47c-292e76571cf4",
+    "run": "run_12fa11537288",
+    "worker_ownership_closed": true,
+    "task": "task_22b753090506",
+    "dispatch": "ctx_2b9828692183",
+    "turn_start": "unobserved;inspect same handles,no retry",
+    "report_sha256": "9f629e9e3a55bf68619fa6d0e49e9fc0eb2d41d112d089210fbb286116899d4a",
+    "report_bytes": 11882,
+    "worker_done_observed": true,
+    "terminal_closed_verified": true,
+    "delivery_processed_and_acked": true,
+    "native_review": ".cache/strata-research/20261024/checkpoint-compatible-prefill/native-review.json"
   }
 }
