@@ -31,8 +31,10 @@ source-provenance hold remains explicit in the build result; retiring this
 comparison does not resolve it. The separate primary product review has now
 closed:262 project inputs and the recipe recover, but final dependency and
 quoted-header identities remain unavailable. Its unused179 build files
-(153072851 bytes) are retired; the provenance failure and unique original
-receipt remain explicit. Preserve the selected fallback before any future rebuild.
+(153072851 bytes) are retired. The initial8 source hashes also recover:6 from
+the declared commit and2 exact test blobs from`74ebaff3`; its duplicate22811-byte
+receipt is now retired. The final dependency failure remains explicit.
+Preserve the selected fallback before any future rebuild.
 
 The completed clean prefill comparison used six independent processes in
 retained/candidate/candidate/retained/retained/candidate order, with four fresh
@@ -445,14 +447,27 @@ native readback. The original prepared plan remains failed/closed in
 A Main-authored checked readback/file-output helper passes7 host fault-injection
 tests. The separate diagnostic engine/runtime compile and link successfully at
 `663a4b275`; the first standalone fixture compile fails for a missing declaration
-header. That failure remains unchanged. An include-only correction and explicit
-fixture-only continuation preserve the compiled native assets after proving
-the changed source paths were outside their compile database. Runtime
-qualification and explicit library/native-exit lineage remain required before
-a new capture plan; selected6e40 and decode remain unchanged.
+header. That failure remains unchanged. The include-only correction and explicit
+fixture-only continuation compile successfully, preserving the native assets
+after proving the changed paths were outside their compile database.
+The traced17x33 and parameter-validated8192x2051 cases then pass exact payload,
+header,source guards and invalid-geometry no-submit checks. Both native processes
+exit normally, with the same-PID pre-main validation proof and no fresh fault.
+The largest payload is67207184 bytes. Runtime admission binds31 shared-library
+identities, the earlier component and a separately verified normal model exit;
+the original model parser failure remains failed. These are readback checks,
+not real-QSA semantics, a model trial, decode qualification or a speed gain.
+See the [checked readback evidence](../bench/results/2026-10-15-pr6-recovery-audit/qsa-selection-qualification-current.json).
+After verification,186 synthetic/transaction/intermediate files (141064053 bytes)
+are retired; selected6e40/12fixtures and the3 diagnostic assets still match.
+Keep only the additional diagnostic generation for one new real-selection
+capture,then retire it after analysis. Before retaining real IDs,name a committed
+replay consumer;otherwise delete them after compact analysis. The unsafe original
+capture remains unexecuted, and selected6e40/decode remain unchanged.
 The refused plan's four generated inputs were recovered from its pushed source
 and then removed with consumed research transactions:14 files,259820 bytes.
-Its original failed outcome remains in Git; no GPU capture or new native build ran.
+Its original failed outcome remains in Git. At that prelaunch closure,no GPU
+capture or new native build had run.
 
 Remaining model gates are repeated phase-preserving adoption evidence,
 agent-session and task quality, full physical262144 tokens including the final
