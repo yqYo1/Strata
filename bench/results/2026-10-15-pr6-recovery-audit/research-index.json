@@ -10273,5 +10273,27 @@
     "terminal_closed_verified": true,
     "terminal_close_sha256": "b227669015b32c40a0b8d1022e08111f15c2317a995d806705fdec06b0f59092",
     "delivery_processed_and_acked": true
+  },
+  "native_state_controller_source_audit_20261024": {
+    "classification": "decision_support",
+    "status": "eligible_for_dispatch",
+    "schedulable_now": true,
+    "source_commit": "3713d8dbc98e883833f7019c2e53ca117ccf4052",
+    "source_sha256": {
+      "tools/sycl/check_model_restore.py": "950f60270c848f032dd5ee3812f1888eb10cc90b457252f74029c188c822482d",
+      "tools/sycl/full_context_model.py": "c3d3dbf8e0a583d40e607d853d2bd32e4540b67409b8d27ee0d60e0c169bacfa",
+      "tools/sycl/measurement_owner.py": "bddd0c5e5020e882ca3404679420faec11e820dabce2ed4c72ef82b4c9c0874a",
+      "serve/server.py": "cafd71f1fcf7b506ed9ac6e2d3f7751049a7c57592022610ed3c054596a47832",
+      "src/program/generate.cpp": "cded66240ea5dd90d5c536748ae3a54f4481a2500aa2b2f71dd6de017689547b"
+    },
+    "report": "/home/yayoi/orca/workspaces/Strata/sycl/.cache/strata-research/20261024/full-context-model-controller/report.md",
+    "budget_bytes": 10240,
+    "prerequisites": [
+      {
+        "met": true,
+        "evidence": "Main committed the new native GEN controller and corrected eight-token reserve/window+accepted accounting. Build is owned/running;controller and native sources remain frozen. A static audit can reject unsafe ownership or false evidence before model calls."
+      }
+    ],
+    "next_review": "Native Luna/max report curation;Main corrects and commits before any state plan/model execution. No worker GPU execution."
   }
 }

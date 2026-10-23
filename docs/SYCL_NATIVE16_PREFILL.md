@@ -653,12 +653,12 @@ residency or successful allocation. Its separate native configure now passes;
 the actual generator compiles with `-fsyntax-only` both with and without the
 diagnostic definition, with no diagnostics and normal owned exits. These checks
 preserve the original9853-input/13-asset proof and verify8697 installed SDK inputs.
-The current unselected diagnostic builds from`a42a4d143`, preserving the
+The current unselected diagnostic builds from`be5192efc`, preserving the
 original selected13 assets and replacing only the previous diagnostic in place.
 Its recipe freezes230 additional MKL header/config/link inputs. The actual
-Ninja dependency census contains1404 files, including one predeclared generated
+Ninja dependency census contains1405 files, including one predeclared generated
 ggml version header, with no uncovered inputs;the owned compile/link and census
-exit normally. The engine and four same-build budget/QSA fixtures are hash-pinned in
+exit normally. The engine and five same-build budget/QSA/snapshot fixtures are hash-pinned in
 the current result. This is not decode-preservation or model qualification.
 The earlier`908158833` diagnostic passed11 owned pre-device CLI checks:help exposes the
 diagnostic flag,and10 invalid requests reject at the intended early boundary.
@@ -774,10 +774,10 @@ planning,the diagnostic-only CLI,manual test targets and a read-only host-span
 query;decode inference sources and allocator implementations are unchanged.
 Actual repeated decode comparisons still determine phase preservation.
 
-The next unbuilt diagnostic adds read-only verification of a restored session's
+The new compiled diagnostic adds read-only verification of a restored session's
 main and draft KV payloads, GDN/PLE/indexer state, spare pooled rows and PLE token
 window. The compiled A42 `STRATA_SNAPSHOT_VERIFY` branch checks draft KV only;
-the new unbuilt source extends that same diagnostic branch before any restored
+the new source extends that same diagnostic branch before any restored
 metadata is moved or prefix processing begins. Do not infer main-state
 restoration from the older marker. A synthetic fixture
 will corrupt each state domain and require rejection without repair. Main-authored
