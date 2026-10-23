@@ -826,6 +826,17 @@ uploads request268139520 bytes per layer, not measured physical bus traffic.
 The native engine and component fixtures remain the qualified a359 generation;
 this controller-only change creates no new native/GPU qualification. All model,
 phase-performance and public API gates remain pending.
+The v2 host protocol gate passes all seven requests, including the1239567-byte
+line, with exit0 and normal ownership closure. Its first native model request
+fails before prompt completion: serve's128-slot retained-prefix rule reduces
+8192 to4096, borrowing704 slots from first552, while dedicated mode10 requires
+8192. The process exits1 after67.09s without cleanup signals or fresh GPU fault;
+the anchored session is empty before reap and no owned identity survives.
+No model request completes and the near-cap/RESTORE cases remain unrun. Preserve
+this failed result. Resolve the prefill loan capacity/order while retaining all
+1256 decode slots and exact restore placement;do not shrink decode to make the
+prefill planner fit. The report review also requires explicit INT8/effective-QSA
+fallback and post-reentry MTP-extent evidence in the next committed plan.
 Detailed closed diagnostic plans and individual historical outcomes recover
 from`95e174255`;the current result retains their original statuses and archive
 references,with the live build/component/model qualifications. Successful model

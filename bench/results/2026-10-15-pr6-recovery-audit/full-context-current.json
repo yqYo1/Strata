@@ -3778,7 +3778,7 @@
     "older_report_retirement": "Content approved for retirement after compact carry-forward. Main will verify ownership and serialize deletion at next safe boundary;no old ownership holds are resolved by this content review."
   },
   "model_state_v2": {
-    "stage": "protocol_closed",
+    "stage": "failed",
     "source_commit": "e8ed0e0d4b738d2b6752a6bd58033ea3217b7180",
     "input_sha256": {
       "data/expert-profile.bin": "8f59b4aa8873209dff11c11e37bcda9529a1335b724a1afeea37bf6388975baf",
@@ -4435,12 +4435,44 @@
           "kernel": "7.0.0-38-generic",
           "devcoredump": false
         }
+      },
+      "small": {
+        "passed": false,
+        "complete": false,
+        "ownership_closed": false,
+        "info": {
+          "context": "262144",
+          "kv": "int8",
+          "kv_resident": "131072",
+          "expert_slots": "1256",
+          "spec": "4",
+          "mtp_max": "0",
+          "lookup": "0",
+          "pool_workers": "5",
+          "conversation_cache_mib": "8192",
+          "conversation_cache_slots": "2",
+          "conversation_cache_min_free_mib": "4096"
+        },
+        "requests": [],
+        "exit_code": 1,
+        "owner_error": "RuntimeError('ERR prefill mixed scratch: requires mode10 native16, checked chunk8192 owners and one queue')",
+        "error": "RuntimeError(\"normal owned exit required: RuntimeError('ERR prefill mixed scratch: requires mode10 native16, checked chunk8192 owners and one queue')\")",
+        "fresh_faults": [],
+        "boot_unchanged": true,
+        "driver_after": {
+          "pci": "/sys/bus/pci/devices/0000:05:00.0",
+          "driver": "xe",
+          "vendor": "0x8086",
+          "device": "0xe20c",
+          "kernel": "7.0.0-38-generic",
+          "devcoredump": false
+        }
       }
     },
     "active": false,
     "passed": false,
     "complete": false,
-    "ownership_closed": true,
+    "ownership_closed": false,
     "budgets": {
       "cpu_s": 7200,
       "rss_bytes": 111669149696,
@@ -4456,6 +4488,32 @@
     "physical262144_qualified": false,
     "decode_performance_qualified": false,
     "ordinary_runtime_teardown_qualified": false,
-    "next_gate": "Public API/agent-session/task quality,failure-owner and repeated clean decode preservation remain separate. This native protocol diagnostic is not a bench.sh performance comparison."
+    "next_gate": "Public API/agent-session/task quality,failure-owner and repeated clean decode preservation remain separate. This native protocol diagnostic is not a bench.sh performance comparison.",
+    "failure_resolution": {
+      "cause": "Shared serve planner enforces128 retained expert slots, halves requested8192 chunk to4096 at physical262144 context. Dedicated mode10 mixed-scratch path requires8192 and safely rejects before model layers.",
+      "owner_error": "RuntimeError('ERR prefill mixed scratch: requires mode10 native16, checked chunk8192 owners and one queue')",
+      "actual_chunk": 4096,
+      "lent_slots": 704,
+      "lent_first": 552,
+      "decode_slots": 1256,
+      "completed_model_requests": 0,
+      "process_closure": {
+        "pid": 1847034,
+        "start_ticks": 113727465,
+        "anchored_session_empty_before_reap": true,
+        "direct_child_reaped": true,
+        "survivors": 0,
+        "observer_errors": [],
+        "cleanup_signals": [],
+        "current_exact_owned_identity_absent": true,
+        "exit_code": 1,
+        "elapsed_seconds": 67.08993006800301
+      },
+      "unrun_cases": [
+        "near-cap",
+        "restore"
+      ],
+      "next_action": "Preserve failed v2. Audit phase-scoped loan capacity/128-slot floor versus total cache bytes. Keep1256 decode slots/config and restore exact original placement before decode. Commit corrected route/source and new plan before build or GPU execution. Protocol pass is host-only;no model state/RESTORE/speed qualification."
+    }
   }
 }
