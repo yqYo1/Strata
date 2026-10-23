@@ -17,8 +17,8 @@ sys.dont_write_bytecode = True
 import check_full_context as gate
 
 P, B, RESULT = gate.P, gate.B, gate.RESULT
-ROOT = B / 'full-context-model-v2'
-KEY = 'model_capacity_v2'
+ROOT = B / 'full-context-model-v3'
+KEY = 'model_capacity_v3'
 DECODE = P / 'bench/results/2026-10-15-pr6-recovery-audit/canonical-restore-decode-current.json'
 BUILD = P / 'bench/results/2026-10-15-pr6-recovery-audit/native-gdn-engine-build.json'
 DECODE_ARCHIVE = dict(commit='a8af3d7fa96a7713f2e516d2da3d7410956be015',
@@ -105,7 +105,7 @@ def prepare(container):
     engine=gate.engine(); _,original=gate.native.source.baseline(); base=setup()
     # v1 preparation hashed all15 assets before its preflight-only refusal.
     # Reuse those byte hashes only with the same stat/ctime and inventory guards.
-    revision_before=gate.native.build.git(P,'rev-parse','102b83623').decode().strip()
+    revision_before='102b83623e93ed39318eda634245ed81b652f997'
     raw=gate.native.build.git(P,'show',revision_before+':'+str(RESULT.relative_to(P)))
     prior=json.loads(raw)['model_capacity_v1']
     require(prior['source_commit']=='9ff5527505665296af1db23f65f5db8148354069' and
@@ -137,8 +137,8 @@ def prepare(container):
     require(args[args.index('--expert-cache')+1]=='1256' and
         args[args.index('--kv-resident')+1]=='131072','decode placement differs')
     cases={}
-    for name,n,outputs in (('short',8193,4),('full',262144,0)):
-        path=(ROOT/'tokens8193.txt') if name=='short' else gate.ROOT/'tokens262144.txt'
+    for name,n,outputs in (('short',16385,4),('full',262144,0)):
+        path=(ROOT/'tokens16385.txt') if name=='short' else gate.ROOT/'tokens262144.txt'
         data=gate.token_bytes(n)
         if name=='short': path.write_bytes(data)
         require(path.read_bytes()==data,'frozen token fixture differs')
@@ -158,7 +158,7 @@ def prepare(container):
         budgets=dict(cpu_s=4800,rss_bytes=104<<30,text_bytes=16<<20,file_bytes=16<<20,total_bytes=512<<20,
             reason='Two cases have at most64MiB combined raw stdout/stderr;512MiB total additionally bounds private compiler JIT/cache/receipts,all retired after their consumer closes.'),
         question='Can the independently built diagnostic execute the unchanged model route,then allocate/process all262144 physical input slots with fixed1256 decode slots and131072 resident INT8 KV? Host KV tail is allowed and must not be called all-VRAM residency.',
-        gate='Run short once with8192 batched+final prompt row and4 output IDs. Only after its committed normal/validated/fault-free closure run full once:262143 batched rows+final T1,zero outputs,exact checked final-commit marker. Require BF16 residual allocation conservation,configured MoE10 with effective2 for no accumulation or10 for admitted accumulation,checked prompt release,unchanged sources/models/boot/driver and owned normal exit. Server-only scratch lease is0;the existing standalone lend/refill path remains enabled. This is a capacity check,not preservation of the serve allocation route. Stop first failure;no retry or speed decision.',
+        gate='Run short once with16384 batched rows(two8192 chunks)+final prompt row and4 output IDs. The earlier one-chunk case exited0 but failed its declared layer-major route gate;it does not advance. Only after the new committed normal/validated/fault-free short closure run full once:262143 batched rows+final T1,zero outputs,exact checked final-commit marker. Require BF16 residual allocation conservation,configured MoE10 with effective2 for no accumulation or10 for admitted accumulation,checked prompt release,unchanged sources/models/boot/driver and owned normal exit. Server-only scratch lease is0;the existing standalone lend/refill path remains enabled. This is a capacity check,not preservation of the serve allocation route. Stop first failure;no retry or speed decision.',
         retention='Keep exact plans,model hashes,individual completion/activation/fault/allocation results. Retire successful traces/JIT after verification. Diagnostic engine and full IDs remain only through imminent near-cap/RESTORE/owner checks;original selected13 assets stay untouched.',
         next_gate='Near-cap/RESTORE/fault-owner,model/task and repeated decode-preservation comparisons. Full synthetic fill alone is not general physical-context qualification or throughput evidence.')
     write(ROOT/'record.json',record);container[KEY]=compact(record);write(RESULT,container)
