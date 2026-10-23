@@ -61,6 +61,12 @@
 #include "strata/core/native_dense.hpp"
 #include "strata/core/canonical_dense_bank.hpp"
 #include "strata/program/logits_selection.hpp"
+#ifdef STRATA_SYCL_FULL_CONTEXT_DIAGNOSTIC
+#ifndef STRATA_ENABLE_SYCL
+#error "The full-context diagnostic requires the SYCL backend"
+#endif
+#include "strata/program/full_context_diagnostic.hpp"
+#endif
 #ifdef STRATA_ENABLE_SYCL
 #include "strata/program/prefill_logits.hpp"
 #include "strata/program/dense_prefill_nll.hpp"
@@ -534,6 +540,10 @@ struct Options {
     std::vector<int64_t> tokens;      // the prompt, PRE-TOKENIZED
     int64_t max_new = 16;
     int64_t max_context = 4096;
+#ifdef STRATA_SYCL_FULL_CONTEXT_DIAGNOSTIC
+    bool consume_prompt = false;
+    bool prompt_from_file = false;
+#endif
     bool greedy = true;
     uint64_t seed = 0;
     int top_k = 20;
@@ -817,6 +827,9 @@ void usage() {
                  "  --pack DIR           the pack directory (default pack/full)\n"
                  "  --tokens LIST        the prompt as comma-separated token IDS (required)\n"
                  "  --tokens-file PATH   pretokenized prompt, commas or whitespace (alternative to --tokens)\n"
+#ifdef STRATA_SYCL_FULL_CONTEXT_DIAGNOSTIC
+                 "  --consume-prompt    diagnostic only: consume exactly262144 prompt tokens, --max-new 0\n"
+#endif
                  "  --ple-gguf PATH      required PLE table (original second GGUF shard); with --native, the model's\n"
                  "                       shard that holds per_layer_token_embd.weight when not given\n"
                  "  --no-ple             explicit diagnostic ablation of the PLE layer\n"
@@ -1510,9 +1523,15 @@ int main(int argc, char** argv) {
             if (text.find('\0') != std::string::npos || !parse_i64_list(text.c_str(), o.tokens, error)) {
                 std::fprintf(stderr, "malformed token file: %s\n", error.c_str()); return 2;
             }
+#ifdef STRATA_SYCL_FULL_CONTEXT_DIAGNOSTIC
+            o.prompt_from_file = true;
+#endif
             have_tokens = true;
         }
         else if (a == "--max-new") o.max_new = std::atoll(next("--max-new"));
+#ifdef STRATA_SYCL_FULL_CONTEXT_DIAGNOSTIC
+        else if (a == "--consume-prompt") o.consume_prompt = true;
+#endif
         else if (a == "--max-context") o.max_context = std::atoll(next("--max-context"));
         else if (a == "--rope-scaling") o.rope_scaling = next("--rope-scaling");
         else if (a == "--rope-scale") o.rope_scale = std::atof(next("--rope-scale"));
@@ -1753,6 +1772,20 @@ int main(int argc, char** argv) {
         }
         }
     }
+#ifdef STRATA_SYCL_FULL_CONTEXT_DIAGNOSTIC
+    if (o.consume_prompt) {
+        if (!strata::program::full_context_diagnostic::request(o.max_context, o.tokens.size(), o.max_new) ||
+            !have_tokens || !o.prompt_from_file || o.serve || o.vision || o.native_preset.empty() ||
+            o.spec != 4 || o.suffix_draft != 0 || o.prefill_until > 0 || !o.layer_split.empty() ||
+            o.prefill_auto || o.prefill_chunk != 8192 || o.gpu_only_full ||
+            o.peer_device >= 0 || o.gpu_stages ||
+            std::any_of(o.expert_cache_remote.begin(), o.expert_cache_remote.end(), [](auto n) { return n > 0; })) {
+            std::fprintf(stderr, "strata generate: --consume-prompt requires a one-shot native SYCL token-file "
+                                 "request,262144 context/prompt,zero output,spec4,no suffix/vision/split/partial prefill\n");
+            return 2;
+        }
+    }
+#endif
     // Output path opt-in; the recipe is prepared and hashed by the external
     // supervisor before this native process starts. Reject unsupported routes
     // before GPU preflight, owner/graph detachment, or pending submissions.
@@ -2124,6 +2157,9 @@ int main(int argc, char** argv) {
         std::fprintf(stderr, "strata generate: --max-context must be below 2^31\n");
         return 2;
     }
+#ifdef STRATA_SYCL_FULL_CONTEXT_DIAGNOSTIC
+    if (!o.consume_prompt)
+#endif
     if (o.max_new <= 0 || o.max_context <= 0 || o.max_new > o.max_context ||
         o.tokens.size() > (size_t) (o.max_context - o.max_new)) {
         std::fprintf(stderr, "strata generate: positive --max-new and --max-context must fit the prompt and generation\n");
@@ -2275,6 +2311,12 @@ int main(int argc, char** argv) {
         }
     }
     const bool native_pack = strata::kernels::cpu::expert_layout().native;
+#ifdef STRATA_SYCL_FULL_CONTEXT_DIAGNOSTIC
+    if (o.consume_prompt && !native_pack) {
+        std::fprintf(stderr, "strata generate: consume-prompt requires the native first-window route\n");
+        return 2;
+    }
+#endif
 #ifdef STRATA_ENABLE_SYCL
     if ((collect_prefill_logits || collect_prefill_nll) && !native_pack) {
         std::fprintf(stderr, "strata generate: prefill logits/NLL requires a native expert pack\n");
@@ -7488,7 +7530,14 @@ int main(int argc, char** argv) {
     // round emits (accepted drafts + 1) tokens.  `commit` keeps the state of the tokens that were emitted.
     const bool ended = o.stop_eos && !produced.empty() &&
                        std::find(o.eos_ids.begin(), o.eos_ids.end(), (int64_t) produced.back()) != o.eos_ids.end();
-    if (spec_pos >= 0 && (int64_t) produced.size() < o.max_new && !ended) {
+#ifdef STRATA_SYCL_FULL_CONTEXT_DIAGNOSTIC
+    bool consume_completed = false;
+#endif
+    if (spec_pos >= 0 && (
+#ifdef STRATA_SYCL_FULL_CONTEXT_DIAGNOSTIC
+            o.consume_prompt ||
+#endif
+            (int64_t) produced.size() < o.max_new) && !ended) {
         std::vector<int64_t> oracle;
         if (!o.spec_oracle.empty()) {
             std::ifstream in(o.spec_oracle);
@@ -7670,7 +7719,11 @@ int main(int argc, char** argv) {
         }
         const double pool_ms0 = drive.cpu_ms;
         const int64_t misses0 = drive.d.multi_misses, entries0 = drive.d.multi_entries;
-        while ((int64_t) produced.size() < o.max_new) {
+        while ((int64_t) produced.size() < o.max_new
+#ifdef STRATA_SYCL_FULL_CONTEXT_DIAGNOSTIC
+               || (o.consume_prompt && first_window)
+#endif
+        ) {
             const Clock::time_point t0 = Clock::now();
             int T = S_mtp;
             if (use_mtp && o.spec_min_p > 0.0) {
@@ -7678,6 +7731,16 @@ int main(int argc, char** argv) {
                 while (T < S_mtp && dprob[(size_t) T - 1] >= (float) o.spec_min_p) ++T;
             }
             if (first_window) T = 1;
+#ifdef STRATA_SYCL_FULL_CONTEXT_DIAGNOSTIC
+            // Capture before first_window is cleared after ver.run().
+            const bool terminal_consume = o.consume_prompt &&
+                strata::program::full_context_diagnostic::last_window(
+                    first_window, n_prompt, p, T, x, o.tokens.back(), produced.size());
+            if (o.consume_prompt && !terminal_consume) {
+                std::fprintf(stderr, "strata generate: consume-prompt did not reach the exact final input window\n");
+                return 1;
+            }
+#endif
             bool from_sfx = false;
             int sfx_match = 0;
             if (o.suffix_draft > 0 && !first_window) {
@@ -7751,6 +7814,24 @@ int main(int argc, char** argv) {
             drafts_ok += a;
             ++accepted_hist[(size_t) a];
             if (from_sfx) { ++sfx_windows; sfx_drafts += T - 1; sfx_ok += a; }
+#ifdef STRATA_SYCL_FULL_CONTEXT_DIAGNOSTIC
+            if (terminal_consume) {
+                if (adapt_thr.joinable()) adapt_thr.join();
+                if (!adapt_ok || a != 0 || !apply_pending(true, err) || !ver.wait_commit(err)) {
+                    std::fprintf(stderr, "strata generate: consume-prompt final commit/refill failed: %s\n", err.c_str());
+                    return 1;
+                }
+                // Diagnostic only: cover every owned refill/default queue before
+                // reporting completion or allowing any graph/owner retirement.
+                if (cudaDeviceSynchronize() != cudaSuccess)
+                    strata::sycl_backend::cleanup_fail_stop("consume-prompt final device drain uncertain");
+                consume_completed = true;
+                std::printf("strata FULL_CONTEXT consumed_position=%lld prompt_tokens=%lld output_tokens=0 "
+                            "window_width=1 commit_count=1 commit_wait=PASS refill_drain=PASS\n",
+                            (long long) (p + 1), (long long) n_prompt);
+                break; // no output publication, suffix proposal or MTP draft
+            }
+#endif
             bool eos = false;
             for (int i = 0; i <= a && (int64_t) produced.size() < o.max_new && !eos; ++i) {
                 produced.push_back(outv[(size_t) i]);
@@ -7859,6 +7940,12 @@ int main(int argc, char** argv) {
                         (double) mtp.vram_bytes() / 1048576.0);
     }
 
+#ifdef STRATA_SYCL_FULL_CONTEXT_DIAGNOSTIC
+    if (o.consume_prompt && !consume_completed) {
+        std::fprintf(stderr, "strata generate: consume-prompt terminated without the final checked commit\n");
+        return 1;
+    }
+#endif
     if (dump != nullptr) {
         const bool header_ok = std::fseek(dump, sizeof(int32_t), SEEK_SET) == 0 &&
             std::fwrite(&dump_rows_written, sizeof(dump_rows_written), 1, dump) == 1;
@@ -7901,6 +7988,10 @@ int main(int argc, char** argv) {
 
     const int64_t decoded = (int64_t) produced.size();
     std::printf("prompt  :");
+#ifdef STRATA_SYCL_FULL_CONTEXT_DIAGNOSTIC
+    if (o.consume_prompt) std::printf(" %lld tokens (ids omitted)", (long long) n_prompt);
+    else
+#endif
     for (int64_t t : o.tokens) std::printf(" %lld", (long long) t);
     std::printf("\noutput  :");
     for (int64_t t : produced) std::printf(" %lld", (long long) t);
