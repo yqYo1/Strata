@@ -663,6 +663,18 @@ diagnostic flag,and10 invalid requests reject at the intended early boundary.
 Actual token files cover262143/262144/262145 parsed integers;no model is loaded
 and no throughput or physical-context result follows. The full synthetic
 262144-token fixture remains only for the imminent capacity diagnostic.
+The original same-build expert-bank fixture now passes its six small device
+cases with full UR API tracing and parameter validation. The same child's
+before-main proof confirms the pinned loader and validation dispatch;170 kernel
+enqueue calls are observed. Guard checks, queue drains and injected host unwind
+pass, with normal owned exit and no fresh driver fault. The first attempt
+stopped before main because the controller omitted the required expected-loader
+variable;its failed result remains unchanged. The corrected plan is separate.
+The preload retains an extra loader reference until exit, so this is not an
+ordinary runtime-teardown qualification, a new-engine model check or evidence
+that decode performance is preserved. The original selected13 assets remain
+unchanged. Successful raw traces have no continuing consumer after recording
+these results.
 The new diagnostic still needs actual262144 memory admission,last-slot commit and checked completion,
 plus separate near-cap,RESTORE and failure-owner validation. It must not change
 the selected decode implementation or establish adoption by diagnostic success.
