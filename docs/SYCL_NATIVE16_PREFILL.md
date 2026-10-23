@@ -468,10 +468,14 @@ production-matched gather/staging/matrix calibration before another layout
 variation;hardware saturation remains unresolved. Any subsequent prefill
 adoption still requires state-handoff checks and repeated matched decode.
 
-The raw IDs have no replay consumer. After compact evidence is committed and
-verified,retire the capture,successful traces,additional diagnostic generation
-and consumed source-audit transactions. Recover original project/dependency
-inputs,generated source and the exact recipe before deleting its build.
+The raw IDs have no replay consumer. After committing/verifying the compact
+evidence,93 external files (685455780 bytes) are retired,including all IDs,
+successful traces,the additional diagnostic generation and consumed source-audit
+transactions. Its539 original project inputs,9311 dependency inputs,generated
+source and exact recipe recover;643 SDK headers match. Nine closed source/result
+files (79617 bytes) are retired to`41579947c`. The reusable checked-lifetime helper
+and7 host fault-injection tests remain. All13 selected native assets still match;
+the separate older lifecycle/provenance holds are unchanged.
 
 Remaining model gates are repeated phase-preserving adoption evidence,
 agent-session and task quality, full physical262144 tokens including the final

@@ -16,7 +16,8 @@
   "native_binary": {
     "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-selection-native-v1/build/strata",
     "bytes": 22195080,
-    "sha256": "55535d122230dd62b2ed1a1fc73803bcc139ace42f31ff7ecbd6d00f0feace1c"
+    "sha256": "55535d122230dd62b2ed1a1fc73803bcc139ace42f31ff7ecbd6d00f0feace1c",
+    "retired": true
   },
   "diagnostic_build_reference": {
     "commit": "41579947cdd580807799151cbbe67ef7b32be357",
@@ -232,7 +233,19 @@
     "remote_retained_ref": "41579947cdd580807799151cbbe67ef7b32be357"
   },
   "retirement": {
-    "complete": false,
-    "consumer": "Current compact evidence commit/verification only;then retire raw IDs,normal traces,closed diagnostic generation and consumed source-audit transactions. No replay consumer remains."
+    "complete": true,
+    "manifest": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-selection-capture-retirement-20261023.jsonl",
+    "sha256": "21448dfaa4431880332b8f3aec193a305d57a283edb34c6dd95540b9c823cbe6",
+    "external_files": 93,
+    "external_bytes": 685455780,
+    "capture_root_absent": true,
+    "diagnostic_root_absent": true,
+    "selected_native_assets_unchanged": 13,
+    "source_archive_commit": "41579947cdd580807799151cbbe67ef7b32be357",
+    "tracked_retired_files": 9,
+    "tracked_retired_bytes": 79617,
+    "tracked_reason": "Closed single-use capture/build/qualification controllers,parser tests and standalone GPU fixture;no remaining execution consumer. Full source and qualification recover from archive commit. Git deletion diff supplies paths/blob hashes.",
+    "preserved_correctness_helper": "include/strata/prefill/selection_dump.hpp and its7 host fault-injection tests remain as reusable checked-lifetime regression coverage. The production dump hook remains disabled;restore the checked diagnostic overlay from Git before any future capture.",
+    "remaining_generation": "This comparison retains the original6e40 selected engine and12 same-build fixtures. The two closed capture/diagnostic roots are absent;separate older lifecycle/provenance holds are unchanged."
   }
 }
