@@ -9203,7 +9203,7 @@
     "remaining_reports": "Four new physical-fill/memory report/review files retained for named Main implementation/owner-trace consumers. Existing unrelated ownership/provenance holds remain unchanged."
   },
   "ur_memory_subscriber_v1": {
-    "stage": "prepared",
+    "stage": "closed_for_environment_admission_correction",
     "source_commit": "2ad9d1d87b4a13a41469cc22a2a487c68af65915",
     "input_sha256": {
       "data/expert-profile.bin": "8f59b4aa8873209dff11c11e37bcda9529a1335b724a1afeea37bf6388975baf",
@@ -9308,8 +9308,25 @@
       "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/ur-validation-preload-v2/canary",
       "sha256": "7903f47691309444cce238d6a0a6fe716f7c668d80a6e2ff3d5cfe21c7dcbfd0"
     },
-    "assets": {},
-    "outcomes": {},
+    "assets": {
+      "libstrata_ur_memory.so": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/ur-memory-subscriber-v1/libstrata_ur_memory.so",
+        "bytes": 16920,
+        "sha256": "677c0e079d4a204cb62400099a81ce9e214883cbda7d4a283340695aad2f2986"
+      },
+      "packet-test": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/ur-memory-subscriber-v1/packet-test",
+        "bytes": 17376,
+        "sha256": "39da2a3ff1072294e8407edd4fb01eecfab6272dfe648a66039d10391958544e"
+      }
+    },
+    "outcomes": {
+      "build": {
+        "passed": true,
+        "complete": true,
+        "ownership_closed": true
+      }
+    },
     "active": false,
     "passed": false,
     "complete": false,
@@ -9327,6 +9344,7 @@
     },
     "criteria": "Commit before every gate. Build shared subscriber and CPU packet fixture with pinned host compiler/header closure. Packet fixture must emit12 events:3 successful USM domains,failed uninitialized-output refusal,free,buffer create/retain/alias/release,unknown mutating API and missing packet controls;no UR initialization or GPU operation. Real qualified host canary must activate ur.call collector exactly once,preserve parameter-validation first-init receipt and normal exit0. Subscriber only reads documented argument packets and reports requested logical bytes,not physical residency/pool ownership. Unknown memory APIs remain unsupported. Stop first failure;no retry. No model/device/speed/adoption or ordinary-teardown claim.",
     "provenance": "Main-authored Strata source,repository LICENSE. Installed public XPTI/UR headers and Intel LLVM official urtrace documentation/API examples consulted;no external application source copied or XeStrata application source used.",
-    "retention": "Retain current subscriber for imminent Main device/short-prefill owner trace;retire CPU packet executable and successful logs once qualification is compacted. No third engine generation. Closed v4 state record environment consumer ends after this new committed plan pins it."
+    "retention": "Retain current subscriber for imminent Main device/short-prefill owner trace;retire CPU packet executable and successful logs once qualification is compacted. No third engine generation. Closed v4 state record environment consumer ends after this new committed plan pins it.",
+    "correction": "Actual build environments match prepared hashes. Controller omitted automatic effective-environment hash enforcement;no CPU packet/canary check has run. Preserve build pass;prospective admission-only plan will verify unchanged C++/compiler/header/recipe/environment/artifact identities before host tests."
   }
 }
