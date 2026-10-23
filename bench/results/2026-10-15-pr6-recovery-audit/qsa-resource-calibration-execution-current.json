@@ -1,5 +1,5 @@
 {
-  "stage": "prepared",
+  "stage": "closed",
   "mode": "small-traced-QSA-resource-calibration",
   "controller_source_commit": "b2db43e7b924f946f85affc2b98863dff7d64847",
   "controller_inputs": {
@@ -382,10 +382,390 @@
   "retention": "Successful API traces and JIT dumps only through immediate final-codegen/resource review. Retire after compact extraction/verification. No tensors,model or realID replay.",
   "active": false,
   "ownership_closed": true,
-  "passed": false,
-  "complete": false,
-  "GPU_executed": false,
+  "passed": true,
+  "complete": true,
+  "GPU_executed": true,
   "timing_launch_permitted": false,
   "model_adoption_qualified": false,
-  "hardware_saturation_qualified": false
+  "hardware_saturation_qualified": false,
+  "validation_activation": {
+    "pid": 3584427,
+    "loader": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_loader.so.0.12.0",
+    "threads_before": 1,
+    "preinit": 37,
+    "config_enabled": true,
+    "first_init": true,
+    "dispatch_result": 46,
+    "output_untouched": true,
+    "retained_reference_until_exit": true,
+    "runtime_teardown_qualified": false
+  },
+  "native_identity": {
+    "pid": 3584427,
+    "state": "D",
+    "ppid": 3583490,
+    "pgid": 3584427,
+    "sid": 3584427,
+    "start_ticks": 106836262,
+    "rss_bytes": 139264
+  },
+  "checks": {
+    "control_bits": true,
+    "producer_checksums": true,
+    "perturbation": true,
+    "guards": true,
+    "immutable": true
+  },
+  "resources": [
+    {
+      "arm": "production",
+      "phase": "prefix",
+      "kernel": "_ZTSZN6strata7kernelsL17prefix_batch_implILi33ELb0ELb0ELb1ELb1ELb1ELb1ELb0EEEbPKtRKNS0_12QsaAttnPoolsEPKiS8_lRKNS0_9QsaShapesEPtlRKNS0_19QsaPromptBf16BoundsElRKNS0_20QsaBf16PackedScratchEPvNS0_19QsaPrefixStateProbeEEUlN4sycl3_V17nd_itemILi1EEEE_",
+      "execution_env": {
+        "grf_count": "128",
+        "has_4gb_buffers": "true",
+        "has_no_stateless_write": "true",
+        "indirect_stateless_count": "25",
+        "inline_data_payload_size": "32",
+        "offset_to_skip_per_thread_data_load": "128",
+        "simd_size": "32",
+        "subgroup_independent_forward_progress": "true",
+        "eu_thread_count": "8"
+      },
+      "per_thread_memory_buffers": null,
+      "observed_launches": {
+        "launches": 3,
+        "local_arguments": [],
+        "dynamic_local_bytes": 0
+      }
+    },
+    {
+      "arm": "production",
+      "phase": "attention",
+      "kernel": "_ZTSZZN6strata7kernelsL17prefix_batch_implILi33ELb0ELb0ELb1ELb1ELb1ELb1ELb0EEEbPKtRKNS0_12QsaAttnPoolsEPKiS8_lRKNS0_9QsaShapesEPtlRKNS0_19QsaPromptBf16BoundsElRKNS0_20QsaBf16PackedScratchEPvNS0_19QsaPrefixStateProbeEENKUlRN4sycl3_V17handlerEE_clESO_EUlNSM_7nd_itemILi1EEEE_",
+      "execution_env": {
+        "barrier_count": "1",
+        "grf_count": "128",
+        "has_4gb_buffers": "true",
+        "has_dpas": "true",
+        "has_no_stateless_write": "true",
+        "require_disable_eufusion": "true",
+        "indirect_stateless_count": "6",
+        "inline_data_payload_size": "32",
+        "offset_to_skip_per_thread_data_load": "192",
+        "simd_size": "16",
+        "slm_size": "32",
+        "spill_size": "12480",
+        "subgroup_independent_forward_progress": "true",
+        "eu_thread_count": "8"
+      },
+      "per_thread_memory_buffers": "- type:            scratch\n        usage:           single_space\n        size:            16384",
+      "observed_launches": {
+        "launches": 3,
+        "local_arguments": [
+          {
+            "index": 0,
+            "bytes": 16384
+          },
+          {
+            "index": 1,
+            "bytes": 1024
+          },
+          {
+            "index": 3,
+            "bytes": 64
+          },
+          {
+            "index": 4,
+            "bytes": 64
+          },
+          {
+            "index": 5,
+            "bytes": 64
+          },
+          {
+            "index": 13,
+            "bytes": 256
+          },
+          {
+            "index": 15,
+            "bytes": 2112
+          },
+          {
+            "index": 16,
+            "bytes": 64
+          }
+        ],
+        "dynamic_local_bytes": 20032
+      }
+    },
+    {
+      "arm": "control",
+      "phase": "prefix",
+      "kernel": "_ZTSZN6strata7kernels20resource_calibrationL17prefix_batch_implILi33ELb0ELb0ELb1ELb1ELb1ELb1ELb0ELi0EEEbPKtRKNS0_12QsaAttnPoolsEPKiS9_lRKNS0_9QsaShapesEPtlRKNS0_19QsaPromptBf16BoundsElRKNS0_20QsaBf16PackedScratchEPvNS0_19QsaPrefixStateProbeEPjEUlN4sycl3_V17nd_itemILi1EEEE_",
+      "execution_env": {
+        "grf_count": "128",
+        "has_4gb_buffers": "true",
+        "has_no_stateless_write": "true",
+        "indirect_stateless_count": "25",
+        "inline_data_payload_size": "32",
+        "offset_to_skip_per_thread_data_load": "128",
+        "simd_size": "32",
+        "subgroup_independent_forward_progress": "true",
+        "eu_thread_count": "8"
+      },
+      "per_thread_memory_buffers": null,
+      "observed_launches": {
+        "launches": 2,
+        "local_arguments": [],
+        "dynamic_local_bytes": 0
+      }
+    },
+    {
+      "arm": "load",
+      "phase": "prefix",
+      "kernel": "_ZTSZN6strata7kernels20resource_calibrationL17prefix_batch_implILi33ELb0ELb0ELb1ELb1ELb1ELb1ELb0ELi1EEEbPKtRKNS0_12QsaAttnPoolsEPKiS9_lRKNS0_9QsaShapesEPtlRKNS0_19QsaPromptBf16BoundsElRKNS0_20QsaBf16PackedScratchEPvNS0_19QsaPrefixStateProbeEPjEUlN4sycl3_V17nd_itemILi1EEEE_",
+      "execution_env": {
+        "grf_count": "128",
+        "has_4gb_buffers": "true",
+        "has_no_stateless_write": "true",
+        "indirect_stateless_count": "25",
+        "inline_data_payload_size": "32",
+        "offset_to_skip_per_thread_data_load": "128",
+        "simd_size": "32",
+        "subgroup_independent_forward_progress": "true",
+        "eu_thread_count": "8"
+      },
+      "per_thread_memory_buffers": null,
+      "observed_launches": {
+        "launches": 3,
+        "local_arguments": [],
+        "dynamic_local_bytes": 0
+      }
+    },
+    {
+      "arm": "stage",
+      "phase": "prefix",
+      "kernel": "_ZTSZN6strata7kernels20resource_calibrationL17prefix_batch_implILi33ELb0ELb0ELb1ELb1ELb1ELb1ELb0ELi2EEEbPKtRKNS0_12QsaAttnPoolsEPKiS9_lRKNS0_9QsaShapesEPtlRKNS0_19QsaPromptBf16BoundsElRKNS0_20QsaBf16PackedScratchEPvNS0_19QsaPrefixStateProbeEPjEUlN4sycl3_V17nd_itemILi1EEEE_",
+      "execution_env": {
+        "grf_count": "128",
+        "has_4gb_buffers": "true",
+        "has_no_stateless_write": "true",
+        "indirect_stateless_count": "25",
+        "inline_data_payload_size": "32",
+        "offset_to_skip_per_thread_data_load": "128",
+        "simd_size": "32",
+        "subgroup_independent_forward_progress": "true",
+        "eu_thread_count": "8"
+      },
+      "per_thread_memory_buffers": null,
+      "observed_launches": {
+        "launches": 3,
+        "local_arguments": [],
+        "dynamic_local_bytes": 0
+      }
+    },
+    {
+      "arm": "control",
+      "phase": "attention",
+      "kernel": "_ZTSZZN6strata7kernels20resource_calibrationL17prefix_batch_implILi33ELb0ELb0ELb1ELb1ELb1ELb1ELb0ELi0EEEbPKtRKNS0_12QsaAttnPoolsEPKiS9_lRKNS0_9QsaShapesEPtlRKNS0_19QsaPromptBf16BoundsElRKNS0_20QsaBf16PackedScratchEPvNS0_19QsaPrefixStateProbeEPjENKUlRN4sycl3_V17handlerEE_clESQ_EUlNSO_7nd_itemILi1EEEE_",
+      "execution_env": {
+        "barrier_count": "1",
+        "grf_count": "128",
+        "has_4gb_buffers": "true",
+        "has_dpas": "true",
+        "has_no_stateless_write": "true",
+        "require_disable_eufusion": "true",
+        "indirect_stateless_count": "6",
+        "inline_data_payload_size": "32",
+        "offset_to_skip_per_thread_data_load": "192",
+        "simd_size": "16",
+        "slm_size": "32",
+        "spill_size": "12480",
+        "subgroup_independent_forward_progress": "true",
+        "eu_thread_count": "8"
+      },
+      "per_thread_memory_buffers": "- type:            scratch\n        usage:           single_space\n        size:            16384",
+      "observed_launches": {
+        "launches": 2,
+        "local_arguments": [
+          {
+            "index": 0,
+            "bytes": 16384
+          },
+          {
+            "index": 1,
+            "bytes": 1024
+          },
+          {
+            "index": 3,
+            "bytes": 64
+          },
+          {
+            "index": 4,
+            "bytes": 64
+          },
+          {
+            "index": 5,
+            "bytes": 64
+          },
+          {
+            "index": 13,
+            "bytes": 256
+          },
+          {
+            "index": 15,
+            "bytes": 2112
+          },
+          {
+            "index": 16,
+            "bytes": 64
+          }
+        ],
+        "dynamic_local_bytes": 20032
+      }
+    },
+    {
+      "arm": "load",
+      "phase": "attention",
+      "kernel": "_ZTSZZN6strata7kernels20resource_calibrationL17prefix_batch_implILi33ELb0ELb0ELb1ELb1ELb1ELb1ELb0ELi1EEEbPKtRKNS0_12QsaAttnPoolsEPKiS9_lRKNS0_9QsaShapesEPtlRKNS0_19QsaPromptBf16BoundsElRKNS0_20QsaBf16PackedScratchEPvNS0_19QsaPrefixStateProbeEPjENKUlRN4sycl3_V17handlerEE_clESQ_EUlNSO_7nd_itemILi1EEEE_",
+      "execution_env": {
+        "barrier_count": "1",
+        "grf_count": "128",
+        "has_4gb_buffers": "true",
+        "has_no_stateless_write": "true",
+        "indirect_stateless_count": "6",
+        "inline_data_payload_size": "32",
+        "offset_to_skip_per_thread_data_load": "128",
+        "simd_size": "16",
+        "slm_size": "4096",
+        "subgroup_independent_forward_progress": "true",
+        "eu_thread_count": "8"
+      },
+      "per_thread_memory_buffers": null,
+      "observed_launches": {
+        "launches": 3,
+        "local_arguments": [
+          {
+            "index": 7,
+            "bytes": 256
+          }
+        ],
+        "dynamic_local_bytes": 256
+      }
+    },
+    {
+      "arm": "stage",
+      "phase": "attention",
+      "kernel": "_ZTSZZN6strata7kernels20resource_calibrationL17prefix_batch_implILi33ELb0ELb0ELb1ELb1ELb1ELb1ELb0ELi2EEEbPKtRKNS0_12QsaAttnPoolsEPKiS9_lRKNS0_9QsaShapesEPtlRKNS0_19QsaPromptBf16BoundsElRKNS0_20QsaBf16PackedScratchEPvNS0_19QsaPrefixStateProbeEPjENKUlRN4sycl3_V17handlerEE_clESQ_EUlNSO_7nd_itemILi1EEEE_",
+      "execution_env": {
+        "barrier_count": "1",
+        "grf_count": "128",
+        "has_4gb_buffers": "true",
+        "has_no_stateless_write": "true",
+        "indirect_stateless_count": "6",
+        "inline_data_payload_size": "32",
+        "offset_to_skip_per_thread_data_load": "128",
+        "simd_size": "16",
+        "slm_size": "4096",
+        "subgroup_independent_forward_progress": "true",
+        "eu_thread_count": "8"
+      },
+      "per_thread_memory_buffers": null,
+      "observed_launches": {
+        "launches": 3,
+        "local_arguments": [
+          {
+            "index": 2,
+            "bytes": 16384
+          },
+          {
+            "index": 8,
+            "bytes": 256
+          }
+        ],
+        "dynamic_local_bytes": 16640
+      }
+    }
+  ],
+  "codegen_files": {
+    "files": 195,
+    "bytes": 61750255
+  },
+  "final_ISA_review_pending": false,
+  "postchecks_complete": true,
+  "postcheck_errors": [],
+  "fresh_faults": [],
+  "boot_unchanged": true,
+  "driver_after": {
+    "pci": "/sys/bus/pci/devices/0000:05:00.0",
+    "driver": "xe",
+    "vendor": "0x8086",
+    "device": "0xe20c",
+    "kernel": "7.0.0-38-generic",
+    "devcoredump": false
+  },
+  "codegen_review": {
+    "passed": true,
+    "actual_executed_kernel_names_matched": true,
+    "ISA": [
+      {
+        "arm": "production",
+        "file": "OCL_asm7e3ea555cb721531_simd16_entry_0006.asm",
+        "sha256": "edbfc3b047a07e944446823317e231060ab1662baf11e61871eee5dffdcb3e6e",
+        "static_instructions": 4906,
+        "dpas_sites": 24,
+        "ugm_load_sites": 36,
+        "slm_load_sites": 619,
+        "slm_store_sites": 38,
+        "slm_d16_load_sites": 0,
+        "slm_d16_store_sites": 10,
+        "global_store_sites": 51
+      },
+      {
+        "arm": "control",
+        "file": "OCL_asmaf1c7a483d43ff0c_simd16_entry_0001.asm",
+        "sha256": "ea8b16d290db8ed9863a936ca17f56460d78c685200ad096f19317aed096ffbf",
+        "static_instructions": 4906,
+        "dpas_sites": 24,
+        "ugm_load_sites": 36,
+        "slm_load_sites": 619,
+        "slm_store_sites": 38,
+        "slm_d16_load_sites": 0,
+        "slm_d16_store_sites": 10,
+        "global_store_sites": 51
+      },
+      {
+        "arm": "load",
+        "file": "OCL_asm1e3129b597e2de4b_simd16_entry_0001.asm",
+        "sha256": "1ae62ad139577c12157afe920b68a8277a0e7373c08afa396ffb5a0532ba95b5",
+        "static_instructions": 460,
+        "dpas_sites": 0,
+        "ugm_load_sites": 12,
+        "slm_load_sites": 6,
+        "slm_store_sites": 4,
+        "slm_d16_load_sites": 0,
+        "slm_d16_store_sites": 0,
+        "global_store_sites": 1
+      },
+      {
+        "arm": "stage",
+        "file": "OCL_asm1e3129b597e2de4b_simd16_entry_0002.asm",
+        "sha256": "d30e2719cdb002de60029e0a0e192ecdfaaf3e42f6515c6884e8c9f18288f435",
+        "static_instructions": 553,
+        "dpas_sites": 0,
+        "ugm_load_sites": 12,
+        "slm_load_sites": 8,
+        "slm_store_sites": 10,
+        "slm_d16_load_sites": 2,
+        "slm_d16_store_sites": 4,
+        "global_store_sites": 1
+      }
+    ],
+    "production_control_instruction_text_equal": false,
+    "source_sink_perturbation_passed": true,
+    "disposition": "Final executed ISA retains global loads and sink writes in both probes,KV SLM reads/writes only in S,and DPAS only in production/control. Production/control resource descriptors match. P has12480spill descriptor and20032dynamicSLM;L/S have no spill descriptor and256/16640dynamicSLM. These material resource differences permit descriptive whole-probe comparisons only,not additive decomposition or an exclusive memory/compute bottleneck claim.",
+    "next_action": "One validated512-query full-capacity synthetic cohort before three independent clean P/L/S timing processes under the committed batch rules. No new model/decode candidate is adopted.",
+    "production_control_difference": "Instruction text differs only in three final immediate values written to the null register for module/kernel tags;all4906instruction opcodes/register operands and other immediate values match. Raw instruction-text equality remains false."
+  }
 }
