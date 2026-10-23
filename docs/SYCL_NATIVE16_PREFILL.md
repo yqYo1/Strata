@@ -497,7 +497,7 @@ tag immediates differ. Both retain GRF128/SIMD16,spill descriptor12480 and20032
 dynamic local bytes. Gather/producer use256/16640 dynamic local bytes and have
 no spill descriptor. These material resource differences permit descriptive
 whole-probe comparisons,not additive saved-time or exclusive saturation claims.
-The [small qualification](../bench/results/2026-10-15-pr6-recovery-audit/qsa-resource-calibration-execution-current.json)
+The [archived small qualification](https://github.com/yqYo1/Strata/blob/15f74b46db79bcdfaad773626b18b2c9095a0c1d/bench/results/2026-10-15-pr6-recovery-audit/qsa-resource-calibration-execution-current.json)
 records these limits. Its consumed210 trace/JIT/research-transaction files
 (62214368 bytes) are retired.
 
@@ -522,8 +522,13 @@ layout variation. A resident matrix-plus-softmax probe is a subsequent option
 if that comparison remains inconclusive. Probe SLM,spill and checksum differences
 prohibit subtracting L/S from P as saved time. Physical traffic,cache behavior
 and the exclusive limiting hardware resource remain unknown. No engine,decode,
-placement or model-performance selection changes. The auxiliary fixture has no
-further execution consumer;retirement follows exact source/recipe recovery.
+placement or model-performance selection changes. Original188 project/recipe
+inputs,generated source,ten commands and8700 SDK inputs were recovered before
+retirement. All14 owned build/measurement commands are closed. The auxiliary
+build,successful raw output and consumed or unused report bodies are retired:
+56 external/cache files,5739150 bytes. Eight closed source/fixture/controller
+and build/smoke result files are recoverable at`15f74b46d`;the compact timing
+result is the maintained evidence. All13 selected native assets still match.
 
 Remaining model gates are repeated phase-preserving adoption evidence,
 agent-session and task quality, full physical262144 tokens including the final
