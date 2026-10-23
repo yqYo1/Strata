@@ -152,6 +152,8 @@ def prepare(container):
         command=[engine['binary']['path'],*args,'--tokens-file',str(path),'--max-new',str(outputs)]
         if name=='full': command.append('--consume-prompt')
         cases[name]=dict(command=command,input_tokens=n,output_tokens=outputs,
+            streamed_qsa=dict(layers=list(range(3,48,4)),chunks_per_layer=(n-2)//8192+1,
+                rows_per_layer=n-1,pos0=0,prefix_H2D_requested_bytes=0),
             fixture=dict(path=str(path),bytes=len(data),sha256=hashlib.sha256(data).hexdigest()),
             wall_s=900 if name=='short' else 2400)
     record=dict(stage='prepared',source_commit=revision,input_sha256=pins,binary=engine['binary'],
@@ -165,7 +167,7 @@ def prepare(container):
         budgets=dict(cpu_s=4800,rss_bytes=104<<30,text_bytes=16<<20,file_bytes=16<<20,total_bytes=512<<20,
             reason='Two cases have at most64MiB combined raw stdout/stderr;512MiB total additionally bounds private compiler JIT/cache/receipts,all retired after their consumer closes.'),
         question='Can the independently built diagnostic execute the unchanged model route,then allocate/process all262144 physical input slots with fixed1256 decode slots and131072 resident INT8 KV? Host KV tail is allowed and must not be called all-VRAM residency.',
-        gate='Run short once with16384 batched rows(two8192 chunks)+final prompt row and4 output IDs. The earlier one-chunk case exited0 but failed its declared layer-major route gate;it does not advance. Only after the new committed normal/validated/fault-free short closure run full once:262143 batched rows+final T1,zero outputs,exact checked final-commit marker. Require BF16 residual allocation conservation,configured MoE10 with effective2 for no accumulation or10 for admitted accumulation,checked prompt release,unchanged sources/models/boot/driver and owned normal exit. Server-only scratch lease is0;the existing standalone lend/refill path remains enabled. This is a capacity check,not preservation of the serve allocation route. Stop first failure;no retry or speed decision.',
+        gate='Run short once with16384 batched rows(two8192 chunks)+final prompt row and4 output IDs. The earlier one-chunk case exited0 but failed its declared layer-major route gate;it does not advance. Only after the new committed normal/validated/fault-free short closure run full once:262143 batched rows+final T1,zero outputs,exact checked final-commit marker. Require all12 actual streamed QSA layer traces,each with the complete batched row/chunk extent,checked drain,GPU_Q8 publication and zero requested prefix H2D bytes for fresh pos0=0;this is not measured PCIe traffic. Require BF16 residual allocation conservation,configured MoE10 with effective2 for no accumulation or10 for admitted accumulation,checked prompt release,unchanged sources/models/boot/driver and owned normal exit. Server-only scratch lease is0;the existing standalone lend/refill path remains enabled. This is a capacity check,not preservation of the serve allocation route. Stop first failure;no retry or speed decision.',
         retention='Keep exact plans,model hashes,individual completion/activation/fault/allocation results. Retire successful traces/JIT after verification. Diagnostic engine and full IDs remain only through imminent near-cap/RESTORE/owner checks;original selected13 assets stay untouched.',
         next_gate='Near-cap/RESTORE/fault-owner,model/task and repeated decode-preservation comparisons. Full synthetic fill alone is not general physical-context qualification or throughput evidence.')
     write(ROOT/'record.json',record);container[KEY]=compact(record);write(RESULT,container)
@@ -212,6 +214,13 @@ def evidence(stdout,stderr,record,case,pid):
     bank=re.search(r'^strata MoE expert bank: .*allocation_limit_bytes=(\d+)',body,re.M)
     require(bank is not None,'actual allocation limit missing')
     ledger['device_max_allocation_bytes']=int(bank[1])
+    qsa_pattern=(r'^strata prefill QSA16 streamed: layer=(\d+) chunks=(\d+) rows=(\d+) pos0=(\d+) '
+        r'prefix_H2D_requested_bytes=(\d+) host_publication=GPU_Q8 stage=full_logical_layer checked_drain=PASS$')
+    qsa_rows=[tuple(map(int,m.groups())) for m in re.finditer(qsa_pattern,body,re.M)]
+    expected=case['streamed_qsa']
+    require(qsa_rows==[(layer,expected['chunks_per_layer'],expected['rows_per_layer'],expected['pos0'],
+        expected['prefix_H2D_requested_bytes']) for layer in expected['layers']],
+        'actual streamed QSA layer/chunk/row/publication/prefix-reuse route differs')
     free=[dict(mib=int(m[1]),after=m[2]) for m in re.finditer(r'^strata trace: (\d+) MiB free after (.+)$',body,re.M)]
     prefill=re.search(r'^prefill\s+(\d+) tokens in ([0-9.]+) ms',stdout,re.M)
     require(prefill is not None and int(prefill[1])==n-1,'actual batched extent differs')
@@ -221,7 +230,10 @@ def evidence(stdout,stderr,record,case,pid):
     marker='strata FULL_CONTEXT consumed_position=262144 prompt_tokens=262144 output_tokens=0 window_width=1 commit_count=1 commit_wait=PASS refill_drain=PASS'
     require((marker in stdout)==(n==262144),'full final-slot completion marker differs')
     return dict(validation=proof,batched_rows=n-1,output_tokens=len(tokens),final_slot_checked=n==262144,
-        allocation=ledger,free_memory_mib=free,prefill_ms_observed=float(prefill[2]),speed_eligible=False)
+        allocation=ledger,streamed_qsa=dict(layers=len(qsa_rows),chunks_per_layer=expected['chunks_per_layer'],
+            rows_per_layer=expected['rows_per_layer'],prefix_H2D_requested_bytes=0,
+            host_publication='GPU_Q8',checked_drain=True,measured_bus_traffic=False),
+        free_memory_mib=free,prefill_ms_observed=float(prefill[2]),speed_eligible=False)
 
 
 def run(container,mode):
