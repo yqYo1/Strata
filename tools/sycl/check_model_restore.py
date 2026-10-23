@@ -97,7 +97,8 @@ def prepare(container):
     pins = inputs(revision)
     args = list(base['config']['args'])
     for name, value in (('--max-context', '262144'), ('--expert-profile', str(P / 'data/expert-profile.bin')),
-                        ('--prompt-cache', '6'), ('--conversation-cache-mib', '8192'),
+                        ('--prompt-cache', '6'), ('--prompt-cache-every', '0'),
+                        ('--conversation-cache-mib', '8192'),
                         ('--conversation-cache-slots', '2'), ('--conversation-cache-min-free-mib', '4096')):
         if name in args:
             args[args.index(name) + 1] = value
@@ -105,6 +106,11 @@ def prepare(container):
             args += [name, value]
     require(args[args.index('--expert-cache') + 1] == '1256' and
             args[args.index('--kv-resident') + 1] == '131072', 'decode placement changed')
+    # A layer-major pass reports its rows only after every layer completes;
+    # intermediate chunk checkpoints need chunk-major ordering. Keep live
+    # conversation parking enabled while excluding those checkpoints here.
+    require(args[args.index('--prompt-cache-every') + 1] == '0',
+            'dedicated long-prefill diagnostic cannot save intermediate checkpoints')
     require('--layer-split' not in args and '--batch' not in args and '--serve' not in args,
             'unsupported diagnostic topology')
     probe = gate.validation.preload_qualification()
@@ -149,7 +155,7 @@ def prepare(container):
                   active=False, passed=False, complete=False, ownership_closed=True,
                   budgets=dict(cpu_s=7200, rss_bytes=104 << 30, text_bytes=32 << 20,
                                file_bytes=32 << 20, total_bytes=512 << 20),
-                  criteria='Stop first failure;no retry. Host-only real owned protocol transport first,then small A/B/A+16,then admitted262120+16 extent,then253920/B/262128 restore with8208 new tokens (8207 batched rows>8192) to exercise layer-major nonzero-prefix reentry. One-token requests must commit exactly prompt extent;general MTP position is prompt-1+actual verifier windows+accepted drafts,not emitted length. Select explicit short/long layouts without changing1256-slot decode placement. Require INT8 startup,byte-exact restoration of all1256 original expert slots including the unlent prefix and both residency-table publications,exact MTP callback row/position conservation,and long-stage lifetime inside retired dense owners. QSA may use either its declared admitted ordered-prefix path or its previously component-qualified on-the-fly budget fallback;record and require matching actual arithmetic,never treat the routes as interchangeable speed samples. Require exact restore-before-reentry payload verification for all12 main QSA layers,draft and running state;actual restored prefix/read counts;valid generated IDs;normal owned exit0;unchanged models,boot,driver and no fresh fault. Do not compare generated text or cold-versus-warm arithmetic bits. Small traced device qualification belongs to the preceding same-build component suite;model checks use warning-level validation and stage progress.',
+                  criteria='Stop first failure;no retry. Host-only real owned protocol transport first,then small A/B/A+16,then admitted262120+16 extent,then253920/B/262128 restore with8208 new tokens (8207 batched rows>8192) to exercise layer-major nonzero-prefix reentry. One-token requests must commit exactly prompt extent;general MTP position is prompt-1+actual verifier windows+accepted drafts,not emitted length. Select explicit short/long layouts without changing1256-slot decode placement. Disable intermediate prefix checkpoints explicitly with prompt-cache-every0 while retaining prompt-cache6 and live conversation parking;this diagnostic does not qualify the checkpoint-enabled production fallback. Require INT8 startup,byte-exact restoration of all1256 original expert slots including the unlent prefix and both residency-table publications,exact MTP callback row/position conservation,and long-stage lifetime inside retired dense owners. QSA may use either its declared admitted ordered-prefix path or its previously component-qualified on-the-fly budget fallback;record and require matching actual arithmetic,never treat the routes as interchangeable speed samples. Require exact restore-before-reentry payload verification for all12 main QSA layers,draft and running state;actual restored prefix/read counts;valid generated IDs;normal owned exit0;unchanged models,boot,driver and no fresh fault. Do not compare generated text or cold-versus-warm arithmetic bits. Small traced device qualification belongs to the preceding same-build component suite;model checks use warning-level validation and stage progress.',
                   retention='Keep source/recipe,request byte hashes and individual admission/position/copy/ownership/fault outcomes. Retire successful raw logs/JIT after closure. Both retained generations keep their existing named qualification/comparison consumers.',
                   speed_eligible=False, production_selected=False, model_adoption_qualified=False,
                   physical262144_qualified=False, decode_performance_qualified=False,

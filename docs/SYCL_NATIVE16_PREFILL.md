@@ -849,11 +849,24 @@ layout by default. This changes shared dispatch and needs a fresh build,guarded
 layout checks,model state verification and repeated decode preservation before
 adoption. Source-only reasoning does not qualify the new route.
 The initial CPU budget and traced scratch smoke pass with normal closure and
-no fresh fault. Before further execution, source review corrected the short
-planner to compare against the actual initial tail capacity,which can be less
-than the128-slot-floor tail. The first cohort closes incomplete with its two
-individual passes intact. Reuse them only after unchanged fixture/input/runtime
-identities are proven for the corrected engine;the remaining gates are unrun.
+no fresh fault. Source review corrected the short planner to compare against
+the actual initial tail capacity,which can be less than the128-slot-floor tail.
+The first cohort remains incomplete with its two individual passes intact.
+Corrected native source`be0d4e35b` proves unchanged fixture/input/runtime identities
+before reusing those two passes. Its seven actual component gates now pass:
+explicit layout/rebind guards,113-check traced restore smoke,4 streamed Q8
+cases,resident numerical oracle,2-case traced and10-case full BF16 attention
+through262144 cells,and2869-check snapshot/restore suite. All close normally
+with no fresh fault. These are component results,not model/decode qualification.
+The prospective v3 model diagnostic explicitly sets`--prompt-cache-every 0`
+while retaining`--prompt-cache 6` and live conversation parking. The default
+16384 interval requires chunk-major intermediate snapshots and otherwise
+refuses dedicated layer-major execution. The checkpoint-enabled production
+fallback still needs separate handling and qualification before adoption.
+The source audit/review's claimed reused-count defect is a false positive:
+its pinned controller already expects`n` for A+suffix. Preserve that original
+review and correction;do not change request bytes or relabel the old model
+failure. The new protocol and actual model state gates remain pending.
 Detailed closed diagnostic plans and individual historical outcomes recover
 from`95e174255`;the current result retains their original statuses and archive
 references,with the live build/component/model qualifications. Successful model

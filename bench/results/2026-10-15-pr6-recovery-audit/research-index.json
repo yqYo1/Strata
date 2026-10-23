@@ -10240,7 +10240,7 @@
   },
   "explicit_layout_ownership_audit_20261024": {
     "classification": "decision_support",
-    "status": "report_completed_native_review_pending",
+    "status": "review_complete_main_corrected_false_positive_model_pending",
     "schedulable_now": false,
     "source_commit": "fe568c3b5",
     "native_source_commit": "be0d4e35b694783d3a8f0ad1803f0b12c578b76b",
@@ -10264,7 +10264,7 @@
     ],
     "report": "/home/yayoi/orca/workspaces/Strata/sycl/.cache/strata-research/20261024/explicit-layout-ownership-audit/report.md",
     "budget_bytes": 12288,
-    "next_review": "Native Luna-max short digest before actual model execution;retire source audit after corrections and useful model evidence are committed.",
+    "next_review": "After committed controller/protocol and small model state gate;retire consumed source audit once useful findings/corrections are preserved.",
     "run": "run_12fa11537288",
     "terminal": "term_7f6c26ce-57ce-4765-9b2b-a10ca8c4957a",
     "incarnation": "1be3a103-cce0-4280-bfab-2f8bd9dfdba8",
@@ -10279,6 +10279,21 @@
     "worker_done_accepted": true,
     "terminal_closed_verified": true,
     "delivery_processed_and_acked": true,
-    "native_review": ".cache/strata-research/20261024/explicit-layout-ownership-audit/native-review.json"
+    "native_review": ".cache/strata-research/20261024/explicit-layout-ownership-audit/native-review.json",
+    "native_review_sha256": "22005b504e0f3d54265f4b6b248a6831675bc88dc989a3b9635df5c62fad4f5e",
+    "native_review_bytes": 6086,
+    "main_corrections": [
+      {
+        "finding": "Review claims third A+suffix expects reused=0",
+        "status": "false_positive",
+        "evidence": "Pinned check_model_restore.py SHA2dfc1a6604df4c1dce7d058020a1723b47775cacffde15cd9c127b1e1ff07b79 already returns third tuple (a+suffix,1,n);prepare and interact both consume that n. Original review is preserved;no request/wire change or hash refresh is justified."
+      },
+      {
+        "finding": "Intermediate prefix checkpoints conflict with dedicated long pass",
+        "status": "prospective_controller_fix",
+        "evidence": "generate.cpp defaults prompt_cache_every16384 and sets requires_prefix_checkpoints when prompt_cache>0/every>0;layer_major.inc disables window_on for such callbacks. Set diagnostic prompt-cache-every0 with prompt-cache6/live parking retained. Checkpoint-enabled production fallback remains unqualified and needs separate handling before adoption."
+      }
+    ],
+    "accepted_scope": "No source-level stage-lifetime/counter-carve defect identified;short tail uses actual capacity;short-read0 supplies batched callbacks. Source review only,not model/state/performance qualification."
   }
 }
