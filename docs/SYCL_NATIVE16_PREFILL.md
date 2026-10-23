@@ -933,8 +933,12 @@ use eight4096-row chunks,and reentry reuses16384 positions before reading33 new
 tokens. All1256 payloads/publications match after each request. Snapshot readback
 checks the parked32769-position live image before rewinding its running state;
 this does not independently byte-compare the shorter16384-position checkpoint.
-Near-cap and nonaligned RESTORE model gates remain pending;decode performance
-is still unqualified. The current candidate's reported free bytes
+The current near-cap model gate also passes with normal exit0 and no fresh fault:
+262120 input tokens,262119 batched rows in32 chunks per QSA layer,and16 generated
+tokens commit position262136 through5 verifier windows and12 accepted drafts.
+All1256 payloads/publications match,and538918720 BF16-prefix bytes are admitted.
+Nonaligned long RESTORE remains pending;decode performance is still unqualified.
+The current candidate's reported free bytes
 after the small test's three cache refills are2,287,861,760/116,117,504/46,448,640;
 the checkpoint process reports155,095,040/15,425,536/13,983,744.
 Their owner attribution is unresolved;preserve these admission observations
