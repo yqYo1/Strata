@@ -21,11 +21,11 @@ import measurement_owner as supervision
 P, B = build.P, build.B
 ROOT = B / 'full-context-native-v1'
 RESULT = source.RESULT
-KEY = 'native_prefill_layout_v2_build'
-PREDECESSOR_KEY = 'native_prefill_layout_build'
+KEY = 'native_prefill_layout_v3_build'
+PREDECESSOR_KEY = 'native_prefill_layout_v2_build'
 MACRO = '-DSTRATA_SYCL_FULL_CONTEXT_DIAGNOSTIC=1'
 PREFIXES = ['CMakeLists.txt', 'cmake', 'include', 'src', 'tests', 'third_party',
-            'bench/sycl', 'tools/sycl/build_full_context.py', *source.INPUTS]
+            'bench/sycl', 'tools/sycl/build_full_context.py','tools/sycl/check_layout_source.py', *source.INPUTS]
 SDK = B / 'unitrace-warmed-graph-window-v1/compiler-inputs.json'
 SDK_SHA = '436cedc9dbd41810cd882e9040a129e6d8b7dbebb98806b00c4f2950b1dc1705'
 
@@ -112,6 +112,13 @@ TARGETS = ('strata', 'sycl_native16_qsa_streamed_test', 'sycl_native16_qsa_test'
 
 def prepare(container):
     guards.require(KEY not in container, 'fresh streamed build only; inspect the previous attempt')
+    host=container['prefill_layout_source_v3']
+    guards.require(host['stage']=='closed' and host['passed'] and host['complete'] and
+        host['ownership_closed'] and not host['active'] and not host['GPU_executed'] and
+        host['bounds_cases']==134 and host['kv_hash_cases']==9459,'closed exact hash-order source gate required')
+    import check_layout_source
+    guards.require(check_layout_source.pins(host['source_commit'])==host['input_sha256'],
+        'host-qualified source changed before rebuild')
     previous = json.loads(ENGINE_RECORD.read_text())
     guards.require(summary(previous)==container[PREDECESSOR_KEY], 'predecessor receipt differs from committed outcome')
     guards.require(previous['stage']=='closed_link' and previous['passed'] and previous['complete'] and
@@ -125,6 +132,9 @@ def prepare(container):
         recovered={n:hashlib.sha256(raw).hexdigest() for n,raw in
             build.blobs(Path(item['root']),item['revision'],item['source_sha256'])}
         guards.require(recovered==item['source_sha256'], 'predecessor source unrecoverable')
+    remote=build.git(P,'ls-remote','origin','refs/heads/feature/sycl').decode().split()
+    guards.require(len(remote)==2 and remote[1]=='refs/heads/feature/sycl','missing retained remote ref')
+    build.git(P,'merge-base','--is-ancestor',previous['source_commit'],remote[0])
     full,reference=source.baseline()
     project=build.pin(P,PREFIXES)
     dependencies=[build.pin(Path(d['root']),['.']) for d in full['dependencies']]
@@ -138,13 +148,16 @@ def prepare(container):
         '-DCMAKE_CXX_FLAGS:STRING='+MACRO in argv,'unexpected diagnostic configuration')
     record=dict(source_commit=project['revision'],project=project,dependencies=dependencies,
         selected_original=reference,compiler=compiler,sdk=sdk(),tools=previous['tools'],
+        host_source_gate=dict(result_key='prefill_layout_source_v3',source_commit=host['source_commit'],
+            input_sha256=host['input_sha256'],bounds_cases=134,kv_hash_cases=9459),
         configure_argv=argv,environment=previous['environment'],external_inputs=mkl_inputs(),
         generated_expected=generated,targets=list(TARGETS),
         predecessor=dict(source_commit=previous['source_commit'],binary=previous['binary'],
             receipt_sha256=build.digest(ENGINE_RECORD),inputs_recovered=True,
+            retained_remote_ref='refs/heads/feature/sycl',retained_remote_sha=remote[0],source_reachable=True,
             source_groups=[dict(revision=s['revision'],count=s['count'],aggregate_sha256=s['aggregate_sha256'])
                 for s in [previous['project'],*previous['dependencies']]],
-            decision='Replace only the unselected b9cd diagnostic after exact input/recipe recovery. Its host and traced layout-smoke gates passed;remaining component/model gates are unrun. Correct only the serve short-layout capacity predicate to price the actual initial tail (not just its128-slot floor). No library/kernel/fixture source changes;preserve individual evidence and retain selected6e40 engine+12fixtures.'),
+            decision='Replace only unselected be0d diagnostic after exact original input/recipe recovery and pushed-source reachability. Its9 component gates and protocol/small/near-cap model cases passed;model cohort closed incomplete before long RESTORE. Align checkpoint layout initialization/pricing/dispatch and coalesce diagnostic complete-page hash copies after134+9459 host checks. No library/kernel or six native fixture source changes;prove exact fixture/input/runtime matches before any component evidence reuse. Preserve selected6e40 engine+12fixtures.'),
         command=['/usr/bin/cmake','--build',str(ROOT/'build'),'--target',*TARGETS,'-j','4'],
         dependency_command=['/usr/bin/ninja','-C',str(ROOT/'build'),'-t','deps'],
         stage='prepared_streamed',passed=False,complete=False,active=False,ownership_closed=True,
@@ -178,7 +191,7 @@ def rebuild(container):
     def persist():
         record['active']=bool(owner and owner.active is not None)
         write(ENGINE_RECORD,dict(record,commands=owner.commands if owner else []))
-    owner=supervision.Owner(ROOT/'owned-prefill-layout-v2',persist)
+    owner=supervision.Owner(ROOT/'owned-prefill-layout-v3',persist)
     record['stage']='building_streamed';persist()
     try:
         b=record['budgets']

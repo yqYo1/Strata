@@ -898,8 +898,13 @@ no-loan participants before masking. The long no-checkpoint route still requires
 8192 rows and the unchanged decode-cache tail. The diagnostic hash now describes
 coalesced complete-page ranges with the original byte order and checked-copy
 consumer. Both changes are Main-authored Strata code;no external application
-source was used. A committed CPU byte-order/bounds gate precedes the new native
-build and model qualification;neither change is adopted by this source edit. Reported free bytes
+source was used. The committed CPU gate passes all134 existing capacity bounds and9,459
+hash-span checks,including every interval of19 cells over3 page sizes,3 head
+counts and5 row widths against the original byte-order oracle. Full262144-page
+ranges emit one span;consumer failure and invalid/overflow domains refuse.
+GNU C++17 compilation and the fixture close normally with135 actual include
+inputs pinned. Native build/model qualification remains pending;this is no
+inference throughput or adoption result. Reported free bytes
 after the small test's three cache refills are2,287,865,856/120,377,344/50,708,480.
 Their owner attribution is unresolved;preserve these admission observations
 for the next long reentry,without claiming physical residency or decode impact.
