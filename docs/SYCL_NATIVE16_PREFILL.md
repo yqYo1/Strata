@@ -890,6 +890,12 @@ an observed diagnostic duration,not clean inference throughput. The state hash
 walks tiny paged KV slices through synchronous copy wrappers;coalesce full
 pages in the same hash order before the next large diagnostic. Exact256K fill
 and long nonzero-prefix RESTORE remain unqualified on this changed layout.
+The v3 cohort closes incomplete before those source corrections;its three
+individual passes remain passes and long RESTORE remains UNRUN. The next
+candidate needs new committed source/build and model gates. Reported free bytes
+after the small test's three cache refills are2,287,865,856/120,377,344/50,708,480.
+Their owner attribution is unresolved;preserve these admission observations
+for the next long reentry,without claiming physical residency or decode impact.
 Detailed closed diagnostic plans and individual historical outcomes recover
 from`95e174255`;the current result retains their original statuses and archive
 references,with the live build/component/model qualifications. Successful model
