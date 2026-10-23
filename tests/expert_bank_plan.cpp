@@ -90,6 +90,38 @@ int main() try {
         uint64_t(1)<<63,Free,Other,Headroom,4ull<<30,-1,LayerMajorResidualDtype::bf16,384,true); });
     std::puts("expert_bank_capacity full117488=GPU partial_request=preserved fallback262144=original exact_boundary=PASS short_tail_fallback_cases=3 single_alloc_limit_cases=4");
 
+    // Observed standalone262144-context budget. Materializing both BF16 K/V
+    // tensors must not prevent the existing full-bank host-tail path. Nothing
+    // here permits shrinking decode placement or the512MiB safety headroom.
+    constexpr uint64_t ActualFree = 2039808000, FullPrefix = 538968064;
+    auto prefix_plan = [&](int64_t rows, uint64_t prefix, uint64_t free, int64_t request=-1) {
+        return ExpertBankPrefixPlan::make(prefix, [&](uint64_t admitted) {
+            return ExpertBankPlan::make(rows,8192,10240,Stride,free,admitted,Headroom,
+                10132807680ull,request,LayerMajorResidualDtype::bf16,384,true);
+        });
+    };
+    const auto short_prefix = prefix_plan(16384,16384*2056ull,ActualFree);
+    need(short_prefix.prefix_bytes==16384*2056ull && short_prefix.bank.staged());
+    need(short_prefix.bank.residual.gpu_rows==16384);
+    for (int64_t rows : {262143,262144}) {
+        const auto full_prefix = prefix_plan(rows,FullPrefix,ActualFree);
+        need(full_prefix.prefix_bytes==0 && !full_prefix.bank.staged() && full_prefix.bank.slots==512);
+        need(full_prefix.bank.residual.gpu_rows==0 && full_prefix.bank.residual.host_bytes==uint64_t(rows)*20480);
+    }
+    constexpr uint64_t Minimum = 512*Stride+Headroom;
+    need(prefix_plan(262143,FullPrefix,Minimum+FullPrefix).prefix_bytes==FullPrefix);
+    need(prefix_plan(262143,FullPrefix,Minimum+FullPrefix-1).prefix_bytes==0);
+    need(prefix_plan(262143,FullPrefix,Minimum).prefix_bytes==0);
+    unsigned budget_rejected=0;
+    try { (void)prefix_plan(262143,FullPrefix,Minimum-1); }
+    catch (const ExpertBankBudgetError&) { ++budget_rejected; }
+    try { (void)prefix_plan(16384,16384*2056ull,Free,16385); }
+    catch (const std::invalid_argument&) { ++budget_rejected; }
+    try { (void)prefix_plan(262143,std::numeric_limits<uint64_t>::max(),ActualFree); }
+    catch (const std::overflow_error&) { ++budget_rejected; }
+    need(budget_rejected==3);
+    std::puts("expert_bank_prefix_budget short_kept=PASS full262143_host_tail=PASS full262144_host_tail=PASS exact=PASS invalid=PASS");
+
     // A host oracle models complete slot contents; accepted enqueue updates it.
     // Two ascending scans must retain three permanent hits without scan eviction.
     ExpertBankSlots slots(4);

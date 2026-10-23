@@ -7,6 +7,12 @@
 
 namespace strata::prefill::detail {
 
+// Distinguish a bank-capacity refusal from invalid geometry/options. A caller
+// may change its optional prefill workspace only for this capacity failure.
+struct ExpertBankBudgetError : std::invalid_argument {
+    using std::invalid_argument::invalid_argument;
+};
+
 struct ExpertBankPlan {
     static constexpr int64_t experts = 512;
     static constexpr int64_t window_rows = 81920; // mode10, chunk8192
@@ -62,13 +68,29 @@ struct ExpertBankPlan {
         p.device_bytes = p.host_upload_bytes;
         const uint64_t need = layer_major_add(fixed, p.device_bytes);
         if (need > free_gpu || p.device_bytes > max_device_alloc_bytes)
-            throw std::invalid_argument("original expert bank exceeds free GPU budget with headroom");
+            throw ExpertBankBudgetError("original expert bank exceeds free GPU budget with headroom");
         p.residual = LayerMajorResidualPlan::make(n, chunk, width,
             std::min(free_gpu - need, max_device_alloc_bytes), requested_rows, dtype);
         return p;
     }
 
     bool staged() const { return selection == Selection::staged; }
+};
+
+// Materialized BF16 K/V is an optional prefill acceleration. When its bank
+// plan cannot fit, try the existing on-demand GPU BF16 attention instead.
+// The factory must preserve all non-prefix reservations and headroom. Invalid
+// configuration/overflow and a second capacity refusal propagate unchanged.
+struct ExpertBankPrefixPlan {
+    ExpertBankPlan bank;
+    uint64_t prefix_bytes;
+    template<class Factory> static ExpertBankPrefixPlan make(uint64_t prefix, Factory factory) {
+        try { return {factory(prefix), prefix}; }
+        catch (const ExpertBankBudgetError&) {
+            if (!prefix) throw;
+            return {factory(0), 0};
+        }
+    }
 };
 
 // A private view of an existing allocation; no allocation, ownership or drain.

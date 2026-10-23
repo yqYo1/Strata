@@ -21,7 +21,8 @@ import measurement_owner as supervision
 P, B = build.P, build.B
 ROOT = B / 'full-context-native-v1'
 RESULT = source.RESULT
-KEY = 'native_streamed_build'
+KEY = 'native_budget_build'
+PREDECESSOR_KEY = 'native_streamed_build'
 MACRO = '-DSTRATA_SYCL_FULL_CONTEXT_DIAGNOSTIC=1'
 PREFIXES = ['CMakeLists.txt', 'cmake', 'include', 'src', 'tests', 'third_party',
             'bench/sycl', 'tools/sycl/build_full_context.py', *source.INPUTS]
@@ -104,15 +105,19 @@ def actual_dependency_closure(record, output):
 
 ENGINE_KEY = KEY
 ENGINE_RECORD = ROOT / 'engine-record.json'
-TARGETS = ('strata', 'sycl_native16_qsa_streamed_test', 'sycl_native16_qsa_test')
+TARGETS = ('strata', 'sycl_native16_qsa_streamed_test', 'sycl_native16_qsa_test',
+           'sycl_qsa_bf16_attention_test', 'prefill_expert_bank_plan_test')
 
 
 def prepare(container):
     guards.require(KEY not in container, 'fresh streamed build only; inspect the previous attempt')
     previous = json.loads(ENGINE_RECORD.read_text())
+    guards.require(summary(previous)==container[PREDECESSOR_KEY], 'predecessor receipt differs from committed outcome')
     guards.require(previous['stage']=='closed_link' and previous['passed'] and previous['complete'] and
         previous['ownership_closed'] and not previous['active'], 'closed predecessor required')
     guards.require(build.digest(previous['binary']['path'])==previous['binary']['sha256'], 'predecessor bytes differ')
+    for fixture in previous['fixtures'].values():
+        guards.require(build.digest(fixture['path'])==fixture['sha256'], 'predecessor fixture differs')
     # Recover the actual original inputs before overwriting this unselected
     # generation. Current native edits require a NEW build, never hash refresh.
     for item in [previous['project'], *previous['dependencies']]:
@@ -148,6 +153,8 @@ def prepare(container):
         criteria='Exact committed native/controller/compiler/dependency/SDK/MKL/generated inputs;owned configure/build/dependency census exit0. Engine and both same-build fixtures hashed;actual dependency closure has zero uncovered files and only predeclared generated headers. No GPU execution or selection.',
         retention='Reuse the existing unselected comparison build directory;no third engine generation. Retain original selected13 assets. New generation is only for imminent traced streamed-Q8,full component/resident-oracle and capacity-model gates;retire normal build output after closure.')
     write(ENGINE_RECORD,record);container[KEY]=summary(record)
+    container[PREDECESSOR_KEY]['superseded_by']=KEY
+    container[PREDECESSOR_KEY]['original_binary_retired_on_rebuild']=True
     container['native_engine_build']['superseded_by']=KEY
     container['native_engine_build']['original_binary_retired_on_rebuild']=True
     write(RESULT,container)
@@ -170,7 +177,7 @@ def rebuild(container):
     def persist():
         record['active']=bool(owner and owner.active is not None)
         write(ENGINE_RECORD,dict(record,commands=owner.commands if owner else []))
-    owner=supervision.Owner(ROOT/'owned-streamed',persist)
+    owner=supervision.Owner(ROOT/'owned-budget',persist)
     record['stage']='building_streamed';persist()
     try:
         b=record['budgets']

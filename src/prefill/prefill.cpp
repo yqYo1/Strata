@@ -623,6 +623,7 @@ struct Prefill::Impl {
 #if defined(STRATA_ENABLE_SYCL)
     MoeWindowContext* moe_window = nullptr; // borrowed through checked layer-major lease
     bool native16_active = false;
+    bool qsa_prefix_budget_fallback = false; // long-prefill lease only; never decode policy
     GdnChunkBuffers gdn_chunk;
     strata::kernels::QsaBf16PackedScratch qsa_prefix; // borrowed only during the long-prefill lease
     qsa_score_gemm::Scratch score_gemm; // attn_h arena + independent sticky status, long lease only
@@ -3021,7 +3022,8 @@ bool Prefill::run_impl(const int64_t* tokens, int64_t n, int64_t pos0, std::stri
                     bool matrix_used = false;
 #if defined(STRATA_ENABLE_SYCL)
                     if (typed_qsa) {
-                        const auto arithmetic = native16::qsa::attention_math();
+                        const auto arithmetic = m.layer_major_active && m.qsa_prefix_budget_fallback
+                            ? native16::qsa::AttentionMath::bf16 : native16::qsa::attention_math();
                         const strata::kernels::QsaPromptBf16Bounds attention_bounds{
                             st.n_pages, staged ? st.n_pages : st.n_slots};
                         if (arithmetic == native16::qsa::AttentionMath::bf16_prefix_subgroup)

@@ -63,6 +63,8 @@ void append_q8(const uint16_t* k, const uint16_t* v, int64_t tokens,
 // tensor, allocation or CPU math. Every destination is checked before enqueue;
 // all12 output spans must be disjoint and owners/table immutable through drain.
 // Host pools must come from this runtime's cudaHostAlloc compatibility owner.
+// Caller owns an injective resident mapping for simultaneously written cells;
+// concurrent aliases or map mutation are invalid, as for resident append.
 // No enqueue; used for every layer before request execution as well as append.
 void validate_streamed_q8_storage(const Q8WritePools& resident,
                                  const Q8LinearPools& stage, const Q8LinearPools& host,

@@ -711,8 +711,7 @@ authoritative mapped host copy and valid resident slots. All ten typed attention
 variants use the full stage's actual page count. Registered host/device spans,
 non-overlap and queue domains are checked before enqueue. Resident-map ownership
 requires unique valid slot assignments for simultaneously written pages;the
-streamed API comment still needs that explicit precondition at the next source
-revision. The resident quantizer body,decode readers and1256-slot placement
+streamed API now states that explicit precondition. The resident quantizer body,decode readers and1256-slot placement
 are unchanged;this source boundary does not prove decode speed preservation.
 
 Stage-prefix reuse is local to one layer-major invocation,matching the actual
@@ -734,8 +733,17 @@ the admitted MoE window uses mode10. Each QSA layer publishes on the GPU with
 zero requested prefix H2D bytes at fresh position0. Prompt owners release,
 dense/MTP owners restore,and the process exits normally without a fresh fault.
 This observed first-use synthetic diagnostic is speed-ineligible and four
-output tokens do not prove decode preservation. The predeclared262144 full-fill
-gate,nonzero-prefix RESTORE and clean matched speed comparisons remain open.
+output tokens do not prove decode preservation. The262144 full-fill gate
+refuses before layer math:the fallback requires a full512-expert bank of
+1363148800 bytes,while the optional BF16 K/V prefix reserves538968064 bytes
+and512MiB headroom must remain. Only2039808000 bytes are free. Dense/MTP owners
+restore and the process exits1 without a fresh fault;the failed gate stays
+failed. A prefill-only budget selector now tries the existing on-demand GPU
+BF16 attention when only the materialized prefix prevents bank admission.
+It preserves invalid-option/overflow/headroom refusals,keeps the short-input
+prefix when it fits,and restores its local selection with the prefill lease.
+This new source awaits its own build,CPU budget,bounded attention and model
+gates. Nonzero-prefix RESTORE and clean matched speed comparisons remain open.
 
 Remaining model gates are repeated phase-preserving adoption evidence,
 agent-session and task quality, full physical262144 tokens including the final

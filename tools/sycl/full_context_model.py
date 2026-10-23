@@ -17,8 +17,8 @@ sys.dont_write_bytecode = True
 import check_full_context as gate
 
 P, B, RESULT = gate.P, gate.B, gate.RESULT
-ROOT = B / 'full-context-model-v4'
-KEY = 'model_capacity_v4'
+ROOT = B / 'full-context-model-v5'
+KEY = 'model_capacity_v5'
 DECODE = P / 'bench/results/2026-10-15-pr6-recovery-audit/canonical-restore-decode-current.json'
 BUILD = P / 'bench/results/2026-10-15-pr6-recovery-audit/native-gdn-engine-build.json'
 DECODE_ARCHIVE = dict(commit='a8af3d7fa96a7713f2e516d2da3d7410956be015',
@@ -103,10 +103,10 @@ def prepare(container):
     smoke=container['device_smoke_v2']
     require(smoke['passed'] and smoke['complete'] and smoke['ownership_closed'] and not smoke['active'] and
         smoke['GPU_work_submitted'] and smoke['fresh_faults']==[],'closed traced device gate required')
-    component=container['streamed_q8_components']
+    component=container['budget_qsa_components']
     require(component['passed'] and component['complete'] and component['ownership_closed'] and not component['active'] and
         all(component['outcomes'][k]['passed'] and component['outcomes'][k]['fresh_faults']==[]
-            for k in ('smoke','component','resident')),'closed same-build streamed/resident QSA gates required')
+            for k in ('host','smoke','component','resident','attention-smoke','attention-component')),'closed same-build streamed/resident QSA gates required')
     engine=gate.engine(); _,original=gate.native.source.baseline(); base=setup()
     require(component['native_source_commit']==engine['source_commit'] and component['binary']==engine['binary'],
         'component qualification belongs to another native generation')
@@ -154,6 +154,8 @@ def prepare(container):
         cases[name]=dict(command=command,input_tokens=n,output_tokens=outputs,
             streamed_qsa=dict(layers=list(range(3,48,4)),chunks_per_layer=(n-2)//8192+1,
                 rows_per_layer=n-1,pos0=0,prefix_H2D_requested_bytes=0),
+            qsa_budget=dict(requested_prefix_bytes=(((n-1+15)//16)*16)*2056,
+                fallback_bf16_on_the_fly=int(name=='full')),
             fixture=dict(path=str(path),bytes=len(data),sha256=hashlib.sha256(data).hexdigest()),
             wall_s=900 if name=='short' else 2400)
     record=dict(stage='prepared',source_commit=revision,input_sha256=pins,binary=engine['binary'],
@@ -167,7 +169,7 @@ def prepare(container):
         budgets=dict(cpu_s=4800,rss_bytes=104<<30,text_bytes=16<<20,file_bytes=16<<20,total_bytes=512<<20,
             reason='Two cases have at most64MiB combined raw stdout/stderr;512MiB total additionally bounds private compiler JIT/cache/receipts,all retired after their consumer closes.'),
         question='Can the independently built diagnostic execute the unchanged model route,then allocate/process all262144 physical input slots with fixed1256 decode slots and131072 resident INT8 KV? Host KV tail is allowed and must not be called all-VRAM residency.',
-        gate='Run short once with16384 batched rows(two8192 chunks)+final prompt row and4 output IDs. The earlier one-chunk case exited0 but failed its declared layer-major route gate;it does not advance. Only after the new committed normal/validated/fault-free short closure run full once:262143 batched rows+final T1,zero outputs,exact checked final-commit marker. Require all12 actual streamed QSA layer traces,each with the complete batched row/chunk extent,checked drain,GPU_Q8 publication and zero requested prefix H2D bytes for fresh pos0=0;this is not measured PCIe traffic. Require BF16 residual allocation conservation,configured MoE10 with effective2 for no accumulation or10 for admitted accumulation,checked prompt release,unchanged sources/models/boot/driver and owned normal exit. Server-only scratch lease is0;the existing standalone lend/refill path remains enabled. This is a capacity check,not preservation of the serve allocation route. Stop first failure;no retry or speed decision.',
+        gate='Run short once with16384 batched rows(two8192 chunks)+final prompt row and4 output IDs. The earlier one-chunk case exited0 but failed its declared layer-major route gate;it does not advance. Only after the new committed normal/validated/fault-free short closure run full once:262143 batched rows+final T1,zero outputs,exact checked final-commit marker. Require short to retain its materialized BF16 prefix and full to select the existing on-demand BF16 attention after a prefix-bank capacity refusal,with512MiB headroom and full residual byte conservation;decode layout stays fixed. Require all12 actual streamed QSA layer traces,each with the complete batched row/chunk extent,checked drain,GPU_Q8 publication and zero requested prefix H2D bytes for fresh pos0=0;this is not measured PCIe traffic. Require BF16 residual allocation conservation,configured MoE10 with effective2 for no accumulation or10 for admitted accumulation,checked prompt release,unchanged sources/models/boot/driver and owned normal exit. Server-only scratch lease is0;the existing standalone lend/refill path remains enabled. This is a capacity check,not preservation of the serve allocation route. Stop first failure;no retry or speed decision.',
         retention='Keep exact plans,model hashes,individual completion/activation/fault/allocation results. Retire successful traces/JIT after verification. Diagnostic engine and full IDs remain only through imminent near-cap/RESTORE/owner checks;original selected13 assets stay untouched.',
         next_gate='Near-cap/RESTORE/fault-owner,model/task and repeated decode-preservation comparisons. Full synthetic fill alone is not general physical-context qualification or throughput evidence.')
     write(ROOT/'record.json',record);container[KEY]=compact(record);write(RESULT,container)
@@ -214,6 +216,12 @@ def evidence(stdout,stderr,record,case,pid):
     bank=re.search(r'^strata MoE expert bank: .*allocation_limit_bytes=(\d+)',body,re.M)
     require(bank is not None,'actual allocation limit missing')
     ledger['device_max_allocation_bytes']=int(bank[1])
+    budget=re.search(r'^strata prefill QSA budget: requested_prefix_bytes=(\d+) admitted_prefix_bytes=(\d+) fallback_bf16_on_the_fly=(0|1) free_gpu_bytes=(\d+) headroom_bytes=(\d+)$',body,re.M)
+    expected_budget=case['qsa_budget']
+    require(budget is not None and int(budget[1])==expected_budget['requested_prefix_bytes'] and
+        int(budget[3])==expected_budget['fallback_bf16_on_the_fly'] and int(budget[5])==536870912 and
+        int(budget[2])==(0 if int(budget[3]) else int(budget[1])), 'actual prefill prefix budget selection differs')
+    ledger['qsa_prefix_bytes']=int(budget[2]);ledger['qsa_on_the_fly_budget_fallback']=bool(int(budget[3]))
     qsa_pattern=(r'^strata prefill QSA16 streamed: layer=(\d+) chunks=(\d+) rows=(\d+) pos0=(\d+) '
         r'prefix_H2D_requested_bytes=(\d+) host_publication=GPU_Q8 stage=full_logical_layer checked_drain=PASS$')
     qsa_rows=[tuple(map(int,m.groups())) for m in re.finditer(qsa_pattern,body,re.M)]

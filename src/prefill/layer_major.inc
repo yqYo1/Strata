@@ -99,11 +99,11 @@ bool Prefill::run_layer_major(const int64_t* tokens, int64_t n, int64_t pos0, st
         err = "prefill score GEMM: workspace exceeds the real attn_h reservation"; return false;
     }
     const bool qsa16_on = native16::qsa::requested();
-    const auto qsa_math = native16::qsa::attention_math();
+    auto qsa_math = native16::qsa::attention_math();
     if (qsa_math != native16::qsa::AttentionMath::existing && !qsa16_on) {
         err = "prefill BF16 QSA math requires STRATA_SYCL_PREFILL_NATIVE16_QSA=1"; return false;
     }
-    const bool qsa_prefix_on = qsa_math == native16::qsa::AttentionMath::bf16_prefix ||
+    bool qsa_prefix_on = qsa_math == native16::qsa::AttentionMath::bf16_prefix ||
         qsa_math == native16::qsa::AttentionMath::bf16_prefix_optimized ||
         qsa_math == native16::qsa::AttentionMath::bf16_prefix_qcache ||
         qsa_math == native16::qsa::AttentionMath::bf16_prefix_kvec4 ||
@@ -298,15 +298,15 @@ bool Prefill::run_layer_major(const int64_t* tokens, int64_t n, int64_t pos0, st
     const auto qsa_page = strata::kernels::qsa_real_shapes().page_size;
     const uint64_t prefix_cells = detail::layer_major_mul(
         (pos0 + n + qsa_page - 1) / qsa_page, qsa_page);
-    const uint64_t prefix_tensor_bytes = qsa_prefix_on ?
+    uint64_t prefix_tensor_bytes = qsa_prefix_on ?
         detail::layer_major_mul(detail::layer_major_mul(prefix_cells, 2 * 256), 2) : 0;
     const uint64_t prefix_flag_bytes = qsa_prefix_on ? detail::layer_major_mul(prefix_cells, 2 * 4) : 0;
-    const uint64_t prefix_bytes = detail::layer_major_add(
+    uint64_t prefix_bytes = detail::layer_major_add(
         detail::layer_major_mul(prefix_tensor_bytes, 2), prefix_flag_bytes);
     // Half/head scratch borrows attn_h only BEFORE gate overwrites it. Qf is
     // still a gate INPUT and must not be reused. Only sticky status is additional.
     const uint64_t score_status_bytes = score_gemm_on ? 256 : 0;
-    const uint64_t other_reserved = detail::layer_major_add(prefix_bytes, score_status_bytes);
+    uint64_t other_reserved = detail::layer_major_add(prefix_bytes, score_status_bytes);
     size_t free_gpu = 0, total_gpu = 0;
     const cudaError_t memory_status = cudaMemGetInfo(&free_gpu, &total_gpu);
     if (memory_status != cudaSuccess || free_gpu > total_gpu) {
@@ -317,11 +317,24 @@ bool Prefill::run_layer_major(const int64_t* tokens, int64_t n, int64_t pos0, st
     }
     const auto max_alloc = sycl_backend::queue_for(m.cs).get_device()
         .get_info<sycl::info::device::max_mem_alloc_size>();
-    const auto bank_plan = detail::ExpertBankPlan::make(n, m.T, D, stride, free_gpu,
-        other_reserved, gpu_headroom, max_alloc,
-        detail::layer_major_requested_rows(std::getenv("STRATA_PREFILL_LAYER_MAJOR_R_GPU")),
-        residual_dtype, requested_slots,
-        window_on && window_requested == 10 && native16_on && scratch_mixed_on);
+    const auto prefix_plan = detail::ExpertBankPrefixPlan::make(prefix_bytes, [&](uint64_t admitted_prefix) {
+        return detail::ExpertBankPlan::make(n, m.T, D, stride, free_gpu,
+            detail::layer_major_add(admitted_prefix, score_status_bytes), gpu_headroom, max_alloc,
+            detail::layer_major_requested_rows(std::getenv("STRATA_PREFILL_LAYER_MAJOR_R_GPU")),
+            residual_dtype, requested_slots,
+            window_on && window_requested == 10 && native16_on && scratch_mixed_on);
+    });
+    const bool prefix_budget_fallback = prefix_bytes && !prefix_plan.prefix_bytes;
+    std::fprintf(stderr, "strata prefill QSA budget: requested_prefix_bytes=%llu admitted_prefix_bytes=%llu "
+        "fallback_bf16_on_the_fly=%d free_gpu_bytes=%llu headroom_bytes=%llu\n",
+        (unsigned long long)prefix_bytes, (unsigned long long)prefix_plan.prefix_bytes,
+        int(prefix_budget_fallback), (unsigned long long)free_gpu, (unsigned long long)gpu_headroom);
+    if (prefix_budget_fallback) {
+        qsa_math = native16::qsa::AttentionMath::bf16;
+        qsa_prefix_on = false; prefix_tensor_bytes = 0; prefix_bytes = 0;
+        other_reserved = score_status_bytes;
+    }
+    const auto& bank_plan = prefix_plan.bank;
     const auto& plan = bank_plan.residual;
     const char* packed_option = std::getenv("STRATA_SYCL_PREFILL_EXPERT_BANK_PACKED");
     if (packed_option && std::strcmp(packed_option, "0") != 0 && std::strcmp(packed_option, "1") != 0) {
@@ -552,6 +565,7 @@ bool Prefill::run_layer_major(const int64_t* tokens, int64_t n, int64_t pos0, st
         detail::LayerMajorResidualPlan plan;
         decltype(on_chunk) chunk; decltype(on_stage_chunk) stage;
         bool native16_on; decltype(m.on_chunk16) chunk16; MoeWindowContext* window;
+        bool qsa_fallback;
         ~Restore() noexcept {
             m.native_dense_overlay = overlay;
             p.stage_lb_ = lb; p.stage_le_ = le; p.hand_in_ = input;
@@ -562,12 +576,13 @@ bool Prefill::run_layer_major(const int64_t* tokens, int64_t n, int64_t pos0, st
             m.layer_major_fp16_stage = fp16_stage; m.layer_major_residual = plan;
             p.on_chunk = std::move(chunk); p.on_stage_chunk = std::move(stage);
             m.native16_active = native16_on; m.on_chunk16 = std::move(chunk16); m.moe_window = window;
+            m.qsa_prefix_budget_fallback = qsa_fallback;
         }
     } restore{*this, m, m.native_dense_overlay, stage_lb_, stage_le_, hand_in_, m.cache, m.host_res,
               m.layer26_phase_audit, m.layer_major_audit, m.layer_major_audit_copy,
               m.layer_major_active, m.layer_major_gpu_input, m.layer_major_host_input,
               m.layer_major_fp16_stage, m.layer_major_residual, on_chunk, on_stage_chunk,
-              m.native16_active, m.on_chunk16, m.moe_window};
+              m.native16_active, m.on_chunk16, m.moe_window, m.qsa_prefix_budget_fallback};
     cudaError_t compute_drain = cudaSuccess, copy_drain = cudaSuccess;
     auto drain = [&]() noexcept {
         const auto profile_drain_start = profile ? LmProfile::Clock::now() : LmProfile::Clock::time_point{};
@@ -695,6 +710,7 @@ bool Prefill::run_layer_major(const int64_t* tokens, int64_t n, int64_t pos0, st
     }
     m.layer_major_fp16_stage = reinterpret_cast<uint16_t*>(fp16_stage.get());
     m.layer_major_active = true;
+    m.qsa_prefix_budget_fallback = prefix_budget_fallback;
     m.native16_active = native16_on;
     m.layer_major_residual = plan;
     if (window_context) {
