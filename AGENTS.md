@@ -344,7 +344,9 @@ integration and testing.
   independent merely because it is outside the benchmark source fingerprint.
   Edit research metadata during a run only when its qualification reader
   explicitly checks the consumed committed fields and isolates unrelated rows;
-  otherwise defer the edit until closure. Changes or missing fields in the
+  otherwise defer the edit until closure. Returning one row does not isolate
+  edits if the reader first requires the entire worktree file to equal HEAD;
+  that still freezes the file during edits. Changes or missing fields in the
   actual qualification evidence must still fail admission.
   If an input must change, close the existing run honestly and commit
   a new plan before using it. Never update hashes to disguise a changed arm.

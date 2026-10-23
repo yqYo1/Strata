@@ -1,4833 +1,821 @@
 {
   "stage": "closed",
-  "controller_source_commit": "5432f0a0822ae44be3a8192d12661efe1f78043d",
-  "controller_inputs": {
-    "bench.sh": "45347f22ce9d1fbb54200d3b984d18aef4a62deb366d6dddb2c2b3b2e3cf6dc1",
-    "serve/__init__.py": "7195d862b09ee0c290b6c28d5c1b6e7c5819212328ecbea7cd1422b4a5d4a3d6",
-    "serve/frontend.py": "1eaedd0f69cb59366060bff7fb782b64bcbc1d3721705be4013249730c1644e9",
-    "serve/mcp.py": "659c8e3c7db7d51c939870f843b2350f3efcf2ce8f1ff4b4372db4631e39b77f",
-    "serve/mcp_fake_server.py": "ecc6afa3b44461e120d6901822a1b0db96bddf59324fefe8faa8f2cad48b7157",
-    "serve/responses.py": "ee058a4211208046fbec08483a721c40a09937d8ca903852695eee5735a22f96",
-    "serve/runconfig.py": "08c5ee5af5b599d11c25778725613948b8f6b8b74432aa6b645845e6d145bf31",
-    "serve/server.py": "cafd71f1fcf7b506ed9ac6e2d3f7751049a7c57592022610ed3c054596a47832",
-    "serve/structured.py": "bd45a0ed7993553a208fcc1584dc4f763e97a47e2da739b4897efc025ca03fc4",
-    "serve/telemetry.py": "cc0d0aa9f6a31b1c6e51969ec3c15a4bbee62309bc620e8b02fbc1e3fe04ff1f",
-    "serve/test_detok.py": "45ac9f0125d6ddb626b948ca8cc2a1443fc7e3dd0b057915e5b3b77fec52064a",
-    "serve/test_lifecycle.py": "158225ee33713bfff7b5a900f3ab918de6f8e3182e75e751049ae0994ec8755a",
-    "serve/test_mcp.py": "4f77c5773c49098228795a79ed2faaa1f543ae6a8581c80f08dd5199a4c27d86",
-    "serve/test_monitor.py": "c5d8af4b3e1877afd0a8b044688dfc7f58531cbe7081647a924edced2649eb5f",
-    "serve/test_parallel.py": "c36da8a99d8d64e5f580dbe3603b609fbe10b70b239e7cca62a8e86d4b01ebf1",
-    "serve/test_prompt_encoder.py": "02e7963bc05e07cc7c65b4d4022b98763da76bc613ae82a9c6496983967f08e1",
-    "serve/test_responses.py": "7f4c5b3368aa6b0dec33eb2b4a24a33629c823baa1f12b543287a19994a1e329",
-    "serve/test_runconfig.py": "efa3712dd39d3367d156da606d2155cd2b1a6ec6894dc17b9210a11dde761650",
-    "serve/test_security.py": "71307e07df36c5342eadd7c37281c69be0d78a915ebaf855685308ea62a11ed1",
-    "serve/test_server.py": "650972844ff3c3575df11e143138c824ff44c08907c981c15b95aadef4ce10c2",
-    "serve/test_structured.py": "b978b70c53cf949beaaa5e329a58bd3af873b82338925684826e94ffc60df6cf",
-    "serve/test_vram.py": "40967f4970ff017ae43d58bb08c1df795fb71f3cecaea89ab4cb375c5f537ac6",
-    "serve/test_winjob.py": "4767df49813e519c7e3cac16378f35ab1f2c19843ae83b8b8e8276fa6828c911",
-    "serve/winjob.py": "ca0ab20cee215a3d35ea69470010875af6ac59f54d98f56e6d6717c1adc9eeac",
-    "tools/_paths.py": "31b0f4d27d66b32793074ad1ff00a7a9b5938dc63dca3ffe79a8de5df7b37d27",
-    "tools/ab_engine.py": "694b563dc7d422a61be05523c75d6bfd473530dee257b71ac65517886f918f77",
-    "tools/agent_turns_bench.py": "784c1c36f49017aa47a0d4a4dfc73788800068b5486b31b9cf39784fab59007e",
-    "tools/calibrate.py": "53775e796e638ca76dd35edf3f0509d142051c65a659abec18d52749d637fee8",
-    "tools/canonical_xcheck.py": "ce294518a12ef2a8dcbceb59f386cc37c2e8d5db5c7ea434ca54d720636c89dc",
-    "tools/compare_dense_prefill_nll.py": "0a6f0b621efd74bc94ed2e8bad88be09c7ec9ff92b42560332f6e1f76551931c",
-    "tools/conversation_cache_disabled.py": "910a280a2241eb2cdff720986b3fa0ba72397a9c035de77cde789559ca98be61",
-    "tools/conversation_cache_growth.py": "14a76e3d5834c6910ee95f6bc64eaff788548fcfe99ecb79968a0199de6772fa",
-    "tools/conversation_cache_http_smoke.py": "5d94772b51bd17cec4ee5da01b1fb33703da6d92055f4a399ce5d7b6292e70b4",
-    "tools/conversation_cache_isolation.py": "0c42dccfa59fc657186f5b1bfd56fe67a8f6f2aa6b3b22ea35e81f8ce3fa25ee",
-    "tools/conversation_cache_parity.py": "b85a67810870aa4974e4d542e494e37004bda72117726addc04f0235272e9c8d",
-    "tools/conversation_cache_soak.py": "094eab177a3eeaab5672735d8e7f81ffafec9e269d2bfced5726680c922a66e1",
-    "tools/draft_vocab.py": "3832709d652fafc726a829f9889b39621bb2afadbc9c6af5ccf357d766089e4c",
-    "tools/embd_bf16_pack.py": "98711f070957a1023e7bf60f2accf8df7dfa5b97cfab1c7a231c419644a737e2",
-    "tools/gguf_reader.py": "5ecf739bb3c2f07bc7f889f7f3a455e3dfdb40068409e10781a1a9b2be289b5e",
-    "tools/gguf_writer.py": "cdcef57013ac98134ec410390b8b20afe4e538a6d646a23be648a007f8bc8fc9",
-    "tools/iq_fixture.py": "85343cd5c66ff5b2a2e40be7e24b6c3c6ec9fe6c146c7e0956299832ecd4deef",
-    "tools/iq_pack.py": "0a79ac86f63d9b36371d37643952592770fe5cc2e4e45fff0c63f5c023c6de26",
-    "tools/long_generation_bench.py": "2563031efb923a6e8a937232f0b8f83ef09223a3f4e7aba99fc5b8780913d13a",
-    "tools/make_profile.py": "7afbd361e2afedcc1aa87a0e51b026a6177462c646901f9056a3f81f2224986d",
-    "tools/mtp_fetch.py": "6652d1b5e8f9ce89f56d732e23475300cdb555e996f226259320b68dc15b6339",
-    "tools/mtp_pack.py": "322502ce2356122c72c5958e0775e4bbbf22ab804a31a8a63c783388e04b3894",
-    "tools/mtp_rt.py": "2d128e3a62f8f4810e1837cf4292d0e8473c80c384c2f2e10e2c9bfc4e94a531",
-    "tools/needle_bench.py": "eb55ad42a0846057e20a2f0ca53112502dd78f5407bf8470b82b2a16698945d2",
-    "tools/pack_index.py": "b4af22069a5f8dc699ab45adccc61cf33068ff3fc9d03fc77e788af44c7fecf3",
-    "tools/pack_layer.py": "caf142fdbf0a6d48ae1c0ab02c520997fca28978ccf80254d88c703cbf33192d",
-    "tools/ple_fp8_pack.py": "6f7a2327ffafa435ff88611167362273399fd77a057efc8e669240e3c06a9419",
-    "tools/serve_load.py": "bf97e79f14835cf2260cbd5150d59e910047f7d05fe900bd955f53f2a6f4e75b",
-    "tools/setup_intel.py": "11f839909bb18c03d2525662a01f4e79b82dfbcf0b7d29d7f800f265d90bd1c9",
-    "tools/strata_bench.py": "bb622fa539943e9db44022735d629297a24120b2589103ed85f81f711773f996",
-    "tools/strata_mcp.py": "ad0be5832af2e2ca392339b10802c28f78e91958eee278924d35a257b325975a",
-    "tools/strata_pack.py": "387d5a321ddadb5e08aca94abf5115549ebe86398a7a3afe048193f6f110b146",
-    "tools/strata_tokenizer.py": "e0cd8d6ae38dda0a4ad7c14f812eb64d5fd6f4fed9c920d4427a14bf585dc9b3",
-    "tools/sycl/analyze_model_aggregate.py": "ccee40d037629cec83a6dcd47c8beb3c600e4f397aa8a2009faadb2c7e5b9107",
-    "tools/sycl/arena_copy.py": "d4f0a772189c5ea9012b23a21a507b2ab545099803853de966b42144d76813a5",
-    "tools/sycl/bench_engine.py": "e5f588605ebc7799b54f8bf7df9ad2e363391375e50b788b9704a6b80887ca6b",
-    "tools/sycl/build_engine.py": "8444783ab417378207ec89ad2bc3cf648480e20d9e77f06ebb3070c93e10b131",
-    "tools/sycl/build_indexed_collector.py": "a16e9bb304fe5e1f68ff095967a57d9817ae046884a4f55d2a8427b41e1a1e57",
-    "tools/sycl/build_locality_capture.py": "0827adcccd5acd3c28e0de10a47142b959c3c263787d15bb9429c1d0342141e9",
-    "tools/sycl/cache_borrow.py": "900a2364d19beea0e1fa3e3c657f980455d676363660c013f6ef9058eeb43450",
-    "tools/sycl/cache_capacity.py": "9d39d3851bfc634901d6b5fd6f984918c53f8f44337df7fd506b6cb2ab3252f5",
-    "tools/sycl/cache_compare.py": "b676d9a466262f5bd6b444280feaeaf6b1475d3e196c52237569ee874244f1eb",
-    "tools/sycl/cache_long.py": "1113563f582bd01bfb7535f8b73d70bf92f8e336dbef60301a6de7f2c28c1548",
-    "tools/sycl/cache_long_compare.py": "e96f1fd77a50e3535e7b0ed545464811e334e2f3bd329cc870675916dd5de4af",
-    "tools/sycl/capture_qsa_locality.py": "40ac1e00414be517f58d4d1ddbc6412d1880573be1d3e4c034e38b538dd83690",
-    "tools/sycl/catalog_inventory.py": "582a7dc582b1350ebf974c8e637be61433754fa6cc5e56f0629176272b1cbf01",
-    "tools/sycl/check_attention.py": "e703ab70915f56561eb21323b9170bf3fddbcad5b51ecf60e1cd2d010611086e",
-    "tools/sycl/check_collector_aggregation.py": "64f0278fc55a3514acb4c6f791893fd07301eb49f4b5124385fcf229c2638b48",
-    "tools/sycl/check_event_gate.py": "a32298f8f63ec43aea9c9190094f067393ba823573ccdb32fd2fab715ad617e7",
-    "tools/sycl/check_expert_bank.py": "31896d82f9f948784720c13044938fd64d5445e5a28168c2ccd569e3cb769eee",
-    "tools/sycl/check_host_profile.py": "51cc35f311e9c1c03b0e90ee9b925adceae21a7f5d718ce6972326feb4a09fa7",
-    "tools/sycl/check_indexed_collector.py": "d30fdf5677dc053fe8d9a2b026d74ba2b17ad779e801b7d09b63ceb278901a5a",
-    "tools/sycl/check_mixed_scratch.py": "ee2efe617bfeab19660d44bfbc5c62cac050453937591165a0e9fd183d870ee2",
-    "tools/sycl/check_mtp_observer.py": "a5ba3ddedbfddb4e3a346439ea07a1650a8c37002a4966430bf590e26bd3580a",
-    "tools/sycl/check_qsa_order_replay.py": "7d7c9f655b338fdd0dfbeeef41c9f3dc1fdcdb5f4578fd093ec3fdc829a6d79c",
-    "tools/sycl/check_submission.py": "655f93e1ae3169ee5d84f3be53abba604507eef79d1a7a92057d1f054df20703",
-    "tools/sycl/check_verifier_retirement.py": "1896bf9dd31954bc1fb95c03e3b18679e280f4690a0b46679493b6d6c11c350e",
-    "tools/sycl/collector_aggregation.py": "6d923317410c15696f443e8135a3d22490e980967d6311f0c0cead07f72fdeba",
-    "tools/sycl/compare_logits.py": "b024450304ed04f9325e138456056826079262409dd9fbae0a9dd207273fa522",
-    "tools/sycl/compare_verify_logits.py": "6b30f741b52638464b2f8395c712c897aaeb94e6cb201b780ace3bb1c847d73c",
-    "tools/sycl/cpu_capacity.py": "685b981462cdf8e667f67bc844d8e522be84c776df57238327a4dad8dbbefa51",
-    "tools/sycl/cpu_census_engine.py": "40013d84a4b7a347c46efc6b7f99b7ea8f253b94c3ad217ea62c7b0dd6000d09",
-    "tools/sycl/cpu_decode_mix.py": "8c8b660b21d00046b962c3f23a52f0ef6447e60bbe436f4b8dbdeefee0fca84d",
-    "tools/sycl/cpu_iq2.py": "73aa915408be2d1641922fbbeb4047e135313ad257cdb7087a9545ccfe250b79",
-    "tools/sycl/cpu_roofline.py": "7f1ec28fa1537f6a860165e152b53f07fae3a9828cf2c119cb9bfabfcf19e161",
-    "tools/sycl/cpu_work_census.py": "37038e04a8192ca3d3e1a8a1790a65db22110737630a30be43db64899ee3d1c6",
-    "tools/sycl/early_pcie.py": "a6ed915b26428f74e77959d003a7914767470d601d984b22623b323ab02db766",
-    "tools/sycl/engine_once.py": "48d12642ca8f07eada83d0f72e6f1b7d88355cd7ab9a74c807adcae643b8205b",
-    "tools/sycl/generation_compare.py": "89eca5bc23bc7b45bbe441490ff2e7c324edf37cc002673118ce5ea9dd9bc4df",
-    "tools/sycl/generation_engine.py": "5986d8bda1e4d71ef64d8dd25a7f2e3781fd684466096b863b3fdb4a54cc689e",
-    "tools/sycl/graph_record_window.py": "4c74781aa8d73d0089a1a4cf6d2292a0f3afdfa030a6d9ce73224c773112e512",
-    "tools/sycl/inspect_native_sections.py": "122521c8364a3a6b007dd5f234c21bb0200c0f1ff6e0b4a7ce23413da3092b94",
-    "tools/sycl/iq2_pair_model.py": "618c3d8c6680ed2dcc3834c9aa6cbf9a67f97c4fc8c78fcdd5e5c83c583e0769",
-    "tools/sycl/locality_capture_overlay.py": "d164dac14c72357225e937ae8079c048e64646384d9434eb32d7dcabf733e08f",
-    "tools/sycl/measure_down_scatter.py": "6d92d7212c7cad9bb7fdee6ef6877528b6240f990c7f74d032394933387ed2de",
-    "tools/sycl/measure_gdn_columns.py": "15ddabec6828348c16aac22f5372ffdc433327726aa8ad9d0fe4c1cfd6065455",
-    "tools/sycl/measure_gemm.py": "484f7ffe624f1387309ff241bf7b9a89990b661eac0e1afffb166102abb88dc5",
-    "tools/sycl/measure_gu_swiglu.py": "8496595d8122c3f8373edbb267376cb347a1eafe0983d2700fa9a83a0a36a42a",
-    "tools/sycl/measure_qsa_order_replay.py": "128cf8aac19d34070d6befd6641c6002374de9d059fa87bf94875c0faef6c1a7",
-    "tools/sycl/measurement_guards.py": "794e332c70aca0acadad4f26d0414548e023a02fd27b72ed78fc773674423ec8",
-    "tools/sycl/measurement_owner.py": "bddd0c5e5020e882ca3404679420faec11e820dabce2ed4c72ef82b4c9c0874a",
-    "tools/sycl/model_aggregate.py": "2ae618b8c09169818f21ee78dfb967605624575ebc550ae63f67986ba6ba7954",
-    "tools/sycl/mtp_model_observer.py": "d08adf85cd4f644ec651ba6b598d7f431930aa6c8dbb6e7a08b941b2bf1ceeff",
-    "tools/sycl/mtp_prefill.py": "416b20f35735c2719244b1b8c2bb9dc1d0f06a44d90d1d83306d9c3aa85b0a7d",
-    "tools/sycl/packed_bank.py": "eee4e623697a2bf935339fddd51fc437359e0412dbfc1a903a46691aacc0235f",
-    "tools/sycl/prefill_resources.py": "b1a05218edcd47ccb83e914513db1f884696c9e2fd8eb53d81bb56cbc8fb5769",
-    "tools/sycl/prefill_status.py": "bd7b24c42de203f397a9861d809807a2508de81a2e2d35308cba44b2573b9c6b",
-    "tools/sycl/production_profile.py": "9fe255c9633d80fc13060fdfb6cf143d66f4b464bec8ee1a776b1f88e2d89918",
-    "tools/sycl/profile_aggregate.py": "ba7e2ff060a6833a5d4d4a8e2427ce96bbd5668c8370695810ec468a5744e8de",
-    "tools/sycl/profile_attention.py": "1e8a7ace6f56959139429e5ead140faace9f283ac3dea15f12bd1744812e2b4c",
-    "tools/sycl/qsa_order_replay.py": "61e8f244b100ea4b65b1fcb50e05f7ada1d6f6efa8e1ac41807122c4e230c61e",
-    "tools/sycl/qualify_qsa_order_resolution.py": "42376237f66a450b74a968b2102c6421e413260219688f7dda355eca3b512bd3",
-    "tools/sycl/query_profile.py": "7136a71790d412394fc1ae345af03efb6eaffa09065c49a3b4cffb10a21477d8",
-    "tools/sycl/resource_engine.py": "7ec369dfb1a908db55a5501a02a4e37b50522a6376e348c2ad1917f29b2b0446",
-    "tools/sycl/serve_bench.py": "9dc774108b8ddd20e9e340941ee5a58bb38477cac09bdce2d3ef3a95cdd534a6",
-    "tools/sycl/test_down_evidence.py": "fd21a3966c5ab23f5fbf44ee98fc88f78415b4e9420e6ecd3446a767f9c9e909",
-    "tools/sycl/test_generation_engine.py": "97117b93eb8740e37a8b84fb824082147292c2bcbf91c25a05751864c16bdbec",
-    "tools/sycl/test_source_view_statistics.py": "ec65bd37e34bd088fb9a98bbef916ce92d25334f80d4dcc91337fd7e5d950a99",
-    "tools/sycl/unitrace_launch.py": "4a60aad4cf869bc7d71e5f33e33959172c4f62ce532fff558aeec91ef1c67846",
-    "tools/sycl/unitrace_probe.py": "930a4a746ea363bd6d2949fce039e38b0d101d46da6e820e1993aa7b3db8c61e",
-    "tools/sycl/unitrace_profile.py": "c87c9934f3ee2b5fa6e1dbcfa05689bb5f9a8c6cf178e23c716a4e3cb7c7cf27",
-    "tools/sycl/ur_validation.py": "2e41d84788dc9cc3c7435b18b43601b3ca79280ccb855414d7a36bae6bff83e7",
-    "tools/test_benchmark_evidence.py": "118fb3e7be6e115a1476092108b120ea8a4b3073202b28b4dfde6f039100f209",
-    "tools/test_calibrate.py": "5db54cc664d5136f64a4fcf01b831220f04c874df8a792ee321cf5271375015b",
-    "tools/test_conversation_cache_disabled.py": "9ffde82d9ee88bf79eb111400e45e5604e39cf40f8fa4cf35b0b4ee47545f106",
-    "tools/test_conversation_cache_growth.py": "857e7843a126522aebbdb60cda08ef5e042d8509c193fab963a11defa53afd8b",
-    "tools/test_conversation_cache_http_smoke.py": "43f54ad4f1524adcd635a4f35962b6d5aa586603fb73b3ae9edc9c94761b7552",
-    "tools/test_conversation_cache_isolation.py": "049248a64f25240e79fb24ce6a32185a8137deacb575c93eec728870395465e3",
-    "tools/test_conversation_cache_parity.py": "c75b3d2812789cd1988cb244d5adb5cbef32e6bcf5a97e1ce7c60039bff258b1",
-    "tools/test_conversation_cache_soak.py": "96fc5e236ff2381c7f06be7e332dd414bcd1e117ba8c46ca1affadf538b8ecb9",
-    "tools/test_draft_vocab.py": "abcfff0384986d9d6e4b197b263735146867f941ecae8d4fdcff56837546ea46",
-    "tools/test_iq_pack.py": "e2d13e9117cbaf6599446c32d1da5e9159b299f6c312541eeb17d317fd36a00a",
-    "tools/test_make_profile.py": "4f5d16e632c961b8e25ad6c9e33b8f21fe6ced22504e2179095eb3f5a915c7d4",
-    "tools/test_mtp_fetch.py": "aab608460ca2aa390aad1126e89a31621481750a42844dd2c566696bcf7ba214",
-    "tools/test_selection_dump.py": "3fa624af0cfe0570c99310af70f2ef7a23566b3688b0b0bdb2845c5378c919e5",
-    "tools/test_setup_amd.py": "abf7a5fd342d200202207ba1b2fe0f25dc6e385f0ef14e340a10b123d4cacee8",
-    "tools/test_setup_choices.py": "c576dc6b8917904f7e2515b247d858290bf0af0131e2037ae443028f7d730702",
-    "tools/test_setup_config.py": "9a3a5804d7ea75d9a8ba3457d3708cad673c0fa7e8f6c5b712873b3d397d1a4e",
-    "tools/test_setup_draft_vocab.py": "db3f887341fa2108fda2ef5932763e5a61f29b7e0c7b8fc352182df40f8df016",
-    "tools/test_setup_golden.py": "fa253c3dd893b3e1c53b51e28039f75532c453f28030ae97ae08d819723130b2",
-    "tools/test_setup_hybrid.py": "801b695a26cc613174d8bc832c7ee276a6df888fe7916fe3aeeadd0e05823d4e",
-    "tools/test_setup_lowram.py": "8c3b925ac822c4493542dc38f5ecec5c6dad1abee6fc04beb80a7fc8352f77b0",
-    "tools/test_setup_native_sycl.py": "3e593fe830ae3c5234a9a2efaca244984e4cde5726005eaf97aa6b393044a044",
-    "tools/test_setup_oldcpu.py": "ca3b6571ece5a7ed7fc88e4ffc3d875bc8c0bed45a505b0c9a28a94ed33d5b4e",
-    "tools/test_setup_older_gpus.py": "51da684f4e63aab13f015558c4654a1900d146308ee0ed2942a09ff5ed23b16f",
-    "tools/test_setup_parallel.py": "ac17585e77f7a9f17e6abae4ace77a1d1ed76bca0aab0128e8d0a179e5190d64",
-    "tools/test_setup_pins.py": "b2025b3ad7b5621a2502bfa9b180e0b3e1e4fb3ad434c44195dcaa1c4f4c9339",
-    "tools/test_setup_prompts.py": "aceb5f394717fdd87fcc2044c00ae5b03b19f6ba906694df928bcf82829c893b",
-    "tools/test_setup_remote_opt.py": "7fb221975b5faa33a9673378b1a71934990e9c52b7382b7a30a871c3f83c44a5",
-    "tools/test_setup_risk.py": "61addf79bd84e930a17300cefee7c8f5451e0528b3c02bd329ba67b699723f58",
-    "tools/test_setup_rope.py": "4c6d2d763edbd74c018bb7ad91b28a8484c56506e3307ed0cdd9924c90a36040",
-    "tools/test_setup_shard_check.py": "a38de71b536c5c58d4e76f36250603d2f86bc0879f6a786ff90689741f993821",
-    "tools/test_setup_unsloth.py": "4577d7a8c55d9887f7ad87959174dd7ac2fd1d31c6d330b4e7bf9da408d44ec9",
-    "tools/test_setup_update.py": "34557b1c8f9593f0c6b5abb8a8b808253a4806fb5d769b59bf8ef68f4a66c331",
-    "tools/test_shards.py": "5485169173665ff6abd5a56bdb955e15f7d39f9edd509ac445144b287ed1f187",
-    "tools/test_strata_bench.py": "daafd021a091ba376a9104bc6c2b224a320ba565323a3a44f3a52af7938b6ba7",
-    "tools/test_strata_bench_failfast.py": "47928c2abeb4d2fc2278f676ee73afd14b6858ee80dc56d18294089475738661",
-    "tools/test_strata_mcp.py": "0f449e00177d8f4bf86deb191491464dc2d28decf91645f029b722b87514cf40",
-    "tools/test_sycl_cache_borrow.py": "88558a331786b8fa3a78de9cd5876311492c97d0d17912187b7da728ff128d8c",
-    "tools/test_sycl_cache_capacity.py": "5ba58f1a5b80b27b2c721994509f4f5e29719e2568a37e2ef7810c72c22da1b1",
-    "tools/test_sycl_cache_compare.py": "4816e5054995e4958774bf7558f0a452e6e9d6fd9f19f1b886ea871d1a45c5ad",
-    "tools/test_sycl_cache_long.py": "b449678273b793e08fdabbd0ca744956c5dfc250ad86427758dbf7c4db1fb9a3",
-    "tools/test_sycl_cache_long_compare.py": "d463414dd617490c65b0fa1d395d8d8fd585ba17b2e1159213ee8249dfd95365",
-    "tools/test_sycl_generation_compare.py": "84221085c7980126e2b05a84d59d6eb2a8d807847330023eeb84e1dca962ef0d",
-    "tools/test_sycl_mtp_model_admission.py": "446ac685a1d25d2497df000010ad692696204b78960834e6fee32edde768b93a",
-    "tools/test_sycl_mtp_prefill.py": "ea17239668255628dfd043b50e268686f1fde927ecce808109b9d1c8cc16a9e1",
-    "tools/test_sycl_packed_bank.py": "f5c6a0e1a187cc79dc508cd93241956ea288426e888a846561fa991be2835bca",
-    "tools/test_sycl_prefill_resources.py": "1e07e40feecdb24b88353a5da8b1146f4aa5b9c5c655be753b1953e2a8baee8b",
-    "tools/test_sycl_query_profile.py": "8177fd144d5428f81ba6f668da002793b502039d98dd6936c6730a1b8148c0fd",
-    "tools/test_sycl_ur_validation.py": "02a03e833db2e7102b3d70fb6daa3205635c6c2c577db49f587b015a6e8d5f6e",
-    "tools/test_tokenizer_plain_spans.py": "79c0d8faee235553e953ade84ad14e5a6958c6813f50528a349cfba7403bb92e"
-  },
-  "review": {
-    "report": {
-      "path": "/home/yayoi/orca/workspaces/Strata/sycl/.cache/strata-research/20261023/actual-qsa-order-cohort-audit/report.md",
-      "sha256": "7c5eb801b21b85c4c2307540cf7e786b32c7c8dd61f51926ea7324f1b7cae580"
-    },
-    "native_review": {
-      "path": "/home/yayoi/orca/workspaces/Strata/sycl/.cache/strata-research/20261023/actual-qsa-order-cohort-audit/native-review.json",
-      "sha256": "f73870f5851d8430f99f0c1b4590a8b0f5fe17d4ba943a86b2ef224f7d373b1a"
-    },
-    "design_review": {
-      "path": "/home/yayoi/orca/workspaces/Strata/sycl/.cache/strata-research/20261023/actual-qsa-order-cohort-audit/source-update-review.json",
-      "sha256": "cfcba00ff2b626df7c281cc4e6650ff90219fa9d981b2a502372cab31f42d842"
-    },
-    "qualification_review": {
-      "path": "/home/yayoi/orca/workspaces/Strata/sycl/.cache/strata-research/20261023/actual-qsa-order-cohort-audit/qualification-review.json",
-      "sha256": "8e6e7ddd4aeaac0f038ced09be0c9df74621eaf078bfbcab7c417fd6258c9d43"
-    }
-  },
+  "passed": true,
+  "complete": true,
+  "ownership_closed": true,
+  "active": false,
   "native_source_commit": "7bb652adbe171a9aab25baca7e8f7e9a59ba9eeb",
-  "binary": {
-    "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-locality-capture-native-v1/replay/qsa_order_replay",
-    "bytes": 1391208,
-    "sha256": "8458ec397cffa1069fac4c4f75c844089b41c0f4c6b1bc008d55cab31aa2167a"
+  "binary_sha256": "8458ec397cffa1069fac4c4f75c844089b41c0f4c6b1bc008d55cab31aa2167a",
+  "binary_bytes": 1391208,
+  "controller_source_commit": "5432f0a0822ae44be3a8192d12661efe1f78043d",
+  "prepared_plan": {
+    "commit": "4fe0e4b2d",
+    "path": "bench/results/2026-10-15-pr6-recovery-audit/qsa-actual-order-current.json",
+    "sha256": "792e18c9657cffa0015cd2af88e1c53fe89d2dc6e323f3b56b0ce8ca485a8142"
   },
-  "capture_sha256": "ea821a34b73da85660d6fe29c16b7e0b40162ed12d52220ca32992fcd61b400b",
-  "completion": {
-    "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-locality-capture-native-v1/capture-v1/capture-complete.json",
-    "sha256": "926917d21ca8bf03b4c2e6c6b8071b771a319598dd4493d80d635092f234fed3"
+  "closed_execution": {
+    "commit": "c45b99c13",
+    "path": "bench/results/2026-10-15-pr6-recovery-audit/qsa-actual-order-current.json",
+    "sha256": "9b3ff1e7e2ffdc44b8d23a41e55b67095c1063ebc13bea603e2290d810207c33"
   },
-  "tail": {
-    "layers": 12,
-    "first": 116976,
-    "queries": 512,
-    "cap": 2051,
-    "steps": 4,
-    "cells": 117488
-  },
-  "jobs": [
-    {
-      "index": 0,
-      "command": [
-        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-locality-capture-native-v1/replay/qsa_order_replay",
-        "--validate",
-        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-locality-capture-native-v1/capture-v1/selected"
-      ],
-      "environment": {
-        "PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin:/usr/bin:/bin",
-        "HOME": "/home/yayoi",
-        "LANG": "C.UTF-8",
-        "LC_ALL": "C.UTF-8",
-        "PYTHONDONTWRITEBYTECODE": "1",
-        "LD_LIBRARY_PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib:/opt/intel/oneapi/mkl/2026.1/lib",
-        "MKLROOT": "/opt/intel/oneapi/mkl/2026.1",
-        "OMP_NUM_THREADS": "1",
-        "GIT_TERMINAL_PROMPT": "0",
-        "GIT_SSH_COMMAND": "ssh -oBatchMode=yes",
-        "CPLUS_INCLUDE_PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/include",
-        "PIP_CONFIG_FILE": "/dev/null",
-        "ONEAPI_DEVICE_SELECTOR": "level_zero:gpu",
-        "UR_ADAPTERS_FORCE_LOAD": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_adapter_level_zero_v2.so.0",
-        "SYCL_CACHE_PERSISTENT": "0",
-        "NEOReadDebugKeys": "1",
-        "EnableDirectSubmission": "0",
-        "UR_L0_V2_FORCE_DISABLE_COPY_OFFLOAD": "1",
-        "STRATA_SYCL_VERIFY_NATIVE_CAPTURE": "0",
-        "STRATA_SYCL_PREFILL_SAME_QUEUE": "1",
-        "STRATA_SYCL_PREFILL_NATIVE16": "bf16",
-        "XDG_CACHE_HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-locality-capture-native-v1/replay/actual-v1/0/cache",
-        "TMPDIR": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-locality-capture-native-v1/replay/actual-v1/0/tmp",
-        "STRATA_TRACE": "1",
-        "LD_PRELOAD": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/ur-validation-preload-v2/libstrata_ur_validation.so",
-        "STRATA_UR_PROBE_EXPECTED_LOADER": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_loader.so.0.12.0",
-        "UR_ENABLE_LAYERS": "UR_LAYER_PARAMETER_VALIDATION",
-        "UR_LOG_VALIDATION": "level:warning;flush:warning;output:stderr",
-        "UR_LOG_LOADER": "level:warning;flush:warning;output:stderr",
-        "UR_LOG_LEVEL_ZERO": "level:warning;flush:warning;output:stderr"
+  "capture": {
+    "closed_evidence": {
+      "commit": "22049ab28",
+      "path": "bench/results/2026-10-15-pr6-recovery-audit/qsa-current-tail-capture.json",
+      "sha256": "ea821a34b73da85660d6fe29c16b7e0b40162ed12d52220ca32992fcd61b400b"
+    },
+    "prepared_plan": {
+      "commit": "4664075bf",
+      "path": "bench/results/2026-10-15-pr6-recovery-audit/qsa-current-tail-capture.json",
+      "sha256": "469e36533b049010a9348513d893228f713909da0c3491242c986e923b2be9ff"
+    },
+    "source_commit": "a341a66e0e447d5cffe03e17d5afe3793eeba55d",
+    "binary_sha256": "90078dc94a9ab8e9bb1d2c5afb75d7534c08c9a4f11ad05bbf049c8b4c1c83aa",
+    "request_sha256": "26f08fd8364b5c4bce718617fe2aed42761d0a794e068b00532694adef78b3be",
+    "actual_input_tokens": 117489,
+    "thinking_output_tokens": 24,
+    "tail": {
+      "layers": 12,
+      "first": 116976,
+      "queries": 512,
+      "cap": 2051,
+      "steps": 4,
+      "cells": 117488
+    },
+    "prefix": {
+      "layers": 12,
+      "chunks_per_layer": 15,
+      "submitted_calls": 180,
+      "packed_logical_rows_per_layer": 1955296,
+      "packed_logical_rows_total": 23463552,
+      "cells": 117488,
+      "page_size": 4,
+      "physical_traffic_measured": false,
+      "completion_or_service_time_measured": false
+    },
+    "files": {
+      ".ids": {
+        "bytes": 50405568,
+        "sha256": "318e4d92792cc8c5cfc1d0a7534a8a4d36e65f966a0c9772dead1ff3e8d90bab"
+      },
+      ".steps": {
+        "bytes": 98496,
+        "sha256": "f3409e6ae0b41cc2e06703a6b1ec62d04480b139161e0e4ea80357b7d421a872"
       }
     },
-    {
-      "index": 1,
-      "command": [
-        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-locality-capture-native-v1/replay/qsa_order_replay",
-        "--timing",
-        "0",
-        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-locality-capture-native-v1/capture-v1/selected"
-      ],
-      "environment": {
-        "PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin:/usr/bin:/bin",
-        "HOME": "/home/yayoi",
-        "LANG": "C.UTF-8",
-        "LC_ALL": "C.UTF-8",
-        "PYTHONDONTWRITEBYTECODE": "1",
-        "LD_LIBRARY_PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib:/opt/intel/oneapi/mkl/2026.1/lib",
-        "MKLROOT": "/opt/intel/oneapi/mkl/2026.1",
-        "OMP_NUM_THREADS": "1",
-        "GIT_TERMINAL_PROMPT": "0",
-        "GIT_SSH_COMMAND": "ssh -oBatchMode=yes",
-        "CPLUS_INCLUDE_PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/include",
-        "PIP_CONFIG_FILE": "/dev/null",
-        "ONEAPI_DEVICE_SELECTOR": "level_zero:gpu",
-        "UR_ADAPTERS_FORCE_LOAD": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_adapter_level_zero_v2.so.0",
-        "SYCL_CACHE_PERSISTENT": "0",
-        "NEOReadDebugKeys": "1",
-        "EnableDirectSubmission": "0",
-        "UR_L0_V2_FORCE_DISABLE_COPY_OFFLOAD": "1",
-        "STRATA_SYCL_VERIFY_NATIVE_CAPTURE": "0",
-        "STRATA_SYCL_PREFILL_SAME_QUEUE": "1",
-        "STRATA_SYCL_PREFILL_NATIVE16": "bf16",
-        "XDG_CACHE_HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-locality-capture-native-v1/replay/actual-v1/1/cache",
-        "TMPDIR": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-locality-capture-native-v1/replay/actual-v1/1/tmp",
-        "STRATA_TRACE": "0"
-      }
+    "bound_session_request_completion": true,
+    "actual_host_parser_passed": true,
+    "selected_assets_unchanged": 13,
+    "model_hashes_unchanged": 15
+  },
+  "validation": {
+    "actual_layers": 12,
+    "original_row_output_bits": true,
+    "V_perturbation": true,
+    "guards": true,
+    "immutable_inputs": true,
+    "private_before_main_same_pid": true,
+    "normal_owned_process_exits": 4,
+    "fresh_faults": [],
+    "boot_unchanged": true,
+    "postchecks_complete": true,
+    "resolution": {
+      "gate": "all-540-clean-timer-pairs-strictly-positive-v1",
+      "passed": true,
+      "samples": 540,
+      "minimum_timer_pair_ns": 20,
+      "maximum_timer_pair_ns": 20
     },
-    {
-      "index": 2,
-      "command": [
-        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-locality-capture-native-v1/replay/qsa_order_replay",
-        "--timing",
-        "1",
-        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-locality-capture-native-v1/capture-v1/selected"
-      ],
-      "environment": {
-        "PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin:/usr/bin:/bin",
-        "HOME": "/home/yayoi",
-        "LANG": "C.UTF-8",
-        "LC_ALL": "C.UTF-8",
-        "PYTHONDONTWRITEBYTECODE": "1",
-        "LD_LIBRARY_PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib:/opt/intel/oneapi/mkl/2026.1/lib",
-        "MKLROOT": "/opt/intel/oneapi/mkl/2026.1",
-        "OMP_NUM_THREADS": "1",
-        "GIT_TERMINAL_PROMPT": "0",
-        "GIT_SSH_COMMAND": "ssh -oBatchMode=yes",
-        "CPLUS_INCLUDE_PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/include",
-        "PIP_CONFIG_FILE": "/dev/null",
-        "ONEAPI_DEVICE_SELECTOR": "level_zero:gpu",
-        "UR_ADAPTERS_FORCE_LOAD": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_adapter_level_zero_v2.so.0",
-        "SYCL_CACHE_PERSISTENT": "0",
-        "NEOReadDebugKeys": "1",
-        "EnableDirectSubmission": "0",
-        "UR_L0_V2_FORCE_DISABLE_COPY_OFFLOAD": "1",
-        "STRATA_SYCL_VERIFY_NATIVE_CAPTURE": "0",
-        "STRATA_SYCL_PREFILL_SAME_QUEUE": "1",
-        "STRATA_SYCL_PREFILL_NATIVE16": "bf16",
-        "XDG_CACHE_HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-locality-capture-native-v1/replay/actual-v1/2/cache",
-        "TMPDIR": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-locality-capture-native-v1/replay/actual-v1/2/tmp",
-        "STRATA_TRACE": "0"
-      }
-    },
-    {
-      "index": 3,
-      "command": [
-        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-locality-capture-native-v1/replay/qsa_order_replay",
-        "--timing",
-        "2",
-        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-locality-capture-native-v1/capture-v1/selected"
-      ],
-      "environment": {
-        "PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin:/usr/bin:/bin",
-        "HOME": "/home/yayoi",
-        "LANG": "C.UTF-8",
-        "LC_ALL": "C.UTF-8",
-        "PYTHONDONTWRITEBYTECODE": "1",
-        "LD_LIBRARY_PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib:/opt/intel/oneapi/mkl/2026.1/lib",
-        "MKLROOT": "/opt/intel/oneapi/mkl/2026.1",
-        "OMP_NUM_THREADS": "1",
-        "GIT_TERMINAL_PROMPT": "0",
-        "GIT_SSH_COMMAND": "ssh -oBatchMode=yes",
-        "CPLUS_INCLUDE_PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/include",
-        "PIP_CONFIG_FILE": "/dev/null",
-        "ONEAPI_DEVICE_SELECTOR": "level_zero:gpu",
-        "UR_ADAPTERS_FORCE_LOAD": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_adapter_level_zero_v2.so.0",
-        "SYCL_CACHE_PERSISTENT": "0",
-        "NEOReadDebugKeys": "1",
-        "EnableDirectSubmission": "0",
-        "UR_L0_V2_FORCE_DISABLE_COPY_OFFLOAD": "1",
-        "STRATA_SYCL_VERIFY_NATIVE_CAPTURE": "0",
-        "STRATA_SYCL_PREFILL_SAME_QUEUE": "1",
-        "STRATA_SYCL_PREFILL_NATIVE16": "bf16",
-        "XDG_CACHE_HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-locality-capture-native-v1/replay/actual-v1/3/cache",
-        "TMPDIR": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-locality-capture-native-v1/replay/actual-v1/3/tmp",
-        "STRATA_TRACE": "0"
-      }
+    "prior_gates": {
+      "host_capture_cases": 8,
+      "GPU_readback_cases": 2,
+      "host_parser_cases": 14,
+      "traced_permutation_smoke": true,
+      "capture_binding_tests": 8,
+      "sample_admission_tests": 7,
+      "positive_resolution_tests": 5
     }
-  ],
-  "processes": [
-    {
-      "index": 0,
-      "exit_code": 0,
-      "summary": null
-    },
-    {
-      "index": 1,
-      "exit_code": 0,
-      "summary": {
-        "process": 0,
-        "sum_of_isolated_layer_medians_ns": [
-          151340151.5625,
-          151314446.71875,
-          151673648.46875
-        ],
-        "ratios": [
-          1.0,
-          0.9998301518566975,
-          1.0022036247671675
-        ],
-        "worst_layer_ratios": [
-          1.0,
-          1.0204983410876323,
-          1.0335388100273502
-        ],
-        "passing_methods": []
-      }
-    },
-    {
-      "index": 2,
-      "exit_code": 0,
-      "summary": {
-        "process": 1,
-        "sum_of_isolated_layer_medians_ns": [
-          151384807.875,
-          151249107.0625,
-          151715027.25
-        ],
-        "ratios": [
-          1.0,
-          0.99910360349625,
-          1.0021813243986324
-        ],
-        "worst_layer_ratios": [
-          1.0,
-          1.0099436196790406,
-          1.0283432650571518
-        ],
-        "passing_methods": []
-      }
-    },
-    {
-      "index": 3,
-      "exit_code": 0,
-      "summary": {
-        "process": 2,
-        "sum_of_isolated_layer_medians_ns": [
-          151467543.75,
-          151274288.71875,
-          151602940.5625
-        ],
-        "ratios": [
-          1.0,
-          0.998724115896611,
-          1.0008938998358847
-        ],
-        "worst_layer_ratios": [
-          1.0,
-          1.0136991872257606,
-          1.03531675778744
-        ],
-        "passing_methods": []
-      }
-    }
-  ],
-  "samples": [
-    [],
-    [
-      [
-        0,
-        0,
-        0,
-        0,
-        387464752,
-        20
-      ],
-      [
-        0,
-        0,
-        1,
-        1,
-        391730085,
-        20
-      ],
-      [
-        0,
-        0,
-        2,
-        2,
-        392418861,
-        20
-      ],
-      [
-        0,
-        1,
-        0,
-        1,
-        391789511,
-        20
-      ],
-      [
-        0,
-        1,
-        1,
-        2,
-        389817242,
-        20
-      ],
-      [
-        0,
-        1,
-        2,
-        0,
-        386808707,
-        20
-      ],
-      [
-        0,
-        2,
-        0,
-        2,
-        391972248,
-        20
-      ],
-      [
-        0,
-        2,
-        1,
-        0,
-        389421564,
-        20
-      ],
-      [
-        0,
-        2,
-        2,
-        1,
-        391207876,
-        20
-      ],
-      [
-        0,
-        3,
-        0,
-        0,
-        387771450,
-        20
-      ],
-      [
-        0,
-        3,
-        1,
-        1,
-        392751065,
-        20
-      ],
-      [
-        0,
-        3,
-        2,
-        2,
-        392139961,
-        20
-      ],
-      [
-        0,
-        4,
-        0,
-        1,
-        391748177,
-        20
-      ],
-      [
-        0,
-        4,
-        1,
-        2,
-        391893571,
-        20
-      ],
-      [
-        0,
-        4,
-        2,
-        0,
-        389610369,
-        20
-      ],
-      [
-        1,
-        0,
-        0,
-        0,
-        425037639,
-        20
-      ],
-      [
-        1,
-        0,
-        1,
-        1,
-        417555848,
-        20
-      ],
-      [
-        1,
-        0,
-        2,
-        2,
-        411881552,
-        20
-      ],
-      [
-        1,
-        1,
-        0,
-        1,
-        421251967,
-        20
-      ],
-      [
-        1,
-        1,
-        1,
-        2,
-        414044906,
-        20
-      ],
-      [
-        1,
-        1,
-        2,
-        0,
-        425250926,
-        20
-      ],
-      [
-        1,
-        2,
-        0,
-        2,
-        413198539,
-        20
-      ],
-      [
-        1,
-        2,
-        1,
-        0,
-        424579379,
-        20
-      ],
-      [
-        1,
-        2,
-        2,
-        1,
-        416563978,
-        20
-      ],
-      [
-        1,
-        3,
-        0,
-        0,
-        424676134,
-        20
-      ],
-      [
-        1,
-        3,
-        1,
-        1,
-        418975417,
-        20
-      ],
-      [
-        1,
-        3,
-        2,
-        2,
-        414604598,
-        20
-      ],
-      [
-        1,
-        4,
-        0,
-        1,
-        417601833,
-        20
-      ],
-      [
-        1,
-        4,
-        1,
-        2,
-        415598506,
-        20
-      ],
-      [
-        1,
-        4,
-        2,
-        0,
-        422230933,
-        20
-      ],
-      [
-        2,
-        0,
-        0,
-        0,
-        416484457,
-        20
-      ],
-      [
-        2,
-        0,
-        1,
-        1,
-        414920874,
-        20
-      ],
-      [
-        2,
-        0,
-        2,
-        2,
-        408928810,
-        20
-      ],
-      [
-        2,
-        1,
-        0,
-        1,
-        411401011,
-        20
-      ],
-      [
-        2,
-        1,
-        1,
-        2,
-        407928406,
-        20
-      ],
-      [
-        2,
-        1,
-        2,
-        0,
-        417919737,
-        20
-      ],
-      [
-        2,
-        2,
-        0,
-        2,
-        409582715,
-        20
-      ],
-      [
-        2,
-        2,
-        1,
-        0,
-        416697667,
-        20
-      ],
-      [
-        2,
-        2,
-        2,
-        1,
-        416858031,
-        20
-      ],
-      [
-        2,
-        3,
-        0,
-        0,
-        415667217,
-        20
-      ],
-      [
-        2,
-        3,
-        1,
-        1,
-        417544852,
-        20
-      ],
-      [
-        2,
-        3,
-        2,
-        2,
-        409935975,
-        20
-      ],
-      [
-        2,
-        4,
-        0,
-        1,
-        414526000,
-        20
-      ],
-      [
-        2,
-        4,
-        1,
-        2,
-        409173457,
-        20
-      ],
-      [
-        2,
-        4,
-        2,
-        0,
-        417198007,
-        20
-      ],
-      [
-        3,
-        0,
-        0,
-        0,
-        382849421,
-        20
-      ],
-      [
-        3,
-        0,
-        1,
-        1,
-        383505635,
-        20
-      ],
-      [
-        3,
-        0,
-        2,
-        2,
-        395379390,
-        20
-      ],
-      [
-        3,
-        1,
-        0,
-        1,
-        386791253,
-        20
-      ],
-      [
-        3,
-        1,
-        1,
-        2,
-        395689735,
-        20
-      ],
-      [
-        3,
-        1,
-        2,
-        0,
-        383240652,
-        20
-      ],
-      [
-        3,
-        2,
-        0,
-        2,
-        396413707,
-        20
-      ],
-      [
-        3,
-        2,
-        1,
-        0,
-        381189304,
-        20
-      ],
-      [
-        3,
-        2,
-        2,
-        1,
-        384142710,
-        20
-      ],
-      [
-        3,
-        3,
-        0,
-        0,
-        382868329,
-        20
-      ],
-      [
-        3,
-        3,
-        1,
-        1,
-        384978731,
-        20
-      ],
-      [
-        3,
-        3,
-        2,
-        2,
-        394144445,
-        20
-      ],
-      [
-        3,
-        4,
-        0,
-        1,
-        384223485,
-        20
-      ],
-      [
-        3,
-        4,
-        1,
-        2,
-        396855447,
-        20
-      ],
-      [
-        3,
-        4,
-        2,
-        0,
-        382123447,
-        20
-      ],
-      [
-        4,
-        0,
-        0,
-        0,
-        405596819,
-        20
-      ],
-      [
-        4,
-        0,
-        1,
-        1,
-        411399551,
-        20
-      ],
-      [
-        4,
-        0,
-        2,
-        2,
-        414737387,
-        20
-      ],
-      [
-        4,
-        1,
-        0,
-        1,
-        410500386,
-        20
-      ],
-      [
-        4,
-        1,
-        1,
-        2,
-        414618217,
-        20
-      ],
-      [
-        4,
-        1,
-        2,
-        0,
-        408140800,
-        20
-      ],
-      [
-        4,
-        2,
-        0,
-        2,
-        415745707,
-        20
-      ],
-      [
-        4,
-        2,
-        1,
-        0,
-        405629280,
-        20
-      ],
-      [
-        4,
-        2,
-        2,
-        1,
-        409088554,
-        20
-      ],
-      [
-        4,
-        3,
-        0,
-        0,
-        406102822,
-        20
-      ],
-      [
-        4,
-        3,
-        1,
-        1,
-        408427967,
-        20
-      ],
-      [
-        4,
-        3,
-        2,
-        2,
-        414186888,
-        20
-      ],
-      [
-        4,
-        4,
-        0,
-        1,
-        411118560,
-        20
-      ],
-      [
-        4,
-        4,
-        1,
-        2,
-        415917810,
-        20
-      ],
-      [
-        4,
-        4,
-        2,
-        0,
-        409987801,
-        20
-      ],
-      [
-        5,
-        0,
-        0,
-        0,
-        397190679,
-        20
-      ],
-      [
-        5,
-        0,
-        1,
-        1,
-        400913298,
-        20
-      ],
-      [
-        5,
-        0,
-        2,
-        2,
-        402540823,
-        20
-      ],
-      [
-        5,
-        1,
-        0,
-        1,
-        402013826,
-        20
-      ],
-      [
-        5,
-        1,
-        1,
-        2,
-        403862327,
-        20
-      ],
-      [
-        5,
-        1,
-        2,
-        0,
-        394072383,
-        20
-      ],
-      [
-        5,
-        2,
-        0,
-        2,
-        404107410,
-        20
-      ],
-      [
-        5,
-        2,
-        1,
-        0,
-        394099116,
-        20
-      ],
-      [
-        5,
-        2,
-        2,
-        1,
-        401769165,
-        20
-      ],
-      [
-        5,
-        3,
-        0,
-        0,
-        395440797,
-        20
-      ],
-      [
-        5,
-        3,
-        1,
-        1,
-        399133400,
-        20
-      ],
-      [
-        5,
-        3,
-        2,
-        2,
-        402983046,
-        20
-      ],
-      [
-        5,
-        4,
-        0,
-        1,
-        400945574,
-        20
-      ],
-      [
-        5,
-        4,
-        1,
-        2,
-        403309142,
-        20
-      ],
-      [
-        5,
-        4,
-        2,
-        0,
-        398688901,
-        20
-      ],
-      [
-        6,
-        0,
-        0,
-        0,
-        412647336,
-        20
-      ],
-      [
-        6,
-        0,
-        1,
-        1,
-        407801233,
-        20
-      ],
-      [
-        6,
-        0,
-        2,
-        2,
-        409171846,
-        20
-      ],
-      [
-        6,
-        1,
-        0,
-        1,
-        408989305,
-        20
-      ],
-      [
-        6,
-        1,
-        1,
-        2,
-        407996173,
-        20
-      ],
-      [
-        6,
-        1,
-        2,
-        0,
-        410597846,
-        20
-      ],
-      [
-        6,
-        2,
-        0,
-        2,
-        407443588,
-        20
-      ],
-      [
-        6,
-        2,
-        1,
-        0,
-        410943457,
-        20
-      ],
-      [
-        6,
-        2,
-        2,
-        1,
-        406908317,
-        20
-      ],
-      [
-        6,
-        3,
-        0,
-        0,
-        409378765,
-        20
-      ],
-      [
-        6,
-        3,
-        1,
-        1,
-        405221945,
-        20
-      ],
-      [
-        6,
-        3,
-        2,
-        2,
-        410351493,
-        20
-      ],
-      [
-        6,
-        4,
-        0,
-        1,
-        408189006,
-        20
-      ],
-      [
-        6,
-        4,
-        1,
-        2,
-        408158501,
-        20
-      ],
-      [
-        6,
-        4,
-        2,
-        0,
-        409191810,
-        20
-      ],
-      [
-        7,
-        0,
-        0,
-        0,
-        415946585,
-        20
-      ],
-      [
-        7,
-        0,
-        1,
-        1,
-        414213896,
-        20
-      ],
-      [
-        7,
-        0,
-        2,
-        2,
-        418625717,
-        20
-      ],
-      [
-        7,
-        1,
-        0,
-        1,
-        408605943,
-        20
-      ],
-      [
-        7,
-        1,
-        1,
-        2,
-        414293178,
-        20
-      ],
-      [
-        7,
-        1,
-        2,
-        0,
-        413346804,
-        20
-      ],
-      [
-        7,
-        2,
-        0,
-        2,
-        418192451,
-        20
-      ],
-      [
-        7,
-        2,
-        1,
-        0,
-        414918538,
-        20
-      ],
-      [
-        7,
-        2,
-        2,
-        1,
-        411469325,
-        20
-      ],
-      [
-        7,
-        3,
-        0,
-        0,
-        416279464,
-        20
-      ],
-      [
-        7,
-        3,
-        1,
-        1,
-        412065056,
-        20
-      ],
-      [
-        7,
-        3,
-        2,
-        2,
-        416317869,
-        20
-      ],
-      [
-        7,
-        4,
-        0,
-        1,
-        413147141,
-        20
-      ],
-      [
-        7,
-        4,
-        1,
-        2,
-        417847653,
-        20
-      ],
-      [
-        7,
-        4,
-        2,
-        0,
-        413528229,
-        20
-      ],
-      [
-        8,
-        0,
-        0,
-        0,
-        399867181,
-        20
-      ],
-      [
-        8,
-        0,
-        1,
-        1,
-        405194042,
-        20
-      ],
-      [
-        8,
-        0,
-        2,
-        2,
-        398764003,
-        20
-      ],
-      [
-        8,
-        1,
-        0,
-        1,
-        401908617,
-        20
-      ],
-      [
-        8,
-        1,
-        1,
-        2,
-        394897247,
-        20
-      ],
-      [
-        8,
-        1,
-        2,
-        0,
-        396132739,
-        20
-      ],
-      [
-        8,
-        2,
-        0,
-        2,
-        398262055,
-        20
-      ],
-      [
-        8,
-        2,
-        1,
-        0,
-        395036574,
-        20
-      ],
-      [
-        8,
-        2,
-        2,
-        1,
-        404252803,
-        20
-      ],
-      [
-        8,
-        3,
-        0,
-        0,
-        395979366,
-        20
-      ],
-      [
-        8,
-        3,
-        1,
-        1,
-        403156910,
-        20
-      ],
-      [
-        8,
-        3,
-        2,
-        2,
-        400480677,
-        20
-      ],
-      [
-        8,
-        4,
-        0,
-        1,
-        405042473,
-        20
-      ],
-      [
-        8,
-        4,
-        1,
-        2,
-        399015449,
-        20
-      ],
-      [
-        8,
-        4,
-        2,
-        0,
-        402227983,
-        20
-      ],
-      [
-        9,
-        0,
-        0,
-        0,
-        402813837,
-        20
-      ],
-      [
-        9,
-        0,
-        1,
-        1,
-        399596599,
-        20
-      ],
-      [
-        9,
-        0,
-        2,
-        2,
-        404078203,
-        20
-      ],
-      [
-        9,
-        1,
-        0,
-        1,
-        400683973,
-        20
-      ],
-      [
-        9,
-        1,
-        1,
-        2,
-        404242965,
-        20
-      ],
-      [
-        9,
-        1,
-        2,
-        0,
-        405403996,
-        20
-      ],
-      [
-        9,
-        2,
-        0,
-        2,
-        400693344,
-        20
-      ],
-      [
-        9,
-        2,
-        1,
-        0,
-        405471647,
-        20
-      ],
-      [
-        9,
-        2,
-        2,
-        1,
-        400434071,
-        20
-      ],
-      [
-        9,
-        3,
-        0,
-        0,
-        406780876,
-        20
-      ],
-      [
-        9,
-        3,
-        1,
-        1,
-        398986196,
-        20
-      ],
-      [
-        9,
-        3,
-        2,
-        2,
-        402394595,
-        20
-      ],
-      [
-        9,
-        4,
-        0,
-        1,
-        403890115,
-        20
-      ],
-      [
-        9,
-        4,
-        1,
-        2,
-        403654643,
-        20
-      ],
-      [
-        9,
-        4,
-        2,
-        0,
-        404292182,
-        20
-      ],
-      [
-        10,
-        0,
-        0,
-        0,
-        396422455,
-        20
-      ],
-      [
-        10,
-        0,
-        1,
-        1,
-        398459910,
-        20
-      ],
-      [
-        10,
-        0,
-        2,
-        2,
-        397750881,
-        20
-      ],
-      [
-        10,
-        1,
-        0,
-        1,
-        397419610,
-        20
-      ],
-      [
-        10,
-        1,
-        1,
-        2,
-        399473506,
-        20
-      ],
-      [
-        10,
-        1,
-        2,
-        0,
-        396947237,
-        20
-      ],
-      [
-        10,
-        2,
-        0,
-        2,
-        397392573,
-        20
-      ],
-      [
-        10,
-        2,
-        1,
-        0,
-        397852118,
-        20
-      ],
-      [
-        10,
-        2,
-        2,
-        1,
-        399787401,
-        20
-      ],
-      [
-        10,
-        3,
-        0,
-        0,
-        399791571,
-        20
-      ],
-      [
-        10,
-        3,
-        1,
-        1,
-        397600388,
-        20
-      ],
-      [
-        10,
-        3,
-        2,
-        2,
-        398602581,
-        20
-      ],
-      [
-        10,
-        4,
-        0,
-        1,
-        397639546,
-        20
-      ],
-      [
-        10,
-        4,
-        1,
-        2,
-        397083121,
-        20
-      ],
-      [
-        10,
-        4,
-        2,
-        0,
-        397741599,
-        20
-      ],
-      [
-        11,
-        0,
-        0,
-        0,
-        404363115,
-        20
-      ],
-      [
-        11,
-        0,
-        1,
-        1,
-        399497572,
-        20
-      ],
-      [
-        11,
-        0,
-        2,
-        2,
-        398454195,
-        20
-      ],
-      [
-        11,
-        1,
-        0,
-        1,
-        412344151,
-        20
-      ],
-      [
-        11,
-        1,
-        1,
-        2,
-        398604329,
-        20
-      ],
-      [
-        11,
-        1,
-        2,
-        0,
-        406482821,
-        20
-      ],
-      [
-        11,
-        2,
-        0,
-        2,
-        399375288,
-        20
-      ],
-      [
-        11,
-        2,
-        1,
-        0,
-        401428827,
-        20
-      ],
-      [
-        11,
-        2,
-        2,
-        1,
-        398285004,
-        20
-      ],
-      [
-        11,
-        3,
-        0,
-        0,
-        404551841,
-        20
-      ],
-      [
-        11,
-        3,
-        1,
-        1,
-        401227041,
-        20
-      ],
-      [
-        11,
-        3,
-        2,
-        2,
-        397620912,
-        20
-      ],
-      [
-        11,
-        4,
-        0,
-        1,
-        399929257,
-        20
-      ],
-      [
-        11,
-        4,
-        1,
-        2,
-        397650910,
-        20
-      ],
-      [
-        11,
-        4,
-        2,
-        0,
-        408106732,
-        20
-      ]
-    ],
-    [
-      [
-        0,
-        0,
-        0,
-        1,
-        391118879,
-        20
-      ],
-      [
-        0,
-        0,
-        1,
-        2,
-        391617776,
-        20
-      ],
-      [
-        0,
-        0,
-        2,
-        0,
-        390125375,
-        20
-      ],
-      [
-        0,
-        1,
-        0,
-        2,
-        392879889,
-        20
-      ],
-      [
-        0,
-        1,
-        1,
-        0,
-        389152801,
-        20
-      ],
-      [
-        0,
-        1,
-        2,
-        1,
-        390195511,
-        20
-      ],
-      [
-        0,
-        2,
-        0,
-        0,
-        389259553,
-        20
-      ],
-      [
-        0,
-        2,
-        1,
-        1,
-        391427387,
-        20
-      ],
-      [
-        0,
-        2,
-        2,
-        2,
-        390838260,
-        20
-      ],
-      [
-        0,
-        3,
-        0,
-        1,
-        392201521,
-        20
-      ],
-      [
-        0,
-        3,
-        1,
-        2,
-        389826022,
-        20
-      ],
-      [
-        0,
-        3,
-        2,
-        0,
-        389091052,
-        20
-      ],
-      [
-        0,
-        4,
-        0,
-        2,
-        392550370,
-        20
-      ],
-      [
-        0,
-        4,
-        1,
-        0,
-        388363278,
-        20
-      ],
-      [
-        0,
-        4,
-        2,
-        1,
-        390800637,
-        20
-      ],
-      [
-        1,
-        0,
-        0,
-        1,
-        417301155,
-        20
-      ],
-      [
-        1,
-        0,
-        1,
-        2,
-        413120595,
-        20
-      ],
-      [
-        1,
-        0,
-        2,
-        0,
-        425354370,
-        20
-      ],
-      [
-        1,
-        1,
-        0,
-        2,
-        415399577,
-        20
-      ],
-      [
-        1,
-        1,
-        1,
-        0,
-        425871132,
-        20
-      ],
-      [
-        1,
-        1,
-        2,
-        1,
-        419764677,
-        20
-      ],
-      [
-        1,
-        2,
-        0,
-        0,
-        425529453,
-        20
-      ],
-      [
-        1,
-        2,
-        1,
-        1,
-        418555439,
-        20
-      ],
-      [
-        1,
-        2,
-        2,
-        2,
-        413829405,
-        20
-      ],
-      [
-        1,
-        3,
-        0,
-        1,
-        413314851,
-        20
-      ],
-      [
-        1,
-        3,
-        1,
-        2,
-        413663957,
-        20
-      ],
-      [
-        1,
-        3,
-        2,
-        0,
-        426021986,
-        20
-      ],
-      [
-        1,
-        4,
-        0,
-        2,
-        411396692,
-        20
-      ],
-      [
-        1,
-        4,
-        1,
-        0,
-        424415791,
-        20
-      ],
-      [
-        1,
-        4,
-        2,
-        1,
-        416496681,
-        20
-      ],
-      [
-        2,
-        0,
-        0,
-        1,
-        416530189,
-        20
-      ],
-      [
-        2,
-        0,
-        1,
-        2,
-        409520887,
-        20
-      ],
-      [
-        2,
-        0,
-        2,
-        0,
-        418459083,
-        20
-      ],
-      [
-        2,
-        1,
-        0,
-        2,
-        410441147,
-        20
-      ],
-      [
-        2,
-        1,
-        1,
-        0,
-        415228540,
-        20
-      ],
-      [
-        2,
-        1,
-        2,
-        1,
-        417140441,
-        20
-      ],
-      [
-        2,
-        2,
-        0,
-        0,
-        415266984,
-        20
-      ],
-      [
-        2,
-        2,
-        1,
-        1,
-        412421121,
-        20
-      ],
-      [
-        2,
-        2,
-        2,
-        2,
-        409951313,
-        20
-      ],
-      [
-        2,
-        3,
-        0,
-        1,
-        415485597,
-        20
-      ],
-      [
-        2,
-        3,
-        1,
-        2,
-        409406433,
-        20
-      ],
-      [
-        2,
-        3,
-        2,
-        0,
-        416295400,
-        20
-      ],
-      [
-        2,
-        4,
-        0,
-        2,
-        411025936,
-        20
-      ],
-      [
-        2,
-        4,
-        1,
-        0,
-        414002197,
-        20
-      ],
-      [
-        2,
-        4,
-        2,
-        1,
-        413676726,
-        20
-      ],
-      [
-        3,
-        0,
-        0,
-        1,
-        383981696,
-        20
-      ],
-      [
-        3,
-        0,
-        1,
-        2,
-        396295241,
-        20
-      ],
-      [
-        3,
-        0,
-        2,
-        0,
-        383151308,
-        20
-      ],
-      [
-        3,
-        1,
-        0,
-        2,
-        392530102,
-        20
-      ],
-      [
-        3,
-        1,
-        1,
-        0,
-        381601942,
-        20
-      ],
-      [
-        3,
-        1,
-        2,
-        1,
-        384426456,
-        20
-      ],
-      [
-        3,
-        2,
-        0,
-        0,
-        382566104,
-        20
-      ],
-      [
-        3,
-        2,
-        1,
-        1,
-        384395048,
-        20
-      ],
-      [
-        3,
-        2,
-        2,
-        2,
-        393505478,
-        20
-      ],
-      [
-        3,
-        3,
-        0,
-        1,
-        386477552,
-        20
-      ],
-      [
-        3,
-        3,
-        1,
-        2,
-        393014208,
-        20
-      ],
-      [
-        3,
-        3,
-        2,
-        0,
-        382659654,
-        20
-      ],
-      [
-        3,
-        4,
-        0,
-        2,
-        394083919,
-        20
-      ],
-      [
-        3,
-        4,
-        1,
-        0,
-        383684772,
-        20
-      ],
-      [
-        3,
-        4,
-        2,
-        1,
-        382518372,
-        20
-      ],
-      [
-        4,
-        0,
-        0,
-        1,
-        409895460,
-        20
-      ],
-      [
-        4,
-        0,
-        1,
-        2,
-        415720721,
-        20
-      ],
-      [
-        4,
-        0,
-        2,
-        0,
-        405038531,
-        20
-      ],
-      [
-        4,
-        1,
-        0,
-        2,
-        414126308,
-        20
-      ],
-      [
-        4,
-        1,
-        1,
-        0,
-        405849697,
-        20
-      ],
-      [
-        4,
-        1,
-        2,
-        1,
-        408225839,
-        20
-      ],
-      [
-        4,
-        2,
-        0,
-        0,
-        407904178,
-        20
-      ],
-      [
-        4,
-        2,
-        1,
-        1,
-        411469974,
-        20
-      ],
-      [
-        4,
-        2,
-        2,
-        2,
-        414887323,
-        20
-      ],
-      [
-        4,
-        3,
-        0,
-        1,
-        409389770,
-        20
-      ],
-      [
-        4,
-        3,
-        1,
-        2,
-        415844584,
-        20
-      ],
-      [
-        4,
-        3,
-        2,
-        0,
-        406354593,
-        20
-      ],
-      [
-        4,
-        4,
-        0,
-        2,
-        416191577,
-        20
-      ],
-      [
-        4,
-        4,
-        1,
-        0,
-        406015207,
-        20
-      ],
-      [
-        4,
-        4,
-        2,
-        1,
-        411782228,
-        20
-      ],
-      [
-        5,
-        0,
-        0,
-        1,
-        398030878,
-        20
-      ],
-      [
-        5,
-        0,
-        1,
-        2,
-        405923452,
-        20
-      ],
-      [
-        5,
-        0,
-        2,
-        0,
-        396828532,
-        20
-      ],
-      [
-        5,
-        1,
-        0,
-        2,
-        401905758,
-        20
-      ],
-      [
-        5,
-        1,
-        1,
-        0,
-        394280248,
-        20
-      ],
-      [
-        5,
-        1,
-        2,
-        1,
-        400565121,
-        20
-      ],
-      [
-        5,
-        2,
-        0,
-        0,
-        396942200,
-        20
-      ],
-      [
-        5,
-        2,
-        1,
-        1,
-        401863132,
-        20
-      ],
-      [
-        5,
-        2,
-        2,
-        2,
-        405007879,
-        20
-      ],
-      [
-        5,
-        3,
-        0,
-        1,
-        401394975,
-        20
-      ],
-      [
-        5,
-        3,
-        1,
-        2,
-        405700332,
-        20
-      ],
-      [
-        5,
-        3,
-        2,
-        0,
-        395944421,
-        20
-      ],
-      [
-        5,
-        4,
-        0,
-        2,
-        405685405,
-        20
-      ],
-      [
-        5,
-        4,
-        1,
-        0,
-        397512869,
-        20
-      ],
-      [
-        5,
-        4,
-        2,
-        1,
-        400774444,
-        20
-      ],
-      [
-        6,
-        0,
-        0,
-        1,
-        409792115,
-        20
-      ],
-      [
-        6,
-        0,
-        1,
-        2,
-        409489698,
-        20
-      ],
-      [
-        6,
-        0,
-        2,
-        0,
-        412085024,
-        20
-      ],
-      [
-        6,
-        1,
-        0,
-        2,
-        407608257,
-        20
-      ],
-      [
-        6,
-        1,
-        1,
-        0,
-        413185954,
-        20
-      ],
-      [
-        6,
-        1,
-        2,
-        1,
-        408535320,
-        20
-      ],
-      [
-        6,
-        2,
-        0,
-        0,
-        410687003,
-        20
-      ],
-      [
-        6,
-        2,
-        1,
-        1,
-        408160819,
-        20
-      ],
-      [
-        6,
-        2,
-        2,
-        2,
-        407290506,
-        20
-      ],
-      [
-        6,
-        3,
-        0,
-        1,
-        406890825,
-        20
-      ],
-      [
-        6,
-        3,
-        1,
-        2,
-        408552338,
-        20
-      ],
-      [
-        6,
-        3,
-        2,
-        0,
-        409710504,
-        20
-      ],
-      [
-        6,
-        4,
-        0,
-        2,
-        408654702,
-        20
-      ],
-      [
-        6,
-        4,
-        1,
-        0,
-        409884613,
-        20
-      ],
-      [
-        6,
-        4,
-        2,
-        1,
-        407849792,
-        20
-      ],
-      [
-        7,
-        0,
-        0,
-        1,
-        409196305,
-        20
-      ],
-      [
-        7,
-        0,
-        1,
-        2,
-        415692809,
-        20
-      ],
-      [
-        7,
-        0,
-        2,
-        0,
-        416524702,
-        20
-      ],
-      [
-        7,
-        1,
-        0,
-        2,
-        418266384,
-        20
-      ],
-      [
-        7,
-        1,
-        1,
-        0,
-        415421963,
-        20
-      ],
-      [
-        7,
-        1,
-        2,
-        1,
-        412521586,
-        20
-      ],
-      [
-        7,
-        2,
-        0,
-        0,
-        413810328,
-        20
-      ],
-      [
-        7,
-        2,
-        1,
-        1,
-        408891691,
-        20
-      ],
-      [
-        7,
-        2,
-        2,
-        2,
-        412987775,
-        20
-      ],
-      [
-        7,
-        3,
-        0,
-        1,
-        410461111,
-        20
-      ],
-      [
-        7,
-        3,
-        1,
-        2,
-        416127194,
-        20
-      ],
-      [
-        7,
-        3,
-        2,
-        0,
-        415534161,
-        20
-      ],
-      [
-        7,
-        4,
-        0,
-        2,
-        415432172,
-        20
-      ],
-      [
-        7,
-        4,
-        1,
-        0,
-        415769214,
-        20
-      ],
-      [
-        7,
-        4,
-        2,
-        1,
-        410753616,
-        20
-      ],
-      [
-        8,
-        0,
-        0,
-        1,
-        401757744,
-        20
-      ],
-      [
-        8,
-        0,
-        1,
-        2,
-        397355878,
-        20
-      ],
-      [
-        8,
-        0,
-        2,
-        0,
-        397331002,
-        20
-      ],
-      [
-        8,
-        1,
-        0,
-        2,
-        397419279,
-        20
-      ],
-      [
-        8,
-        1,
-        1,
-        0,
-        398343565,
-        20
-      ],
-      [
-        8,
-        1,
-        2,
-        1,
-        402575455,
-        20
-      ],
-      [
-        8,
-        2,
-        0,
-        0,
-        398068831,
-        20
-      ],
-      [
-        8,
-        2,
-        1,
-        1,
-        403361554,
-        20
-      ],
-      [
-        8,
-        2,
-        2,
-        2,
-        395315312,
-        20
-      ],
-      [
-        8,
-        3,
-        0,
-        1,
-        402004668,
-        20
-      ],
-      [
-        8,
-        3,
-        1,
-        2,
-        398610413,
-        20
-      ],
-      [
-        8,
-        3,
-        2,
-        0,
-        399296031,
-        20
-      ],
-      [
-        8,
-        4,
-        0,
-        2,
-        396179970,
-        20
-      ],
-      [
-        8,
-        4,
-        1,
-        0,
-        397728800,
-        20
-      ],
-      [
-        8,
-        4,
-        2,
-        1,
-        400627395,
-        20
-      ],
-      [
-        9,
-        0,
-        0,
-        1,
-        401723778,
-        20
-      ],
-      [
-        9,
-        0,
-        1,
-        2,
-        407683774,
-        20
-      ],
-      [
-        9,
-        0,
-        2,
-        0,
-        402108382,
-        20
-      ],
-      [
-        9,
-        1,
-        0,
-        2,
-        405064106,
-        20
-      ],
-      [
-        9,
-        1,
-        1,
-        0,
-        410210442,
-        20
-      ],
-      [
-        9,
-        1,
-        2,
-        1,
-        402293685,
-        20
-      ],
-      [
-        9,
-        2,
-        0,
-        0,
-        405403846,
-        20
-      ],
-      [
-        9,
-        2,
-        1,
-        1,
-        404170702,
-        20
-      ],
-      [
-        9,
-        2,
-        2,
-        2,
-        400431499,
-        20
-      ],
-      [
-        9,
-        3,
-        0,
-        1,
-        402557955,
-        20
-      ],
-      [
-        9,
-        3,
-        1,
-        2,
-        404409513,
-        20
-      ],
-      [
-        9,
-        3,
-        2,
-        0,
-        402332052,
-        20
-      ],
-      [
-        9,
-        4,
-        0,
-        2,
-        406007948,
-        20
-      ],
-      [
-        9,
-        4,
-        1,
-        0,
-        401328808,
-        20
-      ],
-      [
-        9,
-        4,
-        2,
-        1,
-        398960863,
-        20
-      ],
-      [
-        10,
-        0,
-        0,
-        1,
-        399398118,
-        20
-      ],
-      [
-        10,
-        0,
-        1,
-        2,
-        398726608,
-        20
-      ],
-      [
-        10,
-        0,
-        2,
-        0,
-        399256634,
-        20
-      ],
-      [
-        10,
-        1,
-        0,
-        2,
-        397158706,
-        20
-      ],
-      [
-        10,
-        1,
-        1,
-        0,
-        399181334,
-        20
-      ],
-      [
-        10,
-        1,
-        2,
-        1,
-        399050060,
-        20
-      ],
-      [
-        10,
-        2,
-        0,
-        0,
-        400876230,
-        20
-      ],
-      [
-        10,
-        2,
-        1,
-        1,
-        398083386,
-        20
-      ],
-      [
-        10,
-        2,
-        2,
-        2,
-        398137869,
-        20
-      ],
-      [
-        10,
-        3,
-        0,
-        1,
-        396832428,
-        20
-      ],
-      [
-        10,
-        3,
-        1,
-        2,
-        400602169,
-        20
-      ],
-      [
-        10,
-        3,
-        2,
-        0,
-        396244013,
-        20
-      ],
-      [
-        10,
-        4,
-        0,
-        2,
-        397488353,
-        20
-      ],
-      [
-        10,
-        4,
-        1,
-        0,
-        395955344,
-        20
-      ],
-      [
-        10,
-        4,
-        2,
-        1,
-        400699898,
-        20
-      ],
-      [
-        11,
-        0,
-        0,
-        1,
-        400418422,
-        20
-      ],
-      [
-        11,
-        0,
-        1,
-        2,
-        399933222,
-        20
-      ],
-      [
-        11,
-        0,
-        2,
-        0,
-        403291120,
-        20
-      ],
-      [
-        11,
-        1,
-        0,
-        2,
-        398137941,
-        20
-      ],
-      [
-        11,
-        1,
-        1,
-        0,
-        402359482,
-        20
-      ],
-      [
-        11,
-        1,
-        2,
-        1,
-        399030500,
-        20
-      ],
-      [
-        11,
-        2,
-        0,
-        0,
-        405938856,
-        20
-      ],
-      [
-        11,
-        2,
-        1,
-        1,
-        399925604,
-        20
-      ],
-      [
-        11,
-        2,
-        2,
-        2,
-        401536579,
-        20
-      ],
-      [
-        11,
-        3,
-        0,
-        1,
-        398310101,
-        20
-      ],
-      [
-        11,
-        3,
-        1,
-        2,
-        396764539,
-        20
-      ],
-      [
-        11,
-        3,
-        2,
-        0,
-        403057840,
-        20
-      ],
-      [
-        11,
-        4,
-        0,
-        2,
-        401473546,
-        20
-      ],
-      [
-        11,
-        4,
-        1,
-        0,
-        402514270,
-        20
-      ],
-      [
-        11,
-        4,
-        2,
-        1,
-        398776693,
-        20
-      ]
-    ],
-    [
-      [
-        0,
-        0,
-        0,
-        2,
-        392398867,
-        20
-      ],
-      [
-        0,
-        0,
-        1,
-        0,
-        391640733,
-        20
-      ],
-      [
-        0,
-        0,
-        2,
-        1,
-        390628852,
-        20
-      ],
-      [
-        0,
-        1,
-        0,
-        0,
-        390727778,
-        20
-      ],
-      [
-        0,
-        1,
-        1,
-        1,
-        391954995,
-        20
-      ],
-      [
-        0,
-        1,
-        2,
-        2,
-        389608618,
-        20
-      ],
-      [
-        0,
-        2,
-        0,
-        1,
-        392312438,
-        20
-      ],
-      [
-        0,
-        2,
-        1,
-        2,
-        390415916,
-        20
-      ],
-      [
-        0,
-        2,
-        2,
-        0,
-        391103909,
-        20
-      ],
-      [
-        0,
-        3,
-        0,
-        2,
-        390746269,
-        20
-      ],
-      [
-        0,
-        3,
-        1,
-        0,
-        388027100,
-        20
-      ],
-      [
-        0,
-        3,
-        2,
-        1,
-        390572243,
-        20
-      ],
-      [
-        0,
-        4,
-        0,
-        0,
-        390167363,
-        20
-      ],
-      [
-        0,
-        4,
-        1,
-        1,
-        390105768,
-        20
-      ],
-      [
-        0,
-        4,
-        2,
-        2,
-        388638312,
-        20
-      ],
-      [
-        1,
-        0,
-        0,
-        2,
-        413471831,
-        20
-      ],
-      [
-        1,
-        0,
-        1,
-        0,
-        423333809,
-        20
-      ],
-      [
-        1,
-        0,
-        2,
-        1,
-        419617489,
-        20
-      ],
-      [
-        1,
-        1,
-        0,
-        0,
-        426029195,
-        20
-      ],
-      [
-        1,
-        1,
-        1,
-        1,
-        419005100,
-        20
-      ],
-      [
-        1,
-        1,
-        2,
-        2,
-        412248957,
-        20
-      ],
-      [
-        1,
-        2,
-        0,
-        1,
-        418608116,
-        20
-      ],
-      [
-        1,
-        2,
-        1,
-        2,
-        411330304,
-        20
-      ],
-      [
-        1,
-        2,
-        2,
-        0,
-        421699996,
-        20
-      ],
-      [
-        1,
-        3,
-        0,
-        2,
-        415284304,
-        20
-      ],
-      [
-        1,
-        3,
-        1,
-        0,
-        419300068,
-        20
-      ],
-      [
-        1,
-        3,
-        2,
-        1,
-        418295133,
-        20
-      ],
-      [
-        1,
-        4,
-        0,
-        0,
-        421989713,
-        20
-      ],
-      [
-        1,
-        4,
-        1,
-        1,
-        417970594,
-        20
-      ],
-      [
-        1,
-        4,
-        2,
-        2,
-        412482554,
-        20
-      ],
-      [
-        2,
-        0,
-        0,
-        2,
-        407937288,
-        20
-      ],
-      [
-        2,
-        0,
-        1,
-        0,
-        415140422,
-        20
-      ],
-      [
-        2,
-        0,
-        2,
-        1,
-        416208029,
-        20
-      ],
-      [
-        2,
-        1,
-        0,
-        0,
-        418609682,
-        20
-      ],
-      [
-        2,
-        1,
-        1,
-        1,
-        414873163,
-        20
-      ],
-      [
-        2,
-        1,
-        2,
-        2,
-        411368058,
-        20
-      ],
-      [
-        2,
-        2,
-        0,
-        1,
-        412806141,
-        20
-      ],
-      [
-        2,
-        2,
-        1,
-        2,
-        408288734,
-        20
-      ],
-      [
-        2,
-        2,
-        2,
-        0,
-        415659003,
-        20
-      ],
-      [
-        2,
-        3,
-        0,
-        2,
-        409113015,
-        20
-      ],
-      [
-        2,
-        3,
-        1,
-        0,
-        416342638,
-        20
-      ],
-      [
-        2,
-        3,
-        2,
-        1,
-        417575305,
-        20
-      ],
-      [
-        2,
-        4,
-        0,
-        0,
-        417508230,
-        20
-      ],
-      [
-        2,
-        4,
-        1,
-        1,
-        413842895,
-        20
-      ],
-      [
-        2,
-        4,
-        2,
-        2,
-        410965579,
-        20
-      ],
-      [
-        3,
-        0,
-        0,
-        2,
-        393265037,
-        20
-      ],
-      [
-        3,
-        0,
-        1,
-        0,
-        381630870,
-        20
-      ],
-      [
-        3,
-        0,
-        2,
-        1,
-        387350666,
-        20
-      ],
-      [
-        3,
-        1,
-        0,
-        0,
-        381687608,
-        20
-      ],
-      [
-        3,
-        1,
-        1,
-        1,
-        386132620,
-        20
-      ],
-      [
-        3,
-        1,
-        2,
-        2,
-        395108835,
-        20
-      ],
-      [
-        3,
-        2,
-        0,
-        1,
-        383764893,
-        20
-      ],
-      [
-        3,
-        2,
-        1,
-        2,
-        394582247,
-        20
-      ],
-      [
-        3,
-        2,
-        2,
-        0,
-        380587134,
-        20
-      ],
-      [
-        3,
-        3,
-        0,
-        2,
-        395331637,
-        20
-      ],
-      [
-        3,
-        3,
-        1,
-        0,
-        384583123,
-        20
-      ],
-      [
-        3,
-        3,
-        2,
-        1,
-        385236902,
-        20
-      ],
-      [
-        3,
-        4,
-        0,
-        0,
-        381207542,
-        20
-      ],
-      [
-        3,
-        4,
-        1,
-        1,
-        384327636,
-        20
-      ],
-      [
-        3,
-        4,
-        2,
-        2,
-        396807643,
-        20
-      ],
-      [
-        4,
-        0,
-        0,
-        2,
-        416839112,
-        20
-      ],
-      [
-        4,
-        0,
-        1,
-        0,
-        408127817,
-        20
-      ],
-      [
-        4,
-        0,
-        2,
-        1,
-        411297833,
-        20
-      ],
-      [
-        4,
-        1,
-        0,
-        0,
-        408447599,
-        20
-      ],
-      [
-        4,
-        1,
-        1,
-        1,
-        412617545,
-        20
-      ],
-      [
-        4,
-        1,
-        2,
-        2,
-        417396003,
-        20
-      ],
-      [
-        4,
-        2,
-        0,
-        1,
-        409771299,
-        20
-      ],
-      [
-        4,
-        2,
-        1,
-        2,
-        413829333,
-        20
-      ],
-      [
-        4,
-        2,
-        2,
-        0,
-        404310430,
-        20
-      ],
-      [
-        4,
-        3,
-        0,
-        2,
-        416589772,
-        20
-      ],
-      [
-        4,
-        3,
-        1,
-        0,
-        406271335,
-        20
-      ],
-      [
-        4,
-        3,
-        2,
-        1,
-        411157627,
-        20
-      ],
-      [
-        4,
-        4,
-        0,
-        0,
-        403885304,
-        20
-      ],
-      [
-        4,
-        4,
-        1,
-        1,
-        408290101,
-        20
-      ],
-      [
-        4,
-        4,
-        2,
-        2,
-        415116006,
-        20
-      ],
-      [
-        5,
-        0,
-        0,
-        2,
-        401806353,
-        20
-      ],
-      [
-        5,
-        0,
-        1,
-        0,
-        397955429,
-        20
-      ],
-      [
-        5,
-        0,
-        2,
-        1,
-        398420422,
-        20
-      ],
-      [
-        5,
-        1,
-        0,
-        0,
-        394639199,
-        20
-      ],
-      [
-        5,
-        1,
-        1,
-        1,
-        404645671,
-        20
-      ],
-      [
-        5,
-        1,
-        2,
-        2,
-        403641254,
-        20
-      ],
-      [
-        5,
-        2,
-        0,
-        1,
-        401342065,
-        20
-      ],
-      [
-        5,
-        2,
-        1,
-        2,
-        402729292,
-        20
-      ],
-      [
-        5,
-        2,
-        2,
-        0,
-        395918306,
-        20
-      ],
-      [
-        5,
-        3,
-        0,
-        2,
-        400669753,
-        20
-      ],
-      [
-        5,
-        3,
-        1,
-        0,
-        394704748,
-        20
-      ],
-      [
-        5,
-        3,
-        2,
-        1,
-        399036928,
-        20
-      ],
-      [
-        5,
-        4,
-        0,
-        0,
-        398119465,
-        20
-      ],
-      [
-        5,
-        4,
-        1,
-        1,
-        403269492,
-        20
-      ],
-      [
-        5,
-        4,
-        2,
-        2,
-        406185752,
-        20
-      ],
-      [
-        6,
-        0,
-        0,
-        2,
-        407481459,
-        20
-      ],
-      [
-        6,
-        0,
-        1,
-        0,
-        413290776,
-        20
-      ],
-      [
-        6,
-        0,
-        2,
-        1,
-        407390230,
-        20
-      ],
-      [
-        6,
-        1,
-        0,
-        0,
-        410517577,
-        20
-      ],
-      [
-        6,
-        1,
-        1,
-        1,
-        411184330,
-        20
-      ],
-      [
-        6,
-        1,
-        2,
-        2,
-        409018943,
-        20
-      ],
-      [
-        6,
-        2,
-        0,
-        1,
-        410552725,
-        20
-      ],
-      [
-        6,
-        2,
-        1,
-        2,
-        409250629,
-        20
-      ],
-      [
-        6,
-        2,
-        2,
-        0,
-        412149968,
-        20
-      ],
-      [
-        6,
-        3,
-        0,
-        2,
-        406014090,
-        20
-      ],
-      [
-        6,
-        3,
-        1,
-        0,
-        411497735,
-        20
-      ],
-      [
-        6,
-        3,
-        2,
-        1,
-        408726096,
-        20
-      ],
-      [
-        6,
-        4,
-        0,
-        0,
-        412317456,
-        20
-      ],
-      [
-        6,
-        4,
-        1,
-        1,
-        407275673,
-        20
-      ],
-      [
-        6,
-        4,
-        2,
-        2,
-        407347940,
-        20
-      ],
-      [
-        7,
-        0,
-        0,
-        2,
-        418498635,
-        20
-      ],
-      [
-        7,
-        0,
-        1,
-        0,
-        418009717,
-        20
-      ],
-      [
-        7,
-        0,
-        2,
-        1,
-        411928832,
-        20
-      ],
-      [
-        7,
-        1,
-        0,
-        0,
-        416370849,
-        20
-      ],
-      [
-        7,
-        1,
-        1,
-        1,
-        412464208,
-        20
-      ],
-      [
-        7,
-        1,
-        2,
-        2,
-        416155316,
-        20
-      ],
-      [
-        7,
-        2,
-        0,
-        1,
-        411415310,
-        20
-      ],
-      [
-        7,
-        2,
-        1,
-        2,
-        419274889,
-        20
-      ],
-      [
-        7,
-        2,
-        2,
-        0,
-        414029995,
-        20
-      ],
-      [
-        7,
-        3,
-        0,
-        2,
-        418200932,
-        20
-      ],
-      [
-        7,
-        3,
-        1,
-        0,
-        414475703,
-        20
-      ],
-      [
-        7,
-        3,
-        2,
-        1,
-        415770477,
-        20
-      ],
-      [
-        7,
-        4,
-        0,
-        0,
-        417622829,
-        20
-      ],
-      [
-        7,
-        4,
-        1,
-        1,
-        410164145,
-        20
-      ],
-      [
-        7,
-        4,
-        2,
-        2,
-        416712740,
-        20
-      ],
-      [
-        8,
-        0,
-        0,
-        2,
-        395668712,
-        20
-      ],
-      [
-        8,
-        0,
-        1,
-        0,
-        397533897,
-        20
-      ],
-      [
-        8,
-        0,
-        2,
-        1,
-        404552757,
-        20
-      ],
-      [
-        8,
-        1,
-        0,
-        0,
-        399555117,
-        20
-      ],
-      [
-        8,
-        1,
-        1,
-        1,
-        402240282,
-        20
-      ],
-      [
-        8,
-        1,
-        2,
-        2,
-        396408275,
-        20
-      ],
-      [
-        8,
-        2,
-        0,
-        1,
-        400702905,
-        20
-      ],
-      [
-        8,
-        2,
-        1,
-        2,
-        400201043,
-        20
-      ],
-      [
-        8,
-        2,
-        2,
-        0,
-        397991331,
-        20
-      ],
-      [
-        8,
-        3,
-        0,
-        2,
-        398953411,
-        20
-      ],
-      [
-        8,
-        3,
-        1,
-        0,
-        397748727,
-        20
-      ],
-      [
-        8,
-        3,
-        2,
-        1,
-        401025365,
-        20
-      ],
-      [
-        8,
-        4,
-        0,
-        0,
-        400613341,
-        20
-      ],
-      [
-        8,
-        4,
-        1,
-        1,
-        399345169,
-        20
-      ],
-      [
-        8,
-        4,
-        2,
-        2,
-        396135489,
-        20
-      ],
-      [
-        9,
-        0,
-        0,
-        2,
-        404795665,
-        20
-      ],
-      [
-        9,
-        0,
-        1,
-        0,
-        403133943,
-        20
-      ],
-      [
-        9,
-        0,
-        2,
-        1,
-        401731258,
-        20
-      ],
-      [
-        9,
-        1,
-        0,
-        0,
-        407162705,
-        20
-      ],
-      [
-        9,
-        1,
-        1,
-        1,
-        400397844,
-        20
-      ],
-      [
-        9,
-        1,
-        2,
-        2,
-        407465505,
-        20
-      ],
-      [
-        9,
-        2,
-        0,
-        1,
-        398853022,
-        20
-      ],
-      [
-        9,
-        2,
-        1,
-        2,
-        404692786,
-        20
-      ],
-      [
-        9,
-        2,
-        2,
-        0,
-        406475186,
-        20
-      ],
-      [
-        9,
-        3,
-        0,
-        2,
-        403562674,
-        20
-      ],
-      [
-        9,
-        3,
-        1,
-        0,
-        404688590,
-        20
-      ],
-      [
-        9,
-        3,
-        2,
-        1,
-        401072366,
-        20
-      ],
-      [
-        9,
-        4,
-        0,
-        0,
-        404805361,
-        20
-      ],
-      [
-        9,
-        4,
-        1,
-        1,
-        399746446,
-        20
-      ],
-      [
-        9,
-        4,
-        2,
-        2,
-        401864838,
-        20
-      ],
-      [
-        10,
-        0,
-        0,
-        2,
-        396202140,
-        20
-      ],
-      [
-        10,
-        0,
-        1,
-        0,
-        397296326,
-        20
-      ],
-      [
-        10,
-        0,
-        2,
-        1,
-        398648238,
-        20
-      ],
-      [
-        10,
-        1,
-        0,
-        0,
-        398060745,
-        20
-      ],
-      [
-        10,
-        1,
-        1,
-        1,
-        398060285,
-        20
-      ],
-      [
-        10,
-        1,
-        2,
-        2,
-        398532703,
-        20
-      ],
-      [
-        10,
-        2,
-        0,
-        1,
-        399501494,
-        20
-      ],
-      [
-        10,
-        2,
-        1,
-        2,
-        397185503,
-        20
-      ],
-      [
-        10,
-        2,
-        2,
-        0,
-        400630066,
-        20
-      ],
-      [
-        10,
-        3,
-        0,
-        2,
-        399244725,
-        20
-      ],
-      [
-        10,
-        3,
-        1,
-        0,
-        395799340,
-        20
-      ],
-      [
-        10,
-        3,
-        2,
-        1,
-        395519515,
-        20
-      ],
-      [
-        10,
-        4,
-        0,
-        0,
-        399305360,
-        20
-      ],
-      [
-        10,
-        4,
-        1,
-        1,
-        396281869,
-        20
-      ],
-      [
-        10,
-        4,
-        2,
-        2,
-        398113652,
-        20
-      ],
-      [
-        11,
-        0,
-        0,
-        2,
-        399957610,
-        20
-      ],
-      [
-        11,
-        0,
-        1,
-        0,
-        404702506,
-        20
-      ],
-      [
-        11,
-        0,
-        2,
-        1,
-        402169798,
-        20
-      ],
-      [
-        11,
-        1,
-        0,
-        0,
-        402122029,
-        20
-      ],
-      [
-        11,
-        1,
-        1,
-        1,
-        398792092,
-        20
-      ],
-      [
-        11,
-        1,
-        2,
-        2,
-        400959095,
-        20
-      ],
-      [
-        11,
-        2,
-        0,
-        1,
-        398505405,
-        20
-      ],
-      [
-        11,
-        2,
-        1,
-        2,
-        399884227,
-        20
-      ],
-      [
-        11,
-        2,
-        2,
-        0,
-        405417745,
-        20
-      ],
-      [
-        11,
-        3,
-        0,
-        2,
-        402021034,
-        20
-      ],
-      [
-        11,
-        3,
-        1,
-        0,
-        407786136,
-        20
-      ],
-      [
-        11,
-        3,
-        2,
-        1,
-        397000050,
-        20
-      ],
-      [
-        11,
-        4,
-        0,
-        0,
-        399979208,
-        20
-      ],
-      [
-        11,
-        4,
-        1,
-        1,
-        399887296,
-        20
-      ],
-      [
-        11,
-        4,
-        2,
-        2,
-        396192264,
-        20
-      ]
-    ]
-  ],
+  },
   "sample_columns": [
     "layer",
     "round",
     "order",
     "arm",
-    "elapsed_ns",
-    "timer_pair_ns"
+    "elapsed_ns"
   ],
   "sample_calls": 32,
+  "timer_pair_ns": 20,
+  "samples": [
+    [
+      [0, 0, 0, 0, 387464752],
+      [0, 0, 1, 1, 391730085],
+      [0, 0, 2, 2, 392418861],
+      [0, 1, 0, 1, 391789511],
+      [0, 1, 1, 2, 389817242],
+      [0, 1, 2, 0, 386808707],
+      [0, 2, 0, 2, 391972248],
+      [0, 2, 1, 0, 389421564],
+      [0, 2, 2, 1, 391207876],
+      [0, 3, 0, 0, 387771450],
+      [0, 3, 1, 1, 392751065],
+      [0, 3, 2, 2, 392139961],
+      [0, 4, 0, 1, 391748177],
+      [0, 4, 1, 2, 391893571],
+      [0, 4, 2, 0, 389610369],
+      [1, 0, 0, 0, 425037639],
+      [1, 0, 1, 1, 417555848],
+      [1, 0, 2, 2, 411881552],
+      [1, 1, 0, 1, 421251967],
+      [1, 1, 1, 2, 414044906],
+      [1, 1, 2, 0, 425250926],
+      [1, 2, 0, 2, 413198539],
+      [1, 2, 1, 0, 424579379],
+      [1, 2, 2, 1, 416563978],
+      [1, 3, 0, 0, 424676134],
+      [1, 3, 1, 1, 418975417],
+      [1, 3, 2, 2, 414604598],
+      [1, 4, 0, 1, 417601833],
+      [1, 4, 1, 2, 415598506],
+      [1, 4, 2, 0, 422230933],
+      [2, 0, 0, 0, 416484457],
+      [2, 0, 1, 1, 414920874],
+      [2, 0, 2, 2, 408928810],
+      [2, 1, 0, 1, 411401011],
+      [2, 1, 1, 2, 407928406],
+      [2, 1, 2, 0, 417919737],
+      [2, 2, 0, 2, 409582715],
+      [2, 2, 1, 0, 416697667],
+      [2, 2, 2, 1, 416858031],
+      [2, 3, 0, 0, 415667217],
+      [2, 3, 1, 1, 417544852],
+      [2, 3, 2, 2, 409935975],
+      [2, 4, 0, 1, 414526000],
+      [2, 4, 1, 2, 409173457],
+      [2, 4, 2, 0, 417198007],
+      [3, 0, 0, 0, 382849421],
+      [3, 0, 1, 1, 383505635],
+      [3, 0, 2, 2, 395379390],
+      [3, 1, 0, 1, 386791253],
+      [3, 1, 1, 2, 395689735],
+      [3, 1, 2, 0, 383240652],
+      [3, 2, 0, 2, 396413707],
+      [3, 2, 1, 0, 381189304],
+      [3, 2, 2, 1, 384142710],
+      [3, 3, 0, 0, 382868329],
+      [3, 3, 1, 1, 384978731],
+      [3, 3, 2, 2, 394144445],
+      [3, 4, 0, 1, 384223485],
+      [3, 4, 1, 2, 396855447],
+      [3, 4, 2, 0, 382123447],
+      [4, 0, 0, 0, 405596819],
+      [4, 0, 1, 1, 411399551],
+      [4, 0, 2, 2, 414737387],
+      [4, 1, 0, 1, 410500386],
+      [4, 1, 1, 2, 414618217],
+      [4, 1, 2, 0, 408140800],
+      [4, 2, 0, 2, 415745707],
+      [4, 2, 1, 0, 405629280],
+      [4, 2, 2, 1, 409088554],
+      [4, 3, 0, 0, 406102822],
+      [4, 3, 1, 1, 408427967],
+      [4, 3, 2, 2, 414186888],
+      [4, 4, 0, 1, 411118560],
+      [4, 4, 1, 2, 415917810],
+      [4, 4, 2, 0, 409987801],
+      [5, 0, 0, 0, 397190679],
+      [5, 0, 1, 1, 400913298],
+      [5, 0, 2, 2, 402540823],
+      [5, 1, 0, 1, 402013826],
+      [5, 1, 1, 2, 403862327],
+      [5, 1, 2, 0, 394072383],
+      [5, 2, 0, 2, 404107410],
+      [5, 2, 1, 0, 394099116],
+      [5, 2, 2, 1, 401769165],
+      [5, 3, 0, 0, 395440797],
+      [5, 3, 1, 1, 399133400],
+      [5, 3, 2, 2, 402983046],
+      [5, 4, 0, 1, 400945574],
+      [5, 4, 1, 2, 403309142],
+      [5, 4, 2, 0, 398688901],
+      [6, 0, 0, 0, 412647336],
+      [6, 0, 1, 1, 407801233],
+      [6, 0, 2, 2, 409171846],
+      [6, 1, 0, 1, 408989305],
+      [6, 1, 1, 2, 407996173],
+      [6, 1, 2, 0, 410597846],
+      [6, 2, 0, 2, 407443588],
+      [6, 2, 1, 0, 410943457],
+      [6, 2, 2, 1, 406908317],
+      [6, 3, 0, 0, 409378765],
+      [6, 3, 1, 1, 405221945],
+      [6, 3, 2, 2, 410351493],
+      [6, 4, 0, 1, 408189006],
+      [6, 4, 1, 2, 408158501],
+      [6, 4, 2, 0, 409191810],
+      [7, 0, 0, 0, 415946585],
+      [7, 0, 1, 1, 414213896],
+      [7, 0, 2, 2, 418625717],
+      [7, 1, 0, 1, 408605943],
+      [7, 1, 1, 2, 414293178],
+      [7, 1, 2, 0, 413346804],
+      [7, 2, 0, 2, 418192451],
+      [7, 2, 1, 0, 414918538],
+      [7, 2, 2, 1, 411469325],
+      [7, 3, 0, 0, 416279464],
+      [7, 3, 1, 1, 412065056],
+      [7, 3, 2, 2, 416317869],
+      [7, 4, 0, 1, 413147141],
+      [7, 4, 1, 2, 417847653],
+      [7, 4, 2, 0, 413528229],
+      [8, 0, 0, 0, 399867181],
+      [8, 0, 1, 1, 405194042],
+      [8, 0, 2, 2, 398764003],
+      [8, 1, 0, 1, 401908617],
+      [8, 1, 1, 2, 394897247],
+      [8, 1, 2, 0, 396132739],
+      [8, 2, 0, 2, 398262055],
+      [8, 2, 1, 0, 395036574],
+      [8, 2, 2, 1, 404252803],
+      [8, 3, 0, 0, 395979366],
+      [8, 3, 1, 1, 403156910],
+      [8, 3, 2, 2, 400480677],
+      [8, 4, 0, 1, 405042473],
+      [8, 4, 1, 2, 399015449],
+      [8, 4, 2, 0, 402227983],
+      [9, 0, 0, 0, 402813837],
+      [9, 0, 1, 1, 399596599],
+      [9, 0, 2, 2, 404078203],
+      [9, 1, 0, 1, 400683973],
+      [9, 1, 1, 2, 404242965],
+      [9, 1, 2, 0, 405403996],
+      [9, 2, 0, 2, 400693344],
+      [9, 2, 1, 0, 405471647],
+      [9, 2, 2, 1, 400434071],
+      [9, 3, 0, 0, 406780876],
+      [9, 3, 1, 1, 398986196],
+      [9, 3, 2, 2, 402394595],
+      [9, 4, 0, 1, 403890115],
+      [9, 4, 1, 2, 403654643],
+      [9, 4, 2, 0, 404292182],
+      [10, 0, 0, 0, 396422455],
+      [10, 0, 1, 1, 398459910],
+      [10, 0, 2, 2, 397750881],
+      [10, 1, 0, 1, 397419610],
+      [10, 1, 1, 2, 399473506],
+      [10, 1, 2, 0, 396947237],
+      [10, 2, 0, 2, 397392573],
+      [10, 2, 1, 0, 397852118],
+      [10, 2, 2, 1, 399787401],
+      [10, 3, 0, 0, 399791571],
+      [10, 3, 1, 1, 397600388],
+      [10, 3, 2, 2, 398602581],
+      [10, 4, 0, 1, 397639546],
+      [10, 4, 1, 2, 397083121],
+      [10, 4, 2, 0, 397741599],
+      [11, 0, 0, 0, 404363115],
+      [11, 0, 1, 1, 399497572],
+      [11, 0, 2, 2, 398454195],
+      [11, 1, 0, 1, 412344151],
+      [11, 1, 1, 2, 398604329],
+      [11, 1, 2, 0, 406482821],
+      [11, 2, 0, 2, 399375288],
+      [11, 2, 1, 0, 401428827],
+      [11, 2, 2, 1, 398285004],
+      [11, 3, 0, 0, 404551841],
+      [11, 3, 1, 1, 401227041],
+      [11, 3, 2, 2, 397620912],
+      [11, 4, 0, 1, 399929257],
+      [11, 4, 1, 2, 397650910],
+      [11, 4, 2, 0, 408106732]
+    ],
+    [
+      [0, 0, 0, 1, 391118879],
+      [0, 0, 1, 2, 391617776],
+      [0, 0, 2, 0, 390125375],
+      [0, 1, 0, 2, 392879889],
+      [0, 1, 1, 0, 389152801],
+      [0, 1, 2, 1, 390195511],
+      [0, 2, 0, 0, 389259553],
+      [0, 2, 1, 1, 391427387],
+      [0, 2, 2, 2, 390838260],
+      [0, 3, 0, 1, 392201521],
+      [0, 3, 1, 2, 389826022],
+      [0, 3, 2, 0, 389091052],
+      [0, 4, 0, 2, 392550370],
+      [0, 4, 1, 0, 388363278],
+      [0, 4, 2, 1, 390800637],
+      [1, 0, 0, 1, 417301155],
+      [1, 0, 1, 2, 413120595],
+      [1, 0, 2, 0, 425354370],
+      [1, 1, 0, 2, 415399577],
+      [1, 1, 1, 0, 425871132],
+      [1, 1, 2, 1, 419764677],
+      [1, 2, 0, 0, 425529453],
+      [1, 2, 1, 1, 418555439],
+      [1, 2, 2, 2, 413829405],
+      [1, 3, 0, 1, 413314851],
+      [1, 3, 1, 2, 413663957],
+      [1, 3, 2, 0, 426021986],
+      [1, 4, 0, 2, 411396692],
+      [1, 4, 1, 0, 424415791],
+      [1, 4, 2, 1, 416496681],
+      [2, 0, 0, 1, 416530189],
+      [2, 0, 1, 2, 409520887],
+      [2, 0, 2, 0, 418459083],
+      [2, 1, 0, 2, 410441147],
+      [2, 1, 1, 0, 415228540],
+      [2, 1, 2, 1, 417140441],
+      [2, 2, 0, 0, 415266984],
+      [2, 2, 1, 1, 412421121],
+      [2, 2, 2, 2, 409951313],
+      [2, 3, 0, 1, 415485597],
+      [2, 3, 1, 2, 409406433],
+      [2, 3, 2, 0, 416295400],
+      [2, 4, 0, 2, 411025936],
+      [2, 4, 1, 0, 414002197],
+      [2, 4, 2, 1, 413676726],
+      [3, 0, 0, 1, 383981696],
+      [3, 0, 1, 2, 396295241],
+      [3, 0, 2, 0, 383151308],
+      [3, 1, 0, 2, 392530102],
+      [3, 1, 1, 0, 381601942],
+      [3, 1, 2, 1, 384426456],
+      [3, 2, 0, 0, 382566104],
+      [3, 2, 1, 1, 384395048],
+      [3, 2, 2, 2, 393505478],
+      [3, 3, 0, 1, 386477552],
+      [3, 3, 1, 2, 393014208],
+      [3, 3, 2, 0, 382659654],
+      [3, 4, 0, 2, 394083919],
+      [3, 4, 1, 0, 383684772],
+      [3, 4, 2, 1, 382518372],
+      [4, 0, 0, 1, 409895460],
+      [4, 0, 1, 2, 415720721],
+      [4, 0, 2, 0, 405038531],
+      [4, 1, 0, 2, 414126308],
+      [4, 1, 1, 0, 405849697],
+      [4, 1, 2, 1, 408225839],
+      [4, 2, 0, 0, 407904178],
+      [4, 2, 1, 1, 411469974],
+      [4, 2, 2, 2, 414887323],
+      [4, 3, 0, 1, 409389770],
+      [4, 3, 1, 2, 415844584],
+      [4, 3, 2, 0, 406354593],
+      [4, 4, 0, 2, 416191577],
+      [4, 4, 1, 0, 406015207],
+      [4, 4, 2, 1, 411782228],
+      [5, 0, 0, 1, 398030878],
+      [5, 0, 1, 2, 405923452],
+      [5, 0, 2, 0, 396828532],
+      [5, 1, 0, 2, 401905758],
+      [5, 1, 1, 0, 394280248],
+      [5, 1, 2, 1, 400565121],
+      [5, 2, 0, 0, 396942200],
+      [5, 2, 1, 1, 401863132],
+      [5, 2, 2, 2, 405007879],
+      [5, 3, 0, 1, 401394975],
+      [5, 3, 1, 2, 405700332],
+      [5, 3, 2, 0, 395944421],
+      [5, 4, 0, 2, 405685405],
+      [5, 4, 1, 0, 397512869],
+      [5, 4, 2, 1, 400774444],
+      [6, 0, 0, 1, 409792115],
+      [6, 0, 1, 2, 409489698],
+      [6, 0, 2, 0, 412085024],
+      [6, 1, 0, 2, 407608257],
+      [6, 1, 1, 0, 413185954],
+      [6, 1, 2, 1, 408535320],
+      [6, 2, 0, 0, 410687003],
+      [6, 2, 1, 1, 408160819],
+      [6, 2, 2, 2, 407290506],
+      [6, 3, 0, 1, 406890825],
+      [6, 3, 1, 2, 408552338],
+      [6, 3, 2, 0, 409710504],
+      [6, 4, 0, 2, 408654702],
+      [6, 4, 1, 0, 409884613],
+      [6, 4, 2, 1, 407849792],
+      [7, 0, 0, 1, 409196305],
+      [7, 0, 1, 2, 415692809],
+      [7, 0, 2, 0, 416524702],
+      [7, 1, 0, 2, 418266384],
+      [7, 1, 1, 0, 415421963],
+      [7, 1, 2, 1, 412521586],
+      [7, 2, 0, 0, 413810328],
+      [7, 2, 1, 1, 408891691],
+      [7, 2, 2, 2, 412987775],
+      [7, 3, 0, 1, 410461111],
+      [7, 3, 1, 2, 416127194],
+      [7, 3, 2, 0, 415534161],
+      [7, 4, 0, 2, 415432172],
+      [7, 4, 1, 0, 415769214],
+      [7, 4, 2, 1, 410753616],
+      [8, 0, 0, 1, 401757744],
+      [8, 0, 1, 2, 397355878],
+      [8, 0, 2, 0, 397331002],
+      [8, 1, 0, 2, 397419279],
+      [8, 1, 1, 0, 398343565],
+      [8, 1, 2, 1, 402575455],
+      [8, 2, 0, 0, 398068831],
+      [8, 2, 1, 1, 403361554],
+      [8, 2, 2, 2, 395315312],
+      [8, 3, 0, 1, 402004668],
+      [8, 3, 1, 2, 398610413],
+      [8, 3, 2, 0, 399296031],
+      [8, 4, 0, 2, 396179970],
+      [8, 4, 1, 0, 397728800],
+      [8, 4, 2, 1, 400627395],
+      [9, 0, 0, 1, 401723778],
+      [9, 0, 1, 2, 407683774],
+      [9, 0, 2, 0, 402108382],
+      [9, 1, 0, 2, 405064106],
+      [9, 1, 1, 0, 410210442],
+      [9, 1, 2, 1, 402293685],
+      [9, 2, 0, 0, 405403846],
+      [9, 2, 1, 1, 404170702],
+      [9, 2, 2, 2, 400431499],
+      [9, 3, 0, 1, 402557955],
+      [9, 3, 1, 2, 404409513],
+      [9, 3, 2, 0, 402332052],
+      [9, 4, 0, 2, 406007948],
+      [9, 4, 1, 0, 401328808],
+      [9, 4, 2, 1, 398960863],
+      [10, 0, 0, 1, 399398118],
+      [10, 0, 1, 2, 398726608],
+      [10, 0, 2, 0, 399256634],
+      [10, 1, 0, 2, 397158706],
+      [10, 1, 1, 0, 399181334],
+      [10, 1, 2, 1, 399050060],
+      [10, 2, 0, 0, 400876230],
+      [10, 2, 1, 1, 398083386],
+      [10, 2, 2, 2, 398137869],
+      [10, 3, 0, 1, 396832428],
+      [10, 3, 1, 2, 400602169],
+      [10, 3, 2, 0, 396244013],
+      [10, 4, 0, 2, 397488353],
+      [10, 4, 1, 0, 395955344],
+      [10, 4, 2, 1, 400699898],
+      [11, 0, 0, 1, 400418422],
+      [11, 0, 1, 2, 399933222],
+      [11, 0, 2, 0, 403291120],
+      [11, 1, 0, 2, 398137941],
+      [11, 1, 1, 0, 402359482],
+      [11, 1, 2, 1, 399030500],
+      [11, 2, 0, 0, 405938856],
+      [11, 2, 1, 1, 399925604],
+      [11, 2, 2, 2, 401536579],
+      [11, 3, 0, 1, 398310101],
+      [11, 3, 1, 2, 396764539],
+      [11, 3, 2, 0, 403057840],
+      [11, 4, 0, 2, 401473546],
+      [11, 4, 1, 0, 402514270],
+      [11, 4, 2, 1, 398776693]
+    ],
+    [
+      [0, 0, 0, 2, 392398867],
+      [0, 0, 1, 0, 391640733],
+      [0, 0, 2, 1, 390628852],
+      [0, 1, 0, 0, 390727778],
+      [0, 1, 1, 1, 391954995],
+      [0, 1, 2, 2, 389608618],
+      [0, 2, 0, 1, 392312438],
+      [0, 2, 1, 2, 390415916],
+      [0, 2, 2, 0, 391103909],
+      [0, 3, 0, 2, 390746269],
+      [0, 3, 1, 0, 388027100],
+      [0, 3, 2, 1, 390572243],
+      [0, 4, 0, 0, 390167363],
+      [0, 4, 1, 1, 390105768],
+      [0, 4, 2, 2, 388638312],
+      [1, 0, 0, 2, 413471831],
+      [1, 0, 1, 0, 423333809],
+      [1, 0, 2, 1, 419617489],
+      [1, 1, 0, 0, 426029195],
+      [1, 1, 1, 1, 419005100],
+      [1, 1, 2, 2, 412248957],
+      [1, 2, 0, 1, 418608116],
+      [1, 2, 1, 2, 411330304],
+      [1, 2, 2, 0, 421699996],
+      [1, 3, 0, 2, 415284304],
+      [1, 3, 1, 0, 419300068],
+      [1, 3, 2, 1, 418295133],
+      [1, 4, 0, 0, 421989713],
+      [1, 4, 1, 1, 417970594],
+      [1, 4, 2, 2, 412482554],
+      [2, 0, 0, 2, 407937288],
+      [2, 0, 1, 0, 415140422],
+      [2, 0, 2, 1, 416208029],
+      [2, 1, 0, 0, 418609682],
+      [2, 1, 1, 1, 414873163],
+      [2, 1, 2, 2, 411368058],
+      [2, 2, 0, 1, 412806141],
+      [2, 2, 1, 2, 408288734],
+      [2, 2, 2, 0, 415659003],
+      [2, 3, 0, 2, 409113015],
+      [2, 3, 1, 0, 416342638],
+      [2, 3, 2, 1, 417575305],
+      [2, 4, 0, 0, 417508230],
+      [2, 4, 1, 1, 413842895],
+      [2, 4, 2, 2, 410965579],
+      [3, 0, 0, 2, 393265037],
+      [3, 0, 1, 0, 381630870],
+      [3, 0, 2, 1, 387350666],
+      [3, 1, 0, 0, 381687608],
+      [3, 1, 1, 1, 386132620],
+      [3, 1, 2, 2, 395108835],
+      [3, 2, 0, 1, 383764893],
+      [3, 2, 1, 2, 394582247],
+      [3, 2, 2, 0, 380587134],
+      [3, 3, 0, 2, 395331637],
+      [3, 3, 1, 0, 384583123],
+      [3, 3, 2, 1, 385236902],
+      [3, 4, 0, 0, 381207542],
+      [3, 4, 1, 1, 384327636],
+      [3, 4, 2, 2, 396807643],
+      [4, 0, 0, 2, 416839112],
+      [4, 0, 1, 0, 408127817],
+      [4, 0, 2, 1, 411297833],
+      [4, 1, 0, 0, 408447599],
+      [4, 1, 1, 1, 412617545],
+      [4, 1, 2, 2, 417396003],
+      [4, 2, 0, 1, 409771299],
+      [4, 2, 1, 2, 413829333],
+      [4, 2, 2, 0, 404310430],
+      [4, 3, 0, 2, 416589772],
+      [4, 3, 1, 0, 406271335],
+      [4, 3, 2, 1, 411157627],
+      [4, 4, 0, 0, 403885304],
+      [4, 4, 1, 1, 408290101],
+      [4, 4, 2, 2, 415116006],
+      [5, 0, 0, 2, 401806353],
+      [5, 0, 1, 0, 397955429],
+      [5, 0, 2, 1, 398420422],
+      [5, 1, 0, 0, 394639199],
+      [5, 1, 1, 1, 404645671],
+      [5, 1, 2, 2, 403641254],
+      [5, 2, 0, 1, 401342065],
+      [5, 2, 1, 2, 402729292],
+      [5, 2, 2, 0, 395918306],
+      [5, 3, 0, 2, 400669753],
+      [5, 3, 1, 0, 394704748],
+      [5, 3, 2, 1, 399036928],
+      [5, 4, 0, 0, 398119465],
+      [5, 4, 1, 1, 403269492],
+      [5, 4, 2, 2, 406185752],
+      [6, 0, 0, 2, 407481459],
+      [6, 0, 1, 0, 413290776],
+      [6, 0, 2, 1, 407390230],
+      [6, 1, 0, 0, 410517577],
+      [6, 1, 1, 1, 411184330],
+      [6, 1, 2, 2, 409018943],
+      [6, 2, 0, 1, 410552725],
+      [6, 2, 1, 2, 409250629],
+      [6, 2, 2, 0, 412149968],
+      [6, 3, 0, 2, 406014090],
+      [6, 3, 1, 0, 411497735],
+      [6, 3, 2, 1, 408726096],
+      [6, 4, 0, 0, 412317456],
+      [6, 4, 1, 1, 407275673],
+      [6, 4, 2, 2, 407347940],
+      [7, 0, 0, 2, 418498635],
+      [7, 0, 1, 0, 418009717],
+      [7, 0, 2, 1, 411928832],
+      [7, 1, 0, 0, 416370849],
+      [7, 1, 1, 1, 412464208],
+      [7, 1, 2, 2, 416155316],
+      [7, 2, 0, 1, 411415310],
+      [7, 2, 1, 2, 419274889],
+      [7, 2, 2, 0, 414029995],
+      [7, 3, 0, 2, 418200932],
+      [7, 3, 1, 0, 414475703],
+      [7, 3, 2, 1, 415770477],
+      [7, 4, 0, 0, 417622829],
+      [7, 4, 1, 1, 410164145],
+      [7, 4, 2, 2, 416712740],
+      [8, 0, 0, 2, 395668712],
+      [8, 0, 1, 0, 397533897],
+      [8, 0, 2, 1, 404552757],
+      [8, 1, 0, 0, 399555117],
+      [8, 1, 1, 1, 402240282],
+      [8, 1, 2, 2, 396408275],
+      [8, 2, 0, 1, 400702905],
+      [8, 2, 1, 2, 400201043],
+      [8, 2, 2, 0, 397991331],
+      [8, 3, 0, 2, 398953411],
+      [8, 3, 1, 0, 397748727],
+      [8, 3, 2, 1, 401025365],
+      [8, 4, 0, 0, 400613341],
+      [8, 4, 1, 1, 399345169],
+      [8, 4, 2, 2, 396135489],
+      [9, 0, 0, 2, 404795665],
+      [9, 0, 1, 0, 403133943],
+      [9, 0, 2, 1, 401731258],
+      [9, 1, 0, 0, 407162705],
+      [9, 1, 1, 1, 400397844],
+      [9, 1, 2, 2, 407465505],
+      [9, 2, 0, 1, 398853022],
+      [9, 2, 1, 2, 404692786],
+      [9, 2, 2, 0, 406475186],
+      [9, 3, 0, 2, 403562674],
+      [9, 3, 1, 0, 404688590],
+      [9, 3, 2, 1, 401072366],
+      [9, 4, 0, 0, 404805361],
+      [9, 4, 1, 1, 399746446],
+      [9, 4, 2, 2, 401864838],
+      [10, 0, 0, 2, 396202140],
+      [10, 0, 1, 0, 397296326],
+      [10, 0, 2, 1, 398648238],
+      [10, 1, 0, 0, 398060745],
+      [10, 1, 1, 1, 398060285],
+      [10, 1, 2, 2, 398532703],
+      [10, 2, 0, 1, 399501494],
+      [10, 2, 1, 2, 397185503],
+      [10, 2, 2, 0, 400630066],
+      [10, 3, 0, 2, 399244725],
+      [10, 3, 1, 0, 395799340],
+      [10, 3, 2, 1, 395519515],
+      [10, 4, 0, 0, 399305360],
+      [10, 4, 1, 1, 396281869],
+      [10, 4, 2, 2, 398113652],
+      [11, 0, 0, 2, 399957610],
+      [11, 0, 1, 0, 404702506],
+      [11, 0, 2, 1, 402169798],
+      [11, 1, 0, 0, 402122029],
+      [11, 1, 1, 1, 398792092],
+      [11, 1, 2, 2, 400959095],
+      [11, 2, 0, 1, 398505405],
+      [11, 2, 1, 2, 399884227],
+      [11, 2, 2, 0, 405417745],
+      [11, 3, 0, 2, 402021034],
+      [11, 3, 1, 0, 407786136],
+      [11, 3, 2, 1, 397000050],
+      [11, 4, 0, 0, 399979208],
+      [11, 4, 1, 1, 399887296],
+      [11, 4, 2, 2, 396192264]
+    ]
+  ],
+  "process_summaries": [
+    {
+      "process": 0,
+      "sum_of_isolated_layer_medians_ns": [
+        151340151.5625,
+        151314446.71875,
+        151673648.46875
+      ],
+      "ratios": [
+        1.0,
+        0.9998301518566975,
+        1.0022036247671675
+      ],
+      "worst_layer_ratios": [
+        1.0,
+        1.0204983410876323,
+        1.0335388100273502
+      ],
+      "passing_methods": []
+    },
+    {
+      "process": 1,
+      "sum_of_isolated_layer_medians_ns": [
+        151384807.875,
+        151249107.0625,
+        151715027.25
+      ],
+      "ratios": [
+        1.0,
+        0.99910360349625,
+        1.0021813243986324
+      ],
+      "worst_layer_ratios": [
+        1.0,
+        1.0099436196790406,
+        1.0283432650571518
+      ],
+      "passing_methods": []
+    },
+    {
+      "process": 2,
+      "sum_of_isolated_layer_medians_ns": [
+        151467543.75,
+        151274288.71875,
+        151602940.5625
+      ],
+      "ratios": [
+        1.0,
+        0.998724115896611,
+        1.0008938998358847
+      ],
+      "worst_layer_ratios": [
+        1.0,
+        1.0136991872257606,
+        1.03531675778744
+      ],
+      "passing_methods": []
+    }
+  ],
+  "host_order_wall_ns_by_layer": [
+    [
+      127467562,
+      123280388,
+      122445960,
+      122173257,
+      121984862,
+      121882838,
+      124155962,
+      122953514,
+      122265159,
+      122166101,
+      124707469,
+      122935200
+    ],
+    [
+      130610225,
+      124069190,
+      124956153,
+      121496653,
+      121357818,
+      121824200,
+      122318063,
+      120669283,
+      123515233,
+      122942743,
+      122245960,
+      124352552
+    ],
+    [
+      125339100,
+      121731309,
+      122806173,
+      122592396,
+      121937500,
+      122895343,
+      122201375,
+      122356179,
+      121577762,
+      121169799,
+      121633013,
+      127983009
+    ]
+  ],
   "prospective_gates": "Require exact committed actual capture/session/request/file hashes and passed actual-file host check. One full parameter-validated12-layer replay then three clean independent processes. Each process:five cyclically rotated rounds,all three arms,32 production-wrapper calls/batch,>=100ms and>=1000median timer pair overhead,equal two-call warmups. Original-row output bits,V perturbation, guards and immutable inputs pass every layer/arm.540timing samples total. For each method separately,all three processes must have sum_of_layer_medians(method)/sum_of_layer_medians(natural)<=0.97 and no per-layer/process median ratio>1.05 to justify a future GPU-local implementation experiment. Reverse is a control and eligible mechanism by the same rule. No model trial from this CPU-built-order result. Stop on first source/runtime/file/validation/owner/fault/budget failure;no retry or adaptive batches. Mandatory entrypoint:tools/sycl/qualify_qsa_order_resolution.py. The original native/controller PASS and eligible fields establish execution only. Require strictly positive timer_pair_ns on all540clean samples before any performance advancement. Preserve the original execution outcome if this gate fails.",
   "limits": "Actual last512-query masks/steps with synthetic finite Q/K/V,identity pages and full prefix pack. Same per-query operands/order/output ownership and same device allocations across arms. CPU grouping/uploads/restore excluded;SYCL does not guarantee relative workgroup order/co-residency/cache behavior. Sum of isolated layer medians is not end-to-end model time;no physical traffic or saturation measurement. Actual model final chunk may have more than512queries. Selected6e40/decode1256slots unchanged.",
-  "budgets": {
-    "wall": 600,
-    "cpu": 2400,
-    "rss_cap": 8589934592,
-    "text_cap": 33554432,
-    "file_cap": 33554432,
-    "total_cap": 134217728
-  },
-  "complete": true,
-  "passed": true,
-  "active": false,
-  "ownership_closed": true,
-  "GPU_executed": true,
+  "cpu_order_note": "Per-layer steady-clock wall time for CPU order construction,not thread CPU time. Excluded with permutation upload and output restore;cannot establish model adoption.",
+  "passing_methods": [],
+  "gpu_local_experiment_eligible": false,
+  "decision": "Neither order meets prospective mechanism gate;no model trial",
   "clean_model_speed_qualified": false,
   "hardware_saturation_qualified": false,
   "model_adoption_qualified": false,
-  "retention": "Keep useful individual samples/criteria/source/provenance. Retire actual paired files,successful raw traces and additional diagnostic generation after mechanism decision and exact source/recipe recovery.",
-  "resolution_qualification": {
-    "gate": "all-540-clean-timer-pairs-strictly-positive-v1",
+  "source_recovery": {
     "passed": true,
-    "samples": 540,
-    "minimum_timer_pair_ns": 20,
-    "maximum_timer_pair_ns": 20
+    "project_and_dependencies": [
+      {
+        "revision": "a341a66e0e447d5cffe03e17d5afe3793eeba55d",
+        "files": 541,
+        "fingerprint": "42b2ba9f75ac2e37ab1cb3408c3d381b09516f401df1fbbd9c4c74b76b58a377"
+      },
+      {
+        "revision": "3cf03257f219afbe7334045ff7c6a06ac68c627d",
+        "files": 3608,
+        "fingerprint": "322862d213ed722d6500da0b58a1b7fffff53aa0de77d7f2e8ba685c653a0d9f"
+      },
+      {
+        "revision": "87f6850680a580654b9ea2c80dbc01aeb36ad231",
+        "files": 5703,
+        "fingerprint": "5768eaea650c06eb022c9068784590a27400c2a577974c56750519edde859fe5"
+      }
+    ],
+    "original_build_recipe_commit": "c55b394f4",
+    "plan_sha256": "fcd8900fb300afbc870621ba1d919020343c5aa760a0be694ab7338905372c68",
+    "commands_reconstructed_and_compared": 12,
+    "overlay_regenerated": true,
+    "compiler_sdk_inventory_reconstructed": 8700,
+    "sdk_headers": 643,
+    "original_replay_recipe_commit": "bff6e6b97",
+    "replay_source_commit": "7bb652adbe171a9aab25baca7e8f7e9a59ba9eeb",
+    "replay_inputs": 172,
+    "replay_binary": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-locality-capture-native-v1/replay/qsa_order_replay",
+      "bytes": 1391208,
+      "sha256": "8458ec397cffa1069fac4c4f75c844089b41c0f4c6b1bc008d55cab31aa2167a"
+    },
+    "selected_binary": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/strata",
+      "bytes": 22190000,
+      "sha256": "22182f1a5e62e5f4259ce49a75ae44afbd988166ec79324816e499ff37ef60e4"
+    },
+    "selected_original_inputs_recovered": 9853,
+    "selected_assets_preserved": 13,
+    "owned_commands_closed": 19
   },
-  "gpu_local_experiment_eligible": false,
-  "activation": {
-    "pid": 670724,
-    "loader": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_loader.so.0.12.0",
-    "threads_before": 1,
-    "preinit": 37,
-    "config_enabled": true,
-    "first_init": true,
-    "dispatch_result": 46,
-    "output_untouched": true,
-    "retained_reference_until_exit": true,
-    "runtime_teardown_qualified": false
-  },
-  "passing_methods": [],
-  "decision": "Neither order meets prospective mechanism gate;no model trial",
-  "postchecks_complete": true,
-  "postcheck_errors": [],
-  "fresh_faults": [],
-  "boot_unchanged": true,
-  "driver_after": {
-    "pci": "/sys/bus/pci/devices/0000:05:00.0",
-    "driver": "xe",
-    "vendor": "0x8086",
-    "device": "0xe20c",
-    "kernel": "7.0.0-38-generic",
-    "devcoredump": false
-  },
-  "execution_decision": "Neither order meets prospective mechanism gate;no model trial"
+  "retirement": {
+    "complete": false,
+    "consumer": "None:both orders failed the frozen mechanism gate.",
+    "next_action": "Retire paired IDs/steps,successful normal output and extra diagnostic generation after pushed source/result verification. Selected6e40 engine plus12fixtures remain.",
+    "tracked_retirement": {
+      "source_commit": "c45b99c1318f61ad6c54f0385acdccbc68fe979e",
+      "files": 23,
+      "bytes": 195907,
+      "reason": "Closed capture/replay consumers:17unused experimental source/fixtures and6superseded receipts. Exact original paths/blobs are in this deletion diff;source/recipes and all540samples remain recoverable. None is in selected6e40 source."
+    }
+  }
 }

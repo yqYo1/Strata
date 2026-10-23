@@ -543,61 +543,47 @@ tree after verifying their pinned Git recovery. The current compact result keeps
 all45 samples and minimal ISA/resource evidence. All13 selected native assets
 still qualify;the separate older ownership/provenance holds remain explicit.
 
-A separate diagnostic package at`a341a66e0` now compiles successfully. Its
-checked hook captures only the final512 queries' actual selected IDs and step
-descriptors, and records successful prefix-pack submissions. Eight CPU
-normal/fault cases pass, including deliberate fail-stop exit73. The small17/33
-and full8192/2051 GPU readback cases now pass with exact tail bytes,source guards,
-invalid-geometry rejection,inherited-work drains,normal exits,private pre-main
-validation and no fresh fault. The [readback result](../bench/results/2026-10-15-pr6-recovery-audit/qsa-locality-readback-current.json)
-keeps both cases and their original-plan reference. The [build result](../bench/results/2026-10-15-pr6-recovery-audit/qsa-locality-capture-build-current.json)
-pins the generated TU,541 project inputs,9311 dependency inputs and8700 SDK
-inputs. The original selected package and decode placement are unchanged.
-The source audit identifies paired append-file freshness/completion as a launch
-hold. The new controller proposes an exclusive transaction claim, fresh private
-destinations and a checked normal-exit completion record binding both hashes;
-the protocol review accepts those two completed synthetic scopes. The
-implemented replay consumer preserves whole-query operands and output ownership
-under natural,reverse and overlap-grouped enumeration,using synthetic Q/K/V with
-captured masks/steps. It compiles successfully. Its14-case host parser tests pass,including
-short/mismatched pairs,causality,ordering,step fields and missing layers. The
-traced97/3/33 synthetic replay smoke also passes:original-row output bits,
-V perturbation,guards and immutable inputs match under all three query orders,
-with private validation,normal exit and no fresh fault. Actual-file provenance
-and host-check remain separate
-requirements before actual-mask execution. CPU order
-construction is excluded from this diagnostic and cannot justify model adoption.
-The committed`capture_qsa_locality.py` producer binds a one-shot actual117K
-request/session to the paired hashes and final512-row extent,then requires the
-actual-file host check and checked completion. Its8 CPU request/header/prefix
-conservation tests pass. The committed`measure_qsa_order_replay.py` consumer
-plans one full12-layer validation and three clean processes/540 timing samples;
-its7 CPU sample-admission tests pass. The producer source review passed,then
-one official117489-input request closed normally with24 thinking tokens. The
-[capture result](../bench/results/2026-10-15-pr6-recovery-audit/qsa-current-tail-capture.json)
-binds the native PID/session,request/journal/config and paired file hashes to
-12 layers of512 actual queries at116976..117487. The actual-file CPU parser
-passes. All15 model hashes,selected13 assets and runtime/source inputs still
-match;no fresh fault occurred. The records conserve180 successful prefix-pack
-submissions and23463552 source-level logical rows;these are neither measured
-physical traffic nor completion time. Capture logging/readback clocks are not
-clean speed evidence. The immediate actual-mask replay remains unrun:its source
-review identified acceptance of a zero timer-pair median. The new mandatory
-`qualify_qsa_order_resolution.py` entrypoint preserves the original capture,
-controller and native inputs,and requires a positive timer median on all540
-clean samples before performance advancement. Five CPU acceptance/refusal tests
-pass and the source-conformance review qualifies only that entrypoint. Original
-native/controller PASS fields remain execution evidence only. Commit the reviewed
-cohort plan before launch. Each order must improve the sum of isolated layer
-medians by at least3% in every process,with no layer/process regression above5%,
-to justify a subsequent GPU-local implementation experiment. CPU order building
-and these fixture results establish neither a locality model speedup nor adoption.
-Closed synthetic files and successful full tracing/build output are now retired:
-50 files,59423024 bytes,with a path/hash/reason manifest in the
-[smoke result](../bench/results/2026-10-15-pr6-recovery-audit/qsa-order-smoke-current.json).
-All13 selected assets,the replay binary and31 runtime inputs still qualify.
-One additional diagnostic generation remains only for the imminent actual-tail
-capture/replay;retire it when that decision closes.
+The actual-mask whole-query order comparison is closed and rejected. Separate
+native source`a341a66e0` passed8 CPU capture/fault cases,small/full GPU readback,
+14 parser cases and a traced permutation smoke before one official117489-input
+request captured the last512 queries across12 layers. Request/session/config
+binding,the actual-file parser,all15 model hashes,selected13 assets,normal exit
+and no fresh fault passed. The capture records180 full-prefix-pack submissions
+and23463552 source logical rows;these are not physical traffic or service time.
+
+One full12-layer parameter-validated replay and three clean processes then
+closed540 eligible32-call samples,all above100ms and with positive20ns median
+timer pairs. Every order preserves original-row output bits,V perturbation,
+guards and immutable inputs. The prospective rule required at least3% improvement
+in the sum of isolated layer medians in every process,and no layer/process
+regression above5%. Neither method passes:
+
+| Process | Reverse/natural latency | Overlap-grouped/natural latency |
+| --- | ---: | ---: |
+| 0 | 0.999830 | 1.002204 |
+| 1 | 0.999104 | 1.002181 |
+| 2 | 0.998724 | 1.000894 |
+
+These use actual selected IDs/steps with synthetic Q/K/V,identity pages and full
+prefix packing. The actual final model chunk has2800 queries;this fixture uses
+its final512. CPU order construction alone costs1.478/1.480/1.474s across12 layers,
+measured as host wall time and excluded along with uploads/output restoration.
+The isolated GPU-wrapper layer-median sums are151.340/151.385/151.468ms;they are
+not model time. No GPU-local order prototype or model trial follows. Selected6e40,
+decode implementation/settings and1256-slot placement remain unchanged.
+
+The [compact comparison](../bench/results/2026-10-15-pr6-recovery-audit/qsa-actual-order-current.json)
+keeps all540 individual samples,criteria,conservation checks,original recipe and
+capture references,and source recovery. The strict downstream timing gate
+preserves the original execution outcome;an original native/controller PASS
+alone never qualified performance advancement. Its five CPU refusal tests pass.
+Exact541 project/9311 dependency inputs,8700 SDK inputs,643 headers,12 reconstructed
+build commands and172 replay inputs recover. The extra diagnostic generation,
+paired captures,normal output and now-unused experiment code are being retired
+at this closed boundary;the original6e40 engine and12 fixtures remain selected.
+The conditional transform-reuse methods report is indexed for targeted retrieval
+only after a local version/lifecycle and packing-cost census. No physical-resource
+saturation or transform-reuse gain is claimed.
 
 Remaining model gates are repeated phase-preserving adoption evidence,
 agent-session and task quality, full physical262144 tokens including the final

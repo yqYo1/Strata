@@ -152,7 +152,9 @@ research index used for one committed qualification record must not silently
 make unrelated dispatch rows part of that record. A scoped reader must return
 only the verified subtree and reject changed, missing or type-altered evidence.
 Defer metadata edits until process closure when its reader still requires the
-whole file. Preserve a run already rejected by the old gate as failed.
+whole file,including a whole-file worktree-versus-HEAD check before returning
+one row. A scoped return alone does not make edits independent. Preserve a run
+already rejected by the old gate as failed.
 
 Keep the original native-source revision separate from a later controller-only
 admission revision. Reusing qualification requires proof that the relevant
