@@ -611,6 +611,25 @@ measured service budget is small at this shape. The source lifecycle audit
 remains a conditional reference,not an adopted cache design. Selected decode
 code,configuration and1256-slot placement are unchanged.
 
+The consumed full table,normal model logs and closed research transactions are
+retired after source/consumer checks:69 files,17918087 bytes. The original
+166-input controller,167-input replay and six-input QSA analysis recover from
+Git. The one-run analyzers and their consumed test are removed from the active
+tree;restore their closed source and results at`c8452d0e4` when needed for a new
+committed comparison. The shared table parser and current profiler assets remain.
+The original failed profiler result stays unchanged. Selected9853 inputs,
+13 native assets and8 current profiler assets still verify after deletion.
+
+All three source-audit workers settled and their owned terminals closed. The
+current full-context report and corrected review remain only for the next
+CLI-only consume-prompt diagnostic. The selected binary has no zero-output
+full-fill entrypoint. A reviewer initially misread the SYCL commit flag's
+conditional scope;Main checked the original/current source and corrected that
+false positive. No verifier change is required for it. The new diagnostic still
+needs actual262144 memory admission,last-slot commit and checked completion,
+plus separate near-cap,RESTORE and failure-owner validation. It must not change
+the selected decode implementation or establish adoption by diagnostic success.
+
 Remaining model gates are repeated phase-preserving adoption evidence,
 agent-session and task quality, full physical262144 tokens including the final
 slots and tail boundaries, prefill-to-decode/session/RESTORE, and70tok/s decode.
