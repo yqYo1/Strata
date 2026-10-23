@@ -9517,7 +9517,7 @@
     "retention": "Retain current subscriber for imminent Main device/short-prefill owner trace;retire CPU packet executable and successful logs once qualification is compacted. No third engine generation. Closed v4 state record environment consumer ends after this new committed plan pins it."
   },
   "ur_memory_device_v1": {
-    "stage": "prepared",
+    "stage": "closed",
     "source_commit": "c6c751d1ef98b6859a600d2ee983e027205fd8e3",
     "input_sha256": {
       "data/expert-profile.bin": "8f59b4aa8873209dff11c11e37bcda9529a1335b724a1afeea37bf6388975baf",
@@ -9581,10 +9581,10 @@
     },
     "boot": "cfda0b6a-7c13-4fe2-bdf5-8f9202770840",
     "active": false,
-    "passed": false,
-    "complete": false,
+    "passed": true,
+    "complete": true,
     "ownership_closed": true,
-    "GPU_executed": false,
+    "GPU_executed": true,
     "budgets": {
       "wall_s": 120,
       "cpu_s": 120,
@@ -9594,6 +9594,48 @@
       "total_bytes": 67108864
     },
     "criteria": "Stop first failure,no retry. Exact selected6e40 sycl_submission_test --submission,with unchanged qualified safety and validation plus bounded memory-only XPTI subscriber. Require all10 original numerical/copy/event/profiling/lifetime checks,normal owned exit0,actual successful host/device USM allocations and frees,one collector activation,zero invalid/unsupported/lost records,no free-before-known-allocation,unchanged identities/boot/driver and no fresh fault. Residual requested allocations are reported,not called leaks;UR pools/driver storage are not physical-byte accounting. No model,speed,task,phase preservation or ordinary runtime teardown qualification.",
-    "retention": "Retain compact individual gate/byte conservation and distinct unresolved errors. Retire successful raw trace/JIT after the immediate model-trace plan consumes this gate. Collector is a sidecar to the existing candidate;no engine generation added."
+    "retention": "Retain compact individual gate/byte conservation and distinct unresolved errors. Retire successful raw trace/JIT after the immediate model-trace plan consumes this gate. Collector is a sidecar to the existing candidate;no engine generation added.",
+    "exit_code": 0,
+    "evidence": {
+      "activation": {
+        "pid": 2308801,
+        "loader": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_loader.so.0.12.0",
+        "threads_before": 1,
+        "preinit": 37,
+        "config_enabled": true,
+        "first_init": true,
+        "dispatch_result": 46,
+        "output_untouched": true,
+        "retained_reference_until_exit": true,
+        "runtime_teardown_qualified": false
+      },
+      "original_submission_checks": 10,
+      "memory_records": 10,
+      "allocations": {
+        "host": {
+          "count": 2,
+          "requested_bytes": 2056
+        },
+        "device": {
+          "count": 3,
+          "requested_bytes": 3220
+        }
+      },
+      "successful_frees": 5,
+      "residual_requested_allocations": 0,
+      "residual_requested_bytes": 0,
+      "scope": "Requested UR allocation lifetime only;residuals are not a physical-residency/leak claim."
+    },
+    "host_probe_accepted": true,
+    "fresh_faults": [],
+    "boot_unchanged": true,
+    "driver_after": {
+      "pci": "/sys/bus/pci/devices/0000:05:00.0",
+      "driver": "xe",
+      "vendor": "0x8086",
+      "device": "0xe20c",
+      "kernel": "7.0.0-38-generic",
+      "devcoredump": false
+    }
   }
 }
