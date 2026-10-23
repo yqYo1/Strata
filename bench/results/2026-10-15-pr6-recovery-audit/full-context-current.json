@@ -908,7 +908,7 @@
     "physical262144_qualified": false
   },
   "model_capacity_v3": {
-    "stage": "prepared",
+    "stage": "failed",
     "source_commit": "ac7e1a7d186c85a5777b37d39b6e20c93432293d",
     "input_sha256": {
       "data/expert-profile.bin": "8f59b4aa8873209dff11c11e37bcda9529a1335b724a1afeea37bf6388975baf",
@@ -1270,7 +1270,27 @@
         "wall_s": 2400
       }
     },
-    "outcomes": {},
+    "outcomes": {
+      "short": {
+        "passed": false,
+        "complete": false,
+        "ownership_closed": true,
+        "exit_code": 1,
+        "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stderr_sha256": "b917fa07c09475dc6eb81d6b684ddda87cc7edc5f1199769c0f362ef134fdfa2",
+        "error": "RuntimeError('native model exit/ownership failed')",
+        "fresh_faults": [],
+        "driver_after": {
+          "pci": "/sys/bus/pci/devices/0000:05:00.0",
+          "driver": "xe",
+          "vendor": "0x8086",
+          "device": "0xe20c",
+          "kernel": "7.0.0-38-generic",
+          "devcoredump": false
+        },
+        "boot_unchanged": true
+      }
+    },
     "boot": "cfda0b6a-7c13-4fe2-bdf5-8f9202770840",
     "driver_before": {
       "pci": "/sys/bus/pci/devices/0000:05:00.0",
@@ -1299,6 +1319,23 @@
     "question": "Can the independently built diagnostic execute the unchanged model route,then allocate/process all262144 physical input slots with fixed1256 decode slots and131072 resident INT8 KV? Host KV tail is allowed and must not be called all-VRAM residency.",
     "gate": "Run short once with16384 batched rows(two8192 chunks)+final prompt row and4 output IDs. The earlier one-chunk case exited0 but failed its declared layer-major route gate;it does not advance. Only after the new committed normal/validated/fault-free short closure run full once:262143 batched rows+final T1,zero outputs,exact checked final-commit marker. Require BF16 residual allocation conservation,configured MoE10 with effective2 for no accumulation or10 for admitted accumulation,checked prompt release,unchanged sources/models/boot/driver and owned normal exit. Server-only scratch lease is0;the existing standalone lend/refill path remains enabled. This is a capacity check,not preservation of the serve allocation route. Stop first failure;no retry or speed decision.",
     "retention": "Keep exact plans,model hashes,individual completion/activation/fault/allocation results. Retire successful traces/JIT after verification. Diagnostic engine and full IDs remain only through imminent near-cap/RESTORE/owner checks;original selected13 assets stay untouched.",
-    "next_gate": "Near-cap/RESTORE/fault-owner,model/task and repeated decode-preservation comparisons. Full synthetic fill alone is not general physical-context qualification or throughput evidence."
+    "next_gate": "Near-cap/RESTORE/fault-owner,model/task and repeated decode-preservation comparisons. Full synthetic fill alone is not general physical-context qualification or throughput evidence.",
+    "failure_analysis": {
+      "cause": "Native QSA16 deliberately rejects kv_mode1/non-full-resident KV at layer_major.inc245 before layer arithmetic. CLI max_context262144/KVresident131072 is valid for decode,but unsupported by this prefill variant. Full case was never launched;no retry/full-physical qualification.",
+      "memory_observed": {
+        "decode_slots": 1256,
+        "resident_kv_cells": 131072,
+        "logical_kv_cells": 262144,
+        "pinned_kv_gib_printed": 3.09,
+        "standalone_shared_region_bytes": 1180698624,
+        "standalone_accounted_scratch_bytes": 2588395008,
+        "native_dense_full_bytes": 2116951040,
+        "native_dense_bank_bytes": 50918400,
+        "free_after_dense_bank_and_MTP_detach_bytes": 2039812096,
+        "free_after_dense_MTP_restore_bytes": 118489088
+      },
+      "checked_return": "Trace shows dense Full->Bank->Full and MTP detach/restore;activations0. Owned exit1,no cleanup signals,no fresh fault. This does not prove numerical decode preservation.",
+      "next_action": "Extend dedicated prefill QSA16 to the existing one-layer full-logical-range stage while retaining decode resident map/host backing. Audit BF16->Q8 append publication to authoritative host+resident slots and staged attention bounds;keep resident prefill and all decode paths unchanged. Component guard/quantized-byte/publication tests precede model retry."
+    }
   }
 }
