@@ -64,6 +64,8 @@ def current(record):
                    'qualification controller inputs changed')
     guards.require(frontend_IR()==record['frontend_IR'] and build.runtime_lineage()==record['runtime_lineage'],
                    'runtime/source evidence changed')
+    guards.require(built['device_IR']['calibration']['sha256']==record['frontend_IR']['sha256'],
+                   'frontend IR differs from the recorded compiler output')
 
 
 def prepare():
