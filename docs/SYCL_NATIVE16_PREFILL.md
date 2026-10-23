@@ -584,9 +584,16 @@ paired captures,normal output and consumed audit transactions are now retired:
 files and6 superseded receipts are removed to reachable Git history. All9853
 selected native inputs and13 assets still qualify after deletion;only the original
 6e40 engine generation remains selected. A broader physical inventory finds
-255 older objects/archives across71 roots,193406352 bytes;their source and
-tool/runtime consumers remain an explicit review before the next diagnostic
-build in the existing native-build result. They are not newly qualified builds.
+255 older objects/archives across71 roots,193406352 bytes. Their consumer/source
+audit is now closed:2870 recorded project blobs recover,but final transitive
+input/recipe closure remains unavailable for the orphan project objects.
+Ten staging archives match the separately retained installed compiler runtimes.
+No maintained reader or8697-entry compiler-manifest dependency consumes the
+selected paths. All255 unused files are retired after recording the bounded
+provenance failures;unique source/recipe receipts remain. All9853 original
+selected inputs and13 assets still verify. The same roots also contain111 older
+ELF products,213948472 bytes;their consumer/runtime review remains explicit
+before another diagnostic build. This is not a global retirement claim.
 The closed-data prefix-service census now separates the actual full-prefix
 transform from its attention kernel in an existing33214-input request. Source,
 launch geometry and call counts reconcile all33213 prefill cells:four8192-row
