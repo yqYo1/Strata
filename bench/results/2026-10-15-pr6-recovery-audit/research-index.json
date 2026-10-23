@@ -10385,7 +10385,7 @@
   },
   "short_prefill_memory_interval_source_audit_20261024": {
     "classification": "decision_support",
-    "status": "worker_report_received_native_review_running",
+    "status": "native_reviewed_targeted_owner_trace_pending_model_gates",
     "schedulable_now": false,
     "source_commit": "6cc40909a20d25b58adaded061ed236f976c4573",
     "native_source_commit": "1cba8a2857891862f8ed4c534d8afee3b0aeaf98",
@@ -10407,7 +10407,7 @@
     "question": "Which source-grounded owners/conversions can explain the observed short32-row memory interval,and what minimal Main trace discriminates them without altering decode?",
     "report": "/home/yayoi/orca/workspaces/Strata/sycl/.cache/strata-research/20261024/explicit-layout-physical-full/short-prefill-memory-owners.md",
     "report_budget_bytes": 12288,
-    "next_review": "Native Luna-max accuracy/scope review,then next owner trace after frozen model cohort;retire source audit after decision consumption.",
+    "next_review": "After the frozen RESTORE case closes,Main commits a targeted phase/owner allocation trace plan;retire source-only report after that decision is consumed. No allocator/source change or cache purge is qualified by this review.",
     "model_observed": "GPT-6-Luna high (same settled agent reused)",
     "report_root_writable_at_launch": true,
     "terminal": "term_44b1572f-5828-4ad6-bb31-ce75c35333ba",
@@ -10423,6 +10423,22 @@
     "native_reviewer": "/root/review_short_prefill_memory_interval_20261024",
     "terminal_closed_verified": true,
     "terminal_close_sha256": "feeb3c7f884362d1b20b6628df4cb4fe2839db51be77f89b71051394248af9fd",
-    "delivery_processed_and_acked": "delivery_3167aa55e2cb"
+    "delivery_processed_and_acked": "delivery_3167aa55e2cb",
+    "native_review": "/home/yayoi/orca/workspaces/Strata/sycl/.cache/strata-research/20261024/explicit-layout-physical-full/short-memory-native-review.json",
+    "native_review_sha256": "716884d9c53bec84861d0f804b3b35a49fedfb4bc001204dd7f2877827510293",
+    "native_review_bytes": 8144,
+    "review_digest": "All7 pins match;actual closed B33 short-prefill phase adds a distinct interval to the existing owner trace. Its2442137600B aggregate drop remains unattributed. Prior16K draft_kv path does not prove32-row MTP fallback warmth;3712B fallback records cannot explain the drop. Use native_prefill_layout_v3_build/engine590f. No new broad research scope is eligible.",
+    "corrections": [
+      {
+        "finding": "Prior long request establishes fallback warmth",
+        "status": "unsupported",
+        "evidence": "The prior16K call used Prefill::draft_kv;B33 uses MTP token fallback. Device and host fallback records can each request3712B,not2442137600B."
+      },
+      {
+        "finding": "Build identity for binary590f",
+        "status": "wrong_record_reference",
+        "evidence": "Use native_prefill_layout_v3_build. MKL build configuration does not establish which runtime library owns the unexplained memory."
+      }
+    ]
   }
 }
