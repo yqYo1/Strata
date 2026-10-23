@@ -7354,5 +7354,26 @@
         "aggregate_sha256": "5768eaea650c06eb022c9068784590a27400c2a577974c56750519edde859fe5"
       }
     ]
+  },
+  "prefill_layout_components_v3": {
+    "kind": "unchanged-fixture-qualification-proof",
+    "stage": "failed",
+    "source_commit": "be6e0d64d",
+    "controller_sha256": "fa38167738c35a84b4b845e0e230c2501468c13fa42039266052ab687dcec34d",
+    "native_source_commit": "1cba8a2857891862f8ed4c534d8afee3b0aeaf98",
+    "binary": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/full-context-native-v1/build/strata",
+      "bytes": 22229920,
+      "sha256": "590f8237e48139d96f77b9fd4c25ea18b1e701be147c52ecf75b7598c4284018"
+    },
+    "passed": false,
+    "complete": false,
+    "active": false,
+    "ownership_closed": true,
+    "GPU_executed": false,
+    "exit_code": 1,
+    "error": "original effective runtime differs: layout",
+    "cause": "Continuity controller omitted the seven layout-fixture-specific environment overrides while reconstructing the original environment. No recorded environment hash or original outcome changed;native/fixture identities passed before this refusal.",
+    "next_action": "New committed continuity controller/attempt reconstructs the full original environment including the seven layout flags,then compares against the unchanged original hashes. No new native build or GPU qualification inherited from this failure."
   }
 }

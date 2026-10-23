@@ -10,7 +10,7 @@ sys.dont_write_bytecode=True
 import check_full_context as gate
 
 P,B,RESULT=gate.P,gate.B,gate.RESULT
-KEY='prefill_layout_components_v3'
+KEY='prefill_layout_components_v4'
 ORDER=('layout','restore-smoke','component','resident','attention-smoke','attention-component','restore-component')
 require=gate.native.guards.require
 
@@ -66,6 +66,10 @@ def qualify(container):
             env.update(UR_ENABLE_LAYERS='UR_LAYER_TRACING,UR_LAYER_PARAMETER_VALIDATION',
                 UR_LOG_TRACING='level:info;flush:info;output:stderr')
         else:env.pop('UR_LOG_TRACING',None)
+        if name.startswith('layout'):
+            env.update(STRATA_SYCL_PREFILL_SCRATCH_ALIAS='1',STRATA_PREFILL_MMQ='0',
+                STRATA_PREFILL_MOE_COMPACT_FP16='1',STRATA_PREFILL_RING='8',
+                STRATA_GR_UNFUSED='0',STRATA_PREFILL_BF16X2='0',STRATA_PREFILL_LAYER_MAJOR='1')
         require(hashlib.sha256(json.dumps(env,sort_keys=True).encode()).hexdigest()==case['environment_sha256'],
             'original effective runtime differs: '+mode)
         verified.append(dict(result_key=key,outcome=name,fixture_sha256=case['fixture']['sha256']))
