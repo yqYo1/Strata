@@ -485,50 +485,13 @@ files (79617 bytes) are retired to`41579947c`. The reusable checked-lifetime hel
 and7 host fault-injection tests remain. All13 selected native assets still match;
 the separate older lifecycle/provenance holds are unchanged.
 
-The next resource calibration is separate from the engine. Native source
-`234cd17d8` builds the actual ordered-exp prefix plus namespace control and
-observable row-gather/SLM-producer probes. The97-cell/3-query/cap33 traced check
-passes production/control output bits,all producer checksums,V perturbation,
-guards and input immutability,with normal exit and no fresh fault. Executed
-native ISA retains global loads and sink writes in both probes,KV SLM payload
-loads/stores only in the producer,and DPAS only in production/control.
-Production/control share4906 static instructions;only three final null-register
-tag immediates differ. Both retain GRF128/SIMD16,spill descriptor12480 and20032
-dynamic local bytes. Gather/producer use256/16640 dynamic local bytes and have
-no spill descriptor. These material resource differences permit descriptive
-whole-probe comparisons,not additive saved-time or exclusive saturation claims.
-The [archived small qualification](https://github.com/yqYo1/Strata/blob/15f74b46db79bcdfaad773626b18b2c9095a0c1d/bench/results/2026-10-15-pr6-recovery-audit/qsa-resource-calibration-execution-current.json)
-records these limits. Its consumed210 trace/JIT/research-transaction files
-(62214368 bytes) are retired.
-
-The full512-query validation and three independent clean timing processes are
-now closed. All135 batches meet the committed128-call,100ms and timer-overhead
-floors;production/control bits,all producer checksums,perturbation,guards and
-input immutability pass. All four processes exit normally;source,runtime and
-the selected13 assets match after every process,with no fresh fault.
-
-| Synthetic shape | P production,ms | L gather,ms | S producer,ms |
-| --- | ---: | ---: | ---: |
-| 32768 cells,gather | 13.457..13.479 | 8.050..8.058 | 11.804..11.823 |
-| 117488 cells,gather | 17.429..17.472 | 12.765..12.773 | 16.484..16.543 |
-| 117488 cells,clustered | 10.792..10.804 | 5.027..5.028 | 9.829..9.842 |
-
-These are ranges of per-process five-batch medians for the whole wrapper,
-including prefix preparation and drain. The [compact comparison](../bench/results/2026-10-15-pr6-recovery-audit/qsa-resource-calibration-timing-current.json)
-keeps all135 individual samples and their spread. The full production path's
-large gather case takes about1.62 times its clustered case. This prioritizes a
-same-production-code working-set/locality sensitivity comparison before another
-layout variation. A resident matrix-plus-softmax probe is a subsequent option
-if that comparison remains inconclusive. Probe SLM,spill and checksum differences
-prohibit subtracting L/S from P as saved time. Physical traffic,cache behavior
-and the exclusive limiting hardware resource remain unknown. No engine,decode,
-placement or model-performance selection changes. Original188 project/recipe
-inputs,generated source,ten commands and8700 SDK inputs were recovered before
-retirement. All14 owned build/measurement commands are closed. The auxiliary
-build,successful raw output and consumed or unused report bodies are retired:
-56 external/cache files,5739150 bytes. Eight closed source/fixture/controller
-and build/smoke result files are recoverable at`15f74b46d`;the compact timing
-result is the maintained evidence. All13 selected native assets still match.
+The earlier production/gather/SLM-producer calibration at`234cd17d8`
+closed135 eligible batches,with numerical,ownership and fault checks passing.
+Material SLM,spill and checksum differences prohibit subtracting the probes
+from production or diagnosing an exclusive hardware bottleneck. Its [individual
+samples and source/retirement proof](https://github.com/yqYo1/Strata/blob/7adbbf7b0241e48da0dcfabf458e5a4e81138379/bench/results/2026-10-15-pr6-recovery-audit/qsa-resource-calibration-timing-current.json)
+are archived in Git. Its consumed comparison result and unused tooling have no
+active consumer;the following same-code test is the maintained locality evidence.
 
 The same-code auxiliary fixture is committed at`a509cdbbf`. Its eight-command build
 has closed successfully. It calls the unchanged
@@ -571,7 +534,14 @@ keeps every sample and spread. Next obtain current-shape actual selected IDs and
 per-layer/chunk prefix-pack counts before implementing query-order/locality
 changes. BroadGRF256 already failed its earlier comparison;do not retry it from
 the spill descriptor alone. Selected6e40,decode configuration and placement
-remain unchanged. The closed auxiliary build awaits exact-source retirement.
+remain unchanged. Its186 original project/recipe inputs,eight commands and8700
+SDK inputs recover exactly. All13 owned build/smoke/timing commands are closed.
+The extra generation,successful raw output and consumed report/transaction files
+are retired:184 external/cache files,58535923 bytes. Seven closed fixture,
+controller/build/smoke and earlier-probe-result files are removed from the active
+tree after verifying their pinned Git recovery. The current compact result keeps
+all45 samples and minimal ISA/resource evidence. All13 selected native assets
+still qualify;the separate older ownership/provenance holds remain explicit.
 
 Remaining model gates are repeated phase-preserving adoption evidence,
 agent-session and task quality, full physical262144 tokens including the final
