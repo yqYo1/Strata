@@ -591,9 +591,11 @@ Ten staging archives match the separately retained installed compiler runtimes.
 No maintained reader or8697-entry compiler-manifest dependency consumes the
 selected paths. All255 unused files are retired after recording the bounded
 provenance failures;unique source/recipe receipts remain. All9853 original
-selected inputs and13 assets still verify. The same roots also contain111 older
-ELF products,213948472 bytes;their consumer/runtime review remains explicit
-before another diagnostic build. This is not a global retirement claim.
+selected inputs and13 assets still verify. The additional111 older ELF products
+in those roots are also retired after consumer/runtime checks:213948472 bytes,
+including16 archive-member extracts and three duplicate installed sanitizer
+DSOs. All8 current profiler assets still verify. This closes the identified
+366-file,407354824-byte selection,not a global retirement claim.
 The closed-data prefix-service census now separates the actual full-prefix
 transform from its attention kernel in an existing33214-input request. Source,
 launch geometry and call counts reconcile all33213 prefill cells:four8192-row
