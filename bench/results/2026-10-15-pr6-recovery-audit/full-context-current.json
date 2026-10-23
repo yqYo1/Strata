@@ -5835,7 +5835,7 @@
     "decision": "Retire normal closed build output,completed Orca transactions,consumed old controller/source audits and resolved v1 callback raw. Current native-v2 representative failure,near-cap map and owner trace reports remain for named active questions. No test/build/GPU active during deletion;selected/current binaries and their required fixtures unchanged. Original statuses retained;bounded metadata/source obligations recover from f00b35e9a and new controller criteria."
   },
   "model_state_v3": {
-    "stage": "small_closed",
+    "stage": "near-cap_closed",
     "source_commit": "8b52357f4076af921175bbe51a4e932f8dfa19d1",
     "input_sha256": {
       "data/expert-profile.bin": "8f59b4aa8873209dff11c11e37bcda9529a1335b724a1afeea37bf6388975baf",
@@ -6703,6 +6703,132 @@
           "rows": 16384,
           "layers": 12,
           "chunks_per_layer": 2,
+          "pos0": 0,
+          "prefix_H2D_requested_bytes": 0
+        },
+        "fresh_faults": [],
+        "boot_unchanged": true,
+        "driver_after": {
+          "pci": "/sys/bus/pci/devices/0000:05:00.0",
+          "driver": "xe",
+          "vendor": "0x8086",
+          "device": "0xe20c",
+          "kernel": "7.0.0-38-generic",
+          "devcoredump": false
+        }
+      },
+      "near-cap": {
+        "passed": true,
+        "complete": true,
+        "ownership_closed": true,
+        "info": {
+          "context": "262144",
+          "kv": "int8",
+          "kv_resident": "131072",
+          "expert_slots": "1256",
+          "spec": "4",
+          "mtp_max": "0",
+          "lookup": "0",
+          "pool_workers": "5",
+          "conversation_cache_mib": "8192",
+          "conversation_cache_slots": "2",
+          "conversation_cache_min_free_mib": "4096"
+        },
+        "requests": [
+          {
+            "generated": 16,
+            "prompt": 262120,
+            "finish": "length",
+            "accepted": 12,
+            "offered": 12,
+            "reused": 0,
+            "read": 262120,
+            "ids": [
+              4072,
+              4073,
+              4074,
+              4075,
+              4076,
+              4077,
+              4078,
+              4079,
+              4080,
+              4081,
+              4082,
+              4083,
+              4084,
+              4085,
+              4086,
+              4087
+            ],
+            "publications": {
+              "count": 32,
+              "last": 262119,
+              "sha256": "137c5026536248093e353e8f4997f4b44c9b5b6a6bfb2e855d619f465780611f"
+            },
+            "state_L": 262136,
+            "windows": 5,
+            "state_sha256": "4abc4469be97dc5b94acb3af7c5f4ee1062532216787ba377dbdb05f759ab940",
+            "ple_prev": "4086,4087",
+            "draft_prefill": {
+              "rows": 262119,
+              "callbacks": 32,
+              "end": 262119,
+              "modes": [
+                2
+              ],
+              "paths": [
+                "batched"
+              ]
+            },
+            "decode_cache_restore": {
+              "slots": 1256,
+              "payload_bytes": 2575206400,
+              "lent": 1124,
+              "same_slots": true,
+              "payload_match": true
+            }
+          }
+        ],
+        "exit_code": 0,
+        "activation": {
+          "pid": 2020363,
+          "loader": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_loader.so.0.12.0",
+          "threads_before": 1,
+          "preinit": 37,
+          "config_enabled": true,
+          "first_init": true,
+          "dispatch_result": 46,
+          "output_untouched": true,
+          "retained_reference_until_exit": true,
+          "runtime_teardown_qualified": false
+        },
+        "effective_prefill": [
+          {
+            "path": "layer-major",
+            "stage_payload_bytes": 276824064,
+            "stage_requested_allocation_bytes": 276825088,
+            "physical_driver_allocation_bytes": "unmeasured",
+            "requested_prefix_bytes": 538918720,
+            "admitted_prefix_bytes": 538918720,
+            "qualified_budget_fallback": false,
+            "arithmetic": [
+              "active-logical-prefix",
+              "538918720",
+              "33",
+              "row-major",
+              "parallel-exp-ascending-sum"
+            ],
+            "free_before_bank_bytes": 4181970944,
+            "headroom_bytes": 536870912
+          }
+        ],
+        "restored_tokens": [],
+        "restore_payloads": [],
+        "initial_prefill": {
+          "rows": 262119,
+          "layers": 12,
+          "chunks_per_layer": 32,
           "pos0": 0,
           "prefix_H2D_requested_bytes": 0
         },

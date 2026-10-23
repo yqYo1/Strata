@@ -881,7 +881,15 @@ The first16,384 batched rows use two8192-row chunks per QSA layer;the separate
 Full and no dense/MTP withdrawal. MTP callbacks and committed positions match.
 The33,685,504-byte BF16 prefix is admitted for this small long pass. These
 observed routes do not qualify near-cap/long RESTORE,task quality or decode
-speed. The near-cap and long nonzero-prefix model gates remain pending.
+speed. The near-cap diagnostic also passes:262,120 input tokens,262,119
+batched rows in32 chunks per QSA layer,16 generated tokens,5 verifier windows
+and12 accepted drafts commit position262,136. All1,256 original expert payloads
+and residency publications match;538,918,720 BF16-prefix bytes are admitted.
+The process closes normally after985.63 seconds with no fresh fault. This is
+an observed diagnostic duration,not clean inference throughput. The state hash
+walks tiny paged KV slices through synchronous copy wrappers;coalesce full
+pages in the same hash order before the next large diagnostic. Exact256K fill
+and long nonzero-prefix RESTORE remain unqualified on this changed layout.
 Detailed closed diagnostic plans and individual historical outcomes recover
 from`95e174255`;the current result retains their original statuses and archive
 references,with the live build/component/model qualifications. Successful model
