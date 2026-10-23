@@ -485,6 +485,24 @@ files (79617 bytes) are retired to`41579947c`. The reusable checked-lifetime hel
 and7 host fault-injection tests remain. All13 selected native assets still match;
 the separate older lifecycle/provenance holds are unchanged.
 
+The next resource calibration is separate from the engine. Native source
+`234cd17d8` builds the actual ordered-exp prefix plus namespace control and
+observable row-gather/SLM-producer probes. The97-cell/3-query/cap33 traced check
+passes production/control output bits,all producer checksums,V perturbation,
+guards and input immutability,with normal exit and no fresh fault. Executed
+native ISA retains global loads and sink writes in both probes,KV SLM payload
+loads/stores only in the producer,and DPAS only in production/control.
+Production/control share4906 static instructions;only three final null-register
+tag immediates differ. Both retain GRF128/SIMD16,spill descriptor12480 and20032
+dynamic local bytes. Gather/producer use256/16640 dynamic local bytes and have
+no spill descriptor. These material resource differences permit descriptive
+whole-probe comparisons,not additive saved-time or exclusive saturation claims.
+The [small qualification](../bench/results/2026-10-15-pr6-recovery-audit/qsa-resource-calibration-execution-current.json)
+records these limits. Its consumed210 trace/JIT/research-transaction files
+(62214368 bytes) are retired;the fixture remains only for the imminent
+512-query validation and three-process balanced timing cohort. No engine,
+decode or model-performance selection changes.
+
 Remaining model gates are repeated phase-preserving adoption evidence,
 agent-session and task quality, full physical262144 tokens including the final
 slots and tail boundaries, prefill-to-decode/session/RESTORE, and70tok/s decode.
