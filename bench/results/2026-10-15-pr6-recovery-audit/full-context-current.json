@@ -435,7 +435,9 @@
         "count": 5703,
         "aggregate_sha256": "5768eaea650c06eb022c9068784590a27400c2a577974c56750519edde859fe5"
       }
-    ]
+    ],
+    "superseded_by": "native_streamed_build",
+    "original_binary_retired_on_rebuild": true
   },
   "record_scope": "Top-level source_commit/passed/complete/GPU/native-engine fields describe only the original134-case CPU source gate. Subsequent native_diagnostic,native_engine_build and native_cli stages have independent source/qualification fields.",
   "native_cli": {
@@ -1003,5 +1005,164 @@
       },
       "retained": "One5761-byte refused streamed-QSA diagnostic;original selected13assets,unselected native diagnostic/source receipt,full262144-ID fixture,and research report/review through staged-KV design remain. No active native job."
     }
+  },
+  "native_streamed_build": {
+    "source_commit": "43587ce221a27b005990cfe3757039165335a147",
+    "selected_original": {
+      "source_commit": "6e40afc1beddd059ee518617f6c1efce1da14aca",
+      "inputs_recovered": 9853,
+      "assets_verified": 13,
+      "receipt": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/record.json",
+        "sha256": "a38f477670fafcd1a931be2e20d90d6d9718df75b61954b421f361af9f6881b2"
+      },
+      "limits": "Original build remains selected; this source-only diagnostic is not adoption."
+    },
+    "compiler": {
+      "path": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin/clang++",
+      "sha256": "1290881b4e12a5e002e5b0de0787f85328ee5fe19f253a54be1cdd97dc2f26eb"
+    },
+    "sdk": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/unitrace-warmed-graph-window-v1/compiler-inputs.json",
+      "sha256": "436cedc9dbd41810cd882e9040a129e6d8b7dbebb98806b00c4f2950b1dc1705",
+      "files": 8697
+    },
+    "tools": {
+      "cmake": {
+        "path": "/usr/bin/cmake",
+        "sha256": "1c5227af4edd22d8d689def545e18ee458260c0fd579eba2187967f38817e638"
+      },
+      "ninja": {
+        "path": "/usr/bin/ninja",
+        "sha256": "5965527e09fe2b3787772aa4f711d6a36b393e7f2fcaa744a7a96c5a4ddf59cb"
+      }
+    },
+    "configure_argv": [
+      "/usr/bin/cmake",
+      "-S",
+      "/home/yayoi/orca/workspaces/Strata/sycl",
+      "-B",
+      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/full-context-native-v1/build",
+      "-G",
+      "Ninja",
+      "-DCMAKE_CXX_COMPILER=/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin/clang++",
+      "-DCMAKE_BUILD_TYPE=Release",
+      "-DCMAKE_EXPORT_COMPILE_COMMANDS=ON",
+      "-DMKL_DIR=/opt/intel/oneapi/mkl/2026.1/lib/cmake/mkl",
+      "-DSTRATA_BUILD_CONVERSATION_TESTS:BOOL=OFF",
+      "-DSTRATA_BUILD_PREFILL_HOST_TESTS:BOOL=ON",
+      "-DSTRATA_BUILD_TESTS:BOOL=OFF",
+      "-DSTRATA_CPU_ARCH:STRING=znver3",
+      "-DSTRATA_ENABLE_CUDA:BOOL=OFF",
+      "-DSTRATA_ENABLE_HIP:BOOL=OFF",
+      "-DSTRATA_ENABLE_SYCL:BOOL=ON",
+      "-DSTRATA_GGML_DIR:PATH=/home/yayoi/ghq/github.com/ggml-org/llama.cpp/.worktree/dep-ggml-3cf-xe-e32-20261011",
+      "-DSTRATA_MMQ_KQUANTS:BOOL=OFF",
+      "-DSTRATA_NATIVE_EXPERTS:BOOL=ON",
+      "-DSTRATA_ORCA_Q4KS_MMQ:BOOL=OFF",
+      "-DSTRATA_PORTABLE:BOOL=OFF",
+      "-DSTRATA_PREFILL_MMQ:BOOL=OFF",
+      "-DSTRATA_SYCL_AOT_DOUBLE_GRF:BOOL=OFF",
+      "-DSTRATA_SYCL_TESTS:BOOL=ON",
+      "-DSTRATA_WERROR:BOOL=ON",
+      "-DSTRATA_SYCL_VLLM_XE2_NATIVE16=ON",
+      "-DSTRATA_SYCL_DEVICE_ARCH=",
+      "-DSYCL_TLA_SOURCE_DIR=/home/yayoi/ghq/github.com/intel/sycl-tla/.worktree/strata-native16-87f",
+      "-DCMAKE_CXX_FLAGS:STRING=-DSTRATA_SYCL_FULL_CONTEXT_DIAGNOSTIC=1"
+    ],
+    "generated_expected": {
+      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/full-context-native-v1/build/ggml/src/ggml-version.h": "9e45eee8391971371922f51b66925184609125d467c444744599f680b78edc92"
+    },
+    "targets": [
+      "strata",
+      "sycl_native16_qsa_streamed_test",
+      "sycl_native16_qsa_test"
+    ],
+    "predecessor": {
+      "source_commit": "9081588332cf848faf61d252bf22539007ae180c",
+      "binary": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/full-context-native-v1/build/strata",
+        "bytes": 22194056,
+        "sha256": "65067acdf14ef4059a35bf3c9cc64b74bd7798f745b6a44cd7b48dd983070419"
+      },
+      "receipt_sha256": "cd5d5a38af3442ae093771d7ca466011e2e67e58733d13f6680887d74a7804f8",
+      "inputs_recovered": true,
+      "source_groups": [
+        {
+          "revision": "9081588332cf848faf61d252bf22539007ae180c",
+          "count": 538,
+          "aggregate_sha256": "507bb2cecfe76f4ebde255018095a65437f0dd7d4c70977dfee78c6c0dfa5b2d"
+        },
+        {
+          "revision": "3cf03257f219afbe7334045ff7c6a06ac68c627d",
+          "count": 3608,
+          "aggregate_sha256": "322862d213ed722d6500da0b58a1b7fffff53aa0de77d7f2e8ba685c653a0d9f"
+        },
+        {
+          "revision": "87f6850680a580654b9ea2c80dbc01aeb36ad231",
+          "count": 5703,
+          "aggregate_sha256": "5768eaea650c06eb022c9068784590a27400c2a577974c56750519edde859fe5"
+        }
+      ],
+      "decision": "Replace only the unselected diagnostic in place. Its original source/recipe recover;capacity checks failed closed. Original selected6e40 engine+12fixtures remain the validated fallback."
+    },
+    "command": [
+      "/usr/bin/cmake",
+      "--build",
+      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/full-context-native-v1/build",
+      "--target",
+      "strata",
+      "sycl_native16_qsa_streamed_test",
+      "sycl_native16_qsa_test",
+      "-j",
+      "4"
+    ],
+    "dependency_command": [
+      "/usr/bin/ninja",
+      "-C",
+      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/full-context-native-v1/build",
+      "-t",
+      "deps"
+    ],
+    "stage": "prepared_streamed",
+    "passed": false,
+    "complete": false,
+    "active": false,
+    "ownership_closed": true,
+    "GPU_executed": false,
+    "native_engine_built": false,
+    "production_selected": false,
+    "model_adoption_qualified": false,
+    "physical262144_qualified": false,
+    "budgets": {
+      "wall_s": 1200,
+      "cpu_s": 7200,
+      "rss_bytes": 17179869184,
+      "text_bytes": 8388608,
+      "file_bytes": 268435456,
+      "total_bytes": 4294967296
+    },
+    "criteria": "Exact committed native/controller/compiler/dependency/SDK/MKL/generated inputs;owned configure/build/dependency census exit0. Engine and both same-build fixtures hashed;actual dependency closure has zero uncovered files and only predeclared generated headers. No GPU execution or selection.",
+    "retention": "Reuse the existing unselected comparison build directory;no third engine generation. Retain original selected13 assets. New generation is only for imminent traced streamed-Q8,full component/resident-oracle and capacity-model gates;retire normal build output after closure.",
+    "sources": [
+      {
+        "root": "/home/yayoi/orca/workspaces/Strata/sycl",
+        "revision": "43587ce221a27b005990cfe3757039165335a147",
+        "count": 540,
+        "aggregate_sha256": "428434545554f18ce392de5f4ea49bc13de7de43d69bcd9759ecc2e5362a373e"
+      },
+      {
+        "root": "/home/yayoi/ghq/github.com/ggml-org/llama.cpp/.worktree/dep-ggml-3cf-xe-e32-20261011",
+        "revision": "3cf03257f219afbe7334045ff7c6a06ac68c627d",
+        "count": 3608,
+        "aggregate_sha256": "322862d213ed722d6500da0b58a1b7fffff53aa0de77d7f2e8ba685c653a0d9f"
+      },
+      {
+        "root": "/home/yayoi/ghq/github.com/intel/sycl-tla/.worktree/strata-native16-87f",
+        "revision": "87f6850680a580654b9ea2c80dbc01aeb36ad231",
+        "count": 5703,
+        "aggregate_sha256": "5768eaea650c06eb022c9068784590a27400c2a577974c56750519edde859fe5"
+      }
+    ]
   }
 }
