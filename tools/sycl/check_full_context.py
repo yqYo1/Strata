@@ -173,8 +173,8 @@ def run(container):
     return 0 if record['passed'] else 1
 
 
-DEVICE_ROOT = B / 'full-context-device-v1'
-DEVICE_KEY = 'device_smoke'
+DEVICE_ROOT = B / 'full-context-device-v2'
+DEVICE_KEY = 'device_smoke_v2'
 
 
 def device_admission(record, container):
@@ -183,6 +183,8 @@ def device_admission(record, container):
         inputs(record['source_commit']) == record['input_sha256'], 'commit exact device plan first')
     native.guards.require(hashlib.sha256(json.dumps(record['environment'],sort_keys=True).encode()).hexdigest() ==
         record['environment_sha256'], 'effective device environment differs from committed plan')
+    native.guards.require(record['environment'].get('STRATA_UR_PROBE_EXPECTED_LOADER') ==
+        record['preload']['loader']['path'], 'preloader provider pin missing')
     full, reference = native.source.baseline()
     native.guards.require(reference == record['selected_original'] and
         full['fixtures']['sycl_expert_bank_test'] == record['fixture'], 'original fixture identity differs')
@@ -214,6 +216,7 @@ def prepare_device(container):
         UR_LOG_VALIDATION='level:warning;flush:warning;output:stderr')
     native.guards.require(not env.get('LD_PRELOAD'), 'unexpected existing preload')
     env['LD_PRELOAD'] = preload['library']['path']
+    env['STRATA_UR_PROBE_EXPECTED_LOADER'] = preload['loader']['path']
     fixture = full['fixtures']['sycl_expert_bank_test']
     record = dict(stage='prepared', source_commit=revision, input_sha256=pins,
         selected_original=reference, fixture=fixture, fixture_source_commit=full['source_commit'],
