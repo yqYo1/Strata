@@ -553,10 +553,10 @@ inputs. The original selected package and decode placement are unchanged.
 The source audit identifies paired append-file freshness/completion as a launch
 hold. The new controller proposes an exclusive transaction claim, fresh private
 destinations and a checked normal-exit completion record binding both hashes;
-independent review and small/full GPU qualification remain required. The
+the protocol review accepts the two synthetic readback scopes;small/full GPU qualification remains required. The
 implemented replay consumer preserves whole-query operands and output ownership
 under natural,reverse and overlap-grouped enumeration,using synthetic Q/K/V with
-captured masks/steps. It is not yet compiled or GPU-qualified. CPU order
+captured masks/steps. It compiles successfully and is not yet GPU-qualified. CPU order
 construction is excluded from this diagnostic and cannot justify model adoption.
 No actual-model capture is permitted before that consumer and readback qualify.
 
