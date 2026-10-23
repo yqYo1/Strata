@@ -17,8 +17,8 @@ sys.dont_write_bytecode = True
 import check_full_context as gate
 
 P, B, RESULT = gate.P, gate.B, gate.RESULT
-ROOT = B / 'full-context-model-v1'
-KEY = 'model_capacity_v1'
+ROOT = B / 'full-context-model-v2'
+KEY = 'model_capacity_v2'
 DECODE = P / 'bench/results/2026-10-15-pr6-recovery-audit/canonical-restore-decode-current.json'
 BUILD = P / 'bench/results/2026-10-15-pr6-recovery-audit/native-gdn-engine-build.json'
 DECODE_ARCHIVE = dict(commit='a8af3d7fa96a7713f2e516d2da3d7410956be015',
@@ -103,7 +103,14 @@ def prepare(container):
     require(smoke['passed'] and smoke['complete'] and smoke['ownership_closed'] and not smoke['active'] and
         smoke['GPU_work_submitted'] and smoke['fresh_faults']==[],'closed traced device gate required')
     engine=gate.engine(); _,original=gate.native.source.baseline(); base=setup()
-    model_pins(base['config'],base['models'],full=True)
+    # v1 preparation hashed all15 assets before its preflight-only refusal.
+    # Reuse those byte hashes only with the same stat/ctime and inventory guards.
+    revision_before=gate.native.build.git(P,'rev-parse','102b83623').decode().strip()
+    raw=gate.native.build.git(P,'show',revision_before+':'+str(RESULT.relative_to(P)))
+    prior=json.loads(raw)['model_capacity_v1']
+    require(prior['source_commit']=='9ff5527505665296af1db23f65f5db8148354069' and
+        prior['stage']=='prepared' and prior['model_assets']==base['models'], 'original whole-model digest proof differs')
+    model_pins(base['config'],base['models'])
     revision=gate.native.build.git(P,'rev-parse','HEAD').decode().strip()
     pins=inputs(revision)
     args=list(base['config']['args'])
@@ -118,7 +125,7 @@ def prepare(container):
     require(not env.get('LD_PRELOAD'),'unexpected preload')
     env.update(TMPDIR=str(ROOT/'tmp'),XDG_CACHE_HOME=str(ROOT/'cache'),CUDA_MODULE_LOADING='EAGER',
         LD_PRELOAD=probe['library']['path'],STRATA_UR_PROBE_EXPECTED_LOADER=probe['loader']['path'],
-        UR_ENABLE_LAYERS='UR_LAYER_PARAMETER_VALIDATION',STRATA_TRACE='1')
+        UR_ENABLE_LAYERS='UR_LAYER_PARAMETER_VALIDATION',STRATA_TRACE='1',STRATA_SYCL_CACHE_SCRATCH_LEASE='0')
     env.pop('UR_LOG_TRACING',None)
     for name in ('UR_LOG_VALIDATION','UR_LOG_LOADER','UR_LOG_LEVEL_ZERO'):
         env[name]='level:warning;flush:warning;output:stderr'
@@ -142,6 +149,8 @@ def prepare(container):
             wall_s=900 if name=='short' else 2400)
     record=dict(stage='prepared',source_commit=revision,input_sha256=pins,binary=engine['binary'],
         selected_original=original,setup_reference=base['reference'],model_assets=base['models'],preload=probe,
+        initial_model_digest_reference=dict(commit=revision_before,path=str(RESULT.relative_to(P)),
+            sha256=hashlib.sha256(raw).hexdigest(),scope='v1 preparation full15-asset digests;unchanged inode/size/mtime/ctime and inventory required before/after every case;full hashes again after full fill.'),
         environment=env,environment_sha256=fingerprint(env),vocab_size=max(ids)+1,cases=cases,outcomes={},
         boot=Path('/proc/sys/kernel/random/boot_id').read_text().strip(),driver_before=gate.native.guards.driver_guard(),
         active=False,ownership_closed=True,passed=False,complete=False,production_selected=False,
@@ -149,7 +158,7 @@ def prepare(container):
         budgets=dict(cpu_s=4800,rss_bytes=104<<30,text_bytes=16<<20,file_bytes=16<<20,total_bytes=512<<20,
             reason='Two cases have at most64MiB combined raw stdout/stderr;512MiB total additionally bounds private compiler JIT/cache/receipts,all retired after their consumer closes.'),
         question='Can the independently built diagnostic execute the unchanged model route,then allocate/process all262144 physical input slots with fixed1256 decode slots and131072 resident INT8 KV? Host KV tail is allowed and must not be called all-VRAM residency.',
-        gate='Run short once with8192 batched+final prompt row and4 output IDs. Only after its committed normal/validated/fault-free closure run full once:262143 batched rows+final T1,zero outputs,exact checked final-commit marker. Require BF16 residual allocation conservation,GPU mode10,checked prompt release,unchanged sources/models/boot/driver and owned normal exit. Stop first failure;no retry or speed decision.',
+        gate='Run short once with8192 batched+final prompt row and4 output IDs. Only after its committed normal/validated/fault-free closure run full once:262143 batched rows+final T1,zero outputs,exact checked final-commit marker. Require BF16 residual allocation conservation,configured MoE10 with effective2 for no accumulation or10 for admitted accumulation,checked prompt release,unchanged sources/models/boot/driver and owned normal exit. Server-only scratch lease is0;the existing standalone lend/refill path remains enabled. This is a capacity check,not preservation of the serve allocation route. Stop first failure;no retry or speed decision.',
         retention='Keep exact plans,model hashes,individual completion/activation/fault/allocation results. Retire successful traces/JIT after verification. Diagnostic engine and full IDs remain only through imminent near-cap/RESTORE/owner checks;original selected13 assets stay untouched.',
         next_gate='Near-cap/RESTORE/fault-owner,model/task and repeated decode-preservation comparisons. Full synthetic fill alone is not general physical-context qualification or throughput evidence.')
     write(ROOT/'record.json',record);container[KEY]=compact(record);write(RESULT,container)
@@ -189,8 +198,10 @@ def evidence(stdout,stderr,record,case,pid):
         ledger['element_bytes']==2 and ledger['total']==(n-1)*10240*2 and
         ledger['gpu_bytes']+ledger['host_bytes']==ledger['total'] and
         ledger['gpu_bytes']==ledger['gpu_rows']*10240*2,'actual residual allocation conservation failed')
-    require('requested_mode=10 effective_mode=10' in body and
+    window=re.search(r'^strata MoE window configuration: requested_mode=10 effective_mode=(2|10) maximum_rows=(\d+) mixed_fp16_bytes=(\d+)$',body,re.M)
+    require(window is not None and
         'MiB free after releasing the standalone prompt buffers' in body,'model route/release evidence missing')
+    ledger['effective_moe_mode']=int(window[1])
     bank=re.search(r'^strata MoE expert bank: .*allocation_limit_bytes=(\d+)',body,re.M)
     require(bank is not None,'actual allocation limit missing')
     ledger['device_max_allocation_bytes']=int(bank[1])
