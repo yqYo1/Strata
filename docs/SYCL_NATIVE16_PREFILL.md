@@ -806,6 +806,16 @@ plans must include the native/API eight-token reserve:262120 input plus16 output
 tokens is admitted at262144 context. For exact-position RESTORE checks use one
 output token, and record consumed positions rather than inferring them from a
 speculative generation's emitted length. Generated text equality is not a gate.
+The first native model controller failed before READY or any request: its
+one-argument callback did not match the owner's two-argument interaction
+interface. The owner sent SIGTERM after0.188s, observed the anchored session
+empty before reaping, and left no surviving owned identity or fresh GPU fault.
+The original failed result and conservative `ownership_closed=false` remain;
+the separate forced-closure proof permits correction without claiming a normal
+model exit. Near-cap and RESTORE cases were not run. Correct the controller and
+check its real owned protocol transport before a new committed model plan.
+A16-token restored suffix exercises the short path; a long-prefill RESTORE
+needs more than8192 batched fresh rows to exercise layer-major reentry.
 Detailed closed diagnostic plans and individual historical outcomes recover
 from`95e174255`;the current result retains their original statuses and archive
 references,with the live build/component/model qualifications. Successful model

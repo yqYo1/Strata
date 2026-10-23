@@ -3711,7 +3711,7 @@
     }
   },
   "model_state_v1": {
-    "stage": "prepared",
+    "stage": "failed",
     "source_commit": "0f8adefdca466fd993fff10559aed7468ce42e31",
     "input_sha256": {
       "data/expert-profile.bin": "8f59b4aa8873209dff11c11e37bcda9529a1335b724a1afeea37bf6388975baf",
@@ -4177,11 +4177,29 @@
       "kernel": "7.0.0-38-generic",
       "devcoredump": false
     },
-    "outcomes": {},
+    "outcomes": {
+      "small": {
+        "passed": false,
+        "complete": false,
+        "ownership_closed": false,
+        "exit_code": -15,
+        "error": "RuntimeError('normal owned model exit required')",
+        "fresh_faults": [],
+        "boot_unchanged": true,
+        "driver_after": {
+          "pci": "/sys/bus/pci/devices/0000:05:00.0",
+          "driver": "xe",
+          "vendor": "0x8086",
+          "device": "0xe20c",
+          "kernel": "7.0.0-38-generic",
+          "devcoredump": false
+        }
+      }
+    },
     "active": false,
     "passed": false,
     "complete": false,
-    "ownership_closed": true,
+    "ownership_closed": false,
     "budgets": {
       "cpu_s": 7200,
       "rss_bytes": 111669149696,
@@ -4197,7 +4215,26 @@
     "physical262144_qualified": false,
     "decode_performance_qualified": false,
     "ordinary_runtime_teardown_qualified": false,
-    "next_gate": "Public API/agent-session/task quality,failure-owner and repeated clean decode preservation remain separate. This native protocol diagnostic is not a bench.sh performance comparison."
+    "next_gate": "Public API/agent-session/task quality,failure-owner and repeated clean decode preservation remain separate. This native protocol diagnostic is not a bench.sh performance comparison.",
+    "failure_resolution": {
+      "cause": "Controller callback accepted one argument; measurement_owner.Owner.run calls interaction(io,entry). TypeError before native READY/request; owner sent SIGTERM after 0.188 seconds. Not a completed model or GPU test.",
+      "owner_error": "TypeError('run.<locals>.<lambda>() takes 1 positional argument but 2 were given')",
+      "forced_process_closure": {
+        "pid": 1808648,
+        "start_ticks": 113627877,
+        "original_anchored_session_empty_before_reap": true,
+        "direct_child_reaped": true,
+        "survivors": 0,
+        "observer_errors": [],
+        "current_exact_owned_identity_absent": true,
+        "normal_observation_complete": false
+      },
+      "unrun_cases": [
+        "near-cap",
+        "restore"
+      ],
+      "next_action": "Keep failed v1 unchanged; commit corrected callback and a prospective v2 plan. Exercise the actual Owner/Interactive transport without GPU before model execution. Long RESTORE must enter layer-major with >8192 fresh batched rows, rather than only16 new tokens."
+    }
   },
   "owner_trace_obligations": {
     "status": "pending_after_state_gates",
