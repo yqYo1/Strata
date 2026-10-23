@@ -627,9 +627,10 @@ committed comparison. The shared table parser and current profiler assets remain
 The original failed profiler result stays unchanged. Selected9853 inputs,
 13 native assets and8 current profiler assets still verify after deletion.
 
-All three source-audit workers settled and their owned terminals closed. The
-current full-context report and corrected review remain only for the next
-CLI-only consume-prompt diagnostic. The selected binary has no zero-output
+All three earlier source-audit workers settled and their owned terminals closed.
+The CLI-only source report/review are retired after their decisions and the
+corrected model full-fill result are preserved. The separate near-cap/session
+gate map remains for the next qualification plan. The selected binary has no zero-output
 full-fill entrypoint. A reviewer initially misread the SYCL commit flag's
 conditional scope;Main checked the original/current source and corrected that
 false positive. No verifier change is required for it. The diagnostic-only
@@ -772,6 +773,11 @@ The native-source delta from selected`6e40afc1b` is confined to prefill math and
 planning,the diagnostic-only CLI,manual test targets and a read-only host-span
 query;decode inference sources and allocator implementations are unchanged.
 Actual repeated decode comparisons still determine phase preservation.
+Detailed closed diagnostic plans and individual historical outcomes recover
+from`95e174255`;the current result retains their original statuses and archive
+references,with the live build/component/model qualifications. Successful model
+output,JIT,duplicate receipts,reproducible ID files and the resolved old budget
+diagnostic are retired. The original13 and current5 native assets still verify.
 
 Remaining model gates are repeated phase-preserving adoption evidence,
 agent-session and task quality,near-cap/tail boundaries,
