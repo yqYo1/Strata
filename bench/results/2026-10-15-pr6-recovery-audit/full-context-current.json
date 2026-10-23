@@ -1465,7 +1465,7 @@
     "ordinary_runtime_teardown_qualified": false
   },
   "model_capacity_v4": {
-    "stage": "prepared",
+    "stage": "short_closed",
     "source_commit": "3ee79eaa742f142eacbbff91afe799ef9e7d7640",
     "input_sha256": {
       "data/expert-profile.bin": "8f59b4aa8873209dff11c11e37bcda9529a1335b724a1afeea37bf6388975baf",
@@ -1868,7 +1868,108 @@
         "wall_s": 2400
       }
     },
-    "outcomes": {},
+    "outcomes": {
+      "short": {
+        "passed": true,
+        "complete": true,
+        "ownership_closed": true,
+        "exit_code": 0,
+        "stdout_sha256": "ff3557da8486aff7b9927c27007a02c7545604f937e46699fa219a953bf83609",
+        "stderr_sha256": "305768212a2c9d920261d5de7358d6f38dd7edbedfdf917fcf13f7d11bbd6b75",
+        "validation": {
+          "pid": 1432061,
+          "loader": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_loader.so.0.12.0",
+          "threads_before": 1,
+          "preinit": 37,
+          "config_enabled": true,
+          "first_init": true,
+          "dispatch_result": 46,
+          "output_untouched": true,
+          "retained_reference_until_exit": true,
+          "runtime_teardown_qualified": false
+        },
+        "batched_rows": 16384,
+        "output_tokens": 4,
+        "final_slot_checked": false,
+        "allocation": {
+          "tokens": 16384,
+          "chunk": 8192,
+          "dtype": "bf16",
+          "element_bytes": 2,
+          "total": 335544320,
+          "gpu_rows": 16384,
+          "gpu_bytes": 335544320,
+          "host_bytes": 0,
+          "staging_bytes": 0,
+          "layer_cache": 1022361600,
+          "effective_moe_mode": 10,
+          "device_max_allocation_bytes": 10132807680
+        },
+        "streamed_qsa": {
+          "layers": 12,
+          "chunks_per_layer": 2,
+          "rows_per_layer": 16384,
+          "prefix_H2D_requested_bytes": 0,
+          "host_publication": "GPU_Q8",
+          "checked_drain": true,
+          "measured_bus_traffic": false
+        },
+        "free_memory_mib": [
+          {
+            "mib": 3531,
+            "after": "the weights, the session and the drafter"
+          },
+          {
+            "mib": 577,
+            "after": "opening the expert cache"
+          },
+          {
+            "mib": 577,
+            "after": "the profile fill"
+          },
+          {
+            "mib": 563,
+            "after": "the R4 hit path"
+          },
+          {
+            "mib": 563,
+            "after": "the expert cache and the graphs"
+          },
+          {
+            "mib": 5,
+            "after": "the standalone prompt buffers"
+          },
+          {
+            "mib": 120,
+            "after": "the standalone prompt execution"
+          },
+          {
+            "mib": 2575,
+            "after": "releasing the standalone prompt buffers"
+          },
+          {
+            "mib": 2575,
+            "after": "the head and the prompt path"
+          },
+          {
+            "mib": 2511,
+            "after": "the verifier and the drafter's binding"
+          }
+        ],
+        "prefill_ms_observed": 48929.3,
+        "speed_eligible": false,
+        "fresh_faults": [],
+        "driver_after": {
+          "pci": "/sys/bus/pci/devices/0000:05:00.0",
+          "driver": "xe",
+          "vendor": "0x8086",
+          "device": "0xe20c",
+          "kernel": "7.0.0-38-generic",
+          "devcoredump": false
+        },
+        "boot_unchanged": true
+      }
+    },
     "boot": "cfda0b6a-7c13-4fe2-bdf5-8f9202770840",
     "driver_before": {
       "pci": "/sys/bus/pci/devices/0000:05:00.0",

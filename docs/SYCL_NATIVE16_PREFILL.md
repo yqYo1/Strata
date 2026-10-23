@@ -725,9 +725,17 @@ fault. All four component cases also pass,including an8192-row append and the
 last three cells ending262144. The unchanged resident fixture's independent
 numerical oracle passes on the same build. Both exit normally without a fresh
 fault. A source-audit claim of colliding active resident mappings was corrected
-by native Luna review;the actual valid slots are distinct. These gates allow
-the separately planned capacity diagnostic. No streamed model,nonzero-prefix
-RESTORE or clean speed result is established yet.
+by native Luna review;the actual valid slots are distinct.
+
+The streamed model admission diagnostic now passes:16385 actual input IDs,
+16384 batched BF16 rows,two8192-row chunks through each of12QSA layers,and four
+valid output IDs. All335544320 residual bytes fit in VRAM for this short case;
+the admitted MoE window uses mode10. Each QSA layer publishes on the GPU with
+zero requested prefix H2D bytes at fresh position0. Prompt owners release,
+dense/MTP owners restore,and the process exits normally without a fresh fault.
+This observed first-use synthetic diagnostic is speed-ineligible and four
+output tokens do not prove decode preservation. The predeclared262144 full-fill
+gate,nonzero-prefix RESTORE and clean matched speed comparisons remain open.
 
 Remaining model gates are repeated phase-preserving adoption evidence,
 agent-session and task quality, full physical262144 tokens including the final
