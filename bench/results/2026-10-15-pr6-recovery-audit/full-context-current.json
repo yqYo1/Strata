@@ -2753,7 +2753,7 @@
     ]
   },
   "allocation_budget_qsa_components": {
-    "stage": "component_closed",
+    "stage": "resident_closed",
     "source_commit": "dfd137d1bb3be3dac729fa76c9b937ca03ce413f",
     "input_sha256": {
       "include/strata/program/full_context_diagnostic.hpp": "d4abd9516913df9c0672adfea079e036223c8454ae79fadacd6f209432f04621",
@@ -3011,6 +3011,38 @@
             "checked_drain": "PASS"
           }
         ],
+        "fresh_faults": [],
+        "driver_after": {
+          "pci": "/sys/bus/pci/devices/0000:05:00.0",
+          "driver": "xe",
+          "vendor": "0x8086",
+          "device": "0xe20c",
+          "kernel": "7.0.0-38-generic",
+          "devcoredump": false
+        },
+        "boot_unchanged": true
+      },
+      "resident": {
+        "passed": true,
+        "complete": true,
+        "ownership_closed": true,
+        "exit_code": 0,
+        "stdout_sha256": "5f86743c1d1539f42004912ac3a416ab78230732cbcb49ae6be9387cd81a74dc",
+        "stderr_sha256": "b8d091c406ed953e0f89aa873acf7275dcdba71809891461ed35b8909a9c60e8",
+        "GPU_work_submitted": true,
+        "activation": {
+          "pid": 1526278,
+          "loader": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_loader.so.0.12.0",
+          "threads_before": 1,
+          "preinit": 37,
+          "config_enabled": true,
+          "first_init": true,
+          "dispatch_result": 46,
+          "output_untouched": true,
+          "retained_reference_until_exit": true,
+          "runtime_teardown_qualified": false
+        },
+        "resident_numerical_oracle": true,
         "fresh_faults": [],
         "driver_after": {
           "pci": "/sys/bus/pci/devices/0000:05:00.0",
