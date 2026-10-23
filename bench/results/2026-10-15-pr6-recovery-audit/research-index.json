@@ -10237,5 +10237,39 @@
     "delivery_processed_and_acked": true,
     "retention_review": "/home/yayoi/orca/workspaces/Strata/sycl/.cache/strata-research/20261024/full-context-state-qualification/retention-review.json",
     "retention_review_sha256": "285169711bfaa384f035089055ad2b518be9f68a0efaf4f7b28950c3b72db9a7"
+  },
+  "explicit_layout_ownership_audit_20261024": {
+    "classification": "decision_support",
+    "status": "dispatch_observation_pending",
+    "schedulable_now": false,
+    "source_commit": "fe568c3b5",
+    "native_source_commit": "be0d4e35b694783d3a8f0ad1803f0b12c578b76b",
+    "source_sha256": {
+      "include/strata/prefill/prefill.hpp": "8b7f2117b7eae566f4a527947f9f7c3855022ddaa282430713f7d60c8a246c83",
+      "src/prefill/prefill.cpp": "942c352c4197b296313e54d63243b62dcfabfae1ab79d04b2893ba3aec6c6686",
+      "src/prefill/layer_major.inc": "a0019a68132c50d18805fcf3914a92eb326f9fa55a73d51e4bf85cc5d479afbb",
+      "src/program/generate.cpp": "9cee537ce0f10d609dab793ffb5dac35a97c8670baf8abb7dc591ead5ede987c",
+      "src/sycl/compat.cpp": "7e88d1684bf1d6f386a739a798f7e0b5eebf90fc92ce03e577536a1d08d5ed03",
+      "include/strata/sycl/checked_cleanup.hpp": "c2c9bdee7b3a6eac9fb9ae9d965cec237b2971a83ec7a3a8f9ff274b3e53f683",
+      "include/strata/core/cache_scratch_lease.hpp": "71e0c67d49cacb055b51e54db34afe8d0533029413a72303bbec4ad0de92e494",
+      "include/strata/prefill/scratch_allocation.hpp": "b7001b50bbf9576f750133047762f0dcf6a28c8b601a472a4503c3f2bf9290bd",
+      "tools/sycl/check_model_restore.py": "2dfc1a6604df4c1dce7d058020a1723b47775cacffde15cd9c127b1e1ff07b79",
+      "tools/sycl/check_streamed_qsa.py": "4408482a9606abe4e50f6cc49bd0055cc006022b7684631df0d27174c688e25b"
+    },
+    "prerequisites": [
+      {
+        "met": true,
+        "evidence": "New explicit-layout code compiled with1406covered inputs. Same-build layout fixture passed real8192/256 rebind,guard and Q8 price checks;source route corrected,remaining component checks serialized. Concrete new lifetime/dispatch/model-evidence question exists before the small model."
+      }
+    ],
+    "report": "/home/yayoi/orca/workspaces/Strata/sycl/.cache/strata-research/20261024/explicit-layout-ownership-audit/report.md",
+    "budget_bytes": 12288,
+    "next_review": "Native Luna-max short digest before actual model execution;retire source audit after corrections and useful model evidence are committed.",
+    "run": "run_12fa11537288",
+    "terminal": "term_7f6c26ce-57ce-4765-9b2b-a10ca8c4957a",
+    "incarnation": "1be3a103-cce0-4280-bfab-2f8bd9dfdba8",
+    "model_observed": "GPT-6-Luna high",
+    "report_root_writable_at_launch": true,
+    "worker_ownership_closed": false
   }
 }
