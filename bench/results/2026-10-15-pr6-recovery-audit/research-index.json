@@ -10000,7 +10000,7 @@
   },
   "actual_qsa_tail_capture_controller_audit_20261023": {
     "classification": "decision support",
-    "status": "returned_native_review_pending",
+    "status": "reviewed_model_capture_eligible",
     "schedulable_now": true,
     "prerequisite_evidence": [
       "Committed separate diagnostic sourcea341;passed8CPU cases and small/full GPU readback.",
@@ -10017,7 +10017,7 @@
     "consumer": "Main single official long-request actual-tail capture and immediate same-generation mask replay.",
     "next_review": "Native6-luna-max before model launch;Main executes CPU binding tests concurrently;retire at capture/replay decision.",
     "rules_revision": "cdb4a67e4",
-    "source_gate_passed": false,
+    "source_gate_passed": true,
     "run_id": "run_432552edd149",
     "task_id": "task_ede36648fee7",
     "dispatch_id": "ctx_884511eb1b2e",
@@ -10030,7 +10030,25 @@
     "worker_done_accepted": true,
     "release": "retained_external_processAction_none",
     "terminal_closed_verified": true,
-    "delivery_processed_and_acked": true
+    "delivery_processed_and_acked": true,
+    "review": {
+      "report": {
+        "path": "/home/yayoi/orca/workspaces/Strata/sycl/.cache/strata-research/20261023/current-tail-capture-controller-audit/report.md",
+        "sha256": "255d2c393a38309d4ceb573f753c2e62fb9a0a3e4db1dfceead970854149f921"
+      },
+      "native_review": {
+        "path": "/home/yayoi/orca/workspaces/Strata/sycl/.cache/strata-research/20261023/current-tail-capture-controller-audit/native-review.json",
+        "sha256": "dc7eba0b2d45ec7aea39c78688eab938a36ab304135a39f771f7d94870cb2c32"
+      }
+    },
+    "main_digest": "Bounded producer source gate passes;actual values/replay/clean speed/adoption unqualified. Main supplements review scope with existing exact overlay/generated-TU compilation qualification.",
+    "scope_supplement": {
+      "overlay_generator": "tools/sycl/locality_capture_overlay.py",
+      "generator_sha256": "d164dac14c72357225e937ae8079c048e64646384d9434eb32d7dcabf733e08f",
+      "build_result": "bench/results/2026-10-15-pr6-recovery-audit/qsa-locality-capture-build-current.json",
+      "build_result_sha256": "fe5902ffdf01e3af66fe9c86754c32293adce79e8bfef6fbdecf7d643d6b3280",
+      "verification": "diagnostic_admission/current(plan) checks exact generated TU,launcher/original source,actual recorded compilation and diagnostic artifacts before/after capture."
+    }
   },
   "actual_qsa_order_cohort_controller_audit_20261023": {
     "classification": "decision support",
