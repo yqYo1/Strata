@@ -543,6 +543,23 @@ tree after verifying their pinned Git recovery. The current compact result keeps
 all45 samples and minimal ISA/resource evidence. All13 selected native assets
 still qualify;the separate older ownership/provenance holds remain explicit.
 
+A separate diagnostic package at`a341a66e0` now compiles successfully. Its
+checked hook captures only the final512 queries' actual selected IDs and step
+descriptors, and records successful prefix-pack submissions. Eight CPU
+normal/fault cases pass, including deliberate fail-stop exit73;GPU readback is
+still unexecuted. The [build result](../bench/results/2026-10-15-pr6-recovery-audit/qsa-locality-capture-build-current.json)
+pins the generated TU,541 project inputs,9311 dependency inputs and8700 SDK
+inputs. The original selected package and decode placement are unchanged.
+The source audit identifies paired append-file freshness/completion as a launch
+hold. The new controller proposes an exclusive transaction claim, fresh private
+destinations and a checked normal-exit completion record binding both hashes;
+independent review and small/full GPU qualification remain required. The
+implemented replay consumer preserves whole-query operands and output ownership
+under natural,reverse and overlap-grouped enumeration,using synthetic Q/K/V with
+captured masks/steps. It is not yet compiled or GPU-qualified. CPU order
+construction is excluded from this diagnostic and cannot justify model adoption.
+No actual-model capture is permitted before that consumer and readback qualify.
+
 Remaining model gates are repeated phase-preserving adoption evidence,
 agent-session and task quality, full physical262144 tokens including the final
 slots and tail boundaries, prefill-to-decode/session/RESTORE, and70tok/s decode.
