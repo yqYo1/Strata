@@ -10281,7 +10281,7 @@
   },
   "checkpoint_layout_v4_model_source_audit_20261024": {
     "classification": "decision_support",
-    "status": "dispatch_accepted_turn_start_unobserved",
+    "status": "native_reviewed_no_declared_small_gate_blocker",
     "schedulable_now": false,
     "source_commit": "0a6da6f4bdb33fa83b65557d536c8d075d224225",
     "native_source_commit": "1cba8a285",
@@ -10310,9 +10310,24 @@
     "terminal": "term_689d4c0a-aef4-4427-af9a-a86ac8381b09",
     "incarnation": "f99acbf9-e42b-48e6-8460-41757a475306",
     "run": "run_12fa11537288",
-    "worker_ownership_closed": false,
+    "worker_ownership_closed": true,
     "task": "task_66f0c7d0b96d",
     "dispatch": "ctx_0a0aec1f5bb4",
-    "turn_start": "unobserved;inspect existing handles,no retry"
+    "turn_start": "unobserved;inspect existing handles,no retry",
+    "report_sha256": "2832056530746952626552d0eb57863142213e30199366c87952ca1a853eef03",
+    "report_bytes": 12252,
+    "terminal_closed_verified": true,
+    "delivery_processed_and_acked": true,
+    "native_review": ".cache/strata-research/20261024/checkpoint-layout-v4-model-audit/native-review.json",
+    "native_review_sha256": "eb51c06e935e07a360e6c1fcb5706999d3beeb93ced4681ffd3dddab1fc3535f",
+    "native_review_bytes": 3974,
+    "review_digest": "Prepared commands use short-read0 and batched33-token callbacks,so the report parser blocker is false. Actual source checkpoint route,fail-before-mask admission,reuse/nonaligned restore math and134+9459 hash-order cases verified. Only host protocol has run;fresh model and broader adoption gates remain.",
+    "corrections": [
+      {
+        "finding": "Hypothetical short-window parser blocker",
+        "status": "false_positive",
+        "evidence": "All prepared native commands pin --short-read0;their33-token requests and restored suffixes use batched prefill. Original report preserved;no parser/source change or recorded hash update needed."
+      }
+    ]
   }
 }

@@ -94,7 +94,9 @@ repeated matched measurements; do not label a changed controller or package
 prefill-only merely because its new code runs outside the decode loop.
 
 The default-off CPU IQ2 pair producer remains explicitly confined to decode;
-prefill retains its reference producer. Its component comparison preserves
+prefill retains its reference producer. The selected benchmark environment
+already sets`STRATA_IQ2_PAIR=1`;the absent-setting default is off,not an unused
+optimization switch for this selected configuration. Its component comparison preserves
 output bits and reduces the tested NT1 pool latencies by8.85%/7.29%. The old
 whole-process IQ2 advancement screen failed prefill preservation; that failure
 remains unchanged. The phase-scoped6e40 source contains that candidate without
