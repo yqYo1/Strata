@@ -2627,7 +2627,7 @@
     ]
   },
   "snapshot_qsa_components": {
-    "stage": "host_closed",
+    "stage": "smoke_closed",
     "source_commit": "5a20040d6e6f27005eece9038e0b2ea72906faec",
     "input_sha256": {
       "include/strata/program/full_context_diagnostic.hpp": "d4abd9516913df9c0672adfea079e036223c8454ae79fadacd6f209432f04621",
@@ -2772,6 +2772,53 @@
         "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
         "GPU_work_submitted": false,
         "prefix_budget_oracle": true,
+        "fresh_faults": [],
+        "driver_after": {
+          "pci": "/sys/bus/pci/devices/0000:05:00.0",
+          "driver": "xe",
+          "vendor": "0x8086",
+          "device": "0xe20c",
+          "kernel": "7.0.0-38-generic",
+          "devcoredump": false
+        },
+        "boot_unchanged": true
+      },
+      "smoke": {
+        "passed": true,
+        "complete": true,
+        "ownership_closed": true,
+        "exit_code": 0,
+        "stdout_sha256": "f69e2201741a97d2fef7d70900380f8057894cd7a9a1d9c3fa2e6a0f0b581b05",
+        "stderr_sha256": "39545636c2e8d4e0e96fc76cbc9acb0b1ec7bf385a7a0a30742c1e7a8ba1154c",
+        "GPU_work_submitted": true,
+        "activation": {
+          "pid": 1732166,
+          "loader": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_loader.so.0.12.0",
+          "threads_before": 1,
+          "preinit": 37,
+          "config_enabled": true,
+          "first_init": true,
+          "dispatch_result": 46,
+          "output_untouched": true,
+          "retained_reference_until_exit": true,
+          "runtime_teardown_qualified": false
+        },
+        "cases": [
+          {
+            "cells": "12",
+            "physical_pages": "2",
+            "pos0": "1",
+            "tokens": "5",
+            "rejects": "14",
+            "unwind": "1",
+            "chunks": "3",
+            "stage_host_reference": "PASS",
+            "resident_map": "PASS",
+            "guards": "PASS",
+            "inputs": "PASS",
+            "checked_drain": "PASS"
+          }
+        ],
         "fresh_faults": [],
         "driver_after": {
           "pci": "/sys/bus/pci/devices/0000:05:00.0",
