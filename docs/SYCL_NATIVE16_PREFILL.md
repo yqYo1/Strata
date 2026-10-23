@@ -652,13 +652,14 @@ residency or successful allocation. Its separate native configure now passes;
 the actual generator compiles with `-fsyntax-only` both with and without the
 diagnostic definition, with no diagnostics and normal owned exits. These checks
 preserve the original9853-input/13-asset proof and verify8697 installed SDK inputs.
-The separate diagnostic engine now also builds from`908158833`, preserving
-the original selected13 assets. Its recipe freezes230 additional MKL
-header/config/link inputs. The actual Ninja dependency census contains1399
-files, including one generated ggml version header, with no uncovered inputs;
-the owned compile/link and dependency census exit normally. This is an
-unselected diagnostic build, not a decode-preservation or GPU/model result.
-Its executable also passes11 owned pre-device CLI checks:help exposes the
+The current unselected diagnostic builds from`43587ce22`, preserving the
+original selected13 assets and replacing only the previous diagnostic in place.
+Its recipe freezes230 additional MKL header/config/link inputs. The actual
+Ninja dependency census contains1402 files, including one predeclared generated
+ggml version header, with no uncovered inputs;the owned compile/link and census
+exit normally. The engine and two same-build QSA fixtures are hash-pinned in
+the current result. This is not decode-preservation or model qualification.
+The earlier`908158833` diagnostic passed11 owned pre-device CLI checks:help exposes the
 diagnostic flag,and10 invalid requests reject at the intended early boundary.
 Actual token files cover262143/262144/262145 parsed integers;no model is loaded
 and no throughput or physical-context result follows. The full synthetic
@@ -704,14 +705,29 @@ layer's K/V stage and identity page table. At262144 cells,2KV heads and256
 dimensions, its INT8 codes and per64 FP16 scales occupy276824064B (264MiB),
 already included in the observed standalone scratch accounting. Keeping every
 layer's KV in VRAM simultaneously is therefore unnecessary for a layer-major
-prefill design. This is a source/size result,not a completed implementation.
-The missing native16 work is quantized publication to the authoritative host
-copy and currently resident slots,and using the stage's actual page count for
-every typed attention variant. Preserve the resident native16 path and all
-decode map/reader behavior. Copy the existing quantized codes/scales rather
-than introducing an FP32 hidden-state bridge. A later prefix-transfer reduction
-needs explicit per-layer/request ownership,including nonzero-prefix RESTORE,
-instead of assuming a staging buffer still holds the preceding chunk.
+prefill design. Source`43587ce22` implements native16 streamed publication:
+one GPU quantizer writes identical codes/scales to the full-layer stage,
+authoritative mapped host copy and valid resident slots. All ten typed attention
+variants use the full stage's actual page count. Registered host/device spans,
+non-overlap and queue domains are checked before enqueue. Resident-map ownership
+requires unique valid slot assignments for simultaneously written pages;the
+streamed API comment still needs that explicit precondition at the next source
+revision. The resident quantizer body,decode readers and1256-slot placement
+are unchanged;this source boundary does not prove decode speed preservation.
+
+Stage-prefix reuse is local to one layer-major invocation,matching the actual
+layer and contiguous end position. A different layer or request starts by
+refilling its prefix from the authoritative host copy. Trace counters count
+requested prefix-transfer bytes,not measured PCIe traffic. The bounded traced
+smoke passes fourteen pre-enqueue refusals,three append/refill/rewind chunks,
+exact stage/host/resident parity,guards and checked unwind/drains,with no fresh
+fault. All four component cases also pass,including an8192-row append and the
+last three cells ending262144. The unchanged resident fixture's independent
+numerical oracle passes on the same build. Both exit normally without a fresh
+fault. A source-audit claim of colliding active resident mappings was corrected
+by native Luna review;the actual valid slots are distinct. These gates allow
+the separately planned capacity diagnostic. No streamed model,nonzero-prefix
+RESTORE or clean speed result is established yet.
 
 Remaining model gates are repeated phase-preserving adoption evidence,
 agent-session and task quality, full physical262144 tokens including the final
