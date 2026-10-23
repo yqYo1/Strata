@@ -862,7 +862,12 @@ The prospective v3 model diagnostic explicitly sets`--prompt-cache-every 0`
 while retaining`--prompt-cache 6` and live conversation parking. The default
 16384 interval requires chunk-major intermediate snapshots and otherwise
 refuses dedicated layer-major execution. The checkpoint-enabled production
-fallback still needs separate handling and qualification before adoption.
+fallback still needs separate handling and qualification before adoption:
+select and price the effective layout before initialization,cover no-loan
+participants,and admit the actual occupied tail before per-request dispatch.
+Layer-major callbacks exist,but earlier-layer main state can already be at the
+segment end when draft callbacks report earlier prefixes;those are not coherent
+intermediate snapshots. A request-layout predicate alone does not fix this.
 The source audit/review's claimed reused-count defect is a false positive:
 its pinned controller already expects`n` for A+suffix. Preserve that original
 review and correction;do not change request bytes or relabel the old model
