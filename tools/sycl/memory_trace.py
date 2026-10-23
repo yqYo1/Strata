@@ -17,7 +17,7 @@ import check_model_restore as model
 
 P, B, RESULT = model.P, model.B, model.RESULT
 ROOT = B / 'ur-memory-subscriber-v1'
-KEY = 'ur_memory_subscriber_v1'
+KEY = 'ur_memory_subscriber_v2'
 INPUTS = sorted(set([*model.INPUTS,'tools/sycl/memory_trace.py',
     'tools/sycl/ur_memory_subscriber.cpp','tools/sycl/ur_memory_packet_test.cpp']))
 require, digest, write = model.require, model.digest, model.write
@@ -36,7 +36,12 @@ def compact(r):
 
 
 def prepare(container):
-    require(KEY not in container and not ROOT.exists(),'fresh subscriber gate only')
+    require(KEY not in container and ROOT.exists(),'fresh admission-corrected host gate only')
+    old=json.loads((ROOT/'record.json').read_text())
+    require(compact(old)==container['ur_memory_subscriber_v1'] and
+        old['stage']=='closed_for_environment_admission_correction' and not old['active'] and
+        old['ownership_closed'] and set(old['outcomes'])=={'build'} and old['outcomes']['build']['passed'],
+        'closed original subscriber build required;no host test inherited')
     native=model.gate.engine()
     state=json.loads((model.ROOT/'record.json').read_text())
     require(state['complete'] and state['passed'] and not state['active'] and state['ownership_closed'] and
@@ -64,7 +69,6 @@ def prepare(container):
     require(len(deps)>20,'actual header closure missing')
     deps[str(framework)]=digest(framework)
     libraries=['-L',str(sdk/'lib'),'-Wl,-rpath,'+str(sdk/'lib'),'-lxptifw']
-    ROOT.mkdir(mode=0o700)
     commands={
         'library':[compiler,*options,'-shared',str(P/'tools/sycl/ur_memory_subscriber.cpp'),
             *libraries,'-o',str(ROOT/'libstrata_ur_memory.so')],
@@ -77,13 +81,27 @@ def prepare(container):
         UR_ENABLE_LAYERS='UR_LAYER_TRACING,UR_LAYER_PARAMETER_VALIDATION',
         UR_LOG_TRACING='level:warning;flush:warning;output:stderr')
     host={'PATH':'/usr/bin:/bin','LANG':'C.UTF-8','LD_LIBRARY_PATH':env['LD_LIBRARY_PATH']}
-    r=dict(stage='prepared',source_commit=revision,input_sha256=source,
-        compiler={'path':compiler,'sha256':digest(compiler)},dependencies=deps,
-        commands_planned=commands,environment={'host':host,'trace':trace},
-        environment_sha256={k:model.model.fingerprint(v) for k,v in {'host':host,'trace':trace}.items()},
+    compiler_pin={'path':compiler,'sha256':digest(compiler)}
+    environment={'host':host,'trace':trace}
+    environment_hashes={k:model.model.fingerprint(v) for k,v in environment.items()}
+    require(old['compiler']==compiler_pin and old['dependencies']==deps and
+        old['commands_planned']==commands and old['environment_sha256']==environment_hashes and
+        old['environment']==environment,'collector native recipe/headers/runtime/environment changed')
+    for name,h in old['input_sha256'].items():
+        raw=model.gate.native.build.git(P,'show',old['source_commit']+':'+name)
+        require(hashlib.sha256(raw).hexdigest()==h,'original subscriber source unrecoverable: '+name)
+        if name!='tools/sycl/memory_trace.py':require(source[name]==h,'native/transitive source changed: '+name)
+    for asset in old['assets'].values():require(digest(asset['path'])==asset['sha256'],'original artifact changed')
+    r=dict(stage='build_closed',source_commit=revision,input_sha256=source,
+        compiler=compiler_pin,dependencies=deps,commands_planned=commands,environment=environment,
+        environment_sha256=environment_hashes,
         native_source_commit=native['source_commit'],native_binary=native['binary'],
         preload=probe,canary=qualification['canary'],
-        assets={},outcomes={},active=False,passed=False,complete=False,ownership_closed=True,
+        assets=old['assets'],outcomes={},active=False,passed=False,complete=False,ownership_closed=True,
+        inherited_build=dict(result_key='ur_memory_subscriber_v1',source_commit=old['source_commit'],
+            original_record_sha256=digest(ROOT/'record.json'),assets_verified=2,actual_dependency_inputs=len(deps),
+            native_source_recipe_environment_unchanged=True,host_tests_inherited=False,
+            native_binaries_rebuilt=False,changed_input_only='tools/sycl/memory_trace.py'),
         GPU_executed=False,speed_eligible=False,ordinary_runtime_teardown_qualified=False,
         budgets=dict(wall_s=60,cpu_s=60,rss_bytes=2<<30,text_bytes=8<<20,file_bytes=8<<20,total_bytes=32<<20),
         criteria='Commit before every gate. Build shared subscriber and CPU packet fixture with pinned host compiler/header closure. Packet fixture must emit12 events:3 successful USM domains,failed uninitialized-output refusal,free,buffer create/retain/alias/release,unknown mutating API and missing packet controls;no UR initialization or GPU operation. Real qualified host canary must activate ur.call collector exactly once,preserve parameter-validation first-init receipt and normal exit0. Subscriber only reads documented argument packets and reports requested logical bytes,not physical residency/pool ownership. Unknown memory APIs remain unsupported. Stop first failure;no retry. No model/device/speed/adoption or ordinary-teardown claim.',
@@ -98,6 +116,9 @@ def admission(r,container):
         compact(r)==container[KEY] and pins(r['source_commit'])==r['input_sha256'],'commit exact subscriber plan')
     require(digest(r['compiler']['path'])==r['compiler']['sha256'] and
         all(digest(p)==h for p,h in r['dependencies'].items()),'compiler/header/runtime identity changed')
+    require(set(r['environment'])==set(r['environment_sha256']) and
+        all(model.model.fingerprint(v)==r['environment_sha256'][k] for k,v in r['environment'].items()),
+        'effective subscriber environment differs')
     native=model.gate.engine()
     require(native['binary']==r['native_binary'] and native['source_commit']==r['native_source_commit'] and
         model.gate.validation.preload_qualification()==r['preload'],'native/qualified loader changed')
