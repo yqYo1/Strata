@@ -647,8 +647,13 @@ from VRAM. Actual free memory, largest single allocation, layer/workspace/KV
 owners and their lifetimes still need runtime admission evidence. CLI
 `Prefill::reset()` calls `release()` before the final verifier, including checked
 stream drains and owner release; this source fact does not prove runtime
-residency or successful allocation. The new diagnostic still needs native
-configure/syntax/build, actual262144 memory admission,last-slot commit and checked completion,
+residency or successful allocation. Its separate native configure now passes;
+the actual generator compiles with `-fsyntax-only` both with and without the
+diagnostic definition, with no diagnostics and normal owned exits. These checks
+preserve the original9853-input/13-asset proof and verify8697 installed SDK inputs.
+They do not link an engine, qualify decode preservation or cover the actual
+MKL/header/link dependency closure needed before that build. The new diagnostic
+still needs a pinned native link plan, actual262144 memory admission,last-slot commit and checked completion,
 plus separate near-cap,RESTORE and failure-owner validation. It must not change
 the selected decode implementation or establish adoption by diagnostic success.
 
