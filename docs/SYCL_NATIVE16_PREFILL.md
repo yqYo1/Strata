@@ -567,10 +567,16 @@ with private validation,normal exit and no fresh fault. Actual-file provenance
 and host-check remain separate
 requirements before actual-mask execution. CPU order
 construction is excluded from this diagnostic and cannot justify model adoption.
-The next action is a separately committed117K actual-tail capture with session
-identity,paired-file hashes and checked completion,followed by actual-file
-host-check/full replay validation. These source/fixture results establish neither
-a locality speedup nor model adoption.
+The committed`capture_qsa_locality.py` producer binds a one-shot actual117K
+request/session to the paired hashes and final512-row extent,then requires the
+actual-file host check and checked completion. Its8 CPU request/header/prefix
+conservation tests pass. The committed`measure_qsa_order_replay.py` consumer
+plans one full12-layer validation and three clean processes/540 timing samples;
+its7 CPU sample-admission tests pass. Both source reviews remain pending before
+the model/cohort launches. Each order must improve the sum of isolated layer
+medians by at least3% in every process,with no layer/process regression above5%,
+to justify a subsequent GPU-local implementation experiment. CPU order building
+and these fixture results establish neither a locality model speedup nor adoption.
 Closed synthetic files and successful full tracing/build output are now retired:
 50 files,59423024 bytes,with a path/hash/reason manifest in the
 [smoke result](../bench/results/2026-10-15-pr6-recovery-audit/qsa-order-smoke-current.json).
