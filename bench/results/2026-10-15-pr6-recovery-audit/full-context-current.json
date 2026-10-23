@@ -601,7 +601,7 @@
     "retained": "Original selected6e40+12fixtures,one unselected diagnostic engine/build/source record,and full262144-ID input only for imminent physical admission. No successful raw build/CLI output or consumed research packet retained. Other legacy raw/fixture payloads remain separately reviewed;no global retirement claim."
   },
   "device_smoke": {
-    "stage": "prepared",
+    "stage": "failed",
     "source_commit": "e3e136861944f59c2588ce70ded3a739862526ec",
     "input_sha256": {
       "include/strata/program/full_context_diagnostic.hpp": "d4abd9516913df9c0672adfea079e036223c8454ae79fadacd6f209432f04621",
@@ -672,7 +672,7 @@
     "passed": false,
     "complete": false,
     "ownership_closed": true,
-    "GPU_attempted": false,
+    "GPU_attempted": true,
     "GPU_work_submitted": null,
     "physical262144_qualified": false,
     "model_adoption_qualified": false,
@@ -687,6 +687,18 @@
     "source_audit": "Original6e40 smoke:256/512-byte slots,explicit256-item padded workgroups with uniform collectives,in-order upload/read/reuse,device/host guard checks,foreign-context rejection before enqueue,and owners outliving checked error unwind. No process-environment mutation or model arithmetic.",
     "criteria": "Original fixture6cases and final PASS;qualified same-child before-main validation/first-init proof before GPU work;trace shows kernel enqueue. No unexpected post-canary UR/LevelZero/teardown errors. Normal owned exit,unchanged source/assets/boot/driver,no fresh fault. No model/physical/decode/speed claim.",
     "retention": "Reuse original same-build fixture;no additional native generation. Retain compact case/activation/fault results,then retire successful full API trace. Diagnostic engine/full262144 IDs remain for imminent model-capacity consumer.",
-    "next_gate": "Diagnostic engine short model validation,then actual262144 allocation/last-slot completion,near-cap/RESTORE/fault-owner checks and repeated phase preservation before adoption."
+    "next_gate": "Diagnostic engine short model validation,then actual262144 allocation/last-slot completion,near-cap/RESTORE/fault-owner checks and repeated phase preservation before adoption.",
+    "exit_code": 125,
+    "error": "RuntimeError('native-child config/first-init proof missing')",
+    "fresh_faults": [],
+    "driver_after": {
+      "pci": "/sys/bus/pci/devices/0000:05:00.0",
+      "driver": "xe",
+      "vendor": "0x8086",
+      "device": "0xe20c",
+      "kernel": "7.0.0-38-generic",
+      "devcoredump": false
+    },
+    "boot_unchanged": true
   }
 }
