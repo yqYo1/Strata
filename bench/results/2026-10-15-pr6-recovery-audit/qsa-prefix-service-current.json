@@ -131,5 +131,26 @@
   },
   "hardware_saturation_qualified": false,
   "clean_model_speed_qualified": false,
-  "model_adoption_qualified": false
+  "model_adoption_qualified": false,
+  "host_tests": {
+    "passed": true,
+    "cases": 4,
+    "exit_code": 0,
+    "scope": "CPU parser and refusal checks at the original committed source;no device execution."
+  },
+  "consumed_evidence_retirement": {
+    "state": "prepared",
+    "manifest": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/closed-prefix-evidence-retirement-20261023.jsonl",
+      "sha256": "a5d33fd391d43c9ea92341daeaf5173b3fec0ad677d336ae358793cd47cde492",
+      "files": 69,
+      "bytes": 17918087
+    },
+    "source_and_plan_restore": {
+      "commit": "c8452d0e402faeb1b475f13e83345862491bdf8c",
+      "path": "bench/results/2026-10-15-pr6-recovery-audit/qsa-prefix-service-current.json"
+    },
+    "unused_tracked_files": 4,
+    "reason": "Retire the one-run QSA analyzer/test and closed model-aggregate controllers to reachable Git history;shared profile_aggregate parser remains maintained. External raw table/model logs and consumed research transactions no longer have a current consumer."
+  }
 }
