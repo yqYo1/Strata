@@ -220,7 +220,7 @@ bool Prefill::run_layer_major(const int64_t* tokens, int64_t n, int64_t pos0, st
             }
         }
     }
-    // QSA16 v1 deliberately supports a resident text INT8 cache only. Reject
+    // QSA16 uses resident pools or the full-logical-range mode1 stage. Reject
     // every unsupported layer/device/domain BEFORE this request submits work.
     if (qsa16_on) {
         native16::qsa::validate_device(m.cs);
@@ -239,21 +239,29 @@ bool Prefill::run_layer_major(const int64_t* tokens, int64_t n, int64_t pos0, st
         const auto shapes = strata::kernels::qsa_real_shapes();
         for (int64_t i = 0; i < ss.qsa_alloc; ++i) {
             const auto& q = ss.qsa_states[i];
-            if (q.kv_mode != 0 || !q.kv_int8 || q.kv_rot || q.kv_q4 || q.kv_hybrid || q.host.present() ||
-                q.n_slots != q.n_pages || tab.cos != q.cos_tab || tab.sin != q.sin_tab ||
+            const bool resident = q.kv_mode == 0 && !q.host.present() && q.n_slots == q.n_pages;
+            const bool streamed = q.kv_mode == 1 && q.host.present() &&
+                q.n_slots > 0 && q.n_slots <= q.n_pages;
+            if ((!resident && !streamed) || !q.kv_int8 || q.kv_rot || q.kv_q4 || q.kv_hybrid ||
+                tab.cos != q.cos_tab || tab.sin != q.sin_tab ||
                 tab.max_pos != q.max_cells) {
-                err = "prefill QSA16: requires resident unrotated INT8 K/V and the owning session RoPE tables";
+                err = "prefill QSA16: requires resident or mode1 unrotated INT8 K/V and the owning session RoPE tables";
                 return false;
             }
+            if (streamed)
+                native16::qsa::validate_streamed_q8_storage(
+                    {q.k_q, q.v_q, q.k_scale, q.v_scale, q.page_table},
+                    q8_linear(m.stage), q8_linear(q.host), shapes, {q.n_pages, q.n_slots}, m.cs);
             sycl_backend::validate_device_span(q.cos_tab, size_t(q.max_cells) * 32 * sizeof(float),
                                                sycl_backend::queue_for(m.cs));
             sycl_backend::validate_device_span(q.sin_tab, size_t(q.max_cells) * 32 * sizeof(float),
                                                sycl_backend::queue_for(m.cs));
             // Owner n_slots sizes physical pools, n_pages sizes the table.
             // max_cells is NOT used to guess allocated physical pages.
-            if (!strata::kernels::qsa_prompt_attn_bf16_validate(m.qsa_q16, core::qsa_attn_pools(q),
+            const auto pools = streamed ? pools_of(m.stage, m.ident_table) : core::qsa_attn_pools(q);
+            if (!strata::kernels::qsa_prompt_attn_bf16_validate(m.qsa_q16, pools,
                     m.sel_ids, m.steps_dev, m.cap, shapes, m.qsa_attn16, m.T,
-                    {q.n_pages, q.n_slots}, m.cs)) {
+                    {q.n_pages, streamed ? q.n_pages : q.n_slots}, m.cs)) {
                 err = "prefill QSA16: typed attention capability/geometry unsupported"; return false;
             }
         }

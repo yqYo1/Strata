@@ -754,6 +754,11 @@ strata::kernels::QsaAttnPools pools_of(const strata::kernels::KvHostPools& h, co
     p.page_table = table;
     return p;
 }
+#if defined(STRATA_ENABLE_SYCL)
+native16::qsa::Q8LinearPools q8_linear(const strata::kernels::KvHostPools& h) {
+    return {h.k_q, h.v_q, h.k_scale, h.v_scale};
+}
+#endif
 }  // namespace
 
 Prefill::Prefill() : impl_(new Impl) {}
@@ -2160,6 +2165,12 @@ bool Prefill::run_impl(const int64_t* tokens, int64_t n, int64_t pos0, std::stri
 
 #if defined(STRATA_ENABLE_SYCL)
     int64_t window_first = -1, window_end = -1, window_next = -1;
+    // This run_impl invocation owns a single layer in layer-major mode. The
+    // stage lies outside the attention/MoE scratch union and survives chunks.
+    // Local state cannot survive a new layer, request, reset or RESTORE entry.
+    int64_t staged_qsa_layer = -1, staged_qsa_end = -1;
+    uint64_t streamed_qsa_chunks = 0, streamed_qsa_rows = 0, staged_prefix_bytes = 0;
+    const bool trace_streamed_qsa = std::getenv("STRATA_TRACE") != nullptr;
 #endif
     for (int64_t c0 = 0; c0 < n; c0 += m.T) {
         if (should_stop && should_stop()) { err = "cancelled"; return false; }
@@ -2773,18 +2784,38 @@ bool Prefill::run_impl(const int64_t* tokens, int64_t n, int64_t pos0, std::stri
                     const bool staged = st.kv_mode == 1;
                     if (staged) {
                         pt.mark(kPfKvStage, cs);
-                        strata::kernels::kv_stage_from_host(pools_of(m.stage, m.ident_table), st.host,
-                                                            core::qsa_kv_format(st),
-                                                            (p0 + s.page_size - 1) / s.page_size, s, m.cs);
+                        bool reuse = false;
+#if defined(STRATA_ENABLE_SYCL)
+                        reuse = typed_qsa && m.layer_major_active && LE == LB + 1 &&
+                            staged_qsa_layer == l && staged_qsa_end == p0;
+#endif
+                        if (!reuse) {
+                            const int64_t blocks = (p0 + s.page_size - 1) / s.page_size;
+                            strata::kernels::kv_stage_from_host(pools_of(m.stage, m.ident_table), st.host,
+                                                                core::qsa_kv_format(st), blocks, s, m.cs);
+#if defined(STRATA_ENABLE_SYCL)
+                            if (typed_qsa && trace_streamed_qsa)
+                                staged_prefix_bytes += uint64_t(blocks) * strata::kernels::kv_block_bytes(s, core::qsa_kv_format(st));
+#endif
+                        }
                         pt.mark(kPfQsa, cs);
                     }
                     if (qp) qp->end(QsaProfile::kv_stage, m.cs);
                     if (qp) qp->begin(QsaProfile::kv_append_query, m.cs);
 #if defined(STRATA_ENABLE_SYCL)
                     if (typed_qsa) {
-                        native16::qsa::append_q8(m.qsa_Krope16, m.qsa_V16, T, 512, p0,
-                            {st.k_q, st.v_q, st.k_scale, st.v_scale, st.page_table},
-                            s, {st.n_pages, st.n_slots}, m.cs);
+                        const native16::qsa::Q8WritePools resident{
+                            st.k_q, st.v_q, st.k_scale, st.v_scale, st.page_table};
+                        if (staged) {
+                            native16::qsa::append_q8_streamed(m.qsa_Krope16, m.qsa_V16, T, 512, p0,
+                                resident, q8_linear(m.stage), q8_linear(st.host), s,
+                                {st.n_pages, st.n_slots}, m.cs);
+                            staged_qsa_layer = l; staged_qsa_end = p0 + T;
+                            if (trace_streamed_qsa) { ++streamed_qsa_chunks; streamed_qsa_rows += T; }
+                        } else {
+                            native16::qsa::append_q8(m.qsa_Krope16, m.qsa_V16, T, 512, p0,
+                                resident, s, {st.n_pages, st.n_slots}, m.cs);
+                        }
                     } else {
 #endif
                     if (st.kv_hybrid) {   // K8V4: K INT8 unrotated, V rotated Q4_0 (only V and the output rotate)
@@ -2991,46 +3022,48 @@ bool Prefill::run_impl(const int64_t* tokens, int64_t n, int64_t pos0, std::stri
 #if defined(STRATA_ENABLE_SYCL)
                     if (typed_qsa) {
                         const auto arithmetic = native16::qsa::attention_math();
+                        const strata::kernels::QsaPromptBf16Bounds attention_bounds{
+                            st.n_pages, staged ? st.n_pages : st.n_slots};
                         if (arithmetic == native16::qsa::AttentionMath::bf16_prefix_subgroup)
                             matrix_used = strata::kernels::qsa_bf16_prefix_subgroup_batch(
                                 m.qsa_q16, pools, m.sel_ids, m.steps_dev, m.cap, s, m.qsa_attn16, T,
-                                {st.n_pages, st.n_slots}, p0 + T, m.qsa_prefix, m.cs);
+                                attention_bounds, p0 + T, m.qsa_prefix, m.cs);
                         else if (arithmetic == native16::qsa::AttentionMath::bf16_prefix_tilepack)
                             matrix_used = strata::kernels::qsa_bf16_prefix_tilepack_batch(
                                 m.qsa_q16, pools, m.sel_ids, m.steps_dev, m.cap, s, m.qsa_attn16, T,
-                                {st.n_pages, st.n_slots}, p0 + T, m.qsa_prefix, m.cs);
+                                attention_bounds, p0 + T, m.qsa_prefix, m.cs);
                         else if (arithmetic == native16::qsa::AttentionMath::bf16_prefix_ordered_exp)
                             matrix_used = strata::kernels::qsa_bf16_prefix_ordered_exp_batch(
                                 m.qsa_q16, pools, m.sel_ids, m.steps_dev, m.cap, s, m.qsa_attn16, T,
-                                {st.n_pages, st.n_slots}, p0 + T, m.qsa_prefix, m.cs);
+                                attention_bounds, p0 + T, m.qsa_prefix, m.cs);
                         else if (arithmetic == native16::qsa::AttentionMath::bf16_prefix_kvvec4)
                             matrix_used = strata::kernels::qsa_bf16_prefix_kvvec4_batch(
                                 m.qsa_q16, pools, m.sel_ids, m.steps_dev, m.cap, s, m.qsa_attn16, T,
-                                {st.n_pages, st.n_slots}, p0 + T, m.qsa_prefix, m.cs);
+                                attention_bounds, p0 + T, m.qsa_prefix, m.cs);
                         else if (arithmetic == native16::qsa::AttentionMath::bf16_prefix_kvec4)
                             matrix_used = strata::kernels::qsa_bf16_prefix_kvec4_batch(
                                 m.qsa_q16, pools, m.sel_ids, m.steps_dev, m.cap, s, m.qsa_attn16, T,
-                                {st.n_pages, st.n_slots}, p0 + T, m.qsa_prefix, m.cs);
+                                attention_bounds, p0 + T, m.qsa_prefix, m.cs);
                         else if (arithmetic == native16::qsa::AttentionMath::bf16_prefix_qcache)
                             matrix_used = strata::kernels::qsa_bf16_prefix_qcache_batch(
                                 m.qsa_q16, pools, m.sel_ids, m.steps_dev, m.cap, s, m.qsa_attn16, T,
-                                {st.n_pages, st.n_slots}, p0 + T, m.qsa_prefix, m.cs);
+                                attention_bounds, p0 + T, m.qsa_prefix, m.cs);
                         else if (arithmetic == native16::qsa::AttentionMath::bf16_prefix_optimized)
                             matrix_used = strata::kernels::qsa_bf16_prefix_optimized_batch(
                                 m.qsa_q16, pools, m.sel_ids, m.steps_dev, m.cap, s, m.qsa_attn16, T,
-                                {st.n_pages, st.n_slots}, p0 + T, m.qsa_prefix, m.cs);
+                                attention_bounds, p0 + T, m.qsa_prefix, m.cs);
                         else if (arithmetic == native16::qsa::AttentionMath::bf16_prefix)
                             matrix_used = strata::kernels::qsa_bf16_prefix_batch(
                                 m.qsa_q16, pools, m.sel_ids, m.steps_dev, m.cap, s, m.qsa_attn16, T,
-                                {st.n_pages, st.n_slots}, p0 + T, m.qsa_prefix, m.cs);
+                                attention_bounds, p0 + T, m.qsa_prefix, m.cs);
                         else if (arithmetic == native16::qsa::AttentionMath::bf16)
                             matrix_used = strata::kernels::qsa_bf16_attention_late_flags_batch(
                                 m.qsa_q16, pools, m.sel_ids, m.steps_dev, m.cap, s, m.qsa_attn16, T,
-                                {st.n_pages, st.n_slots}, m.cs);
+                                attention_bounds, m.cs);
                         else
                             matrix_used = strata::kernels::qsa_prompt_attn_bf16_batch(
                                 m.qsa_q16, pools, m.sel_ids, m.steps_dev, m.cap, s, m.qsa_attn16, T,
-                                {st.n_pages, st.n_slots}, m.cs);
+                                attention_bounds, m.cs);
                         if (!matrix_used) {
                             err = "prefill QSA16: unsupported typed attention; no fallback submitted"; return false;
                         }
@@ -4009,6 +4042,13 @@ bool Prefill::run_impl(const int64_t* tokens, int64_t n, int64_t pos0, std::stri
         err = std::string("prefill: expert copy stream: ") + cudaGetErrorString(cst);
         return false;
     }
+#if defined(STRATA_ENABLE_SYCL)
+    if (trace_streamed_qsa && streamed_qsa_chunks)
+        std::fprintf(stderr, "strata prefill QSA16 streamed: layer=%lld chunks=%llu rows=%llu pos0=%lld "
+            "prefix_H2D_requested_bytes=%llu host_publication=GPU_Q8 stage=full_logical_layer checked_drain=PASS\n",
+            (long long)LB, (unsigned long long)streamed_qsa_chunks, (unsigned long long)streamed_qsa_rows,
+            (long long)pos0, (unsigned long long)staged_prefix_bytes);
+#endif
     if (!m.layer_major_active) stats_.ms_total += ms_since(t_start);
     if (pt.on) {
         pt.fold();

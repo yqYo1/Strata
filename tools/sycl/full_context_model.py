@@ -17,13 +17,14 @@ sys.dont_write_bytecode = True
 import check_full_context as gate
 
 P, B, RESULT = gate.P, gate.B, gate.RESULT
-ROOT = B / 'full-context-model-v3'
-KEY = 'model_capacity_v3'
+ROOT = B / 'full-context-model-v4'
+KEY = 'model_capacity_v4'
 DECODE = P / 'bench/results/2026-10-15-pr6-recovery-audit/canonical-restore-decode-current.json'
 BUILD = P / 'bench/results/2026-10-15-pr6-recovery-audit/native-gdn-engine-build.json'
 DECODE_ARCHIVE = dict(commit='a8af3d7fa96a7713f2e516d2da3d7410956be015',
     path=str(DECODE.relative_to(P)),sha256='7dda2bcefa6f7e54d568e6aa3d5226d5e0a7383f0b41efd7584093854d9547ca')
-INPUTS = sorted(set([*gate.INPUTS, 'tools/sycl/full_context_model.py', 'data/expert-profile.bin']))
+INPUTS = sorted(set([*gate.INPUTS, 'tools/sycl/full_context_model.py',
+    'tools/sycl/check_streamed_qsa.py', 'data/expert-profile.bin']))
 require = gate.native.guards.require
 digest = gate.native.build.digest
 write = gate.write
@@ -102,7 +103,13 @@ def prepare(container):
     smoke=container['device_smoke_v2']
     require(smoke['passed'] and smoke['complete'] and smoke['ownership_closed'] and not smoke['active'] and
         smoke['GPU_work_submitted'] and smoke['fresh_faults']==[],'closed traced device gate required')
+    component=container['streamed_q8_components']
+    require(component['passed'] and component['complete'] and component['ownership_closed'] and not component['active'] and
+        all(component['outcomes'][k]['passed'] and component['outcomes'][k]['fresh_faults']==[]
+            for k in ('smoke','component','resident')),'closed same-build streamed/resident QSA gates required')
     engine=gate.engine(); _,original=gate.native.source.baseline(); base=setup()
+    require(component['native_source_commit']==engine['source_commit'] and component['binary']==engine['binary'],
+        'component qualification belongs to another native generation')
     # v1 preparation hashed all15 assets before its preflight-only refusal.
     # Reuse those byte hashes only with the same stat/ctime and inventory guards.
     revision_before='102b83623e93ed39318eda634245ed81b652f997'

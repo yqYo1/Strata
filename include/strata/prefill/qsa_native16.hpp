@@ -14,6 +14,14 @@ struct Q8WritePools {
     uint16_t* v_scale = nullptr;
     const int32_t* page_table = nullptr;
 };
+// Full logical-page layout [page][KV head][cell][256 or4], without a residency
+// map. Streamed prefill owns one device stage and the session owns host backing.
+struct Q8LinearPools {
+    int8_t* k_q = nullptr;
+    int8_t* v_q = nullptr;
+    uint16_t* k_scale = nullptr;
+    uint16_t* v_scale = nullptr;
+};
 // Startup-only opt-in. A short request does not activate this route.
 bool requested();
 // Startup-only arithmetic selector. Default preserves the qualified typed path.
@@ -48,4 +56,22 @@ void append_q8(const uint16_t* k, const uint16_t* v, int64_t tokens,
                const Q8WritePools& pools,
                const strata::kernels::QsaShapes& shapes,
                const strata::kernels::QsaPromptBf16Bounds& bounds, void* stream);
+// Streamed long-prefill only. Quantize once with the resident append arithmetic,
+// publishing identical codes/scales to full device stage, authoritative mapped
+// host backing, and any valid resident slot. Missing/invalid resident pages are
+// skipped, but host/stage always receive the exact requested cells. No FP32
+// tensor, allocation or CPU math. Every destination is checked before enqueue;
+// all12 output spans must be disjoint and owners/table immutable through drain.
+// Host pools must come from this runtime's cudaHostAlloc compatibility owner.
+// No enqueue; used for every layer before request execution as well as append.
+void validate_streamed_q8_storage(const Q8WritePools& resident,
+                                 const Q8LinearPools& stage, const Q8LinearPools& host,
+                                 const strata::kernels::QsaShapes& shapes,
+                                 const strata::kernels::QsaPromptBf16Bounds& bounds, void* stream);
+void append_q8_streamed(const uint16_t* k, const uint16_t* v, int64_t tokens,
+                       int64_t input_ld, int64_t pos0,
+                       const Q8WritePools& resident, const Q8LinearPools& stage,
+                       const Q8LinearPools& host,
+                       const strata::kernels::QsaShapes& shapes,
+                       const strata::kernels::QsaPromptBf16Bounds& bounds, void* stream);
 } // namespace strata::prefill::native16::qsa
