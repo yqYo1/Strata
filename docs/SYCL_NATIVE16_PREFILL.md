@@ -675,9 +675,43 @@ ordinary runtime-teardown qualification, a new-engine model check or evidence
 that decode performance is preserved. The original selected13 assets remain
 unchanged. Successful raw traces have no continuing consumer after recording
 these results.
-The new diagnostic still needs actual262144 memory admission,last-slot commit and checked completion,
-plus separate near-cap,RESTORE and failure-owner validation. It must not change
-the selected decode implementation or establish adoption by diagnostic success.
+The diagnostic's first model checks now identify a concrete capacity limitation.
+With logical context262144, resident INT8 KV131072 and the original1256 decode
+slots, the standalone entrypoint rejects the server-only scratch lease. With
+that lease disabled,8193 synthetic inputs and4 outputs exit normally without a
+fresh fault, but this single chunk does not enter layer-major processing and
+fails its declared route gate. A separately planned16385-input check reaches
+the layer-major preflight and exits1:QSA16 deliberately requires fully resident
+unrotated INT8 KV. No full-fill request was launched. All three original outcomes
+remain failed;normal execution of the one-chunk case is not a route qualification.
+
+Actual initialization reports3.09GiB of pinned K/V backing for the262144 logical
+cells and131072 resident cells. Standalone scratch accounts2588395008B,including
+an1180698624B shared region. Dense Full->Bank and MTP detach leave2039812096B
+free;the refused request restores both owners and exits with no fresh fault.
+These observations do not identify a throughput bottleneck or prove a complete
+VRAM ledger. Decode already supports streamed KV;changing its placement to
+accommodate prefill would violate phase isolation. Extend dedicated QSA16
+prefill using the existing full-logical-range one-layer staging pool, with
+explicit quantized publication to host/resident caches and correct staged
+attention bounds. Component byte/guard/lifetime checks must precede another
+model attempt. Actual262144 full-fill/last-slot completion,near-cap,RESTORE and
+failure-owner validation remain open;diagnostic success alone cannot establish
+decode preservation or adoption.
+
+The existing streamed scratch already contains one full-logical-range QSA
+layer's K/V stage and identity page table. At262144 cells,2KV heads and256
+dimensions, its INT8 codes and per64 FP16 scales occupy276824064B (264MiB),
+already included in the observed standalone scratch accounting. Keeping every
+layer's KV in VRAM simultaneously is therefore unnecessary for a layer-major
+prefill design. This is a source/size result,not a completed implementation.
+The missing native16 work is quantized publication to the authoritative host
+copy and currently resident slots,and using the stage's actual page count for
+every typed attention variant. Preserve the resident native16 path and all
+decode map/reader behavior. Copy the existing quantized codes/scales rather
+than introducing an FP32 hidden-state bridge. A later prefix-transfer reduction
+needs explicit per-layer/request ownership,including nonzero-prefix RESTORE,
+instead of assuming a staging buffer still holds the preceding chunk.
 
 Remaining model gates are repeated phase-preserving adoption evidence,
 agent-session and task quality, full physical262144 tokens including the final
