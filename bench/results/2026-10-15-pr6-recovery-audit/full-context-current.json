@@ -2898,7 +2898,21 @@
       "assertion_line": 6917,
       "verifier_changed": false,
       "new_build_and_gates_required": true,
-      "fixture_correction_source": "8468ecfa8"
+      "fixture_correction_source": "8468ecfa8",
+      "trace_evidence": [
+        {
+          "line": 200,
+          "text": "   <--- urUSMDeviceAlloc(.hContext = 0x68eed60, .hDevice = 0x68ecc30, .pUSMDesc = 0x7ffe94d2e490 ((struct ur_usm_desc_t){.stype = UR_STRUCTURE_TYPE_CONTEXT_PROPERTIES, .pNext = nullptr, .hints = 0, .align = 0}), .pool = nullptr, .size = 1024, .ppMem = 0x7ffe94d2e468 (0xffffffffff630000)) -> UR_RESULT_SUCCESS;"
+        },
+        {
+          "line": 6476,
+          "text": "   <--- urEnqueueUSMMemcpy(.hQueue = 0x68f4280, .blocking = 0, .pDst = 0xffffffffff630000, .pSrc = 0x7ffe94d2e944, .size = 1, .numEventsInWaitList = 0, .phEventWaitList = nullptr, .phEvent = 0x7ffe94d2e660 (0x6b3aeb0)) -> UR_RESULT_SUCCESS;"
+        },
+        {
+          "line": 6917,
+          "text": "FAIL: detect one-byte restore corruption"
+        }
+      ]
     }
   },
   "native_snapshot_verify_v2_build": {
@@ -3684,6 +3698,16 @@
     "physical262144_model_qualified": false,
     "decode_performance_qualified": false,
     "ordinary_runtime_teardown_qualified": false,
-    "snapshot_criteria": "Traced INT8 streamed-main/ring-draft restore smoke precedes the full snapshot suite. Require byte-exact main/draft payload and live GDN/PLE/indexer/spare-row checks;detect one-byte corruption in every saved/live domain and live resident ring plus PLE tokens,without repair,and clear all seven result fields on failure. Draft attention has no indexer:its unused fixture pooled allocation is not a saved/live domain;positive control must leave it untouched. Complete legacy snapshot growth/rewind/format and separate map invalidation checks. Preserve original v1 failure. These synthetic checks do not qualify near-cap model RESTORE,task quality or decode performance."
+    "snapshot_criteria": "Traced INT8 streamed-main/ring-draft restore smoke precedes the full snapshot suite. Require byte-exact main/draft payload and live GDN/PLE/indexer/spare-row checks;detect one-byte corruption in every saved/live domain and live resident ring plus PLE tokens,without repair,and clear all seven result fields on failure. Draft attention has no indexer:its unused fixture pooled allocation is not a saved/live domain;positive control must leave it untouched. Complete legacy snapshot growth/rewind/format and separate map invalidation checks. Preserve original v1 failure. These synthetic checks do not qualify near-cap model RESTORE,task quality or decode performance.",
+    "raw_retirement": {
+      "complete": true,
+      "files": 69,
+      "bytes": 15039459,
+      "manifest": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/closed-snapshot-component-retirement-20261024.jsonl",
+        "sha256": "cc4146527207db13ed93dedd908c398c276bcd64bd0ce2b4349c49d1fe38aecf"
+      },
+      "retained": "All19 current/selected assets and current exact engine recipe;closed component results remain in Git. No active measurement or ownership-held research touched."
+    }
   }
 }
