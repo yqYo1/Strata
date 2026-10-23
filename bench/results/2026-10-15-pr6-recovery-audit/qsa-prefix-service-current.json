@@ -1,7 +1,7 @@
 {
-  "stage": "prepared",
-  "passed": false,
-  "complete": false,
+  "stage": "closed",
+  "passed": true,
+  "complete": true,
   "GPU_executed": false,
   "source_commit": "afd8bf135985d3da66889f1154a03513f8857e9e",
   "source_sha256": {
@@ -25,5 +25,111 @@
   },
   "criteria": "No native execution. Preserve original parser failure. Verify exact closed replay and all8474rows/5672366calls/211017537985ns. Match every selected prefix-template launch to source-derived full-prefix pack or attention geometry,count every33213cell chunk across12layers,positive service statistics,one long official request and4warmups. No missing/extra/duplicate matched work. Keep source-correlated device service separate from phase-recorded critical path,CPU time,wire bytes or saturation.",
   "limits": "Whole-process profiler data; attribution by exact source/shape/count conservation. No per-request event timeline. No causal end-to-end speed bound from sums of service. The32K+request does not measure117K or262144 behavior. No inference/adoption change.",
-  "retention": "Keep seven phase/shape service samples and provenance/limits;retire the consumed full aggregate/normal logs after reader/source checks. No new build or raw trace."
+  "retention": "Keep seven phase/shape service samples and provenance/limits;retire the consumed full aggregate/normal logs after reader/source checks. No new build or raw trace.",
+  "original_run_passed": false,
+  "original_failure_preserved": true,
+  "attribution": {
+    "rows": [
+      {
+        "phase": "attention",
+        "workgroups": 890,
+        "local_size": 128,
+        "SIMD": 16,
+        "name_sha256": "b3658b040fbcfed98442db9861c4a0c47dc080301c73359ab0a41f9e5d9ec759",
+        "calls": 12,
+        "total_ns": 102951245,
+        "average_ns": 8579270,
+        "min_ns": 8436145,
+        "max_ns": 8692812
+      },
+      {
+        "phase": "attention",
+        "workgroups": 16384,
+        "local_size": 128,
+        "SIMD": 16,
+        "name_sha256": "0694cd299ca0a3ec208ac1b80cf3d4ccea6e38b69d5bb5fcf1f7723714c58d19",
+        "calls": 48,
+        "total_ns": 6805837062,
+        "average_ns": 141788272,
+        "min_ns": 122503541,
+        "max_ns": 153050208
+      },
+      {
+        "phase": "pack",
+        "workgroups": 16384,
+        "local_size": 64,
+        "SIMD": 32,
+        "name_sha256": "66310871f4dc58d17198a010d5cc111593119699574131077c53bbad8e94efdb",
+        "calls": 12,
+        "total_ns": 1235516,
+        "average_ns": 102959,
+        "min_ns": 96458,
+        "max_ns": 165416
+      },
+      {
+        "phase": "pack",
+        "workgroups": 32768,
+        "local_size": 64,
+        "SIMD": 32,
+        "name_sha256": "62e4ebbfddcefca94263e98c89dcdcaaf69bdee8538c42cd60c6407fe17a149b",
+        "calls": 12,
+        "total_ns": 2244372,
+        "average_ns": 187031,
+        "min_ns": 185625,
+        "max_ns": 188645
+      },
+      {
+        "phase": "pack",
+        "workgroups": 49152,
+        "local_size": 64,
+        "SIMD": 32,
+        "name_sha256": "f05fff7337e704d3ba57031032541f44212ca758609931af621834b05a4a4a34",
+        "calls": 12,
+        "total_ns": 3330411,
+        "average_ns": 277534,
+        "min_ns": 275416,
+        "max_ns": 279375
+      },
+      {
+        "phase": "pack",
+        "workgroups": 65536,
+        "local_size": 64,
+        "SIMD": 32,
+        "name_sha256": "90d92c29168f2af9396a206410c49d837cbeb9512ea330390f6e2af7ecfae4cc",
+        "calls": 12,
+        "total_ns": 4424788,
+        "average_ns": 368732,
+        "min_ns": 366562,
+        "max_ns": 370729
+      },
+      {
+        "phase": "pack",
+        "workgroups": 66432,
+        "local_size": 64,
+        "SIMD": 32,
+        "name_sha256": "806cfbbb1d3cf9dc2fc8c10c7e219edf7bb2c2e619250bc94ef6f8ca043a392f",
+        "calls": 12,
+        "total_ns": 4484059,
+        "average_ns": 373671,
+        "min_ns": 371250,
+        "max_ns": 375520
+      }
+    ],
+    "totals_ns": {
+      "pack": 15719146,
+      "attention": 6908788307
+    },
+    "calls_per_phase": 60,
+    "packed_logical_rows": 2763264,
+    "pack_share_of_attributed_device_service": 0.0022700742409035575
+  },
+  "request": {
+    "read_tokens": 33214,
+    "generated_tokens": 3611,
+    "prompt_ms": 55292.6,
+    "request_sha256": "b0a065720a5eb86fa2d3f84d6371e35da774b4ea144d022608d49b80c227cba1"
+  },
+  "hardware_saturation_qualified": false,
+  "clean_model_speed_qualified": false,
+  "model_adoption_qualified": false
 }

@@ -587,9 +587,20 @@ selected native inputs and13 assets still qualify after deletion;only the origin
 255 older objects/archives across71 roots,193406352 bytes;their source and
 tool/runtime consumers remain an explicit review before the next diagnostic
 build in the existing native-build result. They are not newly qualified builds.
-The conditional transform-reuse methods report is indexed for targeted retrieval
-only after a local version/lifecycle and packing-cost census. No physical-resource
-saturation or transform-reuse gain is claimed.
+The closed-data prefix-service census now separates the actual full-prefix
+transform from its attention kernel in an existing33214-input request. Source,
+launch geometry and call counts reconcile all33213 prefill cells:four8192-row
+chunks plus445 rows across12 QSA layers. The60 pack kernels total15.719ms;
+the60 attention kernels total6908.788ms. Packing is0.227% of those two device
+service sums. The [seven shape samples](../bench/results/2026-10-15-pr6-recovery-audit/qsa-prefix-service-current.json)
+retain counts,source identity and limits. Four CPU parser/refusal tests pass.
+The original whole-process profiler parser failure remains failed;this independent
+committed replay succeeds without executing the model or changing inference.
+These sums establish neither critical-path wall time,117K behavior nor hardware
+saturation. Defer full-prefix reuse implementation on this evidence;its direct
+measured service budget is small at this shape. The source lifecycle audit
+remains a conditional reference,not an adopted cache design. Selected decode
+code,configuration and1256-slot placement are unchanged.
 
 Remaining model gates are repeated phase-preserving adoption evidence,
 agent-session and task quality, full physical262144 tokens including the final
