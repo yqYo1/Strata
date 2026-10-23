@@ -794,7 +794,12 @@ is left untouched. The corrected build closes normally with1405 covered inputs;
 its engine and four unchanged fixtures retain the previous exact bytes,while the
 snapshot fixture changes. Reuse only the original passing CPU/streamed-smoke
 individual evidence after checking these identities;the failed cohort stays
-failed. The new snapshot and remaining QSA gates are pending. Main-authored
+failed. All six actual corrected-cohort gates now pass:113-check traced restore,
+four streamed-Q8 cases,resident numerical reference,two-case traced and ten-case
+full-range BF16 attention,and the2869-check full snapshot suite. Each owned
+process exits0 without a fresh fault. The two inherited gates remain individual
+evidence from their original execution;they were not rerun. These component
+results do not qualify a model route or decode performance. Main-authored
 code uses the existing Strata snapshot interfaces, with no external implementation
 copy. Qualification and decode preservation remain pending. Near-cap request
 plans must include the native/API eight-token reserve:262120 input plus16 output

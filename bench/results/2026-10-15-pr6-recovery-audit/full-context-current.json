@@ -3108,7 +3108,7 @@
     ]
   },
   "snapshot_qsa_components_v2": {
-    "stage": "attention-component_closed",
+    "stage": "restore-component_closed",
     "source_commit": "9a5e5f56ddc494175878ac6b7ad7aec7d041b314",
     "input_sha256": {
       "include/strata/program/full_context_diagnostic.hpp": "d4abd9516913df9c0672adfea079e036223c8454ae79fadacd6f209432f04621",
@@ -3622,11 +3622,44 @@
           "devcoredump": false
         },
         "boot_unchanged": true
+      },
+      "restore-component": {
+        "passed": true,
+        "complete": true,
+        "ownership_closed": true,
+        "exit_code": 0,
+        "stdout_sha256": "81fab503ea561429fcb4d7040b20e4c015d02fd9f9b51538e24f71036db058d7",
+        "stderr_sha256": "ebb8fa2a3d7415ede8c257400a9d13fdf0a8eebae939cdb1766aceff7bfbd9ad",
+        "GPU_work_submitted": true,
+        "activation": {
+          "pid": 1776596,
+          "loader": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_loader.so.0.12.0",
+          "threads_before": 1,
+          "preinit": 37,
+          "config_enabled": true,
+          "first_init": true,
+          "dispatch_result": 46,
+          "output_untouched": true,
+          "retained_reference_until_exit": true,
+          "runtime_teardown_qualified": false
+        },
+        "checks": 2869,
+        "scope": "exact snapshot payload/running-state comparison;not model,task,physical262144 or decode performance",
+        "fresh_faults": [],
+        "driver_after": {
+          "pci": "/sys/bus/pci/devices/0000:05:00.0",
+          "driver": "xe",
+          "vendor": "0x8086",
+          "device": "0xe20c",
+          "kernel": "7.0.0-38-generic",
+          "devcoredump": false
+        },
+        "boot_unchanged": true
       }
     },
     "active": false,
-    "passed": false,
-    "complete": false,
+    "passed": true,
+    "complete": true,
     "ownership_closed": true,
     "boot": "cfda0b6a-7c13-4fe2-bdf5-8f9202770840",
     "driver_before": {
