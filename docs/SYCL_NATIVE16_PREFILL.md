@@ -530,8 +530,8 @@ build,successful raw output and consumed or unused report bodies are retired:
 and build/smoke result files are recoverable at`15f74b46d`;the compact timing
 result is the maintained evidence. All13 selected native assets still match.
 
-The next auxiliary fixture is committed at`a509cdbbf`. Its eight-command build
-has closed successfully;no GPU execution has occurred. It calls the unchanged
+The same-code auxiliary fixture is committed at`a509cdbbf`. Its eight-command build
+has closed successfully. It calls the unchanged
 production entrypoint for three unique-ID address patterns. A32-cell KV payload
 period preserves every ordered operand bit across those patterns;all arms must
 produce identical output bits and observe the same V perturbation. This tests
@@ -540,12 +540,38 @@ without claiming cache residency or actual-model reuse. The original build
 admission refused a research startup directory whose basename matched the
 conservative process scan;no compiler or GPU work had started. That pre-task
 terminal was closed and the directory renamed before the recorded build.
-The [build result](../bench/results/2026-10-15-pr6-recovery-audit/qsa-locality-build-current.json)
-pins186 project/recipe inputs and8700 SDK inputs. Its only consumer is the
-imminent small traced and full-width locality comparison. An Orca Luna/high
-source/protocol audit and native Luna/max report review must close before the
-small GPU check;the controller enforces the committed scoped admission evidence.
-Selected6e40,decode configuration and placement remain unchanged.
+The build pins186 project/recipe inputs and8700 SDK inputs. The Orca Luna/high
+audit and native Luna/max review close without a static smoke blocker;the
+fixture sourcea509 and original6e40 production basis are separate correct
+identities. The97/3/33 traced check passes all output bits,perturbation,guards,
+immutability and unique-ID checks,with normal exit and no fresh fault. Its actual
+attention ISA is byte-identical to the earlier production image,as is its
+frontend IR;GRF128/SIMD16/spill12480/dynamicSLM20032 also match.
+
+The full mixed/uniform-width validation and three independent clean timing
+processes are now closed. All45 batches pass the128-call,100ms and timer-overhead
+floors. Every pattern produces the same output bits and the same changed output
+under V perturbation. There are four normal process exits,no fresh fault and
+unchanged source/runtime/selected13asset checks after every process.
+
+| Address pattern,117488 cells/512 queries/cap2051 | Process1 median,ms | Process2 | Process3 |
+| --- | ---: | ---: | ---: |
+| Common2051 selected rows | 11.033 | 11.062 | 11.033 |
+| Shifted contiguous blocks | 13.996 | 13.992 | 13.988 |
+| Scattered rows | 18.452 | 18.449 | 18.448 |
+
+Scattered/common ratios are1.672521/1.667822/1.672012,geometric mean1.670784;
+all pass the prospective1.10 sensitivity gate. Shifted and scattered patterns
+both reference117472 distinct logical cells across the cohort,yet differ in
+time. This establishes whole-wrapper mask-address sensitivity with identical
+ordered operands,not physical traffic,cache behavior or exclusive hardware
+saturation. Separate ID allocations,full-prefix repacking and periodic synthetic
+payloads remain explicit limits. The [compact result](../bench/results/2026-10-15-pr6-recovery-audit/qsa-locality-timing-current.json)
+keeps every sample and spread. Next obtain current-shape actual selected IDs and
+per-layer/chunk prefix-pack counts before implementing query-order/locality
+changes. BroadGRF256 already failed its earlier comparison;do not retry it from
+the spill descriptor alone. Selected6e40,decode configuration and placement
+remain unchanged. The closed auxiliary build awaits exact-source retirement.
 
 Remaining model gates are repeated phase-preserving adoption evidence,
 agent-session and task quality, full physical262144 tokens including the final
