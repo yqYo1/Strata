@@ -580,7 +580,7 @@ alone never qualified performance advancement. Its five CPU refusal tests pass.
 Exact541 project/9311 dependency inputs,8700 SDK inputs,643 headers,12 reconstructed
 build commands and172 replay inputs recover. The extra diagnostic generation,
 paired captures,normal output and consumed audit transactions are now retired:
-366 external/cache files,165620123 bytes. The17 unused experimental source/fixture
+370 external/cache files,165668737 bytes. The17 unused experimental source/fixture
 files and6 superseded receipts are removed to reachable Git history. All9853
 selected native inputs and13 assets still qualify after deletion;only the original
 6e40 engine generation remains selected. A broader physical inventory finds
