@@ -5201,7 +5201,7 @@
     ]
   },
   "prefill_layout_components_v2": {
-    "stage": "resident_closed",
+    "stage": "attention-smoke_closed",
     "source_commit": "f00b35e9a75d942f710098f42c6d4ee16a051b33",
     "input_sha256": {
       "include/strata/program/full_context_diagnostic.hpp": "d4abd9516913df9c0672adfea079e036223c8454ae79fadacd6f209432f04621",
@@ -5530,6 +5530,65 @@
           "runtime_teardown_qualified": false
         },
         "resident_numerical_oracle": true,
+        "fresh_faults": [],
+        "driver_after": {
+          "pci": "/sys/bus/pci/devices/0000:05:00.0",
+          "driver": "xe",
+          "vendor": "0x8086",
+          "device": "0xe20c",
+          "kernel": "7.0.0-38-generic",
+          "devcoredump": false
+        },
+        "boot_unchanged": true
+      },
+      "attention-smoke": {
+        "passed": true,
+        "complete": true,
+        "ownership_closed": true,
+        "exit_code": 0,
+        "stdout_sha256": "bb9e411cafdc9e5b9ae9c4132cf51daedeb99d4e8b54b132a583bedb4e8d4e08",
+        "stderr_sha256": "49553724a1c3e5a948cce830e1e9cd6180229c4a0a5ce0fdaa83085d7bf628b8",
+        "GPU_work_submitted": true,
+        "activation": {
+          "pid": 1974440,
+          "loader": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_loader.so.0.12.0",
+          "threads_before": 1,
+          "preinit": 37,
+          "config_enabled": true,
+          "first_init": true,
+          "dispatch_result": 46,
+          "output_untouched": true,
+          "retained_reference_until_exit": true,
+          "runtime_teardown_qualified": false
+        },
+        "cases": [
+          {
+            "cells": "97",
+            "cap": "33",
+            "queries": "1",
+            "masked": "0",
+            "compared": "6144",
+            "max_abs": "6.103515625e-05",
+            "max_budget_ratio": "0.9682716738",
+            "oracle": "BF16_operands_FP32_online",
+            "guards": "PASS",
+            "inputs": "PASS",
+            "status": "PASS"
+          },
+          {
+            "cells": "97",
+            "cap": "33",
+            "queries": "3",
+            "masked": "1",
+            "compared": "18432",
+            "max_abs": "0",
+            "max_budget_ratio": "0",
+            "oracle": "BF16_operands_FP32_online",
+            "guards": "PASS",
+            "inputs": "PASS",
+            "status": "PASS"
+          }
+        ],
         "fresh_faults": [],
         "driver_after": {
           "pci": "/sys/bus/pci/devices/0000:05:00.0",
