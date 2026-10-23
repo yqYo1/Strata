@@ -903,8 +903,12 @@ hash-span checks,including every interval of19 cells over3 page sizes,3 head
 counts and5 row widths against the original byte-order oracle. Full262144-page
 ranges emit one span;consumer failure and invalid/overflow domains refuse.
 GNU C++17 compilation and the fixture close normally with135 actual include
-inputs pinned. Native build/model qualification remains pending;this is no
-inference throughput or adoption result. Reported free bytes
+inputs pinned. Native source`1cba8a285` now builds normally as the unselected candidate
+`590f8237e48139d96f77b9fd4c25ea18b1e701be147c52ecf75b7598c4284018`.
+All six native fixture executables will be checked against their qualified
+predecessor bytes,compiler/dependency/runtime and effective environment before
+reusing individual component evidence. The changed generator still needs fresh
+model gates;this is no inference throughput or adoption result. Reported free bytes
 after the small test's three cache refills are2,287,865,856/120,377,344/50,708,480.
 Their owner attribution is unresolved;preserve these admission observations
 for the next long reentry,without claiming physical residency or decode impact.
