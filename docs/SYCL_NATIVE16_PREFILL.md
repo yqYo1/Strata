@@ -937,12 +937,26 @@ The current near-cap model gate also passes with normal exit0 and no fresh fault
 262120 input tokens,262119 batched rows in32 chunks per QSA layer,and16 generated
 tokens commit position262136 through5 verifier windows and12 accepted drafts.
 All1256 payloads/publications match,and538918720 BF16-prefix bytes are admitted.
-Nonaligned long RESTORE remains pending;decode performance is still unqualified.
+Nonaligned long RESTORE also passes:253919 positions are parked and byte-verified
+across12 main layers,draft and running state;reentry reads8209 new tokens.
+Its8208 batched rows use two8192-row chunks per QSA layer,requesting268139520
+prefix H2D bytes per layer. Both long passes admit the ordered BF16-prefix path,
+and every request restores all1256 original expert payloads/publications.
+The final position is262128. All15 model files pass full hashing after the cohort,
+and all five gates close normally without a fresh fault. This is a completed
+state diagnostic,not physical262144 fill,task quality,clean speed or decode
+performance qualification. The candidate remains unselected.
 The current candidate's reported free bytes
 after the small test's three cache refills are2,287,861,760/116,117,504/46,448,640;
 the checkpoint process reports155,095,040/15,425,536/13,983,744.
 Their owner attribution is unresolved;preserve these admission observations
 for the next long reentry,without claiming physical residency or decode impact.
+The short32-row interval drops reported free memory from2558320640 to116183040
+bytes before its refill;the cause remains unattributed. Reviewed source bounds
+rule out the3712-byte host/device MTP fallback records as an explanation.
+The completed long reentry is admitted despite this earlier low-memory interval.
+Next measure actual owner allocation/free events at these phase boundaries;
+do not infer a leak or library owner from the aggregate difference.
 Detailed closed diagnostic plans and individual historical outcomes recover
 from`95e174255`;the current result retains their original statuses and archive
 references,with the live build/component/model qualifications. Successful closed model/component

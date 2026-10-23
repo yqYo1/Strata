@@ -3797,6 +3797,22 @@
       },
       "limits": "Validation/state-hash/snapshot/cache-loan observers enabled. Aggregate cudaMemGetInfo admission observations;owner attribution and physical residency remain unknown. Not clean speed or decode-impact evidence.",
       "consumer": "Nonaligned long RESTORE admission and next bounded owner trace;retire when that ownership question closes."
+    },
+    "short32_measured_interval": {
+      "result_key": "model_state_v4",
+      "case": "small",
+      "request_index": 1,
+      "native_source_commit": "1cba8a2857891862f8ed4c534d8afee3b0aeaf98",
+      "before_cache_loan_reported_free_bytes": 2558320640,
+      "after_dense_restore_reported_free_bytes": 116183040,
+      "decrease_bytes": 2442137600,
+      "dense_residency": "Full",
+      "dense_activations": 0,
+      "fallback_host_and_device_record_requested_bytes_each": 3712,
+      "cause": "unattributed",
+      "separate_nonaligned_long_reentry_passed": true,
+      "limits": "Global free-memory observations,not physical ownership/leak/saturation or clean speed. Prior long request used draft_kv,so it does not prove short MTP fallback warmth. Native590f build identity is native_prefill_layout_v3_build.",
+      "consumer": "Next bounded phase-tagged allocation/free trace;retire these diagnostic details when ownership/cost decision closes."
     }
   },
   "model_state_v2": {
@@ -7478,7 +7494,7 @@
     "scope": "Only exact six fixture bytes and their9 already-executed component gates are reused. Changed generator and diagnostic model behavior require new actual model gates. Original cohort statuses remain unchanged;no new GPU execution or speed result."
   },
   "model_state_v4": {
-    "stage": "near-cap_closed",
+    "stage": "restore_closed",
     "source_commit": "0a6da6f4bdb33fa83b65557d536c8d075d224225",
     "input_sha256": {
       "data/expert-profile.bin": "8f59b4aa8873209dff11c11e37bcda9529a1335b724a1afeea37bf6388975baf",
@@ -8878,11 +8894,268 @@
           "kernel": "7.0.0-38-generic",
           "devcoredump": false
         }
+      },
+      "restore": {
+        "passed": true,
+        "complete": true,
+        "ownership_closed": true,
+        "info": {
+          "context": "262144",
+          "kv": "int8",
+          "kv_resident": "131072",
+          "expert_slots": "1256",
+          "spec": "4",
+          "mtp_max": "0",
+          "lookup": "0",
+          "pool_workers": "5",
+          "conversation_cache_mib": "8192",
+          "conversation_cache_slots": "2",
+          "conversation_cache_min_free_mib": "4096"
+        },
+        "requests": [
+          {
+            "generated": 1,
+            "prompt": 253919,
+            "finish": "length",
+            "accepted": 0,
+            "offered": 0,
+            "reused": 0,
+            "read": 253919,
+            "ids": [
+              4063
+            ],
+            "publications": {
+              "count": 31,
+              "last": 253918,
+              "sha256": "b23daa92e13a28fc24703e1f1873adbda9e776b28e7d1bf0c886e4010aa00cd9"
+            },
+            "state_L": 253919,
+            "windows": 1,
+            "state_sha256": "91c24e42d12b52a8c29ca79c2a5ab29f5f56aa06783493adde957fcd8b4a86ad",
+            "ple_prev": "4061,4062",
+            "draft_prefill": {
+              "rows": 253918,
+              "callbacks": 31,
+              "end": 253918,
+              "modes": [
+                2
+              ],
+              "paths": [
+                "batched"
+              ]
+            },
+            "decode_cache_restore": {
+              "slots": 1256,
+              "payload_bytes": 2575206400,
+              "lent": 1124,
+              "same_slots": true,
+              "payload_match": true
+            },
+            "prefill_loan": {
+              "chunk": 8192,
+              "first": 132,
+              "capacity_bytes": 2321664000,
+              "needed_bytes": 2319958528
+            }
+          },
+          {
+            "generated": 1,
+            "prompt": 33,
+            "finish": "length",
+            "accepted": 0,
+            "offered": 0,
+            "reused": 0,
+            "read": 33,
+            "ids": [
+              104
+            ],
+            "publications": {
+              "count": 1,
+              "last": 32,
+              "sha256": "bb92d74f1bc9cdecef174885f4461ee391d54dcd2ad4a229c79c89543c2a6b92"
+            },
+            "state_L": 33,
+            "windows": 1,
+            "state_sha256": "3de0013cc06103027ffb1b766fd63ba86949d0740a2b448d2a49cf4df3e0e6d9",
+            "ple_prev": "159,160",
+            "draft_prefill": {
+              "rows": 32,
+              "callbacks": 1,
+              "end": 32,
+              "modes": [
+                2
+              ],
+              "paths": [
+                "token"
+              ]
+            },
+            "decode_cache_restore": {
+              "slots": 1256,
+              "payload_bytes": 2575206400,
+              "lent": 243,
+              "same_slots": true,
+              "payload_match": true
+            },
+            "prefill_loan": {
+              "chunk": 256,
+              "first": 1013,
+              "capacity_bytes": 551961600,
+              "needed_bytes": 550683904
+            }
+          },
+          {
+            "generated": 1,
+            "prompt": 262128,
+            "finish": "length",
+            "accepted": 0,
+            "offered": 0,
+            "reused": 253919,
+            "read": 8209,
+            "ids": [
+              257
+            ],
+            "publications": {
+              "count": 2,
+              "last": 262127,
+              "sha256": "43a30b5721d4a66197f8484cbcc30b4a00567cfa9034464d977efb5a32f9d337"
+            },
+            "state_L": 262128,
+            "windows": 1,
+            "state_sha256": "c8e37ec30fa388009e3a81e8ec72d5624ee78a0d171046db251c4baec8248e40",
+            "ple_prev": "271,256",
+            "draft_prefill": {
+              "rows": 8208,
+              "callbacks": 2,
+              "end": 262127,
+              "modes": [
+                2
+              ],
+              "paths": [
+                "batched",
+                "token"
+              ]
+            },
+            "decode_cache_restore": {
+              "slots": 1256,
+              "payload_bytes": 2575206400,
+              "lent": 1124,
+              "same_slots": true,
+              "payload_match": true
+            },
+            "prefill_loan": {
+              "chunk": 8192,
+              "first": 132,
+              "capacity_bytes": 2321664000,
+              "needed_bytes": 2319958528
+            }
+          }
+        ],
+        "exit_code": 0,
+        "activation": {
+          "pid": 2216061,
+          "loader": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_loader.so.0.12.0",
+          "threads_before": 1,
+          "preinit": 37,
+          "config_enabled": true,
+          "first_init": true,
+          "dispatch_result": 46,
+          "output_untouched": true,
+          "retained_reference_until_exit": true,
+          "runtime_teardown_qualified": false
+        },
+        "effective_prefill": [
+          {
+            "path": "layer-major",
+            "stage_payload_bytes": 276824064,
+            "stage_requested_allocation_bytes": 276825088,
+            "physical_driver_allocation_bytes": "unmeasured",
+            "requested_prefix_bytes": 522059520,
+            "admitted_prefix_bytes": 522059520,
+            "qualified_budget_fallback": false,
+            "arithmetic": [
+              "active-logical-prefix",
+              "522059520",
+              "33",
+              "row-major",
+              "parallel-exp-ascending-sum"
+            ],
+            "free_before_bank_bytes": 4181966848,
+            "headroom_bytes": 536870912
+          },
+          {
+            "path": "chunk-major",
+            "dense_weights": "Full",
+            "stage": "borrowed"
+          },
+          {
+            "path": "layer-major",
+            "stage_payload_bytes": 276824064,
+            "stage_requested_allocation_bytes": 276825088,
+            "physical_driver_allocation_bytes": "unmeasured",
+            "requested_prefix_bytes": 538935168,
+            "admitted_prefix_bytes": 538935168,
+            "qualified_budget_fallback": false,
+            "arithmetic": [
+              "active-logical-prefix",
+              "538935168",
+              "33",
+              "row-major",
+              "parallel-exp-ascending-sum"
+            ],
+            "free_before_bank_bytes": 4228542464,
+            "headroom_bytes": 536870912
+          }
+        ],
+        "restored_tokens": [
+          253919
+        ],
+        "restore_payloads": [
+          {
+            "draft": "1f3d1c7b3ee5e931",
+            "cells": "253920",
+            "mode": "2",
+            "source": "ram",
+            "resident": "32848",
+            "main": "61cb5e49bd9ead99",
+            "main_layers": "12",
+            "main_bytes": "3607695360",
+            "draft_bytes": "268139520",
+            "running": "aad4945b2e27158f",
+            "running_bytes": "118069304",
+            "upto": "253919",
+            "result": "PASS"
+          }
+        ],
+        "resume_kind": "live",
+        "resumed_prefill": {
+          "rows": 8208,
+          "layers": 12,
+          "chunks_per_layer": 2,
+          "pos0": 253919,
+          "prefix_H2D_requested_bytes_per_layer": 268139520
+        },
+        "initial_prefill": {
+          "rows": 253918,
+          "layers": 12,
+          "chunks_per_layer": 31,
+          "pos0": 0,
+          "prefix_H2D_requested_bytes": 0
+        },
+        "fresh_faults": [],
+        "boot_unchanged": true,
+        "driver_after": {
+          "pci": "/sys/bus/pci/devices/0000:05:00.0",
+          "driver": "xe",
+          "vendor": "0x8086",
+          "device": "0xe20c",
+          "kernel": "7.0.0-38-generic",
+          "devcoredump": false
+        }
       }
     },
     "active": false,
-    "passed": false,
-    "complete": false,
+    "passed": true,
+    "complete": true,
     "ownership_closed": true,
     "budgets": {
       "cpu_s": 7200,
