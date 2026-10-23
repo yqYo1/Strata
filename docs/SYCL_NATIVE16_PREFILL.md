@@ -561,10 +561,16 @@ implemented replay consumer preserves whole-query operands and output ownership
 under natural,reverse and overlap-grouped enumeration,using synthetic Q/K/V with
 captured masks/steps. It compiles successfully. Its14-case host parser tests pass,including
 short/mismatched pairs,causality,ordering,step fields and missing layers. The
-traced synthetic replay smoke remains pending;actual-file provenance and host-check are separate
+traced97/3/33 synthetic replay smoke also passes:original-row output bits,
+V perturbation,guards and immutable inputs match under all three query orders,
+with private validation,normal exit and no fresh fault. Actual-file provenance
+and host-check remain separate
 requirements before actual-mask execution. CPU order
 construction is excluded from this diagnostic and cannot justify model adoption.
-No actual-model capture is permitted before that consumer and readback qualify.
+The next action is a separately committed117K actual-tail capture with session
+identity,paired-file hashes and checked completion,followed by actual-file
+host-check/full replay validation. These source/fixture results establish neither
+a locality speedup nor model adoption.
 
 Remaining model gates are repeated phase-preserving adoption evidence,
 agent-session and task quality, full physical262144 tokens including the final
