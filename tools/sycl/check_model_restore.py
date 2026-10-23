@@ -51,7 +51,7 @@ def wire(ids, count):
 
 def prepare(container):
     require(KEY not in container and not ROOT.exists(), 'fresh state plan only')
-    component = container['snapshot_qsa_components']
+    component = container['snapshot_qsa_components_v2']
     require(component['passed'] and component['complete'] and component['ownership_closed'] and
             not component['active'] and all(v['passed'] and not v['fresh_faults']
                 for v in component['outcomes'].values()) and
@@ -155,7 +155,8 @@ def interact(io, mode, row, record):
     row['info'] = {k: info[k] for k in ('context','kv','kv_resident','expert_slots','spec','mtp_max',
         'lookup','pool_workers','conversation_cache_mib','conversation_cache_slots','conversation_cache_min_free_mib') if k in info}
     require(info.get('expert_slots') == '1256' and info.get('kv_resident') == '131072' and
-            info.get('conversation_cache_mib') == '8192', 'actual model/cache admission differs')
+            info.get('conversation_cache_mib') == '8192' and info.get('conversation_cache_slots') == '2' and
+            info.get('conversation_cache_min_free_mib') == '4096', 'actual model/cache admission differs')
     row['requests'] = []
     for (ids, count, reused), expected in zip(requests(mode), record['cases'][mode]['requests']):
         payload = wire(ids, count)

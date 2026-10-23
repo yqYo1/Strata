@@ -663,8 +663,9 @@ the current result. This is not decode-preservation or model qualification.
 The earlier`908158833` diagnostic passed11 owned pre-device CLI checks:help exposes the
 diagnostic flag,and10 invalid requests reject at the intended early boundary.
 Actual token files cover262143/262144/262145 parsed integers;no model is loaded
-and no throughput or physical-context result follows. The full synthetic
-262144-token fixture remains only for the imminent capacity diagnostic.
+and no throughput or physical-context result follows. The synthetic token
+fixtures are regenerated from committed source when needed;the closed diagnostic's
+copies are retired.
 The original same-build expert-bank fixture now passes its six small device
 cases with full UR API tracing and parameter validation. The same child's
 before-main proof confirms the pinned loader and validation dispatch;170 kernel
@@ -779,8 +780,14 @@ main and draft KV payloads, GDN/PLE/indexer state, spare pooled rows and PLE tok
 window. The compiled A42 `STRATA_SNAPSHOT_VERIFY` branch checks draft KV only;
 the new source extends that same diagnostic branch before any restored
 metadata is moved or prefix processing begins. Do not infer main-state
-restoration from the older marker. A synthetic fixture
-will corrupt each state domain and require rejection without repair. Main-authored
+restoration from the older marker. The first traced synthetic restore screen
+exited1 on its corruption assertion, with no fresh GPU fault. Its last one-byte
+write targets the fixture's unused1024-byte draft indexer allocation, which the
+draft snapshot intentionally excludes (`include_index=false`). Requiring that
+unused region to fail comparison was a fixture error. The original screen remains
+failed. The corrected fixture retains every main/draft KV and running-state
+negative check, names failure domains, and checks that unused draft indexer storage
+is left untouched. New committed build and bounded gates are required. Main-authored
 code uses the existing Strata snapshot interfaces, with no external implementation
 copy. Qualification and decode preservation remain pending. Near-cap request
 plans must include the native/API eight-token reserve:262120 input plus16 output
@@ -791,7 +798,7 @@ Detailed closed diagnostic plans and individual historical outcomes recover
 from`95e174255`;the current result retains their original statuses and archive
 references,with the live build/component/model qualifications. Successful model
 output,JIT,duplicate receipts,reproducible ID files and the resolved old budget
-diagnostic are retired. The original13 and current5 native assets still verify.
+diagnostic are retired. The original13 and current6 native assets still verify.
 
 Remaining model gates are repeated phase-preserving adoption evidence,
 agent-session and task quality,near-cap/tail boundaries,

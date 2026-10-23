@@ -173,24 +173,41 @@ void full_session(int fmt, int mode, int experts) {
           "verification counts describe all state domains");
     // Corrupt each independent state domain. The verifier must reject it without
     // repairing it; the test itself then restores the original byte.
-    std::vector<void*> corrupt = {ss.gdn_state,ss.ple_hist,main.state.idx_tail,main.state.idx_dead,
-        main.state.idx_block_pos,main.state.idx_pooled+(ids.size()/4)*g.idx_key_dim,
-        draft.state.k_pool,draft.state.k_q,draft.state.k_q4,
-        draft.state.v_pool,draft.state.v_q,draft.state.v_q4,draft.state.k_scale,draft.state.v_scale};
-    for (void* p : main.sources) if (p) corrupt.push_back(p);
-    for (void* p : draft.sources) if (p) corrupt.push_back(p);
-    for (void* p : corrupt) if (p) {
+    std::vector<std::pair<const char*,void*>> corrupt = {
+        {"gdn",ss.gdn_state},{"ple",ss.ple_hist},{"main_tail",main.state.idx_tail},{"main_dead",main.state.idx_dead},
+        {"main_block_pos",main.state.idx_block_pos},{"main_spare",main.state.idx_pooled+(ids.size()/4)*g.idx_key_dim},
+        {"draft_ring_k_f16",draft.state.k_pool},{"draft_ring_k8",draft.state.k_q},{"draft_ring_k4",draft.state.k_q4},
+        {"draft_ring_v_f16",draft.state.v_pool},{"draft_ring_v8",draft.state.v_q},{"draft_ring_v4",draft.state.v_q4},
+        {"draft_ring_k_scale",draft.state.k_scale},{"draft_ring_v_scale",draft.state.v_scale}};
+    constexpr const char* main_names[]={"main_k","main_v","main_k_scale","main_v_scale","main_pooled"};
+    constexpr const char* draft_names[]={"draft_k","draft_v","draft_k_scale","draft_v_scale"};
+    for (size_t i=0;i<main.sources.size();++i) if (main.sources[i]) corrupt.emplace_back(main_names[i],main.sources[i]);
+    // Draft attention has no indexer: its fixture's unused pooled allocation is
+    // deliberately absent from the saved image (include_index=false).
+    for (size_t i=0;i<4;++i) if (draft.sources[i]) corrupt.emplace_back(draft_names[i],draft.sources[i]);
+    for (auto [name,p] : corrupt) if (p) {
         uint8_t before=0,after=0;
         cuda_check(cudaMemcpy(&before,p,1,cudaMemcpyDefault));
         const uint8_t changed=before^uint8_t(1);
         cuda_check(cudaMemcpy(p,&changed,1,cudaMemcpyDefault));
         ConversationVerification rejected{1,1,1,1,1,1,1};
-        check(!conversation_snapshot_verify(a,ss,g,draft.state,rejected,err),"detect one-byte restore corruption");
+        const bool detected=!conversation_snapshot_verify(a,ss,g,draft.state,rejected,err);
+        if (!detected) std::fprintf(stderr,"corruption domain not detected: %s\n",name);
+        check(detected,"detect one-byte restore corruption");
         check(unpublished(rejected),"failed verification publishes no partial success in all seven fields");
         cuda_check(cudaMemcpy(&after,p,1,cudaMemcpyDefault));
         check(after==changed,"verification does not repair corrupted state");
         cuda_check(cudaMemcpy(p,&before,1,cudaMemcpyDefault));
     }
+    check(a.kv.back().pooled.empty(),"draft snapshot intentionally has no indexer payload");
+    uint8_t unused_before=0,unused_after=0;
+    cuda_check(cudaMemcpy(&unused_before,draft.sources[4],1,cudaMemcpyDefault));
+    const uint8_t unused_changed=unused_before^uint8_t(1);
+    cuda_check(cudaMemcpy(draft.sources[4],&unused_changed,1,cudaMemcpyDefault));
+    check(conversation_snapshot_verify(a,ss,g,draft.state,verified,err),"unused draft-indexer storage is outside snapshot comparison");
+    cuda_check(cudaMemcpy(&unused_after,draft.sources[4],1,cudaMemcpyDefault));
+    check(unused_after==unused_changed,"verification leaves unused draft storage untouched");
+    cuda_check(cudaMemcpy(draft.sources[4],&unused_before,1,cudaMemcpyDefault));
     ss.ple_prev[0]^=1;
     check(!conversation_snapshot_verify(a,ss,g,draft.state,verified,err),"detect PLE token metadata corruption");
     check(unpublished(verified),"PLE verification failure clears every result field");

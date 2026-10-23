@@ -21,8 +21,8 @@ import measurement_owner as supervision
 P, B = build.P, build.B
 ROOT = B / 'full-context-native-v1'
 RESULT = source.RESULT
-KEY = 'native_snapshot_verify_build'
-PREDECESSOR_KEY = 'native_allocation_budget_build'
+KEY = 'native_snapshot_verify_v2_build'
+PREDECESSOR_KEY = 'native_snapshot_verify_build'
 MACRO = '-DSTRATA_SYCL_FULL_CONTEXT_DIAGNOSTIC=1'
 PREFIXES = ['CMakeLists.txt', 'cmake', 'include', 'src', 'tests', 'third_party',
             'bench/sycl', 'tools/sycl/build_full_context.py', *source.INPUTS]
@@ -144,7 +144,7 @@ def prepare(container):
             receipt_sha256=build.digest(ENGINE_RECORD),inputs_recovered=True,
             source_groups=[dict(revision=s['revision'],count=s['count'],aggregate_sha256=s['aggregate_sha256'])
                 for s in [previous['project'],*previous['dependencies']]],
-            decision='Replace only the unselected A42 diagnostic in place after exact source/recipe recovery. Its six component and two model capacity gates passed;near-cap/RESTORE/decode adoption remains pending. Original selected6e40 engine+12fixtures remain the validated fallback.'),
+            decision='Replace only the unselected be5192 diagnostic in place after exact source/recipe recovery. Its host/streamed-smoke gates passed,but restore-smoke failed because the fixture required detection in unused draft-indexer storage,which is absent from the snapshot. The failure remains failed. Correct only the fixture scope;runtime verifier and inference math stay unchanged. Original selected6e40 engine+12fixtures remain the validated fallback.'),
         command=['/usr/bin/cmake','--build',str(ROOT/'build'),'--target',*TARGETS,'-j','4'],
         dependency_command=['/usr/bin/ninja','-C',str(ROOT/'build'),'-t','deps'],
         stage='prepared_streamed',passed=False,complete=False,active=False,ownership_closed=True,
@@ -178,7 +178,7 @@ def rebuild(container):
     def persist():
         record['active']=bool(owner and owner.active is not None)
         write(ENGINE_RECORD,dict(record,commands=owner.commands if owner else []))
-    owner=supervision.Owner(ROOT/'owned-snapshot-verify',persist)
+    owner=supervision.Owner(ROOT/'owned-snapshot-verify-v2',persist)
     record['stage']='building_streamed';persist()
     try:
         b=record['budgets']

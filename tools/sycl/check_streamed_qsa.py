@@ -12,8 +12,8 @@ sys.dont_write_bytecode=True
 import check_full_context as gate
 
 P,B,RESULT=gate.P,gate.B,gate.RESULT
-ROOT=B/'snapshot-qsa-component-v1'
-KEY='snapshot_qsa_components'
+ROOT=B/'snapshot-qsa-component-v2'
+KEY='snapshot_qsa_components_v2'
 ORDER=('host','smoke','restore-smoke','component','resident','attention-smoke','attention-component','restore-component')
 INPUTS=sorted(set([*gate.INPUTS,'tools/sycl/check_streamed_qsa.py']))
 require=gate.native.guards.require

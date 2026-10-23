@@ -2878,6 +2878,25 @@
     "decode_performance_qualified": false,
     "ordinary_runtime_teardown_qualified": false,
     "snapshot_criteria": "Traced INT8 streamed-main/ring-draft restore smoke precedes the full snapshot suite. Require byte-exact main/draft payload and live GDN/PLE/indexer/spare-row checks,detect one-byte corruption in every independently stored domain and PLE token metadata without repairing state,and publish no partial verification success. Complete legacy snapshot growth/rewind/format checks too. These are synthetic component checks;near-cap model RESTORE,state handoff,task quality and repeated decode performance remain unqualified.",
-    "closure_decision": "Closed at original restore-smoke failure after host/streamed-smoke passes;no later component/model run. Native exit1,owned closure,no fresh fault. Investigate fixture corruption of draft idx_pooled,which include_index=false deliberately excludes;failure domain is not yet instrumented. Preserve original failure and full small trace until concrete source/trace discriminator."
+    "closure_decision": "Closed at original restore-smoke assertion failure after host/streamed-smoke passes. Exit1,normal owned closure,no fresh GPU fault;later cases and models not run. Correct fixture domain under a new committed source/build/namespace;never relabel or retry the original screen.",
+    "failure_resolution": {
+      "domain": "unused draft idx_pooled",
+      "mechanism": "Fixture adds all5 draft sources although saved draft has include_index=false and pooled.empty();last1B write targets its1024B unused allocation. Production verifier correctly ignores it. Main excludes only that unused source from negative domains and adds a positive read-only control;all real payload/running negatives remain.",
+      "trace_sha256": "258be685e8581cfadca349d849882c39e917d47ee64e783b80f2da6f28b58650",
+      "allocation": {
+        "line": 200,
+        "bytes": 1024,
+        "address": "0xffffffffff630000"
+      },
+      "last_corruption": {
+        "line": 6476,
+        "bytes": 1,
+        "address": "0xffffffffff630000"
+      },
+      "assertion_line": 6917,
+      "verifier_changed": false,
+      "source_fixed": false,
+      "new_build_and_gates_required": true
+    }
   }
 }
