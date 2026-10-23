@@ -726,10 +726,12 @@ numerical oracle passes on the same build. Both exit normally without a fresh
 fault. A source-audit claim of colliding active resident mappings was corrected
 by native Luna review;the actual valid slots are distinct.
 
-The streamed model admission diagnostic now passes:16385 actual input IDs,
+The corrected`a42a4d143` streamed model admission diagnostic passes:16385 actual input IDs,
 16384 batched BF16 rows,two8192-row chunks through each of12QSA layers,and four
 valid output IDs. All335544320 residual bytes fit in VRAM for this short case;
-the admitted MoE window uses mode10. Each QSA layer publishes on the GPU with
+the admitted MoE window uses mode10. The33685504-byte BF16 prefix is retained
+without a fallback and fits the actual10132807680-byte device allocation limit.
+Each QSA layer publishes on the GPU with
 zero requested prefix H2D bytes at fresh position0. Prompt owners release,
 dense/MTP owners restore,and the process exits normally without a fresh fault.
 This observed first-use synthetic diagnostic is speed-ineligible and four
@@ -755,7 +757,7 @@ streamed smoke/four-case publication,resident numerical oracle,and traced
 two-case plus ten-case on-demand BF16 attention. The latter includes262144
 cells;its largest independent-oracle error/budget ratio is0.968272. Every owned
 process exits normally without a fresh fault. These qualify components only;
-the corrected source still needs its separate model admission/full-fill gates.
+the corrected short model gate above permits the predeclared full-fill attempt.
 Nonzero-prefix RESTORE and clean matched speed comparisons remain open.
 
 Remaining model gates are repeated phase-preserving adoption evidence,
