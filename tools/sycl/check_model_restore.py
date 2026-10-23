@@ -120,7 +120,7 @@ def prepare(container):
                    LD_PRELOAD=probe['library']['path'], STRATA_UR_PROBE_EXPECTED_LOADER=probe['loader']['path'],
                    UR_ENABLE_LAYERS='UR_LAYER_PARAMETER_VALIDATION', STRATA_TRACE='1',
                    STRATA_STATE_HASH='1', STRATA_SNAPSHOT_VERIFY='1', STRATA_DECODE_TIMING='1',
-                   STRATA_SYCL_PREFILL_SEPARATE_LAYOUT='1')
+                   STRATA_SYCL_PREFILL_SEPARATE_LAYOUT='1', STRATA_SYCL_CACHE_LOAN_AUDIT='1')
         env.pop('UR_LOG_TRACING', None)
         for name in ('UR_LOG_VALIDATION', 'UR_LOG_LOADER', 'UR_LOG_LEVEL_ZERO'):
             env[name] = 'level:warning;flush:warning;output:stderr'
@@ -149,7 +149,7 @@ def prepare(container):
                   active=False, passed=False, complete=False, ownership_closed=True,
                   budgets=dict(cpu_s=7200, rss_bytes=104 << 30, text_bytes=32 << 20,
                                file_bytes=32 << 20, total_bytes=512 << 20),
-                  criteria='Stop first failure;no retry. Host-only real owned protocol transport first,then small A/B/A+16,then admitted262120+16 extent,then253920/B/262128 restore with8208 new tokens (8207 batched rows>8192) to exercise layer-major nonzero-prefix reentry. One-token requests must commit exactly prompt extent;general MTP position is prompt-1+actual verifier windows+accepted drafts,not emitted length. Select explicit short/long layouts without changing1256-slot decode placement. Require INT8 startup,exact MTP callback row/position conservation,and long-stage lifetime inside retired dense owners. QSA may use either its declared admitted ordered-prefix path or its previously component-qualified on-the-fly budget fallback;record and require matching actual arithmetic,never treat the routes as interchangeable speed samples. Require exact restore-before-reentry payload verification for all12 main QSA layers,draft and running state;actual restored prefix/read counts;valid generated IDs;normal owned exit0;unchanged models,boot,driver and no fresh fault. Do not compare generated text or cold-versus-warm arithmetic bits. Small traced device qualification belongs to the preceding same-build component suite;model checks use warning-level validation and stage progress.',
+                  criteria='Stop first failure;no retry. Host-only real owned protocol transport first,then small A/B/A+16,then admitted262120+16 extent,then253920/B/262128 restore with8208 new tokens (8207 batched rows>8192) to exercise layer-major nonzero-prefix reentry. One-token requests must commit exactly prompt extent;general MTP position is prompt-1+actual verifier windows+accepted drafts,not emitted length. Select explicit short/long layouts without changing1256-slot decode placement. Require INT8 startup,byte-exact restoration of all1256 original expert slots including the unlent prefix and both residency-table publications,exact MTP callback row/position conservation,and long-stage lifetime inside retired dense owners. QSA may use either its declared admitted ordered-prefix path or its previously component-qualified on-the-fly budget fallback;record and require matching actual arithmetic,never treat the routes as interchangeable speed samples. Require exact restore-before-reentry payload verification for all12 main QSA layers,draft and running state;actual restored prefix/read counts;valid generated IDs;normal owned exit0;unchanged models,boot,driver and no fresh fault. Do not compare generated text or cold-versus-warm arithmetic bits. Small traced device qualification belongs to the preceding same-build component suite;model checks use warning-level validation and stage progress.',
                   retention='Keep source/recipe,request byte hashes and individual admission/position/copy/ownership/fault outcomes. Retire successful raw logs/JIT after closure. Both retained generations keep their existing named qualification/comparison consumers.',
                   speed_eligible=False, production_selected=False, model_adoption_qualified=False,
                   physical262144_qualified=False, decode_performance_qualified=False,
@@ -264,6 +264,15 @@ def evidence(text, mode, row, record, pid):
                 'MTP callbacks differ from reported committed positions')
         actual['draft_prefill'] = dict(rows=sum(cells),callbacks=len(cells),end=pos,
             modes=sorted(set(int(m[1]) for m in draft)),paths=sorted(set(m[0] for m in draft)))
+        payloads=re.findall(r'^strata loan audit: phase=payload rows=(\d+) bytes=(\d+) lent=(\d+) same_slots=1 payload_match=1$',frame,re.M)
+        require(len(payloads)==1 and int(payloads[0][0])==1256 and int(payloads[0][1])==2575206400 and
+                0<int(payloads[0][2])<=1256, 'original decode slot/payload restoration missing')
+        for phase in ('lend','refill'):
+            require(len(re.findall(r'^strata loan audit: phase='+phase+
+                r' table_entries=24576 table_match=1 free_bytes=\d+ total_bytes=\d+$',frame,re.M))==1,
+                'decode residency publication incomplete: '+phase)
+        actual['decode_cache_restore']=dict(slots=1256,payload_bytes=2575206400,
+            lent=int(payloads[0][2]),same_slots=True,payload_match=True)
         long = sum(cells)>8192
         owners=re.findall(r'^strata prefill: KV stage owner=long-pass bytes=(\d+) release=before-decode-restore$',frame,re.M)
         require(owners == (['276824064'] if long else []), 'long/short stage-owner selection differs')
