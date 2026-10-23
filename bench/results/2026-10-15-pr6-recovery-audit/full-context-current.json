@@ -3709,5 +3709,510 @@
       },
       "retained": "All19 current/selected assets and current exact engine recipe;closed component results remain in Git. No active measurement or ownership-held research touched."
     }
+  },
+  "model_state_v1": {
+    "stage": "prepared",
+    "source_commit": "0f8adefdca466fd993fff10559aed7468ce42e31",
+    "input_sha256": {
+      "data/expert-profile.bin": "8f59b4aa8873209dff11c11e37bcda9529a1335b724a1afeea37bf6388975baf",
+      "include/strata/program/full_context_diagnostic.hpp": "d4abd9516913df9c0672adfea079e036223c8454ae79fadacd6f209432f04621",
+      "src/program/generate.cpp": "cded66240ea5dd90d5c536748ae3a54f4481a2500aa2b2f71dd6de017689547b",
+      "tests/core/full_context_diagnostic_test.cpp": "045c7ea526aee9a8df48c6ce28c025c5006db003d6136ffd97168b8a27b893c1",
+      "tools/sycl/build_engine.py": "8444783ab417378207ec89ad2bc3cf648480e20d9e77f06ebb3070c93e10b131",
+      "tools/sycl/build_full_context.py": "a8e3631bbc7047bf56dede85a100c769ace9567a3f3f2cfd049ad78361a7d653",
+      "tools/sycl/check_full_context.py": "3db5296b72056453faa9ee7d30703c84059cc861520de02d040a4e7fc6c128be",
+      "tools/sycl/check_full_context_source.py": "5e72fa724e890e682382758caf6222042e1ec89770962ce205ab756783332030",
+      "tools/sycl/check_model_restore.py": "c694dca4895ab9378fa24f20f9435e7c760c7956ed13722477028b52163cb76f",
+      "tools/sycl/check_streamed_qsa.py": "039df16091bc19d72909db5d177df7cad4eddf5585264a1c5e4d529ee5d46c37",
+      "tools/sycl/full_context_model.py": "c3d3dbf8e0a583d40e607d853d2bd32e4540b67409b8d27ee0d60e0c169bacfa",
+      "tools/sycl/measurement_environment.json": "d4402591df50e80dc45a5ec9e4839c7a794888850b1473537b6f95179be5b03c",
+      "tools/sycl/measurement_guards.py": "794e332c70aca0acadad4f26d0414548e023a02fd27b72ed78fc773674423ec8",
+      "tools/sycl/measurement_owner.py": "bddd0c5e5020e882ca3404679420faec11e820dabce2ed4c72ef82b4c9c0874a",
+      "tools/sycl/ur_validation.py": "2e41d84788dc9cc3c7435b18b43601b3ca79280ccb855414d7a36bae6bff83e7"
+    },
+    "native_source_commit": "a359ef93874e84857154ddbae8ff416eff4df0c4",
+    "binary": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/full-context-native-v1/build/strata",
+      "bytes": 22225232,
+      "sha256": "052376c0beed34e28ab00f2e39fbd49bba79594296159bbc3611c9da4fd38f92"
+    },
+    "vocab_size": 248320,
+    "selected_original": {
+      "source_commit": "6e40afc1beddd059ee518617f6c1efce1da14aca",
+      "inputs_recovered": 9853,
+      "assets_verified": 13,
+      "receipt": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/record.json",
+        "sha256": "a38f477670fafcd1a931be2e20d90d6d9718df75b61954b421f361af9f6881b2"
+      },
+      "limits": "Original build remains selected; this source-only diagnostic is not adoption."
+    },
+    "cases": {
+      "small": {
+        "command": [
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/full-context-native-v1/build/strata",
+          "--serve",
+          "--pack",
+          "/home/yayoi/.local/share/strata-sycl/packs/qwen3.8-flash-next-iq3_s",
+          "--native",
+          "/home/yayoi/.local/share/strata-sycl/models/qwen3.8-flash-next-iq3_s/IQ3_S/Qwen3.8-Flash-Next-GSQ-RCO-IQ3_S-00001-of-00002.gguf",
+          "--max-context",
+          "262144",
+          "--kv",
+          "int8",
+          "--kv-resident",
+          "131072",
+          "--expert-cache",
+          "1256",
+          "--expert-profile",
+          "/home/yayoi/orca/workspaces/Strata/sycl/data/expert-profile.bin",
+          "--expert-cache-per-layer",
+          "--pool-workers",
+          "5",
+          "--pcie-frac",
+          "0",
+          "--adapt-swaps",
+          "0",
+          "--conversation-cache-mib",
+          "8192",
+          "--prompt-cache",
+          "6",
+          "--turn-token",
+          "-1",
+          "--suffix-draft",
+          "0",
+          "--greedy",
+          "--no-spec-split",
+          "--short-read",
+          "0",
+          "--spec",
+          "4",
+          "--mtp",
+          "/home/yayoi/.local/share/strata-sycl/mtp/rt",
+          "--prefill",
+          "8192",
+          "--vram-reserve-mib",
+          "700",
+          "--no-coupled-draft",
+          "--no-token-graph",
+          "--conversation-cache-slots",
+          "2",
+          "--conversation-cache-min-free-mib",
+          "4096"
+        ],
+        "requests": [
+          {
+            "prompt": 16385,
+            "max_new": 1,
+            "reused": 0,
+            "wire_bytes": 77488,
+            "wire_sha256": "a4349f9ea8e3a23f4d39fd94eaa748336ba2ad0f70d1753763b9c24f77dbcc5a"
+          },
+          {
+            "prompt": 33,
+            "max_new": 1,
+            "reused": 0,
+            "wire_bytes": 138,
+            "wire_sha256": "aa403cae69457851a7d1fc1a6dbc0c845d70dc4e086d0adfb2a6d93477f275b1"
+          },
+          {
+            "prompt": 16401,
+            "max_new": 1,
+            "reused": 16385,
+            "wire_bytes": 77552,
+            "wire_sha256": "79104c73d1bf6f879ba81154297b8dc2b82061d6f804422b65324aeaa84662a7"
+          }
+        ],
+        "wall_s": 1200,
+        "environment_sha256": "36f645530b2b9b8bd94ee06f6459c951e923dd63785b746f86865d8a1cdce774"
+      },
+      "near-cap": {
+        "command": [
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/full-context-native-v1/build/strata",
+          "--serve",
+          "--pack",
+          "/home/yayoi/.local/share/strata-sycl/packs/qwen3.8-flash-next-iq3_s",
+          "--native",
+          "/home/yayoi/.local/share/strata-sycl/models/qwen3.8-flash-next-iq3_s/IQ3_S/Qwen3.8-Flash-Next-GSQ-RCO-IQ3_S-00001-of-00002.gguf",
+          "--max-context",
+          "262144",
+          "--kv",
+          "int8",
+          "--kv-resident",
+          "131072",
+          "--expert-cache",
+          "1256",
+          "--expert-profile",
+          "/home/yayoi/orca/workspaces/Strata/sycl/data/expert-profile.bin",
+          "--expert-cache-per-layer",
+          "--pool-workers",
+          "5",
+          "--pcie-frac",
+          "0",
+          "--adapt-swaps",
+          "0",
+          "--conversation-cache-mib",
+          "8192",
+          "--prompt-cache",
+          "6",
+          "--turn-token",
+          "-1",
+          "--suffix-draft",
+          "0",
+          "--greedy",
+          "--no-spec-split",
+          "--short-read",
+          "0",
+          "--spec",
+          "4",
+          "--mtp",
+          "/home/yayoi/.local/share/strata-sycl/mtp/rt",
+          "--prefill",
+          "8192",
+          "--vram-reserve-mib",
+          "700",
+          "--no-coupled-draft",
+          "--no-token-graph",
+          "--conversation-cache-slots",
+          "2",
+          "--conversation-cache-min-free-mib",
+          "4096"
+        ],
+        "requests": [
+          {
+            "prompt": 262120,
+            "max_new": 16,
+            "reused": 0,
+            "wire_bytes": 1239567,
+            "wire_sha256": "1be540345946ba19f7ec79dbd07e0075cdf0f827f44db7aecca65e0ba6af8677"
+          }
+        ],
+        "wall_s": 3600,
+        "environment_sha256": "d0ecc308b1dc591469d316fb0d8591d86d5250ec5bfccb318314417aea0d0a11"
+      },
+      "restore": {
+        "command": [
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/full-context-native-v1/build/strata",
+          "--serve",
+          "--pack",
+          "/home/yayoi/.local/share/strata-sycl/packs/qwen3.8-flash-next-iq3_s",
+          "--native",
+          "/home/yayoi/.local/share/strata-sycl/models/qwen3.8-flash-next-iq3_s/IQ3_S/Qwen3.8-Flash-Next-GSQ-RCO-IQ3_S-00001-of-00002.gguf",
+          "--max-context",
+          "262144",
+          "--kv",
+          "int8",
+          "--kv-resident",
+          "131072",
+          "--expert-cache",
+          "1256",
+          "--expert-profile",
+          "/home/yayoi/orca/workspaces/Strata/sycl/data/expert-profile.bin",
+          "--expert-cache-per-layer",
+          "--pool-workers",
+          "5",
+          "--pcie-frac",
+          "0",
+          "--adapt-swaps",
+          "0",
+          "--conversation-cache-mib",
+          "8192",
+          "--prompt-cache",
+          "6",
+          "--turn-token",
+          "-1",
+          "--suffix-draft",
+          "0",
+          "--greedy",
+          "--no-spec-split",
+          "--short-read",
+          "0",
+          "--spec",
+          "4",
+          "--mtp",
+          "/home/yayoi/.local/share/strata-sycl/mtp/rt",
+          "--prefill",
+          "8192",
+          "--vram-reserve-mib",
+          "700",
+          "--no-coupled-draft",
+          "--no-token-graph",
+          "--conversation-cache-slots",
+          "2",
+          "--conversation-cache-min-free-mib",
+          "4096"
+        ],
+        "requests": [
+          {
+            "prompt": 262112,
+            "max_new": 1,
+            "reused": 0,
+            "wire_bytes": 1239526,
+            "wire_sha256": "190939230dd3aa31c2ffc0c3df824101e8475bdc99bc125eff449af6b7a7abd1"
+          },
+          {
+            "prompt": 33,
+            "max_new": 1,
+            "reused": 0,
+            "wire_bytes": 138,
+            "wire_sha256": "aa403cae69457851a7d1fc1a6dbc0c845d70dc4e086d0adfb2a6d93477f275b1"
+          },
+          {
+            "prompt": 262128,
+            "max_new": 1,
+            "reused": 262112,
+            "wire_bytes": 1239590,
+            "wire_sha256": "f69156228da30cc13da51ec22b00a3176e448b7818f659871adebcf8b0433f98"
+          }
+        ],
+        "wall_s": 3600,
+        "environment_sha256": "fed3a66a2c81106ff9af8e14ff21c2d03d1b71642f3e451cbf49f8a02e0939b3"
+      }
+    },
+    "setup_reference": {
+      "decode_archive": {
+        "commit": "a8af3d7fa96a7713f2e516d2da3d7410956be015",
+        "path": "bench/results/2026-10-15-pr6-recovery-audit/canonical-restore-decode-current.json",
+        "sha256": "7dda2bcefa6f7e54d568e6aa3d5226d5e0a7383f0b41efd7584093854d9547ca"
+      },
+      "decode_compact_sha256": "7a7276cf70e8507838aa62246b0f4a6d858c7f390318bd5f9a23f555cd4712ec",
+      "model": {
+        "commit": "64efe12f005b6a518daa2ee1d0f0d2712baa325f",
+        "path": "bench/results/2026-10-15-pr6-recovery-audit/prefill-recovery-current.json",
+        "sha256": "9945b8234465e0c963732086eac0b10b081fb63ca3eb16db3daae27899eab7f2"
+      },
+      "build_compact_sha256": "3e6f266eabc13b94178e96a4d0cf6b5de2909dcd8927a760ead2c92248f0d1da"
+    },
+    "model_assets": {
+      "/home/yayoi/.local/share/strata-sycl/models/qwen3.8-flash-next-iq3_s/IQ3_S/Qwen3.8-Flash-Next-GSQ-RCO-IQ3_S-00001-of-00002.gguf": {
+        "identity": {
+          "realpath": "/home/yayoi/.local/share/strata-sycl/models/qwen3.8-flash-next-iq3_s/IQ3_S/Qwen3.8-Flash-Next-GSQ-RCO-IQ3_S-00001-of-00002.gguf",
+          "dev": 40,
+          "ino": 2640848,
+          "bytes": 54817524224,
+          "mtime_ns": 1791009083688077826,
+          "ctime_ns": 1791009083692077878
+        },
+        "sha256": "4c1eb2ceb4915e1192f4f386021897bde56a97f40a0bb78bb86465e0f7d2aca3"
+      },
+      "/home/yayoi/.local/share/strata-sycl/models/qwen3.8-flash-next-iq3_s/IQ3_S/Qwen3.8-Flash-Next-GSQ-RCO-IQ3_S-00002-of-00002.gguf": {
+        "identity": {
+          "realpath": "/home/yayoi/.local/share/strata-sycl/models/qwen3.8-flash-next-iq3_s/IQ3_S/Qwen3.8-Flash-Next-GSQ-RCO-IQ3_S-00002-of-00002.gguf",
+          "dev": 40,
+          "ino": 2623800,
+          "bytes": 28800138432,
+          "mtime_ns": 1790924461554234294,
+          "ctime_ns": 1791008604221189761
+        },
+        "sha256": "316b46f3a2dbd68c900f43136ab9449f9dcc3725dfd8c794847c204bc161e113"
+      },
+      "/home/yayoi/.local/share/strata-sycl/mtp/rt/dense.bin": {
+        "identity": {
+          "realpath": "/home/yayoi/.local/share/strata-sycl/mtp/rt/dense.bin",
+          "dev": 40,
+          "ino": 2878806,
+          "bytes": 116099072,
+          "mtime_ns": 1790947194721370688,
+          "ctime_ns": 1790947194721370688
+        },
+        "sha256": "c724dc0b0822ada5d2977bf5bde821605feabaa64ea2e0045b67ca656329070a"
+      },
+      "/home/yayoi/.local/share/strata-sycl/mtp/rt/dense.txt": {
+        "identity": {
+          "realpath": "/home/yayoi/.local/share/strata-sycl/mtp/rt/dense.txt",
+          "dev": 40,
+          "ino": 2878822,
+          "bytes": 1851,
+          "mtime_ns": 1790947194721370688,
+          "ctime_ns": 1790947194721370688
+        },
+        "sha256": "991456cf4eb266eb8a888c349e548d11bc640f5dbd9149439aa9786af0f732fd"
+      },
+      "/home/yayoi/.local/share/strata-sycl/mtp/rt/draft_vocab.bin": {
+        "identity": {
+          "realpath": "/home/yayoi/.local/share/strata-sycl/mtp/rt/draft_vocab.bin",
+          "dev": 40,
+          "ino": 2878820,
+          "bytes": 425196,
+          "mtime_ns": 1790947268196150153,
+          "ctime_ns": 1790947268196150153
+        },
+        "sha256": "b1e1d3a7a9e4bf862dcd5923ce661fb59bbd07907e594df5cf86a62ac235cb91"
+      },
+      "/home/yayoi/.local/share/strata-sycl/mtp/rt/experts.bin": {
+        "identity": {
+          "realpath": "/home/yayoi/.local/share/strata-sycl/mtp/rt/experts.bin",
+          "dev": 40,
+          "ino": 2878804,
+          "bytes": 707788800,
+          "mtime_ns": 1790947193902361950,
+          "ctime_ns": 1790947193902361950
+        },
+        "sha256": "09398406be61f1f54c93861f449e48b8df0bfccbc9ec9b2b7636775a6ea9244f"
+      },
+      "/home/yayoi/.local/share/strata-sycl/packs/qwen3.8-flash-next-iq3_s/conversions.json": {
+        "identity": {
+          "realpath": "/home/yayoi/.local/share/strata-sycl/packs/qwen3.8-flash-next-iq3_s/conversions.json",
+          "dev": 40,
+          "ino": 2654126,
+          "bytes": 306,
+          "mtime_ns": 1791009279665519972,
+          "ctime_ns": 1791009279665519972
+        },
+        "sha256": "51df3cd6ffd0d38c2da8e2d3a95a604b4a96c20b06fc639a9bf477282a42b86a"
+      },
+      "/home/yayoi/.local/share/strata-sycl/packs/qwen3.8-flash-next-iq3_s/dense.bin": {
+        "identity": {
+          "realpath": "/home/yayoi/.local/share/strata-sycl/packs/qwen3.8-flash-next-iq3_s/dense.bin",
+          "dev": 40,
+          "ino": 2652886,
+          "bytes": 1538035200,
+          "mtime_ns": 1791009279664519959,
+          "ctime_ns": 1791009279665519972
+        },
+        "sha256": "d2af3d8331e5c7a1985d1d589747230f9d56719a6d33c7cddc9ee6b81cde6b13"
+      },
+      "/home/yayoi/.local/share/strata-sycl/packs/qwen3.8-flash-next-iq3_s/index.txt": {
+        "identity": {
+          "realpath": "/home/yayoi/.local/share/strata-sycl/packs/qwen3.8-flash-next-iq3_s/index.txt",
+          "dev": 40,
+          "ino": 2654124,
+          "bytes": 93685,
+          "mtime_ns": 1791009279665519972,
+          "ctime_ns": 1791009279665519972
+        },
+        "sha256": "b2a014878c3b61d6a6f915e194055a5e68ede34f9465dd1cb13249d902f008ac"
+      },
+      "/home/yayoi/.local/share/strata-sycl/packs/qwen3.8-flash-next-iq3_s/native_experts.txt": {
+        "identity": {
+          "realpath": "/home/yayoi/.local/share/strata-sycl/packs/qwen3.8-flash-next-iq3_s/native_experts.txt",
+          "dev": 40,
+          "ino": 2653896,
+          "bytes": 3304,
+          "mtime_ns": 1791009280472529749,
+          "ctime_ns": 1791009280472529749
+        },
+        "sha256": "d9ac2dfa3ee63c55c9c6a6db26f72da0cec0ee41733f007e5cbbbba71617aa5d"
+      },
+      "/home/yayoi/.local/share/strata-sycl/packs/qwen3.8-flash-next-iq3_s/tokenizer/chat_template.jinja": {
+        "identity": {
+          "realpath": "/home/yayoi/.local/share/strata-sycl/packs/qwen3.8-flash-next-iq3_s/tokenizer/chat_template.jinja",
+          "dev": 40,
+          "ino": 2653772,
+          "bytes": 9993,
+          "mtime_ns": 1791009280442529386,
+          "ctime_ns": 1791009280442529386
+        },
+        "sha256": "12827f24b742ea4e80cdc12dbcf9622227056b9f797252a3149263d4f9aaadce"
+      },
+      "/home/yayoi/.local/share/strata-sycl/packs/qwen3.8-flash-next-iq3_s/tokenizer/merges.txt": {
+        "identity": {
+          "realpath": "/home/yayoi/.local/share/strata-sycl/packs/qwen3.8-flash-next-iq3_s/tokenizer/merges.txt",
+          "dev": 40,
+          "ino": 2785432,
+          "bytes": 3353258,
+          "mtime_ns": 1791009280259527169,
+          "ctime_ns": 1791009280259527169
+        },
+        "sha256": "4ba698529766c7a2f5052083ea10cdf2485577f5237a332ee291054eb11e3332"
+      },
+      "/home/yayoi/.local/share/strata-sycl/packs/qwen3.8-flash-next-iq3_s/tokenizer/token_type.json": {
+        "identity": {
+          "realpath": "/home/yayoi/.local/share/strata-sycl/packs/qwen3.8-flash-next-iq3_s/tokenizer/token_type.json",
+          "dev": 40,
+          "ino": 2785434,
+          "bytes": 744960,
+          "mtime_ns": 1791009280269527290,
+          "ctime_ns": 1791009280269527290
+        },
+        "sha256": "5088c8c298fc06af8382ddb3b76c888703ac2634e82263b97eedcc2ad202738b"
+      },
+      "/home/yayoi/.local/share/strata-sycl/packs/qwen3.8-flash-next-iq3_s/tokenizer/tokenizer.json": {
+        "identity": {
+          "realpath": "/home/yayoi/.local/share/strata-sycl/packs/qwen3.8-flash-next-iq3_s/tokenizer/tokenizer.json",
+          "dev": 40,
+          "ino": 2785438,
+          "bytes": 541,
+          "mtime_ns": 1791009280269527290,
+          "ctime_ns": 1791009280269527290
+        },
+        "sha256": "c0bd435efbc6c3b28964b47999afe16c4ad268c7c7c4e8cb3af410796a6f30bf"
+      },
+      "/home/yayoi/.local/share/strata-sycl/packs/qwen3.8-flash-next-iq3_s/tokenizer/vocab.json": {
+        "identity": {
+          "realpath": "/home/yayoi/.local/share/strata-sycl/packs/qwen3.8-flash-next-iq3_s/tokenizer/vocab.json",
+          "dev": 40,
+          "ino": 2785430,
+          "bytes": 5737005,
+          "mtime_ns": 1791009280185526273,
+          "ctime_ns": 1791009280185526273
+        },
+        "sha256": "4ba64f0332abcfb0b600b7df1537d1e836e68009d5fb7cdb77339738dc6365c4"
+      }
+    },
+    "preload": {
+      "library": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/ur-validation-preload-v2/libstrata_ur_validation.so",
+        "sha256": "1d4e69d672d55fa0a126ae43b7b4743482cccca7e2f2bc22e0db2bfdad5bdc7c"
+      },
+      "loader": {
+        "path": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_loader.so.0.12.0",
+        "sha256": "bb6e1311850e4b1a924e42acae80c2b3610934625a4985aaa67967abe31356fc"
+      },
+      "component_source_commit": "f312b6691f508125db6cfc2580ca32a686ff2642",
+      "component_original_plan": {
+        "commit": "550c75f5fc954ee38b70230e32d2a48e12100d8a",
+        "path": "bench/results/2026-10-15-pr6-recovery-audit/research-index.json",
+        "sha256": "d12866b93c51e76a83e95638e66b6f6f4e0e33d779516a5fddecc178a6f8e10a"
+      },
+      "retained_reference_until_exit": true,
+      "runtime_teardown_qualified": false
+    },
+    "boot": "cfda0b6a-7c13-4fe2-bdf5-8f9202770840",
+    "driver_before": {
+      "pci": "/sys/bus/pci/devices/0000:05:00.0",
+      "driver": "xe",
+      "vendor": "0x8086",
+      "device": "0xe20c",
+      "kernel": "7.0.0-38-generic",
+      "devcoredump": false
+    },
+    "outcomes": {},
+    "active": false,
+    "passed": false,
+    "complete": false,
+    "ownership_closed": true,
+    "budgets": {
+      "cpu_s": 7200,
+      "rss_bytes": 111669149696,
+      "text_bytes": 33554432,
+      "file_bytes": 33554432,
+      "total_bytes": 536870912
+    },
+    "criteria": "Stop first failure;no retry. Small A/B/A+16 first,then admitted262120+16 extent,then262112/B/262128 restore. One-token requests must commit exactly prompt extent;general MTP position is prompt-1+actual verifier windows+accepted drafts,not emitted length. Require exact restore-before-reentry payload verification for all12 main QSA layers,draft and running state;actual restored prefix/read counts;valid generated IDs;normal owned exit0;unchanged models,boot,driver and no fresh fault. Do not compare generated text or cold-versus-warm arithmetic bits. Small traced device qualification belongs to the preceding same-build component suite;model checks use warning-level validation and stage progress.",
+    "retention": "Keep source/recipe,request byte hashes and individual admission/position/copy/ownership/fault outcomes. Retire successful raw logs/JIT after closure. Both retained generations keep their existing named qualification/comparison consumers.",
+    "speed_eligible": false,
+    "production_selected": false,
+    "model_adoption_qualified": false,
+    "physical262144_qualified": false,
+    "decode_performance_qualified": false,
+    "ordinary_runtime_teardown_qualified": false,
+    "next_gate": "Public API/agent-session/task quality,failure-owner and repeated clean decode preservation remain separate. This native protocol diagnostic is not a bench.sh performance comparison."
+  },
+  "owner_trace_obligations": {
+    "status": "pending_after_state_gates",
+    "question": "Which actual device/host owners overlap at the long-prefill VRAM cliff,and what does a retention/refill/rebuild choice save at fixed decode layout?",
+    "constraints": [
+      "Separate the 1256-slot target decode expert cache from the temporary 512-expert prompt bank; infer no bytes from either count. On current pinned sources, measure actual cache bytes/slot offsets/resident map, host expert-source validity, cache-base/captured readers, and refill/restore transfers and latency.",
+      "Count the session arena once. Include separate verifier/MTP arenas, weights/state, graph/runtime/workspace, pinned-host and ordinary-host owners in the event census; Bump subcarves and per-layer reused scratch are not separate/multiplied owners.",
+      "Current Prefill source puts T*N PLE device storage inside packed scratch unless it aliases emb; do not add another allocation. Two T*N host ping-pong buffers are reused across chunks, pinned when available with pageable fallback, and reset releases them before verifier work.",
+      "NativeDense/canonical bank code already exists: verify current config and runtime activation/bytes, do not reimplement. Distinguish it from target xcache; drain and retire actual graph/callback readers before pointer withdrawal/free/rebind/recapture.",
+      "Preserve QSA/GDN and MTP QSA/dense prompt state through decode/RESTORE. The older +0.70 GB was only the MTP expert-detach interval. A42 full fill is synthetic, speed-ineligible, unselected, and not overall physical-context qualification."
+    ],
+    "consumer": "Next bounded owner-tagged allocation/free and phase-overlap trace;no allocation saving or saturation conclusion from counts/free-memory deltas.",
+    "reference_report": ".cache/strata-research/20261024/full-context-state-qualification/vram-owner-attribution.md",
+    "source_review": ".cache/strata-research/20261024/full-context-state-qualification/vram-native-review.json",
+    "retention_curation_sha256": "285169711bfaa384f035089055ad2b518be9f68a0efaf4f7b28950c3b72db9a7",
+    "older_report_retirement": "Content approved for retirement after compact carry-forward. Main will verify ownership and serialize deletion at next safe boundary;no old ownership holds are resolved by this content review."
   }
 }
