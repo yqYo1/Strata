@@ -73,8 +73,9 @@ def admission():
     built = gen.committed(candidate.RESULT)
     guards.require(built['stage'] == 'closed' and built['passed'] and built['complete'] and
         built['ownership_closed'] and not built['active'] and not built['GPU_executed'], 'closed diagnostic build required')
-    guards.require(validation.digest(candidate.ROOT / 'plan.json') == built['plan_sha256'], 'build plan changed')
-    plan = json.loads((candidate.ROOT / 'plan.json').read_text()); candidate.current(plan)
+    plan_path = Path(built.get('plan_path', str(candidate.ROOT / 'plan.json')))
+    guards.require(validation.digest(plan_path) == built['plan_sha256'], 'build plan changed')
+    plan = json.loads(plan_path.read_text()); candidate.current(plan)
     for item in built['artifacts'].values():
         guards.require(validation.digest(item['path']) == item['sha256'], 'diagnostic artifact changed')
     review = validation.committed(validation.INDEX, (SCOPE, 'review'))

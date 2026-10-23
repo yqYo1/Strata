@@ -1,5 +1,6 @@
 // Main-authored bounded diagnostic readback test; repository LICENSE applies.
 #include <cuda_runtime.h>
+#include "strata/sycl/checked_cleanup.hpp"
 #include "strata/prefill/selection_dump.hpp"
 #include <fstream>
 #include <iostream>

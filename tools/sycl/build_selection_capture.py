@@ -48,6 +48,66 @@ def current(plan):
     selected, proof, _ = resource.qualification()
     guards.require(proof == plan['selected_qualification'] and selected['binary'] == plan['selected_binary'],
                    'selected fallback qualification changed')
+    if 'fixture_repair' in plan:
+        repair = plan['fixture_repair']
+        for path, expected in repair['preserved_files'].items():
+            guards.require(build.digest(path) == expected, 'closed build input/artifact changed: ' + path)
+        old = json.loads((ROOT / 'plan.json').read_text())
+        changed = {n for n, h in old['project']['source_sha256'].items()
+                   if plan['project']['source_sha256'][n] != h}
+        guards.require(changed == set(repair['uncompiled_changes']), 'unexpected native source change')
+        database = json.loads((ROOT / 'build/compile_commands.json').read_text())
+        compiled = {c['file'] for c in database}
+        guards.require(not compiled.intersection(str(P / n) for n in changed), 'changed input was in engine build')
+        for source in [old['project'], *old['dependencies']]:
+            recovered = {n: hashlib.sha256(raw).hexdigest() for n, raw in
+                build.blobs(Path(source['root']), source['revision'], source['source_sha256'])}
+            guards.require(recovered == source['source_sha256'], 'original failed-build inputs unavailable')
+
+
+def prepare_repair():
+    """Reuse compiled native assets only across the explicit include-only fix."""
+    previous = gen.committed(RESULT)
+    guards.require(previous['stage'] == 'closed' and not previous['passed'] and previous['ownership_closed'] and
+        not previous['GPU_executed'] and 'cleanup_fail_stop' in previous['failure_mechanism'],
+        'expected closed fixture declaration failure required')
+    guards.require(not (ROOT / 'fixture-repair-plan.json').exists(), 'single fixture continuation only')
+    old = json.loads((ROOT / 'plan.json').read_text())
+    guards.require(build.digest(ROOT / 'plan.json') == previous['plan_sha256'], 'original plan changed')
+    native = json.loads((ROOT / 'record.json').read_text())
+    guards.require([c['exit_code'] for c in native['commands']] == [0, 0, 1] and
+        all(supervision.closed(c) for c in native['commands']), 'original compile ownership incomplete')
+    fixture = 'tests/sycl/selection_dump.cpp'
+    original = gen.git('show', old['source_commit'] + ':' + fixture)
+    fixed = original.replace(b'#include <cuda_runtime.h>\n',
+        b'#include <cuda_runtime.h>\n#include "strata/sycl/checked_cleanup.hpp"\n', 1)
+    guards.require((P / fixture).read_bytes() == fixed, 'only the reviewed declaration include may change the fixture')
+    plan = dict(old, project=build.pin(P, list(old['project']['source_sha256'])))
+    plan['source_commit'] = plan['project']['revision']
+    command = list(old['fixture_command']); command[-1] = str(ROOT / 'selection_dump_test-v2')
+    plan['fixture_command'] = command
+    plan['commands'] = [('readback-fixture-v2', command)]
+    preserved = {str(ROOT / n): build.digest(ROOT / n) for n in
+        ('plan.json', 'record.json', 'prefill-compile.json', 'build/compile_commands.json',
+         'build/libstrata_sycl_runtime.a')}
+    for artifact in previous['partial_artifacts'].values():
+        guards.require(build.digest(artifact['path']) == artifact['sha256'], 'compiled artifact changed')
+        preserved[artifact['path']] = artifact['sha256']
+    plan['fixture_repair'] = dict(preserved_files=preserved,
+        uncompiled_changes=[fixture, 'tools/sycl/build_selection_capture.py'],
+        native_engine_origin_source_commit=old['source_commit'],
+        original_failure=dict(commit=gen.git('rev-parse', 'HEAD').decode().strip(),
+            path=str(RESULT.relative_to(P)), sha256=build.digest(RESULT)))
+    current(plan)
+    path = ROOT / 'fixture-repair-plan.json'; write(path, plan)
+    compact = {k: previous[k] for k in ('root', 'compiler', 'overlay', 'targets', 'retention')}
+    compact.update(stage='prepared', mode='fixture-repair', source_commit=plan['source_commit'],
+        native_engine_origin_source_commit=old['source_commit'], plan_path=str(path), plan_sha256=build.digest(path),
+        original_failure=plan['fixture_repair']['original_failure'], original_failure_preserved=True,
+        passed=False, complete=False, active=False, ownership_closed=True, GPU_executed=False,
+        model_adoption_qualified=False, clean_speed_qualified=False)
+    write(RESULT, compact)
+    print('Prepared explicit fixture-only continuation; commit it before build.', flush=True)
 
 
 def prepare():
@@ -105,14 +165,16 @@ def prepare():
 
 def compile_build():
     record = gen.committed(RESULT)
-    guards.require(record['stage'] == 'prepared' and not (ROOT / 'record.json').exists(), 'fresh committed build only')
-    guards.require(build.digest(ROOT / 'plan.json') == record['plan_sha256'], 'frozen build plan changed')
-    plan = json.loads((ROOT / 'plan.json').read_text()); current(plan)
+    output_record = ROOT / ('repair-record.json' if record.get('mode') == 'fixture-repair' else 'record.json')
+    guards.require(record['stage'] == 'prepared' and not output_record.exists(), 'fresh committed build only')
+    plan_path = Path(record.get('plan_path', str(ROOT / 'plan.json')))
+    guards.require(build.digest(plan_path) == record['plan_sha256'], 'frozen build plan changed')
+    plan = json.loads(plan_path.read_text()); current(plan)
     record.update(stage='building', active=True, ownership_closed=False)
     owner = None
     def persist():
-        write(ROOT / 'record.json', dict(record, commands=owner.commands if owner else []))
-    owner = supervision.Owner(ROOT / 'owned', persist); persist()
+        write(output_record, dict(record, commands=owner.commands if owner else []))
+    owner = supervision.Owner(ROOT / ('repair-owned' if 'fixture_repair' in plan else 'owned'), persist); persist()
     try:
         for label, argv in plan['commands']:
             entry, _, _ = owner.run(label, argv, plan['environment'], P, wall=1800, cpu=21600,
@@ -124,7 +186,9 @@ def compile_build():
             str(ROOT / 'prefill.cpp') in substituted['argv'], 'actual prefill substitution not recorded')
         record['artifacts'] = {n: dict(path=str(p), bytes=p.stat().st_size, sha256=build.digest(p)) for n, p in
             [('engine', ROOT / 'build/strata'), ('runtime', ROOT / 'build/sycl_compat_test'),
-             ('readback', ROOT / 'selection_dump_test')]}
+             ('readback', Path(plan['fixture_command'][-1]))]}
+        record['artifact_source_commits'] = dict(engine=record.get('native_engine_origin_source_commit', record['source_commit']),
+            runtime=record.get('native_engine_origin_source_commit', record['source_commit']), readback=record['source_commit'])
         record['compile_database_sha256'] = build.digest(ROOT / 'build/compile_commands.json')
         record['actual_prefill_command'] = substituted
         record.update(passed=True, complete=True)
@@ -139,8 +203,8 @@ def compile_build():
 
 
 if __name__ == '__main__':
-    guards.require(sys.argv[1:] in (['prepare'], ['build']), 'use prepare|build')
+    guards.require(sys.argv[1:] in (['prepare'], ['prepare-repair'], ['build']), 'use prepare|prepare-repair|build')
     with (B / 'owned-v0141-measurement.lock').open('a+') as lock:
         fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
         guards.no_model_owners([]); guards.driver_guard()
-        sys.exit(prepare() if sys.argv[1] == 'prepare' else compile_build())
+        sys.exit(prepare() if sys.argv[1] == 'prepare' else prepare_repair() if sys.argv[1] == 'prepare-repair' else compile_build())
