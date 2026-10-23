@@ -2753,7 +2753,7 @@
     ]
   },
   "allocation_budget_qsa_components": {
-    "stage": "prepared",
+    "stage": "host_closed",
     "source_commit": "dfd137d1bb3be3dac729fa76c9b937ca03ce413f",
     "input_sha256": {
       "include/strata/program/full_context_diagnostic.hpp": "d4abd9516913df9c0672adfea079e036223c8454ae79fadacd6f209432f04621",
@@ -2865,7 +2865,28 @@
       "retained_reference_until_exit": true,
       "runtime_teardown_qualified": false
     },
-    "outcomes": {},
+    "outcomes": {
+      "host": {
+        "passed": true,
+        "complete": true,
+        "ownership_closed": true,
+        "exit_code": 0,
+        "stdout_sha256": "bc4d7a23b53c9952471b1371f2cfbcf0e54226c83c337a38d4d3d2ccb298a553",
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "GPU_work_submitted": false,
+        "prefix_budget_oracle": true,
+        "fresh_faults": [],
+        "driver_after": {
+          "pci": "/sys/bus/pci/devices/0000:05:00.0",
+          "driver": "xe",
+          "vendor": "0x8086",
+          "device": "0xe20c",
+          "kernel": "7.0.0-38-generic",
+          "devcoredump": false
+        },
+        "boot_unchanged": true
+      }
+    },
     "active": false,
     "passed": false,
     "complete": false,
