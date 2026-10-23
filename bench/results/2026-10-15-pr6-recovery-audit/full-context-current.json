@@ -9348,7 +9348,7 @@
     "correction": "Actual build environments match prepared hashes. Controller omitted automatic effective-environment hash enforcement;no CPU packet/canary check has run. Preserve build pass;prospective admission-only plan will verify unchanged C++/compiler/header/recipe/environment/artifact identities before host tests."
   },
   "ur_memory_subscriber_v2": {
-    "stage": "build_closed",
+    "stage": "check_closed",
     "source_commit": "f67b57aeddb646782f48c07068c3e8d1f95944e3",
     "input_sha256": {
       "data/expert-profile.bin": "8f59b4aa8873209dff11c11e37bcda9529a1335b724a1afeea37bf6388975baf",
@@ -9465,10 +9465,30 @@
         "sha256": "39da2a3ff1072294e8407edd4fb01eecfab6272dfe648a66039d10391958544e"
       }
     },
-    "outcomes": {},
+    "outcomes": {
+      "check": {
+        "passed": true,
+        "complete": true,
+        "ownership_closed": true,
+        "packet_controls": 12,
+        "activation": {
+          "pid": 2297230,
+          "loader": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_loader.so.0.12.0",
+          "threads_before": 1,
+          "preinit": 37,
+          "config_enabled": true,
+          "first_init": true,
+          "dispatch_result": 46,
+          "output_untouched": true,
+          "retained_reference_until_exit": true,
+          "runtime_teardown_qualified": false
+        },
+        "host_xpti_activation": true
+      }
+    },
     "active": false,
-    "passed": false,
-    "complete": false,
+    "passed": true,
+    "complete": true,
     "ownership_closed": true,
     "inherited_build": {
       "result_key": "ur_memory_subscriber_v1",
