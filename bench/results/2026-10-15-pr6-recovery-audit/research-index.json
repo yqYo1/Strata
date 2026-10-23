@@ -10000,7 +10000,7 @@
   },
   "actual_qsa_tail_capture_controller_audit_20261023": {
     "classification": "decision support",
-    "status": "prepared",
+    "status": "returned_native_review_pending",
     "schedulable_now": true,
     "prerequisite_evidence": [
       "Committed separate diagnostic sourcea341;passed8CPU cases and small/full GPU readback.",
@@ -10017,6 +10017,39 @@
     "consumer": "Main single official long-request actual-tail capture and immediate same-generation mask replay.",
     "next_review": "Native6-luna-max before model launch;Main executes CPU binding tests concurrently;retire at capture/replay decision.",
     "rules_revision": "cdb4a67e4",
+    "source_gate_passed": false,
+    "run_id": "run_432552edd149",
+    "task_id": "task_ede36648fee7",
+    "dispatch_id": "ctx_884511eb1b2e",
+    "terminal": "term_710c5141-52d7-459d-ac4b-60d13a39ece0",
+    "incarnation": "9f7a223d-f5d9-4e56-9470-460688dde57f",
+    "effective_model": "gpt-6-luna",
+    "effective_effort": "high",
+    "turn_started": true,
+    "host_binding_tests_passed": 8,
+    "worker_done_accepted": true,
+    "release": "retained_external_processAction_none",
+    "terminal_closed_verified": true,
+    "delivery_processed_and_acked": true
+  },
+  "actual_qsa_order_cohort_controller_audit_20261023": {
+    "classification": "decision support",
+    "status": "prepared",
+    "schedulable_now": true,
+    "prerequisite_evidence": [
+      "Implemented actual-capture producer9642729c5;source review pending,8CPU binding tests passed.",
+      "Replay7bb passes14parser+GPU97/3/33smoke;new full cohort controller/sample tests implemented and committed before dispatch."
+    ],
+    "source_sha256": {
+      "tools/sycl/measure_qsa_order_replay.py": "8ed2dd5ab4fe91fd71ff68d64ca8b7848c0ea754936bb157f3208fcf23e1779f",
+      "tests/core/test_qsa_order_samples.py": "f1f0c3fc1bd397d98bfa3d5a5ac58151ab62e5a8543482b62e638dcc70d454ca"
+    },
+    "report": "/home/yayoi/orca/workspaces/Strata/sycl/.cache/strata-research/20261023/actual-qsa-order-cohort-audit/report.md",
+    "report_budget_bytes": 12288,
+    "question": "Audit capture/session/hash admission,full/clean separation,sample conservation and mechanism criteria before actual-mask cohort.",
+    "consumer": "Main future actual-mask12-layer validation and540timing samples;actual capture must close first.",
+    "next_review": "Native6-luna-max before replay launch;no empirical timing/source claim before actual data.",
+    "rules_revision": "9642729c5",
     "source_gate_passed": false
   }
 }
