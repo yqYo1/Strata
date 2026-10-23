@@ -317,7 +317,7 @@ bool Prefill::run_layer_major(const int64_t* tokens, int64_t n, int64_t pos0, st
     }
     const auto max_alloc = sycl_backend::queue_for(m.cs).get_device()
         .get_info<sycl::info::device::max_mem_alloc_size>();
-    const auto prefix_plan = detail::ExpertBankPrefixPlan::make(prefix_bytes, [&](uint64_t admitted_prefix) {
+    const auto prefix_plan = detail::ExpertBankPrefixPlan::make(prefix_bytes, max_alloc, [&](uint64_t admitted_prefix) {
         return detail::ExpertBankPlan::make(n, m.T, D, stride, free_gpu,
             detail::layer_major_add(admitted_prefix, score_status_bytes), gpu_headroom, max_alloc,
             detail::layer_major_requested_rows(std::getenv("STRATA_PREFILL_LAYER_MAJOR_R_GPU")),

@@ -12,8 +12,8 @@ sys.dont_write_bytecode=True
 import check_full_context as gate
 
 P,B,RESULT=gate.P,gate.B,gate.RESULT
-ROOT=B/'budget-qsa-component-v1'
-KEY='budget_qsa_components'
+ROOT=B/'budget-qsa-component-v2'
+KEY='allocation_budget_qsa_components'
 ORDER=('host','smoke','component','resident','attention-smoke','attention-component')
 INPUTS=sorted(set([*gate.INPUTS,'tools/sycl/check_streamed_qsa.py']))
 require=gate.native.guards.require
@@ -67,7 +67,7 @@ def prepare(container):
         preload=probe,outcomes={},active=False,passed=False,complete=False,ownership_closed=True,
         boot=Path('/proc/sys/kernel/random/boot_id').read_text().strip(),driver_before=gate.native.guards.driver_guard(),
         budgets=dict(wall_s=180,cpu_s=360,rss_bytes=6<<30,text_bytes=16<<20,file_bytes=16<<20,total_bytes=512<<20),
-        criteria='First CPU budget fixture must keep the short prefix,permit full262143/262144 host tails only after removing optional prefix,and preserve invalid/overflow/headroom refusals. Commit each case before the next. Tiny full-API-traced smoke first:one case,14 pre-enqueue refusals,three append chunks including checked host unwind and host->stage refill/rewind. Then parameter-validated4case suite:partial/missing/invalid/nonidentity pages,8192 row ceiling,last3cells ending262144. All stage/host codes/scales exactly match separately qualified resident append;resident slots,guards,inputs/maps and drains pass. Then unchanged resident numerical oracle passes,followed by traced two-case and parameter-validated ten-case on-demand BF16 attention fixtures,including262144 cells. Same-child activation,normal owned exits,unchanged native/controller/runtime/boot/driver,no fresh fault. First failure stops;no retry or speed/model claim.',
+        criteria='First CPU budget fixture must keep the short prefix,permit full262143/262144 host tails only after removing optional prefix,and preserve invalid/overflow/headroom refusals and enforce the optional workspace single-allocation limit at exact/below boundaries with the SAME limit for mandatory bank/residual owners. Commit each case before the next. Tiny full-API-traced smoke first:one case,14 pre-enqueue refusals,three append chunks including checked host unwind and host->stage refill/rewind. Then parameter-validated4case suite:partial/missing/invalid/nonidentity pages,8192 row ceiling,last3cells ending262144. All stage/host codes/scales exactly match separately qualified resident append;resident slots,guards,inputs/maps and drains pass. Then unchanged resident numerical oracle passes,followed by traced two-case and parameter-validated ten-case on-demand BF16 attention fixtures,including262144 cells. Same-child activation,normal owned exits,unchanged native/controller/runtime/boot/driver,no fresh fault. First failure stops;no retry or speed/model claim.',
         retention='Retain compact individual case/activation/guard/fault/source decisions. Retire successful traces,JIT and duplicate receipts after closure;original selected13 assets remain untouched. New engine+same-build fixtures are the only unselected generation for imminent capacity-model validation.',
         model_adoption_qualified=False,physical262144_model_qualified=False,decode_performance_qualified=False,
         ordinary_runtime_teardown_qualified=False)
@@ -123,7 +123,7 @@ def run(container,mode):
         require(not re.search(r'UR_RESULT_ERROR_|ZE_RESULT_ERROR_|terminate called|teardown uncertain|cleanup failed',body),
             'unexpected post-canary runtime failure')
         if mode=='host':
-            require('expert_bank_prefix_budget short_kept=PASS full262143_host_tail=PASS full262144_host_tail=PASS exact=PASS invalid=PASS' in stdout.splitlines() and
+            require('expert_bank_prefix_budget short_kept=PASS full262143_host_tail=PASS full262144_host_tail=PASS exact=PASS single_allocation=PASS invalid=PASS' in stdout.splitlines() and
                 stdout.splitlines()[-1]=='expert_bank_plan PASS GPU=UNRUN model=UNRUN physical262144_RESTORE=UNQUALIFIED' and not stderr, 'CPU budget oracle failed')
             row['prefix_budget_oracle']=True
         elif mode.startswith('attention-'):

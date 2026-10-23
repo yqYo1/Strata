@@ -103,7 +103,7 @@ def prepare(container):
     smoke=container['device_smoke_v2']
     require(smoke['passed'] and smoke['complete'] and smoke['ownership_closed'] and not smoke['active'] and
         smoke['GPU_work_submitted'] and smoke['fresh_faults']==[],'closed traced device gate required')
-    component=container['budget_qsa_components']
+    component=container['allocation_budget_qsa_components']
     require(component['passed'] and component['complete'] and component['ownership_closed'] and not component['active'] and
         all(component['outcomes'][k]['passed'] and component['outcomes'][k]['fresh_faults']==[]
             for k in ('host','smoke','component','resident','attention-smoke','attention-component')),'closed same-build streamed/resident QSA gates required')
@@ -221,6 +221,7 @@ def evidence(stdout,stderr,record,case,pid):
     require(budget is not None and int(budget[1])==expected_budget['requested_prefix_bytes'] and
         int(budget[3])==expected_budget['fallback_bf16_on_the_fly'] and int(budget[5])==536870912 and
         int(budget[2])==(0 if int(budget[3]) else int(budget[1])), 'actual prefill prefix budget selection differs')
+    require(int(budget[2])<=ledger['device_max_allocation_bytes'], 'prefix exceeds actual one-shot allocation limit')
     ledger['qsa_prefix_bytes']=int(budget[2]);ledger['qsa_on_the_fly_budget_fallback']=bool(int(budget[3]))
     qsa_pattern=(r'^strata prefill QSA16 streamed: layer=(\d+) chunks=(\d+) rows=(\d+) pos0=(\d+) '
         r'prefix_H2D_requested_bytes=(\d+) host_publication=GPU_Q8 stage=full_logical_layer checked_drain=PASS$')

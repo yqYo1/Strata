@@ -21,8 +21,8 @@ import measurement_owner as supervision
 P, B = build.P, build.B
 ROOT = B / 'full-context-native-v1'
 RESULT = source.RESULT
-KEY = 'native_budget_build'
-PREDECESSOR_KEY = 'native_streamed_build'
+KEY = 'native_allocation_budget_build'
+PREDECESSOR_KEY = 'native_budget_build'
 MACRO = '-DSTRATA_SYCL_FULL_CONTEXT_DIAGNOSTIC=1'
 PREFIXES = ['CMakeLists.txt', 'cmake', 'include', 'src', 'tests', 'third_party',
             'bench/sycl', 'tools/sycl/build_full_context.py', *source.INPUTS]
@@ -177,7 +177,7 @@ def rebuild(container):
     def persist():
         record['active']=bool(owner and owner.active is not None)
         write(ENGINE_RECORD,dict(record,commands=owner.commands if owner else []))
-    owner=supervision.Owner(ROOT/'owned-budget',persist)
+    owner=supervision.Owner(ROOT/'owned-allocation-budget',persist)
     record['stage']='building_streamed';persist()
     try:
         b=record['budgets']

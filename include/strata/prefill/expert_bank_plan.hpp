@@ -81,10 +81,15 @@ struct ExpertBankPlan {
 // plan cannot fit, try the existing on-demand GPU BF16 attention instead.
 // The factory must preserve all non-prefix reservations and headroom. Invalid
 // configuration/overflow and a second capacity refusal propagate unchanged.
+// Use the same actual device allocation limit for prefix and factory owners.
 struct ExpertBankPrefixPlan {
     ExpertBankPlan bank;
     uint64_t prefix_bytes;
-    template<class Factory> static ExpertBankPrefixPlan make(uint64_t prefix, Factory factory) {
+    template<class Factory> static ExpertBankPrefixPlan make(
+            uint64_t prefix, uint64_t max_allocation, Factory factory) {
+        (void)layer_major_add(prefix, 0); // invalid/overflow is never a capacity fallback
+        if (!max_allocation) throw std::invalid_argument("invalid QSA allocation limit");
+        if (prefix > max_allocation) return {factory(0), 0};
         try { return {factory(prefix), prefix}; }
         catch (const ExpertBankBudgetError&) {
             if (!prefix) throw;
