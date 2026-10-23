@@ -24,9 +24,17 @@ from measure_down_scatter import postchecks
 P,B,A=gen.P,gen.B,gen.A
 ROOT=checked.replay.ROOT/'actual-v1'
 RESULT=A/'qsa-actual-order-current.json'
+SCOPE='actual_qsa_order_cohort_controller_audit_20261023'
 
 
 def write(path,value):path.write_text(json.dumps(value,indent=2)+'\n')
+
+
+def review():
+    row=gen.committed(A/'research-index.json')[SCOPE]
+    guards.require(row.get('source_gate_passed') is True,'actual replay cohort review required')
+    for item in row['review'].values():guards.require(gen.common.digest(item['path'])==item['sha256'],'cohort review changed')
+    return row['review']
 
 
 def captured():
@@ -57,6 +65,7 @@ def admission(record):
         origin['tail']==record['tail'] and built['binary']==record['binary'],'actual replay provenance changed')
     guards.require(gen.benchmark_pins(record['controller_source_commit'])==record['controller_inputs'],
         'measurement controller inputs changed')
+    guards.require(review()==record['review'],'cohort review qualification changed')
 
 
 def prepare():
@@ -79,6 +88,7 @@ def prepare():
         jobs.append(dict(index=i,command=command,environment=env))
     revision=gen.git('rev-parse','HEAD').decode().strip()
     record=dict(stage='prepared',controller_source_commit=revision,controller_inputs=gen.benchmark_pins(revision),
+        review=review(),
         native_source_commit=built['source_commit'],binary=built['binary'],capture_sha256=gen.common.digest(capture.RESULT),
         completion=origin['completion'],tail=origin['tail'],jobs=jobs,processes=[],samples=[],
         sample_columns=['layer','round','order','arm','elapsed_ns','timer_pair_ns'],sample_calls=32,
