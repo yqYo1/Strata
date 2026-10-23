@@ -443,9 +443,13 @@ observed GPU fault. Nine host parser tests pass, but that does not qualify the
 native readback. The original prepared plan remains failed/closed in
 [the capture result](../bench/results/2026-10-15-pr6-recovery-audit/qsa-selection-current.json).
 A Main-authored checked readback/file-output helper passes7 host fault-injection
-tests. A reversible native source overlay is prepared but not compiled or
-integrated. Its separate diagnostic qualification and explicit runtime-lineage
-binding are required before a new plan; selected6e40 and decode remain unchanged.
+tests. The separate diagnostic engine/runtime compile and link successfully at
+`663a4b275`; the first standalone fixture compile fails for a missing declaration
+header. That failure remains unchanged. An include-only correction and explicit
+fixture-only continuation preserve the compiled native assets after proving
+the changed source paths were outside their compile database. Runtime
+qualification and explicit library/native-exit lineage remain required before
+a new capture plan; selected6e40 and decode remain unchanged.
 The refused plan's four generated inputs were recovered from its pushed source
 and then removed with consumed research transactions:14 files,259820 bytes.
 Its original failed outcome remains in Git; no GPU capture or new native build ran.
