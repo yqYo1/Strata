@@ -652,12 +652,12 @@ residency or successful allocation. Its separate native configure now passes;
 the actual generator compiles with `-fsyntax-only` both with and without the
 diagnostic definition, with no diagnostics and normal owned exits. These checks
 preserve the original9853-input/13-asset proof and verify8697 installed SDK inputs.
-The current unselected diagnostic builds from`43587ce22`, preserving the
+The current unselected diagnostic builds from`2e8c5330e`, preserving the
 original selected13 assets and replacing only the previous diagnostic in place.
 Its recipe freezes230 additional MKL header/config/link inputs. The actual
-Ninja dependency census contains1402 files, including one predeclared generated
+Ninja dependency census contains1404 files, including one predeclared generated
 ggml version header, with no uncovered inputs;the owned compile/link and census
-exit normally. The engine and two same-build QSA fixtures are hash-pinned in
+exit normally. The engine and four same-build budget/QSA fixtures are hash-pinned in
 the current result. This is not decode-preservation or model qualification.
 The earlier`908158833` diagnostic passed11 owned pre-device CLI checks:help exposes the
 diagnostic flag,and10 invalid requests reject at the intended early boundary.
@@ -742,8 +742,10 @@ failed. A prefill-only budget selector now tries the existing on-demand GPU
 BF16 attention when only the materialized prefix prevents bank admission.
 It preserves invalid-option/overflow/headroom refusals,keeps the short-input
 prefix when it fits,and restores its local selection with the prefill lease.
-This new source awaits its own build,CPU budget,bounded attention and model
-gates. Nonzero-prefix RESTORE and clean matched speed comparisons remain open.
+The new build and CPU budget fixture pass,including both262143/262144 host-tail
+plans,exact admission boundaries and preserved invalid/overflow/headroom
+refusals. Its bounded GPU attention and model gates are still pending.
+Nonzero-prefix RESTORE and clean matched speed comparisons remain open.
 
 Remaining model gates are repeated phase-preserving adoption evidence,
 agent-session and task quality, full physical262144 tokens including the final
