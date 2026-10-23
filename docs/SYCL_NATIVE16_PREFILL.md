@@ -499,9 +499,31 @@ no spill descriptor. These material resource differences permit descriptive
 whole-probe comparisons,not additive saved-time or exclusive saturation claims.
 The [small qualification](../bench/results/2026-10-15-pr6-recovery-audit/qsa-resource-calibration-execution-current.json)
 records these limits. Its consumed210 trace/JIT/research-transaction files
-(62214368 bytes) are retired;the fixture remains only for the imminent
-512-query validation and three-process balanced timing cohort. No engine,
-decode or model-performance selection changes.
+(62214368 bytes) are retired.
+
+The full512-query validation and three independent clean timing processes are
+now closed. All135 batches meet the committed128-call,100ms and timer-overhead
+floors;production/control bits,all producer checksums,perturbation,guards and
+input immutability pass. All four processes exit normally;source,runtime and
+the selected13 assets match after every process,with no fresh fault.
+
+| Synthetic shape | P production,ms | L gather,ms | S producer,ms |
+| --- | ---: | ---: | ---: |
+| 32768 cells,gather | 13.457..13.479 | 8.050..8.058 | 11.804..11.823 |
+| 117488 cells,gather | 17.429..17.472 | 12.765..12.773 | 16.484..16.543 |
+| 117488 cells,clustered | 10.792..10.804 | 5.027..5.028 | 9.829..9.842 |
+
+These are ranges of per-process five-batch medians for the whole wrapper,
+including prefix preparation and drain. The [compact comparison](../bench/results/2026-10-15-pr6-recovery-audit/qsa-resource-calibration-timing-current.json)
+keeps all135 individual samples and their spread. The full production path's
+large gather case takes about1.62 times its clustered case. This prioritizes a
+same-production-code working-set/locality sensitivity comparison before another
+layout variation. A resident matrix-plus-softmax probe is a subsequent option
+if that comparison remains inconclusive. Probe SLM,spill and checksum differences
+prohibit subtracting L/S from P as saved time. Physical traffic,cache behavior
+and the exclusive limiting hardware resource remain unknown. No engine,decode,
+placement or model-performance selection changes. The auxiliary fixture has no
+further execution consumer;retirement follows exact source/recipe recovery.
 
 Remaining model gates are repeated phase-preserving adoption evidence,
 agent-session and task quality, full physical262144 tokens including the final
