@@ -437,5 +437,86 @@
       }
     ]
   },
-  "record_scope": "Top-level source_commit/passed/complete/GPU/native-engine fields describe only the original134-case CPU source gate. Subsequent native_diagnostic,native_engine_build and native_cli stages have independent source/qualification fields."
+  "record_scope": "Top-level source_commit/passed/complete/GPU/native-engine fields describe only the original134-case CPU source gate. Subsequent native_diagnostic,native_engine_build and native_cli stages have independent source/qualification fields.",
+  "native_cli": {
+    "stage": "prepared",
+    "source_commit": "f5d082394a5d8d3e833ed4c4315a8fe830e7c4e0",
+    "input_sha256": {
+      "include/strata/program/full_context_diagnostic.hpp": "d4abd9516913df9c0672adfea079e036223c8454ae79fadacd6f209432f04621",
+      "src/program/generate.cpp": "8ed3db3e989996269b532e6fb7a8c2a685508b45473e12f0fe4f397e3c6e12c4",
+      "tests/core/full_context_diagnostic_test.cpp": "045c7ea526aee9a8df48c6ce28c025c5006db003d6136ffd97168b8a27b893c1",
+      "tools/sycl/build_engine.py": "8444783ab417378207ec89ad2bc3cf648480e20d9e77f06ebb3070c93e10b131",
+      "tools/sycl/build_full_context.py": "03aded9f90f9a19929eaf53c32b8ef26aa5973b08c6e44288a5e5a2dd5b6d4ce",
+      "tools/sycl/check_full_context.py": "efe22b3e5e84f97a47464078e617888ec5b78cda0f4730cc8d164b4a632625c0",
+      "tools/sycl/check_full_context_source.py": "5e72fa724e890e682382758caf6222042e1ec89770962ce205ab756783332030",
+      "tools/sycl/measurement_environment.json": "d4402591df50e80dc45a5ec9e4839c7a794888850b1473537b6f95179be5b03c",
+      "tools/sycl/measurement_guards.py": "794e332c70aca0acadad4f26d0414548e023a02fd27b72ed78fc773674423ec8",
+      "tools/sycl/measurement_owner.py": "bddd0c5e5020e882ca3404679420faec11e820dabce2ed4c72ef82b4c9c0874a"
+    },
+    "binary": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/full-context-native-v1/build/strata",
+      "bytes": 22194056,
+      "sha256": "65067acdf14ef4059a35bf3c9cc64b74bd7798f745b6a44cd7b48dd983070419"
+    },
+    "native_source_commit": "9081588332cf848faf61d252bf22539007ae180c",
+    "native_record_sha256": "cd5d5a38af3442ae093771d7ca466011e2e67e58733d13f6680887d74a7804f8",
+    "token_files": [
+      {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/full-context-cli-v1/tokens262143.txt",
+        "rows": 262143,
+        "first_id": 0,
+        "last_id": 4094,
+        "sha256": "c21ac2672d8dbb05df7a90bfe1826a27a1489ec441188a2376b77ec5a6bbc351",
+        "bytes": 1239675
+      },
+      {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/full-context-cli-v1/tokens262144.txt",
+        "rows": 262144,
+        "first_id": 0,
+        "last_id": 4095,
+        "sha256": "14d396a5c68f5f0791759fb567442530a6b46c45f29d3dd38ae7517557c12c7b",
+        "bytes": 1239680
+      },
+      {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/full-context-cli-v1/tokens262145.txt",
+        "rows": 262145,
+        "first_id": 0,
+        "last_id": 0,
+        "sha256": "1ffc4d38c8efde94c5f218c4be42f1fe68fc8984676f13536799891897b4eaf2",
+        "bytes": 1239682
+      }
+    ],
+    "active": false,
+    "passed": false,
+    "complete": false,
+    "ownership_closed": true,
+    "GPU_work_submitted": false,
+    "physical262144_qualified": false,
+    "model_adoption_qualified": false,
+    "criteria": "Help exposes diagnostic flag;all10 invalid consume requests exit2 at the exact pre-device rejection and emit no stdout. No UR context/queue/kernel/copy submission. Normal owned exits and unchanged native/original assets. These are CLI refusal checks,not physical-context or decode qualification.",
+    "token_scope": "Synthetic integer IDs cycle0..4095. Under/full/over input fixtures exercise actual parser extent. No tokenizer,thinking,generated answer,throughput or task-quality evidence. Keep full fixture only for imminent physical full-fill consumer;retire tails and successful raw output after this gate.",
+    "environment_note": "All variables fixed before exec;CUDA_MODULE_LOADING=EAGER also avoids the legacy startup setenv branch. Existing qualified SYCL safety settings are unchanged.",
+    "budgets": {
+      "wall_s": 15,
+      "cpu_s": 15,
+      "rss_bytes": 1073741824,
+      "text_bytes": 1048576,
+      "file_bytes": 4194304,
+      "total_bytes": 16777216
+    },
+    "next_gate": "Actual bounded device validation,262144 allocation/processed extent,last-slot commit,near-cap decode,RESTORE and failure-owner checks;independently repeated phase preservation before adoption.",
+    "case_names": [
+      "help",
+      "missing-full-request",
+      "under-context",
+      "over-context",
+      "output-room",
+      "wrong-spec",
+      "suffix",
+      "wrong-chunk",
+      "under-input",
+      "over-input",
+      "missing-native"
+    ]
+  }
 }
