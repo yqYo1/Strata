@@ -17,9 +17,9 @@ import full_context_model as model
 
 gate = model.gate
 P, B, RESULT = model.P, model.B, model.RESULT
-ROOT = B / 'full-context-state-v1'
-KEY = 'model_state_v1'
-ORDER = ('small', 'near-cap', 'restore')
+ROOT = B / 'full-context-state-v2'
+KEY = 'model_state_v2'
+ORDER = ('protocol', 'small', 'near-cap', 'restore')
 INPUTS = sorted(set([*model.INPUTS, 'tools/sycl/check_model_restore.py']))
 require, digest, write = model.require, model.digest, model.write
 
@@ -37,20 +37,47 @@ def inputs(revision):
 
 
 def requests(mode):
-    n = 16385 if mode == 'small' else 262112
+    if mode == 'protocol':
+        return [r for case in ('small', 'near-cap', 'restore') for r in requests(case)]
+    n = 16385 if mode == 'small' else 253920
     a = [i % 4096 for i in range(n)]
     if mode == 'near-cap':
         return [([i % 4096 for i in range(262120)], 16, 0)]
     return [(a, 1, 0), ([128 + i for i in range(33)], 1, 0),
-            (a + list(range(256, 272)), 1, n)]
+            (a + [256 + i % 16 for i in range(16 if mode == 'small' else 8208)], 1, n)]
 
 
 def wire(ids, count):
     return ('GEN ' + str(count) + ' ' + ','.join(map(str, ids)) + '\n').encode()
 
 
+# Host-only peer checks the real Owner/Interactive callback and long-line
+# transport against independently pinned request hashes before any model run.
+PROTOCOL_PEER = r"""
+import hashlib,json,sys
+expected=json.loads(sys.argv[1])
+print('INFO expert_slots=1256 kv_resident=131072 conversation_cache_mib=8192 conversation_cache_slots=2 conversation_cache_min_free_mib=4096')
+print('READY 262144 stop',flush=True)
+for case in expected:
+    line=sys.stdin.buffer.readline()
+    assert len(line)==case['wire_bytes'] and hashlib.sha256(line).hexdigest()==case['wire_sha256']
+    prefix,maximum,payload=line.decode().strip().split(' ',2)
+    ids=list(map(int,payload.split(',')))
+    assert prefix=='GEN' and int(maximum)==case['max_new'] and len(ids)==case['prompt']
+    for _ in range(case['max_new']): print('T 1')
+    print('DONE',case['max_new'],len(ids),0,0,'length',0,0,case['reused'],0,0,0,0,0,len(ids)-case['reused'],flush=True)
+assert sys.stdin.buffer.readline()==b'QUIT\n'
+"""
+
+
 def prepare(container):
     require(KEY not in container and not ROOT.exists(), 'fresh state plan only')
+    old = container['model_state_v1']
+    require(old['stage'] == 'failed' and not old['active'] and
+            old['failure_resolution']['forced_process_closure']['original_anchored_session_empty_before_reap'] and
+            old['failure_resolution']['forced_process_closure']['direct_child_reaped'] and
+            old['failure_resolution']['forced_process_closure']['current_exact_owned_identity_absent'],
+            'original failed model run needs explicit forced ownership closure')
     component = container['snapshot_qsa_components_v2']
     require(component['passed'] and component['complete'] and component['ownership_closed'] and
             not component['active'] and all(v['passed'] and not v['fresh_faults']
@@ -103,8 +130,13 @@ def prepare(container):
                         wire_bytes=len(wire(ids, count)), wire_sha256=hashlib.sha256(wire(ids, count)).hexdigest())
                    for ids, count, reused in requests(mode)]
         require(all(s['prompt'] + s['max_new'] + 8 <= 262144 for s in samples), 'eight-token admission reserve')
-        cases[mode] = dict(command=[engine['binary']['path'], '--serve', *args], requests=samples,
-                           wall_s=1200 if mode == 'small' else 3600,
+        if mode == 'protocol':
+            env = dict(PATH='/usr/bin:/bin', LANG='C.UTF-8', PYTHONDONTWRITEBYTECODE='1')
+            command = ['/usr/bin/python3', '-c', PROTOCOL_PEER, json.dumps(samples)]
+        else:
+            command = [engine['binary']['path'], '--serve', *args]
+        cases[mode] = dict(command=command, requests=samples, GPU_executed=mode != 'protocol',
+                           wall_s=60 if mode == 'protocol' else 1200 if mode == 'small' else 3600,
                            environment_sha256=model.fingerprint(env))
         envs[mode] = env
     record = dict(stage='prepared', source_commit=revision, input_sha256=pins,
@@ -116,7 +148,7 @@ def prepare(container):
                   active=False, passed=False, complete=False, ownership_closed=True,
                   budgets=dict(cpu_s=7200, rss_bytes=104 << 30, text_bytes=32 << 20,
                                file_bytes=32 << 20, total_bytes=512 << 20),
-                  criteria='Stop first failure;no retry. Small A/B/A+16 first,then admitted262120+16 extent,then262112/B/262128 restore. One-token requests must commit exactly prompt extent;general MTP position is prompt-1+actual verifier windows+accepted drafts,not emitted length. Require exact restore-before-reentry payload verification for all12 main QSA layers,draft and running state;actual restored prefix/read counts;valid generated IDs;normal owned exit0;unchanged models,boot,driver and no fresh fault. Do not compare generated text or cold-versus-warm arithmetic bits. Small traced device qualification belongs to the preceding same-build component suite;model checks use warning-level validation and stage progress.',
+                  criteria='Stop first failure;no retry. Host-only real owned protocol transport first,then small A/B/A+16,then admitted262120+16 extent,then253920/B/262128 restore with8208 new tokens (8207 batched rows>8192) to exercise layer-major nonzero-prefix reentry. One-token requests must commit exactly prompt extent;general MTP position is prompt-1+actual verifier windows+accepted drafts,not emitted length. Require exact restore-before-reentry payload verification for all12 main QSA layers,draft and running state;actual restored prefix/read counts;valid generated IDs;normal owned exit0;unchanged models,boot,driver and no fresh fault. Do not compare generated text or cold-versus-warm arithmetic bits. Small traced device qualification belongs to the preceding same-build component suite;model checks use warning-level validation and stage progress.',
                   retention='Keep source/recipe,request byte hashes and individual admission/position/copy/ownership/fault outcomes. Retire successful raw logs/JIT after closure. Both retained generations keep their existing named qualification/comparison consumers.',
                   speed_eligible=False, production_selected=False, model_adoption_qualified=False,
                   physical262144_qualified=False, decode_performance_qualified=False,
@@ -227,8 +259,17 @@ def evidence(text, mode, row, record, pid):
         r'^strata prefill QSA16 streamed: layer=(\d+) chunks=(\d+) rows=(\d+) pos0=(\d+) '
         r'prefix_H2D_requested_bytes=(\d+) host_publication=GPU_Q8 stage=full_logical_layer checked_drain=PASS$', body, re.M)]
     n = row['requests'][0]['prompt']
-    require(route == [(layer, (n - 2) // 8192 + 1, n - 1, 0, 0) for layer in range(3, 48, 4)],
-            'initial long-prefill route/extent differs')
+    expected = [(layer, (n - 2) // 8192 + 1, n - 1, 0, 0) for layer in range(3, 48, 4)]
+    if mode == 'restore':
+        fresh = row['requests'][-1]['prompt'] - 1 - n
+        require(fresh > 8192 and n % 4 == 0, 'RESTORE must enter long-prefill at page-aligned nonzero prefix')
+        # INT8 K/V: two256-byte heads, each with four FP16 scales (groups64).
+        requested_bytes = n * (2 * 2 * (256 + (256 // 64) * 2))
+        expected += [(layer, (fresh - 1) // 8192 + 1, fresh, n, requested_bytes)
+                     for layer in range(3, 48, 4)]
+        row['resumed_prefill'] = dict(rows=fresh, layers=12, chunks_per_layer=(fresh-1)//8192+1,
+                                      pos0=n, prefix_H2D_requested_bytes_per_layer=requested_bytes)
+    require(route == expected, 'long-prefill route/extent differs')
     row['initial_prefill'] = dict(rows=n-1, layers=12, chunks_per_layer=(n-2)//8192+1,
                                   pos0=0, prefix_H2D_requested_bytes=0)
 
@@ -253,11 +294,19 @@ def run(container, mode):
     try:
         case, b = record['cases'][mode], record['budgets']
         entry, out, err = owner.run(mode, case['command'], record['environments'][mode], P,
-            interaction=lambda io: interact(io, mode, row, record), wall=case['wall_s'], cpu=b['cpu_s'],
+            interaction=lambda io, entry: interact(io, mode, row, record), wall=case['wall_s'], cpu=b['cpu_s'],
             rss_cap=b['rss_bytes'], text_cap=b['text_bytes'], file_cap=b['file_bytes'], total_cap=b['total_bytes'])
         row['exit_code'] = entry['exit_code']
-        require(gate.native.supervision.closed(entry) and entry['exit_code'] == 0, 'normal owned model exit required')
-        evidence(err.read_text(errors='replace'), mode, row, record, entry['pid'])
+        if entry.get('error'):
+            row['owner_error'] = entry['error']
+        require(gate.native.supervision.closed(entry) and entry['exit_code'] == 0,
+                'normal owned exit required: ' + entry.get('error', str(entry['exit_code'])))
+        if mode != 'protocol':
+            evidence(err.read_text(errors='replace'), mode, row, record, entry['pid'])
+        else:
+            require(not err.stat().st_size, 'protocol peer stderr is not empty')
+            row['GPU_executed'] = False
+            row['longest_wire_bytes'] = max(c['wire_bytes'] for c in record['cases'][mode]['requests'])
         admission(original, container)
         model.model_pins(model.setup()['config'], record['model_assets'], full=mode == ORDER[-1])
         row['passed'] = True
