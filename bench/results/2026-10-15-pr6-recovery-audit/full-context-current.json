@@ -3306,7 +3306,7 @@
     "ordinary_runtime_teardown_qualified": false
   },
   "model_capacity_v5": {
-    "stage": "short_closed",
+    "stage": "full_closed",
     "source_commit": "5075244dcd56ff68eaaa89da9d4411aa84aa9eec",
     "input_sha256": {
       "data/expert-profile.bin": "8f59b4aa8873209dff11c11e37bcda9529a1335b724a1afeea37bf6388975baf",
@@ -3819,6 +3819,108 @@
           "devcoredump": false
         },
         "boot_unchanged": true
+      },
+      "full": {
+        "passed": true,
+        "complete": true,
+        "ownership_closed": true,
+        "exit_code": 0,
+        "stdout_sha256": "5a91c5b1bcc8a5a2881cf31e3218e52de7f3acf4df74673a3eb04544e95e15e4",
+        "stderr_sha256": "7c384aabeaff6ff3af88e4d1b0a0e2a89ea25df2f06ae7c32749ece241263d22",
+        "validation": {
+          "pid": 1553121,
+          "loader": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_loader.so.0.12.0",
+          "threads_before": 1,
+          "preinit": 37,
+          "config_enabled": true,
+          "first_init": true,
+          "dispatch_result": 46,
+          "output_untouched": true,
+          "retained_reference_until_exit": true,
+          "runtime_teardown_qualified": false
+        },
+        "batched_rows": 262143,
+        "output_tokens": 0,
+        "final_slot_checked": true,
+        "allocation": {
+          "tokens": 262143,
+          "chunk": 8192,
+          "dtype": "bf16",
+          "element_bytes": 2,
+          "total": 5368688640,
+          "gpu_rows": 0,
+          "gpu_bytes": 0,
+          "host_bytes": 5368688640,
+          "staging_bytes": 0,
+          "layer_cache": 1363148800,
+          "effective_moe_mode": 2,
+          "device_max_allocation_bytes": 10132807680,
+          "qsa_prefix_bytes": 0,
+          "qsa_on_the_fly_budget_fallback": true
+        },
+        "streamed_qsa": {
+          "layers": 12,
+          "chunks_per_layer": 32,
+          "rows_per_layer": 262143,
+          "prefix_H2D_requested_bytes": 0,
+          "host_publication": "GPU_Q8",
+          "checked_drain": true,
+          "measured_bus_traffic": false
+        },
+        "free_memory_mib": [
+          {
+            "mib": 3531,
+            "after": "the weights, the session and the drafter"
+          },
+          {
+            "mib": 577,
+            "after": "opening the expert cache"
+          },
+          {
+            "mib": 577,
+            "after": "the profile fill"
+          },
+          {
+            "mib": 563,
+            "after": "the R4 hit path"
+          },
+          {
+            "mib": 563,
+            "after": "the expert cache and the graphs"
+          },
+          {
+            "mib": 5,
+            "after": "the standalone prompt buffers"
+          },
+          {
+            "mib": 608,
+            "after": "the standalone prompt execution"
+          },
+          {
+            "mib": 3063,
+            "after": "releasing the standalone prompt buffers"
+          },
+          {
+            "mib": 3063,
+            "after": "the head and the prompt path"
+          },
+          {
+            "mib": 2999,
+            "after": "the verifier and the drafter's binding"
+          }
+        ],
+        "prefill_ms_observed": 686109.5,
+        "speed_eligible": false,
+        "fresh_faults": [],
+        "driver_after": {
+          "pci": "/sys/bus/pci/devices/0000:05:00.0",
+          "driver": "xe",
+          "vendor": "0x8086",
+          "device": "0xe20c",
+          "kernel": "7.0.0-38-generic",
+          "devcoredump": false
+        },
+        "boot_unchanged": true
       }
     },
     "boot": "cfda0b6a-7c13-4fe2-bdf5-8f9202770840",
@@ -3832,8 +3934,8 @@
     },
     "active": false,
     "ownership_closed": true,
-    "passed": false,
-    "complete": false,
+    "passed": true,
+    "complete": true,
     "production_selected": false,
     "model_adoption_qualified": false,
     "physical262144_qualified": false,
@@ -3860,5 +3962,28 @@
     },
     "consumers_ended": "Both closed component cohorts and normal build logs;consumed streamed-source audit and all3 research dispatch transactions. All4current fixtures,original13assets,currentengine record,full256K IDs and unresolved bank-budget failure remain.",
     "individual_outcomes_preserved": true
+  },
+  "phase_preservation_scope": {
+    "native_source": "a42a4d14362fb8d539b080483b1b5cfabd520680",
+    "selected_reference": "6e40afc1beddd059ee518617f6c1efce1da14aca",
+    "native_delta": {
+      "files": 10,
+      "insertions": 398,
+      "deletions": 37,
+      "scope": "Prefill math/planning,diagnostic-only generate CLI,manual test targets and read-only compatibility host-span query. No decode inference or allocator implementation changes."
+    },
+    "full_fill_case_passed": true,
+    "model_assets_hashed_after_cohort": 15,
+    "decode_implementation_configuration_and_placement_preserved_in_source": true,
+    "decode_performance_preservation_qualified": false,
+    "ordinary_runtime_teardown_qualified": false,
+    "production_selected": false,
+    "remaining": [
+      "Near-cap/tails and nonzero-prefix RESTORE",
+      "Failure-owner/state checks",
+      "Matched clean long-prefill and repeated strong/weak MTP decode preservation",
+      "Agent-session/task quality",
+      "70tok/s decode"
+    ]
   }
 }

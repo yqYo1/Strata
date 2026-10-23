@@ -691,14 +691,10 @@ cells and131072 resident cells. Standalone scratch accounts2588395008B,including
 an1180698624B shared region. Dense Full->Bank and MTP detach leave2039812096B
 free;the refused request restores both owners and exits with no fresh fault.
 These observations do not identify a throughput bottleneck or prove a complete
-VRAM ledger. Decode already supports streamed KV;changing its placement to
-accommodate prefill would violate phase isolation. Extend dedicated QSA16
-prefill using the existing full-logical-range one-layer staging pool, with
-explicit quantized publication to host/resident caches and correct staged
-attention bounds. Component byte/guard/lifetime checks must precede another
-model attempt. Actual262144 full-fill/last-slot completion,near-cap,RESTORE and
-failure-owner validation remain open;diagnostic success alone cannot establish
-decode preservation or adoption.
+VRAM ledger. Decode already supports streamed KV;its placement is preserved.
+Those refusals motivated the dedicated QSA16 staging/publication and corrected
+attention bounds below. Near-cap,RESTORE,failure-owner and repeated decode
+preservation still govern adoption after the separate full-fill gate.
 
 The existing streamed scratch already contains one full-logical-range QSA
 layer's K/V stage and identity page table. At262144 cells,2KV heads and256
@@ -735,8 +731,8 @@ Each QSA layer publishes on the GPU with
 zero requested prefix H2D bytes at fresh position0. Prompt owners release,
 dense/MTP owners restore,and the process exits normally without a fresh fault.
 This observed first-use synthetic diagnostic is speed-ineligible and four
-output tokens do not prove decode preservation. The262144 full-fill gate
-refuses before layer math:the fallback requires a full512-expert bank of
+output tokens do not prove decode preservation. The earlier`43587ce22`262144
+full-fill gate refused before layer math:the fallback required a full512-expert bank of
 1363148800 bytes,while the optional BF16 K/V prefix reserves538968064 bytes
 and512MiB headroom must remain. Only2039808000 bytes are free. Dense/MTP owners
 restore and the process exits1 without a fresh fault;the failed gate stays
@@ -756,13 +752,30 @@ The corrected CPU gate now passes. All five bounded GPU gates also pass:
 streamed smoke/four-case publication,resident numerical oracle,and traced
 two-case plus ten-case on-demand BF16 attention. The latter includes262144
 cells;its largest independent-oracle error/budget ratio is0.968272. Every owned
-process exits normally without a fresh fault. These qualify components only;
-the corrected short model gate above permits the predeclared full-fill attempt.
-Nonzero-prefix RESTORE and clean matched speed comparisons remain open.
+process exits normally without a fresh fault. These qualify components only.
+
+The corrected model's full-fill gate also passes:262143 batched rows through
+all48 layers,then one final token committed through the target verifier,with
+consumed position262144 and zero output. All12 QSA layers process32 chunks,
+publish GPU Q8 data and request zero fresh-prefix H2D bytes. The optional BF16
+prefix is omitted;the full512-expert bank uses1363148800 device bytes and the
+5368688640-byte BF16 residual is stored in RAM. The plan retains512MiB GPU
+headroom and respects the actual10132807680-byte allocation limit. Prompt
+owners release,dense/MTP state restores,and the owned process exits0 without a
+fresh fault or boot/driver change. All15 model-asset byte hashes match after
+the cohort. This is one checked physical full-fill case,not broad context,
+RESTORE,task-quality or decode-performance qualification. Its observed686109.5ms
+prefill is a synthetic first-use,validated capacity diagnostic and is not an
+eligible clean speed comparison.
+
+The native-source delta from selected`6e40afc1b` is confined to prefill math and
+planning,the diagnostic-only CLI,manual test targets and a read-only host-span
+query;decode inference sources and allocator implementations are unchanged.
+Actual repeated decode comparisons still determine phase preservation.
 
 Remaining model gates are repeated phase-preserving adoption evidence,
-agent-session and task quality, full physical262144 tokens including the final
-slots and tail boundaries, prefill-to-decode/session/RESTORE, and70tok/s decode.
+agent-session and task quality,near-cap/tail boundaries,
+prefill-to-decode/session/RESTORE,failure-owner checks,and70tok/s decode.
 The short-output117K proof does not close them. Niko011c9e60 functional imports
 and a hardware-tuned unmodified-upstream benchmark are still pending; curated
 coverage reports are not implemented ports. The last actual upstream check was
