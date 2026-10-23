@@ -652,9 +652,18 @@ residency or successful allocation. Its separate native configure now passes;
 the actual generator compiles with `-fsyntax-only` both with and without the
 diagnostic definition, with no diagnostics and normal owned exits. These checks
 preserve the original9853-input/13-asset proof and verify8697 installed SDK inputs.
-They do not link an engine, qualify decode preservation or cover the actual
-MKL/header/link dependency closure needed before that build. The new diagnostic
-still needs a pinned native link plan, actual262144 memory admission,last-slot commit and checked completion,
+The separate diagnostic engine now also builds from`908158833`, preserving
+the original selected13 assets. Its recipe freezes230 additional MKL
+header/config/link inputs. The actual Ninja dependency census contains1399
+files, including one generated ggml version header, with no uncovered inputs;
+the owned compile/link and dependency census exit normally. This is an
+unselected diagnostic build, not a decode-preservation or GPU/model result.
+Its executable also passes11 owned pre-device CLI checks:help exposes the
+diagnostic flag,and10 invalid requests reject at the intended early boundary.
+Actual token files cover262143/262144/262145 parsed integers;no model is loaded
+and no throughput or physical-context result follows. The full synthetic
+262144-token fixture remains only for the imminent capacity diagnostic.
+The new diagnostic still needs actual262144 memory admission,last-slot commit and checked completion,
 plus separate near-cap,RESTORE and failure-owner validation. It must not change
 the selected decode implementation or establish adoption by diagnostic success.
 
