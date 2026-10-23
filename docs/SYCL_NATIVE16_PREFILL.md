@@ -571,6 +571,12 @@ The next action is a separately committed117K actual-tail capture with session
 identity,paired-file hashes and checked completion,followed by actual-file
 host-check/full replay validation. These source/fixture results establish neither
 a locality speedup nor model adoption.
+Closed synthetic files and successful full tracing/build output are now retired:
+50 files,59423024 bytes,with a path/hash/reason manifest in the
+[smoke result](../bench/results/2026-10-15-pr6-recovery-audit/qsa-order-smoke-current.json).
+All13 selected assets,the replay binary and31 runtime inputs still qualify.
+One additional diagnostic generation remains only for the imminent actual-tail
+capture/replay;retire it when that decision closes.
 
 Remaining model gates are repeated phase-preserving adoption evidence,
 agent-session and task quality, full physical262144 tokens including the final
