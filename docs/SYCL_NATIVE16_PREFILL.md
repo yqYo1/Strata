@@ -35,11 +35,14 @@ quoted-header identities remain unavailable. Its unused179 build files
 the declared commit and2 exact test blobs from`74ebaff3`; its duplicate22811-byte
 receipt is now retired. The final dependency failure remains explicit.
 Preserve the selected fallback before any future rebuild.
-The boundary inventory also finds five other unqualified legacy engine roots
-(69 files,171887518 bytes),separate from those retired products. Their exact
-final-input/recipe review is pending before another extra generation;they are
-not executable references. The existing build result records their paths,
-receipt/binary hashes and the bounded recovery-or-retirement action.
+The five additional legacy product roots are now reviewed. Changed-TU hashes,
+seed revisions and binary-member assertions do not recover their full final
+linked source/dependency maps. Their provenance qualification remains failed,
+including the originally failed file-path comparison. All five unused engines,
+their objects/archives/maps and normal logs are retired:61 files,171605051 bytes.
+Eight unique original receipt/include-dependency files remain;no comparison
+generation is held for this failed recovery. The existing build result records
+the bounded findings and deletion manifest. No old binary was executed.
 
 The completed clean prefill comparison used six independent processes in
 retained/candidate/candidate/retained/retained/candidate order, with four fresh
