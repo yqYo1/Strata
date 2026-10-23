@@ -14,7 +14,7 @@ import check_full_context as gate
 P,B,RESULT=gate.P,gate.B,gate.RESULT
 ROOT=B/'snapshot-qsa-component-v2'
 KEY='snapshot_qsa_components_v2'
-ORDER=('host','smoke','restore-smoke','component','resident','attention-smoke','attention-component','restore-component')
+ORDER=('restore-smoke','component','resident','attention-smoke','attention-component','restore-component')
 INPUTS=sorted(set([*gate.INPUTS,'tools/sycl/check_streamed_qsa.py']))
 require=gate.native.guards.require
 digest=gate.native.build.digest
@@ -38,6 +38,27 @@ def prepare(container):
     require(engine['targets']==list(gate.native.TARGETS),
         'matching streamed same-build suite required')
     probe=gate.validation.preload_qualification()
+    # The correction changes only the snapshot fixture. Preserve the two valid
+    # individual v1 results without rerunning unchanged binaries; the failed
+    # aggregate v1 outcome and failed snapshot case remain failed.
+    previous=container['snapshot_qsa_components']
+    predecessor=container['native_snapshot_verify_build']
+    require(previous['stage']=='failed' and not previous['passed'] and previous['ownership_closed'] and
+        not previous['active'] and previous['preload']==probe and
+        previous['native_source_commit']==predecessor['source_commit'] and
+        predecessor['binary']==engine['binary'] and engine['predecessor']['inputs_recovered'] and
+        engine['predecessor']['source_commit']==predecessor['source_commit'], 'original component/build recovery differs')
+    inherited={}
+    for mode in ('host','smoke'):
+        outcome=previous['outcomes'][mode];fixture=previous['cases'][mode]['fixture']
+        require(outcome['passed'] and outcome['complete'] and outcome['ownership_closed'] and
+            outcome['fresh_faults']==[] and previous['boot']==Path('/proc/sys/kernel/random/boot_id').read_text().strip() and
+            previous['driver_before']==gate.native.guards.driver_guard() and
+            fixture in engine['fixtures'].values() and digest(fixture['path'])==fixture['sha256'],
+            'cannot inherit changed or unqualified component: '+mode)
+        inherited[mode]=dict(result_key='snapshot_qsa_components',outcome=mode,
+            native_source_commit=previous['native_source_commit'],fixture=fixture,
+            executed_in_this_cohort=False,scope='Exact unchanged fixture/engine bytes and same runtime;individual gate only,not aggregate v1 qualification.')
     revision=gate.native.build.git(P,'rev-parse','HEAD').decode().strip()
     pins=inputs(revision)
     for row in engine['fixtures'].values():require(digest(row['path'])==row['sha256'],'fixture changed')
@@ -50,30 +71,28 @@ def prepare(container):
         env.update(LD_PRELOAD=probe['library']['path'],STRATA_UR_PROBE_EXPECTED_LOADER=probe['loader']['path'])
         for name in ('UR_LOG_VALIDATION','UR_LOG_LOADER','UR_LOG_LEVEL_ZERO'):
             env[name]='level:warning;flush:warning;output:stderr'
-        if mode in ('smoke','attention-smoke','restore-smoke'):
+        if mode in ('attention-smoke','restore-smoke'):
             env.update(UR_ENABLE_LAYERS='UR_LAYER_TRACING,UR_LAYER_PARAMETER_VALIDATION',
                 UR_LOG_TRACING='level:info;flush:info;output:stderr')
         else:env.pop('UR_LOG_TRACING',None)
-        target=('prefill_expert_bank_plan_test' if mode=='host' else 'sycl_conversation_snapshot_test' if mode.startswith('restore-') else 'sycl_qsa_bf16_attention_test' if mode.startswith('attention-') else 'sycl_native16_qsa_test' if mode=='resident' else 'sycl_native16_qsa_streamed_test')
+        target=('sycl_conversation_snapshot_test' if mode.startswith('restore-') else 'sycl_qsa_bf16_attention_test' if mode.startswith('attention-') else 'sycl_native16_qsa_test' if mode=='resident' else 'sycl_native16_qsa_streamed_test')
         fixture=engine['fixtures'][target]
-        if mode=='host':
-            env.pop('LD_PRELOAD');env.pop('STRATA_UR_PROBE_EXPECTED_LOADER')
         argument='restore-smoke' if mode=='restore-smoke' else mode.removeprefix('attention-')
-        cases[mode]=dict(command=[fixture['path']]+([] if mode in ('host','resident','restore-component') else ['--'+argument]),
+        cases[mode]=dict(command=[fixture['path']]+([] if mode in ('resident','restore-component') else ['--'+argument]),
             fixture=fixture,environment_sha256=hashlib.sha256(json.dumps(env,sort_keys=True).encode()).hexdigest())
         envs[mode]=env
     record=dict(stage='prepared',source_commit=revision,input_sha256=pins,
         native_source_commit=engine['source_commit'],binary=engine['binary'],cases=cases,environments=envs,
-        preload=probe,outcomes={},active=False,passed=False,complete=False,ownership_closed=True,
+        preload=probe,reused_unchanged_gates=inherited,outcomes={},active=False,passed=False,complete=False,ownership_closed=True,
         boot=Path('/proc/sys/kernel/random/boot_id').read_text().strip(),driver_before=gate.native.guards.driver_guard(),
         budgets=dict(wall_s=180,cpu_s=360,rss_bytes=6<<30,text_bytes=16<<20,file_bytes=16<<20,total_bytes=512<<20),
-        criteria='First CPU budget fixture must keep the short prefix,permit full262143/262144 host tails only after removing optional prefix,and preserve invalid/overflow/headroom refusals and enforce the optional workspace single-allocation limit at exact/below boundaries with the SAME limit for mandatory bank/residual owners. Commit each case before the next. Tiny full-API-traced smoke first:one case,14 pre-enqueue refusals,three append chunks including checked host unwind and host->stage refill/rewind. Then parameter-validated4case suite:partial/missing/invalid/nonidentity pages,8192 row ceiling,last3cells ending262144. All stage/host codes/scales exactly match separately qualified resident append;resident slots,guards,inputs/maps and drains pass. Then unchanged resident numerical oracle passes,followed by traced two-case and parameter-validated ten-case on-demand BF16 attention fixtures,including262144 cells. Same-child activation,normal owned exits,unchanged native/controller/runtime/boot/driver,no fresh fault. First failure stops;no retry or speed/model claim.',
+        criteria='Inherit only the original passing CPU budget and traced streamed-smoke individual gates,after exact engine/fixture byte equality,same qualified loader/runtime and recoverable source proof;v1 aggregate and restore failure stay failed. First execute corrected traced restore smoke. Then4case streamed suite,unchanged resident numerical oracle,traced two-case and full ten-case BF16 attention(including262144 cells),and full snapshot suite. Stage/host/resident parity,guards,input immutability,checked drains and negative domains remain required. Commit each result before next case. Same-child activation,normal owned exits,unchanged inputs/runtime/boot/driver and no fresh fault. Stop first failure;no retry or model/speed claim.',
         retention='Retain compact individual case/activation/guard/fault/source decisions. Retire successful traces,JIT and duplicate receipts after closure;original selected13 assets remain untouched. New engine+same-build fixtures are the only unselected generation for imminent capacity-model validation.',
         model_adoption_qualified=False,physical262144_model_qualified=False,decode_performance_qualified=False,
         ordinary_runtime_teardown_qualified=False)
     record['snapshot_criteria']='Traced INT8 streamed-main/ring-draft restore smoke precedes the full snapshot suite. Require byte-exact main/draft payload and live GDN/PLE/indexer/spare-row checks;detect one-byte corruption in every saved/live domain and live resident ring plus PLE tokens,without repair,and clear all seven result fields on failure. Draft attention has no indexer:its unused fixture pooled allocation is not a saved/live domain;positive control must leave it untouched. Complete legacy snapshot growth/rewind/format and separate map invalidation checks. Preserve original v1 failure. These synthetic checks do not qualify near-cap model RESTORE,task quality or decode performance.'
     write(ROOT/'record.json',record);container[KEY]=compact(record);write(RESULT,container)
-    print('Prepared host,streamed,resident and on-demand BF16 gates;commit before execution.',flush=True)
+    print('Prepared corrected snapshot/QSA gates with verified unchanged host/smoke evidence;commit before execution.',flush=True)
 
 
 def admission(record,container):
@@ -113,21 +132,15 @@ def run(container,mode):
         stdout,stderr=out.read_text(errors='replace'),err.read_text(errors='replace')
         row.update(exit_code=entry.get('exit_code'),stdout_sha256=digest(out),stderr_sha256=digest(err))
         require(gate.native.supervision.closed(entry) and entry['exit_code']==0,'fixture exit/ownership failed')
-        row['GPU_work_submitted']=mode!='host'
-        if mode!='host':
-            row['activation']=gate.validation.preload_evidence(stderr,entry['pid'])
+        row['GPU_work_submitted']=True
+        row['activation']=gate.validation.preload_evidence(stderr,entry['pid'])
         boundary=re.search(r'^strata UR validation: .*phase=before-main[^\n]*\n',stderr,re.M)
-        if mode!='host':
-            require(boundary is not None and row['activation']['loader']==record['preload']['loader']['path'],
-                'actual fixture first-init/provider proof missing')
-        body=stderr[boundary.end():] if boundary else stderr
+        require(boundary is not None and row['activation']['loader']==record['preload']['loader']['path'],
+            'actual fixture first-init/provider proof missing')
+        body=stderr[boundary.end():]
         require(not re.search(r'UR_RESULT_ERROR_|ZE_RESULT_ERROR_|terminate called|teardown uncertain|cleanup failed',body),
             'unexpected post-canary runtime failure')
-        if mode=='host':
-            require('expert_bank_prefix_budget short_kept=PASS full262143_host_tail=PASS full262144_host_tail=PASS exact=PASS single_allocation=PASS invalid=PASS' in stdout.splitlines() and
-                stdout.splitlines()[-1]=='expert_bank_plan PASS GPU=UNRUN model=UNRUN physical262144_RESTORE=UNQUALIFIED' and not stderr, 'CPU budget oracle failed')
-            row['prefix_budget_oracle']=True
-        elif mode.startswith('restore-'):
+        if mode.startswith('restore-'):
             match=re.fullmatch(r'conversation_snapshot_test: ([0-9]+) checks passed'+
                 (r' \(restore smoke\)' if mode=='restore-smoke' else '')+r'\n',stdout)
             require(match is not None and int(match[1])>=100,'snapshot restore/corruption fixture failed')
@@ -147,7 +160,7 @@ def run(container,mode):
             row['resident_numerical_oracle']=True
         else:
             lines=stdout.splitlines();case_lines=lines[:-1]
-            require(len(case_lines)==(1 if mode=='smoke' else 4) and
+            require(len(case_lines)==4 and
                 lines[-1]=='QSA16 streamed publication PASS model=UNRUN physical262144_model_RESTORE_decode_performance=UNQUALIFIED' and
                 all(s.startswith('QSA16_streamed_case ') and s.endswith(
                     'stage_host_reference=PASS resident_map=PASS guards=PASS inputs=PASS checked_drain=PASS') for s in case_lines),
@@ -157,7 +170,6 @@ def run(container,mode):
                 row['cases'][0]['unwind']=='1','missing pre-enqueue/checked-unwind/refill checks')
             if mode=='component':require(row['cases'][-1]['cells']=='262144' and
                 row['cases'][-1]['pos0']=='262141' and row['cases'][-1]['tokens']=='3','final physical cell missing')
-            if mode=='smoke':require('urEnqueueKernelLaunch' in body,'no actual GPU kernel trace')
         admission(original,container);row['passed']=True
     except BaseException as error:row['error']=repr(error)
     finally:

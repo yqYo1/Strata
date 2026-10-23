@@ -653,7 +653,7 @@ residency or successful allocation. Its separate native configure now passes;
 the actual generator compiles with `-fsyntax-only` both with and without the
 diagnostic definition, with no diagnostics and normal owned exits. These checks
 preserve the original9853-input/13-asset proof and verify8697 installed SDK inputs.
-The current unselected diagnostic builds from`be5192efc`, preserving the
+The current unselected diagnostic builds from`a359ef938`, preserving the
 original selected13 assets and replacing only the previous diagnostic in place.
 Its recipe freezes230 additional MKL header/config/link inputs. The actual
 Ninja dependency census contains1405 files, including one predeclared generated
@@ -787,7 +787,11 @@ draft snapshot intentionally excludes (`include_index=false`). Requiring that
 unused region to fail comparison was a fixture error. The original screen remains
 failed. The corrected fixture retains every main/draft KV and running-state
 negative check, names failure domains, and checks that unused draft indexer storage
-is left untouched. New committed build and bounded gates are required. Main-authored
+is left untouched. The corrected build closes normally with1405 covered inputs;
+its engine and four unchanged fixtures retain the previous exact bytes,while the
+snapshot fixture changes. Reuse only the original passing CPU/streamed-smoke
+individual evidence after checking these identities;the failed cohort stays
+failed. The new snapshot and remaining QSA gates are pending. Main-authored
 code uses the existing Strata snapshot interfaces, with no external implementation
 copy. Qualification and decode preservation remain pending. Near-cap request
 plans must include the native/API eight-token reserve:262120 input plus16 output
