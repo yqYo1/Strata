@@ -524,6 +524,7 @@ bool moe_scratch_mixed_requested() {
 #endif
 
 struct Prefill::Impl {
+    Layout layout = Layout::legacy;
     const core::WeightTable* wt = nullptr;
     const core::LayerView::Overlay* native_dense_overlay = nullptr;
     const core::ModelGeometry* g = nullptr;
@@ -721,6 +722,20 @@ detail::ScratchQsaPlan preflight_qsa(const core::ModelGeometry& g, const core::S
 // streamed run lends the prompt path exactly the slots a resident one does (a lent expert runs on the CPU, which
 // rounds differently: without this an A/B compares two expert placements as well as two KV placements)
 bool stage_own() { static const bool v = std::getenv("STRATA_KV_STAGE_OWN") != nullptr; return v; }
+int scratch_alias_mode();
+void validate_layout(Prefill::Layout layout, int64_t chunk) {
+    if (layout != Prefill::Layout::legacy && layout != Prefill::Layout::chunk_major &&
+        layout != Prefill::Layout::layer_major)
+        throw std::invalid_argument("prefill: invalid explicit layout");
+    if (layout == Prefill::Layout::layer_major) {
+#if defined(STRATA_ENABLE_SYCL)
+        if (chunk != 8192 || scratch_alias_mode() != 1 || stage_own())
+            throw std::invalid_argument("prefill: explicit layer-major layout requires chunk8192, alias1 and no KV_STAGE_OWN");
+#else
+        throw std::invalid_argument("prefill: explicit layer-major layout requires SYCL");
+#endif
+    }
+}
 void take_stage(Alloc& o_borrowed, const core::SessionState& ss, const strata::kernels::QsaShapes& s,
                 strata::kernels::KvHostPools& st, bool& ok) {
     const core::QsaState& q0 = ss.qsa_states[ss.qsa_primary()];
@@ -995,11 +1010,12 @@ int prefill_fallback_attn_layout() {
 
 bool Prefill::init(const core::WeightTable& wt, const core::ModelGeometry& g, core::SessionState& ss,
                    core::ExpertSource* src, const core::ExpertCache* cache, const int32_t* host_res, int64_t chunk,
-                   void* stream, std::string& err, void* borrow, uint64_t borrow_bytes) {
+                   void* stream, std::string& err, void* borrow, uint64_t borrow_bytes, Layout route_layout) {
     Impl& m = *impl_;
     detail::ScratchLayoutState::Update layout(m.scratch_layout, true);
     if (!layout.started()) { err = "prefill: init requires reset scratch layout"; return false; }
     try {
+        validate_layout(route_layout, chunk);
         (void) detail::scratch_rows(chunk, g.n_expert, ss.max_cells, K);
         (void) preflight_qsa(g, ss);
     }
@@ -1032,6 +1048,7 @@ bool Prefill::init(const core::WeightTable& wt, const core::ModelGeometry& g, co
 #ifdef STRATA_ENABLE_SYCL
     m.cache_scratch_parent = cache;
 #endif
+    m.layout = route_layout;
     m.T = chunk; m.cs = (cudaStream_t) stream; m.stats = &stats_;
     if (g.n_embd != N || g.hc != HC || g.hc_lr != LR || g.n_expert < 1 || ss.k != K) {
         err = "prefill: geometry differs from the artifact's"; return false;
@@ -1279,7 +1296,8 @@ bool Prefill::carve(size_t T, void* alloc) {
     // are in layer 1, before that layer's first mixed write (also for short runs).
     m.ple_emb = m.scratch_alias ? m.emb : o.take<float>(T * N, ok);
     m.ple_norm = o.take<float>((size_t) strata::kernels::NG_HC_DIM, ok);
-    take_stage(o, ss, s, m.stage, ok);
+    m.stage = {};
+    if (m.layout != Layout::layer_major) take_stage(o, ss, s, m.stage, ok);
     m.T = (int64_t) T;
     if (mmq_plan().fallback || std::getenv("STRATA_PREFILL_MOE_COMPACT_FP16") != nullptr) {
         std::fprintf(stderr, "strata prefill: FP16 MoE compact requested=%d effective=%d, chunk=%zu, "
@@ -1291,8 +1309,10 @@ bool Prefill::carve(size_t T, void* alloc) {
     return ok;
 }
 
-bool Prefill::relayout(int64_t chunk, void* borrow, uint64_t borrow_bytes, std::string& err) {
+bool Prefill::relayout(int64_t chunk, void* borrow, uint64_t borrow_bytes, std::string& err, Layout route_layout) {
     Impl& m = *impl_;
+    try { validate_layout(route_layout, chunk); }
+    catch (const std::exception& e) { err = e.what(); return false; }
 #ifdef STRATA_ENABLE_SYCL
     if (m.cache_scratch_lease.pending()) {
         err = "prefill: relayout prohibited until cache loan refill/publication"; return false;
@@ -1325,6 +1345,7 @@ bool Prefill::relayout(int64_t chunk, void* borrow, uint64_t borrow_bytes, std::
         return false;
     }
     bool ok = true;
+    m.layout = route_layout;
     Alloc o;
     o.base = (uint8_t*) borrow;
     o.cap = borrow_bytes;
@@ -1345,6 +1366,13 @@ bool Prefill::relayout(int64_t chunk, void* borrow, uint64_t borrow_bytes, std::
 }
 
 int64_t Prefill::chunk() const { return impl_->scratch_layout.ready() ? impl_->T : 0; }
+Prefill::Layout Prefill::layout() const { return impl_->layout; }
+bool Prefill::uses_layer_major(int64_t rows) const {
+    if (!impl_->scratch_layout.ready() || rows <= impl_->T || impl_->layout == Layout::chunk_major) return false;
+    if (impl_->layout == Layout::layer_major) return true;
+    const char* v = std::getenv("STRATA_PREFILL_LAYER_MAJOR");
+    return v && !std::strcmp(v, "1");
+}
 
 #ifdef STRATA_ENABLE_SYCL
 bool Prefill::bind_cache_scratch_lease(const core::CacheScratchLease& lease, std::string& err) {
@@ -1679,7 +1707,9 @@ void Prefill::set_pinned_share(double share) { g_pinned_share = share; }
 void Prefill::set_ring_override(int slots) { g_ring_override = slots > 0 ? slots : 0; }
 double Prefill::pinned_share() { return g_pinned_share; }
 
-uint64_t Prefill::bytes_needed(const core::ModelGeometry& g, const core::SessionState& ss, int64_t chunk) {
+uint64_t Prefill::bytes_needed(const core::ModelGeometry& g, const core::SessionState& ss, int64_t chunk,
+                              Layout route_layout) {
+    validate_layout(route_layout, chunk);
     (void) detail::scratch_rows(chunk, g.n_expert, ss.max_cells, K);
     const auto qsa_plan = preflight_qsa(g, ss);
     const int alias_mode = scratch_alias_mode();
@@ -1723,7 +1753,7 @@ uint64_t Prefill::bytes_needed(const core::ModelGeometry& g, const core::Session
     if (!alias_mode) f(T * N);
     f((size_t) strata::kernels::NG_HC_DIM);
     strata::kernels::KvHostPools stage;
-    take_stage(o, ss, s, stage, ok);
+    if (route_layout != Layout::layer_major) take_stage(o, ss, s, stage, ok);
     return detail::scratch_with_slack(o.used, 8u << 20);
 }
 

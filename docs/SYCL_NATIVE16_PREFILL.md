@@ -837,6 +837,17 @@ this failed result. Resolve the prefill loan capacity/order while retaining all
 1256 decode slots and exact restore placement;do not shrink decode to make the
 prefill planner fit. The report review also requires explicit INT8/effective-QSA
 fallback and post-reentry MTP-extent evidence in the next committed plan.
+The prospective fix uses explicit chunk-major and layer-major layouts under a
+default-off serve selector. The long layout excludes the full-logical-layer KV
+stage from its expert-tail loan. It allocates that stage only inside the long
+pass, after outer decode-reader and dense/MTP retirement, and drains/frees it
+before those outer owners restore. Short inputs retain their original stage in
+the borrowed layout and keep the decode dense weights;they may use several
+legacy chunks without accidentally selecting the long pipeline. No decode slot
+is removed and the128-slot floor remains. Existing callers keep the legacy
+layout by default. This changes shared dispatch and needs a fresh build,guarded
+layout checks,model state verification and repeated decode preservation before
+adoption. Source-only reasoning does not qualify the new route.
 Detailed closed diagnostic plans and individual historical outcomes recover
 from`95e174255`;the current result retains their original statuses and archive
 references,with the live build/component/model qualifications. Successful model

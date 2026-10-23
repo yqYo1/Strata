@@ -7,6 +7,10 @@ bool Prefill::run(const int64_t* tokens, int64_t n, int64_t pos0, std::string& e
 #ifdef STRATA_ENABLE_SYCL
     if (!impl_->cache_scratch_entry(err)) return false;
 #endif
+    if (impl_->layout == Layout::chunk_major) return run_impl(tokens, n, pos0, err);
+    if (impl_->layout == Layout::layer_major && n <= impl_->T) {
+        err = "prefill: explicit long layout requires more than one chunk"; return false;
+    }
     const char* requested = std::getenv("STRATA_PREFILL_LAYER_MAJOR");
     const char* phase_switch = std::getenv("STRATA_PREFILL_PHASE_AUDIT");
     if (phase_switch && std::strcmp(phase_switch, "1") == 0 &&
@@ -19,7 +23,7 @@ bool Prefill::run(const int64_t* tokens, int64_t n, int64_t pos0, std::string& e
     }
     // Reuse only pays across chunks. Keep short chat/agent turns on the
     // original path even when long-prompt layer reuse is requested.
-    if (requested && std::strcmp(requested, "1") == 0 && impl_ && n > impl_->T) {
+    if (uses_layer_major(n)) {
 #if defined(STRATA_ENABLE_SYCL)
         // Read on the calling thread before publishing the thread-local scope.
         const char* cpu_wait_switch = std::getenv("STRATA_PREFILL_CPU_WAIT_PROFILE");
@@ -200,6 +204,33 @@ bool Prefill::run_layer_major(const int64_t* tokens, int64_t n, int64_t pos0, st
         previous_end = end;
     }
     const auto& primary = ss.qsa_states[0];
+    // The serve loan pays for the long path's chunk buffers; this separate
+    // full-logical-layer stage exists only after decode readers/weights retire.
+    // Destroy it before returning to the outer dense/MTP restoration scopes.
+    std::vector<void*> stage_owners;
+    struct StageRetirement {
+        Impl& m; std::vector<void*>& owners;
+        ~StageRetirement() noexcept {
+            if (owners.empty()) return;
+            if (cudaStreamSynchronize(m.cs) != cudaSuccess)
+                sycl_backend::cleanup_fail_stop("long-prefill KV stage completion uncertain");
+            m.stage = {};
+            for (void* p : owners)
+                if (cudaFree(p) != cudaSuccess)
+                    sycl_backend::cleanup_fail_stop("long-prefill KV stage release failed");
+        }
+    } stage_retirement{m, stage_owners};
+    if (m.layout == Layout::layer_major && primary.kv_mode == 1) {
+        if (m.stage.present()) { err = "prefill: deferred KV stage still published"; return false; }
+        (void)preflight_qsa(g, ss);
+        Alloc stage; stage.owned = &stage_owners;
+        bool ok = true;
+        take_stage(stage, ss, strata::kernels::qsa_real_shapes(), m.stage, ok);
+        if (!ok) { err = "prefill: deferred KV stage allocation failed"; return false; }
+        std::fprintf(stderr, "strata prefill: KV stage owner=long-pass bytes=%llu release=before-decode-restore\n",
+            (unsigned long long)(uint64_t(primary.n_pages) * strata::kernels::kv_block_bytes(
+                strata::kernels::qsa_real_shapes(), core::qsa_kv_format(primary))));
+    }
     for (int64_t i = 0; i < ss.qsa_alloc; ++i) {
         const auto& q = ss.qsa_states[i];
         if ((q.kv_mode != 0 && q.kv_mode != 1) || q.kv_hybrid || q.max_cells != ss.max_cells ||
