@@ -9926,7 +9926,7 @@
   },
   "qsa_samecode_equal_operand_locality_audit_20261023": {
     "classification": "decision support",
-    "status": "awaiting_native_review",
+    "status": "reviewed_decision_support",
     "schedulable_now": false,
     "prerequisite_evidence": [
       "Closed135-sample calibration at4eb6f849c with material probe resources;all raw/extra generation retired438bad7ec.",
@@ -9936,7 +9936,7 @@
     "report": "/home/yayoi/orca/workspaces/Strata/sycl/.cache/strata-research/20261023/qsa-samecode-locality-audit/report.md",
     "report_budget_bytes": 12288,
     "consumer": "Main first GPU qualification of the committed locality fixture.",
-    "next_review": "Native Luna-max review before GPU execution;retire after corrections/decision.",
+    "next_review": "After the immediate locality comparison;retire consumed report/review and transactions after scoped admission no longer consumes them.",
     "rules_revision": "f231d7810c15f19e3c0295caa406cf25f88fba59",
     "source_fixture_sha256": "72dae06f1cd761d85a46003d9a5b84452a32eeb6460ec4dc2557fc628b34fab3",
     "lifecycle": {
@@ -9958,6 +9958,19 @@
     },
     "worker_ownership_closed": true,
     "report_sha256": "c387210f7ab51982027b12352477efc7b0f20bb46ff8dc33b3bc119c9e58bfb8",
-    "report_bytes": 12109
+    "report_bytes": 12109,
+    "review": {
+      "path": ".cache/strata-research/20261023/qsa-samecode-locality-native-review.json",
+      "sha256": "cb6b9b8f627e012232c24f84d860da339fa9900e4ee78f01a1300dffeea2fff6",
+      "bytes": 5988,
+      "model": "native Codex gpt-6-luna max"
+    },
+    "main_resolution": {
+      "small_GPU_admission": true,
+      "source_identity": "Fixture/build sourcea509 remains distinct from original6e40 production-native basis;five production files match exactly. Report finding3 resolved,not a source mismatch.",
+      "safety": "Native review found no static bounds,mapping,lifetime or ordered-operand blocker;actual traced97/3/33 smoke still required.",
+      "measurement_scope": "Whole-wrapper mask-address/working-set sensitivity only;separate ID allocations and whole-prefix repacking preclude exclusive KV/cache attribution.",
+      "remaining_gates": "Actual small runtime/ISA qualification,then full mixed/full-width validation and3independent eligible clean processes. No model/decode adoption."
+    }
   }
 }
