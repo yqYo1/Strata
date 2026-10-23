@@ -7375,5 +7375,86 @@
     "error": "original effective runtime differs: layout",
     "cause": "Continuity controller omitted the seven layout-fixture-specific environment overrides while reconstructing the original environment. No recorded environment hash or original outcome changed;native/fixture identities passed before this refusal.",
     "next_action": "New committed continuity controller/attempt reconstructs the full original environment including the seven layout flags,then compares against the unchanged original hashes. No new native build or GPU qualification inherited from this failure."
+  },
+  "prefill_layout_components_v4": {
+    "kind": "unchanged-fixture-qualification-proof",
+    "stage": "closed_proof",
+    "source_commit": "358c84680786f50686cdd233c92491c9b7588e98",
+    "controller_sha256": "0a3222c0ae5b4df3e3b8a1a5f9e0a40a0387e49ed86b6c9f111d3fb4bab95ebb",
+    "native_source_commit": "1cba8a2857891862f8ed4c534d8afee3b0aeaf98",
+    "binary": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/full-context-native-v1/build/strata",
+      "bytes": 22229920,
+      "sha256": "590f8237e48139d96f77b9fd4c25ea18b1e701be147c52ecf75b7598c4284018"
+    },
+    "previous_native_source_commit": "be0d4e35b694783d3a8f0ad1803f0b12c578b76b",
+    "changed_native_inputs": [
+      "include/strata/program/diagnostic_kv_ranges.hpp",
+      "src/program/generate.cpp",
+      "tests/core/full_context_diagnostic_test.cpp",
+      "tools/sycl/build_full_context.py",
+      "tools/sycl/check_layout_source.py"
+    ],
+    "fixtures_verified": 6,
+    "individual_gate_references": [
+      {
+        "result_key": "prefill_layout_components_v2",
+        "outcome": "layout",
+        "fixture_sha256": "3743a36ae0646c8377ce7b552bd17edae26338656e865fe9dc492639fd5d9e38"
+      },
+      {
+        "result_key": "prefill_layout_components_v2",
+        "outcome": "restore-smoke",
+        "fixture_sha256": "ad273a5514409bebead223fac2960f2a46ba1d9f1f684860c0343420e1277528"
+      },
+      {
+        "result_key": "prefill_layout_components_v2",
+        "outcome": "component",
+        "fixture_sha256": "968e2cffdd60309842a62a7e3e44e0eb98b205d0594fa2ae24c732524da15a02"
+      },
+      {
+        "result_key": "prefill_layout_components_v2",
+        "outcome": "resident",
+        "fixture_sha256": "b77a1249e665998d99a3e113a7afc53729d85fe811359cc31957920ec024ad8f"
+      },
+      {
+        "result_key": "prefill_layout_components_v2",
+        "outcome": "attention-smoke",
+        "fixture_sha256": "162efd45a663c0caee4b7fafb8facd1f38f8e7d081ddf13e5ae5f85cff305acf"
+      },
+      {
+        "result_key": "prefill_layout_components_v2",
+        "outcome": "attention-component",
+        "fixture_sha256": "162efd45a663c0caee4b7fafb8facd1f38f8e7d081ddf13e5ae5f85cff305acf"
+      },
+      {
+        "result_key": "prefill_layout_components_v2",
+        "outcome": "restore-component",
+        "fixture_sha256": "ad273a5514409bebead223fac2960f2a46ba1d9f1f684860c0343420e1277528"
+      },
+      {
+        "result_key": "prefill_layout_components",
+        "outcome": "host",
+        "fixture_sha256": "be7b4c9c93ef857a8e064b6c587daaddd21e42264ee54739c73d1b6686c2fd55"
+      },
+      {
+        "result_key": "prefill_layout_components",
+        "outcome": "layout-smoke",
+        "fixture_sha256": "3743a36ae0646c8377ce7b552bd17edae26338656e865fe9dc492639fd5d9e38"
+      }
+    ],
+    "compiler_recipe_dependencies_generated_matched": true,
+    "effective_runtime_matched": true,
+    "passed": true,
+    "complete": true,
+    "active": false,
+    "ownership_closed": true,
+    "GPU_executed": false,
+    "native_model_qualification_inherited": false,
+    "model_adoption_qualified": false,
+    "physical262144_model_qualified": false,
+    "decode_performance_qualified": false,
+    "ordinary_runtime_teardown_qualified": false,
+    "scope": "Only exact six fixture bytes and their9 already-executed component gates are reused. Changed generator and diagnostic model behavior require new actual model gates. Original cohort statuses remain unchanged;no new GPU execution or speed result."
   }
 }

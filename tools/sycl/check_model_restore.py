@@ -17,9 +17,9 @@ import full_context_model as model
 
 gate = model.gate
 P, B, RESULT = model.P, model.B, model.RESULT
-ROOT = B / 'full-context-state-v3'
-KEY = 'model_state_v3'
-ORDER = ('protocol', 'small', 'near-cap', 'restore')
+ROOT = B / 'full-context-state-v4'
+KEY = 'model_state_v4'
+ORDER = ('protocol', 'small', 'checkpoint', 'near-cap', 'restore')
 INPUTS = sorted(set([*model.INPUTS, 'tools/sycl/check_model_restore.py']))
 require, digest, write = model.require, model.digest, model.write
 
@@ -38,13 +38,17 @@ def inputs(revision):
 
 def requests(mode):
     if mode == 'protocol':
-        return [r for case in ('small', 'near-cap', 'restore') for r in requests(case)]
-    n = 16385 if mode == 'small' else 253920
+        return [r for case in ('small', 'checkpoint', 'near-cap', 'restore') for r in requests(case)]
+    if mode == 'checkpoint':
+        a = [i % 4096 for i in range(32769)]
+        return [(a,1,0),([128+i for i in range(33)],1,0),
+                (a[:16384]+[256+i%16 for i in range(33)],1,16384)]
+    n = 16385 if mode == 'small' else 253919
     a = [i % 4096 for i in range(n)]
     if mode == 'near-cap':
         return [([i % 4096 for i in range(262120)], 16, 0)]
     return [(a, 1, 0), ([128 + i for i in range(33)], 1, 0),
-            (a + [256 + i % 16 for i in range(16 if mode == 'small' else 8208)], 1, n)]
+            (a + [256 + i % 16 for i in range(16 if mode == 'small' else 8209)], 1, n)]
 
 
 def wire(ids, count):
@@ -72,23 +76,33 @@ assert sys.stdin.buffer.readline()==b'QUIT\n'
 
 def prepare(container):
     require(KEY not in container and not ROOT.exists(), 'fresh state plan only')
-    old = container['model_state_v2']
-    require(old['stage'] == 'failed' and not old['active'] and
-            old['failure_resolution']['process_closure']['anchored_session_empty_before_reap'] and
-            old['failure_resolution']['process_closure']['direct_child_reaped'] and
-            old['failure_resolution']['process_closure']['current_exact_owned_identity_absent'],
-            'original failed model run needs explicit forced ownership closure')
-    component = container['prefill_layout_components_v2']
-    require(component['passed'] and component['complete'] and component['ownership_closed'] and
-            not component['active'] and all(v['passed'] and not v['fresh_faults']
-                for v in component['outcomes'].values()) and
-            set(component['outcomes']) == set(__import__('check_streamed_qsa').ORDER),
-            'closed same-build streamed/attention/snapshot component gates required')
+    old = container['model_state_v3']
+    require(old['stage']=='closed_for_checkpoint_and_diagnostic_correction' and
+            not old['active'] and old['ownership_closed'] and not old['complete'] and
+            set(old['outcomes'])=={'protocol','small','near-cap'} and
+            all(r['passed'] and r['ownership_closed'] and r['fresh_faults']==[] for r in old['outcomes'].values()),
+            'preserve original partial model cohort and its three passes')
+    component = container['prefill_layout_components_v4']
+    require(component['kind']=='unchanged-fixture-qualification-proof' and component['stage']=='closed_proof' and
+            component['passed'] and component['complete'] and component['ownership_closed'] and
+            not component['active'] and not component['GPU_executed'] and component['fixtures_verified']==6 and
+            len(component['individual_gate_references'])==9 and
+            not component['native_model_qualification_inherited'], 'exact component continuity proof required')
     engine = gate.engine()
-    require(component['native_source_commit'] == engine['source_commit'] and
-            component['binary'] == engine['binary'], 'component/native generation mismatch')
+    require(component['native_source_commit']==engine['source_commit'] and component['binary']==engine['binary'],
+            'component proof/native generation mismatch')
     base = model.setup()
-    model.model_pins(base['config'], base['models'], full=True)
+    require(old['source_commit']=='8b52357f4076af921175bbe51a4e932f8dfa19d1' and
+            old['model_assets']==base['models'] and len(base['models'])==15,
+            'original full model digest proof differs')
+    for name in ('tools/sycl/check_model_restore.py','tools/sycl/full_context_model.py'):
+        raw=gate.native.build.git(P,'show',old['source_commit']+':'+name)
+        require(hashlib.sha256(raw).hexdigest()==old['input_sha256'][name],
+                'original digest-controller source unrecoverable')
+    # That exact committed prepare hashed all15 assets before writing its plan.
+    # Same dev/inode/size/mtime/ctime and inventory retain those byte hashes;
+    # the final RESTORE gate hashes the entire assets again.
+    model.model_pins(base['config'], base['models'])
     original_args = base['config']['args']
     pack = Path(original_args[original_args.index('--pack') + 1])
     vocab = set(json.loads((pack / 'tokenizer/vocab.json').read_text()).values())
@@ -141,21 +155,25 @@ def prepare(container):
             env = dict(PATH='/usr/bin:/bin', LANG='C.UTF-8', PYTHONDONTWRITEBYTECODE='1')
             command = ['/usr/bin/python3', '-c', PROTOCOL_PEER, json.dumps(samples)]
         else:
-            command = [engine['binary']['path'], '--serve', *args]
+            case_args=list(args)
+            if mode=='checkpoint': case_args[case_args.index('--prompt-cache-every')+1]='16384'
+            command = [engine['binary']['path'], '--serve', *case_args]
         cases[mode] = dict(command=command, requests=samples, GPU_executed=mode != 'protocol',
-                           wall_s=60 if mode == 'protocol' else 1200 if mode == 'small' else 3600,
+                           wall_s=60 if mode == 'protocol' else 1200 if mode == 'small' else 1800 if mode=='checkpoint' else 3600,
                            environment_sha256=model.fingerprint(env))
         envs[mode] = env
     record = dict(stage='prepared', source_commit=revision, input_sha256=pins,
                   native_source_commit=engine['source_commit'], binary=engine['binary'], vocab_size=len(vocab),
                   selected_original=gate.native.source.baseline()[1], cases=cases, environments=envs,
                   setup_reference=base['reference'], model_assets=base['models'], preload=probe,
+                  model_digest_reuse=dict(result_key='model_state_v3',prepare_source_commit=old['source_commit'],
+                      files=15,dev_inode_size_mtime_ctime_matched=True,final_full_hash_required=True),
                   boot=Path('/proc/sys/kernel/random/boot_id').read_text().strip(),
                   driver_before=gate.native.guards.driver_guard(), outcomes={},
                   active=False, passed=False, complete=False, ownership_closed=True,
                   budgets=dict(cpu_s=7200, rss_bytes=104 << 30, text_bytes=32 << 20,
                                file_bytes=32 << 20, total_bytes=512 << 20),
-                  criteria='Stop first failure;no retry. Host-only real owned protocol transport first,then small A/B/A+16,then admitted262120+16 extent,then253920/B/262128 restore with8208 new tokens (8207 batched rows>8192) to exercise layer-major nonzero-prefix reentry. One-token requests must commit exactly prompt extent;general MTP position is prompt-1+actual verifier windows+accepted drafts,not emitted length. Select explicit short/long layouts without changing1256-slot decode placement. Disable intermediate prefix checkpoints explicitly with prompt-cache-every0 while retaining prompt-cache6 and live conversation parking;this diagnostic does not qualify the checkpoint-enabled production fallback. Require INT8 startup,byte-exact restoration of all1256 original expert slots including the unlent prefix and both residency-table publications,exact MTP callback row/position conservation,and long-stage lifetime inside retired dense owners. QSA may use either its declared admitted ordered-prefix path or its previously component-qualified on-the-fly budget fallback;record and require matching actual arithmetic,never treat the routes as interchangeable speed samples. Require exact restore-before-reentry payload verification for all12 main QSA layers,draft and running state;actual restored prefix/read counts;valid generated IDs;normal owned exit0;unchanged models,boot,driver and no fresh fault. Do not compare generated text or cold-versus-warm arithmetic bits. Small traced device qualification belongs to the preceding same-build component suite;model checks use warning-level validation and stage progress.',
+                  criteria='Stop first failure;no retry. Host-only owned protocol first with all10 exact request wires;then small A/B/A+16 with no periodic checkpoints;then checkpoint-enabled32769/B/prefix16384+33 to require a parked checkpoint hit at16384,all prefix callbacks,Full dense weights and chunk-major ordering without long stage/dense/MTP withdrawal;then262120+16 near-cap;then nonaligned253919/B/262128 RESTORE with8209 new tokens (8208 batched rows>8192). Require exact1256-slot payload/membership and residency tables after each request;actual initialized loan capacity>=need and callbacks fit its actual chunk. Live snapshot payload read-back covers all12 main layers,draft and running state. A parked checkpoint test verifies full outgoing live snapshot before its shorter running-state rewind;it is not a model-level byte comparison of that shorter checkpoint. Require MTP-aware committed positions,actual prefix reuse/read counts and valid IDs. Original page/head/cell FNV order is qualified by134+9459 CPU cases;new generator still needs these fresh model runs. QSA may use only its declared ordered-prefix arithmetic or previously qualified on-the-fly budget fallback,record actual route. Normal owned exit0,unchanged15 model identities plus full hashes after final RESTORE,boot/driver and no fresh fault. No generated-text identity,clean speed,task/public API,physical262144 or decode-performance claim.',
                   retention='Keep source/recipe,request byte hashes and individual admission/position/copy/ownership/fault outcomes. Retire successful raw logs/JIT after closure. Both retained generations keep their existing named qualification/comparison consumers.',
                   speed_eligible=False, production_selected=False, model_adoption_qualified=False,
                   physical262144_qualified=False, decode_performance_qualified=False,
@@ -279,11 +297,18 @@ def evidence(text, mode, row, record, pid):
                 'decode residency publication incomplete: '+phase)
         actual['decode_cache_restore']=dict(slots=1256,payload_bytes=2575206400,
             lent=int(payloads[0][2]),same_slots=True,payload_match=True)
-        long = sum(cells)>8192
+        layouts=re.findall(r'^strata loan audit: phase=layout chunk=(\d+) first=(\d+) slots=1256 bytes=(\d+) need=(\d+) lent=(\d+) mask_match=1$',frame,re.M)
+        require(len(layouts)==1,'actual bound loan layout missing')
+        chunk,first,capacity,needed,lent=map(int,layouts[0])
+        require(chunk in (256,512,1024,2048,4096,8192) and first>=128 and capacity>=needed and
+                lent==int(payloads[0][2]) and all(n<=chunk for n in cells),'callback/actual-tail admission mismatch')
+        actual['prefill_loan']=dict(chunk=chunk,first=first,capacity_bytes=capacity,needed_bytes=needed)
+        long = mode!='checkpoint' and sum(cells)>8192
         owners=re.findall(r'^strata prefill: KV stage owner=long-pass bytes=(\d+) release=before-decode-restore$',frame,re.M)
         require(owners == (['276824064'] if long else []), 'long/short stage-owner selection differs')
         if not long:
-            require('phase=bank ' not in frame and 'phase=before-detach ' not in frame,
+            require('phase=bank ' not in frame and 'phase=before-detach ' not in frame and
+                    re.search(r'^strata prefill dense: phase=restored residency=Full activations=0 ',frame,re.M),
                     'short input withdrew decode dense/MTP weights')
             row['effective_prefill'].append(dict(path='chunk-major',dense_weights='Full',stage='borrowed'))
             continue
@@ -314,29 +339,34 @@ def evidence(text, mode, row, record, pid):
         require(not copies and not restores, 'fresh near-cap request unexpectedly restored')
     else:
         n = len(requests(mode)[0][0])
-        require(restores == [n] and len(copies) == 1, 'actual parking/restore not exercised')
+        require(restores == [16384 if mode=='checkpoint' else n] and len(copies) == 1, 'actual parking/restore not exercised')
         proof = copies[0]
         require(proof.get('result') == 'PASS' and int(proof.get('upto', -1)) == n and
                 int(proof.get('main_layers', -1)) == 12 and
                 all(int(proof.get(k, 0)) > 0 for k in ('main_bytes','draft_bytes','running_bytes')),
                 'complete restore payload verification missing')
+        expected_kind='checkpoint' if mode=='checkpoint' else 'live'
+        require(re.findall(r'^strata serve: conversation cache: restored \d+ tokens \((live|checkpoint)\)',body,re.M)==[expected_kind],
+                'wrong parked-state resume kind')
+        row['resume_kind']=expected_kind
         require('conversation cache: skip parking' not in body, 'cache budget/RAM skipped required parking')
     route = [tuple(map(int, m)) for m in re.findall(
         r'^strata prefill QSA16 streamed: layer=(\d+) chunks=(\d+) rows=(\d+) pos0=(\d+) '
         r'prefix_H2D_requested_bytes=(\d+) host_publication=GPU_Q8 stage=full_logical_layer checked_drain=PASS$', body, re.M)]
     n = row['requests'][0]['prompt']
-    expected = [(layer, (n - 2) // 8192 + 1, n - 1, 0, 0) for layer in range(3, 48, 4)]
+    expected = [] if mode=='checkpoint' else [(layer, (n - 2) // 8192 + 1, n - 1, 0, 0) for layer in range(3, 48, 4)]
     if mode == 'restore':
         fresh = row['requests'][-1]['prompt'] - 1 - n
-        require(fresh > 8192 and n % 4 == 0, 'RESTORE must enter long-prefill at page-aligned nonzero prefix')
+        require(fresh > 8192 and n % 4 == 3, 'RESTORE must enter long-prefill at a nonaligned nonzero prefix')
         # INT8 K/V: two256-byte heads, each with four FP16 scales (groups64).
-        requested_bytes = n * (2 * 2 * (256 + (256 // 64) * 2))
+        requested_bytes = ((n+3)//4*4) * (2 * 2 * (256 + (256 // 64) * 2))
         expected += [(layer, (fresh - 1) // 8192 + 1, fresh, n, requested_bytes)
                      for layer in range(3, 48, 4)]
         row['resumed_prefill'] = dict(rows=fresh, layers=12, chunks_per_layer=(fresh-1)//8192+1,
                                       pos0=n, prefix_H2D_requested_bytes_per_layer=requested_bytes)
     require(route == expected, 'long-prefill route/extent differs')
-    row['initial_prefill'] = dict(rows=n-1, layers=12, chunks_per_layer=(n-2)//8192+1,
+    actual_chunk=row['requests'][0]['prefill_loan']['chunk']
+    row['initial_prefill'] = dict(rows=n-1, layers=12, chunks_per_layer=(n-2)//actual_chunk+1,
                                   pos0=0, prefix_H2D_requested_bytes=0)
 
 

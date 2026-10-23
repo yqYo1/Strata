@@ -905,10 +905,21 @@ ranges emit one span;consumer failure and invalid/overflow domains refuse.
 GNU C++17 compilation and the fixture close normally with135 actual include
 inputs pinned. Native source`1cba8a285` now builds normally as the unselected candidate
 `590f8237e48139d96f77b9fd4c25ea18b1e701be147c52ecf75b7598c4284018`.
-All six native fixture executables will be checked against their qualified
-predecessor bytes,compiler/dependency/runtime and effective environment before
-reusing individual component evidence. The changed generator still needs fresh
-model gates;this is no inference throughput or adoption result. Reported free bytes
+All six native fixture executables match their qualified predecessor bytes.
+Compiler,recipe,dependency/generated inputs and all9 original case environments
+also match. The first continuity proof refused because its reconstruction
+omitted7 layout-specific variables;that refusal remains failed. The corrected
+proof matches the unchanged original environment hashes and reuses only the
+already-executed component evidence,without submitting new GPU work. No native
+model qualification is inherited. The new model plan gates host protocol,
+small live restore,periodic-checkpoint reentry,near-cap generation and nonaligned
+long RESTORE before any performance or adoption claim. A32769-token branch is
+parked before a second prompt;the third request matches only its16384 checkpoint.
+The long restore uses253919 parked positions and8208 fresh batched rows,covering
+a partial prefix page and two8192-row chunks. Periodic checkpoints are enabled
+only in their own process. Byte hashes of15 model files are reused from the
+original fully hashed8b52357 preparation only with unchanged dev/inode/size/time
+identities,and are recomputed after the final RESTORE gate. Reported free bytes
 after the small test's three cache refills are2,287,865,856/120,377,344/50,708,480.
 Their owner attribution is unresolved;preserve these admission observations
 for the next long reentry,without claiming physical residency or decode impact.
