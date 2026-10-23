@@ -8,6 +8,7 @@ import unittest
 
 sys.path.insert(0, str(Path(__file__).resolve().parent / 'sycl'))
 from qsa_selection_capture import analyze
+from capture_qsa_selection import route_frame
 
 
 def capture(mutate=None):
@@ -35,6 +36,8 @@ class CaptureTests(unittest.TestCase):
         self.assertEqual(union['union_cells'], 2051)
         self.assertEqual(union['separate_cells'], 2051 * 16)
         self.assertEqual(union['union_fraction'], 1 / 16)
+        self.assertFalse(result['replay']['retained'])
+        self.assertIsNone(result['replay']['consumer'])
 
     def test_duplicate_rejected(self):
         with self.assertRaisesRegex(ValueError, 'unique'):
@@ -74,6 +77,28 @@ class CaptureTests(unittest.TestCase):
             records.append(struct.pack('<4i', layer, 0, 11, 2051) + ids.tobytes())
         result = self.check(b''.join(records) + capture())
         self.assertEqual(result['warmup_records'], 12)
+
+
+class RequestFramingTests(unittest.TestCase):
+    def test_warmup_markers_cannot_satisfy_long_route(self):
+        text = ('strata prefill: layer-major candidate, tokens=32767 chunk=8192 '
+                'residual_dtype=bf16 residual_element_bytes=2 residual_total=671068160 '
+                'residual_gpu_rows=32767 residual_gpu=671068160 residual_host=0 residual_staging=0 x\n'
+                'strata serve: prompt warmup\n'
+                'strata serve: prompt long\n')
+        with self.assertRaisesRegex(RuntimeError, 'long-request GPU'):
+            route_frame(text, 32767)
+
+    def test_wrong_long_residual_extent_rejected(self):
+        text = ('strata serve: prompt warmup\n'
+                'strata prefill: layer-major candidate, tokens=32767 chunk=8192 '
+                'residual_dtype=bf16 residual_element_bytes=2 residual_total=671068159 '
+                'residual_gpu_rows=32767 residual_gpu=671068159 residual_host=0 residual_staging=0 x\n'
+                'strata MoE window configuration: requested_mode=10 effective_mode=10 '
+                'maximum_rows=32767 mixed_fp16_bytes=0\n'
+                'strata serve: prompt long\n')
+        with self.assertRaisesRegex(RuntimeError, 'long-request GPU'):
+            route_frame(text, 32767)
 
 
 if __name__ == '__main__': unittest.main()

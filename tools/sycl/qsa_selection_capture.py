@@ -1,4 +1,4 @@
-"""Read the native QSA dump; validate every selected ID, retain one replay input.
+"""Read the native QSA dump; validate every selected ID and optional replay input.
 
 Main-authored under the repository LICENSE. Logical unions are reuse opportunity,
 not cache hits, physical traffic, bandwidth or additive avoidable time.
@@ -72,6 +72,7 @@ def analyze(path, prompt_tokens, warmup_tokens, replay_path=None):
         captured_first=pos, captured_queries=tail, cap=2051, long_layers=long_rows,
         warmup_records=len(warm_rows), all_selected_IDs_validated=True,
         replay=dict(bytes=len(replay), sha256=hashlib.sha256(replay).hexdigest(),
-            layer=0, consumer='Immediate QSA production/gather/staging replay design using these exact IDs.'),
+            layer=0, retained=replay_path is not None,
+            consumer='Explicit caller replay input.' if replay_path is not None else None),
         limits='Final chunk only, one prompt/process. Deterministic sampled logical16query unions '
                'are reuse opportunities, not physical traffic,cache hits or model speed. Query/KV values not captured.')
