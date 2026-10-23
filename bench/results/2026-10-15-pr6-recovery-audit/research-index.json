@@ -10238,64 +10238,6 @@
     "retention_review": "/home/yayoi/orca/workspaces/Strata/sycl/.cache/strata-research/20261024/full-context-state-qualification/retention-review.json",
     "retention_review_sha256": "285169711bfaa384f035089055ad2b518be9f68a0efaf4f7b28950c3b72db9a7"
   },
-  "explicit_layout_ownership_audit_20261024": {
-    "classification": "decision_support",
-    "status": "review_complete_main_corrected_false_positive_model_pending",
-    "schedulable_now": false,
-    "source_commit": "fe568c3b5",
-    "native_source_commit": "be0d4e35b694783d3a8f0ad1803f0b12c578b76b",
-    "source_sha256": {
-      "include/strata/prefill/prefill.hpp": "8b7f2117b7eae566f4a527947f9f7c3855022ddaa282430713f7d60c8a246c83",
-      "src/prefill/prefill.cpp": "942c352c4197b296313e54d63243b62dcfabfae1ab79d04b2893ba3aec6c6686",
-      "src/prefill/layer_major.inc": "a0019a68132c50d18805fcf3914a92eb326f9fa55a73d51e4bf85cc5d479afbb",
-      "src/program/generate.cpp": "9cee537ce0f10d609dab793ffb5dac35a97c8670baf8abb7dc591ead5ede987c",
-      "src/sycl/compat.cpp": "7e88d1684bf1d6f386a739a798f7e0b5eebf90fc92ce03e577536a1d08d5ed03",
-      "include/strata/sycl/checked_cleanup.hpp": "c2c9bdee7b3a6eac9fb9ae9d965cec237b2971a83ec7a3a8f9ff274b3e53f683",
-      "include/strata/core/cache_scratch_lease.hpp": "71e0c67d49cacb055b51e54db34afe8d0533029413a72303bbec4ad0de92e494",
-      "include/strata/prefill/scratch_allocation.hpp": "b7001b50bbf9576f750133047762f0dcf6a28c8b601a472a4503c3f2bf9290bd",
-      "tools/sycl/check_model_restore.py": "2dfc1a6604df4c1dce7d058020a1723b47775cacffde15cd9c127b1e1ff07b79",
-      "tools/sycl/check_streamed_qsa.py": "4408482a9606abe4e50f6cc49bd0055cc006022b7684631df0d27174c688e25b"
-    },
-    "prerequisites": [
-      {
-        "met": true,
-        "evidence": "New explicit-layout code compiled with1406covered inputs. Same-build layout fixture passed real8192/256 rebind,guard and Q8 price checks;source route corrected,remaining component checks serialized. Concrete new lifetime/dispatch/model-evidence question exists before the small model."
-      }
-    ],
-    "report": "/home/yayoi/orca/workspaces/Strata/sycl/.cache/strata-research/20261024/explicit-layout-ownership-audit/report.md",
-    "budget_bytes": 12288,
-    "next_review": "After committed controller/protocol and small model state gate;retire consumed source audit once useful findings/corrections are preserved.",
-    "run": "run_12fa11537288",
-    "terminal": "term_7f6c26ce-57ce-4765-9b2b-a10ca8c4957a",
-    "incarnation": "1be3a103-cce0-4280-bfab-2f8bd9dfdba8",
-    "model_observed": "GPT-6-Luna high",
-    "report_root_writable_at_launch": true,
-    "worker_ownership_closed": true,
-    "task": "task_dafe32f97445",
-    "dispatch": "ctx_ec34c5cb472b",
-    "turn_start": "unobserved;inspect existing handles,no retry",
-    "report_sha256": "83ff331afb761b204001f7120a9fb00b993a4894d2b1f82f9cda396b7b249896",
-    "report_bytes": 12185,
-    "worker_done_accepted": true,
-    "terminal_closed_verified": true,
-    "delivery_processed_and_acked": true,
-    "native_review": ".cache/strata-research/20261024/explicit-layout-ownership-audit/native-review.json",
-    "native_review_sha256": "22005b504e0f3d54265f4b6b248a6831675bc88dc989a3b9635df5c62fad4f5e",
-    "native_review_bytes": 6086,
-    "main_corrections": [
-      {
-        "finding": "Review claims third A+suffix expects reused=0",
-        "status": "false_positive",
-        "evidence": "Pinned check_model_restore.py SHA2dfc1a6604df4c1dce7d058020a1723b47775cacffde15cd9c127b1e1ff07b79 already returns third tuple (a+suffix,1,n);prepare and interact both consume that n. Original review is preserved;no request/wire change or hash refresh is justified."
-      },
-      {
-        "finding": "Intermediate prefix checkpoints conflict with dedicated long pass",
-        "status": "prospective_controller_fix",
-        "evidence": "generate.cpp defaults prompt_cache_every16384 and sets requires_prefix_checkpoints when prompt_cache>0/every>0;layer_major.inc disables window_on for such callbacks. Set diagnostic prompt-cache-every0 with prompt-cache6/live parking retained. Checkpoint-enabled production fallback remains unqualified and needs separate handling before adoption."
-      }
-    ],
-    "accepted_scope": "No source-level stage-lifetime/counter-carve defect identified;short tail uses actual capacity;short-read0 supplies batched callbacks. Source review only,not model/state/performance qualification."
-  },
   "checkpoint_compatible_prefill_source_20261024": {
     "classification": "decision_support",
     "status": "native_reviewed_checkpoint_route_unqualified",

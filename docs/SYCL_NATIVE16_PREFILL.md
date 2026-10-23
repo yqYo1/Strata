@@ -837,7 +837,7 @@ this failed result. Resolve the prefill loan capacity/order while retaining all
 1256 decode slots and exact restore placement;do not shrink decode to make the
 prefill planner fit. The report review also requires explicit INT8/effective-QSA
 fallback and post-reentry MTP-extent evidence in the next committed plan.
-The prospective fix uses explicit chunk-major and layer-major layouts under a
+The unselected implementation uses explicit chunk-major and layer-major layouts under a
 default-off serve selector. The long layout excludes the full-logical-layer KV
 stage from its expert-tail loan. It allocates that stage only inside the long
 pass, after outer decode-reader and dense/MTP retirement, and drains/frees it
@@ -845,9 +845,9 @@ before those outer owners restore. Short inputs retain their original stage in
 the borrowed layout and keep the decode dense weights;they may use several
 legacy chunks without accidentally selecting the long pipeline. No decode slot
 is removed and the128-slot floor remains. Existing callers keep the legacy
-layout by default. This changes shared dispatch and needs a fresh build,guarded
-layout checks,model state verification and repeated decode preservation before
-adoption. Source-only reasoning does not qualify the new route.
+layout by default. This changes shared dispatch;the qualification below does
+not establish decode preservation or adoption. Source-only reasoning does not
+qualify the new route.
 The initial CPU budget and traced scratch smoke pass with normal closure and
 no fresh fault. Source review corrected the short planner to compare against
 the actual initial tail capacity,which can be less than the128-slot-floor tail.
@@ -858,7 +858,7 @@ explicit layout/rebind guards,113-check traced restore smoke,4 streamed Q8
 cases,resident numerical oracle,2-case traced and10-case full BF16 attention
 through262144 cells,and2869-check snapshot/restore suite. All close normally
 with no fresh fault. These are component results,not model/decode qualification.
-The prospective v3 model diagnostic explicitly sets`--prompt-cache-every 0`
+The v3 model diagnostic explicitly sets`--prompt-cache-every 0`
 while retaining`--prompt-cache 6` and live conversation parking. The default
 16384 interval requires chunk-major intermediate snapshots and otherwise
 refuses dedicated layer-major execution. The checkpoint-enabled production
@@ -898,9 +898,12 @@ Their owner attribution is unresolved;preserve these admission observations
 for the next long reentry,without claiming physical residency or decode impact.
 Detailed closed diagnostic plans and individual historical outcomes recover
 from`95e174255`;the current result retains their original statuses and archive
-references,with the live build/component/model qualifications. Successful model
-output,JIT,duplicate receipts,reproducible ID files and the resolved old budget
-diagnostic are retired. The original13 and current6 native assets still verify.
+references,with the live build/component/model qualifications. Successful closed model/component
+output,JIT,duplicate receipts,reproducible ID files and consumed source audits
+are retired after their useful outcomes and corrections are committed. All20
+selected/candidate native assets verify. The checkpoint compatibility audit
+remains for its concrete source fix;unresolved owner/provenance holds remain
+separate from those closed raw artifacts.
 
 Remaining model gates are repeated phase-preserving adoption evidence,
 agent-session and task quality,near-cap/tail boundaries,
