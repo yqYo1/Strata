@@ -10,18 +10,25 @@ that affects decode has a separation defect; a prefill gain cannot compensate
 for it. Preserve the current decode implementation, configuration and 1256-slot
 placement while fixing the prefill path.
 
-The selected continuation build is the original phase-scoped
-`6e40afc1beddd059ee518617f6c1efce1da14aca`, restored to its original native
-sources and artifact paths. The engine and all12 required same-build fixtures
+The selected continuation binary is the original phase-scoped
+`6e40afc1beddd059ee518617f6c1efce1da14aca`, at its original artifact paths.
+The engine and all12 required same-build fixtures
 match their original hashes. All9853 original project/dependency inputs and the
 recipe were recovered from Git. The original full build receipt and18-group
 component result were restored byte for byte. No recompilation or new GPU
-validation was needed. The only inventoried source differences are two
+validation was needed for that restoration. Its qualification allowed two
 uncompiled Python provenance tests and an explicitly reviewed retention-only
 controller change. Admission pins the controller's original/current hashes;
 future changes cannot silently reuse this exception. All26 host provenance and
 refusal tests passed. See the
 [build selection and identity proof](../bench/results/2026-10-15-pr6-recovery-audit/native-gdn-engine-build.json).
+
+The current worktree additionally contains an unadopted CLI diagnostic in
+`generate.cpp`, enabled only by `STRATA_SYCL_FULL_CONTEXT_DIAGNOSTIC` at compile
+time. The selected binary has not been rebuilt. The original current-worktree
+admission correctly rejects this changed native source; do not refresh its
+hashes or extend the restoration exception. The diagnostic source has its own
+pinned source gate and must earn independent native and model qualification.
 
 The rejected362 package's copy/transition prototypes, unused targets, modes and
 controllers are removed; recover them at`44c7c919c`. Its build products and the
@@ -625,8 +632,23 @@ current full-context report and corrected review remain only for the next
 CLI-only consume-prompt diagnostic. The selected binary has no zero-output
 full-fill entrypoint. A reviewer initially misread the SYCL commit flag's
 conditional scope;Main checked the original/current source and corrected that
-false positive. No verifier change is required for it. The new diagnostic still
-needs actual262144 memory admission,last-slot commit and checked completion,
+false positive. No verifier change is required for it. The diagnostic-only
+`--consume-prompt` path now has a committed CPU gate:134 admission and terminal
+boundary cases pass with normal owned compile/test exits. It requires an actual
+262144-token file, zero output, the native preset, spec4, suffix0 and chunk8192;
+the final one-token verifier window must commit and complete without generating
+output. These host checks do not compile the whole generator or execute a GPU.
+See the [current diagnostic gate](../bench/results/2026-10-15-pr6-recovery-audit/full-context-current.json).
+
+At262143 batched rows and width10240, the BF16 residual alone needs5368688640
+bytes. The source owner ledger corrects the two float PLE host buffers to
+335544320 bytes each,671088640 bytes combined. These host bytes are distinct
+from VRAM. Actual free memory, largest single allocation, layer/workspace/KV
+owners and their lifetimes still need runtime admission evidence. CLI
+`Prefill::reset()` calls `release()` before the final verifier, including checked
+stream drains and owner release; this source fact does not prove runtime
+residency or successful allocation. The new diagnostic still needs native
+configure/syntax/build, actual262144 memory admission,last-slot commit and checked completion,
 plus separate near-cap,RESTORE and failure-owner validation. It must not change
 the selected decode implementation or establish adoption by diagnostic success.
 
