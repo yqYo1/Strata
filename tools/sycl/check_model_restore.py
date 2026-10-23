@@ -17,8 +17,8 @@ import full_context_model as model
 
 gate = model.gate
 P, B, RESULT = model.P, model.B, model.RESULT
-ROOT = B / 'full-context-state-v2'
-KEY = 'model_state_v2'
+ROOT = B / 'full-context-state-v3'
+KEY = 'model_state_v3'
 ORDER = ('protocol', 'small', 'near-cap', 'restore')
 INPUTS = sorted(set([*model.INPUTS, 'tools/sycl/check_model_restore.py']))
 require, digest, write = model.require, model.digest, model.write
@@ -56,7 +56,7 @@ def wire(ids, count):
 PROTOCOL_PEER = r"""
 import hashlib,json,sys
 expected=json.loads(sys.argv[1])
-print('INFO expert_slots=1256 kv_resident=131072 conversation_cache_mib=8192 conversation_cache_slots=2 conversation_cache_min_free_mib=4096')
+print('INFO kv=int8 expert_slots=1256 kv_resident=131072 conversation_cache_mib=8192 conversation_cache_slots=2 conversation_cache_min_free_mib=4096')
 print('READY 262144 stop',flush=True)
 for case in expected:
     line=sys.stdin.buffer.readline()
@@ -72,13 +72,13 @@ assert sys.stdin.buffer.readline()==b'QUIT\n'
 
 def prepare(container):
     require(KEY not in container and not ROOT.exists(), 'fresh state plan only')
-    old = container['model_state_v1']
+    old = container['model_state_v2']
     require(old['stage'] == 'failed' and not old['active'] and
-            old['failure_resolution']['forced_process_closure']['original_anchored_session_empty_before_reap'] and
-            old['failure_resolution']['forced_process_closure']['direct_child_reaped'] and
-            old['failure_resolution']['forced_process_closure']['current_exact_owned_identity_absent'],
+            old['failure_resolution']['process_closure']['anchored_session_empty_before_reap'] and
+            old['failure_resolution']['process_closure']['direct_child_reaped'] and
+            old['failure_resolution']['process_closure']['current_exact_owned_identity_absent'],
             'original failed model run needs explicit forced ownership closure')
-    component = container['snapshot_qsa_components_v2']
+    component = container['prefill_layout_components']
     require(component['passed'] and component['complete'] and component['ownership_closed'] and
             not component['active'] and all(v['passed'] and not v['fresh_faults']
                 for v in component['outcomes'].values()) and
@@ -119,7 +119,8 @@ def prepare(container):
         env.update(TMPDIR=str(root / 'tmp'), XDG_CACHE_HOME=str(root / 'cache'), CUDA_MODULE_LOADING='EAGER',
                    LD_PRELOAD=probe['library']['path'], STRATA_UR_PROBE_EXPECTED_LOADER=probe['loader']['path'],
                    UR_ENABLE_LAYERS='UR_LAYER_PARAMETER_VALIDATION', STRATA_TRACE='1',
-                   STRATA_STATE_HASH='1', STRATA_SNAPSHOT_VERIFY='1', STRATA_DECODE_TIMING='1')
+                   STRATA_STATE_HASH='1', STRATA_SNAPSHOT_VERIFY='1', STRATA_DECODE_TIMING='1',
+                   STRATA_SYCL_PREFILL_SEPARATE_LAYOUT='1')
         env.pop('UR_LOG_TRACING', None)
         for name in ('UR_LOG_VALIDATION', 'UR_LOG_LOADER', 'UR_LOG_LEVEL_ZERO'):
             env[name] = 'level:warning;flush:warning;output:stderr'
@@ -148,7 +149,7 @@ def prepare(container):
                   active=False, passed=False, complete=False, ownership_closed=True,
                   budgets=dict(cpu_s=7200, rss_bytes=104 << 30, text_bytes=32 << 20,
                                file_bytes=32 << 20, total_bytes=512 << 20),
-                  criteria='Stop first failure;no retry. Host-only real owned protocol transport first,then small A/B/A+16,then admitted262120+16 extent,then253920/B/262128 restore with8208 new tokens (8207 batched rows>8192) to exercise layer-major nonzero-prefix reentry. One-token requests must commit exactly prompt extent;general MTP position is prompt-1+actual verifier windows+accepted drafts,not emitted length. Require exact restore-before-reentry payload verification for all12 main QSA layers,draft and running state;actual restored prefix/read counts;valid generated IDs;normal owned exit0;unchanged models,boot,driver and no fresh fault. Do not compare generated text or cold-versus-warm arithmetic bits. Small traced device qualification belongs to the preceding same-build component suite;model checks use warning-level validation and stage progress.',
+                  criteria='Stop first failure;no retry. Host-only real owned protocol transport first,then small A/B/A+16,then admitted262120+16 extent,then253920/B/262128 restore with8208 new tokens (8207 batched rows>8192) to exercise layer-major nonzero-prefix reentry. One-token requests must commit exactly prompt extent;general MTP position is prompt-1+actual verifier windows+accepted drafts,not emitted length. Select explicit short/long layouts without changing1256-slot decode placement. Require INT8 startup,exact MTP callback row/position conservation,and long-stage lifetime inside retired dense owners. QSA may use either its declared admitted ordered-prefix path or its previously component-qualified on-the-fly budget fallback;record and require matching actual arithmetic,never treat the routes as interchangeable speed samples. Require exact restore-before-reentry payload verification for all12 main QSA layers,draft and running state;actual restored prefix/read counts;valid generated IDs;normal owned exit0;unchanged models,boot,driver and no fresh fault. Do not compare generated text or cold-versus-warm arithmetic bits. Small traced device qualification belongs to the preceding same-build component suite;model checks use warning-level validation and stage progress.',
                   retention='Keep source/recipe,request byte hashes and individual admission/position/copy/ownership/fault outcomes. Retire successful raw logs/JIT after closure. Both retained generations keep their existing named qualification/comparison consumers.',
                   speed_eligible=False, production_selected=False, model_adoption_qualified=False,
                   physical262144_qualified=False, decode_performance_qualified=False,
@@ -186,7 +187,7 @@ def interact(io, mode, row, record):
             break
     row['info'] = {k: info[k] for k in ('context','kv','kv_resident','expert_slots','spec','mtp_max',
         'lookup','pool_workers','conversation_cache_mib','conversation_cache_slots','conversation_cache_min_free_mib') if k in info}
-    require(info.get('expert_slots') == '1256' and info.get('kv_resident') == '131072' and
+    require(info.get('kv') == 'int8' and info.get('expert_slots') == '1256' and info.get('kv_resident') == '131072' and
             info.get('conversation_cache_mib') == '8192' and info.get('conversation_cache_slots') == '2' and
             info.get('conversation_cache_min_free_mib') == '4096', 'actual model/cache admission differs')
     row['requests'] = []
@@ -198,10 +199,12 @@ def interact(io, mode, row, record):
         # existing Interactive input cap; all chunks form one exact GEN request.
         for offset in range(0, len(payload), 256 << 10):
             io.send(payload[offset:offset + (256 << 10)])
-        tokens = []
+        tokens, publications = [], []
         while True:
             line = io.line(1800)
             require(not line.startswith('ERR'), line)
+            if line.startswith('PP '):
+                publications.append(int(line.split()[1]))
             if line.startswith('T '):
                 tokens.append(int(line.split()[1]))
             if line.startswith('DONE '):
@@ -211,6 +214,12 @@ def interact(io, mode, row, record):
                               accepted=int(fields[5]), offered=int(fields[6]), reused=int(fields[7]),
                               read=int(fields[13]), ids=tokens)
                 row['requests'].append(actual)
+                if mode != 'protocol':
+                    require(publications and all(reused < a <= len(ids)-1 for a in publications) and
+                            all(a < b for a,b in zip(publications,publications[1:])) and publications[-1] == len(ids)-1,
+                            'prompt callback positions incomplete')
+                    actual['publications'] = dict(count=len(publications),last=publications[-1],
+                        sha256=model.fingerprint(publications))
                 require(actual['generated'] == len(tokens) == count and actual['prompt'] == len(ids) and
                         actual['reused'] == reused and actual['read'] == len(ids) - reused and
                         0 <= actual['accepted'] <= actual['offered'] and all(0 <= t < record['vocab_size'] for t in tokens) and
@@ -240,6 +249,47 @@ def evidence(text, mode, row, record, pid):
         require(actual['generated'] != 1 or (position == n and nw == 1 and actual['accepted'] == 0),
                 'one-token request position changed')
         actual.update(state_L=position, windows=nw, state_sha256=model.fingerprint(state), ple_prev=state['ple_prev'])
+    frames = re.split(r'^strata serve: STATE_HASH L=.*$', body, flags=re.M)
+    require(len(frames) == len(row['requests'])+1, 'request state frames incomplete')
+    row['effective_prefill'] = []
+    for frame, actual in zip(frames, row['requests']):
+        draft = re.findall(r'^strata serve: DRAFT_PREFILL path=(batched|token) mode=([012]) cells=(\d+)$', frame, re.M)
+        cells = [int(m[2]) for m in draft]
+        require(cells and all(0 < n <= 8192 for n in cells) and
+                sum(cells) == actual['prompt']-actual['reused']-1, 'MTP prompt coverage is incomplete')
+        ends=[]; pos=actual['reused']
+        for n in cells:
+            pos+=n; ends.append(pos)
+        require(actual['publications'] == dict(count=len(ends),last=ends[-1],sha256=model.fingerprint(ends)),
+                'MTP callbacks differ from reported committed positions')
+        actual['draft_prefill'] = dict(rows=sum(cells),callbacks=len(cells),end=pos,
+            modes=sorted(set(int(m[1]) for m in draft)),paths=sorted(set(m[0] for m in draft)))
+        long = sum(cells)>8192
+        owners=re.findall(r'^strata prefill: KV stage owner=long-pass bytes=(\d+) release=before-decode-restore$',frame,re.M)
+        require(owners == (['276824064'] if long else []), 'long/short stage-owner selection differs')
+        if not long:
+            require('phase=bank ' not in frame and 'phase=before-detach ' not in frame,
+                    'short input withdrew decode dense/MTP weights')
+            row['effective_prefill'].append(dict(path='chunk-major',dense_weights='Full',stage='borrowed'))
+            continue
+        require(frame.index('phase=bank ') < frame.index('KV stage owner=long-pass') < frame.rindex('phase=restored '),
+                'long stage lies outside retired dense-owner interval')
+        budgets=re.findall(r'^strata prefill QSA budget: requested_prefix_bytes=(\d+) admitted_prefix_bytes=(\d+) '
+            r'fallback_bf16_on_the_fly=([01]) free_gpu_bytes=(\d+) headroom_bytes=(\d+)$',frame,re.M)
+        arithmetic=re.findall(r'^strata prefill: QSA BF16 operands, FP32 online state/accumulation; '
+            r'KV=(\S+) transient_bytes=(\d+); source=resident-Mode0 score_pitch=(\d+) operand_layout=(\S+) softmax=(\S+)$',frame,re.M)
+        require(len(budgets)==len(arithmetic)==1,'effective QSA math/budget missing')
+        requested,admitted,fallback,free,headroom=map(int,budgets[0])
+        expected=(actual['prompt']-1+3)//4*4*2056
+        require(requested==expected and headroom==512<<20 and
+                ((not fallback and admitted==requested) or (fallback and admitted==0)), 'QSA prefix admission differs')
+        expected_math=(('on-the-fly','0','32','row-major','serial') if fallback else
+                       ('active-logical-prefix',str(admitted),'33','row-major','parallel-exp-ascending-sum'))
+        require(arithmetic[0]==expected_math, 'unplanned QSA arithmetic/fallback')
+        row['effective_prefill'].append(dict(path='layer-major',stage_owner_bytes=276824064,
+            requested_prefix_bytes=requested,admitted_prefix_bytes=admitted,
+            qualified_budget_fallback=bool(fallback),arithmetic=list(arithmetic[0]),
+            free_before_bank_bytes=free,headroom_bytes=headroom))
     copies = [dict(re.findall(r'(\w+)=([^ ]+)', s))
               for s in re.findall(r'^strata serve: SNAPSHOT_VERIFY .*$', body, re.M)]
     restores = [int(s) for s in re.findall(r'^strata serve: conversation cache: restored (\d+) tokens', body, re.M)]

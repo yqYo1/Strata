@@ -4732,7 +4732,7 @@
     ]
   },
   "prefill_layout_components": {
-    "stage": "prepared",
+    "stage": "host_closed",
     "source_commit": "e07dea5cc59305736290706347ef4eab34ba9bf2",
     "input_sha256": {
       "include/strata/program/full_context_diagnostic.hpp": "d4abd9516913df9c0672adfea079e036223c8454ae79fadacd6f209432f04621",
@@ -4882,7 +4882,39 @@
       "runtime_teardown_qualified": false
     },
     "reused_unchanged_gates": {},
-    "outcomes": {},
+    "outcomes": {
+      "host": {
+        "passed": true,
+        "complete": true,
+        "ownership_closed": true,
+        "exit_code": 0,
+        "stdout_sha256": "bc4d7a23b53c9952471b1371f2cfbcf0e54226c83c337a38d4d3d2ccb298a553",
+        "stderr_sha256": "7c4dcdf5d6946cf761d49c41688af93a9aca7d1ebc5f2e80b4a8021d822fa8cd",
+        "GPU_work_submitted": false,
+        "activation": {
+          "pid": 1904190,
+          "loader": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_loader.so.0.12.0",
+          "threads_before": 1,
+          "preinit": 37,
+          "config_enabled": true,
+          "first_init": true,
+          "dispatch_result": 46,
+          "output_untouched": true,
+          "retained_reference_until_exit": true,
+          "runtime_teardown_qualified": false
+        },
+        "fresh_faults": [],
+        "driver_after": {
+          "pci": "/sys/bus/pci/devices/0000:05:00.0",
+          "driver": "xe",
+          "vendor": "0x8086",
+          "device": "0xe20c",
+          "kernel": "7.0.0-38-generic",
+          "devcoredump": false
+        },
+        "boot_unchanged": true
+      }
+    },
     "active": false,
     "passed": false,
     "complete": false,
