@@ -10057,7 +10057,7 @@
     "report_budget_bytes": 12288,
     "rules_revision": "44c4096429f91759d4aa2c56d6893c95324b1255",
     "consumer": "Main's pre-run memory-admission gate for the CLI-only 262144-token diagnostic; source ledger only, not physical admission or model qualification.",
-    "next_review": "Before actual diagnostic link/allocation admission. Keep only report and corrected review for that imminent consumer;retire consumed transactions and curation packets after their decision is pushed.",
+    "next_review": "At actual native diagnostic link/allocation admission:retire source reports after useful ownership/admission facts are recorded;no research transactions remain for this closed worker.",
     "scope_curation_sha256": "be6e48fe9cb0fccbbb39f2e2aef55385e829e62955ee9ce55e3b22ea34c5c31b",
     "run_id": "run_432552edd149",
     "task_id": "task_7ba585f625b8",
@@ -10084,7 +10084,17 @@
       "prefill_reset": "src/prefill/prefill.cpp:762 reset calls release(),which performs checked stream retirement then frees owned buffers. The selected CLI calls prefill.reset() after its batched prompt and before the final verifier.",
       "extent": "CLI n_batched=n_prompt-1 with prefill_until0,so exact262144 input plans262143 prompt rows then one final first-window token. Runtime extent/placement remain unmeasured."
     },
-    "prior_native_review_sha256": "45dbed581a3e840e9e8ed8d18447d3c6b3f2b1437c5007b661aed52e897c7948"
+    "prior_native_review_sha256": "45dbed581a3e840e9e8ed8d18447d3c6b3f2b1437c5007b661aed52e897c7948",
+    "transaction_retirement": {
+      "complete": true,
+      "files": 19,
+      "bytes": 48857,
+      "manifest": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/closed-context-research-retirement-20261023.jsonl",
+        "sha256": "eff1a113b206b0d79709f0817e09fb3bd20c131ef57f9c6da4fc944abc090866"
+      },
+      "retained": "Original report and corrected native review only for imminent allocation-admission decision;no launch/spec/ready/ack/correction-packet retained."
+    }
   },
   "ple_layer1_boundary_scope": {
     "classification": "decision support",
