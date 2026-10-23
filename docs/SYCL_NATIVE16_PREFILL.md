@@ -582,9 +582,13 @@ match;no fresh fault occurred. The records conserve180 successful prefix-pack
 submissions and23463552 source-level logical rows;these are neither measured
 physical traffic nor completion time. Capture logging/readback clocks are not
 clean speed evidence. The immediate actual-mask replay remains unrun:its source
-review blocks acceptance of a zero timer-pair median. Correct and review that
-downstream gate while preserving the original capture/source binding before
-committing a cohort plan. Each order must improve the sum of isolated layer
+review identified acceptance of a zero timer-pair median. The new mandatory
+`qualify_qsa_order_resolution.py` entrypoint preserves the original capture,
+controller and native inputs,and requires a positive timer median on all540
+clean samples before performance advancement. Five CPU acceptance/refusal tests
+pass and the source-conformance review qualifies only that entrypoint. Original
+native/controller PASS fields remain execution evidence only. Commit the reviewed
+cohort plan before launch. Each order must improve the sum of isolated layer
 medians by at least3% in every process,with no layer/process regression above5%,
 to justify a subsequent GPU-local implementation experiment. CPU order building
 and these fixture results establish neither a locality model speedup nor adoption.

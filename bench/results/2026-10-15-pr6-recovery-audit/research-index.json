@@ -10052,23 +10052,26 @@
   },
   "actual_qsa_order_cohort_controller_audit_20261023": {
     "classification": "decision support",
-    "status": "reviewed_source_blocked_positive_timer_gate",
+    "status": "reviewed_strict_entrypoint_eligible",
     "schedulable_now": true,
     "prerequisite_evidence": [
-      "Implemented actual-capture producer9642729c5;source review pending,8CPU binding tests passed.",
-      "Replay7bb passes14parser+GPU97/3/33smoke;new full cohort controller/sample tests implemented and committed before dispatch."
+      "Closed117489-input capture22049ab28;actual12-layer512-query pair/session binding and host check pass;all15model hashes and runtime/source unchanged.",
+      "Original replay source7bb and controller3ba remain unchanged;14parser+traced smoke qualified.",
+      "Committed additive strict gatec77968449 passes5CPU acceptance/refusal tests and native source-conformance review."
     ],
     "source_sha256": {
       "tools/sycl/measure_qsa_order_replay.py": "128cf8aac19d34070d6befd6641c6002374de9d059fa87bf94875c0faef6c1a7",
-      "tests/core/test_qsa_order_samples.py": "f1f0c3fc1bd397d98bfa3d5a5ac58151ab62e5a8543482b62e638dcc70d454ca"
+      "tests/core/test_qsa_order_samples.py": "f1f0c3fc1bd397d98bfa3d5a5ac58151ab62e5a8543482b62e638dcc70d454ca",
+      "tools/sycl/qualify_qsa_order_resolution.py": "42376237f66a450b74a968b2102c6421e413260219688f7dda355eca3b512bd3",
+      "tests/core/test_qsa_order_resolution.py": "b5332f4dd891d59265b46a5c359d42c5389a548b2f63deb0bef5396c52a7d160"
     },
     "report": "/home/yayoi/orca/workspaces/Strata/sycl/.cache/strata-research/20261023/actual-qsa-order-cohort-audit/report.md",
     "report_budget_bytes": 12288,
     "question": "Audit capture/session/hash admission,full/clean separation,sample conservation and mechanism criteria before actual-mask cohort.",
-    "consumer": "Main future actual-mask12-layer validation and540timing samples;actual capture must close first.",
-    "next_review": "Review minimal downstream timing-gate correction preserving exact original capture/source binding;then CPU refusal tests and fresh source gate before cohort launch.",
+    "consumer": "Main immediate actual-mask12-layer validation and540timing samples through qualified entrypoint;closed capture provides exact pair/session binding.",
+    "next_review": "Prepare/commit/run strict entrypoint once;evaluate prospective3%/5% mechanism gates only after positive540sample resolution gate. Retire capture/diagnostic generation at decision.",
     "rules_revision": "9642729c5",
-    "source_gate_passed": false,
+    "source_gate_passed": true,
     "run_id": "run_432552edd149",
     "task_id": "task_bc6e71001e4c",
     "dispatch_id": "ctx_8539b9c3b71c",
@@ -10082,7 +10085,7 @@
     "release": "retained_external_processAction_none",
     "terminal_closed_verified": true,
     "delivery_processed_and_acked": true,
-    "main_digest": "Source review blocks zero timer-pair median admission in native and Python gates;all other scoped source invariants pass. Actual capture closed successfully;do not prepare/launch cohort before gate correction and new reviewed committed plan.",
+    "main_digest": "Source gate passes only through the additive mandatory qualification entrypoint:all540clean timer-pair medians must be positive before advancement. Original native/controller PASS is execution-only;capture and original180-source/native bindings remain unchanged.",
     "review": {
       "report": {
         "path": "/home/yayoi/orca/workspaces/Strata/sycl/.cache/strata-research/20261023/actual-qsa-order-cohort-audit/report.md",
@@ -10091,7 +10094,17 @@
       "native_review": {
         "path": "/home/yayoi/orca/workspaces/Strata/sycl/.cache/strata-research/20261023/actual-qsa-order-cohort-audit/native-review.json",
         "sha256": "f73870f5851d8430f99f0c1b4590a8b0f5fe17d4ba943a86b2ef224f7d373b1a"
+      },
+      "design_review": {
+        "path": "/home/yayoi/orca/workspaces/Strata/sycl/.cache/strata-research/20261023/actual-qsa-order-cohort-audit/source-update-review.json",
+        "sha256": "cfcba00ff2b626df7c281cc4e6650ff90219fa9d981b2a502372cab31f42d842"
+      },
+      "qualification_review": {
+        "path": "/home/yayoi/orca/workspaces/Strata/sycl/.cache/strata-research/20261023/actual-qsa-order-cohort-audit/qualification-review.json",
+        "sha256": "8e6e7ddd4aeaac0f038ced09be0c9df74621eaf078bfbcab7c417fd6258c9d43"
       }
-    }
+    },
+    "qualified_entrypoint": "tools/sycl/qualify_qsa_order_resolution.py",
+    "host_resolution_gate_tests_passed": 5
   }
 }
