@@ -770,10 +770,13 @@ RESTORE,task-quality or decode-performance qualification. Its observed686109.5ms
 prefill is a synthetic first-use,validated capacity diagnostic and is not an
 eligible clean speed comparison.
 
-The native-source delta from selected`6e40afc1b` is confined to prefill math and
-planning,the diagnostic-only CLI,manual test targets and a read-only host-span
-query;decode inference sources and allocator implementations are unchanged.
-Actual repeated decode comparisons still determine phase preservation.
+The native-source delta from selected`6e40afc1b` contains prefill math/planning,
+the diagnostic-only CLI,manual test targets,a read-only host-span query,and
+out-of-line snapshot verification called by the existing optional restore
+diagnostic. Decode inference math,restore copies and allocator implementations
+are unchanged. The shared generator/core compilation and restored state still
+require repeated matched decode comparisons;source boundaries alone do not
+establish phase preservation. A slower decode result remains a separation defect.
 
 The new compiled diagnostic adds read-only verification of a restored session's
 main and draft KV payloads, GDN/PLE/indexer state, spare pooled rows and PLE token
