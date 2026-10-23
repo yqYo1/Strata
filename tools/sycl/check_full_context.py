@@ -41,6 +41,8 @@ def engine():
     native.check_inputs(record)
     native.guards.require(native.mkl_inputs() == record['external_inputs'] and
         native.build.digest(record['binary']['path']) == record['binary']['sha256'], 'native engine inputs changed')
+    for name, sha256 in record['actual_dependency_closure']['generated_sha256'].items():
+        native.guards.require(native.build.digest(name) == sha256, 'generated native input changed')
     return record
 
 
@@ -69,7 +71,12 @@ def cases(binary):
 
 
 def summary(record):
-    return {k: v for k, v in record.items() if k not in ('environment', 'commands')}
+    compact = {k: v for k, v in record.items() if k not in ('environment', 'commands', 'cases', 'outcomes')}
+    compact['case_names'] = [case['name'] for case in record['cases']]
+    if 'outcomes' in record:
+        compact['outcomes'] = [{k: v for k, v in row.items() if not k.endswith('_sha256')}
+                               for row in record['outcomes']]
+    return compact
 
 
 def prepare(container):
