@@ -922,8 +922,14 @@ a partial prefix page and two8192-row chunks. Periodic checkpoints are enabled
 only in their own process. Byte hashes of15 model files are reused from the
 original fully hashed8b52357 preparation only with unchanged dev/inode/size/time
 identities,and are recomputed after the final RESTORE gate. The v4 host transport
-passes all10 exact request wires with normal exit0 and no GPU execution. Fresh
-small/checkpoint/near-cap/nonaligned RESTORE native model gates remain pending. Reported free bytes
+passes all10 exact request wires with normal exit0 and no GPU execution. Its fresh
+small A/B/A+16 native model gate also passes with normal exit0 and no fresh fault.
+All1256 decode payloads and both residency publications match after each request;
+the16385-position live snapshot restores all12 main layers,draft and running state.
+The initial long pass uses two8192-row chunks per QSA layer;both shorter requests
+use the admitted256-row chunk-major layout with Full dense weights. Checkpoint,
+near-cap and nonaligned RESTORE model gates remain pending;decode performance
+is still unqualified. Reported free bytes
 after the small test's three cache refills are2,287,865,856/120,377,344/50,708,480.
 Their owner attribution is unresolved;preserve these admission observations
 for the next long reentry,without claiming physical residency or decode impact.
