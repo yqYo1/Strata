@@ -838,7 +838,7 @@
     }
   },
   "model_capacity_v1": {
-    "stage": "prepared",
+    "stage": "failed",
     "source_commit": "9ff5527505665296af1db23f65f5db8148354069",
     "input_sha256": {
       "data/expert-profile.bin": "8f59b4aa8873209dff11c11e37bcda9529a1335b724a1afeea37bf6388975baf",
@@ -1194,7 +1194,27 @@
         "wall_s": 2400
       }
     },
-    "outcomes": {},
+    "outcomes": {
+      "short": {
+        "passed": false,
+        "complete": false,
+        "ownership_closed": true,
+        "exit_code": 2,
+        "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stderr_sha256": "9fd91083f4f7fbad3dfb74ea889610360b3ffffa8c8a4940a7eaaf70c31eccec",
+        "error": "RuntimeError('native model exit/ownership failed')",
+        "fresh_faults": [],
+        "driver_after": {
+          "pci": "/sys/bus/pci/devices/0000:05:00.0",
+          "driver": "xe",
+          "vendor": "0x8086",
+          "device": "0xe20c",
+          "kernel": "7.0.0-38-generic",
+          "devcoredump": false
+        },
+        "boot_unchanged": true
+      }
+    },
     "boot": "cfda0b6a-7c13-4fe2-bdf5-8f9202770840",
     "driver_before": {
       "pci": "/sys/bus/pci/devices/0000:05:00.0",
