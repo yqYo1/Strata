@@ -1124,13 +1124,13 @@
       "-t",
       "deps"
     ],
-    "stage": "prepared_streamed",
-    "passed": false,
-    "complete": false,
+    "stage": "closed_link",
+    "passed": true,
+    "complete": true,
     "active": false,
     "ownership_closed": true,
     "GPU_executed": false,
-    "native_engine_built": false,
+    "native_engine_built": true,
     "production_selected": false,
     "model_adoption_qualified": false,
     "physical262144_qualified": false,
@@ -1144,6 +1144,32 @@
     },
     "criteria": "Exact committed native/controller/compiler/dependency/SDK/MKL/generated inputs;owned configure/build/dependency census exit0. Engine and both same-build fixtures hashed;actual dependency closure has zero uncovered files and only predeclared generated headers. No GPU execution or selection.",
     "retention": "Reuse the existing unselected comparison build directory;no third engine generation. Retain original selected13 assets. New generation is only for imminent traced streamed-Q8,full component/resident-oracle and capacity-model gates;retire normal build output after closure.",
+    "binary": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/full-context-native-v1/build/strata",
+      "bytes": 22211544,
+      "sha256": "a1d0b2774c835ec3352da2231c7cc0059611ac14dd9451391aa1691b48965334"
+    },
+    "fixtures": {
+      "sycl_native16_qsa_streamed_test": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/full-context-native-v1/build/sycl_native16_qsa_streamed_test",
+        "bytes": 1935656,
+        "sha256": "968e2cffdd60309842a62a7e3e44e0eb98b205d0594fa2ae24c732524da15a02"
+      },
+      "sycl_native16_qsa_test": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/full-context-native-v1/build/sycl_native16_qsa_test",
+        "bytes": 1877672,
+        "sha256": "b77a1249e665998d99a3e113a7afc53729d85fe811359cc31957920ec024ad8f"
+      }
+    },
+    "actual_dependency_closure": {
+      "files": 1402,
+      "generated_files": 1,
+      "generated_sha256": {
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/full-context-native-v1/build/ggml/src/ggml-version.h": "9e45eee8391971371922f51b66925184609125d467c444744599f680b78edc92"
+      },
+      "uncovered_files": 0,
+      "uncovered": []
+    },
     "sources": [
       {
         "root": "/home/yayoi/orca/workspaces/Strata/sycl",
