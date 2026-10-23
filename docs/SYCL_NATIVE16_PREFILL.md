@@ -572,8 +572,19 @@ request/session to the paired hashes and final512-row extent,then requires the
 actual-file host check and checked completion. Its8 CPU request/header/prefix
 conservation tests pass. The committed`measure_qsa_order_replay.py` consumer
 plans one full12-layer validation and three clean processes/540 timing samples;
-its7 CPU sample-admission tests pass. Both source reviews remain pending before
-the model/cohort launches. Each order must improve the sum of isolated layer
+its7 CPU sample-admission tests pass. The producer source review passed,then
+one official117489-input request closed normally with24 thinking tokens. The
+[capture result](../bench/results/2026-10-15-pr6-recovery-audit/qsa-current-tail-capture.json)
+binds the native PID/session,request/journal/config and paired file hashes to
+12 layers of512 actual queries at116976..117487. The actual-file CPU parser
+passes. All15 model hashes,selected13 assets and runtime/source inputs still
+match;no fresh fault occurred. The records conserve180 successful prefix-pack
+submissions and23463552 source-level logical rows;these are neither measured
+physical traffic nor completion time. Capture logging/readback clocks are not
+clean speed evidence. The immediate actual-mask replay remains unrun:its source
+review blocks acceptance of a zero timer-pair median. Correct and review that
+downstream gate while preserving the original capture/source binding before
+committing a cohort plan. Each order must improve the sum of isolated layer
 medians by at least3% in every process,with no layer/process regression above5%,
 to justify a subsequent GPU-local implementation experiment. CPU order building
 and these fixture results establish neither a locality model speedup nor adoption.
