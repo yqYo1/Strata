@@ -6052,16 +6052,20 @@ int main(int argc, char** argv) {
                     return 1;
                 }
                 if (std::getenv("STRATA_SNAPSHOT_VERIFY") != nullptr) {
-                    uint64_t draft_hash = 0;
-                    if (!strata::core::conversation_kv_verify(incoming->kv.back(), mtp.kv_state(), g,
-                            int64_t(incoming->live.ids.size()), false, draft_hash, err)) {
-                        std::printf("ERR verifying restored draft KV: %s\n", err.c_str());
+                    strata::core::ConversationVerification checked;
+                    if (!strata::core::conversation_snapshot_verify(*incoming, ss, g, mtp.kv_state(), checked, err)) {
+                        std::printf("ERR verifying restored session: %s\n", err.c_str());
                         return 1;
                     }
-                    std::fprintf(stderr, "strata serve: SNAPSHOT_VERIFY draft=%016llx cells=%lld mode=%d source=%s resident=%lld\n",
-                                 (unsigned long long) draft_hash, (long long) incoming->kv.back().cells,
+                    std::fprintf(stderr, "strata serve: SNAPSHOT_VERIFY draft=%016llx cells=%lld mode=%d source=%s resident=%lld "
+                                         "main=%016llx main_layers=%zu main_bytes=%zu draft_bytes=%zu "
+                                         "running=%016llx running_bytes=%zu upto=%zu result=PASS\n",
+                                 (unsigned long long) checked.draft_hash, (long long) incoming->kv.back().cells,
                                  mtp.kv_state().kv_mode, "ram",
-                                 (long long) (mtp.kv_state().n_slots * strata::kernels::qsa_real_shapes().page_size));
+                                 (long long) (mtp.kv_state().n_slots * strata::kernels::qsa_real_shapes().page_size),
+                                 (unsigned long long) checked.main_hash, checked.main_layers, checked.main_bytes,
+                                 checked.draft_bytes, (unsigned long long) checked.running_hash, checked.running_bytes,
+                                 incoming->live.ids.size());
                 }
                 live = std::move(incoming->live.ids);
                 live_imgs = std::move(incoming->live.imgs);

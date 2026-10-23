@@ -776,8 +776,10 @@ Actual repeated decode comparisons still determine phase preservation.
 
 The next unbuilt diagnostic adds read-only verification of a restored session's
 main and draft KV payloads, GDN/PLE/indexer state, spare pooled rows and PLE token
-window. The existing `STRATA_SNAPSHOT_VERIFY` branch currently checks draft KV
-only; do not infer main-state restoration from its marker. A synthetic fixture
+window. The compiled A42 `STRATA_SNAPSHOT_VERIFY` branch checks draft KV only;
+the new unbuilt source extends that same diagnostic branch before any restored
+metadata is moved or prefix processing begins. Do not infer main-state
+restoration from the older marker. A synthetic fixture
 will corrupt each state domain and require rejection without repair. Main-authored
 code uses the existing Strata snapshot interfaces, with no external implementation
 copy. Qualification and decode preservation remain pending. Near-cap request

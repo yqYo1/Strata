@@ -104,6 +104,10 @@ struct Fixture {
 bool equal(const ConversationKv& a,const ConversationKv& b) {
     return a.k==b.k && a.v==b.v && a.k_scale==b.k_scale && a.v_scale==b.v_scale && a.pooled==b.pooled;
 }
+bool unpublished(const ConversationVerification& v) {
+    return v.main_layers==0 && v.main_bytes==0 && v.draft_bytes==0 && v.running_bytes==0 &&
+           v.main_hash==0 && v.draft_hash==0 && v.running_hash==0;
+}
 
 void full_session(int fmt, int mode, int experts) {
     Fixture main(fmt,mode), draft(fmt==3?kKvInt8:fmt,2);
@@ -150,9 +154,10 @@ void full_session(int fmt, int mode, int experts) {
     auto bad=a; bad.kv.back().k.pop_back();
     check(conversation_snapshot_restore(bad,ss,g,draft.state,err)==ConversationRestore::invalid,
           "reject invalid late draft before any main-layer write");
-    ConversationVerification invalid_check;
+    ConversationVerification invalid_check{1,1,1,1,1,1,1};
     check(!conversation_snapshot_verify(bad,ss,g,draft.state,invalid_check,err),
           "reject invalid snapshot before diagnostic reads");
+    check(unpublished(invalid_check),"invalid snapshot clears every verification result field");
     check(conversation_snapshot_save(restored,view,ss,g,draft.state,err),"capture B after refused restore");
     check(restored.live.gdn==b.live.gdn && restored.live.dead==b.live.dead &&
           equal(restored.kv[0],b.kv[0]) && equal(restored.kv[1],b.kv[1]),"refusal preserves all tested state");
@@ -170,7 +175,8 @@ void full_session(int fmt, int mode, int experts) {
     // repairing it; the test itself then restores the original byte.
     std::vector<void*> corrupt = {ss.gdn_state,ss.ple_hist,main.state.idx_tail,main.state.idx_dead,
         main.state.idx_block_pos,main.state.idx_pooled+(ids.size()/4)*g.idx_key_dim,
-        draft.state.k_pool,draft.state.k_q,draft.state.k_q4};
+        draft.state.k_pool,draft.state.k_q,draft.state.k_q4,
+        draft.state.v_pool,draft.state.v_q,draft.state.v_q4,draft.state.k_scale,draft.state.v_scale};
     for (void* p : main.sources) if (p) corrupt.push_back(p);
     for (void* p : draft.sources) if (p) corrupt.push_back(p);
     for (void* p : corrupt) if (p) {
@@ -178,15 +184,16 @@ void full_session(int fmt, int mode, int experts) {
         cuda_check(cudaMemcpy(&before,p,1,cudaMemcpyDefault));
         const uint8_t changed=before^uint8_t(1);
         cuda_check(cudaMemcpy(p,&changed,1,cudaMemcpyDefault));
-        ConversationVerification rejected;
+        ConversationVerification rejected{1,1,1,1,1,1,1};
         check(!conversation_snapshot_verify(a,ss,g,draft.state,rejected,err),"detect one-byte restore corruption");
-        check(rejected.main_layers==0 && rejected.main_hash==0,"failed verification publishes no partial success");
+        check(unpublished(rejected),"failed verification publishes no partial success in all seven fields");
         cuda_check(cudaMemcpy(&after,p,1,cudaMemcpyDefault));
         check(after==changed,"verification does not repair corrupted state");
         cuda_check(cudaMemcpy(p,&before,1,cudaMemcpyDefault));
     }
     ss.ple_prev[0]^=1;
     check(!conversation_snapshot_verify(a,ss,g,draft.state,verified,err),"detect PLE token metadata corruption");
+    check(unpublished(verified),"PLE verification failure clears every result field");
     ss.ple_prev[0]^=1;
     check(conversation_snapshot_verify(a,ss,g,draft.state,verified,err),"verification succeeds after test repairs");
     for (int64_t dirty : {65, 3, 0}) {
@@ -292,6 +299,27 @@ int main(int argc,char** argv) {
                     std::vector<uint8_t> expected(code_block);
                     check(a.k.read(expected.data(), page*code_block, code_block),"read segmented expected draft page");
                     check(got == expected,"draft ring contains restored pages");
+                }
+                // Main-mode2 and draft rings share this verifier. Corrupt a
+                // known live slot independently in both codes and both scales.
+                std::vector<std::pair<void*,size_t>> ring;
+                if (fmt==kKvInt8) {
+                    ring={{f.state.k_q,code_block},{f.state.v_q,code_block},
+                          {f.state.k_scale,size_t(s.page_size*s.n_head_kv*(s.head_dim/64)*2)},
+                          {f.state.v_scale,size_t(s.page_size*s.n_head_kv*(s.head_dim/64)*2)}};
+                } else if (fmt==kKvQ4) ring={{f.state.k_q4,code_block},{f.state.v_q4,code_block}};
+                else ring={{f.state.k_pool,code_block},{f.state.v_pool,code_block}};
+                for (auto [base,page_bytes] : ring) {
+                    auto* p=static_cast<uint8_t*>(base)+size_t((b1-1)%f.state.n_slots)*page_bytes;
+                    uint8_t before=0,after=0;
+                    cuda_check(cudaMemcpy(&before,p,1,cudaMemcpyDefault));
+                    const uint8_t changed=before^uint8_t(1);
+                    cuda_check(cudaMemcpy(p,&changed,1,cudaMemcpyDefault));
+                    check(!conversation_kv_verify(a,f.state,f.g,upto,index,fingerprint,err),"detect live-ring corruption");
+                    cuda_check(cudaMemcpy(&after,p,1,cudaMemcpyDefault));
+                    check(after==changed,"ring verifier never repairs corruption");
+                    cuda_check(cudaMemcpy(p,&before,1,cudaMemcpyDefault));
+                    check(conversation_kv_verify(a,f.state,f.g,upto,index,fingerprint,err),"ring verification after test repair");
                 }
             }
             auto bad=a; bad.head_dim++;
