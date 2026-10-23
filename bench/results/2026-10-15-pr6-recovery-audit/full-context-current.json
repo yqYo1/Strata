@@ -62,12 +62,17 @@
   "owner_ledger_reference": {
     "scope": "selected_6e40_context_owner_ledger_20261023",
     "report_sha256": "edcc035db5f4a3777ee6a6a3aa79b0f04242743dea7649a326cb4d5402486c1e",
-    "native_review_sha256": "45dbed581a3e840e9e8ed8d18447d3c6b3f2b1437c5007b661aed52e897c7948",
-    "corrected_PLE_host_total_bytes": 671088640,
+    "native_review_sha256": "c77f07ee328bb299f0d19570df942ea973fc3d9b3c94dd6286096b54e9701c57",
+    "corrected_PLE_host_total_bytes": 167772160,
     "full_prefill_BF16_residual_bytes": 5368688640,
     "full_prefill_rows": 262143,
     "all_device_residency_qualified": false,
-    "actual_allocation_admission_qualified": false
+    "actual_allocation_admission_qualified": false,
+    "PLE_host_buffer_bytes": 83886080,
+    "PLE_width": 2560,
+    "HC_residual_width": 10240,
+    "main_source_correction": "src/prefill/prefill.cpp:118 N=2560,HC=4,D=10240;:1112..1117 allocate T*N*4 per PLE host buffer. AtT8192 each83886080B,total167772160B. The original research report was correct;the first native review substitutedD forN and wrongly multiplied by4 again. Main corrected this before GPU execution;native review corrected and confirms no other dimension correction. Old review error/hash preserved in that review. Residual/window formulas useD separately.",
+    "prior_native_review_sha256": "45dbed581a3e840e9e8ed8d18447d3c6b3f2b1437c5007b661aed52e897c7948"
   },
   "handoff_source_review": {
     "source_commit": "5e723ba2a497c9949e7ec9d10d581671140146d6",

@@ -641,8 +641,9 @@ output. These host checks do not compile the whole generator or execute a GPU.
 See the [current diagnostic gate](../bench/results/2026-10-15-pr6-recovery-audit/full-context-current.json).
 
 At262143 batched rows and width10240, the BF16 residual alone needs5368688640
-bytes. The source owner ledger corrects the two float PLE host buffers to
-335544320 bytes each,671088640 bytes combined. These host bytes are distinct
+bytes. PLE uses embedding width2560, distinct from the10240-wide HC residual.
+Its two float host buffers use83886080 bytes each,167772160 bytes combined
+at chunk8192. These host bytes are distinct
 from VRAM. Actual free memory, largest single allocation, layer/workspace/KV
 owners and their lifetimes still need runtime admission evidence. CLI
 `Prefill::reset()` calls `release()` before the final verifier, including checked

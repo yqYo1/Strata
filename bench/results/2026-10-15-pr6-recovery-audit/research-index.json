@@ -10057,7 +10057,7 @@
     "report_budget_bytes": 12288,
     "rules_revision": "44c4096429f91759d4aa2c56d6893c95324b1255",
     "consumer": "Main's pre-run memory-admission gate for the CLI-only 262144-token diagnostic; source ledger only, not physical admission or model qualification.",
-    "next_review": "Before configuring/running the nonadopted native diagnostic and actual allocation-admission test;retire transactions and the curation packet after this reviewed decision is recorded.",
+    "next_review": "Before actual diagnostic link/allocation admission. Keep only report and corrected review for that imminent consumer;retire consumed transactions and curation packets after their decision is pushed.",
     "scope_curation_sha256": "be6e48fe9cb0fccbbb39f2e2aef55385e829e62955ee9ce55e3b22ea34c5c31b",
     "run_id": "run_432552edd149",
     "task_id": "task_7ba585f625b8",
@@ -10075,14 +10075,58 @@
     "report_sha256": "edcc035db5f4a3777ee6a6a3aa79b0f04242743dea7649a326cb4d5402486c1e",
     "report_bytes": 10307,
     "native_review": "/home/yayoi/orca/workspaces/Strata/sycl/.cache/strata-research/20261023/context-owner-ledger/native-review.json",
-    "native_review_sha256": "45dbed581a3e840e9e8ed8d18447d3c6b3f2b1437c5007b661aed52e897c7948",
-    "native_review_bytes": 6439,
-    "main_digest": "All10source hashes match. Source ledger supports a bounded allocation-admission step,not successful allocation/model qualification. Correct PLE host rows to two335544320B buffers,total671088640B;track all persistent Prefill owners until actual release and confirm processed extent.",
+    "native_review_sha256": "c77f07ee328bb299f0d19570df942ea973fc3d9b3c94dd6286096b54e9701c57",
+    "native_review_bytes": 7810,
+    "main_digest": "All10source hashes match;actual allocation/physical qualification remain open. Main corrected the native review dimensional error:PLE widthN2560 gives two83886080B buffers,total167772160B atT8192;HC residual widthD10240 is separate. Original research report PLE bytes were correct. Native review now agrees;no other ledger dimension correction was found;CLI reset->release and262143batched+T1 extent remain source facts.",
     "main_source_resolution": {
       "source_commit": "5e723ba2a497c9949e7ec9d10d581671140146d6",
       "generator_sha256": "8ed3db3e989996269b532e6fb7a8c2a685508b45473e12f0fe4f397e3c6e12c4",
       "prefill_reset": "src/prefill/prefill.cpp:762 reset calls release(),which performs checked stream retirement then frees owned buffers. The selected CLI calls prefill.reset() after its batched prompt and before the final verifier.",
       "extent": "CLI n_batched=n_prompt-1 with prefill_until0,so exact262144 input plans262143 prompt rows then one final first-window token. Runtime extent/placement remain unmeasured."
-    }
+    },
+    "prior_native_review_sha256": "45dbed581a3e840e9e8ed8d18447d3c6b3f2b1437c5007b661aed52e897c7948"
+  },
+  "ple_layer1_boundary_scope": {
+    "classification": "decision support",
+    "status": "conditional_attribution_required",
+    "schedulable_now": false,
+    "source_snapshot_revision": "b4fec0dab56ee7fbae0cf8b07c18737e9faca77f",
+    "source_hashes": {
+      "src/prefill/prefill.cpp": "777e6d847ab6d83bc0a9103d6baabb7f4204ff23d34ce6c853eb1d7e68a11c37",
+      "src/prefill/layer_major.inc": "f7db8923dc466239f44c820ac3f8e9edfdd209b239e6b91f0993adc595d7dcf1",
+      "src/kernels/ngram.cpp": "3bff07eba26ed24c3a3cf2e571d4e7c5a457236e7de4d6a5b0f0a5e89ff23db2",
+      "include/strata/kernels/ngram.hpp": "cac660e7566e7df9d6bae18e19728362b6516d9f14707104a4d7a797b2f3975a",
+      "src/kernels/ple_fp8_parity.cpp": "cc9f2003628c6169a38464d2e65b28237311d92fa92f6b4fdbb8984d775a168e"
+    },
+    "scope_review_sha256": "c4700add4b76140493858978a7dfca7d08e38ae0399c83a18402179ad952960e",
+    "source_fact": "Layer-major PLE gather/upload belongs to layer1 only,once per token chunk,not48layer copies. Host output/upload useT*N*4 withN2560;native16 retains this FP32 bridge. Actual table formats/routes and cost remain runtime-unmeasured.",
+    "prerequisite": "Matched actual>=32K production-route attribution separating PLE gather/dequant,wait,H2D/overlap and compute/critical-path cost;record actual IQ4_NL orF8_E4M3 table route and one concrete candidate decision before dispatch.",
+    "question": "For the pinned current layer-1 PLE path and actual table format, compare FP32 host gather plus T*N*4 upload with lower-precision host output and packed-row upload followed by GPU dequantization at the PLE consumer. Establish actual format/scale/decode contracts, supported producer-consumer interfaces for direct quantized input, lifetime/rounding/numerical gates, and evidence needed to choose one bounded comparison. Treat IQ4_NL and F8_E4M3 separately; existing FP8 table parity does not prove low-precision output, GPU direct gather, or speed.",
+    "previous_report_coordinates": [
+      {
+        "scope": "native16_32k_117k_ledger",
+        "path": ".cache/strata-research/20261020/native16-long-prefill-work-ledger.json",
+        "sha256": "a35f20c9d0e4b8af72f815d50ca072c77bade9d60f60fdf9098ec562a1619591",
+        "status": "decision support; review says NEEDS_TARGETED_CORRECTION",
+        "use": "dispatch and fixed_shape_logical_work_flops.not_in_fixed_total note possible layer-1 PLE but exclude it; no PLE path alternatives or performance evidence."
+      },
+      {
+        "scope": "low_bit_residual_storage_scope",
+        "path": "/home/yayoi/.local/state/strata-sycl/artifact-retention-audit-20261018/research-wave-20261018/low-bit-residual-storage.md",
+        "sha256": "b58025c2faa83d645f3764490355d8db8ed820ae1ff608a3a0c5189e997fc347",
+        "review_sha256": "7e451c7ed5324d0aa1aa9d8d68e53480aeb9f514a753983cb1ee1c5a9367a771",
+        "use": "Sections on FP8/INT8 formats, reconstruction break-even, and gates provide conditional precision/storage framing. It concerns persistent HC/MoE residuals, not PLE table rows."
+      },
+      {
+        "scope": "host_dma_source_preparation_collection_scope",
+        "path": "/home/yayoi/.local/state/strata-sycl/artifact-retention-audit-20261018/research-wave-20261018/host-dma-source-preparation.md",
+        "sha256": "c2b48d3eb2e14bfaff6a4506e9775f696c91afc3e16db4bdb9907b5e2c243194",
+        "review_sha256": "4505f86a5caf74dd0b50b51b008a43caf7c3b818c8524a3fff6d9aa74d198975",
+        "use": "Conditional reference for immutable Arena host-source preparation, not sparse GGUF PLE reads/dequantization. The indexed host-layer-slab report is likewise expert-weight upload ownership, not PLE."
+      }
+    ],
+    "report_budget_bytes": 20480,
+    "consumer": "One bounded lower-precision/direct-packed PLE comparison if measured cost or capacity justifies it. No optimization,hardware-saturation or speed claim from static source;do not dispatch while prerequisite is absent.",
+    "next_review": "At next matched production-route attribution;retrieve adjacent precision/host-transfer sections only for that concrete question. Scope-control transaction is consumed."
   }
 }
