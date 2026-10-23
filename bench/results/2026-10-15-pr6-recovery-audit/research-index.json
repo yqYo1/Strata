@@ -10332,7 +10332,7 @@
   },
   "explicit_layout_physical_full_entrypoint_audit_20261024": {
     "classification": "decision_support",
-    "status": "dispatched_turn_start_unobserved",
+    "status": "worker_report_received_native_review_running",
     "schedulable_now": false,
     "source_commit": "72f6de92ad792787098cbf01667b99dcf3c872f8",
     "native_source_commit": "1cba8a2857891862f8ed4c534d8afee3b0aeaf98",
@@ -10364,6 +10364,37 @@
     "task": "task_167227bff1a0",
     "dispatch": "ctx_74bde531d38b",
     "turn_start": "unobserved;inspect same handles,no duplicate/retry or steering",
-    "worker_ownership_closed": false
+    "worker_ownership_closed": false,
+    "report_bytes": 10580,
+    "report_sha256": "8b9881c4aa746f8c2e90e8696bc0bdcbcb47800508452f22744ff9b742385565",
+    "accepted_worker_completion": true,
+    "native_reviewer": "/root/review_explicit_layout_physical_full_20261024",
+    "terminal_next_owner": "fresh short-prefill memory source audit pending dispatch"
+  },
+  "short_prefill_memory_interval_source_audit_20261024": {
+    "classification": "decision_support",
+    "status": "eligible_for_settled_terminal_reuse",
+    "schedulable_now": true,
+    "source_commit": "6cc40909a20d25b58adaded061ed236f976c4573",
+    "native_source_commit": "1cba8a2857891862f8ed4c534d8afee3b0aeaf98",
+    "source_sha256": {
+      "/home/yayoi/orca/workspaces/Strata/sycl/src/program/generate.cpp": "6857436f344b6ea41cf1facd88eeaa6dd2f3d61432312960b76b66f0cf68837f",
+      "/home/yayoi/orca/workspaces/Strata/sycl/src/prefill/prefill.cpp": "942c352c4197b296313e54d63243b62dcfabfae1ab79d04b2893ba3aec6c6686",
+      "/home/yayoi/orca/workspaces/Strata/sycl/src/prefill/layer_major.inc": "a0019a68132c50d18805fcf3914a92eb326f9fa55a73d51e4bf85cc5d479afbb",
+      "/home/yayoi/orca/workspaces/Strata/sycl/src/core/native_dense.cpp": "4424972f8bd8c1f0e71ea360140a6cd3c56ed6a5533d1354bdbcdbc13d387d42",
+      "/home/yayoi/orca/workspaces/Strata/sycl/src/core/session.cpp": "4c1aa246e568f96b40b9f9e16000e1f1dc6d75c99168cb26baef56a43b4e4bce",
+      "/home/yayoi/orca/workspaces/Strata/sycl/src/sycl/compat.cpp": "7e88d1684bf1d6f386a739a798f7e0b5eebf90fc92ce03e577536a1d08d5ed03",
+      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/full-context-state-v4/small/owned/small.stderr": "42716979793fb56b577785f05929a5552880dbd4c34ba1512a1211550c19d121"
+    },
+    "prerequisites": [
+      {
+        "met": true,
+        "evidence": "New actual v4 small gate closes normally;B33 short32-row Full path drops reported free memory by2442137600B during its prompt transaction. Prior generic owner review did not attribute this observed interval. Same proven high/network/report-writable terminal just settled physical-full audit."
+      }
+    ],
+    "question": "Which source-grounded owners/conversions can explain the observed short32-row memory interval,and what minimal Main trace discriminates them without altering decode?",
+    "report": "/home/yayoi/orca/workspaces/Strata/sycl/.cache/strata-research/20261024/explicit-layout-physical-full/short-prefill-memory-owners.md",
+    "report_budget_bytes": 12288,
+    "next_review": "Native Luna-max accuracy/scope review,then next owner trace after frozen model cohort;retire source audit after decision consumption."
   }
 }
