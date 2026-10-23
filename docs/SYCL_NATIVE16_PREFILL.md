@@ -892,7 +892,14 @@ pages in the same hash order before the next large diagnostic. Exact256K fill
 and long nonzero-prefix RESTORE remain unqualified on this changed layout.
 The v3 cohort closes incomplete before those source corrections;its three
 individual passes remain passes and long RESTORE remains UNRUN. The next
-candidate needs new committed source/build and model gates. Reported free bytes
+source now selects the checkpoint-compatible layout before pricing/init and
+request dispatch,allows its smaller admitted chunks,and refuses unsupported
+no-loan participants before masking. The long no-checkpoint route still requires
+8192 rows and the unchanged decode-cache tail. The diagnostic hash now describes
+coalesced complete-page ranges with the original byte order and checked-copy
+consumer. Both changes are Main-authored Strata code;no external application
+source was used. A committed CPU byte-order/bounds gate precedes the new native
+build and model qualification;neither change is adopted by this source edit. Reported free bytes
 after the small test's three cache refills are2,287,865,856/120,377,344/50,708,480.
 Their owner attribution is unresolved;preserve these admission observations
 for the next long reentry,without claiming physical residency or decode impact.

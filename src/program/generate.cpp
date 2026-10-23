@@ -74,6 +74,7 @@
 #endif
 #include "strata/program/conv_cache.hpp"
 #include "strata/program/prompt_checkpoint.hpp"
+#include "strata/program/diagnostic_kv_ranges.hpp"
 #include "strata/spec/draft_policy.hpp"
 #include "strata/spec/suffix_drafter.hpp"
 #include "strata/kernels/cvec.hpp"
@@ -4841,7 +4842,12 @@ int main(int argc, char** argv) {
 #endif
         };
         using PrefillLayout = strata::prefill::Prefill::Layout;
-        const auto initial_layout = separate_prefill_layout ? PrefillLayout::layer_major : PrefillLayout::legacy;
+        // A layer-major callback sees earlier layers at the segment end, so
+        // periodic prefix checkpoints must keep the chunk-major state order.
+        // Use that same layout for initial pricing, carving and every request.
+        const bool dedicated_long_layout = separate_prefill_layout && !sp.requires_prefix_checkpoints;
+        const auto initial_layout = !separate_prefill_layout ? PrefillLayout::legacy
+            : dedicated_long_layout ? PrefillLayout::layer_major : PrefillLayout::chunk_major;
         auto part_slots_for = [&](const PfPart& p, int64_t c, PrefillLayout layout) -> int64_t {
             const uint64_t need = strata::prefill::Prefill::bytes_needed(g, *p.ses, c, layout);
             strata::core::ExpertCache& xc = *p.cache;
@@ -4941,7 +4947,7 @@ int main(int argc, char** argv) {
             };
             static constexpr int64_t kAutoChunks[] = {32768, 16384, 8192, 6144, 4096, 3072, 2048, 1024, 512, 256};
             auto pick = [&](const PfPart* only) -> int64_t {
-                if (separate_prefill_layout) return fits(8192,false,only) ? 8192 : 0;
+                if (dedicated_long_layout) return fits(8192,false,only) ? 8192 : 0;
                 if (o.prefill_auto) {
                     for (const int64_t c : kAutoChunks) {
                         if (c > 8192 && (c > o.prefill_auto_max || c > o.max_context)) continue;   // #282, as plan_lend
@@ -4954,7 +4960,7 @@ int main(int argc, char** argv) {
                 return 0;
             };
             const int64_t chunk = pick(nullptr);
-            if (separate_prefill_layout && chunk != 8192) {
+            if (dedicated_long_layout && chunk != 8192) {
                 std::fprintf(stderr,"separate long-prefill scratch does not fit the unchanged decode-cache tail\n");
                 return 1;
             }
@@ -5048,6 +5054,13 @@ int main(int argc, char** argv) {
         }
         bool any_loan = borrow != nullptr;
         for (size_t i = 1; i < pf_parts.size(); ++i) any_loan = any_loan || pf_parts[i].first >= 0;
+        // The optional selector requires an actual checked single-cache loan.
+        // Refuse unsupported no-loan participants before any table is masked;
+        // they retain the existing legacy path when the selector is off.
+        if (separate_prefill_layout && (pf_parts.size() != 1 || !borrow)) {
+            std::fprintf(stderr,"separate prefill layout requires one actual expert-tail loan\n");
+            return 2;
+        }
         if (any_loan) {
             if (borrow != nullptr)
                 std::fprintf(stderr, "strata serve: the prompt path borrows %lld CUDA0 cache slots (%.2f GiB)\n",
@@ -5103,7 +5116,8 @@ int main(int argc, char** argv) {
                     const strata::core::OnDevice on(dev);
                     size_t fb = 0, tb = 0;
                     cudaMemGetInfo(&fb, &tb);
-                    const int64_t need = (int64_t) strata::prefill::Prefill::bytes_needed(g, i == 0 ? ss : stages[i - 1]->ss, c);
+                    const int64_t need = (int64_t) strata::prefill::Prefill::bytes_needed(g, i == 0 ? ss : stages[i - 1]->ss, c,
+                        i == 0 ? initial_layout : PrefillLayout::legacy);
                     if (need + kHeadroom > (int64_t) fb) {
                         dev_out = dev < 0 ? 0 : dev; need_out = need; free_out = (int64_t) fb;
                         return false;
@@ -5134,7 +5148,7 @@ int main(int argc, char** argv) {
             int64_t next = 0;
             for (const int64_t c : kStepChunks)
                 if (c < o.prefill_chunk) { next = c; break; }
-            if (r == 2 && next > 0 && !separate_prefill_layout) {
+            if (r == 2 && next > 0 && !dedicated_long_layout) {
                 std::fprintf(stderr, "strata serve: %s: trying a %lld-token chunk\n", err.c_str(), (long long) next);
                 // start the prompt paths over (a failed init may hold buffers), and consume the failed allocation's
                 // error: it is sticky, and the next launch check would report "out of memory" for a kernel
@@ -6367,11 +6381,12 @@ int main(int argc, char** argv) {
                 int64_t want = split_small > 0 && tokens <= split_small_max ? std::min(want_full, split_small)
                                                                                  : want_full;
                 const auto request_layout = separate_prefill_layout
-                    ? (tokens > o.prefill_chunk ? PrefillLayout::layer_major : PrefillLayout::chunk_major)
+                    ? (dedicated_long_layout && tokens > o.prefill_chunk ? PrefillLayout::layer_major : PrefillLayout::chunk_major)
                     : PrefillLayout::legacy;
                 if (separate_prefill_layout && request_layout == PrefillLayout::chunk_major) {
-                    // Keep short input on the decode weight layout. Its legacy
-                    // scratch includes the KV stage and may use several chunks.
+                    // Short inputs and checkpointed segments keep decode
+                    // weights. Their scratch includes the KV stage and may
+                    // use several chunks; respect the actual initialized tail.
                     while (want >= 256 && std::any_of(pf_parts.begin(),pf_parts.end(),[&](const auto& p) {
                         return p.first >= 0 && strata::prefill::Prefill::bytes_needed(g,*p.ses,want,request_layout) > part_bytes(p,p.first);
                     })) want /= 2;
@@ -6861,13 +6876,11 @@ int main(int argc, char** argv) {
                 };
                 // the cells [c0, c1) of one int8 K or V pool ([page][kv_head][page_size][head_dim]), bytes per value `w`
                 auto hash_cells = [&](const void* pool, int64_t per_cell, int64_t c0, int64_t c1, uint64_t h) {
-                    const int64_t ps = qs.page_size;
-                    for (int64_t pg = c0 / ps; pg * ps < c1; ++pg)
-                        for (int64_t hd = 0; hd < qs.n_head_kv; ++hd) {
-                            const int64_t a = std::max(c0, pg * ps) - pg * ps, e = std::min(c1, (pg + 1) * ps) - pg * ps;
-                            const size_t off = (size_t) (((pg * qs.n_head_kv + hd) * ps + a) * per_cell);
-                            h = hash_dev((const uint8_t*) pool + off, (size_t) ((e - a) * per_cell), h);
-                        }
+                    if (!strata::program::diagnostic::kv_hash_spans(c0,c1,qs.page_size,qs.n_head_kv,per_cell,
+                            [&](size_t offset,size_t bytes) {
+                                h = hash_dev(static_cast<const uint8_t*>(pool)+offset,bytes,h);
+                                return hash_ok;
+                            })) hash_ok = false;
                     return h;
                 };
                 const ConvStateSizes z = conv_state_sizes(g, ss);
