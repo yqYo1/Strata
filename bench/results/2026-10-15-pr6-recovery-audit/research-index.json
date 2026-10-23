@@ -10278,5 +10278,41 @@
     "native_review_sha256": "fa7a822be39f33593411ec9a05ce657e9c45612df8e2e24e0ee0d2cea4951088",
     "native_review_bytes": 7756,
     "review_digest": "Checkpoint-preserving chunk-major is provisional. A predicate alone is insufficient: align initial layout/no-loan path and actual occupied-tail sizing;layer-major callbacks cannot snapshot earlier main state after full segment. Keep feature and validate coherent main/draft checkpoint restore,cache/graph handoff and repeated decode independently. No runtime qualification."
+  },
+  "checkpoint_layout_v4_model_source_audit_20261024": {
+    "classification": "decision_support",
+    "status": "dispatch_accepted_turn_start_unobserved",
+    "schedulable_now": false,
+    "source_commit": "0a6da6f4bdb33fa83b65557d536c8d075d224225",
+    "native_source_commit": "1cba8a285",
+    "source_sha256": {
+      "src/program/generate.cpp": "6857436f344b6ea41cf1facd88eeaa6dd2f3d61432312960b76b66f0cf68837f",
+      "include/strata/program/diagnostic_kv_ranges.hpp": "3973975b37f804b7a276bb5d35b0bc5cb2eff597b1df9dcbdacccad1877f714d",
+      "tests/core/full_context_diagnostic_test.cpp": "ef0f83bb29f5faf66119b420482080084b4087aa42610426bb0209eda35b391f",
+      "tools/sycl/check_model_restore.py": "98fab9343539b063020bcb37702c21a32ec69e1393825cb4969acb8848f85c64",
+      "tools/sycl/check_streamed_qsa.py": "0a3222c0ae5b4df3e3b8a1a5f9e0a40a0387e49ed86b6c9f111d3fb4bab95ebb",
+      "include/strata/prefill/prefill.hpp": "8b7f2117b7eae566f4a527947f9f7c3855022ddaa282430713f7d60c8a246c83",
+      "src/prefill/prefill.cpp": "942c352c4197b296313e54d63243b62dcfabfae1ab79d04b2893ba3aec6c6686",
+      "src/prefill/layer_major.inc": "a0019a68132c50d18805fcf3914a92eb326f9fa55a73d51e4bf85cc5d479afbb",
+      "src/core/conversation_snapshot.cpp": "57ced89d4e3e90f5a93b597b04d1c73f406f20a742e43174eb042b4dea885fe2"
+    },
+    "report": "/home/yayoi/orca/workspaces/Strata/sycl/.cache/strata-research/20261024/checkpoint-layout-v4-model-audit/report.md",
+    "report_budget_bytes": 12288,
+    "prerequisites": [
+      {
+        "met": true,
+        "evidence": "New compiled checkpoint-layout/hash-span fix,134+9459 CPU passes and6 exact fixture matches exist;new model checkpoint/nonaligned-prefix controller is committed and needs source audit before GPU execution."
+      }
+    ],
+    "next_review": "Native Luna-max review before small/checkpoint model execution;retire consumed source report after useful corrections and relevant model outcomes are committed.",
+    "model_observed": "GPT-6-Luna high",
+    "report_root_writable_at_launch": true,
+    "terminal": "term_689d4c0a-aef4-4427-af9a-a86ac8381b09",
+    "incarnation": "f99acbf9-e42b-48e6-8460-41757a475306",
+    "run": "run_12fa11537288",
+    "worker_ownership_closed": false,
+    "task": "task_66f0c7d0b96d",
+    "dispatch": "ctx_0a0aec1f5bb4",
+    "turn_start": "unobserved;inspect existing handles,no retry"
   }
 }

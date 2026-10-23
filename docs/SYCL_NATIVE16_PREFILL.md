@@ -919,7 +919,9 @@ The long restore uses253919 parked positions and8208 fresh batched rows,covering
 a partial prefix page and two8192-row chunks. Periodic checkpoints are enabled
 only in their own process. Byte hashes of15 model files are reused from the
 original fully hashed8b52357 preparation only with unchanged dev/inode/size/time
-identities,and are recomputed after the final RESTORE gate. Reported free bytes
+identities,and are recomputed after the final RESTORE gate. The v4 host transport
+passes all10 exact request wires with normal exit0 and no GPU execution. Fresh
+small/checkpoint/near-cap/nonaligned RESTORE native model gates remain pending. Reported free bytes
 after the small test's three cache refills are2,287,865,856/120,377,344/50,708,480.
 Their owner attribution is unresolved;preserve these admission observations
 for the next long reentry,without claiming physical residency or decode impact.
