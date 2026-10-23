@@ -2625,5 +2625,171 @@
         "aggregate_sha256": "5768eaea650c06eb022c9068784590a27400c2a577974c56750519edde859fe5"
       }
     ]
+  },
+  "snapshot_qsa_components": {
+    "stage": "prepared",
+    "source_commit": "5a20040d6e6f27005eece9038e0b2ea72906faec",
+    "input_sha256": {
+      "include/strata/program/full_context_diagnostic.hpp": "d4abd9516913df9c0672adfea079e036223c8454ae79fadacd6f209432f04621",
+      "src/program/generate.cpp": "cded66240ea5dd90d5c536748ae3a54f4481a2500aa2b2f71dd6de017689547b",
+      "tests/core/full_context_diagnostic_test.cpp": "045c7ea526aee9a8df48c6ce28c025c5006db003d6136ffd97168b8a27b893c1",
+      "tools/sycl/build_engine.py": "8444783ab417378207ec89ad2bc3cf648480e20d9e77f06ebb3070c93e10b131",
+      "tools/sycl/build_full_context.py": "e2ecca3124f18e9945d9c7ccc6a122fbdf00d403f278f0315f454e26095e66b0",
+      "tools/sycl/check_full_context.py": "3db5296b72056453faa9ee7d30703c84059cc861520de02d040a4e7fc6c128be",
+      "tools/sycl/check_full_context_source.py": "5e72fa724e890e682382758caf6222042e1ec89770962ce205ab756783332030",
+      "tools/sycl/check_streamed_qsa.py": "eafb460497c175e1a44464d25882791dee89705f63537edd42274a5c8bad8598",
+      "tools/sycl/measurement_environment.json": "d4402591df50e80dc45a5ec9e4839c7a794888850b1473537b6f95179be5b03c",
+      "tools/sycl/measurement_guards.py": "794e332c70aca0acadad4f26d0414548e023a02fd27b72ed78fc773674423ec8",
+      "tools/sycl/measurement_owner.py": "bddd0c5e5020e882ca3404679420faec11e820dabce2ed4c72ef82b4c9c0874a",
+      "tools/sycl/ur_validation.py": "2e41d84788dc9cc3c7435b18b43601b3ca79280ccb855414d7a36bae6bff83e7"
+    },
+    "native_source_commit": "be5192efcd41e48d9b8334438207cbbcff85fb84",
+    "binary": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/full-context-native-v1/build/strata",
+      "bytes": 22225232,
+      "sha256": "052376c0beed34e28ab00f2e39fbd49bba79594296159bbc3611c9da4fd38f92"
+    },
+    "cases": {
+      "host": {
+        "command": [
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/full-context-native-v1/build/prefill_expert_bank_plan_test"
+        ],
+        "fixture": {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/full-context-native-v1/build/prefill_expert_bank_plan_test",
+          "bytes": 35696,
+          "sha256": "be7b4c9c93ef857a8e064b6c587daaddd21e42264ee54739c73d1b6686c2fd55"
+        },
+        "environment_sha256": "e077b5aa0adef32a99ed072710f8979b2e21295eea12d1bfa9bb6cbd2b336ee0"
+      },
+      "smoke": {
+        "command": [
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/full-context-native-v1/build/sycl_native16_qsa_streamed_test",
+          "--smoke"
+        ],
+        "fixture": {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/full-context-native-v1/build/sycl_native16_qsa_streamed_test",
+          "bytes": 1935656,
+          "sha256": "968e2cffdd60309842a62a7e3e44e0eb98b205d0594fa2ae24c732524da15a02"
+        },
+        "environment_sha256": "a7ddc6a89eca8b3ddfb821933b0ac35bbd625696930cf5b38fa6bcb1ca8b5260"
+      },
+      "restore-smoke": {
+        "command": [
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/full-context-native-v1/build/sycl_conversation_snapshot_test",
+          "--restore-smoke"
+        ],
+        "fixture": {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/full-context-native-v1/build/sycl_conversation_snapshot_test",
+          "bytes": 13557320,
+          "sha256": "a4311c51e8fa0849d163f2c270f5f02e84f44d1f0ff3359f98f29b0778c10721"
+        },
+        "environment_sha256": "a5f62a0704dedf123e8f63af187a909d30fee2548c661639dc14992b4928caa7"
+      },
+      "component": {
+        "command": [
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/full-context-native-v1/build/sycl_native16_qsa_streamed_test",
+          "--component"
+        ],
+        "fixture": {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/full-context-native-v1/build/sycl_native16_qsa_streamed_test",
+          "bytes": 1935656,
+          "sha256": "968e2cffdd60309842a62a7e3e44e0eb98b205d0594fa2ae24c732524da15a02"
+        },
+        "environment_sha256": "a1c378c98336f98bef95a5a1857426f66aea6a98c6d74ce4162ce1fc9b4eb416"
+      },
+      "resident": {
+        "command": [
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/full-context-native-v1/build/sycl_native16_qsa_test"
+        ],
+        "fixture": {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/full-context-native-v1/build/sycl_native16_qsa_test",
+          "bytes": 1877672,
+          "sha256": "b77a1249e665998d99a3e113a7afc53729d85fe811359cc31957920ec024ad8f"
+        },
+        "environment_sha256": "eae0755cd61e98215b1e3a37c02ae45a271a76fb9e087e4e1d273eed91dd72ad"
+      },
+      "attention-smoke": {
+        "command": [
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/full-context-native-v1/build/sycl_qsa_bf16_attention_test",
+          "--smoke"
+        ],
+        "fixture": {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/full-context-native-v1/build/sycl_qsa_bf16_attention_test",
+          "bytes": 943272,
+          "sha256": "162efd45a663c0caee4b7fafb8facd1f38f8e7d081ddf13e5ae5f85cff305acf"
+        },
+        "environment_sha256": "0b90499556aed12c1a2596f0ecc4c09635f8aae71af973b1d43a67bc772af598"
+      },
+      "attention-component": {
+        "command": [
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/full-context-native-v1/build/sycl_qsa_bf16_attention_test",
+          "--component"
+        ],
+        "fixture": {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/full-context-native-v1/build/sycl_qsa_bf16_attention_test",
+          "bytes": 943272,
+          "sha256": "162efd45a663c0caee4b7fafb8facd1f38f8e7d081ddf13e5ae5f85cff305acf"
+        },
+        "environment_sha256": "26c8d0ec03ee072336c2de6a2a1f84eb85e1b99b62051f54f4b6468663867e84"
+      },
+      "restore-component": {
+        "command": [
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/full-context-native-v1/build/sycl_conversation_snapshot_test"
+        ],
+        "fixture": {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/full-context-native-v1/build/sycl_conversation_snapshot_test",
+          "bytes": 13557320,
+          "sha256": "a4311c51e8fa0849d163f2c270f5f02e84f44d1f0ff3359f98f29b0778c10721"
+        },
+        "environment_sha256": "a65d06611dacace333a2285a545e300f8057187af1436c7d6e26b6d9387fef4c"
+      }
+    },
+    "preload": {
+      "library": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/ur-validation-preload-v2/libstrata_ur_validation.so",
+        "sha256": "1d4e69d672d55fa0a126ae43b7b4743482cccca7e2f2bc22e0db2bfdad5bdc7c"
+      },
+      "loader": {
+        "path": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_loader.so.0.12.0",
+        "sha256": "bb6e1311850e4b1a924e42acae80c2b3610934625a4985aaa67967abe31356fc"
+      },
+      "component_source_commit": "f312b6691f508125db6cfc2580ca32a686ff2642",
+      "component_original_plan": {
+        "commit": "550c75f5fc954ee38b70230e32d2a48e12100d8a",
+        "path": "bench/results/2026-10-15-pr6-recovery-audit/research-index.json",
+        "sha256": "d12866b93c51e76a83e95638e66b6f6f4e0e33d779516a5fddecc178a6f8e10a"
+      },
+      "retained_reference_until_exit": true,
+      "runtime_teardown_qualified": false
+    },
+    "outcomes": {},
+    "active": false,
+    "passed": false,
+    "complete": false,
+    "ownership_closed": true,
+    "boot": "cfda0b6a-7c13-4fe2-bdf5-8f9202770840",
+    "driver_before": {
+      "pci": "/sys/bus/pci/devices/0000:05:00.0",
+      "driver": "xe",
+      "vendor": "0x8086",
+      "device": "0xe20c",
+      "kernel": "7.0.0-38-generic",
+      "devcoredump": false
+    },
+    "budgets": {
+      "wall_s": 180,
+      "cpu_s": 360,
+      "rss_bytes": 6442450944,
+      "text_bytes": 16777216,
+      "file_bytes": 16777216,
+      "total_bytes": 536870912
+    },
+    "criteria": "First CPU budget fixture must keep the short prefix,permit full262143/262144 host tails only after removing optional prefix,and preserve invalid/overflow/headroom refusals and enforce the optional workspace single-allocation limit at exact/below boundaries with the SAME limit for mandatory bank/residual owners. Commit each case before the next. Tiny full-API-traced smoke first:one case,14 pre-enqueue refusals,three append chunks including checked host unwind and host->stage refill/rewind. Then parameter-validated4case suite:partial/missing/invalid/nonidentity pages,8192 row ceiling,last3cells ending262144. All stage/host codes/scales exactly match separately qualified resident append;resident slots,guards,inputs/maps and drains pass. Then unchanged resident numerical oracle passes,followed by traced two-case and parameter-validated ten-case on-demand BF16 attention fixtures,including262144 cells. Same-child activation,normal owned exits,unchanged native/controller/runtime/boot/driver,no fresh fault. First failure stops;no retry or speed/model claim.",
+    "retention": "Retain compact individual case/activation/guard/fault/source decisions. Retire successful traces,JIT and duplicate receipts after closure;original selected13 assets remain untouched. New engine+same-build fixtures are the only unselected generation for imminent capacity-model validation.",
+    "model_adoption_qualified": false,
+    "physical262144_model_qualified": false,
+    "decode_performance_qualified": false,
+    "ordinary_runtime_teardown_qualified": false,
+    "snapshot_criteria": "Traced INT8 streamed-main/ring-draft restore smoke precedes the full snapshot suite. Require byte-exact main/draft payload and live GDN/PLE/indexer/spare-row checks,detect one-byte corruption in every independently stored domain and PLE token metadata without repairing state,and publish no partial verification success. Complete legacy snapshot growth/rewind/format checks too. These are synthetic component checks;near-cap model RESTORE,state handoff,task quality and repeated decode performance remain unqualified."
   }
 }
