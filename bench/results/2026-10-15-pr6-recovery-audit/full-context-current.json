@@ -74,5 +74,111 @@
     "prefill_reset": "src/prefill/prefill.cpp:762 reset calls release(),which performs checked stream retirement then frees owned buffers. The selected CLI calls prefill.reset() after its batched prompt and before the final verifier.",
     "extent": "CLI n_batched=n_prompt-1 with prefill_until0,so exact262144 input plans262143 prompt rows then one final first-window token. Runtime extent/placement remain unmeasured."
   },
-  "pending": "Native configure/syntax/build is unrun. Keep the original selected binary/13assets;current worktree generate.cpp has a diagnostic-only delta and must not silently reuse the original current-worktree native-source gate. Actual262144 allocations,processed extent,near-cap decode,RESTORE,fault/owner closure and repeated phase-preserving adoption remain open."
+  "pending": "Native configure/syntax/build is unrun. Keep the original selected binary/13assets;current worktree generate.cpp has a diagnostic-only delta and must not silently reuse the original current-worktree native-source gate. Actual262144 allocations,processed extent,near-cap decode,RESTORE,fault/owner closure and repeated phase-preserving adoption remain open.",
+  "native_diagnostic": {
+    "stage": "prepared_configure",
+    "source_commit": "b4fec0dab56ee7fbae0cf8b07c18737e9faca77f",
+    "selected_original": {
+      "source_commit": "6e40afc1beddd059ee518617f6c1efce1da14aca",
+      "inputs_recovered": 9853,
+      "assets_verified": 13,
+      "receipt": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/record.json",
+        "sha256": "a38f477670fafcd1a931be2e20d90d6d9718df75b61954b421f361af9f6881b2"
+      },
+      "limits": "Original build remains selected; this source-only diagnostic is not adoption."
+    },
+    "compiler": {
+      "path": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin/clang++",
+      "sha256": "1290881b4e12a5e002e5b0de0787f85328ee5fe19f253a54be1cdd97dc2f26eb"
+    },
+    "sdk": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/unitrace-warmed-graph-window-v1/compiler-inputs.json",
+      "sha256": "436cedc9dbd41810cd882e9040a129e6d8b7dbebb98806b00c4f2950b1dc1705",
+      "files": 8697
+    },
+    "tools": {
+      "cmake": {
+        "path": "/usr/bin/cmake",
+        "sha256": "1c5227af4edd22d8d689def545e18ee458260c0fd579eba2187967f38817e638"
+      },
+      "ninja": {
+        "path": "/usr/bin/ninja",
+        "sha256": "5965527e09fe2b3787772aa4f711d6a36b393e7f2fcaa744a7a96c5a4ddf59cb"
+      }
+    },
+    "configure_argv": [
+      "/usr/bin/cmake",
+      "-S",
+      "/home/yayoi/orca/workspaces/Strata/sycl",
+      "-B",
+      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/full-context-native-v1/build",
+      "-G",
+      "Ninja",
+      "-DCMAKE_CXX_COMPILER=/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin/clang++",
+      "-DCMAKE_BUILD_TYPE=Release",
+      "-DCMAKE_EXPORT_COMPILE_COMMANDS=ON",
+      "-DMKL_DIR=/opt/intel/oneapi/mkl/2026.1/lib/cmake/mkl",
+      "-DSTRATA_BUILD_CONVERSATION_TESTS:BOOL=OFF",
+      "-DSTRATA_BUILD_PREFILL_HOST_TESTS:BOOL=ON",
+      "-DSTRATA_BUILD_TESTS:BOOL=OFF",
+      "-DSTRATA_CPU_ARCH:STRING=znver3",
+      "-DSTRATA_ENABLE_CUDA:BOOL=OFF",
+      "-DSTRATA_ENABLE_HIP:BOOL=OFF",
+      "-DSTRATA_ENABLE_SYCL:BOOL=ON",
+      "-DSTRATA_GGML_DIR:PATH=/home/yayoi/ghq/github.com/ggml-org/llama.cpp/.worktree/dep-ggml-3cf-xe-e32-20261011",
+      "-DSTRATA_MMQ_KQUANTS:BOOL=OFF",
+      "-DSTRATA_NATIVE_EXPERTS:BOOL=ON",
+      "-DSTRATA_ORCA_Q4KS_MMQ:BOOL=OFF",
+      "-DSTRATA_PORTABLE:BOOL=OFF",
+      "-DSTRATA_PREFILL_MMQ:BOOL=OFF",
+      "-DSTRATA_SYCL_AOT_DOUBLE_GRF:BOOL=OFF",
+      "-DSTRATA_SYCL_TESTS:BOOL=ON",
+      "-DSTRATA_WERROR:BOOL=ON",
+      "-DSTRATA_SYCL_VLLM_XE2_NATIVE16=ON",
+      "-DSTRATA_SYCL_DEVICE_ARCH=",
+      "-DSYCL_TLA_SOURCE_DIR=/home/yayoi/ghq/github.com/intel/sycl-tla/.worktree/strata-native16-87f",
+      "-DCMAKE_CXX_FLAGS:STRING=-DSTRATA_SYCL_FULL_CONTEXT_DIAGNOSTIC=1"
+    ],
+    "active": false,
+    "ownership_closed": true,
+    "passed": false,
+    "complete": false,
+    "GPU_executed": false,
+    "native_engine_built": false,
+    "production_selected": false,
+    "model_adoption_qualified": false,
+    "physical262144_qualified": false,
+    "budgets": {
+      "wall_s": 300,
+      "cpu_s": 600,
+      "rss_bytes": 8589934592,
+      "text_bytes": 8388608,
+      "file_bytes": 67108864,
+      "total_bytes": 268435456
+    },
+    "criteria": "Owned configure, then separately committed enabled/default generator syntax commands; both must exit zero with frozen source, dependencies, SDK and selected13 original assets. No engine execution, speed, decode-preservation or physical-context claim.",
+    "retention": "Original qualified6e40 engine+12fixtures remain selected and untouched. This separate configure/syntax tree is solely for the imminent full-context diagnostic build; no new comparison engine is built here. Retire routine output after extracting results. Legacy unqualified products are not used as fallbacks or reference generations.",
+    "next_gate": "Native link plan, actual allocation/lifetime admission, bounded device validation, full-fill/near-cap/RESTORE/fault-owner checks and independently repeated phase-preservation.",
+    "sources": [
+      {
+        "root": "/home/yayoi/orca/workspaces/Strata/sycl",
+        "revision": "b4fec0dab56ee7fbae0cf8b07c18737e9faca77f",
+        "count": 538,
+        "aggregate_sha256": "105d9f0dd4dc69d4532934ddfd225f7e52731c389a999ff12378a07630b3b3f2"
+      },
+      {
+        "root": "/home/yayoi/ghq/github.com/ggml-org/llama.cpp/.worktree/dep-ggml-3cf-xe-e32-20261011",
+        "revision": "3cf03257f219afbe7334045ff7c6a06ac68c627d",
+        "count": 3608,
+        "aggregate_sha256": "322862d213ed722d6500da0b58a1b7fffff53aa0de77d7f2e8ba685c653a0d9f"
+      },
+      {
+        "root": "/home/yayoi/ghq/github.com/intel/sycl-tla/.worktree/strata-native16-87f",
+        "revision": "87f6850680a580654b9ea2c80dbc01aeb36ad231",
+        "count": 5703,
+        "aggregate_sha256": "5768eaea650c06eb022c9068784590a27400c2a577974c56750519edde859fe5"
+      }
+    ]
+  }
 }
