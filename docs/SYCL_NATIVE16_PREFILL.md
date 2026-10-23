@@ -866,7 +866,17 @@ fallback still needs separate handling and qualification before adoption.
 The source audit/review's claimed reused-count defect is a false positive:
 its pinned controller already expects`n` for A+suffix. Preserve that original
 review and correction;do not change request bytes or relabel the old model
-failure. The new protocol and actual model state gates remain pending.
+failure. The v3 host protocol gate passes all seven exact request wires. The small
+native A/B/A+16 model diagnostic also passes with normal exit0 and no fresh
+fault:16,385 tokens are parked and restored,all12 main QSA layers plus draft
+and running state pass byte comparison,and all1,256 decode expert payloads
+(2,575,206,400 bytes) and both table publications match after each request.
+The first16,384 batched rows use two8192-row chunks per QSA layer;the separate
+33-token request and restored15 batched rows use chunk-major with dense weights
+Full and no dense/MTP withdrawal. MTP callbacks and committed positions match.
+The33,685,504-byte BF16 prefix is admitted for this small long pass. These
+observed routes do not qualify near-cap/long RESTORE,task quality or decode
+speed. The near-cap and long nonzero-prefix model gates remain pending.
 Detailed closed diagnostic plans and individual historical outcomes recover
 from`95e174255`;the current result retains their original statuses and archive
 references,with the live build/component/model qualifications. Successful model
