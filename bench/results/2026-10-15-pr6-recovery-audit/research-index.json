@@ -10238,101 +10238,9 @@
     "retention_review": "/home/yayoi/orca/workspaces/Strata/sycl/.cache/strata-research/20261024/full-context-state-qualification/retention-review.json",
     "retention_review_sha256": "285169711bfaa384f035089055ad2b518be9f68a0efaf4f7b28950c3b72db9a7"
   },
-  "checkpoint_compatible_prefill_source_20261024": {
-    "classification": "decision_support",
-    "status": "native_reviewed_checkpoint_route_unqualified",
-    "schedulable_now": false,
-    "source_commit": "56525aac5a7eca233196d8c311bf278e2dfcf223",
-    "native_source_commit": "be0d4e35b694783d3a8f0ad1803f0b12c578b76b",
-    "source_sha256": {
-      "src/program/generate.cpp": "9cee537ce0f10d609dab793ffb5dac35a97c8670baf8abb7dc591ead5ede987c",
-      "src/prefill/prefill.cpp": "942c352c4197b296313e54d63243b62dcfabfae1ab79d04b2893ba3aec6c6686",
-      "src/prefill/layer_major.inc": "a0019a68132c50d18805fcf3914a92eb326f9fa55a73d51e4bf85cc5d479afbb",
-      "include/strata/prefill/prefill.hpp": "8b7f2117b7eae566f4a527947f9f7c3855022ddaa282430713f7d60c8a246c83",
-      "src/core/native_dense.cpp": "4424972f8bd8c1f0e71ea360140a6cd3c56ed6a5533d1354bdbcdbc13d387d42"
-    },
-    "report": "/home/yayoi/orca/workspaces/Strata/sycl/.cache/strata-research/20261024/checkpoint-compatible-prefill/report.md",
-    "report_budget_bytes": 12288,
-    "prerequisites": [
-      {
-        "met": true,
-        "evidence": "Default prompt-cache-every16384 sets requires_prefix_checkpoints and disables dedicated layer-major;diagnostic every0/cache6 small model passes;checkpoint-enabled production route remains unqualified. Existing source audit did not compare compatible callback/sizing/lifetime alternatives."
-      }
-    ],
-    "next_review": "Native Luna-max review after report,then source decision before checkpoint-enabled production qualification;retire source-only audit after consumption.",
-    "model_observed": "GPT-6-Luna high",
-    "report_root_writable_at_launch": true,
-    "terminal": "term_8b534ecf-b804-4c46-9c32-f1b789a46428",
-    "incarnation": "05c040a7-497c-45e3-b47c-292e76571cf4",
-    "run": "run_12fa11537288",
-    "worker_ownership_closed": true,
-    "task": "task_22b753090506",
-    "dispatch": "ctx_2b9828692183",
-    "turn_start": "unobserved;inspect same handles,no retry",
-    "report_sha256": "9f629e9e3a55bf68619fa6d0e49e9fc0eb2d41d112d089210fbb286116899d4a",
-    "report_bytes": 11882,
-    "worker_done_observed": true,
-    "terminal_closed_verified": true,
-    "delivery_processed_and_acked": true,
-    "native_review": ".cache/strata-research/20261024/checkpoint-compatible-prefill/native-review.json",
-    "native_review_sha256": "fa7a822be39f33593411ec9a05ce657e9c45612df8e2e24e0ee0d2cea4951088",
-    "native_review_bytes": 7756,
-    "review_digest": "Checkpoint-preserving chunk-major is provisional. A predicate alone is insufficient: align initial layout/no-loan path and actual occupied-tail sizing;layer-major callbacks cannot snapshot earlier main state after full segment. Keep feature and validate coherent main/draft checkpoint restore,cache/graph handoff and repeated decode independently. No runtime qualification."
-  },
-  "checkpoint_layout_v4_model_source_audit_20261024": {
-    "classification": "decision_support",
-    "status": "native_reviewed_no_declared_small_gate_blocker",
-    "schedulable_now": false,
-    "source_commit": "0a6da6f4bdb33fa83b65557d536c8d075d224225",
-    "native_source_commit": "1cba8a285",
-    "source_sha256": {
-      "src/program/generate.cpp": "6857436f344b6ea41cf1facd88eeaa6dd2f3d61432312960b76b66f0cf68837f",
-      "include/strata/program/diagnostic_kv_ranges.hpp": "3973975b37f804b7a276bb5d35b0bc5cb2eff597b1df9dcbdacccad1877f714d",
-      "tests/core/full_context_diagnostic_test.cpp": "ef0f83bb29f5faf66119b420482080084b4087aa42610426bb0209eda35b391f",
-      "tools/sycl/check_model_restore.py": "98fab9343539b063020bcb37702c21a32ec69e1393825cb4969acb8848f85c64",
-      "tools/sycl/check_streamed_qsa.py": "0a3222c0ae5b4df3e3b8a1a5f9e0a40a0387e49ed86b6c9f111d3fb4bab95ebb",
-      "include/strata/prefill/prefill.hpp": "8b7f2117b7eae566f4a527947f9f7c3855022ddaa282430713f7d60c8a246c83",
-      "src/prefill/prefill.cpp": "942c352c4197b296313e54d63243b62dcfabfae1ab79d04b2893ba3aec6c6686",
-      "src/prefill/layer_major.inc": "a0019a68132c50d18805fcf3914a92eb326f9fa55a73d51e4bf85cc5d479afbb",
-      "src/core/conversation_snapshot.cpp": "57ced89d4e3e90f5a93b597b04d1c73f406f20a742e43174eb042b4dea885fe2"
-    },
-    "report": "/home/yayoi/orca/workspaces/Strata/sycl/.cache/strata-research/20261024/checkpoint-layout-v4-model-audit/report.md",
-    "report_budget_bytes": 12288,
-    "prerequisites": [
-      {
-        "met": true,
-        "evidence": "New compiled checkpoint-layout/hash-span fix,134+9459 CPU passes and6 exact fixture matches exist;new model checkpoint/nonaligned-prefix controller is committed and needs source audit before GPU execution."
-      }
-    ],
-    "next_review": "Native Luna-max review before small/checkpoint model execution;retire consumed source report after useful corrections and relevant model outcomes are committed.",
-    "model_observed": "GPT-6-Luna high",
-    "report_root_writable_at_launch": true,
-    "terminal": "term_689d4c0a-aef4-4427-af9a-a86ac8381b09",
-    "incarnation": "f99acbf9-e42b-48e6-8460-41757a475306",
-    "run": "run_12fa11537288",
-    "worker_ownership_closed": true,
-    "task": "task_66f0c7d0b96d",
-    "dispatch": "ctx_0a0aec1f5bb4",
-    "turn_start": "unobserved;inspect existing handles,no retry",
-    "report_sha256": "2832056530746952626552d0eb57863142213e30199366c87952ca1a853eef03",
-    "report_bytes": 12252,
-    "terminal_closed_verified": true,
-    "delivery_processed_and_acked": true,
-    "native_review": ".cache/strata-research/20261024/checkpoint-layout-v4-model-audit/native-review.json",
-    "native_review_sha256": "eb51c06e935e07a360e6c1fcb5706999d3beeb93ced4681ffd3dddab1fc3535f",
-    "native_review_bytes": 3974,
-    "review_digest": "Prepared commands use short-read0 and batched33-token callbacks,so the report parser blocker is false. Actual source checkpoint route,fail-before-mask admission,reuse/nonaligned restore math and134+9459 hash-order cases verified. Only host protocol has run;fresh model and broader adoption gates remain.",
-    "corrections": [
-      {
-        "finding": "Hypothetical short-window parser blocker",
-        "status": "false_positive",
-        "evidence": "All prepared native commands pin --short-read0;their33-token requests and restored suffixes use batched prefill. Original report preserved;no parser/source change or recorded hash update needed."
-      }
-    ]
-  },
   "explicit_layout_physical_full_entrypoint_audit_20261024": {
     "classification": "decision_support",
-    "status": "native_reviewed_terminal_consume_plan_pending_model_gates",
+    "status": "native_reviewed_main_implementation_pending",
     "schedulable_now": false,
     "source_commit": "72f6de92ad792787098cbf01667b99dcf3c872f8",
     "native_source_commit": "1cba8a2857891862f8ed4c534d8afee3b0aeaf98",
@@ -10355,7 +10263,7 @@
     "question": "Choose an actual final-position physical262144 diagnostic entrypoint for the explicit serve layout;compare terminal-consume versus existing entrypoints without changing decode.",
     "report": "/home/yayoi/orca/workspaces/Strata/sycl/.cache/strata-research/20261024/explicit-layout-physical-full/report.md",
     "report_budget_bytes": 12288,
-    "next_review": "Native Luna-max source/plan review,then prospective Main plan after the frozen model cohort closes;retire consumed source audit after useful decision.",
+    "next_review": "Actual v4 near-cap and nonaligned RESTORE now pass;Main may prospectively implement diagnostic-only explicit serve physical full-fill. Retire report after decision/source consumption;no new broad research scope is eligible.",
     "model_observed": "GPT-6-Luna high",
     "report_root_writable_at_launch": true,
     "terminal": "term_44b1572f-5828-4ad6-bb31-ce75c35333ba",
@@ -10381,11 +10289,12 @@
         "status": "wording_correction",
         "evidence": "A42 does exercise layer-major math;its missing coverage is the optional serve layout and checked cache-lease ownership. Do not claim it lacks layer-major execution."
       }
-    ]
+    ],
+    "retired_transaction_inputs": "Original specs/source-pin duplicates/worker lifecycle receipts are retired after accepted settlement and native review;use f29175c9f index fields and closed_v4_model_audit_retirement. Historical pinned small stderr was consumed by source review;its useful before/after delta is preserved in full-context-current.owner_trace_obligations."
   },
   "short_prefill_memory_interval_source_audit_20261024": {
     "classification": "decision_support",
-    "status": "native_reviewed_targeted_owner_trace_pending_model_gates",
+    "status": "native_reviewed_targeted_owner_trace_next",
     "schedulable_now": false,
     "source_commit": "6cc40909a20d25b58adaded061ed236f976c4573",
     "native_source_commit": "1cba8a2857891862f8ed4c534d8afee3b0aeaf98",
@@ -10407,7 +10316,7 @@
     "question": "Which source-grounded owners/conversions can explain the observed short32-row memory interval,and what minimal Main trace discriminates them without altering decode?",
     "report": "/home/yayoi/orca/workspaces/Strata/sycl/.cache/strata-research/20261024/explicit-layout-physical-full/short-prefill-memory-owners.md",
     "report_budget_bytes": 12288,
-    "next_review": "After the frozen RESTORE case closes,Main commits a targeted phase/owner allocation trace plan;retire source-only report after that decision is consumed. No allocator/source change or cache purge is qualified by this review.",
+    "next_review": "V4 cohort is complete/passed. Main next commits targeted owner allocation/free trace at observed short32-row boundaries;the cause/cost remain unknown. Retire source-only report after decision consumption.",
     "model_observed": "GPT-6-Luna high (same settled agent reused)",
     "report_root_writable_at_launch": true,
     "terminal": "term_44b1572f-5828-4ad6-bb31-ce75c35333ba",
@@ -10439,6 +10348,7 @@
         "status": "wrong_record_reference",
         "evidence": "Use native_prefill_layout_v3_build. MKL build configuration does not establish which runtime library owns the unexplained memory."
       }
-    ]
+    ],
+    "retired_transaction_inputs": "Original specs/source-pin duplicates/worker lifecycle receipts are retired after accepted settlement and native review;use f29175c9f index fields and closed_v4_model_audit_retirement. Historical pinned small stderr was consumed by source review;its useful before/after delta is preserved in full-context-current.owner_trace_obligations."
   }
 }

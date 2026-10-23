@@ -950,7 +950,7 @@ The current candidate's reported free bytes
 after the small test's three cache refills are2,287,861,760/116,117,504/46,448,640;
 the checkpoint process reports155,095,040/15,425,536/13,983,744.
 Their owner attribution is unresolved;preserve these admission observations
-for the next long reentry,without claiming physical residency or decode impact.
+for the next owner trace,without claiming physical residency or decode impact.
 The short32-row interval drops reported free memory from2558320640 to116183040
 bytes before its refill;the cause remains unattributed. Reviewed source bounds
 rule out the3712-byte host/device MTP fallback records as an explanation.
@@ -961,10 +961,13 @@ Detailed closed diagnostic plans and individual historical outcomes recover
 from`95e174255`;the current result retains their original statuses and archive
 references,with the live build/component/model qualifications. Successful closed model/component
 output,JIT,duplicate receipts,reproducible ID files and consumed source audits
-are retired after their useful outcomes and corrections are committed. All20
-selected/candidate native assets verify. The checkpoint compatibility audit
-remains for its concrete source fix;unresolved owner/provenance holds remain
-separate from those closed raw artifacts.
+are retired after their useful outcomes and corrections are committed. The
+closed v4 model outputs,consumed checkpoint/layout audits and settled research
+transactions now retire241 files/46482302 bytes. All20 selected/candidate native
+assets verify before and after deletion. The closed model record remains only
+for the imminent owner-trace environment/configuration consumer. Four new
+physical-fill/memory report/review files remain for their named Main tasks;
+unrelated owner/provenance holds remain separate from the retired artifacts.
 
 Remaining model gates are repeated phase-preserving adoption evidence,
 agent-session and task quality,near-cap/tail boundaries,
