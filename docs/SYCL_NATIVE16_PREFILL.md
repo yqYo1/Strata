@@ -816,6 +816,16 @@ model exit. Near-cap and RESTORE cases were not run. Correct the controller and
 check its real owned protocol transport before a new committed model plan.
 A16-token restored suffix exercises the short path; a long-prefill RESTORE
 needs more than8192 batched fresh rows to exercise layer-major reentry.
+The corrected v2 plan checks the real Owner/Interactive callback and all seven
+exact request hashes with a host-only protocol peer first. It retains the small
+16-token reentry case and the admitted262120-input/16-output case. Long RESTORE
+now parks253920 positions, processes a separate33-token request, then restores
+and extends to262128. Its8207 fresh batched rows exceed the8192 threshold and
+must produce two chunks per QSA layer at nonzero position253920. Q8 host-prefix
+uploads request268139520 bytes per layer, not measured physical bus traffic.
+The native engine and component fixtures remain the qualified a359 generation;
+this controller-only change creates no new native/GPU qualification. All model,
+phase-performance and public API gates remain pending.
 Detailed closed diagnostic plans and individual historical outcomes recover
 from`95e174255`;the current result retains their original statuses and archive
 references,with the live build/component/model qualifications. Successful model

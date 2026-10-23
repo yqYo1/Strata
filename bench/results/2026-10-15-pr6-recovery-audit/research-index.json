@@ -10277,5 +10277,39 @@
     "terminal_closed_verified": true,
     "terminal_close_sha256": "497f7e737ff3d0212bbfbf4c54a84491e2d5ef8df9df32595b1269a86fe8b6e3",
     "delivery_processed_and_acked": true
+  },
+  "nonzero_prefix_restore_audit_20261024": {
+    "classification": "decision_support",
+    "status": "dispatched_turn_start_unobserved_live_working_observed",
+    "schedulable_now": false,
+    "source_commit": "e8ed0e0d4",
+    "source_sha256": {
+      "tools/sycl/check_model_restore.py": "cab9a64e77851d194ea654cdf0f697f396ad8589a7cef5d94d5bdcc8613ab0c1",
+      "tools/sycl/measurement_owner.py": "bddd0c5e5020e882ca3404679420faec11e820dabce2ed4c72ef82b4c9c0874a",
+      "src/prefill/layer_major.inc": "8a36f5d655a0ad8bfe097ee3452e9598df609a9c620427e67dd2fd4b7deb1742",
+      "src/prefill/prefill.cpp": "c3c267b811a16cc236daafef7736bf47c2aa03697ff5b9d47368386a951adf18",
+      "src/program/generate.cpp": "cded66240ea5dd90d5c536748ae3a54f4481a2500aa2b2f71dd6de017689547b",
+      "src/core/conversation_state.cpp": "1d4aa88385af168802dedb19d5c9779bb2f934eaffa2a78003a724f8774dabdb",
+      "src/kernels/sycl/kv_stream.cpp": "4473c66af0c24663534fe2ca01e56cdb41f96c3aaae7de61eabeda8d25294696",
+      "include/strata/kernels/kv_q8.hpp": "8917232c10900e85a6193012d2cc56138c7ab000c01d964bc9d296cf2b2e4bb6"
+    },
+    "prerequisites": [
+      {
+        "met": true,
+        "evidence": "Main verified source admission n>chunk8192. New prospective controller uses253920/B/262128,8207 fresh batched rows, rather than the old16-token suffix. Earlier failed callback owned session positively closed; native component suite passed. Exact source is committed and frozen."
+      }
+    ],
+    "report": "/home/yayoi/orca/workspaces/Strata/sycl/.cache/strata-research/20261024/nonzero-prefix-restore-audit/report.md",
+    "budget_bytes": 12288,
+    "next_review": "Review before long nonzero-prefix model RESTORE;native Luna-max digest only. Retire source-only audit after useful checks/evidence and correction decisions are committed.",
+    "run": "run_12fa11537288",
+    "task": "task_758d87f76573",
+    "dispatch": "ctx_ff608b027229",
+    "terminal": "term_3bf16ea5-645b-47d4-a7b8-b6be41116482",
+    "incarnation": "1acae05c-9380-42b2-9d88-23124cc74d1c",
+    "model_observed": "GPT-6-Luna high",
+    "report_root_writable_at_launch": true,
+    "turn_start": "initially_unobserved;later_exact_worker_live_working_with_source_reads",
+    "worker_ownership_closed": false
   }
 }
