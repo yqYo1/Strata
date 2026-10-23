@@ -10242,7 +10242,7 @@
   "prefill_prefix_budget_policy_audit_20261024": {
     "classification": "decision_support",
     "schedulable_now": false,
-    "status": "native_reviewed_single_allocation_gap",
+    "status": "native_reviewed_allocation_gap_source_corrected",
     "source_commit": "2e8c5330e80caf8256a3ebaf36c7d6d96e9a0566",
     "source_sha256": {
       "include/strata/prefill/expert_bank_plan.hpp": "cb1a277c10d56692ff24635fece9acc43ad9e162e27fba9a913185a94e098c80",
@@ -10255,15 +10255,19 @@
     "budget_bytes": 8192,
     "run": "run_12fa11537288",
     "terminal": "term_3e938809-fe8c-4653-a9a4-0cf04a826efe",
-    "next_review": "Compare corrected source/CPU outcome,then qualified device/model gates. No additional same-source survey needed.",
+    "next_review": "Record corrected build/CPU and bounded GPU gates,then model capacity. Extract reusable source facts and retire consumed audit packet after this decision.",
     "task": "task_359ae19bd4fd",
     "dispatch": "ctx_8efd760d4153",
     "turn_start": "observed",
     "accepted_worker_completion": true,
     "report_sha256": "190e9df7077aba3ca328412b82e6a29597ee98b89ebbfbc9a21a74f9f2df11d1",
     "review": "/home/yayoi/orca/workspaces/Strata/sycl/.cache/strata-research/20261024/staged-q8-source-contract/budget-policy-native-review.json",
-    "review_sha256": "8b94d55a1b04053647d98bc4b8aa6cb9547236b47ffdb8b76341371bada23b69",
+    "review_sha256": "c263021e849d8c6a60cefd2b1a2111014ffbbd51a2e852791ffb3a8eb0f7bbad",
     "reviewer": "native Codex gpt-6-luna max /root/review_prefill_budget_policy_20261024",
-    "decision": "Typed capacity-only retry,unchanged mandatory reservations,actual BF16 dispatch and prefill-local restoration supported. Prefix itself lacks a max_mem_alloc_size check;Main closes current cohort and fixes it with exact boundary/invalid/overflow tests before further gates."
+    "decision": "Typed capacity-only retry,unchanged mandatory reservations,actual BF16 dispatch and prefill-local restoration supported. Prefix itself lacks a max_mem_alloc_size check;Main closes current cohort and fixes it with exact boundary/invalid/overflow tests before further gates.",
+    "review_previous_sha256": "8b94d55a1b04053647d98bc4b8aa6cb9547236b47ffdb8b76341371bada23b69",
+    "followup_source_commit": "a42a4d143",
+    "followup_decision": "Native Luna/max confirms source closes single-allocation gap with same device limit for prefix and mandatory owners;preserves invalid/overflow/mandatory refusals. CPU cases present for realistic long-prefix/small-bank exact/below limits and128MiB refusal. Build/CPU/GPU/model results remain separate;no adoption.",
+    "closure": "Orca Task accepted succeeded/completed;third and final bounded Task for this same TUI. No further research assigned to this session;exact terminal cleanup remains Main-owned outside automatic external-terminal release."
   }
 }

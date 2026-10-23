@@ -652,7 +652,7 @@ residency or successful allocation. Its separate native configure now passes;
 the actual generator compiles with `-fsyntax-only` both with and without the
 diagnostic definition, with no diagnostics and normal owned exits. These checks
 preserve the original9853-input/13-asset proof and verify8697 installed SDK inputs.
-The current unselected diagnostic builds from`2e8c5330e`, preserving the
+The current unselected diagnostic builds from`a42a4d143`, preserving the
 original selected13 assets and replacing only the previous diagnostic in place.
 Its recipe freezes230 additional MKL header/config/link inputs. The actual
 Ninja dependency census contains1404 files, including one predeclared generated
@@ -742,9 +742,15 @@ failed. A prefill-only budget selector now tries the existing on-demand GPU
 BF16 attention when only the materialized prefix prevents bank admission.
 It preserves invalid-option/overflow/headroom refusals,keeps the short-input
 prefix when it fits,and restores its local selection with the prefill lease.
-The new build and CPU budget fixture pass,including both262143/262144 host-tail
-plans,exact admission boundaries and preserved invalid/overflow/headroom
-refusals. Its bounded GPU attention and model gates are still pending.
+Source`2e8c5330e` passed CPU budget,streamed smoke and four-case checks,but its
+cohort closed before the remaining gates after review found a missing explicit
+single-allocation check for the optional prefix. Those individual passes remain
+passes;the unfinished cohort is not qualified. Source`a42a4d143` adds that check
+with the same actual device limit for mandatory owners,and preserves invalid,
+overflow and mandatory-budget refusals. Its new build passes1404 covered
+dependencies. Its CPU cases include exact/below-prefix limits for a long-prefix
+8193-row request with a legal one-slot bank,and a128MiB mandatory refusal.
+The corrected CPU,bounded attention and model gates are still pending.
 Nonzero-prefix RESTORE and clean matched speed comparisons remain open.
 
 Remaining model gates are repeated phase-preserving adoption evidence,
