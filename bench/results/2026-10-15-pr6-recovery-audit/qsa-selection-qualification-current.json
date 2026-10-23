@@ -1,0 +1,142 @@
+{
+  "stage": "prepared",
+  "source_commit": "d51d49b7fd081d52430c8651f3417d0be045828c",
+  "source_fingerprint": "fa78e25b8850426b30524e9512719cee04a8cb7173ca12263fe5e2f0b5dcc3ad",
+  "build_source_commit": "f64d40b886cbc633dd2e5159115b6f70da5d5ca3",
+  "build_sha256": "a464008750d395090c5868657816137be7a55e00e9030140fc53131403647936",
+  "fixture": {
+    "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-selection-native-v1/selection_dump_test-v2",
+    "bytes": 196728,
+    "sha256": "1d44f851d1542581563313f89488f6825558e47f162bc6cd1a04939890438fdb"
+  },
+  "review": {
+    "model": "native Codex gpt-6-luna max",
+    "status": "complete",
+    "source_gate_passed": true,
+    "sha256": "e46682ef534af3676cc192954fa3b0bbac14d1aa0ae4c1bec11a5161ac73a43a",
+    "bytes": 3776,
+    "disposition": "Helper/overlay/fixture static contract passes. Compiler-path prohibition unsupported: installed Intel LLVM is allowed and no XeStrata implementation was read. Prior7host tests did pass;new GPU callbacks/compilation are separately unqualified. Pin runtime/shared-library and normal-native-exit lineage before execution."
+  },
+  "runtime_lineage": {
+    "reference": {
+      "component_reference": {
+        "path": "bench/results/2026-10-15-pr6-recovery-audit/decode-query-profile-component-current.json",
+        "sha256": "8412bb2d5fffaba976ec0129afe9f3d0a0268a5ba9c4efbe89dff6eff28d46b1"
+      },
+      "same_runtime_delta_matches": true,
+      "same_private_native_probe_matches": true,
+      "observed_long_model_native_exit": 0,
+      "model_profile_original_failure": {
+        "commit": "292bbc4410d789b93165c336dd405e6185ea5a63",
+        "path": "bench/results/2026-10-15-pr6-recovery-audit/cpu-profiler-current.json",
+        "sha256": "cb628a244c652d46789a1458e303934e1dab36abf7708e1fca2607af73d2d302"
+      },
+      "separate_closed_analysis": {
+        "path": "bench/results/2026-10-15-pr6-recovery-audit/cpu-profiler-current.json",
+        "key": "native_model_aggregate_v2_reanalysis",
+        "canonical_sha256": "9d408613ae0d827b136ca973e4814559e4da7b6d1085e587787ea44c4ca42e6a"
+      },
+      "disposition": "These same runtime deltas and private probe already have passed component and observed long-model normal-exit evidence. The prepared capture controller did not explicitly bind this lineage; the replacement admission must bind it. Preserve original aggregate parser failure and preload runtime_teardown_qualified=false; normal process exit is not qualification of every adapter lifecycle API. No runtime setting changed or new GPU execution."
+    },
+    "native_validation_probe": {
+      "library": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/ur-validation-preload-v2/libstrata_ur_validation.so",
+        "sha256": "1d4e69d672d55fa0a126ae43b7b4743482cccca7e2f2bc22e0db2bfdad5bdc7c"
+      },
+      "loader": {
+        "path": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_loader.so.0.12.0",
+        "sha256": "bb6e1311850e4b1a924e42acae80c2b3610934625a4985aaa67967abe31356fc"
+      },
+      "component_source_commit": "f312b6691f508125db6cfc2580ca32a686ff2642",
+      "component_original_plan": {
+        "commit": "550c75f5fc954ee38b70230e32d2a48e12100d8a",
+        "path": "bench/results/2026-10-15-pr6-recovery-audit/research-index.json",
+        "sha256": "d12866b93c51e76a83e95638e66b6f6f4e0e33d779516a5fddecc178a6f8e10a"
+      },
+      "retained_reference_until_exit": true,
+      "runtime_teardown_qualified": false
+    },
+    "runtime_pins": {
+      "/usr/lib/x86_64-linux-gnu/libz.so.1.3": "86200da370f20476a2507e9097a789b5ef97269b4ca8d5e164ad82dab9d99892",
+      "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_loader.so.0.12.0": "bb6e1311850e4b1a924e42acae80c2b3610934625a4985aaa67967abe31356fc",
+      "/usr/lib/x86_64-linux-gnu/libc.so.6": "3a15d66867d83762c7f2f1e37359cb8f6c5743edb369c65285cb0b1c4f7498bf",
+      "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libsycl.so.9.0.0-0": "74243bafb2766fd1a038cf80fd62632b4aad9ecfdc0d3ce8711e4515a93d7008",
+      "/usr/lib/x86_64-linux-gnu/libgcc_s.so.1": "d93224d2b0dab4247598be683adca02f5cf00586f99c187579cd7e92058fb7cb",
+      "/usr/lib/x86_64-linux-gnu/libm.so.6": "fce00b6f25f459cf4ae0b7fae4257909a1a8a86f9149e7c029a5d617baf1ccd0",
+      "/usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.33": "1fd75fe70354a416d75aef22bcae68c47bd25d20e2d0568c30b1a9838cf62f11",
+      "/usr/lib/x86_64-linux-gnu/ld-linux-x86-64.so.2": "c20a2dc8917c755f02b94049356320fe1f62ac7d9f8994731f807d9df39302da",
+      "/usr/lib/x86_64-linux-gnu/libnl-3.so.200.26.0": "afcb69e2ef0b46c2ce7b7483848332fa9462776d33163f64209acf01f86eddd7",
+      "/usr/lib/x86_64-linux-gnu/libdrm.so.2.134.0": "0603c4dcb88bc9e076e34aedeec3513038e608d6d15d21330e49cb0ea38155e1",
+      "/usr/lib/x86_64-linux-gnu/libigdml.so.1.0.231": "8f4ffe4a856c441d4c85bd7d7de6ad7672c59812fe4655d2a8843c32eba97075",
+      "/usr/local/lib/libigc.so.2.41.5+1788943183": "40badd8f1ee80ac844a8947f5e91e5654fbcd851caefe343b0e5ec4ce4d1b123",
+      "/usr/lib/x86_64-linux-gnu/libzstd.so.1.5.5": "0a2128bc10841fb29e76d08d945864dfb0b6a66da5df6df5d8299197439e54bb",
+      "/usr/local/lib/libopencl-clang2.so.22.1": "02ba9fb0f16b7f02c012095c46f8053c4bc20f9b5bde3028eedff6dcfed94bfe",
+      "/usr/local/lib/libigdfcl.so.2.41.5+1788943183": "ece8bcd533a44cc1684c1f24eeeca3302e4d19307a806fad5f1b83171f9fc1c3",
+      "/usr/lib/x86_64-linux-gnu/libze_tracing_layer.so.1.32.0": "db1856f379706d51b6ded84ce028d4aa48740ef63793f60e8a1e027c6db6ffb5",
+      "/usr/lib/x86_64-linux-gnu/libigdgmm.so.12.10.0": "a7904f18d8d59c7128dec4d6f22ae2b2e8a51f91f6946ac4e68b1ec6e0a7a6f3",
+      "/usr/lib/x86_64-linux-gnu/libze_intel_gpu.so.1.17.39395": "50adb6b727d027309039803033d41efeae4b248589ee363f321c0d538c7de3ff",
+      "/usr/lib/x86_64-linux-gnu/libze_loader.so.1.32.0": "b764efda507f173560fa6055d433dd5c76140180b4a7c532e1cea813cde67363",
+      "/usr/lib/x86_64-linux-gnu/libcap.so.2.66": "6ac6abc86ac891c6e13486470e26f1d939f47fda9e6b5d5508a7f5ec881adc84",
+      "/usr/lib/x86_64-linux-gnu/libudev.so.1.7.8": "0d6934adafb2ef3c640382440c14d6bd60f391e688c000796ffcea0c72849269",
+      "/usr/lib/x86_64-linux-gnu/libhwloc.so.15.7.0": "86dff44a023254d997cea910b9a51f35afefe6780f4b5530f974a2009ba47487",
+      "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libumf.so.1.1.0": "ebe65269abd5869010ab256375e8663f7a8f8b5453e0be0c78f615eb71581ab9",
+      "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_adapter_level_zero_v2.so.0.12.0": "05bcafc4a0d45d33f957f16ffb4ba4776da675e79ade1121b93b94b8549335d8",
+      "/usr/lib/x86_64-linux-gnu/libnl-genl-3.so.200.26.0": "0757db7e6c5fbc4d2a8bbedbac7061fbb8ebb6196b4d2954d3a321e9ff76933c",
+      "/opt/intel/oneapi/mkl/2026.1/lib/libmkl_sycl_blas.so.6": "51d6c16990701a5aaf9fbbde5d86f5a7197b81357b66b19cbb912206564cf4ee",
+      "/opt/intel/oneapi/mkl/2026.1/lib/libmkl_intel_ilp64.so.3": "ffbbeff402fdf09baa53f8226b86f27046592d984ae2916b1bbc2e59132c7c89",
+      "/opt/intel/oneapi/mkl/2026.1/lib/libmkl_sequential.so.3": "4e7ff529bec90a1b0ce70299258a64a2ebae7a5a6f3ec031306a6ddb39b5a650",
+      "/opt/intel/oneapi/mkl/2026.1/lib/libmkl_core.so.3": "b4f086651ee5a8471140d53fedfdbbaba606287784763b0739f282872c31aa9b",
+      "/usr/lib/x86_64-linux-gnu/libdl.so.2": "c2994527172cc23b7fb0f7d611b71e00a37da27af12c2e5e9e0dc1a742886c96",
+      "/usr/lib/x86_64-linux-gnu/libpthread.so.0": "90491a21ce44efcf3bd4b65ec82501c091d7ebe7f8d9b341dd01d721001d9ecd"
+    }
+  },
+  "environment": {
+    "PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin:/usr/bin:/bin",
+    "HOME": "/home/yayoi",
+    "LANG": "C.UTF-8",
+    "LC_ALL": "C.UTF-8",
+    "PYTHONDONTWRITEBYTECODE": "1",
+    "LD_LIBRARY_PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib:/opt/intel/oneapi/mkl/2026.1/lib",
+    "MKLROOT": "/opt/intel/oneapi/mkl/2026.1",
+    "OMP_NUM_THREADS": "1",
+    "GIT_TERMINAL_PROMPT": "0",
+    "GIT_SSH_COMMAND": "ssh -oBatchMode=yes",
+    "CPLUS_INCLUDE_PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/include",
+    "PIP_CONFIG_FILE": "/dev/null",
+    "ONEAPI_DEVICE_SELECTOR": "level_zero:gpu",
+    "UR_ADAPTERS_FORCE_LOAD": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_adapter_level_zero_v2.so.0",
+    "SYCL_CACHE_PERSISTENT": "0",
+    "NEOReadDebugKeys": "1",
+    "EnableDirectSubmission": "0",
+    "UR_L0_V2_FORCE_DISABLE_COPY_OFFLOAD": "1",
+    "STRATA_SYCL_VERIFY_NATIVE_CAPTURE": "0",
+    "STRATA_SYCL_PREFILL_SAME_QUEUE": "1",
+    "STRATA_SYCL_PREFILL_NATIVE16": "bf16",
+    "XDG_CACHE_HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-selection-qual-v1/cache",
+    "TMPDIR": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-selection-qual-v1/tmp",
+    "LD_PRELOAD": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/ur-validation-preload-v2/libstrata_ur_validation.so",
+    "STRATA_UR_PROBE_EXPECTED_LOADER": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_loader.so.0.12.0"
+  },
+  "cases_order": [
+    "small",
+    "full"
+  ],
+  "cases": [],
+  "prospective_gates": "Two fresh processes,small17x33 with full UR trace then8192x2051 with parameter validation. Exact payload/header and source guards,no invalid-geometry submission,checked normal teardown; same-PID pre-main validation,unchanged inputs/runtime/selected fallback,no fresh fault. First failure stops without retry. No model,physical-context,decode or speed qualification.",
+  "budgets": {
+    "wall": 90,
+    "cpu": 180,
+    "rss_cap": 2147483648,
+    "text_cap": 33554432,
+    "file_cap": 100663296,
+    "total_cap": 268435456
+  },
+  "retention": "Retire both synthetic payloads and successful API traces after recorded exact checks/hash/closure. Keep compact case evidence for one real-selection capture admission,then review diagnostic build retirement.",
+  "passed": false,
+  "complete": false,
+  "active": false,
+  "ownership_closed": true,
+  "GPU_executed": false,
+  "clean_speed_qualified": false,
+  "model_adoption_qualified": false
+}
