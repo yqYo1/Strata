@@ -26,9 +26,9 @@ refusal tests passed. See the
 The rejected362 package's copy/transition prototypes, unused targets, modes and
 controllers are removed; recover them at`44c7c919c`. Its build products and the
 duplicate fallback receipt were retired after source recovery and consumer
-checks. One qualified engine generation remains. The separate legacy
-source-provenance hold remains explicit in the build result; retiring this
-comparison does not resolve it. The separate primary product review has now
+checks. One qualified engine generation remains. Legacy source-provenance
+failures remain explicit in the build result;this comparison does not qualify
+those older products. The separate primary product review has now
 closed:262 project inputs and the recipe recover, but final dependency and
 quoted-header identities remain unavailable. Its unused179 build files
 (153072851 bytes) are retired. The initial8 source hashes also recover:6 from
