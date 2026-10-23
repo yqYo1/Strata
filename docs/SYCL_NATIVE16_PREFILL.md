@@ -530,6 +530,23 @@ build,successful raw output and consumed or unused report bodies are retired:
 and build/smoke result files are recoverable at`15f74b46d`;the compact timing
 result is the maintained evidence. All13 selected native assets still match.
 
+The next auxiliary fixture is committed at`a509cdbbf`. Its eight-command build
+has closed successfully;no GPU execution has occurred. It calls the unchanged
+production entrypoint for three unique-ID address patterns. A32-cell KV payload
+period preserves every ordered operand bit across those patterns;all arms must
+produce identical output bits and observe the same V perturbation. This tests
+address/working-set sensitivity with the full matrix/softmax path intact,
+without claiming cache residency or actual-model reuse. The original build
+admission refused a research startup directory whose basename matched the
+conservative process scan;no compiler or GPU work had started. That pre-task
+terminal was closed and the directory renamed before the recorded build.
+The [build result](../bench/results/2026-10-15-pr6-recovery-audit/qsa-locality-build-current.json)
+pins186 project/recipe inputs and8700 SDK inputs. Its only consumer is the
+imminent small traced and full-width locality comparison. An Orca Luna/high
+source/protocol audit and native Luna/max report review must close before the
+small GPU check;the controller enforces the committed scoped admission evidence.
+Selected6e40,decode configuration and placement remain unchanged.
+
 Remaining model gates are repeated phase-preserving adoption evidence,
 agent-session and task quality, full physical262144 tokens including the final
 slots and tail boundaries, prefill-to-decode/session/RESTORE, and70tok/s decode.
