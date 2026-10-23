@@ -546,17 +546,21 @@ still qualify;the separate older ownership/provenance holds remain explicit.
 A separate diagnostic package at`a341a66e0` now compiles successfully. Its
 checked hook captures only the final512 queries' actual selected IDs and step
 descriptors, and records successful prefix-pack submissions. Eight CPU
-normal/fault cases pass, including deliberate fail-stop exit73;GPU readback is
-still unexecuted. The [build result](../bench/results/2026-10-15-pr6-recovery-audit/qsa-locality-capture-build-current.json)
+normal/fault cases pass, including deliberate fail-stop exit73. The small17/33
+and full8192/2051 GPU readback cases now pass with exact tail bytes,source guards,
+invalid-geometry rejection,inherited-work drains,normal exits,private pre-main
+validation and no fresh fault. The [build result](../bench/results/2026-10-15-pr6-recovery-audit/qsa-locality-capture-build-current.json)
 pins the generated TU,541 project inputs,9311 dependency inputs and8700 SDK
 inputs. The original selected package and decode placement are unchanged.
 The source audit identifies paired append-file freshness/completion as a launch
 hold. The new controller proposes an exclusive transaction claim, fresh private
 destinations and a checked normal-exit completion record binding both hashes;
-the protocol review accepts the two synthetic readback scopes;small/full GPU qualification remains required. The
+the protocol review accepts those two completed synthetic scopes. The
 implemented replay consumer preserves whole-query operands and output ownership
 under natural,reverse and overlap-grouped enumeration,using synthetic Q/K/V with
-captured masks/steps. It compiles successfully and is not yet GPU-qualified. CPU order
+captured masks/steps. It compiles successfully. Its14-case host parser tests and traced synthetic
+replay smoke remain pending;actual-file provenance and host-check are separate
+requirements before actual-mask execution. CPU order
 construction is excluded from this diagnostic and cannot justify model adoption.
 No actual-model capture is permitted before that consumer and readback qualify.
 
