@@ -1,0 +1,29 @@
+{
+  "stage": "prepared",
+  "passed": false,
+  "complete": false,
+  "GPU_executed": false,
+  "source_commit": "afd8bf135985d3da66889f1154a03513f8857e9e",
+  "source_sha256": {
+    "tools/sycl/analyze_qsa_prefix_service.py": "e886c1d8b5b5b71d4e95020fc737583f8b99774c74d51307edc38c9e3533449d",
+    "tools/sycl/measurement_guards.py": "794e332c70aca0acadad4f26d0414548e023a02fd27b72ed78fc773674423ec8",
+    "tests/core/test_qsa_prefix_service.py": "6688d572775f3501a077773fd053a10e62ffd73fd2384e456eac5a2b13506a73",
+    "src/kernels/sycl/qsa_bf16_prefix.cpp": "4f9f815c9baae709f919f6d5ad1af04677c10d8c13c7597b3857cf81567ae192",
+    "src/prefill/prefill.cpp": "777e6d847ab6d83bc0a9103d6baabb7f4204ff23d34ce6c853eb1d7e68a11c37",
+    "src/prefill/layer_major.inc": "f7db8923dc466239f44c820ac3f8e9edfdd209b239e6b91f0993adc595d7dcf1"
+  },
+  "native_source_commit": "6e40afc1beddd059ee518617f6c1efce1da14aca",
+  "profile_sha256": "6d0c27e2b16f987e0a3e6da138a1399f3a45b73229a91403ad7b88f8cccf1370",
+  "aggregate": {
+    "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/unitrace-model-aggregate-v2/reanalysis.json",
+    "sha256": "55a0bb49577f2c7ac5bb3f1a1c61526a850c8fac984a837d8dc49b66675a9659"
+  },
+  "original_failure": {
+    "commit": "292bbc4410d789b93165c336dd405e6185ea5a63",
+    "path": "bench/results/2026-10-15-pr6-recovery-audit/cpu-profiler-current.json",
+    "sha256": "cb628a244c652d46789a1458e303934e1dab36abf7708e1fca2607af73d2d302"
+  },
+  "criteria": "No native execution. Preserve original parser failure. Verify exact closed replay and all8474rows/5672366calls/211017537985ns. Match every selected prefix-template launch to source-derived full-prefix pack or attention geometry,count every33213cell chunk across12layers,positive service statistics,one long official request and4warmups. No missing/extra/duplicate matched work. Keep source-correlated device service separate from phase-recorded critical path,CPU time,wire bytes or saturation.",
+  "limits": "Whole-process profiler data; attribution by exact source/shape/count conservation. No per-request event timeline. No causal end-to-end speed bound from sums of service. The32K+request does not measure117K or262144 behavior. No inference/adoption change.",
+  "retention": "Keep seven phase/shape service samples and provenance/limits;retire the consumed full aggregate/normal logs after reader/source checks. No new build or raw trace."
+}
