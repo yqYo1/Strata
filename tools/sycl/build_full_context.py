@@ -21,8 +21,8 @@ import measurement_owner as supervision
 P, B = build.P, build.B
 ROOT = B / 'full-context-native-v1'
 RESULT = source.RESULT
-KEY = 'native_allocation_budget_build'
-PREDECESSOR_KEY = 'native_budget_build'
+KEY = 'native_snapshot_verify_build'
+PREDECESSOR_KEY = 'native_allocation_budget_build'
 MACRO = '-DSTRATA_SYCL_FULL_CONTEXT_DIAGNOSTIC=1'
 PREFIXES = ['CMakeLists.txt', 'cmake', 'include', 'src', 'tests', 'third_party',
             'bench/sycl', 'tools/sycl/build_full_context.py', *source.INPUTS]
@@ -106,7 +106,8 @@ def actual_dependency_closure(record, output):
 ENGINE_KEY = KEY
 ENGINE_RECORD = ROOT / 'engine-record.json'
 TARGETS = ('strata', 'sycl_native16_qsa_streamed_test', 'sycl_native16_qsa_test',
-           'sycl_qsa_bf16_attention_test', 'prefill_expert_bank_plan_test')
+           'sycl_qsa_bf16_attention_test', 'prefill_expert_bank_plan_test',
+           'sycl_conversation_snapshot_test')
 
 
 def prepare(container):
@@ -143,15 +144,15 @@ def prepare(container):
             receipt_sha256=build.digest(ENGINE_RECORD),inputs_recovered=True,
             source_groups=[dict(revision=s['revision'],count=s['count'],aggregate_sha256=s['aggregate_sha256'])
                 for s in [previous['project'],*previous['dependencies']]],
-            decision='Replace only the unselected diagnostic in place. Its original source/recipe recover;capacity checks failed closed. Original selected6e40 engine+12fixtures remain the validated fallback.'),
+            decision='Replace only the unselected A42 diagnostic in place after exact source/recipe recovery. Its six component and two model capacity gates passed;near-cap/RESTORE/decode adoption remains pending. Original selected6e40 engine+12fixtures remain the validated fallback.'),
         command=['/usr/bin/cmake','--build',str(ROOT/'build'),'--target',*TARGETS,'-j','4'],
         dependency_command=['/usr/bin/ninja','-C',str(ROOT/'build'),'-t','deps'],
         stage='prepared_streamed',passed=False,complete=False,active=False,ownership_closed=True,
         GPU_executed=False,native_engine_built=False,production_selected=False,model_adoption_qualified=False,
         physical262144_qualified=False,
         budgets=dict(wall_s=1200,cpu_s=7200,rss_bytes=16<<30,text_bytes=8<<20,file_bytes=256<<20,total_bytes=4<<30),
-        criteria='Exact committed native/controller/compiler/dependency/SDK/MKL/generated inputs;owned configure/build/dependency census exit0. Engine and both same-build fixtures hashed;actual dependency closure has zero uncovered files and only predeclared generated headers. No GPU execution or selection.',
-        retention='Reuse the existing unselected comparison build directory;no third engine generation. Retain original selected13 assets. New generation is only for imminent traced streamed-Q8,full component/resident-oracle and capacity-model gates;retire normal build output after closure.')
+        criteria='Exact committed native/controller/compiler/dependency/SDK/MKL/generated inputs;owned configure/build/dependency census exit0. Engine and all five same-build fixtures hashed;actual dependency closure has zero uncovered files and only predeclared generated headers. No GPU execution or selection.',
+        retention='Reuse the existing unselected comparison build directory;no third engine generation. Retain original selected13 assets. New generation is only for imminent traced streamed-Q8,attention/resident-oracle and snapshot restore component/model gates;retire normal build output after closure.')
     write(ENGINE_RECORD,record);container[KEY]=summary(record)
     container[PREDECESSOR_KEY]['superseded_by']=KEY
     container[PREDECESSOR_KEY]['original_binary_retired_on_rebuild']=True
@@ -177,7 +178,7 @@ def rebuild(container):
     def persist():
         record['active']=bool(owner and owner.active is not None)
         write(ENGINE_RECORD,dict(record,commands=owner.commands if owner else []))
-    owner=supervision.Owner(ROOT/'owned-allocation-budget',persist)
+    owner=supervision.Owner(ROOT/'owned-snapshot-verify',persist)
     record['stage']='building_streamed';persist()
     try:
         b=record['budgets']

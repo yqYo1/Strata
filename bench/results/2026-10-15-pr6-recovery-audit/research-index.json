@@ -10156,8 +10156,8 @@
   },
   "current_a42_near_cap_restore_gate_audit_20261024": {
     "classification": "decision_support",
-    "schedulable_now": true,
-    "status": "dispatched",
+    "schedulable_now": false,
+    "status": "native_reviewed_plan_corrections_required",
     "source_commit": "a42a4d143",
     "source_sha256": {
       "src/program/generate.cpp": "8ed3db3e989996269b532e6fb7a8c2a685508b45473e12f0fe4f397e3c6e12c4",
@@ -10175,9 +10175,52 @@
     "incarnation": "d67f4bde-923e-4e8d-adda-e58f3ed89c96",
     "model_observed": "GPT-6-Luna high",
     "report_root_writable_at_launch": true,
-    "next_review": "Native Luna/max report review;Main commits/owns next state/performance tests.",
+    "next_review": "Main commits exact-byte main/draft/running-state diagnostics and corrected bounded state plan before execution. Small traced/validated probe precedes long calls;native max_new=1 gives exact prompt-position parity.",
     "task": "task_66a9b9b819c8",
     "dispatch": "ctx_e4c8eb0105fd",
+    "turn_start": "observed",
+    "report_sha256": "ee946ae8abdba76a6581eb1872ada110da54d6aedbe2d1c3d0e1776ac4d4afed",
+    "report_bytes": 11926,
+    "native_review": "/home/yayoi/orca/workspaces/Strata/sycl/.cache/strata-research/20261024/full-context-state-qualification/native-review.json",
+    "native_review_sha256": "1dbb2016e389e02869302063bf36ba6d6ba2bfc11654f50977b0ad97b73abe47",
+    "worker_done_accepted": true,
+    "worker_ownership_closed": true,
+    "main_digest": "Internal cache restore only,no public RESTORE endpoint. Correct eight-token reserve and MTP committed positions. Existing SNAPSHOT_VERIFY reads draft KV only;main KV/running-state verification is missing. Do not use generated-text equality as an adoption gate."
+  },
+  "current_full_context_vram_owner_attribution_20261024": {
+    "classification": "decision_support",
+    "status": "dispatched",
+    "schedulable_now": false,
+    "source_commit": "cac65e3d3422c373a2eb6011ae6196804f70d039",
+    "source_sha256": {
+      "src/program/generate.cpp": "8ed3db3e989996269b532e6fb7a8c2a685508b45473e12f0fe4f397e3c6e12c4",
+      "src/prefill/prefill.cpp": "c3c267b811a16cc236daafef7736bf47c2aa03697ff5b9d47368386a951adf18",
+      "src/prefill/layer_major.inc": "8a36f5d655a0ad8bfe097ee3452e9598df609a9c620427e67dd2fd4b7deb1742",
+      "src/core/native_dense.cpp": "4424972f8bd8c1f0e71ea360140a6cd3c56ed6a5533d1354bdbcdbc13d387d42",
+      "src/core/session.cpp": "4c1aa246e568f96b40b9f9e16000e1f1dc6d75c99168cb26baef56a43b4e4bce",
+      "include/strata/core/session.hpp": "b7f6e053fd3c4c454980f071ada8bbc4ad0fc92902d9009d9c8761aaaefcfbb9",
+      "src/sycl/compat.cpp": "7e88d1684bf1d6f386a739a798f7e0b5eebf90fc92ce03e577536a1d08d5ed03"
+    },
+    "prerequisites": [
+      {
+        "met": true,
+        "evidence": "model_capacity_v5 full262144 pass proves actual all-RAM5368688640B residual,1363148800B512-expert bank,512MiB allowance;aggregate free-memory logs do not close the resident-owner ledger."
+      },
+      {
+        "met": true,
+        "evidence": "Prior selected6e40 ledger and decode-vram-rebuild reports are indexed and supplied. Main is only changing snapshot verification sources outside these pinned files until this finite audit settles."
+      }
+    ],
+    "question": "Reconcile current prefill/decode GPU owner sizes and aliases with actual full-context admission;identify remaining measurements needed before selecting retention/rebuild/placement changes. Do not repeat settled banking feasibility.",
+    "report": "/home/yayoi/orca/workspaces/Strata/sycl/.cache/strata-research/20261024/full-context-state-qualification/vram-owner-attribution.md",
+    "budget_bytes": 12288,
+    "next_review": "Native Luna/max curation;Main reads only digest. A source ledger does not prove physical allocation savings or speed.",
+    "run": "run_12fa11537288",
+    "task": "task_71d2f4f91ff6",
+    "dispatch": "ctx_713f6397e2dc",
+    "terminal": "term_acd4d28e-83b2-403c-9e25-714c876490c9",
+    "incarnation": "d67f4bde-923e-4e8d-adda-e58f3ed89c96",
+    "model_observed": "GPT-6-Luna high",
     "turn_start": "observed"
   }
 }

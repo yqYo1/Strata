@@ -773,6 +773,18 @@ The native-source delta from selected`6e40afc1b` is confined to prefill math and
 planning,the diagnostic-only CLI,manual test targets and a read-only host-span
 query;decode inference sources and allocator implementations are unchanged.
 Actual repeated decode comparisons still determine phase preservation.
+
+The next unbuilt diagnostic adds read-only verification of a restored session's
+main and draft KV payloads, GDN/PLE/indexer state, spare pooled rows and PLE token
+window. The existing `STRATA_SNAPSHOT_VERIFY` branch currently checks draft KV
+only; do not infer main-state restoration from its marker. A synthetic fixture
+will corrupt each state domain and require rejection without repair. Main-authored
+code uses the existing Strata snapshot interfaces, with no external implementation
+copy. Qualification and decode preservation remain pending. Near-cap request
+plans must include the native/API eight-token reserve:262120 input plus16 output
+tokens is admitted at262144 context. For exact-position RESTORE checks use one
+output token, and record consumed positions rather than inferring them from a
+speculative generation's emitted length. Generated text equality is not a gate.
 Detailed closed diagnostic plans and individual historical outcomes recover
 from`95e174255`;the current result retains their original statuses and archive
 references,with the live build/component/model qualifications. Successful model

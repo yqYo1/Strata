@@ -6,6 +6,7 @@
 #include <cstdio>
 #include <cstdlib>
 #include <limits>
+#include <cstring>
 #include <vector>
 
 using namespace strata::core;
@@ -149,6 +150,9 @@ void full_session(int fmt, int mode, int experts) {
     auto bad=a; bad.kv.back().k.pop_back();
     check(conversation_snapshot_restore(bad,ss,g,draft.state,err)==ConversationRestore::invalid,
           "reject invalid late draft before any main-layer write");
+    ConversationVerification invalid_check;
+    check(!conversation_snapshot_verify(bad,ss,g,draft.state,invalid_check,err),
+          "reject invalid snapshot before diagnostic reads");
     check(conversation_snapshot_save(restored,view,ss,g,draft.state,err),"capture B after refused restore");
     check(restored.live.gdn==b.live.gdn && restored.live.dead==b.live.dead &&
           equal(restored.kv[0],b.kv[0]) && equal(restored.kv[1],b.kv[1]),"refusal preserves all tested state");
@@ -158,6 +162,33 @@ void full_session(int fmt, int mode, int experts) {
           restored.live.dead==a.live.dead && restored.live.block_pos==a.live.block_pos &&
           equal(restored.kv[0],a.kv[0]) && equal(restored.kv[1],a.kv[1]),"whole-session A/B/A exactness including spare key");
     check(ss.ple_prev[0]==64 && ss.ple_prev[1]==65,"PLE token window reconstructed");
+    ConversationVerification verified;
+    check(conversation_snapshot_verify(a,ss,g,draft.state,verified,err),"verify main, draft and running restore payloads");
+    check(verified.main_layers==1 && verified.main_bytes>0 && verified.draft_bytes>0 && verified.running_bytes>0,
+          "verification counts describe all state domains");
+    // Corrupt each independent state domain. The verifier must reject it without
+    // repairing it; the test itself then restores the original byte.
+    std::vector<void*> corrupt = {ss.gdn_state,ss.ple_hist,main.state.idx_tail,main.state.idx_dead,
+        main.state.idx_block_pos,main.state.idx_pooled+(ids.size()/4)*g.idx_key_dim,
+        draft.state.k_pool,draft.state.k_q,draft.state.k_q4};
+    for (void* p : main.sources) if (p) corrupt.push_back(p);
+    for (void* p : draft.sources) if (p) corrupt.push_back(p);
+    for (void* p : corrupt) if (p) {
+        uint8_t before=0,after=0;
+        cuda_check(cudaMemcpy(&before,p,1,cudaMemcpyDefault));
+        const uint8_t changed=before^uint8_t(1);
+        cuda_check(cudaMemcpy(p,&changed,1,cudaMemcpyDefault));
+        ConversationVerification rejected;
+        check(!conversation_snapshot_verify(a,ss,g,draft.state,rejected,err),"detect one-byte restore corruption");
+        check(rejected.main_layers==0 && rejected.main_hash==0,"failed verification publishes no partial success");
+        cuda_check(cudaMemcpy(&after,p,1,cudaMemcpyDefault));
+        check(after==changed,"verification does not repair corrupted state");
+        cuda_check(cudaMemcpy(p,&before,1,cudaMemcpyDefault));
+    }
+    ss.ple_prev[0]^=1;
+    check(!conversation_snapshot_verify(a,ss,g,draft.state,verified,err),"detect PLE token metadata corruption");
+    ss.ple_prev[0]^=1;
+    check(conversation_snapshot_verify(a,ss,g,draft.state,verified,err),"verification succeeds after test repairs");
     for (int64_t dirty : {65, 3, 0}) {
         check(conversation_snapshot_restore(a,ss,g,draft.state,err)==ConversationRestore::restored,"restore growth fixture base");
         ConversationKvReuse reuse{a.kv,65,dirty};
@@ -195,9 +226,15 @@ void full_session(int fmt, int mode, int experts) {
 }
 }
 
-int main() {
+int main(int argc,char** argv) {
     int devices=0;
     if (cudaGetDeviceCount(&devices)!=cudaSuccess || !devices) return 77;
+    if (argc==2 && std::strcmp(argv[1],"--restore-smoke")==0) {
+        full_session(kKvInt8,1,512);
+        std::printf("conversation_snapshot_test: %d checks passed (restore smoke)\n",checks);
+        return 0;
+    }
+    if (argc!=1) return 2;
     for (int fmt : std::array<int,4>{kKvF16,kKvInt8,kKvQ4,3}) for (int mode : {0,1,2}) {
         if (fmt==3 && mode!=0) continue;
         Fixture f(fmt,mode);

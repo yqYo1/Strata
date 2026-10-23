@@ -12,9 +12,9 @@ sys.dont_write_bytecode=True
 import check_full_context as gate
 
 P,B,RESULT=gate.P,gate.B,gate.RESULT
-ROOT=B/'budget-qsa-component-v2'
-KEY='allocation_budget_qsa_components'
-ORDER=('host','smoke','component','resident','attention-smoke','attention-component')
+ROOT=B/'snapshot-qsa-component-v1'
+KEY='snapshot_qsa_components'
+ORDER=('host','smoke','restore-smoke','component','resident','attention-smoke','attention-component','restore-component')
 INPUTS=sorted(set([*gate.INPUTS,'tools/sycl/check_streamed_qsa.py']))
 require=gate.native.guards.require
 digest=gate.native.build.digest
@@ -50,16 +50,16 @@ def prepare(container):
         env.update(LD_PRELOAD=probe['library']['path'],STRATA_UR_PROBE_EXPECTED_LOADER=probe['loader']['path'])
         for name in ('UR_LOG_VALIDATION','UR_LOG_LOADER','UR_LOG_LEVEL_ZERO'):
             env[name]='level:warning;flush:warning;output:stderr'
-        if mode in ('smoke','attention-smoke'):
+        if mode in ('smoke','attention-smoke','restore-smoke'):
             env.update(UR_ENABLE_LAYERS='UR_LAYER_TRACING,UR_LAYER_PARAMETER_VALIDATION',
                 UR_LOG_TRACING='level:info;flush:info;output:stderr')
         else:env.pop('UR_LOG_TRACING',None)
-        target=('prefill_expert_bank_plan_test' if mode=='host' else 'sycl_qsa_bf16_attention_test' if mode.startswith('attention-') else 'sycl_native16_qsa_test' if mode=='resident' else 'sycl_native16_qsa_streamed_test')
+        target=('prefill_expert_bank_plan_test' if mode=='host' else 'sycl_conversation_snapshot_test' if mode.startswith('restore-') else 'sycl_qsa_bf16_attention_test' if mode.startswith('attention-') else 'sycl_native16_qsa_test' if mode=='resident' else 'sycl_native16_qsa_streamed_test')
         fixture=engine['fixtures'][target]
         if mode=='host':
             env.pop('LD_PRELOAD');env.pop('STRATA_UR_PROBE_EXPECTED_LOADER')
-        argument=mode.removeprefix('attention-')
-        cases[mode]=dict(command=[fixture['path']]+([] if mode in ('host','resident') else ['--'+argument]),
+        argument='restore-smoke' if mode=='restore-smoke' else mode.removeprefix('attention-')
+        cases[mode]=dict(command=[fixture['path']]+([] if mode in ('host','resident','restore-component') else ['--'+argument]),
             fixture=fixture,environment_sha256=hashlib.sha256(json.dumps(env,sort_keys=True).encode()).hexdigest())
         envs[mode]=env
     record=dict(stage='prepared',source_commit=revision,input_sha256=pins,
@@ -71,6 +71,7 @@ def prepare(container):
         retention='Retain compact individual case/activation/guard/fault/source decisions. Retire successful traces,JIT and duplicate receipts after closure;original selected13 assets remain untouched. New engine+same-build fixtures are the only unselected generation for imminent capacity-model validation.',
         model_adoption_qualified=False,physical262144_model_qualified=False,decode_performance_qualified=False,
         ordinary_runtime_teardown_qualified=False)
+    record['snapshot_criteria']='Traced INT8 streamed-main/ring-draft restore smoke precedes the full snapshot suite. Require byte-exact main/draft payload and live GDN/PLE/indexer/spare-row checks,detect one-byte corruption in every independently stored domain and PLE token metadata without repairing state,and publish no partial verification success. Complete legacy snapshot growth/rewind/format checks too. These are synthetic component checks;near-cap model RESTORE,state handoff,task quality and repeated decode performance remain unqualified.'
     write(ROOT/'record.json',record);container[KEY]=compact(record);write(RESULT,container)
     print('Prepared host,streamed,resident and on-demand BF16 gates;commit before execution.',flush=True)
 
@@ -126,6 +127,12 @@ def run(container,mode):
             require('expert_bank_prefix_budget short_kept=PASS full262143_host_tail=PASS full262144_host_tail=PASS exact=PASS single_allocation=PASS invalid=PASS' in stdout.splitlines() and
                 stdout.splitlines()[-1]=='expert_bank_plan PASS GPU=UNRUN model=UNRUN physical262144_RESTORE=UNQUALIFIED' and not stderr, 'CPU budget oracle failed')
             row['prefix_budget_oracle']=True
+        elif mode.startswith('restore-'):
+            match=re.fullmatch(r'conversation_snapshot_test: ([0-9]+) checks passed'+
+                (r' \(restore smoke\)' if mode=='restore-smoke' else '')+r'\n',stdout)
+            require(match is not None and int(match[1])>=100,'snapshot restore/corruption fixture failed')
+            row['checks']=int(match[1]);row['scope']='exact snapshot payload/running-state comparison;not model,task,physical262144 or decode performance'
+            if mode=='restore-smoke':require('urEnqueueKernelLaunch' in body,'missing restore device-work trace')
         elif mode.startswith('attention-'):
             lines=stdout.splitlines();case_lines=[s for s in lines if s.startswith('case cells=')]
             require(len(case_lines)==(2 if mode=='attention-smoke' else 10) and

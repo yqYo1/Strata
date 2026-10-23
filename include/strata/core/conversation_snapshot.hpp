@@ -25,7 +25,7 @@ bool conversation_kv_validate(const ConversationKv& image, const QsaState& state
 bool conversation_kv_restore(const ConversationKv& image, const QsaState& state, const ModelGeometry& g,
                              int64_t upto, bool include_index, std::string& error);
 // Diagnostic read-back after a synchronized restore. Uses 64 KiB of stack
-// workspace, compares authoritative bytes and resident draft-ring pages, and
+// workspace, compares authoritative bytes and resident ring pages, and
 // fingerprints the authoritative payload only. Never changes model state.
 bool conversation_kv_verify(const ConversationKv& image, const QsaState& state, const ModelGeometry& g,
                             int64_t upto, bool include_index, uint64_t& fingerprint, std::string& error);
@@ -75,5 +75,18 @@ enum class ConversationRestore { restored, invalid, transfer_failed };
 ConversationRestore conversation_snapshot_restore(const SavedConversation& image, SessionState& session,
                                                    const ModelGeometry& g, const QsaState& draft,
                                                    std::string& error);
+
+struct ConversationVerification {
+    size_t main_layers = 0, main_bytes = 0, draft_bytes = 0, running_bytes = 0;
+    uint64_t main_hash = 0, draft_hash = 0, running_hash = 0;
+};
+// Diagnostic only: synchronized, bounded-workspace byte comparison immediately
+// after restore, before prefix processing or moving the image's metadata. Checks
+// every main/draft payload, live recurrent/indexer/PLE state and rebuilt spare
+// pooled rows. Never modifies the session. Does not compare generated text or
+// qualify cache-policy metadata, allocator teardown, task quality or speed.
+bool conversation_snapshot_verify(const SavedConversation& image, const SessionState& session,
+                                  const ModelGeometry& g, const QsaState& draft,
+                                  ConversationVerification& result, std::string& error);
 
 } // namespace strata::core
