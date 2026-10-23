@@ -10046,8 +10046,8 @@
   },
   "selected_6e40_context_owner_ledger_20261023": {
     "classification": "decision support",
-    "status": "running",
-    "schedulable_now": true,
+    "status": "reviewed_allocation_admission_next",
+    "schedulable_now": false,
     "prerequisite_evidence": [
       "Selected engine/build identity is 6e40afc1beddd059ee518617f6c1efce1da14aca; the exact 262144 capacity, 8192 chunk, 12 QSA layers and current 1256-slot decode placement are already in the reviewed full-context and prefill decisions.",
       "The current full-context review explicitly requires owner-by-owner sizes, peak overlap, largest allocation and actual-admission follow-up. Its source notes that the layer-major plan covers only selected extra allocations; the remainder is still unaccounted.",
@@ -10057,7 +10057,7 @@
     "report_budget_bytes": 12288,
     "rules_revision": "44c4096429f91759d4aa2c56d6893c95324b1255",
     "consumer": "Main's pre-run memory-admission gate for the CLI-only 262144-token diagnostic; source ledger only, not physical admission or model qualification.",
-    "next_review": "Before Main commits the diagnostic memory-admission plan or launches any full-context build/run.",
+    "next_review": "Before configuring/running the nonadopted native diagnostic and actual allocation-admission test;retire transactions and the curation packet after this reviewed decision is recorded.",
     "scope_curation_sha256": "be6e48fe9cb0fccbbb39f2e2aef55385e829e62955ee9ce55e3b22ea34c5c31b",
     "run_id": "run_432552edd149",
     "task_id": "task_7ba585f625b8",
@@ -10067,6 +10067,22 @@
     "turn_started": true,
     "effective_model": "gpt-6-luna",
     "effective_effort": "high",
-    "launch_api_failure": "agent launch incompatible_runtime; no worker started. Same-runtime Orca terminal launch succeeded,ready model/effort and worker-start input_accepted/turn_started observed."
+    "launch_api_failure": "agent launch incompatible_runtime; no worker started. Same-runtime Orca terminal launch succeeded,ready model/effort and worker-start input_accepted/turn_started observed.",
+    "worker_done_accepted": true,
+    "worker_ownership_closed": true,
+    "terminal_closed_verified": true,
+    "delivery_processed_and_acked": true,
+    "report_sha256": "edcc035db5f4a3777ee6a6a3aa79b0f04242743dea7649a326cb4d5402486c1e",
+    "report_bytes": 10307,
+    "native_review": "/home/yayoi/orca/workspaces/Strata/sycl/.cache/strata-research/20261023/context-owner-ledger/native-review.json",
+    "native_review_sha256": "45dbed581a3e840e9e8ed8d18447d3c6b3f2b1437c5007b661aed52e897c7948",
+    "native_review_bytes": 6439,
+    "main_digest": "All10source hashes match. Source ledger supports a bounded allocation-admission step,not successful allocation/model qualification. Correct PLE host rows to two335544320B buffers,total671088640B;track all persistent Prefill owners until actual release and confirm processed extent.",
+    "main_source_resolution": {
+      "source_commit": "5e723ba2a497c9949e7ec9d10d581671140146d6",
+      "generator_sha256": "8ed3db3e989996269b532e6fb7a8c2a685508b45473e12f0fe4f397e3c6e12c4",
+      "prefill_reset": "src/prefill/prefill.cpp:762 reset calls release(),which performs checked stream retirement then frees owned buffers. The selected CLI calls prefill.reset() after its batched prompt and before the final verifier.",
+      "extent": "CLI n_batched=n_prompt-1 with prefill_until0,so exact262144 input plans262143 prompt rows then one final first-window token. Runtime extent/placement remain unmeasured."
+    }
   }
 }
