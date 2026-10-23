@@ -76,7 +76,7 @@
   },
   "pending": "Native configure/syntax/build is unrun. Keep the original selected binary/13assets;current worktree generate.cpp has a diagnostic-only delta and must not silently reuse the original current-worktree native-source gate. Actual262144 allocations,processed extent,near-cap decode,RESTORE,fault/owner closure and repeated phase-preserving adoption remain open.",
   "native_diagnostic": {
-    "stage": "prepared_configure",
+    "stage": "prepared_syntax",
     "source_commit": "b4fec0dab56ee7fbae0cf8b07c18737e9faca77f",
     "selected_original": {
       "source_commit": "6e40afc1beddd059ee518617f6c1efce1da14aca",
@@ -160,6 +160,77 @@
     "criteria": "Owned configure, then separately committed enabled/default generator syntax commands; both must exit zero with frozen source, dependencies, SDK and selected13 original assets. No engine execution, speed, decode-preservation or physical-context claim.",
     "retention": "Original qualified6e40 engine+12fixtures remain selected and untouched. This separate configure/syntax tree is solely for the imminent full-context diagnostic build; no new comparison engine is built here. Retire routine output after extracting results. Legacy unqualified products are not used as fallbacks or reference generations.",
     "next_gate": "Native link plan, actual allocation/lifetime admission, bounded device validation, full-fill/near-cap/RESTORE/fault-owner checks and independently repeated phase-preservation.",
+    "outcomes": [
+      {
+        "operation": "configure",
+        "exit_code": 0,
+        "ownership_closed": true,
+        "stdout_sha256": "d5a117485d8e2fd5e297b8d9eb5e1cfb1f302c0b2a48dfadc6c8669648a1e599",
+        "stderr_sha256": "491dd4a0145cf57cc78fea5b8e55b566d6325e5b78996eea8433467099b3c996"
+      }
+    ],
+    "syntax_plan": {
+      "database": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/full-context-native-v1/build/compile_commands.json",
+        "sha256": "aa73566642500d8ac9509474fefff7b77c3360944344eada3c7044533a030cae",
+        "entries": 232
+      },
+      "directory": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/full-context-native-v1/build",
+      "commands": [
+        {
+          "label": "syntax-enabled",
+          "argv": [
+            "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin/clang++",
+            "-DSTRATA_ENABLE_SYCL=1",
+            "-DSTRATA_NATIVE_EXPERTS=1",
+            "-DSTRATA_VERSION=\"0.1.38\"",
+            "-I/home/yayoi/orca/workspaces/Strata/sycl/include",
+            "-I/home/yayoi/orca/workspaces/Strata/sycl/include/strata/sycl/compat",
+            "-I/home/yayoi/ghq/github.com/ggml-org/llama.cpp/.worktree/dep-ggml-3cf-xe-e32-20261011/ggml/src/../include",
+            "-isystem",
+            "/opt/intel/oneapi/mkl/2026.1/include",
+            "-DSTRATA_SYCL_FULL_CONTEXT_DIAGNOSTIC=1",
+            "-O3",
+            "-DNDEBUG",
+            "-std=c++20",
+            "-fsycl",
+            "-fsycl-id-queries-range=size_t",
+            "-Wall",
+            "-Wextra",
+            "-Werror",
+            "-DMKL_ILP64",
+            "/home/yayoi/orca/workspaces/Strata/sycl/src/program/generate.cpp",
+            "-fsyntax-only"
+          ]
+        },
+        {
+          "label": "syntax-default",
+          "argv": [
+            "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin/clang++",
+            "-DSTRATA_ENABLE_SYCL=1",
+            "-DSTRATA_NATIVE_EXPERTS=1",
+            "-DSTRATA_VERSION=\"0.1.38\"",
+            "-I/home/yayoi/orca/workspaces/Strata/sycl/include",
+            "-I/home/yayoi/orca/workspaces/Strata/sycl/include/strata/sycl/compat",
+            "-I/home/yayoi/ghq/github.com/ggml-org/llama.cpp/.worktree/dep-ggml-3cf-xe-e32-20261011/ggml/src/../include",
+            "-isystem",
+            "/opt/intel/oneapi/mkl/2026.1/include",
+            "-O3",
+            "-DNDEBUG",
+            "-std=c++20",
+            "-fsycl",
+            "-fsycl-id-queries-range=size_t",
+            "-Wall",
+            "-Wextra",
+            "-Werror",
+            "-DMKL_ILP64",
+            "/home/yayoi/orca/workspaces/Strata/sycl/src/program/generate.cpp",
+            "-fsyntax-only"
+          ]
+        }
+      ]
+    },
+    "configure_passed": true,
     "sources": [
       {
         "root": "/home/yayoi/orca/workspaces/Strata/sycl",
