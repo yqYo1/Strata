@@ -579,8 +579,14 @@ preserves the original execution outcome;an original native/controller PASS
 alone never qualified performance advancement. Its five CPU refusal tests pass.
 Exact541 project/9311 dependency inputs,8700 SDK inputs,643 headers,12 reconstructed
 build commands and172 replay inputs recover. The extra diagnostic generation,
-paired captures,normal output and now-unused experiment code are being retired
-at this closed boundary;the original6e40 engine and12 fixtures remain selected.
+paired captures,normal output and consumed audit transactions are now retired:
+366 external/cache files,165620123 bytes. The17 unused experimental source/fixture
+files and6 superseded receipts are removed to reachable Git history. All9853
+selected native inputs and13 assets still qualify after deletion;only the original
+6e40 engine generation remains selected. A broader physical inventory finds
+255 older objects/archives across71 roots,193406352 bytes;their source and
+tool/runtime consumers remain an explicit review before the next diagnostic
+build in the existing native-build result. They are not newly qualified builds.
 The conditional transform-reuse methods report is indexed for targeted retrieval
 only after a local version/lifecycle and packing-cost census. No physical-resource
 saturation or transform-reuse gain is claimed.
