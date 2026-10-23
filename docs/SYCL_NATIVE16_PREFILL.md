@@ -750,7 +750,12 @@ with the same actual device limit for mandatory owners,and preserves invalid,
 overflow and mandatory-budget refusals. Its new build passes1404 covered
 dependencies. Its CPU cases include exact/below-prefix limits for a long-prefix
 8193-row request with a legal one-slot bank,and a128MiB mandatory refusal.
-The corrected CPU,bounded attention and model gates are still pending.
+The corrected CPU gate now passes. All five bounded GPU gates also pass:
+streamed smoke/four-case publication,resident numerical oracle,and traced
+two-case plus ten-case on-demand BF16 attention. The latter includes262144
+cells;its largest independent-oracle error/budget ratio is0.968272. Every owned
+process exits normally without a fresh fault. These qualify components only;
+the corrected source still needs its separate model admission/full-fill gates.
 Nonzero-prefix RESTORE and clean matched speed comparisons remain open.
 
 Remaining model gates are repeated phase-preserving adoption evidence,
