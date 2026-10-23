@@ -295,7 +295,8 @@ def evidence(text, mode, row, record, pid):
         expected_math=(('on-the-fly','0','32','row-major','serial') if fallback else
                        ('active-logical-prefix',str(admitted),'33','row-major','parallel-exp-ascending-sum'))
         require(arithmetic[0]==expected_math, 'unplanned QSA arithmetic/fallback')
-        row['effective_prefill'].append(dict(path='layer-major',stage_owner_bytes=276824064,
+        row['effective_prefill'].append(dict(path='layer-major',stage_payload_bytes=276824064,
+            stage_requested_allocation_bytes=276825088,physical_driver_allocation_bytes='unmeasured',
             requested_prefix_bytes=requested,admitted_prefix_bytes=admitted,
             qualified_budget_fallback=bool(fallback),arithmetic=list(arithmetic[0]),
             free_before_bank_bytes=free,headroom_bytes=headroom))

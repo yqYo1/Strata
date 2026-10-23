@@ -5201,7 +5201,7 @@
     ]
   },
   "prefill_layout_components_v2": {
-    "stage": "prepared",
+    "stage": "layout_closed",
     "source_commit": "f00b35e9a75d942f710098f42c6d4ee16a051b33",
     "input_sha256": {
       "include/strata/program/full_context_diagnostic.hpp": "d4abd9516913df9c0672adfea079e036223c8454ae79fadacd6f209432f04621",
@@ -5352,7 +5352,42 @@
         "scope": "Exact same fixture bytes,compiler/SDK/recipe/dependencies and runtime;only executable generator and build controller changed. No native engine/model qualification inherited."
       }
     },
-    "outcomes": {},
+    "outcomes": {
+      "layout": {
+        "passed": true,
+        "complete": true,
+        "ownership_closed": true,
+        "exit_code": 0,
+        "stdout_sha256": "afb5d1a8bc22be1be09ab1e9a038e224db76d223e24b05fbe2e434451a963128",
+        "stderr_sha256": "6004c0db767963d32cd41e4d1c222e13c7da5623cff487a2446dae864c5089cb",
+        "GPU_work_submitted": true,
+        "activation": {
+          "pid": 1942676,
+          "loader": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_loader.so.0.12.0",
+          "threads_before": 1,
+          "preinit": 37,
+          "config_enabled": true,
+          "first_init": true,
+          "dispatch_result": 46,
+          "output_untouched": true,
+          "retained_reference_until_exit": true,
+          "runtime_teardown_qualified": false
+        },
+        "Q8_stage_bytes": 276824064,
+        "loan_reduction_bytes": 276825088,
+        "scope": "Production counter on shape-only proxy plus real8192 long/256 short layout rebind and whole-parent canary;not actual streamed model/late-stage/RESTORE qualification",
+        "fresh_faults": [],
+        "driver_after": {
+          "pci": "/sys/bus/pci/devices/0000:05:00.0",
+          "driver": "xe",
+          "vendor": "0x8086",
+          "device": "0xe20c",
+          "kernel": "7.0.0-38-generic",
+          "devcoredump": false
+        },
+        "boot_unchanged": true
+      }
+    },
     "active": false,
     "passed": false,
     "complete": false,
