@@ -50,8 +50,12 @@ class Routes(unittest.TestCase):
             def line(self, _): return self.lines.pop(0)
             def send(self, value): self.sent.append(value)
             def exit(self, _): self.finished = True
-        io = IO(); io.lines = ['INFO context=131072 kv=int8 kv_resident=131072 expert_slots=1256 '
+        io = IO(); io.lines = ['INFO context=131072 kv=int8 kv_resident=0 expert_slots=1256 '
             'spec=4 mtp_max=1 lookup=0 pool_workers=5 pcie_frac=0.00 conversation_cache_mib=0', 'READY 131072 stop']
+        wrong = IO(); wrong.lines = [io.lines[0].replace('kv_resident=0', 'kv_resident=131072'), io.lines[1]]
+        with self.assertRaisesRegex(RuntimeError, 'actual model/cache/MTP configuration differs'):
+            m.interact(wrong, {}, {}, 1)
+        self.assertFalse(wrong.sent)
         fixtures = []
         for ids in m.requests():
             payload = m.wire(ids); fixtures.append(dict(wire_bytes=len(payload), wire_sha256=m.hashlib.sha256(payload).hexdigest()))

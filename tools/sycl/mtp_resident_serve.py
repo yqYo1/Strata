@@ -17,7 +17,7 @@ import check_mtp_resident_control as gate
 import full_context_model as model
 
 P, B = gate.P, gate.B
-ROOT = B / 'mtp-resident-serve-v1'
+ROOT = B / 'mtp-resident-serve-v2'
 RESULT = gate.RESULT.with_name('mtp-resident-serve-current.json')
 INPUTS = sorted(set([*gate.INPUTS, 'tools/sycl/mtp_resident_serve.py', 'tools/sycl/test_mtp_resident_serve.py',
     'tools/sycl/full_context_model.py', 'tools/sycl/check_full_context.py', 'data/expert-profile.bin']))
@@ -60,7 +60,17 @@ def native_gate():
 
 
 def prepare():
-    require(not ROOT.exists() and not RESULT.exists(), 'fresh serve root only; no duplicate/retry')
+    require(not ROOT.exists(), 'fresh serve root only; no duplicate/retry')
+    previous = gate.validation.committed(RESULT)
+    require(previous['stage'] == 'failed' and not previous['passed'] and not previous['active'] and
+        not previous['ownership_closed'] and previous['outcomes']['0']['fresh_faults'] == [] and
+        len(previous['outcomes']) == 1, 'preserve the original failed INFO gate')
+    termination = previous['termination_evidence']
+    require(termination['direct_child_reaped'] and termination['session_empty'] and not termination['survivors'] and
+        termination['exit_code'] == -15, 'prior owned process must be positively terminated')
+    actual = gate.native.supervision.identity(termination['pid'])
+    require(actual is None or actual['start_ticks'] != termination['direct_identity']['start_ticks'],
+        'old owned native identity still live;no retry')
     full = native_gate(); base = model.setup()
     model.model_pins(base['config'], base['models'])
     speed = gate.validation.committed(RESULT.with_name('phase-prefill-speed-current.json'))
@@ -94,6 +104,8 @@ def prepare():
         environments[str(cap)] = env
         plans.append(dict(cap=cap, command=[full['assets']['strata']['path'], '--serve', *args, '--mtp-max-t', str(cap)]))
     row = dict(stage='prepared', source_commit=revision, input_sha256=pins, binary=full['assets']['strata'],
+        prior_failed_operation=dict(commit=revision, path=str(RESULT.relative_to(P)),
+            status='Original failed INFO assertion and ownership_closed=false remain unchanged. Native reached READY then owned SIGTERM before GEN;positive reap/empty session verified. New v2 corrects only controller reporting semantics;no native change.'),
         base_native_source=gate.native.BASE, native_controller_source_commit=full['source_commit'],
         native_result_sha256=digest(gate.native.RESULT), native_gate_sha256=digest(gate.RESULT),
         model_reference=base['reference'], model_assets=base['models'],
@@ -103,7 +115,8 @@ def prepare():
         requests=[dict(prompt_tokens=len(ids), max_new=32, wire_bytes=len(wire(ids)),
             wire_sha256=hashlib.sha256(wire(ids)).hexdigest()) for ids in requests()],
         driver=gate.native.guards.driver_guard(), boot=Path('/proc/sys/kernel/random/boot_id').read_text().strip(),
-        criteria='Exactly two fresh native processes,cap0 then1,each33/257 synthetic input IDs and32 output IDs per fresh request,caches0. Same original prefill/settings/1256slots. INFO must confirm131072 resident INT8,spec4,selected cap,5workers,PCIe0,caches0. Each request has complete batched mode2 draft prompt callbacks and valid vocabulary IDs. Cap0 first targetT1 thenT4 with positive increasing draft-round counters;cap1 every targetT1,zero offered/accepted drafts and zero draft rounds. Same-child preexec validation,normal owned exit,empty validation warnings,unchanged source/model/runtime/boot/driver and no fresh fault;full15 model hashes after cohort. Stop first failure,no retry. No token-string identity,speed/task/physical-context/adoption claim.',
+        criteria='Exactly two fresh native processes,cap0 then1,each33/257 synthetic input IDs and32 output IDs per fresh request,caches0. Same original prefill/settings/1256slots. INFO must confirm context131072,kv=int8,kv_resident=0 (original full-resident mode0 reporting),spec4,selected cap,5workers,PCIe0,caches0. Each request has complete batched mode2 draft prompt callbacks and valid vocabulary IDs. Cap0 first targetT1 thenT4 with positive increasing draft-round counters;cap1 every targetT1,zero offered/accepted drafts and zero draft rounds. Same-child preexec validation,normal owned exit,empty validation warnings,unchanged source/model/runtime/boot/driver and no fresh fault;full15 model hashes after cohort. Stop first failure,no retry. No token-string identity,speed/task/physical-context/adoption claim.',
+        kv_reporting_contract='Pinned6e40 kv_plan leaves mode0/all slots when requested residency>=max_cells. INFO kv_resident reports slot count only for main mode1,else0. Main context131072 and requested131072 therefore require INFO0;draft prompt mode2 independently confirms the MTP ring.',
         interpretation='Resident no-decode-draft retains MTP weights/KV/prompt precompute but omits generation KV catchup and proposals. Target verifier geometry also changesT4 toT1. This is a private attribution control,not full-MTP-off or an adopted decoder. State hashing of future MTP cells is disabled because this arm intentionally does not maintain them.',
         budgets=dict(wall=900, cpu=3600, rss_cap=104 << 30, text_cap=16 << 20,
             file_cap=32 << 20, total_cap=256 << 20),
@@ -140,7 +153,7 @@ def interact(io, row, outcome, cap):
         if line.startswith('INFO '): info.update(t.split('=', 1) for t in line.split()[1:] if '=' in t)
         if line.startswith('READY '):
             require(line == 'READY 131072 stop', 'actual context readiness differs'); break
-    expected = dict(context='131072', kv='int8', kv_resident='131072', expert_slots='1256', spec='4',
+    expected = dict(context='131072', kv='int8', kv_resident='0', expert_slots='1256', spec='4',
         mtp_max=str(cap), lookup='0', pool_workers='5', pcie_frac='0.00', conversation_cache_mib='0')
     require(all(info.get(k) == v for k, v in expected.items()), 'actual model/cache/MTP configuration differs')
     outcome['admission'] = {k: info[k] for k in expected}; outcome['requests'] = []
