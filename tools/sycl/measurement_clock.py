@@ -35,6 +35,7 @@ def prepare(native, compiler, environment, root, provider):
     guards.require(re.search(r'mov\s+\$0x1,%edi',assembly) and '<clock_gettime@plt>' in assembly,
         'clock provider is not the inspected CLOCK_MONOTONIC implementation')
     row = dict(inputs=inputs,inputs_sha256=fingerprint(inputs),command=command,environment=env,
+        environment_sha256=fingerprint(env),
         provider=provider,compiler=compiler,minimum_time_ms=MIN_TIME_MS,maximum_endpoint_fraction=MAX_FRACTION,
         source_sha256=build.digest(SOURCE),source_contract='Same native libstdc++ steady_clock::now;65536 consecutive pairs,sort/output outside pairs. Observed endpoint/rounding screen,not a universal bound or time subtraction.')
     check(row); return row
@@ -42,6 +43,7 @@ def prepare(native, compiler, environment, root, provider):
 
 def check(row):
     guards.require(fingerprint(row['inputs']) == row['inputs_sha256'] and
+        fingerprint(row['environment']) == row['environment_sha256'] and
         row['minimum_time_ms'] == MIN_TIME_MS and row['maximum_endpoint_fraction'] == MAX_FRACTION,
         'clock input seal/criteria changed')
     for path, sha in row['inputs'].items(): guards.require(build.digest(path) == sha, 'clock input changed: '+path)
