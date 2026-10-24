@@ -1175,6 +1175,13 @@ test anchor,with no native compilation or GPU execution. Preserve that failure
 and correct the source gate before building. Native/source review and then
 bounded device/model qualification remain pending. Existing selected6e40 and
 all1256 decode slots remain unchanged.
+The closed590f comparison generation is now retired after recovery of its9853
+original source inputs,committed recipe,SDK and pushed source identity:172
+build files/136261604 bytes,including its engine and six fixtures. Its source
+receipt remains only for the existing closed provenance readers. No physical
+fill execution consumer uses it;that gate needs a new entrypoint/build. All
+original state successes and performance failures remain unchanged. The
+selected original13 assets are still present;no replacement engine is compiled.
 
 Remaining model gates are repeated phase-preserving adoption evidence,
 agent-session and task quality,near-cap/tail boundaries,

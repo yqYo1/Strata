@@ -1,6 +1,6 @@
 {
   "schema": "strata-resident-mtp-control-v1",
-  "stage": "prepared",
+  "stage": "retired_previous",
   "source_commit": "8af8fe1e3c038133b6aad53cf5278ee8e8c51958",
   "input_sha256": {
     "tools/sycl/mtp_resident_control.py": "58ab065ff46bc43b1fa9185328be18a71a303b82813c7614de6b48d5bce6cf57",
@@ -199,8 +199,12 @@
       }
     ],
     "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/full-context-native-v1/build",
-    "complete": false,
-    "reason": "Six-process prefill comparison closed without adoption. Existing capacity/state outcomes stay preserved;physical262144 needs a new entrypoint/build,so it is not a consumer of these old binaries. Keep source receipt only for the existing closed qualification/provenance readers,not an execution generation."
+    "complete": true,
+    "reason": "Six-process prefill comparison closed without adoption. Existing capacity/state outcomes stay preserved;physical262144 needs a new entrypoint/build,so it is not a consumer of these old binaries. Keep source receipt only for the existing closed qualification/provenance readers,not an execution generation.",
+    "files": 172,
+    "bytes": 136261604,
+    "manifest_path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/mtp-resident-control-v1/retired-generation.jsonl",
+    "manifest_sha256": "7a8b62768fdbaf42495592a44c170c2f5b270f238003861b3f84d21278af58aa"
   },
   "question": "Measure resident MTP4 versus resident-no-decode-draft under unchanged original prefill,target1256 slots and safety. This is an attribution control,not full MTP-off or hardware saturation.",
   "criteria": "Build from exact selected6e40 source plus only two declared generated TUs. Native startup refuses standalone,caches,suffix,coupled/oracle,graphs/split. Cap0 returns only after owner/T/a checks,clears outputs and avoids graph observation/staging/submission. Default cap3 retains original math. Before models require owned build/actual dependency closure,CPU refusal checks,bounded traced device and short model checks. Repeated thinking-on code/prose,long/agent-session and independent prefill preservation remain necessary for adoption.",

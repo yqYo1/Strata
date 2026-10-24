@@ -49,7 +49,7 @@
     "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/full-context-source-v1/host_bounds"
   ],
   "criteria": "Exactly134 admission/terminal boundary cases,including integer extremes,final-slot/width/token/output refusal and capture-before-clearing-first-window. Normal owned compile/fixture exits; no GPU/model execution.",
-  "next_gate": "Bounded traced/validated device smoke,then actual262144 allocation/lifetime admission,full-fill/last-slot completion,near-cap/RESTORE/failure-owner checks. No speed/physical/decode claim from build or CLI checks.",
+  "next_gate": "Implement a bounded serve-compatible physical262144 entrypoint and qualify its new native build/actual last-slot execution,tail,state handoff/RESTORE,failure-owner and independent phase preservation. Preserve original model_state_v4 successes and performance failures;no old executable consumer remains.",
   "retention": "Keep source/recipe and compact case/outcome. Host executable and normal compile/test logs are disposable after source-gate closure. Original selected13assets remain intact.",
   "fixture": {
     "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/full-context-source-v1/host_bounds",
@@ -80,7 +80,7 @@
     "prefill_reset": "src/prefill/prefill.cpp:762 reset calls release(),which performs checked stream retirement then frees owned buffers. The selected CLI calls prefill.reset() after its batched prompt and before the final verifier.",
     "extent": "CLI n_batched=n_prompt-1 with prefill_until0,so exact262144 input plans262143 prompt rows then one final first-window token. Runtime extent/placement remain unmeasured."
   },
-  "pending": "Diagnostic engine link and11pre-device CLI checks passed;GPU/model execution is still unrun. Keep original selected binary/13assets;the diagnostic is not selected and cannot inherit decode/model qualification. Actual262144 allocations,processed extent,near-cap decode,RESTORE,fault/owner closure and repeated phase-preserving adoption remain open.",
+  "pending": "Historical top-level source/CLI gate flags keep their original scope. Retired590f subsequently passed v4 protocol/small/checkpoint/262120+16 near-cap/nonaligned262128 RESTORE plus payload/table/owner/fault checks;physical262144 fill,task/agent/decode preservation and ordinary teardown remain unqualified. Its six-process prefill no-decline/faster screens failed. Original6e40/13assets/1256 slots remain selected. Old7 native assets and disposable build are now retired after9853 source/recipe/SDK/remote/consumer checks;receipt remains provenance-only. Exact physical fill needs a new entrypoint/build;no new engine inherits retired-native qualification.",
   "native_diagnostic": {
     "source_commit": "b4fec0dab56ee7fbae0cf8b07c18737e9faca77f",
     "stage": "closed_syntax",
@@ -8112,7 +8112,94 @@
         "count": 5703,
         "aggregate_sha256": "5768eaea650c06eb022c9068784590a27400c2a577974c56750519edde859fe5"
       }
-    ]
+    ],
+    "artifact_retirement": {
+      "source_commit": "1cba8a2857891862f8ed4c534d8afee3b0aeaf98",
+      "receipt_path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/full-context-native-v1/engine-record.json",
+      "receipt_sha256": "166d0e1ca062202929fddc41a6e1979314bbb83f2e1dc9912d1bbfcd8328072e",
+      "source_inputs_recovered": 9853,
+      "configure_argv": [
+        "/usr/bin/cmake",
+        "-S",
+        "/home/yayoi/orca/workspaces/Strata/sycl",
+        "-B",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/full-context-native-v1/build",
+        "-G",
+        "Ninja",
+        "-DCMAKE_CXX_COMPILER=/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin/clang++",
+        "-DCMAKE_BUILD_TYPE=Release",
+        "-DCMAKE_EXPORT_COMPILE_COMMANDS=ON",
+        "-DMKL_DIR=/opt/intel/oneapi/mkl/2026.1/lib/cmake/mkl",
+        "-DSTRATA_BUILD_CONVERSATION_TESTS:BOOL=OFF",
+        "-DSTRATA_BUILD_PREFILL_HOST_TESTS:BOOL=ON",
+        "-DSTRATA_BUILD_TESTS:BOOL=OFF",
+        "-DSTRATA_CPU_ARCH:STRING=znver3",
+        "-DSTRATA_ENABLE_CUDA:BOOL=OFF",
+        "-DSTRATA_ENABLE_HIP:BOOL=OFF",
+        "-DSTRATA_ENABLE_SYCL:BOOL=ON",
+        "-DSTRATA_GGML_DIR:PATH=/home/yayoi/ghq/github.com/ggml-org/llama.cpp/.worktree/dep-ggml-3cf-xe-e32-20261011",
+        "-DSTRATA_MMQ_KQUANTS:BOOL=OFF",
+        "-DSTRATA_NATIVE_EXPERTS:BOOL=ON",
+        "-DSTRATA_ORCA_Q4KS_MMQ:BOOL=OFF",
+        "-DSTRATA_PORTABLE:BOOL=OFF",
+        "-DSTRATA_PREFILL_MMQ:BOOL=OFF",
+        "-DSTRATA_SYCL_AOT_DOUBLE_GRF:BOOL=OFF",
+        "-DSTRATA_SYCL_TESTS:BOOL=ON",
+        "-DSTRATA_WERROR:BOOL=ON",
+        "-DSTRATA_SYCL_VLLM_XE2_NATIVE16=ON",
+        "-DSTRATA_SYCL_DEVICE_ARCH=",
+        "-DSYCL_TLA_SOURCE_DIR=/home/yayoi/ghq/github.com/intel/sycl-tla/.worktree/strata-native16-87f",
+        "-DCMAKE_CXX_FLAGS:STRING=-DSTRATA_SYCL_FULL_CONTEXT_DIAGNOSTIC=1"
+      ],
+      "recipe_matches_committed_result": true,
+      "source_reachable_remote": "f63e1e820a321305d46fc1603fbc1ac2aaa919dd",
+      "assets": [
+        {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/full-context-native-v1/build/strata",
+          "bytes": 22229920,
+          "sha256": "590f8237e48139d96f77b9fd4c25ea18b1e701be147c52ecf75b7598c4284018"
+        },
+        {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/full-context-native-v1/build/sycl_native16_qsa_streamed_test",
+          "bytes": 1935656,
+          "sha256": "968e2cffdd60309842a62a7e3e44e0eb98b205d0594fa2ae24c732524da15a02"
+        },
+        {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/full-context-native-v1/build/sycl_native16_qsa_test",
+          "bytes": 1877672,
+          "sha256": "b77a1249e665998d99a3e113a7afc53729d85fe811359cc31957920ec024ad8f"
+        },
+        {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/full-context-native-v1/build/sycl_qsa_bf16_attention_test",
+          "bytes": 943272,
+          "sha256": "162efd45a663c0caee4b7fafb8facd1f38f8e7d081ddf13e5ae5f85cff305acf"
+        },
+        {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/full-context-native-v1/build/prefill_expert_bank_plan_test",
+          "bytes": 35696,
+          "sha256": "be7b4c9c93ef857a8e064b6c587daaddd21e42264ee54739c73d1b6686c2fd55"
+        },
+        {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/full-context-native-v1/build/sycl_conversation_snapshot_test",
+          "bytes": 13557320,
+          "sha256": "ad273a5514409bebead223fac2960f2a46ba1d9f1f684860c0343420e1277528"
+        },
+        {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/full-context-native-v1/build/sycl_prefill_scratch_test",
+          "bytes": 21242992,
+          "sha256": "3743a36ae0646c8377ce7b552bd17edae26338656e865fe9dc492639fd5d9e38"
+        }
+      ],
+      "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/full-context-native-v1/build",
+      "complete": true,
+      "reason": "Six-process prefill comparison closed without adoption. Existing capacity/state outcomes stay preserved;physical262144 needs a new entrypoint/build,so it is not a consumer of these old binaries. Keep source receipt only for the existing closed qualification/provenance readers,not an execution generation.",
+      "files": 172,
+      "bytes": 136261604,
+      "manifest_path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/mtp-resident-control-v1/retired-generation.jsonl",
+      "manifest_sha256": "7a8b62768fdbaf42495592a44c170c2f5b270f238003861b3f84d21278af58aa",
+      "next_consumer": "Source receipt only: existing closed qualification/provenance readers. No engine execution consumer.",
+      "physical_context": "Full physical262144 remains unqualified and needs a new native entrypoint/build;past near-cap/RESTORE successes are unchanged."
+    }
   },
   "prefill_layout_components_v3": {
     "kind": "unchanged-fixture-qualification-proof",
