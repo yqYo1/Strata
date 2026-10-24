@@ -259,7 +259,8 @@ def host_prepare():
     closed = gen.committed(RESULT)
     require(not HOST.exists() and closed['schema'] == 'strata-phase-prefill-closed-ineligible-v1' and
         closed['stage'] == 'closed_performance_ineligible' and closed['performance_eligible'] is False and
-        closed['archive']['commit'] == V1['commit'] and closed['retirement']['complete'],
+        gen.git('rev-parse',closed['archive']['commit']).decode().strip() == V1['commit'] and
+        closed['retirement']['complete'],
         'closed ineligible v1 and fresh v2 host root required')
     try:
         return host_prepare_impl(closed)
