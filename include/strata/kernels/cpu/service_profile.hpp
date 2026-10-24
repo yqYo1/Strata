@@ -100,6 +100,8 @@ public:
         return out;
     }
 
+    // The dispatch caller owns BatchScope until these worker scopes have joined.
+    // Slot counters themselves have one writer and never take the snapshot mutex.
     class Scope {
         Slot* slot_=nullptr; Counts* cell_=nullptr;
         uint64_t wall_=0, cpu_=0; int rows_=0, nt_=0;
@@ -123,7 +125,8 @@ public:
                 operation>=kOps || rows<1 || rows>maximum) {slot_->errors|=1;return;}
             rows_=rows; nt_=nt;
             cell_=&slot_->cells[(fmt*kWidths+static_cast<unsigned>(nt-1))*kOps+operation];
-            // CPU interval is nested inside wall. Read/record overhead remains charged.
+            // CPU interval is nested inside wall. Classification/counter updates
+            // are outside this interval, but remain charged to model execution.
             if (!clock_ns(CLOCK_MONOTONIC,wall_) || !clock_ns(CLOCK_THREAD_CPUTIME_ID,cpu_)) {
                 slot_->errors|=2;cell_=nullptr;
             }

@@ -246,13 +246,15 @@ dispatch host's hidden-quantization slot to the separate generation reader.
 Snapshots run before the decode clock and after final commit. Unsupported
 geometry/width/worker, clock errors, counter overflow, slot-owner changes and
 inconsistent snapshots invalidate attribution. Observer and batch-lock overhead
-remain charged. This changes neither the selected original6e40 executable nor
+remain charged to model execution; bin lookup and counter updates are outside
+the reported leaf intervals. This changes neither the selected original6e40 executable nor
 the active clean-width inputs; it is not an inference optimization or a speedup.
 
 At a serialized gap between live model processes, run the committed standalone
 collector host fixture under bounded ownership. After the frozen width comparison
 closes, require production-pool conservation/numerical checks; recover and retire
-the private comparison generation before another native engine build. A future instrumented engine must use original6e40 plus
+the private comparison generation before another native engine build. A future
+instrumented engine must use original6e40 plus
 only the committed observer delta, not silently adopt the current worktree's
 unselected layout/full-context changes. Pin that recipe before building; require
 observer-off/on overhead and model census/clock/fault/source checks before
