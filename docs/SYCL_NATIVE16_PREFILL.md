@@ -1207,7 +1207,7 @@ individual native results recover at`5c7bde19c`;the current result keeps the
 32-refusal aggregate,two fixture results,fault/ownership outcome and manifest.
 Private generated source and its actual-input receipt remain only for the
 imminent short-serve/MTP attribution consumer. The fresh v4
-[short-serve plan](../bench/results/2026-10-15-pr6-recovery-audit/mtp-resident-serve-current.json)
+[short-serve result](../bench/results/2026-10-15-pr6-recovery-audit/mtp-resident-serve-current.json)
 closes both fresh processes normally,cap0 then1,with33/257 synthetic inputs and
 max32 generated IDs per request. Source`c0801edad` passes five host protocol/corruption controls
 and CPU replay of the actual earlier32-ID/2-ID-EOS responses. It checks real
@@ -1227,6 +1227,13 @@ fixed32-output assumption at`2e46bd5e7`,and the unexecuted long-only prompt
 parser plan at`42107a807`. The first two owned processes were reaped after
 controller SIGTERM without fresh faults;v3 launched no model. These corrections
 change only the controller and do not qualify the old failed model runs.
+All4 actual request/route/owner/environment/preload records replay identically
+before167 closed output/JIT/duplicate-record/consumed-review files (40835188
+bytes) retire. Original samples and frozen inputs recover at`426c270c6`;
+all26 native assets verify before and after. One full short-model receipt remains
+only for the imminent official long-comparison admission;review it when that
+new plan seals its required model/environment fields. Net speed and limiting
+hardware resources remain unqualified by this short diagnostic.
 For the prefill restoration,any decode impact,including state handoff,
 configuration,placement or throughput,is a separation defect to resolve.
 Keep the existing selected decode route until independent qualification.

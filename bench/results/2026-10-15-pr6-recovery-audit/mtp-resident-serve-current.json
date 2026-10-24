@@ -1,46 +1,35 @@
 {
+  "schema": "strata-resident-mtp-model-closed-v1",
   "stage": "closed",
-  "source_commit": "c0801edad121cf30d1dd7388dd7b2fd9c1f13fc9",
-  "input_sha256": {
-    "data/expert-profile.bin": "8f59b4aa8873209dff11c11e37bcda9529a1335b724a1afeea37bf6388975baf",
-    "tests/core/test_build_manifest.py": "2d054d4fbbb862ef62eaacf53d7580e2d5a92ea57598fd179c480bf1cc943847",
-    "tools/sycl/bench_engine.py": "e5f588605ebc7799b54f8bf7df9ad2e363391375e50b788b9704a6b80887ca6b",
-    "tools/sycl/build_engine.py": "8444783ab417378207ec89ad2bc3cf648480e20d9e77f06ebb3070c93e10b131",
-    "tools/sycl/build_full_context.py": "6e2aa8c584e0fd014157cfd08360945ae2d28ad2db660499d9f4eb900e517b72",
-    "tools/sycl/build_manifest.py": "3cf94b8fb9aee4677babc91a56c8620a413c734dc94060f97603a30667b9e79b",
-    "tools/sycl/check_full_context.py": "3db5296b72056453faa9ee7d30703c84059cc861520de02d040a4e7fc6c128be",
-    "tools/sycl/check_full_context_source.py": "5e72fa724e890e682382758caf6222042e1ec89770962ce205ab756783332030",
-    "tools/sycl/check_mtp_resident_control.py": "9011a86107e7e91d70713ec17bdb7822f51249fea93d4efda9a39c710b8aef27",
-    "tools/sycl/full_context_model.py": "c3d3dbf8e0a583d40e607d853d2bd32e4540b67409b8d27ee0d60e0c169bacfa",
-    "tools/sycl/generation_engine.py": "5986d8bda1e4d71ef64d8dd25a7f2e3781fd684466096b863b3fdb4a54cc689e",
-    "tools/sycl/measurement_environment.json": "d4402591df50e80dc45a5ec9e4839c7a794888850b1473537b6f95179be5b03c",
-    "tools/sycl/measurement_guards.py": "794e332c70aca0acadad4f26d0414548e023a02fd27b72ed78fc773674423ec8",
-    "tools/sycl/measurement_owner.py": "bddd0c5e5020e882ca3404679420faec11e820dabce2ed4c72ef82b4c9c0874a",
-    "tools/sycl/mtp_resident_control.py": "fcc35c63d9c4da33e1b9fea8f2ab5fa15b80a909ce9f8b29c713d74f1530c9c4",
-    "tools/sycl/mtp_resident_serve.py": "ce04149d5ce203b326bd38f7d9d38af26e276584d66e5325bcfb4238776f984c",
-    "tools/sycl/test_mtp_resident_control.py": "3a42b2dcd3b9775dc3923e9359afad3bff949bb57a3abe805c0c3b1568e9109f",
-    "tools/sycl/test_mtp_resident_serve.py": "9c7657f508a4fd683a26b5fe0cb7c302a4c0921aa622bf5d6a24f0d1303bf35a",
-    "tools/sycl/ur_validation.py": "2e41d84788dc9cc3c7435b18b43601b3ca79280ccb855414d7a36bae6bff83e7"
+  "archive": {
+    "commit": "426c270c65011f5393c5356d0363173156a4f872",
+    "path": "bench/results/2026-10-15-pr6-recovery-audit/mtp-resident-serve-current.json"
   },
+  "controller_source_commit": "c0801edad121cf30d1dd7388dd7b2fd9c1f13fc9",
+  "base_native_source": "6e40afc1beddd059ee518617f6c1efce1da14aca",
+  "native_controller_source_commit": "26d48498529f8bc38327a9b9e4ebbbe610ae5b1d",
   "binary": {
     "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/mtp-resident-control-v3/build/strata",
     "bytes": 22194216,
     "sha256": "81393573f25be5cdc44f1ac13cb06d6c280a387e0ee9142d5ebe01e9d82f9307"
   },
-  "prior_failed_operation": {
-    "commit": "c0801edad121cf30d1dd7388dd7b2fd9c1f13fc9",
-    "path": "bench/results/2026-10-15-pr6-recovery-audit/mtp-resident-serve-current.json",
-    "prior_model_failure": {
-      "commit": "d32192db3530c1bf96fe6c93bb6193881a7cd54e",
-      "path": "bench/results/2026-10-15-pr6-recovery-audit/mtp-resident-serve-current.json",
-      "status": "Original fixed32-output assertion/ownership_closed=false remain failed. Native generated32 then a valid2-ID EOS completion before controller SIGTERM;positive reap/empty session verified. New v3 changes only variable-output/route qualification;no native change."
-    },
-    "status": "V3 held before model execution because actual v2 trace replay exposed the long-only draft-KV parser. Original V1 INFO and V2 fixed32-output failures remain unchanged;owned model identities are terminated. V4 accepts checked EOS and source-confirmed token32/batched256 prompt routes;no native change."
+  "native_build_reference": {
+    "commit": "426c270c65011f5393c5356d0363173156a4f872",
+    "path": "bench/results/2026-10-15-pr6-recovery-audit/mtp-resident-control-current.json",
+    "sha256": "69c1b85330196c4ac8dbff191a2fd7402739022d6498d2fe5b64983b29dfd941"
   },
-  "base_native_source": "6e40afc1beddd059ee518617f6c1efce1da14aca",
-  "native_controller_source_commit": "26d48498529f8bc38327a9b9e4ebbbe610ae5b1d",
-  "native_result_sha256": "69c1b85330196c4ac8dbff191a2fd7402739022d6498d2fe5b64983b29dfd941",
-  "native_gate_sha256": "c70d080cc563c8e107fe6d4f1241f9988f8850a0c056b9a2a1a5afd894a6dcc0",
+  "native_device_gate_reference": {
+    "commit": "426c270c65011f5393c5356d0363173156a4f872",
+    "path": "bench/results/2026-10-15-pr6-recovery-audit/mtp-resident-check-current.json",
+    "sha256": "c70d080cc563c8e107fe6d4f1241f9988f8850a0c056b9a2a1a5afd894a6dcc0"
+  },
+  "record": {
+    "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/mtp-resident-serve-v4/record.json",
+    "sha256": "a77552ac3c0b22c1cfca0ee19426867f1970dcd0fff7708ceb876630b19db034"
+  },
+  "input_fingerprint": "5cecf4ea6fde3db9f90efaa893d5e510f1bc8c699fba17100b889f049dedf741",
+  "input_files": 19,
+  "private_inputs_sha256": "271f2857ccc7acc91a9a5bd04ca72906cf7eddac8322a529c95eb31259e7dc7d",
   "model_reference": {
     "decode_archive": {
       "commit": "a8af3d7fa96a7713f2e516d2da3d7410956be015",
@@ -55,138 +44,28 @@
     },
     "build_compact_sha256": "3e6f266eabc13b94178e96a4d0cf6b5de2909dcd8927a760ead2c92248f0d1da"
   },
-  "prefill_reference_sha256": "9543297abc2ce0b4530ee6984d55366e735881caf42a08239f3494d655f9e10d",
-  "preload": {
-    "library": {
-      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/ur-validation-preload-v2/libstrata_ur_validation.so",
-      "sha256": "1d4e69d672d55fa0a126ae43b7b4743482cccca7e2f2bc22e0db2bfdad5bdc7c"
-    },
-    "loader": {
-      "path": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_loader.so.0.12.0",
-      "sha256": "bb6e1311850e4b1a924e42acae80c2b3610934625a4985aaa67967abe31356fc"
-    },
-    "component_source_commit": "f312b6691f508125db6cfc2580ca32a686ff2642",
-    "component_original_plan": {
-      "commit": "550c75f5fc954ee38b70230e32d2a48e12100d8a",
-      "path": "bench/results/2026-10-15-pr6-recovery-audit/research-index.json",
-      "sha256": "d12866b93c51e76a83e95638e66b6f6f4e0e33d779516a5fddecc178a6f8e10a"
-    },
-    "retained_reference_until_exit": true,
-    "runtime_teardown_qualified": false
+  "configuration": {
+    "context": 131072,
+    "kv": "int8",
+    "kv_requested_resident": 131072,
+    "actual_main_mode": 0,
+    "INFO_kv_resident": 0,
+    "expert_slots": 1256,
+    "pool_workers": 5,
+    "pcie_frac": 0,
+    "caches": 0,
+    "prefill": 8192,
+    "order": [
+      0,
+      1
+    ],
+    "max_new": 32,
+    "eos_ids": [
+      248044,
+      248046
+    ],
+    "speed_eligible": false
   },
-  "plans": [
-    {
-      "cap": 0,
-      "command": [
-        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/mtp-resident-control-v3/build/strata",
-        "--serve",
-        "--pack",
-        "/home/yayoi/.local/share/strata-sycl/packs/qwen3.8-flash-next-iq3_s",
-        "--native",
-        "/home/yayoi/.local/share/strata-sycl/models/qwen3.8-flash-next-iq3_s/IQ3_S/Qwen3.8-Flash-Next-GSQ-RCO-IQ3_S-00001-of-00002.gguf",
-        "--max-context",
-        "131072",
-        "--kv",
-        "int8",
-        "--kv-resident",
-        "131072",
-        "--expert-cache",
-        "1256",
-        "--expert-profile",
-        "/home/yayoi/orca/workspaces/Strata/sycl/data/expert-profile.bin",
-        "--expert-cache-per-layer",
-        "--pool-workers",
-        "5",
-        "--pcie-frac",
-        "0",
-        "--adapt-swaps",
-        "0",
-        "--conversation-cache-mib",
-        "0",
-        "--prompt-cache",
-        "0",
-        "--turn-token",
-        "-1",
-        "--suffix-draft",
-        "0",
-        "--greedy",
-        "--no-spec-split",
-        "--short-read",
-        "0",
-        "--spec",
-        "4",
-        "--mtp",
-        "/home/yayoi/.local/share/strata-sycl/mtp/rt",
-        "--prefill",
-        "8192",
-        "--vram-reserve-mib",
-        "700",
-        "--no-coupled-draft",
-        "--no-token-graph",
-        "--mtp-max-t",
-        "0"
-      ]
-    },
-    {
-      "cap": 1,
-      "command": [
-        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/mtp-resident-control-v3/build/strata",
-        "--serve",
-        "--pack",
-        "/home/yayoi/.local/share/strata-sycl/packs/qwen3.8-flash-next-iq3_s",
-        "--native",
-        "/home/yayoi/.local/share/strata-sycl/models/qwen3.8-flash-next-iq3_s/IQ3_S/Qwen3.8-Flash-Next-GSQ-RCO-IQ3_S-00001-of-00002.gguf",
-        "--max-context",
-        "131072",
-        "--kv",
-        "int8",
-        "--kv-resident",
-        "131072",
-        "--expert-cache",
-        "1256",
-        "--expert-profile",
-        "/home/yayoi/orca/workspaces/Strata/sycl/data/expert-profile.bin",
-        "--expert-cache-per-layer",
-        "--pool-workers",
-        "5",
-        "--pcie-frac",
-        "0",
-        "--adapt-swaps",
-        "0",
-        "--conversation-cache-mib",
-        "0",
-        "--prompt-cache",
-        "0",
-        "--turn-token",
-        "-1",
-        "--suffix-draft",
-        "0",
-        "--greedy",
-        "--no-spec-split",
-        "--short-read",
-        "0",
-        "--spec",
-        "4",
-        "--mtp",
-        "/home/yayoi/.local/share/strata-sycl/mtp/rt",
-        "--prefill",
-        "8192",
-        "--vram-reserve-mib",
-        "700",
-        "--no-coupled-draft",
-        "--no-token-graph",
-        "--mtp-max-t",
-        "1"
-      ]
-    }
-  ],
-  "vocab_path": "/home/yayoi/.local/share/strata-sycl/packs/qwen3.8-flash-next-iq3_s/tokenizer/vocab.json",
-  "vocab_sha256": "4ba64f0332abcfb0b600b7df1537d1e836e68009d5fb7cdb77339738dc6365c4",
-  "vocab_size": 248320,
-  "eos_ids": [
-    248044,
-    248046
-  ],
   "requests": [
     {
       "prompt_tokens": 33,
@@ -201,233 +80,6 @@
       "wire_sha256": "9f8125e4fcf3b270b08d3638230b524c15a4e7fb735ecd439da9e608cfca91d9"
     }
   ],
-  "driver": {
-    "pci": "/sys/bus/pci/devices/0000:05:00.0",
-    "driver": "xe",
-    "vendor": "0x8086",
-    "device": "0xe20c",
-    "kernel": "7.0.0-38-generic",
-    "devcoredump": false
-  },
-  "boot": "cfda0b6a-7c13-4fe2-bdf5-8f9202770840",
-  "criteria": "Exactly two fresh native processes,cap0 then1,each33/257 synthetic input IDs and max32 generated IDs per fresh request,caches0. Accept1..32 valid IDs with finish=length only at32 or finish=stop with the actual default EOS ID248044/248046. Same original prefill/settings/1256slots. INFO must confirm context131072,kv=int8,kv_resident=0 (original full-resident mode0 reporting),spec4,selected cap,5workers,PCIe0,caches0. Draft prompt callbacks must cover all32/256 cells in mode2,using token fallback for32 cells and batched for256 (native batch minimum64). Cap0 first targetT1 thenT4 if more windows,exactly windows-1 draft rounds,and at least one actual draft round across the process;cap1 every targetT1,zero offered/accepted drafts and zero draft rounds. Actual accepted-prefix positions and generated counts must conserve windows,including an EOS inside the final window. Same-child preexec validation,normal owned exit,empty validation warnings,unchanged source/model/runtime/boot/driver and no fresh fault;full15 model hashes after cohort. Stop first failure,no retry. No token-string identity,speed/task/physical-context/adoption claim.",
-  "kv_reporting_contract": "Pinned6e40 kv_plan leaves mode0/all slots when requested residency>=max_cells. INFO kv_resident reports slot count only for main mode1,else0. Main context131072 and requested131072 therefore require INFO0;draft prompt mode2 independently confirms the MTP ring.",
-  "interpretation": "Resident no-decode-draft retains MTP weights/KV/prompt precompute but omits generation KV catchup and proposals. Target verifier geometry also changesT4 toT1. This is a private attribution control,not full-MTP-off or an adopted decoder. State hashing of future MTP cells is disabled because this arm intentionally does not maintain them.",
-  "budgets": {
-    "wall": 900,
-    "cpu": 3600,
-    "rss_cap": 111669149696,
-    "text_cap": 16777216,
-    "file_cap": 33554432,
-    "total_cap": 268435456
-  },
-  "retention": "Keep compact per-request route/count/wire/result hashes and per-process ownership/fault outcomes. Retire successful stdout/stderr/JIT after replay. Reuse only model configuration/assets from full_context_model.setup;never its retired candidate engine qualification.",
-  "outcomes": {
-    "0": {
-      "passed": true,
-      "admission": {
-        "context": "131072",
-        "kv": "int8",
-        "kv_resident": "0",
-        "expert_slots": "1256",
-        "spec": "4",
-        "mtp_max": "0",
-        "lookup": "0",
-        "pool_workers": "5",
-        "pcie_frac": "0.00",
-        "conversation_cache_mib": "0"
-      },
-      "requests": [
-        {
-          "generated_tokens": 32,
-          "prompt_tokens": 33,
-          "finish": "length",
-          "drafts_accepted": 18,
-          "drafts_offered": 48,
-          "reused_tokens": 0,
-          "read_tokens": 33,
-          "output_ids_sha256": "265a4e66ed226ffd9a38f38d5e514697be455eb7cf4f70adbefb355e37471275",
-          "publications": 1
-        },
-        {
-          "generated_tokens": 2,
-          "prompt_tokens": 257,
-          "finish": "stop",
-          "drafts_accepted": 0,
-          "drafts_offered": 3,
-          "reused_tokens": 0,
-          "read_tokens": 257,
-          "output_ids_sha256": "8c90ba1d76cfa262e2fffe37ddeac5e7c83667b518186a21fea159542af32828",
-          "publications": 1
-        }
-      ],
-      "exit_code": 0,
-      "activation": {
-        "pid": 3194967,
-        "loader": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_loader.so.0.12.0",
-        "threads_before": 1,
-        "preinit": 37,
-        "config_enabled": true,
-        "first_init": true,
-        "dispatch_result": 46,
-        "output_untouched": true,
-        "retained_reference_until_exit": true,
-        "runtime_teardown_qualified": false
-      },
-      "routes": [
-        {
-          "target_windows": 17,
-          "first_T": 1,
-          "subsequent_T": 4,
-          "draft_rounds_delta": 16,
-          "cumulative_draft_rounds": 16,
-          "prompt_draft": {
-            "read_tokens": 33,
-            "draft_cells": 32,
-            "batch_count": 1,
-            "path": "token",
-            "mode": 2
-          }
-        },
-        {
-          "target_windows": 2,
-          "first_T": 1,
-          "subsequent_T": 4,
-          "draft_rounds_delta": 1,
-          "cumulative_draft_rounds": 17,
-          "prompt_draft": {
-            "read_tokens": 257,
-            "draft_cells": 256,
-            "batch_count": 1,
-            "path": "batched",
-            "mode": 2
-          }
-        }
-      ],
-      "validation_warning_bytes": 0,
-      "stdout_sha256": "272670ff08014d300448e0c65fa5badc81a2ec03a358a78ef95abe4a23fa4191",
-      "stderr_sha256": "716873e1368a7b0822d35fabb225e1662b160496656b23b05a9784efcda4beeb",
-      "host_probe_accepted": true,
-      "ownership_closed": true,
-      "fresh_faults": [],
-      "boot_unchanged": true,
-      "driver_after": {
-        "pci": "/sys/bus/pci/devices/0000:05:00.0",
-        "driver": "xe",
-        "vendor": "0x8086",
-        "device": "0xe20c",
-        "kernel": "7.0.0-38-generic",
-        "devcoredump": false
-      }
-    },
-    "1": {
-      "passed": true,
-      "admission": {
-        "context": "131072",
-        "kv": "int8",
-        "kv_resident": "0",
-        "expert_slots": "1256",
-        "spec": "4",
-        "mtp_max": "1",
-        "lookup": "0",
-        "pool_workers": "5",
-        "pcie_frac": "0.00",
-        "conversation_cache_mib": "0"
-      },
-      "requests": [
-        {
-          "generated_tokens": 32,
-          "prompt_tokens": 33,
-          "finish": "length",
-          "drafts_accepted": 0,
-          "drafts_offered": 0,
-          "reused_tokens": 0,
-          "read_tokens": 33,
-          "output_ids_sha256": "265a4e66ed226ffd9a38f38d5e514697be455eb7cf4f70adbefb355e37471275",
-          "publications": 1
-        },
-        {
-          "generated_tokens": 32,
-          "prompt_tokens": 257,
-          "finish": "length",
-          "drafts_accepted": 0,
-          "drafts_offered": 0,
-          "reused_tokens": 0,
-          "read_tokens": 257,
-          "output_ids_sha256": "09b902743d301eb10b00840d70b02dc648f84cb70428e069c0240e94dc0f9d2d",
-          "publications": 1
-        }
-      ],
-      "exit_code": 0,
-      "activation": {
-        "pid": 3202002,
-        "loader": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_loader.so.0.12.0",
-        "threads_before": 1,
-        "preinit": 37,
-        "config_enabled": true,
-        "first_init": true,
-        "dispatch_result": 46,
-        "output_untouched": true,
-        "retained_reference_until_exit": true,
-        "runtime_teardown_qualified": false
-      },
-      "routes": [
-        {
-          "target_windows": 32,
-          "first_T": 1,
-          "subsequent_T": 1,
-          "draft_rounds_delta": 0,
-          "cumulative_draft_rounds": 0,
-          "prompt_draft": {
-            "read_tokens": 33,
-            "draft_cells": 32,
-            "batch_count": 1,
-            "path": "token",
-            "mode": 2
-          }
-        },
-        {
-          "target_windows": 32,
-          "first_T": 1,
-          "subsequent_T": 1,
-          "draft_rounds_delta": 0,
-          "cumulative_draft_rounds": 0,
-          "prompt_draft": {
-            "read_tokens": 257,
-            "draft_cells": 256,
-            "batch_count": 1,
-            "path": "batched",
-            "mode": 2
-          }
-        }
-      ],
-      "validation_warning_bytes": 0,
-      "final_full_model_hashes": 15,
-      "stdout_sha256": "3f43246b3297ce0814862f43134305c2b4f7c73e9dba6bf4c6533fe2992d6280",
-      "stderr_sha256": "f05771ddf44043ae5b91913cd35beff0edac0b8af41c6803156000e2115317bb",
-      "host_probe_accepted": true,
-      "ownership_closed": true,
-      "fresh_faults": [],
-      "boot_unchanged": true,
-      "driver_after": {
-        "pci": "/sys/bus/pci/devices/0000:05:00.0",
-        "driver": "xe",
-        "vendor": "0x8086",
-        "device": "0xe20c",
-        "kernel": "7.0.0-38-generic",
-        "devcoredump": false
-      }
-    }
-  },
-  "active": false,
-  "ownership_closed": true,
-  "passed": true,
-  "complete": true,
-  "speed_eligible": false,
-  "model_adoption_qualified": false,
-  "production_selected": false,
-  "next_gate": "Only after both fresh model arms pass,freeze matched official bench.sh thinking-on long strong/weak MTP,agent-session and independent prefill-preservation timing with prospective clock screens. Selected original decode remains unchanged.",
-  "private_inputs_sha256": "271f2857ccc7acc91a9a5bd04ca72906cf7eddac8322a529c95eb31259e7dc7d",
   "controller_host_tests": {
     "source_commit": "c0801edad121cf30d1dd7388dd7b2fd9c1f13fc9",
     "command": [
@@ -466,5 +118,194 @@
       1
     ],
     "limits": "Parser qualification only;does not retroactively qualify terminated v2 or authorize model/performance adoption."
-  }
+  },
+  "processes": [
+    {
+      "cap": 0,
+      "pid": 3194967,
+      "passed": true,
+      "exit_code": 0,
+      "ownership_closed": true,
+      "validation_warning_bytes": 0,
+      "fresh_faults": [],
+      "boot_unchanged": true,
+      "driver_unchanged": true,
+      "preload_activated": true,
+      "requests": [
+        {
+          "generated_tokens": 32,
+          "prompt_tokens": 33,
+          "finish": "length",
+          "drafts_accepted": 18,
+          "drafts_offered": 48,
+          "reused_tokens": 0,
+          "read_tokens": 33,
+          "output_ids_sha256": "265a4e66ed226ffd9a38f38d5e514697be455eb7cf4f70adbefb355e37471275",
+          "publications": 1
+        },
+        {
+          "generated_tokens": 2,
+          "prompt_tokens": 257,
+          "finish": "stop",
+          "drafts_accepted": 0,
+          "drafts_offered": 3,
+          "reused_tokens": 0,
+          "read_tokens": 257,
+          "output_ids_sha256": "8c90ba1d76cfa262e2fffe37ddeac5e7c83667b518186a21fea159542af32828",
+          "publications": 1
+        }
+      ],
+      "routes": [
+        {
+          "target_windows": 17,
+          "first_T": 1,
+          "subsequent_T": 4,
+          "draft_rounds_delta": 16,
+          "cumulative_draft_rounds": 16,
+          "prompt_draft": {
+            "read_tokens": 33,
+            "draft_cells": 32,
+            "batch_count": 1,
+            "path": "token",
+            "mode": 2
+          }
+        },
+        {
+          "target_windows": 2,
+          "first_T": 1,
+          "subsequent_T": 4,
+          "draft_rounds_delta": 1,
+          "cumulative_draft_rounds": 17,
+          "prompt_draft": {
+            "read_tokens": 257,
+            "draft_cells": 256,
+            "batch_count": 1,
+            "path": "batched",
+            "mode": 2
+          }
+        }
+      ]
+    },
+    {
+      "cap": 1,
+      "pid": 3202002,
+      "passed": true,
+      "exit_code": 0,
+      "ownership_closed": true,
+      "validation_warning_bytes": 0,
+      "fresh_faults": [],
+      "boot_unchanged": true,
+      "driver_unchanged": true,
+      "preload_activated": true,
+      "requests": [
+        {
+          "generated_tokens": 32,
+          "prompt_tokens": 33,
+          "finish": "length",
+          "drafts_accepted": 0,
+          "drafts_offered": 0,
+          "reused_tokens": 0,
+          "read_tokens": 33,
+          "output_ids_sha256": "265a4e66ed226ffd9a38f38d5e514697be455eb7cf4f70adbefb355e37471275",
+          "publications": 1
+        },
+        {
+          "generated_tokens": 32,
+          "prompt_tokens": 257,
+          "finish": "length",
+          "drafts_accepted": 0,
+          "drafts_offered": 0,
+          "reused_tokens": 0,
+          "read_tokens": 257,
+          "output_ids_sha256": "09b902743d301eb10b00840d70b02dc648f84cb70428e069c0240e94dc0f9d2d",
+          "publications": 1
+        }
+      ],
+      "routes": [
+        {
+          "target_windows": 32,
+          "first_T": 1,
+          "subsequent_T": 1,
+          "draft_rounds_delta": 0,
+          "cumulative_draft_rounds": 0,
+          "prompt_draft": {
+            "read_tokens": 33,
+            "draft_cells": 32,
+            "batch_count": 1,
+            "path": "token",
+            "mode": 2
+          }
+        },
+        {
+          "target_windows": 32,
+          "first_T": 1,
+          "subsequent_T": 1,
+          "draft_rounds_delta": 0,
+          "cumulative_draft_rounds": 0,
+          "prompt_draft": {
+            "read_tokens": 257,
+            "draft_cells": 256,
+            "batch_count": 1,
+            "path": "batched",
+            "mode": 2
+          }
+        }
+      ]
+    }
+  ],
+  "runtime": {
+    "boot": "cfda0b6a-7c13-4fe2-bdf5-8f9202770840",
+    "driver": {
+      "pci": "/sys/bus/pci/devices/0000:05:00.0",
+      "driver": "xe",
+      "vendor": "0x8086",
+      "device": "0xe20c",
+      "kernel": "7.0.0-38-generic",
+      "devcoredump": false
+    },
+    "preload": {
+      "library": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/ur-validation-preload-v2/libstrata_ur_validation.so",
+        "sha256": "1d4e69d672d55fa0a126ae43b7b4743482cccca7e2f2bc22e0db2bfdad5bdc7c"
+      },
+      "loader": {
+        "path": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_loader.so.0.12.0",
+        "sha256": "bb6e1311850e4b1a924e42acae80c2b3610934625a4985aaa67967abe31356fc"
+      },
+      "component_source_commit": "f312b6691f508125db6cfc2580ca32a686ff2642",
+      "component_original_plan": {
+        "commit": "550c75f5fc954ee38b70230e32d2a48e12100d8a",
+        "path": "bench/results/2026-10-15-pr6-recovery-audit/research-index.json",
+        "sha256": "d12866b93c51e76a83e95638e66b6f6f4e0e33d779516a5fddecc178a6f8e10a"
+      },
+      "retained_reference_until_exit": true,
+      "runtime_teardown_qualified": false
+    }
+  },
+  "passed": true,
+  "complete": true,
+  "active": false,
+  "ownership_closed": true,
+  "final_full_model_hashes": 15,
+  "production_selected": false,
+  "model_adoption_qualified": false,
+  "speed_eligible": false,
+  "limits": "Resident no-decode-draft retains MTP weights/KV/prompt precompute but omits generation KV catchup and proposals. Target verifier geometry also changesT4 toT1. This is a private attribution control,not full-MTP-off or an adopted decoder. State hashing of future MTP cells is disabled because this arm intentionally does not maintain them.",
+  "prior_failures": {
+    "INFO": "a0d0bdaab",
+    "fixed_output": "2e46bd5e7",
+    "unexecuted_short_prompt_parser": "42107a807",
+    "outcome": "All original failures/ineligible model receipts remain unchanged in Git;only freshv4 is qualified."
+  },
+  "artifact_retirement": {
+    "complete": true,
+    "files": 167,
+    "bytes": 40835188,
+    "manifest_path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/closed-mtp-short-serve-20261024.jsonl",
+    "manifest_sha256": "30f451d9776326b4fe183dd9ad16475041c939ebe03a5655c975c665b18f7b54",
+    "archive_commit": "426c270c65011f5393c5356d0363173156a4f872",
+    "replay": "All4 actual protocol/EOS/ID/request/route vectors,closed ownership,exact native argv/environments,preload,stdout/stderr digests replay identically. Original9853 source/recipe and private source/compiler/SDK/MKL/1410 actual compiled inputs verified;all26 current native assets verify before/after.15 model full hashes passed after cohort and identities still match.",
+    "retained": "Selected original13 plus private13 for imminent official long MTP-net comparison. Keep one full short-model record for exact model/environment qualification input to that comparison;review/remove once its new plan reconstructs and seals those fields. Private source/compiled-input record remain live. No failed old outcome is promoted."
+  },
+  "next_gate": "Only after both fresh model arms pass,freeze matched official bench.sh thinking-on long strong/weak MTP,agent-session and independent prefill-preservation timing with prospective clock screens. Selected original decode remains unchanged."
 }
