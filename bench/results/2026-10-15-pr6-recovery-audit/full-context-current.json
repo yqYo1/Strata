@@ -4235,7 +4235,7 @@
         "required_patterns": {
           "allocation_type": "^Created Graphics Allocation of type (?P<type>\\S+)$",
           "allocation_pool_size": "ThreadID: .* Type: (?P<type>\\S+) Pool: (?P<pool>\\S+) Root index: (?P<root>\\d+) Size: (?P<size>\\d+) CPU VA: .* GPU VA: .* Total sys mem allocated: \\d+ Total lmem allocated: \\d+",
-          "bo_create": "(?:^Created new BO with GEM_USERPTR, handle: BO-(?P<handle>\\d+)$|^Created BO-(?P<handle>\\d+) range: (?P<start>[0-9a-fA-F]+) - (?P<end>[0-9a-fA-F]+), size: (?P<size>\\d+) from PRIME_FD_TO_HANDLE$)",
+          "bo_create": "(?:^Created new BO with GEM_USERPTR, handle: BO-(?P<userptr_handle>\\d+)$|^Created BO-(?P<handle>\\d+) range: (?P<start>[0-9a-fA-F]+) - (?P<end>[0-9a-fA-F]+), size: (?P<size>\\d+) from PRIME_FD_TO_HANDLE$)",
           "bo_bind": "^(?P<op>bind) BO-(?P<handle>\\d+) (?:to|from) VM (?P<vm>\\d+), vmHandleId = \\d+, range: [0-9a-fA-F]+ - [0-9a-fA-F]+, size: \\d+, result: (?P<result>-?\\d+)",
           "bo_unbind": "^(?P<op>unbind) BO-(?P<handle>\\d+) (?:to|from) VM (?P<vm>\\d+), vmHandleId = \\d+, range: [0-9a-fA-F]+ - [0-9a-fA-F]+, size: \\d+, result: (?P<result>-?\\d+)",
           "bo_close_attempt": "^(?:Calling gem close on handle: BO-(?P<close_handle>\\d+)|Skipped closing BO-(?P<skip_handle>\\d+) - more shared users!)$"

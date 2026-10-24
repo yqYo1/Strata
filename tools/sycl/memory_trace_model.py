@@ -72,6 +72,12 @@ def prepare(container):
     require(review['native_review_passed'] and review['logging_only'] and
         review['flag_map'] and set(review['flag_map'])<=LOGGING_KEYS and
         all(v=='1' for v in review['flag_map'].values()),'reviewed logging-only flags required')
+    contract=review['output_contract'];required=contract['required_patterns']
+    require(required and not set(required)&set(contract.get('optional_patterns',{})),
+        'nonempty disjoint logging categories required')
+    for pattern in {**required,**contract.get('optional_patterns',{})}.values():
+        require(0<len(pattern)<=512 and '\n' not in pattern,'bounded logging pattern required')
+        re.compile(pattern)  # Reject invalid decoders before creating/running a plan.
     p=parent(container);native,preload=runtime(p)
     selected,proof=model.gate.native.source.baseline();fixture=selected['fixtures']['sycl_submission_test']
     require(digest(fixture['path'])==fixture['sha256'],'selected fixture changed')
