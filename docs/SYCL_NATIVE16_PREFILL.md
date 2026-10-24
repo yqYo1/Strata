@@ -183,10 +183,16 @@ preexec parameter validation remain. Native arguments and actual aggregate
 offered/accepted/emitted counts bind the source-fixed widths; this is not a
 per-window trace or hardware attribution. Four host corruption/selection controls
 and two clock controls pass, and the same-library clock probe passes its screen.
-Clean model samples remain pending. Require all three block-paired decode ratios
-to avoid decline and their geomean to exceed1.02 for advancement. Independently
-require all three paired prefill ratios to avoid decline. This does not qualify
-adoption,70tok/s or the separate long/agent/task/full-context/teardown gates.
+The first width2 process closed with a failed workload gate: code generated3415
+tokens at exact13.285064tok/s, but prose spent the16384-token output cap in
+thinking and produced no answer body. The benchmark exited1; the native engine
+exited0, its owners closed and no fresh driver fault appeared. The other eight
+processes remain unstarted under the prospective first-failure rule. Configured
+context131072 was not filled; this was output-budget exhaustion. Preserve this
+failed comparison and define a new output budget/plan before fresh measurements.
+Its intended advancement rules remain three nondeclining paired decode ratios
+and geomean above1.02, with independent prefill no-decline in all three pairs.
+No clean repeated gain, model adoption or70tok/s qualification follows.
 The closed launchers and protocol corruption controls recover at`b61f376c2`.
 Their successful raw logs, temporary source snapshot and consumed scope review
 are retired after route/observer replay. Original13 and private13 build assets
