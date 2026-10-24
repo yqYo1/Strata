@@ -1,5 +1,5 @@
 {
-  "stage": "prepared",
+  "stage": "host-checked",
   "source_commit": "b05a22c52a66131c081d3e7d6aff1af4764ed8ac",
   "input_sha256": {
     "tests/core/cpu_service_profile_test.cpp": "3efb6e3fe24a00816d06f476007ce35ace52088dd69bf4cce3a6b86d70f6a38b",
@@ -54,11 +54,33 @@
   },
   "criteria": "Owned compile/test exit0;actual project include closure exactly the three pinned native inputs;counter/row/NT conservation,phase exclusion,thread publication/identity,clock wall versus CPU,refusal/overflow and invalid-delta controls. No production kernels or GPU.",
   "retention": "Keep source,recipe,host outcome and limits;retire successful raw output and standalone fixture after committed replay. No extra native engine generation.",
-  "passed": false,
-  "complete": false,
+  "passed": true,
+  "complete": true,
   "active": false,
   "ownership_closed": true,
   "GPU_executed": false,
   "production_pool_checked": false,
-  "model_adoption_qualified": false
+  "model_adoption_qualified": false,
+  "compiled_project_inputs": 3,
+  "fixture": {
+    "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-service-host-v1/fixture",
+    "sha256": "c70f12121c54c9f5c9b6f40488e8858cb41f3124c5bd866f808d7a3421e76cd2",
+    "bytes": 37872
+  },
+  "command_outcomes": [
+    {
+      "label": "compile",
+      "exit_code": 0
+    },
+    {
+      "label": "check",
+      "exit_code": 0
+    }
+  ],
+  "retirement_prerequisites": {
+    "original_inputs_recovered": 7,
+    "original_plan_commit": "cd431b057",
+    "original_plan_matches": true,
+    "consumer": "Host collector evidence only;standalone executable/raw logs have no next consumer. Native production-pool and model gates remain open."
+  }
 }

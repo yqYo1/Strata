@@ -230,7 +230,11 @@ saturation. Stage clocks are nested. Expert-copy counters cover only their named
 route, not all physical PCIe traffic. Keep physical PCIe/VRAM traffic, CPU issued
 instructions and compatible-shape hardware ceilings unknown where unmeasured.
 
-The next CPU attribution source is prepared, **unbuilt and untested**. Optional
+The next CPU attribution source is **unbuilt as a native engine**. Its
+[host collector gate](../bench/results/2026-10-15-pr6-recovery-audit/cpu-service-current.json)
+passes owned GCC13.3 compilation and all standalone counter/clock controls, with
+three actual project includes matched and both processes closed at exit0.
+This qualifies neither the production pool nor a model measurement. Optional
 `STRATA_CPU_SERVICE_PROFILE` compilation plus preexec`STRATA_CPU_SERVICE=1`
 collects decode-only pool GU/SwiGLU, hidden quantization and Down leaf scopes for
 the seven observed format pairs at H2560/FF640/NT1..4. It records calling-thread
@@ -253,9 +257,9 @@ remain charged to model execution; bin lookup and counter updates are outside
 the reported leaf intervals. This changes neither the selected original6e40 executable nor
 the active clean-width inputs; it is not an inference optimization or a speedup.
 
-At a serialized gap between live model processes, run the committed standalone
-collector host fixture under bounded ownership. After the frozen width comparison
-closes, require production-pool conservation/numerical checks; recover and retire
+The standalone collector checks passed in a serialized gap between model
+processes. After the frozen width comparison closes, require production-pool
+conservation/numerical checks; recover and retire
 the private comparison generation before another native engine build. A future
 instrumented engine must use original6e40 plus
 only the committed observer delta, not silently adopt the current worktree's
