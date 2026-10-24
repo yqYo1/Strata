@@ -287,5 +287,42 @@
     "metadata_tests": 6,
     "passed": true,
     "limits": "CPU source/metadata refusals only;no native compilation,GPU,model or adoption qualification. Repeat through the owned build operation before compile."
+  },
+  "actual_prepared_admission_controls": {
+    "source_commit": "2abb70d8408e55a76c6abd5cb35a291d4a1bafd1",
+    "positive_inputs_accepted": true,
+    "negative_cases": [
+      {
+        "field": "project_inputs",
+        "refused": true
+      },
+      {
+        "field": "generated_inputs",
+        "refused": true
+      },
+      {
+        "field": "dependency_inputs",
+        "refused": true
+      },
+      {
+        "field": "external_inputs",
+        "refused": true
+      },
+      {
+        "field": "environment",
+        "refused": true
+      },
+      {
+        "field": "compiler_inputs",
+        "refused": true
+      },
+      {
+        "field": "changed_map_and_local_digest",
+        "refused": true
+      }
+    ],
+    "passed": true,
+    "GPU_executed": false,
+    "limits": "In-memory copies only;no native process/build launched. Original v1 failures remain unchanged."
   }
 }
