@@ -10,7 +10,6 @@ import hashlib
 import json
 from pathlib import Path
 import re
-import shutil
 import sys
 
 sys.dont_write_bytecode = True
@@ -19,24 +18,28 @@ import build_full_context as prior
 import check_full_context_source as selected
 import measurement_guards as guards
 import measurement_owner as supervision
+import build_manifest
 
 P, B = build.P, build.B
-ROOT = B / 'mtp-resident-control-v1'
+ROOT = B / 'mtp-resident-control-v2'
 RESULT = P / 'bench/results/2026-10-15-pr6-recovery-audit/mtp-resident-control-current.json'
 BASE = '6e40afc1beddd059ee518617f6c1efce1da14aca'
 INPUTS = ['tools/sycl/mtp_resident_control.py', 'tools/sycl/test_mtp_resident_control.py',
           'tools/sycl/build_engine.py', 'tools/sycl/build_full_context.py',
           'tools/sycl/check_full_context_source.py', 'tools/sycl/measurement_guards.py',
-          'tools/sycl/measurement_owner.py', 'tools/sycl/measurement_environment.json']
+          'tools/sycl/measurement_owner.py', 'tools/sycl/measurement_environment.json',
+          'tools/sycl/build_manifest.py', 'tests/core/test_build_manifest.py']
 GUARD_ANCHOR = '    strata::core::set_coupled_draft(o.coupled_draft);\n'
 GUARD = '''    // Private resident-MTP control: no reuse of generation MTP state.
     if (!o.serve || o.spec != 4 || (o.mtp_max_t != 0 && o.mtp_max_t != 1) || o.mtp.empty() ||
         o.prompt_cache != 0 || o.conversation_cache_mib != 0 || o.suffix_draft != 0 ||
         o.coupled_draft || !o.spec_oracle.empty() || o.vision || !o.layer_split.empty() ||
+        o.prefill_chunk != 8192 || o.prefill_auto || o.expert_cache != 1256 || !o.expert_cache_per_layer ||
+        o.max_context != 131072 || o.kv_resident != 131072 ||
         o.peer_device >= 0 || o.gpu_stages || o.graph_only || o.gpu_only_full || !o.no_token_graph ||
         std::any_of(o.expert_cache_remote.begin(), o.expert_cache_remote.end(), [](auto n) { return n > 0; })) {
         std::fprintf(stderr, "resident MTP control requires fresh single-GPU serve, spec4, mtp-max-t0/1, "
-                             "no prompt/conversation cache, suffix, coupled/oracle, token graphs or split\\n");
+                             "prefill8192,1256 per-layer slots,resident131072; no caches,suffix,coupled/oracle,graphs/split\\n");
         return 2;
     }
 '''
@@ -110,17 +113,25 @@ def recover_sources(record):
 
 def compact(row):
     return {k: v for k, v in row.items() if k not in ('project_inputs', 'generated_inputs',
-        'dependency_inputs', 'external_inputs', 'environment', 'commands', 'compiler_inputs')}
+        'dependency_inputs', 'external_inputs', 'environment', 'commands', 'compiler_inputs',
+        'actual_compiled_inputs')}
 
 
 def prepare():
-    guards.require(not ROOT.exists() and not RESULT.exists(), 'single-use fresh build only')
+    guards.require(not ROOT.exists() and RESULT.read_bytes() == build.git(P,'show',
+        'HEAD:'+str(RESULT.relative_to(P))), 'fresh root after committed v1 closure only')
+    previous=json.loads(RESULT.read_text())
+    guards.require(previous['stage']=='closed_prebuild_failed' and previous['ownership_closed'] and
+        not previous['active'] and not previous['GPU_executed'] and not previous['passed'] and
+        previous['retire_generation']['complete'] and
+        not (B/'mtp-resident-control-v1/build').exists(), 'do not retry or promote the failed unbuilt v1')
     revision = build.git(P, 'rev-parse', 'HEAD').decode().strip()
     pins = committed_inputs(revision)
     original, proof = selected.baseline()
     guards.require(original['source_commit'] == BASE, 'selected base changed')
     old = json.loads(prior.ENGINE_RECORD.read_text())
     old_result = json.loads(selected.RESULT.read_text())[prior.ENGINE_KEY]
+    retired=old_result.pop('artifact_retirement')
     guards.require(old_result == prior.summary(old) and old['stage'] == 'closed_link' and
         old['passed'] and old['complete'] and old['ownership_closed'] and not old['active'],
         'unselected generation not closed')
@@ -132,11 +143,17 @@ def prepare():
                             XDG_CACHE_HOME=str(prior.ROOT/'cache'))
     guards.require(recover_sources(old) == 9853 and old['environment'] == expected_old_env,
         'old source/environment recovery differs')
-    for item in [old['binary'], *old['fixtures'].values()]:
-        guards.require(build.digest(item['path']) == item['sha256'], 'old artifact continuity differs')
+    retirement=previous['retire_generation']
+    guards.require(retirement['receipt_sha256']==build.digest(prior.ENGINE_RECORD) and
+        all(retired[k]==v for k,v in retirement.items()) and
+        build.digest(retirement['manifest_path'])==retirement['manifest_sha256'] and
+        not Path(retirement['root']).exists() and
+        all(not Path(v['path']).exists() for v in retirement['assets']),
+        'completed retirement evidence changed;never repeat deletion')
     remote = build.git(P, 'ls-remote', 'origin', 'refs/heads/feature/sycl').decode().split()
     guards.require(len(remote) == 2 and remote[1] == 'refs/heads/feature/sycl', 'missing retained remote')
     build.git(P, 'merge-base', '--is-ancestor', old['source_commit'], remote[0])
+    build.git(P, 'merge-base', '--is-ancestor', BASE, remote[0])
     for tool in old['tools'].values():
         guards.require(build.digest(tool['path']) == tool['sha256'], 'build tool changed')
     sdk = prior.sdk()
@@ -154,7 +171,8 @@ def prepare():
     argv = list(original['configure_argv'])
     argv[argv.index('-S') + 1] = str(source)
     argv[argv.index('-B') + 1] = str(ROOT / 'build')
-    row = dict(schema='strata-resident-mtp-control-v1', stage='prepared', source_commit=revision,
+    argv.append('-DCMAKE_MAKE_PROGRAM:FILEPATH='+old['tools']['ninja']['path'])
+    row = dict(schema='strata-resident-mtp-control-v2', stage='retired_previous', source_commit=revision,
         input_sha256=pins, selected_original=proof, base_native_source=BASE,
         project_inputs=original['project']['source_sha256'], generated_inputs=generated,
         generated_source_files=len(generated), generated_source_fingerprint=fingerprint(generated),
@@ -169,27 +187,48 @@ def prepare():
         dependency_command=['/usr/bin/ninja', '-C', str(ROOT / 'build'), '-t', 'deps'],
         generated_header_sha256={str(ROOT / 'build' / 'ggml/src/ggml-version.h'):
             next(iter(old['actual_dependency_closure']['generated_sha256'].values()))},
-        retire_generation=dict(source_commit=old['source_commit'], receipt_path=str(prior.ENGINE_RECORD),
-            receipt_sha256=build.digest(prior.ENGINE_RECORD), source_inputs_recovered=9853,
-            configure_argv=old['configure_argv'], recipe_matches_committed_result=True,
-            source_reachable_remote=remote[0], assets=[old['binary'], *old['fixtures'].values()],
-            root=str(prior.ROOT / 'build'), complete=False,
-            reason='Six-process prefill comparison closed without adoption. Existing capacity/state outcomes stay preserved;physical262144 needs a new entrypoint/build,so it is not a consumer of these old binaries. Keep source receipt only for the existing closed qualification/provenance readers,not an execution generation.'),
+        retire_generation=retirement,
+        prior_prebuild_failure=dict(archive_commit=revision,path=str(RESULT.relative_to(P)),
+            source_commit=previous['source_commit'],initial_cpu_source_check=previous['initial_cpu_source_check'],
+            source_admission_negative_control=previous['source_admission_negative_control'],
+            native_source_review=previous['native_source_review'],
+            outcome='Closed before native compilation/GPU;two admission-negative controls unexpectedly accepted. Preserve original failure;this new source/root/plan is prospective.'),
         question='Measure resident MTP4 versus resident-no-decode-draft under unchanged original prefill,target1256 slots and safety. This is an attribution control,not full MTP-off or hardware saturation.',
         criteria='Build from exact selected6e40 source plus only two declared generated TUs. Native startup refuses standalone,caches,suffix,coupled/oracle,graphs/split. Cap0 returns only after owner/T/a checks,clears outputs and avoids graph observation/staging/submission. Default cap3 retains original math. Before models require owned build/actual dependency closure,CPU refusal checks,bounded traced device and short model checks. Repeated thinking-on code/prose,long/agent-session and independent prefill preservation remain necessary for adoption.',
         budgets=dict(wall=1200,cpu=7200,rss_cap=16<<30,text_cap=8<<20,file_cap=256<<20,total_cap=4<<30),
         passed=False, complete=False, active=False, ownership_closed=True, GPU_executed=False,
         production_selected=False, model_adoption_qualified=False,
         retention='One selected original13-asset fallback plus this imminent diagnostic generation. Retire old unselected7 assets/build only after original source/recipe/remote/consumer checks. Generated source is a disposable current compile input;remove it with closed build output after qualification/comparison. Keep compact measurements and original inputs in Git.')
+    row['metadata_sha256']=build_manifest.pins(row)
     write(ROOT / 'record.json', row); write(RESULT, compact(row))
-    print('Prepared exact original-source diagnostic;commit before retirement/build.', flush=True)
+    print('Prepared fresh v2 original-source diagnostic;prior retirement stays closed. Commit before build.', flush=True)
 
 
 def admission(row):
-    guards.require(RESULT.read_bytes() == build.git(P, 'show', 'HEAD:' + str(RESULT.relative_to(P))) and
-        json.loads(RESULT.read_text()) == compact(row), 'commit the exact prepared operation')
+    guards.require(RESULT.read_bytes() == build.git(P, 'show', 'HEAD:' + str(RESULT.relative_to(P))),
+        'commit the exact prepared operation')
+    frozen=json.loads(RESULT.read_text())
+    guards.require(frozen==compact(row), 'private operation differs from committed plan')
+    build_manifest.verify(row,frozen['metadata_sha256'])
     guards.require(committed_inputs(row['source_commit']) == row['input_sha256'], 'controller changed')
-    guards.require(selected.baseline()[1] == row['selected_original'], 'fallback changed')
+    original,proof=selected.baseline()
+    guards.require(proof == row['selected_original'] and row['base_native_source']==BASE and
+        row['project_inputs']==original['project']['source_sha256'] and
+        row['dependency_inputs']==original['dependencies'] and
+        row['environment']==dict(original['environment'],TMPDIR=str(ROOT/'tmp'),
+            XDG_CACHE_HOME=str(ROOT/'cache')), 'original source/dependencies/effective environment changed')
+    generated={n:hashlib.sha256(transformed(n,raw)).hexdigest() for n,raw in
+        build.blobs(P,BASE,original['project']['source_sha256'])}
+    guards.require(row['generated_inputs']==generated and len(generated)==row['generated_source_files'] and
+        fingerprint(generated)==row['generated_source_fingerprint'] and
+        {str(p.relative_to(ROOT/'source')) for p in (ROOT/'source').rglob('*') if p.is_file()}==set(generated),
+        'generated source map/transform/extent changed')
+    tools=row['compiler_inputs']['tools']
+    guards.require(row['configure_argv'][0]==row['build_command'][0]==tools['cmake']['path'] and
+        row['dependency_command'][0]==tools['ninja']['path'] and
+        '-DCMAKE_MAKE_PROGRAM:FILEPATH='+tools['ninja']['path'] in row['configure_argv'] and
+        '-DCMAKE_CXX_COMPILER='+row['compiler']['path'] in row['configure_argv'],
+        'actual command-to-tool binding changed')
     guards.require(prior.sdk() == row['compiler_inputs']['sdk'], 'SDK changed')
     for v in row['compiler_inputs']['tools'].values():
         guards.require(build.digest(v['path']) == v['sha256'], 'build tool changed')
@@ -200,30 +239,6 @@ def admission(row):
         guards.require(build.pin(Path(source['root']), ['.']) == source, 'dependency changed')
     for n, h in row['external_inputs'].items():
         guards.require(build.digest(n) == h, 'external input changed')
-
-
-def retire():
-    row = json.loads((ROOT / 'record.json').read_text()); admission(row)
-    guards.require(row['stage'] == 'prepared' and not row['retire_generation']['complete'], 'no duplicate retirement')
-    old = json.loads(prior.ENGINE_RECORD.read_text())
-    guards.require(build.digest(prior.ENGINE_RECORD) == row['retire_generation']['receipt_sha256'] and
-        recover_sources(old) == 9853, 'old linked inputs/recipe changed')
-    files = sorted(p for p in Path(row['retire_generation']['root']).rglob('*') if p.is_file())
-    manifest = ROOT / 'retired-generation.jsonl'
-    manifest.write_text(''.join(json.dumps(dict(path=str(p),bytes=p.stat().st_size,sha256=build.digest(p),
-        reason=row['retire_generation']['reason']),sort_keys=True)+'\n' for p in files))
-    for p in files: p.unlink()
-    shutil.rmtree(row['retire_generation']['root'])
-    row['retire_generation'].update(complete=True, files=len(files), bytes=sum(json.loads(s)['bytes'] for s in manifest.read_text().splitlines()),
-        manifest_path=str(manifest), manifest_sha256=build.digest(manifest))
-    guards.require(all(not Path(v['path']).exists() for v in row['retire_generation']['assets']), 'old native asset remains')
-    row['stage'] = 'retired_previous'; write(ROOT / 'record.json', row); write(RESULT, compact(row))
-    container=json.loads(selected.RESULT.read_text())
-    container[prior.ENGINE_KEY]['artifact_retirement']=dict(row['retire_generation'],
-        next_consumer='Source receipt only: existing closed qualification/provenance readers. No engine execution consumer.',
-        physical_context='Full physical262144 remains unqualified and needs a new native entrypoint/build;past near-cap/RESTORE successes are unchanged.')
-    write(selected.RESULT,container)
-    print(json.dumps(row['retire_generation']), flush=True)
 
 
 def dependency_closure(row, text):
@@ -239,7 +254,10 @@ def dependency_closure(row, text):
     uncovered=sorted(str(p) for p in paths if str(p) not in expected)
     guards.require(not uncovered, 'uncovered compiled input: '+repr(uncovered[:12]))
     for p in paths: guards.require(build.digest(p)==expected[str(p)], 'compiled input changed: '+str(p))
-    return dict(files=len(paths),uncovered_files=0,generated_headers=row['generated_header_sha256'])
+    closure={str(p):expected[str(p)] for p in sorted(paths)}
+    row['actual_compiled_inputs']=closure
+    return dict(files=len(paths),uncovered_files=0,sha256=fingerprint(closure),
+        generated_headers=row['generated_header_sha256'])
 
 
 def compile_engine():
@@ -250,9 +268,10 @@ def compile_engine():
     def persist():
         row['active']=bool(owner and owner.active is not None)
         write(ROOT/'record.json',dict(row,commands=owner.commands if owner else []))
-    owner=supervision.Owner(ROOT/'owned',persist)
     try:
+        owner=supervision.Owner(ROOT/'owned',persist)
         for label,argv in [('host-controls',['/usr/bin/python3','-B',str(P/INPUTS[1])]),
+            ('metadata-controls',['/usr/bin/python3','-B',str(P/'tests/core/test_build_manifest.py')]),
             ('configure',row['configure_argv']),('build',row['build_command'])]:
             entry,out,err=owner.run(label,argv,row['environment'],P,**row['budgets'])
             guards.require(supervision.closed(entry) and entry['exit_code']==0,
@@ -267,7 +286,7 @@ def compile_engine():
     except BaseException as error:
         row.update(stage='build_failed',passed=False,complete=False,error=repr(error))
     finally:
-        row['ownership_closed']=owner.active is None and all(supervision.closed(e) for e in owner.commands)
+        row['ownership_closed']=owner is None or (owner.active is None and all(supervision.closed(e) for e in owner.commands))
         row['passed']=bool(row['passed'] and row['ownership_closed']);row['complete']=row['passed']
         persist();write(RESULT,compact(row))
     print(json.dumps({k:row.get(k) for k in ('stage','passed','complete','ownership_closed','error')}),flush=True)
@@ -275,9 +294,8 @@ def compile_engine():
 
 
 if __name__=='__main__':
-    guards.require(sys.argv[1:] in (['prepare'],['retire'],['build']), 'prepare|retire|build')
+    guards.require(sys.argv[1:] in (['prepare'],['build']), 'prepare|build')
     with (B/'owned-v0141-measurement.lock').open('a+') as lock:
         fcntl.flock(lock,fcntl.LOCK_EX|fcntl.LOCK_NB);guards.no_model_owners([])
         if sys.argv[1]=='prepare':prepare()
-        elif sys.argv[1]=='retire':retire()
         else:sys.exit(compile_engine())
