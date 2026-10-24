@@ -4523,6 +4523,18 @@
       "replayed_all_four_state_route_UR_NEO_and_client_parsers": true,
       "native_assets_verified_before_after": 20,
       "scope": "Raw output/JIT only. Retain130632-byte cohort record and qualified v3 parent record for exact environment/provenance replay until phase-prefill/decode comparison closes;these are not extra engine builds. Original failure statuses unchanged."
+    },
+    "phase_prefill_initial_admission_unrun": {
+      "source_commit": "e7f127c29",
+      "command": [
+        "python3",
+        "tools/sycl/phase_prefill_speed.py",
+        "run"
+      ],
+      "status": "UNRUN",
+      "GPU_executed": false,
+      "reason": "Pre-entry no_model_owners guard matched the audit worker argument /tmp/strata-phase-prefill-audit-20261024;exact research-only worker2687048,not a model. Guard was not bypassed. No owned benchmark/native attempt or launch file exists.",
+      "next_action": "Wait for the already active source audit to settle,close its exact created terminal,then execute the unchanged committed first process. No failed native sample or retry is inferred."
     }
   },
   "model_state_v2": {
