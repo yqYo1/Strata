@@ -1,5 +1,6 @@
 // Collector correctness only: no kernel speed, model or GPU qualification.
 #include "strata/kernels/cpu/service_profile.hpp"
+#include <algorithm>
 #include <cstdlib>
 #include <cstring>
 #include <string>
@@ -27,7 +28,60 @@ static std::string output(const Snapshot& before,const Snapshot& after,bool expe
     std::fclose(f);return text;
 }
 
-int main() {
+// Same four clock reads as a leaf interval, with no kernel or counter mutation.
+// An observed reference, not a subtractable bound on the full Scope/model cost.
+static int clock_screen() {
+    constexpr int samples=65536, warmup=512, lanes=6;
+    struct Screen { uint64_t tid=0, errors=0; std::vector<uint64_t> wall, cpu; };
+    std::array<Screen,lanes> screens;
+    auto run=[&](int lane) {
+        auto& out=screens[lane];
+        const long tid=syscall(SYS_gettid);
+        if (tid<=0) {++out.errors;return;}
+        out.tid=static_cast<uint64_t>(tid);
+        out.wall.reserve(samples);out.cpu.reserve(samples);
+        for (int i=-warmup;i<samples;++i) {
+            uint64_t w0=0,c0=0,c1=0,w1=0;
+            const bool ok=clock_ns(CLOCK_MONOTONIC,w0) && clock_ns(CLOCK_THREAD_CPUTIME_ID,c0) &&
+                clock_ns(CLOCK_THREAD_CPUTIME_ID,c1) && clock_ns(CLOCK_MONOTONIC,w1) &&
+                c1>=c0 && w1>=w0 && c1-c0<=w1-w0;
+            if (!ok) {++out.errors;continue;}
+            if (i>=0) {out.wall.push_back(w1-w0);out.cpu.push_back(c1-c0);}
+        }
+    };
+    // No affinity changes; pool parity and model observer-off/on are separate.
+    std::vector<std::thread> threads;
+    for (int i=1;i<lanes;++i) threads.emplace_back(run,i);
+    run(0);for (auto& t:threads) t.join();
+    // Sorting must not compete with another lane still collecting clocks.
+    for (auto& s:screens) {std::sort(s.wall.begin(),s.wall.end());std::sort(s.cpu.begin(),s.cpu.end());}
+    bool valid=true;
+    for (const auto& s:screens)
+        valid=valid && s.tid && !s.errors && s.wall.size()==samples && s.cpu.size()==samples;
+    auto stats=[](const std::vector<uint64_t>& values) {
+        std::printf("{\"min\":%llu,\"p50\":%llu,\"p99\":%llu,\"max\":%llu}",
+            static_cast<unsigned long long>(values.front()),
+            static_cast<unsigned long long>(values[values.size()/2]),
+            static_cast<unsigned long long>(values[(values.size()-1)*99/100]),
+            static_cast<unsigned long long>(values.back()));
+    };
+    for (int i=0;i<lanes;++i) {
+        const auto& s=screens[i];
+        std::printf("{\"kind\":\"cpu_leaf_four_clock_reference_v1\",\"valid\":%s,\"lane\":%d,"
+            "\"tid\":%llu,\"samples\":%d,\"warmup\":%d,\"errors\":%llu,"
+            "\"affinity\":\"uncontrolled\",\"sequence\":\"MONOTONIC,THREAD_CPU,THREAD_CPU,MONOTONIC\","
+            "\"kernel\":false,\"overhead_bound\":false,\"subtracted\":false",
+            valid?"true":"false",i,static_cast<unsigned long long>(s.tid),samples,warmup,
+            static_cast<unsigned long long>(s.errors));
+        if (valid) {std::printf(",\"wall_ns\":");stats(s.wall);std::printf(",\"cpu_ns\":");stats(s.cpu);}
+        std::puts("}");
+    }
+    return valid?0:1;
+}
+
+int main(int argc,char** argv) {
+    if (argc==2 && !std::strcmp(argv[1],"--clock-screen")) return clock_screen();
+    require(argc==1,"usage: cpu_service_profile_test [--clock-screen]");
     const auto fmt=format();
     {
         Profile p(false);{Profile::Scope s(p,900,fmt,Op::Gu,999,-1,NativeGuPhase::Decode);}

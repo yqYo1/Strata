@@ -270,9 +270,12 @@ Snapshots run before the decode clock and after final commit. Unsupported
 geometry/width/worker, clock errors, counter overflow, slot-owner changes and
 inconsistent snapshots invalidate attribution. Observer and batch-lock overhead
 remain charged to model execution; bin lookup and counter updates are outside
-the reported leaf intervals. Leaf intervals include clock-read cost; an
-empty-scope screen must report its observed distribution alongside short HQ
-samples, without subtraction or treating it as a universal overhead bound.
+the reported leaf intervals. Leaf intervals include clock-read cost. The
+prepared, unrun `cpu_service_profile_test --clock-screen` reports the same
+four-read sequence without a kernel, across five threads and the caller,
+with65536 samples each and uncontrolled affinity. Report that reference
+distribution alongside short HQ intervals, without subtraction or treating it
+as a universal bound on the full Scope/model overhead.
 This changes neither the selected original6e40 executable nor
 the active clean-width inputs; it is not an inference optimization or a speedup.
 
