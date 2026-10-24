@@ -274,8 +274,9 @@ and [actual-mix CPU calibration](../bench/results/2026-10-15-pr6-recovery-audit/
 provide scoped work/activity bounds. CPU perf counters were denied; the metric
 query's observation ioctl returned EACCES. Permissions were not changed. The
 whole-model Unitrace aggregate includes loading/warmups/prefill/decode and is not
-a phase critical path. Its complete raw table has only the recorded next
-source/shape-attribution consumer; retire it when that question closes. See
+a phase critical path. Its Q6K/QSA source-attribution consumer has already closed:
+69 raw files/17,918,087bytes are retired, with compact shape/source results retained.
+Do not repeat that analysis or look for its deleted raw table. See
 [profiler capability and coverage](../bench/results/2026-10-15-pr6-recovery-audit/cpu-profiler-current.json).
 
 Basic [profile-off/on graph support](../bench/results/2026-10-15-pr6-recovery-audit/mtp-graph-observer-current.json)
@@ -289,6 +290,26 @@ breakdown. Do not repeat basic adapter qualification from an older report's
 unknown-support note. After the active clean comparison, check existing
 collector qualifications and source mapping for a bounded target/per-operator
 collection using the indexed expanded-graph method.
+
+Additional source binding uses unchanged6e40 `verify.cpp`, `native_head.cpp`,
+`mtp.cpp` and `native_mmvq.cpp`. The target verifier head has input2560,
+output248320 and columns equal to its window T; the standalone NativeHead route
+uses one column. The MTP subset has106299 output rows and its completed head
+calibration used one column. The prior1035-window code request processed4137
+target rows (firstT1,then1034*T4). The aggregate's1047 full-vocabulary calls still
+mix request phases and column counts; their mean11.581ms is not a decode-only T4 service.
+
+The Q6K launcher loads each packed weight fragment outside its column loop.
+Its inlined apply reconstructs6-bit values, but the compiler may already hoist
+that work: C++ source alone does not establish redundant machine instructions.
+The existing alternative ROWS2/NW4 route differs from selected ROWS1/NW4;
+register pressure, occupancy and actual service remain to be measured. The
+`multi_exact` selector is global across callers. A future target-head-only
+candidate must select by explicit caller/shape, preserving MTP and both prefill
+paths; changing that global is not phase isolation. This is a source-design
+question, not a selected kernel optimization or hardware-bottleneck conclusion.
+The selected SYCL `sequence.cpp` rejects device mapped-flag polling outright;
+its event-completed handoff does not make GPU-busy cycles an arithmetic ceiling.
 
 The separate3,611-output code diagnostic also supplies a nominal CPU weight
 budget. Match its seven format/NT histograms to the checked blob geometry in
