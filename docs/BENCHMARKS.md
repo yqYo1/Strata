@@ -40,6 +40,15 @@ increase the finite output/context budget or revise the task. Do not compare
 different workload versions as an engine optimization. A complete answer at
 the cap is not required by this speed test.
 
+For a new comparison needing more output room, add
+`--long-generation-max-tokens 32768` (or65536) on both engines. The default
+remains16384. The budget is included in the wire request, request journal,
+parameters and comparison identity; different budgets are not comparable.
+A larger budget requires known context capacity, and eligibility checks actual
+input plus the requested budget and256 reserved context slots. Thinking remains
+enabled; a thinking-only output still fails the answer-body gate. Preserve an
+earlier capped failure and use a fresh committed plan, rather than replacing it.
+
 - `regular-code`: a long Python module with regularly formatted individual tests.
 - `varied-prose`: an original Japanese story with distinct viewpoints and vocabulary.
 

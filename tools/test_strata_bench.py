@@ -1,6 +1,9 @@
 """HTTP/usage and eligibility regression checks; no model or GPU is needed."""
 import io
+import hashlib
 import json
+from pathlib import Path
+import tempfile
 import unittest
 from unittest.mock import patch
 
@@ -20,6 +23,62 @@ def response(offered=1600, accepted=1200, generated=1152):
 
 
 class BenchmarkTest(unittest.TestCase):
+    def test_larger_output_budget_is_explicit_and_keeps_body_and_context_gates(self):
+        raw=response(generated=20000)
+        self.assertFalse(lg.sample_eligibility(raw,bench.digest(raw))['eligible'])
+        self.assertTrue(lg.sample_eligibility(raw,bench.digest(raw),maximum=32768,context=131072)['eligible'])
+        for changed in ({'text':''},{'reasoning_text':''},{'done_received':False},
+                        {'usage':dict(raw['usage'],completion_tokens=32769)}):
+            bad=dict(raw,**changed)
+            self.assertFalse(lg.sample_eligibility(bad,bench.digest(bad),maximum=32768,context=131072)['eligible'])
+        for context in (65767,True,'131072'):
+            self.assertFalse(lg.sample_eligibility(raw,bench.digest(raw),maximum=32768,context=context)['eligible'])
+        for cap in (True,8192,16385):
+            with self.assertRaises(ValueError):lg.sample_eligibility(raw,bench.digest(raw),maximum=cap)
+
+    def test_budget_journal_and_suite_bind_the_same_thinking_request(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            journal=bench.RequestJournal(Path(tmp),lambda text:text)
+            suite=bench.Suite('http://localhost','',131072,1,True,log=lambda _:None,
+                want_long_generation=True,long_generation_only=True,generation_max_tokens=32768,
+                workload_id='budget-control',journal=journal)
+            def chat(_base,_key,messages,cap,think,**kwargs):
+                self.assertEqual(cap,32768);self.assertIs(think,True)
+                self.assertEqual(kwargs['request_overrides']['reasoning_budget_tokens'],0)
+                raw=response(generated=20000)
+                payload=json.dumps(bench.chat_body(messages,cap,think,kwargs.get('tools'),
+                    kwargs.get('request_overrides'))).encode()
+                raw['request_sha256']=hashlib.sha256(payload).hexdigest()
+                return raw
+            with patch.object(bench,'chat',side_effect=chat):suite.run_long_generation()
+            self.assertEqual(suite.out['long_generation']['max_tokens'],32768)
+            events=[json.loads(line)for line in (Path(tmp)/'requests.jsonl').read_text().splitlines()]
+            for i,name in enumerate(lg.WORKLOADS):
+                start,end=events[2*i:2*i+2]
+                self.assertEqual(start['max_tokens'],32768);self.assertIs(start['thinking'],True)
+                self.assertEqual(start['request_sha256'],end['sample']['request_sha256'])
+                row=suite.out['long_generation']['workloads'][name]['requests'][0]
+                self.assertTrue(row['eligible']);self.assertEqual(row['eligible'],end['sample']['eligible'])
+                self.assertEqual(row['usage_generated_tokens'],20000)
+
+    def test_custom_budget_requires_scope_and_known_sufficient_context(self):
+        with self.assertRaises(ValueError):bench.Suite('', '',131072,1,True,generation_max_tokens=32768)
+        for context in (None,0,65536):
+            suite=bench.Suite('http://localhost','',context,1,True,log=lambda _:None,
+                want_long_generation=True,long_generation_only=True,generation_max_tokens=32768)
+            with patch.object(bench,'chat') as chat:suite.run_long_generation()
+            chat.assert_not_called();self.assertIn('long-generation',suite.out['skipped'])
+
+    def test_different_output_budgets_cannot_be_compared(self):
+        metric={'median':10,'min':10,'max':10,'n':3}
+        result={'machine':{},'complete':True,'comparison_identity':{
+            'workload':{'nonce':'budget-control','nonce_policy':'fixed-id'},
+            'long_generation_max_tokens':16384},'results':{
+            'long_generation':{'workloads':{'regular-code':{'decode_tps':metric,'eligible_runs':3}}}}}
+        other=json.loads(json.dumps(result));other['comparison_identity']['long_generation_max_tokens']=32768
+        comparison=bench.compare_table(result,other)
+        self.assertIn('not comparable',comparison);self.assertNotIn('+0.0%',comparison)
+
     def test_long_generation_gate_blocks_before_http_and_excludes_warmups(self):
         events=[]
         def gate(stage,phase,run):

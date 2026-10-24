@@ -1,5 +1,8 @@
 """Offline width/count/eligibility and independent phase-selection regressions."""
 import copy
+import json
+from pathlib import Path
+import tempfile
 import unittest
 import mtp_width_bench as m
 
@@ -17,6 +20,21 @@ def fixture(width):
 
 
 class WidthEvidence(unittest.TestCase):
+    def test_failed_client_result_keeps_individual_samples_without_promoting_status(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root=Path(tmp);output=root/'bench'/'run';output.mkdir(parents=True)
+            result=dict(complete=True,results=dict(failures=[{'error':'thinking exhausted output budget'}],
+                long_generation={'workloads':{'varied-prose':{'requests':[
+                    dict(run=0,order=0,eligible=False,speed_eligible=False,output_chars=0,
+                         generated_tokens=16384,usage_generated_tokens=16384)]}}}))
+            (output/'results.json').write_text(json.dumps(result))
+            outcome=dict(passed=False,benchmark_exit_code=1)
+            m.retain_client_result(root,outcome)
+            self.assertFalse(outcome['passed']);self.assertEqual(outcome['benchmark_exit_code'],1)
+            self.assertEqual(outcome['requests'][0]['usage_generated_tokens'],16384)
+            self.assertFalse(outcome['requests'][0]['controller_eligible'])
+            self.assertEqual(outcome['benchmark_failures'],result['results']['failures'])
+
     def test_three_fixed_widths_and_actual_output_conservation(self):
         for width in (1,2,4):
             text,rows=fixture(width)

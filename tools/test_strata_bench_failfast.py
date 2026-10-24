@@ -9,6 +9,25 @@ from test_benchmark_evidence import raw
 
 
 class FailFastTests(unittest.TestCase):
+    def test_cli_records_explicit_budget_in_results_and_journal(self):
+        with tempfile.TemporaryDirectory() as td:
+            status,_,result,rows,count=self.run_main(td,[raw(body='answer '*200)for _ in range(6)],
+                ['--long-generation-only','--think','--runs','1','--long-generation-max-tokens','32768'])
+            self.assertEqual(status,0);self.assertEqual(count,6)
+            self.assertEqual(result['params']['long_generation_max_tokens'],32768)
+            self.assertIn('--long-generation-max-tokens 32768',result['params']['command'])
+            self.assertEqual(result['comparison_identity']['long_generation_max_tokens'],32768)
+            self.assertEqual(rows[0]['long_generation_max_tokens'],32768)
+            for row in rows:
+                if row['kind']=='start' and row['phase'].startswith('long-generation/'):
+                    self.assertEqual(row['max_tokens'],32768);self.assertIs(row['thinking'],True)
+
+    def test_output_budget_option_rejected_before_server_access(self):
+        for options in (['--long-generation-max-tokens','32768'],
+                        ['--long-generation-only','--long-generation-max-tokens','8192']):
+            with patch.object(b,'is_strata') as server,self.assertRaises(SystemExit):b.main(options)
+            server.assert_not_called()
+
     def run_main(self, directory, replies, extra=()):
         machine = {"model": "fixture", "context": 262144, "quant": "q"}
         with patch.object(b, "is_strata", return_value=True), \

@@ -254,6 +254,16 @@ def official(root,width):
     return rows,events,dict(warm,journal_sha256=digest(path))
 
 
+def retain_client_result(root,outcome):
+    """Save returned samples before exit/eligibility gates, without qualifying them."""
+    paths=list((root/'bench').glob('*/results.json'))
+    if len(paths)!=1:return
+    result=json.loads(paths[0].read_text())
+    outcome['requests']=gen.collect_samples(result.get('results',{}).get('long_generation',{}))
+    outcome['benchmark_complete']=result.get('complete')
+    outcome['benchmark_failures']=result.get('results',{}).get('failures',[])
+
+
 def host(row):
     require(row['stage']=='host-prepared' and not (ROOT/'host/owned').exists(),'fresh host phase only')
     owner=None
@@ -317,9 +327,12 @@ def run(row,index):
         require(original.supervision.closed(entry) and entry['exit_code']==0,'per-process clock screen failed')
         outcome['clock']=clock.evidence(out.read_text(),row['clock']['provider'])
         entry,_,_=owner.run('bench',plan['command'],row['environments'][str(index)],P,interaction=interact,**row['budgets'])
+        outcome['benchmark_exit_code']=entry['exit_code']
+        retain_client_result(root,outcome)
+        end=gen.native_end(root,dict(binary=plan['binary'],native_validation_probe=row['native_validation_probe']),plan,row['boot'],entry['pid'])
+        outcome['native_exit_code']=end['exit_code']
         require(original.supervision.closed(entry) and entry['exit_code']==0,'owned official benchmark failed')
         rows,events,journal=official(root,plan['width'])
-        end=gen.native_end(root,dict(binary=plan['binary'],native_validation_probe=row['native_validation_probe']),plan,row['boot'],entry['pid'])
         text=(root/'engine.stderr').read_text()
         outcome['work']=native_work(text,[e['sample']for e in events if e['kind']=='result'],plan['width'])
         outcome['activation']=validation.preload_evidence(text,end['native']['pid'])

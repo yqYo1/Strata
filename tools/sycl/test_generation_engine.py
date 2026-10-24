@@ -20,6 +20,16 @@ def sample():
 
 
 class EvidenceTests(unittest.TestCase):
+    def test_larger_budget_requires_explicit_controller_plan(self):
+        row=dict(sample(),usage_generated_tokens=20000,generated_tokens=20000)
+        self.assertFalse(sample_eligible(row))
+        self.assertTrue(sample_eligible(row,maximum_output=32768))
+        self.assertFalse(sample_eligible(dict(row,output_chars=0),maximum_output=32768))
+        self.assertFalse(sample_eligible(dict(row,usage_generated_tokens=32769,generated_tokens=32769),maximum_output=32768))
+        generation={'workloads':{'regular-code':{'requests':[row]}}}
+        self.assertFalse(collect_samples(generation)[0]['controller_eligible'])
+        self.assertTrue(collect_samples(generation,maximum_output=32768)[0]['controller_eligible'])
+
     def test_short_or_thinking_only_cannot_pass_client_labels(self):
         self.assertTrue(sample_eligible(sample()))
         for patch in ({'usage_generated_tokens': 1000, 'generated_tokens': 1000},

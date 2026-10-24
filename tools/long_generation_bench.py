@@ -5,6 +5,8 @@ import math
 
 MIN_OUTPUT_TOKENS = 1024
 MAX_OUTPUT_TOKENS = 16384
+OUTPUT_TOKEN_CHOICES = (16384, 32768, 65536)
+CONTEXT_RESERVE = 256
 MIN_BODY_CHARS = 512  # presence/substance check, deliberately not a token-count estimate
 MIN_INPUT_TOKENS = 32768
 TARGET_INPUT_TOKENS = 33792  # calibration is approximate; check actual usage afterwards
@@ -42,20 +44,28 @@ WORKLOADS = {
 }
 
 
-def sample_eligibility(raw, sample, minimum=MIN_OUTPUT_TOKENS):
+def sample_eligibility(raw, sample, minimum=MIN_OUTPUT_TOKENS,
+                       maximum=MAX_OUTPUT_TOKENS, context=None):
     """No stream-piece fallback, short/EOS success or absent clock can pass this gate."""
+    if type(maximum) is not int or maximum not in OUTPUT_TOKEN_CHOICES:
+        raise ValueError("unsupported long-generation output budget")
     reasons = []
     usage = raw.get("usage") or {}
     generated = usage.get("completion_tokens")
     if not sample.get("ok") or not raw.get("done_received") or raw.get("finish_reason") not in ("stop", "length"):
         reasons.append("response did not finish normally")
-    if type(generated) is not int or not minimum <= generated <= MAX_OUTPUT_TOKENS:
-        reasons.append(f"actual completion usage is outside {minimum}..{MAX_OUTPUT_TOKENS} tokens")
+    if type(generated) is not int or not minimum <= generated <= maximum:
+        reasons.append(f"actual completion usage is outside {minimum}..{maximum} tokens")
     if len(raw.get("text") or "") < MIN_BODY_CHARS:
         reasons.append("thinking did not leave at least 512 characters of answer body")
+    if not raw.get("reasoning_text"):
+        reasons.append("thinking output is absent")
     prompt = usage.get("prompt_tokens")
     if type(prompt) is not int or prompt < MIN_INPUT_TOKENS:
         reasons.append("actual input is below 32768 tokens or unreported")
+    if context is not None and (type(context) is not int or type(prompt) is not int or
+                                prompt + maximum + CONTEXT_RESERVE > context):
+        reasons.append("actual input leaves insufficient context for the requested output budget")
     if sample.get("reused_tokens") != 0:
         reasons.append("fresh-prefix reuse is nonzero or unreported")
     for field in ("decode_tps", "decode_ms"):

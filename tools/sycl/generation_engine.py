@@ -240,19 +240,20 @@ def decode_timing_evidence(text, samples):
         for v, w in zip(parsed, work)]
 
 
-def sample_eligible(row):
+def sample_eligible(row, maximum_output=16384):
     """Independently reject mislabeled short, incomplete or unclocked samples."""
     def integer(key, minimum):
         value = row.get(key)
         return type(value) is int and value >= minimum
 
     offered, accepted = row.get('drafts_offered'), row.get('drafts_accepted')
-    return bool(row.get('eligible') is True and row.get('speed_eligible') is True and
+    return bool(type(maximum_output) is int and maximum_output in (16384,32768,65536) and
+        row.get('eligible') is True and row.get('speed_eligible') is True and
         row.get('ok') is True and row.get('stream_complete') is True and
         row.get('finish_reason') in ('stop', 'length') and row.get('reused_tokens') == 0 and
         integer('prompt_tokens', 32768) and integer('read_tokens', 32768) and
         row['prompt_tokens'] == row['read_tokens'] and integer('usage_generated_tokens', 1024) and
-        row['usage_generated_tokens'] <= 16384 and
+        row['usage_generated_tokens'] <= maximum_output and
         row.get('generated_tokens') == row['usage_generated_tokens'] and
         row.get('generated_tokens_source') == 'usage' and integer('output_chars', 512) and
         integer('reasoning_chars', 1) and row.get('completion_includes_thinking') is True and
@@ -264,13 +265,13 @@ def sample_eligible(row):
             math.isfinite(row[key]) and row[key] > 0 for key in ('decode_ms', 'decode_tps', 'total_s')))
 
 
-def collect_samples(generation):
+def collect_samples(generation, maximum_output=16384):
     # Preserve every completed/failed client row before assessing eligibility.
     rows = []
     for workload, case in generation.get('workloads', {}).items():
         for request in case.get('requests', []):
             row = dict(request, workload=workload)
-            row['controller_eligible'] = sample_eligible(row)
+            row['controller_eligible'] = sample_eligible(row, maximum_output)
             rows.append(row)
     return sorted(rows, key=lambda r: r.get('order', -1))
 
@@ -303,11 +304,13 @@ def journal_evidence(root):
     return journal, rows
 
 
-def warmup_reconciliation(entries, workloads=('regular-code',)):
+def warmup_reconciliation(entries, workloads=('regular-code',), maximum_output=16384):
     """Require the actual official warmups, not just a successful final request."""
     expected = [('warm-up/chat', None, 24, True), ('calibration', 200, 1, False),
                 ('calibration', 800, 1, False), ('warm-up/prompt', None, 8, True)]
-    expected += [('long-generation/' + name, 0, 16384, True) for name in workloads]
+    guards.require(type(maximum_output) is int and maximum_output in (16384,32768,65536),
+        'unsupported long-generation output budget')
+    expected += [('long-generation/' + name, 0, maximum_output, True) for name in workloads]
     events = [row for row in entries if row['kind'] != 'identity']
     guards.require(len(events) == 2 * len(expected), 'missing or extra official request events')
     hashes = []
