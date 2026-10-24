@@ -10364,8 +10364,8 @@
   },
   "readback_residency_methods_20261024": {
     "classification": "knowledge_collection",
-    "schedulable_now": true,
-    "status": "eligible_scoped",
+    "schedulable_now": false,
+    "status": "dispatched_turn_start_unobserved_no_retry",
     "source_commit": "f63559d2126f5a0024e3b65cf0a056affe6df2fe",
     "source_pins": "/home/yayoi/orca/workspaces/Strata/sycl/.cache/strata-research/20261024/readback-residency-methods/source-pins.json",
     "report": "/home/yayoi/orca/workspaces/Strata/sycl/.cache/strata-research/20261024/readback-residency-methods/report.md",
@@ -10377,12 +10377,21 @@
       }
     ],
     "question": "One coherent investigation: how GPU diagnostic readbacks/touches can perturb the resident working set,and how to test phase transitions without misclassifying logical allocation demand as physical movement. Compare mechanisms for explicit D2H/hash/snapshot auditing,driver eviction/migration or backing replacement,asynchronous accounting and host-pinned versus device storage. Emphasize original non-LLM discrete-GPU/HPC experiments and Intel/Xe official semantics;CUDA studies are transferable concepts,not literal SYCL APIs. Explain what measurements distinguish observer perturbation from a real inference working-set transition,and which limits remain when only owning-client fdinfo and UMD logs are available. Main is implementing a matched before-exec audit-on/off control;do not choose or revise its run order/criteria after seeing data. Focus on physical locality/touch mechanisms and counterfactual observation design,not generic subpercent statistics,DVFS/carryover checklists,profiler catalogues or the already consumed NEO logging registry survey. Existing resident_ceiling_methods_scope,moe_status_host_readback_scope and subpercent_heterogeneous_benchmark_methods_scope_20261022 cover GEMM ceilings,status D2H blocking and general experimental design;do not repeat those. Provide actionable tests and evidence limits for future Main decisions,without assuming audit readback is the current cause.",
-    "next_review": "Native Luna-max collection review;Main consumes only short indexing/scope digest unless a concrete implementation question requires retrieval."
+    "next_review": "Native Luna-max collection review;Main consumes only short indexing/scope digest unless a concrete implementation question requires retrieval.",
+    "run": "run_12fa11537288",
+    "task": "task_63a7d571ff72",
+    "dispatch": "ctx_6b10c94fa255",
+    "terminal": "term_01d7e707-3237-4056-9cb0-a6731a22836a",
+    "incarnation": "cdb401b7-81bf-43d5-a85b-508d9714c014",
+    "model_observed": "GPT-6-Luna high",
+    "report_root_writable_at_launch": true,
+    "startup_permissions": "Rendered /status:workspace with network access,named added report directory,approval never.",
+    "ownership": "Input accepted,turn start initially unobserved;inspect same dispatch/handle,no resend or duplicate."
   },
   "phase_runtime_resource_lifetimes_20261024": {
     "classification": "knowledge_collection",
-    "schedulable_now": true,
-    "status": "eligible_scoped",
+    "schedulable_now": false,
+    "status": "dispatched_turn_start_unobserved_no_retry",
     "source_commit": "f63559d2126f5a0024e3b65cf0a056affe6df2fe",
     "source_pins": "/home/yayoi/orca/workspaces/Strata/sycl/.cache/strata-research/20261024/phase-runtime-resource-lifetimes/source-pins.json",
     "report": "/home/yayoi/orca/workspaces/Strata/sycl/.cache/strata-research/20261024/phase-runtime-resource-lifetimes/report.md",
@@ -10394,6 +10403,15 @@
       }
     ],
     "question": "One coherent investigation: release or bound phase-private compiled/runtime resources after long prefill while preserving the already selected decode queue/context/program route. Compare SYCL kernel-bundle/program caches,executable graphs and LevelZero module/command-list lifetimes,plus oneDNN primitive/code cache where relevant. Which objects can be explicitly scoped or released,which survive queues/graphs,which require context/process boundaries,and what context/USM/event ownership or thread-safety contracts constrain isolation? Prioritize exact Intel LLVM/UR/NEO/oneDNN official source/docs,and original general GPU/HPC technical reports;do not copy application implementations. Separate APIs actually available in installed v711 from compatible-source hypotheses. Explain how to assess a code-cache/command-memory cost before pursuing cleanup;currentB logs show only2.03MB KERNEL_ISA and1.11MB COMMAND_BUFFER,so these do not explain a multi-GB shift or prove a bottleneck. Do not repeat the old MTP call-chain/conditional graph survey,UR/XPTI packet ABI,NEO allocation-log registry or graph-event timestamp-query incident. The question is resource lifetime and phase isolation without accidentally discarding decode state/programs. No unsafe cross-context USM borrowing,global environment mutation after init,global cache changes on an active context or unsupported teardown assumptions. Ordinary runtime teardown remains unqualified because the existing validation preload deliberately retains UR until exit. Provide alternatives,their contracts and evidence prerequisites;do not invent a currently supported cache purge or performance gain.",
-    "next_review": "Native Luna-max collection review;Main consumes only short indexing/scope digest unless a concrete implementation question requires retrieval."
+    "next_review": "Native Luna-max collection review;Main consumes only short indexing/scope digest unless a concrete implementation question requires retrieval.",
+    "run": "run_12fa11537288",
+    "task": "task_ed7298327a08",
+    "dispatch": "ctx_33d4cd81fbb0",
+    "terminal": "term_6ddc33dc-ba37-4d09-bb6e-689fff357ce5",
+    "incarnation": "6887ea03-f415-4324-8df1-6fe20c7960ef",
+    "model_observed": "GPT-6-Luna high",
+    "report_root_writable_at_launch": true,
+    "startup_permissions": "Rendered /status:workspace with network access,named added report directory,approval never.",
+    "ownership": "Input accepted,turn start initially unobserved;inspect same dispatch/handle,no resend or duplicate."
   }
 }
