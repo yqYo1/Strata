@@ -324,13 +324,79 @@ def run(container):
     return 0 if r['passed'] else 1
 
 
+def analyze(container):
+    """Bounded offline allocation taxonomy; no GPU/runtime initialization."""
+    r=json.loads((ROOT/'record.json').read_text())
+    require(RESULT.read_bytes()==model.gate.native.build.git(P,'show','HEAD:'+str(RESULT.relative_to(P))) and
+        compact(r)==container[KEY],'commit the original closed capture first')
+    require(r['passed'] and r['complete'] and r['ownership_closed'] and not r['active'] and
+        r['exit_code']==0 and r['fresh_faults']==[] and r['full_model_hashes_matched']==15,
+        'completed same-native model capture required')
+    target='neo_client_memory_analysis_v3'
+    require(target not in container['owner_trace_obligations'],'no analysis overwrite')
+    revision=model.gate.native.build.git(P,'rev-parse','HEAD').decode().strip();source=pins(revision)
+    for name,h in r['input_sha256'].items():
+        raw=model.gate.native.build.git(P,'show',r['source_commit']+':'+name)
+        require(hashlib.sha256(raw).hexdigest()==h,'original capture source unrecoverable: '+name)
+        if name!='tools/sycl/memory_trace_model.py':require(digest(P/name)==h,'capture dependency source changed: '+name)
+    logs={}
+    for name in ('stdout','stderr'):
+        path=ROOT/'owned'/('model.'+name);require(path.stat().st_size<=r['budgets']['text_bytes'],'bounded captured output')
+        raw=path.read_bytes();logs[name]=dict(path=str(path),bytes=len(raw),sha256=hashlib.sha256(raw).hexdigest(),text=raw.decode())
+    stdout,stderr=logs['stdout']['text'],logs['stderr']['text']
+    require(logging_evidence(stdout,stderr,r['source_review']['output_contract'])==r['logging_evidence'] and
+        model_memory_evidence(stderr)==r['trace'],'captured compact output evidence changed')
+    row=json.loads(json.dumps(r['row']));model.evidence(stderr,'small',row,r,r['commands'][0]['pid'])
+    require(row==r['row'],'original request/state evidence changed')
+    lines=stdout.splitlines();boundaries=[i for i,line in enumerate(lines) if line.startswith(('READY ','DONE '))]
+    require(len(boundaries)==4 and lines[boundaries[0]]=='READY 262144 stop' and
+        all(lines[i].startswith('DONE ') for i in boundaries[1:]),'captured protocol boundaries differ')
+    pattern=re.compile(r['source_review']['output_contract']['required_patterns']['allocation_pool_size'])
+    all_rows=[]
+    for line_no,line in enumerate(lines):
+        match=pattern.search(line)
+        if match:
+            fields=match.groupdict();all_rows.append(dict(line=line_no,type=fields['type'],
+                pool=fields['pool'],requested_bytes=int(fields['size'])))
+    require(len(all_rows)==r['logging_evidence']['categories']['allocation_pool_size']['records'],
+        'allocation detail row conservation failed')
+    short=[a for a in all_rows if boundaries[1]<a['line']<boundaries[2]]
+    groups={}
+    for a in short:
+        g=groups.setdefault((a['type'],a['pool']),dict(type=a['type'],pool=a['pool'],records=0,
+            sum_requested_bytes=0,largest_requested_bytes=0))
+        g['records']+=1;g['sum_requested_bytes']+=a['requested_bytes']
+        g['largest_requested_bytes']=max(g['largest_requested_bytes'],a['requested_bytes'])
+    before,after=r['client_boundaries'][1:3]
+    require(len(before['clients'])==len(after['clients'])==1 and
+        before['clients'][0]['client_id']==after['clients'][0]['client_id'],'one same client comparison required')
+    old,new=before['clients'][0]['memory_bytes'],after['clients'][0]['memory_bytes']
+    delta={k:new[k]-old[k] for k in old if k.startswith(('drm-total-','drm-resident-'))}
+    result=dict(source_commit=revision,input_sha256=source,collection_source_commit=r['source_commit'],
+        capture_logs={k:{n:v[n] for n in ('path','bytes','sha256')} for k,v in logs.items()},
+        short_request=dict(stdout_interval='after DONE A16385 through before DONE B33',
+            allocation_detail_records=len(short),sum_requested_allocation_bytes=sum(a['requested_bytes'] for a in short),
+            largest_requested_allocation_bytes=max((a['requested_bytes'] for a in short),default=0),
+            allocation_types=sorted(groups.values(),key=lambda a:(-a['sum_requested_bytes'],a['type'],a['pool'])),
+            owning_client_region_delta_bytes=delta,
+            all_total_region_delta_bytes=sum(v for k,v in delta.items() if k.startswith('drm-total-')),
+            internal_dense_reported_free_decrease_bytes=r['trace']['short32_interval']['decrease_bytes']),
+        UR_requested_byte_ledger=r['trace'],decode_state_restore_verified=True,
+        physical_owner_attribution_qualified=False,causal_phase_attribution_qualified=False,
+        decode_performance_qualified=False,speed_eligible=False,
+        limits='Allocation-detail sums are logged creation requests,not live or physical bytes;pool labels are creation decisions. Stdout boundaries differ from inner stderr dense boundaries and callback timing. BO create coverage is partial,close text is an attempt,no complete NEO-allocation/BO join or KMD migration proof. State/cache readback audits and observers are enabled;these diagnostic observations do not establish the production speed or memory-pressure effect. Preserve original failed v1 observer and UNRUN v2 preparation outcomes.')
+    container['owner_trace_obligations'][target]=result;write(RESULT,container)
+    print(json.dumps(result['short_request']),flush=True)
+
+
 if __name__=='__main__':
-    require(sys.argv[1:] in (['prepare'],['run'],['prepare-model'],['run-model']),
-        'prepare|run|prepare-model|run-model')
+    require(sys.argv[1:] in (['prepare'],['run'],['prepare-model'],['run-model'],['analyze-model']),
+        'prepare|run|prepare-model|run-model|analyze-model')
     kind='model' if sys.argv[1].endswith('-model') else 'fixture'
     if kind=='model':ROOT=B/'neo-memory-model-v3';KEY='neo_memory_model_v3'
     with (B/'owned-v0141-measurement.lock').open('a+') as lock:
         fcntl.flock(lock,fcntl.LOCK_EX|fcntl.LOCK_NB);model.gate.native.guards.no_model_owners([])
         container=json.loads(RESULT.read_text())
         if sys.argv[1].startswith('prepare'):prepare(container,kind)
+        elif sys.argv[1]=='analyze-model':analyze(container)
         else:sys.exit(run(container))
