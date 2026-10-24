@@ -1013,7 +1013,18 @@ driver admission matches after failure. A Main-owned wrapper now accepts only
 bounded,complete,known logging records after exit/pipe EOF;unknown protocol,
 partial matches,truncation,nonzero binding results,oversized tails and live pipes
 remain rejected. Nine CPU controls pass,including the exact154602-byte tail.
-A fresh committed v2 plan must still verify actual model/state/logging completion.
+The v2 preparation then closes UNRUN before native exec because the host
+contract hash used compact JSON while admission expected spaced JSON. Its hash
+is preserved;new source checks the declared encoding and fresh nine CPU controls
+pass. The fresh v3 model capture now passes all three requests,four owning-client
+and actual mapped-driver reads,all1256 cache payloads/publications and the live
+main/draft/running snapshot. All15 model files rehash;exit0,ownership and fault
+checks pass. Its1482 UR records conserve requested bytes,and1254 NEO allocation
+rows plus1251 binds/1246 unbinds are collected with zero binding errors.
+The2174 known trailing records pass the bounded strict filter. Prior failed/UNRUN
+outcomes remain unchanged. Next perform bounded offline type/pool/size analysis;
+this is still a diagnostic with cache/state readback audits enabled,not production
+memory pressure,clean speed or decode-performance qualification.
 No speed/decode-performance/adoption qualification
 is claimed. The returned observer audit is accepted with correction:the pinned
 XPTI init version is the invoking runtime version,so the UR0.12 check is valid.
