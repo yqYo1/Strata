@@ -1,11 +1,11 @@
 {
-  "stage": "host-prepared",
+  "stage": "host-checked",
   "host": {
     "source_commit": "d39e438a4a0dcb4fdc60940ad4e976d3b11d1f1f",
     "controller_sha256": "3c9cafdc4ddaca856952e5ce7bf9e5260e149f1a75a49a4ca997ac413511e936",
     "test_sha256": "5fdda7886b6734971998ab8f5515e163f08bc9984ab96bab5202a4b8292f5ac4",
     "clock_source_sha256": "dbf7cc7a21e64dcd37632872be129fc5433e82fadb0e859792c01fbbf1deb676",
-    "passed": false,
+    "passed": true,
     "tests": 8,
     "GPU_executed": false,
     "clock_inputs": {
@@ -171,7 +171,27 @@
       "path": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin/clang++",
       "sha256": "1290881b4e12a5e002e5b0de0787f85328ee5fe19f253a54be1cdd97dc2f26eb"
     },
-    "clock_source_contract": "Both native binaries import libstdc++ steady_clock::now;inspected provider uses clock_gettime(CLOCK_MONOTONIC). Probe calls that same C++ API/library;one fixed65536-pair pass,sort/output outside the measured pairs."
+    "clock_source_contract": "Both native binaries import libstdc++ steady_clock::now;inspected provider uses clock_gettime(CLOCK_MONOTONIC). Probe calls that same C++ API/library;one fixed65536-pair pass,sort/output outside the measured pairs.",
+    "exit_code": 0,
+    "clock_probe": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/phase-prefill-speed-host-v2/clock_probe",
+      "sha256": "a44ef582c9fab6f40a6740377dba8b249693a21ee7c8be2c71be68513307c934",
+      "bytes": 16344
+    },
+    "clock_calibration": {
+      "samples": 65536,
+      "resolution_ns": 1,
+      "min_ns": 20,
+      "p99_ns": 31,
+      "max_ns": 6823,
+      "endpoint_rounding_fraction_at_floor": 6.364600000000001e-06,
+      "provider": {
+        "path": "/usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.33",
+        "sha256": "1fd75fe70354a416d75aef22bcae68c47bd25d20e2d0568c30b1a9838cf62f11"
+      },
+      "limits": "Observed CPU C++ endpoint-cost screen;not a universal worst-case bound or subtraction from model times."
+    },
+    "ownership_closed": true
   },
   "plan": {
     "question": "Does the independently selected long-prefill layout preserve/improve the original fast route with decode configuration fixed?",
