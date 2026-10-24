@@ -986,6 +986,16 @@ UR allocation/release counts and opposing region shifts suggest movement or
 replacement of existing backing,without proving BO identity,migration,physical
 residency or PCIe traffic. Next qualify bounded DRM ioctl decoding and inspect
 BO lifecycle/placement;do not infer a new2.44GB heap or library owner.
+The selected10-check fixture runs normally under rootless strace6.8,with the
+qualified native environment applied only to its owned child. Its UR records
+and fault/ownership checks pass,but the planned decoder capability fails:
+GEM_CREATE/VM_BIND arguments remain raw pointers with no size/handle fields.
+Complete source/runtime/preload/tool admission also matches after that failure;
+the decoder result stays failed and no model syscall capture is authorized.
+An earlier incomplete-admission draft was closed UNRUN before any GPU work.
+The next candidate is vendor allocation/BO logging,whose keys exist in the
+observed NEO26.31.39395.16 library;qualify exact source semantics and a small
+logging-only fixture before a model. No logging flags have been enabled yet.
 No speed/decode-performance/adoption qualification
 is claimed. The returned observer audit is accepted with correction:the pinned
 XPTI init version is the invoking runtime version,so the UR0.12 check is valid.

@@ -4178,6 +4178,16 @@
         "interpretation": "Opposing VRAM/GTT shifts with near-constant sum are consistent with moving or replacing existing backing;not proof of identical BOs,migration,physical residency,PCIe wire bytes or a new2.44GB heap. These whole-request idle boundaries differ from the internal dense-phase global-free interval.",
         "next_action": "Qualify installed strace6.8 DRM XE ioctl decoding with the selected10-check submission fixture,then decide a bounded per-BO create/close/VM-bind capture with exact owned native identity and unchanged safety. Determine placement/movement or replacement before selecting an optimization."
       }
+    },
+    "post_collection_driver_identification": {
+      "path": "/usr/lib/x86_64-linux-gnu/libze_intel_gpu.so.1.17.39395",
+      "sha256": "50adb6b727d027309039803033d41efeae4b248589ee363f321c0d538c7de3ff",
+      "captured_mapping_inode": 4660818,
+      "mapping_source_sha256": "7f6afea60452198a03dfc08ff13b16a7b5e73c0e63187c7e17ec8d5bd41649c1",
+      "package": "libze-intel-gpu1 26.31.39395.16-1~24.04~ppa1",
+      "kernel_signature": "Ubuntu 7.0.0-38.38~24.04.4-generic 7.0.14",
+      "xe_srcversion": "F0A1FF8BB6C5A3C7F361574",
+      "scope": "Post-collection bytes at the same path/inode observed in DONE-B33 maps;new driver-logging tests must pin these bytes before and after exec. No retrospective before-run byte pin or exact vendor-source mapping is asserted."
     }
   },
   "model_state_v2": {
@@ -11608,6 +11618,14 @@
       "path": "/usr/bin/strace",
       "sha256": "28f957c227012de0b18d1bd7fff2d396cb693ea60ed8013be68de071e84b5001"
     },
+    "tool_dependencies": {
+      "/usr/lib/x86_64-linux-gnu/ld-linux-x86-64.so.2": "c20a2dc8917c755f02b94049356320fe1f62ac7d9f8994731f807d9df39302da",
+      "/usr/lib/x86_64-linux-gnu/libc.so.6": "3a15d66867d83762c7f2f1e37359cb8f6c5743edb369c65285cb0b1c4f7498bf",
+      "/usr/lib/x86_64-linux-gnu/liblzma.so.5.4.5": "696e868dd0700a19a6d65fc01608ec2d70d3cb91f65710e89180cd2e688f30cb",
+      "/usr/lib/x86_64-linux-gnu/libunwind-ptrace.so.0.0.0": "ec993e45c024b66ea0f17085be1333001428dc714bd9f0520f44a0cde18b921b",
+      "/usr/lib/x86_64-linux-gnu/libunwind-x86_64.so.8.0.1": "70a88c376a1aced719ca7bdcd5cdd6c5d3bdce44b99f5ab2037fdad096bbf03d",
+      "/usr/lib/x86_64-linux-gnu/libunwind.so.8.0.1": "28e77a498f2f17f8cb883c91303f9901343ea0d8e34959d138dd462fcc9b201f"
+    },
     "tool_dependency_count": 6,
     "tool_dependency_sha256": "383580a38e0594359f2b71f36146bb116fbdacac5f535d9c62cf31d7fa7b1f2f",
     "fixture": {
@@ -11693,6 +11711,16 @@
       "device": "0xe20c",
       "kernel": "7.0.0-38-generic",
       "devcoredump": false
+    },
+    "post_failure_input_admission_verified": true,
+    "decoder_limitation": {
+      "strace_version": "6.8",
+      "raw_pointer_only": true,
+      "representative": [
+        "2462591 1792803867.390011 ioctl(3, DRM_IOCTL_XE_GEM_CREATE, 0x7fff5e661310) = 0",
+        "2462591 1792803867.377464 ioctl(3, DRM_IOCTL_XE_VM_BIND, 0x7fff5e661a70) = 0"
+      ],
+      "warning": "Names alone may alias other DRM namespaces;not a decoded XE argument/BO ledger. Do not run a model with this failed capability."
     }
   }
 }
