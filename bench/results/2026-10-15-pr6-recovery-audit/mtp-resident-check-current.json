@@ -1,6 +1,6 @@
 {
-  "stage": "failed",
-  "source_commit": "9db32e004f07c53c88231dde95768e06af6bb639",
+  "stage": "prepared",
+  "source_commit": "227bcf9fd7bad6839ca198ce6b5bb1ac785fc800",
   "input_sha256": {
     "tests/core/test_build_manifest.py": "2d054d4fbbb862ef62eaacf53d7580e2d5a92ea57598fd179c480bf1cc943847",
     "tools/sycl/bench_engine.py": "e5f588605ebc7799b54f8bf7df9ad2e363391375e50b788b9704a6b80887ca6b",
@@ -8,7 +8,7 @@
     "tools/sycl/build_full_context.py": "6e2aa8c584e0fd014157cfd08360945ae2d28ad2db660499d9f4eb900e517b72",
     "tools/sycl/build_manifest.py": "3cf94b8fb9aee4677babc91a56c8620a413c734dc94060f97603a30667b9e79b",
     "tools/sycl/check_full_context_source.py": "5e72fa724e890e682382758caf6222042e1ec89770962ce205ab756783332030",
-    "tools/sycl/check_mtp_resident_control.py": "1850942fbd89cd43447e6c97ed248b27c733ec7b45cca818a671c3f3a9244626",
+    "tools/sycl/check_mtp_resident_control.py": "9011a86107e7e91d70713ec17bdb7822f51249fea93d4efda9a39c710b8aef27",
     "tools/sycl/generation_engine.py": "5986d8bda1e4d71ef64d8dd25a7f2e3781fd684466096b863b3fdb4a54cc689e",
     "tools/sycl/measurement_environment.json": "d4402591df50e80dc45a5ec9e4839c7a794888850b1473537b6f95179be5b03c",
     "tools/sycl/measurement_guards.py": "794e332c70aca0acadad4f26d0414548e023a02fd27b72ed78fc773674423ec8",
@@ -16,6 +16,11 @@
     "tools/sycl/mtp_resident_control.py": "fcc35c63d9c4da33e1b9fea8f2ab5fa15b80a909ce9f8b29c713d74f1530c9c4",
     "tools/sycl/test_mtp_resident_control.py": "3a42b2dcd3b9775dc3923e9359afad3bff949bb57a3abe805c0c3b1568e9109f",
     "tools/sycl/ur_validation.py": "2e41d84788dc9cc3c7435b18b43601b3ca79280ccb855414d7a36bae6bff83e7"
+  },
+  "prior_failed_operation": {
+    "commit": "227bcf9fd7bad6839ca198ce6b5bb1ac785fc800",
+    "path": "bench/results/2026-10-15-pr6-recovery-audit/mtp-resident-check-current.json",
+    "outcome": "V1 remains failed: removal of --no-token-graph cannot enable the SYCL default-off token graph.12 native refusals passed;13th returned later model-argument validation. No device fixture/GPU work. New v2 replaces this unreachable case with missing-MTP;no native/source change."
   },
   "native_build_sha256": "d88dc76f6f648640ace0a2715ac492d4e9b8b0c9f864afe9bc0b713ac40ab7dd",
   "assets": {
@@ -148,149 +153,5 @@
   "passed": false,
   "model_executed": false,
   "model_adoption_qualified": false,
-  "private_inputs_sha256": "63b41329c2a9662cdeeee6a59a7972d8b21eb8581c3dd36db81d16334be38189",
-  "outcomes": [
-    {
-      "name": "cap0-spec",
-      "passed": true,
-      "exit_code": 2,
-      "ownership_closed": true,
-      "preload_activated": true,
-      "validation_warning_bytes": 0,
-      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-      "stderr_sha256": "e16c9ef6eda150e086623db41428d512aff954e1e0d07ac5cacd85672cd1ad09"
-    },
-    {
-      "name": "cap0-cap",
-      "passed": true,
-      "exit_code": 2,
-      "ownership_closed": true,
-      "preload_activated": true,
-      "validation_warning_bytes": 0,
-      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-      "stderr_sha256": "4a782c18d858c65fdd9f2d382631f76abfc48d235bd8de84c6c636cacf66a42d"
-    },
-    {
-      "name": "cap0-prompt-reuse",
-      "passed": true,
-      "exit_code": 2,
-      "ownership_closed": true,
-      "preload_activated": true,
-      "validation_warning_bytes": 0,
-      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-      "stderr_sha256": "2106a1b89ddc42b9d23887fe993bdaf64a966769ab83d962846b59d5007d741f"
-    },
-    {
-      "name": "cap0-session-reuse",
-      "passed": true,
-      "exit_code": 2,
-      "ownership_closed": true,
-      "preload_activated": true,
-      "validation_warning_bytes": 0,
-      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-      "stderr_sha256": "548644484e513272f79bd90e9ee47c53cbc70d5ea4b1ffa717cb733743e41b0a"
-    },
-    {
-      "name": "cap0-suffix",
-      "passed": true,
-      "exit_code": 2,
-      "ownership_closed": true,
-      "preload_activated": true,
-      "validation_warning_bytes": 0,
-      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-      "stderr_sha256": "687c2e81324e6032a90fd77d856dfb8b06fcafea8cd0e7fc3adfdd5a3f842369"
-    },
-    {
-      "name": "cap0-chunk",
-      "passed": true,
-      "exit_code": 2,
-      "ownership_closed": true,
-      "preload_activated": true,
-      "validation_warning_bytes": 0,
-      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-      "stderr_sha256": "038c50f7d7058b5a8dab7c65536aa91cf398a832e3afa5a395127b5a79b45182"
-    },
-    {
-      "name": "cap0-auto-chunk",
-      "passed": true,
-      "exit_code": 2,
-      "ownership_closed": true,
-      "preload_activated": true,
-      "validation_warning_bytes": 0,
-      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-      "stderr_sha256": "eb18b75446d8f0d20ad0b04d069016b7b856879b2e225a07b2f1a501e17da3d6"
-    },
-    {
-      "name": "cap0-slots",
-      "passed": true,
-      "exit_code": 2,
-      "ownership_closed": true,
-      "preload_activated": true,
-      "validation_warning_bytes": 0,
-      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-      "stderr_sha256": "b0772bd54e8183d7638a92fc04e6939911e8a93c3efd4d5b85d7843727bc5989"
-    },
-    {
-      "name": "cap0-context",
-      "passed": true,
-      "exit_code": 2,
-      "ownership_closed": true,
-      "preload_activated": true,
-      "validation_warning_bytes": 0,
-      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-      "stderr_sha256": "d17da6da2df932698d2e9424e177400e907f341032df98b60e7f132352326620"
-    },
-    {
-      "name": "cap0-resident",
-      "passed": true,
-      "exit_code": 2,
-      "ownership_closed": true,
-      "preload_activated": true,
-      "validation_warning_bytes": 0,
-      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-      "stderr_sha256": "932dc7d515db77c7b85c61263aee0e5b24567ea0ac6644eca11a8fbbb9db87b7"
-    },
-    {
-      "name": "cap0-standalone",
-      "passed": true,
-      "exit_code": 2,
-      "ownership_closed": true,
-      "preload_activated": true,
-      "validation_warning_bytes": 0,
-      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-      "stderr_sha256": "2266acb35c45374325f32a60dd441779fe64fcfbf9f5742bb19b49e97b1dce34"
-    },
-    {
-      "name": "cap0-global-slots",
-      "passed": true,
-      "exit_code": 2,
-      "ownership_closed": true,
-      "preload_activated": true,
-      "validation_warning_bytes": 0,
-      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-      "stderr_sha256": "b0d830429525835d141f499aca7078e88a5382209200bf8c168dee6e838209cf"
-    },
-    {
-      "name": "cap0-token-graph",
-      "passed": false,
-      "exit_code": 2,
-      "ownership_closed": true,
-      "preload_activated": true,
-      "validation_warning_bytes": 0,
-      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-      "stderr_sha256": "5416c2499e01981a3a2d63f883af715bb5ef802d0016219728c6c1ca4d749ae7"
-    }
-  ],
-  "error": "RuntimeError('native check failed: cap0-token-graph: 711/install/lib/libur_loader.so.0.12.0\\nstrata UR validation API: pid=3122139 operation=preinit result=37\\nstrata UR validation API: pid=3122139 operation=config-create result=0\\nstrata UR validation API: pid=3122139 operation=layers-size result=0\\nstrata UR validation API: pid=3122139 operation=layers-query result=0\\nstrata UR validation API: pid=3122139 operation=enable result=0\\nstrata UR validation API: pid=3122139 operation=first-init result=0\\nstrata UR validation API: pid=3122139 operation=config-release result=0\\n   ---> urPlatformGetApiVersion\\n   <--- urPlatformGetApiVersion(.hPlatform = nullptr, .pVersion = 0x7ffee6f764bc (-1.65535)) -> UR_RESULT_ERROR_INVALID_NULL_HANDLE;\\nstrata UR validation API: pid=3122139 operation=postinit result=46\\nstrata UR validation: pid=3122139 phase=before-main threads_before=1 preinit=37 config_create=0 layers_query=0 enable=0 init=0 config_release=0 checked=46 untouched=1 retained_ref=1\\nstrata generate: --ple-gguf is required; --no-ple explicitly enables a diagnostic ablation\\n')",
-  "fresh_faults": [],
-  "boot_unchanged": true,
-  "driver_after": {
-    "pci": "/sys/bus/pci/devices/0000:05:00.0",
-    "driver": "xe",
-    "vendor": "0x8086",
-    "device": "0xe20c",
-    "kernel": "7.0.0-38-generic",
-    "devcoredump": false
-  },
-  "failure_interpretation": "The13th case incorrectly assumed removal of --no-token-graph enables it. Pinned SYCL defaults no_token_graph=true,with no CLI enable flag. Guard correctly continued to later model-argument validation;this case does not exercise a forbidden option.12 refusals passed,no device fixtures submitted,no fresh fault,owned normal closure. Keep this failed plan/outcome;new root/source/plan replaces only the unreachable case with missing-MTP."
+  "private_inputs_sha256": "6a66d7f31b2bc5853a0dd3b90fc5b902383e1fd596a2c611ae5d9d5b52d04723"
 }
