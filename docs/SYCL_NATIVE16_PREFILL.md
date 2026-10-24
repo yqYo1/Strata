@@ -1134,7 +1134,14 @@ Per-request owned environment,actual extents/chunks and QSA arithmetic bind
 the pinned deterministic selector;there is no direct layout-enum log.
 Heavy observers stay removed;the qualified native-only validation/retained-loader
 preload and warning logs stay identical in both arms,and their cost remains charged.
-Independent clock/controller and actual-route source audits precede execution.
+Independent clock/controller and actual-route source reviews permit execution.
+The first original/candidate processes now close normally without fresh faults;
+their subsequent-three medians are1003.0316/1002.7148tok/s. The first paired
+ratio is below1;do not waive it as noise or change the criteria. Four planned
+processes remain,with no speed-based early stopping. This is an unfinished
+comparison and neither decode-preservation nor adoption evidence. Consumed
+source audits and review transactions are retired after compact findings and
+actual-route checks:19 files/69079 bytes;the index retains the deletion manifest.
 Prefill evidence cannot qualify decode or adoption. Repeated strong/weak
 thinking-on generation,long/agent-session benchmarks and state handoff remain
 independent requirements;any decode impact is a separation defect to resolve.
