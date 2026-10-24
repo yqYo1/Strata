@@ -11,6 +11,7 @@ from pathlib import Path
 import re
 import subprocess
 import sys
+import time
 
 sys.dont_write_bytecode=True
 import memory_trace_device as device
@@ -19,11 +20,14 @@ model=host.model
 P,B,RESULT=host.P,host.B,host.RESULT
 PARENT_ROOT=B/'ur-memory-client-v1'
 PARENT_KEY='ur_memory_client_v1'
+FIXTURE_KEY='neo_memory_fixture_v1'
 ROOT=B/'neo-memory-fixture-v1'
-KEY='neo_memory_fixture_v1'
+KEY=FIXTURE_KEY
 REVIEW_KEY='neo_logging_source_review'
 INPUTS=sorted(set([*device.INPUTS,'tools/sycl/memory_trace_model.py',
     'bench/sycl/client_resources.py','tests/core/test_client_resources.py']))
+sys.path.insert(0,str(P/'bench/sycl'))
+import client_resources as resources
 require,digest,write=host.require,host.digest,host.write
 LOGGING_KEYS={'LogAllocationType','LogAllocationMemoryPool','LogAllocationStdout',
     'PrintBOCreateDestroyResult','PrintBOBindingResult','PrintBOPrefetchingResult'}
@@ -66,7 +70,7 @@ def runtime(r):
     return dict(binary=native['binary'],source_commit=native['source_commit']),preload
 
 
-def prepare(container):
+def prepare(container,kind):
     require(KEY not in container and not ROOT.exists(),'fresh logging fixture only')
     review=container['owner_trace_obligations'][REVIEW_KEY]
     require(review['native_review_passed'] and review['logging_only'] and
@@ -79,6 +83,18 @@ def prepare(container):
         require(0<len(pattern)<=512 and '\n' not in pattern,'bounded logging pattern required')
         re.compile(pattern)  # Reject invalid decoders before creating/running a plan.
     p=parent(container);native,preload=runtime(p)
+    if kind=='model':
+        q=container[FIXTURE_KEY]
+        require(q['passed'] and q['complete'] and not q['active'] and q['ownership_closed'] and
+            q['fresh_faults']==[] and q['exit_code']==0 and q['source_review']==review and
+            q['runtime_native']==native and q['preload']==preload and q['collector']==p['collector'],
+            'passed unchanged actual fixture logging capability required')
+        for name,h in q['input_sha256'].items():
+            raw=model.gate.native.build.git(P,'show',q['source_commit']+':'+name)
+            require(hashlib.sha256(raw).hexdigest()==h,'fixture original source unrecoverable: '+name)
+            if name!='tools/sycl/memory_trace_model.py':require(digest(P/name)==h,'qualified fixture input changed: '+name)
+        base=model.model.setup();require(base['models']==p['model_assets'],'model reference changed')
+        model.model.model_pins(base['config'],p['model_assets'])
     selected,proof=model.gate.native.source.baseline();fixture=selected['fixtures']['sycl_submission_test']
     require(digest(fixture['path'])==fixture['sha256'],'selected fixture changed')
     info=container['owner_trace_obligations']['post_collection_driver_identification']
@@ -110,8 +126,17 @@ def prepare(container):
         budgets=dict(wall_s=120,cpu_s=120,rss_bytes=4<<30,text_bytes=16<<20,file_bytes=16<<20,total_bytes=64<<20),
         criteria='One selected original10-check submission fixture,no model or engine rebuild. Preserve the complete immutable qualified safety/preload/UR observer environment;add only reviewed logging keys and private temporary/cache paths before exec. Pin original source/recipe,full SDK,runtime,collector239 dependencies,driver DSO and fixture. Require the original10 numerical/copy/event/profiling/lifetime checks,complete UR memory ledger,each predeclared minimum NEO log category,normal direct native exit0,closed ownership,unchanged inputs/boot/driver and no fresh fault. Capture stdout/stderr in private cwd under finite budgets. Stop first failure;no retry. NEO memory pool names describe creation decisions,not necessarily current KMD placement;UMD logs alone do not establish migration,physical residency,PCIe traffic or speed. Exit summary and ordinary teardown are not required or qualified.',
         retention='Main consumes small output to select one finite same-native model capture. Keep compact sample counts,representative output,identities and original outcome;retire raw logs/JIT after that plan or refusal. No extra engine generation.')
+    r['kind']=kind
+    if kind=='model':
+        r.update(command=p['command'],binary=p['binary'],native_source_commit=p['native_source_commit'],
+            cases=p['cases'],vocab_size=p['vocab_size'],model_assets=p['model_assets'],row={},client_boundaries=[],
+            fixture_qualification_sha256=model.model.fingerprint(container[FIXTURE_KEY]),
+            budgets=dict(wall_s=1200,cpu_s=7200,rss_bytes=104<<30,text_bytes=64<<20,
+                file_bytes=64<<20,total_bytes=256<<20,map_read_bytes=1<<20),
+            criteria='One same-native590f A16385/B33/A+16 wire/model-state capture,no benchmark or engine rebuild. Require the committed passed selected-fixture logging gate and unchanged reviewed five logging keys,UR observer,full SDK/preload safety and model inputs. Preserve all1256 expert payloads/publications and main/draft/running snapshot checks;full15 model digests after collection. Require bounded4 READY/DONE owning-PID/start/SID resource reads,stable nonempty clients,total/resident VRAM exports,zero shared counters and actual mapped pinned driver DSO. Require complete successful UR allocation/free/simple-buffer ledger with zero final requested balance and all predeclared NEO categories with binding result0. Native normal exit0,closed ownership,unchanged identities/boot/driver and no fresh fault. Stop first failure,no retry. Global-free internal dense interval and whole-request client/log boundaries differ;no causal phase,complete BO ledger,migration,physical residency,PCIe traffic,speed,decode-performance,ordinary teardown or adoption claim.',
+            retention='Main immediate allocation-type/BO lifecycle comparison against committed earlier UR/client changes. Keep compact request/state,conservation,counter deltas,type/pool summaries and limitations. Raw stdout/stderr only for this bounded offline analysis,64MiB combined;retire logs/JIT and prior fulltrace after useful evidence is committed. No extra engine generation.')
     write(ROOT/'record.json',r);container[KEY]=compact(r);write(RESULT,container)
-    print('Prepared bounded selected-fixture NEO logging gate;commit before run.',flush=True)
+    print('Prepared bounded '+kind+' NEO logging gate;commit before run.',flush=True)
 
 
 def admission(r,container):
@@ -127,6 +152,11 @@ def admission(r,container):
         all(digest(p)==h for p,h in r['dependencies'].items()),'logging environment/dependencies changed')
     for asset in (r['fixture'],r['collector'],r['driver_library']):
         require(digest(asset['path'])==asset['sha256'],'logging artifact changed')
+    if r['kind']=='model':
+        require(model.model.fingerprint(container[FIXTURE_KEY])==r['fixture_qualification_sha256'],
+            'actual fixture qualification changed')
+        base=model.model.setup();require(base['models']==r['model_assets'],'model reference changed')
+        model.model.model_pins(base['config'],r['model_assets'])
     require(model.gate.native.source.baseline()[1]==r['selected_original'] and
         model.gate.native.guards.driver_guard()==r['driver_before'] and
         Path('/proc/sys/kernel/random/boot_id').read_text().strip()==r['boot'],
@@ -157,6 +187,68 @@ def logging_evidence(stdout,stderr,contract):
     return dict(categories=result,scope='Observed logging capability only;not complete BO identity/lifetime,UMD-to-BO pointer join,KMD migration or ordinary teardown.')
 
 
+class AtBoundary:
+    def __init__(self,io,entry,r):
+        self.io,self.r=io,r
+        self.target={k:entry['direct_identity'][k] for k in ('pid','start_ticks','sid')}
+    def __getattr__(self,name):return getattr(self.io,name)
+    def line(self,seconds=700):
+        line=self.io.line(seconds)
+        if line.startswith(('READY ','DONE ')):
+            cpu=time.thread_time_ns();sample=resources.snapshot(self.target,'0000:05:00.0')
+            clients=[dict(client_id=c['client_id'],memory_bytes=c['memory_bytes']) for c in sample['clients']]
+            require(0<len(clients)<=8 and all('drm-resident-vram0' in c['memory_bytes'] and
+                'drm-total-vram0' in c['memory_bytes'] for c in clients),'required client VRAM counters absent')
+            require(all(v==0 for c in clients for k,v in c['memory_bytes'].items() if k.startswith('drm-shared-')),
+                'shared client counters need another comparison contract')
+            ids=sorted(c['client_id'] for c in clients)
+            require(not self.r['client_boundaries'] or
+                ids==sorted(c['client_id'] for c in self.r['client_boundaries'][0]['clients']),
+                'owning DRM client identities changed')
+            with open('/proc/'+str(self.target['pid'])+'/maps','rb') as f:
+                raw=f.read(self.r['budgets']['map_read_bytes']+1)
+            require(0<len(raw)<=self.r['budgets']['map_read_bytes'],'owned module map exceeds budget')
+            driver=self.r['driver_library'];inode=Path(driver['path']).stat().st_ino
+            matches=[s.split(maxsplit=5) for s in raw.decode().splitlines() if s.endswith(' '+driver['path'])]
+            require(matches and all(int(v[4])==inode for v in matches),'pinned driver DSO is not the mapped module')
+            self.r['client_boundaries'].append(dict(boundary='READY' if line.startswith('READY ') else 'DONE',
+                begin_monotonic_ns=sample['begin_monotonic_ns'],end_monotonic_ns=sample['end_monotonic_ns'],
+                reader_thread_cpu_ns=time.thread_time_ns()-cpu,clients=clients,mapped_driver_inode=inode))
+        return line
+
+
+def model_memory_evidence(text):
+    require(text.count('activated stream=ur.call format=1 limit=25000')==1,'collector not activated once')
+    summary=re.findall(r'^strata UR memory summary: active=1 records=(\d+) invalid=0 unsupported=0 lost=0 ',text,re.M)
+    rows=[dict(re.findall(r'(\w+)=([^ ]*)',s)) for s in re.findall(r'^strata UR memory: seq=.*$',text,re.M)]
+    require(len(summary)==1 and rows and len(rows)==int(summary[0]) and
+        sorted(int(r['seq']) for r in rows)==list(range(1,len(rows)+1)),'memory record conservation failed')
+    live={};totals={};frees=0
+    for row in sorted(rows,key=lambda v:int(v['seq'])):
+        require(row['result']=='0' and row['kind'] in ('alloc','free','release'),
+            'failed memory call or unqualified alias/refcount packet')
+        pointer=row['ptr']
+        if row['kind']=='alloc':
+            domain=row['domain'];size=int(row['requested_bytes'])
+            require(pointer!='(nil)' and pointer not in live and size>0,'invalid live allocation')
+            live[pointer]=(domain,size);item=totals.setdefault(domain,dict(count=0,requested_bytes=0))
+            item['count']+=1;item['requested_bytes']+=size
+        else:
+            require(pointer in live,'free/release without recorded allocation');domain,size=live.pop(pointer)
+            require((row['kind']=='release')==(domain=='buffer'),'USM/buffer release kind differs');frees+=1
+    require(not live,'requested-byte ledger does not close')
+    starts=list(re.finditer(r'^strata trace: request (\d+) \d+$',text,re.M))
+    require([int(m[1]) for m in starts]==[16385,33,16401],'actual request framing differs')
+    frame=text[starts[1].end():starts[2].start()]
+    begin=re.search(r'^strata prefill dense: phase=cache-loan residency=Full activations=0 .*free_bytes=(\d+) total_bytes=(\d+)$',frame,re.M)
+    end=re.search(r'^strata prefill dense: phase=restored residency=Full activations=0 .*free_bytes=(\d+) total_bytes=(\d+)$',frame,re.M)
+    require(begin and end and begin.end()<end.start() and begin[2]==end[2],'short dense interval missing')
+    return dict(records=len(rows),successful_allocations=totals,successful_releases=frees,final_requested_bytes=0,
+        short32_interval=dict(before_reported_free_bytes=int(begin[1]),after_reported_free_bytes=int(end[1]),
+            decrease_bytes=int(begin[1])-int(end[1]),total_reported_bytes=int(begin[2])),
+        scope='Successful logical UR request ledger;not physical residency,causal phase assignment or ordinary teardown.')
+
+
 def run(container):
     r=json.loads((ROOT/'record.json').read_text());admission(r,container)
     require(r['stage']=='prepared','closed logging gate cannot be retried')
@@ -169,13 +261,21 @@ def run(container):
     owner=model.gate.native.supervision.Owner(ROOT/'owned',persist)
     r.update(stage='running',GPU_executed=True);persist()
     try:
-        b=r['budgets'];entry,out,err=owner.run('device',r['command'],r['environment'],Path(r['cwd']),
+        interaction=(lambda io,e:model.interact(AtBoundary(io,e,r),'small',r['row'],r)) if r['kind']=='model' else None
+        b=r['budgets'];entry,out,err=owner.run(r['kind'],r['command'],r['environment'],Path(r['cwd']),
+            interaction=interaction,
             wall=b['wall_s'],cpu=b['cpu_s'],rss_cap=b['rss_bytes'],text_cap=b['text_bytes'],
             file_cap=b['file_bytes'],total_cap=b['total_bytes'])
         r['exit_code']=entry['exit_code']
         require(model.gate.native.supervision.closed(entry) and entry['exit_code']==0,'normal owned direct native exit required')
         stdout,stderr=out.read_text(errors='replace'),err.read_text(errors='replace')
-        r['device_evidence']=device.evidence(stderr,stdout,entry['pid'])
+        if r['kind']=='fixture':r['device_evidence']=device.evidence(stderr,stdout,entry['pid'])
+        else:
+            model.evidence(stderr,'small',r['row'],r,entry['pid'])
+            require(len(r['client_boundaries'])==4,'four client boundary reads required')
+            r['trace']=model_memory_evidence(stderr)
+            model.model.model_pins(model.model.setup()['config'],r['model_assets'],full=True)
+            r['full_model_hashes_matched']=15
         r['logging_evidence']=logging_evidence(stdout,stderr,r['source_review']['output_contract'])
         admission(original,container);r['host_probe_accepted']=True
     except BaseException as error:r['error']=repr(error)
@@ -189,9 +289,12 @@ def run(container):
 
 
 if __name__=='__main__':
-    require(sys.argv[1:] in (['prepare'],['run']),'prepare|run')
+    require(sys.argv[1:] in (['prepare'],['run'],['prepare-model'],['run-model']),
+        'prepare|run|prepare-model|run-model')
+    kind='model' if sys.argv[1].endswith('-model') else 'fixture'
+    if kind=='model':ROOT=B/'neo-memory-model-v1';KEY='neo_memory_model_v1'
     with (B/'owned-v0141-measurement.lock').open('a+') as lock:
         fcntl.flock(lock,fcntl.LOCK_EX|fcntl.LOCK_NB);model.gate.native.guards.no_model_owners([])
         container=json.loads(RESULT.read_text())
-        if sys.argv[1]=='prepare':prepare(container)
+        if sys.argv[1].startswith('prepare'):prepare(container,kind)
         else:sys.exit(run(container))
