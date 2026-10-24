@@ -142,10 +142,22 @@ allocation-matched. Both thinking-on v4 workloads have at least32K fresh input,
 The explicit speed-only client mode permits valid zero counters without calling
 them agreement/MTP-classification evidence.
 
-MTP4 has closed normally: code33214/3611 input/generated tokens at14.884tok/s,
-prose33288/8638 at9.510tok/s. The cap1 process is still active; its owned receipt
-and process handle, rather than the global partial result, determine live state.
-Do not infer a complete cohort, select a policy or claim clean speed from it.
+Both processes close normally with all15 final model hashes unchanged, no fresh
+faults and exact request/route/clock/resource replay. The observed single samples
+are:
+
+| Workload | MTP4 generated / exact tok/s | No decode draft generated / exact tok/s |
+| --- | ---: | ---: |
+| Code,33214 fresh input | 3611 /14.884 | 3126 /11.306 |
+| Prose,33288 fresh input | 8638 /9.510 | 10983 /11.190 |
+
+No-draft/MTP4 ratios are0.759652 for code and1.176653 for prose. These are
+observer-charged descriptive readings with different generated lengths, not
+repeated clean gains or policy adoption. Cap1 has zero offered/accepted drafts
+and zero actual draft rounds; its agreement/classification eligibility remains
+false while its explicit speed eligibility passes. Existing selected6e40,
+prefill/decode configuration and placement remain unchanged. The next source
+question is the existing fixed MTP2 route, before any new bounded model trial.
 Stage/parameter/cache observers and the bounded1s CPU/CCS reader remain charged.
 Each process has its same-library65536-pair C++ clock screen; endpoint/rounding
 must meet0.01% at the10s duration floor. Observed timer overhead is not a universal
@@ -153,7 +165,7 @@ bound and is not subtracted. Replay work/clocks/resources before raw retirement.
 
 ## Attribution limits and outstanding gates
 
-The limiting hardware resource remains incompletely attributed. CPU-pool wall
+The limiting hardware resource remains incompletely attributed. CPU-pool and GPU-reach wall scopes dominate the current decode route. CPU-pool wall
 includes scheduling/waits; scheduled CPU includes idle polling. GPU-reach wait is
 host wall time, while CCS busy cycles include stalls and possibly shared clients.
 Neither a saturated host thread nor a GPU busy percentage proves arithmetic
