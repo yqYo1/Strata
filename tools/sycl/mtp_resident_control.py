@@ -21,7 +21,7 @@ import measurement_owner as supervision
 import build_manifest
 
 P, B = build.P, build.B
-ROOT = B / 'mtp-resident-control-v2'
+ROOT = B / 'mtp-resident-control-v3'
 RESULT = P / 'bench/results/2026-10-15-pr6-recovery-audit/mtp-resident-control-current.json'
 BASE = '6e40afc1beddd059ee518617f6c1efce1da14aca'
 INPUTS = ['tools/sycl/mtp_resident_control.py', 'tools/sycl/test_mtp_resident_control.py',
@@ -111,6 +111,17 @@ def recover_sources(record):
     return total
 
 
+def project_sources(original):
+    # CMake generates every declared target, including unrequested diagnostics.
+    # The original linked-input receipt correctly excludes their uncompiled
+    # sources; a standalone source tree still needs them to configure.
+    result=dict(original['project']['source_sha256'])
+    names=build.git(P,'ls-tree','-r','--name-only',BASE,'--','tools/sycl').decode().splitlines()
+    names=[n for n in names if Path(n).suffix in ('.cpp','.c','.h','.hpp','.cmake')]
+    for n,raw in build.blobs(P,BASE,names):result[n]=hashlib.sha256(raw).hexdigest()
+    return result
+
+
 def compact(row):
     return {k: v for k, v in row.items() if k not in ('project_inputs', 'generated_inputs',
         'dependency_inputs', 'external_inputs', 'environment', 'commands', 'compiler_inputs',
@@ -119,12 +130,13 @@ def compact(row):
 
 def prepare():
     guards.require(not ROOT.exists() and RESULT.read_bytes() == build.git(P,'show',
-        'HEAD:'+str(RESULT.relative_to(P))), 'fresh root after committed v1 closure only')
+        'HEAD:'+str(RESULT.relative_to(P))), 'fresh root after committed failure closure only')
     previous=json.loads(RESULT.read_text())
-    guards.require(previous['stage']=='closed_prebuild_failed' and previous['ownership_closed'] and
+    guards.require(previous['stage']=='build_failed' and previous['ownership_closed'] and
         not previous['active'] and not previous['GPU_executed'] and not previous['passed'] and
         previous['retire_generation']['complete'] and
-        not (B/'mtp-resident-control-v1/build').exists(), 'do not retry or promote the failed unbuilt v1')
+        not previous.get('assets') and not (B/'mtp-resident-control-v2/build/strata').exists(),
+        'do not retry or promote the closed configure failure')
     revision = build.git(P, 'rev-parse', 'HEAD').decode().strip()
     pins = committed_inputs(revision)
     original, proof = selected.baseline()
@@ -161,20 +173,21 @@ def prepare():
     ROOT.mkdir(mode=0o700)
     for name in ('tmp', 'cache'): (ROOT/name).mkdir()
     source = ROOT / 'source'; source.mkdir()
-    generated = {}
-    for name, raw in build.blobs(P, BASE, original['project']['source_sha256']):
+    project=project_sources(original);generated = {}
+    for name, raw in build.blobs(P, BASE, project):
         new = transformed(name, raw)
         target = source / name; target.parent.mkdir(parents=True, exist_ok=True); target.write_bytes(new)
         generated[name] = hashlib.sha256(new).hexdigest()
-    changed = sorted(n for n, h in generated.items() if h != original['project']['source_sha256'][n])
+    changed = sorted(n for n, h in generated.items() if h != project[n])
     guards.require(changed == ['src/core/mtp.cpp', 'src/program/generate.cpp'], 'component selection changed')
     argv = list(original['configure_argv'])
     argv[argv.index('-S') + 1] = str(source)
     argv[argv.index('-B') + 1] = str(ROOT / 'build')
     argv.append('-DCMAKE_MAKE_PROGRAM:FILEPATH='+old['tools']['ninja']['path'])
-    row = dict(schema='strata-resident-mtp-control-v2', stage='retired_previous', source_commit=revision,
+    row = dict(schema='strata-resident-mtp-control-v3', stage='retired_previous', source_commit=revision,
         input_sha256=pins, selected_original=proof, base_native_source=BASE,
-        project_inputs=original['project']['source_sha256'], generated_inputs=generated,
+        project_inputs=project, generated_inputs=generated,
+        configure_extra_paths=sorted(set(project)-set(original['project']['source_sha256'])),
         generated_source_files=len(generated), generated_source_fingerprint=fingerprint(generated),
         changed_native_files=changed, dependency_inputs=original['dependencies'],
         compiler_inputs=dict(sdk=sdk, tools=old['tools']), compiler=original['compiler'],
@@ -188,11 +201,12 @@ def prepare():
         generated_header_sha256={str(ROOT / 'build' / 'ggml/src/ggml-version.h'):
             next(iter(old['actual_dependency_closure']['generated_sha256'].values()))},
         retire_generation=retirement,
-        prior_prebuild_failure=dict(archive_commit=revision,path=str(RESULT.relative_to(P)),
-            source_commit=previous['source_commit'],initial_cpu_source_check=previous['initial_cpu_source_check'],
-            source_admission_negative_control=previous['source_admission_negative_control'],
-            native_source_review=previous['native_source_review'],
-            outcome='Closed before native compilation/GPU;two admission-negative controls unexpectedly accepted. Preserve original failure;this new source/root/plan is prospective.'),
+        prior_failed_operation=dict(archive_commit=revision,path=str(RESULT.relative_to(P)),
+            source_commit=previous['source_commit'],stage=previous['stage'],
+            cause='Original CMake references9 unrequested diagnostic .cpp inputs absent from the linked-source receipt. CPU8+6 checks passed;configure generation failed,normal owned closure,no engine compilation or GPU execution.',
+            original_v1_archive=dict(commit='afb9b33ed',path=str(RESULT.relative_to(P)),
+                outcome='V1 source/admission failures remain failed;original deletion manifest remains retained.'),
+            outcome='New committed source/root/plan includes original uncompiled configuration inputs;no failed operation is retried or promoted.'),
         question='Measure resident MTP4 versus resident-no-decode-draft under unchanged original prefill,target1256 slots and safety. This is an attribution control,not full MTP-off or hardware saturation.',
         criteria='Build from exact selected6e40 source plus only two declared generated TUs. Native startup refuses standalone,caches,suffix,coupled/oracle,graphs/split. Cap0 returns only after owner/T/a checks,clears outputs and avoids graph observation/staging/submission. Default cap3 retains original math. Before models require owned build/actual dependency closure,CPU refusal checks,bounded traced device and short model checks. Repeated thinking-on code/prose,long/agent-session and independent prefill preservation remain necessary for adoption.',
         budgets=dict(wall=1200,cpu=7200,rss_cap=16<<30,text_cap=8<<20,file_cap=256<<20,total_cap=4<<30),
@@ -201,7 +215,7 @@ def prepare():
         retention='One selected original13-asset fallback plus this imminent diagnostic generation. Retire old unselected7 assets/build only after original source/recipe/remote/consumer checks. Generated source is a disposable current compile input;remove it with closed build output after qualification/comparison. Keep compact measurements and original inputs in Git.')
     row['metadata_sha256']=build_manifest.pins(row)
     write(ROOT / 'record.json', row); write(RESULT, compact(row))
-    print('Prepared fresh v2 original-source diagnostic;prior retirement stays closed. Commit before build.', flush=True)
+    print('Prepared fresh v3 original-source/configuration diagnostic;prior failures stay closed. Commit before build.', flush=True)
 
 
 def admission(row):
@@ -213,12 +227,12 @@ def admission(row):
     guards.require(committed_inputs(row['source_commit']) == row['input_sha256'], 'controller changed')
     original,proof=selected.baseline()
     guards.require(proof == row['selected_original'] and row['base_native_source']==BASE and
-        row['project_inputs']==original['project']['source_sha256'] and
+        row['project_inputs']==project_sources(original) and
         row['dependency_inputs']==original['dependencies'] and
         row['environment']==dict(original['environment'],TMPDIR=str(ROOT/'tmp'),
             XDG_CACHE_HOME=str(ROOT/'cache')), 'original source/dependencies/effective environment changed')
     generated={n:hashlib.sha256(transformed(n,raw)).hexdigest() for n,raw in
-        build.blobs(P,BASE,original['project']['source_sha256'])}
+        build.blobs(P,BASE,row['project_inputs'])}
     guards.require(row['generated_inputs']==generated and len(generated)==row['generated_source_files'] and
         fingerprint(generated)==row['generated_source_fingerprint'] and
         {str(p.relative_to(ROOT/'source')) for p in (ROOT/'source').rglob('*') if p.is_file()}==set(generated),

@@ -63,6 +63,15 @@ class SourceContract(unittest.TestCase):
         self.assertEqual(m.ROOT.parent, m.B)
         self.assertFalse(m.ROOT.is_relative_to(m.P))
 
+    def test_original_cmake_diagnostic_sources_are_present_before_configure(self):
+        # Source presence is required even when CMake will not build the target.
+        original = {'project':{'source_sha256':{}}}
+        inputs = m.project_sources(original)
+        backend = m.build.git(m.P,'show',m.BASE+':cmake/sycl_backend.cmake').decode()
+        names=set(m.re.findall(r'tools/sycl/[A-Za-z0-9_./-]+\.(?:cpp|hpp|c|h)\b',backend))
+        self.assertGreaterEqual(len(names),9)
+        self.assertTrue(names.issubset(inputs), sorted(names-set(inputs)))
+
 
 class AdmissionControls(unittest.TestCase):
     def test_real_admission_refuses_changed_private_maps_before_source_or_launch(self):
