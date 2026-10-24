@@ -67,6 +67,7 @@ class SourceContract(unittest.TestCase):
 class AdmissionControls(unittest.TestCase):
     def test_real_admission_refuses_changed_private_maps_before_source_or_launch(self):
         base = {field: {'original': 'value'} for field in m.build_manifest.FIELDS}
+        base.update(source_commit='fixture', input_sha256={})
         base['metadata_sha256'] = m.build_manifest.pins(base)
         with tempfile.TemporaryDirectory() as td:
             p = Path(td) / 'result.json'; frozen = json.dumps(m.compact(base)).encode(); p.write_bytes(frozen)
