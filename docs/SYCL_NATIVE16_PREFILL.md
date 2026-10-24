@@ -156,12 +156,26 @@ observer-charged descriptive readings with different generated lengths, not
 repeated clean gains or policy adoption. Cap1 has zero offered/accepted drafts
 and zero actual draft rounds; its agreement/classification eligibility remains
 false while its explicit speed eligibility passes. Existing selected6e40,
-prefill/decode configuration and placement remain unchanged. The next source
-question is the existing fixed MTP2 route, before any new bounded model trial.
+prefill/decode configuration and placement remain unchanged.
 Stage/parameter/cache observers and the bounded1s CPU/CCS reader remain charged.
 Each process has its same-library65536-pair C++ clock screen; endpoint/rounding
 must meet0.01% at the10s duration floor. Observed timer overhead is not a universal
 bound and is not subtracted. Replay work/clocks/resources before raw retirement.
+
+The [fixed MTP2 route check](../bench/results/2026-10-15-pr6-recovery-audit/mtp2-route-current.json)
+uses the exact selected6e40 binary, retaining allocated`--spec 4` and setting
+`--mtp-max-t 2`. Allocating only`--spec 2` would miss the existing MTP expert
+release contract. Ten host corruption controls and a fully traced ten-case
+same-build GPU fixture passed before one fresh model process. Its four synthetic
+inputs33/257/16385/33 produced16/2/2/16 tokens with valid length/EOS finishes.
+The16384-cell prefill restored the checked cache payload/map,48 dense layers and
+MTP experts. The final request replayed the recaptured T1/T2 draft graphs with
+zero chain calls and valid bounded host accounting. The process exited normally,
+all15 model hashes matched and no new driver fault appeared. This qualifies
+short-route wiring and owner restoration only. Clean repeated speed, task quality
+and full-context gates remain open; no production prefill/decode setting changed.
+The next comparison is fixed2 versus MTP4 and resident no-draft with prospective
+official thinking-on long-generation measurements.
 
 ## Attribution limits and outstanding gates
 

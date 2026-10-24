@@ -1,5 +1,5 @@
 {
-  "stage": "device-checked",
+  "stage": "closed",
   "source_commit": "4e328bc02eddcde29c9391c17583df136c91bb97",
   "source_audit": {
     "source_commit": "6e40afc1beddd059ee518617f6c1efce1da14aca",
@@ -216,14 +216,163 @@
         "kernel": "7.0.0-38-generic",
         "devcoredump": false
       }
+    },
+    "model": {
+      "passed": true,
+      "admission": {
+        "context": "131072",
+        "kv": "int8",
+        "kv_resident": "0",
+        "expert_slots": "1256",
+        "spec": "4",
+        "mtp_max": "2",
+        "lookup": "0",
+        "pool_workers": "5",
+        "pcie_frac": "0.00",
+        "conversation_cache_mib": "0"
+      },
+      "requests": [
+        {
+          "generated_tokens": 16,
+          "prompt_tokens": 33,
+          "finish": "length",
+          "drafts_accepted": 5,
+          "drafts_offered": 11,
+          "reused_tokens": 0,
+          "read_tokens": 33,
+          "output_ids_sha256": "0b1eccb5e3642531b2b40e9cd1ef908b2b1ccd52f6167c74324226d8872554b3",
+          "publications": 1
+        },
+        {
+          "generated_tokens": 2,
+          "prompt_tokens": 257,
+          "finish": "stop",
+          "drafts_accepted": 0,
+          "drafts_offered": 1,
+          "reused_tokens": 0,
+          "read_tokens": 257,
+          "output_ids_sha256": "8c90ba1d76cfa262e2fffe37ddeac5e7c83667b518186a21fea159542af32828",
+          "publications": 1
+        },
+        {
+          "generated_tokens": 2,
+          "prompt_tokens": 16385,
+          "finish": "stop",
+          "drafts_accepted": 0,
+          "drafts_offered": 1,
+          "reused_tokens": 0,
+          "read_tokens": 16385,
+          "output_ids_sha256": "08a392904479e1ae3d7d6edf2fdef272228ad3249c48bbeb65b3fd2bbf102ca4",
+          "publications": 2
+        },
+        {
+          "generated_tokens": 16,
+          "prompt_tokens": 33,
+          "finish": "length",
+          "drafts_accepted": 5,
+          "drafts_offered": 11,
+          "reused_tokens": 0,
+          "read_tokens": 33,
+          "output_ids_sha256": "0b1eccb5e3642531b2b40e9cd1ef908b2b1ccd52f6167c74324226d8872554b3",
+          "publications": 1
+        }
+      ],
+      "routes": [
+        {
+          "target_windows": 12,
+          "target_rows": 23,
+          "prompt_chunks": [
+            32
+          ]
+        },
+        {
+          "target_windows": 2,
+          "target_rows": 3,
+          "prompt_chunks": [
+            256
+          ]
+        },
+        {
+          "target_windows": 2,
+          "target_rows": 3,
+          "prompt_chunks": [
+            8192,
+            8192
+          ],
+          "GPU_BF16_rows": 16384,
+          "MoE_mode": 10,
+          "dense_layers_restored": 48,
+          "cache_payload_and_map_match": true,
+          "MTP_experts_restored": true,
+          "loan_generation": 3
+        },
+        {
+          "target_windows": 12,
+          "target_rows": 23,
+          "prompt_chunks": [
+            32
+          ]
+        }
+      ],
+      "observer": {
+        "request": 4,
+        "proposal_windows": 2,
+        "proposal_rows": 3,
+        "T_mask": 6,
+        "round_replays": 2,
+        "chain_calls": 0,
+        "accounting_valid": true
+      },
+      "activation": {
+        "pid": 3498007,
+        "loader": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_loader.so.0.12.0",
+        "threads_before": 1,
+        "preinit": 37,
+        "config_enabled": true,
+        "first_init": true,
+        "dispatch_result": 46,
+        "output_untouched": true,
+        "retained_reference_until_exit": true,
+        "runtime_teardown_qualified": false
+      },
+      "final_full_model_hashes": 15,
+      "host_probe_accepted": true,
+      "exit_code": 0,
+      "stdout_sha256": "966232a2f9b880e419f01b5aa548126e5e6d81e25ce03bc70d00eb882eb2bb2d",
+      "stderr_sha256": "31ec50866aca700d0c4a0b5748ba78120e879fd16513455692228af738ab0359",
+      "ownership_closed": true,
+      "fresh_faults": [],
+      "boot_unchanged": true,
+      "driver_after": {
+        "pci": "/sys/bus/pci/devices/0000:05:00.0",
+        "driver": "xe",
+        "vendor": "0x8086",
+        "device": "0xe20c",
+        "kernel": "7.0.0-38-generic",
+        "devcoredump": false
+      }
     }
   },
   "active": false,
   "ownership_closed": true,
-  "passed": false,
-  "complete": false,
+  "passed": true,
+  "complete": true,
   "production_selected": false,
   "speed_qualified": false,
   "model_adoption_qualified": false,
-  "private_inputs_sha256": "00b23c542d5534c0ab79632dd2383bca56d219aa2c50e5b2d50cfa794b411751"
+  "private_inputs_sha256": "00b23c542d5534c0ab79632dd2383bca56d219aa2c50e5b2d50cfa794b411751",
+  "postclosure_audit": {
+    "host_corruption_controls": {
+      "protocol": 5,
+      "fixed2": 5,
+      "passed": true
+    },
+    "traced_submission_cases": 10,
+    "validation_warning_bytes": 0,
+    "all_recorded_log_hashes_matched": true,
+    "prefill_changed": false,
+    "production_decode_changed": false,
+    "limits": "Four bounded synthetic requests qualify fixed2 wiring and post-prefill owner/graph restoration only. No sustained speed, task-quality, full262144 context or independent prefill/decode throughput-preservation qualification."
+  },
+  "next_gate": "Commit a new prospective matched official bench.sh thinking-on long-generation comparison of fixed2, MTP4 and resident no-draft. Keep clean repetitions and prefill/decode selection separate; production6e40 remains unchanged. No width adoption from this short check."
 }
