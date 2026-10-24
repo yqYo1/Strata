@@ -1025,6 +1025,18 @@ The2174 known trailing records pass the bounded strict filter. Prior failed/UNRU
 outcomes remain unchanged. Next perform bounded offline type/pool/size analysis;
 this is still a diagnostic with cache/state readback audits enabled,not production
 memory pressure,clean speed or decode-performance qualification.
+Offline replay of the v3 state/log parsers matches the committed capture. Between
+DONE A16385 and DONE B33,only7 NEO creation-detail rows total3473408 requested
+bytes:KERNEL_ISA2031616,COMMAND_BUFFER1114112,three LINEAR_STREAM rows196608,
+and65536 each for GPU_TIMESTAMP_DEVICE_BUFFER and INTERNAL_HEAP. The largest
+single request is2031616 bytes. In this run,client VRAM rises2480402432 bytes,
+GTT falls2749759488 bytes,and total-region accounting falls269357056 bytes.
+The narrower dense global-free drop is2751729664 bytes. Logged creation sums
+and pool labels do not explain physical movement or live byte totals. The
+counter variations and enabled cache/state readbacks prohibit treating this
+as a production2.5GB new allocation or a measured throughput bottleneck.
+Next compare matched audit-on/off placement,then clean long-prefill and repeated
+strong/weak MTP decode performance;any decode impact remains a separation defect.
 No speed/decode-performance/adoption qualification
 is claimed. The returned observer audit is accepted with correction:the pinned
 XPTI init version is the invoking runtime version,so the UR0.12 check is valid.
@@ -1047,10 +1059,17 @@ maps/JIT/stdout,rejected strace captures and the consumed MTP runtime audit.
 Original source/recipe,all20 native assets,the full candidate SDK and the
 16920-byte collector verify before/after retirement. The unavailable syscall
 command modes are removed;their source and failed decoder outcome remain in
-Git. Only the current client record and497888-byte successor UR trace remain
-for the imminent same-native NEO logging comparison,with a1MiB trace budget and
-review after that comparison. The current record supplies the immutable effective
-environment and239 observer dependencies. Four physical-fill/memory report/review
+Git. That boundary retained the current client record and497888-byte successor UR
+trace for the NEO comparison,with a1MiB trace budget. The NEO comparison has now
+closed. Before the next GPU cohort,reconcile those files,the newly closed NEO
+fixture/model captures and consumed research against actual readers. The v1
+stdout still supplies the strict-protocol regression;replace it with minimum
+regression evidence before retirement. The v3 stdout/stderr have one named
+consumer,the matched audit-on/off allocation/placement comparison,with64MiB
+combined budget and review immediately after it. The current client record
+supplies the effective environment and239 observer dependencies until its
+preparation consumer is replaced. Closed fixture/model JIT and research
+transactions have no such future data consumer and are pending retirement. Four physical-fill/memory report/review
 files remain for their named Main tasks;unrelated owner/provenance holds remain
 separate.
 
