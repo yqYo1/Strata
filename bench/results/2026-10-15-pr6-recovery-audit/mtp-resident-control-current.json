@@ -1,16 +1,18 @@
 {
-  "schema": "strata-resident-mtp-control-v1",
-  "stage": "closed_prebuild_failed",
-  "source_commit": "8af8fe1e3c038133b6aad53cf5278ee8e8c51958",
+  "schema": "strata-resident-mtp-control-v2",
+  "stage": "retired_previous",
+  "source_commit": "2abb70d8408e55a76c6abd5cb35a291d4a1bafd1",
   "input_sha256": {
-    "tools/sycl/mtp_resident_control.py": "58ab065ff46bc43b1fa9185328be18a71a303b82813c7614de6b48d5bce6cf57",
-    "tools/sycl/test_mtp_resident_control.py": "2f822b249a57fc2538f10f3833d353e0f2f929d559d7869c11a9ea425c55fde2",
+    "tools/sycl/mtp_resident_control.py": "ea91e839d5cc0f14dac64888079e72b0296c5a3b3d64438bcabe26d3d2b395f7",
+    "tools/sycl/test_mtp_resident_control.py": "e13bf24d8235063a1a9f45d57dd041d1693b5e2c5a6b5dffcfe32678c09eeb44",
     "tools/sycl/build_engine.py": "8444783ab417378207ec89ad2bc3cf648480e20d9e77f06ebb3070c93e10b131",
     "tools/sycl/build_full_context.py": "6e2aa8c584e0fd014157cfd08360945ae2d28ad2db660499d9f4eb900e517b72",
     "tools/sycl/check_full_context_source.py": "5e72fa724e890e682382758caf6222042e1ec89770962ce205ab756783332030",
     "tools/sycl/measurement_guards.py": "794e332c70aca0acadad4f26d0414548e023a02fd27b72ed78fc773674423ec8",
     "tools/sycl/measurement_owner.py": "bddd0c5e5020e882ca3404679420faec11e820dabce2ed4c72ef82b4c9c0874a",
-    "tools/sycl/measurement_environment.json": "d4402591df50e80dc45a5ec9e4839c7a794888850b1473537b6f95179be5b03c"
+    "tools/sycl/measurement_environment.json": "d4402591df50e80dc45a5ec9e4839c7a794888850b1473537b6f95179be5b03c",
+    "tools/sycl/build_manifest.py": "3cf94b8fb9aee4677babc91a56c8620a413c734dc94060f97603a30667b9e79b",
+    "tests/core/test_build_manifest.py": "2d054d4fbbb862ef62eaacf53d7580e2d5a92ea57598fd179c480bf1cc943847"
   },
   "selected_original": {
     "source_commit": "6e40afc1beddd059ee518617f6c1efce1da14aca",
@@ -24,7 +26,7 @@
   },
   "base_native_source": "6e40afc1beddd059ee518617f6c1efce1da14aca",
   "generated_source_files": 542,
-  "generated_source_fingerprint": "16aa6425fd785f012d0795dc94f9466e7d86dcc7091219e219635a3a61faaeda",
+  "generated_source_fingerprint": "5e012dcd1b00291122742b4fd9cdad6c2bc50cc5af862b40686247af3e94c270",
   "changed_native_files": [
     "src/core/mtp.cpp",
     "src/program/generate.cpp"
@@ -39,16 +41,16 @@
       "sha256": "a38f477670fafcd1a931be2e20d90d6d9718df75b61954b421f361af9f6881b2"
     },
     "replacements": {
-      "TMPDIR": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/mtp-resident-control-v1/tmp",
-      "XDG_CACHE_HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/mtp-resident-control-v1/cache"
+      "TMPDIR": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/mtp-resident-control-v2/tmp",
+      "XDG_CACHE_HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/mtp-resident-control-v2/cache"
     }
   },
   "configure_argv": [
     "/usr/bin/cmake",
     "-S",
-    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/mtp-resident-control-v1/source",
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/mtp-resident-control-v2/source",
     "-B",
-    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/mtp-resident-control-v1/build",
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/mtp-resident-control-v2/build",
     "-G",
     "Ninja",
     "-DCMAKE_CXX_COMPILER=/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin/clang++",
@@ -73,7 +75,8 @@
     "-DSTRATA_WERROR:BOOL=ON",
     "-DSTRATA_SYCL_VLLM_XE2_NATIVE16=ON",
     "-DSTRATA_SYCL_DEVICE_ARCH=",
-    "-DSYCL_TLA_SOURCE_DIR=/home/yayoi/ghq/github.com/intel/sycl-tla/.worktree/strata-native16-87f"
+    "-DSYCL_TLA_SOURCE_DIR=/home/yayoi/ghq/github.com/intel/sycl-tla/.worktree/strata-native16-87f",
+    "-DCMAKE_MAKE_PROGRAM:FILEPATH=/usr/bin/ninja"
   ],
   "targets": [
     "strata",
@@ -93,7 +96,7 @@
   "build_command": [
     "/usr/bin/cmake",
     "--build",
-    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/mtp-resident-control-v1/build",
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/mtp-resident-control-v2/build",
     "--target",
     "strata",
     "sycl_verifier_retirement_test",
@@ -114,12 +117,12 @@
   "dependency_command": [
     "/usr/bin/ninja",
     "-C",
-    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/mtp-resident-control-v1/build",
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/mtp-resident-control-v2/build",
     "-t",
     "deps"
   ],
   "generated_header_sha256": {
-    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/mtp-resident-control-v1/build/ggml/src/ggml-version.h": "9e45eee8391971371922f51b66925184609125d467c444744599f680b78edc92"
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/mtp-resident-control-v2/build/ggml/src/ggml-version.h": "9e45eee8391971371922f51b66925184609125d467c444744599f680b78edc92"
   },
   "retire_generation": {
     "source_commit": "1cba8a2857891862f8ed4c534d8afee3b0aeaf98",
@@ -206,6 +209,52 @@
     "manifest_path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/mtp-resident-control-v1/retired-generation.jsonl",
     "manifest_sha256": "7a8b62768fdbaf42495592a44c170c2f5b270f238003861b3f84d21278af58aa"
   },
+  "prior_prebuild_failure": {
+    "archive_commit": "2abb70d8408e55a76c6abd5cb35a291d4a1bafd1",
+    "path": "bench/results/2026-10-15-pr6-recovery-audit/mtp-resident-control-current.json",
+    "source_commit": "8af8fe1e3c038133b6aad53cf5278ee8e8c51958",
+    "initial_cpu_source_check": {
+      "source_commit": "8af8fe1e3",
+      "tests": 6,
+      "exit_code": 1,
+      "passed": false,
+      "error": "test_only_declared_mtp_edits_and_no_prefill_or_first_draft_edit: generic signature-tail anchor also matches draft_first (2 occurrences). CPU source generator/guard checks otherwise complete;no native compilation or GPU/model execution. Correct the test anchor in a new committed source/plan before build;do not reinterpret this failed check as passed.",
+      "build_permitted": false,
+      "retirement_independent": "Old candidate prefill comparison is already closed/rejected;source9853/recipe/SDK/asset/remote proofs completed. Its unused generation retirement remains separately permitted;selected original13 assets stay unchanged."
+    },
+    "source_admission_negative_control": {
+      "source_commit": "8af8fe1e3",
+      "cases": [
+        {
+          "case": "unbound_environment",
+          "unexpected_acceptance": true
+        },
+        {
+          "case": "missing_generated_mtp_pin",
+          "unexpected_acceptance": true
+        }
+      ],
+      "passed": false,
+      "GPU_executed": false,
+      "scope": "In-memory copies only;actual record/environment/source files unchanged. Old admission did not bind omitted raw environment/generated-input maps to its compact committed fields. Must correct prospectively before native build;does not revise prior CPU failure."
+    },
+    "native_source_review": {
+      "path": ".cache/strata-research/20261024/mtp-net-control/control-source-review.json",
+      "sha256": "7b927b1add3970b1976fceabcfa74279b0c718883327c241036e695639b25db2",
+      "verdict": "hold_v1_build",
+      "findings": "Cap-zero source path and unchanged normal/prefill source confirmed. Rebind omitted environment/generated/dependency/tool/external metadata and exact compilation closure. V1 already closed before build;completed retirement must not repeat. Main additionally verified all7 artifact hashes immediately before its serialized retirement;manifest is complete.",
+      "next": "Fresh v2 source/root/plan with metadata refusal tests and exact8192/1256 startup guard;keep original6e40 selected."
+    },
+    "outcome": "Closed before native compilation/GPU;two admission-negative controls unexpectedly accepted. Preserve original failure;this new source/root/plan is prospective.",
+    "source_copy_retirement": {
+      "complete": true,
+      "files": 543,
+      "bytes": 9671990,
+      "manifest_path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/closed-mtp-control-v1-source-20261024.jsonl",
+      "manifest_sha256": "b60e50dc8a241b731268286f1e167ff045397c0d74252ae7bccb22d089556b92",
+      "original542_sources_recovered": true
+    }
+  },
   "question": "Measure resident MTP4 versus resident-no-decode-draft under unchanged original prefill,target1256 slots and safety. This is an attribution control,not full MTP-off or hardware saturation.",
   "criteria": "Build from exact selected6e40 source plus only two declared generated TUs. Native startup refuses standalone,caches,suffix,coupled/oracle,graphs/split. Cap0 returns only after owner/T/a checks,clears outputs and avoids graph observation/staging/submission. Default cap3 retains original math. Before models require owned build/actual dependency closure,CPU refusal checks,bounded traced device and short model checks. Repeated thinking-on code/prose,long/agent-session and independent prefill preservation remain necessary for adoption.",
   "budgets": {
@@ -224,56 +273,19 @@
   "production_selected": false,
   "model_adoption_qualified": false,
   "retention": "One selected original13-asset fallback plus this imminent diagnostic generation. Retire old unselected7 assets/build only after original source/recipe/remote/consumer checks. Generated source is a disposable current compile input;remove it with closed build output after qualification/comparison. Keep compact measurements and original inputs in Git.",
-  "initial_cpu_source_check": {
-    "source_commit": "8af8fe1e3",
-    "tests": 6,
-    "exit_code": 1,
-    "passed": false,
-    "error": "test_only_declared_mtp_edits_and_no_prefill_or_first_draft_edit: generic signature-tail anchor also matches draft_first (2 occurrences). CPU source generator/guard checks otherwise complete;no native compilation or GPU/model execution. Correct the test anchor in a new committed source/plan before build;do not reinterpret this failed check as passed.",
-    "build_permitted": false,
-    "retirement_independent": "Old candidate prefill comparison is already closed/rejected;source9853/recipe/SDK/asset/remote proofs completed. Its unused generation retirement remains separately permitted;selected original13 assets stay unchanged."
+  "metadata_sha256": {
+    "project_inputs": "d2eacd07768333b7893b7781494f735e32b258886097afde924d3b940b6b38a4",
+    "generated_inputs": "5e012dcd1b00291122742b4fd9cdad6c2bc50cc5af862b40686247af3e94c270",
+    "dependency_inputs": "2f463615c5e951cd000256f4238441bf28b054016d29cdcbca18e4d6a92ba198",
+    "external_inputs": "149850c8f3fe4779cedb36846899f98f9a9c5a92ecb9ee27e7beda422c87967e",
+    "environment": "4a6a49254960ea4b1c442bcc6d69018376fbc0c78e52e3b4cccc5c0c5045e028",
+    "compiler_inputs": "ed4c9e9a88394765fdd8eb5251db46eca703a327faf37bb8ce96ed72f452bf97"
   },
-  "source_admission_negative_control": {
-    "source_commit": "8af8fe1e3",
-    "cases": [
-      {
-        "case": "unbound_environment",
-        "unexpected_acceptance": true
-      },
-      {
-        "case": "missing_generated_mtp_pin",
-        "unexpected_acceptance": true
-      }
-    ],
-    "passed": false,
-    "GPU_executed": false,
-    "scope": "In-memory copies only;actual record/environment/source files unchanged. Old admission did not bind omitted raw environment/generated-input maps to its compact committed fields. Must correct prospectively before native build;does not revise prior CPU failure."
-  },
-  "next_action": "Correct the CPU test anchor and bind every omitted input map/environment to immutable committed evidence in a fresh prospective v2 preparation. No native build was attempted. Do not promote or rewrite v1 failure. Old generation retirement is completed independently.",
-  "prospective_metadata_helper": {
-    "source_commit": "68f3912ef",
-    "source_sha256": "3cf94b8fb9aee4677babc91a56c8620a413c734dc94060f97603a30667b9e79b",
-    "test_sha256": "2d054d4fbbb862ef62eaacf53d7580e2d5a92ea57598fd179c480bf1cc943847",
-    "CPU_tests": 6,
-    "exit_code": 0,
+  "host_source_controls": {
+    "source_commit": "2abb70d84",
+    "source_and_admission_tests": 8,
+    "metadata_tests": 6,
     "passed": true,
-    "GPU_executed": false,
-    "limits": "Standalone input-seal/refusal helper only;private v1 controller remains failed and does not yet call this helper. Integrate and qualify a new prospective controller/plan before native compilation."
-  },
-  "native_source_review": {
-    "path": ".cache/strata-research/20261024/mtp-net-control/control-source-review.json",
-    "sha256": "7b927b1add3970b1976fceabcfa74279b0c718883327c241036e695639b25db2",
-    "verdict": "hold_v1_build",
-    "findings": "Cap-zero source path and unchanged normal/prefill source confirmed. Rebind omitted environment/generated/dependency/tool/external metadata and exact compilation closure. V1 already closed before build;completed retirement must not repeat. Main additionally verified all7 artifact hashes immediately before its serialized retirement;manifest is complete.",
-    "next": "Fresh v2 source/root/plan with metadata refusal tests and exact8192/1256 startup guard;keep original6e40 selected."
-  },
-  "v2_preparation_cpu_failure": {
-    "source_commit": "f8ebdfe2b",
-    "tests": 8,
-    "exit_code": 1,
-    "passed": false,
-    "GPU_executed": false,
-    "native_compiled": false,
-    "error": "Positive-prefix fake admission fixture lacked source_commit/input_sha256 and reached KeyError before the sentinel. Add those fixture fields;negative-source controller checks themselves were reached. No v2 preparation/build/root existed. Preserve original failed CPU check."
+    "limits": "CPU source/metadata refusals only;no native compilation,GPU,model or adoption qualification. Repeat through the owned build operation before compile."
   }
 }

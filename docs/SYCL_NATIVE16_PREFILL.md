@@ -1170,10 +1170,16 @@ and reports cumulative draft rounds after request timing;`mtp.cpp` can return
 without graph observation or GPU draft work when the existing cap is zero.
 MTP prompt precompute,weights/KV allocation and original prefill remain. Against
 MTP4,the target verifier window also changes toT1;this is not full-MTP-off or
-completely allocation-matched. The first CPU source check fails on an ambiguous
-test anchor,with no native compilation or GPU execution. Preserve that failure
-and correct the source gate before building. Native/source review and then
-bounded device/model qualification remain pending. Existing selected6e40 and
+completely allocation-matched. V1 closes before native compilation after an
+ambiguous test anchor and two CPU admission-negative controls expose unbound
+input metadata. Those failures remain in Git. Source review confirms the native
+cap-zero path but holds that build. Fresh v2 source`2abb70d84` binds all six
+omitted metadata groups to committed digests,rederives the exact generated
+source and effective environment,and records the actual compiled-input
+fingerprint. Eight source/admission and six metadata CPU controls pass. The
+native guard also requires8192 prefill,1256 per-layer slots and131072 resident
+context. Commit this new root/plan before building;bounded native/device/model
+qualification remains pending. Existing selected6e40 and
 all1256 decode slots remain unchanged.
 The closed590f comparison generation is now retired after recovery of its9853
 original source inputs,committed recipe,SDK and pushed source identity:172
