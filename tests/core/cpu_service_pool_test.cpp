@@ -151,7 +151,10 @@ void run(cpu::ExpertPool& pool,bool enabled,uint64_t& checksum) {
                     const float want=t<jobs[e].nt ? refs[e%kBlobs][jobs[e].nt-1][t][r] : kGuard;
                     require(std::isfinite(got[r+1]) && std::bit_cast<uint32_t>(got[r+1])==
                             std::bit_cast<uint32_t>(want),"pool output/unused token differs");
-                    checksum^=std::bit_cast<uint32_t>(got[r+1]);checksum*=1099511628211ull;
+                    const uint32_t bits=std::bit_cast<uint32_t>(got[r+1]);
+                    for (unsigned shift=0;shift<32;shift+=8) {
+                        checksum^=(bits>>shift)&255u;checksum*=1099511628211ull;
+                    }
                 }
             }
             pool.run_split_multi_native(f,nullptr,0,phase);
@@ -180,7 +183,7 @@ int main(int argc,char** argv) {
         dispatch.join();if (error) std::rethrow_exception(error);
         const auto final=pool.service_snapshot();
         require(final.enabled==enabled && final.error_mask==0 && (!enabled || final.valid),"generation reader");
-        std::printf("cpu_service_pool PASS observer=%d formats=7 nt=1..4 cases=28 checksum_fnv64=%016llx\n",
+        std::printf("cpu_service_pool PASS observer=%d formats=7 nt=1..4 cases=28 checksum_fnv1a64_le=%016llx\n",
                     int(enabled),static_cast<unsigned long long>(checksum));
         return 0;
     } catch (const std::exception& error) {
