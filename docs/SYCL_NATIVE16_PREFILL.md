@@ -1063,13 +1063,25 @@ Git. The later NEO boundary retires120 files/25423429 bytes after its compact
 model/type evidence is committed. Both original source/recipe closures,the full
 SDK,all20 native assets and the16920-byte collector verify before/after deletion.
 Successful fixture output,the consumed prior UR trace,model JIT and consumed NEO
-research/transactions are removed. Five files remain for named consumers:the
-current client environment/dependency record,the v1 stdout required by the strict
-CPU regression,and the v3 record+stdout+stderr for one matched audit-on/off
-allocation/placement comparison. Replace the old full-stdout regression fixture
-with minimum independent cases before retiring it;retire the client record when
-its preparation consumer moves. The v3 comparison has64MiB combined text budget
-and review immediately after its control. Four physical-fill/memory report/review
+research/transactions are removed. The next control replaces the old full-stdout
+regression with six committed representative records plus immutable audit-env
+checks;all11 CPU controls pass. It prepares only from the v3 record,so the old
+client record,v1 stdout and v3 stdout/stderr have no remaining input consumer.
+After source/recipe and20 native asset verification,those4 files/2611818 bytes
+are retired. Only the v3 environment/dependency/source qualification record is
+needed for the new control. No old raw trace is a measurement input.
+
+The prepared Main control uses four fresh native processes in ON/OFF/OFF/ON
+order with the same16385/33/16401-token requests and unchanged decode settings.
+OFF removes only STATE_HASH,SNAPSHOT_VERIFY,CACHE_LOAN_AUDIT before native exec;
+UR/NEO logging,safety,queues,weights and1256 slots remain fixed. ON retains the
+full payload/state gates;OFF is a route/wire/resource observation and does not
+requalify payload bytes. Refill has an unconditional sync before its optional
+audit,commit is waited before DONE,and snapshot restore has its own checked
+sync/copies,so this removes observation rather than a declared required fence.
+The prospective screen and individual samples remain in the compact result.
+This is not a throughput/adoption comparison. Cohort raw output has a256MiB cap
+and64MiB text per process,with retirement after the compact comparison. Four physical-fill/memory report/review
 files remain for their named Main tasks;unrelated owner/provenance holds remain
 separate.
 
