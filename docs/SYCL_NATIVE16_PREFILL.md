@@ -1107,24 +1107,34 @@ were not launched. The native review found no prospectively declared numeric
 timing-duration floor or timer-overhead screen;do not retrofit those criteria
 or call this a qualified speed/decode/adoption comparison. Its source,full
 frozen plan and original samples recover at`4df78bb6f`. The current
-[compact closure](../bench/results/2026-10-15-pr6-recovery-audit/phase-prefill-speed-current.json)
-preserves the actual successful execution separately from timing ineligibility.
+archived result preserves successful execution separately from timing
+ineligibility;the maintained result now holds the prospectively prepared v2.
 After replay and both source/recipe/SDK/20-asset checks,112 files/13879208 bytes
 of closed v1 output,JIT,CPU logs and consumed collection transactions are retired.
 The two corrected substantive collection reports remain indexed for retrieval;
 the active timing/driver source audit remains only through its correction.
 
-Next commit a corrected controller and CPU controls,then a fresh v2 plan with
-numeric duration/overhead eligibility and final driver-equality enforcement.
-An interrupted preparation must preserve its failed receipt;port collisions
-remain fail-closed and do not authorize automatic retries. Keep original131072
-resident INT8 context,8192 prefill and1256-slot decode placement. Heavy observers
-stay removed;the qualified native-only validation/retained-loader preload and
-warning logs stay identical in both arms,and their cost remains charged.
-The closed first screen left`STRATA_SYCL_PREFILL_SEPARATE_LAYOUT`unset,so it
-would test the compiled package's legacy resident route. The next scope must
-explicitly select whether to compare that package or the optional independent
-layout,with actual per-request layout/publication evidence for the latter.
+The corrected source`d39e438a4` passes eight CPU controls and a C++ clock
+calibration using the same pinned libstdc++ provider as both engines. Its
+137 compiler/header/library/tool inputs and recipe were committed before
+compilation. The65536-pair check reports1ns resolution and6823ns observed
+maximum;including decimal rounding gives a0.00063646% fraction at the declared
+10s request floor,below0.01%. This is an observed endpoint/precision screen,
+not a universal bound or subtraction from model time. Repeat it once before
+each native process,without retries. Final driver equality is enforced and
+interrupted preparation preserves its failure;port collisions fail closed.
+
+The fresh [v2 plan](../bench/results/2026-10-15-pr6-recovery-audit/phase-prefill-speed-current.json)
+was committed at`90cfa9eaa` before execution. It fixes original/candidate/
+candidate/original/original/candidate order and four117489-token requests per
+process. Keep original131072 resident INT8 context,8192 prefill and1256-slot
+decode placement. Candidate590f explicitly enables
+`STRATA_SYCL_PREFILL_SEPARATE_LAYOUT=1`;original6e40 leaves it absent.
+Per-request owned environment,actual extents/chunks and QSA arithmetic bind
+the pinned deterministic selector;there is no direct layout-enum log.
+Heavy observers stay removed;the qualified native-only validation/retained-loader
+preload and warning logs stay identical in both arms,and their cost remains charged.
+Independent clock/controller and actual-route source audits precede execution.
 Prefill evidence cannot qualify decode or adoption. Repeated strong/weak
 thinking-on generation,long/agent-session benchmarks and state handoff remain
 independent requirements;any decode impact is a separation defect to resolve.
