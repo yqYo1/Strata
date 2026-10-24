@@ -10532,5 +10532,35 @@
     "consumer": "Main next CPU GU measurement/source-plan decision after the clean MTP-width cohort;read only necessary review sections.",
     "review_point": "At clean-width cohort closure,or before a new CPU GU instrumentation/build plan;retire consumed temporary review afterward.",
     "active_measurement_isolation": "Current preload reader consumes only UR_silent_validation_native_child_scope.preload_component;frozen benchmark source and five qualification-result files are untouched."
+  },
+  "gpu_cross_request_row_coalescing_methods_20261024": {
+    "classification": "knowledge_collection",
+    "status": "eligible_terminal_ready_before_dispatch",
+    "schedulable_now": true,
+    "eligibility_review": {
+      "path": ".cache/strata-research/20261024/tiny-batch-collection-scope-review.json",
+      "bytes": 8129,
+      "sha256": "868c3596c66ce8457045ba07bf4305c2922bf20650b0496c55c994ec64ce32af"
+    },
+    "question": "How should a low-latency autoregressive server form tiny same-layer row batches from independent live decode requests, and when do no-wait dispatch, bounded microbatching, iteration-level continuous batching, active-row compaction or padding to a matrix-engine tile justify their queue-delay, tail-latency and state-management costs?",
+    "novelty": "Existing Q8/S2 reports compare kernel choices given rows from one call or one target window; Q8 reuse combines projections over one input. None studies forming rows across independent requests sharing the same layer weights. Qwen4 verification covers proposal positions within one request; the CPU scheduling report covers Zen3 expert jobs.",
+    "consumer": "A future Main-owned server/decode scheduling decision on whether to coalesce concurrent requests into same-layer GPU row batches, including max batch size or queue-delay policy.",
+    "review_point": "At the next source-pinned request-concurrency or decode-scheduler design boundary. Keep the body retrieval-only until that decision; if no candidate arises, reassess at that boundary.",
+    "report_path": ".cache/strata-research/20261024/gpu-cross-request-row-coalescing/report.md",
+    "report_budget_bytes": 16384,
+    "startup": {
+      "terminal": "term_3a135541-4c63-4908-87e0-6ed4f8efcd2e",
+      "model": "gpt-6-luna",
+      "effort": "high",
+      "UI": "GPT-6-Luna high;Codex0.162.1;no update prompt",
+      "tui_idle_satisfied": true,
+      "child_only_override": "check_for_update_on_startup=false",
+      "normal_sandbox": "workspace-write rooted at the named report directory;approval never;no global configuration changes",
+      "official_reference": "https://learn.chatgpt.com/docs/config-file/config-reference",
+      "capacity": "Current Run has22 succeeded,1 failed,2 unconfirmed. Add one distinct Task only through scheduler admission;no capacity override or older-worker intervention. Six older ownership holds remain unresolved.",
+      "coordinator": "term_6fbfd718-e3a2-46d8-ab62-73c36d2851a6",
+      "run": "run_12fa11537288"
+    },
+    "scope_limits": "Report only;no Git/tests/builds/GPU/profiling/process inspection/product edits/worker management. No XeStrata. Aggregate concurrency gains do not establish single-request70tok/s. Main does not read the collection body on arrival;native Luna/max review required."
   }
 }
