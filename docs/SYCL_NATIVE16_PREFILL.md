@@ -1101,6 +1101,10 @@ process's subsequent-three median. Both retain original131072 resident INT8
 context,8192 prefill and1256-slot decode placement. Heavy observers are removed;
 the qualified native-only validation/retained-loader preload and warning logs
 remain identical in both arms. Its overhead is charged,not assumed zero.
+This first package comparison keeps`STRATA_SYCL_PREFILL_SEPARATE_LAYOUT`unset
+as in the original reference;it measures the legacy resident131072 route after
+the compiled changes,not the optional streamed/explicit-layout route. Qualifying
+that route requires its own matched plan with actual layout/publication evidence.
 The committed controller's five CPU evidence controls pass. Prefill screens
 cannot qualify decode or adoption. Repeated strong/weak thinking-on generation,
 long/agent-session benchmarks and state handoff remain independent requirements.
