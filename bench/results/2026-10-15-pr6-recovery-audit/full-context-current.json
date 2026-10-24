@@ -3813,6 +3813,132 @@
       "separate_nonaligned_long_reentry_passed": true,
       "limits": "Global free-memory observations,not physical ownership/leak/saturation or clean speed. Prior long request used draft_kv,so it does not prove short MTP fallback warmth. Native590f build identity is native_prefill_layout_v3_build.",
       "consumer": "Next bounded phase-tagged allocation/free trace;retire these diagnostic details when ownership/cost decision closes."
+    },
+    "ur_allocation_analysis": {
+      "source_commit": "da1c8447294101f35336b19a8c69ed6a54014652",
+      "input_sha256": {
+        "data/expert-profile.bin": "8f59b4aa8873209dff11c11e37bcda9529a1335b724a1afeea37bf6388975baf",
+        "include/strata/program/full_context_diagnostic.hpp": "d4abd9516913df9c0672adfea079e036223c8454ae79fadacd6f209432f04621",
+        "src/program/generate.cpp": "6857436f344b6ea41cf1facd88eeaa6dd2f3d61432312960b76b66f0cf68837f",
+        "tests/core/full_context_diagnostic_test.cpp": "ef0f83bb29f5faf66119b420482080084b4087aa42610426bb0209eda35b391f",
+        "tests/sycl/compat.cpp": "1040611974c4454c28d327f4f21a94d4e6cbc034f49a15560634886a5fb51994",
+        "tools/sycl/build_engine.py": "8444783ab417378207ec89ad2bc3cf648480e20d9e77f06ebb3070c93e10b131",
+        "tools/sycl/build_full_context.py": "6e2aa8c584e0fd014157cfd08360945ae2d28ad2db660499d9f4eb900e517b72",
+        "tools/sycl/check_full_context.py": "3db5296b72056453faa9ee7d30703c84059cc861520de02d040a4e7fc6c128be",
+        "tools/sycl/check_full_context_source.py": "5e72fa724e890e682382758caf6222042e1ec89770962ce205ab756783332030",
+        "tools/sycl/check_model_restore.py": "98fab9343539b063020bcb37702c21a32ec69e1393825cb4969acb8848f85c64",
+        "tools/sycl/check_streamed_qsa.py": "0a3222c0ae5b4df3e3b8a1a5f9e0a40a0387e49ed86b6c9f111d3fb4bab95ebb",
+        "tools/sycl/full_context_model.py": "c3d3dbf8e0a583d40e607d853d2bd32e4540b67409b8d27ee0d60e0c169bacfa",
+        "tools/sycl/measurement_environment.json": "d4402591df50e80dc45a5ec9e4839c7a794888850b1473537b6f95179be5b03c",
+        "tools/sycl/measurement_guards.py": "794e332c70aca0acadad4f26d0414548e023a02fd27b72ed78fc773674423ec8",
+        "tools/sycl/measurement_owner.py": "bddd0c5e5020e882ca3404679420faec11e820dabce2ed4c72ef82b4c9c0874a",
+        "tools/sycl/memory_trace.py": "7bbac78b31d5841e23ee533f2cf98fb08e190c3df9c83551be4e2a6da9b94e24",
+        "tools/sycl/memory_trace_device.py": "9fb86c4f0f025b3267ef93dbb9ac9147ac8fa40dbdc7020e3b0b297bea834d50",
+        "tools/sycl/memory_trace_model.py": "91fbbc5a127c2631dd15ad4cfff0ed9ee4373cdb1045d335da402739fad2f811",
+        "tools/sycl/ur_memory_packet_test.cpp": "9a9d79a91bfc2471f9a11d78d94bbb1ef7b71fc729586501ed58977d18dd297a",
+        "tools/sycl/ur_memory_subscriber.cpp": "9d4fd222b41b717f1bb375a26f4343d5335f136fcfa1053014e77220c7d5e81c",
+        "tools/sycl/ur_validation.py": "2e41d84788dc9cc3c7435b18b43601b3ca79280ccb855414d7a36bae6bff83e7"
+      },
+      "collection_source_commit": "437ef0dc73aeb47e87936d25f7f42dd4d583b12c",
+      "trace": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/ur-memory-model-v1/owned/model.stderr",
+        "bytes": 497891,
+        "sha256": "6f0fe95c6a6f0ac6d4ad017eb3653004da3c34b172fb69142d591792b51078e5"
+      },
+      "maps_sha256": [
+        "255309ebf67e208f443f4bde11c8a9cfe39ef454fa06557cf070a189de4bfa50",
+        "b9537437309a1c7056cf1829fb40f184746453717a3e9b00a315408799b4b3ef",
+        "4187b868f7412911d61c7d26cac09b36bf548b33688a2708fda9c7cb809e3521",
+        "1b1048c854442f8b6c5c5471302d05060a839267399cba9c86c02d0b3c91d5d8"
+      ],
+      "native_symbol_module": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/full-context-native-v1/build/strata",
+        "bytes": 22229920,
+        "sha256": "590f8237e48139d96f77b9fd4c25ea18b1e701be147c52ecf75b7598c4284018"
+      },
+      "symbolizer": {
+        "path": "/usr/bin/x86_64-linux-gnu-addr2line",
+        "sha256": "a116f9e176f9f1ef6e2ab31ad41bacb9d2571b479725ebdfe10fb9cb70aa9e53",
+        "return_pc_adjustment": -1
+      },
+      "successful_allocations": {
+        "host": {
+          "count": 92,
+          "requested_bytes": 4178901128
+        },
+        "device": {
+          "count": 647,
+          "requested_bytes": 16389741288
+        },
+        "buffer": {
+          "count": 2,
+          "requested_bytes": 8
+        }
+      },
+      "successful_releases": 741,
+      "requested_peak_bytes_by_domain": {
+        "host": 4153735304,
+        "device": 10358545768,
+        "buffer": 8
+      },
+      "final_requested_allocations": 0,
+      "final_requested_bytes": 0,
+      "stderr_interval_events": [
+        {
+          "seq": 1059,
+          "kind": "alloc",
+          "domain": "device",
+          "requested_bytes": 3712,
+          "tid": 2359892,
+          "native_frames": [
+            {
+              "return_pc": "0x68fba1",
+              "function": "strata::sycl_backend::Allocation::Allocation(std::shared_ptr<strata::sycl_backend::Runtime>, unsigned long, strata::sycl_backend::MemoryKind)"
+            },
+            {
+              "return_pc": "0x6936b6",
+              "function": "strata::sycl_backend::compat::(anonymous namespace)::allocate(void**, unsigned long, strata::sycl_backend::MemoryKind)"
+            },
+            {
+              "return_pc": "0x551797",
+              "function": "strata::core::MtpDrafter::prefill(float const*, int const*, long, long, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >&)"
+            },
+            {
+              "return_pc": "0x442755",
+              "function": "std::_Function_handler<bool (float const*, long, long, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >&), main::{lambda(float const*, long, long, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >&)#1}>::_M_invoke(std::_Any_data const&, float const*&&, long&&, long&&, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >&)"
+            },
+            {
+              "return_pc": "0x4b3679",
+              "function": "std::function<bool (float const*, long, long, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >&)>::operator()(float const*, long, long, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >&) const"
+            },
+            {
+              "return_pc": "0x492592",
+              "function": "strata::prefill::Prefill::run_impl(long const*, long, long, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >&)"
+            },
+            {
+              "return_pc": "0x4412cb",
+              "function": "(anonymous namespace)::run_prompt_with_native_dense_phase((anonymous namespace)::NativeDensePhase&, strata::prefill::Prefill&, strata::core::MtpDrafter&, bool, strata::core::NativeHead&, strata::core::Verifier*, sycl::_V1::queue*, long const*, long, long, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >&)::{lambda()#1}::operator()() const"
+            },
+            {
+              "return_pc": "0x43d7e9",
+              "function": "(anonymous namespace)::run_prompt_with_native_dense_phase((anonymous namespace)::NativeDensePhase&, strata::prefill::Prefill&, strata::core::MtpDrafter&, bool, strata::core::NativeHead&, strata::core::Verifier*, sycl::_V1::queue*, long const*, long, long, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >&)"
+            },
+            {
+              "return_pc": "0x42a7f8",
+              "function": "main"
+            },
+            {
+              "return_pc": "0x40c3b5",
+              "function": "_start"
+            }
+          ]
+        }
+      ],
+      "reported_free_memory_decrease_bytes": 2442137600,
+      "causal_phase_attribution_qualified": false,
+      "physical_owner_attribution_qualified": false,
+      "interpretation": "All observed successful USM allocations/frees and the two simple buffer create/release pairs conserve requested bytes. Peak is callback-sequence requested-byte accounting,not physical residency. The stderr-bounded event list is not causal B33 assignment;library frames remain unresolved and driver/pool/program/command storage is unobserved. Zero final requested bytes is not physical allocator cleanup or ordinary-runtime-teardown qualification.",
+      "next_action": "Measure the owning DRM client and lower-level allocator/program/command backing at matched phase boundaries;do not name a leak or library owner from global free memory alone."
     }
   },
   "model_state_v2": {

@@ -966,9 +966,20 @@ The actual selected submission fixture also passes all10 original GPU checks wit
 this subscriber:10 records cover2 host allocations/2056 requested bytes,3 device
 allocations/3220 bytes and5 frees,with no remaining requested allocation.
 Invalid,unsupported and lost counters are zero;exit and fault checks pass.
-These are requested API bytes,not physical residency. The2.44GB model interval
-is still unattributed;next run its same-native16K/B33/restore diagnostic with
-this qualified observer and retain allocation stacks only for that analysis.
+These are requested API bytes,not physical residency. The same-native16K/B33/restore model trace now also passes:all1256 cache payloads
+and tables and the live main/draft/running snapshot verify;all15 model files
+rehash;the owned process exits0 without a fresh fault. Its1482 records contain
+741 successful allocations and741 matching USM frees/simple buffer releases,
+with zero invalid/unsupported/lost events and zero final requested-byte balance.
+The stderr-bounded short32 interval still loses2442137600 reported free bytes,
+but contains just one3712-byte device request. Exact native ET_EXEC symbolization
+identifies its caller asMtpDrafter::prefill. This does not assign callbacks
+causally to a phase or explain physical residency:implicit pools,program/command
+backing and driver storage remain unobserved. Next measure the owning DRM client
+and lower-level backing at matched boundaries;do not infer a leak or library
+owner from global free memory. No speed/decode-performance/adoption qualification
+is claimed. The returned observer audit is accepted with correction:the pinned
+XPTI init version is the invoking runtime version,so the UR0.12 check is valid.
 Detailed closed diagnostic plans and individual historical outcomes recover
 from`95e174255`;the current result retains their original statuses and archive
 references,with the live build/component/model qualifications. Successful closed model/component
