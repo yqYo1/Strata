@@ -10364,62 +10364,125 @@
   },
   "readback_residency_methods_20261024": {
     "classification": "knowledge_collection",
+    "status": "reviewed_curated_reference",
     "schedulable_now": false,
-    "status": "worker_settled_native_collection_review_pending",
-    "source_commit": "f63559d2126f5a0024e3b65cf0a056affe6df2fe",
-    "source_pins": "/home/yayoi/orca/workspaces/Strata/sycl/.cache/strata-research/20261024/readback-residency-methods/source-pins.json",
     "report": "/home/yayoi/orca/workspaces/Strata/sycl/.cache/strata-research/20261024/readback-residency-methods/report.md",
-    "report_budget_bytes": 12288,
-    "prerequisites": [
+    "report_sha256": "0e46cf354d8869a3eb32192c77c7eab7c367824c1cf1794e3ea53bf2bc00d9a2",
+    "report_bytes": 12266,
+    "original_report_sha256": "50124b9028e44bc4ce0c4e692c1e5a5d1d337b3313e98c88f5138267021f33a8",
+    "native_review_sha256": "12c77778eb0c1ee61034f6d268ba806a774af4d5acca545a7de7e3f2333e24bb",
+    "reviewer": "native Codex gpt-6-luna max /root/review_phase_observation_collections_20261024",
+    "retrieval": [
       {
-        "met": true,
-        "evidence": "Qualified same-native v3 state/log capture and bounded offline taxonomy show7 creation rows/3473408B versus multi-GB opposing client-region shifts under readback audits;no prior scope covers this physical-touch/lifetime question."
+        "section": "Contracts and mechanisms",
+        "tags": [
+          "diagnostic-readback",
+          "D2H",
+          "device-hash",
+          "host-pinned",
+          "USM",
+          "Xe BO eviction"
+        ]
+      },
+      {
+        "section": "What the experiments establish\u2014and do not; Hard evidence limits",
+        "tags": [
+          "fdinfo total-vs-resident",
+          "UMD logging limits",
+          "observer perturbation",
+          "phase transition",
+          "audit-on/off counterfactual"
+        ]
+      },
+      {
+        "section": "Pinned references and retrieval",
+        "tags": [
+          "CUDA UVM-transferable-not-SYCL",
+          "IPDPS 2020 page migration",
+          "SC 2025 HELM"
+        ]
       }
     ],
-    "question": "One coherent investigation: how GPU diagnostic readbacks/touches can perturb the resident working set,and how to test phase transitions without misclassifying logical allocation demand as physical movement. Compare mechanisms for explicit D2H/hash/snapshot auditing,driver eviction/migration or backing replacement,asynchronous accounting and host-pinned versus device storage. Emphasize original non-LLM discrete-GPU/HPC experiments and Intel/Xe official semantics;CUDA studies are transferable concepts,not literal SYCL APIs. Explain what measurements distinguish observer perturbation from a real inference working-set transition,and which limits remain when only owning-client fdinfo and UMD logs are available. Main is implementing a matched before-exec audit-on/off control;do not choose or revise its run order/criteria after seeing data. Focus on physical locality/touch mechanisms and counterfactual observation design,not generic subpercent statistics,DVFS/carryover checklists,profiler catalogues or the already consumed NEO logging registry survey. Existing resident_ceiling_methods_scope,moe_status_host_readback_scope and subpercent_heterogeneous_benchmark_methods_scope_20261022 cover GEMM ceilings,status D2H blocking and general experimental design;do not repeat those. Provide actionable tests and evidence limits for future Main decisions,without assuming audit readback is the current cause.",
-    "next_review": "Native Luna-max collection review;Main consumes only short indexing/scope digest unless a concrete implementation question requires retrieval.",
-    "run": "run_12fa11537288",
-    "task": "task_63a7d571ff72",
-    "dispatch": "ctx_6b10c94fa255",
-    "terminal": "term_01d7e707-3237-4056-9cb0-a6731a22836a",
-    "incarnation": "cdb401b7-81bf-43d5-a85b-508d9714c014",
-    "model_observed": "GPT-6-Luna high",
-    "report_root_writable_at_launch": true,
-    "startup_permissions": "Rendered /status:workspace with network access,named added report directory,approval never.",
-    "ownership": "Matching accepted worker_done;external release,exact created PTY closed;delivery processed before acknowledgement.",
+    "corrections_applied": [
+      "Changed the contract text to SYCL 2020 revision 12 and cited the registry snapshot commit b3bcc5d5cc83217d14ebbb904e353c5a0d17f52b."
+    ],
     "worker_ownership_closed": true,
     "terminal_closed": true,
-    "report_bytes": 12245,
-    "report_sha256": "50124b9028e44bc4ce0c4e692c1e5a5d1d337b3313e98c88f5138267021f33a8"
+    "ownership": "Matching accepted worker_done;external release,exact created PTY closed;delivery processed before acknowledgement.",
+    "future_scope": {
+      "schedulable_now": false,
+      "prerequisites": [
+        "Close the frozen audit-on/off cohort.",
+        "Identify one repeatable audit-off phase shift or audit-treatment effect with a named placement/touch decision.",
+        "Pin route, sample boundaries, client counters, and available object identity."
+      ],
+      "eligible_question_if_met": "One bounded test of the specific mechanism (e.g. D2H vs device hash or object-level placement), not another general residency survey."
+    },
+    "consumer": "Retrieval reference for a concrete phase-residency or resource-lifetime decision;Main keeps the collection body unread on arrival.",
+    "next_review": "After the frozen control and decision record close; retain a corrected digest, then retire the body if unused.",
+    "assignment_archive": "79cf1ba54;closed dispatch identities at50c2ef6bb"
   },
   "phase_runtime_resource_lifetimes_20261024": {
     "classification": "knowledge_collection",
+    "status": "reviewed_curated_reference",
     "schedulable_now": false,
-    "status": "worker_settled_native_collection_review_pending",
-    "source_commit": "f63559d2126f5a0024e3b65cf0a056affe6df2fe",
-    "source_pins": "/home/yayoi/orca/workspaces/Strata/sycl/.cache/strata-research/20261024/phase-runtime-resource-lifetimes/source-pins.json",
     "report": "/home/yayoi/orca/workspaces/Strata/sycl/.cache/strata-research/20261024/phase-runtime-resource-lifetimes/report.md",
-    "report_budget_bytes": 12288,
-    "prerequisites": [
+    "report_sha256": "90dcbfde906bd7cf12d2bfee195903c6264af0f3eb4a5e191c981609682b8591",
+    "report_bytes": 11994,
+    "original_report_sha256": "deae45948ac582929430185a49653d72905da18ec9a8c56f43765c7783c98455",
+    "native_review_sha256": "12c77778eb0c1ee61034f6d268ba806a774af4d5acca545a7de7e3f2333e24bb",
+    "reviewer": "native Codex gpt-6-luna max /root/review_phase_observation_collections_20261024",
+    "retrieval": [
       {
-        "met": true,
-        "evidence": "Qualified same-native v3 state/log capture and bounded offline taxonomy show7 creation rows/3473408B versus multi-GB opposing client-region shifts under readback audits;no prior scope covers this physical-touch/lifetime question."
+        "section": "Finding; Resource table",
+        "tags": [
+          "sycl-kernel-bundle",
+          "program-cache",
+          "graph-capture",
+          "level-zero-module",
+          "command-list",
+          "event-pool"
+        ]
+      },
+      {
+        "section": "Isolation contracts and alternatives",
+        "tags": [
+          "context-boundary",
+          "USM ownership",
+          "thread-safety",
+          "subprocess cost",
+          "runtime teardown"
+        ]
+      },
+      {
+        "section": "Cost test before pursuing cleanup; Bounded alternatives / evidence gates",
+        "tags": [
+          "resource attribution",
+          "phase isolation",
+          "oneDNN primitive cache",
+          "decode preservation"
+        ]
       }
     ],
-    "question": "One coherent investigation: release or bound phase-private compiled/runtime resources after long prefill while preserving the already selected decode queue/context/program route. Compare SYCL kernel-bundle/program caches,executable graphs and LevelZero module/command-list lifetimes,plus oneDNN primitive/code cache where relevant. Which objects can be explicitly scoped or released,which survive queues/graphs,which require context/process boundaries,and what context/USM/event ownership or thread-safety contracts constrain isolation? Prioritize exact Intel LLVM/UR/NEO/oneDNN official source/docs,and original general GPU/HPC technical reports;do not copy application implementations. Separate APIs actually available in installed v711 from compatible-source hypotheses. Explain how to assess a code-cache/command-memory cost before pursuing cleanup;currentB logs show only2.03MB KERNEL_ISA and1.11MB COMMAND_BUFFER,so these do not explain a multi-GB shift or prove a bottleneck. Do not repeat the old MTP call-chain/conditional graph survey,UR/XPTI packet ABI,NEO allocation-log registry or graph-event timestamp-query incident. The question is resource lifetime and phase isolation without accidentally discarding decode state/programs. No unsafe cross-context USM borrowing,global environment mutation after init,global cache changes on an active context or unsupported teardown assumptions. Ordinary runtime teardown remains unqualified because the existing validation preload deliberately retains UR until exit. Provide alternatives,their contracts and evidence prerequisites;do not invent a currently supported cache purge or performance gain.",
-    "next_review": "Native Luna-max collection review;Main consumes only short indexing/scope digest unless a concrete implementation question requires retrieval.",
-    "run": "run_12fa11537288",
-    "task": "task_ed7298327a08",
-    "dispatch": "ctx_33d4cd81fbb0",
-    "terminal": "term_6ddc33dc-ba37-4d09-bb6e-689fff357ce5",
-    "incarnation": "6887ea03-f415-4324-8df1-6fe20c7960ef",
-    "model_observed": "GPT-6-Luna high",
-    "report_root_writable_at_launch": true,
-    "startup_permissions": "Rendered /status:workspace with network access,named added report directory,approval never.",
-    "ownership": "Matching accepted worker_done;external release,exact created PTY closed;delivery processed before acknowledgement.",
+    "corrections_applied": [
+      "Clarified that v7.1.1 graph use does not extend buffer lifetime and the proposed extension is marked Features Awaiting Implementation.",
+      "Qualified queue destruction for asynchronous-error handling and removed any physical VRAM reclamation promise.",
+      "Expanded the Intel LLVM graph and interop citations to the full target commit 504366f4b82ff00bbac7b0c956635eed8bc599d8."
+    ],
     "worker_ownership_closed": true,
     "terminal_closed": true,
-    "report_bytes": 11625,
-    "report_sha256": "deae45948ac582929430185a49653d72905da18ec9a8c56f43765c7783c98455"
+    "ownership": "Matching accepted worker_done;external release,exact created PTY closed;delivery processed before acknowledgement.",
+    "future_scope": {
+      "schedulable_now": false,
+      "prerequisites": [
+        "Close the audit control and identify one persistent phase-correlated resource question.",
+        "Prove production-route ownership and last-reference/completion map for the named object.",
+        "Pin loaded SYCL/UR/NEO/driver, graph capability, and decode preservation checks before any experiment."
+      ],
+      "eligible_question_if_met": "One application-owned lifecycle check with a measured reclaimable delta; no global purge, cross-context borrowed USM, or assumed runtime teardown."
+    },
+    "consumer": "Retrieval reference for a concrete phase-residency or resource-lifetime decision;Main keeps the collection body unread on arrival.",
+    "next_review": "After the control closes and any specific owner is resolved; keep a compact corrected digest, then retire the body if unused.",
+    "assignment_archive": "79cf1ba54;closed dispatch identities at50c2ef6bb"
   }
 }
