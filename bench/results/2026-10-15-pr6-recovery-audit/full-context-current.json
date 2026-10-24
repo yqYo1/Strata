@@ -10471,7 +10471,7 @@
     }
   },
   "ur_memory_client_v1": {
-    "stage": "prepared",
+    "stage": "closed",
     "source_commit": "e448641c8029edf752de39994236d01463d78bfd",
     "input_sha256": {
       "bench/sycl/client_resources.py": "9d5afa1bfc7df83ebd0ada8470b61a2c5b01d59b72822dd75f45ddb5a56ec16e",
@@ -10839,14 +10839,361 @@
       "devcoredump": false
     },
     "boot": "cfda0b6a-7c13-4fe2-bdf5-8f9202770840",
-    "row": {},
-    "maps": [],
-    "client_boundaries": [],
+    "row": {
+      "info": {
+        "context": "262144",
+        "kv": "int8",
+        "kv_resident": "131072",
+        "expert_slots": "1256",
+        "spec": "4",
+        "mtp_max": "0",
+        "lookup": "0",
+        "pool_workers": "5",
+        "conversation_cache_mib": "8192",
+        "conversation_cache_slots": "2",
+        "conversation_cache_min_free_mib": "4096"
+      },
+      "requests": [
+        {
+          "generated": 1,
+          "prompt": 16385,
+          "finish": "length",
+          "accepted": 0,
+          "offered": 0,
+          "reused": 0,
+          "read": 16385,
+          "ids": [
+            271
+          ],
+          "publications": {
+            "count": 2,
+            "last": 16384,
+            "sha256": "17ce574a49c328f44f66e282407392118923293957dde67f9febe2a60fef941d"
+          },
+          "state_L": 16385,
+          "windows": 1,
+          "state_sha256": "c6ec8cf67b90da845003cc5169032b2472b3d3e6901cacb8c44438ef2406fde2",
+          "ple_prev": "4095,0",
+          "draft_prefill": {
+            "rows": 16384,
+            "callbacks": 2,
+            "end": 16384,
+            "modes": [
+              2
+            ],
+            "paths": [
+              "batched"
+            ]
+          },
+          "decode_cache_restore": {
+            "slots": 1256,
+            "payload_bytes": 2575206400,
+            "lent": 1124,
+            "same_slots": true,
+            "payload_match": true
+          },
+          "prefill_loan": {
+            "chunk": 8192,
+            "first": 132,
+            "capacity_bytes": 2321664000,
+            "needed_bytes": 2319958528
+          }
+        },
+        {
+          "generated": 1,
+          "prompt": 33,
+          "finish": "length",
+          "accepted": 0,
+          "offered": 0,
+          "reused": 0,
+          "read": 33,
+          "ids": [
+            104
+          ],
+          "publications": {
+            "count": 1,
+            "last": 32,
+            "sha256": "bb92d74f1bc9cdecef174885f4461ee391d54dcd2ad4a229c79c89543c2a6b92"
+          },
+          "state_L": 33,
+          "windows": 1,
+          "state_sha256": "c13d347f99c59fb2070054c918db8e5ac06049ee168e3d48fc6b8f794cec4052",
+          "ple_prev": "159,160",
+          "draft_prefill": {
+            "rows": 32,
+            "callbacks": 1,
+            "end": 32,
+            "modes": [
+              2
+            ],
+            "paths": [
+              "token"
+            ]
+          },
+          "decode_cache_restore": {
+            "slots": 1256,
+            "payload_bytes": 2575206400,
+            "lent": 243,
+            "same_slots": true,
+            "payload_match": true
+          },
+          "prefill_loan": {
+            "chunk": 256,
+            "first": 1013,
+            "capacity_bytes": 551961600,
+            "needed_bytes": 550683904
+          }
+        },
+        {
+          "generated": 1,
+          "prompt": 16401,
+          "finish": "length",
+          "accepted": 0,
+          "offered": 0,
+          "reused": 16385,
+          "read": 16,
+          "ids": [
+            272
+          ],
+          "publications": {
+            "count": 1,
+            "last": 16400,
+            "sha256": "ead5672aae17ed52960226772e3de6d1d6326d1537eafc92f18e445abf8d976b"
+          },
+          "state_L": 16401,
+          "windows": 1,
+          "state_sha256": "7a62ef2450875abb626e40ca7c84739786c2ac565382e703b4b603b72d97e4fe",
+          "ple_prev": "270,271",
+          "draft_prefill": {
+            "rows": 15,
+            "callbacks": 1,
+            "end": 16400,
+            "modes": [
+              2
+            ],
+            "paths": [
+              "token"
+            ]
+          },
+          "decode_cache_restore": {
+            "slots": 1256,
+            "payload_bytes": 2575206400,
+            "lent": 243,
+            "same_slots": true,
+            "payload_match": true
+          },
+          "prefill_loan": {
+            "chunk": 256,
+            "first": 1013,
+            "capacity_bytes": 551961600,
+            "needed_bytes": 550683904
+          }
+        }
+      ],
+      "activation": {
+        "pid": 2424560,
+        "loader": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_loader.so.0.12.0",
+        "threads_before": 1,
+        "preinit": 37,
+        "config_enabled": true,
+        "first_init": true,
+        "dispatch_result": 46,
+        "output_untouched": true,
+        "retained_reference_until_exit": true,
+        "runtime_teardown_qualified": false
+      },
+      "effective_prefill": [
+        {
+          "path": "layer-major",
+          "stage_payload_bytes": 276824064,
+          "stage_requested_allocation_bytes": 276825088,
+          "physical_driver_allocation_bytes": "unmeasured",
+          "requested_prefix_bytes": 33685504,
+          "admitted_prefix_bytes": 33685504,
+          "qualified_budget_fallback": false,
+          "arithmetic": [
+            "active-logical-prefix",
+            "33685504",
+            "33",
+            "row-major",
+            "parallel-exp-ascending-sum"
+          ],
+          "free_before_bank_bytes": 4181962752,
+          "headroom_bytes": 536870912
+        },
+        {
+          "path": "chunk-major",
+          "dense_weights": "Full",
+          "stage": "borrowed"
+        },
+        {
+          "path": "chunk-major",
+          "dense_weights": "Full",
+          "stage": "borrowed"
+        }
+      ],
+      "restored_tokens": [
+        16385
+      ],
+      "restore_payloads": [
+        {
+          "draft": "18740a3d2f39a19c",
+          "cells": "16388",
+          "mode": "2",
+          "source": "ram",
+          "resident": "32848",
+          "main": "e3fe9aede0d08425",
+          "main_layers": "12",
+          "main_bytes": "232840704",
+          "draft_bytes": "17305728",
+          "running": "08db6f4cb3617b65",
+          "running_bytes": "118069304",
+          "upto": "16385",
+          "result": "PASS"
+        }
+      ],
+      "resume_kind": "live",
+      "initial_prefill": {
+        "rows": 16384,
+        "layers": 12,
+        "chunks_per_layer": 2,
+        "pos0": 0,
+        "prefix_H2D_requested_bytes": 0
+      }
+    },
+    "maps": [
+      {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/ur-memory-client-v1/maps/boundary-0.txt",
+        "bytes": 49042,
+        "sha256": "784713746782a5d10627682f5fd34fb37a88b96493e9f76653728178be256b50",
+        "boundary": "READY"
+      },
+      {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/ur-memory-client-v1/maps/boundary-1.txt",
+        "bytes": 129474,
+        "sha256": "93bc5580e2a2e2a6c2cdc1d4ee327e6fa19e73f54698b8723c6db9568f7fa3f6",
+        "boundary": "DONE"
+      },
+      {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/ur-memory-client-v1/maps/boundary-2.txt",
+        "bytes": 130277,
+        "sha256": "7f6afea60452198a03dfc08ff13b16a7b5e73c0e63187c7e17ec8d5bd41649c1",
+        "boundary": "DONE"
+      },
+      {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/ur-memory-client-v1/maps/boundary-3.txt",
+        "bytes": 130698,
+        "sha256": "05efb0b9e1dca23a8ba569965e9c07e5618a079670db44d6d191e1a4f838562b",
+        "boundary": "DONE"
+      }
+    ],
+    "client_boundaries": [
+      {
+        "boundary": "READY",
+        "begin_monotonic_ns": 1151573886829523,
+        "end_monotonic_ns": 1151573889260656,
+        "reader_thread_cpu_ns": 2758282,
+        "clients": [
+          {
+            "client_id": 48022,
+            "memory_bytes": {
+              "drm-total-system": 131334144,
+              "drm-shared-system": 0,
+              "drm-resident-system": 2490368,
+              "drm-total-gtt": 4313882624,
+              "drm-shared-gtt": 0,
+              "drm-resident-gtt": 4313882624,
+              "drm-total-vram0": 10344534016,
+              "drm-shared-vram0": 0,
+              "drm-resident-vram0": 10344534016,
+              "drm-total-stolen": 0,
+              "drm-shared-stolen": 0,
+              "drm-resident-stolen": 0
+            }
+          }
+        ]
+      },
+      {
+        "boundary": "DONE",
+        "begin_monotonic_ns": 1151631755877040,
+        "end_monotonic_ns": 1151631757767644,
+        "reader_thread_cpu_ns": 1986525,
+        "clients": [
+          {
+            "client_id": 48022,
+            "memory_bytes": {
+              "drm-total-system": 128843776,
+              "drm-shared-system": 0,
+              "drm-resident-system": 0,
+              "drm-total-gtt": 7795613696,
+              "drm-shared-gtt": 0,
+              "drm-resident-gtt": 7795613696,
+              "drm-total-vram0": 8082247680,
+              "drm-shared-vram0": 0,
+              "drm-resident-vram0": 8082247680,
+              "drm-total-stolen": 0,
+              "drm-shared-stolen": 0,
+              "drm-resident-stolen": 0
+            }
+          }
+        ]
+      },
+      {
+        "boundary": "DONE",
+        "begin_monotonic_ns": 1151647043495988,
+        "end_monotonic_ns": 1151647045747271,
+        "reader_thread_cpu_ns": 2377148,
+        "clients": [
+          {
+            "client_id": 48022,
+            "memory_bytes": {
+              "drm-total-system": 128843776,
+              "drm-shared-system": 0,
+              "drm-resident-system": 0,
+              "drm-total-gtt": 5287157760,
+              "drm-shared-gtt": 0,
+              "drm-resident-gtt": 5287157760,
+              "drm-total-vram0": 10594185216,
+              "drm-shared-vram0": 0,
+              "drm-resident-vram0": 10594185216,
+              "drm-total-stolen": 0,
+              "drm-shared-stolen": 0,
+              "drm-resident-stolen": 0
+            }
+          }
+        ]
+      },
+      {
+        "boundary": "DONE",
+        "begin_monotonic_ns": 1151652903245021,
+        "end_monotonic_ns": 1151652905707222,
+        "reader_thread_cpu_ns": 2588534,
+        "clients": [
+          {
+            "client_id": 48022,
+            "memory_bytes": {
+              "drm-total-system": 128843776,
+              "drm-shared-system": 0,
+              "drm-resident-system": 0,
+              "drm-total-gtt": 5287157760,
+              "drm-shared-gtt": 0,
+              "drm-resident-gtt": 5287157760,
+              "drm-total-vram0": 10595495936,
+              "drm-shared-vram0": 0,
+              "drm-resident-vram0": 10595495936,
+              "drm-total-stolen": 0,
+              "drm-shared-stolen": 0,
+              "drm-resident-stolen": 0
+            }
+          }
+        ]
+      }
+    ],
     "active": false,
-    "passed": false,
-    "complete": false,
+    "passed": true,
+    "complete": true,
     "ownership_closed": true,
-    "GPU_executed": false,
+    "GPU_executed": true,
     "speed_eligible": false,
     "model_adoption_qualified": false,
     "decode_performance_qualified": false,
@@ -10874,6 +11221,32 @@
       "raw_text_budget_bytes": 33554432,
       "map_budget_bytes": 4194304,
       "permanent": "Source,recipe,individual request/state and trace-conservation/free-memory results,qualification limits. No full trace or maps in Git."
+    },
+    "exit_code": 0,
+    "native_state_diagnostic_passed": true,
+    "trace": {
+      "records": 1482,
+      "api_failures": 0,
+      "short32_interval": {
+        "before_reported_free_bytes": 2558320640,
+        "after_reported_free_bytes": 116183040,
+        "decrease_bytes": 2442137600,
+        "total_reported_bytes": 10666115072,
+        "memory_records_in_stderr_interval": 1
+      },
+      "interpretation": "Collection integrity only. Buffer alias/refcount ledger,driver storage and module/caller attribution remain offline;stderr line bounds can differ from asynchronous callback start time."
+    },
+    "full_model_hashes_matched": 15,
+    "host_probe_accepted": true,
+    "fresh_faults": [],
+    "boot_unchanged": true,
+    "driver_after": {
+      "pci": "/sys/bus/pci/devices/0000:05:00.0",
+      "driver": "xe",
+      "vendor": "0x8086",
+      "device": "0xe20c",
+      "kernel": "7.0.0-38-generic",
+      "devcoredump": false
     }
   }
 }
