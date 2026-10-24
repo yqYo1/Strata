@@ -1,265 +1,21 @@
 {
+  "schema": "strata-resident-mtp-net-closed-v1",
   "stage": "closed",
   "source_commit": "e25c8fbbc25e85cf8c827c8c86ed14af8b6a771f",
+  "original_evidence_commit": "51bb62ed60101b43e92d62d87bd7f92f7407d585",
+  "original_evidence_path": "bench/results/2026-10-15-pr6-recovery-audit/mtp-net-bench-current.json",
   "benchmark_fingerprint": "0a797a4c917eb1758dfc4d875d75d8aa05dfeca8b65f2ead656ef7262b1e5670",
   "benchmark_files": 190,
-  "short_proof": {
-    "schema": "strata-resident-mtp-model-closed-v1",
-    "controller_source_commit": "c0801edad121cf30d1dd7388dd7b2fd9c1f13fc9",
-    "base_native_source": "6e40afc1beddd059ee518617f6c1efce1da14aca",
-    "native_controller_source_commit": "26d48498529f8bc38327a9b9e4ebbbe610ae5b1d",
-    "binary": {
-      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/mtp-resident-control-v3/build/strata",
-      "bytes": 22194216,
-      "sha256": "81393573f25be5cdc44f1ac13cb06d6c280a387e0ee9142d5ebe01e9d82f9307"
-    },
-    "input_fingerprint": "5cecf4ea6fde3db9f90efaa893d5e510f1bc8c699fba17100b889f049dedf741",
-    "private_inputs_sha256": "271f2857ccc7acc91a9a5bd04ca72906cf7eddac8322a529c95eb31259e7dc7d",
-    "model_reference": {
-      "decode_archive": {
-        "commit": "a8af3d7fa96a7713f2e516d2da3d7410956be015",
-        "path": "bench/results/2026-10-15-pr6-recovery-audit/canonical-restore-decode-current.json",
-        "sha256": "7dda2bcefa6f7e54d568e6aa3d5226d5e0a7383f0b41efd7584093854d9547ca"
-      },
-      "decode_compact_sha256": "7a7276cf70e8507838aa62246b0f4a6d858c7f390318bd5f9a23f555cd4712ec",
-      "model": {
-        "commit": "64efe12f005b6a518daa2ee1d0f0d2712baa325f",
-        "path": "bench/results/2026-10-15-pr6-recovery-audit/prefill-recovery-current.json",
-        "sha256": "9945b8234465e0c963732086eac0b10b081fb63ca3eb16db3daae27899eab7f2"
-      },
-      "build_compact_sha256": "3e6f266eabc13b94178e96a4d0cf6b5de2909dcd8927a760ead2c92248f0d1da"
-    },
-    "configuration": {
-      "context": 131072,
-      "kv": "int8",
-      "kv_requested_resident": 131072,
-      "actual_main_mode": 0,
-      "INFO_kv_resident": 0,
-      "expert_slots": 1256,
-      "pool_workers": 5,
-      "pcie_frac": 0,
-      "caches": 0,
-      "prefill": 8192,
-      "order": [
-        0,
-        1
-      ],
-      "max_new": 32,
-      "eos_ids": [
-        248044,
-        248046
-      ],
-      "speed_eligible": false
-    },
-    "processes": [
-      {
-        "cap": 0,
-        "pid": 3194967,
-        "passed": true,
-        "exit_code": 0,
-        "ownership_closed": true,
-        "validation_warning_bytes": 0,
-        "fresh_faults": [],
-        "boot_unchanged": true,
-        "driver_unchanged": true,
-        "preload_activated": true,
-        "requests": [
-          {
-            "generated_tokens": 32,
-            "prompt_tokens": 33,
-            "finish": "length",
-            "drafts_accepted": 18,
-            "drafts_offered": 48,
-            "reused_tokens": 0,
-            "read_tokens": 33,
-            "output_ids_sha256": "265a4e66ed226ffd9a38f38d5e514697be455eb7cf4f70adbefb355e37471275",
-            "publications": 1
-          },
-          {
-            "generated_tokens": 2,
-            "prompt_tokens": 257,
-            "finish": "stop",
-            "drafts_accepted": 0,
-            "drafts_offered": 3,
-            "reused_tokens": 0,
-            "read_tokens": 257,
-            "output_ids_sha256": "8c90ba1d76cfa262e2fffe37ddeac5e7c83667b518186a21fea159542af32828",
-            "publications": 1
-          }
-        ],
-        "routes": [
-          {
-            "target_windows": 17,
-            "first_T": 1,
-            "subsequent_T": 4,
-            "draft_rounds_delta": 16,
-            "cumulative_draft_rounds": 16,
-            "prompt_draft": {
-              "read_tokens": 33,
-              "draft_cells": 32,
-              "batch_count": 1,
-              "path": "token",
-              "mode": 2
-            }
-          },
-          {
-            "target_windows": 2,
-            "first_T": 1,
-            "subsequent_T": 4,
-            "draft_rounds_delta": 1,
-            "cumulative_draft_rounds": 17,
-            "prompt_draft": {
-              "read_tokens": 257,
-              "draft_cells": 256,
-              "batch_count": 1,
-              "path": "batched",
-              "mode": 2
-            }
-          }
-        ]
-      },
-      {
-        "cap": 1,
-        "pid": 3202002,
-        "passed": true,
-        "exit_code": 0,
-        "ownership_closed": true,
-        "validation_warning_bytes": 0,
-        "fresh_faults": [],
-        "boot_unchanged": true,
-        "driver_unchanged": true,
-        "preload_activated": true,
-        "requests": [
-          {
-            "generated_tokens": 32,
-            "prompt_tokens": 33,
-            "finish": "length",
-            "drafts_accepted": 0,
-            "drafts_offered": 0,
-            "reused_tokens": 0,
-            "read_tokens": 33,
-            "output_ids_sha256": "265a4e66ed226ffd9a38f38d5e514697be455eb7cf4f70adbefb355e37471275",
-            "publications": 1
-          },
-          {
-            "generated_tokens": 32,
-            "prompt_tokens": 257,
-            "finish": "length",
-            "drafts_accepted": 0,
-            "drafts_offered": 0,
-            "reused_tokens": 0,
-            "read_tokens": 257,
-            "output_ids_sha256": "09b902743d301eb10b00840d70b02dc648f84cb70428e069c0240e94dc0f9d2d",
-            "publications": 1
-          }
-        ],
-        "routes": [
-          {
-            "target_windows": 32,
-            "first_T": 1,
-            "subsequent_T": 1,
-            "draft_rounds_delta": 0,
-            "cumulative_draft_rounds": 0,
-            "prompt_draft": {
-              "read_tokens": 33,
-              "draft_cells": 32,
-              "batch_count": 1,
-              "path": "token",
-              "mode": 2
-            }
-          },
-          {
-            "target_windows": 32,
-            "first_T": 1,
-            "subsequent_T": 1,
-            "draft_rounds_delta": 0,
-            "cumulative_draft_rounds": 0,
-            "prompt_draft": {
-              "read_tokens": 257,
-              "draft_cells": 256,
-              "batch_count": 1,
-              "path": "batched",
-              "mode": 2
-            }
-          }
-        ]
-      }
-    ],
-    "runtime": {
-      "boot": "cfda0b6a-7c13-4fe2-bdf5-8f9202770840",
-      "driver": {
-        "pci": "/sys/bus/pci/devices/0000:05:00.0",
-        "driver": "xe",
-        "vendor": "0x8086",
-        "device": "0xe20c",
-        "kernel": "7.0.0-38-generic",
-        "devcoredump": false
-      },
-      "preload": {
-        "library": {
-          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/ur-validation-preload-v2/libstrata_ur_validation.so",
-          "sha256": "1d4e69d672d55fa0a126ae43b7b4743482cccca7e2f2bc22e0db2bfdad5bdc7c"
-        },
-        "loader": {
-          "path": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_loader.so.0.12.0",
-          "sha256": "bb6e1311850e4b1a924e42acae80c2b3610934625a4985aaa67967abe31356fc"
-        },
-        "component_source_commit": "f312b6691f508125db6cfc2580ca32a686ff2642",
-        "component_original_plan": {
-          "commit": "550c75f5fc954ee38b70230e32d2a48e12100d8a",
-          "path": "bench/results/2026-10-15-pr6-recovery-audit/research-index.json",
-          "sha256": "d12866b93c51e76a83e95638e66b6f6f4e0e33d779516a5fddecc178a6f8e10a"
-        },
-        "retained_reference_until_exit": true,
-        "runtime_teardown_qualified": false
-      }
-    },
-    "passed": true,
-    "ownership_closed": true,
-    "final_full_model_hashes": 15
+  "binary": {
+    "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/mtp-resident-control-v3/build/strata",
+    "bytes": 22194216,
+    "sha256": "81393573f25be5cdc44f1ac13cb06d6c280a387e0ee9142d5ebe01e9d82f9307"
   },
+  "base_native_source": "6e40afc1beddd059ee518617f6c1efce1da14aca",
+  "native_controller_source_commit": "26d48498529f8bc38327a9b9e4ebbbe610ae5b1d",
+  "short_model_qualification_reference": "mtp-resident-serve-current.json",
   "short_proof_sha256": "4e9bdf20634dd6ebfdfeb939d8314a87f29f5f4da0bde8387917d39f689f0c97",
-  "clock": {
-    "inputs_sha256": "bbf0602aa4f85d512a2d67805a0b318f96b0b0ea51a44f6e9aa4becc96e36692",
-    "command": [
-      "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin/clang++",
-      "-std=c++17",
-      "-O2",
-      "/home/yayoi/orca/workspaces/Strata/sycl/tools/sycl/clock_overhead.cpp",
-      "-o",
-      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/mtp-net-bench-v1/host/clock_probe"
-    ],
-    "environment_sha256": "c7c25b9e42b9d28ac42de0f7b91e6fd8295a282cc84ea35f0282b674186810f2",
-    "provider": {
-      "path": "/usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.33",
-      "sha256": "1fd75fe70354a416d75aef22bcae68c47bd25d20e2d0568c30b1a9838cf62f11"
-    },
-    "compiler": {
-      "path": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin/clang++",
-      "sha256": "1290881b4e12a5e002e5b0de0787f85328ee5fe19f253a54be1cdd97dc2f26eb"
-    },
-    "minimum_time_ms": 10000,
-    "maximum_endpoint_fraction": 0.0001,
-    "source_sha256": "dbf7cc7a21e64dcd37632872be129fc5433e82fadb0e859792c01fbbf1deb676",
-    "source_contract": "Same native libstdc++ steady_clock::now;65536 consecutive pairs,sort/output outside pairs. Observed endpoint/rounding screen,not a universal bound or time subtraction.",
-    "probe": {
-      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/mtp-net-bench-v1/host/clock_probe",
-      "sha256": "a44ef582c9fab6f40a6740377dba8b249693a21ee7c8be2c71be68513307c934",
-      "bytes": 16344
-    },
-    "initial_screen": {
-      "samples": 65536,
-      "resolution_ns": 1,
-      "min_ns": 10,
-      "p99_ns": 31,
-      "max_ns": 139513,
-      "endpoint_rounding_fraction_at_floor": 3.29026e-05,
-      "provider": {
-        "path": "/usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.33",
-        "sha256": "1fd75fe70354a416d75aef22bcae68c47bd25d20e2d0568c30b1a9838cf62f11"
-      }
-    }
-  },
+  "private_inputs_sha256": "2f062389a6f0290a12b80942ee005b9bc03e7be5cc61325def8b9166705f1523",
   "model_reference": {
     "decode_archive": {
       "commit": "a8af3d7fa96a7713f2e516d2da3d7410956be015",
@@ -476,37 +232,37 @@
       ]
     }
   ],
-  "binary": {
-    "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/mtp-resident-control-v3/build/strata",
-    "bytes": 22194216,
-    "sha256": "81393573f25be5cdc44f1ac13cb06d6c280a387e0ee9142d5ebe01e9d82f9307"
+  "environment_recipe": {
+    "base_result": "phase-prefill-speed-current.json",
+    "base_sha256": "9543297abc2ce0b4530ee6984d55366e735881caf42a08239f3494d655f9e10d",
+    "controller": "e25c8fbbc25e85cf8c827c8c86ed14af8b6a771f:tools/sycl/mtp_net_bench.py:prepare",
+    "runtime_reference_sha256": "ae608777c52288b5e8803aef04a29bbbdd378598933d7c1f21a5b04a948e6672"
   },
-  "runtime_reference_sha256": "ae608777c52288b5e8803aef04a29bbbdd378598933d7c1f21a5b04a948e6672",
-  "phase_reference_sha256": "9543297abc2ce0b4530ee6984d55366e735881caf42a08239f3494d655f9e10d",
   "criteria": "Attribution pilot only:two fresh processes cap0 then1,same binary/config/original prefill/1256slots/resident131072,4 standard warmups and both official v4 thinking-on workloads each. Actual fresh input>=32768,generated1024..16384 including thought,answer>=512 chars,valid complete SSE/journal/native exit. Zero drafts allowed only forcap1;MTP4 reference counters>=256. Require actual target windows/draft rounds/prompt mode2 cells,source-confirmed<64 fallback,and GPU BF16/mode10 with cache/dense restoration. One same-library65536-pair clock screen before each native process;prompt and decode durations>=10s,observed endpoint+rounding<=0.01%,no subtraction/retry. Require native-only preexec validation,source/assets/runtime/owner/boot/fault gates,whole-cohort15 hashes. Keep all samples;stop first failure. No speed/adoption or MTP-classification qualification from one process per arm.",
-  "resources": "Passive proc/fdinfo reader,1s interval,3300s deadline,32MiB reader budget. Report request-contained scheduled CPU and associated CCS busy cycles plus logical native copy counts. CPU ticks include polling/stalls,CCS busy includes stalls and shared clients;neither proves arithmetic saturation. Actual PCIe traffic/VRAM bandwidth/CPU instruction saturation remain unknown. Stage timers are nested/nonadditive;observers remain charged. Separate repeated clean speed and long/agent/phase preservation remain required.",
-  "budgets": {
-    "wall": 3600,
-    "cpu": 54000,
-    "rss_cap": 111669149696,
-    "text_cap": 67108864,
-    "file_cap": 67108864,
-    "total_cap": 134217728
+  "resources_limits": "Passive proc/fdinfo reader,1s interval,3300s deadline,32MiB reader budget. Report request-contained scheduled CPU and associated CCS busy cycles plus logical native copy counts. CPU ticks include polling/stalls,CCS busy includes stalls and shared clients;neither proves arithmetic saturation. Actual PCIe traffic/VRAM bandwidth/CPU instruction saturation remain unknown. Stage timers are nested/nonadditive;observers remain charged. Separate repeated clean speed and long/agent/phase preservation remain required.",
+  "host_controls": {
+    "tests": 38,
+    "passed": true,
+    "clock_source": "dbf7cc7a21e64dcd37632872be129fc5433e82fadb0e859792c01fbbf1deb676",
+    "clock_provider": {
+      "path": "/usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.33",
+      "sha256": "1fd75fe70354a416d75aef22bcae68c47bd25d20e2d0568c30b1a9838cf62f11"
+    },
+    "minimum_time_ms": 10000,
+    "endpoint_rounding_maximum_fraction": 0.0001
   },
-  "host_budgets": {
-    "wall": 120,
-    "cpu": 120,
-    "rss_cap": 4294967296,
-    "text_cap": 2097152,
-    "file_cap": 4194304,
-    "total_cap": 16777216
-  },
-  "retention": "Keep useful individual samples,clock screens,work/resource aggregates,source/configuration/decisions. Replay then retire normal logs/JIT/full resource timeline. One original selected13 and private13 remain for this comparison;remove private generation after closure/next qualified source recovery. Full short-model receipt can retire once these sealed model/environment inputs admit.",
   "processes": [
     {
       "cap": 0,
       "passed": true,
-      "active": false,
+      "native_exit_code": 0,
+      "ownership_closed": true,
+      "fresh_faults": [],
+      "native_identity": {
+        "pid": 3291163,
+        "start_ticks": 117449236,
+        "sid": 3291125
+      },
       "clock": {
         "samples": 65536,
         "resolution_ns": 1,
@@ -519,65 +275,164 @@
           "sha256": "1fd75fe70354a416d75aef22bcae68c47bd25d20e2d0568c30b1a9838cf62f11"
         }
       },
-      "native_identity": {
-        "pid": 3291163,
-        "start_ticks": 117449236,
-        "sid": 3291125
-      },
-      "effective_environment_verified": true,
-      "routes": [
+      "requests": [
         {
-          "target_windows": 7,
-          "target_rows": 25,
-          "draft_rounds_delta": 6,
-          "cumulative_draft_rounds": 6,
-          "prompt_chunks": [
-            73
-          ],
-          "prompt_paths": [
-            "batched"
-          ],
-          "long_prefill": null
+          "workload": "regular-code",
+          "run": 0,
+          "order": 0,
+          "read_tokens": 33214,
+          "reused_tokens": 0,
+          "prompt_tokens": 33214,
+          "generated_tokens": 3611,
+          "prompt_ms": 52286.5,
+          "decode_ms": 242615.1,
+          "decode_tps": 14.9,
+          "total_s": 294.925,
+          "ttft_s": 52.397,
+          "drafts_offered": 3102,
+          "drafts_accepted": 2578,
+          "acceptance_rate": 0.8310767246937459,
+          "ok": true,
+          "eligible": true,
+          "agreement_eligible": true,
+          "controller_eligible": true,
+          "speed_eligible": true,
+          "ineligible_reasons": [],
+          "finish_reason": "stop",
+          "stream_complete": true,
+          "completion_includes_thinking": true,
+          "output_chars": 5496,
+          "reasoning_chars": 4368,
+          "request_sha256": "b0a065720a5eb86fa2d3f84d6371e35da774b4ea144d022608d49b80c227cba1",
+          "output_sha256": "5b7ae0f207d7804bc693ebde382f1a762c43f477fd01483939648d004cfaf971",
+          "reasoning_sha256": "8daeec41f22d90c32c1c1c5c3cfe4486a9ee6d65fa7ffe8857bfe980c02d411e",
+          "client_interval": {
+            "request_begin_monotonic_ns": 1174632785704860,
+            "first_output_monotonic_ns": 1174685182853641,
+            "request_end_monotonic_ns": 1174927710479095
+          }
         },
         {
-          "target_windows": 1,
-          "target_rows": 1,
-          "draft_rounds_delta": 0,
-          "cumulative_draft_rounds": 6,
-          "prompt_chunks": [
-            259
-          ],
-          "prompt_paths": [
-            "batched"
-          ],
-          "long_prefill": null
+          "workload": "varied-prose",
+          "run": 0,
+          "order": 1,
+          "read_tokens": 33288,
+          "reused_tokens": 0,
+          "prompt_tokens": 33288,
+          "generated_tokens": 8638,
+          "prompt_ms": 43736.3,
+          "decode_ms": 908312.4,
+          "decode_tps": 9.5,
+          "total_s": 952.071,
+          "ttft_s": 43.852,
+          "drafts_offered": 11931,
+          "drafts_accepted": 4660,
+          "acceptance_rate": 0.390579163523594,
+          "ok": true,
+          "eligible": true,
+          "agreement_eligible": true,
+          "controller_eligible": true,
+          "speed_eligible": true,
+          "ineligible_reasons": [],
+          "finish_reason": "stop",
+          "stream_complete": true,
+          "completion_includes_thinking": true,
+          "output_chars": 4452,
+          "reasoning_chars": 21300,
+          "request_sha256": "c6d16c6adb19adf79de1cc29929ab71cab5433488ca2fda2dfcdad523bde56f4",
+          "output_sha256": "c8f13901e39c197d5020f290998ab2332dc695d93b32365cffa9ce85f743e983",
+          "reasoning_sha256": "5199dece9d887f8928a737a5470e1f470a75b0f6a7ca29ffd2e148f355d46c57",
+          "client_interval": {
+            "request_begin_monotonic_ns": 1174927775928170,
+            "first_output_monotonic_ns": 1174971627739496,
+            "request_end_monotonic_ns": 1175879847576603
+          }
+        }
+      ],
+      "resources": [
+        {
+          "collector_complete": true,
+          "request_coverage_verified": true,
+          "samples": 1388,
+          "before_first_output": {
+            "contained_CPU_wall_seconds": 51.14265812900001,
+            "process_cpu_seconds": 48.19,
+            "process_cpu_core_equivalents": 0.9422662365035396,
+            "unmatched_thread_intervals": 3,
+            "main_thread_CPU_seconds": 46.25,
+            "CCS": {
+              "pci": "0000:05:00.0",
+              "client_id": 48711,
+              "engine": "ccs",
+              "eligible_intervals": 51,
+              "busy_cycles": 820245373,
+              "capacity_total_cycles": 981891181,
+              "busy_fraction": 0.8353729912968838
+            },
+            "other_engine_busy_cycles": 0
+          },
+          "after_first_output": {
+            "contained_CPU_wall_seconds": 241.75965919350003,
+            "process_cpu_seconds": 1264.68,
+            "process_cpu_core_equivalents": 5.231145693284475,
+            "unmatched_thread_intervals": 0,
+            "main_thread_CPU_seconds": 233.98,
+            "CCS": {
+              "pci": "0000:05:00.0",
+              "client_id": 48711,
+              "engine": "ccs",
+              "eligible_intervals": 241,
+              "busy_cycles": 2684311880,
+              "capacity_total_cycles": 4641572433,
+              "busy_fraction": 0.5783195067506555
+            },
+            "other_engine_busy_cycles": 0
+          }
         },
         {
-          "target_windows": 1,
-          "target_rows": 1,
-          "draft_rounds_delta": 0,
-          "cumulative_draft_rounds": 6,
-          "prompt_chunks": [
-            905
-          ],
-          "prompt_paths": [
-            "batched"
-          ],
-          "long_prefill": null
-        },
-        {
-          "target_windows": 3,
-          "target_rows": 9,
-          "draft_rounds_delta": 2,
-          "cumulative_draft_rounds": 8,
-          "prompt_chunks": [
-            1067
-          ],
-          "prompt_paths": [
-            "batched"
-          ],
-          "long_prefill": null
-        },
+          "collector_complete": true,
+          "request_coverage_verified": true,
+          "samples": 1388,
+          "before_first_output": {
+            "contained_CPU_wall_seconds": 42.114427146,
+            "process_cpu_seconds": 41.65,
+            "process_cpu_core_equivalents": 0.9889722554128554,
+            "unmatched_thread_intervals": 0,
+            "main_thread_CPU_seconds": 41.49,
+            "CCS": {
+              "pci": "0000:05:00.0",
+              "client_id": 48711,
+              "engine": "ccs",
+              "eligible_intervals": 42,
+              "busy_cycles": 800002479,
+              "capacity_total_cycles": 808559560,
+              "busy_fraction": 0.9894168822887951
+            },
+            "other_engine_busy_cycles": 0
+          },
+          "after_first_output": {
+            "contained_CPU_wall_seconds": 907.9081544544996,
+            "process_cpu_seconds": 4679.31,
+            "process_cpu_core_equivalents": 5.153946439451775,
+            "unmatched_thread_intervals": 0,
+            "main_thread_CPU_seconds": 871.42,
+            "CCS": {
+              "pci": "0000:05:00.0",
+              "client_id": 48711,
+              "engine": "ccs",
+              "eligible_intervals": 899,
+              "busy_cycles": 10330816217,
+              "capacity_total_cycles": 17431014177,
+              "busy_fraction": 0.5926686830781986
+            },
+            "other_engine_busy_cycles": 0
+          }
+        }
+      ],
+      "warmup_requests_checked": 4,
+      "total_requests_replayed": 6,
+      "cache_restorations_checked": 6,
+      "long_routes": [
         {
           "target_windows": 1035,
           "target_rows": 4137,
@@ -632,777 +487,19 @@
             "loan_generation": 6
           }
         }
-      ],
-      "activation": {
-        "pid": 3291163,
-        "loader": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_loader.so.0.12.0",
-        "threads_before": 1,
-        "preinit": 37,
-        "config_enabled": true,
-        "first_init": true,
-        "dispatch_result": 46,
-        "output_untouched": true,
-        "retained_reference_until_exit": true,
-        "runtime_teardown_qualified": false
-      },
-      "resources": [
-        {
-          "collector_complete": true,
-          "request_coverage_verified": true,
-          "samples": 1388,
-          "final_sample_to_response_end_seconds": 0.0,
-          "before_first_output": {
-            "window_begin_monotonic_ns": 1174632785704860,
-            "window_end_monotonic_ns": 1174685182853641,
-            "contained_CPU_wall_seconds": 51.14265812900001,
-            "process_cpu_seconds": 48.19,
-            "process_cpu_core_equivalents": 0.9422662365035396,
-            "top_scheduled_threads": [
-              {
-                "tid": 3291163,
-                "start_ticks": 117449236,
-                "cpu_ticks": 4625,
-                "observed_last_cpus": [
-                  0
-                ],
-                "cpu_seconds": 46.25
-              },
-              {
-                "tid": 3291394,
-                "start_ticks": 117449910,
-                "cpu_ticks": 40,
-                "observed_last_cpus": [
-                  0,
-                  1,
-                  2,
-                  3,
-                  4,
-                  6,
-                  7,
-                  10,
-                  11
-                ],
-                "cpu_seconds": 0.4
-              },
-              {
-                "tid": 3295620,
-                "start_ticks": 117463428,
-                "cpu_ticks": 13,
-                "observed_last_cpus": [
-                  0
-                ],
-                "cpu_seconds": 0.13
-              },
-              {
-                "tid": 3291377,
-                "start_ticks": 117449905,
-                "cpu_ticks": 8,
-                "observed_last_cpus": [
-                  1,
-                  5,
-                  7,
-                  9,
-                  11
-                ],
-                "cpu_seconds": 0.08
-              },
-              {
-                "tid": 3291379,
-                "start_ticks": 117449905,
-                "cpu_ticks": 8,
-                "observed_last_cpus": [
-                  2,
-                  3,
-                  9,
-                  10,
-                  11
-                ],
-                "cpu_seconds": 0.08
-              },
-              {
-                "tid": 3291383,
-                "start_ticks": 117449905,
-                "cpu_ticks": 8,
-                "observed_last_cpus": [
-                  2,
-                  4,
-                  7,
-                  9,
-                  10,
-                  11
-                ],
-                "cpu_seconds": 0.08
-              },
-              {
-                "tid": 3291385,
-                "start_ticks": 117449905,
-                "cpu_ticks": 8,
-                "observed_last_cpus": [
-                  2,
-                  3,
-                  6,
-                  7,
-                  8,
-                  9,
-                  11
-                ],
-                "cpu_seconds": 0.08
-              },
-              {
-                "tid": 3291388,
-                "start_ticks": 117449905,
-                "cpu_ticks": 8,
-                "observed_last_cpus": [
-                  4,
-                  6,
-                  7,
-                  10
-                ],
-                "cpu_seconds": 0.08
-              }
-            ],
-            "unmatched_thread_intervals": 3,
-            "engines": [
-              {
-                "pci": "0000:05:00.0",
-                "client_id": 48711,
-                "engine": "bcs",
-                "eligible_intervals": 51,
-                "busy_cycles": 0,
-                "capacity_total_cycles": 981891181,
-                "busy_fraction": 0.0
-              },
-              {
-                "pci": "0000:05:00.0",
-                "client_id": 48711,
-                "engine": "ccs",
-                "eligible_intervals": 51,
-                "busy_cycles": 820245373,
-                "capacity_total_cycles": 981891181,
-                "busy_fraction": 0.8353729912968838
-              },
-              {
-                "pci": "0000:05:00.0",
-                "client_id": 48711,
-                "engine": "rcs",
-                "eligible_intervals": 51,
-                "busy_cycles": 0,
-                "capacity_total_cycles": 981891181,
-                "busy_fraction": 0.0
-              },
-              {
-                "pci": "0000:05:00.0",
-                "client_id": 48711,
-                "engine": "vcs",
-                "eligible_intervals": 51,
-                "busy_cycles": 0,
-                "capacity_total_cycles": 1963782362,
-                "busy_fraction": 0.0
-              },
-              {
-                "pci": "0000:05:00.0",
-                "client_id": 48711,
-                "engine": "vecs",
-                "eligible_intervals": 51,
-                "busy_cycles": 0,
-                "capacity_total_cycles": 1963782362,
-                "busy_fraction": 0.0
-              }
-            ]
-          },
-          "after_first_output": {
-            "window_begin_monotonic_ns": 1174685182853641,
-            "window_end_monotonic_ns": 1174927710479095,
-            "contained_CPU_wall_seconds": 241.75965919350003,
-            "process_cpu_seconds": 1264.68,
-            "process_cpu_core_equivalents": 5.231145693284475,
-            "top_scheduled_threads": [
-              {
-                "tid": 3291163,
-                "start_ticks": 117449236,
-                "cpu_ticks": 23398,
-                "observed_last_cpus": [
-                  0
-                ],
-                "cpu_seconds": 233.98
-              },
-              {
-                "tid": 3293264,
-                "start_ticks": 117456138,
-                "cpu_ticks": 20617,
-                "observed_last_cpus": [
-                  1
-                ],
-                "cpu_seconds": 206.17
-              },
-              {
-                "tid": 3293268,
-                "start_ticks": 117456138,
-                "cpu_ticks": 20609,
-                "observed_last_cpus": [
-                  5
-                ],
-                "cpu_seconds": 206.09
-              },
-              {
-                "tid": 3293266,
-                "start_ticks": 117456138,
-                "cpu_ticks": 20583,
-                "observed_last_cpus": [
-                  3
-                ],
-                "cpu_seconds": 205.83
-              },
-              {
-                "tid": 3293265,
-                "start_ticks": 117456138,
-                "cpu_ticks": 20574,
-                "observed_last_cpus": [
-                  2
-                ],
-                "cpu_seconds": 205.74
-              },
-              {
-                "tid": 3293267,
-                "start_ticks": 117456138,
-                "cpu_ticks": 20574,
-                "observed_last_cpus": [
-                  4
-                ],
-                "cpu_seconds": 205.74
-              },
-              {
-                "tid": 3291394,
-                "start_ticks": 117449910,
-                "cpu_ticks": 24,
-                "observed_last_cpus": [
-                  0,
-                  1,
-                  2,
-                  3,
-                  4,
-                  6,
-                  7,
-                  8,
-                  9,
-                  10,
-                  11
-                ],
-                "cpu_seconds": 0.24
-              },
-              {
-                "tid": 3291374,
-                "start_ticks": 117449905,
-                "cpu_ticks": 7,
-                "observed_last_cpus": [
-                  0,
-                  1,
-                  2,
-                  3,
-                  4,
-                  5,
-                  6,
-                  7,
-                  8,
-                  9,
-                  10,
-                  11
-                ],
-                "cpu_seconds": 0.07
-              }
-            ],
-            "unmatched_thread_intervals": 0,
-            "engines": [
-              {
-                "pci": "0000:05:00.0",
-                "client_id": 48711,
-                "engine": "bcs",
-                "eligible_intervals": 241,
-                "busy_cycles": 0,
-                "capacity_total_cycles": 4641572433,
-                "busy_fraction": 0.0
-              },
-              {
-                "pci": "0000:05:00.0",
-                "client_id": 48711,
-                "engine": "ccs",
-                "eligible_intervals": 241,
-                "busy_cycles": 2684311880,
-                "capacity_total_cycles": 4641572433,
-                "busy_fraction": 0.5783195067506555
-              },
-              {
-                "pci": "0000:05:00.0",
-                "client_id": 48711,
-                "engine": "rcs",
-                "eligible_intervals": 241,
-                "busy_cycles": 0,
-                "capacity_total_cycles": 4641572433,
-                "busy_fraction": 0.0
-              },
-              {
-                "pci": "0000:05:00.0",
-                "client_id": 48711,
-                "engine": "vcs",
-                "eligible_intervals": 241,
-                "busy_cycles": 0,
-                "capacity_total_cycles": 9283144866,
-                "busy_fraction": 0.0
-              },
-              {
-                "pci": "0000:05:00.0",
-                "client_id": 48711,
-                "engine": "vecs",
-                "eligible_intervals": 241,
-                "busy_cycles": 0,
-                "capacity_total_cycles": 9283144866,
-                "busy_fraction": 0.0
-              }
-            ]
-          },
-          "limits": "Client observation windows, not native kernel-stage boundaries. Scheduled CPU includes polling/stalls. Associated DRM clients may be shared; cycle busy fraction is not arithmetic efficiency, VRAM bandwidth, physical PCIe traffic or hardware saturation."
-        },
-        {
-          "collector_complete": true,
-          "request_coverage_verified": true,
-          "samples": 1388,
-          "final_sample_to_response_end_seconds": 0.0,
-          "before_first_output": {
-            "window_begin_monotonic_ns": 1174927775928170,
-            "window_end_monotonic_ns": 1174971627739496,
-            "contained_CPU_wall_seconds": 42.114427146,
-            "process_cpu_seconds": 41.65,
-            "process_cpu_core_equivalents": 0.9889722554128554,
-            "top_scheduled_threads": [
-              {
-                "tid": 3291163,
-                "start_ticks": 117449236,
-                "cpu_ticks": 4149,
-                "observed_last_cpus": [
-                  0
-                ],
-                "cpu_seconds": 41.49
-              },
-              {
-                "tid": 3291394,
-                "start_ticks": 117449910,
-                "cpu_ticks": 3,
-                "observed_last_cpus": [
-                  1,
-                  2,
-                  3,
-                  4,
-                  5,
-                  7,
-                  8
-                ],
-                "cpu_seconds": 0.03
-              },
-              {
-                "tid": 3291375,
-                "start_ticks": 117449905,
-                "cpu_ticks": 1,
-                "observed_last_cpus": [
-                  2,
-                  10
-                ],
-                "cpu_seconds": 0.01
-              },
-              {
-                "tid": 3291376,
-                "start_ticks": 117449905,
-                "cpu_ticks": 1,
-                "observed_last_cpus": [
-                  1,
-                  6,
-                  8,
-                  10
-                ],
-                "cpu_seconds": 0.01
-              },
-              {
-                "tid": 3291377,
-                "start_ticks": 117449905,
-                "cpu_ticks": 1,
-                "observed_last_cpus": [
-                  6,
-                  7,
-                  8
-                ],
-                "cpu_seconds": 0.01
-              },
-              {
-                "tid": 3291379,
-                "start_ticks": 117449905,
-                "cpu_ticks": 1,
-                "observed_last_cpus": [
-                  2,
-                  10,
-                  11
-                ],
-                "cpu_seconds": 0.01
-              },
-              {
-                "tid": 3291380,
-                "start_ticks": 117449905,
-                "cpu_ticks": 1,
-                "observed_last_cpus": [
-                  7,
-                  10
-                ],
-                "cpu_seconds": 0.01
-              },
-              {
-                "tid": 3291381,
-                "start_ticks": 117449905,
-                "cpu_ticks": 1,
-                "observed_last_cpus": [
-                  7,
-                  8
-                ],
-                "cpu_seconds": 0.01
-              }
-            ],
-            "unmatched_thread_intervals": 0,
-            "engines": [
-              {
-                "pci": "0000:05:00.0",
-                "client_id": 48711,
-                "engine": "bcs",
-                "eligible_intervals": 42,
-                "busy_cycles": 0,
-                "capacity_total_cycles": 808559560,
-                "busy_fraction": 0.0
-              },
-              {
-                "pci": "0000:05:00.0",
-                "client_id": 48711,
-                "engine": "ccs",
-                "eligible_intervals": 42,
-                "busy_cycles": 800002479,
-                "capacity_total_cycles": 808559560,
-                "busy_fraction": 0.9894168822887951
-              },
-              {
-                "pci": "0000:05:00.0",
-                "client_id": 48711,
-                "engine": "rcs",
-                "eligible_intervals": 42,
-                "busy_cycles": 0,
-                "capacity_total_cycles": 808559560,
-                "busy_fraction": 0.0
-              },
-              {
-                "pci": "0000:05:00.0",
-                "client_id": 48711,
-                "engine": "vcs",
-                "eligible_intervals": 42,
-                "busy_cycles": 0,
-                "capacity_total_cycles": 1617119120,
-                "busy_fraction": 0.0
-              },
-              {
-                "pci": "0000:05:00.0",
-                "client_id": 48711,
-                "engine": "vecs",
-                "eligible_intervals": 42,
-                "busy_cycles": 0,
-                "capacity_total_cycles": 1617119120,
-                "busy_fraction": 0.0
-              }
-            ]
-          },
-          "after_first_output": {
-            "window_begin_monotonic_ns": 1174971627739496,
-            "window_end_monotonic_ns": 1175879847576603,
-            "contained_CPU_wall_seconds": 907.9081544544996,
-            "process_cpu_seconds": 4679.31,
-            "process_cpu_core_equivalents": 5.153946439451775,
-            "top_scheduled_threads": [
-              {
-                "tid": 3291163,
-                "start_ticks": 117449236,
-                "cpu_ticks": 87142,
-                "observed_last_cpus": [
-                  0
-                ],
-                "cpu_seconds": 871.42
-              },
-              {
-                "tid": 3293267,
-                "start_ticks": 117456138,
-                "cpu_ticks": 76297,
-                "observed_last_cpus": [
-                  4
-                ],
-                "cpu_seconds": 762.97
-              },
-              {
-                "tid": 3293268,
-                "start_ticks": 117456138,
-                "cpu_ticks": 76284,
-                "observed_last_cpus": [
-                  5
-                ],
-                "cpu_seconds": 762.84
-              },
-              {
-                "tid": 3293266,
-                "start_ticks": 117456138,
-                "cpu_ticks": 76028,
-                "observed_last_cpus": [
-                  3
-                ],
-                "cpu_seconds": 760.28
-              },
-              {
-                "tid": 3293264,
-                "start_ticks": 117456138,
-                "cpu_ticks": 75788,
-                "observed_last_cpus": [
-                  1
-                ],
-                "cpu_seconds": 757.88
-              },
-              {
-                "tid": 3293265,
-                "start_ticks": 117456138,
-                "cpu_ticks": 75743,
-                "observed_last_cpus": [
-                  2
-                ],
-                "cpu_seconds": 757.43
-              },
-              {
-                "tid": 3291394,
-                "start_ticks": 117449910,
-                "cpu_ticks": 139,
-                "observed_last_cpus": [
-                  0,
-                  1,
-                  2,
-                  3,
-                  4,
-                  5,
-                  6,
-                  7,
-                  8,
-                  9,
-                  10,
-                  11
-                ],
-                "cpu_seconds": 1.39
-              },
-              {
-                "tid": 3291378,
-                "start_ticks": 117449905,
-                "cpu_ticks": 33,
-                "observed_last_cpus": [
-                  0,
-                  1,
-                  2,
-                  3,
-                  4,
-                  5,
-                  6,
-                  7,
-                  8,
-                  9,
-                  10,
-                  11
-                ],
-                "cpu_seconds": 0.33
-              }
-            ],
-            "unmatched_thread_intervals": 0,
-            "engines": [
-              {
-                "pci": "0000:05:00.0",
-                "client_id": 48711,
-                "engine": "bcs",
-                "eligible_intervals": 905,
-                "busy_cycles": 0,
-                "capacity_total_cycles": 17431014177,
-                "busy_fraction": 0.0
-              },
-              {
-                "pci": "0000:05:00.0",
-                "client_id": 48711,
-                "engine": "ccs",
-                "eligible_intervals": 899,
-                "busy_cycles": 10330816217,
-                "capacity_total_cycles": 17431014177,
-                "busy_fraction": 0.5926686830781986
-              },
-              {
-                "pci": "0000:05:00.0",
-                "client_id": 48711,
-                "engine": "rcs",
-                "eligible_intervals": 905,
-                "busy_cycles": 0,
-                "capacity_total_cycles": 17431014177,
-                "busy_fraction": 0.0
-              },
-              {
-                "pci": "0000:05:00.0",
-                "client_id": 48711,
-                "engine": "vcs",
-                "eligible_intervals": 905,
-                "busy_cycles": 0,
-                "capacity_total_cycles": 34862028354,
-                "busy_fraction": 0.0
-              },
-              {
-                "pci": "0000:05:00.0",
-                "client_id": 48711,
-                "engine": "vecs",
-                "eligible_intervals": 905,
-                "busy_cycles": 0,
-                "capacity_total_cycles": 34862028354,
-                "busy_fraction": 0.0
-              }
-            ]
-          },
-          "limits": "Client observation windows, not native kernel-stage boundaries. Scheduled CPU includes polling/stalls. Associated DRM clients may be shared; cycle busy fraction is not arithmetic efficiency, VRAM bandwidth, physical PCIe traffic or hardware saturation."
-        }
-      ],
-      "host_probe_accepted": true,
-      "requests": [
-        {
-          "ok": true,
-          "err": null,
-          "ttft_s": 52.397,
-          "total_s": 294.925,
-          "prompt_tokens": 33214,
-          "reused_tokens": 0,
-          "read_tokens": 33214,
-          "generated_tokens": 3611,
-          "prompt_tps": 635.2,
-          "prompt_tps_source": "engine",
-          "decode_tps": 14.9,
-          "decode_tps_source": "engine",
-          "prompt_ms": 52286.5,
-          "decode_ms": 242615.1,
-          "drafts_offered": 3102,
-          "drafts_accepted": 2578,
-          "finish_reason": "stop",
-          "request_sha256": "b0a065720a5eb86fa2d3f84d6371e35da774b4ea144d022608d49b80c227cba1",
-          "stream_complete": true,
-          "truncated": false,
-          "generated_tokens_source": "usage",
-          "client_interval": {
-            "request_begin_monotonic_ns": 1174632785704860,
-            "first_output_monotonic_ns": 1174685182853641,
-            "request_end_monotonic_ns": 1174927710479095
-          },
-          "eligible": true,
-          "agreement_eligible": true,
-          "speed_eligible": true,
-          "speed_ineligible_reasons": [],
-          "ineligible_reasons": [],
-          "acceptance_rate": 0.8310767246937459,
-          "usage_generated_tokens": 3611,
-          "completion_includes_thinking": true,
-          "run": 0,
-          "order": 0,
-          "output_sha256": "5b7ae0f207d7804bc693ebde382f1a762c43f477fd01483939648d004cfaf971",
-          "reasoning_sha256": "8daeec41f22d90c32c1c1c5c3cfe4486a9ee6d65fa7ffe8857bfe980c02d411e",
-          "output_chars": 5496,
-          "reasoning_chars": 4368,
-          "reasoning_tokens": null,
-          "workload": "regular-code",
-          "controller_eligible": true
-        },
-        {
-          "ok": true,
-          "err": null,
-          "ttft_s": 43.852,
-          "total_s": 952.071,
-          "prompt_tokens": 33288,
-          "reused_tokens": 0,
-          "read_tokens": 33288,
-          "generated_tokens": 8638,
-          "prompt_tps": 761.1,
-          "prompt_tps_source": "engine",
-          "decode_tps": 9.5,
-          "decode_tps_source": "engine",
-          "prompt_ms": 43736.3,
-          "decode_ms": 908312.4,
-          "drafts_offered": 11931,
-          "drafts_accepted": 4660,
-          "finish_reason": "stop",
-          "request_sha256": "c6d16c6adb19adf79de1cc29929ab71cab5433488ca2fda2dfcdad523bde56f4",
-          "stream_complete": true,
-          "truncated": false,
-          "generated_tokens_source": "usage",
-          "client_interval": {
-            "request_begin_monotonic_ns": 1174927775928170,
-            "first_output_monotonic_ns": 1174971627739496,
-            "request_end_monotonic_ns": 1175879847576603
-          },
-          "eligible": true,
-          "agreement_eligible": true,
-          "speed_eligible": true,
-          "speed_ineligible_reasons": [],
-          "ineligible_reasons": [],
-          "acceptance_rate": 0.390579163523594,
-          "usage_generated_tokens": 8638,
-          "completion_includes_thinking": true,
-          "run": 0,
-          "order": 1,
-          "output_sha256": "c8f13901e39c197d5020f290998ab2332dc695d93b32365cffa9ce85f743e983",
-          "reasoning_sha256": "5199dece9d887f8928a737a5470e1f470a75b0f6a7ca29ffd2e148f355d46c57",
-          "output_chars": 4452,
-          "reasoning_chars": 21300,
-          "reasoning_tokens": null,
-          "workload": "varied-prose",
-          "controller_eligible": true
-        }
-      ],
-      "journal": {
-        "successful_warmups": 4,
-        "successful_long_requests": 2,
-        "phase_order": [
-          "warm-up/chat",
-          "calibration",
-          "calibration",
-          "warm-up/prompt",
-          "long-generation/regular-code",
-          "long-generation/varied-prose"
-        ],
-        "request_sha256": [
-          "6976dd85c26437117139f185ce0ac4da0ab9d1d4eb576dd2f9e252ae99d63f03",
-          "d53e3c2e317b3f08b3b3c48aa391fd7c6bd7e451a3176a85b9b4763f7d85fdf3",
-          "7980bd89f91dbcfd84166ee8ea45c5d77888ee349ccee71596c073a2ed4790a0",
-          "cfe052d03f13fa28f83f44331156d873212064c85036a8652c6eab4a2d7380a5",
-          "b0a065720a5eb86fa2d3f84d6371e35da774b4ea144d022608d49b80c227cba1",
-          "c6d16c6adb19adf79de1cc29929ab71cab5433488ca2fda2dfcdad523bde56f4"
-        ],
-        "journal_sha256": "dff116b9485bd7fbb1048fd266364b80ccd417b13cd46e09b53f61deb3bffa12"
-      },
-      "native_exit_code": 0,
-      "evidence_sha256": {
-        "engine.stderr": "ed4d8405ff23baa683225061c856cd3bdbd01c00580bed16489facd46350c553",
-        "client-resources.jsonl": "3c58dd8b8e97a35f82412f210efa730e83b79d33aea07fedee3672b84cc9de33",
-        "engine-start.json": "c5da369f4e447c49157cc75a3a4c05e17c89affa4ad555df030530892daacfa1",
-        "engine-exit.json": "40bf96672af854dafe824b7e2c4269023e84e6e2c57b61e37c73ca72ebdcbe50"
-      },
-      "ownership_closed": true,
-      "fresh_faults": [],
-      "boot_unchanged": true,
-      "driver_after": {
-        "pci": "/sys/bus/pci/devices/0000:05:00.0",
-        "driver": "xe",
-        "vendor": "0x8086",
-        "device": "0xe20c",
-        "kernel": "7.0.0-38-generic",
-        "devcoredump": false
-      }
+      ]
     },
     {
       "cap": 1,
       "passed": true,
-      "active": false,
+      "native_exit_code": 0,
+      "ownership_closed": true,
+      "fresh_faults": [],
+      "native_identity": {
+        "pid": 3343058,
+        "start_ticks": 117601377,
+        "sid": 3343029
+      },
       "clock": {
         "samples": 65536,
         "resolution_ns": 1,
@@ -1415,65 +512,168 @@
           "sha256": "1fd75fe70354a416d75aef22bcae68c47bd25d20e2d0568c30b1a9838cf62f11"
         }
       },
-      "native_identity": {
-        "pid": 3343058,
-        "start_ticks": 117601377,
-        "sid": 3343029
-      },
-      "effective_environment_verified": true,
-      "routes": [
+      "requests": [
         {
-          "target_windows": 24,
-          "target_rows": 24,
-          "draft_rounds_delta": 0,
-          "cumulative_draft_rounds": 0,
-          "prompt_chunks": [
-            73
+          "workload": "regular-code",
+          "run": 0,
+          "order": 0,
+          "read_tokens": 33214,
+          "reused_tokens": 0,
+          "prompt_tokens": 33214,
+          "generated_tokens": 3126,
+          "prompt_ms": 51760.9,
+          "decode_ms": 276480.6,
+          "decode_tps": 11.3,
+          "total_s": 328.264,
+          "ttft_s": 51.871,
+          "drafts_offered": 0,
+          "drafts_accepted": 0,
+          "acceptance_rate": null,
+          "ok": true,
+          "eligible": false,
+          "agreement_eligible": false,
+          "controller_eligible": false,
+          "speed_eligible": true,
+          "ineligible_reasons": [
+            "MTP counters are missing, invalid or below 256 offered drafts"
           ],
-          "prompt_paths": [
-            "batched"
-          ],
-          "long_prefill": null
+          "finish_reason": "stop",
+          "stream_complete": true,
+          "completion_includes_thinking": true,
+          "output_chars": 5564,
+          "reasoning_chars": 3689,
+          "request_sha256": "b0a065720a5eb86fa2d3f84d6371e35da774b4ea144d022608d49b80c227cba1",
+          "output_sha256": "e36c666647e5d179eff689d3ee30c7951fc6bdca4d1829ee283d14e4266092b7",
+          "reasoning_sha256": "2375294f11bb088eef724a0d67aa9a179569a4b75dff095e84d870bdc65cdbd0",
+          "client_interval": {
+            "request_begin_monotonic_ns": 1176132748617884,
+            "first_output_monotonic_ns": 1176184620080182,
+            "request_end_monotonic_ns": 1176461013215485
+          }
         },
         {
-          "target_windows": 1,
-          "target_rows": 1,
-          "draft_rounds_delta": 0,
-          "cumulative_draft_rounds": 0,
-          "prompt_chunks": [
-            259
+          "workload": "varied-prose",
+          "run": 0,
+          "order": 1,
+          "read_tokens": 33288,
+          "reused_tokens": 0,
+          "prompt_tokens": 33288,
+          "generated_tokens": 10983,
+          "prompt_ms": 43702.0,
+          "decode_ms": 981509.7,
+          "decode_tps": 11.2,
+          "total_s": 1025.234,
+          "ttft_s": 43.813,
+          "drafts_offered": 0,
+          "drafts_accepted": 0,
+          "acceptance_rate": null,
+          "ok": true,
+          "eligible": false,
+          "agreement_eligible": false,
+          "controller_eligible": false,
+          "speed_eligible": true,
+          "ineligible_reasons": [
+            "MTP counters are missing, invalid or below 256 offered drafts"
           ],
-          "prompt_paths": [
-            "batched"
-          ],
-          "long_prefill": null
+          "finish_reason": "stop",
+          "stream_complete": true,
+          "completion_includes_thinking": true,
+          "output_chars": 4974,
+          "reasoning_chars": 28310,
+          "request_sha256": "c6d16c6adb19adf79de1cc29929ab71cab5433488ca2fda2dfcdad523bde56f4",
+          "output_sha256": "eeb20bfaec5c704a4d3594892fcab90666700009448d87c2f06551bc2bad4797",
+          "reasoning_sha256": "351fc282b70801d65f86a08392435ec77f07086a2cafa83f2cd65bbf80b713cc",
+          "client_interval": {
+            "request_begin_monotonic_ns": 1176461035939472,
+            "first_output_monotonic_ns": 1176504848919023,
+            "request_end_monotonic_ns": 1177486270522556
+          }
+        }
+      ],
+      "resources": [
+        {
+          "collector_complete": true,
+          "request_coverage_verified": true,
+          "samples": 1473,
+          "before_first_output": {
+            "contained_CPU_wall_seconds": 51.136002608000005,
+            "process_cpu_seconds": 48.41,
+            "process_cpu_core_equivalents": 0.9466911281881557,
+            "unmatched_thread_intervals": 3,
+            "main_thread_CPU_seconds": 46.45,
+            "CCS": {
+              "pci": "0000:05:00.0",
+              "client_id": 48779,
+              "engine": "ccs",
+              "eligible_intervals": 51,
+              "busy_cycles": 821858346,
+              "capacity_total_cycles": 981766410,
+              "busy_fraction": 0.8371220869127107
+            },
+            "other_engine_busy_cycles": 0
+          },
+          "after_first_output": {
+            "contained_CPU_wall_seconds": 274.79494347,
+            "process_cpu_seconds": 1608.83,
+            "process_cpu_core_equivalents": 5.854656492890086,
+            "unmatched_thread_intervals": 0,
+            "main_thread_CPU_seconds": 262.98,
+            "CCS": {
+              "pci": "0000:05:00.0",
+              "client_id": 48779,
+              "engine": "ccs",
+              "eligible_intervals": 274,
+              "busy_cycles": 3454498324,
+              "capacity_total_cycles": 5275810358,
+              "busy_fraction": 0.6547806099136515
+            },
+            "other_engine_busy_cycles": 0
+          }
         },
         {
-          "target_windows": 1,
-          "target_rows": 1,
-          "draft_rounds_delta": 0,
-          "cumulative_draft_rounds": 0,
-          "prompt_chunks": [
-            905
-          ],
-          "prompt_paths": [
-            "batched"
-          ],
-          "long_prefill": null
-        },
-        {
-          "target_windows": 8,
-          "target_rows": 8,
-          "draft_rounds_delta": 0,
-          "cumulative_draft_rounds": 0,
-          "prompt_chunks": [
-            1067
-          ],
-          "prompt_paths": [
-            "batched"
-          ],
-          "long_prefill": null
-        },
+          "collector_complete": true,
+          "request_coverage_verified": true,
+          "samples": 1473,
+          "before_first_output": {
+            "contained_CPU_wall_seconds": 43.11908281499999,
+            "process_cpu_seconds": 42.48,
+            "process_cpu_core_equivalents": 0.9851786547097501,
+            "unmatched_thread_intervals": 0,
+            "main_thread_CPU_seconds": 42.3,
+            "CCS": {
+              "pci": "0000:05:00.0",
+              "client_id": 48779,
+              "engine": "ccs",
+              "eligible_intervals": 43,
+              "busy_cycles": 817044857,
+              "capacity_total_cycles": 827844064,
+              "busy_fraction": 0.9869550227275653
+            },
+            "other_engine_busy_cycles": 0
+          },
+          "after_first_output": {
+            "contained_CPU_wall_seconds": 980.9361859175002,
+            "process_cpu_seconds": 5734.04,
+            "process_cpu_core_equivalents": 5.845477088437485,
+            "unmatched_thread_intervals": 0,
+            "main_thread_CPU_seconds": 934.77,
+            "CCS": {
+              "pci": "0000:05:00.0",
+              "client_id": 48779,
+              "engine": "ccs",
+              "eligible_intervals": 967,
+              "busy_cycles": 12241085209,
+              "capacity_total_cycles": 18833081329,
+              "busy_fraction": 0.6499778233395426
+            },
+            "other_engine_busy_cycles": 0
+          }
+        }
+      ],
+      "warmup_requests_checked": 4,
+      "total_requests_replayed": 6,
+      "cache_restorations_checked": 6,
+      "long_routes": [
         {
           "target_windows": 3126,
           "target_rows": 3126,
@@ -1528,784 +728,9 @@
             "loan_generation": 6
           }
         }
-      ],
-      "activation": {
-        "pid": 3343058,
-        "loader": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_loader.so.0.12.0",
-        "threads_before": 1,
-        "preinit": 37,
-        "config_enabled": true,
-        "first_init": true,
-        "dispatch_result": 46,
-        "output_untouched": true,
-        "retained_reference_until_exit": true,
-        "runtime_teardown_qualified": false
-      },
-      "resources": [
-        {
-          "collector_complete": true,
-          "request_coverage_verified": true,
-          "samples": 1473,
-          "final_sample_to_response_end_seconds": 0.0,
-          "before_first_output": {
-            "window_begin_monotonic_ns": 1176132748617884,
-            "window_end_monotonic_ns": 1176184620080182,
-            "contained_CPU_wall_seconds": 51.136002608000005,
-            "process_cpu_seconds": 48.41,
-            "process_cpu_core_equivalents": 0.9466911281881557,
-            "top_scheduled_threads": [
-              {
-                "tid": 3343058,
-                "start_ticks": 117601377,
-                "cpu_ticks": 4645,
-                "observed_last_cpus": [
-                  0
-                ],
-                "cpu_seconds": 46.45
-              },
-              {
-                "tid": 3343283,
-                "start_ticks": 117602047,
-                "cpu_ticks": 43,
-                "observed_last_cpus": [
-                  0,
-                  1,
-                  2,
-                  5,
-                  6,
-                  7,
-                  8,
-                  9,
-                  10,
-                  11
-                ],
-                "cpu_seconds": 0.43
-              },
-              {
-                "tid": 3347777,
-                "start_ticks": 117613377,
-                "cpu_ticks": 13,
-                "observed_last_cpus": [
-                  0
-                ],
-                "cpu_seconds": 0.13
-              },
-              {
-                "tid": 3343266,
-                "start_ticks": 117602042,
-                "cpu_ticks": 8,
-                "observed_last_cpus": [
-                  2,
-                  3,
-                  6,
-                  7,
-                  8,
-                  10,
-                  11
-                ],
-                "cpu_seconds": 0.08
-              },
-              {
-                "tid": 3343268,
-                "start_ticks": 117602042,
-                "cpu_ticks": 8,
-                "observed_last_cpus": [
-                  0,
-                  3,
-                  5,
-                  7,
-                  8
-                ],
-                "cpu_seconds": 0.08
-              },
-              {
-                "tid": 3343269,
-                "start_ticks": 117602042,
-                "cpu_ticks": 8,
-                "observed_last_cpus": [
-                  1,
-                  2,
-                  9,
-                  10,
-                  11
-                ],
-                "cpu_seconds": 0.08
-              },
-              {
-                "tid": 3343271,
-                "start_ticks": 117602042,
-                "cpu_ticks": 8,
-                "observed_last_cpus": [
-                  1,
-                  2,
-                  3,
-                  5,
-                  6,
-                  10,
-                  11
-                ],
-                "cpu_seconds": 0.08
-              },
-              {
-                "tid": 3343272,
-                "start_ticks": 117602042,
-                "cpu_ticks": 8,
-                "observed_last_cpus": [
-                  5,
-                  6,
-                  7,
-                  10,
-                  11
-                ],
-                "cpu_seconds": 0.08
-              }
-            ],
-            "unmatched_thread_intervals": 3,
-            "engines": [
-              {
-                "pci": "0000:05:00.0",
-                "client_id": 48779,
-                "engine": "bcs",
-                "eligible_intervals": 51,
-                "busy_cycles": 0,
-                "capacity_total_cycles": 981766410,
-                "busy_fraction": 0.0
-              },
-              {
-                "pci": "0000:05:00.0",
-                "client_id": 48779,
-                "engine": "ccs",
-                "eligible_intervals": 51,
-                "busy_cycles": 821858346,
-                "capacity_total_cycles": 981766410,
-                "busy_fraction": 0.8371220869127107
-              },
-              {
-                "pci": "0000:05:00.0",
-                "client_id": 48779,
-                "engine": "rcs",
-                "eligible_intervals": 51,
-                "busy_cycles": 0,
-                "capacity_total_cycles": 981766410,
-                "busy_fraction": 0.0
-              },
-              {
-                "pci": "0000:05:00.0",
-                "client_id": 48779,
-                "engine": "vcs",
-                "eligible_intervals": 51,
-                "busy_cycles": 0,
-                "capacity_total_cycles": 1963532820,
-                "busy_fraction": 0.0
-              },
-              {
-                "pci": "0000:05:00.0",
-                "client_id": 48779,
-                "engine": "vecs",
-                "eligible_intervals": 51,
-                "busy_cycles": 0,
-                "capacity_total_cycles": 1963532820,
-                "busy_fraction": 0.0
-              }
-            ]
-          },
-          "after_first_output": {
-            "window_begin_monotonic_ns": 1176184620080182,
-            "window_end_monotonic_ns": 1176461013215485,
-            "contained_CPU_wall_seconds": 274.79494347,
-            "process_cpu_seconds": 1608.83,
-            "process_cpu_core_equivalents": 5.854656492890086,
-            "top_scheduled_threads": [
-              {
-                "tid": 3344957,
-                "start_ticks": 117606380,
-                "cpu_ticks": 27085,
-                "observed_last_cpus": [
-                  5
-                ],
-                "cpu_seconds": 270.85
-              },
-              {
-                "tid": 3344956,
-                "start_ticks": 117606380,
-                "cpu_ticks": 26993,
-                "observed_last_cpus": [
-                  4
-                ],
-                "cpu_seconds": 269.93
-              },
-              {
-                "tid": 3344955,
-                "start_ticks": 117606380,
-                "cpu_ticks": 26911,
-                "observed_last_cpus": [
-                  3
-                ],
-                "cpu_seconds": 269.11
-              },
-              {
-                "tid": 3344954,
-                "start_ticks": 117606380,
-                "cpu_ticks": 26780,
-                "observed_last_cpus": [
-                  2
-                ],
-                "cpu_seconds": 267.8
-              },
-              {
-                "tid": 3344953,
-                "start_ticks": 117606380,
-                "cpu_ticks": 26722,
-                "observed_last_cpus": [
-                  1
-                ],
-                "cpu_seconds": 267.22
-              },
-              {
-                "tid": 3343058,
-                "start_ticks": 117601377,
-                "cpu_ticks": 26298,
-                "observed_last_cpus": [
-                  0
-                ],
-                "cpu_seconds": 262.98
-              },
-              {
-                "tid": 3343283,
-                "start_ticks": 117602047,
-                "cpu_ticks": 21,
-                "observed_last_cpus": [
-                  0,
-                  1,
-                  6,
-                  7,
-                  8,
-                  9,
-                  10,
-                  11
-                ],
-                "cpu_seconds": 0.21
-              },
-              {
-                "tid": 3343279,
-                "start_ticks": 117602042,
-                "cpu_ticks": 6,
-                "observed_last_cpus": [
-                  0,
-                  3,
-                  4,
-                  6,
-                  7,
-                  8,
-                  9,
-                  10,
-                  11
-                ],
-                "cpu_seconds": 0.06
-              }
-            ],
-            "unmatched_thread_intervals": 0,
-            "engines": [
-              {
-                "pci": "0000:05:00.0",
-                "client_id": 48779,
-                "engine": "bcs",
-                "eligible_intervals": 274,
-                "busy_cycles": 0,
-                "capacity_total_cycles": 5275810358,
-                "busy_fraction": 0.0
-              },
-              {
-                "pci": "0000:05:00.0",
-                "client_id": 48779,
-                "engine": "ccs",
-                "eligible_intervals": 274,
-                "busy_cycles": 3454498324,
-                "capacity_total_cycles": 5275810358,
-                "busy_fraction": 0.6547806099136515
-              },
-              {
-                "pci": "0000:05:00.0",
-                "client_id": 48779,
-                "engine": "rcs",
-                "eligible_intervals": 274,
-                "busy_cycles": 0,
-                "capacity_total_cycles": 5275810358,
-                "busy_fraction": 0.0
-              },
-              {
-                "pci": "0000:05:00.0",
-                "client_id": 48779,
-                "engine": "vcs",
-                "eligible_intervals": 274,
-                "busy_cycles": 0,
-                "capacity_total_cycles": 10551620716,
-                "busy_fraction": 0.0
-              },
-              {
-                "pci": "0000:05:00.0",
-                "client_id": 48779,
-                "engine": "vecs",
-                "eligible_intervals": 274,
-                "busy_cycles": 0,
-                "capacity_total_cycles": 10551620716,
-                "busy_fraction": 0.0
-              }
-            ]
-          },
-          "limits": "Client observation windows, not native kernel-stage boundaries. Scheduled CPU includes polling/stalls. Associated DRM clients may be shared; cycle busy fraction is not arithmetic efficiency, VRAM bandwidth, physical PCIe traffic or hardware saturation."
-        },
-        {
-          "collector_complete": true,
-          "request_coverage_verified": true,
-          "samples": 1473,
-          "final_sample_to_response_end_seconds": 0.0,
-          "before_first_output": {
-            "window_begin_monotonic_ns": 1176461035939472,
-            "window_end_monotonic_ns": 1176504848919023,
-            "contained_CPU_wall_seconds": 43.11908281499999,
-            "process_cpu_seconds": 42.48,
-            "process_cpu_core_equivalents": 0.9851786547097501,
-            "top_scheduled_threads": [
-              {
-                "tid": 3343058,
-                "start_ticks": 117601377,
-                "cpu_ticks": 4230,
-                "observed_last_cpus": [
-                  0
-                ],
-                "cpu_seconds": 42.3
-              },
-              {
-                "tid": 3343283,
-                "start_ticks": 117602047,
-                "cpu_ticks": 4,
-                "observed_last_cpus": [
-                  2,
-                  3,
-                  4,
-                  5,
-                  7,
-                  8,
-                  9,
-                  10,
-                  11
-                ],
-                "cpu_seconds": 0.04
-              },
-              {
-                "tid": 3343266,
-                "start_ticks": 117602042,
-                "cpu_ticks": 1,
-                "observed_last_cpus": [
-                  10,
-                  11
-                ],
-                "cpu_seconds": 0.01
-              },
-              {
-                "tid": 3343267,
-                "start_ticks": 117602042,
-                "cpu_ticks": 1,
-                "observed_last_cpus": [
-                  4,
-                  8,
-                  9,
-                  11
-                ],
-                "cpu_seconds": 0.01
-              },
-              {
-                "tid": 3343268,
-                "start_ticks": 117602042,
-                "cpu_ticks": 1,
-                "observed_last_cpus": [
-                  2,
-                  3,
-                  7,
-                  10
-                ],
-                "cpu_seconds": 0.01
-              },
-              {
-                "tid": 3343269,
-                "start_ticks": 117602042,
-                "cpu_ticks": 1,
-                "observed_last_cpus": [
-                  2,
-                  3,
-                  4,
-                  7,
-                  10
-                ],
-                "cpu_seconds": 0.01
-              },
-              {
-                "tid": 3343272,
-                "start_ticks": 117602042,
-                "cpu_ticks": 1,
-                "observed_last_cpus": [
-                  8,
-                  9,
-                  10,
-                  11
-                ],
-                "cpu_seconds": 0.01
-              },
-              {
-                "tid": 3343273,
-                "start_ticks": 117602042,
-                "cpu_ticks": 1,
-                "observed_last_cpus": [
-                  8,
-                  10
-                ],
-                "cpu_seconds": 0.01
-              }
-            ],
-            "unmatched_thread_intervals": 0,
-            "engines": [
-              {
-                "pci": "0000:05:00.0",
-                "client_id": 48779,
-                "engine": "bcs",
-                "eligible_intervals": 43,
-                "busy_cycles": 0,
-                "capacity_total_cycles": 827844064,
-                "busy_fraction": 0.0
-              },
-              {
-                "pci": "0000:05:00.0",
-                "client_id": 48779,
-                "engine": "ccs",
-                "eligible_intervals": 43,
-                "busy_cycles": 817044857,
-                "capacity_total_cycles": 827844064,
-                "busy_fraction": 0.9869550227275653
-              },
-              {
-                "pci": "0000:05:00.0",
-                "client_id": 48779,
-                "engine": "rcs",
-                "eligible_intervals": 43,
-                "busy_cycles": 0,
-                "capacity_total_cycles": 827844064,
-                "busy_fraction": 0.0
-              },
-              {
-                "pci": "0000:05:00.0",
-                "client_id": 48779,
-                "engine": "vcs",
-                "eligible_intervals": 43,
-                "busy_cycles": 0,
-                "capacity_total_cycles": 1655688128,
-                "busy_fraction": 0.0
-              },
-              {
-                "pci": "0000:05:00.0",
-                "client_id": 48779,
-                "engine": "vecs",
-                "eligible_intervals": 43,
-                "busy_cycles": 0,
-                "capacity_total_cycles": 1655688128,
-                "busy_fraction": 0.0
-              }
-            ]
-          },
-          "after_first_output": {
-            "window_begin_monotonic_ns": 1176504848919023,
-            "window_end_monotonic_ns": 1177486270522556,
-            "contained_CPU_wall_seconds": 980.9361859175002,
-            "process_cpu_seconds": 5734.04,
-            "process_cpu_core_equivalents": 5.845477088437485,
-            "top_scheduled_threads": [
-              {
-                "tid": 3344957,
-                "start_ticks": 117606380,
-                "cpu_ticks": 96657,
-                "observed_last_cpus": [
-                  5
-                ],
-                "cpu_seconds": 966.57
-              },
-              {
-                "tid": 3344956,
-                "start_ticks": 117606380,
-                "cpu_ticks": 96394,
-                "observed_last_cpus": [
-                  4
-                ],
-                "cpu_seconds": 963.94
-              },
-              {
-                "tid": 3344955,
-                "start_ticks": 117606380,
-                "cpu_ticks": 95884,
-                "observed_last_cpus": [
-                  3
-                ],
-                "cpu_seconds": 958.84
-              },
-              {
-                "tid": 3344954,
-                "start_ticks": 117606380,
-                "cpu_ticks": 95224,
-                "observed_last_cpus": [
-                  2
-                ],
-                "cpu_seconds": 952.24
-              },
-              {
-                "tid": 3344953,
-                "start_ticks": 117606380,
-                "cpu_ticks": 95192,
-                "observed_last_cpus": [
-                  1
-                ],
-                "cpu_seconds": 951.92
-              },
-              {
-                "tid": 3343058,
-                "start_ticks": 117601377,
-                "cpu_ticks": 93477,
-                "observed_last_cpus": [
-                  0
-                ],
-                "cpu_seconds": 934.77
-              },
-              {
-                "tid": 3343283,
-                "start_ticks": 117602047,
-                "cpu_ticks": 130,
-                "observed_last_cpus": [
-                  0,
-                  1,
-                  6,
-                  7,
-                  8,
-                  9,
-                  10,
-                  11
-                ],
-                "cpu_seconds": 1.3
-              },
-              {
-                "tid": 3343270,
-                "start_ticks": 117602042,
-                "cpu_ticks": 29,
-                "observed_last_cpus": [
-                  0,
-                  3,
-                  6,
-                  7,
-                  8,
-                  9,
-                  10,
-                  11
-                ],
-                "cpu_seconds": 0.29
-              }
-            ],
-            "unmatched_thread_intervals": 0,
-            "engines": [
-              {
-                "pci": "0000:05:00.0",
-                "client_id": 48779,
-                "engine": "bcs",
-                "eligible_intervals": 978,
-                "busy_cycles": 0,
-                "capacity_total_cycles": 18833081329,
-                "busy_fraction": 0.0
-              },
-              {
-                "pci": "0000:05:00.0",
-                "client_id": 48779,
-                "engine": "ccs",
-                "eligible_intervals": 967,
-                "busy_cycles": 12241085209,
-                "capacity_total_cycles": 18833081329,
-                "busy_fraction": 0.6499778233395426
-              },
-              {
-                "pci": "0000:05:00.0",
-                "client_id": 48779,
-                "engine": "rcs",
-                "eligible_intervals": 978,
-                "busy_cycles": 0,
-                "capacity_total_cycles": 18833081329,
-                "busy_fraction": 0.0
-              },
-              {
-                "pci": "0000:05:00.0",
-                "client_id": 48779,
-                "engine": "vcs",
-                "eligible_intervals": 978,
-                "busy_cycles": 0,
-                "capacity_total_cycles": 37666162658,
-                "busy_fraction": 0.0
-              },
-              {
-                "pci": "0000:05:00.0",
-                "client_id": 48779,
-                "engine": "vecs",
-                "eligible_intervals": 978,
-                "busy_cycles": 0,
-                "capacity_total_cycles": 37666162658,
-                "busy_fraction": 0.0
-              }
-            ]
-          },
-          "limits": "Client observation windows, not native kernel-stage boundaries. Scheduled CPU includes polling/stalls. Associated DRM clients may be shared; cycle busy fraction is not arithmetic efficiency, VRAM bandwidth, physical PCIe traffic or hardware saturation."
-        }
-      ],
-      "final_full_model_hashes": 15,
-      "host_probe_accepted": true,
-      "requests": [
-        {
-          "ok": true,
-          "err": null,
-          "ttft_s": 51.871,
-          "total_s": 328.264,
-          "prompt_tokens": 33214,
-          "reused_tokens": 0,
-          "read_tokens": 33214,
-          "generated_tokens": 3126,
-          "prompt_tps": 641.7,
-          "prompt_tps_source": "engine",
-          "decode_tps": 11.3,
-          "decode_tps_source": "engine",
-          "prompt_ms": 51760.9,
-          "decode_ms": 276480.6,
-          "drafts_offered": 0,
-          "drafts_accepted": 0,
-          "finish_reason": "stop",
-          "request_sha256": "b0a065720a5eb86fa2d3f84d6371e35da774b4ea144d022608d49b80c227cba1",
-          "stream_complete": true,
-          "truncated": false,
-          "generated_tokens_source": "usage",
-          "client_interval": {
-            "request_begin_monotonic_ns": 1176132748617884,
-            "first_output_monotonic_ns": 1176184620080182,
-            "request_end_monotonic_ns": 1176461013215485
-          },
-          "eligible": false,
-          "agreement_eligible": false,
-          "speed_eligible": true,
-          "speed_ineligible_reasons": [],
-          "ineligible_reasons": [
-            "MTP counters are missing, invalid or below 256 offered drafts"
-          ],
-          "acceptance_rate": null,
-          "usage_generated_tokens": 3126,
-          "completion_includes_thinking": true,
-          "run": 0,
-          "order": 0,
-          "output_sha256": "e36c666647e5d179eff689d3ee30c7951fc6bdca4d1829ee283d14e4266092b7",
-          "reasoning_sha256": "2375294f11bb088eef724a0d67aa9a179569a4b75dff095e84d870bdc65cdbd0",
-          "output_chars": 5564,
-          "reasoning_chars": 3689,
-          "reasoning_tokens": null,
-          "workload": "regular-code",
-          "controller_eligible": false
-        },
-        {
-          "ok": true,
-          "err": null,
-          "ttft_s": 43.813,
-          "total_s": 1025.234,
-          "prompt_tokens": 33288,
-          "reused_tokens": 0,
-          "read_tokens": 33288,
-          "generated_tokens": 10983,
-          "prompt_tps": 761.7,
-          "prompt_tps_source": "engine",
-          "decode_tps": 11.2,
-          "decode_tps_source": "engine",
-          "prompt_ms": 43702.0,
-          "decode_ms": 981509.7,
-          "drafts_offered": 0,
-          "drafts_accepted": 0,
-          "finish_reason": "stop",
-          "request_sha256": "c6d16c6adb19adf79de1cc29929ab71cab5433488ca2fda2dfcdad523bde56f4",
-          "stream_complete": true,
-          "truncated": false,
-          "generated_tokens_source": "usage",
-          "client_interval": {
-            "request_begin_monotonic_ns": 1176461035939472,
-            "first_output_monotonic_ns": 1176504848919023,
-            "request_end_monotonic_ns": 1177486270522556
-          },
-          "eligible": false,
-          "agreement_eligible": false,
-          "speed_eligible": true,
-          "speed_ineligible_reasons": [],
-          "ineligible_reasons": [
-            "MTP counters are missing, invalid or below 256 offered drafts"
-          ],
-          "acceptance_rate": null,
-          "usage_generated_tokens": 10983,
-          "completion_includes_thinking": true,
-          "run": 0,
-          "order": 1,
-          "output_sha256": "eeb20bfaec5c704a4d3594892fcab90666700009448d87c2f06551bc2bad4797",
-          "reasoning_sha256": "351fc282b70801d65f86a08392435ec77f07086a2cafa83f2cd65bbf80b713cc",
-          "output_chars": 4974,
-          "reasoning_chars": 28310,
-          "reasoning_tokens": null,
-          "workload": "varied-prose",
-          "controller_eligible": false
-        }
-      ],
-      "journal": {
-        "successful_warmups": 4,
-        "successful_long_requests": 2,
-        "phase_order": [
-          "warm-up/chat",
-          "calibration",
-          "calibration",
-          "warm-up/prompt",
-          "long-generation/regular-code",
-          "long-generation/varied-prose"
-        ],
-        "request_sha256": [
-          "6976dd85c26437117139f185ce0ac4da0ab9d1d4eb576dd2f9e252ae99d63f03",
-          "d53e3c2e317b3f08b3b3c48aa391fd7c6bd7e451a3176a85b9b4763f7d85fdf3",
-          "7980bd89f91dbcfd84166ee8ea45c5d77888ee349ccee71596c073a2ed4790a0",
-          "cfe052d03f13fa28f83f44331156d873212064c85036a8652c6eab4a2d7380a5",
-          "b0a065720a5eb86fa2d3f84d6371e35da774b4ea144d022608d49b80c227cba1",
-          "c6d16c6adb19adf79de1cc29929ab71cab5433488ca2fda2dfcdad523bde56f4"
-        ],
-        "journal_sha256": "ed1f03f08d00e0e64ba23bd3c491f7516ae421c9218cfea818e2d48264447cdc"
-      },
-      "native_exit_code": 0,
-      "evidence_sha256": {
-        "engine.stderr": "cf585d50778116a29eade4279502b30942899dd1eee0b27d02b56bbf914b3426",
-        "client-resources.jsonl": "5e2fd0ad4073a4df1181143dc40ad5d9b7dfe4a7397dd038d1954aeaf2fcad8a",
-        "engine-start.json": "b3e7cde9683c219f76d9fb27df81add2b8f8e8a0beb3acbda90e5133ea5b612e",
-        "engine-exit.json": "003f6d401592dfb29a39e17688988bd1b235d9a36ed9a9bccdcafd14b38a883f"
-      },
-      "ownership_closed": true,
-      "fresh_faults": [],
-      "boot_unchanged": true,
-      "driver_after": {
-        "pci": "/sys/bus/pci/devices/0000:05:00.0",
-        "driver": "xe",
-        "vendor": "0x8086",
-        "device": "0xe20c",
-        "kernel": "7.0.0-38-generic",
-        "devcoredump": false
-      }
+      ]
     }
   ],
-  "active": false,
-  "passed": true,
-  "complete": true,
-  "ownership_closed": true,
-  "production_selected": false,
-  "model_adoption_qualified": false,
-  "clean_speed_qualified": false,
-  "hardware_saturation_qualified": false,
-  "private_inputs_sha256": "2f062389a6f0290a12b80942ee005b9bc03e7be5cc61325def8b9166705f1523",
   "analysis": {
     "source_commit": "81907432cd61ad48e3f984a61c1a0f7daedbce1c",
     "passed": true,
@@ -2568,5 +993,23 @@
     },
     "decision": "No production or global policy adoption. The one observer-charged process pair has slower no-draft code and faster no-draft prose, with different generated lengths. These descriptive ratios are not repeated clean gains. Keep selected6e40,original prefill/decode and1256slots. Next source question: qualify the already implemented fixed MTP2 route on original6e40 before any model/performance trial; no new numerical kernel is selected.",
     "remaining_hardware_question": "CPU-pool host wall and GPU-reach waits dominate this route, but include scheduling/polling/overlap. Counter zeros cover expert-copy only. Physical PCIe/VRAM traffic and arithmetic saturation remain unknown."
+  },
+  "final_full_model_hashes": 15,
+  "active": false,
+  "passed": true,
+  "complete": true,
+  "ownership_closed": true,
+  "production_selected": false,
+  "model_adoption_qualified": false,
+  "clean_speed_qualified": false,
+  "hardware_saturation_qualified": false,
+  "artifact_retirement": {
+    "status": "verified-manifest-prepared",
+    "manifest": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/closed-mtp-net-bench-20261024.jsonl",
+    "sha256": "05fce8da9053bf096b54cf6f0697cbe24c00cbed0caed06bb79eafa7979e01fd",
+    "files": 163,
+    "bytes": 43700882,
+    "proof": "Closed model/owner/12request/route/clock/resource replay;190 original controller inputs recovered and13 selected assets rehashed before deletion.Original full inputs/results recover at51bb62ed6.",
+    "remaining": "Original selected13 plus private13 retained for imminent fixed-MTP2 versus MTP4/T1 comparison after source and bounded route qualification;private generation retires when that comparison closes or before any new native generation. Keep actual private source/compiled-input receipt for its current admission reader. Unrelated provenance/worker holds remain open."
   }
 }

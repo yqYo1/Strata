@@ -165,7 +165,8 @@ bound and is not subtracted. Replay work/clocks/resources before raw retirement.
 
 ## Attribution limits and outstanding gates
 
-The limiting hardware resource remains incompletely attributed. CPU-pool and GPU-reach wall scopes dominate the current decode route. CPU-pool wall
+The limiting hardware resource remains incompletely attributed. CPU-pool and
+GPU-reach wall scopes dominate the current decode route. CPU-pool wall
 includes scheduling/waits; scheduled CPU includes idle polling. GPU-reach wait is
 host wall time, while CCS busy cycles include stalls and possibly shared clients.
 Neither a saturated host thread nor a GPU busy percentage proves arithmetic
