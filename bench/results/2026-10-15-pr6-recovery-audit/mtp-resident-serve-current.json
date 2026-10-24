@@ -1,6 +1,6 @@
 {
-  "stage": "failed",
-  "source_commit": "fbeec37b8be217b7d2412a15ebba4cbbc240a527",
+  "stage": "prepared",
+  "source_commit": "cfb04d039e7312eae55882a21958e1ea3bc9f712",
   "input_sha256": {
     "data/expert-profile.bin": "8f59b4aa8873209dff11c11e37bcda9529a1335b724a1afeea37bf6388975baf",
     "tests/core/test_build_manifest.py": "2d054d4fbbb862ef62eaacf53d7580e2d5a92ea57598fd179c480bf1cc943847",
@@ -17,15 +17,20 @@
     "tools/sycl/measurement_guards.py": "794e332c70aca0acadad4f26d0414548e023a02fd27b72ed78fc773674423ec8",
     "tools/sycl/measurement_owner.py": "bddd0c5e5020e882ca3404679420faec11e820dabce2ed4c72ef82b4c9c0874a",
     "tools/sycl/mtp_resident_control.py": "fcc35c63d9c4da33e1b9fea8f2ab5fa15b80a909ce9f8b29c713d74f1530c9c4",
-    "tools/sycl/mtp_resident_serve.py": "98018ba99bf23b1a5b011de2f89cb69b94c1c6cc9efb009c1e1e48ed6c026bb3",
+    "tools/sycl/mtp_resident_serve.py": "433ad7d09bc269fed9ac2b81aa518314e328c5c4a95be05190183037a4c3d2cd",
     "tools/sycl/test_mtp_resident_control.py": "3a42b2dcd3b9775dc3923e9359afad3bff949bb57a3abe805c0c3b1568e9109f",
-    "tools/sycl/test_mtp_resident_serve.py": "348c87849dcfb07d4849d98bf3242e379643ec83b4024379f8a824fb64d8c89d",
+    "tools/sycl/test_mtp_resident_serve.py": "d6bb2b7699770337da2bba7d192d4ccba8014395467872bd35a12a8e8a7266b0",
     "tools/sycl/ur_validation.py": "2e41d84788dc9cc3c7435b18b43601b3ca79280ccb855414d7a36bae6bff83e7"
   },
   "binary": {
     "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/mtp-resident-control-v3/build/strata",
     "bytes": 22194216,
     "sha256": "81393573f25be5cdc44f1ac13cb06d6c280a387e0ee9142d5ebe01e9d82f9307"
+  },
+  "prior_failed_operation": {
+    "commit": "cfb04d039e7312eae55882a21958e1ea3bc9f712",
+    "path": "bench/results/2026-10-15-pr6-recovery-audit/mtp-resident-serve-current.json",
+    "status": "Original failed INFO assertion and ownership_closed=false remain unchanged. Native reached READY then owned SIGTERM before GEN;positive reap/empty session verified. New v2 corrects only controller reporting semantics;no native change."
   },
   "base_native_source": "6e40afc1beddd059ee518617f6c1efce1da14aca",
   "native_controller_source_commit": "26d48498529f8bc38327a9b9e4ebbbe610ae5b1d",
@@ -196,7 +201,8 @@
     "devcoredump": false
   },
   "boot": "cfda0b6a-7c13-4fe2-bdf5-8f9202770840",
-  "criteria": "Exactly two fresh native processes,cap0 then1,each33/257 synthetic input IDs and32 output IDs per fresh request,caches0. Same original prefill/settings/1256slots. INFO must confirm131072 resident INT8,spec4,selected cap,5workers,PCIe0,caches0. Each request has complete batched mode2 draft prompt callbacks and valid vocabulary IDs. Cap0 first targetT1 thenT4 with positive increasing draft-round counters;cap1 every targetT1,zero offered/accepted drafts and zero draft rounds. Same-child preexec validation,normal owned exit,empty validation warnings,unchanged source/model/runtime/boot/driver and no fresh fault;full15 model hashes after cohort. Stop first failure,no retry. No token-string identity,speed/task/physical-context/adoption claim.",
+  "criteria": "Exactly two fresh native processes,cap0 then1,each33/257 synthetic input IDs and32 output IDs per fresh request,caches0. Same original prefill/settings/1256slots. INFO must confirm context131072,kv=int8,kv_resident=0 (original full-resident mode0 reporting),spec4,selected cap,5workers,PCIe0,caches0. Each request has complete batched mode2 draft prompt callbacks and valid vocabulary IDs. Cap0 first targetT1 thenT4 with positive increasing draft-round counters;cap1 every targetT1,zero offered/accepted drafts and zero draft rounds. Same-child preexec validation,normal owned exit,empty validation warnings,unchanged source/model/runtime/boot/driver and no fresh fault;full15 model hashes after cohort. Stop first failure,no retry. No token-string identity,speed/task/physical-context/adoption claim.",
+  "kv_reporting_contract": "Pinned6e40 kv_plan leaves mode0/all slots when requested residency>=max_cells. INFO kv_resident reports slot count only for main mode1,else0. Main context131072 and requested131072 therefore require INFO0;draft prompt mode2 independently confirms the MTP ring.",
   "interpretation": "Resident no-decode-draft retains MTP weights/KV/prompt precompute but omits generation KV catchup and proposals. Target verifier geometry also changesT4 toT1. This is a private attribution control,not full-MTP-off or an adopted decoder. State hashing of future MTP cells is disabled because this arm intentionally does not maintain them.",
   "budgets": {
     "wall": 900,
@@ -207,35 +213,18 @@
     "total_cap": 268435456
   },
   "retention": "Keep compact per-request route/count/wire/result hashes and per-process ownership/fault outcomes. Retire successful stdout/stderr/JIT after replay. Reuse only model configuration/assets from full_context_model.setup;never its retired candidate engine qualification.",
-  "outcomes": {
-    "0": {
-      "passed": false,
-      "exit_code": -15,
-      "error": "RuntimeError('native model exit/ownership failed')",
-      "ownership_closed": false,
-      "fresh_faults": [],
-      "boot_unchanged": true,
-      "driver_after": {
-        "pci": "/sys/bus/pci/devices/0000:05:00.0",
-        "driver": "xe",
-        "vendor": "0x8086",
-        "device": "0xe20c",
-        "kernel": "7.0.0-38-generic",
-        "devcoredump": false
-      }
-    }
-  },
+  "outcomes": {},
   "active": false,
-  "ownership_closed": false,
+  "ownership_closed": true,
   "passed": false,
   "complete": false,
   "speed_eligible": false,
   "model_adoption_qualified": false,
   "production_selected": false,
   "next_gate": "Only after both fresh model arms pass,freeze matched official bench.sh thinking-on long strong/weak MTP,agent-session and independent prefill-preservation timing with prospective clock screens. Selected original decode remains unchanged.",
-  "private_inputs_sha256": "a1045415261bab3944a1c34df268a269538decef26a6ca0162c05abbbe33bc41",
+  "private_inputs_sha256": "024567e6442de95a90341a010068304b740be3a8b0c4b761b08ef9b96adb7fc6",
   "controller_host_tests": {
-    "source_commit": "fbeec37b8be217b7d2412a15ebba4cbbc240a527",
+    "source_commit": "cfb04d039e7312eae55882a21958e1ea3bc9f712",
     "command": [
       "/usr/bin/python3",
       "-B",
@@ -244,38 +233,6 @@
     "tests": 4,
     "exit_code": 0,
     "passed": true,
-    "scope": "Host-only valid/invalid trace-conservation and protocol-wire controls;not native/model execution."
-  },
-  "failure_interpretation": "Controller wrongly required INFO kv_resident=131072. Original native INFO prints physical resident slots only in streamed main-KV mode1;with max_context=kv_resident=131072,kv_plan keeps all pages in VRAM at mode0 and INFO prints0. Model reached READY with correct slots/spec/pool/no caching;no GEN submitted. Interaction assertion triggered owned SIGTERM;exit-15 is not a GPU hang. Original failed/ownership_closed=false outcome remains unchanged.",
-  "termination_evidence": {
-    "pid": 3163652,
-    "direct_identity": {
-      "pid": 3163652,
-      "state": "R",
-      "ppid": 3162792,
-      "pgid": 3163652,
-      "sid": 3163652,
-      "start_ticks": 117075506,
-      "rss_bytes": 323584
-    },
-    "direct_child_reaped": true,
-    "session_empty": true,
-    "survivors": [],
-    "exit_code": -15,
-    "error": "RuntimeError('actual model/cache/MTP configuration differs')",
-    "cleanup": [
-      {
-        "pid": 3163652,
-        "start_ticks": 117075506,
-        "signal": "SIGTERM",
-        "result": "sent"
-      }
-    ]
-  },
-  "kv_contract_source": {
-    "revision": "6e40afc1beddd059ee518617f6c1efce1da14aca",
-    "allocation": "src/core/layer.cpp:kv_plan",
-    "reporting": "src/program/generate.cpp:INFO kv_resident conditional on kv_mode==1",
-    "native_change_required": false
+    "scope": "Host protocol/wire,actual original INFO full-residency semantics,route/round/count corruption controls;no model/device execution. Original wrong INFO test remains failed in its archive."
   }
 }
