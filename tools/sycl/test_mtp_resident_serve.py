@@ -19,7 +19,7 @@ def sample_trace(cap):
         row = dict(prompt_tokens=n, reused_tokens=0, read_tokens=n,
             generated_tokens=32, drafts_accepted=0, drafts_offered=0 if cap else 93)
         rows.append(row)
-        text += f'strata serve: DRAFT_PREFILL path=batched mode=2 cells={n-1}\n'
+        text += f'strata serve: DRAFT_PREFILL path={"token" if n<65 else "batched"} mode=2 cells={n-1}\n'
         for i in range(32): text += f'strata trace: window {n-1+i} {1 if cap or not i else 4}\n'
         text += f'strata serve: prompt {n} tokens = 0 reused + {n} read, 32 generated\n'
         if not cap: rounds += 31
@@ -38,6 +38,7 @@ class Routes(unittest.TestCase):
         text, rows = sample_trace(1)
         for bad in (text.replace('window 33 1', 'window 33 4'),
                     text.replace('cumulative_draft_rounds=0', 'cumulative_draft_rounds=1', 1),
+                    text.replace('path=token mode=2 cells=32', 'path=batched mode=2 cells=32'),
                     text.replace('mode=2 cells=32', 'mode=2 cells=31'),
                     text.replace('mode=2 cells=32', 'mode=1 cells=32')):
             with self.subTest(bad=bad[:80]), self.assertRaises(RuntimeError): m.route_evidence(bad, rows, 1)
