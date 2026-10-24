@@ -1,0 +1,48 @@
+{
+  "stage": "host-checked",
+  "host": {
+    "source_commit": "8a0f791262c9834f4b6695ef82b0e876fcf470ca",
+    "controller_sha256": "0aab1fbf0e3cd46082b9aa3dfb8b6dfd0f46e6eb2380690fcef69cb059a37157",
+    "test_sha256": "079d9fb296141511f29aa1d6c223baf92b371232c4fb5f9f4cd188da65d8ec84",
+    "passed": true,
+    "tests": 5,
+    "GPU_executed": false,
+    "exit_code": 0,
+    "ownership_closed": true
+  },
+  "plan": {
+    "question": "Does the full-context-corrected package preserve/improve the original fast long-prefill route?",
+    "order": [
+      0,
+      1,
+      1,
+      0,
+      0,
+      1
+    ],
+    "pairs": [
+      [
+        0,
+        1
+      ],
+      [
+        3,
+        2
+      ],
+      [
+        4,
+        5
+      ]
+    ],
+    "processes": 6,
+    "requests_per_process": 4,
+    "execution": "Official bench.sh --prefill-only --prefill-tokens98304 --think --runs4;one short warmup then four fresh117489-token requests per independent process. Original6e40/candidate590f/candidate590f/original6e40/original6e40/candidate590f. First long request remains separate from the three subsequent requests.",
+    "constants": "Original canonical decode configuration:131072 resident INT8 context,1256 slots,8192 prefill,5 workers,pcie0,adapt0,spec4,suffix0,caches0,Q8 MTP,no token graph/no coupled draft. Identical arithmetic/placement/safety flags. Only the native executable differs;no new tuning or environment mutation.",
+    "observers": "Remove NEO allocation logs,UR memory subscriber,stage/state/cache readbacks,census and timers. Keep the qualified native-only UR validation/retained-loader preload and warning logs in BOTH arms. Parameter validation is charged to both;this is not an observer-free speed claim or ordinary-teardown qualification.",
+    "decision": "Use each process subsequent-three median,exact tokens/engine_ms. Preserve every sample. Candidate faster screen requires all three paired ratios>1 and geomean>=1.0005. Prefill no-decline screen requires every ratio>=1. Target screen requires every candidate process median>=1000. A failed screen remains failed;no threshold/order change or noise dismissal. None qualifies decode or adoption.",
+    "stopping": "Stop first source/config/model/route/journal/owner/fault/budget failure. No retry,skipped/replaced process or speed-based early stopping. Commit each closed outcome before the next process. Full15 model hashes at preparation and after process5;identity/stat pins before/after each process.",
+    "next": "Independently compare repeated thinking-on long generation for both observed MTP classes and upstream long/agent-session suite with the original decode implementation/configuration/1256 slots. Any decode impact is a separation defect;do not adopt while it remains. Physical262144/task/session/failure-owner gates remain distinct.",
+    "interpretation": "Package comparison after capacity/state gates,not causal kernel attribution or measured hardware saturation. Existing whole-model limits remain;no new speed gain is claimed before the samples.",
+    "retention": "Keep individual request clocks/counts/hashes,phase decisions,source/config/actual route/owner/fault evidence. Successful raw logs/JIT retire after committed replay;retain only the two existing native generations for this imminent prefill/decode comparison."
+  }
+}

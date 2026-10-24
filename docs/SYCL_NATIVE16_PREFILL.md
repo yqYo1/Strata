@@ -1035,7 +1035,8 @@ The narrower dense global-free drop is2751729664 bytes. Logged creation sums
 and pool labels do not explain physical movement or live byte totals. The
 counter variations and enabled cache/state readbacks prohibit treating this
 as a production2.5GB new allocation or a measured throughput bottleneck.
-Next compare matched audit-on/off placement,then clean long-prefill and repeated
+The matched audit-on/off placement control below is now closed. Next compare
+long-prefill and repeated
 strong/weak MTP decode performance;any decode impact remains a separation defect.
 No speed/decode-performance/adoption qualification
 is claimed. The returned observer audit is accepted with correction:the pinned
@@ -1071,7 +1072,7 @@ After source/recipe and20 native asset verification,those4 files/2611818 bytes
 are retired. Only the v3 environment/dependency/source qualification record is
 needed for the new control. No old raw trace is a measurement input.
 
-The prepared Main control uses four fresh native processes in ON/OFF/OFF/ON
+The completed Main control used four fresh native processes in ON/OFF/OFF/ON
 order with the same16385/33/16401-token requests and unchanged decode settings.
 OFF removes only STATE_HASH,SNAPSHOT_VERIFY,CACHE_LOAN_AUDIT before native exec;
 UR/NEO logging,safety,queues,weights and1256 slots remain fixed. ON retains the
@@ -1079,9 +1080,28 @@ full payload/state gates;OFF is a route/wire/resource observation and does not
 requalify payload bytes. Refill has an unconditional sync before its optional
 audit,commit is waited before DONE,and snapshot restore has its own checked
 sync/copies,so this removes observation rather than a declared required fence.
-The prospective screen and individual samples remain in the compact result.
-This is not a throughput/adoption comparison. Cohort raw output has a256MiB cap
-and64MiB text per process,with retirement after the compact comparison. Four physical-fill/memory report/review
+All four processes exit0 with closed ownership and no fresh fault;the final15
+model hashes match. ON VRAM deltas are2511937536/2512003072 bytes;both OFF
+deltas are2511872000. Every process's dense global-free decrease is2442137600
+bytes. The predeclared audit-contribution screen fails,and both OFF shifts
+exceed1GiB:these readbacks are not necessary for the large accounting change.
+This does not identify physical backing movement,bus bytes or a speed cost.
+Individual samples and original limits remain in the compact result. This
+closes the current observer question;do not extend driver attribution without
+a concrete decision. No inference code or decode placement changed.
+
+The next official117K comparison retains original6e40 and unselected590f in
+six independent processes,original/candidate/candidate/original/original/candidate,
+with four fresh long requests each. First-use remains separate from each
+process's subsequent-three median. Both retain original131072 resident INT8
+context,8192 prefill and1256-slot decode placement. Heavy observers are removed;
+the qualified native-only validation/retained-loader preload and warning logs
+remain identical in both arms. Its overhead is charged,not assumed zero.
+The committed controller's five CPU evidence controls pass. Prefill screens
+cannot qualify decode or adoption. Repeated strong/weak thinking-on generation,
+long/agent-session benchmarks and state handoff remain independent requirements.
+See the [current phase comparison](../bench/results/2026-10-15-pr6-recovery-audit/phase-prefill-speed-current.json).
+Four physical-fill/memory report/review
 files remain for their named Main tasks;unrelated owner/provenance holds remain
 separate.
 
