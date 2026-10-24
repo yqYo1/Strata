@@ -1,6 +1,6 @@
 {
   "schema": "strata-resident-mtp-control-v1",
-  "stage": "retired_previous",
+  "stage": "closed_prebuild_failed",
   "source_commit": "8af8fe1e3c038133b6aad53cf5278ee8e8c51958",
   "input_sha256": {
     "tools/sycl/mtp_resident_control.py": "58ab065ff46bc43b1fa9185328be18a71a303b82813c7614de6b48d5bce6cf57",
@@ -232,5 +232,22 @@
     "error": "test_only_declared_mtp_edits_and_no_prefill_or_first_draft_edit: generic signature-tail anchor also matches draft_first (2 occurrences). CPU source generator/guard checks otherwise complete;no native compilation or GPU/model execution. Correct the test anchor in a new committed source/plan before build;do not reinterpret this failed check as passed.",
     "build_permitted": false,
     "retirement_independent": "Old candidate prefill comparison is already closed/rejected;source9853/recipe/SDK/asset/remote proofs completed. Its unused generation retirement remains separately permitted;selected original13 assets stay unchanged."
-  }
+  },
+  "source_admission_negative_control": {
+    "source_commit": "8af8fe1e3",
+    "cases": [
+      {
+        "case": "unbound_environment",
+        "unexpected_acceptance": true
+      },
+      {
+        "case": "missing_generated_mtp_pin",
+        "unexpected_acceptance": true
+      }
+    ],
+    "passed": false,
+    "GPU_executed": false,
+    "scope": "In-memory copies only;actual record/environment/source files unchanged. Old admission did not bind omitted raw environment/generated-input maps to its compact committed fields. Must correct prospectively before native build;does not revise prior CPU failure."
+  },
+  "next_action": "Correct the CPU test anchor and bind every omitted input map/environment to immutable committed evidence in a fresh prospective v2 preparation. No native build was attempted. Do not promote or rewrite v1 failure. Old generation retirement is completed independently."
 }
