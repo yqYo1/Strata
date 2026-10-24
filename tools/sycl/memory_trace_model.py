@@ -130,7 +130,9 @@ def admission(r,container):
 def logging_evidence(stdout,stderr,contract):
     require(contract['required_patterns'],'nonempty predeclared NEO output contract required')
     result={}
-    for category,pattern in contract['required_patterns'].items():
+    required=contract['required_patterns'];optional=contract.get('optional_patterns',{})
+    require(not set(required)&set(optional),'overlapping required/optional log categories')
+    for category,pattern in {**required,**optional}.items():
         require(0<len(pattern)<=512 and '\n' not in pattern,'bounded log decoder pattern required')
         rows=[]
         for sink,text in (('stdout',stdout),('stderr',stderr)):
@@ -138,9 +140,9 @@ def logging_evidence(stdout,stderr,contract):
                 if re.search(pattern,line):
                     require(len(line)<=4096,'NEO record exceeds bounded line size')
                     rows.append((sink,line))
-        require(rows,'required NEO output missing: '+category)
-        result[category]=dict(records=len(rows),sinks=sorted({sink for sink,_ in rows}),
-            representative=rows[0][1])
+        require(rows or category not in required,'required NEO output missing: '+category)
+        result[category]=dict(records=len(rows),required=category in required,
+            sinks=sorted({sink for sink,_ in rows}),representative=rows[0][1] if rows else None)
     return dict(categories=result,scope='Observed logging capability only;not complete BO identity/lifetime,UMD-to-BO pointer join,KMD migration or ordinary teardown.')
 
 
