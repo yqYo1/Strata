@@ -1,5 +1,5 @@
 {
-  "stage": "prepared",
+  "stage": "partial",
   "source_commit": "c0801edad121cf30d1dd7388dd7b2fd9c1f13fc9",
   "input_sha256": {
     "data/expert-profile.bin": "8f59b4aa8873209dff11c11e37bcda9529a1335b724a1afeea37bf6388975baf",
@@ -222,7 +222,105 @@
     "total_cap": 268435456
   },
   "retention": "Keep compact per-request route/count/wire/result hashes and per-process ownership/fault outcomes. Retire successful stdout/stderr/JIT after replay. Reuse only model configuration/assets from full_context_model.setup;never its retired candidate engine qualification.",
-  "outcomes": {},
+  "outcomes": {
+    "0": {
+      "passed": true,
+      "admission": {
+        "context": "131072",
+        "kv": "int8",
+        "kv_resident": "0",
+        "expert_slots": "1256",
+        "spec": "4",
+        "mtp_max": "0",
+        "lookup": "0",
+        "pool_workers": "5",
+        "pcie_frac": "0.00",
+        "conversation_cache_mib": "0"
+      },
+      "requests": [
+        {
+          "generated_tokens": 32,
+          "prompt_tokens": 33,
+          "finish": "length",
+          "drafts_accepted": 18,
+          "drafts_offered": 48,
+          "reused_tokens": 0,
+          "read_tokens": 33,
+          "output_ids_sha256": "265a4e66ed226ffd9a38f38d5e514697be455eb7cf4f70adbefb355e37471275",
+          "publications": 1
+        },
+        {
+          "generated_tokens": 2,
+          "prompt_tokens": 257,
+          "finish": "stop",
+          "drafts_accepted": 0,
+          "drafts_offered": 3,
+          "reused_tokens": 0,
+          "read_tokens": 257,
+          "output_ids_sha256": "8c90ba1d76cfa262e2fffe37ddeac5e7c83667b518186a21fea159542af32828",
+          "publications": 1
+        }
+      ],
+      "exit_code": 0,
+      "activation": {
+        "pid": 3194967,
+        "loader": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_loader.so.0.12.0",
+        "threads_before": 1,
+        "preinit": 37,
+        "config_enabled": true,
+        "first_init": true,
+        "dispatch_result": 46,
+        "output_untouched": true,
+        "retained_reference_until_exit": true,
+        "runtime_teardown_qualified": false
+      },
+      "routes": [
+        {
+          "target_windows": 17,
+          "first_T": 1,
+          "subsequent_T": 4,
+          "draft_rounds_delta": 16,
+          "cumulative_draft_rounds": 16,
+          "prompt_draft": {
+            "read_tokens": 33,
+            "draft_cells": 32,
+            "batch_count": 1,
+            "path": "token",
+            "mode": 2
+          }
+        },
+        {
+          "target_windows": 2,
+          "first_T": 1,
+          "subsequent_T": 4,
+          "draft_rounds_delta": 1,
+          "cumulative_draft_rounds": 17,
+          "prompt_draft": {
+            "read_tokens": 257,
+            "draft_cells": 256,
+            "batch_count": 1,
+            "path": "batched",
+            "mode": 2
+          }
+        }
+      ],
+      "validation_warning_bytes": 0,
+      "stdout_sha256": "272670ff08014d300448e0c65fa5badc81a2ec03a358a78ef95abe4a23fa4191",
+      "stderr_sha256": "716873e1368a7b0822d35fabb225e1662b160496656b23b05a9784efcda4beeb",
+      "host_probe_accepted": true,
+      "ownership_closed": true,
+      "fresh_faults": [],
+      "boot_unchanged": true,
+      "driver_after": {
+        "pci": "/sys/bus/pci/devices/0000:05:00.0",
+        "driver": "xe",
+        "vendor": "0x8086",
+        "device": "0xe20c",
+        "kernel": "7.0.0-38-generic",
+        "devcoredump": false
+      }
+    }
+  },
   "active": false,
   "ownership_closed": true,
   "passed": false,
