@@ -314,7 +314,7 @@ def main(argv=None):
     parser.add_argument('--interval', type=float, default=1.)
     parser.add_argument('--pci', default='0000:05:00.0')
     args = parser.parse_args(argv)
-    require(0 < args.seconds <= 900 and .2 <= args.interval <= 10, 'finite sampling budget required')
+    require(0 < args.seconds <= 3600 and .2 <= args.interval <= 10, 'finite sampling budget required')
     pci = canonical_pci(args.pci)
     boot = Path('/proc/sys/kernel/random/boot_id').read_text().strip()
     target = receipt_target(json.loads(args.native_receipt.read_text()), boot)
