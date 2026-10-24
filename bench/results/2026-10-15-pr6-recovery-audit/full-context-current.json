@@ -13095,7 +13095,7 @@
     }
   },
   "neo_readback_control_v1": {
-    "stage": "sample_1_closed",
+    "stage": "sample_2_closed",
     "source_commit": "50c2ef6bb162131c1c8aecba4c6a500175124692",
     "input_sha256": {
       "bench/sycl/client_resources.py": "9d5afa1bfc7df83ebd0ada8470b61a2c5b01d59b72822dd75f45ddb5a56ec16e",
@@ -13597,6 +13597,166 @@
             "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/neo-readback-control-v1/owned/sample-1.stderr",
             "bytes": 495393,
             "sha256": "b8ebbfafa7838a8f689c9c5981fd046311a5e332311b905019a1d8a43cfb97a6"
+          }
+        },
+        "host_probe_accepted": true,
+        "fresh_faults": [],
+        "boot_unchanged": true,
+        "driver_after": {
+          "pci": "/sys/bus/pci/devices/0000:05:00.0",
+          "driver": "xe",
+          "vendor": "0x8086",
+          "device": "0xe20c",
+          "kernel": "7.0.0-38-generic",
+          "devcoredump": false
+        },
+        "requests": [
+          {
+            "generated": 1,
+            "prompt": 16385,
+            "accepted": 0,
+            "offered": 0,
+            "reused": 0,
+            "read": 16385
+          },
+          {
+            "generated": 1,
+            "prompt": 33,
+            "accepted": 0,
+            "offered": 0,
+            "reused": 0,
+            "read": 33
+          },
+          {
+            "generated": 1,
+            "prompt": 16401,
+            "accepted": 0,
+            "offered": 0,
+            "reused": 16385,
+            "read": 16
+          }
+        ]
+      },
+      "2": {
+        "audit": "off",
+        "stage": "closed",
+        "passed": true,
+        "complete": true,
+        "ownership_closed": true,
+        "trailing_neo_records": {
+          "records": 2200,
+          "bytes": 156556,
+          "sha256": "f554fc35fa99b89fa2cfaf60359d00692cf88de2ec9593d032d5cc46b5f9d74f",
+          "scope": "Known complete logging records after QUIT/EOF;not ordinary runtime teardown qualification."
+        },
+        "exit_code": 0,
+        "off_evidence": {
+          "activation": {
+            "pid": 2655744,
+            "loader": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_loader.so.0.12.0",
+            "threads_before": 1,
+            "preinit": 37,
+            "config_enabled": true,
+            "first_init": true,
+            "dispatch_result": 46,
+            "output_untouched": true,
+            "retained_reference_until_exit": true,
+            "runtime_teardown_qualified": false
+          },
+          "actual_qsa_layers": 12,
+          "readback_audit_markers_absent": true,
+          "cache_payload_and_snapshot_byte_verification": false,
+          "limits": "Wire/reuse/route and ownership/fault checks only;no new payload/state numerical qualification."
+        },
+        "readback_state_verified": false,
+        "trace": {
+          "records": 1482,
+          "successful_allocations": {
+            "host": {
+              "count": 92,
+              "requested_bytes": 4178901128
+            },
+            "device": {
+              "count": 647,
+              "requested_bytes": 16389741288
+            },
+            "buffer": {
+              "count": 2,
+              "requested_bytes": 8
+            }
+          },
+          "successful_releases": 741,
+          "final_requested_bytes": 0,
+          "short32_interval": {
+            "before_reported_free_bytes": 2559438848,
+            "after_reported_free_bytes": 117301248,
+            "decrease_bytes": 2442137600,
+            "total_reported_bytes": 10666115072
+          },
+          "scope": "Successful logical UR request ledger;not physical residency,causal phase assignment or ordinary teardown."
+        },
+        "logging_counts": {
+          "allocation_type": 1264,
+          "allocation_pool_size": 1264,
+          "bo_create": 2,
+          "bo_bind": 1261,
+          "bo_unbind": 1256,
+          "bo_close_attempt": 1265
+        },
+        "short_request": {
+          "client_region_delta": {
+            "vram_bytes": 2511872000,
+            "gtt_bytes": -2508455936,
+            "all_total_region_bytes": 3416064
+          },
+          "allocation_details": {
+            "records": 6,
+            "sum_requested_bytes": 3407872,
+            "largest_requested_bytes": 2031616,
+            "types": [
+              {
+                "type": "KERNEL_ISA",
+                "pool": "LocalMemory",
+                "records": 1,
+                "requested_bytes": 2031616,
+                "largest_bytes": 2031616
+              },
+              {
+                "type": "COMMAND_BUFFER",
+                "pool": "LocalMemory",
+                "records": 1,
+                "requested_bytes": 1114112,
+                "largest_bytes": 1114112
+              },
+              {
+                "type": "LINEAR_STREAM",
+                "pool": "LocalMemory",
+                "records": 3,
+                "requested_bytes": 196608,
+                "largest_bytes": 65536
+              },
+              {
+                "type": "GPU_TIMESTAMP_DEVICE_BUFFER",
+                "pool": "LocalMemory",
+                "records": 1,
+                "requested_bytes": 65536,
+                "largest_bytes": 65536
+              }
+            ],
+            "scope": "Logged creation requests between DONE A and DONE B,not live/physical bytes or causal phase assignment."
+          },
+          "dense_reported_free_decrease_bytes": 2442137600
+        },
+        "logs": {
+          "stdout": {
+            "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/neo-readback-control-v1/owned/sample-2.stdout",
+            "bytes": 1031648,
+            "sha256": "5218761cef88a658360afd3fde9e53e34a7e2dc0c1c43f1cad603bd8393c75b3"
+          },
+          "stderr": {
+            "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/neo-readback-control-v1/owned/sample-2.stderr",
+            "bytes": 495393,
+            "sha256": "67326ce6641722b219fbe22e5b6ead82ce7db85728d4ffd68fb58bc9803741ce"
           }
         },
         "host_probe_accepted": true,
