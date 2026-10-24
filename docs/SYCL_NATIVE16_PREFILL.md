@@ -1012,10 +1012,18 @@ v4 environment record,packet executable,source audit and model JIT/maps.
 Original packet source/recipe,239 dependencies,compiler/environment and exact
 assets are recovered and checked against pushed history before retirement.
 All20 native assets and the16920-byte collector verify after deletion.
-Only the current model record and497891-byte full UR trace remain for the named
-DRM-client/lower-allocator comparison,with a1MiB trace budget and review after
-that comparison. Four physical-fill/memory report/review files remain for their
-named Main tasks;unrelated owner/provenance holds remain separate.
+The later client/syscall boundary retires75 files/13360622 bytes after the
+prior UR comparison closes,including the old trace/record,successful client
+maps/JIT/stdout,rejected strace captures and the consumed MTP runtime audit.
+Original source/recipe,all20 native assets,the full candidate SDK and the
+16920-byte collector verify before/after retirement. The unavailable syscall
+command modes are removed;their source and failed decoder outcome remain in
+Git. Only the current client record and497888-byte successor UR trace remain
+for the imminent same-native NEO logging comparison,with a1MiB trace budget and
+review after that comparison. The current record supplies the immutable effective
+environment and239 observer dependencies. Four physical-fill/memory report/review
+files remain for their named Main tasks;unrelated owner/provenance holds remain
+separate.
 
 Remaining model gates are repeated phase-preserving adoption evidence,
 agent-session and task quality,near-cap/tail boundaries,

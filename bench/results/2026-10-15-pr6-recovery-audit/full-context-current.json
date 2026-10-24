@@ -4188,6 +4188,28 @@
       "kernel_signature": "Ubuntu 7.0.0-38.38~24.04.4-generic 7.0.14",
       "xe_srcversion": "F0A1FF8BB6C5A3C7F361574",
       "scope": "Post-collection bytes at the same path/inode observed in DONE-B33 maps;new driver-logging tests must pin these bytes before and after exec. No retrospective before-run byte pin or exact vendor-source mapping is asserted."
+    },
+    "closed_client_syscall_artifact_retirement": {
+      "manifest": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/closed-client-syscall-artifacts-20261024.jsonl",
+      "sha256": "3c8756ed9e9774961a430d69fcdeda47487296ddd45b66dd5e6ac9f097739c8f",
+      "files": 75,
+      "bytes": 13360622,
+      "source_archive": "69c593411",
+      "rejected_controller_source": "ef1051aa7",
+      "native_assets_verified_before_after": 20,
+      "collector_sha256": "677c0e079d4a204cb62400099a81ce9e214883cbda7d4a283340695aad2f2986",
+      "original_source_inputs_recovered": 9853,
+      "current_native_source_recipe_sdk_verified": true,
+      "remaining_capture": {
+        "owner": "Main",
+        "paths": [
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/ur-memory-client-v1/owned/model.stderr",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/ur-memory-client-v1/record.json"
+        ],
+        "full_trace_budget_bytes": 1048576,
+        "consumer": "Imminent same-native NEO logging/UR comparison;record supplies immutable environment and239 dependency pins. Retire after comparison or replacement."
+      },
+      "limits": "Original success/failed/unrun statuses preserved. No new numerical,physical owner,decode-performance,ordinary teardown or adoption qualification."
     }
   },
   "model_state_v2": {
@@ -11464,211 +11486,29 @@
   "ur_memory_syscall_probe_v1": {
     "stage": "closed_unrun_for_runtime_admission",
     "source_commit": "22cb59531932eadbcb9f0ea55248f30f18655847",
-    "input_sha256": {
-      "bench/sycl/client_resources.py": "9d5afa1bfc7df83ebd0ada8470b61a2c5b01d59b72822dd75f45ddb5a56ec16e",
-      "data/expert-profile.bin": "8f59b4aa8873209dff11c11e37bcda9529a1335b724a1afeea37bf6388975baf",
-      "include/strata/program/full_context_diagnostic.hpp": "d4abd9516913df9c0672adfea079e036223c8454ae79fadacd6f209432f04621",
-      "src/program/generate.cpp": "6857436f344b6ea41cf1facd88eeaa6dd2f3d61432312960b76b66f0cf68837f",
-      "tests/core/full_context_diagnostic_test.cpp": "ef0f83bb29f5faf66119b420482080084b4087aa42610426bb0209eda35b391f",
-      "tests/core/test_client_resources.py": "6fe86c85186e34d120404d5009aa71f0f869c4d68d2ef7839bd2a31121ce6641",
-      "tests/sycl/compat.cpp": "1040611974c4454c28d327f4f21a94d4e6cbc034f49a15560634886a5fb51994",
-      "tools/sycl/build_engine.py": "8444783ab417378207ec89ad2bc3cf648480e20d9e77f06ebb3070c93e10b131",
-      "tools/sycl/build_full_context.py": "6e2aa8c584e0fd014157cfd08360945ae2d28ad2db660499d9f4eb900e517b72",
-      "tools/sycl/check_full_context.py": "3db5296b72056453faa9ee7d30703c84059cc861520de02d040a4e7fc6c128be",
-      "tools/sycl/check_full_context_source.py": "5e72fa724e890e682382758caf6222042e1ec89770962ce205ab756783332030",
-      "tools/sycl/check_model_restore.py": "98fab9343539b063020bcb37702c21a32ec69e1393825cb4969acb8848f85c64",
-      "tools/sycl/check_streamed_qsa.py": "0a3222c0ae5b4df3e3b8a1a5f9e0a40a0387e49ed86b6c9f111d3fb4bab95ebb",
-      "tools/sycl/full_context_model.py": "c3d3dbf8e0a583d40e607d853d2bd32e4540b67409b8d27ee0d60e0c169bacfa",
-      "tools/sycl/measurement_environment.json": "d4402591df50e80dc45a5ec9e4839c7a794888850b1473537b6f95179be5b03c",
-      "tools/sycl/measurement_guards.py": "794e332c70aca0acadad4f26d0414548e023a02fd27b72ed78fc773674423ec8",
-      "tools/sycl/measurement_owner.py": "bddd0c5e5020e882ca3404679420faec11e820dabce2ed4c72ef82b4c9c0874a",
-      "tools/sycl/memory_trace.py": "7bbac78b31d5841e23ee533f2cf98fb08e190c3df9c83551be4e2a6da9b94e24",
-      "tools/sycl/memory_trace_device.py": "9fb86c4f0f025b3267ef93dbb9ac9147ac8fa40dbdc7020e3b0b297bea834d50",
-      "tools/sycl/memory_trace_model.py": "67aa3052a9cccc927593955d0dedbdcbcd981a55c5fc19d818f82ec8828e3e39",
-      "tools/sycl/ur_memory_packet_test.cpp": "9a9d79a91bfc2471f9a11d78d94bbb1ef7b71fc729586501ed58977d18dd297a",
-      "tools/sycl/ur_memory_subscriber.cpp": "9d4fd222b41b717f1bb375a26f4343d5335f136fcfa1053014e77220c7d5e81c",
-      "tools/sycl/ur_validation.py": "2e41d84788dc9cc3c7435b18b43601b3ca79280ccb855414d7a36bae6bff83e7"
-    },
-    "parent_qualification_sha256": "65f17a01ddef0db3c02500572dee16b740b346de87aa4ee4958da20c4e070f24",
-    "selected_original": {
-      "source_commit": "6e40afc1beddd059ee518617f6c1efce1da14aca",
-      "inputs_recovered": 9853,
-      "assets_verified": 13,
-      "receipt": {
-        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/record.json",
-        "sha256": "a38f477670fafcd1a931be2e20d90d6d9718df75b61954b421f361af9f6881b2"
-      },
-      "limits": "Original build remains selected; this source-only diagnostic is not adoption."
-    },
-    "tool": {
-      "path": "/usr/bin/strace",
-      "sha256": "28f957c227012de0b18d1bd7fff2d396cb693ea60ed8013be68de071e84b5001"
-    },
-    "tool_dependency_count": 6,
-    "tool_dependency_sha256": "383580a38e0594359f2b71f36146bb116fbdacac5f535d9c62cf31d7fa7b1f2f",
-    "fixture": {
-      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/sycl_submission_test",
-      "sha256": "5a434921664fac6b111ba2a0de5ebe4fd0182d226f1c56d34aeffa73171b9b79"
-    },
-    "fixture_source_commit": "6e40afc1beddd059ee518617f6c1efce1da14aca",
-    "collector": {
-      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/ur-memory-subscriber-v1/libstrata_ur_memory.so",
-      "bytes": 16920,
-      "sha256": "677c0e079d4a204cb62400099a81ce9e214883cbda7d4a283340695aad2f2986"
-    },
-    "environment_sha256": "af2ce1daeb9c37143f70fad1dd06c1dd698c52ed314d52a101ce2d0bfc383b2c",
-    "tracee_environment_sha256": "6dcb9de825d2649bf26d603c66ee663b9d6cf5f346d22354a50ee650ba5bf080",
-    "command_sha256": "74ec82ba7f53bd947f3cbc2f0db9a44b73de0f5593ea4a2ad9678d227872cb53",
-    "command_form": "strace -f -qq -ttt -v -s128 -e trace=ioctl -o private/ioctl.log -E EACH_PINNED_CHILD_ENV selected/sycl_submission_test --submission",
-    "driver_before": {
-      "pci": "/sys/bus/pci/devices/0000:05:00.0",
-      "driver": "xe",
-      "vendor": "0x8086",
-      "device": "0xe20c",
-      "kernel": "7.0.0-38-generic",
-      "devcoredump": false
-    },
-    "boot": "cfda0b6a-7c13-4fe2-bdf5-8f9202770840",
-    "active": false,
     "passed": false,
     "complete": false,
+    "active": false,
     "ownership_closed": true,
     "GPU_executed": false,
+    "archived_detail": {
+      "commit": "69c593411f52fcd6117d02304d6029ef4d76fd08",
+      "path": "bench/results/2026-10-15-pr6-recovery-audit/full-context-current.json",
+      "key": "ur_memory_syscall_probe_v1"
+    },
     "speed_eligible": false,
     "physical_owner_attribution_qualified": false,
     "ordinary_runtime_teardown_qualified": false,
-    "budgets": {
-      "wall_s": 120,
-      "cpu_s": 120,
-      "rss_bytes": 4294967296,
-      "text_bytes": 16777216,
-      "file_bytes": 16777216,
-      "total_bytes": 67108864
-    },
-    "criteria": "First owned small capability gate only,no model. Keep the strace parent environment free of LD_PRELOAD/UR/SYCL settings;apply the complete qualified immutable native environment with strace -E before native exec. Pin tool and shared libraries,selected6e40 fixture,collector and runtime. Require distinct owned native PID,its first-init validation,all10 original submission checks,normal owned root exit0,unchanged identities/boot/driver and no fresh fault. Require the installed decoder to name DRM_IOCTL_XE_GEM_CREATE and expose at least one requested-size field. Ioctl request decoding is not a successful-call/BO-lifetime ledger,migration proof,physical-residency or performance qualification. Stop first failure;no retry.",
-    "retention": "Retain one successful small ioctl stream only for immediate Main decoder/full-model-plan work;retire routine stdout/stderr/JIT after compact numerical,ownership,fault and decoder evidence. No additional engine generation.",
-    "correction": "Review before first execution found the new wrapper checked collector/header/tool bytes but did not enforce the complete native SDK/runtime manifest and separate validation-preload qualification. No execution/admission failure or device work occurred. Preserve this unrun plan;use a fresh prospectively corrected v2."
+    "model_syscall_capture_authorized": false
   },
   "ur_memory_syscall_probe_v2": {
     "stage": "failed",
     "source_commit": "ef1051aa762260f7973864d28ca0127f4273bd4d",
-    "input_sha256": {
-      "bench/sycl/client_resources.py": "9d5afa1bfc7df83ebd0ada8470b61a2c5b01d59b72822dd75f45ddb5a56ec16e",
-      "data/expert-profile.bin": "8f59b4aa8873209dff11c11e37bcda9529a1335b724a1afeea37bf6388975baf",
-      "include/strata/program/full_context_diagnostic.hpp": "d4abd9516913df9c0672adfea079e036223c8454ae79fadacd6f209432f04621",
-      "src/program/generate.cpp": "6857436f344b6ea41cf1facd88eeaa6dd2f3d61432312960b76b66f0cf68837f",
-      "tests/core/full_context_diagnostic_test.cpp": "ef0f83bb29f5faf66119b420482080084b4087aa42610426bb0209eda35b391f",
-      "tests/core/test_client_resources.py": "6fe86c85186e34d120404d5009aa71f0f869c4d68d2ef7839bd2a31121ce6641",
-      "tests/sycl/compat.cpp": "1040611974c4454c28d327f4f21a94d4e6cbc034f49a15560634886a5fb51994",
-      "tools/sycl/build_engine.py": "8444783ab417378207ec89ad2bc3cf648480e20d9e77f06ebb3070c93e10b131",
-      "tools/sycl/build_full_context.py": "6e2aa8c584e0fd014157cfd08360945ae2d28ad2db660499d9f4eb900e517b72",
-      "tools/sycl/check_full_context.py": "3db5296b72056453faa9ee7d30703c84059cc861520de02d040a4e7fc6c128be",
-      "tools/sycl/check_full_context_source.py": "5e72fa724e890e682382758caf6222042e1ec89770962ce205ab756783332030",
-      "tools/sycl/check_model_restore.py": "98fab9343539b063020bcb37702c21a32ec69e1393825cb4969acb8848f85c64",
-      "tools/sycl/check_streamed_qsa.py": "0a3222c0ae5b4df3e3b8a1a5f9e0a40a0387e49ed86b6c9f111d3fb4bab95ebb",
-      "tools/sycl/full_context_model.py": "c3d3dbf8e0a583d40e607d853d2bd32e4540b67409b8d27ee0d60e0c169bacfa",
-      "tools/sycl/measurement_environment.json": "d4402591df50e80dc45a5ec9e4839c7a794888850b1473537b6f95179be5b03c",
-      "tools/sycl/measurement_guards.py": "794e332c70aca0acadad4f26d0414548e023a02fd27b72ed78fc773674423ec8",
-      "tools/sycl/measurement_owner.py": "bddd0c5e5020e882ca3404679420faec11e820dabce2ed4c72ef82b4c9c0874a",
-      "tools/sycl/memory_trace.py": "7bbac78b31d5841e23ee533f2cf98fb08e190c3df9c83551be4e2a6da9b94e24",
-      "tools/sycl/memory_trace_device.py": "9fb86c4f0f025b3267ef93dbb9ac9147ac8fa40dbdc7020e3b0b297bea834d50",
-      "tools/sycl/memory_trace_model.py": "8326d2cbca841b5da673cc1419cfca5ce4db3552bec7553787114e6b399adedb",
-      "tools/sycl/ur_memory_packet_test.cpp": "9a9d79a91bfc2471f9a11d78d94bbb1ef7b71fc729586501ed58977d18dd297a",
-      "tools/sycl/ur_memory_subscriber.cpp": "9d4fd222b41b717f1bb375a26f4343d5335f136fcfa1053014e77220c7d5e81c",
-      "tools/sycl/ur_validation.py": "2e41d84788dc9cc3c7435b18b43601b3ca79280ccb855414d7a36bae6bff83e7"
-    },
-    "parent_qualification_sha256": "65f17a01ddef0db3c02500572dee16b740b346de87aa4ee4958da20c4e070f24",
-    "selected_original": {
-      "source_commit": "6e40afc1beddd059ee518617f6c1efce1da14aca",
-      "inputs_recovered": 9853,
-      "assets_verified": 13,
-      "receipt": {
-        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/record.json",
-        "sha256": "a38f477670fafcd1a931be2e20d90d6d9718df75b61954b421f361af9f6881b2"
-      },
-      "limits": "Original build remains selected; this source-only diagnostic is not adoption."
-    },
-    "runtime_native": {
-      "binary": {
-        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/full-context-native-v1/build/strata",
-        "bytes": 22229920,
-        "sha256": "590f8237e48139d96f77b9fd4c25ea18b1e701be147c52ecf75b7598c4284018"
-      },
-      "source_commit": "1cba8a2857891862f8ed4c534d8afee3b0aeaf98"
-    },
-    "preload": {
-      "library": {
-        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/ur-validation-preload-v2/libstrata_ur_validation.so",
-        "sha256": "1d4e69d672d55fa0a126ae43b7b4743482cccca7e2f2bc22e0db2bfdad5bdc7c"
-      },
-      "loader": {
-        "path": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_loader.so.0.12.0",
-        "sha256": "bb6e1311850e4b1a924e42acae80c2b3610934625a4985aaa67967abe31356fc"
-      },
-      "component_source_commit": "f312b6691f508125db6cfc2580ca32a686ff2642",
-      "component_original_plan": {
-        "commit": "550c75f5fc954ee38b70230e32d2a48e12100d8a",
-        "path": "bench/results/2026-10-15-pr6-recovery-audit/research-index.json",
-        "sha256": "d12866b93c51e76a83e95638e66b6f6f4e0e33d779516a5fddecc178a6f8e10a"
-      },
-      "retained_reference_until_exit": true,
-      "runtime_teardown_qualified": false
-    },
-    "tool": {
-      "path": "/usr/bin/strace",
-      "sha256": "28f957c227012de0b18d1bd7fff2d396cb693ea60ed8013be68de071e84b5001"
-    },
-    "tool_dependencies": {
-      "/usr/lib/x86_64-linux-gnu/ld-linux-x86-64.so.2": "c20a2dc8917c755f02b94049356320fe1f62ac7d9f8994731f807d9df39302da",
-      "/usr/lib/x86_64-linux-gnu/libc.so.6": "3a15d66867d83762c7f2f1e37359cb8f6c5743edb369c65285cb0b1c4f7498bf",
-      "/usr/lib/x86_64-linux-gnu/liblzma.so.5.4.5": "696e868dd0700a19a6d65fc01608ec2d70d3cb91f65710e89180cd2e688f30cb",
-      "/usr/lib/x86_64-linux-gnu/libunwind-ptrace.so.0.0.0": "ec993e45c024b66ea0f17085be1333001428dc714bd9f0520f44a0cde18b921b",
-      "/usr/lib/x86_64-linux-gnu/libunwind-x86_64.so.8.0.1": "70a88c376a1aced719ca7bdcd5cdd6c5d3bdce44b99f5ab2037fdad096bbf03d",
-      "/usr/lib/x86_64-linux-gnu/libunwind.so.8.0.1": "28e77a498f2f17f8cb883c91303f9901343ea0d8e34959d138dd462fcc9b201f"
-    },
-    "tool_dependency_count": 6,
-    "tool_dependency_sha256": "383580a38e0594359f2b71f36146bb116fbdacac5f535d9c62cf31d7fa7b1f2f",
-    "fixture": {
-      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/sycl_submission_test",
-      "sha256": "5a434921664fac6b111ba2a0de5ebe4fd0182d226f1c56d34aeffa73171b9b79"
-    },
-    "fixture_source_commit": "6e40afc1beddd059ee518617f6c1efce1da14aca",
-    "collector": {
-      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/ur-memory-subscriber-v1/libstrata_ur_memory.so",
-      "bytes": 16920,
-      "sha256": "677c0e079d4a204cb62400099a81ce9e214883cbda7d4a283340695aad2f2986"
-    },
-    "environment_sha256": "af2ce1daeb9c37143f70fad1dd06c1dd698c52ed314d52a101ce2d0bfc383b2c",
-    "tracee_environment_sha256": "e86f87dc13d639a29eb9b626a5773ef47123f89cfd93328908f2c3eeb4b99f32",
-    "command_sha256": "aeb7d29a6c18bd64d5d74255f3b21133fb60beeafbe2fa71c1608783e19d75a7",
-    "command_form": "strace -f -qq -ttt -v -s128 -e trace=ioctl -o private/ioctl.log -E EACH_PINNED_CHILD_ENV selected/sycl_submission_test --submission",
-    "driver_before": {
-      "pci": "/sys/bus/pci/devices/0000:05:00.0",
-      "driver": "xe",
-      "vendor": "0x8086",
-      "device": "0xe20c",
-      "kernel": "7.0.0-38-generic",
-      "devcoredump": false
-    },
-    "boot": "cfda0b6a-7c13-4fe2-bdf5-8f9202770840",
-    "active": false,
     "passed": false,
     "complete": false,
+    "active": false,
     "ownership_closed": true,
     "GPU_executed": true,
-    "speed_eligible": false,
-    "physical_owner_attribution_qualified": false,
-    "ordinary_runtime_teardown_qualified": false,
-    "budgets": {
-      "wall_s": 120,
-      "cpu_s": 120,
-      "rss_bytes": 4294967296,
-      "text_bytes": 16777216,
-      "file_bytes": 16777216,
-      "total_bytes": 67108864
-    },
-    "criteria": "First owned small capability gate only,no model. Keep the strace parent environment free of LD_PRELOAD/UR/SYCL settings;apply the complete qualified immutable native environment with strace -E before native exec. Pin tool and shared libraries,selected6e40 fixture,collector and runtime. Require distinct owned native PID,its first-init validation,all10 original submission checks,normal owned root exit0,unchanged identities/boot/driver and no fresh fault. Require the installed decoder to name DRM_IOCTL_XE_GEM_CREATE and expose at least one requested-size field. Ioctl request decoding is not a successful-call/BO-lifetime ledger,migration proof,physical-residency or performance qualification. Stop first failure;no retry.",
-    "retention": "Retain one successful small ioctl stream only for immediate Main decoder/full-model-plan work;retire routine stdout/stderr/JIT after compact numerical,ownership,fault and decoder evidence. No additional engine generation.",
     "exit_code": 0,
     "native_pid": 2462591,
     "device_evidence": {
@@ -11703,15 +11543,6 @@
     },
     "error": "RuntimeError('installed strace does not decode GEM_CREATE request sizes')",
     "fresh_faults": [],
-    "boot_unchanged": true,
-    "driver_after": {
-      "pci": "/sys/bus/pci/devices/0000:05:00.0",
-      "driver": "xe",
-      "vendor": "0x8086",
-      "device": "0xe20c",
-      "kernel": "7.0.0-38-generic",
-      "devcoredump": false
-    },
     "post_failure_input_admission_verified": true,
     "decoder_limitation": {
       "strace_version": "6.8",
@@ -11721,6 +11552,15 @@
         "2462591 1792803867.377464 ioctl(3, DRM_IOCTL_XE_VM_BIND, 0x7fff5e661a70) = 0"
       ],
       "warning": "Names alone may alias other DRM namespaces;not a decoded XE argument/BO ledger. Do not run a model with this failed capability."
-    }
+    },
+    "archived_detail": {
+      "commit": "69c593411f52fcd6117d02304d6029ef4d76fd08",
+      "path": "bench/results/2026-10-15-pr6-recovery-audit/full-context-current.json",
+      "key": "ur_memory_syscall_probe_v2"
+    },
+    "speed_eligible": false,
+    "physical_owner_attribution_qualified": false,
+    "ordinary_runtime_teardown_qualified": false,
+    "model_syscall_capture_authorized": false
   }
 }
