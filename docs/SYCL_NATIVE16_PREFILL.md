@@ -207,8 +207,13 @@ speed samples. The next width2 process also closes normally, with code3415 and
 prose19750 generated tokens. Its first-pair decode ratios against width4 are
 0.888372/1.079073; prefill ratios are1.000354/1.001118.
 Code misses no-decline; the single faster prose sample is not a repeated gain.
-Seven processes are still unstarted. Both native exits are0, ownership is closed
-and no fresh driver fault is recorded. No route or placement is adopted.
+The resident-no-decode-draft control also closes normally: code3064 and
+prose26209 generated tokens, at exact11.334027/11.075995tok/s. Its first-pair
+decode ratios are0.764091/0.938513, and prefill ratios0.999815/1.001409.
+It passes the explicit speed-only contract with no proposals; draft-agreement
+eligibility remains false and acceptance is undefined. Six processes are still
+unstarted. All three native/benchmark exits are0, ownership is closed and no
+fresh driver fault is recorded. No route or placement is adopted.
 Closedv1 logs/JIT, its superseded clock probe and eight unstarted plans retire
 after exact188-input and clock-recipe recovery:108 files,14,594,530bytes.
 Its intended advancement rules remain three nondeclining paired decode ratios
@@ -250,7 +255,8 @@ CPU and monotonic wall intervals, calls and output-row/token-row counts by forma
 width and pool thread. GU rows count the paired gate/up output rows, not two
 independent projections. Pool dispatch, claims and barriers, input activation
 quantization, routing and GPU work are outside these leaf scopes. Row counts
-must reconcile against the independent work census before timings are usable.
+must reconcile against the independent work census from the same new request
+and source before timings are usable; the older63af census is not that check.
 GU and Down intervals include their local pointer preparation and native format
 dispatch, in addition to the selected kernel call.
 Summed concurrent worker intervals are not an additive critical path, CPU time
@@ -320,7 +326,10 @@ The selected SYCL `sequence.cpp` rejects device mapped-flag polling outright;
 its event-completed handoff does not make GPU-busy cycles an arithmetic ceiling.
 
 The separate3,611-output code diagnostic also supplies a nominal CPU weight
-budget. Match its seven format/NT histograms to the checked blob geometry in
+budget. That census used native source`63af639ac`, with `STRATA_IQ2_PAIR` unset;
+selected6e40 adds the decode-only IQ2_S NT1 pair path and enables it. Historical
+job counts and projected pool times do not measure the current dispatch.
+Match the historical seven format/NT histograms to the checked blob geometry in
 the [archived calibration plan](https://github.com/yqYo1/Strata/blob/1c450997ad10b17d387d86e3e0904ae447924160/bench/results/2026-10-15-pr6-recovery-audit/cpu-roofline-plan.json):
 `sum(sum(jobs_NT) * blob_bytes)` is2,796,077,900,800bytes across1,370,846
 unique CPU jobs, or774,322,321 nominal bytes/output. This already groups
