@@ -10521,7 +10521,7 @@
   },
   "phase_prefill_v2_clock_admission_audit_20261024": {
     "classification": "decision_support",
-    "status": "report_returned_native_review_pending",
+    "status": "reviewed_conditional_go",
     "schedulable_now": false,
     "prerequisites": [
       {
@@ -10547,7 +10547,10 @@
     "report_bytes": 5465,
     "terminal_closed": true,
     "closure": "Accepted matching worker_done,external release,exact terminal closed;delivery464c95791d72 acknowledged.",
-    "reviewer": "native Codex gpt-6-luna max /root/review_phase_prefill_v2_clock_20261024"
+    "reviewer": "native Codex gpt-6-luna max /root/review_phase_prefill_v2_clock_20261024",
+    "native_review_sha256": "b1d5a78db4087755d0ec101b03ef8805be68480f427f732c14be2814bbe1cbbd",
+    "decision": "Measured same-provider endpoint/rounding gate is prospectively valid;not universal error bound. Pre-try Owner initialization/admission exceptions fail before native launch but may lack durable attempt receipt. Main must close cohort on any such exception;never retry the same plan.",
+    "next_action": "Run only after independent actual-route audit;all prior source/config/runtime gates remain. Any prelaunch exception closes this cohort externally and durably before fresh plan."
   },
   "phase_prefill_v2_actual_route_audit_20261024": {
     "classification": "decision_support",
