@@ -1,5 +1,5 @@
 {
-  "stage": "prepared",
+  "stage": "failed",
   "source_commit": "cfb04d039e7312eae55882a21958e1ea3bc9f712",
   "input_sha256": {
     "data/expert-profile.bin": "8f59b4aa8873209dff11c11e37bcda9529a1335b724a1afeea37bf6388975baf",
@@ -213,9 +213,51 @@
     "total_cap": 268435456
   },
   "retention": "Keep compact per-request route/count/wire/result hashes and per-process ownership/fault outcomes. Retire successful stdout/stderr/JIT after replay. Reuse only model configuration/assets from full_context_model.setup;never its retired candidate engine qualification.",
-  "outcomes": {},
+  "outcomes": {
+    "0": {
+      "passed": false,
+      "admission": {
+        "context": "131072",
+        "kv": "int8",
+        "kv_resident": "0",
+        "expert_slots": "1256",
+        "spec": "4",
+        "mtp_max": "0",
+        "lookup": "0",
+        "pool_workers": "5",
+        "pcie_frac": "0.00",
+        "conversation_cache_mib": "0"
+      },
+      "requests": [
+        {
+          "generated_tokens": 32,
+          "prompt_tokens": 33,
+          "finish": "length",
+          "drafts_accepted": 18,
+          "drafts_offered": 48,
+          "reused_tokens": 0,
+          "read_tokens": 33,
+          "output_ids_sha256": "265a4e66ed226ffd9a38f38d5e514697be455eb7cf4f70adbefb355e37471275",
+          "publications": 1
+        }
+      ],
+      "exit_code": -15,
+      "error": "RuntimeError('native model exit/ownership failed')",
+      "ownership_closed": false,
+      "fresh_faults": [],
+      "boot_unchanged": true,
+      "driver_after": {
+        "pci": "/sys/bus/pci/devices/0000:05:00.0",
+        "driver": "xe",
+        "vendor": "0x8086",
+        "device": "0xe20c",
+        "kernel": "7.0.0-38-generic",
+        "devcoredump": false
+      }
+    }
+  },
   "active": false,
-  "ownership_closed": true,
+  "ownership_closed": false,
   "passed": false,
   "complete": false,
   "speed_eligible": false,
@@ -234,5 +276,44 @@
     "exit_code": 0,
     "passed": true,
     "scope": "Host protocol/wire,actual original INFO full-residency semantics,route/round/count corruption controls;no model/device execution. Original wrong INFO test remains failed in its archive."
+  },
+  "failure_interpretation": "Corrected INFO gate passed and native generated32 IDs on33-input request. On257-input request it legitimately emitted220 thenEOS248046,reported DONE2/finish=stop. Controller incorrectly demanded32 generated tokens for every synthetic input and triggered owned SIGTERM after that valid completion. New prospective controller must accept/check EOS and conserve actual windows;old failed/performance-ineligible/ownership_closed=false result remains unchanged. No fresh GPU fault.",
+  "termination_evidence": {
+    "pid": 3176307,
+    "direct_identity": {
+      "pid": 3176307,
+      "state": "R",
+      "ppid": 3175469,
+      "pgid": 3176307,
+      "sid": 3176307,
+      "start_ticks": 117111404,
+      "rss_bytes": 495616
+    },
+    "direct_child_reaped": true,
+    "session_empty": true,
+    "survivors": [],
+    "exit_code": -15,
+    "error": "RuntimeError('native output extent/IDs differ')",
+    "cleanup": [
+      {
+        "pid": 3176307,
+        "start_ticks": 117111404,
+        "signal": "SIGTERM",
+        "result": "sent"
+      }
+    ]
+  },
+  "captured_early_stop": {
+    "prompt_tokens": 257,
+    "read_tokens": 257,
+    "reused_tokens": 0,
+    "generated_tokens": 2,
+    "output_ids": [
+      220,
+      248046
+    ],
+    "finish": "stop",
+    "drafts_accepted": 0,
+    "drafts_offered": 3
   }
 }
