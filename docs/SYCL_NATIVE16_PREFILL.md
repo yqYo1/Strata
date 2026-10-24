@@ -234,7 +234,9 @@ The next CPU attribution source is **unbuilt as a native engine**. Its
 [host collector gate](../bench/results/2026-10-15-pr6-recovery-audit/cpu-service-current.json)
 passes owned GCC13.3 compilation and all standalone counter/clock controls, with
 three actual project includes matched and both processes closed at exit0.
-This qualifies neither the production pool nor a model measurement. Optional
+Its8 raw/fixture files (48,600bytes) and one-shot runner retire after original
+source/recipe recovery; the runner recovers at`b05a22c52`. This qualifies neither
+the production pool nor a model measurement. Optional
 `STRATA_CPU_SERVICE_PROFILE` compilation plus preexec`STRATA_CPU_SERVICE=1`
 collects decode-only pool GU/SwiGLU, hidden quantization and Down leaf scopes for
 the seven observed format pairs at H2560/FF640/NT1..4. It records calling-thread
