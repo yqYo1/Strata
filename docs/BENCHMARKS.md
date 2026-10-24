@@ -65,6 +65,15 @@ JSONL hash chain; interrupted requests remain pending/incomplete. Agent
 statistics use complete six-turn sessions only, while all partial rows remain.
 Full successful response traces are unnecessary after these facts are recorded.
 
+For a throughput comparison that includes a no-draft baseline, add
+`--long-generation-speed-only` to `--long-generation-only` on **both** engines.
+The input bodies, thinking and output budgets stay identical. Normal complete
+generation, at least 32K input/1K output, answer body, engine clocks and valid
+draft counters remain required; zero offered/accepted drafts are allowed.
+Agreement eligibility and classification remain separate and unqualified when
+there are no drafts. This mode does not turn short or incomplete output into
+a usable speed sample. Its selection is recorded in parameters and identity.
+
 For a focused diagnostic, add `--long-generation-workload regular-code` or
 `--long-generation-workload varied-prose` to `--long-generation-only`. It keeps
 the same warmup, prompt, thinking and output budget, records the selected subset

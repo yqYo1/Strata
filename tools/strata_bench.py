@@ -438,7 +438,7 @@ def profile_request_gate(stage, phase, run):
 
 class Suite:
     def __init__(self, base, key, ctx, runs, think, log=print, want_clients=0, want_long=False, quick=False,
-                 want_long_generation=False, long_generation_only=False, journal=None, fail_fast_engine_error=False, workload_id=None, prefill_only=False, prefill_tokens=65536, generation_workload=None, request_gate=None):
+                 want_long_generation=False, long_generation_only=False, journal=None, fail_fast_engine_error=False, workload_id=None, prefill_only=False, prefill_tokens=65536, generation_workload=None, request_gate=None, generation_speed_only=False):
         self.base, self.key, self.ctx, self.runs, self.think, self.log = base, key, ctx, runs, think, log
         self.prefill_only, self.prefill_tokens = prefill_only, prefill_tokens
         if request_gate is not None and not (prefill_only or long_generation_only):
@@ -458,6 +458,9 @@ class Suite:
                                                not long_generation_only or prefill_only):
             raise ValueError("a long-generation workload selection requires --long-generation-only")
         self.generation_workload = generation_workload
+        if generation_speed_only and not (want_long_generation and long_generation_only):
+            raise ValueError('long-generation speed-only requires --long-generation-only')
+        self.generation_speed_only = generation_speed_only
         self.journal = journal
         self.fail_fast_engine_error = fail_fast_engine_error or prefill_only
         self.workload_id = validate_workload_id(workload_id) if workload_id is not None else None
@@ -599,9 +602,11 @@ class Suite:
                 order.append({"run": run, "workload": name})
                 self.log(f"  run {run + 1} {name}: {d['usage_generated_tokens']} tokens, "
                          f"decode {d['decode_tps']} tok/s, drafts {d['drafts_accepted']}/{d['drafts_offered']}, "
-                         f"eligible={d['eligible']}")
-                if not d["eligible"]:
-                    reason = "; ".join(d["ineligible_reasons"])
+                         f"agreement_eligible={d['agreement_eligible']} speed_eligible={d['speed_eligible']}")
+                if not lg.run_eligible(d, self.generation_speed_only):
+                    reason = "; ".join(d["speed_ineligible_reasons"] if self.generation_speed_only else d["ineligible_reasons"])
+                    if self.generation_speed_only and not reason:
+                        reason = "MTP counters are missing or invalid"
                     self.out["failures"].append({"where": f"long-generation/{name}/{run}", "error": reason})
         for case in cases.values():
             good = [r for r in case["requests"] if r["eligible"]]
@@ -615,6 +620,7 @@ class Suite:
                         pooled_drafts_offered=offered, pooled_drafts_accepted=accepted,
                         pooled_acceptance_rate=accepted / offered if offered else None)
         self.out["long_generation"] = {"workload_version": lg.WORKLOAD_VERSION,
+            "speed_only": self.generation_speed_only,
             "selected_workloads": selected, "diagnostic_subset": self.generation_workload is not None,
             "minimum_generated_tokens": lg.MIN_OUTPUT_TOKENS, "max_tokens": lg.MAX_OUTPUT_TOKENS,
             "minimum_body_chars": lg.MIN_BODY_CHARS,
@@ -1364,6 +1370,7 @@ def main(argv=None) -> int:
     ap.add_argument("--long", action="store_true", help="also a prompt of about 32,768 tokens")
     ap.add_argument("--long-generation", action="store_true", help="also two 32K-input, >=1K-output MTP workloads (thinking on, up to 16K output)")
     ap.add_argument("--long-generation-only", action="store_true", help="run only the new long-generation workloads and warm-up")
+    ap.add_argument("--long-generation-speed-only", action="store_true", help="allow valid zero-draft throughput baselines; keep agreement eligibility separate (requires --long-generation-only)")
     ap.add_argument("--long-generation-workload", choices=tuple(long_generation.WORKLOADS),
                     help="select one diagnostic workload with --long-generation-only; does not qualify the MTP pair")
     ap.add_argument("--prefill-only", action="store_true", help="only one short warmup and fresh long prefill requests; thinking on, output capped at 24")
@@ -1381,6 +1388,8 @@ def main(argv=None) -> int:
     a = ap.parse_args(argv)
     if a.long_generation_workload and not a.long_generation_only:
         ap.error("--long-generation-workload requires --long-generation-only")
+    if a.long_generation_speed_only and not a.long_generation_only:
+        ap.error("--long-generation-speed-only requires --long-generation-only")
     if a.fail_fast_engine_error and a.clients:
         ap.error("--fail-fast-engine-error cannot be combined with --clients")
     if a.prefill_tokens is not None and not a.prefill_only:
@@ -1457,8 +1466,10 @@ def main(argv=None) -> int:
                       fail_fast_engine_error=a.fail_fast_engine_error, workload_id=a.workload_id,
                       prefill_only=a.prefill_only, prefill_tokens=a.prefill_tokens,
                       generation_workload=a.long_generation_workload,
+                      generation_speed_only=a.long_generation_speed_only,
                       request_gate=profile_request_gate if a.profile_request_gates else None)
         journal.append("identity", "suite", source=client_fingerprint(),
+                       long_generation_speed_only=a.long_generation_speed_only,
                        model=pre.get("model"), quant=pre.get("quant"), context=pre.get("context"),
                        thinking=a.think, long_generation_thinking=long_generation.THINKING,
                        workload_version=long_generation.WORKLOAD_VERSION, requested_runs=max(1, a.runs),
@@ -1484,9 +1495,11 @@ def main(argv=None) -> int:
             res = {"schema": SCHEMA, "tool": "tools/strata_bench.py", "date": datetime.date.today().isoformat(),
                    "params": {"mode":"prefill-only" if a.prefill_only else "suite", "prefill_tokens":a.prefill_tokens if a.prefill_only else None, "workload": suite.workload_identity(), "fail_fast_engine_error": suite.fail_fast_engine_error, "runs": suite.runs, "think": a.think, "clients": a.clients, "long": a.long, "started_server": started,
                               "long_generation": suite.want_long_generation, "long_generation_only": a.long_generation_only,
+                              "long_generation_speed_only": a.long_generation_speed_only,
                               "command": "python tools/strata_bench.py" + "".join(
                                   f" {x}" for x in (f"--clients {a.clients}" if a.clients else "", "--long" if a.long else "",
                                                     "--think" if a.think else "",
+                                                    "--long-generation-speed-only" if a.long_generation_speed_only else "",
                                                     f"--prefill-only --prefill-tokens {a.prefill_tokens}" if a.prefill_only else "",
                                                     f"--workload-id {a.workload_id}" if a.workload_id is not None else "",
                                                     "--fail-fast-engine-error" if a.fail_fast_engine_error else "", f"--runs {a.runs}" if a.runs != 3 else "",
@@ -1494,6 +1507,7 @@ def main(argv=None) -> int:
                                                     "--long-generation" if a.long_generation else "") if x)},
                    "elapsed_s": time.time() - t0, "machine": machine, "results": out,
                    "comparison_identity": {"mode":"prefill-only" if a.prefill_only else "suite", "prefill_plan":suite.prefill_plan() if a.prefill_only else None, "workload": suite.workload_identity(), "client": client_fingerprint(), "thinking": a.think,
+                       "long_generation_speed_only": a.long_generation_speed_only,
                        "reasoning_budget_tokens": 0, "temperature": 0, "model": machine.get("model"),
                        "quant": machine.get("quant"), "context": machine.get("context"),
                        "long_generation_version": long_generation.WORKLOAD_VERSION,
@@ -1557,7 +1571,7 @@ def main(argv=None) -> int:
             return 1
         if suite.want_long_generation and suite.generation_workload is not None:
             say("Diagnostic subset only: the strong/weak MTP pair remains unqualified.")
-        elif suite.want_long_generation and suite.runs >= 3 and not out["long_generation"]["classification"]["qualified"]:
+        elif suite.want_long_generation and not suite.generation_speed_only and suite.runs >= 3 and not out["long_generation"]["classification"]["qualified"]:
             return 1
         if suite.want_long_generation and suite.runs < 3:
             say("Pilot execution only: fewer than three runs cannot qualify the strong/weak MTP pair.")

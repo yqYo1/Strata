@@ -167,6 +167,34 @@ class BenchmarkTest(unittest.TestCase):
             row["acceptance_rate"] = .75
         self.assertFalse(lg.classify_pair(out["workloads"], 3)["qualified"])
 
+    def test_zero_draft_throughput_mode_keeps_requests_and_agreement_separate(self):
+        bodies=[]
+        for speed_only in (False,True):
+            captured=[]
+            def chat(_base,_key,messages,cap,think,**kwargs):
+                captured.append((messages,cap,think,kwargs))
+                return response(offered=0,accepted=0)
+            suite=bench.Suite('http://localhost','',131072,3,True,log=lambda _:None,
+                want_long_generation=True,long_generation_only=True,generation_speed_only=speed_only,
+                workload_id='mtp-net-control')
+            with patch.object(bench,'chat',side_effect=chat):suite.run_long_generation()
+            bodies.append(captured)
+            self.assertEqual(bool(suite.out['failures']),not speed_only)
+            result=suite.out['long_generation'];self.assertFalse(result['classification']['qualified'])
+            for case in result['workloads'].values():
+                self.assertEqual(case['eligible_runs'],0);self.assertEqual(case['speed_eligible_runs'],3)
+                for sample in case['requests']:
+                    self.assertFalse(sample['agreement_eligible']);self.assertIsNone(sample['acceptance_rate'])
+        self.assertEqual(bodies[0],bodies[1])
+
+    def test_throughput_mode_rejects_corrupt_counters_and_wrong_scope(self):
+        for offered,accepted in [(None,None),(0,1),(-1,0),(True,0)]:
+            raw=response(offered=offered,accepted=accepted);sample=bench.digest(raw)
+            sample.update(lg.sample_eligibility(raw,sample))
+            self.assertFalse(lg.run_eligible(sample,True))
+        with self.assertRaises(ValueError):
+            bench.Suite('http://localhost','',131072,1,True,generation_speed_only=True)
+
     def test_selected_long_generation_dispatch_keeps_thinking_and_cannot_qualify_pair(self):
         for selected in lg.WORKLOADS:
             with self.subTest(selected=selected):

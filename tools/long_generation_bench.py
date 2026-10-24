@@ -87,3 +87,10 @@ def classify_pair(workloads, runs):
             "weak_case_confirmed": bool(weak), "minimum_runs": 3,
             "strong_min_acceptance": .60, "weak_max_acceptance": .40,
             "scope": "Observed draft agreement only; prompts do not guarantee an MTP regime or prove speedup."}
+
+
+def run_eligible(sample, speed_only=False):
+    """Explicit throughput runs may have zero drafts; agreement stays separate."""
+    offered, accepted = sample.get("drafts_offered"), sample.get("drafts_accepted")
+    valid = type(offered) is int and type(accepted) is int and 0 <= accepted <= offered
+    return bool(valid and sample.get("speed_eligible" if speed_only else "eligible") is True)
