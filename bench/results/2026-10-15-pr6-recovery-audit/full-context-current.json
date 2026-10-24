@@ -13093,5 +13093,213 @@
       "kernel": "7.0.0-38-generic",
       "devcoredump": false
     }
+  },
+  "neo_readback_control_v1": {
+    "stage": "prepared",
+    "source_commit": "50c2ef6bb162131c1c8aecba4c6a500175124692",
+    "input_sha256": {
+      "bench/sycl/client_resources.py": "9d5afa1bfc7df83ebd0ada8470b61a2c5b01d59b72822dd75f45ddb5a56ec16e",
+      "data/expert-profile.bin": "8f59b4aa8873209dff11c11e37bcda9529a1335b724a1afeea37bf6388975baf",
+      "include/strata/program/full_context_diagnostic.hpp": "d4abd9516913df9c0672adfea079e036223c8454ae79fadacd6f209432f04621",
+      "src/program/generate.cpp": "6857436f344b6ea41cf1facd88eeaa6dd2f3d61432312960b76b66f0cf68837f",
+      "tests/core/full_context_diagnostic_test.cpp": "ef0f83bb29f5faf66119b420482080084b4087aa42610426bb0209eda35b391f",
+      "tests/core/test_client_resources.py": "6fe86c85186e34d120404d5009aa71f0f869c4d68d2ef7839bd2a31121ce6641",
+      "tests/sycl/compat.cpp": "1040611974c4454c28d327f4f21a94d4e6cbc034f49a15560634886a5fb51994",
+      "tools/sycl/build_engine.py": "8444783ab417378207ec89ad2bc3cf648480e20d9e77f06ebb3070c93e10b131",
+      "tools/sycl/build_full_context.py": "6e2aa8c584e0fd014157cfd08360945ae2d28ad2db660499d9f4eb900e517b72",
+      "tools/sycl/check_full_context.py": "3db5296b72056453faa9ee7d30703c84059cc861520de02d040a4e7fc6c128be",
+      "tools/sycl/check_full_context_source.py": "5e72fa724e890e682382758caf6222042e1ec89770962ce205ab756783332030",
+      "tools/sycl/check_model_restore.py": "98fab9343539b063020bcb37702c21a32ec69e1393825cb4969acb8848f85c64",
+      "tools/sycl/check_streamed_qsa.py": "0a3222c0ae5b4df3e3b8a1a5f9e0a40a0387e49ed86b6c9f111d3fb4bab95ebb",
+      "tools/sycl/full_context_model.py": "c3d3dbf8e0a583d40e607d853d2bd32e4540b67409b8d27ee0d60e0c169bacfa",
+      "tools/sycl/measurement_environment.json": "d4402591df50e80dc45a5ec9e4839c7a794888850b1473537b6f95179be5b03c",
+      "tools/sycl/measurement_guards.py": "794e332c70aca0acadad4f26d0414548e023a02fd27b72ed78fc773674423ec8",
+      "tools/sycl/measurement_owner.py": "bddd0c5e5020e882ca3404679420faec11e820dabce2ed4c72ef82b4c9c0874a",
+      "tools/sycl/memory_trace.py": "7bbac78b31d5841e23ee533f2cf98fb08e190c3df9c83551be4e2a6da9b94e24",
+      "tools/sycl/memory_trace_device.py": "9fb86c4f0f025b3267ef93dbb9ac9147ac8fa40dbdc7020e3b0b297bea834d50",
+      "tools/sycl/memory_trace_model.py": "6ebe4b97b55f641aacbe094815e2471fd283556421859fc86b398323be94c206",
+      "tools/sycl/memory_trace_protocol_test.py": "ab23e280049bebcd32f89baeb272c3c8a55b7aa044f28db8ff8800ce9ca91f95",
+      "tools/sycl/ur_memory_packet_test.cpp": "9a9d79a91bfc2471f9a11d78d94bbb1ef7b71fc729586501ed58977d18dd297a",
+      "tools/sycl/ur_memory_subscriber.cpp": "9d4fd222b41b717f1bb375a26f4343d5335f136fcfa1053014e77220c7d5e81c",
+      "tools/sycl/ur_validation.py": "2e41d84788dc9cc3c7435b18b43601b3ca79280ccb855414d7a36bae6bff83e7"
+    },
+    "order": [
+      "on",
+      "off",
+      "off",
+      "on"
+    ],
+    "parent_qualification_sha256": "a12d8c58a3ba2b4c5cf9e6be91c0bd479e622126be9495a46c9e39da1b6c0fdf",
+    "source_review_sha256": "7175b6e8e39d4c0024bcfaa6c38254b9b93458a96d03b338dfeb31135d545d55",
+    "protocol_qualification_sha256": "895d81eb74d7ac2be02275b5bffab3388fcd08b3c15145640aced662bb47d9f6",
+    "selected_original": {
+      "source_commit": "6e40afc1beddd059ee518617f6c1efce1da14aca",
+      "inputs_recovered": 9853,
+      "assets_verified": 13,
+      "receipt": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/record.json",
+        "sha256": "a38f477670fafcd1a931be2e20d90d6d9718df75b61954b421f361af9f6881b2"
+      },
+      "limits": "Original build remains selected; this source-only diagnostic is not adoption."
+    },
+    "runtime_native": {
+      "binary": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/full-context-native-v1/build/strata",
+        "bytes": 22229920,
+        "sha256": "590f8237e48139d96f77b9fd4c25ea18b1e701be147c52ecf75b7598c4284018"
+      },
+      "source_commit": "1cba8a2857891862f8ed4c534d8afee3b0aeaf98"
+    },
+    "preload": {
+      "library": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/ur-validation-preload-v2/libstrata_ur_validation.so",
+        "sha256": "1d4e69d672d55fa0a126ae43b7b4743482cccca7e2f2bc22e0db2bfdad5bdc7c"
+      },
+      "loader": {
+        "path": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_loader.so.0.12.0",
+        "sha256": "bb6e1311850e4b1a924e42acae80c2b3610934625a4985aaa67967abe31356fc"
+      },
+      "component_source_commit": "f312b6691f508125db6cfc2580ca32a686ff2642",
+      "component_original_plan": {
+        "commit": "550c75f5fc954ee38b70230e32d2a48e12100d8a",
+        "path": "bench/results/2026-10-15-pr6-recovery-audit/research-index.json",
+        "sha256": "d12866b93c51e76a83e95638e66b6f6f4e0e33d779516a5fddecc178a6f8e10a"
+      },
+      "retained_reference_until_exit": true,
+      "runtime_teardown_qualified": false
+    },
+    "driver_library": {
+      "path": "/usr/lib/x86_64-linux-gnu/libze_intel_gpu.so.1.17.39395",
+      "sha256": "50adb6b727d027309039803033d41efeae4b248589ee363f321c0d538c7de3ff"
+    },
+    "collector": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/ur-memory-subscriber-v1/libstrata_ur_memory.so",
+      "bytes": 16920,
+      "sha256": "677c0e079d4a204cb62400099a81ce9e214883cbda7d4a283340695aad2f2986"
+    },
+    "environment_sha256": {
+      "0": "f97f15e6ef21d451cb4a9708f7b270b7d1318311b90afd809817fedb44c5257f",
+      "1": "cfbf71122801361835f15f97017ccc479e261b9836ef26bc7be3adbf747e452c",
+      "2": "bbbfa41e0906ab0cb1842df827fbcca808494794760083b04bf75db5f81e503c",
+      "3": "35b5886181c69bc2ec13508454787cc26c043c43fc88304dc35be70183cfd2ed"
+    },
+    "command": [
+      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/full-context-native-v1/build/strata",
+      "--serve",
+      "--pack",
+      "/home/yayoi/.local/share/strata-sycl/packs/qwen3.8-flash-next-iq3_s",
+      "--native",
+      "/home/yayoi/.local/share/strata-sycl/models/qwen3.8-flash-next-iq3_s/IQ3_S/Qwen3.8-Flash-Next-GSQ-RCO-IQ3_S-00001-of-00002.gguf",
+      "--max-context",
+      "262144",
+      "--kv",
+      "int8",
+      "--kv-resident",
+      "131072",
+      "--expert-cache",
+      "1256",
+      "--expert-profile",
+      "/home/yayoi/orca/workspaces/Strata/sycl/data/expert-profile.bin",
+      "--expert-cache-per-layer",
+      "--pool-workers",
+      "5",
+      "--pcie-frac",
+      "0",
+      "--adapt-swaps",
+      "0",
+      "--conversation-cache-mib",
+      "8192",
+      "--prompt-cache",
+      "6",
+      "--turn-token",
+      "-1",
+      "--suffix-draft",
+      "0",
+      "--greedy",
+      "--no-spec-split",
+      "--short-read",
+      "0",
+      "--spec",
+      "4",
+      "--mtp",
+      "/home/yayoi/.local/share/strata-sycl/mtp/rt",
+      "--prefill",
+      "8192",
+      "--vram-reserve-mib",
+      "700",
+      "--no-coupled-draft",
+      "--no-token-graph",
+      "--prompt-cache-every",
+      "0",
+      "--conversation-cache-slots",
+      "2",
+      "--conversation-cache-min-free-mib",
+      "4096"
+    ],
+    "cases": {
+      "small": {
+        "requests": [
+          {
+            "prompt": 16385,
+            "max_new": 1,
+            "reused": 0,
+            "wire_bytes": 77488,
+            "wire_sha256": "a4349f9ea8e3a23f4d39fd94eaa748336ba2ad0f70d1753763b9c24f77dbcc5a"
+          },
+          {
+            "prompt": 33,
+            "max_new": 1,
+            "reused": 0,
+            "wire_bytes": 138,
+            "wire_sha256": "aa403cae69457851a7d1fc1a6dbc0c845d70dc4e086d0adfb2a6d93477f275b1"
+          },
+          {
+            "prompt": 16401,
+            "max_new": 1,
+            "reused": 16385,
+            "wire_bytes": 77552,
+            "wire_sha256": "79104c73d1bf6f879ba81154297b8dc2b82061d6f804422b65324aeaa84662a7"
+          }
+        ]
+      }
+    },
+    "vocab_size": 248320,
+    "model_assets_reference": {
+      "result_key": "neo_memory_model_v3",
+      "sha256": "986be81744907994c44c232523362a2f30e7256b8f23339407d3e2f6e87ef2ff"
+    },
+    "driver_before": {
+      "pci": "/sys/bus/pci/devices/0000:05:00.0",
+      "driver": "xe",
+      "vendor": "0x8086",
+      "device": "0xe20c",
+      "kernel": "7.0.0-38-generic",
+      "devcoredump": false
+    },
+    "boot": "cfda0b6a-7c13-4fe2-bdf5-8f9202770840",
+    "active": false,
+    "passed": false,
+    "complete": false,
+    "ownership_closed": true,
+    "GPU_executed": false,
+    "speed_eligible": false,
+    "decode_performance_qualified": false,
+    "model_adoption_qualified": false,
+    "ordinary_runtime_teardown_qualified": false,
+    "physical_owner_attribution_qualified": false,
+    "budgets": {
+      "wall_s": 1200,
+      "cpu_s": 7200,
+      "rss_bytes": 111669149696,
+      "text_bytes": 67108864,
+      "file_bytes": 67108864,
+      "total_bytes": 268435456,
+      "map_read_bytes": 1048576
+    },
+    "criteria": "Four independent native590f processes in ON/OFF/OFF/ON order,same A16385/B33/A+16 requests,original decode configuration and1256 slots. OFF removes only STATE_HASH,SNAPSHOT_VERIFY,CACHE_LOAN_AUDIT before exec;no mid-runtime environment mutation. Preserve safety/preload,UR/NEO logging,queues,model,weights,cache and all other flags. Every process requires exact request extents/valid IDs/actual reuse,QSA12-layer route,complete zero-balance UR ledger,all logging categories/zero binding errors,four stable owning-client and mapped-driver reads,normal exit0,closed ownership and no fresh fault. ON additionally repeats all1256 payload/table/main/draft/running checks;OFF must emit none of those readback-audit markers and is not a new payload/state qualification. Full15 model hashes after the final process;identity/stat pins before/after each. Preserve strict known trailing records,unknown protocol remains rejected. Stop first failure;no retry or skipped arm. No clean speed,decode preservation,physical migration or adoption claim.",
+    "decision_rule": "Keep every individual short-request creation sum,max and DRM/global-free delta. Observer-contribution screen requires max(abs(OFF VRAM delta))+256MiB < min(abs(ON VRAM delta));independently,if both OFF abs deltas>=1GiB,readback audits are not necessary for a large shift. Otherwise inconclusive. These screens do not identify KMD movement,physical PCIe traffic or production throughput. Never change thresholds after observing samples.",
+    "synchronization_source_review": "Refill always sync_queued before optional payload audit and checked residency publication. Native waits ver.wait_commit before DONE and next request. Snapshot restore has its own initial checked sync and checked copies/checkpoint restore;optional verify adds readback only. Keep original source and safety;no queue/context/lifetime change.",
+    "retention": "Main one audit-control comparison. Preserve source/recipe,individual counter and creation samples,ON state checks/OFF limits and faults. Cohort256MiB supervised raw cap,64MiB text per process. Retire successful raw/JIT and previous v3 captures after compact comparison;no extra engine generation.",
+    "outcomes": {}
   }
 }
