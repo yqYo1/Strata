@@ -312,8 +312,8 @@ def analyze(container):
         'previous_trace_comparison')}),flush=True)
 
 
-SYSCALL_ROOT=B/'ur-memory-syscall-probe-v1'
-SYSCALL_KEY='ur_memory_syscall_probe_v1'
+SYSCALL_ROOT=B/'ur-memory-syscall-probe-v2'
+SYSCALL_KEY='ur_memory_syscall_probe_v2'
 
 
 def syscall_compact(r):
@@ -327,6 +327,11 @@ def syscall_prepare(container):
     require(compact(parent)==container[KEY] and parent['passed'] and parent['complete'] and
         not parent['active'] and parent['ownership_closed'] and parent['fresh_faults']==[],
         'completed current model/client observer required')
+    native=model.gate.engine();preload=model.gate.validation.preload_qualification()
+    require(native['binary']==parent['binary'] and native['source_commit']==parent['native_source_commit'] and
+        parent['environment']['LD_PRELOAD']==preload['library']['path'] and
+        parent['environment']['STRATA_UR_PROBE_EXPECTED_LOADER']==preload['loader']['path'],
+        'qualified full runtime/native/preload identity differs')
     for name,h in parent['input_sha256'].items():
         raw=model.gate.native.build.git(P,'show',parent['source_commit']+':'+name)
         require(hashlib.sha256(raw).hexdigest()==h,'original client input unrecoverable: '+name)
@@ -350,6 +355,7 @@ def syscall_prepare(container):
     command.extend((fixture['path'],'--submission'))
     r=dict(stage='prepared',source_commit=revision,input_sha256=source,
         parent_qualification_sha256=model.model.fingerprint(container[KEY]),selected_original=selected,
+        runtime_native=dict(binary=native['binary'],source_commit=native['source_commit']),preload=preload,
         tool=dict(path=str(tool),sha256=digest(tool)),tool_dependencies={p:digest(p) for p in sorted(libraries)},
         tool_dependency_count=len(libraries),tool_dependency_sha256=model.model.fingerprint({p:digest(p) for p in sorted(libraries)}),
         fixture=fixture,fixture_source_commit=baseline['source_commit'],collector=parent['collector'],
@@ -371,6 +377,12 @@ def syscall_admission(r,container):
     require(RESULT.read_bytes()==model.gate.native.build.git(P,'show','HEAD:'+str(RESULT.relative_to(P))) and
         syscall_compact(r)==container[SYSCALL_KEY] and pins(r['source_commit'])==r['input_sha256'],
         'commit exact syscall capability plan')
+    native=model.gate.engine()
+    require(dict(binary=native['binary'],source_commit=native['source_commit'])==r['runtime_native'] and
+        model.gate.validation.preload_qualification()==r['preload'] and
+        r['tracee_environment']['LD_PRELOAD']==r['preload']['library']['path'] and
+        r['tracee_environment']['STRATA_UR_PROBE_EXPECTED_LOADER']==r['preload']['loader']['path'],
+        'full native SDK/runtime/validation preload qualification changed')
     require(model.model.fingerprint(container[KEY])==r['parent_qualification_sha256'] and
         model.model.fingerprint(r['command'])==r['command_sha256'] and
         model.model.fingerprint(r['environment'])==r['environment_sha256'] and
