@@ -1147,6 +1147,14 @@ is **not adopted** and original6e40 remains selected. These24-token outputs
 qualify neither sustained decode nor task quality. Consumed
 source audits and review transactions are retired after compact findings and
 actual-route checks:19 files/69079 bytes;the index retains the deletion manifest.
+After closure,Main replays all30 official requests,including24 long requests,
+and all six native/route/journal/clock/validation records identically. The full
+frozen inputs and original samples remain at`1e676d554`;the current result
+keeps compact individual clocks and decisions. The442 successful output/JIT/
+private-input/host-probe files (77003305 bytes) and two closed single-use
+controller/test sources are retired. No native engine or same-build fixture
+is deleted by this cleanup. The reusable C++ clock source remains for the next
+bounded timing qualification.
 Prefill evidence cannot qualify decode or adoption. Repeated strong/weak
 thinking-on generation,long/agent-session benchmarks and state handoff remain
 independent requirements;any decode impact is a separation defect to resolve.
