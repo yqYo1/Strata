@@ -225,43 +225,19 @@ def decode_work_evidence(text, samples):
 
 
 def decode_timing_evidence(text, samples):
-    """Existing rounded host clocks; waits, nested scopes and GPU service stay distinct."""
-    labels=('average_T','tokens_per_window','total','verify','GPU_reach_wait','per_layer_host','plan',
-            'activation_quant','jobs','CPU_pool_run','stage','commit_emit','draft','CPU_experts',
-            'CPU_entries','VRAM_hits','PCIe')
-    f=r'(\d+(?:\.\d+)?)'
-    pattern=(r'^strata decode timing: (\d+) windows, avg T '+f+r', '+f+r' tokens/window, '+f+
-        r' ms/window = verify '+f+r' \(GPU-reach wait '+f+r' \+ per-layer host '+f+
-        r' \[plan '+f+r' actq '+f+r' jobs '+f+r' CPU '+f+r'\] \+ stage '+f+
-        r'\) \+ commit/emit '+f+r' \+ draft '+f+r'; per layer-window: CPU experts '+f+
-        r' \('+f+r' entries\), VRAM hits '+f+r', PCIe '+f+r'$')
-    rows=re.findall(pattern,text,re.M)
-    guards.require(len(rows)==len(samples)==text.count('strata decode timing:'),'missing/extra timing records')
-    work=decode_work_evidence(text,samples);result=[]
-    for values,row,w in zip(rows,samples,work):
-        windows=int(values[0]);v=dict(zip(labels,map(float,values[1:])))
-        # generate.cpp prints this average with %.2f, but DONE (and the API
-        # decode_ms) with %.1f. Compare the two rounding intervals in total ms;
-        # the DONE quantum matters especially for one-window warmups.
-        clock_error_ms=abs(v['total']*windows-row['decode_ms'])
-        clock_rounding_ms=.005*windows+.05
-        guards.require(windows==w['target_windows'] and all(math.isfinite(x) and x>=0 for x in v.values()) and
-            abs(v['average_T']-w['target_rows']/windows)<=.00501 and
-            abs(v['tokens_per_window']-row['generated_tokens']/windows)<=.00501 and
-            clock_error_ms<=clock_rounding_ms+1e-8 and
-            abs(v['CPU_experts']-w['cpu_unique_jobs']/(windows*48))<=.00501 and
-            abs(v['CPU_entries']-w['cpu_entries']/(windows*48))<=.00501 and
-            abs(v['VRAM_hits']-(w['target_rows']*48*10-w['cpu_entries'])/(windows*48))<=.00501 and v['PCIe']==0,
-            'rounded decode clocks/work do not bind to completed request')
-        residual=v['total']-sum(v[k] for k in ('verify','commit_emit','draft'))
-        nested=v['per_layer_host']-sum(v[k] for k in ('plan','activation_quant','jobs','CPU_pool_run'))
-        guards.require(residual>=-.025 and nested>=-.025,'rounded timing scopes overcount their parents')
-        result.append(dict(windows=windows,ms_per_window=v,outer_residual_ms_per_window=residual,
-            host_nested_residual_ms_per_window=nested,work=w,
-            clock_binding=dict(absolute_total_difference_ms=clock_error_ms,
-                rounding_bound_ms=clock_rounding_ms,average_quantum_ms=.01,DONE_total_quantum_ms=.1),
-            limits='Existing two-decimal host wall clocks include firstT1. Parent/child fields are nested,not additive hardware costs. CPU_pool_run includes pool scheduling/waits; GPU_reach_wait is a host wait,not device arithmetic time. Residuals preserve rounding sign; no clean speed or hardware saturation claim.'))
-    return result
+    """Legacy spec4 work contract through the shared T1/T4 footer parser."""
+    import decode_footer
+    work = decode_work_evidence(text, samples)
+    try:
+        parsed = decode_footer.analyze(text, samples, work)
+    except ValueError as error:
+        guards.require(False, str(error))
+    return [dict(windows=v['target_windows'], ms_per_window=v['ms_per_window'],
+        outer_residual_ms_per_window=v['outer_residual_ms_per_window'],
+        host_nested_residual_ms_per_window=v['host_nested_residual_ms_per_window'], work=w,
+        clock_binding=dict(v['clock_binding'], average_quantum_ms=.01, DONE_total_quantum_ms=.1),
+        limits='Existing rounded nested host wall clocks,not additive hardware costs. CPU_pool_run includes scheduling/waits;GPU_reach_wait is not device arithmetic service. No clean-speed/saturation qualification.')
+        for v, w in zip(parsed, work)]
 
 
 def sample_eligible(row):

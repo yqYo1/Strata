@@ -10499,8 +10499,8 @@
   },
   "mtp2_original6e40_source_audit_20261024": {
     "classification": "decision_support",
-    "status": "eligible_not_dispatched",
-    "schedulable_now": true,
+    "status": "Orca_start_failed_before_task",
+    "schedulable_now": false,
     "eligibility_report": {
       "path": ".cache/strata-research/20261024/mtp2-scope-eligibility.json",
       "bytes": 6659,
@@ -10521,6 +10521,20 @@
       "retire_after": "Returned report/native review and Main source-gate consumption"
     },
     "report_path": "/home/yayoi/orca/workspaces/Strata/sycl/.cache/strata-research/20261024/mtp2-source-audit/report.md",
-    "startup_scope": "Report and immutable source snapshot are inside the verified primary Orca worktree. No external writable root or permission broadening requested. Report-only startup sentinel required before research."
+    "startup_scope": "Report and immutable source snapshot are inside the verified primary Orca worktree. No external writable root or permission broadening requested. Report-only startup sentinel required before research.",
+    "launch": {
+      "run": "run_12fa11537288",
+      "task": "task_4276824a0625",
+      "dispatch": "ctx_8757c7ec2558",
+      "terminal": "term_dd83f3e6-bc3c-40e6-8c8b-965f2a9f1bad",
+      "failedStage": "agent_readiness",
+      "error": "Agent startup blocked: agent-update-prompt",
+      "task_ran": false,
+      "replacement_started": false,
+      "closure": "Exact worker-release accepted:state released,processAction closed_agent_terminal,archive terminal/captured. No Task research ran.",
+      "release_request": "8a6ec1eb-e9fe-4079-9d51-16ad8adc752b"
+    },
+    "next_action": "Main uses the pinned source snapshot for fixed2 safety planning. Research dispatch remains unavailable until the Codex update-prompt readiness barrier is resolved;do not retry unchanged. If resumed,use original failed Task/retry-of rather than creating a duplicate.",
+    "source_scope_eligible": true
   }
 }

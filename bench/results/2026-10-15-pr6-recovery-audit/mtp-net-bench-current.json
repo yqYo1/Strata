@@ -1004,12 +1004,23 @@
   "clean_speed_qualified": false,
   "hardware_saturation_qualified": false,
   "artifact_retirement": {
-    "status": "verified-manifest-prepared",
+    "status": "deleted",
     "manifest": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/closed-mtp-net-bench-20261024.jsonl",
     "sha256": "05fce8da9053bf096b54cf6f0697cbe24c00cbed0caed06bb79eafa7979e01fd",
     "files": 163,
     "bytes": 43700882,
     "proof": "Closed model/owner/12request/route/clock/resource replay;190 original controller inputs recovered and13 selected assets rehashed before deletion.Original full inputs/results recover at51bb62ed6.",
-    "remaining": "Original selected13 plus private13 retained for imminent fixed-MTP2 versus MTP4/T1 comparison after source and bounded route qualification;private generation retires when that comparison closes or before any new native generation. Keep actual private source/compiled-input receipt for its current admission reader. Unrelated provenance/worker holds remain open."
+    "remaining": "Original selected13 plus private13 retained for imminent fixed-MTP2 versus MTP4/T1 comparison after source and bounded route qualification;private generation retires when that comparison closes or before any new native generation. Keep actual private source/compiled-input receipt for its current admission reader. Unrelated provenance/worker holds remain open.",
+    "remaining_native_assets_verified": 26
+  },
+  "helper_retirement": {
+    "original_source": "e25c8fbbc25e85cf8c827c8c86ed14af8b6a771f",
+    "analysis_source": "81907432cd61ad48e3f984a61c1a0f7daedbce1c",
+    "removed": [
+      "tools/sycl/mtp_net_bench.py",
+      "tools/sycl/test_mtp_net_bench.py",
+      "decode_footer.closed_pilot"
+    ],
+    "decision": "Closed launch/replay controllers have no execution consumer after raw retirement. Preserve shared T1/T4 footer parser through maintained generation_engine.decode_timing_evidence;source and original failed/success outcomes remain inGit."
   }
 }
