@@ -10,6 +10,7 @@ from pathlib import Path
 import re
 import subprocess
 import sys
+import struct
 
 sys.dont_write_bytecode=True
 import memory_trace_device as device
@@ -160,10 +161,100 @@ def run(container):
     return 0 if r['passed'] else 1
 
 
+def analyze(container):
+    """Offline requested-byte conservation; no GPU/runtime initialization."""
+    r=json.loads((ROOT/'record.json').read_text())
+    require(RESULT.read_bytes()==model.gate.native.build.git(P,'show','HEAD:'+str(RESULT.relative_to(P))) and
+        compact(r)==container[KEY],'commit the original closed collection first')
+    require(r['complete'] and r['passed'] and not r['active'] and r['ownership_closed'] and
+        r['exit_code']==0 and r['full_model_hashes_matched']==15,'completed collection required')
+    require('ur_allocation_analysis' not in container['owner_trace_obligations'],'no analysis overwrite')
+    revision=model.gate.native.build.git(P,'rev-parse','HEAD').decode().strip()
+    current_inputs=pins(revision)
+    for name,h in r['input_sha256'].items():
+        original=model.gate.native.build.git(P,'show',r['source_commit']+':'+name)
+        require(hashlib.sha256(original).hexdigest()==h,'original collector source unrecoverable: '+name)
+    path=ROOT/'owned/model.stderr';require(path.stat().st_size<=r['budgets']['text_bytes'],'trace size cap')
+    raw=path.read_bytes();text=raw.decode();require(trace_evidence(text)==r['trace'],'collection evidence changed')
+    maps=[]
+    for snapshot in r['maps']:
+        rawmap=Path(snapshot['path']).read_bytes()
+        require(len(rawmap)==snapshot['bytes'] and hashlib.sha256(rawmap).hexdigest()==snapshot['sha256'],
+            'captured map identity changed')
+        maps.append([s.split(maxsplit=5) for s in rawmap.decode().splitlines()])
+    binary=Path(r['binary']['path']);require(digest(binary)==r['binary']['sha256'],'native symbol module changed')
+    # This qualified engine is ET_EXEC. Do not guess a PIE/shared-library load
+    # bias or symbolize unpinned library frames from their pathname alone.
+    with binary.open('rb') as stream:header=stream.read(64)
+    require(header[:6]==b'\x7fELF\x02\x01' and struct.unpack_from('<H',header,16)[0]==2,
+        'native symbolization supports the pinned little-endian ELF64 ET_EXEC only')
+    ranges=[]
+    for snapshot in maps:
+        found=[tuple(int(v,16) for v in s[0].split('-')) for s in snapshot
+            if len(s)==6 and 'x' in s[1] and s[5]==str(binary)]
+        require(found,'native executable mapping absent');ranges.append(found)
+    require(all(v==ranges[0] for v in ranges),'native executable mappings changed')
+    rows=[]
+    for match in re.finditer(r'^strata UR memory: seq=.*$',text,re.M):
+        row=dict(re.findall(r'(\w+)=([^ ]*)',match[0]));row['offset']=match.start();rows.append(row)
+    require(all(row['result']=='0' and row['kind'] in ('alloc','free','release') for row in rows),
+        'this trace requires another failed-call/refcount/alias decoder')
+    live={};totals={};peak={};current={};frees=0
+    for row in sorted(rows,key=lambda v:int(v['seq'])):
+        pointer=row['ptr']
+        if row['kind']=='alloc':
+            domain=row['domain'];size=int(row['requested_bytes'])
+            require(pointer!='(nil)' and pointer not in live and size>0,'invalid or overlapping live allocation')
+            live[pointer]=(domain,size)
+            item=totals.setdefault(domain,dict(count=0,requested_bytes=0));item['count']+=1;item['requested_bytes']+=size
+            current[domain]=current.get(domain,0)+size;peak[domain]=max(peak.get(domain,0),current[domain])
+        else:
+            require(pointer in live,'free/release without a recorded live allocation')
+            domain,size=live.pop(pointer)
+            require((row['kind']=='release')==(domain=='buffer'),'USM/buffer release kind differs')
+            current[domain]-=size;frees+=1
+    require(not live and all(v==0 for v in current.values()),'requested-byte ledger does not close')
+    start=text.index('strata trace: request 33 0\n');stop=text.index('strata trace: request 16401 ',start)
+    begin=text.index('strata prefill dense: phase=cache-loan ',start)
+    end=text.index('strata prefill dense: phase=restored ',begin)
+    require(start<begin<end<stop,'short request marker order differs')
+    interval=[row for row in rows if begin<row['offset']<end]
+    addresses=sorted({int(pc,16) for row in interval if row['kind']=='alloc' for pc in row['stack'].split(',')
+        if pc and any(lo<=int(pc,16)<hi for lo,hi in ranges[0])})
+    require(0<len(addresses)<=4096,'bounded native symbol address set required')
+    tool=Path('/usr/bin/addr2line').resolve();tool_hash=digest(tool)
+    command=[str(tool),'--functions','--demangle','--exe',str(binary),*[hex(pc-1) for pc in addresses]]
+    symbols=subprocess.check_output(command,timeout=30)
+    require(len(symbols)<=1<<20 and digest(tool)==tool_hash and digest(binary)==r['binary']['sha256'],
+        'symbolizer output or input identity changed')
+    lines=symbols.decode().splitlines();require(len(lines)==2*len(addresses),'unexpected symbolizer fields')
+    functions={pc:lines[2*i] for i,pc in enumerate(addresses)}
+    events=[]
+    for row in interval:
+        native=[dict(return_pc=pc,function=functions[int(pc,16)]) for pc in row['stack'].split(',')
+            if pc and int(pc,16) in functions]
+        events.append(dict(seq=int(row['seq']),kind=row['kind'],domain=row['domain'],
+            requested_bytes=int(row['requested_bytes']),tid=int(row['tid']),native_frames=native))
+    result=dict(source_commit=revision,input_sha256=current_inputs,collection_source_commit=r['source_commit'],
+        trace=dict(path=str(path),bytes=len(raw),sha256=hashlib.sha256(raw).hexdigest()),
+        maps_sha256=[v['sha256'] for v in r['maps']],native_symbol_module=r['binary'],
+        symbolizer=dict(path=str(tool),sha256=tool_hash,return_pc_adjustment=-1),
+        successful_allocations=totals,successful_releases=frees,requested_peak_bytes_by_domain=peak,
+        final_requested_allocations=0,final_requested_bytes=0,stderr_interval_events=events,
+        reported_free_memory_decrease_bytes=r['trace']['short32_interval']['decrease_bytes'],
+        causal_phase_attribution_qualified=False,physical_owner_attribution_qualified=False,
+        interpretation='All observed successful USM allocations/frees and the two simple buffer create/release pairs conserve requested bytes. Peak is callback-sequence requested-byte accounting,not physical residency. The stderr-bounded event list is not causal B33 assignment;library frames remain unresolved and driver/pool/program/command storage is unobserved. Zero final requested bytes is not physical allocator cleanup or ordinary-runtime-teardown qualification.',
+        next_action='Measure the owning DRM client and lower-level allocator/program/command backing at matched phase boundaries;do not name a leak or library owner from global free memory alone.')
+    container['owner_trace_obligations']['ur_allocation_analysis']=result;write(RESULT,container)
+    print(json.dumps({k:result[k] for k in ('successful_allocations','successful_releases',
+        'final_requested_bytes','stderr_interval_events','reported_free_memory_decrease_bytes')}),flush=True)
+
+
 if __name__=='__main__':
-    require(sys.argv[1:] in (['prepare'],['run']),'prepare|run')
+    require(sys.argv[1:] in (['prepare'],['run'],['analyze']),'prepare|run|analyze')
     with (B/'owned-v0141-measurement.lock').open('a+') as lock:
         fcntl.flock(lock,fcntl.LOCK_EX|fcntl.LOCK_NB);model.gate.native.guards.no_model_owners([])
         container=json.loads(RESULT.read_text())
         if sys.argv[1]=='prepare':prepare(container)
-        else:sys.exit(run(container))
+        elif sys.argv[1]=='run':sys.exit(run(container))
+        else:analyze(container)
