@@ -203,9 +203,12 @@ prose read33283/generated23179, prompt43076.7ms and decode1964048.6ms.
 Both include thinking and an answer body. Draft acceptance is0.848624/0.572026;
 the prose sample does not meet the predeclared weak-reference ceiling0.40.
 Keep that classification failure separate from successful execution and useful
-speed samples. Eight processes are still unstarted; there is no paired gain,
-phase-preservation result or adoption. Native exit0, closed ownership and no
-fresh driver fault are verified for this first process.
+speed samples. The next width2 process also closes normally, with code3415 and
+prose19750 generated tokens. Its first-pair decode ratios against width4 are
+0.888372/1.079073; prefill ratios are1.000354/1.001118.
+Code misses no-decline; the single faster prose sample is not a repeated gain.
+Seven processes are still unstarted. Both native exits are0, ownership is closed
+and no fresh driver fault is recorded. No route or placement is adopted.
 Closedv1 logs/JIT, its superseded clock probe and eight unstarted plans retire
 after exact188-input and clock-recipe recovery:108 files,14,594,530bytes.
 Its intended advancement rules remain three nondeclining paired decode ratios

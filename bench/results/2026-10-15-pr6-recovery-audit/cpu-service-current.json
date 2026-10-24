@@ -1,0 +1,64 @@
+{
+  "stage": "prepared",
+  "source_commit": "b05a22c52a66131c081d3e7d6aff1af4764ed8ac",
+  "input_sha256": {
+    "tests/core/cpu_service_profile_test.cpp": "3efb6e3fe24a00816d06f476007ce35ace52088dd69bf4cce3a6b86d70f6a38b",
+    "include/strata/kernels/cpu/service_profile.hpp": "68d2f0df14eddd7ef9963b790ce205e781df86b1c5c1a98e8e33fa3fab8efe93",
+    "include/strata/kernels/cpu/native_expert.hpp": "4764a1a881a4d7491165018ab71ff397132e4173f033160bf38f8cd6c8f33e72",
+    "tools/sycl/cpu_service_profile.py": "c0d5812072a9086bd8a1ed0186a993c28e62fc9d1f1acb23ed2d9f5c567b8370",
+    "tools/sycl/build_engine.py": "8444783ab417378207ec89ad2bc3cf648480e20d9e77f06ebb3070c93e10b131",
+    "tools/sycl/measurement_guards.py": "794e332c70aca0acadad4f26d0414548e023a02fd27b72ed78fc773674423ec8",
+    "tools/sycl/measurement_owner.py": "bddd0c5e5020e882ca3404679420faec11e820dabce2ed4c72ef82b4c9c0874a"
+  },
+  "compiler": {
+    "path": "/usr/bin/g++",
+    "sha256": "1353e9bdd29a7295c7226bf6c63abccce056d8cac31f112e5cdbecc3f28c2769",
+    "version": "g++ (Ubuntu 13.3.0-6ubuntu2~24.04.1) 13.3.0"
+  },
+  "stdlib": {
+    "path": "/usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.33",
+    "sha256": "1fd75fe70354a416d75aef22bcae68c47bd25d20e2d0568c30b1a9838cf62f11"
+  },
+  "command": [
+    "/usr/bin/g++",
+    "-std=c++20",
+    "-O2",
+    "-Wall",
+    "-Wextra",
+    "-Werror",
+    "-pedantic",
+    "-pthread",
+    "-DSTRATA_CPU_SERVICE_PROFILE=1",
+    "-I",
+    "/home/yayoi/orca/workspaces/Strata/sycl/include",
+    "-MMD",
+    "-MF",
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-service-host-v1/fixture.d",
+    "/home/yayoi/orca/workspaces/Strata/sycl/tests/core/cpu_service_profile_test.cpp",
+    "-o",
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-service-host-v1/fixture"
+  ],
+  "environment": {
+    "PATH": "/usr/bin:/bin",
+    "LANG": "C.UTF-8",
+    "LC_ALL": "C.UTF-8",
+    "TMPDIR": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-service-host-v1/tmp"
+  },
+  "budgets": {
+    "wall": 90,
+    "cpu": 120,
+    "rss_cap": 2147483648,
+    "text_cap": 2097152,
+    "file_cap": 8388608,
+    "total_cap": 16777216
+  },
+  "criteria": "Owned compile/test exit0;actual project include closure exactly the three pinned native inputs;counter/row/NT conservation,phase exclusion,thread publication/identity,clock wall versus CPU,refusal/overflow and invalid-delta controls. No production kernels or GPU.",
+  "retention": "Keep source,recipe,host outcome and limits;retire successful raw output and standalone fixture after committed replay. No extra native engine generation.",
+  "passed": false,
+  "complete": false,
+  "active": false,
+  "ownership_closed": true,
+  "GPU_executed": false,
+  "production_pool_checked": false,
+  "model_adoption_qualified": false
+}
