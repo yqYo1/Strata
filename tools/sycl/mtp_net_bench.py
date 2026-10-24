@@ -162,6 +162,9 @@ def host():
         owner=short.gate.native.supervision.Owner(ROOT/'host/owned',persist)
         for label,args in [('tests',['/usr/bin/python3','-B','tools/sycl/test_mtp_net_bench.py']),
                            ('clock-tests',['/usr/bin/python3','-B','tools/sycl/test_measurement_clock.py']),
+                           ('client-tests',['/usr/bin/python3','-B','tools/test_strata_bench.py']),
+                           ('failfast-tests',['/usr/bin/python3','-B','tools/test_strata_bench_failfast.py']),
+                           ('reader-tests',['/usr/bin/python3','-B','tests/core/test_client_resources.py']),
                            ('compile',row['clock']['command'])]:
             entry,_,_=owner.run(label,args,row['clock']['environment'],P,**row['host_budgets'])
             require(short.gate.native.supervision.closed(entry) and entry['exit_code']==0,'host gate failed: '+label)
@@ -347,6 +350,12 @@ if __name__=='__main__':
     require(sys.argv[1:]in(['prepare'],['host'],['0'],['1']),'prepare|host|0|1')
     with (B/'owned-v0141-measurement.lock').open('a+')as lock:
         fcntl.flock(lock,fcntl.LOCK_EX|fcntl.LOCK_NB);short.gate.native.guards.no_model_owners([])
-        if sys.argv[1]=='prepare':prepare()
+        if sys.argv[1]=='prepare':
+            try:prepare()
+            except BaseException as error:
+                write(RESULT,dict(stage='preparation-failed',source_commit=gen.git('rev-parse','HEAD').decode().strip(),
+                    error=repr(error),partial_root=str(ROOT),active=False,ownership_closed=True,GPU_executed=False,
+                    next_action='Preserve original failure;inspect partial inputs and commit corrected source/fresh root before another prepare.'))
+                raise
         elif sys.argv[1]=='host':sys.exit(host())
         else:sys.exit(run(int(sys.argv[1])))
