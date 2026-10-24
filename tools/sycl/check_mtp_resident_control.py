@@ -17,7 +17,7 @@ import ur_validation as validation
 import generation_engine as generation
 
 P, B = native.P, native.B
-ROOT = B / 'mtp-resident-check-v1'
+ROOT = B / 'mtp-resident-check-v2'
 RESULT = native.RESULT.with_name('mtp-resident-check-current.json')
 INPUTS = sorted(set([*native.INPUTS, 'tools/sycl/check_mtp_resident_control.py',
     'tools/sycl/ur_validation.py', 'tools/sycl/generation_engine.py',
@@ -70,10 +70,13 @@ def cases(binary):
             ('context', '--max-context', '131071'), ('resident', '--kv-resident', '131071')]:
             changed = list(base); changed[changed.index(flag) + 1] = value
             result.append(dict(name='cap' + cap + '-' + label, argv=[binary, *changed]))
-        for label, flag in [('standalone', '--serve'), ('global-slots', '--expert-cache-per-layer'),
-            ('token-graph', '--no-token-graph')]:
+        for label, flag in [('standalone', '--serve'), ('global-slots', '--expert-cache-per-layer')]:
             changed = list(base); changed.remove(flag)
             result.append(dict(name='cap' + cap + '-' + label, argv=[binary, *changed]))
+        # SYCL defaults no_token_graph=true and has no CLI enable flag. Removing
+        # --no-token-graph cannot exercise that guard; use a real missing owner.
+        changed = list(base); offset = changed.index('--mtp'); del changed[offset:offset + 2]
+        result.append(dict(name='cap' + cap + '-missing-mtp', argv=[binary, *changed]))
         for label, extra in [('coupled', ['--coupled-draft']), ('remote', ['--expert-cache-device1', '1']),
             ('peer', ['--peer-device', '0'])]:
             result.append(dict(name='cap' + cap + '-' + label, argv=[binary, *base, *extra]))
@@ -89,7 +92,12 @@ def private_seal(row):
 
 
 def prepare():
-    native.guards.require(not ROOT.exists() and not RESULT.exists(), 'fresh check root only; no retry')
+    native.guards.require(not ROOT.exists(), 'fresh check root only; no retry')
+    previous = generation.committed(RESULT)
+    native.guards.require(previous['stage'] == 'failed' and not previous['passed'] and
+        previous['ownership_closed'] and not previous['active'] and previous['fresh_faults'] == [] and
+        len(previous['outcomes']) == 13 and not previous['outcomes'][-1]['passed'] and
+        all(v['passed'] for v in previous['outcomes'][:-1]), 'preserve closed original refusal failure')
     full = current_build()
     reference = generation.committed(RESULT.with_name('client-resources-current.json'))
     native.guards.require(reference['passed'] and reference['ownership_closed'] and
@@ -112,6 +120,8 @@ def prepare():
         UR_LOG_LEVEL_ZERO='level:warning;flush:warning;output:stderr',
         LD_PRELOAD=preload['library']['path'], STRATA_UR_PROBE_EXPECTED_LOADER=preload['loader']['path'])
     row = dict(stage='prepared', source_commit=revision, input_sha256=source,
+        prior_failed_operation=dict(commit=revision, path=str(RESULT.relative_to(P)),
+            outcome='V1 remains failed: removal of --no-token-graph cannot enable the SYCL default-off token graph.12 native refusals passed;13th returned later model-argument validation. No device fixture/GPU work. New v2 replaces this unreachable case with missing-MTP;no native/source change.'),
         native_build_sha256=native.build.digest(native.RESULT), assets=full['assets'],
         native_source_commit=full['source_commit'], base_native_source=full['base_native_source'],
         preload=preload, runtime_pins=runtime, environment=env,
