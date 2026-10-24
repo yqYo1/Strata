@@ -1091,24 +1091,43 @@ closes the current observer question;do not extend driver attribution without
 a concrete decision. No inference code or decode placement changed.
 All four raw state/route/UR/NEO/client parsers replay identically before
 retirement of208 successful output/JIT files,54396750 bytes. The compact
-samples and exact-environment cohort/parent records remain;both native source
-and recipe closures,the full SDK and all20 assets verify before/after deletion.
+samples remain;both native source and recipe closures,the full SDK and all20
+assets verify before/after deletion. The two external environment records are
+not performance inputs. Their remaining hold is archive closure:commit a common
+effective-environment template/dependency references,verify all four hashes,then
+retire the duplicate records. Recover the collector source/recipe before its
+retirement now that this observer consumer ended;review at the next safe boundary.
 
-The next official117K comparison retains original6e40 and unselected590f in
-six independent processes,original/candidate/candidate/original/original/candidate,
-with four fresh long requests each. First-use remains separate from each
-process's subsequent-three median. Both retain original131072 resident INT8
-context,8192 prefill and1256-slot decode placement. Heavy observers are removed;
-the qualified native-only validation/retained-loader preload and warning logs
-remain identical in both arms. Its overhead is charged,not assumed zero.
-This first package comparison keeps`STRATA_SYCL_PREFILL_SEPARATE_LAYOUT`unset
-as in the original reference;it measures the legacy resident131072 route after
-the compiled changes,not the optional streamed/explicit-layout route. Qualifying
-that route requires its own matched plan with actual layout/publication evidence.
-The committed controller's five CPU evidence controls pass. Prefill screens
-cannot qualify decode or adoption. Repeated strong/weak thinking-on generation,
-long/agent-session benchmarks and state handoff remain independent requirements.
-See the [current phase comparison](../bench/results/2026-10-15-pr6-recovery-audit/phase-prefill-speed-current.json).
+The first official117K package screen is now **closed, performance-ineligible**.
+Its one executed original6e40 process completes all four117489-token requests,
+exits0 with closed ownership,no fresh fault and unchanged final driver evidence.
+Printed first-use928.7 and subsequent1003.0/1003.3/1002.9tok/s agree with the
+older fast route, but are diagnostic observations. The five remaining processes
+were not launched. The native review found no prospectively declared numeric
+timing-duration floor or timer-overhead screen;do not retrofit those criteria
+or call this a qualified speed/decode/adoption comparison. Its source,full
+frozen plan and original samples recover at`4df78bb6f`. The current
+[compact closure](../bench/results/2026-10-15-pr6-recovery-audit/phase-prefill-speed-current.json)
+preserves the actual successful execution separately from timing ineligibility.
+After replay and both source/recipe/SDK/20-asset checks,112 files/13879208 bytes
+of closed v1 output,JIT,CPU logs and consumed collection transactions are retired.
+The two corrected substantive collection reports remain indexed for retrieval;
+the active timing/driver source audit remains only through its correction.
+
+Next commit a corrected controller and CPU controls,then a fresh v2 plan with
+numeric duration/overhead eligibility and final driver-equality enforcement.
+An interrupted preparation must preserve its failed receipt;port collisions
+remain fail-closed and do not authorize automatic retries. Keep original131072
+resident INT8 context,8192 prefill and1256-slot decode placement. Heavy observers
+stay removed;the qualified native-only validation/retained-loader preload and
+warning logs stay identical in both arms,and their cost remains charged.
+The closed first screen left`STRATA_SYCL_PREFILL_SEPARATE_LAYOUT`unset,so it
+would test the compiled package's legacy resident route. The next scope must
+explicitly select whether to compare that package or the optional independent
+layout,with actual per-request layout/publication evidence for the latter.
+Prefill evidence cannot qualify decode or adoption. Repeated strong/weak
+thinking-on generation,long/agent-session benchmarks and state handoff remain
+independent requirements;any decode impact is a separation defect to resolve.
 Four physical-fill/memory report/review
 files remain for their named Main tasks;unrelated owner/provenance holds remain
 separate.
@@ -1123,8 +1142,11 @@ coverage reports are not implemented ports. The latest actual upstream check at2
 This is an update observation,not integration or performance qualification.
 Required functional ports through the new target and the hardware-tuned
 unmodified upstream benchmark remain pending. The next check is approximately
-2026-10-25T21:29:32.552053+00:00. PR180/default integration is blocked by the existing merge
-policy; original measured commits remain reachable on pushed`feature/sycl`.
+2026-10-25T21:29:32.552053+00:00. PR180/default integration is blocked:repository
+ruleset24638744 permits squash only,whereas the measured original revisions
+must remain reachable through a merge commit. The PR is mergeable and not draft;
+no reviews/checks are pending. Do not squash or override this rule. Original
+measured commits remain reachable on pushed`feature/sycl`.
 
 ## MTP graph observer: closed diagnostic, resource attribution next
 
