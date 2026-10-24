@@ -312,135 +312,15 @@ def analyze(container):
         'previous_trace_comparison')}),flush=True)
 
 
-SYSCALL_ROOT=B/'ur-memory-syscall-probe-v2'
-SYSCALL_KEY='ur_memory_syscall_probe_v2'
-
-
-def syscall_compact(r):
-    return {k:v for k,v in r.items() if k not in
-        ('environment','tracee_environment','dependencies','tool_dependencies','commands','command')}
-
-
-def syscall_prepare(container):
-    require(SYSCALL_KEY not in container and not SYSCALL_ROOT.exists(),'fresh syscall probe only')
-    parent=json.loads((ROOT/'record.json').read_text())
-    require(compact(parent)==container[KEY] and parent['passed'] and parent['complete'] and
-        not parent['active'] and parent['ownership_closed'] and parent['fresh_faults']==[],
-        'completed current model/client observer required')
-    native=model.gate.engine();preload=model.gate.validation.preload_qualification()
-    require(native['binary']==parent['binary'] and native['source_commit']==parent['native_source_commit'] and
-        parent['environment']['LD_PRELOAD']==preload['library']['path'] and
-        parent['environment']['STRATA_UR_PROBE_EXPECTED_LOADER']==preload['loader']['path'],
-        'qualified full runtime/native/preload identity differs')
-    for name,h in parent['input_sha256'].items():
-        raw=model.gate.native.build.git(P,'show',parent['source_commit']+':'+name)
-        require(hashlib.sha256(raw).hexdigest()==h,'original client input unrecoverable: '+name)
-        if name!='tools/sycl/memory_trace_model.py':require(digest(P/name)==h,'native/observer input changed: '+name)
-    _,selected=host.model.gate.native.source.baseline()
-    baseline=json.loads((B/'main-native-gdn-engine/record.json').read_text())
-    fixture=baseline['fixtures']['sycl_submission_test']
-    require(digest(fixture['path'])==fixture['sha256'],'selected submission fixture changed')
-    revision=model.gate.native.build.git(P,'rev-parse','HEAD').decode().strip();source=pins(revision)
-    environment={'PATH':'/usr/bin:/bin','LANG':'C.UTF-8'}
-    tool=Path('/usr/bin/strace').resolve()
-    linked=subprocess.check_output(['/usr/bin/ldd',str(tool)],env=environment,text=True,timeout=15)
-    require('not found' not in linked,'strace dependency missing')
-    libraries={str(Path(p).resolve()) for p in re.findall(r'(/[^\s()]+)\s+\(0x',linked)}
-    require(0<len(libraries)<=32,'strace dependency closure missing/oversized')
-    SYSCALL_ROOT.mkdir(mode=0o700)
-    for name in ('tmp','cache'):(SYSCALL_ROOT/name).mkdir(mode=0o700)
-    tracee=dict(parent['environment'],TMPDIR=str(SYSCALL_ROOT/'tmp'),XDG_CACHE_HOME=str(SYSCALL_ROOT/'cache'))
-    command=[str(tool),'-f','-qq','-ttt','-v','-s','128','-e','trace=ioctl','-o',str(SYSCALL_ROOT/'ioctl.log')]
-    for key,value in sorted(tracee.items()):command.extend(('-E',key+'='+value))
-    command.extend((fixture['path'],'--submission'))
-    r=dict(stage='prepared',source_commit=revision,input_sha256=source,
-        parent_qualification_sha256=model.model.fingerprint(container[KEY]),selected_original=selected,
-        runtime_native=dict(binary=native['binary'],source_commit=native['source_commit']),preload=preload,
-        tool=dict(path=str(tool),sha256=digest(tool)),tool_dependencies={p:digest(p) for p in sorted(libraries)},
-        tool_dependency_count=len(libraries),tool_dependency_sha256=model.model.fingerprint({p:digest(p) for p in sorted(libraries)}),
-        fixture=fixture,fixture_source_commit=baseline['source_commit'],collector=parent['collector'],
-        dependencies=parent['dependencies'],environment=environment,tracee_environment=tracee,
-        environment_sha256=model.model.fingerprint(environment),tracee_environment_sha256=model.model.fingerprint(tracee),
-        command=command,command_sha256=model.model.fingerprint(command),
-        command_form='strace -f -qq -ttt -v -s128 -e trace=ioctl -o private/ioctl.log -E EACH_PINNED_CHILD_ENV selected/sycl_submission_test --submission',
-        driver_before=parent['driver_before'],boot=parent['boot'],
-        active=False,passed=False,complete=False,ownership_closed=True,GPU_executed=False,
-        speed_eligible=False,physical_owner_attribution_qualified=False,ordinary_runtime_teardown_qualified=False,
-        budgets=dict(wall_s=120,cpu_s=120,rss_bytes=4<<30,text_bytes=16<<20,file_bytes=16<<20,total_bytes=64<<20),
-        criteria='First owned small capability gate only,no model. Keep the strace parent environment free of LD_PRELOAD/UR/SYCL settings;apply the complete qualified immutable native environment with strace -E before native exec. Pin tool and shared libraries,selected6e40 fixture,collector and runtime. Require distinct owned native PID,its first-init validation,all10 original submission checks,normal owned root exit0,unchanged identities/boot/driver and no fresh fault. Require the installed decoder to name DRM_IOCTL_XE_GEM_CREATE and expose at least one requested-size field. Ioctl request decoding is not a successful-call/BO-lifetime ledger,migration proof,physical-residency or performance qualification. Stop first failure;no retry.',
-        retention='Retain one successful small ioctl stream only for immediate Main decoder/full-model-plan work;retire routine stdout/stderr/JIT after compact numerical,ownership,fault and decoder evidence. No additional engine generation.')
-    write(SYSCALL_ROOT/'record.json',r);container[SYSCALL_KEY]=syscall_compact(r);write(RESULT,container)
-    print('Prepared bounded selected-fixture syscall capability gate;commit before run.',flush=True)
-
-
-def syscall_admission(r,container):
-    require(RESULT.read_bytes()==model.gate.native.build.git(P,'show','HEAD:'+str(RESULT.relative_to(P))) and
-        syscall_compact(r)==container[SYSCALL_KEY] and pins(r['source_commit'])==r['input_sha256'],
-        'commit exact syscall capability plan')
-    native=model.gate.engine()
-    require(dict(binary=native['binary'],source_commit=native['source_commit'])==r['runtime_native'] and
-        model.gate.validation.preload_qualification()==r['preload'] and
-        r['tracee_environment']['LD_PRELOAD']==r['preload']['library']['path'] and
-        r['tracee_environment']['STRATA_UR_PROBE_EXPECTED_LOADER']==r['preload']['loader']['path'],
-        'full native SDK/runtime/validation preload qualification changed')
-    require(model.model.fingerprint(container[KEY])==r['parent_qualification_sha256'] and
-        model.model.fingerprint(r['command'])==r['command_sha256'] and
-        model.model.fingerprint(r['environment'])==r['environment_sha256'] and
-        model.model.fingerprint(r['tracee_environment'])==r['tracee_environment_sha256'],
-        'syscall command/environment/parent changed')
-    require(model.model.fingerprint(r['tool_dependencies'])==r['tool_dependency_sha256'] and
-        all(digest(p)==h for p,h in {**r['dependencies'],**r['tool_dependencies']}.items()),
-        'syscall tool/runtime dependencies changed')
-    for asset in (r['tool'],r['fixture'],r['collector']):require(digest(asset['path'])==asset['sha256'],'syscall input bytes changed')
-    require(host.model.gate.native.source.baseline()[1]==r['selected_original'] and
-        model.gate.native.guards.driver_guard()==r['driver_before'] and
-        Path('/proc/sys/kernel/random/boot_id').read_text().strip()==r['boot'],'baseline/driver/boot changed')
-
-
-def syscall_run(container):
-    r=json.loads((SYSCALL_ROOT/'record.json').read_text());syscall_admission(r,container)
-    require(r['stage']=='prepared','closed syscall probe cannot be retried')
-    original=json.loads(json.dumps(r));owner=None
-    journal=subprocess.check_output(['journalctl','-k','-b','-n','0','--show-cursor','--no-pager'],text=True,timeout=15)
-    cursor=next(s.split(': ',1)[1] for s in journal.splitlines() if s.startswith('-- cursor: '))
-    def persist():
-        r['active']=bool(owner and owner.active is not None);write(SYSCALL_ROOT/'record.json',dict(r,commands=owner.commands if owner else []))
-    owner=model.gate.native.supervision.Owner(SYSCALL_ROOT/'owned',persist);r.update(stage='running',GPU_executed=True);persist()
-    try:
-        b=r['budgets'];entry,out,err=owner.run('device',r['command'],r['environment'],P,
-            wall=b['wall_s'],cpu=b['cpu_s'],rss_cap=b['rss_bytes'],text_cap=b['text_bytes'],
-            file_cap=b['file_bytes'],total_cap=b['total_bytes'])
-        r['exit_code']=entry['exit_code']
-        require(model.gate.native.supervision.closed(entry) and entry['exit_code']==0,'normal owned syscall gate exit required')
-        stderr=err.read_text();native=re.findall(r'^strata UR validation: pid=(\d+) phase=begin ',stderr,re.M)
-        require(len(native)==1 and int(native[0])!=entry['pid'] and
-            int(native[0]) in [p['pid'] for p in entry['owners']],'distinct owned native child not observed')
-        r['native_pid']=int(native[0]);r['device_evidence']=device.evidence(stderr,out.read_text(),r['native_pid'])
-        path=SYSCALL_ROOT/'ioctl.log';require(path.stat().st_size<=b['text_bytes'],'syscall text budget exceeded')
-        raw=path.read_bytes();text=raw.decode(errors='replace')
-        sizes=[int(v) for v in re.findall(r'DRM_IOCTL_XE_GEM_CREATE[^\n]*?\bsize=(\d+)',text)]
-        require(sizes and all(n>0 for n in sizes),'installed strace does not decode GEM_CREATE request sizes')
-        r['syscall_decoder']=dict(path=str(path),bytes=len(raw),sha256=hashlib.sha256(raw).hexdigest(),
-            gem_create_requested_size_fields=len(sizes),smallest_request_bytes=min(sizes),largest_request_bytes=max(sizes),
-            scope='Requested fields in entered/returned ioctl text;success,unfinished/resumed pairing,handle ownership and migration remain unqualified.')
-        syscall_admission(original,container);r['host_probe_accepted']=True
-    except BaseException as error:r['error']=repr(error)
-    finally:
-        model.gate.validation.finish(r,owner,cursor,r['boot']);r['passed']=bool(r['passed'] and r.get('driver_after')==r['driver_before'])
-        r['complete']=r['passed'];r['stage']='closed' if r['passed'] else 'failed';persist()
-        container[SYSCALL_KEY]=syscall_compact(r);write(RESULT,container)
-    print(json.dumps({k:r.get(k) for k in ('passed','complete','ownership_closed','exit_code','native_pid','syscall_decoder','error','fresh_faults')}),flush=True)
-    return 0 if r['passed'] else 1
+# The installed strace6.8 decoder failed its selected-fixture gate. Its closed
+# controller/source/recipe recover from ef1051aa7; do not retry it for a model.
 
 
 if __name__=='__main__':
-    require(sys.argv[1:] in (['prepare'],['run'],['analyze'],['syscalls-prepare'],['syscalls-run']),
-        'prepare|run|analyze|syscalls-prepare|syscalls-run')
+    require(sys.argv[1:] in (['prepare'],['run'],['analyze']),'prepare|run|analyze')
     with (B/'owned-v0141-measurement.lock').open('a+') as lock:
         fcntl.flock(lock,fcntl.LOCK_EX|fcntl.LOCK_NB);model.gate.native.guards.no_model_owners([])
         container=json.loads(RESULT.read_text())
         if sys.argv[1]=='prepare':prepare(container)
         elif sys.argv[1]=='run':sys.exit(run(container))
-        elif sys.argv[1]=='analyze':analyze(container)
-        elif sys.argv[1]=='syscalls-prepare':syscall_prepare(container)
-        else:sys.exit(syscall_run(container))
+        else:analyze(container)
