@@ -1234,6 +1234,18 @@ all26 native assets verify before and after. One full short-model receipt remain
 only for the imminent official long-comparison admission;review it when that
 new plan seals its required model/environment fields. Net speed and limiting
 hardware resources remain unqualified by this short diagnostic.
+The prepared [official MTP net-cost pilot](../bench/results/2026-10-15-pr6-recovery-audit/mtp-net-bench-current.json)
+fixes cap0 then1 on that same binary,original prefill and1256 slots,with four
+standard warmups and both thinking-on v4 long-generation cases per process.
+Its explicit speed-only client mode allows valid zero-draft throughput without
+changing request bodies or qualifying agreement. Individual long requests need
+at least32K fresh input,1K generated tokens,512 answer characters and10s prompt/
+decode clocks. The same-provider C++ clock probe runs once before each process.
+Stage/parameter/cache observers and the passive1s CPU/CCS reader stay charged;
+this is attribution,not clean speed,hardware saturation or adoption. The reader
+has a3300s/32MiB bound;requested copy counts still do not measure PCIe traffic.
+The host gate and models require the committed190-file benchmark fingerprint,
+sealed clock/model/environment maps and the unchanged native qualification.
 For the prefill restoration,any decode impact,including state handoff,
 configuration,placement or throughput,is a separation defect to resolve.
 Keep the existing selected decode route until independent qualification.
