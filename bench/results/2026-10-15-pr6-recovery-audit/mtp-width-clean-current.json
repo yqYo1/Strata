@@ -1,5 +1,5 @@
 {
-  "stage": "host-prepared",
+  "stage": "host-checked",
   "source_commit": "10919c13de1e82fc28e6412ab405ccbb0f658512",
   "benchmark_files": 188,
   "previous_failed_comparison": {
@@ -196,7 +196,24 @@
     "minimum_time_ms": 10000,
     "maximum_endpoint_fraction": 0.0001,
     "source_sha256": "dbf7cc7a21e64dcd37632872be129fc5433e82fadb0e859792c01fbbf1deb676",
-    "source_contract": "Same native libstdc++ steady_clock::now;65536 consecutive pairs,sort/output outside pairs. Observed endpoint/rounding screen,not a universal bound or time subtraction."
+    "source_contract": "Same native libstdc++ steady_clock::now;65536 consecutive pairs,sort/output outside pairs. Observed endpoint/rounding screen,not a universal bound or time subtraction.",
+    "probe": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/mtp-width-clean-v2/host/clock_probe",
+      "sha256": "a44ef582c9fab6f40a6740377dba8b249693a21ee7c8be2c71be68513307c934",
+      "bytes": 16344
+    },
+    "initial_screen": {
+      "samples": 65536,
+      "resolution_ns": 1,
+      "min_ns": 10,
+      "p99_ns": 30,
+      "max_ns": 3998,
+      "endpoint_rounding_fraction_at_floor": 5.7996e-06,
+      "provider": {
+        "path": "/usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.33",
+        "sha256": "1fd75fe70354a416d75aef22bcae68c47bd25d20e2d0568c30b1a9838cf62f11"
+      }
+    }
   },
   "plans": [
     {
@@ -1146,5 +1163,46 @@
   "production_selected": false,
   "model_adoption_qualified": false,
   "clean_comparison_complete": false,
-  "private_inputs_sha256": "295fa78618973ea070499ca4782dc123110dc987b8d72b0cbbbc967cae38c87a"
+  "private_inputs_sha256": "295fa78618973ea070499ca4782dc123110dc987b8d72b0cbbbc967cae38c87a",
+  "host_validation": {
+    "source_commit": "10919c13de1e82fc28e6412ab405ccbb0f658512",
+    "groups": [
+      {
+        "label": "width-tests",
+        "tests": 6,
+        "exit_code": 0
+      },
+      {
+        "label": "client-tests",
+        "tests": 16,
+        "exit_code": 0
+      },
+      {
+        "label": "failfast-tests",
+        "tests": 9,
+        "exit_code": 0
+      },
+      {
+        "label": "journal-tests",
+        "tests": 15,
+        "exit_code": 0
+      },
+      {
+        "label": "engine-evidence-tests",
+        "tests": 16,
+        "exit_code": 0
+      },
+      {
+        "label": "clock-tests",
+        "tests": 2,
+        "exit_code": 0
+      }
+    ],
+    "tests": 64,
+    "commands": 8,
+    "all_exit_zero": true,
+    "all_owned_processes_closed": true,
+    "GPU_executed": false,
+    "scope": "Offline client/journal/width/independent-phase/clock evidence,plus a host-only clock probe;no native model or speed qualification."
+  }
 }
