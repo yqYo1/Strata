@@ -13095,7 +13095,7 @@
     }
   },
   "neo_readback_control_v1": {
-    "stage": "prepared",
+    "stage": "sample_0_closed",
     "source_commit": "50c2ef6bb162131c1c8aecba4c6a500175124692",
     "input_sha256": {
       "bench/sycl/client_resources.py": "9d5afa1bfc7df83ebd0ada8470b61a2c5b01d59b72822dd75f45ddb5a56ec16e",
@@ -13281,7 +13281,7 @@
     "passed": false,
     "complete": false,
     "ownership_closed": true,
-    "GPU_executed": false,
+    "GPU_executed": true,
     "speed_eligible": false,
     "decode_performance_qualified": false,
     "model_adoption_qualified": false,
@@ -13300,6 +13300,183 @@
     "decision_rule": "Keep every individual short-request creation sum,max and DRM/global-free delta. Observer-contribution screen requires max(abs(OFF VRAM delta))+256MiB < min(abs(ON VRAM delta));independently,if both OFF abs deltas>=1GiB,readback audits are not necessary for a large shift. Otherwise inconclusive. These screens do not identify KMD movement,physical PCIe traffic or production throughput. Never change thresholds after observing samples.",
     "synchronization_source_review": "Refill always sync_queued before optional payload audit and checked residency publication. Native waits ver.wait_commit before DONE and next request. Snapshot restore has its own initial checked sync and checked copies/checkpoint restore;optional verify adds readback only. Keep original source and safety;no queue/context/lifetime change.",
     "retention": "Main one audit-control comparison. Preserve source/recipe,individual counter and creation samples,ON state checks/OFF limits and faults. Cohort256MiB supervised raw cap,64MiB text per process. Retire successful raw/JIT and previous v3 captures after compact comparison;no extra engine generation.",
-    "outcomes": {}
+    "outcomes": {
+      "0": {
+        "audit": "on",
+        "stage": "closed",
+        "passed": true,
+        "complete": true,
+        "ownership_closed": true,
+        "trailing_neo_records": {
+          "records": 2192,
+          "bytes": 156002,
+          "sha256": "b1861f929127dc59da38bc555922379cbd6a8626e79c2a618745b09287efddb1",
+          "scope": "Known complete logging records after QUIT/EOF;not ordinary runtime teardown qualification."
+        },
+        "exit_code": 0,
+        "readback_state_verified": true,
+        "trace": {
+          "records": 1482,
+          "successful_allocations": {
+            "host": {
+              "count": 92,
+              "requested_bytes": 4178901128
+            },
+            "device": {
+              "count": 647,
+              "requested_bytes": 16389741288
+            },
+            "buffer": {
+              "count": 2,
+              "requested_bytes": 8
+            }
+          },
+          "successful_releases": 741,
+          "final_requested_bytes": 0,
+          "short32_interval": {
+            "before_reported_free_bytes": 2558324736,
+            "after_reported_free_bytes": 116187136,
+            "decrease_bytes": 2442137600,
+            "total_reported_bytes": 10666115072
+          },
+          "scope": "Successful logical UR request ledger;not physical residency,causal phase assignment or ordinary teardown."
+        },
+        "logging_counts": {
+          "allocation_type": 1260,
+          "allocation_pool_size": 1260,
+          "bo_create": 2,
+          "bo_bind": 1257,
+          "bo_unbind": 1252,
+          "bo_close_attempt": 1261
+        },
+        "short_request": {
+          "client_region_delta": {
+            "vram_bytes": 2511937536,
+            "gtt_bytes": -2508455936,
+            "all_total_region_bytes": 3481600
+          },
+          "allocation_details": {
+            "records": 7,
+            "sum_requested_bytes": 3473408,
+            "largest_requested_bytes": 2031616,
+            "types": [
+              {
+                "type": "KERNEL_ISA",
+                "pool": "LocalMemory",
+                "records": 1,
+                "requested_bytes": 2031616,
+                "largest_bytes": 2031616
+              },
+              {
+                "type": "COMMAND_BUFFER",
+                "pool": "LocalMemory",
+                "records": 1,
+                "requested_bytes": 1114112,
+                "largest_bytes": 1114112
+              },
+              {
+                "type": "LINEAR_STREAM",
+                "pool": "LocalMemory",
+                "records": 3,
+                "requested_bytes": 196608,
+                "largest_bytes": 65536
+              },
+              {
+                "type": "GPU_TIMESTAMP_DEVICE_BUFFER",
+                "pool": "LocalMemory",
+                "records": 1,
+                "requested_bytes": 65536,
+                "largest_bytes": 65536
+              },
+              {
+                "type": "INTERNAL_HEAP",
+                "pool": "LocalMemory",
+                "records": 1,
+                "requested_bytes": 65536,
+                "largest_bytes": 65536
+              }
+            ],
+            "scope": "Logged creation requests between DONE A and DONE B,not live/physical bytes or causal phase assignment."
+          },
+          "dense_reported_free_decrease_bytes": 2442137600
+        },
+        "logs": {
+          "stdout": {
+            "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/neo-readback-control-v1/owned/sample-0.stdout",
+            "bytes": 1028314,
+            "sha256": "9fa1704e99897139df66176347700e9ba7e8990a78b1239a9e40e86de720f782"
+          },
+          "stderr": {
+            "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/neo-readback-control-v1/owned/sample-0.stderr",
+            "bytes": 497939,
+            "sha256": "de884ed93cd6a9e5055bfb89af41a45cad72247e31dc6f821d54e90567e288fc"
+          }
+        },
+        "host_probe_accepted": true,
+        "fresh_faults": [],
+        "boot_unchanged": true,
+        "driver_after": {
+          "pci": "/sys/bus/pci/devices/0000:05:00.0",
+          "driver": "xe",
+          "vendor": "0x8086",
+          "device": "0xe20c",
+          "kernel": "7.0.0-38-generic",
+          "devcoredump": false
+        },
+        "requests": [
+          {
+            "generated": 1,
+            "prompt": 16385,
+            "accepted": 0,
+            "offered": 0,
+            "reused": 0,
+            "read": 16385,
+            "state_L": 16385,
+            "state_sha256": "c6ec8cf67b90da845003cc5169032b2472b3d3e6901cacb8c44438ef2406fde2",
+            "decode_cache_restore": {
+              "slots": 1256,
+              "payload_bytes": 2575206400,
+              "lent": 1124,
+              "same_slots": true,
+              "payload_match": true
+            }
+          },
+          {
+            "generated": 1,
+            "prompt": 33,
+            "accepted": 0,
+            "offered": 0,
+            "reused": 0,
+            "read": 33,
+            "state_L": 33,
+            "state_sha256": "c13d347f99c59fb2070054c918db8e5ac06049ee168e3d48fc6b8f794cec4052",
+            "decode_cache_restore": {
+              "slots": 1256,
+              "payload_bytes": 2575206400,
+              "lent": 243,
+              "same_slots": true,
+              "payload_match": true
+            }
+          },
+          {
+            "generated": 1,
+            "prompt": 16401,
+            "accepted": 0,
+            "offered": 0,
+            "reused": 16385,
+            "read": 16,
+            "state_L": 16401,
+            "state_sha256": "7a62ef2450875abb626e40ca7c84739786c2ac565382e703b4b603b72d97e4fe",
+            "decode_cache_restore": {
+              "slots": 1256,
+              "payload_bytes": 2575206400,
+              "lent": 243,
+              "same_slots": true,
+              "payload_match": true
+            }
+          }
+        ]
+      }
+    }
   }
 }
