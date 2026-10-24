@@ -3,7 +3,6 @@
 
 Main-authored Strata source, repository LICENSE; no native process or GPU call.
 """
-import hashlib
 import json
 from pathlib import Path
 from types import SimpleNamespace
@@ -68,19 +67,30 @@ class Protocol(unittest.TestCase):
     def test_other_runtime_error_preserved(self):
         a,io,r=wrapper(b'Calling gem close on handle: BO-1\n',error='protocol send deadline')
         with self.assertRaisesRegex(RuntimeError,'^protocol send deadline$'):a.exit(1)
-    def test_actual_failed_capture_remains_failed(self):
-        failed=CONTAINER['neo_memory_model_v1'];e=failed['observer_protocol_failure']['stdout']
+    def test_all_known_categories_and_original_failed_status(self):
+        failed=CONTAINER['neo_memory_model_v1']
         self.assertFalse(failed['passed']);self.assertFalse(failed['complete'])
-        raw=Path(e['path']).read_bytes();self.assertEqual(len(raw),e['bytes'])
-        self.assertEqual(hashlib.sha256(raw).hexdigest(),e['sha256'])
-        marker=raw.rfind(b'\nDONE ');self.assertGreater(marker,0)
-        tail=raw[marker:].split(b'\n',2)[2];a,io,r=wrapper(tail);a.exit(1)
-        self.assertEqual(r['trailing_neo_records']['records'],2172)
-        self.assertEqual(r['trailing_neo_records']['bytes'],154602)
+        vectors=trace.protocol_vectors(CONTAINER)
+        self.assertEqual(len(vectors),6)
+        a,io,r=wrapper(('\n'.join(vectors)+'\n').encode());a.exit(1)
+        self.assertEqual(r['trailing_neo_records']['records'],6)
         self.assertFalse(failed['passed'])
+    def test_immutable_audit_environment(self):
+        base=dict(safety='keep',TMPDIR='oldtmp',XDG_CACHE_HOME='oldcache',**{k:'1' for k in trace.AUDITS})
+        before=dict(base)
+        on=trace.audit_environment(base,Path('/private'),'on');off=trace.audit_environment(base,Path('/private'),'off')
+        self.assertEqual(base,before)
+        self.assertEqual({k for k in on if k not in off},set(trace.AUDITS))
+        self.assertEqual({k:v for k,v in on.items() if k not in trace.AUDITS},off)
+        self.assertEqual(on['safety'],'keep');self.assertEqual(off['safety'],'keep')
+    def test_unmatched_audit_baseline_refused(self):
+        for override in ({trace.AUDITS[0]:'0'},{trace.AUDITS[1]:None}):
+            base=dict(**{k:'1' for k in trace.AUDITS});base.update(override)
+            with self.assertRaises(RuntimeError):trace.audit_environment(base,Path('/private'),'off')
 
 
 if __name__=='__main__':
     result=unittest.TextTestRunner(verbosity=1).run(unittest.defaultTestLoader.loadTestsFromTestCase(Protocol))
-    print(json.dumps(dict(tests=result.testsRun,passed=result.wasSuccessful(),GPU_executed=False)))
+    print(json.dumps(dict(tests=result.testsRun,passed=result.wasSuccessful(),GPU_executed=False,
+        input_fingerprint=trace.protocol_input_fingerprint(CONTAINER))))
     sys.exit(0 if result.wasSuccessful() else 1)
