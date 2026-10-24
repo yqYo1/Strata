@@ -1089,6 +1089,10 @@ This does not identify physical backing movement,bus bytes or a speed cost.
 Individual samples and original limits remain in the compact result. This
 closes the current observer question;do not extend driver attribution without
 a concrete decision. No inference code or decode placement changed.
+All four raw state/route/UR/NEO/client parsers replay identically before
+retirement of208 successful output/JIT files,54396750 bytes. The compact
+samples and exact-environment cohort/parent records remain;both native source
+and recipe closures,the full SDK and all20 assets verify before/after deletion.
 
 The next official117K comparison retains original6e40 and unselected590f in
 six independent processes,original/candidate/candidate/original/original/candidate,
