@@ -236,7 +236,12 @@ passes owned GCC13.3 compilation and all standalone counter/clock controls, with
 three actual project includes matched and both processes closed at exit0.
 Its8 raw/fixture files (48,600bytes) and one-shot runner retire after original
 source/recipe recovery; the runner recovers at`b05a22c52`. This qualifies neither
-the production pool nor a model measurement. Optional
+the production pool nor a model measurement. The prepared
+`cpu_service_pool_test` covers the real five-worker pool, mixedNT1..4,
+seven format pairs, the96-expert batch boundary, output canaries and leaf-output
+parity. Its observer-off/on arms use separate preexec settings. It is unbuilt
+and unrun; execute it only after the active width cohort and extra-build retirement,
+then qualify observer overhead separately. Optional
 `STRATA_CPU_SERVICE_PROFILE` compilation plus preexec`STRATA_CPU_SERVICE=1`
 collects decode-only pool GU/SwiGLU, hidden quantization and Down leaf scopes for
 the seven observed format pairs at H2560/FF640/NT1..4. It records calling-thread
