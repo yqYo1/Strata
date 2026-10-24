@@ -228,6 +228,38 @@ a phase critical path. Its complete raw table has only the recorded next
 source/shape-attribution consumer; retire it when that question closes. See
 [profiler capability and coverage](../bench/results/2026-10-15-pr6-recovery-audit/cpu-profiler-current.json).
 
+Basic [profile-off/on graph support](../bench/results/2026-10-15-pr6-recovery-audit/mtp-graph-observer-current.json)
+already passed, with exact6e40 reuse checked separately. The closed
+[64-window MTP observation](../bench/results/2026-10-15-pr6-recovery-audit/mtp-model-observer-current.json)
+measured a31.2083ms/window outer graph envelope; the
+[Q6_K head calibration](../bench/results/2026-10-15-pr6-recovery-audit/mtp-head-current.json)
+also completed and reached only its intermediate follow-up screen. These are
+charged graph envelopes, not individual arithmetic service or a target-verifier
+breakdown. Do not repeat basic adapter qualification from an older report's
+unknown-support note. After the active clean comparison, check existing
+collector qualifications and source mapping for a bounded target/per-operator
+collection using the indexed expanded-graph method.
+
+The separate3,611-output code diagnostic also supplies a nominal CPU weight
+budget. Match its seven format/NT histograms to the checked blob geometry in
+the [archived calibration plan](https://github.com/yqYo1/Strata/blob/1c450997ad10b17d387d86e3e0904ae447924160/bench/results/2026-10-15-pr6-recovery-audit/cpu-roofline-plan.json):
+`sum(sum(jobs_NT) * blob_bytes)` is2,796,077,900,800bytes across1,370,846
+unique CPU jobs, or774,322,321 nominal bytes/output. This already groups
+NT1..4 reuse within each job. It is one packed-blob visit per job, excluding
+additional activation/output traffic; cache-line reuse, repeated loads and
+actual DRAM transactions remain unmeasured. VRAM serves10.7728% of that
+trace's target expert entries; this is neither a GPU time fraction nor a
+fraction of parameter bytes.
+
+At70tok/s the same nominal work rate would be54.203GB/s. The simple read
+reference achieved30.642GB/s, not a physical memory ceiling. If every nominal
+byte reached RAM at that rate, weights alone would take25.270ms/output
+(39.573tok/s), before other work. Reaching70 at that reference would require
+physical bytes at most56.533% of the nominal count, or lower per-output weight
+demand; neither is established. Use this conditional budget to test cache,
+grouping and CPU-kernel alternatives together. Do not declare RAM saturation,
+an impossible70tok/s target or a new clean throughput result from these numbers.
+
 Before any adoption, complete the relevant independent gates:
 
 - Repeated clean thinking-on strong/weak long generation, official long and
