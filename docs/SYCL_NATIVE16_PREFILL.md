@@ -211,8 +211,11 @@ The resident-no-decode-draft control also closes normally: code3064 and
 prose26209 generated tokens, at exact11.334027/11.075995tok/s. Its first-pair
 decode ratios are0.764091/0.938513, and prefill ratios0.999815/1.001409.
 It passes the explicit speed-only contract with no proposals; draft-agreement
-eligibility remains false and acceptance is undefined. Six processes remain in
-the other two blocks. All three closed native/benchmark exits are0, ownership is closed and no
+eligibility remains false and acceptance is undefined. The second width2 process
+also closes normally, generating3415/19750 code/prose tokens with decode
+times258410.8/1555581.7ms. Five processes remain; its block's width4 reference
+has not run, so this does not supply the next paired comparison.
+All four closed native/benchmark exits are0, ownership is closed and no
 fresh driver fault is recorded. No route or placement is adopted.
 Closedv1 logs/JIT, its superseded clock probe and eight unstarted plans retire
 after exact188-input and clock-recipe recovery:108 files,14,594,530bytes.
