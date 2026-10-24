@@ -1162,6 +1162,20 @@ Four physical-fill/memory report/review
 files remain for their named Main tasks;unrelated owner/provenance holds remain
 separate.
 
+The next [resident-MTP control](../bench/results/2026-10-15-pr6-recovery-audit/mtp-resident-control-current.json)
+is a private diagnostic,not a new selected decode implementation. It regenerates
+the selected6e40 project inputs from Git and changes only two translation units:
+`generate.cpp` rejects unsupported cache/standalone/suffix/coupled/oracle paths
+and reports cumulative draft rounds after request timing;`mtp.cpp` can return
+without graph observation or GPU draft work when the existing cap is zero.
+MTP prompt precompute,weights/KV allocation and original prefill remain. Against
+MTP4,the target verifier window also changes toT1;this is not full-MTP-off or
+completely allocation-matched. The first CPU source check fails on an ambiguous
+test anchor,with no native compilation or GPU execution. Preserve that failure
+and correct the source gate before building. Native/source review and then
+bounded device/model qualification remain pending. Existing selected6e40 and
+all1256 decode slots remain unchanged.
+
 Remaining model gates are repeated phase-preserving adoption evidence,
 agent-session and task quality,near-cap/tail boundaries,
 prefill-to-decode/session/RESTORE,failure-owner checks,and70tok/s decode.
