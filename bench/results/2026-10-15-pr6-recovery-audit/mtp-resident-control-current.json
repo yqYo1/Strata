@@ -1,0 +1,232 @@
+{
+  "schema": "strata-resident-mtp-control-v1",
+  "stage": "prepared",
+  "source_commit": "8af8fe1e3c038133b6aad53cf5278ee8e8c51958",
+  "input_sha256": {
+    "tools/sycl/mtp_resident_control.py": "58ab065ff46bc43b1fa9185328be18a71a303b82813c7614de6b48d5bce6cf57",
+    "tools/sycl/test_mtp_resident_control.py": "2f822b249a57fc2538f10f3833d353e0f2f929d559d7869c11a9ea425c55fde2",
+    "tools/sycl/build_engine.py": "8444783ab417378207ec89ad2bc3cf648480e20d9e77f06ebb3070c93e10b131",
+    "tools/sycl/build_full_context.py": "6e2aa8c584e0fd014157cfd08360945ae2d28ad2db660499d9f4eb900e517b72",
+    "tools/sycl/check_full_context_source.py": "5e72fa724e890e682382758caf6222042e1ec89770962ce205ab756783332030",
+    "tools/sycl/measurement_guards.py": "794e332c70aca0acadad4f26d0414548e023a02fd27b72ed78fc773674423ec8",
+    "tools/sycl/measurement_owner.py": "bddd0c5e5020e882ca3404679420faec11e820dabce2ed4c72ef82b4c9c0874a",
+    "tools/sycl/measurement_environment.json": "d4402591df50e80dc45a5ec9e4839c7a794888850b1473537b6f95179be5b03c"
+  },
+  "selected_original": {
+    "source_commit": "6e40afc1beddd059ee518617f6c1efce1da14aca",
+    "inputs_recovered": 9853,
+    "assets_verified": 13,
+    "receipt": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/record.json",
+      "sha256": "a38f477670fafcd1a931be2e20d90d6d9718df75b61954b421f361af9f6881b2"
+    },
+    "limits": "Original build remains selected; this source-only diagnostic is not adoption."
+  },
+  "base_native_source": "6e40afc1beddd059ee518617f6c1efce1da14aca",
+  "generated_source_files": 542,
+  "generated_source_fingerprint": "16aa6425fd785f012d0795dc94f9466e7d86dcc7091219e219635a3a61faaeda",
+  "changed_native_files": [
+    "src/core/mtp.cpp",
+    "src/program/generate.cpp"
+  ],
+  "compiler": {
+    "path": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin/clang++",
+    "sha256": "1290881b4e12a5e002e5b0de0787f85328ee5fe19f253a54be1cdd97dc2f26eb"
+  },
+  "environment_reference": {
+    "receipt": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/record.json",
+      "sha256": "a38f477670fafcd1a931be2e20d90d6d9718df75b61954b421f361af9f6881b2"
+    },
+    "replacements": {
+      "TMPDIR": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/mtp-resident-control-v1/tmp",
+      "XDG_CACHE_HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/mtp-resident-control-v1/cache"
+    }
+  },
+  "configure_argv": [
+    "/usr/bin/cmake",
+    "-S",
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/mtp-resident-control-v1/source",
+    "-B",
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/mtp-resident-control-v1/build",
+    "-G",
+    "Ninja",
+    "-DCMAKE_CXX_COMPILER=/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin/clang++",
+    "-DCMAKE_BUILD_TYPE=Release",
+    "-DCMAKE_EXPORT_COMPILE_COMMANDS=ON",
+    "-DMKL_DIR=/opt/intel/oneapi/mkl/2026.1/lib/cmake/mkl",
+    "-DSTRATA_BUILD_CONVERSATION_TESTS:BOOL=OFF",
+    "-DSTRATA_BUILD_PREFILL_HOST_TESTS:BOOL=ON",
+    "-DSTRATA_BUILD_TESTS:BOOL=OFF",
+    "-DSTRATA_CPU_ARCH:STRING=znver3",
+    "-DSTRATA_ENABLE_CUDA:BOOL=OFF",
+    "-DSTRATA_ENABLE_HIP:BOOL=OFF",
+    "-DSTRATA_ENABLE_SYCL:BOOL=ON",
+    "-DSTRATA_GGML_DIR:PATH=/home/yayoi/ghq/github.com/ggml-org/llama.cpp/.worktree/dep-ggml-3cf-xe-e32-20261011",
+    "-DSTRATA_MMQ_KQUANTS:BOOL=OFF",
+    "-DSTRATA_NATIVE_EXPERTS:BOOL=ON",
+    "-DSTRATA_ORCA_Q4KS_MMQ:BOOL=OFF",
+    "-DSTRATA_PORTABLE:BOOL=OFF",
+    "-DSTRATA_PREFILL_MMQ:BOOL=OFF",
+    "-DSTRATA_SYCL_AOT_DOUBLE_GRF:BOOL=OFF",
+    "-DSTRATA_SYCL_TESTS:BOOL=ON",
+    "-DSTRATA_WERROR:BOOL=ON",
+    "-DSTRATA_SYCL_VLLM_XE2_NATIVE16=ON",
+    "-DSTRATA_SYCL_DEVICE_ARCH=",
+    "-DSYCL_TLA_SOURCE_DIR=/home/yayoi/ghq/github.com/intel/sycl-tla/.worktree/strata-native16-87f"
+  ],
+  "targets": [
+    "strata",
+    "sycl_verifier_retirement_test",
+    "sycl_submission_test",
+    "file_expert_source_test",
+    "sycl_mmvq_test",
+    "residency_publication_host_test",
+    "cache_tail_host_test",
+    "prefill_scratch_host_test",
+    "sycl_prefill_scratch_test",
+    "sycl_expert_bank_test",
+    "cpu_work_census_host_test",
+    "sycl_graph_envelope_test",
+    "iq2_phase_host_test"
+  ],
+  "build_command": [
+    "/usr/bin/cmake",
+    "--build",
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/mtp-resident-control-v1/build",
+    "--target",
+    "strata",
+    "sycl_verifier_retirement_test",
+    "sycl_submission_test",
+    "file_expert_source_test",
+    "sycl_mmvq_test",
+    "residency_publication_host_test",
+    "cache_tail_host_test",
+    "prefill_scratch_host_test",
+    "sycl_prefill_scratch_test",
+    "sycl_expert_bank_test",
+    "cpu_work_census_host_test",
+    "sycl_graph_envelope_test",
+    "iq2_phase_host_test",
+    "-j",
+    "4"
+  ],
+  "dependency_command": [
+    "/usr/bin/ninja",
+    "-C",
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/mtp-resident-control-v1/build",
+    "-t",
+    "deps"
+  ],
+  "generated_header_sha256": {
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/mtp-resident-control-v1/build/ggml/src/ggml-version.h": "9e45eee8391971371922f51b66925184609125d467c444744599f680b78edc92"
+  },
+  "retire_generation": {
+    "source_commit": "1cba8a2857891862f8ed4c534d8afee3b0aeaf98",
+    "receipt_path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/full-context-native-v1/engine-record.json",
+    "receipt_sha256": "166d0e1ca062202929fddc41a6e1979314bbb83f2e1dc9912d1bbfcd8328072e",
+    "source_inputs_recovered": 9853,
+    "configure_argv": [
+      "/usr/bin/cmake",
+      "-S",
+      "/home/yayoi/orca/workspaces/Strata/sycl",
+      "-B",
+      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/full-context-native-v1/build",
+      "-G",
+      "Ninja",
+      "-DCMAKE_CXX_COMPILER=/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin/clang++",
+      "-DCMAKE_BUILD_TYPE=Release",
+      "-DCMAKE_EXPORT_COMPILE_COMMANDS=ON",
+      "-DMKL_DIR=/opt/intel/oneapi/mkl/2026.1/lib/cmake/mkl",
+      "-DSTRATA_BUILD_CONVERSATION_TESTS:BOOL=OFF",
+      "-DSTRATA_BUILD_PREFILL_HOST_TESTS:BOOL=ON",
+      "-DSTRATA_BUILD_TESTS:BOOL=OFF",
+      "-DSTRATA_CPU_ARCH:STRING=znver3",
+      "-DSTRATA_ENABLE_CUDA:BOOL=OFF",
+      "-DSTRATA_ENABLE_HIP:BOOL=OFF",
+      "-DSTRATA_ENABLE_SYCL:BOOL=ON",
+      "-DSTRATA_GGML_DIR:PATH=/home/yayoi/ghq/github.com/ggml-org/llama.cpp/.worktree/dep-ggml-3cf-xe-e32-20261011",
+      "-DSTRATA_MMQ_KQUANTS:BOOL=OFF",
+      "-DSTRATA_NATIVE_EXPERTS:BOOL=ON",
+      "-DSTRATA_ORCA_Q4KS_MMQ:BOOL=OFF",
+      "-DSTRATA_PORTABLE:BOOL=OFF",
+      "-DSTRATA_PREFILL_MMQ:BOOL=OFF",
+      "-DSTRATA_SYCL_AOT_DOUBLE_GRF:BOOL=OFF",
+      "-DSTRATA_SYCL_TESTS:BOOL=ON",
+      "-DSTRATA_WERROR:BOOL=ON",
+      "-DSTRATA_SYCL_VLLM_XE2_NATIVE16=ON",
+      "-DSTRATA_SYCL_DEVICE_ARCH=",
+      "-DSYCL_TLA_SOURCE_DIR=/home/yayoi/ghq/github.com/intel/sycl-tla/.worktree/strata-native16-87f",
+      "-DCMAKE_CXX_FLAGS:STRING=-DSTRATA_SYCL_FULL_CONTEXT_DIAGNOSTIC=1"
+    ],
+    "recipe_matches_committed_result": true,
+    "source_reachable_remote": "f63e1e820a321305d46fc1603fbc1ac2aaa919dd",
+    "assets": [
+      {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/full-context-native-v1/build/strata",
+        "bytes": 22229920,
+        "sha256": "590f8237e48139d96f77b9fd4c25ea18b1e701be147c52ecf75b7598c4284018"
+      },
+      {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/full-context-native-v1/build/sycl_native16_qsa_streamed_test",
+        "bytes": 1935656,
+        "sha256": "968e2cffdd60309842a62a7e3e44e0eb98b205d0594fa2ae24c732524da15a02"
+      },
+      {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/full-context-native-v1/build/sycl_native16_qsa_test",
+        "bytes": 1877672,
+        "sha256": "b77a1249e665998d99a3e113a7afc53729d85fe811359cc31957920ec024ad8f"
+      },
+      {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/full-context-native-v1/build/sycl_qsa_bf16_attention_test",
+        "bytes": 943272,
+        "sha256": "162efd45a663c0caee4b7fafb8facd1f38f8e7d081ddf13e5ae5f85cff305acf"
+      },
+      {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/full-context-native-v1/build/prefill_expert_bank_plan_test",
+        "bytes": 35696,
+        "sha256": "be7b4c9c93ef857a8e064b6c587daaddd21e42264ee54739c73d1b6686c2fd55"
+      },
+      {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/full-context-native-v1/build/sycl_conversation_snapshot_test",
+        "bytes": 13557320,
+        "sha256": "ad273a5514409bebead223fac2960f2a46ba1d9f1f684860c0343420e1277528"
+      },
+      {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/full-context-native-v1/build/sycl_prefill_scratch_test",
+        "bytes": 21242992,
+        "sha256": "3743a36ae0646c8377ce7b552bd17edae26338656e865fe9dc492639fd5d9e38"
+      }
+    ],
+    "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/full-context-native-v1/build",
+    "complete": false,
+    "reason": "Six-process prefill comparison closed without adoption. Existing capacity/state outcomes stay preserved;physical262144 needs a new entrypoint/build,so it is not a consumer of these old binaries. Keep source receipt only for the existing closed qualification/provenance readers,not an execution generation."
+  },
+  "question": "Measure resident MTP4 versus resident-no-decode-draft under unchanged original prefill,target1256 slots and safety. This is an attribution control,not full MTP-off or hardware saturation.",
+  "criteria": "Build from exact selected6e40 source plus only two declared generated TUs. Native startup refuses standalone,caches,suffix,coupled/oracle,graphs/split. Cap0 returns only after owner/T/a checks,clears outputs and avoids graph observation/staging/submission. Default cap3 retains original math. Before models require owned build/actual dependency closure,CPU refusal checks,bounded traced device and short model checks. Repeated thinking-on code/prose,long/agent-session and independent prefill preservation remain necessary for adoption.",
+  "budgets": {
+    "wall": 1200,
+    "cpu": 7200,
+    "rss_cap": 17179869184,
+    "text_cap": 8388608,
+    "file_cap": 268435456,
+    "total_cap": 4294967296
+  },
+  "passed": false,
+  "complete": false,
+  "active": false,
+  "ownership_closed": true,
+  "GPU_executed": false,
+  "production_selected": false,
+  "model_adoption_qualified": false,
+  "retention": "One selected original13-asset fallback plus this imminent diagnostic generation. Retire old unselected7 assets/build only after original source/recipe/remote/consumer checks. Generated source is a disposable current compile input;remove it with closed build output after qualification/comparison. Keep compact measurements and original inputs in Git.",
+  "initial_cpu_source_check": {
+    "source_commit": "8af8fe1e3",
+    "tests": 6,
+    "exit_code": 1,
+    "passed": false,
+    "error": "test_only_declared_mtp_edits_and_no_prefill_or_first_draft_edit: generic signature-tail anchor also matches draft_first (2 occurrences). CPU source generator/guard checks otherwise complete;no native compilation or GPU/model execution. Correct the test anchor in a new committed source/plan before build;do not reinterpret this failed check as passed.",
+    "build_permitted": false,
+    "retirement_independent": "Old candidate prefill comparison is already closed/rejected;source9853/recipe/SDK/asset/remote proofs completed. Its unused generation retirement remains separately permitted;selected original13 assets stay unchanged."
+  }
+}
