@@ -11540,7 +11540,7 @@
     "correction": "Review before first execution found the new wrapper checked collector/header/tool bytes but did not enforce the complete native SDK/runtime manifest and separate validation-preload qualification. No execution/admission failure or device work occurred. Preserve this unrun plan;use a fresh prospectively corrected v2."
   },
   "ur_memory_syscall_probe_v2": {
-    "stage": "prepared",
+    "stage": "failed",
     "source_commit": "ef1051aa762260f7973864d28ca0127f4273bd4d",
     "input_sha256": {
       "bench/sycl/client_resources.py": "9d5afa1bfc7df83ebd0ada8470b61a2c5b01d59b72822dd75f45ddb5a56ec16e",
@@ -11637,7 +11637,7 @@
     "passed": false,
     "complete": false,
     "ownership_closed": true,
-    "GPU_executed": false,
+    "GPU_executed": true,
     "speed_eligible": false,
     "physical_owner_attribution_qualified": false,
     "ordinary_runtime_teardown_qualified": false,
@@ -11650,6 +11650,49 @@
       "total_bytes": 67108864
     },
     "criteria": "First owned small capability gate only,no model. Keep the strace parent environment free of LD_PRELOAD/UR/SYCL settings;apply the complete qualified immutable native environment with strace -E before native exec. Pin tool and shared libraries,selected6e40 fixture,collector and runtime. Require distinct owned native PID,its first-init validation,all10 original submission checks,normal owned root exit0,unchanged identities/boot/driver and no fresh fault. Require the installed decoder to name DRM_IOCTL_XE_GEM_CREATE and expose at least one requested-size field. Ioctl request decoding is not a successful-call/BO-lifetime ledger,migration proof,physical-residency or performance qualification. Stop first failure;no retry.",
-    "retention": "Retain one successful small ioctl stream only for immediate Main decoder/full-model-plan work;retire routine stdout/stderr/JIT after compact numerical,ownership,fault and decoder evidence. No additional engine generation."
+    "retention": "Retain one successful small ioctl stream only for immediate Main decoder/full-model-plan work;retire routine stdout/stderr/JIT after compact numerical,ownership,fault and decoder evidence. No additional engine generation.",
+    "exit_code": 0,
+    "native_pid": 2462591,
+    "device_evidence": {
+      "activation": {
+        "pid": 2462591,
+        "loader": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_loader.so.0.12.0",
+        "threads_before": 1,
+        "preinit": 37,
+        "config_enabled": true,
+        "first_init": true,
+        "dispatch_result": 46,
+        "output_untouched": true,
+        "retained_reference_until_exit": true,
+        "runtime_teardown_qualified": false
+      },
+      "original_submission_checks": 10,
+      "memory_records": 10,
+      "allocations": {
+        "host": {
+          "count": 2,
+          "requested_bytes": 2056
+        },
+        "device": {
+          "count": 3,
+          "requested_bytes": 3220
+        }
+      },
+      "successful_frees": 5,
+      "residual_requested_allocations": 0,
+      "residual_requested_bytes": 0,
+      "scope": "Requested UR allocation lifetime only;residuals are not a physical-residency/leak claim."
+    },
+    "error": "RuntimeError('installed strace does not decode GEM_CREATE request sizes')",
+    "fresh_faults": [],
+    "boot_unchanged": true,
+    "driver_after": {
+      "pci": "/sys/bus/pci/devices/0000:05:00.0",
+      "driver": "xe",
+      "vendor": "0x8086",
+      "device": "0xe20c",
+      "kernel": "7.0.0-38-generic",
+      "devcoredump": false
+    }
   }
 }
