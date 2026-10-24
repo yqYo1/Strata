@@ -197,7 +197,15 @@ The next fresh cohort uses balanced4/2/1,2/1/4,1/4/2 blocks, starting with the
 unchanged MTP4 reference. It stops on another capped thinking-only output;
 it does not automatically increase the budget. Exact inputs and generated plan
 are committed; all64 host controls and the same-provider clock screen pass.
-This is not a new model measurement or a throughput/phase-preservation pass.
+The first fresh MTP4 process has closed normally with both workload gates passed:
+code read33209/generated3091, prompt51452.3ms and decode208381.7ms;
+prose read33283/generated23179, prompt43076.7ms and decode1964048.6ms.
+Both include thinking and an answer body. Draft acceptance is0.848624/0.572026;
+the prose sample does not meet the predeclared weak-reference ceiling0.40.
+Keep that classification failure separate from successful execution and useful
+speed samples. Eight processes are still unstarted; there is no paired gain,
+phase-preservation result or adoption. Native exit0, closed ownership and no
+fresh driver fault are verified for this first process.
 Closedv1 logs/JIT, its superseded clock probe and eight unstarted plans retire
 after exact188-input and clock-recipe recovery:108 files,14,594,530bytes.
 Its intended advancement rules remain three nondeclining paired decode ratios

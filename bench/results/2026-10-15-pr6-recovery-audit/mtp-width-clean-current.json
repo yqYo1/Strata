@@ -1,5 +1,5 @@
 {
-  "stage": "host-checked",
+  "stage": "partial",
   "source_commit": "10919c13de1e82fc28e6412ab405ccbb0f658512",
   "benchmark_files": 188,
   "previous_failed_comparison": {
@@ -1167,7 +1167,223 @@
     "total_cap": 16777216
   },
   "retention": "Keep individual samples,clock screens,source/configuration,comparison/fault decisions. Replay then retire successful logs/JIT/journals/raw responses and one-shot launcher. Original13/private13 assets serve this imminent comparison only;retire private after closure and exact original-input recovery,or before a new native generation.",
-  "processes": [],
+  "processes": [
+    {
+      "index": 0,
+      "width": 4,
+      "passed": true,
+      "active": false,
+      "clock": {
+        "samples": 65536,
+        "resolution_ns": 1,
+        "min_ns": 10,
+        "p99_ns": 30,
+        "max_ns": 60,
+        "endpoint_rounding_fraction_at_floor": 5.0120000000000005e-06,
+        "provider": {
+          "path": "/usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.33",
+          "sha256": "1fd75fe70354a416d75aef22bcae68c47bd25d20e2d0568c30b1a9838cf62f11"
+        }
+      },
+      "effective_native_environment_verified": true,
+      "benchmark_exit_code": 0,
+      "requests": [
+        {
+          "ok": true,
+          "err": null,
+          "ttft_s": 51.563,
+          "total_s": 259.856,
+          "prompt_tokens": 33209,
+          "reused_tokens": 0,
+          "read_tokens": 33209,
+          "generated_tokens": 3091,
+          "prompt_tps": 645.4,
+          "prompt_tps_source": "engine",
+          "decode_tps": 14.8,
+          "decode_tps_source": "engine",
+          "prompt_ms": 51452.3,
+          "decode_ms": 208381.7,
+          "drafts_offered": 2616,
+          "drafts_accepted": 2220,
+          "finish_reason": "stop",
+          "request_sha256": "0face770ccba6241eab79725cd7c932f45f9b590b03fbfbdaaee3da7b649f542",
+          "stream_complete": true,
+          "truncated": false,
+          "generated_tokens_source": "usage",
+          "client_interval": {
+            "request_begin_monotonic_ns": 1185582172333490,
+            "first_output_monotonic_ns": 1185633734912008,
+            "request_end_monotonic_ns": 1185842028660475
+          },
+          "eligible": true,
+          "agreement_eligible": true,
+          "speed_eligible": true,
+          "speed_ineligible_reasons": [],
+          "ineligible_reasons": [],
+          "acceptance_rate": 0.8486238532110092,
+          "usage_generated_tokens": 3091,
+          "completion_includes_thinking": true,
+          "run": 0,
+          "order": 0,
+          "output_sha256": "4eacd45dc98dcabd31c005643888becf722dc3d2b761b315a5a5f19539444bbe",
+          "reasoning_sha256": "63b409a44414e93e9c8de70c8cf95c9361d01934957c579457bb738160133575",
+          "output_chars": 5575,
+          "reasoning_chars": 3063,
+          "reasoning_tokens": null,
+          "workload": "regular-code",
+          "controller_eligible": true
+        },
+        {
+          "ok": true,
+          "err": null,
+          "ttft_s": 43.187,
+          "total_s": 2007.148,
+          "prompt_tokens": 33283,
+          "reused_tokens": 0,
+          "read_tokens": 33283,
+          "generated_tokens": 23179,
+          "prompt_tps": 772.6,
+          "prompt_tps_source": "engine",
+          "decode_tps": 11.8,
+          "decode_tps_source": "engine",
+          "prompt_ms": 43076.7,
+          "decode_ms": 1964048.6,
+          "drafts_offered": 25602,
+          "drafts_accepted": 14645,
+          "finish_reason": "stop",
+          "request_sha256": "06b3f7fd680663ee4e6082bb5ec23eb613e9f88ee100464ec7df98787582bad6",
+          "stream_complete": true,
+          "truncated": false,
+          "generated_tokens_source": "usage",
+          "client_interval": {
+            "request_begin_monotonic_ns": 1185842042403407,
+            "first_output_monotonic_ns": 1185885229434825,
+            "request_end_monotonic_ns": 1187849190852195
+          },
+          "eligible": true,
+          "agreement_eligible": true,
+          "speed_eligible": true,
+          "speed_ineligible_reasons": [],
+          "ineligible_reasons": [],
+          "acceptance_rate": 0.5720256229982033,
+          "usage_generated_tokens": 23179,
+          "completion_includes_thinking": true,
+          "run": 0,
+          "order": 1,
+          "output_sha256": "f79734c564134b0771b2d8db48709b9bb7dd7dc30485642a26ef18f5ff6765d3",
+          "reasoning_sha256": "640bd5db8f166604d53b0e5f5574ac5a771195497782bdb56bd6a3bf94b3a82f",
+          "output_chars": 4055,
+          "reasoning_chars": 51085,
+          "reasoning_tokens": null,
+          "workload": "varied-prose",
+          "controller_eligible": true
+        }
+      ],
+      "benchmark_complete": true,
+      "benchmark_failures": [],
+      "native_exit_code": 0,
+      "work": [
+        {
+          "source_fixed_width": 4,
+          "target_windows_inferred_from_offered": 7,
+          "target_rows_inferred": 25,
+          "emitted": 24,
+          "accepted": 18,
+          "offered": 18
+        },
+        {
+          "source_fixed_width": 4,
+          "target_windows_inferred_from_offered": 1,
+          "target_rows_inferred": 1,
+          "emitted": 1,
+          "accepted": 0,
+          "offered": 0
+        },
+        {
+          "source_fixed_width": 4,
+          "target_windows_inferred_from_offered": 1,
+          "target_rows_inferred": 1,
+          "emitted": 1,
+          "accepted": 0,
+          "offered": 0
+        },
+        {
+          "source_fixed_width": 4,
+          "target_windows_inferred_from_offered": 3,
+          "target_rows_inferred": 9,
+          "emitted": 8,
+          "accepted": 6,
+          "offered": 6
+        },
+        {
+          "source_fixed_width": 4,
+          "target_windows_inferred_from_offered": 873,
+          "target_rows_inferred": 3489,
+          "emitted": 3091,
+          "accepted": 2220,
+          "offered": 2616
+        },
+        {
+          "source_fixed_width": 4,
+          "target_windows_inferred_from_offered": 8535,
+          "target_rows_inferred": 34137,
+          "emitted": 23179,
+          "accepted": 14645,
+          "offered": 25602
+        }
+      ],
+      "activation": {
+        "pid": 3689511,
+        "loader": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_loader.so.0.12.0",
+        "threads_before": 1,
+        "preinit": 37,
+        "config_enabled": true,
+        "first_init": true,
+        "dispatch_result": 46,
+        "output_untouched": true,
+        "retained_reference_until_exit": true,
+        "runtime_teardown_qualified": false
+      },
+      "host_probe_accepted": true,
+      "journal": {
+        "successful_warmups": 4,
+        "successful_long_requests": 2,
+        "phase_order": [
+          "warm-up/chat",
+          "calibration",
+          "calibration",
+          "warm-up/prompt",
+          "long-generation/regular-code",
+          "long-generation/varied-prose"
+        ],
+        "request_sha256": [
+          "6976dd85c26437117139f185ce0ac4da0ab9d1d4eb576dd2f9e252ae99d63f03",
+          "d8ca2c50709718ca5b39d97002c11e82241f2c1c5c85897fe8f4ff4e1bbc15ef",
+          "674dccdcdd568cf7d50f62d4350fdb716811792566d9b6f7e0cfa79abb2d6c15",
+          "6289ab9d230f5e68e6c4dba87ee88bc3729223a3f0008f427d5273d2d820b084",
+          "0face770ccba6241eab79725cd7c932f45f9b590b03fbfbdaaee3da7b649f542",
+          "06b3f7fd680663ee4e6082bb5ec23eb613e9f88ee100464ec7df98787582bad6"
+        ],
+        "journal_sha256": "966c32105fd3df0938c0e2cb02a89f38eb4d0d1429ffa29565af08a452f0593d"
+      },
+      "evidence_sha256": {
+        "engine.stderr": "d4d04b0108fdbc518ec3e263968f8ed3ad3a32a752cf398d9bafc68f50826c94",
+        "engine-start.json": "a3503cb37374535aadc336632903a54d60f904a143c90fa057d1063208a62ac8",
+        "engine-exit.json": "503384d9c35918691a2cfc2509d833f5410af161b45178f69f2f355ce0175864"
+      },
+      "ownership_closed": true,
+      "fresh_faults": [],
+      "boot_unchanged": true,
+      "driver_after": {
+        "pci": "/sys/bus/pci/devices/0000:05:00.0",
+        "driver": "xe",
+        "vendor": "0x8086",
+        "device": "0xe20c",
+        "kernel": "7.0.0-38-generic",
+        "devcoredump": false
+      }
+    }
+  ],
   "active": false,
   "ownership_closed": true,
   "passed": false,
