@@ -36,8 +36,8 @@ def requests():
     return [[i % 4096 for i in range(n)] for n in (33, 257)]
 
 
-def wire(ids):
-    return ('GEN 32 ' + ','.join(map(str, ids)) + '\n').encode()
+def wire(ids, max_new=32):
+    return ('GEN ' + str(max_new) + ' ' + ','.join(map(str, ids)) + '\n').encode()
 
 
 def private_seal(row):
@@ -153,7 +153,10 @@ def admission(row):
     gate.generation.runtime_assets_unchanged(reference)
 
 
-def interact(io, row, outcome, cap):
+def interact(io, row, outcome, cap, *, request_ids=None, max_new=32):
+    require(type(max_new) is int and 1 <= max_new <= 32, 'bounded GEN output cap required')
+    request_ids = requests() if request_ids is None else request_ids
+    require(len(request_ids) == len(row['requests']), 'request plan count differs')
     info = {}
     while True:
         line = io.line(600); require(not line.startswith('ERR'), line)
@@ -164,8 +167,8 @@ def interact(io, row, outcome, cap):
         mtp_max=str(cap), lookup='0', pool_workers='5', pcie_frac='0.00', conversation_cache_mib='0')
     require(all(info.get(k) == v for k, v in expected.items()), 'actual model/cache/MTP configuration differs')
     outcome['admission'] = {k: info[k] for k in expected}; outcome['requests'] = []
-    for ids, fixture in zip(requests(), row['requests']):
-        payload = wire(ids)
+    for ids, fixture in zip(request_ids, row['requests']):
+        payload = wire(ids, max_new)
         require(len(payload) == fixture['wire_bytes'] and hashlib.sha256(payload).hexdigest() == fixture['wire_sha256'],
             'generated request wire changed')
         io.send(payload); tokens = []; progress = []
@@ -177,9 +180,9 @@ def interact(io, row, outcome, cap):
                 f = line.split()[1:]; require(len(f) == 14, 'native DONE shape changed')
                 sample = dict(generated_tokens=int(f[0]), prompt_tokens=int(f[1]), finish=f[4],
                     drafts_accepted=int(f[5]), drafts_offered=int(f[6]), reused_tokens=int(f[7]), read_tokens=int(f[13]))
-                require(sample['generated_tokens'] == len(tokens) and 1 <= len(tokens) <= 32 and
+                require(sample['generated_tokens'] == len(tokens) and 1 <= len(tokens) <= max_new and
                     sample['prompt_tokens'] == len(ids) and
-                    ((sample['finish'] == 'length' and len(tokens) == 32 and tokens[-1] not in row['eos_ids']) or
+                    ((sample['finish'] == 'length' and len(tokens) == max_new and tokens[-1] not in row['eos_ids']) or
                      (sample['finish'] == 'stop' and tokens[-1] in row['eos_ids'])) and
                     sample['reused_tokens'] == 0 and sample['read_tokens'] == len(ids) and
                     0 <= sample['drafts_accepted'] <= sample['drafts_offered'] and

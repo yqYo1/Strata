@@ -57,7 +57,7 @@ class Routes(unittest.TestCase):
             'spec=4 mtp_max=1 lookup=0 pool_workers=5 pcie_frac=0.00 conversation_cache_mib=0', 'READY 131072 stop']
         wrong = IO(); wrong.lines = [io.lines[0].replace('kv_resident=0', 'kv_resident=131072'), io.lines[1]]
         with self.assertRaisesRegex(RuntimeError, 'actual model/cache/MTP configuration differs'):
-            m.interact(wrong, {}, {}, 1)
+            m.interact(wrong, {'requests': [None, None]}, {}, 1)
         self.assertFalse(wrong.sent)
         fixtures = []
         for ids in m.requests():
