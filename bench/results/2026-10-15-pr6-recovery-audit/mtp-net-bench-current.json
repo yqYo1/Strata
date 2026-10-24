@@ -431,7 +431,6 @@
       ],
       "warmup_requests_checked": 4,
       "total_requests_replayed": 6,
-      "cache_restorations_checked": 6,
       "long_routes": [
         {
           "target_windows": 1035,
@@ -487,7 +486,8 @@
             "loan_generation": 6
           }
         }
-      ]
+      ],
+      "long_cache_restorations_checked": 2
     },
     {
       "cap": 1,
@@ -672,7 +672,6 @@
       ],
       "warmup_requests_checked": 4,
       "total_requests_replayed": 6,
-      "cache_restorations_checked": 6,
       "long_routes": [
         {
           "target_windows": 3126,
@@ -728,7 +727,8 @@
             "loan_generation": 6
           }
         }
-      ]
+      ],
+      "long_cache_restorations_checked": 2
     }
   ],
   "analysis": {
@@ -1021,6 +1021,20 @@
       "tools/sycl/test_mtp_net_bench.py",
       "decode_footer.closed_pilot"
     ],
-    "decision": "Closed launch/replay controllers have no execution consumer after raw retirement. Preserve shared T1/T4 footer parser through maintained generation_engine.decode_timing_evidence;source and original failed/success outcomes remain inGit."
-  }
+    "decision": "Closed launch/replay controllers have no execution consumer after raw retirement. Preserve shared T1/T4 footer parser through maintained generation_engine.decode_timing_evidence;source and original failed/success outcomes remain inGit.",
+    "validation": {
+      "source_commit": "07301aa99",
+      "commands": [
+        "python3 -B tools/sycl/test_decode_footer.py",
+        "python3 -B tools/sycl/test_generation_engine.py"
+      ],
+      "tests": [
+        3,
+        15
+      ],
+      "passed": true,
+      "GPU_executed": false
+    }
+  },
+  "summary_correction": "Compact replay count corrected:each process directly checks payload/map and48-layer dense restoration for its2 long requests. All6 request prompt/target/draft routes replay;this does not separately prove6 warm+long restoration cycles. Original source/gates/samples and successful outcome at51bb62ed6 remain unchanged."
 }
