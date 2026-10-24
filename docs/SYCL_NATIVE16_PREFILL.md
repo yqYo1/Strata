@@ -250,6 +250,8 @@ width and pool thread. GU rows count the paired gate/up output rows, not two
 independent projections. Pool dispatch, claims and barriers, input activation
 quantization, routing and GPU work are outside these leaf scopes. Row counts
 must reconcile against the independent work census before timings are usable.
+GU and Down intervals include their local pointer preparation and native format
+dispatch, in addition to the selected kernel call.
 Summed concurrent worker intervals are not an additive critical path, CPU time
 includes memory stalls, and physical RAM traffic remains unknown.
 
