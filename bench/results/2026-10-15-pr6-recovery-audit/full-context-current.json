@@ -11877,7 +11877,7 @@
     }
   },
   "neo_memory_model_v1": {
-    "stage": "prepared",
+    "stage": "failed",
     "source_commit": "6556ef468ff12f7ca2d6d5a31a5e15417472555a",
     "input_sha256": {
       "bench/sycl/client_resources.py": "9d5afa1bfc7df83ebd0ada8470b61a2c5b01d59b72822dd75f45ddb5a56ec16e",
@@ -12058,8 +12058,8 @@
     "active": false,
     "passed": false,
     "complete": false,
-    "ownership_closed": true,
-    "GPU_executed": false,
+    "ownership_closed": false,
+    "GPU_executed": true,
     "speed_eligible": false,
     "physical_owner_attribution_qualified": false,
     "ordinary_runtime_teardown_qualified": false,
@@ -12334,8 +12334,208 @@
         "sha256": "4ba64f0332abcfb0b600b7df1537d1e836e68009d5fb7cdb77339738dc6365c4"
       }
     },
-    "row": {},
-    "client_boundaries": [],
-    "fixture_qualification_sha256": "e98312f257551874ca66e6d002506f99e7d1886675e23c1ed9784f98d95dade6"
+    "row": {
+      "info": {
+        "context": "262144",
+        "kv": "int8",
+        "kv_resident": "131072",
+        "expert_slots": "1256",
+        "spec": "4",
+        "mtp_max": "0",
+        "lookup": "0",
+        "pool_workers": "5",
+        "conversation_cache_mib": "8192",
+        "conversation_cache_slots": "2",
+        "conversation_cache_min_free_mib": "4096"
+      },
+      "requests": [
+        {
+          "generated": 1,
+          "prompt": 16385,
+          "finish": "length",
+          "accepted": 0,
+          "offered": 0,
+          "reused": 0,
+          "read": 16385,
+          "ids": [
+            271
+          ],
+          "publications": {
+            "count": 2,
+            "last": 16384,
+            "sha256": "17ce574a49c328f44f66e282407392118923293957dde67f9febe2a60fef941d"
+          }
+        },
+        {
+          "generated": 1,
+          "prompt": 33,
+          "finish": "length",
+          "accepted": 0,
+          "offered": 0,
+          "reused": 0,
+          "read": 33,
+          "ids": [
+            104
+          ],
+          "publications": {
+            "count": 1,
+            "last": 32,
+            "sha256": "bb92d74f1bc9cdecef174885f4461ee391d54dcd2ad4a229c79c89543c2a6b92"
+          }
+        },
+        {
+          "generated": 1,
+          "prompt": 16401,
+          "finish": "length",
+          "accepted": 0,
+          "offered": 0,
+          "reused": 16385,
+          "read": 16,
+          "ids": [
+            272
+          ],
+          "publications": {
+            "count": 1,
+            "last": 16400,
+            "sha256": "ead5672aae17ed52960226772e3de6d1d6326d1537eafc92f18e445abf8d976b"
+          }
+        }
+      ]
+    },
+    "client_boundaries": [
+      {
+        "boundary": "READY",
+        "begin_monotonic_ns": 1154721189304544,
+        "end_monotonic_ns": 1154721191998294,
+        "reader_thread_cpu_ns": 3898681,
+        "clients": [
+          {
+            "client_id": 48070,
+            "memory_bytes": {
+              "drm-total-system": 131334144,
+              "drm-shared-system": 0,
+              "drm-resident-system": 2490368,
+              "drm-total-gtt": 4326465536,
+              "drm-shared-gtt": 0,
+              "drm-resident-gtt": 4326465536,
+              "drm-total-vram0": 10344525824,
+              "drm-shared-vram0": 0,
+              "drm-resident-vram0": 10344525824,
+              "drm-total-stolen": 0,
+              "drm-shared-stolen": 0,
+              "drm-resident-stolen": 0
+            }
+          }
+        ],
+        "mapped_driver_inode": 4660818
+      },
+      {
+        "boundary": "DONE",
+        "begin_monotonic_ns": 1154777577645100,
+        "end_monotonic_ns": 1154777579710437,
+        "reader_thread_cpu_ns": 3506645,
+        "clients": [
+          {
+            "client_id": 48070,
+            "memory_bytes": {
+              "drm-total-system": 128843776,
+              "drm-shared-system": 0,
+              "drm-resident-system": 0,
+              "drm-total-gtt": 7743184896,
+              "drm-shared-gtt": 0,
+              "drm-resident-gtt": 7743184896,
+              "drm-total-vram0": 8082239488,
+              "drm-shared-vram0": 0,
+              "drm-resident-vram0": 8082239488,
+              "drm-total-stolen": 0,
+              "drm-shared-stolen": 0,
+              "drm-resident-stolen": 0
+            }
+          }
+        ],
+        "mapped_driver_inode": 4660818
+      },
+      {
+        "boundary": "DONE",
+        "begin_monotonic_ns": 1154792819287966,
+        "end_monotonic_ns": 1154792821285175,
+        "reader_thread_cpu_ns": 3466701,
+        "clients": [
+          {
+            "client_id": 48070,
+            "memory_bytes": {
+              "drm-total-system": 128843776,
+              "drm-shared-system": 0,
+              "drm-resident-system": 0,
+              "drm-total-gtt": 5234728960,
+              "drm-shared-gtt": 0,
+              "drm-resident-gtt": 5234728960,
+              "drm-total-vram0": 10594177024,
+              "drm-shared-vram0": 0,
+              "drm-resident-vram0": 10594177024,
+              "drm-total-stolen": 0,
+              "drm-shared-stolen": 0,
+              "drm-resident-stolen": 0
+            }
+          }
+        ],
+        "mapped_driver_inode": 4660818
+      },
+      {
+        "boundary": "DONE",
+        "begin_monotonic_ns": 1154798684561026,
+        "end_monotonic_ns": 1154798686546914,
+        "reader_thread_cpu_ns": 3259002,
+        "clients": [
+          {
+            "client_id": 48070,
+            "memory_bytes": {
+              "drm-total-system": 128843776,
+              "drm-shared-system": 0,
+              "drm-resident-system": 0,
+              "drm-total-gtt": 5234728960,
+              "drm-shared-gtt": 0,
+              "drm-resident-gtt": 5234728960,
+              "drm-total-vram0": 10595487744,
+              "drm-shared-vram0": 0,
+              "drm-resident-vram0": 10595487744,
+              "drm-total-stolen": 0,
+              "drm-shared-stolen": 0,
+              "drm-resident-stolen": 0
+            }
+          }
+        ],
+        "mapped_driver_inode": 4660818
+      }
+    ],
+    "fixture_qualification_sha256": "e98312f257551874ca66e6d002506f99e7d1886675e23c1ed9784f98d95dade6",
+    "exit_code": 0,
+    "error": "RuntimeError('normal owned direct native exit required')",
+    "fresh_faults": [],
+    "boot_unchanged": true,
+    "driver_after": {
+      "pci": "/sys/bus/pci/devices/0000:05:00.0",
+      "driver": "xe",
+      "vendor": "0x8086",
+      "device": "0xe20c",
+      "kernel": "7.0.0-38-generic",
+      "devcoredump": false
+    },
+    "observer_protocol_failure": {
+      "source_commit": "6556ef468ff12f7ca2d6d5a31a5e15417472555a",
+      "error": "RuntimeError('unexpected trailing protocol')",
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "native_exit_code": 0,
+      "fresh_faults": [],
+      "requests_completed": 3,
+      "boundaries_completed": 4,
+      "stdout": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/neo-memory-model-v1/owned/model.stdout",
+        "bytes": 1019975,
+        "sha256": "2b0578522941ca6d52ffeddc047169e0ecf15c5e99b4420c94137dec771ad2d8"
+      },
+      "interpretation": "Native process exited0 and its session is empty,but the observer rejected normal-looking trailing driver records after QUIT. Original passed/complete/observation/ownership result remains failed;no model qualification. Next bounded offline strict trailing-record validator and new plan only;no retry or acceptance of arbitrary stdout."
+    }
   }
 }
