@@ -957,6 +957,18 @@ rule out the3712-byte host/device MTP fallback records as an explanation.
 The completed long reentry is admitted despite this earlier low-memory interval.
 Next measure actual owner allocation/free events at these phase boundaries;
 do not infer a leak or library owner from the aggregate difference.
+A Main-authored memory-only XPTI subscriber now builds separately from the engine.
+Its12 CPU packet controls and real host-only loader activation pass. A corrected
+controller proves unchanged C++/compiler/239 dependency inputs/recipe/environment
+and both artifacts before reusing the original build;the initial cohort closes
+before host testing because automatic environment-hash admission was missing.
+The actual selected submission fixture also passes all10 original GPU checks with
+this subscriber:10 records cover2 host allocations/2056 requested bytes,3 device
+allocations/3220 bytes and5 frees,with no remaining requested allocation.
+Invalid,unsupported and lost counters are zero;exit and fault checks pass.
+These are requested API bytes,not physical residency. The2.44GB model interval
+is still unattributed;next run its same-native16K/B33/restore diagnostic with
+this qualified observer and retain allocation stacks only for that analysis.
 Detailed closed diagnostic plans and individual historical outcomes recover
 from`95e174255`;the current result retains their original statuses and archive
 references,with the live build/component/model qualifications. Successful closed model/component
