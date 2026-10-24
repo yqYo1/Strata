@@ -1,5 +1,5 @@
 {
-  "stage": "host-checked",
+  "stage": "partial",
   "source_commit": "e25c8fbbc25e85cf8c827c8c86ed14af8b6a771f",
   "benchmark_fingerprint": "0a797a4c917eb1758dfc4d875d75d8aa05dfeca8b65f2ead656ef7262b1e5670",
   "benchmark_files": 190,
@@ -502,7 +502,904 @@
     "total_cap": 16777216
   },
   "retention": "Keep useful individual samples,clock screens,work/resource aggregates,source/configuration/decisions. Replay then retire normal logs/JIT/full resource timeline. One original selected13 and private13 remain for this comparison;remove private generation after closure/next qualified source recovery. Full short-model receipt can retire once these sealed model/environment inputs admit.",
-  "processes": [],
+  "processes": [
+    {
+      "cap": 0,
+      "passed": true,
+      "active": false,
+      "clock": {
+        "samples": 65536,
+        "resolution_ns": 1,
+        "min_ns": 10,
+        "p99_ns": 30,
+        "max_ns": 5591,
+        "endpoint_rounding_fraction_at_floor": 6.1182e-06,
+        "provider": {
+          "path": "/usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.33",
+          "sha256": "1fd75fe70354a416d75aef22bcae68c47bd25d20e2d0568c30b1a9838cf62f11"
+        }
+      },
+      "native_identity": {
+        "pid": 3291163,
+        "start_ticks": 117449236,
+        "sid": 3291125
+      },
+      "effective_environment_verified": true,
+      "routes": [
+        {
+          "target_windows": 7,
+          "target_rows": 25,
+          "draft_rounds_delta": 6,
+          "cumulative_draft_rounds": 6,
+          "prompt_chunks": [
+            73
+          ],
+          "prompt_paths": [
+            "batched"
+          ],
+          "long_prefill": null
+        },
+        {
+          "target_windows": 1,
+          "target_rows": 1,
+          "draft_rounds_delta": 0,
+          "cumulative_draft_rounds": 6,
+          "prompt_chunks": [
+            259
+          ],
+          "prompt_paths": [
+            "batched"
+          ],
+          "long_prefill": null
+        },
+        {
+          "target_windows": 1,
+          "target_rows": 1,
+          "draft_rounds_delta": 0,
+          "cumulative_draft_rounds": 6,
+          "prompt_chunks": [
+            905
+          ],
+          "prompt_paths": [
+            "batched"
+          ],
+          "long_prefill": null
+        },
+        {
+          "target_windows": 3,
+          "target_rows": 9,
+          "draft_rounds_delta": 2,
+          "cumulative_draft_rounds": 8,
+          "prompt_chunks": [
+            1067
+          ],
+          "prompt_paths": [
+            "batched"
+          ],
+          "long_prefill": null
+        },
+        {
+          "target_windows": 1035,
+          "target_rows": 4137,
+          "draft_rounds_delta": 1034,
+          "cumulative_draft_rounds": 1042,
+          "prompt_chunks": [
+            8192,
+            8192,
+            8192,
+            8192,
+            445
+          ],
+          "prompt_paths": [
+            "batched",
+            "batched",
+            "batched",
+            "batched",
+            "batched"
+          ],
+          "long_prefill": {
+            "GPU_BF16_rows": 33213,
+            "MoE_mode": 10,
+            "restored_dense_layers": 48,
+            "cache_payload_and_map_match": true,
+            "loan_generation": 5
+          }
+        },
+        {
+          "target_windows": 3978,
+          "target_rows": 15909,
+          "draft_rounds_delta": 3977,
+          "cumulative_draft_rounds": 5019,
+          "prompt_chunks": [
+            8192,
+            8192,
+            8192,
+            8192,
+            519
+          ],
+          "prompt_paths": [
+            "batched",
+            "batched",
+            "batched",
+            "batched",
+            "batched"
+          ],
+          "long_prefill": {
+            "GPU_BF16_rows": 33287,
+            "MoE_mode": 10,
+            "restored_dense_layers": 48,
+            "cache_payload_and_map_match": true,
+            "loan_generation": 6
+          }
+        }
+      ],
+      "activation": {
+        "pid": 3291163,
+        "loader": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_loader.so.0.12.0",
+        "threads_before": 1,
+        "preinit": 37,
+        "config_enabled": true,
+        "first_init": true,
+        "dispatch_result": 46,
+        "output_untouched": true,
+        "retained_reference_until_exit": true,
+        "runtime_teardown_qualified": false
+      },
+      "resources": [
+        {
+          "collector_complete": true,
+          "request_coverage_verified": true,
+          "samples": 1388,
+          "final_sample_to_response_end_seconds": 0.0,
+          "before_first_output": {
+            "window_begin_monotonic_ns": 1174632785704860,
+            "window_end_monotonic_ns": 1174685182853641,
+            "contained_CPU_wall_seconds": 51.14265812900001,
+            "process_cpu_seconds": 48.19,
+            "process_cpu_core_equivalents": 0.9422662365035396,
+            "top_scheduled_threads": [
+              {
+                "tid": 3291163,
+                "start_ticks": 117449236,
+                "cpu_ticks": 4625,
+                "observed_last_cpus": [
+                  0
+                ],
+                "cpu_seconds": 46.25
+              },
+              {
+                "tid": 3291394,
+                "start_ticks": 117449910,
+                "cpu_ticks": 40,
+                "observed_last_cpus": [
+                  0,
+                  1,
+                  2,
+                  3,
+                  4,
+                  6,
+                  7,
+                  10,
+                  11
+                ],
+                "cpu_seconds": 0.4
+              },
+              {
+                "tid": 3295620,
+                "start_ticks": 117463428,
+                "cpu_ticks": 13,
+                "observed_last_cpus": [
+                  0
+                ],
+                "cpu_seconds": 0.13
+              },
+              {
+                "tid": 3291377,
+                "start_ticks": 117449905,
+                "cpu_ticks": 8,
+                "observed_last_cpus": [
+                  1,
+                  5,
+                  7,
+                  9,
+                  11
+                ],
+                "cpu_seconds": 0.08
+              },
+              {
+                "tid": 3291379,
+                "start_ticks": 117449905,
+                "cpu_ticks": 8,
+                "observed_last_cpus": [
+                  2,
+                  3,
+                  9,
+                  10,
+                  11
+                ],
+                "cpu_seconds": 0.08
+              },
+              {
+                "tid": 3291383,
+                "start_ticks": 117449905,
+                "cpu_ticks": 8,
+                "observed_last_cpus": [
+                  2,
+                  4,
+                  7,
+                  9,
+                  10,
+                  11
+                ],
+                "cpu_seconds": 0.08
+              },
+              {
+                "tid": 3291385,
+                "start_ticks": 117449905,
+                "cpu_ticks": 8,
+                "observed_last_cpus": [
+                  2,
+                  3,
+                  6,
+                  7,
+                  8,
+                  9,
+                  11
+                ],
+                "cpu_seconds": 0.08
+              },
+              {
+                "tid": 3291388,
+                "start_ticks": 117449905,
+                "cpu_ticks": 8,
+                "observed_last_cpus": [
+                  4,
+                  6,
+                  7,
+                  10
+                ],
+                "cpu_seconds": 0.08
+              }
+            ],
+            "unmatched_thread_intervals": 3,
+            "engines": [
+              {
+                "pci": "0000:05:00.0",
+                "client_id": 48711,
+                "engine": "bcs",
+                "eligible_intervals": 51,
+                "busy_cycles": 0,
+                "capacity_total_cycles": 981891181,
+                "busy_fraction": 0.0
+              },
+              {
+                "pci": "0000:05:00.0",
+                "client_id": 48711,
+                "engine": "ccs",
+                "eligible_intervals": 51,
+                "busy_cycles": 820245373,
+                "capacity_total_cycles": 981891181,
+                "busy_fraction": 0.8353729912968838
+              },
+              {
+                "pci": "0000:05:00.0",
+                "client_id": 48711,
+                "engine": "rcs",
+                "eligible_intervals": 51,
+                "busy_cycles": 0,
+                "capacity_total_cycles": 981891181,
+                "busy_fraction": 0.0
+              },
+              {
+                "pci": "0000:05:00.0",
+                "client_id": 48711,
+                "engine": "vcs",
+                "eligible_intervals": 51,
+                "busy_cycles": 0,
+                "capacity_total_cycles": 1963782362,
+                "busy_fraction": 0.0
+              },
+              {
+                "pci": "0000:05:00.0",
+                "client_id": 48711,
+                "engine": "vecs",
+                "eligible_intervals": 51,
+                "busy_cycles": 0,
+                "capacity_total_cycles": 1963782362,
+                "busy_fraction": 0.0
+              }
+            ]
+          },
+          "after_first_output": {
+            "window_begin_monotonic_ns": 1174685182853641,
+            "window_end_monotonic_ns": 1174927710479095,
+            "contained_CPU_wall_seconds": 241.75965919350003,
+            "process_cpu_seconds": 1264.68,
+            "process_cpu_core_equivalents": 5.231145693284475,
+            "top_scheduled_threads": [
+              {
+                "tid": 3291163,
+                "start_ticks": 117449236,
+                "cpu_ticks": 23398,
+                "observed_last_cpus": [
+                  0
+                ],
+                "cpu_seconds": 233.98
+              },
+              {
+                "tid": 3293264,
+                "start_ticks": 117456138,
+                "cpu_ticks": 20617,
+                "observed_last_cpus": [
+                  1
+                ],
+                "cpu_seconds": 206.17
+              },
+              {
+                "tid": 3293268,
+                "start_ticks": 117456138,
+                "cpu_ticks": 20609,
+                "observed_last_cpus": [
+                  5
+                ],
+                "cpu_seconds": 206.09
+              },
+              {
+                "tid": 3293266,
+                "start_ticks": 117456138,
+                "cpu_ticks": 20583,
+                "observed_last_cpus": [
+                  3
+                ],
+                "cpu_seconds": 205.83
+              },
+              {
+                "tid": 3293265,
+                "start_ticks": 117456138,
+                "cpu_ticks": 20574,
+                "observed_last_cpus": [
+                  2
+                ],
+                "cpu_seconds": 205.74
+              },
+              {
+                "tid": 3293267,
+                "start_ticks": 117456138,
+                "cpu_ticks": 20574,
+                "observed_last_cpus": [
+                  4
+                ],
+                "cpu_seconds": 205.74
+              },
+              {
+                "tid": 3291394,
+                "start_ticks": 117449910,
+                "cpu_ticks": 24,
+                "observed_last_cpus": [
+                  0,
+                  1,
+                  2,
+                  3,
+                  4,
+                  6,
+                  7,
+                  8,
+                  9,
+                  10,
+                  11
+                ],
+                "cpu_seconds": 0.24
+              },
+              {
+                "tid": 3291374,
+                "start_ticks": 117449905,
+                "cpu_ticks": 7,
+                "observed_last_cpus": [
+                  0,
+                  1,
+                  2,
+                  3,
+                  4,
+                  5,
+                  6,
+                  7,
+                  8,
+                  9,
+                  10,
+                  11
+                ],
+                "cpu_seconds": 0.07
+              }
+            ],
+            "unmatched_thread_intervals": 0,
+            "engines": [
+              {
+                "pci": "0000:05:00.0",
+                "client_id": 48711,
+                "engine": "bcs",
+                "eligible_intervals": 241,
+                "busy_cycles": 0,
+                "capacity_total_cycles": 4641572433,
+                "busy_fraction": 0.0
+              },
+              {
+                "pci": "0000:05:00.0",
+                "client_id": 48711,
+                "engine": "ccs",
+                "eligible_intervals": 241,
+                "busy_cycles": 2684311880,
+                "capacity_total_cycles": 4641572433,
+                "busy_fraction": 0.5783195067506555
+              },
+              {
+                "pci": "0000:05:00.0",
+                "client_id": 48711,
+                "engine": "rcs",
+                "eligible_intervals": 241,
+                "busy_cycles": 0,
+                "capacity_total_cycles": 4641572433,
+                "busy_fraction": 0.0
+              },
+              {
+                "pci": "0000:05:00.0",
+                "client_id": 48711,
+                "engine": "vcs",
+                "eligible_intervals": 241,
+                "busy_cycles": 0,
+                "capacity_total_cycles": 9283144866,
+                "busy_fraction": 0.0
+              },
+              {
+                "pci": "0000:05:00.0",
+                "client_id": 48711,
+                "engine": "vecs",
+                "eligible_intervals": 241,
+                "busy_cycles": 0,
+                "capacity_total_cycles": 9283144866,
+                "busy_fraction": 0.0
+              }
+            ]
+          },
+          "limits": "Client observation windows, not native kernel-stage boundaries. Scheduled CPU includes polling/stalls. Associated DRM clients may be shared; cycle busy fraction is not arithmetic efficiency, VRAM bandwidth, physical PCIe traffic or hardware saturation."
+        },
+        {
+          "collector_complete": true,
+          "request_coverage_verified": true,
+          "samples": 1388,
+          "final_sample_to_response_end_seconds": 0.0,
+          "before_first_output": {
+            "window_begin_monotonic_ns": 1174927775928170,
+            "window_end_monotonic_ns": 1174971627739496,
+            "contained_CPU_wall_seconds": 42.114427146,
+            "process_cpu_seconds": 41.65,
+            "process_cpu_core_equivalents": 0.9889722554128554,
+            "top_scheduled_threads": [
+              {
+                "tid": 3291163,
+                "start_ticks": 117449236,
+                "cpu_ticks": 4149,
+                "observed_last_cpus": [
+                  0
+                ],
+                "cpu_seconds": 41.49
+              },
+              {
+                "tid": 3291394,
+                "start_ticks": 117449910,
+                "cpu_ticks": 3,
+                "observed_last_cpus": [
+                  1,
+                  2,
+                  3,
+                  4,
+                  5,
+                  7,
+                  8
+                ],
+                "cpu_seconds": 0.03
+              },
+              {
+                "tid": 3291375,
+                "start_ticks": 117449905,
+                "cpu_ticks": 1,
+                "observed_last_cpus": [
+                  2,
+                  10
+                ],
+                "cpu_seconds": 0.01
+              },
+              {
+                "tid": 3291376,
+                "start_ticks": 117449905,
+                "cpu_ticks": 1,
+                "observed_last_cpus": [
+                  1,
+                  6,
+                  8,
+                  10
+                ],
+                "cpu_seconds": 0.01
+              },
+              {
+                "tid": 3291377,
+                "start_ticks": 117449905,
+                "cpu_ticks": 1,
+                "observed_last_cpus": [
+                  6,
+                  7,
+                  8
+                ],
+                "cpu_seconds": 0.01
+              },
+              {
+                "tid": 3291379,
+                "start_ticks": 117449905,
+                "cpu_ticks": 1,
+                "observed_last_cpus": [
+                  2,
+                  10,
+                  11
+                ],
+                "cpu_seconds": 0.01
+              },
+              {
+                "tid": 3291380,
+                "start_ticks": 117449905,
+                "cpu_ticks": 1,
+                "observed_last_cpus": [
+                  7,
+                  10
+                ],
+                "cpu_seconds": 0.01
+              },
+              {
+                "tid": 3291381,
+                "start_ticks": 117449905,
+                "cpu_ticks": 1,
+                "observed_last_cpus": [
+                  7,
+                  8
+                ],
+                "cpu_seconds": 0.01
+              }
+            ],
+            "unmatched_thread_intervals": 0,
+            "engines": [
+              {
+                "pci": "0000:05:00.0",
+                "client_id": 48711,
+                "engine": "bcs",
+                "eligible_intervals": 42,
+                "busy_cycles": 0,
+                "capacity_total_cycles": 808559560,
+                "busy_fraction": 0.0
+              },
+              {
+                "pci": "0000:05:00.0",
+                "client_id": 48711,
+                "engine": "ccs",
+                "eligible_intervals": 42,
+                "busy_cycles": 800002479,
+                "capacity_total_cycles": 808559560,
+                "busy_fraction": 0.9894168822887951
+              },
+              {
+                "pci": "0000:05:00.0",
+                "client_id": 48711,
+                "engine": "rcs",
+                "eligible_intervals": 42,
+                "busy_cycles": 0,
+                "capacity_total_cycles": 808559560,
+                "busy_fraction": 0.0
+              },
+              {
+                "pci": "0000:05:00.0",
+                "client_id": 48711,
+                "engine": "vcs",
+                "eligible_intervals": 42,
+                "busy_cycles": 0,
+                "capacity_total_cycles": 1617119120,
+                "busy_fraction": 0.0
+              },
+              {
+                "pci": "0000:05:00.0",
+                "client_id": 48711,
+                "engine": "vecs",
+                "eligible_intervals": 42,
+                "busy_cycles": 0,
+                "capacity_total_cycles": 1617119120,
+                "busy_fraction": 0.0
+              }
+            ]
+          },
+          "after_first_output": {
+            "window_begin_monotonic_ns": 1174971627739496,
+            "window_end_monotonic_ns": 1175879847576603,
+            "contained_CPU_wall_seconds": 907.9081544544996,
+            "process_cpu_seconds": 4679.31,
+            "process_cpu_core_equivalents": 5.153946439451775,
+            "top_scheduled_threads": [
+              {
+                "tid": 3291163,
+                "start_ticks": 117449236,
+                "cpu_ticks": 87142,
+                "observed_last_cpus": [
+                  0
+                ],
+                "cpu_seconds": 871.42
+              },
+              {
+                "tid": 3293267,
+                "start_ticks": 117456138,
+                "cpu_ticks": 76297,
+                "observed_last_cpus": [
+                  4
+                ],
+                "cpu_seconds": 762.97
+              },
+              {
+                "tid": 3293268,
+                "start_ticks": 117456138,
+                "cpu_ticks": 76284,
+                "observed_last_cpus": [
+                  5
+                ],
+                "cpu_seconds": 762.84
+              },
+              {
+                "tid": 3293266,
+                "start_ticks": 117456138,
+                "cpu_ticks": 76028,
+                "observed_last_cpus": [
+                  3
+                ],
+                "cpu_seconds": 760.28
+              },
+              {
+                "tid": 3293264,
+                "start_ticks": 117456138,
+                "cpu_ticks": 75788,
+                "observed_last_cpus": [
+                  1
+                ],
+                "cpu_seconds": 757.88
+              },
+              {
+                "tid": 3293265,
+                "start_ticks": 117456138,
+                "cpu_ticks": 75743,
+                "observed_last_cpus": [
+                  2
+                ],
+                "cpu_seconds": 757.43
+              },
+              {
+                "tid": 3291394,
+                "start_ticks": 117449910,
+                "cpu_ticks": 139,
+                "observed_last_cpus": [
+                  0,
+                  1,
+                  2,
+                  3,
+                  4,
+                  5,
+                  6,
+                  7,
+                  8,
+                  9,
+                  10,
+                  11
+                ],
+                "cpu_seconds": 1.39
+              },
+              {
+                "tid": 3291378,
+                "start_ticks": 117449905,
+                "cpu_ticks": 33,
+                "observed_last_cpus": [
+                  0,
+                  1,
+                  2,
+                  3,
+                  4,
+                  5,
+                  6,
+                  7,
+                  8,
+                  9,
+                  10,
+                  11
+                ],
+                "cpu_seconds": 0.33
+              }
+            ],
+            "unmatched_thread_intervals": 0,
+            "engines": [
+              {
+                "pci": "0000:05:00.0",
+                "client_id": 48711,
+                "engine": "bcs",
+                "eligible_intervals": 905,
+                "busy_cycles": 0,
+                "capacity_total_cycles": 17431014177,
+                "busy_fraction": 0.0
+              },
+              {
+                "pci": "0000:05:00.0",
+                "client_id": 48711,
+                "engine": "ccs",
+                "eligible_intervals": 899,
+                "busy_cycles": 10330816217,
+                "capacity_total_cycles": 17431014177,
+                "busy_fraction": 0.5926686830781986
+              },
+              {
+                "pci": "0000:05:00.0",
+                "client_id": 48711,
+                "engine": "rcs",
+                "eligible_intervals": 905,
+                "busy_cycles": 0,
+                "capacity_total_cycles": 17431014177,
+                "busy_fraction": 0.0
+              },
+              {
+                "pci": "0000:05:00.0",
+                "client_id": 48711,
+                "engine": "vcs",
+                "eligible_intervals": 905,
+                "busy_cycles": 0,
+                "capacity_total_cycles": 34862028354,
+                "busy_fraction": 0.0
+              },
+              {
+                "pci": "0000:05:00.0",
+                "client_id": 48711,
+                "engine": "vecs",
+                "eligible_intervals": 905,
+                "busy_cycles": 0,
+                "capacity_total_cycles": 34862028354,
+                "busy_fraction": 0.0
+              }
+            ]
+          },
+          "limits": "Client observation windows, not native kernel-stage boundaries. Scheduled CPU includes polling/stalls. Associated DRM clients may be shared; cycle busy fraction is not arithmetic efficiency, VRAM bandwidth, physical PCIe traffic or hardware saturation."
+        }
+      ],
+      "host_probe_accepted": true,
+      "requests": [
+        {
+          "ok": true,
+          "err": null,
+          "ttft_s": 52.397,
+          "total_s": 294.925,
+          "prompt_tokens": 33214,
+          "reused_tokens": 0,
+          "read_tokens": 33214,
+          "generated_tokens": 3611,
+          "prompt_tps": 635.2,
+          "prompt_tps_source": "engine",
+          "decode_tps": 14.9,
+          "decode_tps_source": "engine",
+          "prompt_ms": 52286.5,
+          "decode_ms": 242615.1,
+          "drafts_offered": 3102,
+          "drafts_accepted": 2578,
+          "finish_reason": "stop",
+          "request_sha256": "b0a065720a5eb86fa2d3f84d6371e35da774b4ea144d022608d49b80c227cba1",
+          "stream_complete": true,
+          "truncated": false,
+          "generated_tokens_source": "usage",
+          "client_interval": {
+            "request_begin_monotonic_ns": 1174632785704860,
+            "first_output_monotonic_ns": 1174685182853641,
+            "request_end_monotonic_ns": 1174927710479095
+          },
+          "eligible": true,
+          "agreement_eligible": true,
+          "speed_eligible": true,
+          "speed_ineligible_reasons": [],
+          "ineligible_reasons": [],
+          "acceptance_rate": 0.8310767246937459,
+          "usage_generated_tokens": 3611,
+          "completion_includes_thinking": true,
+          "run": 0,
+          "order": 0,
+          "output_sha256": "5b7ae0f207d7804bc693ebde382f1a762c43f477fd01483939648d004cfaf971",
+          "reasoning_sha256": "8daeec41f22d90c32c1c1c5c3cfe4486a9ee6d65fa7ffe8857bfe980c02d411e",
+          "output_chars": 5496,
+          "reasoning_chars": 4368,
+          "reasoning_tokens": null,
+          "workload": "regular-code",
+          "controller_eligible": true
+        },
+        {
+          "ok": true,
+          "err": null,
+          "ttft_s": 43.852,
+          "total_s": 952.071,
+          "prompt_tokens": 33288,
+          "reused_tokens": 0,
+          "read_tokens": 33288,
+          "generated_tokens": 8638,
+          "prompt_tps": 761.1,
+          "prompt_tps_source": "engine",
+          "decode_tps": 9.5,
+          "decode_tps_source": "engine",
+          "prompt_ms": 43736.3,
+          "decode_ms": 908312.4,
+          "drafts_offered": 11931,
+          "drafts_accepted": 4660,
+          "finish_reason": "stop",
+          "request_sha256": "c6d16c6adb19adf79de1cc29929ab71cab5433488ca2fda2dfcdad523bde56f4",
+          "stream_complete": true,
+          "truncated": false,
+          "generated_tokens_source": "usage",
+          "client_interval": {
+            "request_begin_monotonic_ns": 1174927775928170,
+            "first_output_monotonic_ns": 1174971627739496,
+            "request_end_monotonic_ns": 1175879847576603
+          },
+          "eligible": true,
+          "agreement_eligible": true,
+          "speed_eligible": true,
+          "speed_ineligible_reasons": [],
+          "ineligible_reasons": [],
+          "acceptance_rate": 0.390579163523594,
+          "usage_generated_tokens": 8638,
+          "completion_includes_thinking": true,
+          "run": 0,
+          "order": 1,
+          "output_sha256": "c8f13901e39c197d5020f290998ab2332dc695d93b32365cffa9ce85f743e983",
+          "reasoning_sha256": "5199dece9d887f8928a737a5470e1f470a75b0f6a7ca29ffd2e148f355d46c57",
+          "output_chars": 4452,
+          "reasoning_chars": 21300,
+          "reasoning_tokens": null,
+          "workload": "varied-prose",
+          "controller_eligible": true
+        }
+      ],
+      "journal": {
+        "successful_warmups": 4,
+        "successful_long_requests": 2,
+        "phase_order": [
+          "warm-up/chat",
+          "calibration",
+          "calibration",
+          "warm-up/prompt",
+          "long-generation/regular-code",
+          "long-generation/varied-prose"
+        ],
+        "request_sha256": [
+          "6976dd85c26437117139f185ce0ac4da0ab9d1d4eb576dd2f9e252ae99d63f03",
+          "d53e3c2e317b3f08b3b3c48aa391fd7c6bd7e451a3176a85b9b4763f7d85fdf3",
+          "7980bd89f91dbcfd84166ee8ea45c5d77888ee349ccee71596c073a2ed4790a0",
+          "cfe052d03f13fa28f83f44331156d873212064c85036a8652c6eab4a2d7380a5",
+          "b0a065720a5eb86fa2d3f84d6371e35da774b4ea144d022608d49b80c227cba1",
+          "c6d16c6adb19adf79de1cc29929ab71cab5433488ca2fda2dfcdad523bde56f4"
+        ],
+        "journal_sha256": "dff116b9485bd7fbb1048fd266364b80ccd417b13cd46e09b53f61deb3bffa12"
+      },
+      "native_exit_code": 0,
+      "evidence_sha256": {
+        "engine.stderr": "ed4d8405ff23baa683225061c856cd3bdbd01c00580bed16489facd46350c553",
+        "client-resources.jsonl": "3c58dd8b8e97a35f82412f210efa730e83b79d33aea07fedee3672b84cc9de33",
+        "engine-start.json": "c5da369f4e447c49157cc75a3a4c05e17c89affa4ad555df030530892daacfa1",
+        "engine-exit.json": "40bf96672af854dafe824b7e2c4269023e84e6e2c57b61e37c73ca72ebdcbe50"
+      },
+      "ownership_closed": true,
+      "fresh_faults": [],
+      "boot_unchanged": true,
+      "driver_after": {
+        "pci": "/sys/bus/pci/devices/0000:05:00.0",
+        "driver": "xe",
+        "vendor": "0x8086",
+        "device": "0xe20c",
+        "kernel": "7.0.0-38-generic",
+        "devcoredump": false
+      }
+    }
+  ],
   "active": false,
   "passed": false,
   "complete": false,
