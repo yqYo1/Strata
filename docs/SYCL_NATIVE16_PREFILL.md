@@ -975,9 +975,18 @@ The stderr-bounded short32 interval still loses2442137600 reported free bytes,
 but contains just one3712-byte device request. Exact native ET_EXEC symbolization
 identifies its caller asMtpDrafter::prefill. This does not assign callbacks
 causally to a phase or explain physical residency:implicit pools,program/command
-backing and driver storage remain unobserved. Next measure the owning DRM client
-and lower-level backing at matched boundaries;do not infer a leak or library
-owner from global free memory. No speed/decode-performance/adoption qualification
+backing and driver storage remain unobserved. A fresh same-native model run with
+read-only owning-client observations also passes state,15 model hashes,normal
+exit0 and fresh-fault checks. Four READY/DONE reads retain one stable DRM client
+and zero shared counters. From DONE A16385 to DONE B33,its reported VRAM grows
+2511937536 bytes and GTT falls2508455936 bytes;the sum of total-region counters
+grows only3481600 bytes. Both total/resident counters show those changes.
+This differs from the narrower dense-phase global-free interval. The unchanged
+UR allocation/release counts and opposing region shifts suggest movement or
+replacement of existing backing,without proving BO identity,migration,physical
+residency or PCIe traffic. Next qualify bounded DRM ioctl decoding and inspect
+BO lifecycle/placement;do not infer a new2.44GB heap or library owner.
+No speed/decode-performance/adoption qualification
 is claimed. The returned observer audit is accepted with correction:the pinned
 XPTI init version is the invoking runtime version,so the UR0.12 check is valid.
 Detailed closed diagnostic plans and individual historical outcomes recover
