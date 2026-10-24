@@ -4245,6 +4245,30 @@
       },
       "consumer": "Main one bounded selected-fixture logging capability;full model only if it passes.",
       "provenance": "Main-authored controller under repository LICENSE;official Intel source used only to select environment logging keys/output contract;no external application source copied."
+    },
+    "neo_trailing_protocol_host": {
+      "source_commit": "22a764ac87e0e68e3f38dcde999f5497811e0b2c",
+      "input_sha256": {
+        "tools/sycl/memory_trace_model.py": "2c45eb7e9cfdc1ed389058d5de2eea2a39275b4e0a35f58e6b94240cb5769555",
+        "tools/sycl/memory_trace_protocol_test.py": "bc76bf3995ebfa47e92cb48a7ed64cdfd2c4e3ec03e5db454d3389da7f91b742"
+      },
+      "command": [
+        "timeout",
+        "15s",
+        "python3",
+        "tools/sycl/memory_trace_protocol_test.py"
+      ],
+      "contract_sha256": "00e0c6216bafd7b0b8351ee82777380fb57c56db5f7ee520220d30c660e7a71d",
+      "tests": 9,
+      "exit_code": 0,
+      "passed": true,
+      "GPU_executed": false,
+      "actual_failed_capture": {
+        "stdout_sha256": "2b0578522941ca6d52ffeddc047169e0ecf15c5e99b4420c94137dec771ad2d8",
+        "trailing_bytes": 154602,
+        "recognized_lines": 2172
+      },
+      "limits": "CPU-only strict post-QUIT record controls;unknown or extra protocol/truncated/nonzero-binding/oversized/live/non-EOF records remain rejected. Original model gate remains failed;new v2 model plan needed. Retire raw actual-tail fixture consumer after new v2 qualifies or closes."
     }
   },
   "model_state_v2": {
@@ -12536,6 +12560,7 @@
         "sha256": "2b0578522941ca6d52ffeddc047169e0ecf15c5e99b4420c94137dec771ad2d8"
       },
       "interpretation": "Native process exited0 and its session is empty,but the observer rejected normal-looking trailing driver records after QUIT. Original passed/complete/observation/ownership result remains failed;no model qualification. Next bounded offline strict trailing-record validator and new plan only;no retry or acceptance of arbitrary stdout."
-    }
+    },
+    "post_failure_input_admission_verified": true
   }
 }

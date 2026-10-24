@@ -1004,8 +1004,16 @@ GEM-create ledger. Source review maps the official26.31.39395.16 release to
 The driver DSO is newly hash-pinned before/after this run. Allocation pool names
 are creation decisions,close messages are attempts,and UMD logs cannot join every
 allocation to a BO or prove KMD migration. Next use one bounded same-native
-16K/B33/restore capture with the qualified logging,UR observer and four DRM reads;
-no model has yet run with these logging flags.
+16K/B33/restore capture with the qualified logging,UR observer and four DRM reads.
+Its first run completes all three requests and four reads,native exit0 and no
+fresh fault,but the strict observer rejects2172 trailing driver records after
+QUIT. The original gate stays failed and observation/ownership incomplete despite
+confirmed direct-child reaping and an empty session. Full source/runtime/preload/
+driver admission matches after failure. A Main-owned wrapper now accepts only
+bounded,complete,known logging records after exit/pipe EOF;unknown protocol,
+partial matches,truncation,nonzero binding results,oversized tails and live pipes
+remain rejected. Nine CPU controls pass,including the exact154602-byte tail.
+A fresh committed v2 plan must still verify actual model/state/logging completion.
 No speed/decode-performance/adoption qualification
 is claimed. The returned observer audit is accepted with correction:the pinned
 XPTI init version is the invoking runtime version,so the UR0.12 check is valid.
