@@ -1022,7 +1022,8 @@ main/draft/running snapshot. All15 model files rehash;exit0,ownership and fault
 checks pass. Its1482 UR records conserve requested bytes,and1254 NEO allocation
 rows plus1251 binds/1246 unbinds are collected with zero binding errors.
 The2174 known trailing records pass the bounded strict filter. Prior failed/UNRUN
-outcomes remain unchanged. This is still a diagnostic with cache/state readback audits enabled,not production
+outcomes remain unchanged. This is still a diagnostic with cache/state readback
+audits enabled,not production
 memory pressure,clean speed or decode-performance qualification.
 Offline replay of the v3 state/log parsers matches the committed capture. Between
 DONE A16385 and DONE B33,only7 NEO creation-detail rows total3473408 requested

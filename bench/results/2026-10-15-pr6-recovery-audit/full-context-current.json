@@ -4464,7 +4464,20 @@
         "https://github.com/intel/compute-runtime/blob/4e308a10b232dbb22a2a5c2cdb32eb2578577866/shared/source/debug_settings/debug_variables_base.inl",
         "https://www.kernel.org/doc/html/latest/gpu/drm-usage-stats.html",
         "https://www.kernel.org/doc/html/latest/gpu/xe/xe-drm-usage-stats.html"
-      ]
+      ],
+      "retained_protocol_fixture_check": {
+        "source_commit": "d9d9ec9572706c20a4dfc967b2ede72ae7fcf039",
+        "command": [
+          "timeout",
+          "15s",
+          "python3",
+          "tools/sycl/memory_trace_protocol_test.py"
+        ],
+        "tests": 9,
+        "exit_code": 0,
+        "GPU_executed": false,
+        "scope": "After cleanup,all strict-protocol CPU controls and the remaining actual stdout fixture still pass. No new native/model/speed qualification."
+      }
     }
   },
   "model_state_v2": {
