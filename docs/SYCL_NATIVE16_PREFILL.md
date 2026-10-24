@@ -211,8 +211,8 @@ The resident-no-decode-draft control also closes normally: code3064 and
 prose26209 generated tokens, at exact11.334027/11.075995tok/s. Its first-pair
 decode ratios are0.764091/0.938513, and prefill ratios0.999815/1.001409.
 It passes the explicit speed-only contract with no proposals; draft-agreement
-eligibility remains false and acceptance is undefined. Six processes are still
-unstarted. All three native/benchmark exits are0, ownership is closed and no
+eligibility remains false and acceptance is undefined. Six processes remain in
+the other two blocks. All three closed native/benchmark exits are0, ownership is closed and no
 fresh driver fault is recorded. No route or placement is adopted.
 Closedv1 logs/JIT, its superseded clock probe and eight unstarted plans retire
 after exact188-input and clock-recipe recovery:108 files,14,594,530bytes.
@@ -270,7 +270,10 @@ Snapshots run before the decode clock and after final commit. Unsupported
 geometry/width/worker, clock errors, counter overflow, slot-owner changes and
 inconsistent snapshots invalidate attribution. Observer and batch-lock overhead
 remain charged to model execution; bin lookup and counter updates are outside
-the reported leaf intervals. This changes neither the selected original6e40 executable nor
+the reported leaf intervals. Leaf intervals include clock-read cost; an
+empty-scope screen must report its observed distribution alongside short HQ
+samples, without subtraction or treating it as a universal overhead bound.
+This changes neither the selected original6e40 executable nor
 the active clean-width inputs; it is not an inference optimization or a speedup.
 
 The standalone collector checks passed in a serialized gap between model
