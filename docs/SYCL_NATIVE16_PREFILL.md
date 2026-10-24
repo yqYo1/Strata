@@ -1022,8 +1022,7 @@ main/draft/running snapshot. All15 model files rehash;exit0,ownership and fault
 checks pass. Its1482 UR records conserve requested bytes,and1254 NEO allocation
 rows plus1251 binds/1246 unbinds are collected with zero binding errors.
 The2174 known trailing records pass the bounded strict filter. Prior failed/UNRUN
-outcomes remain unchanged. Next perform bounded offline type/pool/size analysis;
-this is still a diagnostic with cache/state readback audits enabled,not production
+outcomes remain unchanged. This is still a diagnostic with cache/state readback audits enabled,not production
 memory pressure,clean speed or decode-performance qualification.
 Offline replay of the v3 state/log parsers matches the committed capture. Between
 DONE A16385 and DONE B33,only7 NEO creation-detail rows total3473408 requested
@@ -1059,17 +1058,17 @@ maps/JIT/stdout,rejected strace captures and the consumed MTP runtime audit.
 Original source/recipe,all20 native assets,the full candidate SDK and the
 16920-byte collector verify before/after retirement. The unavailable syscall
 command modes are removed;their source and failed decoder outcome remain in
-Git. That boundary retained the current client record and497888-byte successor UR
-trace for the NEO comparison,with a1MiB trace budget. The NEO comparison has now
-closed. Before the next GPU cohort,reconcile those files,the newly closed NEO
-fixture/model captures and consumed research against actual readers. The v1
-stdout still supplies the strict-protocol regression;replace it with minimum
-regression evidence before retirement. The v3 stdout/stderr have one named
-consumer,the matched audit-on/off allocation/placement comparison,with64MiB
-combined budget and review immediately after it. The current client record
-supplies the effective environment and239 observer dependencies until its
-preparation consumer is replaced. Closed fixture/model JIT and research
-transactions have no such future data consumer and are pending retirement. Four physical-fill/memory report/review
+Git. The later NEO boundary retires120 files/25423429 bytes after its compact
+model/type evidence is committed. Both original source/recipe closures,the full
+SDK,all20 native assets and the16920-byte collector verify before/after deletion.
+Successful fixture output,the consumed prior UR trace,model JIT and consumed NEO
+research/transactions are removed. Five files remain for named consumers:the
+current client environment/dependency record,the v1 stdout required by the strict
+CPU regression,and the v3 record+stdout+stderr for one matched audit-on/off
+allocation/placement comparison. Replace the old full-stdout regression fixture
+with minimum independent cases before retiring it;retire the client record when
+its preparation consumer moves. The v3 comparison has64MiB combined text budget
+and review immediately after its control. Four physical-fill/memory report/review
 files remain for their named Main tasks;unrelated owner/provenance holds remain
 separate.
 
