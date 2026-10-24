@@ -10469,5 +10469,411 @@
       "kernel": "7.0.0-38-generic",
       "devcoredump": false
     }
+  },
+  "ur_memory_client_v1": {
+    "stage": "prepared",
+    "source_commit": "e448641c8029edf752de39994236d01463d78bfd",
+    "input_sha256": {
+      "bench/sycl/client_resources.py": "9d5afa1bfc7df83ebd0ada8470b61a2c5b01d59b72822dd75f45ddb5a56ec16e",
+      "data/expert-profile.bin": "8f59b4aa8873209dff11c11e37bcda9529a1335b724a1afeea37bf6388975baf",
+      "include/strata/program/full_context_diagnostic.hpp": "d4abd9516913df9c0672adfea079e036223c8454ae79fadacd6f209432f04621",
+      "src/program/generate.cpp": "6857436f344b6ea41cf1facd88eeaa6dd2f3d61432312960b76b66f0cf68837f",
+      "tests/core/full_context_diagnostic_test.cpp": "ef0f83bb29f5faf66119b420482080084b4087aa42610426bb0209eda35b391f",
+      "tests/core/test_client_resources.py": "6fe86c85186e34d120404d5009aa71f0f869c4d68d2ef7839bd2a31121ce6641",
+      "tests/sycl/compat.cpp": "1040611974c4454c28d327f4f21a94d4e6cbc034f49a15560634886a5fb51994",
+      "tools/sycl/build_engine.py": "8444783ab417378207ec89ad2bc3cf648480e20d9e77f06ebb3070c93e10b131",
+      "tools/sycl/build_full_context.py": "6e2aa8c584e0fd014157cfd08360945ae2d28ad2db660499d9f4eb900e517b72",
+      "tools/sycl/check_full_context.py": "3db5296b72056453faa9ee7d30703c84059cc861520de02d040a4e7fc6c128be",
+      "tools/sycl/check_full_context_source.py": "5e72fa724e890e682382758caf6222042e1ec89770962ce205ab756783332030",
+      "tools/sycl/check_model_restore.py": "98fab9343539b063020bcb37702c21a32ec69e1393825cb4969acb8848f85c64",
+      "tools/sycl/check_streamed_qsa.py": "0a3222c0ae5b4df3e3b8a1a5f9e0a40a0387e49ed86b6c9f111d3fb4bab95ebb",
+      "tools/sycl/full_context_model.py": "c3d3dbf8e0a583d40e607d853d2bd32e4540b67409b8d27ee0d60e0c169bacfa",
+      "tools/sycl/measurement_environment.json": "d4402591df50e80dc45a5ec9e4839c7a794888850b1473537b6f95179be5b03c",
+      "tools/sycl/measurement_guards.py": "794e332c70aca0acadad4f26d0414548e023a02fd27b72ed78fc773674423ec8",
+      "tools/sycl/measurement_owner.py": "bddd0c5e5020e882ca3404679420faec11e820dabce2ed4c72ef82b4c9c0874a",
+      "tools/sycl/memory_trace.py": "7bbac78b31d5841e23ee533f2cf98fb08e190c3df9c83551be4e2a6da9b94e24",
+      "tools/sycl/memory_trace_device.py": "9fb86c4f0f025b3267ef93dbb9ac9147ac8fa40dbdc7020e3b0b297bea834d50",
+      "tools/sycl/memory_trace_model.py": "cd28f55ea90f1911fbed48be958d5b8a0ffb222b45fd268deeac933fb53f0fe4",
+      "tools/sycl/ur_memory_packet_test.cpp": "9a9d79a91bfc2471f9a11d78d94bbb1ef7b71fc729586501ed58977d18dd297a",
+      "tools/sycl/ur_memory_subscriber.cpp": "9d4fd222b41b717f1bb375a26f4343d5335f136fcfa1053014e77220c7d5e81c",
+      "tools/sycl/ur_validation.py": "2e41d84788dc9cc3c7435b18b43601b3ca79280ccb855414d7a36bae6bff83e7"
+    },
+    "native_source_commit": "1cba8a2857891862f8ed4c534d8afee3b0aeaf98",
+    "binary": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/full-context-native-v1/build/strata",
+      "bytes": 22229920,
+      "sha256": "590f8237e48139d96f77b9fd4c25ea18b1e701be147c52ecf75b7598c4284018"
+    },
+    "command": [
+      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/full-context-native-v1/build/strata",
+      "--serve",
+      "--pack",
+      "/home/yayoi/.local/share/strata-sycl/packs/qwen3.8-flash-next-iq3_s",
+      "--native",
+      "/home/yayoi/.local/share/strata-sycl/models/qwen3.8-flash-next-iq3_s/IQ3_S/Qwen3.8-Flash-Next-GSQ-RCO-IQ3_S-00001-of-00002.gguf",
+      "--max-context",
+      "262144",
+      "--kv",
+      "int8",
+      "--kv-resident",
+      "131072",
+      "--expert-cache",
+      "1256",
+      "--expert-profile",
+      "/home/yayoi/orca/workspaces/Strata/sycl/data/expert-profile.bin",
+      "--expert-cache-per-layer",
+      "--pool-workers",
+      "5",
+      "--pcie-frac",
+      "0",
+      "--adapt-swaps",
+      "0",
+      "--conversation-cache-mib",
+      "8192",
+      "--prompt-cache",
+      "6",
+      "--turn-token",
+      "-1",
+      "--suffix-draft",
+      "0",
+      "--greedy",
+      "--no-spec-split",
+      "--short-read",
+      "0",
+      "--spec",
+      "4",
+      "--mtp",
+      "/home/yayoi/.local/share/strata-sycl/mtp/rt",
+      "--prefill",
+      "8192",
+      "--vram-reserve-mib",
+      "700",
+      "--no-coupled-draft",
+      "--no-token-graph",
+      "--prompt-cache-every",
+      "0",
+      "--conversation-cache-slots",
+      "2",
+      "--conversation-cache-min-free-mib",
+      "4096"
+    ],
+    "cases": {
+      "small": {
+        "command": [
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/full-context-native-v1/build/strata",
+          "--serve",
+          "--pack",
+          "/home/yayoi/.local/share/strata-sycl/packs/qwen3.8-flash-next-iq3_s",
+          "--native",
+          "/home/yayoi/.local/share/strata-sycl/models/qwen3.8-flash-next-iq3_s/IQ3_S/Qwen3.8-Flash-Next-GSQ-RCO-IQ3_S-00001-of-00002.gguf",
+          "--max-context",
+          "262144",
+          "--kv",
+          "int8",
+          "--kv-resident",
+          "131072",
+          "--expert-cache",
+          "1256",
+          "--expert-profile",
+          "/home/yayoi/orca/workspaces/Strata/sycl/data/expert-profile.bin",
+          "--expert-cache-per-layer",
+          "--pool-workers",
+          "5",
+          "--pcie-frac",
+          "0",
+          "--adapt-swaps",
+          "0",
+          "--conversation-cache-mib",
+          "8192",
+          "--prompt-cache",
+          "6",
+          "--turn-token",
+          "-1",
+          "--suffix-draft",
+          "0",
+          "--greedy",
+          "--no-spec-split",
+          "--short-read",
+          "0",
+          "--spec",
+          "4",
+          "--mtp",
+          "/home/yayoi/.local/share/strata-sycl/mtp/rt",
+          "--prefill",
+          "8192",
+          "--vram-reserve-mib",
+          "700",
+          "--no-coupled-draft",
+          "--no-token-graph",
+          "--prompt-cache-every",
+          "0",
+          "--conversation-cache-slots",
+          "2",
+          "--conversation-cache-min-free-mib",
+          "4096"
+        ],
+        "requests": [
+          {
+            "prompt": 16385,
+            "max_new": 1,
+            "reused": 0,
+            "wire_bytes": 77488,
+            "wire_sha256": "a4349f9ea8e3a23f4d39fd94eaa748336ba2ad0f70d1753763b9c24f77dbcc5a"
+          },
+          {
+            "prompt": 33,
+            "max_new": 1,
+            "reused": 0,
+            "wire_bytes": 138,
+            "wire_sha256": "aa403cae69457851a7d1fc1a6dbc0c845d70dc4e086d0adfb2a6d93477f275b1"
+          },
+          {
+            "prompt": 16401,
+            "max_new": 1,
+            "reused": 16385,
+            "wire_bytes": 77552,
+            "wire_sha256": "79104c73d1bf6f879ba81154297b8dc2b82061d6f804422b65324aeaa84662a7"
+          }
+        ],
+        "GPU_executed": true,
+        "wall_s": 1200,
+        "environment_sha256": "e66d5035d76513a053a1ff80ea46f43e81266b66fef45bdcf3d460489190adb8"
+      }
+    },
+    "vocab_size": 248320,
+    "model_assets": {
+      "/home/yayoi/.local/share/strata-sycl/models/qwen3.8-flash-next-iq3_s/IQ3_S/Qwen3.8-Flash-Next-GSQ-RCO-IQ3_S-00001-of-00002.gguf": {
+        "identity": {
+          "realpath": "/home/yayoi/.local/share/strata-sycl/models/qwen3.8-flash-next-iq3_s/IQ3_S/Qwen3.8-Flash-Next-GSQ-RCO-IQ3_S-00001-of-00002.gguf",
+          "dev": 40,
+          "ino": 2640848,
+          "bytes": 54817524224,
+          "mtime_ns": 1791009083688077826,
+          "ctime_ns": 1791009083692077878
+        },
+        "sha256": "4c1eb2ceb4915e1192f4f386021897bde56a97f40a0bb78bb86465e0f7d2aca3"
+      },
+      "/home/yayoi/.local/share/strata-sycl/models/qwen3.8-flash-next-iq3_s/IQ3_S/Qwen3.8-Flash-Next-GSQ-RCO-IQ3_S-00002-of-00002.gguf": {
+        "identity": {
+          "realpath": "/home/yayoi/.local/share/strata-sycl/models/qwen3.8-flash-next-iq3_s/IQ3_S/Qwen3.8-Flash-Next-GSQ-RCO-IQ3_S-00002-of-00002.gguf",
+          "dev": 40,
+          "ino": 2623800,
+          "bytes": 28800138432,
+          "mtime_ns": 1790924461554234294,
+          "ctime_ns": 1791008604221189761
+        },
+        "sha256": "316b46f3a2dbd68c900f43136ab9449f9dcc3725dfd8c794847c204bc161e113"
+      },
+      "/home/yayoi/.local/share/strata-sycl/mtp/rt/dense.bin": {
+        "identity": {
+          "realpath": "/home/yayoi/.local/share/strata-sycl/mtp/rt/dense.bin",
+          "dev": 40,
+          "ino": 2878806,
+          "bytes": 116099072,
+          "mtime_ns": 1790947194721370688,
+          "ctime_ns": 1790947194721370688
+        },
+        "sha256": "c724dc0b0822ada5d2977bf5bde821605feabaa64ea2e0045b67ca656329070a"
+      },
+      "/home/yayoi/.local/share/strata-sycl/mtp/rt/dense.txt": {
+        "identity": {
+          "realpath": "/home/yayoi/.local/share/strata-sycl/mtp/rt/dense.txt",
+          "dev": 40,
+          "ino": 2878822,
+          "bytes": 1851,
+          "mtime_ns": 1790947194721370688,
+          "ctime_ns": 1790947194721370688
+        },
+        "sha256": "991456cf4eb266eb8a888c349e548d11bc640f5dbd9149439aa9786af0f732fd"
+      },
+      "/home/yayoi/.local/share/strata-sycl/mtp/rt/draft_vocab.bin": {
+        "identity": {
+          "realpath": "/home/yayoi/.local/share/strata-sycl/mtp/rt/draft_vocab.bin",
+          "dev": 40,
+          "ino": 2878820,
+          "bytes": 425196,
+          "mtime_ns": 1790947268196150153,
+          "ctime_ns": 1790947268196150153
+        },
+        "sha256": "b1e1d3a7a9e4bf862dcd5923ce661fb59bbd07907e594df5cf86a62ac235cb91"
+      },
+      "/home/yayoi/.local/share/strata-sycl/mtp/rt/experts.bin": {
+        "identity": {
+          "realpath": "/home/yayoi/.local/share/strata-sycl/mtp/rt/experts.bin",
+          "dev": 40,
+          "ino": 2878804,
+          "bytes": 707788800,
+          "mtime_ns": 1790947193902361950,
+          "ctime_ns": 1790947193902361950
+        },
+        "sha256": "09398406be61f1f54c93861f449e48b8df0bfccbc9ec9b2b7636775a6ea9244f"
+      },
+      "/home/yayoi/.local/share/strata-sycl/packs/qwen3.8-flash-next-iq3_s/conversions.json": {
+        "identity": {
+          "realpath": "/home/yayoi/.local/share/strata-sycl/packs/qwen3.8-flash-next-iq3_s/conversions.json",
+          "dev": 40,
+          "ino": 2654126,
+          "bytes": 306,
+          "mtime_ns": 1791009279665519972,
+          "ctime_ns": 1791009279665519972
+        },
+        "sha256": "51df3cd6ffd0d38c2da8e2d3a95a604b4a96c20b06fc639a9bf477282a42b86a"
+      },
+      "/home/yayoi/.local/share/strata-sycl/packs/qwen3.8-flash-next-iq3_s/dense.bin": {
+        "identity": {
+          "realpath": "/home/yayoi/.local/share/strata-sycl/packs/qwen3.8-flash-next-iq3_s/dense.bin",
+          "dev": 40,
+          "ino": 2652886,
+          "bytes": 1538035200,
+          "mtime_ns": 1791009279664519959,
+          "ctime_ns": 1791009279665519972
+        },
+        "sha256": "d2af3d8331e5c7a1985d1d589747230f9d56719a6d33c7cddc9ee6b81cde6b13"
+      },
+      "/home/yayoi/.local/share/strata-sycl/packs/qwen3.8-flash-next-iq3_s/index.txt": {
+        "identity": {
+          "realpath": "/home/yayoi/.local/share/strata-sycl/packs/qwen3.8-flash-next-iq3_s/index.txt",
+          "dev": 40,
+          "ino": 2654124,
+          "bytes": 93685,
+          "mtime_ns": 1791009279665519972,
+          "ctime_ns": 1791009279665519972
+        },
+        "sha256": "b2a014878c3b61d6a6f915e194055a5e68ede34f9465dd1cb13249d902f008ac"
+      },
+      "/home/yayoi/.local/share/strata-sycl/packs/qwen3.8-flash-next-iq3_s/native_experts.txt": {
+        "identity": {
+          "realpath": "/home/yayoi/.local/share/strata-sycl/packs/qwen3.8-flash-next-iq3_s/native_experts.txt",
+          "dev": 40,
+          "ino": 2653896,
+          "bytes": 3304,
+          "mtime_ns": 1791009280472529749,
+          "ctime_ns": 1791009280472529749
+        },
+        "sha256": "d9ac2dfa3ee63c55c9c6a6db26f72da0cec0ee41733f007e5cbbbba71617aa5d"
+      },
+      "/home/yayoi/.local/share/strata-sycl/packs/qwen3.8-flash-next-iq3_s/tokenizer/chat_template.jinja": {
+        "identity": {
+          "realpath": "/home/yayoi/.local/share/strata-sycl/packs/qwen3.8-flash-next-iq3_s/tokenizer/chat_template.jinja",
+          "dev": 40,
+          "ino": 2653772,
+          "bytes": 9993,
+          "mtime_ns": 1791009280442529386,
+          "ctime_ns": 1791009280442529386
+        },
+        "sha256": "12827f24b742ea4e80cdc12dbcf9622227056b9f797252a3149263d4f9aaadce"
+      },
+      "/home/yayoi/.local/share/strata-sycl/packs/qwen3.8-flash-next-iq3_s/tokenizer/merges.txt": {
+        "identity": {
+          "realpath": "/home/yayoi/.local/share/strata-sycl/packs/qwen3.8-flash-next-iq3_s/tokenizer/merges.txt",
+          "dev": 40,
+          "ino": 2785432,
+          "bytes": 3353258,
+          "mtime_ns": 1791009280259527169,
+          "ctime_ns": 1791009280259527169
+        },
+        "sha256": "4ba698529766c7a2f5052083ea10cdf2485577f5237a332ee291054eb11e3332"
+      },
+      "/home/yayoi/.local/share/strata-sycl/packs/qwen3.8-flash-next-iq3_s/tokenizer/token_type.json": {
+        "identity": {
+          "realpath": "/home/yayoi/.local/share/strata-sycl/packs/qwen3.8-flash-next-iq3_s/tokenizer/token_type.json",
+          "dev": 40,
+          "ino": 2785434,
+          "bytes": 744960,
+          "mtime_ns": 1791009280269527290,
+          "ctime_ns": 1791009280269527290
+        },
+        "sha256": "5088c8c298fc06af8382ddb3b76c888703ac2634e82263b97eedcc2ad202738b"
+      },
+      "/home/yayoi/.local/share/strata-sycl/packs/qwen3.8-flash-next-iq3_s/tokenizer/tokenizer.json": {
+        "identity": {
+          "realpath": "/home/yayoi/.local/share/strata-sycl/packs/qwen3.8-flash-next-iq3_s/tokenizer/tokenizer.json",
+          "dev": 40,
+          "ino": 2785438,
+          "bytes": 541,
+          "mtime_ns": 1791009280269527290,
+          "ctime_ns": 1791009280269527290
+        },
+        "sha256": "c0bd435efbc6c3b28964b47999afe16c4ad268c7c7c4e8cb3af410796a6f30bf"
+      },
+      "/home/yayoi/.local/share/strata-sycl/packs/qwen3.8-flash-next-iq3_s/tokenizer/vocab.json": {
+        "identity": {
+          "realpath": "/home/yayoi/.local/share/strata-sycl/packs/qwen3.8-flash-next-iq3_s/tokenizer/vocab.json",
+          "dev": 40,
+          "ino": 2785430,
+          "bytes": 5737005,
+          "mtime_ns": 1791009280185526273,
+          "ctime_ns": 1791009280185526273
+        },
+        "sha256": "4ba64f0332abcfb0b600b7df1537d1e836e68009d5fb7cdb77339738dc6365c4"
+      }
+    },
+    "model_digest_reuse": {
+      "result_key": "model_state_v3",
+      "prepare_source_commit": "8b52357f4076af921175bbe51a4e932f8dfa19d1",
+      "files": 15,
+      "dev_inode_size_mtime_ctime_matched": true,
+      "final_full_hash_required": true
+    },
+    "reference_model_state": {
+      "result_key": "model_state_v4",
+      "sha256": "7de54fbc2e637b5264e99556078d2db895cc5f7ccf5705a5c17e4cabc85cd2fd"
+    },
+    "observer_gate": {
+      "result_key": "ur_memory_model_v1",
+      "sha256": "c387b523a5cd135101d71e5e47a9496f6f60be1fb424ab29a51b1b0d7dc002be"
+    },
+    "reader_qualification_sha256": "86271dca6842c087f3cfbd6a941337db15ddf4c421aac0e34d07207989a05a2a",
+    "collector": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/ur-memory-subscriber-v1/libstrata_ur_memory.so",
+      "bytes": 16920,
+      "sha256": "677c0e079d4a204cb62400099a81ce9e214883cbda7d4a283340695aad2f2986"
+    },
+    "environment_sha256": "cdf91928f9ad7f56b470b1d6204d624b36463eb60f27bc6b039f9a114c3868a0",
+    "driver_before": {
+      "pci": "/sys/bus/pci/devices/0000:05:00.0",
+      "driver": "xe",
+      "vendor": "0x8086",
+      "device": "0xe20c",
+      "kernel": "7.0.0-38-generic",
+      "devcoredump": false
+    },
+    "boot": "cfda0b6a-7c13-4fe2-bdf5-8f9202770840",
+    "row": {},
+    "maps": [],
+    "client_boundaries": [],
+    "active": false,
+    "passed": false,
+    "complete": false,
+    "ownership_closed": true,
+    "GPU_executed": false,
+    "speed_eligible": false,
+    "model_adoption_qualified": false,
+    "decode_performance_qualified": false,
+    "physical262144_qualified": false,
+    "ordinary_runtime_teardown_qualified": false,
+    "physical_owner_attribution_qualified": false,
+    "budgets": {
+      "wall_s": 1200,
+      "cpu_s": 7200,
+      "rss_bytes": 111669149696,
+      "text_bytes": 33554432,
+      "file_bytes": 33554432,
+      "total_bytes": 268435456,
+      "map_snapshot_bytes": 1048576
+    },
+    "criteria": "Same native590f A16385/B33/A+16 wire/model-state gates,all1256 cache payloads/tables and main/draft/running restore. Reuse exact qualified engine/UR observer/runtime safety;no new native code or environment mutation. The only new observation is the existing read-only DRM resource reader at READY and each DONE,before sending any next input. Require4 bounded PID/start/SID-verified,deduplicated client observations with stable nonempty client identities and exported total/resident VRAM counters. Record each client separately;do not add shared objects across clients. These idle-request boundaries include more than the internal short32 dense phase and do not qualify causal phase assignment or allocation owner. Require trace sequence/count integrity with zero invalid/unsupported/lost,normal owned exit0,unchanged input identities,full15 model digests after collection,unchanged boot/driver and no fresh fault. Stop first failure,no retry. No speed,hardware saturation,decode-performance,physical262144,ordinary teardown or adoption claim.",
+    "client_counter_contract": {
+      "source": "https://www.kernel.org/doc/html/latest/gpu/drm-usage-stats.html",
+      "driver_source": "https://www.kernel.org/doc/html/latest/gpu/xe/xe-drm-usage-stats.html",
+      "scope": "DRM client buffer requested/resident/shared storage;not UR ownership or application tensor bytes. Read spans are bounded but not atomic across descriptors/clients."
+    },
+    "retention": {
+      "owner": "Main",
+      "consumer": "Immediate comparison of owning-DRM-client boundary changes against prior UR trace and global free memory;retire traces/maps/JIT after useful facts are recorded or superseded.",
+      "raw_text_budget_bytes": 33554432,
+      "map_budget_bytes": 4194304,
+      "permanent": "Source,recipe,individual request/state and trace-conservation/free-memory results,qualification limits. No full trace or maps in Git."
+    }
   }
 }
