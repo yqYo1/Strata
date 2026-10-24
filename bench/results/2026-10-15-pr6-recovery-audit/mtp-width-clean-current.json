@@ -1,5 +1,5 @@
 {
-  "stage": "host-prepared",
+  "stage": "host-checked",
   "source_commit": "036bf96e9bf0d26b8f00a29ea118f9a6aac678ae",
   "benchmark_files": 188,
   "benchmark_fingerprint": "f5791aae50adf7612e7428c828c363c2862965e57e032ebd592695d5e15fb82e",
@@ -74,7 +74,24 @@
     "minimum_time_ms": 10000,
     "maximum_endpoint_fraction": 0.0001,
     "source_sha256": "dbf7cc7a21e64dcd37632872be129fc5433e82fadb0e859792c01fbbf1deb676",
-    "source_contract": "Same native libstdc++ steady_clock::now;65536 consecutive pairs,sort/output outside pairs. Observed endpoint/rounding screen,not a universal bound or time subtraction."
+    "source_contract": "Same native libstdc++ steady_clock::now;65536 consecutive pairs,sort/output outside pairs. Observed endpoint/rounding screen,not a universal bound or time subtraction.",
+    "probe": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/mtp-width-clean-v1/host/clock_probe",
+      "sha256": "a44ef582c9fab6f40a6740377dba8b249693a21ee7c8be2c71be68513307c934",
+      "bytes": 16344
+    },
+    "initial_screen": {
+      "samples": 65536,
+      "resolution_ns": 1,
+      "min_ns": 10,
+      "p99_ns": 30,
+      "max_ns": 4749,
+      "endpoint_rounding_fraction_at_floor": 5.9498e-06,
+      "provider": {
+        "path": "/usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.33",
+        "sha256": "1fd75fe70354a416d75aef22bcae68c47bd25d20e2d0568c30b1a9838cf62f11"
+      }
+    }
   },
   "plans": [
     {

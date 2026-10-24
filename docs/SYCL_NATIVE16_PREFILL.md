@@ -174,8 +174,19 @@ zero chain calls and valid bounded host accounting. The process exited normally,
 all15 model hashes matched and no new driver fault appeared. This qualifies
 short-route wiring and owner restoration only. Clean repeated speed, task quality
 and full-context gates remain open; no production prefill/decode setting changed.
-The next comparison is fixed2 versus MTP4 and resident no-draft with prospective
-official thinking-on long-generation measurements.
+The [clean width comparison](../bench/results/2026-10-15-pr6-recovery-audit/mtp-width-clean-current.json)
+is frozen for nine fresh processes in balanced blocks2/4/1,4/1/2,1/2/4.
+Each uses four official warmups and both thinking-on v4 long-generation workloads.
+Widths2/4 use selected6e40; width1 uses the existing resident private control.
+Native trace/stage/work observers are disabled; qualified runtime safety and
+preexec parameter validation remain. Native arguments and actual aggregate
+offered/accepted/emitted counts bind the source-fixed widths; this is not a
+per-window trace or hardware attribution. Four host corruption/selection controls
+and two clock controls pass, and the same-library clock probe passes its screen.
+Clean model samples remain pending. Require all three block-paired decode ratios
+to avoid decline and their geomean to exceed1.02 for advancement. Independently
+require all three paired prefill ratios to avoid decline. This does not qualify
+adoption,70tok/s or the separate long/agent/task/full-context/teardown gates.
 The closed launchers and protocol corruption controls recover at`b61f376c2`.
 Their successful raw logs, temporary source snapshot and consumed scope review
 are retired after route/observer replay. Original13 and private13 build assets
