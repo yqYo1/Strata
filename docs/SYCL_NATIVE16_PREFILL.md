@@ -966,8 +966,8 @@ The actual selected submission fixture also passes all10 original GPU checks wit
 this subscriber:10 records cover2 host allocations/2056 requested bytes,3 device
 allocations/3220 bytes and5 frees,with no remaining requested allocation.
 Invalid,unsupported and lost counters are zero;exit and fault checks pass.
-These are requested API bytes,not physical residency. The same-native16K/B33/restore model trace now also passes:all1256 cache payloads
-and tables and the live main/draft/running snapshot verify;all15 model files
+These are requested API bytes,not physical residency. The same-native16K/B33/restore
+model trace now also passes:all1256 cache payloads and tables and the live main/draft/running snapshot verify;all15 model files
 rehash;the owned process exits0 without a fresh fault. Its1482 records contain
 741 successful allocations and741 matching USM frees/simple buffer releases,
 with zero invalid/unsupported/lost events and zero final requested-byte balance.
@@ -987,10 +987,16 @@ output,JIT,duplicate receipts,reproducible ID files and consumed source audits
 are retired after their useful outcomes and corrections are committed. The
 closed v4 model outputs,consumed checkpoint/layout audits and settled research
 transactions now retire241 files/46482302 bytes. All20 selected/candidate native
-assets verify before and after deletion. The closed model record remains only
-for the imminent owner-trace environment/configuration consumer. Four new
-physical-fill/memory report/review files remain for their named Main tasks;
-unrelated owner/provenance holds remain separate from the retired artifacts.
+assets verify before and after deletion. The subsequent observer boundary retires
+80 files/12798021 bytes,including successful host/device output,the consumed
+v4 environment record,packet executable,source audit and model JIT/maps.
+Original packet source/recipe,239 dependencies,compiler/environment and exact
+assets are recovered and checked against pushed history before retirement.
+All20 native assets and the16920-byte collector verify after deletion.
+Only the current model record and497891-byte full UR trace remain for the named
+DRM-client/lower-allocator comparison,with a1MiB trace budget and review after
+that comparison. Four physical-fill/memory report/review files remain for their
+named Main tasks;unrelated owner/provenance holds remain separate.
 
 Remaining model gates are repeated phase-preserving adoption evidence,
 agent-session and task quality,near-cap/tail boundaries,
