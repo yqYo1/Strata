@@ -1,0 +1,612 @@
+{
+  "mode": "engine-compare",
+  "diagnostic": "prefill-resources-117k-v1",
+  "stage": "diagnostic",
+  "source_commit": "e45e97367994e931be1d9e7b1f570a769c4151e0",
+  "build_source_commit": "bb71e78db7b6a4930945a2d564ec6cd42d0ad245",
+  "binary": {
+    "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/strata",
+    "bytes": 22127264,
+    "sha256": "33452421e15ad5c5329921c3d12310fd77e198ce7f8af4aa9cb77c9d9d6bab97"
+  },
+  "complete": true,
+  "passed": false,
+  "active": false,
+  "ownership_closed": true,
+  "exit_code": 0,
+  "error": "incomplete mixed owner/phase census",
+  "fresh_faults": [],
+  "fault_probe_successful": true,
+  "boot_unchanged": true,
+  "driver_after": {
+    "pci": "/sys/bus/pci/devices/0000:05:00.0",
+    "driver": "xe",
+    "vendor": "0x8086",
+    "device": "0xe20c",
+    "kernel": "7.0.0-38-generic",
+    "devcoredump": false
+  },
+  "validation_activation": {
+    "pid": 3889663,
+    "loader": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_loader.so.0.12.0",
+    "threads_before": 1,
+    "preinit": 37,
+    "config_enabled": true,
+    "first_init": true,
+    "dispatch_result": 46,
+    "output_untouched": true,
+    "retained_reference_until_exit": true,
+    "runtime_teardown_qualified": false
+  },
+  "post_closure_input_check": {
+    "original_collection_passed": false,
+    "original_error": "incomplete mixed owner/phase census",
+    "source_and_fixture_proof": true,
+    "benchmark_inputs_unchanged": 141,
+    "full_model_hashes_matched": 15,
+    "binary_sha256": "33452421e15ad5c5329921c3d12310fd77e198ce7f8af4aa9cb77c9d9d6bab97",
+    "source_commit": "e45e97367994e931be1d9e7b1f570a769c4151e0"
+  },
+  "reanalysis_plan": {
+    "original_failed_result_commit": "754481bfc",
+    "original_outcome_unchanged": true,
+    "native_execution_permitted": false,
+    "reason": "The controller incorrectly invoked the independent-buffer direct_owners1 parser for an admitted borrowed scratch lease, whose checked contract requires direct_owners0. Reanalyze existing closed bytes only; preserve original failure.",
+    "acceptance": "Use the existing borrowed-window ownership checks, with96 entry/loan/retired tuples, stable nonoverlapping typed spans, matching sealed generation/capacity, completed dense restoration and ready publication. Keep the existing exact workload, CPU/work conservation, GPU profile, client capture and restore-time checks. No clean speed, hardware saturation or adoption claim.",
+    "raw_sha256": {
+      "engine.stderr": "ab2547c8b6be1988635c8091650e347f14bf644c5d7e2e73680425a4710be960",
+      "engine-start.json": "864f12244e930298ccb2337074a268ae06a36ae89fab97e7aa9ac5a6d9ef1fb0",
+      "engine-exit.json": "48cacd1f171ac36e4c62d7a1d64e1e0dae7478a6804e2c06bb94233639ece367",
+      "client-resources.jsonl": "ed108bf4d3931d091e2ed99dadd9c42ce30ff84333d78d6614e9b2c72c43e6d5",
+      "post-closure-input-check.json": "187f05ed7cd0f49718f9545a737dfbc9ade42e2722c285f0c3260afb0e74ce41"
+    }
+  },
+  "closed_analysis": {
+    "complete": true,
+    "attribution_checks_passed": true,
+    "analyzer_source_commit": "eaeba9e6c45cc3c797ef5432bde72fb5f7666207",
+    "changed_analysis_inputs": [
+      "tools/sycl/cache_long.py",
+      "tools/sycl/prefill_resources.py",
+      "tools/test_sycl_prefill_resources.py"
+    ],
+    "original_source_inputs_recovered": 141,
+    "native_execution": false,
+    "original_collection_passed": false,
+    "original_failure_preserved": true,
+    "attribution": {
+      "host_counter_conservation": {
+        "moe_map_upload": 96,
+        "moe_job_weights": 96,
+        "moe_dequant_gu": 33225,
+        "moe_dequant_down": 33225,
+        "moe_gather": 37353,
+        "moe_swiglu": 29868,
+        "moe_accumulate": 29868,
+        "moe_status": 96,
+        "source_copy": 48,
+        "upload_submit": 33273
+      },
+      "window_census": {
+        "window_count": 96,
+        "jobs": 37353,
+        "routed_rows": 56394240,
+        "gu_nk": [
+          1280,
+          2560
+        ],
+        "down_nk": [
+          2560,
+          640
+        ],
+        "gu_down_storage": "bf16",
+        "hidden_storage": "fp16",
+        "requested_router_D2H_bytes": 225576960,
+        "requested_map_H2D_bytes": 451153920,
+        "all_job_row_and_expert_conservation_checks_passed": true,
+        "planned_matches_retired": true,
+        "limits": "Requested/logical metadata; not physical PCIe or VRAM traffic, occupancy or additive wall time.",
+        "window_rows_counts": [
+          [
+            35568,
+            48
+          ],
+          [
+            81920,
+            48
+          ]
+        ],
+        "job_size_groups": [
+          {
+            "min_rows": 1,
+            "max_rows": 2333,
+            "jobs": 29868,
+            "routed_rows": 7103790
+          },
+          {
+            "min_rows": 2334,
+            "max_rows": 8192,
+            "jobs": 7485,
+            "routed_rows": 49290450
+          }
+        ]
+      },
+      "all_resource_gates_passed": true,
+      "detail_not_retained": "All per-layer/window conservation and ownership checks run before reduction. Full layer arrays and exact job-size histograms are not needed by the current aggregate host-source attribution question.",
+      "native_dense": {
+        "entry_ms": 388.342,
+        "run_ms": 125598.0,
+        "restore_ms": 819.103
+      },
+      "expert_cache_refill_wall_ms": 388.3,
+      "refilled_slots": 1124,
+      "intervals_nonexclusive": true,
+      "expert_refill_outside_native_dense": true,
+      "limits": "Dense entry/run/restore are nonexclusive wrapper clocks. Expert refill includes RAM source lookup, enqueue, completion and residency publication, not pure PCIe service. Do not add these to nested queue intervals.",
+      "borrowed_owner_evidence": {
+        "borrowed_ffn_entries": 96,
+        "checked_retirements": 96,
+        "secondary_bank_windows": 48,
+        "layout_generation": 3,
+        "used_bytes": 2311569920,
+        "stable_nonoverlapping_typed_spans": true
+      },
+      "cpu_accounting": {
+        "complete": true,
+        "version": 4,
+        "wall_s": 125.472210472,
+        "main_cpu_s": 119.335409402,
+        "wait_cpu_s": 78.872114932,
+        "wait_wall_s": 79.271294893,
+        "outside_wait_cpu_s": 40.46329447,
+        "unclassified_cpu_s": 10.412838638,
+        "unclassified_wall_s": 15.487824129,
+        "region_columns": [
+          "region",
+          "calls",
+          "outside_wait_cpu_s",
+          "outside_wait_wall_s"
+        ],
+        "regions": [
+          [
+            "source_copy",
+            48,
+            3.7222e-05,
+            3.8127e-05
+          ],
+          [
+            "host_group",
+            96,
+            0.24483593,
+            0.244893821
+          ],
+          [
+            "gemm_submit",
+            99306,
+            5.008024861,
+            5.206636881
+          ],
+          [
+            "route_exchange",
+            0,
+            0.0,
+            0.0
+          ],
+          [
+            "upload_submit",
+            33273,
+            4.889389276,
+            4.98381516
+          ],
+          [
+            "residual_input_host",
+            0,
+            0.0,
+            0.0
+          ],
+          [
+            "residual_input_device",
+            705,
+            0.016897594,
+            0.018488047
+          ],
+          [
+            "residual_store_host",
+            0,
+            0.0,
+            0.0
+          ],
+          [
+            "residual_store_device",
+            0,
+            0.0,
+            0.0
+          ],
+          [
+            "moe_map_upload",
+            96,
+            0.036101653,
+            0.036861021
+          ],
+          [
+            "moe_job_weights",
+            96,
+            0.002702798,
+            0.002887832
+          ],
+          [
+            "moe_dequant_gu",
+            33225,
+            1.748496559,
+            1.815091288
+          ],
+          [
+            "moe_dequant_down",
+            33225,
+            1.740605649,
+            1.804462617
+          ],
+          [
+            "moe_gather",
+            37353,
+            2.135602869,
+            2.208512838
+          ],
+          [
+            "moe_swiglu",
+            29868,
+            1.681079091,
+            1.742518577
+          ],
+          [
+            "moe_accumulate",
+            29868,
+            1.715200549,
+            1.777440128
+          ],
+          [
+            "moe_status",
+            96,
+            10.831481781,
+            10.871445113
+          ]
+        ],
+        "wait_kind_columns": [
+          "kind",
+          "calls",
+          "cpu_s",
+          "wall_s"
+        ],
+        "wait_kinds": [
+          [
+            "compute",
+            10,
+            9.55e-06,
+            9.499e-06
+          ],
+          [
+            "transfer",
+            10,
+            8.898e-06,
+            8.776e-06
+          ],
+          [
+            "event",
+            14980,
+            0.013366963,
+            0.013572294
+          ],
+          [
+            "compat",
+            1648,
+            78.858729521,
+            79.257704324
+          ],
+          [
+            "direct",
+            0,
+            0.0,
+            0.0
+          ]
+        ],
+        "conservation_checked": true,
+        "throws": 0
+      },
+      "coarse_queue": {
+        "wall_ms": "0.076473,1.8053,0.875684,619.102,0,59.4456,0,0,0,0,0,24.3502",
+        "queue_ms": "712.091,44428.9,25180.9,37869.3,0.275625,0,9360.29,1315.78,9705.84,4786.34",
+        "samples": "705,180,540,96,48,0,540,540,540,540",
+        "gdn_expected_chunks": "540",
+        "gdn_submit_wall_ms": "125.245,38.8287,30.7008,29.0206",
+        "upload_bytes": "0",
+        "input_bytes_host_device": "0,113089249280",
+        "store_bytes_host_device": "0,0",
+        "input_queue_host_device_ms": "0,712.091",
+        "store_queue_host_device_ms": "0,0",
+        "description": "strata lm profile: v=3 complete=1 errors=0 first_status=0 wrapper_ms=125420 denominator=started_through_checked_lease_retirement teardown_unmeasured=1 queue_intervals=NONEXCLUSIVE_including_host_submission_gaps bytes=REQUESTED_not_wire wall_order=source,upload_submit,upload_drain,activation,input_submit_host,input_submit_device,store_wall_host,store_wall_device,store_drain_host,store_drain_device,chunk_drain,wrapper_drain queue_order=input,QSA,GDN,MoE,upload,store,GDN_projections,GDN_conv_gates,GDN_recurrence,GDN_output"
+      },
+      "qsa_queue": {
+        "expected_chunks": "180",
+        "queue_ms": "3279.09,0.81687,790.189,9.37543,7688.98,30763.8,1889.98",
+        "host_wall_ms": "264.438,3.82328,16.0904,11.1404,937.741,3697.59,51.0202",
+        "samples": "180,180,180,180,180,180,180",
+        "cap": "2051",
+        "expected_queries": "1409856",
+        "dispatch_chunks": "180",
+        "query_total": "1409856",
+        "matrix_chunks": "180",
+        "fallback_chunks": "0",
+        "matrix_queries": "1409856",
+        "fallback_queries": "0",
+        "staged_chunks": "0",
+        "description": "strata lm qsa profile: v=1 complete=1 errors=0 first_status=0 wrapper_ms=125420 denominator=started_through_checked_lease_retirement teardown_unmeasured=1 granularity=QSA_LAYER_CHUNK sections=projections,kv_stage,kv_append_query,indexer_append,selection,attention,output_projection queue_intervals=NONEXCLUSIVE_including_host_submission_gaps host_wall=NONEXCLUSIVE_submission_and_helper_waits_not_CPU_or_GPU_service markers_included=1 kv_stage_noop_sample=1 dispatch=ACTUAL_matrix_used_result queries=SUM_T_not_request_tokens"
+      }
+    },
+    "client_resources": {
+      "collector_complete": true,
+      "request_coverage_verified": true,
+      "samples": 1159,
+      "final_sample_to_response_end_seconds": 0.0,
+      "before_first_output": {
+        "window_begin_monotonic_ns": 860210741088003,
+        "window_end_monotonic_ns": 860338124889086,
+        "contained_CPU_wall_seconds": 127.21255566900001,
+        "process_cpu_seconds": 123.11,
+        "process_cpu_core_equivalents": 0.9677503871577375,
+        "top_scheduled_threads": [
+          {
+            "tid": 3889663,
+            "start_ticks": 86010899,
+            "cpu_ticks": 12071,
+            "observed_last_cpus": [
+              0
+            ],
+            "cpu_seconds": 120.71
+          },
+          {
+            "tid": 3889990,
+            "start_ticks": 86011911,
+            "cpu_ticks": 49,
+            "observed_last_cpus": [
+              0,
+              1,
+              2,
+              3,
+              4,
+              5,
+              6,
+              7,
+              8,
+              9,
+              10,
+              11
+            ],
+            "cpu_seconds": 0.49
+          },
+          {
+            "tid": 3893403,
+            "start_ticks": 86021321,
+            "cpu_ticks": 18,
+            "observed_last_cpus": [
+              0
+            ],
+            "cpu_seconds": 0.18
+          },
+          {
+            "tid": 3889973,
+            "start_ticks": 86011906,
+            "cpu_ticks": 8,
+            "observed_last_cpus": [
+              2,
+              3,
+              4,
+              5,
+              7,
+              8,
+              9,
+              10,
+              11
+            ],
+            "cpu_seconds": 0.08
+          },
+          {
+            "tid": 3889974,
+            "start_ticks": 86011906,
+            "cpu_ticks": 8,
+            "observed_last_cpus": [
+              0,
+              2,
+              3,
+              6,
+              8,
+              9,
+              10,
+              11
+            ],
+            "cpu_seconds": 0.08
+          },
+          {
+            "tid": 3889975,
+            "start_ticks": 86011906,
+            "cpu_ticks": 8,
+            "observed_last_cpus": [
+              0,
+              1,
+              2,
+              3,
+              4,
+              5,
+              6,
+              7,
+              9,
+              10,
+              11
+            ],
+            "cpu_seconds": 0.08
+          },
+          {
+            "tid": 3889976,
+            "start_ticks": 86011906,
+            "cpu_ticks": 8,
+            "observed_last_cpus": [
+              3,
+              4,
+              5,
+              7,
+              8,
+              9,
+              10,
+              11
+            ],
+            "cpu_seconds": 0.08
+          },
+          {
+            "tid": 3889977,
+            "start_ticks": 86011906,
+            "cpu_ticks": 8,
+            "observed_last_cpus": [
+              1,
+              2,
+              4,
+              5,
+              6,
+              7,
+              9,
+              10,
+              11
+            ],
+            "cpu_seconds": 0.08
+          }
+        ],
+        "unmatched_thread_intervals": 4,
+        "engines": [
+          {
+            "pci": "0000:05:00.0",
+            "client_id": 42256,
+            "engine": "bcs",
+            "eligible_intervals": 627,
+            "busy_cycles": 0,
+            "capacity_total_cycles": 2442348990,
+            "busy_fraction": 0.0
+          },
+          {
+            "pci": "0000:05:00.0",
+            "client_id": 42256,
+            "engine": "ccs",
+            "eligible_intervals": 616,
+            "busy_cycles": 2242700841,
+            "capacity_total_cycles": 2442348990,
+            "busy_fraction": 0.9182556834353145
+          },
+          {
+            "pci": "0000:05:00.0",
+            "client_id": 42256,
+            "engine": "rcs",
+            "eligible_intervals": 627,
+            "busy_cycles": 0,
+            "capacity_total_cycles": 2442348990,
+            "busy_fraction": 0.0
+          },
+          {
+            "pci": "0000:05:00.0",
+            "client_id": 42256,
+            "engine": "vcs",
+            "eligible_intervals": 627,
+            "busy_cycles": 0,
+            "capacity_total_cycles": 4884697980,
+            "busy_fraction": 0.0
+          },
+          {
+            "pci": "0000:05:00.0",
+            "client_id": 42256,
+            "engine": "vecs",
+            "eligible_intervals": 627,
+            "busy_cycles": 0,
+            "capacity_total_cycles": 4884697980,
+            "busy_fraction": 0.0
+          }
+        ]
+      },
+      "limits": "Client observation windows, not native kernel-stage boundaries. Scheduled CPU includes polling/stalls. Associated DRM clients may be shared; cycle busy fraction is not arithmetic efficiency, VRAM bandwidth, physical PCIe traffic or hardware saturation.",
+      "short_output_interval": {
+        "contained_CPU_wall_seconds": 1.4205841000000001,
+        "process_cpu_seconds": 7.25,
+        "process_cpu_core_equivalents": 5.103534524988699,
+        "sustained_decode_qualified": false
+      }
+    },
+    "validation_activation": {
+      "pid": 3889663,
+      "loader": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_loader.so.0.12.0",
+      "threads_before": 1,
+      "preinit": 37,
+      "config_enabled": true,
+      "first_init": true,
+      "dispatch_result": 46,
+      "output_untouched": true,
+      "retained_reference_until_exit": true,
+      "runtime_teardown_qualified": false
+    },
+    "limits": "Post-closure correction of an incompatible ownership parser. Original execution receipt remains failed. These data attribute this observed request only; no clean speed, observer overhead, physical bandwidth, arithmetic saturation or model adoption qualification."
+  },
+  "clean_speed_qualified": false,
+  "hardware_saturation_qualified": false,
+  "model_adoption_qualified": false,
+  "result_format": "closed-compact-v1",
+  "original_plan": {
+    "commit": "d081f088bc0480e6a484f1361b7f4d283c7973ce",
+    "path": "bench/results/2026-10-15-pr6-recovery-audit/prefill-resources-current.json",
+    "sha256": "dc5178db87ade1e309f208e69ee1a76d8f67322f84d733830364625f9b5a737d"
+  },
+  "original_failed_result": {
+    "commit": "754481bfc7a18b335e68db07e61141f13d605a58",
+    "path": "bench/results/2026-10-15-pr6-recovery-audit/prefill-resources-current.json",
+    "sha256": "0f3d9da38446209f5ffd2a9fa7f6e3854f17d7db72af557eeb00569db6fac428"
+  },
+  "requests": [
+    {
+      "run": 0,
+      "ok": true,
+      "eligible": true,
+      "stream_complete": true,
+      "thinking_requested": true,
+      "reasoning_observed": true,
+      "actual_prompt_tokens": 117489,
+      "actual_read_tokens": 117489,
+      "actual_reused_tokens": 0,
+      "generated_tokens": 24,
+      "generated_tokens_source": "usage",
+      "prompt_tps_source": "engine",
+      "prompt_ms": 127197.8,
+      "ttft_s": 127.384,
+      "decode_ms": 1687.4,
+      "drafts_offered": 21,
+      "drafts_accepted": 16,
+      "finish_reason": "length",
+      "request_sha256": "26f08fd8364b5c4bce718617fe2aed42761d0a794e068b00532694adef78b3be",
+      "client_interval": {
+        "request_begin_monotonic_ns": 860210741088003,
+        "first_output_monotonic_ns": 860338124889086,
+        "request_end_monotonic_ns": 860339710079806
+      },
+      "output_chars": 0,
+      "reasoning_chars": 121,
+      "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "reasoning_sha256": "0d786145d04b965534c72ea005fcccb9fb3a7e2552f6dda1bf32578d1916b8b2"
+    }
+  ],
+  "decision": {
+    "expert_cache_refill_fraction_of_observed_prompt": 0.0030527257546907258,
+    "hardware_limiting_resource_known": false,
+    "next_action": "Attribute QSA attention/selection against matched memory/arithmetic shapes, and inspect the complete96 MoE status-copy/check paths with observer overhead kept separate. Select one validated engine generation before another build.",
+    "limits": "127.198s parameter-validated first-use diagnostic; no clean speed or causal attribution of the0.49% paired route gap. Original controller outcome remains failed; independent closed-log analysis passed."
+  },
+  "retention": {
+    "raw_root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-resources-117k-v1",
+    "owner": "Main",
+    "byte_budget": 67108864,
+    "consumer": "Select a concrete current117K QSA/MoE matched-ceiling and status-check measurement from the conserved histogram and aggregate profile.",
+    "next_review": "Retire successful raw/profile/JIT and dispatch output immediately after that bounded workload is fixed; recover original plans/results from Git.",
+    "extra_engine_generation_review": "The named attribution is closed. Select and retire the extra validated generation before another build; no third generation is authorized by this record."
+  }
+}

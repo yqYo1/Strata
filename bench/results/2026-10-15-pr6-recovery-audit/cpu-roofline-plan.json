@@ -1,19 +1,26 @@
 {
-  "schema": "strata-cpu-roofline-v1",
+  "schema": "strata-cpu-decode-mix-v2",
   "source": {
-    "revision": "c24bfb62f44bf797319557e9e7c1b3264acc6d52",
-    "count": 29,
-    "aggregate_sha256": "e990af8f1e7011995dbd3e240fb71a1efec17195a14495094077bb53a8357975"
+    "revision": "7725d3f838962bc4a5974c0ed77b882ddfd8da4c",
+    "count": 108,
+    "aggregate_sha256": "d38461501440c4e476ee8adaed10854c758a995caaea509114dde26ca6149440"
   },
   "ggml": {
     "revision": "3cf03257f219afbe7334045ff7c6a06ac68c627d",
     "count": 1376,
     "aggregate_sha256": "04cc6ab883190bdb3bbcfc3e3d62c630c7b147587b98379157ad768f9936c8d2"
   },
-  "tools": {
-    "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin/clang-22": "1290881b4e12a5e002e5b0de0787f85328ee5fe19f253a54be1cdd97dc2f26eb",
-    "/usr/bin/cmake": "1c5227af4edd22d8d689def545e18ee458260c0fd579eba2187967f38817e638",
-    "/usr/bin/ninja": "5965527e09fe2b3787772aa4f711d6a36b393e7f2fcaa744a7a96c5a4ddf59cb"
+  "qualification": {
+    "native_source": "6e40afc1beddd059ee518617f6c1efce1da14aca",
+    "native_inputs_recovered": 9853,
+    "native_binary": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/strata",
+      "bytes": 22190000,
+      "sha256": "22182f1a5e62e5f4259ce49a75ae44afbd988166ec79324816e499ff37ef60e4"
+    },
+    "native_fixture_count": 12,
+    "component_sha256": "8412bb2d5fffaba976ec0129afe9f3d0a0268a5ba9c4efbe89dff6eff28d46b1",
+    "resource_sha256": "ae608777c52288b5e8803aef04a29bbbdd378598933d7c1f21a5b04a948e6672"
   },
   "environment": {
     "PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin:/usr/bin:/bin",
@@ -22,7 +29,10 @@
     "LANG": "C.UTF-8",
     "LC_ALL": "C.UTF-8",
     "OMP_NUM_THREADS": "1",
-    "PYTHONDONTWRITEBYTECODE": "1"
+    "PYTHONDONTWRITEBYTECODE": "1",
+    "STRATA_IQ2_PAIR": "1",
+    "STRATA_IQ_SINGLE_EXACT": "0",
+    "STRATA_IQ2_PAIR_AUDIT": "0"
   },
   "machine": {
     "boot_id": "cfda0b6a-7c13-4fe2-bdf5-8f9202770840",
@@ -113,7 +123,6 @@
     ],
     "cpuinfo_sha256": "b76b714d9c601674e41e94536b65107b50ec8428fcf179057a3bb14a8b17cb87"
   },
-  "metadata_sha256": "d9ac2dfa3ee63c55c9c6a6db26f72da0cec0ee41733f007e5cbbbba71617aa5d",
   "formats": [
     {
       "layer": 0,
@@ -124,10 +133,16 @@
       "up": 1711166464,
       "down_offset": 913711104,
       "shard": "/home/yayoi/.local/share/strata-sycl/models/qwen3.8-flash-next-iq3_s/IQ3_S/Qwen3.8-Flash-Next-GSQ-RCO-IQ3_S-00001-of-00002.gguf",
-      "experts": 48,
+      "experts": 84,
       "gu_bytes": 627200,
       "down_bytes": 921600,
-      "fixture_sha256": "396a3b74440156bd9779e4e22e644d54cc35d218712f1e2814bae353a1d9e617"
+      "observed_jobs_NT": [
+        312670,
+        65168,
+        16541,
+        5226
+      ],
+      "fixture_sha256": "5895760f169c51da395dbd1d1b39dcb4c70dd068d27a2b7766a2aeaa829d5131"
     },
     {
       "layer": 12,
@@ -138,10 +153,16 @@
       "up": 14026847104,
       "down_offset": 13464898944,
       "shard": "/home/yayoi/.local/share/strata-sycl/models/qwen3.8-flash-next-iq3_s/IQ3_S/Qwen3.8-Flash-Next-GSQ-RCO-IQ3_S-00001-of-00002.gguf",
-      "experts": 60,
+      "experts": 84,
       "gu_bytes": 627200,
       "down_bytes": 460800,
-      "fixture_sha256": "7a7ce26d5daeff90cff5b058b28b7ab9142b659d362251280bebce0c3d6c7dfb"
+      "observed_jobs_NT": [
+        70375,
+        15934,
+        3320,
+        654
+      ],
+      "fixture_sha256": "b106ea4fc2490b3c2e294d8d82fc7746c9863a92c1006c902818e7591c8afd38"
     },
     {
       "layer": 17,
@@ -152,10 +173,16 @@
       "up": 19556330880,
       "down_offset": 18719605120,
       "shard": "/home/yayoi/.local/share/strata-sycl/models/qwen3.8-flash-next-iq3_s/IQ3_S/Qwen3.8-Flash-Next-GSQ-RCO-IQ3_S-00001-of-00002.gguf",
-      "experts": 48,
+      "experts": 84,
       "gu_bytes": 704000,
       "down_bytes": 921600,
-      "fixture_sha256": "1a594d3fedb0d870b7c9d31015837e02871cd6237be87f762df584aef8fbab51"
+      "observed_jobs_NT": [
+        187015,
+        42554,
+        10760,
+        3429
+      ],
+      "fixture_sha256": "e96e073ca66cf71175e540f9e4a4212f2b77db8aeb576d97e4afc54a40969edc"
     },
     {
       "layer": 21,
@@ -166,10 +193,16 @@
       "up": 23820359680,
       "down_offset": 23219512320,
       "shard": "/home/yayoi/.local/share/strata-sycl/models/qwen3.8-flash-next-iq3_s/IQ3_S/Qwen3.8-Flash-Next-GSQ-RCO-IQ3_S-00001-of-00002.gguf",
-      "experts": 54,
+      "experts": 84,
       "gu_bytes": 704000,
       "down_bytes": 460800,
-      "fixture_sha256": "f7bdf83bb14192a9540008d4258d312d2f15cbc98a4b247d23ccf2d91fde7f31"
+      "observed_jobs_NT": [
+        24201,
+        5344,
+        1146,
+        180
+      ],
+      "fixture_sha256": "dad6430f10fdff4eeb1dc891ab691a10cc6a3cadcb1b3ee1e32c9a2484996bb6"
     },
     {
       "layer": 2,
@@ -180,10 +213,16 @@
       "up": 3763417856,
       "down_offset": 3018391296,
       "shard": "/home/yayoi/.local/share/strata-sycl/models/qwen3.8-flash-next-iq3_s/IQ3_S/Qwen3.8-Flash-Next-GSQ-RCO-IQ3_S-00001-of-00002.gguf",
-      "experts": 54,
+      "experts": 84,
       "gu_bytes": 524800,
       "down_bytes": 921600,
-      "fixture_sha256": "c5dfbfbe6f2a4169db878ab9db7ac9511eb16a898c6c6bfd4d9a44c2ed0406ea"
+      "observed_jobs_NT": [
+        339214,
+        78601,
+        17357,
+        4878
+      ],
+      "fixture_sha256": "284725c0ce17550253cb85c8003c75c0bf6f638cf4b510e69d11197ac6e8ac8f"
     },
     {
       "layer": 1,
@@ -194,10 +233,16 @@
       "up": 2613152640,
       "down_offset": 2104106880,
       "shard": "/home/yayoi/.local/share/strata-sycl/models/qwen3.8-flash-next-iq3_s/IQ3_S/Qwen3.8-Flash-Next-GSQ-RCO-IQ3_S-00001-of-00002.gguf",
-      "experts": 72,
+      "experts": 112,
       "gu_bytes": 524800,
       "down_bytes": 460800,
-      "fixture_sha256": "9c2d330cdb34801ffcfe6dd960e79809a11a8e4d887184ae830870060c79334a"
+      "observed_jobs_NT": [
+        105622,
+        28237,
+        6804,
+        1693
+      ],
+      "fixture_sha256": "74c9cc4647896e505dd10bb42d24fbee5fc1f63dc0eda167346d173930849b63"
     },
     {
       "layer": 47,
@@ -208,12 +253,194 @@
       "up": 54341015040,
       "down_offset": 53418222080,
       "shard": "/home/yayoi/.local/share/strata-sycl/models/qwen3.8-flash-next-iq3_s/IQ3_S/Qwen3.8-Flash-Next-GSQ-RCO-IQ3_S-00001-of-00002.gguf",
-      "experts": 42,
+      "experts": 56,
       "gu_bytes": 870400,
       "down_bytes": 921600,
-      "fixture_sha256": "97dc54d1e5eccc9bdade3b0ac50932fa880a3b8ddba7311e4e1746000e88cec1"
+      "observed_jobs_NT": [
+        19700,
+        3442,
+        666,
+        115
+      ],
+      "fixture_sha256": "9358f1942e6ad86e00e73981baa81b5cb6029f9bf1c9103a9dda3bb541893b40"
     }
   ],
+  "order": [
+    [
+      18,
+      20,
+      5,
+      6
+    ],
+    [
+      22,
+      42,
+      5,
+      28
+    ],
+    [
+      22,
+      20,
+      5,
+      28
+    ],
+    [
+      23,
+      20,
+      1,
+      28
+    ],
+    [
+      21,
+      42,
+      1,
+      6
+    ],
+    [
+      21,
+      20,
+      1,
+      6
+    ],
+    [
+      18,
+      42,
+      5,
+      6
+    ],
+    [
+      21,
+      42,
+      1,
+      28
+    ],
+    [
+      21,
+      42,
+      5,
+      28
+    ],
+    [
+      23,
+      20,
+      1,
+      6
+    ],
+    [
+      23,
+      20,
+      5,
+      6
+    ],
+    [
+      21,
+      20,
+      5,
+      6
+    ],
+    [
+      22,
+      20,
+      1,
+      6
+    ],
+    [
+      21,
+      42,
+      5,
+      6
+    ],
+    [
+      18,
+      20,
+      5,
+      28
+    ],
+    [
+      22,
+      42,
+      5,
+      6
+    ],
+    [
+      18,
+      42,
+      1,
+      6
+    ],
+    [
+      22,
+      20,
+      1,
+      28
+    ],
+    [
+      18,
+      20,
+      1,
+      6
+    ],
+    [
+      22,
+      42,
+      1,
+      6
+    ],
+    [
+      23,
+      20,
+      5,
+      28
+    ],
+    [
+      18,
+      42,
+      5,
+      28
+    ],
+    [
+      18,
+      20,
+      1,
+      28
+    ],
+    [
+      18,
+      42,
+      1,
+      28
+    ],
+    [
+      21,
+      20,
+      1,
+      28
+    ],
+    [
+      22,
+      20,
+      5,
+      6
+    ],
+    [
+      21,
+      20,
+      5,
+      28
+    ],
+    [
+      22,
+      42,
+      1,
+      28
+    ]
+  ],
+  "tools": {
+    "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin/clang-22": "1290881b4e12a5e002e5b0de0787f85328ee5fe19f253a54be1cdd97dc2f26eb",
+    "/usr/bin/cmake": "1c5227af4edd22d8d689def545e18ee458260c0fd579eba2187967f38817e638",
+    "/usr/bin/ninja": "5965527e09fe2b3787772aa4f711d6a36b393e7f2fcaa744a7a96c5a4ddf59cb"
+  },
+  "metadata_sha256": "d9ac2dfa3ee63c55c9c6a6db26f72da0cec0ee41733f007e5cbbbba71617aa5d",
   "model_identity": {
     "/home/yayoi/.local/share/strata-sycl/models/qwen3.8-flash-next-iq3_s/IQ3_S/Qwen3.8-Flash-Next-GSQ-RCO-IQ3_S-00001-of-00002.gguf": {
       "path": "/home/yayoi/.local/share/strata-sycl/models/qwen3.8-flash-next-iq3_s/IQ3_S/Qwen3.8-Flash-Next-GSQ-RCO-IQ3_S-00001-of-00002.gguf",
@@ -224,87 +451,21 @@
       "ctime_ns": 1791009083692077878
     }
   },
-  "order": [
-    [
-      18,
-      20,
-      5
-    ],
-    [
-      18,
-      42,
-      1
-    ],
-    [
-      21,
-      20,
-      1
-    ],
-    [
-      21,
-      42,
-      1
-    ],
-    [
-      22,
-      20,
-      1
-    ],
-    [
-      22,
-      20,
-      5
-    ],
-    [
-      18,
-      20,
-      1
-    ],
-    [
-      23,
-      20,
-      5
-    ],
-    [
-      18,
-      42,
-      5
-    ],
-    [
-      21,
-      20,
-      5
-    ],
-    [
-      22,
-      42,
-      1
-    ],
-    [
-      22,
-      42,
-      5
-    ],
-    [
-      21,
-      42,
-      5
-    ],
-    [
-      23,
-      20,
-      1
-    ]
-  ],
+  "previous_result": {
+    "commit": "f8d608e58fdbec2e08f7728ac97092fc0a00d7d2",
+    "path": "bench/results/2026-10-15-pr6-recovery-audit/cpu-roofline-current.json",
+    "sha256": "31c08f16ca50975891c6428f54bc10f529bf1e36c90a18c576a28e3611197b30"
+  },
   "configure": [
     "/usr/bin/cmake",
     "-S",
-    "/home/yayoi/orca/workspaces/Strata/sycl/bench/sycl/cpu_roofline",
+    "/home/yayoi/orca/workspaces/Strata/sycl/bench/sycl/cpu_decode_mix",
     "-B",
-    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-roofline-v5/build",
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-decode-mix-v2/build",
     "-G",
     "Ninja",
     "-DCMAKE_BUILD_TYPE=Release",
+    "-DCMAKE_EXPORT_COMPILE_COMMANDS=ON",
     "-DCMAKE_C_COMPILER=/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin/clang",
     "-DCMAKE_CXX_COMPILER=/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin/clang++",
     "-DSTRATA_GGML_DIR=/home/yayoi/ghq/github.com/ggml-org/llama.cpp/.worktree/dep-ggml-3cf-xe-e32-20261011"
@@ -312,49 +473,47 @@
   "build": [
     "/usr/bin/cmake",
     "--build",
-    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-roofline-v5/build",
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-decode-mix-v2/build",
     "--target",
+    "cpu_decode_mix",
     "cpu_roofline",
     "--parallel",
     "6"
   ],
   "protocol": {
-    "nt": [
-      1,
-      2,
-      3,
-      4
+    "question": "Does current decode CPU expert work show batch/cache-footprint or compute-thread sensitivity at the actual post-IQ2 NT/format mix?",
+    "groups": [
+      6,
+      28
     ],
-    "group": 6,
-    "reps": 5,
-    "minimum_sample_s": 1,
-    "fixed_minimum_target_s": 1.3,
-    "under_floor": "Terminal failure; no automatic retry. Whole passes until1.3s, maximum1000000 passes. Preflight per-pass clock cost must be below0.1% of fastest warm pass.",
-    "hot": "Six distinct real expert blobs, 8.6\u201315.3 MiB including weights only.",
-    "stream": "At least96 MiB of distinct real blobs; shuffled six-expert groups, no revisit per pass.",
-    "scan": "256 MiB read-only checksum; persistent pinned1/6/12 threads.",
-    "workers": "1 worker + noncomputing waiting host; or production5 workers + computing host. Host wait CPU is included.",
-    "validation": "Before/after each NT cell: GU and Down20 rel-L1<=1e-5 vs same-input ggml; Down42 <=1e-5 vs independent scalar dot with production ActQ float scales. GGML Q8_0 half-scale gap is diagnostic only. Pool exact vs serial same-route. Finite outputs and external canaries; private pool scratch is not instrumented.",
-    "gate": "Require all14 checks, all112 five-sample expert cells and3 scan cells; keep failures/under-floor attempts. No automatic run retry.",
-    "interpretation": "Hot/stream and1/6-compute-thread scaling identify sensitivity. Requested byte rates and scan are not physical DRAM traffic, saturation proof, model speed or70tok/s evidence."
+    "workers": [
+      1,
+      5
+    ],
+    "computed_threads": [
+      1,
+      6
+    ],
+    "batches_per_pass": 100,
+    "repetitions": 5,
+    "sample_floor_seconds": 1.0,
+    "target_seconds": 1.3,
+    "timer_fraction_cap": 0.001,
+    "NT": "Per-format measured NT1..4 histogram rounded by largest remainder to100*group jobs; deterministic shuffled schedule. This approximates that marginal distribution,not the complete layer/activation/working-set trace.",
+    "reuse": "Reuse the same distinct group of6 or28 real expert blobs.28-expert weights may exceed32MiB L3;do not label it cache-resident.",
+    "stream": "Rotate distinct groups through at least128MiB. A pass has100 batches and may revisit the extent;requested blob visits are not physical RAM traffic.",
+    "scan": "Existing read-only256MiB checksum fixture,persistent1/6 threads,five>=1s samples. An achieved read reference,not an arithmetic or DRAM upper bound.",
+    "validation": "Each loaded distinct expert at uniform NT1..4 and a heterogeneous-NT batch at the timed group size:production pool bit-exact to serial production GU/quant/down,finite outputs,untouched inactive NT lanes,external canaries. Mixed groups force NT1..4 coverage. Real distinct blobs detect job permutations. This is route consistency,not independent model/task validation.",
+    "observers": "Native IQ2 pairing1,SINGLE_EXACT0,IQ2 audit0;fixed before process startup. Existing production pool subphase clocks only. No extra per-callback/thread clocks,no GPU runtime.",
+    "gates": "All28 check children before measure. All56 expert cells and2 read cells with five individual eligible samples,actual placement/work/histogram conservation,normal ownership closure. Stop at first failure or budget,no sample replacement/retry.",
+    "interpretation": "6/28 batches and reuse/stream change scheduling,cache and work together;thread scaling includes main quantization and waiting. Sensitivity may guide a later optimization;it does not establish arithmetic/RAM saturation,physical traffic,clean model speed or70tok/s.",
+    "retention": "Keep compact per-cell individual timing/work samples,source/recipe/fixture hashes,numerical and ownership outcomes. Retire full output and this extra CPU build after source recovery and calibration decision;retain original6e40 engine+12fixtures."
   },
+  "retained_generation": "Keep original6e40 engine and12 fixtures at their original paths. Extra CPU-only build is solely for this imminent calibration and retires when it closes.",
   "budgets": {
-    "build_wall_s": 600,
-    "check_child_s": 120,
-    "measure_child_s": 180,
-    "scan_child_s": 40,
-    "raw_text_bytes": 67108864,
-    "root_bytes": 536870912,
-    "rss_bytes": 3221225472
-  },
-  "retention": "Auxiliary CPU fixture, no new inference generation. Keep during calibration/next identified regression; retire successful raw/build cache after compact evidence/source recovery. Existing two engine generations retain their117K comparison consumer.",
-  "previous_failed_matrix": {
-    "commit": "cf098f72efeb9056cd7da4be4aeb27364023ba9c",
-    "path": "bench/results/2026-10-15-pr6-recovery-audit/cpu-roofline-current.json",
-    "status": "failed_timing_floor",
-    "individual_samples": 495,
-    "completed_processes": 11,
-    "planned_processes": 17,
-    "decision": "Original outcome unchanged; recollect all115 cells with the new committed fixed-duration timing source. No partial reuse to claim original-matrix success."
+    "build_seconds": 600,
+    "check_child_seconds": 120,
+    "measure_child_seconds": 180,
+    "scan_seconds": 40
   }
 }

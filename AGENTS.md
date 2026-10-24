@@ -231,6 +231,28 @@ integration and testing.
   existing fork implementation. Measure unmodified upstream without local
   patches, including a configuration tuned for this hardware; default settings
   alone are insufficient. A prefill gain does not justify a decode regression.
+  Conversely, assess a decode improvement independently of prefill. Design,
+  tune and select independent prefill and decode execution paths by default,
+  including kernels, scheduling and placement. Identical current implementations
+  are coincidental selections, not a reason to couple the paths. Share inference
+  processing only when a matched measurement demonstrates that sharing is faster
+  than independent paths; record the benefiting shapes/phases and retain separate
+  selection outside that scope. Existing shared processing without this evidence
+  is a legacy arrangement to audit, not a qualified design decision.
+  When isolating a candidate in a legacy shared dispatcher, keep the existing
+  prefill implementation and use an explicit phase/job policy for decode. This
+  containment does not establish that sharing is faster. Do not mutate process
+  environment variables between phases. For a prefill-only restoration or change,
+  preserve the current decode implementation, configuration and placement, and
+  verify its state handoff and repeated decode performance. Any decode impact
+  from a prefill-only change is a separation defect to resolve, including
+  handoff, configuration, placement or throughput changes; do not accept it as
+  a cost of faster prefill. Do not
+  declare the restoration complete or adopt it while that defect remains.
+  Verify the actual
+  call paths before attributing a regression. A failed whole-process comparison
+  remains failed, but does not permanently reject a separately scoped component;
+  commit a new phase-specific plan and criteria before gathering new evidence.
   XeStrata remains excluded from implementation adoption even if its
   measurements are faster.
 - Trace the configured SYCL build's actual source resolver and entrypoint.
@@ -320,7 +342,15 @@ integration and testing.
 - Freeze the source, executable, helpers, fixtures, generated workloads and
   configuration pinned by an active measurement or A/B plan. Review planned
   edits against those inputs first; documentation outside the pinned inputs may
-  proceed. If an input must change, close the existing run honestly and commit
+  proceed. Include transitive qualification readers: a metadata file is not
+  independent merely because it is outside the benchmark source fingerprint.
+  Edit research metadata during a run only when its qualification reader
+  explicitly checks the consumed committed fields and isolates unrelated rows;
+  otherwise defer the edit until closure. Returning one row does not isolate
+  edits if the reader first requires the entire worktree file to equal HEAD;
+  that still freezes the file during edits. Changes or missing fields in the
+  actual qualification evidence must still fail admission.
+  If an input must change, close the existing run honestly and commit
   a new plan before using it. Never update hashes to disguise a changed arm.
 - Set SYCL, Level Zero, driver, profiler and experiment environment variables in
   the native child's environment before `exec`. Keep the process environment
@@ -491,7 +521,11 @@ Follow [docs/ARTIFACT_RETENTION.md](docs/ARTIFACT_RETENTION.md) for every measur
   Retrieve the recorded source/recipe from reachable Git history and compare it
   with the exact final build's source identities before deleting its last copy.
   Preserve original measured commits and referenced inputs through integration
-  into the fork default. A matching binary/receipt hash proves artifact continuity,
+  into the fork default. Build retirement may use exact inputs recovered from
+  the pushed, retained `feature/sycl` branch; verify its remote ref and keep the
+  measured commits reachable until default integration. A blocked PR alone
+  does not justify unused binaries. Branch retirement still requires the
+  integration checks above. A matching binary/receipt hash proves artifact continuity,
   not source recovery; a seed, similarly named or later build is not proof.
   Reconcile uncommitted measured inputs before removing their last source/build copy.
   If recovery remains unresolved, record a temporary provenance hold with exact

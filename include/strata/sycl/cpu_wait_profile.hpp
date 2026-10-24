@@ -17,6 +17,9 @@ enum HostKind { source_copy, host_group, gemm_submit, route_exchange,
     moe_map_upload, moe_job_weights, moe_dequant_gu, moe_dequant_down,
     moe_gather, moe_swiglu, moe_accumulate, moe_status, host_kinds };
 enum Kind { compute_queue, transfer_queue, event, compat_queue, direct_queue, kinds };
+enum StatusKind { status_tag, status_precheck, status_queue, status_enqueue,
+    status_observer, status_drain, status_postcheck, status_after_drain,
+    status_branch, status_kinds };
 struct Stamp { double wall = 0, cpu = 0; bool valid = false; };
 inline Stamp stamp() noexcept {
     const int saved_errno = errno;
@@ -41,9 +44,84 @@ struct State {
     unsigned long long host_count[host_kinds]{}, host_throws[host_kinds]{};
     unsigned host_depth = 0;
     unsigned depth = 0;
+    double status_cpu[status_kinds]{}, status_wall[status_kinds]{};
+    double status_wait_cpu[status_kinds]{}, status_wait_wall[status_kinds]{};
+    unsigned long long status_calls[status_kinds]{}, status_throws[status_kinds]{};
+    double status_scope_cpu = 0, status_scope_wall = 0;
+    unsigned long long status_scopes = 0, status_completed = 0;
+    unsigned status_depth = 0, status_part_depth = 0;
     bool invalid = false;
 };
 inline thread_local State* active = nullptr;
+// A separate nested partition of the existing MoE status region. It does not
+// add another Host region, submit SYCL work or change the checked drain.
+class StatusScope {
+    State* s_ = active;
+    Stamp begin_;
+    bool measured_ = false, complete_ = false;
+public:
+    StatusScope() noexcept {
+        if (!s_) return;
+        if (s_->status_depth++ || s_->depth || s_->status_part_depth) {
+            s_->invalid = true; return;
+        }
+        ++s_->status_scopes;
+        begin_ = stamp(); measured_ = true;
+    }
+    void complete() noexcept { complete_ = true; }
+    ~StatusScope() noexcept {
+        if (!s_) return;
+        --s_->status_depth;
+        if (!measured_) return;
+        const auto end = stamp();
+        if (!begin_.valid || !end.valid || s_->status_part_depth || s_->depth ||
+            !duration(end.cpu - begin_.cpu) || !duration(end.wall - begin_.wall)) {
+            s_->invalid = true; return;
+        }
+        s_->status_scope_cpu += end.cpu - begin_.cpu;
+        s_->status_scope_wall += end.wall - begin_.wall;
+        if (complete_) ++s_->status_completed;
+    }
+    StatusScope(const StatusScope&) = delete;
+    StatusScope& operator=(const StatusScope&) = delete;
+};
+class StatusPart {
+    State* s_ = active;
+    StatusKind kind_;
+    Stamp begin_;
+    double wc_ = 0, ww_ = 0;
+    int exceptions_ = 0;
+    bool measured_ = false;
+public:
+    explicit StatusPart(StatusKind kind) noexcept : kind_(kind) {
+        if (!s_ || !s_->status_depth) { s_ = nullptr; return; }
+        if (s_->status_part_depth++ || s_->depth || s_->status_depth != 1) {
+            s_->invalid = true; return;
+        }
+        ++s_->status_calls[kind_];
+        for (int i = 0; i < kinds; ++i) { wc_ += s_->cpu[i]; ww_ += s_->wall[i]; }
+        exceptions_ = std::uncaught_exceptions();
+        begin_ = stamp(); measured_ = true;
+    }
+    ~StatusPart() noexcept {
+        if (!s_) return;
+        --s_->status_part_depth;
+        if (!measured_) return;
+        const auto end = stamp();
+        double wc = 0, ww = 0;
+        for (int i = 0; i < kinds; ++i) { wc += s_->cpu[i]; ww += s_->wall[i]; }
+        wc -= wc_; ww -= ww_;
+        const double cpu = end.cpu - begin_.cpu, wall = end.wall - begin_.wall;
+        if (!begin_.valid || !end.valid || s_->status_part_depth || s_->depth ||
+            !duration(cpu) || !duration(wall) || !duration(wc) || !duration(ww) ||
+            !duration(cpu - wc) || !duration(wall - ww)) { s_->invalid = true; return; }
+        s_->status_cpu[kind_] += cpu; s_->status_wall[kind_] += wall;
+        s_->status_wait_cpu[kind_] += wc; s_->status_wait_wall[kind_] += ww;
+        if (std::uncaught_exceptions() > exceptions_) ++s_->status_throws[kind_];
+    }
+    StatusPart(const StatusPart&) = delete;
+    StatusPart& operator=(const StatusPart&) = delete;
+};
 class Wait {
     State* s_ = active;
     Kind kind_;
@@ -160,7 +238,13 @@ public:
                 duration(state_.host_wait_cpu[k]) && duration(state_.host_wait_wall[k]) && duration(c) && duration(w);
             hc += c; hw += w;
         }
-        const bool available = begin_.valid && end.valid && !state_.invalid &&
+        double sc = 0, sw = 0;
+        for (int k = 0; k < status_kinds; ++k) {
+            sc += state_.status_cpu[k]; sw += state_.status_wall[k];
+        }
+        const bool status_valid = !state_.status_depth && !state_.status_part_depth &&
+            duration(state_.status_scope_cpu - sc) && duration(state_.status_scope_wall - sw);
+        const bool available = begin_.valid && end.valid && !state_.invalid && status_valid &&
             !state_.depth && host_valid && duration(cpu) && duration(wall) &&
             duration(wc) && duration(ww) && duration(cpu - wc - hc) && duration(wall - ww - hw);
         std::fprintf(stderr, "strata prefill cpu wait: version=4 available=%d complete=%d "
@@ -193,6 +277,24 @@ public:
                 names[k], available ? state_.host_cpu[k] : -1., names[k], available ? state_.host_wall[k] : -1.,
                 names[k], available ? state_.host_cpu[k] - state_.host_wait_cpu[k] : -1.,
                 names[k], available ? state_.host_wall[k] - state_.host_wait_wall[k] : -1.);
+        std::fputc('\n', stderr);
+        std::fprintf(stderr, "strata prefill status: version=1 available=%d complete=%d "
+            "scopes=%llu completed=%llu open_scopes=%u open_parts=%u cpu_s=%.9f wall_s=%.9f "
+            "unclassified_cpu_s=%.9f unclassified_wall_s=%.9f",
+            int(available), int(complete_ && state_.status_scopes == state_.status_completed),
+            state_.status_scopes, state_.status_completed, state_.status_depth, state_.status_part_depth,
+            available ? state_.status_scope_cpu : -1., available ? state_.status_scope_wall : -1.,
+            available ? state_.status_scope_cpu - sc : -1., available ? state_.status_scope_wall - sw : -1.);
+        const char* status_names[status_kinds] = {"tag", "precheck", "queue_context", "enqueue",
+            "observer", "drain", "postcheck", "after_drain", "branch"};
+        for (int k = 0; k < status_kinds; ++k)
+            std::fprintf(stderr, " %s_count=%llu %s_throws=%llu %s_cpu_s=%.9f %s_wall_s=%.9f "
+                "%s_wait_cpu_s=%.9f %s_wait_wall_s=%.9f",
+                status_names[k], state_.status_calls[k], status_names[k], state_.status_throws[k],
+                status_names[k], available ? state_.status_cpu[k] : -1.,
+                status_names[k], available ? state_.status_wall[k] : -1.,
+                status_names[k], available ? state_.status_wait_cpu[k] : -1.,
+                status_names[k], available ? state_.status_wait_wall[k] : -1.);
         std::fputc('\n', stderr);
     }
     Scope(const Scope&) = delete;

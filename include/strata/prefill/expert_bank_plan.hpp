@@ -7,6 +7,12 @@
 
 namespace strata::prefill::detail {
 
+// Distinguish a bank-capacity refusal from invalid geometry/options. A caller
+// may change its optional prefill workspace only for this capacity failure.
+struct ExpertBankBudgetError : std::invalid_argument {
+    using std::invalid_argument::invalid_argument;
+};
+
 struct ExpertBankPlan {
     static constexpr int64_t experts = 512;
     static constexpr int64_t window_rows = 81920; // mode10, chunk8192
@@ -62,7 +68,7 @@ struct ExpertBankPlan {
         p.device_bytes = p.host_upload_bytes;
         const uint64_t need = layer_major_add(fixed, p.device_bytes);
         if (need > free_gpu || p.device_bytes > max_device_alloc_bytes)
-            throw std::invalid_argument("original expert bank exceeds free GPU budget with headroom");
+            throw ExpertBankBudgetError("original expert bank exceeds free GPU budget with headroom");
         p.residual = LayerMajorResidualPlan::make(n, chunk, width,
             std::min(free_gpu - need, max_device_alloc_bytes), requested_rows, dtype);
         return p;
@@ -71,10 +77,51 @@ struct ExpertBankPlan {
     bool staged() const { return selection == Selection::staged; }
 };
 
+// Materialized BF16 K/V is an optional prefill acceleration. When its bank
+// plan cannot fit, try the existing on-demand GPU BF16 attention instead.
+// The factory must preserve all non-prefix reservations and headroom. Invalid
+// configuration/overflow and a second capacity refusal propagate unchanged.
+// Use the same actual device allocation limit for prefix and factory owners.
+struct ExpertBankPrefixPlan {
+    ExpertBankPlan bank;
+    uint64_t prefix_bytes;
+    template<class Factory> static ExpertBankPrefixPlan make(
+            uint64_t prefix, uint64_t max_allocation, Factory factory) {
+        (void)layer_major_add(prefix, 0); // invalid/overflow is never a capacity fallback
+        if (!max_allocation) throw std::invalid_argument("invalid QSA allocation limit");
+        if (prefix > max_allocation) return {factory(0), 0};
+        try { return {factory(prefix), prefix}; }
+        catch (const ExpertBankBudgetError&) {
+            if (!prefix) throw;
+            return {factory(0), 0};
+        }
+    }
+};
+
+// A private view of an existing allocation; no allocation, ownership or drain.
+// Rebind only after all readers of the preceding layer have checked retirement.
+struct ExpertBankLayout {
+    uint64_t backing_bytes = 0, stride = 0, used_bytes = 0;
+    int32_t slots = 0;
+    static ExpertBankLayout packed(uint64_t backing, uint64_t layer_stride) {
+        if (!backing || !layer_stride || layer_stride % 256 || backing < layer_stride)
+            throw std::invalid_argument("invalid private expert bank extent");
+        const auto count = std::min<uint64_t>(ExpertBankPlan::experts, backing / layer_stride);
+        return {backing, layer_stride, layer_major_mul(count, layer_stride), int32_t(count)};
+    }
+    uint64_t offset(int32_t slot) const {
+        if (slot < 0 || slot >= slots)
+            throw std::invalid_argument("private expert bank slot out of range");
+        return layer_major_mul(uint64_t(slot), stride);
+    }
+    bool full_fit() const { return slots == ExpertBankPlan::experts; }
+};
+
 // Fixed first-demand admission plus ONE reusable scratch slot. Permanent slots
 // are never evicted; a repeated ascending expert scan cannot evict its future
 // cache hits. Private mappings may be published after successful enqueue only
 // when every reader uses the same in-order queue and the slab survives its drain.
+// An explicitly full-fit512 view needs no scratch: all experts can be permanent.
 class ExpertBankSlots {
 public:
     struct Ticket {
@@ -82,8 +129,8 @@ public:
         uint64_t generation = 0;
         bool upload = false, permanent = false;
     };
-    explicit ExpertBankSlots(int32_t slots) : slots_(slots) {
-        if (slots < 1 || slots > ExpertBankPlan::experts)
+    explicit ExpertBankSlots(int32_t slots, bool full_fit = false) : slots_(slots), full_fit_(full_fit) {
+        if (slots < 1 || slots > ExpertBankPlan::experts || (full_fit && slots != ExpertBankPlan::experts))
             throw std::invalid_argument("expert bank needs1..512 slots");
         residency_.fill(-1);
     }
@@ -97,7 +144,7 @@ public:
         if (hit >= 0) return {expert, hit, 0, false, true};
         if (generation_ == std::numeric_limits<uint64_t>::max())
             throw std::overflow_error("expert bank ticket generation exhausted");
-        const bool permanent = used_ < slots_ - 1;
+        const bool permanent = used_ < slots_ - (full_fit_ ? 0 : 1);
         pending_ = {expert, permanent ? used_ : slots_ - 1, ++generation_, true, permanent};
         return pending_;
     }
@@ -125,9 +172,11 @@ public:
     }
     int32_t permanent_used() const { return used_; }
     int32_t slots() const { return slots_; }
+    bool full_fit() const { return full_fit_; }
 
 private:
     int32_t slots_, used_ = 0;
+    bool full_fit_ = false;
     uint64_t generation_ = 0;
     Ticket pending_;
     std::array<int32_t, size_t(ExpertBankPlan::experts)> residency_{};

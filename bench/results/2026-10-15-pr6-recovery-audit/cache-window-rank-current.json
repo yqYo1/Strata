@@ -1,0 +1,412 @@
+{
+  "schema": "strata-window-ranked-cache-pilot-closed-v1",
+  "stage": "closed",
+  "source_commit": "7fd10a25c35fe0878cf5f8fd90a324bd68d22412",
+  "build_source_commit": "6e40afc1beddd059ee518617f6c1efce1da14aca",
+  "binary": {
+    "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/strata",
+    "bytes": 22190000,
+    "sha256": "22182f1a5e62e5f4259ce49a75ae44afbd988166ec79324816e499ff37ef60e4"
+  },
+  "archive": {
+    "commit": "832285dfc83d93c64da8b9610e5d788230e71b8f",
+    "path": "bench/results/2026-10-15-pr6-recovery-audit/cache-window-rank-current.json",
+    "sha256": "bf850cd1ece9ea19df07d0fd9e2e22b29a5c0228317a400c7526765961ee615e"
+  },
+  "complete": true,
+  "passed": true,
+  "passed_meaning": "Execution/restoration/closure evidence passed;performance advance gate FAILED.",
+  "active": false,
+  "ownership_closed": true,
+  "plan": {
+    "order": [
+      "original-profile",
+      "window-ranked-profile"
+    ],
+    "workloads": [
+      "regular-code",
+      "varied-prose"
+    ],
+    "repetitions_per_workload_per_arm": 1,
+    "thresholds": "Each workload: actual logical CPU job-blob bytes/verifier row<=.95 baseline;GPU routed-entry fraction increases;exact decode_ms/generated_tokens<=baseline;observed strong MTP>=.60 and weak<=.40. Any failed workload rejects clean advancement.",
+    "scope": "Diagnostic profile-membership comparison only;same original6e40 native and per-layer slot/byte layout. Full frozen commands/environment/admission/retention remain in archive. No output identity requirement or adoption from this pilot."
+  },
+  "qualification": {
+    "controller_inputs": 164,
+    "native_inputs": 9853,
+    "required_artifacts": 13,
+    "host_tests_passed": 19,
+    "prepared_plan_commit": "4f42434d222fbe388e684bc0e6728cd045519908"
+  },
+  "configuration": {
+    "expert_slots": 1256,
+    "per_layer": {
+      "layers0_to46": 26,
+      "layer47": 34
+    },
+    "allocated_bytes": 2575206400,
+    "protected128_bytes": 245657600,
+    "max_loan_bytes": 2329548800,
+    "context": 131072,
+    "KV": "resident INT8",
+    "prefill_chunk": 8192,
+    "workers": 5,
+    "spec": 4,
+    "pcie_fraction": 0,
+    "adaptive_swaps": 0,
+    "prompt_and_conversation_cache": 0,
+    "thinking": true,
+    "profile_sha256": [
+      "8f59b4aa8873209dff11c11e37bcda9529a1335b724a1afeea37bf6388975baf",
+      "b28e12e11f39124fd25ab88833761e0f541f6549eecca63c21e364bf29527579"
+    ]
+  },
+  "processes": [
+    {
+      "arm": 0,
+      "passed": true,
+      "complete": true,
+      "ownership_closed": true,
+      "native_identity": {
+        "pid": 1696353,
+        "start_ticks": 102208702,
+        "sid": 1696294
+      },
+      "native_exit_code": 0,
+      "full_model_hashes_verified_after_process": 15,
+      "fresh_faults": [],
+      "fault_probe_successful": true,
+      "boot_unchanged": true,
+      "requests": [
+        {
+          "workload": "regular-code",
+          "request_sha256": "b0a065720a5eb86fa2d3f84d6371e35da774b4ea144d022608d49b80c227cba1",
+          "prompt_tokens": 33214,
+          "read_tokens": 33214,
+          "reused_tokens": 0,
+          "generated_tokens": 3611,
+          "prompt_ms": 52188.4,
+          "decode_ms": 243807.8,
+          "prompt_tps": 636.4,
+          "decode_tps": 14.8,
+          "drafts_accepted": 2578,
+          "drafts_offered": 3102,
+          "acceptance_rate": 0.8310767246937459,
+          "finish_reason": "stop",
+          "output_sha256": "5b7ae0f207d7804bc693ebde382f1a762c43f477fd01483939648d004cfaf971",
+          "reasoning_sha256": "8daeec41f22d90c32c1c1c5c3cfe4486a9ee6d65fa7ffe8857bfe980c02d411e",
+          "output_chars": 5496,
+          "reasoning_chars": 4368,
+          "completion_includes_thinking": true,
+          "controller_eligible": true,
+          "exact_decode_tok_s": 14.810846904816007,
+          "work": {
+            "windows": 1035,
+            "rows": 4137,
+            "cpu_jobs": 1370846,
+            "cpu_entries": 1771839,
+            "vram_entries": 213921,
+            "logical_job_blob_bytes": 2796077900800,
+            "membership_sha256": "7be037be3ed62aedcd10a0a2556fb7d96480892c35e683dbb38b329dbf7fff43",
+            "jobs_NT1_to4": [
+              1058797,
+              239280,
+              56594,
+              16175
+            ]
+          },
+          "ms_per_window": {
+            "total": 235.56,
+            "verify": 202.32,
+            "GPU_reach_wait": 74.92,
+            "per_layer_host": 110.08,
+            "CPU_pool_run": 107.55,
+            "stage": 2.83,
+            "draft": 33.16
+          },
+          "prefill_loan": {
+            "generation": 5,
+            "chunk": 8192,
+            "first": 132,
+            "lent": 1124,
+            "capacity": 2321664000,
+            "need": 2319958528,
+            "min_observed_free_bytes": 78626816
+          }
+        },
+        {
+          "workload": "varied-prose",
+          "request_sha256": "c6d16c6adb19adf79de1cc29929ab71cab5433488ca2fda2dfcdad523bde56f4",
+          "prompt_tokens": 33288,
+          "read_tokens": 33288,
+          "reused_tokens": 0,
+          "generated_tokens": 8638,
+          "prompt_ms": 43735.6,
+          "decode_ms": 909754.4,
+          "prompt_tps": 761.1,
+          "decode_tps": 9.5,
+          "drafts_accepted": 4660,
+          "drafts_offered": 11931,
+          "acceptance_rate": 0.390579163523594,
+          "finish_reason": "stop",
+          "output_sha256": "c8f13901e39c197d5020f290998ab2332dc695d93b32365cffa9ce85f743e983",
+          "reasoning_sha256": "5199dece9d887f8928a737a5470e1f470a75b0f6a7ca29ffd2e148f355d46c57",
+          "output_chars": 4452,
+          "reasoning_chars": 21300,
+          "completion_includes_thinking": true,
+          "controller_eligible": true,
+          "exact_decode_tok_s": 9.494870263886606,
+          "work": {
+            "windows": 3978,
+            "rows": 15909,
+            "cpu_jobs": 4605780,
+            "cpu_entries": 6953521,
+            "vram_entries": 682799,
+            "logical_job_blob_bytes": 9383784345600,
+            "membership_sha256": "7be037be3ed62aedcd10a0a2556fb7d96480892c35e683dbb38b329dbf7fff43",
+            "jobs_NT1_to4": [
+              3104475,
+              901153,
+              353868,
+              246284
+            ]
+          },
+          "ms_per_window": {
+            "total": 228.7,
+            "verify": 195.6,
+            "GPU_reach_wait": 75.28,
+            "per_layer_host": 101.8,
+            "CPU_pool_run": 99.28,
+            "stage": 4.04,
+            "draft": 33.03
+          },
+          "prefill_loan": {
+            "generation": 6,
+            "chunk": 8192,
+            "first": 132,
+            "lent": 1124,
+            "capacity": 2321664000,
+            "need": 2319958528,
+            "min_observed_free_bytes": 146100224
+          }
+        }
+      ],
+      "restoration": {
+        "all6_payload_map_refill_cycles_verified": true,
+        "long_chunk8192": true,
+        "GPU_BF16_mode10": true,
+        "private_bank_layers": 48,
+        "restored_dense_layers": 48
+      }
+    },
+    {
+      "arm": 1,
+      "passed": true,
+      "complete": true,
+      "ownership_closed": true,
+      "native_identity": {
+        "pid": 1762609,
+        "start_ticks": 102370111,
+        "sid": 1762538
+      },
+      "native_exit_code": 0,
+      "full_model_hashes_verified_after_process": 15,
+      "fresh_faults": [],
+      "fault_probe_successful": true,
+      "boot_unchanged": true,
+      "requests": [
+        {
+          "workload": "regular-code",
+          "request_sha256": "b0a065720a5eb86fa2d3f84d6371e35da774b4ea144d022608d49b80c227cba1",
+          "prompt_tokens": 33214,
+          "read_tokens": 33214,
+          "reused_tokens": 0,
+          "generated_tokens": 2869,
+          "prompt_ms": 52082.4,
+          "decode_ms": 172050.7,
+          "prompt_tps": 637.7,
+          "decode_tps": 16.7,
+          "drafts_accepted": 2071,
+          "drafts_offered": 2397,
+          "acceptance_rate": 0.8639966624947851,
+          "finish_reason": "stop",
+          "output_sha256": "99ceca676fbc02b8d8ba5ba58310339f19d54d2898d5c3ed477eda65220515bf",
+          "reasoning_sha256": "1abbcb55d1105d1b6fb14209740b22ed7f8d215b5b0258357a90ef7b3d0add87",
+          "output_chars": 5578,
+          "reasoning_chars": 2424,
+          "completion_includes_thinking": true,
+          "controller_eligible": true,
+          "exact_decode_tok_s": 16.675317217541107,
+          "work": {
+            "windows": 800,
+            "rows": 3197,
+            "cpu_jobs": 837935,
+            "cpu_entries": 1003379,
+            "vram_entries": 531181,
+            "logical_job_blob_bytes": 1709373875200,
+            "membership_sha256": "6d9a49559f408f6a7137ecf51a5091f4d51ac96060757fc93837e01d6c610fc7",
+            "jobs_NT1_to4": [
+              703694,
+              108140,
+              20999,
+              5102
+            ]
+          },
+          "ms_per_window": {
+            "total": 215.06,
+            "verify": 181.85,
+            "GPU_reach_wait": 73.38,
+            "per_layer_host": 88.68,
+            "CPU_pool_run": 86.03,
+            "stage": 4.77,
+            "draft": 33.14
+          },
+          "prefill_loan": {
+            "generation": 5,
+            "chunk": 8192,
+            "first": 132,
+            "lent": 1124,
+            "capacity": 2321664000,
+            "need": 2319958528,
+            "min_observed_free_bytes": 78688256
+          }
+        },
+        {
+          "workload": "varied-prose",
+          "request_sha256": "c6d16c6adb19adf79de1cc29929ab71cab5433488ca2fda2dfcdad523bde56f4",
+          "prompt_tokens": 33288,
+          "read_tokens": 33288,
+          "reused_tokens": 0,
+          "generated_tokens": 11299,
+          "prompt_ms": 43735.4,
+          "decode_ms": 1204781.3,
+          "prompt_tps": 761.1,
+          "decode_tps": 9.4,
+          "drafts_accepted": 6144,
+          "drafts_offered": 15468,
+          "acceptance_rate": 0.39720713731574864,
+          "finish_reason": "stop",
+          "output_sha256": "cfa03fe2c7ccbb9714c1a6add14f8709bbafaa84595a98413cf87432f4cbb4db",
+          "reasoning_sha256": "51323b574200d9924827d25f2ef5cf49a81240157a1bfc4be243219d739b4828",
+          "output_chars": 6483,
+          "reasoning_chars": 26959,
+          "completion_includes_thinking": true,
+          "controller_eligible": true,
+          "exact_decode_tok_s": 9.378465618614763,
+          "work": {
+            "windows": 5157,
+            "rows": 20625,
+            "cpu_jobs": 6231630,
+            "cpu_entries": 9365311,
+            "vram_entries": 534689,
+            "logical_job_blob_bytes": 12706827904000,
+            "membership_sha256": "6d9a49559f408f6a7137ecf51a5091f4d51ac96060757fc93837e01d6c610fc7",
+            "jobs_NT1_to4": [
+              4235209,
+              1192104,
+              471374,
+              332943
+            ]
+          },
+          "ms_per_window": {
+            "total": 233.62,
+            "verify": 200.5,
+            "GPU_reach_wait": 75.64,
+            "per_layer_host": 106.31,
+            "CPU_pool_run": 103.79,
+            "stage": 3.98,
+            "draft": 33.06
+          },
+          "prefill_loan": {
+            "generation": 6,
+            "chunk": 8192,
+            "first": 132,
+            "lent": 1124,
+            "capacity": 2321664000,
+            "need": 2319958528,
+            "min_observed_free_bytes": 146161664
+          }
+        }
+      ],
+      "restoration": {
+        "all6_payload_map_refill_cycles_verified": true,
+        "long_chunk8192": true,
+        "GPU_BF16_mode10": true,
+        "private_bank_layers": 48,
+        "restored_dense_layers": 48
+      }
+    }
+  ],
+  "decision": {
+    "workloads": [
+      {
+        "workload": "regular-code",
+        "matched_request_and_read": true,
+        "logical_bytes_per_row_ratio": 0.7910987164145334,
+        "vram_entry_fraction": [
+          0.10772751994198694,
+          0.3461454749244083
+        ],
+        "token_latency_ratio": 0.8881898144184134,
+        "passed": true
+      },
+      {
+        "workload": "varied-prose",
+        "matched_request_and_read": true,
+        "logical_bytes_per_row_ratio": 1.0444990618350625,
+        "vram_entry_fraction": [
+          0.08941466570285163,
+          0.0540089898989899
+        ],
+        "token_latency_ratio": 1.0124119072357418,
+        "passed": false
+      }
+    ],
+    "advance_to_new_clean_plan": false,
+    "repetitions_per_workload_per_arm": 1,
+    "clean_speed_qualified": false,
+    "adoption_qualified": false
+  },
+  "clean_speed_qualified": false,
+  "adoption_qualified": false,
+  "retained_selection": "Original6e40 engine and shipped profile unchanged. No new clean comparison or profile adoption permitted by this pilot.",
+  "limits": "One ordered diagnostic sample per workload/arm;output/route/MTP counts differ. Logical job-blob bytes are not physical RAM/PCIe traffic. Stage clocks include scheduling/waits and overlap,not hardware saturation. Full physical262144/session/RESTORE,heldout/agent/task and repeated phase-preserving adoption evidence remain open.",
+  "artifact_retirement": {
+    "complete": true,
+    "manifest": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cache-window-rank-v1-closed-retirement-20261022.jsonl",
+      "sha256": "fa4b3f4fbbeffdf05c1a10016c644686b4d72bec003aa81259ab47790ee5e4ed",
+      "files": 144,
+      "bytes": 26912616
+    },
+    "replayed_requests": 12,
+    "replayed_long_samples": 4,
+    "replayed_fields": [
+      "official samples",
+      "warmups",
+      "work",
+      "IQ2 dispatch",
+      "decode timings",
+      "all6 loans/arm",
+      "actual routes",
+      "owner closure"
+    ],
+    "all_original_inputs_recovered": true,
+    "prepared_plan_byte_exact": true,
+    "selected_native_artifacts_unchanged": 13,
+    "raw_roots_absent": true,
+    "tracked_source": {
+      "commit": "7fd10a25c35fe0878cf5f8fd90a324bd68d22412",
+      "paths": [
+        "tools/sycl/cache_window_rank_engine.py",
+        "tools/sycl/routing_workmix.py",
+        "tests/core/test_cache_window_rank_engine.py",
+        "tests/core/test_routing_workmix.py"
+      ],
+      "files": 4,
+      "bytes": 44000,
+      "reason": "Rejected single-use pilot and ranker have no current execution/fixture consumer;restore original measured source from Git for a separately planned new question."
+    },
+    "remaining_raw_consumer": null
+  }
+}

@@ -90,6 +90,48 @@ int main() try {
         uint64_t(1)<<63,Free,Other,Headroom,4ull<<30,-1,LayerMajorResidualDtype::bf16,384,true); });
     std::puts("expert_bank_capacity full117488=GPU partial_request=preserved fallback262144=original exact_boundary=PASS short_tail_fallback_cases=3 single_alloc_limit_cases=4");
 
+    // Observed standalone262144-context budget. Materializing both BF16 K/V
+    // tensors must not prevent the existing full-bank host-tail path. Nothing
+    // here permits shrinking decode placement or the512MiB safety headroom.
+    constexpr uint64_t ActualFree = 2039808000, FullPrefix = 538968064;
+    auto prefix_plan = [&](int64_t rows, uint64_t prefix, uint64_t free, int64_t request=-1,
+                           uint64_t prefix_limit=10132807680ull, int64_t bank_slots=384) {
+        return ExpertBankPrefixPlan::make(prefix, prefix_limit, [&](uint64_t admitted) {
+            return ExpertBankPlan::make(rows,8192,10240,Stride,free,admitted,Headroom,
+                prefix_limit,request,LayerMajorResidualDtype::bf16,bank_slots,true);
+        });
+    };
+    const auto short_prefix = prefix_plan(16384,16384*2056ull,ActualFree);
+    need(short_prefix.prefix_bytes==16384*2056ull && short_prefix.bank.staged());
+    need(short_prefix.bank.residual.gpu_rows==16384);
+    for (int64_t rows : {262143,262144}) {
+        const auto full_prefix = prefix_plan(rows,FullPrefix,ActualFree);
+        need(full_prefix.prefix_bytes==0 && !full_prefix.bank.staged() && full_prefix.bank.slots==512);
+        need(full_prefix.bank.residual.gpu_rows==0 && full_prefix.bank.residual.host_bytes==uint64_t(rows)*20480);
+    }
+    constexpr uint64_t Minimum = 512*Stride+Headroom;
+    need(prefix_plan(262143,FullPrefix,Minimum+FullPrefix).prefix_bytes==FullPrefix);
+    need(prefix_plan(262143,FullPrefix,Minimum+FullPrefix-1).prefix_bytes==0);
+    need(prefix_plan(262143,FullPrefix,Minimum).prefix_bytes==0);
+    // A long nonzero-prefix request may have only8193 new rows and a legal
+    // one-slot bank. Mandatory owners fit a stricter hypothetical device limit
+    // while the full262144-cell prefix needs its own one-shot check.
+    need(prefix_plan(8193,FullPrefix,ActualFree,-1,FullPrefix,1).prefix_bytes==FullPrefix);
+    need(prefix_plan(8193,FullPrefix,ActualFree,-1,FullPrefix-1,1).prefix_bytes==0);
+    unsigned budget_rejected=0;
+    try { (void)prefix_plan(262143,FullPrefix,Minimum-1); }
+    catch (const ExpertBankBudgetError&) { ++budget_rejected; }
+    try { (void)prefix_plan(16384,16384*2056ull,Free,16385); }
+    catch (const std::invalid_argument&) { ++budget_rejected; }
+    try { (void)prefix_plan(262143,std::numeric_limits<uint64_t>::max(),ActualFree); }
+    catch (const std::overflow_error&) { ++budget_rejected; }
+    try { (void)prefix_plan(262143,FullPrefix,Minimum+FullPrefix,-1,0); }
+    catch (const std::invalid_argument&) { ++budget_rejected; }
+    try { (void)prefix_plan(8193,FullPrefix,ActualFree,-1,128ull<<20,1); }
+    catch (const ExpertBankBudgetError&) { ++budget_rejected; }
+    need(budget_rejected==5);
+    std::puts("expert_bank_prefix_budget short_kept=PASS full262143_host_tail=PASS full262144_host_tail=PASS exact=PASS single_allocation=PASS invalid=PASS");
+
     // A host oracle models complete slot contents; accepted enqueue updates it.
     // Two ascending scans must retain three permanent hits without scan eviction.
     ExpertBankSlots slots(4);
@@ -129,6 +171,44 @@ int main() try {
     need(one.permanent_used() == 0);
     need(negative == 18);
     std::printf("expert_bank_slots uploads=%d hits=%d negative_checks=%zu PASS\n",uploads,hits,negative);
+    const size_t packed_negative_begin = negative;
+    const uint64_t bank_bytes = 384 * Stride;
+    const std::array<uint64_t,7> layer_strides{2176000,1510400,1971200,1715200,2329600,1868800,2662400};
+    const std::array<int,7> capacities{469,512,512,512,438,512,384};
+    for (size_t i = 0; i < layer_strides.size(); ++i) {
+        const auto geometry = ExpertBankLayout::packed(bank_bytes, layer_strides[i]);
+        need(geometry.slots == capacities[i] && geometry.stride == layer_strides[i]);
+        need(geometry.used_bytes <= bank_bytes && geometry.backing_bytes == bank_bytes);
+        need(geometry.offset(geometry.slots - 1) + geometry.stride == geometry.used_bytes);
+        rejects([&] { (void)geometry.offset(-1); });
+        rejects([&] { (void)geometry.offset(geometry.slots); });
+        ExpertBankSlots mapped(geometry.slots, geometry.full_fit());
+        std::array<int,512> oracle{}; oracle.fill(-1);
+        unsigned copied = 0, reused = 0;
+        for (int layer = 0; layer < 2; ++layer) {
+            mapped.reset();
+            for (int round = 0; round < 2; ++round) for (int expert = 0; expert < 512; ++expert) {
+                const auto t = mapped.begin(expert);
+                if (t.upload) { oracle[size_t(t.slot)] = expert; mapped.queued(t); ++copied; }
+                else ++reused;
+                need(oracle[size_t(t.slot)] == expert);
+                need(geometry.offset(t.slot) + geometry.stride <= bank_bytes);
+            }
+        }
+        const auto permanent = unsigned(geometry.slots - (geometry.full_fit() ? 0 : 1));
+        need(copied == 2 * (1024 - permanent) && reused == 2 * permanent);
+    }
+    const auto one_exact = ExpertBankLayout::packed(256,256);
+    need(one_exact.slots == 1 && one_exact.used_bytes == 256 && !one_exact.full_fit());
+    need(ExpertBankLayout::packed(512*256-1,256).slots == 511);
+    need(ExpertBankLayout::packed(512*256,256).full_fit());
+    rejects([] { (void)ExpertBankLayout::packed(0,256); });
+    rejects([] { (void)ExpertBankLayout::packed(256,0); });
+    rejects([] { (void)ExpertBankLayout::packed(255,256); });
+    rejects([] { (void)ExpertBankLayout::packed(512,255); });
+    rejects([] { ExpertBankSlots invalid(511,true); });
+    std::printf("expert_bank_packed formats=7 layers_each=2 full_fit512=PASS boundary=PASS negative_checks=%zu PASS\n",
+        negative - packed_negative_begin);
     std::puts("expert_bank_plan PASS GPU=UNRUN model=UNRUN physical262144_RESTORE=UNQUALIFIED");
     return 0;
 } catch (const std::exception& e) {

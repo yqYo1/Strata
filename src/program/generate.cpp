@@ -22,6 +22,7 @@
 #include "strata/core/conversation_memory.hpp"
 #include "strata/core/coupled_draft.hpp"
 #include "strata/core/expert_source.hpp"
+#include "strata/core/cpu_work_census.hpp"
 #include "strata/core/pinned.hpp"
 #include "strata/core/remote_experts.hpp"
 #include "strata/core/on_device.hpp"
@@ -52,6 +53,7 @@
 #include "strata/core/prefill_head_scope.hpp"
 #ifdef STRATA_ENABLE_SYCL
 #include "strata/sycl/checked_cleanup.hpp"
+#include "strata/kernels/cpu/iq2_pair_avx2.hpp"
 #endif
 #include "strata/core/verify.hpp"
 #include "strata/core/mtp.hpp"
@@ -59,6 +61,12 @@
 #include "strata/core/native_dense.hpp"
 #include "strata/core/canonical_dense_bank.hpp"
 #include "strata/program/logits_selection.hpp"
+#ifdef STRATA_SYCL_FULL_CONTEXT_DIAGNOSTIC
+#ifndef STRATA_ENABLE_SYCL
+#error "The full-context diagnostic requires the SYCL backend"
+#endif
+#include "strata/program/full_context_diagnostic.hpp"
+#endif
 #ifdef STRATA_ENABLE_SYCL
 #include "strata/program/prefill_logits.hpp"
 #include "strata/program/dense_prefill_nll.hpp"
@@ -66,6 +74,7 @@
 #endif
 #include "strata/program/conv_cache.hpp"
 #include "strata/program/prompt_checkpoint.hpp"
+#include "strata/program/diagnostic_kv_ranges.hpp"
 #include "strata/spec/draft_policy.hpp"
 #include "strata/spec/suffix_drafter.hpp"
 #include "strata/kernels/cvec.hpp"
@@ -131,7 +140,7 @@ bool run_prompt_with_mtp_experts_impl(strata::prefill::Prefill& prompt, strata::
     if (!layer_major || std::strcmp(layer_major, "1") != 0) {
         err = "MTP expert release requires exact STRATA_PREFILL_LAYER_MAJOR=1"; return false;
     }
-    if (prompt.chunk() <= 0 || n <= prompt.chunk()) return prompt.run(tokens, n, pos0, err);
+    if (!prompt.uses_layer_major(n)) return prompt.run(tokens, n, pos0, err);
 #if !defined(STRATA_ENABLE_SYCL)
     (void) mtp; (void) supported;
     err = "MTP expert release requires the SYCL engine"; return false;
@@ -266,7 +275,8 @@ bool run_prompt_with_native_dense_phase(NativeDensePhase& phase,
         bool supported,strata::core::NativeHead& head,strata::core::Verifier* verifier,cudaStream_t main_cs,
         const int64_t* tokens,int64_t n,int64_t pos0,std::string& err) {
     auto run=[&](){return run_prompt_with_mtp_experts(prompt,mtp,supported,head,verifier,main_cs,tokens,n,pos0,err);};
-    const bool release_dense = prompt.chunk()>0 && n>prompt.chunk();
+    const bool release_dense = prompt.layout() != strata::prefill::Prefill::Layout::chunk_major &&
+        prompt.chunk()>0 && n>prompt.chunk();
 #ifdef STRATA_ENABLE_SYCL
     const bool cache_loan = prompt.has_cache_scratch_lease();
 #else
@@ -532,6 +542,10 @@ struct Options {
     std::vector<int64_t> tokens;      // the prompt, PRE-TOKENIZED
     int64_t max_new = 16;
     int64_t max_context = 4096;
+#ifdef STRATA_SYCL_FULL_CONTEXT_DIAGNOSTIC
+    bool consume_prompt = false;
+    bool prompt_from_file = false;
+#endif
     bool greedy = true;
     uint64_t seed = 0;
     int top_k = 20;
@@ -815,6 +829,9 @@ void usage() {
                  "  --pack DIR           the pack directory (default pack/full)\n"
                  "  --tokens LIST        the prompt as comma-separated token IDS (required)\n"
                  "  --tokens-file PATH   pretokenized prompt, commas or whitespace (alternative to --tokens)\n"
+#ifdef STRATA_SYCL_FULL_CONTEXT_DIAGNOSTIC
+                 "  --consume-prompt    diagnostic only: consume exactly262144 prompt tokens, --max-new 0\n"
+#endif
                  "  --ple-gguf PATH      required PLE table (original second GGUF shard); with --native, the model's\n"
                  "                       shard that holds per_layer_token_embd.weight when not given\n"
                  "  --no-ple             explicit diagnostic ablation of the PLE layer\n"
@@ -1508,9 +1525,15 @@ int main(int argc, char** argv) {
             if (text.find('\0') != std::string::npos || !parse_i64_list(text.c_str(), o.tokens, error)) {
                 std::fprintf(stderr, "malformed token file: %s\n", error.c_str()); return 2;
             }
+#ifdef STRATA_SYCL_FULL_CONTEXT_DIAGNOSTIC
+            o.prompt_from_file = true;
+#endif
             have_tokens = true;
         }
         else if (a == "--max-new") o.max_new = std::atoll(next("--max-new"));
+#ifdef STRATA_SYCL_FULL_CONTEXT_DIAGNOSTIC
+        else if (a == "--consume-prompt") o.consume_prompt = true;
+#endif
         else if (a == "--max-context") o.max_context = std::atoll(next("--max-context"));
         else if (a == "--rope-scaling") o.rope_scaling = next("--rope-scaling");
         else if (a == "--rope-scale") o.rope_scale = std::atof(next("--rope-scale"));
@@ -1751,6 +1774,20 @@ int main(int argc, char** argv) {
         }
         }
     }
+#ifdef STRATA_SYCL_FULL_CONTEXT_DIAGNOSTIC
+    if (o.consume_prompt) {
+        if (!strata::program::full_context_diagnostic::request(o.max_context, o.tokens.size(), o.max_new) ||
+            !have_tokens || !o.prompt_from_file || o.serve || o.vision || o.native_preset.empty() ||
+            o.spec != 4 || o.suffix_draft != 0 || o.prefill_until > 0 || !o.layer_split.empty() ||
+            o.prefill_auto || o.prefill_chunk != 8192 || o.gpu_only_full ||
+            o.peer_device >= 0 || o.gpu_stages ||
+            std::any_of(o.expert_cache_remote.begin(), o.expert_cache_remote.end(), [](auto n) { return n > 0; })) {
+            std::fprintf(stderr, "strata generate: --consume-prompt requires a one-shot native SYCL token-file "
+                                 "request,262144 context/prompt,zero output,spec4,no suffix/vision/split/partial prefill\n");
+            return 2;
+        }
+    }
+#endif
     // Output path opt-in; the recipe is prepared and hashed by the external
     // supervisor before this native process starts. Reject unsupported routes
     // before GPU preflight, owner/graph detachment, or pending submissions.
@@ -2122,6 +2159,9 @@ int main(int argc, char** argv) {
         std::fprintf(stderr, "strata generate: --max-context must be below 2^31\n");
         return 2;
     }
+#ifdef STRATA_SYCL_FULL_CONTEXT_DIAGNOSTIC
+    if (!o.consume_prompt)
+#endif
     if (o.max_new <= 0 || o.max_context <= 0 || o.max_new > o.max_context ||
         o.tokens.size() > (size_t) (o.max_context - o.max_new)) {
         std::fprintf(stderr, "strata generate: positive --max-new and --max-context must fit the prompt and generation\n");
@@ -2273,6 +2313,12 @@ int main(int argc, char** argv) {
         }
     }
     const bool native_pack = strata::kernels::cpu::expert_layout().native;
+#ifdef STRATA_SYCL_FULL_CONTEXT_DIAGNOSTIC
+    if (o.consume_prompt && !native_pack) {
+        std::fprintf(stderr, "strata generate: consume-prompt requires the native first-window route\n");
+        return 2;
+    }
+#endif
 #ifdef STRATA_ENABLE_SYCL
     if ((collect_prefill_logits || collect_prefill_nll) && !native_pack) {
         std::fprintf(stderr, "strata generate: prefill logits/NLL requires a native expert pack\n");
@@ -2482,12 +2528,33 @@ int main(int argc, char** argv) {
     }
     const char* dense_bank_switch=std::getenv("STRATA_PREFILL_NATIVE_DENSE_BANK");
     const bool native_dense_bank_enabled=dense_bank_switch && !std::strcmp(dense_bank_switch,"1");
+    bool separate_prefill_layout = false;
 #ifdef STRATA_ENABLE_SYCL
     const char* cache_lease_switch = std::getenv("STRATA_SYCL_CACHE_SCRATCH_LEASE");
     if (cache_lease_switch && std::strcmp(cache_lease_switch,"0") && std::strcmp(cache_lease_switch,"1")) {
         std::fprintf(stderr,"cache scratch lease requires exact0 or1\n"); return 2;
     }
     const bool cache_scratch_lease_enabled = cache_lease_switch && !std::strcmp(cache_lease_switch,"1");
+    const char* separate_layout_switch = std::getenv("STRATA_SYCL_PREFILL_SEPARATE_LAYOUT");
+    if (separate_layout_switch && std::strcmp(separate_layout_switch,"0") && std::strcmp(separate_layout_switch,"1")) {
+        std::fprintf(stderr,"separate prefill layout requires exact0 or1\n"); return 2;
+    }
+    separate_prefill_layout = separate_layout_switch && !std::strcmp(separate_layout_switch,"1");
+    if (separate_prefill_layout) {
+        auto setting = [](const char* name, const char* expected) {
+            const char* v = std::getenv(name); return v && !std::strcmp(v,expected);
+        };
+        if (!cache_scratch_lease_enabled || o.prefill_auto || o.prefill_chunk != 8192 ||
+            !setting("STRATA_PREFILL_LAYER_MAJOR","1") ||
+            !setting("STRATA_SYCL_PREFILL_NATIVE16","bf16") ||
+            !setting("STRATA_SYCL_PREFILL_NATIVE16_QSA","1") ||
+            !setting("STRATA_SYCL_PREFILL_MOE_WINDOW","10") ||
+            !setting("STRATA_SYCL_PREFILL_MIXED_SCRATCH","1") ||
+            !setting("STRATA_PREFILL_CANONICAL_DENSE_BANK","1") || std::getenv("STRATA_KV_STAGE_OWN")) {
+            std::fprintf(stderr,"separate prefill layout requires checked cache loan,explicit8192,native16 QSA,mode10,mixed scratch and canonical bank\n");
+            return 2;
+        }
+    }
     if (cache_scratch_lease_enabled && (!o.serve || !native_dense_bank_enabled || !native_pack ||
         !o.no_token_graph || o.no_prefill_borrow || o.spec != 4 || o.vision || o.gpu_stages ||
         multi_gpu || !o.layer_split.empty() || o.peer_device >= 0 ||
@@ -4774,12 +4841,20 @@ int main(int argc, char** argv) {
             strata::core::CacheScratchLease lease{};
 #endif
         };
-        auto part_slots = [&](const PfPart& p, int64_t c) -> int64_t {
-            const uint64_t need = strata::prefill::Prefill::bytes_needed(g, *p.ses, c);
+        using PrefillLayout = strata::prefill::Prefill::Layout;
+        // A layer-major callback sees earlier layers at the segment end, so
+        // periodic prefix checkpoints must keep the chunk-major state order.
+        // Use that same layout for initial pricing, carving and every request.
+        const bool dedicated_long_layout = separate_prefill_layout && !sp.requires_prefix_checkpoints;
+        const auto initial_layout = !separate_prefill_layout ? PrefillLayout::legacy
+            : dedicated_long_layout ? PrefillLayout::layer_major : PrefillLayout::chunk_major;
+        auto part_slots_for = [&](const PfPart& p, int64_t c, PrefillLayout layout) -> int64_t {
+            const uint64_t need = strata::prefill::Prefill::bytes_needed(g, *p.ses, c, layout);
             strata::core::ExpertCache& xc = *p.cache;
             return strata::core::ExpertCacheTail(xc.slots(), xc.bytes(), xc.slot_offsets(),
                 strata::kernels::cpu::expert_layout().max_blob).slots_for(need);
         };
+        auto part_slots = [&](const PfPart& p, int64_t c) { return part_slots_for(p,c,initial_layout); };
         auto part_bytes = [&](const PfPart& p, int32_t first) -> uint64_t {
             strata::core::ExpertCache& xc = *p.cache;
             return strata::core::ExpertCacheTail(xc.slots(), xc.bytes(), xc.slot_offsets(),
@@ -4872,6 +4947,7 @@ int main(int argc, char** argv) {
             };
             static constexpr int64_t kAutoChunks[] = {32768, 16384, 8192, 6144, 4096, 3072, 2048, 1024, 512, 256};
             auto pick = [&](const PfPart* only) -> int64_t {
+                if (dedicated_long_layout) return fits(8192,false,only) ? 8192 : 0;
                 if (o.prefill_auto) {
                     for (const int64_t c : kAutoChunks) {
                         if (c > 8192 && (c > o.prefill_auto_max || c > o.max_context)) continue;   // #282, as plan_lend
@@ -4884,6 +4960,10 @@ int main(int argc, char** argv) {
                 return 0;
             };
             const int64_t chunk = pick(nullptr);
+            if (dedicated_long_layout && chunk != 8192) {
+                std::fprintf(stderr,"separate long-prefill scratch does not fit the unchanged decode-cache tail\n");
+                return 1;
+            }
             // #448: a small card in a layer split caps every stage's chunk (an RTX 3080's 512-slot cache held a
             // 32 GB card's split to 512 tokens: prompts 6.2x slower, decode the same).  Named when it bites, so the
             // regression is one log line: each stage that cannot fund the chunk CUDA0 alone would read in.
@@ -4974,6 +5054,13 @@ int main(int argc, char** argv) {
         }
         bool any_loan = borrow != nullptr;
         for (size_t i = 1; i < pf_parts.size(); ++i) any_loan = any_loan || pf_parts[i].first >= 0;
+        // The optional selector requires an actual checked single-cache loan.
+        // Refuse unsupported no-loan participants before any table is masked;
+        // they retain the existing legacy path when the selector is off.
+        if (separate_prefill_layout && (pf_parts.size() != 1 || !borrow)) {
+            std::fprintf(stderr,"separate prefill layout requires one actual expert-tail loan\n");
+            return 2;
+        }
         if (any_loan) {
             if (borrow != nullptr)
                 std::fprintf(stderr, "strata serve: the prompt path borrows %lld CUDA0 cache slots (%.2f GiB)\n",
@@ -5010,7 +5097,8 @@ int main(int argc, char** argv) {
                 }
             }
             if (multi_gpu) sp.set_stage(0, split_at[0], &stages[0]->sp);
-            if (!sp.init(wt, g, ss, srcp, &xcache, host_res.data(), o.prefill_chunk, main_cs, err, borrow, borrow_bytes))
+            if (!sp.init(wt, g, ss, srcp, &xcache, host_res.data(), o.prefill_chunk, main_cs, err, borrow, borrow_bytes,
+                         initial_layout))
                 return err.find("do not fit") != std::string::npos ? 2 : 1;
             return 0;
         };
@@ -5028,7 +5116,8 @@ int main(int argc, char** argv) {
                     const strata::core::OnDevice on(dev);
                     size_t fb = 0, tb = 0;
                     cudaMemGetInfo(&fb, &tb);
-                    const int64_t need = (int64_t) strata::prefill::Prefill::bytes_needed(g, i == 0 ? ss : stages[i - 1]->ss, c);
+                    const int64_t need = (int64_t) strata::prefill::Prefill::bytes_needed(g, i == 0 ? ss : stages[i - 1]->ss, c,
+                        i == 0 ? initial_layout : PrefillLayout::legacy);
                     if (need + kHeadroom > (int64_t) fb) {
                         dev_out = dev < 0 ? 0 : dev; need_out = need; free_out = (int64_t) fb;
                         return false;
@@ -5059,7 +5148,7 @@ int main(int argc, char** argv) {
             int64_t next = 0;
             for (const int64_t c : kStepChunks)
                 if (c < o.prefill_chunk) { next = c; break; }
-            if (r == 2 && next > 0) {
+            if (r == 2 && next > 0 && !dedicated_long_layout) {
                 std::fprintf(stderr, "strata serve: %s: trying a %lld-token chunk\n", err.c_str(), (long long) next);
                 // start the prompt paths over (a failed init may hold buffers), and consume the failed allocation's
                 // error: it is sticky, and the next launch check would report "out of memory" for a kernel
@@ -5748,6 +5837,11 @@ int main(int argc, char** argv) {
         std::fflush(stdout);
         std::string line;
         int64_t rounds = 0;
+        const char* census_env = std::getenv("STRATA_CPU_WORK_CENSUS");
+        const bool cpu_census_enabled = census_env && std::strcmp(census_env, "1") == 0;
+        const char* iq2_audit_env = std::getenv("STRATA_IQ2_PAIR_AUDIT");
+        const bool iq2_audit_enabled = iq2_audit_env && std::strcmp(iq2_audit_env, "1") == 0;
+        uint64_t census_request = 0;
         const int S = o.spec;
         const int S_mtp = o.mtp_max_t > 0 ? std::min(o.mtp_max_t, S) : S;   // the MTP's windows; suffixes go up to S
         if (S_mtp < S) mtp.set_max_drafts(S_mtp - 1);
@@ -6003,16 +6097,20 @@ int main(int argc, char** argv) {
                     return 1;
                 }
                 if (std::getenv("STRATA_SNAPSHOT_VERIFY") != nullptr) {
-                    uint64_t draft_hash = 0;
-                    if (!strata::core::conversation_kv_verify(incoming->kv.back(), mtp.kv_state(), g,
-                            int64_t(incoming->live.ids.size()), false, draft_hash, err)) {
-                        std::printf("ERR verifying restored draft KV: %s\n", err.c_str());
+                    strata::core::ConversationVerification checked;
+                    if (!strata::core::conversation_snapshot_verify(*incoming, ss, g, mtp.kv_state(), checked, err)) {
+                        std::printf("ERR verifying restored session: %s\n", err.c_str());
                         return 1;
                     }
-                    std::fprintf(stderr, "strata serve: SNAPSHOT_VERIFY draft=%016llx cells=%lld mode=%d source=%s resident=%lld\n",
-                                 (unsigned long long) draft_hash, (long long) incoming->kv.back().cells,
+                    std::fprintf(stderr, "strata serve: SNAPSHOT_VERIFY draft=%016llx cells=%lld mode=%d source=%s resident=%lld "
+                                         "main=%016llx main_layers=%zu main_bytes=%zu draft_bytes=%zu "
+                                         "running=%016llx running_bytes=%zu upto=%zu result=PASS\n",
+                                 (unsigned long long) checked.draft_hash, (long long) incoming->kv.back().cells,
                                  mtp.kv_state().kv_mode, "ram",
-                                 (long long) (mtp.kv_state().n_slots * strata::kernels::qsa_real_shapes().page_size));
+                                 (long long) (mtp.kv_state().n_slots * strata::kernels::qsa_real_shapes().page_size),
+                                 (unsigned long long) checked.main_hash, checked.main_layers, checked.main_bytes,
+                                 checked.draft_bytes, (unsigned long long) checked.running_hash, checked.running_bytes,
+                                 incoming->live.ids.size());
                 }
                 live = std::move(incoming->live.ids);
                 live_imgs = std::move(incoming->live.imgs);
@@ -6087,6 +6185,9 @@ int main(int argc, char** argv) {
             // host copies and slots are always current (every writer writes both), so they need nothing
             if (resume > 0 && reread_to <= 0) mtp.kv_restore(resume);
             tr("request", n, geni ? 1 : 0);
+            if (!strata::core::CpuWorkCensus::checked_add(census_request, 1)) {
+                std::printf("ERR request sequence overflow\n"); return 1;
+            }
             mtp.set_prompt_len(n);
             const int64_t read_from = reread_to > 0 ? 0 : resume;
             conversations.limit_reuse(read_from);
@@ -6277,8 +6378,20 @@ int main(int argc, char** argv) {
                 // prompt needs, so a large chunk costs a short prompt nothing
                 const int64_t want_full = request_chunk(tokens, o.prefill_chunk);
                 // #340: a short enough request reads in the stages' own S-token chunks (nothing lent)
-                const int64_t want = split_small > 0 && tokens <= split_small_max ? std::min(want_full, split_small)
+                int64_t want = split_small > 0 && tokens <= split_small_max ? std::min(want_full, split_small)
                                                                                  : want_full;
+                const auto request_layout = separate_prefill_layout
+                    ? (dedicated_long_layout && tokens > o.prefill_chunk ? PrefillLayout::layer_major : PrefillLayout::chunk_major)
+                    : PrefillLayout::legacy;
+                if (separate_prefill_layout && request_layout == PrefillLayout::chunk_major) {
+                    // Short inputs and checkpointed segments keep decode
+                    // weights. Their scratch includes the KV stage and may
+                    // use several chunks; respect the actual initialized tail.
+                    while (want >= 256 && std::any_of(pf_parts.begin(),pf_parts.end(),[&](const auto& p) {
+                        return p.first >= 0 && strata::prefill::Prefill::bytes_needed(g,*p.ses,want,request_layout) > part_bytes(p,p.first);
+                    })) want /= 2;
+                    if (want < 256) { e="prefill: short-path scratch does not fit unchanged decode cache"; return false; }
+                }
                 if (want <= 0) {
                     e = "prefill: cannot lend buffers for an empty request segment";
                     return false;
@@ -6287,14 +6400,14 @@ int main(int argc, char** argv) {
                 for (PfPart& p : pf_parts) {
                     if (p.first < 0) continue;
                     if (!p.lent.empty()) {
-                        if (want <= p.lent_chunk) continue;            // its current loan already covers this
+                        if (want <= p.lent_chunk && request_layout == p.sp->layout()) continue;
                         // ONLY this participant's loan goes back: `refill` would return the other participants'
                         // loans too, and their buffers are still laid out in their caches - marking those slots
                         // resident again would hand the next window a prompt buffer in place of an expert
                         if (!refill_one(p, e)) return false;
                     }
                     const strata::core::OnDevice on(p.dev);
-                    int32_t first = std::max<int32_t>(p.first, (int32_t) (p.cache->slots() - part_slots(p, want)));
+                    int32_t first = std::max<int32_t>(p.first, (int32_t) (p.cache->slots() - part_slots_for(p, want, request_layout)));
 #ifdef STRATA_ENABLE_SYCL
                     std::vector<std::pair<int32_t,int32_t>> checked_lent;
                     if (cache_scratch_lease_enabled && !loan_call([&] {
@@ -6304,7 +6417,7 @@ int main(int argc, char** argv) {
                         if (first<0) { e="cache scratch lease: no occupied borrowable tail; parent unchanged"; return false; }
                         for (size_t i=begin;i<begin+count;++i)
                             if (host_res[i]>=first) checked_lent.emplace_back(int32_t(i),host_res[i]);
-                        if (checked_lent.empty() || part_bytes(p,first)<strata::prefill::Prefill::bytes_needed(g,*p.ses,want)) {
+                        if (checked_lent.empty() || part_bytes(p,first)<strata::prefill::Prefill::bytes_needed(g,*p.ses,want,request_layout)) {
                             e="cache scratch lease: preflight mask/capacity failed; parent unchanged"; return false;
                         }
                         return true;
@@ -6313,8 +6426,8 @@ int main(int argc, char** argv) {
                         p.lease = p.cache->prepare_scratch_loan(first); return true;
                     },e)) return false;
 #endif
-                    if (want != p.sp->chunk() || first != p.first_now) {
-                        if (!p.sp->relayout(want, p.cache->device_slot(first), part_bytes(p, first), e)) return false;
+                    if (want != p.sp->chunk() || first != p.first_now || request_layout != p.sp->layout()) {
+                        if (!p.sp->relayout(want, p.cache->device_slot(first), part_bytes(p, first), e, request_layout)) return false;
                         p.first_now = first;
                     }
 #ifdef STRATA_ENABLE_SYCL
@@ -6341,7 +6454,7 @@ int main(int argc, char** argv) {
 #ifdef STRATA_ENABLE_SYCL
                     if (loan_audit) {
                         const auto bytes = part_bytes(p, first);
-                        const auto need = strata::prefill::Prefill::bytes_needed(g, *p.ses, want);
+                        const auto need = strata::prefill::Prefill::bytes_needed(g, *p.ses, want,request_layout);
                         if (first < 128 || first >= p.cache->slots() || bytes < need || p.lent.empty() ||
                             p.sp->chunk() != want || p.first_now != first) {
                             e = "cache loan audit: invalid/empty tail loan"; return false;
@@ -6491,6 +6604,8 @@ int main(int argc, char** argv) {
             }
             tr("prompt done (slots refilled)");
             const double prompt_ms = std::chrono::duration<double, std::milli>(Clock::now() - r0).count();
+            strata::kernels::cpu::NativeGuPhaseScope native_decode_phase(
+                drive.d.native_gu_phase, strata::kernels::cpu::NativeGuPhase::Decode);
             std::printf("REUSED %lld\n", (long long) resume);   // the prompt is read; the first window comes next
             std::fflush(stdout);
             // the verify windows: the first holds the last prompt token alone
@@ -6511,11 +6626,19 @@ int main(int argc, char** argv) {
             consumed.reserve((size_t) (n + max_new + S));
             for (int64_t i = 0; i < n - 1; ++i) consumed.push_back((int32_t) ids[(size_t) i]);
             const char* finish = "length";
+#ifdef STRATA_CPU_SERVICE_PROFILE
+            const auto cpu_service_begin=pool.service_snapshot();
+#endif
 #ifdef STRATA_ENABLE_SYCL
             const auto copy0 = ver.expert_copy_stats();
             const auto early_pcie0 = ver.early_pcie_stats();
             const auto host_copy_groups0 = drive.d.host_layer_copy_groups;
             ver.reset_query_profile();
+            // The prior synchronous CPU pool has drained. Snapshot outside the
+            // decode clock; optional callback counters themselves remain charged.
+            strata::kernels::cpu::Iq2GuAudit iq2_audit_begin;
+            if (iq2_audit_enabled) iq2_audit_begin = strata::kernels::cpu::iq2_gu_audit_snapshot();
+            auto mtp_observation = mtp.observe_draft_request(census_request);
 #endif
             const Clock::time_point d0 = Clock::now();
             // STRATA_DECODE_TIMING=1: where a request's decode time goes (one line per request)
@@ -6530,6 +6653,29 @@ int main(int argc, char** argv) {
                                drive.d.pcie_experts};
             };
             const DecSnap ds0 = dec_snap();
+            // Only the post-refill decode phase owns these counters. The source
+            // callback is synchronous here; no pointer is captured by a graph,
+            // attached to a worker, or inferred from a thread-local request ID.
+            std::unique_ptr<strata::core::CpuWorkCensus> cpu_census;
+            if (cpu_census_enabled) {
+                const auto& layout = strata::kernels::cpu::expert_layout();
+                cpu_census = std::make_unique<strata::core::CpuWorkCensus>(census_request,
+                    (int)g.n_layers, (int)g.n_expert, drive.d.host_res,
+                    layout.native && layout.fmt.size() == (size_t)g.n_layers ? layout.fmt.data() : nullptr);
+                if (multi_gpu || !o.layer_split.empty() || peer.valid() || drive.d.remote_count ||
+                    !drive.d.usage.empty() || !drive.d.split_rows)
+                    cpu_census->invalidate("unsupported_route");
+                cpu_census->write_begin(stderr, n);
+                drive.d.cpu_work_census = cpu_census.get();
+            }
+            struct CpuCensusDetach {
+                strata::core::ExpertDispatch& dispatch;
+                strata::core::CpuWorkCensus* census;
+                ~CpuCensusDetach() {
+                    dispatch.cpu_work_census = nullptr;
+                    if (census && !census->closed()) census->abort(stderr);
+                }
+            } cpu_census_detach{drive.d, cpu_census.get()};
             double dt_run = 0, dt_commit = 0, dt_draft = 0;
             int64_t dec_windows = 0, dec_T = 0;
             const int64_t decode_hits0 = drive.d.cache_hits;
@@ -6581,12 +6727,14 @@ int main(int argc, char** argv) {
                                cudaMemcpyHostToDevice);
                 }
                 tr("window", p, T);
+                if (cpu_census) cpu_census->begin_window((uint64_t)dec_windows + 1, p, T);
                 const Clock::time_point tw0 = Clock::now();
                 if (!ver.run(T, window.data(), p, win_pool_fn, win_pool_user, outv.data(), err) || drive.d.failed) {
                     std::printf("ERR %s\n", drive.d.failed && drive.d.fail ? drive.d.fail : err.c_str());
                     return 1;
                 }
                 int a = 0;
+                if (cpu_census) cpu_census->end_window();
                 while (a < T - 1 && window[(size_t) a + 1] == outv[(size_t) a]) ++a;
                 if (from_sfx) { ++sfx_windows; sfx_drafts += T - 1; sfx_ok += a; }
                 const Clock::time_point tw1 = Clock::now();
@@ -6650,6 +6798,37 @@ int main(int argc, char** argv) {
                 std::printf("ERR %s\n", err.c_str());
                 return 1;
             }
+#ifdef STRATA_CPU_SERVICE_PROFILE
+            (void)strata::kernels::cpu::service::write_delta(stderr,census_request,cpu_service_begin,pool.service_snapshot());
+#endif
+#ifdef STRATA_ENABLE_SYCL
+            mtp_observation.finish(!cancelled && std::strcmp(finish, "cancel") != 0);
+            if (iq2_audit_enabled) {
+                const auto iq2_audit_end = strata::kernels::cpu::iq2_gu_audit_snapshot();
+                // This prints existing host counters only, after the synchronous
+                // pool and commit drain. It does not wait on or read the device.
+                auto write_audit = [&](const char* stage, const strata::kernels::cpu::Iq2GuAudit& a) {
+                    std::fprintf(stderr, "strata IQ2_GU_AUDIT stage=%s request=%llu enabled=%d overflow=%d threads=%u\n",
+                        stage, (unsigned long long)census_request, a.enabled, a.overflow, a.size);
+                    for (unsigned i = 0; i < a.size && i < a.threads.size(); ++i) {
+                        const auto& t = a.threads[i];
+                        std::fprintf(stderr, "strata IQ2_GU_THREAD stage=%s request=%llu slot=%u tid=%llu "
+                            "calls=%llu row_ops=%llu nt1_rows=%llu pair_rows=%llu cpu=%d pinned=%d\n",
+                            stage, (unsigned long long)census_request, i, (unsigned long long)t.tid,
+                            (unsigned long long)t.calls, (unsigned long long)t.row_ops,
+                            (unsigned long long)t.nt1_rows, (unsigned long long)t.pair_rows, t.cpu, t.pinned);
+                    }
+                };
+                write_audit("begin", iq2_audit_begin);
+                write_audit("end", iq2_audit_end);
+            }
+#endif
+            if (cpu_census) {
+                const DecSnap d1 = dec_snap();
+                cpu_census->finish(stderr, dec_windows, dec_T, d1.misses - ds0.misses,
+                    d1.entries - ds0.entries, d1.hits - ds0.hits, d1.pcie - ds0.pcie);
+                drive.d.cpu_work_census = nullptr;
+            }
             if (dec_timing && dec_windows > 0) {
                 const DecSnap d1 = dec_snap();
                 const double w = (double) dec_windows, L = (double) g.n_layers;
@@ -6703,13 +6882,11 @@ int main(int argc, char** argv) {
                 };
                 // the cells [c0, c1) of one int8 K or V pool ([page][kv_head][page_size][head_dim]), bytes per value `w`
                 auto hash_cells = [&](const void* pool, int64_t per_cell, int64_t c0, int64_t c1, uint64_t h) {
-                    const int64_t ps = qs.page_size;
-                    for (int64_t pg = c0 / ps; pg * ps < c1; ++pg)
-                        for (int64_t hd = 0; hd < qs.n_head_kv; ++hd) {
-                            const int64_t a = std::max(c0, pg * ps) - pg * ps, e = std::min(c1, (pg + 1) * ps) - pg * ps;
-                            const size_t off = (size_t) (((pg * qs.n_head_kv + hd) * ps + a) * per_cell);
-                            h = hash_dev((const uint8_t*) pool + off, (size_t) ((e - a) * per_cell), h);
-                        }
+                    if (!strata::program::diagnostic::kv_hash_spans(c0,c1,qs.page_size,qs.n_head_kv,per_cell,
+                            [&](size_t offset,size_t bytes) {
+                                h = hash_dev(static_cast<const uint8_t*>(pool)+offset,bytes,h);
+                                return hash_ok;
+                            })) hash_ok = false;
                     return h;
                 };
                 const ConvStateSizes z = conv_state_sizes(g, ss);
@@ -7192,6 +7369,9 @@ int main(int argc, char** argv) {
             std::fprintf(stderr, "strata generate: ran out of context at position %lld\n", (long long) pos);
             return 2;
         }
+        strata::kernels::cpu::NativeGuPhaseScope native_token_phase(drive.d.native_gu_phase,
+            pos >= n_prompt - 1 ? strata::kernels::cpu::NativeGuPhase::Decode
+                                : strata::kernels::cpu::NativeGuPhase::Prefill);
         // **THE TOKEN TIMER STARTS HERE, BEFORE ANY OF THE TOKEN'S WORK (A7).**  It used to start after
         // `put_input`/`embed_row`, which excluded the embedding and the PLE window advance from the reported
         // rate, and it stopped before the NaN scan, the logits dump and the sampler.  The published tok/s
@@ -7415,7 +7595,14 @@ int main(int argc, char** argv) {
     // round emits (accepted drafts + 1) tokens.  `commit` keeps the state of the tokens that were emitted.
     const bool ended = o.stop_eos && !produced.empty() &&
                        std::find(o.eos_ids.begin(), o.eos_ids.end(), (int64_t) produced.back()) != o.eos_ids.end();
-    if (spec_pos >= 0 && (int64_t) produced.size() < o.max_new && !ended) {
+#ifdef STRATA_SYCL_FULL_CONTEXT_DIAGNOSTIC
+    bool consume_completed = false;
+#endif
+    if (spec_pos >= 0 && (
+#ifdef STRATA_SYCL_FULL_CONTEXT_DIAGNOSTIC
+            o.consume_prompt ||
+#endif
+            (int64_t) produced.size() < o.max_new) && !ended) {
         std::vector<int64_t> oracle;
         if (!o.spec_oracle.empty()) {
             std::ifstream in(o.spec_oracle);
@@ -7572,6 +7759,11 @@ int main(int argc, char** argv) {
         // plan v0.3 P6: with a native pack the first window is the last prompt token alone (it produces the first
         // generated token and the MTP's first cell); otherwise the token loop already did that.
         bool first_window = native_pack;
+        strata::kernels::cpu::NativeGuPhaseScope native_spec_phase(
+            drive.d.native_gu_phase, strata::kernels::cpu::NativeGuPhase::Decode);
+#ifdef STRATA_ENABLE_SYCL
+        auto mtp_observation = mtp.observe_draft_request(1, true);
+#endif
         if (use_mtp && !first_window &&
             !mtp.draft_first(o.spec, ss.R, x, p - 1, drafts.data(), err, dprob.data(), (float) o.spec_min_p)) {
             std::fprintf(stderr, "strata generate: %s\n", err.c_str());
@@ -7592,7 +7784,11 @@ int main(int argc, char** argv) {
         }
         const double pool_ms0 = drive.cpu_ms;
         const int64_t misses0 = drive.d.multi_misses, entries0 = drive.d.multi_entries;
-        while ((int64_t) produced.size() < o.max_new) {
+        while ((int64_t) produced.size() < o.max_new
+#ifdef STRATA_SYCL_FULL_CONTEXT_DIAGNOSTIC
+               || (o.consume_prompt && first_window)
+#endif
+        ) {
             const Clock::time_point t0 = Clock::now();
             int T = S_mtp;
             if (use_mtp && o.spec_min_p > 0.0) {
@@ -7600,6 +7796,16 @@ int main(int argc, char** argv) {
                 while (T < S_mtp && dprob[(size_t) T - 1] >= (float) o.spec_min_p) ++T;
             }
             if (first_window) T = 1;
+#ifdef STRATA_SYCL_FULL_CONTEXT_DIAGNOSTIC
+            // Capture before first_window is cleared after ver.run().
+            const bool terminal_consume = o.consume_prompt &&
+                strata::program::full_context_diagnostic::last_window(
+                    first_window, n_prompt, p, T, x, o.tokens.back(), produced.size());
+            if (o.consume_prompt && !terminal_consume) {
+                std::fprintf(stderr, "strata generate: consume-prompt did not reach the exact final input window\n");
+                return 1;
+            }
+#endif
             bool from_sfx = false;
             int sfx_match = 0;
             if (o.suffix_draft > 0 && !first_window) {
@@ -7673,6 +7879,24 @@ int main(int argc, char** argv) {
             drafts_ok += a;
             ++accepted_hist[(size_t) a];
             if (from_sfx) { ++sfx_windows; sfx_drafts += T - 1; sfx_ok += a; }
+#ifdef STRATA_SYCL_FULL_CONTEXT_DIAGNOSTIC
+            if (terminal_consume) {
+                if (adapt_thr.joinable()) adapt_thr.join();
+                if (!adapt_ok || a != 0 || !apply_pending(true, err) || !ver.wait_commit(err)) {
+                    std::fprintf(stderr, "strata generate: consume-prompt final commit/refill failed: %s\n", err.c_str());
+                    return 1;
+                }
+                // Diagnostic only: cover every owned refill/default queue before
+                // reporting completion or allowing any graph/owner retirement.
+                if (cudaDeviceSynchronize() != cudaSuccess)
+                    strata::sycl_backend::cleanup_fail_stop("consume-prompt final device drain uncertain");
+                consume_completed = true;
+                std::printf("strata FULL_CONTEXT consumed_position=%lld prompt_tokens=%lld output_tokens=0 "
+                            "window_width=1 commit_count=1 commit_wait=PASS refill_drain=PASS\n",
+                            (long long) (p + 1), (long long) n_prompt);
+                break; // no output publication, suffix proposal or MTP draft
+            }
+#endif
             bool eos = false;
             for (int i = 0; i <= a && (int64_t) produced.size() < o.max_new && !eos; ++i) {
                 produced.push_back(outv[(size_t) i]);
@@ -7772,12 +7996,21 @@ int main(int argc, char** argv) {
                         "pcie experts", (double) (drive.d.pcie_experts - pcie0) / (double) (rounds * g.n_layers),
                         drive.d.pcie_num);
         (void) pool_ms0;
+#ifdef STRATA_ENABLE_SYCL
+        mtp_observation.finish(true);
+#endif
         if (use_mtp && rounds > 0)
             std::printf("%-24s %.3f ms/round drafting (%lld rounds), MTP prompt %.1f ms, %.0f MiB of VRAM\n", "mtp",
                         mtp.ms_draft / (double) mtp.rounds, (long long) mtp.rounds, mtp.ms_prefill,
                         (double) mtp.vram_bytes() / 1048576.0);
     }
 
+#ifdef STRATA_SYCL_FULL_CONTEXT_DIAGNOSTIC
+    if (o.consume_prompt && !consume_completed) {
+        std::fprintf(stderr, "strata generate: consume-prompt terminated without the final checked commit\n");
+        return 1;
+    }
+#endif
     if (dump != nullptr) {
         const bool header_ok = std::fseek(dump, sizeof(int32_t), SEEK_SET) == 0 &&
             std::fwrite(&dump_rows_written, sizeof(dump_rows_written), 1, dump) == 1;
@@ -7820,6 +8053,10 @@ int main(int argc, char** argv) {
 
     const int64_t decoded = (int64_t) produced.size();
     std::printf("prompt  :");
+#ifdef STRATA_SYCL_FULL_CONTEXT_DIAGNOSTIC
+    if (o.consume_prompt) std::printf(" %lld tokens (ids omitted)", (long long) n_prompt);
+    else
+#endif
     for (int64_t t : o.tokens) std::printf(" %lld", (long long) t);
     std::printf("\noutput  :");
     for (int64_t t : produced) std::printf(" %lld", (long long) t);

@@ -1,0 +1,251 @@
+{
+  "stage": "closed",
+  "mode": "checked-model-QSA-selection-capture",
+  "passed": true,
+  "complete": true,
+  "active": false,
+  "ownership_closed": true,
+  "GPU_executed": true,
+  "source_commit": "a45d9aafaa64eb348ac4d76fb2ffa0b18e0b1f8b",
+  "prepared_plan": {
+    "commit": "41579947cdd580807799151cbbe67ef7b32be357",
+    "path": "bench/results/2026-10-15-pr6-recovery-audit/qsa-selection-current.json",
+    "sha256": "b8965d7c810868196773cbadcf27a6161f324d7f6941239d9a9c9dc19c88d33e"
+  },
+  "native_build_source_commit": "663a4b27581ae4f3af931274dd47dca8188b4bb1",
+  "native_binary": {
+    "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-selection-native-v1/build/strata",
+    "bytes": 22195080,
+    "sha256": "55535d122230dd62b2ed1a1fc73803bcc139ace42f31ff7ecbd6d00f0feace1c",
+    "retired": true
+  },
+  "diagnostic_build_reference": {
+    "commit": "41579947cdd580807799151cbbe67ef7b32be357",
+    "path": "bench/results/2026-10-15-pr6-recovery-audit/qsa-selection-build-current.json",
+    "sha256": "a464008750d395090c5868657816137be7a55e00e9030140fc53131403647936"
+  },
+  "selected_binary": {
+    "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/strata",
+    "bytes": 22190000,
+    "sha256": "22182f1a5e62e5f4259ce49a75ae44afbd988166ec79324816e499ff37ef60e4"
+  },
+  "selected_native_assets_unchanged": 13,
+  "selected_decode_implementation_config_and_1256_slots_unchanged": true,
+  "original_refusal": {
+    "commit": "a45d9aafaa64eb348ac4d76fb2ffa0b18e0b1f8b",
+    "path": "bench/results/2026-10-15-pr6-recovery-audit/qsa-selection-current.json",
+    "sha256": "e9ee8b528b24917c4c2078e459ec0bde70c1134b406f2a0107128195844e4d8d"
+  },
+  "request": {
+    "request_sha256": "1fd63b8c67a1888e443800b5c6d339ca116df2cb91941e6f332b6adf74275b3a",
+    "actual_prompt_tokens": 39260,
+    "actual_read_tokens": 39260,
+    "actual_reused_tokens": 0,
+    "generated_tokens": 24,
+    "prompt_ms": 56939.2,
+    "decode_ms": 1527.2,
+    "drafts_offered": 21,
+    "drafts_accepted": 16,
+    "finish_reason": "length",
+    "thinking_requested": true,
+    "reasoning_observed": true,
+    "reasoning_chars": 121,
+    "output_chars": 0,
+    "stream_complete": true
+  },
+  "observer_limits": "One official thinking-on request after one short warmup,with parameter validation,stage/snapshot/loan audits and646213056B checked host readback. Timings are diagnostic;24 thinking tokens and no final answer qualify neither task quality nor sustained decode performance. No candidate inference implementation is adopted.",
+  "source_inputs": {
+    "count": 185,
+    "fingerprint": "2b14894fa63dac7f4de4766b1c39a65b2c281e9738b3307cd1fe6770f53c4037",
+    "all_checked": true
+  },
+  "full_model_hashes_matched": 15,
+  "native_validation": {
+    "pid": 3481279,
+    "same_pid_before_main": true,
+    "environment_verified": true,
+    "parameter_validation_enabled": true,
+    "normal_native_exit": 0,
+    "loader_sha256": "bb6e1311850e4b1a924e42acae80c2b3610934625a4985aaa67967abe31356fc",
+    "preload_sha256": "1d4e69d672d55fa0a126ae43b7b4743482cccca7e2f2bc22e0db2bfdad5bdc7c",
+    "runtime_elfs_matched": 31,
+    "runtime_teardown_qualified": false
+  },
+  "actual_long_request_route": {
+    "actual_GPU_BF16_rows": 39259,
+    "actual_MoE_mode": 10,
+    "private_bank": {
+      "actual_private_layers": 48,
+      "stride_layers": {
+        "2176000": 14,
+        "1510400": 5,
+        "1971200": 15,
+        "1715200": 3,
+        "2329600": 9,
+        "1868800": 1,
+        "2662400": 1
+      },
+      "requested_work": {
+        "uploads": 17580,
+        "requested_H2D_bytes": 35928217600,
+        "permanent_hits": 0,
+        "permanent_slots": 264,
+        "total_slots": 384
+      },
+      "physical_PCIe_traffic_measured": false
+    },
+    "restored_dense_layers": 48,
+    "cache_payload_and_map_match": true,
+    "loan_generation": 2
+  },
+  "geometry": {
+    "processed_prefill_cells": 39259,
+    "captured_first": 32768,
+    "captured_queries": 6491,
+    "cap": 2051,
+    "warmup_records": 12,
+    "all_selected_IDs_validated": true
+  },
+  "selected_ID_validation": {
+    "long_layers": 12,
+    "all_active_ids_unique_ascending_nonnegative_causal": true,
+    "unused_padding_ignored": true,
+    "long_selected_cells": 159756492
+  },
+  "logical_16query_union": {
+    "sampled_tiles_per_layer": 32,
+    "method": "32 deterministic starts across each final6491-query chunk;union of16 causal selected-ID sets. Samples are not independent and do not generalize beyond this prompt.",
+    "samples": [
+      {
+        "layer": 0,
+        "sampled_tiles": 32,
+        "separate_cells": 1050112,
+        "union_cells": 375366,
+        "union_fraction": 0.3574533002194052
+      },
+      {
+        "layer": 1,
+        "sampled_tiles": 32,
+        "separate_cells": 1050112,
+        "union_cells": 421729,
+        "union_fraction": 0.4016038289249147
+      },
+      {
+        "layer": 2,
+        "sampled_tiles": 32,
+        "separate_cells": 1050112,
+        "union_cells": 411241,
+        "union_fraction": 0.39161632283032666
+      },
+      {
+        "layer": 3,
+        "sampled_tiles": 32,
+        "separate_cells": 1050112,
+        "union_cells": 317592,
+        "union_fraction": 0.30243631155533884
+      },
+      {
+        "layer": 4,
+        "sampled_tiles": 32,
+        "separate_cells": 1050112,
+        "union_cells": 345549,
+        "union_fraction": 0.3290591860677718
+      },
+      {
+        "layer": 5,
+        "sampled_tiles": 32,
+        "separate_cells": 1050112,
+        "union_cells": 388714,
+        "union_fraction": 0.37016432532910776
+      },
+      {
+        "layer": 6,
+        "sampled_tiles": 32,
+        "separate_cells": 1050112,
+        "union_cells": 362729,
+        "union_fraction": 0.34541934574597755
+      },
+      {
+        "layer": 7,
+        "sampled_tiles": 32,
+        "separate_cells": 1050112,
+        "union_cells": 311398,
+        "union_fraction": 0.2965378931009264
+      },
+      {
+        "layer": 8,
+        "sampled_tiles": 32,
+        "separate_cells": 1050112,
+        "union_cells": 287636,
+        "union_fraction": 0.2739098305704534
+      },
+      {
+        "layer": 9,
+        "sampled_tiles": 32,
+        "separate_cells": 1050112,
+        "union_cells": 330776,
+        "union_fraction": 0.31499116284739154
+      },
+      {
+        "layer": 10,
+        "sampled_tiles": 32,
+        "separate_cells": 1050112,
+        "union_cells": 369950,
+        "union_fraction": 0.35229575511945393
+      },
+      {
+        "layer": 11,
+        "sampled_tiles": 32,
+        "separate_cells": 1050112,
+        "union_cells": 373627,
+        "union_fraction": 0.3557972863846904
+      }
+    ],
+    "separate_cells": 12601344,
+    "union_cells": 4296307,
+    "union_fraction": 0.34094037905797986
+  },
+  "raw_capture": {
+    "bytes": 646213056,
+    "sha256": "cd76cbc1d2997c31e535afa3a8f48dbd1cd3b77febecc1e532552df123d38398",
+    "persistent_replay_created": false
+  },
+  "decision": "Observed16-query logical unions are27.39..40.16% of independent selected-cell references. Use as a reuse opportunity for a bounded prefill-only resource calibration,not a predicted speedup or measured cache/VRAM/PCIe traffic. Removing or hoisting work changes occupancy and must be compared at the actual production entrypoint. Do not start another layout tweak from descriptor sizes alone.",
+  "next_action": "Prepare production-matched QSA gather/staging/matrix calibration with runtime operands,observable outputs,codegen/resource checks and prospectively timed batches;physical resource saturation remains unresolved. Preserve selected6e40 decode and qualify any later prefill adoption through full state handoff and repeated matched decode.",
+  "clean_speed_qualified": false,
+  "hardware_saturation_qualified": false,
+  "model_adoption_qualified": false,
+  "postchecks_complete": true,
+  "postcheck_errors": [],
+  "boot_unchanged": true,
+  "fresh_faults": [],
+  "retirement_preflight": {
+    "original_project_inputs": 539,
+    "dependency_inputs": 9311,
+    "original_project_commit": "663a4b27581ae4f3af931274dd47dca8188b4bb1",
+    "fixture_repair_project_commit": "f64d40b886cbc633dd2e5159115b6f70da5d5ca3",
+    "original_and_repaired_inputs_recovered": true,
+    "generated_source_matches": true,
+    "recipe_recovered_from": "f64d40b886cbc633dd2e5159115b6f70da5d5ca3:tools/sycl/build_selection_capture.py",
+    "commands_and_environment_match": true,
+    "sdk_headers_verified": 643,
+    "selected_native_assets_unchanged": 13,
+    "remote_retained_ref": "41579947cdd580807799151cbbe67ef7b32be357"
+  },
+  "retirement": {
+    "complete": true,
+    "manifest": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-selection-capture-retirement-20261023.jsonl",
+    "sha256": "21448dfaa4431880332b8f3aec193a305d57a283edb34c6dd95540b9c823cbe6",
+    "external_files": 93,
+    "external_bytes": 685455780,
+    "capture_root_absent": true,
+    "diagnostic_root_absent": true,
+    "selected_native_assets_unchanged": 13,
+    "source_archive_commit": "41579947cdd580807799151cbbe67ef7b32be357",
+    "tracked_retired_files": 9,
+    "tracked_retired_bytes": 79617,
+    "tracked_reason": "Closed single-use capture/build/qualification controllers,parser tests and standalone GPU fixture;no remaining execution consumer. Full source and qualification recover from archive commit. Git deletion diff supplies paths/blob hashes.",
+    "preserved_correctness_helper": "include/strata/prefill/selection_dump.hpp and its7 host fault-injection tests remain as reusable checked-lifetime regression coverage. The production dump hook remains disabled;restore the checked diagnostic overlay from Git before any future capture.",
+    "remaining_generation": "This comparison retains the original6e40 selected engine and12 same-build fixtures. The two closed capture/diagnostic roots are absent;separate older lifecycle/provenance holds are unchanged."
+  }
+}

@@ -126,16 +126,37 @@ MtpDrafter::~MtpDrafter() {
     if(head_release_used_)retire_full_head_graphs();
     if (cs_) {
         const auto status = cudaStreamSynchronize(cs_);
-        if ((expert_source_valid_ || head_release_used_) && status != cudaSuccess)
+        bool checked = expert_source_valid_ || head_release_used_;
+#ifdef STRATA_ENABLE_SYCL
+        checked = checked || graph_observer_.enabled();
+#endif
+        if (checked && status != cudaSuccess)
             expert_failstop("expert owner teardown did not drain", status);
     }
+#ifdef STRATA_ENABLE_SYCL
+    if (graph_observer_completion_) {
+        const auto status = cudaEventDestroy(graph_observer_completion_);
+        if (status != cudaSuccess) expert_failstop("MTP observer event retirement", status);
+        graph_observer_completion_ = nullptr;
+    }
+#endif
     for (auto& e : prefill_exec_) if (e) {const auto status=cudaGraphExecDestroy(e);if(head_release_used_ && status!=cudaSuccess)expert_failstop("head scope KV graph retirement",status);}
     for (auto& e : prefill_dev_exec_) if (e) {const auto status=cudaGraphExecDestroy(e);if(head_release_used_ && status!=cudaSuccess)expert_failstop("head scope KV graph retirement",status);}
     if (pf_dev_) cudaFree(pf_dev_);
-    for (auto& e : round_exec_) if (e) cudaGraphExecDestroy(e);
-    for (auto& e : step_exec_) if (e) cudaGraphExecDestroy(e);
-    for (auto& e : round_exec_c_) if (e) cudaGraphExecDestroy(e);
-    for (auto& e : step_exec_c_) if (e) cudaGraphExecDestroy(e);
+    auto retire_decode_graph = [&](cudaGraphExec_t e) {
+        if (!e) return;
+        const auto status = cudaGraphExecDestroy(e);
+#ifdef STRATA_ENABLE_SYCL
+        if (graph_observer_.enabled() && status != cudaSuccess)
+            expert_failstop("MTP observer graph retirement", status);
+#else
+        (void)status;
+#endif
+    };
+    for (auto& e : round_exec_) retire_decode_graph(e);
+    for (auto& e : step_exec_) retire_decode_graph(e);
+    for (auto& e : round_exec_c_) retire_decode_graph(e);
+    for (auto& e : step_exec_c_) retire_decode_graph(e);
     if (cparams_) cudaFree(cparams_);
     if (cring_) cudaFree(cring_);
     if (dinv_) cudaFree(dinv_);
@@ -169,6 +190,9 @@ const void* MtpDrafter::q8(const char* name) const {
 
 bool MtpDrafter::load(const std::string& rt_dir, const ModelGeometry& g, SessionState& ss, int max_t, std::string& err,
                       int64_t window) {
+#ifdef STRATA_ENABLE_SYCL
+    if (!graph_observer_.configure(err)) return false;
+#endif
     cudaGetDevice(&device_);   // a layer split's last stage on another GPU: the drafter lives there
     g_ = &g;
     ss_ = &ss;
@@ -328,6 +352,12 @@ bool MtpDrafter::load(const std::string& rt_dir, const ModelGeometry& g, Session
         cudaMemcpy(ident_, id.data(), id.size() * 4, cudaMemcpyHostToDevice);
     }
     if (cudaStreamCreateWithFlags(&cs_, cudaStreamNonBlocking) != cudaSuccess) { err = "mtp: stream"; return false; }
+#ifdef STRATA_ENABLE_SYCL
+    if (graph_observer_.enabled() &&
+        cudaEventCreateWithFlags(&graph_observer_completion_, cudaEventDisableTiming) != cudaSuccess) {
+        err = "mtp observer: completion event allocation failed"; return false;
+    }
+#endif
     const double files_s = std::chrono::duration<double>(std::chrono::steady_clock::now() - t_files).count();
     std::fprintf(stderr, "strata mtp: draft layer loaded, %.0f MiB of VRAM (experts %.0f, dense %.0f), files read in %.2f s (%.0f MiB/s)\n",
                  (double) vram_ / 1048576.0, (double) g.n_expert * strata::kernels::cpu::BLOB / 1048576.0,
@@ -967,7 +997,7 @@ namespace {
 // that a later `if (exec)` would reuse. Keep graph/allocation owners on any
 // ambiguous queue or destroy result, and fail closed.
 bool finish_expert_capture(cudaStream_t cs, bool ok, cudaGraphExec_t& exec,
-                           const char* what, std::string& err) {
+                           const char* what, std::string& err, bool profile = false) {
     cudaGraph_t graph = nullptr;
     const auto ended = cudaStreamEndCapture(cs, &graph);
     if (ended != cudaSuccess) expert_failstop("expert recapture did not end", ended);
@@ -979,7 +1009,14 @@ bool finish_expert_capture(cudaStream_t cs, bool ok, cudaGraphExec_t& exec,
         }
     };
     if (!ok) { destroy_graph(); return false; }
-    const auto instantiated = cudaGraphInstantiate(&exec, graph, 0);
+    cudaError_t instantiated;
+#ifdef STRATA_ENABLE_SYCL
+    instantiated = profile ? strata::sycl_backend::compat::graph_instantiate_profiled(&exec, graph)
+                           : cudaGraphInstantiate(&exec, graph, 0);
+#else
+    (void)profile;
+    instantiated = cudaGraphInstantiate(&exec, graph, 0);
+#endif
     destroy_graph();
     if (instantiated != cudaSuccess) {
         // A failed API is not allowed to publish an ambiguous exec handle.
@@ -1083,8 +1120,14 @@ bool MtpDrafter::capture_round(int T, bool coupled, std::string& err) try {
         coupled_rec_ = false;
     }
     if (ok) mtp_select(R_, HCN, out_ids_, row_ + 1, Rin_, tok_, m_out_, 0, cs_, probs_, m_prob_);
-    const bool captured = (expert_recapture_timing_ || head_release_used_)
-        ? finish_expert_capture(cs_, ok, exec, coupled ? "round (coupled)" : "round", err)
+    bool checked = expert_recapture_timing_ || head_release_used_;
+    bool profile = false;
+#ifdef STRATA_ENABLE_SYCL
+    checked = checked || graph_observer_.enabled();
+    profile = graph_observer_.profiled();
+#endif
+    const bool captured = checked
+        ? finish_expert_capture(cs_, ok, exec, coupled ? "round (coupled)" : "round", err, profile)
         : finish_capture(cs_, ok, exec, coupled ? "round (coupled)" : "round", err);
     if (expert_recapture_timing_) {
         const double elapsed = ms_since(recapture_start);
@@ -1094,7 +1137,11 @@ bool MtpDrafter::capture_round(int T, bool coupled, std::string& err) try {
     }
     return captured;
 } catch (...) {
-    if (expert_recapture_timing_ || head_release_used_)
+    bool checked = expert_recapture_timing_ || head_release_used_;
+#ifdef STRATA_ENABLE_SYCL
+    checked = checked || graph_observer_.enabled();
+#endif
+    if (checked)
         expert_failstop("expert recapture threw before checked ownership close", cudaErrorUnknown);
     throw;
 }
@@ -1118,8 +1165,14 @@ bool MtpDrafter::capture_step(int j, bool coupled, std::string& err) try {
     bool ok = record_forward(1, row, cs_, err);
     coupled_rec_ = false;
     if (ok) mtp_select(R_, HCN, out_ids_, row_ + 1, Rin_, tok_, m_out_, j, cs_, probs_, m_prob_);
-    const bool captured = (expert_recapture_timing_ || head_release_used_)
-        ? finish_expert_capture(cs_, ok, exec, coupled ? "step (coupled)" : "step", err)
+    bool checked = expert_recapture_timing_ || head_release_used_;
+    bool profile = false;
+#ifdef STRATA_ENABLE_SYCL
+    checked = checked || graph_observer_.enabled();
+    profile = graph_observer_.profiled();
+#endif
+    const bool captured = checked
+        ? finish_expert_capture(cs_, ok, exec, coupled ? "step (coupled)" : "step", err, profile)
         : finish_capture(cs_, ok, exec, coupled ? "step (coupled)" : "step", err);
     if (expert_recapture_timing_) {
         const double elapsed = ms_since(recapture_start);
@@ -1129,7 +1182,11 @@ bool MtpDrafter::capture_step(int j, bool coupled, std::string& err) try {
     }
     return captured;
 } catch (...) {
-    if (expert_recapture_timing_ || head_release_used_)
+    bool checked = expert_recapture_timing_ || head_release_used_;
+#ifdef STRATA_ENABLE_SYCL
+    checked = checked || graph_observer_.enabled();
+#endif
+    if (checked)
         expert_failstop("expert recapture threw before checked ownership close", cudaErrorUnknown);
     throw;
 }
@@ -1282,12 +1339,45 @@ bool MtpDrafter::prefill(const float* R_rows, const int32_t* next_tokens, int64_
 
 bool MtpDrafter::draft(int T, const int32_t* tokens, int64_t p, int a, int32_t* drafts, std::string& err,
                        float* probs, float min_p, int* n_drafts) {
+#ifdef STRATA_ENABLE_SYCL
+    using Observation = strata::sycl_backend::MtpGraphObserver;
+    auto observation = graph_observer_.window(T, p, a, coupled_active_);
+#endif
     const OnDevice on_device(device_);
     if(head_detached_ || head_owner_retired_){err="mtp: draft requires restored head";return false;}
     if (!experts_ || experts_detached_) { err = "mtp: draft requires restored experts"; return false; }
     if (T < 1 || T > max_t_ || a < 0 || a >= T) { err = "mtp: draft arguments out of range"; return false; }
     const bool cp = coupled_active_;   // coupled draft sampling for this request: its own graphs
+#ifdef STRATA_ENABLE_SYCL
+    if (!observation.measure(Observation::capture, [&] { return capture_round(T, cp, err); })) return false;
+#else
     if (!capture_round(T, cp, err)) return false;
+#endif
+    auto replay = [&](cudaGraphExec_t executable, int step) {
+#ifdef STRATA_ENABLE_SYCL
+        if (graph_observer_.enabled()) {
+            const auto submitted = observation.measure(Observation::submit, [&] {
+                return observation.enabled()
+                    ? strata::sycl_backend::compat::graph_launch_with_completion(executable, cs_, graph_observer_completion_)
+                    : cudaGraphLaunch(executable, cs_);
+            }, step);
+            // Always establish completion, even if submission's post-check failed.
+            // Mapped records and graph/allocation owners remain live on failure.
+            const auto drained = observation.measure(Observation::drain, [&] { return cudaStreamSynchronize(cs_); }, step);
+            if (drained != cudaSuccess) expert_failstop("MTP observer replay did not drain", drained);
+            if (submitted != cudaSuccess) {
+                err = std::string("mtp observer: graph launch: ") + cudaGetErrorString(submitted); return false;
+            }
+            return observation.graph_clock(graph_observer_completion_, step, err);
+        }
+#else
+        (void)step;
+#endif
+        if (cudaGraphLaunch(executable, cs_) != cudaSuccess || cudaStreamSynchronize(cs_) != cudaSuccess) {
+            err = std::string("mtp draft: ") + cudaGetErrorString(cudaGetLastError()); return false;
+        }
+        return true;
+    };
     const Clock::time_point t0 = Clock::now();
     const int64_t NH = g_->n_head;
     auto put = [&](int row, int64_t cell) {
@@ -1305,25 +1395,21 @@ bool MtpDrafter::draft(int T, const int32_t* tokens, int64_t p, int a, int32_t* 
     h_row_[0] = a;
     h_row_[1] = 0;
     std::atomic_thread_fence(std::memory_order_seq_cst);
-    if (cudaGraphLaunch(cp ? round_exec_c_[T] : round_exec_[T], cs_) != cudaSuccess ||
-        cudaStreamSynchronize(cs_) != cudaSuccess) {
-        err = std::string("mtp draft: ") + cudaGetErrorString(cudaGetLastError());
-        return false;
-    }
+    if (!replay(cp ? round_exec_c_[T] : round_exec_[T], 0)) return false;
     drafts[0] = ((volatile int32_t*) h_out_)[0];
     float pj = ((volatile float*) h_prob_)[0];
     if (probs) probs[0] = pj;
     int n = 1;
     // the chain continues while the last draft is likely enough to be verified
     for (int j = 1; j < std::min(max_t_ - 1, max_drafts_) && pj >= min_p; ++j) {
+#ifdef STRATA_ENABLE_SYCL
+        if (!observation.measure(Observation::capture, [&] { return capture_step(j, cp, err); }, j)) return false;
+#else
         if (!capture_step(j, cp, err)) return false;
+#endif
         put(max_t_ + j - 1, coupled_draft_cell(p, a, j));   // p + a + j; coupled: drawn at counter cell + 1
         std::atomic_thread_fence(std::memory_order_seq_cst);
-        if (cudaGraphLaunch(cp ? step_exec_c_[j] : step_exec_[j], cs_) != cudaSuccess ||
-            cudaStreamSynchronize(cs_) != cudaSuccess) {
-            err = std::string("mtp draft step: ") + cudaGetErrorString(cudaGetLastError());
-            return false;
-        }
+        if (!replay(cp ? step_exec_c_[j] : step_exec_[j], j)) return false;
         drafts[j] = ((volatile int32_t*) h_out_)[j];
         pj = ((volatile float*) h_prob_)[j];
         if (probs) probs[j] = pj;
@@ -1333,6 +1419,9 @@ bool MtpDrafter::draft(int T, const int32_t* tokens, int64_t p, int a, int32_t* 
     if (n_drafts) *n_drafts = n;
     ms_draft += ms_since(t0);
     ++rounds;
+#ifdef STRATA_ENABLE_SYCL
+    observation.complete();
+#endif
     return true;
 }
 

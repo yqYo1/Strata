@@ -1,2889 +1,409 @@
 # Native 16-bit long prefill
 
-`STRATA_SYCL_PREFILL_NATIVE16=bf16` selects an experimental kernel path only
-inside long layer-major prefill. Short prefill and decode keep their existing
-FP32 route. Leave `STRATA_PREFILL_LAYER_MAJOR_R_DTYPE` unset, or set it to
-`bf16`; another saved-residual format is rejected for this path.
-
-The first implementation keeps the HC4 residual in BF16 between normalization,
-projection, mixing, residual addition and interlayer copies. HC projections and
-MoE gate/up, down and shared-expert projections produce BF16 tensors directly.
-Their consumers accept those tensors without a global FP32 restoration.
-Expert hidden activations remain FP16, matching the existing dequantized FP16
-weight path. XMX GEMM has FP32 accumulators and an FP32 epilogue, then a single
-16-bit output store. Normalization, sigmoid and expert summation use FP32 local
-values. HC injection coefficients, router decisions/weights and GDN recurrent
-state remain FP32.
-
-There are explicit remaining boundaries:
-
-- The PLE block at layer 1 restores and repacks one chunk through its existing
-  FP32 interface.
-- The final residual expands once for existing MTP, decode and diagnostic
-  callbacks. Intermediate layers use a typed BF16 callback and direct copies.
-- GDN internal projection and recurrent tensors use the existing FP32 kernels
-  unless the separate experimental chunk64 route described below is enabled.
-  QSA internals remain FP32 unless the separate typed-QSA option below is enabled.
-- The existing scratch arena remains reserved to preserve the short-input
-  layout. Native views share its unused ranges, including separate BF16
-  residual/gated halves of the old FP32 gated range. This does not yet establish
-  a smaller scratch allocation. The interlayer BF16 store uses two bytes per
-  value and needs no separate pack/unpack staging slab.
-
-Old float tensor audits, residual dumps, BF16x2 HC and control vectors are
-rejected before native16 layer submission. They remain available through the
-FP32 reference. Unsupported matrix tuples/geometry fail before GEMM submission;
-there is no CPU arithmetic fallback. The first GEMM supports N and K divisible
-by 16, with arbitrary positive token counts and strided output. Existing model
-matrices on this path meet those dimensions; scalar injection still uses the
-FP32-output GEMM.
-
-On Arc B570, the fresh v2 build passed 68 independent GEMM cases, HC4/MoE
-post-operations, runtime/compatibility checks, the existing single-queue FP32
-GEMM/payload cases, and early/late allocation teardown. Both FP32 and BF16
-completed a 129-token, 48-layer model check normally. All 128 target NLLs were
-finite; three full-vocabulary rows also matched an independent FP64 NLL oracle.
-This establishes mechanics, not model quality: the synthetic comparison had
-mean absolute target-NLL difference 0.596 and maximum 6.56. These differences
-have not been accepted as a quality tolerance.
-
-The original full FP32 regression timed out in its separate-copy-queue pipeline.
-It remains a failure; the narrower single-queue continuation does not turn it
-into a pass. This experimental production route requires the qualified single
-queue. The timeout mechanism remains unresolved, with no fresh kernel GPU fault
-or driver dump. See the
-[diagnostic](../bench/results/2026-10-15-pr6-recovery-audit/own-native16-separate-queue-timeout-v2.ja.md)
-and [paired model receipt](https://github.com/yqYo1/Strata/blob/8063aacc6749d18089f7a53db5d3e47b745f348c/bench/results/2026-10-15-pr6-recovery-audit/own-native16-model-smoke-v2.json).
-An earlier new allocation-registry destruction-order error was reproduced and
-fixed separately; the fixed model processes exit normally.
-
-The first official `bench.sh` comparison on the B570 used the same binary and
-78,453-token request, thinking on, chunk 8192 and 32,768 GPU residual rows.
-FP32 measured 346.5 tok/s; BF16 measured 123.8 tok/s (one process per arm).
-The BF16 GPU residual fell from 1,280 to 640 MiB, but this implementation's
-throughput fell 64.3%. It is rejected for default/performance adoption pending
-kernel improvement. See the
-[individual-sample comparison](https://github.com/yqYo1/Strata/blob/8063aacc6749d18089f7a53db5d3e47b745f348c/bench/results/2026-10-15-pr6-recovery-audit/own-native16-first-long-comparison-v1.json).
-This is a first screening pair, not a repeated variance study or evidence that
-the datatype alone caused the slowdown.
-
-The matched operator check now identifies the new GEMM as a major cost. On
-three model geometries, FP16 or BF16 inputs with native BF16 output took
-5.57–30.66 times the wall time of the existing oneMKL FP32-output route. Each
-geometry/format used one process and three timed submits per route after
-warmup, with complete output checks outside timing. This does not identify
-the instruction/layout cause or establish a datatype disadvantage. See the
-[operator samples](https://github.com/yqYo1/Strata/blob/8063aacc6749d18089f7a53db5d3e47b745f348c/bench/results/2026-10-15-pr6-recovery-audit/own-native16-paired-gemm-summary-v1.json).
-
-A natural 32,863-token diagnostic completed FP32 twice and BF16 once. At 64
-stratified positions, every full-vocabulary logit row was finite; the two FP32
-controls were byte-identical. BF16 agreed on top-1 at 59/64 positions, with
-mean absolute target-NLL difference 0.556. Its sampled mean NLL was lower
-(5.05747 to 4.88628), but a sparse sample from one document corpus does not
-establish general quality or a permitted degradation. No quality tolerance
-has been accepted. See the
-[quality review](https://github.com/yqYo1/Strata/blob/8063aacc6749d18089f7a53db5d3e47b745f348c/bench/results/2026-10-15-pr6-recovery-audit/own-native16-natural-quality-review-v1.ja.md).
-
-The original joint-matrix backend remains rejected for speed. The later vLLM
-backend below improves measured long-prefill speed. Broader model quality,
-physical 262144-context and RESTORE qualification remain required. Keep the
-default FP32 route while those gates are open.
-
-The architecture references are the
-[vLLM XPU MoE dtype policy](https://github.com/vllm-project/vllm-xpu-kernels/blob/6b30c9b92cc525c32729df988b5f918e7c5661a5/csrc/xpu/grouped_gemm/collective/gemm/moe_dtype_policy.hpp)
-and the pinned SGLang/vLLM HC and recurrent dtype contracts indexed in
-`bench/results/2026-10-15-pr6-recovery-audit/research-scope-review-round785-v1.json`.
-These distinguish 16-bit tensor storage from FP32 accumulation and state.
-The first GEMM is authored here using the existing Strata/SYCL matrix API;
-the proposal's `provenance.json` records all design and API sources. Framework
-wrappers, CUTLASS templates and third-party kernel code were not imported.
-Their per-file licenses were checked separately; newly authored project files
-use the repository MIT license. XeStrata is excluded as an implementation source.
-
-## Optional vLLM GEMM and typed QSA
-
-The optional `STRATA_SYCL_VLLM_XE2_NATIVE16` build adds the actual Intel BSD-3 vLLM Xe2 direct16-output core. See [SYCL_VLLM_XE2_NATIVE16.md](SYCL_VLLM_XE2_NATIVE16.md) for its explicit runtime selection, isolated AOT object, stricter shape/lifetime contract and repeated integrated measurements. On the B570 at source `6354f0b4`, the matched 39,262-input official workload measured median 394.9 tok/s with vLLM BF16 versus 372.5 FP32 (three independent processes each). The earlier 78K custom-kernel experiment used different context/residency settings and is not the denominator for this gain.
-
-`STRATA_SYCL_PREFILL_NATIVE16_QSA=1` additionally keeps QSA projection/norm/RoPE/append/attention/gate boundaries typed16 for resident unrotated INT8 K/V with session RoPE tables. Indexer/local accumulation and GDN's existing internal FP32 boundaries remain explicit. The shared scratch arena reservation is unchanged. Streaming/host mirrors and rotated/Q4/hybrid KV are currently refused; do not infer full-context adoption from the component tests.
-
-
-The clean same-binary attention screening at source `d72c8ac3` used four
-78,451-token fresh requests per process, thinking on, chunk8192 and no GDN
-chunk64. Prefix33 PP was663.9 on first use, then725.2/720.3/725.0 tok/s;
-direct INT8 attention was566.9, then592.9/589.0/592.5. Subsequent medians were
-725.0 versus592.5, an18.28% direct-path regression. Both processes exited
-normally without fresh GPU faults. Keep the existing prefix route for this
-configuration. The comparison also changes score pitch33 to32, so it does not
-isolate dequantization, physical memory traffic or SLM conflicts. These are
-sequential samples within one process per arm;24-token generation does not
-qualify sustained decode. See the [individual samples and comparison limits](../bench/results/2026-10-15-pr6-recovery-audit/qsa-attention-model-current.json).
-
-The fixed-score33 K36/V260 experiment passed all bit, oracle and boundary
-checks. Six rotated samples per arm on8192 queries changed median latency
-by+0.60% (cap33 gathered),-0.51% (cap2051 gathered), and+0.23% (cap2051
-clustered). These mixed subpercent results do not justify selection. Source
-and individual samples remain at commit`ee14c50d`; the experimental pitch code
-is retired from the active implementation.
-
-The closed `qsa_bf16_prefix_rows_batch` experiment retained score33,
-K32/V256 and28224 requested local bytes. It publishes first IDs with Q/state
-initialization, and next IDs during PV, using the existing final PV barrier.
-All current row readers finish before V/probability publication; PV reads no
-row IDs. The final barrier still protects V-to-K overwrite. This removes one
-workgroup barrier per32-cell tile without changing arithmetic or output order.
-Its source and tests remain in Git at `51a6f70a`; the callable is retired after
-the negative timing result and emitted-resource comparison. Production dispatch
-is unchanged. Main's serialized qualification sequence for the current candidate is
-`python3 tools/sycl/build_engine.py rebuild-attention`, then
-`python3 tools/sycl/check_attention.py smoke`, `component`, and `perf`.
-The oracle fixture compares all output bits with prefix33, including diagnostics
-and physical262144 component extent. The timing fixture rotates six samples
-per arm on three8192-query shapes, outside uploads/readbacks. These checks
-do not qualify full-model context, RESTORE, quality or model throughput.
-
-This schedule passed all those correctness checks, including explicit duplicate
-IDs, aliased physical pages and first-/later-tile K/V diagnostics. Six rotated
-samples per arm changed median latency by-0.60%,+0.10%,+0.24% for the same three
-shapes above. It is not selected. At cap2051, baseline gathered versus clustered
-reads took419.8 versus299.4ms with the same matrix work. This is locality
-sensitivity, not a physical-bandwidth or saturation measurement.
-
-The current-path MoE census used `python3 tools/sycl/bench_engine.py
-prepare qsa-census`, commits its plan, then uses `run qsa-census`. This runs one
-official78K request with parameter validation, trace and existing coarse/QSA/CPU
-observers. The optional profile records exact planned job-size and jobs/expert
-histograms from already available host routes; final issuer totals must match.
-It adds no tensor readback or GPU submission. Requested DMA bytes and diagnostic
-timings must stay distinct from physical traffic and clean speed.
-
-The installed VTune2026.4 rejects GPU-hotspots on this Ryzen5600X host before
-starting the target; this is not an observed permission denial. The maintained
-`python3 tools/sycl/profile_attention.py resources` alternative ran the exact
-qualified fixture with `IGC_DumpZEInfoToConsole=1`. Traced launch identities map
-the executed prefix33 and row-publication kernels to128GRF/SIMD16, raw static `slm_size=32`
-plus28224B of dynamic-local arguments, and no emitted scratch descriptor.
-These are compiler/launch properties, not hardware utilization or bandwidth.
-The static field's unit/schema and physical allocation rounding remain unverified;
-the traced dynamic-local argument sizes are explicitly bytes.
-The unlaunched compiled score32 variant has1920B spill metadata and2048B scratch;
-it must not be attributed to the executed production prefix33.
-
-The next independently authored `qsa_bf16_prefix_qcache_batch` candidate loads
-the same16 BF16 Q fragments per QK subgroup once, preserves their DPAS order,
-and reuses their initial shared arena for K/V after a uniform workgroup barrier.
-It budgets20036 local bytes, including a nonzero four-byte unused accessor.
-The installed compiler removes that unused accessor: traced dynamic arguments
-total20032B. Default128GRF compilation adds2112B spill metadata and4096B scratch,
-yet six rotated samples per arm reduced median latency by11.81%,13.24%,11.83%
-for cap33 gather, cap2051 gather and cap2051 clustered. Exact-bit/oracle,
-diagnostic/alias and physical262144 component gates passed; no new GPU faults.
-Source`0ddd14719211` and individual results at`13976170f` preserve this variant.
-
-The separate comparison applied the installed compiler's
-[`grf_size_automatic` property](https://github.com/intel/llvm/blob/sycl/sycl/doc/extensions/experimental/sycl_ext_intel_grf_size.asciidoc)
-only to the cached-Q kernel through the SDK's functor property API. It selected
-256GRF, removed scratch and changed compiler thread-count metadata from8 to4.
-Its matched median latency nevertheless increased16.65%,16.20%,12.65%; reject
-this variant (`b82207709`). The comparison also changes the SDK functor form,
-so it does not isolate GRF mode as the sole cause. Occupancy remains unmeasured.
-
-The original default128GRF kernel source is restored byte-for-byte. The new
-explicit `STRATA_SYCL_PREFILL_QSA_MATH=bf16-prefix-qcache` model screening route
-uses the existing prefix allocation/admission and leaves default dispatch alone.
-Main prepares/commits/runs `qsa-qcache-check`, then matched `qsa-qcache-base` and
-`qsa-qcache` with `tools/sycl/bench_engine.py`. The check uses validation/trace;
-the two speed arms each use four fresh78K requests, thinking on and the same
-binary/configuration. These24-output screens cannot qualify sustained decode,
-full-model262144 context, RESTORE or task quality.
-
-The matched78K screen completed with78451 actual input tokens per request and
-no reused tokens. Prefix33 PP was676.6 on first use, then725.0/718.5/724.5 tok/s;
-cached-Q was708.2, then756.6/751.2/755.7. Subsequent medians724.5 versus755.7
-show a4.31% model gain; sample SDs were3.62 and2.89 tok/s. This is one process
-per arm, not repeated independent processes. Both exited normally without new
-GPU faults. Actual request hashes, binary and configuration match. Retain the
-opt-in candidate for further tuning; default adoption and the broader gates
-above remain open. Short-output decode medians14.2 versus14.0 tok/s do not
-decide sustained decode performance. See the [individual samples and comparison](../bench/results/2026-10-15-pr6-recovery-audit/qsa-cached-query-model-current.json).
-
-The component-only row-coalesced K experiment passed all numerical, guard and
-physical262144 component gates, but increased median latency12.44%,27.98%,7.75%
-for cap33 gather, cap2051 gather and cap2051 clustered (six rotated samples per
-arm; result`eb9b0469c`, source`2d4f24484`). Both attention kernels emitted128GRF,
-2112B spill metadata,4096B scratch and20032B dynamic-local arguments. Reject it
-and retire its active API/fixtures. Changed local stores and memory-level
-parallelism are possible explanations; no physical traffic or bank counters
-were collected. The current cached-Q model route keeps its original K gather.
-
-The four-value K candidate preserves parallel row ownership and contiguous
-cell stores, grouping four adjacent K values per lane. With thread`t=0..127`,
-loop`r=0..15` and element`j=0..3`, its map is
-`cell=t%32,d=4*(t/32)+16*r+j`; all8192 local destinations have one writer.
-Typed `vec<uint16_t,4>::load` avoids wider-pointer aliasing and needs only the
-existing two-byte alignment per [SYCL2020 vec members](https://registry.khronos.org/SYCL/specs/sycl-2020/html/sycl-2020.html).
-The installed SDK implements this API with typed element loads. Captured
-executed ISA lowers these four values to two32-bit A64 loads at offsets0/4,
-with align2 retained in LLVM IR; this is not one64-bit message. The oracle also
-uses a17-element scratch guard to exercise a pointer unaligned to eight bytes.
-BF16 bits, matrix arithmetic/strides and all barriers stay unchanged. Main
-authors this candidate independently. Six rotated samples per arm reduced
-component median latency9.16%,10.15%,15.72% for cap33 gather, cap2051 gather
-and cap2051 clustered (`d39258f6e`, source`112071c5c`). Bitwise comparisons,
-guards, two-byte scratch alignment and physical262144 component cases passed.
-This does not qualify model speed, task quality, physical262144 model/RESTORE
-or sustained decode. Build pins also cover project `third_party` and maintained
-`bench/sycl` inputs.
-
-The model screening selector is
-`STRATA_SYCL_PREFILL_QSA_MATH=bf16-prefix-kvec4`; defaults stay unchanged.
-It uses the same prefix admission, scratch lease and cached-Q arithmetic as
-`bf16-prefix-qcache`. Main prepares/commits/runs `qsa-kvec4-check`, then
-`qsa-kvec4-base` and `qsa-kvec4` with `tools/sycl/bench_engine.py` for a fresh
-same-binary comparison. The first run enables validation and trace; timing arms
-are clean processes. A successful model screen alone is not default adoption.
-
-The same-binary model screen (`23b0e7bb8`, engine source`52f047586`) read78,451
-fresh tokens per request, thinking on, four requests per process per arm.
-Cached-Q first PP was696.8 tok/s; subsequent samples756.4,750.7,756.3
-(median756.3, sample SD3.26). Kvec4 first PP was737.2; subsequent
-samples792.6,786.6,792.7 (median792.6, sample SD3.49), a4.80% median gain.
-Both native engines exited0 without fresh GPU faults. Exact workload hashes,
-engine/benchmark inputs, normalized configuration and private profiles matched;
-only the QSA math selector differed. Three subsequent requests are not three
-independent processes. The24-token output does not qualify sustained decode;
-model quality, agent/long-generation, physical262144 and RESTORE gates remain
-open, so this route stays opt-in.
-
-## Resident MoE service reference
-
-The maintained `sycl_native16_paired_gemm_bench --resident` fixture calls the
-same vLLM Xe2 `beta0` implementation as production, with FP16 operands/weights,
-BF16 outputs and FP32 accumulation. The shape sweep retains the original IDs
-and adds Down8192, compact64 and exact M2334/M5963 row-mass quantiles from
-`66d5c545` (histogram SHA`4aa422bcaddb00220f44ca5ad931328df36425f226cc5d49f21aca1e0f39d0b3`).
-M8192 contains24,829,952 of37,656,000 routed rows; job counts alone are misleading.
-Production selects compact16x64 below128 rows and wide128x128 otherwise.
-
-Each resident sample submits eight identical beta0 kernels on one in-order
-profiling queue, with all owners alive and no intervening transfer. It checks
-the final full output against the independent closed-form oracle, all guards
-and input immutability. Three warmups precede three timed bursts per route;
-Main uses three independent processes per shape. Reset/readback/checking are
-outside the reported burst interval. Record GPU event submit/start/end,
-CPU submit/wait and host submit-to-completion wall time separately. Event
-nanoseconds share a backend timebase per the [SYCL profiling contract](https://registry.khronos.org/SYCL/specs/sycl-2020/html/sycl-2020.html#sec:event-profiling);
-do not subtract them from host clocks or claim exact hardware-cycle accuracy.
-
-Build committed inputs with `tools/sycl/build_engine.py rebuild-gemm`, commit
-the build receipt, then use Main-owned `tools/sycl/measure_gemm.py smoke` and
-`perf`, committing the smoke before clean timing. The small first checks use
-trace/parameter validation, and the clean sweep uses separate untraced children.
-The source and all planned inputs stay frozen through the sweep.
-
-The original sweep stopped at a profiling assertion, not a GPU fault
-(`543ab5e28`). A bounded logged repeat (`0f6356d12`) found submit331ns after
-the first GPU start while all GPU start/end intervals were positive and ordered.
-The compiler's reported source revision, Intel LLVM`504366f4`, documents an
-estimated submit clock in `sycl/source/detail/event_impl.cpp`; device start/end
-are separate queries. This source corroborates a clock-domain explanation, but
-does not prove every installed runtime byte came from that revision. The new
-prospective service metric uses only positive ordered GPU start/end pairs;
-submit-clock inversions remain recorded and disqualify submit-to-start latency
-claims. No timestamp is clamped or sample silently excluded. Original failed
-receipts stay failed in Git; all numerical, guard and lifetime checks remain.
-
-This is a resident, reused-operand implementation reference. It excludes IQ3
-weight dequantization, routing, SwiGLU, scatter and model transfers. Cold/warm
-GPU clocks and cache reuse can differ from model execution. It is neither a
-hardware peak nor a weighted prediction of model latency. Initial pageable
-fixture uploads are recorded separately and do not qualify the production
-pinned-memory PCIe ceiling. No model route or default is changed by this fixture.
-
-The complete sweep at source`5eb48ed4` passed all435 invocation validations
-across smoke, traced diagnostics and30 clean timing processes. Selected M8192
-GU service was52.210 TFLOP/s (process medians51.896/63.963/52.210); Down was
-45.668 (44.489/45.668/46.013). Keep the GU spread rather than treating its
-best process as the hardware limit. The individual timed bursts and shapes
-remain in [the compact result](../bench/results/2026-10-15-pr6-recovery-audit/resident-gemm-current.json).
-This evidence justifies comparing resident service with actual model commands;
-it does not establish that GPU arithmetic is the whole-model bottleneck.
-
-Main's next model observation reuses the existing bounded command sampler.
-Version2 qualifies positive, ordered GPU start/end service independently of the
-estimated submit clock. Every retained tuple contributes its signed
-start-minus-submit diagnostic; inverted samples never contribute queue-delay
-sums. Group counts state how many service and queue-delay samples qualified.
-Query delays, incomplete events, invalid duration/order and capacity failures
-still invalidate service. Original version1 rejected receipts remain failed.
-The sampler adds no GPU commands or readbacks and queries only completed events
-after the existing checked drain; it samples first windows in layers0/15/31/47,
-not all device work. Timestamp gaps alone do not prove device idle.
-
-The first model check at`d9f3e91d9` exited1 before long-model arithmetic: the
-legacy collector admitted only window2 and explicitly refused the production
-window10 accumulator path. No fresh GPU fault occurred. The corrected route
-tags its map upload, job-weight preparation, dequant, gather, GU, SwiGLU, Down,
-FP32 accumulation and existing status readback, retiring the sampled events
-at that existing status drain. It excludes initial router preparation and final
-shared-expert/writes. Accumulation adds a fifth sampled command per selected
-job; the finite cap is192 events/frame (maximum172 from32 selected jobs,
-four experts and four non-job commands), with total host storage checked
-against128KiB and included in admission. Requested window8/10 must really be
-admitted; the observer cannot silently measure a window2 fallback. The existing
-window2 collector remains separate. No arithmetic or synchronization is added.
-
-With source and recipe committed, build using`tools/sycl/build_engine.py rebuild`.
-Prepare/commit/run`qsa-kvec4-check` for the traced/validated32K-class input,
-then prepare/commit/run`qsa-kvec4-census` for one official78K request with the
-existing coarse, CPU, route-histogram and command observers. These profiled
-requests support resource attribution; use separate clean processes for speed
-comparisons. Neither run qualifies sustained generation, model task quality or
-the full physical262144-context/RESTORE paths.
-
-Both corrected model checks passed at`f111b5ff6`:39,260 and78,451 actual read
-tokens, all four frames complete, peaks172/192 retained events, no fresh GPU
-faults. The78K request retained678 qualified command samples and reconciled
-21,514 jobs/37,656,000 routed rows with the exact historical histogram hash.
-Its five matched8192-row jobs had median GU+Down service0.989792ms and
-gather+FP32 accumulation1.240625ms. These are selected jobs, not a whole-model
-time partition. Sampled model GU service is faster than the reused-operand
-fixture, so that fixture cannot serve as a warmed hardware ceiling. Clock/cache
-or duty-cycle attribution needs a separate controlled test.
-
-The same diagnostic's nonexclusive queue intervals were QSA37.733s
-(attention29.933s), MoE20.976s and weight upload8.412s. CPU time was99.944s,
-of which67.579s was inside explicit waits; host grouping took0.161s. Do not
-equate one busy host thread with a CPU arithmetic bottleneck. Neither queue
-intervals nor requested transfer bytes establish physical saturation. Remaining
-QSA attention and MoE intermediate traffic are the next tuning targets; the
-actual Down epilogue and indexed-input feasibility reports are separately
-reviewed candidates. Keep the [structured resource evidence](../bench/results/2026-10-15-pr6-recovery-audit/moe-window-census-current.json)
-and the prior clean792.6 tok/s result distinct: this first profiled request's
-735.2 tok/s is not a new clean speed comparison or inference adoption.
-
-The opt-in QSA K/Vvec4 path keeps the qualified cached-Q/Kvec4 path fixed
-and loads four adjacent BF16 V words per lane through typed`vec<uint16_t,4>`.
-The existing two-byte scratch alignment is sufficient. Each vector stays in
-one256-value row; missing cells write four zero words, and each original V SLM
-destination retains one writer. The row-major local layout, payload, barriers,
-DPAS order and FP32 online arithmetic remain the reference contract. This tests
-load-instruction efficiency, not fewer useful tensor bytes or physical bandwidth.
-Use the shared oracle fixture with guard offset17 (align2), tails, alias/diagnostic
-cases and physical262144 component extent. Main's existing attention controller
-now compares Kvec4 (variant0) with K/Vvec4 (variant1), six rotated samples per
-arm on the same three8192-query shapes. Its model screening selector is separate
-from the default dispatch and uses the qualified component export.
-
-Source`4b9618071` passed those bit/oracle/diagnostic/alias/align2/boundary
-checks, including the physical262144 component extent. Six rotated samples
-per arm reduced median complete-call latency from11.0624 to8.7701ms
-(cap33 gathered),327.2740 to230.7490ms (cap2051 gathered), and223.0425 to
-174.0250ms (cap2051 clustered):20.72%,29.49%,21.98% reductions. Inputs were
-immutable, outputs/guards matched, and no fresh GPU faults occurred. Timing
-includes admission/prefix refresh/checked drain; it is not isolated attention
-service, a bandwidth measurement or a model speed result.
-
-For the separate model screen, startup selector
-`STRATA_SYCL_PREFILL_QSA_MATH=bf16-prefix-kvvec4` reaches that exact qualified
-export with the same prefix admission and scratch lifetime. Main prepares,
-commits and runs`qsa-kvvec4-check`, then`qsa-kvvec4-base` and`qsa-kvvec4`
-through the existing official benchmark controller. The base uses Kvec4;
-both clean arms use four78K-class fresh requests, thinking on. V-route logging
-must match the chosen arm. This remains opt-in pending long-model evidence
-and the existing task/generation/full-context/RESTORE gates.
-
-The engine from`5b35bee71` passed the validated/traced39,260-token check.
-The clean same-binary screen then read78,451 new tokens per request, four
-requests in each arm, thinking on. Kvec4 first PP was733.7 tok/s; subsequent
-samples792.6,785.5,792.4 (median792.4, sample SD4.04). K/Vvec4 first PP
-was786.6; subsequent853.2,847.3,853.9 (median853.2, sample SD3.63), a7.67%
-median gain. Source/engine/workload/private-profile identities matched; only
-the startup QSA math selector differed after normalizing private paths/ports.
-Both processes exited0 with no fresh GPU faults. The
-[individual samples and comparison](../bench/results/2026-10-15-pr6-recovery-audit/qsa-kvvec4-model-current.json)
-retain the original baseline at`c728adad4`. One process per arm does not
-establish independent-process variability;24 generated tokens do not qualify
-sustained decode, task quality or physical262144/RESTORE. Keep this faster
-screening route opt-in as the next prefill tuning baseline.
-
-Before selecting a GDN scheduling change, Main prepares/commits/runs
-`qsa-kvvec4-timing-check`, then `qsa-kvvec4-census` with the existing model
-controller. They use the K/Vvec4 engine and existing GDN path
-(`GDN_CHUNK64=0`), first32K-class then78K input, thinking on. Both enable
-parameter validation, existing coarse/CPU/MoE observers and
-`STRATA_PREFILL_LAYER_MAJOR_GDN_PROFILE=1`. Coarse observer v3 adds four fixed
-event pairs for input projections, conv/gates, recurrence and output projection.
-They retire only after the existing checked chunk drain. Every event status and
-expected per-layer count is checked (36GDN/12QSA); observation failure remains
-incomplete while the existing lease/Restore still owns retirement. The original
-coarse v2 output and twelve event owners remain when GDN detail is off.
-These nested intervals include host submission gaps and queue dependencies;
-host-submit wall time is separate from thread CPU time. Neither establishes
-pure GPU service or hardware occupancy. Keep sampled MoE service and clean853.2
-tok/s evidence separate; observer-enabled PP is not a new speed comparison.
-
-The first attempt (`95aec2914`) enabled legacy `STRATA_PREFILL_TIMING` and was
-rejected by long-prefill admission before long-model arithmetic, exit1 with no
-new GPU fault. Preserve that failed receipt. Its prohibition remains in place;
-the supported coarse observer supplies the new substages instead.
-
-Both supported observer checks passed. The full check read78,451 fresh tokens,
-thinking on, with360 checked intervals per new GDN section across36 layers;
-all owners closed, boot unchanged and no fresh GPU faults. On the Arc B570,
-the GDN input projections, conv/gates, recurrence and output projection intervals
-were6.27625,0.879437,7.99004 and2.94327 seconds. Recurrence host-submit wall
-was15.4556ms. QSA and MoE intervals were31.1534 and20.9776 seconds. These
-nonexclusive queue intervals identify a recurrence scheduling experiment,
-not measured occupancy, a hardware ceiling or an additive wall-time breakdown.
-The profiled785.0PP sample does not replace the clean853.2 median.
-
-The next candidate partitions the independent value columns of each persistent
-GDN state across2/4/8 workgroups, then performs the existing RMS/gating on the
-GPU. Keep the FP32 per-column recurrence and reduction order, FP16 consumer,
-shared state layout and decode/verify paths. Use the existing FP32 y buffer as
-an explicitly owned intermediate, with ordered kernels and no host readback.
-One partition with the separate epilogue is the control for its traffic/launch
-cost. Require exact output/state/FP16 images, guards, chunk boundaries and
-streamed262144/restore continuity before model speed comparisons. Recurrence
-is only part of the remaining cost; this candidate alone cannot qualify1000PP.
-
-`STRATA_SYCL_PREFILL_GDN_COLUMNS=1|2|4|8` selects this experiment only during
-long layer-major prefill; unset/0 keeps the original. It cannot combine with
-chunk64. For2/4/8 partitions the scan launches96/192/384 groups of256/128/64
-lanes; each lane still owns32 FP32 state elements. No occupancy gain is assumed.
-The intermediate adds two FP32 reads/writes per output element compared with
-the fused path, before considering cache behavior. Public admission checks
-registered device spans and the queue's context/device before submission.
-
-Main builds the engine and the same-library manual fixture with
-`tools/sycl/build_engine.py rebuild-gdn`, then runs
-`tools/sycl/measure_gdn_columns.py smoke`, `validate`, `perf` and `context`,
-committing each result before the next phase. The continuous resident timing
-train rotates all five arms over three independent processes; full comparisons
-run outside timing. It measures both kernels and launch gaps and excludes
-initial transfer. The separate physical-extent recurrence check includes saved
-FP32 carry restoration and the unchanged single-token decode consumer at the
-last position; it does not qualify a full model conversation RESTORE.
-Advance from resident timing only if the pooled median is at least5% faster
-and each of the three independent-process medians beats the original. This is
-a screening threshold, not model adoption. The first fixture compile failed
-on a mixed-type`auto` declaration at`4720519ca`; the corrected build must retain
-that failed identity rather than relabel it.
-
-For the78,450 long-prefill rows over36GDN layers, the explicit recurrence
-dot/state/output/delta arithmetic is15.5993444352TFLOP, excluding exponentials,
-normalization and reductions. Dividing by the observed7.99004s interval gives
-1.95235TFLOP/s of this logical work, not measured FP32 saturation. Separating
-the RMS adds138,815,078,400 logical FP32 intermediate bytes over these layers;
-actual DRAM traffic depends on caching. Column partitioning also repeats Q/K
-loads, so the unchanged arithmetic count does not imply an unchanged memory cost.
-
-The corrected same-library fixture passed traced17-token/split cases,24 cases
-at1/33/65/129/8191/8192 tokens across all four partitions, and the selected
-4-partition262144-token recurrence/state-restore/decode continuity check. FP32
-output/carry and FP16 images matched the existing kernel bit for bit; guards,
-input immutability and invalid admission checks passed with no fresh GPU fault.
-This is recurrence-component evidence, not full model context/RESTORE coverage.
-
-The three clean resident processes each measured six rotating8192-token samples
-per arm after a first-use round. Pooled queue-interval medians were:
-
-| Schedule | Median ms |
-| --- | ---: |
-| Existing fused recurrence | 23.693646 |
-| Separate RMS,1 partition | 17.994375 |
-| Separate RMS,2 partitions | 19.077656 |
-| Separate RMS,4 partitions | 17.675782 |
-| Separate RMS,8 partitions | 19.388281 |
-
-The4-partition candidate reduced this interval25.40%; the1-partition control
-already reduced it24.05%, so most of the gain is attributable to separating
-the RMS rather than increased column parallelism. All three4-partition process
-medians beat their original controls. The retained
-[individual component samples](../bench/results/2026-10-15-pr6-recovery-audit/gdn-columns-current.json)
-include first-use results and spread. The parameter-validated39,260-token model
-check passed. The clean official benchmark then read78,451 fresh tokens per
-request, thinking on, four requests per process. Existing versus4-partition
-first PP was786.9 versus795.7 tok/s. Subsequent samples were854.3,845.7,853.7
-(median853.7, sample SD4.80) versus867.2,858.7,867.1 (median867.1, sample
-SD4.88): a1.57% median gain, or1415.7ms less median prompt time. The same
-engine, helper hashes, original profile and request hashes matched; only the
-column selector differed after normalizing private roots/ports. Both processes
-closed without fresh GPU faults. The
-[individual model samples and comparison](../bench/results/2026-10-15-pr6-recovery-audit/gdn-columns-model-current.json)
-retain the original receipts in Git. Use4 partitions as the next opt-in profiling
-baseline, keeping default0. One process per arm does not establish independent
-process variability;24 generated tokens do not qualify sustained decode, task
-quality, agent workloads, full-model262144 or conversation RESTORE. The component
-gain therefore translates to a small model gain and does not qualify1000PP.
-
-The next resource check uses the same qualified engine through
-`bench_engine.py prepare|run qsa-gdncols4-warm-census`: two fresh78K requests,
-thinking on, with the existing parameter-validated coarse/GDN/QSA/CPU/command
-observers enabled before process startup. Exact long-request route markers
-separate the records; each independently must pass all48-layer census and
-observer completion checks. Retain first-use aggregate/CPU observations and
-the subsequent request's detailed service samples. This tests whether first-use
-CPU cost distorted the previous attribution; both speeds remain profiled,
-and sampled service is not occupancy or full critical-path coverage. CPU parser
-checks reproduced retained48-layer GDN and678 command observations and rejected
-merged requests, missing windows/samples, incomplete or duplicate CPU headers,
-and a missing GDN aggregate. The reconstructed check used synthetic census
-distributions and absolute clock origins for already-retired raw logs.
-
-The two-request check passed at78,451 fresh tokens each, with no new GPU fault
-and every owner closed. Profiled PP was778.9 first-use and866.6 subsequently;
-the clean867.1 median remains the speed reference. Warm QSA attention, MoE,
-GDN recurrence and upload queue intervals were20.8568,20.9974,6.52363 and8.38669s.
-Main-thread CPU was88.806s over89.508s wall:59.184s inside GPU waits and29.622s
-outside them. The latter includes4.720s source copy,4.823s upload submission,
-3.277s GEMM submission and16.630s unclassified CPU. These overlap device work
-and are not an additive hardware-bottleneck breakdown. First-use unclassified
-CPU/wall was19.490/26.745s versus warm16.630/16.971s; the cause remains unknown.
-Next check software call-stack collection for the remaining host cost. The
-[compact profile](../bench/results/2026-10-15-pr6-recovery-audit/moe-window-census-current.json)
-keeps all673 selected warm command intervals. Review added exact frame/stratum
-and zero-throw guards; both original log intervals passed those CPU-only checks.
-
-Before another model run, Main checks unprivileged VTune CPU stack collection
-with `profile_attention.py cpu-smoke`. It runs the installed OpenSSL SHA256
-workload for3s under software sampling, with hardware characterization disabled,
-then requires positive target-module CPU samples in a finite hotspot table.
-Source/helpers and installed tool hashes are pinned; collection/report processes
-have180s deadlines,64MiB raw-text and256MiB total budgets. This is a capability
-probe, without model execution or a GPU-counter/compute-ceiling claim. No sysctl,
-driver or privilege changes are part of it.
-
-The CPU software probe was refused at collector startup by the current ptrace
-policy (`ptrace_scope=1`); it produced no qualified CPU samples. Preserve the
-[failed capability receipt](../bench/results/2026-10-15-pr6-recovery-audit/cpu-profiler-current.json).
-The reviewed next path is disjoint non-GEMM host timing around existing launch
-segments, preserving internal GEMM/transfer scopes. The current Host accounting
-rejects nested Host regions, so a whole-job outer timer is invalid. That review
-requires CPU-only lifetime/exception/accounting cases before separate traced
-and untraced bounded model diagnostics. No speedup follows
-from this source review.
-
-The next diagnostic revision adds version4 CPU categories only to the mode10
-expert window: map upload, job-weight preparation, gate/up and down dequantization,
-gather, SwiGLU, accumulation and status readback. Each wraps an existing disjoint
-host segment; internal GEMM accounting remains unchanged. Explicit GPU waits
-inside a category are subtracted. These regions cover all layers with command
-tracing off or on; no device kernel, transfer, synchronization or inference order
-is added. Pre-job span/layout checks and other engine work remain unclassified.
-Version3 and version4 unclassified time therefore describe different partitions.
-
-Before the engine rebuild, `tools/sycl/check_host_profile.py` compiles and runs
-the CPU-only fixture from committed inputs. It checks disabled/TLS ownership,
-all17 region counters, nested wait subtraction, idempotent closure, exceptions
-and invalid nesting. The parser must reject incomplete, duplicate, wrong-version,
-nonzero-throw and inconsistent-partition receipts. Preserve the known-good engine
-and same-library fixture outside the reused build root; the builder now requires
-that hashed fallback before overwriting outputs.
-
-The model sequence is `bench_engine.py prepare|run` with
-`qsa-gdncols4-host-check`, then `qsa-gdncols4-host-traced-check`, then
-`qsa-gdncols4-host-census`. The first two each use one32K nominal input
-(actual token count recorded), thinking on, parameter validation and CPU/coarse
-observers, with command tracing off then on in separate processes. The last
-uses two fresh78K requests to distinguish first-use and subsequent CPU costs.
-Every version4 category count must match the48-layer planned-work census:
-one map/job-weight/status region per window, one dequant pair per active expert,
-and one gather/SwiGLU/accumulation per job. Retain compact qualification receipts
-and retire successful full logs/CPU fixture binaries once their consumer closes.
-The model counters have not yet run; this is not a speedup, hardware saturation,
-task-quality, physical262144 or RESTORE qualification. Observer overhead remains
-unqualified until compared with a matched clean cohort.
-
-The CPU-only gates passed at`fd0c38e71`: six lifetime/accounting cases and eight
-invalid-case/parser rejections, with all owned processes closed. This does not
-execute the model. The current qualified engine and GDN fixture were hash-checked
-and copied before reusing the build root; all488 project,3608ggml and5703TLA
-original source inputs were recovered and verified from their recorded commits.
-The global inventory also still contains legacy artifacts under an unfinished
-provenance audit. They are not qualified comparison builds; the current build
-receipt records that exception and its next review after bounded model admission.
-No global storage-cleanup completion is claimed.
-
-Both command-tracing off/on model gates passed at39,260 fresh tokens, thinking
-on,24 generated tokens, with no fresh fault and every owner closed. Per request,
-48 map/job-weight/status regions,17,580 dequant pairs and18,796 gather/SwiGLU/
-accumulation jobs matched the actual census. Off/on status-region CPU outside
-explicit waits was3.884881/3.886876s; unclassified CPU was5.282371/5.341875s.
-The status segment includes SYCL memcpy submission and runtime checking, so
-this does not establish3.9s of host arithmetic: an API can wait internally.
-First-use profiled PP was575.2/614.9; differing cold wall gaps prevent a speed
-claim. The traced run qualified668 service intervals, but17 submit-clock
-inversions prevent an absolute submit-to-start timing claim. Full per-layer
-histograms are verified then reduced to conserved work totals for these admission
-checks. Next use the committed two-request78K plan for warm attribution.
-
-The final two-request check passed at78,451 fresh tokens per request, with
-profiled PP796.0 first-use and865.1 subsequently, zero fresh GPU faults and
-all ownership closed. The workload hashes match the earlier warm resource run.
-Warm main-thread CPU was88.805216s over89.659797s wall, with59.173520s inside
-explicit waits and29.631696s outside. Version4 attributes12.441650s to the new
-MoE categories, leaving4.204023s unclassified; the same request's version3
-definition would leave16.645674s. This is attribution, not time saved.
-
-| Warm CPU outside explicit waits | Seconds |
-| --- | ---: |
-| Source copy | 4.769362 |
-| Upload submission | 4.803936 |
-| GEMM submission | 3.240548 |
-| Dequant GU/down, gather, SwiGLU and accumulation submission | 6.845040 |
-| Status wrapper | 5.567415 |
-| Unclassified | 4.204023 |
-
-The table omits smaller categories and overlaps device execution. The status
-wrapper includes `attempt()` preflight runtime checks before both memcpy and
-synchronize, queue/context lookup, submission, observer and post-check work.
-Its5.567s cannot be attributed solely to memcpy or to host arithmetic. Ordinary
-host pointers are legal SYCL memcpy arguments; the contract alone does not prove
-whether the loaded adapter blocks internally. A future discriminating probe
-must time those pieces separately and preserve all asynchronous error checks.
-
-Warm QSA attention, MoE, GDN recurrence and upload queue intervals were20.8553,
-21.0035,6.52502 and8.40041s. Requested layer-weight upload payload was50,292,326,400
-bytes; payload divided by this nonexclusive upload interval is5.987GB/s,
-not a physical PCIe counter measurement. GPU saturation and full critical-path
-coverage remain unproven. The clean867.1 tok/s median remains the speed reference.
-
-For the four sampled expert windows only, expanding each row-bin sample mean
-by its eligible command count gives0.149864s Down and0.265763s accumulation
-service, with0.205840s gather and0.278878s GU. These are descriptive screening
-estimates, not full-model totals or statistical bounds. The next component
-candidate is a Down scatter/FP32 accumulation epilogue using the existing
-reviewed contract: retain the actual BF16 Down rounding before FP32 FMA, unique
-writers, legal element/tail ownership and checked event/owner retirement. Do not
-change inference order or treat it as adopted before same-library correctness
-and matched component/model timing pass. Existing source-specific fusion and
-indexed-A references are available; no repeat generic survey is needed.
-
-## Ordered parallel exponentials for QSA
-
-A separate component candidate adds `qsa_bf16_prefix_ordered_exp_batch` beside
-KVvec4, without a model dispatch hook. It keeps cached BF16 Q, typed K/V loads,
-score pitch33, probability rounding and FP32 recurrent updates. SIMD16 lanes
-compute two exponentials each. Every lane executes32 uniform indexed exchanges;
-lane0 sums cells0..31 in the original ascending FP32 order. The existing subgroup
-max/invalid-score reduction supplies the maximum. No additional workgroup
-barrier, SLM array, host arithmetic or transfer is added to the normal route.
-Shuffle latency, register effects and speed remain unmeasured.
-
-The implementation follows the independently authored existing Strata kernel
-and the reviewed order-preserving QSA design indexed under
-`qsa_ordered_parallel_softmax_scope`; no third-party implementation is copied.
-The pinned compiler's public `select_from_group` API supplies lane exchange.
-The diagnostic-only `QsaPrefixStateProbe` records one query/KV group/head's
-maximum, alpha, normalizer and tile sum per32-cell tile, including padded heads.
-Its full device extent, alignment and disjointness are checked before either
-kernel submits. Non-probe entrypoints have no capture writes. Captured outputs
-must match normal outputs before interpreting state differences.
-
-Main first closes the frozen Down comparison; this source was prepared in an
-isolated child of `feature/sycl`, without another build/GPU job. After integration,
-reuse the closed candidate cache with `build_engine.py rebuild-ordered`, preserve
-the validated fallback, and run `check_attention.py smoke|component|perf ordered-exp`
-one phase at a time, committing each result before advancing. The first small
-GPU phase uses tracing and parameter validation. Require complete BF16 output,
-FP32 state/guard and input-preservation comparisons, invalid state-span/coordinate
-rejections, width/tail/missing/duplicate/page-alias diagnostics and physical262144
-component addressing. A component check does not qualify full-context model,
-RESTORE, numerical quality or sustained generation.
-
-The prospective clean timing compares actual KVvec4 and ordered-exp exports in
-three independent processes, six rotated measured samples per arm/shape, at
-78453 cells/8192 queries with cap33 gather and cap2051 gather/clustered patterns.
-Timing includes admission, pack, attention and checked drain, with checks/copies
-outside. Main's finite budget is180seconds,360CPU-seconds,4GiB RSS and64MiB output
-per child. Advance only for geometric-mean candidate/base ratio<=0.95, no shape
-ratio>1.05, and every process faster in both cap2051 patterns. Passing permits a
-later matched official long-input model A/B; it is not inference adoption or a
-hardware saturation claim.
-
-Source`9d000172f53c399453a0662c3eac2b0771114e7e` passed the traced smoke and
-all11 numerical/boundary cases per arm. Ordered-exp also matched the serial
-FP32 maximum, alpha, normalizer and tile-sum bits, including padded heads and
-unused capture guards; all9 invalid probe admissions rejected. No fresh GPU
-fault or boot change was detected. The initial failed smoke remains archived
-at`963d387698f8b30b8fff9229449775000bdef4b8`: its invalid-overlap test pointed
-at the legal leading guard, and the corrected test points inside the output.
-This was a fixture error, not a relaxed kernel admission or numerical criterion.
-
-Three independent clean processes then completed all108 individual samples:
-
-| Cap / access | KVvec4 median ms | Ordered-exp median ms | Latency change |
+## Selected implementation and independent phases
+
+The selected engine is the original source
+`6e40afc1beddd059ee518617f6c1efce1da14aca`, SHA-256
+`22182f1a5e62e5f4259ce49a75ae44afbd988166ec79324816e499ff37ef60e4`.
+Its engine and twelve same-build fixtures match their original hashes. All9853
+original project/dependency inputs and the build recipe recover from Git.
+Restoring that exact package required no recompilation and supplied no new GPU
+validation. See [the selected build proof](../bench/results/2026-10-15-pr6-recovery-audit/native-gdn-engine-build.json).
+
+Prefill and decode have independently selected kernels, scheduling and placement.
+Keep the existing decode implementation, configuration and1256 expert slots
+while changing prefill. Any decode impact from a prefill change is a separation
+defect, including state handoff, configuration, placement or throughput changes.
+A prefill gain cannot compensate for it. Shared processing requires matched
+measurements demonstrating its benefit; legacy sharing is an audit obligation.
+
+The SYCL build has a separate `strata_prefill` archive, but
+`src/program/generate.cpp` controls both phases and their handoff. That archive
+alone does not prove isolation. Audit the shared controller, native dense owners,
+cache publication and restored runtime state, then repeat matched decode checks.
+Keep short-input prefill through the decode weight/cache layout available.
+Do not change process environment variables between phases.
+
+The current worktree also has an unadopted, compile-time
+`STRATA_SYCL_FULL_CONTEXT_DIAGNOSTIC` path in `generate.cpp`. The selected engine
+was not rebuilt with it. Its original current-worktree admission rejects this
+source difference correctly; do not refresh hashes or relabel the old binary.
+
+## Long-prefill processing order
+
+The selected benchmark configuration uses native BF16, the vLLM Xe2 backend,
+8192-token chunks, GPU residuals, mode10 MoE windows,384 expert-bank slots and
+immutable Arena source views. The complete environment and configuration are
+in [the current prefill comparison](../bench/results/2026-10-15-pr6-recovery-audit/phase-prefill-speed-current.json).
+Use that pinned configuration rather than assembling flags from old reports.
+The implementation is in `src/prefill/layer_major.inc`, `moe_window.inc` and
+`src/prefill/sycl/`; the program controller owns its entry/exit transitions.
+
+| Order | Work and ownership |
+| --- | --- |
+| Admission | Check actual tensor extents, VRAM and single-allocation limits, residual placement and scratch owners before submission. |
+| Loan | Retire conflicting graphs, loan the checked expert-cache suffix, and retain its payload/map restoration contract. Dense decode owners move from Full to the private Bank layout. |
+| Residual | Keep the long request's HC residual on the GPU in BF16; a budget estimate alone does not establish residency. |
+| Layer | Process layers in order. Within a layer, issue8192-token chunks through HC normalization/mixing, attention or GDN, and shared/routed MoE work. |
+| Experts | Borrow immutable private-Arena source views and upload the required layer weights into the bounded bank. GPU routing feeds a host grouping/map step; GU/SwiGLU and Down/scatter run on the GPU. |
+| State | Publish KV and recurrent state with the required dependencies. Typed BF16 interlayer callbacks avoid a full FP32 host round trip. |
+| Handoff | Drain temporary owners; restore48 dense layers, the expert-cache payload and its map. Expand the final residual for existing MTP/decode interfaces. |
+| Decode | Resume the independently selected verifier/draft path and1256-slot placement. Confirm actual restoration and repeated throughput. |
+
+Private-Arena views avoid the old512-expert CPU staging copy; shared-file and
+unsupported providers retain synchronous copying. Source owners stay open through
+checked queue retirement. This removes a CPU copy, not the requested expert H2D
+payload. The selected MoE path still reads router IDs back, groups metadata on
+the CPU and uploads maps. This is a remaining host boundary to measure, not a
+GPU-only routing claim. A prior warm profile charged0.25367CPU seconds to host
+grouping; that is neither its full synchronization cost nor a clean speed.
+At117K input, the observed requested payload is about40GB/request;
+it is not measured wire traffic. GPU-local residual copies remove the old
+interlayer host round trips. Neither fact alone assigns the measured speed gain.
+
+## Storage, arithmetic and provenance
+
+`STRATA_SYCL_PREFILL_NATIVE16=bf16` scopes native16 to long layer-major prefill.
+Short prefill and decode retain their selected FP32 route. Saved residual dtype
+must also be BF16. FP16 and BF16 both use two bytes; select by range, numerical
+contract and measured performance.
+
+| Data or operation | Contract |
+| --- | --- |
+| HC residual, projection outputs and interlayer storage | BF16 producer/consumer tensors, without restoring the whole tensor to FP32 before every operation. |
+| Expert hidden activations and dequantized expert weights | FP16 on the selected expert path. |
+| XMX GEMM | FP32 accumulation/epilogue, followed by one16-bit output store. |
+| Normalization, sigmoid, expert summation and routing | Local FP32 arithmetic; HC coefficients and routing decisions/weights remain FP32. |
+| GDN | Persistent recurrent state remains FP32; internal boundaries retain their selected kernels. The chunk64 candidate is independently selectable, not implied by native16. |
+| Typed QSA | BF16 projection/norm/RoPE/append/attention/gate boundaries with FP32 local/online state. The selected prefix uses ordered exponential arithmetic. |
+| PLE and final interface | Existing FP32 PLE interface and one final residual expansion for MTP/decode remain explicit. |
+| Scratch | Native views alias checked unused arena ranges; narrower tensors alone do not prove a smaller total allocation. |
+
+The selected typed QSA route uses resident, unrotated INT8 K/V and session RoPE
+tables. Streaming/host mirrors and rotated/Q4/hybrid KV need separately qualified
+paths. Unsupported tuples/geometry fail before GEMM submission; there is no CPU
+arithmetic fallback. Keep the FP32 reference for diagnostics. A validated
+SGLang/vLLM arithmetic contract is acceptable; extra llama.cpp/FP32 precision is
+not the adoption standard. Identical generated text is not required.
+
+See [the vLLM Xe2 native16 implementation](SYCL_VLLM_XE2_NATIVE16.md) for its
+checked BSD-3 source, AOT object and shape/lifetime contract. The original custom
+joint-matrix backend was rejected for speed. XeStrata application code is
+excluded from implementation adoption; the independent installed compiler is a
+separate toolchain asset. Early sparse NLL/top1 checks establish neither broad
+quality nor a permitted numerical degradation. Broader task qualification remains
+open; do not revive an old rejected backend from its isolated correctness pass.
+
+## Measured performance and rejected comparisons
+
+Hardware is Arc B57010GiB and Ryzen5600X6c/12t. The latest clean prefill comparison
+used official `bench.sh`, thinking enabled and six fresh processes in
+original/candidate/candidate/original/original/candidate order. Each process read
+four fresh117489-token requests. First use and subsequent requests are distinct.
+
+| Process pair | Original subsequent-three median, tok/s | Candidate median, tok/s | Candidate/original |
 | --- | ---: | ---: | ---: |
-| 33 / gathered | 8.792280 | 8.618858 | -1.97% |
-| 2051 / gathered | 231.586801 | 224.028323 | -3.26% |
-| 2051 / clustered | 174.369835 | 139.799954 | -19.83% |
+| 0 | 1003.0316 | 1002.7148 | 0.99968422 |
+| 1 | 1002.6507 | 1002.7970 | 1.00014595 |
+| 2 | 1002.3795 | 1002.6703 | 1.00029016 |
 
-Every process improved both cap2051 patterns. The geometric-mean latency ratio
-is0.912692, satisfying the prospective component gate. The
-[individual results](../bench/results/2026-10-15-pr6-recovery-audit/qsa-ordered-exp-current.json)
-retain spread and process medians. Proceed to an explicit opt-in long-prefill
-model route and a matched official78K comparison; no new model throughput or
-sustained decode, task-quality, full-context or RESTORE qualification is claimed.
+The candidate is source`1cba8a285`, engine SHA prefix`590f8237`. Its paired
+geomean1.00004008 misses the prospective improvement gate; the first pair also
+fails no-decline. It is **not adopted**, and its extra build is retired.
+First-use926.174..929.804tok/s stays separate. Original6e40 repeatedly exceeds
+1000tok/s on the subsequent-request workload. The24-token outputs qualify
+neither sustained decode nor task quality. All processes closed normally,
+all15 model hashes matched and no fresh fault was recorded. Full frozen evidence
+recovers at`1e676d554`; the linked compact result retains individual samples.
 
-`STRATA_SYCL_PREFILL_QSA_MATH=bf16-prefix-ordered-exp` explicitly selects the
-qualified kernel in dedicated long prefill. It uses the same prefix allocation,
-resident-pool admission, strides and owner lifetime as KVvec4; the component
-kernel and default selector are unchanged. Startup logs identify parallel exp
-with ascending sum, cached Q and typed4 K/V. Short prefill and decode keep their
-existing route.
+The older362 package is also rejected. Its repeated long-generation comparison
+missed the no-decline rule for both code and prose; a prior prefill improvement
+cannot excuse that outcome. See [its decode decision](../bench/results/2026-10-15-pr6-recovery-audit/canonical-restore-decode-current.json).
+Do not conflate362,590f and the selected6e40 package. Static cache reordering and
+window-ranked membership were rejected separately; original placement remains.
 
-Main rebuilds from committed inputs, then prepares/commits/runs
-`qsa-ordered-exp-check`, `qsa-ordered-exp-base` and
-`qsa-ordered-exp-candidate` using `tools/sycl/bench_engine.py`. Preparation
-requires the recorded component gate and unchanged kernel source. The first
-model gate uses validation/trace on a32K nominal input. Both clean speed arms
-use the same binary, GDN columns4, thinking enabled and four fresh78K requests;
-only the startup QSA selector differs after normalizing private paths/ports.
-Each later plan requires its matching completed predecessor committed. Retain
-all requests, separate first-use from subsequent speed and archive prior gates
-by immutable commit. This is a model screen, not independent-process variance,
-sustained generation or default-adoption qualification.
+## Current MTP attribution
 
-The opt-in source`ce1e950a843953c7856382978f7993bcc848e366` passed its
-39,260-input validated model admission, thinking enabled, without fresh GPU
-faults. The subsequent same-binary clean screen used78,451 fresh tokens on
-every request and matched benchmark source, request hashes, profile seed and
-normalized environment/configuration. Both processes exited normally.
+The [private resident-MTP build](../bench/results/2026-10-15-pr6-recovery-audit/mtp-resident-control-current.json)
+regenerates6e40 with only two declared diagnostic translation units changed.
+Source/admission checks,1410 compiled-input identities,32 native pre-device
+refusals, two traced device fixtures and two fresh short-model processes passed.
+The [short-model qualification](../bench/results/2026-10-15-pr6-recovery-audit/mtp-resident-serve-current.json)
+checks actual prompt paths, accepted-prefix positions, target windows, draft
+rounds, first-init validation and normal closure. It is not speed or adoption.
 
-| QSA route, GDN columns4 | First-use tok/s | Subsequent tok/s | Subsequent median / sample SD |
-| --- | ---: | --- | ---: |
-| KVvec4 | 789.4 | 867.8, 859.5, 867.4 | 867.4 / 4.68 |
-| Ordered-exp | 816.9 | 902.9, 893.5, 900.6 | 900.6 / 4.90 |
+The [official net-cost pilot](../bench/results/2026-10-15-pr6-recovery-audit/mtp-net-bench-current.json)
+uses two fresh processes, cap0 then1, on that same binary and unchanged original
+prefill/configuration/1256 slots. Cap0 means the normal MTP4 route; cap1 omits
+generation catch-up/proposals and uses T1 target windows. MTP weights, KV and
+prompt precompute remain resident. This is not complete MTP-off or completely
+allocation-matched. Both thinking-on v4 workloads have at least32K fresh input,
+1K generated tokens including thought,512 answer characters and10s clocks.
+The explicit speed-only client mode permits valid zero counters without calling
+them agreement/MTP-classification evidence.
 
-The matched subsequent-median gain is3.83%. Keep ordered-exp as an explicit
-long-prefill tuning candidate. This is one process per arm with three subsequent
-requests, not independent-process variance. All individual requests and the
-immutable baseline reference are in the
-[current model comparison](../bench/results/2026-10-15-pr6-recovery-audit/qsa-ordered-exp-model-current.json).
-The24 generated tokens do not qualify sustained decode; quality, full-model
-262144 context and RESTORE remain open. Neither1000 PP nor70 TG is achieved.
-The next source-backed candidate is UR V2 submission batching, conditional on
-bounded queue/event/profiling acceptance and preservation of the existing
-copy-offload avoidance path; the indexed review does not qualify running it.
+Both processes close normally with all15 final model hashes unchanged, no fresh
+faults and exact request/route/clock/resource replay. The observed single samples
+are:
 
-At comparison closure, all component samples and nine official model requests
-were checked against raw output, and the original build inputs were recovered
-from Git before retirement. The current ce1 engine and three qualified QSA
-fixtures remain. The older bb8 fallback/GDN fixture, closed QSA logs/caches and
-four completed audit report/review payloads were retired under the
-[deletion manifest](../bench/results/2026-10-15-pr6-recovery-audit/build-retirement-20261018.json).
-Before another rebuild overwrites this selected engine, preserve and hash-check
-it outside the reused cache and commit a new fallback reference. The six legacy
-provenance holds remain unresolved; this is not global storage cleanup.
-
-## Submission batching acceptance
-
-The pinned UR Level Zero V2 provider exposes the startup-only experimental
-`UR_L0_V2_FORCE_BATCHED` selector. The source audit in the research index confirms
-that common command-list creation still honors the existing copy-offload
-disable flag, but regular batched-event profiling is an unresolved compatibility
-question. Current engine streams explicitly request in-order execution and
-profiling. Do not infer acceptance from the environment variable or ELF strings.
-
-The maintained compatibility fixture's explicit `--submission` mode stops before
-graph recording. It checks two-stream copies/order, explicit/default-stream
-elapsed times, direct kernel profiling, integer/guard results for1/119/120/121/241
-queued kernels, ordinary-RAM copy lifetime and teardown. `sycl_submission_test`
-is a manual target; the default/native compatibility tests keep their graph
-coverage. No inference math or production queue property changes here.
-
-Main first preserves the selected engine, commits source/recipe/controller and
-runs `build_engine.py rebuild-submission`. Then run/commit
-`check_submission.py control` and only after it passes run
-`check_submission.py candidate`. Separate owned processes keep the selector
-unset versus1, set all runtime variables before initialization, and retain
-copy-offload disable1. Both phases use tracing/parameter validation and finite
-90-second/120CPU-second/2GiB-RSS/64MiB-output budgets. All10 fixture cases and
-normal ownership/fault closure must pass before a forced-batched model run.
-This gate measures compatibility, not speed or hardware saturation. A failed
-profiling/synchronization contract prevents model advancement without changing
-the900.6tok/s route or weakening its existing API.
-
-At source`dfba48ef52e1bd8df596ecda06ab4eae0c882359`, the ordinary control
-passed all10 cases. The forced-batched candidate passed the initial copy/order
-case, then returned`UR_RESULT_ERROR_PROFILING_INFO_NOT_AVAILABLE` for the first
-explicit-stream elapsed-time query. The remaining candidate cases did not run.
-Both processes closed without a fresh GPU fault or boot change. Reject this
-setting for the current profiling-enabled runtime; no forced-batched model or
-speed measurement follows. The engine executable is byte-identical to the
-900.6tok/s reference. Keep the
-[failed gate and compact diagnostic](../bench/results/2026-10-15-pr6-recovery-audit/submission-acceptance-current.json).
-The selected next implementation is the interleaved GU/SwiGLU epilogue seam;
-prove actual fragment partner ownership before running its GPU kernel.
-
-## MoE GU/SwiGLU component
-
-The first gate is host-only inspection of the actual pinned TLA matrix and
-output-copy layouts. `build_engine.py rebuild-gu` builds the manual
-`sycl_moe_gu_swiglu_bench` target. `measure_gu_swiglu.py ownership` checks both
-compact16x64 and wide128x128 policies at1/3/17/33/129/2334/5963/8191/8192 rows,
-including masked tails. Each logical GU value and hidden output must have one
-owner. Adjacent interleaved gate/up columns may use same-index lane-XOR1 exchange
-only if every pair in that layout passes. This mode creates no Runtime, queue or
-USM allocation and submits no GPU work; its90s/120CPU-second/2GiB-RSS/64MiB-output
-budget is independent of later numerical and performance gates. No model path
-selects a fused GU kernel at this stage.
-
-The original ownership gate at source`b3e982d93` passed all36 cases, with zero
-adjacent-pair mismatches for both layouts/policies (receipt at`3ea300e5d`). The
-next explicit component API uses the matrix layout and packs two already-rounded
-BF16 fragment values into one32-bit subgroup exchange. Adjacent lanes compute
-different fragment indices, balancing the hidden writers. A new host gate must
-prove this packed mapping before any GPU test, followed by a384-work-item check
-of the actual local/subgroup index relationship. This is newly authored Strata
-code using the existing licensed DPAS helper and public TLA/SYCL APIs.
-
-Run/commit `measure_gu_swiglu.py ownership`, then `smoke`, then `validate`, then
-`perf`. Smoke uses tracing/parameter validation and checks both tile policies,
-finite/rounding/NaN/saturation inputs and13 rejected admissions. Full validation
-adds1/17/33/129/2334/5963/8191/8192-row cases for both policies. BF16 diagnostic
-capture must match dense DPAS output exactly; hidden output preserves finite
-FP16 saturation and NaN classification, with a prospective maximum1 FP16 ULP
-bound across the existing JIT activation and new AOT epilogue. Small finite
-cases also use an independent integer dot-product oracle. Check guards and input
-immutability for both capture and no-capture specializations.
-
-Clean timing uses three independent processes, rotated separate/fused arms,
-five measured rounds plus warmup,16 submissions per burst, at64/160/2334/5963/8192
-rows. Keep every measured sample and both host wall time and queue intervals;
-an interval includes launch bubbles and does not establish GPU busy time.
-The prospective component gate is wall-ratio geomean<0.98 with every large
-shape/process ratio<=1.02. Any model integration still requires long-input
-matched measurements and the broader correctness gates. The eliminated logical
-GU write/read is5120bytes per row,40MiB for8192 rows; this is an operation count,
-not a measurement of physical VRAM traffic or a proof of a bandwidth bottleneck.
-
-At source`5ca094afc`, the packed ownership36 cases, traced smoke4 cases and13
-admissions, full18 cases and all timed outputs passed without a fresh GPU fault.
-BF16 captures were exact and the observed FP16 difference was0 ULP, including
-the no-capture specialization. NaN payload bits are not an adoption criterion;
-the finite hidden output must remain saturated and within the stated bound.
-The native Luna-max review corrected a research false positive: the all-slot
-partner loop, XOR involution, parity and packed writer census also prove sloti+1.
-
-| Rows | Fused/separate wall ratio, median of3 process ratios | Decision for next model trial |
-| --- | ---: | --- |
-| 64 | 0.85950 (range0.67026–0.92128) | Exclude because of wide timing spread |
-| 160 | 1.07211 | Retain separate GU/SwiGLU |
-| 2334 | 0.97321 | Eligible large-job candidate |
-| 5963 | 0.94814 | Eligible large-job candidate |
-| 8192 | 0.92754 | Eligible large-job candidate |
-
-The component wall-ratio geometric mean was0.94205. This is a component result,
-not model throughput. Preserve the samples in the
-[current component result](../bench/results/2026-10-15-pr6-recovery-audit/moe-gu-swiglu-current.json).
-The explicit startup selector`STRATA_SYCL_PREFILL_GU_SWIGLU=large` is a model
-experiment: use the wide fused kernel only for jobs>=2334 rows in the existing
-long-input accumulator window. Smaller jobs keep the separate operators.
-Speeds between the sampled sizes remain unmeasured; actual model timing decides
-this threshold. Default, short-input prefill and decode do not select this API.
-Existing command-service census assumes a separate activation command, so the
-new selector rejects that observer until fused-command coverage is qualified;
-the ordinary parameter validation and trace path remains available.
-
-Run/commit `bench_engine.py prepare qsa-gu-fusion-check`, then its matching
-`run`. Only a passed>=32K actual-input admission permits the corresponding
-`base` then`candidate` phases. Both clean arms use the same engine, ordered-exp
-QSA, GDN columns4, matched official`bench.sh` requests and thinking enabled;
-only the GU selector changes. Each arm records first-use plus3 subsequent
-fresh>=64K requests and actual fused/separate job counts. Repeated independent
-cohorts are still required if variability prevents an adoption decision.
-
-The matched78,451-token comparison used engine
-`89895909e04a811b2b34ba2f9eca957718086c13df2f669726b8182368482e02`
-at source`3d8708758`. Six independent native processes ran in the committed
-order A0/B0/B1/A1/A2/B2, with one first-use and three subsequent fresh inputs
-per process, thinking enabled. Every input/profile/configuration/runtime and
-executable matched after normalizing private output paths, ports and the GU
-selector. Recovering each original source snapshot also verified that the
-executed benchmark, server and workload helpers matched; the cohort0-to1
-extension changed only the owner/receipt controller.
-
-| Pair | Separate first-use / subsequent median tok/s | Fusion first-use / subsequent median tok/s | Subsequent median gain |
-| --- | ---: | ---: | ---: |
-| 0 | 814.8 /898.2 | 819.2 /903.5 | +0.5901% |
-| 1 (reversed) | 816.0 /899.8 | 819.0 /903.2 | +0.3779% |
-| 2 | 816.4 /900.0 | 816.3 /902.9 | +0.3222% |
-
-All nine matched subsequent inputs favored fusion. Their geometric-mean speed
-ratio was1.00566723 (+0.5667%), passing the prospective requirement of all three
-paired medians improving and geomean>1.002. Keep the original samples and spread:
-for example, A1's subsequent samples were900.3/883.6/899.8 with sampleSD9.50.
-First use is excluded from selection; the third pair did not improve first use.
-All six processes passed eligibility/closure checks without a fresh GPU fault
-or boot change. At78K, fusion handled about5,000 jobs and33.9million rows per
-request; smaller jobs remained separate.
-
-`python3 tools/sycl/bench_engine.py summarize-gu` verifies the six committed
-receipts, recovered source hashes, request bytes, normalized settings, actual
-route counts and independent native identities before recording the decision.
-The [current compact comparison](../bench/results/2026-10-15-pr6-recovery-audit/moe-gu-swiglu-model-current.json)
-keeps all24 prompt-speed samples and links the full original receipts in Git.
-Retain the explicit large-job candidate for further qualification. The default
-selector stays off:24-token generation does not qualify sustained decode,
-broad task quality or physical262144/RESTORE. The1000tok/s prefill and70tok/s
-decode goals remain unmet.
-
-The historical runtime check covers the then-configured `runtime_elfs`, not
-a complete loaded-library census. A later offline dependency check found the
-four linked MKL libraries absent from that set; subsequent settings pin them
-and the libdl/libpthread shims as well. This does not retroactively add per-launch
-hash evidence to the six finished processes or change their original status.
-
-## MoE Down/scatter component
-
-`Gemm::down_scatter` is an explicit component API with no model dispatch hook.
-Its separately named final-fragment sibling retains the licensed vLLM-XPU BSD
-DPAS loop; the original dense helper definition is preserved verbatim from
-`7829568c6`. FP16 X/weights have the fixed production Down shape2560x640.
-The new epilogue uses the actual TLA `partition_C` coordinates, BF16 conversion
-on the accumulator's unchanged thread/value layout, then explicit FP32 FMA.
-Logical tails are masked before map reads. The published immutable expert plan
-provides unique token rows per job; the original in-order queue serializes
-contributions from different jobs/experts. Complete registered device spans,
-non-aliasing and the original block2D input alignment are checked before enqueue.
-A diagnostic-only BF16 capture is optional; the null-capture kernel materializes
-no Down tensor. These contracts do not establish speed or model qualification.
-
-Source`7fbe795ce` passed18 exhaustive CPU tile/element ownership cases for both
-policies at1,3,17,33,129,2334,5963,8191,8192 rows; one traced seven-result small
-GPU gate; and22 tail/split/irregular/rounding cases. BF16 captures and FP32
-accumulation matched the separate reference bitwise, including exceptional
-inputs and invalid-map status. The small finite cases also checked an independent
-integer-dot/RNE oracle; nine invalid admissions rejected. All processes closed
-normally without a fresh GPU fault or boot change. Main uses the maintained
-[fixture](../bench/sycl/moe_down_scatter.cpp) and
-[phase controller](../tools/sycl/measure_down_scatter.py).
-
-Three independent resident processes measured six rotated rounds per arm/shape,
-16 repetitions per sample, at64,160,2334,5963,8192 routed rows and both contiguous
-and every-other-token layouts. The baseline uses the same tile as the candidate:
-compact below128 rows, wide otherwise. Queue-marker intervals include host gaps;
-they are not device busy, physical traffic or a hardware ceiling.
-
-| Routed rows | Contiguous separate/fused ms | Every-other-token separate/fused ms |
+| Workload | MTP4 generated / exact tok/s | No decode draft generated / exact tok/s |
 | --- | ---: | ---: |
-| 64 | 0.045553 /0.045326 | 0.022663 /0.022998 |
-| 160 | 0.028639 /0.051579 | 0.028363 /0.051549 |
-| 2334 | 0.337158 /0.397920 | 0.369938 /0.418913 |
-| 5963 | 0.810121 /0.879896 | 0.929319 /0.855455 |
-| 8192 | 1.112955 /1.189010 | 1.337500 /1.127850 |
-
-The ten-shape geometric-mean latency ratio is1.148080, so the unchanged
-prospective gate failed. That gate requires ratio<=0.95, no shape ratio>1.05,
-and every process to improve at2334/5963/8192 for both layouts. Irregular8192
-improves15.67%, but160 and2334 regress in every process. **Do not connect this
-variant to the model.** Individual samples, process medians and limits are in
-the [original raw-fragment result](https://github.com/yqYo1/Strata/blob/16b697d9c2c5a699c8e7250e7a04d2b5cfbf15b0/bench/results/2026-10-15-pr6-recovery-audit/moe-down-scatter-current.json).
-The clean model reference remains867.1 tok/s; this component did not change it.
-Physical262144, model quality, RESTORE and decode remain separate gates.
-
-For the earlier7fbe795ce build, offline inspection of the retained known-good
-and rebuilt engine native images
-found identical instruction streams through EOT and identical complete per-kernel
-`.ze_info` blocks for all eight existing dense entries. Nine bytes per entry
-differ after EOT in null-destination immediates/padding; no branch targets enter
-that region and no unresolved indirect transfer was found. The other eight
-existing native text entries matched directly; four new scatter entries were
-added. The [original build result](https://github.com/yqYo1/Strata/blob/16b697d9c2c5a699c8e7250e7a04d2b5cfbf15b0/bench/results/2026-10-15-pr6-recovery-audit/native-gdn-engine-build.json)
-records hashes and exact comparison scope. This checks those native calculations
-and recorded kernel argument information, not total host behavior or model speed.
-
-The reviewed next discriminator is an explicitly constructed BF16 output-copy
-TV layout. The current descriptor is an identity tensor, so the copy layout and
-its paired coordinates need a new ownership/equality proof; `partition_C` tests
-alone do not establish it. Keep the separate two-stage path as performance
-anchor and raw scatter as diagnostic control. Do not change metadata hoisting
-or alias declarations in the same experiment. Also predeclare a representative
-working-set comparison: this fixture's accumulator contains T or2T token rows,
-whereas the measured model window has78451. Row sparsity and VRAM footprint
-must be matched before a model-relevance claim. Evaluate tile choice separately.
-Logical byte removal and one fewer launch did not establish a speedup, and the
-shape-dependent timings do not yet establish their hardware cause.
-
-After recording those results, Main retired221 closed-run, CPU-fixture,
-consumed-review and old-fallback files (61,391,969bytes). Original run helpers
-and the fallback's9799 source inputs were retrieved and hash-verified from Git
-before deletion. Keep the new runtime-qualified engine and its current GDN
-fixture. Older legacy build provenance remains an explicit separate exception;
-the six-root review has completed, with no exact final-build source proof for
-any of those roots. Each binary matches its own receipt, but seed links,
-similarly named proofs and declared commits do not establish recovery of the
-final source, recipe and dependencies. Keep the six provenance holds until
-their recovery steps are verified. The review identity and unresolved outcome
-are recorded in the [current build result](../bench/results/2026-10-15-pr6-recovery-audit/native-gdn-engine-build.json);
-this is not a global cleanup claim or authorization to retire those roots.
-
-## Optional GDN chunk64
-
-`STRATA_SYCL_PREFILL_GDN_CHUNK64=1` adds a separate experimental long-prefill
-route with native BF16 projection/conv/recurrence activations, FP32 gate/beta,
-carry and shared convolution history, and a genuine FP16 projection consumer.
-It retains the loaded16/48 head order. The lifetime-shared8192 arena fits the
-existing GDN reservation, preserving the MoE-window8192 admission. See the
-[maintained contract and fixture](../bench/sycl/gdn_chunk64/README.md).
-
-The same-binary clean official benchmark read78,451 fresh tokens per request,
-thinking on, four requests per process. Existing versus chunk64 first PP was
-682.9 versus677.4 tok/s; subsequent medians were725.3 versus725.8 tok/s. This
-0.07% difference establishes no material model speed gain despite the earlier
-22% resident component gain. Both processes exited without fresh GPU faults.
-Keep the existing GDN selected for performance. The new route remains opt-in;
-its full64 solve differs from the SGLang XPU block16 contract, and numerical/task
-quality, sustained generation, physical262144 and RESTORE are still unqualified.
-
-The next source candidate adds an explicit `ScatterLayout::output_copy` parameter
-without a model hook. It constructs the pinned TLA public
-`make_block_2d_copy_D<cutlass::bfloat16_t>(mma, stride)` layout without a global
-output pointer. Values use `partition_sg_fragment_S`, paired coordinates use
-`partition_S`, and the same TLA reorder as dense BF16 output precedes the
-unchanged scalar FP32 scatter/FMA. The original matrix mapping remains a
-diagnostic arm. No tile, metadata-hoisting or alias-policy change is combined.
-
-Before measurement, the new plan requires36 host ownership cases,14 traced
-small checks and52 GPU correctness cases across both layouts and tiles,
-including fixed78451-token windows. Only after those pass, three independent
-processes compare separate, raw-fragment and output-copy arms at64/160/2334/5963/8192
-expert rows, contiguous or evenly distributed over the same78451-row accumulator.
-Six rotated measured rounds and one warmup use16 repeats; every timed sample
-gets a full bitwise reference comparison outside timing. Allocations, resets
-and readback stay outside marker intervals. Main supervises each process for
-900seconds (other phases600),6GiB host RSS and128MiB raw output. The prospective
-advance gate remains geometric-mean latency ratio<=0.95 against the separate
-reference, no shape>1.05, and each process improves at2334/5963/8192 in both
-placements. Passing permits a later model experiment, not inference adoption.
-
-Source7ad7aad7ad7399ba54ce3aaa5171b0298370e117 passed all36 CPU ownership,
-14 traced small and52 GPU correctness cases. Captures and normal kernels
-matched BF16 outputs and FP32 accumulation bitwise, including guards and invalid
-maps. The three independent performance processes also completed normally,
-with540 measured and90 warmup samples and no fresh GPU fault or boot change.
-
-| Routed rows | Contiguous separate / raw / output-copy ms | Distributed separate / raw / output-copy ms |
-| --- | ---: | ---: |
-| 64 | 0.027161 / 0.025632 / 0.025791 | 0.026423 / 0.025879 / 0.025898 |
-| 160 | 0.030964 / 0.054749 / 0.054603 | 0.030911 / 0.055638 / 0.055446 |
-| 2334 | 0.338083 / 0.399388 / 0.397962 | 0.367198 / 0.419964 / 0.418617 |
-| 5963 | 0.798512 / 0.848633 / 0.847256 | 0.847103 / 0.937369 / 0.934727 |
-| 8192 | 1.087380 / 1.127760 / 1.125495 | 1.160900 / 1.225910 / 1.224640 |
-
-The output-copy/separate geometric-mean latency ratio is1.175797. Every process
-is slower at2334/5963/8192 in both placements, so the predeclared advance gate
-fails. **Keep the separate engine route; do not connect either fusion variant.**
-The [current individual results](../bench/results/2026-10-15-pr6-recovery-audit/moe-down-scatter-current.json)
-preserve the raw control, spread and every sample. This repeated same-buffer
-component regime does not identify physical traffic, saturation or model speed.
-At the close of this Down comparison, the clean model reference was867.1 tok/s;
-the later ordered-exp model screen above reaches900.6 tok/s.
-
-Bounded offline ELF inspection of the actual7ad engine also found125504/126912
-byte native wide no-capture scatter sections, versus8128 bytes for dense
-FP16-to-BF16 wide GEMM. Compact scatter sections were15936/15680 versus3072
-bytes dense. Raw and output-copy code hashes differ. This is compiled code-size
-evidence, not proof of instruction-cache pressure, occupancy or a slowdown
-mechanism. Before another fusion variant, investigate grouping repeated row
-metadata/predicates while preserving static fragment access; a dynamic register
-index or restricted pointer must not be assumed faster or legal without checks.
-The QSA ordered-exp component and opt-in model screen subsequently passed their
-gates as described above. Neither Down fusion variant is selected.
-
-### Next Down discriminator: workgroup row metadata
-
-The selected next component hypothesis stages each logical M row's validated
-token and weight once per workgroup, independently of the TLA fragment layout.
-It targets repeated global metadata loads, address calculations and predicates
-in the rejected scalar epilogue; those source operations and the compiled code
-size do not establish a measured resource bottleneck or predict a speedup.
-The GU model comparison closed before this implementation; its original
-source and individual samples remain reachable in Git.
-
-Use the existing matrix mapping and explicit opt-in component API. Local IDs
-cover the16 or128 M rows without overlap, including a masked final M tile.
-Validate the slot/token before loading a weight, OR the existing error bit for
-an invalid map, and publish an invalid-token sentinel. After one unconditional
-workgroup local-memory barrier, the unchanged DPAS helper and BF16 conversion
-feed the original per-cell FP32 FMA using cached token/weight. All work-items
-must reach the barrier. No subgroup row-ownership assumption, dynamic fragment
-index, global metadata slab, alias promise or barrier removal is included.
-Two local arrays require128 or1024 bytes per workgroup; query the device limit
-and retain all current span, plan lifetime and disjoint-writer checks.
-
-Before implementation, an independent source-only review must assess the
-barrier, tails, error semantics and numerical contract against the pinned SYCL
-and TLA interfaces, and compare counterarguments such as static factoring or
-already-commoned loads. Main owns implementation, codegen inspection and tests.
-Keep the existing separate and scalar-fused controls. Require exact captures,
-FP32 accumulation, guards, immutable inputs and invalid-map outcomes before
-three clean independent processes measure the fixed78451-row window at
-64/160/2334/5963/8192 expert rows in both placements. The existing advance gate
-(geomean latency ratio<=0.95, no shape>1.05, each large shape improves in every
-process) remains prospective. The extra barrier or SLM accesses may regress;
-reject the variant if it fails. Component success alone permits only a later
-model trial, not adoption or a hardware-saturation claim.
-
-The independent source-contract review requires BF16 diagnostic capture to
-remain before the invalid-token skip, including invalid-map cases. Status is
-the final OR-ed bitmask, not an atomic-call count: a bad slot sets bit1 and
-suppresses that row's token-error branch; bit2 requires a valid slot. Add a
-combined bad-slot/bad-token case and require exactly bit1. This review found
-the cache conditionally legal; it provides no new runtime or speed evidence.
-Use the pinned TLA revision87f6850680a580654b9ea2c80dbc01aeb36ad231 when
-resolving its interface references.
-
-The component implementation exposes `ScatterLayout::matrix_row_cache`; no
-engine route selects it. The original matrix and output-copy kernels remain
-separate specializations. Its host ownership check also counts every local
-metadata slot and checks each actual TLA coordinate against its workgroup's M
-interval. The published plan, maps and weights stay immutable through the
-checked drain. Typed metadata/output alignment is rejected before submission.
-
-Before its first GPU run, source review found that this fixture's borrowed
-queue was not drained by `Allocation` teardown: `Runtime::wait()` covers only
-the two built-in queues. A synchronous submission/admission exception could
-therefore unwind owners while earlier borrowed-queue work remained pending.
-Explicit checked drains now precede Case and Buffer member destruction; a
-failed drain exits without releasing those owners. This is a source-level
-lifetime fix, not a demonstrated cause of an earlier GPU fault.
-
-The new fixture requires54 host ownership cases,33 traced small-check events
-(including16 admission rejects,7 invalid-map cases and synchronous-exception
-retirement per policy), and78 full
-correctness events across the three policies and both tiles. It verifies full
-input bits/guards, diagnostic M tails, null-capture non-writes, combined
-bad-slot/bad-token precedence and a mixed-row error mask of3. Clean timing
-retains three arms: separate, scalar matrix fusion and row-cached matrix fusion;
-output-copy remains a correctness diagnostic. All checking/readback is outside
-the reported bursts. `rebuild-down` also rebuilds the GU fixture because the
-component shares its adapter translation unit; the validated prior engine and
-same-build GU fixture are preserved before overwrite. These are prospective
-performance gates, not a new model performance result.
-
-At source`c9ad511e4f3ec8387327e6c86d8e6a9e02988eac`, the54 CPU ownership,
-33 traced small-check and78 full correctness events passed. All three policies,
-tails, capture/non-capture, immutable inputs, invalid maps and checked exception
-retirement completed without a fresh driver fault. The current
-[component result](../bench/results/2026-10-15-pr6-recovery-audit/moe-down-scatter-current.json)
-records these gates. Three independent clean timing processes subsequently
-closed normally, with630 successful timing events (90 warmup,540 measured),
-no fresh driver fault and unchanged boot. The original all-shape advance gate
-failed: the geometric-mean latency ratio is0.987055, above the required0.95,
-and160-row shapes exceed1.05. No model route selects the cache.
-
-| Expert rows | Row-cache/separate ratio, contiguous | Distributed |
-| --- | ---: | ---: |
-| 64 | 0.99792 | 0.86405 |
-| 160 | 1.37682 | 1.37339 |
-| 2334 | 0.95136 | 0.98721 |
-| 5963 | 0.87003 | 0.91436 |
-| 8192 | 0.83246 | 0.86564 |
-
-Every2334/5963/8192-row shape improves in each of the three processes. Their
-exploratory six-shape geometric mean is0.901956; it does not turn the failed
-all-shape gate into a pass. The next candidate should retain separate Down
-and accumulation below2334 rows and use the cache only for larger jobs.
-Commit that routing and its threshold/tail/diagnostic checks, then define a
-fresh component/model qualification plan before execution. This is a new
-candidate, not a retrospective threshold or a selected model route.
-The compact result retains every measured queue and wall sample, spread,
-original decision, checked outcomes and exact source/fixture identity; nominal
-case payloads and unused warmup durations are retired after verified extraction.
-
-Offline AOT inspection of engine`f004aabae84dbea46db59bdf98ec0413a8bf93b53c13e9b5b28e5c2ed045fc86`
-and fixture`e28d402742cfceca3d238142e2de1065b8bd1d6c0ca553ad87feb3052b8186e3`
-found identical native no-capture code between those two artifacts for both
-policies/tiles. Scalar matrix versus row-cache text is15680/11648 bytes
-(compact) and126912/67840 (wide). All selected metadata entries report
-256GRF/SIMD16/eu_thread_count4, barrier_count2 and no per-thread memory-buffer
-descriptor. Code size and static metadata do not establish JIT behavior,
-complete ABI equivalence, occupancy, instruction-cache pressure or speed.
-The timing cohort above decides the uniform candidate; code-size reduction
-alone did not avoid its small-job regression. Review raw logs/JIT after this
-owned closure. The candidate build has one immediate consumer: the forthcoming
-selective-routing comparison; retain the validated8989 engine/fixture fallback
-until replacement qualification or explicit comparison closure.
-
-While this cohort is frozen, the benchmark client adds minimum actual-input
-sizes98304 and131072 in source`10a18c2e7`; its source files are outside this
-component build/run's pinned inputs. After closure, the maintained client,
-evidence and fail-fast suites passed6+14+7 tests, including the new sizes'
-context boundary and actual-count checks. The first longer
-screen should use98304 with the current131072 context/resident-KV setting,
-keeping the selected engine route, chunk and other placement settings fixed.
-This asks whether amortizing fixed work over more input improves throughput;
-it is not a same-workload kernel speedup. Keep first-use and subsequent requests
-separate and record actual counts. A131072-minimum screen needs a larger
-context allocation and its explicit capacity/boundary check first. Neither
-screen establishes physical262144-context or sustained decode qualification.
-
-The next Down prototype adds startup-only
-`STRATA_SYCL_PREFILL_DOWN_SCATTER=large` (default0). Only the native-BF16,
-vLLM auto/wide backend accepts it; jobs below2334 rows still execute separate
-Down and accumulation. The selected wide row-cache kernel retains BF16 output
-rounding before FP32 FMA and writes neither the Down nor diagnostic tensor.
-The outer window keeps its existing immutable route owner, queue ordering,
-status drain and exception lease. No router readback or transfer is removed.
-Command-service profiling rejects this fusion until that observer is qualified.
-Request-level counters distinguish fused and separate jobs/rows.
-
-This is Main-authored routing and validation, with no new copied implementation.
-The fresh component plan adds actual startup-selected flag0/large processes,
-2333/2334/2335 boundaries, false-return non-writes, map masks1/2/3 and
-8191/8192 tails. Three clean timing processes compare the selected hook plus
-fallback against separate dense+accumulation at14 fixed-window shapes. The
-prospective gate is geometric-mean latency ratio<=0.97, no shape>1.05 and
-improvement at every>=2334-row shape in each process. A3% component gain warrants
-only a subsequent matched model experiment; the prior uniform candidate's
-failed5% gate is unchanged. Requalify the same-build GU fixture before the next
-model comparison because its shared adapter translation unit changed during
-the previous Down work. Source45c387d11 built successfully;54 ownership,45
-traced smoke and110 full correctness events passed in closed owned processes,
-including startup flag0/large, threshold/tail/fallback checks and mixed map
-masks. No fresh driver fault occurred. Same-build GU requalification, including
-its clean timing, was then completed:36 ownership cases,4 small correctness
-cases with13 admission rejects,18 full cases and3 clean timing processes passed
-without a fresh fault. The component wall-time geomean is0.952777; the existing
->=2334 selector still excludes the slower160-row shape. Selective Down timing
-remains pending; no new model speed or adoption is claimed.
-
-The current source-view build's Down fixture differs from the source45 fixture;
-its old receipt does not qualify the new executable. A fresh plan at
-`1dff76365` repeated54 ownership,45 traced smoke and110 full correctness events
-successfully. All three clean timing processes then exited normally, with504
-used queue/wall samples, complete ownership closure, unchanged boot and no
-fresh driver fault. The selected/separate latency geomean was0.937848,
-but64 contiguous rows regressed9.53% (ratio1.095345), exceeding the unchanged
-1.05 per-shape limit. Every>=2334-row shape improved in each process.
-**The selective candidate fails its advancement gate; do not run its gated
-model comparison.** This neither changes source45's original unrun timing
-status nor qualifies model speed, quality, sustained decode or full context.
-The next source question is whether the low-level separate reference and
-public-wrapper candidate measure the same host dispatch work at fallback
-shapes. Any corrected comparison needs a separately committed plan and evidence;
-the current failure and all individual timing samples remain in the
-[current component result](../bench/results/2026-10-15-pr6-recovery-audit/moe-down-scatter-current.json).
-The validated a576 engine and its same-build fixtures were hash-checked at
-`known-good-before-selective-down-v1` before reusing the build cache. The old1222
-fallback's9812 original source blobs and recipe were recovered before retirement.
-A bounded lookup of3074 local source files and2307 Git blobs found both old
-controllers and one old source override, but left original source/dependency
-recipe gaps. Six obsolete unqualified native-product payloads were retired;
-their original small receipts and unique source evidence remain separate from
-qualified builds. This is no global-retirement or historical source-recovery claim.
-
-### Production-matched Down comparison
-
-The next fixture uses `--bench-public PROCESS ARM`. Both arms call the actual
-public try hook and fallback: a fresh process starts with Down0 or Down-large,
-which remains immutable through runtime initialization and all measurements.
-There is no engine math change. Six processes run A0,B0,B1,A1,A2,B2; each covers
-all14 fixed78451-window shapes, one warmup and six measured rounds. Use256
-repeated calls for64/160-row timing batches and16 otherwise, to reduce fixed
-marker/drain noise without removing small shapes. All504 used queue/wall
-samples and each native process identity/actual selector must be retained.
-
-The original v6 failure remains failed. This new comparison keeps the same
-<=0.97 geomean, <=1.05 worst-shape and per-pair>=2334-row improvement gates.
-A partial cohort cannot advance. Repeat54 ownership,45 traced small and110
-full correctness events on the exact new fixture before timing. The controller
-checks full process order, unique PID/start ticks, route markers, effective
-startup selectors, timing granularity, shape coverage and closure. Its offline
-negative cases cover partial/duplicate/reordered evidence, reused identities,
-a low-level control, the old small-batch size and the wrong startup route.
-Source`9b6db2661` compiled the fixture; the engine SHA matches the validated
-a576 engine. Main's corrected source now records every timed hook return,
-requires exactly repeat or zero fused dispatches, checks the14 preflight
-row/placement cases and prospectively requires every marker bracket, including
-warmups, to last at least2ms. This screens granularity, not timer accuracy or
-noise. A shorter batch invalidates the comparison; retry requires a new
-committed plan. Main passed all16 offline fault/evidence tests at source7626a2fc5,
-including wrong timed-hook counts, duplicate preflight placement, warmup duration
-and inconsistent marker arithmetic. Source396d0c91f built the corrected fixture;
-the engine remains byte-identical570b65dd with native origin9b6db2661 preserved.
-Compilation does not reuse qualification for the changed Down fixture.
-The exact93248e27 fixture passed54 CPU ownership,45 traced smoke and110 full
-numerical/admission events, all owners closed and no fresh GPU fault. All six
-clean timing processes then closed normally, with504 eligible used samples,
-checked actual dispatch counts and no fresh fault. The candidate/base latency
-geomean is0.953898926 (4.61% shorter), the worst shape ratio is1.020361103,
-and every selected large shape improves in each of the three process pairs.
-The unchanged component gate permits the117K model comparison; it establishes
-neither a whole-model gain nor adoption. The original v6 failure stays failed.
-The a576 fallback protected that fixture/model comparison. Its six executable
-copies were retired after the completed cohort selected the current qualified
-generation and both original source inventories/recipes were recovered from Git.
-Only its `source-build.json` remains for the current scoped bank/provider
-admission proof; preserve the selected current generation before the next
-native rebuild. The dedicated
-`bench_engine.py summarize-down` analyzer preserves the frozen>1.002 model
-criterion, while `summarize-source-view` keeps>1.005. It rechecks original
-component qualification, exact117489-token requests, six-process order, paired
-inputs and clean work conservation; first-use and the1000tok/s target remain
-separate. Main passed all26 model statistics, work-counter and build-identity
-tests; these are offline checks, not end-to-end model qualification. The later
-bank/provider-scoped build-proof change at sourcec4583093b passed all32 model
-statistics/build-proof tests after timing closed; all16 Down evidence tests also
-passed again. Independent receipt-chain review found three admission gaps.
-Main fixed the same-source shortcut, committed/full-receipt binding and launch
-rechecks in93257a29a; all37 offline tests passed at0c1632b10. The original GPU
-controller commit78a119cf7 contains the exact compact build receipt corresponding
-to the retained full a576 record. Both9813-input source inventories and original
-recipes were recovered, and current bank/provider bytes matched. This reuses
-only those component gates, without changing their original status or claiming
-a new GPU check. The Down fixture remains separately qualified. Independent
-Orca source audit and separate native Luna-max review found no verified reducer
-defect. Receipt-chain wiring tests remain optional strengthening; actual eligible
-model evidence is still required before a cohort decision.
-
-The first parameter-validated Down-large model request then passed at117489
-fresh read tokens, thinking on and24 generated tokens. All96 mixed windows
-retired; actual Down counters record7485 fused jobs/49290450 fused rows and
-29868 separate jobs. Native and benchmark owners closed normally, with no fresh
-fault. The profiled930.2tok/s is diagnostic; it is not a clean speed result.
-The clean comparison kept source-view enabled and changed only Down0/large
-across the frozen six-process order. Each process completed four fresh117489-token
-requests, thinking on, with unchanged384-slot expert banking,117488 GPU residual
-rows,81920+35568 MoE windows and8192 operator chunks. All owners closed normally
-without fresh GPU faults. Each process's median of its three subsequent requests was:
-
-| Process pair | Down0 tok/s | Down-large tok/s | First use Down0 / Down-large tok/s |
-| --- | ---: | ---: | ---: |
-| 0 | 998.6 | 1005.8 | 926.2 / 933.1 |
-| 1 | 998.2 | 1005.8 | 925.9 / 931.0 |
-| 2 | 998.3 | 1005.5 | 925.6 / 933.2 |
-
-The three independent paired median ratios have geomean1.007345335
-(+0.7345%), passing the prospective>1.002 criterion with every pair faster.
-All three candidate medians exceed1000tok/s: this establishes the stated
-subsequent-request117K prefill speed milestone, with first-use costs separate.
-The committed reducer recovered9813 original native/dependency inputs and112
-frozen benchmark inputs, checked the original component gate, actual model
-dispatch/work conservation and matched request/configuration identities. See
-[all24 speed samples and the decision](../bench/results/2026-10-15-pr6-recovery-audit/prefill-long-input-current.json).
-Retain selective Down as an opt-in for further qualification. Default adoption,
-broad quality,physical262144/session/RESTORE and sustained70tok/s decode remain
-unqualified;24 output tokens do not establish sustained generation speed.
-The selected engine completed the official thinking-enabled long-generation
-check and three independent clean processes, with actual fresh inputs33211 and
-33285 tokens. Regular-code generated2931 tokens at14.6/14.7/14.6tok/s;
-varied-prose generated10805 at9.5/9.5/9.4tok/s. Observed MTP acceptance was
-84.84% and39.98%, confirming the intended strong/weak pair. All owners closed
-normally without fresh GPU faults. The existing reducer recovered114 original
-benchmark inputs and the four-process result chain, excluding the traced check
-from clean statistics. See the [clean samples at8fe6b1af6](https://github.com/yqYo1/Strata/blob/8fe6b1af6cd9a7c86411143dfc9f98d9209bc1e8/bench/results/2026-10-15-pr6-recovery-audit/decode-long-generation-current.json).
-This is a baseline, with no measured gain or70tok/s qualification. Logical
-target expert-cache hit rates were2.0% and1.0%; these do not establish physical
-RAM/PCIe traffic or CPU arithmetic as the limiting resource. The next consumer
-is qualification of the CPU-time observer before resource attribution. Its four
-CPU clock/pool tests passed both standalone and in the native build, including
-output parity and enabled/disabled accounting. The new engine passed two bounded
-native requests with one valid CPU record per completed request, zero clock/
-counter errors and normal ownership/fault closure at`69888d181`; the old engine
-also passed two requests on the proposed assets at`d2ec0ec93`. These tiny checks
-do not measure observer overhead or qualify long-generation attribution. The
-clean speeds above used libze-intel-gpu1 package26.31.39395.14; the system subsequently installed
-26.31.39395.16 and updated libudev. These assets need explicit qualification;
-the shared qualified runtime pins remain unchanged. Six small bank upload/guard/
-unwind cases passed with full API trace on the proposed assets at`db11be131`.
-The earlier full-model check hit its64MiB API-trace budget and remains incomplete,
-with no fresh driver fault. Both closed model checks used parameter validation
-and stage progress.
-The same-build provider and six full expert-bank cases then passed on the
-proposed assets at`f5561c265`. The official long-generation CPU observation at
-`26d0f4bd6` completed both workloads:33211/33285 fresh inputs and2931/10805
-generated tokens. All six CPU records matched the four warmup/calibration and
-two long requests, with zero clock/counter errors, normal native/benchmark
-closure and no fresh GPU faults. See the [current diagnostic and two CPU observations](../bench/results/2026-10-15-pr6-recovery-audit/decode-long-generation-current.json).
-Its13.0/7.2tok/s readings include CPU/wall observers and parameter validation;
-they are not clean speed or a matched observer-overhead comparison. Worker CPU
-time includes scheduled memory stalls and pool polling; GPU-reach wall time
-does not isolate device service. No limiting hardware resource is established.
-The matched observer-bundle comparison then completed six independent processes
-in the committed off/on/on/off/off/on order on the same engine and proposed
-runtime. Every request read33211 fresh tokens, generated2931 including thinking,
-and accepted2105 of2481 drafts. The off samples were14.3,10.3,9.0tok/s; the
-on samples were9.1,10.2,10.5. All owners closed normally without fresh GPU faults.
-The three paired on/off per-token latency ratios were1.573758,1.005914,0.853985;
-their geomean1.105731 fails the unchanged1.05 aggregate/1.10 maximum-pair gate.
-The final pair reverses direction and the off arm itself varies widely. This
-does not identify a constant observer penalty, a CPU-clock cost or a hardware
-bottleneck. Do not compensate profiles by dividing by the observed geomean.
-The reducer recovered all115 original benchmark inputs; all six predecessor
-receipt hashes were also checked against their original Git blobs.
-
-The isolated CPU-region calibration then passed all12 batches in six owned
-off/on/on/off/off/on processes at source`227869de9`. Each process ran one and
-six physical cores,500000 regions per thread and256 fixed integer operations
-per region. Actual checks cover independent process identities,50ms batch
-floors, exact integer results/counts, CPU clocks, affinity and restored masks.
-Paired additional scheduled CPU time per region was1111.19/1143.01/1115.99ns
-with one thread and1172.59/1178.44/1170.50ns with six; the medians are1115.99
-and1172.59ns. This includes both CPU-clock reads and bookkeeping/control costs.
-It is a local differential microbenchmark, not a production-overhead bound or
-evidence of a syscall/vDSO path. Do not linearly correct model wall time from it.
-No lighter-accounting rewrite is selected from these values. The same-runtime
-old/new comparison and first bounded resource observation below are closed;
-their results still do not identify a limiting hardware resource.
-Independent source/interpretation review found no calibration reuse blocker.
-The closed calibration export, standalone fixture and parser tests are retired;
-restore original source`227869de9` and its committed plan for a concrete new
-comparison. Individual batch timings/totals remain in the current index, with
-original per-thread vectors at`1c35d2156`.
-A separate read-only placement observation found the native leader on CPU0,
-expert workers on CPUs1–5,19 earlier threads allowed on0–11 and five later
-threads on0. Their roles/activity and any latency effect remain unknown.
-The host pin occurs in `SessionLoopScratch::init`, not the pool constructor;
-Linux inheritance is a hypothesis for those later masks, not a demonstrated
-cause. Do not change affinity during an active comparison.
-Explicit runtime-baseline adoption remains pending and the shared qualified
-asset hashes remain unchanged. The observer-off old/new comparison used the
-frozen old/new/new/old/old/new order, the unchanged official regular-code request
-and four warmups. Both arms removed CPU/wall/validation observers before native
-exec and preserved the safety settings. Original fallback inputs/recipe and
-both runtime checks bound the selected binaries. The prospective diagnostic gate
-was new/old per-token latency geomean<=1.05 and maximum pair<=1.10 after request/
-work reconciliation. This single workload does not replace the strong/weak pair
-required for adoption. The closed launcher/reducer is recoverable from original
-source`77f1ad644`; `generation_engine.py` now contains shared admission helpers
-only. No inference optimization, runtime-baseline adoption or resource saturation
-follows from this comparison alone.
-Independent source audit and native Luna-max review found no technical reuse
-blocker. Main closed the missing automatic warmup assertion at`77f1ad644`;
-all18 offline evidence tests passed. The final reducer checked all six original
-hash-chained journals against their closed receipts, including the four
-successful warmups, request identities and order. Residual
-null-counter work is the intended old/new test subject, not proof of a defect.
-The audit worker is completed and its terminal is closed. The original frozen
-index remains recoverable at each measurement revision.
-All six processes closed with the same33211 fresh input tokens,
-2931 generated including thinking and2105 of2481 accepted drafts. All four
-warmups passed and native/benchmark owners closed normally without fresh faults.
-
-| Pair | Old tok/s | New tok/s |
-| --- | ---: | ---: |
-| 0 | 13.1 | 11.8 |
-| 1 | 11.5 | 14.4 |
-| 2 | 13.2 | 11.4 |
-
-Original closed receipts remain in Git at`c1e33bdf0`,`b6e70064d`,`4de041ebb`,
-`8a76c139e`,`12e0ac0a2` and`50315cbef`. New/old per-token latency ratios are
-1.115807,0.798233,1.156885, with geomean1.010035. The geomean meets1.05, but
-two pairs exceed the unchanged1.10 maximum; the diagnostic nonregression gate
-fails. Old/new medians are13.1/11.8tok/s with sample SD0.954/1.629. Preserve
-all samples and the failed decision. Pair1 reverses the faster arm; these data
-do not establish a constant engine cost or a hardware bottleneck. Keep the old
-engine as the speed reference. It also completed the passive diagnostic below.
-The newer extra build has since been retired after source recovery and consumer
-migration; see the current [build decision](../bench/results/2026-10-15-pr6-recovery-audit/native-gdn-engine-build.json).
-No new inference optimization or runtime-baseline adoption follows.
-After the CPU-capacity comparison closed, the unused internal CPU observer's
-production hooks, header, two CPU fixtures and build mode were retired to
-`d50d31347cc8505a40181db8308735bfa0058427`. Before independent copy-safety changes,
-all maintained native/build files were restored byte-for-byte to the selected
-`396d0c91f301` source; only that observer delta existed in those paths.
-The external collector, original failed gates and compact observations remain
-distinct. This removes an unqualified experiment from the next candidate's
-baseline; it is not a new build, speed measurement or observer-overhead result.
-During process0, a read-only capability check of the owned native client's
-`/proc/<pid>/fdinfo` exposed xe `drm-cycles-ccs`, `drm-total-cycles-ccs` and
-memory residency fields on kernel7.0.0-38-generic. This is field availability,
-not an interval utilization result. A subsequent bounded diagnostic can test
-client identity, duplicate descriptors, engine capacity, monotonic recovery and
-aligned request intervals before interpreting cycle deltas. The kernel's
-[generic contract](https://www.kernel.org/doc/html/latest/gpu/drm-usage-stats.html)
-and [xe implementation contract](https://www.kernel.org/doc/html/next/gpu/xe/xe-drm-usage-stats.html)
-describe these counters. Engine busy fraction still does not measure arithmetic
-efficiency, VRAM bandwidth or physical PCIe bytes. Preserve unknowns rather
-than converting the earlier GPU-reach wall percentage into device utilization.
-The independent [client resource reader](../bench/sycl/client_resources.py)
-at`3743a3bd4` passed all14 synthetic CPU-only tests with
-`python3 -B tests/core/test_client_resources.py`. It binds the original receipt
-to the current boot and rechecks PID/start/SID,
-deduplicates descriptors, preserves raw cycle counters and recovery spans,
-rejects impossible deltas and reads scheduled CPU ticks. Enumeration stops at
-the descriptor/thread budget before materializing an unbounded directory.
-Collector completion requires an explicit terminal and at least two samples
-with eligible CCS intervals; empty or unsupported clients cannot pass. A
-confirmed process exit can close this process-bounded collector, but planned
-model-phase completion and coverage remain separate checks. The CLI has a900s/
-32MiB bound and opens no GPU device.
-The [resource controller](../tools/sycl/resource_engine.py) at`d9ff684f1`
-prepares a bounded official regular-code diagnostic on the old engine, recovering
-its9813 original native/dependency inputs and recipe. The original build path
-differs from the retained path; admission checks the original committed relocation
-record as well as source identity, byte size and actual executable SHA256.
-Its relocated-source regression test passed, along with the native-wrapper
-synthetic lifecycle test,7 HTTP/eligibility tests and18 evidence tests (41 total
-with the reader tests). No new native engine was built.
-The wrapper now records the boot ID and owns the passive reader beside the
-native child. The diagnostic preserves parameter validation, stage progress
-and the qualified safety environment; its observer-contaminated speed is not
-a clean result. Exact client clocks divide observations before and after the
-first content/reasoning output. These are client windows, not native prefill/
-decode boundaries. The reducer replays raw cycles, checks the terminal and
-contained spans, and records the unsampled final edge without extrapolation.
-The committed900s/1s/32MiB collection plan ran inside the1800s/64MiB official
-benchmark budget. The independent Orca Luna audit and native Luna-max review
-are completed; Main owned all tests and GPU work.
-The first live collection at`497311e01` then closed normally without a fresh GPU
-fault:33211 fresh inputs,2931 generated tokens and2105/2481 accepted drafts.
-Its8.5tok/s includes parameter validation, stage progress and the collector;
-retain the earlier clean speeds separately. All523 snapshots and both CPU/client
-windows passed replay/coverage checks, with no final unsampled response edge.
-Orca audit plus native Luna-max review identified a result-to-journal clock
-binding gap, with no actual mismatch. Main fixed it at`7d5a11afb`; both admission
-tests passed (42 relevant CPU tests total). The committed post-closure analyzer
-matched all work/clocks to the original hashed journal and reproduced every
-resource value, preserving the original execution outcome.
-
-| Observed client window | Contained CPU wall s | Process CPU core equivalents | CCS busy fraction |
-| --- | ---: | ---: | ---: |
-| Before first output | 50.160 | 0.943 | 0.830 |
-| After first output | 342.636 | 4.319 | 0.325 |
-
-The leading native thread stayed on CPU0 and used283.33 scheduled CPU seconds
-after first output. Five other busy threads on CPUs1–5 used232.83,233.71,256.55,
-240.39 and231.88 seconds. Scheduled time includes polling and memory stalls;
-CCS busy cycles include device stalls and are associated-client measurements.
-These observations do not show GPU arithmetic saturation or establish CPU
-arithmetic versus RAM/submission/synchronization as the limiting resource.
-The second, collector-only diagnostic at`a71b6214a` removed parameter validation,
-stage progress and internal CPU/wall observers while preserving the selected
-engine, runtime and safety settings. Its committed plan at`ca84a06c5` completed
-with the same33211 fresh inputs,2931 generated tokens and2105/2481 accepted
-drafts, normal ownership closure and no fresh GPU fault. All519 snapshots passed
-journal-bound clock/work and resource replay checks. Before first output it
-observed51.186 contained CPU-wall seconds,0.936 process core equivalents and
-0.809 CCS busy fraction; after first output,333.541 seconds,4.380 core equivalents
-and0.334 CCS busy fraction. These are client windows, not native phase boundaries.
-The8.8tok/s reading still includes the external collector and is not a clean
-speed sample or a paired overhead comparison. The post-closure analyzer at
-`dc4acc8f8` reproduced the original`682d47f8b` result. Its333 contained reader
-calls after first output totalled1.088 seconds; this synchronous call duration
-does not bound indirect driver/cache/clock effects or total model slowdown.
-See the [current compact resource result](../bench/results/2026-10-15-pr6-recovery-audit/client-resources-current.json).
-
-An idle-device Sysman probe at`dc4acc8f8` successfully initialized the installed
-loader1.32.0 with validation and bound PCI0000:05:00.0. The device reported
-bandwidth-counter support, but the first`zesDevicePciGetStats` returned
-`ZE_RESULT_ERROR_INSUFFICIENT_PERMISSIONS` (`0x70010000`); no successful snapshot
-was obtained. The owned probe closed normally with no fresh fault, but the
-counter capability check failed. No permission setting changed. Keep physical
-PCIe traffic unknown and do not repeat the same probe under unchanged access;
-the [compact denial result](../bench/results/2026-10-15-pr6-recovery-audit/sysman-pcie-capability-current.json)
-preserves its source, actual assets, command and outcome.
-After PR141 made the original source/results default-reachable, Main verified
-the closed captures, probe recipe/assets and original hashes, then retired85
-raw/transaction files totalling15929917 bytes. Both closed raw roots are absent.
-The consumed probe source/mode is retired to`dc4acc8f8`; the selected engine
-and its five same-build fixtures remain. This changes no original outcome.
-
-A static audit of the actual3304-byte`native_experts.txt` found Down weights
-IQ4_NL in39 layers and Q2_0 in9, with no IQ3_S Down. Gate/up uses17 IQ3_XXS,
-10 IQ3_S,20 IQ2_S and1 IQ4_XS layers. Thus the pack's IQ3_S filename is not a
-per-projection format contract. Its H2560/FF640/512-expert geometry and packed
-payload are recorded in the resource result; these do not measure physical
-traffic or dynamic reuse. Do not optimize an unused IQ3_S Down path.
-The [CPU capacity controller](../tools/sycl/cpu_capacity.py) freezes a clean
-pool-workers5/1 comparison: six independent processes in5,1,1,5,5,1 order,
-three pairs, with four official warmups and identical long-generation input/work.
-Support directional sensitivity only if all three paired per-token latency
-ratios agree and their geomean exceeds1.10 in that direction. Failed/partial or
-mismatched-work cohorts remain ineligible. All7 offline negative-evidence tests
-passed. Controller source`5e7943d80` then passed the bounded one-worker check:
-two thinking-enabled small inputs,16 generated tokens each, actual one-worker
-plus host marker, normal owned closure and no fresh GPU fault. The generator
-uses Strata's actual tokenizer/template; an earlier optional-tokenizers import
-failed during preparation before any native launch and was corrected.
-The independent Orca audit and native Luna-max review are now closed, with no
-execution safety blocker. They require model/expert/MTP byte identity,
-cross-process boot/kernel/guarded-runtime equality and evidence of CPU-pool work
-during the timed request before a performance interpretation. The unlaunched v1
-clean plan was explicitly cancelled, preserving its successful small check.
-V2 keeps the original six-process order, all original work keys and the10%
-directional gate. It hashes model inputs before the cohort and after its last
-request, with device/inode/size/mtime/ctime guards before and after each native
-run. Hash I/O stays outside measured execution. Existing completion footers
-provide decode-cache-miss evidence: original DONE cache counters start after
-prefill, and at pcie-frac0 refused native rows enter the CPU pool. This adds no
-timed observer and does not count exact routes or physical bytes. Ten offline
-negative-evidence tests passed. V2 source`7d9dce79a` pinned all15 model inputs
-(85989955827 bytes) and passed the revised one-worker check: both16-token
-requests, unchanged model/platform identity, normal owned closure and no fresh
-GPU fault. The first clean long process (five workers plus the host) then
-completed all four warmups and the33211-fresh-token request:2931 generated
-tokens including thinking,653.9 prefill tok/s and14.6 decode tok/s. Native and
-benchmark owners closed normally, model/platform identities stayed unchanged,
-and no fresh fault occurred. Its existing completion footer reports2.0% decode
-expert-cache hits, establishing CPU-pool work under the configuredpcie-frac0.
-The second process (one worker plus the host) also completed all four warmups,
-with identical fresh input,2931 generated tokens and2105/2481 accepted drafts.
-It measured647.6 prefill tok/s and8.7 decode tok/s, with normal native/benchmark
-closure and no fresh fault. The first one/five per-token decode latency ratio
-is1.684906196. The third process (one worker plus the host) also passed with
-the same work and no fresh fault:651.9 prefill tok/s,8.3 decode tok/s and
-352495.2 decode ms. The fourth process (five workers plus the host) passed with
-the same work and no fresh fault:652.9 prefill tok/s,11.2 decode tok/s and
-260639.1 decode ms. The fifth process (five workers plus the host) also passed
-with unchanged work and no fresh fault:652.4 prefill tok/s,10.1 decode tok/s
-and290587.5 decode ms. The final one-worker process passed at642.6 prefill
-tok/s,8.1 decode tok/s and362645.0 decode ms, with the same work and no fresh
-fault. All six owners closed normally; final hashes of all15 model inputs
-(85989955827 bytes) match the initial model fingerprint. The frozen reducer
-and an independent replay agree: one/five per-token latency ratios are
-1.684906196,1.352426401 and1.247971781; geomean1.416765734. Every pair is slower
-with reduced capacity, exceeding the unchanged1.10 directional gate.
-The result supports CPU expert-pool capacity sensitivity for this request.
-Keep the individual five-worker14.6/11.2/10.1 and one-worker8.7/8.3/8.1tok/s
-samples: medians11.2/8.3 do not erase the substantial baseline spread.
-This does not isolate arithmetic from RAM/scheduling or prove baseline saturation,
-model quality, strong/weak adoption or70tok/s. A bounded explicit-copy candidate
-can reduce both CPU arithmetic and RAM demand; it still needs the separate
-source/submission/retirement gates below and measured total-path improvement.
-After PR144 preserved the original controller and result commits on the fork
-default, Main verified closure and useful evidence, recovered the temporary
-native source views from396d0c91f301, and retired187 closed raw/audit files
-totalling37592380 bytes. The deletion manifest is pinned in the result atf8a60975c.
-The selected engine and five same-build fixtures remain for the comparison.
-This diagnostic can test CPU-pool capacity sensitivity, not distinguish
-arithmetic from RAM limits or prove saturation at the baseline. Small-check
-success establishes neither task quality nor a speed gain. Keep earlier clean
-speeds and all failed comparison gates separate; see
-the [current plan/check](../bench/results/2026-10-15-pr6-recovery-audit/decode-cpu-capacity-current.json).
-A separate original-source audit finds the selected SYCL ordinary Arena provider
-cannot admit nonresident GPU experts through the existing alias/pin gate,
-although SYCL forces explicit mode0 copy. A host-USM FileExpertSource complement
-is a separate conditional route. Before a new copy capability, check every
-enqueue result and require checked retirement or fail-stop with owners alive:
-current fetch ignores submit errors, and a query error is not completion.
-The [reviewed source requirements](../bench/results/2026-10-15-pr6-recovery-audit/research-index.json)
-do not qualify enabling the route or predict a gain.
-
-The independent verifier correction checks every copy submission, refuses
-invalid staging extents and drains earlier copies even after a later submission
-fails. An error from a stream query no longer counts as completion. All SYCL
-verifier teardown now requires checked drains before releasing borrowed owners;
-if sticky runtime errors prevent that proof, the process stops with owners
-alive. The redundant queued flag callback is removed from the SYCL path.
-This change still leaves the ordinary-Arena nonresident GPU route closed.
-Before execution, the committed plan is to build with
-`python3 tools/sycl/build_engine.py build-copy-safety`, commit its build result,
-then run `python3 tools/sycl/check_verifier_retirement.py`. The prospective gate
-requires all ten existing submission cases plus six isolated production-verifier
-cases (valid copy, partial submission failure, bounds, query error, destructor
-failure and copy-drain failure), normal owned closure, unchanged source/runtime
-and no fresh GPU fault. The last two cases must exit1 before unwind or atexit;
-they inject only a host-task exception, never an invalid GPU address or stalled
-kernel. The small traced/validated check explicitly admits the already observed
-driver.16/libudev.18 diagnostic delta without changing the shared runtime
-baseline. Source changes, build receipt, small-check execution and any future
-model-route/performance decision remain separate gates. The source396 known-good
-engine and its five fixtures remain the fallback for this immediate comparison;
-the second generation must be selected or retired at qualification closure.
-Source`d20736c36290` compiled successfully. Both same-build fixtures passed all
-ten submission and six verifier cases under the traced/validated environment;
-the two fail-stop cases exited1 with only their pre-stop markers, without
-unwind/atexit markers. Source/runtime hashes remained unchanged, all owned
-processes closed, the boot stayed unchanged and no fresh GPU fault appeared.
-See the [small-check result](../bench/results/2026-10-15-pr6-recovery-audit/verifier-copy-safety-current.json).
-The independent delta audit identified a public failed-object reuse/output gap:
-the server exits on run failure, but the object did not itself refuse another
-window or old logits. It also noted early flag-B publication for an empty
-batch, although SYCL's next graph segment already waits for checked retirement.
-The follow-up latches failed copy submission as terminal and refuses subsequent
-run/commit/logits/logprobs/residual access; it publishes flagB only after checked
-retirement, including empty batches. The revised prospective gate adds a seventh
-isolated empty-batch case and strengthens the partial-failure case to exercise
-public reuse and output refusal. Build with
-`python3 tools/sycl/build_engine.py rebuild-copy-safety`, commit the build result,
-then run the same check controller with its fresh v2 root. All17 cases, source/
-runtime/boot identity, ownership and fault checks must pass; the original16-case
-pass remains a result of the earlier source only. Source`cd81dcd133e7` rebuilt
-successfully and all17 revised cases passed, with normal owned closure,
-unchanged source/runtime/boot and no fresh GPU fault. The separate native
-Luna-max review confirms that existing callers abort after run failure and
-earlyB cannot bypass the checked SYCL segment barrier; the public failed-object
-reuse gap was not a demonstrated current-caller or GPU-hang mechanism. The
-small follow-up closes that API gap. Its source and17-case result are distinct
-from the independent audit ofd207. These component results do not enable the
-ordinary-Arena route, establish model correctness/nonregression or add speed.
-Return to the bounded explicit-copy/CPU-share comparison next.
-
-The ordinary-Arena candidate is independently authored against this Strata
-provider/planner and verifier. `STRATA_SYCL_VERIFY_ARENA_COPY=1`, set before
-native exec, permits only explicit mode0 copies from the existing immutable
-private-Arena layer view. It rechecks expert count, stride, full size and
-address extent; shared/file/transient providers gain no new promise. Existing
-pin and device-alias predicates retain their meaning. The default remains off.
-The existing `pcie-frac` still selects a bounded share of distinct missed
-experts; this changes neither prefill placement nor model/KV precision.
-It uses the existing16-slot staging allocation, with exact admitted staging and
-window-arena bytes logged on opt-in, and adds no resident weight bank.
-Request-footer counters separate submitted/completed copy payload and blobs,
-immutable-view groups, GPU miss groups and CPU expert jobs/entries. These are
-requested/retired logical bytes, never measured physical PCIe traffic. Partial
-submissions count only accepted copies, including rejected draft work.
-
-Before any model launch, build with
-`python3 tools/sycl/build_engine.py rebuild-arena-copy`, commit its build result,
-then run `python3 tools/sycl/check_verifier_retirement.py`. The frozen component
-gate requires17 native-variable-stride provider/planner/pool cases covering grouping, share/capacity,
-disabled/direct modes, file/shared fallback, missing callbacks and malformed view refusal;10
-existing submission cases; and8 verifier cases, including all16 largest-model
-blobs (2662400B each) from ordinary RAM, payload/outer guards and copy counters.
-The v5 gate additionally requires16 grouped-output cases from the existing
-`sycl_mmvq_test --arena-grouped` fixture. It covers GU18/21/22/23 crossed with
-Down20/42 at H2560/FF640 and windows1/4 (groups10/16, entries10/40): all seven
-actual model pairs plus supported IQ4_XS/Q2_0. An ordinary host vector is copied
-on the transfer queue into a guarded device payload, retired before compute,
-and mixed with a separately uploaded resident expert. Check both entry tiles,
-invalid-token zeroing, empty groups, finite/nonzero references, copied bytes
-and outer guards. Grouped output must equal separate GPU projections using the
-same unchanged Q8_1 contract. This checks transfer/grouping, not generated-text
-identity or an independently implemented projection oracle; common-mode native
-projection errors and model/task quality remain separate. Two distinct weight
-blobs repeat across group metadata; the original verifier case separately covers
-16 distinct largest-size copy payloads. This is a Main-authored extension of
-this fork's existing fixture, with no XeStrata source or proposal input.
-Require normal owned closure, unchanged source/runtime/boot and no fresh fault;
-retain the source396 validated fallback during this comparison. No component
-speed threshold is imposed: this is a capability/safety prerequisite, not a
-kernel-optimization claim. A separate committed model check must establish
-actual GPU expert dispatch before32K+ thinking-enabled strong/weak generation
-comparisons. Default/model/physical262144/session/RESTORE qualification and70
-tok/s remain pending. This candidate targets measured CPU-pool capacity
-sensitivity; it does not assume CPU arithmetic rather than RAM is saturated.
-The initial component attempt at`189e5163d` stopped in the new host fixture with
-SIGILL, before any model launch, with no fresh GPU fault. It incorrectly chose
-the canonical Q2_0 CPU path: its quantizer is compiled with AVX512 flags and the
-actual binary contains unconditional ZMM instructions, while this CPU reports
-no AVX512F/VNNI/VBMI. Preserve that failure at`6352c2c3f`. The corrected fixture
-uses the actual native IQ3_XXS/IQ2_S GU and IQ4_NL Down formats on two differently
-sized layers, retaining all grouping/fallback/refusal assertions. The revised
-17+10+8 gate uses a fresh v4 root; the native engine code is unchanged by this
-fixture/controller correction. This is not canonical-pack support or a GPU fix.
-At`3ef95537a398`, the rebuilt native provider17, submission10 and verifier8 cases
-all passed, including the16 largest-size copies and byte/outer-guard checks.
-All owners closed normally; source/runtime/boot stayed unchanged and no fresh
-GPU fault appeared. Engine bytes remained those of`189e5163d`; only the fixture
-and controller were corrected. Independent Orca producer/consumer review and
-native Luna-max review found no verified source blocker; grouped arithmetic/output
-qualification remains separate from the35 component cases.
-The next bounded model gate uses `python3 tools/sycl/arena_copy.py prepare`,
-then a committed generated plan before `run`. It pins the current engine and
-all component bytes, recovers the original build inputs, hashes all model inputs
-before preparation and checks their identities before/after execution. Keep
-pool5,131072 context/resident INT8 KV and the previous8192 prefill settings;
-set the new opt-in before exec andpcie-frac0.25. One owned process serves two
-thinking-template questions with at most16 output tokens each. Both must show
-nonzero immutable-view GPU miss groups, equal submitted/completed blob and byte
-counts, remaining CPU work, normal closure and no fresh fault. Use parameter
-validation and stage progress, not the full model API trace. The driver.16 delta
-is admitted only for this named diagnostic, without updating the shared runtime.
-This check does not compare speed, numerical/task quality or physical262144/
-RESTORE. Long-generation strong/weak comparisons require their own committed
-order, repetitions and decision criteria after actual route admission.
-The frozen check on controller source`9feb1dbb1` then passed both requests:
-66/64 input tokens and16 generated tokens each. Actual mode0 GPU miss groups
-were1309/1534, with2684518400/3143577600 logical payload bytes respectively;
-all submitted blobs/bytes completed. CPU work remained positive in both requests.
-The native owner exited normally with unchanged boot and no fresh GPU fault.
-See the [compact route result and original frozen-plan reference](../bench/results/2026-10-15-pr6-recovery-audit/decode-arena-copy-current.json).
-This is execution/copy-conservation evidence, not native-output or task-quality
-qualification or a speed gain. Validate dispatched mixed-format expert outputs
-before advancing a long-generation candidate. Preserve the source396 fallback
-and default-off candidate for that imminent comparison.
-At build source`218561fc0`, all51 v5 component cases passed, including the16
-staged grouped-output cases. Engine and prior three fixture bytes remained
-unchanged; the added fixture supplies the new arithmetic evidence. Owners closed
-normally with unchanged boot and no fresh fault. Independent native Luna-max
-review confirmed that the omitted generic MMQ/IQ-dequant environment flags do
-not affect this grouped route; its relevant defaults match the model. This is
-the fixed tested contract, not a claim of bit identity for every optimized path.
-
-The controller source`a6e9e4762` passed all six offline evidence tests, including
-copy-footer conservation and negative comparison cases; these do not execute a model.
-The next `arena_copy.py prepare check` uses official `bench.sh` for one
-parameter-validated, thinking-enabled regular-code request: at least32768 fresh
-input tokens,1024 generated tokens including thinking and actual answer body,
-with positive copied groups and exact copy conservation. Commit its generated
-plan before `run`. This is a diagnostic, not clean speed. After it closes, the
-same frozen source admits six independent clean processes via
-`arena_copy.py prepare clean N` for N0..5, each followed by a committed plan and
-`run`. Both arms use pool5/pcie-frac0.25 and the same binary, configuration and
-input; only `STRATA_SYCL_VERIFY_ARENA_COPY` changes in order0,1,1,0,0,1.
-Preserve qualified queue/safety settings, remove observers for clean speed and
-require strong MTP acceptance>=0.60. Generated text, output length and draft
-counts may differ; retain the actual values. Pairs0/1,3/2,4/5 signal faster only
-when all three candidate/base ratios exceed1 and their geomean exceeds1.02;
-signal slower only for the corresponding inverse condition, otherwise
-inconclusive. Stop on any failed or mismatched process without an automatic
-retry. Record completed logical bytes per emitted token and remaining CPU work;
-neither establishes wire traffic or saturation. This screen cannot adopt a
-candidate: weak-MTP, agent-session, broader task quality, long-prefill
-nonregression and physical262144/session/RESTORE checks remain pending.
-
-The frozen six-process ordinary-Arena copy screen then closed normally on the
-same source/binary, with33,211 fresh input tokens, complete copy conservation,
-unchanged boot/model/runtime and no fresh GPU fault. The matched clean pairs were:
-
-| Pair | Copy off, tok/s | Copy on, tok/s | Candidate/base |
-| --- | ---: | ---: | ---: |
-| 0 | 14.1 | 11.5 | 0.815603 |
-| 1 | 14.0 | 11.5 | 0.821429 |
-| 2 | 10.3 | 11.2 | 1.087379 |
-
-Their geometric mean is0.899794. The unchanged all-three-pairs decision rule
-returns **inconclusive**; it does not support adoption. Preserve the lower final
-control sample without excluding it or calling it noise; its cause is unknown.
-The work and acceptance remain different between arms as recorded in the
-[individual samples](../bench/results/2026-10-15-pr6-recovery-audit/decode-arena-generation-current.json).
-Ordinary-Arena copy remains default-off. The next separate scheduling experiment
-must qualify its exact source and event/owner behavior before model execution;
-the completed copy screen does not qualify that new implementation.
-
-The frozen long route diagnostic then passed33,211 fresh input tokens and3,177
-thinking-plus-answer tokens, with four successful official warmups, normal native
-and owner exits, unchanged boot and no fresh fault. MTP accepted2253/2775 drafts
-(81.19%); answer/thinking bodies contain5571/3730 characters. All314831 requested
-expert blobs completed, totaling642680908800 logical bytes, with1010725 remaining
-CPU unique misses and1410855 CPU entries. This is202291756 requested bytes per
-emitted token. At unchanged traffic,70tok/s would request14.16GB/s; a hypothetical
-6GB/s payload link would permit29.66tok/s if every byte crosses it. These are
-conditional requested-payload calculations, not wire measurements or saturation.
-The11.4tok/s diagnostic reading includes validation/progress output and is excluded
-from clean speed. Continue the unchanged six-process screen; no adoption follows.
-
-The Main-authored early-PCIe prototype started from`52b9734b9` in an isolated
-child during that now-closed screen. Its original commits are merged into
-`feature/sycl` for qualification. It copies no XeStrata or other external
-implementation. `STRATA_SYCL_VERIFY_PCIE_EARLY=1` requires the native ordinary-Arena
-copy route, mode0 and existing shared/hit overlap. The unchanged copied-expert
-projection is captured separately. After DMA submission, a freshly recorded copy
-event gates its launch on the same compute queue, behind shared/resident work
-using the same scratch. CPU result staging and the merge remain after CPU return;
-checked host-source retirement and failure latching remain required. No future
-event or host-task wait is captured. Unrecorded copy events and plan/count
-mismatches must refuse submission. `STRATA_SYCL_VERIFY_PCIE_EARLY_AUDIT=1` adds
-ready/pending queries only for diagnostics; clean timing leaves it off. Its
-counters prove submissions/readiness observations, not hardware saturation or
-quantified overlap. Default behavior remains the existing schedule.
-
-Before build/run, commit all source, fixtures and updated controller/recipe.
-Following screen closure and source review, require the existing51 gates
-plus the new real-queue early-enqueue fixture: ordinary host copies, resident-to-
-copied scratch ordering, payload/output/outer guards, empty input, maximum copy
-extent, fresh-event replay, and refusal of mismatched or unrecorded inputs.
-The separate `sycl_verifier_retirement_test --early` entry has six cases:
-small,16 largest blobs, empty, fresh-event replay, mismatched plan and unrecorded
-event. They use production publication/fetch/launch/retirement with guarded device
-payloads and a resident-produced dependency byte. Retain all16 native projection
-cases: synthetic graph ordering does not replace their arithmetic checks.
-
-Two closed test mechanisms remain failed. Source`246415bfc` passed all51 existing
-cases, then its host-task gate delayed arrival at the first UR memcpy until the
-two-second deadline. Source`b41fecbb8` again passed51, then its fixed32x64MiB finite
-DMA was complete before the first pending observation. Neither failure admitted
-model execution or a resize/retry. Both owners closed normally without fresh GPU
-faults. The [current57-case result](../bench/results/2026-10-15-pr6-recovery-audit/verifier-copy-safety-current.json)
-and its original Git references preserve these distinct outcomes. They do not
-establish production deadlock or physical transfer bandwidth.
-
-The current isolated native-event method uses `tools/sycl/check_event_gate.py`
-and the manual `sycl_host_event_gate_test` target. Three fresh processes check
-import only (no dependent command/kernel), then copy/kernel dependencies, then
-command-graph replay. The selected context/device owns one regular host-visible
-event, imported with keep ownership and HOST scopes. A host signaller is armed
-before import; its two-second fallback counts as failure. Import and dependent
-submission each need to return within100ms. The pending/output/progress window
-is50ms. Cleanup signals and joins before draining consumers, dropping the SYCL
-wrapper, and destroying the native event then its pool. Loader/header inputs
-are pinned test-only dependencies; production linkage and safety settings stay
-unchanged. Source`1dd3eef34` passed native import in367us with50,100us pending,
-then failed the copy case's resident-progress assertion; graph was not run.
-The [native-event result](../bench/results/2026-10-15-pr6-recovery-audit/native-event-gate-current.json)
-preserves normal closure, unchanged boot and no fresh GPU fault.
-
-The next v2 run is a diagnostic with the same enqueue order and thresholds. It
-records the resident marker, whether the gate is still held, and host time in
-the resident event wait. This separates marker failure from deadline expiry;
-it cannot qualify a replacement gate even if it passes. Its source`7cb121367`
-again failed: dependent submits returned in578us; the resident wait took1,999,496us,
-the resulting marker was60 (the correct0x3c), and the gate was already released.
-Normal closure/boot and no fresh GPU fault were confirmed. This does not establish
-when the kernel actually ran; the remaining question is host wait semantics versus
-queue/engine progress. The completed source review traces the version-aligned
-Intel LLVMv7.1.1 UR-v2 wait to the target native event's host synchronize; mapping
-the installed runtime DSO to that exact source commit remains unverified.
-The v3 diagnostic keeps the same enqueue order and safety settings. It
-materializes the resident native event and queries it at most20 times,5ms apart,
-with a200ms observation limit. If it remains unready, release the gate before
-the SYCL wait; if already ready, time that wait while the gate is held. Record
-native readiness, query/handle/wait times, gate state and the post-wait marker.
-Native-handle retrieval can flush/materialize an event, so this observation is
-not unchanged-work timing or proof of the original kernel completion time.
-No host marker is read before checked completion, and no host atomic capability
-is assumed. This diagnostic cannot qualify the replacement gate or model route,
-even if it completes successfully. Source`172b9f1e9` compiled, then the one
-`copy-query` child failed the bounded native-query observation before producing
-a readiness sample: its200ms limit was exceeded or the held gate expired.
-The combined check does not identify whether a resident native query or the
-gate-status check consumed that interval. No raw status/time sample exists to
-resolve this yet. The child closed, boot was unchanged and no fresh GPU fault
-was recorded. A new observation needs separate call timings; this failed run
-must not be relabelled as a device fault or a qualified gate.
-The v4 observation adds flushed begin/end timestamps around the existing
-gate-held checks and resident native queries, plus a window summary printed
-before the failure check. Enqueue order, native call count,20x5ms observation,
-200ms window,2s fallback and safety settings stay unchanged. Keep per-call
-counts/maxima and the last window even on failure. These text observers can
-change timing and provide no throughput or gate qualification.
-Source`174911063` built and the bounded child again failed, with normal closure,
-unchanged boot and no fresh GPU fault. Two calls started and returned: the
-gate-held check took5us and returned true; the first raw resident
-`zeEventQueryStatus` took1,998,861us and returned SUCCESS. The whole window
-was1,998,885us. No second query or post-window gate check was reached. This
-locates the latency inside the raw resident query, rather than the outer
-observation loop; it does not establish when the device kernel completed.
-`Runtime::make_queue(bool)` selects profiling, not in-order behavior: every
-queue it returns is in-order. This fixture explicitly profiles copy/compute
-and leaves the probe unprofiled. Compatible NEO26.31.39395.14 source's
-`queryCounterBasedEventStatus` calls timestamp-completion synchronization for a
-profiled counter-based event. Exact correspondence to installed26.31.39395.16
-remains unverified, so this is a testable source hypothesis, not attribution
-of the installed DSO or model latency. The next diagnostic changes only the
-compute queue to `make_queue(false)` while preserving the copy/probe queues,
-context/device, enqueue order, checks,2s fallback, tracing and safety settings.
-Queue profiling is a new explicit diagnostic variable; no production queue or
-model route is qualified by this comparison.
-That source`51864e379` contrast built and completed with verified queue
-properties, normal closure, unchanged boot and no fresh GPU fault. All20 raw
-resident queries returned NOT_READY in at most3us, across101,429us while the
-gate remained held. Manual release preceded a52us event wait and correct
-marker/payload. All41 observed calls started and returned. This is evidence of
-profiling-dependent native-query latency in the small fixture; no resident
-completion was observed during the held interval. It does not qualify the
-replacement gate, production queues, model performance or physical context.
-The next bounded diagnostic restores the original profiled compute queue and
-sets `EnableImplicitConvertionToCounterBasedEvents=0` before native exec. The
-original NEO26.31.39395.14 registry documents the key and the actual pinned
-installed DSO contains its exact name; neither proves effective consumption or
-the installed DSO's exact source mapping. Compare with the committed profiled
-v4 control, rather than attributing the difference from unprofiled v5 solely to
-the key. A new `copy-query-profiled` mode preserves enqueue order, observers,
-checks,2s fallback and all runtime safety settings; require actual1/1/0 profiling
-and in-order queues. Keep the same20x5ms/200ms window and record unsuccessful
-status/latency observations. This single fresh v6 process remains diagnostic,
-with no model, replacement-gate or production configuration qualification.
-Source`44253b63b` built and the new diagnostic failed its unchanged200ms
-window: the gate-held check took4us and the first resident native query took
-1,999,034us, returning SUCCESS. Actual profiling was1/1/0 and all queues were
-in-order. Both calls returned, ownership closed and no fresh fault occurred.
-The override did not avoid the wait; installed key consumption and explicit UR
-counter-event selection remain unverified. Review the original UR event creation
-and native gate scheduling before another configuration or model experiment.
-The completed source review corrected confusion between v4/v6 timings. Neither
-receipt records the actual host signal timestamp, so a late SUCCESS does not
-establish post-fallback ordering or the earlier kernel completion time. The
-profiling-off NOT_READY samples also do not identify a scheduling cause. A new
-committed no-gate/held-gate diagnostic with joined query-thread and actual signal
-timestamps is a possible next discriminator; production query cost and the
-complete57-case/model gates remain separate unresolved questions.
-The next production diagnostic uses `STRATA_SYCL_QUERY_PROFILE=1` on the
-existing default route. It times the complete compatibility query wrapper at
-resident launch/pool-return and early-PCIe launch/pool-return, without adding
-queries or changing their status handling, arithmetic, queue properties or
-safety environment. Counters reset after prefill and report four constant-size
-rows after decode; disabled calls read no clock. Wrapper wall time includes
-runtime checks, EventState locking and any completed-event wait, plus effects
-of clock readings. There is no event registry-map lookup in this wrapper.
-These four points exclude direct event queries elsewhere in decode; their sum
-is not total request query time, device service time, CPU arithmetic or proof
-of resource saturation. The new
-`check_verifier_retirement.py --query-profile` result requires the normal51
-cases plus an isolated real completed-event observer check. It does not modify
-the failed early57-case outcome or admit early/arena-copy execution. Next gates
-are a committed, bounded two-request default-route model check, followed by a
-separate32K+ thinking-enabled diagnostic and independent observer-overhead
-qualification. No throughput improvement or new model validation is established
-by adding the observer.
-The observer engine at source`ce8dd0e94` then passed all51 existing normal
-cases and the completed-event observer case. The six offline evidence/runtime
-admission tests passed at`8d4e53937`. Two earlier preparation refusals (unknown
-diagnostic mode, then receipt package labels compared with identity-only
-metadata) occurred before native launch and remain recorded in Git. The new
-controller admits only the exact same-build component-qualified runtime hashes;
-it does not relabel the mode or update the shared runtime baseline.
-The bounded normal-route model check subsequently completed both16-token
-thinking-template requests, with no fresh GPU fault and all owners closed.
-Resident launch queries were240/288 calls, all pending, with1.065699/0.973088ms
-wrapper intervals; their matching pool-return queries were all ready, with
-1.240609/1.513645ms. The second request's combined2.486733ms is about0.21% of
-its1185ms rounded decode time. The first request includes graph capture and is
-not a steady decode comparison. The four-point observer saw no2s query delay
-on these requests; short safety checks do not establish long-generation cost,
-observer overhead, a limiting hardware resource or a speed improvement.
-Use the separately committed official32K+ thinking-enabled regular-code
-diagnostic next, with only this narrow observer and the established validation/
-safety settings. Query intervals remain diagnostic until independent overhead
-qualification, and clean speed remains separate.
-That official diagnostic completed at controller source`06750114d`, native
-source`ce8dd0e94` and engine SHA256`51e97cbbd9d550d2c0d892bc2537faba5dfa07d6be25a202108865b0bd1d8307`.
-It processed33211 fresh inputs and2931 generated tokens, with2783 reasoning
-and5578 answer characters and2105/2481 accepted drafts. Four warmups and the
-timed request matched the official journal; all owners closed, boot unchanged
-and no fresh fault. The timed request made39744 queries at each resident point:
-launch150.074225ms (20ready/39724pending, max3.391505ms), pool-return354.337961ms
-(39713ready/31pending, max15.038424ms). Total504.412186ms is0.24208% of the
-208368ms rounded decode interval; both inactive PCIe categories remained zero.
-These four queries were not dominant in this observed production execution.
-The208368.1ms/14.1tok/s and651.3prefill tok/s include validation/progress and the
-query observer; they are diagnostic, not a new clean speed or overhead estimate.
-The run recorded1205698 unique CPU expert jobs,1556213 CPU entries and32107
-cache hits out of1588320 lookups (2.0% rounded). These are logical work counts,
-not measured DRAM or PCIe bytes, and do not distinguish CPU arithmetic from RAM.
-
-The next placement question corrects an earlier research assumption: the
-`prefill.reset()` before standalone token generation is outside `--serve`.
-Serve's `refill` returns lent cache slots without resetting the persistent
-owned `sp` workspace. The official benchmark uses serve, so the standalone
-reset does not establish spare decode VRAM. Review the existing borrowing path
-and actual variable-size cache/MTP/graph owners before a larger-cache trial;
-static sizes and the2% hit rate alone establish neither memory admission nor a
-speed gain. Keep context/session/RESTORE state and cached graph readers intact.
-The closed Orca source review and native Luna-max review found a concrete
-safety prerequisite before borrowing: lend/refill/adapt discarded residency
-upload errors, so failed publication could leave device slot ownership stale.
-No such copy failure was observed in the no-borrow diagnostic, and this is not
-an established cause of the earlier hangs. The current source change checks
-all post-initialization publications, including standalone and small-prompt
-reservations, and propagates failure before dependent prompt/verify work.
-The new host-only fixture injects first/middle/last-device failures for lend
-and refill, checks exact snapshots and stops fanout; it does not inject GPU
-faults. Newly authored helper and tests use no external implementation.
-The rebuild at source`126eda334` reused the current-build cache while
-preserving the named qualified fallback. Engine SHA256 is
-`5b10303034666b8e25b8c625511534a1e04ffddd0419e7221af90cb20b3d7708`.
-Normal51+query-observer1+residency-publication9 cases passed in the fresh v2
-component root, with unchanged boot, all owners closed and no fresh GPU fault.
-The six offline evidence/runtime-admission tests also passed. The injected
-failures test the shared host publication helper and fake table snapshots;
-production call-site returns were source-reviewed, not model-fault-injected.
-Compilation and these component passes do not exercise actual borrowing.
-The next source check shares the exact sized/uniform tail calculation with ten
-host cases (boundaries, no-fit/overflow,128-slot floor and request rounding).
-A default-off single-GPU `STRATA_SYCL_CACHE_LOAN_AUDIT=1` checks the device
-residency table after lend/refill and compares every refilled and unlent-prefix
-resident expert against its immutable RAM bytes. It records actual loan bytes,
-chunk, offset and free VRAM without retaining tensor dumps. The helper, audit,
-fixture and controller are Main-authored from this fork's Strata path, with no
-external implementation or XeStrata source.
-The rebuild at native source`1dc52b068` reused the current cache and preserved
-the qualified fallback. Engine SHA256 is
-`2fce2d79fc5f6eebf8829b65d0de863d99d697a0c4c013ad9c25d28cae9fc917`.
-All normal51+observer1+publication9+tail10 cases passed in the fresh v3 root;
-ten offline evidence/runtime tests passed. All owned processes closed, no
-fresh driver fault occurred and boot/runtime remained unchanged. These are
-component/admission prerequisites, not a borrower model result.
-`tools/sycl/cache_borrow.py prepare` then freezes the1280-slot hypothesis,
-8194/257-token thinking-template inputs and qualified runtime/safety settings;
-commit its plan before `run`. It requires positive loans at two distinct
-rounded chunks/offsets, exact GPU maps and full resident payload agreement,
-same-slot refill, G1/T4 decode and configured MTP expert detach/restore. The
-readback audit is diagnostic work, not clean speed or a quality benchmark.
-The v1 check allocated1280 slots/2639104000bytes (about2.458GiB), and lent
-1115 slots from165 for chunk8192:2320512000bytes available versus2319958528
-required. The24576-entry device map matched the host, with477712384bytes free.
-It then refused before prefill math: `layer_major.inc` requires owned scratch
-for the mode10 mixed accumulator. No generated token, refill/payload check or
-decode qualification resulted. The supervisor terminated/reaped the exact
-owned child on ERR; its original `ownership_closed=false`/incomplete validation
-remain recorded, with separate confirmed process closure, no fresh driver fault
-and unchanged boot. This was a configuration guard refusal, not a GPU hang.
-The controller now observes a native ERR through a bounded natural exit,
-instead of raising inside Owner and immediately signaling the process. Eleven
-offline tests, including a real CPU-only child that emits ERR and exits1,
-passed at controller source`81662a525`; no second request or cleanup signal
-was sent and the child/session closed. This does not revise the v1 outcome.
-Main missed this guard in the first preflight. Do not disable the fast mixed
-scratch/staged-bank path merely to obtain an admission pass: inspect its direct
-allocation assumptions and introduce checked borrower bounds/lifetime before a
-new component/model plan. The original v1 root is closed and cannot be retried.
-The completed Orca source audit and native Luna-max review additionally found
-unchecked Alloc arithmetic and nontransactional relayout: GEMM is rebound and
-carve changes pointers/T before all allocations are known to fit. The next
-implementation needs a sealed checked layout and parent-loan generation with
-reader retirement; on failure preserve the old layout or poison it and keep
-the parent unavailable. Registered USM containment alone does not authorize
-a loan. Preserve the owned fast path and staged-bank rules, and qualify host,
-device, error and relayout behavior before another borrower model check. These
-are source findings, not an observed GPU fault or an implemented borrower route.
-The first implementation step checks Alloc's element/guard/alignment/cursor
-arithmetic and sizing slack, validates signed32 routing/page shape bounds, and
-stops all later takes after a failed allocation. Carve returns before making
-aliases from a failed prefix or treating a null borrowed region as owned.
-A shared layout-state guard marks init/rebinding in progress; any return or
-exception before commit poisons the instance. Public run, internal chunk run,
-draft-KV and chunk reporting cannot use that incomplete layout; reset/init is
-required. This is a poison-on-failure contract, not pointer rollback. Fifteen
-host cases exercise the actual arithmetic/state helpers, including injected
-host phase exceptions; real Prefill/GEMM/queue fault injection and checked
-parent ownership, graph retirement and loan/refill admission remain pending.
-The new helper and tests are Main-authored from this fork's allocation path.
-At native source`6a553b54b`, the engine and seven fixtures rebuilt successfully
-(engine SHA256`b6e870895ab0e3399626169f7da02e09d011e7c72110406afcc342884e65876e`).
-All86 prerequisite cases and11 offline tests passed in a fresh v4 root; every
-owner closed, boot remained unchanged and no fresh driver fault occurred.
-The owned-mode math was not changed, and the new engine has not run a model.
-The completed Orca Luna audit and native Luna-max review retained this owned
-route step. They found no supported-route defect, but malformed QSA metadata
-can overflow earlier sizing expressions; add shared primary/range/geometry
-preflight without rejecting valid split ordinals. Also make reset/destruction
-retirement checked: the existing release ignores stream-sync errors. Next add
-a small actual Prefill init/relayout failure fixture before parent-loan
-admission; helper-state exceptions alone do not exercise those paths.
-CPU-math/RAM/GPU resource attribution remains unknown; physical262144/session/
-RESTORE, model quality and clean speed remain separate gates.
-The next committed gate uses a shared QSA metadata/product preflight and checked
-Prefill retirement before freeing owners. Its new model-free SYCL fixture calls
-actual Prefill init/relayout/reset with a1024-cell session and256/128-row scratch.
-Freeze normal71+host22+device17 cases in a fresh v5 root: smoke capacity refusal
-first, then exact/moved/shrunk layouts, failed init/rebind poison, reset recovery,
-QSA/USM/context refusal and complete parent/guard readback. The final separate
-child changes a fully drained external queue's context; reset must exit1 before
-owner release. This tests host-domain synchronization rejection, not a device
-fault. Use the shared immutable safety/tracing environment with alias1,MMQ0,
-compactFP16,BF16,QSA1,GDN-chunk640,vLLM backend set before exec. Each child has
-180s wall/600s CPU/4GiB RSS and the job64MiB raw/artifact budget; stop on the first
-failure without resizing or retry. Pin the source/controller before rebuilding
-the current comparison cache; keep the396d0c91f301 fallback until the next model
-qualification selects a generation. These gates do not enable borrowed mixed
-scratch: parent-loan generation and all graph/MTP/cache-reader retirement,
-refill/publication and a new complete model plan remain required. Run the11
-offline controller tests separately after components. No new speed sample is
-claimed by this plan.
-The v5 build at96e6d9e81 completed (engine SHA256
-`968200f3d60abb265279eae8890041b89827b85dfd93017c095c00e91ebad5be`).
-Normal71+host22+device-smoke1 passed; the full child passed13 subcases and
-then failed its foreign-queue assertion. The fixture created that queue with
-default out-of-order properties, so queue_for rejects it before the intended
-context check; the combined assertion misleadingly prints "foreign queue
-admitted". The gate is failed/incomplete, retirement was not executed and no
-model is admitted. All owners closed, no fresh GPU fault occurred and the11
-offline tests passed. Keep this outcome; correct both foreign queue constructions
-and separate the assertions in a fresh committed plan after source review.
-Native Luna-max review corrected the report's overly broad coverage claim and
-approved the fixture-only correction. The new v6 plan keeps all110 cases,
-order, environments, budgets and stopping rules above. Both foreign queues must
-be explicitly in order and have a different context; verify the original
-same-domain stream completes before substitution. Separate actual init refusal
-from its runtime-domain reason, and require the reset child to print both setup
-checks before the expected context-error exit1. Preserve failed v5 through Git;
-neither this correction nor source review admits parent loans or model work.
-At sourcea51989adc, the corrected fixture rebuilt and all110 cases passed in
-the fresh v6 root. Both init context refusal and reset's actual context-error
-exit1 were reached; the latter stopped before owner release. All processes
-closed normally, boot remained unchanged, no fresh GPU fault occurred and the11
-offline tests passed. Engine bytes remain968200f3d60a from96e6d9e81; the changed
-fixture has its own newly built identity. Keep the shared QSA/checked teardown
-step, with borrowed mode10 still rejected. Next implement checked parent-loan
-generation, sealed interval/layout and complete cache-reader retirement, keeping
-loan bookkeeping until successful refill/publication. No new model or speed
-result follows from this gate, and physical262144/session/RESTORE remain open.
-The next Main-authored source step represents the parent cache, exact loan
-interval, nonrepeating generation, decode host-reader admission and masked/use/
-refill/publication phases. Only ExpertCache mints a loan capability; USM
-registration alone cannot mint one. Prefill binds it to its checked carve's
-base/capacity/used extent and layout generation, and rejects stale/inactive
-capabilities at run/chunk/draft entry. Checked borrower retirement and parent
-close keep owners live on uncertain completion. This is an implementation
-step, still unbuilt/unqualified: generator/verifier integration, actual global
-reader retirement, refill/publication conservation and host/device/error gates
-remain required before borrowed mode10 can run. The original owned fast guards
-remain in force until those call sites supply the complete contract. All new
-ownership code is original project work, with no XeStrata implementation input.
-The independent Orca audit and native Luna-max review confirmed a fill-admission
-race and missing pending-loan checks in that first source step. Main replaced
-the Boolean fill check with a scoped, single-writer reservation held through
-the final enqueue. Prepare, close and phase transitions refuse active writers;
-refill writers are restricted to the loan interval. The ticket's pending query
-retains poisoned/refilling/in-transition loans without dereferencing a cache.
-Relayout rejects them before mutation, and release/reset fails before freeing
-owners. Uniform products, residency dimensions and sized-slot alignment/sums
-are checked; sized allocation uses real slot indices and keeps exact default
-payload lengths. Source`181043472` passed the37-case host-only fixture under
-GCC13.3 with warnings as errors:22 scratch/layout,10 loan-protocol and5 scoped
-writer cases. Both compiler/test processes closed normally. Exact source and
-compiler hashes, commands and budgets are retained in the
-[archived host result](https://github.com/yqYo1/Strata/blob/5f1c06452cd2c13c0d64bf67ca8a870a52b76065/bench/results/2026-10-15-pr6-recovery-audit/prefill-cache-loan-host-current.json).
-This does not build or qualify the changed SYCL engine or actual cache tickets.
-The prospective generator/verifier connection is default-off under
-`STRATA_SYCL_CACHE_SCRATCH_LEASE=1`, restricted to the single-cache serve route.
-It closes decode admission, retires verifier/session/MTP readers before use and
-keeps the exact lent rows/slots through refill completion and checked residency
-publication. Short borrowed chunks retain full dense weights. This connection
-still needs independent complete-source review and actual ticket/device/error
-tests. Existing owned-only mixed-mode guards continue to reject borrowed mode10;
-no model execution, new speed or full-context qualification is claimed.
-The next fresh v7 component plan commits154 checks before rebuilding:
-normal75 (including14 tail/preflight cases),host37,existing device17,actual
-cache-loan20 and five fail-stop children.
-The new model-free fixture uses actual ExpertCache tickets and Prefill layouts,
-a1024-cell session,256/128 rows,128 prefix slots of256B and1MiB tail slots
-(at most513MiB device parent). It checks exact resident payload/map restoration,
-a moved smaller second generation, an empty resident-tail cycle, cache reopen
-epoch refusal and prepared/used/refilling/poisoned reset plus pending parent
-close. GPU work is bounded memset/copy/readback; no invalid address or hung
-kernel is injected. The existing small traced check runs first. Each child keeps
-the qualified immutable environment and180s/600CPU-s/4GiB-RSS/64MiB output
-budgets; any failure closes the gate without retry. Preserve the396d0c91f301
-fallback and rebuild only the closed comparison cache. Complete source review
-and generator/model qualification remain separate from these prospective tests.
-The completed source audit/native curation confirmed a conditional short-tail
-setup gap, without evidence that a model request triggered it. Main now selects
-an occupied interval and preallocates the exact masked rows before preparing
-the parent. A short request widens its tail only toward the validated lower
-bound; if no borrowable resident exists, rejection leaves the parent unchanged.
-Four host cases cover exact/widened/prefix-only/invalid maps. The device fixture
-also checks that an empty-tail preflight leaves decode admission open; it then
-exercises the lower-level capability on that empty tail independently of the
-generator positive-mask policy. The review mistakenly carried the old57-case
-early-PCIe gate into its next-step text; use this154-case cache-loan gate instead.
-The failed early-PCIe route stays disabled and separate.
-The first native build at`e9a3854c1` stopped before GPU/test execution:
-Clang's warnings-as-errors rejected two existing PfPart aggregate initializers
-after adding the lease field without an explicit default member initializer.
-The failed receipt and closed ownership remain recorded. Set that field's
-default to`{}` and commit the source before a corrected build of the same
-prospective v7 gate; no test outcome or qualification is reused from this failure.
-The corrected source`0a385b388` built successfully (engine SHA256
-`60f09c471ff928c9e223bdf71ac249b96778ef233f0908fe0b39b618ab5e2434`).
-All154 v7 checks and11 offline tests passed. The provider's single summary
-marker represents17 cases, so the138 emitted case markers are not the case
-total. All owned processes closed, boot was unchanged and no fresh GPU fault
-occurred. Actual cache overwrite/same-slot refill/map restoration, moved and
-reopened tickets, the empty resident-tail capability and five pending-owner
-fail-stop paths passed. Keep the source-reviewed preflight and ownership step.
-Next connect the checked parent capability to all three existing mixed-scratch
-owner guards without changing the fast staged-bank path, then qualify the full
-generator/model cycle. These component results do not qualify model math,
-performance, task quality,physical262144/session/RESTORE or global graph execution.
-The next source step connects the same active parent capability to all three
-mixed-scratch owner checks. Bind and execution now also check that the complete
-R,region and embedding spans fit the sealed used extent and are pairwise
-disjoint; parent capacity alone is insufficient. Owned allocations retain their
-existing direct-owner check. FFN math, staging, phase/drain and subview checks
-stay unchanged. Trace records distinguish direct owners from parent loans and
-associate each borrowed FFN with its loan/layout generation; successful mask
-and refill publication record the actual decode admission state.
-The v8 normal75+host39+device17+loan20+fail-stop5 gate (156 cases) passed on
-build source`87ce707df`, using the same qualified settings, budgets and no-retry
-rule. All owners closed, boot was unchanged and no fresh GPU fault occurred.
-The two added host cases cover sealed-used bounds, overflow and view overlap.
-The396 fallback remains protected. The earlier
-standalone GCC mode/result is retired to commit5f1c06452; its same-build consumer
-has superseded it. The changed engine SHA256 is
-`02a61db21c50f5824f3af748ec6e89fbe05db04c7cacc0454c6b7c435d0e5bc6`.
-Component passes alone did not establish model qualification; v2's outcome is below.
-The independent Orca audit and native Luna-max curation found no source-supported
-defect in those three guards. This is bounded source acceptance: planner geometry
-is outside the ten reviewed files, and execution/math remain unqualified. The
-fresh v2 model controller requires that committed review, the complete same-build
-156-case result and the explicit checked-loan flag. It checks all48 borrowed FFN
-entries/retirements against one sealed generation, then actual decode admission
-after each successful refill. Its two thinking inputs8194/257 each request16
-generated tokens;8193 processed rows use only the primary mixed bank, so the full
-tail remains unqualified. The closed v1 refusal and its original failed outcome
-remain recoverable from the recorded Git reference; its separate process closure
-does not turn it into a pass. Source`b5161eb1b` passed all15 offline controller
-tests, including missing/stale/reordered evidence and natural ERR-child closure.
-The same-build proof recovered9831 original inputs and verified the engine and
-all eight fixtures before the committed v2 model plan ran. That model check
-failed: the first loan was masked and mode10 setup reached layer0, then run_impl
-refused a stale/inactive owner. The source path replaces `m.cache` with the
-private per-layer execution cache before run_impl; the new span helper also
-uses that mutable pointer as the original loan's parent identity. This wrongly
-rejects the valid parent ticket. No borrowed FFN, refill or generated token was
-completed. Native exit1 and ownership closed normally; boot was unchanged and
-no fresh GPU fault occurred. Preserve this failed result. The earlier source
-audit missed the dynamic identity coupling. The original source correction
-keeps the parent supplied to init separate from the execution cache. All lease
-checks, activation and retirement use that parent; binding also requires the
-ordinary parent cache to be active. The actual per-layer cache substitution
-immediately rechecks the lease before inference, with a trace identifying the
-distinct execution cache. The v3 model gate requires this actual
-substitution and all48 borrowed FFN entries/retirements, two complete refill/
-decode cycles and the original payload/map checks. Its offline parser rejects
-missing, duplicated or false substitution evidence. Use a fresh v9 156-case
-component plan, complete corrected-source review and a committed v3 model plan;
-never retry closed v2 or bypass the owner check. Source`3832efe2a` passed all16
-offline evidence tests. Build`bb71e78db` passed all156 fresh v9 cases, with
-owners closed, unchanged boot and no fresh GPU fault. Its source audit and
-native curation support the parent correction,
-but found a short-residency evidence gap. Controller-only source`57dfa2204`
-now requires all six ordered dense phases inside their respective loans:48
-long-path activations before Full restoration, and Full residency with zero
-activations on the short256-row path. Its17 offline tests passed. No native
-input/fixture changed; same-build admission recovered9831 inputs and verified
-the engine/eight fixtures. A separate native review accepted this controller
-delta and all14 final pins, including12 unchanged inputs. The fresh v3 plan was
-committed before its single model execution.
-The committed v3 check passed: actual private-cache substitution preserved the
-parent, all48 borrowed FFNs retired, both full1280-slot payloads and24576-entry
-maps matched after same-slot refill, and both requests generated16 tokens.
-The first1115-slot loan covered2320512000B; the smaller97-slot loan covered
-241280000B at chunk256. Decode admission followed0/1/0/1. The short path observed
-Full dense state with zero layer activations; the long path restored Full after48.
-Exit0, ownership closure, unchanged boot and no fresh GPU fault were confirmed.
-Keep the parent correction. Free VRAM at the four lend/refill observations was
-477712384/151470080/147935232/138100736B: the larger decode cache leaves little
-headroom, so capacity and longer generation still need measurement. Next compare
-the checked larger cache against the owned small cache using official32K+ input
-and long generation, with prospective repetition/order and clean processes.
-The first input processed8193 rows and used only the primary mixed bank;
-tail routing, clean speed, task quality,physical262144/session/RESTORE remain
-unqualified. The default-off route stays unadopted for general use. Closed v9/v3 raw, JIT,
-successful compiler output and consumed source-audit transactions were retired
-after committing the evidence: 121 files, 39114382 bytes. The compact
-model result records the path/hash/reason manifest. Current engine/eight fixtures,
-the396 fallback and14 separate legacy provenance holds remain.
-The official32K+ capacity admission is now maintained in
-`tools/sycl/cache_capacity.py`: four official warmups/calibrations and one
-thinking-enabled1024+ output request, with all five exact1280-slot refill/map
-cycles and48 actual long borrowed FFNs required. Its21 offline tests passed
-at3f4752335; native/controller review verified18 pins, and Main recovered9831
-build inputs and verified the engine/eight fixtures and runtime. The source
-report halved residual storage in its arithmetic; the correct BF16 extent
-is20480B/row, as used by the controller. The512MiB admission headroom remains
-unchanged. The committed official check passed
-all four warmups and a33211-input/2932-output thinking request:48 actual FFNs,
-five exact1280-slot payload/map refills and normal native exit0, with no fresh
-fault. Its680140800B residual stayed fully on GPU in mode10. The observed
-long-allocation free budget was4185026560B versus2307657440B fixed including
-the512MiB allowance. The discrete pre-release low-water was14786560B; the long
-refill observation was102322176B. Neither is continuous peak memory.
-Diagnostic638.5 prefill/11.6 decode tok/s and85.03% draft acceptance are kept
-as one observed request, without a clean gain or regression claim. Logical
-decode cache hit rate was10.2%; remaining1120890 CPU miss jobs do not measure
-RAM/PCIe traffic. Corrected117488-row arithmetic is21915776B above the observed
-33K free budget.1256 slots would save63897600B while still lending enough for
-chunk8192, but its117K admission and speed are unmeasured. The independent
-clean owned128/borrowed1280 comparison is defined in `tools/sycl/cache_compare.py`.
-Its31 offline tests and independent source review passed at controller source
-`cba7b0a7c`; the owned32K parameter-validated check also closed normally with
-48 actual direct-owner FFNs,2931 generated tokens and no fresh fault. These
-checks admitted the frozen six-process comparison. All six subsequently closed
-normally, with no fresh fault, matched generation/MTP regimes and unchanged
-full hashes for all15 model assets. Each process handled33211 fresh input
-tokens and2931/2932 thinking-plus-answer output tokens. The individual samples are:
-
-| Pair | Owned128 prefill / decode tok/s | Borrowed1280 prefill / decode tok/s |
-| --- | ---: | ---: |
-| 0 | 653.1 /14.1 | 647.6 /14.6 |
-| 1 | 644.9 /14.0 | 647.2 /14.6 |
-| 2 | 648.5 /14.2 | 647.3 /14.6 |
-
-All three exact-clock decode ratios favor borrowing:1.036040,1.040718,1.034376,
-geomean1.037041 (**+3.7041%**). This misses the prospective>5% faster screen;
-preserve its inconclusive/small-effect outcome rather than relaxing the gate.
-Prefill geomean0.997771 (**-0.2229%**) passes the separate nonregression gate,
-without a conclusive speed direction. Decode sample SD is0.05930tok/s owned
-and0.01546tok/s borrowed. Cache hits are2.0%/10.2%, with1205698/1120890 CPU
-miss jobs respectively; those counts do not establish physical RAM/PCIe traffic
-or saturation. Keep the default-off route for the planned1256-slot117K capacity
-follow-up, and calibrate mixed-format CPU work against RAM-read throughput
-before selecting another decode kernel change. Default adoption remains pending.
-See
-[the current comparison](../bench/results/2026-10-15-pr6-recovery-audit/cache-comparison-current.json).
-Broader quality, full mixed
-tail and physical262144/session/RESTORE remain unqualified. Closed successful
-raw/JIT and consumed source-audit transactions are retired after their compact
-evidence is committed. The owned check and first clean pair retired217 files,
-38525713 bytes; the comparison's research-index entry records the path/hash/reason
-manifest and successful post-cleanup source/build admission. The remaining four
-clean roots then retired280 files,51307063 bytes, with the second manifest in
-the same index entry. All seven comparison/check roots are closed and empty;
-their individual samples and decisions remain in Git. All9831 native
-inputs,131 benchmark inputs, the engine/eight fixtures and396 fallback remained
-verified; cleanup executed no GPU work. Current engine/eight fixtures remain
-for mixed-format CPU calibration and the1256-slot117K check. The396 engine/five
-fixtures remain the historical117K/long-generation reference for that explicit
-old-owned/current-borrowed long-input comparison on the current runtime. Review
-and retire the extra generation when that comparison closes; this32K cache-layout
-screen does not qualify the current engine's117K borrowed mixed tail. The14
-legacy provenance holds remain separate.
-The same borrowed-cache request records1424035 CPU entries over1120890
-unique CPU expert jobs: mean NT=1.27045027. Since each job has a positive
-integer token count, at least817745 jobs (72.9550%) have NT1:
-each NT2+ job consumes at least one of the303145 excess entries.
-`expert_pool_dispatch_multi` increments entries per CPU-routed row and misses
-by the number of distinct jobs; the request snapshots exclude prefill. This
-bound is on logical job count, not CPU time, physical traffic or the unknown
-per-format/NT histogram. Prioritize NT1 applicability when selecting a CPU
-method; high draft acceptance alone does not establish multi-token expert reuse.
-The CPU-only discriminator `tools/sycl/cpu_roofline.py` now passed all115 cells
-and575 samples at source `c24bfb62f44bf797319557e9e7c1b3264acc6d52`, with the
-production CPU sources/pinned ggml and official Intel LLVM/Zen3 flags. All56
-real-weight numerical cases passed, with maximum relative-L1 errors6.52976e-8
-GU and2.14853e-7 Down, and exact pool/serial outputs. Down42 uses an independent
-scalar reference with production FP32 ActQ scales; its2.72877e-4 difference
-from ggml's FP16 activation scales is a separate contract diagnostic. Finite
-outputs and external canaries passed; private pool scratch is not instrumented.
-Every sample lasted at least1.300002841s; maximum clock-query/warm-pass ratio
-was9.93725e-5, below the prospective0.001 gate. Earlier495 timing samples and
-the failed timing-floor outcome remain at `cf098f72e`, unchanged; the replacement
-recollected the entire matrix rather than accepting partial original success.
-
-On Ryzen5 5600X (6 cores/12 threads,32MiB L3), the coordinated256MiB read scan
-achieved median32.40/39.35/30.96GB/s on1/6/12 pinned threads. It includes barriers
-and checksum and measures requested reads; it is not a physical DRAM counter or
-an upper bound for every access pattern. The six-compute-participant NT1 expert
-results are below. Each call handles six distinct experts. Hot uses8.6–15.3MiB;
-stream uses at least96MiB without revisiting a blob inside a pass.
-
-| GU / Down | Stream logical GB/s | Hot logical GB/s | Stream us/expert |
-| --- | ---: | ---: | ---: |
-| IQ3_XXS / IQ4_NL | 26.40 | 28.29 | 82.43 |
-| IQ3_XXS / Q2_0 | 22.14 | 22.77 | 77.47 |
-| IQ3_S / IQ4_NL | 22.95 | 25.12 | 101.49 |
-| IQ3_S / Q2_0 | 20.39 | 20.25 | 91.68 |
-| IQ2_S / IQ4_NL | 26.84 | 28.69 | 73.43 |
-| IQ2_S / Q2_0 | 21.14 | 22.19 | 71.45 |
-| IQ4_XS / IQ4_NL | 40.66 | 59.67 | 65.48 |
-
-IQ2/IQ3 hot/stream differences are about0–10%, while IQ4_XS gains about47%.
-This supports investigating NT1 low-bit GU/decode work in the former families;
-it does not establish whole-model CPU/RAM saturation. Blob bytes differ by
-format, so compare latency as well as byte rate. The GU pool phase occupies
-about70–81% of NT1 IQ2/IQ3 stream wall time, including its scheduling/waits.
-Logical rates exclude extra table/scratch traffic. Actual per-format/NT job
-frequencies and model critical-path CPU time remain unknown. Keep the pure-kernel,
-six-job-call and model questions separate; no model speed or70tok/s follows.
-See [the individual samples and pinned plan](../bench/results/2026-10-15-pr6-recovery-audit/cpu-roofline-current.json).
-The next model work remains1256-slot117K borrowed-tail admission and the retained
-old-owned/current-borrowed long-input comparison; new CPU methods need a bounded
-component comparison before inference adoption.
-
-For the separate earlier early-PCIe candidate, only a later qualified mechanism permits a
-fresh complete51+6-case plan. Preserve all pending-completion,
-untouched-output, payload/guard and owner-lifetime requirements under that plan.
-Model execution remains blocked until the complete57-case gate passes.
-After all57 passes, use `tools/sycl/early_pcie.py prepare`, commit the generated
-plan, then `run`: two thinking-template requests with16 generated tokens each,
-G1/T4 capture reached, positive copied/early groups, per-request group/copy and
-ready/pending conservation. Preparation refuses an incomplete component gate.
-This uses parameter validation and stage progress; full API tracing remains in
-the component fixture. No clean speed or task quality comes from this small run.
-Run the separate parameter-validated long model check before clean speed.
-The model check needs32K+ fresh input,1024+ thinking-plus-answer tokens, positive
-actual early launches/groups matching completed copies, normal ownership and no
-fresh fault. Record audit readiness separately. A later committed six-process
-copy-enabled comparison uses `tools/sycl/arena_copy.py prepare check
---early-scheduling` followed by its committed generated plan, then the six clean
-cohorts. It changes only early0/1; readiness queries are enabled in the diagnostic
-and disabled in clean timing. Every measured footer is bound to its actual input
-and generated work, and early groups must equal completed copied blobs. A faster
-screen requires paired ratios>1 and geomean
->1.02 required for a faster screen. Weak-MTP/agent-session, task quality,
-prefill nonregression and physical262144/session/RESTORE remain adoption gates.
-Compilation and the51 existing passes do not qualify early model execution,
-performance gain or adoption.
-
-A conditional complete-blob copy budget also constrains that candidate.
-With at most2 resident experts per layer, top10 routing and at most4 emitted
-tokens/window, even identical routes and perfect acceptance require at least
-`(10-2)*98227200/4=196454400` requested miss bytes per emitted token if all misses
-go to GPU. At the observed upstream encoding-only7.877GB/s budget this corresponds
-to40.095tok/s; illustrative6GB/s gives30.541tok/s. This optimistic scenario is
-below70tok/s, so full miss offload alone under this placement cannot supply
-the target. CPU/GPU sharing, larger resident reuse and wider effective windows
-remain distinct possibilities. The [calculation](../bench/results/2026-10-15-pr6-recovery-audit/client-resources-current.json)
-records its assumptions; it is neither measured wire traffic nor a hybrid
-throughput ceiling, and unchanged-work CPU scaling is not established.
-Actual unprivileged perf `cycles` and `task-clock` command probes at`dea283917`
-both exited1 with the access-limited diagnostic under`perf_event_paranoid=4`.
-This preserves the earlier VTune ptrace refusal as a separate result; no host
-permission was changed and model hardware counters remain unavailable.
-After the source and results became default-reachable through PR139, Main
-recovered and verified the newer build's9816 original source/dependency blobs,
-recipe and final artifact hashes before retirement. The closed extra build,
-resource/perf raw roots and consumed audit payloads were deleted:444 files,
-151385935 bytes, with a path/hash/reason manifest recorded before deletion.
-The selected old engine, its five original fixtures and source receipt remain;
-its9813-input admission passed again after deletion. The fresh-build fallback
-check now accepts the original hash-only fixture receipts while verifying the
-relocated sizes/hashes and exact fixture selection. Its updated regression test
-passed. Original execution, quality limits and failed performance gates remain
-unchanged; this closure adds no throughput gain.
-Recovered spans must fit the selected request interval. CPU ticks include
-polling, and a shared DRM client's counters are not exclusive process usage.
-Keep model quality,agent-session,physical262144/session/RESTORE and matched
-no-MTP attribution as separate pending checks.
-
-The maintained model controller now provides `prepare|run qsa-long-input-check`
-and `prepare|run qsa-long-input [0|1|2]`. Its prospective screen holds131072
-context/resident INT8 KV,8192 chunks,GU-large,ordered-exp QSA and GDN columns4
-fixed; Down fusion is explicitly off. Minimum actual input is98304 and the
-client's constructed122880-token budget plus24 output and256 guard requires
-123160 context. The validation request must close before three independent
-clean four-request processes. Keep first use separate from each process's
-three subsequent samples; the target is a subsequent median>=1000tok/s in each
-process. This measures longer-input amortization rather than a same-input
-kernel improvement. Capacity/admission and actual route/token checks remain
-required. The first parameter-validated117489-token request closed with native
-exit0, thinking observed,24 generated tokens and no fresh fault. Its750.2tok/s
-first-use reading is diagnostic only: the frozen route gate failed. At admission
-only4257304576B were free; fixed reservations including512MiB headroom needed
-4154841216B and the mixed bank needed419430400B, a316967040B shortfall.
-Mode10 safely fell back to mode2, with98304 GPU residual rows and392888320B
-host residual storage; the accumulator/GU fusion counters were absent. The
-[failed screen](https://github.com/yqYo1/Strata/blob/2e83c15f6d4cc62ddaa65a99719dfb76bb3344bd/bench/results/2026-10-15-pr6-recovery-audit/prefill-long-input-current.json)
-keeps its original failure and individual sample. Do not call this a matched
-route comparison or a clean speed regression. Before a new configuration
-probe, audit/test existing output-head release and restore, or explicitly
-compare residual-prefix/window placement; preserve safety headroom and guards.
-Selective Down timing remains the next pending component comparison.
-
-The next capacity discriminator uses `qsa-long-input-balanced-check`, followed
-by `qsa-long-input-balanced [0|1|2]` only after it passes. Its only placement
-change is the existing `STRATA_PREFILL_LAYER_MAJOR_R_GPU=81920`; output heads
-remain resident and the512MiB safety allowance stays fixed. Relative to the
-failed automatic98304-row prefix, this releases335544320B for the mixed bank,
-18577280B more than the observed admission shortfall. That is an admission
-calculation, not measured free memory or speed. More residual rows move through
-RAM, so their extra transfer cost must be included. The new check must prove
-actual mode10,81920 GPU rows,GU-large and Down0; it links the original failed
-screen in Git. Prioritize this measured VRAM cliff before spending another
-clean timing cohort on the still-unqualified selective Down candidate.
-
-The balanced validation request closed normally at117489 actual read tokens,
-with mode10 and81920 GPU rows confirmed. Its first-use parameter-validated
-reading is756.8tok/s, compared with the original diagnostic750.2; one sample
-per configuration does not establish a speed gain. The mixed bank fits with
-18581376B beyond the unchanged512MiB allowance, and the host residual is
-728432640B. GU counters show5240 fused jobs/35581471 rows and16172 separate
-jobs; Down remains separate for21412 jobs. No fresh fault occurred.
-The clean four-request process then closed normally, with117489 fresh read
-tokens per request, thinking on, mode10 and81920 GPU rows throughout. First
-use was755.3tok/s; subsequent samples were802.1,802.1 and802.0 (median802.1,
-sample SD0.0577). Ownership closed, boot unchanged and no fresh fault occurred.
-The prospective futility rule (median<950 and all3 subsequent samples<975)
-stops this configuration without the other two independent processes. The
-route/correctness screen passed; the1000tok/s target did not. Keep all samples
-in the [current result](../bench/results/2026-10-15-pr6-recovery-audit/prefill-long-input-current.json).
-This is a different input size from the earlier78K~903tok/s reference and does
-not establish a same-input regression or sustained decode performance.
-
-The current-library output-head fixture passed two exact521472000-byte
-detach/restore cycles, with all packed weights and projection logits unchanged
-and different GPU addresses in both cycles. No fresh GPU fault occurred. This
-isolated API result does not qualify the combined production transaction.
-The subsequent same-engine model check was rejected before long-prefill work:
-NativeDensePhase explicitly excludes head release, and the verifier's two
-leases also reject nesting. Worse, error teardown ended in CPU SIGSEGV inside
-the installed Level Zero driver; no new GPU fault was recorded. No head detach
-occurred. Preserve this failed result and its diagnostic limits, and do not
-repeat the configuration or remove the exclusion guard. Disabling existing
-dense banking to bypass it is not the selected optimization.
-
-The selected capacity path is bounded two-bank mixed storage using idle m.R
-and the unused shared-arena tail. Source review establishes335544320 and
-121566720 disjoint bytes, enough for the419430400-byte bank; it does not prove
-runtime ownership or release any allocation yet. Implement checked bank
-selection for preparation, arbitrary expert-major gathers and shared consumers,
-with phase/owner validation before a traced component/model check. Keep PLE,
-short-input fallback and final callbacks intact. Separately audit the newly
-observed early-error teardown fault. Selective Down remains off and its clean
-component timing is still pending.
-
-`STRATA_SYCL_PREFILL_MIXED_SCRATCH=1` is the new default-off implementation of
-this capacity option, initially restricted to mode10, native16, owned chunk8192
-scratch and the existing single queue. It checks direct Prefill allocation
-owners and registered device spans, retains every mixed row through shared
-projection/HC completion, and uses the existing final checked drain before any
-callback may reuse m.R or the arena. Preparation and shared consumers use the
-same chunk/bank plan; a new GPU gather validates every row before loading either
-bank and sets sticky status bit4 for invalid rows. No numerical conversion or
-accumulation order changes. This is Main-authored Strata code, based on the
-existing local planner/route interfaces and the reviewed source lifetime map;
-no XeStrata implementation is used.
-
-Source034bddff8393 passed the CPU capacity plan and all five GPU gather cases,
-including banks crossed within one job,65536/65537 boundaries, partial windows,
-invalid maps, rejected spans, guards and immutable inputs. The same-build GU
-ownership, traced smoke,18-case validation and three-process timing also passed;
-the fused/separate wall-time ratio geomean was0.95335. This is component evidence.
-
-The first parameter-validated117489-token borrowed-scratch model request then
-closed normally, with mode10,98304 GPU residual rows, zero extra mixed allocation,
-thinking observed and no fresh GPU fault. All96 entry/retirement windows matched
-the48-layer81920+16384 schedule and expected extents. Its794.2tok/s first-use
-reading includes validation/logging and is not a clean speed comparison.
-The clean cohort0 then closed with795.0tok/s on first use and845.9,846.1,845.8
-on its three subsequent requests (median845.9, sample SD0.1528). All four actual
-117489-token request hashes match the81920-row screen at commit0dc815171;
-the new placement gains5.46% over its802.1tok/s subsequent median.
-Each placement has one independent process; this is not a repeated-process
-gain or an isolated kernel change. No fresh fault occurred. The prospective
-futility rule stops this configuration without cohorts1/2;1000tok/s is not met.
-Keep this opt-in capacity reference. Next measure remaining exact VRAM owners
-and the changed route/resource costs. The target-cache startup0.26GiB is rounded
-and cannot justify a release budget; head/dense composition remains excluded.
-Short prefill, broader numerical/task quality, full physical262144 context and
-RESTORE remain unqualified; this check does not establish default adoption or
-sustained decode performance.
-
-The selected next prototype reduces the temporary compressed-expert GPU bank
-from512 slots (1363148800B) to384 (1022361600B), while retaining the existing
-immutable512-expert RAM upload slab. Cache383 experts on first demand and use
-one scratch slot for remaining experts on the same in-order queue. This saves
-340787200B and admits all117488 residual rows in the pinned total-budget example,
-without releasing heads or reducing the512MiB allowance. Extra weight uploads
-between windows and their CPU/PCIe cost remain to be measured.
-The committed CPU admission/ticket planner passes exact-budget, explicit-prefix,
-stale-ticket and three short-tail fallback cases. It selects the original512-slot
-path when full GPU residency is unavailable or a final1..8192-row window would
-take normal FFN. Its262144-row case is capacity arithmetic, not physical-context
-qualification. The query-only check reports10132807680B as the B570
-max_mem_alloc_size, above the2406154240B residual. It submits no allocations or
-kernels, so actual allocation success remains untested. The planner now accepts
-an explicit per-allocation cap and must preserve it independently of total budget;
-CPU cap-boundary/fallback checks passed at sourcecb74810ab, including stricter
-hypothetical2GiB/1.5GiB devices, the exact residual-size boundary, invalid caps
-and explicit full-prefix rejection. These remain CPU planning checks.
-The default-off STRATA_SYCL_PREFILL_EXPERT_BANK_SLOTS=384 route now connects
-that plan to the engine. Production and the new synthetic GPU fixture share
-the same checked upload helper. Its private map is published after accepted
-enqueue, with source/cache/status owners retained through the existing checked
-lease. The original path still publishes all512 experts after its initial drain.
-Staged requested H2D bytes/hits are counted separately: its uploads occur inside
-the MoE dependency path, not the initial bulk-upload interval.
-The corrected source1222e27d0 compiles successfully, including the production
-engine and shared-helper GPU fixture. The initial attempt rejected the const
-cache view at compile time, before any execution; the implementation now owns
-an explicit mutable upload target rather than casting away const. The source034
-validated engine/fixtures are retained externally for this immediate comparison.
-The traced three-case GPU smoke and four-case validation passed with no fresh
-fault. They cover383/384/512 slots, two-layer resets, scratch-only capacity1,
-actual2662400B stride, all512 host experts, two queued readers per selection,
-immutable source/slot guards, seven admission rejections per case and caller
-unwind after queued work. Three old math/gather fixtures rebuild to identical
-SHA256 bytes, so their existing checks remain component evidence; this does not
-claim a fresh run or qualify the changed model orchestration.
-The parameter-validated117489-token model request then passed, with all117488
-engine rows on GPU, zero host residual,96 exact entry/retirement window pairs
-and normal process closure. Requested expert H2D payload was40102860800B across
-19631 uploads, with13594 permanent hits; unused experts are not bulk-uploaded.
-The final layer used267 permanent slots. No fresh fault occurred. Its874.6tok/s
-first-use reading includes validation/logging and is diagnostic.
-All three clean independent processes then closed on the same frozen engine,
-configuration and four request hashes, with117489 fresh read tokens per request:
-
-| Process | First use, tok/s | Subsequent individual samples, tok/s | Subsequent median | Sample SD |
-| --- | ---: | --- | ---: | ---: |
-| 0 | 890.8 | 957.8,953.4,955.8 | 955.8 | 2.2030 |
-| 1 | 888.2 | 956.6,957.9,957.9 | 957.9 | 0.7506 |
-| 2 | 891.9 | 956.9,955.4,954.0 | 955.4 | 1.4503 |
-
-All12 requests closed normally, with actual full-GPU residual placement,
-normal native exits and no fresh fault. The median of the three process medians
-is955.8; the pooled median of the nine subsequent samples is956.6.
-The matched98304-row baseline has one process with median845.9, so the12.9921%
-ratio to955.8 is still a screen against one baseline process, not a paired
-three-process gain or isolated kernel improvement. The1000tok/s target remains
-unmet. The individual process evidence is preserved at commits1b3b92d93,
-1f302e6e4 and7f6d7c0fe; the compact current result records their parity checks.
-
-The65536-minimum configuration screen used the same official benchmark
-extension, retaining131072 resident INT8 context,
-chunk8192,384 expert slots,borrowed mixed scratch,GU-large and Down0.
-The fixed generator produced78451 actual read tokens and78450 engine rows.
-The validation passed full GPU residency and all48 single-window owner/extent
-pairs, with1606656000B residuals, zero extra mixed allocation,18484 weight
-uploads/dequantizations and21514 jobs. Requested expert H2D was37750041600B;
-there were no permanent hits because every expert is visited only once per layer.
-Its833.8tok/s first-use reading includes validation and is diagnostic.
-The clean process then measured835.0 on first use and930.9,921.6,930.4
-subsequently (median930.4, sample SD5.2310), with normal closure and no fresh
-fault. The prospective median<950/all samples<975 futility rule stops this
-configuration without the other two processes. The1000tok/s target is unmet.
-This different input size does not establish a same-input kernel regression.
-
-The117K route's observer check passed, and the separate first-use/warm pair
-completed normally without a fresh fault. Its original controller result remains
-failed: a global owner count incorrectly compared192 windows against96.
-The corrected offline analyzer independently validates96 windows per request,
-complete CPU/coarse/work counts and four negative parser cases; it does not
-rerun the model or overwrite the original failure. First-use/warm source copying
-took5.15749/5.12719wall seconds (5.13619/5.06660CPU); warm frame wall was122.49556s.
-Warm host grouping took0.25367CPU seconds. The951.1tok/s warm reading is profiled,
-not a clean speed sample. Main keeps only aggregate attribution and checked
-work totals; the full layer arrays and exact job-size histogram are unnecessary.
-
-The next candidate is an opt-in immutable layer view from the already resident
-Arena source, eliminating the512-expert staging copy. This may avoid a second
-slab and worker without changing arithmetic or PCIe payload. It requires explicit
-bounded source lifetime through checked queue retirement; transient/custom
-providers keep synchronous copying. Ordinary host-pointer DMA may itself stage
-or behave differently, so no speedup or1000tok/s claim follows from byte removal.
-CPU-only next-layer double-buffering remains an alternative if direct borrowing
-fails its correctness/performance comparison.
-
-The prospective implementation is default-off under
-`STRATA_SYCL_PREFILL_EXPERT_SOURCE_VIEW=1`. It applies only to the existing
-all-GPU staged expert bank. Arena publishes bounded immutable host views from
-its loaded-layout snapshot; the caller keeps the source open until checked
-queue retirement. Empty provider capability or an unsupported bank route retains
-the synchronous path. RAM admission counts an upload slab only when needed.
-The upload helper separates host blob stride from the fixed GPU-cache stride;
-each transfer still copies exactly that layer's blob bytes. No worker, GPU math,
-cache policy, decode layout or requested PCIe weight payload changes.
-Before any model run, require independent source-contract review,14 CPU view
-extent checks plus existing planner/ticket checks, then traced small and full
-GPU byte/guard/queue-unwind checks for both strides. Clean same-binary117K
-off/on model comparisons follow only after these pass. The current engine and
-same-build fixtures remain the validated fallback through qualification.
-
-The independent source audit and native Luna-max review found the private-Arena
-caller/stride/queue contract sound, while flagging externally mutable shared
-file backing. Main disables resident views for every nonempty shared-arena path;
-those sources keep the original synchronous copy. The next bounded gate also
-uses the real Arena provider to check blob identity, later source calls, invalid
-layers, close/reopen, File fallback and Linux shared exclusion, before synthetic
-GPU upload/guard/unwind cases. Initial compilation and the14 CPU view extent
-checks passed. The real provider checks and all six traced small/six full GPU
-cases subsequently passed at build source`a57611b9c`, without a fresh fault or
-boot change. These include fixed/compact source strides and checked unwind.
-An earlier build stopped before execution because the provider target was not
-registered in the separate SYCL CMake path; that failed receipt is preserved.
-The official117K check subsequently passed actual48-layer view admission,
-zero owned upload slab, unchanged384-slot/residual placement,96 owner windows
-and complete work/CPU accounting. Requested expert H2D remained40102860800B.
-The legacy source-copy region now prepares references in0.000038133wall /
-0.000035870CPU seconds; actual bulk CPU copying is absent. Upload submission
-still took4.94585wall /4.88016CPU seconds, and explicit wait CPU was78.90636s.
-The125.91473s observer frame and923.2tok/s first-use reading are profiled;
-they are not clean repeated performance. All owners closed normally without
-a fresh fault. The first clean pair then closed normally on the same binary,
-110 benchmark-input hashes and four fresh request hashes, with identical
-requested expert H2D bytes for every matched request:
-
-| Process | First use, tok/s | Subsequent individual samples, tok/s | Subsequent median | Sample SD |
-| --- | ---: | --- | ---: | ---: |
-| A0, synchronous copy | 891.6 | 957.4,952.7,951.6 | 952.7 | 3.0806 |
-| B0, immutable view | 829.0 | 995.5,996.9,997.2 | 996.9 | 0.9074 |
-| B1, immutable view | 908.7 | 995.8,995.9,996.1 | 995.9 | 0.1528 |
-| A1, synchronous copy | 883.4 | 951.8,950.7,954.7 | 951.8 | 2.0664 |
-| A2, synchronous copy | 886.2 | 956.4,956.0,957.6 | 956.4 | 0.8327 |
-| B2, immutable view | 920.5 | 998.5,998.3,998.3 | 998.3 | 0.1155 |
-
-All six processes subsequently closed in the frozen A0/B0/B1/A1/A2/B2 order,
-with normal native exits, no fresh faults and identical requested expert payloads
-for each matched request. The three paired subsequent-median ratios are
-1.046394,1.046333,1.043810; their geometric mean is1.045512 (**4.5512%**).
-All three pairs favor the view and exceed the unchanged prospective aggregate
-criterion. These are three independent process-pair ratios, not nine independent
-request ratios. First-use ratios0.929789,1.028639,1.038705 remain separate; the
-initial829.0 regression is retained and its cause remains unproven.
-The three view-process medians996.9,995.9,998.3 still miss1000tok/s.
-Retain the view as an opt-in tuning path; default adoption, broader quality,
-physical262144,session/RESTORE and sustained-generation qualification remain pending.
-
-The committed offline analyzer recovered all110 benchmark inputs per process,
-9813 original engine/dependency inputs and the original build recipe from Git.
-Six fault-evidence and six adversarial statistics regressions passed; they do
-not execute the GPU or qualify the pending Down component. The compact
-[current comparison](../bench/results/2026-10-15-pr6-recovery-audit/prefill-long-input-current.json)
-keeps all24 speed samples, spread, original source/receipt pointers and limits.
-Do not equate disappearance of the source-copy category with a gain in other
-workloads or requested payload equality with measured physical PCIe traffic.
-
-Keep the compiled
-fine command sampler off: it lacks a staged-expert-copy tag and would reject
-those untagged events. Coarse event intervals include host submission gaps and
-do not establish physical PCIe traffic or arithmetic saturation. The reviewed
-double-slab source contract also requires audited providers, exclusive source
-calls and join/error/RAM-admission qualification; no implementation is adopted.
-The old47 intermediate residual stores plus47 inputs requested36931502080B
-of host transfers; the new route replaces those with GPU-local copies. Staged
-expert payload at117K is39.95..40.10GB/request versus the old bulk50.29GB. This does
-not measure wire traffic or assign the speed gain to transfers alone: the
-remaining FFN window also changes from16384 plus host chunks to35568 GPU rows.
-Physical262144, production failure/session/RESTORE and default adoption remain
-unqualified; this bounded screen does not establish sustained decode speed.
-
-A read-only PCI topology check on2026-10-19 found16GT/s x4 at the card's
-03:00.0 upstream bridge and its AMD ancestors. The endpoint and internal04:01.0
-bridge instead report2.5GT/s x1, including as their maximum; interpreted as a
-payload limit that contradicts the earlier approximately6GB/s H2D measurement.
-The [retained topology readings](../bench/results/2026-10-15-pr6-recovery-audit/qsa-hardware-profile-current.json)
-preserve the discrepancy. The observed upstream encoding bound is
-16e9*4*128/130/8=7.877GB/s, using the [Linux encoding conversion](https://github.com/torvalds/linux/blob/master/drivers/pci/pci.h);
-the [B570 product specification](https://www.intel.com/content/www/us/en/products/sku/241676/intel-arc-b570-graphics/specifications.html)
-allows4.0x8. At that upstream bound,40GB would take5.08s if every requested byte
-crosses it. This is a conditional payload estimate, excluding protocol overhead
-and shared traffic; it is not measured wire bandwidth, additive model time or
-evidence of PCIe saturation. No recovery or device configuration was changed.
-
-
-## Cached-Q/KVvec4 parallel FP32 sum candidate
-
-The component-only experiment at source`bba952e33` retained the ordered-exp path's cached Q,
-vector K/V staging, maximum, ordinary `sycl::exp2`, alpha, BF16 probability
-operand and FP32 FMA normalizer update. Each SIMD16 lane adds probabilities
-for cells `lane` and `lane+16`; `reduce_over_group` then replaces the32 ordered
-indexed exchanges. It adds no model dispatch or default selection. The
-[SYCL group algorithm contract](https://github.khronos.org/SYCL_Reference/iface/group-algorithms-library.html)
-does not fix a floating-point reduction order. The pinned
-[SGLang QSA source](https://github.com/sgl-project/sglang/blob/877be2974aa151a984e52822c028276c2b1e9303/python/sglang/srt/layers/attention/qsa/sparse_attn.py)
-uses an FP32 sum without specifying that order. No external implementation
-code is copied. Existing ordered-exp bit/state requirements remain unchanged.
-
-Before execution, the new fixture fixes exact maximum/alpha checks, nonnegative
-finite sums/state, zero empty-prefix and positive nonempty-prefix normalizers,
-a conservative gamma31 bound for any32-term association and a recurrence bound
-for the single FP32 FMA update. Finite synthetic outputs must remain within
-one BF16 ULP plus2e-6 of the ordered reference and pass the independent tensor
-oracle. These are component-fixture limits, not a general task-quality tolerance.
-Both probe variants must reproduce their own normal output and reject invalid
-state spans; guards, diagnostics, input immutability, partial/missing/duplicate
-rows, padded heads and physical262144 addressing remain required.
-
-After small traced and full parameter-validated checks, use three clean processes
-with six rotated rounds for cap33 gathered and cap2051 gathered/clustered:
-108 timing samples. Advance only if candidate/base latency geomean<=0.95,
-no shape>1.05 and both cap2051 patterns improve in each process. Complete
-wrapper wall time includes admission, prefix preparation and checked drain;
-it does not prove arithmetic saturation or physical VRAM traffic. The proposed
-mechanism reduces subgroup dependency/exchange work, with unchanged PCIe
-payload. Source`bba952e33` compiled successfully. The initial traced small check passed
-both two-case numerical fixtures and the small timing-fixture sanity check,
-including state-span rejection checks, with normal closure and no fresh fault.
-Both full11-case numerical fixtures subsequently passed, including the
-physical262144 addressing cases, with normal ownership closure and no fresh
-fault. All three clean timing processes then completed without a fresh fault.
-Candidate/base latency ratios were0.995263 for cap33 gathered,0.995479 for
-cap2051 gathered and0.990206 for cap2051 clustered. All cap2051 process medians
-improved, but the geomean0.993646 misses the prospective0.95 gate.
-**This candidate does not advance to a model trial.** The full108 samples remain
-in [the current component result](../bench/results/2026-10-15-pr6-recovery-audit/qsa-parallel-sum-current.json).
-This is evidence that this isolated reduction change has a small effect in
-these shapes, not a physical-bandwidth or occupancy measurement. Physical-context
-model qualification remains separate from the component checks.
-The a576 validated engine/fixtures remain the fallback while the new native
-build used the existing comparison cache. At that pinned source, commands were
-`build_engine.py rebuild-parallel-sum`, followed by
-`check_attention.py smoke|component|perf parallel-sum`, committing each phase
-before the next. Native fixtures and all controlling inputs must be committed
-before the build. The exact current result is written to
-`bench/results/2026-10-15-pr6-recovery-audit/qsa-parallel-sum-current.json`.
-The rejected prototype exports, conditional tests and build/measurement modes
-are retired from the active tree; restore source`bba952e33` for a concrete new
-comparison. Keep the independent fault-observation robustness fix. Source and
-recipe recovery preceded retirement of closed raw logs and unused fixtures;
-the known-good a576 fallback is retained for the next Down comparison.
+| Code,33214 fresh input | 3611 /14.884 | 3126 /11.306 |
+| Prose,33288 fresh input | 8638 /9.510 | 10983 /11.190 |
+
+No-draft/MTP4 ratios are0.759652 for code and1.176653 for prose. These are
+observer-charged descriptive readings with different generated lengths, not
+repeated clean gains or policy adoption. Cap1 has zero offered/accepted drafts
+and zero actual draft rounds; its agreement/classification eligibility remains
+false while its explicit speed eligibility passes. Existing selected6e40,
+prefill/decode configuration and placement remain unchanged.
+Stage/parameter/cache observers and the bounded1s CPU/CCS reader remain charged.
+Each process has its same-library65536-pair C++ clock screen; endpoint/rounding
+must meet0.01% at the10s duration floor. Observed timer overhead is not a universal
+bound and is not subtracted. Replay work/clocks/resources before raw retirement.
+
+The [fixed MTP2 route check](../bench/results/2026-10-15-pr6-recovery-audit/mtp2-route-current.json)
+uses the exact selected6e40 binary, retaining allocated`--spec 4` and setting
+`--mtp-max-t 2`. Allocating only`--spec 2` would miss the existing MTP expert
+release contract. Ten host corruption controls and a fully traced ten-case
+same-build GPU fixture passed before one fresh model process. Its four synthetic
+inputs33/257/16385/33 produced16/2/2/16 tokens with valid length/EOS finishes.
+The16384-cell prefill restored the checked cache payload/map,48 dense layers and
+MTP experts. The final request replayed the recaptured T1/T2 draft graphs with
+zero chain calls and valid bounded host accounting. The process exited normally,
+all15 model hashes matched and no new driver fault appeared. This qualifies
+short-route wiring and owner restoration only. Clean repeated speed, task quality
+and full-context gates remain open; no production prefill/decode setting changed.
+The original [clean width comparison](../bench/results/2026-10-15-pr6-recovery-audit/mtp-width-clean-current.json)
+was frozen for nine fresh processes in balanced blocks2/4/1,4/1/2,1/2/4.
+Each uses four official warmups and both thinking-on v4 long-generation workloads.
+Widths2/4 use selected6e40; width1 uses the existing resident private control.
+Native trace/stage/work observers are disabled; qualified runtime safety and
+preexec parameter validation remain. Native arguments and actual aggregate
+offered/accepted/emitted counts bind the source-fixed widths; this is not a
+per-window trace or hardware attribution. Four host corruption/selection controls
+and two clock controls pass, and the same-library clock probe passes its screen.
+The first width2 process closed with a failed workload gate: code generated3415
+tokens at exact13.285064tok/s, but prose spent the16384-token output cap in
+thinking and produced no answer body. The benchmark exited1; the native engine
+exited0, its owners closed and no fresh driver fault appeared. The other eight
+processes remain unstarted under the prospective first-failure rule. Configured
+context131072 was not filled; this was output-budget exhaustion. All15 model
+hashes passed after closure. Full original plan and failure recover at`6c5857113`;
+the next plan retains the useful failed samples without reclassifying them.
+The maintained client supports an explicit32768-output budget, retaining
+thinking and the answer-body gate, with actual input/output context checks.
+The next fresh cohort uses balanced4/2/1,2/1/4,1/4/2 blocks, starting with the
+unchanged MTP4 reference. It stops on another capped thinking-only output;
+it does not automatically increase the budget. Exact inputs and generated plan
+are committed; all64 host controls and the same-provider clock screen pass.
+The first fresh MTP4 process has closed normally with both workload gates passed:
+code read33209/generated3091, prompt51452.3ms and decode208381.7ms;
+prose read33283/generated23179, prompt43076.7ms and decode1964048.6ms.
+Both include thinking and an answer body. Draft acceptance is0.848624/0.572026;
+the prose sample does not meet the predeclared weak-reference ceiling0.40.
+Keep that classification failure separate from successful execution and useful
+speed samples. The next width2 process also closes normally, with code3415 and
+prose19750 generated tokens. Its first-pair decode ratios against width4 are
+0.888372/1.079073; prefill ratios are1.000354/1.001118.
+Code misses no-decline; the single faster prose sample is not a repeated gain.
+The resident-no-decode-draft control also closes normally: code3064 and
+prose26209 generated tokens, at exact11.334027/11.075995tok/s. Its first-pair
+decode ratios are0.764091/0.938513, and prefill ratios0.999815/1.001409.
+It passes the explicit speed-only contract with no proposals; draft-agreement
+eligibility remains false and acceptance is undefined. The second width2 process
+also closes normally, generating3415/19750 code/prose tokens with decode
+times258410.8/1555581.7ms. Five processes remain; its block's width4 reference
+has not run, so this does not supply the next paired comparison.
+All four closed native/benchmark exits are0, ownership is closed and no
+fresh driver fault is recorded. No route or placement is adopted.
+Closedv1 logs/JIT, its superseded clock probe and eight unstarted plans retire
+after exact188-input and clock-recipe recovery:108 files,14,594,530bytes.
+Its intended advancement rules remain three nondeclining paired decode ratios
+and geomean above1.02, with independent prefill no-decline in all three pairs.
+No clean repeated gain, model adoption or70tok/s qualification follows.
+The closed launchers and protocol corruption controls recover at`b61f376c2`.
+Their successful raw logs, temporary source snapshot and consumed scope review
+are retired after route/observer replay. Original13 and private13 build assets
+remain only for that imminent width comparison; retire the extra at its closure.
+
+## Attribution limits and outstanding gates
+
+The limiting hardware resource remains incompletely attributed. CPU-pool and
+GPU-reach wall scopes dominate the current decode route. CPU-pool wall
+includes scheduling/waits; scheduled CPU includes idle polling. GPU-reach wait is
+host wall time, while CCS busy cycles include stalls and possibly shared clients.
+Neither a saturated host thread nor a GPU busy percentage proves arithmetic
+saturation. Stage clocks are nested. Expert-copy counters cover only their named
+route, not all physical PCIe traffic. Keep physical PCIe/VRAM traffic, CPU issued
+instructions and compatible-shape hardware ceilings unknown where unmeasured.
+
+The next CPU attribution source is **unbuilt as a native engine**. Its
+[host collector gate](../bench/results/2026-10-15-pr6-recovery-audit/cpu-service-current.json)
+passes owned GCC13.3 compilation and all standalone counter/clock controls, with
+three actual project includes matched and both processes closed at exit0.
+Its8 raw/fixture files (48,600bytes) and one-shot runner retire after original
+source/recipe recovery; the runner recovers at`b05a22c52`. This qualifies neither
+the production pool nor a model measurement. The prepared
+`cpu_service_pool_test` covers the real five-worker pool, mixedNT1..4,
+seven format pairs, the96-expert batch boundary, output canaries and leaf-output
+parity. Its observer-off/on arms use separate preexec settings. It is unbuilt
+and unrun; execute it only after the active width cohort and extra-build retirement,
+requiring both passes and matching output checksums, then qualify observer
+overhead separately. Optional
+`STRATA_CPU_SERVICE_PROFILE` compilation plus preexec`STRATA_CPU_SERVICE=1`
+collects decode-only pool GU/SwiGLU, hidden quantization and Down leaf scopes for
+the seven observed format pairs at H2560/FF640/NT1..4. It records calling-thread
+CPU and monotonic wall intervals, calls and output-row/token-row counts by format,
+width and pool thread. GU rows count the paired gate/up output rows, not two
+independent projections. Pool dispatch, claims and barriers, input activation
+quantization, routing and GPU work are outside these leaf scopes. Row counts
+must reconcile against the independent work census from the same new request
+and source before timings are usable; the older63af census is not that check.
+The `cpu_service_evidence` reader revalidates that census from the
+same native text and binds GU/HQ/Down row and token-row counts to its format/NT
+jobs. It also checks request framing and thread/bin clock sums. Its six owned
+host controls pass, including rejection of partial/misbound rows and changing
+thread owners. This supplies no new production timing.
+GU and Down intervals include their local pointer preparation and native format
+dispatch, in addition to the selected kernel call.
+Summed concurrent worker intervals are not an additive critical path, CPU time
+includes memory stalls, and physical RAM traffic remains unknown.
+
+Normal builds compile out this observer. The diagnostic mutex spans only a
+native decode pool batch, outside leaf clocks; existing parked-worker acquires
+publish worker writes, and mutex release/acquire also publishes the dedicated
+dispatch host's hidden-quantization slot to the separate generation reader.
+Snapshots run before the decode clock and after final commit. Unsupported
+geometry/width/worker, clock errors, counter overflow, slot-owner changes and
+inconsistent snapshots invalidate attribution. Observer and batch-lock overhead
+remain charged to model execution; bin lookup and counter updates are outside
+the reported leaf intervals. Leaf intervals include clock-read cost. The
+host `cpu_service_profile_test --clock-screen` completes the same four-read
+sequence without a kernel, across five threads and the caller, with65536 samples
+each and uncontrolled affinity. All393216 observations pass the nested-clock
+checks. Per-lane wall medians are1.132..1.583us and p99 values1.553..1.923us;
+the largest wall observation is430.920us. CPU medians are0.551..0.781us.
+Report this reference distribution alongside short HQ intervals, without
+subtraction or treating it as a universal bound on the full Scope/model overhead.
+The new source`f935f0979` host gate also repeats the collector controls and
+closes all four owned commands at exit0. All11 source inputs and the original
+recipe recover from Git; the original host result/source remain unchanged.
+This changes neither the selected original6e40 executable nor
+the active clean-width inputs; it is not an inference optimization or a speedup.
+
+The standalone collector checks passed in a serialized gap between model
+processes. After the frozen width comparison closes, require production-pool
+conservation/numerical checks; recover and retire
+the private comparison generation before another native engine build. A future
+instrumented engine must use original6e40 plus
+only the committed observer delta, not silently adopt the current worktree's
+unselected layout/full-context changes. Pin that recipe before building; require
+observer-off/on overhead and model census/clock/fault/source checks before
+using the per-format attribution to select a kernel or placement optimization.
+
+[Client-resource evidence](../bench/results/2026-10-15-pr6-recovery-audit/client-resources-current.json)
+and [actual-mix CPU calibration](../bench/results/2026-10-15-pr6-recovery-audit/cpu-roofline-current.json)
+provide scoped work/activity bounds. CPU perf counters were denied; the metric
+query's observation ioctl returned EACCES. Permissions were not changed. The
+whole-model Unitrace aggregate includes loading/warmups/prefill/decode and is not
+a phase critical path. Its Q6K/QSA source-attribution consumer has already closed:
+69 raw files/17,918,087bytes are retired, with compact shape/source results retained.
+Do not repeat that analysis or look for its deleted raw table. See
+[profiler capability and coverage](../bench/results/2026-10-15-pr6-recovery-audit/cpu-profiler-current.json).
+
+Basic [profile-off/on graph support](../bench/results/2026-10-15-pr6-recovery-audit/mtp-graph-observer-current.json)
+already passed, with exact6e40 reuse checked separately. The closed
+[64-window MTP observation](../bench/results/2026-10-15-pr6-recovery-audit/mtp-model-observer-current.json)
+measured a31.2083ms/window outer graph envelope; the
+[Q6_K head calibration](../bench/results/2026-10-15-pr6-recovery-audit/mtp-head-current.json)
+also completed and reached only its intermediate follow-up screen. These are
+charged graph envelopes, not individual arithmetic service or a target-verifier
+breakdown. Do not repeat basic adapter qualification from an older report's
+unknown-support note. After the active clean comparison, check existing
+collector qualifications and source mapping for a bounded target/per-operator
+collection using the indexed expanded-graph method.
+
+Additional source binding uses unchanged6e40 `verify.cpp`, `native_head.cpp`,
+`mtp.cpp` and `native_mmvq.cpp`. The target verifier head has input2560,
+output248320 and columns equal to its window T; the standalone NativeHead route
+uses one column. The MTP subset has106299 output rows and its completed head
+calibration used one column. The prior1035-window code request processed4137
+target rows (firstT1,then1034*T4). The aggregate's1047 full-vocabulary calls still
+mix request phases and column counts; their mean11.581ms is not a decode-only T4 service.
+
+The Q6K launcher loads each packed weight fragment outside its column loop.
+Its inlined apply reconstructs6-bit values, but the compiler may already hoist
+that work: C++ source alone does not establish redundant machine instructions.
+The existing alternative ROWS2/NW4 route differs from selected ROWS1/NW4;
+register pressure, occupancy and actual service remain to be measured. The
+`multi_exact` selector is global across callers. A future target-head-only
+candidate must select by explicit caller/shape, preserving MTP and both prefill
+paths; changing that global is not phase isolation. This is a source-design
+question, not a selected kernel optimization or hardware-bottleneck conclusion.
+The selected SYCL `sequence.cpp` rejects device mapped-flag polling outright;
+its event-completed handoff does not make GPU-busy cycles an arithmetic ceiling.
+
+The separate3,611-output code diagnostic also supplies a nominal CPU weight
+budget. That census used native source`63af639ac`, with `STRATA_IQ2_PAIR` unset;
+selected6e40 adds the decode-only IQ2_S NT1 pair path and enables it. Historical
+job counts and projected pool times do not measure the current dispatch.
+Match the historical seven format/NT histograms to the checked blob geometry in
+the [archived calibration plan](https://github.com/yqYo1/Strata/blob/1c450997ad10b17d387d86e3e0904ae447924160/bench/results/2026-10-15-pr6-recovery-audit/cpu-roofline-plan.json):
+`sum(sum(jobs_NT) * blob_bytes)` is2,796,077,900,800bytes across1,370,846
+unique CPU jobs, or774,322,321 nominal bytes/output. This already groups
+NT1..4 reuse within each job. It is one packed-blob visit per job, excluding
+additional activation/output traffic; cache-line reuse, repeated loads and
+actual DRAM transactions remain unmeasured. VRAM serves10.7728% of that
+trace's target expert entries; this is neither a GPU time fraction nor a
+fraction of parameter bytes.
+
+At70tok/s the same nominal work rate would be54.203GB/s. The simple read
+reference achieved30.642GB/s, not a physical memory ceiling. If every nominal
+byte reached RAM at that rate, weights alone would take25.270ms/output
+(39.573tok/s), before other work. Reaching70 at that reference would require
+physical bytes at most56.533% of the nominal count, or lower per-output weight
+demand; neither is established. Use this conditional budget to test cache,
+grouping and CPU-kernel alternatives together. Do not declare RAM saturation,
+an impossible70tok/s target or a new clean throughput result from these numbers.
+
+Before any adoption, complete the relevant independent gates:
+
+- Repeated clean thinking-on strong/weak long generation, official long and
+  agent-session benchmarks, task quality and prefill/decode state preservation.
+- Actual physical262144 fill, final slots/tails, prefill-to-decode/session and
+  RESTORE paths. No output space at a completely full context is expected;
+  crashes or corruption are not. The retired590f candidate's262120-input plus16
+  outputs and scoped RESTORE results do not qualify exact fill or selected6e40.
+- Failure-owner, graph/allocation retirement and ordinary runtime teardown.
+  Current preexec parameter validation holds a UR reference until process exit;
+  its normal exits do not qualify ordinary runtime/provider destruction.
+- Source-scoped provenance/lifecycle exceptions. Selected6e40 recovery is separate
+  from legacy final-input failures. Use the actual missing inputs, named consumer
+  and next review in the linked build results; do not preserve old binaries merely
+  because an unrelated ownership or default-merge hold remains open.
+
+Preserve copy-offload avoidance, disabled direct submission, in-order queues
+and other qualified settings in [the measurement environment](../tools/sycl/measurement_environment.json).
+Set them before native exec and leave them immutable. Keep the embedding service
+stopped. No reset/unbind/recovery action is part of a benchmark.
+
+## Upstream and history
+
+Niko1221/Strata is the only upstream. The last actual check was
+2026-10-23T21:29:32.552053Z at`7ddc17a38` (`v0.2.3.1`),131 commits/294 paths
+beyond011c9e60. Required non-inference ports and hardware-tuned unmodified-upstream
+measurements remain pending; observation is not integration. Check again around
+2026-10-25T21:29Z using the project-only sync skill.
+
+Work is on`feature/sycl`. PR180 is mergeable but blocked by squash-only
+ruleset24638744; original measured commit identities require a merge commit.
+Do not squash, bypass the rule or claim default integration. Measured source
+remains reachable on pushed`feature/sycl`.
+
+Closed QSA/GDN/MoE/layout/CPU/cache/profiler narratives, obsolete recipes and
+retirement transcripts are archived in the [prior document](https://github.com/yqYo1/Strata/blob/ffff15bde/docs/SYCL_NATIVE16_PREFILL.md)
+and their compact result files. Restore exact Git revisions for a concrete
+question; this note records the current selection and contracts, not a running
+history of every trial. Follow [artifact retention](ARTIFACT_RETENTION.md) at each
+boundary and leave collection-report bodies to the indexed research workflow.

@@ -3,6 +3,7 @@
 
 #include <algorithm>
 #include <array>
+#include <cstring>
 #include <limits>
 
 namespace strata::core {
@@ -301,5 +302,70 @@ ConversationRestore conversation_snapshot_restore(const SavedConversation& image
     if (!conversation_kv_restore(image.kv.back(), draft, g, upto, false, error) ||
         !conversation_checkpoint_restore(image.live, ss, g, error)) return ConversationRestore::transfer_failed;
     return ConversationRestore::restored;
+}
+
+bool conversation_snapshot_verify(const SavedConversation& image, const SessionState& ss,
+                                  const ModelGeometry& g, const QsaState& draft,
+                                  ConversationVerification& result, std::string& error) {
+    result = {};
+    if (!conversation_snapshot_validate(image, ss, g, draft, error) || !sync(error)) return false;
+    ConversationVerification checked;
+    constexpr uint64_t basis = 1469598103934665603ull;
+    auto hash = [](uint64_t h, const void* p, size_t n) {
+        const auto* bytes = static_cast<const uint8_t*>(p);
+        for (size_t i = 0; i < n; ++i) { h ^= bytes[i]; h *= 1099511628211ull; }
+        return h;
+    };
+    auto payload_bytes = [](const ConversationKv& kv, size_t& bytes) {
+        for (size_t n : {kv.k.size(), kv.v.size(), kv.k_scale.size(), kv.v_scale.size(), kv.pooled.size()})
+            if (!add(bytes, n)) return false;
+        return true;
+    };
+    const int64_t upto = (int64_t) image.live.ids.size();
+    checked.main_hash = basis;
+    for (size_t j = 0; j < owned_qsa(ss); ++j) {
+        uint64_t layer = 0;
+        if (!conversation_kv_verify(image.kv[j], owned(ss, j), g, upto, true, layer, error)) return false;
+        checked.main_hash = hash(checked.main_hash, &layer, sizeof(layer));
+        if (!payload_bytes(image.kv[j], checked.main_bytes)) return fail(error, "verified byte count overflow");
+        ++checked.main_layers;
+    }
+    if (!conversation_kv_verify(image.kv.back(), draft, g, upto, false, checked.draft_hash, error)) return false;
+    if (!payload_bytes(image.kv.back(), checked.draft_bytes)) return fail(error, "verified byte count overflow");
+    ConversationStateSizes z;
+    if (!conversation_session_sizes(g, ss, z, error)) return false;
+    std::array<uint8_t, 65536> buffer;
+    checked.running_hash = basis;
+    auto compare = [&](const void* actual, const uint8_t* expected, size_t bytes) {
+        for (size_t offset = 0; offset < bytes;) {
+            const size_t n = std::min(buffer.size(), bytes - offset);
+            if (!copy(buffer.data(), static_cast<const uint8_t*>(actual) + offset, n, error)) return false;
+            if (std::memcmp(buffer.data(), expected + offset, n) != 0)
+                return fail(error, "restored running-state bytes differ");
+            checked.running_hash = hash(checked.running_hash, buffer.data(), n);
+            offset += n;
+        }
+        return add(checked.running_bytes, bytes) || fail(error, "verified byte count overflow");
+    };
+    const auto& live = image.live;
+    if (!compare(ss.gdn_state, live.gdn.data(), live.gdn.size()) ||
+        !compare(ss.ple_hist, live.ple.data(), live.ple.size())) return false;
+    for (size_t j = 0; j < owned_qsa(ss); ++j) {
+        const auto& st = owned(ss, j);
+        if (!compare(st.idx_tail, live.tails.data() + j * z.tail, z.tail) ||
+            !compare(st.idx_dead, live.dead.data() + j * z.dead, z.dead) ||
+            !compare(st.idx_block_pos, live.block_pos.data() + j * z.block_pos, z.block_pos)) return false;
+        if (upto && !compare(st.idx_pooled + (upto / strata::kernels::qsa_real_shapes().idx_block) * g.idx_key_dim,
+                             live.dead.data() + j * z.dead, z.dead)) return false;
+    }
+    const std::array<int32_t, 2> previous = {
+        upto >= 2 ? live.ids[size_t(upto - 2)] : -1,
+        upto >= 1 ? live.ids[size_t(upto - 1)] : -1};
+    if (ss.ple_prev[0] != previous[0] || ss.ple_prev[1] != previous[1])
+        return fail(error, "restored PLE token window differs");
+    checked.running_hash = hash(checked.running_hash, previous.data(), sizeof(previous));
+    if (!add(checked.running_bytes, sizeof(previous))) return fail(error, "verified byte count overflow");
+    result = checked;
+    return true;
 }
 } // namespace strata::core

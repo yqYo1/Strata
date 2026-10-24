@@ -1,44 +1,49 @@
 {
   "schema": "strata-upstream-status-v3",
-  "queried_utc": "2026-10-19T21:24:52.909428+00:00",
+  "queried_utc": "2026-10-23T21:29:32.552053+00:00",
   "sole_upstream": "Niko1221/Strata",
   "skill": ".claude/skills/strata-upstream-sync/SKILL.md",
   "previous_observation": {
-    "revision": "84e864c577951d5c51d25103c0ba7c1e334b9b4d",
+    "revision": "f00b35e9a",
     "path": "bench/results/2026-10-15-pr6-recovery-audit/upstream-status.json",
-    "observed_sha": "477ac13cbe8e582c20484871ce459d20d82df09d",
-    "queried_utc": "2026-10-17T21:18:59.594534+00:00",
-    "sha256": "4992eecdad91822d7650763bf7a2389e9a4ee64b8a8bcfba9b64aa3168d3f2f8"
+    "observed_sha": "011c9e600a93bbc9fd451c563501b5831c32bbca",
+    "queried_utc": "2026-10-21T21:26:18.234257+00:00",
+    "sha256": "ff959ad5067aa1ce861f493a452520ee109abeed2a8df15e6a9e2aed5900ddcb"
   },
-  "observed_sha": "e88ee39d1d6be6e3364183af3b39b62a7ed6f211",
+  "observed_sha": "7ddc17a38fe7f31637e895ecfba58c2cd43d65ec",
   "changed_since_previous_observation": true,
   "source_fetched": true,
   "fetch_command": [
     "git",
+    "-C",
+    "/home/yayoi/ghq/github.com/Niko1221/Strata",
     "fetch",
-    "--no-tags",
-    "origin",
-    "refs/heads/main:refs/remotes/origin/main"
+    "origin"
   ],
   "remote_check": [
-    "e88ee39d1d6be6e3364183af3b39b62a7ed6f211\tHEAD",
-    "e88ee39d1d6be6e3364183af3b39b62a7ed6f211\trefs/heads/main"
+    "7ddc17a38fe7f31637e895ecfba58c2cd43d65ec\tHEAD",
+    "7ddc17a38fe7f31637e895ecfba58c2cd43d65ec\trefs/heads/main"
   ],
   "new_interval": {
-    "commits": 789,
-    "changed_paths": 1284,
-    "shortstat": "1284 files changed, 220159 insertions(+), 3181 deletions(-)"
+    "start": "011c9e600a93bbc9fd451c563501b5831c32bbca",
+    "target": "7ddc17a38fe7f31637e895ecfba58c2cd43d65ec",
+    "commits": 131,
+    "changed_paths": 294,
+    "tags_at_target": [
+      "v0.2.3.1"
+    ],
+    "inspection": "Fetched Niko source and independently checked remote HEAD/main. No code import or benchmark by this observation. Preserve selected6e40 and independent prefill/decode choices;close current frozen layout tests before inference-source edits."
   },
   "integrated_upstream_target": "7695859aa13afb248bdb4d36f9b2e95707db079d",
   "unmodified_upstream_performance_evaluation_complete": false,
   "whole_function_ledger_complete": false,
   "required_function_port_complete": false,
   "new_inference_components_adopted": [],
-  "current_engine_source_commit": "246415bfc3f8d68242b067ca49723c23c3e96be7",
-  "current_engine_sha256": "1c84da96dfcbcb35efaaef8ce4bccc1d078f58bc36e697dd82b3485fcdab6d11",
+  "current_engine_source_commit": "6e40afc1beddd059ee518617f6c1efce1da14aca",
+  "current_engine_sha256": "22182f1a5e62e5f4259ce49a75ae44afbd988166ec79324816e499ff37ef60e4",
   "current_engine_changed_by_check": false,
-  "next_check_utc": "2026-10-21T21:24:52.909428+00:00",
-  "pending": "Review the new477ac13c..e88ee39d interval and the existing7695859..477ac13c obligations. Port required non-inference functionality; select inference per component and prefill/decode separately. Unmodified hardware-tuned upstream official-bench performance remains unmeasured; current diagnostic does not qualify a model or complete synchronization.",
+  "next_check_utc": "2026-10-25T21:29:32.552053+00:00",
+  "pending": "Reconcile required non-inference functions through7ddc17a3 (v0.2.3.1),including still-unimplemented011c/e88 native protocol,server/UI/setup obligations. Keep old source-review targets explicit. Build/configure and measure unmodified hardware-tuned Niko with official long/agent/thinking benchmarks;no such performance qualification yet. Select inference per component and phase;no upstream inference adopted by this check.",
   "legacy_upstream_clone_root": "Divergent checkout left untouched; fetch updates origin/main only. No root checkout, reset, commit or pull performed.",
   "function_review": {
     "fork_revision": "21ad950a4cde54f57ab5f78d9318cca57631df91",
@@ -364,12 +369,12 @@
       "license_gate": "Niko-only source evidence; check applicable per-file licensing before copying source/tests. No XeStrata source."
     }
   },
-  "validated_reference_source_commit": "396d0c91f301e0ac99b81d6641fdc435b95b4da9",
+  "validated_reference_source_commit": "6e40afc1beddd059ee518617f6c1efce1da14aca",
   "unmodified_evaluation_source": {
-    "root": "/home/yayoi/ghq/github.com/Niko1221/Strata/.worktree/eval-upstream-e88ee39d",
-    "revision": "e88ee39d1d6be6e3364183af3b39b62a7ed6f211",
+    "root": "/home/yayoi/ghq/github.com/Niko1221/Strata/.worktree/eval-upstream-011c9e60",
+    "revision": "011c9e600a93bbc9fd451c563501b5831c32bbca",
     "modified": false,
-    "consumer": "Current read-only functionality/component review and next unchanged upstream benchmark after closing the native-gate comparison cache; no upstream build generation exists yet."
+    "consumer": "Current three read-only feature reviews and next unmodified,hardware-tuned Niko benchmark after current native comparison closes. Source-only reference;no upstream build or performance qualification."
   },
   "current_review": {
     "target": "e88ee39d1d6be6e3364183af3b39b62a7ed6f211",
@@ -387,5 +392,33 @@
       "meaning": "Actual e88 SYCL --prefill CHUNK needs an admitted --native route; first recover model/config/build/runtime and confirm tiny API compatibility before freezing hardware-tuned arms. Source planning is not performance evaluation."
     }
   },
-  "current_comparison_build_source_commit": "44253b63b0583d85f7fb1df87e4b4a08bfbf6862"
+  "current_comparison_build_source_commit": "be0d4e35b694783d3a8f0ad1803f0b12c578b76b",
+  "prior_unmodified_source_consumer": {
+    "root": "/home/yayoi/ghq/github.com/Niko1221/Strata/.worktree/eval-upstream-e88ee39d",
+    "revision": "e88ee39d1d6be6e3364183af3b39b62a7ed6f211",
+    "consumer": "Before-tree for the three active e88..011c read-only feature reviews. Review retirement after their closure and dependency check."
+  },
+  "new_release_review": {
+    "target": "011c9e600a93bbc9fd451c563501b5831c32bbca",
+    "scopes": [
+      "upstream_011c_server_contract_scope",
+      "upstream_011c_control_setup_scope",
+      "upstream_011c_native_interface_scope"
+    ],
+    "state": "Three source-only feature reviews closed and curated;feature-ledger reconciliation and functional ports remain pending after frozen model comparison.",
+    "whole_function_ledger_complete": false,
+    "performance_evaluation_complete": false,
+    "code_imported": false,
+    "review_sha256": "db665586220191d8a948a1db0331f74d87d88947c1772f96e30a0eff9980239b",
+    "coverage": "Complementary server/API,setup/Control and native interface maps;not all392 commits/575 paths covered. No implementation or new remote query by this review.",
+    "next_scope_eligibility": "All followups conditional on closing the frozen model comparison and selecting an actual feature port;no fresh researcher dispatch yet."
+  },
+  "current_comparison_build_sha256": "c83a1516ea30ce4f03b60dbd5940205cc15442fb17803451c2d8414ebe214139",
+  "latest_interval_review": {
+    "target": "7ddc17a38fe7f31637e895ecfba58c2cd43d65ec",
+    "state": "Fetched;131-commit/294-path functional ledger and unmodified tuned measurement pending. New source reviews require a named port/decision and a pinned unmodified source view;do not relabel old011c reviews as current coverage.",
+    "code_imported": false,
+    "whole_function_ledger_complete": false,
+    "performance_evaluation_complete": false
+  }
 }

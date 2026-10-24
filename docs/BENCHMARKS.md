@@ -40,6 +40,15 @@ increase the finite output/context budget or revise the task. Do not compare
 different workload versions as an engine optimization. A complete answer at
 the cap is not required by this speed test.
 
+For a new comparison needing more output room, add
+`--long-generation-max-tokens 32768` (or65536) on both engines. The default
+remains16384. The budget is included in the wire request, request journal,
+parameters and comparison identity; different budgets are not comparable.
+A larger budget requires known context capacity, and eligibility checks actual
+input plus the requested budget and256 reserved context slots. Thinking remains
+enabled; a thinking-only output still fails the answer-body gate. Preserve an
+earlier capped failure and use a fresh committed plan, rather than replacing it.
+
 - `regular-code`: a long Python module with regularly formatted individual tests.
 - `varied-prose`: an original Japanese story with distinct viewpoints and vocabulary.
 
@@ -65,6 +74,15 @@ JSONL hash chain; interrupted requests remain pending/incomplete. Agent
 statistics use complete six-turn sessions only, while all partial rows remain.
 Full successful response traces are unnecessary after these facts are recorded.
 
+For a throughput comparison that includes a no-draft baseline, add
+`--long-generation-speed-only` to `--long-generation-only` on **both** engines.
+The input bodies, thinking and output budgets stay identical. Normal complete
+generation, at least 32K input/1K output, answer body, engine clocks and valid
+draft counters remain required; zero offered/accepted drafts are allowed.
+Agreement eligibility and classification remain separate and unqualified when
+there are no drafts. This mode does not turn short or incomplete output into
+a usable speed sample. Its selection is recorded in parameters and identity.
+
 For a focused diagnostic, add `--long-generation-workload regular-code` or
 `--long-generation-workload varied-prose` to `--long-generation-only`. It keeps
 the same warmup, prompt, thinking and output budget, records the selected subset
@@ -78,25 +96,7 @@ from decode. About 1K generated tokens is a starting observation window. Increas
 independent repetitions or length when variation still prevents a decision.
 Do not pool the original 24-token decode with this new workload.
 
-For the checked SYCL cache-loan capacity admission, Main uses
-`python3 -B tools/sycl/cache_capacity.py prepare`, commits the generated plan,
-then uses `python3 -B tools/sycl/cache_capacity.py run`. Preparation requires
-the matching156-case component gate, the completed small model cycle and the
-curated source review. The single official process includes its four warmups
-and a32K+ input,1024+ output regular-code request, with thinking and an answer.
-Parameter validation, stage progress and full cache/map readback stay enabled;
-its elapsed times are diagnostic. Budgets are2400 wall seconds,54000 CPU
-seconds,96GiB owned-session RSS and64MiB raw output. Stop on the first error or
-budget limit; never retry the closed root.
-
-Check actual mode10, all-GPU BF16 residuals, all48 borrowed FFNs and complete
-same-slot refill/decode publication. This primary-window check does not qualify
-full mixed-tail routing, clean speed, the strong/weak pair, agent-session, task
-quality or physical262144/session/RESTORE. Plan the later matched owned-small /
-borrowed-large clean comparison separately, including order, independent
-process repetitions, work/configuration matching and prefill nonregression.
-
-The owned128/borrowed1280 capacity comparison is closed. Its
+The owned128/borrowed1280 capacity admission and comparison are closed. Their
 [compact result](../bench/results/2026-10-15-pr6-recovery-audit/cache-comparison-current.json)
 keeps all six independent samples, common evidence and arm-specific route
 counts. Restore controller source`cba7b0a7c` and the recorded plan revisions
@@ -107,6 +107,21 @@ matches the original result exactly. The+3.7041% decode geomean misses the
 prospective>5% screen; prefill separately passes nonregression. Further1256-slot
 capacity work requires a fresh committed plan. Weak-MTP, agent-session, quality
 and physical262144/session/RESTORE qualification remain separate.
+
+The observed IQ2 pilot is closed at commit`bedfdf312`; its launcher and full
+model outcome remain recoverable there. The current `iq2_pair_model.py prepare`
+creates a six-process comparison, followed by one `run` invocation per process.
+Commit its generated plan and each closed outcome before advancing. Its
+[current plan/result](../bench/results/2026-10-15-pr6-recovery-audit/iq2-pair-model-current.json)
+pins that original pilot, its same-build safety/bank gates and the actual CPU
+baseline. The order is PAIR0/1/1/0/0/1, with four official warmups and both
+thinking-on long-generation workloads in each process. Source, native binary,
+model/profile, placement, runtime and observer settings stay fixed; only the
+pre-exec pair flag changes. Per-request counters prove dispatch and target-work
+conservation. Judge prefill and decode separately using actual tokens and engine
+milliseconds; the frozen plan records repetition, performance and MTP-class
+gates. Validation, stage trace, census and clocks are charged observers. A pass
+does not qualify clean speed, saturation or adoption. Never retry a closed root.
 
 `generation_engine.py` is now a shared admission/evidence library, with no
 launcher CLI. Restore closed long-generation launchers and their original

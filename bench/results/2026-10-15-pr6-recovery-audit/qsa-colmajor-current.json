@@ -1,0 +1,2295 @@
+{
+  "base_native": "6e40afc1beddd059ee518617f6c1efce1da14aca",
+  "source_provenance": "Main-authored layout changes and own archived760dvariable-page fixtures;API semantics from installed Intel LLVM headers and official matrix extension. No external engine implementation copied.",
+  "question": "Can separate column-major QK B and unchanged row-major PV avoid K transpose/store tradeoff while preserving original operands,looporder and GPU-local state? Hardware/compiler support remains unqualified.",
+  "prior_evidence": {
+    "row_coalesced_K_rejected_at": "eb9b0469c",
+    "latency_increase_percent": [
+      12.43967550042897,
+      27.975547323363514,
+      7.748234521326203
+    ],
+    "fixed_heads_rejected_commit": "30520793d",
+    "latencyGM_vs_production": 1.0020392063859935
+  },
+  "engine_decode_changed": false,
+  "GPU_executed": true,
+  "model_adoption_qualified": false,
+  "prebuild_source_review_pin_refusal": {
+    "status": "refused_before_build",
+    "review_sha256": "ba798d445f2218a2e188365510e96377783b4d1722346686882c393050845ecf",
+    "path": "bench/sycl/qsa_colmajor_numerical.cpp",
+    "expected_in_review": "e28abf70dce02a82d61483e43ccf086f3f7e0e3511bc91501c3e7190bb10a59d",
+    "actual_current_and_d5e5a2324": "e28abf70dce02a82d61483e43ccf086f3e7f0e3511bc91501c3e7190bb10a59d",
+    "native_or_fixture_source_changed": false,
+    "build_executed": false,
+    "GPU_executed": false,
+    "next_action": "Finished reviewer independently verifies original reviewed bytes and supplies separate correction;do not overwrite original review or refresh hashes to bypass admission."
+  },
+  "source_audit": {
+    "review_complete": true,
+    "prebuild_findings_resolved": true,
+    "review_revision": "d5e5a2324864d0513b668542d7b6db8b510c7546",
+    "original_review_sha256": "ba798d445f2218a2e188365510e96377783b4d1722346686882c393050845ecf",
+    "correction_sha256": "26920ffc8cc6056808fcea2a70b4927bf29536707af0cbb5c09008fe13ae9436",
+    "pin_correction": {
+      "revision": "d5e5a2324864d0513b668542d7b6db8b510c7546",
+      "current_head_at_correction": "b4e3b2dbfc4b1669e8b0667058a98bc3d207f366",
+      "source_path": "bench/sycl/qsa_colmajor_numerical.cpp",
+      "review_entered_sha256": "e28abf70dce02a82d61483e43ccf086f3f7e0e3511bc91501c3e7190bb10a59d",
+      "actual_d5_and_worktree_sha256": "e28abf70dce02a82d61483e43ccf086f3e7f0e3511bc91501c3e7190bb10a59d",
+      "d5_git_blob": "af9bcbf4df259d702565ac847e9fd19212c57c82",
+      "classification": "Transcription error in the review hash; immutable Git bytes and current bytes are identical, so no different source was reviewed."
+    },
+    "binding": "Pinned main maps colmajor to qsa_colmajor_functions()[2], whose header slot is colmajor::qsa_bf16_prefix_ordered_exp_batch. The macro-renamed call in numerical-reference.inc reaches that wrapper; route assertions require specialized_routes>0 and generic=0. The fixture also checks an independent BF16-operand/FP32-online scalar oracle and exact production prefix33 output bits.",
+    "installed_stack": {
+      "llvm": {
+        "version": "v7.1.0-pre",
+        "commit": "504366f4b82ff00bbac7b0c956635eed8bc599d8",
+        "executable_sha256": "1290881b4e12a5e002e5b0de0787f85328ee5fe19f253a54be1cdd97dc2f26eb"
+      },
+      "igc": {
+        "packages": [
+          "intel-igc-core-2 2.41.5",
+          "intel-igc-opencl-2 2.41.5"
+        ],
+        "recorded_loaded_library": "/usr/local/lib/libigc.so.2.41.5+1788943183",
+        "limit": "Release lists Battlemage support, not this joint_matrix layout's lowering."
+      },
+      "headers": {
+        "matrix-unified.hpp": "d76027407a09884b34879f5677b2efe1c634d6d058333d2fd83ecaa2b49a673e",
+        "matrix-unified-utils.hpp": "c4ec45d987a054e2e5ee7d51f2fbbabf2d4a50bff0b7d4124d5e01a1162f8e8a",
+        "matrix-intel.hpp": "524efda8771175ee9c271fc78fab547a4bf6e845ad471ac9d501375ff5834ccb"
+      },
+      "findings": [
+        "The compiler-matched spec permits row/col-major A and B and lists BMG G21/G31 BF16 A/B, FP32 accumulator/result, M<=8,N=16,K=16: the candidate's QK combination.",
+        "Installed headers map col_major to SPIR-V ColumnMajor and forward layout/stride. The generic load accepts local-space pointers; actual IGC local-load transformation is unknown.",
+        "BMG limits: stride*sizeof(T) multiple of 8 and <=2^24; base 4-byte aligned. Candidate stride=256 BF16=512 bytes; alignas(4) tile bases move by 16-cell/16-dimension multiples.",
+        "matrix_available checks subgroup 16, BF16/BF16/FP32/FP32 dimensions 8x16x16, and local-memory capacity; query has no layout field.",
+        "No IGC source, target JIT, emitted IR/ISA, SLM transactions, bank metric, or performance was inspected. IGC may rearrange or canonicalize the requested layout.",
+        "Intel LLVM issue #22926 reports BMG-G31 matrix-query failure on DPC++ 2025.3.3/runtime 26.05; Intel response calls that compiler old. Version-mismatched counterevidence, not a finding about installed v7.1.0-pre/IGC 2.41.5."
+      ],
+      "primary_sources": [
+        "https://github.com/intel/llvm/blob/504366f4b82ff00bbac7b0c956635eed8bc599d8/sycl/doc/extensions/experimental/sycl_ext_matrix/sycl_ext_oneapi_matrix.asciidoc",
+        "https://github.com/intel/intel-graphics-compiler/releases/tag/v2.41.5",
+        "https://github.com/intel/llvm/issues/22926"
+      ]
+    },
+    "review_scope": "Static source/API review only. Global address/value set unchanged; work-item assignment changes. Runtime lowering/safety/numerical/performance unqualified."
+  },
+  "qualification_plan": {
+    "trace_smoke": {
+      "processes": 12,
+      "arms": [
+        "default",
+        "control",
+        "colmajor"
+      ],
+      "pages": [
+        1,
+        4,
+        7,
+        16
+      ],
+      "cases_per_process": 2,
+      "expected_compute_launches": 23,
+      "candidate_route_counts": [
+        34,
+        0
+      ]
+    },
+    "parameter_validated": {
+      "processes": 12,
+      "cases_per_process": 11,
+      "candidate_route_counts": [
+        52,
+        0
+      ]
+    },
+    "resource": {
+      "exact_output_rows": 18,
+      "compute_launches_per_arm": [
+        8,
+        7,
+        7
+      ],
+      "subgroup": 16,
+      "require_positive_GRF_and_record_spill_local": true
+    },
+    "clean_timing": {
+      "independent_processes": 3,
+      "rotated_rounds": 6,
+      "arms": [
+        "default",
+        "control",
+        "colmajor"
+      ],
+      "shapes": [
+        [
+          32768,
+          8192,
+          2051,
+          "gather"
+        ],
+        [
+          117488,
+          8192,
+          2051,
+          "gather"
+        ],
+        [
+          117488,
+          8192,
+          2051,
+          "clustered"
+        ]
+      ],
+      "samples": 162,
+      "queries": 8192,
+      "page": 4,
+      "minimum_batch_ms": 0.1,
+      "minimum_timer_floor_multiple": 1000,
+      "acceptance": "Latency GM <=0.95 against both production and namespace control; no aggregate shape ratio >1.05; each candidate per-process median strictly less than both controls for all three shapes. All other gates required. Do not revise criteria after observing results.",
+      "shape_clarification": "Before any build or run, inspection of immutable timing.cpp corrected the initial prose cap33 shape label to its actual cap2051 shapes; count/order/thresholds unchanged."
+    },
+    "phase_preservation": "Component-only separate executable; production engine and all13 assets remain unchanged. Before model integration preserve exact decode implementation/configuration/1256slots, handoff and repeated matched thinking-enabled strong/weakMTP generation. Any decode impact is a separation defect."
+  },
+  "frontend_IR_finding": {
+    "candidate_QK_B": {
+      "layout_operand": 1,
+      "stride_BF16_elements": 256,
+      "address_space": 3
+    },
+    "control_QK_B": {
+      "layout_operand": 0,
+      "stride_BF16_elements": 32,
+      "address_space": 3
+    },
+    "both_PV_B": {
+      "layout_operand": 0,
+      "stride_BF16_elements": 256,
+      "address_space": 3
+    },
+    "scope": "Pinned LLVM IR retains the requested local-space QK layout discriminator and unchanged PV layout. IGC machine lowering, safety and speed are not established by frontend IR."
+  },
+  "comparison_decision": {
+    "component_execution_passed": true,
+    "performance_gate_passed": false,
+    "candidate_latency_GM_vs_production": 1.2620901896579306,
+    "candidate_latency_GM_vs_namespace_control": 1.2620102282932675,
+    "decision": "Reject. All3 aggregate shapes and all9 candidate process medians are slower than both controls. No model trial or production adoption. Preserve all162samples and original frozen0.95 gate.",
+    "interpretation": "Reduced spill allocation descriptor12480->10240 does not imply lower actual traffic or faster service; current source uses a faster mapping in these shapes. Physical memory/cache/XMX attribution remains unresolved.",
+    "phase_isolation": "Selected native6e40 engine and12fixtures,decode implementation/configuration/1256slot placement unchanged. Component candidate is a separate executable; no new model/decode qualification."
+  },
+  "source_recovery_before_retirement": {
+    "passed": true,
+    "original_build_source_commit": "51f51a5fb32b88f0c6f70fc62b70ad7907c1e414",
+    "project_inputs": 186,
+    "generated_inputs_verified": 5,
+    "commands": 13,
+    "closed_owned_commands": 42,
+    "original_SDK_inputs": 8700,
+    "recover_SDK_from_parent": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/unitrace-warmed-graph-window-v1/compiler-inputs.json",
+      "sha256": "436cedc9dbd41810cd882e9040a129e6d8b7dbebb98806b00c4f2950b1dc1705",
+      "files": 8697
+    },
+    "additional_SDK_inputs": {
+      "/usr/lib/gcc/x86_64-linux-gnu/13/crtbeginS.o": "667ff5f1edc931d44d1f2bb44d313907aa274bcc207c0beff71a398335f0d29f",
+      "/usr/lib/gcc/x86_64-linux-gnu/13/crtendS.o": "9c8b2caad195193301ef072895dc89bea1d23371d4c19accd821debe27773063",
+      "/usr/lib/gcc/x86_64-linux-gnu/13/libgcc_s.so": "69a56a9993b7729b29b274e65016031c81f2397f176ed5ad44d59bd50425e0bd"
+    },
+    "engine_and12fixtures_qualification_unchanged": {
+      "original_inputs_recovered": 9853,
+      "build_sha256": "a38f477670fafcd1a931be2e20d90d6d9718df75b61954b421f361af9f6881b2",
+      "component_sha256": "8412bb2d5fffaba976ec0129afe9f3d0a0268a5ba9c4efbe89dff6eff28d46b1",
+      "mtp_reference_sha256": "9f9c40a672c7b5cbc5b2c9e2f0b89e4cd177a93d0615395fec9320a106f920d2",
+      "setup_reference": {
+        "commit": "a8af3d7fa96a7713f2e516d2da3d7410956be015",
+        "path": "bench/results/2026-10-15-pr6-recovery-audit/canonical-restore-decode-current.json",
+        "sha256": "7dda2bcefa6f7e54d568e6aa3d5226d5e0a7383f0b41efd7584093854d9547ca",
+        "compact_sha256": "7a7276cf70e8507838aa62246b0f4a6d858c7f390318bd5f9a23f555cd4712ec",
+        "model_reference": {
+          "commit": "64efe12f005b6a518daa2ee1d0f0d2712baa325f",
+          "path": "bench/results/2026-10-15-pr6-recovery-audit/prefill-recovery-current.json",
+          "sha256": "9945b8234465e0c963732086eac0b10b081fb63ca3eb16db3daae27899eab7f2"
+        }
+      }
+    },
+    "archive_result_commit": "fb2d75af6",
+    "frozen_plan_commits": {
+      "smoke": "f3c973b66",
+      "component": "a9ef2c804",
+      "resources": "b98b17da2",
+      "perf": "6aeba005a"
+    },
+    "first_retirement_check": "Stopped before deletion on KeyError:check_plan after using the controller-source commit as the plan-result commit; corrected by locating each original frozen-plan commit, without changing source/hash pins or measurement results.",
+    "scope": "Exact committed native,fixture,controller,generator,recipe and compiler inputs recovered/verified before product retirement. No new GPU or model validation."
+  },
+  "next_action": "Use the unchanged selected6e40 engine. Retrieve relevant reviewed counterfactual-calibration sections to choose a bounded resource-attribution plan before another QSA layout variation. Preserve independent prefill/decode selection and all model/fullcontext/quality gates.",
+  "stage": "closed_rejected",
+  "active": false,
+  "ownership_closed": true,
+  "source_archive": {
+    "commit": "fb2d75af6",
+    "path": "bench/results/2026-10-15-pr6-recovery-audit/qsa-colmajor-current.json",
+    "sha256": "05226275723564b70916632206cb22f406e58356a82d6a77082a832518a41390",
+    "consumer": "Recover full exact source/build/plans/check receipts from reachable Git; no duplicate active snapshot."
+  },
+  "compiler": {
+    "path": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin/clang++",
+    "sha256": "1290881b4e12a5e002e5b0de0787f85328ee5fe19f253a54be1cdd97dc2f26eb"
+  },
+  "build_source_commit": "51f51a5fb32b88f0c6f70fc62b70ad7907c1e414",
+  "retained_engine": {
+    "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/strata",
+    "bytes": 22190000,
+    "sha256": "22182f1a5e62e5f4259ce49a75ae44afbd988166ec79324816e499ff37ef60e4"
+  },
+  "generated_source_sha256": {
+    "control.cpp": {
+      "sha256": "fb4718b57cf7714531ccb278ea10a240f5490df8ea7389a1b67aef0093f7f6fd",
+      "bytes": 25152
+    },
+    "colmajor.cpp": {
+      "sha256": "a37447fe10cd5363f6fc54b7030ed3e826e79c1a92ddbfd2eeb5848785e9f726",
+      "bytes": 25456
+    },
+    "qsa-colmajor-variants.hpp": {
+      "sha256": "54455cd783dc3ab64cc20963c218743b1f11190c48c5a7bed93aafa5ff6a89d7",
+      "bytes": 1213
+    },
+    "timing.cpp": {
+      "sha256": "bf2ec3995d74a5500a64e47ded2e46aab8f05206d7492abc566f8d588c8901a3",
+      "bytes": 8923
+    },
+    "numerical-reference.inc": {
+      "sha256": "b20fc7981cdb17110a728e2f062a81591d17a8a70fe5880ba2ab67cc3b3af361",
+      "bytes": 23277
+    }
+  },
+  "validation_summary": {
+    "traced_processes": 12,
+    "traced_numerical_cases": 24,
+    "actual_selected_compute_launches_each": 23,
+    "full_processes": 12,
+    "full_cases": 132,
+    "pages": [
+      1,
+      4,
+      7,
+      16
+    ],
+    "candidate_smoke_routes_each": [
+      34,
+      0
+    ],
+    "candidate_full_routes_each": [
+      52,
+      0
+    ],
+    "all_exact_bits_independent_oracle_guards_inputs": true,
+    "all_component_final262144_slot_addressed": true,
+    "padded_state": "Source mapping only;not captured.",
+    "physical262144_model_qualified": false,
+    "fresh_faults": [],
+    "all_owned_commands_closed": 42
+  },
+  "resources": {
+    "conserved_device_ns": 3966800,
+    "table_rows": 24,
+    "compute_calls": {
+      "0": 8,
+      "2": 7,
+      "1": 7
+    },
+    "properties": [
+      {
+        "arm": 0,
+        "compiled": "JIT",
+        "SIMD": 16,
+        "arguments": 18,
+        "raw_SLM": 32,
+        "private_memory_descriptor": 0,
+        "spill_memory_descriptor": 12480,
+        "GRF": 128
+      },
+      {
+        "arm": 2,
+        "compiled": "JIT",
+        "SIMD": 16,
+        "arguments": 18,
+        "raw_SLM": 32,
+        "private_memory_descriptor": 0,
+        "spill_memory_descriptor": 10240,
+        "GRF": 128
+      },
+      {
+        "arm": 1,
+        "compiled": "JIT",
+        "SIMD": 16,
+        "arguments": 18,
+        "raw_SLM": 32,
+        "private_memory_descriptor": 0,
+        "spill_memory_descriptor": 12480,
+        "GRF": 128
+      }
+    ],
+    "limits": "Allocation descriptors and summed service only;rawSLM units,actual spill traffic,occupancy,physical traffic and model/decode speed remain unmeasured."
+  },
+  "performance": {
+    "shapes": [
+      {
+        "cells": 32768,
+        "pattern": "gather",
+        "arms": [
+          {
+            "arm": 0,
+            "median_ms": 199.63824449999998,
+            "sample_sd_ms": 0.30301135622171077,
+            "process_medians_ms": [
+              199.6516755,
+              199.7952665,
+              199.52014
+            ]
+          },
+          {
+            "arm": 1,
+            "median_ms": 199.618026,
+            "sample_sd_ms": 0.3189030314360826,
+            "process_medians_ms": [
+              199.62933249999998,
+              199.43202150000002,
+              199.835938
+            ]
+          },
+          {
+            "arm": 2,
+            "median_ms": 255.2458145,
+            "sample_sd_ms": 0.6998555052492759,
+            "process_medians_ms": [
+              254.74895199999997,
+              255.1912365,
+              255.51433450000002
+            ]
+          }
+        ],
+        "ratios": [
+          1.2785416699053374,
+          1.278671168204018
+        ]
+      },
+      {
+        "cells": 117488,
+        "pattern": "gather",
+        "arms": [
+          {
+            "arm": 0,
+            "median_ms": 233.0341625,
+            "sample_sd_ms": 0.41252962507634977,
+            "process_medians_ms": [
+              232.62103050000002,
+              233.141568,
+              233.072672
+            ]
+          },
+          {
+            "arm": 1,
+            "median_ms": 233.0859555,
+            "sample_sd_ms": 0.3297316404898161,
+            "process_medians_ms": [
+              233.06919499999998,
+              233.123874,
+              233.1711905
+            ]
+          },
+          {
+            "arm": 2,
+            "median_ms": 296.3030215,
+            "sample_sd_ms": 1.0474177969545746,
+            "process_medians_ms": [
+              296.380621,
+              295.982258,
+              296.4312555
+            ]
+          }
+        ],
+        "ratios": [
+          1.2715003599525885,
+          1.2712178254772626
+        ]
+      },
+      {
+        "cells": 117488,
+        "pattern": "clustered",
+        "arms": [
+          {
+            "arm": 0,
+            "median_ms": 138.43189999999998,
+            "sample_sd_ms": 0.12335441536875708,
+            "process_medians_ms": [
+              138.455112,
+              138.41215449999999,
+              138.49317050000002
+            ]
+          },
+          {
+            "arm": 1,
+            "median_ms": 138.44146949999998,
+            "sample_sd_ms": 0.12565432119184394,
+            "process_medians_ms": [
+              138.384701,
+              138.474909,
+              138.455261
+            ]
+          },
+          {
+            "arm": 2,
+            "median_ms": 171.1890485,
+            "sample_sd_ms": 0.9306764622128127,
+            "process_medians_ms": [
+              171.214416,
+              171.26085,
+              171.1537325
+            ]
+          }
+        ],
+        "ratios": [
+          1.2366300578118197,
+          1.236544578140295
+        ]
+      }
+    ],
+    "candidate_latency_geomeans_vs_default_and_control": [
+      1.2620901896579306,
+      1.2620102282932675
+    ],
+    "advance_to_model": false,
+    "decode_preservation_qualified": false,
+    "model_adoption_qualified": false,
+    "sample_columns": [
+      "process",
+      "cells",
+      "queries",
+      "cap",
+      "pattern",
+      "round",
+      "order",
+      "arm",
+      "milliseconds"
+    ],
+    "samples": [
+      [
+        0,
+        32768,
+        8192,
+        2051,
+        "gather",
+        0,
+        0,
+        0,
+        199.947649
+      ],
+      [
+        0,
+        32768,
+        8192,
+        2051,
+        "gather",
+        0,
+        1,
+        1,
+        199.493349
+      ],
+      [
+        0,
+        32768,
+        8192,
+        2051,
+        "gather",
+        0,
+        2,
+        2,
+        254.229629
+      ],
+      [
+        0,
+        32768,
+        8192,
+        2051,
+        "gather",
+        1,
+        0,
+        1,
+        199.902781
+      ],
+      [
+        0,
+        32768,
+        8192,
+        2051,
+        "gather",
+        1,
+        1,
+        2,
+        255.728075
+      ],
+      [
+        0,
+        32768,
+        8192,
+        2051,
+        "gather",
+        1,
+        2,
+        0,
+        199.691418
+      ],
+      [
+        0,
+        32768,
+        8192,
+        2051,
+        "gather",
+        2,
+        0,
+        2,
+        256.08278
+      ],
+      [
+        0,
+        32768,
+        8192,
+        2051,
+        "gather",
+        2,
+        1,
+        0,
+        199.550791
+      ],
+      [
+        0,
+        32768,
+        8192,
+        2051,
+        "gather",
+        2,
+        2,
+        1,
+        199.763784
+      ],
+      [
+        0,
+        32768,
+        8192,
+        2051,
+        "gather",
+        3,
+        0,
+        0,
+        199.611933
+      ],
+      [
+        0,
+        32768,
+        8192,
+        2051,
+        "gather",
+        3,
+        1,
+        1,
+        199.892153
+      ],
+      [
+        0,
+        32768,
+        8192,
+        2051,
+        "gather",
+        3,
+        2,
+        2,
+        255.268275
+      ],
+      [
+        0,
+        32768,
+        8192,
+        2051,
+        "gather",
+        4,
+        0,
+        1,
+        199.494881
+      ],
+      [
+        0,
+        32768,
+        8192,
+        2051,
+        "gather",
+        4,
+        1,
+        2,
+        253.906152
+      ],
+      [
+        0,
+        32768,
+        8192,
+        2051,
+        "gather",
+        4,
+        2,
+        0,
+        200.164815
+      ],
+      [
+        0,
+        32768,
+        8192,
+        2051,
+        "gather",
+        5,
+        0,
+        2,
+        254.211941
+      ],
+      [
+        0,
+        32768,
+        8192,
+        2051,
+        "gather",
+        5,
+        1,
+        0,
+        199.516887
+      ],
+      [
+        0,
+        32768,
+        8192,
+        2051,
+        "gather",
+        5,
+        2,
+        1,
+        199.393112
+      ],
+      [
+        0,
+        117488,
+        8192,
+        2051,
+        "gather",
+        0,
+        0,
+        0,
+        232.513145
+      ],
+      [
+        0,
+        117488,
+        8192,
+        2051,
+        "gather",
+        0,
+        1,
+        1,
+        232.494731
+      ],
+      [
+        0,
+        117488,
+        8192,
+        2051,
+        "gather",
+        0,
+        2,
+        2,
+        297.342938
+      ],
+      [
+        0,
+        117488,
+        8192,
+        2051,
+        "gather",
+        1,
+        0,
+        1,
+        233.010382
+      ],
+      [
+        0,
+        117488,
+        8192,
+        2051,
+        "gather",
+        1,
+        1,
+        2,
+        295.703702
+      ],
+      [
+        0,
+        117488,
+        8192,
+        2051,
+        "gather",
+        1,
+        2,
+        0,
+        233.135677
+      ],
+      [
+        0,
+        117488,
+        8192,
+        2051,
+        "gather",
+        2,
+        0,
+        2,
+        294.108769
+      ],
+      [
+        0,
+        117488,
+        8192,
+        2051,
+        "gather",
+        2,
+        1,
+        0,
+        232.728916
+      ],
+      [
+        0,
+        117488,
+        8192,
+        2051,
+        "gather",
+        2,
+        2,
+        1,
+        233.128008
+      ],
+      [
+        0,
+        117488,
+        8192,
+        2051,
+        "gather",
+        3,
+        0,
+        0,
+        232.153873
+      ],
+      [
+        0,
+        117488,
+        8192,
+        2051,
+        "gather",
+        3,
+        1,
+        1,
+        232.80222
+      ],
+      [
+        0,
+        117488,
+        8192,
+        2051,
+        "gather",
+        3,
+        2,
+        2,
+        297.05754
+      ],
+      [
+        0,
+        117488,
+        8192,
+        2051,
+        "gather",
+        4,
+        0,
+        1,
+        233.441825
+      ],
+      [
+        0,
+        117488,
+        8192,
+        2051,
+        "gather",
+        4,
+        1,
+        2,
+        297.155132
+      ],
+      [
+        0,
+        117488,
+        8192,
+        2051,
+        "gather",
+        4,
+        2,
+        0,
+        232.866814
+      ],
+      [
+        0,
+        117488,
+        8192,
+        2051,
+        "gather",
+        5,
+        0,
+        2,
+        294.941798
+      ],
+      [
+        0,
+        117488,
+        8192,
+        2051,
+        "gather",
+        5,
+        1,
+        0,
+        232.37357
+      ],
+      [
+        0,
+        117488,
+        8192,
+        2051,
+        "gather",
+        5,
+        2,
+        1,
+        233.226379
+      ],
+      [
+        0,
+        117488,
+        8192,
+        2051,
+        "clustered",
+        0,
+        0,
+        0,
+        138.511626
+      ],
+      [
+        0,
+        117488,
+        8192,
+        2051,
+        "clustered",
+        0,
+        1,
+        1,
+        138.347314
+      ],
+      [
+        0,
+        117488,
+        8192,
+        2051,
+        "clustered",
+        0,
+        2,
+        2,
+        171.981225
+      ],
+      [
+        0,
+        117488,
+        8192,
+        2051,
+        "clustered",
+        1,
+        0,
+        1,
+        138.379704
+      ],
+      [
+        0,
+        117488,
+        8192,
+        2051,
+        "clustered",
+        1,
+        1,
+        2,
+        170.074959
+      ],
+      [
+        0,
+        117488,
+        8192,
+        2051,
+        "clustered",
+        1,
+        2,
+        0,
+        138.495773
+      ],
+      [
+        0,
+        117488,
+        8192,
+        2051,
+        "clustered",
+        2,
+        0,
+        2,
+        172.353466
+      ],
+      [
+        0,
+        117488,
+        8192,
+        2051,
+        "clustered",
+        2,
+        1,
+        0,
+        138.180925
+      ],
+      [
+        0,
+        117488,
+        8192,
+        2051,
+        "clustered",
+        2,
+        2,
+        1,
+        138.655573
+      ],
+      [
+        0,
+        117488,
+        8192,
+        2051,
+        "clustered",
+        3,
+        0,
+        0,
+        138.306162
+      ],
+      [
+        0,
+        117488,
+        8192,
+        2051,
+        "clustered",
+        3,
+        1,
+        1,
+        138.389698
+      ],
+      [
+        0,
+        117488,
+        8192,
+        2051,
+        "clustered",
+        3,
+        2,
+        2,
+        170.447607
+      ],
+      [
+        0,
+        117488,
+        8192,
+        2051,
+        "clustered",
+        4,
+        0,
+        1,
+        138.293246
+      ],
+      [
+        0,
+        117488,
+        8192,
+        2051,
+        "clustered",
+        4,
+        1,
+        2,
+        172.125391
+      ],
+      [
+        0,
+        117488,
+        8192,
+        2051,
+        "clustered",
+        4,
+        2,
+        0,
+        138.414451
+      ],
+      [
+        0,
+        117488,
+        8192,
+        2051,
+        "clustered",
+        5,
+        0,
+        2,
+        169.386567
+      ],
+      [
+        0,
+        117488,
+        8192,
+        2051,
+        "clustered",
+        5,
+        1,
+        0,
+        138.537464
+      ],
+      [
+        0,
+        117488,
+        8192,
+        2051,
+        "clustered",
+        5,
+        2,
+        1,
+        138.453595
+      ],
+      [
+        1,
+        32768,
+        8192,
+        2051,
+        "gather",
+        0,
+        0,
+        1,
+        199.676919
+      ],
+      [
+        1,
+        32768,
+        8192,
+        2051,
+        "gather",
+        0,
+        1,
+        2,
+        255.49116
+      ],
+      [
+        1,
+        32768,
+        8192,
+        2051,
+        "gather",
+        0,
+        2,
+        0,
+        199.664556
+      ],
+      [
+        1,
+        32768,
+        8192,
+        2051,
+        "gather",
+        1,
+        0,
+        2,
+        256.010799
+      ],
+      [
+        1,
+        32768,
+        8192,
+        2051,
+        "gather",
+        1,
+        1,
+        0,
+        199.411784
+      ],
+      [
+        1,
+        32768,
+        8192,
+        2051,
+        "gather",
+        1,
+        2,
+        1,
+        199.559133
+      ],
+      [
+        1,
+        32768,
+        8192,
+        2051,
+        "gather",
+        2,
+        0,
+        0,
+        200.089896
+      ],
+      [
+        1,
+        32768,
+        8192,
+        2051,
+        "gather",
+        2,
+        1,
+        1,
+        199.040478
+      ],
+      [
+        1,
+        32768,
+        8192,
+        2051,
+        "gather",
+        2,
+        2,
+        2,
+        255.140047
+      ],
+      [
+        1,
+        32768,
+        8192,
+        2051,
+        "gather",
+        3,
+        0,
+        1,
+        199.208095
+      ],
+      [
+        1,
+        32768,
+        8192,
+        2051,
+        "gather",
+        3,
+        1,
+        2,
+        255.124786
+      ],
+      [
+        1,
+        32768,
+        8192,
+        2051,
+        "gather",
+        3,
+        2,
+        0,
+        199.309052
+      ],
+      [
+        1,
+        32768,
+        8192,
+        2051,
+        "gather",
+        4,
+        0,
+        2,
+        255.242426
+      ],
+      [
+        1,
+        32768,
+        8192,
+        2051,
+        "gather",
+        4,
+        1,
+        0,
+        200.061486
+      ],
+      [
+        1,
+        32768,
+        8192,
+        2051,
+        "gather",
+        4,
+        2,
+        1,
+        199.36241
+      ],
+      [
+        1,
+        32768,
+        8192,
+        2051,
+        "gather",
+        5,
+        0,
+        0,
+        199.925977
+      ],
+      [
+        1,
+        32768,
+        8192,
+        2051,
+        "gather",
+        5,
+        1,
+        1,
+        199.501633
+      ],
+      [
+        1,
+        32768,
+        8192,
+        2051,
+        "gather",
+        5,
+        2,
+        2,
+        254.754448
+      ],
+      [
+        1,
+        117488,
+        8192,
+        2051,
+        "gather",
+        0,
+        0,
+        1,
+        233.368292
+      ],
+      [
+        1,
+        117488,
+        8192,
+        2051,
+        "gather",
+        0,
+        1,
+        2,
+        295.553792
+      ],
+      [
+        1,
+        117488,
+        8192,
+        2051,
+        "gather",
+        0,
+        2,
+        0,
+        233.081846
+      ],
+      [
+        1,
+        117488,
+        8192,
+        2051,
+        "gather",
+        1,
+        0,
+        2,
+        296.250649
+      ],
+      [
+        1,
+        117488,
+        8192,
+        2051,
+        "gather",
+        1,
+        1,
+        0,
+        232.902323
+      ],
+      [
+        1,
+        117488,
+        8192,
+        2051,
+        "gather",
+        1,
+        2,
+        1,
+        232.666006
+      ],
+      [
+        1,
+        117488,
+        8192,
+        2051,
+        "gather",
+        2,
+        0,
+        0,
+        233.176331
+      ],
+      [
+        1,
+        117488,
+        8192,
+        2051,
+        "gather",
+        2,
+        1,
+        1,
+        232.879456
+      ],
+      [
+        1,
+        117488,
+        8192,
+        2051,
+        "gather",
+        2,
+        2,
+        2,
+        297.044341
+      ],
+      [
+        1,
+        117488,
+        8192,
+        2051,
+        "gather",
+        3,
+        0,
+        1,
+        233.508224
+      ],
+      [
+        1,
+        117488,
+        8192,
+        2051,
+        "gather",
+        3,
+        1,
+        2,
+        297.673046
+      ],
+      [
+        1,
+        117488,
+        8192,
+        2051,
+        "gather",
+        3,
+        2,
+        0,
+        233.908959
+      ],
+      [
+        1,
+        117488,
+        8192,
+        2051,
+        "gather",
+        4,
+        0,
+        2,
+        295.713867
+      ],
+      [
+        1,
+        117488,
+        8192,
+        2051,
+        "gather",
+        4,
+        1,
+        0,
+        233.308639
+      ],
+      [
+        1,
+        117488,
+        8192,
+        2051,
+        "gather",
+        4,
+        2,
+        1,
+        232.781251
+      ],
+      [
+        1,
+        117488,
+        8192,
+        2051,
+        "gather",
+        5,
+        0,
+        0,
+        233.106805
+      ],
+      [
+        1,
+        117488,
+        8192,
+        2051,
+        "gather",
+        5,
+        1,
+        1,
+        233.412531
+      ],
+      [
+        1,
+        117488,
+        8192,
+        2051,
+        "gather",
+        5,
+        2,
+        2,
+        294.359487
+      ],
+      [
+        1,
+        117488,
+        8192,
+        2051,
+        "clustered",
+        0,
+        0,
+        1,
+        138.49203
+      ],
+      [
+        1,
+        117488,
+        8192,
+        2051,
+        "clustered",
+        0,
+        1,
+        2,
+        172.711001
+      ],
+      [
+        1,
+        117488,
+        8192,
+        2051,
+        "clustered",
+        0,
+        2,
+        0,
+        138.48148
+      ],
+      [
+        1,
+        117488,
+        8192,
+        2051,
+        "clustered",
+        1,
+        0,
+        2,
+        171.198988
+      ],
+      [
+        1,
+        117488,
+        8192,
+        2051,
+        "clustered",
+        1,
+        1,
+        0,
+        138.399732
+      ],
+      [
+        1,
+        117488,
+        8192,
+        2051,
+        "clustered",
+        1,
+        2,
+        1,
+        138.587608
+      ],
+      [
+        1,
+        117488,
+        8192,
+        2051,
+        "clustered",
+        2,
+        0,
+        0,
+        138.417045
+      ],
+      [
+        1,
+        117488,
+        8192,
+        2051,
+        "clustered",
+        2,
+        1,
+        1,
+        138.53678
+      ],
+      [
+        1,
+        117488,
+        8192,
+        2051,
+        "clustered",
+        2,
+        2,
+        2,
+        170.71002
+      ],
+      [
+        1,
+        117488,
+        8192,
+        2051,
+        "clustered",
+        3,
+        0,
+        1,
+        138.170547
+      ],
+      [
+        1,
+        117488,
+        8192,
+        2051,
+        "clustered",
+        3,
+        1,
+        2,
+        171.549297
+      ],
+      [
+        1,
+        117488,
+        8192,
+        2051,
+        "clustered",
+        3,
+        2,
+        0,
+        138.407264
+      ],
+      [
+        1,
+        117488,
+        8192,
+        2051,
+        "clustered",
+        4,
+        0,
+        2,
+        170.42576
+      ],
+      [
+        1,
+        117488,
+        8192,
+        2051,
+        "clustered",
+        4,
+        1,
+        0,
+        138.322572
+      ],
+      [
+        1,
+        117488,
+        8192,
+        2051,
+        "clustered",
+        4,
+        2,
+        1,
+        138.457788
+      ],
+      [
+        1,
+        117488,
+        8192,
+        2051,
+        "clustered",
+        5,
+        0,
+        0,
+        138.587422
+      ],
+      [
+        1,
+        117488,
+        8192,
+        2051,
+        "clustered",
+        5,
+        1,
+        1,
+        138.248148
+      ],
+      [
+        1,
+        117488,
+        8192,
+        2051,
+        "clustered",
+        5,
+        2,
+        2,
+        171.322712
+      ],
+      [
+        2,
+        32768,
+        8192,
+        2051,
+        "gather",
+        0,
+        0,
+        2,
+        255.249203
+      ],
+      [
+        2,
+        32768,
+        8192,
+        2051,
+        "gather",
+        0,
+        1,
+        0,
+        200.138852
+      ],
+      [
+        2,
+        32768,
+        8192,
+        2051,
+        "gather",
+        0,
+        2,
+        1,
+        199.432005
+      ],
+      [
+        2,
+        32768,
+        8192,
+        2051,
+        "gather",
+        1,
+        0,
+        0,
+        199.29138
+      ],
+      [
+        2,
+        32768,
+        8192,
+        2051,
+        "gather",
+        1,
+        1,
+        1,
+        199.798607
+      ],
+      [
+        2,
+        32768,
+        8192,
+        2051,
+        "gather",
+        1,
+        2,
+        2,
+        255.970731
+      ],
+      [
+        2,
+        32768,
+        8192,
+        2051,
+        "gather",
+        2,
+        0,
+        1,
+        199.820717
+      ],
+      [
+        2,
+        32768,
+        8192,
+        2051,
+        "gather",
+        2,
+        1,
+        2,
+        253.994674
+      ],
+      [
+        2,
+        32768,
+        8192,
+        2051,
+        "gather",
+        2,
+        2,
+        0,
+        199.367397
+      ],
+      [
+        2,
+        32768,
+        8192,
+        2051,
+        "gather",
+        3,
+        0,
+        2,
+        255.785887
+      ],
+      [
+        2,
+        32768,
+        8192,
+        2051,
+        "gather",
+        3,
+        1,
+        0,
+        200.022335
+      ],
+      [
+        2,
+        32768,
+        8192,
+        2051,
+        "gather",
+        3,
+        2,
+        1,
+        199.851159
+      ],
+      [
+        2,
+        32768,
+        8192,
+        2051,
+        "gather",
+        4,
+        0,
+        0,
+        199.441002
+      ],
+      [
+        2,
+        32768,
+        8192,
+        2051,
+        "gather",
+        4,
+        1,
+        1,
+        200.254811
+      ],
+      [
+        2,
+        32768,
+        8192,
+        2051,
+        "gather",
+        4,
+        2,
+        2,
+        255.122007
+      ],
+      [
+        2,
+        32768,
+        8192,
+        2051,
+        "gather",
+        5,
+        0,
+        1,
+        200.191769
+      ],
+      [
+        2,
+        32768,
+        8192,
+        2051,
+        "gather",
+        5,
+        1,
+        2,
+        255.779466
+      ],
+      [
+        2,
+        32768,
+        8192,
+        2051,
+        "gather",
+        5,
+        2,
+        0,
+        199.599278
+      ],
+      [
+        2,
+        117488,
+        8192,
+        2051,
+        "gather",
+        0,
+        0,
+        2,
+        296.713319
+      ],
+      [
+        2,
+        117488,
+        8192,
+        2051,
+        "gather",
+        0,
+        1,
+        0,
+        232.971623
+      ],
+      [
+        2,
+        117488,
+        8192,
+        2051,
+        "gather",
+        0,
+        2,
+        1,
+        232.578197
+      ],
+      [
+        2,
+        117488,
+        8192,
+        2051,
+        "gather",
+        1,
+        0,
+        0,
+        233.158865
+      ],
+      [
+        2,
+        117488,
+        8192,
+        2051,
+        "gather",
+        1,
+        1,
+        1,
+        233.298478
+      ],
+      [
+        2,
+        117488,
+        8192,
+        2051,
+        "gather",
+        1,
+        2,
+        2,
+        295.951839
+      ],
+      [
+        2,
+        117488,
+        8192,
+        2051,
+        "gather",
+        2,
+        0,
+        1,
+        233.043903
+      ],
+      [
+        2,
+        117488,
+        8192,
+        2051,
+        "gather",
+        2,
+        1,
+        2,
+        296.507117
+      ],
+      [
+        2,
+        117488,
+        8192,
+        2051,
+        "gather",
+        2,
+        2,
+        0,
+        232.606122
+      ],
+      [
+        2,
+        117488,
+        8192,
+        2051,
+        "gather",
+        3,
+        0,
+        2,
+        296.594129
+      ],
+      [
+        2,
+        117488,
+        8192,
+        2051,
+        "gather",
+        3,
+        1,
+        0,
+        232.986479
+      ],
+      [
+        2,
+        117488,
+        8192,
+        2051,
+        "gather",
+        3,
+        2,
+        1,
+        233.356547
+      ],
+      [
+        2,
+        117488,
+        8192,
+        2051,
+        "gather",
+        4,
+        0,
+        0,
+        233.253322
+      ],
+      [
+        2,
+        117488,
+        8192,
+        2051,
+        "gather",
+        4,
+        1,
+        1,
+        233.031361
+      ],
+      [
+        2,
+        117488,
+        8192,
+        2051,
+        "gather",
+        4,
+        2,
+        2,
+        294.731447
+      ],
+      [
+        2,
+        117488,
+        8192,
+        2051,
+        "gather",
+        5,
+        0,
+        1,
+        233.540871
+      ],
+      [
+        2,
+        117488,
+        8192,
+        2051,
+        "gather",
+        5,
+        1,
+        2,
+        296.355394
+      ],
+      [
+        2,
+        117488,
+        8192,
+        2051,
+        "gather",
+        5,
+        2,
+        0,
+        233.466197
+      ],
+      [
+        2,
+        117488,
+        8192,
+        2051,
+        "clustered",
+        0,
+        0,
+        2,
+        171.241049
+      ],
+      [
+        2,
+        117488,
+        8192,
+        2051,
+        "clustered",
+        0,
+        1,
+        0,
+        138.549604
+      ],
+      [
+        2,
+        117488,
+        8192,
+        2051,
+        "clustered",
+        0,
+        2,
+        1,
+        138.581374
+      ],
+      [
+        2,
+        117488,
+        8192,
+        2051,
+        "clustered",
+        1,
+        0,
+        0,
+        138.692765
+      ],
+      [
+        2,
+        117488,
+        8192,
+        2051,
+        "clustered",
+        1,
+        1,
+        1,
+        138.520568
+      ],
+      [
+        2,
+        117488,
+        8192,
+        2051,
+        "clustered",
+        1,
+        2,
+        2,
+        173.020429
+      ],
+      [
+        2,
+        117488,
+        8192,
+        2051,
+        "clustered",
+        2,
+        0,
+        1,
+        138.429344
+      ],
+      [
+        2,
+        117488,
+        8192,
+        2051,
+        "clustered",
+        2,
+        1,
+        2,
+        171.179109
+      ],
+      [
+        2,
+        117488,
+        8192,
+        2051,
+        "clustered",
+        2,
+        2,
+        0,
+        138.311962
+      ],
+      [
+        2,
+        117488,
+        8192,
+        2051,
+        "clustered",
+        3,
+        0,
+        2,
+        171.075189
+      ],
+      [
+        2,
+        117488,
+        8192,
+        2051,
+        "clustered",
+        3,
+        1,
+        0,
+        138.446755
+      ],
+      [
+        2,
+        117488,
+        8192,
+        2051,
+        "clustered",
+        3,
+        2,
+        1,
+        138.321498
+      ],
+      [
+        2,
+        117488,
+        8192,
+        2051,
+        "clustered",
+        4,
+        0,
+        0,
+        138.32804
+      ],
+      [
+        2,
+        117488,
+        8192,
+        2051,
+        "clustered",
+        4,
+        1,
+        1,
+        138.406917
+      ],
+      [
+        2,
+        117488,
+        8192,
+        2051,
+        "clustered",
+        4,
+        2,
+        2,
+        171.128356
+      ],
+      [
+        2,
+        117488,
+        8192,
+        2051,
+        "clustered",
+        5,
+        0,
+        1,
+        138.481178
+      ],
+      [
+        2,
+        117488,
+        8192,
+        2051,
+        "clustered",
+        5,
+        1,
+        2,
+        170.682534
+      ],
+      [
+        2,
+        117488,
+        8192,
+        2051,
+        "clustered",
+        5,
+        2,
+        0,
+        138.539586
+      ]
+    ]
+  },
+  "timing_floor_ns_by_process": [
+    20,
+    20,
+    20
+  ],
+  "retirement": {
+    "complete": true,
+    "files": 144,
+    "bytes": 20179599,
+    "auxiliary_files": 113,
+    "cache_files": 30,
+    "manifest": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/closed-colmajor-retirement-20261023.jsonl",
+      "sha256": "108566603e45c0af0feb407baec04c71ca71875fcec87f8f407af39cb9a3bcdd"
+    },
+    "auxiliary_root_absent": true,
+    "selected13assets_unchanged": true,
+    "source_archive": "fb2d75af6",
+    "retained_research_reports": [
+      "shared-bank-layout/report.md",
+      "qsa-counterfactual-calibration/report.md",
+      "ragged-gqa-head-tiles/report.md"
+    ],
+    "separate_holds": "Primary legacy final-input/ownership recovery and six older Orca ownership holds remain open;this retirement does not resolve them.",
+    "unused_source_files_removed": 4,
+    "selected_native_admission_passed_after_cleanup": true,
+    "new_GPU_execution_for_retirement": false,
+    "transaction_input_files": 1
+  }
+}

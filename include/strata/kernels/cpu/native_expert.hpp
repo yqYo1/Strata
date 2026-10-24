@@ -39,9 +39,25 @@ void native_quant_act(const NativeFmt& f, const float* x, void* dst);
 /// h (n_ff floats) -> the down activation (h_bytes).
 void native_quant_h(const NativeFmt& f, const float* h, void* dst);
 
+// Explicit host-owned phase, copied into each synchronous pool batch. Never
+// change the process environment when moving between prompt and generation.
+enum class NativeGuPhase { Prefill, Decode };
+class NativeGuPhaseScope {
+    NativeGuPhase& phase_;
+    NativeGuPhase previous_;
+public:
+    NativeGuPhaseScope(NativeGuPhase& phase, NativeGuPhase selected) noexcept
+        : phase_(phase), previous_(phase) { phase_ = selected; }
+    NativeGuPhaseScope(const NativeGuPhaseScope&) = delete;
+    NativeGuPhaseScope& operator=(const NativeGuPhaseScope&) = delete;
+    ~NativeGuPhaseScope() noexcept { phase_ = previous_; }
+};
+
 /// ff[t][r] = silu(gate_r . a[t]) * (up_r . a[t]) for rows r in [r0, r1), `nt` tokens.
+/// Direct component callers retain the historical Decode selection. Production
+/// callers pass the actual phase, so CPU/window prefill retains its reference.
 void native_gu_rows(const NativeFmt& f, const uint8_t* blob, const void* const* act, int nt, float* const* ff,
-                    int r0, int r1);
+                    int r0, int r1, NativeGuPhase phase = NativeGuPhase::Decode);
 /// out[t][r] = down_r . hq[t] for rows r in [r0, r1).
 void native_down_rows(const NativeFmt& f, const uint8_t* blob, const void* const* hq, int nt, float* const* out,
                       int r0, int r1);

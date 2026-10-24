@@ -1,0 +1,502 @@
+{
+  "stage": "measure",
+  "source_commit": "8ccdcb9c90052763012608fbe5ec6abb69ebf62e",
+  "plan_sha256": "c17127f048f7cbdde16467d35009c4eec1f800b0465345a4338fec6bc6c807c3",
+  "passed": true,
+  "complete": true,
+  "active": false,
+  "ownership_closed": true,
+  "GPU_executed": false,
+  "binary": {
+    "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-iq2-indices-v1/build/cpu_iq2_indices",
+    "sha256": "d848473a0904ec59c2bb9f4d3a2f3059c6c4fd8d147734f6f95df0af852deef4",
+    "bytes": 2538944
+  },
+  "decisions": [
+    {
+      "down": 20,
+      "ratios": [
+        {
+          "pair": 0,
+          "access": 0,
+          "ratio": 0.739358672169763
+        },
+        {
+          "pair": 0,
+          "access": 1,
+          "ratio": 0.8615295424547225
+        },
+        {
+          "pair": 1,
+          "access": 0,
+          "ratio": 0.9486304595120714
+        },
+        {
+          "pair": 1,
+          "access": 1,
+          "ratio": 0.92516135352009
+        },
+        {
+          "pair": 2,
+          "access": 0,
+          "ratio": 0.9115552714422682
+        },
+        {
+          "pair": 2,
+          "access": 1,
+          "ratio": 0.8471420183061229
+        }
+      ],
+      "pair_geomeans": [
+        0.7981098536820274,
+        0.9368224164229702,
+        0.8787586542658847
+      ],
+      "geomean": 0.8693537276310952,
+      "performance_gate_passed": true
+    },
+    {
+      "down": 42,
+      "ratios": [
+        {
+          "pair": 0,
+          "access": 0,
+          "ratio": 0.8895871336776713
+        },
+        {
+          "pair": 0,
+          "access": 1,
+          "ratio": 0.9127791867739623
+        },
+        {
+          "pair": 1,
+          "access": 0,
+          "ratio": 0.9021225170556924
+        },
+        {
+          "pair": 1,
+          "access": 1,
+          "ratio": 0.9093429970140784
+        },
+        {
+          "pair": 2,
+          "access": 0,
+          "ratio": 0.83865015813065
+        },
+        {
+          "pair": 2,
+          "access": 1,
+          "ratio": 0.8358793494630418
+        }
+      ],
+      "pair_geomeans": [
+        0.9011085508654797,
+        0.9057255618195322,
+        0.8372636075963918
+      ],
+      "geomean": 0.880802726039441,
+      "performance_gate_passed": true
+    }
+  ],
+  "model_adoption_qualified": false,
+  "artifact_retirement": {
+    "complete": true,
+    "manifest": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-iq2-indices-v1-closed-retirement-20261022.jsonl",
+    "manifest_sha256": "4a20711cfa36bd239fdcbdc892f65489965e8cd9930c29440dae3542f86aeb9f",
+    "files": 107,
+    "bytes": 18268713,
+    "original_recipes_recovered": true,
+    "source_inputs": 110,
+    "ggml_inputs": 1376,
+    "original_native_inputs_recovered": 9853,
+    "archive": "4176ff75a9230e4136b38384e69882bd93434801",
+    "owned_commands_closed": 14,
+    "captures_retired": 8,
+    "capture_bytes": 860160,
+    "root_absent": true,
+    "original_outcomes_unchanged": true,
+    "retained_engine_and12fixtures_unchanged": true,
+    "compile_commands_sha256": "b8003afd4b577969a677a3854d57e0c1c0c631a9cd6cfd9702f9d4d0f67ffcf3",
+    "lowering": {
+      "pair_dot": {
+        "start": 4514240,
+        "bytes": 3220,
+        "gathers": 0,
+        "pdep": 0,
+        "calls": 0,
+        "vector_stack_accesses": 0
+      },
+      "indices_pair_dot": {
+        "start": 4250416,
+        "bytes": 2851,
+        "gathers": 0,
+        "pdep": 32,
+        "calls": 0,
+        "vector_stack_accesses": 0
+      }
+    },
+    "review_retired": {
+      "files": 1,
+      "bytes": 4004,
+      "sha256": "45e144d2155e71f2b058fd85fa1ba86b93d3f235359942abdddfd703e2641c36"
+    },
+    "tracked_source_retirement": {
+      "archive": "4176ff75a9230e4136b38384e69882bd93434801",
+      "files": 5,
+      "bytes": 38738,
+      "reason": "Closed kernel fixture/controller/test/full plan;restore from Git for reproduction. Only candidate.cpp retained for named imminent pool comparison;Git deletion diff gives paths/blob identities."
+    },
+    "remaining_candidate_retired_at_pool_closure": true
+  },
+  "schema": "strata-iq2-indices-closed-v1",
+  "performance_gate_passed": true,
+  "original_full_result": {
+    "commit": "4176ff75a9230e4136b38384e69882bd93434801",
+    "path": "bench/results/2026-10-15-pr6-recovery-audit/cpu-iq2-indices-current.json",
+    "sha256": "a469eec0a6f65f2b3e600bb80fac023fb0dfee8b4a17047e3a67d28548aacced",
+    "individual_samples": 120,
+    "scope": "All original individual samples retained in reachable Git;active decision keeps24 process/cell medians and spread."
+  },
+  "plan_reference": {
+    "commit": "4176ff75a9230e4136b38384e69882bd93434801",
+    "path": "bench/results/2026-10-15-pr6-recovery-audit/cpu-iq2-indices-plan.json",
+    "sha256": "c17127f048f7cbdde16467d35009c4eec1f800b0465345a4338fec6bc6c807c3"
+  },
+  "source_pin": {
+    "revision": "8ccdcb9c90052763012608fbe5ec6abb69ebf62e",
+    "count": 110,
+    "aggregate_sha256": "4f44bee9d55c1b8903fd797ac4deecfa8d83c9c6993d0288dff484eeef3a5790"
+  },
+  "ggml_pin": {
+    "revision": "3cf03257f219afbe7334045ff7c6a06ac68c627d",
+    "count": 1376,
+    "aggregate_sha256": "04cc6ab883190bdb3bbcfc3e3d62c630c7b147587b98379157ad768f9936c8d2"
+  },
+  "native_reference": {
+    "source": "6e40afc1beddd059ee518617f6c1efce1da14aca",
+    "binary": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/strata",
+      "bytes": 22190000,
+      "sha256": "22182f1a5e62e5f4259ce49a75ae44afbd988166ec79324816e499ff37ef60e4"
+    },
+    "inputs_recovered": 9853
+  },
+  "host_admission_tests": {
+    "source": "8ccdcb9c90052763012608fbe5ec6abb69ebf62e",
+    "command": [
+      "python3",
+      "-B",
+      "tests/core/test_cpu_iq2_indices.py"
+    ],
+    "tests": 3,
+    "passed": true
+  },
+  "machine_reference": "Original plan contains exact boot/kernel/topology,compiler,environment and actual fixture identities.",
+  "columns": [
+    "process",
+    "arm",
+    "down",
+    "access",
+    "samples",
+    "median_ms_per_expert",
+    "min_ms_per_expert",
+    "max_ms_per_expert",
+    "median_cpu_core_equivalents"
+  ],
+  "cells": [
+    [
+      0,
+      0,
+      20,
+      0,
+      5,
+      0.20307550659898477,
+      0.20071067820127048,
+      0.21283118687943264,
+      0.9985322324360464
+    ],
+    [
+      0,
+      0,
+      20,
+      1,
+      5,
+      0.1701378826530612,
+      0.16670410603543742,
+      0.1768084950638792,
+      0.9973635197627618
+    ],
+    [
+      0,
+      0,
+      42,
+      0,
+      5,
+      0.16430434181718664,
+      0.16020199973311983,
+      0.16823642809083264,
+      0.9941871670806297
+    ],
+    [
+      0,
+      0,
+      42,
+      1,
+      5,
+      0.16138834947089947,
+      0.16076652923280424,
+      0.1646872574404762,
+      0.9982837175840478
+    ],
+    [
+      1,
+      1,
+      20,
+      0,
+      5,
+      0.1501456369092273,
+      0.14678182868672046,
+      0.15258779900839053,
+      0.9945191132439921
+    ],
+    [
+      1,
+      1,
+      20,
+      1,
+      5,
+      0.14657881219630708,
+      0.14598750340136055,
+      0.16388832656926405,
+      0.996143179066457
+    ],
+    [
+      1,
+      1,
+      42,
+      0,
+      5,
+      0.1461630284879474,
+      0.1443706531986532,
+      0.1469891511143767,
+      0.9994822952106845
+    ],
+    [
+      1,
+      1,
+      42,
+      1,
+      5,
+      0.14731192638483964,
+      0.14647611686103013,
+      0.15218543275075988,
+      0.9940459070816694
+    ],
+    [
+      2,
+      1,
+      20,
+      0,
+      5,
+      0.15200460612968594,
+      0.15155714204545456,
+      0.1541147692604006,
+      0.9992837356522725
+    ],
+    [
+      2,
+      1,
+      20,
+      1,
+      5,
+      0.15261715906788248,
+      0.15005499156746033,
+      0.1605072615079365,
+      0.9984960898977661
+    ],
+    [
+      2,
+      1,
+      42,
+      0,
+      5,
+      0.14500649903381643,
+      0.1443655226070226,
+      0.14581330199222545,
+      0.9993297320127682
+    ],
+    [
+      2,
+      1,
+      42,
+      1,
+      5,
+      0.14650127636054422,
+      0.14513890964285714,
+      0.15987173563664597,
+      0.9977929601145806
+    ],
+    [
+      3,
+      0,
+      20,
+      0,
+      5,
+      0.16023584801174273,
+      0.15970727227986167,
+      0.16662696891479323,
+      0.9996610866359407
+    ],
+    [
+      3,
+      0,
+      20,
+      1,
+      5,
+      0.16496274783549783,
+      0.1609966835978836,
+      0.19812925997425995,
+      0.9995279157883736
+    ],
+    [
+      3,
+      0,
+      42,
+      0,
+      5,
+      0.16073925247657295,
+      0.15886920585120468,
+      0.1618252746763754,
+      0.9949977036716617
+    ],
+    [
+      3,
+      0,
+      42,
+      1,
+      5,
+      0.16110672962962963,
+      0.1598666328042328,
+      0.16199495634920633,
+      0.9996261314785362
+    ],
+    [
+      4,
+      0,
+      20,
+      0,
+      5,
+      0.1608982108788853,
+      0.15928997719437815,
+      0.16318774714518758,
+      0.9995509733949961
+    ],
+    [
+      4,
+      0,
+      20,
+      1,
+      5,
+      0.17229152394795125,
+      0.1683219316168328,
+      0.1794972816964286,
+      0.996054370333552
+    ],
+    [
+      4,
+      0,
+      42,
+      0,
+      5,
+      0.17328153867243867,
+      0.16225302716950527,
+      0.20979513155136267,
+      0.9995659280651646
+    ],
+    [
+      4,
+      0,
+      42,
+      1,
+      5,
+      0.2110393005952381,
+      0.20722096020408165,
+      0.2124070649509804,
+      0.9995675161732404
+    ],
+    [
+      5,
+      1,
+      20,
+      0,
+      5,
+      0.14666761229227762,
+      0.14357160927785748,
+      0.14946085374657705,
+      0.9993005355099597
+    ],
+    [
+      5,
+      1,
+      20,
+      1,
+      5,
+      0.14595538933430513,
+      0.14567171523809522,
+      0.1473101948493683,
+      0.9991800645595462
+    ],
+    [
+      5,
+      1,
+      42,
+      0,
+      5,
+      0.14532258980876303,
+      0.14427727168949772,
+      0.17606065272887325,
+      0.9993250037657517
+    ],
+    [
+      5,
+      1,
+      42,
+      1,
+      5,
+      0.17640339329268295,
+      0.1454455192857143,
+      0.2476369002463054,
+      0.9954919763190038
+    ]
+  ],
+  "output_validation": {
+    "check_processes": 2,
+    "measurement_processes": 6,
+    "capture_bytes": 860160,
+    "all_capture_sha256": "8dfd2f7e577d83f2bf8f236260260325d223bfbf2e4599273f3a79245b120495",
+    "index_layout_exhaustive": true,
+    "bitwise_and_finite": true,
+    "partial_empty_tail_rows_and_rejected_geometry": true,
+    "guards_and_inputs_unchanged": true,
+    "CPU_only_linkage": true
+  },
+  "timing_eligibility": {
+    "individual_samples": 120,
+    "min_wall_s": 1.200029409,
+    "max_timer_fraction": 2.365074287214209e-05,
+    "all_work_and_sample_gates_passed": true
+  },
+  "decision": "Both format-specific kernel-only performance gates pass. Full-unroll exact PDEP index construction reduces median-pair latency by13.06%/11.92%;all ratios<1. This permits a separate source-pinned production-pool plan only. No model adoption,precision change,critical-path share or hardware saturation claim. Native prefill/decode,configuration and1256-slot placement unchanged.",
+  "consumer": "Historical exact-index kernel gain and its failed production-pool advancement. No active implementation consumer;recover original source/plan from Git for a concrete future question.",
+  "review_point": "Reconsider only after a new independently planned mechanism/shape question;all unused prototype source is retired.",
+  "consumer_outcome": {
+    "pool_result": "bench/results/2026-10-15-pr6-recovery-audit/cpu-iq2-indices-pool-current.json",
+    "source": "341d0d94768a9c089c75ea44258e56d86b754435",
+    "performance_gate_passed": false,
+    "latency_geomeans": [
+      0.9291064114825683,
+      0.9798596420870778
+    ],
+    "decision": "Both full-pool stability gates fail;kernel-only gain permits no inference advancement."
+  }
+}

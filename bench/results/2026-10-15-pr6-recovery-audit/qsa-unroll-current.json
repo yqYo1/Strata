@@ -1,0 +1,2244 @@
+{
+  "schema": 1,
+  "stage": "closed_rejected",
+  "source_commit": "b072267fae67176df75137c396aa5cdb9926111e",
+  "recipe_commit": "de3f22da7",
+  "source_restore_commit": "b072267fae67176df75137c396aa5cdb9926111e",
+  "native_source": "6e40afc1beddd059ee518617f6c1efce1da14aca",
+  "plan": {
+    "question": "Does explicit full unrolling of the16 cached-Q fragment loads and16 dependent QK matrix steps improve the actual current ordered-exp implementation?",
+    "mechanism": "Current QSA device service and GRF128/spill12480 metadata are measured; changing GRF mode alone slowed6.7%. Hardware saturation remains unknown because counter setup is refused. This controlled compiler-sensitivity test targets dynamic fragment indexing/loop scheduling without changing requested memory/PCIe bytes or math. No claimed hot-spill,occupancy or integer/compute saturation.",
+    "arms": "Unmodified production ordered-exp; isolated namespace with identical body(control); same namespace form with only two clang unroll(full) hints(unroll). Dim256 means16 cached fragments. Default GRF policy,subgroup16,128 workitems,SLM shape,query/cache lifetime,ascending QK/softmax order,ordinary exp2,FP32 accumulation andBF16 boundaries stay fixed. Reversing namespace/hints recovers every original body byte.",
+    "provenance": "Main-authored overlay reuses own MIT GRF discriminator source b4beb8d53 and check a2fbf491f; no XeStrata implementation. Intel oneAPI GPU optimization guide2024.2 and experimental SYCL matrix extension supply contract/design context only. No new production dispatch,engine build or decode-source/configuration/1256slot placement change.",
+    "qualification": "Three traced/parameter-validated small numerical processes followed by original independent tensor oracle,exact ordered-output bits,guards,input immutability,alias/domain and physical262144 component cases in each arm. Normal ownership closure,no freshfault and actual compiled GRF/resource observations required. Inspect compiler IR for the two loop hints and remaining dynamic indexing when available; source hint alone does not prove changed codegen. Component tests do not qualify full-context model/session/RESTORE.",
+    "performance": "Only after all component gates:3independent clean processes,6rotated rounds,3arms,3artificial shapes(32768/8192/2051 gather;117488/8192/2051 gather andclustered),all162individual latencies. Each batch>=100us and>=1000timesminimum positive128-pair clock floor. Unroll/default ANDunroll/control geomeans<=.95,no shape>1.05,both117488patterns improve in everyprocess. Preserve original outcomes;no rule change or model trial after failed gate.",
+    "limits": "Timed complete wrapper includes admission,prefix preparation and checked drain. Synthetic locality is not production distribution; timing and allocation descriptors are not physical traffic or saturation. Even a passing component needs a separately committed long-input/agent/thinking-friendly-andweak-generation plan preserving exactdecodehandoff/configuration/placement and repeated speed before adoption.",
+    "retention": "Retain original13engine/fixture assets unchanged plus one immediate two-executable component generation. Keep source,recipe,all clean samples,correctness/fault evidence and compact decision. Retire consumed build/API logs,generated copies,objects and auxiliary executables after consumer closes;legacy provenance holds remain explicit."
+  },
+  "compiler": {
+    "path": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin/clang++",
+    "sha256": "1290881b4e12a5e002e5b0de0787f85328ee5fe19f253a54be1cdd97dc2f26eb"
+  },
+  "compiler_inputs": {
+    "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-qcache-unroll-v1/compiler-inputs.json",
+    "files": 8700,
+    "sha256": "5cdf1a647648111b26159b441cff6082c4b7acaab051222ba3db275ebd1f37a2",
+    "retired": true
+  },
+  "generated_sha256": {
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-qcache-unroll-v1/control.cpp": "fb4718b57cf7714531ccb278ea10a240f5490df8ea7389a1b67aef0093f7f6fd",
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-qcache-unroll-v1/unroll.cpp": "b50ed1812da24286d83696e2fcbb30a80089e3884d2f1b05c19b3918b5421565",
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-qcache-unroll-v1/qsa-unroll-variants.hpp": "8046a75ba9b41ca64226be945c0568c34b1ad9feeac02ce0c23d98e284bfca38",
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-qcache-unroll-v1/timing.cpp": "8fff7887e73b38233d5cac780358598077281ca363cfdc697ce1fcf6d5fe8ea3"
+  },
+  "binaries": {
+    "numerical": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-qcache-unroll-v1/numerical",
+      "sha256": "e41c7798d4b977aa44a24e927398f1a35c13c4c1fea3ba0d1b6da7b8ebfc5536",
+      "bytes": 1585424,
+      "retired": true
+    },
+    "timing": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-qcache-unroll-v1/timing",
+      "sha256": "1ff4808d00727c9a26a55a691b25e8ebf5092c9ba8d07444b47bbd4cfa60645e",
+      "bytes": 1568768,
+      "retired": true
+    }
+  },
+  "retained_engine": {
+    "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/strata",
+    "bytes": 22190000,
+    "sha256": "22182f1a5e62e5f4259ce49a75ae44afbd988166ec79324816e499ff37ef60e4"
+  },
+  "device_IR": {
+    "control": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-qcache-unroll-v1/control.ll",
+      "sha256": "ccd14473ef16bff1a244b77829b02dcb4bb70ecf6eea0e1901b0dbfc72c9e338",
+      "bytes": 72122,
+      "retired": true
+    },
+    "unroll": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-qcache-unroll-v1/unroll.ll",
+      "sha256": "48b5de34d9c8c6c84da6cff11a322367e50bcfed5c801b0fccbda7649fcfcd08",
+      "bytes": 72159,
+      "retired": true
+    }
+  },
+  "device_IR_analysis": {
+    "method": "O3 device-only LLVM IR;extract define-to-closing-brace function text,normalize only known namespace mangling/text and remove numeric metadata attachments. Compare resulting instruction text;preserve originalIR hashes. This ignores loop metadata deliberately and is not final IGC ISA equivalence.",
+    "arms": {
+      "control": {
+        "bytes": 72122,
+        "sha256": "ccd14473ef16bff1a244b77829b02dcb4bb70ecf6eea0e1901b0dbfc72c9e338",
+        "spir_kernel_count": 2,
+        "normalized_instruction_sha256": "ef30791a52f045b40c044d2ee1d001f259adef41f3d40623f243f293db8fb12d",
+        "signed_i64_divisions": 2,
+        "unsigned_i64_divisions": 2,
+        "full_unroll_metadata": false
+      },
+      "unroll": {
+        "bytes": 72159,
+        "sha256": "48b5de34d9c8c6c84da6cff11a322367e50bcfed5c801b0fccbda7649fcfcd08",
+        "spir_kernel_count": 2,
+        "normalized_instruction_sha256": "ef30791a52f045b40c044d2ee1d001f259adef41f3d40623f243f293db8fb12d",
+        "signed_i64_divisions": 2,
+        "unsigned_i64_divisions": 2,
+        "full_unroll_metadata": true
+      }
+    },
+    "normalized_function_instructions_equal": true,
+    "limits": "Both frontend modules retain division and matrix-loop representation. The loop hint survives as metadata in the candidate;actual JIT allocation/timing must decide. No hardware compute/PCIe/memory saturation claim."
+  },
+  "frozen_check_plans": {
+    "smoke": "af6a184b7",
+    "component": "b7806367c",
+    "resources": "d965e2b99",
+    "perf": "c965d516a"
+  },
+  "checks": [
+    {
+      "mode": "smoke",
+      "source_commit": "da76a18c77e0029f4bf2a6acadd4c56311533994",
+      "passed": true,
+      "complete": true,
+      "ownership_closed": true,
+      "fresh_faults": [],
+      "boot_unchanged": true,
+      "arms": [
+        {
+          "arm": "default",
+          "pid": 2638347,
+          "exit_code": 0,
+          "ownership_closed": true,
+          "case_count": 2,
+          "exact_prefix33_bits": true,
+          "physical262144_component_addressed": false,
+          "same_pid_validation_verified": true
+        },
+        {
+          "arm": "control",
+          "pid": 2638912,
+          "exit_code": 0,
+          "ownership_closed": true,
+          "case_count": 2,
+          "exact_prefix33_bits": true,
+          "physical262144_component_addressed": false,
+          "same_pid_validation_verified": true
+        },
+        {
+          "arm": "unroll",
+          "pid": 2639607,
+          "exit_code": 0,
+          "ownership_closed": true,
+          "case_count": 2,
+          "exact_prefix33_bits": true,
+          "physical262144_component_addressed": false,
+          "same_pid_validation_verified": true
+        }
+      ]
+    },
+    {
+      "mode": "component",
+      "source_commit": "8529b9cd10ed1fe50b31679ea51879e093e55285",
+      "passed": true,
+      "complete": true,
+      "ownership_closed": true,
+      "fresh_faults": [],
+      "boot_unchanged": true,
+      "arms": [
+        {
+          "arm": "default",
+          "pid": 2645495,
+          "exit_code": 0,
+          "ownership_closed": true,
+          "case_count": 11,
+          "exact_prefix33_bits": true,
+          "physical262144_component_addressed": true,
+          "same_pid_validation_verified": true
+        },
+        {
+          "arm": "control",
+          "pid": 2646126,
+          "exit_code": 0,
+          "ownership_closed": true,
+          "case_count": 11,
+          "exact_prefix33_bits": true,
+          "physical262144_component_addressed": true,
+          "same_pid_validation_verified": true
+        },
+        {
+          "arm": "unroll",
+          "pid": 2646875,
+          "exit_code": 0,
+          "ownership_closed": true,
+          "case_count": 11,
+          "exact_prefix33_bits": true,
+          "physical262144_component_addressed": true,
+          "same_pid_validation_verified": true
+        }
+      ]
+    },
+    {
+      "mode": "resources",
+      "source_commit": "09907aea19e82e47689278db01542f5b96ecf93c",
+      "passed": true,
+      "complete": true,
+      "ownership_closed": true,
+      "fresh_faults": [],
+      "boot_unchanged": true,
+      "arms": [
+        {
+          "arm": "all",
+          "pid": 2656985,
+          "exit_code": 0,
+          "ownership_closed": true,
+          "session_removed": true,
+          "same_pid_validation_verified": true,
+          "clock_floor_ns": 20
+        }
+      ],
+      "resources": {
+        "conserved_device_ns": 4036717,
+        "table_rows": 24,
+        "compute_calls": {
+          "0": 8,
+          "1": 7,
+          "2": 7
+        },
+        "properties": [
+          {
+            "arm": 0,
+            "compiled": "JIT",
+            "SIMD": 16,
+            "arguments": 18,
+            "raw_SLM": 32,
+            "private_memory_descriptor": 0,
+            "spill_memory_descriptor": 12480,
+            "GRF": 128
+          },
+          {
+            "arm": 1,
+            "compiled": "JIT",
+            "SIMD": 16,
+            "arguments": 18,
+            "raw_SLM": 32,
+            "private_memory_descriptor": 0,
+            "spill_memory_descriptor": 12480,
+            "GRF": 128
+          },
+          {
+            "arm": 2,
+            "compiled": "JIT",
+            "SIMD": 16,
+            "arguments": 18,
+            "raw_SLM": 32,
+            "private_memory_descriptor": 0,
+            "spill_memory_descriptor": 12480,
+            "GRF": 128
+          }
+        ],
+        "limits": "Allocation descriptors and summed service only;rawSLM units,actual spill traffic,occupancy,physical traffic and model/decode speed remain unmeasured."
+      }
+    },
+    {
+      "mode": "perf",
+      "source_commit": "0a398d2fa257f2e9f2be332d2d7451370e2f6d72",
+      "passed": true,
+      "complete": true,
+      "ownership_closed": true,
+      "fresh_faults": [],
+      "boot_unchanged": true,
+      "arms": [
+        {
+          "arm": "0",
+          "pid": 2663406,
+          "exit_code": 0,
+          "ownership_closed": true,
+          "session_removed": true,
+          "same_pid_validation_verified": "clean:observer removed",
+          "clock_floor_ns": 20
+        },
+        {
+          "arm": "1",
+          "pid": 2664499,
+          "exit_code": 0,
+          "ownership_closed": true,
+          "session_removed": true,
+          "same_pid_validation_verified": "clean:observer removed",
+          "clock_floor_ns": 20
+        },
+        {
+          "arm": "2",
+          "pid": 2665620,
+          "exit_code": 0,
+          "ownership_closed": true,
+          "session_removed": true,
+          "same_pid_validation_verified": "clean:observer removed",
+          "clock_floor_ns": 20
+        }
+      ],
+      "performance": {
+        "shapes": [
+          {
+            "cells": 32768,
+            "pattern": "gather",
+            "arms": [
+              {
+                "arm": 0,
+                "median_ms": 197.497367,
+                "sample_sd_ms": 0.36344118037430706,
+                "process_medians_ms": [
+                  197.497367,
+                  197.47458749999998,
+                  197.39836250000002
+                ]
+              },
+              {
+                "arm": 1,
+                "median_ms": 197.344197,
+                "sample_sd_ms": 0.3541609999509619,
+                "process_medians_ms": [
+                  197.25300199999998,
+                  197.4652655,
+                  197.390458
+                ]
+              },
+              {
+                "arm": 2,
+                "median_ms": 197.5427315,
+                "sample_sd_ms": 0.3739731350575492,
+                "process_medians_ms": [
+                  197.66716150000002,
+                  197.7787755,
+                  197.2710125
+                ]
+              }
+            ],
+            "ratios": [
+              1.0002296967331215,
+              1.001006031608824
+            ]
+          },
+          {
+            "cells": 117488,
+            "pattern": "gather",
+            "arms": [
+              {
+                "arm": 0,
+                "median_ms": 236.8055985,
+                "sample_sd_ms": 0.4092228493588193,
+                "process_medians_ms": [
+                  236.948132,
+                  236.7756325,
+                  236.738778
+                ]
+              },
+              {
+                "arm": 1,
+                "median_ms": 236.55575349999998,
+                "sample_sd_ms": 0.44556493123099505,
+                "process_medians_ms": [
+                  236.631596,
+                  236.307011,
+                  236.7029305
+                ]
+              },
+              {
+                "arm": 2,
+                "median_ms": 236.58034550000002,
+                "sample_sd_ms": 0.33228927984354445,
+                "process_medians_ms": [
+                  236.67837400000002,
+                  236.51960100000002,
+                  236.555062
+                ]
+              }
+            ],
+            "ratios": [
+              0.9990487851578391,
+              1.0001039585790503
+            ]
+          },
+          {
+            "cells": 117488,
+            "pattern": "clustered",
+            "arms": [
+              {
+                "arm": 0,
+                "median_ms": 140.2453445,
+                "sample_sd_ms": 0.12632602913761146,
+                "process_medians_ms": [
+                  140.237473,
+                  140.2322135,
+                  140.2453445
+                ]
+              },
+              {
+                "arm": 1,
+                "median_ms": 140.280691,
+                "sample_sd_ms": 0.12925807601206077,
+                "process_medians_ms": [
+                  140.2955675,
+                  140.382261,
+                  140.22693950000001
+                ]
+              },
+              {
+                "arm": 2,
+                "median_ms": 140.2895555,
+                "sample_sd_ms": 0.13043219091610503,
+                "process_medians_ms": [
+                  140.3446435,
+                  140.247007,
+                  140.27777500000002
+                ]
+              }
+            ],
+            "ratios": [
+              1.0003152404107076,
+              1.0000631911629236
+            ]
+          }
+        ],
+        "candidate_latency_geomeans_vs_default_and_control": [
+          0.9998644070454431,
+          1.0003909658206716
+        ],
+        "advance_to_model": false,
+        "decode_preservation_qualified": false,
+        "model_adoption_qualified": false,
+        "sample_columns": [
+          "process",
+          "cells",
+          "queries",
+          "cap",
+          "pattern",
+          "round",
+          "order",
+          "arm",
+          "milliseconds"
+        ],
+        "samples": [
+          [
+            0,
+            32768,
+            8192,
+            2051,
+            "gather",
+            0,
+            0,
+            0,
+            197.499942
+          ],
+          [
+            0,
+            32768,
+            8192,
+            2051,
+            "gather",
+            0,
+            1,
+            1,
+            197.785729
+          ],
+          [
+            0,
+            32768,
+            8192,
+            2051,
+            "gather",
+            0,
+            2,
+            2,
+            198.151618
+          ],
+          [
+            0,
+            32768,
+            8192,
+            2051,
+            "gather",
+            1,
+            0,
+            1,
+            196.803932
+          ],
+          [
+            0,
+            32768,
+            8192,
+            2051,
+            "gather",
+            1,
+            1,
+            2,
+            197.815716
+          ],
+          [
+            0,
+            32768,
+            8192,
+            2051,
+            "gather",
+            1,
+            2,
+            0,
+            197.75418
+          ],
+          [
+            0,
+            32768,
+            8192,
+            2051,
+            "gather",
+            2,
+            0,
+            2,
+            197.123403
+          ],
+          [
+            0,
+            32768,
+            8192,
+            2051,
+            "gather",
+            2,
+            1,
+            0,
+            197.494792
+          ],
+          [
+            0,
+            32768,
+            8192,
+            2051,
+            "gather",
+            2,
+            2,
+            1,
+            197.225385
+          ],
+          [
+            0,
+            32768,
+            8192,
+            2051,
+            "gather",
+            3,
+            0,
+            0,
+            197.00498
+          ],
+          [
+            0,
+            32768,
+            8192,
+            2051,
+            "gather",
+            3,
+            1,
+            1,
+            197.280619
+          ],
+          [
+            0,
+            32768,
+            8192,
+            2051,
+            "gather",
+            3,
+            2,
+            2,
+            196.924319
+          ],
+          [
+            0,
+            32768,
+            8192,
+            2051,
+            "gather",
+            4,
+            0,
+            1,
+            197.649102
+          ],
+          [
+            0,
+            32768,
+            8192,
+            2051,
+            "gather",
+            4,
+            1,
+            2,
+            197.600051
+          ],
+          [
+            0,
+            32768,
+            8192,
+            2051,
+            "gather",
+            4,
+            2,
+            0,
+            197.167817
+          ],
+          [
+            0,
+            32768,
+            8192,
+            2051,
+            "gather",
+            5,
+            0,
+            2,
+            197.734272
+          ],
+          [
+            0,
+            32768,
+            8192,
+            2051,
+            "gather",
+            5,
+            1,
+            0,
+            197.784798
+          ],
+          [
+            0,
+            32768,
+            8192,
+            2051,
+            "gather",
+            5,
+            2,
+            1,
+            196.985174
+          ],
+          [
+            0,
+            117488,
+            8192,
+            2051,
+            "gather",
+            0,
+            0,
+            0,
+            236.073174
+          ],
+          [
+            0,
+            117488,
+            8192,
+            2051,
+            "gather",
+            0,
+            1,
+            1,
+            236.844876
+          ],
+          [
+            0,
+            117488,
+            8192,
+            2051,
+            "gather",
+            0,
+            2,
+            2,
+            236.725242
+          ],
+          [
+            0,
+            117488,
+            8192,
+            2051,
+            "gather",
+            1,
+            0,
+            1,
+            237.245199
+          ],
+          [
+            0,
+            117488,
+            8192,
+            2051,
+            "gather",
+            1,
+            1,
+            2,
+            236.869042
+          ],
+          [
+            0,
+            117488,
+            8192,
+            2051,
+            "gather",
+            1,
+            2,
+            0,
+            236.952409
+          ],
+          [
+            0,
+            117488,
+            8192,
+            2051,
+            "gather",
+            2,
+            0,
+            2,
+            236.448571
+          ],
+          [
+            0,
+            117488,
+            8192,
+            2051,
+            "gather",
+            2,
+            1,
+            0,
+            237.033201
+          ],
+          [
+            0,
+            117488,
+            8192,
+            2051,
+            "gather",
+            2,
+            2,
+            1,
+            236.153917
+          ],
+          [
+            0,
+            117488,
+            8192,
+            2051,
+            "gather",
+            3,
+            0,
+            0,
+            237.186409
+          ],
+          [
+            0,
+            117488,
+            8192,
+            2051,
+            "gather",
+            3,
+            1,
+            1,
+            236.146644
+          ],
+          [
+            0,
+            117488,
+            8192,
+            2051,
+            "gather",
+            3,
+            2,
+            2,
+            236.349435
+          ],
+          [
+            0,
+            117488,
+            8192,
+            2051,
+            "gather",
+            4,
+            0,
+            1,
+            236.557807
+          ],
+          [
+            0,
+            117488,
+            8192,
+            2051,
+            "gather",
+            4,
+            1,
+            2,
+            236.733678
+          ],
+          [
+            0,
+            117488,
+            8192,
+            2051,
+            "gather",
+            4,
+            2,
+            0,
+            236.299051
+          ],
+          [
+            0,
+            117488,
+            8192,
+            2051,
+            "gather",
+            5,
+            0,
+            2,
+            236.631506
+          ],
+          [
+            0,
+            117488,
+            8192,
+            2051,
+            "gather",
+            5,
+            1,
+            0,
+            236.943855
+          ],
+          [
+            0,
+            117488,
+            8192,
+            2051,
+            "gather",
+            5,
+            2,
+            1,
+            236.705385
+          ],
+          [
+            0,
+            117488,
+            8192,
+            2051,
+            "clustered",
+            0,
+            0,
+            0,
+            140.128427
+          ],
+          [
+            0,
+            117488,
+            8192,
+            2051,
+            "clustered",
+            0,
+            1,
+            1,
+            140.293729
+          ],
+          [
+            0,
+            117488,
+            8192,
+            2051,
+            "clustered",
+            0,
+            2,
+            2,
+            140.372225
+          ],
+          [
+            0,
+            117488,
+            8192,
+            2051,
+            "clustered",
+            1,
+            0,
+            1,
+            140.235068
+          ],
+          [
+            0,
+            117488,
+            8192,
+            2051,
+            "clustered",
+            1,
+            1,
+            2,
+            140.502611
+          ],
+          [
+            0,
+            117488,
+            8192,
+            2051,
+            "clustered",
+            1,
+            2,
+            0,
+            140.389459
+          ],
+          [
+            0,
+            117488,
+            8192,
+            2051,
+            "clustered",
+            2,
+            0,
+            2,
+            140.317062
+          ],
+          [
+            0,
+            117488,
+            8192,
+            2051,
+            "clustered",
+            2,
+            1,
+            0,
+            140.263963
+          ],
+          [
+            0,
+            117488,
+            8192,
+            2051,
+            "clustered",
+            2,
+            2,
+            1,
+            140.297406
+          ],
+          [
+            0,
+            117488,
+            8192,
+            2051,
+            "clustered",
+            3,
+            0,
+            0,
+            140.456214
+          ],
+          [
+            0,
+            117488,
+            8192,
+            2051,
+            "clustered",
+            3,
+            1,
+            1,
+            139.990408
+          ],
+          [
+            0,
+            117488,
+            8192,
+            2051,
+            "clustered",
+            3,
+            2,
+            2,
+            140.468507
+          ],
+          [
+            0,
+            117488,
+            8192,
+            2051,
+            "clustered",
+            4,
+            0,
+            1,
+            140.516578
+          ],
+          [
+            0,
+            117488,
+            8192,
+            2051,
+            "clustered",
+            4,
+            1,
+            2,
+            140.262049
+          ],
+          [
+            0,
+            117488,
+            8192,
+            2051,
+            "clustered",
+            4,
+            2,
+            0,
+            140.142013
+          ],
+          [
+            0,
+            117488,
+            8192,
+            2051,
+            "clustered",
+            5,
+            0,
+            2,
+            140.236151
+          ],
+          [
+            0,
+            117488,
+            8192,
+            2051,
+            "clustered",
+            5,
+            1,
+            0,
+            140.210983
+          ],
+          [
+            0,
+            117488,
+            8192,
+            2051,
+            "clustered",
+            5,
+            2,
+            1,
+            140.345457
+          ],
+          [
+            1,
+            32768,
+            8192,
+            2051,
+            "gather",
+            0,
+            0,
+            1,
+            197.546839
+          ],
+          [
+            1,
+            32768,
+            8192,
+            2051,
+            "gather",
+            0,
+            1,
+            2,
+            197.742707
+          ],
+          [
+            1,
+            32768,
+            8192,
+            2051,
+            "gather",
+            0,
+            2,
+            0,
+            197.641196
+          ],
+          [
+            1,
+            32768,
+            8192,
+            2051,
+            "gather",
+            1,
+            0,
+            2,
+            197.988129
+          ],
+          [
+            1,
+            32768,
+            8192,
+            2051,
+            "gather",
+            1,
+            1,
+            0,
+            197.265249
+          ],
+          [
+            1,
+            32768,
+            8192,
+            2051,
+            "gather",
+            1,
+            2,
+            1,
+            197.146706
+          ],
+          [
+            1,
+            32768,
+            8192,
+            2051,
+            "gather",
+            2,
+            0,
+            0,
+            196.720834
+          ],
+          [
+            1,
+            32768,
+            8192,
+            2051,
+            "gather",
+            2,
+            1,
+            1,
+            197.383692
+          ],
+          [
+            1,
+            32768,
+            8192,
+            2051,
+            "gather",
+            2,
+            2,
+            2,
+            197.146455
+          ],
+          [
+            1,
+            32768,
+            8192,
+            2051,
+            "gather",
+            3,
+            0,
+            1,
+            197.796128
+          ],
+          [
+            1,
+            32768,
+            8192,
+            2051,
+            "gather",
+            3,
+            1,
+            2,
+            197.814844
+          ],
+          [
+            1,
+            32768,
+            8192,
+            2051,
+            "gather",
+            3,
+            2,
+            0,
+            197.880807
+          ],
+          [
+            1,
+            32768,
+            8192,
+            2051,
+            "gather",
+            4,
+            0,
+            2,
+            197.926754
+          ],
+          [
+            1,
+            32768,
+            8192,
+            2051,
+            "gather",
+            4,
+            1,
+            0,
+            197.307979
+          ],
+          [
+            1,
+            32768,
+            8192,
+            2051,
+            "gather",
+            4,
+            2,
+            1,
+            198.139774
+          ],
+          [
+            1,
+            32768,
+            8192,
+            2051,
+            "gather",
+            5,
+            0,
+            0,
+            197.855049
+          ],
+          [
+            1,
+            32768,
+            8192,
+            2051,
+            "gather",
+            5,
+            1,
+            1,
+            196.876047
+          ],
+          [
+            1,
+            32768,
+            8192,
+            2051,
+            "gather",
+            5,
+            2,
+            2,
+            197.00509
+          ],
+          [
+            1,
+            117488,
+            8192,
+            2051,
+            "gather",
+            0,
+            0,
+            1,
+            236.5537
+          ],
+          [
+            1,
+            117488,
+            8192,
+            2051,
+            "gather",
+            0,
+            1,
+            2,
+            236.75044
+          ],
+          [
+            1,
+            117488,
+            8192,
+            2051,
+            "gather",
+            0,
+            2,
+            0,
+            237.368943
+          ],
+          [
+            1,
+            117488,
+            8192,
+            2051,
+            "gather",
+            1,
+            0,
+            2,
+            236.510017
+          ],
+          [
+            1,
+            117488,
+            8192,
+            2051,
+            "gather",
+            1,
+            1,
+            0,
+            236.502964
+          ],
+          [
+            1,
+            117488,
+            8192,
+            2051,
+            "gather",
+            1,
+            2,
+            1,
+            236.167052
+          ],
+          [
+            1,
+            117488,
+            8192,
+            2051,
+            "gather",
+            2,
+            0,
+            0,
+            236.329308
+          ],
+          [
+            1,
+            117488,
+            8192,
+            2051,
+            "gather",
+            2,
+            1,
+            1,
+            235.908465
+          ],
+          [
+            1,
+            117488,
+            8192,
+            2051,
+            "gather",
+            2,
+            2,
+            2,
+            236.016869
+          ],
+          [
+            1,
+            117488,
+            8192,
+            2051,
+            "gather",
+            3,
+            0,
+            1,
+            236.897046
+          ],
+          [
+            1,
+            117488,
+            8192,
+            2051,
+            "gather",
+            3,
+            1,
+            2,
+            236.368071
+          ],
+          [
+            1,
+            117488,
+            8192,
+            2051,
+            "gather",
+            3,
+            2,
+            0,
+            237.255179
+          ],
+          [
+            1,
+            117488,
+            8192,
+            2051,
+            "gather",
+            4,
+            0,
+            2,
+            236.66527
+          ],
+          [
+            1,
+            117488,
+            8192,
+            2051,
+            "gather",
+            4,
+            1,
+            0,
+            237.048301
+          ],
+          [
+            1,
+            117488,
+            8192,
+            2051,
+            "gather",
+            4,
+            2,
+            1,
+            236.44697
+          ],
+          [
+            1,
+            117488,
+            8192,
+            2051,
+            "gather",
+            5,
+            0,
+            0,
+            236.252254
+          ],
+          [
+            1,
+            117488,
+            8192,
+            2051,
+            "gather",
+            5,
+            1,
+            1,
+            235.890844
+          ],
+          [
+            1,
+            117488,
+            8192,
+            2051,
+            "gather",
+            5,
+            2,
+            2,
+            236.529185
+          ],
+          [
+            1,
+            117488,
+            8192,
+            2051,
+            "clustered",
+            0,
+            0,
+            1,
+            140.364387
+          ],
+          [
+            1,
+            117488,
+            8192,
+            2051,
+            "clustered",
+            0,
+            1,
+            2,
+            140.351523
+          ],
+          [
+            1,
+            117488,
+            8192,
+            2051,
+            "clustered",
+            0,
+            2,
+            0,
+            140.177636
+          ],
+          [
+            1,
+            117488,
+            8192,
+            2051,
+            "clustered",
+            1,
+            0,
+            2,
+            140.210268
+          ],
+          [
+            1,
+            117488,
+            8192,
+            2051,
+            "clustered",
+            1,
+            1,
+            0,
+            140.334732
+          ],
+          [
+            1,
+            117488,
+            8192,
+            2051,
+            "clustered",
+            1,
+            2,
+            1,
+            140.417577
+          ],
+          [
+            1,
+            117488,
+            8192,
+            2051,
+            "clustered",
+            2,
+            0,
+            0,
+            140.295678
+          ],
+          [
+            1,
+            117488,
+            8192,
+            2051,
+            "clustered",
+            2,
+            1,
+            1,
+            140.400135
+          ],
+          [
+            1,
+            117488,
+            8192,
+            2051,
+            "clustered",
+            2,
+            2,
+            2,
+            140.2326
+          ],
+          [
+            1,
+            117488,
+            8192,
+            2051,
+            "clustered",
+            3,
+            0,
+            1,
+            140.132771
+          ],
+          [
+            1,
+            117488,
+            8192,
+            2051,
+            "clustered",
+            3,
+            1,
+            2,
+            140.181353
+          ],
+          [
+            1,
+            117488,
+            8192,
+            2051,
+            "clustered",
+            3,
+            2,
+            0,
+            140.286791
+          ],
+          [
+            1,
+            117488,
+            8192,
+            2051,
+            "clustered",
+            4,
+            0,
+            2,
+            140.373885
+          ],
+          [
+            1,
+            117488,
+            8192,
+            2051,
+            "clustered",
+            4,
+            1,
+            0,
+            140.049555
+          ],
+          [
+            1,
+            117488,
+            8192,
+            2051,
+            "clustered",
+            4,
+            2,
+            1,
+            140.203956
+          ],
+          [
+            1,
+            117488,
+            8192,
+            2051,
+            "clustered",
+            5,
+            0,
+            0,
+            139.97265
+          ],
+          [
+            1,
+            117488,
+            8192,
+            2051,
+            "clustered",
+            5,
+            1,
+            1,
+            140.408852
+          ],
+          [
+            1,
+            117488,
+            8192,
+            2051,
+            "clustered",
+            5,
+            2,
+            2,
+            140.261414
+          ],
+          [
+            2,
+            32768,
+            8192,
+            2051,
+            "gather",
+            0,
+            0,
+            2,
+            197.300473
+          ],
+          [
+            2,
+            32768,
+            8192,
+            2051,
+            "gather",
+            0,
+            1,
+            0,
+            197.528693
+          ],
+          [
+            2,
+            32768,
+            8192,
+            2051,
+            "gather",
+            0,
+            2,
+            1,
+            197.476214
+          ],
+          [
+            2,
+            32768,
+            8192,
+            2051,
+            "gather",
+            1,
+            0,
+            0,
+            197.268032
+          ],
+          [
+            2,
+            32768,
+            8192,
+            2051,
+            "gather",
+            1,
+            1,
+            1,
+            197.483258
+          ],
+          [
+            2,
+            32768,
+            8192,
+            2051,
+            "gather",
+            1,
+            2,
+            2,
+            197.241552
+          ],
+          [
+            2,
+            32768,
+            8192,
+            2051,
+            "gather",
+            2,
+            0,
+            1,
+            197.038651
+          ],
+          [
+            2,
+            32768,
+            8192,
+            2051,
+            "gather",
+            2,
+            1,
+            2,
+            197.730272
+          ],
+          [
+            2,
+            32768,
+            8192,
+            2051,
+            "gather",
+            2,
+            2,
+            0,
+            196.798239
+          ],
+          [
+            2,
+            32768,
+            8192,
+            2051,
+            "gather",
+            3,
+            0,
+            2,
+            197.241042
+          ],
+          [
+            2,
+            32768,
+            8192,
+            2051,
+            "gather",
+            3,
+            1,
+            0,
+            197.131416
+          ],
+          [
+            2,
+            32768,
+            8192,
+            2051,
+            "gather",
+            3,
+            2,
+            1,
+            197.597333
+          ],
+          [
+            2,
+            32768,
+            8192,
+            2051,
+            "gather",
+            4,
+            0,
+            0,
+            197.911284
+          ],
+          [
+            2,
+            32768,
+            8192,
+            2051,
+            "gather",
+            4,
+            1,
+            1,
+            197.304702
+          ],
+          [
+            2,
+            32768,
+            8192,
+            2051,
+            "gather",
+            4,
+            2,
+            2,
+            197.485412
+          ],
+          [
+            2,
+            32768,
+            8192,
+            2051,
+            "gather",
+            5,
+            0,
+            1,
+            197.061434
+          ],
+          [
+            2,
+            32768,
+            8192,
+            2051,
+            "gather",
+            5,
+            1,
+            2,
+            197.125285
+          ],
+          [
+            2,
+            32768,
+            8192,
+            2051,
+            "gather",
+            5,
+            2,
+            0,
+            197.596321
+          ],
+          [
+            2,
+            117488,
+            8192,
+            2051,
+            "gather",
+            0,
+            0,
+            2,
+            236.476814
+          ],
+          [
+            2,
+            117488,
+            8192,
+            2051,
+            "gather",
+            0,
+            1,
+            0,
+            236.020666
+          ],
+          [
+            2,
+            117488,
+            8192,
+            2051,
+            "gather",
+            0,
+            2,
+            1,
+            236.376255
+          ],
+          [
+            2,
+            117488,
+            8192,
+            2051,
+            "gather",
+            1,
+            0,
+            0,
+            236.781568
+          ],
+          [
+            2,
+            117488,
+            8192,
+            2051,
+            "gather",
+            1,
+            1,
+            1,
+            236.826232
+          ],
+          [
+            2,
+            117488,
+            8192,
+            2051,
+            "gather",
+            1,
+            2,
+            2,
+            236.214712
+          ],
+          [
+            2,
+            117488,
+            8192,
+            2051,
+            "gather",
+            2,
+            0,
+            1,
+            236.44247
+          ],
+          [
+            2,
+            117488,
+            8192,
+            2051,
+            "gather",
+            2,
+            1,
+            2,
+            237.395243
+          ],
+          [
+            2,
+            117488,
+            8192,
+            2051,
+            "gather",
+            2,
+            2,
+            0,
+            236.829629
+          ],
+          [
+            2,
+            117488,
+            8192,
+            2051,
+            "gather",
+            3,
+            0,
+            2,
+            237.150813
+          ],
+          [
+            2,
+            117488,
+            8192,
+            2051,
+            "gather",
+            3,
+            1,
+            0,
+            236.965415
+          ],
+          [
+            2,
+            117488,
+            8192,
+            2051,
+            "gather",
+            3,
+            2,
+            1,
+            237.573629
+          ],
+          [
+            2,
+            117488,
+            8192,
+            2051,
+            "gather",
+            4,
+            0,
+            0,
+            236.538993
+          ],
+          [
+            2,
+            117488,
+            8192,
+            2051,
+            "gather",
+            4,
+            1,
+            1,
+            236.972879
+          ],
+          [
+            2,
+            117488,
+            8192,
+            2051,
+            "gather",
+            4,
+            2,
+            2,
+            236.211596
+          ],
+          [
+            2,
+            117488,
+            8192,
+            2051,
+            "gather",
+            5,
+            0,
+            1,
+            236.579629
+          ],
+          [
+            2,
+            117488,
+            8192,
+            2051,
+            "gather",
+            5,
+            1,
+            2,
+            236.63331
+          ],
+          [
+            2,
+            117488,
+            8192,
+            2051,
+            "gather",
+            5,
+            2,
+            0,
+            236.695988
+          ],
+          [
+            2,
+            117488,
+            8192,
+            2051,
+            "clustered",
+            0,
+            0,
+            2,
+            140.376486
+          ],
+          [
+            2,
+            117488,
+            8192,
+            2051,
+            "clustered",
+            0,
+            1,
+            0,
+            140.308698
+          ],
+          [
+            2,
+            117488,
+            8192,
+            2051,
+            "clustered",
+            0,
+            2,
+            1,
+            140.212667
+          ],
+          [
+            2,
+            117488,
+            8192,
+            2051,
+            "clustered",
+            1,
+            0,
+            0,
+            140.207869
+          ],
+          [
+            2,
+            117488,
+            8192,
+            2051,
+            "clustered",
+            1,
+            1,
+            1,
+            140.082172
+          ],
+          [
+            2,
+            117488,
+            8192,
+            2051,
+            "clustered",
+            1,
+            2,
+            2,
+            140.504045
+          ],
+          [
+            2,
+            117488,
+            8192,
+            2051,
+            "clustered",
+            2,
+            0,
+            1,
+            140.276408
+          ],
+          [
+            2,
+            117488,
+            8192,
+            2051,
+            "clustered",
+            2,
+            1,
+            2,
+            140.430358
+          ],
+          [
+            2,
+            117488,
+            8192,
+            2051,
+            "clustered",
+            2,
+            2,
+            0,
+            140.036136
+          ],
+          [
+            2,
+            117488,
+            8192,
+            2051,
+            "clustered",
+            3,
+            0,
+            2,
+            140.179064
+          ],
+          [
+            2,
+            117488,
+            8192,
+            2051,
+            "clustered",
+            3,
+            1,
+            0,
+            140.331792
+          ],
+          [
+            2,
+            117488,
+            8192,
+            2051,
+            "clustered",
+            3,
+            2,
+            1,
+            140.241212
+          ],
+          [
+            2,
+            117488,
+            8192,
+            2051,
+            "clustered",
+            4,
+            0,
+            0,
+            140.254216
+          ],
+          [
+            2,
+            117488,
+            8192,
+            2051,
+            "clustered",
+            4,
+            1,
+            1,
+            140.185617
+          ],
+          [
+            2,
+            117488,
+            8192,
+            2051,
+            "clustered",
+            4,
+            2,
+            2,
+            140.026698
+          ],
+          [
+            2,
+            117488,
+            8192,
+            2051,
+            "clustered",
+            5,
+            0,
+            1,
+            140.284974
+          ],
+          [
+            2,
+            117488,
+            8192,
+            2051,
+            "clustered",
+            5,
+            1,
+            2,
+            140.162865
+          ],
+          [
+            2,
+            117488,
+            8192,
+            2051,
+            "clustered",
+            5,
+            2,
+            0,
+            140.236473
+          ]
+        ]
+      }
+    }
+  ],
+  "context_scope": "Independent tensor/bounds/full262144 addressing components usePage16;timingPage16 artificial patterns,8192queries,cap2051. Production QSA usesPage4. These fixtures do not establish model physical-capacity/session/RESTORE,production locality,decode handoff or task quality.",
+  "environment": "Pinned shared tools/sycl/measurement_environment.json and qualified current runtime delta in decode-query-profile-component-current.json;per-process exact immutable environment/commands in frozen check-plan commits. Retain original safety settings;metrics disabled. All clean timing observers removed separately from traced/validated checks.",
+  "passed": true,
+  "complete": true,
+  "active": false,
+  "ownership_closed": true,
+  "GPU_executed": true,
+  "advance_to_model": false,
+  "model_adoption_qualified": false,
+  "inference_unchanged": true,
+  "decision": "Reject explicit two-loop full-unroll hints for current QSA. Geomean latency vsproduction0.9998644070 andvsnamespacecontrol1.0003909658;prospective0.95 andperprocessrules fail. Numerical/resource execution passed but no modeltrial or inferenceintegration. Preserve originalselected6e40decode implementation/configuration/1256slots.",
+  "next_action": "After source/recipe recovery and artifact retirement,next bounded prefill candidate is validatedPage4 logical address specialization,with generic fallback. Before testing,freeze proof ofnegative/overflow/page-table/missing/tail semantics and extend the Page16 fixture to genuinely exercisePage4 including final262144slots. No32bit narrowing or final-ISA/saturation claim inferred from this experiment.",
+  "retention": "Keep all162individual clean samples once plus compact numerical/fault/resource/IR decisions. Closed logs,IR,generatedsourcecopies,objects,binaries andunused experimenthelpers retireafter source/recipe verification. Original13engine artifacts andlegacy provenance/lifecycle holds unchanged.",
+  "retirement": {
+    "stage": "closed",
+    "source_recovered_from_commit": "b072267fae67176df75137c396aa5cdb9926111e",
+    "recipe_recovered_from_commit": "de3f22da7",
+    "pushed_source_ref": "be1fdb41fca1037b7eee873defe47b2fe2726e98",
+    "verified_project_inputs": 186,
+    "verified_compiler_dependencies": 8700,
+    "original_recipe_equal": true,
+    "exact_final_binaries_verified": 2,
+    "manifest": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-qcache-unroll-v1-retirement-20261023.jsonl",
+      "sha256": "85b9e96e8821adc8791466c8dd57b3cf853f84021af9f8efe40775069cafce73",
+      "files": 83,
+      "bytes": 9877721
+    },
+    "selected_generation": "Original6e40 engine+12same-buildfixtures;noenginegenerationbuilt/adopted.",
+    "next_action": "Closed and retired. Continue independently authoredPage4logical-address specialization/genericfallback with a newly committed plan exercisingPage4full262144 component boundaries. Keep exactselected6e40decode/configuration/1256slots;legacyholds remain explicit elsewhere.",
+    "deleted_files": 83,
+    "deleted_bytes": 9877721,
+    "root_absent": true,
+    "selected_original_artifacts_before_after_verified": 13,
+    "unused_probe_sources_retired": 4
+  }
+}

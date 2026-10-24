@@ -1,0 +1,371 @@
+{
+  "status": "closed_attribution_not_speed_or_adoption",
+  "question": "Locate static spill/fill code and source/loop live-state differences in the exact reconstructed generic/control/Page4 shapes. Not a speed trial or saturation proof.",
+  "selected_native_engine": "6e40afc1beddd059ee518617f6c1efce1da14aca",
+  "engine_or_decode_changed": false,
+  "source_and_recipe": {
+    "native_source_commit": "54946de15df53700936ea126c9f056cc5ffebb3f",
+    "build_plan_commit": "7ede8328c",
+    "build_result_commit": "89a864b25",
+    "smoke_plan_commit": "813b3048b",
+    "smoke_result_commit": "baea72549",
+    "capture_plan_commit": "1c513b0e2",
+    "original_capture_commit": "6ab472964",
+    "static_analysis_plan_commit": "88759ebd5",
+    "full_final_result_commit": "02901e45d",
+    "historical_generator": {
+      "commit": "760d22dc3178903cdeb0316d349bce06c09a0ffc",
+      "plan_commit": "1ebecb46a",
+      "path": "tools/sycl/qsa_page4_sources.py"
+    },
+    "compiler": {
+      "path": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin/clang++",
+      "sha256": "1290881b4e12a5e002e5b0de0787f85328ee5fe19f253a54be1cdd97dc2f26eb"
+    },
+    "environment_reference": "tools/sycl/measurement_environment.json",
+    "IGC": "2.41.5 / f05f218e6f0b888823c5678e1f64e91e597ea2dc"
+  },
+  "qualification": {
+    "build_commands": 9,
+    "smoke_and_capture_passed": true,
+    "each_exact_bit_samples": 18,
+    "each_candidate_routes": {
+      "fast": 7,
+      "generic": 0
+    },
+    "compute_calls": {
+      "0": 8,
+      "1": 7,
+      "2": 7
+    },
+    "GRF": 128,
+    "SIMD": 16,
+    "dynamic_local_bytes": 20032,
+    "spill_allocation": [
+      12480,
+      12480,
+      22208
+    ],
+    "scratch_single_space_bytes": [
+      16384,
+      16384,
+      32768
+    ],
+    "closed_owned_commands": 12,
+    "fresh_faults": [],
+    "speed_qualified": false,
+    "model_adoption_qualified": false
+  },
+  "static_analysis": {
+    "analyzer_commit": "88759ebd56c9b43e854b1a796c3514da38c08d1c",
+    "analyzer_sha256": "91a67a7ddc46e6ad724a39a1bea59940fc9793a47ffbd293b2e912215eda62bb",
+    "arms": [
+      {
+        "arm": 0,
+        "asm_sha256": "4c06b4e70c5128b531c99d3ff74ca65f7246a82544154891c217c020a0ba8a19",
+        "compiler_headers": {
+          "instCount": 4906,
+          "spill size": 12480,
+          "spill GRF est. ref count": 1526,
+          "spill flag store": 28,
+          "spill flag load": 36
+        },
+        "spilled_declarations": 215,
+        "declaration_types": {
+          "d": 23,
+          "ud": 16,
+          "uw": 4,
+          "w": 172
+        },
+        "llvm_blocks": 457,
+        "reachable_blocks": 457,
+        "natural_loop_headers": 5,
+        "selected_loop": {
+          "header": "840",
+          "phi": "%842",
+          "phi_line": 1034,
+          "update_line": 4114,
+          "update_id": 3799,
+          "step": 32,
+          "fp32_accumulator_phis": 4
+        },
+        "selected_loop_blocks": 63,
+        "llvm_origin_scratch_instructions": {
+          "spill": {
+            "total": 19,
+            "regions": {
+              "inside": 2,
+              "outside": 15,
+              "unmapped": 2
+            }
+          },
+          "fill": {
+            "total": 22,
+            "regions": {
+              "inside": 10,
+              "outside": 7,
+              "unmapped": 5
+            }
+          }
+        },
+        "native_cfg": {
+          "blocks": 339,
+          "reachable_blocks": 339,
+          "loop_header": "B027",
+          "loop_blocks": 47,
+          "update_block": "B073",
+          "update_line": 7389,
+          "annotated_scratch_instructions": {
+            "spill": {
+              "total": 19,
+              "regions": {
+                "inside": 2,
+                "outside": 17
+              }
+            },
+            "fill": {
+              "total": 22,
+              "regions": {
+                "inside": 13,
+                "outside": 9
+              }
+            }
+          }
+        }
+      },
+      {
+        "arm": 1,
+        "asm_sha256": "13c5ad7ca1c79cd1c154d3b19a59e683e6d60911b06d1be983c5660b79e38ff1",
+        "compiler_headers": {
+          "instCount": 4906,
+          "spill size": 12480,
+          "spill GRF est. ref count": 1526,
+          "spill flag store": 28,
+          "spill flag load": 36
+        },
+        "spilled_declarations": 215,
+        "declaration_types": {
+          "d": 23,
+          "ud": 16,
+          "uw": 4,
+          "w": 172
+        },
+        "llvm_blocks": 457,
+        "reachable_blocks": 457,
+        "natural_loop_headers": 5,
+        "selected_loop": {
+          "header": "840",
+          "phi": "%842",
+          "phi_line": 1034,
+          "update_line": 4114,
+          "update_id": 3799,
+          "step": 32,
+          "fp32_accumulator_phis": 4
+        },
+        "selected_loop_blocks": 63,
+        "llvm_origin_scratch_instructions": {
+          "spill": {
+            "total": 19,
+            "regions": {
+              "inside": 2,
+              "outside": 15,
+              "unmapped": 2
+            }
+          },
+          "fill": {
+            "total": 22,
+            "regions": {
+              "inside": 10,
+              "outside": 7,
+              "unmapped": 5
+            }
+          }
+        },
+        "native_cfg": {
+          "blocks": 339,
+          "reachable_blocks": 339,
+          "loop_header": "B027",
+          "loop_blocks": 47,
+          "update_block": "B073",
+          "update_line": 7389,
+          "annotated_scratch_instructions": {
+            "spill": {
+              "total": 19,
+              "regions": {
+                "inside": 2,
+                "outside": 17
+              }
+            },
+            "fill": {
+              "total": 22,
+              "regions": {
+                "inside": 13,
+                "outside": 9
+              }
+            }
+          }
+        }
+      },
+      {
+        "arm": 2,
+        "asm_sha256": "6ee560d4b29ab3e0e8cee1fe3a1ae4a00d6210824e5c0d628f1330d421b807c6",
+        "compiler_headers": {
+          "instCount": 4839,
+          "spill size": 22208,
+          "spill GRF est. ref count": 2731,
+          "spill flag store": 25,
+          "spill flag load": 33
+        },
+        "spilled_declarations": 369,
+        "declaration_types": {
+          "b": 1,
+          "d": 24,
+          "ub": 1,
+          "ud": 17,
+          "uw": 7,
+          "w": 319
+        },
+        "llvm_blocks": 445,
+        "reachable_blocks": 445,
+        "natural_loop_headers": 5,
+        "selected_loop": {
+          "header": "816",
+          "phi": "%818",
+          "phi_line": 1007,
+          "update_line": 3944,
+          "update_id": 3677,
+          "step": 32,
+          "fp32_accumulator_phis": 4
+        },
+        "selected_loop_blocks": 51,
+        "llvm_origin_scratch_instructions": {
+          "spill": {
+            "total": 24,
+            "regions": {
+              "inside": 2,
+              "outside": 20,
+              "unmapped": 2
+            }
+          },
+          "fill": {
+            "total": 30,
+            "regions": {
+              "inside": 13,
+              "outside": 12,
+              "unmapped": 5
+            }
+          }
+        },
+        "native_cfg": {
+          "blocks": 329,
+          "reachable_blocks": 329,
+          "loop_header": "B027",
+          "loop_blocks": 37,
+          "update_block": "B063",
+          "update_line": 7466,
+          "annotated_scratch_instructions": {
+            "spill": {
+              "total": 24,
+              "regions": {
+                "inside": 2,
+                "outside": 22
+              }
+            },
+            "fill": {
+              "total": 30,
+              "regions": {
+                "inside": 16,
+                "outside": 14
+              }
+            }
+          }
+        }
+      }
+    ],
+    "default_control_dat_identical": false,
+    "limits": "Native CFG membership uses compiler-emitted BNNN predecessor/successor metadata and the selected-loop i64+32 backedge; LLVM-origin counts are separate. Neither implies every iteration/lane executes a static instruction. Shared visa IDs are not unique source-value provenance. rf=r spilled declarations include aliases; declaration types do not identify named tensors. Compiler estimates/flag counters are not observed traffic. No occupancy, causal attribution, speed or loaded-machine-code-equivalence claim.",
+    "source_discriminator": {
+      "observation": "All3 native CFGs qualify the same B027 outer selected-cell loop. Original/control have2spill+13fill native instructions inside,Page4 has2spill+16fill. The3additional Page4 fills inB042/B044/B050 restore flag words before jumps: LLVMvisa1110/2555/2676 branch on b2s1366/b2s1358/b2s1368, respectively. Definitions compare hardware-localThreadId-derived values against4/16/8. This does not attribute all added allocation to those flags or prove dynamic cost.",
+      "evidence": {
+        "page4_asm_lines": [
+          5471,
+          6480,
+          6641
+        ],
+        "page4_llvm_branch_lines": [
+          1251,
+          2713,
+          2887
+        ],
+        "page4_llvm_condition_lines": [
+          263,
+          51,
+          902
+        ],
+        "instruction_effect": "scratch load;move word into flag register;conditional jump"
+      },
+      "decision": "Stop extending this static attribution. Reject Page4specialization as before. Test fixed two-head iteration on unchanged generic production addressing; retain necessary subgroup<4 QK guard and all original math/order/barriers."
+    }
+  },
+  "research_review": {
+    "report_sha256": "af78621424cbd8f28b5cd6455d5c25bac2340293edb2e1d63beee8afdda5b6dc",
+    "review_model": "native gpt-6-luna max",
+    "scope": "Matched selected12hashes and static/dynamic limits; no named tensor-to-spill attribution. Main separately resolved native-loop placement and threeflagrestores. Consumedreport/transactionsretired; nextcandidate hasnewaudit."
+  },
+  "next_candidate": {
+    "status": "source_constructor_prepared_not_built",
+    "generator": "tools/sycl/qsa_fixed_heads_sources.py",
+    "scope": "Standalone generic-page prefill component only; no engine/decode source change.",
+    "mechanism": "WG128/requiredSG16 gives8subgroups; both padded-head loops own exactly subgroup andsubgroup+8. Replace variable-bound head<16/+8 loops with exactly2iterations, retaining BF16rounding,orderedFP32softmax,real/paddedhead checks,64bitpaging,barriersandQKsubgroup<4. This removes redundant bound expressions and tests a codegen/flag-lifetime mechanism,not an established saturation bottleneck.",
+    "reference": "Exact6e40native source plus Main-authored760d variable-page oracle correction and rotated3-arm fixture; noXeStrata implementation.",
+    "future_gates": "Main freezes generatedbytes/native recipe before building, then qualifiedtraced smallcheck,numerical/tensor/guard/bounds/tails Page1/4/7/16 includingphysical262144,actualexecutednames/routecounts and3independent cleanprocesses with162rotatedsamples,eachbatch>=.1ms and>=1000timerfloor. Prospective componentlatencyGM<=.95 vsproduction andnamespacecontrol,andallprocessratios<1 beforemodeltrial. Preserve decodeimplementation/config1256slots/handoff and repeateddecode performance;anyimpactisseparationdefect. No modeladoption fromcomponentpass.",
+    "next_action": "Generate five exact inputs from committed constructor into one fresh external comparison root; commit their hashes and finite build/qualification/speed plan before execution. Retire completedcodegen auxiliarygeneration first."
+  },
+  "retirement": {
+    "complete": true,
+    "manifest": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-codegen-allocation-v1-retirement-20261023.jsonl",
+    "manifest_sha256": "7f54984c9cc0926e7c2501e4e924d27d9164df56c677a5793e185028e909a460",
+    "files": 256,
+    "bytes": 69720631,
+    "raw_dump_files": 200,
+    "raw_dump_bytes": 64009118,
+    "original_source_recipe_recovery": {
+      "remote_feature": "02901e45dfbe87022986734fda6541282f2b991e",
+      "source_commit": "54946de15df53700936ea126c9f056cc5ffebb3f",
+      "original_plan": "7ede8328c",
+      "original_build_result": "89a864b25",
+      "original_capture": "6ab472964",
+      "project_input_blobs_recovered": 199,
+      "generated_bytes_recovered": 4,
+      "sdk_inputs_verified": 8700,
+      "compile_link_commands": 9,
+      "normal_closed_commands": 12,
+      "selected_assets_verified": 13,
+      "consumer": "Closed static attribution and native review; nextfixedheadconstructor uses only committedGit source and its separate5sourcefiles.",
+      "cleanup_ready": true,
+      "sdk_parent": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/unitrace-warmed-graph-window-v1/compiler-inputs.json",
+        "sha256": "436cedc9dbd41810cd882e9040a129e6d8b7dbebb98806b00c4f2950b1dc1705",
+        "files": 8697
+      },
+      "additional_link_inputs": [
+        {
+          "path": "/usr/lib/gcc/x86_64-linux-gnu/13/crtbeginS.o",
+          "sha256": "667ff5f1edc931d44d1f2bb44d313907aa274bcc207c0beff71a398335f0d29f"
+        },
+        {
+          "path": "/usr/lib/gcc/x86_64-linux-gnu/13/crtendS.o",
+          "sha256": "9c8b2caad195193301ef072895dc89bea1d23371d4c19accd821debe27773063"
+        },
+        {
+          "path": "/usr/lib/gcc/x86_64-linux-gnu/13/libgcc_s.so",
+          "sha256": "69a56a9993b7729b29b274e65016031c81f2397f176ed5ad44d59bd50425e0bd"
+        }
+      ]
+    },
+    "root_absent": true,
+    "selected_13_assets_match_before_after": true,
+    "next_comparison_5_sources_unchanged": true,
+    "legacy_holds": "Separate actual legacy native-product/provenance and sixolder Orca lifecycle holds are unchanged; see native-gdn-engine-build.json/research-index.json. This cleanup doesnot clear them."
+  }
+}

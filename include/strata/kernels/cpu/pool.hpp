@@ -29,6 +29,7 @@
 
 #include "strata/kernels/cpu/expert.hpp"
 #include "strata/kernels/cpu/native_expert.hpp"
+#include "strata/kernels/cpu/service_profile.hpp"
 
 #include <atomic>
 #include <cstdio>
@@ -133,6 +134,14 @@ public:
     /// is on" is only true if the engine says which adaptation it took.
     bool host_works() const { return host_works_; }
 
+#ifdef STRATA_CPU_SERVICE_PROFILE
+    // Generation thread only, outside its decode clock. Native batch retirement
+    // and the diagnostic mutex publish worker AND dedicated dispatch-host writes.
+    service::Snapshot service_snapshot() const {
+        return service_profile_.snapshot(true);
+    }
+#endif
+
     bool is_hybrid() const { return topo_.is_hybrid; }
     int p_cores() const { return topo_.p_cores; }
     int p_threads() const { return topo_.p_threads; }
@@ -153,7 +162,8 @@ public:
     /// read once for all of its tokens.
     void run_split_multi(ExpertJobMulti* jobs, int n);
     /// Plan v0.3 P6: the same for a native pack's layer (ggml-cpu arithmetic, `nact` activations).
-    void run_split_multi_native(const NativeFmt& f, ExpertJobMulti* jobs, int n);
+    void run_split_multi_native(const NativeFmt& f, ExpertJobMulti* jobs, int n,
+                                NativeGuPhase phase = NativeGuPhase::Decode);
     static constexpr int kMaxSplitMulti = 96;
     /// run_split_multi's phases, accumulated ms: gate/up rows, the intermediate quantization, down rows.
     double ms_multi_gu = 0, ms_multi_q = 0, ms_multi_down = 0;
@@ -204,6 +214,9 @@ private:
     void publish();
 
     int n_ = 0;
+#ifdef STRATA_CPU_SERVICE_PROFILE
+    service::Profile service_profile_;
+#endif
     bool host_works_ = true;
     ExpertJob* jobs_ = nullptr;
     int njobs_ = 0;
@@ -264,6 +277,7 @@ private:
         alignas(64) uint8_t hq[MAXT][kNativeHBytes];   // plan v0.3 P6: native down activations
     };
     const NativeFmt* nfmt_ = nullptr;
+    NativeGuPhase native_gu_phase_ = NativeGuPhase::Prefill;
     std::vector<SplitBufMulti> split_multi_;
     PoolAffinity affinity_ = PoolAffinity::All;
     CpuTopology topo_;

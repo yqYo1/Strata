@@ -42,6 +42,10 @@ namespace strata::prefill {
 
 class Prefill {
 public:
+    // Explicit serve paths do not infer the execution phase from chunk size.
+    // legacy preserves existing callers; layer_major owns its streamed KV stage
+    // only during the pass, after the outer caller retires decode readers.
+    enum class Layout { legacy, chunk_major, layer_major };
     /// E-9: the draft layer's K/V for prompt cells [cell0, cell0 + n) from their final residual rows `R_rows`
     /// (device) and `next_tokens` (host: the token at cell+1), in batches through this path's GEMMs and its idle
     /// scratch - call it from on_chunk.  false with `err` empty: not applicable here (a ring or hybrid K/V, another
@@ -64,13 +68,17 @@ public:
     /// lent for the prompt and refilled after it); null = allocate normally.
     bool init(const core::WeightTable& wt, const core::ModelGeometry& g, core::SessionState& ss,
               core::ExpertSource* src, const core::ExpertCache* cache, const int32_t* host_res, int64_t chunk,
-              void* stream, std::string& err, void* borrow = nullptr, uint64_t borrow_bytes = 0);
+              void* stream, std::string& err, void* borrow = nullptr, uint64_t borrow_bytes = 0,
+              Layout layout = Layout::legacy);
 
     /// With borrowed buffers: lay them out again for chunks of `chunk` tokens (at most `init`'s) in `borrow` - a
     /// request lends only the slots its prompt needs.  The stream must be idle (between prompts).
     /// Failure after retirement/rebinding starts invalidates the layout: reset/init before reuse.
-    bool relayout(int64_t chunk, void* borrow, uint64_t borrow_bytes, std::string& err);
+    bool relayout(int64_t chunk, void* borrow, uint64_t borrow_bytes, std::string& err,
+                  Layout layout = Layout::legacy);
     int64_t chunk() const;
+    Layout layout() const;
+    bool uses_layer_major(int64_t rows) const;
 #ifdef STRATA_ENABLE_SYCL
     // The generator must retain the parent and keep decode admission closed
     // through refill/publication. Binding seals this layout generation; it
@@ -91,7 +99,8 @@ public:
     static void set_ring_override(int slots);
 
     /// Device bytes `init` needs for a chunk of `chunk` tokens (what a borrowed region must hold).
-    static uint64_t bytes_needed(const core::ModelGeometry& g, const core::SessionState& ss, int64_t chunk);
+    static uint64_t bytes_needed(const core::ModelGeometry& g, const core::SessionState& ss, int64_t chunk,
+                                 Layout layout = Layout::legacy);
 
     /// Positions [pos0, pos0 + n) holding `tokens`; `ss.ple_prev` must be the two tokens before pos0 (oldest
     /// first, -1 for none) and is advanced to the last two of these.
