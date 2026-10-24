@@ -92,3 +92,52 @@ def analyze(text, samples, routes, layers=48, top_k=10):
             clock_binding=dict(absolute_total_difference_ms=error, rounding_bound_ms=rounding)))
         previous = header.end()
     return result
+
+
+def closed_pilot():
+    """Replay the closed pilot before extracting its planned clock/work evidence."""
+    import json
+    import mtp_net_bench as pilot
+    pilot.short.gate.native.guards.no_model_owners([])
+    row = json.loads((pilot.ROOT / 'record.json').read_text())
+    require(row['stage'] == 'closed' and row['passed'] and row['complete'] and
+            row['ownership_closed'] and not row['active'] and
+            [p['cap'] for p in row['processes']] == [0, 1], 'complete closed cohort required')
+    pilot.current(row)
+    source = pilot.gen.git('rev-parse', 'HEAD').decode().strip()
+    report = dict(source_commit=source, passed=False, inference_rerun=False)
+    try:
+        processes = []
+        for plan, outcome in zip(row['plans'], row['processes']):
+            root = pilot.Path(plan['root'])
+            for name, sha in outcome['evidence_sha256'].items():
+                require(pilot.digest(root / name) == sha, 'closed raw evidence changed: ' + name)
+            samples, events, journal = pilot.official(root, plan['cap'])
+            require(samples == outcome['requests'] and journal == outcome['journal'], 'official replay differs')
+            start = pilot.native_end(root, row, plan, outcome['native_identity']['sid'])
+            text = (root / 'engine.stderr').read_text()
+            all_samples = [e['sample'] for e in events if e['kind'] == 'result']
+            routes = pilot.request_routes(text, all_samples, plan['cap'])
+            require(routes == outcome['routes'], 'actual route replay differs')
+            timing = analyze(text, all_samples, routes)
+            capture = [json.loads(l) for l in (root / 'client-resources.jsonl').read_text().splitlines()]
+            resources = [pilot.resources.summarize_capture(capture, start['native'], start['boot_id'], s['client_interval'])
+                         for s in samples]
+            require(resources == outcome['resources'], 'resource replay differs')
+            processes.append(dict(cap=plan['cap'], requests_replayed=len(all_samples),
+                long_requests=[dict(workload=s['workload'], **v) for s, v in zip(samples, timing[-2:])]))
+        report.update(passed=True, processes=processes,
+            limits='Post-collection descriptive replay of predeclared clocks/work/resource evidence. Nested host wall scopes include polling, submission and overlap. Zero expert-copy bytes cover only that native route; no physical PCIe/VRAM bandwidth, hardware saturation, clean speed, repeated gain or adoption qualification.')
+    except Exception as error:
+        report['error'] = repr(error)
+    row['analysis'] = report
+    pilot.write(pilot.ROOT / 'record.json', row)
+    pilot.write(pilot.RESULT, pilot.compact(row))
+    print(json.dumps(dict(analysis_passed=report['passed'], error=report.get('error'))), flush=True)
+    return 0 if report['passed'] else 1
+
+
+if __name__ == '__main__':
+    import sys
+    require(sys.argv[1:] == ['closed-pilot'], 'closed-pilot')
+    sys.exit(closed_pilot())
