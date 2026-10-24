@@ -1208,15 +1208,20 @@ individual native results recover at`5c7bde19c`;the current result keeps the
 Private generated source and its actual-input receipt remain only for the
 imminent short-serve/MTP attribution consumer. The fresh v4
 [short-serve plan](../bench/results/2026-10-15-pr6-recovery-audit/mtp-resident-serve-current.json)
-uses two processes,cap0 then1,with33/257 synthetic inputs and max32 generated
-IDs per request. Source`c0801edad` passes five host protocol/corruption controls
+closes both fresh processes normally,cap0 then1,with33/257 synthetic inputs and
+max32 generated IDs per request. Source`c0801edad` passes five host protocol/corruption controls
 and CPU replay of the actual earlier32-ID/2-ID-EOS responses. It checks real
 EOS IDs,accepted-prefix positions,verifier windows and draft round conservation.
 Native prompt KV uses token fallback below64 cells and a batched path for256;
 main full-resident mode0 reports INFO`kv_resident=0`. Both facts are bound to
 the pinned original source. Context131072,INT8,1256 decode slots,original
-prefill and runtime safety remain fixed. Full15 model hashes are checked after
-the cohort;independent official long timing and task quality remain required.
+prefill and runtime safety remain fixed. Cap0 emits32/2 IDs with length/EOS
+finishes,17/2 target windows and16/1 actual draft rounds. Cap1 emits32/32 IDs,
+all32/32 windows haveT1,and draft rounds/offered/accepted are0. Output identity
+is not required. Both processes close with no warning,fresh fault or changed
+boot/driver;all15 final full model hashes match. This qualifies the private
+route control,not clean speed or adoption. Independent official long timing,
+agent-session,task quality and phase preservation remain required.
 Earlier controller failures remain failed:INFO interpretation at`a0d0bdaab`,
 fixed32-output assumption at`2e46bd5e7`,and the unexecuted long-only prompt
 parser plan at`42107a807`. The first two owned processes were reaped after

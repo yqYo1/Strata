@@ -1,5 +1,5 @@
 {
-  "stage": "partial",
+  "stage": "closed",
   "source_commit": "c0801edad121cf30d1dd7388dd7b2fd9c1f13fc9",
   "input_sha256": {
     "data/expert-profile.bin": "8f59b4aa8873209dff11c11e37bcda9529a1335b724a1afeea37bf6388975baf",
@@ -319,12 +319,110 @@
         "kernel": "7.0.0-38-generic",
         "devcoredump": false
       }
+    },
+    "1": {
+      "passed": true,
+      "admission": {
+        "context": "131072",
+        "kv": "int8",
+        "kv_resident": "0",
+        "expert_slots": "1256",
+        "spec": "4",
+        "mtp_max": "1",
+        "lookup": "0",
+        "pool_workers": "5",
+        "pcie_frac": "0.00",
+        "conversation_cache_mib": "0"
+      },
+      "requests": [
+        {
+          "generated_tokens": 32,
+          "prompt_tokens": 33,
+          "finish": "length",
+          "drafts_accepted": 0,
+          "drafts_offered": 0,
+          "reused_tokens": 0,
+          "read_tokens": 33,
+          "output_ids_sha256": "265a4e66ed226ffd9a38f38d5e514697be455eb7cf4f70adbefb355e37471275",
+          "publications": 1
+        },
+        {
+          "generated_tokens": 32,
+          "prompt_tokens": 257,
+          "finish": "length",
+          "drafts_accepted": 0,
+          "drafts_offered": 0,
+          "reused_tokens": 0,
+          "read_tokens": 257,
+          "output_ids_sha256": "09b902743d301eb10b00840d70b02dc648f84cb70428e069c0240e94dc0f9d2d",
+          "publications": 1
+        }
+      ],
+      "exit_code": 0,
+      "activation": {
+        "pid": 3202002,
+        "loader": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_loader.so.0.12.0",
+        "threads_before": 1,
+        "preinit": 37,
+        "config_enabled": true,
+        "first_init": true,
+        "dispatch_result": 46,
+        "output_untouched": true,
+        "retained_reference_until_exit": true,
+        "runtime_teardown_qualified": false
+      },
+      "routes": [
+        {
+          "target_windows": 32,
+          "first_T": 1,
+          "subsequent_T": 1,
+          "draft_rounds_delta": 0,
+          "cumulative_draft_rounds": 0,
+          "prompt_draft": {
+            "read_tokens": 33,
+            "draft_cells": 32,
+            "batch_count": 1,
+            "path": "token",
+            "mode": 2
+          }
+        },
+        {
+          "target_windows": 32,
+          "first_T": 1,
+          "subsequent_T": 1,
+          "draft_rounds_delta": 0,
+          "cumulative_draft_rounds": 0,
+          "prompt_draft": {
+            "read_tokens": 257,
+            "draft_cells": 256,
+            "batch_count": 1,
+            "path": "batched",
+            "mode": 2
+          }
+        }
+      ],
+      "validation_warning_bytes": 0,
+      "final_full_model_hashes": 15,
+      "stdout_sha256": "3f43246b3297ce0814862f43134305c2b4f7c73e9dba6bf4c6533fe2992d6280",
+      "stderr_sha256": "f05771ddf44043ae5b91913cd35beff0edac0b8af41c6803156000e2115317bb",
+      "host_probe_accepted": true,
+      "ownership_closed": true,
+      "fresh_faults": [],
+      "boot_unchanged": true,
+      "driver_after": {
+        "pci": "/sys/bus/pci/devices/0000:05:00.0",
+        "driver": "xe",
+        "vendor": "0x8086",
+        "device": "0xe20c",
+        "kernel": "7.0.0-38-generic",
+        "devcoredump": false
+      }
     }
   },
   "active": false,
   "ownership_closed": true,
-  "passed": false,
-  "complete": false,
+  "passed": true,
+  "complete": true,
   "speed_eligible": false,
   "model_adoption_qualified": false,
   "production_selected": false,
