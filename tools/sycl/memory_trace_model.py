@@ -25,7 +25,8 @@ ROOT=B/'neo-memory-fixture-v1'
 KEY=FIXTURE_KEY
 REVIEW_KEY='neo_logging_source_review'
 INPUTS=sorted(set([*device.INPUTS,'tools/sycl/memory_trace_model.py',
-    'bench/sycl/client_resources.py','tests/core/test_client_resources.py']))
+    'bench/sycl/client_resources.py','tests/core/test_client_resources.py',
+    'tools/sycl/memory_trace_protocol_test.py']))
 sys.path.insert(0,str(P/'bench/sycl'))
 import client_resources as resources
 require,digest,write=host.require,host.digest,host.write
@@ -84,6 +85,11 @@ def prepare(container,kind):
         re.compile(pattern)  # Reject invalid decoders before creating/running a plan.
     p=parent(container);native,preload=runtime(p)
     if kind=='model':
+        controls=container['owner_trace_obligations']['neo_trailing_protocol_host']
+        require(controls['passed'] and controls['tests']==9 and controls['exit_code']==0 and
+            controls['contract_sha256']==model.model.fingerprint(review['output_contract']) and
+            all(digest(P/n)==h for n,h in controls['input_sha256'].items()),
+            'passed current strict trailing-protocol host controls required')
         q=container[FIXTURE_KEY]
         require(q['passed'] and q['complete'] and not q['active'] and q['ownership_closed'] and
             q['fresh_faults']==[] and q['exit_code']==0 and q['source_review']==review and
@@ -131,9 +137,10 @@ def prepare(container,kind):
         r.update(command=p['command'],binary=p['binary'],native_source_commit=p['native_source_commit'],
             cases=p['cases'],vocab_size=p['vocab_size'],model_assets=p['model_assets'],row={},client_boundaries=[],
             fixture_qualification_sha256=model.model.fingerprint(container[FIXTURE_KEY]),
+            trailing_protocol_qualification_sha256=model.model.fingerprint(controls),
             budgets=dict(wall_s=1200,cpu_s=7200,rss_bytes=104<<30,text_bytes=64<<20,
                 file_bytes=64<<20,total_bytes=256<<20,map_read_bytes=1<<20),
-            criteria='One same-native590f A16385/B33/A+16 wire/model-state capture,no benchmark or engine rebuild. Require the committed passed selected-fixture logging gate and unchanged reviewed five logging keys,UR observer,full SDK/preload safety and model inputs. Preserve all1256 expert payloads/publications and main/draft/running snapshot checks;full15 model digests after collection. Require bounded4 READY/DONE owning-PID/start/SID resource reads,stable nonempty clients,total/resident VRAM exports,zero shared counters and actual mapped pinned driver DSO. Require complete successful UR allocation/free/simple-buffer ledger with zero final requested balance and all predeclared NEO categories with binding result0. Native normal exit0,closed ownership,unchanged identities/boot/driver and no fresh fault. Stop first failure,no retry. Global-free internal dense interval and whole-request client/log boundaries differ;no causal phase,complete BO ledger,migration,physical residency,PCIe traffic,speed,decode-performance,ordinary teardown or adoption claim.',
+            criteria='One same-native590f A16385/B33/A+16 wire/model-state capture,no benchmark or engine rebuild. Require the committed passed selected-fixture logging gate and unchanged reviewed five logging keys,UR observer,full SDK/preload safety and model inputs. Preserve all1256 expert payloads/publications and main/draft/running snapshot checks;full15 model digests after collection. Require bounded4 READY/DONE owning-PID/start/SID resource reads,stable nonempty clients,total/resident VRAM exports,zero shared counters and actual mapped pinned driver DSO. Require complete successful UR allocation/free/simple-buffer ledger with zero final requested balance and all predeclared NEO categories with binding result0. After QUIT accept only bounded complete known NEO records following confirmed exit/pipe EOF;reject other protocol,unknown/truncated data or nonzero binding results. Native normal exit0,closed ownership,unchanged identities/boot/driver and no fresh fault. Stop first failure,no retry. Global-free internal dense interval and whole-request client/log boundaries differ;no causal phase,complete BO ledger,migration,physical residency,PCIe traffic,speed,decode-performance,ordinary teardown or adoption claim.',
             retention='Main immediate allocation-type/BO lifecycle comparison against committed earlier UR/client changes. Keep compact request/state,conservation,counter deltas,type/pool summaries and limitations. Raw stdout/stderr only for this bounded offline analysis,64MiB combined;retire logs/JIT and prior fulltrace after useful evidence is committed. No extra engine generation.')
     write(ROOT/'record.json',r);container[KEY]=compact(r);write(RESULT,container)
     print('Prepared bounded '+kind+' NEO logging gate;commit before run.',flush=True)
@@ -153,6 +160,8 @@ def admission(r,container):
     for asset in (r['fixture'],r['collector'],r['driver_library']):
         require(digest(asset['path'])==asset['sha256'],'logging artifact changed')
     if r['kind']=='model':
+        require(model.model.fingerprint(container['owner_trace_obligations']['neo_trailing_protocol_host'])==
+            r['trailing_protocol_qualification_sha256'],'strict protocol host controls changed')
         require(model.model.fingerprint(container[FIXTURE_KEY])==r['fixture_qualification_sha256'],
             'actual fixture qualification changed')
         base=model.model.setup();require(base['models']==r['model_assets'],'model reference changed')
@@ -192,6 +201,31 @@ class AtBoundary:
         self.io,self.r=io,r
         self.target={k:entry['direct_identity'][k] for k in ('pid','start_ticks','sid')}
     def __getattr__(self,name):return getattr(self.io,name)
+    def exit(self,seconds):
+        try:return self.io.exit(seconds)
+        except RuntimeError as error:
+            if str(error)!='unexpected trailing protocol':raise
+            require(self.io.eof and self.io.exit_watch.poll(0),
+                'trailing logger validation requires completed native exit and pipe EOF')
+            raw=bytes(self.io.pending)
+            require(0<len(raw)<=512<<10 and raw.endswith(b'\n'),'bounded complete trailing records required')
+            contract=self.r['source_review']['output_contract']
+            patterns=[re.compile(p) for p in {**contract['required_patterns'],
+                **contract.get('optional_patterns',{})}.values()]
+            count=0
+            for line in raw.decode('utf-8').splitlines():
+                line=line.strip()
+                if not line:continue
+                matches=[m for p in patterns if (m:=p.search(line)) and m.start()==0 and m.end()==len(line)]
+                require(matches,'unknown trailing native protocol: '+line[:256])
+                require(all('result' not in m.groupdict() or int(m['result'])==0 for m in matches),
+                    'trailing NEO binding failed')
+                count+=1
+            require(count>0,'no recognized trailing NEO records')
+            self.r['trailing_neo_records']=dict(records=count,bytes=len(raw),
+                sha256=hashlib.sha256(raw).hexdigest(),scope='Known complete logging records after QUIT/EOF;not ordinary runtime teardown qualification.')
+            self.io.pending.clear()
+            return self.io.exit(seconds)
     def line(self,seconds=700):
         line=self.io.line(seconds)
         if line.startswith(('READY ','DONE ')):
@@ -292,7 +326,7 @@ if __name__=='__main__':
     require(sys.argv[1:] in (['prepare'],['run'],['prepare-model'],['run-model']),
         'prepare|run|prepare-model|run-model')
     kind='model' if sys.argv[1].endswith('-model') else 'fixture'
-    if kind=='model':ROOT=B/'neo-memory-model-v1';KEY='neo_memory_model_v1'
+    if kind=='model':ROOT=B/'neo-memory-model-v2';KEY='neo_memory_model_v2'
     with (B/'owned-v0141-measurement.lock').open('a+') as lock:
         fcntl.flock(lock,fcntl.LOCK_EX|fcntl.LOCK_NB);model.gate.native.guards.no_model_owners([])
         container=json.loads(RESULT.read_text())
