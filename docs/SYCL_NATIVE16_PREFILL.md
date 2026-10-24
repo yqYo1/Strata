@@ -276,6 +276,11 @@ four-read sequence without a kernel, across five threads and the caller,
 with65536 samples each and uncontrolled affinity. Report that reference
 distribution alongside short HQ intervals, without subtraction or treating it
 as a universal bound on the full Scope/model overhead.
+The restored one-shot `tools/sycl/cpu_service_profile.py` prepares a new owned
+host gate for the updated fixture, repeating collector controls before collecting
+the clock reference. It preserves the original host result and source identity.
+This new gate is unrun; its plan must be committed before compilation in a
+serialized gap. The old host pass does not qualify this changed fixture.
 This changes neither the selected original6e40 executable nor
 the active clean-width inputs; it is not an inference optimization or a speedup.
 
