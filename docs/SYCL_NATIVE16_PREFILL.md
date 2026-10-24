@@ -196,7 +196,10 @@ thinking and the answer-body gate, with actual input/output context checks.
 The next fresh cohort uses balanced4/2/1,2/1/4,1/4/2 blocks, starting with the
 unchanged MTP4 reference. It stops on another capped thinking-only output;
 it does not automatically increase the budget. Exact inputs and generated plan
-must be committed and host checks must pass before any model execution.
+are committed; all64 host controls and the same-provider clock screen pass.
+This is not a new model measurement or a throughput/phase-preservation pass.
+Closedv1 logs/JIT, its superseded clock probe and eight unstarted plans retire
+after exact188-input and clock-recipe recovery:108 files,14,594,530bytes.
 Its intended advancement rules remain three nondeclining paired decode ratios
 and geomean above1.02, with independent prefill no-decline in all three pairs.
 No clean repeated gain, model adoption or70tok/s qualification follows.
