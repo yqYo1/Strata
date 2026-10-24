@@ -58,6 +58,7 @@ class WidthEvidence(unittest.TestCase):
             completion_includes_thinking=True,decode_tps_source='engine',drafts_offered=0,drafts_accepted=0,
             acceptance_rate=None,decode_ms=120000.,decode_tps=10.,prompt_ms=40000.,total_s=160.)
         self.assertTrue(m.sample_eligible(sample,1));self.assertFalse(sample['eligible'])
+        self.assertTrue(m.sample_eligible(dict(sample,generated_tokens=20000,usage_generated_tokens=20000),1))
         self.assertIsNone(sample['acceptance_rate']);self.assertEqual(sample['drafts_offered'],0)
         for key,value in [('speed_eligible',False),('read_tokens',10),('reasoning_chars',0),
                 ('acceptance_rate',0.),('drafts_offered',1),('drafts_accepted',True),('generated_tokens',100),
@@ -75,9 +76,22 @@ class WidthEvidence(unittest.TestCase):
         result=m.comparison(processes);candidate=result['candidates']['2']['regular-code']
         self.assertTrue(candidate['decode_gain_gate']);self.assertFalse(candidate['prefill_preservation_gate'])
         self.assertFalse(candidate['production_adopted']);self.assertTrue(result['reference_classification'])
-        processes[7]['requests'][0]['decode_ms']=121000.
+        next(p for p in processes if p['width']==2)['requests'][0]['decode_ms']=121000.
         self.assertFalse(m.comparison(processes)['candidates']['2']['regular-code']['decode_gain_gate'])
         with self.assertRaises(RuntimeError):m.comparison(processes[:-1])
+
+    def test_prefill_gain_does_not_excuse_even_a_small_decode_decline(self):
+        processes=[]
+        for width in m.ORDER:
+            requests=[dict(generated_tokens=1200,decode_ms=120000. if width==4 else 120001.,
+                read_tokens=33000,prompt_ms=40000. if width==4 else 30000.,
+                acceptance_rate=.85 if i==0 else .35)for i,_ in enumerate(m.WORKLOADS)]
+            processes.append(dict(width=width,passed=True,requests=requests))
+        for candidate in m.comparison(processes)['candidates'].values():
+            for workload in candidate.values():
+                self.assertTrue(workload['prefill_preservation_gate'])
+                self.assertFalse(workload['decode_gain_gate'])
+                self.assertFalse(workload['production_adopted'])
 
 
 if __name__=='__main__':unittest.main()

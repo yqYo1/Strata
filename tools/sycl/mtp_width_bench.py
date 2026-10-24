@@ -28,9 +28,11 @@ import measurement_clock as clock
 import ur_validation as validation
 
 P, B = original.P, original.B
-ROOT = B / 'mtp-width-clean-v1'
+ROOT = B / 'mtp-width-clean-v2'
 RESULT = gen.A / 'mtp-width-clean-current.json'
-ORDER = (2, 4, 1, 4, 1, 2, 1, 2, 4)
+ORDER = (4, 2, 1, 2, 1, 4, 1, 4, 2)
+MAX_OUTPUT = 32768
+PRIOR_ARCHIVE = '6c5857113'
 WORKLOADS = ('regular-code', 'varied-prose')
 WORKLOAD_ID = 'native16_mtp_width_clean_20261024'
 require, digest, write = original.guards.require, original.build.digest, original.write
@@ -78,7 +80,13 @@ def compact(row):
 
 
 def prepare():
-    require(not ROOT.exists() and not RESULT.exists(), 'fresh width plan only; no duplicate/retry')
+    require(not ROOT.exists(), 'fresh width plan only; no duplicate/retry')
+    prior=validation.committed(RESULT)
+    require(prior['stage']=='failed' and prior['ownership_closed'] and not prior['active'] and
+        not prior['passed'] and not prior['complete'] and len(prior['processes'])==1 and
+        prior['postfailure_full_model_hashes']==15 and
+        prior==json.loads(gen.git('show',PRIOR_ARCHIVE+':'+str(RESULT.relative_to(P)))),
+        'close and preserve the failed original cohort before a new output-budget plan')
     native, control, proof = qualification(); base = model.setup()
     model.model_pins(base['config'], base['models'])
     speed = validation.committed(RESULT.with_name('phase-prefill-speed-current.json'))
@@ -117,19 +125,28 @@ def prepare():
             generated_inputs={str(root/n):digest(root/n) for n in ('config.json','plan.json','expert-profile.bin')},
             command=['/bin/sh',str(P/'bench.sh'),'--config',str(root/'config.json'),'--port',str(port),
                 '--long-generation-only','--long-generation-speed-only','--think','--runs','1',
+                '--long-generation-max-tokens',str(MAX_OUTPUT),
                 '--profile-request-gates','--workload-id',WORKLOAD_ID,'--fail-fast-engine-error',
                 '--ready-timeout','600','--out',str(root/'bench')]))
         environments[str(index)] = env
     row = dict(stage='host-prepared', source_commit=revision, benchmark_files=len(inputs),
+        previous_failed_comparison=dict(archive=PRIOR_ARCHIVE,source_commit=prior['source_commit'],
+            benchmark_fingerprint=prior['benchmark_fingerprint'],output_budget=16384,
+            stage=prior['stage'],passed=False,complete=False,ownership_closed=True,
+            postfailure_full_model_hashes=15,width=2,
+            requests=[{k:v for k,v in request.items()if k not in ('client_interval','reasoning_tokens')}
+                for request in prior['processes'][0]['requests']],
+            clock=prior['processes'][0]['clock'],fresh_faults=prior['processes'][0]['fresh_faults'],
+            closure=prior['processes'][0]['diagnostic_closure']),
         benchmark_fingerprint=fingerprint(inputs), original=proof, native_validation_probe=preload,
         model_assets=base['models'], model_reference=base['reference'], environments=environments,
         references={str(RESULT.with_name(n)):digest(RESULT.with_name(n)) for n in REFERENCE_NAMES},
         clock=host, plans=plans, boot=Path('/proc/sys/kernel/random/boot_id').read_text().strip(),
         driver=original.guards.driver_guard(),
         mechanism='Previously observed draft wrapper costs9.50/15.21ms per emitted code/prose token,with CPU-pool and GPU-reach waits also dominant. Width2 removes chain proposals and reduces target rows versus4;it can lose accepted tokens. Source/lifetime qualified;test actual end-to-end tradeoff. Host scopes do not prove CPU or GPU arithmetic saturation;physical PCIe/VRAM ceilings remain unknown.',
-        criteria='Nine fresh processes in balanced blocks2,4,1 /4,1,2 /1,2,4;three independent samples per width/workload. Four standard warmups then official v4 regular-code/varied-prose thinking-on with>=32768 fresh input,1024..16384 generated,>=512 answer chars,reasoning present,complete valid SSE/journal and native exit0. Same original prefill/chunk8192/resident131072/1256slots/caches0. Width4/2 use exact original6e40;1 uses qualified private control retaining MTP weights/KV/prompt precompute. Native observers absent/disabled;only qualified parameter-validation/preexec safety remains. Actual native args/environment and aggregate offered/accepted/emitted work bind the source-fixed widths;no per-window trace or hardware attribution claim. Clock screen before every process;prompt/decode>=10s,endpoint+rounding<=0.01%. Full source/assets/runtime/owner/boot/no-fault gates each process;all15 hashes after the cohort. Stop first execution/eligibility/fault failure,no replacement or changed criteria;slower samples do not stop collection. No adoption before all separate gates.',
+        criteria='New output-budget cohort,not a replacement sample for failedv1. Nine fresh processes in balanced blocks4,2,1 /2,1,4 /1,4,2;three independent samples per width/workload. Start with original MTP4 reference to establish behavior under the larger cap. Four standard warmups then official v4 regular-code/varied-prose thinking-on with>=32768 fresh input,1024..32768 generated,>=512 answer chars,reasoning present,actual input+requested output+256<=131072,complete valid SSE/journal and native exit0. Same original prefill/chunk8192/resident131072/1256slots/caches0. Width4/2 use exact original6e40;1 uses qualified private control retaining MTP weights/KV/prompt precompute. Native observers absent/disabled;only qualified parameter-validation/preexec safety remains. Actual native args/environment and aggregate offered/accepted/emitted work bind the source-fixed widths;no per-window trace or hardware attribution claim. Clock screen before every process;prompt/decode>=10s,endpoint+rounding<=0.01%. Full source/assets/runtime/owner/boot/no-fault gates each process;all15 hashes after the cohort or first failure. Stop first execution/eligibility/fault failure,no replacement or changed criteria;slower samples do not stop collection. A second thinking-only cap failure stops this plan rather than automatically increasing the budget again. No adoption before all separate gates.',
         selection_rule='For each candidate1/2 and each workload,all3 block-paired decode ratios>=1.0 and geometric mean>1.02 to advance that workload. Independently require all3 paired prefill ratios>=1.0;any measured impact fails separation/preservation and prevents adoption. Compare native counts/exact unrounded times;keep every sample/spread and original failed gate. Record acceptance per width;MTP4 code>=0.80/prose<=0.40 alone validates intended strong/weak reference classification,not labels imposed on narrower widths.70tok/s target requires repeated actual model throughput,not a component gain. Long/agent-session,task,physical262144/RESTORE and ordinary teardown remain separate pending adoption gates.',
-        budgets=dict(wall=3900,cpu=46800,rss_cap=104<<30,text_cap=16<<20,file_cap=32<<20,total_cap=64<<20),
+        budgets=dict(wall=7200,cpu=86400,rss_cap=104<<30,text_cap=16<<20,file_cap=32<<20,total_cap=64<<20),
         host_budgets=dict(wall=120,cpu=120,rss_cap=4<<30,text_cap=2<<20,file_cap=4<<20,total_cap=16<<20),
         retention='Keep individual samples,clock screens,source/configuration,comparison/fault decisions. Replay then retire successful logs/JIT/journals/raw responses and one-shot launcher. Original13/private13 assets serve this imminent comparison only;retire private after closure and exact original-input recovery,or before a new native generation.',
         processes=[], active=False, ownership_closed=True, passed=False, complete=False,
@@ -159,13 +176,14 @@ def current(row):
 
 
 def sample_eligible(sample,width):
-    if width != 1: return gen.sample_eligible(sample)
+    if width != 1: return gen.sample_eligible(sample,maximum_output=MAX_OUTPUT)
     # Check the explicit speed contract without relabeling agreement/counters.
     return bool(sample.get('speed_eligible') is True and sample.get('ok') is True and
         sample.get('stream_complete') is True and sample.get('finish_reason') in ('stop','length') and
         sample.get('reused_tokens') == 0 and type(sample.get('read_tokens')) is int and
         sample['read_tokens'] >= 32768 and sample.get('prompt_tokens') == sample['read_tokens'] and
-        type(sample.get('generated_tokens')) is int and 1024 <= sample['generated_tokens'] <= 16384 and
+        type(sample.get('generated_tokens')) is int and 1024 <= sample['generated_tokens'] <= MAX_OUTPUT and
+        sample['read_tokens']+MAX_OUTPUT+256<=131072 and
         sample.get('usage_generated_tokens') == sample['generated_tokens'] and
         sample.get('generated_tokens_source') == 'usage' and sample.get('output_chars',0) >= 512 and
         sample.get('reasoning_chars',0) > 0 and sample.get('completion_includes_thinking') is True and
@@ -228,26 +246,29 @@ def comparison(processes):
 
 def official(root,width):
     path,=(root/'bench').glob('*/results.json'); result=json.loads(path.read_text())
-    suite=result['results']['long_generation']; rows=gen.collect_samples(suite)
+    suite=result['results']['long_generation']; rows=gen.collect_samples(suite,maximum_output=MAX_OUTPUT)
     require(result['complete'] and not result['results']['failures'] and
         result['params']['long_generation_speed_only'] is True and result['params']['runs']==1 and
         result['params']['think'] is True and result['params']['long_generation_only'] is True and
         suite['speed_only'] is True and suite['workload_version']==4 and suite['thinking'] is True and
-        suite['reasoning_budget_tokens']==0 and suite['max_tokens']==16384 and
+        suite['reasoning_budget_tokens']==0 and suite['max_tokens']==MAX_OUTPUT and
+        result['params']['long_generation_max_tokens']==MAX_OUTPUT and
         suite['selected_workloads']==list(WORKLOADS) and len(rows)==2 and
-        all(sample_eligible(s,width) and all(type(s.get(k))in(int,float) and math.isfinite(s[k]) and
+        all(sample_eligible(s,width) and s['read_tokens']+MAX_OUTPUT+256<=131072 and
+            all(type(s.get(k))in(int,float) and math.isfinite(s[k]) and
             s[k]>=clock.MIN_TIME_MS for k in ('prompt_ms','decode_ms')) for s in rows), 'official work/clock eligibility failed')
     require([(s['workload'],s['run'],s['order'])for s in rows]==[(w,0,i)for i,w in enumerate(WORKLOADS)],'workload order differs')
     journal,jrows=gen.journal_evidence(root)
     require(journal['valid'] and journal['complete'] and
         [{k:v for k,v in s.items()if k not in ('controller_eligible','reasoning_tokens')}for s in rows]==jrows,'journal work differs')
     path,=(root/'bench').glob('*/requests.jsonl'); events=[json.loads(l)for l in path.read_text().splitlines()]
-    warm=gen.warmup_reconciliation(events,WORKLOADS)
+    warm=gen.warmup_reconciliation(events,WORKLOADS,maximum_output=MAX_OUTPUT)
     from strata_bench import client_fingerprint
     identity=events[0]; binding=result['comparison_identity']
     work=dict(workload_id=WORKLOAD_ID,nonce=WORKLOAD_ID,nonce_policy='fixed-id')
     require(identity['source']==binding['client']==client_fingerprint() and
         identity['long_generation_speed_only'] is binding['long_generation_speed_only'] is True and
+        identity['long_generation_max_tokens']==binding['long_generation_max_tokens']==MAX_OUTPUT and
         identity['context']==binding['context']==131072 and
         identity['workload']==binding['workload']==result['params']['workload']==work and
         identity['thinking'] is binding['thinking'] is True,'official workload identity differs')
@@ -259,7 +280,7 @@ def retain_client_result(root,outcome):
     paths=list((root/'bench').glob('*/results.json'))
     if len(paths)!=1:return
     result=json.loads(paths[0].read_text())
-    outcome['requests']=gen.collect_samples(result.get('results',{}).get('long_generation',{}))
+    outcome['requests']=gen.collect_samples(result.get('results',{}).get('long_generation',{}),maximum_output=MAX_OUTPUT)
     outcome['benchmark_complete']=result.get('complete')
     outcome['benchmark_failures']=result.get('results',{}).get('failures',[])
 
@@ -271,6 +292,10 @@ def host(row):
     try:
         owner=original.supervision.Owner(ROOT/'host/owned',persist)
         for label,args in [('width-tests',['/usr/bin/python3','-B','tools/sycl/test_mtp_width_bench.py']),
+                ('client-tests',['/usr/bin/python3','-B','tools/test_strata_bench.py']),
+                ('failfast-tests',['/usr/bin/python3','-B','tools/test_strata_bench_failfast.py']),
+                ('journal-tests',['/usr/bin/python3','-B','tools/test_benchmark_evidence.py']),
+                ('engine-evidence-tests',['/usr/bin/python3','-B','tools/sycl/test_generation_engine.py']),
                 ('clock-tests',['/usr/bin/python3','-B','tools/sycl/test_measurement_clock.py']),
                 ('compile',row['clock']['command'])]:
             entry,_,_=owner.run(label,args,row['clock']['environment'],P,**row['host_budgets'])

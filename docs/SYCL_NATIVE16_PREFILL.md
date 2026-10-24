@@ -174,8 +174,8 @@ zero chain calls and valid bounded host accounting. The process exited normally,
 all15 model hashes matched and no new driver fault appeared. This qualifies
 short-route wiring and owner restoration only. Clean repeated speed, task quality
 and full-context gates remain open; no production prefill/decode setting changed.
-The [clean width comparison](../bench/results/2026-10-15-pr6-recovery-audit/mtp-width-clean-current.json)
-is frozen for nine fresh processes in balanced blocks2/4/1,4/1/2,1/2/4.
+The original [clean width comparison](../bench/results/2026-10-15-pr6-recovery-audit/mtp-width-clean-current.json)
+was frozen for nine fresh processes in balanced blocks2/4/1,4/1/2,1/2/4.
 Each uses four official warmups and both thinking-on v4 long-generation workloads.
 Widths2/4 use selected6e40; width1 uses the existing resident private control.
 Native trace/stage/work observers are disabled; qualified runtime safety and
@@ -188,8 +188,15 @@ tokens at exact13.285064tok/s, but prose spent the16384-token output cap in
 thinking and produced no answer body. The benchmark exited1; the native engine
 exited0, its owners closed and no fresh driver fault appeared. The other eight
 processes remain unstarted under the prospective first-failure rule. Configured
-context131072 was not filled; this was output-budget exhaustion. Preserve this
-failed comparison and define a new output budget/plan before fresh measurements.
+context131072 was not filled; this was output-budget exhaustion. All15 model
+hashes passed after closure. Full original plan and failure recover at`6c5857113`;
+the next plan retains the useful failed samples without reclassifying them.
+The maintained client supports an explicit32768-output budget, retaining
+thinking and the answer-body gate, with actual input/output context checks.
+The next fresh cohort uses balanced4/2/1,2/1/4,1/4/2 blocks, starting with the
+unchanged MTP4 reference. It stops on another capped thinking-only output;
+it does not automatically increase the budget. Exact inputs and generated plan
+must be committed and host checks must pass before any model execution.
 Its intended advancement rules remain three nondeclining paired decode ratios
 and geomean above1.02, with independent prefill no-decline in all three pairs.
 No clean repeated gain, model adoption or70tok/s qualification follows.
