@@ -4278,6 +4278,32 @@
       "output_directory_created": false,
       "original_contract_sha256": "00e0c6216bafd7b0b8351ee82777380fb57c56db5f7ee520220d30c660e7a71d",
       "reason": "Host result recorded sorted compact JSON while admission expected sorted default-spaced JSON. Existing hash/status kept;new source validates the declared compact encoding,new CPU qualification and fresh v3 plan required."
+    },
+    "neo_trailing_protocol_host_v2": {
+      "source_commit": "8e787c801f7e22ac0612da0cb1368ee5b428221f",
+      "input_sha256": {
+        "tools/sycl/memory_trace_model.py": "51bbb7c24acaa2ef5d91453c5524d2e3bb2f92b69d3cda9387e6d98c844a35a0",
+        "tools/sycl/memory_trace_protocol_test.py": "bc76bf3995ebfa47e92cb48a7ed64cdfd2c4e3ec03e5db454d3389da7f91b742"
+      },
+      "command": [
+        "timeout",
+        "15s",
+        "python3",
+        "tools/sycl/memory_trace_protocol_test.py"
+      ],
+      "contract_sha256": "00e0c6216bafd7b0b8351ee82777380fb57c56db5f7ee520220d30c660e7a71d",
+      "tests": 9,
+      "exit_code": 0,
+      "passed": true,
+      "GPU_executed": false,
+      "actual_failed_capture": {
+        "stdout_sha256": "2b0578522941ca6d52ffeddc047169e0ecf15c5e99b4420c94137dec771ad2d8",
+        "trailing_bytes": 154602,
+        "recognized_lines": 2172
+      },
+      "limits": "Fresh nine CPU controls after source encoding correction. No native execution;v1 failed model and v2 UNRUN preparation refusal unchanged. Requires fresh v3 model validation.",
+      "contract_encoding": "json_sorted_compact",
+      "supersedes_for_new_plans": "neo_trailing_protocol_host;original result/hash preserved"
     }
   },
   "model_state_v2": {
