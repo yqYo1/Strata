@@ -1,6 +1,6 @@
 {
-  "stage": "closed_source_review",
-  "source_commit": "d32192db3530c1bf96fe6c93bb6193881a7cd54e",
+  "stage": "prepared",
+  "source_commit": "c0801edad121cf30d1dd7388dd7b2fd9c1f13fc9",
   "input_sha256": {
     "data/expert-profile.bin": "8f59b4aa8873209dff11c11e37bcda9529a1335b724a1afeea37bf6388975baf",
     "tests/core/test_build_manifest.py": "2d054d4fbbb862ef62eaacf53d7580e2d5a92ea57598fd179c480bf1cc943847",
@@ -17,9 +17,9 @@
     "tools/sycl/measurement_guards.py": "794e332c70aca0acadad4f26d0414548e023a02fd27b72ed78fc773674423ec8",
     "tools/sycl/measurement_owner.py": "bddd0c5e5020e882ca3404679420faec11e820dabce2ed4c72ef82b4c9c0874a",
     "tools/sycl/mtp_resident_control.py": "fcc35c63d9c4da33e1b9fea8f2ab5fa15b80a909ce9f8b29c713d74f1530c9c4",
-    "tools/sycl/mtp_resident_serve.py": "7d75fbdd77607a03af656d475a4d6eeb1166e350b56f14901799d631b7ab31a3",
+    "tools/sycl/mtp_resident_serve.py": "ce04149d5ce203b326bd38f7d9d38af26e276584d66e5325bcfb4238776f984c",
     "tools/sycl/test_mtp_resident_control.py": "3a42b2dcd3b9775dc3923e9359afad3bff949bb57a3abe805c0c3b1568e9109f",
-    "tools/sycl/test_mtp_resident_serve.py": "ea337dd57a3e96594136f759a8f238d73c8424db7eabf57523d4c843f2254814",
+    "tools/sycl/test_mtp_resident_serve.py": "9c7657f508a4fd683a26b5fe0cb7c302a4c0921aa622bf5d6a24f0d1303bf35a",
     "tools/sycl/ur_validation.py": "2e41d84788dc9cc3c7435b18b43601b3ca79280ccb855414d7a36bae6bff83e7"
   },
   "binary": {
@@ -28,9 +28,14 @@
     "sha256": "81393573f25be5cdc44f1ac13cb06d6c280a387e0ee9142d5ebe01e9d82f9307"
   },
   "prior_failed_operation": {
-    "commit": "d32192db3530c1bf96fe6c93bb6193881a7cd54e",
+    "commit": "c0801edad121cf30d1dd7388dd7b2fd9c1f13fc9",
     "path": "bench/results/2026-10-15-pr6-recovery-audit/mtp-resident-serve-current.json",
-    "status": "Original fixed32-output assertion/ownership_closed=false remain failed. Native generated32 then a valid2-ID EOS completion before controller SIGTERM;positive reap/empty session verified. New v3 changes only variable-output/route qualification;no native change."
+    "prior_model_failure": {
+      "commit": "d32192db3530c1bf96fe6c93bb6193881a7cd54e",
+      "path": "bench/results/2026-10-15-pr6-recovery-audit/mtp-resident-serve-current.json",
+      "status": "Original fixed32-output assertion/ownership_closed=false remain failed. Native generated32 then a valid2-ID EOS completion before controller SIGTERM;positive reap/empty session verified. New v3 changes only variable-output/route qualification;no native change."
+    },
+    "status": "V3 held before model execution because actual v2 trace replay exposed the long-only draft-KV parser. Original V1 INFO and V2 fixed32-output failures remain unchanged;owned model identities are terminated. V4 accepts checked EOS and source-confirmed token32/batched256 prompt routes;no native change."
   },
   "base_native_source": "6e40afc1beddd059ee518617f6c1efce1da14aca",
   "native_controller_source_commit": "26d48498529f8bc38327a9b9e4ebbbe610ae5b1d",
@@ -205,7 +210,7 @@
     "devcoredump": false
   },
   "boot": "cfda0b6a-7c13-4fe2-bdf5-8f9202770840",
-  "criteria": "Exactly two fresh native processes,cap0 then1,each33/257 synthetic input IDs and max32 generated IDs per fresh request,caches0. Accept1..32 valid IDs with finish=length only at32 or finish=stop with the actual default EOS ID248044/248046. Same original prefill/settings/1256slots. INFO must confirm context131072,kv=int8,kv_resident=0 (original full-resident mode0 reporting),spec4,selected cap,5workers,PCIe0,caches0. Each request has complete batched mode2 draft prompt callbacks. Cap0 first targetT1 thenT4 if more windows,exactly windows-1 draft rounds,and at least one actual draft round across the process;cap1 every targetT1,zero offered/accepted drafts and zero draft rounds. Actual accepted-prefix positions and generated counts must conserve windows,including an EOS inside the final window. Same-child preexec validation,normal owned exit,empty validation warnings,unchanged source/model/runtime/boot/driver and no fresh fault;full15 model hashes after cohort. Stop first failure,no retry. No token-string identity,speed/task/physical-context/adoption claim.",
+  "criteria": "Exactly two fresh native processes,cap0 then1,each33/257 synthetic input IDs and max32 generated IDs per fresh request,caches0. Accept1..32 valid IDs with finish=length only at32 or finish=stop with the actual default EOS ID248044/248046. Same original prefill/settings/1256slots. INFO must confirm context131072,kv=int8,kv_resident=0 (original full-resident mode0 reporting),spec4,selected cap,5workers,PCIe0,caches0. Draft prompt callbacks must cover all32/256 cells in mode2,using token fallback for32 cells and batched for256 (native batch minimum64). Cap0 first targetT1 thenT4 if more windows,exactly windows-1 draft rounds,and at least one actual draft round across the process;cap1 every targetT1,zero offered/accepted drafts and zero draft rounds. Actual accepted-prefix positions and generated counts must conserve windows,including an EOS inside the final window. Same-child preexec validation,normal owned exit,empty validation warnings,unchanged source/model/runtime/boot/driver and no fresh fault;full15 model hashes after cohort. Stop first failure,no retry. No token-string identity,speed/task/physical-context/adoption claim.",
   "kv_reporting_contract": "Pinned6e40 kv_plan leaves mode0/all slots when requested residency>=max_cells. INFO kv_resident reports slot count only for main mode1,else0. Main context131072 and requested131072 therefore require INFO0;draft prompt mode2 independently confirms the MTP ring.",
   "interpretation": "Resident no-decode-draft retains MTP weights/KV/prompt precompute but omits generation KV catchup and proposals. Target verifier geometry also changesT4 toT1. This is a private attribution control,not full-MTP-off or an adopted decoder. State hashing of future MTP cells is disabled because this arm intentionally does not maintain them.",
   "budgets": {
@@ -226,7 +231,44 @@
   "model_adoption_qualified": false,
   "production_selected": false,
   "next_gate": "Only after both fresh model arms pass,freeze matched official bench.sh thinking-on long strong/weak MTP,agent-session and independent prefill-preservation timing with prospective clock screens. Selected original decode remains unchanged.",
-  "private_inputs_sha256": "ad802f0f622d025eafe158fbaf45ef2891ab2c507f83dd3ffeefd80e41b765bf",
-  "model_submitted": false,
-  "failure_interpretation": "CPU replay of the original v2 stdout/stderr rejects the new long-only draft-KV parser: actual33-input request uses token mode2,cells32;Prefill::draft_kv falls back whenB<64. Actual257-input is batched mode2,cells256. No v3 model launched. Preserve this stopped preflight;next source must bind both source-confirmed prompt paths and replay actual early-EOS transcript before execution."
+  "private_inputs_sha256": "271f2857ccc7acc91a9a5bd04ca72906cf7eddac8322a529c95eb31259e7dc7d",
+  "controller_host_tests": {
+    "source_commit": "c0801edad121cf30d1dd7388dd7b2fd9c1f13fc9",
+    "command": [
+      "/usr/bin/python3",
+      "-B",
+      "tools/sycl/test_mtp_resident_serve.py"
+    ],
+    "tests": 5,
+    "exit_code": 0,
+    "passed": true,
+    "scope": "Checked EOS/false-stop,INFO reporting,short token/batched prompt dispatch,wire and verifier/round conservation controls. No model/device execution."
+  },
+  "prior_transcript_CPU_replay": {
+    "passed": true,
+    "original_model_outcome_unchanged": "failed",
+    "stdout_sha256": "910e88105b1835ba97d0a3e3645b7af1618389176c371e57e61bb3f4030bfb92",
+    "stderr_sha256": "b9c0fa091890364586b7bce1513bd6c99c5e5ca82c1346d3ec9685810989ad28",
+    "generated_tokens": [
+      32,
+      2
+    ],
+    "finish": [
+      "length",
+      "stop"
+    ],
+    "prompt_paths": [
+      "token",
+      "batched"
+    ],
+    "target_windows": [
+      17,
+      2
+    ],
+    "draft_rounds_delta": [
+      16,
+      1
+    ],
+    "limits": "Parser qualification only;does not retroactively qualify terminated v2 or authorize model/performance adoption."
+  }
 }
