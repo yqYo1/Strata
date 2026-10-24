@@ -257,6 +257,11 @@ independent projections. Pool dispatch, claims and barriers, input activation
 quantization, routing and GPU work are outside these leaf scopes. Row counts
 must reconcile against the independent work census from the same new request
 and source before timings are usable; the older63af census is not that check.
+The prepared `cpu_service_evidence` reader revalidates that census from the
+same native text and binds GU/HQ/Down row and token-row counts to its format/NT
+jobs. It also checks request framing and thread/bin clock sums. Its negative
+controls are unrun and included in the next owned host gate; neither source
+preparation nor a reader pass supplies new production timing.
 GU and Down intervals include their local pointer preparation and native format
 dispatch, in addition to the selected kernel call.
 Summed concurrent worker intervals are not an additive critical path, CPU time
@@ -277,7 +282,7 @@ with65536 samples each and uncontrolled affinity. Report that reference
 distribution alongside short HQ intervals, without subtraction or treating it
 as a universal bound on the full Scope/model overhead.
 The restored one-shot `tools/sycl/cpu_service_profile.py` prepares a new owned
-host gate for the updated fixture, repeating collector controls before collecting
+host gate for the reader and updated fixture, repeating collector controls before collecting
 the clock reference. It preserves the original host result and source identity.
 This new gate is unrun; its plan must be committed before compilation in a
 serialized gap. The old host pass does not qualify this changed fixture.

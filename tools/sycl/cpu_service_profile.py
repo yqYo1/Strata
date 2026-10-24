@@ -25,9 +25,12 @@ KEY = 'four_clock_reference'
 NATIVE = ('tests/core/cpu_service_profile_test.cpp',
     'include/strata/kernels/cpu/service_profile.hpp', 'include/strata/kernels/cpu/native_expert.hpp')
 INPUTS = (*NATIVE, 'tools/sycl/cpu_service_profile.py', 'tools/sycl/build_engine.py',
-    'tools/sycl/measurement_guards.py', 'tools/sycl/measurement_owner.py')
+    'tools/sycl/measurement_guards.py', 'tools/sycl/measurement_owner.py',
+    'tools/sycl/cpu_service_evidence.py', 'tests/core/test_cpu_service_evidence.py',
+    'tools/sycl/cpu_work_census.py', 'tests/core/test_cpu_work_census.py')
 PACKAGES = ('g++-13', 'gcc-13', 'libstdc++-13-dev', 'libgcc-13-dev',
-    'libc6-dev', 'linux-libc-dev', 'libstdc++6', 'libgcc-s1', 'libc6', 'binutils')
+    'libc6-dev', 'linux-libc-dev', 'libstdc++6', 'libgcc-s1', 'libc6', 'binutils',
+    'python3.12-minimal', 'libpython3.12-stdlib')
 EXPECTED = 'cpu_service_profile counters,phase isolation,thread ownership,clocks,refusals=PASS\n'
 require = guards.require
 
@@ -67,7 +70,7 @@ def current(plan):
     require(fingerprint(historical(row)) == plan['historical_result_sha256'], 'original host outcome changed')
     require(pins(plan['source_commit']) == plan['input_sha256'], 'host source changed')
     require(packages() == plan['provider_packages'], 'host provider package versions changed')
-    for item in (plan['compiler'], plan['stdlib']):
+    for item in (plan['compiler'], plan['stdlib'], plan['python']):
         require(build.digest(item['path']) == item['sha256'], 'host provider changed')
 
 
@@ -89,12 +92,14 @@ def prepare():
         compiler=dict(path=compiler, sha256=build.digest(compiler),
             version=subprocess.check_output([compiler, '--version'], text=True, timeout=10).splitlines()[0]),
         stdlib=dict(path=stdlib, sha256=build.digest(stdlib)),
+        python=dict(path='/usr/bin/python3', sha256=build.digest('/usr/bin/python3'),
+            version=subprocess.check_output(['/usr/bin/python3', '--version'], text=True, timeout=10).strip()),
         command=[compiler, '-std=c++20', '-O2', '-Wall', '-Wextra', '-Werror', '-pedantic', '-pthread',
             '-DSTRATA_CPU_SERVICE_PROFILE=1', '-I', str(P / 'include'), '-MMD', '-MF', str(ROOT / 'fixture.d'),
             str(P / NATIVE[0]), '-o', str(ROOT / 'fixture')],
         environment=dict(PATH='/usr/bin:/bin', LANG='C.UTF-8', LC_ALL='C.UTF-8', TMPDIR=str(ROOT / 'tmp')),
         budgets=dict(wall=90, cpu=120, rss_cap=2 << 30, text_cap=2 << 20, file_cap=8 << 20, total_cap=16 << 20),
-        criteria='Single owned compile, default collector controls, then --clock-screen; all exit0 and ownership closed. Actual project includes exactly the three pinned native files. Default counters/phase/thread/refusal controls still pass. Clock output exactly six distinct positive calling TIDs/lanes,65536 observations+512 warmups each,zero errors,ordered finite integer min/p50/p99/max wall/CPU values. No model or GPU; failure stops this gate without retry.',
+        criteria='Owned same-request leaf/census reader controls,single compile,default collector controls,then --clock-screen;all exit0 and ownership closed. Actual project includes exactly the three pinned native files. Default counters/phase/thread/refusal controls still pass. Clock output exactly six distinct positive calling TIDs/lanes,65536 observations+512 warmups each,zero errors,ordered finite integer min/p50/p99/max wall/CPU values. No model or GPU;failure stops this gate without retry.',
         interpretation='Four ordered clock reads only,without a kernel/counter update. Affinity uncontrolled. Observed per-lane distributions are not a universal upper bound on full Scope/model cost and must not be subtracted from leaf timings. Separate production-pool parity,same-request census and model observer-off/on overhead gates remain open.',
         retention='Keep source/recipe,provider identities,per-lane compact distributions and original collector status. After committed source/recipe recovery,delete the standalone executable,successful raw output and this one-shot runner. No extra native engine generation.',
         passed=False, complete=False, active=False, ownership_closed=True,
@@ -144,6 +149,9 @@ def host(plan):
 
     try:
         owner = supervision.Owner(ROOT / 'owned', persist)
+        entry, _, _ = owner.run('reader', [plan['python']['path'], '-B', 'tests/core/test_cpu_service_evidence.py'],
+            plan['environment'], P, **plan['budgets'])
+        require(supervision.closed(entry) and entry['exit_code'] == 0, 'CPU service reader controls failed')
         entry, _, _ = owner.run('compile', plan['command'], plan['environment'], P, **plan['budgets'])
         require(supervision.closed(entry) and entry['exit_code'] == 0, 'host compile failed')
         deps = shlex.split((ROOT / 'fixture.d').read_text().replace('\\\n', ' ').partition(':')[2])
