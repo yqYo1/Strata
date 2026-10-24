@@ -1187,7 +1187,15 @@ build files/136261604 bytes,including its engine and six fixtures. Its source
 receipt remains only for the existing closed provenance readers. No physical
 fill execution consumer uses it;that gate needs a new entrypoint/build. All
 original state successes and performance failures remain unchanged. The
-selected original13 assets are still present;no replacement engine is compiled.
+selected original13 assets remain present and selected. The fresh private v3
+build from controller`26d484985` now links all13 declared targets normally.
+Its actual compiled-input closure covers1410 files with no uncovered input;
+nine source/admission and six metadata controls pass in the owned build.
+Only the two declared diagnostic translation units differ from6e40. This is
+build evidence only:device,model,speed and adoption gates remain pending.
+For the prefill restoration,any decode impact,including state handoff,
+configuration,placement or throughput,is a separation defect to resolve.
+Keep the existing selected decode route until independent qualification.
 
 Remaining model gates are repeated phase-preserving adoption evidence,
 agent-session and task quality,near-cap/tail boundaries,

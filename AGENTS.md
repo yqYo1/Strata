@@ -244,8 +244,10 @@ integration and testing.
   containment does not establish that sharing is faster. Do not mutate process
   environment variables between phases. For a prefill-only restoration or change,
   preserve the current decode implementation, configuration and placement, and
-  verify its state handoff and repeated decode performance. A decode impact is a
-  separation defect to resolve, not an acceptable cost of faster prefill; do not
+  verify its state handoff and repeated decode performance. Any decode impact
+  from a prefill-only change is a separation defect to resolve, including
+  handoff, configuration, placement or throughput changes; do not accept it as
+  a cost of faster prefill. Do not
   declare the restoration complete or adopt it while that defect remains.
   Verify the actual
   call paths before attributing a regression. A failed whole-process comparison
