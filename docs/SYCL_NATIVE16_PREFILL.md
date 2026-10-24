@@ -1191,8 +1191,15 @@ selected original13 assets remain present and selected. The fresh private v3
 build from controller`26d484985` now links all13 declared targets normally.
 Its actual compiled-input closure covers1410 files with no uncovered input;
 nine source/admission and six metadata controls pass in the owned build.
-Only the two declared diagnostic translation units differ from6e40. This is
-build evidence only:device,model,speed and adoption gates remain pending.
+Only the two declared diagnostic translation units differ from6e40.
+The fresh [v2 native check](../bench/results/2026-10-15-pr6-recovery-audit/mtp-resident-check-current.json)
+passes all32 pre-device refusal cases and same-build submission/ordinary-graph
+fixtures. Every child proves first-init parameter validation;both device tests
+exit0 with no warnings,fresh fault,boot/driver change or leftover owned process.
+V1's unreachable token-graph toggle remains failed at`976d7dac4`;SYCL defaults
+that feature off,and removing the disabling flag cannot enable it. V2 uses a
+real missing-MTP refusal in both arms. This qualifies only the bounded native
+checks;short serve,model,speed and adoption gates remain pending.
 For the prefill restoration,any decode impact,including state handoff,
 configuration,placement or throughput,is a separation defect to resolve.
 Keep the existing selected decode route until independent qualification.
