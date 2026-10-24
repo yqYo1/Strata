@@ -11,6 +11,7 @@ import re
 import subprocess
 import sys
 import struct
+import time
 
 sys.dont_write_bytecode=True
 import memory_trace_device as device
@@ -18,9 +19,15 @@ import memory_trace_device as device
 host=device.host
 model=host.model
 P,B,RESULT=host.P,host.B,host.RESULT
-ROOT=B/'ur-memory-model-v1'
-KEY='ur_memory_model_v1'
-INPUTS=sorted(set([*device.INPUTS,'tools/sycl/memory_trace_model.py']))
+PREVIOUS_ROOT=B/'ur-memory-model-v1'
+PREVIOUS_KEY='ur_memory_model_v1'
+ROOT=B/'ur-memory-client-v1'
+KEY='ur_memory_client_v1'
+ANALYSIS_KEY='ur_client_memory_analysis_v1'
+sys.path.insert(0,str(P/'bench/sycl'))
+import client_resources as resources
+INPUTS=sorted(set([*device.INPUTS,'tools/sycl/memory_trace_model.py',
+    'bench/sycl/client_resources.py','tests/core/test_client_resources.py']))
 require,digest,write=host.require,host.digest,host.write
 
 
@@ -38,9 +45,26 @@ def compact(r):
 
 def prepare(container):
     require(KEY not in container and not ROOT.exists(),'fresh model memory trace only')
-    parent=json.loads((device.ROOT/'record.json').read_text());device.admission(parent,container)
+    reader=container['owner_trace_obligations']['drm_client_reader_host']
+    require(reader['exit_code']==0 and reader['tests']>0 and
+        all(digest(P/name)==h for name,h in reader['input_sha256'].items()),
+        'passed unchanged client-reader host controls required')
+    parent=json.loads((PREVIOUS_ROOT/'record.json').read_text())
+    require(compact(parent)==container[PREVIOUS_KEY],'previous model observer qualification changed')
     require(parent['complete'] and parent['passed'] and not parent['active'] and parent['ownership_closed'] and
-        parent['fresh_faults']==[],'completed actual GPU observer gate required')
+        parent['fresh_faults']==[] and parent['full_model_hashes_matched']==15,
+        'completed actual same-native model observer gate required')
+    # Reuse the passed native/observer bytes, not its Python controller. Retired
+    # host/device environment receipts have no live consumer; this record holds
+    # the copied, still-pinned effective environment and dependency closure.
+    for name,h in parent['input_sha256'].items():
+        original=model.gate.native.build.git(P,'show',parent['source_commit']+':'+name)
+        require(hashlib.sha256(original).hexdigest()==h,'previous trace input unrecoverable: '+name)
+        if name!='tools/sycl/memory_trace_model.py':require(digest(P/name)==h,'native/observer input changed: '+name)
+    require(digest(parent['collector']['path'])==parent['collector']['sha256'] and
+        all(digest(p)==h for p,h in parent['dependencies'].items()) and
+        model.model.fingerprint(parent['environment'])==parent['environment_sha256'],
+        'qualified observer/runtime/environment changed')
     state=container[model.KEY]
     require(state['complete'] and state['passed'] and not state['active'] and state['ownership_closed'] and
         state['binary']==model.gate.engine()['binary'],'completed same-native model-state reference required')
@@ -56,18 +80,22 @@ def prepare(container):
         cases={'small':state['cases']['small']},vocab_size=state['vocab_size'],
         model_assets=state['model_assets'],model_digest_reuse=state['model_digest_reuse'],
         reference_model_state=dict(result_key=model.KEY,sha256=model.model.fingerprint(state)),
-        observer_gate=dict(result_key=device.KEY,sha256=model.model.fingerprint(container[device.KEY])),
+        observer_gate=dict(result_key=PREVIOUS_KEY,sha256=model.model.fingerprint(container[PREVIOUS_KEY])),
+        reader_qualification_sha256=model.model.fingerprint(reader),
         collector=parent['collector'],dependencies=parent['dependencies'],
         environment=env,environment_sha256=model.model.fingerprint(env),
         driver_before=parent['driver_before'],boot=parent['boot'],
-        row={},maps=[],active=False,passed=False,complete=False,ownership_closed=True,
+        row={},maps=[],client_boundaries=[],active=False,passed=False,complete=False,ownership_closed=True,
         GPU_executed=False,speed_eligible=False,model_adoption_qualified=False,
         decode_performance_qualified=False,physical262144_qualified=False,
         ordinary_runtime_teardown_qualified=False,physical_owner_attribution_qualified=False,
         budgets=dict(wall_s=1200,cpu_s=7200,rss_bytes=104<<30,text_bytes=32<<20,
             file_bytes=32<<20,total_bytes=256<<20,map_snapshot_bytes=1<<20),
-        criteria='Same current native590f small A16385/B33/A+16 protocol and model-state evidence,including all1256 cache payloads/tables and main/draft/running restore. Only new observer is the already host/device-qualified memory-only XPTI subscriber;qualified safety remains. Require one activation,exact sequence/count conservation,zero invalid/unsupported/lost,normal owned exit0,unchanged source/observer/runtime/model identities,full15 model digests after collection,unchanged boot/driver and no fresh fault. Capture maps at READY and each DONE while owned PID is live for later module symbolization. Requested bytes and stderr-phase ordering are collection evidence,not physical ownership,pool residency,leak,CPU/GPU saturation or clean speed. Stop first failure,no retry;interpret captured trace in a separate bounded offline analysis.',
-        retention=dict(owner='Main',consumer='Immediate offline attribution of the B33 free-memory drop and allocation stacks to loaded modules;retire trace/maps/JIT after useful owner/cost facts are recorded or the question is superseded.',
+        criteria='Same native590f A16385/B33/A+16 wire/model-state gates,all1256 cache payloads/tables and main/draft/running restore. Reuse exact qualified engine/UR observer/runtime safety;no new native code or environment mutation. The only new observation is the existing read-only DRM resource reader at READY and each DONE,before sending any next input. Require4 bounded PID/start/SID-verified,deduplicated client observations with stable nonempty client identities and exported total/resident VRAM counters. Record each client separately;do not add shared objects across clients. These idle-request boundaries include more than the internal short32 dense phase and do not qualify causal phase assignment or allocation owner. Require trace sequence/count integrity with zero invalid/unsupported/lost,normal owned exit0,unchanged input identities,full15 model digests after collection,unchanged boot/driver and no fresh fault. Stop first failure,no retry. No speed,hardware saturation,decode-performance,physical262144,ordinary teardown or adoption claim.',
+        client_counter_contract=dict(source='https://www.kernel.org/doc/html/latest/gpu/drm-usage-stats.html',
+            driver_source='https://www.kernel.org/doc/html/latest/gpu/xe/xe-drm-usage-stats.html',
+            scope='DRM client buffer requested/resident/shared storage;not UR ownership or application tensor bytes. Read spans are bounded but not atomic across descriptors/clients.'),
+        retention=dict(owner='Main',consumer='Immediate comparison of owning-DRM-client boundary changes against prior UR trace and global free memory;retire traces/maps/JIT after useful facts are recorded or superseded.',
             raw_text_budget_bytes=32<<20,map_budget_bytes=4<<20,
             permanent='Source,recipe,individual request/state and trace-conservation/free-memory results,qualification limits. No full trace or maps in Git.'))
     write(ROOT/'record.json',r);container[KEY]=compact(r);write(RESULT,container)
@@ -79,6 +107,8 @@ def admission(r,container):
         compact(r)==container[KEY] and pins(r['source_commit'])==r['input_sha256'],'commit exact model trace plan')
     require(model.model.fingerprint(r['environment'])==r['environment_sha256'] and
         all(digest(p)==h for p,h in r['dependencies'].items()),'observer environment/header/runtime changed')
+    require(model.model.fingerprint(container['owner_trace_obligations']['drm_client_reader_host'])==
+        r['reader_qualification_sha256'],'client-reader host qualification changed')
     for key in ('reference_model_state','observer_gate'):
         ref=r[key];require(model.model.fingerprint(container[ref['result_key']])==ref['sha256'],
             'consumed qualification changed: '+ref['result_key'])
@@ -92,7 +122,9 @@ def admission(r,container):
 
 
 class MapsAtBoundary:
-    def __init__(self,io,pid,r):self.io,self.pid,self.r=io,pid,r
+    def __init__(self,io,entry,r):
+        self.io,self.pid,self.r=io,entry['pid'],r
+        self.target={k:entry['direct_identity'][k] for k in ('pid','start_ticks','sid')}
     def __getattr__(self,name):return getattr(self.io,name)
     def line(self,seconds=700):
         line=self.io.line(seconds)
@@ -103,6 +135,18 @@ class MapsAtBoundary:
             path=ROOT/'maps'/('boundary-'+str(len(self.r['maps']))+'.txt');path.write_bytes(raw)
             self.r['maps'].append(dict(path=str(path),bytes=len(raw),sha256=hashlib.sha256(raw).hexdigest(),
                 boundary='READY' if line.startswith('READY ') else 'DONE'))
+            cpu=time.thread_time_ns()
+            sample=resources.snapshot(self.target,'0000:05:00.0')
+            clients=[dict(client_id=c['client_id'],memory_bytes=c['memory_bytes']) for c in sample['clients']]
+            require(0<len(clients)<=8 and all('drm-resident-vram0' in c['memory_bytes'] and
+                'drm-total-vram0' in c['memory_bytes'] for c in clients),'required client VRAM counters absent')
+            ids=sorted(c['client_id'] for c in clients)
+            require(not self.r['client_boundaries'] or
+                ids==sorted(c['client_id'] for c in self.r['client_boundaries'][0]['clients']),
+                'DRM client identities changed between request boundaries')
+            self.r['client_boundaries'].append(dict(boundary='READY' if line.startswith('READY ') else 'DONE',
+                begin_monotonic_ns=sample['begin_monotonic_ns'],end_monotonic_ns=sample['end_monotonic_ns'],
+                reader_thread_cpu_ns=time.thread_time_ns()-cpu,clients=clients))
         return line
 
 
@@ -139,7 +183,7 @@ def run(container):
     owner=model.gate.native.supervision.Owner(ROOT/'owned',persist);r.update(stage='running',GPU_executed=True);persist()
     try:
         b=r['budgets'];entry,out,err=owner.run('model',r['command'],r['environment'],P,
-            interaction=lambda io,e:model.interact(MapsAtBoundary(io,e['pid'],r),'small',r['row'],r),
+            interaction=lambda io,e:model.interact(MapsAtBoundary(io,e,r),'small',r['row'],r),
             wall=b['wall_s'],cpu=b['cpu_s'],rss_cap=b['rss_bytes'],text_cap=b['text_bytes'],
             file_cap=b['file_bytes'],total_cap=b['total_bytes'])
         r['exit_code']=entry['exit_code']
@@ -147,7 +191,7 @@ def run(container):
             'normal model exit required: '+entry.get('error',str(entry['exit_code'])))
         text=err.read_text(errors='replace');model.evidence(text,'small',r['row'],r,entry['pid'])
         r['native_state_diagnostic_passed']=True
-        require(len(r['maps'])==4,'map snapshots incomplete')
+        require(len(r['maps'])==len(r['client_boundaries'])==4,'map/client boundary snapshots incomplete')
         r['trace']=trace_evidence(text);admission(original,container)
         model.model.model_pins(model.model.setup()['config'],r['model_assets'],full=True)
         r['full_model_hashes_matched']=15;r['host_probe_accepted']=True
@@ -168,7 +212,7 @@ def analyze(container):
         compact(r)==container[KEY],'commit the original closed collection first')
     require(r['complete'] and r['passed'] and not r['active'] and r['ownership_closed'] and
         r['exit_code']==0 and r['full_model_hashes_matched']==15,'completed collection required')
-    require('ur_allocation_analysis' not in container['owner_trace_obligations'],'no analysis overwrite')
+    require(ANALYSIS_KEY not in container['owner_trace_obligations'],'no analysis overwrite')
     revision=model.gate.native.build.git(P,'rev-parse','HEAD').decode().strip()
     current_inputs=pins(revision)
     for name,h in r['input_sha256'].items():
@@ -245,9 +289,27 @@ def analyze(container):
         causal_phase_attribution_qualified=False,physical_owner_attribution_qualified=False,
         interpretation='All observed successful USM allocations/frees and the two simple buffer create/release pairs conserve requested bytes. Peak is callback-sequence requested-byte accounting,not physical residency. The stderr-bounded event list is not causal B33 assignment;library frames remain unresolved and driver/pool/program/command storage is unobserved. Zero final requested bytes is not physical allocator cleanup or ordinary-runtime-teardown qualification.',
         next_action='Measure the owning DRM client and lower-level allocator/program/command backing at matched phase boundaries;do not name a leak or library owner from global free memory alone.')
-    container['owner_trace_obligations']['ur_allocation_analysis']=result;write(RESULT,container)
+    boundaries=r['client_boundaries'];require(len(boundaries)==4,'four owning-client observations required')
+    changes=[]
+    for boundary_no,(before,after) in enumerate(zip(boundaries,boundaries[1:])):
+        previous={c['client_id']:c['memory_bytes'] for c in before['clients']}
+        for client in after['clients']:
+            old=previous[client['client_id']];new=client['memory_bytes']
+            require(set(old)==set(new),'client memory counter set changed')
+            changes.append(dict(from_boundary=boundary_no,client_id=client['client_id'],
+                memory_delta_bytes={k:new[k]-old[k] for k in old}))
+    prior=container['owner_trace_obligations']['ur_allocation_analysis']
+    require(digest(prior['trace']['path'])==prior['trace']['sha256'],'original UR comparison trace changed')
+    result.update(client_boundary_changes=changes,
+        previous_trace_comparison=dict(source_commit=prior['collection_source_commit'],
+            prior_trace_sha256=prior['trace']['sha256'],same_allocation_counts_and_bytes=prior['successful_allocations']==totals,
+            same_release_count=prior['successful_releases']==frees,
+            prior_free_memory_decrease_bytes=prior['reported_free_memory_decrease_bytes']),
+        interpretation=result['interpretation']+' DRM deltas are per client across READY/DONE boundaries,not the narrower dense phase. Shared objects are not summed across clients.')
+    container['owner_trace_obligations'][ANALYSIS_KEY]=result;write(RESULT,container)
     print(json.dumps({k:result[k] for k in ('successful_allocations','successful_releases',
-        'final_requested_bytes','stderr_interval_events','reported_free_memory_decrease_bytes')}),flush=True)
+        'final_requested_bytes','reported_free_memory_decrease_bytes','client_boundary_changes',
+        'previous_trace_comparison')}),flush=True)
 
 
 if __name__=='__main__':
