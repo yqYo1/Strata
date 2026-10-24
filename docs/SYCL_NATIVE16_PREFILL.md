@@ -1206,7 +1206,14 @@ All26 selected/private native assets verify before and after deletion. Original
 individual native results recover at`5c7bde19c`;the current result keeps the
 32-refusal aggregate,two fixture results,fault/ownership outcome and manifest.
 Private generated source and its actual-input receipt remain only for the
-imminent short-serve/MTP attribution consumer.
+imminent short-serve/MTP attribution consumer. The prepared
+[short-serve plan](../bench/results/2026-10-15-pr6-recovery-audit/mtp-resident-serve-current.json)
+uses two fresh processes,cap0 then1,with33/257 synthetic inputs and32 generated
+IDs per request. Source`fbeec37b8` has four host protocol/corruption controls;
+actual MTP rounds,verifier windows,prompt callbacks and output counts must
+conserve. This is a route gate,not a speed or task-quality sample. Original
+prefill,131072 resident INT8 context,1256 decode slots and runtime safety stay
+fixed;full model hashes and independent long benchmarks remain required.
 For the prefill restoration,any decode impact,including state handoff,
 configuration,placement or throughput,is a separation defect to resolve.
 Keep the existing selected decode route until independent qualification.
