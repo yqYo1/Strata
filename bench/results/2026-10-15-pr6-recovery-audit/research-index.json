@@ -10350,5 +10350,29 @@
       }
     ],
     "retired_transaction_inputs": "Original specs/source-pin duplicates/worker lifecycle receipts are retired after accepted settlement and native review;use f29175c9f index fields and closed_v4_model_audit_retirement. Historical pinned small stderr was consumed by source review;its useful before/after delta is preserved in full-context-current.owner_trace_obligations."
+  },
+  "ur_memory_observer_contract_audit_20261024": {
+    "classification": "decision_support",
+    "schedulable_now": true,
+    "status": "eligible_preparing_startup",
+    "source_commit": "45ad0be2eeb523935c3d653bd9fa223d0581f430",
+    "source_sha256": {
+      "/home/yayoi/orca/workspaces/Strata/sycl/tools/sycl/ur_memory_subscriber.cpp": "9d4fd222b41b717f1bb375a26f4343d5335f136fcfa1053014e77220c7d5e81c",
+      "/home/yayoi/orca/workspaces/Strata/sycl/tools/sycl/ur_memory_packet_test.cpp": "9a9d79a91bfc2471f9a11d78d94bbb1ef7b71fc729586501ed58977d18dd297a",
+      "/home/yayoi/orca/workspaces/Strata/sycl/tools/sycl/memory_trace.py": "7bbac78b31d5841e23ee533f2cf98fb08e190c3df9c83551be4e2a6da9b94e24",
+      "/home/yayoi/orca/workspaces/Strata/sycl/tools/sycl/memory_trace_device.py": "9fb86c4f0f025b3267ef93dbb9ac9147ac8fa40dbdc7020e3b0b297bea834d50",
+      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/ur-memory-subscriber-v1/record.json": "52187cc079c0c3e92d9ad69123f115b5f764aaf8c34231e032453c4ba32039de",
+      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/ur-memory-device-v1/record.json": "cb363fc308340af8fdb755fa60f1a7267eb5eb6c29ae1e520b363fe48fdf90ea"
+    },
+    "prerequisites": [
+      {
+        "met": true,
+        "evidence": "New observer CPU packet/real loader activation and actual10-check GPU submission trace pass;first model observer path and interpretation need a source/contract audit. Existing short-memory source audit did not inspect this new subscriber."
+      }
+    ],
+    "question": "Audit UR/XPTI memory observer callback/lifetime/coverage and first model phase attribution limits;avoid a generic owner survey.",
+    "report": "/home/yayoi/orca/workspaces/Strata/sycl/.cache/strata-research/20261024/ur-memory-observer-contract/report.md",
+    "report_budget_bytes": 12288,
+    "next_review": "Native Luna-max review,then first model trace interpretation/source correction. Retire consumed audit after findings are applied."
   }
 }
