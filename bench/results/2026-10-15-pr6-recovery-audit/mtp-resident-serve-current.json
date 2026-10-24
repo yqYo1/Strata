@@ -1,5 +1,5 @@
 {
-  "stage": "prepared",
+  "stage": "failed",
   "source_commit": "fbeec37b8be217b7d2412a15ebba4cbbc240a527",
   "input_sha256": {
     "data/expert-profile.bin": "8f59b4aa8873209dff11c11e37bcda9529a1335b724a1afeea37bf6388975baf",
@@ -207,9 +207,26 @@
     "total_cap": 268435456
   },
   "retention": "Keep compact per-request route/count/wire/result hashes and per-process ownership/fault outcomes. Retire successful stdout/stderr/JIT after replay. Reuse only model configuration/assets from full_context_model.setup;never its retired candidate engine qualification.",
-  "outcomes": {},
+  "outcomes": {
+    "0": {
+      "passed": false,
+      "exit_code": -15,
+      "error": "RuntimeError('native model exit/ownership failed')",
+      "ownership_closed": false,
+      "fresh_faults": [],
+      "boot_unchanged": true,
+      "driver_after": {
+        "pci": "/sys/bus/pci/devices/0000:05:00.0",
+        "driver": "xe",
+        "vendor": "0x8086",
+        "device": "0xe20c",
+        "kernel": "7.0.0-38-generic",
+        "devcoredump": false
+      }
+    }
+  },
   "active": false,
-  "ownership_closed": true,
+  "ownership_closed": false,
   "passed": false,
   "complete": false,
   "speed_eligible": false,
@@ -228,5 +245,37 @@
     "exit_code": 0,
     "passed": true,
     "scope": "Host-only valid/invalid trace-conservation and protocol-wire controls;not native/model execution."
+  },
+  "failure_interpretation": "Controller wrongly required INFO kv_resident=131072. Original native INFO prints physical resident slots only in streamed main-KV mode1;with max_context=kv_resident=131072,kv_plan keeps all pages in VRAM at mode0 and INFO prints0. Model reached READY with correct slots/spec/pool/no caching;no GEN submitted. Interaction assertion triggered owned SIGTERM;exit-15 is not a GPU hang. Original failed/ownership_closed=false outcome remains unchanged.",
+  "termination_evidence": {
+    "pid": 3163652,
+    "direct_identity": {
+      "pid": 3163652,
+      "state": "R",
+      "ppid": 3162792,
+      "pgid": 3163652,
+      "sid": 3163652,
+      "start_ticks": 117075506,
+      "rss_bytes": 323584
+    },
+    "direct_child_reaped": true,
+    "session_empty": true,
+    "survivors": [],
+    "exit_code": -15,
+    "error": "RuntimeError('actual model/cache/MTP configuration differs')",
+    "cleanup": [
+      {
+        "pid": 3163652,
+        "start_ticks": 117075506,
+        "signal": "SIGTERM",
+        "result": "sent"
+      }
+    ]
+  },
+  "kv_contract_source": {
+    "revision": "6e40afc1beddd059ee518617f6c1efce1da14aca",
+    "allocation": "src/core/layer.cpp:kv_plan",
+    "reporting": "src/program/generate.cpp:INFO kv_resident conditional on kv_mode==1",
+    "native_change_required": false
   }
 }
