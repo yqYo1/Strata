@@ -1,10 +1,10 @@
 {
-  "schema": "strata-resident-mtp-control-v2",
-  "stage": "build_failed",
-  "source_commit": "2abb70d8408e55a76c6abd5cb35a291d4a1bafd1",
+  "schema": "strata-resident-mtp-control-v3",
+  "stage": "retired_previous",
+  "source_commit": "26d48498529f8bc38327a9b9e4ebbbe610ae5b1d",
   "input_sha256": {
-    "tools/sycl/mtp_resident_control.py": "ea91e839d5cc0f14dac64888079e72b0296c5a3b3d64438bcabe26d3d2b395f7",
-    "tools/sycl/test_mtp_resident_control.py": "e13bf24d8235063a1a9f45d57dd041d1693b5e2c5a6b5dffcfe32678c09eeb44",
+    "tools/sycl/mtp_resident_control.py": "fcc35c63d9c4da33e1b9fea8f2ab5fa15b80a909ce9f8b29c713d74f1530c9c4",
+    "tools/sycl/test_mtp_resident_control.py": "3a42b2dcd3b9775dc3923e9359afad3bff949bb57a3abe805c0c3b1568e9109f",
     "tools/sycl/build_engine.py": "8444783ab417378207ec89ad2bc3cf648480e20d9e77f06ebb3070c93e10b131",
     "tools/sycl/build_full_context.py": "6e2aa8c584e0fd014157cfd08360945ae2d28ad2db660499d9f4eb900e517b72",
     "tools/sycl/check_full_context_source.py": "5e72fa724e890e682382758caf6222042e1ec89770962ce205ab756783332030",
@@ -25,8 +25,19 @@
     "limits": "Original build remains selected; this source-only diagnostic is not adoption."
   },
   "base_native_source": "6e40afc1beddd059ee518617f6c1efce1da14aca",
-  "generated_source_files": 542,
-  "generated_source_fingerprint": "5e012dcd1b00291122742b4fd9cdad6c2bc50cc5af862b40686247af3e94c270",
+  "configure_extra_paths": [
+    "tools/sycl/expert_contract.cpp",
+    "tools/sycl/gemm_device_probe.cpp",
+    "tools/sycl/gemm_orientation_bench.cpp",
+    "tools/sycl/gr_bench.cpp",
+    "tools/sycl/host_transfer_probe.cpp",
+    "tools/sycl/kv_copy_groups_bench.cpp",
+    "tools/sycl/kv_copy_groups_host.cpp",
+    "tools/sycl/moe_bench.cpp",
+    "tools/sycl/projection_bench.cpp"
+  ],
+  "generated_source_files": 551,
+  "generated_source_fingerprint": "5de18ab019155c32cc3d3c61b0d5b4c3f65e4d0fab16cb42dc67ee34a30cb575",
   "changed_native_files": [
     "src/core/mtp.cpp",
     "src/program/generate.cpp"
@@ -41,16 +52,16 @@
       "sha256": "a38f477670fafcd1a931be2e20d90d6d9718df75b61954b421f361af9f6881b2"
     },
     "replacements": {
-      "TMPDIR": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/mtp-resident-control-v2/tmp",
-      "XDG_CACHE_HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/mtp-resident-control-v2/cache"
+      "TMPDIR": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/mtp-resident-control-v3/tmp",
+      "XDG_CACHE_HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/mtp-resident-control-v3/cache"
     }
   },
   "configure_argv": [
     "/usr/bin/cmake",
     "-S",
-    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/mtp-resident-control-v2/source",
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/mtp-resident-control-v3/source",
     "-B",
-    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/mtp-resident-control-v2/build",
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/mtp-resident-control-v3/build",
     "-G",
     "Ninja",
     "-DCMAKE_CXX_COMPILER=/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin/clang++",
@@ -96,7 +107,7 @@
   "build_command": [
     "/usr/bin/cmake",
     "--build",
-    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/mtp-resident-control-v2/build",
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/mtp-resident-control-v3/build",
     "--target",
     "strata",
     "sycl_verifier_retirement_test",
@@ -117,12 +128,12 @@
   "dependency_command": [
     "/usr/bin/ninja",
     "-C",
-    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/mtp-resident-control-v2/build",
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/mtp-resident-control-v3/build",
     "-t",
     "deps"
   ],
   "generated_header_sha256": {
-    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/mtp-resident-control-v2/build/ggml/src/ggml-version.h": "9e45eee8391971371922f51b66925184609125d467c444744599f680b78edc92"
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/mtp-resident-control-v3/build/ggml/src/ggml-version.h": "9e45eee8391971371922f51b66925184609125d467c444744599f680b78edc92"
   },
   "retire_generation": {
     "source_commit": "1cba8a2857891862f8ed4c534d8afee3b0aeaf98",
@@ -209,50 +220,31 @@
     "manifest_path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/mtp-resident-control-v1/retired-generation.jsonl",
     "manifest_sha256": "7a8b62768fdbaf42495592a44c170c2f5b270f238003861b3f84d21278af58aa"
   },
-  "prior_prebuild_failure": {
-    "archive_commit": "2abb70d8408e55a76c6abd5cb35a291d4a1bafd1",
+  "prior_failed_operation": {
+    "archive_commit": "26d48498529f8bc38327a9b9e4ebbbe610ae5b1d",
     "path": "bench/results/2026-10-15-pr6-recovery-audit/mtp-resident-control-current.json",
-    "source_commit": "8af8fe1e3c038133b6aad53cf5278ee8e8c51958",
-    "initial_cpu_source_check": {
-      "source_commit": "8af8fe1e3",
-      "tests": 6,
-      "exit_code": 1,
-      "passed": false,
-      "error": "test_only_declared_mtp_edits_and_no_prefill_or_first_draft_edit: generic signature-tail anchor also matches draft_first (2 occurrences). CPU source generator/guard checks otherwise complete;no native compilation or GPU/model execution. Correct the test anchor in a new committed source/plan before build;do not reinterpret this failed check as passed.",
-      "build_permitted": false,
-      "retirement_independent": "Old candidate prefill comparison is already closed/rejected;source9853/recipe/SDK/asset/remote proofs completed. Its unused generation retirement remains separately permitted;selected original13 assets stay unchanged."
+    "source_commit": "2abb70d8408e55a76c6abd5cb35a291d4a1bafd1",
+    "stage": "build_failed",
+    "cause": "Original CMake references9 unrequested diagnostic .cpp inputs absent from the linked-source receipt. CPU8+6 checks passed;configure generation failed,normal owned closure,no engine compilation or GPU execution.",
+    "original_v1_archive": {
+      "commit": "afb9b33ed",
+      "path": "bench/results/2026-10-15-pr6-recovery-audit/mtp-resident-control-current.json",
+      "outcome": "V1 source/admission failures remain failed;original deletion manifest remains retained."
     },
-    "source_admission_negative_control": {
-      "source_commit": "8af8fe1e3",
-      "cases": [
-        {
-          "case": "unbound_environment",
-          "unexpected_acceptance": true
-        },
-        {
-          "case": "missing_generated_mtp_pin",
-          "unexpected_acceptance": true
-        }
-      ],
-      "passed": false,
-      "GPU_executed": false,
-      "scope": "In-memory copies only;actual record/environment/source files unchanged. Old admission did not bind omitted raw environment/generated-input maps to its compact committed fields. Must correct prospectively before native build;does not revise prior CPU failure."
-    },
-    "native_source_review": {
-      "path": ".cache/strata-research/20261024/mtp-net-control/control-source-review.json",
-      "sha256": "7b927b1add3970b1976fceabcfa74279b0c718883327c241036e695639b25db2",
-      "verdict": "hold_v1_build",
-      "findings": "Cap-zero source path and unchanged normal/prefill source confirmed. Rebind omitted environment/generated/dependency/tool/external metadata and exact compilation closure. V1 already closed before build;completed retirement must not repeat. Main additionally verified all7 artifact hashes immediately before its serialized retirement;manifest is complete.",
-      "next": "Fresh v2 source/root/plan with metadata refusal tests and exact8192/1256 startup guard;keep original6e40 selected."
-    },
-    "outcome": "Closed before native compilation/GPU;two admission-negative controls unexpectedly accepted. Preserve original failure;this new source/root/plan is prospective.",
-    "source_copy_retirement": {
+    "outcome": "New committed source/root/plan includes original uncompiled configuration inputs;no failed operation is retried or promoted.",
+    "artifact_retirement": {
       "complete": true,
-      "files": 543,
-      "bytes": 9671990,
-      "manifest_path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/closed-mtp-control-v1-source-20261024.jsonl",
-      "manifest_sha256": "b60e50dc8a241b731268286f1e167ff045397c0d74252ae7bccb22d089556b92",
-      "original542_sources_recovered": true
+      "files": 564,
+      "bytes": 9936518,
+      "manifest_path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/closed-mtp-control-v2-configure-20261024.jsonl",
+      "manifest_sha256": "a3b27fe6d3ff46c7c7582bbad8350cfd94b5c9c8ad7e9d6e06a939b73b0d2416",
+      "original542_sources_recovered": true,
+      "diagnostic_hold": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/mtp-resident-control-v2/owned/configure.stderr",
+        "bytes": 3497,
+        "sha256": "9de0fcd80f38b14521b7338deb4c618363372dbce27fa8e6dab2bd5bf0ae330e",
+        "consumer": "Main first v3 configure;retire after successful generation or a distinct new diagnosis."
+      }
     }
   },
   "question": "Measure resident MTP4 versus resident-no-decode-draft under unchanged original prefill,target1256 slots and safety. This is an attribution control,not full MTP-off or hardware saturation.",
@@ -274,56 +266,20 @@
   "model_adoption_qualified": false,
   "retention": "One selected original13-asset fallback plus this imminent diagnostic generation. Retire old unselected7 assets/build only after original source/recipe/remote/consumer checks. Generated source is a disposable current compile input;remove it with closed build output after qualification/comparison. Keep compact measurements and original inputs in Git.",
   "metadata_sha256": {
-    "project_inputs": "d2eacd07768333b7893b7781494f735e32b258886097afde924d3b940b6b38a4",
-    "generated_inputs": "5e012dcd1b00291122742b4fd9cdad6c2bc50cc5af862b40686247af3e94c270",
+    "project_inputs": "a899dd57a2639f46a315bcb0f0b90e5f8b281332bfa8fc1401be5f081ecd49d8",
+    "generated_inputs": "5de18ab019155c32cc3d3c61b0d5b4c3f65e4d0fab16cb42dc67ee34a30cb575",
     "dependency_inputs": "2f463615c5e951cd000256f4238441bf28b054016d29cdcbca18e4d6a92ba198",
     "external_inputs": "149850c8f3fe4779cedb36846899f98f9a9c5a92ecb9ee27e7beda422c87967e",
-    "environment": "4a6a49254960ea4b1c442bcc6d69018376fbc0c78e52e3b4cccc5c0c5045e028",
+    "environment": "1ce5fcd02341365463fb4a3a4fcdfbb4141b1d3820d42703401e43f30209e63e",
     "compiler_inputs": "ed4c9e9a88394765fdd8eb5251db46eca703a327faf37bb8ce96ed72f452bf97"
   },
   "host_source_controls": {
-    "source_commit": "2abb70d84",
-    "source_and_admission_tests": 8,
+    "source_commit": "26d48498529f8bc38327a9b9e4ebbbe610ae5b1d",
+    "source_and_admission_tests": 9,
     "metadata_tests": 6,
     "passed": true,
-    "limits": "CPU source/metadata refusals only;no native compilation,GPU,model or adoption qualification. Repeat through the owned build operation before compile."
-  },
-  "actual_prepared_admission_controls": {
-    "source_commit": "2abb70d8408e55a76c6abd5cb35a291d4a1bafd1",
-    "positive_inputs_accepted": true,
-    "negative_cases": [
-      {
-        "field": "project_inputs",
-        "refused": true
-      },
-      {
-        "field": "generated_inputs",
-        "refused": true
-      },
-      {
-        "field": "dependency_inputs",
-        "refused": true
-      },
-      {
-        "field": "external_inputs",
-        "refused": true
-      },
-      {
-        "field": "environment",
-        "refused": true
-      },
-      {
-        "field": "compiler_inputs",
-        "refused": true
-      },
-      {
-        "field": "changed_map_and_local_digest",
-        "refused": true
-      }
-    ],
-    "passed": true,
     "GPU_executed": false,
-    "limits": "In-memory copies only;no native process/build launched. Original v1 failures remain unchanged."
+    "scope": "CPU source/configure-input and admission refusal controls. Repeat in owned build;no native/model/adoption qualification."
   },
-  "error": "RuntimeError('configure failed: -- The CXX compiler identification is Clang 22.1.0\\n-- Detecting CXX compiler ABI info\\n-- Detecting CXX compiler ABI info - done\\n-- Check for working CXX compiler: /home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin/clang++ - skipped\\n-- Detecting CXX compile features\\n-- Detecting CXX compile features - done\\n-- Performing Test CMAKE_HAVE_LIBC_PTHREAD\\n-- Performing Test CMAKE_HAVE_LIBC_PTHREAD - Success\\n-- Found Threads: TRUE  \\n-- Performing Test STRATA_COMPILER_HAS_FSYCL\\n-- Performing Test STRATA_COMPILER_HAS_FSYCL - Success\\n-- Performing Test STRATA_COMPILER_HAS_SYCL_SIZE_T_RANGE\\n-- Performing Test STRATA_COMPILER_HAS_SYCL_SIZE_T_RANGE - Success\\n-- Performing Test STRATA_SYCL_HAS_INTEL_HA_EXP\\n-- Performing Test STRATA_SYCL_HAS_INTEL_HA_EXP - Failed\\n-- Experimental Q2 CPU-order route: standard SYCL exp; Intel high-accuracy API unavailable\\n-- Performing Test COMPILER_FSYCL_SUPPORT\\n-- Performing Test COMPILER_FSYCL_SUPPORT - Success\\n-- Looking for C++ include sycl/sycl.hpp\\n-- Looking for C++ include sycl/sycl.hpp - found\\n-- MKL_VERSION: 2026.1.0\\n-- MKL_ROOT: /opt/intel/oneapi/mkl/2026.1\\n-- MKL_ARCH: intel64\\n-- MKL_SYCL_LINK: dynamic\\n-- MKL_LINK: dynamic\\n-- MKL_SYCL_INTERFACE_FULL: None, set to ` intel_ilp64` by default\\n-- MKL_INTERFACE_FULL: None, set to ` intel_ilp64` by default\\n-- MKL_SYCL_THREADING: sequential\\n-- MKL_THREADING: sequential\\n-- MKL_SYCL_MPI: None, set to ` intelmpi` by default\\n-- MKL_MPI: None, set to ` intelmpi` by default\\n-- Found /opt/intel/oneapi/mkl/2026.1/lib/libmkl_scalapack_ilp64.so\\n-- Found /opt/intel/oneapi/mkl/2026.1/lib/libmkl_cdft_core.so\\n-- Found /opt/intel/oneapi/mkl/2026.1/lib/libmkl_intel_ilp64.so\\n-- Found /opt/intel/oneapi/mkl/2026.1/lib/libmkl_sequential.so\\n-- Found /opt/intel/oneapi/mkl/2026.1/lib/libmkl_core.so\\n-- Found /opt/intel/oneapi/mkl/2026.1/lib/libmkl_blacs_intelmpi_ilp64.so\\n-- Could NOT find mkl_sycl_distributed_dft for target MKL::MKL_SYCL_DISTRIBUTED_DFT\\n-- Found /opt/intel/oneapi/mkl/2026.1/lib/libmkl_sycl_blas.so\\n-- Found /opt/intel/oneapi/mkl/2026.1/lib/libmkl_sycl_lapack.so\\n-- Found /opt/intel/oneapi/mkl/2026.1/lib/libmkl_sycl_dft.so\\n-- Found /opt/intel/oneapi/mkl/2026.1/lib/libmkl_sycl_sparse.so\\n-- Found /opt/intel/oneapi/mkl/2026.1/lib/libmkl_sycl_data_fitting.so\\n-- Found /opt/intel/oneapi/mkl/2026.1/lib/libmkl_sycl_rng.so\\n-- Found /opt/intel/oneapi/mkl/2026.1/lib/libmkl_sycl_stats.so\\n-- Found /opt/intel/oneapi/mkl/2026.1/lib/libmkl_sycl_vm.so\\n-- Strata: opt-in vLLM Xe2 native16; isolated BMG G21 AOT object; existing engine JIT; external TLA pinned; UNQUALIFIED\\n-- Performing Test STRATA_CPU_ARCH_znver3_SUPPORTED\\n-- Performing Test STRATA_CPU_ARCH_znver3_SUPPORTED - Success\\n-- The C compiler identification is Clang 22.1.0\\n-- Detecting C compiler ABI info\\n-- Detecting C compiler ABI info - done\\n-- Check for working C compiler: /home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin/clang - skipped\\n-- Detecting C compile features\\n-- Detecting C compile features - done\\n-- The ASM compiler identification is Clang with GNU-like command-line\\n-- Found assembler: /home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin/clang\\n-- Warning: ccache not found - consider installing it for faster compilation or disable this warning with GGML_CCACHE=OFF\\n-- CMAKE_SYSTEM_PROCESSOR: x86_64\\n-- GGML_SYSTEM_ARCH: x86\\n-- Including CPU backend\\n-- x86 detected\\n-- Adding CPU backend variant ggml-cpu: -march=native \\n-- ggml version: 0.24.0\\n-- ggml commit:  3cf03257f\\n-- Configuring done (8.9s)\\nCMake Error at cmake/sycl_backend.cmake:32 (add_executable):\\n  Cannot find source file:\\n\\n    tools/sycl/host_transfer_probe.cpp\\nCall Stack (most recent call first):\\n  CMakeLists.txt:211 (include)\\n\\n\\nCMake Error at cmake/sycl_backend.cmake:118 (add_executable):\\n  Cannot find source file:\\n\\n    tools/sycl/kv_copy_groups_host.cpp\\nCall Stack (most recent call first):\\n  CMakeLists.txt:211 (include)\\n\\n\\nCMake Error at cmake/sycl_backend.cmake:121 (add_executable):\\n  Cannot find source file:\\n\\n    tools/sycl/kv_copy_groups_bench.cpp\\nCall Stack (most recent call first):\\n  CMakeLists.txt:211 (include)\\n\\n\\nCMake Error at cmake/sycl_backend.cmake:172 (add_executable):\\n  Cannot find source file:\\n\\n    tools/sycl/gemm_orientation_bench.cpp\\nCall Stack (most recent call first):\\n  CMakeLists.txt:211 (include)\\n\\n\\nCMake Error at cmake/sycl_backend.cmake:218 (add_executable):\\n  Cannot find source file:\\n\\n    tools/sycl/projection_bench.cpp\\nCall Stack (most recent call first):\\n  CMakeLists.txt:211 (include)\\n\\n\\nCMake Error at cmake/sycl_backend.cmake:221 (add_executable):\\n  Cannot find source file:\\n\\n    tools/sycl/moe_bench.cpp\\nCall Stack (most recent call first):\\n  CMakeLists.txt:211 (include)\\n\\n\\nCMake Error at cmake/sycl_backend.cmake:224 (add_executable):\\n  Cannot find source file:\\n\\n    tools/sycl/gr_bench.cpp\\nCall Stack (most recent call first):\\n  CMakeLists.txt:211 (include)\\n\\n\\nCMake Error at cmake/sycl_backend.cmake:228 (add_executable):\\n  Cannot find source file:\\n\\n    tools/sycl/expert_contract.cpp\\nCall Stack (most recent call first):\\n  CMakeLists.txt:211 (include)\\n\\n\\nCMake Error at cmake/sycl_backend.cmake:321 (add_executable):\\n  Cannot find source file:\\n\\n    tools/sycl/gemm_device_probe.cpp\\nCall Stack (most recent call first):\\n  CMakeLists.txt:211 (include)\\n\\n\\nCMake Error at cmake/sycl_backend.cmake:32 (add_executable):\\n  No SOURCES given to target: sycl_host_transfer_probe\\nCall Stack (most recent call first):\\n  CMakeLists.txt:211 (include)\\n\\n\\nCMake Error at cmake/sycl_backend.cmake:118 (add_executable):\\n  No SOURCES given to target: kv_copy_groups_host_fixture\\nCall Stack (most recent call first):\\n  CMakeLists.txt:211 (include)\\n\\n\\nCMake Error at cmake/sycl_backend.cmake:121 (add_executable):\\n  No SOURCES given to target: sycl_kv_copy_groups_bench\\nCall Stack (most recent call first):\\n  CMakeLists.txt:211 (include)\\n\\n\\nCMake Error at cmake/sycl_backend.cmake:172 (add_executable):\\n  No SOURCES given to target: sycl_gemm_orientation_bench\\nCall Stack (most recent call first):\\n  CMakeLists.txt:211 (include)\\n\\n\\nCMake Error at cmake/sycl_backend.cmake:218 (add_executable):\\n  No SOURCES given to target: sycl_projection_bench\\nCall Stack (most recent call first):\\n  CMakeLists.txt:211 (include)\\n\\n\\nCMake Error at cmake/sycl_backend.cmake:221 (add_executable):\\n  No SOURCES given to target: sycl_moe_bench\\nCall Stack (most recent call first):\\n  CMakeLists.txt:211 (include)\\n\\n\\nCMake Error at cmake/sycl_backend.cmake:224 (add_executable):\\n  No SOURCES given to target: sycl_gr_bench\\nCall Stack (most recent call first):\\n  CMakeLists.txt:211 (include)\\n\\n\\nCMake Error at cmake/sycl_backend.cmake:228 (add_executable):\\n  No SOURCES given to target: sycl_expert_contract\\nCall Stack (most recent call first):\\n  CMakeLists.txt:211 (include)\\n\\n\\nCMake Error at cmake/sycl_backend.cmake:321 (add_executable):\\n  No SOURCES given to target: sycl_gemm_device_probe\\nCall Stack (most recent call first):\\n  CMakeLists.txt:211 (include)\\n\\n\\nCMake Generate step failed.  Build files cannot be regenerated correctly.\\n')"
+  "configure_extra_source_provenance": "Nine sources declared by original6e40 cmake/sycl_backend.cmake. Their first commits are own fork SYCL diagnostics:deea4d862,d3f6aa508,d00ea8773,2ef5c48d0 before XeStrata evaluation;5ef5d8478,a4d27df24,c8a682103,7d2d344fa are existing independent diagnostic additions. Preserve original notices. They are not built by the pinned13 targets;no XeStrata application source is used."
 }
