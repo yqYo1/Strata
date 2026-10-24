@@ -29,6 +29,7 @@
 
 #include "strata/kernels/cpu/expert.hpp"
 #include "strata/kernels/cpu/native_expert.hpp"
+#include "strata/kernels/cpu/service_profile.hpp"
 
 #include <atomic>
 #include <cstdio>
@@ -133,6 +134,14 @@ public:
     /// is on" is only true if the engine says which adaptation it took.
     bool host_works() const { return host_works_; }
 
+#ifdef STRATA_CPU_SERVICE_PROFILE
+    // Generation thread only, outside its decode clock. Native batch retirement
+    // and the diagnostic mutex publish worker AND dedicated dispatch-host writes.
+    service::Snapshot service_snapshot() const {
+        return service_profile_.snapshot(true);
+    }
+#endif
+
     bool is_hybrid() const { return topo_.is_hybrid; }
     int p_cores() const { return topo_.p_cores; }
     int p_threads() const { return topo_.p_threads; }
@@ -205,6 +214,9 @@ private:
     void publish();
 
     int n_ = 0;
+#ifdef STRATA_CPU_SERVICE_PROFILE
+    service::Profile service_profile_;
+#endif
     bool host_works_ = true;
     ExpertJob* jobs_ = nullptr;
     int njobs_ = 0;

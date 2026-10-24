@@ -343,7 +343,11 @@ void ExpertPool::diag(std::FILE* f) const {
 }
 
 ExpertPool::ExpertPool(int n_workers, bool pin, bool host_works, PoolAffinity affinity)
-    : host_works_(host_works), affinity_(affinity), topo_(detect_cpu_topology(true, affinity)) {
+    :
+#ifdef STRATA_CPU_SERVICE_PROFILE
+      service_profile_([] { const char* e=std::getenv("STRATA_CPU_SERVICE");return e && e[0]=='1' && e[1]=='\0'; }()),
+#endif
+      host_works_(host_works), affinity_(affinity), topo_(detect_cpu_topology(true, affinity)) {
     if (const char* e = std::getenv("STRATA_POOL_SPIN_US"))   // a test knob; see kSpinBeforeSleep
         spin_before_sleep_ = std::chrono::microseconds((std::max)(0, std::atoi(e)));
     if (n_workers > 0) {
@@ -540,6 +544,10 @@ void ExpertPool::drain(int id, ExpertScratch& scratch, uint32_t epoch) {
                 const int e = (int) (r / per), r0 = (int) (r % per);
                 const int r1 = (int) std::min<int64_t>(per, r0 + (g1 - r));
                 SplitBufMulti& sb = split_multi_[(size_t) e];
+#ifdef STRATA_CPU_SERVICE_PROFILE
+                service::Profile::Scope cpu_service(service_profile_,id,*nfmt_,
+                    mode_==5?service::Op::Gu:service::Op::Down,mjobs_[e].nt,r1-r0,native_gu_phase_);
+#endif
                 if (mode_ == 5 && nfmt_->gu_type == 42) {
                     // a native Q2_0 pack: gate and up rows on the Q2_0 kernels, then SwiGLU
                     thread_local float gbuf[MAXT][FF], ubuf[MAXT][FF];
@@ -661,6 +669,9 @@ void ExpertPool::run_split_multi(ExpertJobMulti* jobs, int n) {
 }
 
 void ExpertPool::run_split_multi_native(const NativeFmt& f, ExpertJobMulti* jobs, int n, NativeGuPhase phase) {
+#ifdef STRATA_CPU_SERVICE_PROFILE
+    service::Profile::BatchScope service_batch(service_profile_,phase);
+#endif
     if (n <= 0) return;
     const auto t0 = std::chrono::steady_clock::now();
     // more distinct experts than buffers: run them in batches
@@ -677,13 +688,17 @@ void ExpertPool::run_split_multi_native(const NativeFmt& f, ExpertJobMulti* jobs
         const auto a = std::chrono::steady_clock::now();
         run_phase(5, mtasks_);
         const auto b = std::chrono::steady_clock::now();
-        for (int e = 0; e < nb; ++e)
+        for (int e = 0; e < nb; ++e) {
+#ifdef STRATA_CPU_SERVICE_PROFILE
+            service::Profile::Scope cpu_service(service_profile_,-1,f,service::Op::HiddenQuant,mjobs_[e].nt,FF,phase);
+#endif
             for (int t = 0; t < mjobs_[e].nt; ++t)
                 if (f.d_type == 42) {
                     act_quant_any(split_multi_[(size_t) e].ff[t], FF, split_multi_[(size_t) e].a2[t]);
                 } else {
                     native_quant_h(f, split_multi_[(size_t) e].ff[t], split_multi_[(size_t) e].hq[t]);
                 }
+        }
         const auto c = std::chrono::steady_clock::now();
         mrows_ = (int64_t) nb * H;
         run_phase(6, mtasks_);

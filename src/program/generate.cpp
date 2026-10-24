@@ -6626,6 +6626,9 @@ int main(int argc, char** argv) {
             consumed.reserve((size_t) (n + max_new + S));
             for (int64_t i = 0; i < n - 1; ++i) consumed.push_back((int32_t) ids[(size_t) i]);
             const char* finish = "length";
+#ifdef STRATA_CPU_SERVICE_PROFILE
+            const auto cpu_service_begin=pool.service_snapshot();
+#endif
 #ifdef STRATA_ENABLE_SYCL
             const auto copy0 = ver.expert_copy_stats();
             const auto early_pcie0 = ver.early_pcie_stats();
@@ -6795,6 +6798,9 @@ int main(int argc, char** argv) {
                 std::printf("ERR %s\n", err.c_str());
                 return 1;
             }
+#ifdef STRATA_CPU_SERVICE_PROFILE
+            (void)strata::kernels::cpu::service::write_delta(stderr,census_request,cpu_service_begin,pool.service_snapshot());
+#endif
 #ifdef STRATA_ENABLE_SYCL
             mtp_observation.finish(!cancelled && std::strcmp(finish, "cancel") != 0);
             if (iq2_audit_enabled) {

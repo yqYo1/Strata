@@ -227,6 +227,37 @@ saturation. Stage clocks are nested. Expert-copy counters cover only their named
 route, not all physical PCIe traffic. Keep physical PCIe/VRAM traffic, CPU issued
 instructions and compatible-shape hardware ceilings unknown where unmeasured.
 
+The next CPU attribution source is prepared, **unbuilt and untested**. Optional
+`STRATA_CPU_SERVICE_PROFILE` compilation plus preexec`STRATA_CPU_SERVICE=1`
+collects decode-only pool GU/SwiGLU, hidden quantization and Down leaf scopes for
+the seven observed format pairs at H2560/FF640/NT1..4. It records calling-thread
+CPU and monotonic wall intervals, calls and output-row/token-row counts by format,
+width and pool thread. GU rows count the paired gate/up output rows, not two
+independent projections. Pool dispatch, claims and barriers, input activation
+quantization, routing and GPU work are outside these leaf scopes. Row counts
+must reconcile against the independent work census before timings are usable.
+Summed concurrent worker intervals are not an additive critical path, CPU time
+includes memory stalls, and physical RAM traffic remains unknown.
+
+Normal builds compile out this observer. The diagnostic mutex spans only a
+native decode pool batch, outside leaf clocks; existing parked-worker acquires
+publish worker writes, and mutex release/acquire also publishes the dedicated
+dispatch host's hidden-quantization slot to the separate generation reader.
+Snapshots run before the decode clock and after final commit. Unsupported
+geometry/width/worker, clock errors, counter overflow, slot-owner changes and
+inconsistent snapshots invalidate attribution. Observer and batch-lock overhead
+remain charged. This changes neither the selected original6e40 executable nor
+the active clean-width inputs; it is not an inference optimization or a speedup.
+
+At a serialized gap between live model processes, run the committed standalone
+collector host fixture under bounded ownership. After the frozen width comparison
+closes, require production-pool conservation/numerical checks; recover and retire
+the private comparison generation before another native engine build. A future instrumented engine must use original6e40 plus
+only the committed observer delta, not silently adopt the current worktree's
+unselected layout/full-context changes. Pin that recipe before building; require
+observer-off/on overhead and model census/clock/fault/source checks before
+using the per-format attribution to select a kernel or placement optimization.
+
 [Client-resource evidence](../bench/results/2026-10-15-pr6-recovery-audit/client-resources-current.json)
 and [actual-mix CPU calibration](../bench/results/2026-10-15-pr6-recovery-audit/cpu-roofline-current.json)
 provide scoped work/activity bounds. CPU perf counters were denied; the metric
