@@ -137,12 +137,17 @@ def logging_evidence(stdout,stderr,contract):
         rows=[]
         for sink,text in (('stdout',stdout),('stderr',stderr)):
             for line in text.splitlines():
-                if re.search(pattern,line):
+                match=re.search(pattern,line)
+                if match:
                     require(len(line)<=4096,'NEO record exceeds bounded line size')
-                    rows.append((sink,line))
+                    fields=match.groupdict()
+                    require('result' not in fields or int(fields['result'])==0,
+                        'NEO binding reports nonzero result: '+line)
+                    rows.append((sink,line,fields))
         require(rows or category not in required,'required NEO output missing: '+category)
         result[category]=dict(records=len(rows),required=category in required,
-            sinks=sorted({sink for sink,_ in rows}),representative=rows[0][1] if rows else None)
+            sinks=sorted({row[0] for row in rows}),representative=rows[0][1] if rows else None,
+            first_fields=rows[0][2] if rows else None)
     return dict(categories=result,scope='Observed logging capability only;not complete BO identity/lifetime,UMD-to-BO pointer join,KMD migration or ordinary teardown.')
 
 

@@ -4210,6 +4210,41 @@
         "consumer": "Imminent same-native NEO logging/UR comparison;record supplies immutable environment and239 dependency pins. Retire after comparison or replacement."
       },
       "limits": "Original success/failed/unrun statuses preserved. No new numerical,physical owner,decode-performance,ordinary teardown or adoption qualification."
+    },
+    "neo_logging_source_review": {
+      "native_review_passed": true,
+      "logging_only": true,
+      "flag_map": {
+        "LogAllocationType": "1",
+        "LogAllocationMemoryPool": "1",
+        "LogAllocationStdout": "1",
+        "PrintBOCreateDestroyResult": "1",
+        "PrintBOBindingResult": "1"
+      },
+      "installed_driver": {
+        "path": "/usr/lib/x86_64-linux-gnu/libze_intel_gpu.so.1.17.39395",
+        "sha256": "50adb6b727d027309039803033d41efeae4b248589ee363f321c0d538c7de3ff"
+      },
+      "report_sha256": "378d494caa7a07a0eb27e19cda2b797aef2b1f250db16d653ff331af36ee172f",
+      "native_review_sha256": "c19ca5571e13160bc69607e531b5ee09ac3556e138992a376b86db1f6aea74dc",
+      "native_review_agent": "/root/review_neo_allocation_logging_20261024",
+      "vendor_source_commit": "4e308a10b232dbb22a2a5c2cdb32eb2578577866",
+      "official_release": "https://github.com/intel/compute-runtime/releases/tag/26.31.39395.16",
+      "source_version_limit": "Official26.31.39395.16 maps to4e308a10;installed PPA binary exact build provenance remains unverified. Actual flag/output support requires this fresh selected-fixture gate.",
+      "output_contract": {
+        "required_patterns": {
+          "allocation_type": "^Created Graphics Allocation of type (?P<type>\\S+)$",
+          "allocation_pool_size": "ThreadID: .* Type: (?P<type>\\S+) Pool: (?P<pool>\\S+) Root index: (?P<root>\\d+) Size: (?P<size>\\d+) CPU VA: .* GPU VA: .* Total sys mem allocated: \\d+ Total lmem allocated: \\d+",
+          "bo_create": "(?:^Created new BO with GEM_USERPTR, handle: BO-(?P<handle>\\d+)$|^Created BO-(?P<handle>\\d+) range: (?P<start>[0-9a-fA-F]+) - (?P<end>[0-9a-fA-F]+), size: (?P<size>\\d+) from PRIME_FD_TO_HANDLE$)",
+          "bo_bind": "^(?P<op>bind) BO-(?P<handle>\\d+) (?:to|from) VM (?P<vm>\\d+), vmHandleId = \\d+, range: [0-9a-fA-F]+ - [0-9a-fA-F]+, size: \\d+, result: (?P<result>-?\\d+)",
+          "bo_unbind": "^(?P<op>unbind) BO-(?P<handle>\\d+) (?:to|from) VM (?P<vm>\\d+), vmHandleId = \\d+, range: [0-9a-fA-F]+ - [0-9a-fA-F]+, size: \\d+, result: (?P<result>-?\\d+)",
+          "bo_close_attempt": "^(?:Calling gem close on handle: BO-(?P<close_handle>\\d+)|Skipped closing BO-(?P<skip_handle>\\d+) - more shared users!)$"
+        },
+        "sinks": "Allocation type/detail and successful BO records expected stdout;binding errors stderr. Private cwd under64MiB output budget. No global timestamp/cross-thread order guarantee.",
+        "interpretation": "Create messages cover selected USERPTR/import paths,not all GEM creation. Close text records an attempt or shared-user skip,not ioctl success. No NEO-allocation-to-BO join,KMD migration,physical residency,PCIe bytes,ordinary teardown or speed qualification. Require original10-check success and every required category before model capture;missing path remains a failed capability,never silently relax after observation."
+      },
+      "consumer": "Main one bounded selected-fixture logging capability;full model only if it passes.",
+      "provenance": "Main-authored controller under repository LICENSE;official Intel source used only to select environment logging keys/output contract;no external application source copied."
     }
   },
   "model_state_v2": {
