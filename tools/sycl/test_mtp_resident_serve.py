@@ -1,0 +1,66 @@
+#!/usr/bin/env python3
+"""Host protocol/dispatch corruption controls; no model/device execution."""
+import copy
+import unittest
+import mtp_resident_serve as m
+
+
+def sample_trace(cap):
+    rows = []; text = ''; rounds = 0
+    for n in (33, 257):
+        # One initial token plus31 subsequent single tokens (no accepted drafts).
+        row = dict(prompt_tokens=n, reused_tokens=0, read_tokens=n,
+            generated_tokens=32, drafts_accepted=0, drafts_offered=0 if cap else 93)
+        rows.append(row)
+        text += f'strata serve: DRAFT_PREFILL path=batched mode=2 cells={n-1}\n'
+        for i in range(32): text += f'strata trace: window {n-1+i} {1 if cap or not i else 4}\n'
+        text += f'strata serve: prompt {n} tokens = 0 reused + {n} read, 32 generated\n'
+        if not cap: rounds += 31
+        text += f'strata resident MTP control: mtp_max_t={cap} cumulative_draft_rounds={rounds}\n'
+    return text, rows
+
+
+class Routes(unittest.TestCase):
+    def test_both_valid_routes_and_round_counts(self):
+        for cap in (0, 1):
+            text, rows = sample_trace(cap); out = m.route_evidence(text, rows, cap)
+            self.assertEqual(len(out), 2)
+            self.assertEqual([r['draft_rounds_delta'] for r in out], [0, 0] if cap else [31, 31])
+
+    def test_false_no_draft_or_missing_prompt_work_is_rejected(self):
+        text, rows = sample_trace(1)
+        for bad in (text.replace('window 33 1', 'window 33 4'),
+                    text.replace('cumulative_draft_rounds=0', 'cumulative_draft_rounds=1', 1),
+                    text.replace('mode=2 cells=32', 'mode=2 cells=31'),
+                    text.replace('mode=2 cells=32', 'mode=1 cells=32')):
+            with self.subTest(bad=bad[:80]), self.assertRaises(RuntimeError): m.route_evidence(bad, rows, 1)
+
+    def test_reference_round_and_output_conservation(self):
+        text, rows = sample_trace(0)
+        with self.assertRaises(RuntimeError):
+            m.route_evidence(text.replace('cumulative_draft_rounds=31', 'cumulative_draft_rounds=30'), rows, 0)
+        bad = copy.deepcopy(rows); bad[0]['generated_tokens'] = 33
+        with self.assertRaises(RuntimeError): m.route_evidence(text, bad, 0)
+        bad = copy.deepcopy(rows); bad[0]['drafts_accepted'] = 4
+        with self.assertRaises(RuntimeError): m.route_evidence(text, bad, 0)
+
+    def test_protocol_wires_and_reply_extents(self):
+        class IO:
+            def __init__(self): self.sent = []; self.finished = False; self.lines = []
+            def line(self, _): return self.lines.pop(0)
+            def send(self, value): self.sent.append(value)
+            def exit(self, _): self.finished = True
+        io = IO(); io.lines = ['INFO context=131072 kv=int8 kv_resident=131072 expert_slots=1256 '
+            'spec=4 mtp_max=1 lookup=0 pool_workers=5 pcie_frac=0.00 conversation_cache_mib=0', 'READY 131072 stop']
+        fixtures = []
+        for ids in m.requests():
+            payload = m.wire(ids); fixtures.append(dict(wire_bytes=len(payload), wire_sha256=m.hashlib.sha256(payload).hexdigest()))
+            io.lines += [f'PP {len(ids)-1}'] + [f'T {i}' for i in range(32)] + [f'DONE 32 {len(ids)} 0 0 length 0 0 0 0 0 0 0 0 {len(ids)}']
+        row = dict(requests=fixtures, vocab_size=4096); out = {}
+        m.interact(io, row, out, 1)
+        self.assertEqual(io.sent, [*(m.wire(ids) for ids in m.requests()), b'QUIT\n'])
+        self.assertTrue(io.finished); self.assertEqual(len(out['requests']), 2)
+        self.assertFalse(io.lines)
+
+
+if __name__ == '__main__': unittest.main()
