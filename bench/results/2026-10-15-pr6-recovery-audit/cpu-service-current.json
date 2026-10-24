@@ -96,5 +96,97 @@
     "remote_feature_tip": "5a30d36f987309e75b87f8c9941a464766715dd0",
     "scope": "Only this standalone host fixture and successful raw output;original/private engines and active-cohort evidence retained."
   },
-  "host_runner_archive": "b05a22c52:tools/sycl/cpu_service_profile.py"
+  "host_runner_archive": "b05a22c52:tools/sycl/cpu_service_profile.py",
+  "four_clock_reference": {
+    "stage": "prepared",
+    "source_commit": "f935f09791c5f834d0ed66c430c8d8c8d4a4d423",
+    "input_sha256": {
+      "tests/core/cpu_service_profile_test.cpp": "fdc4dce687abf224a11371a93ce03c6c81ef5e0c6ec563e0d78e346de635cec8",
+      "include/strata/kernels/cpu/service_profile.hpp": "68d2f0df14eddd7ef9963b790ce205e781df86b1c5c1a98e8e33fa3fab8efe93",
+      "include/strata/kernels/cpu/native_expert.hpp": "4764a1a881a4d7491165018ab71ff397132e4173f033160bf38f8cd6c8f33e72",
+      "tools/sycl/cpu_service_profile.py": "2323b9717c11ef97dc66985346e4367578a1ce8d9f8288d286b2da6552fcb9f3",
+      "tools/sycl/build_engine.py": "8444783ab417378207ec89ad2bc3cf648480e20d9e77f06ebb3070c93e10b131",
+      "tools/sycl/measurement_guards.py": "794e332c70aca0acadad4f26d0414548e023a02fd27b72ed78fc773674423ec8",
+      "tools/sycl/measurement_owner.py": "bddd0c5e5020e882ca3404679420faec11e820dabce2ed4c72ef82b4c9c0874a",
+      "tools/sycl/cpu_service_evidence.py": "5ba9d32a32ff7de7923e314eb3f283f200a0110b36e9ca22361e7625f311859e",
+      "tests/core/test_cpu_service_evidence.py": "b948835d149797a1c3f9c9530dbf7057597ef1b38e4e92820aa950b914699935",
+      "tools/sycl/cpu_work_census.py": "37038e04a8192ca3d3e1a8a1790a65db22110737630a30be43db64899ee3d1c6",
+      "tests/core/test_cpu_work_census.py": "8deb79e03e53088de1026c6371807acecd5dec2506d8e86375733467e2f8c36f"
+    },
+    "historical_result_sha256": "7ad4f3d8466b1cd011457003ef319d8b5dac1fd1c45a4d3399426197c8f2063a",
+    "provider_packages": [
+      "binutils=2.42-4ubuntu2.10",
+      "g++-13=13.3.0-6ubuntu2~24.04.1",
+      "gcc-13=13.3.0-6ubuntu2~24.04.1",
+      "libc6:amd64=2.39-0ubuntu8.9",
+      "libc6:i386=2.39-0ubuntu8.9",
+      "libc6-dev:amd64=2.39-0ubuntu8.9",
+      "libgcc-13-dev:amd64=13.3.0-6ubuntu2~24.04.1",
+      "libgcc-s1:amd64=14.2.0-4ubuntu2~24.04.1",
+      "libgcc-s1:i386=14.2.0-4ubuntu2~24.04.1",
+      "libpython3.12-stdlib:amd64=3.12.3-1ubuntu0.17",
+      "libstdc++-13-dev:amd64=13.3.0-6ubuntu2~24.04.1",
+      "libstdc++6:amd64=14.2.0-4ubuntu2~24.04.1",
+      "libstdc++6:i386=14.2.0-4ubuntu2~24.04.1",
+      "linux-libc-dev:amd64=6.8.0-147.147",
+      "python3.12-minimal=3.12.3-1ubuntu0.17"
+    ],
+    "compiler": {
+      "path": "/usr/bin/g++",
+      "sha256": "1353e9bdd29a7295c7226bf6c63abccce056d8cac31f112e5cdbecc3f28c2769",
+      "version": "g++ (Ubuntu 13.3.0-6ubuntu2~24.04.1) 13.3.0"
+    },
+    "stdlib": {
+      "path": "/usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.33",
+      "sha256": "1fd75fe70354a416d75aef22bcae68c47bd25d20e2d0568c30b1a9838cf62f11"
+    },
+    "python": {
+      "path": "/usr/bin/python3",
+      "sha256": "e50d468e8b0adfb05733f5b87b3cff34829c4a8c1aea50c865aa8bdfe4bb150f",
+      "version": "Python 3.12.3"
+    },
+    "command": [
+      "/usr/bin/g++",
+      "-std=c++20",
+      "-O2",
+      "-Wall",
+      "-Wextra",
+      "-Werror",
+      "-pedantic",
+      "-pthread",
+      "-DSTRATA_CPU_SERVICE_PROFILE=1",
+      "-I",
+      "/home/yayoi/orca/workspaces/Strata/sycl/include",
+      "-MMD",
+      "-MF",
+      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-service-host-clock-v1/fixture.d",
+      "/home/yayoi/orca/workspaces/Strata/sycl/tests/core/cpu_service_profile_test.cpp",
+      "-o",
+      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-service-host-clock-v1/fixture"
+    ],
+    "environment": {
+      "PATH": "/usr/bin:/bin",
+      "LANG": "C.UTF-8",
+      "LC_ALL": "C.UTF-8",
+      "TMPDIR": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-service-host-clock-v1/tmp"
+    },
+    "budgets": {
+      "wall": 90,
+      "cpu": 120,
+      "rss_cap": 2147483648,
+      "text_cap": 2097152,
+      "file_cap": 8388608,
+      "total_cap": 16777216
+    },
+    "criteria": "Owned same-request leaf/census reader controls,single compile,default collector controls,then --clock-screen;all exit0 and ownership closed. Actual project includes exactly the three pinned native files. Default counters/phase/thread/refusal controls still pass. Clock output exactly six distinct positive calling TIDs/lanes,65536 observations+512 warmups each,zero errors,ordered finite integer min/p50/p99/max wall/CPU values. No model or GPU;failure stops this gate without retry.",
+    "interpretation": "Four ordered clock reads only,without a kernel/counter update. Affinity uncontrolled. Observed per-lane distributions are not a universal upper bound on full Scope/model cost and must not be subtracted from leaf timings. Separate production-pool parity,same-request census and model observer-off/on overhead gates remain open.",
+    "retention": "Keep source/recipe,provider identities,per-lane compact distributions and original collector status. After committed source/recipe recovery,delete the standalone executable,successful raw output and this one-shot runner. No extra native engine generation.",
+    "passed": false,
+    "complete": false,
+    "active": false,
+    "ownership_closed": true,
+    "GPU_executed": false,
+    "production_pool_checked": false,
+    "model_adoption_qualified": false
+  }
 }
