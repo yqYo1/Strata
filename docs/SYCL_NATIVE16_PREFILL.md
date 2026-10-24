@@ -260,11 +260,11 @@ independent projections. Pool dispatch, claims and barriers, input activation
 quantization, routing and GPU work are outside these leaf scopes. Row counts
 must reconcile against the independent work census from the same new request
 and source before timings are usable; the older63af census is not that check.
-The prepared `cpu_service_evidence` reader revalidates that census from the
+The `cpu_service_evidence` reader revalidates that census from the
 same native text and binds GU/HQ/Down row and token-row counts to its format/NT
-jobs. It also checks request framing and thread/bin clock sums. Its negative
-controls are unrun and included in the next owned host gate; neither source
-preparation nor a reader pass supplies new production timing.
+jobs. It also checks request framing and thread/bin clock sums. Its six owned
+host controls pass, including rejection of partial/misbound rows and changing
+thread owners. This supplies no new production timing.
 GU and Down intervals include their local pointer preparation and native format
 dispatch, in addition to the selected kernel call.
 Summed concurrent worker intervals are not an additive critical path, CPU time
@@ -279,16 +279,16 @@ geometry/width/worker, clock errors, counter overflow, slot-owner changes and
 inconsistent snapshots invalidate attribution. Observer and batch-lock overhead
 remain charged to model execution; bin lookup and counter updates are outside
 the reported leaf intervals. Leaf intervals include clock-read cost. The
-prepared, unrun `cpu_service_profile_test --clock-screen` reports the same
-four-read sequence without a kernel, across five threads and the caller,
-with65536 samples each and uncontrolled affinity. Report that reference
-distribution alongside short HQ intervals, without subtraction or treating it
-as a universal bound on the full Scope/model overhead.
-The restored one-shot `tools/sycl/cpu_service_profile.py` prepares a new owned
-host gate for the reader and updated fixture, repeating collector controls before collecting
-the clock reference. It preserves the original host result and source identity.
-This new gate is unrun; its plan must be committed before compilation in a
-serialized gap. The old host pass does not qualify this changed fixture.
+host `cpu_service_profile_test --clock-screen` completes the same four-read
+sequence without a kernel, across five threads and the caller, with65536 samples
+each and uncontrolled affinity. All393216 observations pass the nested-clock
+checks. Per-lane wall medians are1.132..1.583us and p99 values1.553..1.923us;
+the largest wall observation is430.920us. CPU medians are0.551..0.781us.
+Report this reference distribution alongside short HQ intervals, without
+subtraction or treating it as a universal bound on the full Scope/model overhead.
+The new source`f935f0979` host gate also repeats the collector controls and
+closes all four owned commands at exit0. All11 source inputs and the original
+recipe recover from Git; the original host result/source remain unchanged.
 This changes neither the selected original6e40 executable nor
 the active clean-width inputs; it is not an inference optimization or a speedup.
 

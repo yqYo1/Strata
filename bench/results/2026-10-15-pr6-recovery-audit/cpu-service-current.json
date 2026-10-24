@@ -98,7 +98,7 @@
   },
   "host_runner_archive": "b05a22c52:tools/sycl/cpu_service_profile.py",
   "four_clock_reference": {
-    "stage": "prepared",
+    "stage": "host-checked",
     "source_commit": "f935f09791c5f834d0ed66c430c8d8c8d4a4d423",
     "input_sha256": {
       "tests/core/cpu_service_profile_test.cpp": "fdc4dce687abf224a11371a93ce03c6c81ef5e0c6ec563e0d78e346de635cec8",
@@ -181,12 +181,149 @@
     "criteria": "Owned same-request leaf/census reader controls,single compile,default collector controls,then --clock-screen;all exit0 and ownership closed. Actual project includes exactly the three pinned native files. Default counters/phase/thread/refusal controls still pass. Clock output exactly six distinct positive calling TIDs/lanes,65536 observations+512 warmups each,zero errors,ordered finite integer min/p50/p99/max wall/CPU values. No model or GPU;failure stops this gate without retry.",
     "interpretation": "Four ordered clock reads only,without a kernel/counter update. Affinity uncontrolled. Observed per-lane distributions are not a universal upper bound on full Scope/model cost and must not be subtracted from leaf timings. Separate production-pool parity,same-request census and model observer-off/on overhead gates remain open.",
     "retention": "Keep source/recipe,provider identities,per-lane compact distributions and original collector status. After committed source/recipe recovery,delete the standalone executable,successful raw output and this one-shot runner. No extra native engine generation.",
-    "passed": false,
-    "complete": false,
+    "passed": true,
+    "complete": true,
     "active": false,
     "ownership_closed": true,
     "GPU_executed": false,
     "production_pool_checked": false,
-    "model_adoption_qualified": false
+    "model_adoption_qualified": false,
+    "compiled_project_inputs": 3,
+    "fixture": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-service-host-clock-v1/fixture",
+      "sha256": "1241ca600660d13f1a5651a9d2b1f91d46b4ae1e1e8e239733780322fb6b9b90",
+      "bytes": 47304
+    },
+    "lanes": [
+      {
+        "lane": 0,
+        "samples": 65536,
+        "errors": 0,
+        "wall_ns": {
+          "min": 1153,
+          "p50": 1583,
+          "p99": 1923,
+          "max": 59231
+        },
+        "cpu_ns": {
+          "min": 571,
+          "p50": 781,
+          "p99": 932,
+          "max": 12443
+        }
+      },
+      {
+        "lane": 1,
+        "samples": 65536,
+        "errors": 0,
+        "wall_ns": {
+          "min": 1072,
+          "p50": 1132,
+          "p99": 1553,
+          "max": 51416
+        },
+        "cpu_ns": {
+          "min": 520,
+          "p50": 551,
+          "p99": 761,
+          "max": 9418
+        }
+      },
+      {
+        "lane": 2,
+        "samples": 65536,
+        "errors": 0,
+        "wall_ns": {
+          "min": 1092,
+          "p50": 1132,
+          "p99": 1553,
+          "max": 46066
+        },
+        "cpu_ns": {
+          "min": 531,
+          "p50": 551,
+          "p99": 761,
+          "max": 7915
+        }
+      },
+      {
+        "lane": 3,
+        "samples": 65536,
+        "errors": 0,
+        "wall_ns": {
+          "min": 1092,
+          "p50": 1132,
+          "p99": 1633,
+          "max": 430920
+        },
+        "cpu_ns": {
+          "min": 530,
+          "p50": 551,
+          "p99": 802,
+          "max": 12173
+        }
+      },
+      {
+        "lane": 4,
+        "samples": 65536,
+        "errors": 0,
+        "wall_ns": {
+          "min": 1092,
+          "p50": 1132,
+          "p99": 1603,
+          "max": 36839
+        },
+        "cpu_ns": {
+          "min": 531,
+          "p50": 551,
+          "p99": 782,
+          "max": 11562
+        }
+      },
+      {
+        "lane": 5,
+        "samples": 65536,
+        "errors": 0,
+        "wall_ns": {
+          "min": 1072,
+          "p50": 1583,
+          "p99": 1904,
+          "max": 48301
+        },
+        "cpu_ns": {
+          "min": 520,
+          "p50": 772,
+          "p99": 951,
+          "max": 11712
+        }
+      }
+    ],
+    "command_outcomes": [
+      {
+        "label": "reader",
+        "exit_code": 0
+      },
+      {
+        "label": "compile",
+        "exit_code": 0
+      },
+      {
+        "label": "check",
+        "exit_code": 0
+      },
+      {
+        "label": "clock",
+        "exit_code": 0
+      }
+    ],
+    "reader_tests": 6,
+    "retirement_prerequisites": {
+      "original_inputs_recovered": 11,
+      "original_plan_commit": "217c63cda13d6a5a2b621f8459eb15d10eb4e954",
+      "original_plan_matches": true,
+      "actual_project_includes": 3,
+      "original_host_status_preserved": true,
+      "consumer": "Standalone controls and four-clock reference complete;production-pool and model observer overhead remain unqualified. Recover original source/recipe from this plan before deleting raw output/fixture/runner."
+    }
   }
 }
