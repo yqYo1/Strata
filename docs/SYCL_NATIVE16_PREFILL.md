@@ -1230,9 +1230,9 @@ change only the controller and do not qualify the old failed model runs.
 All4 actual request/route/owner/environment/preload records replay identically
 before167 closed output/JIT/duplicate-record/consumed-review files (40835188
 bytes) retire. Original samples and frozen inputs recover at`426c270c6`;
-all26 native assets verify before and after. One full short-model receipt remains
-only for the imminent official long-comparison admission;review it when that
-new plan seals its required model/environment fields. Net speed and limiting
+all26 native assets verify before and after. The full short-model receipt now
+retires after the official long comparison seals its required model/environment
+fields and verifies all19 original controller inputs from Git. Net speed and limiting
 hardware resources remain unqualified by this short diagnostic.
 The prepared [official MTP net-cost pilot](../bench/results/2026-10-15-pr6-recovery-audit/mtp-net-bench-current.json)
 fixes cap0 then1 on that same binary,original prefill and1256 slots,with four
@@ -1246,6 +1246,10 @@ this is attribution,not clean speed,hardware saturation or adoption. The reader
 has a3300s/32MiB bound;requested copy counts still do not measure PCIe traffic.
 The host gate and models require the committed190-file benchmark fingerprint,
 sealed clock/model/environment maps and the unchanged native qualification.
+The owned host gate passes38 CPU controls and compiles the16344-byte probe.
+The initial65536-pair screen observes139513ns maximum and0.00329026% endpoint/
+rounding fraction at10s,below0.01%;this is an observed screen,not a universal
+latency bound. Repeat once before each native process without retries.
 For the prefill restoration,any decode impact,including state handoff,
 configuration,placement or throughput,is a separation defect to resolve.
 Keep the existing selected decode route until independent qualification.
