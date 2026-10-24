@@ -11599,7 +11599,7 @@
     "model_syscall_capture_authorized": false
   },
   "neo_memory_fixture_v1": {
-    "stage": "prepared",
+    "stage": "closed",
     "source_commit": "85a9af71cbc81bbd90c97059aa781cfbb18c30c2",
     "input_sha256": {
       "bench/sycl/client_resources.py": "9d5afa1bfc7df83ebd0ada8470b61a2c5b01d59b72822dd75f45ddb5a56ec16e",
@@ -11729,10 +11729,10 @@
     },
     "boot": "cfda0b6a-7c13-4fe2-bdf5-8f9202770840",
     "active": false,
-    "passed": false,
-    "complete": false,
+    "passed": true,
+    "complete": true,
     "ownership_closed": true,
-    "GPU_executed": false,
+    "GPU_executed": true,
     "speed_eligible": false,
     "physical_owner_attribution_qualified": false,
     "ordinary_runtime_teardown_qualified": false,
@@ -11747,6 +11747,133 @@
       "total_bytes": 67108864
     },
     "criteria": "One selected original10-check submission fixture,no model or engine rebuild. Preserve the complete immutable qualified safety/preload/UR observer environment;add only reviewed logging keys and private temporary/cache paths before exec. Pin original source/recipe,full SDK,runtime,collector239 dependencies,driver DSO and fixture. Require the original10 numerical/copy/event/profiling/lifetime checks,complete UR memory ledger,each predeclared minimum NEO log category,normal direct native exit0,closed ownership,unchanged inputs/boot/driver and no fresh fault. Capture stdout/stderr in private cwd under finite budgets. Stop first failure;no retry. NEO memory pool names describe creation decisions,not necessarily current KMD placement;UMD logs alone do not establish migration,physical residency,PCIe traffic or speed. Exit summary and ordinary teardown are not required or qualified.",
-    "retention": "Main consumes small output to select one finite same-native model capture. Keep compact sample counts,representative output,identities and original outcome;retire raw logs/JIT after that plan or refusal. No extra engine generation."
+    "retention": "Main consumes small output to select one finite same-native model capture. Keep compact sample counts,representative output,identities and original outcome;retire raw logs/JIT after that plan or refusal. No extra engine generation.",
+    "exit_code": 0,
+    "device_evidence": {
+      "activation": {
+        "pid": 2530863,
+        "loader": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_loader.so.0.12.0",
+        "threads_before": 1,
+        "preinit": 37,
+        "config_enabled": true,
+        "first_init": true,
+        "dispatch_result": 46,
+        "output_untouched": true,
+        "retained_reference_until_exit": true,
+        "runtime_teardown_qualified": false
+      },
+      "original_submission_checks": 10,
+      "memory_records": 10,
+      "allocations": {
+        "host": {
+          "count": 2,
+          "requested_bytes": 2056
+        },
+        "device": {
+          "count": 3,
+          "requested_bytes": 3220
+        }
+      },
+      "successful_frees": 5,
+      "residual_requested_allocations": 0,
+      "residual_requested_bytes": 0,
+      "scope": "Requested UR allocation lifetime only;residuals are not a physical-residency/leak claim."
+    },
+    "logging_evidence": {
+      "categories": {
+        "allocation_type": {
+          "records": 73,
+          "required": true,
+          "sinks": [
+            "stdout"
+          ],
+          "representative": "Created Graphics Allocation of type KERNEL_ISA_INTERNAL",
+          "first_fields": {
+            "type": "KERNEL_ISA_INTERNAL"
+          }
+        },
+        "allocation_pool_size": {
+          "records": 73,
+          "required": true,
+          "sinks": [
+            "stdout"
+          ],
+          "representative": " ThreadID: 132582768453696 Type: KERNEL_ISA_INTERNAL Pool: LocalMemory Root index: 0 Size: 65536 CPU VA: NULL GPU VA: 0xffff8000fffe0000 - 0xffff8000fffeffff Handle: 1 PATIndex: 1, Gmm resource usage: [ GMM_RESOURCE_USAGE_OCL_BUFFER ], Cacheable: 1 NotLockable: 0 Total sys mem allocated: 0 Total lmem allocated: 65536",
+          "first_fields": {
+            "type": "KERNEL_ISA_INTERNAL",
+            "pool": "LocalMemory",
+            "root": "0",
+            "size": "65536"
+          }
+        },
+        "bo_create": {
+          "records": 1,
+          "required": true,
+          "sinks": [
+            "stdout"
+          ],
+          "representative": "Created new BO with GEM_USERPTR, handle: BO-0",
+          "first_fields": {
+            "userptr_handle": "0",
+            "handle": null,
+            "start": null,
+            "end": null,
+            "size": null
+          }
+        },
+        "bo_bind": {
+          "records": 68,
+          "required": true,
+          "sinks": [
+            "stdout"
+          ],
+          "representative": "bind BO-3 to VM 1, vmHandleId = 0, range: 78955434c000 - 78955434d000, size: 4096, result: 0",
+          "first_fields": {
+            "op": "bind",
+            "handle": "3",
+            "vm": "1",
+            "result": "0"
+          }
+        },
+        "bo_unbind": {
+          "records": 63,
+          "required": true,
+          "sinks": [
+            "stdout"
+          ],
+          "representative": "unbind BO-25 from VM 1, vmHandleId = 0, range: ffffffffff800000 - ffffffffffa00000, size: 2097152, result: 0",
+          "first_fields": {
+            "op": "unbind",
+            "handle": "25",
+            "vm": "1",
+            "result": "0"
+          }
+        },
+        "bo_close_attempt": {
+          "records": 74,
+          "required": true,
+          "sinks": [
+            "stdout"
+          ],
+          "representative": "Calling gem close on handle: BO-27",
+          "first_fields": {
+            "close_handle": "27",
+            "skip_handle": null
+          }
+        }
+      },
+      "scope": "Observed logging capability only;not complete BO identity/lifetime,UMD-to-BO pointer join,KMD migration or ordinary teardown."
+    },
+    "host_probe_accepted": true,
+    "fresh_faults": [],
+    "boot_unchanged": true,
+    "driver_after": {
+      "pci": "/sys/bus/pci/devices/0000:05:00.0",
+      "driver": "xe",
+      "vendor": "0x8086",
+      "device": "0xe20c",
+      "kernel": "7.0.0-38-generic",
+      "devcoredump": false
+    }
   }
 }

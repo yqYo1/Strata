@@ -993,9 +993,19 @@ GEM_CREATE/VM_BIND arguments remain raw pointers with no size/handle fields.
 Complete source/runtime/preload/tool admission also matches after that failure;
 the decoder result stays failed and no model syscall capture is authorized.
 An earlier incomplete-admission draft was closed UNRUN before any GPU work.
-The next candidate is vendor allocation/BO logging,whose keys exist in the
-observed NEO26.31.39395.16 library;qualify exact source semantics and a small
-logging-only fixture before a model. No logging flags have been enabled yet.
+The fresh installed-NEO logging gate now passes the selected fixture's10 checks,
+complete UR ledger,normal exit0 and fault/ownership checks. Five logging-only
+keys add type/pool/size,BO create and bind/unbind/close-attempt records without
+changing the qualified safety settings. The observed output includes73 type/pool
+rows,68 binds,63 unbinds and74 close-attempt/shared-user records;all binding
+results are0. Only one selected USERPTR-create message appears,not a complete
+GEM-create ledger. Source review maps the official26.31.39395.16 release to
+4e308a10;the installed PPA binary's exact build provenance remains unknown.
+The driver DSO is newly hash-pinned before/after this run. Allocation pool names
+are creation decisions,close messages are attempts,and UMD logs cannot join every
+allocation to a BO or prove KMD migration. Next use one bounded same-native
+16K/B33/restore capture with the qualified logging,UR observer and four DRM reads;
+no model has yet run with these logging flags.
 No speed/decode-performance/adoption qualification
 is claimed. The returned observer audit is accepted with correction:the pinned
 XPTI init version is the invoking runtime version,so the UR0.12 check is valid.
