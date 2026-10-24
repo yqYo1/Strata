@@ -116,8 +116,8 @@ def project_sources(original):
     # The original linked-input receipt correctly excludes their uncompiled
     # sources; a standalone source tree still needs them to configure.
     result=dict(original['project']['source_sha256'])
-    names=build.git(P,'ls-tree','-r','--name-only',BASE,'--','tools/sycl').decode().splitlines()
-    names=[n for n in names if Path(n).suffix in ('.cpp','.c','.h','.hpp','.cmake')]
+    backend=build.git(P,'show',BASE+':cmake/sycl_backend.cmake').decode()
+    names=sorted(set(re.findall(r'tools/sycl/[A-Za-z0-9_./-]+\.(?:cpp|hpp|c|h)\b',backend)))
     for n,raw in build.blobs(P,BASE,names):result[n]=hashlib.sha256(raw).hexdigest()
     return result
 
