@@ -176,6 +176,10 @@ short-route wiring and owner restoration only. Clean repeated speed, task qualit
 and full-context gates remain open; no production prefill/decode setting changed.
 The next comparison is fixed2 versus MTP4 and resident no-draft with prospective
 official thinking-on long-generation measurements.
+The closed launchers and protocol corruption controls recover at`b61f376c2`.
+Their successful raw logs, temporary source snapshot and consumed scope review
+are retired after route/observer replay. Original13 and private13 build assets
+remain only for that imminent width comparison; retire the extra at its closure.
 
 ## Attribution limits and outstanding gates
 
