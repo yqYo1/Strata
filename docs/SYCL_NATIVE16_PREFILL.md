@@ -1200,6 +1200,13 @@ V1's unreachable token-graph toggle remains failed at`976d7dac4`;SYCL defaults
 that feature off,and removing the disabling flag cannot enable it. V2 uses a
 real missing-MTP refusal in both arms. This qualifies only the bounded native
 checks;short serve,model,speed and adoption gates remain pending.
+All34 native outcomes and the1410-file compiled-input census replay identically
+before retirement of292 closed output/object/CMake/JIT files (83154580 bytes).
+All26 selected/private native assets verify before and after deletion. Original
+individual native results recover at`5c7bde19c`;the current result keeps the
+32-refusal aggregate,two fixture results,fault/ownership outcome and manifest.
+Private generated source and its actual-input receipt remain only for the
+imminent short-serve/MTP attribution consumer.
 For the prefill restoration,any decode impact,including state handoff,
 configuration,placement or throughput,is a separation defect to resolve.
 Keep the existing selected decode route until independent qualification.
