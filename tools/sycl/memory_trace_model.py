@@ -85,9 +85,11 @@ def prepare(container,kind):
         re.compile(pattern)  # Reject invalid decoders before creating/running a plan.
     p=parent(container);native,preload=runtime(p)
     if kind=='model':
-        controls=container['owner_trace_obligations']['neo_trailing_protocol_host']
+        controls=container['owner_trace_obligations']['neo_trailing_protocol_host_v2']
         require(controls['passed'] and controls['tests']==9 and controls['exit_code']==0 and
-            controls['contract_sha256']==model.model.fingerprint(review['output_contract']) and
+            controls['contract_encoding']=='json_sorted_compact' and
+            controls['contract_sha256']==hashlib.sha256(json.dumps(review['output_contract'],
+                sort_keys=True,separators=(',',':')).encode()).hexdigest() and
             all(digest(P/n)==h for n,h in controls['input_sha256'].items()),
             'passed current strict trailing-protocol host controls required')
         q=container[FIXTURE_KEY]
@@ -160,7 +162,7 @@ def admission(r,container):
     for asset in (r['fixture'],r['collector'],r['driver_library']):
         require(digest(asset['path'])==asset['sha256'],'logging artifact changed')
     if r['kind']=='model':
-        require(model.model.fingerprint(container['owner_trace_obligations']['neo_trailing_protocol_host'])==
+        require(model.model.fingerprint(container['owner_trace_obligations']['neo_trailing_protocol_host_v2'])==
             r['trailing_protocol_qualification_sha256'],'strict protocol host controls changed')
         require(model.model.fingerprint(container[FIXTURE_KEY])==r['fixture_qualification_sha256'],
             'actual fixture qualification changed')
@@ -326,7 +328,7 @@ if __name__=='__main__':
     require(sys.argv[1:] in (['prepare'],['run'],['prepare-model'],['run-model']),
         'prepare|run|prepare-model|run-model')
     kind='model' if sys.argv[1].endswith('-model') else 'fixture'
-    if kind=='model':ROOT=B/'neo-memory-model-v2';KEY='neo_memory_model_v2'
+    if kind=='model':ROOT=B/'neo-memory-model-v3';KEY='neo_memory_model_v3'
     with (B/'owned-v0141-measurement.lock').open('a+') as lock:
         fcntl.flock(lock,fcntl.LOCK_EX|fcntl.LOCK_NB);model.gate.native.guards.no_model_owners([])
         container=json.loads(RESULT.read_text())
