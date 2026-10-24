@@ -1134,12 +1134,17 @@ Per-request owned environment,actual extents/chunks and QSA arithmetic bind
 the pinned deterministic selector;there is no direct layout-enum log.
 Heavy observers stay removed;the qualified native-only validation/retained-loader
 preload and warning logs stay identical in both arms,and their cost remains charged.
-Independent clock/controller and actual-route source reviews permit execution.
-The first original/candidate processes now close normally without fresh faults;
-their subsequent-three medians are1003.0316/1002.7148tok/s. The first paired
-ratio is below1;do not waive it as noise or change the criteria. Four planned
-processes remain,with no speed-based early stopping. This is an unfinished
-comparison and neither decode-preservation nor adoption evidence. Consumed
+All six processes now close normally,with all24 fresh long requests completed,
+unchanged final15 model hashes and no fresh faults. Original subsequent-three
+medians are1003.0316/1002.6507/1002.3795tok/s;candidate medians are
+1002.7148/1002.7970/1002.6703tok/s. First-use results926.174..929.804tok/s
+remain separate. Paired candidate/original ratios are0.99968422,1.00014595
+and1.00029016;their geometric mean is1.00004008 (+0.00401%). The first pair
+fails the no-decline requirement and the faster screen also fails. Preserve
+these failed decisions;do not waive the slower pair as noise. Both packages
+record repeated warm medians above1000 on this workload,but the candidate
+is **not adopted** and original6e40 remains selected. These24-token outputs
+qualify neither sustained decode nor task quality. Consumed
 source audits and review transactions are retired after compact findings and
 actual-route checks:19 files/69079 bytes;the index retains the deletion manifest.
 Prefill evidence cannot qualify decode or adoption. Repeated strong/weak
