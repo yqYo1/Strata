@@ -1,0 +1,198 @@
+{
+  "stage": "prepared",
+  "source_commit": "4e328bc02eddcde29c9391c17583df136c91bb97",
+  "source_audit": {
+    "source_commit": "6e40afc1beddd059ee518617f6c1efce1da14aca",
+    "manifest_sha256": "1300c58a593dce8975c0d061022add49a5386eabb47886662ba322789f1fb8ab",
+    "files": 108,
+    "contracts": {
+      "generate.cpp:5759-5760": "--spec 4 keeps allocated width4;--mtp-max-t 2 sets S_mtp2 and max_drafts1.",
+      "generate.cpp:6582-6665": "Fresh first targetT1,then fixedT2 without confidence/suffix;commit accepted prefix before drafting,skip final draft at EOS/output cap.",
+      "generate.cpp:122-178": "Short n<=8192 does not detach MTP experts;16384 prompt cells do. Prompt checked owners end before expert restoration.",
+      "mtp.cpp:580-649": "Detach requires allocated max_t4,drains MTP stream,destroys all width-keyed round/chain graphs and preserves borrowed verifier window_R. Restore drains prompt consumers before expert upload.",
+      "mtp.cpp:1091-1148,1340-1425": "Round graph keyed by actualT;catch-upT rows plus one full proposal. max_drafts1 skips every chain step. Buffers and row7 staging retain max_t4 extents.",
+      "mtp_graph_observer.hpp:34-103": "Host observer request4,skip0,limit2 must see T1/T2,one round replay each,zero chain work;not a device-service or speed measurement."
+    }
+  },
+  "baseline": {
+    "source_commit": "6e40afc1beddd059ee518617f6c1efce1da14aca",
+    "inputs_recovered": 9853,
+    "assets_verified": 13,
+    "receipt": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/record.json",
+      "sha256": "a38f477670fafcd1a931be2e20d90d6d9718df75b61954b421f361af9f6881b2"
+    },
+    "limits": "Original build remains selected; this source-only diagnostic is not adoption."
+  },
+  "binary": {
+    "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/strata",
+    "bytes": 22190000,
+    "sha256": "22182f1a5e62e5f4259ce49a75ae44afbd988166ec79324816e499ff37ef60e4"
+  },
+  "fixture": {
+    "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/sycl_submission_test",
+    "sha256": "5a434921664fac6b111ba2a0de5ebe4fd0182d226f1c56d34aeffa73171b9b79"
+  },
+  "benchmark_files": 189,
+  "benchmark_fingerprint": "23ef3d01a65d1bf51b9aca631cd0daf7ea716ea73699017f23762cd04c7b0e17",
+  "model_reference": {
+    "decode_archive": {
+      "commit": "a8af3d7fa96a7713f2e516d2da3d7410956be015",
+      "path": "bench/results/2026-10-15-pr6-recovery-audit/canonical-restore-decode-current.json",
+      "sha256": "7dda2bcefa6f7e54d568e6aa3d5226d5e0a7383f0b41efd7584093854d9547ca"
+    },
+    "decode_compact_sha256": "7a7276cf70e8507838aa62246b0f4a6d858c7f390318bd5f9a23f555cd4712ec",
+    "model": {
+      "commit": "64efe12f005b6a518daa2ee1d0f0d2712baa325f",
+      "path": "bench/results/2026-10-15-pr6-recovery-audit/prefill-recovery-current.json",
+      "sha256": "9945b8234465e0c963732086eac0b10b081fb63ca3eb16db3daae27899eab7f2"
+    },
+    "build_compact_sha256": "3e6f266eabc13b94178e96a4d0cf6b5de2909dcd8927a760ead2c92248f0d1da"
+  },
+  "preload": {
+    "library": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/ur-validation-preload-v2/libstrata_ur_validation.so",
+      "sha256": "1d4e69d672d55fa0a126ae43b7b4743482cccca7e2f2bc22e0db2bfdad5bdc7c"
+    },
+    "loader": {
+      "path": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_loader.so.0.12.0",
+      "sha256": "bb6e1311850e4b1a924e42acae80c2b3610934625a4985aaa67967abe31356fc"
+    },
+    "component_source_commit": "f312b6691f508125db6cfc2580ca32a686ff2642",
+    "component_original_plan": {
+      "commit": "550c75f5fc954ee38b70230e32d2a48e12100d8a",
+      "path": "bench/results/2026-10-15-pr6-recovery-audit/research-index.json",
+      "sha256": "d12866b93c51e76a83e95638e66b6f6f4e0e33d779516a5fddecc178a6f8e10a"
+    },
+    "retained_reference_until_exit": true,
+    "runtime_teardown_qualified": false
+  },
+  "references": {
+    "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/phase-prefill-speed-current.json": "9543297abc2ce0b4530ee6984d55366e735881caf42a08239f3494d655f9e10d",
+    "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/client-resources-current.json": "ae608777c52288b5e8803aef04a29bbbdd378598933d7c1f21a5b04a948e6672"
+  },
+  "command": [
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/strata",
+    "--serve",
+    "--pack",
+    "/home/yayoi/.local/share/strata-sycl/packs/qwen3.8-flash-next-iq3_s",
+    "--native",
+    "/home/yayoi/.local/share/strata-sycl/models/qwen3.8-flash-next-iq3_s/IQ3_S/Qwen3.8-Flash-Next-GSQ-RCO-IQ3_S-00001-of-00002.gguf",
+    "--max-context",
+    "131072",
+    "--kv",
+    "int8",
+    "--kv-resident",
+    "131072",
+    "--expert-cache",
+    "1256",
+    "--expert-profile",
+    "/home/yayoi/orca/workspaces/Strata/sycl/data/expert-profile.bin",
+    "--expert-cache-per-layer",
+    "--pool-workers",
+    "5",
+    "--pcie-frac",
+    "0",
+    "--adapt-swaps",
+    "0",
+    "--conversation-cache-mib",
+    "0",
+    "--prompt-cache",
+    "0",
+    "--turn-token",
+    "-1",
+    "--suffix-draft",
+    "0",
+    "--greedy",
+    "--no-spec-split",
+    "--short-read",
+    "0",
+    "--spec",
+    "4",
+    "--mtp",
+    "/home/yayoi/.local/share/strata-sycl/mtp/rt",
+    "--prefill",
+    "8192",
+    "--vram-reserve-mib",
+    "700",
+    "--no-coupled-draft",
+    "--no-token-graph",
+    "--mtp-max-t",
+    "2"
+  ],
+  "requests": [
+    {
+      "prompt_tokens": 33,
+      "max_new": 16,
+      "wire_bytes": 96,
+      "wire_sha256": "b73bc437c1a10211f23ef9f30b3b0848eaa8657c5bd0722024c682e360b8fb1e"
+    },
+    {
+      "prompt_tokens": 257,
+      "max_new": 16,
+      "wire_bytes": 925,
+      "wire_sha256": "0eb5fbc434e70f43c22c74d62ce84aef1d0710c4ea33504094d6cdb122741d89"
+    },
+    {
+      "prompt_tokens": 16385,
+      "max_new": 16,
+      "wire_bytes": 77489,
+      "wire_sha256": "3ca96d589d6bf5f033013a431f5506c9b1b74eba3d5c199ddad3e065109f9ae8"
+    },
+    {
+      "prompt_tokens": 33,
+      "max_new": 16,
+      "wire_bytes": 96,
+      "wire_sha256": "b73bc437c1a10211f23ef9f30b3b0848eaa8657c5bd0722024c682e360b8fb1e"
+    }
+  ],
+  "vocab_size": 248320,
+  "eos_ids": [
+    248044,
+    248046
+  ],
+  "driver": {
+    "pci": "/sys/bus/pci/devices/0000:05:00.0",
+    "driver": "xe",
+    "vendor": "0x8086",
+    "device": "0xe20c",
+    "kernel": "7.0.0-38-generic",
+    "devcoredump": false
+  },
+  "boot": "cfda0b6a-7c13-4fe2-bdf5-8f9202770840",
+  "criteria": "Original6e40 only,no rebuild. Commit each phase before launch. First host controls and same-build10-case submission fixture with bounded fullUR trace/preexec validation. Only then one fresh serve process,spec4/mtp-max-t2,original8192 prefill/1256slots/resident131072/caches0/suffix0. Four synthetic GEN16 inputs33/257/16385/33. Each fresh prompt covers n-1 cells in exact8192 chunks,token fallback below64,mode2;first verifierT1,thenT2,position/accepted/output/offer conservation. Third request must detach/restore MTP experts and check long GPU BF16/mode10/cache payload/map/48dense restoration;fourth must exercise2 host-observed MTP round replays(T1,T2),zero chain calls and valid accounting after that handoff. Accept valid EOS1..16 except require at least2 target windows per request and observer4 complete. Normal exit,empty validation warnings,source/assets/runtime/boot/driver unchanged,no fresh fault,all15 full hashes afterward. Stop first failure;no retry or text-identity/speed/task/full-context/adoption claim.",
+  "budgets": {
+    "wall": 900,
+    "cpu": 5400,
+    "rss_cap": 111669149696,
+    "text_cap": 16777216,
+    "file_cap": 33554432,
+    "total_cap": 134217728
+  },
+  "device_budgets": {
+    "wall": 90,
+    "cpu": 120,
+    "rss_cap": 2147483648,
+    "text_cap": 8388608,
+    "file_cap": 8388608,
+    "total_cap": 67108864
+  },
+  "host_budgets": {
+    "wall": 60,
+    "cpu": 60,
+    "rss_cap": 4294967296,
+    "text_cap": 2097152,
+    "file_cap": 2097152,
+    "total_cap": 8388608
+  },
+  "retention": "Keep exact source/configuration,individual request work/count/hash and fault/owner outcomes. Retire normal trace/model logs after replay. Source snapshot remains only through this source/route check;original/private13 assets remain for imminent width comparison,not default adoption.",
+  "outcomes": {},
+  "active": false,
+  "ownership_closed": true,
+  "passed": false,
+  "complete": false,
+  "production_selected": false,
+  "speed_qualified": false,
+  "model_adoption_qualified": false,
+  "private_inputs_sha256": "00b23c542d5534c0ab79632dd2383bca56d219aa2c50e5b2d50cfa794b411751"
+}
