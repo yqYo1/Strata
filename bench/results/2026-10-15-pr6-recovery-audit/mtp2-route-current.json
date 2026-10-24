@@ -1,5 +1,5 @@
 {
-  "stage": "prepared",
+  "stage": "device-checked",
   "source_commit": "4e328bc02eddcde29c9391c17583df136c91bb97",
   "source_audit": {
     "source_commit": "6e40afc1beddd059ee518617f6c1efce1da14aca",
@@ -186,7 +186,38 @@
     "total_cap": 8388608
   },
   "retention": "Keep exact source/configuration,individual request work/count/hash and fault/owner outcomes. Retire normal trace/model logs after replay. Source snapshot remains only through this source/route check;original/private13 assets remain for imminent width comparison,not default adoption.",
-  "outcomes": {},
+  "outcomes": {
+    "device": {
+      "passed": true,
+      "activation": {
+        "pid": 3496471,
+        "loader": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_loader.so.0.12.0",
+        "threads_before": 1,
+        "preinit": 37,
+        "config_enabled": true,
+        "first_init": true,
+        "dispatch_result": 46,
+        "output_untouched": true,
+        "retained_reference_until_exit": true,
+        "runtime_teardown_qualified": false
+      },
+      "host_probe_accepted": true,
+      "exit_code": 0,
+      "stdout_sha256": "dadad801d8022f3b40ad3bdab3e29f65fc13e1f61d60b219406f04e9881bb5be",
+      "stderr_sha256": "7c2d39eb14b8636a6ca27724caf65705b01a6d821e2c9756aa9256b91d31a4eb",
+      "ownership_closed": true,
+      "fresh_faults": [],
+      "boot_unchanged": true,
+      "driver_after": {
+        "pci": "/sys/bus/pci/devices/0000:05:00.0",
+        "driver": "xe",
+        "vendor": "0x8086",
+        "device": "0xe20c",
+        "kernel": "7.0.0-38-generic",
+        "devcoredump": false
+      }
+    }
+  },
   "active": false,
   "ownership_closed": true,
   "passed": false,
