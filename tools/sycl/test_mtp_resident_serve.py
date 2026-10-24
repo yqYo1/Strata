@@ -5,6 +5,13 @@ import unittest
 import mtp_resident_serve as m
 
 
+class IO:
+    def __init__(self): self.sent = []; self.finished = False; self.lines = []
+    def line(self, _): return self.lines.pop(0)
+    def send(self, value): self.sent.append(value)
+    def exit(self, _): self.finished = True
+
+
 def sample_trace(cap):
     rows = []; text = ''; rounds = 0
     for n in (33, 257):
@@ -45,11 +52,6 @@ class Routes(unittest.TestCase):
         with self.assertRaises(RuntimeError): m.route_evidence(text, bad, 0)
 
     def test_protocol_wires_and_reply_extents(self):
-        class IO:
-            def __init__(self): self.sent = []; self.finished = False; self.lines = []
-            def line(self, _): return self.lines.pop(0)
-            def send(self, value): self.sent.append(value)
-            def exit(self, _): self.finished = True
         io = IO(); io.lines = ['INFO context=131072 kv=int8 kv_resident=0 expert_slots=1256 '
             'spec=4 mtp_max=1 lookup=0 pool_workers=5 pcie_frac=0.00 conversation_cache_mib=0', 'READY 131072 stop']
         wrong = IO(); wrong.lines = [io.lines[0].replace('kv_resident=0', 'kv_resident=131072'), io.lines[1]]
@@ -60,11 +62,27 @@ class Routes(unittest.TestCase):
         for ids in m.requests():
             payload = m.wire(ids); fixtures.append(dict(wire_bytes=len(payload), wire_sha256=m.hashlib.sha256(payload).hexdigest()))
             io.lines += [f'PP {len(ids)-1}'] + [f'T {i}' for i in range(32)] + [f'DONE 32 {len(ids)} 0 0 length 0 0 0 0 0 0 0 0 {len(ids)}']
-        row = dict(requests=fixtures, vocab_size=4096); out = {}
+        row = dict(requests=fixtures, vocab_size=4096, eos_ids=[248044,248046]); out = {}
         m.interact(io, row, out, 1)
         self.assertEqual(io.sent, [*(m.wire(ids) for ids in m.requests()), b'QUIT\n'])
         self.assertTrue(io.finished); self.assertEqual(len(out['requests']), 2)
         self.assertFalse(io.lines)
+
+    def test_real_early_eos_is_valid_and_false_stop_is_rejected(self):
+        def fixture(finish='stop', last=248046):
+            io = IO(); io.lines = ['INFO context=131072 kv=int8 kv_resident=0 expert_slots=1256 '
+                'spec=4 mtp_max=1 lookup=0 pool_workers=5 pcie_frac=0.00 conversation_cache_mib=0', 'READY 131072 stop']
+            cases=[]
+            for ids in m.requests():
+                payload=m.wire(ids);cases.append(dict(wire_bytes=len(payload),wire_sha256=m.hashlib.sha256(payload).hexdigest()))
+                io.lines += [f'PP {len(ids)-1}', 'T 220', f'T {last}',
+                    f'DONE 2 {len(ids)} 0 0 {finish} 0 0 0 0 0 0 0 0 {len(ids)}']
+            return io,dict(requests=cases,vocab_size=248320,eos_ids=[248044,248046])
+        io,row=fixture();out={};m.interact(io,row,out,1)
+        self.assertEqual([s['generated_tokens']for s in out['requests']],[2,2]);self.assertTrue(io.finished)
+        for finish,last in [('stop',221),('length',248046),('length',221)]:
+            io,row=fixture(finish,last)
+            with self.assertRaises(RuntimeError):m.interact(io,row,{},1)
 
 
 if __name__ == '__main__': unittest.main()

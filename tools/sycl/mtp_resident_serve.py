@@ -17,7 +17,7 @@ import check_mtp_resident_control as gate
 import full_context_model as model
 
 P, B = gate.P, gate.B
-ROOT = B / 'mtp-resident-serve-v2'
+ROOT = B / 'mtp-resident-serve-v3'
 RESULT = gate.RESULT.with_name('mtp-resident-serve-current.json')
 INPUTS = sorted(set([*gate.INPUTS, 'tools/sycl/mtp_resident_serve.py', 'tools/sycl/test_mtp_resident_serve.py',
     'tools/sycl/full_context_model.py', 'tools/sycl/check_full_context.py', 'data/expert-profile.bin']))
@@ -64,7 +64,8 @@ def prepare():
     previous = gate.validation.committed(RESULT)
     require(previous['stage'] == 'failed' and not previous['passed'] and not previous['active'] and
         not previous['ownership_closed'] and previous['outcomes']['0']['fresh_faults'] == [] and
-        len(previous['outcomes']) == 1, 'preserve the original failed INFO gate')
+        len(previous['outcomes']) == 1 and previous['captured_early_stop']['output_ids'] == [220, 248046],
+        'preserve the original failed fixed-output gate')
     termination = previous['termination_evidence']
     require(termination['direct_child_reaped'] and termination['session_empty'] and not termination['survivors'] and
         termination['exit_code'] == -15, 'prior owned process must be positively terminated')
@@ -105,17 +106,18 @@ def prepare():
         plans.append(dict(cap=cap, command=[full['assets']['strata']['path'], '--serve', *args, '--mtp-max-t', str(cap)]))
     row = dict(stage='prepared', source_commit=revision, input_sha256=pins, binary=full['assets']['strata'],
         prior_failed_operation=dict(commit=revision, path=str(RESULT.relative_to(P)),
-            status='Original failed INFO assertion and ownership_closed=false remain unchanged. Native reached READY then owned SIGTERM before GEN;positive reap/empty session verified. New v2 corrects only controller reporting semantics;no native change.'),
+            status='Original fixed32-output assertion/ownership_closed=false remain failed. Native generated32 then a valid2-ID EOS completion before controller SIGTERM;positive reap/empty session verified. New v3 changes only variable-output/route qualification;no native change.'),
         base_native_source=gate.native.BASE, native_controller_source_commit=full['source_commit'],
         native_result_sha256=digest(gate.native.RESULT), native_gate_sha256=digest(gate.RESULT),
         model_reference=base['reference'], model_assets=base['models'],
         prefill_reference_sha256=digest(RESULT.with_name('phase-prefill-speed-current.json')),
         preload=preload, environments=environments, plans=plans, vocab_path=str(vocab_path),
         vocab_sha256=digest(vocab_path), vocab_size=len(vocab),
+        eos_ids=[248044, 248046],
         requests=[dict(prompt_tokens=len(ids), max_new=32, wire_bytes=len(wire(ids)),
             wire_sha256=hashlib.sha256(wire(ids)).hexdigest()) for ids in requests()],
         driver=gate.native.guards.driver_guard(), boot=Path('/proc/sys/kernel/random/boot_id').read_text().strip(),
-        criteria='Exactly two fresh native processes,cap0 then1,each33/257 synthetic input IDs and32 output IDs per fresh request,caches0. Same original prefill/settings/1256slots. INFO must confirm context131072,kv=int8,kv_resident=0 (original full-resident mode0 reporting),spec4,selected cap,5workers,PCIe0,caches0. Each request has complete batched mode2 draft prompt callbacks and valid vocabulary IDs. Cap0 first targetT1 thenT4 with positive increasing draft-round counters;cap1 every targetT1,zero offered/accepted drafts and zero draft rounds. Same-child preexec validation,normal owned exit,empty validation warnings,unchanged source/model/runtime/boot/driver and no fresh fault;full15 model hashes after cohort. Stop first failure,no retry. No token-string identity,speed/task/physical-context/adoption claim.',
+        criteria='Exactly two fresh native processes,cap0 then1,each33/257 synthetic input IDs and max32 generated IDs per fresh request,caches0. Accept1..32 valid IDs with finish=length only at32 or finish=stop with the actual default EOS ID248044/248046. Same original prefill/settings/1256slots. INFO must confirm context131072,kv=int8,kv_resident=0 (original full-resident mode0 reporting),spec4,selected cap,5workers,PCIe0,caches0. Each request has complete batched mode2 draft prompt callbacks. Cap0 first targetT1 thenT4 if more windows,exactly windows-1 draft rounds,and at least one actual draft round across the process;cap1 every targetT1,zero offered/accepted drafts and zero draft rounds. Actual accepted-prefix positions and generated counts must conserve windows,including an EOS inside the final window. Same-child preexec validation,normal owned exit,empty validation warnings,unchanged source/model/runtime/boot/driver and no fresh fault;full15 model hashes after cohort. Stop first failure,no retry. No token-string identity,speed/task/physical-context/adoption claim.',
         kv_reporting_contract='Pinned6e40 kv_plan leaves mode0/all slots when requested residency>=max_cells. INFO kv_resident reports slot count only for main mode1,else0. Main context131072 and requested131072 therefore require INFO0;draft prompt mode2 independently confirms the MTP ring.',
         interpretation='Resident no-decode-draft retains MTP weights/KV/prompt precompute but omits generation KV catchup and proposals. Target verifier geometry also changesT4 toT1. This is a private attribution control,not full-MTP-off or an adopted decoder. State hashing of future MTP cells is disabled because this arm intentionally does not maintain them.',
         budgets=dict(wall=900, cpu=3600, rss_cap=104 << 30, text_cap=16 << 20,
@@ -170,8 +172,11 @@ def interact(io, row, outcome, cap):
                 f = line.split()[1:]; require(len(f) == 14, 'native DONE shape changed')
                 sample = dict(generated_tokens=int(f[0]), prompt_tokens=int(f[1]), finish=f[4],
                     drafts_accepted=int(f[5]), drafts_offered=int(f[6]), reused_tokens=int(f[7]), read_tokens=int(f[13]))
-                require(sample['generated_tokens'] == len(tokens) == 32 and sample['prompt_tokens'] == len(ids) and
-                    sample['finish'] == 'length' and sample['reused_tokens'] == 0 and sample['read_tokens'] == len(ids) and
+                require(sample['generated_tokens'] == len(tokens) and 1 <= len(tokens) <= 32 and
+                    sample['prompt_tokens'] == len(ids) and
+                    ((sample['finish'] == 'length' and len(tokens) == 32 and tokens[-1] not in row['eos_ids']) or
+                     (sample['finish'] == 'stop' and tokens[-1] in row['eos_ids'])) and
+                    sample['reused_tokens'] == 0 and sample['read_tokens'] == len(ids) and
                     0 <= sample['drafts_accepted'] <= sample['drafts_offered'] and
                     all(0 <= t < row['vocab_size'] for t in tokens), 'native output extent/IDs differ')
                 require(progress and progress[-1] == len(ids) - 1 and all(0 < p < len(ids) for p in progress) and
@@ -190,7 +195,7 @@ def route_evidence(text, samples, cap):
     result = []; previous = 0; rounds = 0
     for sample, header, marker, prompt in zip(samples, headers, marks, prefix):
         windows = [tuple(map(int, w)) for w in re.findall(r'^strata trace: window (\d+) (\d+)$', text[previous:header.start()], re.M)]
-        require(len(windows) > 1 and windows[0] == (sample['read_tokens'] - 1, 1) and
+        require(windows and windows[0] == (sample['read_tokens'] - 1, 1) and
             all(t == (1 if cap else 4) for _, t in windows[1:]) and
             all(1 <= b[0] - a[0] <= a[1] for a, b in zip(windows, windows[1:])) and
             sum(t - 1 for _, t in windows) == sample['drafts_offered'], 'actual verifier route/work differs')
@@ -200,12 +205,13 @@ def route_evidence(text, samples, cap):
             0 <= committed - sample['generated_tokens'] < windows[-1][1],
             'accepted-prefix positions/output count do not conserve windows')
         actual = int(marker[1])
-        require((actual == sample['drafts_offered'] == sample['drafts_accepted'] == 0) if cap else actual > rounds,
+        require((actual == sample['drafts_offered'] == sample['drafts_accepted'] == 0) if cap else actual >= rounds,
             'no-draft control still executes MTP or reference does not draft')
         require(cap == 1 or actual - rounds == len(windows) - 1, 'reference draft round/window count differs')
         result.append(dict(target_windows=len(windows), first_T=1, subsequent_T=1 if cap else 4,
             draft_rounds_delta=actual - rounds, cumulative_draft_rounds=actual, prompt_draft=prompt))
         rounds = actual; previous = header.end()
+    require(cap == 1 or any(r['draft_rounds_delta'] > 0 for r in result), 'reference never exercised MTP')
     return result
 
 
