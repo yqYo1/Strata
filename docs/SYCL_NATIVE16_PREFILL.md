@@ -803,6 +803,14 @@ on the selected MoE route. This is Main's next attribution task,not a claimed
 speedup or an explanation for the historical decline. The library-ledger gap
 above remains a separate scope;do not substitute a general graph survey for
 measuring the actual selected fusion route.
+Both fused calls already publish their event through`sycl_backend::finish`;
+do not register it twice. The missing contract is correct fused-operation
+classification and sampling. The current last row bin spans the2334-row fusion
+threshold;simply adding fused names can leave an eligible fused/unfused stratum
+unsampled. Split that boundary,check the fixed event/host-record capacities,and
+test exact population/sample conservation,retirement on errors and real fused
+GEMM results before removing the admission guard. No such extension is
+implemented or selected yet.
 The source has two BF16 GEMM sites per executed inner batch,four projection
 sites,and an early no-needed-rows return;do not infer dynamic counts from the
 15 callback markers. The existing runtime manifest already pins the L0 v2

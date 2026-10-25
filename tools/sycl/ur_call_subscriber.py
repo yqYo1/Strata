@@ -437,7 +437,8 @@ def admit_native(row, binary=False):
 
 def qualified_native(key=BUFFER_KEY):
     row = r.validation.committed(RESULT, key)
-    require(row['stage'] == 'host-checked' and row['passed'] and row['ownership_closed'] and not row['fresh_faults'] and
+    require(not row.get('native_artifacts_retired', False) and row['stage'] == 'host-checked' and
+            row['passed'] and row['ownership_closed'] and not row['fresh_faults'] and
             len(row['outcomes']) == (5 if key == LEGACY_KEY else 7 if key == BUFFER_KEY else 6) and row['outcomes'][-1]['calls']['call_pairs'] == 2,
             'closed native CPU qualification required')
     admit_native(row, True)
