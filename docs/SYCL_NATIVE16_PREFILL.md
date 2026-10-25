@@ -833,8 +833,18 @@ classification and sampling. The current last row bin spans the2334-row fusion
 threshold;simply adding fused names can leave an eligible fused/unfused stratum
 unsampled. Split that boundary,check the fixed event/host-record capacities,and
 test exact population/sample conservation,retirement on errors and real fused
-GEMM results before removing the admission guard. No such extension is
-implemented or selected yet.
+GEMM results before removing the admission guard. The prospective version3
+extension is now implemented,not built or device-qualified:9 row bins,224
+events per window and scoped relabeling around the existing finish calls.
+Profiling with fusion still requires a separate explicit qualification opt-in.
+Seven CPU parser rejection controls pass,including signed submit-clock
+diagnostics and group/service conservation. Synthetic populations should retain
+191 events with the fused large bin and199 with separate operations;real
+GU/Down production-hook checks cover2333,2334 and8192 rows,plus irregular Down
+source rows. The original selected6e40 and12fixtures remain unchanged.
+This is attribution infrastructure,not a throughput gain,model qualification or
+an explanation for the historical decline. The next action is the frozen
+component build and small traced/validated checks recorded in the same result.
 The source has two BF16 GEMM sites per executed inner batch,four projection
 sites,and an early no-needed-rows return;do not infer dynamic counts from the
 15 callback markers. The existing runtime manifest already pins the L0 v2
