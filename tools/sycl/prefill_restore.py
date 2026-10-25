@@ -171,7 +171,7 @@ def prepare():
     print('Prepared restoration build;commit exact plan before build.', flush=True)
 
 
-def current(row):
+def current(row, *, controller_revision=None):
     guards.require(gen.committed(RESULT) == compact(row), 'commit exact restoration plan')
     actual_project = build.pin(P, PROJECT_PATHS)
     # A later plan/result commit may move HEAD without changing any build input.
@@ -180,9 +180,27 @@ def current(row):
     guards.require(row['project']['revision'] == row['source_commit'] and
         row['project']['count'] == row['project_files'] and
         row['project']['aggregate_sha256'] == row['project_fingerprint'] and
-        native.fingerprint(row['project']['source_sha256']) == row['project_fingerprint'] and
-        dict(actual_project, revision=row['source_commit']) == row['project'], 'project source changed')
-    pins = gen.benchmark_pins(row['source_commit'])
+        native.fingerprint(row['project']['source_sha256']) == row['project_fingerprint'],
+        'original project manifest changed')
+    if controller_revision is None:
+        guards.require(dict(actual_project, revision=row['source_commit']) == row['project'], 'project source changed')
+    else:
+        # A separately committed host/device controller may reuse linked native
+        # bytes. Recover the complete original snapshot, then require every
+        # non-Python project input and its tracked extent to remain identical.
+        # Seal the NEW controller/benchmark snapshot independently; do not
+        # relabel this build or inherit its failed host observation.
+        recovered = {n: hashlib.sha256(raw).hexdigest() for n, raw in
+            build.blobs(P, row['source_commit'], row['project']['source_sha256'])}
+        guards.require(recovered == row['project']['source_sha256'], 'original project cannot recover')
+        native_inputs = lambda values: {n: sha for n, sha in values.items() if not n.endswith('.py')}
+        guards.require(native_inputs(actual_project['source_sha256']) == native_inputs(recovered),
+            'controller reuse changed native project inputs')
+        guards.require('actual_compiled_inputs' in row and len(row['assets']) == len(row['targets'])
+            and gen.benchmark_pins(controller_revision) ==
+                gen.benchmark_pins(gen.git('rev-parse', 'HEAD').decode().strip()),
+            'pin complete new controller snapshot separately from native source')
+    pins = gen.benchmark_pins(row['source_commit'], match_worktree=controller_revision is None)
     guards.require(len(pins) == row['benchmark_files'] and native.fingerprint(pins) ==
         row['benchmark_fingerprint'], 'benchmark/controller changed')
     restoration_source(row['source_commit'])

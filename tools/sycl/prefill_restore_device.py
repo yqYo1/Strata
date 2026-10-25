@@ -29,13 +29,15 @@ write, digest = restored.write, restored.build.digest
 def current(row):
     guards.require(restored.gen.committed(RESULT) == runtime.compact(row), 'commit exact device plan')
     build = json.loads((restored.ROOT / 'record.json').read_text())
-    restored.current(build)
-    guards.require(build['stage'] == 'build-host-closed' and build['passed'] and build['complete']
-        and build['ownership_closed'] and not build['active'] and len(build['host']) == 8
-        and build['source_commit'] == row['build_source_commit']
+    restored.current(build, controller_revision=row['controller_source_commit'])
+    linked(build)
+    guards.require(build['source_commit'] == row['build_source_commit']
         and build['assets'] == row['assets']
         and digest(restored.ROOT / 'record.json') == row['build_record_sha256'],
-        'closed same-build source/host qualification differs')
+        'same-build native/source identity differs')
+    pins = restored.gen.benchmark_pins(row['controller_source_commit'])
+    guards.require(len(pins) == row['controller_files'] and
+        restored.native.fingerprint(pins) == row['controller_fingerprint'], 'new controller snapshot changed')
     for asset in row['assets'].values():
         guards.require(Path(asset['path']).stat().st_size == asset['bytes']
             and digest(asset['path']) == asset['sha256'], 'same-build artifact changed')
@@ -47,16 +49,32 @@ def current(row):
         'qualified safety environment/runtime differs')
 
 
+def linked(build):
+    """Reuse successful compilation, without promoting failed host observation."""
+    commands = build['commands']
+    guards.require(build['stage'] == 'failed' and not build['passed'] and not build['active']
+        and len(commands) == 4 and [c['label'] for c in commands[:3]] ==
+            ['configure', 'link', 'compiler-census']
+        and all(supervision.closed(c) and c['exit_code'] == 0 for c in commands[:3])
+        and build['compiler_closure']['files'] == 1416 and build['compiler_closure']['uncovered'] == 0
+        and not build['host'] and len(build['assets']) == 17, 'closed compilation/census required')
+    failed = commands[-1]
+    guards.require(failed['label'] == 'host-prefill_expert_bank_plan_test'
+        and failed['error'] == "RuntimeError('artifact cap')" and failed['direct_child_reaped']
+        and failed['session_empty'] and not failed['survivors']
+        and build['build_diagnosis']['actual_ownership_closed'], 'reconcile failed host supervision first')
+
+
 def prepare():
     guards.require(not ROOT.exists() and not RESULT.exists(), 'fresh single-use device gate')
     build = json.loads((restored.ROOT / 'record.json').read_text())
-    restored.current(build)
-    guards.require(build['passed'] and build['stage'] == 'build-host-closed', 'build/host gates first')
+    revision = restored.gen.git('rev-parse', 'HEAD').decode().strip()
+    restored.current(build, controller_revision=revision)
+    linked(build)
     qualified = restored.gen.committed(runtime.RESULT)
     guards.require(qualified['passed'] and qualified['complete'], 'qualified runtime required')
-    revision = restored.gen.git('rev-parse', 'HEAD').decode().strip()
-    pins = restored.gen.benchmark_pins(build['source_commit'])
-    guards.require('tools/sycl/prefill_restore_device.py' in pins, 'commit controller before native build')
+    pins = restored.gen.benchmark_pins(revision)
+    guards.require('tools/sycl/prefill_restore_device.py' in pins, 'commit exact host/device controller')
     cases = [dict(label=label, target=target, args=args, marker=marker) for label, target, args, marker in (
         ('submission', 'sycl_submission_test', ['--submission'], 'fixture_status=PASS mode=submission'),
         ('graph0', 'sycl_graph_envelope_test', ['--profile=0'],
@@ -72,17 +90,30 @@ def prepare():
         ('expert-private', 'sycl_expert_bank_test', ['--packed-smoke'],
             'expert_bank_fixture PASS model=UNRUN physical262144_RESTORE=UNQUALIFIED'),
         ('restore-smoke', 'sycl_conversation_snapshot_test', ['--restore-smoke'], '(restore smoke)'))]
+    host_cases = []
+    for target in restored.HOST_TARGETS:
+        for args in (['--pair=0'], ['--pair=1']) if target == 'iq2_phase_host_test' else ([],):
+            host_cases.append(dict(label='host-' + target + ''.join(args), target=target, args=args, kind='host'))
+    for case in cases:
+        case['kind'] = 'device'
+    cases = host_cases + cases
     ROOT.mkdir(mode=0o700)
     for name in ('tmp', 'cache'):
         (ROOT / name).mkdir()
     row = dict(stage='prepared', controller_source_commit=revision, build_source_commit=build['source_commit'],
+        controller_files=len(pins), controller_fingerprint=restored.native.fingerprint(pins),
         build_record_sha256=digest(restored.ROOT / 'record.json'), assets=build['assets'], cases=cases,
         preload=qualified['preload'], runtime_files=qualified['runtime_files'],
         boot=qualified['boot'], driver=qualified['driver'],
         environment=dict(qualified['environment'], TMPDIR=str(ROOT / 'tmp'), XDG_CACHE_HOME=str(ROOT / 'cache')),
         budgets=dict(wall=90, cpu=120, rss_cap=4 << 30, text_cap=16 << 20,
             file_cap=32 << 20, total_cap=64 << 20),
-        criteria='Eight ordered fresh owned processes on the exact restored same-build fixtures;stop first failure,no retry. '
+        host_environment=dict(build['environment'], TMPDIR=str(ROOT / 'tmp'), XDG_CACHE_HOME=str(ROOT / 'cache')),
+        host_budgets=dict(wall=60, cpu=60, rss_cap=1 << 30, text_cap=1 << 20,
+            file_cap=1 << 20, total_cap=4 << 20),
+        criteria='Eight ordered host checks then eight fresh device processes on the exact same-build fixtures;'
+            'stop first failure,no retry. Original build host observation remains failed;'
+            'this new plan owns output separately from the build tree. Require all host checks before GPU work. '
             'Require exit0,numerical/bounds/loan/publication/RESTORE markers,pre-main validation,silent parameter '
             'validation and an observed pinned updated NEO. Trace enqueue work where expected;smoke refusal may '
             'perform allocation only. Check actual process closure,boot and fresh driver faults after every case.',
@@ -114,6 +145,20 @@ def run(row):
         for case in row['cases']:
             current(initial)
             asset = row['assets'][case['target']]
+            if case['kind'] == 'host':
+                entry, out, err = owner.run(case['label'], [asset['path'], *case['args']],
+                    row['host_environment'], P, **row['host_budgets'])
+                guards.require(supervision.closed(entry) and entry['exit_code'] == 0, 'host fixture failed: ' + case['label'])
+                if case['target'] == 'full_context_diagnostic_host_test':
+                    text = out.read_text()
+                    guards.require('cases=134 full_context_request_and_terminal_bounds=PASS' in text and
+                        'byte_order_and_bounds=PASS full_extent_spans=1 GPU=UNRUN' in text, 'bounds/hash controls differ')
+                row['outcomes'].append(dict(label=case['label'], kind='host', exit_code=0, passed=True,
+                    ownership_closed=True, GPU_executed=False, stdout_sha256=digest(out), stderr_sha256=digest(err)))
+                persist()
+                continue
+            guards.require(sum(c['kind'] == 'host' and c['passed'] for c in row['outcomes']) == 8,
+                'all host gates before the first device')
             trace, warnings = ROOT / (case['label'] + '.trace'), ROOT / (case['label'] + '.validation')
             env = dict(row['environment'], UR_LOG_TRACING='level:info;flush:info;output:file,' + str(trace),
                 UR_LOG_VALIDATION='level:warning;flush:warning;output:file,' + str(warnings))
@@ -157,7 +202,7 @@ def run(row):
             probe = dict(host_probe_accepted=True)
             validation.finish(probe, owner, cursor, row['boot'])
             guards.require(probe['passed'] and probe['driver_after'] == row['driver'], 'fresh fault/closure check failed')
-            row['outcomes'].append(dict(label=case['label'], exit_code=0, passed=True, ownership_closed=True,
+            row['outcomes'].append(dict(label=case['label'], kind='device', exit_code=0, passed=True, ownership_closed=True,
                 parameter_validation=True, fresh_faults=[], restore_checks=checks,
                 mapped_runtime_fingerprint=restored.native.fingerprint(sorted(seen)),
                 stdout_sha256=digest(out), stderr_sha256=digest(err), trace_bytes=trace.stat().st_size))
@@ -170,7 +215,7 @@ def run(row):
         if owner is not None:
             validation.finish(row, owner, cursor, row['boot'])
         row['active'] = bool(owner and owner.active is not None)
-        row['passed'] = bool(row.get('passed') and row['complete'] and len(row['outcomes']) == 8)
+        row['passed'] = bool(row.get('passed') and row['complete'] and len(row['outcomes']) == 16)
         persist(); write(RESULT, runtime.compact(row))
     print(json.dumps({k: row.get(k) for k in ('stage', 'passed', 'complete', 'ownership_closed', 'error')}), flush=True)
     return int(not row['passed'])
