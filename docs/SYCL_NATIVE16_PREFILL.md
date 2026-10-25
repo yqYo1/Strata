@@ -775,6 +775,34 @@ remain open. These exact joins do not qualify complete model attribution or
 identify the cause of the historical prefill decline. Preserve the original
 native-passed/coverage-pending status and retrieve further raw detail only for
 those named gaps.
+
+The source`05f0f7af4` buffer observer now passes35 parser/link controls and
+seven native CPU processes,including21 synthetic buffer/query calls with five
+rejected invalid-pointee cases. The original26-call fixture and four mutation
+guards remain intact. Its own native library/driver are distinct from the
+unchanged wrapper and selected engine. Capture source`f5e4bef35`,frozen plan
+`0da73a505`,reuses the original wrapper only after recovering9865 original
+project/dependency inputs,the original recipe and all1383 compiled inputs;
+changed uncompiled observer/tests are outside that native artifact.
+The new real GPU call passes all20480 values,input/output guards,actual
+provider checks and silent parameter validation,with normal owner/session
+closure and no fresh fault. All ten GPU executions join distinct successful
+UR calls. Typed fields now cover both4-byte buffers,8 requested buffer-copy
+bytes and15894528 explicit USM-copy bytes. External references close for two
+queues,three USM allocations,two buffers and ten event generations;seven event
+values are reused. Both actual graph-query results are false. These observations
+do not establish driver-internal lifetimes,host-payload ownership,an independent
+library work plan,complete model coverage,observer cost or clean speed.
+
+For the next long-prefill resource observation,a separate source obstacle is
+now explicit:`gemm16.cpp` rejects command-service profiling whenever selected
+GU or Down fusion is enabled. An unfused profile therefore changes the measured
+processing. Extend sparse event attribution to those actual fused kernels and
+qualify the event/count/drain/numerical/observer-cost contract before using it
+on the selected MoE route. This is Main's next attribution task,not a claimed
+speedup or an explanation for the historical decline. The library-ledger gap
+above remains a separate scope;do not substitute a general graph survey for
+measuring the actual selected fusion route.
 The source has two BF16 GEMM sites per executed inner batch,four projection
 sites,and an early no-needed-rows return;do not infer dynamic counts from the
 15 callback markers. The existing runtime manifest already pins the L0 v2

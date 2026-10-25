@@ -3217,7 +3217,7 @@
       ]
     },
     "oneMKL_buffer_call": {
-      "stage": "prepared",
+      "stage": "native-passed-coverage-pending",
       "source_commit": "f5e4bef35ca1a27d12c10b980000331a6070085a",
       "input_sha256": {
         "tests/core/test_work_ledger_fixture.py": "ea6bf40c7c21ee403937032ce86e345896a0e4bce83a60216ebf557d91e01cd1",
@@ -3498,12 +3498,181 @@
       "retention": "Main consumes bounded raw UR/PTI records for the actual oneMKL adapter decision. Retire normal traces/JIT/cache after that closed-data analysis;keep compact evidence. Original engine+12fixtures and qualified observer unchanged. Wrapper remains only for this coverage question.",
       "active": false,
       "ownership_closed": true,
-      "passed": false,
+      "passed": true,
       "complete_device_coverage_qualified": false,
       "observer_cost_qualified": false,
       "model_qualified": false,
       "inference_changed": false,
-      "buffer_observer": true
+      "buffer_observer": true,
+      "start_raw_ns": 1303976876409355,
+      "end_raw_ns": 1303977080817522,
+      "activation": {
+        "pid": 3640813,
+        "loader": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_loader.so.0.12.0",
+        "threads_before": 1,
+        "preinit": 37,
+        "config_enabled": true,
+        "first_init": true,
+        "dispatch_result": 46,
+        "output_untouched": true,
+        "retained_reference_until_exit": true,
+        "runtime_teardown_qualified": false
+      },
+      "discovery": {
+        "oracle_values": 20480,
+        "device_bytes": 7947264,
+        "wrapper_invocations": 1,
+        "source_FMA_operations": 209715200,
+        "source_explicit_copy_bytes": 15894528,
+        "outer_pid": 3640813,
+        "outer_tid": 3640813,
+        "begin_ns": 1303976948454872,
+        "return_ns": 1303976958473750,
+        "drain_ns": 1303976958641615,
+        "PTI_device_records": 10,
+        "device_records_inside_charged_envelope": 4,
+        "enqueue_outcomes": [
+          {
+            "name": "urEnqueueKernelLaunchWithArgsExp",
+            "status": 0,
+            "calls": 2
+          },
+          {
+            "name": "urEnqueueMemBufferRead",
+            "status": 0,
+            "calls": 1
+          },
+          {
+            "name": "urEnqueueMemBufferWrite",
+            "status": 0,
+            "calls": 1
+          },
+          {
+            "name": "urEnqueueUSMMemcpy",
+            "status": 0,
+            "calls": 6
+          }
+        ],
+        "enqueue_threads": 1,
+        "graph_API_seen": true,
+        "limits": "Counts and charged envelope only;no internal operation association,device saturation,independent model ledger or performance qualification."
+      },
+      "direct_links": {
+        "links": {
+          "linked_UR_instances": 10,
+          "source_threads": 1,
+          "independent_UR_to_PTI_links": true,
+          "collector_internal_links": {
+            "linked_device_operations": 10,
+            "actual_append_apis": {
+              "zeCommandListAppendMemoryCopy": 8,
+              "zeCommandListAppendLaunchKernelWithArguments": 2
+            },
+            "host_source_threads": 1,
+            "unsunk_barrier_completions": 0,
+            "exact_collector_host_device_links": true,
+            "independent_UR_API_join_qualified": false,
+            "limits": "Collector-internal identity/clock consistency only. UR text has no call timestamp/thread identity;do not infer its per-operation join by ordinal or call counts. No graph parent/child,queue-generation,host-task,phase-boundary or observer-cost qualification."
+          },
+          "shape_lifetime_graph_qualified": false,
+          "observer_cost_qualified": false,
+          "limits": "Exact successful-direct-enqueue interval/thread/instance joins on this fixture only. No ordinal inference,tolerance fallback,graph expansion,queue/event generations,model completeness,speed or hardware-saturation qualification."
+        },
+        "graph_capture_query_calls": 2,
+        "graph_capture_query_wall_ns": 42790,
+        "graph_lifecycle_or_submission_calls": 0,
+        "missing_typed_enqueue_queue": {},
+        "complete_device_coverage_qualified": false,
+        "observer_cost_qualified": false,
+        "limits": "Observed successful direct UR/native/PTI identity joins only. Query return values,buffer extents/lifetimes,independent internal library work ledger,model-route coverage and clean speed remain unqualified."
+      },
+      "typed": {
+        "counts": {
+          "rejected_calls": 1,
+          "urQueueCreate": 2,
+          "urUSMDeviceAlloc": 3,
+          "enqueue_calls": 10,
+          "copy_bytes": 15894528,
+          "graph_query_calls": 2,
+          "urMemBufferCreate": 2,
+          "buffer_copy_bytes": 8,
+          "kernel_geometries": 2
+        },
+        "enqueue_queue_handles": 1,
+        "lifetime_generations_qualified": false,
+        "graph_children_qualified": false,
+        "limits": "Typed callback capture/geometry/requested-byte census only. Handles are raw values;reference generations,retirement,actual launch rounding,graph child mapping and application host-memory lifetime still need independent checks."
+      },
+      "external_lifetimes": {
+        "counts": {
+          "queue_created": 2,
+          "queue_reused_values": 0,
+          "allocation_created": 3,
+          "allocation_reused_values": 0,
+          "event_created": 10,
+          "event_reused_values": 7,
+          "event_released": 10,
+          "graph_query_calls": 2,
+          "buffer_created": 2,
+          "buffer_reused_values": 0,
+          "buffer_native_queries": 4,
+          "buffer_transfers": 2,
+          "buffer_released": 2,
+          "queue_finish_calls": 12,
+          "allocation_released": 3,
+          "queue_released": 2
+        },
+        "external_generations_closed": true,
+        "source_threads": 1,
+        "limits": "Complete serial fixture external API reference generations only. Not driver-internal ownership,buffer-reader completion,host-memory lifetime,ordinary runtime teardown or exact graph-child/device identity."
+      },
+      "actual_typed_buffer_and_external_refs_qualified": true,
+      "callback_capture": {
+        "call_pairs": 166,
+        "source_threads": 1
+      },
+      "host_probe_accepted": true,
+      "pid": 3640813,
+      "actual_required_providers_observed": true,
+      "environment_mutation_guard_not_triggered": true,
+      "analysis_inputs": [
+        {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/onemkl-wrapper-work-v2/buffer-call-v1/target-owned/one-bf16.stdout",
+          "bytes": 468,
+          "sha256": "e20ceb87b8d579af0eb1c838c30920e391bbe546b8f062448bf305f0b55345f9"
+        },
+        {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/onemkl-wrapper-work-v2/buffer-call-v1/target-owned/one-bf16.stderr",
+          "bytes": 46753,
+          "sha256": "453d780623088603d953febfa18f9f141ffa45cf5d9119cf2b3a578ec45e8851"
+        },
+        {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/onemkl-wrapper-work-v2/buffer-call-v1/calls.jsonl",
+          "bytes": 57147,
+          "sha256": "d2d394c224d960cc7fa8f51072b114a67dead4b72442b7a95d97b05739324bc3"
+        },
+        {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/onemkl-wrapper-work-v2/buffer-call-v1/ur.log",
+          "bytes": 38380,
+          "sha256": "9ff61338e8e608bba88a43a0dc9a28d181aac5cf3598f265936a74aee8f662b7"
+        },
+        {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/onemkl-wrapper-work-v2/buffer-call-v1/trace/sycl_gemm_devic.3640813.json",
+          "bytes": 40073,
+          "sha256": "9d44c311b84c2ee5dc6634842733039d70e783687df5589c9df1502f9462a2d5"
+        }
+      ],
+      "fresh_faults": [],
+      "boot_unchanged": true,
+      "driver_after": {
+        "pci": "/sys/bus/pci/devices/0000:05:00.0",
+        "driver": "xe",
+        "vendor": "0x8086",
+        "device": "0xe20c",
+        "kernel": "7.0.0-38-generic",
+        "devcoredump": false
+      },
+      "session_removed": true
     }
   }
 }
