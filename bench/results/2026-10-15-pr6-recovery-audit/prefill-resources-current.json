@@ -1144,7 +1144,7 @@
       "next_action": "Extend current observer controller with independent UR-call-interval/PTI-source reconciliation;commit finite GPU fixture plan after native/source reuse proof. Keep graph/generation/cost and model gates unqualified."
     },
     "ur_subscriber_gpu": {
-      "stage": "prepared",
+      "stage": "direct-join-passed",
       "source_commit": "eae4e9affcb167ba3cfb1cfb3707588d1154ac55",
       "input_sha256": {
         "tests/core/test_work_ledger_fixture.py": "ea6bf40c7c21ee403937032ce86e345896a0e4bce83a60216ebf557d91e01cd1",
@@ -1348,12 +1348,127 @@
       "retention": "Main consumes bounded raw records for this direct join only;after verified compact evidence,retire normal traces/JIT/output with a deletion manifest. Reuse current13 native artifacts and the small observer;no new binary generation.",
       "active": false,
       "ownership_closed": true,
-      "passed": false,
+      "passed": true,
       "gpu_work": true,
       "model_qualified": false,
       "graph_lifetime_qualified": false,
       "observer_cost_qualified": false,
-      "clean_speed_qualified": false
+      "clean_speed_qualified": false,
+      "begin_raw_ns": 1281257186490895,
+      "end_raw_ns": 1281257544898376,
+      "pid": 2786254,
+      "validation": {
+        "pid": 2786254,
+        "loader": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_loader.so.0.12.0",
+        "threads_before": 1,
+        "preinit": 37,
+        "config_enabled": true,
+        "first_init": true,
+        "dispatch_result": 46,
+        "output_untouched": true,
+        "retained_reference_until_exit": true,
+        "runtime_teardown_qualified": false
+      },
+      "actual_runtime_providers_verified": true,
+      "time_namespace": "time:[4026531834]",
+      "api": {
+        "counts": {
+          "barrier": 20,
+          "copy_bytes": 55844,
+          "copy": 53,
+          "kernel": 606,
+          "fill_bytes": 1028,
+          "fill": 1
+        },
+        "enqueue_calls": {
+          "urEnqueueEventsWaitWithBarrierExt": 20,
+          "urEnqueueUSMMemcpy": 53,
+          "urEnqueueKernelLaunchWithArgsExp": 606,
+          "urEnqueueUSMFill": 1
+        }
+      },
+      "device": {
+        "counts": {
+          "barrier": 20,
+          "copy_bytes": 55844,
+          "copy": 53,
+          "kernel": 606,
+          "fill_bytes": 1028,
+          "fill": 1
+        },
+        "host_events": 2303,
+        "device_events": 680,
+        "device_instance_ids_unique": true,
+        "all_device_host_sources": true,
+        "raw_clock_bounds": true
+      },
+      "links": {
+        "linked_UR_instances": 680,
+        "source_threads": 1,
+        "independent_UR_to_PTI_links": true,
+        "collector_internal_links": {
+          "linked_device_operations": 680,
+          "actual_append_apis": {
+            "zeCommandListAppendBarrier": 20,
+            "zeCommandListAppendMemoryCopy": 53,
+            "zeCommandListAppendLaunchKernelWithArguments": 606,
+            "zeCommandListAppendMemoryFill": 1
+          },
+          "host_source_threads": 1,
+          "unsunk_barrier_completions": 1,
+          "exact_collector_host_device_links": true,
+          "independent_UR_API_join_qualified": false,
+          "limits": "Collector-internal identity/clock consistency only. UR text has no call timestamp/thread identity;do not infer its per-operation join by ordinal or call counts. No graph parent/child,queue-generation,host-task,phase-boundary or observer-cost qualification."
+        },
+        "shape_lifetime_graph_qualified": false,
+        "observer_cost_qualified": false,
+        "limits": "Exact successful-direct-enqueue interval/thread/instance joins on this fixture only. No ordinal inference,tolerance fallback,graph expansion,queue/event generations,model completeness,speed or hardware-saturation qualification."
+      },
+      "subscriber": {
+        "call_pairs": 3453,
+        "source_threads": 1,
+        "complete_pairs": true,
+        "environment_guard_exit_not_triggered": true
+      },
+      "analysis_inputs": [
+        {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/ur-call-subscriber-v1/gpu-direct-v2/trace/sycl_submission.2786254.json",
+          "sha256": "923eec57f2b9a74eac3df23f930f0fc87f2c5afa3e47e8d72d4856a541c958fa",
+          "bytes": 864414
+        },
+        {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/ur-call-subscriber-v1/gpu-direct-v2/ur.log",
+          "sha256": "d985948076735fb82f58fb87995faef1f25dd7d55cf5471600f51b2a2d809221",
+          "bytes": 950148
+        },
+        {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/ur-call-subscriber-v1/gpu-direct-v2/calls.jsonl",
+          "sha256": "aa36e467e8b119792bf0162f339dd11672b4bfc11bd60537ec9a5da13b2b3ddc",
+          "bytes": 1010820
+        }
+      ],
+      "session_removed": true,
+      "fresh_faults": [],
+      "boot_unchanged": true,
+      "driver_after": {
+        "pci": "/sys/bus/pci/devices/0000:05:00.0",
+        "driver": "xe",
+        "vendor": "0x8086",
+        "device": "0xe20c",
+        "kernel": "7.0.0-38-generic",
+        "devcoredump": false
+      },
+      "loader_order": {
+        "init_offsets": {
+          "libxptifw.so.1": 10079,
+          "libstrata_ur_calls.so": 10665,
+          "libstrata_ur_validation.so": 10826,
+          "libunitrace_tool.so": 15090
+        },
+        "validation_before_main_offset": 14917,
+        "dispatcher_subscriber_validation_collector": true
+      },
+      "next_action": "Direct fixture identity bridge passed only. Extend successful callbacks with queue/event/allocation generations and graph parent/child metadata,then bounded graph/reuse/shape/host-task/drained-boundary qualification and observer-cost checks before a model trace. Keep production prefill/decode and shared measurement safety environment unchanged."
     }
   }
 }
