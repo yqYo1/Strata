@@ -866,7 +866,7 @@
       }
     },
     "ur_subscriber": {
-      "stage": "built",
+      "stage": "failed",
       "source_commit": "567b54356beab5de8bd7d8fbae1cf95f94f2158d",
       "input_sha256": {
         "tests/core/test_work_ledger_fixture.py": "ea6bf40c7c21ee403937032ce86e345896a0e4bce83a60216ebf557d91e01cd1",
@@ -1036,7 +1036,24 @@
         "bytes": 17216
       },
       "fresh_faults": [],
-      "boot_unchanged": true
+      "boot_unchanged": true,
+      "outcomes": [],
+      "error": "RuntimeError('mutation control failed')",
+      "failure_evidence": {
+        "kind": "setenv",
+        "exit_code": 87,
+        "test_marker_reached": false,
+        "stdout_bytes": 0,
+        "guard_message": "strata UR subscriber: environment mutation blocked",
+        "subscriber_load_record": {
+          "kind": "load",
+          "pid": 2680635,
+          "raw_ns": 1278219970910780
+        },
+        "stderr_sha256": "558bed606053fbb3a5c0e741aa71ba92f3962ad18e24b03597a5982248ed52f7",
+        "interpretation": "The Python host process hit a mutation guard before the named test marker. Startup versus import caller is not attributed;this does not establish a subscriber or GPU failure. Replace the interpreter-dependent mutation control with a native host driver,keeping the measured library immutable."
+      },
+      "next_action": "Commit a new native host-driver plan and preserve this failed Python-control result. Verify/reuse unchanged observer ELF and original native compiled inputs;do not rerun this Python control or advance to GPU."
     }
   }
 }
