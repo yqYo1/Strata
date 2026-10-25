@@ -31,7 +31,7 @@ The unused streamed-QSA writer, host-span export and fixture are removed.
 Decode kernels, configuration and1256-slot placement remain selected as before.
 The restored build has native source`1baa0547f` and engine SHA prefix`2a128c6a`.
 The original6e40 executable remains the selected fallback; restored-source
-model, state-handoff and performance qualification is pending.
+performance, task and full-context qualification is pending.
 
 The reviewed `selected_native_tree_reconcile_20261025` decision in the
 [research index](../bench/results/2026-10-15-pr6-recovery-audit/research-index.json)
@@ -53,8 +53,20 @@ all17 artifacts are rechecked. Earlier census, supervision-budget and fixture
 startup refusals remain failed in Git; no native recompilation or relabelling
 was used to correct the later controller-only cases.
 
-This qualifies bounded fixtures only. Real-model handoff, independent repeated
-prefill/decode speed, quality and agent-session gates remain open. Physical262144
+The [bounded real-model state gate](../bench/results/2026-10-15-pr6-recovery-audit/prefill-restore-model-current.json)
+now passes four requests in one fresh process:33-token short input,16385-token
+long input,another33-token input,and16401 tokens with16385 reused. The long
+BF16/mode10 pass restores all48 dense layers; every request restores the1256-slot
+cache payload and map. Live RESTORE verifies all12 main state layers,the draft
+and running state before continuation. All15 final model hashes match,the
+updated NEO is observed at all five process boundaries,parameter validation is
+silent,and the native child exits normally with no fresh fault. This synthetic
+diagnostic deliberately enables conversation parking; it is not a speed or
+task-quality sample. The earlier cache-disabled plan was blocked before GPU
+execution and remains transport-only evidence in Git.
+
+These gates qualify bounded fixtures and this state handoff only. Independent
+repeated prefill/decode speed,quality and agent-session gates remain open. Physical262144
 allocation/final-slot execution still needs its own bounded plan and evidence;
 the earlier retired streamed/layout results do not qualify this source.
 
