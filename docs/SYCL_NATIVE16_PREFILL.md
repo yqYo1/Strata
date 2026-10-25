@@ -202,7 +202,8 @@ window-ranked membership were rejected separately; original placement remains.
 
 The20261026 audit distinguishes two differences. The fastest reported owned128
 package used source396d and recorded1005.5..1005.8tok/s subsequent-process
-medians. The six-process owned128/borrowed1256 comparison recorded a0.4899%
+medians;see[the direct owned128 result](../bench/results/2026-10-15-pr6-recovery-audit/prefill-long-input-current.json).
+The six-process owned128/borrowed1256 comparison recorded a0.4899%
 prefill decline for borrowed1256,with every pair slower. Its old2% screen did
 not classify a regression;that does not establish equal speed or satisfy the
 later requirement to restore the fastest prefill independently of decode.
@@ -295,8 +296,14 @@ payload SHA256a7904f18d8d59c7128dec4d6f22ae2b2e8a51f91f6946ac4e68b1ec6e0a7a6f3
 matches the historical runtime manifest. It was never loaded. The GMM-only
 crossover is not advanced because the changed condition lacks source-level
 enabling evidence in these NEO versions;that does not prove the installed
-packages have no performance effect. Retire this unused capture at NEO-cohort
-closure,within its original2MiB budget.
+packages have no performance effect. At cohort closure the unused package and
+both private NEO extracts,normal traces/JIT and closed transaction inventory
+were retired:470 files,202522512bytes. The compact comparison records the
+external path/hash/reason manifest. The single-use controller and its controls
+also retire from the active tree;their original source remains reachable at
+d53e15bda. The selected engine and12 fixtures remain intact. This does not
+reconcile the14 older provenance holds or retire the separate oneMKL probe
+and capture still needed for graph/native-work coverage.
 
 Between native processes at20261025T16:06UTC,CPU policy0 used
 `amd-pstate-epp`,governor`powersave`,EPP`power`,maximum4654288kHz.
