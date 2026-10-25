@@ -1,0 +1,142 @@
+{
+  "stage": "prepared",
+  "controller_source_commit": "cb1b5a5182cbc13bd52c1e139f83a96b9e305d5f",
+  "controller_files": 189,
+  "controller_fingerprint": "3a29a99f1c825e3c59440cfc1ffe66abbe8586652d60050c9c9b86e7cc2a1b64",
+  "native_source_commit": "1baa0547f151264d4ef7a0972e5355b6b1b3fe6b",
+  "binary": {
+    "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/selected-prefill-restoration-v2/build/strata",
+    "bytes": 22198704,
+    "sha256": "2a128c6a58a46eb9b865eaef355055251297c2f96749f390cf78c3b892246ca5"
+  },
+  "component_sha256": "95e859017e91596d20b801b90902f51ce9f30a83c81c98ca830dc0e0dc644f78",
+  "args": [
+    "--pack",
+    "/home/yayoi/.local/share/strata-sycl/packs/qwen3.8-flash-next-iq3_s",
+    "--native",
+    "/home/yayoi/.local/share/strata-sycl/models/qwen3.8-flash-next-iq3_s/IQ3_S/Qwen3.8-Flash-Next-GSQ-RCO-IQ3_S-00001-of-00002.gguf",
+    "--max-context",
+    "131072",
+    "--kv",
+    "int8",
+    "--kv-resident",
+    "131072",
+    "--expert-cache",
+    "1256",
+    "--expert-profile",
+    "/home/yayoi/orca/workspaces/Strata/sycl/data/expert-profile.bin",
+    "--expert-cache-per-layer",
+    "--pool-workers",
+    "5",
+    "--pcie-frac",
+    "0",
+    "--adapt-swaps",
+    "0",
+    "--conversation-cache-mib",
+    "8192",
+    "--prompt-cache",
+    "0",
+    "--turn-token",
+    "-1",
+    "--suffix-draft",
+    "0",
+    "--greedy",
+    "--no-spec-split",
+    "--short-read",
+    "0",
+    "--spec",
+    "4",
+    "--mtp",
+    "/home/yayoi/.local/share/strata-sycl/mtp/rt",
+    "--prefill",
+    "8192",
+    "--vram-reserve-mib",
+    "700",
+    "--no-coupled-draft",
+    "--no-token-graph",
+    "--conversation-cache-slots",
+    "2",
+    "--conversation-cache-min-free-mib",
+    "4096"
+  ],
+  "environment_fingerprint": "e23c14be1b766293323bd376cdb8f89f09bf389ca41b7f171f03fffaa48ade77",
+  "template_sha256": "9543297abc2ce0b4530ee6984d55366e735881caf42a08239f3494d655f9e10d",
+  "base_reference": {
+    "decode_archive": {
+      "commit": "a8af3d7fa96a7713f2e516d2da3d7410956be015",
+      "path": "bench/results/2026-10-15-pr6-recovery-audit/canonical-restore-decode-current.json",
+      "sha256": "7dda2bcefa6f7e54d568e6aa3d5226d5e0a7383f0b41efd7584093854d9547ca"
+    },
+    "decode_compact_sha256": "7a7276cf70e8507838aa62246b0f4a6d858c7f390318bd5f9a23f555cd4712ec",
+    "model": {
+      "commit": "64efe12f005b6a518daa2ee1d0f0d2712baa325f",
+      "path": "bench/results/2026-10-15-pr6-recovery-audit/prefill-recovery-current.json",
+      "sha256": "9945b8234465e0c963732086eac0b10b081fb63ca3eb16db3daae27899eab7f2"
+    },
+    "build_compact_sha256": "3e6f266eabc13b94178e96a4d0cf6b5de2909dcd8927a760ead2c92248f0d1da"
+  },
+  "model_fingerprint": "986be81744907994c44c232523362a2f30e7256b8f23339407d3e2f6e87ef2ff",
+  "model_files": 15,
+  "profile_sha256": "8f59b4aa8873209dff11c11e37bcda9529a1335b724a1afeea37bf6388975baf",
+  "vocab_size": 248320,
+  "requests": [
+    {
+      "prompt": 33,
+      "max_new": 16,
+      "reused": 0,
+      "wire_bytes": 96,
+      "wire_sha256": "b73bc437c1a10211f23ef9f30b3b0848eaa8657c5bd0722024c682e360b8fb1e"
+    },
+    {
+      "prompt": 16385,
+      "max_new": 1,
+      "reused": 0,
+      "wire_bytes": 77490,
+      "wire_sha256": "b27ac860aeaa2ec2325983f9327bcdb210b1efbb64c5cb36ec801bc1ad69ba4d"
+    },
+    {
+      "prompt": 33,
+      "max_new": 16,
+      "reused": 0,
+      "wire_bytes": 139,
+      "wire_sha256": "7844ef95703bd36e44622013ff6c8d8e33f0617fd6dd582326450e1261653bdf"
+    },
+    {
+      "prompt": 16401,
+      "max_new": 16,
+      "reused": 16385,
+      "wire_bytes": 77555,
+      "wire_sha256": "fdbfebd3e9223530411ce1880c844750170b1a59b60359cf19dc2c8352504b18"
+    }
+  ],
+  "boot": "cfda0b6a-7c13-4fe2-bdf5-8f9202770840",
+  "driver": {
+    "pci": "/sys/bus/pci/devices/0000:05:00.0",
+    "driver": "xe",
+    "vendor": "0x8086",
+    "device": "0xe20c",
+    "kernel": "7.0.0-38-generic",
+    "devcoredump": false
+  },
+  "budgets": {
+    "wall": 1200,
+    "cpu": 7200,
+    "rss_cap": 111669149696,
+    "text_cap": 33554432,
+    "file_cap": 33554432,
+    "total_cap": 67108864
+  },
+  "criteria": "One fresh owned native serve process after the host protocol gate;four disjoint-prefix requests 33/16385/33/16401 with16/1/16/16 output limits and last prefix reuse16385. Allow a valid earlier EOS with positive output;no generated-text identity requirement. Require startup/read/reuse extents,valid IDs,callbacks,draft precompute,actual BF16/vLLM/mode10 long dispatch,Full48 dense restoration and1256-slot payload/map restoration. RESTORE must verify all12 main layers,draft and running state before the last continuation. Check MTP committed positions,actual mapped ELF allowlist at READY and each DONE,pre-main/silent parameter validation,15 final full model hashes,normal owned exit,boot/driver and no fresh fault. Stop first failure;no retry. No identical-text,speed,task,HTTP/agent,physical262144 or ordinary runtime teardown claim.",
+  "retention": "Keep compact individual request/route/state/restore/owner/fault outcomes and source/recipe identities. Retire successful stage logs after committed replay. Original6e40 remains selected;this restored generation stays only for imminent independent long-input/decode comparisons.",
+  "protocol": null,
+  "observation": null,
+  "active": false,
+  "ownership_closed": true,
+  "passed": false,
+  "complete": false,
+  "production_selected": false,
+  "speed_qualified": false,
+  "decode_preservation_qualified": false,
+  "physical262144_qualified": false,
+  "ordinary_runtime_teardown_qualified": false
+}
