@@ -866,7 +866,7 @@
       }
     },
     "ur_subscriber": {
-      "stage": "driver-built",
+      "stage": "host-checked",
       "source_commit": "3dddb1bda41d0d93be1a04158ab38eaccae3abb7",
       "input_sha256": {
         "tests/core/test_work_ledger_fixture.py": "ea6bf40c7c21ee403937032ce86e345896a0e4bce83a60216ebf557d91e01cd1",
@@ -1015,7 +1015,7 @@
       "retention": "Original6e40 plus12 fixtures retained unchanged. Keep this one small observer ELF,exact source/recipe and header manifest only for the imminent GPU coverage fixture after host checks;retire normal build/API/loader output after compact evidence.",
       "active": false,
       "ownership_closed": true,
-      "passed": false,
+      "passed": true,
       "gpu_work": false,
       "model_qualified": false,
       "parser_host_controls": {
@@ -1067,6 +1067,72 @@
         "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/ur-call-subscriber-v1/ur_call_guard_test",
         "sha256": "3f5903fd6235d5ad1176a84b979aa641d2886490f837141780e453161347b3a5",
         "bytes": 16320
+      },
+      "outcomes": [
+        {
+          "kind": "setenv",
+          "exit_code": 87,
+          "mutation_blocked": true
+        },
+        {
+          "kind": "unsetenv",
+          "exit_code": 87,
+          "mutation_blocked": true
+        },
+        {
+          "kind": "putenv",
+          "exit_code": 87,
+          "mutation_blocked": true
+        },
+        {
+          "kind": "clearenv",
+          "exit_code": 87,
+          "mutation_blocked": true
+        },
+        {
+          "kind": "canary",
+          "exit_code": 0,
+          "validation": {
+            "pid": 2700628,
+            "loader": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_loader.so.0.12.0",
+            "threads_before": 1,
+            "preinit": 37,
+            "config_enabled": true,
+            "first_init": true,
+            "dispatch_result": 46,
+            "output_untouched": true,
+            "retained_reference_until_exit": true,
+            "runtime_teardown_qualified": false
+          },
+          "calls": {
+            "call_pairs": 2,
+            "source_threads": 1,
+            "outcomes": [
+              {
+                "name": "urPlatformGetApiVersion",
+                "status": 46,
+                "calls": 2
+              }
+            ],
+            "ordinary_runtime_teardown_qualified": false,
+            "device_work_qualified": false
+          }
+        }
+      ],
+      "loader_order": {
+        "dispatcher_then_subscriber_then_validation_before_main": true,
+        "all_three_actual_ELF_paths_resolved_and_matched": true
+      },
+      "qualification": {
+        "standard_environment_mutation_APIs_blocked": 4,
+        "canary_UR_call_pairs": 2,
+        "canary_source_threads": 1,
+        "CPU_only": true,
+        "GPU_coverage": false,
+        "graph_generations": false,
+        "observer_cost": false,
+        "model_attribution": false,
+        "ordinary_runtime_teardown": false
       }
     }
   }
