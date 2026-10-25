@@ -525,7 +525,9 @@ remain unchanged;hardware saturation remains unknown.
 
 Bounded dispatch discovery now passes on selected6e40 with the official117489-token
 request. All15 successful`DRAFT_PREFILL` markers use the direct batched path:
-14x8192+2800=117488 cells,mode2 drafter placement,zero callback graph fallbacks.
+14x8192+2800=117488 callback input cells,mode2 drafter placement,zero callback graph fallbacks.
+These are input extents;the inner`r0`/needed-window crop and scratch-sized batch
+loop still determine actual computed rows and library invocation counts.
 The GPU BF16 residual and MoE10 route run,and all48 dense layers restore.
 Seven adversarial CPU controls pass,both request gates verify actual providers
 and immutable settings,all15 model hashes match,and owners close without a fresh
@@ -533,7 +535,15 @@ fault. Both conversation caches were disabled;no snapshot-readback or draft-time
 observer ran. This is callback-route evidence,not complete device coverage,
 observer cost,speed,decode preservation or library-internal graph absence.
 See`route_discovery` in the same prefill resource result. Check called oneMKL
-native-command/host-task submission before extending the device ledger.
+native-command/host-task submission before extending the device ledger. The
+reviewed next fixture uses one known-answer production`Gemm::bf16` call with
+all-thread UR,Level Zero append and PTI observation through a checked drain.
+The source has two BF16 GEMM sites per executed inner batch,four projection
+sites,and an early no-needed-rows return;do not infer dynamic counts from the
+15 callback markers. The existing runtime manifest already pins the L0 v2
+adapter;observe its actual mapping/capability rather than infer installed
+behavior from the inspected SDK source. No new research scope is eligible
+until that fixture identifies a concrete gap.
 
 Basic [profile-off/on graph support](../bench/results/2026-10-15-pr6-recovery-audit/mtp-graph-observer-current.json)
 already passed, with exact6e40 reuse checked separately. The closed

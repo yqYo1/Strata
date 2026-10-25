@@ -11325,7 +11325,7 @@
   },
   "oneMKL_native_work_coverage_20261025": {
     "classification": "decision_support",
-    "status": "running_read_only",
+    "status": "reviewed_first_oneMKL_fixture_pending",
     "schedulable_now": false,
     "question": "Cover called oneMKL/native-command/interop/host-task GPU work without assuming every device operation has one same-thread UR kernel enqueue.",
     "prerequisites": "Actual selected117K mode10 direct-MTP callback route is verified;library-internal coverage remains unknown.",
@@ -11344,7 +11344,9 @@
     ],
     "report": {
       "path": ".cache/strata-research/20261025/onemkl-native-work/report.md",
-      "byte_budget": 12000
+      "byte_budget": 12000,
+      "bytes": 11277,
+      "sha256": "8cdfea88ea8944ecd188efc35aea7e524792681e512519e3c471b398b8d11e19"
     },
     "ownership": "One Orca gpt-6-luna read-only researcher;Main owns all implementation/tests/GPU. Native Codex gpt-6-luna max report review.",
     "retention": "Keep report only through native review and current coverage/fixture decision;retain substantive reusable findings or compact decision,not transaction files.",
@@ -11354,8 +11356,42 @@
     "terminal": "term_dd3bdbc2-97aa-46d5-b0d3-91a0f7ccb99e",
     "incarnation": "179713dd-49d7-4840-96d2-87e80a83efa1",
     "model": "gpt-6-luna",
-    "actual_model_verified_by": "worker-show projection.provider.model;agent_status live/working",
+    "actual_model_verified_by": "Orca provider projection and terminal GPT-6-Luna high footer",
     "policy_source_commit": "d1bd26e59262362f92861d49004764b0bf6e463b",
-    "report_body_read_by_Main": false
+    "report_body_read_by_Main": false,
+    "closure": {
+      "worker_done": "msg_8d809354c6f2",
+      "outcome": "succeeded",
+      "delivery_acknowledged": "delivery_66a902368260",
+      "release": "external_terminal/processAction none;creation PTY/incarnation matched before own terminal close;ptyKilled true",
+      "reclaimable_workers_in_run": 0
+    },
+    "review": {
+      "path": ".cache/strata-research/20261025/onemkl-native-work/review.json",
+      "bytes": 6486,
+      "sha256": "5954ebf03c13f6045fe898544b21b38d30df67e3c93315bc25ac7b6307e6a3b6",
+      "reviewer": "native Codex gpt-6-luna max",
+      "digest": "Useful distinct library-work coverage gap;first one-call production Gemm::bf16 fixture must observe all-thread UR,L0 appends and PTI through drain. Source/interface evidence does not qualify installed lowering,model coverage or speed."
+    },
+    "Main_source_corrections": [
+      "Selected/current prefill.cpp1426,1501,1529..1543 match6e40 exactly:early no-needed-rows return;two BF16 call sites per executed inner batch,not per callback;four projection call sites,with no-MMQ native f16 fan-out potentially further tiled. Nominal callback cells do not give executed rows or invocation counts.",
+      "Existing current-runtime manifest already hashes forced L0 v2 adapter0.12.0 as05bcafc4a0d45d33f957f16ffb4ba4776da675e79ade1121b93b94b8549335d8. Exact actual loaded provider/capability and inspected-source-to-installed-build identity remain different checks.",
+      "Official2024.1 oneMKL API documentation supports only the general queue/event interface;the actual selected2026.1 package must supply runtime/library identity for the fixture."
+    ],
+    "next_action": "Main implements one small known-answer production Gemm::bf16 call,not just direct public-API replacement. Keep actual operator/library/provider pins,source/build recipe,all-thread UR and native/L0/PTI links,queue/list/event generations,checked drain/async errors and no fresh fault. Start with one call;add unrelated-queue negative control only after baseline coverage is understood. Observer cost remains separate.",
+    "next_research_eligibility": {
+      "schedulable_now": false,
+      "prerequisite": "Closed first oneMKL fixture with concrete unresolved native/host-task records and actual runtime/library identities."
+    },
+    "transaction_retirement": {
+      "manifest": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-onemkl-transactions-retired-20261025.jsonl",
+      "sha256": "6989cb0804447c5bd5c8d48a7a03b7996a72a6cb1206327f4c976c0ecd42c2de",
+      "files": 4,
+      "bytes": 8981,
+      "remaining_files": [
+        "report.md",
+        "review.json"
+      ]
+    }
   }
 }
