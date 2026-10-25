@@ -22,7 +22,7 @@ import measurement_owner as supervision
 import ur_validation as validation
 
 P, B = build.P, build.B
-ROOT = B / 'neo-39758-runtime-probe-v1'
+ROOT = B / 'neo-39758-runtime-probe-v2'
 RESULT = selected.RESULT.with_name('runtime-requalification-current.json')
 SETTINGS = P / 'tools/sycl/measurement_environment.json'
 INPUTS = ('tools/sycl/runtime_probe.py', 'tools/sycl/check_full_context_source.py',
@@ -35,6 +35,15 @@ REPLACEMENTS = {
     '/usr/lib/x86_64-linux-gnu/libigdml.so.1.0.231':
         '/usr/lib/x86_64-linux-gnu/libigdml.so.1.0.240'}
 EXTRA = '/usr/lib/x86_64-linux-gnu/libmetee.so.6.2.5.0'
+DECLARED_CHANGES = {
+    '/usr/lib/x86_64-linux-gnu/libz.so.1.3':
+        'f61677c7bdb7c2aa2a243ea781bfd16afcb361cede7b4ef76127a9d8eb9a5242',
+    '/usr/lib/x86_64-linux-gnu/libigdml.so.1.0.231':
+        '1806ee390b7693dd61dd5385a25744dd94479295d3a7d15730e578e91b18e782',
+    '/usr/lib/x86_64-linux-gnu/libigdgmm.so.12.10.0':
+        '427847d14c2c36889efa8b0be6a8af6afac32cc3c744dcfc8e010d4ca210c957',
+    '/usr/lib/x86_64-linux-gnu/libze_intel_gpu.so.1.17.39395':
+        '52e29a602f92d3542eac91e20717743e63ca7d4b257d0c79a3c4d6c64c94ea49'}
 write, require, digest = selected.write, guards.require, build.digest
 
 
@@ -82,7 +91,7 @@ def runtime_files(preload):
         target = REPLACEMENTS.get(name, name)
         sha = digest(target)
         expected = client.get('runtime_asset_delta', {}).get(name, {}).get('candidate_sha256', original['sha256'])
-        require(target != name or sha == expected, 'undeclared additional runtime change: ' + name)
+        require(sha == DECLARED_CHANGES.get(name, expected), 'undeclared additional runtime change: ' + name)
         out[target] = sha
     for name in (EXTRA, preload['library']['path']):
         out[name] = digest(name)
@@ -106,7 +115,13 @@ def current(row):
 
 
 def prepare():
-    require(not ROOT.exists() and not RESULT.exists(), 'fresh bounded runtime gate only; no retry')
+    require(not ROOT.exists(), 'fresh bounded runtime gate only; no retry')
+    failure = validation.committed(RESULT)
+    require(failure['stage'] == 'preparation-failed' and not failure['root_created'] and
+        not failure['native_launched'] and failure['ownership_closed'] and not failure['active'],
+        'preserve the closed metadata-only preparation refusal')
+    failure_ref = dict(commit=validation.git('log', '-1', '--format=%H', '--',
+        str(RESULT.relative_to(P))).decode().strip(), path=str(RESULT.relative_to(P)), sha256=digest(RESULT))
     prior = validation.committed(RESULT.with_name('mtp-width-clean-current.json'))
     require(prior['stage'] == 'admission-failed' and len(prior['processes']) == 4 and
         prior['postfailure_full_model_hashes'] == 15 and not prior['active'] and prior['ownership_closed'],
@@ -129,6 +144,7 @@ def prepare():
             ('graph1', 'sycl_graph_envelope_test', ['--profile=1'])):
         cases.append(dict(label=label, binary=full['fixtures'][fixture], args=args))
     row = dict(stage='prepared', source_commit=revision, input_sha256=inputs,
+        prior_preparation_failure=failure_ref, declared_runtime_changes=DECLARED_CHANGES,
         original_build=proof, preload=preload, runtime_files=files, environment=environment, cases=cases,
         boot=Path('/proc/sys/kernel/random/boot_id').read_text().strip(), driver=guards.driver_guard(),
         criteria='Four ordered fresh owned processes: host-only preload canary,submission/USM/events,ordinary graph profile0,profile1. All exit0,expected numerical/guard/profiling markers,pre-main parameter validation,silent validation log,observed ELF subset pinned and actual new NEO observed in device children. Trace must record enqueue work;fresh fault/boot/source/runtime/owner checks after every child. Stop first failure,no retry. Not model,clean speed,physical context or ordinary runtime destruction qualification.',
