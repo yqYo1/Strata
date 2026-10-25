@@ -1,14 +1,14 @@
 {
-  "stage": "failed",
-  "controller_source_commit": "b8e0f603fdbe7611a9cc08237821d4868436b407",
+  "stage": "prepared",
+  "controller_source_commit": "1823b0dcf4c70df87e494f3ed38ea4deaae5e275",
   "build_source_commit": "1baa0547f151264d4ef7a0972e5355b6b1b3fe6b",
   "prior_failed_gate": {
-    "commit": "b8e0f603fdbe7611a9cc08237821d4868436b407",
+    "commit": "1823b0dcf4c70df87e494f3ed38ea4deaae5e275",
     "path": "bench/results/2026-10-15-pr6-recovery-audit/prefill-restore-device-current.json",
-    "sha256": "3029da72d939883aaa39a84337d14e02049dad702dd05e16b1c96bfe43c874ab"
+    "sha256": "5c4f931ecc97a20ccef20d013e1ebe5fe87d43198aaf2ce358ac3c2e8779bce7"
   },
   "controller_files": 189,
-  "controller_fingerprint": "cdfa406f88b2ebed8e2929c08e13b9c92d096cd669765dcca6742ab0949f7430",
+  "controller_fingerprint": "f4fae5a16d1edb758d11893871a75aeaf793af4b9d4dbabae7532a4f9a4f3f13",
   "build_record_sha256": "9882f206f5db305ea58f7bec62c54a68d0a93858b4600a6fb3e6db1e847d56c4",
   "assets": {
     "strata": {
@@ -99,99 +99,6 @@
   },
   "cases": [
     {
-      "label": "host-prefill_expert_bank_plan_test",
-      "target": "prefill_expert_bank_plan_test",
-      "args": [],
-      "kind": "host",
-      "environment_delta": {}
-    },
-    {
-      "label": "host-full_context_diagnostic_host_test",
-      "target": "full_context_diagnostic_host_test",
-      "args": [],
-      "kind": "host",
-      "environment_delta": {}
-    },
-    {
-      "label": "host-cache_tail_host_test",
-      "target": "cache_tail_host_test",
-      "args": [],
-      "kind": "host",
-      "environment_delta": {}
-    },
-    {
-      "label": "host-prefill_scratch_host_test",
-      "target": "prefill_scratch_host_test",
-      "args": [],
-      "kind": "host",
-      "environment_delta": {}
-    },
-    {
-      "label": "host-residency_publication_host_test",
-      "target": "residency_publication_host_test",
-      "args": [],
-      "kind": "host",
-      "environment_delta": {}
-    },
-    {
-      "label": "host-cpu_work_census_host_test",
-      "target": "cpu_work_census_host_test",
-      "args": [],
-      "kind": "host",
-      "environment_delta": {}
-    },
-    {
-      "label": "host-iq2_phase_host_test--pair=0",
-      "target": "iq2_phase_host_test",
-      "args": [
-        "--pair=0"
-      ],
-      "kind": "host",
-      "environment_delta": {
-        "STRATA_IQ2_PAIR": "0",
-        "STRATA_IQ2_PAIR_AUDIT": "1"
-      }
-    },
-    {
-      "label": "host-iq2_phase_host_test--pair=1",
-      "target": "iq2_phase_host_test",
-      "args": [
-        "--pair=1"
-      ],
-      "kind": "host",
-      "environment_delta": {
-        "STRATA_IQ2_PAIR": "1",
-        "STRATA_IQ2_PAIR_AUDIT": "1"
-      }
-    },
-    {
-      "label": "submission",
-      "target": "sycl_submission_test",
-      "args": [
-        "--submission"
-      ],
-      "marker": "fixture_status=PASS mode=submission",
-      "kind": "device"
-    },
-    {
-      "label": "graph0",
-      "target": "sycl_graph_envelope_test",
-      "args": [
-        "--profile=0"
-      ],
-      "marker": "numerical=PASS guards=PASS aliases=PASS checked_teardown=PASS support=NOT_ENABLED",
-      "kind": "device"
-    },
-    {
-      "label": "graph1",
-      "target": "sycl_graph_envelope_test",
-      "args": [
-        "--profile=1"
-      ],
-      "marker": "numerical=PASS guards=PASS aliases=PASS checked_teardown=PASS support=SUPPORTED",
-      "kind": "device"
-    },
-    {
       "label": "scratch-smoke",
       "target": "sycl_prefill_scratch_test",
       "args": [
@@ -199,7 +106,16 @@
         "smoke"
       ],
       "marker": "prefill_scratch_device_fixture mode=smoke cases=1 status=PASS",
-      "kind": "device"
+      "kind": "device",
+      "environment_delta": {
+        "STRATA_SYCL_PREFILL_SCRATCH_ALIAS": "1",
+        "STRATA_PREFILL_MMQ": "0",
+        "STRATA_PREFILL_MOE_COMPACT_FP16": "1",
+        "STRATA_PREFILL_RING": "8",
+        "STRATA_GR_UNFUSED": "0",
+        "STRATA_PREFILL_BF16X2": "0",
+        "STRATA_PREFILL_LAYER_MAJOR": "1"
+      }
     },
     {
       "label": "scratch-full",
@@ -209,7 +125,16 @@
         "full"
       ],
       "marker": "prefill_scratch_device_fixture mode=full cases=15 status=PASS",
-      "kind": "device"
+      "kind": "device",
+      "environment_delta": {
+        "STRATA_SYCL_PREFILL_SCRATCH_ALIAS": "1",
+        "STRATA_PREFILL_MMQ": "0",
+        "STRATA_PREFILL_MOE_COMPACT_FP16": "1",
+        "STRATA_PREFILL_RING": "8",
+        "STRATA_GR_UNFUSED": "0",
+        "STRATA_PREFILL_BF16X2": "0",
+        "STRATA_PREFILL_LAYER_MAJOR": "1"
+      }
     },
     {
       "label": "scratch-loan",
@@ -219,7 +144,16 @@
         "loan"
       ],
       "marker": "prefill_cache_loan_fixture cases=20 cycles=3 model_PP=UNRUN status=PASS",
-      "kind": "device"
+      "kind": "device",
+      "environment_delta": {
+        "STRATA_SYCL_PREFILL_SCRATCH_ALIAS": "1",
+        "STRATA_PREFILL_MMQ": "0",
+        "STRATA_PREFILL_MOE_COMPACT_FP16": "1",
+        "STRATA_PREFILL_RING": "8",
+        "STRATA_GR_UNFUSED": "0",
+        "STRATA_PREFILL_BF16X2": "0",
+        "STRATA_PREFILL_LAYER_MAJOR": "1"
+      }
     },
     {
       "label": "expert-private",
@@ -228,7 +162,8 @@
         "--packed-smoke"
       ],
       "marker": "expert_bank_fixture PASS model=UNRUN physical262144_RESTORE=UNQUALIFIED",
-      "kind": "device"
+      "kind": "device",
+      "environment_delta": {}
     },
     {
       "label": "restore-smoke",
@@ -237,7 +172,8 @@
         "--restore-smoke"
       ],
       "marker": "(restore smoke)",
-      "kind": "device"
+      "kind": "device",
+      "environment_delta": {}
     }
   ],
   "preload": {
@@ -326,8 +262,8 @@
     "UR_LOG_LEVEL_ZERO": "level:warning;flush:warning;output:stderr",
     "LD_PRELOAD": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/ur-validation-preload-v2/libstrata_ur_validation.so",
     "STRATA_UR_PROBE_EXPECTED_LOADER": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_loader.so.0.12.0",
-    "TMPDIR": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/selected-prefill-restoration-device-v2/tmp",
-    "XDG_CACHE_HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/selected-prefill-restoration-device-v2/cache"
+    "TMPDIR": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/selected-prefill-restoration-device-v3/tmp",
+    "XDG_CACHE_HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/selected-prefill-restoration-device-v3/cache"
   },
   "budgets": {
     "wall": 90,
@@ -359,18 +295,10 @@
     "STRATA_SYCL_VERIFY_NATIVE_CAPTURE": "0",
     "STRATA_SYCL_PREFILL_SAME_QUEUE": "1",
     "STRATA_SYCL_PREFILL_NATIVE16": "bf16",
-    "XDG_CACHE_HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/selected-prefill-restoration-device-v2/cache",
-    "TMPDIR": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/selected-prefill-restoration-device-v2/tmp"
+    "XDG_CACHE_HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/selected-prefill-restoration-device-v3/cache",
+    "TMPDIR": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/selected-prefill-restoration-device-v3/tmp"
   },
-  "host_budgets": {
-    "wall": 60,
-    "cpu": 60,
-    "rss_cap": 1073741824,
-    "text_cap": 1048576,
-    "file_cap": 1048576,
-    "total_cap": 4194304
-  },
-  "criteria": "Eight ordered host checks then eight fresh device processes on the exact same-build fixtures;stop first failure,no retry. Original build host observation remains failed;this new plan owns output separately from the build tree. Require all host checks before GPU work. Require exit0,numerical/bounds/loan/publication/RESTORE markers,pre-main validation,silent parameter validation and an observed pinned updated NEO. Trace enqueue work where expected;smoke refusal may perform allocation only. Check actual process closure,boot and fresh driver faults after every case.",
+  "criteria": "Reuse only8 host and3 submission/graph passes from the closed failed gate after exact source,17-asset,runtime and effective-environment proof. Scratch smoke with its changed layout is NOT reused. Five fresh device cases:Alias1/MMQ0 scratch smoke/full/loan,private bank,RESTORE. Stop first failure,no retry;original failed gates remain failed. All8 host gates precede GPU work. Require exit0,numerical/bounds/loan/publication/RESTORE markers,pre-main validation,silent parameter validation and an observed pinned updated NEO. Trace enqueue work where expected;smoke refusal may perform allocation only. Check actual process closure,boot and fresh driver faults after every case.",
   "retention": "Keep compact individual fixture outcomes and source/artifact/runtime identities. Delete successful API traces,maps and repeated logs after committed replay. Keep this generation only for imminent model/state and independent prefill/decode comparisons;do not select it from fixture success.",
   "pending": "Model admission/state handoff,matched repeated long prefill and independent decode,task/agent/RESTORE and physical262144 qualification. Retained UR reference means ordinary runtime teardown is unqualified.",
   "outcomes": [
@@ -495,65 +423,14 @@
       "stdout_sha256": "c8ce8e2f1bec7268d3bd0d978528179a3a80e97a3a01ad881e4af24fe16de5a7",
       "stderr_sha256": "a5bb7b53c691f03c1cd5f7ea32faa5d4e13ae47ebff928fc5e9c559b05383af5",
       "trace_bytes": 25604
-    },
-    {
-      "label": "scratch-smoke",
-      "kind": "device",
-      "exit_code": 0,
-      "passed": true,
-      "ownership_closed": true,
-      "parameter_validation": true,
-      "fresh_faults": [],
-      "restore_checks": null,
-      "mapped_runtime_fingerprint": "5ba3904c0c184fb27ab736e3b55c51aa7563307476fb880b14584f567a1ca37b",
-      "stdout_sha256": "d042b38fc9217cd4924a04307023ebb05ed0884fee1497766748a19e407ce7e1",
-      "stderr_sha256": "72cd98b348fa303ae62f60292359aef43ceddde96d367dc2a302fca9393a8cf7",
-      "trace_bytes": 780473
     }
   ],
+  "reused_outcomes": 11,
   "active": false,
   "ownership_closed": true,
   "complete": false,
   "passed": false,
   "model_qualified": false,
   "clean_speed_qualified": false,
-  "production_selected": false,
-  "error": "RuntimeError('device fixture failed: scratch-full')",
-  "fresh_faults": [],
-  "boot_unchanged": true,
-  "driver_after": {
-    "pci": "/sys/bus/pci/devices/0000:05:00.0",
-    "driver": "xe",
-    "vendor": "0x8086",
-    "device": "0xe20c",
-    "kernel": "7.0.0-38-generic",
-    "devcoredump": false
-  },
-  "failure_diagnosis": {
-    "mechanism": "scratch fixture exact_bytes explicitly assumes Alias1/MMQ0,but its process inherited alias default0 from the runtime-only environment. Non-alias bytes_needed is conservative;the exact-capacity negative check is not applicable to that fixture configuration.",
-    "failed_case": "scratch-full",
-    "stderr": "prefill scratch fixture: one byte short was admitted",
-    "partial_cases_passed": [
-      "exact_init",
-      "moved_relayout",
-      "smaller_relayout",
-      "growth_refusal"
-    ],
-    "host_checks_passed": 8,
-    "device_checks_passed": 4,
-    "failed_exit_code": 1,
-    "fresh_faults": [],
-    "ownership_closed": true,
-    "next_action": "Commit a fresh plan pinning the original layout fixture environment. Reuse only8 host and3 submission/graph passes on identical assets/settings;rerun scratch smoke with the corrected layout,then full/loan/expert/RESTORE. No model or decode-preservation qualification."
-  },
-  "artifact_retirement": {
-    "complete": true,
-    "files": 40,
-    "bytes": 3331016,
-    "manifest": {
-      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/closed-restored-scratch-layout-refusal-20261025.jsonl",
-      "sha256": "2f24cd1ee9c05d701dacd46f4df421d105d734ccb019ad14fdcd9f84481edfc0"
-    },
-    "decision": "Closed raw traces/logs retired after compact failed diagnostic and individual qualification evidence were committed;native17 assets retained for five imminent device cases."
-  }
+  "production_selected": false
 }
