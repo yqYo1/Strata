@@ -331,6 +331,9 @@ but its resource-level cause remains unattributed. This is evidence against
 userspace rollback as a sufficient remedy,not proof that the libraries have
 identical performance or that historical clocks/contention were reproduced.
 Decode implementation,configuration and1256-slot placement remain unchanged.
+After replay,the485 private vendor/raw/JIT files retire,142631294bytes in total;
+the installed apt cache is excluded. The one-use controller and controls also
+retire to0697c74e8. The selected original engine and12fixtures remain intact.
 Read-only idle settings after closure match the earlier CPU EPP/GPU power
 policy audit below. Measure loaded clocks,throttle flags,paging and competing
 load separately before assigning a hardware bottleneck. The component-level
