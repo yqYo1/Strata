@@ -264,8 +264,8 @@
   "model": "qwen3.8-flash-next-iq3_s-primary",
   "model_fingerprint": "32d552dc1fb0ad6594425e8bd39f35049f896afe5775b0f7abf751110a11333e",
   "placement_diagnostic": {
-    "stage": "closed",
-    "source_commit": "53c2c7fe80a85e66b6e70b8fba27c23f24efe8d4",
+    "stage": "planned",
+    "source_commit": "f573fc00d23a0291b998ec88f410899c3c508eb9",
     "native_source_commit": "6e40afc1beddd059ee518617f6c1efce1da14aca",
     "binary": {
       "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/strata",
@@ -349,7 +349,7 @@
     "model_fingerprint": "32d552dc1fb0ad6594425e8bd39f35049f896afe5775b0f7abf751110a11333e",
     "reader": {
       "path": "/home/yayoi/orca/workspaces/Strata/sycl/bench/sycl/client_resources.py",
-      "sha256": "12e8899846e8b761730edf1a8c298ee8357a3091de3075729484cf6a14865366"
+      "sha256": "c7f5bbd077a78d02bf1677c7c97360e7dc76d9de2629f0620a65df24ca2af750"
     },
     "request_hashes": [
       "26f08fd8364b5c4bce718617fe2aed42761d0a794e068b00532694adef78b3be",
@@ -357,13 +357,14 @@
       "daabbef4775c3fbdbfd832339d80a5ae2f91025b66df79b92fb8f6905f33b041",
       "8669c9ebe2747b1fc2d7c4806eeb66025c919981d81c51cfdbd64ba3ec3cc2b1"
     ],
-    "prior_preparation_failure": {
-      "source": "76bf87d1a",
-      "error": "KeyError:models",
-      "GPU_executed": false,
-      "boundary": "Before root creation/model reads;compact historical record excludes models. Recover original15-asset map from1e676d554 and verify the8573 fingerprint. No native/model outcome relabelled."
+    "prior_gate": {
+      "archive": "8c921642b",
+      "original_passed": false,
+      "scoped_attribution_passed": true,
+      "actual_read_tokens": 39260,
+      "reuse": "Same native/runtime/math,owned8192 scratch/48-layer restore validated;full15 model hashes from its preparation match original inventory/ctime. Original failed collection/cohort remain closed. No117K/262144 or decode qualification."
     },
-    "plan": "One owned128/32K+ gate,then two separate observed117K processes:borrowed1256 then owned128;four fresh requests each,first separate. Fixed same6e40 binary/current runtime/math. Placement/cache geometry change together;order and observers prevent clean causal/adoption claims. Never change production decode. No retries or speed-based stopping.",
+    "plan": "Two separate observed117K processes:borrowed1256 then owned128;four fresh requests each,first separate. Fixed same6e40 binary/current runtime/math. Placement/cache geometry change together;order and observers prevent clean causal/adoption claims. Passive scope is pre-first-output only;short decode coverage is not required or qualified. Never change production decode. No retries or speed-based stopping.",
     "source_audit": "6e40 generate own_fits uses exact bytes_needed+512MiB;chunk fallback rejected by actual8192 route. Owned carve separately owns emb/R/region;borrowed lease uses checked tail. Native admission forbids lease1 with no-prefill-borrow,so owned-only uses lease0 for its independently owned buffers;borrowed keeps lease1. Shared long-pass GPU BF16/mode10 and48-layer dense restore must match. Same runtime safety/queue/parameter validation. Actual all-GPU residual allocation verified per request;32K gate does not establish117K or262144 capacity.",
     "limits": "Diagnostic only. No clean speed,observer overhead,hardware saturation,task/decode performance,physical262144 or ordinary-runtime-teardown qualification.",
     "retention": "At closed replay,keep all useful request clocks/work/placement/host summaries;retire normal logs,raw sampling,JIT and single-use controller. Selected engine+12fixtures and separate pending oneMKL consumer remain.",
@@ -377,66 +378,8 @@
     },
     "cases": [
       {
-        "name": "owned-gate",
-        "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-placement-probe-v1/owned-gate",
-        "tokens": 32768,
-        "runs": 1,
-        "owned": true,
-        "command": [
-          "/bin/sh",
-          "/home/yayoi/orca/workspaces/Strata/sycl/bench.sh",
-          "--config",
-          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-placement-probe-v1/owned-gate/config.json",
-          "--port",
-          "47915",
-          "--prefill-only",
-          "--prefill-tokens",
-          "32768",
-          "--think",
-          "--runs",
-          "1",
-          "--profile-request-gates",
-          "--workload-id",
-          "native_gdn_20261018",
-          "--fail-fast-engine-error",
-          "--ready-timeout",
-          "600",
-          "--out",
-          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-placement-probe-v1/owned-gate/bench"
-        ],
-        "native_plan": {
-          "binary": {
-            "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/strata",
-            "bytes": 22190000,
-            "sha256": "22182f1a5e62e5f4259ce49a75ae44afbd988166ec79324816e499ff37ef60e4"
-          },
-          "native_validation_probe": {
-            "library": {
-              "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/ur-validation-preload-v2/libstrata_ur_validation.so",
-              "sha256": "1d4e69d672d55fa0a126ae43b7b4743482cccca7e2f2bc22e0db2bfdad5bdc7c"
-            },
-            "loader": {
-              "path": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_loader.so.0.12.0",
-              "sha256": "bb6e1311850e4b1a924e42acae80c2b3610934625a4985aaa67967abe31356fc"
-            }
-          },
-          "resource_collection": {
-            "source": {
-              "path": "/home/yayoi/orca/workspaces/Strata/sycl/bench/sycl/client_resources.py",
-              "sha256": "12e8899846e8b761730edf1a8c298ee8357a3091de3075729484cf6a14865366"
-            },
-            "seconds": 900,
-            "interval": 1
-          }
-        },
-        "inputs": {
-          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-placement-probe-v1/owned-gate/config.json": "2494c3360db66d7649b8ecc1a702364441869762d2097288f1505805c7962241",
-          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-placement-probe-v1/owned-gate/plan.json": "90dbaa94d6b4b1fa17841dd3c56b6dd8ec8cd66cfff87747c2a9c6e6b122e38c"
-        }
-      },
-      {
         "name": "borrowed",
-        "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-placement-probe-v1/borrowed",
+        "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-placement-probe-v2/borrowed",
         "tokens": 98304,
         "runs": 4,
         "owned": false,
@@ -444,9 +387,9 @@
           "/bin/sh",
           "/home/yayoi/orca/workspaces/Strata/sycl/bench.sh",
           "--config",
-          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-placement-probe-v1/borrowed/config.json",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-placement-probe-v2/borrowed/config.json",
           "--port",
-          "44465",
+          "51747",
           "--prefill-only",
           "--prefill-tokens",
           "98304",
@@ -460,7 +403,7 @@
           "--ready-timeout",
           "600",
           "--out",
-          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-placement-probe-v1/borrowed/bench"
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-placement-probe-v2/borrowed/bench"
         ],
         "native_plan": {
           "binary": {
@@ -481,20 +424,20 @@
           "resource_collection": {
             "source": {
               "path": "/home/yayoi/orca/workspaces/Strata/sycl/bench/sycl/client_resources.py",
-              "sha256": "12e8899846e8b761730edf1a8c298ee8357a3091de3075729484cf6a14865366"
+              "sha256": "c7f5bbd077a78d02bf1677c7c97360e7dc76d9de2629f0620a65df24ca2af750"
             },
             "seconds": 900,
             "interval": 1
           }
         },
         "inputs": {
-          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-placement-probe-v1/borrowed/config.json": "5c85505b52f3ddb1affcaacb179ca7d8ae662fa706a0b8a132dc7cd2e0b55dfc",
-          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-placement-probe-v1/borrowed/plan.json": "90dbaa94d6b4b1fa17841dd3c56b6dd8ec8cd66cfff87747c2a9c6e6b122e38c"
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-placement-probe-v2/borrowed/config.json": "1058aa53dfd483006148b69837cf67df13e269743e57cd24c59b84577362696b",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-placement-probe-v2/borrowed/plan.json": "ce847afa2d483edae90050d5252016253cfaefa12f2f8fba17bc0276064b0711"
         }
       },
       {
         "name": "owned",
-        "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-placement-probe-v1/owned",
+        "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-placement-probe-v2/owned",
         "tokens": 98304,
         "runs": 4,
         "owned": true,
@@ -502,9 +445,9 @@
           "/bin/sh",
           "/home/yayoi/orca/workspaces/Strata/sycl/bench.sh",
           "--config",
-          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-placement-probe-v1/owned/config.json",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-placement-probe-v2/owned/config.json",
           "--port",
-          "55591",
+          "60107",
           "--prefill-only",
           "--prefill-tokens",
           "98304",
@@ -518,7 +461,7 @@
           "--ready-timeout",
           "600",
           "--out",
-          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-placement-probe-v1/owned/bench"
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-placement-probe-v2/owned/bench"
         ],
         "native_plan": {
           "binary": {
@@ -539,151 +482,20 @@
           "resource_collection": {
             "source": {
               "path": "/home/yayoi/orca/workspaces/Strata/sycl/bench/sycl/client_resources.py",
-              "sha256": "12e8899846e8b761730edf1a8c298ee8357a3091de3075729484cf6a14865366"
+              "sha256": "c7f5bbd077a78d02bf1677c7c97360e7dc76d9de2629f0620a65df24ca2af750"
             },
             "seconds": 900,
             "interval": 1
           }
         },
         "inputs": {
-          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-placement-probe-v1/owned/config.json": "38a415da4dd016fb23eadde32622c624370d818f96454f5d4aa03e4eed0f95e8",
-          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-placement-probe-v1/owned/plan.json": "90dbaa94d6b4b1fa17841dd3c56b6dd8ec8cd66cfff87747c2a9c6e6b122e38c"
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-placement-probe-v2/owned/config.json": "c46314a1af8b6d43d7fe04499471f14989585e0c33d4393bd6d0743bfdbbe7d6",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-placement-probe-v2/owned/plan.json": "ce847afa2d483edae90050d5252016253cfaefa12f2f8fba17bc0276064b0711"
         }
       }
     ],
-    "outcomes": [
-      {
-        "name": "owned-gate",
-        "passed": false,
-        "complete": false,
-        "requests": [],
-        "error": "ValueError('insufficient contained CPU/CCS observation spans for the client interval')",
-        "error_excerpt": "HC=checked_drain callbacks=after_return\nstrata trace: layer-major layer 46 of 48: completed 5 chunks\nstrata trace: layer-major layer 47 of 48: loading 512 experts\nstrata packed expert bank: layer=47 slots=384 stride=2662400 used_bytes=1022361600 backing_bytes=1022361600 full_fit=0\nstrata trace: prompt chunk 0 of 39259\nstrata trace: prefill issuer threaded=0 stream_all=0 ring=8 chunk=8192 entries=0\nstrata trace: prompt chunk 8192 of 39259\nstrata trace: prefill issuer threaded=0 stream_all=0 ring=8 chunk=8192 entries=0\nstrata trace: prompt chunk 16384 of 39259\nstrata trace: prefill issuer threaded=0 stream_all=0 ring=8 chunk=8192 entries=0\nstrata trace: prompt chunk 24576 of 39259\nstrata trace: prefill issuer threaded=0 stream_all=0 ring=8 chunk=8192 entries=0\nstrata trace: prompt chunk 32768 of 39259\nstrata trace: prefill issuer threaded=0 stream_all=0 ring=8 chunk=6491 entries=0\nstrata MoE mixed owners: phase=entry layer=47 first=0 rows=39259 primary=0xffffd55885000000 primary_bytes=201006080 region=0xffffd558bdc00000 region_bytes=1180698624 tail=(nil) tail_offset=614605312 tail_bytes=0 residual=0xffffd5596b200000 residual_bytes=804024320 bo=0xffffd5587fe00000 queue=0x195c4990 direct_owners=1 previous_attention=checked_drain\nstrata MoE mixed owners: phase=retired layer=47 first=0 rows=39259 route_status=0 shared_HC=checked_drain callbacks=after_return\nstrata trace: layer-major layer 47 of 48: completed 5 chunks\nstrata MoE expert bank complete: uploads=17580 requested_H2D_bytes=35928217600 permanent_hits=0 permanent_slots=264 total_slots=384 final_drain=checked\nstrata MoE GU fusion: fused_jobs=2519 fused_rows=15829095 separate_jobs=16277 min_rows=2334\nstrata MoE Down fusion: fused_jobs=2519 fused_rows=15829095 separate_jobs=16277 min_rows=2334\nstrata MoE accumulator window: windows=48 dequants=17580 jobs=18796 source_H2D_bytes=75377280 GPU_resident_windows_only=1 operator_max=8192 maximum_rows=39259\nstrata mtp: prompt expert phase=after-prompt-before-restore free_bytes=4262469632 total_bytes=10666115072\nstrata mtp: expert source original=0 bytes=707788800 source=owned-RAM\nstrata mtp: experts restored bytes=707788800, cumulative detach=2.436 ms reload=287.213 ms decode graph recapture=0.000 ms (lazy, later captures accumulate)\nstrata mtp: prompt expert phase=after-restore free_bytes=3554672640 total_bytes=10666115072\nstrata prefill dense: phase=restored residency=Full activations=48 full_bytes=2116951040 bank_bytes=50918400 snapshot_bytes=2116951040 overlay_rows=0 session_recapture=0 verifier=1 free_bytes=120205312 total_bytes=10666115072\nstrata trace: read 39259 tokens (batched) in 58599.5 ms\nstrata trace: prompt done (slots refilled) -1 -1\nstrata trace: window 39259 1\nstrata verify: captured the 1-token window in 49 event-completed segments\nstrata verify: capture 1 tokens 10.276 ms, free VRAM 114.6 MiB\nstrata verify: 48 shared/hit graphs can overlap CPU experts\nstrata mtp: expert decode recapture kind=round coupled=0 ok=1 ms=0.569 cumulative_ms=0.569\nstrata mtp: expert decode recapture kind=step coupled=0 ok=1 ms=0.482 cumulative_ms=1.052\nstrata mtp: expert decode recapture kind=step coupled=0 ok=1 ms=0.386 cumulative_ms=1.437\nstrata trace: window 39260 4\nstrata verify: captured the 4-token window in 49 event-completed segments\nstrata verify: capture 4 tokens 17.235 ms, free VRAM 114.5 MiB\nstrata verify: 48 shared/hit graphs can overlap CPU experts\nstrata mtp: expert decode recapture kind=round coupled=0 ok=1 ms=0.629 cumulative_ms=2.067\nstrata trace: window 39264 4\nstrata trace: window 39267 4\nstrata trace: window 39268 4\nstrata trace: window 39272 4\nstrata trace: window 39276 4\nstrata trace: window 39280 4\nstrata serve: prompt 39260 tokens = 0 reused + 39260 read in 58605 ms (669.9 tok/s), 24 generated in 1890 ms (12.7 tok/s), drafts accepted 16 of 21, 0 checkpoints\nstrata serve: SYCL_EXPERT_COPY submitted_blobs=0 submitted_bytes=0 completed_blobs=0 completed_bytes=0 host_view_groups=0 gpu_miss_groups=0 cpu_unique_misses=9043 cpu_entries=13301\nstrata serve: decode expert cache hit rate: 4.4% (619 hits / 13920 lookups)\n",
-        "ownership_closed": true,
-        "fresh_faults": [],
-        "boot_unchanged": true,
-        "driver_after": {
-          "pci": "/sys/bus/pci/devices/0000:05:00.0",
-          "driver": "xe",
-          "vendor": "0x8086",
-          "device": "0xe20c",
-          "kernel": "7.0.0-38-generic",
-          "devcoredump": false
-        }
-      }
-    ],
+    "outcomes": [],
     "active": false,
-    "ownership_closed": true,
-    "post_closure_admission": {
-      "source_inputs_recovered": 9853,
-      "selected_artifacts_verified": 13,
-      "runtime_ELFs_verified": 33,
-      "model_assets_stat_verified": 15,
-      "native_exit_code": 0,
-      "collector_exit_code": 0,
-      "original_failure_unchanged": true,
-      "workload_read_tokens": 39260,
-      "prompt_ms": 58605.3,
-      "owned_scope": {
-        "batched_wrapper_ms": 58599.5,
-        "expert_refill_ms": 0.0,
-        "limits": "Batch includes native entry/run/restore;refill includes RAM lookup/enqueue/drain/publication. Not GPU service or PCIe bytes."
-      },
-      "raw_hashes": {
-        "engine.stderr": "f7307401454b4e1ab8fe80c207aa13a14c698556d2f917e2d859a066b5f362fd",
-        "client-resources.jsonl": "59bef7254a325f197f6ebcca3ccb8c9460f383eaacf6ba98bfcec82223276b7d",
-        "host-state.jsonl": "48c6c14378031ffb491ffa6c55e3ba415a6876ba15f88e3e274c2126e465dfa8",
-        "engine-start.json": "5b35ed024ae579d1321f27e87be22be7b401961dae6a43f6fcd20f3fb284bddc",
-        "engine-exit.json": "92e349a049d5604c6ce06dd7c5a546991f93c2f3e428893a0b83f4553c1ee7c0",
-        "bench/2026-10-26-community-cpu-qwen3-8-flash-next-iq3-s-primary/results.json": "e0547186d37e2a43166bf43eb1747b09b4ee6fcdab20df590ed796b7f3a7b3bc",
-        "bench/2026-10-26-community-cpu-qwen3-8-flash-next-iq3-s-primary/requests.jsonl": "ed831e48de39b605818e87e58dc349b8bfb6b3ed236891f35c30a9e05308c013"
-      },
-      "GPU_executed": false
-    },
-    "closed_analysis": {
-      "source_commit": "78b44c2e8373e4886c17e740043cf5388b21c6b9",
-      "collection_archive": "80bb79887",
-      "source_inputs_changed": [
-        "tools/sycl/prefill_placement_probe.py"
-      ],
-      "reader_sha256": "c7f5bbd077a78d02bf1677c7c97360e7dc76d9de2629f0620a65df24ca2af750",
-      "GPU_executed": false,
-      "attribution_passed": true,
-      "original_passed": false,
-      "native_ownership_closed": true,
-      "actual_read_tokens": 39260,
-      "prompt_ms": 58605.3,
-      "instrumented_tok_s": 669.9052816042234,
-      "request_sha256": "1fd63b8c67a1888e443800b5c6d339ca116df2cb91941e6f332b6adf74275b3a",
-      "scope": {
-        "batched_wrapper_ms": 58599.5,
-        "expert_refill_ms": 0.0,
-        "limits": "Batch includes native entry/run/restore;refill includes RAM lookup/enqueue/drain/publication. Not GPU service or PCIe bytes."
-      },
-      "host": {
-        "samples": 50,
-        "gpu_act_mhz": {
-          "min": 0,
-          "median": 2750.0,
-          "max": 2750
-        },
-        "throttle_samples": 0,
-        "cpu0_reported_khz_median": 4641267.5,
-        "system_vm_delta": {
-          "pswpin": 0,
-          "pswpout": 0,
-          "pgmajfault": 60
-        },
-        "min_available_RAM_bytes": 23298498560,
-        "limits": "Wholly contained pre-first-output snapshots;not native phase boundaries. Reported frequency is not an arithmetic ceiling;system paging counters are not per-process attribution."
-      },
-      "client_coverage_verified": true,
-      "pre_first_output_cpu_seconds": 55.24,
-      "pre_first_output_cpu_core_equivalents": 0.9496005123395669,
-      "top_scheduled_threads": [
-        {
-          "tid": 3448041,
-          "start_ticks": 129860436,
-          "cpu_ticks": 5286,
-          "observed_last_cpus": [
-            0
-          ],
-          "cpu_seconds": 52.86
-        },
-        {
-          "tid": 3448278,
-          "start_ticks": 129861126,
-          "cpu_ticks": 52,
-          "observed_last_cpus": [
-            0,
-            1,
-            2,
-            3,
-            4,
-            5,
-            6,
-            7,
-            8,
-            9,
-            10,
-            11
-          ],
-          "cpu_seconds": 0.52
-        }
-      ],
-      "ccs": [
-        {
-          "pci": "0000:05:00.0",
-          "client_id": 50239,
-          "engine": "ccs",
-          "eligible_intervals": 58,
-          "busy_cycles": 929350565,
-          "capacity_total_cycles": 1116843116,
-          "busy_fraction": 0.8321227499959807
-        }
-      ],
-      "limits": "Closed39K owned128 observation only;first use,trace and passive collectors charged. Not clean speed,117K/262144 capacity,decode,host/GPU/bus saturation or historical decline attribution.",
-      "next": "New committed two-process117K plan may reuse this bounded owned-shape gate with unchanged native/runtime/inputs. Original failed collection and original three-case cohort stay closed;never resume or overwrite them."
-    }
+    "ownership_closed": true
   }
 }
