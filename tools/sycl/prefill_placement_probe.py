@@ -13,6 +13,7 @@ import re
 import select
 import socket
 import statistics
+import subprocess
 import sys
 import time
 
@@ -142,7 +143,7 @@ def prepare():
     models = assets.model_pins(cfg, baseline['models'], full=True)
     source = gen.git('rev-parse','HEAD').decode().strip(); pins = gen.benchmark_pins(source)
     ROOT.mkdir(mode=0o700)
-    row = dict(stage='planned',source_commit=source, native_source_commit=baseline['build_proof']['source_commit'] if 'source_commit' in baseline['build_proof'] else '6e40afc1beddd059ee518617f6c1efce1da14aca',
+    row = dict(stage='planned',source_commit=source, native_source_commit=rt['original_build']['source_commit'],
         binary=baseline['binary'], preload=baseline['preload'], configuration=cfg,
         template_sha256=digest(TEMPLATE), environment_template=gen.committed(TEMPLATE)['environment_template'],
         runtime_sha256=digest(runtime.RESULT), boot=rt['boot'], runtime_reference=str(runtime.RESULT.relative_to(P)),
@@ -175,7 +176,9 @@ def run():
     i=len(row['outcomes']);require(i<3 and all(o['passed'] for o in row['outcomes']),'qualified ordered cases only')
     plan=row['cases'][i];root=Path(plan['root']);config=json.loads((root/'config.json').read_text());env=environment(row,root,plan['owned'])
     require(not (root/'owned').exists(),'existing attempt;inspect owner,never retry')
-    cursor=runtime.validation.journal_cursor();outcome=dict(name=plan['name'],passed=False,complete=False);owner=None
+    lines=subprocess.check_output(['journalctl','-k','-b','-n','0','--show-cursor','--no-pager'],text=True,timeout=15)
+    cursor=next(s.split(': ',1)[1] for s in lines.splitlines() if s.startswith('-- cursor: '))
+    outcome=dict(name=plan['name'],passed=False,complete=False);owner=None
     host_file=(root/'host-state.jsonl').open('x');next_sample=0.0;native_target=None
     def persist():
         nonlocal next_sample
