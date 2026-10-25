@@ -307,6 +307,23 @@ contemporaneous frequency/pressure controls are absent;neither these samples
 nor the unchanged job counts establish hardware saturation or exclude host
 effects on the old/current difference.
 
+For the subsequent117K requests,client-window CCS busy fractions are about
+99.1..99.3% in both arms and scheduled CPU is about0.99 core;reported GT0 median
+is2750MHz. The shorter first-use39K gate below instead reports83.2% CCS and
+0.95 core. Do not mix those extents or interpret either busy fraction as XMX/FLOP
+utilization. The current observation still lacks stage-aligned GPU service,
+physical PCIe/VRAM traffic and disjoint host-work/wait attribution. Those are the
+next resource-attribution gaps;the proposed scratch candidate is not an
+established explanation or fix for the historical decline.
+
+After independent replay of all eight request clocks and resource summaries,
+both closed observation roots are retired:222 files,47728246B,with the external
+path/hash/reason deletion manifest recorded in the compact result. The single-use
+controller and controls recover from`f573fc00d`,the frozen recipe from`f678f3ffd`,
+and the full closed compact result from`136fe2b9d`. The selected engine and its
+twelve fixtures remain unchanged. This cleanup does not resolve the separate
+oneMKL coverage consumer or the14 older provenance holds.
+
 The39K owned gate exits normally and restores all48 dense layers. Its original
 collection remains failed because the parser required two wholly contained
 intervals in the short decode tail. Closed-data analysis at`8c921642b` scopes the
