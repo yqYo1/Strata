@@ -109,7 +109,8 @@ def process_stat(path):
     fields = path.read_text().rsplit(')', 1)[1].split()
     require(len(fields) >= 37, 'incomplete process stat')
     return dict(state=fields[0], sid=int(fields[3]), start_ticks=int(fields[19]),
-                cpu_ticks=int(fields[11]) + int(fields[12]), processor=int(fields[36]))
+                cpu_ticks=int(fields[11]) + int(fields[12]), processor=int(fields[36]),
+                minor_faults=int(fields[7]),major_faults=int(fields[9]),rss_pages=int(fields[21]))
 
 
 def snapshot(target, pci, proc=Path('/proc')):
@@ -322,15 +323,23 @@ def main(argv=None):
     pci = canonical_pci(args.pci)
     boot = Path('/proc/sys/kernel/random/boot_id').read_text().strip()
     target = receipt_target(json.loads(args.native_receipt.read_text()), boot)
+    conditions = None
+    condition_flag = os.environ.get('STRATA_RESOURCE_CONDITIONS','0')
+    require(condition_flag in ('0','1'), 'condition collection must be0 or1 before exec')
+    if condition_flag == '1':
+        from hardware_conditions import Conditions
+        conditions = Conditions(pci)
     deadline, count = time.monotonic() + args.seconds, 0
     intervals = CycleIntervals()
     evidence = CollectionEvidence()
     reason, error = 'deadline', None
     with args.out.open('x') as stream:
-        stream.write(json.dumps(dict(kind='header', schema=2, target=target, pci=pci, boot_id=boot,
+        header = dict(kind='header', schema=2, target=target, pci=pci, boot_id=boot,
             kernel=Path('/proc/sys/kernel/osrelease').read_text().strip(),
             ticks_per_second=os.sysconf('SC_CLK_TCK'), interval=args.interval, seconds=args.seconds,
-            limits='Associated DRM-client busy cycles and scheduled CPU ticks; no stage alignment, FLOPs, VRAM bandwidth, PCIe bytes or throughput qualification.')) + '\n')
+            limits='Associated DRM-client busy cycles and scheduled CPU ticks; no stage alignment, FLOPs, VRAM bandwidth, PCIe bytes or throughput qualification.')
+        if conditions is not None: header['conditions'] = conditions.describe()
+        stream.write(json.dumps(header) + '\n')
         try:
             while time.monotonic() < deadline:
                 require(Path('/proc/sys/kernel/random/boot_id').read_text().strip() == boot, 'boot changed')
@@ -348,6 +357,7 @@ def main(argv=None):
                     break
                 row.update(kind='sample', ordinal=count, ticks_per_second=os.sysconf('SC_CLK_TCK'),
                            engine_intervals=intervals.update(row))
+                if conditions is not None: row['conditions'] = conditions.capture()
                 encoded = json.dumps(row) + '\n'
                 require(stream.tell() + len(encoded.encode()) + 2048 <= 32 << 20, 'raw sample budget exceeded')
                 stream.write(encoded); stream.flush()
