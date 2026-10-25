@@ -11253,6 +11253,43 @@
       "files": 5,
       "bytes": 7398,
       "retained": "Only report.md and review.json for the current exact-runtime bridge decision;review again after qualification/rejection."
+    },
+    "exact_SDK_inspection": {
+      "source_root": "/home/yayoi/ghq/github.com/intel/llvm/.worktree/toolchain-sycl-v711-b570-20261011",
+      "source_commit": "504366f4b82ff00bbac7b0c956635eed8bc599d8",
+      "compiler_report": "DPC++7.1.0 pre-release;clang22.1.0 Intel LLVM504366f4b82ff00bbac7b0c956635eed8bc599d8",
+      "source_inputs": {
+        "unified-runtime/source/loader/layers/tracing/ur_tracing_layer.cpp": "c8635e1aa4273a645e25d9a24dc8ab68e27ab5f3bb7d4e034e1b1fe8021c6b66",
+        "sycl/source/detail/ur.cpp": "07a3b70c18d9002fd99d715b0998d6e1b6b8733baed40f2e27f5cebd0cf0262c",
+        "xpti/include/xpti/xpti_data_types.h": "30864a096077d2e131b10616c179b17d59f20b86e1755bab0e7a6a3c17e0e4e9",
+        "xpti/include/xpti/xpti_trace_framework.h": "bd60ef720459eba0c30fec499c178accd3e731dd4aea6cea6d002bfa532a6d09"
+      },
+      "build_cache_sha256": "5275fb208738e3fde22ceb945d246841d2be5b5a9ce5ebce36914421112a9f6c",
+      "configured": {
+        "SYCL_ENABLE_XPTI_TRACING": "ON",
+        "UR_ENABLE_TRACING": "ON",
+        "UR_BUILD_XPTI_LIBS": "OFF",
+        "LLVM_TOOL_XPTIFW_BUILD": "TRUE"
+      },
+      "runtime_assets": {
+        "libur_loader.so.0.12.0": {
+          "installed_sha256": "bb6e1311850e4b1a924e42acae80c2b3610934625a4985aaa67967abe31356fc",
+          "build_sha256": "ddc9744bedeb08368d5aa1c7abed4c9b214993ece63139a5111d2994e19413cd",
+          "bytes": 19267664,
+          "proof": "Complete ELF bytes match after reproducing CMake installation:remove sole DT_RUNPATH entry and zero its build-directory string. No file modified;not a relaxed executable hash.",
+          "runpath_string_offset": 64106,
+          "runpath_string_bytes": 126,
+          "dynamic_entry_offset": 16220376
+        },
+        "libxptifw.so.1.0.1": {
+          "installed_sha256": "e31626a7a4ce9afb038a3bc185329341bc4771f96262ea07b3e5b5fdb65f6ff8",
+          "build_sha256": "e31626a7a4ce9afb038a3bc185329341bc4771f96262ea07b3e5b5fdb65f6ff8",
+          "bytes": 140352,
+          "proof": "Installed and build output identical."
+        }
+      },
+      "immutable_env_requirement": "Use preexec SYCL_UR_TRACE=0;inspected SYCL trace branches call setenv for UR_LOG_TRACING/UR_LOG_LOADER. UR tracing initializes ur.call and ur.call.debug and emits function_with_args begin/end instance IDs. Configure subscriber/dispatcher/trace enable before exec;verify callback delivery and no environment mutation on CPU canary before GPU.",
+      "limits": "Relevant source blobs match the compiler-reported SDK checkout;installed runtime ELF transformations verified in full above. Not a reconstructed complete historical SDK compiler-input census or native subscriber qualification. ghq root LLVMfbccb466 is a different revision. Independent compiler/runtime assets only;no XeStrata application code read."
     }
   }
 }
