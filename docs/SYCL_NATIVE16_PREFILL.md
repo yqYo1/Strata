@@ -273,8 +273,12 @@ it has not been loaded and must retire if that consumer is not advanced.
 Between native processes at20261025T16:06UTC,CPU policy0 used
 `amd-pstate-epp`,governor`powersave`,EPP`power`,maximum4654288kHz.
 The GPU reported base power profile,GT0 maximum2750MHz and170W power cap.
-These settings were only read,not changed;historical matching values are not
-retained,so they cannot yet explain the decline. The later PCIe hierarchy read
+These settings were only read,not changed. A targeted original-session search
+also recovered the same governor,EPP,min/max and driver in a20261009T23:24UTC
+host audit,and `powersave` again in a20261021 frequency snapshot. Those are not
+contemporaneous controls for both117K cohorts,but they counter the hypothesis
+that this policy was newly introduced. They do not explain the decline.
+The later PCIe hierarchy read
 matches the20261018 capability record:16GT/s x4 upstream and2.5GT/s x1 at the
 endpoint/downstream functions. These fields do not prove physical wiring,
 actual transfer throughput or saturation. Active frequency,paging,contention
