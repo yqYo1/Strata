@@ -224,8 +224,9 @@ The first refusal is the historical SDK's changed`metee.h`; two OpenCL headers
 also changed. All1410 actual private compiled inputs still match, and all15
 full model hashes match after closure. This does not qualify execution on the
 new runtime. Keep the old four samples; do not refresh their pins or combine
-new-runtime samples with them. Pin and qualify bounded traced/validated device
-checks before any model, then commit a fresh balanced comparison.
+new-runtime samples with them. The bounded new-runtime device and model gates
+below pass independently. Further width comparison is deferred until actual
+CPU-service attribution and a valid weak-MTP workload justify a fresh plan.
 Closedv1 logs/JIT, its superseded clock probe and eight unstarted plans retire
 after exact188-input and clock-recipe recovery:108 files,14,594,530bytes.
 Its intended advancement rules remain three nondeclining paired decode ratios
@@ -233,10 +234,14 @@ and geomean above1.02, with independent prefill no-decline in all three pairs.
 No clean repeated gain, model adoption or70tok/s qualification follows.
 The closed launchers and protocol corruption controls recover at`b61f376c2`.
 Their successful raw logs, temporary source snapshot and consumed scope review
-are retired after route/observer replay. Original13 and private13 build assets
-remain for the imminent new-runtime qualification and fresh width comparison;
-review after qualification/cohort closure and before a new native generation.
-Their previous runtime qualification does not transfer automatically.
+are retired after route/observer replay. The private13 assets and old width
+raw output are now retired:888 files,153903357bytes. Exact recovery verifies
+10 builder inputs,551 transformed project sources,9311 dependency inputs,the
+generated header,all1410 actual compiled inputs and13 asset hashes. The old
+width's188 benchmark inputs and clock recipe also recover. Its four samples
+and admission failure remain unchanged. Keep original6e40 plus12 fixtures;
+legacy14 provenance holds remain separate. A later width experiment can recover
+the private recipe from`26d484985`; it does not retain an extra engine meanwhile.
 
 The [new-runtime device gate](../bench/results/2026-10-15-pr6-recovery-audit/runtime-requalification-current.json)
 passes six host mapping controls, then four ordered native checks: host-only UR
@@ -292,7 +297,7 @@ the production pool nor a model measurement. The prepared
 `cpu_service_pool_test` covers the real five-worker pool, mixedNT1..4,
 seven format pairs, the96-expert batch boundary, output canaries and leaf-output
 parity. Its observer-off/on arms use separate preexec settings. It is unbuilt
-and unrun; execute it only after the active width cohort and extra-build retirement,
+and unrun; the old width cohort and extra-build retirement are now closed. Execute it
 requiring both passes and matching output checksums, then qualify observer
 overhead separately. Optional
 `STRATA_CPU_SERVICE_PROFILE` compilation plus preexec`STRATA_CPU_SERVICE=1`
@@ -339,9 +344,8 @@ This changes neither the selected original6e40 executable nor
 the active clean-width inputs; it is not an inference optimization or a speedup.
 
 The standalone collector checks passed in a serialized gap between model
-processes. After the frozen width comparison closes, require production-pool
-conservation/numerical checks; recover and retire
-the private comparison generation before another native engine build. A future
+processes. Require production-pool conservation/numerical checks before using
+service attribution; the private comparison generation has retired. A future
 instrumented engine must use original6e40 plus
 only the committed observer delta, not silently adopt the current worktree's
 unselected layout/full-context changes. Pin that recipe before building; require
