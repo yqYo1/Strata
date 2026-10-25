@@ -1,7 +1,12 @@
 {
-  "stage": "failed",
-  "source_commit": "399118b9a72c72990649b23e86038663730292ab",
+  "stage": "prepared",
+  "source_commit": "1baa0547f151264d4ef7a0972e5355b6b1b3fe6b",
   "selected_source": "6e40afc1beddd059ee518617f6c1efce1da14aca",
+  "prior_failed_build": {
+    "commit": "1baa0547f151264d4ef7a0972e5355b6b1b3fe6b",
+    "path": "bench/results/2026-10-15-pr6-recovery-audit/prefill-restore-current.json",
+    "sha256": "6d92d24c5e17e6e805f0f0e055b92fa86ff60eb0b8f0808ab55992610e0740ae"
+  },
   "fallback": {
     "source_commit": "6e40afc1beddd059ee518617f6c1efce1da14aca",
     "inputs_recovered": 9853,
@@ -17,14 +22,14 @@
     "bytes": 22190000,
     "sha256": "22182f1a5e62e5f4259ce49a75ae44afbd988166ec79324816e499ff37ef60e4"
   },
-  "project_files": 643,
-  "project_fingerprint": "6d8f6fb44de75ea4e0a2fe08103b2693622d3b0ec5ccc738f678cdd713b632fe",
+  "project_files": 647,
+  "project_fingerprint": "85ba5993ada498ea1f5e0ad74510a22567b90940b9f0c5461c372fe200d2071d",
   "dependency_revisions": [
     "3cf03257f219afbe7334045ff7c6a06ac68c627d",
     "87f6850680a580654b9ea2c80dbc01aeb36ad231"
   ],
-  "benchmark_files": 188,
-  "benchmark_fingerprint": "f82b95b49117e32b2aeccfb3ae3ff1cf5509b58acfee7a122e6c4a5e5d523ced",
+  "benchmark_files": 189,
+  "benchmark_fingerprint": "ecd3d24ff23f8ba38c123c41d6b20987c9b1e541cfdf743d59ed376ad582c5fc",
   "sdk_fingerprint": "e9b51e99778921cf898aedfdf01742ab73d617ba7dfaffd2285c54d2d02bd07c",
   "sdk_files": 8697,
   "sdk_reference": {
@@ -51,7 +56,7 @@
     "sha256": "166d0e1ca062202929fddc41a6e1979314bbb83f2e1dc9912d1bbfcd8328072e"
   },
   "generated_headers": {
-    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/selected-prefill-restoration-v1/build/ggml/src/ggml-version.h": "9e45eee8391971371922f51b66925184609125d467c444744599f680b78edc92"
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/selected-prefill-restoration-v2/build/ggml/src/ggml-version.h": "9e45eee8391971371922f51b66925184609125d467c444744599f680b78edc92"
   },
   "compiler": {
     "path": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin/clang++",
@@ -72,7 +77,7 @@
     "-S",
     "/home/yayoi/orca/workspaces/Strata/sycl",
     "-B",
-    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/selected-prefill-restoration-v1/build",
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/selected-prefill-restoration-v2/build",
     "-G",
     "Ninja",
     "-DCMAKE_CXX_COMPILER=/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin/clang++",
@@ -123,7 +128,7 @@
   "build_argv": [
     "/usr/bin/cmake",
     "--build",
-    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/selected-prefill-restoration-v1/build",
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/selected-prefill-restoration-v2/build",
     "--target",
     "strata",
     "strata_full_context_diagnostic",
@@ -167,8 +172,8 @@
     "STRATA_SYCL_VERIFY_NATIVE_CAPTURE": "0",
     "STRATA_SYCL_PREFILL_SAME_QUEUE": "1",
     "STRATA_SYCL_PREFILL_NATIVE16": "bf16",
-    "XDG_CACHE_HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/selected-prefill-restoration-v1/cache",
-    "TMPDIR": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/selected-prefill-restoration-v1/tmp"
+    "XDG_CACHE_HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/selected-prefill-restoration-v2/cache",
+    "TMPDIR": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/selected-prefill-restoration-v2/tmp"
   },
   "runtime_boot": "cfda0b6a-7c13-4fe2-bdf5-8f9202770840",
   "driver": {
@@ -181,7 +186,7 @@
   },
   "criteria": "Exact restored native sources and committed complete project/benchmark/recipe pins;original dependency/toolchain identities with the declared three installed-header changes;complete actual compiler dependency census;all link/host commands close normally. Normal strata compiles CPU service out and has no full-context macro;the manual diagnostic has its private macro. Retain original planner/bounds/hash/loan/publication/census/phase host controls. No GPU/model work here.",
   "retention": "Selected original6e40 remains the validated fallback. This one extra source generation,including its manual diagnostic and same-build fixtures,is for imminent bounded device/admission,model-state and independent prefill/decode comparisons. Retire it on rejection or select only after the applicable model/phase gates;linking/host controls alone never select it.",
-  "pending": "Fresh committed build plan including third_party,then all host/device/model and independent phase gates. This failed build supplies no host/device/model qualification.",
+  "pending": "Traced bounded device/admission checks,model allocation/state handoff,matched repeated long prefill and decode,quality/agent/session/RESTORE/physical262144/failure-owner/ordinary runtime teardown.",
   "budgets": {
     "wall": 1800,
     "cpu": 14400,
@@ -198,47 +203,5 @@
   "production_selected": false,
   "model_adoption_qualified": false,
   "assets": {},
-  "host": [],
-  "error": "RuntimeError('uncovered actual compiler input')",
-  "failure_diagnosis": {
-    "mechanism": "Project pin prefixes omitted the committed vendored ggml header;complete compiler census correctly refused advancement.",
-    "uncovered_input": "third_party/ggml/ggml-common.h",
-    "sha256": "0061131b615c5721fc88a78feeb22c1f8c450f1c2646a317d80796a653bf595c",
-    "committed_before_compile": true,
-    "byte_equal_to_selected_source": true,
-    "compiled_inputs": 1416,
-    "other_changed_inputs": 0,
-    "configure_exit": 0,
-    "link_exit": 0,
-    "host_controls_executed": 0,
-    "GPU_executed": false
-  },
-  "source_recovery": {
-    "source_commit": "399118b9a72c72990649b23e86038663730292ab",
-    "original_plan_commit": "cd1c04766",
-    "all_recorded_project_dependency_inputs_recovered": 9954,
-    "additional_committed_header_recovered": 1,
-    "actual_compiler_inputs_recovered_and_matched": 1416,
-    "sdk_inputs_checked": 8697,
-    "external_inputs_checked": 230,
-    "generated_headers_checked": 1,
-    "original_recipe_and_tool_identities_checked": true,
-    "linked_assets": 17,
-    "linked_assets_fingerprint": "0f05108bb0ae246c4dd2fe6b59377823fa5c281ab05afa704072e76882f8e7cb",
-    "fallback_and_twelve_fixtures_unchanged": true,
-    "remote_source_reachable": true
-  },
-  "retirement": {
-    "complete": true,
-    "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/selected-prefill-restoration-v1",
-    "files": 200,
-    "bytes": 212961017,
-    "manifest": {
-      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/failed-prefill-restoration-v1-and-scope-review-20261025.jsonl",
-      "sha256": "95f4bb03b38b7e8861e362ca85904172393950f3048457196ee3aae3be36aa1f"
-    },
-    "decision": "Closed failed build retired after exact Git source/recipe and1416 actual input recovery;13 selected fallback assets unchanged.",
-    "next_action": "Prepare the corrected build with vendored headers pinned.",
-    "review_point": "Before corrected build launch."
-  }
+  "host": []
 }
