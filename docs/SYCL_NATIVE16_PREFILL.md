@@ -76,7 +76,7 @@ processes in0/1/1/0/0/1 order. Official`bench.sh` measures four117489-token inpu
 per process,separating first use from the subsequent-three median. Its CPU clock
 and provider controls pass; the cohort is collecting. This is a prefill-only
 comparison. Keep the separate repeated decode and agent-session gates open.
-On this B570,the first three processes pass source/provider/journal/route/owner/fault
+On this B570,the first four processes pass source/provider/journal/route/owner/fault
 checks with identical request hashes and no fresh fault:
 
 | Process/package | First use,tok/s | Subsequent-three median | Subsequent range |
@@ -84,9 +84,10 @@ checks with identical request hashes and no fresh fault:
 | 0/original6e40 | 900.6211 | 974.7035 | 974.4836..974.7956 |
 | 1/restored1baa | 898.6723 | 975.4350 | 973.5533..975.6237 |
 | 2/restored1baa | 902.5098 | 973.4517 | 972.8947..973.7801 |
+| 3/original6e40 | 901.5887 | 972.2731 | 971.8380..973.5170 |
 
-The first paired ratio is1.00075053;three independent processes remain.
-Process2 awaits its paired control,process3. Both packages are below the
+The first two paired ratios are1.00075053 and1.00121216;two independent
+processes remain for the final pair. Both packages are below the
 historical old-runtime1003tok/s. This does not attribute
 that difference,decide the cohort,or qualify decode preservation/adoption.
 
