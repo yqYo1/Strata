@@ -244,7 +244,41 @@ pre-exec driver selection and verify the actually mapped library. The installed
 runtime,other dependencies,selected engine and decode configuration stay fixed.
 Small traced/validated submission and graph gates precede six official117K
 processes in new/old/old/new/new/old order. This is diagnosis,not permission to
-adopt an old driver or change decode. Its result is not yet available.
+adopt an old driver or change decode. The cohort decision is pending;individual
+closed outcomes are in[the runtime comparison](../bench/results/2026-10-15-pr6-recovery-audit/prefill-runtime-comparison-current.json).
+
+The GMM22.10.1→22.10.2 exact source interval is one commit,
+[`733c91a19baa65c40f4b1cf95a3991cc8c84d866`](https://github.com/intel/gmmlib/commit/733c91a19baa65c40f4b1cf95a3991cc8c84d866),
+parent757922744cc32f247ab4ac31416c32edb57624c7. It extends a PAT-selection
+condition to OCL system-memory buffers. That condition also needs
+`FtrAppTransientCaching` and transient eligibility. Counterevidence:upstream NEO
+4e308a10b232dbb22a2a5c2cdb32eb2578577866 and
+c9fe9ecbe5c137657c34f2ae0bea35123afe35ac zero-initialize the GMM SKU table and
+neither source tree sets/transfers this flag;GMM's only assignment is in its
+unit-test setup. The source therefore does not establish that the changed
+condition executes on this B570. It is not an attributed performance cause or
+proof of the installed package's runtime flag value.
+
+The exact old GMM was recovered from its primary
+[Launchpad build](https://api.launchpad.net/1.0/~kobuk-team/+archive/ubuntu/intel-graphics-testing/+build/33524966).
+Private186038-byte package:
+`prefill-runtime-candidates/libigdgmm12_22.10.1-1~24.04~ppa1_amd64.deb` under
+the shared external state root;package SHA256
+2c68fcb150cba1b679063266cdf0054f26f18af90de71d6d3b614eaf95c98f80,
+payload SHA256a7904f18d8d59c7128dec4d6f22ae2b2e8a51f91f6946ac4e68b1ec6e0a7a6f3
+matches the historical runtime manifest. Main holds it within a2MiB budget
+only for the GMM eligibility/possible crossover decision at NEO-cohort closure;
+it has not been loaded and must retire if that consumer is not advanced.
+
+Between native processes at20261025T16:06UTC,CPU policy0 used
+`amd-pstate-epp`,governor`powersave`,EPP`power`,maximum4654288kHz.
+The GPU reported base power profile,GT0 maximum2750MHz and170W power cap.
+These settings were only read,not changed;historical matching values are not
+retained,so they cannot yet explain the decline. The later PCIe hierarchy read
+matches the20261018 capability record:16GT/s x4 upstream and2.5GT/s x1 at the
+endpoint/downstream functions. These fields do not prove physical wiring,
+actual transfer throughput or saturation. Active frequency,paging,contention
+and current copy-throughput effects remain unmeasured.
 
 ## Current MTP attribution
 
