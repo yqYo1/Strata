@@ -339,6 +339,32 @@ policy audit below. Measure loaded clocks,throttle flags,paging and competing
 load separately before assigning a hardware bottleneck. The component-level
 fused-command work still needs its whole-model and observer-cost gates.
 
+The subsequent loaded-conditions diagnostic uses the same original6e40 and
+placement,with1Hz read-only telemetry and stage logging. Twenty synthetic
+observer controls pass before two117489-token thinking-on requests. Both
+requests,collector and native process close normally;all15 final model hashes
+match and no fresh GPU fault appears. These are diagnostic samples,
+847.7127/916.5116tok/s,not replacements for the clean911.7371 reference.
+
+On the second request,127 contained samples report GT0 median2750MHz,
+nonzero minimum2733MHz,and no zero readings. Throttle reasons are126 `none`
+and one `pl2`;package/VRAM maxima are67/76C and mean card power132.83W.
+This does not show sustained low GT clocks;1Hz sampling does not exclude brief
+limits or establish historical conditions. CPU0 reported frequency has median
+4616382kHz,not an APERF/MPERF effective-clock measurement. The native process
+uses0.990 scheduled core-equivalents,mostly its CPU0 main thread,and incurs no
+major faults. Global CPU busy is34.25%,with other CPU/IO work present;no causal
+owner attribution follows from those global counters. Available RAM stays
+above24GiB and swap counters do not advance in either contained window.
+
+The model's CCS busy fraction is98.80% on the second request. It includes
+execution stalls and copies on the qualified shared queue;it is not arithmetic
+efficiency or a PCIe/GDDR bandwidth measurement. Core clocks,CPU usage and this
+busy fraction do not identify the limiting hardware unit. Continue the
+instrumented whole-model,observer-cost and matched hardware-ceiling work before
+selecting an optimization. The compact evidence is `execution_conditions` in
+[the resource result](../bench/results/2026-10-15-pr6-recovery-audit/prefill-resources-current.json).
+
 The earlier[NEO-only comparison](../bench/results/2026-10-15-pr6-recovery-audit/prefill-runtime-comparison-current.json)
 uses exact cached packages in private directories. Both arms explicitly select
 the driver before exec and verify its actual mapping. Other dependencies,the
