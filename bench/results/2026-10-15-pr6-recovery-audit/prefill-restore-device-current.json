@@ -1,5 +1,5 @@
 {
-  "stage": "prepared",
+  "stage": "failed",
   "controller_source_commit": "94cdb86210753429f726b26c2aa741a744b1ae6f",
   "build_source_commit": "1baa0547f151264d4ef7a0972e5355b6b1b3fe6b",
   "controller_files": 189,
@@ -354,12 +354,93 @@
   "criteria": "Eight ordered host checks then eight fresh device processes on the exact same-build fixtures;stop first failure,no retry. Original build host observation remains failed;this new plan owns output separately from the build tree. Require all host checks before GPU work. Require exit0,numerical/bounds/loan/publication/RESTORE markers,pre-main validation,silent parameter validation and an observed pinned updated NEO. Trace enqueue work where expected;smoke refusal may perform allocation only. Check actual process closure,boot and fresh driver faults after every case.",
   "retention": "Keep compact individual fixture outcomes and source/artifact/runtime identities. Delete successful API traces,maps and repeated logs after committed replay. Keep this generation only for imminent model/state and independent prefill/decode comparisons;do not select it from fixture success.",
   "pending": "Model admission/state handoff,matched repeated long prefill and independent decode,task/agent/RESTORE and physical262144 qualification. Retained UR reference means ordinary runtime teardown is unqualified.",
-  "outcomes": [],
+  "outcomes": [
+    {
+      "label": "host-prefill_expert_bank_plan_test",
+      "kind": "host",
+      "exit_code": 0,
+      "passed": true,
+      "ownership_closed": true,
+      "GPU_executed": false,
+      "stdout_sha256": "50c24d388a1b1098f54f2366e3db050c67a7aa3b7e31b5a51f07a069bd993a91",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "host-full_context_diagnostic_host_test",
+      "kind": "host",
+      "exit_code": 0,
+      "passed": true,
+      "ownership_closed": true,
+      "GPU_executed": false,
+      "stdout_sha256": "6ef1580e04a0a7e82eb74b89bb5dfb15cf6e7f30882f020ec4e448ff9409eaa6",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "host-cache_tail_host_test",
+      "kind": "host",
+      "exit_code": 0,
+      "passed": true,
+      "ownership_closed": true,
+      "GPU_executed": false,
+      "stdout_sha256": "f6f7170e86bdd879c9a73c42d971ecaaded47397242a02238fb5c98ce19219cc",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "host-prefill_scratch_host_test",
+      "kind": "host",
+      "exit_code": 0,
+      "passed": true,
+      "ownership_closed": true,
+      "GPU_executed": false,
+      "stdout_sha256": "352f4f042fff4a560a9a0166e3f70874c782f5c0137c3bd538669a6c3c2f41f0",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "host-residency_publication_host_test",
+      "kind": "host",
+      "exit_code": 0,
+      "passed": true,
+      "ownership_closed": true,
+      "GPU_executed": false,
+      "stdout_sha256": "1a01d1d570a52f64dc0642bfcb02e99284e5d3569619caa6ae358cd493b722b0",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "host-cpu_work_census_host_test",
+      "kind": "host",
+      "exit_code": 0,
+      "passed": true,
+      "ownership_closed": true,
+      "GPU_executed": false,
+      "stdout_sha256": "223c1554a798d12f816dccd5ebe8fdb286c7ee2c42977f3d39ea89200cfc2e9c",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
   "active": false,
   "ownership_closed": true,
   "complete": false,
   "passed": false,
   "model_qualified": false,
   "clean_speed_qualified": false,
-  "production_selected": false
+  "production_selected": false,
+  "error": "RuntimeError('host fixture failed: host-iq2_phase_host_test--pair=0')",
+  "fresh_faults": [],
+  "boot_unchanged": true,
+  "driver_after": {
+    "pci": "/sys/bus/pci/devices/0000:05:00.0",
+    "driver": "xe",
+    "vendor": "0x8086",
+    "device": "0xe20c",
+    "kernel": "7.0.0-38-generic",
+    "devcoredump": false
+  },
+  "failure_diagnosis": {
+    "mechanism": "Controller omitted immutable startup STRATA_IQ2_PAIR and STRATA_IQ2_PAIR_AUDIT required by tests/cpu/iq2_phase.cpp;pair0 refused before its numerical matrix.",
+    "stderr": "iq2 phase: immutable startup selection",
+    "host_checks_passed": 6,
+    "failed_case": "host-iq2_phase_host_test--pair=0",
+    "failed_exit_code": 1,
+    "GPU_executed": false,
+    "next_action": "Commit a fresh plan with each IQ2 arm and audit flag fixed before exec;reuse unchanged native artifacts. Preserve this failed gate."
+  }
 }
