@@ -11216,7 +11216,7 @@
   },
   "UR_PTI_identity_bridge_20261025": {
     "classification": "decision_support",
-    "status": "reviewed_exact_runtime_subscriber_fixture_pending",
+    "status": "native_subscriber_CPU_qualified_GPU_bridge_pending",
     "schedulable_now": false,
     "prerequisites": "Committed6a4380629 current-runtime census:680 device events match independent source/API counts,no faults,owned closure. UR text lacks thread/time identity while PTI host-flow sources have exact timestamps;needs a concrete immutable-env bridge choice.",
     "scope": "Compare UR call XPTI subscriber,UR/DDI interception,and native spans for exact generations/graph replay/failed calls on installed v711/PTI4b6d742;explicitly handle post-init environment mutation hazards.",
@@ -11246,7 +11246,7 @@
       "reviewer": "native Codex gpt-6-luna max"
     },
     "decision": "Source/design guidance only. PTI BUILD_WITH_XPTI=0 is unitrace-specific. Optional pti_view XPTI adapter environment writes are skipped for a foreign subscriber,which it does not disable. A pre-exec standalone UR subscriber remains plausible;bind exact installed loader/tracing/dispatcher source and test immutable-env startup before rejecting/adopting. No model coverage or speed claim.",
-    "next_action": "Main owns exact-runtime standalone UR-call subscriber fixture and native spans comparison;no new generic survey until that evidence exists.",
+    "next_action": "Main implements independent UR-call-span/PTI-host-flow reconciliation and finite GPU qualification on retained6e40. Keep graph/generation/observer-overhead gates open;no generic survey before new execution evidence.",
     "transaction_retirement": {
       "manifest": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/ur-pti-bridge-transactions-retired-20261025.jsonl",
       "sha256": "3aa49ded544e15872b2dc4a39c16d8a7c6cde386406a8ced11e165670122fdaf",
@@ -11290,6 +11290,14 @@
       },
       "immutable_env_requirement": "Use preexec SYCL_UR_TRACE=0;inspected SYCL trace branches call setenv for UR_LOG_TRACING/UR_LOG_LOADER. UR tracing initializes ur.call and ur.call.debug and emits function_with_args begin/end instance IDs. Configure subscriber/dispatcher/trace enable before exec;verify callback delivery and no environment mutation on CPU canary before GPU.",
       "limits": "Relevant source blobs match the compiler-reported SDK checkout;installed runtime ELF transformations verified in full above. Not a reconstructed complete historical SDK compiler-input census or native subscriber qualification. ghq root LLVMfbccb466 is a different revision. Independent compiler/runtime assets only;no XeStrata application code read."
+    },
+    "implementation": {
+      "native_source_commit": "567b54356beab5de8bd7d8fbae1cf95f94f2158d",
+      "native_source": "bench/sycl/ur_call_subscriber.cpp",
+      "native_library_sha256": "209db0f2191b8eb694848f2e4834c7f2acf6d5ada7f471c2235a1810a860aaaf",
+      "controller_driver_source_commit": "3dddb1bda",
+      "result": "prefill-resources-current.json:event_reconciliation.ur_subscriber",
+      "host_gate": "Four native mutation cases and original CPU UR canary passed;two complete UR instance pairs,status46,single thread. No GPU/model/overhead or ordinary teardown qualification. Original Python-control refusal preserved by Git reference."
     }
   }
 }

@@ -499,8 +499,16 @@ one barrier has no optional host-completion sink. Six parser/link host controls
 pass,all native owners close normally and no fresh fault appears. This qualifies
 the bounded count/internal-link checks only. UR text lacks call time/thread IDs;
 its independent per-operation bridge,graph/reuse coverage and observer cost remain
-open. No production prefill/decode source or selected binary changes;hardware
-saturation remains unknown.
+open. A standalone preloaded XPTI UR subscriber now passes CPU qualification:
+four native controls reach their markers and block the standard environment
+mutation APIs;the original CPU UR canary yields two complete,single-thread
+`urPlatformGetApiVersion` instance pairs with the expected validation status46.
+The dispatcher/subscriber/validation constructor order is verified on the installed
+SDK. The earlier Python control stopped before its test marker and remains failed
+in the original receipt;the observer ELF is unchanged. Next,join actual UR call
+intervals to the PTI host/device links in a bounded GPU fixture,then qualify
+graph/lifetime coverage and observer cost. No production prefill/decode source
+or selected binary changes;hardware saturation remains unknown.
 
 Basic [profile-off/on graph support](../bench/results/2026-10-15-pr6-recovery-audit/mtp-graph-observer-current.json)
 already passed, with exact6e40 reuse checked separately. The closed
