@@ -866,8 +866,8 @@
       }
     },
     "ur_subscriber": {
-      "stage": "failed",
-      "source_commit": "567b54356beab5de8bd7d8fbae1cf95f94f2158d",
+      "stage": "driver-prepared",
+      "source_commit": "3dddb1bda41d0d93be1a04158ab38eaccae3abb7",
       "input_sha256": {
         "tests/core/test_work_ledger_fixture.py": "ea6bf40c7c21ee403937032ce86e345896a0e4bce83a60216ebf557d91e01cd1",
         "tools/sycl/bench_engine.py": "e5f588605ebc7799b54f8bf7df9ad2e363391375e50b788b9704a6b80887ca6b",
@@ -900,7 +900,8 @@
         "tools/sycl/ur_validation.py": "2e41d84788dc9cc3c7435b18b43601b3ca79280ccb855414d7a36bae6bff83e7",
         "tools/sycl/work_ledger_fixture.py": "425894fda0a8f006f850519a26962246b66cc8c4e57ce94b948d6efc3b599319",
         "bench/sycl/ur_call_subscriber.cpp": "bbb588f397c2f7cbb26636583a47272e4d788c80217f9a8ce5fc3ef9fb359ecc",
-        "tools/sycl/ur_call_subscriber.py": "786cea402149708c86b4ef332364e2a7751fb099b128c4318b344eddbbf4fddd",
+        "bench/sycl/ur_call_guard_test.cpp": "a4bf548b6e5f17a7a5961366b18dd6b40ce5c39021e6d746d4254a5a7743e5f7",
+        "tools/sycl/ur_call_subscriber.py": "9224d210c1a8dca2c4ca9fede18d6e0687e027d066cd2efdb4310b61e12ec4a1",
         "tests/core/test_ur_call_subscriber.py": "b8ef14d9e6131eca70e42cf62aaef806d89ec3bc665156cb7851a8bf64adc2b6"
       },
       "assets": {
@@ -1010,7 +1011,7 @@
         "file_cap": 33554432,
         "total_cap": 67108864
       },
-      "gates": "Compile one Main-authored host-only observer ELF;commit binary hash before checks. Four CPU mutation controls must each reach their marker then exit87 without changing environment. CPU-only original UR canary must exit0 with pre-main provider/validation proof,exactly two rejected urPlatformGetApiVersion pairs,status46,unique instance IDs and complete ordered per-thread timestamps. Never enumerate a device,create a queue or enqueue work. Any failure stops. No GPU/model/performance or ordinary teardown qualification.",
+      "gates": "Reuse exact original209db0f2 observer ELF/source567b54356 and254 verified compiled inputs;no library rebuild. Compile and pin the new native host driver. Each of four native mutation cases must reach its named marker then exit87 without changing environment. CPU-only original UR canary must exit0 with provider/pre-main validation proof and exactly two urPlatformGetApiVersion callback pairs,status46,unique instance IDs and complete single-thread timestamps. Any failure stops. No device/queue/enqueue,model,speed or ordinary runtime teardown qualification. Original failed Python control remains failed in the linked Git receipt.",
       "retention": "Original6e40 plus12 fixtures retained unchanged. Keep this one small observer ELF,exact source/recipe and header manifest only for the imminent GPU coverage fixture after host checks;retire normal build/API/loader output after compact evidence.",
       "active": false,
       "ownership_closed": true,
@@ -1037,23 +1038,31 @@
       },
       "fresh_faults": [],
       "boot_unchanged": true,
-      "outcomes": [],
-      "error": "RuntimeError('mutation control failed')",
-      "failure_evidence": {
-        "kind": "setenv",
-        "exit_code": 87,
-        "test_marker_reached": false,
-        "stdout_bytes": 0,
-        "guard_message": "strata UR subscriber: environment mutation blocked",
-        "subscriber_load_record": {
-          "kind": "load",
-          "pid": 2680635,
-          "raw_ns": 1278219970910780
-        },
-        "stderr_sha256": "558bed606053fbb3a5c0e741aa71ba92f3962ad18e24b03597a5982248ed52f7",
-        "interpretation": "The Python host process hit a mutation guard before the named test marker. Startup versus import caller is not attributed;this does not establish a subscriber or GPU failure. Replace the interpreter-dependent mutation control with a native host driver,keeping the measured library immutable."
+      "original_failed_result": {
+        "commit": "3dddb1bda41d0d93be1a04158ab38eaccae3abb7",
+        "path": "bench/results/2026-10-15-pr6-recovery-audit/prefill-resources-current.json",
+        "sha256": "b03f77a572897b766aea7363ddac8cb938375338730e5e89e9602ac95781765c"
       },
-      "next_action": "Commit a new native host-driver plan and preserve this failed Python-control result. Verify/reuse unchanged observer ELF and original native compiled inputs;do not rerun this Python control or advance to GPU."
+      "library_origin": {
+        "source_commit": "567b54356beab5de8bd7d8fbae1cf95f94f2158d",
+        "cpp_sha256": "bbb588f397c2f7cbb26636583a47272e4d788c80217f9a8ce5fc3ef9fb359ecc",
+        "library_sha256": "209db0f2191b8eb694848f2e4834c7f2acf6d5ada7f471c2235a1810a860aaaf",
+        "compiled_inputs_verified": 254,
+        "reuse": "No observer rebuild or hash refresh. Original source/recipe and254 compiled inputs recover;only the native host test driver is new."
+      },
+      "driver_command": [
+        "/usr/bin/x86_64-linux-gnu-g++-13",
+        "-std=c++17",
+        "-O2",
+        "/home/yayoi/orca/workspaces/Strata/sycl/bench/sycl/ur_call_guard_test.cpp",
+        "-o",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/ur-call-subscriber-v1/ur_call_guard_test"
+      ],
+      "driver_compiler_inputs": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/ur-call-subscriber-v1/driver-inputs.json",
+        "sha256": "22b74a1746a00c676e01e669f5e6814e4886f6e6de7655a77feeb9f659c9d7e5",
+        "files": 76
+      }
     }
   }
 }
