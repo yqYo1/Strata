@@ -489,9 +489,9 @@ planned operations, actual API results and collector device executions.
 [`work_ledger.py`](../tools/sycl/work_ledger.py) implements the host reconciliation
 gate, including graph-child expansion, lifetime generations, rejected submissions,
 host-task completion, shapes/requested bytes and drained phase bounds. Its
-adversarial controls use synthetic records only. Actual UR/PTI adapters, current
-source/runtime coverage, clock mapping and observer cost still require a bounded
-native fixture before a model observation. No production prefill/decode source
+18 adversarial host controls pass using synthetic records only. Actual UR/PTI
+adapters, current source/runtime coverage, clock mapping and observer cost still
+require a bounded native fixture before a model observation. No production prefill/decode source
 or selected binary changes in this step; hardware saturation remains unknown.
 
 Basic [profile-off/on graph support](../bench/results/2026-10-15-pr6-recovery-audit/mtp-graph-observer-current.json)

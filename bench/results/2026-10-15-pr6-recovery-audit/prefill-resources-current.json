@@ -608,5 +608,48 @@
     "consumer": "Select a concrete current117K QSA/MoE matched-ceiling and status-check measurement from the conserved histogram and aggregate profile.",
     "next_review": "Retire successful raw/profile/JIT and dispatch output immediately after that bounded workload is fixed; recover original plans/results from Git.",
     "extra_engine_generation_review": "The named attribution is closed. Select and retire the extra validated generation before another build; no third generation is authorized by this record."
+  },
+  "event_reconciliation": {
+    "stage": "host-controls-passed-native-adapter-pending",
+    "source_commit": "aa66857d8a305eb52ba5c2ee17180d1b31b996f2",
+    "inputs": {
+      "tools/sycl/work_ledger.py": "a1eb1cadb7c0fcd4b12fafd607246de95ba377e243d6c9c611f4af86d37c5b94",
+      "tests/core/test_work_ledger.py": "7fdd028d5b1ee1a6756657b71ab6edeb81e8a5a74d74e3a02830c8a8733cfcf7"
+    },
+    "host_controls": {
+      "command": [
+        "/usr/bin/python3",
+        "-B",
+        "tests/core/test_work_ledger.py"
+      ],
+      "python_sha256": "e50d468e8b0adfb05733f5b87b3cff34829c4a8c1aea50c865aa8bdfe4bb150f",
+      "tests": 18,
+      "exit_code": 0,
+      "elapsed_test_s": 0.004,
+      "serialized": true,
+      "wall_budget_s": 45,
+      "child_deadline_s": 35,
+      "output_budget_bytes": 1048576,
+      "gpu_work": false
+    },
+    "coverage": [
+      "independent literal route plan versus captured/replayed API work",
+      "two replays and recycled command-buffer/queue/event identities",
+      "copy/fill requested extents,kernel shapes,barriers and completed host work",
+      "missing expected/API/device record,duplicates,wrong source and unmatched event",
+      "rejected submission,uncertain drain,mocked async error and invalid phase clock"
+    ],
+    "production_changed": false,
+    "qualification": {
+      "native_fixture": false,
+      "UR_PTI_adapter": false,
+      "current_runtime_coverage": false,
+      "clock_mapping": false,
+      "observer_overhead": false,
+      "hardware_limiting_resource_known": false,
+      "clean_speed": false
+    },
+    "next_action": "Implement the bounded native fixture and actual UR/PTI adapters against selected6e40/current NEO. Independently qualify origin/generation links,all device buckets,clock conversion and overhead before a model observation. Synthetic host records cannot supply those proofs.",
+    "retention": "Retain this compact host result and maintained reconciliation controls for the imminent current-runtime fixture. No raw output or binary was created."
   }
 }
