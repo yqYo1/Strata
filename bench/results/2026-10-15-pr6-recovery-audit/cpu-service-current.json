@@ -626,7 +626,7 @@
     }
   },
   "native_engine": {
-    "stage": "prepared",
+    "stage": "linked",
     "source_commit": "0d434a573baeabb57e4849adea4286badbf87dbb",
     "base_native_source": "6e40afc1beddd059ee518617f6c1efce1da14aca",
     "observer_source_reference": {
@@ -760,13 +760,46 @@
     "criteria": "Compile exactly the already admitted original6e40 plus four scoped CPU-observer/test patches. Reuse existing CMake/CPU objects without changing settings;all three targets must link. Require complete actual compiler closure including generate.cpp/mtp.cpp,pinned source/SDK/MKL/generated header,unchanged CPU fixture/archive/configuration and normal owned exits. No engine/fixture invocation at this step.",
     "limits": "Successful linking is not native device/model qualification,observer overhead measurement,hardware attribution,throughput gain or inference adoption. Keep original selected6e40 and12same-build fixtures untouched.",
     "retention": "One extra generation shares the host-pool build for imminent bounded validated device/model checks,then observer overhead and same-request service/census attribution. Retire on rejection/closure after exact source/recipe recovery;normal build output is disposable after recorded closure.",
-    "passed": false,
-    "complete": false,
+    "passed": true,
+    "complete": true,
     "active": false,
     "ownership_closed": true,
     "GPU_executed": false,
     "model_executed": false,
     "production_selected": false,
-    "assets": {}
+    "assets": {
+      "strata": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-service-original-v2/build/strata",
+        "bytes": 22199168,
+        "sha256": "7791bf8b6da7f94095c5ef5cefb852dab8852a54f39181e22add81892eaf15bd"
+      },
+      "sycl_submission_test": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-service-original-v2/build/sycl_submission_test",
+        "bytes": 267200,
+        "sha256": "5a434921664fac6b111ba2a0de5ebe4fd0182d226f1c56d34aeffa73171b9b79"
+      },
+      "sycl_graph_envelope_test": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-service-original-v2/build/sycl_graph_envelope_test",
+        "bytes": 208536,
+        "sha256": "e5b0a849430591402f29dc14bd09c5305b216c4f4e0a42692feec6c125416ed8"
+      }
+    },
+    "dependency_closure": {
+      "files": 1402,
+      "uncovered_files": 0,
+      "sha256": "6f4fd3e2353e6709467f7f5d87a4593b9ffdd27b9ed6aa64fdd42084ba5630e2"
+    },
+    "command_outcomes": [
+      {
+        "label": "build",
+        "exit_code": 0,
+        "ownership_closed": true
+      },
+      {
+        "label": "compiler-census",
+        "exit_code": 0,
+        "ownership_closed": true
+      }
+    ]
   }
 }
