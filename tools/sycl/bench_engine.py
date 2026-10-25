@@ -470,43 +470,12 @@ def extract_resource_profile(log, phase_profile, command_profile, limits, cpu_ve
             aggregate['expected_chunks'] == sum(x['expected_chunks'] for x in layers),
             'incomplete per-layer GDN stage coverage')
     if command_profile:
-        def rows(prefix):
-            return [dict(part.split('=', 1) for part in line[len(prefix):].split())
-                    for line in log.splitlines() if line.startswith(prefix)]
-        summaries = rows('strata command profile: ')
-        groups = rows('strata command group: ')
-        samples = rows('strata command sample: ')
-        invalid = rows('strata command invalid: ')
-        # Keep service intervals and signed clock diagnostics, not a
-        # permanent raw absolute timeline. All samples remain present.
-        for sample in samples:
-            submit, start, end = (int(sample.pop(key)) for key in ('submit', 'start', 'end'))
-            sample.update(service_ns=end-start, start_minus_submit_ns=start-submit)
-        record['command_service_profile'] = dict(version=2, summaries=summaries,
-            groups=groups, samples=samples, invalid=invalid,
-            scope='Deterministic samples in first accumulator expert phases of layers0,15,31,47; initial router/shared/final writes excluded; no device-busy or physical-traffic claim.')
-        frame_layers = {0: 0, 1: 15, 2: 31, 3: 47}
-        group_keys = [(int(g['window']), g['kind'], int(g['bin'])) for g in groups]
-        guards.require(len(set(group_keys)) == len(group_keys) and
-            {int(g['window']) for g in groups} == set(frame_layers) and
-            all(frame_layers.get(int(g['window'])) == int(g['layer']) and int(g['first_row']) == 0
-                for g in groups), 'unexpected or duplicate command window/stratum')
-        observed = Counter((int(s['window']), s['kind'], int(s['bin'])) for s in samples)
-        guards.require(observed == {key: int(g['service_samples']) for key, g in zip(group_keys, groups)},
-                       'command samples do not match window/stratum counts')
-        guards.require('strata MoE window configuration: requested_mode=10 effective_mode=10 ' in log,
-            'command service must sample the admitted production accumulator route')
-        guards.require(len(summaries) == 1 and summaries[0]['version'] == '2' and
-            summaries[0]['service_complete'] == '1' and summaries[0]['invalid'] == '0' and
-            summaries[0]['windows'] == summaries[0]['expected'] == '4' and not invalid and
-            len(samples) == int(summaries[0]['records']) and groups and
-            all(int(g['selected']) == int(g['service_samples']) and int(g['selected']) > 0 for g in groups) and
-            sum(int(g['service_samples']) for g in groups) == len(samples) and
-            sum(int(g['queue_delay_samples']) for g in groups) +
-                int(summaries[0]['submit_clock_inversions']) == len(samples) and
-            sum(s['start_minus_submit_ns'] < 0 for s in samples) == int(summaries[0]['submit_clock_inversions']) and
-            all(s['service_ns'] >= int(summaries[0]['timer_resolution_ns']) for s in samples),
-            'incomplete GPU-only command service profile')
+        import command_service
+        profiles = command_service.parse_profiles(log, expected_windows=4)
+        guards.require(len(profiles) == 1 and
+            'strata MoE window configuration: requested_mode=10 effective_mode=10 ' in log,
+            'one admitted production accumulator command-service profile required')
+        record['command_service_profile'] = profiles[0]
     return record
 
 

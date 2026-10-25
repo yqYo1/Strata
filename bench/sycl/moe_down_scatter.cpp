@@ -2,6 +2,7 @@
 #include "native16.hpp"
 #include "strata/prefill/gemm.hpp"
 #include "strata/prefill/native16.hpp"
+#include "strata/sycl/command_profile.hpp"
 #include <algorithm>
 #include <array>
 #include <bit>
@@ -215,6 +216,41 @@ struct Case {
               << ",\"expected_mask\":" << expected_mask
               << ",\"inputs_immutable\":true,\"false_route_no_write\":true,\"status\":\"PASS\"}\n";
   }
+  void check_profile() {
+    namespace cp = sb::command_profile;
+    init_routed();
+    const auto inputs=input_snapshot();
+    separate(0,xe::Tile::wide_128x128);drain(q);
+    const auto before_down=down.get(),before_capture=capture.get();
+    const auto& job=routes->jobs().front();
+    bool selected=false;
+    {
+      std::unique_ptr<cp::Trace> trace;
+      if (cp::requested()) trace.reset(new cp::Trace(&q,1));
+      struct Retirement { sycl::queue& queue; ~Retirement() { drain(queue); } } retirement{q};
+      auto frame=trace ? trace->begin(0,0) : cp::Frame{};
+      frame.consider(job.expert,job.global_row,job.rows);
+      {
+        auto tag=frame.tag(cp::Kind::down,job.expert,job.global_row,job.rows,N,K);
+        selected=try_selected(0);
+        if (!selected) routed.f16_out16(x.data(),w.data(),down.data(),job.rows,N,K,true);
+      }
+      if (!selected) {
+        auto tag=frame.tag(cp::Kind::accumulate,job.expert,job.global_row,job.rows,N);
+        strata::prefill::native16::moe_accumulate(*routes,0,down.data(),source.data(),
+            original.data(),weights.data(),candidate.data(),candidate_status.data(),&q);
+      }
+      drain(q);frame.after_checked_drain();
+    }
+    need(selected==(job.rows>=2334),"profile changed production Down dispatch");
+    equal(reference,candidate);equal(reference_status,candidate_status);
+    need(candidate_status.get()[0]==0,"profiled Down status");
+    need(same_bytes(before_down,down.get()) && same_bytes(before_capture,capture.get()),"profiled Down wrote separate output");
+    inputs_unchanged(inputs);
+    std::cout<<"{\"kind\":\"profiled_engine_down\",\"rows\":"<<job.rows
+      <<",\"selected\":"<<selected<<",\"expected_records\":"<<(selected ? 1 : 2)
+      <<",\"guards\":true,\"inputs_immutable\":true,\"status\":\"PASS\"}\n";
+  }
   void separate(size_t index, xe::Tile tile) {
     try {
       const auto &job = routes->jobs().at(index);
@@ -407,7 +443,11 @@ int main(int argc, char **argv) {
     else {
       runtime = sb::runtime_for();
       auto q = runtime->make_queue(true);
-      if (mode == "--smoke") {
+      if (mode == "--profile-engine-hook") {
+        need(argc==2,"profile hook takes no timing parameters");
+        for (int rows : {2333,2334,8192}) { Case c(rows,false,false,q);c.check_profile(); }
+        Case irregular(16384,true,false,q,2334);irregular.check_profile();
+      } else if (mode == "--smoke") {
         for (auto mapping : {xe::ScatterLayout::matrix, xe::ScatterLayout::output_copy,
                              xe::ScatterLayout::matrix_row_cache}) {
           correctness(3, false, false, xe::Tile::wide_128x128, q, mapping);

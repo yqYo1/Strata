@@ -1,6 +1,8 @@
 // Main-authored GU/SwiGLU qualification; repository LICENSE (MIT) applies.
 #include "native16.hpp"
 #include "strata/prefill/native16.hpp"
+#include "strata/prefill/gemm.hpp"
+#include "strata/sycl/command_profile.hpp"
 #include <algorithm>
 #include <array>
 #include <bit>
@@ -27,6 +29,10 @@ void drain(sycl::queue &q) noexcept {
 void wait(sycl::queue &q, sycl::event e) {
   try { e.wait_and_throw(); runtime->check(); } catch (...) { drain(q); throw; }
 }
+template <class Submit> void submit_wait(sycl::queue &q, Submit submit) {
+  // Keep local host vectors alive through synchronous enqueue failures too.
+  try { wait(q,submit()); } catch (...) { drain(q); throw; }
+}
 struct Buffer {
   sb::Allocation owner;
   size_t n;
@@ -34,16 +40,16 @@ struct Buffer {
   Buffer(size_t count, sycl::queue &queue)
       : owner(runtime, (count + 2 * Pad) * 2, sb::MemoryKind::Device), n(count), q(queue) {
     std::vector<uint16_t> all(n + 2 * Pad, Sentinel);
-    wait(q, q.memcpy(owner.data(), all.data(), all.size() * 2));
+    submit_wait(q,[&] { return q.memcpy(owner.data(), all.data(), all.size() * 2); });
   }
   ~Buffer() { drain(q); }
   uint16_t *data() const { return owner.as<uint16_t>() + Pad; }
   void set(const std::vector<uint16_t> &v) {
-    need(v.size() == n, "upload extent"); wait(q, q.memcpy(data(), v.data(), n * 2));
+    need(v.size() == n, "upload extent"); submit_wait(q,[&] { return q.memcpy(data(), v.data(), n * 2); });
   }
   std::vector<uint16_t> get() const {
     std::vector<uint16_t> all(n + 2 * Pad);
-    wait(q, q.memcpy(all.data(), owner.data(), all.size() * 2));
+    submit_wait(q,[&] { return q.memcpy(all.data(), owner.data(), all.size() * 2); });
     for (size_t i = 0; i < Pad; ++i)
       need(all[i] == Sentinel && all[n + Pad + i] == Sentinel, "buffer guard changed");
     return {all.begin() + Pad, all.begin() + Pad + n};
@@ -157,6 +163,39 @@ struct Case {
       << ",\"BF16_capture_exact\":true,\"guards\":true,\"inputs_immutable\":true,\"status\":\"PASS\"}\n";
     return ulp;
   }
+  void check_profile() {
+    namespace cp = sb::command_profile;
+    strata::prefill::Gemm routed;
+    std::string error;
+    if (!routed.init_external(&q,nullptr,0,nullptr,0,error)) throw std::runtime_error(error);
+    candidate.reset();capture.reset();separate(xe::Tile::wide_128x128);drain(q);
+    bool selected=false;
+    {
+      std::unique_ptr<cp::Trace> trace;
+      if (cp::requested()) trace.reset(new cp::Trace(&q,1));
+      // Must drain before Trace or any Case-owned device/host storage unwinds.
+      struct Retirement { sycl::queue& queue; ~Retirement() { drain(queue); } } retirement{q};
+      auto frame=trace ? trace->begin(0,0) : cp::Frame{};
+      frame.consider(0,0,rows);
+      {
+        auto tag=frame.tag(cp::Kind::gu,0,0,rows,N,K);
+        selected=routed.try_gu_swiglu16(x.data(),w.data(),candidate.data(),rows);
+        if (!selected) routed.f16_out16(x.data(),w.data(),gu.data(),rows,N,K,true);
+      }
+      if (!selected) {
+        auto tag=frame.tag(cp::Kind::swiglu,0,0,rows,H);
+        strata::prefill::native16::swiglu(gu.data(),candidate.data(),rows,&q);
+      }
+      drain(q);frame.after_checked_drain();
+    }
+    need(selected==(rows>=2334),"profile changed production GU dispatch");
+    const int ulp=compare_hidden(reference,candidate);
+    need(x.get()==hx && w.get()==hw,"profiled GU changed inputs");
+    for (auto v:capture.get()) need(v==Sentinel,"profiled GU wrote diagnostic storage");
+    std::cout<<"{\"kind\":\"profiled_engine_gu\",\"rows\":"<<rows<<",\"selected\":"<<selected
+      <<",\"expected_records\":"<<(selected ? 1 : 2)<<",\"max_half_ulp\":"<<ulp
+      <<",\"guards\":true,\"inputs_immutable\":true,\"status\":\"PASS\"}\n";
+  }
 };
 void admissions(Case &c) {
   int count=0;
@@ -220,14 +259,17 @@ int main(int argc,char **argv) {
     if (mode=="--ownership") {
       ownership(); std::cout << "fixture_status=PASS mode=ownership GPU_submissions=0\n"; return 0;
     }
-    need(mode=="--smoke" || mode=="--validate" || mode=="--bench","invalid mode");
+    need(mode=="--smoke" || mode=="--validate" || mode=="--bench" || mode=="--profile-engine-hook","invalid mode");
     for (auto tile:{xe::Tile::compact_16x64,xe::Tile::wide_128x128}) {
       const auto p=xe::inspect_gu_pair_ownership(8192,tile,xe::GuLayout::matrix);
       need(!p.partner_mismatch && !p.packed_missing && !p.packed_multiple && !p.packed_orientation_mismatch,
            "packed partner ownership gate");
     }
     runtime=sb::runtime_for(); auto q=runtime->make_queue(true); topology(q);
-    if (mode=="--smoke") {
+    if (mode=="--profile-engine-hook") {
+      need(argc==2,"profile hook takes no timing parameters");
+      for (int rows:{2333,2334,8192}) { Case c(rows,false,q);c.check_profile(); }
+    } else if (mode=="--smoke") {
       for (auto tile:{xe::Tile::compact_16x64,xe::Tile::wide_128x128}) {
         Case c(3,false,q); c.check(tile); Case edge(3,true,q); edge.check(tile);
       }

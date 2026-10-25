@@ -15,21 +15,28 @@
 namespace strata::sycl_backend::command_profile {
 thread_local Trace* active = nullptr;
 namespace {
-constexpr size_t Kinds = size_t(Kind::count), Bins = 8, PerBin = 4;
-constexpr size_t Frames = 4, PendingMax = 192, RecordsMax = Frames * PendingMax;
+constexpr size_t Kinds = size_t(Kind::count), Bins = 9, PerBin = 4;
+// At most36 selected jobs*5 separate operations,12 expert dequant events and
+//4 map/weight/status events per window.224 also leaves bounded diagnostic room.
+constexpr size_t Frames = 4, PendingMax = 224, RecordsMax = Frames * PendingMax;
 const char* kind_name(Kind kind) {
   constexpr const char* names[] = {"none","upload","dequant_gu","dequant_down",
-      "gather","gu","swiglu","down","combine","write","accumulate","job_weights","status"};
+      "gather","gu","swiglu","down","combine","write","accumulate","job_weights","status",
+      "gu_swiglu","down_scatter"};
   return names[size_t(kind)];
 }
 unsigned row_bin(int64_t rows) {
+  // Both selected production fusion dispatchers switch at2334 rows. The old
+  //1024..8192 stratum could choose only one side and leave the other unsampled.
+  if (rows >= 2334) return 8;
   if (rows < 16) return 0;
   unsigned b = 1;
   while (b < 7 && rows >= (int64_t(16) << b)) ++b;
   return b;
 }
 bool by_job(Kind kind) {
-  return kind==Kind::gather || kind==Kind::gu || kind==Kind::swiglu || kind==Kind::down || kind==Kind::accumulate;
+  return kind==Kind::gather || kind==Kind::gu || kind==Kind::swiglu || kind==Kind::down || kind==Kind::accumulate ||
+      kind==Kind::gu_swiglu || kind==Kind::down_scatter;
 }
 bool by_expert(Kind kind) { return kind==Kind::dequant_gu || kind==Kind::dequant_down; }
 // Independent deterministic FNV rank over IDs, not copied implementation code.
@@ -131,7 +138,7 @@ Trace::~Trace() noexcept {
           g.service_samples,g.queue_delay_samples,
           (unsigned long long)g.service,(unsigned long long)g.queue_delay);
     }
-  std::fprintf(stderr,"strata command profile: version=2 service_complete=%d submit_clock_qualified=%d submit_clock_inversions=%zu windows=%u expected=%u records=%zu peak_events=%zu cap=%zu timer_resolution_ns=%llu max_query_wall_ns=%llu error=%s invalid=%zu invalid_saved=%zu scope=selected_first_windows hardware_busy=UNMEASURED\n",
+  std::fprintf(stderr,"strata command profile: version=3 service_complete=%d submit_clock_qualified=%d submit_clock_inversions=%zu windows=%u expected=%u records=%zu peak_events=%zu cap=%zu timer_resolution_ns=%llu max_query_wall_ns=%llu error=%s invalid=%zu invalid_saved=%zu scope=selected_first_windows hardware_busy=UNMEASURED\n",
       int(x.complete),int(x.complete && !x.submit_clock_inversions),x.submit_clock_inversions,
       x.windows,x.expected,x.records,x.peak,PendingMax,
       (unsigned long long)x.timer_resolution,(unsigned long long)x.query_wall_ns,x.error,x.invalid_total,x.invalid_saved);
@@ -181,6 +188,18 @@ Tag::Tag(Trace* trace, Meta meta) noexcept : trace_(trace) {
   if (trace_) { previous_=trace_->impl_->meta;trace_->impl_->meta=meta; }
 }
 Tag::~Tag() noexcept { if (trace_) trace_->impl_->meta=previous_; }
+Tag fused_tag(Kind expected, Kind replacement) noexcept {
+  if (!active) return Tag(nullptr,{});
+  auto& x=*active->impl_;
+  if (x.meta.kind!=expected || x.meta.rows<2334 ||
+      !((expected==Kind::gu && replacement==Kind::gu_swiglu) ||
+        (expected==Kind::down && replacement==Kind::down_scatter))) {
+    x.fail("fused_tag_scope");
+    return Tag(nullptr,{});
+  }
+  auto meta=x.meta;meta.kind=replacement;
+  return Tag(active,meta);
+}
 void observe_impl(Trace& trace, void* stream, const sycl::event& event) noexcept {
   auto& x=*trace.impl_;
   if (stream!=x.stream || x.meta.kind==Kind::none || x.current>=Frames) { x.fail("unexpected_stream_or_tag");return; }

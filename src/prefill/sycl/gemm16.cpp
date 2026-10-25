@@ -13,6 +13,7 @@
 #include <cstring>
 #include <utility>
 #include "strata/sycl/cpu_wait_profile.hpp"
+#include "strata/sycl/command_profile.hpp"
 #include "strata/sycl/launch.hpp"
 #include <algorithm>
 #include <cmath>
@@ -69,10 +70,11 @@ const BackendConfig &backend_config() {
     if (down_fusion && (!active || !use_vllm || chosen == VllmTile::compact))
       throw std::invalid_argument("DOWN_SCATTER=large requires native16 bf16, vllm and auto/wide tile");
     const char *command_profile = std::getenv("STRATA_SYCL_PREFILL_COMMAND_PROFILE");
-    if (gu_fusion && command_profile && std::strcmp(command_profile, "0") != 0)
-      throw std::invalid_argument("GU fusion command-service census is not yet qualified; use separate GU for that observer");
-    if (down_fusion && command_profile && std::strcmp(command_profile, "0") != 0)
-      throw std::invalid_argument("Down fusion command-service census is not yet qualified; use separate Down for that observer");
+    if ((gu_fusion || down_fusion) && command_profile && std::strcmp(command_profile, "0") != 0) {
+      const char *admit = std::getenv("STRATA_SYCL_PREFILL_FUSED_COMMAND_PROFILE");
+      if (!admit || std::strcmp(admit, "1") != 0)
+        throw std::invalid_argument("fused command-service profiling requires explicit qualification opt-in STRATA_SYCL_PREFILL_FUSED_COMMAND_PROFILE=1");
+    }
     std::fprintf(stderr, "[native16-route] engine=%s backend=%s tile=%s%s\n",
         active ? "bf16" : "0", use_vllm ? "vllm" : "own",
         use_vllm ? (chosen == VllmTile::automatic ? "auto(T<128:compact;else:wide)" :
@@ -347,6 +349,8 @@ bool Gemm::try_gu_swiglu16(const uint16_t *x, const uint16_t *w, uint16_t *hidde
   sycl_backend::cpu_wait_profile::Host submission(sycl_backend::cpu_wait_profile::gemm_submit);
   const auto event = bound.adapter.gu_swiglu({x, w, hidden, t, nullptr}, vx::Tile::wide_128x128);
   submission.finish();
+  auto profile_tag = sycl_backend::command_profile::fused_tag(
+      sycl_backend::command_profile::Kind::gu, sycl_backend::command_profile::Kind::gu_swiglu);
   sycl_backend::finish(stream_, event);
   return true;
 #else
@@ -368,6 +372,8 @@ bool Gemm::try_down_scatter16(const detail::MoeWindowRoutes &plan, size_t index,
       {&plan, index, x, w, source, original, weights, accumulator, status, nullptr},
       vx::Tile::wide_128x128, vx::ScatterLayout::matrix_row_cache);
   submission.finish();
+  auto profile_tag = sycl_backend::command_profile::fused_tag(
+      sycl_backend::command_profile::Kind::down, sycl_backend::command_profile::Kind::down_scatter);
   sycl_backend::finish(stream_, event);
   return true;
 #else
