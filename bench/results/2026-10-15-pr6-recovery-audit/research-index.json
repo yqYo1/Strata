@@ -11216,14 +11216,28 @@
   },
   "UR_PTI_identity_bridge_20261025": {
     "classification": "decision_support",
-    "status": "prepared",
-    "schedulable_now": true,
+    "status": "report_received_native_review_running",
+    "schedulable_now": false,
     "prerequisites": "Committed6a4380629 current-runtime census:680 device events match independent source/API counts,no faults,owned closure. UR text lacks thread/time identity while PTI host-flow sources have exact timestamps;needs a concrete immutable-env bridge choice.",
     "scope": "Compare UR call XPTI subscriber,UR/DDI interception,and native spans for exact generations/graph replay/failed calls on installed v711/PTI4b6d742;explicitly handle post-init environment mutation hazards.",
     "report": ".cache/strata-research/20261025/ur-pti-identity-bridge/report.md",
     "report_budget_bytes": 10000,
     "model": "gpt-6-luna",
     "main_work": "Closed-data PTI host-flow normalization and negative controls;Main owns implementation and all execution.",
-    "policy_commit": "6a4380629"
+    "policy_commit": "6a4380629",
+    "report_sha256": "3c3fc6eecd0a5d5e0d6a3beb26f681067550ddcfa891cd33f9555fde360bad80",
+    "report_bytes": 9875,
+    "ownership": {
+      "run": "run_12fa11537288",
+      "task": "task_429fe1d2bdf0",
+      "dispatch": "ctx_d4eec6bdc9bf",
+      "terminal": "term_9cf97302-004f-4cdf-a1b9-cfcddbf74bb9",
+      "incarnation": "2d6a4c1d-0f61-4159-a721-40d3ae7f076f",
+      "settlement": "accepted succeeded msg_f1706ff4377d;delivery_4e70d1eb9195 acknowledged",
+      "release": "external_terminal retained;processAction none",
+      "external_owner_cleanup": "Main matched exact creation PTY/incarnation and closed its own terminal;ptyKilled=true",
+      "effective_model": "GPT-6-Luna high observed in terminal footer"
+    },
+    "reviewer": "/root/review_ur_pti_identity_bridge_20261025"
   }
 }

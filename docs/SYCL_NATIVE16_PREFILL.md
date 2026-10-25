@@ -490,9 +490,17 @@ planned operations, actual API results and collector device executions.
 gate, including graph-child expansion, lifetime generations, rejected submissions,
 host-task completion, shapes/requested bytes and drained phase bounds. Its
 18 adversarial host controls pass using synthetic records only. Actual UR/PTI
-adapters, current source/runtime coverage, clock mapping and observer cost still
-require a bounded native fixture before a model observation. No production prefill/decode source
-or selected binary changes in this step; hardware saturation remains unknown.
+adapters, model-route coverage, clock mapping and observer cost still require
+qualification before a model observation. On current NEO, the retained6e40
+submission fixture now matches606 kernels,53 copies/55,844 requested bytes,one
+fill/1,028 bytes and20 barriers across the source/API/device ledgers. All680
+collector GPU instances have exact unique host-append flow sources and GPU sinks;
+one barrier has no optional host-completion sink. Six parser/link host controls
+pass,all native owners close normally and no fresh fault appears. This qualifies
+the bounded count/internal-link checks only. UR text lacks call time/thread IDs;
+its independent per-operation bridge,graph/reuse coverage and observer cost remain
+open. No production prefill/decode source or selected binary changes;hardware
+saturation remains unknown.
 
 Basic [profile-off/on graph support](../bench/results/2026-10-15-pr6-recovery-audit/mtp-graph-observer-current.json)
 already passed, with exact6e40 reuse checked separately. The closed
