@@ -3439,6 +3439,78 @@
               "kernel": "7.0.0-38-generic",
               "devcoredump": false
             }
+          },
+          {
+            "name": "gu-0",
+            "passed": true,
+            "host_probe_accepted": true,
+            "validation": {
+              "pid": 3848506,
+              "loader": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_loader.so.0.12.0",
+              "threads_before": 1,
+              "preinit": 37,
+              "config_enabled": true,
+              "first_init": true,
+              "dispatch_result": 46,
+              "output_untouched": true,
+              "retained_reference_until_exit": true,
+              "runtime_teardown_qualified": false
+            },
+            "analysis": {
+              "operator": "gu",
+              "oracle_cases": [
+                {
+                  "kind": "profiled_engine_gu",
+                  "rows": 2333,
+                  "selected": 0,
+                  "expected_records": 2,
+                  "max_half_ulp": 0,
+                  "guards": true,
+                  "inputs_immutable": true,
+                  "status": "PASS"
+                },
+                {
+                  "kind": "profiled_engine_gu",
+                  "rows": 2334,
+                  "selected": 1,
+                  "expected_records": 1,
+                  "max_half_ulp": 0,
+                  "guards": true,
+                  "inputs_immutable": true,
+                  "status": "PASS"
+                },
+                {
+                  "kind": "profiled_engine_gu",
+                  "rows": 8192,
+                  "selected": 1,
+                  "expected_records": 1,
+                  "max_half_ulp": 0,
+                  "guards": true,
+                  "inputs_immutable": true,
+                  "status": "PASS"
+                }
+              ],
+              "profile_records": [],
+              "gpu_service_qualified": false,
+              "speed_qualified": false
+            },
+            "complete": true,
+            "expected_exit_code": 0,
+            "actual_provider_mappings": true,
+            "parameter_validation_warnings": 0,
+            "trace_bytes": 96973,
+            "trace_sha256": "05f4e8d288cc8a7c6d6cb17f8183d938dd855e6a5be0e5280384c25dafc3144c",
+            "ownership_closed": true,
+            "fresh_faults": [],
+            "boot_unchanged": true,
+            "driver_after": {
+              "pci": "/sys/bus/pci/devices/0000:05:00.0",
+              "driver": "xe",
+              "vendor": "0x8086",
+              "device": "0xe20c",
+              "kernel": "7.0.0-38-generic",
+              "devcoredump": false
+            }
           }
         ],
         "active": false,
