@@ -287,10 +287,25 @@ changing both the source package and placement again would leave the cause
 confounded. Audit owned/borrowed admission and actual allocation geometry before
 launch,and keep clean speed separate from instrumented host/device/resource
 attribution. The comparison's `placement_diagnostic` subrecord now contains that
-observed same-binary work. Borrowed1256 keeps lease1;owned128 uses independent
+closed observed same-binary work. Borrowed1256 keeps lease1;owned128 uses independent
 allocations and lease0,as required by native admission. It is a diagnostic,
 not a production decode placement. Both use trace and passive CPU/CCS/frequency
 sampling,so they do not replace clean speed or repeated adoption comparisons.
+
+Both processes pass all four117489-token requests,normal native/collector
+closure,original-source/provider checks and silent parameter validation,with
+no fresh fault. All15 final model digests match. First use is901.6385tok/s for
+borrowed1256 and903.3106 for owned128;the subsequent-three medians are972.9914
+and975.0545 respectively,owned/borrowed1.00212042. The completed job/dequant
+counts match exactly between arms. Borrowed refill takes390.4..515.2ms,under0.5%
+of these request totals. Reverting ownership alone therefore does not restore
+historical1003tok/s in this observed comparison;do not call the0.212% descriptive
+difference a repeated clean gain or adopt the128-slot decode layout.
+The client-window CPU/CCS and reported frequency/paging samples are retained
+individually. Busy cycles include stalls,CPU includes polling,and historical
+contemporaneous frequency/pressure controls are absent;neither these samples
+nor the unchanged job counts establish hardware saturation or exclude host
+effects on the old/current difference.
 
 The39K owned gate exits normally and restores all48 dense layers. Its original
 collection remains failed because the parser required two wholly contained

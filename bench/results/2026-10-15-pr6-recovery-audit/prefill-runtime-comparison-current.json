@@ -264,7 +264,7 @@
   "model": "qwen3.8-flash-next-iq3_s-primary",
   "model_fingerprint": "32d552dc1fb0ad6594425e8bd39f35049f896afe5775b0f7abf751110a11333e",
   "placement_diagnostic": {
-    "stage": "collecting",
+    "stage": "closed",
     "source_commit": "f573fc00d23a0291b998ec88f410899c3c508eb9",
     "native_source_commit": "6e40afc1beddd059ee518617f6c1efce1da14aca",
     "binary": {
@@ -272,91 +272,10 @@
       "bytes": 22190000,
       "sha256": "22182f1a5e62e5f4259ce49a75ae44afbd988166ec79324816e499ff37ef60e4"
     },
-    "preload": {
-      "library": {
-        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/ur-validation-preload-v2/libstrata_ur_validation.so",
-        "sha256": "1d4e69d672d55fa0a126ae43b7b4743482cccca7e2f2bc22e0db2bfdad5bdc7c"
-      },
-      "loader": {
-        "path": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_loader.so.0.12.0",
-        "sha256": "bb6e1311850e4b1a924e42acae80c2b3610934625a4985aaa67967abe31356fc"
-      }
-    },
-    "configuration": {
-      "exe": "/home/yayoi/orca/workspaces/Strata/sycl/tools/sycl/engine_once.py",
-      "args": [
-        "--pack",
-        "/home/yayoi/.local/share/strata-sycl/packs/qwen3.8-flash-next-iq3_s",
-        "--native",
-        "/home/yayoi/.local/share/strata-sycl/models/qwen3.8-flash-next-iq3_s/IQ3_S/Qwen3.8-Flash-Next-GSQ-RCO-IQ3_S-00001-of-00002.gguf",
-        "--max-context",
-        "131072",
-        "--kv",
-        "int8",
-        "--kv-resident",
-        "131072",
-        "--expert-cache",
-        "1256",
-        "--expert-profile",
-        "/home/yayoi/orca/workspaces/Strata/sycl/data/expert-profile.bin",
-        "--expert-cache-per-layer",
-        "--pool-workers",
-        "5",
-        "--pcie-frac",
-        "0",
-        "--adapt-swaps",
-        "0",
-        "--conversation-cache-mib",
-        "0",
-        "--prompt-cache",
-        "0",
-        "--turn-token",
-        "-1",
-        "--suffix-draft",
-        "0",
-        "--greedy",
-        "--no-spec-split",
-        "--short-read",
-        "0",
-        "--spec",
-        "4",
-        "--mtp",
-        "/home/yayoi/.local/share/strata-sycl/mtp/rt",
-        "--prefill",
-        "8192",
-        "--vram-reserve-mib",
-        "700",
-        "--no-coupled-draft",
-        "--no-token-graph"
-      ],
-      "cwd": "/home/yayoi/orca/workspaces/Strata/sycl",
-      "tokenizer": "/home/yayoi/.local/share/strata-sycl/packs/qwen3.8-flash-next-iq3_s/tokenizer",
-      "model_name": "qwen3.8-flash-next-iq3_s-primary",
-      "aliases": [
-        "strata"
-      ],
-      "host": "127.0.0.1",
-      "log": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/restored-phase-bench-v1/0/engine.stderr",
-      "engine_silence_s": 480,
-      "parallel": 1,
-      "open_browser": false,
-      "env": {}
-    },
     "template_sha256": "9543297abc2ce0b4530ee6984d55366e735881caf42a08239f3494d655f9e10d",
     "runtime_sha256": "09ad358e12f6ef58bfc0a978519927863f3d09949a033a1e224db95997647d97",
     "boot": "cfda0b6a-7c13-4fe2-bdf5-8f9202770840",
-    "runtime_reference": "bench/results/2026-10-15-pr6-recovery-audit/runtime-requalification-current.json",
     "model_fingerprint": "32d552dc1fb0ad6594425e8bd39f35049f896afe5775b0f7abf751110a11333e",
-    "reader": {
-      "path": "/home/yayoi/orca/workspaces/Strata/sycl/bench/sycl/client_resources.py",
-      "sha256": "c7f5bbd077a78d02bf1677c7c97360e7dc76d9de2629f0620a65df24ca2af750"
-    },
-    "request_hashes": [
-      "26f08fd8364b5c4bce718617fe2aed42761d0a794e068b00532694adef78b3be",
-      "fd3ad8ad7033776ad749b22e62e910e5f47e3f7664705f48d9f1fe7349b65515",
-      "daabbef4775c3fbdbfd832339d80a5ae2f91025b66df79b92fb8f6905f33b041",
-      "8669c9ebe2747b1fc2d7c4806eeb66025c919981d81c51cfdbd64ba3ec3cc2b1"
-    ],
     "prior_gate": {
       "archive": "8c921642b",
       "original_passed": false,
@@ -364,151 +283,96 @@
       "actual_read_tokens": 39260,
       "reuse": "Same native/runtime/math,owned8192 scratch/48-layer restore validated;full15 model hashes from its preparation match original inventory/ctime. Original failed collection/cohort remain closed. No117K/262144 or decode qualification."
     },
-    "plan": "Two separate observed117K processes:borrowed1256 then owned128;four fresh requests each,first separate. Fixed same6e40 binary/current runtime/math. Placement/cache geometry change together;order and observers prevent clean causal/adoption claims. Passive scope is pre-first-output only;short decode coverage is not required or qualified. Never change production decode. No retries or speed-based stopping.",
-    "source_audit": "6e40 generate own_fits uses exact bytes_needed+512MiB;chunk fallback rejected by actual8192 route. Owned carve separately owns emb/R/region;borrowed lease uses checked tail. Native admission forbids lease1 with no-prefill-borrow,so owned-only uses lease0 for its independently owned buffers;borrowed keeps lease1. Shared long-pass GPU BF16/mode10 and48-layer dense restore must match. Same runtime safety/queue/parameter validation. Actual all-GPU residual allocation verified per request;32K gate does not establish117K or262144 capacity.",
     "limits": "Diagnostic only. No clean speed,observer overhead,hardware saturation,task/decode performance,physical262144 or ordinary-runtime-teardown qualification.",
-    "retention": "At closed replay,keep all useful request clocks/work/placement/host summaries;retire normal logs,raw sampling,JIT and single-use controller. Selected engine+12fixtures and separate pending oneMKL consumer remain.",
-    "budgets": {
-      "wall": 1800,
-      "cpu": 72000,
-      "rss_cap": 111669149696,
-      "text_cap": 33554432,
-      "file_cap": 67108864,
-      "total_cap": 134217728
+    "recipe_reference": "f678f3ffd:bench/results/2026-10-15-pr6-recovery-audit/prefill-runtime-comparison-current.json::placement_diagnostic",
+    "configuration": {
+      "shared": "131072 residentINT8 context,8192chunk,5workers,pcie0,adapt0,spec4,Q8MTP,caches0,no coupled draft/token graph,BF16/vLLM/mode10,all-GPU residuals",
+      "borrowed": "1256slots,cache-tail lease1,1124lent/132kept",
+      "owned": "128slots,no-prefill-borrow,lease0;diagnostic only"
     },
-    "cases": [
-      {
-        "name": "borrowed",
-        "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-placement-probe-v2/borrowed",
-        "tokens": 98304,
-        "runs": 4,
-        "owned": false,
-        "command": [
-          "/bin/sh",
-          "/home/yayoi/orca/workspaces/Strata/sycl/bench.sh",
-          "--config",
-          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-placement-probe-v2/borrowed/config.json",
-          "--port",
-          "51747",
-          "--prefill-only",
-          "--prefill-tokens",
-          "98304",
-          "--think",
-          "--runs",
-          "4",
-          "--profile-request-gates",
-          "--workload-id",
-          "native_gdn_20261018",
-          "--fail-fast-engine-error",
-          "--ready-timeout",
-          "600",
-          "--out",
-          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-placement-probe-v2/borrowed/bench"
+    "observations": {
+      "source": "STRATA_TRACE1,warning-only parameter validation,retained-loader preload,1s read-only CPU/DRM/frequency/paging collectors",
+      "window": "pre-first-output;complete capture validated,short decode tail not attributed",
+      "reader_sha256": "c7f5bbd077a78d02bf1677c7c97360e7dc76d9de2629f0620a65df24ca2af750",
+      "host_controls": "4 placement negative controls;15 client-reader controls"
+    },
+    "request_common": {
+      "actual_read_tokens": 117489,
+      "actual_prompt_tokens": 117489,
+      "reused_tokens": 0,
+      "generated_tokens": 24,
+      "thinking": true,
+      "request_hashes": [
+        "26f08fd8364b5c4bce718617fe2aed42761d0a794e068b00532694adef78b3be",
+        "fd3ad8ad7033776ad749b22e62e910e5f47e3f7664705f48d9f1fe7349b65515",
+        "daabbef4775c3fbdbfd832339d80a5ae2f91025b66df79b92fb8f6905f33b041",
+        "8669c9ebe2747b1fc2d7c4806eeb66025c919981d81c51cfdbd64ba3ec3cc2b1"
+      ],
+      "moe_work": {
+        "windows_each": 96,
+        "operator_max": 8192,
+        "maximum_rows": 81920,
+        "jobs_by_request": [
+          37353,
+          37326,
+          37318,
+          37298
         ],
-        "native_plan": {
-          "binary": {
-            "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/strata",
-            "bytes": 22190000,
-            "sha256": "22182f1a5e62e5f4259ce49a75ae44afbd988166ec79324816e499ff37ef60e4"
-          },
-          "native_validation_probe": {
-            "library": {
-              "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/ur-validation-preload-v2/libstrata_ur_validation.so",
-              "sha256": "1d4e69d672d55fa0a126ae43b7b4743482cccca7e2f2bc22e0db2bfdad5bdc7c"
-            },
-            "loader": {
-              "path": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_loader.so.0.12.0",
-              "sha256": "bb6e1311850e4b1a924e42acae80c2b3610934625a4985aaa67967abe31356fc"
-            }
-          },
-          "resource_collection": {
-            "source": {
-              "path": "/home/yayoi/orca/workspaces/Strata/sycl/bench/sycl/client_resources.py",
-              "sha256": "c7f5bbd077a78d02bf1677c7c97360e7dc76d9de2629f0620a65df24ca2af750"
-            },
-            "seconds": 900,
-            "interval": 1
-          }
-        },
-        "inputs": {
-          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-placement-probe-v2/borrowed/config.json": "1058aa53dfd483006148b69837cf67df13e269743e57cd24c59b84577362696b",
-          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-placement-probe-v2/borrowed/plan.json": "ce847afa2d483edae90050d5252016253cfaefa12f2f8fba17bc0276064b0711"
-        }
-      },
-      {
-        "name": "owned",
-        "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-placement-probe-v2/owned",
-        "tokens": 98304,
-        "runs": 4,
-        "owned": true,
-        "command": [
-          "/bin/sh",
-          "/home/yayoi/orca/workspaces/Strata/sycl/bench.sh",
-          "--config",
-          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-placement-probe-v2/owned/config.json",
-          "--port",
-          "60107",
-          "--prefill-only",
-          "--prefill-tokens",
-          "98304",
-          "--think",
-          "--runs",
-          "4",
-          "--profile-request-gates",
-          "--workload-id",
-          "native_gdn_20261018",
-          "--fail-fast-engine-error",
-          "--ready-timeout",
-          "600",
-          "--out",
-          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-placement-probe-v2/owned/bench"
+        "dequants_by_request": [
+          33225,
+          33196,
+          33188,
+          33169
         ],
-        "native_plan": {
-          "binary": {
-            "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/strata",
-            "bytes": 22190000,
-            "sha256": "22182f1a5e62e5f4259ce49a75ae44afbd988166ec79324816e499ff37ef60e4"
-          },
-          "native_validation_probe": {
-            "library": {
-              "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/ur-validation-preload-v2/libstrata_ur_validation.so",
-              "sha256": "1d4e69d672d55fa0a126ae43b7b4743482cccca7e2f2bc22e0db2bfdad5bdc7c"
-            },
-            "loader": {
-              "path": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_loader.so.0.12.0",
-              "sha256": "bb6e1311850e4b1a924e42acae80c2b3610934625a4985aaa67967abe31356fc"
-            }
-          },
-          "resource_collection": {
-            "source": {
-              "path": "/home/yayoi/orca/workspaces/Strata/sycl/bench/sycl/client_resources.py",
-              "sha256": "c7f5bbd077a78d02bf1677c7c97360e7dc76d9de2629f0620a65df24ca2af750"
-            },
-            "seconds": 900,
-            "interval": 1
-          }
-        },
-        "inputs": {
-          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-placement-probe-v2/owned/config.json": "c46314a1af8b6d43d7fe04499471f14989585e0c33d4393bd6d0743bfdbbe7d6",
-          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-placement-probe-v2/owned/plan.json": "ce847afa2d483edae90050d5252016253cfaefa12f2f8fba17bc0276064b0711"
-        }
+        "requested_source_map_H2D_bytes_each": 225576960,
+        "matches_between_arms": true,
+        "limits": "Completed source-work counters;requested map bytes are not physical PCIe traffic or all transfers."
       }
-    ],
-    "outcomes": [
+    },
+    "processes": [
       {
         "name": "borrowed",
         "passed": true,
-        "complete": true,
+        "ownership_closed": true,
+        "fresh_faults": [],
+        "native_identity": {
+          "pid": 3473748,
+          "start_ticks": 129933352,
+          "sid": 3473706
+        },
+        "journal_sha256": "eb98850dad2b0aad3214529a7fa6bb1c17f9688acc4644d90ce9a0d3b9fd3fb9",
         "requests": [
           {
             "prompt_ms": 130306.1,
-            "read_tokens": 117489,
-            "request_sha256": "26f08fd8364b5c4bce718617fe2aed42761d0a794e068b00532694adef78b3be",
-            "scope": {
-              "batched_wrapper_ms": 129911.1,
-              "expert_refill_ms": 390.4,
-              "limits": "Batch includes native entry/run/restore;refill includes RAM lookup/enqueue/drain/publication. Not GPU service or PCIe bytes."
+            "batched_wrapper_ms": 129911.1,
+            "expert_refill_ms": 390.4,
+            "client_window": {
+              "request_begin_monotonic_ns": 1299433026909108,
+              "first_output_monotonic_ns": 1299563507125279,
+              "request_end_monotonic_ns": 1299565241643406
             },
+            "scheduled_CPU_seconds": 125.43,
+            "CPU_core_equivalents": 0.9694044646118783,
+            "main_scheduled_thread": {
+              "tid": 3473748,
+              "start_ticks": 129933352,
+              "cpu_ticks": 12288,
+              "observed_last_cpus": [
+                0
+              ],
+              "cpu_seconds": 122.88
+            },
+            "ccs": [
+              {
+                "pci": "0000:05:00.0",
+                "client_id": 50269,
+                "engine": "ccs",
+                "eligible_intervals": 129,
+                "busy_cycles": 2285675372,
+                "capacity_total_cycles": 2484146046,
+                "busy_fraction": 0.9201050701831401
+              }
+            ],
             "host": {
               "samples": 110,
               "gpu_act_mhz": {
@@ -525,61 +389,39 @@
               },
               "min_available_RAM_bytes": 23391129600,
               "limits": "Wholly contained pre-first-output snapshots;not native phase boundaries. Reported frequency is not an arithmetic ceiling;system paging counters are not per-process attribution."
+            }
+          },
+          {
+            "prompt_ms": 120642.0,
+            "batched_wrapper_ms": 120246.0,
+            "expert_refill_ms": 391.1,
+            "client_window": {
+              "request_begin_monotonic_ns": 1299565287979358,
+              "first_output_monotonic_ns": 1299686087743089,
+              "request_end_monotonic_ns": 1299687771122619
             },
-            "pre_first_output_cpu_seconds": 125.43,
-            "pre_first_output_cpu_core_equivalents": 0.9694044646118783,
-            "top_scheduled_threads": [
-              {
-                "tid": 3473748,
-                "start_ticks": 129933352,
-                "cpu_ticks": 12288,
-                "observed_last_cpus": [
-                  0
-                ],
-                "cpu_seconds": 122.88
-              },
-              {
-                "tid": 3473978,
-                "start_ticks": 129934041,
-                "cpu_ticks": 52,
-                "observed_last_cpus": [
-                  1,
-                  2,
-                  3,
-                  4,
-                  5,
-                  6,
-                  7,
-                  8,
-                  9,
-                  10,
-                  11
-                ],
-                "cpu_seconds": 0.52
-              }
-            ],
+            "scheduled_CPU_seconds": 118.45,
+            "CPU_core_equivalents": 0.9925549954586148,
+            "main_scheduled_thread": {
+              "tid": 3473748,
+              "start_ticks": 129933352,
+              "cpu_ticks": 11817,
+              "observed_last_cpus": [
+                0
+              ],
+              "cpu_seconds": 118.17
+            },
             "ccs": [
               {
                 "pci": "0000:05:00.0",
                 "client_id": 50269,
                 "engine": "ccs",
-                "eligible_intervals": 129,
-                "busy_cycles": 2285675372,
-                "capacity_total_cycles": 2484146046,
-                "busy_fraction": 0.9201050701831401
+                "eligible_intervals": 117,
+                "busy_cycles": 2273756155,
+                "capacity_total_cycles": 2291187953,
+                "busy_fraction": 0.9923918079365006
               }
             ],
-            "collector_coverage_verified": true
-          },
-          {
-            "prompt_ms": 120642.0,
-            "read_tokens": 117489,
-            "request_sha256": "fd3ad8ad7033776ad749b22e62e910e5f47e3f7664705f48d9f1fe7349b65515",
-            "scope": {
-              "batched_wrapper_ms": 120246.0,
-              "expert_refill_ms": 391.1,
-              "limits": "Batch includes native entry/run/restore;refill includes RAM lookup/enqueue/drain/publication. Not GPU service or PCIe bytes."
-            },
             "host": {
               "samples": 102,
               "gpu_act_mhz": {
@@ -596,58 +438,39 @@
               },
               "min_available_RAM_bytes": 23255703552,
               "limits": "Wholly contained pre-first-output snapshots;not native phase boundaries. Reported frequency is not an arithmetic ceiling;system paging counters are not per-process attribution."
+            }
+          },
+          {
+            "prompt_ms": 120750.3,
+            "batched_wrapper_ms": 120354.0,
+            "expert_refill_ms": 391.3,
+            "client_window": {
+              "request_begin_monotonic_ns": 1299687813314988,
+              "first_output_monotonic_ns": 1299808729886963,
+              "request_end_monotonic_ns": 1299810450500694
             },
-            "pre_first_output_cpu_seconds": 118.45,
-            "pre_first_output_cpu_core_equivalents": 0.9925549954586148,
-            "top_scheduled_threads": [
-              {
-                "tid": 3473748,
-                "start_ticks": 129933352,
-                "cpu_ticks": 11817,
-                "observed_last_cpus": [
-                  0
-                ],
-                "cpu_seconds": 118.17
-              },
-              {
-                "tid": 3473964,
-                "start_ticks": 129934037,
-                "cpu_ticks": 2,
-                "observed_last_cpus": [
-                  3,
-                  4,
-                  5,
-                  6,
-                  7,
-                  9,
-                  10,
-                  11
-                ],
-                "cpu_seconds": 0.02
-              }
-            ],
+            "scheduled_CPU_seconds": 118.49,
+            "CPU_core_equivalents": 0.9928619667260212,
+            "main_scheduled_thread": {
+              "tid": 3473748,
+              "start_ticks": 129933352,
+              "cpu_ticks": 11822,
+              "observed_last_cpus": [
+                0
+              ],
+              "cpu_seconds": 118.22
+            },
             "ccs": [
               {
                 "pci": "0000:05:00.0",
                 "client_id": 50269,
                 "engine": "ccs",
-                "eligible_intervals": 117,
-                "busy_cycles": 2273756155,
-                "capacity_total_cycles": 2291187953,
-                "busy_fraction": 0.9923918079365006
+                "eligible_intervals": 118,
+                "busy_cycles": 2273415083,
+                "capacity_total_cycles": 2291254069,
+                "busy_fraction": 0.9922143134446082
               }
             ],
-            "collector_coverage_verified": true
-          },
-          {
-            "prompt_ms": 120750.3,
-            "read_tokens": 117489,
-            "request_sha256": "daabbef4775c3fbdbfd832339d80a5ae2f91025b66df79b92fb8f6905f33b041",
-            "scope": {
-              "batched_wrapper_ms": 120354.0,
-              "expert_refill_ms": 391.3,
-              "limits": "Batch includes native entry/run/restore;refill includes RAM lookup/enqueue/drain/publication. Not GPU service or PCIe bytes."
-            },
             "host": {
               "samples": 101,
               "gpu_act_mhz": {
@@ -664,58 +487,39 @@
               },
               "min_available_RAM_bytes": 23236907008,
               "limits": "Wholly contained pre-first-output snapshots;not native phase boundaries. Reported frequency is not an arithmetic ceiling;system paging counters are not per-process attribution."
+            }
+          },
+          {
+            "prompt_ms": 120944.2,
+            "batched_wrapper_ms": 120424.1,
+            "expert_refill_ms": 515.2,
+            "client_window": {
+              "request_begin_monotonic_ns": 1299810502448493,
+              "first_output_monotonic_ns": 1299931659330064,
+              "request_end_monotonic_ns": 1299933268675074
             },
-            "pre_first_output_cpu_seconds": 118.49,
-            "pre_first_output_cpu_core_equivalents": 0.9928619667260212,
-            "top_scheduled_threads": [
-              {
-                "tid": 3473748,
-                "start_ticks": 129933352,
-                "cpu_ticks": 11822,
-                "observed_last_cpus": [
-                  0
-                ],
-                "cpu_seconds": 118.22
-              },
-              {
-                "tid": 3473961,
-                "start_ticks": 129934037,
-                "cpu_ticks": 1,
-                "observed_last_cpus": [
-                  2,
-                  3,
-                  4,
-                  5,
-                  7,
-                  8,
-                  9,
-                  11
-                ],
-                "cpu_seconds": 0.01
-              }
-            ],
+            "scheduled_CPU_seconds": 119.3,
+            "CPU_core_equivalents": 0.9911101924293538,
+            "main_scheduled_thread": {
+              "tid": 3473748,
+              "start_ticks": 129933352,
+              "cpu_ticks": 11904,
+              "observed_last_cpus": [
+                0
+              ],
+              "cpu_seconds": 119.04
+            },
             "ccs": [
               {
                 "pci": "0000:05:00.0",
                 "client_id": 50269,
                 "engine": "ccs",
-                "eligible_intervals": 118,
-                "busy_cycles": 2273415083,
-                "capacity_total_cycles": 2291254069,
-                "busy_fraction": 0.9922143134446082
+                "eligible_intervals": 117,
+                "busy_cycles": 2290892526,
+                "capacity_total_cycles": 2311002854,
+                "busy_fraction": 0.9912980081503612
               }
             ],
-            "collector_coverage_verified": true
-          },
-          {
-            "prompt_ms": 120944.2,
-            "read_tokens": 117489,
-            "request_sha256": "8669c9ebe2747b1fc2d7c4806eeb66025c919981d81c51cfdbd64ba3ec3cc2b1",
-            "scope": {
-              "batched_wrapper_ms": 120424.1,
-              "expert_refill_ms": 515.2,
-              "limits": "Batch includes native entry/run/restore;refill includes RAM lookup/enqueue/drain/publication. Not GPU service or PCIe bytes."
-            },
             "host": {
               "samples": 101,
               "gpu_act_mhz": {
@@ -732,80 +536,243 @@
               },
               "min_available_RAM_bytes": 23187910656,
               "limits": "Wholly contained pre-first-output snapshots;not native phase boundaries. Reported frequency is not an arithmetic ceiling;system paging counters are not per-process attribution."
+            }
+          }
+        ]
+      },
+      {
+        "name": "owned",
+        "passed": true,
+        "ownership_closed": true,
+        "fresh_faults": [],
+        "native_identity": {
+          "pid": 3499500,
+          "start_ticks": 130007257,
+          "sid": 3499472
+        },
+        "journal_sha256": "613dd2c7dbedc2bb3469e8eff20c100aa5a758a08ddcc6b096b46022f1a37f36",
+        "requests": [
+          {
+            "prompt_ms": 130064.9,
+            "batched_wrapper_ms": 130060.4,
+            "expert_refill_ms": 0.0,
+            "client_window": {
+              "request_begin_monotonic_ns": 1300170035483023,
+              "first_output_monotonic_ns": 1300300275586020,
+              "request_end_monotonic_ns": 1300302181038038
             },
-            "pre_first_output_cpu_seconds": 119.3,
-            "pre_first_output_cpu_core_equivalents": 0.9911101924293538,
-            "top_scheduled_threads": [
-              {
-                "tid": 3473748,
-                "start_ticks": 129933352,
-                "cpu_ticks": 11904,
-                "observed_last_cpus": [
-                  0
-                ],
-                "cpu_seconds": 119.04
-              },
-              {
-                "tid": 3473958,
-                "start_ticks": 129934037,
-                "cpu_ticks": 1,
-                "observed_last_cpus": [
-                  6,
-                  7,
-                  8,
-                  9,
-                  10
-                ],
-                "cpu_seconds": 0.01
-              }
-            ],
+            "scheduled_CPU_seconds": 126.39,
+            "CPU_core_equivalents": 0.9768858559272647,
+            "main_scheduled_thread": {
+              "tid": 3499500,
+              "start_ticks": 130007257,
+              "cpu_ticks": 12346,
+              "observed_last_cpus": [
+                0
+              ],
+              "cpu_seconds": 123.46
+            },
             "ccs": [
               {
                 "pci": "0000:05:00.0",
-                "client_id": 50269,
+                "client_id": 50334,
                 "engine": "ccs",
-                "eligible_intervals": 117,
-                "busy_cycles": 2290892526,
-                "capacity_total_cycles": 2311002854,
-                "busy_fraction": 0.9912980081503612
+                "eligible_intervals": 129,
+                "busy_cycles": 2293271038,
+                "capacity_total_cycles": 2483988177,
+                "busy_fraction": 0.9232213982474201
               }
             ],
-            "collector_coverage_verified": true
+            "host": {
+              "samples": 109,
+              "gpu_act_mhz": {
+                "min": 0,
+                "median": 2750,
+                "max": 2750
+              },
+              "throttle_samples": 0,
+              "cpu0_reported_khz_median": 4591510,
+              "system_vm_delta": {
+                "pswpin": 0,
+                "pswpout": 0,
+                "pgmajfault": 216
+              },
+              "min_available_RAM_bytes": 23626334208,
+              "limits": "Wholly contained pre-first-output snapshots;not native phase boundaries. Reported frequency is not an arithmetic ceiling;system paging counters are not per-process attribution."
+            }
+          },
+          {
+            "prompt_ms": 120716.2,
+            "batched_wrapper_ms": 120711.4,
+            "expert_refill_ms": 0.0,
+            "client_window": {
+              "request_begin_monotonic_ns": 1300302251522814,
+              "first_output_monotonic_ns": 1300423139220581,
+              "request_end_monotonic_ns": 1300424989116429
+            },
+            "scheduled_CPU_seconds": 119.39,
+            "CPU_core_equivalents": 0.9920603349744538,
+            "main_scheduled_thread": {
+              "tid": 3499500,
+              "start_ticks": 130007257,
+              "cpu_ticks": 11910,
+              "observed_last_cpus": [
+                0
+              ],
+              "cpu_seconds": 119.1
+            },
+            "ccs": [
+              {
+                "pci": "0000:05:00.0",
+                "client_id": 50334,
+                "engine": "ccs",
+                "eligible_intervals": 119,
+                "busy_cycles": 2289861664,
+                "capacity_total_cycles": 2310520643,
+                "busy_fraction": 0.9910587342889193
+              }
+            ],
+            "host": {
+              "samples": 102,
+              "gpu_act_mhz": {
+                "min": 2733,
+                "median": 2750.0,
+                "max": 2750
+              },
+              "throttle_samples": 0,
+              "cpu0_reported_khz_median": 4587352.0,
+              "system_vm_delta": {
+                "pswpin": 1,
+                "pswpout": 0,
+                "pgmajfault": 108
+              },
+              "min_available_RAM_bytes": 23260110848,
+              "limits": "Wholly contained pre-first-output snapshots;not native phase boundaries. Reported frequency is not an arithmetic ceiling;system paging counters are not per-process attribution."
+            }
+          },
+          {
+            "prompt_ms": 120494.8,
+            "batched_wrapper_ms": 120490.2,
+            "expert_refill_ms": 0.0,
+            "client_window": {
+              "request_begin_monotonic_ns": 1300425032632901,
+              "first_output_monotonic_ns": 1300545694936875,
+              "request_end_monotonic_ns": 1300547580174156
+            },
+            "scheduled_CPU_seconds": 118.44,
+            "CPU_core_equivalents": 0.9923647675062218,
+            "main_scheduled_thread": {
+              "tid": 3499500,
+              "start_ticks": 130007257,
+              "cpu_ticks": 11818,
+              "observed_last_cpus": [
+                0
+              ],
+              "cpu_seconds": 118.18
+            },
+            "ccs": [
+              {
+                "pci": "0000:05:00.0",
+                "client_id": 50334,
+                "engine": "ccs",
+                "eligible_intervals": 119,
+                "busy_cycles": 2274630743,
+                "capacity_total_cycles": 2291442888,
+                "busy_fraction": 0.9926630748302552
+              }
+            ],
+            "host": {
+              "samples": 101,
+              "gpu_act_mhz": {
+                "min": 2750,
+                "median": 2750,
+                "max": 2750
+              },
+              "throttle_samples": 0,
+              "cpu0_reported_khz_median": 4591394,
+              "system_vm_delta": {
+                "pswpin": 0,
+                "pswpout": 0,
+                "pgmajfault": 106
+              },
+              "min_available_RAM_bytes": 23224233984,
+              "limits": "Wholly contained pre-first-output snapshots;not native phase boundaries. Reported frequency is not an arithmetic ceiling;system paging counters are not per-process attribution."
+            }
+          },
+          {
+            "prompt_ms": 120320.5,
+            "batched_wrapper_ms": 120316.1,
+            "expert_refill_ms": 0.0,
+            "client_window": {
+              "request_begin_monotonic_ns": 1300547657252528,
+              "first_output_monotonic_ns": 1300668145154504,
+              "request_end_monotonic_ns": 1300669987616401
+            },
+            "scheduled_CPU_seconds": 118.38,
+            "CPU_core_equivalents": 0.9917583303541243,
+            "main_scheduled_thread": {
+              "tid": 3499500,
+              "start_ticks": 130007257,
+              "cpu_ticks": 11811,
+              "observed_last_cpus": [
+                0
+              ],
+              "cpu_seconds": 118.11
+            },
+            "ccs": [
+              {
+                "pci": "0000:05:00.0",
+                "client_id": 50334,
+                "engine": "ccs",
+                "eligible_intervals": 118,
+                "busy_cycles": 2274823767,
+                "capacity_total_cycles": 2291668633,
+                "busy_fraction": 0.9926495193251615
+              }
+            ],
+            "host": {
+              "samples": 101,
+              "gpu_act_mhz": {
+                "min": 0,
+                "median": 2750,
+                "max": 2750
+              },
+              "throttle_samples": 3,
+              "cpu0_reported_khz_median": 4568378,
+              "system_vm_delta": {
+                "pswpin": 0,
+                "pswpout": 0,
+                "pgmajfault": 120
+              },
+              "min_available_RAM_bytes": 23153754112,
+              "limits": "Wholly contained pre-first-output snapshots;not native phase boundaries. Reported frequency is not an arithmetic ceiling;system paging counters are not per-process attribution."
+            }
           }
-        ],
-        "host_probe_accepted": true,
-        "native_identity": {
-          "pid": 3473748,
-          "start_ticks": 129933352,
-          "sid": 3473706
-        },
-        "validation": {
-          "pid": 3473748,
-          "loader": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_loader.so.0.12.0",
-          "threads_before": 1,
-          "preinit": 37,
-          "config_enabled": true,
-          "first_init": true,
-          "dispatch_result": 46,
-          "output_untouched": true,
-          "retained_reference_until_exit": true,
-          "runtime_teardown_qualified": false
-        },
-        "journal_sha256": "eb98850dad2b0aad3214529a7fa6bb1c17f9688acc4644d90ce9a0d3b9fd3fb9",
-        "ownership_closed": true,
-        "fresh_faults": [],
-        "boot_unchanged": true,
-        "driver_after": {
-          "pci": "/sys/bus/pci/devices/0000:05:00.0",
-          "driver": "xe",
-          "vendor": "0x8086",
-          "device": "0xe20c",
-          "kernel": "7.0.0-38-generic",
-          "devcoredump": false
-        }
+        ]
       }
     ],
-    "active": false,
-    "ownership_closed": true
+    "analysis": {
+      "subsequent_process_medians": [
+        972.9913714500088,
+        975.0545251745303
+      ],
+      "owned_over_borrowed": 1.0021204234539582,
+      "limits": "One observed process per configuration,four inputs each. Descriptive,not repeated paired causal/adoption evidence.",
+      "decision": "Owned allocation does not restore historical1003tok/s. Keep production decode1256/selected6e40 unchanged. Borrowed refill390.4..515.2ms is under0.5% of these request totals;it cannot explain the entire historical decline."
+    },
+    "verification": {
+      "original_inputs": 9853,
+      "retained_artifacts": 13,
+      "runtime_ELFs": 33,
+      "final_full_model_hashes": 15,
+      "requests": 8,
+      "all_clocks_and_routes_replayed": true,
+      "all_owners_closed": true,
+      "fresh_faults": []
+    },
+    "retention": {
+      "status": "retirement-pending",
+      "consumer": "Closed analysis verified;retire both private observation roots and single-use controller/controls after result/source push. Keep original engine+12fixtures and separate pending oneMKL consumer;14 older provenance holds unchanged."
+    }
   }
 }
