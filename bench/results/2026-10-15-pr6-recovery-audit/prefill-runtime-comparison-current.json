@@ -264,7 +264,7 @@
   "model": "qwen3.8-flash-next-iq3_s-primary",
   "model_fingerprint": "32d552dc1fb0ad6594425e8bd39f35049f896afe5775b0f7abf751110a11333e",
   "placement_diagnostic": {
-    "stage": "planned",
+    "stage": "collecting",
     "source_commit": "f573fc00d23a0291b998ec88f410899c3c508eb9",
     "native_source_commit": "6e40afc1beddd059ee518617f6c1efce1da14aca",
     "binary": {
@@ -494,7 +494,317 @@
         }
       }
     ],
-    "outcomes": [],
+    "outcomes": [
+      {
+        "name": "borrowed",
+        "passed": true,
+        "complete": true,
+        "requests": [
+          {
+            "prompt_ms": 130306.1,
+            "read_tokens": 117489,
+            "request_sha256": "26f08fd8364b5c4bce718617fe2aed42761d0a794e068b00532694adef78b3be",
+            "scope": {
+              "batched_wrapper_ms": 129911.1,
+              "expert_refill_ms": 390.4,
+              "limits": "Batch includes native entry/run/restore;refill includes RAM lookup/enqueue/drain/publication. Not GPU service or PCIe bytes."
+            },
+            "host": {
+              "samples": 110,
+              "gpu_act_mhz": {
+                "min": 0,
+                "median": 2750.0,
+                "max": 2750
+              },
+              "throttle_samples": 0,
+              "cpu0_reported_khz_median": 4637017.5,
+              "system_vm_delta": {
+                "pswpin": 0,
+                "pswpout": 0,
+                "pgmajfault": 116
+              },
+              "min_available_RAM_bytes": 23391129600,
+              "limits": "Wholly contained pre-first-output snapshots;not native phase boundaries. Reported frequency is not an arithmetic ceiling;system paging counters are not per-process attribution."
+            },
+            "pre_first_output_cpu_seconds": 125.43,
+            "pre_first_output_cpu_core_equivalents": 0.9694044646118783,
+            "top_scheduled_threads": [
+              {
+                "tid": 3473748,
+                "start_ticks": 129933352,
+                "cpu_ticks": 12288,
+                "observed_last_cpus": [
+                  0
+                ],
+                "cpu_seconds": 122.88
+              },
+              {
+                "tid": 3473978,
+                "start_ticks": 129934041,
+                "cpu_ticks": 52,
+                "observed_last_cpus": [
+                  1,
+                  2,
+                  3,
+                  4,
+                  5,
+                  6,
+                  7,
+                  8,
+                  9,
+                  10,
+                  11
+                ],
+                "cpu_seconds": 0.52
+              }
+            ],
+            "ccs": [
+              {
+                "pci": "0000:05:00.0",
+                "client_id": 50269,
+                "engine": "ccs",
+                "eligible_intervals": 129,
+                "busy_cycles": 2285675372,
+                "capacity_total_cycles": 2484146046,
+                "busy_fraction": 0.9201050701831401
+              }
+            ],
+            "collector_coverage_verified": true
+          },
+          {
+            "prompt_ms": 120642.0,
+            "read_tokens": 117489,
+            "request_sha256": "fd3ad8ad7033776ad749b22e62e910e5f47e3f7664705f48d9f1fe7349b65515",
+            "scope": {
+              "batched_wrapper_ms": 120246.0,
+              "expert_refill_ms": 391.1,
+              "limits": "Batch includes native entry/run/restore;refill includes RAM lookup/enqueue/drain/publication. Not GPU service or PCIe bytes."
+            },
+            "host": {
+              "samples": 102,
+              "gpu_act_mhz": {
+                "min": 2750,
+                "median": 2750.0,
+                "max": 2750
+              },
+              "throttle_samples": 0,
+              "cpu0_reported_khz_median": 4595793.0,
+              "system_vm_delta": {
+                "pswpin": 1,
+                "pswpout": 0,
+                "pgmajfault": 118
+              },
+              "min_available_RAM_bytes": 23255703552,
+              "limits": "Wholly contained pre-first-output snapshots;not native phase boundaries. Reported frequency is not an arithmetic ceiling;system paging counters are not per-process attribution."
+            },
+            "pre_first_output_cpu_seconds": 118.45,
+            "pre_first_output_cpu_core_equivalents": 0.9925549954586148,
+            "top_scheduled_threads": [
+              {
+                "tid": 3473748,
+                "start_ticks": 129933352,
+                "cpu_ticks": 11817,
+                "observed_last_cpus": [
+                  0
+                ],
+                "cpu_seconds": 118.17
+              },
+              {
+                "tid": 3473964,
+                "start_ticks": 129934037,
+                "cpu_ticks": 2,
+                "observed_last_cpus": [
+                  3,
+                  4,
+                  5,
+                  6,
+                  7,
+                  9,
+                  10,
+                  11
+                ],
+                "cpu_seconds": 0.02
+              }
+            ],
+            "ccs": [
+              {
+                "pci": "0000:05:00.0",
+                "client_id": 50269,
+                "engine": "ccs",
+                "eligible_intervals": 117,
+                "busy_cycles": 2273756155,
+                "capacity_total_cycles": 2291187953,
+                "busy_fraction": 0.9923918079365006
+              }
+            ],
+            "collector_coverage_verified": true
+          },
+          {
+            "prompt_ms": 120750.3,
+            "read_tokens": 117489,
+            "request_sha256": "daabbef4775c3fbdbfd832339d80a5ae2f91025b66df79b92fb8f6905f33b041",
+            "scope": {
+              "batched_wrapper_ms": 120354.0,
+              "expert_refill_ms": 391.3,
+              "limits": "Batch includes native entry/run/restore;refill includes RAM lookup/enqueue/drain/publication. Not GPU service or PCIe bytes."
+            },
+            "host": {
+              "samples": 101,
+              "gpu_act_mhz": {
+                "min": 2583,
+                "median": 2750,
+                "max": 2750
+              },
+              "throttle_samples": 1,
+              "cpu0_reported_khz_median": 4591459,
+              "system_vm_delta": {
+                "pswpin": 0,
+                "pswpout": 0,
+                "pgmajfault": 106
+              },
+              "min_available_RAM_bytes": 23236907008,
+              "limits": "Wholly contained pre-first-output snapshots;not native phase boundaries. Reported frequency is not an arithmetic ceiling;system paging counters are not per-process attribution."
+            },
+            "pre_first_output_cpu_seconds": 118.49,
+            "pre_first_output_cpu_core_equivalents": 0.9928619667260212,
+            "top_scheduled_threads": [
+              {
+                "tid": 3473748,
+                "start_ticks": 129933352,
+                "cpu_ticks": 11822,
+                "observed_last_cpus": [
+                  0
+                ],
+                "cpu_seconds": 118.22
+              },
+              {
+                "tid": 3473961,
+                "start_ticks": 129934037,
+                "cpu_ticks": 1,
+                "observed_last_cpus": [
+                  2,
+                  3,
+                  4,
+                  5,
+                  7,
+                  8,
+                  9,
+                  11
+                ],
+                "cpu_seconds": 0.01
+              }
+            ],
+            "ccs": [
+              {
+                "pci": "0000:05:00.0",
+                "client_id": 50269,
+                "engine": "ccs",
+                "eligible_intervals": 118,
+                "busy_cycles": 2273415083,
+                "capacity_total_cycles": 2291254069,
+                "busy_fraction": 0.9922143134446082
+              }
+            ],
+            "collector_coverage_verified": true
+          },
+          {
+            "prompt_ms": 120944.2,
+            "read_tokens": 117489,
+            "request_sha256": "8669c9ebe2747b1fc2d7c4806eeb66025c919981d81c51cfdbd64ba3ec3cc2b1",
+            "scope": {
+              "batched_wrapper_ms": 120424.1,
+              "expert_refill_ms": 515.2,
+              "limits": "Batch includes native entry/run/restore;refill includes RAM lookup/enqueue/drain/publication. Not GPU service or PCIe bytes."
+            },
+            "host": {
+              "samples": 101,
+              "gpu_act_mhz": {
+                "min": 2733,
+                "median": 2750,
+                "max": 2750
+              },
+              "throttle_samples": 1,
+              "cpu0_reported_khz_median": 4572709,
+              "system_vm_delta": {
+                "pswpin": 0,
+                "pswpout": 0,
+                "pgmajfault": 105
+              },
+              "min_available_RAM_bytes": 23187910656,
+              "limits": "Wholly contained pre-first-output snapshots;not native phase boundaries. Reported frequency is not an arithmetic ceiling;system paging counters are not per-process attribution."
+            },
+            "pre_first_output_cpu_seconds": 119.3,
+            "pre_first_output_cpu_core_equivalents": 0.9911101924293538,
+            "top_scheduled_threads": [
+              {
+                "tid": 3473748,
+                "start_ticks": 129933352,
+                "cpu_ticks": 11904,
+                "observed_last_cpus": [
+                  0
+                ],
+                "cpu_seconds": 119.04
+              },
+              {
+                "tid": 3473958,
+                "start_ticks": 129934037,
+                "cpu_ticks": 1,
+                "observed_last_cpus": [
+                  6,
+                  7,
+                  8,
+                  9,
+                  10
+                ],
+                "cpu_seconds": 0.01
+              }
+            ],
+            "ccs": [
+              {
+                "pci": "0000:05:00.0",
+                "client_id": 50269,
+                "engine": "ccs",
+                "eligible_intervals": 117,
+                "busy_cycles": 2290892526,
+                "capacity_total_cycles": 2311002854,
+                "busy_fraction": 0.9912980081503612
+              }
+            ],
+            "collector_coverage_verified": true
+          }
+        ],
+        "host_probe_accepted": true,
+        "native_identity": {
+          "pid": 3473748,
+          "start_ticks": 129933352,
+          "sid": 3473706
+        },
+        "validation": {
+          "pid": 3473748,
+          "loader": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_loader.so.0.12.0",
+          "threads_before": 1,
+          "preinit": 37,
+          "config_enabled": true,
+          "first_init": true,
+          "dispatch_result": 46,
+          "output_untouched": true,
+          "retained_reference_until_exit": true,
+          "runtime_teardown_qualified": false
+        },
+        "journal_sha256": "eb98850dad2b0aad3214529a7fa6bb1c17f9688acc4644d90ce9a0d3b9fd3fb9",
+        "ownership_closed": true,
+        "fresh_faults": [],
+        "boot_unchanged": true,
+        "driver_after": {
+          "pci": "/sys/bus/pci/devices/0000:05:00.0",
+          "driver": "xe",
+          "vendor": "0x8086",
+          "device": "0xe20c",
+          "kernel": "7.0.0-38-generic",
+          "devcoredump": false
+        }
+      }
+    ],
     "active": false,
     "ownership_closed": true
   }
