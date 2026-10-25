@@ -238,14 +238,40 @@ other runtime changes,clock/power conditions or concurrent workstation activity.
 Do not dismiss the nonoverlapping repeated samples as noise or call the old
 1003 result the latest current speed.
 
-`tools/sycl/prefill_runtime_compare.py` prepares a prospective NEO-only crossover
-using the exact cached packages in private directories. Both arms use explicit
-pre-exec driver selection and verify the actually mapped library. The installed
-runtime,other dependencies,selected engine and decode configuration stay fixed.
-Small traced/validated submission and graph gates precede six official117K
-processes in new/old/old/new/new/old order. This is diagnosis,not permission to
-adopt an old driver or change decode. The cohort decision is pending;individual
-closed outcomes are in[the runtime comparison](../bench/results/2026-10-15-pr6-recovery-audit/prefill-runtime-comparison-current.json).
+The[closed runtime comparison](../bench/results/2026-10-15-pr6-recovery-audit/prefill-runtime-comparison-current.json)
+uses exact cached packages in private directories. Both arms explicitly select
+the driver before exec and verify its actual mapping. Other dependencies,the
+selected engine and1256-slot decode configuration stay fixed. Six host negative
+controls and three traced/validated submission/graph cases per driver pass
+before the six official117K processes,new/old/old/new/new/old:
+
+| Process/NEO | First use,tok/s | Subsequent-three median | Subsequent range |
+| --- | ---: | ---: | ---: |
+| 0/new | 902.6631 | 974.1458 | 973.9560..974.1757 |
+| 1/old | 898.3727 | 972.1316 | 967.2392..972.8995 |
+| 2/old | 903.1516 | 972.7553 | 971.8453..975.5265 |
+| 3/new | 908.0447 | 973.0429 | 971.5680..974.4084 |
+| 4/new | 901.8863 | 967.3117 | 965.9478..976.0403 |
+| 5/old | 900.6598 | 971.3511 | 969.2276..972.4051 |
+
+Old/new paired ratios0.99793227,0.99970442 and1.00417596 have geometric mean
+1.00060077. Neither prospective1% faster screen passes;the signs are mixed.
+All24 source clocks replay,the15 final model hashes match,all six native
+processes exit normally,parameter validation stays silent,and no fresh fault
+appears. Original9853 source inputs,the selected13 artifacts and33 runtime
+ELFs recheck after closure. Full evidence is archived at8573fa7fb;controller and
+controls recover fromd53e15bda.
+
+Old NEO alone therefore did not restore historical1003tok/s under these current
+dependencies. This is not proof that NEO has no effect or that runtime interactions
+are excluded. The original matched117K difference remains unattributed. No
+driver,inference,decode configuration or placement change is adopted. Next
+isolate current prefill ownership/loan/handoff costs and the limiting hardware;
+an owned128 diagnostic is not permission to shrink production decode.
+
+Earlier progress reports also contain33K/39K and profiler-charged results.
+Those differ from117K subsequent-request speed. The matched comparison above
+shows that measurement-condition differences do not explain the entire decline.
 
 The GMM22.10.1→22.10.2 exact source interval is one commit,
 [`733c91a19baa65c40f4b1cf95a3991cc8c84d866`](https://github.com/intel/gmmlib/commit/733c91a19baa65c40f4b1cf95a3991cc8c84d866),
@@ -266,9 +292,11 @@ Private186038-byte package:
 the shared external state root;package SHA256
 2c68fcb150cba1b679063266cdf0054f26f18af90de71d6d3b614eaf95c98f80,
 payload SHA256a7904f18d8d59c7128dec4d6f22ae2b2e8a51f91f6946ac4e68b1ec6e0a7a6f3
-matches the historical runtime manifest. Main holds it within a2MiB budget
-only for the GMM eligibility/possible crossover decision at NEO-cohort closure;
-it has not been loaded and must retire if that consumer is not advanced.
+matches the historical runtime manifest. It was never loaded. The GMM-only
+crossover is not advanced because the changed condition lacks source-level
+enabling evidence in these NEO versions;that does not prove the installed
+packages have no performance effect. Retire this unused capture at NEO-cohort
+closure,within its original2MiB budget.
 
 Between native processes at20261025T16:06UTC,CPU policy0 used
 `amd-pstate-epp`,governor`powersave`,EPP`power`,maximum4654288kHz.
