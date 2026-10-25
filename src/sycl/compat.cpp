@@ -1,12 +1,10 @@
 #include "strata/sycl/cpu_wait_profile.hpp"
 #include "strata/sycl/compat/cuda_runtime.h"
-#include "strata/sycl/compat_host_span.hpp"
 #include "strata/sycl/launch.hpp"
 #include "strata/sycl/runtime.hpp"
 #include <algorithm>
 #include <cstring>
 #include <map>
-#include <iterator>
 #include <memory>
 #include <mutex>
 #include <optional>
@@ -158,22 +156,6 @@ cudaError_t release(void *ptr, MemoryKind kind) {
   });
 }
 } // namespace
-void validate_host_span(const void* pointer, size_t bytes, const sycl::queue& q) {
-  const auto address = reinterpret_cast<uintptr_t>(pointer);
-  require(pointer && bytes && bytes <= UINTPTR_MAX - address,
-          "invalid registered SYCL host span");
-  const auto runtime = runtime_for();
-  require(q.get_context() == runtime->context() && q.get_device() == runtime->device(),
-          "SYCL host span requires its owning runtime queue domain");
-  std::lock_guard lock(registry_mutex);
-  auto next = allocations.upper_bound(const_cast<void*>(pointer));
-  require(next != allocations.begin(), "unregistered SYCL host span");
-  const auto& [base, entry] = *std::prev(next);
-  const size_t offset = address - reinterpret_cast<uintptr_t>(base);
-  require(entry.kind == MemoryKind::Host && offset <= entry.allocation->size() &&
-              bytes <= entry.allocation->size() - offset,
-          "SYCL host span exceeds its live host allocation");
-}
 } // namespace strata::sycl_backend::compat
 using namespace strata::sycl_backend;
 using namespace strata::sycl_backend::compat;

@@ -24,21 +24,24 @@ cache publication and restored runtime state, then repeat matched decode checks.
 Keep short-input prefill through the decode weight/cache layout available.
 Do not change process environment variables between phases.
 
-The current worktree also has an unadopted, compile-time
-`STRATA_SYCL_FULL_CONTEXT_DIAGNOSTIC` path in `generate.cpp`. The selected engine
-was not rebuilt with it. Its original current-worktree admission rejects this
-source difference correctly; do not refresh hashes or relabel the old binary.
+The active source now restores nine prefill/planning/compatibility paths exactly
+to6e40 and the15 coupled layout/admission/pricing/loan hunks in `generate.cpp`.
+Its18 independent diagnostic/observer hunks are preserved byte-for-byte.
+The unused streamed-QSA writer, host-span export and fixture are removed.
+Decode kernels, configuration and1256-slot placement remain selected as before.
+This is source restoration; the selected executable has not been rebuilt or
+relabeled, and restored-source performance/state qualification is pending.
 
 The reviewed `selected_native_tree_reconcile_20261025` decision in the
 [research index](../bench/results/2026-10-15-pr6-recovery-audit/research-index.json)
-maps all20 differing native paths against the selected-plus-observer source.
-Restore the unselected layout/pricing as a unit while preserving independent
-conversation RESTORE verification. Review the KV-range helper's `STRATA_STATE_HASH`
-use separately from the full-context guard. The full-context macro and its CPU
-fixture still lack CMake build definitions; name an explicit gated build/fixture
-recipe before treating that diagnostic executable as available. Source restoration
-remains pending; the frozen nine-process comparison has now closed. Its failed
-overall observer gate does not block the independent source restoration.
+archives its corrected20-path action map. Conversation RESTORE verification and
+the `STRATA_STATE_HASH` KV-range helper remain for the next state checks.
+CMake now defines manual `strata_full_context_diagnostic` and
+`full_context_diagnostic_host_test` targets. Only the former defines
+`STRATA_SYCL_FULL_CONTEXT_DIAGNOSTIC`; normal `strata` keeps its original admission.
+Neither target has yet been built in the restored generation. Physical262144
+allocation/final-slot execution still needs its own bounded plan and evidence;
+the earlier retired streamed/layout results do not qualify this source.
 
 ## Long-prefill processing order
 

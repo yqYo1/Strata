@@ -55,9 +55,8 @@ struct Session {
 struct Parent {
     sb::Allocation allocation;
     size_t bytes;
-    explicit Parent(size_t n, size_t maximum = 512ull << 20)
-        : allocation(runtime, n + 2 * guard, sb::MemoryKind::Device), bytes(n) {
-        need(n <= maximum && uintptr_t(data()) % guard == 0, "parent size/alignment");
+    explicit Parent(size_t n) : allocation(runtime, n + 2 * guard, sb::MemoryKind::Device), bytes(n) {
+        need(n <= (512ull << 20) && uintptr_t(data()) % guard == 0, "parent size/alignment");
         runtime->compute().memset(allocation.data(), 0xa5, allocation.size());
         runtime->wait();
     }
@@ -325,55 +324,9 @@ void run(const std::string& mode) {
     Session session; session.init();
     core::WeightTable weights;
     auto queue = runtime->make_queue(true);
-    std::string error;
-    if (mode == "separated-plan") {
-        using Layout = Prefill::Layout;
-        // Shape-only metadata for the production byte counter. These pointers
-        // establish presence; no device operation consumes this proxy session.
-        auto proxy = session.state;
-        std::vector<core::QsaState> states(size_t(proxy.qsa_alloc), session.state.qsa_states[0]);
-        proxy.max_cells = 262144; proxy.qsa_states = states.data();
-        for (auto& q : states) {
-            q.max_cells=262144; q.n_pages=65536; q.n_slots=32768;
-            q.kv_mode=1; q.kv_int8=true; q.kv_q4=false; q.kv_hybrid=false;
-            q.k_q=reinterpret_cast<int8_t*>(session.allocation.data()); q.v_q=q.k_q;
-            q.k_scale=reinterpret_cast<uint16_t*>(session.allocation.data()); q.v_scale=q.k_scale;
-            q.host.k_q=q.k_q; q.host.v_q=q.v_q; q.host.k_scale=q.k_scale; q.host.v_scale=q.v_scale;
-            q.map.page_table=q.page_table; q.map.n_blocks=q.n_pages; q.map.n_slots=q.n_slots;
-            q.map.slot_block=q.page_table; q.map.slot_stamp=q.page_table; q.map.slot_ref=q.page_table;
-            q.map.miss_block=q.page_table; q.map.miss_slot=q.page_table; q.map.ctl=q.page_table;
-        }
-        const auto legacy=Prefill::bytes_needed(session.geometry,proxy,8192);
-        const auto long_loan=Prefill::bytes_needed(session.geometry,proxy,8192,Layout::layer_major);
-        const uint64_t stage=262144ull*1056;
-        need(legacy-long_loan==stage+4*guard,"full logical Q8 stage counted once outside long loan");
-        need(Prefill::bytes_needed(session.geometry,proxy,256,Layout::chunk_major)==
-             Prefill::bytes_needed(session.geometry,proxy,256),"short scratch price changed");
-        rejects([&] { (void)Prefill::bytes_needed(session.geometry,proxy,4096,Layout::layer_major); },
-                "long planner admitted wrong chunk");
-        const auto extent=Prefill::bytes_needed(session.geometry,session.state,8192,Layout::layer_major);
-        need(extent<3ull<<30,"long layout fixture budget");
-        Parent parent(size_t(extent),3ull<<30);
-        {
-            Prefill p;
-            need(p.init(weights,session.geometry,session.state,nullptr,nullptr,nullptr,8192,
-                        &queue,error,parent.data(),parent.bytes,Layout::layer_major),"long borrowed init");
-            need(p.layout()==Layout::layer_major && p.uses_layer_major(8193) && !p.uses_layer_major(8192),
-                 "explicit long route classification");
-            need(!p.run(nullptr,1,0,error) && error.find("more than one chunk")!=std::string::npos,
-                 "long layout allowed short dispatch");
-            need(p.relayout(256,parent.data(),parent.bytes,error,Layout::chunk_major),"short rebind");
-            need(p.layout()==Layout::chunk_major && !p.uses_layer_major(8193),"short route inferred from chunk size");
-            need(p.relayout(8192,parent.data(),parent.bytes,error,Layout::layer_major),"long rebind");
-            need(p.uses_layer_major(8193),"long route not restored");
-        }
-        parent.unchanged();
-        std::cout<<"prefill_scratch_device_fixture mode=separated-plan status=PASS Q8_stage_bytes="<<stage
-                 <<" external_loan_reduction_bytes="<<legacy-long_loan<<" short_price_unchanged=1 model_PP=UNRUN\n";
-        return;
-    }
     const size_t full = exact_bytes(session, 256), small = exact_bytes(session, 128);
     Parent a(full), b(full);
+    std::string error;
     if (mode == "smoke") {
         Prefill p;
         need(!init(p,session,weights,queue,a.data(),(64u << 20)-1,error) &&

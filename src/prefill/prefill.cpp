@@ -524,7 +524,6 @@ bool moe_scratch_mixed_requested() {
 #endif
 
 struct Prefill::Impl {
-    Layout layout = Layout::legacy;
     const core::WeightTable* wt = nullptr;
     const core::LayerView::Overlay* native_dense_overlay = nullptr;
     const core::ModelGeometry* g = nullptr;
@@ -624,7 +623,6 @@ struct Prefill::Impl {
 #if defined(STRATA_ENABLE_SYCL)
     MoeWindowContext* moe_window = nullptr; // borrowed through checked layer-major lease
     bool native16_active = false;
-    bool qsa_prefix_budget_fallback = false; // long-prefill lease only; never decode policy
     GdnChunkBuffers gdn_chunk;
     strata::kernels::QsaBf16PackedScratch qsa_prefix; // borrowed only during the long-prefill lease
     qsa_score_gemm::Scratch score_gemm; // attn_h arena + independent sticky status, long lease only
@@ -722,20 +720,6 @@ detail::ScratchQsaPlan preflight_qsa(const core::ModelGeometry& g, const core::S
 // streamed run lends the prompt path exactly the slots a resident one does (a lent expert runs on the CPU, which
 // rounds differently: without this an A/B compares two expert placements as well as two KV placements)
 bool stage_own() { static const bool v = std::getenv("STRATA_KV_STAGE_OWN") != nullptr; return v; }
-int scratch_alias_mode();
-void validate_layout(Prefill::Layout layout, int64_t chunk) {
-    if (layout != Prefill::Layout::legacy && layout != Prefill::Layout::chunk_major &&
-        layout != Prefill::Layout::layer_major)
-        throw std::invalid_argument("prefill: invalid explicit layout");
-    if (layout == Prefill::Layout::layer_major) {
-#if defined(STRATA_ENABLE_SYCL)
-        if (chunk != 8192 || scratch_alias_mode() != 1 || stage_own())
-            throw std::invalid_argument("prefill: explicit layer-major layout requires chunk8192, alias1 and no KV_STAGE_OWN");
-#else
-        throw std::invalid_argument("prefill: explicit layer-major layout requires SYCL");
-#endif
-    }
-}
 void take_stage(Alloc& o_borrowed, const core::SessionState& ss, const strata::kernels::QsaShapes& s,
                 strata::kernels::KvHostPools& st, bool& ok) {
     const core::QsaState& q0 = ss.qsa_states[ss.qsa_primary()];
@@ -770,11 +754,6 @@ strata::kernels::QsaAttnPools pools_of(const strata::kernels::KvHostPools& h, co
     p.page_table = table;
     return p;
 }
-#if defined(STRATA_ENABLE_SYCL)
-native16::qsa::Q8LinearPools q8_linear(const strata::kernels::KvHostPools& h) {
-    return {h.k_q, h.v_q, h.k_scale, h.v_scale};
-}
-#endif
 }  // namespace
 
 Prefill::Prefill() : impl_(new Impl) {}
@@ -1010,12 +989,11 @@ int prefill_fallback_attn_layout() {
 
 bool Prefill::init(const core::WeightTable& wt, const core::ModelGeometry& g, core::SessionState& ss,
                    core::ExpertSource* src, const core::ExpertCache* cache, const int32_t* host_res, int64_t chunk,
-                   void* stream, std::string& err, void* borrow, uint64_t borrow_bytes, Layout route_layout) {
+                   void* stream, std::string& err, void* borrow, uint64_t borrow_bytes) {
     Impl& m = *impl_;
     detail::ScratchLayoutState::Update layout(m.scratch_layout, true);
     if (!layout.started()) { err = "prefill: init requires reset scratch layout"; return false; }
     try {
-        validate_layout(route_layout, chunk);
         (void) detail::scratch_rows(chunk, g.n_expert, ss.max_cells, K);
         (void) preflight_qsa(g, ss);
     }
@@ -1048,7 +1026,6 @@ bool Prefill::init(const core::WeightTable& wt, const core::ModelGeometry& g, co
 #ifdef STRATA_ENABLE_SYCL
     m.cache_scratch_parent = cache;
 #endif
-    m.layout = route_layout;
     m.T = chunk; m.cs = (cudaStream_t) stream; m.stats = &stats_;
     if (g.n_embd != N || g.hc != HC || g.hc_lr != LR || g.n_expert < 1 || ss.k != K) {
         err = "prefill: geometry differs from the artifact's"; return false;
@@ -1296,8 +1273,7 @@ bool Prefill::carve(size_t T, void* alloc) {
     // are in layer 1, before that layer's first mixed write (also for short runs).
     m.ple_emb = m.scratch_alias ? m.emb : o.take<float>(T * N, ok);
     m.ple_norm = o.take<float>((size_t) strata::kernels::NG_HC_DIM, ok);
-    m.stage = {};
-    if (m.layout != Layout::layer_major) take_stage(o, ss, s, m.stage, ok);
+    take_stage(o, ss, s, m.stage, ok);
     m.T = (int64_t) T;
     if (mmq_plan().fallback || std::getenv("STRATA_PREFILL_MOE_COMPACT_FP16") != nullptr) {
         std::fprintf(stderr, "strata prefill: FP16 MoE compact requested=%d effective=%d, chunk=%zu, "
@@ -1309,10 +1285,8 @@ bool Prefill::carve(size_t T, void* alloc) {
     return ok;
 }
 
-bool Prefill::relayout(int64_t chunk, void* borrow, uint64_t borrow_bytes, std::string& err, Layout route_layout) {
+bool Prefill::relayout(int64_t chunk, void* borrow, uint64_t borrow_bytes, std::string& err) {
     Impl& m = *impl_;
-    try { validate_layout(route_layout, chunk); }
-    catch (const std::exception& e) { err = e.what(); return false; }
 #ifdef STRATA_ENABLE_SYCL
     if (m.cache_scratch_lease.pending()) {
         err = "prefill: relayout prohibited until cache loan refill/publication"; return false;
@@ -1345,7 +1319,6 @@ bool Prefill::relayout(int64_t chunk, void* borrow, uint64_t borrow_bytes, std::
         return false;
     }
     bool ok = true;
-    m.layout = route_layout;
     Alloc o;
     o.base = (uint8_t*) borrow;
     o.cap = borrow_bytes;
@@ -1366,13 +1339,6 @@ bool Prefill::relayout(int64_t chunk, void* borrow, uint64_t borrow_bytes, std::
 }
 
 int64_t Prefill::chunk() const { return impl_->scratch_layout.ready() ? impl_->T : 0; }
-Prefill::Layout Prefill::layout() const { return impl_->layout; }
-bool Prefill::uses_layer_major(int64_t rows) const {
-    if (!impl_->scratch_layout.ready() || rows <= impl_->T || impl_->layout == Layout::chunk_major) return false;
-    if (impl_->layout == Layout::layer_major) return true;
-    const char* v = std::getenv("STRATA_PREFILL_LAYER_MAJOR");
-    return v && !std::strcmp(v, "1");
-}
 
 #ifdef STRATA_ENABLE_SYCL
 bool Prefill::bind_cache_scratch_lease(const core::CacheScratchLease& lease, std::string& err) {
@@ -1707,9 +1673,7 @@ void Prefill::set_pinned_share(double share) { g_pinned_share = share; }
 void Prefill::set_ring_override(int slots) { g_ring_override = slots > 0 ? slots : 0; }
 double Prefill::pinned_share() { return g_pinned_share; }
 
-uint64_t Prefill::bytes_needed(const core::ModelGeometry& g, const core::SessionState& ss, int64_t chunk,
-                              Layout route_layout) {
-    validate_layout(route_layout, chunk);
+uint64_t Prefill::bytes_needed(const core::ModelGeometry& g, const core::SessionState& ss, int64_t chunk) {
     (void) detail::scratch_rows(chunk, g.n_expert, ss.max_cells, K);
     const auto qsa_plan = preflight_qsa(g, ss);
     const int alias_mode = scratch_alias_mode();
@@ -1753,7 +1717,7 @@ uint64_t Prefill::bytes_needed(const core::ModelGeometry& g, const core::Session
     if (!alias_mode) f(T * N);
     f((size_t) strata::kernels::NG_HC_DIM);
     strata::kernels::KvHostPools stage;
-    if (route_layout != Layout::layer_major) take_stage(o, ss, s, stage, ok);
+    take_stage(o, ss, s, stage, ok);
     return detail::scratch_with_slack(o.used, 8u << 20);
 }
 
@@ -2196,12 +2160,6 @@ bool Prefill::run_impl(const int64_t* tokens, int64_t n, int64_t pos0, std::stri
 
 #if defined(STRATA_ENABLE_SYCL)
     int64_t window_first = -1, window_end = -1, window_next = -1;
-    // This run_impl invocation owns a single layer in layer-major mode. The
-    // stage lies outside the attention/MoE scratch union and survives chunks.
-    // Local state cannot survive a new layer, request, reset or RESTORE entry.
-    int64_t staged_qsa_layer = -1, staged_qsa_end = -1;
-    uint64_t streamed_qsa_chunks = 0, streamed_qsa_rows = 0, staged_prefix_bytes = 0;
-    const bool trace_streamed_qsa = std::getenv("STRATA_TRACE") != nullptr;
 #endif
     for (int64_t c0 = 0; c0 < n; c0 += m.T) {
         if (should_stop && should_stop()) { err = "cancelled"; return false; }
@@ -2815,38 +2773,18 @@ bool Prefill::run_impl(const int64_t* tokens, int64_t n, int64_t pos0, std::stri
                     const bool staged = st.kv_mode == 1;
                     if (staged) {
                         pt.mark(kPfKvStage, cs);
-                        bool reuse = false;
-#if defined(STRATA_ENABLE_SYCL)
-                        reuse = typed_qsa && m.layer_major_active && LE == LB + 1 &&
-                            staged_qsa_layer == l && staged_qsa_end == p0;
-#endif
-                        if (!reuse) {
-                            const int64_t blocks = (p0 + s.page_size - 1) / s.page_size;
-                            strata::kernels::kv_stage_from_host(pools_of(m.stage, m.ident_table), st.host,
-                                                                core::qsa_kv_format(st), blocks, s, m.cs);
-#if defined(STRATA_ENABLE_SYCL)
-                            if (typed_qsa && trace_streamed_qsa)
-                                staged_prefix_bytes += uint64_t(blocks) * strata::kernels::kv_block_bytes(s, core::qsa_kv_format(st));
-#endif
-                        }
+                        strata::kernels::kv_stage_from_host(pools_of(m.stage, m.ident_table), st.host,
+                                                            core::qsa_kv_format(st),
+                                                            (p0 + s.page_size - 1) / s.page_size, s, m.cs);
                         pt.mark(kPfQsa, cs);
                     }
                     if (qp) qp->end(QsaProfile::kv_stage, m.cs);
                     if (qp) qp->begin(QsaProfile::kv_append_query, m.cs);
 #if defined(STRATA_ENABLE_SYCL)
                     if (typed_qsa) {
-                        const native16::qsa::Q8WritePools resident{
-                            st.k_q, st.v_q, st.k_scale, st.v_scale, st.page_table};
-                        if (staged) {
-                            native16::qsa::append_q8_streamed(m.qsa_Krope16, m.qsa_V16, T, 512, p0,
-                                resident, q8_linear(m.stage), q8_linear(st.host), s,
-                                {st.n_pages, st.n_slots}, m.cs);
-                            staged_qsa_layer = l; staged_qsa_end = p0 + T;
-                            if (trace_streamed_qsa) { ++streamed_qsa_chunks; streamed_qsa_rows += T; }
-                        } else {
-                            native16::qsa::append_q8(m.qsa_Krope16, m.qsa_V16, T, 512, p0,
-                                resident, s, {st.n_pages, st.n_slots}, m.cs);
-                        }
+                        native16::qsa::append_q8(m.qsa_Krope16, m.qsa_V16, T, 512, p0,
+                            {st.k_q, st.v_q, st.k_scale, st.v_scale, st.page_table},
+                            s, {st.n_pages, st.n_slots}, m.cs);
                     } else {
 #endif
                     if (st.kv_hybrid) {   // K8V4: K INT8 unrotated, V rotated Q4_0 (only V and the output rotate)
@@ -3052,50 +2990,47 @@ bool Prefill::run_impl(const int64_t* tokens, int64_t n, int64_t pos0, std::stri
                     bool matrix_used = false;
 #if defined(STRATA_ENABLE_SYCL)
                     if (typed_qsa) {
-                        const auto arithmetic = m.layer_major_active && m.qsa_prefix_budget_fallback
-                            ? native16::qsa::AttentionMath::bf16 : native16::qsa::attention_math();
-                        const strata::kernels::QsaPromptBf16Bounds attention_bounds{
-                            st.n_pages, staged ? st.n_pages : st.n_slots};
+                        const auto arithmetic = native16::qsa::attention_math();
                         if (arithmetic == native16::qsa::AttentionMath::bf16_prefix_subgroup)
                             matrix_used = strata::kernels::qsa_bf16_prefix_subgroup_batch(
                                 m.qsa_q16, pools, m.sel_ids, m.steps_dev, m.cap, s, m.qsa_attn16, T,
-                                attention_bounds, p0 + T, m.qsa_prefix, m.cs);
+                                {st.n_pages, st.n_slots}, p0 + T, m.qsa_prefix, m.cs);
                         else if (arithmetic == native16::qsa::AttentionMath::bf16_prefix_tilepack)
                             matrix_used = strata::kernels::qsa_bf16_prefix_tilepack_batch(
                                 m.qsa_q16, pools, m.sel_ids, m.steps_dev, m.cap, s, m.qsa_attn16, T,
-                                attention_bounds, p0 + T, m.qsa_prefix, m.cs);
+                                {st.n_pages, st.n_slots}, p0 + T, m.qsa_prefix, m.cs);
                         else if (arithmetic == native16::qsa::AttentionMath::bf16_prefix_ordered_exp)
                             matrix_used = strata::kernels::qsa_bf16_prefix_ordered_exp_batch(
                                 m.qsa_q16, pools, m.sel_ids, m.steps_dev, m.cap, s, m.qsa_attn16, T,
-                                attention_bounds, p0 + T, m.qsa_prefix, m.cs);
+                                {st.n_pages, st.n_slots}, p0 + T, m.qsa_prefix, m.cs);
                         else if (arithmetic == native16::qsa::AttentionMath::bf16_prefix_kvvec4)
                             matrix_used = strata::kernels::qsa_bf16_prefix_kvvec4_batch(
                                 m.qsa_q16, pools, m.sel_ids, m.steps_dev, m.cap, s, m.qsa_attn16, T,
-                                attention_bounds, p0 + T, m.qsa_prefix, m.cs);
+                                {st.n_pages, st.n_slots}, p0 + T, m.qsa_prefix, m.cs);
                         else if (arithmetic == native16::qsa::AttentionMath::bf16_prefix_kvec4)
                             matrix_used = strata::kernels::qsa_bf16_prefix_kvec4_batch(
                                 m.qsa_q16, pools, m.sel_ids, m.steps_dev, m.cap, s, m.qsa_attn16, T,
-                                attention_bounds, p0 + T, m.qsa_prefix, m.cs);
+                                {st.n_pages, st.n_slots}, p0 + T, m.qsa_prefix, m.cs);
                         else if (arithmetic == native16::qsa::AttentionMath::bf16_prefix_qcache)
                             matrix_used = strata::kernels::qsa_bf16_prefix_qcache_batch(
                                 m.qsa_q16, pools, m.sel_ids, m.steps_dev, m.cap, s, m.qsa_attn16, T,
-                                attention_bounds, p0 + T, m.qsa_prefix, m.cs);
+                                {st.n_pages, st.n_slots}, p0 + T, m.qsa_prefix, m.cs);
                         else if (arithmetic == native16::qsa::AttentionMath::bf16_prefix_optimized)
                             matrix_used = strata::kernels::qsa_bf16_prefix_optimized_batch(
                                 m.qsa_q16, pools, m.sel_ids, m.steps_dev, m.cap, s, m.qsa_attn16, T,
-                                attention_bounds, p0 + T, m.qsa_prefix, m.cs);
+                                {st.n_pages, st.n_slots}, p0 + T, m.qsa_prefix, m.cs);
                         else if (arithmetic == native16::qsa::AttentionMath::bf16_prefix)
                             matrix_used = strata::kernels::qsa_bf16_prefix_batch(
                                 m.qsa_q16, pools, m.sel_ids, m.steps_dev, m.cap, s, m.qsa_attn16, T,
-                                attention_bounds, p0 + T, m.qsa_prefix, m.cs);
+                                {st.n_pages, st.n_slots}, p0 + T, m.qsa_prefix, m.cs);
                         else if (arithmetic == native16::qsa::AttentionMath::bf16)
                             matrix_used = strata::kernels::qsa_bf16_attention_late_flags_batch(
                                 m.qsa_q16, pools, m.sel_ids, m.steps_dev, m.cap, s, m.qsa_attn16, T,
-                                attention_bounds, m.cs);
+                                {st.n_pages, st.n_slots}, m.cs);
                         else
                             matrix_used = strata::kernels::qsa_prompt_attn_bf16_batch(
                                 m.qsa_q16, pools, m.sel_ids, m.steps_dev, m.cap, s, m.qsa_attn16, T,
-                                attention_bounds, m.cs);
+                                {st.n_pages, st.n_slots}, m.cs);
                         if (!matrix_used) {
                             err = "prefill QSA16: unsupported typed attention; no fallback submitted"; return false;
                         }
@@ -4074,13 +4009,6 @@ bool Prefill::run_impl(const int64_t* tokens, int64_t n, int64_t pos0, std::stri
         err = std::string("prefill: expert copy stream: ") + cudaGetErrorString(cst);
         return false;
     }
-#if defined(STRATA_ENABLE_SYCL)
-    if (trace_streamed_qsa && streamed_qsa_chunks)
-        std::fprintf(stderr, "strata prefill QSA16 streamed: layer=%lld chunks=%llu rows=%llu pos0=%lld "
-            "prefix_H2D_requested_bytes=%llu host_publication=GPU_Q8 stage=full_logical_layer checked_drain=PASS\n",
-            (long long)LB, (unsigned long long)streamed_qsa_chunks, (unsigned long long)streamed_qsa_rows,
-            (long long)pos0, (unsigned long long)staged_prefix_bytes);
-#endif
     if (!m.layer_major_active) stats_.ms_total += ms_since(t_start);
     if (pt.on) {
         pt.fold();

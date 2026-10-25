@@ -140,7 +140,7 @@ bool run_prompt_with_mtp_experts_impl(strata::prefill::Prefill& prompt, strata::
     if (!layer_major || std::strcmp(layer_major, "1") != 0) {
         err = "MTP expert release requires exact STRATA_PREFILL_LAYER_MAJOR=1"; return false;
     }
-    if (!prompt.uses_layer_major(n)) return prompt.run(tokens, n, pos0, err);
+    if (prompt.chunk() <= 0 || n <= prompt.chunk()) return prompt.run(tokens, n, pos0, err);
 #if !defined(STRATA_ENABLE_SYCL)
     (void) mtp; (void) supported;
     err = "MTP expert release requires the SYCL engine"; return false;
@@ -275,8 +275,7 @@ bool run_prompt_with_native_dense_phase(NativeDensePhase& phase,
         bool supported,strata::core::NativeHead& head,strata::core::Verifier* verifier,cudaStream_t main_cs,
         const int64_t* tokens,int64_t n,int64_t pos0,std::string& err) {
     auto run=[&](){return run_prompt_with_mtp_experts(prompt,mtp,supported,head,verifier,main_cs,tokens,n,pos0,err);};
-    const bool release_dense = prompt.layout() != strata::prefill::Prefill::Layout::chunk_major &&
-        prompt.chunk()>0 && n>prompt.chunk();
+    const bool release_dense = prompt.chunk()>0 && n>prompt.chunk();
 #ifdef STRATA_ENABLE_SYCL
     const bool cache_loan = prompt.has_cache_scratch_lease();
 #else
@@ -2528,33 +2527,12 @@ int main(int argc, char** argv) {
     }
     const char* dense_bank_switch=std::getenv("STRATA_PREFILL_NATIVE_DENSE_BANK");
     const bool native_dense_bank_enabled=dense_bank_switch && !std::strcmp(dense_bank_switch,"1");
-    bool separate_prefill_layout = false;
 #ifdef STRATA_ENABLE_SYCL
     const char* cache_lease_switch = std::getenv("STRATA_SYCL_CACHE_SCRATCH_LEASE");
     if (cache_lease_switch && std::strcmp(cache_lease_switch,"0") && std::strcmp(cache_lease_switch,"1")) {
         std::fprintf(stderr,"cache scratch lease requires exact0 or1\n"); return 2;
     }
     const bool cache_scratch_lease_enabled = cache_lease_switch && !std::strcmp(cache_lease_switch,"1");
-    const char* separate_layout_switch = std::getenv("STRATA_SYCL_PREFILL_SEPARATE_LAYOUT");
-    if (separate_layout_switch && std::strcmp(separate_layout_switch,"0") && std::strcmp(separate_layout_switch,"1")) {
-        std::fprintf(stderr,"separate prefill layout requires exact0 or1\n"); return 2;
-    }
-    separate_prefill_layout = separate_layout_switch && !std::strcmp(separate_layout_switch,"1");
-    if (separate_prefill_layout) {
-        auto setting = [](const char* name, const char* expected) {
-            const char* v = std::getenv(name); return v && !std::strcmp(v,expected);
-        };
-        if (!cache_scratch_lease_enabled || o.prefill_auto || o.prefill_chunk != 8192 ||
-            !setting("STRATA_PREFILL_LAYER_MAJOR","1") ||
-            !setting("STRATA_SYCL_PREFILL_NATIVE16","bf16") ||
-            !setting("STRATA_SYCL_PREFILL_NATIVE16_QSA","1") ||
-            !setting("STRATA_SYCL_PREFILL_MOE_WINDOW","10") ||
-            !setting("STRATA_SYCL_PREFILL_MIXED_SCRATCH","1") ||
-            !setting("STRATA_PREFILL_CANONICAL_DENSE_BANK","1") || std::getenv("STRATA_KV_STAGE_OWN")) {
-            std::fprintf(stderr,"separate prefill layout requires checked cache loan,explicit8192,native16 QSA,mode10,mixed scratch and canonical bank\n");
-            return 2;
-        }
-    }
     if (cache_scratch_lease_enabled && (!o.serve || !native_dense_bank_enabled || !native_pack ||
         !o.no_token_graph || o.no_prefill_borrow || o.spec != 4 || o.vision || o.gpu_stages ||
         multi_gpu || !o.layer_split.empty() || o.peer_device >= 0 ||
@@ -4841,20 +4819,12 @@ int main(int argc, char** argv) {
             strata::core::CacheScratchLease lease{};
 #endif
         };
-        using PrefillLayout = strata::prefill::Prefill::Layout;
-        // A layer-major callback sees earlier layers at the segment end, so
-        // periodic prefix checkpoints must keep the chunk-major state order.
-        // Use that same layout for initial pricing, carving and every request.
-        const bool dedicated_long_layout = separate_prefill_layout && !sp.requires_prefix_checkpoints;
-        const auto initial_layout = !separate_prefill_layout ? PrefillLayout::legacy
-            : dedicated_long_layout ? PrefillLayout::layer_major : PrefillLayout::chunk_major;
-        auto part_slots_for = [&](const PfPart& p, int64_t c, PrefillLayout layout) -> int64_t {
-            const uint64_t need = strata::prefill::Prefill::bytes_needed(g, *p.ses, c, layout);
+        auto part_slots = [&](const PfPart& p, int64_t c) -> int64_t {
+            const uint64_t need = strata::prefill::Prefill::bytes_needed(g, *p.ses, c);
             strata::core::ExpertCache& xc = *p.cache;
             return strata::core::ExpertCacheTail(xc.slots(), xc.bytes(), xc.slot_offsets(),
                 strata::kernels::cpu::expert_layout().max_blob).slots_for(need);
         };
-        auto part_slots = [&](const PfPart& p, int64_t c) { return part_slots_for(p,c,initial_layout); };
         auto part_bytes = [&](const PfPart& p, int32_t first) -> uint64_t {
             strata::core::ExpertCache& xc = *p.cache;
             return strata::core::ExpertCacheTail(xc.slots(), xc.bytes(), xc.slot_offsets(),
@@ -4947,7 +4917,6 @@ int main(int argc, char** argv) {
             };
             static constexpr int64_t kAutoChunks[] = {32768, 16384, 8192, 6144, 4096, 3072, 2048, 1024, 512, 256};
             auto pick = [&](const PfPart* only) -> int64_t {
-                if (dedicated_long_layout) return fits(8192,false,only) ? 8192 : 0;
                 if (o.prefill_auto) {
                     for (const int64_t c : kAutoChunks) {
                         if (c > 8192 && (c > o.prefill_auto_max || c > o.max_context)) continue;   // #282, as plan_lend
@@ -4960,10 +4929,6 @@ int main(int argc, char** argv) {
                 return 0;
             };
             const int64_t chunk = pick(nullptr);
-            if (dedicated_long_layout && chunk != 8192) {
-                std::fprintf(stderr,"separate long-prefill scratch does not fit the unchanged decode-cache tail\n");
-                return 1;
-            }
             // #448: a small card in a layer split caps every stage's chunk (an RTX 3080's 512-slot cache held a
             // 32 GB card's split to 512 tokens: prompts 6.2x slower, decode the same).  Named when it bites, so the
             // regression is one log line: each stage that cannot fund the chunk CUDA0 alone would read in.
@@ -5054,13 +5019,6 @@ int main(int argc, char** argv) {
         }
         bool any_loan = borrow != nullptr;
         for (size_t i = 1; i < pf_parts.size(); ++i) any_loan = any_loan || pf_parts[i].first >= 0;
-        // The optional selector requires an actual checked single-cache loan.
-        // Refuse unsupported no-loan participants before any table is masked;
-        // they retain the existing legacy path when the selector is off.
-        if (separate_prefill_layout && (pf_parts.size() != 1 || !borrow)) {
-            std::fprintf(stderr,"separate prefill layout requires one actual expert-tail loan\n");
-            return 2;
-        }
         if (any_loan) {
             if (borrow != nullptr)
                 std::fprintf(stderr, "strata serve: the prompt path borrows %lld CUDA0 cache slots (%.2f GiB)\n",
@@ -5097,8 +5055,7 @@ int main(int argc, char** argv) {
                 }
             }
             if (multi_gpu) sp.set_stage(0, split_at[0], &stages[0]->sp);
-            if (!sp.init(wt, g, ss, srcp, &xcache, host_res.data(), o.prefill_chunk, main_cs, err, borrow, borrow_bytes,
-                         initial_layout))
+            if (!sp.init(wt, g, ss, srcp, &xcache, host_res.data(), o.prefill_chunk, main_cs, err, borrow, borrow_bytes))
                 return err.find("do not fit") != std::string::npos ? 2 : 1;
             return 0;
         };
@@ -5116,8 +5073,7 @@ int main(int argc, char** argv) {
                     const strata::core::OnDevice on(dev);
                     size_t fb = 0, tb = 0;
                     cudaMemGetInfo(&fb, &tb);
-                    const int64_t need = (int64_t) strata::prefill::Prefill::bytes_needed(g, i == 0 ? ss : stages[i - 1]->ss, c,
-                        i == 0 ? initial_layout : PrefillLayout::legacy);
+                    const int64_t need = (int64_t) strata::prefill::Prefill::bytes_needed(g, i == 0 ? ss : stages[i - 1]->ss, c);
                     if (need + kHeadroom > (int64_t) fb) {
                         dev_out = dev < 0 ? 0 : dev; need_out = need; free_out = (int64_t) fb;
                         return false;
@@ -5148,7 +5104,7 @@ int main(int argc, char** argv) {
             int64_t next = 0;
             for (const int64_t c : kStepChunks)
                 if (c < o.prefill_chunk) { next = c; break; }
-            if (r == 2 && next > 0 && !dedicated_long_layout) {
+            if (r == 2 && next > 0) {
                 std::fprintf(stderr, "strata serve: %s: trying a %lld-token chunk\n", err.c_str(), (long long) next);
                 // start the prompt paths over (a failed init may hold buffers), and consume the failed allocation's
                 // error: it is sticky, and the next launch check would report "out of memory" for a kernel
@@ -6378,20 +6334,8 @@ int main(int argc, char** argv) {
                 // prompt needs, so a large chunk costs a short prompt nothing
                 const int64_t want_full = request_chunk(tokens, o.prefill_chunk);
                 // #340: a short enough request reads in the stages' own S-token chunks (nothing lent)
-                int64_t want = split_small > 0 && tokens <= split_small_max ? std::min(want_full, split_small)
+                const int64_t want = split_small > 0 && tokens <= split_small_max ? std::min(want_full, split_small)
                                                                                  : want_full;
-                const auto request_layout = separate_prefill_layout
-                    ? (dedicated_long_layout && tokens > o.prefill_chunk ? PrefillLayout::layer_major : PrefillLayout::chunk_major)
-                    : PrefillLayout::legacy;
-                if (separate_prefill_layout && request_layout == PrefillLayout::chunk_major) {
-                    // Short inputs and checkpointed segments keep decode
-                    // weights. Their scratch includes the KV stage and may
-                    // use several chunks; respect the actual initialized tail.
-                    while (want >= 256 && std::any_of(pf_parts.begin(),pf_parts.end(),[&](const auto& p) {
-                        return p.first >= 0 && strata::prefill::Prefill::bytes_needed(g,*p.ses,want,request_layout) > part_bytes(p,p.first);
-                    })) want /= 2;
-                    if (want < 256) { e="prefill: short-path scratch does not fit unchanged decode cache"; return false; }
-                }
                 if (want <= 0) {
                     e = "prefill: cannot lend buffers for an empty request segment";
                     return false;
@@ -6400,14 +6344,14 @@ int main(int argc, char** argv) {
                 for (PfPart& p : pf_parts) {
                     if (p.first < 0) continue;
                     if (!p.lent.empty()) {
-                        if (want <= p.lent_chunk && request_layout == p.sp->layout()) continue;
+                        if (want <= p.lent_chunk) continue;            // its current loan already covers this
                         // ONLY this participant's loan goes back: `refill` would return the other participants'
                         // loans too, and their buffers are still laid out in their caches - marking those slots
                         // resident again would hand the next window a prompt buffer in place of an expert
                         if (!refill_one(p, e)) return false;
                     }
                     const strata::core::OnDevice on(p.dev);
-                    int32_t first = std::max<int32_t>(p.first, (int32_t) (p.cache->slots() - part_slots_for(p, want, request_layout)));
+                    int32_t first = std::max<int32_t>(p.first, (int32_t) (p.cache->slots() - part_slots(p, want)));
 #ifdef STRATA_ENABLE_SYCL
                     std::vector<std::pair<int32_t,int32_t>> checked_lent;
                     if (cache_scratch_lease_enabled && !loan_call([&] {
@@ -6417,7 +6361,7 @@ int main(int argc, char** argv) {
                         if (first<0) { e="cache scratch lease: no occupied borrowable tail; parent unchanged"; return false; }
                         for (size_t i=begin;i<begin+count;++i)
                             if (host_res[i]>=first) checked_lent.emplace_back(int32_t(i),host_res[i]);
-                        if (checked_lent.empty() || part_bytes(p,first)<strata::prefill::Prefill::bytes_needed(g,*p.ses,want,request_layout)) {
+                        if (checked_lent.empty() || part_bytes(p,first)<strata::prefill::Prefill::bytes_needed(g,*p.ses,want)) {
                             e="cache scratch lease: preflight mask/capacity failed; parent unchanged"; return false;
                         }
                         return true;
@@ -6426,8 +6370,8 @@ int main(int argc, char** argv) {
                         p.lease = p.cache->prepare_scratch_loan(first); return true;
                     },e)) return false;
 #endif
-                    if (want != p.sp->chunk() || first != p.first_now || request_layout != p.sp->layout()) {
-                        if (!p.sp->relayout(want, p.cache->device_slot(first), part_bytes(p, first), e, request_layout)) return false;
+                    if (want != p.sp->chunk() || first != p.first_now) {
+                        if (!p.sp->relayout(want, p.cache->device_slot(first), part_bytes(p, first), e)) return false;
                         p.first_now = first;
                     }
 #ifdef STRATA_ENABLE_SYCL
@@ -6454,7 +6398,7 @@ int main(int argc, char** argv) {
 #ifdef STRATA_ENABLE_SYCL
                     if (loan_audit) {
                         const auto bytes = part_bytes(p, first);
-                        const auto need = strata::prefill::Prefill::bytes_needed(g, *p.ses, want,request_layout);
+                        const auto need = strata::prefill::Prefill::bytes_needed(g, *p.ses, want);
                         if (first < 128 || first >= p.cache->slots() || bytes < need || p.lent.empty() ||
                             p.sp->chunk() != want || p.first_now != first) {
                             e = "cache loan audit: invalid/empty tail loan"; return false;

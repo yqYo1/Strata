@@ -179,6 +179,15 @@ target_link_libraries(strata PRIVATE strata_prefill strata_spec)
 
 option(STRATA_SYCL_TESTS "Build GPU parity and runtime tests for SYCL" ON)
 if(STRATA_SYCL_TESTS)
+  # Explicit diagnostic entrypoint: the normal strata target keeps its original
+  # admission/decode path. Building this does not qualify physical context fill.
+  add_executable(strata_full_context_diagnostic EXCLUDE_FROM_ALL src/program/generate.cpp src/program/dense_prefill_nll.cpp)
+  target_link_libraries(strata_full_context_diagnostic PRIVATE strata_prefill strata_spec)
+  target_compile_definitions(strata_full_context_diagnostic PRIVATE STRATA_SYCL_FULL_CONTEXT_DIAGNOSTIC=1)
+  # CPU-only request/final-slot and independent KV hash-order bounds controls.
+  add_executable(full_context_diagnostic_host_test EXCLUDE_FROM_ALL tests/core/full_context_diagnostic_test.cpp)
+  target_include_directories(full_context_diagnostic_host_test PRIVATE include)
+  target_compile_features(full_context_diagnostic_host_test PRIVATE cxx_std_17)
   add_executable(sycl_command_profile_test EXCLUDE_FROM_ALL tests/sycl/command_profile.cpp)
   target_link_libraries(sycl_command_profile_test PRIVATE strata_sycl_runtime)
   target_compile_features(sycl_command_profile_test PRIVATE cxx_std_20)
@@ -465,9 +474,8 @@ if(STRATA_SYCL_TESTS)
   add_executable(sycl_native16_qsa_test EXCLUDE_FROM_ALL tests/sycl/qsa_native16.cpp)
   target_link_libraries(sycl_native16_qsa_test PRIVATE strata_prefill)
   target_compile_options(sycl_native16_qsa_test PRIVATE -fno-fast-math -ffp-contract=off)
-  add_executable(sycl_native16_qsa_streamed_test EXCLUDE_FROM_ALL tests/sycl/qsa_streamed_native16.cpp)
-  target_link_libraries(sycl_native16_qsa_streamed_test PRIVATE strata_prefill)
-  target_compile_options(sycl_native16_qsa_streamed_test PRIVATE -fno-fast-math -ffp-contract=off)
+  # Original selected planner's capacity/overflow checks, without the retired
+  # prefix fallback. Main invokes this in the restoration host preflight.
   add_executable(prefill_expert_bank_plan_test EXCLUDE_FROM_ALL tests/expert_bank_plan.cpp)
   target_include_directories(prefill_expert_bank_plan_test PRIVATE ${CMAKE_SOURCE_DIR}/include)
   target_compile_features(prefill_expert_bank_plan_test PRIVATE cxx_std_20)

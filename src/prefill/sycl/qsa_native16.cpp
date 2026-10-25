@@ -4,9 +4,7 @@
 #include "strata/kernels/bf16_bits.hpp"
 #include "strata/kernels/f16_bits.hpp"
 #include "strata/sycl/launch.hpp"
-#include "strata/sycl/compat_host_span.hpp"
 #include <algorithm>
-#include <array>
 #include <cmath>
 #include <cstring>
 #include <cstdlib>
@@ -36,25 +34,6 @@ uint16_t store(float x) { return strata::kernels::bf16_from_f32(x); }
 void shape(int64_t tokens, int64_t ld, int64_t width) {
     need(tokens > 0 && tokens <= 8192 && ld >= width,
          "QSA16 unsupported tokens or stride");
-}
-std::array<Span, 12> streamed_spans(const Q8WritePools& resident,
-                                  const Q8LinearPools& stage, const Q8LinearPools& host,
-                                  const strata::kernels::QsaShapes& s,
-                                  const strata::kernels::QsaPromptBf16Bounds& b) {
-    need(s.n_head == NH && s.n_head_kv == KH && s.head_dim == HD &&
-         s.page_size > 0 && s.page_size <= 262144 && b.logical_pages > 0 &&
-         b.logical_pages <= 262144 && b.physical_pages > 0 && b.physical_pages <= b.logical_pages,
-         "QSA16 streamed append requires bounded INT8 pools");
-    need(checked_count(b.logical_pages, s.page_size) <= 262144,
-         "QSA16 streamed append exceeds physical context");
-    const int64_t logical_rows = int64_t(checked_count(checked_count(b.logical_pages, KH), s.page_size));
-    const int64_t resident_rows = int64_t(checked_count(checked_count(b.physical_pages, KH), s.page_size));
-    return {{{resident.k_q, bytes(resident_rows, HD, 1)}, {resident.v_q, bytes(resident_rows, HD, 1)},
-        {resident.k_scale, bytes(resident_rows, 4, 2)}, {resident.v_scale, bytes(resident_rows, 4, 2)},
-        {stage.k_q, bytes(logical_rows, HD, 1)}, {stage.v_q, bytes(logical_rows, HD, 1)},
-        {stage.k_scale, bytes(logical_rows, 4, 2)}, {stage.v_scale, bytes(logical_rows, 4, 2)},
-        {host.k_q, bytes(logical_rows, HD, 1)}, {host.v_q, bytes(logical_rows, HD, 1)},
-        {host.k_scale, bytes(logical_rows, 4, 2)}, {host.v_scale, bytes(logical_rows, 4, 2)}}};
 }
 } // namespace
 
@@ -216,80 +195,6 @@ void append_q8(const uint16_t* k, const uint16_t* v, int64_t tokens,
                 const size_t row = (physical * KH + h) * shapes.page_size + pos % shapes.page_size;
                 (which ? pools.v_q : pools.k_q)[row * HD + g * 64 + lane] = int8_t(code);
                 if (!lane) (which ? pools.v_scale : pools.k_scale)[row * 4 + g] = scale_bits;
-            }
-        });
-    finish(stream, event);
-}
-void validate_streamed_q8_storage(const Q8WritePools& resident,
-                                 const Q8LinearPools& stage, const Q8LinearPools& host,
-                                 const strata::kernels::QsaShapes& s,
-                                 const strata::kernels::QsaPromptBf16Bounds& b, void* stream) {
-    const auto writes = streamed_spans(resident, stage, host, s, b);
-    validate_device(stream);
-    auto& queue = queue_for(stream);
-    const Span table{resident.page_table, bytes(b.logical_pages, 1, 4)};
-    for (size_t i = 0; i < 12; ++i) {
-        validate_spans({writes[i]}, {}, 1);
-        for (size_t j = 0; j < i; ++j) validate_spans({writes[i]}, {writes[j]}, 1);
-        validate_spans({writes[i]}, {table}, 1);
-        if (i < 8) validate_device_span(writes[i].pointer, writes[i].bytes, queue);
-        else compat::validate_host_span(writes[i].pointer, writes[i].bytes, queue);
-    }
-    validate_device_span(table.pointer, table.bytes, queue);
-    validate_spans({}, {writes[2], writes[3], writes[6], writes[7], writes[10], writes[11]}, 2);
-    validate_spans({}, {table}, 4);
-}
-void append_q8_streamed(const uint16_t* k, const uint16_t* v, int64_t tokens,
-                       int64_t input_ld, int64_t pos0,
-                       const Q8WritePools& resident, const Q8LinearPools& stage,
-                       const Q8LinearPools& host,
-                       const strata::kernels::QsaShapes& s,
-                       const strata::kernels::QsaPromptBf16Bounds& b, void* stream) {
-    shape(tokens, input_ld, KH * HD);
-    validate_streamed_q8_storage(resident, stage, host, s, b, stream);
-    const int64_t cells = int64_t(checked_count(b.logical_pages, s.page_size));
-    need(pos0 >= 0 && pos0 <= cells && tokens <= cells - pos0,
-         "QSA16 streamed append exceeds logical table");
-    auto& queue = queue_for(stream);
-    const auto writes = streamed_spans(resident, stage, host, s, b);
-    const Span reads[] = {{k, bytes(tokens, input_ld, 2)}, {v, bytes(tokens, input_ld, 2)}};
-    for (auto output : writes) for (auto input : reads) validate_spans({output}, {input}, 1);
-    for (auto input : reads) validate_device_span(input.pointer, input.bytes, queue);
-    validate_spans({}, {reads[0], reads[1]}, 2);
-    const auto shapes = s;
-    auto event = queue.parallel_for(
-        sycl::nd_range<1>(size_t(tokens) * 2 * KH * 4 * 64, 64),
-        [=](sycl::nd_item<1> it) [[sycl::reqd_sub_group_size(32)]] {
-            const size_t group = it.get_group_linear_id();
-            const int lane = it.get_local_linear_id(), g = group % 4;
-            const size_t h = group / 4 % KH, which = group / (4 * KH) % 2,
-                         t = group / (4 * KH * 2);
-            const float x = load((which ? v : k)[t * input_ld + h * HD + g * 64 + lane]);
-            const int bad = sycl::reduce_over_group(it.get_group(),
-                sycl::isfinite(x) ? 0 : 1, sycl::maximum<int>());
-            const float maximum = sycl::reduce_over_group(it.get_group(),
-                sycl::isfinite(x) ? sycl::fabs(x) : 0.f, sycl::maximum<float>());
-            // Same quantizer as resident append: local FP32 only, one RNE
-            // scale/code result copied to each representation without recasting.
-            const uint16_t scale_bits = bad ? uint16_t(0x7e00) :
-                strata::kernels::f16_from_f32(sycl::ext::intel::math::fdiv_rn(maximum, 127.f));
-            const float scale = strata::kernels::f32_from_f16(scale_bits);
-            const int code = !bad && sycl::isfinite(scale) && scale > 0.f ?
-                int(sycl::clamp(sycl::rint(sycl::ext::intel::math::fdiv_rn(x, scale)), -127.f, 127.f)) : 0;
-            const int64_t pos = pos0 + t, logical = pos / shapes.page_size;
-            const size_t row = (logical * KH + h) * shapes.page_size + pos % shapes.page_size;
-            (which ? stage.v_q : stage.k_q)[row * HD + g * 64 + lane] = int8_t(code);
-            (which ? host.v_q : host.k_q)[row * HD + g * 64 + lane] = int8_t(code);
-            if (!lane) {
-                (which ? stage.v_scale : stage.k_scale)[row * 4 + g] = scale_bits;
-                (which ? host.v_scale : host.k_scale)[row * 4 + g] = scale_bits;
-            }
-            // Every lane has participated in both collectives before this test.
-            const int64_t physical = resident.page_table[logical];
-            if (physical >= 0 && physical < b.physical_pages) {
-                const size_t resident_row = (physical * KH + h) * shapes.page_size + pos % shapes.page_size;
-                (which ? resident.v_q : resident.k_q)[resident_row * HD + g * 64 + lane] = int8_t(code);
-                if (!lane) (which ? resident.v_scale : resident.k_scale)[resident_row * 4 + g] = scale_bits;
             }
         });
     finish(stream, event);
