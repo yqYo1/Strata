@@ -2627,5 +2627,19 @@
         "sha256": "b471279b104acbfd3af7bb850d687337e02f8fa5c017f609e2173c0d99a1836e"
       }
     ]
+  },
+  "thread_service_followup": {
+    "planned_on_index": 7,
+    "question": "Check cumulative per-thread CPU leaf distribution before choosing a decode-pool scheduling calibration. run_split_multi_native uses3*(five workers+host)=18 equal-row tasks,while conserved format/NT service shows different work cost per row.",
+    "collection": "Retain the six already-emitted CPU_SERVICE_THREAD rows for request5 of the final on arm;no new instrumentation,source,environment,workload,cohort order,overhead criteria or stopping change. Do not repeat retired samples.",
+    "columns": [
+      "slot",
+      "calls",
+      "wall_ns",
+      "cpu_ns"
+    ],
+    "validation": "Bind to that native owner and the existing same-request service/census;require distinct six slots/owners and totals equal retained calls/wall_ns/cpu_ns. Existing reader has already checked stable TIDs across the five requests.",
+    "limits": "One cumulative diagnostic can reveal skew,but cannot prove per-batch critical-path imbalance or arithmetic/RAM saturation. Leaf clocks omit pool/barrier/sleep/submission work and include memory stalls and charged clock costs.",
+    "consumer": "Main next source-pinned decode-only row-task calibration after full cohort closure;preserve the selected prefill policy and use actual format/NT mix. Retire successful raw output after compact validation."
   }
 }
