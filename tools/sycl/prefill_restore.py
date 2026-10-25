@@ -52,7 +52,7 @@ def write(path, value):
 def compact(row):
     return {k: v for k, v in row.items() if k not in (
         'project', 'dependencies', 'sdk_inputs', 'external_inputs',
-        'generated_headers', 'commands', 'actual_compiled_inputs')}
+        'commands', 'actual_compiled_inputs')}
 
 
 def restoration_source(revision):
@@ -166,6 +166,9 @@ def current(row):
     # Compare its complete tracked extent and hashes, retaining the original
     # native source revision rather than relabelling it with that later HEAD.
     guards.require(row['project']['revision'] == row['source_commit'] and
+        row['project']['count'] == row['project_files'] and
+        row['project']['aggregate_sha256'] == row['project_fingerprint'] and
+        native.fingerprint(row['project']['source_sha256']) == row['project_fingerprint'] and
         dict(actual_project, revision=row['source_commit']) == row['project'], 'project source changed')
     pins = gen.benchmark_pins(row['source_commit'])
     guards.require(len(pins) == row['benchmark_files'] and native.fingerprint(pins) ==
@@ -180,7 +183,14 @@ def current(row):
     for item in [row['compiler'], *row['tools'].values(), row['sdk_reference'], row['external_reference']]:
         guards.require(build.digest(item['path']) == item['sha256'], 'build asset/reference changed')
     original, proof = native.selected.baseline()
-    guards.require(proof == row['fallback'] and original['binary'] == row['fallback_binary'], 'fallback changed')
+    guards.require(proof == row['fallback'] and original['binary'] == row['fallback_binary'] and
+        row['dependencies'] == original['dependencies'], 'fallback or dependency identity changed')
+    if 'actual_compiled_inputs' in row:
+        closure = row['compiler_closure']
+        guards.require(len(row['actual_compiled_inputs']) == closure['files'] and closure['uncovered'] == 0 and
+            native.fingerprint(row['actual_compiled_inputs']) == closure['sha256'] and
+            all(build.digest(p) == sha for p, sha in row['actual_compiled_inputs'].items()),
+            'retained compiler closure changed')
     runtime_record = gen.committed(runtime.RESULT)
     runtime.current(runtime_record)
     guards.require(runtime_record['boot'] == row['runtime_boot'] and runtime_record['driver'] == row['driver'], 'runtime changed')
