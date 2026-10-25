@@ -29,6 +29,16 @@ The current worktree also has an unadopted, compile-time
 was not rebuilt with it. Its original current-worktree admission rejects this
 source difference correctly; do not refresh hashes or relabel the old binary.
 
+The reviewed `selected_native_tree_reconcile_20261025` decision in the
+[research index](../bench/results/2026-10-15-pr6-recovery-audit/research-index.json)
+maps all20 differing native paths against the selected-plus-observer source.
+Restore the unselected layout/pricing as a unit while preserving independent
+conversation RESTORE verification. Review the KV-range helper's `STRATA_STATE_HASH`
+use separately from the full-context guard. The full-context macro and its CPU
+fixture still lack CMake build definitions; name an explicit gated build/fixture
+recipe before treating that diagnostic executable as available. Source restoration
+remains pending until the frozen nine-process comparison closes.
+
 ## Long-prefill processing order
 
 The selected benchmark configuration uses native BF16, the vLLM Xe2 backend,
