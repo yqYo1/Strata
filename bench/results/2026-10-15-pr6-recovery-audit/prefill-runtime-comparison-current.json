@@ -915,7 +915,7 @@
         1005.5
       ],
       "later_selected_median_tok_s": 974.7034550043057,
-      "change_pct": -3.091722509017125,
+      "change_pct": -3.088398532581371,
       "configuration_difference": "Fastest396d:128 decode expert slots/owned prefill;selected6e40:1256 slots/borrowed prefill. Maintain selected decode placement;the separate -0.4899%396d/bb71 package comparison is not an ownership-only estimate.",
       "unchanged_kernel_source_groups": [
         {
@@ -931,7 +931,31 @@
           "formula": "SHA256 of ordered path,NUL,SHA256(raw Git blob) bytes"
         }
       ],
-      "interpretation": "All14 prefill SYCL and43 SYCL kernel files match exactly. Ownership,bank/compatibility/phase orchestration differ. File equality does not prove equal compiler output,headers,actual dispatch or runtime. Do not add package and historical percentages as causal components."
+      "interpretation": "All14 prefill SYCL and43 SYCL kernel files match exactly. Ownership,bank/compatibility/phase orchestration differ. File equality does not prove equal compiler output,headers,actual dispatch or runtime. Do not add package and historical percentages as causal components.",
+      "reconstructed_process_medians_tok_s": [
+        1005.7715289500987,
+        1005.7655020095792,
+        1005.4556424179407
+      ],
+      "historical_hierarchical_median_tok_s": 1005.7655020095792,
+      "request_replay": {
+        "archive_commits": [
+          "f6306a58dfc2e3274d8965eb4ba11ee9ce4ee0ba",
+          "447bdcad8d4c82ce553fa05b4d699d18b6fe7daa",
+          "3a25a134e0446a219eea6f32a9a52b6ae31a224a"
+        ],
+        "requests_per_process": 4,
+        "same_fields": [
+          "actual_prompt_tokens",
+          "actual_read_tokens",
+          "actual_reused_tokens",
+          "generated_tokens",
+          "thinking_requested",
+          "request_sha256"
+        ],
+        "all_three_processes_match_current_wire_bodies_and_counts": true,
+        "formula": "actual_read_tokens*1000/prompt_ms;median of subsequent3 within process,then median across3 processes. Earliest printed rates rounded to1decimal;use engine milliseconds for precise comparison."
+      }
     },
     "runtime_dependency_audit": {
       "historical_sources": [

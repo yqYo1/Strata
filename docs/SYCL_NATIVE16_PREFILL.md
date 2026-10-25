@@ -212,8 +212,11 @@ Those arms also used different source packages,396d andbb71. This is a package
 comparison,not an isolated causal measurement of ownership or cache size.
 Do not recover that speed by shrinking the current decode cache.
 
-The fastest three-process median is1005.8tok/s;the later selected-package
-median974.7035 is3.0917% lower. Do not add the separate0.4899% package and
+The fastest reported three-process median is1005.8tok/s. Recomputing all
+three processes from engine milliseconds gives medians1005.7715,1005.7655
+and1005.4556tok/s;the later selected-package median974.7035 is about3.09%
+lower. All four wire-body hashes,input/read/reuse/output counts and thinking
+settings match the later requests in each of those three processes. Do not add the separate0.4899% package and
 2.7873% historical differences as causal components:their revisions and
 measurement windows differ. Source replay finds all14 files under
 `src/prefill/sycl` and43 under `src/kernels/sycl` byte-identical between396d
