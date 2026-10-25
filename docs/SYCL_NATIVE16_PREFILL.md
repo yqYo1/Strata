@@ -39,7 +39,14 @@ the `STRATA_STATE_HASH` KV-range helper remain for the next state checks.
 CMake now defines manual `strata_full_context_diagnostic` and
 `full_context_diagnostic_host_test` targets. Only the former defines
 `STRATA_SYCL_FULL_CONTEXT_DIAGNOSTIC`; normal `strata` keeps its original admission.
-Neither target has yet been built in the restored generation. Physical262144
+Both targets linked in the first restored generation, along with normal `strata`
+and its fixtures. The compiler-input census then correctly stopped advancement:
+the source inventory omitted the committed `third_party/ggml/ggml-common.h`.
+All1416 actual inputs recover and match, including that unchanged header, but
+no host fixture or GPU/model test ran. The failed gate remains failed. Include
+the vendored headers in the next committed build plan rather than weakening
+the census. See [the restoration result](../bench/results/2026-10-15-pr6-recovery-audit/prefill-restore-current.json).
+Physical262144
 allocation/final-slot execution still needs its own bounded plan and evidence;
 the earlier retired streamed/layout results do not qualify this source.
 
