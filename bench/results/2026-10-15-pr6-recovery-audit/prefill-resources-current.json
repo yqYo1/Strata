@@ -2728,7 +2728,7 @@
       "remaining": "Fourteen older provenance holds and separate pending numerical/model/full-context/upstream gates are unchanged."
     },
     "fused_command_profile": {
-      "stage": "component-device-collecting",
+      "stage": "component-device-closed",
       "production_selected": false,
       "GPU_executed": true,
       "mechanism": "Relabel the existing finish event under the production GU/Down tag;no second registration,new device wait,readback or arithmetic change. Add separately ranked expert-upload events. Split2334 boundary into9 bins and retain224 events/window with128KiB static host budget. Profiling+fusion stays behind explicit pre-exec qualification opt-in.",
@@ -3002,7 +3002,7 @@
         "reason": "Tighten expected negative profiles to reject additional GPU clock/population faults;clarify that enabled API tracing alone does not prove complete device coverage. Original generated device plan was uncommitted and no native process ran."
       },
       "device": {
-        "stage": "collecting",
+        "stage": "closed",
         "source_commit": "9dc98bf3b5bdf3d1818c328b7c7ff71f3d6f8c3b",
         "inputs": {
           "tools/sycl/check_fused_profile.py": "58ab891d4bddc79e9f61e17060861c2fff679b1c9349261762130969e02b96e7",
@@ -3665,11 +3665,94 @@
               "kernel": "7.0.0-38-generic",
               "devcoredump": false
             }
+          },
+          {
+            "name": "down-1",
+            "passed": true,
+            "host_probe_accepted": true,
+            "validation": {
+              "pid": 3855025,
+              "loader": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_loader.so.0.12.0",
+              "threads_before": 1,
+              "preinit": 37,
+              "config_enabled": true,
+              "first_init": true,
+              "dispatch_result": 46,
+              "output_untouched": true,
+              "retained_reference_until_exit": true,
+              "runtime_teardown_qualified": false
+            },
+            "analysis": {
+              "operator": "down",
+              "oracle_cases": [
+                {
+                  "kind": "profiled_engine_down",
+                  "rows": 2333,
+                  "selected": 0,
+                  "expected_records": 2,
+                  "guards": true,
+                  "inputs_immutable": true,
+                  "status": "PASS"
+                },
+                {
+                  "kind": "profiled_engine_down",
+                  "rows": 2334,
+                  "selected": 1,
+                  "expected_records": 1,
+                  "guards": true,
+                  "inputs_immutable": true,
+                  "status": "PASS"
+                },
+                {
+                  "kind": "profiled_engine_down",
+                  "rows": 8192,
+                  "selected": 1,
+                  "expected_records": 1,
+                  "guards": true,
+                  "inputs_immutable": true,
+                  "status": "PASS"
+                },
+                {
+                  "kind": "profiled_engine_down",
+                  "rows": 2334,
+                  "selected": 1,
+                  "expected_records": 1,
+                  "guards": true,
+                  "inputs_immutable": true,
+                  "status": "PASS"
+                }
+              ],
+              "profile_records": [
+                2,
+                1,
+                1,
+                1
+              ],
+              "gpu_service_qualified": true,
+              "speed_qualified": false
+            },
+            "complete": true,
+            "expected_exit_code": 0,
+            "actual_provider_mappings": true,
+            "parameter_validation_warnings": 0,
+            "trace_bytes": 207480,
+            "trace_sha256": "fcfe8b0abf72503b9eb898c9a5d66477f0942e6a7c645f372f6e98895acadc1e",
+            "ownership_closed": true,
+            "fresh_faults": [],
+            "boot_unchanged": true,
+            "driver_after": {
+              "pci": "/sys/bus/pci/devices/0000:05:00.0",
+              "driver": "xe",
+              "vendor": "0x8086",
+              "device": "0xe20c",
+              "kernel": "7.0.0-38-generic",
+              "devcoredump": false
+            }
           }
         ],
         "active": false,
         "ownership_closed": true,
-        "passed": false,
+        "passed": true,
         "model_qualified": false,
         "clean_speed_qualified": false,
         "observer_cost_qualified": false,
