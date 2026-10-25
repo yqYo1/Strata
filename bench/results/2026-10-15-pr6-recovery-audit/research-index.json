@@ -11274,5 +11274,18 @@
       "immutable_env_requirement": "Use preexec SYCL_UR_TRACE=0;inspected SYCL trace branches call setenv for UR_LOG_TRACING/UR_LOG_LOADER. UR tracing initializes ur.call and ur.call.debug and emits function_with_args begin/end instance IDs. Configure subscriber/dispatcher/trace enable before exec;verify callback delivery and no environment mutation on CPU canary before GPU.",
       "limits": "Relevant source blobs match the compiler-reported SDK checkout;installed runtime ELF transformations verified in full above. Not a reconstructed complete historical SDK compiler-input census or native subscriber qualification. ghq root LLVMfbccb466 is a different revision. Independent compiler/runtime assets only;no XeStrata application code read."
     }
+  },
+  "PTI_graph_expanded_links_20261025": {
+    "classification": "decision_support",
+    "status": "eligible_after_direct_join",
+    "schedulable_now": true,
+    "prerequisites": "e71b957b8:680 exact independent UR/PTI direct joins,3453 complete pairs,current NEO;graph replay remains unqualified. Known collector-internal one-source/one-execution check cannot simply be assumed for graph children.",
+    "scope": "At exact PTI4b6d742 and Intel LLVM504366,determine concrete replay-instance/graph-child provenance fields and loss/ambiguity tests. Source-only comparison,not generic XPTI feasibility or runtime qualification.",
+    "report": ".cache/strata-research/20261025/graph-expanded-links/report.md",
+    "report_budget_bytes": 12000,
+    "model": "gpt-6-luna",
+    "main_work": "Main implements bounded UR handle/shape metadata;all builds/tests/GPU work stay exclusively with Main.",
+    "policy_commit": "7374fb996",
+    "next_action": "One bounded read-only report,then native Luna-max scope/source review. No steering or duplicate retries."
   }
 }
