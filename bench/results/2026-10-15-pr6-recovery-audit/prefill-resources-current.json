@@ -1144,8 +1144,8 @@
       "next_action": "Extend current observer controller with independent UR-call-interval/PTI-source reconciliation;commit finite GPU fixture plan after native/source reuse proof. Keep graph/generation/cost and model gates unqualified."
     },
     "ur_subscriber_gpu": {
-      "stage": "failed",
-      "source_commit": "adfc75954e5da44124b3a6442e7f284f14a3d98c",
+      "stage": "prepared",
+      "source_commit": "eae4e9affcb167ba3cfb1cfb3707588d1154ac55",
       "input_sha256": {
         "tests/core/test_work_ledger_fixture.py": "ea6bf40c7c21ee403937032ce86e345896a0e4bce83a60216ebf557d91e01cd1",
         "tools/sycl/bench_engine.py": "e5f588605ebc7799b54f8bf7df9ad2e363391375e50b788b9704a6b80887ca6b",
@@ -1179,7 +1179,7 @@
         "tools/sycl/work_ledger_fixture.py": "425894fda0a8f006f850519a26962246b66cc8c4e57ce94b948d6efc3b599319",
         "bench/sycl/ur_call_subscriber.cpp": "bbb588f397c2f7cbb26636583a47272e4d788c80217f9a8ce5fc3ef9fb359ecc",
         "bench/sycl/ur_call_guard_test.cpp": "a4bf548b6e5f17a7a5961366b18dd6b40ce5c39021e6d746d4254a5a7743e5f7",
-        "tools/sycl/ur_call_subscriber.py": "c4e13c958a59313b982b07e08506ccac48ce0ae85c3064a6414296cdea0da7ed",
+        "tools/sycl/ur_call_subscriber.py": "f97d23c450066397566ac0b1173bded19a0dd722770f6724c740dd7fec89e577",
         "tests/core/test_ur_call_subscriber.py": "2f358f1ced1896f021013dc76ce1c26e0781afc23eb6144d0a2ddd28f5d43e78"
       },
       "assets": {
@@ -1236,6 +1236,44 @@
         },
         "reuse": "Same observer/driver native sources,recipes,254/76 compiled inputs and ELF hashes;new controller only. CPU qualification reuse does not establish GPU coverage."
       },
+      "prior_failed_result": {
+        "commit": "647a661955ee7423c0f5637babaf255c8d241a12",
+        "path": "bench/results/2026-10-15-pr6-recovery-audit/prefill-resources-current.json",
+        "sha256": "067d3003ab92d03c86218a3e9d437a0b3b743f46e386873a2307e43224ef67f9",
+        "scope": [
+          "event_reconciliation",
+          "ur_subscriber_gpu"
+        ]
+      },
+      "host_controls": {
+        "source_commit": "adfc75954e5da44124b3a6442e7f284f14a3d98c",
+        "command": [
+          "/usr/bin/python3",
+          "-B",
+          "tests/core/test_ur_call_subscriber.py"
+        ],
+        "python_sha256": "e50d468e8b0adfb05733f5b87b3cff34829c4a8c1aea50c865aa8bdfe4bb150f",
+        "wall_limit_s": 35,
+        "tests": 14,
+        "exit_code": 0,
+        "scope": "Pure host parser and adversarial UR/PTI join controls;no GPU or engine work."
+      },
+      "diagnostic_startup_override": {
+        "name": "UR_L0_ENABLE_SYSMAN_ENV_DEFAULT",
+        "value": "0",
+        "source_diagnosis": {
+          "repository": "intel/llvm",
+          "revision": "504366f4b82ff00bbac7b0c956635eed8bc599d8",
+          "source_sha256": {
+            "unified-runtime/source/adapters/level_zero/adapter.cpp": "0407d18fed738e288fbe94689cd55479b0455601e35a5211b0736ad23f4d18f0",
+            "unified-runtime/source/adapters/level_zero/common.cpp": "7007277cf856ab623b602639ead5d33ce0b06c0b5e5f1dd51b20a7d5e5fcdbc7",
+            "unified-runtime/source/adapters/level_zero/v2/README.md": "613651da212a6ea7a83661f14b2de20bc3b1c5445b7eb1e96be01b6260827351"
+          },
+          "finding": "Exact SDK source: v2 reuses adapter.cpp. Its constructor defaults UR_L0_ENABLE_SYSMAN_ENV_DEFAULT to1 and calls setEnvVar(ZES_ENABLE_SYSMAN,1) even when ZES_ENABLE_SYSMAN=0 was provided. Trace stops during urAdapterGet, before any enqueue. Caller stack/name was not recorded;this is a source-supported explanation,not an actual captured setter callsite.",
+          "next_action": "Preserve this failure. Commit a new bounded plan adding UR_L0_ENABLE_SYSMAN_ENV_DEFAULT=0 before exec,keeping guard and all existing safety settings. No production environment change before separate small qualification. Independent zesInit/counters/ordinary teardown are not qualified by this control."
+        },
+        "scope": "Only this bounded diagnostic process. Keep all existing safety settings and immutable-environment guard. Do not infer disabled zesInit,hardware-counter capability,clean speed or production environment qualification."
+      },
       "dispatcher": {
         "path": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libxptifw.so.1.0.1",
         "sha256": "e31626a7a4ce9afb038a3bc185329341bc4771f96262ea07b3e5b5fdb65f6ff8"
@@ -1265,12 +1303,12 @@
         "SYCL_CACHE_PERSISTENT": "0",
         "ZES_ENABLE_SYSMAN": "0",
         "UR_ENABLE_LAYERS": "UR_LAYER_TRACING,UR_LAYER_PARAMETER_VALIDATION",
-        "UR_LOG_TRACING": "level:info;flush:info;output:file,/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/ur-call-subscriber-v1/gpu-direct-v1/ur.log",
-        "UR_LOG_VALIDATION": "level:warning;flush:warning;output:file,/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/ur-call-subscriber-v1/gpu-direct-v1/validation.log",
+        "UR_LOG_TRACING": "level:info;flush:info;output:file,/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/ur-call-subscriber-v1/gpu-direct-v2/ur.log",
+        "UR_LOG_VALIDATION": "level:warning;flush:warning;output:file,/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/ur-call-subscriber-v1/gpu-direct-v2/validation.log",
         "UR_LOG_LOADER": "level:warning;flush:warning;output:stderr",
         "UR_LOG_LEVEL_ZERO": "level:warning;flush:warning;output:stderr",
-        "TMPDIR": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/ur-call-subscriber-v1/gpu-direct-v1/tmp",
-        "XDG_CACHE_HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/ur-call-subscriber-v1/gpu-direct-v1/cache",
+        "TMPDIR": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/ur-call-subscriber-v1/gpu-direct-v2/tmp",
+        "XDG_CACHE_HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/ur-call-subscriber-v1/gpu-direct-v2/cache",
         "LD_DEBUG": "libs",
         "STRATA_UNITRACE_TARGET_PRELOAD": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/ur-validation-preload-v2/libstrata_ur_validation.so:/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/ur-call-subscriber-v1/libstrata_ur_calls.so",
         "STRATA_UR_PROBE_EXPECTED_LOADER": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_loader.so.0.12.0",
@@ -1278,16 +1316,17 @@
         "XPTI_SUBSCRIBERS": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/ur-call-subscriber-v1/libstrata_ur_calls.so",
         "XPTI_TRACE_ENABLE": "1",
         "SYCL_UR_TRACE": "0",
-        "STRATA_UR_CALL_LOG": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/ur-call-subscriber-v1/gpu-direct-v1/calls.jsonl",
+        "UR_L0_ENABLE_SYSMAN_ENV_DEFAULT": "0",
+        "STRATA_UR_CALL_LOG": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/ur-call-subscriber-v1/gpu-direct-v2/calls.jsonl",
         "UNITRACE_FollowChildProcess": "1",
         "UNITRACE_SystemTime": "1",
-        "UNITRACE_TraceOutputDir": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/ur-call-subscriber-v1/gpu-direct-v1/trace"
+        "UNITRACE_TraceOutputDir": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/ur-call-subscriber-v1/gpu-direct-v2/trace"
       },
-      "session": "StrataUR66a040a3b8f619bb1c58f93b",
+      "session": "StrataURc89091e71dda0221525a0a4a",
       "command": [
         "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/unitrace-session-owner-v1/unitrace",
         "--session",
-        "StrataUR66a040a3b8f619bb1c58f93b",
+        "StrataURc89091e71dda0221525a0a4a",
         "--host-timing",
         "--device-timing",
         "--chrome-device-logging",
@@ -1314,75 +1353,7 @@
       "model_qualified": false,
       "graph_lifetime_qualified": false,
       "observer_cost_qualified": false,
-      "clean_speed_qualified": false,
-      "host_controls": {
-        "source_commit": "adfc75954e5da44124b3a6442e7f284f14a3d98c",
-        "command": [
-          "/usr/bin/python3",
-          "-B",
-          "tests/core/test_ur_call_subscriber.py"
-        ],
-        "python_sha256": "e50d468e8b0adfb05733f5b87b3cff34829c4a8c1aea50c865aa8bdfe4bb150f",
-        "wall_limit_s": 35,
-        "tests": 14,
-        "exit_code": 0,
-        "scope": "Pure host parser and adversarial UR/PTI join controls;no GPU or engine work."
-      },
-      "begin_raw_ns": 1281007513599928,
-      "end_raw_ns": 1281007647555455,
-      "pid": 2775051,
-      "error": "RuntimeError('native observer owner/exit failed')",
-      "session_removed": true,
-      "fresh_faults": [],
-      "boot_unchanged": true,
-      "driver_after": {
-        "pci": "/sys/bus/pci/devices/0000:05:00.0",
-        "driver": "xe",
-        "vendor": "0x8086",
-        "device": "0xe20c",
-        "kernel": "7.0.0-38-generic",
-        "devcoredump": false
-      },
-      "failure_evidence": {
-        "exit_code": 87,
-        "last_callback": "urAdapterGet begin without end",
-        "enqueue_callbacks": 0,
-        "guard_message": "strata UR subscriber: environment mutation blocked",
-        "pre_main_validation": true,
-        "raw_inputs": [
-          {
-            "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/ur-call-subscriber-v1/gpu-direct-v1/calls.jsonl",
-            "sha256": "ccddeca21ca51e5bfd057e0ce32ddf0c9b00b8292663ffc91a90b94cd5066fe8",
-            "bytes": 566
-          },
-          {
-            "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/ur-call-subscriber-v1/gpu-direct-v1/ur.log",
-            "sha256": "cb17e6a80c4c7f23d8a2d73677d84ff614f8c45201aadb4bbac04431e9a9473e",
-            "bytes": 186
-          },
-          {
-            "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/ur-call-subscriber-v1/gpu-direct-v1/target-owned/submission.stderr",
-            "sha256": "0cc293f09326f70b8a102d454dc536fba3a4fb32c0a1b41aa578a6a307a4f8c5",
-            "bytes": 23472
-          },
-          {
-            "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/ur-call-subscriber-v1/gpu-direct-v1/record.json",
-            "sha256": "249b9b9b2245a9a437737a28c398dbeaf2b17480d95fd157459b652b01df0aa1",
-            "bytes": 22331
-          }
-        ]
-      },
-      "source_diagnosis": {
-        "repository": "intel/llvm",
-        "revision": "504366f4b82ff00bbac7b0c956635eed8bc599d8",
-        "source_sha256": {
-          "unified-runtime/source/adapters/level_zero/adapter.cpp": "0407d18fed738e288fbe94689cd55479b0455601e35a5211b0736ad23f4d18f0",
-          "unified-runtime/source/adapters/level_zero/common.cpp": "7007277cf856ab623b602639ead5d33ce0b06c0b5e5f1dd51b20a7d5e5fcdbc7",
-          "unified-runtime/source/adapters/level_zero/v2/README.md": "613651da212a6ea7a83661f14b2de20bc3b1c5445b7eb1e96be01b6260827351"
-        },
-        "finding": "Exact SDK source: v2 reuses adapter.cpp. Its constructor defaults UR_L0_ENABLE_SYSMAN_ENV_DEFAULT to1 and calls setEnvVar(ZES_ENABLE_SYSMAN,1) even when ZES_ENABLE_SYSMAN=0 was provided. Trace stops during urAdapterGet, before any enqueue. Caller stack/name was not recorded;this is a source-supported explanation,not an actual captured setter callsite.",
-        "next_action": "Preserve this failure. Commit a new bounded plan adding UR_L0_ENABLE_SYSMAN_ENV_DEFAULT=0 before exec,keeping guard and all existing safety settings. No production environment change before separate small qualification. Independent zesInit/counters/ordinary teardown are not qualified by this control."
-      }
+      "clean_speed_qualified": false
     }
   }
 }
