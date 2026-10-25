@@ -29,7 +29,7 @@ to6e40 and the15 coupled layout/admission/pricing/loan hunks in `generate.cpp`.
 Its18 independent diagnostic/observer hunks are preserved byte-for-byte.
 The unused streamed-QSA writer, host-span export and fixture are removed.
 Decode kernels, configuration and1256-slot placement remain selected as before.
-The restored build has native source`1baa0547f` and engine SHA prefix`2a128c6a`.
+The measured restoration used native source`1baa0547f` and engine SHA prefix`2a128c6a`.
 The original6e40 executable remains the selected fallback; restored-source
 prefill speed screen now fails; task and full-context qualification is pending.
 
@@ -40,7 +40,7 @@ the `STRATA_STATE_HASH` KV-range helper remain for the next state checks.
 CMake now defines manual `strata_full_context_diagnostic` and
 `full_context_diagnostic_host_test` targets. Only the former defines
 `STRATA_SYCL_FULL_CONTEXT_DIAGNOSTIC`; normal `strata` keeps its original admission.
-The17 linked targets and all1416 actual compiler inputs are checked. Normal
+The17 linked targets and all1416 actual compiler inputs were checked. Normal
 `strata` compiles out CPU-service observation and the full-context macro.
 The [closed component gate](../bench/results/2026-10-15-pr6-recovery-audit/prefill-restore-device-current.json)
 reuses eight qualified host controls and three submission/graph cases, then
@@ -65,13 +65,14 @@ diagnostic deliberately enables conversation parking; it is not a speed or
 task-quality sample. The earlier cache-disabled plan was blocked before GPU
 execution and remains transport-only evidence in Git.
 
-These gates qualify bounded fixtures and this state handoff only. Independent
-repeated prefill/decode speed,quality and agent-session gates remain open. Physical262144
+These gates qualify bounded fixtures and this state handoff only. The prefill
+screen below rejects this package;decode speed,quality and agent-session qualification
+remain open. Physical262144
 allocation/final-slot execution still needs its own bounded plan and evidence;
 the earlier retired streamed/layout results do not qualify this source.
 
 The [current throughput comparison](../bench/results/2026-10-15-pr6-recovery-audit/restored-phase-bench-current.json)
-uses the updated NEO and the existing6e40/restored1baa packages,with six fresh
+used the updated NEO and the6e40/restored1baa packages,with six fresh
 processes in0/1/1/0/0/1 order. Official`bench.sh` measures four117489-token inputs
 per process,separating first use from the subsequent-three median. Its CPU clock
 and provider controls pass; all six processes have closed. This is a prefill-only
@@ -91,11 +92,18 @@ checks with identical request hashes and no fresh fault:
 The paired ratios are1.00075053,1.00121216 and0.99606206;their geomean
 is0.99933887. The last pair fails the prospective no-decline screen;the faster
 screen also fails. Do not adopt1baa or advance its gated model trials. Keep the
-original6e40 selected and retire the extra native generation after source/recipe
-recovery and consumer closure. All15 final model hashes match,parameter validation
+original6e40 selected. All15 final model hashes match,parameter validation
 is silent,and no fresh fault appears. Both packages exceed600tok/s repeatedly
 but remain below the historical old-runtime1003tok/s and the current1000tok/s
 target. This does not attribute that difference or qualify decode preservation.
+
+The rejected generation and its closed comparison/model controls are now retired.
+Recovery checked647 project sources,9311 dependency inputs,the original build
+commands/environment/generated header,all1416 compiled inputs and17 artifacts.
+The selected6e40 and its12 fixtures remain unchanged. The three closed Python
+readers/launcher recover from`2e99d2c49`;the measured controller is`5c35a18ce`.
+Compact samples and decisions remain in Git;successful logs,JIT data,temporary
+plans and consumed research transactions are removed with a path/hash/reason manifest.
 
 ## Long-prefill processing order
 
