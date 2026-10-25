@@ -7,7 +7,7 @@ import unittest
 
 sys.dont_write_bytecode = True
 sys.path.insert(0, str(Path(__file__).resolve().parents[2] / 'tools/sycl'))
-from ur_call_subscriber import parse_calls, correlate_calls, metadata_census
+from ur_call_subscriber import parse_calls, correlate_calls, metadata_census, lifetime_census
 
 
 def records():
@@ -187,6 +187,104 @@ class MetadataCaptureTests(unittest.TestCase):
             spans = self.fixture();del spans[1]['metadata'][key]
             with self.subTest(key=key), self.assertRaises(RuntimeError):
                 metadata_census(spans)
+
+
+class ExternalLifetimeTests(unittest.TestCase):
+    def fixture(self):
+        return self.schedule([
+            ('urQueueCreate', dict(context=0x100, created_queue=0x101)),
+            ('urUSMDeviceAlloc', dict(context=0x100, allocation=0x1000, bytes=1028)),
+            ('urEnqueueKernelLaunchWithArgsExp', dict(queue=0x101, waits=[], wait_count=0, produced_event=0x201)),
+            ('urEventWait', dict(waits=[0x201], wait_count=1)),
+            ('urEventRelease', dict(event=0x201)),
+            ('urUSMFree', dict(context=0x100, allocation=0x1000)),
+            ('urQueueRelease', dict(queue=0x101))])
+
+    def schedule(self, events):
+        return [dict(name=name, metadata=meta, status=0, instance=i, tid=72, begin_ns=i * 3, end_ns=i * 3 + 1)
+                for i, (name, meta) in enumerate(events)]
+
+    def serial(self, spans):
+        for i, span in enumerate(spans):
+            span.update(instance=i, begin_ns=i * 3, end_ns=i * 3 + 1)
+        return spans
+
+    def test_recycled_values_produce_distinct_closed_generations(self):
+        spans = self.serial(self.fixture() + self.fixture())
+        value = lifetime_census(spans)
+        self.assertTrue(value['external_generations_closed'])
+        for kind in ('queue', 'event', 'allocation'):
+            self.assertEqual(value['counts'][kind + '_created'], 2)
+            self.assertEqual(value['counts'][kind + '_reused_values'], 1)
+
+    def test_live_duplicate_unknown_release_or_lost_retirement_fails(self):
+        for corrupt in ('duplicate-create', 'duplicate-event', 'unknown-release', 'lost-free', 'lost-queue'):
+            spans = self.fixture()
+            if corrupt == 'duplicate-create':
+                spans.insert(1, copy.deepcopy(spans[0]))
+            elif corrupt == 'duplicate-event':
+                spans.insert(3, copy.deepcopy(spans[2]))
+            elif corrupt == 'unknown-release':
+                spans[4]['metadata']['event'] = 0x202
+            elif corrupt == 'lost-free':
+                del spans[5]
+            else:
+                del spans[0]
+            with self.subTest(corrupt=corrupt), self.assertRaises(RuntimeError):
+                lifetime_census(self.serial(spans))
+
+    def test_retain_requires_the_matching_final_release(self):
+        spans = self.fixture()
+        spans.insert(3, dict(spans[4], name='urEventRetain'))
+        with self.assertRaisesRegex(RuntimeError, 'unretired'):
+            lifetime_census(self.serial(spans))
+        spans.insert(6, copy.deepcopy(spans[5]))
+        self.assertTrue(lifetime_census(self.serial(spans))['external_generations_closed'])
+
+    def test_rejected_call_cannot_create_or_retire_a_generation(self):
+        spans = self.fixture()
+        spans.insert(0, dict(spans[0], status=46))
+        spans.insert(4, dict(spans[-1], status=46))
+        value = lifetime_census(self.serial(spans))
+        self.assertEqual(value['counts']['queue_created'], 1)
+        self.assertEqual(value['counts']['rejected_without_transition'], 2)
+
+    def graph_fixture(self):
+        return self.schedule([
+            ('urQueueCreate', dict(context=0x100, created_queue=0x101)),
+            ('urCommandBufferCreateExp', dict(context=0x100, created_graph=0x301)),
+            ('urCommandBufferAppendKernelLaunchExp', dict(graph=0x301)),
+            ('urCommandBufferAppendKernelLaunchExp', dict(graph=0x301)),
+            ('urCommandBufferFinalizeExp', dict(graph=0x301)),
+            ('urEnqueueCommandBufferExp', dict(queue=0x101, graph=0x301)),
+            ('urEnqueueCommandBufferExp', dict(queue=0x101, graph=0x301)),
+            ('urCommandBufferReleaseExp', dict(graph=0x301)),
+            ('urQueueRelease', dict(queue=0x101))])
+
+    def test_two_graph_replays_expand_the_declared_children(self):
+        value = lifetime_census(self.graph_fixture())
+        self.assertEqual(value['counts']['graph_children'], 2)
+        self.assertEqual(value['counts']['graph_replays'], 2)
+        self.assertEqual(value['counts']['declared_replay_children'], 4)
+
+    def test_wrong_context_unfinalized_and_changed_graph_are_rejected(self):
+        for corrupt in ('context', 'finalize', 'late-append'):
+            spans = self.graph_fixture()
+            if corrupt == 'context':
+                spans[1]['metadata']['context'] = 0x200
+            elif corrupt == 'finalize':
+                del spans[4]
+            else:
+                spans.insert(5, copy.deepcopy(spans[2]))
+            with self.subTest(corrupt=corrupt), self.assertRaises(RuntimeError):
+                lifetime_census(self.serial(spans))
+
+    def test_concurrent_or_nested_calls_require_another_adapter(self):
+        for corrupt in ('thread', 'overlap'):
+            spans = self.fixture()
+            spans[1].update(dict(tid=73) if corrupt == 'thread' else dict(begin_ns=0))
+            with self.subTest(corrupt=corrupt), self.assertRaises(RuntimeError):
+                lifetime_census(spans)
 
 
 if __name__ == '__main__':

@@ -195,6 +195,123 @@ def metadata_census(spans):
                 limits='Typed callback capture/geometry/requested-byte census only. Handles are raw values;reference generations,retirement,actual launch rounding,graph child mapping and application host-memory lifetime still need independent checks.')
 
 
+def lifetime_census(spans):
+    """External API reference generations in a serial,fully captured fixture.
+
+    Internal driver references,USM payload readers,drained GPU completion and
+    application host buffers are different lifetimes;none is inferred here.
+    """
+    live = {kind: {} for kind in ('queue', 'event', 'allocation', 'graph')}
+    generations = collections.Counter()
+    counts = collections.Counter()
+    tracked = [s for s in spans if s.get('metadata')]
+    require(tracked and len({s['tid'] for s in tracked}) == 1, 'external lifetime adapter requires one caller thread')
+    tracked.sort(key=lambda s: s['begin_ns'])
+    require(all(a['end_ns'] <= b['begin_ns'] for a, b in zip(tracked, tracked[1:])), 'overlapping lifetime callbacks')
+
+    def current(kind, handle):
+        require(handle in live[kind], 'unknown/retired ' + kind + ' generation')
+        return live[kind][handle]
+
+    def create(kind, handle, **extra):
+        require(handle not in (0, None) and handle not in live[kind], 'duplicate/live ' + kind + ' create')
+        key = (kind, handle)
+        generations[key] += 1
+        require(len(generations) <= 16384, 'external generation budget')
+        live[kind][handle] = dict(refs=1, generation=generations[key], **extra)
+        counts[kind + '_created'] += 1
+        counts[kind + '_reused_values'] += generations[key] > 1
+
+    def reference(kind, handle, retain):
+        value = current(kind, handle)
+        value['refs'] += 1 if retain else -1
+        counts[kind + ('_retained' if retain else '_released')] += 1
+        if not value['refs']:
+            del live[kind][handle]
+
+    for span in tracked:
+        name, meta = span['name'], span['metadata']
+        if span['status']:
+            # Rejection must neither create nor retire any external generation.
+            counts['rejected_without_transition'] += 1
+            continue
+        if name == 'urQueueCreate':
+            create('queue', meta['created_queue'], context=meta['context'])
+        elif name in ('urUSMDeviceAlloc', 'urUSMHostAlloc', 'urUSMSharedAlloc'):
+            require(meta['bytes'] > 0 and meta['allocation'] > 0, 'invalid successful allocation extent')
+            create('allocation', (meta['context'], meta['allocation']), bytes=meta['bytes'])
+        elif name == 'urUSMFree':
+            reference('allocation', (meta['context'], meta['allocation']), False)
+        elif name == 'urCommandBufferCreateExp':
+            create('graph', meta['created_graph'], context=meta['context'], finalized=False, children=0)
+        elif name in ('urQueueRetain', 'urQueueRelease', 'urEventRetain', 'urEventRelease',
+                      'urCommandBufferRetainExp', 'urCommandBufferReleaseExp'):
+            kind = 'queue' if name.startswith('urQueue') else 'event' if name.startswith('urEvent') else 'graph'
+            reference(kind, meta[kind], name.endswith('Retain') or name.endswith('RetainExp'))
+        elif name == 'urCommandBufferFinalizeExp':
+            graph = current('graph', meta['graph'])
+            require(not graph['finalized'], 'duplicate graph finalize')
+            graph['finalized'] = True
+        elif name == 'urQueueFinish':
+            current('queue', meta['queue'])
+            counts['queue_finish_calls'] += 1
+        if name.startswith('urEnqueue'):
+            queue = current('queue', meta['queue'])
+            if name == 'urEnqueueCommandBufferExp':
+                graph = current('graph', meta['graph'])
+                require(graph['finalized'] and graph['context'] == queue['context'], 'unfinalized/wrong-context graph replay')
+                counts['graph_replays'] += 1
+                counts['declared_replay_children'] += graph['children']
+        if name.startswith('urCommandBufferAppend'):
+            graph = current('graph', meta['graph'])
+            require(not graph['finalized'], 'append after graph finalize')
+            graph['children'] += 1
+            counts['graph_children'] += 1
+        if 'waits' in meta:
+            require(len(meta['waits']) == meta['wait_count'], 'incomplete event dependency snapshot')
+            for handle in meta['waits']:
+                current('event', handle)
+        if meta.get('produced_event'):
+            create('event', meta['produced_event'])
+    require(all(not objects for objects in live.values()), 'unretired external fixture generations')
+    return dict(counts=dict(counts), external_generations_closed=True, source_threads=1,
+        limits='Complete serial fixture external API reference generations only. Not driver-internal ownership,buffer-reader completion,host-memory lifetime,ordinary runtime teardown or exact graph-child/device identity.')
+
+
+def analyse_lifetimes():
+    """Replay already closed typed GPU/CPU data;no additional GPU process."""
+    row = r.validation.committed(RESULT, GPU_KEY)
+    host = r.validation.committed(RESULT, KEY)
+    require(row['stage'] == 'direct-join-passed' and row['passed'] and row['ownership_closed'] and
+            row['fresh_faults'] == [] and 'lifetime_analysis' not in row, 'fresh closed typed fixture analysis only')
+    revision = r.validation.git('rev-parse', 'HEAD').decode().strip()
+    result = dict(source_commit=revision, input_sha256=source_pins(revision), passed=False, gpu_work=False)
+    try:
+        for item in row['analysis_inputs']:
+            require(digest(item['path']) == item['sha256'], 'closed typed input changed')
+        gpu = parse_calls((GPU_ROOT / 'calls.jsonl').read_text(), row['pid'], intervals=True)
+        require(metadata_census(gpu['intervals']) == row['typed_metadata'], 'typed capture replay differs')
+        result['device_fixture'] = lifetime_census(gpu['intervals'])
+        native = next(o for o in host['outcomes'] if o['kind'] == 'metadata')
+        private = json.loads((ROOT / 'record.json').read_text())
+        owner = next(c for c in private['commands'] if c['label'] == 'metadata')
+        raw = (ROOT / 'native-metadata/calls.jsonl').read_text()
+        require(metadata_fixture(raw, owner['pid']) == native['metadata'], 'original CPU controls do not replay')
+        result['synthetic_CPU_fixture'] = lifetime_census(parse_calls(raw, owner['pid'], intervals=True)['intervals'])
+        cpu = result['synthetic_CPU_fixture']['counts']
+        require(cpu['queue_reused_values'] == cpu['allocation_reused_values'] == 1 and cpu['event_reused_values'] == 2 and
+                cpu['graph_replays'] == 2 and cpu['declared_replay_children'] == 4 and
+                cpu['rejected_without_transition'] == 2, 'synthetic generation/replay conservation differs')
+        result['passed'] = True
+    except BaseException as error:
+        result['error'] = repr(error)
+    container = json.loads(RESULT.read_text())
+    container[GPU_KEY[0]][GPU_KEY[1]]['lifetime_analysis'] = result
+    r.write(RESULT, container)
+    print(json.dumps(result), flush=True)
+    return 0 if result['passed'] else 1
+
+
 def correlate_calls(spans, events, pid, expected_calls):
     """Join independent UR instances to actual PTI sources; no ordinal join.
 
@@ -671,10 +788,11 @@ def execute(action):
 
 
 if __name__ == '__main__':
-    require(len(sys.argv) == 2 and sys.argv[1] in ('prepare', 'build', 'repair', 'build-driver', 'check', 'gpu-prepare', 'gpu-check'),
-            'use ur_call_subscriber.py prepare|build|repair|build-driver|check|gpu-prepare|gpu-check')
+    require(len(sys.argv) == 2 and sys.argv[1] in ('prepare', 'build', 'repair', 'build-driver', 'check', 'gpu-prepare', 'gpu-check', 'analyse-lifetimes'),
+            'use ur_call_subscriber.py prepare|build|repair|build-driver|check|gpu-prepare|gpu-check|analyse-lifetimes')
     with (B / 'owned-v0141-measurement.lock').open('a+') as lock:
         fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
         r.guards.no_model_owners([])
-        raise SystemExit({'prepare': prepare, 'repair': repair, 'gpu-prepare': gpu_prepare, 'gpu-check': gpu_check}
+        raise SystemExit({'prepare': prepare, 'repair': repair, 'gpu-prepare': gpu_prepare, 'gpu-check': gpu_check,
+                          'analyse-lifetimes': analyse_lifetimes}
                          .get(sys.argv[1], lambda: execute(sys.argv[1]))())
