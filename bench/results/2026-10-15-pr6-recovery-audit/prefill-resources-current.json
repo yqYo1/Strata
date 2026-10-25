@@ -1755,7 +1755,15 @@
             "device_work_qualified": false
           }
         }
-      ]
+      ],
+      "raw_retirement": {
+        "manifest": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/ur-metadata-qualified-raw-retired-20261025.jsonl",
+        "sha256": "4ea729fd3682c9485c61d286b456a82545cdaf228cc3b0cc4e357d24397a5c76",
+        "files": 43,
+        "bytes": 3388501,
+        "closed_data_replay": true,
+        "retained_consumer": "Typed observer34408B,native CPU driver16848B and254/217 input manifests for imminent graph/group-key and actual-prefill route qualification. Review after next observer qualifies or is rejected;no extra engine build."
+      }
     },
     "ur_metadata_gpu": {
       "stage": "direct-join-passed",
@@ -2051,23 +2059,6 @@
         "complete_pairs": true,
         "environment_guard_exit_not_triggered": true
       },
-      "analysis_inputs": [
-        {
-          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/ur-call-subscriber-v2/gpu-direct-v1/trace/sycl_submission.2860607.json",
-          "sha256": "c7b2c5a9373468047d910b999da406c270a330b1d3d3aa589262fa2e4bcab951",
-          "bytes": 864396
-        },
-        {
-          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/ur-call-subscriber-v2/gpu-direct-v1/ur.log",
-          "sha256": "b6bb75fabd466f94f91b677afb8fb11c271f32d19129ced56eec2db05045e40c",
-          "bytes": 950102
-        },
-        {
-          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/ur-call-subscriber-v2/gpu-direct-v1/calls.jsonl",
-          "sha256": "afd84942e33bbcff64f4981c50579f6208eb819a2d2c808507f177ea587b9679",
-          "bytes": 1285887
-        }
-      ],
       "session_removed": true,
       "fresh_faults": [],
       "boot_unchanged": true,
@@ -2174,7 +2165,32 @@
           "wall_limit_s": 35,
           "scope": "Host-only negative controls for duplicate/stale/lost references,failed-call transitions,context/finalize/replay conservation and unsupported concurrent scopes."
         }
-      }
+      },
+      "retired_analysis_fingerprints": [
+        {
+          "kind": "PTI timeline",
+          "sha256": "c7b2c5a9373468047d910b999da406c270a330b1d3d3aa589262fa2e4bcab951",
+          "bytes": 864396
+        },
+        {
+          "kind": "UR API text",
+          "sha256": "b6bb75fabd466f94f91b677afb8fb11c271f32d19129ced56eec2db05045e40c",
+          "bytes": 950102
+        },
+        {
+          "kind": "UR instance metadata",
+          "sha256": "afd84942e33bbcff64f4981c50579f6208eb819a2d2c808507f177ea587b9679",
+          "bytes": 1285887
+        }
+      ],
+      "raw_retirement": {
+        "manifest": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/ur-metadata-qualified-raw-retired-20261025.jsonl",
+        "sha256": "4ea729fd3682c9485c61d286b456a82545cdaf228cc3b0cc4e357d24397a5c76",
+        "files": 43,
+        "bytes": 3388501,
+        "closed_data_replay": true
+      },
+      "next_action": "Scope graph reconciliation to the actual long-prefill call path. For called graphs,qualify an explicit UR/PTI parent/group key and child identity;signatures alone remain candidate-only. Qualify host tasks/drained boundaries and observer cost before a bounded model observation. Selected original6e40 and independent prefill/decode stay unchanged."
     }
   }
 }
