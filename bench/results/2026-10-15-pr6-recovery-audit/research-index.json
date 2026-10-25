@@ -11216,43 +11216,26 @@
   },
   "UR_PTI_identity_bridge_20261025": {
     "classification": "decision_support",
-    "status": "native_subscriber_CPU_qualified_GPU_bridge_pending",
+    "status": "direct_UR_PTI_join_qualified_graph_generations_cost_pending",
     "schedulable_now": false,
-    "prerequisites": "Committed6a4380629 current-runtime census:680 device events match independent source/API counts,no faults,owned closure. UR text lacks thread/time identity while PTI host-flow sources have exact timestamps;needs a concrete immutable-env bridge choice.",
-    "scope": "Compare UR call XPTI subscriber,UR/DDI interception,and native spans for exact generations/graph replay/failed calls on installed v711/PTI4b6d742;explicitly handle post-init environment mutation hazards.",
-    "report": ".cache/strata-research/20261025/ur-pti-identity-bridge/report.md",
-    "report_budget_bytes": 10000,
-    "model": "gpt-6-luna",
-    "main_work": "Closed-data PTI host-flow normalization and negative controls;Main owns implementation and all execution.",
-    "policy_commit": "6a4380629",
-    "report_sha256": "3c3fc6eecd0a5d5e0d6a3beb26f681067550ddcfa891cd33f9555fde360bad80",
-    "report_bytes": 9875,
-    "ownership": {
-      "run": "run_12fa11537288",
-      "task": "task_429fe1d2bdf0",
-      "dispatch": "ctx_d4eec6bdc9bf",
-      "terminal": "term_9cf97302-004f-4cdf-a1b9-cfcddbf74bb9",
-      "incarnation": "2d6a4c1d-0f61-4159-a721-40d3ae7f076f",
-      "settlement": "accepted succeeded msg_f1706ff4377d;delivery_4e70d1eb9195 acknowledged",
-      "release": "external_terminal retained;processAction none",
-      "external_owner_cleanup": "Main matched exact creation PTY/incarnation and closed its own terminal;ptyKilled=true",
-      "effective_model": "GPT-6-Luna high observed in terminal footer"
+    "decision": "Standalone preexec UR.call subscriber passes the current-runtime direct fixture gate with immutable-environment guard. PTI BUILD_WITH_XPTI=0 is unitrace-specific;it does not disable standalone UR/SYCL XPTI. Optional pti_view declines its own subscription for a foreign subscriber rather than disabling the foreign subscriber. Exact SDK source/runtime binding and direct results are retained;no graph,model,observer-cost or speed claim.",
+    "result": {
+      "commit": "e71b957b8935d405d7c86125f4a32ece21288b28",
+      "path": "bench/results/2026-10-15-pr6-recovery-audit/prefill-resources-current.json",
+      "scope": [
+        "event_reconciliation",
+        "ur_subscriber_gpu"
+      ]
     },
-    "reviewer": "/root/review_ur_pti_identity_bridge_20261025",
-    "review": {
-      "path": ".cache/strata-research/20261025/ur-pti-identity-bridge/review.json",
-      "sha256": "da1cb7aa970e33d2f7191bf602e241a02ab90db806227f3a4406464cfa5883ed",
-      "bytes": 5426,
-      "reviewer": "native Codex gpt-6-luna max"
-    },
-    "decision": "Source/design guidance only. PTI BUILD_WITH_XPTI=0 is unitrace-specific. Optional pti_view XPTI adapter environment writes are skipped for a foreign subscriber,which it does not disable. A pre-exec standalone UR subscriber remains plausible;bind exact installed loader/tracing/dispatcher source and test immutable-env startup before rejecting/adopting. No model coverage or speed claim.",
-    "next_action": "Main implements independent UR-call-span/PTI-host-flow reconciliation and finite GPU qualification on retained6e40. Keep graph/generation/observer-overhead gates open;no generic survey before new execution evidence.",
-    "transaction_retirement": {
-      "manifest": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/ur-pti-bridge-transactions-retired-20261025.jsonl",
-      "sha256": "3aa49ded544e15872b2dc4a39c16d8a7c6cde386406a8ced11e165670122fdaf",
-      "files": 5,
-      "bytes": 7398,
-      "retained": "Only report.md and review.json for the current exact-runtime bridge decision;review again after qualification/rejection."
+    "limits": "Direct fixture only:680 successful enqueue/device joins,3453 complete call pairs,current NEO,same native observer. First guarded adapter initialization failed with exit87 before enqueue and remains in647a66195. Explicit pre-exec UR_L0_ENABLE_SYSMAN_ENV_DEFAULT=0 passes the separate small gate;no production environment/speed/model or ordinary teardown qualification.",
+    "next_action": "Main extends callback payload for queue/event/allocation generations and command-buffer parent/child identity. Qualify reuse/graph/shape/drained boundaries and observer cost before model tracing. No duplicate generic survey while these known implementation gates remain.",
+    "research_retirement": {
+      "archived_metadata_commit": "76eab26b1aa36d0637adcf2c8e7a468fd2e386c5",
+      "manifest": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/ur-direct-bridge-raw-retired-20261025.jsonl",
+      "sha256": "99904329a8db8b936e7741fb0b5f3c7b724253d1059879df7f841bdc095290eb",
+      "files": 2,
+      "bytes": 15301,
+      "reason": "Read-only report reviewed by native Luna-max;current bridge-selection question resolved. Main did not load the original report body. Useful source corrections and remaining gates retained here;settled external terminal observed exited/operator_close."
     },
     "exact_SDK_inspection": {
       "source_root": "/home/yayoi/ghq/github.com/intel/llvm/.worktree/toolchain-sycl-v711-b570-20261011",
@@ -11290,14 +11273,6 @@
       },
       "immutable_env_requirement": "Use preexec SYCL_UR_TRACE=0;inspected SYCL trace branches call setenv for UR_LOG_TRACING/UR_LOG_LOADER. UR tracing initializes ur.call and ur.call.debug and emits function_with_args begin/end instance IDs. Configure subscriber/dispatcher/trace enable before exec;verify callback delivery and no environment mutation on CPU canary before GPU.",
       "limits": "Relevant source blobs match the compiler-reported SDK checkout;installed runtime ELF transformations verified in full above. Not a reconstructed complete historical SDK compiler-input census or native subscriber qualification. ghq root LLVMfbccb466 is a different revision. Independent compiler/runtime assets only;no XeStrata application code read."
-    },
-    "implementation": {
-      "native_source_commit": "567b54356beab5de8bd7d8fbae1cf95f94f2158d",
-      "native_source": "bench/sycl/ur_call_subscriber.cpp",
-      "native_library_sha256": "209db0f2191b8eb694848f2e4834c7f2acf6d5ada7f471c2235a1810a860aaaf",
-      "controller_driver_source_commit": "3dddb1bda",
-      "result": "prefill-resources-current.json:event_reconciliation.ur_subscriber",
-      "host_gate": "Four native mutation cases and original CPU UR canary passed;two complete UR instance pairs,status46,single thread. No GPU/model/overhead or ordinary teardown qualification. Original Python-control refusal preserved by Git reference."
     }
   }
 }

@@ -490,25 +490,27 @@ planned operations, actual API results and collector device executions.
 gate, including graph-child expansion, lifetime generations, rejected submissions,
 host-task completion, shapes/requested bytes and drained phase bounds. Its
 18 adversarial host controls pass using synthetic records only. Actual UR/PTI
-adapters, model-route coverage, clock mapping and observer cost still require
-qualification before a model observation. On current NEO, the retained6e40
-submission fixture now matches606 kernels,53 copies/55,844 requested bytes,one
-fill/1,028 bytes and20 barriers across the source/API/device ledgers. All680
-collector GPU instances have exact unique host-append flow sources and GPU sinks;
-one barrier has no optional host-completion sink. Six parser/link host controls
-pass,all native owners close normally and no fresh fault appears. This qualifies
-the bounded count/internal-link checks only. UR text lacks call time/thread IDs;
-its independent per-operation bridge,graph/reuse coverage and observer cost remain
-open. A standalone preloaded XPTI UR subscriber now passes CPU qualification:
-four native controls reach their markers and block the standard environment
-mutation APIs;the original CPU UR canary yields two complete,single-thread
-`urPlatformGetApiVersion` instance pairs with the expected validation status46.
-The dispatcher/subscriber/validation constructor order is verified on the installed
-SDK. The earlier Python control stopped before its test marker and remains failed
-in the original receipt;the observer ELF is unchanged. Next,join actual UR call
-intervals to the PTI host/device links in a bounded GPU fixture,then qualify
-graph/lifetime coverage and observer cost. No production prefill/decode source
-or selected binary changes;hardware saturation remains unknown.
+adapters, model-route coverage and observer cost still require qualification
+before a model observation. On current NEO, the retained6e40 submission fixture
+matches606 kernels,53 copies/55,844 requested bytes,one fill/1,028 bytes and20
+barriers across the source/API/device ledgers. All680 GPU executions now also
+join distinct,successful UR enqueue instances by their actual caller thread and
+raw-clock interval,through exact PTI host/device flow endpoints. This uses3,453
+complete UR call pairs;14 adversarial host controls reject missing,ambiguous or
+wrong-thread/time/identity joins. Four native CPU controls qualify the standard
+environment-mutation guard. Native owners and collector sessions close normally,
+with no fresh faults. One barrier lacks an optional host-completion sink.
+
+The first guarded GPU startup stopped during`urAdapterGet`,before any enqueue;
+that failed result remains archived. The exact SDK source defaults to rewriting
+`ZES_ENABLE_SYSMAN` even when it was supplied as0. A separately committed
+diagnostic plan sets`UR_L0_ENABLE_SYSMAN_ENV_DEFAULT=0` before exec and passes
+without triggering the guard. Dispatcher/subscriber/validation/collector load order
+is verified. This does not qualify disabled`zesInit`,ordinary runtime destruction
+or a production environment change. Next,add queue/event/allocation generations
+and graph parent/child metadata,then qualify graph/reuse,shapes,host tasks,drained
+boundaries and observer cost. Production prefill/decode source and the selected
+binary remain unchanged;hardware saturation remains unknown.
 
 Basic [profile-off/on graph support](../bench/results/2026-10-15-pr6-recovery-audit/mtp-graph-observer-current.json)
 already passed, with exact6e40 reuse checked separately. The closed
