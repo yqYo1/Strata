@@ -1,5 +1,5 @@
 {
-  "stage": "prepared",
+  "stage": "failed",
   "controller_source_commit": "b8e0f603fdbe7611a9cc08237821d4868436b407",
   "build_source_commit": "1baa0547f151264d4ef7a0972e5355b6b1b3fe6b",
   "prior_failed_gate": {
@@ -373,12 +373,177 @@
   "criteria": "Eight ordered host checks then eight fresh device processes on the exact same-build fixtures;stop first failure,no retry. Original build host observation remains failed;this new plan owns output separately from the build tree. Require all host checks before GPU work. Require exit0,numerical/bounds/loan/publication/RESTORE markers,pre-main validation,silent parameter validation and an observed pinned updated NEO. Trace enqueue work where expected;smoke refusal may perform allocation only. Check actual process closure,boot and fresh driver faults after every case.",
   "retention": "Keep compact individual fixture outcomes and source/artifact/runtime identities. Delete successful API traces,maps and repeated logs after committed replay. Keep this generation only for imminent model/state and independent prefill/decode comparisons;do not select it from fixture success.",
   "pending": "Model admission/state handoff,matched repeated long prefill and independent decode,task/agent/RESTORE and physical262144 qualification. Retained UR reference means ordinary runtime teardown is unqualified.",
-  "outcomes": [],
+  "outcomes": [
+    {
+      "label": "host-prefill_expert_bank_plan_test",
+      "kind": "host",
+      "exit_code": 0,
+      "passed": true,
+      "ownership_closed": true,
+      "GPU_executed": false,
+      "stdout_sha256": "50c24d388a1b1098f54f2366e3db050c67a7aa3b7e31b5a51f07a069bd993a91",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "host-full_context_diagnostic_host_test",
+      "kind": "host",
+      "exit_code": 0,
+      "passed": true,
+      "ownership_closed": true,
+      "GPU_executed": false,
+      "stdout_sha256": "6ef1580e04a0a7e82eb74b89bb5dfb15cf6e7f30882f020ec4e448ff9409eaa6",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "host-cache_tail_host_test",
+      "kind": "host",
+      "exit_code": 0,
+      "passed": true,
+      "ownership_closed": true,
+      "GPU_executed": false,
+      "stdout_sha256": "f6f7170e86bdd879c9a73c42d971ecaaded47397242a02238fb5c98ce19219cc",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "host-prefill_scratch_host_test",
+      "kind": "host",
+      "exit_code": 0,
+      "passed": true,
+      "ownership_closed": true,
+      "GPU_executed": false,
+      "stdout_sha256": "352f4f042fff4a560a9a0166e3f70874c782f5c0137c3bd538669a6c3c2f41f0",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "host-residency_publication_host_test",
+      "kind": "host",
+      "exit_code": 0,
+      "passed": true,
+      "ownership_closed": true,
+      "GPU_executed": false,
+      "stdout_sha256": "1a01d1d570a52f64dc0642bfcb02e99284e5d3569619caa6ae358cd493b722b0",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "host-cpu_work_census_host_test",
+      "kind": "host",
+      "exit_code": 0,
+      "passed": true,
+      "ownership_closed": true,
+      "GPU_executed": false,
+      "stdout_sha256": "223c1554a798d12f816dccd5ebe8fdb286c7ee2c42977f3d39ea89200cfc2e9c",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "host-iq2_phase_host_test--pair=0",
+      "kind": "host",
+      "exit_code": 0,
+      "passed": true,
+      "ownership_closed": true,
+      "GPU_executed": false,
+      "stdout_sha256": "c1de4716a166b8f74b6fe3c67498529390103e200ce3157fa578ee4ffb5dd3ad",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "host-iq2_phase_host_test--pair=1",
+      "kind": "host",
+      "exit_code": 0,
+      "passed": true,
+      "ownership_closed": true,
+      "GPU_executed": false,
+      "stdout_sha256": "352b62481a028fb129e730b97eb2262c411ca1f96fdbf2243958f22981f71e98",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "submission",
+      "kind": "device",
+      "exit_code": 0,
+      "passed": true,
+      "ownership_closed": true,
+      "parameter_validation": true,
+      "fresh_faults": [],
+      "restore_checks": null,
+      "mapped_runtime_fingerprint": "01afd19cba1503e4c2368d9ca298c46cc07b372b6d17a02f342fb97ffdff1d77",
+      "stdout_sha256": "dadad801d8022f3b40ad3bdab3e29f65fc13e1f61d60b219406f04e9881bb5be",
+      "stderr_sha256": "070468edbd6e2b06fadf270c6dbacbf3146c0f30ef0287fc279effe43397e004",
+      "trace_bytes": 949721
+    },
+    {
+      "label": "graph0",
+      "kind": "device",
+      "exit_code": 0,
+      "passed": true,
+      "ownership_closed": true,
+      "parameter_validation": true,
+      "fresh_faults": [],
+      "restore_checks": null,
+      "mapped_runtime_fingerprint": "01afd19cba1503e4c2368d9ca298c46cc07b372b6d17a02f342fb97ffdff1d77",
+      "stdout_sha256": "8ead80115559fba31453d1e57d8d58ed2b1bc7536407992b51986dd09c54e2f5",
+      "stderr_sha256": "58ad4d8359396fb6ec8879154e4395c37810dde066b2c65ea396e154dc211a42",
+      "trace_bytes": 22712
+    },
+    {
+      "label": "graph1",
+      "kind": "device",
+      "exit_code": 0,
+      "passed": true,
+      "ownership_closed": true,
+      "parameter_validation": true,
+      "fresh_faults": [],
+      "restore_checks": null,
+      "mapped_runtime_fingerprint": "01afd19cba1503e4c2368d9ca298c46cc07b372b6d17a02f342fb97ffdff1d77",
+      "stdout_sha256": "c8ce8e2f1bec7268d3bd0d978528179a3a80e97a3a01ad881e4af24fe16de5a7",
+      "stderr_sha256": "a5bb7b53c691f03c1cd5f7ea32faa5d4e13ae47ebff928fc5e9c559b05383af5",
+      "trace_bytes": 25604
+    },
+    {
+      "label": "scratch-smoke",
+      "kind": "device",
+      "exit_code": 0,
+      "passed": true,
+      "ownership_closed": true,
+      "parameter_validation": true,
+      "fresh_faults": [],
+      "restore_checks": null,
+      "mapped_runtime_fingerprint": "5ba3904c0c184fb27ab736e3b55c51aa7563307476fb880b14584f567a1ca37b",
+      "stdout_sha256": "d042b38fc9217cd4924a04307023ebb05ed0884fee1497766748a19e407ce7e1",
+      "stderr_sha256": "72cd98b348fa303ae62f60292359aef43ceddde96d367dc2a302fca9393a8cf7",
+      "trace_bytes": 780473
+    }
+  ],
   "active": false,
   "ownership_closed": true,
   "complete": false,
   "passed": false,
   "model_qualified": false,
   "clean_speed_qualified": false,
-  "production_selected": false
+  "production_selected": false,
+  "error": "RuntimeError('device fixture failed: scratch-full')",
+  "fresh_faults": [],
+  "boot_unchanged": true,
+  "driver_after": {
+    "pci": "/sys/bus/pci/devices/0000:05:00.0",
+    "driver": "xe",
+    "vendor": "0x8086",
+    "device": "0xe20c",
+    "kernel": "7.0.0-38-generic",
+    "devcoredump": false
+  },
+  "failure_diagnosis": {
+    "mechanism": "scratch fixture exact_bytes explicitly assumes Alias1/MMQ0,but its process inherited alias default0 from the runtime-only environment. Non-alias bytes_needed is conservative;the exact-capacity negative check is not applicable to that fixture configuration.",
+    "failed_case": "scratch-full",
+    "stderr": "prefill scratch fixture: one byte short was admitted",
+    "partial_cases_passed": [
+      "exact_init",
+      "moved_relayout",
+      "smaller_relayout",
+      "growth_refusal"
+    ],
+    "host_checks_passed": 8,
+    "device_checks_passed": 4,
+    "failed_exit_code": 1,
+    "fresh_faults": [],
+    "ownership_closed": true,
+    "next_action": "Commit a fresh plan pinning the original layout fixture environment. Reuse only8 host and3 submission/graph passes on identical assets/settings;rerun scratch smoke with the corrected layout,then full/loan/expert/RESTORE. No model or decode-preservation qualification."
+  }
 }
