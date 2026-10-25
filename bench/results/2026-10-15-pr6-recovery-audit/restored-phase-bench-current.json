@@ -1,5 +1,5 @@
 {
-  "stage": "prepared",
+  "stage": "host-closed",
   "source_commit": "5c35a18ce7a80c5b217fee18498813efa8dda5bd",
   "plan": {
     "order": [
@@ -108,7 +108,26 @@
     "minimum_time_ms": 10000,
     "maximum_endpoint_fraction": 0.0001,
     "source_sha256": "dbf7cc7a21e64dcd37632872be129fc5433e82fadb0e859792c01fbbf1deb676",
-    "source_contract": "Same native libstdc++ steady_clock::now;65536 consecutive pairs,sort/output outside pairs. Observed endpoint/rounding screen,not a universal bound or time subtraction."
+    "source_contract": "Same native libstdc++ steady_clock::now;65536 consecutive pairs,sort/output outside pairs. Observed endpoint/rounding screen,not a universal bound or time subtraction.",
+    "binary": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/restored-phase-bench-v1/host/clock_probe",
+      "sha256": "f0efdb55df7c5eeb8b57e77fcdb5d6d775509ad1f17cb8fc2d453b2b532416e0"
+    },
+    "passed": true,
+    "ownership_closed": true,
+    "calibration": {
+      "samples": 65536,
+      "resolution_ns": 1,
+      "min_ns": 20,
+      "p99_ns": 30,
+      "max_ns": 5180,
+      "endpoint_rounding_fraction_at_floor": 6.036e-06,
+      "provider": {
+        "path": "/usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.33",
+        "sha256": "1fd75fe70354a416d75aef22bcae68c47bd25d20e2d0568c30b1a9838cf62f11"
+      }
+    },
+    "host_tests": 2
   },
   "benchmark_fingerprint": "a574a43322b06d190d6bee83facc0967f103b8b4763627d7fe99ccc0a56bd473",
   "model_fingerprint": "986be81744907994c44c232523362a2f30e7256b8f23339407d3e2f6e87ef2ff",
@@ -372,5 +391,10 @@
     "file_cap": 67108864,
     "total_cap": 134217728
   },
-  "retention": "Keep compact individual samples,route/clocks/journal/conservation/owner/fault decisions. Retire closed successful raw/JIT data after replay;only original fallback and restored candidate retained for this imminent phase comparison.No new engine generation or inference adoption."
+  "retention": "Keep compact individual samples,route/clocks/journal/conservation/owner/fault decisions. Retire closed successful raw/JIT data after replay;only original fallback and restored candidate retained for this imminent phase comparison.No new engine generation or inference adoption.",
+  "host_observation": {
+    "passed": true,
+    "GPU_executed": false,
+    "ownership_closed": true
+  }
 }
