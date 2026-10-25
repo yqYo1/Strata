@@ -70,6 +70,17 @@ repeated prefill/decode speed,quality and agent-session gates remain open. Physi
 allocation/final-slot execution still needs its own bounded plan and evidence;
 the earlier retired streamed/layout results do not qualify this source.
 
+The [current throughput comparison](../bench/results/2026-10-15-pr6-recovery-audit/restored-phase-bench-current.json)
+uses the updated NEO and the existing6e40/restored1baa packages,with six fresh
+processes in0/1/1/0/0/1 order. Official`bench.sh` measures four117489-token inputs
+per process,separating first use from the subsequent-three median. Its CPU clock
+and provider controls pass; the cohort is collecting. This is a prefill-only
+comparison. Keep the separate repeated decode and agent-session gates open.
+The first original6e40 process passes source/provider/journal/route/owner/fault
+checks:900.6211tok/s first use,then974.7035,974.7956 and974.4836tok/s
+(median974.7035). This is below the historical old-runtime1003tok/s;
+one process does not attribute that difference or compare the restored candidate.
+
 ## Long-prefill processing order
 
 The selected benchmark configuration uses native BF16, the vLLM Xe2 backend,
