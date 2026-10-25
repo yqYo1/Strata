@@ -341,7 +341,7 @@
     "host_runner_archive": "f935f09791c5f834d0ed66c430c8d8c8d4a4d423:tools/sycl/cpu_service_profile.py"
   },
   "production_pool": {
-    "stage": "prepared",
+    "stage": "pool-checked",
     "source_commit": "e42ae21ac82ea00772569299a07b35f0448a48ac",
     "base_native_source": "6e40afc1beddd059ee518617f6c1efce1da14aca",
     "prior_preparation_failure": {
@@ -525,14 +525,45 @@
       "file_cap": 33554432,
       "total_cap": 2147483648
     },
-    "passed": false,
-    "complete": false,
+    "passed": true,
+    "complete": true,
     "active": false,
     "ownership_closed": true,
     "GPU_executed": false,
     "native_engine_built": false,
-    "production_pool_checked": false,
-    "outcomes": [],
+    "production_pool_checked": true,
+    "outcomes": [
+      {
+        "observer": 0,
+        "passed": true,
+        "exit_code": 0,
+        "ownership_closed": true,
+        "cases": 28,
+        "formats": 7,
+        "widths": [
+          1,
+          2,
+          3,
+          4
+        ],
+        "checksum_fnv1a64_le": "bb3654e880dfda0d"
+      },
+      {
+        "observer": 1,
+        "passed": true,
+        "exit_code": 0,
+        "ownership_closed": true,
+        "cases": 28,
+        "formats": 7,
+        "widths": [
+          1,
+          2,
+          3,
+          4
+        ],
+        "checksum_fnv1a64_le": "bb3654e880dfda0d"
+      }
+    ],
     "prior_source_snapshot_retirement": {
       "complete": true,
       "files": 554,
@@ -541,6 +572,44 @@
       "manifest_path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/uncompiled-cpu-source-preview-20261025.jsonl",
       "manifest_sha256": "92b7d0b75d4fa86b9f325fc242afde3959be9ffa315d1e7833d2c0094a58331e",
       "failed_source_commit": "bd3897759"
-    }
+    },
+    "dependency_closure": {
+      "files": 612,
+      "uncovered_files": 0,
+      "sha256": "0ba93ecb049ea67fa301096db5f46f21e14e1331067935d80e6f66def4a19786"
+    },
+    "fixture": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-service-original-v2/build/cpu_service_pool_test",
+      "bytes": 2503536,
+      "sha256": "ca750ca1317bb28ecb8300411e224939bbe5706fc29fce478ec2b91445a31549"
+    },
+    "checksum_match": true,
+    "command_outcomes": [
+      {
+        "label": "configure",
+        "exit_code": 0,
+        "ownership_closed": true
+      },
+      {
+        "label": "build-pool",
+        "exit_code": 0,
+        "ownership_closed": true
+      },
+      {
+        "label": "compiler-census",
+        "exit_code": 0,
+        "ownership_closed": true
+      },
+      {
+        "label": "observer0",
+        "exit_code": 0,
+        "ownership_closed": true
+      },
+      {
+        "label": "observer1",
+        "exit_code": 0,
+        "ownership_closed": true
+      }
+    ]
   }
 }

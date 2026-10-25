@@ -293,13 +293,20 @@ passes owned GCC13.3 compilation and all standalone counter/clock controls, with
 three actual project includes matched and both processes closed at exit0.
 Its8 raw/fixture files (48,600bytes) and one-shot runner retire after original
 source/recipe recovery; the runner recovers at`b05a22c52`. This qualifies neither
-the production pool nor a model measurement. The prepared
+the production pool nor a model measurement. The separate
 `cpu_service_pool_test` covers the real five-worker pool, mixedNT1..4,
 seven format pairs, the96-expert batch boundary, output canaries and leaf-output
-parity. Its observer-off/on arms use separate preexec settings. It is unbuilt
-and unrun; the old width cohort and extra-build retirement are now closed. Execute it
-requiring both passes and matching output checksums, then qualify observer
-overhead separately. Optional
+parity. Both separate preexec observer-off/on processes now pass all28 cases
+with matching output checksum`bb3654e880dfda0d`. The reconstructed source is
+original6e40 plus four explicitly scoped observer/test patches; it contains none
+of the current tree's unselected layout/full-context changes. All612 actual
+compiler inputs match their prospective pins, and configure,build,census and
+both test processes close at exit0. This is same-leaf parity and counter/owner
+validation, not an independent mathematical oracle or a speed measurement.
+The build's CPU objects and fixture remain for the imminent original-plus-observer
+engine/model attribution; the validated original engine remains intact.
+Model observer overhead and same-request census/time reconciliation are still
+pending. Optional
 `STRATA_CPU_SERVICE_PROFILE` compilation plus preexec`STRATA_CPU_SERVICE=1`
 collects decode-only pool GU/SwiGLU, hidden quantization and Down leaf scopes for
 the seven observed format pairs at H2560/FF640/NT1..4. It records calling-thread
@@ -341,7 +348,7 @@ recipe recover from Git; the original host result/source remain unchanged.
 Its12 temporary fixture/log files (70,843bytes) and one-shot runner are retired;
 the runner and recipe recover from the pinned source/plan in the host result.
 This changes neither the selected original6e40 executable nor
-the active clean-width inputs; it is not an inference optimization or a speedup.
+the closed width samples; it is not an inference optimization or a speedup.
 
 The standalone collector checks passed in a serialized gap between model
 processes. Require production-pool conservation/numerical checks before using
