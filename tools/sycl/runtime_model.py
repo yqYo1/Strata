@@ -23,7 +23,7 @@ import runtime_probe as runtime
 
 guards, validation, supervision = runtime.guards, runtime.validation, runtime.supervision
 P, B = runtime.P, runtime.B
-ROOT = B / 'neo-39758-model-v1'
+ROOT = B / 'neo-39758-model-v2'
 RESULT = runtime.RESULT.with_name('runtime-model-current.json')
 write, require, digest = runtime.write, guards.require, runtime.digest
 
@@ -65,14 +65,17 @@ def current(row):
 
 
 def prepare():
-    require(not ROOT.exists() and not RESULT.exists(), 'fresh model gate only; never retry')
+    require(not ROOT.exists(), 'fresh model gate only; never retry')
+    prior = validation.committed(RESULT)
+    require(prior['stage'] == 'preparation-failed' and not prior['GPU_executed'] and
+        not prior['native_executed'] and prior['ownership_closed'] and not prior['active'],
+        'preserve closed pre-native preparation refusal')
+    prior_reference = dict(commit=gen.git('log', '-1', '--format=%H', '--',
+        str(RESULT.relative_to(P))).decode().strip(), path=str(RESULT.relative_to(P)), sha256=digest(RESULT))
     qualification, native, base, speed, probe = references()
     revision = gen.git('rev-parse', 'HEAD').decode().strip()
     pins = gen.benchmark_pins(revision)
     model.model_pins(base['config'], base['models'])
-    ROOT.mkdir(mode=0o700)
-    for name in ('tmp', 'cache'):
-        (ROOT / name).mkdir()
     config = copy.deepcopy(base['config'])
     config['args'][config['args'].index('--expert-profile') + 1] = str(ROOT / 'expert-profile.bin')
     config.update(log=str(ROOT / 'engine.stderr'), env={})
@@ -83,14 +86,18 @@ def prepare():
         env['UR_ENABLE_LAYERS'] == 'UR_LAYER_PARAMETER_VALIDATION', 'bounded native validation only')
     for key in ('UR_L0_V2_FORCE_DISABLE_COPY_OFFLOAD', 'NEOReadDebugKeys', 'EnableDirectSubmission',
                 'STRATA_SYCL_PREFILL_SAME_QUEUE', 'SYCL_CACHE_PERSISTENT', 'ZES_ENABLE_SYSMAN'):
-        require(env[key] == native['environment'][key], 'qualified safety changed: ' + key)
+        require(env[key] == qualification['environment'][key], 'qualified safety changed: ' + key)
+    ROOT.mkdir(mode=0o700)
+    for name in ('tmp', 'cache'):
+        (ROOT / name).mkdir()
     shutil.copyfile(P / 'data/expert-profile.bin', ROOT / 'expert-profile.bin')
     write(ROOT / 'config.json', config)
     write(ROOT / 'plan.json', dict(binary=native['binary'], native_validation_probe=probe))
     with socket.socket() as sock:
         sock.bind(('127.0.0.1', 0))
         port = sock.getsockname()[1]
-    row = dict(stage='prepared', source_commit=revision, benchmark_files=len(pins),
+    row = dict(stage='prepared', source_commit=revision, prior_preparation_failure=prior_reference,
+        benchmark_files=len(pins),
         benchmark_fingerprint=fingerprint(pins), binary=native['binary'],
         original_configuration=base['reference'], native_validation_probe=probe,
         runtime_reference=dict(path=str(runtime.RESULT.relative_to(P)), sha256=digest(runtime.RESULT),
