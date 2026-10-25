@@ -76,10 +76,17 @@ processes in0/1/1/0/0/1 order. Official`bench.sh` measures four117489-token inpu
 per process,separating first use from the subsequent-three median. Its CPU clock
 and provider controls pass; the cohort is collecting. This is a prefill-only
 comparison. Keep the separate repeated decode and agent-session gates open.
-The first original6e40 process passes source/provider/journal/route/owner/fault
-checks:900.6211tok/s first use,then974.7035,974.7956 and974.4836tok/s
-(median974.7035). This is below the historical old-runtime1003tok/s;
-one process does not attribute that difference or compare the restored candidate.
+On this B570,the first pair passes source/provider/journal/route/owner/fault
+checks with identical request hashes and no fresh fault:
+
+| Package | First use,tok/s | Subsequent-three median | Subsequent range |
+| --- | ---: | ---: | ---: |
+| Original6e40 | 900.6211 | 974.7035 | 974.4836..974.7956 |
+| Restored1baa | 898.6723 | 975.4350 | 973.5533..975.6237 |
+
+The first paired ratio is1.00075053;four independent processes remain.
+Both are below the historical old-runtime1003tok/s. This does not attribute
+that difference,decide the cohort,or qualify decode preservation/adoption.
 
 ## Long-prefill processing order
 
