@@ -748,20 +748,39 @@ observer ran. This is callback-route evidence,not complete device coverage,
 observer cost,speed,decode preservation or library-internal graph absence.
 See`route_discovery` in the same prefill resource result. Check called oneMKL
 native-command/host-task submission before extending the device ledger. The
-reviewed next fixture uses one known-answer production`Gemm::bf16` call with
+completed fixture uses one known-answer production`Gemm::bf16` call with
 all-thread UR,Level Zero append and PTI observation through a checked drain.
 Its built probe uses64x320x10240 BF16 inputs and FP32 output stride323,with
 full20480-value exact/input/stride/end-guard checks. All1383 actual compiler
 inputs are covered. The old broad SDK inventory refused3 updated system
 headers before configure;the separate prospective build pins those updates,
 and none occurs in this probe's actual compiled closure. The original refusal
-stays failed. Compilation alone supplies no new GPU validation.
+stays failed. The fresh native process subsequently passes the full oracle and
+guards,checked drain,actual provider/namespace checks and silent parameter
+validation,and closes normally without a fresh fault. Original capture source
+is`ccd2a46ca`,with its outcome at`cf00172d7`;the selected engine is unchanged.
+
+Closed-data analysis source`8df13f8f2` and plan`167f50fd2` independently join all
+ten observed GPU executions to ten distinct successful UR enqueue instances
+through actual PTI append flows,caller thread and clock intervals:two kernel
+appends and eight copies. The two`urQueueIsGraphCaptureEnabledExp` calls are
+capability queries;no graph lifecycle/submission is observed in this capture.
+Thus the original`graph_API_seen=true` does not establish graph execution.
+The queries total23.213041ms of charged host wall time in this first-use,
+instrumented call;this is not repeated model overhead or a clean speed sample.
+Twenty-seven subscriber/link and nine envelope/classification host controls pass.
+The buffer read and write still lack typed queue/extent/lifetime metadata;
+independent library work planning and model-route/observer-cost coverage also
+remain open. These exact joins do not qualify complete model attribution or
+identify the cause of the historical prefill decline. Preserve the original
+native-passed/coverage-pending status and retrieve further raw detail only for
+those named gaps.
 The source has two BF16 GEMM sites per executed inner batch,four projection
 sites,and an early no-needed-rows return;do not infer dynamic counts from the
 15 callback markers. The existing runtime manifest already pins the L0 v2
 adapter;observe its actual mapping/capability rather than infer installed
-behavior from the inspected SDK source. No new research scope is eligible
-until that fixture identifies a concrete gap.
+behavior from the inspected SDK source. Any next research scope must address
+one of these actual coverage gaps rather than repeat a generic graph survey.
 
 Basic [profile-off/on graph support](../bench/results/2026-10-15-pr6-recovery-audit/mtp-graph-observer-current.json)
 already passed, with exact6e40 reuse checked separately. The closed

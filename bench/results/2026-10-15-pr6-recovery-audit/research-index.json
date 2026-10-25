@@ -11325,7 +11325,7 @@
   },
   "oneMKL_native_work_coverage_20261025": {
     "classification": "decision_support",
-    "status": "reviewed_first_oneMKL_fixture_pending",
+    "status": "first_fixture_passed_direct_links_partial",
     "schedulable_now": false,
     "question": "Cover called oneMKL/native-command/interop/host-task GPU work without assuming every device operation has one same-thread UR kernel enqueue.",
     "prerequisites": "Actual selected117K mode10 direct-MTP callback route is verified;library-internal coverage remains unknown.",
@@ -11378,10 +11378,10 @@
       "Existing current-runtime manifest already hashes forced L0 v2 adapter0.12.0 as05bcafc4a0d45d33f957f16ffb4ba4776da675e79ade1121b93b94b8549335d8. Exact actual loaded provider/capability and inspected-source-to-installed-build identity remain different checks.",
       "Official2024.1 oneMKL API documentation supports only the general queue/event interface;the actual selected2026.1 package must supply runtime/library identity for the fixture."
     ],
-    "next_action": "Main implements one small known-answer production Gemm::bf16 call,not just direct public-API replacement. Keep actual operator/library/provider pins,source/build recipe,all-thread UR and native/L0/PTI links,queue/list/event generations,checked drain/async errors and no fresh fault. Start with one call;add unrelated-queue negative control only after baseline coverage is understood. Observer cost remains separate.",
+    "next_action": "Qualify typed queue,extent,event and host-payload lifetime metadata for actual oneMKL buffer read/write;establish an independent wrapper-work ledger before model-route/observer-cost qualification. Actual first-call graph records are capability queries only;do not launch another generic graph survey or call these synthetic first-use timings the regression cause.",
     "next_research_eligibility": {
       "schedulable_now": false,
-      "prerequisite": "Closed first oneMKL fixture with concrete unresolved native/host-task records and actual runtime/library identities."
+      "prerequisite": "Main next typed buffer/native-work fixture must leave a concrete source/protocol question beyond the observed read/write metadata gap;current graph capability queries do not establish graph execution."
     },
     "transaction_retirement": {
       "manifest": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-onemkl-transactions-retired-20261025.jsonl",
@@ -11391,6 +11391,22 @@
       "remaining_files": [
         "report.md",
         "review.json"
+      ]
+    },
+    "closed_fixture": {
+      "native_capture_source": "ccd2a46ca",
+      "native_result_commit": "cf00172d7",
+      "link_analysis_source": "8df13f8f2",
+      "frozen_analysis_plan": "167f50fd2",
+      "linked_direct_executions": 10,
+      "kernel_appends": 2,
+      "copy_appends": 8,
+      "graph_capability_queries": 2,
+      "graph_lifecycle_or_submission_calls": 0,
+      "complete_model_coverage": false,
+      "host_controls": [
+        27,
+        9
       ]
     }
   },
