@@ -11396,8 +11396,8 @@
   },
   "prefill_runtime_crossover_review_20261026": {
     "classification": "decision_support",
-    "status": "eligible",
-    "schedulable_now": true,
+    "status": "startup-refused-no-task-execution",
+    "schedulable_now": false,
     "prerequisites": {
       "same_original_binary_repeated_decline": true,
       "four_request_hashes_and_metrics_matched": true,
@@ -11407,6 +11407,13 @@
     "previous_scope": "runtime_prefill_drift_controls_20261025",
     "report_path": ".cache/strata-research/20261026/prefill-runtime-crossover/report.md",
     "report_budget_bytes": 10240,
-    "main_next": "Prepare private drivers and frozen plans;review returned report through native Luna/max before long model crossover."
+    "main_next": "Main reviews frozen source and executes the CPU negative controls and small native gates. Do not retry unchanged startup. No research report or completed independent review is claimed.",
+    "launch": {
+      "task": "task_7ff1414f7c96",
+      "dispatch": "ctx_f038089414d9",
+      "failure": "agent_readiness:agent-update-prompt",
+      "task_ran": false,
+      "release": "released:closed_agent_terminal"
+    }
   }
 }

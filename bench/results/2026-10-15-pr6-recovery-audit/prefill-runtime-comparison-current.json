@@ -1,0 +1,404 @@
+{
+  "stage": "prepared",
+  "source_commit": "d53e15bdad5b10e65b8db3e883ec124bfd6b9794",
+  "template_sha256": "9543297abc2ce0b4530ee6984d55366e735881caf42a08239f3494d655f9e10d",
+  "runtime_sha256": "09ad358e12f6ef58bfc0a978519927863f3d09949a033a1e224db95997647d97",
+  "configuration": {
+    "exe": "/home/yayoi/orca/workspaces/Strata/sycl/tools/sycl/engine_once.py",
+    "args": [
+      "--pack",
+      "/home/yayoi/.local/share/strata-sycl/packs/qwen3.8-flash-next-iq3_s",
+      "--native",
+      "/home/yayoi/.local/share/strata-sycl/models/qwen3.8-flash-next-iq3_s/IQ3_S/Qwen3.8-Flash-Next-GSQ-RCO-IQ3_S-00001-of-00002.gguf",
+      "--max-context",
+      "131072",
+      "--kv",
+      "int8",
+      "--kv-resident",
+      "131072",
+      "--expert-cache",
+      "1256",
+      "--expert-profile",
+      "/home/yayoi/orca/workspaces/Strata/sycl/data/expert-profile.bin",
+      "--expert-cache-per-layer",
+      "--pool-workers",
+      "5",
+      "--pcie-frac",
+      "0",
+      "--adapt-swaps",
+      "0",
+      "--conversation-cache-mib",
+      "0",
+      "--prompt-cache",
+      "0",
+      "--turn-token",
+      "-1",
+      "--suffix-draft",
+      "0",
+      "--greedy",
+      "--no-spec-split",
+      "--short-read",
+      "0",
+      "--spec",
+      "4",
+      "--mtp",
+      "/home/yayoi/.local/share/strata-sycl/mtp/rt",
+      "--prefill",
+      "8192",
+      "--vram-reserve-mib",
+      "700",
+      "--no-coupled-draft",
+      "--no-token-graph"
+    ],
+    "cwd": "/home/yayoi/orca/workspaces/Strata/sycl",
+    "tokenizer": "/home/yayoi/.local/share/strata-sycl/packs/qwen3.8-flash-next-iq3_s/tokenizer",
+    "model_name": "qwen3.8-flash-next-iq3_s-primary",
+    "aliases": [
+      "strata"
+    ],
+    "host": "127.0.0.1",
+    "log": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/restored-phase-bench-v1/0/engine.stderr",
+    "engine_silence_s": 480,
+    "parallel": 1,
+    "open_browser": false,
+    "env": {}
+  },
+  "binary": {
+    "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/strata",
+    "bytes": 22190000,
+    "sha256": "22182f1a5e62e5f4259ce49a75ae44afbd988166ec79324816e499ff37ef60e4"
+  },
+  "fixtures": {
+    "sycl_verifier_retirement_test": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/sycl_verifier_retirement_test",
+      "sha256": "499ab6589e2fbf61208816a667c23f56bdc0a1de6d5068479de87c41e6d2bd49"
+    },
+    "sycl_submission_test": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/sycl_submission_test",
+      "sha256": "5a434921664fac6b111ba2a0de5ebe4fd0182d226f1c56d34aeffa73171b9b79"
+    },
+    "file_expert_source_test": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/file_expert_source_test",
+      "sha256": "df9fa1d685dfab3ab0d2913b65bcfc12de061e3371c210802e27c3afcb18d04f"
+    },
+    "sycl_mmvq_test": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/sycl_mmvq_test",
+      "sha256": "ed4737cef1cfa876ec20528f0fb1904c8b87f594b842308d1f789d4096ef2eea"
+    },
+    "residency_publication_host_test": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/residency_publication_host_test",
+      "sha256": "7583677b558b9263501a447c0bfbcdf587c5e5cdbfe5d624ef5560035761e0fb"
+    },
+    "cache_tail_host_test": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/cache_tail_host_test",
+      "sha256": "3e0e46a57a8a53dd4d163b7ae2b1faacdf2c0a680ad360f21cd0e1f55068a626"
+    },
+    "prefill_scratch_host_test": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/prefill_scratch_host_test",
+      "sha256": "bdc207e4e2d6c132cf9df1b7b925beb0778d231d1b070e526e713e8a0394ebca"
+    },
+    "sycl_prefill_scratch_test": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/sycl_prefill_scratch_test",
+      "sha256": "30bbb45a520c2203a374ae6ac2be59f81c7b7892f2b8a17db096fe5c73562a22"
+    },
+    "sycl_expert_bank_test": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/sycl_expert_bank_test",
+      "sha256": "ba4ff996072f93f928fcc2079ea79448b1f473b857043b0f9144ccfeb6cb9045"
+    },
+    "cpu_work_census_host_test": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/cpu_work_census_host_test",
+      "sha256": "918e9070581c099af373c890474ad2ec6d6ea3efb0673b2bb03f025df935ffae"
+    },
+    "sycl_graph_envelope_test": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/sycl_graph_envelope_test",
+      "sha256": "e5b0a849430591402f29dc14bd09c5305b216c4f4e0a42692feec6c125416ed8"
+    },
+    "iq2_phase_host_test": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/iq2_phase_host_test",
+      "sha256": "e031d869adfc4ba6389772dd16dd522e9972703ccc27a8103bb9646dc81cf755"
+    }
+  },
+  "build_proof": {
+    "source_commit": "6e40afc1beddd059ee518617f6c1efce1da14aca",
+    "inputs_recovered": 9853,
+    "assets_verified": 13,
+    "receipt": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/record.json",
+      "sha256": "a38f477670fafcd1a931be2e20d90d6d9718df75b61954b421f361af9f6881b2"
+    },
+    "limits": "Original build remains selected; this source-only diagnostic is not adoption."
+  },
+  "preload": {
+    "library": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/ur-validation-preload-v2/libstrata_ur_validation.so",
+      "sha256": "1d4e69d672d55fa0a126ae43b7b4743482cccca7e2f2bc22e0db2bfdad5bdc7c"
+    },
+    "loader": {
+      "path": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_loader.so.0.12.0",
+      "sha256": "bb6e1311850e4b1a924e42acae80c2b3610934625a4985aaa67967abe31356fc"
+    }
+  },
+  "drivers": [
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-neo-crossover-v1/libze_intel_gpu.so.1.17.39395",
+      "sha256": "50adb6b727d027309039803033d41efeae4b248589ee363f321c0d538c7de3ff"
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-neo-crossover-v1/libze_intel_gpu.so.1.17.39758",
+      "sha256": "52e29a602f92d3542eac91e20717743e63ca7d4b257d0c79a3c4d6c64c94ea49"
+    }
+  ],
+  "packages": [
+    {
+      "path": "/var/cache/apt/archives/libze-intel-gpu1_26.31.39395.16-1~24.04~ppa1_amd64.deb",
+      "sha256": "ca1b4b9155d9b06d5286c590b6144429e66640d7b4141bdd5440f5c605af6479",
+      "version": "26.31.39395.16"
+    },
+    {
+      "path": "/var/cache/apt/archives/libze-intel-gpu1_26.35.39758.17-1~24.04~ppa1_amd64.deb",
+      "sha256": "57f6e9d074f69b52eca56e1f4cde125d988d9ca243ebf3d7220d82a660593b0c",
+      "version": "26.35.39758.17"
+    }
+  ],
+  "boot": "cfda0b6a-7c13-4fe2-bdf5-8f9202770840",
+  "driver": {
+    "pci": "/sys/bus/pci/devices/0000:05:00.0",
+    "driver": "xe",
+    "vendor": "0x8086",
+    "device": "0xe20c",
+    "kernel": "7.0.0-38-generic",
+    "devcoredump": false
+  },
+  "model_fingerprint": "32d552dc1fb0ad6594425e8bd39f35049f896afe5775b0f7abf751110a11333e",
+  "request_hashes": [
+    "26f08fd8364b5c4bce718617fe2aed42761d0a794e068b00532694adef78b3be",
+    "fd3ad8ad7033776ad749b22e62e910e5f47e3f7664705f48d9f1fe7349b65515",
+    "daabbef4775c3fbdbfd832339d80a5ae2f91025b66df79b92fb8f6905f33b041",
+    "8669c9ebe2747b1fc2d7c4806eeb66025c919981d81c51cfdbd64ba3ec3cc2b1"
+  ],
+  "plan": {
+    "order": [
+      1,
+      0,
+      0,
+      1,
+      1,
+      0
+    ],
+    "pairs": [
+      [
+        1,
+        0
+      ],
+      [
+        2,
+        3
+      ],
+      [
+        5,
+        4
+      ]
+    ],
+    "question": "Does NEO alone explain the original6e40 decline from1003 to974tok/s?",
+    "constants": "Same original6e40 binary,1256-slot decode layout,131072 resident INT8 context,8192 chunks, BF16/vLLM/mode10,384 packed expert bank,Q8 MTP,5 CPU workers,all safety settings. One short warmup then four117489-token thinking-on requests,24 output tokens,no prefix reuse.",
+    "gate": "Before long model work,both private driver arms pass original submission,graph0 and graph1 fixtures with pre-main parameter/API validation,numerical/guard markers,actual mapped NEO, normal owned exit and no fresh fault. Stop first failure,no retry.",
+    "decision": "Six independent processes,new/old/old/new/new/old. Keep first use separate. Use subsequent-three median;old faster requires all three old/new ratios>1 and geomean>=1.01; new faster analogously. Otherwise unresolved. No speed-based stop or replacement. Commit every closed outcome before advancing. No inference or runtime adoption.",
+    "measurement": "Official bench.sh --prefill-only --prefill-tokens98304 --think --runs4 with identical request gates and client in both arms. Engine clock is unchanged original6e40/libstdc++, qualified65536-pair endpoint records remain in both historical cohorts;requests>=10000ms. Warning-only parameter validation and retained-loader preload charged to both. No profiler,census,timer,state readbacks or resource sampling.",
+    "limits": "Only NEO varies. Current GMM/IGC/zlib/loader/kernel remain;this does not reproduce the entire historical stack. Explicit alternative driver selection is applied to BOTH arms before exec and observed from maps. No system install,service change,reset or reboot."
+  },
+  "budgets": {
+    "wall": 3000,
+    "cpu": 72000,
+    "rss_cap": 111669149696,
+    "text_cap": 33554432,
+    "file_cap": 67108864,
+    "total_cap": 134217728
+  },
+  "qualification": [],
+  "processes": [],
+  "process_plans": [
+    {
+      "arm": 1,
+      "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-neo-crossover-v1/0",
+      "command": [
+        "/bin/sh",
+        "/home/yayoi/orca/workspaces/Strata/sycl/bench.sh",
+        "--config",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-neo-crossover-v1/0/config.json",
+        "--port",
+        "48849",
+        "--prefill-only",
+        "--prefill-tokens",
+        "98304",
+        "--think",
+        "--runs",
+        "4",
+        "--profile-request-gates",
+        "--workload-id",
+        "native_gdn_20261018",
+        "--fail-fast-engine-error",
+        "--ready-timeout",
+        "600",
+        "--out",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-neo-crossover-v1/0/bench"
+      ],
+      "inputs": {
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-neo-crossover-v1/0/config.json": "8e2f2dc3af61c909cabfe7969ec326424c4ad8dc936f84d64ef2869208dce38a",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-neo-crossover-v1/0/plan.json": "08cfd654f8512bb484582b232cb0361de9c228e1eb5f4cec465aba42cf5195ef"
+      }
+    },
+    {
+      "arm": 0,
+      "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-neo-crossover-v1/1",
+      "command": [
+        "/bin/sh",
+        "/home/yayoi/orca/workspaces/Strata/sycl/bench.sh",
+        "--config",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-neo-crossover-v1/1/config.json",
+        "--port",
+        "48405",
+        "--prefill-only",
+        "--prefill-tokens",
+        "98304",
+        "--think",
+        "--runs",
+        "4",
+        "--profile-request-gates",
+        "--workload-id",
+        "native_gdn_20261018",
+        "--fail-fast-engine-error",
+        "--ready-timeout",
+        "600",
+        "--out",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-neo-crossover-v1/1/bench"
+      ],
+      "inputs": {
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-neo-crossover-v1/1/config.json": "c9b4c2501e6eea30343d13f584c4407b928933697daf9548176bf5a3360f0190",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-neo-crossover-v1/1/plan.json": "08cfd654f8512bb484582b232cb0361de9c228e1eb5f4cec465aba42cf5195ef"
+      }
+    },
+    {
+      "arm": 0,
+      "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-neo-crossover-v1/2",
+      "command": [
+        "/bin/sh",
+        "/home/yayoi/orca/workspaces/Strata/sycl/bench.sh",
+        "--config",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-neo-crossover-v1/2/config.json",
+        "--port",
+        "46719",
+        "--prefill-only",
+        "--prefill-tokens",
+        "98304",
+        "--think",
+        "--runs",
+        "4",
+        "--profile-request-gates",
+        "--workload-id",
+        "native_gdn_20261018",
+        "--fail-fast-engine-error",
+        "--ready-timeout",
+        "600",
+        "--out",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-neo-crossover-v1/2/bench"
+      ],
+      "inputs": {
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-neo-crossover-v1/2/config.json": "88ad8d7f6ff99bc7fe5be7d385a6d446d9492677ec7c7cc96cf7c141e55e7d26",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-neo-crossover-v1/2/plan.json": "08cfd654f8512bb484582b232cb0361de9c228e1eb5f4cec465aba42cf5195ef"
+      }
+    },
+    {
+      "arm": 1,
+      "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-neo-crossover-v1/3",
+      "command": [
+        "/bin/sh",
+        "/home/yayoi/orca/workspaces/Strata/sycl/bench.sh",
+        "--config",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-neo-crossover-v1/3/config.json",
+        "--port",
+        "41365",
+        "--prefill-only",
+        "--prefill-tokens",
+        "98304",
+        "--think",
+        "--runs",
+        "4",
+        "--profile-request-gates",
+        "--workload-id",
+        "native_gdn_20261018",
+        "--fail-fast-engine-error",
+        "--ready-timeout",
+        "600",
+        "--out",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-neo-crossover-v1/3/bench"
+      ],
+      "inputs": {
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-neo-crossover-v1/3/config.json": "e568fa4d1b19630002db17cde06190bfd3e3f841999d830ec6f36c3c03510d43",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-neo-crossover-v1/3/plan.json": "08cfd654f8512bb484582b232cb0361de9c228e1eb5f4cec465aba42cf5195ef"
+      }
+    },
+    {
+      "arm": 1,
+      "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-neo-crossover-v1/4",
+      "command": [
+        "/bin/sh",
+        "/home/yayoi/orca/workspaces/Strata/sycl/bench.sh",
+        "--config",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-neo-crossover-v1/4/config.json",
+        "--port",
+        "54529",
+        "--prefill-only",
+        "--prefill-tokens",
+        "98304",
+        "--think",
+        "--runs",
+        "4",
+        "--profile-request-gates",
+        "--workload-id",
+        "native_gdn_20261018",
+        "--fail-fast-engine-error",
+        "--ready-timeout",
+        "600",
+        "--out",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-neo-crossover-v1/4/bench"
+      ],
+      "inputs": {
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-neo-crossover-v1/4/config.json": "222f960870dcabf20776161184428f201265077df9f1b6accc639e9ee9dd5bf7",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-neo-crossover-v1/4/plan.json": "08cfd654f8512bb484582b232cb0361de9c228e1eb5f4cec465aba42cf5195ef"
+      }
+    },
+    {
+      "arm": 0,
+      "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-neo-crossover-v1/5",
+      "command": [
+        "/bin/sh",
+        "/home/yayoi/orca/workspaces/Strata/sycl/bench.sh",
+        "--config",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-neo-crossover-v1/5/config.json",
+        "--port",
+        "51723",
+        "--prefill-only",
+        "--prefill-tokens",
+        "98304",
+        "--think",
+        "--runs",
+        "4",
+        "--profile-request-gates",
+        "--workload-id",
+        "native_gdn_20261018",
+        "--fail-fast-engine-error",
+        "--ready-timeout",
+        "600",
+        "--out",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-neo-crossover-v1/5/bench"
+      ],
+      "inputs": {
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-neo-crossover-v1/5/config.json": "bd4eb194e11f43d2c95ea9520361a6bdf79a519dcfd3fd4e9c65def6c02f82e7",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-neo-crossover-v1/5/plan.json": "08cfd654f8512bb484582b232cb0361de9c228e1eb5f4cec465aba42cf5195ef"
+      }
+    }
+  ],
+  "active": false,
+  "ownership_closed": true,
+  "retention": "Keep source/recipe,individual samples,provider/workload/fault checks and decision. Private package extracts and successful raw/JIT output retire after crossover analysis; selected engine and twelve fixtures unchanged. oneMKL capture remains a separate pending consumer."
+}
