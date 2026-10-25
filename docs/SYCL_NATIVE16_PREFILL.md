@@ -523,6 +523,14 @@ host tasks,drained boundaries and observer cost;scope these gates to the actual
 called prefill route. Production prefill/decode source and the selected binary
 remain unchanged;hardware saturation remains unknown.
 
+Before extending that adapter, bounded dispatch discovery uses the existing
+`DRAFT_PREFILL` success marker with the selected6e40 binary and official117K
+request. It checks every final-layer callback for the direct batched path and
+exact row conservation. Both conversation caches stay disabled,so the marker's
+snapshot-readback branch is excluded. This is a route check,not a device-ledger,
+observer-cost or speed qualification;library-internal graphs remain unknown.
+See the`route_discovery` decision in the same prefill resource result.
+
 Basic [profile-off/on graph support](../bench/results/2026-10-15-pr6-recovery-audit/mtp-graph-observer-current.json)
 already passed, with exact6e40 reuse checked separately. The closed
 [64-window MTP observation](../bench/results/2026-10-15-pr6-recovery-audit/mtp-model-observer-current.json)
