@@ -213,10 +213,19 @@ decode ratios are0.764091/0.938513, and prefill ratios0.999815/1.001409.
 It passes the explicit speed-only contract with no proposals; draft-agreement
 eligibility remains false and acceptance is undefined. The second width2 process
 also closes normally, generating3415/19750 code/prose tokens with decode
-times258410.8/1555581.7ms. Five processes remain; its block's width4 reference
+times258410.8/1555581.7ms. Its block's width4 reference
 has not run, so this does not supply the next paired comparison.
 All four closed native/benchmark exits are0, ownership is closed and no
 fresh driver fault is recorded. No route or placement is adopted.
+The cohort is now closed incomplete: process4 was refused before native/owned
+measurement launch after the system's2026-10-24 23:02JST NEO/OpenCL/Level Zero
+upgrade from26.31.39395.16 to26.35.39758.17. Processes4..8 remain unstarted.
+The first refusal is the historical SDK's changed`metee.h`; two OpenCL headers
+also changed. All1410 actual private compiled inputs still match, and all15
+full model hashes match after closure. This does not qualify execution on the
+new runtime. Keep the old four samples; do not refresh their pins or combine
+new-runtime samples with them. Pin and qualify bounded traced/validated device
+checks before any model, then commit a fresh balanced comparison.
 Closedv1 logs/JIT, its superseded clock probe and eight unstarted plans retire
 after exact188-input and clock-recipe recovery:108 files,14,594,530bytes.
 Its intended advancement rules remain three nondeclining paired decode ratios
@@ -225,7 +234,9 @@ No clean repeated gain, model adoption or70tok/s qualification follows.
 The closed launchers and protocol corruption controls recover at`b61f376c2`.
 Their successful raw logs, temporary source snapshot and consumed scope review
 are retired after route/observer replay. Original13 and private13 build assets
-remain only for that imminent width comparison; retire the extra at its closure.
+remain for the imminent new-runtime qualification and fresh width comparison;
+review after qualification/cohort closure and before a new native generation.
+Their previous runtime qualification does not transfer automatically.
 
 ## Attribution limits and outstanding gates
 

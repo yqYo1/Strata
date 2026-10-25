@@ -1,5 +1,5 @@
 {
-  "stage": "partial",
+  "stage": "admission-failed",
   "source_commit": "10919c13de1e82fc28e6412ab405ccbb0f658512",
   "benchmark_files": 188,
   "previous_failed_comparison": {
@@ -2081,5 +2081,49 @@
     "all_owned_processes_closed": true,
     "GPU_executed": false,
     "scope": "Offline client/journal/width/independent-phase/clock evidence,plus a host-only clock probe;no native model or speed qualification."
-  }
+  },
+  "admission_failure": {
+    "index": 4,
+    "width": 1,
+    "controller_exit_code": 1,
+    "native_launched": false,
+    "owned_measurement_started": false,
+    "observed_utc": "2026-10-25T01:41:41.663909+00:00",
+    "error": "SDK input changed: /usr/include/metee.h",
+    "location": "current -> qualification -> private.current_build -> native.admission -> prior.sdk",
+    "remaining_unstarted_indices": [
+      4,
+      5,
+      6,
+      7,
+      8
+    ],
+    "package_change": "Intel NEO/OpenCL/Level Zero packages changed2026-10-24 23:02JST from26.31.39395.16 to26.35.39758.17;do not mix runtimes in the frozen comparison.",
+    "source_audit": "All1410 actual private compiled inputs unchanged. The historical8697-file SDK manifest differs at metee.h,opencl-c-base.h,opencl-c.h;original hashes remain unchanged in the record.",
+    "next_action": "Pin updated runtime assets,qualify bounded traced/validated existing fixtures before any model,then commit a fresh balanced comparison. Keep old four samples and this admission failure;no replacement/hash refresh.",
+    "sdk_changed_inputs": [
+      {
+        "path": "/usr/include/metee.h",
+        "original_sha256": "f063edcb00c88f3ddebc10f9b0487fe813cfb7ba71dc4b798729bed8902018a3",
+        "current_sha256": "d07e18ce9228c3fc570b186eab13bf8a3e6c04214992f0de9d53b855dc837252"
+      },
+      {
+        "path": "/usr/include/opencl-c-base.h",
+        "original_sha256": "e1683c3db9cf9a95e9d02acbbfa74dcd29d4deaf4a856430f538d76985b04114",
+        "current_sha256": "673c4720f879c2f101504979edbd0216c9cb6a982ce2b62bd467b81fd53d8e33"
+      },
+      {
+        "path": "/usr/include/opencl-c.h",
+        "original_sha256": "579b58f482ab0b3dfd396cab32ea3e0537bc5cf4c1067377b83fe417cbcc513b",
+        "current_sha256": "aa7e871a8f7d961aa4126a9fadc2196f822c21811946c90147dc7415fe677de9"
+      }
+    ],
+    "private_compiled_inputs": {
+      "files": 1410,
+      "changed_files": 0,
+      "original_closure_sha256": "53fba0c0d0a73d4b6738a0f87864b34b92c2900188c85aba4d65b5daee1277f1"
+    },
+    "retained_build_consumer": "Original13 fallback plus private13 assets for imminent new-runtime traced device qualification and a fresh balanced width comparison;review after qualification/cohort closure and before any new native engine generation. Neither build is qualified on the updated runtime yet."
+  },
+  "postfailure_full_model_hashes": 15
 }
