@@ -208,6 +208,8 @@ prefill decline for borrowed1256,with every pair slower. Its old2% screen did
 not classify a regression;that does not establish equal speed or satisfy the
 later requirement to restore the fastest prefill independently of decode.
 See[the original comparison](../bench/results/2026-10-15-pr6-recovery-audit/cache-long-comparison-current.json).
+Those arms also used different source packages,396d andbb71. This is a package
+comparison,not an isolated causal measurement of ownership or cache size.
 Do not recover that speed by shrinking the current decode cache.
 
 Separately,the original6e40 executable itself now measures slower. Recomputing
@@ -231,6 +233,17 @@ from the subsequent-three median. `bench.sh`,`serve/server.py` and
 `run_prefill_only` functions also match. The changed client definitions add
 long-generation options and do not change the prefill timing formula. Different
 whole-client fingerprints alone do not establish a changed prefill measurement.
+
+In original6e40 `src/program/generate.cpp`,the request timer starts at line5959
+and stops at line6503,after native dense restoration and the checked expert-cache
+refill at lines6498..6502. Thus this API prefill metric includes the handoff back
+to decode;it is not isolated GPU arithmetic throughput. The long layer-major
+body handles117488 positions and leaves the last input position for the first
+decode window,while the benchmark's unchanged read count is117489. That one-token
+convention differs by0.000851% and cannot explain the observed decline. The86-key
+environment template also matches the historical original arm exactly before
+per-process output-path substitution;the same native-only validation preload
+and charged warning-level parameter validation were already used historically.
 
 NEO changed26.31.39395.16→26.35.39758.17;GMM,IGDML and zlib also changed.
 The same application executable rules out application recompilation as the
@@ -269,6 +282,11 @@ are excluded. The original matched117K difference remains unattributed. No
 driver,inference,decode configuration or placement change is adopted. Next
 isolate current prefill ownership/loan/handoff costs and the limiting hardware;
 an owned128 diagnostic is not permission to shrink production decode.
+Use the same selected6e40 binary and current qualified runtime for that diagnostic:
+changing both the source package and placement again would leave the cause
+confounded. Audit owned/borrowed admission and actual allocation geometry before
+launch,and keep clean speed separate from instrumented host/device/resource
+attribution. No such new placement experiment has run in this audit.
 
 Earlier progress reports also contain33K/39K and profiler-charged results.
 Those differ from117K subsequent-request speed. The matched comparison above
