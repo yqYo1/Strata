@@ -339,7 +339,7 @@ policy audit below. Measure loaded clocks,throttle flags,paging and competing
 load separately before assigning a hardware bottleneck. The component-level
 fused-command work still needs its whole-model and observer-cost gates.
 
-The[closed runtime comparison](../bench/results/2026-10-15-pr6-recovery-audit/prefill-runtime-comparison-current.json)
+The earlier[NEO-only comparison](../bench/results/2026-10-15-pr6-recovery-audit/prefill-runtime-comparison-current.json)
 uses exact cached packages in private directories. Both arms explicitly select
 the driver before exec and verify its actual mapping. Other dependencies,the
 selected engine and1256-slot decode configuration stay fixed. Six host negative
