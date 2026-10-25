@@ -324,7 +324,10 @@ These concurrent sums are not decode latency. Its59801.8ms prompt and1832.0ms
 decode are traced first-use diagnostics,not clean speed or sustained decode.
 Observer overhead and representative long-generation service evidence remain
 pending;this check establishes neither decode nonregression nor a limiting
-hardware resource. Optional
+hardware resource. Successful build/device/model raw output is retired after
+source/recipe recovery. The three generated model admission inputs remain for
+the imminent original/observer-off/observer-on comparison;review them and the
+extra build at that comparison's closure. Optional
 `STRATA_CPU_SERVICE_PROFILE` compilation plus preexec`STRATA_CPU_SERVICE=1`
 collects decode-only pool GU/SwiGLU, hidden quantization and Down leaf scopes for
 the seven observed format pairs at H2560/FF640/NT1..4. It records calling-thread
