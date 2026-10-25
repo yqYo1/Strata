@@ -29,8 +29,9 @@ to6e40 and the15 coupled layout/admission/pricing/loan hunks in `generate.cpp`.
 Its18 independent diagnostic/observer hunks are preserved byte-for-byte.
 The unused streamed-QSA writer, host-span export and fixture are removed.
 Decode kernels, configuration and1256-slot placement remain selected as before.
-This is source restoration; the selected executable has not been rebuilt or
-relabeled, and restored-source performance/state qualification is pending.
+The restored build has native source`1baa0547f` and engine SHA prefix`2a128c6a`.
+The original6e40 executable remains the selected fallback; restored-source
+model, state-handoff and performance qualification is pending.
 
 The reviewed `selected_native_tree_reconcile_20261025` decision in the
 [research index](../bench/results/2026-10-15-pr6-recovery-audit/research-index.json)
@@ -39,26 +40,21 @@ the `STRATA_STATE_HASH` KV-range helper remain for the next state checks.
 CMake now defines manual `strata_full_context_diagnostic` and
 `full_context_diagnostic_host_test` targets. Only the former defines
 `STRATA_SYCL_FULL_CONTEXT_DIAGNOSTIC`; normal `strata` keeps its original admission.
-Both targets linked in the first restored generation, along with normal `strata`
-and its fixtures. The compiler-input census then correctly stopped advancement:
-the source inventory omitted the committed `third_party/ggml/ggml-common.h`.
-That failed generation is retired. The corrected build pins the vendored header
-and all1416 actual compiler inputs match. Its17 targets link, but the first host
-check is unqualified: the supervisor counted the sibling build tree against its
-4MiB diagnostic budget and stopped observation. The child was reaped, its session
-is empty and no GPU/model test ran. Preserve both failed gates. A new committed
-host/device plan uses its own output root and the unchanged native artifacts;
-controller-only source checks must preserve their original build identity.
-The standalone checks now qualify eight host controls and three submission/graph
-cases on the unchanged assets and runtime. The IQ2 pair settings are fixed before
-each process, with the12-case phase-scope marker checked in both arms. The scratch
-exact-capacity fixture separately refused its unqualified Alias0 configuration;
-its documented contract is Alias1/MMQ0. Five fresh device cases pin that layout
-and cover scratch smoke/full/loan, the private bank and RESTORE. The eleven
-unchanged qualified cases are reused explicitly; prior whole-gate failures remain
-failed. Model/decode performance and state handoff are still unqualified.
-See [the restoration result](../bench/results/2026-10-15-pr6-recovery-audit/prefill-restore-current.json).
-Physical262144
+The17 linked targets and all1416 actual compiler inputs are checked. Normal
+`strata` compiles out CPU-service observation and the full-context macro.
+The [closed component gate](../bench/results/2026-10-15-pr6-recovery-audit/prefill-restore-device-current.json)
+reuses eight qualified host controls and three submission/graph cases, then
+passes five fresh device processes with the documented Alias1/MMQ0 scratch
+layout fixed before execution. These cover15 scratch cases,20 cache-loan cases
+over three cycles, private-bank guards/map/drain and113 RESTORE-smoke checks.
+All fresh processes pass pre-main/parameter validation and close normally,
+with the pinned updated NEO observed and no fresh fault. Source, runtime and
+all17 artifacts are rechecked. Earlier census, supervision-budget and fixture
+startup refusals remain failed in Git; no native recompilation or relabelling
+was used to correct the later controller-only cases.
+
+This qualifies bounded fixtures only. Real-model handoff, independent repeated
+prefill/decode speed, quality and agent-session gates remain open. Physical262144
 allocation/final-slot execution still needs its own bounded plan and evidence;
 the earlier retired streamed/layout results do not qualify this source.
 
