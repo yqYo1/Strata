@@ -2468,7 +2468,7 @@
       ]
     },
     "oneMKL_first_call": {
-      "stage": "prepared",
+      "stage": "native-passed-coverage-pending",
       "source_commit": "ccd2a46ca20d49b8225308aa33f81f80e787d5cc",
       "input_sha256": {
         "tests/core/test_work_ledger_fixture.py": "ea6bf40c7c21ee403937032ce86e345896a0e4bce83a60216ebf557d91e01cd1",
@@ -2741,11 +2741,110 @@
       "retention": "Main consumes bounded raw UR/PTI records for the actual oneMKL adapter decision. Retire normal traces/JIT/cache after that closed-data analysis;keep compact evidence. Original engine+12fixtures and qualified observer unchanged. Wrapper remains only for this coverage question.",
       "active": false,
       "ownership_closed": true,
-      "passed": false,
+      "passed": true,
       "complete_device_coverage_qualified": false,
       "observer_cost_qualified": false,
       "model_qualified": false,
-      "inference_changed": false
+      "inference_changed": false,
+      "start_raw_ns": 1289800214845347,
+      "end_raw_ns": 1289800968563113,
+      "activation": {
+        "pid": 3134086,
+        "loader": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_loader.so.0.12.0",
+        "threads_before": 1,
+        "preinit": 37,
+        "config_enabled": true,
+        "first_init": true,
+        "dispatch_result": 46,
+        "output_untouched": true,
+        "retained_reference_until_exit": true,
+        "runtime_teardown_qualified": false
+      },
+      "discovery": {
+        "oracle_values": 20480,
+        "device_bytes": 7947264,
+        "wrapper_invocations": 1,
+        "source_FMA_operations": 209715200,
+        "source_explicit_copy_bytes": 15894528,
+        "outer_pid": 3134086,
+        "outer_tid": 3134086,
+        "begin_ns": 1289800733000843,
+        "return_ns": 1289800767214634,
+        "drain_ns": 1289800767405743,
+        "PTI_device_records": 10,
+        "device_records_inside_charged_envelope": 4,
+        "enqueue_outcomes": [
+          {
+            "name": "urEnqueueKernelLaunchWithArgsExp",
+            "status": 0,
+            "calls": 2
+          },
+          {
+            "name": "urEnqueueMemBufferRead",
+            "status": 0,
+            "calls": 1
+          },
+          {
+            "name": "urEnqueueMemBufferWrite",
+            "status": 0,
+            "calls": 1
+          },
+          {
+            "name": "urEnqueueUSMMemcpy",
+            "status": 0,
+            "calls": 6
+          }
+        ],
+        "enqueue_threads": 1,
+        "graph_API_seen": true,
+        "limits": "Counts and charged envelope only;no internal operation association,device saturation,independent model ledger or performance qualification."
+      },
+      "callback_capture": {
+        "call_pairs": 166,
+        "source_threads": 1
+      },
+      "host_probe_accepted": true,
+      "pid": 3134086,
+      "actual_required_providers_observed": true,
+      "environment_mutation_guard_not_triggered": true,
+      "analysis_inputs": [
+        {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/onemkl-wrapper-work-v2/first-call-v1/target-owned/one-bf16.stdout",
+          "bytes": 468,
+          "sha256": "3291e5821c3f6470cfab214c76dcf89e8528eec6be8249ca15db4f3ffa690d89"
+        },
+        {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/onemkl-wrapper-work-v2/first-call-v1/target-owned/one-bf16.stderr",
+          "bytes": 46752,
+          "sha256": "734127bd4c87cd750704d608d2da65754ae44a83dd9e2905d9080602851e8301"
+        },
+        {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/onemkl-wrapper-work-v2/first-call-v1/calls.jsonl",
+          "bytes": 55541,
+          "sha256": "a005632328689cfb0eed1fff9023d8b1cb0a452606a38a0117e5d8cd73c21ccf"
+        },
+        {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/onemkl-wrapper-work-v2/first-call-v1/ur.log",
+          "bytes": 38634,
+          "sha256": "e0f712b1f7f829881d30b8c8fa832c7d68a07e86cb4c06f72d9d167758909e53"
+        },
+        {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/onemkl-wrapper-work-v2/first-call-v1/trace/sycl_gemm_devic.3134086.json",
+          "bytes": 40079,
+          "sha256": "5db1dd59764aeb4506c8f331a44b393cc0004102a092c554081ef2890f0a3888"
+        }
+      ],
+      "fresh_faults": [],
+      "boot_unchanged": true,
+      "driver_after": {
+        "pci": "/sys/bus/pci/devices/0000:05:00.0",
+        "driver": "xe",
+        "vendor": "0x8086",
+        "device": "0xe20c",
+        "kernel": "7.0.0-38-generic",
+        "devcoredump": false
+      },
+      "session_removed": true
     }
   }
 }
