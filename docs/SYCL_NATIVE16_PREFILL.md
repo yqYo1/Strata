@@ -350,14 +350,14 @@ On the second request,127 contained samples report GT0 median2750MHz,
 nonzero minimum2733MHz,and no zero readings. Throttle reasons are126 `none`
 and one `pl2`;package/VRAM maxima are67/76C and mean card power132.83W.
 This does not show sustained low GT clocks;1Hz sampling does not exclude brief
-limits or establish historical conditions. CPU0 reported frequency has median
+limits or establish historical conditions. CPU policy0 reported frequency has median
 4616382kHz,not an APERF/MPERF effective-clock measurement. The native process
 uses0.990 scheduled core-equivalents,mostly its CPU0 main thread,and incurs no
 major faults. Global CPU busy is34.25%,with other CPU/IO work present;no causal
 owner attribution follows from those global counters. Available RAM stays
 above24GiB and swap counters do not advance in either contained window.
 
-The model's CCS busy fraction is98.80% on the second request. It includes
+The associated DRM client's CCS busy fraction is98.80% on the second request. It includes
 execution stalls and copies on the qualified shared queue;it is not arithmetic
 efficiency or a PCIe/GDDR bandwidth measurement. Core clocks,CPU usage and this
 busy fraction do not identify the limiting hardware unit. Continue the

@@ -3505,11 +3505,6 @@
             "valid": 136,
             "invalid": 0
           },
-          "CPU0_reported_kHz": {
-            "minimum": 3652663,
-            "median": 4640716,
-            "maximum": 4641431
-          },
           "native_CPU": {
             "contained_wall_seconds": 137.49972619749994,
             "scheduled_seconds": 133.72,
@@ -3572,7 +3567,12 @@
             "maximum": 19.044864,
             "sum": 1041.915202
           },
-          "source_errors": {}
+          "source_errors": {},
+          "CPU_policy0_reported_kHz": {
+            "minimum": 3652663,
+            "median": 4640716,
+            "maximum": 4641431
+          }
         },
         {
           "contained_samples": 127,
@@ -3609,11 +3609,6 @@
           "energy_counter_intervals": {
             "valid": 126,
             "invalid": 0
-          },
-          "CPU0_reported_kHz": {
-            "minimum": 4416769,
-            "median": 4616382,
-            "maximum": 4641452
           },
           "native_CPU": {
             "contained_wall_seconds": 127.40310448149994,
@@ -3677,7 +3672,12 @@
             "maximum": 20.218664,
             "sum": 963.11472
           },
-          "source_errors": {}
+          "source_errors": {},
+          "CPU_policy0_reported_kHz": {
+            "minimum": 4416769,
+            "median": 4616382,
+            "maximum": 4641452
+          }
         }
       ],
       "collector_terminal": {
@@ -3858,7 +3858,13 @@
           "8"
         ]
       },
-      "limits": "Policy/link values observed stable in both request windows;transient throttle reasons are preserved separately. PCI endpoint fields are not physical transfer bandwidth. CPU frequency is reported,not APERF/MPERF. No historical loaded hardware control exists."
+      "limits": "Policy/link values observed stable in both request windows;transient throttle reasons are preserved separately. PCI endpoint fields are not physical transfer bandwidth. CPU frequency is reported,not APERF/MPERF. No historical loaded hardware control exists.",
+      "GPU_GT0_power_profile": "[base]    power_saving"
+    },
+    "independent_review": {
+      "sha256": "384627320eea19ebe15ef4e6760b05fbdbe95bfe5026fc4c8f2e737b727cf754",
+      "bytes": 2697,
+      "verdict": "No blocker to limited interpretation. Verified197 source pins,2 request identities/rates and137/127 contained samples with no missing/reset sources. Retained stableGT power profile;CPU policy0 reported frequency and associated DRM client clarified. No causal,saturation,adoption or observer-cost qualification."
     }
   }
 }
