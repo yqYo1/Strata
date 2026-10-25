@@ -454,3 +454,25 @@ def qualified_native(key=BUFFER_KEY):
                  original_project_inputs_recovered=len(row['input_sha256']), library=row['library'], driver=row['driver'],
                  reuse='Original observer/driver native sources and recipes recover;all recorded compiled inputs and ELF hashes verified. CPU qualification reuse does not establish new GPU coverage.')
     return row, proof
+
+
+def direct_library_coverage(spans, events, pid, expected_calls):
+    """Closed-data direct joins; a capability query is not graph submission.
+
+    The direct join independently rejects unknown,deferred,multi-append and
+    unpaired work. Missing typed buffer metadata remains an explicit gap.
+    """
+    links = correlate_calls(spans, events, pid, expected_calls)
+    queries = [s for s in spans if s['name'] == 'urQueueIsGraphCaptureEnabledExp']
+    require(all(s['status'] == 0 for s in queries), 'graph capability query rejected')
+    work = [s for s in spans if any(word in s['name'] for word in ('Graph', 'CommandBuffer', 'Capture'))
+            and s['name'] != 'urQueueIsGraphCaptureEnabledExp']
+    require(not work, 'actual graph lifecycle/work needs a separate adapter')
+    missing = collections.Counter(s['name'] for s in spans if s['name'].startswith('urEnqueue')
+                                  and not s.get('metadata', {}).get('queue'))
+    return dict(links=links, graph_capture_query_calls=len(queries),
+        graph_capture_query_wall_ns=sum(s['end_ns'] - s['begin_ns'] for s in queries),
+        graph_lifecycle_or_submission_calls=0,
+        missing_typed_enqueue_queue=dict(sorted(missing.items())),
+        complete_device_coverage_qualified=False, observer_cost_qualified=False,
+        limits='Observed successful direct UR/native/PTI identity joins only. Query return values,buffer extents/lifetimes,independent internal library work ledger,model-route coverage and clean speed remain unqualified.')
