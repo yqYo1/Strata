@@ -24,12 +24,12 @@ import measurement_owner as owners
 import runtime_probe as runtime
 
 P, B, A = gen.P, gen.B, gen.A
-ROOT = B / 'prefill-placement-probe-v1'
+ROOT = B / 'prefill-placement-probe-v2'
 RESULT = A / 'prefill-runtime-comparison-current.json'
 TEMPLATE = A / 'phase-prefill-speed-current.json'
 READER = P / 'bench/sycl/client_resources.py'
 KEY = 'placement_diagnostic'
-CASES = (('owned-gate', 32768, 1, True), ('borrowed', 98304, 4, False), ('owned', 98304, 4, True))
+CASES = (('borrowed', 98304, 4, False), ('owned', 98304, 4, True))
 require, digest, write = runtime.require, runtime.digest, runtime.write
 
 
@@ -135,14 +135,19 @@ def host_summary(records, interval):
 
 
 def prepare():
-    require(not ROOT.exists() and KEY not in gen.committed(RESULT), 'fresh diagnostic only')
+    prior=gen.committed(RESULT)[KEY]
+    require(not ROOT.exists() and prior['stage']=='closed' and prior['ownership_closed'] and
+        prior['closed_analysis']['attribution_passed'] and prior['closed_analysis']['original_passed'] is False,
+        'fresh plan after original failed collection/scoped reanalysis only')
     rt = gen.committed(runtime.RESULT); runtime.current(rt)
     baseline = json.loads(gen.git('show', '8573fa7fb:' + str(RESULT.relative_to(P))))
     cfg = copy.deepcopy(baseline['configuration']); cfg['args'][cfg['args'].index('--expert-profile')+1] = str(P/'data/expert-profile.bin')
     require(digest(P/'data/expert-profile.bin') == '8f59b4aa8873209dff11c11e37bcda9529a1335b724a1afeea37bf6388975baf', 'profile changed')
     original_assets = json.loads(gen.git('show', '1e676d554:' + str(TEMPLATE.relative_to(P))))['model_assets']
     require(fingerprint(original_assets) == baseline['model_fingerprint'], 'original model inventory differs')
-    models = assets.model_pins(cfg, original_assets, full=True)
+    # Reuse the just-closed full15 hashes only after exact inventory/ctime checks.
+    # Repeat all digests at this new cohort's final closure.
+    models = assets.model_pins(cfg, original_assets)
     source = gen.git('rev-parse','HEAD').decode().strip(); pins = gen.benchmark_pins(source)
     ROOT.mkdir(mode=0o700)
     row = dict(stage='planned',source_commit=source, native_source_commit=rt['original_build']['source_commit'],
@@ -151,9 +156,9 @@ def prepare():
         runtime_sha256=digest(runtime.RESULT), boot=rt['boot'], runtime_reference=str(runtime.RESULT.relative_to(P)),
         models=models,model_fingerprint=fingerprint(models),benchmark_pins=pins,
         reader=dict(path=str(READER),sha256=digest(READER)),request_hashes=baseline['request_hashes'],
-        prior_preparation_failure=dict(source='76bf87d1a',error="KeyError:models",GPU_executed=False,
-            boundary='Before root creation/model reads;compact historical record excludes models. Recover original15-asset map from1e676d554 and verify the8573 fingerprint. No native/model outcome relabelled.'),
-        plan='One owned128/32K+ gate,then two separate observed117K processes:borrowed1256 then owned128;four fresh requests each,first separate. Fixed same6e40 binary/current runtime/math. Placement/cache geometry change together;order and observers prevent clean causal/adoption claims. Never change production decode. No retries or speed-based stopping.',
+        prior_gate=dict(archive='8c921642b',original_passed=False,scoped_attribution_passed=True,actual_read_tokens=39260,
+            reuse='Same native/runtime/math,owned8192 scratch/48-layer restore validated;full15 model hashes from its preparation match original inventory/ctime. Original failed collection/cohort remain closed. No117K/262144 or decode qualification.'),
+        plan='Two separate observed117K processes:borrowed1256 then owned128;four fresh requests each,first separate. Fixed same6e40 binary/current runtime/math. Placement/cache geometry change together;order and observers prevent clean causal/adoption claims. Passive scope is pre-first-output only;short decode coverage is not required or qualified. Never change production decode. No retries or speed-based stopping.',
         source_audit='6e40 generate own_fits uses exact bytes_needed+512MiB;chunk fallback rejected by actual8192 route. Owned carve separately owns emb/R/region;borrowed lease uses checked tail. Native admission forbids lease1 with no-prefill-borrow,so owned-only uses lease0 for its independently owned buffers;borrowed keeps lease1. Shared long-pass GPU BF16/mode10 and48-layer dense restore must match. Same runtime safety/queue/parameter validation. Actual all-GPU residual allocation verified per request;32K gate does not establish117K or262144 capacity.',
         limits='Diagnostic only. No clean speed,observer overhead,hardware saturation,task/decode performance,physical262144 or ordinary-runtime-teardown qualification.',
         retention='At closed replay,keep all useful request clocks/work/placement/host summaries;retire normal logs,raw sampling,JIT and single-use controller. Selected engine+12fixtures and separate pending oneMKL consumer remain.',
@@ -177,7 +182,7 @@ def prepare():
 
 def run():
     row=json.loads((ROOT/'record.json').read_text());rt=current(row)
-    i=len(row['outcomes']);require(i<3 and all(o['passed'] for o in row['outcomes']),'qualified ordered cases only')
+    i=len(row['outcomes']);require(i<len(CASES) and all(o['passed'] for o in row['outcomes']),'qualified ordered cases only')
     plan=row['cases'][i];root=Path(plan['root']);config=json.loads((root/'config.json').read_text());env=environment(row,root,plan['owned'])
     require(not (root/'owned').exists(),'existing attempt;inspect owner,never retry')
     lines=subprocess.check_output(['journalctl','-k','-b','-n','0','--show-cursor','--no-pager'],text=True,timeout=15)
@@ -210,6 +215,10 @@ def run():
                 mapped=runtime.executable_mappings(Path('/proc',str(pid),'maps').read_text())
                 require(mapped<=set(rt['runtime_files'])|{str(Path(row['binary']['path']).resolve())} and
                     any('libze_intel_gpu' in p for p in mapped),'runtime mapping differs')
+                if stage=='end':
+                    text=(root/'engine.stderr').read_text()
+                    required='strata prefill: layer-major candidate, tokens=117488 chunk=8192 residual_dtype=bf16 residual_element_bytes=2 residual_total=2406154240 residual_gpu_rows=117488 residual_gpu=2406154240 residual_host=0 residual_staging=0'
+                    require(text.count(required)==request+1,'117K actual GPU residual/chunk admission failed')
                 io.send(b'continue\n')
         io.proc.stdin.close();deadline=time.monotonic()+180
         while not io.exit_watch.poll(0) or not io.eof:
@@ -221,7 +230,7 @@ def run():
         require(owners.closed(entry) and entry['exit_code']==0,'benchmark/owner failed')
         result_file,=(root/'bench').glob('*/results.json');result=json.loads(result_file.read_text());samples=result['results']['prefill_only']['requests']
         require(result['complete'] and not result['results']['failures'] and len(samples)==plan['runs'],'incomplete benchmark')
-        check_requests(samples,None if i==0 else row['request_hashes'])
+        check_requests(samples,row['request_hashes'])
         sys.path.insert(0,str(P/'tools'));from strata_bench import verify_request_journal
         journal,=(root/'bench').glob('*/requests.jsonl');verified=verify_request_journal(journal.parent)
         events=[json.loads(v) for v in journal.read_text().splitlines()];longs=[v for v in events if v['kind']=='result' and v['phase']=='prefill-only']
@@ -235,7 +244,7 @@ def run():
         captures=[json.loads(s) for s in (root/'client-resources.jsonl').read_text().splitlines()]
         outcome['requests']=[]
         for s,scope in zip(samples,scopes):
-            resource=reader.summarize_capture(captures,claim['native'],row['boot'],s['client_interval'])
+            resource=reader.summarize_capture(captures,claim['native'],row['boot'],s['client_interval'],before_only=True)
             before=resource['before_first_output']
             outcome['requests'].append(dict(prompt_ms=s['prompt_ms'],read_tokens=s['actual_read_tokens'],request_sha256=s['request_sha256'],
                 scope=scope,host=host_summary(hosts,s['client_interval']),
@@ -243,7 +252,7 @@ def run():
                 top_scheduled_threads=before['top_scheduled_threads'][:2],ccs=[e for e in before['engines'] if e['engine']=='ccs'],
                 collector_coverage_verified=resource['request_coverage_verified']))
         current(row)
-        if i==2:assets.model_pins(config,row['models'],full=True)
+        if i==len(CASES)-1:assets.model_pins(config,row['models'],full=True)
         outcome.update(complete=True,host_probe_accepted=True,native_identity=claim['native'],validation=activation,journal_sha256=digest(journal))
     except BaseException as error:
         outcome['error']=repr(error)
@@ -252,63 +261,13 @@ def run():
         if owner:runtime.validation.finish(outcome,owner,cursor,row['boot'])
         outcome['passed']=bool(outcome.get('passed') and outcome['complete']);persist();host_file.close()
         row['outcomes'].append(outcome);row['ownership_closed']=outcome.get('ownership_closed',True)
-        row['stage']='closed' if not outcome['passed'] or i==2 else 'collecting';write(ROOT/'record.json',row);publish(row)
+        row['stage']='closed' if not outcome['passed'] or i==len(CASES)-1 else 'collecting';write(ROOT/'record.json',row);publish(row)
     print(json.dumps({k:outcome.get(k) for k in ('name','passed','complete','ownership_closed','error')}),flush=True)
     return int(not outcome['passed'])
 
 
-def analyze_owned():
-    """Closed-data plan: pre-first-output only; preserve the original failure.
-
-    Original collection and full source/runtime admission are archived at80bb79887.
-    This never resumes its closed cohort or relabels its failed original outcome.
-    """
-    revision=gen.git('rev-parse','HEAD').decode().strip()
-    for source in (Path(__file__).resolve(), READER):
-        require(source.read_bytes()==gen.git('show',revision+':'+str(source.relative_to(P))), 'commit reanalysis source first')
-    row=json.loads((ROOT/'record.json').read_text())
-    frozen=json.loads(gen.git('show','80bb79887:' + str(RESULT.relative_to(P))))[KEY]
-    require(compact(row)==frozen==gen.committed(RESULT)[KEY] and row['stage']=='closed' and
-        row['ownership_closed'] and not row['active'] and len(row['outcomes'])==1 and
-        row['outcomes'][0]['error']=="ValueError('insufficient contained CPU/CCS observation spans for the client interval')" and
-        not row['outcomes'][0]['passed'] and row['outcomes'][0]['fresh_faults']==[], 'original closed parser failure required')
-    proof=row['post_closure_admission'];require(proof['original_failure_unchanged'] and proof['model_assets_stat_verified']==15,'original post-closure proof required')
-    require(gen.benchmark_pins(row['source_commit'],match_worktree=False)==row['benchmark_pins'],'original source cannot recover')
-    changed=[name for name,sha in row['benchmark_pins'].items() if digest(P/name)!=sha]
-    require(changed==['tools/sycl/prefill_placement_probe.py'],'unrelated benchmark changes')
-    rt=gen.committed(runtime.RESULT);runtime.current(rt);require(digest(runtime.RESULT)==row['runtime_sha256'],'runtime changed')
-    assets.model_pins(row['configuration'],row['models'])
-    root=ROOT/'owned-gate'
-    for name,sha in proof['raw_hashes'].items():require(digest(root/name)==sha,'closed input changed')
-    record=json.loads((root/'record.json').read_text())
-    for command in record['commands']:
-        require(owners.closed(command) and command['exit_code']==0,'owner did not close')
-        for identity in command['owners']:
-            now=owners.identity(identity['pid']);require(not now or now['start_ticks']!=identity['start_ticks'],'recorded owner still live')
-    native=json.loads((root/'engine-exit.json').read_text());result=json.loads(next((root/'bench').glob('*/results.json')).read_text())
-    samples=result['results']['prefill_only']['requests'];check_requests(samples)
-    require(len(samples)==1 and result['complete'] and not result['results']['failures'] and native['exit_code']==native['resource_collector_exit_code']==0,'closed collection differs')
-    sample=samples[0];scopes=request_scopes((root/'engine.stderr').read_text(),samples,True)
-    sys.path.insert(0,str(READER.parent));import client_resources as reader
-    captures=[json.loads(s) for s in (root/'client-resources.jsonl').read_text().splitlines()]
-    resources=reader.summarize_capture(captures,native['native'],row['boot'],sample['client_interval'],before_only=True)
-    before=resources['before_first_output'];hosts=[json.loads(s) for s in (root/'host-state.jsonl').read_text().splitlines()]
-    row['closed_analysis']=dict(source_commit=gen.git('rev-parse','HEAD').decode().strip(),collection_archive='80bb79887',
-        source_inputs_changed=changed,reader_sha256=digest(READER),GPU_executed=False,attribution_passed=True,
-        original_passed=False,native_ownership_closed=True,actual_read_tokens=sample['actual_read_tokens'],
-        prompt_ms=sample['prompt_ms'],instrumented_tok_s=sample['actual_read_tokens']*1000/sample['prompt_ms'],
-        request_sha256=sample['request_sha256'],scope=scopes[0],host=host_summary(hosts,sample['client_interval']),
-        client_coverage_verified=resources['request_coverage_verified'],
-        pre_first_output_cpu_seconds=before['process_cpu_seconds'],
-        pre_first_output_cpu_core_equivalents=before['process_cpu_core_equivalents'],
-        top_scheduled_threads=before['top_scheduled_threads'][:2],ccs=[x for x in before['engines'] if x['engine']=='ccs'],
-        limits='Closed39K owned128 observation only;first use,trace and passive collectors charged. Not clean speed,117K/262144 capacity,decode,host/GPU/bus saturation or historical decline attribution.',
-        next='New committed two-process117K plan may reuse this bounded owned-shape gate with unchanged native/runtime/inputs. Original failed collection and original three-case cohort stay closed;never resume or overwrite them.')
-    write(ROOT/'record.json',row);publish(row);print(json.dumps(row['closed_analysis']),flush=True)
-
-
 if __name__=='__main__':
-    require(len(sys.argv)==2 and sys.argv[1] in ('prepare','run','analyze-owned'),'prepare,run or analyze-owned required')
+    require(len(sys.argv)==2 and sys.argv[1] in ('prepare','run'),'prepare or run required')
     with (B/'owned-v0141-measurement.lock').open('r+') as lock:
         fcntl.flock(lock,fcntl.LOCK_EX|fcntl.LOCK_NB);runtime.guards.no_model_owners([]);runtime.guards.driver_guard()
-        sys.exit(prepare() if sys.argv[1]=='prepare' else analyze_owned() if sys.argv[1]=='analyze-owned' else run())
+        sys.exit(prepare() if sys.argv[1]=='prepare' else run())
