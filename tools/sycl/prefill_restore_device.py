@@ -6,6 +6,7 @@ qualification APIs. No model, performance, physical-context or adoption gate.
 """
 import copy
 import fcntl
+import hashlib
 import json
 from pathlib import Path
 import re
@@ -21,9 +22,27 @@ runtime = restored.runtime
 validation = runtime.validation
 guards, supervision = restored.guards, restored.supervision
 P, B = restored.P, restored.B
-ROOT = B / 'selected-prefill-restoration-device-v2'
+ROOT = B / 'selected-prefill-restoration-device-v3'
 RESULT = restored.RESULT.with_name('prefill-restore-device-current.json')
 write, digest = restored.write, restored.build.digest
+
+
+def reused_checks(previous):
+    guards.require(previous['stage'] == 'failed' and not previous['passed'] and not previous['active']
+        and previous['ownership_closed'] and previous['boot_unchanged'] and previous['fresh_faults'] == []
+        and len(previous['outcomes']) == 12
+        and previous['failure_diagnosis']['stderr'] ==
+            'prefill scratch fixture: one byte short was admitted', 'closed layout-configuration refusal required')
+    pins = restored.gen.benchmark_pins(previous['controller_source_commit'], match_worktree=False)
+    guards.require(len(pins) == previous['controller_files'] and
+        restored.native.fingerprint(pins) == previous['controller_fingerprint'], 'original controller cannot recover')
+    checks = [c for c in previous['outcomes'] if c['label'] != 'scratch-smoke']
+    guards.require(len(checks) == 11 and sum(c['kind'] == 'host' for c in checks) == 8
+        and [c['label'] for c in checks if c['kind'] == 'device'] == ['submission', 'graph0', 'graph1']
+        and all(c['passed'] and c['ownership_closed'] and c['exit_code'] == 0 for c in checks)
+        and all(c['parameter_validation'] and c['fresh_faults'] == [] for c in checks if c['kind'] == 'device'),
+        'individual unchanged host/submission/graph qualifications incomplete')
+    return checks
 
 
 def current(row):
@@ -47,6 +66,17 @@ def current(row):
         and qualified['preload'] == row['preload'] and qualified['runtime_files'] == row['runtime_files']
         and qualified['boot'] == row['boot'] and qualified['driver'] == row['driver'],
         'qualified safety environment/runtime differs')
+    ref = row['prior_failed_gate']
+    raw = restored.gen.git('show', ref['commit'] + ':' + ref['path'])
+    guards.require(hashlib.sha256(raw).hexdigest() == ref['sha256'], 'original failed gate changed')
+    previous = json.loads(raw)
+    same_environment = lambda env: {k: v for k, v in env.items() if k not in ('TMPDIR', 'XDG_CACHE_HOME')}
+    guards.require(row['outcomes'][:11] == reused_checks(previous)
+        and previous['assets'] == row['assets'] and previous['build_source_commit'] == row['build_source_commit']
+        and all(previous[k] == row[k] for k in ('runtime_files', 'preload', 'boot', 'driver'))
+        and same_environment(previous['environment']) == same_environment(row['environment'])
+        and same_environment(previous['host_environment']) == same_environment(row['host_environment']),
+        'reused fixture bytes,original source or effective settings differ')
 
 
 def linked(build):
@@ -68,11 +98,8 @@ def linked(build):
 def prepare():
     guards.require(not ROOT.exists(), 'fresh single-use device gate')
     previous = restored.gen.committed(RESULT)
-    guards.require(previous['stage'] == 'failed' and not previous['passed'] and not previous['active']
-        and previous['ownership_closed'] and len(previous['outcomes']) == 6
-        and all(c['kind'] == 'host' and c['passed'] for c in previous['outcomes'])
-        and previous['failure_diagnosis']['stderr'] == 'iq2 phase: immutable startup selection'
-        and previous['artifact_retirement']['complete'], 'preserve and retire the closed host-only refusal')
+    reused = reused_checks(previous)
+    guards.require(previous['artifact_retirement']['complete'], 'retire closed layout-refusal output first')
     prior_failed = dict(commit=restored.gen.git('log', '-1', '--format=%H', '--',
         str(RESULT.relative_to(P))).decode().strip(), path=str(RESULT.relative_to(P)), sha256=digest(RESULT))
     build = json.loads((restored.ROOT / 'record.json').read_text())
@@ -84,11 +111,6 @@ def prepare():
     pins = restored.gen.benchmark_pins(revision)
     guards.require('tools/sycl/prefill_restore_device.py' in pins, 'commit exact host/device controller')
     cases = [dict(label=label, target=target, args=args, marker=marker) for label, target, args, marker in (
-        ('submission', 'sycl_submission_test', ['--submission'], 'fixture_status=PASS mode=submission'),
-        ('graph0', 'sycl_graph_envelope_test', ['--profile=0'],
-            'numerical=PASS guards=PASS aliases=PASS checked_teardown=PASS support=NOT_ENABLED'),
-        ('graph1', 'sycl_graph_envelope_test', ['--profile=1'],
-            'numerical=PASS guards=PASS aliases=PASS checked_teardown=PASS support=SUPPORTED'),
         ('scratch-smoke', 'sycl_prefill_scratch_test', ['--case', 'smoke'],
             'prefill_scratch_device_fixture mode=smoke cases=1 status=PASS'),
         ('scratch-full', 'sycl_prefill_scratch_test', ['--case', 'full'],
@@ -98,15 +120,12 @@ def prepare():
         ('expert-private', 'sycl_expert_bank_test', ['--packed-smoke'],
             'expert_bank_fixture PASS model=UNRUN physical262144_RESTORE=UNQUALIFIED'),
         ('restore-smoke', 'sycl_conversation_snapshot_test', ['--restore-smoke'], '(restore smoke)'))]
-    host_cases = []
-    for target in restored.HOST_TARGETS:
-        for args in (['--pair=0'], ['--pair=1']) if target == 'iq2_phase_host_test' else ([],):
-            delta = dict(STRATA_IQ2_PAIR=args[0][-1], STRATA_IQ2_PAIR_AUDIT='1') if args else {}
-            host_cases.append(dict(label='host-' + target + ''.join(args), target=target, args=args,
-                kind='host', environment_delta=delta))
+    layout = dict(STRATA_SYCL_PREFILL_SCRATCH_ALIAS='1', STRATA_PREFILL_MMQ='0',
+        STRATA_PREFILL_MOE_COMPACT_FP16='1', STRATA_PREFILL_RING='8',
+        STRATA_GR_UNFUSED='0', STRATA_PREFILL_BF16X2='0', STRATA_PREFILL_LAYER_MAJOR='1')
     for case in cases:
         case['kind'] = 'device'
-    cases = host_cases + cases
+        case['environment_delta'] = layout if case['target'] == 'sycl_prefill_scratch_test' else {}
     ROOT.mkdir(mode=0o700)
     for name in ('tmp', 'cache'):
         (ROOT / name).mkdir()
@@ -120,11 +139,10 @@ def prepare():
         budgets=dict(wall=90, cpu=120, rss_cap=4 << 30, text_cap=16 << 20,
             file_cap=32 << 20, total_cap=64 << 20),
         host_environment=dict(build['environment'], TMPDIR=str(ROOT / 'tmp'), XDG_CACHE_HOME=str(ROOT / 'cache')),
-        host_budgets=dict(wall=60, cpu=60, rss_cap=1 << 30, text_cap=1 << 20,
-            file_cap=1 << 20, total_cap=4 << 20),
-        criteria='Eight ordered host checks then eight fresh device processes on the exact same-build fixtures;'
-            'stop first failure,no retry. Original build host observation remains failed;'
-            'this new plan owns output separately from the build tree. Require all host checks before GPU work. '
+        criteria='Reuse only8 host and3 submission/graph passes from the closed failed gate after exact source,'
+            '17-asset,runtime and effective-environment proof. Scratch smoke with its changed layout is NOT reused. '
+            'Five fresh device cases:Alias1/MMQ0 scratch smoke/full/loan,private bank,RESTORE. '
+            'Stop first failure,no retry;original failed gates remain failed. All8 host gates precede GPU work. '
             'Require exit0,numerical/bounds/loan/publication/RESTORE markers,pre-main validation,silent parameter '
             'validation and an observed pinned updated NEO. Trace enqueue work where expected;smoke refusal may '
             'perform allocation only. Check actual process closure,boot and fresh driver faults after every case.',
@@ -133,7 +151,7 @@ def prepare():
             'model/state and independent prefill/decode comparisons;do not select it from fixture success.',
         pending='Model admission/state handoff,matched repeated long prefill and independent decode,task/agent/RESTORE '
             'and physical262144 qualification. Retained UR reference means ordinary runtime teardown is unqualified.',
-        outcomes=[], active=False, ownership_closed=True, complete=False, passed=False,
+        outcomes=reused, reused_outcomes=11, active=False, ownership_closed=True, complete=False, passed=False,
         model_qualified=False, clean_speed_qualified=False, production_selected=False)
     write(ROOT / 'record.json', row); write(RESULT, runtime.compact(row))
     print('Prepared restored same-build device gate;commit before run.', flush=True)
@@ -156,26 +174,11 @@ def run(row):
         for case in row['cases']:
             current(initial)
             asset = row['assets'][case['target']]
-            if case['kind'] == 'host':
-                entry, out, err = owner.run(case['label'], [asset['path'], *case['args']],
-                    dict(row['host_environment'], **case['environment_delta']), P, **row['host_budgets'])
-                guards.require(supervision.closed(entry) and entry['exit_code'] == 0, 'host fixture failed: ' + case['label'])
-                if case['target'] == 'full_context_diagnostic_host_test':
-                    text = out.read_text()
-                    guards.require('cases=134 full_context_request_and_terminal_bounds=PASS' in text and
-                        'byte_order_and_bounds=PASS full_extent_spans=1 GPU=UNRUN' in text, 'bounds/hash controls differ')
-                if case['target'] == 'iq2_phase_host_test':
-                    guards.require(('iq2_phase_scope cases=12 pair=' + case['args'][0][-1] +
-                        ' prefill_pair_rows=0 decode_dispatch=PASS NT2_reference=PASS bits=PASS guards=PASS '
-                        'scope_restore=PASS') in out.read_text(), 'IQ2 phase/dispatch guards differ')
-                row['outcomes'].append(dict(label=case['label'], kind='host', exit_code=0, passed=True,
-                    ownership_closed=True, GPU_executed=False, stdout_sha256=digest(out), stderr_sha256=digest(err)))
-                persist()
-                continue
             guards.require(sum(c['kind'] == 'host' and c['passed'] for c in row['outcomes']) == 8,
                 'all host gates before the first device')
             trace, warnings = ROOT / (case['label'] + '.trace'), ROOT / (case['label'] + '.validation')
-            env = dict(row['environment'], UR_LOG_TRACING='level:info;flush:info;output:file,' + str(trace),
+            env = dict(row['environment'], **case['environment_delta'])
+            env.update(UR_LOG_TRACING='level:info;flush:info;output:file,' + str(trace),
                 UR_LOG_VALIDATION='level:warning;flush:warning;output:file,' + str(warnings))
             seen = set()
 
