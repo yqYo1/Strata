@@ -323,10 +323,13 @@ of summed thread CPU leaf time:GU2414.041345,HQ7.352099,Down1066.278971ms.
 These concurrent sums are not decode latency. Its59801.8ms prompt and1832.0ms
 decode are traced first-use diagnostics,not clean speed or sustained decode.
 Observer overhead and representative long-generation service evidence remain
-pending;this check establishes neither decode nonregression nor a limiting
+pending. The frozen comparison uses nine independent processes in three
+original/off/on order triples,with a fixed thinking-on regular-code request.
+It checks per-format/NT work and MTP agreement before interpreting timing ratios;
+all nine samples are required. The smoke check establishes neither decode nonregression nor a limiting
 hardware resource. Successful build/device/model raw output is retired after
 source/recipe recovery. The three generated model admission inputs remain for
-the imminent original/observer-off/observer-on comparison;review them and the
+the active original/observer-off/observer-on comparison;review them and the
 extra build at that comparison's closure. Optional
 `STRATA_CPU_SERVICE_PROFILE` compilation plus preexec`STRATA_CPU_SERVICE=1`
 collects decode-only pool GU/SwiGLU, hidden quantization and Down leaf scopes for

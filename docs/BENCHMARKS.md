@@ -139,7 +139,8 @@ because device global-timer stamps are unsupported. GPU attribution needs a
 separately qualified profiling-event path outside capture. Leave both observer
 variables absent in clean processes; setting either to `0` still enables it.
 
-The internal CPU-clock observer and its launchers were retired after their
+The earlier whole-decode CPU-clock observer and its launchers were retired after
+their
 failed overhead/nonregression gates; they are historical evidence, not current
 benchmark commands. Their source remains recoverable at
 `d50d31347cc8505a40181db8308735bfa0058427`. The maintained
@@ -149,6 +150,18 @@ methods. Their closed roots cannot be rerun; a new experiment needs its own
 committed plan and admission. Scheduled CPU includes stalls and polling, and
 GPU busy counters do not measure arithmetic efficiency, RAM bandwidth or
 physical PCIe traffic. Keep those unresolved quantities explicit.
+
+The current `cpu_service_overhead.py` comparison separately measures the
+decode-pool leaf observer's cost:original6e40,observer-compiled but disabled,and
+the same observer binary enabled. Its frozen nine-process order uses the
+regular-code subset,thinking on,and the unchanged16384-token output budget.
+Each process runs the four official warmups and requires one eligible32K-input/1K-output
+request. Source,model,placement,runtime and common observers remain fixed.
+Resume the prepared cohort with `python3 -B tools/sycl/cpu_service_overhead.py run`
+only after committing the preceding process outcome;never rerun preparation
+or a closed process. This is observed overhead/attribution,not clean speed or
+inference adoption. The maintained prefill decisions and `cpu-service-current.json`
+record its current qualification and remaining gates.
 
 For a prefill-only screen, `bench.sh --prefill-only --prefill-tokens N` accepts
 32768,65536,98304 or131072 as the minimum **actual prompt and read tokens**.
