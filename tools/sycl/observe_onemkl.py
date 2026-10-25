@@ -23,10 +23,8 @@ import onemkl_work as native
 import ur_call_subscriber as u
 
 r, P, B, RESULT = u.r, u.P, u.B, u.RESULT
-ROOT = native.ROOT / 'first-call-v1'
-KEY = ('event_reconciliation', 'oneMKL_first_call')
-BUFFER_KEY = ('event_reconciliation', 'oneMKL_buffer_call')
-BUFFER_ROOT = native.ROOT / 'buffer-call-v1'
+ROOT = native.ROOT / 'buffer-call-v1'
+KEY = ('event_reconciliation', 'oneMKL_buffer_call')
 require, digest, write = r.require, r.digest, r.write
 
 
@@ -40,27 +38,12 @@ def pins(revision):
     return result
 
 
-def fixture():
-    row = r.validation.committed(RESULT, ('event_reconciliation', native.KEY))
-    private = json.loads((native.ROOT / 'record.json').read_text())
-    require(row == native.summary(private) and row['stage'] == 'built-not-executed' and row['passed'] and
-        row['ownership_closed'] and not row['active'] and not row['GPU_executed'], 'closed unexecuted wrapper build required')
-    native.current(private)
-    require(digest(row['binary']['path']) == row['binary']['sha256'], 'wrapper ELF changed')
-    manifest = private['compiled_inputs']['manifest']
-    require(digest(manifest['path']) == manifest['sha256'], 'compiled-input manifest changed')
-    for path, sha in json.loads(Path(manifest['path']).read_text()).items():
-        require(digest(path) == sha, 'actual compiled input changed: ' + path)
-    return row['binary'], dict(native_source_commit=row['source_commit'], build_result_key=native.KEY,
-        compiled_inputs=manifest, source_groups=row['source_groups'])
-
-
-def prepare(*, root=ROOT, key=KEY, buffers=False):
+def prepare(*, root=ROOT, key=KEY):
     container = r.validation.committed(RESULT)
     require(key[1] not in container[key[0]] and not root.exists(), 'fresh first-call capture only')
     revision = r.validation.git('rev-parse', 'HEAD').decode().strip()
-    inputs = pins(revision); binary, proof = native.retained_fixture() if buffers else fixture()
-    assets = u.probe.assets(); host, reuse = u.qualified_native(u.BUFFER_KEY if buffers else u.KEY)
+    inputs = pins(revision); binary, proof = native.retained_fixture()
+    assets = u.probe.assets(); host, reuse = u.qualified_native()
     root.mkdir(mode=0o700)
     for name in ('tmp', 'cache', 'trace'): (root / name).mkdir()
     template = r.validation.committed(RESULT.with_name('phase-prefill-speed-current.json'))['environment_template']
@@ -101,19 +84,18 @@ def prepare(*, root=ROOT, key=KEY, buffers=False):
             'Original engine+12fixtures and qualified observer unchanged. Wrapper remains only for this coverage question.',
         active=False, ownership_closed=True, passed=False, complete_device_coverage_qualified=False,
         observer_cost_qualified=False, model_qualified=False, inference_changed=False)
-    row['buffer_observer'] = buffers
-    if buffers:
-        row['limits'] = 'Typed direct joins and external API reference generations only;driver-internal command-list/event ownership,host-payload lifetime,independent internal library work,observer cost,model coverage,performance,physical262144 and adoption remain unqualified.'
-        row['criteria'] += ' Additionally require all10 direct UR/PTI links,typed enqueue/transfer ranges,balanced serial queue/event/USM/buffer references,two4-byte buffers,and two actual graph queries returning false. Internal library expected-work and host-payload lifetime remain separate.'
+    row['buffer_observer'] = True
+    row['limits'] = 'Typed direct joins and external API reference generations only;driver-internal command-list/event ownership,host-payload lifetime,independent internal library work,observer cost,model coverage,performance,physical262144 and adoption remain unqualified.'
+    row['criteria'] += ' Additionally require all10 direct UR/PTI links,typed enqueue/transfer ranges,balanced serial queue/event/USM/buffer references,two4-byte buffers,and two actual graph queries returning false. Internal library expected-work and host-payload lifetime remain separate.'
     container[key[0]][key[1]] = row; write(RESULT, container); write(root / 'record.json', row)
     print('Prepared single-call native-work discovery;commit plan before execution.', flush=True)
 
 
 def current(row):
     require(pins(row['source_commit']) == row['input_sha256'] and
-        (native.retained_fixture() if row.get('buffer_observer') else fixture()) == (row['binary'], row['build_proof']) and
+        native.retained_fixture() == (row['binary'], row['build_proof']) and
         u.probe.assets() == row['assets'] and
-        u.qualified_native(u.BUFFER_KEY if row.get('buffer_observer') else u.KEY)[1] == row['observer_reuse'], 'native/observer/controller inputs changed')
+        u.qualified_native()[1] == row['observer_reuse'], 'native/observer/controller inputs changed')
 
 
 def analyze(stdout, spans, events, pid, start, end):
@@ -260,11 +242,8 @@ def run(*, root=ROOT, key=KEY):
 
 
 if __name__ == '__main__':
-    require(sys.argv[1:] in (['prepare'], ['run'], ['prepare-buffers'], ['run-buffers']),
-            'prepare|run|prepare-buffers|run-buffers')
+    require(sys.argv[1:] in (['prepare'], ['run']), 'prepare|run')
     with (B / 'owned-v0141-measurement.lock').open('a+') as lock:
         fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB); r.guards.no_model_owners([]); r.guards.driver_guard()
         if sys.argv[1:] == ['prepare']: prepare()
-        elif sys.argv[1:] == ['prepare-buffers']: prepare(root=BUFFER_ROOT, key=BUFFER_KEY, buffers=True)
-        elif sys.argv[1:] == ['run-buffers']: sys.exit(run(root=BUFFER_ROOT, key=BUFFER_KEY))
         else: sys.exit(run())

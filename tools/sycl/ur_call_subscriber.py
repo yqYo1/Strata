@@ -1,40 +1,27 @@
 #!/usr/bin/env python3
-"""Build and qualify a pre-exec UR-call subscriber on the CPU before GPU use.
+"""Read qualified UR subscriber artifacts and reconcile captured calls.
 
-This diagnostic has no production engine changes. Retained original6e40 and
-its12 fixtures stay selected; one small observer ELF serves the next GPU probe.
+The selected buffer-aware observer has a separate native CPU/GPU qualification.
+Closed one-use build/check controllers recover from05f0f7af4 and7f45b88e0;
+current admission uses their original inputs rather than an obsolete ELF.
 Repository LICENSE; no external implementation copied.
 """
 import collections
 import bisect
-import fcntl
 import hashlib
 import json
-import os
 from pathlib import Path
 import re
-import secrets
-import select
-import shlex
-import shutil
-import subprocess
 import sys
-import time
 
 sys.dont_write_bytecode = True
 import work_ledger_fixture as probe
 
 r = probe.runtime
 P, B, RESULT = probe.P, probe.B, probe.RESULT
-ROOT = B / 'ur-call-subscriber-v2'
 SOURCE = 'bench/sycl/ur_call_subscriber.cpp'
 DRIVER_SOURCE = 'bench/sycl/ur_call_guard_test.cpp'
 LEGACY_KEY = ('event_reconciliation', 'ur_subscriber')
-DIRECT_KEY = ('event_reconciliation', 'ur_subscriber_gpu')
-KEY = ('event_reconciliation', 'ur_subscriber_metadata')
-GPU_KEY = ('event_reconciliation', 'ur_metadata_gpu')
-GPU_ROOT = ROOT / 'gpu-direct-v1'
-BUFFER_ROOT = B / 'ur-call-subscriber-v3'
 BUFFER_KEY = ('event_reconciliation', 'ur_subscriber_buffers')
 SDK_KEY = ('UR_PTI_identity_bridge_20261025', 'exact_SDK_inspection')
 require, digest = r.require, r.digest
@@ -347,40 +334,6 @@ def buffer_fixture(text, pid):
         limits='CPU XPTI simulation only;no UR/L0 device work,actual host-payload ownership,performance or model coverage.')
 
 
-def analyse_lifetimes():
-    """Replay already closed typed GPU/CPU data;no additional GPU process."""
-    row = r.validation.committed(RESULT, GPU_KEY)
-    host = r.validation.committed(RESULT, KEY)
-    require(row['stage'] == 'direct-join-passed' and row['passed'] and row['ownership_closed'] and
-            row['fresh_faults'] == [] and 'lifetime_analysis' not in row, 'fresh closed typed fixture analysis only')
-    revision = r.validation.git('rev-parse', 'HEAD').decode().strip()
-    result = dict(source_commit=revision, input_sha256=source_pins(revision), passed=False, gpu_work=False)
-    try:
-        for item in row['analysis_inputs']:
-            require(digest(item['path']) == item['sha256'], 'closed typed input changed')
-        gpu = parse_calls((GPU_ROOT / 'calls.jsonl').read_text(), row['pid'], intervals=True)
-        require(metadata_census(gpu['intervals']) == row['typed_metadata'], 'typed capture replay differs')
-        result['device_fixture'] = lifetime_census(gpu['intervals'])
-        native = next(o for o in host['outcomes'] if o['kind'] == 'metadata')
-        private = json.loads((ROOT / 'record.json').read_text())
-        owner = next(c for c in private['commands'] if c['label'] == 'metadata')
-        raw = (ROOT / 'native-metadata/calls.jsonl').read_text()
-        require(metadata_fixture(raw, owner['pid']) == native['metadata'], 'original CPU controls do not replay')
-        result['synthetic_CPU_fixture'] = lifetime_census(parse_calls(raw, owner['pid'], intervals=True)['intervals'])
-        cpu = result['synthetic_CPU_fixture']['counts']
-        require(cpu['queue_reused_values'] == cpu['allocation_reused_values'] == 1 and cpu['event_reused_values'] == 2 and
-                cpu['graph_replays'] == 2 and cpu['declared_replay_children'] == 4 and
-                cpu['rejected_without_transition'] == 2, 'synthetic generation/replay conservation differs')
-        result['passed'] = True
-    except BaseException as error:
-        result['error'] = repr(error)
-    container = json.loads(RESULT.read_text())
-    container[GPU_KEY[0]][GPU_KEY[1]]['lifetime_analysis'] = result
-    r.write(RESULT, container)
-    print(json.dumps(result), flush=True)
-    return 0 if result['passed'] else 1
-
-
 def correlate_calls(spans, events, pid, expected_calls):
     """Join independent UR instances to actual PTI sources; no ordinal join.
 
@@ -482,7 +435,7 @@ def admit_native(row, binary=False):
             require(digest(row['driver']['path']) == row['driver']['sha256'], 'native control ELF changed')
 
 
-def qualified_native(key=KEY):
+def qualified_native(key=BUFFER_KEY):
     row = r.validation.committed(RESULT, key)
     require(row['stage'] == 'host-checked' and row['passed'] and row['ownership_closed'] and not row['fresh_faults'] and
             len(row['outcomes']) == (5 if key == LEGACY_KEY else 7 if key == BUFFER_KEY else 6) and row['outcomes'][-1]['calls']['call_pairs'] == 2,
@@ -500,340 +453,3 @@ def qualified_native(key=KEY):
                  original_project_inputs_recovered=len(row['input_sha256']), library=row['library'], driver=row['driver'],
                  reuse='Original observer/driver native sources and recipes recover;all recorded compiled inputs and ELF hashes verified. CPU qualification reuse does not establish new GPU coverage.')
     return row, proof
-
-
-def gpu_prepare():
-    """Freeze one small direct GPU join, reusing the host-qualified native ELF."""
-    container = r.validation.committed(RESULT)
-    require(not GPU_ROOT.exists() and GPU_KEY[1] not in container[GPU_KEY[0]], 'inspect existing GPU owner;no retry')
-    prior = container[DIRECT_KEY[0]][DIRECT_KEY[1]]
-    require(prior['stage'] == 'direct-join-passed' and prior['passed'] and prior['ownership_closed'] and
-            not prior['fresh_faults'], 'closed independent direct-identity gate required')
-    revision = r.validation.git('rev-parse', 'HEAD').decode().strip()
-    pins, assets = source_pins(revision), probe.assets()
-    host, native = qualified_native()
-    GPU_ROOT.mkdir(mode=0o700)
-    for name in ('tmp', 'cache', 'trace'):
-        (GPU_ROOT / name).mkdir()
-    env = dict(r.validation.committed(r.SETTINGS)['environment'],
-        TMPDIR=str(GPU_ROOT / 'tmp'), XDG_CACHE_HOME=str(GPU_ROOT / 'cache'), LD_DEBUG='libs',
-        STRATA_UNITRACE_TARGET_PRELOAD=assets['preload']['library']['path'] + ':' + host['library']['path'],
-        STRATA_UR_PROBE_EXPECTED_LOADER=assets['preload']['loader'],
-        XPTI_FRAMEWORK_DISPATCHER=host['assets']['dispatcher']['path'],
-        XPTI_SUBSCRIBERS=host['library']['path'], XPTI_TRACE_ENABLE='1', SYCL_UR_TRACE='0',
-        UR_L0_ENABLE_SYSMAN_ENV_DEFAULT='0',
-        STRATA_UR_CALL_LOG=str(GPU_ROOT / 'calls.jsonl'),
-        UNITRACE_FollowChildProcess='1', UNITRACE_SystemTime='1', UNITRACE_TraceOutputDir=str(GPU_ROOT / 'trace'),
-        UR_LOG_TRACING='level:info;flush:info;output:file,' + str(GPU_ROOT / 'ur.log'),
-        UR_LOG_VALIDATION='level:warning;flush:warning;output:file,' + str(GPU_ROOT / 'validation.log'))
-    require('LD_PRELOAD' not in env, 'target-only preload required')
-    session = 'StrataUR' + secrets.token_hex(12)
-    row = dict(stage='prepared', source_commit=revision, input_sha256=pins, assets=assets, native_reuse=native,
-        host_controls=host['host_controls'],
-        diagnostic_startup_override=dict(name='UR_L0_ENABLE_SYSMAN_ENV_DEFAULT', value='0',
-            source_diagnosis=prior['diagnostic_startup_override']['source_diagnosis'],
-            scope='Only this bounded diagnostic process. Keep all existing safety settings and immutable-environment guard. Do not infer disabled zesInit,hardware-counter capability,clean speed or production environment qualification.'),
-        dispatcher=host['assets']['dispatcher'], expected_source_census=probe.source_census(), environment=env,
-        session=session, command=[assets['launcher']['path'], '--session', session, '--host-timing', '--device-timing',
-            '--chrome-device-logging', '--chrome-call-logging', '--chrome-event-buffer-size', '128',
-            assets['fixture']['path'], '--submission'],
-        budgets=dict(wall=90, cpu=90, rss_cap=4 << 30, text_cap=8 << 20, file_cap=32 << 20, total_cap=64 << 20),
-        gates='One unchanged original6e40 direct-submission fixture,current NEO. Source/API/device606 kernels,53 copies/55844 requested bytes,one fill/1028 bytes,20 barriers. Every actual PTI GPU event needs one exact internal host/device flow and one distinct successful same-thread UR enqueue interval containing its actual append timestamp,with matching kind. Typed metadata additionally needs680 queues/wait/output snapshots,606 valid launch geometries and matching55844 copy/1028 fill requested bytes. No ordinal/tolerance fallback,ambiguous/unknown/unmapped/failed enqueue. Require complete subscriber pairs,actual pinned providers,pre-main validation,matching time namespace,numerical/drain footer,normal owners/session closure and no fresh faults. Stop first failure;no graph or model work.',
-        retention='Main consumes bounded raw records for this direct join only;after verified compact evidence,retire normal traces/JIT/output with a deletion manifest. Reuse current13 native artifacts and the small observer;no new binary generation.',
-        active=False, ownership_closed=True, passed=False, gpu_work=True, model_qualified=False,
-        graph_lifetime_qualified=False, observer_cost_qualified=False, clean_speed_qualified=False)
-    container[GPU_KEY[0]][GPU_KEY[1]] = row
-    r.write(RESULT, container)
-    r.write(GPU_ROOT / 'record.json', row)
-    print('Prepared single-use GPU UR/PTI join;commit plan before execution.', flush=True)
-
-
-def gpu_check():
-    row = r.validation.committed(RESULT, GPU_KEY)
-    require(row['stage'] == 'prepared' and not (GPU_ROOT / 'target-owned').exists(), 'single-use committed GPU plan required')
-
-    def admit_gpu():
-        require(source_pins(row['source_commit']) == row['input_sha256'] and probe.assets() == row['assets'] and
-                qualified_native()[1] == row['native_reuse'] and probe.source_census() == row['expected_source_census'],
-                'GPU observer source/native/runtime changed')
-
-    admit_gpu()
-    runtime = r.validation.committed(r.RESULT)
-    session_path = Path('/dev/shm/uctrl' + str(os.getuid()) + '_' + row['session'])
-    require(not session_path.exists(), 'preexisting collector session;no overwrite')
-    journal = subprocess.check_output(['journalctl', '-k', '-b', '-n', '0', '--show-cursor', '--no-pager'], text=True, timeout=15)
-    cursor = next(s.split(': ', 1)[1] for s in journal.splitlines() if s.startswith('-- cursor: '))
-    target = control = None
-
-    def persist():
-        row['active'] = any(o and o.active is not None for o in (target, control))
-        r.write(GPU_ROOT / 'record.json', dict(row, target_commands=target.commands if target else [],
-                                             control_commands=control.commands if control else []))
-
-    try:
-        target = r.supervision.Owner(GPU_ROOT / 'target-owned', persist)
-        control = r.supervision.Owner(GPU_ROOT / 'control-owned', persist)
-        row['stage'] = 'observing'
-        seen = set()
-        required = {str(Path(row['native_reuse']['library']['path']).resolve()),
-                    str(Path(row['dispatcher']['path']).resolve()), str(Path(row['assets']['collector']['path']).resolve()),
-                    next(p for p in runtime['runtime_files'] if 'libze_intel_gpu' in p)}
-        allowed = set(runtime['runtime_files']) | required | {str(Path(row['assets'][k]['path']).resolve())
-            for k in ('launcher', 'fixture')}
-        namespace = os.readlink('/proc/self/ns/time')
-        namespace_seen = False
-
-        def observe(io, entry):
-            nonlocal namespace_seen
-            while not io.exit_watch.poll(0) or not io.eof:
-                io.poll()
-                try:
-                    require(os.readlink('/proc/' + str(entry['pid']) + '/ns/time') == namespace,
-                            'native/controller time namespace mismatch')
-                    namespace_seen = True
-                    maps = Path('/proc', str(entry['pid']), 'maps').read_text()
-                except (FileNotFoundError, ProcessLookupError):
-                    maps = ''
-                for path in r.executable_mappings(maps):
-                    require(path in allowed, 'unplanned executable provider: ' + path)
-                    seen.add(path)
-                if select.select([io.proc.stdout], [], [], .01)[0]:
-                    io.read()
-                    io.pending.clear()
-            io.exit(1)
-
-        row['begin_raw_ns'] = time.clock_gettime_ns(time.CLOCK_MONOTONIC_RAW)
-        entry, out, err = target.run('submission', row['command'], row['environment'], P,
-                                    interaction=observe, **row['budgets'])
-        row['end_raw_ns'] = time.clock_gettime_ns(time.CLOCK_MONOTONIC_RAW)
-        row['pid'] = entry['pid']
-        require(r.supervision.closed(entry) and entry['exit_code'] == 0, 'native observer owner/exit failed')
-        row['validation'] = r.validation.preload_evidence(err.read_text(), entry['pid'])
-        require('fixture_status=PASS mode=submission' in out.read_text(), 'native numerical/drain footer missing')
-        require(not (GPU_ROOT / 'validation.log').exists() or not (GPU_ROOT / 'validation.log').stat().st_size,
-                'parameter validation warning')
-        require(required <= seen and namespace_seen, 'observer/dispatcher/collector/current NEO or time namespace not observed')
-        row.update(actual_runtime_providers_verified=True, time_namespace=namespace)
-        row['api'] = probe.api_census((GPU_ROOT / 'ur.log').read_text())
-        traces = list((GPU_ROOT / 'trace').rglob('*.json'))
-        require(len(traces) == 1, 'one complete native JSON timeline required')
-        raw = traces[0].read_bytes()
-        value = json.loads(raw)
-        events = value['traceEvents'] if isinstance(value, dict) else value
-        row['device'] = probe.device_census(events, entry['pid'], row['begin_raw_ns'], row['end_raw_ns'])
-        require(row['api']['counts'] == row['device']['counts'] == row['expected_source_census'],
-                'source/API/device census mismatch')
-        calls = parse_calls((GPU_ROOT / 'calls.jsonl').read_text(), entry['pid'], intervals=True)
-        spans = calls.pop('intervals')
-        row['links'] = correlate_calls(spans, events, entry['pid'], row['api']['enqueue_calls'])
-        row['typed_metadata'] = metadata_census(spans)
-        typed = row['typed_metadata']['counts']
-        require(typed['enqueue_calls'] == 680 and typed['kernel_geometries'] == 606 and
-                typed['copy_bytes'] == 55844 and typed['fill_bytes'] == 1028, 'typed fixture census differs')
-        row['subscriber'] = dict(call_pairs=calls['call_pairs'], source_threads=calls['source_threads'],
-                                 complete_pairs=True, environment_guard_exit_not_triggered=True)
-        row['analysis_inputs'] = [dict(path=str(p), sha256=digest(p), bytes=p.stat().st_size)
-                                  for p in (traces[0], GPU_ROOT / 'ur.log', GPU_ROOT / 'calls.jsonl')]
-        admit_gpu()
-        row.update(stage='direct-join-passed', passed=True)
-    except BaseException as error:
-        row.update(stage='failed', passed=False, error=repr(error))
-    finally:
-        row['ownership_closed'] = all(o is None or (o.active is None and all(r.supervision.closed(c) for c in o.commands))
-                                      for o in (target, control))
-        if session_path.exists() and row['ownership_closed'] and control is not None:
-            try:
-                entry, _, _ = control.run('stop', [row['assets']['launcher']['path'], '--stop', row['session']],
-                    row['environment'], P, wall=15, cpu=15, rss_cap=2 << 30, text_cap=1 << 20,
-                    file_cap=32 << 20, total_cap=64 << 20)
-                require(r.supervision.closed(entry) and entry['exit_code'] == 0 and not session_path.exists(),
-                        'collector session closure failed')
-            except BaseException as error:
-                row.update(passed=False, cleanup_error=repr(error))
-        row['ownership_closed'] = all(o is None or (o.active is None and all(r.supervision.closed(c) for c in o.commands))
-                                      for o in (target, control))
-        row['session_removed'] = not session_path.exists()
-        try:
-            check = dict(host_probe_accepted=True)
-            r.validation.finish(check, target, cursor, runtime['boot'])
-            row.update(fresh_faults=check['fresh_faults'], boot_unchanged=check['boot_unchanged'], driver_after=check['driver_after'])
-            row['passed'] = bool(row['passed'] and check['passed'] and row['ownership_closed'] and
-                                 row['session_removed'] and not row.get('cleanup_error'))
-        except BaseException as error:
-            row.update(passed=False, fault_check_error=repr(error))
-        if not row['passed']:
-            row['stage'] = 'failed'
-        persist()
-        container = json.loads(RESULT.read_text())
-        container[GPU_KEY[0]][GPU_KEY[1]] = row
-        r.write(RESULT, container)
-    print(json.dumps({k: row.get(k) for k in ('stage', 'passed', 'ownership_closed', 'fresh_faults', 'error')}), flush=True)
-    return 0 if row['passed'] else 1
-
-
-def driver_plan(compiler, env, *, root=ROOT):
-    sdk = Path(runtime_assets()['dispatcher']['path']).parent.parent
-    options = [compiler, '-std=c++17', '-O2', '-I' + str(sdk / 'include')]
-    raw = subprocess.check_output([*options, '-M', str(P / DRIVER_SOURCE)], env=env, timeout=30)
-    require(len(raw) <= 1 << 20 and b':' in raw, 'finite driver header census required')
-    names = shlex.split(raw.decode().split(':', 1)[1].replace('\\\n', ' '))
-    require(0 < len(names) < 4096, 'driver header population cap')
-    manifest = root / 'driver-inputs.json'
-    headers = {str(Path(name).resolve()): digest(name) for name in names}
-    r.write(manifest, headers)
-    return dict(driver_command=[*options, str(P / DRIVER_SOURCE), '-L' + str(sdk / 'lib'),
-                '-Wl,-rpath,' + str(sdk / 'lib'), '-lxptifw', '-o', str(root / 'ur_call_guard_test')],
-                driver_compiler_inputs=dict(path=str(manifest), sha256=digest(manifest), files=len(headers)))
-
-
-def prepare(*, root=ROOT, key=KEY):
-    require(not root.exists(), 'inspect existing subscriber owner; no retry')
-    container = r.validation.committed(RESULT)
-    require(key[1] not in container[key[0]], 'preserve existing subscriber result')
-    _, fallback = qualified_native(KEY if key == BUFFER_KEY else LEGACY_KEY)
-    revision = r.validation.git('rev-parse', 'HEAD').decode().strip()
-    pins, assets = source_pins(revision), runtime_assets()
-    sdk = Path(assets['dispatcher']['path']).parent.parent
-    compiler = str(Path('/usr/bin/g++').resolve())
-    options = [compiler, '-std=c++17', '-O2', '-fPIC', '-shared', '-pthread',
-               '-DXPTI_CALLBACK_API_EXPORTS', '-I' + str(sdk / 'include')]
-    env = dict(PATH='/usr/bin:/bin', HOME='/home/yayoi', LANG='C.UTF-8', LC_ALL='C.UTF-8')
-    tools = {compiler: digest(compiler)}
-    for name in ('cc1plus', 'collect2', 'as', 'ld'):
-        value = subprocess.check_output([compiler, '-print-prog-name=' + name], env=env, text=True, timeout=10).strip()
-        path = Path(value) if '/' in value else Path(shutil.which(value, path=env['PATH']))
-        tools[str(path.resolve())] = digest(path)
-    raw = subprocess.check_output([*options, '-M', str(P / SOURCE)], env=env, timeout=30)
-    require(len(raw) <= 1 << 20 and b':' in raw, 'finite compiler header census required')
-    dependencies = shlex.split(raw.decode().split(':', 1)[1].replace('\\\n', ' '))
-    require(0 < len(dependencies) < 4096, 'header population cap')
-    headers = {str(Path(name).resolve()): digest(name) for name in dependencies}
-    root.mkdir(mode=0o700)
-    (root / 'tmp').mkdir()
-    manifest = root / 'compiler-inputs.json'
-    r.write(manifest, headers)
-    library = root / 'libstrata_ur_calls.so'
-    command = [*options, str(P / SOURCE), '-L' + str(sdk / 'lib'), '-Wl,-rpath,' + str(sdk / 'lib'),
-               '-Wl,--no-undefined', '-lxptifw', '-o', str(library)]
-    row = dict(stage='prepared', source_commit=revision, input_sha256=pins, assets=assets, qualified_fallback=fallback,
-        compiler_tools=tools, compiler_inputs=dict(path=str(manifest), sha256=digest(manifest), files=len(headers)),
-        command=command, environment=dict(env, TMPDIR=str(root / 'tmp')),
-        budgets=dict(wall=120, cpu=120, rss_cap=4 << 30, text_cap=4 << 20, file_cap=32 << 20, total_cap=64 << 20),
-        gates='Compile one Main-authored observer ELF and native driver;commit binary hashes before checks. Four CPU mutation controls reach markers then exit87. One synthetic CPU XPTI metadata fixture yields26 complete pairs (24 success,two rejection),same-address queue/allocation/event reuse,two graph children,two replay instances and unreached invalid failed-output/list pointees. No UR or LevelZero device calls. Original CPU UR canary exits0 with pre-main validation and exactly two rejected urPlatformGetApiVersion pairs,status46. Stop first failure. No GPU/model/performance or ordinary teardown qualification.',
-        retention='Original6e40 plus12 fixtures retained unchanged. Keep this one small observer ELF,exact source/recipe and header manifest only for the imminent GPU coverage fixture after host checks;retire normal build/API/loader output after compact evidence.',
-        active=False, ownership_closed=True, passed=False, gpu_work=False, model_qualified=False)
-    row.update(driver_plan(compiler, row['environment'], root=root))
-    row['buffer_fixture'] = key == BUFFER_KEY
-    if row['buffer_fixture']:
-        row['gates'] += ' Additionally pass21 synthetic buffer/query callbacks,5 rejected invalid-pointee controls,recycled buffer/native identities,typed ranges and balanced references. No host-payload/GPU lifetime claim.'
-    container[key[0]][key[1]] = row
-    r.write(RESULT, container)
-    r.write(root / 'record.json', row)
-    print('Prepared host-only UR subscriber;commit recipe before build.', flush=True)
-
-
-def execute(action, *, root=ROOT, key=KEY):
-    row = r.validation.committed(RESULT, key)
-    expected = {'build': ('prepared',), 'check': ('built',)}
-    require(row['stage'] in expected[action], 'committed single-use component stage required')
-    admit(row, action != 'build')
-    owner = None
-    cursor_text = subprocess.check_output(['journalctl', '-k', '-b', '-n', '0', '--show-cursor', '--no-pager'], text=True, timeout=15)
-    cursor = next(x.split(': ', 1)[1] for x in cursor_text.splitlines() if x.startswith('-- cursor: '))
-    boot = Path('/proc/sys/kernel/random/boot_id').read_text().strip()
-
-    def persist():
-        row['active'] = bool(owner and owner.active is not None)
-        r.write(root / 'record.json', dict(row, commands=owner.commands if owner else []))
-
-    try:
-        label = 'check-native' if action == 'check' else action
-        require(not (root / (label + '-owned')).exists(), 'inspect original component process;no retry')
-        owner = r.supervision.Owner(root / (label + '-owned'), persist)
-        row['stage'] = action + 'ing'
-        if action == 'build':
-            entry, _, _ = owner.run('compile', row['command'], row['environment'], P, **row['budgets'])
-            require(r.supervision.closed(entry) and entry['exit_code'] == 0, 'subscriber compile failed')
-            library = root / 'libstrata_ur_calls.so'
-            row['library'] = dict(path=str(library), sha256=digest(library), bytes=library.stat().st_size)
-            entry, _, _ = owner.run('compile-driver', row['driver_command'], row['environment'], P, **row['budgets'])
-            require(r.supervision.closed(entry) and entry['exit_code'] == 0, 'native driver compile failed')
-            driver = root / 'ur_call_guard_test'
-            row.update(stage='built',
-                driver=dict(path=str(driver), sha256=digest(driver), bytes=driver.stat().st_size))
-        else:
-            base = r.validation.committed(r.SETTINGS)['environment']
-            row['outcomes'] = []
-            kinds = ('setenv', 'unsetenv', 'putenv', 'clearenv', 'metadata')
-            for kind in (*kinds, *(('buffers',) if row.get('buffer_fixture') else ()), 'canary'):
-                folder = root / ('native-' + kind)
-                folder.mkdir()
-                env = dict(base, STRATA_UR_CALL_LOG=str(folder / 'calls.jsonl'),
-                    XPTI_FRAMEWORK_DISPATCHER=row['assets']['dispatcher']['path'],
-                    XPTI_SUBSCRIBERS=row['library']['path'], XPTI_TRACE_ENABLE='1', SYCL_UR_TRACE='0',
-                    LD_PRELOAD=row['library']['path'], TMPDIR=str(root / 'tmp'), LD_DEBUG='libs',
-                    UR_LOG_TRACING='level:info;flush:info;output:file,' + str(folder / 'ur.log'))
-                command = [row['driver']['path'], kind]
-                if kind == 'canary':
-                    env.update(LD_PRELOAD=row['assets']['preload']['library']['path'] + ':' + row['library']['path'],
-                               STRATA_UR_PROBE_EXPECTED_LOADER=row['assets']['preload']['loader'])
-                    command = [row['assets']['preload']['canary']['path']]
-                entry, out, err = owner.run(kind, command, env, P, wall=45, cpu=45, rss_cap=2 << 30,
-                                           text_cap=4 << 20, file_cap=32 << 20, total_cap=64 << 20)
-                require(r.supervision.closed(entry), 'component owner closure failed')
-                if kind == 'metadata':
-                    require(entry['exit_code'] == 0 and json.loads(out.read_text()) ==
-                            dict(metadata_fixture='PASS', simulated_calls=26), 'native metadata driver failed')
-                    result = dict(kind=kind, exit_code=0, metadata=metadata_fixture((folder / 'calls.jsonl').read_text(), entry['pid']))
-                elif kind == 'buffers':
-                    require(entry['exit_code'] == 0 and json.loads(out.read_text()) ==
-                            dict(buffer_fixture='PASS', simulated_calls=21), 'native buffer driver failed')
-                    result = dict(kind=kind, exit_code=0, metadata=buffer_fixture((folder / 'calls.jsonl').read_text(), entry['pid']))
-                elif kind != 'canary':
-                    require(entry['exit_code'] == 87 and out.read_text() == 'mutation-case-begin:' + kind + '\n' and
-                            'strata UR subscriber: environment mutation blocked' in err.read_text(), 'mutation control failed')
-                    result = dict(kind=kind, exit_code=87, mutation_blocked=True)
-                else:
-                    require(entry['exit_code'] == 0, 'CPU UR subscriber canary failed')
-                    validation = r.validation.preload_evidence(err.read_text(), entry['pid'])
-                    require(json.loads(out.read_text()) == dict(pid=entry['pid'], initialized=0, checked=46,
-                        expected=46, version=(1 << 32) - 1, closed=0), 'original UR canary result changed')
-                    calls = parse_calls((folder / 'calls.jsonl').read_text(), entry['pid'])
-                    require(calls['call_pairs'] == 2 and calls['source_threads'] == 1 and calls['outcomes'] ==
-                        [dict(name='urPlatformGetApiVersion', status=46, calls=2)], 'CPU UR callback contract differs')
-                    result = dict(kind=kind, exit_code=0, validation=validation, calls=calls)
-                row['outcomes'].append(result)
-                persist()
-            row.update(stage='host-checked', passed=True)
-        admit(row, True)
-    except BaseException as error:
-        row.update(stage='failed', passed=False, error=repr(error))
-    finally:
-        row['ownership_closed'] = owner is None or (owner.active is None and all(r.supervision.closed(e) for e in owner.commands))
-        try:
-            check = dict(host_probe_accepted=True)
-            r.validation.finish(check, owner, cursor, boot)
-            row.update(fresh_faults=check['fresh_faults'], boot_unchanged=check['boot_unchanged'])
-            require(check['passed'] and row['ownership_closed'], 'component fault/closure check failed')
-        except BaseException as error:
-            row.update(stage='failed', passed=False, fault_check_error=repr(error))
-        persist()
-        container = json.loads(RESULT.read_text())
-        container[key[0]][key[1]] = row
-        r.write(RESULT, container)
-    print(json.dumps({k: row.get(k) for k in ('stage', 'passed', 'ownership_closed', 'fresh_faults', 'error')}), flush=True)
-    return 1 if row['stage'] == 'failed' else 0
-
-
-if __name__ == '__main__':
-    require(len(sys.argv) == 2 and sys.argv[1] in ('prepare', 'build', 'check', 'gpu-prepare', 'gpu-check', 'analyse-lifetimes', 'prepare-buffers', 'build-buffers', 'check-buffers'),
-            'use ur_call_subscriber.py prepare|build|check|gpu-prepare|gpu-check|analyse-lifetimes')
-    with (B / 'owned-v0141-measurement.lock').open('a+') as lock:
-        fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
-        r.guards.no_model_owners([])
-        raise SystemExit({'prepare': prepare, 'gpu-prepare': gpu_prepare, 'gpu-check': gpu_check,
-                          'analyse-lifetimes': analyse_lifetimes,
-                          'prepare-buffers': lambda: prepare(root=BUFFER_ROOT, key=BUFFER_KEY),
-                          'build-buffers': lambda: execute('build', root=BUFFER_ROOT, key=BUFFER_KEY),
-                          'check-buffers': lambda: execute('check', root=BUFFER_ROOT, key=BUFFER_KEY)}
-                         .get(sys.argv[1], lambda: execute(sys.argv[1]))())
