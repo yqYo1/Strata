@@ -1424,5 +1424,165 @@
     "limits": "Decision arithmetic and rejection controls only;no GPU/model or overhead qualification.",
     "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
     "stderr_sha256": "65378dcad145da2497120819bebfc3c46534dce9714ce064b3d809a56654aca2"
+  },
+  "observer_overhead": {
+    "stage": "prepared",
+    "source_commit": "c90938140711f6f3e3a0819685ec8cff2cc2cc70",
+    "source_files": 193,
+    "source_fingerprint": "de0fcc6161f9cc973af2ad95b2b2232ef7001022c93865c1ec60efa134d052e8",
+    "qualified_model_fingerprint": "da69b10e49f76c1a613069f7f149a5c2d91a69a1103fddff107ce0dbbdeb22cd",
+    "host_fingerprint": "8bbdc042c45040a4467a813f54c00558db140c9e7a5d6083e2f6e9f845ab5b73",
+    "model_assets_fingerprint": "32d552dc1fb0ad6594425e8bd39f35049f896afe5775b0f7abf751110a11333e",
+    "binaries": {
+      "original": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/strata",
+        "bytes": 22190000,
+        "sha256": "22182f1a5e62e5f4259ce49a75ae44afbd988166ec79324816e499ff37ef60e4"
+      },
+      "observer": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-service-original-v2/build/strata",
+        "bytes": 22199168,
+        "sha256": "7791bf8b6da7f94095c5ef5cefb852dab8852a54f39181e22add81892eaf15bd"
+      }
+    },
+    "boot": "cfda0b6a-7c13-4fe2-bdf5-8f9202770840",
+    "driver": {
+      "pci": "/sys/bus/pci/devices/0000:05:00.0",
+      "driver": "xe",
+      "vendor": "0x8086",
+      "device": "0xe20c",
+      "kernel": "7.0.0-38-generic",
+      "devcoredump": false
+    },
+    "plans": [
+      {
+        "index": 0,
+        "arm": "original",
+        "port": 54955,
+        "generated_inputs": {
+          "config.json": "b23178b9e5377e9e03e61fb8db369956ff56272a1773478e75cb9dab7715205c",
+          "plan.json": "b6eb1c9f5c7780234a4c9c3aa61f4019125118b30f18600cdecf68c5644d8cd5",
+          "expert-profile.bin": "8f59b4aa8873209dff11c11e37bcda9529a1335b724a1afeea37bf6388975baf"
+        }
+      },
+      {
+        "index": 1,
+        "arm": "off",
+        "port": 60757,
+        "generated_inputs": {
+          "config.json": "77d26a1812bb1949e18ab2cfbcd98375122ce37c7da7c6ec25b11d2c01616611",
+          "plan.json": "af115326bdacb8a4469503fcd72e784a86c47089d59e692d9682be70a9d407ee",
+          "expert-profile.bin": "8f59b4aa8873209dff11c11e37bcda9529a1335b724a1afeea37bf6388975baf"
+        }
+      },
+      {
+        "index": 2,
+        "arm": "on",
+        "port": 44815,
+        "generated_inputs": {
+          "config.json": "b70ec7c43cae87138063d5bb0bcd64e7ae00f4a17ab542fb04eb4ce690d12a5e",
+          "plan.json": "af115326bdacb8a4469503fcd72e784a86c47089d59e692d9682be70a9d407ee",
+          "expert-profile.bin": "8f59b4aa8873209dff11c11e37bcda9529a1335b724a1afeea37bf6388975baf"
+        }
+      },
+      {
+        "index": 3,
+        "arm": "on",
+        "port": 54893,
+        "generated_inputs": {
+          "config.json": "056f1527a96cdf3c8aef945dba091ba068b54f1ac11ce864112740636a7c8af8",
+          "plan.json": "af115326bdacb8a4469503fcd72e784a86c47089d59e692d9682be70a9d407ee",
+          "expert-profile.bin": "8f59b4aa8873209dff11c11e37bcda9529a1335b724a1afeea37bf6388975baf"
+        }
+      },
+      {
+        "index": 4,
+        "arm": "original",
+        "port": 45203,
+        "generated_inputs": {
+          "config.json": "04ed31cc287b65944e7041d3d74cc29d231b4fdf019fb7e8e6ebc5b6d59448ba",
+          "plan.json": "b6eb1c9f5c7780234a4c9c3aa61f4019125118b30f18600cdecf68c5644d8cd5",
+          "expert-profile.bin": "8f59b4aa8873209dff11c11e37bcda9529a1335b724a1afeea37bf6388975baf"
+        }
+      },
+      {
+        "index": 5,
+        "arm": "off",
+        "port": 59821,
+        "generated_inputs": {
+          "config.json": "e3b0aaab8613eac2898cb11cf82bb1626d91a0312b8e2bf57eb010444f20dd09",
+          "plan.json": "af115326bdacb8a4469503fcd72e784a86c47089d59e692d9682be70a9d407ee",
+          "expert-profile.bin": "8f59b4aa8873209dff11c11e37bcda9529a1335b724a1afeea37bf6388975baf"
+        }
+      },
+      {
+        "index": 6,
+        "arm": "off",
+        "port": 33675,
+        "generated_inputs": {
+          "config.json": "8b0afb91ff970f51faca33aeeb493662745275bd83a862ba86f8d9d7e4c0be28",
+          "plan.json": "af115326bdacb8a4469503fcd72e784a86c47089d59e692d9682be70a9d407ee",
+          "expert-profile.bin": "8f59b4aa8873209dff11c11e37bcda9529a1335b724a1afeea37bf6388975baf"
+        }
+      },
+      {
+        "index": 7,
+        "arm": "on",
+        "port": 50277,
+        "generated_inputs": {
+          "config.json": "7b349b2e27dbe60908b57fdb2ebc011cf96cf29b83af2a0d95b3fb758ad513bc",
+          "plan.json": "af115326bdacb8a4469503fcd72e784a86c47089d59e692d9682be70a9d407ee",
+          "expert-profile.bin": "8f59b4aa8873209dff11c11e37bcda9529a1335b724a1afeea37bf6388975baf"
+        }
+      },
+      {
+        "index": 8,
+        "arm": "original",
+        "port": 54547,
+        "generated_inputs": {
+          "config.json": "ef8b42d10c762e0f562c0407ca9f707c78e5516de61c81062b46ece811e2101d",
+          "plan.json": "b6eb1c9f5c7780234a4c9c3aa61f4019125118b30f18600cdecf68c5644d8cd5",
+          "expert-profile.bin": "8f59b4aa8873209dff11c11e37bcda9529a1335b724a1afeea37bf6388975baf"
+        }
+      }
+    ],
+    "processes": [],
+    "plan": {
+      "order": [
+        "original",
+        "off",
+        "on",
+        "on",
+        "original",
+        "off",
+        "off",
+        "on",
+        "original"
+      ],
+      "repetitions_per_arm": 3,
+      "workload": "regular-code",
+      "input_minimum": 32768,
+      "output_minimum": 1024,
+      "output_maximum": 16384,
+      "question": "Bound compile-enabled-but-off overhead against original,then CPU-service-on overhead against the same off binary;collect conserved long-request service by format/NT.",
+      "constants": "Original6e40 versus its four scoped observer/test patches only;same selected math/configuration,1256slots,131072residentINT8,8192chunks,spec4,five workers+host. Common parameter validation,retained UR reference,stage trace,CPU census and nested decode clocks;only CPU_SERVICE0/1 and declared binary differ. Environment fixed before exec.",
+      "decision": "Complete all nine independent processes in three Latin-order triples. For each triple compare off/original and on/off actual token throughput for prefill/decode separately. Off/original needs geomean>=0.98 and every ratio>=0.95 in both phases. On/off decode needs geomean>=0.95 and every ratio>=0.90;prefill needs0.98/0.95. Each pairing additionally needs CPU entries per emitted token within5%,each format/NT job count normalized to equal emitted tokens within5% or two jobs for small bins,and absolute MTP acceptance difference<=0.02,otherwise overhead is confounded. Code acceptance>=0.60 is recorded separately;no weak-pair claim. No speed-based early stopping.",
+      "stopping": "Stop first source/runtime/owner/fault/budget/native/request/census/observer error;no retries,replacements or order changes. Commit every process outcome before next launch. Full model hashes before cohort and after final process;inventory/stat/ctime checked each launch and exit.",
+      "retention": "Keep individual samples,paired decisions and conserved on-arm format/NT service needed to choose the next CPU leaf calibration. Retire successful raw traces/logs/cache after each committed process. Keep only three generated inputs per planned process through cohort closure;retire unused extra build/controllers after source recovery when comparison closes.",
+      "limits": "Observed workload-specific overhead and attribution only;not clean speed,physical RAM/PCIe traffic,CPU arithmetic saturation,inference adoption,task quality,weak-MTP,agent-session,262144-context,RESTORE or ordinary runtime destruction qualification."
+    },
+    "budgets": {
+      "wall": 1800,
+      "cpu": 21600,
+      "rss_cap": 103079215104,
+      "text_cap": 33554432,
+      "file_cap": 33554432,
+      "total_cap": 67108864
+    },
+    "active": false,
+    "ownership_closed": true,
+    "passed": false,
+    "complete": false,
+    "inference_adopted": false
   }
 }
