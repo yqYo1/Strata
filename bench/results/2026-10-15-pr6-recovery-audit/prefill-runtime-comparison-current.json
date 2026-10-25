@@ -599,6 +599,91 @@
         "bench/2026-10-26-community-cpu-qwen3-8-flash-next-iq3-s-primary/requests.jsonl": "ed831e48de39b605818e87e58dc349b8bfb6b3ed236891f35c30a9e05308c013"
       },
       "GPU_executed": false
+    },
+    "closed_analysis": {
+      "source_commit": "78b44c2e8373e4886c17e740043cf5388b21c6b9",
+      "collection_archive": "80bb79887",
+      "source_inputs_changed": [
+        "tools/sycl/prefill_placement_probe.py"
+      ],
+      "reader_sha256": "c7f5bbd077a78d02bf1677c7c97360e7dc76d9de2629f0620a65df24ca2af750",
+      "GPU_executed": false,
+      "attribution_passed": true,
+      "original_passed": false,
+      "native_ownership_closed": true,
+      "actual_read_tokens": 39260,
+      "prompt_ms": 58605.3,
+      "instrumented_tok_s": 669.9052816042234,
+      "request_sha256": "1fd63b8c67a1888e443800b5c6d339ca116df2cb91941e6f332b6adf74275b3a",
+      "scope": {
+        "batched_wrapper_ms": 58599.5,
+        "expert_refill_ms": 0.0,
+        "limits": "Batch includes native entry/run/restore;refill includes RAM lookup/enqueue/drain/publication. Not GPU service or PCIe bytes."
+      },
+      "host": {
+        "samples": 50,
+        "gpu_act_mhz": {
+          "min": 0,
+          "median": 2750.0,
+          "max": 2750
+        },
+        "throttle_samples": 0,
+        "cpu0_reported_khz_median": 4641267.5,
+        "system_vm_delta": {
+          "pswpin": 0,
+          "pswpout": 0,
+          "pgmajfault": 60
+        },
+        "min_available_RAM_bytes": 23298498560,
+        "limits": "Wholly contained pre-first-output snapshots;not native phase boundaries. Reported frequency is not an arithmetic ceiling;system paging counters are not per-process attribution."
+      },
+      "client_coverage_verified": true,
+      "pre_first_output_cpu_seconds": 55.24,
+      "pre_first_output_cpu_core_equivalents": 0.9496005123395669,
+      "top_scheduled_threads": [
+        {
+          "tid": 3448041,
+          "start_ticks": 129860436,
+          "cpu_ticks": 5286,
+          "observed_last_cpus": [
+            0
+          ],
+          "cpu_seconds": 52.86
+        },
+        {
+          "tid": 3448278,
+          "start_ticks": 129861126,
+          "cpu_ticks": 52,
+          "observed_last_cpus": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9,
+            10,
+            11
+          ],
+          "cpu_seconds": 0.52
+        }
+      ],
+      "ccs": [
+        {
+          "pci": "0000:05:00.0",
+          "client_id": 50239,
+          "engine": "ccs",
+          "eligible_intervals": 58,
+          "busy_cycles": 929350565,
+          "capacity_total_cycles": 1116843116,
+          "busy_fraction": 0.8321227499959807
+        }
+      ],
+      "limits": "Closed39K owned128 observation only;first use,trace and passive collectors charged. Not clean speed,117K/262144 capacity,decode,host/GPU/bus saturation or historical decline attribution.",
+      "next": "New committed two-process117K plan may reuse this bounded owned-shape gate with unchanged native/runtime/inputs. Original failed collection and original three-case cohort stay closed;never resume or overwrite them."
     }
   }
 }
