@@ -287,7 +287,15 @@ saturation. Stage clocks are nested. Expert-copy counters cover only their named
 route, not all physical PCIe traffic. Keep physical PCIe/VRAM traffic, CPU issued
 instructions and compatible-shape hardware ceilings unknown where unmeasured.
 
-The next CPU attribution source is **unbuilt as a native engine**. Its
+The CPU attribution engine now links from the exact original-plus-observer
+source. All1402 actual compiler inputs match their prospective pins, with no
+current-worktree source leakage or changed CPU archive/fixture/configuration.
+Its same-build submission and graph profile0/profile1 checks pass in three
+separate owned processes under tracing and parameter validation. All close at
+exit0; validation is silent, the updated NEO is observed and no fresh fault
+appears. These fixtures do not invoke the model or qualify observer overhead,
+decode nonregression,clean speed or ordinary runtime destruction.
+Its
 [host collector gate](../bench/results/2026-10-15-pr6-recovery-audit/cpu-service-current.json)
 passes owned GCC13.3 compilation and all standalone counter/clock controls, with
 three actual project includes matched and both processes closed at exit0.
@@ -350,13 +358,12 @@ the runner and recipe recover from the pinned source/plan in the host result.
 This changes neither the selected original6e40 executable nor
 the closed width samples; it is not an inference optimization or a speedup.
 
-The standalone collector checks passed in a serialized gap between model
-processes. Require production-pool conservation/numerical checks before using
-service attribution; the private comparison generation has retired. A future
-instrumented engine must use original6e40 plus
-only the committed observer delta, not silently adopt the current worktree's
-unselected layout/full-context changes. Pin that recipe before building; require
-observer-off/on overhead and model census/clock/fault/source checks before
+The standalone collector and real-pool checks above do not establish model
+attribution. The former private comparison generation has retired. This
+instrumented engine uses original6e40 plus
+only the committed observer delta; the current worktree's unselected
+layout/full-context changes are excluded. Require observer-off/on overhead and
+model census/clock/fault/source checks before
 using the per-format attribution to select a kernel or placement optimization.
 
 [Client-resource evidence](../bench/results/2026-10-15-pr6-recovery-audit/client-resources-current.json)

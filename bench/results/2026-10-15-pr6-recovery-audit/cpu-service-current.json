@@ -803,7 +803,7 @@
     ]
   },
   "native_device": {
-    "stage": "prepared",
+    "stage": "device-checked",
     "source_commit": "d02277730fa2134cd9fbea673191df63709f00f6",
     "benchmark_files": 190,
     "benchmark_fingerprint": "5f0dfe621b36dd5f712bd734b1ba84f605d82cf5e8e16ba7d1a968d759fe4c2c",
@@ -896,13 +896,64 @@
     "criteria": "Three ordered fresh owned processes from the new admitted build: submission/USM/events,graph profile0,graph profile1. Require exit0,numerical/guard/teardown markers,pre-main parameter validation,silent validation log,enqueue trace,only pinned executable mappings and actual updated NEO in each device child. Verify all source/build/runtime assets and boot/driver/no-fresh-fault after each child. Stop first failure;no retry.",
     "limits": "Small same-build fixture qualification only. No model,observer overhead,clean speed,physical context,numerical task quality,ordinary runtime destruction or inference adoption. Retained UR reference until exit remains required.",
     "retention": "Keep source/recipe,three compact outcomes and limits for imminent original-plus-observer model gate. Retire successful trace/map/log output after evidence is committed and verified;keep original fallback and this single named comparison generation.",
-    "outcomes": [],
+    "outcomes": [
+      {
+        "label": "submission",
+        "exit_code": 0,
+        "passed": true,
+        "ownership_closed": true,
+        "parameter_validation": true,
+        "fresh_faults": [],
+        "mapped_runtime_file_count": 26,
+        "updated_NEO_sha256": "52e29a602f92d3542eac91e20717743e63ca7d4b257d0c79a3c4d6c64c94ea49",
+        "stdout_sha256": "dadad801d8022f3b40ad3bdab3e29f65fc13e1f61d60b219406f04e9881bb5be",
+        "stderr_sha256": "4abb8e08f3f572d4d445d07c22fd73127baa0979a6c5a7689adede3e3a3d8167",
+        "trace_bytes": 949721
+      },
+      {
+        "label": "graph0",
+        "exit_code": 0,
+        "passed": true,
+        "ownership_closed": true,
+        "parameter_validation": true,
+        "fresh_faults": [],
+        "mapped_runtime_file_count": 26,
+        "updated_NEO_sha256": "52e29a602f92d3542eac91e20717743e63ca7d4b257d0c79a3c4d6c64c94ea49",
+        "stdout_sha256": "8ead80115559fba31453d1e57d8d58ed2b1bc7536407992b51986dd09c54e2f5",
+        "stderr_sha256": "657882e4bf05a1fb217641ee2b511e5cfc3071831421c94e9d9a54de0c923a57",
+        "trace_bytes": 22883
+      },
+      {
+        "label": "graph1",
+        "exit_code": 0,
+        "passed": true,
+        "ownership_closed": true,
+        "parameter_validation": true,
+        "fresh_faults": [],
+        "mapped_runtime_file_count": 26,
+        "updated_NEO_sha256": "52e29a602f92d3542eac91e20717743e63ca7d4b257d0c79a3c4d6c64c94ea49",
+        "stdout_sha256": "e815797120098a38a0a3f81e3aea5f845cfa7210db90f0317f616bd5b341c90e",
+        "stderr_sha256": "c1710f65ce69bf08b0e9f6e9dfba723361658965bc7b408ebe33b2e0559f97a8",
+        "trace_bytes": 25790
+      }
+    ],
     "active": false,
     "ownership_closed": true,
-    "passed": false,
-    "complete": false,
+    "passed": true,
+    "complete": true,
     "model_qualified": false,
     "production_selected": false,
-    "clean_speed_qualified": false
+    "clean_speed_qualified": false,
+    "host_probe_accepted": true,
+    "fresh_faults": [],
+    "boot_unchanged": true,
+    "driver_after": {
+      "pci": "/sys/bus/pci/devices/0000:05:00.0",
+      "driver": "xe",
+      "vendor": "0x8086",
+      "device": "0xe20c",
+      "kernel": "7.0.0-38-generic",
+      "devcoredump": false
+    }
   }
 }
