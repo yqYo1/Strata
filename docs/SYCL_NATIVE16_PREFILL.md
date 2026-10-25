@@ -538,6 +538,12 @@ See`route_discovery` in the same prefill resource result. Check called oneMKL
 native-command/host-task submission before extending the device ledger. The
 reviewed next fixture uses one known-answer production`Gemm::bf16` call with
 all-thread UR,Level Zero append and PTI observation through a checked drain.
+Its built probe uses64x320x10240 BF16 inputs and FP32 output stride323,with
+full20480-value exact/input/stride/end-guard checks. All1383 actual compiler
+inputs are covered. The old broad SDK inventory refused3 updated system
+headers before configure;the separate prospective build pins those updates,
+and none occurs in this probe's actual compiled closure. The original refusal
+stays failed. Compilation alone supplies no new GPU validation.
 The source has two BF16 GEMM sites per executed inner batch,four projection
 sites,and an early no-needed-rows return;do not infer dynamic counts from the
 15 callback markers. The existing runtime manifest already pins the L0 v2
