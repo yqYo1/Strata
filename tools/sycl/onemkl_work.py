@@ -113,6 +113,68 @@ def dependencies(row, text):
         used_updated_system_headers=sorted(set(observed) & set(SYSTEM_HEADER_UPDATES)))
 
 
+def compiled_reuse(compiled, origins, generated):
+    """Admit unchanged actual compiler inputs,not unrelated later source edits."""
+    require(compiled and not set(origins) & set(generated), 'empty or ambiguous compiled-input origins')
+    for name, sha in compiled.items():
+        require(origins.get(name, generated.get(name)) == sha, 'compiled input has no original source: ' + name)
+        require(digest(name) == sha, 'actual compiled input changed: ' + name)
+    return len(compiled)
+
+
+def retained_fixture():
+    """Reuse only the original compiled wrapper,with its complete original recipe.
+
+    The observer and its tests have changed;none is compiled into this probe.
+    This does not qualify the new observer or a model route.
+    """
+    row = r.validation.committed(RESULT, ('event_reconciliation', KEY))
+    private = json.loads((ROOT / 'record.json').read_text())
+    require(summary(private) == row and row['stage'] == 'built-not-executed' and row['passed'] and
+            row['ownership_closed'] and not row['active'], 'closed original wrapper build required')
+    archive = 'b9ed104da815a53cad3aa1b66afc61cd5c65f5fb'
+    raw = r.validation.git('show', archive + ':' + str(RESULT.relative_to(P)))
+    require(json.loads(raw)['event_reconciliation'][KEY] == row, 'original committed build identity changed')
+    runtime = r.validation.committed(r.RESULT); selected = r.current(runtime)
+    expected_argv = list(selected['configure_argv'])
+    expected_argv[expected_argv.index('-B') + 1] = str(ROOT / 'build')
+    expected_env = dict(selected['environment'], TMPDIR=str(ROOT / 'tmp'), XDG_CACHE_HOME=str(ROOT / 'cache'))
+    require(private['configure_argv'] == expected_argv and private['environment'] == expected_env and
+            private['sdk'] == sdk_inputs() and private['external_inputs'] == external_inputs(runtime) and
+            private['selected_binary'] == selected['binary'], 'original wrapper recipe/dependencies differ')
+    require([c['label'] for c in private['commands']] == ['configure', 'compile', 'dependencies'] and
+            all(r.supervision.closed(c) and c['exit_code'] == 0 for c in private['commands']),
+            'original wrapper build commands did not close')
+    require([c['argv'] for c in private['commands']] == [expected_argv,
+            ['/usr/bin/cmake', '--build', str(ROOT / 'build'), '--target', TARGET, '-j', '4'],
+            ['/usr/bin/ninja', '-C', str(ROOT / 'build'), '-t', 'deps']], 'original wrapper commands differ')
+    origins = {}
+    recovered = 0
+    for group in [private['project'], *private['dependencies']]:
+        before = group['source_sha256']
+        actual = {n: hashlib.sha256(data).hexdigest()
+                  for n, data in build.blobs(Path(group['root']), group['revision'], before)}
+        require(actual == before, 'original wrapper source cannot recover')
+        origins.update({str((Path(group['root']) / n).resolve()): sha for n, sha in before.items()})
+        recovered += len(before)
+    origins.update({v['path']: SYSTEM_HEADER_UPDATES.get(v['path'], (None, v['sha256']))[1]
+                    for v in json.loads(lineage.SDK.read_text())})
+    origins.update(private['external_inputs'])
+    manifest = row['compiled_inputs']['manifest']
+    require(digest(manifest['path']) == manifest['sha256'], 'original compiler-input manifest changed')
+    count = compiled_reuse(json.loads(Path(manifest['path']).read_text()), origins,
+                           row['compiled_inputs']['generated_sha256'])
+    require(count == row['compiled_inputs']['files'] == 1383 and
+            digest(row['binary']['path']) == row['binary']['sha256'], 'original wrapper artifact changed')
+    for tool in row['tools'].values():
+        require(digest(tool['path']) == tool['sha256'], 'original wrapper tool provider changed')
+    return row['binary'], dict(native_source_commit=row['source_commit'], build_result_key=KEY,
+        compiled_inputs=manifest, source_groups=row['source_groups'], recovered_source_inputs=recovered,
+        unchanged_compiled_inputs=count, original_build_archive=dict(commit=archive,
+        path=str(RESULT.relative_to(P)), sha256=hashlib.sha256(raw).hexdigest()),
+        reuse='Original native source/recipe and actual1383 compiled inputs,generated header and ELF rechecked. Changed uncompiled observer/controllers/tests are not part of this native binary;new observer GPU coverage remains unqualified.')
+
+
 def main():
     container = r.validation.committed(RESULT)
     require(not ROOT.exists() and KEY not in container['event_reconciliation'], 'fresh single-use build only;inspect existing owner')

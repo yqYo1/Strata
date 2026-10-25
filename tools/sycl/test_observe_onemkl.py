@@ -1,6 +1,9 @@
 """Host-only rejection controls for the one-call discovery envelope."""
 import sys
 import unittest
+import tempfile
+import hashlib
+from pathlib import Path
 from unittest.mock import patch
 
 sys.dont_write_bytecode = True
@@ -79,6 +82,34 @@ class GraphClassification(unittest.TestCase):
         with patch.object(o.u, 'correlate_calls', return_value={}):
             with self.assertRaisesRegex(RuntimeError, 'query rejected'):
                 o.direct_coverage([dict(name='urQueueIsGraphCaptureEnabledExp', status=46)], [], 42, {})
+
+
+class RetainedCompilerInputs(unittest.TestCase):
+    def test_reuse_checks_compiled_inputs_and_allows_uncompiled_source_changes(self):
+        with tempfile.TemporaryDirectory() as root:
+            p = Path(root) / 'input'; p.write_bytes(b'original')
+            sha = hashlib.sha256(p.read_bytes()).hexdigest()
+            origins = {str(p): sha, str(Path(root) / 'not_compiled'): 'original-uncompiled-sha'}
+            self.assertEqual(o.native.compiled_reuse({str(p): sha}, origins, {}), 1)
+            p.write_bytes(b'changed')
+            with self.assertRaisesRegex(RuntimeError, 'actual compiled input changed'):
+                o.native.compiled_reuse({str(p): sha}, origins, {})
+
+    def test_unknown_conflicting_and_missing_origins_fail(self):
+        for compiled, origins, generated in (({}, {}, {}), ({'unknown': 'sha'}, {}, {}),
+                                              ({'input': 'sha'}, {'input': 'different'}, {}),
+                                              ({'input': 'sha'}, {'input': 'sha'}, {'input': 'sha'})):
+            with self.subTest(compiled=compiled), self.assertRaises(RuntimeError):
+                o.native.compiled_reuse(compiled, origins, generated)
+
+    def test_generated_header_requires_its_original_bytes(self):
+        with tempfile.TemporaryDirectory() as root:
+            p = Path(root) / 'version.h'; p.write_bytes(b'original-version')
+            sha = hashlib.sha256(p.read_bytes()).hexdigest()
+            self.assertEqual(o.native.compiled_reuse({str(p): sha}, {}, {str(p): sha}), 1)
+            p.unlink()
+            with self.assertRaises(FileNotFoundError):
+                o.native.compiled_reuse({str(p): sha}, {}, {str(p): sha})
 
 
 if __name__ == '__main__': unittest.main()

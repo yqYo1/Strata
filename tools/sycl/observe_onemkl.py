@@ -25,6 +25,8 @@ import ur_call_subscriber as u
 r, P, B, RESULT = u.r, u.P, u.B, u.RESULT
 ROOT = native.ROOT / 'first-call-v1'
 KEY = ('event_reconciliation', 'oneMKL_first_call')
+BUFFER_KEY = ('event_reconciliation', 'oneMKL_buffer_call')
+BUFFER_ROOT = native.ROOT / 'buffer-call-v1'
 require, digest, write = r.require, r.digest, r.write
 
 
@@ -53,25 +55,26 @@ def fixture():
         compiled_inputs=manifest, source_groups=row['source_groups'])
 
 
-def prepare():
+def prepare(*, root=ROOT, key=KEY, buffers=False):
     container = r.validation.committed(RESULT)
-    require(KEY[1] not in container[KEY[0]] and not ROOT.exists(), 'fresh first-call capture only')
+    require(key[1] not in container[key[0]] and not root.exists(), 'fresh first-call capture only')
     revision = r.validation.git('rev-parse', 'HEAD').decode().strip()
-    inputs = pins(revision); binary, proof = fixture(); assets = u.probe.assets(); host, reuse = u.qualified_native()
-    ROOT.mkdir(mode=0o700)
-    for name in ('tmp', 'cache', 'trace'): (ROOT / name).mkdir()
+    inputs = pins(revision); binary, proof = native.retained_fixture() if buffers else fixture()
+    assets = u.probe.assets(); host, reuse = u.qualified_native(u.BUFFER_KEY if buffers else u.KEY)
+    root.mkdir(mode=0o700)
+    for name in ('tmp', 'cache', 'trace'): (root / name).mkdir()
     template = r.validation.committed(RESULT.with_name('phase-prefill-speed-current.json'))['environment_template']
-    env = {k: v.replace(template['STRATA_MEASUREMENT_ROOT'], str(ROOT)) for k, v in template.items()}
-    env.update(TMPDIR=str(ROOT / 'tmp'), XDG_CACHE_HOME=str(ROOT / 'cache'), LD_DEBUG='libs',
+    env = {k: v.replace(template['STRATA_MEASUREMENT_ROOT'], str(root)) for k, v in template.items()}
+    env.update(TMPDIR=str(root / 'tmp'), XDG_CACHE_HOME=str(root / 'cache'), LD_DEBUG='libs',
         STRATA_UNITRACE_TARGET_PRELOAD=assets['preload']['library']['path'] + ':' + host['library']['path'],
         STRATA_UR_PROBE_EXPECTED_LOADER=assets['preload']['loader'],
         XPTI_FRAMEWORK_DISPATCHER=host['assets']['dispatcher']['path'], XPTI_SUBSCRIBERS=host['library']['path'],
         XPTI_TRACE_ENABLE='1', SYCL_UR_TRACE='0', UR_L0_ENABLE_SYSMAN_ENV_DEFAULT='0',
-        STRATA_UR_CALL_LOG=str(ROOT / 'calls.jsonl'),
-        UNITRACE_FollowChildProcess='1', UNITRACE_SystemTime='1', UNITRACE_TraceOutputDir=str(ROOT / 'trace'),
+        STRATA_UR_CALL_LOG=str(root / 'calls.jsonl'),
+        UNITRACE_FollowChildProcess='1', UNITRACE_SystemTime='1', UNITRACE_TraceOutputDir=str(root / 'trace'),
         UR_ENABLE_LAYERS='UR_LAYER_TRACING,UR_LAYER_PARAMETER_VALIDATION',
-        UR_LOG_TRACING='level:info;flush:info;output:file,' + str(ROOT / 'ur.log'),
-        UR_LOG_VALIDATION='level:warning;flush:warning;output:file,' + str(ROOT / 'validation.log'))
+        UR_LOG_TRACING='level:info;flush:info;output:file,' + str(root / 'ur.log'),
+        UR_LOG_VALIDATION='level:warning;flush:warning;output:file,' + str(root / 'validation.log'))
     require('LD_PRELOAD' not in env and env['ZES_ENABLE_SYSMAN'] == '0', 'native-only preload and qualified safety required')
     session = 'StrataMKL' + secrets.token_hex(12)
     row = dict(stage='prepared', source_commit=revision, input_sha256=inputs, binary=binary, build_proof=proof,
@@ -81,7 +84,7 @@ def prepare():
         host_commands=[['/usr/bin/python3', '-B', str(P / p)] for p in
             ('tests/core/test_ur_call_subscriber.py', 'tools/sycl/test_observe_onemkl.py')],
         budgets=dict(wall=120, cpu=300, rss_cap=6 << 30, text_cap=8 << 20, file_cap=32 << 20, total_cap=64 << 20),
-        criteria='One fresh native process after25 CPU observer/parser and6 envelope controls. Actual production '
+        criteria='One fresh native process after current committed CPU observer/parser and envelope/reuse controls. Actual production '
             'Gemm::bf16,64x320x10240,FP32 output stride323,beta0. Require full20480-value exact analytic oracle, '
             'end/stride/input guards,one BEGIN/RETURN/DRAIN envelope and normal owned closure. '
             'Capture every UR callback on every thread and the actual PTI device/native API records,not just '
@@ -98,13 +101,19 @@ def prepare():
             'Original engine+12fixtures and qualified observer unchanged. Wrapper remains only for this coverage question.',
         active=False, ownership_closed=True, passed=False, complete_device_coverage_qualified=False,
         observer_cost_qualified=False, model_qualified=False, inference_changed=False)
-    container[KEY[0]][KEY[1]] = row; write(RESULT, container); write(ROOT / 'record.json', row)
+    row['buffer_observer'] = buffers
+    if buffers:
+        row['limits'] = 'Typed direct joins and external API reference generations only;driver-internal command-list/event ownership,host-payload lifetime,independent internal library work,observer cost,model coverage,performance,physical262144 and adoption remain unqualified.'
+        row['criteria'] += ' Additionally require all10 direct UR/PTI links,typed enqueue/transfer ranges,balanced serial queue/event/USM/buffer references,two4-byte buffers,and two actual graph queries returning false. Internal library expected-work and host-payload lifetime remain separate.'
+    container[key[0]][key[1]] = row; write(RESULT, container); write(root / 'record.json', row)
     print('Prepared single-call native-work discovery;commit plan before execution.', flush=True)
 
 
 def current(row):
-    require(pins(row['source_commit']) == row['input_sha256'] and fixture() == (row['binary'], row['build_proof']) and
-        u.probe.assets() == row['assets'] and u.qualified_native()[1] == row['observer_reuse'], 'native/observer/controller inputs changed')
+    require(pins(row['source_commit']) == row['input_sha256'] and
+        (native.retained_fixture() if row.get('buffer_observer') else fixture()) == (row['binary'], row['build_proof']) and
+        u.probe.assets() == row['assets'] and
+        u.qualified_native(u.BUFFER_KEY if row.get('buffer_observer') else u.KEY)[1] == row['observer_reuse'], 'native/observer/controller inputs changed')
 
 
 def analyze(stdout, spans, events, pid, start, end):
@@ -157,9 +166,9 @@ def direct_coverage(spans, events, pid, expected_calls):
         limits='Observed successful direct UR/native/PTI identity joins only. Query return values,buffer extents/lifetimes,independent internal library work ledger,model-route coverage and clean speed remain unqualified.')
 
 
-def run():
-    row = r.validation.committed(RESULT, KEY)
-    require(row['stage'] == 'prepared' and not (ROOT / 'target-owned').exists(), 'single-use committed capture only')
+def run(*, root=ROOT, key=KEY):
+    row = r.validation.committed(RESULT, key)
+    require(row['stage'] == 'prepared' and not (root / 'target-owned').exists(), 'single-use committed capture only')
     current(row); rt = r.validation.committed(r.RESULT)
     session_path = Path('/dev/shm/uctrl' + str(os.getuid()) + '_' + row['session'])
     require(not session_path.exists(), 'preexisting collector session;no overwrite')
@@ -168,9 +177,9 @@ def run():
     target = control = None
     def persist():
         row['active'] = any(o and o.active is not None for o in (target, control))
-        write(ROOT / 'record.json', dict(row, target_commands=target.commands if target else [], control_commands=control.commands if control else []))
+        write(root / 'record.json', dict(row, target_commands=target.commands if target else [], control_commands=control.commands if control else []))
     try:
-        target = r.supervision.Owner(ROOT / 'target-owned', persist); control = r.supervision.Owner(ROOT / 'control-owned', persist)
+        target = r.supervision.Owner(root / 'target-owned', persist); control = r.supervision.Owner(root / 'control-owned', persist)
         for i, command in enumerate(row['host_commands']):
             entry, _, _ = target.run('host-controls-' + str(i), command,
                 dict(PATH='/usr/bin:/bin', LANG='C.UTF-8', PYTHONDONTWRITEBYTECODE='1'), P,
@@ -200,17 +209,32 @@ def run():
         require(r.supervision.closed(entry) and entry['exit_code'] == 0, 'native wrapper owner/exit failed')
         require(required <= seen and namespace_seen, 'required actual providers/namespace not observed')
         row['activation'] = r.validation.preload_evidence(err.read_text(), entry['pid'])
-        require(not (ROOT / 'validation.log').exists() or not (ROOT / 'validation.log').stat().st_size, 'parameter validation warning')
-        calls = u.parse_calls((ROOT / 'calls.jsonl').read_text(), entry['pid'], intervals=True)
-        spans = calls.pop('intervals'); paths = list((ROOT / 'trace').rglob('*.json')); require(len(paths) == 1, 'one complete PTI JSON required')
+        require(not (root / 'validation.log').exists() or not (root / 'validation.log').stat().st_size, 'parameter validation warning')
+        calls = u.parse_calls((root / 'calls.jsonl').read_text(), entry['pid'], intervals=True)
+        spans = calls.pop('intervals'); paths = list((root / 'trace').rglob('*.json')); require(len(paths) == 1, 'one complete PTI JSON required')
         value = json.loads(paths[0].read_text()); events = value['traceEvents'] if isinstance(value, dict) else value
         row['discovery'] = analyze(out.read_text(), spans, events, entry['pid'], row['start_raw_ns'], row['end_raw_ns'])
+        if row.get('buffer_observer'):
+            expected = {s['name']: s['calls'] for s in row['discovery']['enqueue_outcomes']}
+            row['direct_links'] = direct_coverage(spans, events, entry['pid'], expected)
+            row['typed'] = u.metadata_census(spans); row['external_lifetimes'] = u.lifetime_census(spans)
+            require(row['direct_links']['links']['linked_UR_instances'] == 10 and
+                    not row['direct_links']['missing_typed_enqueue_queue'] and
+                    row['external_lifetimes']['counts']['buffer_created'] == 2 and
+                    row['external_lifetimes']['counts']['buffer_released'] == 2 and
+                    row['typed']['counts']['buffer_copy_bytes'] == 8, 'actual buffer/UR coverage differs')
+            queries = [s['metadata'] for s in spans if s['name'] == 'urQueueIsGraphCaptureEnabledExp']
+            require(len(queries) == 2 and all(q['capture_result_valid'] == 1 and q['capture_enabled'] == 0 for q in queries),
+                    'actual graph query results differ')
+            require(all(s['metadata']['bytes'] == 4 for s in spans if s['name'] == 'urMemBufferCreate'),
+                    'actual internal buffer extents differ')
+            row['actual_typed_buffer_and_external_refs_qualified'] = True
         row['callback_capture'] = {k: calls[k] for k in ('call_pairs', 'source_threads')}
         current(row)
         row.update(stage='native-passed-coverage-pending', passed=True, host_probe_accepted=True, pid=entry['pid'],
             actual_required_providers_observed=True, environment_mutation_guard_not_triggered=True,
             analysis_inputs=[dict(path=str(p), bytes=p.stat().st_size, sha256=digest(p))
-                for p in (out, err, ROOT / 'calls.jsonl', ROOT / 'ur.log', paths[0])])
+                for p in (out, err, root / 'calls.jsonl', root / 'ur.log', paths[0])])
     except BaseException as error: row.update(stage='failed', passed=False, error=repr(error))
     finally:
         row['ownership_closed'] = all(o is None or o.active is None and all(r.supervision.closed(c) for c in o.commands) for o in (target, control))
@@ -230,14 +254,17 @@ def run():
         except BaseException as error: row.update(passed=False, fault_check_error=repr(error))
         if not row['passed']: row['stage'] = 'failed'
         row['session_removed'] = not session_path.exists(); persist()
-        container = json.loads(RESULT.read_text()); container[KEY[0]][KEY[1]] = row; write(RESULT, container)
+        container = json.loads(RESULT.read_text()); container[key[0]][key[1]] = row; write(RESULT, container)
     print(json.dumps({k: row.get(k) for k in ('stage', 'passed', 'ownership_closed', 'fresh_faults', 'discovery', 'error')}), flush=True)
     return int(not row['passed'])
 
 
 if __name__ == '__main__':
-    require(sys.argv[1:] in (['prepare'], ['run']), 'prepare|run')
+    require(sys.argv[1:] in (['prepare'], ['run'], ['prepare-buffers'], ['run-buffers']),
+            'prepare|run|prepare-buffers|run-buffers')
     with (B / 'owned-v0141-measurement.lock').open('a+') as lock:
         fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB); r.guards.no_model_owners([]); r.guards.driver_guard()
         if sys.argv[1:] == ['prepare']: prepare()
+        elif sys.argv[1:] == ['prepare-buffers']: prepare(root=BUFFER_ROOT, key=BUFFER_KEY, buffers=True)
+        elif sys.argv[1:] == ['run-buffers']: sys.exit(run(root=BUFFER_ROOT, key=BUFFER_KEY))
         else: sys.exit(run())
