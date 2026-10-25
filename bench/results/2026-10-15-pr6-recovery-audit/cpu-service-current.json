@@ -2368,6 +2368,186 @@
           "kernel": "7.0.0-38-generic",
           "devcoredump": false
         }
+      },
+      {
+        "index": 4,
+        "arm": "original",
+        "active": false,
+        "ownership_closed": true,
+        "passed": true,
+        "binary_sha256": "22182f1a5e62e5f4259ce49a75ae44afbd988166ec79324816e499ff37ef60e4",
+        "source_commit": "c90938140711f6f3e3a0819685ec8cff2cc2cc70",
+        "native_identity": {
+          "pid": 1755896,
+          "start_ticks": 125292348,
+          "sid": 1755866
+        },
+        "effective_environment_verified": true,
+        "sample": {
+          "ok": true,
+          "total_s": 340.851,
+          "prompt_tokens": 33214,
+          "reused_tokens": 0,
+          "read_tokens": 33214,
+          "generated_tokens": 3611,
+          "prompt_tps": 602.0,
+          "prompt_tps_source": "engine",
+          "decode_tps": 12.6,
+          "decode_tps_source": "engine",
+          "prompt_ms": 55177.2,
+          "decode_ms": 285650.8,
+          "drafts_offered": 3102,
+          "drafts_accepted": 2578,
+          "finish_reason": "stop",
+          "request_sha256": "b0a065720a5eb86fa2d3f84d6371e35da774b4ea144d022608d49b80c227cba1",
+          "stream_complete": true,
+          "generated_tokens_source": "usage",
+          "eligible": true,
+          "speed_eligible": true,
+          "acceptance_rate": 0.8310767246937459,
+          "usage_generated_tokens": 3611,
+          "completion_includes_thinking": true,
+          "output_sha256": "5b7ae0f207d7804bc693ebde382f1a762c43f477fd01483939648d004cfaf971",
+          "reasoning_sha256": "8daeec41f22d90c32c1c1c5c3cfe4486a9ee6d65fa7ffe8857bfe980c02d411e",
+          "output_chars": 5496,
+          "reasoning_chars": 4368
+        },
+        "work": {
+          "cpu_jobs": 1370846,
+          "cpu_entries": 1771839,
+          "format_nt_jobs": [
+            {
+              "gu": 18,
+              "down": 20,
+              "jobs_NT": [
+                312670,
+                65168,
+                16541,
+                5226
+              ]
+            },
+            {
+              "gu": 22,
+              "down": 42,
+              "jobs_NT": [
+                105622,
+                28237,
+                6804,
+                1693
+              ]
+            },
+            {
+              "gu": 22,
+              "down": 20,
+              "jobs_NT": [
+                339214,
+                78601,
+                17357,
+                4878
+              ]
+            },
+            {
+              "gu": 18,
+              "down": 42,
+              "jobs_NT": [
+                70375,
+                15934,
+                3320,
+                654
+              ]
+            },
+            {
+              "gu": 21,
+              "down": 20,
+              "jobs_NT": [
+                187015,
+                42554,
+                10760,
+                3429
+              ]
+            },
+            {
+              "gu": 21,
+              "down": 42,
+              "jobs_NT": [
+                24201,
+                5344,
+                1146,
+                180
+              ]
+            },
+            {
+              "gu": 23,
+              "down": 20,
+              "jobs_NT": [
+                19700,
+                3442,
+                666,
+                115
+              ]
+            }
+          ],
+          "target_windows": 1035,
+          "target_rows": 4137,
+          "expert_copy_requested_bytes": 0
+        },
+        "actual_route": {
+          "BF16_GPU_rows": 33213,
+          "MoE_mode": 10,
+          "restored_dense_layers": 48,
+          "restored_cache_membership_verified": true,
+          "cache_payload_hash_verified": false
+        },
+        "timing": {
+          "windows": 1035,
+          "ms_per_window": {
+            "average_T": 4.0,
+            "tokens_per_window": 3.49,
+            "total": 275.99,
+            "verify": 242.25,
+            "GPU_reach_wait": 90.11,
+            "per_layer_host": 132.76,
+            "plan": 2.58,
+            "activation_quant": 0.48,
+            "jobs": 0.13,
+            "CPU_pool_run": 128.31,
+            "stage": 3.04,
+            "commit_emit": 0.1,
+            "draft": 33.61,
+            "CPU_experts": 27.59,
+            "CPU_entries": 35.67,
+            "VRAM_hits": 4.31,
+            "PCIe": 0.0
+          },
+          "outer_residual_ms_per_window": 0.03000000000002956,
+          "host_nested_residual_ms_per_window": 1.259999999999991,
+          "clock_binding": {
+            "absolute_total_difference_ms": 1.1499999999650754,
+            "rounding_bound_ms": 5.225,
+            "average_quantum_ms": 0.01,
+            "DONE_total_quantum_ms": 0.1
+          }
+        },
+        "journal": {
+          "valid": true,
+          "successful_warmups": 4,
+          "successful_long_requests": 1,
+          "journal_sha256": "fce52954b1f64c377d13df8e3aa7bbf484722f363a18b7b4b79a26f7a7dc5435"
+        },
+        "native_exit_code": 0,
+        "benchmark_exit_code": 0,
+        "evidence_sha256": "b14925e03a2729a544b5a32d15b673472e969fa3d69fdf080cf89174280c14d8",
+        "host_probe_accepted": true,
+        "fresh_faults": [],
+        "boot_unchanged": true,
+        "driver_after": {
+          "pci": "/sys/bus/pci/devices/0000:05:00.0",
+          "driver": "xe",
+          "vendor": "0x8086",
+          "device": "0xe20c",
+          "kernel": "7.0.0-38-generic",
+          "devcoredump": false
+        }
       }
     ],
     "plan": {
