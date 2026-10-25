@@ -22,13 +22,13 @@ import measurement_owner as supervision
 import ur_validation as validation
 
 P, B = build.P, build.B
-ROOT = B / 'neo-39758-runtime-probe-v3'
+ROOT = B / 'neo-39758-runtime-probe-v4'
 RESULT = selected.RESULT.with_name('runtime-requalification-current.json')
 SETTINGS = P / 'tools/sycl/measurement_environment.json'
 INPUTS = ('tools/sycl/runtime_probe.py', 'tools/sycl/check_full_context_source.py',
     'tools/sycl/build_engine.py', 'tools/sycl/measurement_guards.py',
     'tools/sycl/measurement_owner.py', 'tools/sycl/ur_validation.py',
-    'tools/sycl/measurement_environment.json')
+    'tools/sycl/measurement_environment.json', 'tests/core/test_runtime_probe.py')
 REPLACEMENTS = {
     '/usr/lib/x86_64-linux-gnu/libze_intel_gpu.so.1.17.39395':
         '/usr/lib/x86_64-linux-gnu/libze_intel_gpu.so.1.17.39758',
@@ -102,6 +102,18 @@ def compact(row):
     return {k: v for k, v in row.items() if k != 'commands'}
 
 
+def executable_mappings(text):
+    """File-backed executable mappings; ld.so.cache/data maps are not code."""
+    paths = set()
+    for line in text.splitlines():
+        fields = line.split(maxsplit=5)
+        if len(fields) != 6 or 'x' not in fields[1] or not fields[5].startswith('/'):
+            continue
+        require(not fields[5].endswith(' (deleted)'), 'executable file removed while mapped')
+        paths.add(str(Path(fields[5]).resolve()))
+    return paths
+
+
 def current(row):
     require(RESULT.read_bytes() == validation.git('show', 'HEAD:' + str(RESULT.relative_to(P))) and
         json.loads(RESULT.read_text()) == compact(row), 'commit exact runtime plan')
@@ -111,15 +123,17 @@ def current(row):
         runtime_files(row['preload']) == row['runtime_files'], 'native/runtime inputs changed')
     require(guards.driver_guard() == row['driver'] and
         Path('/proc/sys/kernel/random/boot_id').read_text().strip() == row['boot'], 'boot/driver changed')
+    require(digest(row['host_controls']['python']['path']) == row['host_controls']['python']['sha256'],
+        'host Python provider changed')
     return full
 
 
 def prepare():
     require(not ROOT.exists(), 'fresh bounded runtime gate only; no retry')
     failure = validation.committed(RESULT)
-    require(failure['stage'] == 'preparation-failed' and not failure['root_created'] and
-        not failure['native_launched'] and failure['ownership_closed'] and not failure['active'],
-        'preserve the closed metadata-only preparation refusal')
+    require(failure['stage'] == 'failed' and not failure['passed'] and not failure['active'] and
+        failure['closure_reconciliation']['all_owned_processes_terminated'] and failure['fresh_faults'] == [],
+        'preserve the failed observer and verify actual process closure before a new gate')
     failure_ref = dict(commit=validation.git('log', '-1', '--format=%H', '--',
         str(RESULT.relative_to(P))).decode().strip(), path=str(RESULT.relative_to(P)), sha256=digest(RESULT))
     prior = validation.committed(RESULT.with_name('mtp-width-clean-current.json'))
@@ -144,9 +158,12 @@ def prepare():
             ('graph1', 'sycl_graph_envelope_test', ['--profile=1'])):
         cases.append(dict(label=label, binary=full['fixtures'][fixture], args=args))
     row = dict(stage='prepared', source_commit=revision, input_sha256=inputs,
-        prior_preparation_failure=failure_ref, declared_runtime_changes=DECLARED_CHANGES,
+        prior_failed_gate=failure_ref, declared_runtime_changes=DECLARED_CHANGES,
         original_build=proof, preload=preload, runtime_files=files, environment=environment, cases=cases,
         boot=Path('/proc/sys/kernel/random/boot_id').read_text().strip(), driver=guards.driver_guard(),
+        host_controls=dict(command=['/usr/bin/python3', '-B', 'tests/core/test_runtime_probe.py'],
+            python=dict(path='/usr/bin/python3', sha256=digest('/usr/bin/python3')),
+            environment=dict(PATH='/usr/bin:/bin', LANG='C.UTF-8', LC_ALL='C.UTF-8', TMPDIR=str(ROOT / 'tmp'))),
         criteria='Four ordered fresh owned processes: host-only preload canary,submission/USM/events,ordinary graph profile0,profile1. All exit0,expected numerical/guard/profiling markers,pre-main parameter validation,silent validation log,observed ELF subset pinned and actual new NEO observed in device children. Trace must record enqueue work;fresh fault/boot/source/runtime/owner checks after every child. Stop first failure,no retry. Not model,clean speed,physical context or ordinary runtime destruction qualification.',
         budgets=dict(wall=90, cpu=120, rss_cap=4 << 30, text_cap=16 << 20, file_cap=32 << 20, total_cap=64 << 20),
         retention='Keep exact source/recipe,runtime hashes,individual fixture outcomes and limits. Retire successful traces/maps/logs after committed replay;retain provider manifest for imminent model requalification/fresh comparison. No new native engine generation.',
@@ -171,6 +188,9 @@ def run(row):
 
     try:
         owner = supervision.Owner(ROOT / 'owned', persist)
+        entry, _, _ = owner.run('host-controls', row['host_controls']['command'],
+            row['host_controls']['environment'], P, **row['budgets'])
+        require(supervision.closed(entry) and entry['exit_code'] == 0, 'mapped-file host controls failed')
         for case in row['cases']:
             current(initial)
             label = case['label']
@@ -188,12 +208,10 @@ def run(row):
                         maps = Path('/proc', str(io.proc.pid), 'maps').read_text()
                     except (FileNotFoundError, ProcessLookupError):
                         maps = ''
-                    for line in maps.splitlines():
-                        fields = line.split(maxsplit=5)
-                        if len(fields) == 6 and fields[5].startswith('/') and '.so' in Path(fields[5]).name:
-                            require(not fields[5].endswith(' (deleted)'), 'runtime asset removed while mapped')
-                            path = str(Path(fields[5]).resolve())
-                            require(path in row['runtime_files'], 'unplanned mapped runtime: ' + path)
+                    for path in executable_mappings(maps):
+                        require(path in row['runtime_files'] or path == str(Path(case['binary']['path']).resolve()),
+                            'unplanned executable mapping: ' + path)
+                        if path in row['runtime_files']:
                             seen.add(path)
                     if select.select([io.proc.stdout], [], [], .01)[0]:
                         io.read()
