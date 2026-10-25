@@ -264,7 +264,7 @@
   "model": "qwen3.8-flash-next-iq3_s-primary",
   "model_fingerprint": "32d552dc1fb0ad6594425e8bd39f35049f896afe5775b0f7abf751110a11333e",
   "placement_diagnostic": {
-    "stage": "planned",
+    "stage": "closed",
     "source_commit": "53c2c7fe80a85e66b6e70b8fba27c23f24efe8d4",
     "native_source_commit": "6e40afc1beddd059ee518617f6c1efce1da14aca",
     "binary": {
@@ -551,7 +551,27 @@
         }
       }
     ],
-    "outcomes": [],
+    "outcomes": [
+      {
+        "name": "owned-gate",
+        "passed": false,
+        "complete": false,
+        "requests": [],
+        "error": "ValueError('insufficient contained CPU/CCS observation spans for the client interval')",
+        "error_excerpt": "HC=checked_drain callbacks=after_return\nstrata trace: layer-major layer 46 of 48: completed 5 chunks\nstrata trace: layer-major layer 47 of 48: loading 512 experts\nstrata packed expert bank: layer=47 slots=384 stride=2662400 used_bytes=1022361600 backing_bytes=1022361600 full_fit=0\nstrata trace: prompt chunk 0 of 39259\nstrata trace: prefill issuer threaded=0 stream_all=0 ring=8 chunk=8192 entries=0\nstrata trace: prompt chunk 8192 of 39259\nstrata trace: prefill issuer threaded=0 stream_all=0 ring=8 chunk=8192 entries=0\nstrata trace: prompt chunk 16384 of 39259\nstrata trace: prefill issuer threaded=0 stream_all=0 ring=8 chunk=8192 entries=0\nstrata trace: prompt chunk 24576 of 39259\nstrata trace: prefill issuer threaded=0 stream_all=0 ring=8 chunk=8192 entries=0\nstrata trace: prompt chunk 32768 of 39259\nstrata trace: prefill issuer threaded=0 stream_all=0 ring=8 chunk=6491 entries=0\nstrata MoE mixed owners: phase=entry layer=47 first=0 rows=39259 primary=0xffffd55885000000 primary_bytes=201006080 region=0xffffd558bdc00000 region_bytes=1180698624 tail=(nil) tail_offset=614605312 tail_bytes=0 residual=0xffffd5596b200000 residual_bytes=804024320 bo=0xffffd5587fe00000 queue=0x195c4990 direct_owners=1 previous_attention=checked_drain\nstrata MoE mixed owners: phase=retired layer=47 first=0 rows=39259 route_status=0 shared_HC=checked_drain callbacks=after_return\nstrata trace: layer-major layer 47 of 48: completed 5 chunks\nstrata MoE expert bank complete: uploads=17580 requested_H2D_bytes=35928217600 permanent_hits=0 permanent_slots=264 total_slots=384 final_drain=checked\nstrata MoE GU fusion: fused_jobs=2519 fused_rows=15829095 separate_jobs=16277 min_rows=2334\nstrata MoE Down fusion: fused_jobs=2519 fused_rows=15829095 separate_jobs=16277 min_rows=2334\nstrata MoE accumulator window: windows=48 dequants=17580 jobs=18796 source_H2D_bytes=75377280 GPU_resident_windows_only=1 operator_max=8192 maximum_rows=39259\nstrata mtp: prompt expert phase=after-prompt-before-restore free_bytes=4262469632 total_bytes=10666115072\nstrata mtp: expert source original=0 bytes=707788800 source=owned-RAM\nstrata mtp: experts restored bytes=707788800, cumulative detach=2.436 ms reload=287.213 ms decode graph recapture=0.000 ms (lazy, later captures accumulate)\nstrata mtp: prompt expert phase=after-restore free_bytes=3554672640 total_bytes=10666115072\nstrata prefill dense: phase=restored residency=Full activations=48 full_bytes=2116951040 bank_bytes=50918400 snapshot_bytes=2116951040 overlay_rows=0 session_recapture=0 verifier=1 free_bytes=120205312 total_bytes=10666115072\nstrata trace: read 39259 tokens (batched) in 58599.5 ms\nstrata trace: prompt done (slots refilled) -1 -1\nstrata trace: window 39259 1\nstrata verify: captured the 1-token window in 49 event-completed segments\nstrata verify: capture 1 tokens 10.276 ms, free VRAM 114.6 MiB\nstrata verify: 48 shared/hit graphs can overlap CPU experts\nstrata mtp: expert decode recapture kind=round coupled=0 ok=1 ms=0.569 cumulative_ms=0.569\nstrata mtp: expert decode recapture kind=step coupled=0 ok=1 ms=0.482 cumulative_ms=1.052\nstrata mtp: expert decode recapture kind=step coupled=0 ok=1 ms=0.386 cumulative_ms=1.437\nstrata trace: window 39260 4\nstrata verify: captured the 4-token window in 49 event-completed segments\nstrata verify: capture 4 tokens 17.235 ms, free VRAM 114.5 MiB\nstrata verify: 48 shared/hit graphs can overlap CPU experts\nstrata mtp: expert decode recapture kind=round coupled=0 ok=1 ms=0.629 cumulative_ms=2.067\nstrata trace: window 39264 4\nstrata trace: window 39267 4\nstrata trace: window 39268 4\nstrata trace: window 39272 4\nstrata trace: window 39276 4\nstrata trace: window 39280 4\nstrata serve: prompt 39260 tokens = 0 reused + 39260 read in 58605 ms (669.9 tok/s), 24 generated in 1890 ms (12.7 tok/s), drafts accepted 16 of 21, 0 checkpoints\nstrata serve: SYCL_EXPERT_COPY submitted_blobs=0 submitted_bytes=0 completed_blobs=0 completed_bytes=0 host_view_groups=0 gpu_miss_groups=0 cpu_unique_misses=9043 cpu_entries=13301\nstrata serve: decode expert cache hit rate: 4.4% (619 hits / 13920 lookups)\n",
+        "ownership_closed": true,
+        "fresh_faults": [],
+        "boot_unchanged": true,
+        "driver_after": {
+          "pci": "/sys/bus/pci/devices/0000:05:00.0",
+          "driver": "xe",
+          "vendor": "0x8086",
+          "device": "0xe20c",
+          "kernel": "7.0.0-38-generic",
+          "devcoredump": false
+        }
+      }
+    ],
     "active": false,
     "ownership_closed": true
   }
