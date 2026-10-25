@@ -315,5 +315,96 @@ class ExternalLifetimeTests(unittest.TestCase):
                 lifetime_census(spans)
 
 
+class BufferCoverageTests(unittest.TestCase):
+    def fixture(self):
+        return ExternalLifetimeTests().schedule([
+            ('urQueueCreate', dict(context=0x100, created_queue=0x101)),
+            ('urMemBufferCreate', dict(context=0x100, created_buffer=0x601, bytes=32)),
+            ('urQueueIsGraphCaptureEnabledExp', dict(queue=0x101, capture_result_valid=1, capture_enabled=0)),
+            ('urMemGetNativeHandle', dict(buffer=0x601, native_result_valid=1, native_handle=0x800)),
+            ('urEnqueueMemBufferRead', dict(queue=0x101, buffer=0x601, host=0x702, bytes=8, offset=8,
+                                          blocking=1, wait_count=0, waits=[], produced_event=0)),
+            ('urMemRelease', dict(buffer=0x601)),
+            ('urQueueRelease', dict(queue=0x101))])
+
+    def test_buffer_only_scope_is_explicit_and_does_not_qualify_payload_ownership(self):
+        spans = self.fixture()
+        with self.assertRaisesRegex(RuntimeError, 'missing typed work'):
+            metadata_census(spans)
+        typed = metadata_census(spans, require_kernel=False)
+        self.assertEqual(typed['counts']['buffer_copy_bytes'], 8)
+        life = lifetime_census(spans)
+        self.assertEqual(life['counts']['buffer_created'], 1)
+        self.assertEqual(life['counts']['graph_query_calls'], 1)
+        self.assertIn('host-memory lifetime', life['limits'])
+
+    def test_missing_buffer_transfer_arguments_and_wrap_are_rejected(self):
+        for key in ('queue', 'buffer', 'host', 'bytes', 'offset', 'blocking', 'waits', 'produced_event'):
+            spans = self.fixture(); del spans[4]['metadata'][key]
+            with self.subTest(key=key), self.assertRaises(RuntimeError):
+                metadata_census(spans, require_kernel=False)
+        for update in (dict(host=(1 << 64) - 4), dict(bytes=0), dict(blocking=2), dict(offset=-1)):
+            spans = self.fixture(); spans[4]['metadata'].update(update)
+            with self.subTest(update=update), self.assertRaises(RuntimeError):
+                metadata_census(spans, require_kernel=False)
+
+    def test_wrong_context_and_out_of_bounds_ranges_fail(self):
+        for update in (dict(offset=33), dict(offset=31, bytes=2), dict(bytes=0), dict(offset=-1)):
+            spans = self.fixture(); spans[4]['metadata'].update(update)
+            with self.subTest(update=update), self.assertRaisesRegex(RuntimeError, 'buffer transfer'):
+                lifetime_census(spans)
+        spans = self.fixture(); spans[1]['metadata']['context'] = 0x200
+        with self.assertRaisesRegex(RuntimeError, 'wrong-context'):
+            lifetime_census(spans)
+
+    def test_query_false_is_distinct_from_missing_or_invalid_result(self):
+        for update in (dict(capture_result_valid=0), dict(capture_enabled=2)):
+            spans = self.fixture(); spans[2]['metadata'].update(update)
+            with self.subTest(update=update), self.assertRaises(RuntimeError):
+                metadata_census(spans, require_kernel=False)
+        spans = self.fixture(); spans[2]['metadata']['queue'] = 0x999
+        with self.assertRaisesRegex(RuntimeError, 'queue generation'):
+            lifetime_census(spans)
+
+    def test_buffer_and_native_query_require_live_generations(self):
+        for index in (3, 4, 5):
+            spans = self.fixture(); spans[index]['metadata']['buffer'] = 0x602
+            with self.subTest(index=index), self.assertRaisesRegex(RuntimeError, 'buffer generation'):
+                lifetime_census(spans)
+        spans = self.fixture(); spans[3]['metadata']['native_result_valid'] = 0
+        with self.assertRaisesRegex(RuntimeError, 'native buffer'):
+            metadata_census(spans, require_kernel=False)
+
+    def test_retain_leak_duplicate_and_use_after_release_fail(self):
+        for mode in ('retain-leak', 'duplicate-create', 'early-release'):
+            spans = self.fixture()
+            if mode == 'retain-leak':
+                spans.insert(3, dict(spans[5], name='urMemRetain'))
+            elif mode == 'duplicate-create':
+                spans.insert(2, copy.deepcopy(spans[1]))
+            else:
+                spans.insert(2, copy.deepcopy(spans[5]))
+            ExternalLifetimeTests().serial(spans)
+            with self.subTest(mode=mode), self.assertRaises(RuntimeError):
+                lifetime_census(spans)
+
+    def test_recycled_buffer_value_has_fresh_extent(self):
+        spans = self.fixture(); spans[6:6] = [copy.deepcopy(spans[1]), copy.deepcopy(spans[4]), copy.deepcopy(spans[5])]
+        spans[6]['metadata']['bytes'] = 16
+        ExternalLifetimeTests().serial(spans)
+        value = lifetime_census(spans)
+        self.assertEqual(value['counts']['buffer_created'], 2)
+        self.assertEqual(value['counts']['buffer_reused_values'], 1)
+        spans[7]['metadata'].update(offset=15, bytes=2)
+        with self.assertRaisesRegex(RuntimeError, 'buffer transfer'):
+            lifetime_census(spans)
+
+    def test_rejected_buffer_creates_and_releases_do_not_change_lifetimes(self):
+        spans = self.fixture(); spans.insert(1, dict(spans[1], status=46))
+        spans.insert(4, dict(spans[5], name='urMemRelease', metadata={'buffer': 0x601}, status=46))
+        ExternalLifetimeTests().serial(spans)
+        self.assertEqual(lifetime_census(spans)['counts']['buffer_created'], 1)
+
+
 if __name__ == '__main__':
     unittest.main()

@@ -98,12 +98,80 @@ int metadata_fixture() {
   std::printf("{\"metadata_fixture\":\"PASS\",\"simulated_calls\":%u}\n", simulated_calls);
   return 0;
 }
+
+int buffer_fixture() {
+  // CPU XPTI payloads only. Addresses are scalar identities,never device work.
+  // Invalid pointees on rejected calls must remain unread by the subscriber.
+  xptiFrameworkInitialize();
+  if (xptiInitialize("ur.call", 0, 1, "buffer-host-fixture") != xpti::result_t::XPTI_RESULT_SUCCESS) return 6;
+  auto context = reinterpret_cast<ur_context_handle_t>(uintptr_t(0x100));
+  auto queue = reinterpret_cast<ur_queue_handle_t>(uintptr_t(0x101));
+  auto buffer = reinterpret_cast<ur_mem_handle_t>(uintptr_t(0x601));
+  auto event = reinterpret_cast<ur_event_handle_t>(uintptr_t(0x201));
+  ur_queue_handle_t* queue_out = &queue;
+  ur_queue_create_params_t qc{}; qc.phContext = &context; qc.pphQueue = &queue_out;
+  notify(UR_FUNCTION_QUEUE_CREATE, "urQueueCreate", &qc);
+  size_t bytes = 32, offset = 4;
+  ur_mem_handle_t* buffer_out = reinterpret_cast<ur_mem_handle_t*>(uintptr_t(1));
+  ur_mem_buffer_create_params_t create{}; create.phContext = &context;
+  create.psize = &bytes; create.pphBuffer = &buffer_out;
+  notify(UR_FUNCTION_MEM_BUFFER_CREATE, "urMemBufferCreate", &create, UR_RESULT_ERROR_INVALID_NULL_HANDLE);
+  bool enabled = true; bool* enabled_out = reinterpret_cast<bool*>(uintptr_t(1));
+  ur_queue_is_graph_capture_enabled_exp_params_t query{&queue, &enabled_out};
+  notify(UR_FUNCTION_QUEUE_IS_GRAPH_CAPTURE_ENABLED_EXP, "urQueueIsGraphCaptureEnabledExp", &query,
+         UR_RESULT_ERROR_INVALID_NULL_HANDLE);
+  ur_native_handle_t native = 0x800; ur_native_handle_t* native_out = reinterpret_cast<ur_native_handle_t*>(uintptr_t(1));
+  ur_mem_get_native_handle_params_t native_query{}; native_query.phMem = &buffer; native_query.pphNativeMem = &native_out;
+  notify(UR_FUNCTION_MEM_GET_NATIVE_HANDLE, "urMemGetNativeHandle", &native_query, UR_RESULT_ERROR_INVALID_NULL_HANDLE);
+  buffer_out = &buffer;
+  notify(UR_FUNCTION_MEM_BUFFER_CREATE, "urMemBufferCreate", &create);
+  ur_mem_retain_params_t retain{&buffer}; ur_mem_release_params_t release{&buffer};
+  notify(UR_FUNCTION_MEM_RETAIN, "urMemRetain", &retain);
+  enabled_out = &enabled;
+  notify(UR_FUNCTION_QUEUE_IS_GRAPH_CAPTURE_ENABLED_EXP, "urQueueIsGraphCaptureEnabledExp", &query);
+  native_out = &native;
+  notify(UR_FUNCTION_MEM_GET_NATIVE_HANDLE, "urMemGetNativeHandle", &native_query);
+  uint32_t wait_count = 1;
+  const ur_event_handle_t* waits = reinterpret_cast<const ur_event_handle_t*>(uintptr_t(1));
+  ur_event_handle_t* event_out = reinterpret_cast<ur_event_handle_t*>(uintptr_t(1));
+  const void* host_src = reinterpret_cast<const void*>(uintptr_t(0x701));
+  void* host_dst = reinterpret_cast<void*>(uintptr_t(0x702));
+  bool blocking = false; bytes = 8;
+  ur_enqueue_mem_buffer_read_params_t read{&queue, &buffer, &blocking, &offset, &bytes, &host_dst,
+                                         &wait_count, &waits, &event_out};
+  ur_enqueue_mem_buffer_write_params_t write{&queue, &buffer, &blocking, &offset, &bytes, &host_src,
+                                           &wait_count, &waits, &event_out};
+  notify(UR_FUNCTION_ENQUEUE_MEM_BUFFER_READ, "urEnqueueMemBufferRead", &read, UR_RESULT_ERROR_INVALID_NULL_HANDLE);
+  notify(UR_FUNCTION_ENQUEUE_MEM_BUFFER_WRITE, "urEnqueueMemBufferWrite", &write, UR_RESULT_ERROR_INVALID_NULL_HANDLE);
+  wait_count = 0; waits = nullptr; event_out = &event;
+  notify(UR_FUNCTION_ENQUEUE_MEM_BUFFER_WRITE, "urEnqueueMemBufferWrite", &write);
+  uint32_t one = 1; waits = &event;
+  ur_event_wait_params_t wait{&one, &waits}; ur_event_release_params_t er{&event};
+  notify(UR_FUNCTION_EVENT_WAIT, "urEventWait", &wait);
+  notify(UR_FUNCTION_EVENT_RELEASE, "urEventRelease", &er);
+  waits = nullptr; event_out = nullptr; blocking = true; offset = 8;
+  notify(UR_FUNCTION_ENQUEUE_MEM_BUFFER_READ, "urEnqueueMemBufferRead", &read);
+  notify(UR_FUNCTION_MEM_RELEASE, "urMemRelease", &release);
+  notify(UR_FUNCTION_MEM_RELEASE, "urMemRelease", &release);
+  bytes = 16;
+  notify(UR_FUNCTION_MEM_BUFFER_CREATE, "urMemBufferCreate", &create);
+  native = 0x900;
+  notify(UR_FUNCTION_MEM_GET_NATIVE_HANDLE, "urMemGetNativeHandle", &native_query);
+  notify(UR_FUNCTION_MEM_RELEASE, "urMemRelease", &release);
+  enabled = false;
+  notify(UR_FUNCTION_QUEUE_IS_GRAPH_CAPTURE_ENABLED_EXP, "urQueueIsGraphCaptureEnabledExp", &query);
+  ur_queue_release_params_t qr{&queue}; notify(UR_FUNCTION_QUEUE_RELEASE, "urQueueRelease", &qr);
+  xptiFinalize("ur.call"); xptiFrameworkFinalize();
+  std::printf("{\"buffer_fixture\":\"PASS\",\"simulated_calls\":%u}\n", simulated_calls);
+  return 0;
+}
 }
 
 int main(int argc, char** argv) {
   if (argc != 2) return 2;
   const char* name = argv[1];
   if (!std::strcmp(name, "metadata")) return metadata_fixture();
+  if (!std::strcmp(name, "buffers")) return buffer_fixture();
   if (std::strcmp(name, "setenv") && std::strcmp(name, "unsetenv") &&
       std::strcmp(name, "putenv") && std::strcmp(name, "clearenv")) return 2;
   std::printf("mutation-case-begin:%s\n", name);

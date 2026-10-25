@@ -150,6 +150,22 @@ void metadata(Metadata& m, const xpti::function_with_args_t* data, bool success)
     ARGS(QUEUE_RETAIN, queue_retain, "urQueueRetain") QUEUE; END
     ARGS(QUEUE_RELEASE, queue_release, "urQueueRelease") QUEUE; END
     ARGS(QUEUE_FINISH, queue_finish, "urQueueFinish") QUEUE; END
+    ARGS(QUEUE_IS_GRAPH_CAPTURE_ENABLED_EXP, queue_is_graph_capture_enabled_exp, "urQueueIsGraphCaptureEnabledExp")
+      QUEUE;
+      if (!p->ppResult) fail();
+      m.number("capture_result_valid", success && *p->ppResult ? 1 : 0);
+      m.number("capture_enabled", success && *p->ppResult ? uint64_t(**p->ppResult) : 0); END
+    ARGS(MEM_BUFFER_CREATE, mem_buffer_create, "urMemBufferCreate")
+      m.handle("context", p->phContext);
+      if (!p->psize) fail();
+      m.number("bytes", *p->psize); m.output("created_buffer", p->pphBuffer, success); END
+    ARGS(MEM_RETAIN, mem_retain, "urMemRetain") m.handle("buffer", p->phMem); END
+    ARGS(MEM_RELEASE, mem_release, "urMemRelease") m.handle("buffer", p->phMem); END
+    ARGS(MEM_GET_NATIVE_HANDLE, mem_get_native_handle, "urMemGetNativeHandle")
+      m.handle("buffer", p->phMem);
+      if (!p->pphNativeMem) fail();
+      m.number("native_result_valid", success && *p->pphNativeMem ? 1 : 0);
+      m.number("native_handle", success && *p->pphNativeMem ? uint64_t(**p->pphNativeMem) : 0); END
     ARGS(EVENT_RETAIN, event_retain, "urEventRetain") m.handle("event", p->phEvent); END
     ARGS(EVENT_RELEASE, event_release, "urEventRelease") m.handle("event", p->phEvent); END
     ARGS(EVENT_WAIT, event_wait, "urEventWait")
@@ -170,6 +186,16 @@ void metadata(Metadata& m, const xpti::function_with_args_t* data, bool success)
     ARGS(ENQUEUE_USM_MEMCPY, enqueue_usm_memcpy, "urEnqueueUSMMemcpy")
       QUEUE; m.handle("dst", p->ppDst); m.handle("src", p->ppSrc); m.number("bytes", *p->psize);
       m.dependencies(p, success); END
+    ARGS(ENQUEUE_MEM_BUFFER_READ, enqueue_mem_buffer_read, "urEnqueueMemBufferRead")
+      QUEUE; m.handle("buffer", p->phBuffer); m.handle("host", p->ppDst);
+      if (!p->psize || !p->poffset || !p->pblockingRead) fail();
+      m.number("bytes", *p->psize); m.number("offset", *p->poffset);
+      m.number("blocking", uint64_t(*p->pblockingRead)); m.dependencies(p, success); END
+    ARGS(ENQUEUE_MEM_BUFFER_WRITE, enqueue_mem_buffer_write, "urEnqueueMemBufferWrite")
+      QUEUE; m.handle("buffer", p->phBuffer); m.handle("host", p->ppSrc);
+      if (!p->psize || !p->poffset || !p->pblockingWrite) fail();
+      m.number("bytes", *p->psize); m.number("offset", *p->poffset);
+      m.number("blocking", uint64_t(*p->pblockingWrite)); m.dependencies(p, success); END
     ARGS(ENQUEUE_USM_FILL, enqueue_usm_fill, "urEnqueueUSMFill")
       QUEUE; m.handle("dst", p->ppMem); m.number("bytes", *p->psize); m.number("pattern_bytes", *p->ppatternSize);
       m.dependencies(p, success); END
