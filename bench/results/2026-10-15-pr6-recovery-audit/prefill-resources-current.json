@@ -1758,7 +1758,7 @@
       ]
     },
     "ur_metadata_gpu": {
-      "stage": "prepared",
+      "stage": "direct-join-passed",
       "source_commit": "b2f3bfa8d1d08e312415d9aa37d4c65d712bf060",
       "input_sha256": {
         "tests/core/test_work_ledger_fixture.py": "ea6bf40c7c21ee403937032ce86e345896a0e4bce83a60216ebf557d91e01cd1",
@@ -1953,12 +1953,132 @@
       "retention": "Main consumes bounded raw records for this direct join only;after verified compact evidence,retire normal traces/JIT/output with a deletion manifest. Reuse current13 native artifacts and the small observer;no new binary generation.",
       "active": false,
       "ownership_closed": true,
-      "passed": false,
+      "passed": true,
       "gpu_work": true,
       "model_qualified": false,
       "graph_lifetime_qualified": false,
       "observer_cost_qualified": false,
-      "clean_speed_qualified": false
+      "clean_speed_qualified": false,
+      "begin_raw_ns": 1283075494773747,
+      "end_raw_ns": 1283075849502189,
+      "pid": 2860607,
+      "validation": {
+        "pid": 2860607,
+        "loader": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_loader.so.0.12.0",
+        "threads_before": 1,
+        "preinit": 37,
+        "config_enabled": true,
+        "first_init": true,
+        "dispatch_result": 46,
+        "output_untouched": true,
+        "retained_reference_until_exit": true,
+        "runtime_teardown_qualified": false
+      },
+      "actual_runtime_providers_verified": true,
+      "time_namespace": "time:[4026531834]",
+      "api": {
+        "counts": {
+          "barrier": 20,
+          "copy_bytes": 55844,
+          "copy": 53,
+          "kernel": 606,
+          "fill_bytes": 1028,
+          "fill": 1
+        },
+        "enqueue_calls": {
+          "urEnqueueEventsWaitWithBarrierExt": 20,
+          "urEnqueueUSMMemcpy": 53,
+          "urEnqueueKernelLaunchWithArgsExp": 606,
+          "urEnqueueUSMFill": 1
+        }
+      },
+      "device": {
+        "counts": {
+          "barrier": 20,
+          "copy_bytes": 55844,
+          "copy": 53,
+          "kernel": 606,
+          "fill_bytes": 1028,
+          "fill": 1
+        },
+        "host_events": 2303,
+        "device_events": 680,
+        "device_instance_ids_unique": true,
+        "all_device_host_sources": true,
+        "raw_clock_bounds": true
+      },
+      "links": {
+        "linked_UR_instances": 680,
+        "source_threads": 1,
+        "independent_UR_to_PTI_links": true,
+        "collector_internal_links": {
+          "linked_device_operations": 680,
+          "actual_append_apis": {
+            "zeCommandListAppendBarrier": 20,
+            "zeCommandListAppendMemoryCopy": 53,
+            "zeCommandListAppendLaunchKernelWithArguments": 606,
+            "zeCommandListAppendMemoryFill": 1
+          },
+          "host_source_threads": 1,
+          "unsunk_barrier_completions": 1,
+          "exact_collector_host_device_links": true,
+          "independent_UR_API_join_qualified": false,
+          "limits": "Collector-internal identity/clock consistency only. UR text has no call timestamp/thread identity;do not infer its per-operation join by ordinal or call counts. No graph parent/child,queue-generation,host-task,phase-boundary or observer-cost qualification."
+        },
+        "shape_lifetime_graph_qualified": false,
+        "observer_cost_qualified": false,
+        "limits": "Exact successful-direct-enqueue interval/thread/instance joins on this fixture only. No ordinal inference,tolerance fallback,graph expansion,queue/event generations,model completeness,speed or hardware-saturation qualification."
+      },
+      "typed_metadata": {
+        "counts": {
+          "rejected_calls": 1,
+          "urQueueCreate": 4,
+          "urUSMHostAlloc": 2,
+          "urUSMDeviceAlloc": 3,
+          "enqueue_calls": 680,
+          "copy_bytes": 55844,
+          "kernel_geometries": 606,
+          "fill_bytes": 1028
+        },
+        "enqueue_queue_handles": 3,
+        "lifetime_generations_qualified": false,
+        "graph_children_qualified": false,
+        "limits": "Typed callback capture/geometry/requested-byte census only. Handles are raw values;reference generations,retirement,actual launch rounding,graph child mapping and application host-memory lifetime still need independent checks."
+      },
+      "subscriber": {
+        "call_pairs": 3453,
+        "source_threads": 1,
+        "complete_pairs": true,
+        "environment_guard_exit_not_triggered": true
+      },
+      "analysis_inputs": [
+        {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/ur-call-subscriber-v2/gpu-direct-v1/trace/sycl_submission.2860607.json",
+          "sha256": "c7b2c5a9373468047d910b999da406c270a330b1d3d3aa589262fa2e4bcab951",
+          "bytes": 864396
+        },
+        {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/ur-call-subscriber-v2/gpu-direct-v1/ur.log",
+          "sha256": "b6bb75fabd466f94f91b677afb8fb11c271f32d19129ced56eec2db05045e40c",
+          "bytes": 950102
+        },
+        {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/ur-call-subscriber-v2/gpu-direct-v1/calls.jsonl",
+          "sha256": "afd84942e33bbcff64f4981c50579f6208eb819a2d2c808507f177ea587b9679",
+          "bytes": 1285887
+        }
+      ],
+      "session_removed": true,
+      "fresh_faults": [],
+      "boot_unchanged": true,
+      "driver_after": {
+        "pci": "/sys/bus/pci/devices/0000:05:00.0",
+        "driver": "xe",
+        "vendor": "0x8086",
+        "device": "0xe20c",
+        "kernel": "7.0.0-38-generic",
+        "devcoredump": false
+      }
     }
   }
 }
