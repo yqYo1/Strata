@@ -298,6 +298,15 @@ the earlier measurements. Current pressure/idle frequency is not a historical
 control. Keep other changed runtime libraries and their interactions,active
 CPU/GPU/VRAM clocks,paging and workstation contention unresolved.
 
+The exact old NEO,GMM,IGDML and zlib vendor ELFs now recover in a private
+directory;all four match the historical SHA-256 values. No system package was
+replaced and no recovered library was executed. Their source-package identities
+and named comparison consumer are recorded in the same runtime result. The
+next comparison must qualify both dependency arms with bounded traced fixtures
+before using the unchanged official117K workload;an asset hash is not runtime
+qualification. This comparison can isolate a userspace-set effect while current
+clock,paging and contention conditions still differ from the historical window.
+
 The[closed runtime comparison](../bench/results/2026-10-15-pr6-recovery-audit/prefill-runtime-comparison-current.json)
 uses exact cached packages in private directories. Both arms explicitly select
 the driver before exec and verify its actual mapping. Other dependencies,the
