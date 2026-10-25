@@ -1,5 +1,5 @@
 {
-  "stage": "prepared",
+  "stage": "qualified",
   "source_commit": "d53e15bdad5b10e65b8db3e883ec124bfd6b9794",
   "template_sha256": "9543297abc2ce0b4530ee6984d55366e735881caf42a08239f3494d655f9e10d",
   "runtime_sha256": "09ad358e12f6ef58bfc0a978519927863f3d09949a033a1e224db95997647d97",
@@ -214,7 +214,74 @@
     "file_cap": 67108864,
     "total_cap": 134217728
   },
-  "qualification": [],
+  "qualification": [
+    {
+      "arm": 1,
+      "case": "submission",
+      "passed": true,
+      "provider": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-neo-crossover-v1/libze_intel_gpu.so.1.17.39758",
+        "sha256": "52e29a602f92d3542eac91e20717743e63ca7d4b257d0c79a3c4d6c64c94ea49"
+      },
+      "ownership_closed": true,
+      "fresh_faults": []
+    },
+    {
+      "arm": 1,
+      "case": "graph0",
+      "passed": true,
+      "provider": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-neo-crossover-v1/libze_intel_gpu.so.1.17.39758",
+        "sha256": "52e29a602f92d3542eac91e20717743e63ca7d4b257d0c79a3c4d6c64c94ea49"
+      },
+      "ownership_closed": true,
+      "fresh_faults": []
+    },
+    {
+      "arm": 1,
+      "case": "graph1",
+      "passed": true,
+      "provider": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-neo-crossover-v1/libze_intel_gpu.so.1.17.39758",
+        "sha256": "52e29a602f92d3542eac91e20717743e63ca7d4b257d0c79a3c4d6c64c94ea49"
+      },
+      "ownership_closed": true,
+      "fresh_faults": []
+    },
+    {
+      "arm": 0,
+      "case": "submission",
+      "passed": true,
+      "provider": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-neo-crossover-v1/libze_intel_gpu.so.1.17.39395",
+        "sha256": "50adb6b727d027309039803033d41efeae4b248589ee363f321c0d538c7de3ff"
+      },
+      "ownership_closed": true,
+      "fresh_faults": []
+    },
+    {
+      "arm": 0,
+      "case": "graph0",
+      "passed": true,
+      "provider": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-neo-crossover-v1/libze_intel_gpu.so.1.17.39395",
+        "sha256": "50adb6b727d027309039803033d41efeae4b248589ee363f321c0d538c7de3ff"
+      },
+      "ownership_closed": true,
+      "fresh_faults": []
+    },
+    {
+      "arm": 0,
+      "case": "graph1",
+      "passed": true,
+      "provider": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-neo-crossover-v1/libze_intel_gpu.so.1.17.39395",
+        "sha256": "50adb6b727d027309039803033d41efeae4b248589ee363f321c0d538c7de3ff"
+      },
+      "ownership_closed": true,
+      "fresh_faults": []
+    }
+  ],
   "processes": [],
   "process_plans": [
     {
@@ -400,5 +467,20 @@
   ],
   "active": false,
   "ownership_closed": true,
-  "retention": "Keep source/recipe,individual samples,provider/workload/fault checks and decision. Private package extracts and successful raw/JIT output retire after crossover analysis; selected engine and twelve fixtures unchanged. oneMKL capture remains a separate pending consumer."
+  "retention": "Keep source/recipe,individual samples,provider/workload/fault checks and decision. Private package extracts and successful raw/JIT output retire after crossover analysis; selected engine and twelve fixtures unchanged. oneMKL capture remains a separate pending consumer.",
+  "qualification_outcome": {
+    "host_probe_accepted": true,
+    "ownership_closed": true,
+    "fresh_faults": [],
+    "boot_unchanged": true,
+    "driver_after": {
+      "pci": "/sys/bus/pci/devices/0000:05:00.0",
+      "driver": "xe",
+      "vendor": "0x8086",
+      "device": "0xe20c",
+      "kernel": "7.0.0-38-generic",
+      "devcoredump": false
+    },
+    "passed": true
+  }
 }
