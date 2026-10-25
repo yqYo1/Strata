@@ -42,10 +42,14 @@ CMake now defines manual `strata_full_context_diagnostic` and
 Both targets linked in the first restored generation, along with normal `strata`
 and its fixtures. The compiler-input census then correctly stopped advancement:
 the source inventory omitted the committed `third_party/ggml/ggml-common.h`.
-All1416 actual inputs recover and match, including that unchanged header, but
-no host fixture or GPU/model test ran. The failed gate remains failed. Include
-the vendored headers in the next committed build plan rather than weakening
-the census. See [the restoration result](../bench/results/2026-10-15-pr6-recovery-audit/prefill-restore-current.json).
+That failed generation is retired. The corrected build pins the vendored header
+and all1416 actual compiler inputs match. Its17 targets link, but the first host
+check is unqualified: the supervisor counted the sibling build tree against its
+4MiB diagnostic budget and stopped observation. The child was reaped, its session
+is empty and no GPU/model test ran. Preserve both failed gates. A new committed
+host/device plan uses its own output root and the unchanged native artifacts;
+controller-only source checks must preserve their original build identity.
+See [the restoration result](../bench/results/2026-10-15-pr6-recovery-audit/prefill-restore-current.json).
 Physical262144
 allocation/final-slot execution still needs its own bounded plan and evidence;
 the earlier retired streamed/layout results do not qualify this source.
