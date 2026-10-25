@@ -31,7 +31,7 @@ The unused streamed-QSA writer, host-span export and fixture are removed.
 Decode kernels, configuration and1256-slot placement remain selected as before.
 The restored build has native source`1baa0547f` and engine SHA prefix`2a128c6a`.
 The original6e40 executable remains the selected fallback; restored-source
-performance, task and full-context qualification is pending.
+prefill speed screen now fails; task and full-context qualification is pending.
 
 The reviewed `selected_native_tree_reconcile_20261025` decision in the
 [research index](../bench/results/2026-10-15-pr6-recovery-audit/research-index.json)
@@ -74,9 +74,9 @@ The [current throughput comparison](../bench/results/2026-10-15-pr6-recovery-aud
 uses the updated NEO and the existing6e40/restored1baa packages,with six fresh
 processes in0/1/1/0/0/1 order. Official`bench.sh` measures four117489-token inputs
 per process,separating first use from the subsequent-three median. Its CPU clock
-and provider controls pass; the cohort is collecting. This is a prefill-only
+and provider controls pass; all six processes have closed. This is a prefill-only
 comparison. Keep the separate repeated decode and agent-session gates open.
-On this B570,the first five processes pass source/provider/journal/route/owner/fault
+On this B570,all six processes pass source/provider/journal/route/owner/fault
 checks with identical request hashes and no fresh fault:
 
 | Process/package | First use,tok/s | Subsequent-three median | Subsequent range |
@@ -86,11 +86,16 @@ checks with identical request hashes and no fresh fault:
 | 2/restored1baa | 902.5098 | 973.4517 | 972.8947..973.7801 |
 | 3/original6e40 | 901.5887 | 972.2731 | 971.8380..973.5170 |
 | 4/original6e40 | 903.1217 | 975.2123 | 971.6010..975.6091 |
+| 5/restored1baa | 901.5811 | 971.3720 | 970.5519..973.1590 |
 
-The first two paired ratios are1.00075053 and1.00121216;the final restored
-process remains for the third pair. Both packages are below the
-historical old-runtime1003tok/s. This does not attribute
-that difference,decide the cohort,or qualify decode preservation/adoption.
+The paired ratios are1.00075053,1.00121216 and0.99606206;their geomean
+is0.99933887. The last pair fails the prospective no-decline screen;the faster
+screen also fails. Do not adopt1baa or advance its gated model trials. Keep the
+original6e40 selected and retire the extra native generation after source/recipe
+recovery and consumer closure. All15 final model hashes match,parameter validation
+is silent,and no fresh fault appears. Both packages exceed600tok/s repeatedly
+but remain below the historical old-runtime1003tok/s and the current1000tok/s
+target. This does not attribute that difference or qualify decode preservation.
 
 ## Long-prefill processing order
 

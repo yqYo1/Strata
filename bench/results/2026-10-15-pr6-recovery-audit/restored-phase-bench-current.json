@@ -1,5 +1,5 @@
 {
-  "stage": "collecting",
+  "stage": "closed",
   "source_commit": "5c35a18ce7a80c5b217fee18498813efa8dda5bd",
   "plan": {
     "order": [
@@ -1045,6 +1045,139 @@
         "kernel": "7.0.0-38-generic",
         "devcoredump": false
       }
+    },
+    {
+      "arm": 1,
+      "passed": true,
+      "complete": true,
+      "clock": {
+        "samples": 65536,
+        "resolution_ns": 1,
+        "min_ns": 10,
+        "p99_ns": 30,
+        "max_ns": 6352,
+        "endpoint_rounding_fraction_at_floor": 6.270400000000001e-06,
+        "provider": {
+          "path": "/usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.33",
+          "sha256": "1fd75fe70354a416d75aef22bcae68c47bd25d20e2d0568c30b1a9838cf62f11"
+        }
+      },
+      "verified_request_boundaries": 4,
+      "requests": [
+        {
+          "ok": true,
+          "generated_tokens": 24,
+          "prompt_tps_source": "engine",
+          "prompt_ms": 130314.4,
+          "decode_ms": 1963.8,
+          "drafts_offered": 21,
+          "drafts_accepted": 16,
+          "finish_reason": "length",
+          "request_sha256": "26f08fd8364b5c4bce718617fe2aed42761d0a794e068b00532694adef78b3be",
+          "stream_complete": true,
+          "eligible": true,
+          "actual_prompt_tokens": 117489,
+          "actual_read_tokens": 117489,
+          "actual_reused_tokens": 0,
+          "thinking_requested": true,
+          "reasoning_observed": true,
+          "run": 0
+        },
+        {
+          "ok": true,
+          "generated_tokens": 24,
+          "prompt_tps_source": "engine",
+          "prompt_ms": 120951.6,
+          "decode_ms": 1905.0,
+          "drafts_offered": 21,
+          "drafts_accepted": 16,
+          "finish_reason": "length",
+          "request_sha256": "fd3ad8ad7033776ad749b22e62e910e5f47e3f7664705f48d9f1fe7349b65515",
+          "stream_complete": true,
+          "eligible": true,
+          "actual_prompt_tokens": 117489,
+          "actual_read_tokens": 117489,
+          "actual_reused_tokens": 0,
+          "thinking_requested": true,
+          "reasoning_observed": true,
+          "run": 1
+        },
+        {
+          "ok": true,
+          "generated_tokens": 24,
+          "prompt_tps_source": "engine",
+          "prompt_ms": 120729.5,
+          "decode_ms": 1875.4,
+          "drafts_offered": 21,
+          "drafts_accepted": 16,
+          "finish_reason": "length",
+          "request_sha256": "daabbef4775c3fbdbfd832339d80a5ae2f91025b66df79b92fb8f6905f33b041",
+          "stream_complete": true,
+          "eligible": true,
+          "actual_prompt_tokens": 117489,
+          "actual_read_tokens": 117489,
+          "actual_reused_tokens": 0,
+          "thinking_requested": true,
+          "reasoning_observed": true,
+          "run": 2
+        },
+        {
+          "ok": true,
+          "generated_tokens": 24,
+          "prompt_tps_source": "engine",
+          "prompt_ms": 121053.8,
+          "decode_ms": 1801.9,
+          "drafts_offered": 21,
+          "drafts_accepted": 16,
+          "finish_reason": "length",
+          "request_sha256": "8669c9ebe2747b1fc2d7c4806eeb66025c919981d81c51cfdbd64ba3ec3cc2b1",
+          "stream_complete": true,
+          "eligible": true,
+          "actual_prompt_tokens": 117489,
+          "actual_read_tokens": 117489,
+          "actual_reused_tokens": 0,
+          "thinking_requested": true,
+          "reasoning_observed": true,
+          "run": 3
+        }
+      ],
+      "native_identity": {
+        "pid": 2473528,
+        "start_ticks": 127233569,
+        "sid": 2473495
+      },
+      "journal_sha256": "c83f9a7df89333b6c7dacbccf8a20e40b14580846b5f6fc181f05273bb96264f",
+      "validation": {
+        "pid": 2473528,
+        "loader": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_loader.so.0.12.0",
+        "threads_before": 1,
+        "preinit": 37,
+        "config_enabled": true,
+        "first_init": true,
+        "dispatch_result": 46,
+        "output_untouched": true,
+        "retained_reference_until_exit": true,
+        "runtime_teardown_qualified": false
+      },
+      "route": {
+        "requests": 4,
+        "rows": 117488,
+        "full_GPU_BF16": true,
+        "MoE_mode": 10,
+        "QSA_prefix_bytes": 241555328
+      },
+      "host_probe_accepted": true,
+      "ownership_closed": true,
+      "fresh_faults": [],
+      "boot_unchanged": true,
+      "driver_after": {
+        "pci": "/sys/bus/pci/devices/0000:05:00.0",
+        "driver": "xe",
+        "vendor": "0x8086",
+        "device": "0xe20c",
+        "kernel": "7.0.0-38-generic",
+        "devcoredump": false
+      }
     }
   ],
   "active": false,
@@ -1129,5 +1262,89 @@
       "bfd93dd59"
     ],
     "retained": "All six exact generated config/plan inputs,qualified CPU clock,and private cohort model/environment/input record remain for the final process;both native generations untouched."
+  },
+  "analysis": {
+    "individual_tok_s": [
+      [
+        900.6211418185665,
+        974.7034550043057,
+        974.7956471091907,
+        974.4835583011378
+      ],
+      [
+        898.6722881650225,
+        975.4350017185868,
+        975.6237310514057,
+        973.5533300298473
+      ],
+      [
+        902.5098267556612,
+        973.4516940473862,
+        972.8946865039834,
+        973.7800708646733
+      ],
+      [
+        901.5887096712307,
+        971.8380460173242,
+        972.2731391639323,
+        973.5170290284384
+      ],
+      [
+        903.1217114644163,
+        971.6009596181374,
+        975.2123464311771,
+        975.6091484999539
+      ],
+      [
+        901.5810992492004,
+        971.372019882333,
+        973.1590042201782,
+        970.5519364117441
+      ]
+    ],
+    "first_use_tok_s": [
+      900.6211418185665,
+      898.6722881650225,
+      902.5098267556612,
+      901.5887096712307,
+      903.1217114644163,
+      901.5810992492004
+    ],
+    "subsequent_median_tok_s": [
+      974.7034550043057,
+      975.4350017185868,
+      973.4516940473862,
+      972.2731391639323,
+      975.2123464311771,
+      971.372019882333
+    ],
+    "pair_ratios": [
+      1.000750532595863,
+      1.001212164397,
+      0.9960620611881116
+    ],
+    "ratio_geomean": 0.9993388748053291,
+    "prefill_no_decline_screen": false,
+    "faster_screen": false,
+    "candidate600_each_process": true,
+    "candidate1000_each_process": false,
+    "decode_preservation_qualified": false,
+    "adoption_qualified": false
+  },
+  "verification": {
+    "all6_processes_closed": true,
+    "actual_native_request_boundaries": 24,
+    "all4_wire_hashes_match_each_process": true,
+    "final_full_model_hashes_matched": 15,
+    "parameter_validation_warnings": 0,
+    "fresh_faults": 0,
+    "predeclared_summary_replayed_after_sample_compaction": true
+  },
+  "selection": {
+    "production_selected": "original6e40",
+    "restored_candidate_selected": false,
+    "decision": "Last paired median fails prospective prefill no-decline;faster screen also fails. Preserve this failed speed outcome. Current original fallback remains selected;no new decode route,configuration or placement adopted.",
+    "next": "Retire the unselected restored native generation after exact original source/recipe recovery and consumer closure. Continue original6e40 prefill resource attribution on current runtime before selecting optimization.",
+    "limits": "Execution/source/route/owner/clock/journal/fault gates pass;prefill performance screen fails. Decode preservation,quality,physical262144 and ordinary runtime teardown remain unqualified. Historical old-runtime1003 is not restored by this package."
   }
 }
