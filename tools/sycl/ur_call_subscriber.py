@@ -32,7 +32,7 @@ SOURCE = 'bench/sycl/ur_call_subscriber.cpp'
 DRIVER_SOURCE = 'bench/sycl/ur_call_guard_test.cpp'
 KEY = ('event_reconciliation', 'ur_subscriber')
 GPU_KEY = ('event_reconciliation', 'ur_subscriber_gpu')
-GPU_ROOT = ROOT / 'gpu-direct-v1'
+GPU_ROOT = ROOT / 'gpu-direct-v2'
 SDK_KEY = ('UR_PTI_identity_bridge_20261025', 'exact_SDK_inspection')
 require, digest = r.require, r.digest
 
@@ -219,7 +219,23 @@ def qualified_native():
 def gpu_prepare():
     """Freeze one small direct GPU join, reusing the host-qualified native ELF."""
     container = r.validation.committed(RESULT)
-    require(not GPU_ROOT.exists() and GPU_KEY[1] not in container[GPU_KEY[0]], 'inspect existing GPU owner;no retry')
+    require(not GPU_ROOT.exists(), 'inspect existing GPU owner;no retry')
+    failed = container[GPU_KEY[0]][GPU_KEY[1]]
+    require(failed['stage'] == 'failed' and failed['ownership_closed'] and not failed['active'] and
+            failed['session_removed'] and failed['fresh_faults'] == [] and
+            failed['failure_evidence']['exit_code'] == 87 and failed['failure_evidence']['enqueue_callbacks'] == 0 and
+            failed['failure_evidence']['last_callback'] == 'urAdapterGet begin without end',
+            'new startup plan only after the closed,unadvanced adapter guard stop')
+    for item in failed['failure_evidence']['raw_inputs']:
+        require(digest(item['path']) == item['sha256'], 'original failed startup evidence changed')
+    source = runtime_assets()['sdk']
+    require(source['source_commit'] == failed['source_diagnosis']['revision'], 'SDK diagnosis revision mismatch')
+    for name, sha in failed['source_diagnosis']['source_sha256'].items():
+        require(digest(Path(source['source_root']) / name) == sha and
+                hashlib.sha256(subprocess.check_output(['git', '-C', source['source_root'], 'show',
+                    source['source_commit'] + ':' + name], timeout=15)).hexdigest() == sha, 'SDK startup source changed')
+    failed_ref = dict(commit=r.validation.git('log', '-1', '--format=%H', '--', str(RESULT.relative_to(P))).decode().strip(),
+                      path=str(RESULT.relative_to(P)), sha256=digest(RESULT), scope=list(GPU_KEY))
     prior = container[GPU_KEY[0]]['native_observation']
     require(prior['passed'] and prior['ownership_closed'] and not prior['fresh_faults'], 'closed count screen required')
     revision = r.validation.git('rev-parse', 'HEAD').decode().strip()
@@ -234,6 +250,7 @@ def gpu_prepare():
         STRATA_UR_PROBE_EXPECTED_LOADER=assets['preload']['loader'],
         XPTI_FRAMEWORK_DISPATCHER=host['assets']['dispatcher']['path'],
         XPTI_SUBSCRIBERS=host['library']['path'], XPTI_TRACE_ENABLE='1', SYCL_UR_TRACE='0',
+        UR_L0_ENABLE_SYSMAN_ENV_DEFAULT='0',
         STRATA_UR_CALL_LOG=str(GPU_ROOT / 'calls.jsonl'),
         UNITRACE_FollowChildProcess='1', UNITRACE_SystemTime='1', UNITRACE_TraceOutputDir=str(GPU_ROOT / 'trace'),
         UR_LOG_TRACING='level:info;flush:info;output:file,' + str(GPU_ROOT / 'ur.log'),
@@ -241,6 +258,10 @@ def gpu_prepare():
     require('LD_PRELOAD' not in env, 'target-only preload required')
     session = 'StrataUR' + secrets.token_hex(12)
     row = dict(stage='prepared', source_commit=revision, input_sha256=pins, assets=assets, native_reuse=native,
+        prior_failed_result=failed_ref, host_controls=failed['host_controls'],
+        diagnostic_startup_override=dict(name='UR_L0_ENABLE_SYSMAN_ENV_DEFAULT', value='0',
+            source_diagnosis=failed['source_diagnosis'],
+            scope='Only this bounded diagnostic process. Keep all existing safety settings and immutable-environment guard. Do not infer disabled zesInit,hardware-counter capability,clean speed or production environment qualification.'),
         dispatcher=host['assets']['dispatcher'], expected_source_census=probe.source_census(), environment=env,
         session=session, command=[assets['launcher']['path'], '--session', session, '--host-timing', '--device-timing',
             '--chrome-device-logging', '--chrome-call-logging', '--chrome-event-buffer-size', '128',
