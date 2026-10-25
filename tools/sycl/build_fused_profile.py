@@ -20,7 +20,7 @@ sys.dont_write_bytecode = True
 import runtime_probe as r
 import build_full_context as lineage
 build, P, B = r.build, r.P, r.B
-ROOT = B / 'prefill-fused-command-profile-v1'
+ROOT = B / 'prefill-fused-command-profile-v2'
 RESULT = P / 'bench/results/2026-10-15-pr6-recovery-audit/prefill-resources-current.json'
 TARGETS = ['sycl_command_profile_test','sycl_moe_gu_swiglu_bench','sycl_moe_down_scatter_bench']
 PREFIXES = ['CMakeLists.txt','cmake','include','src','tests','third_party','bench/sycl',
@@ -126,7 +126,7 @@ def prepare():
     container = r.validation.committed(RESULT)
     scope = container['event_reconciliation']['fused_command_profile']
     require(scope['stage'] == 'sources-prepared' and scope['host_controls']['passed'] and
-            scope['host_controls']['tests'] == 7 and not scope['GPU_executed'], 'closed committed CPU controls required')
+            scope['host_controls']['tests'] == 8 and not scope['GPU_executed'], 'closed committed CPU controls required')
     require(container['event_reconciliation']['oneMKL_wrapper_build_v2']['retirement']['status'] == 'retired',
             'retire obsolete wrapper generation first')
     rt = r.validation.committed(r.RESULT)

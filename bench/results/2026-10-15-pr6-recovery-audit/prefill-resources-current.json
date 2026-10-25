@@ -2731,7 +2731,7 @@
       "stage": "sources-prepared",
       "production_selected": false,
       "GPU_executed": false,
-      "mechanism": "Relabel the existing finish event under the production GU/Down tag;no second registration,new device wait,readback or arithmetic change. Split2334 boundary into9 bins and retain224 events/window with128KiB static host budget. Profiling+fusion stays behind explicit pre-exec qualification opt-in.",
+      "mechanism": "Relabel the existing finish event under the production GU/Down tag;no second registration,new device wait,readback or arithmetic change. Add separately ranked expert-upload events. Split2334 boundary into9 bins and retain224 events/window with128KiB static host budget. Profiling+fusion stays behind explicit pre-exec qualification opt-in.",
       "host_plan": {
         "command": [
           "/usr/bin/python3",
@@ -2739,10 +2739,10 @@
           "tests/core/test_command_service.py"
         ],
         "deadline_s": 30,
-        "criteria": "7 controls cover versions2/3,2333/2334/8192 boundaries,signed submit-clock inversions,GPU order,counts/aggregates,unknown/missing/duplicate/trailing records and record/scope limits. Stop first failure;no GPU."
+        "criteria": "8 controls cover versions2/3,2333/2334/8192 boundaries,signed submit-clock inversions,GPU order,counts/aggregates,unknown/missing/duplicate/trailing records and record/scope limits. Stop first failure;no GPU."
       },
       "device_plan": {
-        "synthetic": "Profile off/on and unfused upper population:564kernels+3copies,191 retained samples;unfused580+3,199 retained. Bad fused-tag and cap overflow must invalidate profiling while all guards/values stay valid. Injected failure must drain before trace/storage release and must not query unfinished events.",
+        "synthetic": "Profile off/on and unfused upper population:564kernels+75copies,195 retained samples;unfused580+75,203 retained. Four selected experts also contribute actual H2D copies. Bad fused-tag/cap overflow invalidate profiling while full guards/values stay valid. Injected failure drains before trace/storage release and must not query unfinished events.",
         "actual_hooks": "Existing GU/Down oracle/guard fixtures call production Gemm hooks at2333/2334/8192 rows;Down also uses2334 irregular rows in16384-token plan. Preserve selected fusion outcome and full-output comparisons;profile expects2 separate or1 fused event per scope.",
         "qualification": "New committed build and generated recipe required before execution;small traced/parameter-validated native controls before any model work. Real hook correctness and profile conservation do not qualify model speed,observer cost or hardware saturation."
       },
@@ -2753,6 +2753,17 @@
         "tests": 7,
         "GPU_executed": false,
         "source_commit": "dc42b10ac"
+      },
+      "preconfigure_plan_superseded": {
+        "source_commit": "1b18bfea0222f76a147e48b84daf7256eda0b92d",
+        "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-fused-command-profile-v1",
+        "configure_executed": false,
+        "GPU_executed": false,
+        "reason": "Add sampled expert-upload tag and real copy coverage before any native build;new source andfresh v2 plan required. Original8-independent-format labels were insufficient for the selected bank route.",
+        "manifest": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/deletion-manifests/20261026-fused-profile-preconfigure-plan.jsonl",
+        "manifest_sha256": "35954f18393d4d877b1dfd7eef3279e6fdb055179a22db46740892d9e5aaf0c5",
+        "retired_files": 1,
+        "retired_bytes": 1323343
       }
     }
   }

@@ -194,6 +194,8 @@ bool Prefill::run_moe_accum_window(int64_t layer, int64_t first_row, int64_t row
                     owner.expert_cache != m.cache)
                     throw std::invalid_argument("prefill expert bank: incomplete residual or queue contract");
                 hp::Host host(hp::upload_submit);
+                auto tag = command_trace.tag(cp::Kind::expert_upload, job.expert, job.global_row, job.rows,
+                    layout.blob_bytes(layer), 1, format.gu_type);
                 if (owner.private_expert_bank && owner.private_expert_bank->owner() != m.cache)
                     throw std::invalid_argument("prefill private expert bank: wrong backing cache");
                 const auto ticket = owner.private_expert_bank ?

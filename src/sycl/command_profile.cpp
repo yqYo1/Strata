@@ -17,12 +17,14 @@ thread_local Trace* active = nullptr;
 namespace {
 constexpr size_t Kinds = size_t(Kind::count), Bins = 9, PerBin = 4;
 // At most36 selected jobs*5 separate operations,12 expert dequant events and
-//4 map/weight/status events per window.224 also leaves bounded diagnostic room.
+//4 expert uploads and4 map/weight/status events per window.224 also leaves
+//bounded diagnostic room. Uploads share the declared expert-rank sample;an
+//eligible upload stratum without a selected event fails qualification.
 constexpr size_t Frames = 4, PendingMax = 224, RecordsMax = Frames * PendingMax;
 const char* kind_name(Kind kind) {
   constexpr const char* names[] = {"none","upload","dequant_gu","dequant_down",
       "gather","gu","swiglu","down","combine","write","accumulate","job_weights","status",
-      "gu_swiglu","down_scatter"};
+      "gu_swiglu","down_scatter","expert_upload"};
   return names[size_t(kind)];
 }
 unsigned row_bin(int64_t rows) {
@@ -38,7 +40,7 @@ bool by_job(Kind kind) {
   return kind==Kind::gather || kind==Kind::gu || kind==Kind::swiglu || kind==Kind::down || kind==Kind::accumulate ||
       kind==Kind::gu_swiglu || kind==Kind::down_scatter;
 }
-bool by_expert(Kind kind) { return kind==Kind::dequant_gu || kind==Kind::dequant_down; }
+bool by_expert(Kind kind) { return kind==Kind::dequant_gu || kind==Kind::dequant_down || kind==Kind::expert_upload; }
 // Independent deterministic FNV rank over IDs, not copied implementation code.
 uint64_t rank(uint64_t seed, uint64_t id) {
   uint64_t h = seed;

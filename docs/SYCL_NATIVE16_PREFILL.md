@@ -837,9 +837,11 @@ GEMM results before removing the admission guard. The prospective version3
 extension is now implemented,not built or device-qualified:9 row bins,224
 events per window and scoped relabeling around the existing finish calls.
 Profiling with fusion still requires a separate explicit qualification opt-in.
-Seven CPU parser rejection controls pass,including signed submit-clock
+The first seven CPU parser rejection controls pass,including signed submit-clock
 diagnostics and group/service conservation. Synthetic populations should retain
-191 events with the fused large bin and199 with separate operations;real
+195 events with the fused large bin and203 with separate operations,including
+four ranked expert-transfer samples from72 actual compatibility copies. An
+additional host control for transfer strata is prepared,not yet run;real
 GU/Down production-hook checks cover2333,2334 and8192 rows,plus irregular Down
 source rows. The original selected6e40 and12fixtures remain unchanged.
 This is attribution infrastructure,not a throughput gain,model qualification or

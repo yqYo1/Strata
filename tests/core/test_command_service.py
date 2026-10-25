@@ -36,6 +36,12 @@ class CommandServiceTests(unittest.TestCase):
             with self.subTest(new=new), self.assertRaises(RuntimeError):
                 self.parse(fixture().replace(old, new))
 
+    def test_expert_transfer_is_separate_and_unsampled_strata_fail(self):
+        text = fixture().replace('kind=gu bin=7', 'kind=expert_upload bin=0')
+        self.assertEqual(self.parse(text)[0]['samples'][0]['kind'], 'expert_upload')
+        with self.assertRaises(RuntimeError):
+            self.parse(text.replace('selected=1', 'selected=0'))
+
     def test_missing_duplicate_or_trailing_records_are_rejected(self):
         lines = fixture().splitlines(True)
         for text in (''.join(lines[1:]), ''.join(lines[:2]+lines[3:]), ''.join(lines[:-1]),

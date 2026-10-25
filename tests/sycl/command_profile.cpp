@@ -29,7 +29,9 @@ void run(bool inject, bool fused, bool bad_tag, bool capacity) {
   for (size_t i=0;i<Count;++i) source[i]=i<Guard || i>=Guard+Words ? Sentinel : 0;
   const auto original=source;
   Allocation memory(runtime,sizeof(source),MemoryKind::Device);
+  Allocation uploads(runtime,sizeof(source),MemoryKind::Device);
   auto& queue=runtime->compute();auto* base=memory.as<uint32_t>();auto* data=base+Guard;
+  auto* upload_base=uploads.as<uint32_t>();
   // Retain the event owner through the fallback checked drain on exceptions.
   std::unique_ptr<cp::Trace> trace;
   bool retired=false;
@@ -44,6 +46,7 @@ void run(bool inject, bool fused, bool bad_tag, bool capacity) {
     }
   } pending{retired};
   runtime->wait(queue.memcpy(base,source.data(),sizeof(source)));
+  runtime->wait(queue.memcpy(upload_base,source.data(),sizeof(source)));
   if (cp::requested()) trace.reset(new cp::Trace(&queue,1));
   {
     auto frame=trace ? trace->begin(0,0) : cp::Frame{};
@@ -68,6 +71,11 @@ void run(bool inject, bool fused, bool bad_tag, bool capacity) {
       finish(&queue,event);++expected[word];++launches;
     };
     for (unsigned id=0;id<72;++id) {
+      {
+        auto tag=frame.tag(cp::Kind::expert_upload,int32_t(id),offsets[id],rows[id],4,1,21);
+        need(cudaMemcpyAsync(upload_base+Guard+id%Words,source.data()+Guard,4,cudaMemcpyHostToDevice,&queue)==cudaSuccess,
+             "actual per-expert upload");
+      }
       for (auto kind:{cp::Kind::dequant_gu,cp::Kind::dequant_down,cp::Kind::gather}) {
         auto tag=frame.tag(kind,int32_t(id),offsets[id],rows[id],5120,640,21);
         launch((id+size_t(kind))%Words);
@@ -125,11 +133,13 @@ void run(bool inject, bool fused, bool bad_tag, bool capacity) {
   for (size_t i=0;i<Count;++i)
     need(result[i]==(i<Guard || i>=Guard+Words ? Sentinel : expected[i-Guard]),"complete result/guard");
   need(source==original,"input unchanged");
+  runtime->wait(queue.memcpy(result.data(),upload_base,sizeof(result)));
+  need(result==original,"upload buffer guards and values");
   trace.reset(); // All events queried/cleared only after the checked sequence drain.
-  std::cout<<"case status=PASS guards=PASS inputs=PASS expected_profile_records="<<(fused ? 191 : 199)
+  std::cout<<"case status=PASS guards=PASS inputs=PASS expected_profile_records="<<(fused ? 195 : 203)
            <<" expected_profile_refusal="<<(bad_tag ? "fused_tag_scope" : capacity ? "event_capacity" : "none")
            <<" profile_requested="<<int(cp::requested())<<" synthetic_kernels="<<(fused ? 564 : 580)+(capacity ? 224 : 0)
-           <<" model_PP=UNRUN\n";
+           <<" synthetic_copies=75 model_PP=UNRUN\n";
 }
 } // namespace
 int main(int argc,char** argv) {

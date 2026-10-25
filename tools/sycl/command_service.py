@@ -8,7 +8,7 @@ from measurement_guards import require
 
 PREFIX = 'strata command '
 JOB = {'gather', 'gu', 'swiglu', 'down', 'accumulate', 'gu_swiglu', 'down_scatter'}
-KINDS = JOB | {'upload', 'dequant_gu', 'dequant_down', 'combine', 'write', 'job_weights', 'status'}
+KINDS = JOB | {'upload', 'expert_upload', 'dequant_gu', 'dequant_down', 'combine', 'write', 'job_weights', 'status'}
 
 
 def row_bin(rows, version):

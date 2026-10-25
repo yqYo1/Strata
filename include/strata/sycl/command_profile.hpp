@@ -6,7 +6,7 @@
 namespace strata::sycl_backend::command_profile {
 enum class Kind : uint8_t { none, upload, dequant_gu, dequant_down, gather, gu,
                             swiglu, down, combine, write, accumulate,
-                            job_weights, status, gu_swiglu, down_scatter, count };
+                            job_weights, status, gu_swiglu, down_scatter, expert_upload, count };
 struct Meta {
   Kind kind = Kind::none;
   int32_t expert = -1, rows = 0, n = 0, k = 0, format = -1;
