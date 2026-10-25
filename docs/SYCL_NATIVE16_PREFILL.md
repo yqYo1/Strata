@@ -172,7 +172,7 @@ open; do not revive an old rejected backend from its isolated correctness pass.
 
 ## Measured performance and rejected comparisons
 
-Hardware is Arc B57010GiB and Ryzen5600X6c/12t. The latest clean prefill comparison
+Hardware is Arc B57010GiB and Ryzen5600X6c/12t. The historical old-NEO comparison
 used official `bench.sh`, thinking enabled and six fresh processes in
 original/candidate/candidate/original/original/candidate order. Each process read
 four fresh117489-token requests. First use and subsequent requests are distinct.
@@ -197,6 +197,54 @@ missed the no-decline rule for both code and prose; a prior prefill improvement
 cannot excuse that outcome. See [its decode decision](../bench/results/2026-10-15-pr6-recovery-audit/canonical-restore-decode-current.json).
 Do not conflate362,590f and the selected6e40 package. Static cache reordering and
 window-ranked membership were rejected separately; original placement remains.
+
+### Historical best and the current decline
+
+The20261026 audit distinguishes two differences. The fastest reported owned128
+package used source396d and recorded1005.5..1005.8tok/s subsequent-process
+medians. The six-process owned128/borrowed1256 comparison recorded a0.4899%
+prefill decline for borrowed1256,with every pair slower. Its old2% screen did
+not classify a regression;that does not establish equal speed or satisfy the
+later requirement to restore the fastest prefill independently of decode.
+See[the original comparison](../bench/results/2026-10-15-pr6-recovery-audit/cache-long-comparison-current.json).
+Do not recover that speed by shrinking the current decode cache.
+
+Separately,the original6e40 executable itself now measures slower. Recomputing
+actual read tokens divided by engine milliseconds from the old cohort at
+1e676d554 and the updated-NEO cohort above gives:
+
+| Same original6e40 package | Old NEO | Updated NEO |
+| --- | ---: | ---: |
+| Three subsequent-process medians,tok/s | 1003.0316,1002.6507,1002.3795 | 974.7035,972.2731,975.2123 |
+| Median of those process medians | 1002.6507 | 974.7035 |
+| All nine subsequent samples,range | 1002.1991..1003.7986 | 971.6010..975.6091 |
+| Median first-use speed,tok/s | 929.4942 | 901.5887 |
+
+The subsequent difference is−2.7873%. These are historical cohorts,not a
+contemporary driver A/B. The same binary SHA22182f1a,boot,kernel,four wire-body
+hashes,117489 fresh input tokens,zero reuse,24 output tokens,thinking,1256-slot
+profile bytes and original prefill configuration match. Both separate first use
+from the subsequent-three median. `bench.sh`,`serve/server.py` and
+`tools/sycl/engine_once.py` match byte-for-byte between controllers4d805d772 and
+5c35a18ce. The prefill construction,eligibility,digest,request gate and
+`run_prefill_only` functions also match. The changed client definitions add
+long-generation options and do not change the prefill timing formula. Different
+whole-client fingerprints alone do not establish a changed prefill measurement.
+
+NEO changed26.31.39395.16→26.35.39758.17;GMM,IGDML and zlib also changed.
+The same application executable rules out application recompilation as the
+cause of this particular difference. It does not identify NEO rather than the
+other runtime changes,clock/power conditions or concurrent workstation activity.
+Do not dismiss the nonoverlapping repeated samples as noise or call the old
+1003 result the latest current speed.
+
+`tools/sycl/prefill_runtime_compare.py` prepares a prospective NEO-only crossover
+using the exact cached packages in private directories. Both arms use explicit
+pre-exec driver selection and verify the actually mapped library. The installed
+runtime,other dependencies,selected engine and decode configuration stay fixed.
+Small traced/validated submission and graph gates precede six official117K
+processes in new/old/old/new/new/old order. This is diagnosis,not permission to
+adopt an old driver or change decode. Its result is not yet available.
 
 ## Current MTP attribution
 
