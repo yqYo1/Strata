@@ -624,5 +624,149 @@
       "CPU_objects_retained": true,
       "consumer": "Imminent original-plus-observer engine,small validated device/model gate,then observer overhead and same-request service/census attribution."
     }
+  },
+  "native_engine": {
+    "stage": "prepared",
+    "source_commit": "0d434a573baeabb57e4849adea4286badbf87dbb",
+    "base_native_source": "6e40afc1beddd059ee518617f6c1efce1da14aca",
+    "observer_source_reference": {
+      "source_commit": "e42ae21ac82ea00772569299a07b35f0448a48ac",
+      "source_files": 554,
+      "source_fingerprint": "7df40d1ea2aeeedd54c878465eee4e8017d3cfe4a6bcf88326794d7e5ec4b666",
+      "patches": [
+        {
+          "commit": "35f3683bc",
+          "paths": [
+            "CMakeLists.txt",
+            "include/strata/kernels/cpu/pool.hpp",
+            "include/strata/kernels/cpu/service_profile.hpp",
+            "src/kernels/cpu/pool.cpp",
+            "src/program/generate.cpp",
+            "tests/core/cpu_service_profile_test.cpp"
+          ],
+          "sha256": "240787a8dca748d6550cd2f730c57d7c1a5abcdeae265dda97c00d3b18475566"
+        },
+        {
+          "commit": "f26979a65",
+          "paths": [
+            "include/strata/kernels/cpu/service_profile.hpp"
+          ],
+          "sha256": "30082c03184df14bf152412d2d6a024fa70e52585237aafbdf7cdd799c1b14a3"
+        },
+        {
+          "commit": "44b520e30",
+          "paths": [
+            "CMakeLists.txt",
+            "tests/core/cpu_service_pool_test.cpp"
+          ],
+          "sha256": "96655a36f06c3cdcfd0b1211bba6cd8b653122c9f88780e834e7a7deaa35e827"
+        },
+        {
+          "commit": "589ff46aa",
+          "paths": [
+            "tests/core/cpu_service_pool_test.cpp"
+          ],
+          "sha256": "4446dfd1797f63231c9dd31841c83f17860b731b6aae05481e459f31899fbbff"
+        }
+      ],
+      "changed_files": [
+        "CMakeLists.txt",
+        "include/strata/kernels/cpu/pool.hpp",
+        "include/strata/kernels/cpu/service_profile.hpp",
+        "src/kernels/cpu/pool.cpp",
+        "src/program/generate.cpp",
+        "tests/core/cpu_service_pool_test.cpp",
+        "tests/core/cpu_service_profile_test.cpp"
+      ]
+    },
+    "host_gate_reference": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-service-original-v2/record.json",
+      "sha256": "6f706e664421dcf0faaf248bcae5ca10da9f2564eeecad96b580152a889c8d15",
+      "fixture": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-service-original-v2/build/cpu_service_pool_test",
+        "bytes": 2503536,
+        "sha256": "ca750ca1317bb28ecb8300411e224939bbe5706fc29fce478ec2b91445a31549"
+      },
+      "compiler_closure": {
+        "files": 612,
+        "uncovered_files": 0,
+        "sha256": "0ba93ecb049ea67fa301096db5f46f21e14e1331067935d80e6f66def4a19786"
+      }
+    },
+    "benchmark_files": 189,
+    "benchmark_fingerprint": "7fde1d7a3ad71f18c9b8e3d37fe32abfd9063838a8be28ce6ba7c883030696cf",
+    "protected_inputs": {
+      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-service-original-v2/build/CMakeCache.txt": "2e0f677dee73c9644b8061595eb65d30b3ce9077e455e847dcb98765ef8479fe",
+      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-service-original-v2/build/compile_commands.json": "44fa8c74f180f7cb18fb66651fc1f31a549a9de497316e8d0a56e04452b5dac9",
+      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-service-original-v2/build/build.ninja": "5b1145c15d56a98e73c36059f5f45712d5773ad1b21470c552e2af60c8088381",
+      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-service-original-v2/build/cpu_service_pool_test": "ca750ca1317bb28ecb8300411e224939bbe5706fc29fce478ec2b91445a31549",
+      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-service-original-v2/build/libstrata_kernels_cpu.a": "8810dae1f0912f979ebe1c968f62a7b1d9678c987a68422a613828a1de539cb8"
+    },
+    "build_argv": [
+      "/usr/bin/cmake",
+      "--build",
+      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-service-original-v2/build",
+      "--target",
+      "strata",
+      "sycl_submission_test",
+      "sycl_graph_envelope_test",
+      "-j",
+      "4"
+    ],
+    "census_argv": [
+      "/usr/bin/ninja",
+      "-C",
+      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-service-original-v2/build",
+      "-t",
+      "deps"
+    ],
+    "environment": {
+      "PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin:/usr/bin:/bin",
+      "HOME": "/home/yayoi",
+      "LANG": "C.UTF-8",
+      "LC_ALL": "C.UTF-8",
+      "PYTHONDONTWRITEBYTECODE": "1",
+      "LD_LIBRARY_PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib:/opt/intel/oneapi/mkl/2026.1/lib",
+      "MKLROOT": "/opt/intel/oneapi/mkl/2026.1",
+      "OMP_NUM_THREADS": "1",
+      "GIT_TERMINAL_PROMPT": "0",
+      "GIT_SSH_COMMAND": "ssh -oBatchMode=yes",
+      "CPLUS_INCLUDE_PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/include",
+      "PIP_CONFIG_FILE": "/dev/null",
+      "ONEAPI_DEVICE_SELECTOR": "level_zero:gpu",
+      "UR_ADAPTERS_FORCE_LOAD": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_adapter_level_zero_v2.so.0",
+      "SYCL_CACHE_PERSISTENT": "0",
+      "NEOReadDebugKeys": "1",
+      "EnableDirectSubmission": "0",
+      "UR_L0_V2_FORCE_DISABLE_COPY_OFFLOAD": "1",
+      "STRATA_SYCL_VERIFY_NATIVE_CAPTURE": "0",
+      "STRATA_SYCL_PREFILL_SAME_QUEUE": "1",
+      "STRATA_SYCL_PREFILL_NATIVE16": "bf16",
+      "XDG_CACHE_HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-service-original-v2/cache",
+      "TMPDIR": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-service-original-v2/tmp"
+    },
+    "runtime_reference": {
+      "path": "bench/results/2026-10-15-pr6-recovery-audit/runtime-requalification-current.json",
+      "sha256": "09ad358e12f6ef58bfc0a978519927863f3d09949a033a1e224db95997647d97"
+    },
+    "budgets": {
+      "wall": 1800,
+      "cpu": 14400,
+      "rss_cap": 17179869184,
+      "text_cap": 33554432,
+      "file_cap": 67108864,
+      "total_cap": 3221225472
+    },
+    "criteria": "Compile exactly the already admitted original6e40 plus four scoped CPU-observer/test patches. Reuse existing CMake/CPU objects without changing settings;all three targets must link. Require complete actual compiler closure including generate.cpp/mtp.cpp,pinned source/SDK/MKL/generated header,unchanged CPU fixture/archive/configuration and normal owned exits. No engine/fixture invocation at this step.",
+    "limits": "Successful linking is not native device/model qualification,observer overhead measurement,hardware attribution,throughput gain or inference adoption. Keep original selected6e40 and12same-build fixtures untouched.",
+    "retention": "One extra generation shares the host-pool build for imminent bounded validated device/model checks,then observer overhead and same-request service/census attribution. Retire on rejection/closure after exact source/recipe recovery;normal build output is disposable after recorded closure.",
+    "passed": false,
+    "complete": false,
+    "active": false,
+    "ownership_closed": true,
+    "GPU_executed": false,
+    "model_executed": false,
+    "production_selected": false,
+    "assets": {}
   }
 }
