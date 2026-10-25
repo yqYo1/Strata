@@ -289,6 +289,8 @@ subtraction or treating it as a universal bound on the full Scope/model overhead
 The new source`f935f0979` host gate also repeats the collector controls and
 closes all four owned commands at exit0. All11 source inputs and the original
 recipe recover from Git; the original host result/source remain unchanged.
+Its12 temporary fixture/log files (70,843bytes) and one-shot runner are retired;
+the runner and recipe recover from the pinned source/plan in the host result.
 This changes neither the selected original6e40 executable nor
 the active clean-width inputs; it is not an inference optimization or a speedup.
 
