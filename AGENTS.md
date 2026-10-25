@@ -359,6 +359,8 @@ integration and testing.
   `setenv`/`unsetenv` while runtime or collector threads may read the environment.
   Review legacy fixtures that switch variables before reusing them. Floating-point
   state operations such as `std::fesetenv` are separate from process environment variables.
+  Read each fixture's committed entrypoint and required startup variables before
+  preparing its case; pair CLI arguments with their matching pre-exec settings.
 - Preserve the current workstation's qualified runtime safety settings from
   [the shared measurement environment](tools/sycl/measurement_environment.json),
   including copy-offload avoidance, disabled direct submission and the qualified
