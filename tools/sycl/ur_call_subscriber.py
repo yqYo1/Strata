@@ -342,7 +342,7 @@ def gpu_prepare():
     require('LD_PRELOAD' not in env, 'target-only preload required')
     session = 'StrataUR' + secrets.token_hex(12)
     row = dict(stage='prepared', source_commit=revision, input_sha256=pins, assets=assets, native_reuse=native,
-        host_controls=prior['host_controls'],
+        host_controls=host['host_controls'],
         diagnostic_startup_override=dict(name='UR_L0_ENABLE_SYSMAN_ENV_DEFAULT', value='0',
             source_diagnosis=prior['diagnostic_startup_override']['source_diagnosis'],
             scope='Only this bounded diagnostic process. Keep all existing safety settings and immutable-environment guard. Do not infer disabled zesInit,hardware-counter capability,clean speed or production environment qualification.'),
@@ -351,7 +351,7 @@ def gpu_prepare():
             '--chrome-device-logging', '--chrome-call-logging', '--chrome-event-buffer-size', '128',
             assets['fixture']['path'], '--submission'],
         budgets=dict(wall=90, cpu=90, rss_cap=4 << 30, text_cap=8 << 20, file_cap=32 << 20, total_cap=64 << 20),
-        gates='One unchanged original6e40 direct-submission fixture,current NEO. Source/API/device606 kernels,53 copies/55844 requested bytes,one fill/1028 bytes,20 barriers. Every actual PTI GPU event needs one exact internal host/device flow and one distinct successful same-thread UR enqueue interval containing its actual append timestamp,with matching kind. No ordinal/tolerance fallback,ambiguous/unknown/unmapped/failed enqueue. Require complete subscriber pairs,actual pinned providers,pre-main validation,matching time namespace,numerical/drain footer,normal owners/session closure and no fresh faults. Stop first failure;no graph or model work.',
+        gates='One unchanged original6e40 direct-submission fixture,current NEO. Source/API/device606 kernels,53 copies/55844 requested bytes,one fill/1028 bytes,20 barriers. Every actual PTI GPU event needs one exact internal host/device flow and one distinct successful same-thread UR enqueue interval containing its actual append timestamp,with matching kind. Typed metadata additionally needs680 queues/wait/output snapshots,606 valid launch geometries and matching55844 copy/1028 fill requested bytes. No ordinal/tolerance fallback,ambiguous/unknown/unmapped/failed enqueue. Require complete subscriber pairs,actual pinned providers,pre-main validation,matching time namespace,numerical/drain footer,normal owners/session closure and no fresh faults. Stop first failure;no graph or model work.',
         retention='Main consumes bounded raw records for this direct join only;after verified compact evidence,retire normal traces/JIT/output with a deletion manifest. Reuse current13 native artifacts and the small observer;no new binary generation.',
         active=False, ownership_closed=True, passed=False, gpu_work=True, model_qualified=False,
         graph_lifetime_qualified=False, observer_cost_qualified=False, clean_speed_qualified=False)
