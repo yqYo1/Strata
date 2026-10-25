@@ -495,11 +495,18 @@ before a model observation. On current NEO, the retained6e40 submission fixture
 matches606 kernels,53 copies/55,844 requested bytes,one fill/1,028 bytes and20
 barriers across the source/API/device ledgers. All680 GPU executions now also
 join distinct,successful UR enqueue instances by their actual caller thread and
-raw-clock interval,through exact PTI host/device flow endpoints. This uses3,453
-complete UR call pairs;14 adversarial host controls reject missing,ambiguous or
-wrong-thread/time/identity joins. Four native CPU controls qualify the standard
-environment-mutation guard. Native owners and collector sessions close normally,
-with no fresh faults. One barrier lacks an optional host-completion sink.
+raw-clock interval,through exact PTI host/device flow endpoints. The current
+typed observer also records606 valid launch geometries and the same requested
+copy/fill byte totals. Its3,453 complete call pairs reconcile4 queues,5 allocations
+and680 external event reference generations through release. Seven numerical
+event-handle values are reused673 times;one allocation value is reused. These
+are distinct generations,not680 unique pointer values. Twenty-five adversarial
+host controls and a26-call native CPU fixture exercise loss,identity,geometry,
+failed-call transitions,references and synthetic graph replay. Four native CPU
+controls qualify the standard environment-mutation guard. Native owners and
+collector sessions close normally,with no fresh faults. One barrier lacks an
+optional host-completion sink. This does not qualify internal driver references,
+USM payload-reader completion,application host-memory lifetime or model coverage.
 
 The first guarded GPU startup stopped during`urAdapterGet`,before any enqueue;
 that failed result remains archived. The exact SDK source defaults to rewriting
@@ -507,10 +514,14 @@ that failed result remains archived. The exact SDK source defaults to rewriting
 diagnostic plan sets`UR_L0_ENABLE_SYSMAN_ENV_DEFAULT=0` before exec and passes
 without triggering the guard. Dispatcher/subscriber/validation/collector load order
 is verified. This does not qualify disabled`zesInit`,ordinary runtime destruction
-or a production environment change. Next,add queue/event/allocation generations
-and graph parent/child metadata,then qualify graph/reuse,shapes,host tasks,drained
-boundaries and observer cost. Production prefill/decode source and the selected
-binary remain unchanged;hardware saturation remains unknown.
+or a production environment change. Graph callbacks now record parent,command,
+syncpoint and replay-call metadata,but actual graph/device identity remains open.
+Pinned PTI source gives each replay child a new execution ID while siblings share
+the parent append's host timestamp. Name/shape signatures are candidate matches,
+not exact node identity. Next,qualify a common parent/group key and child mapping,
+host tasks,drained boundaries and observer cost;scope these gates to the actual
+called prefill route. Production prefill/decode source and the selected binary
+remain unchanged;hardware saturation remains unknown.
 
 Basic [profile-off/on graph support](../bench/results/2026-10-15-pr6-recovery-audit/mtp-graph-observer-current.json)
 already passed, with exact6e40 reuse checked separately. The closed

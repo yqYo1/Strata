@@ -6,7 +6,6 @@ its12 fixtures stay selected; one small observer ELF serves the next GPU probe.
 Repository LICENSE; no external implementation copied.
 """
 import collections
-import copy
 import bisect
 import fcntl
 import hashlib
@@ -616,45 +615,6 @@ def driver_plan(compiler, env):
                 driver_compiler_inputs=dict(path=str(manifest), sha256=digest(manifest), files=len(headers)))
 
 
-def repair():
-    """New native-driver plan, preserving the closed failed Python experiment."""
-    old = r.validation.committed(RESULT, KEY)
-    require(old['stage'] == 'failed' and old['ownership_closed'] and not old['fresh_faults'] and
-            old['error'] == "RuntimeError('mutation control failed')" and not old['outcomes'] and
-            old['failure_evidence']['exit_code'] == 87 and not old['failure_evidence']['test_marker_reached'] and
-            not (ROOT / 'driver-inputs.json').exists(), 'only the closed unadvanced Python control may be superseded')
-    require(runtime_assets() == old['assets'] and digest(old['library']['path']) == old['library']['sha256'],
-            'unchanged original subscriber required')
-    for name, sha in old['compiler_tools'].items():
-        require(digest(name) == sha, 'original compiler provider changed')
-    manifest = Path(old['compiler_inputs']['path'])
-    require(digest(manifest) == old['compiler_inputs']['sha256'], 'original native census changed')
-    inputs = json.loads(manifest.read_text())
-    for name, sha in inputs.items():
-        require(digest(name) == sha, 'original native compiled input changed')
-    native_source = r.validation.git('show', old['source_commit'] + ':' + SOURCE)
-    require(hashlib.sha256(native_source).hexdigest() == inputs[str(P / SOURCE)] and
-            native_source == (P / SOURCE).read_bytes(), 'original observer source does not recover')
-    revision = r.validation.git('rev-parse', 'HEAD').decode().strip()
-    pins = source_pins(revision)
-    row = copy.deepcopy(old)
-    for name in ('outcomes', 'error', 'failure_evidence', 'next_action'):
-        row.pop(name, None)
-    row.update(stage='driver-prepared', source_commit=revision, input_sha256=pins,
-        original_failed_result=dict(commit=revision, path=str(RESULT.relative_to(P)), sha256=digest(RESULT)),
-        library_origin=dict(source_commit=old['source_commit'], cpp_sha256=inputs[str(P / SOURCE)],
-            library_sha256=old['library']['sha256'], compiled_inputs_verified=len(inputs),
-            reuse='No observer rebuild or hash refresh. Original source/recipe and254 compiled inputs recover;only the native host test driver is new.'),
-        gates=old['gates'].replace('Four CPU mutation controls', 'Four NATIVE CPU mutation controls') +
-            ' New plan replaces Python startup with a source-pinned native driver;all original failed outcomes remain in the archived receipt.',
-        **driver_plan(old['command'][0], row['environment']))
-    container = json.loads(RESULT.read_text())
-    container[KEY[0]][KEY[1]] = row
-    r.write(RESULT, container)
-    r.write(ROOT / 'record.json', row)
-    print('Prepared native mutation controls;original failure/library preserved. Commit before driver build.', flush=True)
-
-
 def prepare():
     require(not ROOT.exists(), 'inspect existing subscriber owner; no retry')
     container = r.validation.committed(RESULT)
@@ -700,7 +660,7 @@ def prepare():
 
 def execute(action):
     row = r.validation.committed(RESULT, KEY)
-    expected = {'build': ('prepared',), 'build-driver': ('driver-prepared',), 'check': ('built', 'driver-built')}
+    expected = {'build': ('prepared',), 'check': ('built',)}
     require(row['stage'] in expected[action], 'committed single-use component stage required')
     admit(row, action != 'build')
     owner = None
@@ -717,16 +677,15 @@ def execute(action):
         require(not (ROOT / (label + '-owned')).exists(), 'inspect original component process;no retry')
         owner = r.supervision.Owner(ROOT / (label + '-owned'), persist)
         row['stage'] = action + 'ing'
-        if action in ('build', 'build-driver'):
-            if action == 'build':
-                entry, _, _ = owner.run('compile', row['command'], row['environment'], P, **row['budgets'])
-                require(r.supervision.closed(entry) and entry['exit_code'] == 0, 'subscriber compile failed')
-                library = ROOT / 'libstrata_ur_calls.so'
-                row['library'] = dict(path=str(library), sha256=digest(library), bytes=library.stat().st_size)
+        if action == 'build':
+            entry, _, _ = owner.run('compile', row['command'], row['environment'], P, **row['budgets'])
+            require(r.supervision.closed(entry) and entry['exit_code'] == 0, 'subscriber compile failed')
+            library = ROOT / 'libstrata_ur_calls.so'
+            row['library'] = dict(path=str(library), sha256=digest(library), bytes=library.stat().st_size)
             entry, _, _ = owner.run('compile-driver', row['driver_command'], row['environment'], P, **row['budgets'])
             require(r.supervision.closed(entry) and entry['exit_code'] == 0, 'native driver compile failed')
             driver = ROOT / 'ur_call_guard_test'
-            row.update(stage='built' if action == 'build' else 'driver-built',
+            row.update(stage='built',
                 driver=dict(path=str(driver), sha256=digest(driver), bytes=driver.stat().st_size))
         else:
             base = r.validation.committed(r.SETTINGS)['environment']
@@ -788,11 +747,11 @@ def execute(action):
 
 
 if __name__ == '__main__':
-    require(len(sys.argv) == 2 and sys.argv[1] in ('prepare', 'build', 'repair', 'build-driver', 'check', 'gpu-prepare', 'gpu-check', 'analyse-lifetimes'),
-            'use ur_call_subscriber.py prepare|build|repair|build-driver|check|gpu-prepare|gpu-check|analyse-lifetimes')
+    require(len(sys.argv) == 2 and sys.argv[1] in ('prepare', 'build', 'check', 'gpu-prepare', 'gpu-check', 'analyse-lifetimes'),
+            'use ur_call_subscriber.py prepare|build|check|gpu-prepare|gpu-check|analyse-lifetimes')
     with (B / 'owned-v0141-measurement.lock').open('a+') as lock:
         fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
         r.guards.no_model_owners([])
-        raise SystemExit({'prepare': prepare, 'repair': repair, 'gpu-prepare': gpu_prepare, 'gpu-check': gpu_check,
+        raise SystemExit({'prepare': prepare, 'gpu-prepare': gpu_prepare, 'gpu-check': gpu_check,
                           'analyse-lifetimes': analyse_lifetimes}
                          .get(sys.argv[1], lambda: execute(sys.argv[1]))())
