@@ -49,9 +49,14 @@ check is unqualified: the supervisor counted the sibling build tree against its
 is empty and no GPU/model test ran. Preserve both failed gates. A new committed
 host/device plan uses its own output root and the unchanged native artifacts;
 controller-only source checks must preserve their original build identity.
-Its first execution passed six host checks, then refused the omitted IQ2 startup
-selection before GPU work. The corrected plan fixes pair selection and audit
-variables before each separate process and checks the12-case phase-scope marker.
+The standalone checks now qualify eight host controls and three submission/graph
+cases on the unchanged assets and runtime. The IQ2 pair settings are fixed before
+each process, with the12-case phase-scope marker checked in both arms. The scratch
+exact-capacity fixture separately refused its unqualified Alias0 configuration;
+its documented contract is Alias1/MMQ0. Five fresh device cases pin that layout
+and cover scratch smoke/full/loan, the private bank and RESTORE. The eleven
+unchanged qualified cases are reused explicitly; prior whole-gate failures remain
+failed. Model/decode performance and state handoff are still unqualified.
 See [the restoration result](../bench/results/2026-10-15-pr6-recovery-audit/prefill-restore-current.json).
 Physical262144
 allocation/final-slot execution still needs its own bounded plan and evidence;
