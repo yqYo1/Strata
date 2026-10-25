@@ -263,6 +263,9 @@ def analyze_owned():
     Original collection and full source/runtime admission are archived at80bb79887.
     This never resumes its closed cohort or relabels its failed original outcome.
     """
+    revision=gen.git('rev-parse','HEAD').decode().strip()
+    for source in (Path(__file__).resolve(), READER):
+        require(source.read_bytes()==gen.git('show',revision+':'+str(source.relative_to(P))), 'commit reanalysis source first')
     row=json.loads((ROOT/'record.json').read_text())
     frozen=json.loads(gen.git('show','80bb79887:' + str(RESULT.relative_to(P))))[KEY]
     require(compact(row)==frozen==gen.committed(RESULT)[KEY] and row['stage']=='closed' and
