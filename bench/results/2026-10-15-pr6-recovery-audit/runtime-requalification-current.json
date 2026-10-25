@@ -1,5 +1,5 @@
 {
-  "stage": "prepared",
+  "stage": "failed",
   "source_commit": "8537513e753de8aae98e964acee883c6f4b7145d",
   "input_sha256": {
     "tools/sycl/runtime_probe.py": "dac914b002d5f68247bb81baf73d487400c2d2bb69453080a3254993a60bd6ae",
@@ -170,12 +170,43 @@
     "total_cap": 67108864
   },
   "retention": "Keep exact source/recipe,runtime hashes,individual fixture outcomes and limits. Retire successful traces/maps/logs after committed replay;retain provider manifest for imminent model requalification/fresh comparison. No new native engine generation.",
-  "outcomes": [],
+  "outcomes": [
+    {
+      "label": "canary",
+      "exit_code": 0,
+      "passed": true,
+      "ownership_closed": true,
+      "parameter_validation": true,
+      "fresh_faults": [],
+      "mapped_runtime_files": [],
+      "stdout_sha256": "2ebfaafcbf2013c3f6259a851081c541c86a0044620ec4446c8fa3f2be19ec23",
+      "stderr_sha256": "6aee5844c3283a54f85d11e78ba8d6b0160771d1cd0beff6e48fb0b1a1c4a997",
+      "trace_bytes": 330
+    }
+  ],
   "active": false,
-  "ownership_closed": true,
+  "ownership_closed": false,
   "passed": false,
   "complete": false,
   "model_qualified": false,
   "production_selected": false,
-  "clean_speed_qualified": false
+  "clean_speed_qualified": false,
+  "error": "RuntimeError('runtime fixture failed: submission')",
+  "fresh_faults": [],
+  "boot_unchanged": true,
+  "driver_after": {
+    "pci": "/sys/bus/pci/devices/0000:05:00.0",
+    "driver": "xe",
+    "vendor": "0x8086",
+    "device": "0xe20c",
+    "kernel": "7.0.0-38-generic",
+    "devcoredump": false
+  },
+  "closure_reconciliation": {
+    "all_owned_processes_terminated": true,
+    "original_observation_failed": true,
+    "reason": "Filename substring misclassified the read-only ld.so.cache mapping as a shared library. Owner sent SIGTERM before any recorded enqueue;both direct children reaped,sessions empty,and pinned PID identities no longer live. Original failed/ownership_closed=false result is preserved.",
+    "recorded_enqueue_calls": 0,
+    "fresh_faults": []
+  }
 }
