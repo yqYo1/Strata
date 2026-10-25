@@ -19,7 +19,7 @@ import mtp_resident_control as native
 import runtime_probe as runtime
 
 P, B = native.P, native.B
-ROOT = B / 'cpu-service-original-v1'
+ROOT = B / 'cpu-service-original-v2'
 RESULT = gen.A / 'cpu-service-current.json'
 require, digest = native.guards.require, native.build.digest
 PATCHES = (
@@ -28,8 +28,7 @@ PATCHES = (
         'src/program/generate.cpp', 'tests/core/cpu_service_profile_test.cpp')),
     ('f26979a65', ('include/strata/kernels/cpu/service_profile.hpp',)),
     ('44b520e30', ('CMakeLists.txt', 'tests/core/cpu_service_pool_test.cpp')),
-    ('589ff46aa', ('tests/core/cpu_service_pool_test.cpp',)),
-    ('f935f0979', ('tests/core/cpu_service_profile_test.cpp',)))
+    ('589ff46aa', ('tests/core/cpu_service_pool_test.cpp',)))
 CHANGED = sorted({name for _, names in PATCHES for name in names})
 
 
@@ -44,8 +43,13 @@ def compact(row):
 
 def prepare():
     container = gen.committed(RESULT)
+    prior_pool = container['production_pool']
     require(container['passed'] and container['ownership_closed'] and not container['active'] and
-        'production_pool' not in container and not ROOT.exists(), 'fresh production-pool gate only')
+        prior_pool['stage'] == 'preparation-failed' and prior_pool['ownership_closed'] and
+        not prior_pool['active'] and not prior_pool['GPU_executed'] and not ROOT.exists(),
+        'fresh production-pool gate after preserved pre-build refusal only')
+    prior_reference = dict(commit=gen.git('log', '-1', '--format=%H', '--',
+        str(RESULT.relative_to(P))).decode().strip(), path=str(RESULT.relative_to(P)), sha256=digest(RESULT))
     retired = gen.committed(native.RESULT)['artifact_retirement']
     require(retired['complete'] and not Path(retired['root']).exists(), 'retire extra engine before a new generation')
     qualification = gen.committed(runtime.RESULT)
@@ -82,6 +86,9 @@ def prepare():
     generated = {str(p.relative_to(source)): digest(p) for p in source.rglob('*') if p.is_file()}
     require(sorted(name for name, sha in generated.items() if project.get(name) != sha) == CHANGED,
         'unexpected observer source difference')
+    require(len(generated) == prior_pool['source_files'] and
+        native.fingerprint(generated) == prior_pool['source_fingerprint'],
+        'corrected recipe must recover the same four applied observer patches')
     tools = {name: dict(path=path, sha256=digest(path)) for name, path in
         (('cmake', '/usr/bin/cmake'), ('ninja', '/usr/bin/ninja'))}
     args = list(original['configure_argv'])
@@ -96,6 +103,7 @@ def prepare():
     for path, sha in external.items():
         require(digest(path) == sha, 'external MKL input changed: ' + path)
     row = dict(stage='prepared', source_commit=revision, base_native_source=native.BASE,
+        prior_preparation_failure=prior_reference, partial_source_equivalence_verified=True,
         source_files=len(generated), source_fingerprint=native.fingerprint(generated),
         patches=patches, changed_native_files=CHANGED, generated_inputs=generated,
         benchmark_files=len(inputs), benchmark_fingerprint=native.fingerprint(inputs),
@@ -222,6 +230,8 @@ def build():
         row['ownership_closed'] = owner is None or owner.active is None and all(native.supervision.closed(e) for e in owner.commands)
         row['passed'] = row['complete'] = bool(row['passed'] and row['ownership_closed'])
         row['active'] = False
+        row['command_outcomes'] = [dict(label=e['label'], exit_code=e.get('exit_code'),
+            ownership_closed=native.supervision.closed(e)) for e in (owner.commands if owner else [])]
         persist()
         container['production_pool'] = compact(row)
         write(RESULT, container)
