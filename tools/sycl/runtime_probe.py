@@ -22,7 +22,7 @@ import measurement_owner as supervision
 import ur_validation as validation
 
 P, B = build.P, build.B
-ROOT = B / 'neo-39758-runtime-probe-v2'
+ROOT = B / 'neo-39758-runtime-probe-v3'
 RESULT = selected.RESULT.with_name('runtime-requalification-current.json')
 SETTINGS = P / 'tools/sycl/measurement_environment.json'
 INPUTS = ('tools/sycl/runtime_probe.py', 'tools/sycl/check_full_context_source.py',
@@ -99,7 +99,7 @@ def runtime_files(preload):
 
 
 def compact(row):
-    return {k: v for k, v in row.items() if k not in ('environment', 'commands')}
+    return {k: v for k, v in row.items() if k != 'commands'}
 
 
 def current(row):
