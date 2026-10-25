@@ -2728,9 +2728,9 @@
       "remaining": "Fourteen older provenance holds and separate pending numerical/model/full-context/upstream gates are unchanged."
     },
     "fused_command_profile": {
-      "stage": "component-built-device-unrun",
+      "stage": "component-device-collecting",
       "production_selected": false,
-      "GPU_executed": false,
+      "GPU_executed": true,
       "mechanism": "Relabel the existing finish event under the production GU/Down tag;no second registration,new device wait,readback or arithmetic change. Add separately ranked expert-upload events. Split2334 boundary into9 bins and retain224 events/window with128KiB static host budget. Profiling+fusion stays behind explicit pre-exec qualification opt-in.",
       "host_plan": {
         "command": [
@@ -3002,7 +3002,7 @@
         "reason": "Tighten expected negative profiles to reject additional GPU clock/population faults;clarify that enabled API tracing alone does not prove complete device coverage. Original generated device plan was uncommitted and no native process ran."
       },
       "device": {
-        "stage": "prepared",
+        "stage": "collecting",
         "source_commit": "9dc98bf3b5bdf3d1818c328b7c7ff71f3d6f8c3b",
         "inputs": {
           "tools/sycl/check_fused_profile.py": "58ab891d4bddc79e9f61e17060861c2fff679b1c9349261762130969e02b96e7",
@@ -3187,7 +3187,51 @@
             "exit_code": 0
           }
         ],
-        "processes": [],
+        "processes": [
+          {
+            "name": "sparse-off",
+            "passed": true,
+            "host_probe_accepted": true,
+            "validation": {
+              "pid": 3831466,
+              "loader": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_loader.so.0.12.0",
+              "threads_before": 1,
+              "preinit": 37,
+              "config_enabled": true,
+              "first_init": true,
+              "dispatch_result": 46,
+              "output_untouched": true,
+              "retained_reference_until_exit": true,
+              "runtime_teardown_qualified": false
+            },
+            "analysis": {
+              "kernels": 564,
+              "copies": 75,
+              "profile_records": 0,
+              "guards": true,
+              "inputs": true,
+              "gpu_service_qualified": false,
+              "speed_qualified": false
+            },
+            "complete": true,
+            "expected_exit_code": 0,
+            "actual_provider_mappings": true,
+            "parameter_validation_warnings": 0,
+            "trace_bytes": 740386,
+            "trace_sha256": "5a65abec0372623d9d7f2fd75c655fc0aec9dded304fd17853bb14c841f53721",
+            "ownership_closed": true,
+            "fresh_faults": [],
+            "boot_unchanged": true,
+            "driver_after": {
+              "pci": "/sys/bus/pci/devices/0000:05:00.0",
+              "driver": "xe",
+              "vendor": "0x8086",
+              "device": "0xe20c",
+              "kernel": "7.0.0-38-generic",
+              "devcoredump": false
+            }
+          }
+        ],
         "active": false,
         "ownership_closed": true,
         "passed": false,
