@@ -7,7 +7,7 @@ import unittest
 
 sys.dont_write_bytecode = True
 sys.path.insert(0, str(Path(__file__).resolve().parents[2] / 'tools/sycl'))
-from ur_call_subscriber import parse_calls, correlate_calls
+from ur_call_subscriber import parse_calls, correlate_calls, metadata_census
 
 
 def records():
@@ -149,6 +149,44 @@ class DirectJoinTests(unittest.TestCase):
         events[2]['tid'] = 92
         with self.assertRaisesRegex(RuntimeError, 'GPU flow endpoint'):
             self.join(spans, events)
+
+
+class MetadataCaptureTests(unittest.TestCase):
+    def fixture(self):
+        return [dict(name='urEnqueueKernelLaunchWithArgsExp', status=0,
+                     metadata=dict(queue=0x101, kernel=0x401, work_dim=1,
+                                   **{'global': [257], 'offset': [], 'local': [],
+                                      'wait_count': 0, 'waits': [], 'produced_event': 0})),
+                dict(name='urEnqueueUSMMemcpy', status=0,
+                     metadata=dict(queue=0x101, src=0x1000, dst=0x2000, bytes=1028,
+                                   wait_count=0, waits=[], produced_event=0))]
+
+    def test_complete_typed_counts_keep_lifetime_and_graph_gates_open(self):
+        value = metadata_census(self.fixture())
+        self.assertEqual(value['counts']['copy_bytes'], 1028)
+        self.assertEqual(value['enqueue_queue_handles'], 1)
+        self.assertFalse(value['lifetime_generations_qualified'])
+        self.assertFalse(value['graph_children_qualified'])
+
+    def test_lost_required_metadata_does_not_become_an_empty_default(self):
+        for key in ('queue', 'kernel', 'work_dim', 'global', 'local', 'offset', 'wait_count', 'waits', 'produced_event'):
+            spans = self.fixture();del spans[0]['metadata'][key]
+            with self.subTest(key=key), self.assertRaises(RuntimeError):
+                metadata_census(spans)
+
+    def test_invalid_type_range_geometry_and_wait_extent_fail(self):
+        for change in (dict(queue=True), dict(kernel=-1), dict(work_dim=4), {'global': [0]},
+                       {'global': [float('nan')]}, dict(local=[1, 2]), dict(waits=[0x201]),
+                       dict(bytes=1 << 64)):
+            spans = self.fixture();spans[0]['metadata'].update(change)
+            with self.subTest(change=change), self.assertRaises(RuntimeError):
+                metadata_census(spans)
+
+    def test_missing_transfer_address_or_extent_fails(self):
+        for key in ('src', 'dst', 'bytes'):
+            spans = self.fixture();del spans[1]['metadata'][key]
+            with self.subTest(key=key), self.assertRaises(RuntimeError):
+                metadata_census(spans)
 
 
 if __name__ == '__main__':
