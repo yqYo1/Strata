@@ -141,6 +141,8 @@ def prepare():
         'fresh plan after original failed collection/scoped reanalysis only')
     rt = gen.committed(runtime.RESULT); runtime.current(rt)
     baseline = json.loads(gen.git('show', '8573fa7fb:' + str(RESULT.relative_to(P))))
+    require(prior['binary']==baseline['binary'] and prior['runtime_sha256']==digest(runtime.RESULT) and
+        prior['boot']==rt['boot'] and prior['model_fingerprint']==baseline['model_fingerprint'], 'owned gate no longer matches')
     cfg = copy.deepcopy(baseline['configuration']); cfg['args'][cfg['args'].index('--expert-profile')+1] = str(P/'data/expert-profile.bin')
     require(digest(P/'data/expert-profile.bin') == '8f59b4aa8873209dff11c11e37bcda9529a1335b724a1afeea37bf6388975baf', 'profile changed')
     original_assets = json.loads(gen.git('show', '1e676d554:' + str(TEMPLATE.relative_to(P))))['model_assets']
