@@ -1,1438 +1,23 @@
 {
-  "stage": "host-checked",
-  "source_commit": "b05a22c52a66131c081d3e7d6aff1af4764ed8ac",
-  "input_sha256": {
-    "tests/core/cpu_service_profile_test.cpp": "3efb6e3fe24a00816d06f476007ce35ace52088dd69bf4cce3a6b86d70f6a38b",
-    "include/strata/kernels/cpu/service_profile.hpp": "68d2f0df14eddd7ef9963b790ce205e781df86b1c5c1a98e8e33fa3fab8efe93",
-    "include/strata/kernels/cpu/native_expert.hpp": "4764a1a881a4d7491165018ab71ff397132e4173f033160bf38f8cd6c8f33e72",
-    "tools/sycl/cpu_service_profile.py": "c0d5812072a9086bd8a1ed0186a993c28e62fc9d1f1acb23ed2d9f5c567b8370",
-    "tools/sycl/build_engine.py": "8444783ab417378207ec89ad2bc3cf648480e20d9e77f06ebb3070c93e10b131",
-    "tools/sycl/measurement_guards.py": "794e332c70aca0acadad4f26d0414548e023a02fd27b72ed78fc773674423ec8",
-    "tools/sycl/measurement_owner.py": "bddd0c5e5020e882ca3404679420faec11e820dabce2ed4c72ef82b4c9c0874a"
-  },
-  "compiler": {
-    "path": "/usr/bin/g++",
-    "sha256": "1353e9bdd29a7295c7226bf6c63abccce056d8cac31f112e5cdbecc3f28c2769",
-    "version": "g++ (Ubuntu 13.3.0-6ubuntu2~24.04.1) 13.3.0"
-  },
-  "stdlib": {
-    "path": "/usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.33",
-    "sha256": "1fd75fe70354a416d75aef22bcae68c47bd25d20e2d0568c30b1a9838cf62f11"
-  },
-  "command": [
-    "/usr/bin/g++",
-    "-std=c++20",
-    "-O2",
-    "-Wall",
-    "-Wextra",
-    "-Werror",
-    "-pedantic",
-    "-pthread",
-    "-DSTRATA_CPU_SERVICE_PROFILE=1",
-    "-I",
-    "/home/yayoi/orca/workspaces/Strata/sycl/include",
-    "-MMD",
-    "-MF",
-    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-service-host-v1/fixture.d",
-    "/home/yayoi/orca/workspaces/Strata/sycl/tests/core/cpu_service_profile_test.cpp",
-    "-o",
-    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-service-host-v1/fixture"
-  ],
-  "environment": {
-    "PATH": "/usr/bin:/bin",
-    "LANG": "C.UTF-8",
-    "LC_ALL": "C.UTF-8",
-    "TMPDIR": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-service-host-v1/tmp"
-  },
-  "budgets": {
-    "wall": 90,
-    "cpu": 120,
-    "rss_cap": 2147483648,
-    "text_cap": 2097152,
-    "file_cap": 8388608,
-    "total_cap": 16777216
-  },
-  "criteria": "Owned compile/test exit0;actual project include closure exactly the three pinned native inputs;counter/row/NT conservation,phase exclusion,thread publication/identity,clock wall versus CPU,refusal/overflow and invalid-delta controls. No production kernels or GPU.",
-  "retention": "Keep source,recipe,host outcome and limits;retire successful raw output and standalone fixture after committed replay. No extra native engine generation.",
-  "passed": true,
-  "complete": true,
-  "active": false,
-  "ownership_closed": true,
-  "GPU_executed": false,
-  "production_pool_checked": false,
-  "model_adoption_qualified": false,
-  "compiled_project_inputs": 3,
-  "fixture": {
-    "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-service-host-v1/fixture",
-    "sha256": "c70f12121c54c9f5c9b6f40488e8858cb41f3124c5bd866f808d7a3421e76cd2",
-    "bytes": 37872,
-    "retired": true
-  },
-  "command_outcomes": [
-    {
-      "label": "compile",
-      "exit_code": 0
-    },
-    {
-      "label": "check",
-      "exit_code": 0
-    }
-  ],
-  "retirement_prerequisites": {
-    "original_inputs_recovered": 7,
-    "original_plan_commit": "cd431b057",
-    "original_plan_matches": true,
-    "consumer": "Host collector evidence only;standalone executable/raw logs have no next consumer. Native production-pool and model gates remain open."
-  },
-  "artifact_retirement": {
-    "complete": true,
-    "files": 8,
-    "bytes": 48600,
-    "manifest_path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/closed-cpu-service-host-20261024.jsonl",
-    "manifest_sha256": "9747acadbbae8ad5deac607e70e80469f6f9bdefb54eae9496b4cb8d469d0d06",
-    "source_recovered": 7,
-    "recipe_commit": "cd431b057",
-    "result_commit": "5a30d36f9",
-    "remote_feature_tip": "5a30d36f987309e75b87f8c9941a464766715dd0",
-    "scope": "Only this standalone host fixture and successful raw output;original/private engines and active-cohort evidence retained."
-  },
-  "host_runner_archive": "b05a22c52:tools/sycl/cpu_service_profile.py",
-  "four_clock_reference": {
-    "stage": "host-checked",
-    "source_commit": "f935f09791c5f834d0ed66c430c8d8c8d4a4d423",
-    "input_sha256": {
-      "tests/core/cpu_service_profile_test.cpp": "fdc4dce687abf224a11371a93ce03c6c81ef5e0c6ec563e0d78e346de635cec8",
-      "include/strata/kernels/cpu/service_profile.hpp": "68d2f0df14eddd7ef9963b790ce205e781df86b1c5c1a98e8e33fa3fab8efe93",
-      "include/strata/kernels/cpu/native_expert.hpp": "4764a1a881a4d7491165018ab71ff397132e4173f033160bf38f8cd6c8f33e72",
-      "tools/sycl/cpu_service_profile.py": "2323b9717c11ef97dc66985346e4367578a1ce8d9f8288d286b2da6552fcb9f3",
-      "tools/sycl/build_engine.py": "8444783ab417378207ec89ad2bc3cf648480e20d9e77f06ebb3070c93e10b131",
-      "tools/sycl/measurement_guards.py": "794e332c70aca0acadad4f26d0414548e023a02fd27b72ed78fc773674423ec8",
-      "tools/sycl/measurement_owner.py": "bddd0c5e5020e882ca3404679420faec11e820dabce2ed4c72ef82b4c9c0874a",
-      "tools/sycl/cpu_service_evidence.py": "5ba9d32a32ff7de7923e314eb3f283f200a0110b36e9ca22361e7625f311859e",
-      "tests/core/test_cpu_service_evidence.py": "b948835d149797a1c3f9c9530dbf7057597ef1b38e4e92820aa950b914699935",
-      "tools/sycl/cpu_work_census.py": "37038e04a8192ca3d3e1a8a1790a65db22110737630a30be43db64899ee3d1c6",
-      "tests/core/test_cpu_work_census.py": "8deb79e03e53088de1026c6371807acecd5dec2506d8e86375733467e2f8c36f"
-    },
-    "historical_result_sha256": "7ad4f3d8466b1cd011457003ef319d8b5dac1fd1c45a4d3399426197c8f2063a",
-    "provider_packages": [
-      "binutils=2.42-4ubuntu2.10",
-      "g++-13=13.3.0-6ubuntu2~24.04.1",
-      "gcc-13=13.3.0-6ubuntu2~24.04.1",
-      "libc6:amd64=2.39-0ubuntu8.9",
-      "libc6:i386=2.39-0ubuntu8.9",
-      "libc6-dev:amd64=2.39-0ubuntu8.9",
-      "libgcc-13-dev:amd64=13.3.0-6ubuntu2~24.04.1",
-      "libgcc-s1:amd64=14.2.0-4ubuntu2~24.04.1",
-      "libgcc-s1:i386=14.2.0-4ubuntu2~24.04.1",
-      "libpython3.12-stdlib:amd64=3.12.3-1ubuntu0.17",
-      "libstdc++-13-dev:amd64=13.3.0-6ubuntu2~24.04.1",
-      "libstdc++6:amd64=14.2.0-4ubuntu2~24.04.1",
-      "libstdc++6:i386=14.2.0-4ubuntu2~24.04.1",
-      "linux-libc-dev:amd64=6.8.0-147.147",
-      "python3.12-minimal=3.12.3-1ubuntu0.17"
-    ],
-    "compiler": {
-      "path": "/usr/bin/g++",
-      "sha256": "1353e9bdd29a7295c7226bf6c63abccce056d8cac31f112e5cdbecc3f28c2769",
-      "version": "g++ (Ubuntu 13.3.0-6ubuntu2~24.04.1) 13.3.0"
-    },
-    "stdlib": {
-      "path": "/usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.33",
-      "sha256": "1fd75fe70354a416d75aef22bcae68c47bd25d20e2d0568c30b1a9838cf62f11"
-    },
-    "python": {
-      "path": "/usr/bin/python3",
-      "sha256": "e50d468e8b0adfb05733f5b87b3cff34829c4a8c1aea50c865aa8bdfe4bb150f",
-      "version": "Python 3.12.3"
-    },
-    "command": [
-      "/usr/bin/g++",
-      "-std=c++20",
-      "-O2",
-      "-Wall",
-      "-Wextra",
-      "-Werror",
-      "-pedantic",
-      "-pthread",
-      "-DSTRATA_CPU_SERVICE_PROFILE=1",
-      "-I",
-      "/home/yayoi/orca/workspaces/Strata/sycl/include",
-      "-MMD",
-      "-MF",
-      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-service-host-clock-v1/fixture.d",
-      "/home/yayoi/orca/workspaces/Strata/sycl/tests/core/cpu_service_profile_test.cpp",
-      "-o",
-      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-service-host-clock-v1/fixture"
-    ],
-    "environment": {
-      "PATH": "/usr/bin:/bin",
-      "LANG": "C.UTF-8",
-      "LC_ALL": "C.UTF-8",
-      "TMPDIR": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-service-host-clock-v1/tmp"
-    },
-    "budgets": {
-      "wall": 90,
-      "cpu": 120,
-      "rss_cap": 2147483648,
-      "text_cap": 2097152,
-      "file_cap": 8388608,
-      "total_cap": 16777216
-    },
-    "criteria": "Owned same-request leaf/census reader controls,single compile,default collector controls,then --clock-screen;all exit0 and ownership closed. Actual project includes exactly the three pinned native files. Default counters/phase/thread/refusal controls still pass. Clock output exactly six distinct positive calling TIDs/lanes,65536 observations+512 warmups each,zero errors,ordered finite integer min/p50/p99/max wall/CPU values. No model or GPU;failure stops this gate without retry.",
-    "interpretation": "Four ordered clock reads only,without a kernel/counter update. Affinity uncontrolled. Observed per-lane distributions are not a universal upper bound on full Scope/model cost and must not be subtracted from leaf timings. Separate production-pool parity,same-request census and model observer-off/on overhead gates remain open.",
-    "retention": "Keep source/recipe,provider identities,per-lane compact distributions and original collector status. After committed source/recipe recovery,delete the standalone executable,successful raw output and this one-shot runner. No extra native engine generation.",
-    "passed": true,
-    "complete": true,
-    "active": false,
-    "ownership_closed": true,
-    "GPU_executed": false,
-    "production_pool_checked": false,
-    "model_adoption_qualified": false,
-    "compiled_project_inputs": 3,
-    "fixture": {
-      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-service-host-clock-v1/fixture",
-      "sha256": "1241ca600660d13f1a5651a9d2b1f91d46b4ae1e1e8e239733780322fb6b9b90",
-      "bytes": 47304,
-      "retired": true
-    },
-    "lanes": [
-      {
-        "lane": 0,
-        "samples": 65536,
-        "errors": 0,
-        "wall_ns": {
-          "min": 1153,
-          "p50": 1583,
-          "p99": 1923,
-          "max": 59231
-        },
-        "cpu_ns": {
-          "min": 571,
-          "p50": 781,
-          "p99": 932,
-          "max": 12443
-        }
-      },
-      {
-        "lane": 1,
-        "samples": 65536,
-        "errors": 0,
-        "wall_ns": {
-          "min": 1072,
-          "p50": 1132,
-          "p99": 1553,
-          "max": 51416
-        },
-        "cpu_ns": {
-          "min": 520,
-          "p50": 551,
-          "p99": 761,
-          "max": 9418
-        }
-      },
-      {
-        "lane": 2,
-        "samples": 65536,
-        "errors": 0,
-        "wall_ns": {
-          "min": 1092,
-          "p50": 1132,
-          "p99": 1553,
-          "max": 46066
-        },
-        "cpu_ns": {
-          "min": 531,
-          "p50": 551,
-          "p99": 761,
-          "max": 7915
-        }
-      },
-      {
-        "lane": 3,
-        "samples": 65536,
-        "errors": 0,
-        "wall_ns": {
-          "min": 1092,
-          "p50": 1132,
-          "p99": 1633,
-          "max": 430920
-        },
-        "cpu_ns": {
-          "min": 530,
-          "p50": 551,
-          "p99": 802,
-          "max": 12173
-        }
-      },
-      {
-        "lane": 4,
-        "samples": 65536,
-        "errors": 0,
-        "wall_ns": {
-          "min": 1092,
-          "p50": 1132,
-          "p99": 1603,
-          "max": 36839
-        },
-        "cpu_ns": {
-          "min": 531,
-          "p50": 551,
-          "p99": 782,
-          "max": 11562
-        }
-      },
-      {
-        "lane": 5,
-        "samples": 65536,
-        "errors": 0,
-        "wall_ns": {
-          "min": 1072,
-          "p50": 1583,
-          "p99": 1904,
-          "max": 48301
-        },
-        "cpu_ns": {
-          "min": 520,
-          "p50": 772,
-          "p99": 951,
-          "max": 11712
-        }
-      }
-    ],
-    "command_outcomes": [
-      {
-        "label": "reader",
-        "exit_code": 0
-      },
-      {
-        "label": "compile",
-        "exit_code": 0
-      },
-      {
-        "label": "check",
-        "exit_code": 0
-      },
-      {
-        "label": "clock",
-        "exit_code": 0
-      }
-    ],
-    "reader_tests": 6,
-    "retirement_prerequisites": {
-      "original_inputs_recovered": 11,
-      "original_plan_commit": "217c63cda13d6a5a2b621f8459eb15d10eb4e954",
-      "original_plan_matches": true,
-      "actual_project_includes": 3,
-      "original_host_status_preserved": true,
-      "consumer": "Standalone controls and four-clock reference complete;production-pool and model observer overhead remain unqualified. Recover original source/recipe from this plan before deleting raw output/fixture/runner."
-    },
-    "artifact_retirement": {
-      "complete": true,
-      "files": 12,
-      "bytes": 70843,
-      "manifest_path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/closed-cpu-service-clock-20261025.jsonl",
-      "manifest_sha256": "c08ff25914de05094481a1d06bad311f1368f7fecb3c00e2b67499682ac69b4e",
-      "source_recovered": 11,
-      "recipe_commit": "217c63cda13d6a5a2b621f8459eb15d10eb4e954",
-      "result_commit": "f26377c41812526218e605558598593d623f9c9a",
-      "remote_feature_tip": "f26377c41812526218e605558598593d623f9c9a",
-      "scope": "Standalone host fixture and successful raw output only;original/private native engines and active cohort evidence retained."
-    },
-    "host_runner_archive": "f935f09791c5f834d0ed66c430c8d8c8d4a4d423:tools/sycl/cpu_service_profile.py"
-  },
-  "production_pool": {
-    "stage": "pool-checked",
-    "source_commit": "e42ae21ac82ea00772569299a07b35f0448a48ac",
-    "base_native_source": "6e40afc1beddd059ee518617f6c1efce1da14aca",
-    "prior_preparation_failure": {
-      "commit": "e42ae21ac82ea00772569299a07b35f0448a48ac",
-      "path": "bench/results/2026-10-15-pr6-recovery-audit/cpu-service-current.json",
-      "sha256": "5711575666fc1907e65a3e001d50f1ea1af2f4c0e40ba7241b2aea652338e951"
-    },
-    "partial_source_equivalence_verified": true,
-    "source_files": 554,
-    "source_fingerprint": "7df40d1ea2aeeedd54c878465eee4e8017d3cfe4a6bcf88326794d7e5ec4b666",
-    "patches": [
-      {
-        "commit": "35f3683bc",
-        "paths": [
-          "CMakeLists.txt",
-          "include/strata/kernels/cpu/pool.hpp",
-          "include/strata/kernels/cpu/service_profile.hpp",
-          "src/kernels/cpu/pool.cpp",
-          "src/program/generate.cpp",
-          "tests/core/cpu_service_profile_test.cpp"
-        ],
-        "sha256": "240787a8dca748d6550cd2f730c57d7c1a5abcdeae265dda97c00d3b18475566"
-      },
-      {
-        "commit": "f26979a65",
-        "paths": [
-          "include/strata/kernels/cpu/service_profile.hpp"
-        ],
-        "sha256": "30082c03184df14bf152412d2d6a024fa70e52585237aafbdf7cdd799c1b14a3"
-      },
-      {
-        "commit": "44b520e30",
-        "paths": [
-          "CMakeLists.txt",
-          "tests/core/cpu_service_pool_test.cpp"
-        ],
-        "sha256": "96655a36f06c3cdcfd0b1211bba6cd8b653122c9f88780e834e7a7deaa35e827"
-      },
-      {
-        "commit": "589ff46aa",
-        "paths": [
-          "tests/core/cpu_service_pool_test.cpp"
-        ],
-        "sha256": "4446dfd1797f63231c9dd31841c83f17860b731b6aae05481e459f31899fbbff"
-      }
-    ],
-    "changed_native_files": [
-      "CMakeLists.txt",
-      "include/strata/kernels/cpu/pool.hpp",
-      "include/strata/kernels/cpu/service_profile.hpp",
-      "src/kernels/cpu/pool.cpp",
-      "src/program/generate.cpp",
-      "tests/core/cpu_service_pool_test.cpp",
-      "tests/core/cpu_service_profile_test.cpp"
-    ],
-    "benchmark_files": 188,
-    "benchmark_fingerprint": "821573e604a9e98f989584e77bea60732d904dc69392b5cb7a0ab5cf3b6411f5",
-    "compiler": {
-      "path": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin/clang++",
-      "sha256": "1290881b4e12a5e002e5b0de0787f85328ee5fe19f253a54be1cdd97dc2f26eb"
-    },
-    "tools": {
-      "cmake": {
-        "path": "/usr/bin/cmake",
-        "sha256": "1c5227af4edd22d8d689def545e18ee458260c0fd579eba2187967f38817e638"
-      },
-      "ninja": {
-        "path": "/usr/bin/ninja",
-        "sha256": "5965527e09fe2b3787772aa4f711d6a36b393e7f2fcaa744a7a96c5a4ddf59cb"
-      }
-    },
-    "sdk_original": {
-      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/unitrace-warmed-graph-window-v1/compiler-inputs.json",
-      "sha256": "436cedc9dbd41810cd882e9040a129e6d8b7dbebb98806b00c4f2950b1dc1705"
-    },
-    "sdk_fingerprint": "e9b51e99778921cf898aedfdf01742ab73d617ba7dfaffd2285c54d2d02bd07c",
-    "sdk_files": 8697,
-    "declared_sdk_changes": {
-      "/usr/include/metee.h": {
-        "original": "f063edcb00c88f3ddebc10f9b0487fe813cfb7ba71dc4b798729bed8902018a3",
-        "current": "d07e18ce9228c3fc570b186eab13bf8a3e6c04214992f0de9d53b855dc837252"
-      },
-      "/usr/include/opencl-c-base.h": {
-        "original": "e1683c3db9cf9a95e9d02acbbfa74dcd29d4deaf4a856430f538d76985b04114",
-        "current": "673c4720f879c2f101504979edbd0216c9cb6a982ce2b62bd467b81fd53d8e33"
-      },
-      "/usr/include/opencl-c.h": {
-        "original": "579b58f482ab0b3dfd396cab32ea3e0537bc5cf4c1067377b83fe417cbcc513b",
-        "current": "aa7e871a8f7d961aa4126a9fadc2196f822c21811946c90147dc7415fe677de9"
-      }
-    },
-    "external_fingerprint": "149850c8f3fe4779cedb36846899f98f9a9c5a92ecb9ee27e7beda422c87967e",
-    "external_reference": {
-      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/full-context-native-v1/engine-record.json",
-      "sha256": "166d0e1ca062202929fddc41a6e1979314bbb83f2e1dc9912d1bbfcd8328072e"
-    },
-    "runtime_reference": {
-      "path": "bench/results/2026-10-15-pr6-recovery-audit/runtime-requalification-current.json",
-      "sha256": "09ad358e12f6ef58bfc0a978519927863f3d09949a033a1e224db95997647d97"
-    },
-    "configure_argv": [
-      "/usr/bin/cmake",
-      "-S",
-      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-service-original-v2/source",
-      "-B",
-      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-service-original-v2/build",
-      "-G",
-      "Ninja",
-      "-DCMAKE_CXX_COMPILER=/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin/clang++",
-      "-DCMAKE_BUILD_TYPE=Release",
-      "-DCMAKE_EXPORT_COMPILE_COMMANDS=ON",
-      "-DMKL_DIR=/opt/intel/oneapi/mkl/2026.1/lib/cmake/mkl",
-      "-DSTRATA_BUILD_CONVERSATION_TESTS:BOOL=OFF",
-      "-DSTRATA_BUILD_PREFILL_HOST_TESTS:BOOL=ON",
-      "-DSTRATA_BUILD_TESTS:BOOL=OFF",
-      "-DSTRATA_CPU_ARCH:STRING=znver3",
-      "-DSTRATA_ENABLE_CUDA:BOOL=OFF",
-      "-DSTRATA_ENABLE_HIP:BOOL=OFF",
-      "-DSTRATA_ENABLE_SYCL:BOOL=ON",
-      "-DSTRATA_GGML_DIR:PATH=/home/yayoi/ghq/github.com/ggml-org/llama.cpp/.worktree/dep-ggml-3cf-xe-e32-20261011",
-      "-DSTRATA_MMQ_KQUANTS:BOOL=OFF",
-      "-DSTRATA_NATIVE_EXPERTS:BOOL=ON",
-      "-DSTRATA_ORCA_Q4KS_MMQ:BOOL=OFF",
-      "-DSTRATA_PORTABLE:BOOL=OFF",
-      "-DSTRATA_PREFILL_MMQ:BOOL=OFF",
-      "-DSTRATA_SYCL_AOT_DOUBLE_GRF:BOOL=OFF",
-      "-DSTRATA_SYCL_TESTS:BOOL=ON",
-      "-DSTRATA_WERROR:BOOL=ON",
-      "-DSTRATA_SYCL_VLLM_XE2_NATIVE16=ON",
-      "-DSTRATA_SYCL_DEVICE_ARCH=",
-      "-DSYCL_TLA_SOURCE_DIR=/home/yayoi/ghq/github.com/intel/sycl-tla/.worktree/strata-native16-87f",
-      "-DCMAKE_MAKE_PROGRAM:FILEPATH=/usr/bin/ninja",
-      "-DSTRATA_CPU_SERVICE_PROFILE=ON"
-    ],
-    "build_argv": [
-      "/usr/bin/cmake",
-      "--build",
-      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-service-original-v2/build",
-      "--target",
-      "cpu_service_pool_test",
-      "-j",
-      "4"
-    ],
-    "environment": {
-      "PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin:/usr/bin:/bin",
-      "HOME": "/home/yayoi",
-      "LANG": "C.UTF-8",
-      "LC_ALL": "C.UTF-8",
-      "PYTHONDONTWRITEBYTECODE": "1",
-      "LD_LIBRARY_PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib:/opt/intel/oneapi/mkl/2026.1/lib",
-      "MKLROOT": "/opt/intel/oneapi/mkl/2026.1",
-      "OMP_NUM_THREADS": "1",
-      "GIT_TERMINAL_PROMPT": "0",
-      "GIT_SSH_COMMAND": "ssh -oBatchMode=yes",
-      "CPLUS_INCLUDE_PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/include",
-      "PIP_CONFIG_FILE": "/dev/null",
-      "ONEAPI_DEVICE_SELECTOR": "level_zero:gpu",
-      "UR_ADAPTERS_FORCE_LOAD": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_adapter_level_zero_v2.so.0",
-      "SYCL_CACHE_PERSISTENT": "0",
-      "NEOReadDebugKeys": "1",
-      "EnableDirectSubmission": "0",
-      "UR_L0_V2_FORCE_DISABLE_COPY_OFFLOAD": "1",
-      "STRATA_SYCL_VERIFY_NATIVE_CAPTURE": "0",
-      "STRATA_SYCL_PREFILL_SAME_QUEUE": "1",
-      "STRATA_SYCL_PREFILL_NATIVE16": "bf16",
-      "XDG_CACHE_HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-service-original-v2/cache",
-      "TMPDIR": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-service-original-v2/tmp"
-    },
-    "fixture_environment": {
-      "STRATA_IQ2_PAIR": "1",
-      "STRATA_IQ_SINGLE_EXACT": "0"
-    },
-    "criteria": "Build only the real CPU-pool fixture from selected6e40 plus declared observer/test patches;then separate preexec observer0/1 processes. Require both PASS,28 format/width cases,97 jobs per batch,counter conservation,canaries and identical output checksums. Check complete actual compiler dependencies against pinned source/SDK/MKL/generated header and all owned exits. No native engine or GPU/model invocation at this gate.",
-    "limits": "Same-leaf parity,not an independent mathematical oracle. No full observer/model overhead,speedup,CPU resource attribution or decode nonregression claim. Prefill/decode adoption unchanged.",
-    "retention": "Keep compact source/recipe,outcomes/checksum/closure. Keep this one extra build only for the imminent original-plus-observer engine/model attribution;retire on rejection/closure. Original validated6e40 and12fixtures remain intact;legacy holds separate.",
-    "budgets": {
-      "wall": 900,
-      "cpu": 3600,
-      "rss_cap": 17179869184,
-      "text_cap": 33554432,
-      "file_cap": 33554432,
-      "total_cap": 2147483648
-    },
-    "passed": true,
-    "complete": true,
-    "active": false,
-    "ownership_closed": true,
-    "GPU_executed": false,
-    "native_engine_built": false,
-    "production_pool_checked": true,
-    "outcomes": [
-      {
-        "observer": 0,
-        "passed": true,
-        "exit_code": 0,
-        "ownership_closed": true,
-        "cases": 28,
-        "formats": 7,
-        "widths": [
-          1,
-          2,
-          3,
-          4
-        ],
-        "checksum_fnv1a64_le": "bb3654e880dfda0d"
-      },
-      {
-        "observer": 1,
-        "passed": true,
-        "exit_code": 0,
-        "ownership_closed": true,
-        "cases": 28,
-        "formats": 7,
-        "widths": [
-          1,
-          2,
-          3,
-          4
-        ],
-        "checksum_fnv1a64_le": "bb3654e880dfda0d"
-      }
-    ],
-    "prior_source_snapshot_retirement": {
-      "complete": true,
-      "files": 554,
-      "bytes": 8423748,
-      "source_equivalence_verified": true,
-      "manifest_path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/uncompiled-cpu-source-preview-20261025.jsonl",
-      "manifest_sha256": "92b7d0b75d4fa86b9f325fc242afde3959be9ffa315d1e7833d2c0094a58331e",
-      "failed_source_commit": "bd3897759"
-    },
-    "dependency_closure": {
-      "files": 612,
-      "uncovered_files": 0,
-      "sha256": "0ba93ecb049ea67fa301096db5f46f21e14e1331067935d80e6f66def4a19786"
-    },
-    "fixture": {
-      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-service-original-v2/build/cpu_service_pool_test",
-      "bytes": 2503536,
-      "sha256": "ca750ca1317bb28ecb8300411e224939bbe5706fc29fce478ec2b91445a31549"
-    },
-    "checksum_match": true,
-    "command_outcomes": [
-      {
-        "label": "configure",
-        "exit_code": 0,
-        "ownership_closed": true
-      },
-      {
-        "label": "build-pool",
-        "exit_code": 0,
-        "ownership_closed": true
-      },
-      {
-        "label": "compiler-census",
-        "exit_code": 0,
-        "ownership_closed": true
-      },
-      {
-        "label": "observer0",
-        "exit_code": 0,
-        "ownership_closed": true
-      },
-      {
-        "label": "observer1",
-        "exit_code": 0,
-        "ownership_closed": true
-      }
-    ],
-    "raw_output_retirement": {
-      "complete": true,
-      "files": 10,
-      "bytes": 817317,
-      "manifest_path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/closed-cpu-pool-and-source-review-transactions-20261025.jsonl",
-      "manifest_sha256": "3f3543204a36632b45cef9d218ec2cba4472905e78279470c8ce3097a3d77573",
-      "source_recovered": "e42ae21ac82ea00772569299a07b35f0448a48ac",
-      "plan_commit": "919060082",
-      "compiled_inputs_verified": 612,
-      "fixture_retained": true,
-      "CPU_objects_retained": true,
-      "consumer": "Imminent original-plus-observer engine,small validated device/model gate,then observer overhead and same-request service/census attribution."
-    }
-  },
-  "native_engine": {
-    "stage": "linked",
-    "source_commit": "0d434a573baeabb57e4849adea4286badbf87dbb",
-    "base_native_source": "6e40afc1beddd059ee518617f6c1efce1da14aca",
-    "observer_source_reference": {
-      "source_commit": "e42ae21ac82ea00772569299a07b35f0448a48ac",
-      "source_files": 554,
-      "source_fingerprint": "7df40d1ea2aeeedd54c878465eee4e8017d3cfe4a6bcf88326794d7e5ec4b666",
-      "patches": [
-        {
-          "commit": "35f3683bc",
-          "paths": [
-            "CMakeLists.txt",
-            "include/strata/kernels/cpu/pool.hpp",
-            "include/strata/kernels/cpu/service_profile.hpp",
-            "src/kernels/cpu/pool.cpp",
-            "src/program/generate.cpp",
-            "tests/core/cpu_service_profile_test.cpp"
-          ],
-          "sha256": "240787a8dca748d6550cd2f730c57d7c1a5abcdeae265dda97c00d3b18475566"
-        },
-        {
-          "commit": "f26979a65",
-          "paths": [
-            "include/strata/kernels/cpu/service_profile.hpp"
-          ],
-          "sha256": "30082c03184df14bf152412d2d6a024fa70e52585237aafbdf7cdd799c1b14a3"
-        },
-        {
-          "commit": "44b520e30",
-          "paths": [
-            "CMakeLists.txt",
-            "tests/core/cpu_service_pool_test.cpp"
-          ],
-          "sha256": "96655a36f06c3cdcfd0b1211bba6cd8b653122c9f88780e834e7a7deaa35e827"
-        },
-        {
-          "commit": "589ff46aa",
-          "paths": [
-            "tests/core/cpu_service_pool_test.cpp"
-          ],
-          "sha256": "4446dfd1797f63231c9dd31841c83f17860b731b6aae05481e459f31899fbbff"
-        }
-      ],
-      "changed_files": [
-        "CMakeLists.txt",
-        "include/strata/kernels/cpu/pool.hpp",
-        "include/strata/kernels/cpu/service_profile.hpp",
-        "src/kernels/cpu/pool.cpp",
-        "src/program/generate.cpp",
-        "tests/core/cpu_service_pool_test.cpp",
-        "tests/core/cpu_service_profile_test.cpp"
-      ]
-    },
-    "host_gate_reference": {
-      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-service-original-v2/record.json",
-      "sha256": "6f706e664421dcf0faaf248bcae5ca10da9f2564eeecad96b580152a889c8d15",
-      "fixture": {
-        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-service-original-v2/build/cpu_service_pool_test",
-        "bytes": 2503536,
-        "sha256": "ca750ca1317bb28ecb8300411e224939bbe5706fc29fce478ec2b91445a31549"
-      },
-      "compiler_closure": {
-        "files": 612,
-        "uncovered_files": 0,
-        "sha256": "0ba93ecb049ea67fa301096db5f46f21e14e1331067935d80e6f66def4a19786"
-      }
-    },
-    "benchmark_files": 189,
-    "benchmark_fingerprint": "7fde1d7a3ad71f18c9b8e3d37fe32abfd9063838a8be28ce6ba7c883030696cf",
-    "protected_inputs": {
-      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-service-original-v2/build/CMakeCache.txt": "2e0f677dee73c9644b8061595eb65d30b3ce9077e455e847dcb98765ef8479fe",
-      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-service-original-v2/build/compile_commands.json": "44fa8c74f180f7cb18fb66651fc1f31a549a9de497316e8d0a56e04452b5dac9",
-      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-service-original-v2/build/build.ninja": "5b1145c15d56a98e73c36059f5f45712d5773ad1b21470c552e2af60c8088381",
-      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-service-original-v2/build/cpu_service_pool_test": "ca750ca1317bb28ecb8300411e224939bbe5706fc29fce478ec2b91445a31549",
-      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-service-original-v2/build/libstrata_kernels_cpu.a": "8810dae1f0912f979ebe1c968f62a7b1d9678c987a68422a613828a1de539cb8"
-    },
-    "build_argv": [
-      "/usr/bin/cmake",
-      "--build",
-      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-service-original-v2/build",
-      "--target",
-      "strata",
-      "sycl_submission_test",
-      "sycl_graph_envelope_test",
-      "-j",
-      "4"
-    ],
-    "census_argv": [
-      "/usr/bin/ninja",
-      "-C",
-      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-service-original-v2/build",
-      "-t",
-      "deps"
-    ],
-    "environment": {
-      "PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin:/usr/bin:/bin",
-      "HOME": "/home/yayoi",
-      "LANG": "C.UTF-8",
-      "LC_ALL": "C.UTF-8",
-      "PYTHONDONTWRITEBYTECODE": "1",
-      "LD_LIBRARY_PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib:/opt/intel/oneapi/mkl/2026.1/lib",
-      "MKLROOT": "/opt/intel/oneapi/mkl/2026.1",
-      "OMP_NUM_THREADS": "1",
-      "GIT_TERMINAL_PROMPT": "0",
-      "GIT_SSH_COMMAND": "ssh -oBatchMode=yes",
-      "CPLUS_INCLUDE_PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/include",
-      "PIP_CONFIG_FILE": "/dev/null",
-      "ONEAPI_DEVICE_SELECTOR": "level_zero:gpu",
-      "UR_ADAPTERS_FORCE_LOAD": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_adapter_level_zero_v2.so.0",
-      "SYCL_CACHE_PERSISTENT": "0",
-      "NEOReadDebugKeys": "1",
-      "EnableDirectSubmission": "0",
-      "UR_L0_V2_FORCE_DISABLE_COPY_OFFLOAD": "1",
-      "STRATA_SYCL_VERIFY_NATIVE_CAPTURE": "0",
-      "STRATA_SYCL_PREFILL_SAME_QUEUE": "1",
-      "STRATA_SYCL_PREFILL_NATIVE16": "bf16",
-      "XDG_CACHE_HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-service-original-v2/cache",
-      "TMPDIR": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-service-original-v2/tmp"
-    },
-    "runtime_reference": {
-      "path": "bench/results/2026-10-15-pr6-recovery-audit/runtime-requalification-current.json",
-      "sha256": "09ad358e12f6ef58bfc0a978519927863f3d09949a033a1e224db95997647d97"
-    },
-    "budgets": {
-      "wall": 1800,
-      "cpu": 14400,
-      "rss_cap": 17179869184,
-      "text_cap": 33554432,
-      "file_cap": 67108864,
-      "total_cap": 3221225472
-    },
-    "criteria": "Compile exactly the already admitted original6e40 plus four scoped CPU-observer/test patches. Reuse existing CMake/CPU objects without changing settings;all three targets must link. Require complete actual compiler closure including generate.cpp/mtp.cpp,pinned source/SDK/MKL/generated header,unchanged CPU fixture/archive/configuration and normal owned exits. No engine/fixture invocation at this step.",
-    "limits": "Successful linking is not native device/model qualification,observer overhead measurement,hardware attribution,throughput gain or inference adoption. Keep original selected6e40 and12same-build fixtures untouched.",
-    "retention": "One extra generation shares the host-pool build for imminent bounded validated device/model checks,then observer overhead and same-request service/census attribution. Retire on rejection/closure after exact source/recipe recovery;normal build output is disposable after recorded closure.",
-    "passed": true,
-    "complete": true,
-    "active": false,
-    "ownership_closed": true,
-    "GPU_executed": false,
-    "model_executed": false,
-    "production_selected": false,
-    "assets": {
-      "strata": {
-        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-service-original-v2/build/strata",
-        "bytes": 22199168,
-        "sha256": "7791bf8b6da7f94095c5ef5cefb852dab8852a54f39181e22add81892eaf15bd"
-      },
-      "sycl_submission_test": {
-        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-service-original-v2/build/sycl_submission_test",
-        "bytes": 267200,
-        "sha256": "5a434921664fac6b111ba2a0de5ebe4fd0182d226f1c56d34aeffa73171b9b79"
-      },
-      "sycl_graph_envelope_test": {
-        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-service-original-v2/build/sycl_graph_envelope_test",
-        "bytes": 208536,
-        "sha256": "e5b0a849430591402f29dc14bd09c5305b216c4f4e0a42692feec6c125416ed8"
-      }
-    },
-    "dependency_closure": {
-      "files": 1402,
-      "uncovered_files": 0,
-      "sha256": "6f4fd3e2353e6709467f7f5d87a4593b9ffdd27b9ed6aa64fdd42084ba5630e2"
-    },
-    "command_outcomes": [
-      {
-        "label": "build",
-        "exit_code": 0,
-        "ownership_closed": true
-      },
-      {
-        "label": "compiler-census",
-        "exit_code": 0,
-        "ownership_closed": true
-      }
-    ]
-  },
-  "native_device": {
-    "stage": "device-checked",
-    "source_commit": "d02277730fa2134cd9fbea673191df63709f00f6",
-    "benchmark_files": 190,
-    "benchmark_fingerprint": "5f0dfe621b36dd5f712bd734b1ba84f605d82cf5e8e16ba7d1a968d759fe4c2c",
-    "native_build_reference": {
-      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-service-original-v2/native-record.json",
-      "sha256": "64cd9525cc286d28dad31ccf09fdc48c08a1a37bd2b719aea74b6c5bb51a2dd9"
-    },
-    "runtime_reference": {
-      "path": "bench/results/2026-10-15-pr6-recovery-audit/runtime-requalification-current.json",
-      "sha256": "09ad358e12f6ef58bfc0a978519927863f3d09949a033a1e224db95997647d97"
-    },
-    "environment": {
-      "PATH": "/usr/bin:/bin",
-      "HOME": "/home/yayoi",
-      "LANG": "C.UTF-8",
-      "LC_ALL": "C.UTF-8",
-      "PYTHONDONTWRITEBYTECODE": "1",
-      "LD_LIBRARY_PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib:/opt/intel/oneapi/mkl/2026.1/lib",
-      "ONEAPI_DEVICE_SELECTOR": "level_zero:gpu",
-      "UR_ADAPTERS_FORCE_LOAD": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_adapter_level_zero_v2.so.0",
-      "UR_L0_V2_FORCE_DISABLE_COPY_OFFLOAD": "1",
-      "NEOReadDebugKeys": "1",
-      "EnableDirectSubmission": "0",
-      "STRATA_SYCL_PREFILL_SAME_QUEUE": "1",
-      "STRATA_SYCL_VERIFY_NATIVE_CAPTURE": "0",
-      "SYCL_CACHE_PERSISTENT": "0",
-      "ZES_ENABLE_SYSMAN": "0",
-      "UR_ENABLE_LAYERS": "UR_LAYER_TRACING,UR_LAYER_PARAMETER_VALIDATION",
-      "UR_LOG_TRACING": "level:info;flush:info;output:stderr",
-      "UR_LOG_VALIDATION": "level:warning;flush:warning;output:stderr",
-      "UR_LOG_LOADER": "level:warning;flush:warning;output:stderr",
-      "UR_LOG_LEVEL_ZERO": "level:warning;flush:warning;output:stderr",
-      "LD_PRELOAD": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/ur-validation-preload-v2/libstrata_ur_validation.so",
-      "STRATA_UR_PROBE_EXPECTED_LOADER": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_loader.so.0.12.0",
-      "TMPDIR": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-service-original-v2/device-probe-v1/tmp",
-      "XDG_CACHE_HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-service-original-v2/device-probe-v1/cache"
-    },
-    "cases": [
-      {
-        "label": "submission",
-        "binary": {
-          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-service-original-v2/build/sycl_submission_test",
-          "bytes": 267200,
-          "sha256": "5a434921664fac6b111ba2a0de5ebe4fd0182d226f1c56d34aeffa73171b9b79"
-        },
-        "args": [
-          "--submission"
-        ]
-      },
-      {
-        "label": "graph0",
-        "binary": {
-          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-service-original-v2/build/sycl_graph_envelope_test",
-          "bytes": 208536,
-          "sha256": "e5b0a849430591402f29dc14bd09c5305b216c4f4e0a42692feec6c125416ed8"
-        },
-        "args": [
-          "--profile=0"
-        ]
-      },
-      {
-        "label": "graph1",
-        "binary": {
-          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-service-original-v2/build/sycl_graph_envelope_test",
-          "bytes": 208536,
-          "sha256": "e5b0a849430591402f29dc14bd09c5305b216c4f4e0a42692feec6c125416ed8"
-        },
-        "args": [
-          "--profile=1"
-        ]
-      }
-    ],
-    "boot": "cfda0b6a-7c13-4fe2-bdf5-8f9202770840",
-    "driver": {
-      "pci": "/sys/bus/pci/devices/0000:05:00.0",
-      "driver": "xe",
-      "vendor": "0x8086",
-      "device": "0xe20c",
-      "kernel": "7.0.0-38-generic",
-      "devcoredump": false
-    },
-    "budgets": {
-      "wall": 90,
-      "cpu": 120,
-      "rss_cap": 4294967296,
-      "text_cap": 16777216,
-      "file_cap": 33554432,
-      "total_cap": 67108864
-    },
-    "criteria": "Three ordered fresh owned processes from the new admitted build: submission/USM/events,graph profile0,graph profile1. Require exit0,numerical/guard/teardown markers,pre-main parameter validation,silent validation log,enqueue trace,only pinned executable mappings and actual updated NEO in each device child. Verify all source/build/runtime assets and boot/driver/no-fresh-fault after each child. Stop first failure;no retry.",
-    "limits": "Small same-build fixture qualification only. No model,observer overhead,clean speed,physical context,numerical task quality,ordinary runtime destruction or inference adoption. Retained UR reference until exit remains required.",
-    "retention": "Keep source/recipe,three compact outcomes and limits for imminent original-plus-observer model gate. Retire successful trace/map/log output after evidence is committed and verified;keep original fallback and this single named comparison generation.",
-    "outcomes": [
-      {
-        "label": "submission",
-        "exit_code": 0,
-        "passed": true,
-        "ownership_closed": true,
-        "parameter_validation": true,
-        "fresh_faults": [],
-        "mapped_runtime_file_count": 26,
-        "updated_NEO_sha256": "52e29a602f92d3542eac91e20717743e63ca7d4b257d0c79a3c4d6c64c94ea49",
-        "stdout_sha256": "dadad801d8022f3b40ad3bdab3e29f65fc13e1f61d60b219406f04e9881bb5be",
-        "stderr_sha256": "4abb8e08f3f572d4d445d07c22fd73127baa0979a6c5a7689adede3e3a3d8167",
-        "trace_bytes": 949721
-      },
-      {
-        "label": "graph0",
-        "exit_code": 0,
-        "passed": true,
-        "ownership_closed": true,
-        "parameter_validation": true,
-        "fresh_faults": [],
-        "mapped_runtime_file_count": 26,
-        "updated_NEO_sha256": "52e29a602f92d3542eac91e20717743e63ca7d4b257d0c79a3c4d6c64c94ea49",
-        "stdout_sha256": "8ead80115559fba31453d1e57d8d58ed2b1bc7536407992b51986dd09c54e2f5",
-        "stderr_sha256": "657882e4bf05a1fb217641ee2b511e5cfc3071831421c94e9d9a54de0c923a57",
-        "trace_bytes": 22883
-      },
-      {
-        "label": "graph1",
-        "exit_code": 0,
-        "passed": true,
-        "ownership_closed": true,
-        "parameter_validation": true,
-        "fresh_faults": [],
-        "mapped_runtime_file_count": 26,
-        "updated_NEO_sha256": "52e29a602f92d3542eac91e20717743e63ca7d4b257d0c79a3c4d6c64c94ea49",
-        "stdout_sha256": "e815797120098a38a0a3f81e3aea5f845cfa7210db90f0317f616bd5b341c90e",
-        "stderr_sha256": "c1710f65ce69bf08b0e9f6e9dfba723361658965bc7b408ebe33b2e0559f97a8",
-        "trace_bytes": 25790
-      }
-    ],
-    "active": false,
-    "ownership_closed": true,
-    "passed": true,
-    "complete": true,
-    "model_qualified": false,
-    "production_selected": false,
-    "clean_speed_qualified": false,
-    "host_probe_accepted": true,
-    "fresh_faults": [],
-    "boot_unchanged": true,
-    "driver_after": {
-      "pci": "/sys/bus/pci/devices/0000:05:00.0",
-      "driver": "xe",
-      "vendor": "0x8086",
-      "device": "0xe20c",
-      "kernel": "7.0.0-38-generic",
-      "devcoredump": false
-    }
-  },
-  "native_model": {
-    "stage": "model-checked",
-    "source_commit": "804c515e75400e7268bcabf554548777088d1c1c",
-    "device_reference": {
-      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-service-original-v2/device-probe-v1/record.json",
-      "sha256": "a1b3d3420cf60b241efc69b1d3d1ce05f9e7615f55daa5173f292b1e25e7a8dd"
-    },
-    "benchmark_files": 191,
-    "benchmark_fingerprint": "1d25b71c0132cd5ea9aefd606ed3ae5d91fcf10b8c1ef6ef560691b8b664deef",
-    "binary": {
-      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-service-original-v2/build/strata",
-      "bytes": 22199168,
-      "sha256": "7791bf8b6da7f94095c5ef5cefb852dab8852a54f39181e22add81892eaf15bd"
-    },
-    "original_configuration": {
-      "decode_archive": {
-        "commit": "a8af3d7fa96a7713f2e516d2da3d7410956be015",
-        "path": "bench/results/2026-10-15-pr6-recovery-audit/canonical-restore-decode-current.json",
-        "sha256": "7dda2bcefa6f7e54d568e6aa3d5226d5e0a7383f0b41efd7584093854d9547ca"
-      },
-      "decode_compact_sha256": "7a7276cf70e8507838aa62246b0f4a6d858c7f390318bd5f9a23f555cd4712ec",
-      "model": {
-        "commit": "64efe12f005b6a518daa2ee1d0f0d2712baa325f",
-        "path": "bench/results/2026-10-15-pr6-recovery-audit/prefill-recovery-current.json",
-        "sha256": "9945b8234465e0c963732086eac0b10b081fb63ca3eb16db3daae27899eab7f2"
-      },
-      "build_compact_sha256": "3e6f266eabc13b94178e96a4d0cf6b5de2909dcd8927a760ead2c92248f0d1da"
-    },
-    "native_validation_probe": {
-      "library": {
-        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/ur-validation-preload-v2/libstrata_ur_validation.so",
-        "sha256": "1d4e69d672d55fa0a126ae43b7b4743482cccca7e2f2bc22e0db2bfdad5bdc7c"
-      },
-      "loader": {
-        "path": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_loader.so.0.12.0",
-        "sha256": "bb6e1311850e4b1a924e42acae80c2b3610934625a4985aaa67967abe31356fc"
-      },
-      "retained_reference_until_exit": true,
-      "runtime_teardown_qualified": false
-    },
-    "runtime_reference": {
-      "path": "bench/results/2026-10-15-pr6-recovery-audit/runtime-requalification-current.json",
-      "sha256": "09ad358e12f6ef58bfc0a978519927863f3d09949a033a1e224db95997647d97",
-      "source_commit": "bdf6cb3de05e8eb56640acc904f91518d47f5621"
-    },
-    "config": {
-      "exe": "/home/yayoi/orca/workspaces/Strata/sycl/tools/sycl/engine_once.py",
-      "args": [
-        "--pack",
-        "/home/yayoi/.local/share/strata-sycl/packs/qwen3.8-flash-next-iq3_s",
-        "--native",
-        "/home/yayoi/.local/share/strata-sycl/models/qwen3.8-flash-next-iq3_s/IQ3_S/Qwen3.8-Flash-Next-GSQ-RCO-IQ3_S-00001-of-00002.gguf",
-        "--max-context",
-        "131072",
-        "--kv",
-        "int8",
-        "--kv-resident",
-        "131072",
-        "--expert-cache",
-        "1256",
-        "--expert-profile",
-        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-service-original-v2/model-probe-v1/expert-profile.bin",
-        "--expert-cache-per-layer",
-        "--pool-workers",
-        "5",
-        "--pcie-frac",
-        "0",
-        "--adapt-swaps",
-        "0",
-        "--conversation-cache-mib",
-        "0",
-        "--prompt-cache",
-        "0",
-        "--turn-token",
-        "-1",
-        "--suffix-draft",
-        "0",
-        "--greedy",
-        "--no-spec-split",
-        "--short-read",
-        "0",
-        "--spec",
-        "4",
-        "--mtp",
-        "/home/yayoi/.local/share/strata-sycl/mtp/rt",
-        "--prefill",
-        "8192",
-        "--vram-reserve-mib",
-        "700",
-        "--no-coupled-draft",
-        "--no-token-graph"
-      ],
-      "cwd": "/home/yayoi/orca/workspaces/Strata/sycl",
-      "tokenizer": "/home/yayoi/.local/share/strata-sycl/packs/qwen3.8-flash-next-iq3_s/tokenizer",
-      "model_name": "qwen3.8-flash-next-iq3_s-primary",
-      "aliases": [
-        "strata"
-      ],
-      "host": "127.0.0.1",
-      "log": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-service-original-v2/model-probe-v1/engine.stderr",
-      "engine_silence_s": 480,
-      "parallel": 1,
-      "open_browser": false,
-      "env": {}
-    },
-    "environment": {
-      "PATH": "/home/yayoi/.local/share/strata-sycl/venv/bin:/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin:/usr/bin:/bin",
-      "HOME": "/home/yayoi",
-      "LANG": "C.UTF-8",
-      "LC_ALL": "C.UTF-8",
-      "PYTHONDONTWRITEBYTECODE": "1",
-      "LD_LIBRARY_PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib:/opt/intel/oneapi/mkl/2026.1/lib",
-      "MKLROOT": "/opt/intel/oneapi/mkl/2026.1",
-      "OMP_NUM_THREADS": "1",
-      "CPLUS_INCLUDE_PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/include",
-      "PYTHONUNBUFFERED": "1",
-      "ONEAPI_DEVICE_SELECTOR": "level_zero:gpu",
-      "UR_ADAPTERS_FORCE_LOAD": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_adapter_level_zero_v2.so.0",
-      "SYCL_CACHE_PERSISTENT": "0",
-      "NEOReadDebugKeys": "1",
-      "EnableDirectSubmission": "0",
-      "UR_L0_V2_FORCE_DISABLE_COPY_OFFLOAD": "1",
-      "STRATA_SYCL_VERIFY_NATIVE_CAPTURE": "0",
-      "STRATA_SYCL_MMQ_XMX": "1",
-      "STRATA_SYCL_MMQ_XMX_TILE": "8",
-      "STRATA_SYCL_MMQ_XMX_EXACT": "1",
-      "STRATA_SYCL_MMQ_XMX_PACK": "0",
-      "STRATA_SYCL_MMQ_XMX_COMPACT": "1",
-      "STRATA_SYCL_PREFILL_SAME_QUEUE": "1",
-      "STRATA_PREFILL_RING": "8",
-      "STRATA_PREFILL_MMQ": "0",
-      "STRATA_PREFILL_MOE_COMPACT_FP16": "1",
-      "STRATA_WATCHDOG_S": "480",
-      "STRATA_SYCL_PROMPT_DIRECT": "1",
-      "STRATA_PREFILL_LAYER_MAJOR": "1",
-      "STRATA_PREFILL_LAYER_MAJOR_R_DTYPE": "bf16",
-      "STRATA_PREFILL_LAYER_MAJOR_R_GPU": "auto",
-      "STRATA_PREFILL_RELEASE_MTP_EXPERTS": "1",
-      "STRATA_SYCL_KV_COPY_GROUPS": "0",
-      "STRATA_IQ_SINGLE_EXACT": "0",
-      "STRATA_SYCL_PARALLEL_IQ_DEQUANT": "1",
-      "STRATA_PREFILL_LAYER_MAJOR_SHAPE_CENSUS": "0",
-      "STRATA_IQ_TIMING_PROGRESS": "0",
-      "STRATA_PREFILL_RELEASE_HEADS": "0",
-      "STRATA_PREFILL_NATIVE_DENSE_BANK": "1",
-      "STRATA_SYCL_PREFILL_SCRATCH_ALIAS": "1",
-      "STRATA_SYCL_QSA_INDEXER_DEVICE_BATCH": "1",
-      "STRATA_GR_UNFUSED": "0",
-      "STRATA_PREFILL_BF16X2": "0",
-      "STRATA_PF_FUSED": "0",
-      "STRATA_PREFILL_CANONICAL_DENSE_BANK": "1",
-      "STRATA_SYCL_SELECT_RADIX4": "1",
-      "STRATA_SYCL_SELECT_CYCLIC": "0",
-      "STRATA_SYCL_PROMPT_K_CELL_MAJOR": "0",
-      "STRATA_SYCL_PROMPT_NATIVE_KV_MIN": "0",
-      "XDG_CACHE_HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-service-original-v2/model-probe-v1/cache",
-      "STRATA_SYCL_PREFILL_NATIVE16": "bf16",
-      "STRATA_SYCL_PREFILL_QSA_MATH": "bf16-prefix-ordered-exp",
-      "STRATA_SYCL_PREFILL_NATIVE16_BACKEND": "vllm",
-      "STRATA_SYCL_PREFILL_NATIVE16_QSA": "1",
-      "STRATA_SYCL_PREFILL_NATIVE16_VLLM_TILE": "auto",
-      "STRATA_ROPE_TABLE": "1",
-      "STRATA_SYCL_PREFILL_MOE_WINDOW": "10",
-      "STRATA_SYCL_SCORE_QUERY_TILE": "8",
-      "STRATA_SYCL_SCORE_HEAD_PARALLEL": "1",
-      "STRATA_SYCL_PREFILL_SCORE_GEMM": "1",
-      "TMPDIR": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-service-original-v2/model-probe-v1/tmp",
-      "STRATA_MEASUREMENT_ROOT": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-service-original-v2/model-probe-v1",
-      "ZES_ENABLE_SYSMAN": "0",
-      "STRATA_SYCL_PREFILL_GDN_COLUMNS": "4",
-      "STRATA_SYCL_PREFILL_GDN_CHUNK64": "0",
-      "STRATA_SYCL_PREFILL_GU_SWIGLU": "large",
-      "STRATA_SYCL_PREFILL_EXPERT_SOURCE_VIEW": "1",
-      "STRATA_SYCL_PREFILL_DOWN_SCATTER": "large",
-      "STRATA_SYCL_PREFILL_MIXED_SCRATCH": "1",
-      "STRATA_SYCL_PREFILL_EXPERT_BANK_SLOTS": "384",
-      "STRATA_SYCL_CACHE_SCRATCH_LEASE": "1",
-      "STRATA_SYCL_VERIFY_ARENA_COPY": "0",
-      "STRATA_SYCL_VERIFY_PCIE_EARLY": "0",
-      "CUDA_MODULE_LOADING": "EAGER",
-      "STRATA_MTP_BATCH_F16": "0",
-      "STRATA_SYCL_PREFILL_EXPERT_BANK_PACKED": "1",
-      "STRATA_IQ2_PAIR": "1",
-      "STRATA_SYCL_MTP_OBSERVER": "0",
-      "STRATA_SYCL_PREFILL_CANONICAL_CHUNK64": "0",
-      "STRATA_SYCL_PREFILL_CANONICAL_RESTORE_AUDIT": "0",
-      "STRATA_PREFILL_TRANSITION_PROFILE": "0",
-      "STRATA_PREFILL_LAYER_MAJOR_PROFILE": "0",
-      "UR_ENABLE_LAYERS": "UR_LAYER_PARAMETER_VALIDATION",
-      "UR_LOG_VALIDATION": "level:warning;flush:warning;output:file,/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-service-original-v2/model-probe-v1/validation.log",
-      "UR_LOG_LOADER": "level:warning;flush:warning;output:stderr",
-      "UR_LOG_LEVEL_ZERO": "level:warning;flush:warning;output:stderr",
-      "STRATA_TRACE": "1",
-      "STRATA_CPU_SERVICE": "1",
-      "STRATA_CPU_WORK_CENSUS": "1",
-      "STRATA_DECODE_TIMING": "1"
-    },
-    "generated_inputs": {
-      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-service-original-v2/model-probe-v1/config.json": "0b37ae3f011a2995af9154c8a6fcb111281b185233feb1562a0b85bb47c1717b",
-      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-service-original-v2/model-probe-v1/plan.json": "af115326bdacb8a4469503fcd72e784a86c47089d59e692d9682be70a9d407ee",
-      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-service-original-v2/model-probe-v1/expert-profile.bin": "8f59b4aa8873209dff11c11e37bcda9529a1335b724a1afeea37bf6388975baf"
-    },
-    "command": [
-      "/bin/sh",
-      "/home/yayoi/orca/workspaces/Strata/sycl/bench.sh",
-      "--config",
-      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-service-original-v2/model-probe-v1/config.json",
-      "--port",
-      "59865",
-      "--prefill-only",
-      "--prefill-tokens",
-      "32768",
-      "--think",
-      "--runs",
-      "1",
-      "--profile-request-gates",
-      "--workload-id",
-      "cpu_service_model_20261025",
-      "--fail-fast-engine-error",
-      "--ready-timeout",
-      "600",
-      "--out",
-      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-service-original-v2/model-probe-v1/bench"
-    ],
-    "boot": "cfda0b6a-7c13-4fe2-bdf5-8f9202770840",
-    "driver": {
-      "pci": "/sys/bus/pci/devices/0000:05:00.0",
-      "driver": "xe",
-      "vendor": "0x8086",
-      "device": "0xe20c",
-      "kernel": "7.0.0-38-generic",
-      "devcoredump": false
-    },
-    "budgets": {
-      "wall": 900,
-      "cpu": 10800,
-      "rss_cap": 103079215104,
-      "text_cap": 33554432,
-      "file_cap": 33554432,
-      "total_cap": 67108864
-    },
-    "criteria": "One fresh official bench process: existing short chat warmup,then one fresh>=32768-input thinking-on request with1..24 output tokens. Exact original6e40 plus scoped CPU observer/test patches;selected config/math/decode placement unchanged;pre-main validation,live native owner/environment/new NEO mapping,complete request journal and native footer conservation,actual BF16 GPU residual/mode10 long path;both CPU-service requests must conserve leaf calls/rows/token rows/clocks/thread owners against the independent same-request work census and native pool clocks;normal owned benchmark/native exit,no validation errors/fresh GPU faults. Stop first failure,no retries.",
-    "limits": "Execution/state-handoff smoke gate only. No observer overhead,hardware saturation,numerical/task quality,decode nonregression,sustained TG,clean speed,physical262144,RESTORE or ordinary runtime destruction qualification. Short traced service totals are diagnostic only;no old/new runtime sample pooling.",
-    "retention": "Retain compact source/command/config/environment,individual request extents/times/hash/outcomes and limits. After verification retire successful logs,trace,caches and generated duplicate inputs with a deletion manifest. Keep the original fallback and this one extra named observer generation through overhead/service attribution,then retire on closure.",
-    "active": false,
-    "ownership_closed": true,
-    "passed": true,
-    "complete": true,
-    "adoption_qualified": false,
-    "samples": [
-      {
-        "phase": "warm-up/chat",
-        "run": null,
-        "turn": null,
-        "request_index": 1,
-        "sample": {
-          "ok": true,
-          "prompt_tokens": 74,
-          "reused_tokens": 0,
-          "read_tokens": 74,
-          "generated_tokens": 24,
-          "prompt_ms": 29207.3,
-          "decode_ms": 7261.2,
-          "drafts_offered": 18,
-          "drafts_accepted": 18,
-          "finish_reason": "length",
-          "request_sha256": "6976dd85c26437117139f185ce0ac4da0ab9d1d4eb576dd2f9e252ae99d63f03",
-          "stream_complete": true,
-          "output_chars": 0,
-          "reasoning_chars": 113
-        }
-      },
-      {
-        "phase": "prefill-only",
-        "run": 0,
-        "turn": null,
-        "request_index": 3,
-        "sample": {
-          "ok": true,
-          "prompt_tokens": 39261,
-          "reused_tokens": 0,
-          "read_tokens": 39261,
-          "generated_tokens": 24,
-          "prompt_ms": 59801.8,
-          "decode_ms": 1832.0,
-          "drafts_offered": 21,
-          "drafts_accepted": 17,
-          "finish_reason": "length",
-          "request_sha256": "1e2b2e5a8e30a35f6f2765e6197a3bfbf1333c33ceb25f8e3575bc55efd7cbaa",
-          "stream_complete": true,
-          "output_chars": 0,
-          "reasoning_chars": 101,
-          "eligible": true,
-          "thinking_requested": true,
-          "reasoning_observed": true
-        }
-      }
-    ],
-    "clean_speed_qualified": false,
-    "ordinary_teardown_qualified": false,
-    "begin_live_check": {
-      "owner_verified": true,
-      "environment_verified": true,
-      "only_pinned_executable_mappings": true,
-      "updated_NEO_observed": true
-    },
-    "end_live_check": {
-      "owner_verified": true,
-      "environment_verified": true,
-      "only_pinned_executable_mappings": true,
-      "updated_NEO_observed": true
-    },
-    "request_identity": [
-      {
-        "phase": "warm-up/chat",
-        "request_sha256": "6976dd85c26437117139f185ce0ac4da0ab9d1d4eb576dd2f9e252ae99d63f03",
-        "thinking": true,
-        "max_tokens": 24
-      },
-      {
-        "phase": "prefill-only",
-        "request_sha256": "1e2b2e5a8e30a35f6f2765e6197a3bfbf1333c33ceb25f8e3575bc55efd7cbaa",
-        "thinking": true,
-        "max_tokens": 24
-      }
-    ],
-    "activation": {
-      "pid": 1566079,
-      "loader": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_loader.so.0.12.0",
-      "threads_before": 1,
-      "preinit": 37,
-      "config_enabled": true,
-      "first_init": true,
-      "dispatch_result": 46,
-      "output_untouched": true,
-      "retained_reference_until_exit": true,
-      "runtime_teardown_qualified": false
-    },
-    "service_diagnostic": [
-      {
-        "request": 1,
-        "cpu_jobs": 7042,
-        "cpu_entries": 9855,
-        "same_request_census": true,
-        "thread_count": 6,
-        "calls": 30926,
-        "wall_ns": 3537061309,
-        "cpu_ns": 3401236893,
-        "operations": {
-          "GU": {
-            "calls": 11942,
-            "rows": 4506880,
-            "token_rows": 6307200,
-            "wall_ns": 2433678793,
-            "cpu_ns": 2334786475
-          },
-          "HQ": {
-            "calls": 7042,
-            "rows": 4506880,
-            "token_rows": 6307200,
-            "wall_ns": 14499622,
-            "cpu_ns": 7272060
-          },
-          "DOWN": {
-            "calls": 11942,
-            "rows": 18027520,
-            "token_rows": 25228800,
-            "wall_ns": 1088882894,
-            "cpu_ns": 1059178358
-          }
-        }
-      },
-      {
-        "request": 2,
-        "cpu_jobs": 7764,
-        "cpu_entries": 10727,
-        "same_request_census": true,
-        "thread_count": 6,
-        "calls": 34224,
-        "wall_ns": 3661657551,
-        "cpu_ns": 3487672415,
-        "operations": {
-          "GU": {
-            "calls": 13230,
-            "rows": 4968960,
-            "token_rows": 6865280,
-            "wall_ns": 2534138319,
-            "cpu_ns": 2414041345
-          },
-          "HQ": {
-            "calls": 7764,
-            "rows": 4968960,
-            "token_rows": 6865280,
-            "wall_ns": 12342076,
-            "cpu_ns": 7352099
-          },
-          "DOWN": {
-            "calls": 13230,
-            "rows": 19875840,
-            "token_rows": 27461120,
-            "wall_ns": 1115177156,
-            "cpu_ns": 1066278971
-          }
-        }
-      }
-    ],
-    "host_probe_accepted": true,
-    "native_exit_code": 0,
-    "benchmark_exit_code": 0,
-    "short_and_long_native_footer_conservation": true,
-    "actual_BF16_GPU_rows": 39260,
-    "actual_MoE_mode": 10,
-    "journal_valid": true,
-    "journal_complete": true,
-    "evidence_sha256": {
-      "engine.stderr": "e05b91954b31012db17d31592b7b4535ecee9c68c26b1b244f7671bffae31039",
-      "engine-start.json": "31da56ee9145b9864fce6926841adbea8c5de7fb2d356f7fcfc1b2c9d72d1052",
-      "engine-exit.json": "3736d3cb8bcc49fb88f5b6681d8e0af635c2260f2d1db876844f1fdc1ceb9567"
-    },
-    "fresh_faults": [],
-    "boot_unchanged": true,
-    "driver_after": {
-      "pci": "/sys/bus/pci/devices/0000:05:00.0",
-      "driver": "xe",
-      "vendor": "0x8086",
-      "device": "0xe20c",
-      "kernel": "7.0.0-38-generic",
-      "devcoredump": false
-    }
-  },
-  "native_diagnostic_retirement": {
-    "complete": true,
-    "source_recovery": {
-      "original_inputs_recovered": 9853,
-      "final_observer_project_inputs_recovered": 554,
-      "final_actual_compiler_inputs_checked": 1402,
-      "compiler_closure_sha256": "6f4fd3e2353e6709467f7f5d87a4593b9ffdd27b9ed6aa64fdd42084ba5630e2",
-      "pushed_recovery_ref": "7599a330fac8aff93d02d5afa34ee4f6ea3d8c73",
-      "recipe_and_benchmark_inputs_recovered": {
-        "e42ae21ac82ea00772569299a07b35f0448a48ac": 188,
-        "0d434a573baeabb57e4849adea4286badbf87dbb": 189,
-        "d02277730fa2134cd9fbea673191df63709f00f6": 190,
-        "804c515e75400e7268bcabf554548777088d1c1c": 191
-      }
-    },
-    "manifest": {
-      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/closed-cpu-observer-native-device-model-20261025.jsonl",
-      "sha256": "d9b0270b6b066739d71b8f8ca440c769c9bb1091f3c11d66d0968c7562c9a81a"
-    },
-    "files": 87,
-    "bytes": 20141524,
-    "original_outcomes_unchanged": true,
-    "original_fallback_and_observer_comparison_retained": true,
-    "consumer": "Imminent same-runtime original/observer-off/observer-on overhead and long-generation service comparison. The three model inputs remain consumed by cpu_service_model.current;native/device receipts remain exact live admission inputs.",
-    "review": "Retire generated inputs/one-shot controllers and the extra build when the named comparison ends,after exact final source/recipe recovery. No performance adoption or global storage cleanup claim.",
-    "retained_model_input_count": 3
-  },
-  "observer_overhead_host": {
-    "passed": true,
-    "ownership_closed": true,
-    "exit_code": 0,
-    "source_commit": "6649eea40c83db0d0af6181951e015aa9662a270",
-    "source_files": 193,
-    "source_fingerprint": "de0fcc6161f9cc973af2ad95b2b2232ef7001022c93865c1ec60efa134d052e8",
-    "tests": 6,
-    "limits": "Decision arithmetic and rejection controls only;no GPU/model or overhead qualification.",
-    "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-    "stderr_sha256": "65378dcad145da2497120819bebfc3c46534dce9714ce064b3d809a56654aca2"
+  "schema": "strata-closed-cpu-service-overhead-v1",
+  "archive": {
+    "commit": "ef52642d6",
+    "path": "bench/results/2026-10-15-pr6-recovery-audit/cpu-service-current.json",
+    "scope": "Full source/build/device/host/model receipts,original immutable nine-process plan,all per-format/NT service tables and prior deletion manifests. Closed one-shot launchers recover atc7da83f55. Current working result keeps useful individual measurements and the unchanged failed decision."
   },
   "observer_overhead": {
     "stage": "closed",
     "source_commit": "c90938140711f6f3e3a0819685ec8cff2cc2cc70",
-    "source_files": 193,
-    "source_fingerprint": "de0fcc6161f9cc973af2ad95b2b2232ef7001022c93865c1ec60efa134d052e8",
-    "qualified_model_fingerprint": "da69b10e49f76c1a613069f7f149a5c2d91a69a1103fddff107ce0dbbdeb22cd",
-    "host_fingerprint": "8bbdc042c45040a4467a813f54c00558db140c9e7a5d6083e2f6e9f845ab5b73",
-    "model_assets_fingerprint": "32d552dc1fb0ad6594425e8bd39f35049f896afe5775b0f7abf751110a11333e",
+    "native_source": {
+      "original": "6e40afc1beddd059ee518617f6c1efce1da14aca",
+      "observer_base": "6e40afc1beddd059ee518617f6c1efce1da14aca",
+      "observer_patches": [
+        "35f3683bc",
+        "f26979a65",
+        "44b520e30",
+        "589ff46aa"
+      ]
+    },
     "binaries": {
       "original": {
         "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/strata",
@@ -1445,1919 +30,362 @@
         "sha256": "7791bf8b6da7f94095c5ef5cefb852dab8852a54f39181e22add81892eaf15bd"
       }
     },
-    "boot": "cfda0b6a-7c13-4fe2-bdf5-8f9202770840",
-    "driver": {
-      "pci": "/sys/bus/pci/devices/0000:05:00.0",
-      "driver": "xe",
-      "vendor": "0x8086",
-      "device": "0xe20c",
-      "kernel": "7.0.0-38-generic",
-      "devcoredump": false
-    },
-    "plans": [
-      {
-        "index": 0,
-        "arm": "original",
-        "port": 54955,
-        "generated_inputs": {
-          "config.json": "b23178b9e5377e9e03e61fb8db369956ff56272a1773478e75cb9dab7715205c",
-          "plan.json": "b6eb1c9f5c7780234a4c9c3aa61f4019125118b30f18600cdecf68c5644d8cd5",
-          "expert-profile.bin": "8f59b4aa8873209dff11c11e37bcda9529a1335b724a1afeea37bf6388975baf"
-        }
-      },
-      {
-        "index": 1,
-        "arm": "off",
-        "port": 60757,
-        "generated_inputs": {
-          "config.json": "77d26a1812bb1949e18ab2cfbcd98375122ce37c7da7c6ec25b11d2c01616611",
-          "plan.json": "af115326bdacb8a4469503fcd72e784a86c47089d59e692d9682be70a9d407ee",
-          "expert-profile.bin": "8f59b4aa8873209dff11c11e37bcda9529a1335b724a1afeea37bf6388975baf"
-        }
-      },
-      {
-        "index": 2,
-        "arm": "on",
-        "port": 44815,
-        "generated_inputs": {
-          "config.json": "b70ec7c43cae87138063d5bb0bcd64e7ae00f4a17ab542fb04eb4ce690d12a5e",
-          "plan.json": "af115326bdacb8a4469503fcd72e784a86c47089d59e692d9682be70a9d407ee",
-          "expert-profile.bin": "8f59b4aa8873209dff11c11e37bcda9529a1335b724a1afeea37bf6388975baf"
-        }
-      },
-      {
-        "index": 3,
-        "arm": "on",
-        "port": 54893,
-        "generated_inputs": {
-          "config.json": "056f1527a96cdf3c8aef945dba091ba068b54f1ac11ce864112740636a7c8af8",
-          "plan.json": "af115326bdacb8a4469503fcd72e784a86c47089d59e692d9682be70a9d407ee",
-          "expert-profile.bin": "8f59b4aa8873209dff11c11e37bcda9529a1335b724a1afeea37bf6388975baf"
-        }
-      },
-      {
-        "index": 4,
-        "arm": "original",
-        "port": 45203,
-        "generated_inputs": {
-          "config.json": "04ed31cc287b65944e7041d3d74cc29d231b4fdf019fb7e8e6ebc5b6d59448ba",
-          "plan.json": "b6eb1c9f5c7780234a4c9c3aa61f4019125118b30f18600cdecf68c5644d8cd5",
-          "expert-profile.bin": "8f59b4aa8873209dff11c11e37bcda9529a1335b724a1afeea37bf6388975baf"
-        }
-      },
-      {
-        "index": 5,
-        "arm": "off",
-        "port": 59821,
-        "generated_inputs": {
-          "config.json": "e3b0aaab8613eac2898cb11cf82bb1626d91a0312b8e2bf57eb010444f20dd09",
-          "plan.json": "af115326bdacb8a4469503fcd72e784a86c47089d59e692d9682be70a9d407ee",
-          "expert-profile.bin": "8f59b4aa8873209dff11c11e37bcda9529a1335b724a1afeea37bf6388975baf"
-        }
-      },
-      {
-        "index": 6,
-        "arm": "off",
-        "port": 33675,
-        "generated_inputs": {
-          "config.json": "8b0afb91ff970f51faca33aeeb493662745275bd83a862ba86f8d9d7e4c0be28",
-          "plan.json": "af115326bdacb8a4469503fcd72e784a86c47089d59e692d9682be70a9d407ee",
-          "expert-profile.bin": "8f59b4aa8873209dff11c11e37bcda9529a1335b724a1afeea37bf6388975baf"
-        }
-      },
-      {
-        "index": 7,
-        "arm": "on",
-        "port": 50277,
-        "generated_inputs": {
-          "config.json": "7b349b2e27dbe60908b57fdb2ebc011cf96cf29b83af2a0d95b3fb758ad513bc",
-          "plan.json": "af115326bdacb8a4469503fcd72e784a86c47089d59e692d9682be70a9d407ee",
-          "expert-profile.bin": "8f59b4aa8873209dff11c11e37bcda9529a1335b724a1afeea37bf6388975baf"
-        }
-      },
-      {
-        "index": 8,
-        "arm": "original",
-        "port": 54547,
-        "generated_inputs": {
-          "config.json": "ef8b42d10c762e0f562c0407ca9f707c78e5516de61c81062b46ece811e2101d",
-          "plan.json": "b6eb1c9f5c7780234a4c9c3aa61f4019125118b30f18600cdecf68c5644d8cd5",
-          "expert-profile.bin": "8f59b4aa8873209dff11c11e37bcda9529a1335b724a1afeea37bf6388975baf"
-        }
-      }
+    "order": [
+      "original",
+      "off",
+      "on",
+      "on",
+      "original",
+      "off",
+      "off",
+      "on",
+      "original"
     ],
+    "configuration": "Original6e40 versus its four scoped observer/test patches only;same selected math/configuration,1256slots,131072residentINT8,8192chunks,spec4,five workers+host. Common parameter validation,retained UR reference,stage trace,CPU census and nested decode clocks;only CPU_SERVICE0/1 and declared binary differ. Environment fixed before exec.",
     "processes": [
       {
         "index": 0,
         "arm": "original",
-        "active": false,
-        "ownership_closed": true,
         "passed": true,
-        "binary_sha256": "22182f1a5e62e5f4259ce49a75ae44afbd988166ec79324816e499ff37ef60e4",
-        "source_commit": "c90938140711f6f3e3a0819685ec8cff2cc2cc70",
-        "native_identity": {
-          "pid": 1619526,
-          "start_ticks": 124924036,
-          "sid": 1619495
-        },
-        "effective_environment_verified": true,
+        "ownership_closed": true,
+        "native_exit_code": 0,
         "sample": {
-          "ok": true,
-          "total_s": 355.668,
-          "prompt_tokens": 33214,
-          "reused_tokens": 0,
           "read_tokens": 33214,
+          "reused_tokens": 0,
           "generated_tokens": 3611,
-          "prompt_tps": 457.5,
-          "prompt_tps_source": "engine",
-          "decode_tps": 12.8,
-          "decode_tps_source": "engine",
           "prompt_ms": 72606.3,
           "decode_ms": 283038.5,
           "drafts_offered": 3102,
           "drafts_accepted": 2578,
           "finish_reason": "stop",
-          "request_sha256": "b0a065720a5eb86fa2d3f84d6371e35da774b4ea144d022608d49b80c227cba1",
-          "stream_complete": true,
-          "generated_tokens_source": "usage",
-          "eligible": true,
-          "speed_eligible": true,
-          "acceptance_rate": 0.8310767246937459,
-          "usage_generated_tokens": 3611,
-          "completion_includes_thinking": true,
-          "output_sha256": "5b7ae0f207d7804bc693ebde382f1a762c43f477fd01483939648d004cfaf971",
-          "reasoning_sha256": "8daeec41f22d90c32c1c1c5c3cfe4486a9ee6d65fa7ffe8857bfe980c02d411e",
-          "output_chars": 5496,
-          "reasoning_chars": 4368
+          "speed_eligible": true
         },
-        "work": {
-          "cpu_jobs": 1370846,
-          "cpu_entries": 1771839,
-          "format_nt_jobs": [
-            {
-              "gu": 18,
-              "down": 20,
-              "jobs_NT": [
-                312670,
-                65168,
-                16541,
-                5226
-              ]
-            },
-            {
-              "gu": 22,
-              "down": 42,
-              "jobs_NT": [
-                105622,
-                28237,
-                6804,
-                1693
-              ]
-            },
-            {
-              "gu": 22,
-              "down": 20,
-              "jobs_NT": [
-                339214,
-                78601,
-                17357,
-                4878
-              ]
-            },
-            {
-              "gu": 18,
-              "down": 42,
-              "jobs_NT": [
-                70375,
-                15934,
-                3320,
-                654
-              ]
-            },
-            {
-              "gu": 21,
-              "down": 20,
-              "jobs_NT": [
-                187015,
-                42554,
-                10760,
-                3429
-              ]
-            },
-            {
-              "gu": 21,
-              "down": 42,
-              "jobs_NT": [
-                24201,
-                5344,
-                1146,
-                180
-              ]
-            },
-            {
-              "gu": 23,
-              "down": 20,
-              "jobs_NT": [
-                19700,
-                3442,
-                666,
-                115
-              ]
-            }
-          ],
-          "target_windows": 1035,
-          "target_rows": 4137,
-          "expert_copy_requested_bytes": 0
-        },
-        "actual_route": {
-          "BF16_GPU_rows": 33213,
-          "MoE_mode": 10,
-          "restored_dense_layers": 48,
-          "restored_cache_membership_verified": true,
-          "cache_payload_hash_verified": false
-        },
-        "timing": {
-          "windows": 1035,
-          "ms_per_window": {
-            "average_T": 4.0,
-            "tokens_per_window": 3.49,
-            "total": 273.47,
-            "verify": 239.73,
-            "GPU_reach_wait": 89.88,
-            "per_layer_host": 131.44,
-            "plan": 2.52,
-            "activation_quant": 0.46,
-            "jobs": 0.14,
-            "CPU_pool_run": 127.18,
-            "stage": 2.4,
-            "commit_emit": 0.08,
-            "draft": 33.61,
-            "CPU_experts": 27.59,
-            "CPU_entries": 35.67,
-            "VRAM_hits": 4.31,
-            "PCIe": 0.0
-          },
-          "outer_residual_ms_per_window": 0.05000000000001137,
-          "host_nested_residual_ms_per_window": 1.1399999999999864,
-          "clock_binding": {
-            "absolute_total_difference_ms": 2.9500000000116415,
-            "rounding_bound_ms": 5.225,
-            "average_quantum_ms": 0.01,
-            "DONE_total_quantum_ms": 0.1
-          }
-        },
-        "journal": {
-          "valid": true,
-          "successful_warmups": 4,
-          "successful_long_requests": 1,
-          "journal_sha256": "70fc90bec96d3d4ddf242af01ccd8a8b04ecd0137f24e704aef554dbd1896cc9"
-        },
-        "native_exit_code": 0,
-        "benchmark_exit_code": 0,
-        "evidence_sha256": "125f8e8b9e42ab9c3e08d0717cf0a433e00ae0c4de239bb8296bb8dfdbde4950",
-        "host_probe_accepted": true,
-        "fresh_faults": [],
-        "boot_unchanged": true,
-        "driver_after": {
-          "pci": "/sys/bus/pci/devices/0000:05:00.0",
-          "driver": "xe",
-          "vendor": "0x8086",
-          "device": "0xe20c",
-          "kernel": "7.0.0-38-generic",
-          "devcoredump": false
+        "decode_regions_ms_per_window": {
+          "GPU_reach_wait": 89.88,
+          "CPU_pool_run": 127.18,
+          "draft": 33.61
         }
       },
       {
         "index": 1,
         "arm": "off",
-        "active": false,
-        "ownership_closed": true,
         "passed": true,
-        "binary_sha256": "7791bf8b6da7f94095c5ef5cefb852dab8852a54f39181e22add81892eaf15bd",
-        "source_commit": "c90938140711f6f3e3a0819685ec8cff2cc2cc70",
-        "native_identity": {
-          "pid": 1660691,
-          "start_ticks": 125044682,
-          "sid": 1660658
-        },
-        "effective_environment_verified": true,
+        "ownership_closed": true,
+        "native_exit_code": 0,
         "sample": {
-          "ok": true,
-          "total_s": 341.905,
-          "prompt_tokens": 33214,
-          "reused_tokens": 0,
           "read_tokens": 33214,
+          "reused_tokens": 0,
           "generated_tokens": 3611,
-          "prompt_tps": 595.3,
-          "prompt_tps_source": "engine",
-          "decode_tps": 12.6,
-          "decode_tps_source": "engine",
           "prompt_ms": 55789.1,
           "decode_ms": 286093.1,
           "drafts_offered": 3102,
           "drafts_accepted": 2578,
           "finish_reason": "stop",
-          "request_sha256": "b0a065720a5eb86fa2d3f84d6371e35da774b4ea144d022608d49b80c227cba1",
-          "stream_complete": true,
-          "generated_tokens_source": "usage",
-          "eligible": true,
-          "speed_eligible": true,
-          "acceptance_rate": 0.8310767246937459,
-          "usage_generated_tokens": 3611,
-          "completion_includes_thinking": true,
-          "output_sha256": "5b7ae0f207d7804bc693ebde382f1a762c43f477fd01483939648d004cfaf971",
-          "reasoning_sha256": "8daeec41f22d90c32c1c1c5c3cfe4486a9ee6d65fa7ffe8857bfe980c02d411e",
-          "output_chars": 5496,
-          "reasoning_chars": 4368
+          "speed_eligible": true
         },
-        "work": {
-          "cpu_jobs": 1370846,
-          "cpu_entries": 1771839,
-          "format_nt_jobs": [
-            {
-              "gu": 18,
-              "down": 20,
-              "jobs_NT": [
-                312670,
-                65168,
-                16541,
-                5226
-              ]
-            },
-            {
-              "gu": 22,
-              "down": 42,
-              "jobs_NT": [
-                105622,
-                28237,
-                6804,
-                1693
-              ]
-            },
-            {
-              "gu": 22,
-              "down": 20,
-              "jobs_NT": [
-                339214,
-                78601,
-                17357,
-                4878
-              ]
-            },
-            {
-              "gu": 18,
-              "down": 42,
-              "jobs_NT": [
-                70375,
-                15934,
-                3320,
-                654
-              ]
-            },
-            {
-              "gu": 21,
-              "down": 20,
-              "jobs_NT": [
-                187015,
-                42554,
-                10760,
-                3429
-              ]
-            },
-            {
-              "gu": 21,
-              "down": 42,
-              "jobs_NT": [
-                24201,
-                5344,
-                1146,
-                180
-              ]
-            },
-            {
-              "gu": 23,
-              "down": 20,
-              "jobs_NT": [
-                19700,
-                3442,
-                666,
-                115
-              ]
-            }
-          ],
-          "target_windows": 1035,
-          "target_rows": 4137,
-          "expert_copy_requested_bytes": 0
-        },
-        "actual_route": {
-          "BF16_GPU_rows": 33213,
-          "MoE_mode": 10,
-          "restored_dense_layers": 48,
-          "restored_cache_membership_verified": true,
-          "cache_payload_hash_verified": false
-        },
-        "timing": {
-          "windows": 1035,
-          "ms_per_window": {
-            "average_T": 4.0,
-            "tokens_per_window": 3.49,
-            "total": 276.42,
-            "verify": 242.64,
-            "GPU_reach_wait": 90.45,
-            "per_layer_host": 133.06,
-            "plan": 2.58,
-            "activation_quant": 0.48,
-            "jobs": 0.15,
-            "CPU_pool_run": 128.62,
-            "stage": 2.88,
-            "commit_emit": 0.08,
-            "draft": 33.66,
-            "CPU_experts": 27.59,
-            "CPU_entries": 35.67,
-            "VRAM_hits": 4.31,
-            "PCIe": 0.0
-          },
-          "outer_residual_ms_per_window": 0.040000000000020464,
-          "host_nested_residual_ms_per_window": 1.2299999999999898,
-          "clock_binding": {
-            "absolute_total_difference_ms": 1.6000000000349246,
-            "rounding_bound_ms": 5.225,
-            "average_quantum_ms": 0.01,
-            "DONE_total_quantum_ms": 0.1
-          }
-        },
-        "journal": {
-          "valid": true,
-          "successful_warmups": 4,
-          "successful_long_requests": 1,
-          "journal_sha256": "cf21c6b8dc42944537d3968088006d1b3457f4155da32a635cb320d97aa50e76"
-        },
-        "native_exit_code": 0,
-        "benchmark_exit_code": 0,
-        "evidence_sha256": "065e1fb43dea6e8bb68fb52cbbf6cf8a2b1861c486b196a87e4daf6e0991cad0",
-        "host_probe_accepted": true,
-        "fresh_faults": [],
-        "boot_unchanged": true,
-        "driver_after": {
-          "pci": "/sys/bus/pci/devices/0000:05:00.0",
-          "driver": "xe",
-          "vendor": "0x8086",
-          "device": "0xe20c",
-          "kernel": "7.0.0-38-generic",
-          "devcoredump": false
+        "decode_regions_ms_per_window": {
+          "GPU_reach_wait": 90.45,
+          "CPU_pool_run": 128.62,
+          "draft": 33.66
         }
       },
       {
         "index": 2,
         "arm": "on",
-        "active": false,
-        "ownership_closed": true,
         "passed": true,
-        "binary_sha256": "7791bf8b6da7f94095c5ef5cefb852dab8852a54f39181e22add81892eaf15bd",
-        "source_commit": "c90938140711f6f3e3a0819685ec8cff2cc2cc70",
-        "native_identity": {
-          "pid": 1685577,
-          "start_ticks": 125109960,
-          "sid": 1685538
-        },
-        "effective_environment_verified": true,
-        "service": {
-          "request": 5,
-          "same_request_census": true,
-          "thread_count": 6,
-          "calls": 5560494,
-          "wall_ns": 649336117571,
-          "cpu_ns": 622722045535,
-          "leaf_columns": [
-            "gu",
-            "down",
-            "NT",
-            "GU_calls",
-            "GU_wall_ns",
-            "GU_cpu_ns",
-            "HQ_wall_ns",
-            "HQ_cpu_ns",
-            "DOWN_calls",
-            "DOWN_wall_ns",
-            "DOWN_cpu_ns"
-          ],
-          "leaf_rows": [
-            [18, 20, 1, 473756, 103415803438, 99748577500, 495594702, 262914069, 473756, 49377232535, 47033305640],
-            [18, 20, 2, 101920, 23206943152, 22348515342, 121868022, 65273887, 101920, 9654291361, 9270823079],
-            [18, 20, 3, 26759, 6603121662, 6342734121, 33456722, 19562718, 26759, 3199320650, 3084366103],
-            [18, 20, 4, 8863, 2384070397, 2246585059, 19939316, 7028809, 8863, 1224163863, 1191091345],
-            [18, 42, 1, 105246, 22934604463, 22126297209, 138674008, 85797887, 105246, 6707491598, 6460602411],
-            [18, 42, 2, 24321, 5660015951, 5432427952, 42844216, 28241499, 24321, 1954417711, 1889323044],
-            [18, 42, 3, 5143, 1289644188, 1257260618, 10637235, 7769968, 5143, 518640166, 503721626],
-            [18, 42, 4, 1034, 289782216, 280543196, 2363362, 1917516, 1034, 123952967, 121682665],
-            [21, 20, 1, 287849, 75462223860, 73006534414, 283767703, 154447985, 287849, 29716615885, 28274719968],
-            [21, 20, 2, 67638, 19143948197, 18470127159, 72981452, 42114278, 67638, 6319903194, 6059955989],
-            [21, 20, 3, 17548, 5590760691, 5400150157, 21428680, 12600482, 17548, 2098312221, 2005932628],
-            [21, 20, 4, 5945, 1934918646, 1908416953, 21068192, 4588100, 5945, 801284966, 778048081],
-            [21, 42, 1, 35891, 9757824289, 9458801418, 45744163, 29377606, 35891, 2330405698, 2227826596],
-            [21, 42, 2, 8066, 2409237919, 2300559588, 12987539, 9357460, 8066, 655629512, 634922166],
-            [21, 42, 3, 1714, 583932676, 573526164, 3551497, 2680834, 1714, 178179335, 174669664],
-            [21, 42, 4, 299, 102721202, 101943265, 649913, 516761, 299, 34043716, 33493784],
-            [22, 20, 1, 507735, 74566556550, 71491369494, 552065222, 285797107, 507735, 53676727425, 51309369480],
-            [22, 20, 2, 121417, 31542219104, 30259510334, 133839272, 79490631, 121417, 11618834744, 11131834485],
-            [22, 20, 3, 27943, 7985494872, 7728169853, 40948163, 20632374, 27943, 3355027582, 3207143670],
-            [22, 20, 4, 8189, 2634550101, 2542892870, 12489630, 6585082, 8189, 1130910669, 1100622903],
-            [22, 42, 1, 160956, 23491648835, 22356478564, 207353662, 130012833, 160956, 10084398232, 9630643477],
-            [22, 42, 2, 43837, 11371817618, 10908647226, 69951640, 49966939, 43837, 3531317652, 3338096494],
-            [22, 42, 3, 10847, 3146711154, 3045259707, 21598617, 15862340, 10847, 1112828173, 1032262572],
-            [22, 42, 4, 2806, 921659789, 883544266, 7882871, 4884852, 2806, 318675680, 313210878],
-            [23, 20, 1, 31988, 5780010880, 5562574991, 28930167, 16062530, 31988, 3119995345, 2994034381],
-            [23, 20, 2, 5740, 960287112, 907095529, 5532199, 3290061, 5740, 502573439, 482601278],
-            [23, 20, 3, 1165, 212115098, 206849578, 1192091, 761699, 1165, 123986427, 121416613],
-            [23, 20, 4, 209, 48019094, 46843991, 222380, 145436, 209, 26751035, 26406254]
-          ]
-        },
+        "ownership_closed": true,
+        "native_exit_code": 0,
         "sample": {
-          "ok": true,
-          "total_s": 343.509,
-          "prompt_tokens": 33214,
-          "reused_tokens": 0,
           "read_tokens": 33214,
+          "reused_tokens": 0,
           "generated_tokens": 3611,
-          "prompt_tps": 598.2,
-          "prompt_tps_source": "engine",
-          "decode_tps": 12.5,
-          "decode_tps_source": "engine",
           "prompt_ms": 55522.4,
           "decode_ms": 287961.2,
           "drafts_offered": 3102,
           "drafts_accepted": 2578,
           "finish_reason": "stop",
-          "request_sha256": "b0a065720a5eb86fa2d3f84d6371e35da774b4ea144d022608d49b80c227cba1",
-          "stream_complete": true,
-          "generated_tokens_source": "usage",
-          "eligible": true,
-          "speed_eligible": true,
-          "acceptance_rate": 0.8310767246937459,
-          "usage_generated_tokens": 3611,
-          "completion_includes_thinking": true,
-          "output_sha256": "5b7ae0f207d7804bc693ebde382f1a762c43f477fd01483939648d004cfaf971",
-          "reasoning_sha256": "8daeec41f22d90c32c1c1c5c3cfe4486a9ee6d65fa7ffe8857bfe980c02d411e",
-          "output_chars": 5496,
-          "reasoning_chars": 4368
+          "speed_eligible": true
         },
-        "work": {
-          "cpu_jobs": 1370846,
-          "cpu_entries": 1771839,
-          "format_nt_jobs": [
-            {
-              "gu": 18,
-              "down": 20,
-              "jobs_NT": [
-                312670,
-                65168,
-                16541,
-                5226
-              ]
-            },
-            {
-              "gu": 22,
-              "down": 42,
-              "jobs_NT": [
-                105622,
-                28237,
-                6804,
-                1693
-              ]
-            },
-            {
-              "gu": 22,
-              "down": 20,
-              "jobs_NT": [
-                339214,
-                78601,
-                17357,
-                4878
-              ]
-            },
-            {
-              "gu": 18,
-              "down": 42,
-              "jobs_NT": [
-                70375,
-                15934,
-                3320,
-                654
-              ]
-            },
-            {
-              "gu": 21,
-              "down": 20,
-              "jobs_NT": [
-                187015,
-                42554,
-                10760,
-                3429
-              ]
-            },
-            {
-              "gu": 21,
-              "down": 42,
-              "jobs_NT": [
-                24201,
-                5344,
-                1146,
-                180
-              ]
-            },
-            {
-              "gu": 23,
-              "down": 20,
-              "jobs_NT": [
-                19700,
-                3442,
-                666,
-                115
-              ]
-            }
-          ],
-          "target_windows": 1035,
-          "target_rows": 4137,
-          "expert_copy_requested_bytes": 0
+        "decode_regions_ms_per_window": {
+          "GPU_reach_wait": 90.02,
+          "CPU_pool_run": 132.01,
+          "draft": 33.59
         },
-        "actual_route": {
-          "BF16_GPU_rows": 33213,
-          "MoE_mode": 10,
-          "restored_dense_layers": 48,
-          "restored_cache_membership_verified": true,
-          "cache_payload_hash_verified": false
-        },
-        "timing": {
-          "windows": 1035,
-          "ms_per_window": {
-            "average_T": 4.0,
-            "tokens_per_window": 3.49,
-            "total": 278.22,
-            "verify": 244.52,
-            "GPU_reach_wait": 90.02,
-            "per_layer_host": 136.32,
-            "plan": 2.51,
-            "activation_quant": 0.47,
-            "jobs": 0.14,
-            "CPU_pool_run": 132.01,
-            "stage": 2.13,
-            "commit_emit": 0.08,
-            "draft": 33.59,
-            "CPU_experts": 27.59,
-            "CPU_entries": 35.67,
-            "VRAM_hits": 4.31,
-            "PCIe": 0.0
-          },
-          "outer_residual_ms_per_window": 0.03000000000002956,
-          "host_nested_residual_ms_per_window": 1.1899999999999977,
-          "clock_binding": {
-            "absolute_total_difference_ms": 3.5,
-            "rounding_bound_ms": 5.225,
-            "average_quantum_ms": 0.01,
-            "DONE_total_quantum_ms": 0.1
+        "service": {
+          "calls": 5560494,
+          "wall_ns": 649336117571,
+          "cpu_ns": 622722045535,
+          "leaf_cpu_ns": {
+            "GU": 426942236518,
+            "HQ": 1347681743,
+            "DOWN": 194432127274
           }
-        },
-        "journal": {
-          "valid": true,
-          "successful_warmups": 4,
-          "successful_long_requests": 1,
-          "journal_sha256": "8e3945406b1c6623664859dd2957b93cafbc097ba9109a28768f8004d40b91b9"
-        },
-        "native_exit_code": 0,
-        "benchmark_exit_code": 0,
-        "evidence_sha256": "93f2a17a4dfb28026ffbf972b7cae6b028556dd11e0befb0a2d0b32884e7e68a",
-        "host_probe_accepted": true,
-        "fresh_faults": [],
-        "boot_unchanged": true,
-        "driver_after": {
-          "pci": "/sys/bus/pci/devices/0000:05:00.0",
-          "driver": "xe",
-          "vendor": "0x8086",
-          "device": "0xe20c",
-          "kernel": "7.0.0-38-generic",
-          "devcoredump": false
         }
       },
       {
         "index": 3,
         "arm": "on",
-        "active": false,
-        "ownership_closed": true,
         "passed": true,
-        "binary_sha256": "7791bf8b6da7f94095c5ef5cefb852dab8852a54f39181e22add81892eaf15bd",
-        "source_commit": "c90938140711f6f3e3a0819685ec8cff2cc2cc70",
-        "native_identity": {
-          "pid": 1716226,
-          "start_ticks": 125197271,
-          "sid": 1716193
-        },
-        "effective_environment_verified": true,
-        "service": {
-          "request": 5,
-          "same_request_census": true,
-          "thread_count": 6,
-          "calls": 5560494,
-          "wall_ns": 654284303794,
-          "cpu_ns": 626381417980,
-          "leaf_columns": [
-            "gu",
-            "down",
-            "NT",
-            "GU_calls",
-            "GU_wall_ns",
-            "GU_cpu_ns",
-            "HQ_wall_ns",
-            "HQ_cpu_ns",
-            "DOWN_calls",
-            "DOWN_wall_ns",
-            "DOWN_cpu_ns"
-          ],
-          "leaf_rows": [
-            [18, 20, 1, 473756, 103288785668, 99712949886, 500627794, 260937737, 473756, 49764257551, 47093955479],
-            [18, 20, 2, 101920, 23407747625, 22500459809, 112620073, 64420219, 101920, 9727744501, 9308198262],
-            [18, 20, 3, 26759, 6655667707, 6375856981, 31909260, 18715043, 26759, 3219350491, 3096602960],
-            [18, 20, 4, 8863, 2375701419, 2263146315, 11201223, 6934984, 8863, 1258587504, 1195064772],
-            [18, 42, 1, 105246, 23025569981, 22254286067, 133159446, 85577372, 105246, 6753542997, 6492253157],
-            [18, 42, 2, 24321, 5651881204, 5469181723, 39393321, 28133104, 24321, 1979642876, 1900583519],
-            [18, 42, 3, 5143, 1353878260, 1273548485, 10352886, 7691392, 5143, 539929729, 506164968],
-            [18, 42, 4, 1034, 291582254, 284215924, 2355251, 1864572, 1034, 123708752, 121929266],
-            [21, 20, 1, 287849, 76156024800, 73215795251, 290597981, 153982541, 287849, 29591896981, 28273165292],
-            [21, 20, 2, 67638, 19242350524, 18499615077, 75499494, 41629501, 67638, 6411195863, 6076844000],
-            [21, 20, 3, 17548, 5628891540, 5429811543, 20790627, 12159253, 17548, 2112681739, 2009481269],
-            [21, 20, 4, 5945, 1967644837, 1906051854, 6886797, 4508995, 5945, 796798039, 776520917],
-            [21, 42, 1, 35891, 9769929571, 9433241690, 45752943, 29252567, 35891, 2324507834, 2230764547],
-            [21, 42, 2, 8066, 2403377154, 2298855375, 13455767, 9377650, 8066, 679737255, 640994876],
-            [21, 42, 3, 1714, 596200027, 577963645, 3779186, 2646071, 1714, 181975739, 175755213],
-            [21, 42, 4, 299, 104212367, 101643892, 646975, 522845, 299, 34393022, 33752527],
-            [22, 20, 1, 507735, 75202073763, 71887050861, 542848816, 284825832, 507735, 53649132973, 51339672609],
-            [22, 20, 2, 121417, 32757933914, 31448158733, 140235949, 78487285, 121417, 11734778868, 11153743407],
-            [22, 20, 3, 27943, 8454042084, 8132112308, 33003410, 19858186, 27943, 3362951685, 3215713529],
-            [22, 20, 4, 8189, 2782678742, 2676485669, 11194795, 6521044, 8189, 1133375120, 1103126084],
-            [22, 42, 1, 160956, 23366226472, 22400413349, 204994622, 129554753, 160956, 10251310154, 9651859881],
-            [22, 42, 2, 43837, 11809967991, 11320151243, 70846676, 50290246, 43837, 3581535537, 3350715610],
-            [22, 42, 3, 10847, 3293702193, 3214787100, 20647473, 15719115, 10847, 1081807514, 1033865208],
-            [22, 42, 4, 2806, 984983285, 936210204, 6121034, 4924835, 2806, 334216270, 314218205],
-            [23, 20, 1, 31988, 5693830543, 5537158943, 51088833, 15843068, 31988, 3104228321, 2984564543],
-            [23, 20, 2, 5740, 976751558, 922698811, 5568054, 3301639, 5740, 508804980, 484878632],
-            [23, 20, 3, 1165, 216800615, 212664451, 1214528, 728161, 1165, 123693672, 121666692],
-            [23, 20, 4, 209, 46279673, 45874965, 225166, 148678, 209, 26783676, 26415714]
-          ]
-        },
+        "ownership_closed": true,
+        "native_exit_code": 0,
         "sample": {
-          "ok": true,
-          "total_s": 346.377,
-          "prompt_tokens": 33214,
-          "reused_tokens": 0,
           "read_tokens": 33214,
+          "reused_tokens": 0,
           "generated_tokens": 3611,
-          "prompt_tps": 600.6,
-          "prompt_tps_source": "engine",
-          "decode_tps": 12.4,
-          "decode_tps_source": "engine",
           "prompt_ms": 55299.0,
           "decode_ms": 291048.8,
           "drafts_offered": 3102,
           "drafts_accepted": 2578,
           "finish_reason": "stop",
-          "request_sha256": "b0a065720a5eb86fa2d3f84d6371e35da774b4ea144d022608d49b80c227cba1",
-          "stream_complete": true,
-          "generated_tokens_source": "usage",
-          "eligible": true,
-          "speed_eligible": true,
-          "acceptance_rate": 0.8310767246937459,
-          "usage_generated_tokens": 3611,
-          "completion_includes_thinking": true,
-          "output_sha256": "5b7ae0f207d7804bc693ebde382f1a762c43f477fd01483939648d004cfaf971",
-          "reasoning_sha256": "8daeec41f22d90c32c1c1c5c3cfe4486a9ee6d65fa7ffe8857bfe980c02d411e",
-          "output_chars": 5496,
-          "reasoning_chars": 4368
+          "speed_eligible": true
         },
-        "work": {
-          "cpu_jobs": 1370846,
-          "cpu_entries": 1771839,
-          "format_nt_jobs": [
-            {
-              "gu": 18,
-              "down": 20,
-              "jobs_NT": [
-                312670,
-                65168,
-                16541,
-                5226
-              ]
-            },
-            {
-              "gu": 22,
-              "down": 42,
-              "jobs_NT": [
-                105622,
-                28237,
-                6804,
-                1693
-              ]
-            },
-            {
-              "gu": 22,
-              "down": 20,
-              "jobs_NT": [
-                339214,
-                78601,
-                17357,
-                4878
-              ]
-            },
-            {
-              "gu": 18,
-              "down": 42,
-              "jobs_NT": [
-                70375,
-                15934,
-                3320,
-                654
-              ]
-            },
-            {
-              "gu": 21,
-              "down": 20,
-              "jobs_NT": [
-                187015,
-                42554,
-                10760,
-                3429
-              ]
-            },
-            {
-              "gu": 21,
-              "down": 42,
-              "jobs_NT": [
-                24201,
-                5344,
-                1146,
-                180
-              ]
-            },
-            {
-              "gu": 23,
-              "down": 20,
-              "jobs_NT": [
-                19700,
-                3442,
-                666,
-                115
-              ]
-            }
-          ],
-          "target_windows": 1035,
-          "target_rows": 4137,
-          "expert_copy_requested_bytes": 0
+        "decode_regions_ms_per_window": {
+          "GPU_reach_wait": 90.43,
+          "CPU_pool_run": 133.75,
+          "draft": 33.6
         },
-        "actual_route": {
-          "BF16_GPU_rows": 33213,
-          "MoE_mode": 10,
-          "restored_dense_layers": 48,
-          "restored_cache_membership_verified": true,
-          "cache_payload_hash_verified": false
-        },
-        "timing": {
-          "windows": 1035,
-          "ms_per_window": {
-            "average_T": 4.0,
-            "tokens_per_window": 3.49,
-            "total": 281.21,
-            "verify": 247.49,
-            "GPU_reach_wait": 90.43,
-            "per_layer_host": 138.19,
-            "plan": 2.59,
-            "activation_quant": 0.48,
-            "jobs": 0.14,
-            "CPU_pool_run": 133.75,
-            "stage": 2.71,
-            "commit_emit": 0.08,
-            "draft": 33.6,
-            "CPU_experts": 27.59,
-            "CPU_entries": 35.67,
-            "VRAM_hits": 4.31,
-            "PCIe": 0.0
-          },
-          "outer_residual_ms_per_window": 0.03999999999996362,
-          "host_nested_residual_ms_per_window": 1.2299999999999898,
-          "clock_binding": {
-            "absolute_total_difference_ms": 3.5499999999883585,
-            "rounding_bound_ms": 5.225,
-            "average_quantum_ms": 0.01,
-            "DONE_total_quantum_ms": 0.1
+        "service": {
+          "calls": 5560494,
+          "wall_ns": 654284303794,
+          "cpu_ns": 626381417980,
+          "leaf_cpu_ns": {
+            "GU": 430330390154,
+            "HQ": 1338556688,
+            "DOWN": 194712471138
           }
-        },
-        "journal": {
-          "valid": true,
-          "successful_warmups": 4,
-          "successful_long_requests": 1,
-          "journal_sha256": "0562905aa710732c6d8eb85e28e749fd96792454de93a8b304634c376ab01f84"
-        },
-        "native_exit_code": 0,
-        "benchmark_exit_code": 0,
-        "evidence_sha256": "cae50811b35a704d27de8dc1d6005123bac8b3922f282b3a6103fb14df53e745",
-        "host_probe_accepted": true,
-        "fresh_faults": [],
-        "boot_unchanged": true,
-        "driver_after": {
-          "pci": "/sys/bus/pci/devices/0000:05:00.0",
-          "driver": "xe",
-          "vendor": "0x8086",
-          "device": "0xe20c",
-          "kernel": "7.0.0-38-generic",
-          "devcoredump": false
         }
       },
       {
         "index": 4,
         "arm": "original",
-        "active": false,
-        "ownership_closed": true,
         "passed": true,
-        "binary_sha256": "22182f1a5e62e5f4259ce49a75ae44afbd988166ec79324816e499ff37ef60e4",
-        "source_commit": "c90938140711f6f3e3a0819685ec8cff2cc2cc70",
-        "native_identity": {
-          "pid": 1755896,
-          "start_ticks": 125292348,
-          "sid": 1755866
-        },
-        "effective_environment_verified": true,
+        "ownership_closed": true,
+        "native_exit_code": 0,
         "sample": {
-          "ok": true,
-          "total_s": 340.851,
-          "prompt_tokens": 33214,
-          "reused_tokens": 0,
           "read_tokens": 33214,
+          "reused_tokens": 0,
           "generated_tokens": 3611,
-          "prompt_tps": 602.0,
-          "prompt_tps_source": "engine",
-          "decode_tps": 12.6,
-          "decode_tps_source": "engine",
           "prompt_ms": 55177.2,
           "decode_ms": 285650.8,
           "drafts_offered": 3102,
           "drafts_accepted": 2578,
           "finish_reason": "stop",
-          "request_sha256": "b0a065720a5eb86fa2d3f84d6371e35da774b4ea144d022608d49b80c227cba1",
-          "stream_complete": true,
-          "generated_tokens_source": "usage",
-          "eligible": true,
-          "speed_eligible": true,
-          "acceptance_rate": 0.8310767246937459,
-          "usage_generated_tokens": 3611,
-          "completion_includes_thinking": true,
-          "output_sha256": "5b7ae0f207d7804bc693ebde382f1a762c43f477fd01483939648d004cfaf971",
-          "reasoning_sha256": "8daeec41f22d90c32c1c1c5c3cfe4486a9ee6d65fa7ffe8857bfe980c02d411e",
-          "output_chars": 5496,
-          "reasoning_chars": 4368
+          "speed_eligible": true
         },
-        "work": {
-          "cpu_jobs": 1370846,
-          "cpu_entries": 1771839,
-          "format_nt_jobs": [
-            {
-              "gu": 18,
-              "down": 20,
-              "jobs_NT": [
-                312670,
-                65168,
-                16541,
-                5226
-              ]
-            },
-            {
-              "gu": 22,
-              "down": 42,
-              "jobs_NT": [
-                105622,
-                28237,
-                6804,
-                1693
-              ]
-            },
-            {
-              "gu": 22,
-              "down": 20,
-              "jobs_NT": [
-                339214,
-                78601,
-                17357,
-                4878
-              ]
-            },
-            {
-              "gu": 18,
-              "down": 42,
-              "jobs_NT": [
-                70375,
-                15934,
-                3320,
-                654
-              ]
-            },
-            {
-              "gu": 21,
-              "down": 20,
-              "jobs_NT": [
-                187015,
-                42554,
-                10760,
-                3429
-              ]
-            },
-            {
-              "gu": 21,
-              "down": 42,
-              "jobs_NT": [
-                24201,
-                5344,
-                1146,
-                180
-              ]
-            },
-            {
-              "gu": 23,
-              "down": 20,
-              "jobs_NT": [
-                19700,
-                3442,
-                666,
-                115
-              ]
-            }
-          ],
-          "target_windows": 1035,
-          "target_rows": 4137,
-          "expert_copy_requested_bytes": 0
-        },
-        "actual_route": {
-          "BF16_GPU_rows": 33213,
-          "MoE_mode": 10,
-          "restored_dense_layers": 48,
-          "restored_cache_membership_verified": true,
-          "cache_payload_hash_verified": false
-        },
-        "timing": {
-          "windows": 1035,
-          "ms_per_window": {
-            "average_T": 4.0,
-            "tokens_per_window": 3.49,
-            "total": 275.99,
-            "verify": 242.25,
-            "GPU_reach_wait": 90.11,
-            "per_layer_host": 132.76,
-            "plan": 2.58,
-            "activation_quant": 0.48,
-            "jobs": 0.13,
-            "CPU_pool_run": 128.31,
-            "stage": 3.04,
-            "commit_emit": 0.1,
-            "draft": 33.61,
-            "CPU_experts": 27.59,
-            "CPU_entries": 35.67,
-            "VRAM_hits": 4.31,
-            "PCIe": 0.0
-          },
-          "outer_residual_ms_per_window": 0.03000000000002956,
-          "host_nested_residual_ms_per_window": 1.259999999999991,
-          "clock_binding": {
-            "absolute_total_difference_ms": 1.1499999999650754,
-            "rounding_bound_ms": 5.225,
-            "average_quantum_ms": 0.01,
-            "DONE_total_quantum_ms": 0.1
-          }
-        },
-        "journal": {
-          "valid": true,
-          "successful_warmups": 4,
-          "successful_long_requests": 1,
-          "journal_sha256": "fce52954b1f64c377d13df8e3aa7bbf484722f363a18b7b4b79a26f7a7dc5435"
-        },
-        "native_exit_code": 0,
-        "benchmark_exit_code": 0,
-        "evidence_sha256": "b14925e03a2729a544b5a32d15b673472e969fa3d69fdf080cf89174280c14d8",
-        "host_probe_accepted": true,
-        "fresh_faults": [],
-        "boot_unchanged": true,
-        "driver_after": {
-          "pci": "/sys/bus/pci/devices/0000:05:00.0",
-          "driver": "xe",
-          "vendor": "0x8086",
-          "device": "0xe20c",
-          "kernel": "7.0.0-38-generic",
-          "devcoredump": false
+        "decode_regions_ms_per_window": {
+          "GPU_reach_wait": 90.11,
+          "CPU_pool_run": 128.31,
+          "draft": 33.61
         }
       },
       {
         "index": 5,
         "arm": "off",
-        "active": false,
-        "ownership_closed": true,
         "passed": true,
-        "binary_sha256": "7791bf8b6da7f94095c5ef5cefb852dab8852a54f39181e22add81892eaf15bd",
-        "source_commit": "c90938140711f6f3e3a0819685ec8cff2cc2cc70",
-        "native_identity": {
-          "pid": 1795424,
-          "start_ticks": 125409457,
-          "sid": 1795389
-        },
-        "effective_environment_verified": true,
+        "ownership_closed": true,
+        "native_exit_code": 0,
         "sample": {
-          "ok": true,
-          "total_s": 340.34,
-          "prompt_tokens": 33214,
-          "reused_tokens": 0,
           "read_tokens": 33214,
+          "reused_tokens": 0,
           "generated_tokens": 3611,
-          "prompt_tps": 600.7,
-          "prompt_tps_source": "engine",
-          "decode_tps": 12.7,
-          "decode_tps_source": "engine",
           "prompt_ms": 55294.8,
           "decode_ms": 285021.4,
           "drafts_offered": 3102,
           "drafts_accepted": 2578,
           "finish_reason": "stop",
-          "request_sha256": "b0a065720a5eb86fa2d3f84d6371e35da774b4ea144d022608d49b80c227cba1",
-          "stream_complete": true,
-          "generated_tokens_source": "usage",
-          "eligible": true,
-          "speed_eligible": true,
-          "acceptance_rate": 0.8310767246937459,
-          "usage_generated_tokens": 3611,
-          "completion_includes_thinking": true,
-          "output_sha256": "5b7ae0f207d7804bc693ebde382f1a762c43f477fd01483939648d004cfaf971",
-          "reasoning_sha256": "8daeec41f22d90c32c1c1c5c3cfe4486a9ee6d65fa7ffe8857bfe980c02d411e",
-          "output_chars": 5496,
-          "reasoning_chars": 4368
+          "speed_eligible": true
         },
-        "work": {
-          "cpu_jobs": 1370846,
-          "cpu_entries": 1771839,
-          "format_nt_jobs": [
-            {
-              "gu": 18,
-              "down": 20,
-              "jobs_NT": [
-                312670,
-                65168,
-                16541,
-                5226
-              ]
-            },
-            {
-              "gu": 22,
-              "down": 42,
-              "jobs_NT": [
-                105622,
-                28237,
-                6804,
-                1693
-              ]
-            },
-            {
-              "gu": 22,
-              "down": 20,
-              "jobs_NT": [
-                339214,
-                78601,
-                17357,
-                4878
-              ]
-            },
-            {
-              "gu": 18,
-              "down": 42,
-              "jobs_NT": [
-                70375,
-                15934,
-                3320,
-                654
-              ]
-            },
-            {
-              "gu": 21,
-              "down": 20,
-              "jobs_NT": [
-                187015,
-                42554,
-                10760,
-                3429
-              ]
-            },
-            {
-              "gu": 21,
-              "down": 42,
-              "jobs_NT": [
-                24201,
-                5344,
-                1146,
-                180
-              ]
-            },
-            {
-              "gu": 23,
-              "down": 20,
-              "jobs_NT": [
-                19700,
-                3442,
-                666,
-                115
-              ]
-            }
-          ],
-          "target_windows": 1035,
-          "target_rows": 4137,
-          "expert_copy_requested_bytes": 0
-        },
-        "actual_route": {
-          "BF16_GPU_rows": 33213,
-          "MoE_mode": 10,
-          "restored_dense_layers": 48,
-          "restored_cache_membership_verified": true,
-          "cache_payload_hash_verified": false
-        },
-        "timing": {
-          "windows": 1035,
-          "ms_per_window": {
-            "average_T": 4.0,
-            "tokens_per_window": 3.49,
-            "total": 275.38,
-            "verify": 241.62,
-            "GPU_reach_wait": 90.34,
-            "per_layer_host": 132.72,
-            "plan": 2.55,
-            "activation_quant": 0.47,
-            "jobs": 0.14,
-            "CPU_pool_run": 128.39,
-            "stage": 2.21,
-            "commit_emit": 0.09,
-            "draft": 33.63,
-            "CPU_experts": 27.59,
-            "CPU_entries": 35.67,
-            "VRAM_hits": 4.31,
-            "PCIe": 0.0
-          },
-          "outer_residual_ms_per_window": 0.03999999999996362,
-          "host_nested_residual_ms_per_window": 1.170000000000016,
-          "clock_binding": {
-            "absolute_total_difference_ms": 3.1000000000349246,
-            "rounding_bound_ms": 5.225,
-            "average_quantum_ms": 0.01,
-            "DONE_total_quantum_ms": 0.1
-          }
-        },
-        "journal": {
-          "valid": true,
-          "successful_warmups": 4,
-          "successful_long_requests": 1,
-          "journal_sha256": "592f585f82fc6576614c7033cfd317f768291d71e2e3547421ca9238cf41f3ef"
-        },
-        "native_exit_code": 0,
-        "benchmark_exit_code": 0,
-        "evidence_sha256": "5f775d9917612bea8f49121de72ac7f5054e418aeb70fe4459f9af33f8cfe7e3",
-        "host_probe_accepted": true,
-        "fresh_faults": [],
-        "boot_unchanged": true,
-        "driver_after": {
-          "pci": "/sys/bus/pci/devices/0000:05:00.0",
-          "driver": "xe",
-          "vendor": "0x8086",
-          "device": "0xe20c",
-          "kernel": "7.0.0-38-generic",
-          "devcoredump": false
+        "decode_regions_ms_per_window": {
+          "GPU_reach_wait": 90.34,
+          "CPU_pool_run": 128.39,
+          "draft": 33.63
         }
       },
       {
         "index": 6,
         "arm": "off",
-        "active": false,
-        "ownership_closed": true,
         "passed": true,
-        "binary_sha256": "7791bf8b6da7f94095c5ef5cefb852dab8852a54f39181e22add81892eaf15bd",
-        "source_commit": "c90938140711f6f3e3a0819685ec8cff2cc2cc70",
-        "native_identity": {
-          "pid": 1827551,
-          "start_ticks": 125505692,
-          "sid": 1827513
-        },
-        "effective_environment_verified": true,
+        "ownership_closed": true,
+        "native_exit_code": 0,
         "sample": {
-          "ok": true,
-          "total_s": 349.719,
-          "prompt_tokens": 33214,
-          "reused_tokens": 0,
           "read_tokens": 33214,
+          "reused_tokens": 0,
           "generated_tokens": 3611,
-          "prompt_tps": 510.4,
-          "prompt_tps_source": "engine",
-          "decode_tps": 12.7,
-          "decode_tps_source": "engine",
           "prompt_ms": 65073.3,
           "decode_ms": 284622.1,
           "drafts_offered": 3102,
           "drafts_accepted": 2578,
           "finish_reason": "stop",
-          "request_sha256": "b0a065720a5eb86fa2d3f84d6371e35da774b4ea144d022608d49b80c227cba1",
-          "stream_complete": true,
-          "generated_tokens_source": "usage",
-          "eligible": true,
-          "speed_eligible": true,
-          "acceptance_rate": 0.8310767246937459,
-          "usage_generated_tokens": 3611,
-          "completion_includes_thinking": true,
-          "output_sha256": "5b7ae0f207d7804bc693ebde382f1a762c43f477fd01483939648d004cfaf971",
-          "reasoning_sha256": "8daeec41f22d90c32c1c1c5c3cfe4486a9ee6d65fa7ffe8857bfe980c02d411e",
-          "output_chars": 5496,
-          "reasoning_chars": 4368
+          "speed_eligible": true
         },
-        "work": {
-          "cpu_jobs": 1370846,
-          "cpu_entries": 1771839,
-          "format_nt_jobs": [
-            {
-              "gu": 18,
-              "down": 20,
-              "jobs_NT": [
-                312670,
-                65168,
-                16541,
-                5226
-              ]
-            },
-            {
-              "gu": 22,
-              "down": 42,
-              "jobs_NT": [
-                105622,
-                28237,
-                6804,
-                1693
-              ]
-            },
-            {
-              "gu": 22,
-              "down": 20,
-              "jobs_NT": [
-                339214,
-                78601,
-                17357,
-                4878
-              ]
-            },
-            {
-              "gu": 18,
-              "down": 42,
-              "jobs_NT": [
-                70375,
-                15934,
-                3320,
-                654
-              ]
-            },
-            {
-              "gu": 21,
-              "down": 20,
-              "jobs_NT": [
-                187015,
-                42554,
-                10760,
-                3429
-              ]
-            },
-            {
-              "gu": 21,
-              "down": 42,
-              "jobs_NT": [
-                24201,
-                5344,
-                1146,
-                180
-              ]
-            },
-            {
-              "gu": 23,
-              "down": 20,
-              "jobs_NT": [
-                19700,
-                3442,
-                666,
-                115
-              ]
-            }
-          ],
-          "target_windows": 1035,
-          "target_rows": 4137,
-          "expert_copy_requested_bytes": 0
-        },
-        "actual_route": {
-          "BF16_GPU_rows": 33213,
-          "MoE_mode": 10,
-          "restored_dense_layers": 48,
-          "restored_cache_membership_verified": true,
-          "cache_payload_hash_verified": false
-        },
-        "timing": {
-          "windows": 1035,
-          "ms_per_window": {
-            "average_T": 4.0,
-            "tokens_per_window": 3.49,
-            "total": 275.0,
-            "verify": 241.26,
-            "GPU_reach_wait": 90.13,
-            "per_layer_host": 132.27,
-            "plan": 2.61,
-            "activation_quant": 0.49,
-            "jobs": 0.13,
-            "CPU_pool_run": 127.9,
-            "stage": 2.67,
-            "commit_emit": 0.08,
-            "draft": 33.63,
-            "CPU_experts": 27.59,
-            "CPU_entries": 35.67,
-            "VRAM_hits": 4.31,
-            "PCIe": 0.0
-          },
-          "outer_residual_ms_per_window": 0.03000000000002956,
-          "host_nested_residual_ms_per_window": 1.1400000000000148,
-          "clock_binding": {
-            "absolute_total_difference_ms": 2.900000000023283,
-            "rounding_bound_ms": 5.225,
-            "average_quantum_ms": 0.01,
-            "DONE_total_quantum_ms": 0.1
-          }
-        },
-        "journal": {
-          "valid": true,
-          "successful_warmups": 4,
-          "successful_long_requests": 1,
-          "journal_sha256": "4713dd200bacdfb0ed90e38b64ef0cf30f43aef71765a2c2c594c1d6799ae30e"
-        },
-        "native_exit_code": 0,
-        "benchmark_exit_code": 0,
-        "evidence_sha256": "656835d61b301e673fa00243e4c8622eb3ebb765630288223a8cef6460405c38",
-        "host_probe_accepted": true,
-        "fresh_faults": [],
-        "boot_unchanged": true,
-        "driver_after": {
-          "pci": "/sys/bus/pci/devices/0000:05:00.0",
-          "driver": "xe",
-          "vendor": "0x8086",
-          "device": "0xe20c",
-          "kernel": "7.0.0-38-generic",
-          "devcoredump": false
+        "decode_regions_ms_per_window": {
+          "GPU_reach_wait": 90.13,
+          "CPU_pool_run": 127.9,
+          "draft": 33.63
         }
       },
       {
         "index": 7,
         "arm": "on",
-        "active": false,
-        "ownership_closed": true,
         "passed": true,
-        "binary_sha256": "7791bf8b6da7f94095c5ef5cefb852dab8852a54f39181e22add81892eaf15bd",
-        "source_commit": "c90938140711f6f3e3a0819685ec8cff2cc2cc70",
-        "native_identity": {
-          "pid": 1863691,
-          "start_ticks": 125611850,
-          "sid": 1863661
-        },
-        "effective_environment_verified": true,
-        "service": {
-          "request": 5,
-          "same_request_census": true,
-          "thread_count": 6,
-          "calls": 5560494,
-          "wall_ns": 648891987004,
-          "cpu_ns": 621632874422,
-          "leaf_columns": [
-            "gu",
-            "down",
-            "NT",
-            "GU_calls",
-            "GU_wall_ns",
-            "GU_cpu_ns",
-            "HQ_wall_ns",
-            "HQ_cpu_ns",
-            "DOWN_calls",
-            "DOWN_wall_ns",
-            "DOWN_cpu_ns"
-          ],
-          "leaf_rows": [
-            [18, 20, 1, 473756, 103322921641, 99557383578, 486004492, 263891755, 473756, 49703856161, 47117256198],
-            [18, 20, 2, 101920, 23300644244, 22354632000, 119960543, 65199971, 101920, 9801993482, 9283195813],
-            [18, 20, 3, 26759, 6574680087, 6310893185, 33041081, 19128035, 26759, 3210649449, 3082249878],
-            [18, 20, 4, 8863, 2324932443, 2251169433, 10753922, 6905068, 8863, 1253177283, 1194187158],
-            [18, 42, 1, 105246, 23139408715, 22239459364, 136095041, 86239471, 105246, 6740315796, 6487412921],
-            [18, 42, 2, 24321, 5694814602, 5469433312, 39785807, 28368093, 24321, 1985282658, 1901922104],
-            [18, 42, 3, 5143, 1347086995, 1276680242, 9990565, 7751028, 5143, 537104943, 507027528],
-            [18, 42, 4, 1034, 291202552, 278270813, 2351367, 1872831, 1034, 128070794, 121741083],
-            [21, 20, 1, 287849, 75736515784, 73102951689, 287566878, 155156150, 287849, 29445976286, 28217268968],
-            [21, 20, 2, 67638, 19185487601, 18451465045, 76825446, 42225028, 67638, 6390620661, 6078630954],
-            [21, 20, 3, 17548, 5692874184, 5443153722, 23828329, 12435838, 17548, 2083849021, 2007985319],
-            [21, 20, 4, 5945, 1974635684, 1926439729, 11551321, 4504841, 5945, 843394954, 781040659],
-            [21, 42, 1, 35891, 9751119207, 9440375336, 48768244, 29550044, 35891, 2355742738, 2221327872],
-            [21, 42, 2, 8066, 2415566768, 2300662480, 13123513, 9445553, 8066, 664365374, 635381064],
-            [21, 42, 3, 1714, 597414614, 575517522, 3868432, 2659810, 1714, 180379996, 175618366],
-            [21, 42, 4, 299, 106358282, 102233978, 648361, 516982, 299, 33750821, 33421885],
-            [22, 20, 1, 507735, 73863250363, 70755842065, 519464755, 286830560, 507735, 53637194471, 51272064398],
-            [22, 20, 2, 121417, 31534068497, 30288469653, 139790921, 79641309, 121417, 11600000940, 11122971190],
-            [22, 20, 3, 27943, 8067392742, 7720501166, 37612968, 20386386, 27943, 3322674249, 3204289692],
-            [22, 20, 4, 8189, 2628724045, 2520488447, 10238531, 6458013, 8189, 1144714421, 1097924182],
-            [22, 42, 1, 160956, 22975789720, 22046587587, 204479794, 129817529, 160956, 10092409367, 9603669022],
-            [22, 42, 2, 43837, 11248923833, 10856259921, 72632891, 49904089, 43837, 3481197866, 3324945709],
-            [22, 42, 3, 10847, 3147013683, 3033462258, 21115907, 15896619, 10847, 1057988463, 1028694228],
-            [22, 42, 4, 2806, 918813990, 884489251, 6045216, 4903303, 2806, 325374027, 313555665],
-            [23, 20, 1, 31988, 5754050305, 5518542372, 29682097, 16242141, 31988, 3067581185, 2971119568],
-            [23, 20, 2, 5740, 933633632, 910860346, 5649293, 3340898, 5740, 510241282, 481996573],
-            [23, 20, 3, 1165, 211133422, 207213029, 1166870, 740075, 1165, 129475139, 122447740],
-            [23, 20, 4, 209, 47561304, 44214967, 235201, 146035, 209, 26308452, 25718740]
-          ]
-        },
+        "ownership_closed": true,
+        "native_exit_code": 0,
         "sample": {
-          "ok": true,
-          "total_s": 346.341,
-          "prompt_tokens": 33214,
-          "reused_tokens": 0,
           "read_tokens": 33214,
+          "reused_tokens": 0,
           "generated_tokens": 3611,
-          "prompt_tps": 587.3,
-          "prompt_tps_source": "engine",
-          "decode_tps": 12.5,
-          "decode_tps_source": "engine",
           "prompt_ms": 56555.2,
           "decode_ms": 289761.5,
           "drafts_offered": 3102,
           "drafts_accepted": 2578,
           "finish_reason": "stop",
-          "request_sha256": "b0a065720a5eb86fa2d3f84d6371e35da774b4ea144d022608d49b80c227cba1",
-          "stream_complete": true,
-          "generated_tokens_source": "usage",
-          "eligible": true,
-          "speed_eligible": true,
-          "acceptance_rate": 0.8310767246937459,
-          "usage_generated_tokens": 3611,
-          "completion_includes_thinking": true,
-          "output_sha256": "5b7ae0f207d7804bc693ebde382f1a762c43f477fd01483939648d004cfaf971",
-          "reasoning_sha256": "8daeec41f22d90c32c1c1c5c3cfe4486a9ee6d65fa7ffe8857bfe980c02d411e",
-          "output_chars": 5496,
-          "reasoning_chars": 4368
+          "speed_eligible": true
         },
-        "work": {
-          "cpu_jobs": 1370846,
-          "cpu_entries": 1771839,
-          "format_nt_jobs": [
-            {
-              "gu": 18,
-              "down": 20,
-              "jobs_NT": [
-                312670,
-                65168,
-                16541,
-                5226
-              ]
-            },
-            {
-              "gu": 22,
-              "down": 42,
-              "jobs_NT": [
-                105622,
-                28237,
-                6804,
-                1693
-              ]
-            },
-            {
-              "gu": 22,
-              "down": 20,
-              "jobs_NT": [
-                339214,
-                78601,
-                17357,
-                4878
-              ]
-            },
-            {
-              "gu": 18,
-              "down": 42,
-              "jobs_NT": [
-                70375,
-                15934,
-                3320,
-                654
-              ]
-            },
-            {
-              "gu": 21,
-              "down": 20,
-              "jobs_NT": [
-                187015,
-                42554,
-                10760,
-                3429
-              ]
-            },
-            {
-              "gu": 21,
-              "down": 42,
-              "jobs_NT": [
-                24201,
-                5344,
-                1146,
-                180
-              ]
-            },
-            {
-              "gu": 23,
-              "down": 20,
-              "jobs_NT": [
-                19700,
-                3442,
-                666,
-                115
-              ]
-            }
-          ],
-          "target_windows": 1035,
-          "target_rows": 4137,
-          "expert_copy_requested_bytes": 0
+        "decode_regions_ms_per_window": {
+          "GPU_reach_wait": 90.56,
+          "CPU_pool_run": 132.39,
+          "draft": 33.58
         },
-        "actual_route": {
-          "BF16_GPU_rows": 33213,
-          "MoE_mode": 10,
-          "restored_dense_layers": 48,
-          "restored_cache_membership_verified": true,
-          "cache_payload_hash_verified": false
-        },
-        "timing": {
-          "windows": 1035,
-          "ms_per_window": {
-            "average_T": 4.0,
-            "tokens_per_window": 3.49,
-            "total": 279.96,
-            "verify": 246.27,
-            "GPU_reach_wait": 90.56,
-            "per_layer_host": 136.81,
-            "plan": 2.58,
-            "activation_quant": 0.47,
-            "jobs": 0.14,
-            "CPU_pool_run": 132.39,
-            "stage": 2.7,
-            "commit_emit": 0.08,
-            "draft": 33.58,
-            "CPU_experts": 27.59,
-            "CPU_entries": 35.67,
-            "VRAM_hits": 4.31,
-            "PCIe": 0.0
-          },
-          "outer_residual_ms_per_window": 0.029999999999972715,
-          "host_nested_residual_ms_per_window": 1.2300000000000182,
-          "clock_binding": {
-            "absolute_total_difference_ms": 2.900000000023283,
-            "rounding_bound_ms": 5.225,
-            "average_quantum_ms": 0.01,
-            "DONE_total_quantum_ms": 0.1
+        "service": {
+          "calls": 5560494,
+          "wall_ns": 648891987004,
+          "cpu_ns": 621632874422,
+          "leaf_cpu_ns": {
+            "GU": 425867652490,
+            "HQ": 1350157455,
+            "DOWN": 194415064477
           }
-        },
-        "journal": {
-          "valid": true,
-          "successful_warmups": 4,
-          "successful_long_requests": 1,
-          "journal_sha256": "8888a0c7a2a076355f0b64cab99bdcfc20f46cf96581867e70cf75b9e5e139b7"
-        },
-        "native_exit_code": 0,
-        "benchmark_exit_code": 0,
-        "evidence_sha256": "38d2c415daf2994c3f7236ec9f7a5c48fbd68126c09788d69e85a9c0581b9372",
-        "host_probe_accepted": true,
-        "fresh_faults": [],
-        "boot_unchanged": true,
-        "driver_after": {
-          "pci": "/sys/bus/pci/devices/0000:05:00.0",
-          "driver": "xe",
-          "vendor": "0x8086",
-          "device": "0xe20c",
-          "kernel": "7.0.0-38-generic",
-          "devcoredump": false
         }
       },
       {
         "index": 8,
         "arm": "original",
-        "active": false,
-        "ownership_closed": true,
         "passed": true,
-        "binary_sha256": "22182f1a5e62e5f4259ce49a75ae44afbd988166ec79324816e499ff37ef60e4",
-        "source_commit": "c90938140711f6f3e3a0819685ec8cff2cc2cc70",
-        "native_identity": {
-          "pid": 1889642,
-          "start_ticks": 125680615,
-          "sid": 1889606
-        },
-        "effective_environment_verified": true,
+        "ownership_closed": true,
+        "native_exit_code": 0,
         "sample": {
-          "ok": true,
-          "total_s": 342.27,
-          "prompt_tokens": 33214,
-          "reused_tokens": 0,
           "read_tokens": 33214,
+          "reused_tokens": 0,
           "generated_tokens": 3611,
-          "prompt_tps": 595.1,
-          "prompt_tps_source": "engine",
-          "decode_tps": 12.6,
-          "decode_tps_source": "engine",
           "prompt_ms": 55813.6,
           "decode_ms": 286432.2,
           "drafts_offered": 3102,
           "drafts_accepted": 2578,
           "finish_reason": "stop",
-          "request_sha256": "b0a065720a5eb86fa2d3f84d6371e35da774b4ea144d022608d49b80c227cba1",
-          "stream_complete": true,
-          "generated_tokens_source": "usage",
-          "eligible": true,
-          "speed_eligible": true,
-          "acceptance_rate": 0.8310767246937459,
-          "usage_generated_tokens": 3611,
-          "completion_includes_thinking": true,
-          "output_sha256": "5b7ae0f207d7804bc693ebde382f1a762c43f477fd01483939648d004cfaf971",
-          "reasoning_sha256": "8daeec41f22d90c32c1c1c5c3cfe4486a9ee6d65fa7ffe8857bfe980c02d411e",
-          "output_chars": 5496,
-          "reasoning_chars": 4368
+          "speed_eligible": true
         },
-        "work": {
-          "cpu_jobs": 1370846,
-          "cpu_entries": 1771839,
-          "format_nt_jobs": [
-            {
-              "gu": 18,
-              "down": 20,
-              "jobs_NT": [
-                312670,
-                65168,
-                16541,
-                5226
-              ]
-            },
-            {
-              "gu": 22,
-              "down": 42,
-              "jobs_NT": [
-                105622,
-                28237,
-                6804,
-                1693
-              ]
-            },
-            {
-              "gu": 22,
-              "down": 20,
-              "jobs_NT": [
-                339214,
-                78601,
-                17357,
-                4878
-              ]
-            },
-            {
-              "gu": 18,
-              "down": 42,
-              "jobs_NT": [
-                70375,
-                15934,
-                3320,
-                654
-              ]
-            },
-            {
-              "gu": 21,
-              "down": 20,
-              "jobs_NT": [
-                187015,
-                42554,
-                10760,
-                3429
-              ]
-            },
-            {
-              "gu": 21,
-              "down": 42,
-              "jobs_NT": [
-                24201,
-                5344,
-                1146,
-                180
-              ]
-            },
-            {
-              "gu": 23,
-              "down": 20,
-              "jobs_NT": [
-                19700,
-                3442,
-                666,
-                115
-              ]
-            }
-          ],
-          "target_windows": 1035,
-          "target_rows": 4137,
-          "expert_copy_requested_bytes": 0
-        },
-        "actual_route": {
-          "BF16_GPU_rows": 33213,
-          "MoE_mode": 10,
-          "restored_dense_layers": 48,
-          "restored_cache_membership_verified": true,
-          "cache_payload_hash_verified": false
-        },
-        "timing": {
-          "windows": 1035,
-          "ms_per_window": {
-            "average_T": 4.0,
-            "tokens_per_window": 3.49,
-            "total": 276.75,
-            "verify": 243.04,
-            "GPU_reach_wait": 90.42,
-            "per_layer_host": 133.66,
-            "plan": 2.64,
-            "activation_quant": 0.47,
-            "jobs": 0.14,
-            "CPU_pool_run": 129.25,
-            "stage": 2.51,
-            "commit_emit": 0.09,
-            "draft": 33.58,
-            "CPU_experts": 27.59,
-            "CPU_entries": 35.67,
-            "VRAM_hits": 4.31,
-            "PCIe": 0.0
-          },
-          "outer_residual_ms_per_window": 0.040000000000020464,
-          "host_nested_residual_ms_per_window": 1.1599999999999966,
-          "clock_binding": {
-            "absolute_total_difference_ms": 4.0499999999883585,
-            "rounding_bound_ms": 5.225,
-            "average_quantum_ms": 0.01,
-            "DONE_total_quantum_ms": 0.1
-          }
-        },
-        "journal": {
-          "valid": true,
-          "successful_warmups": 4,
-          "successful_long_requests": 1,
-          "journal_sha256": "eda8ff5b1b9d2e4b33b1eed7554392b2fcb1da72a7afa0b2c8cec30b088c0c0f"
-        },
-        "native_exit_code": 0,
-        "benchmark_exit_code": 0,
-        "evidence_sha256": "6aa2ae2a565c4a90d413307c775f86575a95bf1081e531e8331c3c1268967707",
-        "host_probe_accepted": true,
-        "fresh_faults": [],
-        "boot_unchanged": true,
-        "driver_after": {
-          "pci": "/sys/bus/pci/devices/0000:05:00.0",
-          "driver": "xe",
-          "vendor": "0x8086",
-          "device": "0xe20c",
-          "kernel": "7.0.0-38-generic",
-          "devcoredump": false
+        "decode_regions_ms_per_window": {
+          "GPU_reach_wait": 90.42,
+          "CPU_pool_run": 129.25,
+          "draft": 33.58
         }
       }
     ],
-    "plan": {
-      "order": [
-        "original",
-        "off",
-        "on",
-        "on",
-        "original",
-        "off",
-        "off",
-        "on",
-        "original"
+    "common_sample": {
+      "request_sha256": "b0a065720a5eb86fa2d3f84d6371e35da774b4ea144d022608d49b80c227cba1",
+      "output_sha256": "5b7ae0f207d7804bc693ebde382f1a762c43f477fd01483939648d004cfaf971",
+      "reasoning_sha256": "8daeec41f22d90c32c1c1c5c3cfe4486a9ee6d65fa7ffe8857bfe980c02d411e",
+      "output_chars": 5496,
+      "reasoning_chars": 4368,
+      "completion_includes_thinking": true
+    },
+    "common_work": {
+      "cpu_jobs": 1370846,
+      "cpu_entries": 1771839,
+      "format_nt_jobs": [
+        {
+          "gu": 18,
+          "down": 20,
+          "jobs_NT": [
+            312670,
+            65168,
+            16541,
+            5226
+          ]
+        },
+        {
+          "gu": 22,
+          "down": 42,
+          "jobs_NT": [
+            105622,
+            28237,
+            6804,
+            1693
+          ]
+        },
+        {
+          "gu": 22,
+          "down": 20,
+          "jobs_NT": [
+            339214,
+            78601,
+            17357,
+            4878
+          ]
+        },
+        {
+          "gu": 18,
+          "down": 42,
+          "jobs_NT": [
+            70375,
+            15934,
+            3320,
+            654
+          ]
+        },
+        {
+          "gu": 21,
+          "down": 20,
+          "jobs_NT": [
+            187015,
+            42554,
+            10760,
+            3429
+          ]
+        },
+        {
+          "gu": 21,
+          "down": 42,
+          "jobs_NT": [
+            24201,
+            5344,
+            1146,
+            180
+          ]
+        },
+        {
+          "gu": 23,
+          "down": 20,
+          "jobs_NT": [
+            19700,
+            3442,
+            666,
+            115
+          ]
+        }
       ],
-      "repetitions_per_arm": 3,
-      "workload": "regular-code",
-      "input_minimum": 32768,
-      "output_minimum": 1024,
-      "output_maximum": 16384,
-      "question": "Bound compile-enabled-but-off overhead against original,then CPU-service-on overhead against the same off binary;collect conserved long-request service by format/NT.",
-      "constants": "Original6e40 versus its four scoped observer/test patches only;same selected math/configuration,1256slots,131072residentINT8,8192chunks,spec4,five workers+host. Common parameter validation,retained UR reference,stage trace,CPU census and nested decode clocks;only CPU_SERVICE0/1 and declared binary differ. Environment fixed before exec.",
-      "decision": "Complete all nine independent processes in three Latin-order triples. For each triple compare off/original and on/off actual token throughput for prefill/decode separately. Off/original needs geomean>=0.98 and every ratio>=0.95 in both phases. On/off decode needs geomean>=0.95 and every ratio>=0.90;prefill needs0.98/0.95. Each pairing additionally needs CPU entries per emitted token within5%,each format/NT job count normalized to equal emitted tokens within5% or two jobs for small bins,and absolute MTP acceptance difference<=0.02,otherwise overhead is confounded. Code acceptance>=0.60 is recorded separately;no weak-pair claim. No speed-based early stopping.",
-      "stopping": "Stop first source/runtime/owner/fault/budget/native/request/census/observer error;no retries,replacements or order changes. Commit every process outcome before next launch. Full model hashes before cohort and after final process;inventory/stat/ctime checked each launch and exit.",
-      "retention": "Keep individual samples,paired decisions and conserved on-arm format/NT service needed to choose the next CPU leaf calibration. Retire successful raw traces/logs/cache after each committed process. Keep only three generated inputs per planned process through cohort closure;retire unused extra build/controllers after source recovery when comparison closes.",
-      "limits": "Observed workload-specific overhead and attribution only;not clean speed,physical RAM/PCIe traffic,CPU arithmetic saturation,inference adoption,task quality,weak-MTP,agent-session,262144-context,RESTORE or ordinary runtime destruction qualification."
+      "target_windows": 1035,
+      "target_rows": 4137,
+      "expert_copy_requested_bytes": 0
     },
-    "budgets": {
-      "wall": 1800,
-      "cpu": 21600,
-      "rss_cap": 103079215104,
-      "text_cap": 33554432,
-      "file_cap": 33554432,
-      "total_cap": 67108864
+    "common_actual_route": {
+      "BF16_GPU_rows": 33213,
+      "MoE_mode": 10,
+      "restored_dense_layers": 48,
+      "restored_cache_membership_verified": true,
+      "cache_payload_hash_verified": false
     },
-    "active": false,
-    "ownership_closed": true,
-    "passed": true,
-    "complete": true,
-    "inference_adopted": false,
+    "checks": {
+      "independent_native_processes": 9,
+      "normal_owned_closures": 9,
+      "same_actual_work_route_and_request_verified": 9,
+      "same_request_service_census_conserved": 3,
+      "final_model_hashes_matched": 15,
+      "fresh_faults": [],
+      "boot_unchanged": true,
+      "effective_environment_verified": 9,
+      "cache_payload_hash_verified": false
+    },
     "decision": {
       "comparisons": {
         "off_vs_original": {
@@ -3418,62 +446,20 @@
       "inference_adopted": false,
       "clean_speed_qualified": false,
       "hardware_saturation_qualified": false
-    }
+    },
+    "active": false,
+    "ownership_closed": true,
+    "passed": true,
+    "complete": true,
+    "inference_adopted": false,
+    "limits": "Observed workload-specific overhead and attribution only;not clean speed,physical RAM/PCIe traffic,CPU arithmetic saturation,inference adoption,task quality,weak-MTP,agent-session,262144-context,RESTORE or ordinary runtime destruction qualification."
   },
-  "observer_overhead_retirement": {
-    "processes": [
-      0,
-      1,
-      2,
-      3,
-      4,
-      5,
-      6,
-      7
-    ],
-    "host_output_retired": true,
-    "files": 547,
-    "bytes": 102089059,
-    "source_inputs_recovered": 193,
-    "original_frozen_plan_commit": "1004c67b2",
-    "original_native_inputs_recovered": 9853,
-    "outcomes_unchanged": true,
-    "remaining_generated_inputs": 27,
-    "consumer": "Frozen nine-process cohort;retain three generated admission inputs per planned process and both named engine builds through comparison closure. Native/model admission receipts remain live;successful raw output does not.",
-    "manifests": [
-      {
-        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/closed-cpu-service-overhead-v1-process-0-20261025.jsonl",
-        "sha256": "9ac8613d380be5da8a7f079b48449e2f0b84fbaadf910ff0d3946889e83260e3"
-      },
-      {
-        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/closed-cpu-service-overhead-v1-process-1-and-reviews-20261025.jsonl",
-        "sha256": "dfcbecd57e19cb1754dc305276362a559fb883b8f6924144c2d1a6af12e1e0b4"
-      },
-      {
-        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/closed-cpu-service-overhead-v1-process-2-20261025.jsonl",
-        "sha256": "862f6b89620360189925433a73e5e55afdf887e697037d158582b3b36c15ecf6"
-      },
-      {
-        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/closed-cpu-service-overhead-v1-process-3-20261025.jsonl",
-        "sha256": "f116baf506c0c9bbc6e260b3b3a604dd09e7b354e3935ecda7f650b10c1d531a"
-      },
-      {
-        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/closed-cpu-service-overhead-v1-process-4-and-source-audit-20261025.jsonl",
-        "sha256": "b471279b104acbfd3af7bb850d687337e02f8fa5c017f609e2173c0d99a1836e"
-      },
-      {
-        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/closed-cpu-service-overhead-v1-process-5-20261025.jsonl",
-        "sha256": "f73de764a0dce7cf93364fc1daa89cb7a381582b6b79c4fcee83b41b343d9063"
-      },
-      {
-        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/closed-cpu-service-overhead-v1-process-6-20261025.jsonl",
-        "sha256": "234ca8216cca96185be630eb729d36c7e619814e12ab4ac8e3d096b580fec8a3"
-      },
-      {
-        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/closed-cpu-service-overhead-v1-process-7-20261025.jsonl",
-        "sha256": "e29f16b97fed272776e0498df27ea141a94b05390e6a5aca59ef9db8f654560b"
-      }
-    ]
+  "observer_overhead_interpretation": {
+    "execution": "All nine ordered independent processes close normally;four warmups and one33214-fresh-input/3611-output thinking-on code request each. Same format/NT work and MTP2578/3102. All15 final model hashes match;no fresh faults;updated NEO/boot unchanged.",
+    "decision": "Frozen overall overhead qualification fails:off/original prefill ratios1.3014424,0.9978732,0.8577035;the third misses0.95 despite geomean1.0366031. Preserve first original72606.3ms and third off65073.3ms;their causes are unestablished. No retroactive phase-only adoption or changed thresholds.",
+    "decode": "Off/original geomean0.9992706 and on/off0.9850033 meet their prospective decode screens. This does not override the failed whole-comparison gate or qualify clean speed,hardware saturation or inference adoption.",
+    "next": "Retire this closed observer generation/launchers after exact source and recipe recovery. Keep original6e40 fallback and selected decode. Restore the reviewed prefill source independently;new model/phase evidence needs its own committed plan.",
+    "thread_followup": "Final on-arm six-thread summed CPU ranges102.094797405..105.284417412s,total621.632874422s. Cumulative balance does not establish per-batch critical-path balance,arithmetic/RAM saturation or a scheduling improvement."
   },
   "thread_service_followup": {
     "planned_on_index": 7,
@@ -3487,14 +473,9 @@
     ],
     "validation": "Bind to that native owner and the existing same-request service/census;require distinct six slots/owners and totals equal retained calls/wall_ns/cpu_ns. Existing reader has already checked stable TIDs across the five requests.",
     "limits": "One cumulative diagnostic can reveal skew,but cannot prove per-batch critical-path imbalance or arithmetic/RAM saturation. Leaf clocks omit pool/barrier/sleep/submission work and include memory stalls and charged clock costs.",
-    "consumer": "Main next source-pinned decode-only row-task calibration after full cohort closure;preserve the selected prefill policy and use actual format/NT mix. Retire successful raw output after compact validation.",
+    "consumer": "Diagnostic cumulative skew reference only. Failed overall overhead prevents selecting a CPU scheduling candidate from these clocks;fresh phase-specific qualification would be required. Main resumes independent prefill restoration.",
     "observation": {
       "index": 7,
-      "native_identity": {
-        "pid": 1863691,
-        "start_ticks": 125611850,
-        "sid": 1863661
-      },
       "request": 5,
       "rows": [
         [
@@ -3538,16 +519,9 @@
       "thread_bin_totals_conserved": true
     }
   },
-  "observer_overhead_interpretation": {
-    "execution": "All nine ordered independent processes close normally;four warmups and one33214-fresh-input/3611-output thinking-on code request each. Same format/NT work and MTP2578/3102. All15 final model hashes match;no fresh faults;updated NEO/boot unchanged.",
-    "decision": "Frozen overall overhead qualification fails:off/original prefill ratios1.3014424,0.9978732,0.8577035;the third misses0.95 despite geomean1.0366031. Preserve first original72606.3ms and third off65073.3ms;their causes are unestablished. No retroactive phase-only adoption or changed thresholds.",
-    "decode": "Off/original geomean0.9992706 and on/off0.9850033 meet their prospective decode screens. This does not override the failed whole-comparison gate or qualify clean speed,hardware saturation or inference adoption.",
-    "next": "Retire this closed observer generation/launchers after exact source and recipe recovery. Keep original6e40 fallback and selected decode. Restore the reviewed prefill source independently;new model/phase evidence needs its own committed plan.",
-    "thread_followup": "Final on-arm six-thread summed CPU ranges102.094797405..105.284417412s,total621.632874422s. Cumulative balance does not establish per-batch critical-path balance,arithmetic/RAM saturation or a scheduling improvement."
-  },
   "observer_generation_retirement": {
-    "stage": "prepared",
-    "complete": false,
+    "stage": "retired",
+    "complete": true,
     "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-service-original-v2",
     "cohort_root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-service-overhead-v1",
     "source_recovery_root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/observer-source-recovery-20261025",
@@ -3584,7 +558,7 @@
     ],
     "outcomes_unchanged": true,
     "consumer": "No execution consumer after retiring the five one-shot CPU-service launchers and their decision test. Optional collector/real-pool fixture source remains for a separately planned future attribution;failed overall overhead is not qualification.",
-    "next_action": "Commit launcher retirement and exact prepared deletion manifest,then verify unchanged owned paths/no model owners and unlink these four closed roots. Keep selected original13assets intact.",
+    "next_action": "Build only the committed selected-prefill restoration as the single extra generation;original6e40/13assets remain the validated fallback. No retained observer executable/controller/generated input remains.",
     "research_review_root": "/home/yayoi/orca/workspaces/Strata/sycl/.cache/strata-research/20261025/prefill-restoration-build-review",
     "launchers_retirement": {
       "archive_commit": "c7da83f55",
@@ -3599,6 +573,48 @@
         "tests/core/test_cpu_service_overhead.py"
       ],
       "reason": "Closed single-use observers/build/model comparison;no imports remain outside this retired chain. Git deletion diff records original blobs;retain reusable collector and real-pool source only."
+    },
+    "roots_verified_absent": true,
+    "categories": {
+      "observer_generation": {
+        "files": 726,
+        "bytes": 110975937
+      },
+      "cohort": {
+        "files": 96,
+        "bytes": 14535639
+      },
+      "source_recovery": {
+        "files": 7,
+        "bytes": 677296
+      },
+      "research_review": {
+        "files": 4,
+        "bytes": 12409
+      }
     }
+  },
+  "observer_overhead_retirement": {
+    "processes": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8
+    ],
+    "host_output_retired": true,
+    "files": 643,
+    "bytes": 116624698,
+    "source_inputs_recovered": 193,
+    "original_frozen_plan_commit": "1004c67b2",
+    "original_native_inputs_recovered": 9853,
+    "outcomes_unchanged": true,
+    "remaining_generated_inputs": 0,
+    "consumer": "Closed comparison;no remaining raw/generated admission inputs. Individual samples/failed overall decision remain in Git;selected original fallback retained for prefill restoration.",
+    "cohort_root_deleted": true
   }
 }

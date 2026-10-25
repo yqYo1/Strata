@@ -301,7 +301,7 @@ saturation. Stage clocks are nested. Expert-copy counters cover only their named
 route, not all physical PCIe traffic. Keep physical PCIe/VRAM traffic, CPU issued
 instructions and compatible-shape hardware ceilings unknown where unmeasured.
 
-The CPU attribution engine now links from the exact original-plus-observer
+The now-retired CPU attribution engine linked from the exact original-plus-observer
 source. All1402 actual compiler inputs match their prospective pins, with no
 current-worktree source leakage or changed CPU archive/fixture/configuration.
 Its same-build submission and graph profile0/profile1 checks pass in three
@@ -325,8 +325,8 @@ of the current tree's unselected layout/full-context changes. All612 actual
 compiler inputs match their prospective pins, and configure,build,census and
 both test processes close at exit0. This is same-leaf parity and counter/owner
 validation, not an independent mathematical oracle or a speed measurement.
-The build's CPU objects and fixture remain for the imminent original-plus-observer
-engine/model attribution; the validated original engine remains intact.
+That extra build, generated admission inputs and one-shot launchers are now
+retired after exact source/recipe recovery. The validated original remains intact.
 A bounded official-bench model check now passes:74-token warmup,then39261 fresh
 input tokens,each with24 generated thinking tokens. Actual long prefill uses39260
 BF16 GPU-residual rows and mode10;decode resumes with1256 expert slots. Both
@@ -355,9 +355,11 @@ path balance. Concurrent leaf sums include stalls and charged observer cost;
 they are not additive decode latency or evidence of arithmetic/RAM saturation.
 The next action is independent prefill source restoration with original6e40 and
 its decode implementation/configuration/1256 slots retained. Successful
-build/device/model raw output is retired after source/recipe recovery. Retirement
-of the closed comparison's generated admission inputs, extra build and launchers
-is the immediate cleanup action before the restoration build. Optional
+build/device/model raw output is retired after source/recipe recovery. The closed
+comparison's remaining833files/126201281bytes, including its extra build,
+generated inputs and consumed source-review output, are now deleted. Full
+receipts and format/NT tables recover from the pinned Git archive; current results
+keep individual samples, conserved work, useful aggregates and the failed decision. Optional
 `STRATA_CPU_SERVICE_PROFILE` compilation plus preexec`STRATA_CPU_SERVICE=1`
 collects decode-only pool GU/SwiGLU, hidden quantization and Down leaf scopes for
 the seven observed format pairs at H2560/FF640/NT1..4. It records calling-thread
@@ -403,11 +405,12 @@ the closed width samples; it is not an inference optimization or a speedup.
 
 The standalone collector and real-pool checks above do not establish model
 attribution. The former private comparison generation has retired. This
-instrumented engine uses original6e40 plus
+instrumented source uses original6e40 plus
 only the committed observer delta; the current worktree's unselected
-layout/full-context changes are excluded. Require observer-off/on overhead and
-model census/clock/fault/source checks before
-using the per-format attribution to select a kernel or placement optimization.
+layout/full-context changes are excluded. Its overall overhead gate failed;
+the extra executable is retired and normal compilation leaves this observer out.
+A new scoped observer plan and qualified model census/clock/fault/source checks
+are needed before selecting a kernel or placement optimization from leaf timing.
 
 [Client-resource evidence](../bench/results/2026-10-15-pr6-recovery-audit/client-resources-current.json)
 and [actual-mix CPU calibration](../bench/results/2026-10-15-pr6-recovery-audit/cpu-roofline-current.json)
