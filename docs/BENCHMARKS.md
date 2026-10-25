@@ -151,17 +151,18 @@ committed plan and admission. Scheduled CPU includes stalls and polling, and
 GPU busy counters do not measure arithmetic efficiency, RAM bandwidth or
 physical PCIe traffic. Keep those unresolved quantities explicit.
 
-The current `cpu_service_overhead.py` comparison separately measures the
+The closed CPU-service comparison separately measured the
 decode-pool leaf observer's cost:original6e40,observer-compiled but disabled,and
 the same observer binary enabled. Its frozen nine-process order uses the
 regular-code subset,thinking on,and the unchanged16384-token output budget.
 Each process runs the four official warmups and requires one eligible32K-input/1K-output
 request. Source,model,placement,runtime and common observers remain fixed.
-Resume the prepared cohort with `python3 -B tools/sycl/cpu_service_overhead.py run`
-only after committing the preceding process outcome;never rerun preparation
-or a closed process. This is observed overhead/attribution,not clean speed or
-inference adoption. The maintained prefill decisions and `cpu-service-current.json`
-record its current qualification and remaining gates.
+All nine processes closed normally, but the overall overhead gate failed:
+one off/original prefill ratio was0.857704, below0.95. The independent decode
+screens passed; they do not override that outcome. Do not rerun the closed
+controller or use this as qualified attribution, clean speed or inference
+adoption. The maintained prefill decisions and `cpu-service-current.json`
+retain its individual samples, original criteria and remaining gates.
 
 For a prefill-only screen, `bench.sh --prefill-only --prefill-tokens N` accepts
 32768,65536,98304 or131072 as the minimum **actual prompt and read tokens**.

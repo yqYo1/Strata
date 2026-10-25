@@ -37,7 +37,8 @@ conversation RESTORE verification. Review the KV-range helper's `STRATA_STATE_HA
 use separately from the full-context guard. The full-context macro and its CPU
 fixture still lack CMake build definitions; name an explicit gated build/fixture
 recipe before treating that diagnostic executable as available. Source restoration
-remains pending until the frozen nine-process comparison closes.
+remains pending; the frozen nine-process comparison has now closed. Its failed
+overall observer gate does not block the independent source restoration.
 
 ## Long-prefill processing order
 
@@ -332,21 +333,28 @@ validation is silent and no fresh fault appears. The long request records3487.67
 of summed thread CPU leaf time:GU2414.041345,HQ7.352099,Down1066.278971ms.
 These concurrent sums are not decode latency. Its59801.8ms prompt and1832.0ms
 decode are traced first-use diagnostics,not clean speed or sustained decode.
-The first original/off/on triple now closes normally with 33214 fresh input and
-3611 generated thinking/answer tokens in every arm. Their MTP counts and
-format/NT work agree. The on arm conserves all 28 format/NT leaf groups and six
-thread owners: 622.722 seconds of summed thread CPU, 68.561% GU, 0.216% hidden
-quantization and 31.223% Down. These concurrent sums include memory stalls and
-charged clock costs; they are not additive decode latency or a hardware bottleneck.
-Observer overhead and repeatable long-request attribution remain pending. The
-frozen comparison uses nine independent processes in three original/off/on order
-triples, with a fixed thinking-on regular-code request. It checks per-format/NT
-work and MTP agreement before interpreting timing ratios; all nine samples are
-required. Neither the smoke nor this first triple establishes decode
-nonregression, clean speed or a limiting hardware resource. Successful
-build/device/model raw output is retired after source/recipe recovery. The three generated model admission inputs remain for
-the active original/observer-off/observer-on comparison;review them and the
-extra build at that comparison's closure. Optional
+All nine original/off/on processes now close normally with33214 fresh input and
+3611 generated thinking/answer tokens each. MTP2578/3102 and format/NT work agree;
+all15 final model hashes match and no fresh fault appears. The frozen overall
+observer qualification **fails**: off/original prefill ratios are1.3014424,
+0.9978732 and0.8577035, with the third below0.95. Their geomean1.0366031 cannot
+override that individual gate. The first original72606.3ms and third off65073.3ms
+remain recorded; their causes are unestablished. Off/original decode geomean
+0.9992706 and on/off0.9850033 meet their separate screens, but do not change the
+failed whole-comparison outcome. No phase-only adoption or hardware attribution
+is qualified retroactively.
+
+The three on arms conserve28 format/NT groups and six stable thread owners.
+Their summed thread CPU times are622.722,626.381 and621.633seconds. The final
+arm retains six individual CPU totals102.095..105.284seconds for the named
+scheduling question. Cumulative balance does not establish per-batch critical
+path balance. Concurrent leaf sums include stalls and charged observer cost;
+they are not additive decode latency or evidence of arithmetic/RAM saturation.
+The next action is independent prefill source restoration with original6e40 and
+its decode implementation/configuration/1256 slots retained. Successful
+build/device/model raw output is retired after source/recipe recovery. Retirement
+of the closed comparison's generated admission inputs, extra build and launchers
+is the immediate cleanup action before the restoration build. Optional
 `STRATA_CPU_SERVICE_PROFILE` compilation plus preexec`STRATA_CPU_SERVICE=1`
 collects decode-only pool GU/SwiGLU, hidden quantization and Down leaf scopes for
 the seven observed format pairs at H2560/FF640/NT1..4. It records calling-thread
