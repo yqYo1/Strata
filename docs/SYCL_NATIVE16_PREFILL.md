@@ -250,6 +250,10 @@ that failed run and its actual process-closure reconciliation recover at
 `58e353eaa`, and the new host controls cover it. This qualifies these small
 fixtures only. Model correctness,clean speed and ordinary runtime destruction
 remain unqualified on the new runtime; keep the retained UR reference until exit.
+The31 successful/resolved diagnostic files (1,118,277bytes) retire after exact
+8/7-input source and recipe recovery. The compact gate retains the33-file
+provider manifest and per-case provider/count checks for model qualification;
+repeated observed path lists recover from`c2d8a8c9f` if a concrete question needs them.
 
 ## Attribution limits and outstanding gates
 
