@@ -957,7 +957,7 @@
     }
   },
   "native_model": {
-    "stage": "prepared",
+    "stage": "model-checked",
     "source_commit": "804c515e75400e7268bcabf554548777088d1c1c",
     "device_reference": {
       "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-service-original-v2/device-probe-v1/record.json",
@@ -1202,11 +1202,188 @@
     "retention": "Retain compact source/command/config/environment,individual request extents/times/hash/outcomes and limits. After verification retire successful logs,trace,caches and generated duplicate inputs with a deletion manifest. Keep the original fallback and this one extra named observer generation through overhead/service attribution,then retire on closure.",
     "active": false,
     "ownership_closed": true,
-    "passed": false,
-    "complete": false,
+    "passed": true,
+    "complete": true,
     "adoption_qualified": false,
-    "samples": [],
+    "samples": [
+      {
+        "phase": "warm-up/chat",
+        "run": null,
+        "turn": null,
+        "request_index": 1,
+        "sample": {
+          "ok": true,
+          "prompt_tokens": 74,
+          "reused_tokens": 0,
+          "read_tokens": 74,
+          "generated_tokens": 24,
+          "prompt_ms": 29207.3,
+          "decode_ms": 7261.2,
+          "drafts_offered": 18,
+          "drafts_accepted": 18,
+          "finish_reason": "length",
+          "request_sha256": "6976dd85c26437117139f185ce0ac4da0ab9d1d4eb576dd2f9e252ae99d63f03",
+          "stream_complete": true,
+          "output_chars": 0,
+          "reasoning_chars": 113
+        }
+      },
+      {
+        "phase": "prefill-only",
+        "run": 0,
+        "turn": null,
+        "request_index": 3,
+        "sample": {
+          "ok": true,
+          "prompt_tokens": 39261,
+          "reused_tokens": 0,
+          "read_tokens": 39261,
+          "generated_tokens": 24,
+          "prompt_ms": 59801.8,
+          "decode_ms": 1832.0,
+          "drafts_offered": 21,
+          "drafts_accepted": 17,
+          "finish_reason": "length",
+          "request_sha256": "1e2b2e5a8e30a35f6f2765e6197a3bfbf1333c33ceb25f8e3575bc55efd7cbaa",
+          "stream_complete": true,
+          "output_chars": 0,
+          "reasoning_chars": 101,
+          "eligible": true,
+          "thinking_requested": true,
+          "reasoning_observed": true
+        }
+      }
+    ],
     "clean_speed_qualified": false,
-    "ordinary_teardown_qualified": false
+    "ordinary_teardown_qualified": false,
+    "begin_live_check": {
+      "owner_verified": true,
+      "environment_verified": true,
+      "only_pinned_executable_mappings": true,
+      "updated_NEO_observed": true
+    },
+    "end_live_check": {
+      "owner_verified": true,
+      "environment_verified": true,
+      "only_pinned_executable_mappings": true,
+      "updated_NEO_observed": true
+    },
+    "request_identity": [
+      {
+        "phase": "warm-up/chat",
+        "request_sha256": "6976dd85c26437117139f185ce0ac4da0ab9d1d4eb576dd2f9e252ae99d63f03",
+        "thinking": true,
+        "max_tokens": 24
+      },
+      {
+        "phase": "prefill-only",
+        "request_sha256": "1e2b2e5a8e30a35f6f2765e6197a3bfbf1333c33ceb25f8e3575bc55efd7cbaa",
+        "thinking": true,
+        "max_tokens": 24
+      }
+    ],
+    "activation": {
+      "pid": 1566079,
+      "loader": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_loader.so.0.12.0",
+      "threads_before": 1,
+      "preinit": 37,
+      "config_enabled": true,
+      "first_init": true,
+      "dispatch_result": 46,
+      "output_untouched": true,
+      "retained_reference_until_exit": true,
+      "runtime_teardown_qualified": false
+    },
+    "service_diagnostic": [
+      {
+        "request": 1,
+        "cpu_jobs": 7042,
+        "cpu_entries": 9855,
+        "same_request_census": true,
+        "thread_count": 6,
+        "calls": 30926,
+        "wall_ns": 3537061309,
+        "cpu_ns": 3401236893,
+        "operations": {
+          "GU": {
+            "calls": 11942,
+            "rows": 4506880,
+            "token_rows": 6307200,
+            "wall_ns": 2433678793,
+            "cpu_ns": 2334786475
+          },
+          "HQ": {
+            "calls": 7042,
+            "rows": 4506880,
+            "token_rows": 6307200,
+            "wall_ns": 14499622,
+            "cpu_ns": 7272060
+          },
+          "DOWN": {
+            "calls": 11942,
+            "rows": 18027520,
+            "token_rows": 25228800,
+            "wall_ns": 1088882894,
+            "cpu_ns": 1059178358
+          }
+        }
+      },
+      {
+        "request": 2,
+        "cpu_jobs": 7764,
+        "cpu_entries": 10727,
+        "same_request_census": true,
+        "thread_count": 6,
+        "calls": 34224,
+        "wall_ns": 3661657551,
+        "cpu_ns": 3487672415,
+        "operations": {
+          "GU": {
+            "calls": 13230,
+            "rows": 4968960,
+            "token_rows": 6865280,
+            "wall_ns": 2534138319,
+            "cpu_ns": 2414041345
+          },
+          "HQ": {
+            "calls": 7764,
+            "rows": 4968960,
+            "token_rows": 6865280,
+            "wall_ns": 12342076,
+            "cpu_ns": 7352099
+          },
+          "DOWN": {
+            "calls": 13230,
+            "rows": 19875840,
+            "token_rows": 27461120,
+            "wall_ns": 1115177156,
+            "cpu_ns": 1066278971
+          }
+        }
+      }
+    ],
+    "host_probe_accepted": true,
+    "native_exit_code": 0,
+    "benchmark_exit_code": 0,
+    "short_and_long_native_footer_conservation": true,
+    "actual_BF16_GPU_rows": 39260,
+    "actual_MoE_mode": 10,
+    "journal_valid": true,
+    "journal_complete": true,
+    "evidence_sha256": {
+      "engine.stderr": "e05b91954b31012db17d31592b7b4535ecee9c68c26b1b244f7671bffae31039",
+      "engine-start.json": "31da56ee9145b9864fce6926841adbea8c5de7fb2d356f7fcfc1b2c9d72d1052",
+      "engine-exit.json": "3736d3cb8bcc49fb88f5b6681d8e0af635c2260f2d1db876844f1fdc1ceb9567"
+    },
+    "fresh_faults": [],
+    "boot_unchanged": true,
+    "driver_after": {
+      "pci": "/sys/bus/pci/devices/0000:05:00.0",
+      "driver": "xe",
+      "vendor": "0x8086",
+      "device": "0xe20c",
+      "kernel": "7.0.0-38-generic",
+      "devcoredump": false
+    }
   }
 }

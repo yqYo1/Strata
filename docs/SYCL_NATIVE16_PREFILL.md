@@ -313,8 +313,18 @@ both test processes close at exit0. This is same-leaf parity and counter/owner
 validation, not an independent mathematical oracle or a speed measurement.
 The build's CPU objects and fixture remain for the imminent original-plus-observer
 engine/model attribution; the validated original engine remains intact.
-Model observer overhead and same-request census/time reconciliation are still
-pending. Optional
+A bounded official-bench model check now passes:74-token warmup,then39261 fresh
+input tokens,each with24 generated thinking tokens. Actual long prefill uses39260
+BF16 GPU-residual rows and mode10;decode resumes with1256 expert slots. Both
+requests conserve leaf calls,rows,token rows,clocks and six stable thread owners
+against their independent same-request census. Native and benchmark exit0,
+validation is silent and no fresh fault appears. The long request records3487.672415ms
+of summed thread CPU leaf time:GU2414.041345,HQ7.352099,Down1066.278971ms.
+These concurrent sums are not decode latency. Its59801.8ms prompt and1832.0ms
+decode are traced first-use diagnostics,not clean speed or sustained decode.
+Observer overhead and representative long-generation service evidence remain
+pending;this check establishes neither decode nonregression nor a limiting
+hardware resource. Optional
 `STRATA_CPU_SERVICE_PROFILE` compilation plus preexec`STRATA_CPU_SERVICE=1`
 collects decode-only pool GU/SwiGLU, hidden quantization and Down leaf scopes for
 the seven observed format pairs at H2560/FF640/NT1..4. It records calling-thread
