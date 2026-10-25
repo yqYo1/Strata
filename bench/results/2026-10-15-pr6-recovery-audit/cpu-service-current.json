@@ -801,5 +801,108 @@
         "ownership_closed": true
       }
     ]
+  },
+  "native_device": {
+    "stage": "prepared",
+    "source_commit": "d02277730fa2134cd9fbea673191df63709f00f6",
+    "benchmark_files": 190,
+    "benchmark_fingerprint": "5f0dfe621b36dd5f712bd734b1ba84f605d82cf5e8e16ba7d1a968d759fe4c2c",
+    "native_build_reference": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-service-original-v2/native-record.json",
+      "sha256": "64cd9525cc286d28dad31ccf09fdc48c08a1a37bd2b719aea74b6c5bb51a2dd9"
+    },
+    "runtime_reference": {
+      "path": "bench/results/2026-10-15-pr6-recovery-audit/runtime-requalification-current.json",
+      "sha256": "09ad358e12f6ef58bfc0a978519927863f3d09949a033a1e224db95997647d97"
+    },
+    "environment": {
+      "PATH": "/usr/bin:/bin",
+      "HOME": "/home/yayoi",
+      "LANG": "C.UTF-8",
+      "LC_ALL": "C.UTF-8",
+      "PYTHONDONTWRITEBYTECODE": "1",
+      "LD_LIBRARY_PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib:/opt/intel/oneapi/mkl/2026.1/lib",
+      "ONEAPI_DEVICE_SELECTOR": "level_zero:gpu",
+      "UR_ADAPTERS_FORCE_LOAD": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_adapter_level_zero_v2.so.0",
+      "UR_L0_V2_FORCE_DISABLE_COPY_OFFLOAD": "1",
+      "NEOReadDebugKeys": "1",
+      "EnableDirectSubmission": "0",
+      "STRATA_SYCL_PREFILL_SAME_QUEUE": "1",
+      "STRATA_SYCL_VERIFY_NATIVE_CAPTURE": "0",
+      "SYCL_CACHE_PERSISTENT": "0",
+      "ZES_ENABLE_SYSMAN": "0",
+      "UR_ENABLE_LAYERS": "UR_LAYER_TRACING,UR_LAYER_PARAMETER_VALIDATION",
+      "UR_LOG_TRACING": "level:info;flush:info;output:stderr",
+      "UR_LOG_VALIDATION": "level:warning;flush:warning;output:stderr",
+      "UR_LOG_LOADER": "level:warning;flush:warning;output:stderr",
+      "UR_LOG_LEVEL_ZERO": "level:warning;flush:warning;output:stderr",
+      "LD_PRELOAD": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/ur-validation-preload-v2/libstrata_ur_validation.so",
+      "STRATA_UR_PROBE_EXPECTED_LOADER": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_loader.so.0.12.0",
+      "TMPDIR": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-service-original-v2/device-probe-v1/tmp",
+      "XDG_CACHE_HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-service-original-v2/device-probe-v1/cache"
+    },
+    "cases": [
+      {
+        "label": "submission",
+        "binary": {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-service-original-v2/build/sycl_submission_test",
+          "bytes": 267200,
+          "sha256": "5a434921664fac6b111ba2a0de5ebe4fd0182d226f1c56d34aeffa73171b9b79"
+        },
+        "args": [
+          "--submission"
+        ]
+      },
+      {
+        "label": "graph0",
+        "binary": {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-service-original-v2/build/sycl_graph_envelope_test",
+          "bytes": 208536,
+          "sha256": "e5b0a849430591402f29dc14bd09c5305b216c4f4e0a42692feec6c125416ed8"
+        },
+        "args": [
+          "--profile=0"
+        ]
+      },
+      {
+        "label": "graph1",
+        "binary": {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-service-original-v2/build/sycl_graph_envelope_test",
+          "bytes": 208536,
+          "sha256": "e5b0a849430591402f29dc14bd09c5305b216c4f4e0a42692feec6c125416ed8"
+        },
+        "args": [
+          "--profile=1"
+        ]
+      }
+    ],
+    "boot": "cfda0b6a-7c13-4fe2-bdf5-8f9202770840",
+    "driver": {
+      "pci": "/sys/bus/pci/devices/0000:05:00.0",
+      "driver": "xe",
+      "vendor": "0x8086",
+      "device": "0xe20c",
+      "kernel": "7.0.0-38-generic",
+      "devcoredump": false
+    },
+    "budgets": {
+      "wall": 90,
+      "cpu": 120,
+      "rss_cap": 4294967296,
+      "text_cap": 16777216,
+      "file_cap": 33554432,
+      "total_cap": 67108864
+    },
+    "criteria": "Three ordered fresh owned processes from the new admitted build: submission/USM/events,graph profile0,graph profile1. Require exit0,numerical/guard/teardown markers,pre-main parameter validation,silent validation log,enqueue trace,only pinned executable mappings and actual updated NEO in each device child. Verify all source/build/runtime assets and boot/driver/no-fresh-fault after each child. Stop first failure;no retry.",
+    "limits": "Small same-build fixture qualification only. No model,observer overhead,clean speed,physical context,numerical task quality,ordinary runtime destruction or inference adoption. Retained UR reference until exit remains required.",
+    "retention": "Keep source/recipe,three compact outcomes and limits for imminent original-plus-observer model gate. Retire successful trace/map/log output after evidence is committed and verified;keep original fallback and this single named comparison generation.",
+    "outcomes": [],
+    "active": false,
+    "ownership_closed": true,
+    "passed": false,
+    "complete": false,
+    "model_qualified": false,
+    "production_selected": false,
+    "clean_speed_qualified": false
   }
 }
