@@ -322,13 +322,19 @@ validation is silent and no fresh fault appears. The long request records3487.67
 of summed thread CPU leaf time:GU2414.041345,HQ7.352099,Down1066.278971ms.
 These concurrent sums are not decode latency. Its59801.8ms prompt and1832.0ms
 decode are traced first-use diagnostics,not clean speed or sustained decode.
-Observer overhead and representative long-generation service evidence remain
-pending. The frozen comparison uses nine independent processes in three
-original/off/on order triples,with a fixed thinking-on regular-code request.
-It checks per-format/NT work and MTP agreement before interpreting timing ratios;
-all nine samples are required. The smoke check establishes neither decode nonregression nor a limiting
-hardware resource. Successful build/device/model raw output is retired after
-source/recipe recovery. The three generated model admission inputs remain for
+The first original/off/on triple now closes normally with 33214 fresh input and
+3611 generated thinking/answer tokens in every arm. Their MTP counts and
+format/NT work agree. The on arm conserves all 28 format/NT leaf groups and six
+thread owners: 622.722 seconds of summed thread CPU, 68.561% GU, 0.216% hidden
+quantization and 31.223% Down. These concurrent sums include memory stalls and
+charged clock costs; they are not additive decode latency or a hardware bottleneck.
+Observer overhead and repeatable long-request attribution remain pending. The
+frozen comparison uses nine independent processes in three original/off/on order
+triples, with a fixed thinking-on regular-code request. It checks per-format/NT
+work and MTP agreement before interpreting timing ratios; all nine samples are
+required. Neither the smoke nor this first triple establishes decode
+nonregression, clean speed or a limiting hardware resource. Successful
+build/device/model raw output is retired after source/recipe recovery. The three generated model admission inputs remain for
 the active original/observer-off/observer-on comparison;review them and the
 extra build at that comparison's closure. Optional
 `STRATA_CPU_SERVICE_PROFILE` compilation plus preexec`STRATA_CPU_SERVICE=1`
