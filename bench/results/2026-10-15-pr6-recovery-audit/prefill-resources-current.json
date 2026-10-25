@@ -2193,10 +2193,8 @@
       "next_action": "Scope graph reconciliation to the actual long-prefill call path. For called graphs,qualify an explicit UR/PTI parent/group key and child identity;signatures alone remain candidate-only. Qualify host tasks/drained boundaries and observer cost before a bounded model observation. Selected original6e40 and independent prefill/decode stay unchanged."
     },
     "route_discovery": {
-      "stage": "prepared",
+      "stage": "route-verified",
       "source_commit": "4595cee913843ca6a7a9a9b42665014553e6285b",
-      "benchmark_fingerprint": "63f4f898f3c31bba76c50178c9aa96fdfdd1f4a13051317c553a3637fa6e4c64",
-      "benchmark_files": 191,
       "native_source": "6e40afc1beddd059ee518617f6c1efce1da14aca",
       "binary": {
         "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/strata",
@@ -2204,96 +2202,70 @@
         "sha256": "22182f1a5e62e5f4259ce49a75ae44afbd988166ec79324816e499ff37ef60e4"
       },
       "runtime_sha256": "09ad358e12f6ef58bfc0a978519927863f3d09949a033a1e224db95997647d97",
-      "template_sha256": "9543297abc2ce0b4530ee6984d55366e735881caf42a08239f3494d655f9e10d",
-      "config_reference_sha256": "08fee22e651f45310da16c692f7225158af5bc4cf40fc81535c126a901e656f1",
-      "model_reference": {
-        "decode_archive": {
-          "commit": "a8af3d7fa96a7713f2e516d2da3d7410956be015",
-          "path": "bench/results/2026-10-15-pr6-recovery-audit/canonical-restore-decode-current.json",
-          "sha256": "7dda2bcefa6f7e54d568e6aa3d5226d5e0a7383f0b41efd7584093854d9547ca"
-        },
-        "decode_compact_sha256": "7a7276cf70e8507838aa62246b0f4a6d858c7f390318bd5f9a23f555cd4712ec",
-        "model": {
-          "commit": "64efe12f005b6a518daa2ee1d0f0d2712baa325f",
-          "path": "bench/results/2026-10-15-pr6-recovery-audit/prefill-recovery-current.json",
-          "sha256": "9945b8234465e0c963732086eac0b10b081fb63ca3eb16db3daae27899eab7f2"
-        },
-        "build_compact_sha256": "3e6f266eabc13b94178e96a4d0cf6b5de2909dcd8927a760ead2c92248f0d1da"
-      },
-      "model_fingerprint": "32d552dc1fb0ad6594425e8bd39f35049f896afe5775b0f7abf751110a11333e",
-      "native_validation_probe": {
-        "library": {
-          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/ur-validation-preload-v2/libstrata_ur_validation.so",
-          "sha256": "1d4e69d672d55fa0a126ae43b7b4743482cccca7e2f2bc22e0db2bfdad5bdc7c"
-        },
-        "loader": {
-          "path": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_loader.so.0.12.0",
-          "sha256": "bb6e1311850e4b1a924e42acae80c2b3610934625a4985aaa67967abe31356fc"
-        },
-        "retained_reference_until_exit": true,
-        "ordinary_runtime_teardown_qualified": false
-      },
       "environment_sha256": "6126e276f9dc199593f18f50b3b35b9fc702bff4c5d517689c7deb98776b6b52",
-      "generated_inputs": {
-        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-route-discovery-v1/config.json": "9204701bac3b8846f8cb5136b52f991fc746c46d819f18a106213d65111d0fb4",
-        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-route-discovery-v1/plan.json": "629c89800baeeeaab7513ca3e8fec043caecb087fe6a90b1a2b6c30e66775187"
+      "model_fingerprint": "32d552dc1fb0ad6594425e8bd39f35049f896afe5775b0f7abf751110a11333e",
+      "host_controls_passed": true,
+      "begin_verified": true,
+      "end_verified": true,
+      "route": {
+        "read_tokens": 117489,
+        "draft_cells": 117488,
+        "batch_count": 15,
+        "path": "batched",
+        "mode": 2,
+        "final_layer_callback_graph_fallbacks": 0,
+        "full_dense_layers_restored": 48,
+        "GPU_BF16_residual_rows": 117488,
+        "MoE_mode": 10,
+        "library_internal_graphs_qualified": false
       },
-      "command": [
-        "/bin/sh",
-        "/home/yayoi/orca/workspaces/Strata/sycl/bench.sh",
-        "--config",
-        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-route-discovery-v1/config.json",
-        "--port",
-        "35387",
-        "--prefill-only",
-        "--prefill-tokens",
-        "98304",
-        "--think",
-        "--runs",
-        "1",
-        "--profile-request-gates",
-        "--workload-id",
-        "native_gdn_20261018",
-        "--fail-fast-engine-error",
-        "--ready-timeout",
-        "600",
-        "--out",
-        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-route-discovery-v1/bench"
-      ],
-      "question": "Does every final-layer callback of the actual selected117K long request use Prefill::draft_kv successfully,or does any callback fall back to MtpDrafter::prefill and its graph launches?",
-      "criteria": "One short official warmup then one117489-token fresh thinking-on request,24-output cap. Require15 successful batched mode2 markers,14x8192+2800 cells=117488;actual GPU BF16 residual,MoE10, Full48 dense restoration,complete native/journal extents,matching sources/models/runtime and actual providers at both request gates,silent parameter validation,normal owners/exit and no fresh fault. Stop first failure;no retry. Existing SNAPSHOT_VERIFY marker adds no synchronization here; snapshot restore/readback is excluded by both disabled caches. STRATA_TRACE is charged.",
-      "limits": "Dispatch discovery only. No collector/XPTI,new runtime startup override or native rebuild. No timing comparison,observer-cost,complete device ledger,library-internal graph absence, hardware bottleneck/saturation,decode preservation,task,physical262144 or adoption qualification.",
-      "retention": "Keep compact callback conservation,source/config/runtime identity and result. Retire successful raw output/JIT after committed replay. Selected original engine and12 fixtures stay unchanged.",
-      "host_controls": {
-        "command": [
-          "/usr/bin/python3",
-          "-B",
-          "/home/yayoi/orca/workspaces/Strata/sycl/tests/core/test_prefill_route.py"
-        ],
-        "source_sha256": "97a595764858478636f87258ccf06a5323d08f8a4f94233bd026f6b06a2564b8",
-        "python_sha256": "e50d468e8b0adfb05733f5b87b3cff34829c4a8c1aea50c865aa8bdfe4bb150f"
+      "request_sha256": "26f08fd8364b5c4bce718617fe2aed42761d0a794e068b00532694adef78b3be",
+      "generated_tokens": 24,
+      "native": {
+        "pid": 2960584,
+        "start_ticks": 128580085,
+        "sid": 2960541
       },
-      "budgets": {
-        "wall": 1200,
-        "cpu": 7200,
-        "rss_cap": 111669149696,
-        "text_cap": 16777216,
-        "file_cap": 67108864,
-        "total_cap": 134217728
-      },
+      "full_model_hashes_matched": 15,
       "active": false,
       "ownership_closed": true,
-      "passed": false,
+      "passed": true,
       "production_changed": false,
-      "boot": "cfda0b6a-7c13-4fe2-bdf5-8f9202770840",
-      "driver": {
+      "fresh_faults": [],
+      "boot_unchanged": true,
+      "driver_after": {
         "pci": "/sys/bus/pci/devices/0000:05:00.0",
         "driver": "xe",
         "vendor": "0x8086",
         "device": "0xe20c",
         "kernel": "7.0.0-38-generic",
         "devcoredump": false
-      }
+      },
+      "raw_evidence": [
+        {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-route-discovery-v1/engine.stderr",
+          "sha256": "78400b8b897c52c9c1b83aaff1d918a79ed12bf4446013ff36750dbe06e95d5f",
+          "bytes": 174005
+        },
+        {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-route-discovery-v1/bench/2026-10-25-community-cpu-qwen3-8-flash-next-iq3-s-primary/results.json",
+          "sha256": "04a00ec93ba90484b00f1539609f204723789c3f3d1ea63d897cb612ac5b2519",
+          "bytes": 15205
+        },
+        {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-route-discovery-v1/bench/2026-10-25-community-cpu-qwen3-8-flash-next-iq3-s-primary/requests.jsonl",
+          "sha256": "114b0dadffe9a4e89996b26a7e06766cacd1fbf80e7321026273ce8084c3db0d",
+          "bytes": 5092
+        }
+      ],
+      "original_plan": {
+        "commit": "979e51a76018da39050f61de4d3b99382eb4f293",
+        "path": "bench/results/2026-10-15-pr6-recovery-audit/prefill-resources-current.json",
+        "sha256": "8bc636ef7281ae516f20e7b4f3d4bf38d84a8125a9228179efd1c39494047b98"
+      },
+      "host_tests": 7,
+      "limits": "Callback dispatch/state/owner/fault evidence only. No library-internal graph absence,complete device ledger,observer cost,clean speed,decode preservation,task,physical262144 or adoption qualification.",
+      "next_action": "Scope the actual native ledger to direct mode10 and15 successful batched MTP callbacks. Check called oneMKL/native-command/host-task work before assuming one UR enqueue per device execution;qualify coverage and observer cost before model attribution."
     }
   }
 }

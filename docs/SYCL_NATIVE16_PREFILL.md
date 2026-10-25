@@ -523,13 +523,17 @@ host tasks,drained boundaries and observer cost;scope these gates to the actual
 called prefill route. Production prefill/decode source and the selected binary
 remain unchanged;hardware saturation remains unknown.
 
-Before extending that adapter, bounded dispatch discovery uses the existing
-`DRAFT_PREFILL` success marker with the selected6e40 binary and official117K
-request. It checks every final-layer callback for the direct batched path and
-exact row conservation. Both conversation caches stay disabled,so the marker's
-snapshot-readback branch is excluded. This is a route check,not a device-ledger,
-observer-cost or speed qualification;library-internal graphs remain unknown.
-See the`route_discovery` decision in the same prefill resource result.
+Bounded dispatch discovery now passes on selected6e40 with the official117489-token
+request. All15 successful`DRAFT_PREFILL` markers use the direct batched path:
+14x8192+2800=117488 cells,mode2 drafter placement,zero callback graph fallbacks.
+The GPU BF16 residual and MoE10 route run,and all48 dense layers restore.
+Seven adversarial CPU controls pass,both request gates verify actual providers
+and immutable settings,all15 model hashes match,and owners close without a fresh
+fault. Both conversation caches were disabled;no snapshot-readback or draft-timer
+observer ran. This is callback-route evidence,not complete device coverage,
+observer cost,speed,decode preservation or library-internal graph absence.
+See`route_discovery` in the same prefill resource result. Check called oneMKL
+native-command/host-task submission before extending the device ledger.
 
 Basic [profile-off/on graph support](../bench/results/2026-10-15-pr6-recovery-audit/mtp-graph-observer-current.json)
 already passed, with exact6e40 reuse checked separately. The closed
