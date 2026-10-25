@@ -272,7 +272,8 @@ def summarize_window(samples, begin, end, ticks_per_second):
         engines=sorted(engines.values(),key=lambda v:(v['pci'],v['client_id'],v['engine'])))
 
 
-def summarize_capture(records, target, boot, client_interval):
+def summarize_capture(records, target, boot, client_interval, *, before_only=False):
+    require(type(before_only) is bool, 'explicit boolean observation scope required')
     require(len(records)>=5 and records[0].get('kind')=='header' and records[-1].get('kind')=='terminal',
         'missing resource header or explicit terminal')
     header,terminal=records[0],records[-1]
@@ -280,12 +281,15 @@ def summarize_capture(records, target, boot, client_interval):
         header['pci']==canonical_pci(header['pci']) and type(header['ticks_per_second']) is int and
         header['ticks_per_second']>0,'resource header identity or clock differs')
     samples=records[1:-1];intervals=CycleIntervals();evidence=CollectionEvidence()
+    previous_cpu = -1
     for i,row in enumerate(samples):
         require(row.get('kind')=='sample' and row['ordinal']==i and row['target']==target and
             row['ticks_per_second']==header['ticks_per_second'] and
             row['process']['start_ticks']==target['start_ticks'] and row['process']['sid']==target['sid'],
             'resource sample identity, order or clock differs')
         require(intervals.update(row)==row['engine_intervals'],'resource cycle interval recomputation differs')
+        require(row['process']['cpu_ticks'] >= previous_cpu, 'process CPU counter decreased')
+        previous_cpu = row['process']['cpu_ticks']
         evidence.observe(row)
     require({k:v for k,v in terminal.items() if k!='end_monotonic_ns'}==
         evidence.terminal(terminal['reason'],terminal.get('error')) and
@@ -302,7 +306,7 @@ def summarize_capture(records, target, boot, client_interval):
     return dict(collector_complete=True,request_coverage_verified=True,samples=len(samples),
         final_sample_to_response_end_seconds=max(0,end-samples[-1]['end_monotonic_ns'])/1e9,
         before_first_output=summarize_window(samples,begin,first,header['ticks_per_second']),
-        after_first_output=summarize_window(samples,first,end,header['ticks_per_second']),
+        after_first_output=None if before_only else summarize_window(samples,first,end,header['ticks_per_second']),
         limits='Client observation windows, not native kernel-stage boundaries. Scheduled CPU includes polling/stalls. Associated DRM clients may be shared; cycle busy fraction is not arithmetic efficiency, VRAM bandwidth, physical PCIe traffic or hardware saturation.')
 
 

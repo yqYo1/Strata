@@ -73,6 +73,24 @@ class ClientResourceTests(unittest.TestCase):
                 if variant=='count':rows[-1]['eligible_samples']+=1
                 with self.assertRaises(ValueError):r.summarize_capture(rows,identity,'synthetic-boot',span)
 
+    def test_prefill_scope_does_not_qualify_short_decode_or_relax_capture_checks(self):
+        records,target,window=self.capture()
+        window['first_output_monotonic_ns']=6500000000
+        with self.assertRaises(ValueError):r.summarize_capture(records,target,'synthetic-boot',window)
+        result=r.summarize_capture(records,target,'synthetic-boot',window,before_only=True)
+        self.assertTrue(result['request_coverage_verified'])
+        self.assertIsNone(result['after_first_output'])
+        self.assertEqual(result['before_first_output']['contained_CPU_wall_seconds'],5.)
+        for variant in ('identity','terminal','coverage','counter','cpu_after_output'):
+            with self.subTest(variant=variant):
+                rows=copy.deepcopy(records);span=dict(window)
+                if variant=='identity':rows[0]['target']['start_ticks']+=1
+                if variant=='terminal':rows.pop()
+                if variant=='coverage':span['request_end_monotonic_ns']=11*10**9
+                if variant=='counter':rows[3]['engine_intervals'][0]['busy_fraction']=.9
+                if variant=='cpu_after_output':rows[-2]['process']['cpu_ticks']=0
+                with self.assertRaises(ValueError):r.summarize_capture(rows,target,'synthetic-boot',span,before_only=True)
+
     def test_pci_selector_is_validated_and_canonicalized(self):
         upper = '0000:AB:1F.0'
         rows = r.deduplicate_clients([(5,text().replace(PCI,upper))], upper.lower())

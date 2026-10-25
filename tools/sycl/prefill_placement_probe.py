@@ -257,8 +257,55 @@ def run():
     return int(not outcome['passed'])
 
 
+def analyze_owned():
+    """Closed-data plan: pre-first-output only; preserve the original failure.
+
+    Original collection and full source/runtime admission are archived at80bb79887.
+    This never resumes its closed cohort or relabels its failed original outcome.
+    """
+    row=json.loads((ROOT/'record.json').read_text())
+    frozen=json.loads(gen.git('show','80bb79887:' + str(RESULT.relative_to(P))))[KEY]
+    require(compact(row)==frozen==gen.committed(RESULT)[KEY] and row['stage']=='closed' and
+        row['ownership_closed'] and not row['active'] and len(row['outcomes'])==1 and
+        row['outcomes'][0]['error']=="ValueError('insufficient contained CPU/CCS observation spans for the client interval')" and
+        not row['outcomes'][0]['passed'] and row['outcomes'][0]['fresh_faults']==[], 'original closed parser failure required')
+    proof=row['post_closure_admission'];require(proof['original_failure_unchanged'] and proof['model_assets_stat_verified']==15,'original post-closure proof required')
+    require(gen.benchmark_pins(row['source_commit'],match_worktree=False)==row['benchmark_pins'],'original source cannot recover')
+    changed=[name for name,sha in row['benchmark_pins'].items() if digest(P/name)!=sha]
+    require(changed==['tools/sycl/prefill_placement_probe.py'],'unrelated benchmark changes')
+    rt=gen.committed(runtime.RESULT);runtime.current(rt);require(digest(runtime.RESULT)==row['runtime_sha256'],'runtime changed')
+    assets.model_pins(row['configuration'],row['models'])
+    root=ROOT/'owned-gate'
+    for name,sha in proof['raw_hashes'].items():require(digest(root/name)==sha,'closed input changed')
+    record=json.loads((root/'record.json').read_text())
+    for command in record['commands']:
+        require(owners.closed(command) and command['exit_code']==0,'owner did not close')
+        for identity in command['owners']:
+            now=owners.identity(identity['pid']);require(not now or now['start_ticks']!=identity['start_ticks'],'recorded owner still live')
+    native=json.loads((root/'engine-exit.json').read_text());result=json.loads(next((root/'bench').glob('*/results.json')).read_text())
+    samples=result['results']['prefill_only']['requests'];check_requests(samples)
+    require(len(samples)==1 and result['complete'] and not result['results']['failures'] and native['exit_code']==native['resource_collector_exit_code']==0,'closed collection differs')
+    sample=samples[0];scopes=request_scopes((root/'engine.stderr').read_text(),samples,True)
+    sys.path.insert(0,str(READER.parent));import client_resources as reader
+    captures=[json.loads(s) for s in (root/'client-resources.jsonl').read_text().splitlines()]
+    resources=reader.summarize_capture(captures,native['native'],row['boot'],sample['client_interval'],before_only=True)
+    before=resources['before_first_output'];hosts=[json.loads(s) for s in (root/'host-state.jsonl').read_text().splitlines()]
+    row['closed_analysis']=dict(source_commit=gen.git('rev-parse','HEAD').decode().strip(),collection_archive='80bb79887',
+        source_inputs_changed=changed,reader_sha256=digest(READER),GPU_executed=False,attribution_passed=True,
+        original_passed=False,native_ownership_closed=True,actual_read_tokens=sample['actual_read_tokens'],
+        prompt_ms=sample['prompt_ms'],instrumented_tok_s=sample['actual_read_tokens']*1000/sample['prompt_ms'],
+        request_sha256=sample['request_sha256'],scope=scopes[0],host=host_summary(hosts,sample['client_interval']),
+        client_coverage_verified=resources['request_coverage_verified'],
+        pre_first_output_cpu_seconds=before['process_cpu_seconds'],
+        pre_first_output_cpu_core_equivalents=before['process_cpu_core_equivalents'],
+        top_scheduled_threads=before['top_scheduled_threads'][:2],ccs=[x for x in before['engines'] if x['engine']=='ccs'],
+        limits='Closed39K owned128 observation only;first use,trace and passive collectors charged. Not clean speed,117K/262144 capacity,decode,host/GPU/bus saturation or historical decline attribution.',
+        next='New committed two-process117K plan may reuse this bounded owned-shape gate with unchanged native/runtime/inputs. Original failed collection and original three-case cohort stay closed;never resume or overwrite them.')
+    write(ROOT/'record.json',row);publish(row);print(json.dumps(row['closed_analysis']),flush=True)
+
+
 if __name__=='__main__':
-    require(len(sys.argv)==2 and sys.argv[1] in ('prepare','run'),'prepare or run required')
+    require(len(sys.argv)==2 and sys.argv[1] in ('prepare','run','analyze-owned'),'prepare,run or analyze-owned required')
     with (B/'owned-v0141-measurement.lock').open('r+') as lock:
         fcntl.flock(lock,fcntl.LOCK_EX|fcntl.LOCK_NB);runtime.guards.no_model_owners([]);runtime.guards.driver_guard()
-        sys.exit(prepare() if sys.argv[1]=='prepare' else run())
+        sys.exit(prepare() if sys.argv[1]=='prepare' else analyze_owned() if sys.argv[1]=='analyze-owned' else run())
