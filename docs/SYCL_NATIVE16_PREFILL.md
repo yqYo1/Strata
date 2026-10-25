@@ -298,14 +298,43 @@ the earlier measurements. Current pressure/idle frequency is not a historical
 control. Keep other changed runtime libraries and their interactions,active
 CPU/GPU/VRAM clocks,paging and workstation contention unresolved.
 
-The exact old NEO,GMM,IGDML and zlib vendor ELFs now recover in a private
-directory;all four match the historical SHA-256 values. No system package was
-replaced and no recovered library was executed. Their source-package identities
-and named comparison consumer are recorded in the same runtime result. The
-next comparison must qualify both dependency arms with bounded traced fixtures
-before using the unchanged official117K workload;an asset hash is not runtime
-qualification. This comparison can isolate a userspace-set effect while current
-clock,paging and contention conditions still differ from the historical window.
+The exact old NEO,GMM,IGDML and zlib vendor ELFs recovered in a private
+directory;all four matched the historical SHA-256 values. No system package was
+replaced. A subsequent full-userspace crossover qualifies both arms with eight
+host controls and eight bounded traced canary/submission/graph cases,then runs
+the unchanged original6e40 through six official117K processes:
+
+| Process/userspace | First use,tok/s | Subsequent-three median,tok/s |
+| --- | ---: | ---: |
+| 0/current | 847.4394 | 906.3034 |
+| 1/historical | 836.4635 | 919.1718 |
+| 2/historical | 848.7697 | 908.1430 |
+| 3/current | 853.6422 | 911.7371 |
+| 4/current | 855.9296 | 922.9555 |
+| 5/historical | 858.3383 | 913.9805 |
+
+Historical/current paired ratios are1.01419882,0.99605790 and0.99027589;
+their geometric mean is1.00012580. The signs differ and neither prospective1%
+faster screen passes. All four changed ELFs are observed in each model process
+with the expected hashes. All24 original engine clocks and request journals
+replay,all15 final model hashes match,all native processes close normally and
+no fresh GPU fault is recorded. Full frozen/closed evidence restores from
+ffa4d459f/57a3dd86c,and the controller/controls from0697c74e8. This comparison
+does not adopt a runtime or qualify sustained decode.
+
+The historical userspace set does **not** restore the historical1002.6507tok/s.
+The current arm's three-process median is911.7371tok/s,9.0673% below that
+same-binary historical cohort and9.3489% below the fastest1005.7655 package.
+These new values must not be replaced by the older974.7035 result when reporting
+current speed. The benchmark contract remains matched;the decline is observed,
+but its resource-level cause remains unattributed. This is evidence against
+userspace rollback as a sufficient remedy,not proof that the libraries have
+identical performance or that historical clocks/contention were reproduced.
+Decode implementation,configuration and1256-slot placement remain unchanged.
+Read-only idle settings after closure match the earlier CPU EPP/GPU power
+policy audit below. Measure loaded clocks,throttle flags,paging and competing
+load separately before assigning a hardware bottleneck. The component-level
+fused-command work still needs its whole-model and observer-cost gates.
 
 The[closed runtime comparison](../bench/results/2026-10-15-pr6-recovery-audit/prefill-runtime-comparison-current.json)
 uses exact cached packages in private directories. Both arms explicitly select
