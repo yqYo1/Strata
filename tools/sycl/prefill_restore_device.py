@@ -21,7 +21,7 @@ runtime = restored.runtime
 validation = runtime.validation
 guards, supervision = restored.guards, restored.supervision
 P, B = restored.P, restored.B
-ROOT = B / 'selected-prefill-restoration-device-v1'
+ROOT = B / 'selected-prefill-restoration-device-v2'
 RESULT = restored.RESULT.with_name('prefill-restore-device-current.json')
 write, digest = restored.write, restored.build.digest
 
@@ -66,7 +66,15 @@ def linked(build):
 
 
 def prepare():
-    guards.require(not ROOT.exists() and not RESULT.exists(), 'fresh single-use device gate')
+    guards.require(not ROOT.exists(), 'fresh single-use device gate')
+    previous = restored.gen.committed(RESULT)
+    guards.require(previous['stage'] == 'failed' and not previous['passed'] and not previous['active']
+        and previous['ownership_closed'] and len(previous['outcomes']) == 6
+        and all(c['kind'] == 'host' and c['passed'] for c in previous['outcomes'])
+        and previous['failure_diagnosis']['stderr'] == 'iq2 phase: immutable startup selection'
+        and previous['artifact_retirement']['complete'], 'preserve and retire the closed host-only refusal')
+    prior_failed = dict(commit=restored.gen.git('log', '-1', '--format=%H', '--',
+        str(RESULT.relative_to(P))).decode().strip(), path=str(RESULT.relative_to(P)), sha256=digest(RESULT))
     build = json.loads((restored.ROOT / 'record.json').read_text())
     revision = restored.gen.git('rev-parse', 'HEAD').decode().strip()
     restored.current(build, controller_revision=revision)
@@ -93,7 +101,9 @@ def prepare():
     host_cases = []
     for target in restored.HOST_TARGETS:
         for args in (['--pair=0'], ['--pair=1']) if target == 'iq2_phase_host_test' else ([],):
-            host_cases.append(dict(label='host-' + target + ''.join(args), target=target, args=args, kind='host'))
+            delta = dict(STRATA_IQ2_PAIR=args[0][-1], STRATA_IQ2_PAIR_AUDIT='1') if args else {}
+            host_cases.append(dict(label='host-' + target + ''.join(args), target=target, args=args,
+                kind='host', environment_delta=delta))
     for case in cases:
         case['kind'] = 'device'
     cases = host_cases + cases
@@ -101,6 +111,7 @@ def prepare():
     for name in ('tmp', 'cache'):
         (ROOT / name).mkdir()
     row = dict(stage='prepared', controller_source_commit=revision, build_source_commit=build['source_commit'],
+        prior_failed_gate=prior_failed,
         controller_files=len(pins), controller_fingerprint=restored.native.fingerprint(pins),
         build_record_sha256=digest(restored.ROOT / 'record.json'), assets=build['assets'], cases=cases,
         preload=qualified['preload'], runtime_files=qualified['runtime_files'],
@@ -147,12 +158,16 @@ def run(row):
             asset = row['assets'][case['target']]
             if case['kind'] == 'host':
                 entry, out, err = owner.run(case['label'], [asset['path'], *case['args']],
-                    row['host_environment'], P, **row['host_budgets'])
+                    dict(row['host_environment'], **case['environment_delta']), P, **row['host_budgets'])
                 guards.require(supervision.closed(entry) and entry['exit_code'] == 0, 'host fixture failed: ' + case['label'])
                 if case['target'] == 'full_context_diagnostic_host_test':
                     text = out.read_text()
                     guards.require('cases=134 full_context_request_and_terminal_bounds=PASS' in text and
                         'byte_order_and_bounds=PASS full_extent_spans=1 GPU=UNRUN' in text, 'bounds/hash controls differ')
+                if case['target'] == 'iq2_phase_host_test':
+                    guards.require(('iq2_phase_scope cases=12 pair=' + case['args'][0][-1] +
+                        ' prefill_pair_rows=0 decode_dispatch=PASS NT2_reference=PASS bits=PASS guards=PASS '
+                        'scope_restore=PASS') in out.read_text(), 'IQ2 phase/dispatch guards differ')
                 row['outcomes'].append(dict(label=case['label'], kind='host', exit_code=0, passed=True,
                     ownership_closed=True, GPU_executed=False, stdout_sha256=digest(out), stderr_sha256=digest(err)))
                 persist()
