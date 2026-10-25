@@ -7,15 +7,20 @@ Repository LICENSE; no external implementation copied.
 """
 import collections
 import copy
+import bisect
 import fcntl
 import hashlib
 import json
+import os
 from pathlib import Path
 import re
+import secrets
+import select
 import shlex
 import shutil
 import subprocess
 import sys
+import time
 
 sys.dont_write_bytecode = True
 import work_ledger_fixture as probe
@@ -26,6 +31,8 @@ ROOT = B / 'ur-call-subscriber-v1'
 SOURCE = 'bench/sycl/ur_call_subscriber.cpp'
 DRIVER_SOURCE = 'bench/sycl/ur_call_guard_test.cpp'
 KEY = ('event_reconciliation', 'ur_subscriber')
+GPU_KEY = ('event_reconciliation', 'ur_subscriber_gpu')
+GPU_ROOT = ROOT / 'gpu-direct-v1'
 SDK_KEY = ('UR_PTI_identity_bridge_20261025', 'exact_SDK_inspection')
 require, digest = r.require, r.digest
 
@@ -39,7 +46,7 @@ def source_pins(revision):
     return pins
 
 
-def parse_calls(text, pid):
+def parse_calls(text, pid, *, intervals=False):
     """Validate complete begin/end instance pairs without inventing PTI links."""
     require(len(text.encode()) <= 16 << 20, 'subscriber text budget')
     rows = [json.loads(line) for line in text.splitlines()]
@@ -50,6 +57,7 @@ def parse_calls(text, pid):
     subscribed = finished = False
     pending, seen, stacks, functions = {}, set(), collections.defaultdict(list), {}
     counts = collections.Counter()
+    spans = []
     for event in rows[1:]:
         kind = event['kind']
         if kind in ('subscribe', 'finish'):
@@ -84,11 +92,69 @@ def parse_calls(text, pid):
                     'UR call end identity/clock/status mismatch')
             stacks[tid].pop()
             counts[(event['name'], event['status'])] += 1
+            if intervals:
+                spans.append(dict(instance=ident, tid=tid, name=event['name'], function_id=function,
+                    begin_ns=begin['raw_ns'], end_ns=event['raw_ns'], status=event['status']))
     require(subscribed and seen and not pending and all(not stack for stack in stacks.values()),
             'missing UR subscription/call/end')
-    return dict(call_pairs=len(seen), source_threads=len(stacks),
+    result = dict(call_pairs=len(seen), source_threads=len(stacks),
                 outcomes=[dict(name=name, status=status, calls=count) for (name, status), count in sorted(counts.items())],
                 ordinary_runtime_teardown_qualified=False, device_work_qualified=False)
+    if intervals:
+        result['intervals'] = spans
+    return result
+
+
+def correlate_calls(spans, events, pid, expected_calls):
+    """Join independent UR instances to actual PTI sources; no ordinal join.
+
+    This bounded direct fixture has one device append per successful enqueue.
+    Graph parents, deferred/multiple appends and unknown work fail this contract.
+    """
+    internal = probe.trace_links(events, pid)
+    names = {'urEnqueueKernelLaunch': 'kernel', 'urEnqueueKernelLaunchWithArgsExp': 'kernel',
+             'urEnqueueUSMMemcpy': 'copy', 'urEnqueueUSMFill': 'fill',
+             'urEnqueueEventsWaitWithBarrier': 'barrier', 'urEnqueueEventsWaitWithBarrierExt': 'barrier'}
+    enqueue = [s for s in spans if s['name'].startswith('urEnqueue')]
+    require(enqueue and len(enqueue) <= 4096 and all(s['name'] in names and s['status'] == 0 for s in enqueue),
+            'unknown/failed direct enqueue')
+    require(dict(collections.Counter(s['name'] for s in enqueue)) == expected_calls,
+            'callback/text enqueue census mismatch')
+    require(len({s['instance'] for s in enqueue}) == len(enqueue), 'duplicate UR execution instance')
+    by_thread = collections.defaultdict(list)
+    for span in enqueue:
+        require(span['end_ns'] > span['begin_ns'], 'invalid enqueue interval')
+        by_thread[span['tid']].append(span)
+    starts = {}
+    for tid, rows in by_thread.items():
+        rows.sort(key=lambda s: s['begin_ns'])
+        require(all(a['end_ns'] < b['begin_ns'] for a, b in zip(rows, rows[1:])), 'ambiguous enqueue intervals')
+        starts[tid] = [s['begin_ns'] for s in rows]
+    sources = {str(e['id']): e for e in events if e.get('ph') == 's' and e.get('pid') == pid and
+               e.get('cat', '').startswith('Flow_H2D_')}
+    used = set()
+    for event in events:
+        if event.get('ph') != 'X' or event.get('cat') != 'gpu_op':
+            continue
+        source = sources[str(event['args']['id'])]
+        tid, stamp = source['tid'], source['ts'] * 1000
+        require(tid in by_thread, 'device source has no UR caller thread')
+        index = bisect.bisect_right(starts[tid], stamp) - 1
+        require(index >= 0, 'device source precedes UR call')
+        span = by_thread[tid][index]
+        require(span['begin_ns'] <= stamp <= span['end_ns'] and span['instance'] not in used,
+                'unmapped/duplicated device-to-UR link')
+        name = event['name']
+        kind = 'copy' if name.startswith('zeCommandListAppendMemoryCopy') else (
+            'fill' if name.startswith('zeCommandListAppendMemoryFill') else (
+            'barrier' if name == 'zeCommandListAppendBarrier' else 'kernel'))
+        require(names[span['name']] == kind, 'UR/device operation kind mismatch')
+        used.add(span['instance'])
+    require(len(used) == len(enqueue) == internal['linked_device_operations'], 'unlinked UR enqueue or GPU operation')
+    return dict(linked_UR_instances=len(used), source_threads=len(by_thread),
+                independent_UR_to_PTI_links=True, collector_internal_links=internal,
+                shape_lifetime_graph_qualified=False, observer_cost_qualified=False,
+                limits='Exact successful-direct-enqueue interval/thread/instance joins on this fixture only. No ordinal inference,tolerance fallback,graph expansion,queue/event generations,model completeness,speed or hardware-saturation qualification.')
 
 
 def runtime_assets():
@@ -110,8 +176,12 @@ def runtime_assets():
 
 
 def admit(row, binary=False):
-    require(source_pins(row['source_commit']) == row['input_sha256'] and runtime_assets() == row['assets'],
-            'subscriber source/runtime assets changed')
+    require(source_pins(row['source_commit']) == row['input_sha256'], 'subscriber controller source changed')
+    admit_native(row, binary)
+
+
+def admit_native(row, binary=False):
+    require(runtime_assets() == row['assets'], 'subscriber runtime assets changed')
     for name, sha in row['compiler_tools'].items():
         require(digest(name) == sha, 'compiler/linker provider changed')
     for field in ('compiler_inputs', 'driver_compiler_inputs'):
@@ -125,6 +195,184 @@ def admit(row, binary=False):
         require(digest(row['library']['path']) == row['library']['sha256'], 'observer ELF changed')
         if 'driver' in row:
             require(digest(row['driver']['path']) == row['driver']['sha256'], 'native control ELF changed')
+
+
+def qualified_native():
+    row = r.validation.committed(RESULT, KEY)
+    require(row['stage'] == 'host-checked' and row['passed'] and row['ownership_closed'] and not row['fresh_faults'] and
+            len(row['outcomes']) == 5 and row['outcomes'][-1]['calls']['call_pairs'] == 2, 'closed native CPU qualification required')
+    admit_native(row, True)
+    for name, raw in r.build.blobs(P, row['source_commit'], row['input_sha256']):
+        require(hashlib.sha256(raw).hexdigest() == row['input_sha256'][name], 'original host producer source does not recover')
+    for source, revision, census in ((SOURCE, row['library_origin']['source_commit'], row['compiler_inputs']),
+                                    (DRIVER_SOURCE, row['source_commit'], row['driver_compiler_inputs'])):
+        inputs = json.loads(Path(census['path']).read_text())
+        require(hashlib.sha256(r.validation.git('show', revision + ':' + source)).hexdigest() == inputs[str(P / source)],
+                'qualified native source/compiled-input identity mismatch')
+    raw = json.dumps(row, sort_keys=True, separators=(',', ':')).encode()
+    proof = dict(host_component_sha256=hashlib.sha256(raw).hexdigest(), producer_source_commit=row['source_commit'],
+                 original_project_inputs_recovered=len(row['input_sha256']), library=row['library'], driver=row['driver'],
+                 reuse='Same observer/driver native sources,recipes,254/76 compiled inputs and ELF hashes;new controller only. CPU qualification reuse does not establish GPU coverage.')
+    return row, proof
+
+
+def gpu_prepare():
+    """Freeze one small direct GPU join, reusing the host-qualified native ELF."""
+    container = r.validation.committed(RESULT)
+    require(not GPU_ROOT.exists() and GPU_KEY[1] not in container[GPU_KEY[0]], 'inspect existing GPU owner;no retry')
+    prior = container[GPU_KEY[0]]['native_observation']
+    require(prior['passed'] and prior['ownership_closed'] and not prior['fresh_faults'], 'closed count screen required')
+    revision = r.validation.git('rev-parse', 'HEAD').decode().strip()
+    pins, assets = source_pins(revision), probe.assets()
+    host, native = qualified_native()
+    GPU_ROOT.mkdir(mode=0o700)
+    for name in ('tmp', 'cache', 'trace'):
+        (GPU_ROOT / name).mkdir()
+    env = dict(r.validation.committed(r.SETTINGS)['environment'],
+        TMPDIR=str(GPU_ROOT / 'tmp'), XDG_CACHE_HOME=str(GPU_ROOT / 'cache'), LD_DEBUG='libs',
+        STRATA_UNITRACE_TARGET_PRELOAD=assets['preload']['library']['path'] + ':' + host['library']['path'],
+        STRATA_UR_PROBE_EXPECTED_LOADER=assets['preload']['loader'],
+        XPTI_FRAMEWORK_DISPATCHER=host['assets']['dispatcher']['path'],
+        XPTI_SUBSCRIBERS=host['library']['path'], XPTI_TRACE_ENABLE='1', SYCL_UR_TRACE='0',
+        STRATA_UR_CALL_LOG=str(GPU_ROOT / 'calls.jsonl'),
+        UNITRACE_FollowChildProcess='1', UNITRACE_SystemTime='1', UNITRACE_TraceOutputDir=str(GPU_ROOT / 'trace'),
+        UR_LOG_TRACING='level:info;flush:info;output:file,' + str(GPU_ROOT / 'ur.log'),
+        UR_LOG_VALIDATION='level:warning;flush:warning;output:file,' + str(GPU_ROOT / 'validation.log'))
+    require('LD_PRELOAD' not in env, 'target-only preload required')
+    session = 'StrataUR' + secrets.token_hex(12)
+    row = dict(stage='prepared', source_commit=revision, input_sha256=pins, assets=assets, native_reuse=native,
+        dispatcher=host['assets']['dispatcher'], expected_source_census=probe.source_census(), environment=env,
+        session=session, command=[assets['launcher']['path'], '--session', session, '--host-timing', '--device-timing',
+            '--chrome-device-logging', '--chrome-call-logging', '--chrome-event-buffer-size', '128',
+            assets['fixture']['path'], '--submission'],
+        budgets=dict(wall=90, cpu=90, rss_cap=4 << 30, text_cap=8 << 20, file_cap=32 << 20, total_cap=64 << 20),
+        gates='One unchanged original6e40 direct-submission fixture,current NEO. Source/API/device606 kernels,53 copies/55844 requested bytes,one fill/1028 bytes,20 barriers. Every actual PTI GPU event needs one exact internal host/device flow and one distinct successful same-thread UR enqueue interval containing its actual append timestamp,with matching kind. No ordinal/tolerance fallback,ambiguous/unknown/unmapped/failed enqueue. Require complete subscriber pairs,actual pinned providers,pre-main validation,matching time namespace,numerical/drain footer,normal owners/session closure and no fresh faults. Stop first failure;no graph or model work.',
+        retention='Main consumes bounded raw records for this direct join only;after verified compact evidence,retire normal traces/JIT/output with a deletion manifest. Reuse current13 native artifacts and the small observer;no new binary generation.',
+        active=False, ownership_closed=True, passed=False, gpu_work=True, model_qualified=False,
+        graph_lifetime_qualified=False, observer_cost_qualified=False, clean_speed_qualified=False)
+    container[GPU_KEY[0]][GPU_KEY[1]] = row
+    r.write(RESULT, container)
+    r.write(GPU_ROOT / 'record.json', row)
+    print('Prepared single-use GPU UR/PTI join;commit plan before execution.', flush=True)
+
+
+def gpu_check():
+    row = r.validation.committed(RESULT, GPU_KEY)
+    require(row['stage'] == 'prepared' and not (GPU_ROOT / 'target-owned').exists(), 'single-use committed GPU plan required')
+
+    def admit_gpu():
+        require(source_pins(row['source_commit']) == row['input_sha256'] and probe.assets() == row['assets'] and
+                qualified_native()[1] == row['native_reuse'] and probe.source_census() == row['expected_source_census'],
+                'GPU observer source/native/runtime changed')
+
+    admit_gpu()
+    runtime = r.validation.committed(r.RESULT)
+    session_path = Path('/dev/shm/uctrl' + str(os.getuid()) + '_' + row['session'])
+    require(not session_path.exists(), 'preexisting collector session;no overwrite')
+    journal = subprocess.check_output(['journalctl', '-k', '-b', '-n', '0', '--show-cursor', '--no-pager'], text=True, timeout=15)
+    cursor = next(s.split(': ', 1)[1] for s in journal.splitlines() if s.startswith('-- cursor: '))
+    target = control = None
+
+    def persist():
+        row['active'] = any(o and o.active is not None for o in (target, control))
+        r.write(GPU_ROOT / 'record.json', dict(row, target_commands=target.commands if target else [],
+                                             control_commands=control.commands if control else []))
+
+    try:
+        target = r.supervision.Owner(GPU_ROOT / 'target-owned', persist)
+        control = r.supervision.Owner(GPU_ROOT / 'control-owned', persist)
+        row['stage'] = 'observing'
+        seen = set()
+        required = {str(Path(row['native_reuse']['library']['path']).resolve()),
+                    str(Path(row['dispatcher']['path']).resolve()), str(Path(row['assets']['collector']['path']).resolve()),
+                    next(p for p in runtime['runtime_files'] if 'libze_intel_gpu' in p)}
+        allowed = set(runtime['runtime_files']) | required | {str(Path(row['assets'][k]['path']).resolve())
+            for k in ('launcher', 'fixture')}
+        namespace = os.readlink('/proc/self/ns/time')
+        namespace_seen = False
+
+        def observe(io, entry):
+            nonlocal namespace_seen
+            while not io.exit_watch.poll(0) or not io.eof:
+                io.poll()
+                try:
+                    require(os.readlink('/proc/' + str(entry['pid']) + '/ns/time') == namespace,
+                            'native/controller time namespace mismatch')
+                    namespace_seen = True
+                    maps = Path('/proc', str(entry['pid']), 'maps').read_text()
+                except (FileNotFoundError, ProcessLookupError):
+                    maps = ''
+                for path in r.executable_mappings(maps):
+                    require(path in allowed, 'unplanned executable provider: ' + path)
+                    seen.add(path)
+                if select.select([io.proc.stdout], [], [], .01)[0]:
+                    io.read()
+                    io.pending.clear()
+            io.exit(1)
+
+        row['begin_raw_ns'] = time.clock_gettime_ns(time.CLOCK_MONOTONIC_RAW)
+        entry, out, err = target.run('submission', row['command'], row['environment'], P,
+                                    interaction=observe, **row['budgets'])
+        row['end_raw_ns'] = time.clock_gettime_ns(time.CLOCK_MONOTONIC_RAW)
+        row['pid'] = entry['pid']
+        require(r.supervision.closed(entry) and entry['exit_code'] == 0, 'native observer owner/exit failed')
+        row['validation'] = r.validation.preload_evidence(err.read_text(), entry['pid'])
+        require('fixture_status=PASS mode=submission' in out.read_text(), 'native numerical/drain footer missing')
+        require(not (GPU_ROOT / 'validation.log').exists() or not (GPU_ROOT / 'validation.log').stat().st_size,
+                'parameter validation warning')
+        require(required <= seen and namespace_seen, 'observer/dispatcher/collector/current NEO or time namespace not observed')
+        row.update(actual_runtime_providers_verified=True, time_namespace=namespace)
+        row['api'] = probe.api_census((GPU_ROOT / 'ur.log').read_text())
+        traces = list((GPU_ROOT / 'trace').rglob('*.json'))
+        require(len(traces) == 1, 'one complete native JSON timeline required')
+        raw = traces[0].read_bytes()
+        value = json.loads(raw)
+        events = value['traceEvents'] if isinstance(value, dict) else value
+        row['device'] = probe.device_census(events, entry['pid'], row['begin_raw_ns'], row['end_raw_ns'])
+        require(row['api']['counts'] == row['device']['counts'] == row['expected_source_census'],
+                'source/API/device census mismatch')
+        calls = parse_calls((GPU_ROOT / 'calls.jsonl').read_text(), entry['pid'], intervals=True)
+        spans = calls.pop('intervals')
+        row['links'] = correlate_calls(spans, events, entry['pid'], row['api']['enqueue_calls'])
+        row['subscriber'] = dict(call_pairs=calls['call_pairs'], source_threads=calls['source_threads'],
+                                 complete_pairs=True, environment_guard_exit_not_triggered=True)
+        row['analysis_inputs'] = [dict(path=str(p), sha256=digest(p), bytes=p.stat().st_size)
+                                  for p in (traces[0], GPU_ROOT / 'ur.log', GPU_ROOT / 'calls.jsonl')]
+        admit_gpu()
+        row.update(stage='direct-join-passed', passed=True)
+    except BaseException as error:
+        row.update(stage='failed', passed=False, error=repr(error))
+    finally:
+        row['ownership_closed'] = all(o is None or (o.active is None and all(r.supervision.closed(c) for c in o.commands))
+                                      for o in (target, control))
+        if session_path.exists() and row['ownership_closed'] and control is not None:
+            try:
+                entry, _, _ = control.run('stop', [row['assets']['launcher']['path'], '--stop', row['session']],
+                    row['environment'], P, wall=15, cpu=15, rss_cap=2 << 30, text_cap=1 << 20,
+                    file_cap=32 << 20, total_cap=64 << 20)
+                require(r.supervision.closed(entry) and entry['exit_code'] == 0 and not session_path.exists(),
+                        'collector session closure failed')
+            except BaseException as error:
+                row.update(passed=False, cleanup_error=repr(error))
+        row['ownership_closed'] = all(o is None or (o.active is None and all(r.supervision.closed(c) for c in o.commands))
+                                      for o in (target, control))
+        row['session_removed'] = not session_path.exists()
+        try:
+            check = dict(host_probe_accepted=True)
+            r.validation.finish(check, target, cursor, runtime['boot'])
+            row.update(fresh_faults=check['fresh_faults'], boot_unchanged=check['boot_unchanged'], driver_after=check['driver_after'])
+            row['passed'] = bool(row['passed'] and check['passed'] and row['ownership_closed'] and
+                                 row['session_removed'] and not row.get('cleanup_error'))
+        except BaseException as error:
+            row.update(passed=False, fault_check_error=repr(error))
+        if not row['passed']:
+            row['stage'] = 'failed'
+        persist()
+        container = json.loads(RESULT.read_text())
+        container[GPU_KEY[0]][GPU_KEY[1]] = row
+        r.write(RESULT, container)
+    print(json.dumps({k: row.get(k) for k in ('stage', 'passed', 'ownership_closed', 'fresh_faults', 'error')}), flush=True)
+    return 0 if row['passed'] else 1
 
 
 def driver_plan(compiler, env):
@@ -307,9 +555,10 @@ def execute(action):
 
 
 if __name__ == '__main__':
-    require(len(sys.argv) == 2 and sys.argv[1] in ('prepare', 'build', 'repair', 'build-driver', 'check'),
-            'use ur_call_subscriber.py prepare|build|repair|build-driver|check')
+    require(len(sys.argv) == 2 and sys.argv[1] in ('prepare', 'build', 'repair', 'build-driver', 'check', 'gpu-prepare', 'gpu-check'),
+            'use ur_call_subscriber.py prepare|build|repair|build-driver|check|gpu-prepare|gpu-check')
     with (B / 'owned-v0141-measurement.lock').open('a+') as lock:
         fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
         r.guards.no_model_owners([])
-        raise SystemExit({'prepare': prepare, 'repair': repair}.get(sys.argv[1], lambda: execute(sys.argv[1]))())
+        raise SystemExit({'prepare': prepare, 'repair': repair, 'gpu-prepare': gpu_prepare, 'gpu-check': gpu_check}
+                         .get(sys.argv[1], lambda: execute(sys.argv[1]))())
