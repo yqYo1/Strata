@@ -83,7 +83,7 @@ def prepare():
             'No retry. Preserve intentional failed profiles. Sparse195/203 retained events cover639/655 enqueues;'
             'bad scope/capacity must fail profiling with valid outputs;injection must drain before releasing owners and query no unfinished event. '
             'Real GU2333/2334/8192 and Down those+irregular2334/16384 compare full outputs and inputs off/on;'
-            '2 separate or1 fused event only. Pre-main parameter validation and complete API trace charged;no speed/adoption/saturation claim.',
+            '2 separate or1 fused event only. Pre-main parameter validation and budgeted full API tracing enabled;no complete-device-coverage,speed/adoption/saturation claim.',
         budgets=dict(wall=300,cpu=600,rss_cap=4 << 30,text_cap=16 << 20,file_cap=32 << 20,total_cap=64 << 20),
         whole_check_bytes=512 << 20,
         retention='Keep compact counts,dispatch/numerics/guard/provider/clock/error/drain/fault outcomes and source/recipe. '
@@ -111,6 +111,13 @@ def analyze(case, out, err):
         fields = service.fields('strata command profile: '+footers[0],'strata command profile: ')
         require(fields['version'] == '3' and fields['service_complete'] == '0' and fields['error'] == error,
                 'wrong intentional profile refusal')
+        expected_records = {'bad-tag':195,'capacity':224,'injected':0}[case['name']]
+        require(fields['invalid'] == fields['invalid_saved'] == '0' and
+                fields['windows'] == fields['expected'] == '1' and fields['cap'] == '224' and
+                int(fields['records']) == expected_records and
+                int(fields['peak_events']) == (224 if case['name']=='capacity' else 195) and
+                0 <= int(fields['max_query_wall_ns']) < 1000000000,
+                'intentional refusal hides an unexpected clock/population/cap error')
         if case['name'] == 'injected':
             require('injected-before-drain' in err and 'fixture fallback drain begin\nfixture fallback drain end' in err and
                     fields['records'] == '0' and fields['max_query_wall_ns'] == '0' and
@@ -206,7 +213,7 @@ def run():
         require(any('libze_intel_gpu.so.1.17.39758' in p for p in seen) and
                 str(Path(env['UR_ADAPTERS_FORCE_LOAD']).resolve()) in seen and
                 str(Path(env['LD_PRELOAD']).resolve()) in seen,'actual native providers not observed')
-        require(trace.is_file() and trace.stat().st_size>0 and 'urEnqueue' in trace.read_text(), 'complete API trace/enqueue evidence missing')
+        require(trace.is_file() and trace.stat().st_size>0 and 'urEnqueue' in trace.read_text(), 'enabled API trace/enqueue evidence missing')
         outcome['analysis'] = analyze(case,out.read_text(),text)
         current(plan)
         outcome.update(host_probe_accepted=True,complete=True,expected_exit_code=case['exit_code'],
