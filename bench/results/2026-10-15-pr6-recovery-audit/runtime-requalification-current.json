@@ -1,19 +1,20 @@
 {
-  "stage": "failed",
-  "source_commit": "8537513e753de8aae98e964acee883c6f4b7145d",
+  "stage": "prepared",
+  "source_commit": "bdf6cb3de05e8eb56640acc904f91518d47f5621",
   "input_sha256": {
-    "tools/sycl/runtime_probe.py": "dac914b002d5f68247bb81baf73d487400c2d2bb69453080a3254993a60bd6ae",
+    "tools/sycl/runtime_probe.py": "750818a521dcdf28901638424e9789c2db22d85876226b6f5141a954bb9d41d6",
     "tools/sycl/check_full_context_source.py": "5e72fa724e890e682382758caf6222042e1ec89770962ce205ab756783332030",
     "tools/sycl/build_engine.py": "8444783ab417378207ec89ad2bc3cf648480e20d9e77f06ebb3070c93e10b131",
     "tools/sycl/measurement_guards.py": "794e332c70aca0acadad4f26d0414548e023a02fd27b72ed78fc773674423ec8",
     "tools/sycl/measurement_owner.py": "bddd0c5e5020e882ca3404679420faec11e820dabce2ed4c72ef82b4c9c0874a",
     "tools/sycl/ur_validation.py": "2e41d84788dc9cc3c7435b18b43601b3ca79280ccb855414d7a36bae6bff83e7",
-    "tools/sycl/measurement_environment.json": "d4402591df50e80dc45a5ec9e4839c7a794888850b1473537b6f95179be5b03c"
+    "tools/sycl/measurement_environment.json": "d4402591df50e80dc45a5ec9e4839c7a794888850b1473537b6f95179be5b03c",
+    "tests/core/test_runtime_probe.py": "10acac780a04a18f3b7e78babf313fee3bae58177f550ee5d07f948d3008b0d3"
   },
-  "prior_preparation_failure": {
-    "commit": "ea5a8c24c84fec97deee3d84f061b3b04e9e505a",
+  "prior_failed_gate": {
+    "commit": "58e353eaa046d6102a25f7f06def19d1403b878f",
     "path": "bench/results/2026-10-15-pr6-recovery-audit/runtime-requalification-current.json",
-    "sha256": "1b342fe7dcfd0b5541a13b97095a15035a09c1efa6d2b8f5f9c142e5ef573a28"
+    "sha256": "d6316756b917a697e43f05ad1bcf8849236ee617518e33b12d6b1fe8170c9325"
   },
   "declared_runtime_changes": {
     "/usr/lib/x86_64-linux-gnu/libz.so.1.3": "f61677c7bdb7c2aa2a243ea781bfd16afcb361cede7b4ef76127a9d8eb9a5242",
@@ -108,8 +109,8 @@
     "UR_LOG_LEVEL_ZERO": "level:warning;flush:warning;output:stderr",
     "LD_PRELOAD": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/ur-validation-preload-v2/libstrata_ur_validation.so",
     "STRATA_UR_PROBE_EXPECTED_LOADER": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_loader.so.0.12.0",
-    "TMPDIR": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/neo-39758-runtime-probe-v3/tmp",
-    "XDG_CACHE_HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/neo-39758-runtime-probe-v3/cache"
+    "TMPDIR": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/neo-39758-runtime-probe-v4/tmp",
+    "XDG_CACHE_HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/neo-39758-runtime-probe-v4/cache"
   },
   "cases": [
     {
@@ -160,6 +161,23 @@
     "kernel": "7.0.0-38-generic",
     "devcoredump": false
   },
+  "host_controls": {
+    "command": [
+      "/usr/bin/python3",
+      "-B",
+      "tests/core/test_runtime_probe.py"
+    ],
+    "python": {
+      "path": "/usr/bin/python3",
+      "sha256": "e50d468e8b0adfb05733f5b87b3cff34829c4a8c1aea50c865aa8bdfe4bb150f"
+    },
+    "environment": {
+      "PATH": "/usr/bin:/bin",
+      "LANG": "C.UTF-8",
+      "LC_ALL": "C.UTF-8",
+      "TMPDIR": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/neo-39758-runtime-probe-v4/tmp"
+    }
+  },
   "criteria": "Four ordered fresh owned processes: host-only preload canary,submission/USM/events,ordinary graph profile0,profile1. All exit0,expected numerical/guard/profiling markers,pre-main parameter validation,silent validation log,observed ELF subset pinned and actual new NEO observed in device children. Trace must record enqueue work;fresh fault/boot/source/runtime/owner checks after every child. Stop first failure,no retry. Not model,clean speed,physical context or ordinary runtime destruction qualification.",
   "budgets": {
     "wall": 90,
@@ -170,43 +188,12 @@
     "total_cap": 67108864
   },
   "retention": "Keep exact source/recipe,runtime hashes,individual fixture outcomes and limits. Retire successful traces/maps/logs after committed replay;retain provider manifest for imminent model requalification/fresh comparison. No new native engine generation.",
-  "outcomes": [
-    {
-      "label": "canary",
-      "exit_code": 0,
-      "passed": true,
-      "ownership_closed": true,
-      "parameter_validation": true,
-      "fresh_faults": [],
-      "mapped_runtime_files": [],
-      "stdout_sha256": "2ebfaafcbf2013c3f6259a851081c541c86a0044620ec4446c8fa3f2be19ec23",
-      "stderr_sha256": "6aee5844c3283a54f85d11e78ba8d6b0160771d1cd0beff6e48fb0b1a1c4a997",
-      "trace_bytes": 330
-    }
-  ],
+  "outcomes": [],
   "active": false,
-  "ownership_closed": false,
+  "ownership_closed": true,
   "passed": false,
   "complete": false,
   "model_qualified": false,
   "production_selected": false,
-  "clean_speed_qualified": false,
-  "error": "RuntimeError('runtime fixture failed: submission')",
-  "fresh_faults": [],
-  "boot_unchanged": true,
-  "driver_after": {
-    "pci": "/sys/bus/pci/devices/0000:05:00.0",
-    "driver": "xe",
-    "vendor": "0x8086",
-    "device": "0xe20c",
-    "kernel": "7.0.0-38-generic",
-    "devcoredump": false
-  },
-  "closure_reconciliation": {
-    "all_owned_processes_terminated": true,
-    "original_observation_failed": true,
-    "reason": "Filename substring misclassified the read-only ld.so.cache mapping as a shared library. Owner sent SIGTERM before any recorded enqueue;both direct children reaped,sessions empty,and pinned PID identities no longer live. Original failed/ownership_closed=false result is preserved.",
-    "recorded_enqueue_calls": 0,
-    "fresh_faults": []
-  }
+  "clean_speed_qualified": false
 }
