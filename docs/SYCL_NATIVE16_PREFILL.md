@@ -255,6 +255,13 @@ The31 successful/resolved diagnostic files (1,118,277bytes) retire after exact
 provider manifest and per-case provider/count checks for model qualification;
 repeated observed path lists recover from`c2d8a8c9f` if a concrete question needs them.
 
+The next [bounded model gate](../tools/sycl/runtime_model.py) reuses the selected
+original engine and placement through official`bench.sh`: one short warmup,
+then one fresh32K-or-longer prompt and at most24 generated tokens, with thinking
+enabled. Pre-main validation and stage logging qualify execution and state
+handoff only. They establish neither numerical quality nor sustained decode
+nonregression; preserve those separate gates and keep old/new runtime samples apart.
+
 ## Attribution limits and outstanding gates
 
 The limiting hardware resource remains incompletely attributed. CPU-pool and
