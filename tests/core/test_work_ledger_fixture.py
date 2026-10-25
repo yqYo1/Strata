@@ -61,6 +61,42 @@ class CensusProbeTests(unittest.TestCase):
             with self.subTest(corrupt=corrupt), self.assertRaises(RuntimeError):
                 probe.device_census(rows, 71, 0, 100000)
 
+    def link_timeline(self):
+        return [dict(ph='X', cat='cpu_op', name='zeCommandListAppendLaunchKernelWithArguments',
+                     pid=71, tid=72, ts=10, dur=2, id=0),
+                dict(ph='s', cat='Flow_H2D_1_71', pid=71, tid=72, ts=10, id=1),
+                dict(ph='t', cat='Flow_H2D_1_71', pid=90, tid=91, ts=20, id=1),
+                dict(ph='X', cat='gpu_op', name='main::kernel', pid=90, tid=91, ts=20, dur=3,
+                     args={'id': '1'}),
+                dict(ph='t', cat='Flow_D2H_1_71', pid=71, tid=72, ts=25, id=1)]
+
+    def test_exact_collector_flow_links_do_not_claim_an_independent_UR_join(self):
+        result = probe.trace_links(self.link_timeline(), 71)
+        self.assertEqual(result['linked_device_operations'], 1)
+        self.assertTrue(result['exact_collector_host_device_links'])
+        self.assertFalse(result['independent_UR_API_join_qualified'])
+
+    def test_same_counts_do_not_hide_wrong_flow_source_or_sink(self):
+        for corrupt in ('timestamp', 'source-thread', 'sink-queue', 'sink-time', 'append-kind',
+                        'duplicate-source', 'missing-completion'):
+            events = self.link_timeline()
+            if corrupt == 'timestamp':
+                events[1]['ts'] = 11
+            elif corrupt == 'source-thread':
+                events[1]['tid'] = 73
+            elif corrupt == 'sink-queue':
+                events[2]['pid'] = 92
+            elif corrupt == 'sink-time':
+                events[2]['ts'] = 21
+            elif corrupt == 'append-kind':
+                events[0]['name'] = 'zeCommandListAppendMemoryCopy'
+            elif corrupt == 'duplicate-source':
+                events.append(copy.deepcopy(events[0]))
+            else:
+                events.pop()
+            with self.subTest(corrupt=corrupt), self.assertRaises(RuntimeError):
+                probe.trace_links(events, 71)
+
 
 if __name__ == '__main__':
     unittest.main()

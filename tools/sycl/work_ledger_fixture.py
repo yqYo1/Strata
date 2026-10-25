@@ -146,6 +146,87 @@ def device_census(events, native_pid, begin_ns, end_ns):
                 device_instance_ids_unique=True, all_device_host_sources=True, raw_clock_bounds=True)
 
 
+def trace_links(events, native_pid):
+    """Check collector-internal links, NOT the missing independent UR bridge.
+
+    PTI's CPU API events all have id0 in this build. Match each actual flow
+    source to its unique CPU API timestamp/thread, and its target to the actual
+    GPU execution. No ordinal correspondence or guessed UR timestamp is used.
+    This fixture has no graph replay: one append must produce exactly one event.
+    """
+    gpu = [e for e in events if e.get('ph') == 'X' and e.get('cat') == 'gpu_op']
+    host = collections.defaultdict(list)
+    flows = collections.defaultdict(list)
+    for event in events:
+        if event.get('ph') == 'X' and event.get('cat') == 'cpu_op':
+            host[(event.get('pid'), event.get('tid'), event.get('ts'))].append(event)
+        elif event.get('ph') in ('s', 't'):
+            flows[(event.get('cat'), event.get('ph'), str(event.get('id')))].append(event)
+    used = set()
+    names = collections.Counter()
+    threads, missing_barrier_completions = set(), 0
+    for event in gpu:
+        ident = str(event['args']['id'])
+        category = 'Flow_H2D_' + ident + '_' + str(native_pid)
+        source = flows[(category, 's', ident)]
+        sink = flows[(category, 't', ident)]
+        require(len(source) == len(sink) == 1, 'missing/duplicate host-to-device flow endpoint')
+        source, sink = source[0], sink[0]
+        require(source.get('pid') == native_pid and (sink.get('pid'), sink.get('tid')) ==
+                (event['pid'], event['tid']) and sink.get('ts') == event['ts'], 'wrong GPU flow endpoint')
+        key = (source['pid'], source['tid'], source['ts'])
+        require(len(host[key]) == 1 and key not in used, 'ambiguous/reused CPU append source')
+        api = host[key][0]
+        device_name, api_name = event['name'], api['name']
+        expected = ('zeCommandListAppendMemoryCopy',) if device_name.startswith('zeCommandListAppendMemoryCopy') else (
+            ('zeCommandListAppendMemoryFill',) if device_name.startswith('zeCommandListAppendMemoryFill') else (
+            ('zeCommandListAppendBarrier',) if device_name == 'zeCommandListAppendBarrier' else
+            ('zeCommandListAppendLaunchKernel', 'zeCommandListAppendLaunchKernelWithArguments')))
+        require(api_name in expected and api.get('dur', -1) >= 0 and source['ts'] <= event['ts'] + event['dur'],
+                'CPU append kind/clock mismatch')
+        completion = flows[('Flow_D2H_' + ident + '_' + str(native_pid), 't', ident)]
+        require(len(completion) <= 1 and all(e.get('pid') == native_pid for e in completion),
+                'invalid host completion flow')
+        if not completion:
+            require(device_name == 'zeCommandListAppendBarrier', 'missing non-barrier host completion')
+            missing_barrier_completions += 1
+        used.add(key)
+        threads.add(source['tid'])
+        names[api_name] += 1
+    require(bool(gpu), 'no device operations to link')
+    return dict(linked_device_operations=len(used), actual_append_apis=dict(names),
+                host_source_threads=len(threads), unsunk_barrier_completions=missing_barrier_completions,
+                exact_collector_host_device_links=True, independent_UR_API_join_qualified=False,
+                limits='Collector-internal identity/clock consistency only. UR text has no call timestamp/thread identity;do not infer its per-operation join by ordinal or call counts. No graph parent/child,queue-generation,host-task,phase-boundary or observer-cost qualification.')
+
+
+def analyse():
+    row = runtime.validation.committed(RESULT, KEY)
+    require(row['stage'] == 'count-screen-passed' and row['passed'] and row['ownership_closed'] and
+            not row['fresh_faults'] and 'closed_analysis' not in row, 'fresh closed-data analysis only')
+    revision = runtime.validation.git('rev-parse', 'HEAD').decode().strip()
+    pins = source_pins(revision)
+    result = dict(source_commit=revision, input_sha256=pins, passed=False, gpu_work=False)
+    try:
+        for item in row['closed_analysis_inputs']:
+            require(digest(item['path']) == item['sha256'], 'closed native raw input changed')
+        text = (ROOT / 'ur.log').read_text()
+        path = next((ROOT / 'trace').rglob('*.json'))
+        value = json.loads(path.read_text())
+        events = value['traceEvents'] if isinstance(value, dict) else value
+        require(api_census(text) == row['api'] and device_census(events, row['pid'],
+            row['begin_raw_ns'], row['end_raw_ns']) == row['device'], 'original count/clock gate does not replay')
+        result['links'] = trace_links(events, row['pid'])
+        result['passed'] = True
+    except BaseException as error:
+        result['error'] = repr(error)
+    container = json.loads(RESULT.read_text())
+    container[KEY[0]][KEY[1]]['closed_analysis'] = result
+    runtime.write(RESULT, container)
+    print(json.dumps({k: result.get(k) for k in ('passed', 'gpu_work', 'links', 'error')}), flush=True)
+    return 0 if result['passed'] else 1
+
+
 def prepare():
     require(not ROOT.exists(), 'inspect existing census owner; no retry')
     revision = runtime.validation.git('rev-parse', 'HEAD').decode().strip()
@@ -283,8 +364,9 @@ def run():
 
 
 if __name__ == '__main__':
-    require(len(sys.argv) == 2 and sys.argv[1] in ('prepare', 'run'), 'use work_ledger_fixture.py prepare|run')
+    require(len(sys.argv) == 2 and sys.argv[1] in ('prepare', 'run', 'analyse'),
+            'use work_ledger_fixture.py prepare|run|analyse')
     with (B / 'owned-v0141-measurement.lock').open('a+') as lock:
         fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
         runtime.guards.no_model_owners([])
-        raise SystemExit(prepare() if sys.argv[1] == 'prepare' else run())
+        raise SystemExit({'prepare': prepare, 'run': run, 'analyse': analyse}[sys.argv[1]]())
