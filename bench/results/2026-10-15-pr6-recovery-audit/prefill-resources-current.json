@@ -2888,7 +2888,7 @@
       "retention": "Compact counts and exact links only;full original capture remains temporarily for those named metadata/ledger gaps. No new raw output/build generated. Selected engine+12fixtures unchanged."
     },
     "ur_subscriber_buffers": {
-      "stage": "built",
+      "stage": "host-checked",
       "source_commit": "05f0f7af43fdd9b8d67d1b7210cb0a4e1037fb75",
       "input_sha256": {
         "tests/core/test_work_ledger_fixture.py": "ea6bf40c7c21ee403937032ce86e345896a0e4bce83a60216ebf557d91e01cd1",
@@ -3053,7 +3053,7 @@
       "retention": "Original6e40 plus12 fixtures retained unchanged. Keep this one small observer ELF,exact source/recipe and header manifest only for the imminent GPU coverage fixture after host checks;retire normal build/API/loader output after compact evidence.",
       "active": false,
       "ownership_closed": true,
-      "passed": false,
+      "passed": true,
       "gpu_work": false,
       "model_qualified": false,
       "driver_command": [
@@ -3101,7 +3101,120 @@
         "bytes": 21008
       },
       "fresh_faults": [],
-      "boot_unchanged": true
+      "boot_unchanged": true,
+      "outcomes": [
+        {
+          "kind": "setenv",
+          "exit_code": 87,
+          "mutation_blocked": true
+        },
+        {
+          "kind": "unsetenv",
+          "exit_code": 87,
+          "mutation_blocked": true
+        },
+        {
+          "kind": "putenv",
+          "exit_code": 87,
+          "mutation_blocked": true
+        },
+        {
+          "kind": "clearenv",
+          "exit_code": 87,
+          "mutation_blocked": true
+        },
+        {
+          "kind": "metadata",
+          "exit_code": 0,
+          "metadata": {
+            "simulated_calls": 26,
+            "rejected_calls": 2,
+            "successful_calls": 24,
+            "recycled_queues": 2,
+            "recycled_allocations": 2,
+            "graph_children": 2,
+            "successful_replays": 2,
+            "failed_output_and_list_not_read": true,
+            "device_work_qualified": false,
+            "limits": "Fabricated CPU XPTI payloads only;no UR/LevelZero device calls or actual lifetime/graph execution qualification."
+          }
+        },
+        {
+          "kind": "buffers",
+          "exit_code": 0,
+          "metadata": {
+            "simulated_calls": 21,
+            "rejected_calls": 5,
+            "typed": {
+              "counts": {
+                "urQueueCreate": 1,
+                "rejected_calls": 5,
+                "urMemBufferCreate": 2,
+                "graph_query_calls": 2,
+                "enqueue_calls": 4,
+                "buffer_copy_bytes": 16
+              },
+              "enqueue_queue_handles": 1,
+              "lifetime_generations_qualified": false,
+              "graph_children_qualified": false,
+              "limits": "Typed callback capture/geometry/requested-byte census only. Handles are raw values;reference generations,retirement,actual launch rounding,graph child mapping and application host-memory lifetime still need independent checks."
+            },
+            "external_lifetimes": {
+              "counts": {
+                "queue_created": 1,
+                "queue_reused_values": 0,
+                "rejected_without_transition": 5,
+                "buffer_created": 2,
+                "buffer_reused_values": 1,
+                "buffer_retained": 1,
+                "graph_query_calls": 2,
+                "buffer_native_queries": 2,
+                "buffer_transfers": 2,
+                "event_created": 1,
+                "event_reused_values": 0,
+                "event_released": 1,
+                "buffer_released": 3,
+                "queue_released": 1
+              },
+              "external_generations_closed": true,
+              "source_threads": 1,
+              "limits": "Complete serial fixture external API reference generations only. Not driver-internal ownership,buffer-reader completion,host-memory lifetime,ordinary runtime teardown or exact graph-child/device identity."
+            },
+            "failed_pointees_not_read": true,
+            "gpu_work": false,
+            "limits": "CPU XPTI simulation only;no UR/L0 device work,actual host-payload ownership,performance or model coverage."
+          }
+        },
+        {
+          "kind": "canary",
+          "exit_code": 0,
+          "validation": {
+            "pid": 3619999,
+            "loader": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_loader.so.0.12.0",
+            "threads_before": 1,
+            "preinit": 37,
+            "config_enabled": true,
+            "first_init": true,
+            "dispatch_result": 46,
+            "output_untouched": true,
+            "retained_reference_until_exit": true,
+            "runtime_teardown_qualified": false
+          },
+          "calls": {
+            "call_pairs": 2,
+            "source_threads": 1,
+            "outcomes": [
+              {
+                "name": "urPlatformGetApiVersion",
+                "status": 46,
+                "calls": 2
+              }
+            ],
+            "ordinary_runtime_teardown_qualified": false,
+            "device_work_qualified": false
+          }
+        }
+      ]
     }
   }
 }
