@@ -19,7 +19,7 @@ import runtime_probe as runtime
 
 build, guards, supervision = native.build, native.guards, native.supervision
 P, B = native.P, native.B
-ROOT = B / 'selected-prefill-restoration-v1'
+ROOT = B / 'selected-prefill-restoration-v2'
 RESULT = gen.A / 'prefill-restore-current.json'
 BASE = native.BASE
 RESTORED = (
@@ -41,7 +41,7 @@ NATIVE_DELTA = {'CMakeLists.txt', 'cmake/sycl_backend.cmake',
 HOST_TARGETS = ('prefill_expert_bank_plan_test', 'full_context_diagnostic_host_test',
     'cache_tail_host_test', 'prefill_scratch_host_test',
     'residency_publication_host_test', 'cpu_work_census_host_test', 'iq2_phase_host_test')
-PROJECT_PATHS = ['CMakeLists.txt', 'cmake', 'src', 'include', 'tests',
+PROJECT_PATHS = ['CMakeLists.txt', 'cmake', 'src', 'include', 'third_party', 'tests',
     'bench/sycl', 'bench/micro', 'tools/sycl']
 
 
@@ -76,7 +76,18 @@ def restoration_source(revision):
 
 
 def prepare():
-    guards.require(not ROOT.exists() and not RESULT.exists(), 'fresh single-use restoration build')
+    guards.require(not ROOT.exists(), 'fresh single-use restoration build')
+    previous = gen.committed(RESULT)
+    retirement = previous['retirement']
+    guards.require(previous['stage'] == 'failed' and not previous['passed']
+        and not previous['active'] and previous['ownership_closed']
+        and previous['failure_diagnosis']['uncovered_input'] == 'third_party/ggml/ggml-common.h'
+        and previous['source_recovery']['actual_compiler_inputs_recovered_and_matched'] == 1416
+        and retirement['complete'] and not Path(retirement['root']).exists(),
+        'preserve failed census and retire its generation before the corrected build')
+    prior_failed = dict(commit=gen.git('log', '-1', '--format=%H', '--',
+        str(RESULT.relative_to(P))).decode().strip(), path=str(RESULT.relative_to(P)),
+        sha256=build.digest(RESULT))
     closed = gen.committed(gen.A / 'cpu-service-current.json')
     cohort = closed['observer_overhead']
     retired = closed['observer_generation_retirement']
@@ -122,6 +133,7 @@ def prepare():
     header = fetch('ggml/src/ggml-version.h.in').replace('@GGML_VERSION@', version).replace(
         '@GGML_BUILD_COMMIT@', dependency['revision'][:9]).encode()
     row = dict(stage='prepared', source_commit=revision, selected_source=BASE,
+        prior_failed_build=prior_failed,
         fallback=proof, fallback_binary=original['binary'], project=project,
         project_files=project['count'], project_fingerprint=project['aggregate_sha256'],
         dependencies=dependencies, dependency_revisions=[v['revision'] for v in dependencies],
