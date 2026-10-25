@@ -11325,8 +11325,8 @@
   },
   "oneMKL_native_work_coverage_20261025": {
     "classification": "decision_support",
-    "status": "eligible_before_dispatch",
-    "schedulable_now": true,
+    "status": "running_read_only",
+    "schedulable_now": false,
     "question": "Cover called oneMKL/native-command/interop/host-task GPU work without assuming every device operation has one same-thread UR kernel enqueue.",
     "prerequisites": "Actual selected117K mode10 direct-MTP callback route is verified;library-internal coverage remains unknown.",
     "evidence": {
@@ -11347,6 +11347,15 @@
       "byte_budget": 12000
     },
     "ownership": "One Orca gpt-6-luna read-only researcher;Main owns all implementation/tests/GPU. Native Codex gpt-6-luna max report review.",
-    "retention": "Keep report only through native review and current coverage/fixture decision;retain substantive reusable findings or compact decision,not transaction files."
+    "retention": "Keep report only through native review and current coverage/fixture decision;retain substantive reusable findings or compact decision,not transaction files.",
+    "run": "run_12fa11537288",
+    "task": "task_3ac8af598873",
+    "dispatch": "ctx_24e098532327",
+    "terminal": "term_dd3bdbc2-97aa-46d5-b0d3-91a0f7ccb99e",
+    "incarnation": "179713dd-49d7-4840-96d2-87e80a83efa1",
+    "model": "gpt-6-luna",
+    "actual_model_verified_by": "worker-show projection.provider.model;agent_status live/working",
+    "policy_source_commit": "d1bd26e59262362f92861d49004764b0bf6e463b",
+    "report_body_read_by_Main": false
   }
 }
