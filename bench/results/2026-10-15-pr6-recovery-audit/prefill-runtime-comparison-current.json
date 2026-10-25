@@ -889,6 +889,15 @@
       "The complete historical userspace dependency set has not been A/B tested;current clocks/paging/contention cannot retrospectively substitute for missing historical controls."
     ],
     "retention": "Existing maintained comparison only;original individual samples recover from pinned Git history. No new raw logs,benchmark files or binaries retained.",
-    "benchmark_shared_request_delta": "Suite.request changes only sample_eligibility in phase.startswith(long-generation/);prefill-only does not enter that branch. Constructor/main add long-generation settings and metadata;run_prefill_only,call_stream,digest,prefill construction,counts and clocks remain unchanged."
+    "benchmark_shared_request_delta": "Suite.request changes only sample_eligibility in phase.startswith(long-generation/);prefill-only does not enter that branch. Constructor/main add long-generation settings and metadata;run_prefill_only,call_stream,digest,prefill construction,counts and clocks remain unchanged.",
+    "independent_report_review": {
+      "reviewer": "native Codex gpt-6-luna max",
+      "reviewed_commit": "bbc20f90efb135f66dc9ba67079df7019fc40767",
+      "report_sha256": "fdba965e160d3f0f72f7421bad2c4a9519ae93636278da3abff0af6462be3c55",
+      "report_bytes": 3968,
+      "verdict": "Arithmetic/control selection reproduce;prefill-only timing path unchanged. Narrow wording because overall client changed for long generation. NEO/ownership effects,source cause and limiting hardware remain unresolved;full dependency A/B and historical resource controls are missing.",
+      "correction": "Clarified unchanged prefill-specific methods and the shared request long-generation-only branch. No new inference/speed/correctness qualification.",
+      "retention": "Short verdict retained here;consumed full review scheduled for serialized retirement after commit."
+    }
   }
 }

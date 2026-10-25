@@ -238,7 +238,9 @@ whole-client fingerprints alone do not establish a changed prefill measurement.
 The follow-up source audit also finds byte-identical `measurement_owner.py`,
 `measurement_guards.py` and `clock_overhead.cpp`,with identical process budgets.
 An AST comparison finds changes only in `Suite` and `main` in the benchmark
-client;the prefill methods and module constants are unchanged. Both original
+client;the prefill-specific methods and module constants are unchanged.
+The shared `Suite.request` change is inside its long-generation-only branch,
+which these prefill requests do not enter. Both original
 arms offer21 drafts,accept16 and generate24 tokens in every request. These short
 outputs remain insufficient for sustained decode qualification.
 
