@@ -238,6 +238,19 @@ remain for the imminent new-runtime qualification and fresh width comparison;
 review after qualification/cohort closure and before a new native generation.
 Their previous runtime qualification does not transfer automatically.
 
+The [new-runtime device gate](../bench/results/2026-10-15-pr6-recovery-audit/runtime-requalification-current.json)
+passes six host mapping controls, then four ordered native checks: host-only UR
+canary, USM/copy/event submission, ordinary graph profile0 and profile1. All five
+owned commands close at exit0; parameter-validation logs are empty and no fresh
+driver fault is recorded. Executable mappings bind the three device checks to
+NEO`libze_intel_gpu.so.1.17.39758`. The candidate manifest explicitly accounts
+for the changed NEO,IGDML,GMM and zlib; old runtime/hash records stay unchanged.
+The earlier observer incorrectly treated read-only`ld.so.cache` as a library;
+that failed run and its actual process-closure reconciliation recover at
+`58e353eaa`, and the new host controls cover it. This qualifies these small
+fixtures only. Model correctness,clean speed and ordinary runtime destruction
+remain unqualified on the new runtime; keep the retained UR reference until exit.
+
 ## Attribution limits and outstanding gates
 
 The limiting hardware resource remains incompletely attributed. CPU-pool and
