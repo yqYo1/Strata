@@ -266,6 +266,10 @@ The observed59477.6ms prompt and1960.4ms decode are traced first-use diagnostic
 samples, not clean speed or sustained decode evidence. Numerical/task quality,
 decode nonregression,physical context,RESTORE and ordinary runtime destruction
 remain open; keep old/new runtime samples apart.
+All71 successful raw/cache/generated files retire after recovering190 benchmark
+inputs,9853 original native inputs and plan`e10d6becc` from reachable Git.
+The one-shot controller recovers from source`21f84a11e`; the selected engine and
+its same-build fixtures remain intact.
 
 ## Attribution limits and outstanding gates
 
