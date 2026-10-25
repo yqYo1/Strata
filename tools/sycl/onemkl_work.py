@@ -18,9 +18,9 @@ import runtime_probe as r
 
 build = r.build
 P, B = r.P, r.B
-ROOT = B / 'onemkl-wrapper-work-v1'
+ROOT = B / 'onemkl-wrapper-work-v2'
 RESULT = P / 'bench/results/2026-10-15-pr6-recovery-audit/prefill-resources-current.json'
-KEY = 'oneMKL_wrapper_build'
+KEY = 'oneMKL_wrapper_build_v2'
 TARGET = 'sycl_gemm_device_probe'
 PREFIXES = ['CMakeLists.txt', 'cmake', 'include', 'src', 'tests', 'third_party', 'bench/sycl',
     'tools/sycl/gemm_device_probe.cpp', 'tools/sycl/onemkl_work.py', 'tools/sycl/build_full_context.py',
@@ -28,6 +28,35 @@ PREFIXES = ['CMakeLists.txt', 'cmake', 'include', 'src', 'tests', 'third_party',
     'tools/sycl/measurement_owner.py', 'tools/sycl/measurement_guards.py', 'tools/sycl/ur_validation.py',
     'tools/sycl/measurement_environment.json']
 require, digest, write = r.require, r.digest, r.write
+# V1 refused before configure. This separate v2 build prospectively records the
+#3 known system-header updates;the original inventory/refusal stays unchanged.
+# The new binary still needs its own bounded validation before any model use.
+SYSTEM_HEADER_UPDATES = {
+    '/usr/include/metee.h': ('f063edcb00c88f3ddebc10f9b0487fe813cfb7ba71dc4b798729bed8902018a3',
+                            'd07e18ce9228c3fc570b186eab13bf8a3e6c04214992f0de9d53b855dc837252'),
+    '/usr/include/opencl-c-base.h': ('e1683c3db9cf9a95e9d02acbbfa74dcd29d4deaf4a856430f538d76985b04114',
+                                   '673c4720f879c2f101504979edbd0216c9cb6a982ce2b62bd467b81fd53d8e33'),
+    '/usr/include/opencl-c.h': ('579b58f482ab0b3dfd396cab32ea3e0537bc5cf4c1067377b83fe417cbcc513b',
+                              'aa7e871a8f7d961aa4126a9fadc2196f822c21811946c90147dc7415fe677de9'),
+}
+
+
+def sdk_inputs():
+    require(digest(lineage.SDK) == lineage.SDK_SHA, 'original SDK inventory changed')
+    rows = json.loads(lineage.SDK.read_text())
+    require(len(rows) == 8697, 'original SDK inventory count differs')
+    for item in rows:
+        path = item['path']
+        before, expected = SYSTEM_HEADER_UPDATES.get(path, (item['sha256'], item['sha256']))
+        require(item['sha256'] == before and digest(path) == expected, 'SDK/system input changed: ' + path)
+    require(set(SYSTEM_HEADER_UPDATES) <= {v['path'] for v in rows}, 'unknown header update')
+    packages = subprocess.check_output(['dpkg-query', '-W', '-f=${Package} ${Version}\n',
+        'libmetee-dev', 'libigdfcl2'], text=True, timeout=10).splitlines()
+    require(packages == ['libigdfcl2 2.41.15-1~24.04', 'libmetee-dev 6.2.5-1~24.04~ppa2'], 'updated header packages changed')
+    return dict(path=str(lineage.SDK), sha256=lineage.SDK_SHA, original_files=8697, admitted_files=8697,
+        prospective_system_header_updates={k: list(v) for k, v in SYSTEM_HEADER_UPDATES.items()},
+        updated_header_packages=packages,
+        condition='New v2 input snapshot only;all8694 other original hashes remain mandatory. Actual dependency closure records which updated headers were compiled. No qualification inherited for the new fixture.')
 
 
 def summary(row):
@@ -52,7 +81,7 @@ def current(row):
         require(build.pin(Path(dep['root']), ['.']) == dep, 'independent dependency changed')
     for p, h in row['external_inputs'].items(): require(digest(p) == h, 'external build input changed: ' + p)
     for item in row['tools'].values(): require(digest(item['path']) == item['sha256'], 'build tool changed')
-    require(lineage.sdk() == row['sdk'], 'SDK changed')
+    require(sdk_inputs() == row['sdk'], 'SDK changed')
     rt = r.validation.committed(r.RESULT)
     full = r.current(rt)
     require(digest(r.RESULT) == row['runtime_sha256'] and full['binary'] == row['selected_binary'], 'selected runtime/engine changed')
@@ -62,7 +91,8 @@ def dependencies(row, text):
     expected = {}
     for s in [row['project'], *row['dependencies']]:
         expected.update({str((Path(s['root']) / n).resolve()): h for n, h in s['source_sha256'].items()})
-    expected.update({str(Path(v['path']).resolve()): v['sha256'] for v in json.loads(lineage.SDK.read_text())})
+    expected.update({str(Path(v['path']).resolve()): SYSTEM_HEADER_UPDATES.get(v['path'], (None, v['sha256']))[1]
+                     for v in json.loads(lineage.SDK.read_text())})
     expected.update(row['external_inputs'])
     paths = {Path(v.strip()) for v in text.splitlines() if v.startswith('    ') and v.strip()}
     paths = {(p if p.is_absolute() else ROOT / 'build' / p).resolve() for p in paths}
@@ -79,12 +109,16 @@ def dependencies(row, text):
         observed[str(p)] = sha
     manifest = ROOT / 'compiler-inputs.json'; write(manifest, observed)
     return dict(files=len(observed), manifest=dict(path=str(manifest), sha256=digest(manifest)),
-        generated_sha256=generated, uncovered_files=0)
+        generated_sha256=generated, uncovered_files=0,
+        used_updated_system_headers=sorted(set(observed) & set(SYSTEM_HEADER_UPDATES)))
 
 
 def main():
     container = r.validation.committed(RESULT)
     require(not ROOT.exists() and KEY not in container['event_reconciliation'], 'fresh single-use build only;inspect existing owner')
+    prior = container['event_reconciliation']['oneMKL_wrapper_build']
+    require(prior['stage'] == 'admission-refused' and not prior['passed'] and not prior['GPU_executed'] and
+        prior['ownership_closed'] and prior['build_root_absent'], 'preserve closed v1 prebuild refusal')
     route = container['event_reconciliation']['route_discovery']
     require(route['passed'] and route['ownership_closed'] and not route['active'] and route['fresh_faults'] == [],
             'closed selected117K route required')
@@ -95,7 +129,7 @@ def main():
     for name in ('src/prefill/sycl/gemm.cpp', 'src/prefill/sycl/gemm16.cpp', 'src/sycl/runtime.cpp', 'src/sycl/compat.cpp'):
         require(build.git(P, 'show', '6e40afc1beddd059ee518617f6c1efce1da14aca:' + name) == (P / name).read_bytes(),
                 'called production wrapper/runtime changed: ' + name)
-    sdk = lineage.sdk(); external = external_inputs(rt)
+    sdk = sdk_inputs(); external = external_inputs(rt)
     tool_paths = {n: str(Path('/usr/bin/' + n).resolve()) for n in ('cmake', 'ninja', 'cc', 'ar', 'ranlib', 'as', 'ld')}
     tool_paths['cc1'] = subprocess.check_output(['/usr/bin/cc', '-print-prog-name=cc1'], text=True, timeout=10).strip()
     tool_paths['sycl'] = full['compiler']['path']
@@ -107,6 +141,7 @@ def main():
     for name in ('tmp', 'cache'): (ROOT / name).mkdir()
     row = dict(stage='building', source_commit=project['revision'], project=project, dependencies=deps,
         sdk=sdk, external_inputs=external, tools=tools, configure_argv=argv, environment=env,
+        prior_refused_source=prior['source_commit'],
         target=TARGET, selected_binary=full['binary'], runtime_sha256=digest(r.RESULT),
         boot=rt['boot'], driver=rt['driver'], active=False, ownership_closed=True, passed=False,
         GPU_executed=False, inference_changed=False, engine_built=False,
@@ -138,7 +173,8 @@ def main():
         ninja = (ROOT / 'build/build.ninja').read_text()
         stanza = ninja[ninja.index('build ' + TARGET + ':'):].split('\n\n', 1)[0]
         links = shlex.split(next(v.split(' = ', 1)[1] for v in stanza.splitlines() if v.startswith('  LINK_LIBRARIES = ')))
-        link_inputs = {**{str(Path(v['path']).resolve()): v['sha256'] for v in json.loads(lineage.SDK.read_text())}, **external}
+        link_inputs = {**{str(Path(v['path']).resolve()): SYSTEM_HEADER_UPDATES.get(v['path'], (None, v['sha256']))[1]
+                         for v in json.loads(lineage.SDK.read_text())}, **external}
         for path in (Path(p).resolve() for p in links if p.startswith('/')):
             require(str(path) in link_inputs and digest(path) == link_inputs[str(path)], 'imported library not pinned: ' + str(path))
         current(row)
