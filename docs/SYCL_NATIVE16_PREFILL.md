@@ -255,12 +255,17 @@ The31 successful/resolved diagnostic files (1,118,277bytes) retire after exact
 provider manifest and per-case provider/count checks for model qualification;
 repeated observed path lists recover from`c2d8a8c9f` if a concrete question needs them.
 
-The next [bounded model gate](../tools/sycl/runtime_model.py) reuses the selected
-original engine and placement through official`bench.sh`: one short warmup,
-then one fresh32K-or-longer prompt and at most24 generated tokens, with thinking
-enabled. Pre-main validation and stage logging qualify execution and state
-handoff only. They establish neither numerical quality nor sustained decode
-nonregression; preserve those separate gates and keep old/new runtime samples apart.
+The [bounded model gate](../bench/results/2026-10-15-pr6-recovery-audit/runtime-model-current.json)
+passes on the new runtime with the original engine and placement through
+official`bench.sh`:74-token warmup,then39265 fresh input tokens;each generates24
+tokens with thinking enabled. Both native and benchmark close at exit0,
+parameter validation is silent and no fresh driver fault appears. Live checks
+bind both ends of the long request to the pinned environment and new NEO.
+Actual long prefill uses39264 BF16 GPU-residual rows and mode10 MoE windows.
+The observed59477.6ms prompt and1960.4ms decode are traced first-use diagnostic
+samples, not clean speed or sustained decode evidence. Numerical/task quality,
+decode nonregression,physical context,RESTORE and ordinary runtime destruction
+remain open; keep old/new runtime samples apart.
 
 ## Attribution limits and outstanding gates
 

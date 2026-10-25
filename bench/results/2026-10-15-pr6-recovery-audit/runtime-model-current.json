@@ -1,5 +1,5 @@
 {
-  "stage": "prepared",
+  "stage": "model-checked",
   "source_commit": "21f84a11ecda6ff67b310f52908c31f9bb1e0793",
   "prior_preparation_failure": {
     "commit": "c29f4d51b87bc15ec1c492c41867c8929bb02239",
@@ -242,10 +242,122 @@
   "retention": "Retain compact source/command/config/environment,individual request extents/times/hash/outcomes and limits. After verification retire successful logs,trace,caches and generated duplicate inputs with a deletion manifest. No new engine generation.",
   "active": false,
   "ownership_closed": true,
-  "passed": false,
-  "complete": false,
+  "passed": true,
+  "complete": true,
   "adoption_qualified": false,
-  "samples": [],
+  "samples": [
+    {
+      "phase": "warm-up/chat",
+      "sample": {
+        "ok": true,
+        "prompt_tokens": 74,
+        "reused_tokens": 0,
+        "read_tokens": 74,
+        "generated_tokens": 24,
+        "prompt_tps": 2.5,
+        "decode_tps": 3.4,
+        "prompt_ms": 29109.3,
+        "decode_ms": 7129.4,
+        "drafts_offered": 18,
+        "drafts_accepted": 18,
+        "finish_reason": "length",
+        "request_sha256": "6976dd85c26437117139f185ce0ac4da0ab9d1d4eb576dd2f9e252ae99d63f03",
+        "stream_complete": true,
+        "output_chars": 0,
+        "reasoning_chars": 113,
+        "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "reasoning_sha256": "8e053119e57f03adfc04f8cb9262afbd88c9a5db275b76f48485bdb9a5c2e5ed"
+      }
+    },
+    {
+      "phase": "prefill-only",
+      "sample": {
+        "ok": true,
+        "prompt_tokens": 39265,
+        "reused_tokens": 0,
+        "read_tokens": 39265,
+        "generated_tokens": 24,
+        "prompt_tps": 660.2,
+        "decode_tps": 12.2,
+        "prompt_ms": 59477.6,
+        "decode_ms": 1960.4,
+        "drafts_offered": 21,
+        "drafts_accepted": 17,
+        "finish_reason": "length",
+        "request_sha256": "8c116ff41290bfd043602f0a63da5e1e28e82dc1f0695040b4ebaf886516d428",
+        "stream_complete": true,
+        "output_chars": 0,
+        "reasoning_chars": 101,
+        "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "reasoning_sha256": "2d56a138f55342db1d2bfa12406e319d239514a4c16c2075b6d49256c9cb0dac",
+        "eligible": true
+      }
+    }
+  ],
   "clean_speed_qualified": false,
-  "ordinary_teardown_qualified": false
+  "ordinary_teardown_qualified": false,
+  "begin_live_check": {
+    "owner_verified": true,
+    "environment_verified": true,
+    "only_pinned_executable_mappings": true,
+    "updated_NEO_observed": true
+  },
+  "end_live_check": {
+    "owner_verified": true,
+    "environment_verified": true,
+    "only_pinned_executable_mappings": true,
+    "updated_NEO_observed": true
+  },
+  "request_identity": [
+    {
+      "phase": "warm-up/chat",
+      "request_sha256": "6976dd85c26437117139f185ce0ac4da0ab9d1d4eb576dd2f9e252ae99d63f03",
+      "thinking": true,
+      "max_tokens": 24
+    },
+    {
+      "phase": "prefill-only",
+      "request_sha256": "8c116ff41290bfd043602f0a63da5e1e28e82dc1f0695040b4ebaf886516d428",
+      "thinking": true,
+      "max_tokens": 24
+    }
+  ],
+  "activation": {
+    "pid": 1419250,
+    "loader": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_loader.so.0.12.0",
+    "threads_before": 1,
+    "preinit": 37,
+    "config_enabled": true,
+    "first_init": true,
+    "dispatch_result": 46,
+    "output_untouched": true,
+    "retained_reference_until_exit": true,
+    "runtime_teardown_qualified": false
+  },
+  "host_probe_accepted": true,
+  "native_exit_code": 0,
+  "benchmark_exit_code": 0,
+  "short_and_long_native_footer_conservation": true,
+  "actual_BF16_GPU_rows": 39264,
+  "actual_MoE_mode": 10,
+  "journal_valid": true,
+  "journal_complete": true,
+  "evidence_sha256": {
+    "engine.stderr": "edfd04e1645eb3159ce1951f6f7e2dcf5b0bce742fc63e5d3339098dba2512a7",
+    "engine-start.json": "251d1d20610bd25f4fb8cd9fad1f92743c3762dd443070971c7bcc50c97d51b3",
+    "engine-exit.json": "411fa0db22e224e93d73eb0ebe6d917e6951768f21d52dd2daf759faee3bb36d"
+  },
+  "fresh_faults": [],
+  "boot_unchanged": true,
+  "driver_after": {
+    "pci": "/sys/bus/pci/devices/0000:05:00.0",
+    "driver": "xe",
+    "vendor": "0x8086",
+    "device": "0xe20c",
+    "kernel": "7.0.0-38-generic",
+    "devcoredump": false
+  },
+  "model_execution_qualified": true,
+  "decode_nonregression_qualified": false,
+  "retained_engine": "Original6e40 remains selected;new-runtime short/long execution gate only. Private resident-control generation has no role in this gate;review its formerly planned width-comparison consumer before the CPU observer build."
 }
