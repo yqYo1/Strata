@@ -8,6 +8,7 @@ import copy
 import fcntl
 import hashlib
 import json
+import math
 from pathlib import Path
 import re
 import subprocess
@@ -21,7 +22,7 @@ import measurement_owner as owner_api
 gen, guards, runtime = native.gen, native.guards, native.runtime
 validation = runtime.validation
 P, B = native.P, native.B
-ROOT = B / 'restored-model-state-v1'
+ROOT = B / 'restored-model-state-v2'
 RESULT = gen.A / 'prefill-restore-model-current.json'
 COMPONENT = gen.A / 'prefill-restore-device-current.json'
 TEMPLATE = gen.A / 'phase-prefill-speed-current.json'
@@ -62,7 +63,8 @@ def recipe():
     base = models.setup()
     args = list(base['config']['args'])
     for key, value in (('--expert-profile', str(PROFILE)), ('--conversation-cache-mib', '8192'),
-            ('--conversation-cache-slots', '2'), ('--conversation-cache-min-free-mib', '4096')):
+            ('--conversation-cache-slots', '2'), ('--conversation-cache-min-free-mib', '4096'),
+            ('--prompt-cache', '6'), ('--prompt-cache-every', '0')):
         if key in args:
             args[args.index(key) + 1] = value
         else:
@@ -70,7 +72,8 @@ def recipe():
     guards.require(all(args[args.index(k) + 1] == v for k, v in
         (('--max-context', '131072'), ('--kv', 'int8'), ('--kv-resident', '131072'),
          ('--expert-cache', '1256'), ('--prefill', '8192'), ('--pool-workers', '5'),
-         ('--spec', '4'), ('--prompt-cache', '0'), ('--pcie-frac', '0'), ('--adapt-swaps', '0'))),
+         ('--spec', '4'), ('--prompt-cache', '6'), ('--prompt-cache-every', '0'),
+         ('--pcie-frac', '0'), ('--adapt-swaps', '0'))),
         'preserve selected decode placement/configuration')
     template = gen.committed(TEMPLATE)['environment_template']
     previous_root = template['STRATA_MEASUREMENT_ROOT']
@@ -80,7 +83,8 @@ def recipe():
         STRATA_UR_PROBE_EXPECTED_LOADER=qualified['preload']['loader'],
         UR_ENABLE_LAYERS='UR_LAYER_PARAMETER_VALIDATION', STRATA_TRACE='1',
         STRATA_STATE_HASH='1', STRATA_SNAPSHOT_VERIFY='1', STRATA_DECODE_TIMING='1',
-        STRATA_SYCL_CACHE_LOAN_AUDIT='1')
+        STRATA_SYCL_CACHE_LOAN_AUDIT='1',
+        UR_LOG_VALIDATION='level:warning;flush:warning;output:file,' + str(ROOT / 'parameter.validation'))
     env.pop('UR_LOG_TRACING', None)
     guards.require('STRATA_SYCL_PREFILL_SEPARATE_LAYOUT' not in env, 'retired layout must stay absent')
     for key in ('UR_L0_V2_FORCE_DISABLE_COPY_OFFLOAD', 'NEOReadDebugKeys', 'EnableDirectSubmission',
@@ -112,11 +116,23 @@ def current(row):
 
 
 def prepare():
-    guards.require(not ROOT.exists() and not RESULT.exists(), 'fresh single-use real-model gate')
+    guards.require(not ROOT.exists(), 'fresh single-use real-model gate')
+    previous = gen.committed(RESULT)
+    guards.require(previous['stage'] == 'protocol-closed' and previous['protocol']['passed'] and
+        previous['protocol']['ownership_closed'] and not previous['active'] and previous['observation'] is None,
+        'preserve the closed transport-only gate;no original GPU model execution')
+    prior = dict(commit=gen.git('log','-1','--format=%H','--',str(RESULT.relative_to(P))).decode().strip(),
+        path=str(RESULT.relative_to(P)),sha256=digest(RESULT))
     revision = gen.git('rev-parse', 'HEAD').decode().strip()
     result = component(revision)
     base, args, env = recipe()
-    models.model_pins(base['config'], base['models'], full=True)
+    # The original committed prepare hashed all15 assets before writing its
+    # plan. Reuse only the same inventory,bytes hashes and full stat/ctime
+    # identities;the real-model stage still hashes every file again at closure.
+    guards.require(previous['model_files'] == 15 and previous['model_fingerprint'] == fingerprint(base['models'])
+        and previous['controller_source_commit'] == 'cb1b5a5182cbc13bd52c1e139f83a96b9e305d5f',
+        'original complete model digest/identity proof differs')
+    models.model_pins(base['config'], base['models'])
     pins = gen.benchmark_pins(revision)
     guards.require('tools/sycl/restored_model.py' in pins, 'commit model controller before preparing')
     vocab = set(json.loads((Path(base['config']['tokenizer']) / 'vocab.json').read_text()).values())
@@ -127,6 +143,10 @@ def prepare():
     cases = [dict(prompt=len(ids), max_new=count, reused=reused, wire_bytes=len(wire(ids, count)),
         wire_sha256=hashlib.sha256(wire(ids, count)).hexdigest()) for ids, count, reused in requests()]
     row = dict(stage='prepared', controller_source_commit=revision, controller_files=len(pins),
+        prior_transport_plan=dict(prior, model_admission='blocked before launch: prompt-cache0 disabled parking',
+            protocol_scope='request-wire/DONE transport only; no GPU model executed'),
+        model_digest_reuse=dict(reference=prior,files=15,
+            identical_inventory_hashes_and_stat_ctime=True,final_full_hash_required=True),
         controller_fingerprint=fingerprint(pins), native_source_commit=result['build_source_commit'],
         binary=result['binary'], component_sha256=digest(COMPONENT), args=args, environment=env,
         environment_fingerprint=fingerprint(env), template_sha256=digest(TEMPLATE),
@@ -137,7 +157,9 @@ def prepare():
             file_cap=32 << 20, total_cap=64 << 20),
         criteria='One fresh owned native serve process after the host protocol gate;four disjoint-prefix requests '
             '33/16385/33/16401 with16/1/16/16 output limits and last prefix reuse16385. Allow a valid earlier '
-            'EOS with positive output;no generated-text identity requirement. Require startup/read/reuse '
+            'EOS with positive output;no generated-text identity requirement. Positive prompt-cache6 enables '
+            'parking,while prompt-cache-every0 excludes intermediate checkpoints and preserves long native16. '
+            'Require ordered RESUME/PP/REUSED/T/DONE plus startup/read/reuse '
             'extents,valid IDs,callbacks,draft precompute,actual BF16/vLLM/mode10 long dispatch,Full48 dense '
             'restoration and1256-slot payload/map restoration. RESTORE must verify all12 main layers,draft '
             'and running state before the last continuation. Check MTP committed positions,actual mapped '
@@ -162,7 +184,9 @@ for expected in json.loads(sys.argv[1]):
  line=sys.stdin.buffer.readline();assert len(line)==expected['wire_bytes'] and hashlib.sha256(line).hexdigest()==expected['wire_sha256']
  _,count,ids=line.decode().strip().split(' ',2);n=len(ids.split(','));count=int(count)
  assert n==expected['prompt'] and count==expected['max_new']
- print('PP',n-1)
+ print('RESUME',expected['reused'])
+ print('PP',n-1,n,0,0)
+ print('REUSED',expected['reused'])
  for _ in range(count):print('T 1')
  print('DONE',count,n,0,0,'length',0,0,expected['reused'],0,0,0,0,0,n-expected['reused'],flush=True)
 assert sys.stdin.buffer.readline()==b'QUIT\n'
@@ -171,7 +195,12 @@ assert sys.stdin.buffer.readline()==b'QUIT\n'
 
 def interact(io, row, observation, real):
     info = {}
+    def silent_validation():
+        warnings = ROOT / 'parameter.validation'
+        guards.require(not warnings.exists() or warnings.stat().st_size == 0,
+            'parameter validation emitted a warning/error')
     def mappings():
+        silent_validation()
         files = runtime.executable_mappings(Path('/proc', str(io.proc.pid), 'maps').read_text())
         allowed = gen.committed(runtime.RESULT)['runtime_files']
         guards.require(all(p in allowed or p == str(Path(row['binary']['path']).resolve()) for p in files)
@@ -180,6 +209,7 @@ def interact(io, row, observation, real):
     while True:
         line = io.line(600)
         guards.require(not line.startswith('ERR'), line)
+        guards.require(line.startswith(('INFO ', 'READY ')), 'unexpected startup record: ' + line)
         if line.startswith('INFO '):
             info.update(v.split('=', 1) for v in line.split()[1:] if '=' in v)
         if line.startswith('READY '):
@@ -198,16 +228,35 @@ def interact(io, row, observation, real):
             expected['wire_sha256'], 'request wire changed')
         for offset in range(0, len(payload), 256 << 10):
             io.send(payload[offset:offset + (256 << 10)])
-        tokens, publications = [], []
+        tokens, publications, resume_signal, reused_signal = [], [], None, None
         while True:
             line = io.line(600); guards.require(not line.startswith('ERR'), line)
-            if line.startswith('PP '): publications.append(int(line.split()[1]))
-            if line.startswith('T '): tokens.append(int(line.split()[1]))
+            if real: silent_validation()
+            fields = line.split()
+            guards.require(fields and fields[0] in ('RESUME', 'PP', 'REUSED', 'T', 'DONE'),
+                'unexpected request record: ' + line)
+            if fields[0] in ('RESUME', 'REUSED', 'T'):
+                guards.require(len(fields) == 2, 'malformed record: ' + line)
+            if line.startswith('RESUME '):
+                guards.require(resume_signal is None and not publications and not tokens, 'late/duplicate RESUME')
+                resume_signal = int(line.split()[1]); guards.require(resume_signal == reused, 'RESUME differs')
+            if line.startswith('PP '):
+                guards.require(resume_signal == reused and reused_signal is None, 'PP outside prompt phase')
+                guards.require(len(fields) == 5 and int(fields[2]) == len(ids) and
+                    all(math.isfinite(float(v)) and float(v) >= 0 for v in fields[3:]), 'malformed PP')
+                publications.append(int(fields[1]))
+            if line.startswith('REUSED '):
+                guards.require(resume_signal == reused and reused_signal is None and not tokens, 'late/duplicate REUSED')
+                reused_signal = int(line.split()[1]); guards.require(reused_signal == reused, 'REUSED differs')
+            if line.startswith('T '):
+                guards.require(reused_signal == reused, 'output before prompt completion')
+                tokens.append(int(line.split()[1]))
             if not line.startswith('DONE '): continue
             f = line.split()[1:]; guards.require(len(f) == 14, 'DONE schema differs')
             actual = dict(generated=int(f[0]), prompt=int(f[1]), finish=f[4], accepted=int(f[5]),
                 offered=int(f[6]), reused=int(f[7]), read=int(f[13]), ids=tokens)
-            guards.require(actual['generated'] == len(tokens) and 0 < len(tokens) <= count and actual['prompt'] == len(ids)
+            guards.require(resume_signal == reused_signal == reused and actual['generated'] == len(tokens)
+                and 0 < len(tokens) <= count and actual['prompt'] == len(ids)
                 and actual['reused'] == reused and actual['read'] == len(ids) - reused
                 and 0 <= actual['accepted'] <= actual['offered'] and all(0 <= t < row['vocab_size'] for t in tokens)
                 and (actual['finish'] == 'stop' or actual['finish'] == 'length' and len(tokens) == count)
@@ -291,6 +340,8 @@ def run(row, protocol):
         guards.require(owner_api.closed(entry) and entry['exit_code'] == 0, 'normal owned exit required')
         if protocol: guards.require(err.stat().st_size == 0, 'protocol peer stderr')
         else:
+            warnings = ROOT / 'parameter.validation'
+            guards.require(not warnings.exists() or warnings.stat().st_size == 0, 'parameter validation warning/error')
             evidence(err.read_text(), observation, row, entry['pid'])
             base = models.setup(); models.model_pins(base['config'], row['model_assets'], full=True)
         current(initial)
