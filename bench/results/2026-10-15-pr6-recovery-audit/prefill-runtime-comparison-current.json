@@ -788,5 +788,107 @@
       "verification": "Replayed all8 request clocks and scoped resource/host summaries before deletion;all15 final model hashes matched;original13 engine/fixture artifacts rehashed after deletion.",
       "kept": "Selected6e40 engine+12fixtures unchanged;separate pending oneMKL consumer and14 older provenance holds unchanged. Two single-use placement controls recover from Git;no production inference/decode change."
     }
+  },
+  "historical_regression_audit": {
+    "scope": "Closed-data/source replay and read-only host inspection;no new GPU/model execution or inference adoption.",
+    "evidence": {
+      "historical_commit": "1e676d554",
+      "historical_path": "bench/results/2026-10-15-pr6-recovery-audit/phase-prefill-speed-current.json",
+      "later_commit": "2e99d2c49",
+      "later_path": "bench/results/2026-10-15-pr6-recovery-audit/restored-phase-bench-current.json",
+      "original_control_process_indices": [
+        0,
+        3,
+        4
+      ]
+    },
+    "historical": {
+      "first_use_tok_s": [
+        929.8039156719472,
+        929.4942286848997,
+        929.2383960871841
+      ],
+      "subsequent_process_medians_tok_s": [
+        1003.0315732678584,
+        1002.6506591658532,
+        1002.3794877745177
+      ]
+    },
+    "later": {
+      "first_use_tok_s": [
+        900.6211418185665,
+        901.5887096712307,
+        903.1217114644163
+      ],
+      "subsequent_process_medians_tok_s": [
+        974.7034550043057,
+        972.2731391639323,
+        975.2123464311771
+      ]
+    },
+    "subsequent_change_pct": -2.7873321486466596,
+    "hierarchical_prompt_ms": [
+      117178.4,
+      120538.2
+    ],
+    "added_prompt_ms": 3359.8,
+    "first_use_change_pct": -3.002226173383693,
+    "unchanged_source_sha256": {
+      "bench.sh": "45347f22ce9d1fbb54200d3b984d18aef4a62deb366d6dddb2c2b3b2e3cf6dc1",
+      "serve/server.py": "cafd71f1fcf7b506ed9ac6e2d3f7751049a7c57592022610ed3c054596a47832",
+      "tools/sycl/engine_once.py": "48d12642ca8f07eada83d0f72e6f1b7d88355cd7ab9a74c807adcae643b8205b",
+      "tools/sycl/measurement_owner.py": "bddd0c5e5020e882ca3404679420faec11e820dabce2ed4c72ef82b4c9c0874a",
+      "tools/sycl/measurement_guards.py": "794e332c70aca0acadad4f26d0414548e023a02fd27b72ed78fc773674423ec8",
+      "tools/sycl/clock_overhead.cpp": "dbf7cc7a21e64dcd37632872be129fc5433e82fadb0e859792c01fbbf1deb676"
+    },
+    "benchmark_AST_changed_definitions": [
+      "Suite.__init__",
+      "Suite.request",
+      "Suite.run_long_generation",
+      "main"
+    ],
+    "matched_request_fields": [
+      "actual_read_tokens",
+      "actual_prompt_tokens",
+      "actual_reused_tokens",
+      "request_sha256",
+      "generated_tokens",
+      "thinking_requested",
+      "drafts_offered",
+      "drafts_accepted"
+    ],
+    "launch_budget_equal": true,
+    "host_quota_check": {
+      "observed_utc": "2026-10-25T19:52:33.075757+00:00",
+      "available_CPUs": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11
+      ],
+      "nice": 0,
+      "cgroup": "/user.slice/user-1000.slice/user@1000.service/app.slice/orca-daemon-834f7c66-5d2c-42ea-b7b5-92821d58e0cf.scope",
+      "all_ancestors_checked": true,
+      "no_finite_cpu_max": true,
+      "nr_throttled_all_levels": 0,
+      "limits": "Current groups/cumulative counters,not complete contemporaneous controls for the historical cohorts. Does not exclude scheduling contention or effective frequency changes.",
+      "levels_checked": 6
+    },
+    "decision": "Measured prefill regression exists under an unchanged benchmark/native-binary contract;root cause remains unattributed. NEO-only and ownership observations did not restore it. Rejected1baa candidate remains rejected;no source/placement/runtime adoption.",
+    "remaining_checks": [
+      "Instrument the actual selected fused GU/Down route without disabling fusion;preserve one event registration and2334-row strata boundary,qualify coverage/numerics/drain before a model trace.",
+      "Separate GPU service,host work/waits,physical transfer evidence and dense/expert handoff;busy fractions and requested bytes are not saturation.",
+      "The complete historical userspace dependency set has not been A/B tested;current clocks/paging/contention cannot retrospectively substitute for missing historical controls."
+    ],
+    "retention": "Existing maintained comparison only;original individual samples recover from pinned Git history. No new raw logs,benchmark files or binaries retained.",
+    "benchmark_shared_request_delta": "Suite.request changes only sample_eligibility in phase.startswith(long-generation/);prefill-only does not enter that branch. Constructor/main add long-generation settings and metadata;run_prefill_only,call_stream,digest,prefill construction,counts and clocks remain unchanged."
   }
 }

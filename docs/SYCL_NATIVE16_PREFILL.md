@@ -216,14 +216,16 @@ Separately,the original6e40 executable itself now measures slower. Recomputing
 actual read tokens divided by engine milliseconds from the old cohort at
 1e676d554 and the updated-NEO cohort above gives:
 
-| Same original6e40 package | Old NEO | Updated NEO |
+| Same original6e40 package | Historical cohort | Later cohort |
 | --- | ---: | ---: |
 | Three subsequent-process medians,tok/s | 1003.0316,1002.6507,1002.3795 | 974.7035,972.2731,975.2123 |
 | Median of those process medians | 1002.6507 | 974.7035 |
 | All nine subsequent samples,range | 1002.1991..1003.7986 | 971.6010..975.6091 |
 | Median first-use speed,tok/s | 929.4942 | 901.5887 |
 
-The subsequent difference is−2.7873%. These are historical cohorts,not a
+The subsequent difference is−2.7873%,or3359.8ms added to117178.4ms for the
+same117489-token request. Median first use also falls3.0022%,so the loss is not
+confined to the first-request initialization cost. These are historical cohorts,not a
 contemporary driver A/B. The same binary SHA22182f1a,boot,kernel,four wire-body
 hashes,117489 fresh input tokens,zero reuse,24 output tokens,thinking,1256-slot
 profile bytes and original prefill configuration match. Both separate first use
@@ -233,6 +235,12 @@ from the subsequent-three median. `bench.sh`,`serve/server.py` and
 `run_prefill_only` functions also match. The changed client definitions add
 long-generation options and do not change the prefill timing formula. Different
 whole-client fingerprints alone do not establish a changed prefill measurement.
+The follow-up source audit also finds byte-identical `measurement_owner.py`,
+`measurement_guards.py` and `clock_overhead.cpp`,with identical process budgets.
+An AST comparison finds changes only in `Suite` and `main` in the benchmark
+client;the prefill methods and module constants are unchanged. Both original
+arms offer21 drafts,accept16 and generate24 tokens in every request. These short
+outputs remain insufficient for sustained decode qualification.
 
 In original6e40 `src/program/generate.cpp`,the request timer starts at line5959
 and stops at line6503,after native dense restoration and the checked expert-cache
@@ -251,6 +259,20 @@ cause of this particular difference. It does not identify NEO rather than the
 other runtime changes,clock/power conditions or concurrent workstation activity.
 Do not dismiss the nonoverlapping repeated samples as noise or call the old
 1003 result the latest current speed.
+
+This establishes an observed end-to-end prefill regression with the same
+measurement contract;it does not establish an application-source regression.
+The later1baa restoration candidate separately failed its prospective
+no-decline screen and was not selected. Its result does not replace the
+same-binary historical comparison or qualify the active worktree as restored.
+
+A20261026 read-only host check found all12 CPUs available,nice0,and no CPU
+quota or throttled periods in the current Orca cgroup or any ancestor. The
+current groups' cumulative counters rule out recorded CPU-quota throttling in
+those groups,not scheduler contention or lower effective CPU frequency during
+the earlier measurements. Current pressure/idle frequency is not a historical
+control. Keep other changed runtime libraries and their interactions,active
+CPU/GPU/VRAM clocks,paging and workstation contention unresolved.
 
 The[closed runtime comparison](../bench/results/2026-10-15-pr6-recovery-audit/prefill-runtime-comparison-current.json)
 uses exact cached packages in private directories. Both arms explicitly select
