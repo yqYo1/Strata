@@ -140,7 +140,9 @@ def prepare():
     baseline = json.loads(gen.git('show', '8573fa7fb:' + str(RESULT.relative_to(P))))
     cfg = copy.deepcopy(baseline['configuration']); cfg['args'][cfg['args'].index('--expert-profile')+1] = str(P/'data/expert-profile.bin')
     require(digest(P/'data/expert-profile.bin') == '8f59b4aa8873209dff11c11e37bcda9529a1335b724a1afeea37bf6388975baf', 'profile changed')
-    models = assets.model_pins(cfg, baseline['models'], full=True)
+    original_assets = json.loads(gen.git('show', '1e676d554:' + str(TEMPLATE.relative_to(P))))['model_assets']
+    require(fingerprint(original_assets) == baseline['model_fingerprint'], 'original model inventory differs')
+    models = assets.model_pins(cfg, original_assets, full=True)
     source = gen.git('rev-parse','HEAD').decode().strip(); pins = gen.benchmark_pins(source)
     ROOT.mkdir(mode=0o700)
     row = dict(stage='planned',source_commit=source, native_source_commit=rt['original_build']['source_commit'],
@@ -149,6 +151,8 @@ def prepare():
         runtime_sha256=digest(runtime.RESULT), boot=rt['boot'], runtime_reference=str(runtime.RESULT.relative_to(P)),
         models=models,model_fingerprint=fingerprint(models),benchmark_pins=pins,
         reader=dict(path=str(READER),sha256=digest(READER)),request_hashes=baseline['request_hashes'],
+        prior_preparation_failure=dict(source='76bf87d1a',error="KeyError:models",GPU_executed=False,
+            boundary='Before root creation/model reads;compact historical record excludes models. Recover original15-asset map from1e676d554 and verify the8573 fingerprint. No native/model outcome relabelled.'),
         plan='One owned128/32K+ gate,then two separate observed117K processes:borrowed1256 then owned128;four fresh requests each,first separate. Fixed same6e40 binary/current runtime/math. Placement/cache geometry change together;order and observers prevent clean causal/adoption claims. Never change production decode. No retries or speed-based stopping.',
         source_audit='6e40 generate own_fits uses exact bytes_needed+512MiB;chunk fallback rejected by actual8192 route. Owned carve separately owns emb/R/region;borrowed lease uses checked tail. Native admission forbids lease1 with no-prefill-borrow,so owned-only uses lease0 for its independently owned buffers;borrowed keeps lease1. Shared long-pass GPU BF16/mode10 and48-layer dense restore must match. Same runtime safety/queue/parameter validation. Actual all-GPU residual allocation verified per request;32K gate does not establish117K or262144 capacity.',
         limits='Diagnostic only. No clean speed,observer overhead,hardware saturation,task/decode performance,physical262144 or ordinary-runtime-teardown qualification.',
