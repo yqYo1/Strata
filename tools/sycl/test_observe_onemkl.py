@@ -1,6 +1,7 @@
 """Host-only rejection controls for the one-call discovery envelope."""
 import sys
 import unittest
+from unittest.mock import patch
 
 sys.dont_write_bytecode = True
 import observe_onemkl as o
@@ -51,6 +52,33 @@ class Envelope(unittest.TestCase):
         x = o.analyze(TEXT, spans, [EVENT], 42, 1000, 5000)
         self.assertEqual(x['enqueue_outcomes'], [dict(name='urEnqueueNativeCommandExp', status=46, calls=1)])
         self.assertEqual(x['enqueue_threads'], 1)
+
+
+class GraphClassification(unittest.TestCase):
+    def test_capability_query_is_not_graph_submission_or_complete_coverage(self):
+        spans = [dict(name='urQueueIsGraphCaptureEnabledExp', status=0, begin_ns=2, end_ns=7),
+                 dict(name='urEnqueueMemBufferRead', metadata={})]
+        # The independent identity-join rejection controls live in
+        # test_ur_call_subscriber;isolate the query/gap classification here.
+        with patch.object(o.u, 'correlate_calls', return_value={}):
+            result = o.direct_coverage(spans, [], 42, {})
+        self.assertEqual(result['graph_capture_query_calls'], 1)
+        self.assertEqual(result['graph_capture_query_wall_ns'], 5)
+        self.assertEqual(result['graph_lifecycle_or_submission_calls'], 0)
+        self.assertEqual(result['missing_typed_enqueue_queue'], {'urEnqueueMemBufferRead': 1})
+        self.assertFalse(result['complete_device_coverage_qualified'])
+        self.assertFalse(result['observer_cost_qualified'])
+
+    def test_actual_graph_lifecycle_cannot_use_direct_coverage(self):
+        for name in ('urCommandBufferCreateExp', 'urEnqueueCommandBufferExp', 'urQueueBeginCaptureExp'):
+            with self.subTest(name=name), patch.object(o.u, 'correlate_calls', return_value={}):
+                with self.assertRaisesRegex(RuntimeError, 'graph lifecycle'):
+                    o.direct_coverage([dict(name=name, status=0)], [], 42, {})
+
+    def test_rejected_query_cannot_be_treated_as_success(self):
+        with patch.object(o.u, 'correlate_calls', return_value={}):
+            with self.assertRaisesRegex(RuntimeError, 'query rejected'):
+                o.direct_coverage([dict(name='urQueueIsGraphCaptureEnabledExp', status=46)], [], 42, {})
 
 
 if __name__ == '__main__': unittest.main()

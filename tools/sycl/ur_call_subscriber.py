@@ -319,7 +319,8 @@ def correlate_calls(spans, events, pid, expected_calls):
     """
     internal = probe.trace_links(events, pid)
     names = {'urEnqueueKernelLaunch': 'kernel', 'urEnqueueKernelLaunchWithArgsExp': 'kernel',
-             'urEnqueueUSMMemcpy': 'copy', 'urEnqueueUSMFill': 'fill',
+             'urEnqueueUSMMemcpy': 'copy', 'urEnqueueMemBufferRead': 'copy',
+             'urEnqueueMemBufferWrite': 'copy', 'urEnqueueUSMFill': 'fill',
              'urEnqueueEventsWaitWithBarrier': 'barrier', 'urEnqueueEventsWaitWithBarrierExt': 'barrier'}
     enqueue = [s for s in spans if s['name'].startswith('urEnqueue')]
     require(enqueue and len(enqueue) <= 4096 and all(s['name'] in names and s['status'] == 0 for s in enqueue),

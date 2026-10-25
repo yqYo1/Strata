@@ -135,6 +135,81 @@ def analyze(stdout, spans, events, pid, start, end):
         limits='Counts and charged envelope only;no internal operation association,device saturation,independent model ledger or performance qualification.')
 
 
+def direct_coverage(spans, events, pid, expected_calls):
+    """Closed-data direct joins; a capability query is not graph submission.
+
+    The direct join independently rejects unknown,deferred,multi-append and
+    unpaired work. Missing typed buffer metadata remains an explicit gap.
+    """
+    links = u.correlate_calls(spans, events, pid, expected_calls)
+    queries = [s for s in spans if s['name'] == 'urQueueIsGraphCaptureEnabledExp']
+    require(all(s['status'] == 0 for s in queries), 'graph capability query rejected')
+    work = [s for s in spans if any(word in s['name'] for word in ('Graph', 'CommandBuffer', 'Capture'))
+            and s['name'] != 'urQueueIsGraphCaptureEnabledExp']
+    require(not work, 'actual graph lifecycle/work needs a separate adapter')
+    missing = collections.Counter(s['name'] for s in spans if s['name'].startswith('urEnqueue')
+                                  and not s.get('metadata', {}).get('queue'))
+    return dict(links=links, graph_capture_query_calls=len(queries),
+        graph_capture_query_wall_ns=sum(s['end_ns'] - s['begin_ns'] for s in queries),
+        graph_lifecycle_or_submission_calls=0,
+        missing_typed_enqueue_queue=dict(sorted(missing.items())),
+        complete_device_coverage_qualified=False, observer_cost_qualified=False,
+        limits='Observed successful direct UR/native/PTI identity joins only. Query return values,buffer extents/lifetimes,independent internal library work ledger,model-route coverage and clean speed remain unqualified.')
+
+
+LINK_KEY = 'oneMKL_direct_links'
+
+
+def capture_identity(row):
+    require(row['stage'] == 'native-passed-coverage-pending' and row['passed'] and
+            row['ownership_closed'] and not row['active'] and row['session_removed'] and
+            row['fresh_faults'] == [], 'closed original native capture required')
+    for item in row['analysis_inputs']:
+        require(Path(item['path']).stat().st_size == item['bytes'] and
+                digest(item['path']) == item['sha256'], 'original raw capture changed')
+    for name, sha in row['input_sha256'].items():
+        require(hashlib.sha256(r.validation.git('show', row['source_commit'] + ':' + name)).hexdigest() == sha,
+                'original capture source cannot recover: ' + name)
+    return hashlib.sha256(json.dumps(row, sort_keys=True).encode()).hexdigest()
+
+
+def prepare_links():
+    container = r.validation.committed(RESULT); capture = container[KEY[0]][KEY[1]]
+    require(LINK_KEY not in container[KEY[0]], 'fresh closed-data link analysis only')
+    revision = r.validation.git('rev-parse', 'HEAD').decode().strip()
+    plan = dict(stage='prepared', source_commit=revision, input_sha256=pins(revision),
+        capture_sha256=capture_identity(capture), capture_source_commit=capture['source_commit'],
+        criteria='Replay all original hashes,complete UR pairs and numerical envelope;join every actual PTI device execution to a distinct successful direct enqueue by actual flow/thread/clock/kind. No ordinal join. Classify capability queries separately from graph lifecycle/submission. Preserve missing typed metadata and original qualification limits. No new GPU execution or retrospective speed gate.',
+        command=['/usr/bin/python3', '-B', str(P / 'tools/sycl/observe_onemkl.py'), 'analyze-links'],
+        tests=['tests/core/test_ur_call_subscriber.py', 'tools/sycl/test_observe_onemkl.py'],
+        retention='Keep compact links/counts/gaps only. Raw first-call capture remains for the identified typed buffer identity/lifetime and independent wrapper-ledger consumer;review before any new model attribution.',
+        GPU_executed=False, inference_changed=False, passed=False)
+    container[KEY[0]][LINK_KEY] = plan; write(RESULT, container)
+    print('Prepared closed-data direct links;commit before analysis.', flush=True)
+
+
+def analyze_links():
+    container = r.validation.committed(RESULT); plan = container[KEY[0]][LINK_KEY]
+    capture = container[KEY[0]][KEY[1]]
+    require(plan['stage'] == 'prepared' and pins(plan['source_commit']) == plan['input_sha256'] and
+            capture_identity(capture) == plan['capture_sha256'], 'closed-data plan/capture changed')
+    paths = {Path(v['path']).name: Path(v['path']) for v in capture['analysis_inputs']}
+    calls = u.parse_calls(paths['calls.jsonl'].read_text(), capture['pid'], intervals=True)
+    spans = calls.pop('intervals')
+    trace_path = next(Path(v['path']) for v in capture['analysis_inputs'] if '/trace/' in v['path'])
+    value = json.loads(trace_path.read_text()); events = value['traceEvents'] if isinstance(value, dict) else value
+    replay = analyze(paths['one-bf16.stdout'].read_text(), spans, events, capture['pid'],
+                     capture['start_raw_ns'], capture['end_raw_ns'])
+    require(replay == capture['discovery'], 'original numerical/envelope discovery does not replay')
+    expected = {e['name']: e['calls'] for e in replay['enqueue_outcomes']}
+    derived = direct_coverage(spans, events, capture['pid'], expected)
+    plan.update(stage='closed-data-analyzed', passed=True, derived=derived,
+                original_native_result_unchanged=True, complete_device_coverage_qualified=False)
+    write(RESULT, container)
+    print(json.dumps(derived), flush=True)
+    return 0
+
+
 def run():
     row = r.validation.committed(RESULT, KEY)
     require(row['stage'] == 'prepared' and not (ROOT / 'target-owned').exists(), 'single-use committed capture only')
@@ -214,8 +289,11 @@ def run():
 
 
 if __name__ == '__main__':
-    require(sys.argv[1:] in (['prepare'], ['run']), 'prepare|run')
+    require(sys.argv[1:] in (['prepare'], ['run'], ['prepare-links'], ['analyze-links']),
+            'prepare|run|prepare-links|analyze-links')
     with (B / 'owned-v0141-measurement.lock').open('a+') as lock:
         fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB); r.guards.no_model_owners([]); r.guards.driver_guard()
         if sys.argv[1:] == ['prepare']: prepare()
+        elif sys.argv[1:] == ['prepare-links']: prepare_links()
+        elif sys.argv[1:] == ['analyze-links']: sys.exit(analyze_links())
         else: sys.exit(run())

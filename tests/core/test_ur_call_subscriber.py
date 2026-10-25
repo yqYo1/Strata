@@ -150,6 +150,34 @@ class DirectJoinTests(unittest.TestCase):
         with self.assertRaisesRegex(RuntimeError, 'GPU flow endpoint'):
             self.join(spans, events)
 
+    def test_buffer_copies_need_exact_direct_append_links(self):
+        spans, events = self.fixture()
+        for span, name in zip(spans, ('urEnqueueMemBufferRead', 'urEnqueueMemBufferWrite')):
+            span['name'] = name
+        for event in events:
+            if event['ph'] == 'X':
+                event['name'] = ('zeCommandListAppendMemoryCopy' if event['cat'] == 'cpu_op'
+                                 else 'zeCommandListAppendMemoryCopy(D2M)[4]')
+        counts = {'urEnqueueMemBufferRead': 1, 'urEnqueueMemBufferWrite': 1}
+        value = correlate_calls(spans[::-1], events[::-1], 71, counts)
+        self.assertEqual(value['linked_UR_instances'], 2)
+        self.assertFalse(value['shape_lifetime_graph_qualified'])
+        # Buffer identity,extent and payload lifetime are not supplied by this join.
+        with self.assertRaises(RuntimeError):
+            metadata_census([dict(spans[0], metadata={})])
+        for change in (dict(status=46), dict(tid=73), dict(end_ns=9999),
+                       dict(name='urEnqueueMemBufferCopyRect')):
+            broken = copy.deepcopy(spans); broken[0].update(change)
+            with self.subTest(change=change), self.assertRaises(RuntimeError):
+                correlate_calls(broken, events, 71, counts)
+
+    def test_buffer_api_cannot_be_matched_to_a_kernel(self):
+        spans, events = self.fixture()
+        for span in spans:
+            span['name'] = 'urEnqueueMemBufferRead'
+        with self.assertRaisesRegex(RuntimeError, 'kind mismatch'):
+            correlate_calls(spans, events, 71, {'urEnqueueMemBufferRead': 2})
+
 
 class MetadataCaptureTests(unittest.TestCase):
     def fixture(self):
