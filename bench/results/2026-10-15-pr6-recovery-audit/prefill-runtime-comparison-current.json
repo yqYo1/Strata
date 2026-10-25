@@ -905,6 +905,69 @@
         "deleted_bytes": 3968,
         "preserved": "Reviewed immutable source/compact result and short operational verdict in Git;no throughput/source adoption claim."
       }
+    },
+    "best_reported_package_audit": {
+      "native_source": "396d0c91f301e0ac99b81d6641fdc435b95b4da9",
+      "evidence_path": "bench/results/2026-10-15-pr6-recovery-audit/prefill-long-input-current.json",
+      "three_process_subsequent_medians_tok_s": [
+        1005.8,
+        1005.8,
+        1005.5
+      ],
+      "later_selected_median_tok_s": 974.7034550043057,
+      "change_pct": -3.091722509017125,
+      "configuration_difference": "Fastest396d:128 decode expert slots/owned prefill;selected6e40:1256 slots/borrowed prefill. Maintain selected decode placement;the separate -0.4899%396d/bb71 package comparison is not an ownership-only estimate.",
+      "unchanged_kernel_source_groups": [
+        {
+          "root": "src/prefill/sycl",
+          "files": 14,
+          "aggregate_sha256": "094b1330efbb89c7f5bb6759d9db612232a0a3fe7388054811fbc560af43ee55",
+          "formula": "SHA256 of ordered path,NUL,SHA256(raw Git blob) bytes"
+        },
+        {
+          "root": "src/kernels/sycl",
+          "files": 43,
+          "aggregate_sha256": "62211cb7dec2b885e8efa4bcafbeac1fbf380228517b4c782771d19dc984a83f",
+          "formula": "SHA256 of ordered path,NUL,SHA256(raw Git blob) bytes"
+        }
+      ],
+      "interpretation": "All14 prefill SYCL and43 SYCL kernel files match exactly. Ownership,bank/compatibility/phase orchestration differ. File equality does not prove equal compiler output,headers,actual dispatch or runtime. Do not add package and historical percentages as causal components."
+    },
+    "runtime_dependency_audit": {
+      "historical_sources": [
+        "4d805d772:tools/sycl/measurement_environment.json",
+        "1e676d554:bench/results/2026-10-15-pr6-recovery-audit/client-resources-current.json::runtime_asset_delta"
+      ],
+      "current_reference": "bench/results/2026-10-15-pr6-recovery-audit/runtime-requalification-current.json::runtime_files",
+      "changed_original_ELFs": [
+        {
+          "old_path": "/usr/lib/x86_64-linux-gnu/libz.so.1.3",
+          "old_sha256": "86200da370f20476a2507e9097a789b5ef97269b4ca8d5e164ad82dab9d99892",
+          "new_path": "/usr/lib/x86_64-linux-gnu/libz.so.1.3",
+          "new_sha256": "f61677c7bdb7c2aa2a243ea781bfd16afcb361cede7b4ef76127a9d8eb9a5242"
+        },
+        {
+          "old_path": "/usr/lib/x86_64-linux-gnu/libigdml.so.1.0.231",
+          "old_sha256": "8f4ffe4a856c441d4c85bd7d7de6ad7672c59812fe4655d2a8843c32eba97075",
+          "new_path": "/usr/lib/x86_64-linux-gnu/libigdml.so.1.0.240",
+          "new_sha256": "1806ee390b7693dd61dd5385a25744dd94479295d3a7d15730e578e91b18e782"
+        },
+        {
+          "old_path": "/usr/lib/x86_64-linux-gnu/libigdgmm.so.12.10.0",
+          "old_sha256": "a7904f18d8d59c7128dec4d6f22ae2b2e8a51f91f6946ac4e68b1ec6e0a7a6f3",
+          "new_path": "/usr/lib/x86_64-linux-gnu/libigdgmm.so.12.10.0",
+          "new_sha256": "427847d14c2c36889efa8b0be6a8af6afac32cc3c744dcfc8e010d4ca210c957"
+        },
+        {
+          "old_path": "/usr/lib/x86_64-linux-gnu/libze_intel_gpu.so.1.17.39395",
+          "old_sha256": "50adb6b727d027309039803033d41efeae4b248589ee363f321c0d538c7de3ff",
+          "new_path": "/usr/lib/x86_64-linux-gnu/libze_intel_gpu.so.1.17.39758",
+          "new_sha256": "52e29a602f92d3542eac91e20717743e63ca7d4b257d0c79a3c4d6c64c94ea49"
+        }
+      ],
+      "unchanged_original_ELFs": 27,
+      "added_system_dependency": "/usr/lib/x86_64-linux-gnu/libmetee.so.6.2.5.0",
+      "limits": "Historical override matters:udev already had its later hash;validation preload already used. Added inventory rows are not automatically new execution settings. No package replacement,source/build/GPU execution or full historical dependency A/B in this read-only audit."
     }
   }
 }

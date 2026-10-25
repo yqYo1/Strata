@@ -212,6 +212,17 @@ Those arms also used different source packages,396d andbb71. This is a package
 comparison,not an isolated causal measurement of ownership or cache size.
 Do not recover that speed by shrinking the current decode cache.
 
+The fastest three-process median is1005.8tok/s;the later selected-package
+median974.7035 is3.0917% lower. Do not add the separate0.4899% package and
+2.7873% historical differences as causal components:their revisions and
+measurement windows differ. Source replay finds all14 files under
+`src/prefill/sycl` and43 under `src/kernels/sycl` byte-identical between396d
+and6e40. The differences include scratch/cache ownership,packed-bank dispatch,
+host compatibility wrappers and diagnostic/phase orchestration. Unchanged
+kernel files do not prove identical generated instructions,headers,dispatch or
+runtime behavior. This narrows the source audit without clearing the surrounding
+prefill path of possible regressions.
+
 Separately,the original6e40 executable itself now measures slower. Recomputing
 actual read tokens divided by engine milliseconds from the old cohort at
 1e676d554 and the updated-NEO cohort above gives:
@@ -256,6 +267,14 @@ per-process output-path substitution;the same native-only validation preload
 and charged warning-level parameter validation were already used historically.
 
 NEO changed26.31.39395.16→26.35.39758.17;GMM,IGDML and zlib also changed.
+Replaying the historical runtime template together with its recorded asset
+overrides confirms four changed original ELF hashes and27 unchanged ones.
+In particular,the original cohort already used the later udev hash;comparing
+only the older base template would incorrectly count udev as another change.
+The validation preload was already in use. The new libmetee dependency is an
+additional inventory entry,not evidence of a measured bottleneck. The exact
+old/new hashes are in the maintained runtime comparison. No system packages
+were replaced by this read-only audit.
 The same application executable rules out application recompilation as the
 cause of this particular difference. It does not identify NEO rather than the
 other runtime changes,clock/power conditions or concurrent workstation activity.
@@ -834,20 +853,26 @@ threshold;simply adding fused names can leave an eligible fused/unfused stratum
 unsampled. Split that boundary,check the fixed event/host-record capacities,and
 test exact population/sample conservation,retirement on errors and real fused
 GEMM results before removing the admission guard. The prospective version3
-extension now builds successfully but is not device-qualified:9 row bins,224
+extension now passes its bounded component-device gate:9 row bins,224
 events per window and scoped relabeling around the existing finish calls.
 Profiling with fusion still requires a separate explicit qualification opt-in.
 Eight CPU parser rejection controls pass,including signed submit-clock
-diagnostics and group/service conservation. Synthetic populations should retain
-195 events with the fused large bin and203 with separate operations,including
+diagnostics and group/service conservation. Ten fresh traced,parameter-validated
+GPU processes close with no fresh fault. Synthetic populations retain
+195 of639 eligible events with the fused large bin and203 of655 with separate operations,including
 four ranked expert-transfer samples from72 actual compatibility copies. The
-transfer-stratum control also passes;real
-GU/Down production-hook checks cover2333,2334 and8192 rows,plus irregular Down
-source rows. The original selected6e40 and12fixtures remain unchanged.
+bad-tag and event-capacity profiles fail as intended while their outputs and
+guards pass;injected failure drains before owner release and queries no
+unfinished events. GU production-hook checks at2333,2334 and8192 rows have
+zero half-ULP difference off/on;Down covers those rows and irregular2334 rows
+within a16384-token plan with bitwise-equal full outputs. All input and guard
+checks pass. Replay reproduces all ten outcomes,including the intentional
+exit1. The128KiB bound covers static host records,not total process RSS or
+runtime-owned event storage. The original selected6e40 and12fixtures remain unchanged.
 This is attribution infrastructure,not a throughput gain,model qualification or
 an explanation for the historical decline. The three fixture binaries build with zero uncovered compiler inputs and the
-pinned generated header. The next action is the small traced/validated checks
-recorded in the same result.
+pinned generated header. A separately pinned engine build,small model gate and
+observer-cost qualification remain necessary before a long-input resource profile.
 The source has two BF16 GEMM sites per executed inner batch,four projection
 sites,and an early no-needed-rows return;do not infer dynamic counts from the
 15 callback markers. The existing runtime manifest already pins the L0 v2
