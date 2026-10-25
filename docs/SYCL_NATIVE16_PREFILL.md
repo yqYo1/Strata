@@ -286,7 +286,48 @@ Use the same selected6e40 binary and current qualified runtime for that diagnost
 changing both the source package and placement again would leave the cause
 confounded. Audit owned/borrowed admission and actual allocation geometry before
 launch,and keep clean speed separate from instrumented host/device/resource
-attribution. No such new placement experiment has run in this audit.
+attribution. The comparison's `placement_diagnostic` subrecord now contains that
+observed same-binary work. Borrowed1256 keeps lease1;owned128 uses independent
+allocations and lease0,as required by native admission. It is a diagnostic,
+not a production decode placement. Both use trace and passive CPU/CCS/frequency
+sampling,so they do not replace clean speed or repeated adoption comparisons.
+
+The39K owned gate exits normally and restores all48 dense layers. Its original
+collection remains failed because the parser required two wholly contained
+intervals in the short decode tail. Closed-data analysis at`8c921642b` scopes the
+question to pre-first-output,with the original9853 source inputs,13 artifacts,
+33 runtime files and15 model identities rechecked. The parser still validates
+the complete capture and returns no decode attribution in this scope;15 host
+reader tests include rejecting bad identities,coverage,counters and a CPU
+rollback after first output. No GPU rerun or original-status replacement was
+used. This gate does not qualify117K capacity or physical262144 execution.
+
+A possible subsequent prefill-only candidate is temporal scratch reuse in
+`MoeAccumPlan`;it is **not implemented or selected**. Current mode10 splits117488
+positions at81920 and records about37300 expert jobs across96 windows. In
+`moe_window.inc`,router logits precede routed jobs;gathered input dies before
+Down output;shared output follows the checked expert/status drain. These four
+workspace planes could share one physical arena if every same-queue dependency,
+kernel span and cancellation/failure lifetime remains valid. Keep FP32
+accumulation,existing arithmetic and decode unchanged. Source-only byte counting
+for the existing1180698624-byte region gives:
+
+| Window rows | Existing region+mixed-tail margin | Proposed four-plane alias margin |
+| --- | ---: | ---: |
+| 81920 | 37680640B | 138344704B |
+| 90112 | −89623040B | 11041024B |
+| 98304 | −216926720B | −116262656B |
+
+The alias saves100664064B including three obsolete reservations. Thus an11-chunk
+90112-row window is a bounded candidate without another VRAM allocation;
+98304 is not admitted by this calculation. This is not a runtime allocation or
+speed result. Before implementation,check every planner/route bound,the fixed
+jobs-per-expert histogram capacity,per-phase canaries and all scalar/fused
+consumers;the existing11-entry histogram would be too small for11 jobs.
+After placement diagnosis,consider an opt-in candidate only with those bounds,
+device numerical/guard/drain tests,actual117K admission and clean whole-model
+evidence. Reduced job/dequant counts are a mechanism to measure,not proof of a
+CPU/GPU/PCIe bottleneck or a predicted throughput gain.
 
 Earlier progress reports also contain33K/39K and profiler-charged results.
 Those differ from117K subsequent-request speed. The matched comparison above
