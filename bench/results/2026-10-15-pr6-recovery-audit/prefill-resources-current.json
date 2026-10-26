@@ -4498,9 +4498,9 @@
         }
       },
       "transfer_calibration": {
-        "stage": "built-not-executed",
-        "passed": true,
-        "complete": true,
+        "stage": "prepared-device",
+        "passed": false,
+        "complete": false,
         "active": false,
         "ownership_closed": true,
         "native_engine_changed": false,
@@ -4684,10 +4684,59 @@
           "sha256": "bf9a0ad46035bd1d7243deb4bee9a7af450f611b5b1eccdbb4bc2e2e79f9dd97",
           "bytes": 120976
         },
+        "controller_only_admission": {
+          "original_native_source_commit": "d7737c53e05ab73e860585d8e68db1699064e032",
+          "original_build_environment_unchanged": true,
+          "new_controller_commit": "d851587bdaf945462a693f9006c282dcdc14e5f6",
+          "changed": {
+            "tools/sycl/transfer_calibration.py": {
+              "before": "de81baea80778db01df78186a3c6b424602310e8e9de0675087643eafc5d2ad9",
+              "after": "f7f545a35a0b7e5a218ede6dc96d86602ef1d2a638646b39c653b2936ac3a1cd"
+            }
+          },
+          "compiled_inputs_verified": 679,
+          "binary_sha256": "bf9a0ad46035bd1d7243deb4bee9a7af450f611b5b1eccdbb4bc2e2e79f9dd97",
+          "limits": "No recompilation or GPU qualification inherited for new native code. Original source,build recipe/environment and successful build stay intact. Only uncompiled owned-controller changes;new pre-exec child environment explicitly sets qualified ZES_ENABLE_SYSMAN=0 and warning logs."
+        },
+        "device_environment": {
+          "PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin:/usr/bin:/bin",
+          "HOME": "/home/yayoi",
+          "LANG": "C.UTF-8",
+          "LC_ALL": "C.UTF-8",
+          "PYTHONDONTWRITEBYTECODE": "1",
+          "LD_LIBRARY_PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib:/opt/intel/oneapi/mkl/2026.1/lib",
+          "MKLROOT": "/opt/intel/oneapi/mkl/2026.1",
+          "OMP_NUM_THREADS": "1",
+          "GIT_TERMINAL_PROMPT": "0",
+          "GIT_SSH_COMMAND": "ssh -oBatchMode=yes",
+          "CPLUS_INCLUDE_PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/include",
+          "PIP_CONFIG_FILE": "/dev/null",
+          "ONEAPI_DEVICE_SELECTOR": "level_zero:gpu",
+          "UR_ADAPTERS_FORCE_LOAD": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_adapter_level_zero_v2.so.0",
+          "SYCL_CACHE_PERSISTENT": "0",
+          "NEOReadDebugKeys": "1",
+          "EnableDirectSubmission": "0",
+          "UR_L0_V2_FORCE_DISABLE_COPY_OFFLOAD": "1",
+          "STRATA_SYCL_VERIFY_NATIVE_CAPTURE": "0",
+          "STRATA_SYCL_PREFILL_SAME_QUEUE": "1",
+          "STRATA_SYCL_PREFILL_NATIVE16": "bf16",
+          "XDG_CACHE_HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/transfer-calibration-v1/cache",
+          "TMPDIR": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/transfer-calibration-v1/tmp",
+          "ZES_ENABLE_SYSMAN": "0",
+          "UR_LOG_TRACING": "level:info;flush:info;output:stderr",
+          "UR_LOG_VALIDATION": "level:warning;flush:warning;output:stderr",
+          "UR_LOG_LOADER": "level:warning;flush:warning;output:stderr",
+          "UR_LOG_LEVEL_ZERO": "level:warning;flush:warning;output:stderr"
+        },
         "source": {
           "revision": "d7737c53e05ab73e860585d8e68db1699064e032",
           "count": 132,
           "aggregate_sha256": "e6011549ea592cca429d58980003d7f211a4862738ace6dea7387eed2d86206c"
+        },
+        "device_source": {
+          "revision": "d851587bdaf945462a693f9006c282dcdc14e5f6",
+          "count": 132,
+          "aggregate_sha256": "b0f78f82f6fb6914fdbd6d27af89d80a6e24f36939d97dbb1b4a3a3260f58747"
         }
       }
     }
