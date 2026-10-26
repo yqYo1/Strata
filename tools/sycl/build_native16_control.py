@@ -17,7 +17,7 @@ import build_fused_profile as shared
 
 r, P, B = shared.r, shared.P, shared.B
 RESULT = shared.RESULT
-ROOT = B / 'native16-public-control-v2'
+ROOT = B / 'native16-public-control-v3'
 KEY = 'native16_public_calibration_build'
 OFFICIAL = Path('/opt/intel/oneapi/compiler/2026.2')
 UMF = Path('/opt/intel/oneapi/umf/1.2')
@@ -91,7 +91,13 @@ def current(row):
 
 def prepare():
     container = r.validation.committed(RESULT); source = scope(container)
-    require(not ROOT.exists() and KEY not in source, 'single-use component build;inspect existing attempt')
+    require(not ROOT.exists(), 'single-use component build;inspect existing attempt')
+    prior = source.get(KEY)
+    if prior is not None:
+        require(prior['stage'] == 'failed' and prior['ownership_closed'] and not prior['active'] and
+            prior['source_commit'] == '06d9a264ede03e5ae3be275d326fac4d277fa50b' and
+            prior.get('retirement', {}).get('complete') and not prior['GPU_executed'],
+            'only the closed retired v2deprecation refusal precedes this corrected plan')
     require(source['new_build_toolchain']['independent_build_admitted'], 'independent toolchain origin required')
     rt = r.validation.committed(r.RESULT); full = r.current(rt)
     sdk = copy.deepcopy(source['prefill_upload_staging_v5']['sdk']); sdk_admit(sdk)
@@ -115,7 +121,10 @@ def prepare():
         'independent GGML/TLA dependency differs')
     cfg = [v.replace(str(shared.ROOT / 'build'), str(ROOT / 'build')) for v in previous['configure_argv']]
     cfg = [('-DCMAKE_CXX_COMPILER=' + compiler['compiler']) if v.startswith('-DCMAKE_CXX_COMPILER=') else v for v in cfg]
-    cfg.append('-DCMAKE_CXX_FLAGS=-fsycl-id-queries-range=size_t')
+    # Preserve legacy API semantics for this SDK/ABI control. Keep deprecation
+    # diagnostics visible;only their promotion by Werror is suppressed.
+    # Changing barriers here would confound the independent-runtime control.
+    cfg.append('-DCMAKE_CXX_FLAGS=-fsycl-id-queries-range=size_t -Wno-error=deprecated-declarations')
     require(not any('/MistVVK/' in v for v in cfg), 'former SDK path remains in new configure command')
     env = dict(r.validation.committed(r.SETTINGS)['environment'])
     old_lib = str(Path(next(p for p in rt['runtime_files'] if '/libsycl.so.' in p)).parent)
@@ -145,6 +154,11 @@ def prepare():
         retention='One official component candidate only,no model engine build. Keep source/recipe and useful closure/hash proof;'
             'retire normal build output/objects after qualification selection. Prior GU/Down fixtures retire after their '
             'named same-shape/legacy-ABI comparison;retain original13 selected assets.')
+    if prior is not None:
+        row['previous_failed_build'] = dict(stage=prior['stage'], source_commit=prior['source_commit'],
+            error=prior['error'], GPU_executed=False, ownership_closed=True, retirement=prior['retirement'],
+            change='Keep original barrier/API code and all other warnings as errors. '
+                'Only -Wno-error=deprecated-declarations is added prospectively;no inference source change.')
     ROOT.mkdir(mode=0o700)
     for name in ('tmp', 'cache'): (ROOT / name).mkdir()
     save(row); print('Prepared;commit the frozen build plan before configure.', flush=True)
