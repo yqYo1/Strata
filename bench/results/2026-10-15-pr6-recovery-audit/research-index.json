@@ -11817,7 +11817,7 @@
   },
   "official_gu_repeated_batch_stall_20261026": {
     "classification": "decision_support",
-    "status": "report_received_pending_native_review",
+    "status": "reviewed_changed_diagnostic_pending",
     "schedulable_now": false,
     "question": "Audit observer-off public-GU repeated in-order batches on official oneAPI2026.2 for source-contract violations,finite submission/event lifetime and version-specific runtime progress risks. Distinguish this new normal-kernel/no-host-task/no-graph stall from earlier v7.1.1 held native events and timestamp-query reports.",
     "prerequisite_evidence": "Five small traced checks plus four same-binary complete timing processes passed. Fifth timing process off2 completed one eligible2048-call M160batch then stalled until300s SIGTERM;ccs engine reset at termination. Exact stage unknown. No unchanged rerun. All ten actual sessions empty. Sourcefdec18b9d,plan71fb906b9,result84a909e27. Existing index has old SDK/held-event reports,not this independently installed official runtime repeated-batch failure.",
@@ -11870,11 +11870,31 @@
       "delivery_ack": "delivery_bd1ae9504144"
     },
     "native_review": {
-      "agent": "/root/review_official_native16_abi_20261026",
+      "agent": "/root/review_official_gu_stall_20261026",
       "model": "gpt-6-luna",
       "effort": "max",
-      "status": "running",
-      "output": ".cache/strata-research/20261026/official-gu-stall-native-review.json"
+      "status": "complete",
+      "output": ".cache/strata-research/20261026/official-gu-stall-native-review.json",
+      "verdict": "accept_with_material_corrections",
+      "bytes": 5019,
+      "sha256": "d21b5dad5ad96c52201f568fe80120748e0e50b28a7c25f6d62faa9dd8621f24",
+      "digest": "Distinct official-runtime observer-OFF repeated-batch stall;blocked stage and historical1003\u2192975cause remain unknown. Correct audit follows vllm/TLA fallback,not own joint_matrix kernel. q must drain explicitly;Runtime::wait does not track make_queue queues.64calls/16call checkpoints bound32ordinary kernels plus marker per group,a smoke only. Per-API elapsed thresholds cannot cancel stuck calls;only outer process termination is bounded. No new generic survey eligible."
+    },
+    "main_correction": "The review itself says bf16_out16,but the actual PublicGU::call at moe_gu_swiglu.cpp:244 calls f16_out16(...,output_bf16=true):FP16 input and BF16 GU output,then BF16-to-FP16 swiglu. It enters vllm_submit(input_bf16=false)->adapter.beta0->TLA DenseKernel. Preserve this dtype/path distinction in the new diagnostic. The own-backend joint_matrix audit is not qualifying evidence for that path.",
+    "main_verified_transitive_input": {
+      "path": "src/prefill/sycl/vllm_xe2/xe_gemm_bsd.hpp",
+      "sha256": "84fb1251c2f9f93bd7774fb2a5a6c928df9ac8e86d1c7f6cf1a6cec058403fa6",
+      "both_original_Git_and1427entry_compile_closures_match": true,
+      "build_sources": [
+        "2369886e91da7d4f570d43ba17aacb242b838c60",
+        "fdec18b9d35b12519e9b95128d29a5caef6db468"
+      ],
+      "provenance": "Header records vllm-project/vllm-xpu-kernels6b30c9b92cc525c32729df988b5f918e7c5661a5 BSD-3-Clause;no XeStrata basis. Do not copy mutable references without license/source checks."
+    },
+    "next_main_gate": "Commit new diagnostic-only source/build/run plan. After corrected TLA source audit,one owned30s process,M160FP16-to-BF16 public fallback,four groups of16calls,checked same-queue marker after each group,immediate stage entry/return/API traces;64MiB cap and immutable qualified providers/safety settings. Stop first missing return/error/guard failure,no retry/reset. A64call pass is a smoke,not failed2048call boundary reproduction or performance qualification. Outer process deadline,not cancellable per-API timeout.",
+    "retention": {
+      "consumer": "The compact corrected digest and compile-closure check suffice for the named next stage diagnostic. No current consumer requires full report/review bodies. Retire them after this decision is committed;Main original body unread. Select official v4 as fallback;failing warmed generation can retire after original-source proof because no unchanged rerun or binary comparison is planned.",
+      "review_point": "At changed diagnostic selection/closure;do not renew a whole-report or extra-binary hold for an unspecified future reproduction."
     }
   }
 }
