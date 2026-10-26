@@ -520,12 +520,12 @@ speed;these component results do not replace it.
 After extraction and independent review,456closed raw/build/review/draft files
 retire,119638008bytes,with a path/hash/reason manifest. The completed whole
 profiling engine and command-profile executable retire too. The selected6e40
-engine and12fixtures remain intact. Only two GU/Down component executables,
-original component record,1385-input manifest and generated header remain for
-the next bounded shape/dtype/dispatch audit and service-ceiling comparison.
-Confirm their exact operand precision and production applicability before
-freezing that plan;component throughput alone cannot establish a whole-model
-arithmetic ceiling. Review this five-file subset at that comparison or abandonment.
+engine and12fixtures remain intact. The old two GU/Down executables,1385-input
+manifest and generated header are subsequently retired after recovery of9866
+original inputs and their recipe. The new official four-fixture generation now
+serves public-dispatch calibration;only the original component recipe record
+remains consumed by its builder. Component throughput alone cannot establish
+a whole-model arithmetic ceiling.
 Closed one-use build/cost/calibration controllers retire to their original source
 commits. The old isolated transfer fixture also retires to d7737c53e once the
 whole-bank comparison closes;its4Bstatus samples stay ineligible. No maintained
@@ -607,6 +607,12 @@ This permits bounded normal-input public-GU calibration only. Large-range ID
 edges,same-process mixed-image selection,full numerical/model,oneMKL ABI,decode
 and physical-context qualifications remain separate. No new whole-model speed
 or cause for the historical decline is established.
+After recording those outcomes,233closed files/117078923bytes retire:successful
+API/JIT/process output,disposable build objects,the superseded component pair
+and consumed research/review files. The selected engine and12fixtures remain;
+the official four executables,1427-input manifest,build recipe/Ninja/header and
+compatibility runtime catalogue have the named upcoming public-GU consumer.
+The retained official admission still needs to pass after this reduction.
 
 The fresh sourcee33d16fc3 attribution fixture closes ten official-SDK processes
 with240eligible/correct timing samples and120complete CPU/GPU profiles.
