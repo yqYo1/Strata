@@ -2729,8 +2729,8 @@
     },
     "fused_command_profile": {
       "native16_public_calibration_build": {
-        "stage": "failed",
-        "source_commit": "0bf4502bf7b46713e72a850482aced7ea1ba0728",
+        "stage": "prepared",
+        "source_commit": "2369886e91da7d4f570d43ba17aacb242b838c60",
         "sdk": {
           "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-expert-staging-v3/sdk-inputs.json",
           "sha256": "c8879f0b8d772979bf2096dc64a3bba49853bd15dad221b46427a922030647d8",
@@ -2779,6 +2779,10 @@
           "sycl": {
             "path": "/opt/intel/oneapi/compiler/2026.2/bin/icpx",
             "sha256": "59eaaf55744c7290fb870cd12049ec11877b5224e333cba33270b433bdb73213"
+          },
+          "offload_bundler": {
+            "path": "/opt/intel/oneapi/compiler/2026.2/bin/compiler/clang-offload-bundler",
+            "sha256": "b6c673a2f3a90f2cd37483820a6330d6d417f6e6179dde2c7c46aacde1e45c0c"
           }
         },
         "runtime_sha256": "09ad358e12f6ef58bfc0a978519927863f3d09949a033a1e224db95997647d97",
@@ -2806,7 +2810,7 @@
           "-S",
           "/home/yayoi/orca/workspaces/Strata/sycl",
           "-B",
-          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/native16-public-control-v3/build",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/native16-public-control-v4/build",
           "-G",
           "Ninja",
           "-DCMAKE_CXX_COMPILER=/opt/intel/oneapi/compiler/2026.2/bin/icpx",
@@ -2855,8 +2859,8 @@
           "UR_LOG_VALIDATION": "level:warning;flush:warning;output:stderr",
           "UR_LOG_LOADER": "level:warning;flush:warning;output:stderr",
           "UR_LOG_LEVEL_ZERO": "level:warning;flush:warning;output:stderr",
-          "TMPDIR": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/native16-public-control-v3/tmp",
-          "XDG_CACHE_HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/native16-public-control-v3/cache"
+          "TMPDIR": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/native16-public-control-v4/tmp",
+          "XDG_CACHE_HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/native16-public-control-v4/cache"
         },
         "targets": [
           "sycl_submission_test",
@@ -2867,7 +2871,7 @@
         "build_command": [
           "/usr/bin/cmake",
           "--build",
-          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/native16-public-control-v3/build",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/native16-public-control-v4/build",
           "--parallel",
           "2",
           "--target",
@@ -2879,12 +2883,12 @@
         "dependency_command": [
           "/usr/bin/ninja",
           "-C",
-          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/native16-public-control-v3/build",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/native16-public-control-v4/build",
           "-t",
           "deps"
         ],
         "generated_expected": {
-          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/native16-public-control-v3/build/ggml/src/ggml-version.h": "9e45eee8391971371922f51b66925184609125d467c444744599f680b78edc92"
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/native16-public-control-v4/build/ggml/src/ggml-version.h": "9e45eee8391971371922f51b66925184609125d467c444744599f680b78edc92"
         },
         "budgets": {
           "wall": 1200,
@@ -2908,73 +2912,44 @@
         "retention": "One official component candidate only,no model engine build. Keep source/recipe and useful closure/hash proof;retire normal build output/objects after qualification selection. Prior GU/Down fixtures retire after their named same-shape/legacy-ABI comparison;retain original13 selected assets.",
         "previous_failed_build": {
           "stage": "failed",
-          "source_commit": "06d9a264ede03e5ae3be275d326fac4d277fa50b",
+          "source_commit": "0bf4502bf7b46713e72a850482aced7ea1ba0728",
           "error": "RuntimeError('compile failed')",
           "GPU_executed": false,
           "ownership_closed": true,
           "retirement": {
             "complete": true,
-            "files": 48,
-            "bytes": 3784505,
+            "files": 147,
+            "bytes": 78531553,
             "inputs_recovered": 9972,
             "manifest": {
-              "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/deletion-manifests/20261026-native16-official-v2-failed-build.jsonl",
-              "sha256": "0cdefa0826d049c605e463d39bd4c00ff19fa9c4eb49d5a5aa0134566ba28002"
+              "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/deletion-manifests/20261026-native16-official-v3-failed-build.jsonl",
+              "sha256": "e367d674caa9f38102f41bdf122587ab6883053beeacb3d58716b934d9b097bc"
             },
             "original_plan": {
-              "commit": "a0da19dc7",
+              "commit": "7e478a6ee",
               "path": "bench/results/2026-10-15-pr6-recovery-audit/prefill-resources-current.json",
-              "sha256": "7c7ef5ee1a1c81e83d7bb2aeaedac6b1fc011c8ea992dff94e14bd852dff161f"
+              "sha256": "f7ddc4dfc97d72a7010cd4e24b72ca4daf50eca89fd667ae9726dd3df7a7870f"
             },
-            "closed_result_commit": "748d979cb",
-            "diagnostic": "src/kernels/sycl/cvec.cpp:143: nd_item.barrier deprecated;Werror stopped compiler. Original failure is not GPU execution or numerical failure.",
+            "closed_result_commit": "c991cf368",
             "selected_original13_assets_unchanged": true
           },
-          "change": "Keep original barrier/API code and all other warnings as errors. Only -Wno-error=deprecated-declarations is added prospectively;no inference source change."
-        },
-        "error": "RuntimeError('compile failed')",
-        "fresh_faults": [],
-        "boot_unchanged": true,
-        "driver_after": {
-          "pci": "/sys/bus/pci/devices/0000:05:00.0",
-          "driver": "xe",
-          "vendor": "0x8086",
-          "device": "0xe20c",
-          "kernel": "7.0.0-38-generic",
-          "devcoredump": false
-        },
-        "failure_analysis": {
-          "stage": "host_slice_extraction",
-          "AOT_image_compiler_success_messages": 3,
-          "cause": "cmake/sycl_vllm_xe2_native16.cmake assumes clang-offload-bundler beside icpx;official2026.2 installs it in bin/compiler.",
-          "error": "/opt/intel/oneapi/compiler/2026.2/bin/clang-offload-bundler: not found",
-          "GPU_executed": false,
-          "matrix_or_ABI_qualified": false,
-          "correction": "Ask the pinned compiler with -print-prog-name=clang-offload-bundler;require an existing absolute path and pinned SDK identity. No kernel arithmetic change."
-        },
-        "retirement": {
-          "complete": true,
-          "files": 147,
-          "bytes": 78531553,
-          "inputs_recovered": 9972,
-          "manifest": {
-            "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/deletion-manifests/20261026-native16-official-v3-failed-build.jsonl",
-            "sha256": "e367d674caa9f38102f41bdf122587ab6883053beeacb3d58716b934d9b097bc"
+          "failure_analysis": {
+            "stage": "host_slice_extraction",
+            "AOT_image_compiler_success_messages": 3,
+            "cause": "cmake/sycl_vllm_xe2_native16.cmake assumes clang-offload-bundler beside icpx;official2026.2 installs it in bin/compiler.",
+            "error": "/opt/intel/oneapi/compiler/2026.2/bin/clang-offload-bundler: not found",
+            "GPU_executed": false,
+            "matrix_or_ABI_qualified": false,
+            "correction": "Ask the pinned compiler with -print-prog-name=clang-offload-bundler;require an existing absolute path and pinned SDK identity. No kernel arithmetic change."
           },
-          "original_plan": {
-            "commit": "7e478a6ee",
-            "path": "bench/results/2026-10-15-pr6-recovery-audit/prefill-resources-current.json",
-            "sha256": "f7ddc4dfc97d72a7010cd4e24b72ca4daf50eca89fd667ae9726dd3df7a7870f"
-          },
-          "closed_result_commit": "c991cf368",
-          "selected_original13_assets_unchanged": true
+          "change": "Use the pinned compiler-resolved offload bundler. Preserve the previous deprecation warning exception,all other warnings as errors,and original kernel arithmetic/ABI flags."
         },
         "source_groups": [
           {
             "root": "/home/yayoi/orca/workspaces/Strata/sycl",
-            "revision": "0bf4502bf7b46713e72a850482aced7ea1ba0728",
+            "revision": "2369886e91da7d4f570d43ba17aacb242b838c60",
             "count": 661,
-            "aggregate_sha256": "168f971e9c1c968ac39fc08070693df4bf4d6ab0ded37a95ad0f67686ff111b0"
+            "aggregate_sha256": "49c38695f35740766310c2eb114d1ff883c15f02c2fc002f4add82d2186ad11f"
           },
           {
             "root": "/home/yayoi/ghq/github.com/ggml-org/llama.cpp/.worktree/dep-ggml-3cf-xe-e32-20261011",
