@@ -24,7 +24,8 @@ import generation_engine as gen
 import measurement_owner as owners
 
 r, P, B, RESULT = native.r, native.P, native.B, native.RESULT
-ROOT = native.ROOT / 'model-smoke-v1'
+ROOT = native.ROOT / 'model-smoke-v2'
+KEY = 'model_smoke_v2'
 TEMPLATE = gen.A / 'phase-prefill-speed-current.json'
 HISTORY = gen.A / 'prefill-runtime-comparison-current.json'
 require, digest, write = r.require, r.digest, r.write
@@ -44,7 +45,7 @@ def compact(row):
 
 def save(row):
     container = json.loads(RESULT.read_text())
-    scope(container)['model_smoke'] = compact(row)
+    scope(container)[KEY] = compact(row)
     write(RESULT, container)
 
 
@@ -67,7 +68,7 @@ def engine():
 
 
 def current(row):
-    require(scope(gen.committed(RESULT))['model_smoke'] == compact(row), 'commit frozen smoke plan')
+    require(scope(gen.committed(RESULT))[KEY] == compact(row), 'commit frozen smoke plan')
     require(pins(row['source_commit']) == row['source_pins'], 'smoke controller/benchmark source changed')
     built = engine()
     require(built['binary'] == row['binary'] and built['source_commit'] == row['build_source_commit'],
@@ -83,7 +84,10 @@ def current(row):
 
 def prepare():
     container = gen.committed(RESULT)
-    require(not ROOT.exists() and 'model_smoke' not in scope(container), 'fresh smoke only; no retry')
+    require(not ROOT.exists() and KEY not in scope(container), 'fresh smoke only; no retry')
+    prior = scope(container)['model_smoke']
+    require(not prior['passed'] and not prior['GPU_executed'] and
+        prior['closure_reconciliation']['all_owned_processes_terminated'], 'close prelaunch rejection first')
     built = engine()
     rt = gen.committed(r.RESULT)
     history = gen.committed(HISTORY)['historical_regression_audit']['userland_crossover']
@@ -109,10 +113,10 @@ def prepare():
         preload=preload, generated_inputs={}, active=False, ownership_closed=True,
         passed=False, complete=False, model_qualified=False, observer_cost_qualified=False,
         clean_speed_qualified=False, historical_regression_attributed=False, production_selected=False,
-        question='Does the separately built diagnostic engine complete two real-model16K-class requests '
+        question='Does the separately built diagnostic engine complete two real-model32K-class requests '
             'with four conservative sampled MoE windows each and checked prefill/decode handoff?',
-        criteria='One short warmup and two fresh official bench.sh requests with requested16K input, '
-            'actual16384..32767 tokens,0reuse,24output,thinking enabled. Require normal stream and owned closure, '
+        criteria='One short warmup and two fresh official bench.sh requests with requested32768 input, '
+            'actual32768..65535 tokens,0reuse,24output,thinking enabled. Require normal stream and owned closure, '
             'pre-main validation and actual pinned providers,silent validation log,2 layer-major BF16/mode10 routes, '
             'two version3 sparse profiles with4windows and complete clocks/counts/caps, '
             'normal native exit,same boot,no newGPUfault and15 final model hashes. Stop first failure,no retry. '
@@ -134,7 +138,7 @@ def prepare():
     with socket.socket() as sock:
         sock.bind(('127.0.0.1', 0)); port = sock.getsockname()[1]
     row['command'] = ['/bin/sh', str(P / 'bench.sh'), '--config', str(ROOT / 'config.json'), '--port', str(port),
-        '--prefill-only', '--prefill-tokens', '16384', '--think', '--runs', '2', '--profile-request-gates',
+        '--prefill-only', '--prefill-tokens', '32768', '--think', '--runs', '2', '--profile-request-gates',
         '--workload-id', 'native_gdn_20261018', '--fail-fast-engine-error', '--ready-timeout', '600',
         '--out', str(ROOT / 'bench')]
     write(ROOT / 'record.json', row); save(row)
@@ -197,7 +201,7 @@ def run(row):
         for sample in samples:
             require(sample['ok'] and sample['eligible'] and sample['stream_complete'] and
                 sample['thinking_requested'] and sample['reasoning_observed'] and
-                16384 <= sample['actual_prompt_tokens'] == sample['actual_read_tokens'] < 32768 and
+                32768 <= sample['actual_prompt_tokens'] == sample['actual_read_tokens'] < 65536 and
                 sample['actual_reused_tokens'] == 0 and sample['generated_tokens'] == 24 and
                 sample['prompt_tps_source'] == 'engine', 'small diagnostic workload differs')
         sys.path.insert(0, str(P / 'tools'))
