@@ -2801,6 +2801,23 @@
             "devcoredump": false
           },
           "passed": false
+        },
+        "evidence_replay": {
+          "stage": "prepared",
+          "passed": false,
+          "GPU_executed": false,
+          "source_commit": "9241f6d61aa746158c5b3be98f7562beaaf7320a",
+          "original_failed_commit": "d708f9ab3",
+          "input_sha256": {
+            "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/legacy-gemm-abi-v1/execution.json": "eb3bd469857650fd86a249126794b5c7ec04c9687d2e241228e515314c4e39c5",
+            "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/legacy-gemm-abi-v1/runtime-inputs.json": "43de9b527585addcc6da1f8fdc6f1e8266e2d982ba4c752d909578ed8c7bde21",
+            "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/legacy-gemm-abi-v1/ur.trace": "455380c353433217b5771760c43ebb9a7ce079d5b3e55a8ecc18819532d6404e",
+            "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/legacy-gemm-abi-v1/owned/matrix-only.stdout": "aa8197022830356fe060681b1d6c94f1a1f7ffb6da2d73702faf4b5d46aef913",
+            "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/legacy-gemm-abi-v1/owned/matrix-only.stderr": "227964b1dbdfc01b1263fd6a831b701b3dfe5cbb7c2004becb6e239f9d7c62cc",
+            "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/legacy-gemm-abi-v1/validation.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          "validation_log_present": true,
+          "criteria": "Offline replay only;preserve original failed stage/outcome. Recover original controller/native/SDK/runtime and exact existing argv/environment/logs/normal owner closure;verify22case footer,pre-main activation,no parameter warning,and balanced successful API enqueue entry/returns. No new process or model/performance advancement."
         }
       },
       "legacy_gemm_abi_build_v1": {
