@@ -3,6 +3,7 @@
 #include "strata/prefill/expert_bank_upload.hpp"
 #include "strata/prefill/draft_uploads.hpp"
 #include "strata/sycl/checked_cleanup.hpp"
+#include "strata/sycl/command_profile.hpp"
 #include <algorithm>
 #include <array>
 #include <chrono>
@@ -351,11 +352,12 @@ struct ReadonlySlab {
     ~ReadonlySlab() { if(pointer && pointer!=MAP_FAILED) munmap(pointer,bytes); }
     ReadonlySlab(const ReadonlySlab&)=delete;
 };
-void staging_benchmark(int process, bool custom_queue=false) {
+void staging_benchmark(int process, bool custom_queue=false, bool attribution=false) {
     using Clock=std::chrono::steady_clock;
     auto runtime=sb::runtime_for();
     auto q=custom_queue?runtime->make_queue(true):runtime->compute();
-    auto drain=[&]{q.wait_and_throw();runtime->check();runtime->wait();};
+    auto drain=[&]{sb::cpu_wait_profile::blocking(sb::cpu_wait_profile::direct_queue,
+        [&]{q.wait_and_throw();});runtime->check();runtime->wait();};
     std::vector<double> clock_ns;
     for (int i=0;i<1000;++i) {const auto a=Clock::now(),b=Clock::now();clock_ns.push_back(std::chrono::duration<double,std::nano>(b-a).count());}
     std::sort(clock_ns.begin(),clock_ns.end());
@@ -389,11 +391,21 @@ void staging_benchmark(int process, bool custom_queue=false) {
             q.memset(cache.device_slot(0),0xa5,size_t(cache.bytes()));q.memset(status,0,4);drain();
             uint64_t uploads=0,hits=0,consumers=0;uint32_t observed=~uint32_t(0);
             const auto copies_before=staging.copies(),bytes_before=staging.copied_bytes();
+            std::unique_ptr<sb::command_profile::Trace> trace;
+            if(attribution) {
+                std::cerr<<"staging attribution sample: process="<<process<<" round="<<round
+                    <<" arm="<<arm<<" payload="<<payload<<'\n';
+                trace.reset(new sb::command_profile::Trace(&q,1));
+            }
+            auto frame=trace?trace->begin(0,0):sb::command_profile::Frame{};
+            for(int pass=0;pass<2;++pass)for(int e=0;e<512;++e)frame.consider(e,pass*512+e,1);
             const auto marker=bank_marker(q);
+            auto cpu_scope=std::make_unique<sb::cpu_wait_profile::Scope>(attribution);
             const auto begin=Clock::now();const double begin_cpu=thread_seconds();
             pd::DraftUploadGuard lease([&]{drain();return true;},
                 []{sb::cleanup_fail_stop("staging benchmark retirement");});lease.arm();
             for(int pass=0;pass<2;++pass)for(int e=0;e<512;++e) {
+                auto upload_tag=frame.tag(sb::command_profile::Kind::expert_upload,e,pass*512+e,1);
                 const auto ticket=pd::stage_private_expert_bank(slots,bank,
                     static_cast<const uint8_t*>(slab.pointer),slab_bytes,payload,e,&q,stride,arm?&staging:nullptr);
                 uploads+=ticket.upload;hits+=!ticket.upload;
@@ -401,19 +413,26 @@ void staging_benchmark(int process, bool custom_queue=false) {
                 const size_t words=payload/4;
                 for(int job=0;job<2;++job) {
                     const size_t global=(words+255)/256*256;
-                    q.parallel_for(sycl::nd_range<1>(global,256),[=](sycl::nd_item<1> item){
+                    auto reader_tag=frame.tag(sb::command_profile::Kind::gather,e,pass*512+e,1);
+                    auto event=q.parallel_for(sycl::nd_range<1>(global,256),[=](sycl::nd_item<1> item){
                         const size_t i=item.get_global_linear_id();
                         const bool bad=i<words && blob[i]!=value(e,i,1);
                         const bool any=sycl::any_of_group(item.get_group(),bad);
                         if(item.get_local_linear_id()==0 && any)
                             sycl::atomic_ref<uint32_t,sycl::memory_order::relaxed,sycl::memory_scope::device,
                                 sycl::access::address_space::global_space>(*status).fetch_or(1);
-                    });++consumers;
+                    });sb::command_profile::observe(&q,event);++consumers;
                 }
             }
-            q.memcpy(&observed,status,4);const auto end=bank_marker(q);drain();lease.retire();
+            {
+                sb::cpu_wait_profile::Host status_enqueue(sb::cpu_wait_profile::moe_status);
+                auto status_tag=frame.tag(sb::command_profile::Kind::status,-1,0,1);
+                auto event=q.memcpy(&observed,status,4);sb::command_profile::observe(&q,event);
+            }
+            const auto end=bank_marker(q);drain();lease.retire();
             const double wall=std::chrono::duration<double,std::milli>(Clock::now()-begin).count();
             const double cpu=(thread_seconds()-begin_cpu)*1e3;
+            cpu_scope->complete(true);cpu_scope.reset();frame.after_checked_drain();
             const auto a=marker.get_profiling_info<sycl::info::event_profiling::command_end>();
             const auto b=end.get_profiling_info<sycl::info::event_profiling::command_start>();
             need(b>a && uploads==641 && hits==383 && consumers==2048 && observed==0,"timed production bank contract");
@@ -429,6 +448,7 @@ void staging_benchmark(int process, bool custom_queue=false) {
             const bool eligible=wall>=10 && queue_ms>=10 && empty_wall_ms<=.05*wall;
             std::cout<<std::setprecision(17)<<"{\"kind\":\"staging_bank\",\"process\":"<<process
                 <<",\"custom_queue\":"<<(custom_queue?"true":"false")<<",\"round\":"<<round<<",\"order\":"<<order<<",\"arm\":"<<arm
+                <<",\"attribution\":"<<(attribution?"true":"false")
                 <<",\"payload_bytes\":"<<payload<<",\"source_stride\":"<<stride<<",\"bank_slots\":384"
                 <<",\"uploads\":"<<uploads<<",\"hits\":"<<hits<<",\"consumers\":"<<consumers
                 <<",\"wall_ms\":"<<wall<<",\"thread_CPU_ms\":"<<cpu<<",\"queue_interval_ms\":"<<queue_ms
@@ -444,6 +464,14 @@ void staging_benchmark(int process, bool custom_queue=false) {
 }
 
 int main(int argc, char** argv) try {
+#if defined(STRATA_SYCL_EXPERT_UPLOAD_ATTRIBUTION)
+    if(argc==3 && (std::string(argv[1])=="--staging-attribution-off" ||
+                  std::string(argv[1])=="--staging-attribution-on")) {
+        const int process=std::stoi(argv[2]);need(process>=0 && process<3,"attribution process ordinal");
+        staging_benchmark(process,true,std::string(argv[1])=="--staging-attribution-on");
+        std::cout<<"expert_bank_staging_benchmark PASS model=UNRUN\n";return 0;
+    }
+#endif
     if (argc==3 && (std::string(argv[1])=="--staging-bench" || std::string(argv[1])=="--staging-custom-bench")) {
         const int process=std::stoi(argv[2]);need(process>=0 && process<3,"benchmark process ordinal");
         staging_benchmark(process,std::string(argv[1])=="--staging-custom-bench");

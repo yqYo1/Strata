@@ -46,8 +46,20 @@ public:
             // the destination, so they do not extend the host slot's lifetime.
             if (pending_[index]) runtime_->wait(*pending_[index]);
             auto* host = storage_.as<uint8_t>() + index * stride_ + guard;
-            std::memcpy(host, source, bytes);
-            auto event = queue_.memcpy(destination, host, bytes);
+            // Subregions are compiled only into the diagnostic fixture. A
+            // normal engine keeps its existing outer, nonnested Host region.
+            {
+#if defined(STRATA_SYCL_EXPERT_UPLOAD_ATTRIBUTION)
+                sycl_backend::cpu_wait_profile::Host preparation(sycl_backend::cpu_wait_profile::source_copy);
+#endif
+                std::memcpy(host, source, bytes);
+            }
+            auto event = [&] {
+#if defined(STRATA_SYCL_EXPERT_UPLOAD_ATTRIBUTION)
+                sycl_backend::cpu_wait_profile::Host submission(sycl_backend::cpu_wait_profile::upload_submit);
+#endif
+                return queue_.memcpy(destination, host, bytes);
+            }();
             pending_[index] = event;
             sycl_backend::command_profile::observe(stream, event);
             ++next_; copied_bytes_ += bytes;

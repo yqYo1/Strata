@@ -72,6 +72,9 @@ inline ExpertBankSlots::Ticket stage_private_expert_bank(ExpertBankSlots& slots,
     return stage_private_expert_bank_enqueue(slots,bank,slab,slab_bytes,blob_bytes,expert,stream,source_stride,
         [staging](void* dst, const void* src, size_t bytes, void* queue) {
             if (staging) return staging->enqueue(dst, src, bytes, queue);
+#if defined(STRATA_SYCL_EXPERT_UPLOAD_ATTRIBUTION)
+            sycl_backend::cpu_wait_profile::Host submission(sycl_backend::cpu_wait_profile::upload_submit);
+#endif
             return cudaMemcpyAsync(dst,src,bytes,cudaMemcpyHostToDevice,static_cast<cudaStream_t>(queue)) == cudaSuccess;
         });
 }
