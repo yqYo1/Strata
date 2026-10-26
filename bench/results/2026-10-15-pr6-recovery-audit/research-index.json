@@ -12358,8 +12358,8 @@
   },
   "supervision_model_source_contract_v3_20261027": {
     "classification": "decision_support",
-    "status": "source_audit_ready",
-    "schedulable_now": true,
+    "status": "native_report_review_running",
+    "schedulable_now": false,
     "model_trial_allowed": false,
     "source_commit": "ba158bc54d15d8355feeb64649ae31dd2d462b56",
     "sources": {
@@ -12391,6 +12391,45 @@
     "consumer": "Main exact-source model admission after native Luna/max report review.",
     "next_review": "Native gpt-6-luna/max reviews report and exact frozen source/plan before Main commits model_trial_allowed;no GPU before accepted review.",
     "limits": "Read-only;write named report only. No Git,process inspection,build,test,GPU,profiling,product/index edits,dependency changes or subagents. No steering;no XeStrata-derived code.",
+    "main_reads_body_on_arrival": false,
+    "dispatch": {
+      "run": "run_12fa11537288",
+      "task": "task_84374f605997",
+      "context": "ctx_2e8783d2ebea",
+      "terminal": "term_abb9a1dc-128a-4e5b-b103-dfd761266f72",
+      "incarnation": "d837d03f-b529-43a7-b569-35d4651dcb5d",
+      "model": "gpt-6-luna",
+      "effort": "high",
+      "basis": "Previous dispatch settled;fresh /new current-worktree Codex0.162.1 GPT6Luna/high prompt observed before exact-terminal reuse.",
+      "input_accepted": true,
+      "turn_start_observed": true,
+      "outcome": "succeeded_settled",
+      "done_message": "msg_1ed35d83824b",
+      "delivery": "delivery_93b15b726756",
+      "acknowledged": true,
+      "release": "accepted external-terminal retention,no process action;not claimed process exit"
+    },
+    "report_bytes": 7107,
+    "report_sha256": "f5e30ffa33fcc0dd2d4de7416c46399bd728f5b3bd45957ac837d1d9879ff64f"
+  },
+  "register_only_subgroup_gemm_barrier_methods_20261027": {
+    "classification": "knowledge_collection",
+    "status": "research_ready",
+    "schedulable_now": true,
+    "source_commit": "ba158bc54d15d8355feeb64649ae31dd2d462b56",
+    "prerequisite_evidence": "Selected native16 source uses BSD-derived register-fragment DPAS loops with workgroup barrier_arrive/barrier_wait at every K tile in xe_gemm_bsd.hpp;current native16 adapter uses SG16 compact16x64 or wide128x128. Existing job-shape/work census supplies a concrete retrieval consumer;no limiting-resource or speed claim.",
+    "previous_report_index": "bench/results/2026-10-15-pr6-recovery-audit/research-index.json",
+    "previous_scopes": [
+      "cooperative_matrix_iterative_fragment_lifetime_methods_20261023",
+      "gpu_shared_memory_bank_layout_methods_20261023",
+      "official_2026_2_native16_abi_scope"
+    ],
+    "question": "Compare legality and performance tradeoffs of workgroup split barriers in register-only,subgroup-cooperative XMX/DPAS GEMM with global block2D loads/prefetch. Determine when independent subgroups need workgroup synchronization,what ordering the compiler/intrinsics require,and alternatives such as subgroup barriers,software pipelining and retained workgroup barriers. Include original technical blogs/papers and primary SYCL/Intel/TLA/CUTLASS implementations;separate scope,collective participation and memory-fence semantics. No claim that removing barriers is safe or faster for this project without validation.",
+    "report_path": ".cache/strata-research/20261027/register-only-gemm-barrier-methods.md",
+    "report_budget_bytes": 14336,
+    "consumer": "Reference for a future mechanism-specific native16 GPU compute experiment after the supervisor control;not immediate implementation.",
+    "next_review": "Native gpt-6-luna/max reviews novelty,scope,depth and retrieval metadata;Main reads short operational digest only and retrieves body sections only for a concrete kernel decision.",
+    "limits": "Research only;write named report only,no Git/process/build/test/GPU/profiler/product edits/dependency changes/subagents. No XeStrata source or derivatives;no steering.",
     "main_reads_body_on_arrival": false
   }
 }
