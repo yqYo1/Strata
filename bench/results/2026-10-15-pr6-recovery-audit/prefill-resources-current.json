@@ -2728,6 +2728,117 @@
       "remaining": "Fourteen older provenance holds and separate pending numerical/model/full-context/upstream gates are unchanged."
     },
     "fused_command_profile": {
+      "ur_hold_control_build_v1": {
+        "stage": "prepared",
+        "source_commit": "bb46c4de524a564f596144add63efcc5f94239c8",
+        "native_source": {
+          "path": "/home/yayoi/orca/workspaces/Strata/sycl/bench/sycl/ur_hold_control.c",
+          "sha256": "191887a26d11e0d3e667d4f8e4a45dd219ad02ade93713b980b0722376d94b77"
+        },
+        "official_header": "/opt/intel/oneapi/compiler/2026.2/include/unified-runtime/ur_api.h",
+        "compiler": {
+          "path": "/usr/bin/x86_64-linux-gnu-gcc-13",
+          "sha256": "1b99826121ae6682a634e5efe09bd3e3df58ce58e0b28f849114ab5b89139c26",
+          "version": "x86_64-linux-gnu-gcc-13 (Ubuntu 13.3.0-6ubuntu2~24.04.1) 13.3.0"
+        },
+        "tools": {
+          "cc": {
+            "path": "/usr/bin/x86_64-linux-gnu-gcc-13",
+            "sha256": "1b99826121ae6682a634e5efe09bd3e3df58ce58e0b28f849114ab5b89139c26"
+          },
+          "readelf": {
+            "path": "/usr/bin/x86_64-linux-gnu-readelf",
+            "sha256": "64c58e15274bbbb5153f31078e455e9e77ee5f51489e709bba5bb788ce9df2b0"
+          },
+          "cc1": {
+            "path": "/usr/libexec/gcc/x86_64-linux-gnu/13/cc1",
+            "sha256": "5d1679131184e2de4435b426eb264bf13472fe026db8e5c6bc97445814e8e2f4"
+          },
+          "as": {
+            "path": "/nix/store/y5sgl0vvrpbcwgjwpjs60r1hg0gi7i0n-binutils-2.46/bin/as",
+            "sha256": "4499d2980f494f562c559051a0fc40633e36d8f72e5612bd8b2f417c35748df2"
+          },
+          "ld": {
+            "path": "/nix/store/30axrdkfr53iadyx4445b91x4qnmmc75-binutils-wrapper-2.46/bin/ld",
+            "sha256": "7ed765ac87ae4d27800a4b176629584727dd85967624450d1f67a16bb973e556"
+          },
+          "collect2": {
+            "path": "/usr/libexec/gcc/x86_64-linux-gnu/13/collect2",
+            "sha256": "4d1f341ae5b763b513258ee2812422a45e063c30a2f1924a0cf63d3699f3a158"
+          }
+        },
+        "compile_argv": [
+          "/usr/bin/x86_64-linux-gnu-gcc-13",
+          "-std=c11",
+          "-O2",
+          "-Wall",
+          "-Wextra",
+          "-Werror",
+          "-fPIC",
+          "-I/opt/intel/oneapi/compiler/2026.2/include",
+          "-MD",
+          "-MF",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/ur-hold-control-v1/actual-deps.d",
+          "-c",
+          "/home/yayoi/orca/workspaces/Strata/sycl/bench/sycl/ur_hold_control.c",
+          "-o",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/ur-hold-control-v1/control.o"
+        ],
+        "link_argv": [
+          "/usr/bin/x86_64-linux-gnu-gcc-13",
+          "-shared",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/ur-hold-control-v1/control.o",
+          "-L/opt/intel/oneapi/compiler/2026.2/lib",
+          "-Wl,-rpath,/opt/intel/oneapi/compiler/2026.2/lib",
+          "-Wl,-t",
+          "-lur_loader",
+          "-ldl",
+          "-o",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/ur-hold-control-v1/libstrata_ur_hold_control.so"
+        ],
+        "runtime_sha256": "09ad358e12f6ef58bfc0a978519927863f3d09949a033a1e224db95997647d97",
+        "selected_binary": {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/strata",
+          "bytes": 22190000,
+          "sha256": "22182f1a5e62e5f4259ce49a75ae44afbd988166ec79324816e499ff37ef60e4"
+        },
+        "fallback_component": "native16-public-control-v4",
+        "boot": "cfda0b6a-7c13-4fe2-bdf5-8f9202770840",
+        "driver": {
+          "pci": "/sys/bus/pci/devices/0000:05:00.0",
+          "driver": "xe",
+          "vendor": "0x8086",
+          "device": "0xe20c",
+          "kernel": "7.0.0-38-generic",
+          "devcoredump": false
+        },
+        "budgets": {
+          "wall": 30,
+          "cpu": 30,
+          "rss_cap": 1073741824,
+          "text_cap": 2097152,
+          "file_cap": 8388608,
+          "total_cap": 67108864
+        },
+        "complete": false,
+        "passed": false,
+        "active": false,
+        "ownership_closed": true,
+        "GPU_executed": false,
+        "engine_built": false,
+        "model_adoption_qualified": false,
+        "question": "Build one matched on/off parameter-validation preload retaining the loader reference in both arms.",
+        "criteria": "Committed source/recipe/compiler/header and imported-link closure;finite normal owned compile/link exits;exact helper ELF. No old SDK compiler/header input. No GPU/model or ordinary-teardown qualification. Audit/off-mode host gates precede any GPU comparison.",
+        "retention": "Keep this one tiny helper candidate only for imminent host/provider/submission and same-engine validation-cost comparison. Official v4fallback/original13model assets remain intact. Retire helper/raw output after that decision and original-source recovery.",
+        "native_manifest": {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/ur-hold-control-v1/native-inputs.json",
+          "sha256": "442169b897a289a1177a8883cb0dc8649996cc3ea4eb975e504f49aad70e3892",
+          "files": 127
+        },
+        "expected_header_paths_sha256": "555ad0a21e5f2bd4b33fcfc87443e033ac4fca198b8693c4d7553f96151d935b",
+        "expected_link_paths_sha256": "27c15b5ec9789004fc13532c56828a6fb184d55edb076f24ee7ebae491fc2a05",
+        "environment_sha256": "e7305ce8a9e71cde476366fd479ba47dae9cb8694690f59c1f0ad52ba11cce3e"
+      },
       "legacy_gemm_abi_v1": {
         "stage": "failed",
         "source_commit": "5314d12d643d19564a6c476f651ec0c45c5700f4",
