@@ -2729,7 +2729,7 @@
     },
     "fused_command_profile": {
       "public_gu_warmed_attribution_build_v2": {
-        "stage": "prepared",
+        "stage": "built",
         "source_commit": "fdec18b9d35b12519e9b95128d29a5caef6db468",
         "sdk": {
           "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-expert-staging-v3/sdk-inputs.json",
@@ -2900,8 +2900,8 @@
         },
         "active": false,
         "ownership_closed": true,
-        "passed": false,
-        "complete": false,
+        "passed": true,
+        "complete": true,
         "GPU_executed": false,
         "engine_built": false,
         "production_selected": false,
@@ -2964,6 +2964,45 @@
             "origin": "Installed Intel apt packages;dpkg verification silent. No XeStrata SDK source/artifact reuse.",
             "live": true
           }
+        },
+        "compiled_inputs": {
+          "files": 1427,
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/native16-warmed-attribution-v2/compiler-inputs.json",
+          "sha256": "c3f6e0860072bc813cacfb788e7a394c8c106b500bc8f230e8b754b92adff57b",
+          "uncovered": 0
+        },
+        "fixtures": {
+          "sycl_submission_test": {
+            "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/native16-warmed-attribution-v2/build/sycl_submission_test",
+            "sha256": "451f06d4ba6606b1f58c352c2a2018d68b2f4e5e82b771b81fa73019b61f0f0d",
+            "bytes": 347200
+          },
+          "sycl_vllm_native16_test": {
+            "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/native16-warmed-attribution-v2/build/sycl_vllm_native16_test",
+            "sha256": "7979528ed9932658821d8a346284055d14c72687455410a0671682c382e2a6b2",
+            "bytes": 1778456
+          },
+          "sycl_moe_gu_swiglu_bench": {
+            "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/native16-warmed-attribution-v2/build/sycl_moe_gu_swiglu_bench",
+            "sha256": "bd22586ecd8963e949664b9a20b40696ae907f6e15d89aa36e0823f062658bfa",
+            "bytes": 13112296
+          },
+          "sycl_moe_down_scatter_bench": {
+            "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/native16-warmed-attribution-v2/build/sycl_moe_down_scatter_bench",
+            "sha256": "70bbc7dd26970c79a0383e9632ad81ad83f6dd08c81f6b795584a34023e167a9",
+            "bytes": 13103448
+          }
+        },
+        "host_probe_accepted": true,
+        "fresh_faults": [],
+        "boot_unchanged": true,
+        "driver_after": {
+          "pci": "/sys/bus/pci/devices/0000:05:00.0",
+          "driver": "xe",
+          "vendor": "0x8086",
+          "device": "0xe20c",
+          "kernel": "7.0.0-38-generic",
+          "devcoredump": false
         },
         "source_groups": [
           {
