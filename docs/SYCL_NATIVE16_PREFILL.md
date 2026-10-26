@@ -536,6 +536,16 @@ plan,reusing the exact fixture only after original377ca6194 recipe/binary and
 all724inputs reconcile,including19project inputs recovered from Git. This is
 a controller-only correction,not a new native build or GPU qualification.
 
+V4accepts that loader and completes its before-main46API/layer checks. The
+host canary exits0 in0.171s,but its observer rejects undeclared OS
+`librt.so.1` before EOF. The original observation remains incomplete/failed;
+actual ownership is subsequently reconciled from child reap,current PID/SID
+absence and the anchored empty session. No GPU body or new fault occurs.
+UMF1.2declares librt through DT_NEEDED. V5 resolves the complete dependency
+closure of official SYCL/UR/L0v2/UMF before launch,pins that additional ELF and
+uses a fresh plan/cache with the same verified native fixture. Runtime/model
+qualification is still pending.
+
 Installed native metadata identifies representative actual formats:layer2 has
 IQ2_S(type22) gate/up and IQ4_NL(type20) down,1971200bytes;layer47 has
 IQ4_XS(type23) gate/up and IQ4_NL down,2662400bytes. Next freeze a comparison

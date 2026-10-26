@@ -7152,7 +7152,7 @@
         }
       },
       "new_build_toolchain": {
-        "stage": "official-component-built-preGPU-provider-plan-failed",
+        "stage": "official-loader-path-passes-host-observer-dependency-gap",
         "independent_build_admitted": true,
         "observation_utc": "2026-10-26T03:15:59Z",
         "old_compiler_sha256": "1290881b4e12a5e002e5b0de0787f85328ee5fe19f253a54be1cdd97dc2f26eb",
@@ -7212,7 +7212,7 @@
           },
           "copy_offload_avoidance_key_present": true
         },
-        "next_action": "V4prospective device-only plan corrects expected loader physical path while retaining V3failure. Reuse exact724-input fixture from617e1845a after original377ca6194 recipe recovery;before-main host canary still precedes any GPU. No broader model/runtime qualification.",
+        "next_action": "V5committed preflight of complete ELF DT_NEEDED closure before host canary. V4native canary exited0 but observer incomplete from undeclared librt;not a GPU/driver failure. Official runtime still unqualified for model.",
         "retention": "No XeStrata/dirty SDK source copied. Keep only compact origin evidence and hashes;installed SDK/compiler/runtime assets are separate from disposable project builds. Retire consumed component artifacts and two native reviews after original19project+674external inputs and six-command recipes reconcile from pushed source.",
         "admission_scope": "ONLY the pinned installed official2026.2compiler+runtime/UMF1.2 in the new committed bounded V3component. Prior XeStrata-path SDK stays prohibited for new builds. GPU/runtime/model qualification is NOT inherited or granted by this build permission."
       },
@@ -7283,174 +7283,17 @@
         "retention": "V4named imminent consumer of V3fixture,724-input manifest,10945official SDK snapshot and original build receipt. No native rebuild needed. Retire intermediate objects/normal build/host failure transaction output after V4source and qualification review;record original path/hash/reason. No model qualification from this component."
       },
       "prefill_upload_staging_v4": {
-        "stage": "prepared-device",
+        "stage": "failed",
         "source_commit": "617e1845a4477994f812d9bf0f4cbe4fc80d045c",
-        "sdk": {
-          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-expert-staging-v3/sdk-inputs.json",
-          "sha256": "c8879f0b8d772979bf2096dc64a3bba49853bd15dad221b46427a922030647d8",
-          "files": 10945,
-          "packages": [
-            "intel-oneapi-compiler-dpcpp-cpp-runtime-2026.2 2026.2.0-863",
-            "intel-oneapi-dpcpp-cpp-2026.2 2026.2.0-863",
-            "intel-oneapi-umf-1.2 1.2.0-116"
-          ],
-          "origin": "Installed Intel apt packages;dpkg verification silent. No XeStrata SDK source/artifact reuse."
-        },
-        "compiler": {
-          "path": "/opt/intel/oneapi/compiler/2026.2/bin/icpx",
-          "sha256": "59eaaf55744c7290fb870cd12049ec11877b5224e333cba33270b433bdb73213"
-        },
-        "sources": [
-          "tests/sycl/expert_bank.cpp",
-          "src/sycl/runtime.cpp",
-          "src/sycl/compat.cpp",
-          "src/sycl/command_profile.cpp",
-          "src/core/expert_cache.cpp"
-        ],
-        "build_commands": [
-          [
-            "/opt/intel/oneapi/compiler/2026.2/bin/icpx",
-            "-std=c++20",
-            "-O3",
-            "-fsycl",
-            "-fsycl-id-queries-range=size_t",
-            "-DSTRATA_ENABLE_SYCL=1",
-            "-I/home/yayoi/orca/workspaces/Strata/sycl/include",
-            "-I/home/yayoi/orca/workspaces/Strata/sycl/include/strata/sycl/compat",
-            "-MD",
-            "-MF",
-            "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-expert-staging-v3/0.d",
-            "-c",
-            "/home/yayoi/orca/workspaces/Strata/sycl/tests/sycl/expert_bank.cpp",
-            "-o",
-            "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-expert-staging-v3/0.o"
-          ],
-          [
-            "/opt/intel/oneapi/compiler/2026.2/bin/icpx",
-            "-std=c++20",
-            "-O3",
-            "-fsycl",
-            "-fsycl-id-queries-range=size_t",
-            "-DSTRATA_ENABLE_SYCL=1",
-            "-I/home/yayoi/orca/workspaces/Strata/sycl/include",
-            "-I/home/yayoi/orca/workspaces/Strata/sycl/include/strata/sycl/compat",
-            "-MD",
-            "-MF",
-            "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-expert-staging-v3/1.d",
-            "-c",
-            "/home/yayoi/orca/workspaces/Strata/sycl/src/sycl/runtime.cpp",
-            "-o",
-            "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-expert-staging-v3/1.o"
-          ],
-          [
-            "/opt/intel/oneapi/compiler/2026.2/bin/icpx",
-            "-std=c++20",
-            "-O3",
-            "-fsycl",
-            "-fsycl-id-queries-range=size_t",
-            "-DSTRATA_ENABLE_SYCL=1",
-            "-I/home/yayoi/orca/workspaces/Strata/sycl/include",
-            "-I/home/yayoi/orca/workspaces/Strata/sycl/include/strata/sycl/compat",
-            "-MD",
-            "-MF",
-            "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-expert-staging-v3/2.d",
-            "-c",
-            "/home/yayoi/orca/workspaces/Strata/sycl/src/sycl/compat.cpp",
-            "-o",
-            "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-expert-staging-v3/2.o"
-          ],
-          [
-            "/opt/intel/oneapi/compiler/2026.2/bin/icpx",
-            "-std=c++20",
-            "-O3",
-            "-fsycl",
-            "-fsycl-id-queries-range=size_t",
-            "-DSTRATA_ENABLE_SYCL=1",
-            "-I/home/yayoi/orca/workspaces/Strata/sycl/include",
-            "-I/home/yayoi/orca/workspaces/Strata/sycl/include/strata/sycl/compat",
-            "-MD",
-            "-MF",
-            "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-expert-staging-v3/3.d",
-            "-c",
-            "/home/yayoi/orca/workspaces/Strata/sycl/src/sycl/command_profile.cpp",
-            "-o",
-            "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-expert-staging-v3/3.o"
-          ],
-          [
-            "/opt/intel/oneapi/compiler/2026.2/bin/icpx",
-            "-std=c++20",
-            "-O3",
-            "-fsycl",
-            "-fsycl-id-queries-range=size_t",
-            "-DSTRATA_ENABLE_SYCL=1",
-            "-I/home/yayoi/orca/workspaces/Strata/sycl/include",
-            "-I/home/yayoi/orca/workspaces/Strata/sycl/include/strata/sycl/compat",
-            "-MD",
-            "-MF",
-            "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-expert-staging-v3/4.d",
-            "-c",
-            "/home/yayoi/orca/workspaces/Strata/sycl/src/core/expert_cache.cpp",
-            "-o",
-            "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-expert-staging-v3/4.o"
-          ],
-          [
-            "/opt/intel/oneapi/compiler/2026.2/bin/icpx",
-            "-fsycl",
-            "-fsycl-id-queries-range=size_t",
-            "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-expert-staging-v3/0.o",
-            "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-expert-staging-v3/1.o",
-            "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-expert-staging-v3/2.o",
-            "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-expert-staging-v3/3.o",
-            "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-expert-staging-v3/4.o",
-            "-o",
-            "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-expert-staging-v3/sycl_expert_staging"
-          ]
-        ],
-        "build_environment": {
-          "PATH": "/usr/bin:/bin",
-          "HOME": "/home/yayoi",
-          "LANG": "C.UTF-8",
-          "LC_ALL": "C.UTF-8",
-          "PYTHONDONTWRITEBYTECODE": "1",
-          "LD_LIBRARY_PATH": "/opt/intel/oneapi/compiler/2026.2/lib:/opt/intel/oneapi/umf/1.2/lib:/opt/intel/oneapi/mkl/2026.1/lib",
-          "ONEAPI_DEVICE_SELECTOR": "level_zero:gpu",
-          "UR_ADAPTERS_FORCE_LOAD": "/opt/intel/oneapi/compiler/2026.2/lib/libur_adapter_level_zero_v2.so.0.12.0",
-          "UR_L0_V2_FORCE_DISABLE_COPY_OFFLOAD": "1",
-          "NEOReadDebugKeys": "1",
-          "EnableDirectSubmission": "0",
-          "STRATA_SYCL_PREFILL_SAME_QUEUE": "1",
-          "STRATA_SYCL_VERIFY_NATIVE_CAPTURE": "0",
-          "SYCL_CACHE_PERSISTENT": "0",
-          "ZES_ENABLE_SYSMAN": "0",
-          "UR_ENABLE_LAYERS": "UR_LAYER_TRACING,UR_LAYER_PARAMETER_VALIDATION",
-          "UR_LOG_TRACING": "level:info;flush:info;output:stderr",
-          "UR_LOG_VALIDATION": "level:warning;flush:warning;output:stderr",
-          "UR_LOG_LOADER": "level:warning;flush:warning;output:stderr",
-          "UR_LOG_LEVEL_ZERO": "level:warning;flush:warning;output:stderr",
-          "TMPDIR": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-expert-staging-v4/tmp",
-          "XDG_CACHE_HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-expert-staging-v4/cache"
-        },
-        "runtime_sha256": "09ad358e12f6ef58bfc0a978519927863f3d09949a033a1e224db95997647d97",
-        "preload": {
-          "library": {
-            "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/ur-validation-preload-v2/libstrata_ur_validation.so",
-            "sha256": "1d4e69d672d55fa0a126ae43b7b4743482cccca7e2f2bc22e0db2bfdad5bdc7c"
-          },
-          "canary": {
-            "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/ur-validation-preload-v2/canary",
-            "sha256": "7903f47691309444cce238d6a0a6fe716f7c668d80a6e2ff3d5cfe21c7dcbfd0"
-          },
-          "loader": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
-          "original_plan": {
-            "commit": "550c75f5fc954ee38b70230e32d2a48e12100d8a",
-            "path": "bench/results/2026-10-15-pr6-recovery-audit/research-index.json",
-            "sha256": "d12866b93c51e76a83e95638e66b6f6f4e0e33d779516a5fddecc178a6f8e10a"
-          },
-          "source_commit": "f312b6691f508125db6cfc2580ca32a686ff2642",
-          "retained_reference_until_exit": true,
-          "ordinary_runtime_teardown_qualified": false
-        },
-        "runtime_scope": "Proposed official SDK runtime for this NEW bounded component only;old successful runtime/engine reference is immutable. No legacy/model/GEMM/runtime qualification inherited.",
+        "native_source_commit": "617e1845a4477994f812d9bf0f4cbe4fc80d045c",
+        "controller_commit": "6d080f8d2a1acf9c2ea939cef41170c05b2e230e",
+        "passed": false,
+        "complete": false,
+        "active": false,
+        "ownership_closed": false,
+        "GPU_executed": false,
+        "model_executed": false,
+        "model_adoption_qualified": false,
         "boot": "cfda0b6a-7c13-4fe2-bdf5-8f9202770840",
         "driver": {
           "pci": "/sys/bus/pci/devices/0000:05:00.0",
@@ -7460,102 +7303,9 @@
           "kernel": "7.0.0-38-generic",
           "devcoredump": false
         },
-        "selected_original": {
-          "source_commit": "6e40afc1beddd059ee518617f6c1efce1da14aca",
-          "inputs_recovered": 9853,
-          "assets_verified": 13,
-          "receipt": {
-            "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/record.json",
-            "sha256": "a38f477670fafcd1a931be2e20d90d6d9718df75b61954b421f361af9f6881b2"
-          },
-          "limits": "Original build remains selected; this source-only diagnostic is not adoption."
-        },
-        "active": false,
-        "ownership_closed": true,
-        "passed": false,
-        "complete": false,
-        "GPU_executed": false,
-        "model_executed": false,
-        "model_adoption_qualified": false,
-        "native_engine_built": false,
-        "build_limits": {
-          "wall": 600,
-          "cpu": 1800,
-          "rss_cap": 8589934592,
-          "text_cap": 8388608,
-          "file_cap": 134217728,
-          "total_cap": 536870912
-        },
-        "device_limits": {
-          "wall": 600,
-          "cpu": 1200,
-          "rss_cap": 6442450944,
-          "text_cap": 8388608,
-          "file_cap": 16777216,
-          "total_cap": 134217728
-        },
-        "device_cases": [
-          [
-            "host-canary"
-          ],
-          [
-            "baseline-smoke",
-            "--packed-custom-smoke"
-          ],
-          [
-            "staging-smoke",
-            "--staging-custom-smoke"
-          ],
-          [
-            "staging-validate",
-            "--staging-custom-validate"
-          ],
-          [
-            "bench0",
-            "--staging-custom-bench",
-            "0"
-          ],
-          [
-            "bench1",
-            "--staging-custom-bench",
-            "1"
-          ],
-          [
-            "bench2",
-            "--staging-custom-bench",
-            "2"
-          ]
-        ],
-        "plan": "V4:preserve V3failed. Provider path correction to actual SONAME file(libur_loader.so.0),same bytes as previously expected versioned file. Reuse exact617e1845a native fixture after724-input/19project-source recovery;new controller and fresh device/cache plan. V3:official Intel2026.2 compiler/SYCL/UR plus UMF1.2;before-main loader canary precedes any GPU case;dedicated make_queue(true),not Runtime.compute;two traced small smoke cases with custom-queue destructor-tail check,then parameter-validated staged512-expert/mixed-stride/unwind validation;three independent processes,2payloads1.9712/2.6624MB,384slots,512experts,two scans,separate cold timing-marker setup and five subsequent empty controls;one bank first-use and nine rotated subsequent pairs. Actual production private-bank entrypoint both arms;two full-data queued readers per expert,641uploads+383hits+2048readers per timed batch. Not the dequant/GEMM dependency path or a model benchmark. No environment mutation/adaptive retry.",
-        "criteria": "Execution:normal owned closure,silent parameter validation,actual pinned provider/runtime,zero fresh fault/same boot,all source/target/host guards,all readers,private-map and counters pass. Cold timing-marker initialization is separately recorded setup,not bank first-use;all five subsequent empty controls remain individually recorded. Each timing batch needs wall>=10ms and queue interval>=10ms,timer p99<=10us and empty-control maximum<=5percent of batch wall;queue intervals are nonexclusive,not GPU service. For EACH payload,GM of3process subsequent-median staged/ordinary wall ratios<=0.95 and every process ratio<1. Preserve first-use and all samples. A failed/ineligible screen forbids gated full-pipeline/model advancement;passing permits the separately planned dequant/GEMM component check only,not a model trial or adoption.",
-        "safety_audit": "Main-authored ring;no XeStrata source.4host-USM slots,<=16MiB capacity/slot,256byte guards;same in-order context/device queue and registered device ownership. Reject device sources,overlap,bad extents/queues. Copy-event wait before CPU host-slot reuse;GPU readers and scratch overwrite ordered on same queue. Destructor,guard and catch drains wait the bound queue itself;Runtime.wait alone does not drain custom queues. Finite65536-step unsigned tail checks destructor completion without host-gated spin/barrier. Failed drain fail-stops with owners live. No new GPU arithmetic in inference;only bounded transfer-preparation memcpy. Default disabled prefill-only route;decode/short-prefill/cache placement unchanged. No physical256K qualification.",
-        "retention": "V3fixture/724manifest/official10945SDKsnapshot/build receipt serve this V4qualification;retire extra objects/raw and then fixture at V4closure after compact samples/source proof. Original selected13assets and two named GU/Down ceiling fixtures stay intact.",
-        "compiled_inputs": {
-          "files": 724,
-          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-expert-staging-v3/compiler-inputs.json",
-          "sha256": "6195b364863ba2dfe004b0b382983de6073101cbb11ff72441c6b150c794b78b"
-        },
-        "binary": {
-          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-expert-staging-v3/sycl_expert_staging",
-          "bytes": 445904,
-          "sha256": "354343bf7e4f3797cda3ef9dce62c3877a58f7adb90645691010f12716fe663b"
-        },
-        "samples": [],
         "fresh_faults": [],
         "boot_unchanged": true,
-        "driver_after": {
-          "pci": "/sys/bus/pci/devices/0000:05:00.0",
-          "driver": "xe",
-          "vendor": "0x8086",
-          "device": "0xe20c",
-          "kernel": "7.0.0-38-generic",
-          "devcoredump": false
-        },
-        "controller_commit": "6d080f8d2a1acf9c2ea939cef41170c05b2e230e",
-        "native_build_reused": true,
-        "native_source_commit": "617e1845a4477994f812d9bf0f4cbe4fc80d045c",
-        "native_build_passed": true,
-        "original_native_build_reference": "377ca6194:bench/results/2026-10-15-pr6-recovery-audit/prefill-resources-current.json#event_reconciliation.fused_command_profile.prefill_upload_staging_v3",
+        "error": "RuntimeError('device case failed: strata UR validation: pid=559142 phase=begin loader=/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0\\nstrata UR validation API: pid=559142 operation=preinit result=37\\nstrata UR validation API: pid=559142 operation=config-create result=0\\nstrata UR validation API: pid=559142 operation=layers-size result=0\\nstrata UR validation API: pid=559142 operation=layers-query result=0\\nstrata UR validation API: pid=559142 operation=enable result=0\\nstrata UR validation API: pid=559142 operation=first-init result=0\\nstrata UR validation API: pid=559142 operation=config-release result=0\\nstrata UR validation API: pid=559142 operation=postinit result=46\\nstrata UR validation: pid=559142 phase=before-main threads_before=1 preinit=37 config_create=0 layers_query=0 enable=0 init=0 config_release=0 checked=46 untouched=1 retained_ref=1\\nstrata UR canary begin pid=559142 loader=/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0\\nstrata UR canary end pid=559142\\n')",
         "reuse_proof": {
           "compiled_inputs_verified": 724,
           "project_inputs_recovered": 19,
@@ -7563,13 +7313,37 @@
           "original_final_ELF_verified": true,
           "native_source_and_recipe_unchanged": true
         },
-        "case_outcomes": [],
-        "environment_scope": "This is a device-only plan;original native build environment/recipe restores from377ca6194.Only private cache/tmp and expected loader path differ;no native rebuild.",
-        "project": {
-          "revision": "6d080f8d2a1acf9c2ea939cef41170c05b2e230e",
-          "count": 495,
-          "aggregate_sha256": "4b98195a3fd14ffc9bacba3eb21641b63329524db95bfa6f34d4dd6add3ee881"
-        }
+        "original_native_build_reference": "377ca6194:bench/results/2026-10-15-pr6-recovery-audit/prefill-resources-current.json#event_reconciliation.fused_command_profile.prefill_upload_staging_v3",
+        "frozen_plan_reference": "e6f48c3ac:bench/results/2026-10-15-pr6-recovery-audit/prefill-resources-current.json#event_reconciliation.fused_command_profile.prefill_upload_staging_v4",
+        "failure_diagnostic": {
+          "case": "host-canary",
+          "process_exit_code": 0,
+          "elapsed_seconds": 0.17085293005220592,
+          "observer_error": "RuntimeError('unplanned executable map: /usr/lib/x86_64-linux-gnu/librt.so.1')",
+          "observation_complete": false,
+          "result_not_qualified": true,
+          "stdout_not_fully_observed": true,
+          "explanation": "Actual expected official loader path accepted,before-main46API/layer checks and canary-end reached. Observer rejected newly required system librt.so.1 before EOF. No GPU body ran;no hang or driver fault. Do not turn original failed/ownership_closed=false into PASS."
+        },
+        "closure_reconciliation": {
+          "actual_owned_processes_terminated": true,
+          "original_observation_incomplete": true,
+          "direct_child_reaped": true,
+          "original_session_empty_and_anchored": true,
+          "pid": 559142,
+          "start_ticks": 133499220,
+          "current_identity_absent": true,
+          "current_session_live_members": 0,
+          "owner_survivors": []
+        },
+        "new_dependency": {
+          "path": "/usr/lib/x86_64-linux-gnu/librt.so.1",
+          "sha256": "6d072187d88e092e81561a44c03a4a41397319022c6d43519757cc051c576d82",
+          "package": "libc6:amd64",
+          "reason": "UMF1.2DT_NEEDED;lddclosure of official SYCL,URloader,L0v2 andUMF resolves only this additional OS ELF beyond previous83candidates. New prospective dependency declaration,not an allowlist update to V4."
+        },
+        "decision": "Keep V4failed and original observation incomplete. Actual ownership independently reconciled after child reap+current PID/SID scan. V5fresh controller/device plan resolves/pins whole DT_NEEDED closure before launch,then repeats host canary before any GPU. Reuse original617e1845a native fixture;no rebuild or criterion change.",
+        "retention": "Compact distinct host observer-refusal mechanism,actual closure and new dependency evidence retained;V4raw can retire after V5closure/source review. Native fixture remains atV3only for V5qualification."
       }
     }
   },

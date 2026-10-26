@@ -9,6 +9,7 @@ import fcntl
 import hashlib
 import json
 import math
+import os
 from pathlib import Path
 import select
 import statistics
@@ -20,8 +21,8 @@ import build_fused_profile as n
 
 r, P, B, RESULT = n.r, n.P, n.B, n.RESULT
 PREVIOUS = B / 'prefill-expert-staging-v3'
-ROOT = B / 'prefill-expert-staging-v4'
-KEY = 'prefill_upload_staging_v4'
+ROOT = B / 'prefill-expert-staging-v5'
+KEY = 'prefill_upload_staging_v5'
 OFFICIAL = Path('/opt/intel/oneapi/compiler/2026.2')
 UMF = Path('/opt/intel/oneapi/umf/1.2')
 PACKAGES = ['intel-oneapi-dpcpp-cpp-2026.2', 'intel-oneapi-compiler-dpcpp-cpp-runtime-2026.2',
@@ -56,6 +57,13 @@ def prepare():
     require(not ROOT.exists() and KEY not in scope(c), 'fresh device plan only; inspect ownership before retry')
     prior = json.loads((PREVIOUS / 'record.json').read_text())
     failure = scope(c)['prefill_upload_staging_v3']
+    observer_failure = scope(c)['prefill_upload_staging_v4']
+    closure = observer_failure['closure_reconciliation']
+    require(observer_failure['stage'] == 'failed' and not observer_failure['GPU_executed'] and
+        closure['actual_owned_processes_terminated'] and closure['current_session_live_members'] == 0,
+        'reconcile prior observer failure before a new device plan')
+    now = r.supervision.identity(closure['pid'])
+    require(now is None or now['start_ticks'] != closure['start_ticks'], 'prior owned process still live')
     frozen = scope(json.loads(r.validation.git('show', '377ca6194:' + str(RESULT.relative_to(P)))))['prefill_upload_staging_v3']
     for key in ('source_commit', 'compiler', 'sdk', 'compiled_inputs', 'binary', 'build_commands'):
         require(prior[key] == frozen[key], 'original native build identity/recipe differs: ' + key)
@@ -101,13 +109,35 @@ def prepare():
         model_executed=False, model_adoption_qualified=False, case_outcomes=[], samples=[], fresh_faults=[])
     row['preload']['loader'] = loader
     row['build_environment'].update(TMPDIR=str(ROOT / 'tmp'), XDG_CACHE_HOME=str(ROOT / 'cache'))
+    # Discover OS DT_NEEDED additions BEFORE launch, from the actually used
+    # verified vendor libraries. Dynamic maps must still match the frozen set.
+    dep_env = dict(os.environ, **prior['build_environment']); dep_env.pop('LD_PRELOAD', None)
+    seeds = [OFFICIAL / 'lib/libsycl.so.9.0.0', Path(loader),
+             OFFICIAL / 'lib/libur_adapter_level_zero_v2.so.0.12.0', UMF / 'lib/libumf.so.1.2.0']
+    additions = {}
+    for seed in seeds:
+        output = subprocess.check_output(['/usr/bin/ldd', str(seed)], env=dep_env, text=True, timeout=15)
+        require('not found' not in output, 'declared official runtime has an unresolved dependency')
+        for line in output.splitlines():
+            path = next((part for part in line.split() if part.startswith('/')), None)
+            if path:
+                path = str(Path(path).resolve())
+                if path not in row['runtime_files']: additions[path] = digest(path)
+    require(additions == {observer_failure['new_dependency']['path']:
+        observer_failure['new_dependency']['sha256']}, 'prospective dependency closure changed')
+    row['runtime_files'].update(additions)
+    row['runtime_dependency_resolution'] = dict(seeds=[str(p) for p in seeds], added_ELFs=additions,
+        ldd=dict(path='/usr/bin/ldd', sha256=digest('/usr/bin/ldd')),
+        scope='Read-only DT_NEEDED resolution before launch;does not qualify execution or optional plugins.')
     row['environment_scope'] = 'This is a device-only plan;original native build environment/recipe restores '
     row['environment_scope'] += 'from377ca6194.Only private cache/tmp and expected loader path differ;no native rebuild.'
-    row['plan'] = 'V4:preserve V3failed. Provider path correction to actual SONAME file(libur_loader.so.0),'
+    row['plan'] = 'V5:preserve V3/V4failed;V4actual ownership reconciled without changing its failed observation. '
+    row['plan'] += 'Predeclare resolved DT_NEEDED OS addition(librt) before any launch. '
+    row['plan'] += 'Provider path correction to actual SONAME file(libur_loader.so.0),'
     row['plan'] += 'same bytes as previously expected versioned file. Reuse exact617e1845a native fixture '
     row['plan'] += 'after724-input/19project-source recovery;new controller and fresh device/cache plan. ' + prior['plan']
-    row['retention'] = 'V3fixture/724manifest/official10945SDKsnapshot/build receipt serve this V4qualification;'
-    row['retention'] += 'retire extra objects/raw and then fixture at V4closure after compact samples/source proof. '
+    row['retention'] = 'V3fixture/724manifest/official10945SDKsnapshot/build receipt serve this V5qualification;'
+    row['retention'] += 'retire extra objects/raw and then fixture at V5closure after compact samples/source proof. '
     row['retention'] += 'Original selected13assets and two named GU/Down ceiling fixtures stay intact.'
     write(ROOT / 'record.json', row); scope(c)[KEY] = compact(row); write(RESULT, c)
     print('Prepared NEW committed-source device plan reusing exact native build;commit before device.', flush=True)
