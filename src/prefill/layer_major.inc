@@ -696,6 +696,13 @@ bool Prefill::run_layer_major(const int64_t* tokens, int64_t n, int64_t pos0, st
             window_context->expert_slab = upload.get();
             window_context->expert_slab_bytes = host_slab_bytes;
             window_context->expert_stride = stride;
+            if (packed_bank_on && expert_upload_staging_requested()) {
+                window_context->expert_upload_staging.reset(new detail::ExpertUploadStaging(
+                    layer_cache.device_slot(0), size_t(layer_cache.bytes()), size_t(stride), m.cs));
+                std::fprintf(stderr, "strata prefill expert upload staging: host_usm_slots=4 host_bytes=%zu "
+                    "maximum_blob=%llu queue=same copy_event_before_host_reuse=1 decode_changed=0\n",
+                    window_context->expert_upload_staging->host_bytes(), (unsigned long long)stride);
+            }
         }
         window_context->bank = reinterpret_cast<uint16_t*>(device_rows.get());
         window_context->bank_bytes = plan.gpu_bytes;
@@ -1004,6 +1011,16 @@ bool Prefill::run_layer_major(const int64_t* tokens, int64_t n, int64_t pos0, st
         err = "prefill layer-major: incomplete final callback sequence"; return false;
     }
     if (!drain()) { err = "prefill layer-major: final drain failed"; return false; }
+    if (window_context && window_context->expert_upload_staging) {
+        auto& staging = *window_context->expert_upload_staging;
+        staging.check_guards();
+        if (staging.copies() != window_context->staged_uploads ||
+            staging.copied_bytes() != window_context->staged_upload_bytes)
+            throw std::runtime_error("prefill expert staging upload accounting mismatch");
+        std::fprintf(stderr, "strata prefill expert upload staging complete: copies=%llu bytes=%llu "
+            "host_guards=checked final_drain=checked\n",
+            (unsigned long long)staging.copies(), (unsigned long long)staging.copied_bytes());
+    }
     ss.ple_prev[0] = final_prev[0]; ss.ple_prev[1] = final_prev[1];
     stats_.tokens = old_stats.tokens + n;
     stats_.chunks = old_stats.chunks + logical_chunks;

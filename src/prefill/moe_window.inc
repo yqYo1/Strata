@@ -201,7 +201,7 @@ bool Prefill::run_moe_accum_window(int64_t layer, int64_t first_row, int64_t row
                 const auto ticket = owner.private_expert_bank ?
                     detail::stage_private_expert_bank(*owner.expert_slots, *owner.private_expert_bank,
                         owner.expert_slab, owner.expert_slab_bytes, layout.blob_bytes(layer),
-                        job.expert, m.cs, owner.expert_source_stride) :
+                        job.expert, m.cs, owner.expert_source_stride, owner.expert_upload_staging.get()) :
                     detail::stage_expert_bank(*owner.expert_slots, *owner.expert_cache,
                         owner.expert_slab, owner.expert_slab_bytes, owner.expert_stride,
                         layout.blob_bytes(layer), job.expert, m.cs, owner.expert_source_stride);

@@ -479,6 +479,7 @@ struct PeerPrefill {
 struct MoeWindowContext {
     std::unique_ptr<detail::ExpertBankSlots> expert_slots;
     std::unique_ptr<detail::PrivateExpertBank> private_expert_bank;
+    std::unique_ptr<detail::ExpertUploadStaging> expert_upload_staging;
     core::ExpertCache* expert_cache = nullptr; // outer-owned mutable upload target
     const uint8_t* expert_slab = nullptr;
     uint64_t expert_slab_bytes = 0, expert_stride = 0, expert_source_stride = 0;
@@ -509,6 +510,15 @@ int moe_window_requested() {
         if (std::strcmp(v, "8") == 0) return 8;
         if (std::strcmp(v, "10") == 0) return 10;
         throw std::invalid_argument("STRATA_SYCL_PREFILL_MOE_WINDOW must be 0, 2, 8 or 10");
+    }();
+    return enabled;
+}
+bool expert_upload_staging_requested() {
+    static const bool enabled = [] {
+        const char* value = std::getenv("STRATA_SYCL_PREFILL_EXPERT_UPLOAD_STAGING");
+        if (!value || std::strcmp(value, "0") == 0) return false;
+        if (std::strcmp(value, "1") == 0) return true;
+        throw std::invalid_argument("STRATA_SYCL_PREFILL_EXPERT_UPLOAD_STAGING must be0 or1");
     }();
     return enabled;
 }

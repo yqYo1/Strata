@@ -4,6 +4,7 @@
 // cache and private map through a checked queue drain, including error exits.
 #include "strata/core/expert_cache.hpp"
 #include "strata/prefill/expert_bank_plan.hpp"
+#include "strata/prefill/expert_upload_staging.hpp"
 #include "strata/sycl/launch.hpp"
 #include "strata/sycl/compat/cuda_runtime.h"
 
@@ -66,9 +67,11 @@ inline ExpertBankSlots::Ticket stage_private_expert_bank_enqueue(ExpertBankSlots
 
 inline ExpertBankSlots::Ticket stage_private_expert_bank(ExpertBankSlots& slots,
         const PrivateExpertBank& bank, const uint8_t* slab, uint64_t slab_bytes,
-        uint64_t blob_bytes, int32_t expert, void* stream, uint64_t source_stride) {
+        uint64_t blob_bytes, int32_t expert, void* stream, uint64_t source_stride,
+        ExpertUploadStaging* staging = nullptr) {
     return stage_private_expert_bank_enqueue(slots,bank,slab,slab_bytes,blob_bytes,expert,stream,source_stride,
-        [](void* dst, const void* src, size_t bytes, void* queue) {
+        [staging](void* dst, const void* src, size_t bytes, void* queue) {
+            if (staging) return staging->enqueue(dst, src, bytes, queue);
             return cudaMemcpyAsync(dst,src,bytes,cudaMemcpyHostToDevice,static_cast<cudaStream_t>(queue)) == cudaSuccess;
         });
 }

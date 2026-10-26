@@ -4,6 +4,10 @@
 #include "strata/prefill/draft_uploads.hpp"
 #include "strata/sycl/checked_cleanup.hpp"
 #include <algorithm>
+#include <chrono>
+#include <iomanip>
+#include <sys/mman.h>
+#include <time.h>
 #include <iostream>
 #include <vector>
 
@@ -126,7 +130,7 @@ void run(int capacity, size_t stride, int experts, unsigned layers, bool unwind,
 // Exercise the production private view through checked transitions in ONE
 // allocation. The source stride and destination stride deliberately differ.
 void run_private(int backing_slots, uint64_t backing_stride, int experts,
-                 const std::vector<uint64_t>& strides, uint64_t source_stride, bool unwind, bool full_copy=false) {
+                 const std::vector<uint64_t>& strides, uint64_t source_stride, bool unwind, bool full_copy=false, bool staged=false) {
     auto runtime = sb::runtime_for();
     auto& q = runtime->compute();
     const uint64_t slab_bytes = 512 * source_stride;
@@ -139,6 +143,9 @@ void run_private(int backing_slots, uint64_t backing_stride, int experts,
     sb::Allocation status_owner(runtime,4,sb::MemoryKind::Device);
     auto* status = status_owner.as<uint32_t>();
     uint32_t observed = ~uint32_t(0);
+    std::unique_ptr<pd::ExpertUploadStaging> staging;
+    if (staged) staging.reset(new pd::ExpertUploadStaging(cache.device_slot(0),
+        size_t(cache.bytes()), size_t(source_stride), &q));
     uint64_t uploads=0,hits=0,consumers=0,expected_uploads=0,expected_hits=0;
     unsigned drains=0,cancellations=0;
     for (size_t layer=0;layer<strides.size();++layer) {
@@ -162,7 +169,7 @@ void run_private(int backing_slots, uint64_t backing_stride, int experts,
             q.memset(status,0,4);
             for (int round=0;round<2;++round) for (int e=0;e<experts;++e) {
                 const auto ticket=pd::stage_private_expert_bank(slots,bank,slab,slab_bytes,
-                    blob_bytes,e,&q,source_stride);
+                    blob_bytes,e,&q,source_stride,staging.get());
                 uploads+=ticket.upload;hits+=!ticket.upload;
                 need(cache.slot_of(0,e)<0,"private map leaked into general cache");
                 const auto* blob=reinterpret_cast<const uint32_t*>(bank.device_slot(ticket.slot));
@@ -204,6 +211,10 @@ void run_private(int backing_slots, uint64_t backing_stride, int experts,
         const auto permanent=uint64_t(std::min(experts,geometry.slots-(geometry.full_fit()?0:1)));
         expected_uploads+=2*uint64_t(experts)-permanent;expected_hits+=permanent;
     }
+    if (staging) {
+        staging->check_guards();
+        need(staging->copies()==uploads,"staging upload admission count");
+    }
     if (!unwind) need(uploads==expected_uploads && hits==expected_hits,"private upload/reuse totals");
     need(drains==strides.size() && cancellations==(unwind?strides.size():0),"private checked retirement count");
     unsigned rejects=0;
@@ -233,7 +244,7 @@ void run_private(int backing_slots, uint64_t backing_stride, int experts,
         <<" source_stride="<<source_stride<<" experts="<<experts<<" layers="<<strides.size()
         <<" uploads="<<uploads<<" hits="<<hits<<" consumers="<<consumers<<" unwind="<<cancellations
         <<" admission_rejections="<<rejects<<" status="<<observed<<" full_copy="<<int(full_copy)
-        <<" immutable_slab=PASS guards=PASS private_map=PASS checked_drain=PASS\n";
+        <<" staged="<<staged<<" immutable_slab=PASS guards=PASS private_map=PASS checked_drain=PASS\n";
 }
 
 void run_private_enqueue_failure() {
@@ -269,11 +280,164 @@ void run_private_enqueue_failure() {
     std::cout<<"expert_bank_private_enqueue_failure attempts=1 published=0 pending_rejected=PASS checked_drain=PASS\n";
 }
 
+
+
+void staging_admissions() {
+    auto runtime=sb::runtime_for();auto& q=runtime->compute();
+    strata::core::ExpertCache cache;std::string error;
+    if(!cache.open_uninitialized(4,1,512,512,error))throw std::runtime_error(error);
+    std::vector<uint8_t> source(512,0x3b);
+    pd::ExpertUploadStaging staging(cache.device_slot(0),size_t(cache.bytes()),256,&q);
+    unsigned rejected=0;
+    auto reject=[&](auto action){bool caught=false;try{action();}catch(const std::invalid_argument&){caught=true;}
+        need(caught,"staging invalid admission accepted");++rejected;};
+    reject([&]{staging.enqueue(cache.device_slot(0),nullptr,256,&q);});
+    reject([&]{staging.enqueue(cache.device_slot(0),source.data(),0,&q);});
+    reject([&]{staging.enqueue(cache.device_slot(0),source.data(),257,&q);});
+    reject([&]{staging.enqueue(cache.device_slot(0),source.data(),256,nullptr);});
+    reject([&]{staging.enqueue(source.data(),source.data()+256,256,&q);});
+    reject([&]{staging.enqueue(cache.device_slot(0),cache.device_slot(1),256,&q);});
+    auto other=runtime->make_queue(true);
+    reject([&]{staging.enqueue(cache.device_slot(0),source.data(),256,&other);});
+    reject([&]{pd::ExpertUploadStaging bad(cache.device_slot(0),size_t(cache.bytes()),0,&q);});
+    reject([&]{pd::ExpertUploadStaging bad(cache.device_slot(0),size_t(cache.bytes()),pd::ExpertUploadStaging::maximum_blob+1,&q);});
+    sycl::queue foreign{sycl::context{runtime->device()},runtime->device(),sycl::property::queue::in_order{}};
+    reject([&]{pd::ExpertUploadStaging bad(cache.device_slot(0),size_t(cache.bytes()),256,&foreign);});
+    need(staging.copies()==0,"rejected staging published a copy");
+    {
+        pd::ExpertUploadStaging retiring(cache.device_slot(0),size_t(cache.bytes()),256,&q);
+        for(int i=0;i<17;++i)retiring.enqueue(cache.device_slot(i%4),source.data(),256,&q);
+        // Destruction itself retires the final four host-copy events.
+    }
+    std::vector<uint8_t> observed(256);
+    for(int slot=0;slot<4;++slot){q.memcpy(observed.data(),cache.device_slot(slot),observed.size());runtime->wait();
+        need(std::all_of(observed.begin(),observed.end(),[](uint8_t v){return v==0x3b;}),"staging destructor copy lifetime");}
+    staging.check_guards();
+    std::cout<<"expert_staging_admissions rejections="<<rejected<<" destructor_inflight=PASS host_guards=PASS\n";
+}
+
+// Isolate the actual private-bank upload entrypoint and its queued readers.
+// This measures no dequantization/GEMM or model throughput; those need their
+// own production-path comparison before model advancement.
+class BankTimingMarker;
+sycl::event bank_marker(sycl::queue& q) { return q.single_task<BankTimingMarker>([]{}); }
+double thread_seconds() {
+    timespec t{};need(clock_gettime(CLOCK_THREAD_CPUTIME_ID,&t)==0,"thread clock");
+    return double(t.tv_sec)+double(t.tv_nsec)/1e9;
+}
+struct ReadonlySlab {
+    void* pointer = nullptr;size_t bytes;
+    explicit ReadonlySlab(size_t n):bytes(n) {
+        pointer=mmap(nullptr,n,PROT_READ|PROT_WRITE,MAP_PRIVATE|MAP_ANONYMOUS,-1,0);
+        need(pointer!=MAP_FAILED,"benchmark source mapping");
+    }
+    ~ReadonlySlab() { if(pointer && pointer!=MAP_FAILED) munmap(pointer,bytes); }
+    ReadonlySlab(const ReadonlySlab&)=delete;
+};
+void staging_benchmark(int process) {
+    using Clock=std::chrono::steady_clock;
+    auto runtime=sb::runtime_for();auto& q=runtime->compute();
+    std::vector<double> clock_ns;
+    for (int i=0;i<1000;++i) {const auto a=Clock::now(),b=Clock::now();clock_ns.push_back(std::chrono::duration<double,std::nano>(b-a).count());}
+    std::sort(clock_ns.begin(),clock_ns.end());
+    need(clock_ns[989]<=10000,"timer p99 above10us");
+    for (size_t payload:{size_t(1971200),size_t(2662400)}) {
+        const size_t stride=payload+256,slab_bytes=512*stride;
+        ReadonlySlab slab(slab_bytes);
+        auto* source=static_cast<uint32_t*>(slab.pointer);
+        for (int e=0;e<512;++e) for (size_t i=0;i<stride/4;++i)
+            source[size_t(e)*(stride/4)+i]=value(e,i,1);
+        need(mprotect(slab.pointer,slab_bytes,PROT_READ)==0,"readonly slab protection");
+        strata::core::ExpertCache cache;std::string error;
+        if(!cache.open_uninitialized(384,1,512,int64_t(stride),error))throw std::runtime_error(error);
+        pd::PrivateExpertBank bank(cache,stride);
+        pd::ExpertUploadStaging staging(cache.device_slot(0),size_t(cache.bytes()),payload,&q);
+        sb::Allocation status_owner(runtime,4,sb::MemoryKind::Device);
+        auto* status=status_owner.as<uint32_t>();
+        double empty_wall_ms=0;
+        for (int i=0;i<5;++i) {
+            const auto t=Clock::now();bank_marker(q);bank_marker(q);
+            runtime->wait();empty_wall_ms=std::max(empty_wall_ms,std::chrono::duration<double,std::milli>(Clock::now()-t).count());
+        }
+        for(int round=-1;round<5;++round) for(int order=0;order<2;++order) {
+            const int arm=(process+round+2+order)%2;
+            runtime->wait();pd::ExpertBankSlots slots(384);
+            q.memset(cache.device_slot(0),0xa5,size_t(cache.bytes()));q.memset(status,0,4);runtime->wait();
+            uint64_t uploads=0,hits=0,consumers=0;uint32_t observed=~uint32_t(0);
+            const auto copies_before=staging.copies(),bytes_before=staging.copied_bytes();
+            const auto marker=bank_marker(q);
+            const auto begin=Clock::now();const double begin_cpu=thread_seconds();
+            pd::DraftUploadGuard lease([&]{runtime->wait();return true;},
+                []{sb::cleanup_fail_stop("staging benchmark retirement");});lease.arm();
+            for(int pass=0;pass<2;++pass)for(int e=0;e<512;++e) {
+                const auto ticket=pd::stage_private_expert_bank(slots,bank,
+                    static_cast<const uint8_t*>(slab.pointer),slab_bytes,payload,e,&q,stride,arm?&staging:nullptr);
+                uploads+=ticket.upload;hits+=!ticket.upload;
+                const auto* blob=reinterpret_cast<const uint32_t*>(bank.device_slot(ticket.slot));
+                const size_t words=payload/4;
+                for(int job=0;job<2;++job) {
+                    const size_t global=(words+255)/256*256;
+                    q.parallel_for(sycl::nd_range<1>(global,256),[=](sycl::nd_item<1> item){
+                        const size_t i=item.get_global_linear_id();
+                        const bool bad=i<words && blob[i]!=value(e,i,1);
+                        const bool any=sycl::any_of_group(item.get_group(),bad);
+                        if(item.get_local_linear_id()==0 && any)
+                            sycl::atomic_ref<uint32_t,sycl::memory_order::relaxed,sycl::memory_scope::device,
+                                sycl::access::address_space::global_space>(*status).fetch_or(1);
+                    });++consumers;
+                }
+            }
+            q.memcpy(&observed,status,4);const auto end=bank_marker(q);runtime->wait();lease.retire();
+            const double wall=std::chrono::duration<double,std::milli>(Clock::now()-begin).count();
+            const double cpu=(thread_seconds()-begin_cpu)*1e3;
+            const auto a=marker.get_profiling_info<sycl::info::event_profiling::command_end>();
+            const auto b=end.get_profiling_info<sycl::info::event_profiling::command_start>();
+            need(b>a && uploads==641 && hits==383 && consumers==2048 && observed==0,"timed production bank contract");
+            need(staging.copies()-copies_before==(arm?uploads:0) &&
+                staging.copied_bytes()-bytes_before==(arm?uploads*payload:0),"timed staging dispatch counters");
+            staging.check_guards();
+            std::vector<uint8_t> check(size_t(cache.bytes()));
+            q.memcpy(check.data(),cache.device_slot(0),check.size());runtime->wait();
+            for(size_t slot=0;slot<384;++slot)for(size_t i=payload;i<stride;++i)
+                need(check[slot*stride+i]==0xa5,"timed bank padding guard");
+            for(int e=0;e<512;++e)need(cache.slot_of(0,e)<0,"timed private map leaked");
+            const double queue_ms=double(b-a)/1e6;
+            const bool eligible=wall>=10 && queue_ms>=10 && empty_wall_ms<=.05*wall;
+            std::cout<<std::setprecision(17)<<"{\"kind\":\"staging_bank\",\"process\":"<<process
+                <<",\"round\":"<<round<<",\"order\":"<<order<<",\"arm\":"<<arm
+                <<",\"payload_bytes\":"<<payload<<",\"source_stride\":"<<stride<<",\"bank_slots\":384"
+                <<",\"uploads\":"<<uploads<<",\"hits\":"<<hits<<",\"consumers\":"<<consumers
+                <<",\"wall_ms\":"<<wall<<",\"thread_CPU_ms\":"<<cpu<<",\"queue_interval_ms\":"<<queue_ms
+                <<",\"empty_control_max_wall_ms\":"<<empty_wall_ms<<",\"timer_p99_ns\":"<<clock_ns[989]
+                <<",\"eligible\":"<<(eligible?"true":"false")
+                <<",\"guards_and_every_consumer\":true,\"private_map_unchanged\":true,\"model_qualified\":false}\n";
+        }
+        for(int e=0;e<512;++e)for(size_t i=0;i<stride/4;++i)
+            need(source[size_t(e)*(stride/4)+i]==value(e,i,1),"benchmark immutable source");
+    }
+}
+
 int main(int argc, char** argv) try {
+    if (argc==3 && std::string(argv[1])=="--staging-bench") {
+        const int process=std::stoi(argv[2]);need(process>=0 && process<3,"benchmark process ordinal");
+        staging_benchmark(process);
+        std::cout<<"expert_bank_staging_benchmark PASS model=UNRUN\n";return 0;
+    }
     need(argc == 2 && (std::string(argv[1]) == "--smoke" || std::string(argv[1]) == "--validate" ||
-        std::string(argv[1]) == "--packed-smoke" || std::string(argv[1]) == "--packed-validate"),
+        std::string(argv[1]) == "--packed-smoke" || std::string(argv[1]) == "--packed-validate" ||
+        std::string(argv[1]) == "--staging-smoke" || std::string(argv[1]) == "--staging-validate"),
         "use --smoke|--validate|--packed-smoke|--packed-validate");
-    if (std::string(argv[1]) == "--packed-smoke") {
+    if (std::string(argv[1]) == "--staging-smoke") {
+        run_private(4,512,10,{256,512,256},256,false,true,true);
+        run_private(4,512,10,{256,512},256,true,false,true);
+        run_private_enqueue_failure();
+        staging_admissions();
+    } else if (std::string(argv[1]) == "--staging-validate") {
+        run_private(384,512,512,{256,512,768,256},256,false,false,true);
+        run_private(384,2662400,512,{1510400,2662400,2176000},2662400,false,true,true);
+        run_private(384,512,512,{256,512},256,true,false,true);
+        run_private_enqueue_failure();
+    } else if (std::string(argv[1]) == "--packed-smoke") {
         run_private(4,512,10,{256,512,256},256,false,true);
         run_private(4,512,10,{256,512},256,true);
         run_private_enqueue_failure();
