@@ -751,8 +751,10 @@ on/off pair closes normally with no fresh fault. Initial speeds are906.0413
 and878.4769tok/s;subsequent-three medians are974.2977and973.7050tok/s.
 The off/on ratio is0.9993917:removing validation does not restore old speed in
 this pair. Both sets of15model hashes and four request boundaries match.
-Four frozen processes remain;this is no completed comparison,mechanism-speed
-qualification or historical-cause result.
+The next independent off process also closes normally,with initial906.4264
+and subsequent median974.9170tok/s. All request/model/source/closure/fault
+checks pass. Three frozen processes remain;this is no completed comparison,
+mechanism-speed qualification or historical-cause result.
 CPU effective clock remains unknown. Independently authored
 `bench/sycl/amd_clock_access.c` is only a proposed next host capability pilot;
 it has not been built or executed. Its counter ratios need separate access,
