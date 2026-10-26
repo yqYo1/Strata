@@ -2729,7 +2729,7 @@
     },
     "fused_command_profile": {
       "legacy_gemm_abi_v1": {
-        "stage": "prepared",
+        "stage": "failed",
         "source_commit": "5314d12d643d19564a6c476f651ec0c45c5700f4",
         "native_reference": {
           "source_commit": "fa765fcb8bb21a7a966493bc377e6dba5c4579ba",
@@ -2774,7 +2774,7 @@
         "passed": false,
         "active": false,
         "ownership_closed": true,
-        "GPU_executed": false,
+        "GPU_executed": true,
         "model_executed": false,
         "inference_adopted": false,
         "performance_qualified": false,
@@ -2785,6 +2785,22 @@
           "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/legacy-gemm-abi-v1/runtime-inputs.json",
           "sha256": "43de9b527585addcc6da1f8fdc6f1e8266e2d982ba4c752d909578ed8c7bde21",
           "files": 84
+        },
+        "outcome": {
+          "host_probe_accepted": false,
+          "error": "RuntimeError('GPU launch/copy trace missing')",
+          "ownership_closed": true,
+          "fresh_faults": [],
+          "boot_unchanged": true,
+          "driver_after": {
+            "pci": "/sys/bus/pci/devices/0000:05:00.0",
+            "driver": "xe",
+            "vendor": "0x8086",
+            "device": "0xe20c",
+            "kernel": "7.0.0-38-generic",
+            "devcoredump": false
+          },
+          "passed": false
         }
       },
       "legacy_gemm_abi_build_v1": {
