@@ -22,10 +22,10 @@ import measurement_guards as guards
 import ur_validation as validation
 
 P, B = gen.P, gen.B
-ROOT = B / 'amd-clock-observer-v1'
+ROOT = B / 'amd-clock-observer-v2'
 SOURCE = P / 'bench/sycl/amd_clock_access.c'
 RESULT = gen.A / 'prefill-runtime-comparison-current.json'
-KEY = 'amd_clock_observer_v1'
+KEY = 'amd_clock_observer_v2'
 ORDER = ('on', 'off', 'off', 'on', 'on', 'off')
 require, digest = guards.require, validation.digest
 
@@ -60,6 +60,10 @@ def dependencies(text): return {str(Path(v).resolve()) for v in shlex.split(text
 
 def prepare():
     require(not ROOT.exists() and KEY not in gen.committed(RESULT)['historical_regression_audit'], 'single-use complete observer control')
+    prior = gen.committed(RESULT)['historical_regression_audit']['amd_clock_observer_v1']
+    require(prior['stage'] == 'failed' and not prior['passed'] and prior['ownership_closed'] and
+        not prior['active'] and not (B / 'amd-clock-observer-v1').exists(),
+        'preserve original failure and retire its closed build before new cohort')
     cohort = gen.committed(RESULT)['historical_regression_audit']['validation_cost_control_v1']
     require(cohort['stage'] == 'closed' and cohort['complete'] and cohort['passed'] and
         cohort['ownership_closed'] and not cohort['active'], 'close frozen model cohort first')
@@ -137,7 +141,10 @@ def current(row):
         Path('/proc/sys/kernel/random/boot_id').read_text().strip() == row['boot'], 'host inputs/platform changed')
 
 
-def fields(line): return dict(v.split('=', 1) for v in line.split())
+def fields(line):
+    parts = line.split()
+    if parts and parts[0] in ('observer_ready', 'observer_done'): parts = parts[1:]
+    return dict(v.split('=', 1) for v in parts)
 
 
 def verify_maps(text, row, main_pid):
