@@ -838,15 +838,30 @@ two candidates remain failed at that absolute gate. This qualifies a separate
 model comparison,not inference adoption,a historical cause or a55%model gain.
 The default supervisor and inference implementation remain unchanged.
 
-The sourcec50192c3a matched model control keeps the selected original6e40engine,
-qualified validation/runtime safety,1256decode slots and existing placement.
-Its frozen six-process order is baseline/candidate/candidate/baseline/baseline/
-candidate,with four117489fresh-token requests per process and first use kept
-separate. It records controller CPU operands before enforcing the prospective
-model-specific budgets;it does not change the earlier failed5%clock diagnostic.
-Execution additionally requires exact-source review. See
-`historical_regression_audit.supervision_model_control_v1` in the runtime
-comparison for the plan and actual execution state.
+The sourcec50192c3a matched model control was closed without a native launch:
+native Luna/max review found that the configured196632byte expert-placement
+profile was outside the15-file model-asset inventory and process admission.
+The initial Orca report's contrary admission conclusion is corrected. The
+current profile matches both its original6e40and controller-source Git blobs;
+the omission does not demonstrate that a historical runtime profile changed.
+Past fifteen-asset hashes alone do not establish that extra input's identity.
+
+Source7a20614b4 adds committed profile-byte and actual file-identity checks
+before every model process and after execution,and requires all arms to share
+configuration except log paths. Five CPU-only controls pass,including rewrites
+with restored mtime,equal-byte path replacement,missing/duplicate arguments and
+actual admission rejection before native qualification. The fresh v2 plan keeps
+the selected original6e40engine,qualified validation/runtime safety,1256decode
+slots and existing placement. Its six-process order is baseline/candidate/
+candidate/baseline/baseline/candidate,with four117489fresh-token requests per
+process and first use separate. It records controller CPU operands before
+enforcing prospective model-specific budgets;the earlier failed5%clock
+diagnostic remains failed. Fresh exact-source review is still required. See
+`historical_regression_audit.supervision_model_control_v2` in the runtime
+comparison for actual execution state. The candidate's byte-oriented foreign
+SID filter does not make matching-session text identity parsing arbitrary-byte
+safe;invalid UTF8 there can fail closed,which remains a limit outside this
+planned ASCII process tree.
 
 After replay and exact source/recipe/header/link/object/ELF recovery,these three
 closed observer/model/control roots retire106files/12,760,397bytes. Four
