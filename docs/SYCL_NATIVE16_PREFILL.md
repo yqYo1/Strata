@@ -323,10 +323,10 @@ ffa4d459f/57a3dd86c,and the controller/controls from0697c74e8. This comparison
 does not adopt a runtime or qualify sustained decode.
 
 The historical userspace set does **not** restore the historical1002.6507tok/s.
-The current arm's three-process median is911.7371tok/s,9.0673% below that
+That current arm's three-process median is911.7371tok/s,9.0673% below that
 same-binary historical cohort and9.3489% below the fastest1005.7655 package.
-These new values must not be replaced by the older974.7035 result when reporting
-current speed. The benchmark contract remains matched;the decline is observed,
+Keep that cohort separate from the older974.7035 and the fresh reference below.
+The benchmark contract remains matched;the decline is observed,
 but its resource-level cause remains unattributed. This is evidence against
 userspace rollback as a sufficient remedy,not proof that the libraries have
 identical performance or that historical clocks/contention were reproduced.
@@ -350,6 +350,27 @@ path currently exceeds the earlier reported speed;uniform GPU slowdown is an
 insufficient explanation to assume. Different shapes,algorithms,host work and
 resource interactions remain open. It neither explains nor restores Strata's
 911.7371versus1002.6507result.
+
+A fresh unchanged6e40 process at09:33..09:46UTC on20261026 completes the same
+four117489-token requests,with thinking and zero reuse. First use is909.4597tok/s;
+the subsequent samples are975.0027,975.3014 and973.0695tok/s,median975.0027.
+All15 final model hashes match,the native process exits normally,parameter
+validation is silent and no fresh fault is recorded. Source/controller b8c31f1ae
+and frozen plan7bf4a66f4 recover this diagnostic in the linked runtime result.
+No inference source,decode placement or runtime changed for this check.
+
+This fresh within-process median is6.9390% above the earlier current-userspace
+cohort's911.7371,but remains2.7575% below the same binary's historical1002.6507.
+These unpaired measurement windows show that the9.1% loss is not persistent at
+one fixed magnitude. They do not identify its cause or establish a speedup from
+an implementation change. This is one process,not three independent repetitions;
+the dense control was several hours earlier,not simultaneous. Full model hashing
+before this run also differs from the older crossover's cache history. Historical
+effective clocks,workstation contention,paging and process/cache history remain
+uncontrolled. The fastest1005.7655 package is still a separate configuration.
+Neither restoration nor sustained decode is qualified. Next measure actual
+public GU dispatch/fallback at M160/2333/2334 with official-SDK fixtures;keep GPU
+service distinct from queue intervals that include host submission gaps.
 
 Reference setup failures retain their original outcomes. Three attempts refuse
 previously unlisted code maps;Main also selected the CPU OpenCL registration instead of

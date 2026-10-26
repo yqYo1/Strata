@@ -1987,7 +1987,7 @@
     },
     "independent_control_reference": "prefill-resources-current.json#independent_llama9b_control_v6",
     "near_dense_original_reference_v1": {
-      "stage": "qualified",
+      "stage": "closed",
       "source_commit": "b8c31f1aec195489d71fb0e553e8e412fd8d51f3",
       "qualification_inputs": {
         "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/phase-prefill-speed-current.json": "9543297abc2ce0b4530ee6984d55366e735881caf42a08239f3494d655f9e10d",
@@ -2150,8 +2150,8 @@
           "ownership_closed": true
         }
       ],
-      "complete": false,
-      "passed": false,
+      "complete": true,
+      "passed": true,
       "retention": "Keep useful individual samples,source/config/environment references and decision. Retire successful trace/raw/JIT output and this one-use controller after closure;original13 assets remain.",
       "generated_sha256": {
         "config.json": "751e1603c8c5300f457fdda8f13018609667addc3a594ffd8c0d160466c98a9e",
@@ -2171,6 +2171,155 @@
           "devcoredump": false
         },
         "passed": true
+      },
+      "outcome": {
+        "passed": true,
+        "complete": true,
+        "started_utc": "2026-10-26T09:33:49Z",
+        "mapped_files": [
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/strata",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/ur-validation-preload-v2/libstrata_ur_validation.so",
+          "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libsycl.so.9.0.0-0",
+          "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libumf.so.1.1.0",
+          "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_adapter_level_zero_v2.so.0.12.0",
+          "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_loader.so.0.12.0",
+          "/opt/intel/oneapi/mkl/2026.1/lib/libmkl_core.so.3",
+          "/opt/intel/oneapi/mkl/2026.1/lib/libmkl_intel_ilp64.so.3",
+          "/opt/intel/oneapi/mkl/2026.1/lib/libmkl_sequential.so.3",
+          "/opt/intel/oneapi/mkl/2026.1/lib/libmkl_sycl_blas.so.6",
+          "/usr/lib/x86_64-linux-gnu/ld-linux-x86-64.so.2",
+          "/usr/lib/x86_64-linux-gnu/libc.so.6",
+          "/usr/lib/x86_64-linux-gnu/libcap.so.2.66",
+          "/usr/lib/x86_64-linux-gnu/libdl.so.2",
+          "/usr/lib/x86_64-linux-gnu/libdrm.so.2.134.0",
+          "/usr/lib/x86_64-linux-gnu/libgcc_s.so.1",
+          "/usr/lib/x86_64-linux-gnu/libhwloc.so.15.7.0",
+          "/usr/lib/x86_64-linux-gnu/libigdgmm.so.12.10.0",
+          "/usr/lib/x86_64-linux-gnu/libigdml.so.1.0.240",
+          "/usr/lib/x86_64-linux-gnu/libm.so.6",
+          "/usr/lib/x86_64-linux-gnu/libnl-3.so.200.26.0",
+          "/usr/lib/x86_64-linux-gnu/libnl-genl-3.so.200.26.0",
+          "/usr/lib/x86_64-linux-gnu/libpthread.so.0",
+          "/usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.33",
+          "/usr/lib/x86_64-linux-gnu/libudev.so.1.7.8",
+          "/usr/lib/x86_64-linux-gnu/libz.so.1.3",
+          "/usr/lib/x86_64-linux-gnu/libze_intel_gpu.so.1.17.39758",
+          "/usr/lib/x86_64-linux-gnu/libze_loader.so.1.32.0",
+          "/usr/lib/x86_64-linux-gnu/libze_tracing_layer.so.1.32.0",
+          "/usr/lib/x86_64-linux-gnu/libzstd.so.1.5.5",
+          "/usr/local/lib/libigc.so.2.41.5+1788943183",
+          "/usr/local/lib/libigdfcl.so.2.41.5+1788943183",
+          "/usr/local/lib/libopencl-clang2.so.22.1"
+        ],
+        "verified_request_boundaries": 4,
+        "host_probe_accepted": true,
+        "requests": [
+          {
+            "run": 0,
+            "request_sha256": "26f08fd8364b5c4bce718617fe2aed42761d0a794e068b00532694adef78b3be",
+            "actual_prompt_tokens": 117489,
+            "actual_read_tokens": 117489,
+            "actual_reused_tokens": 0,
+            "generated_tokens": 24,
+            "prompt_ms": 129185.5,
+            "thinking_requested": true
+          },
+          {
+            "run": 1,
+            "request_sha256": "fd3ad8ad7033776ad749b22e62e910e5f47e3f7664705f48d9f1fe7349b65515",
+            "actual_prompt_tokens": 117489,
+            "actual_read_tokens": 117489,
+            "actual_reused_tokens": 0,
+            "generated_tokens": 24,
+            "prompt_ms": 120501.2,
+            "thinking_requested": true
+          },
+          {
+            "run": 2,
+            "request_sha256": "daabbef4775c3fbdbfd832339d80a5ae2f91025b66df79b92fb8f6905f33b041",
+            "actual_prompt_tokens": 117489,
+            "actual_read_tokens": 117489,
+            "actual_reused_tokens": 0,
+            "generated_tokens": 24,
+            "prompt_ms": 120464.3,
+            "thinking_requested": true
+          },
+          {
+            "run": 3,
+            "request_sha256": "8669c9ebe2747b1fc2d7c4806eeb66025c919981d81c51cfdbd64ba3ec3cc2b1",
+            "actual_prompt_tokens": 117489,
+            "actual_read_tokens": 117489,
+            "actual_reused_tokens": 0,
+            "generated_tokens": 24,
+            "prompt_ms": 120740.6,
+            "thinking_requested": true
+          }
+        ],
+        "tok_s": [
+          909.45965297963,
+          975.0027385619396,
+          975.3013963472996,
+          973.0695391608125
+        ],
+        "first_use_tok_s": 909.45965297963,
+        "subsequent_median": 975.0027385619396,
+        "subsequent_range": [
+          973.0695391608125,
+          975.3013963472996
+        ],
+        "ratio_to_historical_6e40": 0.9724251710305211,
+        "ratio_to_previous_current_cohort": 1.0693901803216272,
+        "native_identity": {
+          "pid": 1275585,
+          "start_ticks": 135599485,
+          "sid": 1275555
+        },
+        "validation": {
+          "pid": 1275585,
+          "loader": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_loader.so.0.12.0",
+          "threads_before": 1,
+          "preinit": 37,
+          "config_enabled": true,
+          "first_init": true,
+          "dispatch_result": 46,
+          "output_untouched": true,
+          "retained_reference_until_exit": true,
+          "runtime_teardown_qualified": false
+        },
+        "journal_sha256": "237d65b93fbc325eb5053529afba4c55c9c686a03ab9939cddbfea0cdbd3df5e",
+        "ownership_closed": true,
+        "fresh_faults": [],
+        "boot_unchanged": true,
+        "driver_after": {
+          "pci": "/sys/bus/pci/devices/0000:05:00.0",
+          "driver": "xe",
+          "vendor": "0x8086",
+          "device": "0xe20c",
+          "kernel": "7.0.0-38-generic",
+          "devcoredump": false
+        },
+        "closed_utc": "2026-10-26T09:46:01Z"
+      },
+      "original_plan": {
+        "commit": "7bf4a66f43cb0c2372697dd8ccfa491564e93ff9",
+        "path": "bench/results/2026-10-15-pr6-recovery-audit/prefill-runtime-comparison-current.json",
+        "sha256": "bbdd0bf701df6a2f64e7d062f13370bae22f7364d6dac7c3b1531b3576811341"
+      },
+      "decision": {
+        "descriptive_only": true,
+        "restoration_qualified": false,
+        "implementation_speedup_claimed": false,
+        "independent_processes": 1,
+        "finding": "Original unchanged6e40 now975.0027 median versus prior current-userspace cohort911.7371;historical1002.6507 still2.7575percent faster relative to historical baseline. Earlier9.0673percent loss is not persistent at one magnitude.",
+        "limits": "Unpaired windows,dense control several hours earlier,full pre-run model hashes warm cache differently from old crossover. Effective clocks,contention,paging,process/cache history remain uncontrolled. No isolated source/runtime cause,hardware ceiling,decode or physical256K qualification.",
+        "next": "Official-SDK legacy GEMM correctness and GU public-dispatch/fallback M160/2333/2334 calibration;no adoption of failed staging prototype."
+      },
+      "post_closure_verification": {
+        "all15_model_hashes_match": true,
+        "four_wire_body_hashes_match": true,
+        "actual_environment_verified_at_four_boundaries": true,
+        "native_exit_code": 0,
+        "GPU_faults": []
       }
     }
   }
