@@ -532,9 +532,23 @@ normal processes,132correct timing samples and44profiles. No fresh GPUfault
 occurs. Main found missing checked retirement around post-timing validation:
 a copy/enqueue/wait exception could release the local host destination or the
 GPU status owner too early. This diagnostic safety hold is not an observed
-fault or a completed speed comparison. Source now adds a checked lease after
-every DMA owner and two host-exception-after-enqueue controls;the fresh V3plan
-must pass them before resuming. The selected model/decode binary is unchanged.
+fault or a completed speed comparison. Source adds a checked lease after
+every DMA owner. The fresh V3cohort closes14normal processes,396eligible/correct
+samples and132complete profiles. Eight padding-boundary cases and two
+host-exception-after-enqueue retirement controls pass;no fresh GPUfault occurs.
+The selected model/decode binary is unchanged.
+
+For2662400-byte payloads,the predeclared GPU-padding/full-D2H-check time-ratio
+geometric means are0.824929ordinary and0.818257staged;all three process ratios
+are below1 in both arms. This confirms that between-batch validation can change
+the next timed batch. The change is a method package:host allocation,zeroing,
+full-bank D2H and CPU checks versus a GPU padding check and4-byte status copy.
+It does not isolate PCIe cost or measure model throughput. Both small-payload
+observer screens still fail their frozen overhead limits;the overall resource
+attribution is unqualified. No staging/model advancement follows,and the
+historical9.0673% model decline remains unattributed. Keep V1/V2/V5outcomes.
+Stop this component iteration;next use one newly planned bounded hardware or
+whole-model counterfactual rather than repeat until the observer gate passes.
 
 The native SDK snapshot has a named next consumer:official-runtime original
 fixture ABI/GEMM qualification and the next attributed fixture build. Source
