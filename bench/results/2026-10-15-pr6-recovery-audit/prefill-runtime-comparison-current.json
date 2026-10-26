@@ -804,7 +804,7 @@
   },
   "historical_regression_audit": {
     "amd_clock_observer_v2": {
-      "stage": "prepared",
+      "stage": "closed",
       "source_commit": "58cbd6d4846332a094f985d98c80c5cdab936d49",
       "native_source": {
         "path": "/home/yayoi/orca/workspaces/Strata/sycl/bench/sycl/amd_clock_access.c",
@@ -868,20 +868,196 @@
         "on",
         "off"
       ],
-      "processes": [],
+      "processes": [
+        {
+          "index": 0,
+          "mode": "on",
+          "wall_ns": 8795972855,
+          "actor_cpu_ns": 8738548603,
+          "observer_cpu_ns": 811000,
+          "checksum": 7062953481333637121,
+          "warm_checksum": 9218098643863601153,
+          "cpu_identity": {
+            "cpu_signature": "00a20f10",
+            "hypervisor": "0",
+            "rdpru": "1",
+            "max_index": "1"
+          },
+          "periodic_samples": 8,
+          "observer_cpu_fraction": 9.220128499361996e-05,
+          "ratio_bounds": [
+            1.2500668251221176,
+            1.2563637761551867
+          ],
+          "raw_gap_ns_range": [
+            999990300,
+            1000000730
+          ],
+          "max_snapshot_wall_ns": 701,
+          "observer_pid": 2404440,
+          "bounded_protocol_passed": true
+        },
+        {
+          "index": 1,
+          "mode": "off",
+          "wall_ns": 8862715447,
+          "actor_cpu_ns": 8751753513,
+          "observer_cpu_ns": 0,
+          "checksum": 7062953481333637121,
+          "warm_checksum": 9218098643863601153,
+          "cpu_identity": {
+            "cpu_signature": "00a20f10",
+            "hypervisor": "0",
+            "rdpru": "1",
+            "max_index": "1"
+          }
+        },
+        {
+          "index": 2,
+          "mode": "off",
+          "wall_ns": 8844613460,
+          "actor_cpu_ns": 8764894086,
+          "observer_cpu_ns": 0,
+          "checksum": 7062953481333637121,
+          "warm_checksum": 9218098643863601153,
+          "cpu_identity": {
+            "cpu_signature": "00a20f10",
+            "hypervisor": "0",
+            "rdpru": "1",
+            "max_index": "1"
+          }
+        },
+        {
+          "index": 3,
+          "mode": "on",
+          "wall_ns": 8868256568,
+          "actor_cpu_ns": 8793150370,
+          "observer_cpu_ns": 912000,
+          "checksum": 7062953481333637121,
+          "warm_checksum": 9218098643863601153,
+          "cpu_identity": {
+            "cpu_signature": "00a20f10",
+            "hypervisor": "0",
+            "rdpru": "1",
+            "max_index": "1"
+          },
+          "periodic_samples": 8,
+          "observer_cpu_fraction": 0.00010283870262514038,
+          "ratio_bounds": [
+            1.2387206172530523,
+            1.2512963474427163
+          ],
+          "raw_gap_ns_range": [
+            999991272,
+            1000001641
+          ],
+          "max_snapshot_wall_ns": 551,
+          "observer_pid": 2405446,
+          "bounded_protocol_passed": true
+        },
+        {
+          "index": 4,
+          "mode": "on",
+          "wall_ns": 8926971817,
+          "actor_cpu_ns": 8765550241,
+          "observer_cpu_ns": 781000,
+          "checksum": 7062953481333637121,
+          "warm_checksum": 9218098643863601153,
+          "cpu_identity": {
+            "cpu_signature": "00a20f10",
+            "hypervisor": "0",
+            "rdpru": "1",
+            "max_index": "1"
+          },
+          "periodic_samples": 8,
+          "observer_cpu_fraction": 8.748767398511437e-05,
+          "ratio_bounds": [
+            1.2450718676262302,
+            1.254764074313796
+          ],
+          "raw_gap_ns_range": [
+            998478796,
+            1001510360
+          ],
+          "max_snapshot_wall_ns": 631,
+          "observer_pid": 2406070,
+          "bounded_protocol_passed": true
+        },
+        {
+          "index": 5,
+          "mode": "off",
+          "wall_ns": 8808753783,
+          "actor_cpu_ns": 8790066194,
+          "observer_cpu_ns": 0,
+          "checksum": 7062953481333637121,
+          "warm_checksum": 9218098643863601153,
+          "cpu_identity": {
+            "cpu_signature": "00a20f10",
+            "hypervisor": "0",
+            "rdpru": "1",
+            "max_index": "1"
+          }
+        }
+      ],
       "whole_wall": 900,
       "whole_bytes": 100663296,
       "active": false,
       "ownership_closed": true,
-      "passed": false,
-      "complete": false,
+      "passed": true,
+      "complete": true,
       "GPU_executed": false,
-      "counter_access_observed": false,
+      "counter_access_observed": true,
       "model_clock_qualified": false,
       "MHz_qualified": false,
       "criteria": "System-C compile/link/ELF and fresh access pilot,then6fixed-work CPU-only processes on/off/off/on/on/off. CPU0 actor:1006632960 warmup iterations outside clock,then10066329600 identical serial unsigned LCG iterations. Timed interval includes observer fork/exec,initialization, 1Hz polling/counter/output,EOF shutdown and wait. Child uses same CPU0 and private EOF pipe. Require normal closure/checksums,wall>=5s,>=5periodic samples/on process,positive ordered MPERF/APERF deltas,gaps0.8..1.2s,no missed timer expiration and childCPU/wall<=0.002. Overhead screen:off-wall/on-wall each>=0.98 and geometric mean>=0.99. No speed-based early stop/retries;report all pairs. Stop first source/contract/fault/ownership/budget failure.",
       "limits": "CPU fixture overhead and observer protocol only. No GPU,model clock,MHz,P0/SMT interpretation,resource saturation,historical cause or throughput/adoption claim. Passing permits a separately pinned sampled model diagnostic,with clean speed collected separately; it does not establish identical perturbation for GPU/syscall/polling workloads.",
-      "retention": "Keep individual6work/CPU/overhead values,source/build/contract identities and decision. Retire normal logs/tick sequences/private receipts after verified replay. Retain this tiny host observer ELF only for imminent model diagnostic after audit and this host gate; no new engine generation. Original engine and officialv4fallback are untouched."
+      "retention": "Keep individual6work/CPU/overhead values,source/build/contract identities and decision. Retire normal logs/tick sequences/private receipts after verified replay. Retain this tiny host observer ELF only for imminent model diagnostic after audit and this host gate; no new engine generation. Original engine and officialv4fallback are untouched.",
+      "object": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/amd-clock-observer-v2/clock.o",
+        "sha256": "423ba55daa702b989cadbba8b0b0e62a48a6a24b232d9230703b12462ae6355a"
+      },
+      "actual_link_manifest": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/amd-clock-observer-v2/actual-link-inputs.json",
+        "sha256": "2cefa2439c37615334c7a561bd98151e065d15f2e08161cc848fc82e4eca0788",
+        "files": 13,
+        "uncovered": 0
+      },
+      "binary": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/amd-clock-observer-v2/clock-access",
+        "sha256": "4644cbd1df632eaf1a11121301dba7c24294ede245c1aef51da2ee9239b256c5"
+      },
+      "fresh_access": {
+        "passed": true,
+        "snapshot_batch_wall_ns": 184787
+      },
+      "analysis": {
+        "off_wall_over_on_wall_pairs": [
+          1.0075878578868125,
+          0.997333962113217,
+          0.9867572076597271
+        ],
+        "geometric_mean": 0.9971900741783856,
+        "overhead_screen_passed": true,
+        "source_audit_and_separate_model_plan_required": true,
+        "model_overhead_qualified": false,
+        "MHz_qualified": false,
+        "inference_adoption": false
+      },
+      "outcome": {
+        "host_probe_accepted": true,
+        "ownership_closed": true,
+        "fresh_faults": [],
+        "boot_unchanged": true,
+        "driver_after": {
+          "pci": "/sys/bus/pci/devices/0000:05:00.0",
+          "driver": "xe",
+          "vendor": "0x8086",
+          "device": "0xe20c",
+          "kernel": "7.0.0-38-generic",
+          "devcoredump": false
+        },
+        "passed": true
+      }
     },
     "amd_clock_observer_v1": {
       "stage": "failed",

@@ -765,23 +765,44 @@ The selected original engine and official component fallback remain outside
 these deleted roots;older provenance holds are not cleared by this cleanup.
 
 
-The source303c1b06f CPU-only counter pilot now passes system-GCC13 compile,
-92-input/13-imported-link closure and one normally closed CPU0process. CPUID
-reports RDPRU support,max index1;1000serialized snapshots take239239ns total.
-Three32ms busy intervals have positive ordered APERF/MPERF deltas and bounded
-read skew,with ratios1.204578..1.204589,1.256753..1.256762 and1.256752..1.256762.
-These are primitive-access samples,not the model's effective clock or MHz.
-P0/SMT semantics and complete sampler wake/scheduling/output overhead remain
-unqualified;no clock observer was added to the clean model cohort. The next
-counter consumer is a bounded,matched whole-observer/affinity qualification
-before any sampled model run. See `amd_clock_access_v1` in the runtime result.
+The source303c1b06f CPU-only pilot establishes unprivileged CPU0RDPRU access,
+not the model's effective clock,MHz or SMT semantics. The new source4671d1cb0
+observer pins its fresh process to CPU0,uses1Hz timerfd/EOF control,serializes
+MPERF/APERF sandwiches and records raw-monotonic boundaries. Its source58cbd6d48
+six-process CPU-only on/off/off/on/on/off control closes normally,with ten owned
+compile/link/access/control commands,actual executable/libc/loader identities,
+matching fixed-work checksums and no fresh fault. The clock includes observer
+fork/exec,initialization,wakeup,output,EOF shutdown and wait. The three off-wall/
+on-wall ratios are1.00758786,0.99733396,0.98675721;geomean0.99719007 passes the
+frozen each>=0.98/mean>=0.99screen. Each on process records eight periodic
+samples;whole childCPU is781000..912000ns over8.80..8.93s(0.00875..0.01028%).
+All six native outputs and ratios replay. These CPU-fixture results do not
+establish observer perturbation for actual GPU/syscall/polling work or explain
+the historical decline. A pinned model plan and independent source review
+remain required;no clock observer has run with the model.
+
+The first controller fails on bare observer_ready/observer_done framing after
+five normally closed native commands. Preserve that failed/incomplete result
+at91b8dc832;corrected parserf1790554b replays its single eight-tick on output
+ataf3e60390 without a new native launch or cohort qualification. After exact
+source/header/link/ELF recovery,the old17files/127602bytes retire. The fresh
+cohort uses a new plan and build. Orca source audit and native Luna/max review
+accept only the declared host-fixture scope. A future model observer still needs
+per-launch source/executable/provider checks,a sanitized fresh --observe process
+with piped stdin,bounded EOF/ownership closure and actual model-wrapper overhead
+accounting. Monotonic clocks and the inspected owner deadline exclude suspend;
+a later model plan must reject suspend with BOOTTIME checks and retain counter
+scope/skew limits. Rare host-control-only fd edges do not block fresh --observe
+with piped stdin. Main retains this tiny observer candidate for that imminent
+diagnostic;the original engine and officialv4fallback remain unchanged.
 
 A passive check of this kernel7.0.0-38 finds tracefs,its xe event directory and
 DRM debugfs inaccessible(EACCES). The installed xe UAPI documents memory-range
 queries as preferred-location/PAT/atomic-policy queries,not physical-placement
 history. Its region used counters require CAP_PERFMON or CAP_SYS_ADMIN;no query
-was executed. These observations do not establish migration or rule out every
-userspace observation path. Physical backing/traffic and current owner overlap
+was executed. Both B570PMT telemetry endpoints expose readable GUID/size/offset metadata,
+but their0440 raw telemetry files are unreadable;no registers were read. These
+observations do not establish migration or rule out every userspace observation path. Physical backing/traffic and current owner overlap
 remain unresolved;fdinfo aggregate changes alone cannot establish eviction.
 
 The fresh sourcee33d16fc3 attribution fixture closes ten official-SDK processes

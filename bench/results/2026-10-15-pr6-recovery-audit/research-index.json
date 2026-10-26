@@ -10320,7 +10320,30 @@
         },
         "GPU_executed": false,
         "physical_owner_or_migration_qualified": false,
-        "limit": "Read-only path/header capability evidence only;does not rule out every userspace observation path or prove historical cause."
+        "limit": "Read-only path/header capability evidence only;does not rule out every userspace observation path or prove historical cause.",
+        "pmt_metadata_only": {
+          "both_devices": "0000:05:00.0/intel_vsec.telemetry.0",
+          "endpoints": [
+            {
+              "path": "/sys/class/intel_pmt/telem1/telem",
+              "guid": "0x1e2f8202",
+              "size": 4096,
+              "offset": 144,
+              "mode": "0440",
+              "readable": false
+            },
+            {
+              "path": "/sys/class/intel_pmt/telem2/telem",
+              "guid": "0x5e2f8211",
+              "size": 4096,
+              "offset": 144,
+              "mode": "0440",
+              "readable": false
+            }
+          ],
+          "raw_telemetry_read": false,
+          "limit": "Metadata/access inspection only;no register interpretation,sampling,traffic or saturation result;no permission change."
+        }
       },
       "review_transaction_retired": true,
       "retirement_ref": "prefill-runtime-comparison-current.json:historical_regression_audit.validation_cost_control_v1.artifact_retirement"
@@ -12142,8 +12165,8 @@
   },
   "amd_clock_observer_source_contract_20261027": {
     "classification": "decision_support",
-    "schedulable_now": true,
-    "status": "eligible_pending_Orca_dispatch",
+    "schedulable_now": false,
+    "status": "reviewed_host_scope_only_local_model_gates_pending",
     "source_commit": "f1790554b",
     "sources": {
       "bench/sycl/amd_clock_access.c": "afde4302a9a865c13cf508d056eb017dc22eb6cd0dd499ebd9a6fb4a6c63d088",
@@ -12160,6 +12183,37 @@
     "consumer": "Main complete-observer implementation and separately pinned sampled-model diagnostic after the fresh host overhead gate and native Luna/max review. No source/performance adoption by report alone.",
     "limits": "Read-only exact-source/primary-doc audit. Write only named report;no Git,builds,tests,GPU/profiling,process inspection,product/index edits or subagents. No XeStrata/derived code. Main owns implementation/testing;no steering active research.",
     "next_review": "Native Codex gpt-6-luna/max review after authoritative Orca settlement;Main short digest. Retire consumed decision-support transaction after model-observer plan decision;keep substantive corrections and pinned source.",
-    "main_reads_body_on_arrival": false
+    "main_reads_body_on_arrival": false,
+    "dispatch": {
+      "run": "run_12fa11537288",
+      "task": "task_977e278b17da",
+      "context": "ctx_a232d246f277",
+      "terminal": "term_abb9a1dc-128a-4e5b-b103-dfd761266f72",
+      "incarnation": "d837d03f-b529-43a7-b569-35d4651dcb5d",
+      "model": "gpt-6-luna",
+      "effort": "high",
+      "basis": "Prior Dispatch completed/settled/external release;documented /new/current-worktree choice positively observed fresh Codex0.162.1 GPT6Luna/high before reuse. Same inside-project writable root;no permission broadening.",
+      "input_accepted": true,
+      "turn_start_observed": true,
+      "outcome": "succeeded_settled",
+      "done_message": "msg_eae9f14aba27",
+      "release": "accepted external-terminal retention,no process action;not claimed process exit",
+      "delivery": "delivery_6d22af23810d",
+      "acknowledged": true
+    },
+    "report_bytes": 11029,
+    "report_sha256": "c648e7ac9ce155ae177e335afd6d75be6714fca7c4e91b3d77ea906041eddc0f",
+    "native_review": {
+      "reviewer": "/root/review_cpu_clock_observer_20261027",
+      "model": "gpt-6-luna",
+      "effort": "max",
+      "state": "accepted_host_scope_only",
+      "output": ".cache/strata-research/20261027/amd-clock-observer-native-review.json",
+      "bytes": 6980,
+      "sha256": "b6a1905fb22a3e36b7ea208df8403afe63d2b1f3e025fcb9e12d5c3e69987fe6"
+    },
+    "operational_digest": "Host fixture passes only its declared overhead gate;no model/inference evidence. Before separate --observe model diagnostic:per-launch executable/source/provider checks,sanitized fresh process with stdin PIPE,bounded EOF/ownership closure,actual model-wrapper overhead accounting,and aggregate counter-envelope interpretation. Monotonic clocks/inspected owner deadline exclude suspend;record BOOTTIME-based rejection/limits before model use. Narrow host-control fd edge cases do not block fresh --observe with piped stdin. No new Orca scope;Main owns implementation/local gates.",
+    "new_orca_scope_schedulable_now": false,
+    "model_diagnostic_qualified": false
   }
 }
