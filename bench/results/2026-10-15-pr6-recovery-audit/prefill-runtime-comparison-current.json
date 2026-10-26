@@ -804,7 +804,7 @@
   },
   "historical_regression_audit": {
     "model_cpu_clock_diagnostic_v1": {
-      "stage": "prepared",
+      "stage": "host-passed",
       "source_commit": "175cd318966da0bfdb885f905ce2b01c12cb3866",
       "binary": {
         "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/strata",
@@ -1028,7 +1028,32 @@
         "stop": "First source/provider/request/clock/contract/fault/ownership/budget error;no retries,reset,service or policy change.",
         "retention": "Keep4 individual prompt/ratio/observer CPU/coverage samples,source/recipe/runtime identities and limits. Retire normal tick timelines,build and API logs after independent replay;tiny helper consumer ends at closure."
       },
-      "host": null,
+      "host": {
+        "identity": {
+          "pid": 2459550,
+          "start_ticks": 138703458,
+          "sid": 2459550
+        },
+        "elapsed_ns": 2244123640,
+        "cpu_ns": 3683000,
+        "cpu_fraction": 0.0016411751716139847,
+        "intervals": 2,
+        "ratio_range": [
+          1.015903355500932,
+          1.1412912383438008
+        ],
+        "ratio_median": 1.078597238977816,
+        "max_snapshot_ns": 621,
+        "gap_ns_range": [
+          999990912,
+          1000009747
+        ],
+        "ownership_closed": true,
+        "speed_eligible": false,
+        "MHz_qualified": false,
+        "limits": "CPU0 interval aggregate,not model-thread clock. No historical paired counters or causal frequency attribution.",
+        "passed": true
+      },
       "outcome": null,
       "active": false,
       "ownership_closed": true,
