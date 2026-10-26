@@ -2729,6 +2729,29 @@
     },
     "fused_command_profile": {
       "public_gu_dispatch_calibration": {
+        "source_followup": {
+          "reviewed_tree_commit": "fc39d73c8841febe6cd688270472c25becf9f98a",
+          "source_sha256": {
+            "src/prefill/moe_window.inc": "ea430e09a9ad64d295efd30e8820476e676232688d7e8af7606fe456c69ca6c7",
+            "src/prefill/layer_major.inc": "9c593fd221e9f878e32a7cf5d8be921e85ad631c7004fd3d3bdc831f9f3f3fb4",
+            "src/prefill/prefill.cpp": "2770d5886eb50911c7218b501a42ff0b130d30377e310b11312641daf20e0ebe",
+            "include/strata/prefill/expert_bank_plan.hpp": "7b3874a8eabd78fa48dac1902ce287f0954a23c98333de9424cd50ea80c7f156"
+          },
+          "finding": "ExpertBankSlots permanent membership persists across FFN windows and resets at each layer;packed geometry may admit512slots. Window-local loaded=-1 repeats dequant for active experts,not necessarily quantized H2D uploads. Future routes require current-layer post-attention/PLE inputs;loop interchange needs explicit mixed/FP32-partial storage,recomputation and262144fallback budgets. Existing expert_bank_future_admission_source_scope already records this availability constraint. No cross-window transfer/dequant saving or candidate selected.",
+          "limits": "Current source audit only;additional observer/diagnostic hunks differ from selected6e40. No new native build/model performance or causal timing result."
+        },
+        "artifact_retirement": {
+          "complete": true,
+          "files": 65,
+          "bytes": 2230941,
+          "manifest": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/deletion-manifests/20261026-public-gu-calibration-closed.jsonl",
+          "manifest_sha256": "d149e932d5705853ae91079c678ccfb7ff9533562dd89f73439d85cfc3a3c389",
+          "original_outcomes_unchanged": true,
+          "controller_inputs_recovered": 196,
+          "source_restore": "7c52325edf5568e9653c60d843018c29ec408702:tools/sycl/calibrate_public_gu.py",
+          "recovery_ref": "fc39d73c8841febe6cd688270472c25becf9f98a",
+          "kept": "Original13selected assets and current official4fixtures/1427manifest/SDK/compatibility runtime proof. Raw cohort root and one-use controller removed;next matched host/GPU attribution requires a fresh source/plan."
+        },
         "stage": "closed",
         "source_commit": "7c52325edf5568e9653c60d843018c29ec408702",
         "compatibility_sha256": "9549727b07f0db756f771e3070460c1d2f83a310e02da5b18a68775f2d420399",
@@ -3296,7 +3319,7 @@
             "M2333": "Both arms actually use the same fallback. bench3median299556.25ns versus255106..255322ns in its other baseline processes produces one pair ratio.8507219. Retain it;the.9478583geomean is not a fusion gain when neither arm selects fusion.",
             "M2334": "All three actually selected-fusion pairs reduce whole-call time;time-ratio geomean.9733150(2.6685percent lower). This is current official-SDK component behavior,not an inference adoption or whole-prefill speedup.",
             "service": "Isolated single-call profiles have different cache/spacing/observer history from warmed batches;some isolated service exceeds warm whole-call time. Do not subtract envelopes or derive CPU submit/wait,occupancy or a hardware ceiling.",
-            "next": "Do not repeat this calibration. Audit source-pinned costs and cross-window weight/dequant reuse before choosing a bounded model candidate;matched warmed event-service/thread-CPU attribution remains a distinct gap. Original6e40 and decode1256placement unchanged."
+            "next": "Do not repeat this calibration. Next obtain warmed same-batch event service and disjoint whole-public-wrapper host CPU accounting,including pointer/registry/context checks outside inner gemm_submit;qualify observer-off/on cost. Source audit confirms permanent expert slots persist across windows within a layer,so do not assume every window reloads all weights. Original6e40 and decode1256placement unchanged."
           }
         },
         "outcome": {

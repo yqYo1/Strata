@@ -635,12 +635,20 @@ history;some exceed the warmed whole-call times. They cannot be subtracted to
 invent CPU time or a critical path. Source/controller7c52325ed and the compact
 `public_gu_dispatch_calibration` result preserve all samples and limits.
 This establishes current component behavior,not historical-regression causality,
-hardware saturation,a new model speed or inference adoption. Matched warmed
-GPU service and disjoint host CPU attribution remain open. Before another
-instrumentation build,check actual cross-window expert-weight/dequant reuse as
-a separate data-movement mechanism;the selected engine and decode1256placement
-remain unchanged. The completed host-scope review finds existing ownership and
-submission references sufficient;no duplicate Orca survey is eligible now.
+hardware saturation,a new model speed or inference adoption. The source followup
+confirms permanent expert residency persists across windows within a layer;do
+not assume every window reloads every weight. Dequant is window-local. Moving
+experts outside the window loop requires current-layer post-attention/PLE input
+availability,extra mixed/FP32-partial storage or recomputation,and a262144-safe
+fallback/budget. The existing future-admission report already covers that input
+availability constraint;no cross-window candidate or saving is selected.
+Next measure warmed same-batch GPU service and complete disjoint host CPU
+accounting,including outer ownership/context checks outside `gemm_submit`,with
+observer-off/on cost qualification. The selected engine and decode1256placement
+remain unchanged. Existing ownership/submission references are sufficient;no
+duplicate Orca survey is eligible now. After replay,65raw/review files and the
+one-use controller retire;2,230,941raw bytes are removed. Restore the controller
+from7c52325ed for a concrete later comparison;do not retry its closed root.
 
 The fresh sourcee33d16fc3 attribution fixture closes ten official-SDK processes
 with240eligible/correct timing samples and120complete CPU/GPU profiles.
