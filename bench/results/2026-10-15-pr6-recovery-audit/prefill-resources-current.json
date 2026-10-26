@@ -2728,6 +2728,162 @@
       "remaining": "Fourteen older provenance holds and separate pending numerical/model/full-context/upstream gates are unchanged."
     },
     "fused_command_profile": {
+      "ur_hold_device_v1": {
+        "stage": "prepared",
+        "source_commit": "b9fd7294ff1d476ee0310642f51c5bdcd2f55bef",
+        "helper": {
+          "source_commit": "bb46c4de524a564f596144add63efcc5f94239c8",
+          "native_source": {
+            "path": "/home/yayoi/orca/workspaces/Strata/sycl/bench/sycl/ur_hold_control.c",
+            "sha256": "191887a26d11e0d3e667d4f8e4a45dd219ad02ade93713b980b0722376d94b77"
+          },
+          "library": {
+            "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/ur-hold-control-v1/libstrata_ur_hold_control.so",
+            "sha256": "c8d080a3260bca53ec34589fffddd0b14dd6a0d02e0e485e945ebffd3176f7c3",
+            "bytes": 16744
+          },
+          "record": {
+            "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/ur-hold-control-v1/record.json",
+            "sha256": "835285a77d86e5473a5e473f9f0b5bb8927db30c583fd3c4e70446d706b6fded"
+          },
+          "compiler_inputs": {
+            "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/ur-hold-control-v1/native-inputs.json",
+            "sha256": "442169b897a289a1177a8883cb0dc8649996cc3ea4eb975e504f49aad70e3892",
+            "files": 127
+          },
+          "actual_headers": 108,
+          "actual_link_inputs": {
+            "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/ur-hold-control-v1/actual-link-inputs.json",
+            "sha256": "3afb81a26870ae8a91b5ceff2e49b1adf33b356baa49dccec9f1de114893f597",
+            "files": 14,
+            "uncovered": 0
+          }
+        },
+        "host_gate": {
+          "source_commit": "2cee12fce3b79bfadd1e1036af32356a7ce1531e",
+          "result_sha256": "d6297cd73a21f3daa270cacc0e966be3e6670575ef66ae4c07e3f0ee8f703a76"
+        },
+        "review": {
+          "report": "ea0a17e1138ada7f5240de5c238aaef9847e334fa92cd20e57d2a2227d1e3a05",
+          "native_review": "545e05b2c4dcb878c4f3a94091bf4660d061d122b922fd96e9eeb30b9fb9b676",
+          "matched_empty_layers_plan_accepted": true
+        },
+        "original_build": {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/strata",
+          "bytes": 22190000,
+          "sha256": "22182f1a5e62e5f4259ce49a75ae44afbd988166ec79324816e499ff37ef60e4"
+        },
+        "runtime_sha256": "09ad358e12f6ef58bfc0a978519927863f3d09949a033a1e224db95997647d97",
+        "environment_sha256": "c2bfebfcfc16e8cf507bacac22d635569b4f4a18b01d077e340a6ceaa730727f",
+        "NEO": "/usr/lib/x86_64-linux-gnu/libze_intel_gpu.so.1.17.39758",
+        "cases": [
+          {
+            "label": "on-submission",
+            "mode": "on",
+            "kind": "submission",
+            "binary": {
+              "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/sycl_submission_test",
+              "sha256": "5a434921664fac6b111ba2a0de5ebe4fd0182d226f1c56d34aeffa73171b9b79"
+            },
+            "args": [
+              "--submission"
+            ]
+          },
+          {
+            "label": "on-graph0",
+            "mode": "on",
+            "kind": "graph0",
+            "binary": {
+              "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/sycl_graph_envelope_test",
+              "sha256": "e5b0a849430591402f29dc14bd09c5305b216c4f4e0a42692feec6c125416ed8"
+            },
+            "args": [
+              "--profile=0"
+            ]
+          },
+          {
+            "label": "on-graph1",
+            "mode": "on",
+            "kind": "graph1",
+            "binary": {
+              "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/sycl_graph_envelope_test",
+              "sha256": "e5b0a849430591402f29dc14bd09c5305b216c4f4e0a42692feec6c125416ed8"
+            },
+            "args": [
+              "--profile=1"
+            ]
+          },
+          {
+            "label": "off-submission",
+            "mode": "off",
+            "kind": "submission",
+            "binary": {
+              "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/sycl_submission_test",
+              "sha256": "5a434921664fac6b111ba2a0de5ebe4fd0182d226f1c56d34aeffa73171b9b79"
+            },
+            "args": [
+              "--submission"
+            ]
+          },
+          {
+            "label": "off-graph0",
+            "mode": "off",
+            "kind": "graph0",
+            "binary": {
+              "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/sycl_graph_envelope_test",
+              "sha256": "e5b0a849430591402f29dc14bd09c5305b216c4f4e0a42692feec6c125416ed8"
+            },
+            "args": [
+              "--profile=0"
+            ]
+          },
+          {
+            "label": "off-graph1",
+            "mode": "off",
+            "kind": "graph1",
+            "binary": {
+              "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/sycl_graph_envelope_test",
+              "sha256": "e5b0a849430591402f29dc14bd09c5305b216c4f4e0a42692feec6c125416ed8"
+            },
+            "args": [
+              "--profile=1"
+            ]
+          }
+        ],
+        "processes": [],
+        "boot": "cfda0b6a-7c13-4fe2-bdf5-8f9202770840",
+        "driver": {
+          "pci": "/sys/bus/pci/devices/0000:05:00.0",
+          "driver": "xe",
+          "vendor": "0x8086",
+          "device": "0xe20c",
+          "kernel": "7.0.0-38-generic",
+          "devcoredump": false
+        },
+        "budgets": {
+          "wall": 90,
+          "cpu": 120,
+          "rss_cap": 4294967296,
+          "text_cap": 16777216,
+          "file_cap": 33554432,
+          "total_cap": 67108864
+        },
+        "whole_bytes": 268435456,
+        "active": false,
+        "ownership_closed": true,
+        "complete": false,
+        "passed": false,
+        "GPU_executed": false,
+        "model_executed": false,
+        "performance_qualified": false,
+        "criteria": "Six ordered fresh processes,on then off for submission/graph0/graph1. Same original6e40 fixtures and held loader ref;bounded full API traces plus silent validation log. Exact source/ELFs/native-env/live maps including NEO and loader;all numerical,guard,profiling and checked fixture cleanup markers. Stop first mismatch/fault/deadline. Tracing-mode environment lists differ deliberately;this gate supplies no speed evidence. Clean later A/B must use identical empty layer env and config-only validation,retained ref in both;ordinary UR teardown unqualified.",
+        "retention": "Keep compact six-case results and provider/native identities until upcoming matched validation-cost comparison. Retire normal full traces/private output after verification. Original13 assets and official v4fallback stay unchanged.",
+        "runtime_manifest": {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/ur-hold-device-v1/runtime-inputs.json",
+          "sha256": "68aaf94a9c75b298709a3d873c28a72bdc72e4f4cde176363bb29f143b86ecec",
+          "files": 35
+        }
+      },
       "ur_hold_host_v1": {
         "stage": "closed",
         "source_commit": "2cee12fce3b79bfadd1e1036af32356a7ce1531e",
