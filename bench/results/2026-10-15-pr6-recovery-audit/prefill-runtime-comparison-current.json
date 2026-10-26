@@ -803,6 +803,72 @@
     }
   },
   "historical_regression_audit": {
+    "benchmark_python_runtime_v1": {
+      "stage": "prepared",
+      "source_commit": "474130545b718b96fb3943f039d91d303f5605f2",
+      "selected": {
+        "workspace_venv": false,
+        "path": "/home/yayoi/.local/share/strata-sycl/venv/bin/python3",
+        "file": {
+          "realpath": "/usr/bin/python3.12",
+          "dev": 29,
+          "ino": 774532,
+          "bytes": 8020928,
+          "mtime_ns": 1788171506000000000,
+          "ctime_ns": 1790581701420197973,
+          "sha256": "e50d468e8b0adfb05733f5b87b3cff34829c4a8c1aea50c865aa8bdfe4bb150f"
+        }
+      },
+      "complete": false,
+      "passed": false,
+      "active": false,
+      "GPU_executed": false,
+      "discovery_command_count": 2,
+      "plan": {
+        "source_commit": "474130545b718b96fb3943f039d91d303f5605f2",
+        "selected": {
+          "workspace_venv": false,
+          "path": "/home/yayoi/.local/share/strata-sycl/venv/bin/python3",
+          "file": {
+            "realpath": "/usr/bin/python3.12",
+            "dev": 29,
+            "ino": 774532,
+            "bytes": 8020928,
+            "mtime_ns": 1788171506000000000,
+            "ctime_ns": 1790581701420197973,
+            "sha256": "e50d468e8b0adfb05733f5b87b3cff34829c4a8c1aea50c865aa8bdfe4bb150f"
+          }
+        },
+        "manifest": {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/benchmark-python-admission-v1/runtime.json",
+          "sha256": "21a59fa63f7fd1dacb2c977e13ffd6e6b006a58b73434ecd1880e42e3eee8e89",
+          "files": 3593,
+          "bytes": 172369994
+        },
+        "environment_identity": "1207aac054b56e8a12c5c1b2a89340846f698bda22e0916a713ddf8487fa1443",
+        "template": {
+          "path": "/home/yayoi/.local/share/strata-sycl/packs/qwen3.8-flash-next-iq3_s/tokenizer/chat_template.jinja",
+          "sha256": "12827f24b742ea4e80cdc12dbcf9622227056b9f797252a3149263d4f9aaadce"
+        },
+        "work": "Two bounded definition-only discovery processes,then commit this manifest/plan before two fresh qualified probes. Never call entrypoint main,serve requests or initialize an engine.",
+        "gate": "Exact source/interpreter/environment/template,all runtime directory inventories and file hashes checked before and after both qualified CPU probes;descriptor equality,normal owned closure;no GPU/model or speed claim.",
+        "budgets": {
+          "wall": 30,
+          "cpu": 20,
+          "rss_cap": 268435456,
+          "text_cap": 262144,
+          "file_cap": 1048576,
+          "total_cap": 4194304
+        }
+      },
+      "versions": {
+        "jinja2": "3.1.6",
+        "MarkupSafe": "3.0.3"
+      },
+      "error": null,
+      "ownership_closed": true,
+      "command_count": 2
+    },
     "supervision_input_admission_v4": {
       "source_commit": "bd4ce2e4b71a10d840eef48f671addda0de1226a",
       "sources": {
