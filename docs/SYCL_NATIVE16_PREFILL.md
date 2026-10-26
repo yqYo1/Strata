@@ -883,11 +883,13 @@ startup and final audits are explicitly excluded. Earlier v3/v4 plans remain
 closed without a model launch:environment/timing scope and then argument-tail
 verification were narrower than their frozen claims. No mislaunch was observed;
 the [original outcomes remain in Git](https://github.com/yqYo1/Strata/blob/729e0d9bc/bench/results/2026-10-15-pr6-recovery-audit/prefill-runtime-comparison-current.json).
-The preceding source's two discovery and two qualified definition-only probes
-matched3593runtime files and closed normally. The changed source needs a fresh
-runtime plan/probes and model plan/review. Its private Python startup envelope
-differs from historical runs,so this is a prospective matched control. No model
-speedup or inference adoption follows from these host checks.
+This source's fresh two discovery and two qualified definition-only probes
+match3593runtime files and close normally. A fresh model plan/review is still
+required. Its private Python startup envelope differs from historical runs,so
+this is a prospective matched control. No model speedup or inference adoption
+follows from these host checks. Closed v4 model/Python-v2 raw roots remain only
+through the next source admission,then require the same bounded recovery and
+retirement check;they are not extra engine-build generations.
 
 Exact original source,configuration and pure environment-recipe recovery closes
 the two superseded unlaunched model roots and old Python-probe root. Their
