@@ -7572,5 +7572,217 @@
       ]
     },
     "decision": "Observer refuses lazily loaded NEO media dependency libva.so.2.2400.0 before completing2048warmup;not a GPU hang or a model performance sample. GPU ICD is now correctly selected;new plan must prospectively snapshot installed native linker catalog,not learn/refresh failedv5hashes."
+  },
+  "independent_llama9b_control_v6": {
+    "stage": "prepared",
+    "source_commit": "d1e47b4e5d075814ff5c7e95d881d9fecae306b5",
+    "input_sha256": {
+      "tools/sycl/reference_llama.py": "71627f373a9455afda357984374cdade57ed19b6dc3b76b01b41a9a042f8df7a",
+      "tools/sycl/runtime_probe.py": "750818a521dcdf28901638424e9789c2db22d85876226b6f5141a954bb9d41d6",
+      "tools/sycl/measurement_owner.py": "bddd0c5e5020e882ca3404679420faec11e820dabce2ed4c72ef82b4c9c0874a",
+      "tools/sycl/measurement_guards.py": "794e332c70aca0acadad4f26d0414548e023a02fd27b72ed78fc773674423ec8",
+      "tools/sycl/ur_validation.py": "2e41d84788dc9cc3c7435b18b43601b3ca79280ccb855414d7a36bae6bff83e7",
+      "tools/sycl/build_engine.py": "8444783ab417378207ec89ad2bc3cf648480e20d9e77f06ebb3070c93e10b131",
+      "tools/sycl/check_full_context_source.py": "5e72fa724e890e682382758caf6222042e1ec89770962ce205ab756783332030",
+      "tools/sycl/measurement_environment.json": "d4402591df50e80dc45a5ec9e4839c7a794888850b1473537b6f95179be5b03c"
+    },
+    "external_source": {
+      "revision": "abeada335e2e78bd3fe63febafab7e900ce75810",
+      "tracked_tree_clean": true,
+      "build_metadata_sha256": {
+        "build/common/build-info.cpp": "874c413b42992396aaab29a86707b25e56bdcbdb0607585658e0389da3f194e1",
+        "build/CMakeCache.txt": "e38989e6cb395a0efdac4100954a7914eb221dbcf28569a8dbbe11a0332fee29",
+        "build/CMakeFiles/3.28.3/CMakeCXXCompiler.cmake": "2e264bcc404e2b693bede27e385b1a8f1aaacbdcdec7d269b40c697130bfc730",
+        "build/ggml/src/ggml-sycl/CMakeFiles/ggml-sycl.dir/flags.make": "fa684866ba550833b9734f9a0381b70ec27f525969e9bef52e9cf9b4886c144f"
+      },
+      "limit": "Installed external reference: embedded11455/abeada335 and current clean source/build metadata agree. Complete build-time input receipt and historical binary hash are unavailable;do not claim exact historical binary/source reproducibility."
+    },
+    "binary": {
+      "path": "/home/yayoi/ghq/github.com/ggml-org/llama.cpp/build/bin/llama-bench",
+      "sha256": "4fe327dad8634e70b2f2cb852732265883e7fac84f8ed72510a25ca3d41360bb",
+      "bytes": 94529016
+    },
+    "model": {
+      "path": "/data/llm_models/unsloth/Qwen3.5-9B-GGUF/Qwen3.5-9B-UD-Q4_K_XL.gguf",
+      "bytes": 5966095584,
+      "sha256": "6f5d30666c2d8ae16a306e616d95341dcf3cc46810df84d7e6f5a7d1e4c1b293"
+    },
+    "preload": {
+      "library": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/ur-validation-preload-v2/libstrata_ur_validation.so",
+        "sha256": "1d4e69d672d55fa0a126ae43b7b4743482cccca7e2f2bc22e0db2bfdad5bdc7c"
+      },
+      "canary": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/ur-validation-preload-v2/canary",
+        "sha256": "7903f47691309444cce238d6a0a6fe716f7c668d80a6e2ff3d5cfe21c7dcbfd0"
+      },
+      "loader": "/opt/intel/oneapi/compiler/2026.1/lib/libur_loader.so.0.12.0",
+      "original_plan": {
+        "commit": "550c75f5fc954ee38b70230e32d2a48e12100d8a",
+        "path": "bench/results/2026-10-15-pr6-recovery-audit/research-index.json",
+        "sha256": "d12866b93c51e76a83e95638e66b6f6f4e0e33d779516a5fddecc178a6f8e10a"
+      },
+      "source_commit": "f312b6691f508125db6cfc2580ca32a686ff2642",
+      "retained_reference_until_exit": true,
+      "ordinary_runtime_teardown_qualified": false
+    },
+    "environment": {
+      "PATH": "/usr/bin:/bin",
+      "HOME": "/home/yayoi",
+      "LANG": "C.UTF-8",
+      "LC_ALL": "C.UTF-8",
+      "PYTHONDONTWRITEBYTECODE": "1",
+      "LD_LIBRARY_PATH": "/opt/intel/oneapi/compiler/2026.1/lib:/opt/intel/oneapi/mkl/2026.1/lib:/opt/intel/oneapi/dnnl/2026.1/lib:/opt/intel/oneapi/tbb/2023.1/lib:/opt/intel/oneapi/umf/1.1/lib",
+      "ONEAPI_DEVICE_SELECTOR": "level_zero:gpu",
+      "UR_ADAPTERS_FORCE_LOAD": "/opt/intel/oneapi/compiler/2026.1/lib/libur_adapter_level_zero_v2.so.0.12.0",
+      "UR_L0_V2_FORCE_DISABLE_COPY_OFFLOAD": "1",
+      "NEOReadDebugKeys": "1",
+      "EnableDirectSubmission": "0",
+      "STRATA_SYCL_PREFILL_SAME_QUEUE": "1",
+      "STRATA_SYCL_VERIFY_NATIVE_CAPTURE": "0",
+      "SYCL_CACHE_PERSISTENT": "0",
+      "ZES_ENABLE_SYSMAN": "0",
+      "UR_ENABLE_LAYERS": "UR_LAYER_TRACING,UR_LAYER_PARAMETER_VALIDATION",
+      "UR_LOG_TRACING": "level:info;flush:info;output:stderr",
+      "UR_LOG_VALIDATION": "level:warning;flush:warning;output:stderr",
+      "UR_LOG_LOADER": "level:warning;flush:warning;output:stderr",
+      "UR_LOG_LEVEL_ZERO": "level:warning;flush:warning;output:stderr",
+      "LD_PRELOAD": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/ur-validation-preload-v2/libstrata_ur_validation.so",
+      "STRATA_UR_PROBE_EXPECTED_LOADER": "/opt/intel/oneapi/compiler/2026.1/lib/libur_loader.so.0.12.0",
+      "TMPDIR": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/llama9b-independent-control-v6/tmp",
+      "XDG_CACHE_HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/llama9b-independent-control-v6/cache",
+      "OCL_ICD_VENDORS": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/llama9b-independent-control-v6/icd",
+      "GGML_NO_BACKTRACE": "1"
+    },
+    "packages": [
+      "intel-oneapi-compiler-dpcpp-cpp-runtime-2026.1 2026.1.1-325",
+      "intel-oneapi-dnnl-2026.1 2026.1.0-617",
+      "intel-oneapi-mkl-core-2026.1 2026.1.0-236",
+      "intel-oneapi-tbb-2023.1 2023.1.0-151",
+      "intel-oneapi-umf-1.1 1.1.0-340",
+      "intel-opencl-icd 26.35.39758.17-1~24.04~ppa1"
+    ],
+    "linker_catalog": {
+      "paths": 1423,
+      "purpose": "Prelaunch native OS code candidates including lazy NEO media dependencies. Actual loaded subset separately observed and retained. NVIDIA/CUDA/HIP providers excluded;not permission to use another GPU."
+    },
+    "external_config_sha256": {
+      "/etc/OpenCL/vendors/intel.icd": "3e8dcd1a312124079cc8296fafc6900ce83bed6f789f0ed41d4d9f3f201dd0ed",
+      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/llama9b-independent-control-v6/icd/intel.icd": "3e8dcd1a312124079cc8296fafc6900ce83bed6f789f0ed41d4d9f3f201dd0ed"
+    },
+    "ICD_selection": {
+      "scope": "This child only;no system/user configuration change.",
+      "reference": "https://github.com/KhronosGroup/OpenCL-ICD-Loader/blob/main/README.md#table-of-debug-environment-variables",
+      "loader": "/opt/intel/oneapi/compiler/2026.1/lib/libOpenCL.so.1.0.0",
+      "loader_sha256": "4d7dc0d09f8623a02ecf5cd06c21790f8ec2f8f971bad1a45c10c158079b1028",
+      "private_icd_text": "/usr/lib/x86_64-linux-gnu/intel-opencl/libigdrcl.so\n",
+      "GPU_provider": "/usr/lib/x86_64-linux-gnu/intel-opencl/libigdrcl.so",
+      "GPU_provider_sha256": "83551573a0c19c22eeaa56312e6d4b54af3d51643ea78b4d6c6dd10713d11a83",
+      "reason": "Selected compiler OpenCL loader follows Khronos directory contract,not system ocl-icd file contract. Use a private single-Intel-GPU ICD directory. No NVIDIA/CPU OpenCL enumeration. This differs from unrecorded historical defaults."
+    },
+    "selected_original": {
+      "source_commit": "6e40afc1beddd059ee518617f6c1efce1da14aca",
+      "inputs_recovered": 9853,
+      "assets_verified": 13,
+      "receipt": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/record.json",
+        "sha256": "a38f477670fafcd1a931be2e20d90d6d9718df75b61954b421f361af9f6881b2"
+      },
+      "limits": "Original build remains selected; this source-only diagnostic is not adoption."
+    },
+    "boot": "cfda0b6a-7c13-4fe2-bdf5-8f9202770840",
+    "driver": {
+      "pci": "/sys/bus/pci/devices/0000:05:00.0",
+      "driver": "xe",
+      "vendor": "0x8086",
+      "device": "0xe20c",
+      "kernel": "7.0.0-38-generic",
+      "devcoredump": false
+    },
+    "active": false,
+    "ownership_closed": true,
+    "passed": false,
+    "GPU_executed": false,
+    "model_executed": false,
+    "model_adoption_qualified": false,
+    "cases": [
+      {
+        "label": "canary",
+        "argv": [
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/ur-validation-preload-v2/canary"
+        ]
+      },
+      {
+        "label": "probe2048",
+        "argv": [
+          "/home/yayoi/ghq/github.com/ggml-org/llama.cpp/build/bin/llama-bench",
+          "-fa",
+          "1",
+          "-n",
+          "0",
+          "-ctk",
+          "q8_0",
+          "-ctv",
+          "q8_0",
+          "-m",
+          "/data/llm_models/unsloth/Qwen3.5-9B-GGUF/Qwen3.5-9B-UD-Q4_K_XL.gguf",
+          "-o",
+          "jsonl",
+          "--progress",
+          "-p",
+          "2048",
+          "-r",
+          "1"
+        ]
+      },
+      {
+        "label": "pp131072",
+        "argv": [
+          "/home/yayoi/ghq/github.com/ggml-org/llama.cpp/build/bin/llama-bench",
+          "-fa",
+          "1",
+          "-n",
+          "0",
+          "-ctk",
+          "q8_0",
+          "-ctv",
+          "q8_0",
+          "-m",
+          "/data/llm_models/unsloth/Qwen3.5-9B-GGUF/Qwen3.5-9B-UD-Q4_K_XL.gguf",
+          "-o",
+          "jsonl",
+          "--progress",
+          "-p",
+          "131072",
+          "-r",
+          "3"
+        ]
+      }
+    ],
+    "criteria": "Ordered host canary,one2048-token traced model check exercising512ubatches,then one independent131072-token process with full131072 warmup+3timed repetitions. All normal/reaped/empty-session,no fresh fault,same boot/driver/inputs/models/providers,pre-main parameter validation active,silent validation log,actual official SYCL/LevelZero/NEO maps. Parse exactly one JSON test with n_prompt,zero n_gen,FAon,K/Vq8_0,all GPU layers,SYCL backend,positive finite times. Stop first failure;no retries. Three within-process samples do not measure between-process variability.",
+    "question": "Does a separately installed dense9B SYCL stack still reach the user-reported966.57\u00b110.59tok/s while Strata same-binary historical1002.6507 now measures911.7371? Descriptive discrimination,not a causal model/source comparison or an architecture ceiling.",
+    "historical": {
+      "user_reported_tok_s": 966.57,
+      "user_reported_stdev": 10.59,
+      "build": "abeada335(11455)",
+      "driver": "1.17.39395+14",
+      "historical_binary_hash_available": false,
+      "limits": "Historical environment/runtime hashes absent. Current NEO and explicit Intel-only OpenCL ICD selection differ;diagnostic retained-loader validation and immutable safety settings are charged. Repetition count3 versus user default5. No Strata/llama throughput equivalence or historical regression claim."
+    },
+    "budgets": {
+      "wall": 1800,
+      "cpu": 2400,
+      "rss_cap": 25769803776,
+      "text_cap": 134217728,
+      "file_cap": 134217728,
+      "total_cap": 335544320
+    },
+    "trace_budget_reason": "128MiB finite full-API budget for2048probe covers512ubatch attention and incidental Intel OpenCL enumeration. Long131K has parameter validation without full API trace.",
+    "retention": "Keep exact command/environment/source/executable/model/runtime identities,3individual timings,actual provider/fault/closure result and limits. No new build. Retire successful traces,logs,duplicate external receipt after extraction;user installed binary/model are not disposable project builds.",
+    "runtime_manifest": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/llama9b-independent-control-v6/runtime-inputs.json",
+      "sha256": "d2be801e5c5700331573f04cb6892b79c80aea73f3a7b4ecc15aae98478fc01d",
+      "files": 1516
+    }
   }
 }
