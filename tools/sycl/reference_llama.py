@@ -18,9 +18,9 @@ sys.dont_write_bytecode = True
 import runtime_probe as runtime
 
 P, B = runtime.P, runtime.B
-ROOT = B / 'llama9b-independent-control-v2'
+ROOT = B / 'llama9b-independent-control-v3'
 RESULT = runtime.RESULT.with_name('prefill-resources-current.json')
-KEY = 'independent_llama9b_control_v2'
+KEY = 'independent_llama9b_control_v3'
 LLAMA = Path('/home/yayoi/ghq/github.com/ggml-org/llama.cpp')
 EXE = LLAMA / 'build/bin/llama-bench'
 MODEL = Path('/data/llm_models/unsloth/Qwen3.5-9B-GGUF/Qwen3.5-9B-UD-Q4_K_XL.gguf')
@@ -90,6 +90,11 @@ def prepare():
         previous['actual_ownership_reconciliation']['anchored_session_empty'] and
         previous['actual_ownership_reconciliation']['native_direct_child_reaped'],
         'preserve failed host observer and positively close its owned process first')
+    previous=c['independent_llama9b_control_v2']
+    require(previous['stage']=='failed' and not previous['active'] and previous['fresh_faults']==[] and
+        previous['actual_ownership_reconciliation']['all3direct_children_reaped'] and
+        previous['actual_ownership_reconciliation']['all3anchored_sessions_empty'],
+        'preserve dynamic ICD observer refusal and close owned work first')
     revision = runtime.build.git(P, 'rev-parse', 'HEAD').decode().strip()
     inputs = pins(revision)
     original = runtime.selected.baseline()[1]
@@ -113,18 +118,23 @@ def prepare():
                 files[str(path.resolve())] = digest(path)
     files[str(EXE.resolve())] = digest(EXE)
     files[str(Path(preload['canary']['path']).resolve())] = preload['canary']['sha256']
+    icd=Path('/etc/OpenCL/vendors/intel64.icd')
+    icd_provider=Path(icd.read_text().strip()).resolve()
+    for path in [icd_provider,Path('/usr/lib/x86_64-linux-gnu/libOpenCL.so.1').resolve()]:
+        files[str(path)]=digest(path)
     require(b'UR_L0_V2_FORCE_DISABLE_COPY_OFFLOAD' in
         (SDK / 'lib/libur_adapter_level_zero_v2.so.0.12.0').read_bytes(), 'copy-offload avoidance unavailable')
     env = dict(runtime.validation.committed(runtime.SETTINGS)['environment'])
     env.update(LD_LIBRARY_PATH=':'.join(map(str,VENDOR_DIRS)),
         UR_ADAPTERS_FORCE_LOAD=str(SDK / 'lib/libur_adapter_level_zero_v2.so.0.12.0'),
         LD_PRELOAD=preload['library']['path'], STRATA_UR_PROBE_EXPECTED_LOADER=preload['loader'],
-        TMPDIR=str(ROOT / 'tmp'), XDG_CACHE_HOME=str(ROOT / 'cache'))
+        TMPDIR=str(ROOT / 'tmp'), XDG_CACHE_HOME=str(ROOT / 'cache'),OCL_ICD_VENDORS=str(icd))
     # Resolve the ELF interpreter's DT_NEEDED closure before admitting a child.
     # --list does not enter the target's constructors/main or initialize a GPU.
     pending={str(EXE.resolve()),str(Path(preload['library']['path']).resolve()),
         str(Path(preload['canary']['path']).resolve()),str(Path(env['UR_ADAPTERS_FORCE_LOAD']).resolve()),
-        '/usr/lib/x86_64-linux-gnu/libze_intel_gpu.so.1.17.39758'}
+        '/usr/lib/x86_64-linux-gnu/libze_intel_gpu.so.1.17.39758',str(icd_provider),
+        str(Path('/usr/lib/x86_64-linux-gnu/libOpenCL.so.1').resolve())}
     listed=set()
     while pending:
         path=pending.pop()
@@ -145,18 +155,24 @@ def prepare():
     row = dict(stage='prepared', source_commit=revision, input_sha256=inputs,
         external_source=root_source, binary=dict(path=str(EXE),sha256=digest(EXE),bytes=EXE.stat().st_size),
         model=asset, runtime_files=files, preload=preload, environment=env,packages=packages,
+        external_config_sha256={str(icd):digest(icd)},
+        ICD_selection={'scope':'This child only;no system/user configuration change.',
+            'reference':'https://github.com/OCL-dev/ocl-icd/blob/master/doc/libOpenCL.7.txt.in',
+            'local_document_sha256':digest('/usr/share/doc/ocl-icd-libopencl1/html/libOpenCL.html'),
+            'reason':'The installed ocl-icd loader documents .icd-file override. Limit incidental oneDNN/OpenCL platform enumeration to Intel GPU;do not load NVIDIA or CPU OpenCL ICDs. This differs from unrecorded historical defaults.'},
         selected_original=original, boot=Path('/proc/sys/kernel/random/boot_id').read_text().strip(),
         driver=runtime.guards.driver_guard(), active=False,ownership_closed=True,passed=False,
         GPU_executed=False,model_executed=False,model_adoption_qualified=False,
         cases=[dict(label='canary',argv=[preload['canary']['path']]),
-            dict(label='probe64',argv=[str(EXE),*args,'-p','64','-r','1']),
+            dict(label='probe2048',argv=[str(EXE),*args,'-p','2048','-r','1']),
             dict(label='pp131072',argv=[str(EXE),*args,'-p','131072','-r','3'])],
-        criteria='Ordered host canary,one64-token traced model check,then one independent131072-token process with full131072 warmup+3timed repetitions. All normal/reaped/empty-session,no fresh fault,same boot/driver/inputs/models/providers,pre-main parameter validation active,silent validation log,actual official SYCL/LevelZero/NEO maps. Parse exactly one JSON test with n_prompt,zero n_gen,FAon,K/Vq8_0,all GPU layers,SYCL backend,positive finite times. Stop first failure;no retries. Three within-process samples do not measure between-process variability.',
+        criteria='Ordered host canary,one2048-token traced model check exercising512ubatches,then one independent131072-token process with full131072 warmup+3timed repetitions. All normal/reaped/empty-session,no fresh fault,same boot/driver/inputs/models/providers,pre-main parameter validation active,silent validation log,actual official SYCL/LevelZero/NEO maps. Parse exactly one JSON test with n_prompt,zero n_gen,FAon,K/Vq8_0,all GPU layers,SYCL backend,positive finite times. Stop first failure;no retries. Three within-process samples do not measure between-process variability.',
         question='Does a separately installed dense9B SYCL stack still reach the user-reported966.57±10.59tok/s while Strata same-binary historical1002.6507 now measures911.7371? Descriptive discrimination,not a causal model/source comparison or an architecture ceiling.',
         historical=dict(user_reported_tok_s=966.57,user_reported_stdev=10.59,build='abeada335(11455)',
             driver='1.17.39395+14',historical_binary_hash_available=False,
-            limits='Historical environment/runtime hashes absent. Current NEO differs;diagnostic retained-loader validation and immutable safety settings are charged. Repetition count3 versus user default5. No Strata/llama throughput equivalence or historical regression claim.'),
-        budgets=dict(wall=1800,cpu=2400,rss_cap=24<<30,text_cap=64<<20,file_cap=64<<20,total_cap=160<<20),
+            limits='Historical environment/runtime hashes absent. Current NEO and explicit Intel-only OpenCL ICD selection differ;diagnostic retained-loader validation and immutable safety settings are charged. Repetition count3 versus user default5. No Strata/llama throughput equivalence or historical regression claim.'),
+        budgets=dict(wall=1800,cpu=2400,rss_cap=24<<30,text_cap=128<<20,file_cap=128<<20,total_cap=320<<20),
+        trace_budget_reason='128MiB finite full-API budget for2048probe covers512ubatch attention and incidental Intel OpenCL enumeration. Long131K has parameter validation without full API trace.',
         retention='Keep exact command/environment/source/executable/model/runtime identities,3individual timings,actual provider/fault/closure result and limits. No new build. Retire successful traces,logs,duplicate external receipt after extraction;user installed binary/model are not disposable project builds.')
     ROOT.mkdir(mode=0o700)
     for name in ('tmp','cache'):(ROOT/name).mkdir()
@@ -170,6 +186,7 @@ def admit(initial):
     require(digest(EXE)==initial['binary']['sha256'] and digest(MODEL)==initial['model']['sha256'],
         'external binary/model differs')
     require(all(digest(p)==h for p,h in initial['runtime_files'].items()),'runtime input changed')
+    require(all(digest(p)==h for p,h in initial['external_config_sha256'].items()),'ICD selection file changed')
     require(subprocess.check_output(['dpkg-query','-W','-f=${Package} ${Version}\n',*PACKAGES],
         text=True,timeout=15).splitlines()==initial['packages'],'installed package versions changed')
     require(runtime.guards.driver_guard()==initial['driver'] and
@@ -207,7 +224,7 @@ def run():
             label=case['label'];warning=ROOT/(label+'.validation');trace=ROOT/(label+'.trace')
             env=dict(row['environment'],UR_ENABLE_LAYERS='UR_LAYER_PARAMETER_VALIDATION',
                 UR_LOG_VALIDATION='level:warning;flush:warning;output:file,'+str(warning))
-            if label=='probe64':env.update(UR_ENABLE_LAYERS='UR_LAYER_TRACING,UR_LAYER_PARAMETER_VALIDATION',
+            if label=='probe2048':env.update(UR_ENABLE_LAYERS='UR_LAYER_TRACING,UR_LAYER_PARAMETER_VALIDATION',
                 UR_LOG_TRACING='level:info;flush:info;output:file,'+str(trace))
             if label!='canary':row.update(GPU_executed=True,model_executed=True)
             persist();print('Starting '+label,flush=True)
@@ -226,15 +243,15 @@ def run():
                 require(required<=set(entry['runtime_seen']),'actual GPU provider absent')
                 parsed=[json.loads(s) for s in out.read_text().splitlines() if s.startswith('{')]
                 require(len(parsed)==1,'one JSON benchmark result required');test=parsed[0]
-                require(test['n_prompt']==(64 if label=='probe64' else 131072) and test['n_gen']==0 and
+                require(test['n_prompt']==(2048 if label=='probe2048' else 131072) and test['n_gen']==0 and
                     test['type_k']==test['type_v']=='q8_0' and test['n_gpu_layers']==-1 and
                     'SYCL' in test['backends'] and test['flash_attn']==1 and
                     test['build_commit']=='abeada335' and test['build_number']==11455 and
                     test['n_batch']==2048 and test['n_ubatch']==512 and not test['no_kv_offload'],
                     'benchmark route/config differs')
-                ns=test['samples_ns'];require(len(ns)==(1 if label=='probe64' else 3) and all(isinstance(v,int) and v>0 for v in ns),'bad sample clocks')
+                ns=test['samples_ns'];require(len(ns)==(1 if label=='probe2048' else 3) and all(isinstance(v,int) and v>0 for v in ns),'bad sample clocks')
                 outcome['benchmark']=test
-                if label=='probe64':require(trace.exists() and 'urEnqueue' in trace.read_text(),'small full API trace absent')
+                if label=='probe2048':require(trace.exists() and 'urEnqueue' in trace.read_text(),'small full API trace absent')
             probe=dict(host_probe_accepted=True);runtime.validation.finish(probe,owner,cursor,row['boot'])
             require(probe['passed'] and probe['driver_after']==row['driver'],'fault/closure check failed')
             row['outcomes'].append(outcome);persist();print(label+':closed,provider/validation/fault gates pass',flush=True)
