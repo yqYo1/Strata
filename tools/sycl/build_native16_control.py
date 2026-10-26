@@ -17,7 +17,7 @@ import build_fused_profile as shared
 
 r, P, B = shared.r, shared.P, shared.B
 RESULT = shared.RESULT
-ROOT = B / 'native16-public-control-v3'
+ROOT = B / 'native16-public-control-v4'
 KEY = 'native16_public_calibration_build'
 OFFICIAL = Path('/opt/intel/oneapi/compiler/2026.2')
 UMF = Path('/opt/intel/oneapi/umf/1.2')
@@ -95,12 +95,13 @@ def prepare():
     prior = source.get(KEY)
     if prior is not None:
         require(prior['stage'] == 'failed' and prior['ownership_closed'] and not prior['active'] and
-            prior['source_commit'] == '06d9a264ede03e5ae3be275d326fac4d277fa50b' and
+            prior['source_commit'] == '0bf4502bf7b46713e72a850482aced7ea1ba0728' and
+            prior.get('failure_analysis', {}).get('stage') == 'host_slice_extraction' and
             prior.get('retirement', {}).get('complete') and not prior['GPU_executed'],
-            'only the closed retired v2deprecation refusal precedes this corrected plan')
+            'only the closed retired v3tool-layout refusal precedes this corrected plan')
     require(source['new_build_toolchain']['independent_build_admitted'], 'independent toolchain origin required')
     rt = r.validation.committed(r.RESULT); full = r.current(rt)
-    sdk = copy.deepcopy(source['prefill_upload_staging_v5']['sdk']); sdk_admit(sdk)
+    sdk = copy.deepcopy(source['prefill_upload_staging_v5']['sdk']); sdk_files = sdk_admit(sdk)
     require(digest(RECIPE) == RECIPE_SHA, 'original CMake recipe changed')
     previous = json.loads(RECIPE.read_text())
     require(previous['source_commit'] == '26fdb5dd56070da7e336b44f91e8c04b7a7acf1b', 'original recipe revision differs')
@@ -115,6 +116,10 @@ def prepare():
     compiler = source['new_build_toolchain']['official_candidate']
     require(compiler['compiler'] == str(OFFICIAL / 'bin/icpx') and
         digest(compiler['compiler']) == compiler['compiler_sha256'], 'official compiler changed')
+    bundler = Path(subprocess.check_output([compiler['compiler'], '-print-prog-name=clang-offload-bundler'],
+        text=True, timeout=15).strip())
+    require(bundler.is_absolute() and bundler.is_file() and str(bundler.resolve()) in sdk_files and
+        digest(bundler) == sdk_files[str(bundler.resolve())], 'unqualified compiler-resolved offload bundler')
     project = shared.build.pin(P, PREFIXES)
     deps = [shared.build.pin(Path(g['root']), ['.']) for g in full['dependencies']]
     require(all(a['source_sha256'] == b['source_sha256'] for a, b in zip(deps, full['dependencies'])),
@@ -133,6 +138,7 @@ def prepare():
     env.update(UR_ADAPTERS_FORCE_LOAD=str(OFFICIAL / 'lib/libur_adapter_level_zero_v2.so.0.12.0'),
         TMPDIR=str(ROOT / 'tmp'), XDG_CACHE_HOME=str(ROOT / 'cache'))
     tools = copy.deepcopy(previous['tools']); tools['sycl'] = dict(path=compiler['compiler'], sha256=compiler['compiler_sha256'])
+    tools['offload_bundler'] = dict(path=str(bundler), sha256=digest(bundler))
     row = dict(stage='prepared', source_commit=project['revision'], project=project, dependencies=deps,
         sdk=sdk, tools=tools, external_inputs=shared.external_inputs(rt),
         runtime_sha256=digest(r.RESULT), selected_binary=full['binary'], boot=rt['boot'], driver=rt['driver'],
@@ -157,8 +163,9 @@ def prepare():
     if prior is not None:
         row['previous_failed_build'] = dict(stage=prior['stage'], source_commit=prior['source_commit'],
             error=prior['error'], GPU_executed=False, ownership_closed=True, retirement=prior['retirement'],
-            change='Keep original barrier/API code and all other warnings as errors. '
-                'Only -Wno-error=deprecated-declarations is added prospectively;no inference source change.')
+            failure_analysis=prior['failure_analysis'],
+            change='Use the pinned compiler-resolved offload bundler. Preserve the previous deprecation warning '
+                'exception,all other warnings as errors,and original kernel arithmetic/ABI flags.')
     ROOT.mkdir(mode=0o700)
     for name in ('tmp', 'cache'): (ROOT / name).mkdir()
     save(row); print('Prepared;commit the frozen build plan before configure.', flush=True)
