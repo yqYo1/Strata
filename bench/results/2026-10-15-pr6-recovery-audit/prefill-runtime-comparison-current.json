@@ -803,6 +803,75 @@
     }
   },
   "historical_regression_audit": {
+    "amd_clock_access_v1": {
+      "stage": "prepared",
+      "source_commit": "303c1b06fc61b05a39979313ebd73816c6ef75ad",
+      "native_source": {
+        "path": "/home/yayoi/orca/workspaces/Strata/sycl/bench/sycl/amd_clock_access.c",
+        "sha256": "0413c8886478c276c9eb3b78777bc66f44181c766726b1da2727cc03e98a0101"
+      },
+      "compiler": {
+        "path": "/usr/bin/x86_64-linux-gnu-gcc-13",
+        "sha256": "1b99826121ae6682a634e5efe09bd3e3df58ce58e0b28f849114ab5b89139c26",
+        "version": "x86_64-linux-gnu-gcc-13 (Ubuntu 13.3.0-6ubuntu2~24.04.1) 13.3.0"
+      },
+      "environment": {
+        "PATH": "/usr/bin:/bin",
+        "HOME": "/home/yayoi",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8",
+        "TMPDIR": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/amd-clock-access-v1/tmp"
+      },
+      "manifest": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/amd-clock-access-v1/native-inputs.json",
+        "sha256": "c91aae006087664ccf7124b85d08b34358da17e003d390c8b29749fff6e40988",
+        "files": 92
+      },
+      "compile_argv": [
+        "/usr/bin/x86_64-linux-gnu-gcc-13",
+        "-std=c11",
+        "-O2",
+        "-Wall",
+        "-Wextra",
+        "-Werror",
+        "-fPIE",
+        "-MD",
+        "-MF",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/amd-clock-access-v1/actual-deps.d",
+        "-c",
+        "/home/yayoi/orca/workspaces/Strata/sycl/bench/sycl/amd_clock_access.c",
+        "-o",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/amd-clock-access-v1/clock.o"
+      ],
+      "link_argv": [
+        "/usr/bin/x86_64-linux-gnu-gcc-13",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/amd-clock-access-v1/clock.o",
+        "-Wl,-t",
+        "-o",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/amd-clock-access-v1/clock-access"
+      ],
+      "input_identity": "9f928f6f1b74c61f065199e70022952ec85c200d40a90cfce44f7a19cfb6ca8b",
+      "boot": "cfda0b6a-7c13-4fe2-bdf5-8f9202770840",
+      "budgets": {
+        "wall": 30,
+        "cpu": 30,
+        "rss_cap": 1073741824,
+        "text_cap": 4194304,
+        "file_cap": 8388608,
+        "total_cap": 33554432
+      },
+      "active": false,
+      "ownership_closed": true,
+      "passed": false,
+      "complete": false,
+      "GPU_executed": false,
+      "counter_access_observed": false,
+      "model_clock_qualified": false,
+      "MHz_qualified": false,
+      "criteria": "Fresh system-C compile/link plus one contained CPU0 process after model cohort closure. Exact source/compiler/header/link/ELF identities;normal owner closure. CPU/vendor/CPUID guards,1000 serialized snapshots and three32ms busy intervals with positive ordered counter deltas and finite read-skew bounds. Exit77 or SIGILL records unavailable access,not a usable clock. Other failures remain failures. No retries,signals masked,root,GPU/runtime calls or system frequency changes.",
+      "limits": "Primitive access/progression/skew/timer evidence only. CPU0 counters are not per-process clocks. No verified P0/MHz/SMT semantics,model attribution,sampling overhead,physical bus or speed claim. A later model sampler needs a separate matched complete-observer overhead gate.",
+      "retention": "Keep small counter samples and source/recipe/capability decision. Retire host ELF/object,normal build output and private execution records after source recovery and verified replay. No new engine generation."
+    },
     "validation_cost_control_v1": {
       "stage": "closed",
       "source_commit": "75f88a844a6c212811c7457eb9b0202d62c29480",
