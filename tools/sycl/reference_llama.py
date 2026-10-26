@@ -18,9 +18,9 @@ sys.dont_write_bytecode = True
 import runtime_probe as runtime
 
 P, B = runtime.P, runtime.B
-ROOT = B / 'llama9b-independent-control-v4'
+ROOT = B / 'llama9b-independent-control-v5'
 RESULT = runtime.RESULT.with_name('prefill-resources-current.json')
-KEY = 'independent_llama9b_control_v4'
+KEY = 'independent_llama9b_control_v5'
 LLAMA = Path('/home/yayoi/ghq/github.com/ggml-org/llama.cpp')
 EXE = LLAMA / 'build/bin/llama-bench'
 MODEL = Path('/data/llm_models/unsloth/Qwen3.5-9B-GGUF/Qwen3.5-9B-UD-Q4_K_XL.gguf')
@@ -33,7 +33,8 @@ INPUTS = ['tools/sycl/reference_llama.py', 'tools/sycl/runtime_probe.py',
     'tools/sycl/ur_validation.py', 'tools/sycl/build_engine.py',
     'tools/sycl/check_full_context_source.py', 'tools/sycl/measurement_environment.json']
 PACKAGES = ['intel-oneapi-compiler-dpcpp-cpp-runtime-2026.1', 'intel-oneapi-dnnl-2026.1',
-    'intel-oneapi-mkl-core-2026.1', 'intel-oneapi-tbb-2023.1', 'intel-oneapi-umf-1.1']
+    'intel-oneapi-mkl-core-2026.1', 'intel-oneapi-tbb-2023.1', 'intel-oneapi-umf-1.1',
+    'intel-opencl-icd']
 require, digest = runtime.require, runtime.digest
 
 
@@ -99,6 +100,10 @@ def prepare():
     require(previous['stage']=='failed' and previous['ownership_closed'] and not previous['active'] and
         previous['fresh_faults']==[] and previous['provider_selection_diagnosis'],
         'preserve provider-selection failure and close before corrected directory contract')
+    previous=c['independent_llama9b_control_v4']
+    require(previous['stage']=='failed' and previous['ownership_closed'] and not previous['active'] and
+        previous['fresh_faults']==[] and previous['provider_selection_diagnosis']['selection']=='CPU ICD,not GPU;Main configuration error',
+        'preserve CPU/GPU ICD selection error before corrected GPU plan')
     revision = runtime.build.git(P, 'rev-parse', 'HEAD').decode().strip()
     inputs = pins(revision)
     original = runtime.selected.baseline()[1]
@@ -122,8 +127,10 @@ def prepare():
                 files[str(path.resolve())] = digest(path)
     files[str(EXE.resolve())] = digest(EXE)
     files[str(Path(preload['canary']['path']).resolve())] = preload['canary']['sha256']
-    icd=Path('/etc/OpenCL/vendors/intel64.icd')
+    icd=Path('/etc/OpenCL/vendors/intel.icd')
     icd_provider=Path(icd.read_text().strip()).resolve()
+    require(str(icd_provider)=='/usr/lib/x86_64-linux-gnu/intel-opencl/libigdrcl.so',
+        'ICD must name installed Intel GPU NEO,not compiler CPU OpenCL runtime')
     private_icd=ROOT/'icd/intel.icd'
     icd_text=icd.read_text()
     opencl_loader=(SDK/'lib/libOpenCL.so.1').resolve()
@@ -167,7 +174,7 @@ def prepare():
         ICD_selection={'scope':'This child only;no system/user configuration change.',
             'reference':'https://github.com/KhronosGroup/OpenCL-ICD-Loader/blob/main/README.md#table-of-debug-environment-variables',
             'loader':str(opencl_loader),'loader_sha256':digest(opencl_loader),
-            'private_icd_text':icd_text,
+            'private_icd_text':icd_text,'GPU_provider':str(icd_provider),'GPU_provider_sha256':digest(icd_provider),
             'reason':'Selected compiler OpenCL loader follows Khronos directory contract,not system ocl-icd file contract. Use a private single-Intel-GPU ICD directory. No NVIDIA/CPU OpenCL enumeration. This differs from unrecorded historical defaults.'},
         selected_original=original, boot=Path('/proc/sys/kernel/random/boot_id').read_text().strip(),
         driver=runtime.guards.driver_guard(), active=False,ownership_closed=True,passed=False,
@@ -249,7 +256,8 @@ def run():
                     version=(1<<32)-1,closed=0),'host canary failed')
             else:
                 required={str((SDK/'lib/libsycl.so.9').resolve()),str((SDK/'lib/libur_adapter_level_zero_v2.so.0').resolve()),
-                    '/usr/lib/x86_64-linux-gnu/libze_intel_gpu.so.1.17.39758',row['ICD_selection']['loader']}
+                    '/usr/lib/x86_64-linux-gnu/libze_intel_gpu.so.1.17.39758',row['ICD_selection']['loader'],
+                    row['ICD_selection']['GPU_provider']}
                 require(required<=set(entry['runtime_seen']),'actual GPU provider absent')
                 parsed=[json.loads(s) for s in out.read_text().splitlines() if s.startswith('{')]
                 require(len(parsed)==1,'one JSON benchmark result required');test=parsed[0]
