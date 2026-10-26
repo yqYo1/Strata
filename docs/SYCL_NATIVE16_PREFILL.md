@@ -612,7 +612,8 @@ API/JIT/process output,disposable build objects,the superseded component pair
 and consumed research/review files. The selected engine and12fixtures remain;
 the official four executables,1427-input manifest,build recipe/Ninja/header and
 compatibility runtime catalogue have the named upcoming public-GU consumer.
-The retained official admission still needs to pass after this reduction.
+Post-reduction admission passes again:original13assets,official4fixtures,
+9972recovered inputs,1427compiled inputs and84runtime entries remain intact.
 
 The fresh sourcee33d16fc3 attribution fixture closes ten official-SDK processes
 with240eligible/correct timing samples and120complete CPU/GPU profiles.
