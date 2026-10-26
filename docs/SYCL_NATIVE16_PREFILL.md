@@ -874,8 +874,8 @@ The first baseline process now passes all four requests,source/provider/route/
 journal/clock/CPU/closure gates,final15 model hashes and no-fresh-fault checks.
 First use is904.1691tok/s;subsequent rates are975.1856,975.6821 and978.1417,
 median975.6821. Controller request CPU fractions are11.4852..11.6506percent,
-below its frozen20percent baseline cap. Five processes remain unstarted;there
-is no paired mechanism result or inference/default adoption yet. Neither the
+below its frozen20percent baseline cap. Only the first of six process results
+is qualified;there is no paired mechanism result or inference/default adoption yet. Neither the
 host-cost gain nor this baseline sample proves a historical cause,1000tok/s
 restoration,sustained decode,agent quality or physical262144 correctness.
 
@@ -884,6 +884,13 @@ the two superseded unlaunched model roots and old Python-probe root. Their
 original outcomes and plans remain in pushed Git;normal raw files and duplicate
 current rows retire. The current Python manifest,ownerV3comparison evidence,
 selected engine and separate legacy provenance holds remain.
+
+After the first V6process passes independent raw/compact replay,retirement removes
+150 files/26,438,140bytes:its normal raw output,the superseded V5/PythonV3roots
+and consumed V5review transactions. Process0keeps its two generated config/plan
+inputs;all individual clocks,CPU operands and closure/fault outcomes remain in
+Git. Four old source-audit rows and superseded plans/probe rows retire to
+`b97e30d9e`;the current V6review,PythonV4andownerV3qualification stay live.
 
 After replay and exact source/recipe/header/link/object/ELF recovery,these three
 closed observer/model/control roots retire106files/12,760,397bytes. Four
