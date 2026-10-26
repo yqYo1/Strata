@@ -45,8 +45,23 @@ def compact(row):
 
 
 def save(row):
-    container = json.loads(RESULT.read_text()); scope(container)[KEY] = compact(row)
-    write(ROOT / 'record.json', row); write(RESULT, container)
+    # Preserve the maintained compact sample tables outside this new scope.
+    raw = RESULT.read_text(); container = json.loads(raw)
+    desired = copy.deepcopy(container); scope(desired)[KEY] = compact(row)
+    literal = json.dumps(KEY) + ':'
+    rendered = json.dumps(compact(row), indent=2).replace('\n', '\n      ')
+    if KEY in scope(container):
+        require(raw.count(literal) == 1, 'ambiguous calibration result key')
+        first = raw.index(literal) + len(literal)
+        while raw[first].isspace(): first += 1
+        _, consumed = json.JSONDecoder().raw_decode(raw[first:])
+        raw = raw[:first] + rendered + raw[first + consumed:]
+    else:
+        anchor = '"fused_command_profile": {'
+        require(raw.count(anchor) == 1, 'ambiguous fused-profile container')
+        raw = raw.replace(anchor, anchor + '\n      ' + literal + ' ' + rendered + ',', 1)
+    require(json.loads(raw) == desired, 'scoped result update changed unrelated evidence')
+    write(ROOT / 'record.json', row); RESULT.write_text(raw)
 
 
 def sdk_admit(meta):
