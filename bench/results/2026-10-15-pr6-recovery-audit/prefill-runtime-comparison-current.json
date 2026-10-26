@@ -803,6 +803,30 @@
     }
   },
   "historical_regression_audit": {
+    "supervision_profile_admission_v2": {
+      "source_commit": "7a20614b40e9cc1b417762c6bed88934516c9053",
+      "sources": {
+        "tools/sycl/supervision_model.py": "f59c53ab01c35423c6c7b6f3c1bdec90efe5bad35a9f88cf9cc60d8c8f9c430b",
+        "tools/test_sycl_supervision_model.py": "7f90c6b2ced00a8ff83a76ce0df9fad1552e6dac4f0c108bdcc82a7a1c083b8e"
+      },
+      "command": [
+        "flock",
+        "-n",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/owned-v0141-measurement.lock",
+        "timeout",
+        "45s",
+        "/usr/bin/python3.12",
+        "-I",
+        "-S",
+        "-B",
+        "tools/test_sycl_supervision_model.py"
+      ],
+      "passed": true,
+      "exit_code": 0,
+      "cases": 5,
+      "scope": "CPU-only actual profile-admission corruption controls:unchanged committed profile;rewrite with restored mtime;equal-byte path replacement;missing/duplicate flags;actual current() rejects changed profile before native qualification. Private temporary fixtures are retired by unittest cleanup. No model/device launch or performance claim.",
+      "GPU_executed": false
+    },
     "supervision_model_control_v1": {
       "stage": "closed-unlaunched",
       "binary": {
