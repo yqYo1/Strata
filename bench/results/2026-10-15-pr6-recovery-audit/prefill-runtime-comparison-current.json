@@ -803,6 +803,58 @@
     }
   },
   "historical_regression_audit": {
+    "owner_scan_control_v1": {
+      "stage": "prepared",
+      "plan": {
+        "source_commit": "20cd0ad0ac6befb51a012a2367b35390557f750d",
+        "sources": {
+          "tools/sycl/measurement_owner.py": "bddd0c5e5020e882ca3404679420faec11e820dabce2ed4c72ef82b4c9c0874a",
+          "tools/sycl/owner_candidate.py": "5cadba339ed932c0dd9ab80c628148f0ef8d1766e5a93172639ecb31bf2b3b9d",
+          "tools/sycl/owner_control.py": "ddfc3160493df4f6977c402fcbb799fc037be18fe34842089488784a31936632",
+          "tools/test_sycl_owner_candidate.py": "48868d4e7721030f8882e58d8635f7d7a518aee7ca6e311123ba1fd1f53305f0",
+          "tools/sycl/measurement_guards.py": "794e332c70aca0acadad4f26d0414548e023a02fd27b72ed78fc773674423ec8",
+          "bench/sycl/owner_fixture.py": "3d4cb388e99275e98b2d5e47127a83c95b9ff3b56309bb46823366e08b100da8"
+        },
+        "providers_sha256": "bfe240426f0f201613699ebe923d10e70d0987c0d11dcfe64420f553724d3b72",
+        "python": "/usr/bin/python3.12",
+        "environment": {
+          "PATH": "/usr/bin:/bin",
+          "HOME": "/home/yayoi",
+          "LANG": "C.UTF-8",
+          "LC_ALL": "C.UTF-8"
+        },
+        "boot": "cfda0b6a-7c13-4fe2-bdf5-8f9202770840",
+        "order": [
+          "baseline",
+          "candidate",
+          "candidate",
+          "baseline",
+          "baseline",
+          "candidate"
+        ],
+        "question": "Does direct text/proc-name I/O reduce observed supervisor CPU while preserving250ms reconciliation and ownership?",
+        "mechanism": "Global identity/path allocation dominates measured scan CPU. Sparse owned-identity reuse alone cannot remove most unrelated-PID parsing. Candidate removes Path allocation;new registration accounts only fresh accepted identity and rejects newly dead nonleaders. No cache across scans or cadence reduction.",
+        "correctness": "9source-pinned controls before timing:parser/missing/reuse/disappearance/zombie/freshRSS/knownescape/caps plus normal,escaped32MiBRSS and owned-only cleanup native processes. Stop first failure. No GPU or native rebuild.",
+        "timing": "Six fresh controller processes in baseline/candidate/candidate/baseline/baseline/candidate order. Each times full Owner.run of same10tick/10s CPU-only fixture,including native startup,250ms scans,EOF,closure/reap and final log hashes. Record controller CPU and BOOTTIME;reject suspend divergence>50ms. No profiler in speed processes.",
+        "gate": "Every normal owner/provider/protocol/closure check passes;all3 candidate/baseline CPU-fraction ratios<=0.8 and geometric mean<=0.75;every candidate controller fraction<=0.05. No speed-based stop/retry. A failed gate forbids model advancement. Passing permits a separate matched model plan only;no historical-cause/inference claim.",
+        "budgets": {
+          "wall": 18,
+          "cpu": 3,
+          "rss_cap": 67108864,
+          "text_cap": 1048576,
+          "file_cap": 1048576,
+          "total_cap": 8388608
+        },
+        "retention": "Keep9control outcome and6individual CPU/wall/fraction samples,source/provider/environment and decision. Retire normal fixture/process logs and candidate duplication after decision;no model or engine generation."
+      },
+      "tests": null,
+      "processes": [],
+      "complete": false,
+      "passed": false,
+      "active": false,
+      "ownership_closed": true,
+      "GPU_executed": false
+    },
     "owner_cpu_probe_v1": {
       "stage": "closed",
       "source_commit": "439d3e2d4c5ee53d78289226315624a546a2efa0",
