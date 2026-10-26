@@ -365,6 +365,28 @@ instrumented whole-model,observer-cost and matched hardware-ceiling work before
 selecting an optimization. The compact evidence is `execution_conditions` in
 [the resource result](../bench/results/2026-10-15-pr6-recovery-audit/prefill-resources-current.json).
 
+The retained fused-profile generation now includes a separately built diagnostic
+whole engine,source022652cc5/frozen recipe9852c86a8,with1403 actual compiled inputs
+and no uncovered dependency. The original1385 component inputs and3fixtures
+remain identical;the original6e40 engine and12fixtures remain selected and intact.
+A first smoke plan incorrectly requested16K,which the official CLI rejected
+before native launch. Its failed observation remains failed;all owned processes
+are confirmed terminated. The corrected32K plan freezes at890e13b4e.
+
+That check completes two fresh39260-token thinking-on requests with0reuse and
+24output each. Native/benchmark processes close normally,all15 final model
+hashes match,parameter validation is silent,and no freshGPUfault appears.
+Its first/subsequent prefill clocks are65299.4/55022.7ms;these charged-observer
+samples do not replace the clean117K speed reference. Each request yields four
+selected MoE windows,732/737 valid GPU-service records and peak188 of224events.
+Host-submit/GPU clock correspondence fails,with22/27 inversions;submit-to-start
+queue delays remain unqualified. GPU service does not imply complete device
+coverage or hardware saturation. The build is diagnostic,not an isolated
+6e40 counterfactual,restoration adoption or sustained decode qualification.
+Next commit a matched observer-on/off cost plan before long service attribution;
+keep CPU wait/submission clocks and GPU service distinct from those invalid
+cross-domain queue-delay values.
+
 The earlier[NEO-only comparison](../bench/results/2026-10-15-pr6-recovery-audit/prefill-runtime-comparison-current.json)
 uses exact cached packages in private directories. Both arms explicitly select
 the driver before exec and verify its actual mapping. Other dependencies,the
