@@ -51,6 +51,23 @@ def identity(pid):
         return None
 
 
+def session_identity(pid, sid):
+    """Discover session members before decoding unrelated identities.
+
+    Linux proc_pid_stat(5), field6:session. No external code copied. The
+    prefix is only a filter; matching PIDs get a fresh full identity, and new
+    ownership still requires pidfd_open plus another birth/SID validation.
+    https://man7.org/linux/man-pages/man5/proc_pid_stat.5.html
+    """
+    try:
+        with open('/proc/' + str(pid) + '/stat', 'rb') as stream:
+            prefix = stream.read().rsplit(b')', 1)[1].split(None, 4)
+        if int(prefix[3]) != sid: return None
+        return identity(pid)
+    except (FileNotFoundError, ProcessLookupError):
+        return None
+
+
 def artifact_bytes(root):
     """Count present regular files from one stat, tolerating unlink before stat.
 
@@ -202,12 +219,12 @@ class Owner:
                 v = identity(key[0])
                 if v is None or v['start_ticks'] != key[1] or v['state'] == 'Z':
                     os.close(fd); del owned[key]
-            # Same directory-name snapshot, without Path objects for unrelated PIDs.
+            # Same listdir-based enumeration, without Path objects for unrelated PIDs.
             population = os.listdir('/proc')
             require(len(population) < 131072, 'finite proc population')
             for name in population:
                 if not name.isdecimal(): continue
-                try: v=identity(int(name))
+                try: v=session_identity(int(name), leader['pid'])
                 except PermissionError:
                     try:
                         if os.stat('/proc/' + name).st_uid != os.getuid(): continue

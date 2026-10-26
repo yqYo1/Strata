@@ -38,6 +38,7 @@ def registry(read, population=('100', '200'), pinned=None):
     if pinned: owned.update(pinned)
     scope = dict(vars(candidate), leader=leader, owned=owned,
         entry=dict(owners=[], peak_live_owned_identities=0), identity=read,
+        session_identity=lambda pid, sid: read(pid),
         os=SimpleNamespace(pidfd_open=lambda pid: pid + 10000, close=closed.append,
             listdir=lambda path: population, getuid=lambda: 1000,
             stat=lambda path: SimpleNamespace(st_uid=0)))
@@ -54,6 +55,16 @@ class Races(unittest.TestCase):
 
     def test_missing_identity(self):
         with patch('builtins.open', side_effect=FileNotFoundError): self.assertIsNone(candidate.identity(200))
+
+    def test_foreign_session_prefix_only(self):
+        data = b'200 (nonUTF8\xff ) name\n) S 101 102 999 0 0 0\n'
+        with patch('builtins.open', return_value=io.BytesIO(data)), patch.object(candidate, 'identity') as full:
+            self.assertIsNone(candidate.session_identity(200, 100)); full.assert_not_called()
+
+    def test_matching_session_fresh_identity(self):
+        data = b'200 (name) S 101 102 100 0 0 0\n'; fresh = value(200, 21, sid=300)
+        with patch('builtins.open', return_value=io.BytesIO(data)), patch.object(candidate, 'identity', return_value=fresh) as full:
+            self.assertEqual(candidate.session_identity(200, 100), fresh); full.assert_called_once_with(200)
 
     def test_reused_disappeared_or_zombie_not_accounted(self):
         for ending in (None, value(200, 21), value(200, 20, state='Z')):
