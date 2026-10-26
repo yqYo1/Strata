@@ -12626,9 +12626,9 @@
   },
   "supervision_model_source_contract_v6_20261027": {
     "classification": "decision_support",
-    "status": "orca_source_review_running",
+    "status": "reviewed_model_control_eligible",
     "schedulable_now": false,
-    "model_trial_allowed": false,
+    "model_trial_allowed": true,
     "source_commit": "9e140d0ff765257a42166211be21146022fce023",
     "sources": {
       "tools/sycl/supervision_model.py": "bbe8483c8584f56c68369568a44caf301bcd8f4bebd7c2fd8a9e9e63a6afb5cc",
@@ -12656,7 +12656,7 @@
     "report_path": ".cache/strata-research/20261027/supervision-model-source-audit-v6.md",
     "report_budget_bytes": 12288,
     "consumer": "Main bounded six-process supervisor comparison after independent native Luna/max review.",
-    "next_review": "Native completed-report review,exact source/plan admission,then each owned process boundary.",
+    "next_review": "Each model process closure;stop cohort on first execution,contract or budget failure.",
     "limits": "Read only;write named report only. No Git,process inspection,build,test,GPU,profiler,product/index edits,dependency changes,subagents or XeStrata-derived code. No steering.",
     "main_reads_body_on_arrival": false,
     "dispatch": {
@@ -12669,7 +12669,25 @@
       "effort": "high",
       "basis": "PriorV5dispatch completed/released/ACK;fresh /new current-worktree GPT6Luna/high prompt observed.",
       "input_accepted": true,
-      "turn_start_observed": true
-    }
+      "turn_start_observed": true,
+      "outcome": "succeeded_settled",
+      "done_message": "msg_80ece6c090ec",
+      "delivery": "delivery_e98646b76a66",
+      "acknowledged": true,
+      "release": "accepted external-terminal retention,no process action;not claimed process exit"
+    },
+    "report_bytes": 8494,
+    "report_sha256": "2113c6363affcf82c5592ea5e3477556a69007a15853626e67f9530646f05d48",
+    "native_review": {
+      "path": ".cache/strata-research/20261027/supervision-model-source-audit-v6.review.json",
+      "bytes": 4577,
+      "sha256": "9da7b3a055d86092177c6855dc159442ff66fdb2047280652df00320429f24f8",
+      "reviewer": "/root/review_supervision_model_contract_v6_20261027",
+      "corrections": [
+        "The source rejects unexpected Python environment keys, but the cited test exercises changed and missing expected values rather than adding an unexpected key. This test-coverage wording does not block eligibility because the live comparator enforces the extra-key rejection.",
+        "At review time the index row status is native_report_review_running and model_trial_allowed is false; the report's queued label is stale state. Main must propagate this completed review to the index row before run_one() can admit a launch."
+      ]
+    },
+    "operational_digest": "Eligible for bounded six-process model control only;all five hashes and frozen plan match,zero model outcomes. Mock loopback service observes late tokenizer/telemetry mappings;actual live gate still rejects any unobserved path. Test detail:changed/omitted expected environment values are exercised,not an explicitly added child key;live source rejects unapproved extras. Main must commit this eligibility and verify actual ownership/launch-time inputs. No inference adoption or historical cause."
   }
 }
