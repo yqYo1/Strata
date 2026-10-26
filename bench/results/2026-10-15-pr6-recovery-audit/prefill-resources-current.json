@@ -2728,6 +2728,151 @@
       "remaining": "Fourteen older provenance holds and separate pending numerical/model/full-context/upstream gates are unchanged."
     },
     "fused_command_profile": {
+      "public_gu_dispatch_calibration": {
+        "stage": "prepared",
+        "source_commit": "7c52325edf5568e9653c60d843018c29ec408702",
+        "compatibility_sha256": "9549727b07f0db756f771e3070460c1d2f83a310e02da5b18a68775f2d420399",
+        "native_build_source_commit": "2369886e91da7d4f570d43ba17aacb242b838c60",
+        "fixture": {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/native16-public-control-v4/build/sycl_moe_gu_swiglu_bench",
+          "sha256": "e85080e7342175497a0fc3b9170fad8cb4a8efd2f0cd6a312f2af687f1556477",
+          "bytes": 13082784
+        },
+        "compiled_inputs": {
+          "files": 1427,
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/native16-public-control-v4/compiler-inputs.json",
+          "sha256": "c534c4970837ddc842f6909cf13f6765971c2ba39ee2bc93ba7c15bf129df5ac",
+          "uncovered": 0
+        },
+        "runtime_manifest": {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/native16-compatibility-smoke-v2/runtime-inputs.json",
+          "sha256": "43de9b527585addcc6da1f8fdc6f1e8266e2d982ba4c752d909578ed8c7bde21",
+          "files": 84
+        },
+        "runtime_sha256": "09ad358e12f6ef58bfc0a978519927863f3d09949a033a1e224db95997647d97",
+        "boot": "cfda0b6a-7c13-4fe2-bdf5-8f9202770840",
+        "driver": {
+          "pci": "/sys/bus/pci/devices/0000:05:00.0",
+          "driver": "xe",
+          "vendor": "0x8086",
+          "device": "0xe20c",
+          "kernel": "7.0.0-38-generic",
+          "devcoredump": false
+        },
+        "environment": {
+          "PATH": "/usr/bin:/bin",
+          "HOME": "/home/yayoi",
+          "LANG": "C.UTF-8",
+          "LC_ALL": "C.UTF-8",
+          "PYTHONDONTWRITEBYTECODE": "1",
+          "LD_LIBRARY_PATH": "/opt/intel/oneapi/compiler/2026.2/lib:/opt/intel/oneapi/umf/1.2/lib:/opt/intel/oneapi/mkl/2026.1/lib",
+          "ONEAPI_DEVICE_SELECTOR": "level_zero:gpu",
+          "UR_ADAPTERS_FORCE_LOAD": "/opt/intel/oneapi/compiler/2026.2/lib/libur_adapter_level_zero_v2.so.0.12.0",
+          "UR_L0_V2_FORCE_DISABLE_COPY_OFFLOAD": "1",
+          "NEOReadDebugKeys": "1",
+          "EnableDirectSubmission": "0",
+          "STRATA_SYCL_PREFILL_SAME_QUEUE": "1",
+          "STRATA_SYCL_VERIFY_NATIVE_CAPTURE": "0",
+          "SYCL_CACHE_PERSISTENT": "0",
+          "ZES_ENABLE_SYSMAN": "0",
+          "UR_ENABLE_LAYERS": "UR_LAYER_TRACING,UR_LAYER_PARAMETER_VALIDATION",
+          "UR_LOG_TRACING": "level:info;flush:info;output:stderr",
+          "UR_LOG_VALIDATION": "level:warning;flush:warning;output:stderr",
+          "UR_LOG_LOADER": "level:warning;flush:warning;output:stderr",
+          "UR_LOG_LEVEL_ZERO": "level:warning;flush:warning;output:stderr",
+          "TMPDIR": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/native16-public-control-v4/tmp",
+          "XDG_CACHE_HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/native16-public-control-v4/cache",
+          "STRATA_SYCL_PREFILL_NATIVE16": "bf16",
+          "STRATA_SYCL_PREFILL_NATIVE16_BACKEND": "vllm",
+          "STRATA_SYCL_PREFILL_NATIVE16_VLLM_TILE": "auto",
+          "STRATA_SYCL_PREFILL_COMMAND_PROFILE": "0",
+          "STRATA_SYCL_PREFILL_FUSED_COMMAND_PROFILE": "0",
+          "ZE_ENABLE_ALT_DRIVERS": "/usr/lib/x86_64-linux-gnu/libze_intel_gpu.so.1.17.39758",
+          "LD_PRELOAD": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/ur-validation-preload-v2/libstrata_ur_validation.so",
+          "STRATA_UR_PROBE_EXPECTED_LOADER": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0"
+        },
+        "cases": [
+          {
+            "name": "profile0",
+            "arm": 0,
+            "profile": true,
+            "ordinal": 0
+          },
+          {
+            "name": "profile1",
+            "arm": 1,
+            "profile": true,
+            "ordinal": 0
+          },
+          {
+            "name": "bench0",
+            "arm": 0,
+            "profile": false,
+            "ordinal": 0
+          },
+          {
+            "name": "bench1",
+            "arm": 1,
+            "profile": false,
+            "ordinal": 0
+          },
+          {
+            "name": "bench2",
+            "arm": 1,
+            "profile": false,
+            "ordinal": 1
+          },
+          {
+            "name": "bench3",
+            "arm": 0,
+            "profile": false,
+            "ordinal": 1
+          },
+          {
+            "name": "bench4",
+            "arm": 0,
+            "profile": false,
+            "ordinal": 2
+          },
+          {
+            "name": "bench5",
+            "arm": 1,
+            "profile": false,
+            "ordinal": 2
+          }
+        ],
+        "processes": [],
+        "sample_columns": [
+          "rows",
+          "round",
+          "repeat",
+          "selected",
+          "fallback",
+          "wall_ns",
+          "queue_interval_ns",
+          "max_half_ulp"
+        ],
+        "active": false,
+        "ownership_closed": true,
+        "complete": false,
+        "passed": false,
+        "GPU_executed": false,
+        "model_executed": false,
+        "inference_adopted": false,
+        "hardware_saturation_qualified": false,
+        "question": "Calibrate the actual GU public dispatcher/fallback at M160/2333/2334 with this official SDK;separate event GPU service from queue/wall intervals,without claiming original-engine regression causality.",
+        "plan": "Two fresh traced profile processes(startup fusion0/large),then six clean component processes 0/1/1/0/0/1. Fixed512calls at M160 and128calls at M2333/2334;one initial timing batch after setup and five later batches per shape. All batches require >=10ms wall/queue,endpoint controls<=1percent and timer resolution<=0.1percent of queue interval;actual timed dispatch counts must agree. Independent process pairs are(bench0,bench1),(bench3,bench2),(bench4,bench5). Report every sample;no speed-based stop,retry,selection or model advancement. Stop first source/provider/oracle/guard/owner/budget/fault failure. Validation/preload safety remains charged.",
+        "limits": "Profile service comes from isolated checked-drain calls,not matched clean-batch GPU service. Queue intervals include host submission gaps. Batch wall includes submission and completion;thread CPU submission/wait split is not measured by this existing fixture. External ownership/provider observation and parameter validation are charged;their separate overhead is not established by endpoint timing controls. Setup/warmup precedes the first timing batch:it is not cold-process or model first-use latency. Official compiler/component timings do not attribute the historical same-original-binary decline or establish a whole-model/physical-bus/GDDR/arithmetic ceiling.",
+        "budgets": {
+          "wall": 300,
+          "cpu": 1200,
+          "rss_cap": 4294967296,
+          "text_cap": 8388608,
+          "file_cap": 33554432,
+          "total_cap": 67108864
+        },
+        "retention": "Keep compact individual timing samples,profile service/dispatch/count/conservation/clock limits and source/runtime identities. Retire normal API/JIT/process logs after closure. Official4fixtures and SDK proof remain only until the resulting next component/model qualification decision."
+      },
       "native16_compatibility_smoke": {
         "stage": "qualified",
         "source_commit": "1cca832a506ce4861ae198b4862996ad11affa86",
