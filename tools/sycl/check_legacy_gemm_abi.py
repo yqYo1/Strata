@@ -4,6 +4,7 @@
 No pipeline, repeated-batch timing, model, decode or environment mutation.
 """
 import copy
+from collections import Counter
 import fcntl
 import json
 from pathlib import Path
@@ -93,9 +94,10 @@ def prepare():
     save(row); print('Prepared; commit the exact one-process plan before running.', flush=True)
 
 
-def current(row):
+def current(row, historical=False):
     require(q.build.scope(r.validation.committed(RESULT))[KEY] == compact(row), 'commit exact matrix plan')
-    require(q.gen.benchmark_pins(row['source_commit']) == row['controller_inputs'], 'controller changed')
+    require(q.gen.benchmark_pins(row['source_commit'], match_worktree=not historical) ==
+            row['controller_inputs'], 'controller changed or original source unrecoverable')
     require(q.native(NATIVE, BUILD_KEY)[2] == row['native_build'], 'original native proof changed')
     require(digest(r.RESULT) == row['runtime_sha256'], 'qualified runtime record changed')
     rt = r.validation.committed(r.RESULT); r.current(rt)
@@ -103,6 +105,77 @@ def current(row):
     require(digest(row['runtime_manifest']['path']) == row['runtime_manifest']['sha256'] and
         json.loads(Path(row['runtime_manifest']['path']).read_text()) == row['runtime_files'] and
         all(digest(p) == sha for p, sha in row['runtime_files'].items()), 'prospective provider changed')
+
+
+def api_counts(trace):
+    # UR entries end after the function name; arguments occur on RETURN lines.
+    entries = re.findall(r'^\s*---> (urEnqueue\w+)\s*$', trace, re.M)
+    returns = re.findall(r'^\s*<--- (urEnqueue\w+)\(.*\) -> (UR_RESULT_\w+);$', trace, re.M)
+    calls = Counter(entries)
+    require(calls == Counter(name for name, _ in returns) and
+        all(status == 'UR_RESULT_SUCCESS' for _, status in returns), 'unbalanced or failed enqueue trace')
+    require(sum(v for k, v in calls.items() if k.startswith('urEnqueueKernelLaunch')) > 0 and
+        calls['urEnqueueUSMMemcpy'] > 0, 'GPU launch/copy trace missing')
+    return dict(sorted(calls.items()))
+
+
+def prepare_replay(row):
+    require(row['stage'] == 'failed' and not row['passed'] and not row['complete'] and
+        row['outcome']['ownership_closed'] and row['outcome']['fresh_faults'] == [] and
+        row['outcome'].get('error') == "RuntimeError('GPU launch/copy trace missing')" and
+        'evidence_replay' not in row, 'only the original closed parser failure may be replayed')
+    current(row, historical=True)
+    paths = [ROOT / n for n in ('execution.json', 'runtime-inputs.json', 'ur.trace',
+        'owned/matrix-only.stdout', 'owned/matrix-only.stderr')]
+    if (ROOT / 'validation.log').exists(): paths.append(ROOT / 'validation.log')
+    row['evidence_replay'] = dict(stage='prepared', passed=False, GPU_executed=False,
+        source_commit=r.validation.git('rev-parse', 'HEAD').decode().strip(),
+        original_failed_commit='d708f9ab3', input_sha256={str(p): digest(p) for p in paths},
+        validation_log_present=(ROOT / 'validation.log').exists(),
+        criteria='Offline replay only;preserve original failed stage/outcome. Recover original '
+            'controller/native/SDK/runtime and exact existing argv/environment/logs/normal owner '
+            'closure;verify22case footer,pre-main activation,no parameter warning,and balanced '
+            'successful API enqueue entry/returns. No new process or model/performance advancement.')
+    save(row); print('Prepared offline replay; commit its exact inputs first.', flush=True)
+
+
+def replay(row):
+    current(row, historical=True)
+    plan = row['evidence_replay']
+    require(plan['stage'] == 'prepared' and not plan['passed'] and not plan['GPU_executed'],
+        'single-use offline replay')
+    q.gen.benchmark_pins(plan['source_commit'])
+    require(all(digest(p) == sha for p, sha in plan['input_sha256'].items()) and
+        (ROOT / 'validation.log').exists() == plan['validation_log_present'], 'frozen replay input changed')
+    original = q.build.scope(json.loads(r.validation.git('show',
+        plan['original_failed_commit'] + ':' + str(RESULT.relative_to(P)))))[KEY]
+    require(compact({k: v for k, v in row.items() if k != 'evidence_replay'}) == original,
+        'original failed outcome changed')
+    commands = json.loads((ROOT / 'execution.json').read_text())['commands']
+    require(len(commands) == 1, 'exactly one original native process required')
+    entry = commands[0]
+    require(r.supervision.closed(entry) and entry['exit_code'] == 0 and
+        entry['argv'] == [row['native_reference']['executable']['path'], *row['args']] and
+        entry['environment'] == row['environment'], 'native ownership/argv/environment mismatch')
+    for name, info in entry['logs'].items():
+        p = ROOT / 'owned' / name
+        require(p.stat().st_size == info['bytes'] and digest(p) == info['sha256'], 'original process log changed')
+    text = (ROOT / 'owned/matrix-only.stdout').read_text()
+    require(text == 'SYCL oneMKL GEMM: 22 CPU parity cases passed\n'
+        'MATRIX_SUBSUITE_PASS; pipeline and separate-queue cases UNRUN\n', 'matrix subset differs')
+    activation = r.validation.preload_evidence((ROOT / 'owned/matrix-only.stderr').read_text(), entry['pid'])
+    require(activation['loader'] == row['environment']['STRATA_UR_PROBE_EXPECTED_LOADER'] and
+        (not plan['validation_log_present'] or not (ROOT / 'validation.log').stat().st_size),
+        'activation/validation evidence differs')
+    counts = api_counts((ROOT / 'ur.trace').read_text())
+    plan.update(stage='closed', passed=True, CPU_parity_cases=22, full_API_entry_counts=counts,
+        native_exit_code=0, native_elapsed_seconds=entry['elapsed_seconds'], pre_main_validation=activation,
+        original_live_environment_provider_checks='Original committed controller passed its live '
+            'environment/map/provider requirements before the trace-parser refusal;not reconstructed maps.',
+        source_runtime_recovered=True, original_failure_preserved=True,
+        model_executed=False, performance_qualified=False, physical262144_qualified=False)
+    save(row); print(json.dumps(plan), flush=True)
+    return 0
 
 
 def run(row):
@@ -155,10 +228,7 @@ def run(row):
             text.count('MATRIX_SUBSUITE_PASS; pipeline and separate-queue cases UNRUN') == 1,
             'matrix checks or subset declaration missing')
         trace = (ROOT / 'ur.trace').read_text()
-        calls = {name: len(re.findall(r'--->\s*' + name + r'\(', trace)) for name in
-            ('urEnqueueKernelLaunchWithArgsExp', 'urEnqueueKernelLaunch', 'urEnqueueUSMMemcpy')}
-        require(sum(v for k, v in calls.items() if 'KernelLaunch' in k) > 0 and
-            calls['urEnqueueUSMMemcpy'] > 0, 'GPU launch/copy trace missing')
+        calls = api_counts(trace)
         row['details'] = dict(CPU_parity_cases=22, stride_guards=True, pipeline_executed=False,
             full_API_entry_counts=calls, pre_main_validation=activation,
             observed_providers={p: row['runtime_files'][p] for p in sorted(seen & set(row['runtime_files']))})
@@ -180,7 +250,9 @@ def main():
         fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB); r.guards.no_model_owners([])
         if sys.argv[1:] == ['prepare']: prepare(); return 0
         if sys.argv[1:] == ['run']: return run(json.loads((ROOT / 'record.json').read_text()))
-        raise RuntimeError('use prepare or run')
+        if sys.argv[1:] == ['prepare-replay']: prepare_replay(json.loads((ROOT / 'record.json').read_text())); return 0
+        if sys.argv[1:] == ['replay']: return replay(json.loads((ROOT / 'record.json').read_text()))
+        raise RuntimeError('use prepare/run or prepare-replay/replay')
 
 
 if __name__ == '__main__': sys.exit(main())
