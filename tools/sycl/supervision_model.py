@@ -90,6 +90,12 @@ def save(row):
 
 
 def qualification():
+    tests = runtime.validation.committed(RESULT, ('historical_regression_audit', 'supervision_profile_admission_v2'))
+    require(tests['passed'] and tests['exit_code'] == 0 and tests['cases'] == 5 and
+        all(digest(P / name) == pin and hashlib.sha256(gen.git('show', tests['source_commit'] + ':' + name)).hexdigest() == pin
+            for name, pin in tests['sources'].items()) and
+        set(tests['sources']) == {'tools/sycl/supervision_model.py', 'tools/test_sycl_supervision_model.py'},
+        'committed exact profile-admission corruption controls required')
     rt = runtime.validation.committed(runtime.RESULT); full = runtime.current(rt)
     host = runtime.validation.committed(RESULT, ('historical_regression_audit', 'owner_scan_control_v3'))
     require(host == json.loads((HOST / 'record.json').read_text()) and host['stage'] == 'closed' and
@@ -105,7 +111,7 @@ def qualification():
         str(Path(sys.executable).resolve()) == host['plan']['python'] and
         sys.flags.isolated == sys.flags.no_site == sys.flags.dont_write_bytecode == 1 and sys.flags.optimize == 0,
         'qualified host Python/providers or flags changed')
-    return full, rt, dict(host_gate=identity(host), candidate_sha256=digest(candidate.__file__),
+    return full, rt, dict(host_gate=identity(host), profile_tests=identity(tests), candidate_sha256=digest(candidate.__file__),
         baseline_sha256=digest(baseline.__file__), providers_sha256=host['plan']['providers_sha256'])
 
 
