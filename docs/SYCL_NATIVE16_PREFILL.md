@@ -24,7 +24,7 @@ cache publication and restored runtime state, then repeat matched decode checks.
 Keep short-input prefill through the decode weight/cache layout available.
 Do not change process environment variables between phases.
 
-The active source now restores nine prefill/planning/compatibility paths exactly
+The source restoration returned nine prefill/planning/compatibility paths
 to6e40 and the15 coupled layout/admission/pricing/loan hunks in `generate.cpp`.
 Its18 independent diagnostic/observer hunks are preserved byte-for-byte.
 The unused streamed-QSA writer, host-span export and fixture are removed.
@@ -32,6 +32,10 @@ Decode kernels, configuration and1256-slot placement remain selected as before.
 The measured restoration used native source`1baa0547f` and engine SHA prefix`2a128c6a`.
 The original6e40 executable remains the selected fallback; restored-source
 prefill speed screen now fails; task and full-context qualification is pending.
+The current tree also contains unselected upload-staging code from the closed
+component trials below. Retire its unused exports/targets at the first unfrozen
+boundary,preserving independent ownership fixes. This code is not in the selected
+original6e40 executable and does not explain a same-executable speed decline.
 
 The reviewed `selected_native_tree_reconcile_20261025` decision in the
 [research index](../bench/results/2026-10-15-pr6-recovery-audit/research-index.json)
@@ -447,6 +451,15 @@ and padding,so it is neither the full model's operation count nor measured6e40
 arithmetic service or hardware utilization. Use these actual shapes/work counts,
 with compatible qualified service rates,before deriving a hardware ceiling from
 an active-parameter label or a busy percentage.
+
+The corrected source ledger in the research index also counts489.9315TFLOPs
+for the36 layers' GDN projections and148.7581TFLOPs for both HC projection
+halves in48layers,at117488rows. These are additional logical matrix operations,
+not measured service or issued instructions. The projection call shapes remain
+present in the selected6e40 source;normalization,recurrent FP32 work,attention,
+shared FFN and data movement still need separate accounting. An MoE-only
+operation count therefore cannot stand for the full prompt or share one
+unqualified arithmetic ceiling across these different operators.
 
 The retained fused-profile generation now includes a separately built diagnostic
 whole engine,source022652cc5/frozen recipe9852c86a8,with1403 actual compiled inputs
