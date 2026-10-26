@@ -17,8 +17,8 @@ if str(SOURCE.parent) not in sys.path: sys.path.insert(0, str(SOURCE.parent))
 import measurement_owner as ownership
 
 B = Path('/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007')
-HOST = B / 'benchmark-python-admission-v1'
-SCOPE = 'benchmark_python_runtime_v1'
+HOST = B / 'benchmark-python-admission-v2'
+SCOPE = 'benchmark_python_runtime_v2'
 require = ownership.require
 
 
@@ -100,8 +100,9 @@ def check_running(pid, script, selected, env, allowed_maps):
     require(executable and str(Path(executable).absolute()) == str(Path(selected['path']).absolute()) and
         str(Path(executable).resolve()) == selected['file']['realpath'], 'Python argv/venv resolution differs')
     actual = dict(v.split(b'=', 1) for v in Path('/proc', str(pid), 'environ').read_bytes().split(b'\0') if b'=' in v)
-    for key in ('PATH', 'PYTHONNOUSERSITE', 'PYTHONDONTWRITEBYTECODE', 'PYTHONPYCACHEPREFIX', 'PYTHONPATH', 'PYTHONHOME'):
-        require(actual.get(key.encode()) == (env[key].encode() if key in env else None), 'actual Python environment differs: ' + key)
+    require(all(actual.get(k.encode()) == v.encode() for k, v in env.items()) and
+        set(actual) - {k.encode() for k in env} <= {b'PWD', b'OLDPWD', b'SHLVL', b'_'},
+        'actual Python environment differs;only shell PWD/OLDPWD/SHLVL/_ additions allowed')
     require(set(code_maps(pid)) <= set(allowed_maps), 'unqualified Python code mapping')
     after = ownership.identity(pid)
     require(after and all(after[k] == before[k] for k in ('pid', 'start_ticks', 'sid')), 'Python identity changed during check')
@@ -137,7 +138,7 @@ def host_action(phase):
         fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB); control.runtime.guards.no_model_owners([])
         control.qualification()
         previous = control.runtime.validation.committed(control.RESULT,
-            ('historical_regression_audit', 'supervision_model_control_v2'))
+            ('historical_regression_audit', 'supervision_model_control_v3'))
         require(previous['stage'] == 'closed-unlaunched' and not previous['native_launched'], 'preserve original runtime refusal')
         seed = dict(previous, environment_template=control.gen.committed(control.TEMPLATE)['environment_template'])
         env = control.environment(seed, HOST); require_environment(env); chosen = selection(env)

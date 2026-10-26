@@ -28,12 +28,12 @@ import owner_candidate as candidate
 import runtime_probe as runtime
 
 B, A = gen.B, gen.A
-ROOT = B / 'prefill-supervision-cost-v3'
+ROOT = B / 'prefill-supervision-cost-v4'
 HOST = B / 'owner-scan-control-v3'
 RESULT = A / 'prefill-runtime-comparison-current.json'
 TEMPLATE = A / 'phase-prefill-speed-current.json'
-KEY = 'supervision_model_control_v3'
-REVIEW = 'supervision_model_source_contract_v3_20261027'
+KEY = 'supervision_model_control_v4'
+REVIEW = 'supervision_model_source_contract_v4_20261027'
 ORDER = ('baseline', 'candidate', 'candidate', 'baseline', 'baseline', 'candidate')
 require, digest = runtime.require, runtime.digest
 
@@ -91,7 +91,7 @@ def save(row):
 
 
 def qualification():
-    tests = runtime.validation.committed(RESULT, ('historical_regression_audit', 'supervision_input_admission_v4'))
+    tests = runtime.validation.committed(RESULT, ('historical_regression_audit', 'supervision_input_admission_v5'))
     require(tests['passed'] and tests['exit_code'] == 0 and tests['cases'] == 9 and
         all(digest(P / name) == pin and hashlib.sha256(gen.git('show', tests['source_commit'] + ':' + name)).hexdigest() == pin
             for name, pin in tests['sources'].items()) and
@@ -167,7 +167,7 @@ def current(row):
 
 def prepare():
     require(not ROOT.exists() and KEY not in gen.committed(RESULT)['historical_regression_audit'], 'single-use model control')
-    previous = runtime.validation.committed(RESULT, ('historical_regression_audit', 'supervision_model_control_v2'))
+    previous = runtime.validation.committed(RESULT, ('historical_regression_audit', 'supervision_model_control_v3'))
     require(previous['stage'] == 'closed-unlaunched' and previous['native_launched'] is False and
         not previous['processes'], 'preserve original unlaunched runtime-admission failure')
     full, rt, proof = qualification()
@@ -189,11 +189,11 @@ def prepare():
         plan=dict(source_commit=source, order=list(ORDER), process_plans=[],
             question='Does lower-cost equivalent host supervision improve original6e40 whole-prefill timing?',
             work='Six fresh processes,baseline/candidate/candidate/baseline/baseline/candidate;four117489fresh/zero-reuse/thinking-on/24output requests each. Original22182f1a engine,1256decode slots,131072INT8 resident context,8192chunks,BF16/vLLM/mode10,384bank,original preload and immutable qualified safety settings. All arms share configuration except log paths;expert-profile committed bytes and file identity are checked before every process and after execution,in addition to15model assets. No profiler,clock sampler,inference or placement change.',
-            timing='First use separate;each process contributes median of subsequent3. All3 paired candidate/baseline ratios and geometric mean retained. Actual controller CPU/gate elapsed measured once/request,including existing resource,artifact and protocol work.',
+            timing='First use separate;each process contributes median of subsequent3. All3 paired candidate/baseline ratios and geometric mean retained. Controller CPU/gate interval starts when begin gate is received,before protocol validation,artifact/native/provider/Python admission,and ends after end-gate validation and artifact check. It includes begin-gate continue plus request polling/resource/protocol work;excludes its own window receipt write,progress print,end-gate continue,startup and final audits. Engine prompt milliseconds remain the separate speed metric.',
             CPU_budget='Host-only candidate gate<=5percent has passed. The full model control separately permits<=8percent candidate and<=20percent legacy controller CPU/gate elapsed to cover model-artifact/protocol/provider handling. Persist operands before checking. This does not repair the original failed5percent clock-observer diagnostic;no clock observer is used here.',
             acceptance='All source/provider/request/stream/journal/route/validation/fault/closure gates pass. Mechanism speed screen:all3pair ratios>1 and geometric mean>1.01. Historical1003and1006 comparisons descriptive only. No speed-based early stop/retries;stop first execution/contract/budget failure. No inference/default adoption from this control.',
             limits='24token outputs do not qualify sustained decode/70tok_s,quality/agent/physical262144/handoff or new engine. Parameter validation and existing launch boundaries remain charged;source review and host gate precede execution. BOOTTIME/MONOTONIC divergence>50ms rejects suspend.',
-            Python_runtime='Same bench.sh selects admitted interpreter/venv;all external Python search trees and imported mappings are hashed. Two definition-only discovery processes are excluded;two fresh probes pass the separately committed manifest. Both model arms disable user site and use empty private bytecode-cache prefixes;native safety/placement stay fixed. Actual benchmark/server executable,argv/venv,environment and executable maps are checked at every request begin. This is a new controlled Python-startup envelope,not an exact historical runtime replay.',
+            Python_runtime='Same bench.sh selects admitted interpreter/venv;all external Python search trees and imported mappings are hashed. Two definition-only discovery processes are excluded;two fresh probes pass the separately committed manifest. Both model arms disable user site and use empty private bytecode-cache prefixes;native safety/placement stay fixed. Actual benchmark/server executable,argv/venv,complete expected environment and executable maps are checked at every request begin;only additional shell PWD/OLDPWD/SHLVL/_ keys are permitted. This is a new controlled Python-startup envelope,not an exact historical runtime replay.',
             budgets=dict(wall=3000, cpu=72000, rss_cap=104 << 30, text_cap=32 << 20, file_cap=64 << 20, total_cap=128 << 20),
             whole_bytes=768 << 20,
             retention='Keep24individual clock/work/CPU samples,source/native/runtime/config/recipe and decisions. Retire normal logs/JIT/closed controls after replay;no new engine build. Retain qualified host record/provider manifest only through this comparison.'))
@@ -245,8 +245,10 @@ def run_one(row):
                 while True:
                     line = io.line(1500)
                     if line.startswith('STRATA_PROFILE_GATE '): break
+                if stage == 'begin': boundary = (time.process_time_ns(), awake())
                 require(json.loads(line.removeprefix('STRATA_PROFILE_GATE ')) == dict(stage=stage, phase='prefill-only', run=request), 'request gate differs')
                 require(not (root / 'validation.log').exists() or not (root / 'validation.log').stat().st_size, 'parameter warning')
+                require(baseline.artifact_bytes(ROOT) <= row['plan']['whole_bytes'], 'whole model byte budget')
                 if stage == 'begin':
                     claim = json.loads((root / 'engine-start.json').read_text()); pid = claim['native']['pid']; ident = baseline.identity(pid)
                     require(ident and ident['start_ticks'] == claim['native']['start_ticks'] and ident['sid'] == leader['pid'] and
@@ -266,7 +268,6 @@ def run_one(row):
                         python_manifest['selected'], process['environment'], allowed_python_maps),
                         server=python_runtime.check_running(server['pid'], P / 'serve/server.py',
                         python_manifest['selected'], process['environment'], allowed_python_maps))
-                    boundary = (time.process_time_ns(), awake())
                 else:
                     cpu, elapsed = time.process_time_ns() - boundary[0], awake() - boundary[1]
                     window = dict(request=request, controller_cpu_ns=cpu, gate_elapsed_ns=elapsed, fraction=cpu / elapsed,
@@ -274,7 +275,6 @@ def run_one(row):
                     outcome['request_windows'].append(window); persist()
                     require(0 <= window['fraction'] <= window['maximum'], 'request controller CPU budget: ' + json.dumps(window))
                     print(f"Process{index}/{process['arm']}:long request{request + 1}/4 complete", flush=True)
-                require(baseline.artifact_bytes(ROOT) <= row['plan']['whole_bytes'], 'whole model byte budget')
                 io.send(b'continue\n')
         io.proc.stdin.close(); deadline = time.monotonic() + 180
         while not io.exit_watch.poll(0) or not io.eof:

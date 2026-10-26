@@ -110,6 +110,13 @@ class RuntimeInputs(unittest.TestCase):
                 with self.assertRaises(RuntimeError): self.runtime.check_running(entry['pid'], source, wrong, env, allowed)
                 with self.assertRaises(RuntimeError):
                     self.runtime.check_running(entry['pid'], source, chosen, dict(env, PYTHONNOUSERSITE='0'), allowed)
+                # Locale and unrelated extra keys escaped the old six-key check.
+                # Exercise the actual owned child,not a duplicate env comparator.
+                with self.assertRaises(RuntimeError):
+                    self.runtime.check_running(entry['pid'], source, chosen, dict(env, LANG='C'), allowed)
+                missing = {k: v for k, v in env.items() if k != 'LANG'}
+                with self.assertRaises(RuntimeError):
+                    self.runtime.check_running(entry['pid'], source, chosen, missing, allowed)
                 with self.assertRaises(RuntimeError): self.runtime.check_running(entry['pid'], source, chosen, env, [])
                 io.proc.stdin.close(); io.exit(3)
             owner = control.baseline.Owner(self.root / 'owned', persist)
