@@ -352,7 +352,34 @@ struct ReadonlySlab {
     ~ReadonlySlab() { if(pointer && pointer!=MAP_FAILED) munmap(pointer,bytes); }
     ReadonlySlab(const ReadonlySlab&)=delete;
 };
-void staging_benchmark(int process, bool custom_queue=false, bool attribution=false) {
+void bank_padding_guard(sycl::queue& q,const uint32_t* base,size_t stride,size_t payload,uint32_t* status) {
+    need(stride==payload+256 && payload%4==0 && stride<=(16u<<20),"padding guard geometry");
+    q.parallel_for(sycl::range<1>(384*64),[=](sycl::id<1> item) {
+        const size_t slot=item[0]/64,word=item[0]%64;
+        if(base[(slot*stride+payload)/4+word]!=Guard)
+            sycl::atomic_ref<uint32_t,sycl::memory_order::relaxed,sycl::memory_scope::device,
+                sycl::access::address_space::global_space>(*status).fetch_or(2);
+    });
+}
+void bank_padding_guard_smoke() {
+    auto runtime=sb::runtime_for();auto q=runtime->make_queue(true);
+    sb::Allocation data(runtime,384*512,sb::MemoryKind::Device),flag(runtime,4,sb::MemoryKind::Device);
+    auto drain=[&]{q.wait_and_throw();runtime->check();};
+    pd::DraftUploadGuard lease([&]{drain();return true;},
+        []{sb::cleanup_fail_stop("padding guard fixture retirement");});lease.arm();
+    const std::array<int64_t,8> offsets{{-1,252,256,508,191*512+256,191*512+508,383*512+256,383*512+508}};
+    for(size_t test=0;test<offsets.size();++test) {
+        uint32_t zero=0,observed=~uint32_t(0);
+        q.memset(data.data(),0xa5,data.size());q.memset(flag.data(),0,4);
+        if(offsets[test]>=0)q.memcpy(data.as<uint8_t>()+offsets[test],&zero,4);
+        bank_padding_guard(q,data.as<uint32_t>(),512,256,flag.as<uint32_t>());
+        q.memcpy(&observed,flag.data(),4);drain();
+        need(observed==(test<2?0u:2u),"padding guard missed boundary or rejected payload bytes");
+    }
+    lease.retire();std::cout<<"padding_guard_cases=8 first_middle_last_boundaries=PASS payload_exclusion=PASS\n";
+}
+void staging_benchmark(int process, bool custom_queue=false, bool attribution=false,
+                       bool device_guard=false, int rounds=9) {
     using Clock=std::chrono::steady_clock;
     auto runtime=sb::runtime_for();
     auto q=custom_queue?runtime->make_queue(true):runtime->compute();
@@ -385,70 +412,86 @@ void staging_benchmark(int process, bool custom_queue=false, bool attribution=fa
             drain();empty_controls[size_t(i)]=std::chrono::duration<double,std::milli>(Clock::now()-t).count();
             empty_wall_ms=std::max(empty_wall_ms,empty_controls[size_t(i)]);
         }
-        for(int round=-1;round<9;++round) for(int order=0;order<2;++order) {
+        for(int round=-1;round<rounds;++round) for(int order=0;order<2;++order) {
             const int arm=(process+round+2+order)%2;
             drain();pd::ExpertBankSlots slots(384);
             q.memset(cache.device_slot(0),0xa5,size_t(cache.bytes()));q.memset(status,0,4);drain();
             uint64_t uploads=0,hits=0,consumers=0;uint32_t observed=~uint32_t(0);
             const auto copies_before=staging.copies(),bytes_before=staging.copied_bytes();
-            std::unique_ptr<sb::command_profile::Trace> trace;
-            if(attribution) {
-                std::cerr<<"staging attribution sample: process="<<process<<" round="<<round
-                    <<" arm="<<arm<<" payload="<<payload<<'\n';
-                trace.reset(new sb::command_profile::Trace(&q,1));
-            }
-            auto frame=trace?trace->begin(0,0):sb::command_profile::Frame{};
-            for(int pass=0;pass<2;++pass)for(int e=0;e<512;++e)frame.consider(e,pass*512+e,1);
-            const auto marker=bank_marker(q);
-            auto cpu_scope=std::make_unique<sb::cpu_wait_profile::Scope>(attribution);
-            const auto begin=Clock::now();const double begin_cpu=thread_seconds();
-            pd::DraftUploadGuard lease([&]{drain();return true;},
-                []{sb::cleanup_fail_stop("staging benchmark retirement");});lease.arm();
-            for(int pass=0;pass<2;++pass)for(int e=0;e<512;++e) {
-                auto upload_tag=frame.tag(sb::command_profile::Kind::expert_upload,e,pass*512+e,1);
-                const auto ticket=pd::stage_private_expert_bank(slots,bank,
-                    static_cast<const uint8_t*>(slab.pointer),slab_bytes,payload,e,&q,stride,arm?&staging:nullptr);
-                uploads+=ticket.upload;hits+=!ticket.upload;
-                const auto* blob=reinterpret_cast<const uint32_t*>(bank.device_slot(ticket.slot));
-                const size_t words=payload/4;
-                for(int job=0;job<2;++job) {
-                    const size_t global=(words+255)/256*256;
-                    auto reader_tag=frame.tag(sb::command_profile::Kind::gather,e,pass*512+e,1);
-                    auto event=q.parallel_for(sycl::nd_range<1>(global,256),[=](sycl::nd_item<1> item){
-                        const size_t i=item.get_global_linear_id();
-                        const bool bad=i<words && blob[i]!=value(e,i,1);
-                        const bool any=sycl::any_of_group(item.get_group(),bad);
-                        if(item.get_local_linear_id()==0 && any)
-                            sycl::atomic_ref<uint32_t,sycl::memory_order::relaxed,sycl::memory_scope::device,
-                                sycl::access::address_space::global_space>(*status).fetch_or(1);
-                    });sb::command_profile::observe(&q,event);++consumers;
+            double wall=0,cpu=0,queue_ms=0;
+            const auto observer_whole_begin=Clock::now();
+            { // Observer setup,planning,queries,formatting and destruction are charged below.
+                std::unique_ptr<sb::command_profile::Trace> trace;
+                if(attribution) {
+                    std::cerr<<"staging attribution sample: process="<<process<<" round="<<round
+                        <<" arm="<<arm<<" payload="<<payload<<'\n';
+                    trace.reset(new sb::command_profile::Trace(&q,1));
                 }
-            }
-            {
-                sb::cpu_wait_profile::Host status_enqueue(sb::cpu_wait_profile::moe_status);
-                auto status_tag=frame.tag(sb::command_profile::Kind::status,-1,0,1);
-                auto event=q.memcpy(&observed,status,4);sb::command_profile::observe(&q,event);
-            }
-            const auto end=bank_marker(q);drain();lease.retire();
-            const double wall=std::chrono::duration<double,std::milli>(Clock::now()-begin).count();
-            const double cpu=(thread_seconds()-begin_cpu)*1e3;
-            cpu_scope->complete(true);cpu_scope.reset();frame.after_checked_drain();
-            const auto a=marker.get_profiling_info<sycl::info::event_profiling::command_end>();
-            const auto b=end.get_profiling_info<sycl::info::event_profiling::command_start>();
-            need(b>a && uploads==641 && hits==383 && consumers==2048 && observed==0,"timed production bank contract");
-            need(staging.copies()-copies_before==(arm?uploads:0) &&
-                staging.copied_bytes()-bytes_before==(arm?uploads*payload:0),"timed staging dispatch counters");
+                auto frame=trace?trace->begin(0,0):sb::command_profile::Frame{};
+                for(int pass=0;pass<2;++pass)for(int e=0;e<512;++e)frame.consider(e,pass*512+e,1);
+                const auto marker=bank_marker(q);
+                auto cpu_scope=std::make_unique<sb::cpu_wait_profile::Scope>(attribution);
+                const auto begin=Clock::now();const double begin_cpu=thread_seconds();
+                pd::DraftUploadGuard lease([&]{drain();return true;},
+                    []{sb::cleanup_fail_stop("staging benchmark retirement");});lease.arm();
+                for(int pass=0;pass<2;++pass)for(int e=0;e<512;++e) {
+                    auto upload_tag=frame.tag(sb::command_profile::Kind::expert_upload,e,pass*512+e,1);
+                    const auto ticket=pd::stage_private_expert_bank(slots,bank,
+                        static_cast<const uint8_t*>(slab.pointer),slab_bytes,payload,e,&q,stride,arm?&staging:nullptr);
+                    uploads+=ticket.upload;hits+=!ticket.upload;
+                    const auto* blob=reinterpret_cast<const uint32_t*>(bank.device_slot(ticket.slot));
+                    const size_t words=payload/4;
+                    for(int job=0;job<2;++job) {
+                        const size_t global=(words+255)/256*256;
+                        auto reader_tag=frame.tag(sb::command_profile::Kind::gather,e,pass*512+e,1);
+                        auto event=q.parallel_for(sycl::nd_range<1>(global,256),[=](sycl::nd_item<1> item){
+                            const size_t i=item.get_global_linear_id();
+                            const bool bad=i<words && blob[i]!=value(e,i,1);
+                            const bool any=sycl::any_of_group(item.get_group(),bad);
+                            if(item.get_local_linear_id()==0 && any)
+                                sycl::atomic_ref<uint32_t,sycl::memory_order::relaxed,sycl::memory_scope::device,
+                                    sycl::access::address_space::global_space>(*status).fetch_or(1);
+                        });sb::command_profile::observe(&q,event);++consumers;
+                    }
+                }
+                {
+                    sb::cpu_wait_profile::Host status_enqueue(sb::cpu_wait_profile::moe_status);
+                    auto status_tag=frame.tag(sb::command_profile::Kind::status,-1,0,1);
+                    auto event=q.memcpy(&observed,status,4);sb::command_profile::observe(&q,event);
+                }
+                const auto end=bank_marker(q);drain();lease.retire();
+                wall=std::chrono::duration<double,std::milli>(Clock::now()-begin).count();
+                cpu=(thread_seconds()-begin_cpu)*1e3;
+                cpu_scope->complete(true);cpu_scope.reset();frame.after_checked_drain();
+                const auto a=marker.get_profiling_info<sycl::info::event_profiling::command_end>();
+                const auto b=end.get_profiling_info<sycl::info::event_profiling::command_start>();
+                need(b>a && uploads==641 && hits==383 && consumers==2048 && observed==0,"timed production bank contract");
+                need(staging.copies()-copies_before==(arm?uploads:0) &&
+                    staging.copied_bytes()-bytes_before==(arm?uploads*payload:0),"timed staging dispatch counters");
+                queue_ms=double(b-a)/1e6;
+            } // Frame dies before Trace;its after_checked_drain already retired events.
+            const double observer_whole_ms=std::chrono::duration<double,std::milli>(Clock::now()-observer_whole_begin).count();
             staging.check_guards();
-            std::vector<uint8_t> check(size_t(cache.bytes()));
-            q.memcpy(check.data(),cache.device_slot(0),check.size());drain();
-            for(size_t slot=0;slot<384;++slot)for(size_t i=payload;i<stride;++i)
-                need(check[slot*stride+i]==0xa5,"timed bank padding guard");
+            if(device_guard) {
+                // Same complete padding coverage as the host check,without a
+                // full-bank D2H transfer/allocation between measured batches.
+                // Payload bytes are independently checked by every reader.
+                bank_padding_guard(q,reinterpret_cast<const uint32_t*>(cache.device_slot(0)),
+                                   stride,payload,status);
+                q.memcpy(&observed,status,4);drain();
+                need(observed==0,"GPU bank padding guard");
+            } else {
+                std::vector<uint8_t> check(size_t(cache.bytes()));
+                q.memcpy(check.data(),cache.device_slot(0),check.size());drain();
+                for(size_t slot=0;slot<384;++slot)for(size_t i=payload;i<stride;++i)
+                    need(check[slot*stride+i]==0xa5,"timed bank padding guard");
+            }
             for(int e=0;e<512;++e)need(cache.slot_of(0,e)<0,"timed private map leaked");
-            const double queue_ms=double(b-a)/1e6;
             const bool eligible=wall>=10 && queue_ms>=10 && empty_wall_ms<=.05*wall;
             std::cout<<std::setprecision(17)<<"{\"kind\":\"staging_bank\",\"process\":"<<process
                 <<",\"custom_queue\":"<<(custom_queue?"true":"false")<<",\"round\":"<<round<<",\"order\":"<<order<<",\"arm\":"<<arm
                 <<",\"attribution\":"<<(attribution?"true":"false")
+                <<",\"device_guard\":"<<(device_guard?"true":"false")<<",\"observer_whole_wall_ms\":"<<observer_whole_ms
                 <<",\"payload_bytes\":"<<payload<<",\"source_stride\":"<<stride<<",\"bank_slots\":384"
                 <<",\"uploads\":"<<uploads<<",\"hits\":"<<hits<<",\"consumers\":"<<consumers
                 <<",\"wall_ms\":"<<wall<<",\"thread_CPU_ms\":"<<cpu<<",\"queue_interval_ms\":"<<queue_ms
@@ -465,6 +508,18 @@ void staging_benchmark(int process, bool custom_queue=false, bool attribution=fa
 
 int main(int argc, char** argv) try {
 #if defined(STRATA_SYCL_EXPERT_UPLOAD_ATTRIBUTION)
+    if(argc==2 && std::string(argv[1])=="--padding-guard-smoke") {
+        bank_padding_guard_smoke();std::cout<<"expert_bank_fixture PASS model=UNRUN\n";return 0;
+    }
+    if(argc==3 && (std::string(argv[1])=="--staging-guard-copy-off" ||
+                  std::string(argv[1])=="--staging-guard-device-off" ||
+                  std::string(argv[1])=="--staging-guard-device-on")) {
+        const int process=std::stoi(argv[2]);need(process>=0 && process<3,"guard process ordinal");
+        const std::string mode=argv[1];
+        staging_benchmark(process,true,mode=="--staging-guard-device-on",
+                          mode!="--staging-guard-copy-off",10);
+        std::cout<<"expert_bank_staging_benchmark PASS model=UNRUN\n";return 0;
+    }
     if(argc==3 && (std::string(argv[1])=="--staging-attribution-off" ||
                   std::string(argv[1])=="--staging-attribution-on")) {
         const int process=std::stoi(argv[2]);need(process>=0 && process<3,"attribution process ordinal");

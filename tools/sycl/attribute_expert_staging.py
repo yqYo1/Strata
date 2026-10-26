@@ -21,8 +21,8 @@ sys.dont_write_bytecode = True
 import build_fused_profile as n
 
 r, P, B, RESULT = n.r, n.P, n.B, n.RESULT
-ROOT = B / 'prefill-expert-attribution-v1'
-KEY = 'prefill_upload_attribution_v1'
+ROOT = B / 'prefill-expert-attribution-v2'
+KEY = 'prefill_upload_attribution_v2'
 OFFICIAL = Path('/opt/intel/oneapi/compiler/2026.2')
 UMF = Path('/opt/intel/oneapi/umf/1.2')
 PACKAGES = ['intel-oneapi-dpcpp-cpp-2026.2', 'intel-oneapi-compiler-dpcpp-cpp-runtime-2026.2',
@@ -66,6 +66,10 @@ def prepare():
     verified = subprocess.run(['dpkg', '--verify', *PACKAGES], capture_output=True, text=True, timeout=60)
     require(verified.returncode == 0 and not verified.stdout and not verified.stderr,
         'official package files changed')
+    prior_attribution = scope(c)['prefill_upload_attribution_v1']
+    require(prior_attribution['stage']=='closed' and prior_attribution['ownership_closed'] and
+        not prior_attribution['active'] and prior_attribution['summary']['attribution_qualified'] is False,
+        'preserve and close failed V1overhead gates before fresh source/protocol')
     previous = scope(c)['prefill_upload_staging_v5']
     require(previous['ownership_closed'] and not previous['active'] and previous['complete'] and
         previous['summary']['bank_dependency_gate_passed'] is False, 'close prior failed performance screen')
@@ -119,34 +123,39 @@ def prepare():
         build_limits=dict(wall=600, cpu=1800, rss_cap=8 << 30, text_cap=8 << 20, file_cap=128 << 20, total_cap=512 << 20),
         device_limits=dict(wall=600, cpu=1200, rss_cap=6 << 30, text_cap=8 << 20, file_cap=16 << 20, total_cap=128 << 20),
         device_cases=[['host-canary'], ['baseline-smoke', '--packed-custom-smoke'],
-                      ['staging-smoke', '--staging-custom-smoke'],
+                      ['staging-smoke', '--staging-custom-smoke'], ['padding-smoke','--padding-guard-smoke'],
                       ['staging-validate', '--staging-custom-validate'],
-                      ['bench-off0', '--staging-attribution-off', '0'],
-                      ['bench-on0', '--staging-attribution-on', '0'],
-                      ['bench-on1', '--staging-attribution-on', '1'],
-                      ['bench-off1', '--staging-attribution-off', '1'],
-                      ['bench-off2', '--staging-attribution-off', '2'],
-                      ['bench-on2', '--staging-attribution-on', '2']],
-        plan='Independent official2026.2 SDK;no model or original engine modification. Fresh diagnostic build '
-            'with compile-only transfer subregions,disabled in normal production. Three off/on,on/off,off/on '
-            'process pairs;both bank arms in every process,one first-use+nine subsequent rotated pairs per '
-            'payload. CPU transfer-preparation memcpy and API submission separated from explicit wait CPU/wall '
-            'and unclassified host time. Sample actual upload events plus synthetic full-data reader events '
-            'after checked retirement using existing bounded command observer. Samples are selected service, '
-            'not complete physical traffic or additive critical-path wall. Both timed arms call production '
-            'private-bank entrypoint;641uploads,383hits,2048byte-validation readers per batch. '
-            'Cold marker setup and five empty controls separate. Preserve V5failed performance gate; '
-            'this experiment qualifies attribution only and cannot advance a model or staging adoption.',
-        criteria='Normal owned closure,actual pinned official providers,pre-main/parameter validation, '
-            'same boot/no fresh faults,all guards/readers/maps/counts.240timing samples;every batch wall '
-            'and nonexclusive queue>=10ms,timer p99<=10us,empty-control max<=5percent wall. '
-            'Every on sample needs complete valid disjoint CPU accounting,zero throws,641upload submission '
-            'regions,staged641preparation regions versus ordinary0;one status region. '
-            'GPU observer exact641eligible copies,2048eligible readers,one status;all selected services '
-            'positive/ordered and complete after checked drain. Submit-clock inversion rejects queue '
-            'delay only. For each payload AND bank arm,the GM of3process median on/off wall ratios<=1.02 '
-            'and every process ratio<=1.05. Failed overhead gates preserve raw attribution as unqualified. '
-            'No source change,adaptive retry,performance adoption or model advancement.',
+                      ['bench-copy0','--staging-guard-copy-off','0'],
+                      ['bench-off0','--staging-guard-device-off','0'],
+                      ['bench-on0','--staging-guard-device-on','0'],
+                      ['bench-on1','--staging-guard-device-on','1'],
+                      ['bench-off1','--staging-guard-device-off','1'],
+                      ['bench-copy1','--staging-guard-copy-off','1'],
+                      ['bench-off2','--staging-guard-device-off','2'],
+                      ['bench-copy2','--staging-guard-copy-off','2'],
+                      ['bench-on2','--staging-guard-device-on','2']],
+        plan='V2fresh official-SDK source/protocol;preserve V1failed observer and V5failed performance gates. '
+            'First hostcanary,traced old/staged smoke and8adversarial GPU padding cases,then existing bank validation. '
+            'Three process blocks rotate full-bank D2Hguard/off,device-paddingguard/off and deviceguard/on. '
+            'Each mode/payload/bank arm gets first-use and10subsequent samples,exactly5per pair-order stratum. '
+            'Inner loop clock stays;NEW observer_whole_wall_ms covers Trace construction/planning,CPU regions, '
+            'event retention/query and both CPU/GPU footer formatting/destruction,all before independent guard '
+            'validation. Compare guard modes as a between-batch carryover counterfactual,not model speed. '
+            'GPU guard reads all384*256padding bytes,with full payload checked by every existing queued reader;'
+            'host guard reads same bytes after full-bank D2H. No arithmetic/adoption/runtime-policy change.',
+        criteria='14normal serial owned processes,396eligible/correct samples,132complete on-profiles. '
+            'Same provider/boot,no fresh faults,all guards/readers/maps/counters,10ms inner wall and queue floors,'
+            'clockp99<=10us and empty-control max<=5percent inner wall. Whole observer wall finite and>=inner wall. '
+            'Every CPU wait/host/status footer available/complete,zero open/throw counts,status scopes=completed=0. '
+            'Exact641upload submission,staged641source memcpy versus ordinary0;GPU eligible641copies/2048readers/1status. '
+            'Interpret ordinary upload_submit as full compat-copy wrapper and staged as queue.memcpy only;'
+            'they are not the same API boundary. Source copy/waits and unclassified remain distinct. '
+            'For each payload/arm/process,use sqrt(median(order0whole)*median(order1whole)),5samples/stratum. '
+            'Observer:on/off GM across3processes<=1.02 and every ratio<=1.05,all4payload/arm strata required. '
+            'Primary guard-carryover screen:large2662400payload EACH bank arm deviceguard/full-D2Hguard GM<=.95 '
+            'and every process ratio<1. Report small payload and order spread descriptively. '
+            'Passing a component screen does not advance model/staging adoption or attribute historical9.0673percent. '
+            'No adaptive retries/criterion changes;preserve original failures.',
         safety_audit='Main-authored ring;no XeStrata source.4host-USM slots,<=16MiB capacity/slot,256byte guards;'
             'same in-order context/device queue and registered device ownership. Reject device sources,overlap,'
             'bad extents/queues. Copy-event wait before CPU host-slot reuse;GPU readers and scratch overwrite '
@@ -155,7 +164,7 @@ def prepare():
             'without host-gated spin/barrier. Failed drain fail-stops with owners live. '
             'No new GPU arithmetic in inference;only bounded transfer-preparation memcpy. Default disabled '
             'prefill-only route;decode/short-prefill/cache placement unchanged. No physical256K qualification.',
-        retention='Keep240individual wall/CPU/queue samples and120on-sample CPU regions/selected GPU services. '
+        retention='Keep396individual inner/whole wall,CPU/queue samples and132on-sample CPU regions/selected GPU services. '
             'Review component executable at gate closure or imminent full-pipeline comparison. Original selected '
             'engine+12fixtures stay intact;V1/V2closed fixtures are superseded and not timed arms. '
             'Two earlier GU/Down fixtures retain only their named ceiling consumer. '
@@ -197,7 +206,7 @@ def parsed_fields(line):
 def attribution(stderr, rows):
     import re
     starts = list(re.finditer(r'^staging attribution sample: (.*)$', stderr, re.M))
-    require(len(starts) == len(rows) == 40, 'one attribution scope per batch')
+    require(len(starts) == len(rows) == 44, 'one attribution scope per batch')
     for i, start in enumerate(starts):
         text = stderr[start.end(): starts[i+1].start() if i+1 < len(starts) else len(stderr)]
         ident = parsed_fields(start.group(1)); sample = rows[i]
@@ -207,11 +216,15 @@ def attribution(stderr, rows):
         groups = {}
         for prefix, key in [('strata prefill cpu wait: ', 'wait'),
                             ('strata prefill cpu host: ', 'host'),
-                            ('strata command profile: ', 'gpu')]:
+                            ('strata command profile: ', 'gpu'),
+                            ('strata prefill status: ', 'status')]:
             lines = [v[len(prefix):] for v in text.splitlines() if v.startswith(prefix)]
             require(len(lines) == 1, 'one complete attribution footer: ' + key)
             groups[key] = parsed_fields(lines[0])
-        w, h, g = groups['wait'], groups['host'], groups['gpu']
+        w, h, g, status = groups['wait'], groups['host'], groups['gpu'], groups['status']
+        require(status['available']==status['complete']=='1' and
+            all(status[k]=='0' for k in ('scopes','completed','open_scopes','open_parts')),
+            'incomplete status footer or unexpected nested status scope')
         require(w['available'] == w['complete'] == h['available'] == '1' and
             w['open_waits'] == w['wait_throws'] == h['open_regions'] == '0', 'invalid CPU attribution')
         require(h['upload_submit_count'] == '641' and h['source_copy_count'] ==
@@ -243,27 +256,35 @@ def attribution(stderr, rows):
 
 
 def summarize(samples):
-    require(len(samples) == 240, 'six complete40sample processes required')
-    require({(v['payload_bytes'],v['process'],v['arm'],v['round'],v['attribution']) for v in samples} ==
-        {(size,p,arm,round,on) for size in (1971200,2662400) for p in range(3)
-         for arm in (0,1) for round in range(-1,9) for on in (False,True)}, 'sample identity differs')
+    require(len(samples)==396,'nine complete44sample processes required')
+    require({(v['payload_bytes'],v['process'],v['arm'],v['round'],v['device_guard'],v['attribution']) for v in samples}==
+        {(size,p,arm,round,guard,on) for size in (1971200,2662400) for p in range(3)
+         for arm in (0,1) for round in range(-1,10) for guard,on in ((False,False),(True,False),(True,True))},
+        'sample identity differs')
     require(all(v['eligible'] and v['custom_queue'] and v['guards_and_every_consumer'] and
         v['private_map_unchanged'] and v['uploads']==641 and v['hits']==383 and v['consumers']==2048 and
-        v['timer_p99_ns']<=10000 and len(v['empty_control_wall_ms'])==5 for v in samples),
+        v['timer_p99_ns']<=10000 and len(v['empty_control_wall_ms'])==5 and
+        math.isfinite(v['observer_whole_wall_ms']) and v['observer_whole_wall_ms']>=v['wall_ms'] for v in samples),
         'timing/dispatch/correctness gates failed')
-    outcomes=[]
+    def score(payload,arm,process,guard,on):
+        selected=[v for v in samples if v['payload_bytes']==payload and v['arm']==arm and
+                  v['process']==process and v['device_guard']==guard and v['attribution']==on and v['round']>=0]
+        strata=[[v['observer_whole_wall_ms'] for v in selected if v['order']==order] for order in (0,1)]
+        require([len(x) for x in strata]==[5,5],'balanced order stratum incomplete')
+        return math.sqrt(math.prod(statistics.median(x) for x in strata))
+    outcomes=[];guards=[]
     for payload in (1971200,2662400):
         for arm in (0,1):
-            ratios=[]
-            for process in range(3):
-                pair=[statistics.median(v['wall_ms'] for v in samples if v['payload_bytes']==payload and
-                    v['arm']==arm and v['process']==process and v['attribution']==on and v['round']>=0)
-                    for on in (False,True)]
-                ratios.append(pair[1]/pair[0])
+            obs=[score(payload,arm,p,True,True)/score(payload,arm,p,True,False) for p in range(3)]
+            gm=math.exp(math.fsum(math.log(v) for v in obs)/3)
+            outcomes.append(dict(payload_bytes=payload,arm=arm,time_ratios_on_over_off=obs,
+                geometric_mean=gm,observer_gate_passed=gm<=1.02 and max(obs)<=1.05))
+            ratios=[score(payload,arm,p,True,False)/score(payload,arm,p,False,False) for p in range(3)]
             gm=math.exp(math.fsum(math.log(v) for v in ratios)/3)
-            outcomes.append(dict(payload_bytes=payload,arm=arm,time_ratios_on_over_off=ratios,
-                geometric_mean=gm,observer_gate_passed=gm<=1.02 and max(ratios)<=1.05))
+            guards.append(dict(payload_bytes=payload,arm=arm,time_ratios_device_over_D2Hguard=ratios,
+                geometric_mean=gm,primary=payload==2662400,screen_passed=gm<=.95 and max(ratios)<1))
     return dict(observer_checks=outcomes,attribution_qualified=all(v['observer_gate_passed'] for v in outcomes),
+        guard_comparisons=guards,primary_guard_screen_passed=all(v['screen_passed'] for v in guards if v['primary']),
         model_advancement_allowed=False,staging_adoption_qualified=False,historical_regression_cause='unattributed')
 
 def execute(mode):
@@ -337,9 +358,12 @@ def execute(mode):
                 if label == 'staging-smoke':
                     require('expert_staging_custom_queue destructor_tail_complete=PASS host_copy_owners_live=PASS'
                         in text, 'custom-queue destructor retirement absent')
+                if label=='padding-smoke':
+                    require('padding_guard_cases=8 first_middle_last_boundaries=PASS payload_exclusion=PASS' in text,
+                        'adversarial padding controls incomplete')
                 rows = [json.loads(v) for v in text.splitlines() if v.startswith('{')]
                 if label.startswith('bench'):
-                    require(len(rows) == 40, 'benchmark sample count')
+                    require(len(rows) == 44, 'benchmark sample count')
                     if '-on' in label: rows = attribution(err.read_text(), rows)
                     else: require('staging attribution sample:' not in err.read_text(), 'disabled observer emitted')
                     row['samples'].extend(rows)
