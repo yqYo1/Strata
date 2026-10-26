@@ -12233,7 +12233,7 @@
   },
   "supervision_model_source_contract_20261027": {
     "classification": "decision_support",
-    "status": "native_review_running",
+    "status": "model_admission_blocked",
     "schedulable_now": false,
     "model_trial_allowed": false,
     "source_commit": "c50192c3a60da14a3352da6eecdf2303335b5869",
@@ -12278,7 +12278,15 @@
       "reviewer": "/root/review_supervision_model_contract_20261027",
       "model": "gpt-6-luna",
       "effort": "max",
-      "status": "running"
-    }
+      "status": "completed",
+      "verdict": "block_model_launch",
+      "bytes": 5385,
+      "sha256": "ed11ea08ce132fad3e61e28c2a5f48f30297009e729f79df842a7fa887c12ad8"
+    },
+    "operational_digest": "Native Luna/max blocks launch:configured196632byte expert-placement profile is omitted from model_paths and current admission. All3audited source hashes and frozen plan match;passing host gate does not close this input gap. Keep original plan unexecuted;commit profile pinning,negative controls,new plan and exact-source review. Narrow non-UTF8 claim:foreign SID filtering is byte-oriented,but matching-session full text identities can fail closed on invalid UTF8;not a blocker for this planned ASCII process tree.",
+    "corrections": [
+      "Hash/bind the configured expert profile against committed source and actual file identity before every process;reject mutation or path replacement across arms.",
+      "Foreign-session byte filtering does not make matching-session full identity decoding arbitrary-byte-safe. Preserve this evidence limit."
+    ]
   }
 }

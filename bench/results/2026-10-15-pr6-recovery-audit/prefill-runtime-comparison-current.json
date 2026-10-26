@@ -804,7 +804,7 @@
   },
   "historical_regression_audit": {
     "supervision_model_control_v1": {
-      "stage": "prepared",
+      "stage": "closed-unlaunched",
       "binary": {
         "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/strata",
         "bytes": 22190000,
@@ -1116,6 +1116,15 @@
         "whole_bytes": 805306368,
         "retention": "Keep24individual clock/work/CPU samples,source/native/runtime/config/recipe and decisions. Retire normal logs/JIT/closed controls after replay;no new engine build. Retain qualified host record/provider manifest only through this comparison.",
         "qualified_input_identity": "63043b90ecd3849b4ad0cac7e13a9aa0be9d6d42a86d77a2202b8557c088db6e"
+      },
+      "native_launched": false,
+      "comparison_executed": false,
+      "admission_failure": {
+        "mechanism": "Expert-placement profile is configured but absent from model_paths/model_assets and per-process admission.",
+        "path": "/home/yayoi/orca/workspaces/Strata/sycl/data/expert-profile.bin",
+        "current_sha256": "8f59b4aa8873209dff11c11e37bcda9529a1335b724a1afeea37bf6388975baf",
+        "found_by": "/root/review_supervision_model_contract_20261027",
+        "action": "Preserve original plan unexecuted. Commit profile admission plus negative controls,new plan and fresh exact-source review before model execution."
       }
     },
     "owner_scan_control_v3": {
