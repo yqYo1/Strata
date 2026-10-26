@@ -437,6 +437,17 @@ busy fraction do not identify the limiting hardware unit. Use the cost-qualified
 work before selecting an optimization. The compact evidence is `execution_conditions` in
 [the resource result](../bench/results/2026-10-15-pr6-recovery-audit/prefill-resources-current.json).
 
+A separate arithmetic count comes from the conserved historicalbb71 borrowed-
+cache census:56394240routed rows in37353jobs,GU(N,K)=(1280,2560),
+Down(N,K)=(2560,640). With the conventional two FLOPs per multiply-add,
+`2*56394240*(1280*2560+2560*640)` is554.377936896TFLOPs,or4.71855GFLOPs
+per117489read tokens. This counts only routed logical GEMMs. It excludes dense/
+shared projections,attention,indexing,recurrent work,dequantization,data movement
+and padding,so it is neither the full model's operation count nor measured6e40
+arithmetic service or hardware utilization. Use these actual shapes/work counts,
+with compatible qualified service rates,before deriving a hardware ceiling from
+an active-parameter label or a busy percentage.
+
 The retained fused-profile generation now includes a separately built diagnostic
 whole engine,source022652cc5/frozen recipe9852c86a8,with1403 actual compiled inputs
 and no uncovered dependency. The original1385 component inputs and3fixtures
