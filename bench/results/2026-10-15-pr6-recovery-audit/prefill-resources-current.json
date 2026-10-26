@@ -7013,13 +7013,13 @@
       "historical_binary_hash_available": false
     },
     "interpretation": "Current installed dense9B control reaches1042.0119tok/s mean(3within-process samples),not below user reported966.57 under unmatched historic runtime/environment. Supports investigating Strata-specific paths rather than assuming uniform GPU slowdown;does not exclude hardware/resource interactions for different shapes/algorithms or establish exact historical comparison,hardware ceiling,Strata regression cause or restoration.",
-    "next_action": "Independent GU production-dispatch calibration for M160/2333/2334 plus disjoint GPU service/host submission and waits,under official SDK. First correct measurement coverage;GU direct --bench is not the production dispatcher. No inference route adopted.",
+    "next_action": "Recheck unchanged original6e40 with the same117Kcontract near this dense control to distinguish a changed current device/workstation state from persistent Strata-specific slowdown;commit a fresh bounded reference-only plan first. Then calibrate actual GU production dispatch M160/2333/2334 with GPU service and host submission/waits separate,under official SDK. No staging/inference route adopted.",
     "earlier_preflight_failures": [
       {
         "version": 1,
         "original_stage": "failed",
         "GPU_executed": false,
-        "model_speed_samples": 0,
+        "qualified_long_input_speed_samples": 0,
         "failure": "RuntimeError('unplanned executable map: /usr/lib/x86_64-linux-gnu/librt.so.1')",
         "original_ownership_closed": false,
         "actual_children_reaped_sessions_empty": true,
@@ -7030,7 +7030,7 @@
         "version": 2,
         "original_stage": "failed",
         "GPU_executed": true,
-        "model_speed_samples": 0,
+        "qualified_long_input_speed_samples": 0,
         "failure": "RuntimeError('unplanned executable map: /usr/lib/x86_64-linux-gnu/libnvidia-opencl.so.580.178.04')",
         "original_ownership_closed": false,
         "actual_children_reaped_sessions_empty": true,
@@ -7041,7 +7041,7 @@
         "version": 3,
         "original_stage": "failed",
         "GPU_executed": true,
-        "model_speed_samples": 0,
+        "qualified_long_input_speed_samples": 0,
         "failure": "Main selected CPU intel64.icd and file-form override for actual Khronos loader;oneDNN primitive failure;no valid131Ksample.",
         "original_ownership_closed": true,
         "actual_children_reaped_sessions_empty": true,
@@ -7052,7 +7052,7 @@
         "version": 4,
         "original_stage": "failed",
         "GPU_executed": true,
-        "model_speed_samples": 0,
+        "qualified_long_input_speed_samples": 0,
         "failure": "Directory form corrected but still CPU ICD selected;oneDNN reported B570 OpenCL device not found. V6GPUICD resolves it.",
         "original_ownership_closed": true,
         "actual_children_reaped_sessions_empty": true,
@@ -7063,7 +7063,7 @@
         "version": 5,
         "original_stage": "failed",
         "GPU_executed": true,
-        "model_speed_samples": 0,
+        "qualified_long_input_speed_samples": 0,
         "failure": "RuntimeError('unplanned executable map: /usr/lib/x86_64-linux-gnu/libva.so.2.2400.0')",
         "original_ownership_closed": false,
         "actual_children_reaped_sessions_empty": true,
@@ -7086,6 +7086,28 @@
       "dtype_finding": "Proposed current BF16/FP16 comparator bug is refuted:GU dense intermediates BF16 compared bitwise;hidden outputs FP16 compare_half;Down BF16 compare memcmp. Do not invalidate existing results or change math. Type-tag helper only if reused.",
       "coverage_finding": "GU --bench directly calls xe::Gemm;profile hook calls production at2333/2334/8192 but not repeated clean timing. Down --bench-public calls production at64/160/2333/2334/2335;both arms fall back below2334.",
       "next": "Add public GU dispatch measurement M160/2333/2334 with startup arms and timed route counts;pin source/recipe/inputs,prime setup,qualify timing/control/observer cost. Report GPU service separate from host submission/wait. Independent math calibration does not promote failed staging/model."
+    },
+    "artifact_retirement": {
+      "complete": true,
+      "files": 100,
+      "bytes": 97144620,
+      "manifest": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/deletion-manifests/20261026-llama-independent-control-closed.jsonl",
+      "manifest_sha256": "c893fb33622b7aa587c463935b2ab658f96104837495fe8086f30892bc0d5328",
+      "source_recovery": "All8original controller inputs for each of6attempts and frozen plans verified from pushed original commits. External installed llama binary/model were not built or deleted. Original13Strata assets checked before/after.",
+      "outcomes_unchanged": true,
+      "selected_original_unchanged": true,
+      "SDK_snapshot_consumer": "Official-runtime legacy ABI/GEMM and public GU fixture build after fresh reference;review at next calibration closure."
+    },
+    "closed_controller_retirement": {
+      "paths": [
+        "tools/sycl/reference_llama.py",
+        "tools/sycl/attribute_expert_staging.py"
+      ],
+      "restore_from": [
+        "e42db16f5",
+        "7aa279411"
+      ],
+      "reason": "Closed single-use controllers have no live imports/targets. Source/plan/original result commits retained;no new engine or mathematical implementation selected."
     }
   }
 }
