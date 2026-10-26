@@ -456,104 +456,70 @@ Closed one-use build/cost/calibration controllers retire to their original sourc
 commits;the new transfer fixture source remains for the immediate staging/status
 work. No routine raw API trace or completed observer cohort remains.
 
-The next candidate implements a four-slot host-USM ring only in long-prefill
-private-bank upload. It is opt-in/defaultoff through
-`STRATA_SYCL_PREFILL_EXPERT_UPLOAD_STAGING=1`;decode and short-input routes keep
-their source/configuration/placement. Source8f9abeb99,controller551ec694e and
-frozen plan3b1479c4c build a component fixture with693actual compiled inputs;
-no new whole engine is built. Each host slot retires its own copy event before
-CPU overwrite;GPU destination readers and scratch overwrite remain on the same
-in-order queue. Final counters and host guards are checked after retirement.
-The maintained explicit target is `sycl_expert_bank_test`,with packed/staging
-smoke/validation modes and `--staging-bench PROCESS`.
+The current defaultoff candidate stages long-prefill private-bank uploads
+through four bounded host-USM slots. Source8f9abeb99 introduced it;de083f00d
+corrects guard/destructor/error retirement to wait the actually bound queue.
+Copy-event completion protects each host slot before CPU overwrite;the same
+in-order queue orders GPU consumers and scratch-slot reuse. Decode and short
+prefill keep their implementation,configuration and1256-slot placement.
+No new whole engine or model has run with this candidate.
 
-Two traced smoke cases,staging validation and three independent benchmark
-processes all close normally. The cases cover mixed source/destination strides,
-512experts,full-fit and scratch reuse,exception unwind,ten invalid admissions,
-and destruction with pending transfers. Parameter validation is silent and
-no fresh GPU fault occurs. Each timed batch uses the actual private-bank
-entrypoint,641uploads,383hits,two full-data GPU readers per expert,2048readers
-and checked status/retirement. All72batches pass the10ms wall/queue floor,
-timer-p99<=10us and empty-control<=5% gates. First-use samples stay separate.
+The initial compute-queue cohort reports31–33% bank-path reductions,but does
+not cover the accepted dedicated queue. Its detailed samples and the failed
+V2dedicated-queue cohort restore from617e1845a;their outcomes and limitations
+remain in the compact current result. V2fails both timing eligibility and a
+per-process performance gate. Cold timing-marker setup is subsequently
+separated and recorded,with five subsequent empty controls and nine subsequent
+arm pairs per payload/process. This changes component instrumentation and
+repetition,not the matched117K model benchmark contract.
 
-| Payload bytes | Three staged/ordinary subsequent-median time ratios | Geometric mean | Whole bank-path reduction |
-| ---: | --- | ---: | ---: |
-| 1971200 | 0.680321 / 0.680662 / 0.687008 | 0.682657 | 31.73% |
-| 2662400 | 0.682515 / 0.682247 / 0.640809 | 0.668233 | 33.18% |
+The former claim that the installed LLVM SDK was independent is unsupported:
+its source has17dirty paths with XeStrata modification notices. Its exact
+build-time dirty snapshot is not recovered. No SDK patch is imported;new builds
+use verified Intel oneAPI2026.2.0-863 packages and UMF1.2.0-116. Original speed
+and numerical/fault results keep their status;this finding does not establish
+the historical decline's cause. The original engine/fixtures and successful
+runtime record remain references while the new runtime is qualified separately.
 
-Both pass the prospective5% bank-dependency screen. This is a real whole-wall
-component gain,not relabelling an internal wait. These readers check copy
-contents;they do not perform production dequant/GEMM or qualify model speed.
-The source integration remains unbuilt as an engine,and there is no new
-prefill/decode or physical262144 qualification. The clean117K reference remains
-911.7371tok/s and the historical9.1% cause remains unattributed.
+The official fixture builds from617e1845a with724actual compiled inputs and
+10945pinned vendor/host files. V3/V4host attempts fail for a loader-path alias
+and an undeclared libc librt dependency,respectively;their original failures
+remain recorded. V4actually exits0 but its observer is incomplete;actual
+ownership is reconciled independently. V5predeclares the complete DT_NEEDED
+closure and reuses the unchanged native build after source/recipe recovery.
+It passes the host canary,two traced custom-queue smokes,large512-expert
+validation and three independent benchmark processes. All120batches pass
+contents,guards,maps,counters,10ms wall/queue floors,timer-p99<=10us and
+empty-control<=5% gates. Parameter validation is silent;no fresh fault occurs.
+Each batch has641uploads,383hits and2048full-data readers through the actual
+private-bank entrypoint. The maintained target is `sycl_expert_bank_test`.
 
-Independent source review subsequently finds that helper-local retirement used
-`Runtime::wait()`,which drains only its compute/transfer queues. The production
-outer lease drains its dedicated queue,but the helper accepts custom queues and
-the V1 fixture exercised compute only. V1 outcomes above remain compute-only;
-no model ran. V2 changes guard/destructor/error retirement to wait the bound
-queue itself and adds dedicated-queue smoke,unwind,destructor-tail and repeated
-performance cases. V2 closes six native processes without a fresh fault and
-passes content/guard/map/ownership/parameter checks,but its speed gate fails.
-All36small-payload rows exceed the empty-control5% allowance:the maxima are
-34.728/38.134/37.951ms and include timing-marker initialization. This does not
-prove JIT as the cause. The36large-payload rows are timing-eligible,but process0
-is slower with staging:455.898 versus429.624ms subsequent medians. Preserve
-all72samples and the failed outcome;no full-pipeline/model advancement.
+| Payload bytes | Three staged/ordinary subsequent-median time ratios | Geometric mean | Performance gate |
+| ---: | --- | ---: | --- |
+| 1971200 | 0.734182 / 0.712245 / 0.720932 | 0.722397 | PASS |
+| 2662400 | 0.943385 / 1.049833 / 0.525888 | 0.804577 | FAIL:one process slower |
 
-V3 prospectively separates and records cold timing-marker setup from five
-subsequent empty controls,and increases five to nine subsequent pairs in each
-of three processes. Bank first-use remains separately recorded. All original
-wall/queue/timer/5%control and5%gain/every-process-ratio gates remain required.
-This changes component instrumentation/repetition,not the matched model
-benchmark contract. V3 is unrun;the component remains defaultoff. A subsequent SDK-origin check
-holds reuse of the old SDK as described below.
+The required bank screen fails despite both descriptive geometric means being
+lower. This candidate cannot advance to dequant/GEMM or model trials. Keep all
+120samples,including the slower process;do not dismiss it as noise. Next use
+a fresh bounded attribution with observeroff/on controls to separate CPU
+memcpy preparation,submission,time inside waits and sampled GPUcopy/read
+service. Nonexclusive queue intervals and total thread CPU do not identify
+the limiting hardware unit. The official runtime qualification covers only
+this copy/private-bank component;legacy6e40 ABI/GEMM,model/decode and physical
+262144context remain unqualified for it. The clean117K model reference stays
+911.7371tok/s;the historical9.0673% decline remains unattributed.
 
-The previous description of the compiler as an independent Intel LLVM SDK is
-unsupported. Its build cache points to Intel/LLVM source504366f4 with17current
-modified paths;Clang driver and SYCL implementation files explicitly carry
-MistVVK/XeStrata modification notices. Artifact hashes do not recover the exact
-build-time dirty snapshot. Do not infer that these changes caused the historical
-speed loss,or silently discard earlier numerical/fault results. Reuse of that SDK for new builds is held. A new,prospective bounded
-qualification uses the independently packaged compiler/runtime below.
-Installed Intel oneAPI2026.2.0-863 compiler/runtime packages verify unchanged
-and are candidates;UMF1.2 is its declared loader dependency. A fresh V3
-build pins all vendor files and host headers,and replaces only child library
-paths/forced adapter before exec. Its host loader canary precedes traced tiny
-GPU cases;the safety values stay fixed. No new-package GPU/model check has run. Preserve the
-selected original engine/fixtures and the original successful runtime record
-as references while qualifying the new runtime separately. No fork SDK patch
-is imported into this project.
-
-The official V3component builds from617e1845a with724actual compiled inputs
-and10945pinned vendor/host files. Its before-main canary stops with exit125
-for a provider-path mismatch before GPU initialization. Intel installs
-`libur_loader.so.0` and `.0.12.0` as separate regular files with identical
-SHA81771b83;the plan expected the latter while `dlopen` selected the former.
-V3 remains failed. V4 selects the actual SONAME-file path in a fresh device
-plan,reusing the exact fixture only after original377ca6194 recipe/binary and
-all724inputs reconcile,including19project inputs recovered from Git. This is
-a controller-only correction,not a new native build or GPU qualification.
-
-V4accepts that loader and completes its before-main46API/layer checks. The
-host canary exits0 in0.171s,but its observer rejects undeclared OS
-`librt.so.1` before EOF. The original observation remains incomplete/failed;
-actual ownership is subsequently reconciled from child reap,current PID/SID
-absence and the anchored empty session. No GPU body or new fault occurs.
-UMF1.2declares librt through DT_NEEDED. V5 resolves the complete dependency
-closure of official SYCL/UR/L0v2/UMF before launch,pins that additional ELF and
-uses a fresh plan/cache with the same verified native fixture. Runtime/model
-qualification is still pending.
-
-Installed native metadata identifies representative actual formats:layer2 has
-IQ2_S(type22) gate/up and IQ4_NL(type20) down,1971200bytes;layer47 has
-IQ4_XS(type23) gate/up and IQ4_NL down,2662400bytes. Next freeze a comparison
-through actual IQ dequant and the native GU/SwiGLU/Down entrypoints with pinned
-real weight ranges and shape-specific dispatch. FP16 matrix operands and BF16
-GU/Down outputs remain distinct from BF16 residual storage. Only after that
-component gate may a separately planned official long-input/agent/thinking and
-decode-nondecline/state-handoff comparison advance.
+The native SDK snapshot has a named next consumer:official-runtime original
+fixture ABI/GEMM qualification and the next attributed fixture build. Retire
+closed component binaries/objects and routine raw output after source recovery;
+keep the original13assets and the separately named GU/Down ceiling subset.
+Actual-format pipeline work,after a new bank performance pass,uses installed
+layer2 IQ2_S(type22) gate/up plus IQ4_NL(type20) down,1971200bytes,and layer47
+IQ4_XS(type23) gate/up plus IQ4_NL down,2662400bytes. Preserve FP16 matrix
+operands,BF16 GU/Down outputs and BF16 residual storage as distinct contracts.
+Only separate long/agent/thinking,decode-nondecline/handoff and physical-context
+gates can qualify a model route.
 
 The earlier[NEO-only comparison](../bench/results/2026-10-15-pr6-recovery-audit/prefill-runtime-comparison-current.json)
 uses exact cached packages in private directories. Both arms explicitly select
