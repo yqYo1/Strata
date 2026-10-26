@@ -261,7 +261,8 @@ def seal_unlaunched():
     # Revise only an uncommitted, unlaunched plan. Preserve every generated
     # input hash, configuration and qualification; never repair a failed run.
     row = json.loads((ROOT / 'record.json').read_text())
-    require(KEY not in gen.committed(RESULT)['historical_regression_audit'] and
+    committed_result = json.loads(gen.git('show', 'HEAD:' + str(RESULT.relative_to(P))))
+    require(KEY not in committed_result['historical_regression_audit'] and
         row['stage'] == 'prepared' and not row['processes'] and not row['active'] and
         not list(ROOT.glob('*/execution.json')) and not list(ROOT.glob('*/owned')),
         'only an uncommitted plan with no process attempt may be sealed')
