@@ -12298,7 +12298,7 @@
   },
   "supervision_model_source_contract_v2_20261027": {
     "classification": "decision_support",
-    "status": "native_review_running",
+    "status": "model_admission_blocked",
     "schedulable_now": false,
     "model_trial_allowed": false,
     "source_commit": "da0afe16caaa465721edabb5eae9852f59b5b3a4",
@@ -12319,7 +12319,7 @@
     "report_path": ".cache/strata-research/20261027/supervision-model-source-audit-v2.md",
     "report_budget_bytes": 12288,
     "consumer": "Main exact-source model admission after native Luna/max review;no GPU run before accepted source/plan identity.",
-    "next_review": "Native gpt-6-luna/max completed-report review,Main short digest and exact source/plan comparison before model_trial_allowed.",
+    "next_review": "Main implements bounded benchmark-runtime admission and local controls,then commits fresh model plan and exact-source Orca/native Luna review. No model launch from v2.",
     "limits": "Read-only code/research;write named report only. No Git,process inspection,build,test,GPU,profiling,product/index edits or subagents. No steering or XeStrata-derived code.",
     "main_reads_body_on_arrival": false,
     "dispatch": {
@@ -12345,7 +12345,15 @@
       "reviewer": "/root/review_supervision_model_contract_v2_20261027",
       "model": "gpt-6-luna",
       "effort": "max",
-      "status": "running"
-    }
+      "status": "completed",
+      "verdict": "block_model_launch",
+      "bytes": 5900,
+      "sha256": "e067ebf6000ef0562a263a3e30df3c173f9fd51ccecdc4ed2bb42a845d73b96f"
+    },
+    "operational_digest": "Native Luna/max accepts profile correction,15inventoried model assets plus profile and bounded ownership,but blocks v2:bench.sh may prefer workspace.venv or resolve PATHpython3;the actual benchmark/server interpreter and venv Jinja2/MarkupSafe imported runtime are outside isolated host provider admission. V2 remains unlaunched. Pin effective resolution and complete imported runtime closure,check actual child interpreter,commit local corruption controls and fresh plan/review. Existing5profile tests and v3host gate remain passed;no model speed/cause/adoption follows.",
+    "corrections": [
+      "Cover effective workspace.venv-or-PATH benchmark Python selection,venv/imported package/runtime closure including Jinja2/MarkupSafe,and verify actual benchmark/server interpreter at launch.",
+      "Keep original v2 unlaunched;profile pinning is accepted but does not qualify the independent benchmark-runtime input gap."
+    ]
   }
 }

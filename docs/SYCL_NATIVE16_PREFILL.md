@@ -863,6 +863,16 @@ SID filter does not make matching-session text identity parsing arbitrary-byte
 safe;invalid UTF8 there can fail closed,which remains a limit outside this
 planned ASCII process tree.
 
+Native review closes v2 without a launch as well:the profile correction is
+accepted,but isolated host-Python admission does not pin the actual bench.sh
+Python/venv selection or the server's imported Jinja2/MarkupSafe runtime. The
+launcher prefers workspace`.venv/bin/python`when executable,otherwise PATH
+`python3`;the server inherits that interpreter. The next model plan must bind
+effective resolution and the imported runtime closure,check actual benchmark/
+server interpreters at launch,and pass fresh local controls and exact-source
+review. The v2 plan,its failed admission and zero native launches remain intact;
+no speed evidence follows from either unlaunched plan.
+
 After replay and exact source/recipe/header/link/object/ELF recovery,these three
 closed observer/model/control roots retire106files/12,760,397bytes. Four
 one-use sources/controllers retire to pushed history at925ddfe8e;the selected

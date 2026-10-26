@@ -804,7 +804,7 @@
   },
   "historical_regression_audit": {
     "supervision_model_control_v2": {
-      "stage": "prepared",
+      "stage": "closed-unlaunched",
       "binary": {
         "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/strata",
         "bytes": 22190000,
@@ -1130,6 +1130,20 @@
         "whole_bytes": 805306368,
         "retention": "Keep24individual clock/work/CPU samples,source/native/runtime/config/recipe and decisions. Retire normal logs/JIT/closed controls after replay;no new engine build. Retain qualified host record/provider manifest only through this comparison.",
         "qualified_input_identity": "22e8a8169a6e390efe112280b73046a27e9be9fe11079539271b5da297670518"
+      },
+      "native_launched": false,
+      "comparison_executed": false,
+      "admission_failure": {
+        "mechanism": "The isolated host Python/provider gate does not pin bench.sh effective interpreter/venv selection or imported Jinja2/MarkupSafe runtime.",
+        "entrypoints": [
+          "bench.sh:7-10",
+          "tools/strata_bench.py:1088-1093",
+          "serve/frontend.py:24-25"
+        ],
+        "current_selection": "No executable workspace .venv/bin/python;PATH resolves python3 through /home/yayoi/.local/share/strata-sycl/venv/bin to /usr/bin/python3.12. Native benchmark/server interpreter and venv packages are not admitted.",
+        "found_by": "/root/review_supervision_model_contract_v2_20261027",
+        "profile_blocker_closed": true,
+        "action": "Preserve v2 unlaunched. Bind effective Python resolution and complete imported package/runtime closure,verify actual benchmark/server interpreter at launch,commit local controls and fresh plan/exact-source review."
       }
     },
     "supervision_profile_admission_v2": {
