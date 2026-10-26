@@ -214,11 +214,37 @@ def build(row):
 
 
 def main():
+    global ROOT, KEY
     with (B / 'owned-v0141-measurement.lock').open('a') as lock:
         fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB); r.guards.no_model_owners([])
+        if sys.argv[1:] in (['prepare-attribution'], ['build-attribution']):
+            import qualify_native16_control as qualification
+            baseline = json.loads((qualification.ROOT / 'record.json').read_text())
+            qualification.current(baseline)
+            proof = qualification.native()[2]
+            ROOT = B / 'native16-public-attribution-v1'
+            KEY = 'public_gu_attribution_build'
+            if sys.argv[1] == 'prepare-attribution':
+                prepare()
+                row = json.loads((ROOT / 'record.json').read_text())
+                row.update(baseline_native_build=proof,
+                    question='Build matched warmed public-GU GPU-event and complete-wrapper CPU accounting;'
+                        'no inference arithmetic,placement or model change.',
+                    next_gate='Traced same-build component qualification,then old-fixture/new-observer-off/'
+                        'new-observer-on balanced process comparisons. Charge planning,event queries and '
+                        'profile output to the observer-cost gate before attributing CPU/GPU service.',
+                    retention='Keep original13 selected assets and official v4four-fixture baseline for the '
+                        'imminent compiled-baseline/off/on comparison. Select one qualified official component '
+                        'generation after closure;retire the other and successful build/raw output only '
+                        'after original input recovery. No engine or model build.')
+                save(row)
+                return 0
+            row = json.loads((ROOT / 'record.json').read_text())
+            require(row['baseline_native_build'] == proof, 'original comparison fixture changed')
+            return build(row)
         if sys.argv[1:] == ['prepare']: prepare(); return 0
         if sys.argv[1:] == ['build']: return build(json.loads((ROOT / 'record.json').read_text()))
-        raise RuntimeError('use prepare or build')
+        raise RuntimeError('use prepare/build or prepare-attribution/build-attribution')
 
 
 if __name__ == '__main__': sys.exit(main())

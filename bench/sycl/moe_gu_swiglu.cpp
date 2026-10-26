@@ -3,6 +3,7 @@
 #include "strata/prefill/native16.hpp"
 #include "strata/prefill/gemm.hpp"
 #include "strata/sycl/command_profile.hpp"
+#include "strata/sycl/cpu_wait_profile.hpp"
 #include <algorithm>
 #include <array>
 #include <bit>
@@ -27,7 +28,10 @@ void drain(sycl::queue &q) noexcept {
   try { q.wait_and_throw(); runtime->check(); } catch (...) { std::_Exit(86); }
 }
 void wait(sycl::queue &q, sycl::event e) {
-  try { e.wait_and_throw(); runtime->check(); } catch (...) { drain(q); throw; }
+  try {
+    sb::cpu_wait_profile::blocking(sb::cpu_wait_profile::event,[&] { e.wait_and_throw(); });
+    runtime->check();
+  } catch (...) { drain(q); throw; }
 }
 template <class Submit> void submit_wait(sycl::queue &q, Submit submit) {
   // Keep local host vectors alive through synchronous enqueue failures too.
@@ -233,12 +237,23 @@ struct PublicGU {
     if (!routed.init_external(&c.q,nullptr,0,nullptr,0,error)) throw std::runtime_error(error);
   }
   ~PublicGU() { drain(c.q); }
-  bool call() {
+  template<bool Observe=false> bool call(sb::command_profile::Frame *frame=nullptr,int id=0) {
     try {
-      const bool selected=routed.try_gu_swiglu16(c.x.data(),c.w.data(),c.candidate.data(),c.rows);
+      const auto projection=[&] {
+        const bool selected=routed.try_gu_swiglu16(c.x.data(),c.w.data(),c.candidate.data(),c.rows);
+        if (!selected) routed.f16_out16(c.x.data(),c.w.data(),c.gu.data(),c.rows,N,K,true);
+        return selected;
+      };
+      bool selected;
+      if constexpr (Observe) {
+        auto tag=frame->tag(sb::command_profile::Kind::gu,0,id,c.rows,N,K);
+        selected=projection();
+      } else selected=projection();
       if (!selected) {
-        routed.f16_out16(c.x.data(),c.w.data(),c.gu.data(),c.rows,N,K,true);
-        strata::prefill::native16::swiglu(c.gu.data(),c.candidate.data(),c.rows,&c.q);
+        if constexpr (Observe) {
+          auto tag=frame->tag(sb::command_profile::Kind::swiglu,0,id,c.rows,H);
+          strata::prefill::native16::swiglu(c.gu.data(),c.candidate.data(),c.rows,&c.q);
+        } else strata::prefill::native16::swiglu(c.gu.data(),c.candidate.data(),c.rows,&c.q);
       }
       return selected;
     } catch (...) { drain(c.q); throw; }
@@ -260,9 +275,10 @@ void public_settings(int arm) {
        matches("STRATA_SYCL_PREFILL_GU_SWIGLU",arm ? "large" : "0"),
        "public mode requires matching immutable bf16/vllm/auto/GU startup settings");
 }
-void benchmark_public(int process,int arm,sycl::queue &q) {
+template<bool Observe=false> void benchmark_public(int process,int arm,sycl::queue &q) {
   namespace cp=sb::command_profile;
-  need(!cp::requested(),"clean public timing forbids command profiling");
+  namespace cpu=sb::cpu_wait_profile;
+  need(cp::requested()==Observe,"public attribution requires matching startup command-profile setting");
   need(q.has_property<sycl::property::queue::in_order>() &&
        q.has_property<sycl::property::queue::enable_profiling>(),"ordered profiling queue required");
   const auto resolution=q.get_device().get_info<sycl::info::device::profiling_timer_resolution>();
@@ -300,11 +316,71 @@ void benchmark_public(int process,int arm,sycl::queue &q) {
     const int repeat=rows==160 ? 512 : 128;
     for (int round=-1;round<5;++round) {
       c.candidate.reset();path.prime();
-      const auto start=mark(q);const auto wall=std::chrono::steady_clock::now();
+      // The outer clock charges trace planning, queries and diagnostic output.
+      // GPU samples are selected from this very warmed batch, not another call.
+      const auto charged=std::chrono::steady_clock::now();
+      std::unique_ptr<cp::Trace> trace;
+      if constexpr (Observe) trace.reset(new cp::Trace(&q,1));
       int selected=0;
-      for (int i=0;i<repeat;++i) selected+=int(path.call());
-      const auto end=mark(q);wait(q,end);
-      const double wall_ns=std::chrono::duration<double,std::nano>(std::chrono::steady_clock::now()-wall).count();
+      sycl::event start,end;
+      double wall_ns=0,call_cpu=-1,call_wall=-1,total_cpu=-1,total_wall=-1;
+      double wait_cpu=-1,wait_wall=-1,call_wait_cpu=-1,call_wait_wall=-1,submit_cpu=-1,submit_wall=-1;
+      unsigned long long submit_count=0,wait_count=0;
+      {
+        auto frame=trace ? trace->begin(0,0) : cp::Frame{};
+        struct Retirement {
+          sycl::queue &queue; bool checked=false;
+          ~Retirement() { if (!checked) drain(queue); }
+        } retirement{q};
+        if constexpr (Observe) for (int i=0;i<repeat;++i) frame.consider(0,i,rows);
+        start=mark(q);const auto wall=std::chrono::steady_clock::now();
+        {
+          cpu::Scope scope(Observe);
+          const auto begin=Observe ? cpu::stamp() : cpu::Stamp{};
+          for (int i=0;i<repeat;++i) {
+            if constexpr (Observe) selected+=int(path.call<true>(&frame,i));
+            else selected+=int(path.call());
+          }
+          const auto calls_end=Observe ? cpu::stamp() : cpu::Stamp{};
+          if constexpr (Observe) {
+            need(begin.valid && calls_end.valid && cpu::active,"wrapper CPU clock unavailable");
+            call_cpu=calls_end.cpu-begin.cpu;call_wall=calls_end.wall-begin.wall;
+            call_wait_cpu=0;call_wait_wall=0;
+            for (int k=0;k<cpu::kinds;++k) {
+              call_wait_cpu+=cpu::active->cpu[k];call_wait_wall+=cpu::active->wall[k];
+            }
+          }
+          end=mark(q);wait(q,end);
+          retirement.checked=true;
+          wall_ns=std::chrono::duration<double,std::nano>(std::chrono::steady_clock::now()-wall).count();
+          if constexpr (Observe) {
+            const auto finish=cpu::stamp();const auto &s=*cpu::active;
+            need(finish.valid && !s.invalid && !s.depth && !s.host_depth && !s.status_depth &&
+                !s.status_part_depth,"incomplete wrapper CPU accounting");
+            total_cpu=finish.cpu-begin.cpu;total_wall=finish.wall-begin.wall;
+            wait_cpu=0;wait_wall=0;
+            for (int k=0;k<cpu::kinds;++k) {
+              need(!s.throws[k],"wrapper wait threw");
+              wait_cpu+=s.cpu[k];wait_wall+=s.wall[k];wait_count+=s.count[k];
+            }
+            for (int k=0;k<cpu::host_kinds;++k) {
+              need(!s.host_throws[k] && (k==cpu::gemm_submit || !s.host_count[k]),"unexpected wrapper host region");
+            }
+            submit_cpu=s.host_cpu[cpu::gemm_submit]-s.host_wait_cpu[cpu::gemm_submit];
+            submit_wall=s.host_wall[cpu::gemm_submit]-s.host_wait_wall[cpu::gemm_submit];
+            submit_count=s.host_count[cpu::gemm_submit];
+            need(submit_count==unsigned(repeat) && wait_count>=1 &&
+                cpu::duration(call_cpu-call_wait_cpu-submit_cpu) &&
+                cpu::duration(call_wall-call_wait_wall-submit_wall) &&
+                cpu::duration(total_cpu-call_cpu-wait_cpu+call_wait_cpu) &&
+                cpu::duration(total_wall-call_wall-wait_wall+call_wait_wall),"wrapper CPU partition does not conserve");
+          }
+          scope.complete(true);
+        }
+        if constexpr (Observe) frame.after_checked_drain();
+      }
+      trace.reset(); // event queries and bounded profile output are charged
+      const double charged_ns=std::chrono::duration<double,std::nano>(std::chrono::steady_clock::now()-charged).count();
       const auto a=start.get_profiling_info<sycl::info::event_profiling::command_end>();
       const auto b=end.get_profiling_info<sycl::info::event_profiling::command_start>();
       need(b>a && std::isfinite(wall_ns) && selected==(path.expected ? repeat : 0),
@@ -319,6 +395,13 @@ void benchmark_public(int process,int arm,sycl::queue &q) {
         <<",\"rows\":"<<rows<<",\"round\":"<<round<<",\"repeat\":"<<repeat
         <<",\"selected\":"<<selected<<",\"fallback\":"<<(repeat-selected)
         <<",\"wall_ns\":"<<wall_ns<<",\"queue_interval_ns\":"<<(b-a)
+        <<",\"observed\":"<<Observe<<",\"charged_wall_ns\":"<<charged_ns
+        <<",\"wrapper_cpu_ns\":"<<call_cpu*1e9<<",\"wrapper_wall_ns\":"<<call_wall*1e9
+        <<",\"total_cpu_ns\":"<<total_cpu*1e9<<",\"total_wall_ns\":"<<total_wall*1e9
+        <<",\"wait_cpu_ns\":"<<wait_cpu*1e9<<",\"wait_wall_ns\":"<<wait_wall*1e9
+        <<",\"wrapper_wait_cpu_ns\":"<<call_wait_cpu*1e9<<",\"wrapper_wait_wall_ns\":"<<call_wait_wall*1e9
+        <<",\"inner_submit_cpu_ns\":"<<submit_cpu*1e9<<",\"inner_submit_wall_ns\":"<<submit_wall*1e9
+        <<",\"inner_submit_count\":"<<submit_count<<",\"wait_count\":"<<wait_count
         <<",\"max_half_ulp\":"<<ulp<<",\"eligible\":"<<eligible
         <<",\"scope\":\"public_dispatch_queue_interval_includes_host_gaps_not_GPU_service\""
         <<",\"status\":\"PASS\"}\n";
@@ -364,7 +447,8 @@ int main(int argc,char **argv) {
     if (mode=="--ownership") {
       ownership(); std::cout << "fixture_status=PASS mode=ownership GPU_submissions=0\n"; return 0;
     }
-    const bool public_timing=mode=="--bench-public";
+    const bool public_attribution=mode=="--attribute-public";
+    const bool public_timing=mode=="--bench-public" || public_attribution;
     const bool public_profile=mode=="--profile-public";
     const bool public_smoke=mode=="--smoke-public";
     int public_arm=0,public_process=0;
@@ -384,7 +468,8 @@ int main(int argc,char **argv) {
     }
     runtime=sb::runtime_for(); auto q=runtime->make_queue(true); topology(q);
     if (public_timing) {
-      benchmark_public(public_process,public_arm,q);
+      if (public_attribution) benchmark_public<true>(public_process,public_arm,q);
+      else benchmark_public<false>(public_process,public_arm,q);
     } else if (public_profile || public_smoke) {
       for (int rows:{3,160,2333,2334}) { Case c(rows,false,q);c.check_profile(public_arm!=0); }
     } else if (mode=="--profile-engine-hook") {

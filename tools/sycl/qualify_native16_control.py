@@ -49,37 +49,49 @@ def save(row):
     write(ROOT / 'record.json', row); RESULT.write_text(raw)
 
 
-def native():
-    record = build.ROOT / 'record.json'; row = json.loads(record.read_text())
-    require(build.scope(r.validation.committed(RESULT))[build.KEY] == build.compact(row) and
+def native(root=None, key=None):
+    # A closed fixture keeps its original source identity when later fixture
+    # work edits this worktree. Verify compiled inputs against recovered Git
+    # blobs, not today's files; SDK/vendor/generated inputs still require their
+    # actual pinned bytes. This does not qualify a changed native executable.
+    root = Path(root) if root is not None else build.ROOT
+    key = key if key is not None else build.KEY
+    record = root / 'record.json'; row = json.loads(record.read_text())
+    require(build.scope(r.validation.committed(RESULT))[key] == build.compact(row) and
         row['stage'] == 'built' and row['complete'] and row['passed'] and row['ownership_closed'] and
         not row['active'] and not row['GPU_executed'] and not row['engine_built'], 'closed exact native build required')
-    count = 0
+    count = 0; original_inputs = {}
     for group in [row['project'], *row['dependencies']]:
         recovered = {n: hashlib.sha256(raw).hexdigest() for n, raw in
             build.shared.build.blobs(Path(group['root']), group['revision'], group['source_sha256'])}
         require(recovered == group['source_sha256'] and len(recovered) == group['count'], 'native inputs unrecoverable')
+        require(hashlib.sha256(json.dumps(recovered, sort_keys=True, separators=(',', ':')).encode()).hexdigest()
+            == group['aggregate_sha256'], 'original source aggregate differs')
+        original_inputs.update({str((Path(group['root']) / name).resolve()): sha for name, sha in recovered.items()})
         count += len(recovered)
-    require(count == 9972, 'native source count differs')
+    require(count == sum(group['count'] for group in [row['project'], *row['dependencies']]),
+        'native source count differs')
     closure = row['compiled_inputs']; require(digest(closure['path']) == closure['sha256'], 'compiler manifest changed')
     files = json.loads(Path(closure['path']).read_text())
-    require(len(files) == closure['files'] == 1427 and closure['uncovered'] == 0 and
-        all(digest(p) == sha for p, sha in files.items()), 'actual compiled source/header changed')
     sdk = build.sdk_admit(row['sdk'])
+    expected_inputs = dict(sdk, **row['external_inputs'], **row['generated_expected'], **original_inputs)
+    require(len(files) == closure['files'] >= 100 and closure['uncovered'] == 0 and
+        all(expected_inputs.get(p) == sha and (p in original_inputs or digest(p) == sha)
+            for p, sha in files.items()), 'original actual compile closure changed or uncovered')
     for tool in row['tools'].values(): require(digest(tool['path']) == tool['sha256'], 'native tool changed')
     for artifact in row['fixtures'].values():
         require(digest(artifact['path']) == artifact['sha256'] and Path(artifact['path']).stat().st_size == artifact['bytes'],
             'native fixture changed')
     # Check actual imported link files too; compiler headers alone are insufficient.
     expected = dict(sdk, **row['external_inputs']); imported = {}; generated = {}
-    ninja = (build.ROOT / 'build/build.ninja').read_text()
+    ninja = (root / 'build/build.ninja').read_text()
     for name in row['targets']:
         stanza = ninja[ninja.index('build ' + name + ':'):].split('\n\n', 1)[0]
         line = next(v.split(' = ', 1)[1] for v in stanza.splitlines() if v.startswith('  LINK_LIBRARIES = '))
         for value in shlex.split(line):
             if not value.startswith('/'): continue
             path = Path(value).resolve(); sha = digest(path)
-            if path.is_relative_to(build.ROOT / 'build'):
+            if path.is_relative_to(root / 'build'):
                 generated[str(path)] = sha
             else:
                 require(str(path) in expected and sha == expected[str(path)], 'unplanned imported link file: ' + str(path))
@@ -176,7 +188,11 @@ def prepare():
 
 def current(row):
     require(build.scope(r.validation.committed(RESULT))[KEY] == compact(row), 'commit exact compatibility plan')
-    require(gen.benchmark_pins(row['source_commit']) == row['controller_inputs'], 'controller input changed')
+    # The completed cohort is not re-executed by this reader. Recover its
+    # immutable controller source; a new caller must pin its own current code.
+    closed = row['complete'] and row['passed'] and row['ownership_closed'] and not row['active']
+    require(gen.benchmark_pins(row['source_commit'], match_worktree=not closed) == row['controller_inputs'],
+        'controller input changed or unrecoverable')
     require(native()[2] == row['native_build'] and digest(r.RESULT) == row['runtime_sha256'], 'native/runtime proof changed')
     rt = r.validation.committed(r.RESULT); r.current(rt)
     require(rt['boot'] == row['boot'] and rt['driver'] == row['driver'], 'boot/driver changed')
