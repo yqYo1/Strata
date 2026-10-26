@@ -226,6 +226,19 @@ kernel files do not prove identical generated instructions,headers,dispatch or
 runtime behavior. This narrows the source audit without clearing the surrounding
 prefill path of possible regressions.
 
+A further comparison with the original fastest receipts finds an observer-policy
+difference:396d did not enable UR parameter validation or the native validation
+preload;the later6e40 historical/current measurements do. The benchmark's
+prefill construction,eligibility and execution methods have identical ASTs across
+the fastest,historical6e40 and fresh-reference clients. All retain the engine's
+read-token and prompt-millisecond metric;`bench.sh` is identical. Server tokenizer
+prefix caching and the client's outside-request gates/endpoint metadata also
+changed. Thus the fastest package is not an identical measurement envelope,and
+no isolated cost of the earlier validation transition is measured. This cannot
+by itself explain the later1003→975 decline:both sides of that same-binary
+comparison already use the validation/preload policy. Keep policy changes
+separate from a changed timing formula or an application-source regression.
+
 Separately,the original6e40 executable itself now measures slower. Recomputing
 actual read tokens divided by engine milliseconds from the old cohort at
 1e676d554 and the updated-NEO cohort above gives:
@@ -371,6 +384,12 @@ uncontrolled. The fastest1005.7655 package is still a separate configuration.
 Neither restoration nor sustained decode is qualified. Next measure actual
 public GU dispatch/fallback at M160/2333/2334 with official-SDK fixtures;keep GPU
 service distinct from queue intervals that include host submission gaps.
+This latest result is3.0586% below the earlier fastest396d median1005.7655.
+A bounded reread of
+the actual Codex final answers confirms that the912 and975 reports refer to
+different closed windows;neither is a newly defined throughput metric. Their
+individual samples remain separate in the linked result. Do not continue to
+describe a fixed9.1% current decline after the fresh975 recheck.
 
 Reference setup failures retain their original outcomes. Three attempts refuse
 previously unlisted code maps;Main also selected the CPU OpenCL registration instead of
