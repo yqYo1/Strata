@@ -2729,8 +2729,8 @@
     },
     "fused_command_profile": {
       "native16_compatibility_smoke": {
-        "stage": "failed",
-        "source_commit": "f4e0d81ba7c864f96b7b6862eea33ab762978e82",
+        "stage": "prepared",
+        "source_commit": "1cca832a506ce4861ae198b4862996ad11affa86",
         "native_build": {
           "record": {
             "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/native16-public-control-v4/record.json",
@@ -2918,7 +2918,7 @@
         ],
         "processes": [],
         "active": false,
-        "ownership_closed": false,
+        "ownership_closed": true,
         "complete": false,
         "passed": false,
         "GPU_executed": false,
@@ -2937,43 +2937,32 @@
         },
         "whole_bytes": 536870912,
         "retention": "Keep source/recipe,compact individual case counts/dispatch/provider/validation/fault decisions. Retire successful full trace/JIT and process logs after verification. Candidate4fixtures and 1427input manifest remain for imminent public-GU calibration. Original13assets unchanged.",
+        "previous_failed_attempt": {
+          "result_commit": "99c26a585",
+          "source_commit": "f4e0d81ba7c864f96b7b6862eea33ab762978e82",
+          "stage": "failed",
+          "original_observation_failed": true,
+          "physical_process_closed": true,
+          "GPU_process_launched": false,
+          "failure_analysis": {
+            "stage": "host_only_observation",
+            "GPU_process_launched": false,
+            "native_exit_code": 0,
+            "original_observation_failed": true,
+            "cause": "PermissionError reading /proc/1430011/environ during the short-lived host-canary exit;controller stopped before reading stdout. Pre-main official loader validation completes in stderr. No GPU fixture was launched.",
+            "physical_closure": {
+              "direct_child_reaped": true,
+              "session_empty_observed_before_reap": true,
+              "survivors": [],
+              "pid_absent_at_followup": true
+            },
+            "next": "Preserve failed supervision outcome;new controller/plan must handle positively observed exit races without weakening live-process environment or GPU-provider checks."
+          }
+        },
         "runtime_manifest": {
-          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/native16-compatibility-smoke-v1/runtime-inputs.json",
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/native16-compatibility-smoke-v2/runtime-inputs.json",
           "sha256": "43de9b527585addcc6da1f8fdc6f1e8266e2d982ba4c752d909578ed8c7bde21",
           "files": 84
-        },
-        "outcome": {
-          "host_probe_accepted": false,
-          "error": "RuntimeError('native case failed: host-canary')",
-          "last_case": "host-canary",
-          "ownership_closed": false,
-          "fresh_faults": [],
-          "boot_unchanged": true,
-          "driver_after": {
-            "pci": "/sys/bus/pci/devices/0000:05:00.0",
-            "driver": "xe",
-            "vendor": "0x8086",
-            "device": "0xe20c",
-            "kernel": "7.0.0-38-generic",
-            "devcoredump": false
-          },
-          "passed": false
-        },
-        "observed_runtime_files": {},
-        "GPU_process_launched": false,
-        "failure_analysis": {
-          "stage": "host_only_observation",
-          "GPU_process_launched": false,
-          "native_exit_code": 0,
-          "original_observation_failed": true,
-          "cause": "PermissionError reading /proc/1430011/environ during the short-lived host-canary exit;controller stopped before reading stdout. Pre-main official loader validation completes in stderr. No GPU fixture was launched.",
-          "physical_closure": {
-            "direct_child_reaped": true,
-            "session_empty_observed_before_reap": true,
-            "survivors": [],
-            "pid_absent_at_followup": true
-          },
-          "next": "Preserve failed supervision outcome;new controller/plan must handle positively observed exit races without weakening live-process environment or GPU-provider checks."
         }
       },
       "native16_public_calibration_build": {
