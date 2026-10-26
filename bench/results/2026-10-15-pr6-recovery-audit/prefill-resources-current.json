@@ -7217,7 +7217,7 @@
         "admission_scope": "ONLY the pinned installed official2026.2compiler+runtime/UMF1.2 in the new committed bounded V3component. Prior XeStrata-path SDK stays prohibited for new builds. GPU/runtime/model qualification is NOT inherited or granted by this build permission."
       },
       "prefill_upload_staging_v3": {
-        "stage": "prepared-build",
+        "stage": "built-not-executed",
         "source_commit": "617e1845a4477994f812d9bf0f4cbe4fc80d045c",
         "sdk": {
           "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-expert-staging-v3/sdk-inputs.json",
@@ -7406,8 +7406,8 @@
         },
         "active": false,
         "ownership_closed": true,
-        "passed": false,
-        "complete": false,
+        "passed": true,
+        "complete": true,
         "GPU_executed": false,
         "model_executed": false,
         "model_adoption_qualified": false,
@@ -7464,6 +7464,16 @@
         "criteria": "Execution:normal owned closure,silent parameter validation,actual pinned provider/runtime,zero fresh fault/same boot,all source/target/host guards,all readers,private-map and counters pass. Cold timing-marker initialization is separately recorded setup,not bank first-use;all five subsequent empty controls remain individually recorded. Each timing batch needs wall>=10ms and queue interval>=10ms,timer p99<=10us and empty-control maximum<=5percent of batch wall;queue intervals are nonexclusive,not GPU service. For EACH payload,GM of3process subsequent-median staged/ordinary wall ratios<=0.95 and every process ratio<1. Preserve first-use and all samples. A failed/ineligible screen forbids gated full-pipeline/model advancement;passing permits the separately planned dequant/GEMM component check only,not a model trial or adoption.",
         "safety_audit": "Main-authored ring;no XeStrata source.4host-USM slots,<=16MiB capacity/slot,256byte guards;same in-order context/device queue and registered device ownership. Reject device sources,overlap,bad extents/queues. Copy-event wait before CPU host-slot reuse;GPU readers and scratch overwrite ordered on same queue. Destructor,guard and catch drains wait the bound queue itself;Runtime.wait alone does not drain custom queues. Finite65536-step unsigned tail checks destructor completion without host-gated spin/barrier. Failed drain fail-stops with owners live. No new GPU arithmetic in inference;only bounded transfer-preparation memcpy. Default disabled prefill-only route;decode/short-prefill/cache placement unchanged. No physical256K qualification.",
         "retention": "Keep compact individual timing/CPU samples,eligibility/correctness/fault/source results. Review component executable at gate closure or imminent full-pipeline comparison. Original selected engine+12fixtures stay intact;V1/V2closed fixtures are superseded and not timed arms. Two earlier GU/Down fixtures retain only their named ceiling consumer. Retire routine raw traces/build output once extracted;no full API trace during long validation.",
+        "compiled_inputs": {
+          "files": 724,
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-expert-staging-v3/compiler-inputs.json",
+          "sha256": "6195b364863ba2dfe004b0b382983de6073101cbb11ff72441c6b150c794b78b"
+        },
+        "binary": {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-expert-staging-v3/sycl_expert_staging",
+          "bytes": 445904,
+          "sha256": "354343bf7e4f3797cda3ef9dce62c3877a58f7adb90645691010f12716fe663b"
+        },
         "project": {
           "revision": "617e1845a4477994f812d9bf0f4cbe4fc80d045c",
           "count": 495,
