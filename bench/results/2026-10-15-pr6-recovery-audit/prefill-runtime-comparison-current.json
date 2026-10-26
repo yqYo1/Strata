@@ -804,7 +804,7 @@
   },
   "historical_regression_audit": {
     "amd_clock_observer_v1": {
-      "stage": "prepared",
+      "stage": "failed",
       "source_commit": "4671d1cb0bb9408d465397919970304a12ee0f78",
       "native_source": {
         "path": "/home/yayoi/orca/workspaces/Strata/sycl/bench/sycl/amd_clock_access.c",
@@ -876,12 +876,46 @@
       "passed": false,
       "complete": false,
       "GPU_executed": false,
-      "counter_access_observed": false,
+      "counter_access_observed": true,
       "model_clock_qualified": false,
       "MHz_qualified": false,
       "criteria": "System-C compile/link/ELF and fresh access pilot,then6fixed-work CPU-only processes on/off/off/on/on/off. CPU0 actor:1006632960 warmup iterations outside clock,then10066329600 identical serial unsigned LCG iterations. Timed interval includes observer fork/exec,initialization, 1Hz polling/counter/output,EOF shutdown and wait. Child uses same CPU0 and private EOF pipe. Require normal closure/checksums,wall>=5s,>=5periodic samples/on process,positive ordered MPERF/APERF deltas,gaps0.8..1.2s,no missed timer expiration and childCPU/wall<=0.002. Overhead screen:off-wall/on-wall each>=0.98 and geometric mean>=0.99. No speed-based early stop/retries;report all pairs. Stop first source/contract/fault/ownership/budget failure.",
       "limits": "CPU fixture overhead and observer protocol only. No GPU,model clock,MHz,P0/SMT interpretation,resource saturation,historical cause or throughput/adoption claim. Passing permits a separately pinned sampled model diagnostic,with clean speed collected separately; it does not establish identical perturbation for GPU/syscall/polling workloads.",
-      "retention": "Keep individual6work/CPU/overhead values,source/build/contract identities and decision. Retire normal logs/tick sequences/private receipts after verified replay. Retain this tiny host observer ELF only for imminent model diagnostic after audit and this host gate; no new engine generation. Original engine and officialv4fallback are untouched."
+      "retention": "Keep individual6work/CPU/overhead values,source/build/contract identities and decision. Retire normal logs/tick sequences/private receipts after verified replay. Retain this tiny host observer ELF only for imminent model diagnostic after audit and this host gate; no new engine generation. Original engine and officialv4fallback are untouched.",
+      "object": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/amd-clock-observer-v1/clock.o",
+        "sha256": "423ba55daa702b989cadbba8b0b0e62a48a6a24b232d9230703b12462ae6355a"
+      },
+      "actual_link_manifest": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/amd-clock-observer-v1/actual-link-inputs.json",
+        "sha256": "cbb2abc68ddd557e44c48d2c31e8d1ccad77d4439890e755450d97a15acbc00b",
+        "files": 13,
+        "uncovered": 0
+      },
+      "binary": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/amd-clock-observer-v1/clock-access",
+        "sha256": "4644cbd1df632eaf1a11121301dba7c24294ede245c1aef51da2ee9239b256c5"
+      },
+      "fresh_access": {
+        "passed": true,
+        "snapshot_batch_wall_ns": 189846
+      },
+      "outcome": {
+        "host_probe_accepted": false,
+        "error": "ValueError('dictionary update sequence element #0 has length 1; 2 is required')",
+        "ownership_closed": true,
+        "fresh_faults": [],
+        "boot_unchanged": true,
+        "driver_after": {
+          "pci": "/sys/bus/pci/devices/0000:05:00.0",
+          "driver": "xe",
+          "vendor": "0x8086",
+          "device": "0xe20c",
+          "kernel": "7.0.0-38-generic",
+          "devcoredump": false
+        },
+        "passed": false
+      }
     },
     "amd_clock_access_v1": {
       "stage": "access-observed",
