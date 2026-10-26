@@ -804,7 +804,7 @@
   },
   "historical_regression_audit": {
     "owner_cpu_probe_v1": {
-      "stage": "prepared",
+      "stage": "closed",
       "source_commit": "439d3e2d4c5ee53d78289226315624a546a2efa0",
       "controller_fingerprint": "c3460e0544fbbe1939512cdae6521e04d7db7a6cdfa441b64d47f1b750bd8e67",
       "binary": {
@@ -812,9 +812,64 @@
         "sha256": "4644cbd1df632eaf1a11121301dba7c24294ede245c1aef51da2ee9239b256c5"
       },
       "boot": "cfda0b6a-7c13-4fe2-bdf5-8f9202770840",
-      "processes": [],
-      "complete": false,
-      "passed": false,
+      "processes": [
+        {
+          "index": 0,
+          "mode": "plain",
+          "elapsed_ns": 10083139181,
+          "controller_cpu_ns": 1210166532,
+          "controller_cpu_fraction": 0.12001882650597125,
+          "native_pid": 2481382,
+          "ownership_closed": true
+        },
+        {
+          "index": 1,
+          "mode": "CPU-profile",
+          "elapsed_ns": 10496668109,
+          "controller_cpu_ns": 4660357460,
+          "controller_cpu_fraction": 0.4439844540768265,
+          "native_pid": 2481707,
+          "ownership_closed": true,
+          "attribution": {
+            "timer": "process_time",
+            "functions": {
+              "run": {
+                "calls": 1,
+                "self_CPU_s": 0.00020882300000000002,
+                "cumulative_CPU_s": 4.660158235
+              },
+              "scan": {
+                "calls": 26,
+                "self_CPU_s": 0.133124965,
+                "cumulative_CPU_s": 4.014022378
+              },
+              "identity": {
+                "calls": 22467,
+                "self_CPU_s": 0.217025134,
+                "cumulative_CPU_s": 3.0052711110000003
+              },
+              "artifact_bytes": {
+                "calls": 24,
+                "self_CPU_s": 0.011758236,
+                "cumulative_CPU_s": 0.40672293600000003
+              }
+            },
+            "scan_cumulative_fraction_of_run": 0.8613489447317018,
+            "limits": "Nested cumulative CPU times are not additive. Profiling overhead raises this process cost;use plain processes for observed supervisor CPU fractions."
+          }
+        },
+        {
+          "index": 2,
+          "mode": "plain",
+          "elapsed_ns": 10124211304,
+          "controller_cpu_ns": 1259175374,
+          "controller_cpu_fraction": 0.12437268802385715,
+          "native_pid": 2482055,
+          "ownership_closed": true
+        }
+      ],
+      "complete": true,
+      "passed": true,
       "active": false,
       "ownership_closed": true,
       "GPU_executed": false,
@@ -836,6 +891,15 @@
         "HOME": "/home/yayoi",
         "LANG": "C.UTF-8",
         "LC_ALL": "C.UTF-8"
+      },
+      "analysis": {
+        "unprofiled_controller_fractions": [
+          0.12001882650597125,
+          0.12437268802385715
+        ],
+        "both_within_rejected_model_budget": false,
+        "limits": "Host-only supervisor workload;profile changes overhead. No causal inference loss,clock/model qualification or speedup. Main must address measured overhead before a separate model plan.",
+        "next_check": "Prospectively compare whole-prefill runs with matched native placement/environment and isolated supervisor scheduling or independently validated cheaper supervision. Host12percent CPU and a profile dominated by /proc scanning do not establish historical causation. No further CPU-clock model repetition without a question requiring it."
       }
     },
     "model_cpu_clock_diagnostic_v1": {
@@ -1119,7 +1183,8 @@
             "speed_eligible": false
           },
           "limits": "Controller CPU budget failure,not a GPU hang or accepted clock/speed result. Do not relax the failed gate retroactively."
-        }
+        },
+        "next_check": "CPU-only control confirms12.0..12.4percent of a core in existing supervisor;profile attributes most profiled CPU to /proc scan/identity. Record its measured host cost as a potential confounder,then use a separately committed matched model control to accept/reject its effect. No repeated CPU-clock model run merely to collect missing warm samples."
       },
       "active": false,
       "ownership_closed": false,
@@ -1137,7 +1202,23 @@
         "original_normal_ownership_gate_remains_failed": true,
         "GPU_faults": []
       },
-      "remaining_check": "Measure CPU-only supervision cost with unchanged Owner and standalone observer,then attribute its host CPU cost before any new sampled model plan. Retain failed counter output only for offline replay;no retry of this plan."
+      "remaining_check": "CPU-only control confirms12.0..12.4percent of a core in existing supervisor;profile attributes most profiled CPU to /proc scan/identity. Record its measured host cost as a potential confounder,then use a separately committed matched model control to accept/reject its effect. No repeated CPU-clock model run merely to collect missing warm samples.",
+      "offline_counter_replay": {
+        "intervals": 134,
+        "ratio_range": [
+          1.075177534532077,
+          1.25657142521326
+        ],
+        "ratio_median": 1.2537380050420812,
+        "max_snapshot_ns": 942,
+        "gap_ns_range": [
+          998988332,
+          1000989584
+        ],
+        "raw_sha256": "01af64020b3cbd788f1960c8ff5f41318cd15d352b81305b238c321a177df59f",
+        "method": "Adjacent serialized MPERF-before/APERF/MPERF-after sandwiches. Bound deltaAPERF by cross-snapshot MPERF envelope;require progression,<=100us snapshots,relative envelope<=0.001 and0.8..1.2s gaps. No native reexecution.",
+        "limits": "Partial134 CPU0 interval aggregates spanning first request and cleanup,not exact native-prefill-contained intervals or thread MHz. Original model diagnostic remains failed/incomplete,with no subsequent sample or model-overhead qualification. Past equivalent counters absent;no historical cause established."
+      }
     },
     "amd_clock_observer_v2": {
       "stage": "closed",

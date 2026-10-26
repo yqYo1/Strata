@@ -778,8 +778,7 @@ frozen each>=0.98/mean>=0.99screen. Each on process records eight periodic
 samples;whole childCPU is781000..912000ns over8.80..8.93s(0.00875..0.01028%).
 All six native outputs and ratios replay. These CPU-fixture results do not
 establish observer perturbation for actual GPU/syscall/polling work or explain
-the historical decline. A pinned model plan and independent source review
-remain required;no clock observer has run with the model.
+the historical decline. The separately pinned model attempt below remains failed.
 
 The first controller fails on bare observer_ready/observer_done framing after
 five normally closed native commands. Preserve that failed/incomplete result
@@ -793,8 +792,37 @@ with piped stdin,bounded EOF/ownership closure and actual model-wrapper overhead
 accounting. Monotonic clocks and the inspected owner deadline exclude suspend;
 a later model plan must reject suspend with BOOTTIME checks and retain counter
 scope/skew limits. Rare host-control-only fd edges do not block fresh --observe
-with piped stdin. Main retains this tiny observer candidate for that imminent
-diagnostic;the original engine and officialv4fallback remain unchanged.
+with piped stdin. The original engine and officialv4fallback remain unchanged.
+
+The source175cd3189 request-scoped model diagnostic passes its standalone
+stdin-pipe/ready/EOF/provider/ownership host check,then stops after the first
+117489-token request because controller CPU/gate elapsed exceeds the frozen5%
+limit. The exact rejected fraction was not persisted before the check;do not
+invent it or raise the old limit. The native first request reports129257ms and
+24outputs;there are no subsequent samples. Owned benchmark processes are
+terminated and reaped,the session is empty,and the independent observer records
+normal EOF. The normal-ownership gate remains failed;separate closure evidence
+confirms no owned survivor and no fresh GPUfault. This is not a GPU hang.
+Offline replay recovers134 ordered CPU0 counter intervals:ratio median1.253738,
+range1.075178..1.256571,max snapshot942ns and gaps0.998988..1.000990s.
+They span the first request and cleanup,not exact native-prefill boundaries or
+model-thread MHz. They do not qualify model observer cost or explain history.
+
+A separate CPU-only supervisor control uses the same unchanged Owner and native
+observer,with no model or GPU. Plain/profile/plain processes all close normally.
+The two unprofiled controls consume1.21017s/10.08314s and1.25918s/10.12421s of
+controller CPU:12.0019% and12.4373% of one core,both above that5%model limit.
+The CPU-time profiler itself raises controller cost to4.66036s/10.49667s;
+its nested scan time is4.01402s of4.66016s in Owner.run(86.13%),including22467
+identity calls. Artifact sizing accounts for0.40672s. These cumulative times
+overlap and must not be added. Repeated whole-/proc scanning is the primary
+host cost in this profiled supervision workload. This confirms a measurement
+confounder to control,not a3%inference slowdown or historical-regression cause:
+the supervisor source is unchanged across historical measurements. A separately
+pinned whole-model comparison must establish whether changing supervision
+scheduling/cost changes prefill. Do not repeat CPU-clock model runs without a
+new question requiring them. No inference implementation or decode placement
+changes follow from these diagnostics.
 
 A passive check of this kernel7.0.0-38 finds tracefs,its xe event directory and
 DRM debugfs inaccessible(EACCES). The installed xe UAPI documents memory-range
