@@ -803,6 +803,86 @@
     }
   },
   "historical_regression_audit": {
+    "amd_clock_observer_v2": {
+      "stage": "prepared",
+      "source_commit": "58cbd6d4846332a094f985d98c80c5cdab936d49",
+      "native_source": {
+        "path": "/home/yayoi/orca/workspaces/Strata/sycl/bench/sycl/amd_clock_access.c",
+        "sha256": "afde4302a9a865c13cf508d056eb017dc22eb6cd0dd499ebd9a6fb4a6c63d088"
+      },
+      "compiler": {
+        "path": "/usr/bin/x86_64-linux-gnu-gcc-13",
+        "sha256": "1b99826121ae6682a634e5efe09bd3e3df58ce58e0b28f849114ab5b89139c26",
+        "version": "x86_64-linux-gnu-gcc-13 (Ubuntu 13.3.0-6ubuntu2~24.04.1) 13.3.0"
+      },
+      "environment": {
+        "PATH": "/usr/bin:/bin",
+        "HOME": "/home/yayoi",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8",
+        "TMPDIR": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/amd-clock-observer-v2/tmp"
+      },
+      "manifest": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/amd-clock-observer-v2/native-inputs.json",
+        "sha256": "214d68d79aa4918971df54a10a14e49272eba5bfcea6c4f5063cf9a368c50c98",
+        "files": 160
+      },
+      "compile_argv": [
+        "/usr/bin/x86_64-linux-gnu-gcc-13",
+        "-std=c11",
+        "-O2",
+        "-Wall",
+        "-Wextra",
+        "-Werror",
+        "-fPIE",
+        "-MD",
+        "-MF",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/amd-clock-observer-v2/actual-deps.d",
+        "-c",
+        "/home/yayoi/orca/workspaces/Strata/sycl/bench/sycl/amd_clock_access.c",
+        "-o",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/amd-clock-observer-v2/clock.o"
+      ],
+      "link_argv": [
+        "/usr/bin/x86_64-linux-gnu-gcc-13",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/amd-clock-observer-v2/clock.o",
+        "-Wl,-t",
+        "-o",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/amd-clock-observer-v2/clock-access"
+      ],
+      "input_identity": "6e2ff1290c35113db85f308e907d60669466dd6ca8f4023f8cb0aff392393d58",
+      "boot": "cfda0b6a-7c13-4fe2-bdf5-8f9202770840",
+      "budgets": {
+        "wall": 90,
+        "cpu": 90,
+        "rss_cap": 1073741824,
+        "text_cap": 4194304,
+        "file_cap": 8388608,
+        "total_cap": 33554432
+      },
+      "order": [
+        "on",
+        "off",
+        "off",
+        "on",
+        "on",
+        "off"
+      ],
+      "processes": [],
+      "whole_wall": 900,
+      "whole_bytes": 100663296,
+      "active": false,
+      "ownership_closed": true,
+      "passed": false,
+      "complete": false,
+      "GPU_executed": false,
+      "counter_access_observed": false,
+      "model_clock_qualified": false,
+      "MHz_qualified": false,
+      "criteria": "System-C compile/link/ELF and fresh access pilot,then6fixed-work CPU-only processes on/off/off/on/on/off. CPU0 actor:1006632960 warmup iterations outside clock,then10066329600 identical serial unsigned LCG iterations. Timed interval includes observer fork/exec,initialization, 1Hz polling/counter/output,EOF shutdown and wait. Child uses same CPU0 and private EOF pipe. Require normal closure/checksums,wall>=5s,>=5periodic samples/on process,positive ordered MPERF/APERF deltas,gaps0.8..1.2s,no missed timer expiration and childCPU/wall<=0.002. Overhead screen:off-wall/on-wall each>=0.98 and geometric mean>=0.99. No speed-based early stop/retries;report all pairs. Stop first source/contract/fault/ownership/budget failure.",
+      "limits": "CPU fixture overhead and observer protocol only. No GPU,model clock,MHz,P0/SMT interpretation,resource saturation,historical cause or throughput/adoption claim. Passing permits a separately pinned sampled model diagnostic,with clean speed collected separately; it does not establish identical perturbation for GPU/syscall/polling workloads.",
+      "retention": "Keep individual6work/CPU/overhead values,source/build/contract identities and decision. Retire normal logs/tick sequences/private receipts after verified replay. Retain this tiny host observer ELF only for imminent model diagnostic after audit and this host gate; no new engine generation. Original engine and officialv4fallback are untouched."
+    },
     "amd_clock_observer_v1": {
       "stage": "failed",
       "source_commit": "4671d1cb0bb9408d465397919970304a12ee0f78",
