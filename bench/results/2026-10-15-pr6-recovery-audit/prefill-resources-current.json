@@ -2729,7 +2729,7 @@
     },
     "fused_command_profile": {
       "public_gu_stage_smoke_v1": {
-        "stage": "prepared",
+        "stage": "closed",
         "source_commit": "5a5336f24eb5f487462a63589a3be999df20e219",
         "native_reference": {
           "build_key": "public_gu_stage_smoke_build_v1",
@@ -2780,8 +2780,8 @@
         ],
         "active": false,
         "ownership_closed": true,
-        "complete": false,
-        "passed": false,
+        "complete": true,
+        "passed": true,
         "model_executed": false,
         "inference_adopted": false,
         "performance_qualified": false,
@@ -2798,7 +2798,140 @@
         },
         "stage_return_max_ns": 3000000000,
         "limits": "Smaller queued depth and added stage/API logging change the envelope. A pass is only a smoke,not reproduction or avoidance proof for the failed2048calls,ordinary runtime teardown without retained-loader preload,full numerics,model/legacy oneMKL ABI,decode or262144context. Stage elapsed time includes diagnostic output and is not isolated API/GPU service.",
-        "retention": "Keep source/recipe/provider identities,stage-count/latency maxima,guard/dispatch results and any last unmatched stage/novel failure diagnostic. Retire normal full API/progress/JIT output and disposable objects after verified closure. Choose official v4fallback;retire extra diagnostic generation after original-source recovery unless a concrete imminent consumer is selected."
+        "retention": "Normal trace/progress/JIT/private checkpoint can retire after compact evidence verification. Keep the current N7 build objects/static libraries only for imminent same-generation sycl_gemm_test matrix-only ABI extension;pin existing libraries/four ELFs before building the added fixture,verify they remain unchanged,record new test source/recipe separately. Official v4 stays correctness fallback. No unchanged2048call rerun or model/decode adoption.",
+        "details": {
+          "stage_entries": 308,
+          "stage_returns": 308,
+          "stage_summary": {
+            "runtime.init": {
+              "count": 1,
+              "max_elapsed_ns": 25206091
+            },
+            "queue.create": {
+              "count": 1,
+              "max_elapsed_ns": 170020
+            },
+            "buffer.init.H2D": {
+              "count": 7,
+              "max_elapsed_ns": 1970232
+            },
+            "event.wait": {
+              "count": 43,
+              "max_elapsed_ns": 679670
+            },
+            "buffer.get.D2H": {
+              "count": 25,
+              "max_elapsed_ns": 1737603
+            },
+            "queue.drain": {
+              "count": 10,
+              "max_elapsed_ns": 70623
+            },
+            "topology": {
+              "count": 1,
+              "max_elapsed_ns": 31829036
+            },
+            "buffer.set.H2D": {
+              "count": 6,
+              "max_elapsed_ns": 569232
+            },
+            "case.create": {
+              "count": 1,
+              "max_elapsed_ns": 22254831
+            },
+            "public.init": {
+              "count": 1,
+              "max_elapsed_ns": 78177
+            },
+            "reference.prepare": {
+              "count": 1,
+              "max_elapsed_ns": 213102261
+            },
+            "candidate.reset": {
+              "count": 4,
+              "max_elapsed_ns": 281300
+            },
+            "public.gu.try": {
+              "count": 64,
+              "max_elapsed_ns": 19466
+            },
+            "public.gu.f16_out16": {
+              "count": 64,
+              "max_elapsed_ns": 197642
+            },
+            "public.gu.swiglu": {
+              "count": 64,
+              "max_elapsed_ns": 164891
+            },
+            "checkpoint.enqueue": {
+              "count": 4,
+              "max_elapsed_ns": 12071509
+            },
+            "checkpoint.query": {
+              "count": 4,
+              "max_elapsed_ns": 32256061
+            },
+            "guard.compare": {
+              "count": 4,
+              "max_elapsed_ns": 5750853
+            },
+            "public.retire": {
+              "count": 1,
+              "max_elapsed_ns": 42440
+            },
+            "case.retire": {
+              "count": 1,
+              "max_elapsed_ns": 707493
+            },
+            "final.drain": {
+              "count": 1,
+              "max_elapsed_ns": 57749
+            }
+          },
+          "result": {
+            "kind": "public_progress_result",
+            "rows": 160,
+            "groups": 4,
+            "calls_per_group": 16,
+            "calls": 64,
+            "selected": 0,
+            "fallback": 64,
+            "max_pending_ordinary_kernels": 32,
+            "checkpoint_markers_per_group": 1,
+            "max_half_ulp": 0,
+            "guards": true,
+            "inputs_immutable": true,
+            "status": "PASS"
+          },
+          "limits": "Logged stage durations are diagnostic-only,not speed or saturation evidence.",
+          "native_execution": {
+            "elapsed_seconds": 0.6238296199589968,
+            "exit_code": 0,
+            "actual_owned_session_empty": true,
+            "API_entry_counts": {
+              "urEnqueueKernelLaunchWithArgsExp": 135,
+              "urEnqueueUSMMemcpy": 38,
+              "urEventGetProfilingInfo": 4
+            },
+            "source_and_runtime_rechecked_after_native_exit": true
+          }
+        },
+        "outcome": {
+          "host_probe_accepted": true,
+          "ownership_closed": true,
+          "fresh_faults": [],
+          "boot_unchanged": true,
+          "driver_after": {
+            "pci": "/sys/bus/pci/devices/0000:05:00.0",
+            "driver": "xe",
+            "vendor": "0x8086",
+            "device": "0xe20c",
+            "kernel": "7.0.0-38-generic",
+            "devcoredump": false
+          },
+          "passed": true
+        },
+        "GPU_executed": true
       },
       "public_gu_stage_smoke_build_v1": {
         "stage": "built",
