@@ -38,6 +38,8 @@ def compact(row):
 
 def prepare():
     c = r.validation.committed(RESULT)
+    require(scope(c).get('new_build_toolchain', {}).get('independent_build_admitted') is True,
+        'SDK origin is unresolved; qualify an independently sourced compiler/runtime before another build')
     require(not ROOT.exists() and KEY not in scope(c), 'fresh staging gate only; inspect existing handle before retry')
     rt = r.validation.committed(r.RESULT); r.current(rt)
     baseline = r.selected.baseline()[1]

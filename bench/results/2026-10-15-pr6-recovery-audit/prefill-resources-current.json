@@ -6470,7 +6470,8 @@
           "digest": "Bank-only gate passes;CPU totals mix submission,memcpy,waits and fixture work. Helper-local Runtime.wait missed accepted custom queues;production outer lease drains m.cs but fixture tested only compute queue. No model execution/adoption. Fix helper actual-queue drain and qualify custom queue before full dequant/GEMM test.",
           "report_retirement": "After this compact digest/source gap is committed and V2 closes;source and original outcomes remain in Git."
         },
-        "qualification_scope": "Original V1 Runtime.compute only;passed outcomes/72samples unchanged. Independent review found helper-local custom-queue retirement gap. Original source never executed as a model;V2 repairs and separately qualifies actual dedicated queues."
+        "qualification_scope": "Original V1 Runtime.compute only;passed outcomes/72samples unchanged. Independent review found helper-local custom-queue retirement gap. Original source never executed as a model;V2 repairs and separately qualifies actual dedicated queues.",
+        "toolchain_origin_limit": "See new_build_toolchain:old artifact identity/source recovery does not establish independent SDK origin. No model route adopted."
       },
       "prefill_upload_staging_v2": {
         "stage": "failed",
@@ -7122,11 +7123,71 @@
         },
         "retention": "Compact all72 wall/CPU/nonexclusive-queue samples and eligibility,original failed outcome,gates,source/recipe/runtime/executable identity. Retire raw/executable after native review and original input recovery;V3 uses a fresh source/build and never times V1/V2 binaries.",
         "independent_review": {
-          "stage": "running",
+          "stage": "complete",
           "agent": "/root/review_expert_staging_v2_20261026",
-          "report": ".cache/strata-research/20261026/expert-staging-v2-review.txt",
-          "consumer": "Short review of failed gate and new prospective measurement design before retiring V2 raw. No source steering."
-        }
+          "model": "gpt-6-luna",
+          "reasoning": "max",
+          "report_sha256": "7f05c172fcff44b349130c475f5ca0d9887d5bb50ea8e3dba4b27908fc8e1902",
+          "report_bytes": 5510,
+          "digest": "V2stays failed:36small-payload samples ineligible;large process ratios1.0612/0.6821/0.6849 violate every-process gate. V3separate cold setup/five controls,nine predeclared pairs and unchanged gates is a valid NEW measurement,not requalification of V2. No model advancement. Resolve SDK origin before reuse;retire raw/binary only after exact source/recipe recovery."
+        },
+        "toolchain_origin_limit": "See new_build_toolchain:old artifact identity/source recovery does not establish independent SDK origin. No model route adopted."
+      },
+      "new_build_toolchain": {
+        "stage": "origin-hold-before-new-build",
+        "independent_build_admitted": false,
+        "observation_utc": "2026-10-26T03:15:59Z",
+        "old_compiler_sha256": "1290881b4e12a5e002e5b0de0787f85328ee5fe19f253a54be1cdd97dc2f26eb",
+        "old_sdk_build_cache": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/build/CMakeCache.txt",
+        "actual_source_root": "/home/yayoi/ghq/github.com/intel/llvm/.worktree/toolchain-sycl-v711-b570-20261011",
+        "source_origin": "https://github.com/intel/llvm",
+        "source_HEAD": "504366f4b82ff00bbac7b0c956635eed8bc599d8",
+        "source_current_dirty_paths": [
+          "clang/lib/Driver/ToolChains/Clang.cpp",
+          "clang/lib/Driver/ToolChains/SYCL.cpp",
+          "libclc/CMakeLists.txt",
+          "libclc/clc/include/clc/math/math.h",
+          "llvm/cmake/modules/HandleLLVMOptions.cmake",
+          "sycl/source/detail/device_impl.hpp",
+          "sycl/source/detail/program_manager/program_manager.cpp",
+          "unified-runtime/source/adapters/cuda/command_buffer.cpp",
+          "unified-runtime/source/adapters/cuda/device.cpp",
+          "unified-runtime/source/adapters/cuda/ur_interface_loader.cpp",
+          "unified-runtime/source/adapters/cuda/usm.cpp",
+          "unified-runtime/source/adapters/hip/command_buffer.cpp",
+          "unified-runtime/source/adapters/hip/device.cpp",
+          "unified-runtime/source/adapters/hip/program.cpp",
+          "unified-runtime/source/adapters/hip/queue.cpp",
+          "unified-runtime/source/adapters/hip/ur_interface_loader.cpp",
+          "unified-runtime/source/adapters/hip/usm.cpp"
+        ],
+        "current_diff_sha256": "749489163d93c2f5f8a73d8f5f70e5d1e6c66f163ec3b89d9502ce95d2f48e27",
+        "source_license_files": {
+          "/home/yayoi/ghq/github.com/intel/llvm/.worktree/toolchain-sycl-v711-b570-20261011/llvm/LICENSE.TXT": "8d85c1057d742e597985c7d4e6320b015a9139385cff4cbae06ffc0ebe89afee",
+          "/home/yayoi/ghq/github.com/intel/llvm/.worktree/toolchain-sycl-v711-b570-20261011/sycl/LICENSE.TXT": "410f3a23b4bbacbd246310d8c014a20af18cfc8c0d740ddf0f673ea20894da9c"
+        },
+        "finding": "Current source tree has17modified files,227insertions/35deletions. Clang driver and SYCL device/program-manager files explicitly carry MistVVK/XeStrata contributor modification notices. Build cache points to this source. Existing artifact hashes prove continuity,not independent unmodified SDK origin or exact build-time dirty contents. No fork patch text imported.",
+        "qualification_limit": "Do not retroactively change numerical/fault passes or matched same-binary historical measurements. Prior independent-toolchain claim is unsupported;V1/V2component gains do not qualify source adoption. Same original binary under two times still establishes the observed model decline,not its cause. Original engine+12fixtures remain the named performance/fallback references pending clean-SDK runtime compatibility checks.",
+        "official_candidate": {
+          "compiler": "/opt/intel/oneapi/compiler/2026.2/bin/icpx",
+          "compiler_sha256": "59eaaf55744c7290fb870cd12049ec11877b5224e333cba33270b433bdb73213",
+          "compiler_version": "Intel oneAPI DPC++/C++2026.2.0(2026.2.0.20261001)",
+          "packages": [
+            "intel-oneapi-dpcpp-cpp-2026.2 2026.2.0-863",
+            "intel-oneapi-compiler-dpcpp-cpp-runtime-2026.2 2026.2.0-863"
+          ],
+          "package_source": "https://apt.repos.intel.com/oneapi all/main amd64",
+          "dpkg_verify": "Both installed package verifications exit0 with no changed-file output. No installation/update performed.",
+          "runtime_candidates": {
+            "/opt/intel/oneapi/compiler/2026.2/lib/libsycl.so.9.0.0": "07fe6d52f3350f6e30f4bdcdf3c7def120736dbe440e046e51ab3df9fd166055",
+            "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0.12.0": "81771b8372db7b81dc0c770f55d0171a806754ff4658a6fa301a7d2ad239d60d",
+            "/opt/intel/oneapi/compiler/2026.2/lib/libur_adapter_level_zero_v2.so.0.12.0": "ee33dae4d85948ad72f053f3e9c7e2cf0c30cc6339a35bfd92f6be0caac6364e"
+          },
+          "GPU_qualified": false,
+          "model_executed": false
+        },
+        "next_action": "Pin official SDK inputs/recipe and proposed runtime separately. Build a bounded existing submission/copy fixture,then before-main validated provider/queue/lifetime/fault qualification with safety settings unchanged. Keep old successful runtime record immutable;new runtime/library mappings require new evidence. Only then generate a fresh V3build/device plan and later actual-format full-pipeline check. No long model run yet.",
+        "retention": "No XeStrata/dirty SDK source copied. Keep only compact origin evidence and hashes;installed SDK/compiler/runtime assets are separate from disposable project builds. Retire consumed component artifacts and two native reviews after original19project+674external inputs and six-command recipes reconcile from pushed source."
       }
     }
   },
