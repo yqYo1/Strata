@@ -488,6 +488,14 @@ The source integration remains unbuilt as an engine,and there is no new
 prefill/decode or physical262144 qualification. The clean117K reference remains
 911.7371tok/s and the historical9.1% cause remains unattributed.
 
+Independent source review subsequently finds that helper-local retirement used
+`Runtime::wait()`,which drains only its compute/transfer queues. The production
+outer lease drains its dedicated queue,but the helper accepts custom queues and
+the V1 fixture exercised compute only. V1 outcomes above remain compute-only;
+no model ran. V2 changes guard/destructor/error retirement to wait the bound
+queue itself and adds dedicated-queue smoke,unwind,destructor-tail and repeated
+performance cases. V2 qualification is pending;the component remains defaultoff.
+
 Installed native metadata identifies representative actual formats:layer2 has
 IQ2_S(type22) gate/up and IQ4_NL(type20) down,1971200bytes;layer47 has
 IQ4_XS(type23) gate/up and IQ4_NL down,2662400bytes. Next freeze a comparison

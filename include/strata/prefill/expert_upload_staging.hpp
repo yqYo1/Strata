@@ -2,6 +2,7 @@
 // Main-authored; repository LICENSE applies. Long-prefill transfer preparation,
 // not model arithmetic. Every host slot has its own copy-completion event.
 #include "strata/sycl/launch.hpp"
+#include "strata/sycl/cpu_wait_profile.hpp"
 #include <array>
 #include <cstring>
 #include <cstdlib>
@@ -62,7 +63,7 @@ public:
     uint64_t copies() const { return next_; }
     uint64_t copied_bytes() const { return copied_bytes_; }
     void check_guards() {
-        runtime_->wait();
+        wait_bound_queue();
         const auto* host = storage_.as<uint8_t>();
         for (size_t slot = 0; slot < slots; ++slot)
             for (size_t part = 0; part < 2; ++part)
@@ -76,8 +77,15 @@ private:
             throw std::invalid_argument("expert staging finite capacity");
         return bytes;
     }
+    void wait_bound_queue() {
+        // Runtime::wait covers only its compute/transfer queues. Production
+        // may bind another make_queue stream in this same context.
+        sycl_backend::cpu_wait_profile::blocking(sycl_backend::cpu_wait_profile::direct_queue,
+            [&] { queue_.wait_and_throw(); });
+        runtime_->check();
+    }
     void drain_noexcept() noexcept {
-        try { runtime_->wait(); } catch (...) { std::_Exit(86); }
+        try { wait_bound_queue(); } catch (...) { std::_Exit(86); }
     }
     std::shared_ptr<sycl_backend::Runtime> runtime_;
     sycl::queue queue_;

@@ -20,8 +20,8 @@ sys.dont_write_bytecode = True
 import build_fused_profile as n
 
 r, P, B, RESULT = n.r, n.P, n.B, n.RESULT
-ROOT = B / 'prefill-expert-staging-v1'
-KEY = 'prefill_upload_staging'
+ROOT = B / 'prefill-expert-staging-v2'
+KEY = 'prefill_upload_staging_v2'
 PREFIXES = ['include', 'src', 'tools/sycl', 'tests/sycl/expert_bank.cpp', 'cmake', 'CMakeLists.txt']
 require, digest, write = n.require, n.digest, n.write
 
@@ -65,11 +65,12 @@ def prepare():
         model_executed=False, model_adoption_qualified=False, native_engine_built=False,
         build_limits=dict(wall=600, cpu=1800, rss_cap=8 << 30, text_cap=8 << 20, file_cap=128 << 20, total_cap=512 << 20),
         device_limits=dict(wall=600, cpu=1200, rss_cap=6 << 30, text_cap=8 << 20, file_cap=16 << 20, total_cap=128 << 20),
-        device_cases=[['baseline-smoke', '--packed-smoke'], ['staging-smoke', '--staging-smoke'],
-                      ['staging-validate', '--staging-validate'],
-                      ['bench0', '--staging-bench', '0'], ['bench1', '--staging-bench', '1'],
-                      ['bench2', '--staging-bench', '2']],
-        plan='Two traced small smoke cases,then parameter-validated staged512-expert/mixed-stride/unwind validation;'
+        device_cases=[['baseline-smoke', '--packed-custom-smoke'], ['staging-smoke', '--staging-custom-smoke'],
+                      ['staging-validate', '--staging-custom-validate'],
+                      ['bench0', '--staging-custom-bench', '0'], ['bench1', '--staging-custom-bench', '1'],
+                      ['bench2', '--staging-custom-bench', '2']],
+        plan='V2:dedicated make_queue(true),not Runtime.compute;two traced small smoke cases with custom-queue '
+            'destructor-tail check,then parameter-validated staged512-expert/mixed-stride/unwind validation;'
             'three independent processes,2payloads1.9712/2.6624MB,384slots,512experts,two scans,'
             'one first-use and five rotated subsequent pairs. Actual production private-bank entrypoint both arms;'
             'two full-data queued readers per expert,641uploads+383hits+2048readers per timed batch. '
@@ -85,12 +86,15 @@ def prepare():
         safety_audit='Main-authored ring;no XeStrata source.4host-USM slots,<=16MiB capacity/slot,256byte guards;'
             'same in-order context/device queue and registered device ownership. Reject device sources,overlap,'
             'bad extents/queues. Copy-event wait before CPU host-slot reuse;GPU readers and scratch overwrite '
-            'ordered on same queue. Catch drains before unwinding;failed drain fail-stops with owners live. '
+            'ordered on same queue. Destructor,guard and catch drains wait the bound queue itself;Runtime.wait '
+            'alone does not drain custom queues. Finite65536-step unsigned tail checks destructor completion '
+            'without host-gated spin/barrier. Failed drain fail-stops with owners live. '
             'No new GPU arithmetic in inference;only bounded transfer-preparation memcpy. Default disabled '
             'prefill-only route;decode/short-prefill/cache placement unchanged. No physical256K qualification.',
         retention='Keep compact individual timing/CPU samples,eligibility/correctness/fault/source results. '
             'Review component executable at gate closure or imminent full-pipeline comparison. Original selected '
-            'engine+12fixtures stay intact;two earlier GU/Down fixtures retain only their named ceiling consumer. '
+            'engine+12fixtures stay intact;V1compute-only fixture is superseded at V2closure and not a timed arm. '
+            'Two earlier GU/Down fixtures retain only their named ceiling consumer. '
             'Retire routine raw traces/build output once extracted;no full API trace during long validation.')
     write(ROOT / 'record.json', row); scope(c)[KEY] = compact(row); write(RESULT, c)
     print('Prepared committed-source build plan;commit generated plan before build.', flush=True)
@@ -123,6 +127,11 @@ def dependencies(row):
 
 def summarize(samples):
     require(len(samples) == 72, 'three complete24sample benchmark processes required')
+    require({(v['payload_bytes'], v['process'], v['arm'], v['round']) for v in samples} ==
+        {(size, process, arm, round) for size in (1971200, 2662400) for process in range(3)
+         for arm in (0, 1) for round in range(-1, 5)}, 'missing/duplicate sample identity')
+    require(all(v['custom_queue'] is True and v['eligible'] and v['guards_and_every_consumer'] and
+        v['private_map_unchanged'] for v in samples), 'custom queue/first-use correctness/timing gate failed')
     by_payload = []
     for payload in (1971200, 2662400):
         ratios = []
@@ -200,6 +209,9 @@ def execute(mode):
                 text = out.read_text(); require(('expert_bank_staging_benchmark PASS' if label.startswith('bench')
                     else 'expert_bank_fixture PASS') in text, 'success marker absent')
                 if label.endswith('smoke'): require(trace.exists() and 'urEnqueue' in trace.read_text(), 'smoke trace absent')
+                if label == 'staging-smoke':
+                    require('expert_staging_custom_queue destructor_tail_complete=PASS host_copy_owners_live=PASS'
+                        in text, 'custom-queue destructor retirement absent')
                 rows = [json.loads(v) for v in text.splitlines() if v.startswith('{')]
                 if label.startswith('bench'): require(len(rows) == 24, 'benchmark sample count'); row['samples'].extend(rows)
                 probe = dict(host_probe_accepted=True); r.validation.finish(probe, owner, cursor, row['boot'])
