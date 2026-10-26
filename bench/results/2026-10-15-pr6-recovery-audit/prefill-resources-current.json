@@ -2803,8 +2803,8 @@
           "passed": false
         },
         "evidence_replay": {
-          "stage": "prepared",
-          "passed": false,
+          "stage": "closed",
+          "passed": true,
           "GPU_executed": false,
           "source_commit": "9241f6d61aa746158c5b3be98f7562beaaf7320a",
           "original_failed_commit": "d708f9ab3",
@@ -2817,7 +2817,34 @@
             "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/legacy-gemm-abi-v1/validation.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
           },
           "validation_log_present": true,
-          "criteria": "Offline replay only;preserve original failed stage/outcome. Recover original controller/native/SDK/runtime and exact existing argv/environment/logs/normal owner closure;verify22case footer,pre-main activation,no parameter warning,and balanced successful API enqueue entry/returns. No new process or model/performance advancement."
+          "criteria": "Offline replay only;preserve original failed stage/outcome. Recover original controller/native/SDK/runtime and exact existing argv/environment/logs/normal owner closure;verify22case footer,pre-main activation,no parameter warning,and balanced successful API enqueue entry/returns. No new process or model/performance advancement.",
+          "CPU_parity_cases": 22,
+          "full_API_entry_counts": {
+            "urEnqueueKernelLaunchWithArgsExp": 67,
+            "urEnqueueMemBufferRead": 1,
+            "urEnqueueMemBufferWrite": 1,
+            "urEnqueueUSMMemcpy": 64
+          },
+          "native_exit_code": 0,
+          "native_elapsed_seconds": 7.174702625023201,
+          "pre_main_validation": {
+            "pid": 1966597,
+            "loader": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
+            "threads_before": 1,
+            "preinit": 37,
+            "config_enabled": true,
+            "first_init": true,
+            "dispatch_result": 46,
+            "output_untouched": true,
+            "retained_reference_until_exit": true,
+            "runtime_teardown_qualified": false
+          },
+          "original_live_environment_provider_checks": "Original committed controller passed its live environment/map/provider requirements before the trace-parser refusal;not reconstructed maps.",
+          "source_runtime_recovered": true,
+          "original_failure_preserved": true,
+          "model_executed": false,
+          "performance_qualified": false,
+          "physical262144_qualified": false
         }
       },
       "legacy_gemm_abi_build_v1": {

@@ -381,9 +381,9 @@ the dense control was several hours earlier,not simultaneous. Full model hashing
 before this run also differs from the older crossover's cache history. Historical
 effective clocks,workstation contention,paging and process/cache history remain
 uncontrolled. The fastest1005.7655 package is still a separate configuration.
-Neither restoration nor sustained decode is qualified. Next measure actual
-public GU dispatch/fallback at M160/2333/2334 with official-SDK fixtures;keep GPU
-service distinct from queue intervals that include host submission gaps.
+Neither restoration nor sustained decode is qualified. Subsequent official-SDK
+public-GU component work below preserves the distinction between GPU service
+and queue intervals containing host submission gaps;it has not explained this decline.
 This latest result is3.0586% below the earlier fastest396d median1005.7655.
 A bounded reread of
 the actual Codex final answers confirms that the912 and975 reports refer to
@@ -396,9 +396,9 @@ previously unlisted code maps;Main also selected the CPU OpenCL registration ins
 the GPU one before correcting the private ICD directory. These are not GPU hangs
 or Strata inference failures. The successfully qualified control pins the actual
 GPU registration and providers. The fresh original6e40/117K reference above
-closes the next check;now calibrate the
-production GU dispatcher at small M and the fusion boundary,with GPU service distinct from host submission
-and waits. GU's existing direct component benchmark does not measure that public
+closes that reference check. The subsequent production-GU calibration and
+failed warmed attribution are recorded below;GPU service remains distinct from
+host submission and waits. GU's existing direct component benchmark does not measure that public
 path;Down's public benchmark falls back below2334rows. Static dtype review finds
 that GU's FP16 comparator receives FP16 hidden outputs;BF16 intermediates and
 Down outputs are checked bitwise. The proposed dtype bug is not substantiated.
@@ -686,10 +686,30 @@ component fallback;original13model assets and one2797-byte unresolved-stall
 diagnostic stay intact. Successful full traces/private checkpoints are gone.
 The current source removes the closed high-depth public timing/attribution modes;
 restore their exact tested code from3af1c47d9 only for a separately justified plan.
-`sycl_gemm_test --matrix-only` now selects18FP16/BF16FP32-output and4Q8strided
-matrix checks while leaving transfer-ring/pipeline/separate-queue cases unrun.
-That new CLI path and its clean official build/30s traced qualification are the
-next gate,not a completed oneMKL/model qualification or a throughput improvement.
+The clean official legacy-GEMM build,sourcefa765fcb8,has1424covered compiler
+inputs. Its one7.174702625s native process exits0and passes22CPU-parity/stride
+checks:18FP16/BF16-to-FP32 GEMMs plus4Q8strided matrices. Transfer-ring,pipeline
+and separate-queue cases remain unrun. The original controller fails because
+its API-entry regex wrongly requires an opening parenthesis;UR entry lines end
+at the function name. Preserve that failed outcome atd708f9ab3. Offline replay,
+source9241f6d61/plan982280512,rechecks original source/SDK/runtime,logs,argv/env,
+normal ownership and balanced successful entries/returns:67kernel launches,
+64USM copies,one buffer read and one buffer write. Parameter validation is
+silent and no fresh fault appears. Replay launches no process and does not
+rewrite the failed run into a success. See`legacy_gemm_abi_v1` for the distinct
+native-matrix and observer-parser outcomes. Neither establishes model,decode,
+physical262144,hardware saturation or a throughput improvement.
+
+The next historical-decline comparison should isolate parameter-validation
+cost on the unchanged selected engine and placement. Keep the process-lifetime
+loader reference used for stall avoidance in both arms;ordinary teardown is
+not qualified. A separately authored/pinned control must avoid invalid-handle
+probes when validation is absent,and pass bounded host/provider/submission
+checks before any long model comparison. That control is not implemented or
+qualified yet. This addresses the fastest396d envelope difference;it cannot
+alone explain the1003→975same-binary decline,because both of those cohorts
+already used parameter validation. Official-SDK whole-model qualification
+also remains open.
 
 The fresh sourcee33d16fc3 attribution fixture closes ten official-SDK processes
 with240eligible/correct timing samples and120complete CPU/GPU profiles.
