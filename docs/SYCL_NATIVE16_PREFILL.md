@@ -376,8 +376,8 @@ Reference setup failures retain their original outcomes. Three attempts refuse
 previously unlisted code maps;Main also selected the CPU OpenCL registration instead of
 the GPU one before correcting the private ICD directory. These are not GPU hangs
 or Strata inference failures. The successfully qualified control pins the actual
-GPU registration and providers. Next recheck unchanged original6e40/117K near
-this dense control using a fresh pinned reference-only plan;then calibrate the
+GPU registration and providers. The fresh original6e40/117K reference above
+closes the next check;now calibrate the
 production GU dispatcher at small M and the fusion boundary,with GPU service distinct from host submission
 and waits. GU's existing direct component benchmark does not measure that public
 path;Down's public benchmark falls back below2334rows. Static dtype review finds
