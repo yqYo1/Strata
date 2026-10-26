@@ -1270,12 +1270,12 @@
       "ownership_closed": true,
       "command_count": 2
     },
-    "supervision_input_admission_v6": {
-      "source_commit": "38f8cb5eb2253c8d7ad0b278e1913fdaa5cfb87b",
+    "supervision_input_admission_v7": {
+      "source_commit": "a6a42e20e1140a1bdfd6f2cd3c8c896182684e71",
       "sources": {
-        "tools/sycl/supervision_model.py": "aa71d7fb9200dc77863571c386c34208be1d72048ee90a730bbe11f66ad01938",
-        "tools/test_sycl_supervision_model.py": "fad843755fea03194c61ae9080943a746c035bc8739848da69e176eddf20cdfe",
-        "tools/sycl/benchmark_runtime.py": "2995453d00febe50a58e81676c3d857c1bc92fa9b46f6ad105be483ea30388b9"
+        "tools/sycl/supervision_model.py": "bbe8483c8584f56c68369568a44caf301bcd8f4bebd7c2fd8a9e9e63a6afb5cc",
+        "tools/test_sycl_supervision_model.py": "2de304e91d58b9f4089edc9a574a5e8fead23582ab9a55813a4f287b235e8abd",
+        "tools/sycl/benchmark_runtime.py": "a7221f17937f760acb01f5de95f09d394145a29d251aa98b64dfe8aa6ae188dd"
       },
       "command": [
         "flock",
@@ -1294,12 +1294,12 @@
       "passed": true,
       "ownership_closed": true,
       "GPU_executed": false,
-      "evidence": "Ran9tests in1.291s;OK. Actual owned child accepts a nonempty argument vector including a value with spaces;rejects wrong or omitted expected tail. Full-environment changes/extra keys,profile corruption/path/arguments,interpreter/script/maps,import-inventory and isolated CLI controls remain effective. EOF,reaping,empty owned session and temporary-fixture retirement pass.",
-      "scope": "Host source/input admission only;no model speed or GPU qualification.",
+      "evidence": "Ran9tests in1.293s;OK. Actual owned child accepts correct nonempty/spaced argv and complete environment;rejects wrong/omitted tail,changed/extra environment,interpreter/script and mappings. Missing-map rejection now reports every unexpected path. Profile/input inventory and isolated CLI controls pass;EOF,reaping,empty session and temporary fixture retirement pass.",
+      "scope": "Host source/input admission only;new mock service probe still requires separate discovery and qualification;no model speed or GPU qualification.",
       "supersedes": {
-        "scope": "supervision_input_admission_v5",
-        "archive_commit": "729e0d9bc",
-        "original_status": "passed exact d0e9c81c6 source;not a qualification of changed source"
+        "scope": "supervision_input_admission_v6",
+        "archive_commit": "3690a67d2",
+        "original_status": "passed exact38f8cb5eb source;not qualification of changed source"
       }
     },
     "supervision_model_control_v4": {
