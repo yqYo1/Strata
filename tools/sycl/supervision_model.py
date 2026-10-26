@@ -27,12 +27,12 @@ import owner_candidate as candidate
 import runtime_probe as runtime
 
 B, A = gen.B, gen.A
-ROOT = B / 'prefill-supervision-cost-v1'
+ROOT = B / 'prefill-supervision-cost-v2'
 HOST = B / 'owner-scan-control-v3'
 RESULT = A / 'prefill-runtime-comparison-current.json'
 TEMPLATE = A / 'phase-prefill-speed-current.json'
-KEY = 'supervision_model_control_v1'
-REVIEW = 'supervision_model_source_contract_20261027'
+KEY = 'supervision_model_control_v2'
+REVIEW = 'supervision_model_source_contract_v2_20261027'
 ORDER = ('baseline', 'candidate', 'candidate', 'baseline', 'baseline', 'candidate')
 require, digest = runtime.require, runtime.digest
 
@@ -44,7 +44,26 @@ def identity(value):
 def input_identity(row):
     return identity({k: row[k] for k in ('binary', 'qualification', 'configuration',
         'template_sha256', 'runtime_sha256', 'environment_template', 'probe', 'NEO',
-        'boot', 'request_hashes', 'model_assets')})
+        'boot', 'request_hashes', 'model_assets', 'profile')})
+
+
+def profile_pin(config, revision, expected=None):
+    """Bind placement input to committed bytes and detect replacement/rewrites."""
+    flags = config['args']
+    require(flags.count('--expert-profile') == 1, 'one explicit expert profile required')
+    index = flags.index('--expert-profile') + 1
+    require(index < len(flags), 'expert profile argument missing')
+    path = Path(flags[index])
+    require(path.is_absolute() and path.is_file() and path.resolve().is_relative_to(P),
+        'committed project expert profile required')
+    relative = str(path.resolve().relative_to(P))
+    before = models.file_identity(path); pin = digest(path)
+    require(models.file_identity(path) == before, 'expert profile changed during digest')
+    require(hashlib.sha256(gen.git('show', revision + ':' + relative)).hexdigest() == pin,
+        'expert profile differs from committed bytes')
+    value = dict(path=str(path), source_path=relative, identity=before, sha256=pin)
+    require(expected is None or value == expected, 'expert profile identity/path changed')
+    return value
 
 
 def write(path, value): path.write_text(json.dumps(value, indent=2) + '\n')
@@ -114,6 +133,7 @@ def current(row):
     require(input_identity(row) == row['plan']['qualified_input_identity'] and
         row['environment_template'] == gen.committed(TEMPLATE)['environment_template'],
         'qualified model inputs differ from immutable plan')
+    profile_pin(row['configuration'], row['plan']['source_commit'], row['profile'])
     full, rt, proof = qualification()
     require(proof == row['qualification'] and full['binary'] == row['binary'] and
         gen.benchmark_pins(row['plan']['source_commit']) == row['controller_inputs'] and
@@ -122,6 +142,8 @@ def current(row):
         command=p['command']) for p in row['process_plans']], 'immutable process plans changed')
     for p in row['process_plans']:
         root = Path(p['root'])
+        config = copy.deepcopy(row['configuration']); config['log'] = str(root / 'engine.stderr')
+        require(p['config'] == config, 'model arms differ beyond their log paths')
         require(environment(row, root) == p['environment'] and
             all(digest(root / name) == sha for name, sha in p['inputs'].items()), 'generated input/environment changed')
         require(json.loads((root / 'config.json').read_text()) == p['config'], 'native configuration changed')
@@ -132,22 +154,27 @@ def current(row):
 
 def prepare():
     require(not ROOT.exists() and KEY not in gen.committed(RESULT)['historical_regression_audit'], 'single-use model control')
+    previous = runtime.validation.committed(RESULT, ('historical_regression_audit', 'supervision_model_control_v1'))
+    require(previous['stage'] == 'closed-unlaunched' and previous['native_launched'] is False and
+        not previous['processes'], 'preserve original unlaunched profile-admission failure')
     full, rt, proof = qualification()
     reference = gen.committed(RESULT)['historical_regression_audit']['near_dense_original_reference_v1']
     require(reference['passed'] and reference['ownership_closed'] and reference['binary'] == full['binary'], 'closed same-native reference')
     cfg = copy.deepcopy(reference['configuration'])
+    source = gen.git('rev-parse', 'HEAD').decode().strip()
+    profile = profile_pin(cfg, source)
     assets = json.loads(gen.git('show', '1e676d554:' + str(TEMPLATE.relative_to(P))))['model_assets']
     pins = models.model_pins(cfg, assets, full=True)
     loader = rt['preload']['loader']; probe = dict(library=rt['preload']['library'], loader=dict(path=loader, sha256=rt['runtime_files'][loader]))
-    source = gen.git('rev-parse', 'HEAD').decode().strip()
     row = dict(stage='prepared', binary=full['binary'], qualification=proof, configuration=cfg, model_assets=pins,
+        profile=profile,
         controller_inputs=gen.benchmark_pins(source), template_sha256=digest(TEMPLATE), runtime_sha256=digest(runtime.RESULT),
         environment_template=gen.committed(TEMPLATE)['environment_template'], probe=probe,
         NEO=next(p for p in rt['runtime_files'] if 'libze_intel_gpu' in p), boot=rt['boot'], request_hashes=reference['request_hashes'],
         process_plans=[], processes=[], complete=False, passed=False, active=False, ownership_closed=True,
         plan=dict(source_commit=source, order=list(ORDER), process_plans=[],
             question='Does lower-cost equivalent host supervision improve original6e40 whole-prefill timing?',
-            work='Six fresh processes,baseline/candidate/candidate/baseline/baseline/candidate;four117489fresh/zero-reuse/thinking-on/24output requests each. Original22182f1a engine,1256decode slots,131072INT8 resident context,8192chunks,BF16/vLLM/mode10,384bank,original preload and immutable qualified safety settings. No profiler,clock sampler,inference or placement change.',
+            work='Six fresh processes,baseline/candidate/candidate/baseline/baseline/candidate;four117489fresh/zero-reuse/thinking-on/24output requests each. Original22182f1a engine,1256decode slots,131072INT8 resident context,8192chunks,BF16/vLLM/mode10,384bank,original preload and immutable qualified safety settings. All arms share configuration except log paths;expert-profile committed bytes and file identity are checked before every process and after execution,in addition to15model assets. No profiler,clock sampler,inference or placement change.',
             timing='First use separate;each process contributes median of subsequent3. All3 paired candidate/baseline ratios and geometric mean retained. Actual controller CPU/gate elapsed measured once/request,including existing resource,artifact and protocol work.',
             CPU_budget='Host-only candidate gate<=5percent has passed. The full model control separately permits<=8percent candidate and<=20percent legacy controller CPU/gate elapsed to cover model-artifact/protocol/provider handling. Persist operands before checking. This does not repair the original failed5percent clock-observer diagnostic;no clock observer is used here.',
             acceptance='All source/provider/request/stream/journal/route/validation/fault/closure gates pass. Mechanism speed screen:all3pair ratios>1 and geometric mean>1.01. Historical1003and1006 comparisons descriptive only. No speed-based early stop/retries;stop first execution/contract/budget failure. No inference/default adoption from this control.',
