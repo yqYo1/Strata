@@ -100,6 +100,8 @@ def prepare():
         limits='Profile service comes from isolated checked-drain calls,not matched clean-batch GPU service. '
             'Queue intervals include host submission gaps. Batch wall includes submission and completion;'
             'thread CPU submission/wait split is not measured by this existing fixture. '
+            'External ownership/provider observation and parameter validation are charged;their separate '
+            'overhead is not established by endpoint timing controls. '
             'Setup/warmup precedes the first timing batch:it is not cold-process or model first-use latency. '
             'Official compiler/component timings do not attribute the historical same-original-binary decline '
             'or establish a whole-model/physical-bus/GDDR/arithmetic ceiling.',
@@ -177,7 +179,7 @@ def summarize(processes):
             p=next(v for v in by_name['profile'+str(arm)]['details']['profiles'] if v['rows']==rows)
             service[str(arm)]=sum(p['service_ns_by_kind'].values())
         result.append(dict(rows=rows,projection_n=1280,projection_k=2560,
-            projection_FMA_ops=2*rows*1280*2560,whole_public_call_wall_ns_by_process=wall,
+            projection_FLOPs=2*rows*1280*2560,whole_public_call_wall_ns_by_process=wall,
             queue_interval_ns_by_process=queue,isolated_profile_service_ns_by_arm=service,
             fusion_on_off_paired_wall_ratios=pairs,paired_ratio_geomean=statistics.geometric_mean(pairs)))
     return dict(rows=result,decision='Descriptive current official-SDK component calibration only;'
