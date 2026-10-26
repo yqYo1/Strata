@@ -1763,7 +1763,22 @@
           "tools/sycl/ur_validation_cost.py",
           "tools/sycl/amd_clock_access.py"
         ],
-        "limits": "Scoped closure only;original6e40engine and officialv4fallback retained. Older provenance holds remain separate. Counter C primitive retained for imminent complete-observer gate;closed pilot/controller/ELF retired. No new model,decode,physical-context or ordinary-teardown qualification."
+        "limits": "Scoped closure only;original6e40engine and officialv4fallback retained. Older provenance holds remain separate. Counter C primitive retained for imminent complete-observer gate;closed pilot/controller/ELF retired. No new model,decode,physical-context or ordinary-teardown qualification.",
+        "wrapper_host_validation": {
+          "source_commit": "9f097bc87",
+          "command": "timeout 30s python3 -B tools/test_sycl_ur_validation.py",
+          "tests": 4,
+          "passed": true,
+          "current_runtime_and_selected_build_admission": true,
+          "GPU_executed": false,
+          "review_correction": "Reject only retired control/mode keys;preserve existing provenance/lifetime metadata accepted by original callers.",
+          "legacy_admission": {
+            "function": "ur_validation.preload_qualification",
+            "status": "refused_before_native_execution",
+            "error": "preload runtime changed: /usr/lib/x86_64-linux-gnu/libz.so.1.3",
+            "limits": "Old whole-library pin remains refused;current separate runtime-requalification path passes exact source/provider checks. No hash refresh or new GPU qualification."
+          }
+        }
       }
     },
     "scope": "Closed-data/source replay and read-only host inspection;no new GPU/model execution or inference adoption.",

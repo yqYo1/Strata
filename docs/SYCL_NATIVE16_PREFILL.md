@@ -756,7 +756,11 @@ pushed feature branch,the five closed helper/model/CPU-pilot roots retire:
 also retire(53,035bytes);the new conditional scheduling collection remains.
 Six one-use source/controller files retire to reachable Git history. The native
 wrapper rejects the retired comparison's extra probe keys while preserving the
-normal library/loader validation path;host regression checks remain required.
+normal library/loader validation path. Source9f097bc87 passes four host tests,
+including existing provenance/lifetime metadata. The actual selected build and
+current separately requalified runtime also pass source/provider and native-only
+environment admission without launching a native process. The legacy preload gate separately refuses changed libz;that refusal is preserved,
+not repaired by refreshing hashes. No new GPU qualification follows.
 The selected original engine and official component fallback remain outside
 these deleted roots;older provenance holds are not cleared by this cleanup.
 
