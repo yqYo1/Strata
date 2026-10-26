@@ -2729,7 +2729,7 @@
     },
     "fused_command_profile": {
       "legacy_gemm_abi_build_v1": {
-        "stage": "prepared",
+        "stage": "built",
         "source_commit": "fa765fcb8bb21a7a966493bc377e6dba5c4579ba",
         "sdk": {
           "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-expert-staging-v3/sdk-inputs.json",
@@ -2894,8 +2894,8 @@
         },
         "active": false,
         "ownership_closed": true,
-        "passed": false,
-        "complete": false,
+        "passed": true,
+        "complete": true,
         "GPU_executed": false,
         "engine_built": false,
         "production_selected": false,
@@ -2958,6 +2958,30 @@
             "origin": "Installed Intel apt packages;dpkg verification silent. No XeStrata SDK source/artifact reuse.",
             "live": true
           }
+        },
+        "compiled_inputs": {
+          "files": 1424,
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/native16-legacy-gemm-v1/compiler-inputs.json",
+          "sha256": "96dcf6e94d91ca2510a0249333afc84587b05f2e274fd8a823474048ff848e9c",
+          "uncovered": 0
+        },
+        "fixtures": {
+          "sycl_gemm_test": {
+            "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/native16-legacy-gemm-v1/build/sycl_gemm_test",
+            "sha256": "7d3e8b8e20192e36649f25952a69c79f35d89f5b6e44bc85572d50116f67501d",
+            "bytes": 13043128
+          }
+        },
+        "host_probe_accepted": true,
+        "fresh_faults": [],
+        "boot_unchanged": true,
+        "driver_after": {
+          "pci": "/sys/bus/pci/devices/0000:05:00.0",
+          "driver": "xe",
+          "vendor": "0x8086",
+          "device": "0xe20c",
+          "kernel": "7.0.0-38-generic",
+          "devcoredump": false
         },
         "source_groups": [
           {
