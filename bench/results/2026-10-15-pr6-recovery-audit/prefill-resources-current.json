@@ -2728,6 +2728,221 @@
       "remaining": "Fourteen older provenance holds and separate pending numerical/model/full-context/upstream gates are unchanged."
     },
     "fused_command_profile": {
+      "native16_compatibility_smoke": {
+        "stage": "prepared",
+        "source_commit": "f4e0d81ba7c864f96b7b6862eea33ab762978e82",
+        "native_build": {
+          "record": {
+            "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/native16-public-control-v4/record.json",
+            "sha256": "621cf892352e1a80e8f68ff0a2272a5f55e31d89c2595e6b9f97efd414c27c5c"
+          },
+          "source_commit": "2369886e91da7d4f570d43ba17aacb242b838c60",
+          "recovered_inputs": 9972,
+          "compiled_inputs": {
+            "files": 1427,
+            "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/native16-public-control-v4/compiler-inputs.json",
+            "sha256": "c534c4970837ddc842f6909cf13f6765971c2ba39ee2bc93ba7c15bf129df5ac",
+            "uncovered": 0
+          },
+          "fixtures": {
+            "sycl_submission_test": {
+              "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/native16-public-control-v4/build/sycl_submission_test",
+              "sha256": "451f06d4ba6606b1f58c352c2a2018d68b2f4e5e82b771b81fa73019b61f0f0d",
+              "bytes": 347200
+            },
+            "sycl_vllm_native16_test": {
+              "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/native16-public-control-v4/build/sycl_vllm_native16_test",
+              "sha256": "7979528ed9932658821d8a346284055d14c72687455410a0671682c382e2a6b2",
+              "bytes": 1778456
+            },
+            "sycl_moe_gu_swiglu_bench": {
+              "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/native16-public-control-v4/build/sycl_moe_gu_swiglu_bench",
+              "sha256": "e85080e7342175497a0fc3b9170fad8cb4a8efd2f0cd6a312f2af687f1556477",
+              "bytes": 13082784
+            },
+            "sycl_moe_down_scatter_bench": {
+              "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/native16-public-control-v4/build/sycl_moe_down_scatter_bench",
+              "sha256": "70bbc7dd26970c79a0383e9632ad81ad83f6dd08c81f6b795584a34023e167a9",
+              "bytes": 13103448
+            }
+          },
+          "imported_link_files": {
+            "/opt/intel/oneapi/mkl/2026.1/lib/libmkl_sycl_blas.so.6": "51d6c16990701a5aaf9fbbde5d86f5a7197b81357b66b19cbb912206564cf4ee",
+            "/opt/intel/oneapi/mkl/2026.1/lib/libmkl_intel_ilp64.so.3": "ffbbeff402fdf09baa53f8226b86f27046592d984ae2916b1bbc2e59132c7c89",
+            "/opt/intel/oneapi/mkl/2026.1/lib/libmkl_sequential.so.3": "4e7ff529bec90a1b0ce70299258a64a2ebae7a5a6f3ec031306a6ddb39b5a650",
+            "/opt/intel/oneapi/mkl/2026.1/lib/libmkl_core.so.3": "b4f086651ee5a8471140d53fedfdbbaba606287784763b0739f282872c31aa9b"
+          },
+          "generated_link_files": {},
+          "independent_SDK": {
+            "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-expert-staging-v3/sdk-inputs.json",
+            "sha256": "c8879f0b8d772979bf2096dc64a3bba49853bd15dad221b46427a922030647d8",
+            "files": 10945,
+            "packages": [
+              "intel-oneapi-compiler-dpcpp-cpp-runtime-2026.2 2026.2.0-863",
+              "intel-oneapi-dpcpp-cpp-2026.2 2026.2.0-863",
+              "intel-oneapi-umf-1.2 1.2.0-116"
+            ],
+            "origin": "Installed Intel apt packages;dpkg verification silent. No XeStrata SDK source/artifact reuse.",
+            "live": true
+          }
+        },
+        "runtime_sha256": "09ad358e12f6ef58bfc0a978519927863f3d09949a033a1e224db95997647d97",
+        "boot": "cfda0b6a-7c13-4fe2-bdf5-8f9202770840",
+        "driver": {
+          "pci": "/sys/bus/pci/devices/0000:05:00.0",
+          "driver": "xe",
+          "vendor": "0x8086",
+          "device": "0xe20c",
+          "kernel": "7.0.0-38-generic",
+          "devcoredump": false
+        },
+        "environment": {
+          "PATH": "/usr/bin:/bin",
+          "HOME": "/home/yayoi",
+          "LANG": "C.UTF-8",
+          "LC_ALL": "C.UTF-8",
+          "PYTHONDONTWRITEBYTECODE": "1",
+          "LD_LIBRARY_PATH": "/opt/intel/oneapi/compiler/2026.2/lib:/opt/intel/oneapi/umf/1.2/lib:/opt/intel/oneapi/mkl/2026.1/lib",
+          "ONEAPI_DEVICE_SELECTOR": "level_zero:gpu",
+          "UR_ADAPTERS_FORCE_LOAD": "/opt/intel/oneapi/compiler/2026.2/lib/libur_adapter_level_zero_v2.so.0.12.0",
+          "UR_L0_V2_FORCE_DISABLE_COPY_OFFLOAD": "1",
+          "NEOReadDebugKeys": "1",
+          "EnableDirectSubmission": "0",
+          "STRATA_SYCL_PREFILL_SAME_QUEUE": "1",
+          "STRATA_SYCL_VERIFY_NATIVE_CAPTURE": "0",
+          "SYCL_CACHE_PERSISTENT": "0",
+          "ZES_ENABLE_SYSMAN": "0",
+          "UR_ENABLE_LAYERS": "UR_LAYER_TRACING,UR_LAYER_PARAMETER_VALIDATION",
+          "UR_LOG_TRACING": "level:info;flush:info;output:stderr",
+          "UR_LOG_VALIDATION": "level:warning;flush:warning;output:stderr",
+          "UR_LOG_LOADER": "level:warning;flush:warning;output:stderr",
+          "UR_LOG_LEVEL_ZERO": "level:warning;flush:warning;output:stderr",
+          "TMPDIR": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/native16-public-control-v4/tmp",
+          "XDG_CACHE_HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/native16-public-control-v4/cache",
+          "STRATA_SYCL_PREFILL_NATIVE16": "bf16",
+          "STRATA_SYCL_PREFILL_NATIVE16_BACKEND": "vllm",
+          "STRATA_SYCL_PREFILL_NATIVE16_VLLM_TILE": "auto",
+          "STRATA_SYCL_PREFILL_COMMAND_PROFILE": "0",
+          "STRATA_SYCL_PREFILL_FUSED_COMMAND_PROFILE": "0",
+          "ZE_ENABLE_ALT_DRIVERS": "/usr/lib/x86_64-linux-gnu/libze_intel_gpu.so.1.17.39758",
+          "LD_PRELOAD": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/ur-validation-preload-v2/libstrata_ur_validation.so",
+          "STRATA_UR_PROBE_EXPECTED_LOADER": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0"
+        },
+        "canary": {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/ur-validation-preload-v2/canary",
+          "sha256": "7903f47691309444cce238d6a0a6fe716f7c668d80a6e2ff3d5cfe21c7dcbfd0"
+        },
+        "cases": [
+          {
+            "name": "host-canary",
+            "target": null,
+            "args": []
+          },
+          {
+            "name": "submission",
+            "target": "sycl_submission_test",
+            "args": [
+              "--submission"
+            ]
+          },
+          {
+            "name": "native16-smoke",
+            "target": "sycl_vllm_native16_test",
+            "args": [
+              "--device",
+              "0",
+              "--suite",
+              "smoke"
+            ]
+          },
+          {
+            "name": "native16-guards",
+            "target": "sycl_vllm_native16_test",
+            "args": [
+              "--device",
+              "0",
+              "--suite",
+              "guards"
+            ]
+          },
+          {
+            "name": "GU-smoke",
+            "target": "sycl_moe_gu_swiglu_bench",
+            "args": [
+              "--smoke"
+            ]
+          },
+          {
+            "name": "GU-public0",
+            "target": "sycl_moe_gu_swiglu_bench",
+            "args": [
+              "--smoke-public",
+              "0"
+            ],
+            "gu_arm": 0
+          },
+          {
+            "name": "GU-public1",
+            "target": "sycl_moe_gu_swiglu_bench",
+            "args": [
+              "--smoke-public",
+              "1"
+            ],
+            "gu_arm": 1
+          },
+          {
+            "name": "Down-smoke",
+            "target": "sycl_moe_down_scatter_bench",
+            "args": [
+              "--smoke"
+            ]
+          },
+          {
+            "name": "Down-public0",
+            "target": "sycl_moe_down_scatter_bench",
+            "args": [
+              "--route-smoke",
+              "0"
+            ],
+            "down_arm": 0
+          },
+          {
+            "name": "Down-public1",
+            "target": "sycl_moe_down_scatter_bench",
+            "args": [
+              "--route-smoke",
+              "1"
+            ],
+            "down_arm": 1
+          }
+        ],
+        "processes": [],
+        "active": false,
+        "ownership_closed": true,
+        "complete": false,
+        "passed": false,
+        "GPU_executed": false,
+        "model_executed": false,
+        "model_adoption_qualified": false,
+        "full_numerical_contract_qualified": false,
+        "physical262144_qualified": false,
+        "criteria": "Ten ordered fresh owned processes;stop first unexpected status,source,provider,environment,oracle,guard,dispatch,validation,budget or fault failure. Pre-main native-only parameter validation and finite full API tracing.32normal dyadic smoke cases,26pre-enqueue guards,GU direct independent3-row dot oracle and both public arms at3/160/2333/2334;Down direct guards/invalid maps and public threshold routes. No runtime environment mutation or graph replay. Existing strict gradual-underflow edges,large full/chain matrix tests,model/oneMKL ABI and262144 are separate unqualified gates. Passing authorizes only finite normal-input public-GU calibration,not a model route or hardware ceiling.",
+        "budgets": {
+          "wall": 300,
+          "cpu": 1200,
+          "rss_cap": 4294967296,
+          "text_cap": 16777216,
+          "file_cap": 33554432,
+          "total_cap": 67108864
+        },
+        "whole_bytes": 536870912,
+        "retention": "Keep source/recipe,compact individual case counts/dispatch/provider/validation/fault decisions. Retire successful full trace/JIT and process logs after verification. Candidate4fixtures and 1427input manifest remain for imminent public-GU calibration. Original13assets unchanged.",
+        "runtime_manifest": {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/native16-compatibility-smoke-v1/runtime-inputs.json",
+          "sha256": "43de9b527585addcc6da1f8fdc6f1e8266e2d982ba4c752d909578ed8c7bde21",
+          "files": 84
+        }
+      },
       "native16_public_calibration_build": {
         "stage": "built",
         "source_commit": "2369886e91da7d4f570d43ba17aacb242b838c60",
