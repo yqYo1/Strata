@@ -18,9 +18,9 @@ sys.dont_write_bytecode = True
 import runtime_probe as runtime
 
 P, B = runtime.P, runtime.B
-ROOT = B / 'llama9b-independent-control-v3'
+ROOT = B / 'llama9b-independent-control-v4'
 RESULT = runtime.RESULT.with_name('prefill-resources-current.json')
-KEY = 'independent_llama9b_control_v3'
+KEY = 'independent_llama9b_control_v4'
 LLAMA = Path('/home/yayoi/ghq/github.com/ggml-org/llama.cpp')
 EXE = LLAMA / 'build/bin/llama-bench'
 MODEL = Path('/data/llm_models/unsloth/Qwen3.5-9B-GGUF/Qwen3.5-9B-UD-Q4_K_XL.gguf')
@@ -95,6 +95,10 @@ def prepare():
         previous['actual_ownership_reconciliation']['all3direct_children_reaped'] and
         previous['actual_ownership_reconciliation']['all3anchored_sessions_empty'],
         'preserve dynamic ICD observer refusal and close owned work first')
+    previous=c['independent_llama9b_control_v3']
+    require(previous['stage']=='failed' and previous['ownership_closed'] and not previous['active'] and
+        previous['fresh_faults']==[] and previous['provider_selection_diagnosis'],
+        'preserve provider-selection failure and close before corrected directory contract')
     revision = runtime.build.git(P, 'rev-parse', 'HEAD').decode().strip()
     inputs = pins(revision)
     original = runtime.selected.baseline()[1]
@@ -120,6 +124,9 @@ def prepare():
     files[str(Path(preload['canary']['path']).resolve())] = preload['canary']['sha256']
     icd=Path('/etc/OpenCL/vendors/intel64.icd')
     icd_provider=Path(icd.read_text().strip()).resolve()
+    private_icd=ROOT/'icd/intel.icd'
+    icd_text=icd.read_text()
+    opencl_loader=(SDK/'lib/libOpenCL.so.1').resolve()
     for path in [icd_provider,Path('/usr/lib/x86_64-linux-gnu/libOpenCL.so.1').resolve()]:
         files[str(path)]=digest(path)
     require(b'UR_L0_V2_FORCE_DISABLE_COPY_OFFLOAD' in
@@ -128,7 +135,8 @@ def prepare():
     env.update(LD_LIBRARY_PATH=':'.join(map(str,VENDOR_DIRS)),
         UR_ADAPTERS_FORCE_LOAD=str(SDK / 'lib/libur_adapter_level_zero_v2.so.0.12.0'),
         LD_PRELOAD=preload['library']['path'], STRATA_UR_PROBE_EXPECTED_LOADER=preload['loader'],
-        TMPDIR=str(ROOT / 'tmp'), XDG_CACHE_HOME=str(ROOT / 'cache'),OCL_ICD_VENDORS=str(icd))
+        TMPDIR=str(ROOT / 'tmp'), XDG_CACHE_HOME=str(ROOT / 'cache'),OCL_ICD_VENDORS=str(private_icd.parent),
+        GGML_NO_BACKTRACE='1')
     # Resolve the ELF interpreter's DT_NEEDED closure before admitting a child.
     # --list does not enter the target's constructors/main or initialize a GPU.
     pending={str(EXE.resolve()),str(Path(preload['library']['path']).resolve()),
@@ -155,11 +163,12 @@ def prepare():
     row = dict(stage='prepared', source_commit=revision, input_sha256=inputs,
         external_source=root_source, binary=dict(path=str(EXE),sha256=digest(EXE),bytes=EXE.stat().st_size),
         model=asset, runtime_files=files, preload=preload, environment=env,packages=packages,
-        external_config_sha256={str(icd):digest(icd)},
+        external_config_sha256={str(icd):digest(icd),str(private_icd):hashlib.sha256(icd_text.encode()).hexdigest()},
         ICD_selection={'scope':'This child only;no system/user configuration change.',
-            'reference':'https://github.com/OCL-dev/ocl-icd/blob/master/doc/libOpenCL.7.txt.in',
-            'local_document_sha256':digest('/usr/share/doc/ocl-icd-libopencl1/html/libOpenCL.html'),
-            'reason':'The installed ocl-icd loader documents .icd-file override. Limit incidental oneDNN/OpenCL platform enumeration to Intel GPU;do not load NVIDIA or CPU OpenCL ICDs. This differs from unrecorded historical defaults.'},
+            'reference':'https://github.com/KhronosGroup/OpenCL-ICD-Loader/blob/main/README.md#table-of-debug-environment-variables',
+            'loader':str(opencl_loader),'loader_sha256':digest(opencl_loader),
+            'private_icd_text':icd_text,
+            'reason':'Selected compiler OpenCL loader follows Khronos directory contract,not system ocl-icd file contract. Use a private single-Intel-GPU ICD directory. No NVIDIA/CPU OpenCL enumeration. This differs from unrecorded historical defaults.'},
         selected_original=original, boot=Path('/proc/sys/kernel/random/boot_id').read_text().strip(),
         driver=runtime.guards.driver_guard(), active=False,ownership_closed=True,passed=False,
         GPU_executed=False,model_executed=False,model_adoption_qualified=False,
@@ -175,7 +184,8 @@ def prepare():
         trace_budget_reason='128MiB finite full-API budget for2048probe covers512ubatch attention and incidental Intel OpenCL enumeration. Long131K has parameter validation without full API trace.',
         retention='Keep exact command/environment/source/executable/model/runtime identities,3individual timings,actual provider/fault/closure result and limits. No new build. Retire successful traces,logs,duplicate external receipt after extraction;user installed binary/model are not disposable project builds.')
     ROOT.mkdir(mode=0o700)
-    for name in ('tmp','cache'):(ROOT/name).mkdir()
+    for name in ('tmp','cache','icd'):(ROOT/name).mkdir()
+    private_icd.write_text(icd_text)
     write(ROOT/'record.json',row);c[KEY]=row;write(RESULT,c)
     print('Prepared installed-reference diagnostic;commit plan before running.',flush=True)
 
@@ -225,7 +235,7 @@ def run():
             env=dict(row['environment'],UR_ENABLE_LAYERS='UR_LAYER_PARAMETER_VALIDATION',
                 UR_LOG_VALIDATION='level:warning;flush:warning;output:file,'+str(warning))
             if label=='probe2048':env.update(UR_ENABLE_LAYERS='UR_LAYER_TRACING,UR_LAYER_PARAMETER_VALIDATION',
-                UR_LOG_TRACING='level:info;flush:info;output:file,'+str(trace))
+                UR_LOG_TRACING='level:info;flush:info;output:file,'+str(trace),ONEDNN_VERBOSE='2')
             if label!='canary':row.update(GPU_executed=True,model_executed=True)
             persist();print('Starting '+label,flush=True)
             entry,out,err=owner.run(label,case['argv'],env,LLAMA,interaction=monitor,**row['budgets'])
@@ -239,7 +249,7 @@ def run():
                     version=(1<<32)-1,closed=0),'host canary failed')
             else:
                 required={str((SDK/'lib/libsycl.so.9').resolve()),str((SDK/'lib/libur_adapter_level_zero_v2.so.0').resolve()),
-                    '/usr/lib/x86_64-linux-gnu/libze_intel_gpu.so.1.17.39758'}
+                    '/usr/lib/x86_64-linux-gnu/libze_intel_gpu.so.1.17.39758',row['ICD_selection']['loader']}
                 require(required<=set(entry['runtime_seen']),'actual GPU provider absent')
                 parsed=[json.loads(s) for s in out.read_text().splitlines() if s.startswith('{')]
                 require(len(parsed)==1,'one JSON benchmark result required');test=parsed[0]
