@@ -883,7 +883,7 @@ extras. This private Python-startup envelope differs from historical runs.
 Independent Orca and native Luna/max review accept V6's exact five-source/plan
 contract. Its six-process order is baseline/candidate/candidate/baseline/baseline/
 candidate,each with four117489fresh/zero-reuse/thinking/24-output requests.
-The first four processes pass all four requests each,source/
+The first five processes pass all four requests each,source/
 provider/route/journal/clock/CPU/closure gates,final15 model hashes and
 no-fresh-fault checks. Individual rates and CPU operands remain in the compact
 result;first use is separate:
@@ -894,9 +894,10 @@ result;first use is separate:
 | 1/candidate | 905.1339 | 976.8543 | 6.1229..6.2783% |
 | 2/candidate | 907.1333 | 975.4528 | 6.0249..6.1065% |
 | 3/baseline | 904.8292 | 975.2982 | 11.4547..11.5684% |
+| 4/baseline | 901.2637 | 973.7228 | 11.4648..11.8417% |
 
 The first two candidate/baseline ratios are1.00120144(+0.1201%) and
-1.00015858(+0.0159%). Two process results remain pending. Do not select the
+1.00015858(+0.0159%). The final candidate remains pending. Do not select the
 mechanism before cohort closure or call the host CPU
 reduction a model gain. Neither these samples nor the host gate establishes a
 historical cause,1000tok/s restoration,sustained decode,agent quality or
