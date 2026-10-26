@@ -873,26 +873,21 @@ server interpreters at launch,and pass fresh local controls and exact-source
 review. The v2 plan,its failed admission and zero native launches remain intact;
 no speed evidence follows from either unlaunched plan.
 
-Sourcebd4ce2e4b adds that runtime admission and passes nine CPU-only controls,
-including actual isolated CLI startup. The separately committed runtime plan
-then passes two fresh definition-only probes after two discovery probes:actual
-benchmark/server Python selection,3593 runtime files,template and imported
-descriptors match before and after execution,with normal owned closure and no
-GPU launch. The private Python startup envelope differs from historical runs;
-this is a prospective matched control,not an exact historical replay. Native
-review closes the fresh v3 model plan without a launch:live Python admission
-checks only six environment keys,and request CPU timing excludes admission and
-end-gate work covered by the plan's wording. This is missing verification,not
-an observed misconfiguration. Correct both contracts in fresh committed source
-and plan before the six-process comparison. No model speedup or inference
-adoption follows yet. Sourced0e9c81c6 now checks the complete expected Python
-environment with explicit shell-key exceptions and starts request CPU timing
-before admission,ending after end-gate validation/artifact checks. Its own
-window receipt,progress print,end-gate continue,startup and final audits are
-explicitly excluded. Nine fresh host controls pass,including changed/extra
-non-Python environment keys against a live owned child. A fresh runtime plan
-passes two discovery and two qualified definition-only probes with the same3593
-file manifest and normal closure;no model launch follows yet.
+Source38f8cb5eb checks complete expected Python environments with explicit
+shell-key exceptions,normalized interpreter/script paths and exact remaining
+argument vectors. Nine CPU-only controls pass,including a live child with a
+value containing spaces,wrong/missing arguments and changed/extra environment
+keys. Request CPU timing includes begin admission through end-gate validation
+and artifact checks;its own window receipt,progress print,end-gate continue,
+startup and final audits are explicitly excluded. Earlier v3/v4 plans remain
+closed without a model launch:environment/timing scope and then argument-tail
+verification were narrower than their frozen claims. No mislaunch was observed;
+the [original outcomes remain in Git](https://github.com/yqYo1/Strata/blob/729e0d9bc/bench/results/2026-10-15-pr6-recovery-audit/prefill-runtime-comparison-current.json).
+The preceding source's two discovery and two qualified definition-only probes
+matched3593runtime files and closed normally. The changed source needs a fresh
+runtime plan/probes and model plan/review. Its private Python startup envelope
+differs from historical runs,so this is a prospective matched control. No model
+speedup or inference adoption follows from these host checks.
 
 Exact original source,configuration and pure environment-recipe recovery closes
 the two superseded unlaunched model roots and old Python-probe root. Their
