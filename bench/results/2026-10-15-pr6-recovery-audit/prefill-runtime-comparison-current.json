@@ -803,6 +803,27 @@
     }
   },
   "historical_regression_audit": {
+    "supervision_input_admission_v5": {
+      "source_commit": "d0e9c81c69fa21887a60fb79cf1d676533407db2",
+      "sources": {
+        "tools/sycl/supervision_model.py": "c6c59544e8186b2f4bb36d006207a8b1942ae2bdd4f2c6512b8c96ac39d305ad",
+        "tools/test_sycl_supervision_model.py": "db5372056517d0c26115f9c2afa61ebdfc8df6d5f77dd3b8b7a3d76d8eaaacc4",
+        "tools/sycl/benchmark_runtime.py": "ce53d2927f14295d01b97c7eb87e717816618bdd36baa69f77eb707f58b083b7"
+      },
+      "command": "flock -n /home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/owned-v0141-measurement.lock timeout45s /usr/bin/python3.12 -I -S -B tools/test_sycl_supervision_model.py",
+      "cases": 9,
+      "exit_code": 0,
+      "passed": true,
+      "ownership_closed": true,
+      "GPU_executed": false,
+      "evidence": "Ran9tests in1.036s;OK. Actual owned live-child control additionally rejects changed LANG and an unexpected LANG key,which escaped the old six-key environment check. Existing profile mutation/path/argument/admission,interpreter/script/maps,import inventory and isolated CLI controls pass. Fixture EOF/reaping/empty owned session pass;temporary CPU fixtures retired.",
+      "scope": "Host source/input admission only;no model speed or GPU qualification.",
+      "supersedes": {
+        "scope": "supervision_input_admission_v4",
+        "archive_commit": "ba158bc54",
+        "original_status": "passed;exact bd4ce2e4b source,not a qualification of modified source"
+      }
+    },
     "supervision_model_control_v3": {
       "stage": "closed-unlaunched",
       "binary": {

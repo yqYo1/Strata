@@ -12428,8 +12428,8 @@
   },
   "register_only_subgroup_gemm_barrier_methods_20261027": {
     "classification": "knowledge_collection",
-    "status": "research_ready",
-    "schedulable_now": true,
+    "status": "research_running",
+    "schedulable_now": false,
     "source_commit": "ba158bc54d15d8355feeb64649ae31dd2d462b56",
     "prerequisite_evidence": "Selected native16 source uses BSD-derived register-fragment DPAS loops with workgroup barrier_arrive/barrier_wait at every K tile in xe_gemm_bsd.hpp;current native16 adapter uses SG16 compact16x64 or wide128x128. Existing job-shape/work census supplies a concrete retrieval consumer;no limiting-resource or speed claim.",
     "previous_report_index": "bench/results/2026-10-15-pr6-recovery-audit/research-index.json",
@@ -12444,6 +12444,19 @@
     "consumer": "Reference for a future mechanism-specific native16 GPU compute experiment after the supervisor control;not immediate implementation.",
     "next_review": "Native gpt-6-luna/max reviews novelty,scope,depth and retrieval metadata;Main reads short operational digest only and retrieves body sections only for a concrete kernel decision.",
     "limits": "Research only;write named report only,no Git/process/build/test/GPU/profiler/product edits/dependency changes/subagents. No XeStrata source or derivatives;no steering.",
-    "main_reads_body_on_arrival": false
+    "main_reads_body_on_arrival": false,
+    "dispatch": {
+      "run": "run_12fa11537288",
+      "task": "task_69baba600751",
+      "context": "ctx_f43ff18c6a48",
+      "terminal": "term_abb9a1dc-128a-4e5b-b103-dfd761266f72",
+      "incarnation": "d837d03f-b529-43a7-b569-35d4651dcb5d",
+      "model": "gpt-6-luna",
+      "effort": "high",
+      "basis": "Prior source audit settled/released/ACK;fresh /new current-worktree GPT6Luna/high prompt observed.",
+      "input_accepted": true,
+      "turn_start_observed": true,
+      "outcome": "in_progress"
+    }
   }
 }
