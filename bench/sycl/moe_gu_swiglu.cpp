@@ -163,7 +163,7 @@ struct Case {
       << ",\"BF16_capture_exact\":true,\"guards\":true,\"inputs_immutable\":true,\"status\":\"PASS\"}\n";
     return ulp;
   }
-  void check_profile() {
+  void check_profile(bool fusion_enabled=true) {
     namespace cp = sb::command_profile;
     strata::prefill::Gemm routed;
     std::string error;
@@ -188,7 +188,7 @@ struct Case {
       }
       drain(q);frame.after_checked_drain();
     }
-    need(selected==(rows>=2334),"profile changed production GU dispatch");
+    need(selected==(fusion_enabled && rows>=2334),"profile changed production GU dispatch");
     const int ulp=compare_hidden(reference,candidate);
     need(x.get()==hx && w.get()==hw,"profiled GU changed inputs");
     for (auto v:capture.get()) need(v==Sentinel,"profiled GU wrote diagnostic storage");
@@ -222,6 +222,111 @@ void admissions(Case &c) {
 }
 class Marker;
 sycl::event mark(sycl::queue &q) { return q.single_task<Marker>([] {}); }
+// Exercise the public production dispatcher, including its refused-path cost.
+// The process environment selects an arm before SYCL initializes; never mutate it.
+struct PublicGU {
+  Case &c;
+  strata::prefill::Gemm routed;
+  bool expected;
+  PublicGU(Case &input, bool fusion) : c(input), expected(fusion && c.rows>=2334) {
+    std::string error;
+    if (!routed.init_external(&c.q,nullptr,0,nullptr,0,error)) throw std::runtime_error(error);
+  }
+  ~PublicGU() { drain(c.q); }
+  bool call() {
+    try {
+      const bool selected=routed.try_gu_swiglu16(c.x.data(),c.w.data(),c.candidate.data(),c.rows);
+      if (!selected) {
+        routed.f16_out16(c.x.data(),c.w.data(),c.gu.data(),c.rows,N,K,true);
+        strata::prefill::native16::swiglu(c.gu.data(),c.candidate.data(),c.rows,&c.q);
+      }
+      return selected;
+    } catch (...) { drain(c.q); throw; }
+  }
+  void prime() {
+    for (int i=0;i<8;++i) need(call()==expected,"warmup public dispatch differs");
+    drain(c.q);
+  }
+};
+void public_settings(int arm) {
+  const auto matches=[](const char *key,const char *wanted) {
+    const char *value=std::getenv(key);
+    return value && std::string(value)==wanted;
+  };
+  need(arm==0 || arm==1,"public arm must be0 or1");
+  need(matches("STRATA_SYCL_PREFILL_NATIVE16","bf16") &&
+       matches("STRATA_SYCL_PREFILL_NATIVE16_BACKEND","vllm") &&
+       matches("STRATA_SYCL_PREFILL_NATIVE16_VLLM_TILE","auto") &&
+       matches("STRATA_SYCL_PREFILL_GU_SWIGLU",arm ? "large" : "0"),
+       "public mode requires matching immutable bf16/vllm/auto/GU startup settings");
+}
+void benchmark_public(int process,int arm,sycl::queue &q) {
+  namespace cp=sb::command_profile;
+  need(!cp::requested(),"clean public timing forbids command profiling");
+  need(q.has_property<sycl::property::queue::in_order>() &&
+       q.has_property<sycl::property::queue::enable_profiling>(),"ordered profiling queue required");
+  const auto resolution=q.get_device().get_info<sycl::info::device::profiling_timer_resolution>();
+  need(resolution>0,"invalid device profiling timer resolution");
+  // Prime both marker/timer queries before controls or measured arithmetic.
+  for (int i=0;i<2;++i) {
+    auto a=mark(q),b=mark(q);wait(q,b);
+    (void)a.get_profiling_info<sycl::info::event_profiling::command_end>();
+    (void)b.get_profiling_info<sycl::info::event_profiling::command_start>();
+    (void)std::chrono::steady_clock::now();
+  }
+  const auto control=[&](int phase) {
+    double maximum=0;
+    for (int i=0;i<8;++i) {
+      const auto wall=std::chrono::steady_clock::now();
+      auto a=mark(q),b=mark(q);wait(q,b);
+      const auto start=a.get_profiling_info<sycl::info::event_profiling::command_end>();
+      const auto end=b.get_profiling_info<sycl::info::event_profiling::command_start>();
+      const double ns=std::chrono::duration<double,std::nano>(std::chrono::steady_clock::now()-wall).count();
+      need(end>=start && ns>0 && std::isfinite(ns),"invalid public timing control");
+      maximum=std::max(maximum,ns);
+      std::cout<<"{\"kind\":\"public_control\",\"phase\":"<<phase<<",\"index\":"<<i
+        <<",\"wall_ns\":"<<ns<<",\"queue_interval_ns\":"<<(end-start)
+        <<",\"timer_resolution_ns\":"<<resolution<<",\"status\":\"PASS\"}\n";
+    }
+    return maximum;
+  };
+  const double initial_control=control(0);
+  double minimum_batch=1e300;
+  // Fixed before execution: no adaptive repeats or post-result timing threshold.
+  for (int rows:{160,2333,2334}) {
+    Case c(rows,false,q);PublicGU path(c,arm!=0);
+    c.separate(xe::Tile::wide_128x128);drain(q);
+    path.prime();need(compare_hidden(c.reference,c.candidate)<=1,"public preflight differs");
+    const int repeat=rows==160 ? 512 : 128;
+    for (int round=-1;round<5;++round) {
+      c.candidate.reset();path.prime();
+      const auto start=mark(q);const auto wall=std::chrono::steady_clock::now();
+      int selected=0;
+      for (int i=0;i<repeat;++i) selected+=int(path.call());
+      const auto end=mark(q);wait(q,end);
+      const double wall_ns=std::chrono::duration<double,std::nano>(std::chrono::steady_clock::now()-wall).count();
+      const auto a=start.get_profiling_info<sycl::info::event_profiling::command_end>();
+      const auto b=end.get_profiling_info<sycl::info::event_profiling::command_start>();
+      need(b>a && std::isfinite(wall_ns) && selected==(path.expected ? repeat : 0),
+           "timed public dispatch/count/timer differs");
+      const bool eligible=wall_ns>=1e7 && b-a>=10000000 &&
+          initial_control<=wall_ns*.01 && double(resolution)<=double(b-a)*.001;
+      minimum_batch=std::min(minimum_batch,wall_ns);
+      const int ulp=compare_hidden(c.reference,c.candidate);
+      need(c.x.get()==c.hx && c.w.get()==c.hw,"public timing changed inputs");
+      (void)c.gu.get();for (auto v:c.capture.get()) need(v==Sentinel,"public timing wrote diagnostic capture");
+      std::cout<<"{\"kind\":\"public_sample\",\"process\":"<<process<<",\"arm\":"<<arm
+        <<",\"rows\":"<<rows<<",\"round\":"<<round<<",\"repeat\":"<<repeat
+        <<",\"selected\":"<<selected<<",\"fallback\":"<<(repeat-selected)
+        <<",\"wall_ns\":"<<wall_ns<<",\"queue_interval_ns\":"<<(b-a)
+        <<",\"max_half_ulp\":"<<ulp<<",\"eligible\":"<<eligible
+        <<",\"scope\":\"public_dispatch_queue_interval_includes_host_gaps_not_GPU_service\""
+        <<",\"status\":\"PASS\"}\n";
+      need(eligible,"public batch below frozen duration/control/resolution eligibility");
+    }
+  }
+  need(control(1)<=minimum_batch*.01,"final public timer/control overhead exceeds1percent");
+}
 void benchmark(int process,sycl::queue &q) {
   for (int rows:{64,160,2334,5963,8192}) {
     const auto tile=rows<128 ? xe::Tile::compact_16x64 : xe::Tile::wide_128x128;
@@ -259,14 +364,30 @@ int main(int argc,char **argv) {
     if (mode=="--ownership") {
       ownership(); std::cout << "fixture_status=PASS mode=ownership GPU_submissions=0\n"; return 0;
     }
-    need(mode=="--smoke" || mode=="--validate" || mode=="--bench" || mode=="--profile-engine-hook","invalid mode");
+    const bool public_timing=mode=="--bench-public";
+    const bool public_profile=mode=="--profile-public";
+    const bool public_smoke=mode=="--smoke-public";
+    int public_arm=0,public_process=0;
+    if (public_timing || public_profile || public_smoke) {
+      need(argc==(public_timing ? 4 : 3),"public mode needs PROCESS ARM or ARM");
+      public_arm=std::stoi(argv[public_timing ? 3 : 2]);public_settings(public_arm);
+      if (public_timing) {
+        public_process=std::stoi(argv[2]);need(public_process>=0 && public_process<3,"invalid public process ordinal");
+      }
+    }
+    need(mode=="--smoke" || mode=="--validate" || mode=="--bench" || mode=="--profile-engine-hook" ||
+         public_timing || public_profile || public_smoke,"invalid mode");
     for (auto tile:{xe::Tile::compact_16x64,xe::Tile::wide_128x128}) {
       const auto p=xe::inspect_gu_pair_ownership(8192,tile,xe::GuLayout::matrix);
       need(!p.partner_mismatch && !p.packed_missing && !p.packed_multiple && !p.packed_orientation_mismatch,
            "packed partner ownership gate");
     }
     runtime=sb::runtime_for(); auto q=runtime->make_queue(true); topology(q);
-    if (mode=="--profile-engine-hook") {
+    if (public_timing) {
+      benchmark_public(public_process,public_arm,q);
+    } else if (public_profile || public_smoke) {
+      for (int rows:{3,160,2333,2334}) { Case c(rows,false,q);c.check_profile(public_arm!=0); }
+    } else if (mode=="--profile-engine-hook") {
       need(argc==2,"profile hook takes no timing parameters");
       for (int rows:{2333,2334,8192}) { Case c(rows,false,q);c.check_profile(); }
     } else if (mode=="--smoke") {
