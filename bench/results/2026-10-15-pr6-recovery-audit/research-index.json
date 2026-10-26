@@ -12428,7 +12428,7 @@
   },
   "register_only_subgroup_gemm_barrier_methods_20261027": {
     "classification": "knowledge_collection",
-    "status": "research_running",
+    "status": "reviewed_retrieval_reference",
     "schedulable_now": false,
     "source_commit": "ba158bc54d15d8355feeb64649ae31dd2d462b56",
     "prerequisite_evidence": "Selected native16 source uses BSD-derived register-fragment DPAS loops with workgroup barrier_arrive/barrier_wait at every K tile in xe_gemm_bsd.hpp;current native16 adapter uses SG16 compact16x64 or wide128x128. Existing job-shape/work census supplies a concrete retrieval consumer;no limiting-resource or speed claim.",
@@ -12456,7 +12456,37 @@
       "basis": "Prior source audit settled/released/ACK;fresh /new current-worktree GPT6Luna/high prompt observed.",
       "input_accepted": true,
       "turn_start_observed": true,
-      "outcome": "in_progress"
-    }
+      "outcome": "succeeded_settled",
+      "done_message": "msg_fbb6a6e55ddc",
+      "delivery": "delivery_9313696ba7a8",
+      "acknowledged": true,
+      "release": "accepted external-terminal retention,no process action;not claimed process exit"
+    },
+    "report_bytes": 14060,
+    "report_sha256": "c06c5b9adad804bee03dc0e227425683179cc7b0b83240b6e129ca824ec5e719",
+    "native_review": {
+      "reviewer": "/root/review_register_only_gemm_barriers_20261027",
+      "model": "gpt-6-luna",
+      "effort": "max",
+      "bytes": 4100,
+      "sha256": "7ba80af70e045868970f83f159fba43cf86965c7889996e39e4a98a86028eab1",
+      "status": "completed"
+    },
+    "operational_digest": "Native review finds novel,well-scoped reference material distinct from lifetime,bank-layout and ABI collections. Source shape/loop description matches;SYCL/SPIRV guarantees are kept separate from compiler/TLA behavior. No local barrier necessity,removal legality,bottleneck or speedup established. Corrections:CUTLASS citation returns404 and requested original technical blog/paper is absent. Retrieve only for a concrete native16 kernel question after supervisor control;no next scope currently eligible.",
+    "retrieval_keywords": [
+      "ScopeWorkgroup",
+      "barrier_arrive/barrier_wait",
+      "SG16 DPAS",
+      "block2D prefetch",
+      "register fragments",
+      "TLA lowering",
+      "SWSB/scoreboard",
+      "collective convergence"
+    ],
+    "corrections": [
+      "CUTLASS citation currently404;verify/replace before relying on that source.",
+      "Original technical blog/paper request not fulfilled;do not claim broader evidence coverage."
+    ],
+    "next_scope_eligible": false
   }
 }

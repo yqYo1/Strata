@@ -857,8 +857,8 @@ candidate/baseline/baseline/candidate,with four117489fresh-token requests per
 process and first use separate. It records controller CPU operands before
 enforcing prospective model-specific budgets;the earlier failed5%clock
 diagnostic remains failed. Fresh exact-source review is still required. See
-`historical_regression_audit.supervision_model_control_v2` in the runtime
-comparison for actual execution state. The candidate's byte-oriented foreign
+the [closed v2 plan in Git](https://github.com/yqYo1/Strata/blob/4dc1dea2f/bench/results/2026-10-15-pr6-recovery-audit/prefill-runtime-comparison-current.json)
+for its original execution state. The candidate's byte-oriented foreign
 SID filter does not make matching-session text identity parsing arbitrary-byte
 safe;invalid UTF8 there can fail closed,which remains a limit outside this
 planned ASCII process tree.
@@ -885,7 +885,20 @@ checks only six environment keys,and request CPU timing excludes admission and
 end-gate work covered by the plan's wording. This is missing verification,not
 an observed misconfiguration. Correct both contracts in fresh committed source
 and plan before the six-process comparison. No model speedup or inference
-adoption follows yet.
+adoption follows yet. Sourced0e9c81c6 now checks the complete expected Python
+environment with explicit shell-key exceptions and starts request CPU timing
+before admission,ending after end-gate validation/artifact checks. Its own
+window receipt,progress print,end-gate continue,startup and final audits are
+explicitly excluded. Nine fresh host controls pass,including changed/extra
+non-Python environment keys against a live owned child. A fresh runtime plan
+passes two discovery and two qualified definition-only probes with the same3593
+file manifest and normal closure;no model launch follows yet.
+
+Exact original source,configuration and pure environment-recipe recovery closes
+the two superseded unlaunched model roots and old Python-probe root. Their
+original outcomes and plans remain in pushed Git;normal raw files and duplicate
+current rows retire. The current Python manifest,ownerV3comparison evidence,
+selected engine and separate legacy provenance holds remain.
 
 After replay and exact source/recipe/header/link/object/ELF recovery,these three
 closed observer/model/control roots retire106files/12,760,397bytes. Four
