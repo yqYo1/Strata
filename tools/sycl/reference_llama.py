@@ -34,7 +34,28 @@ INPUTS = ['tools/sycl/reference_llama.py', 'tools/sycl/runtime_probe.py',
     'tools/sycl/check_full_context_source.py', 'tools/sycl/measurement_environment.json']
 PACKAGES = ['intel-oneapi-compiler-dpcpp-cpp-runtime-2026.1', 'intel-oneapi-dnnl-2026.1',
     'intel-oneapi-mkl-core-2026.1', 'intel-oneapi-tbb-2023.1', 'intel-oneapi-umf-1.1']
-require, digest, write = runtime.require, runtime.digest, runtime.write
+require, digest = runtime.require, runtime.digest
+
+
+def write(path, data):
+    text=json.dumps(data,indent=2)+'\n'
+    samples=data.get('event_reconciliation',{}).get('fused_command_profile',{}).get(
+        'prefill_upload_attribution_v3',{}).get('samples',{})
+    # Preserve the existing dense numerical representation during unrelated runs.
+    for rows in (samples.get('rows',[]),samples.get('profiles',{}).get('rows',[])):
+        if not rows:
+            continue
+        lines=json.dumps(rows,indent=2).splitlines()
+        for match in re.finditer(r'(?m)^( +)"rows": \[\n',text):
+            indent=match.group(1);start=match.end()-2
+            old='\n'.join(indent+line if i else line for i,line in enumerate(lines))
+            if text[start:start+len(old)]==old:
+                new='[\n'+''.join(indent+'  '+json.dumps(row,separators=(',',':'))+
+                    (',' if i<len(rows)-1 else '')+'\n' for i,row in enumerate(rows))+indent+']'
+                text=text[:start]+new+text[start+len(old):]
+                break
+    require(json.loads(text)==data,'result rendering lost information')
+    path.write_text(text)
 
 
 def pins(revision):
@@ -101,7 +122,9 @@ def prepare():
         TMPDIR=str(ROOT / 'tmp'), XDG_CACHE_HOME=str(ROOT / 'cache'))
     # Resolve the ELF interpreter's DT_NEEDED closure before admitting a child.
     # --list does not enter the target's constructors/main or initialize a GPU.
-    pending=set(files)
+    pending={str(EXE.resolve()),str(Path(preload['library']['path']).resolve()),
+        str(Path(preload['canary']['path']).resolve()),str(Path(env['UR_ADAPTERS_FORCE_LOAD']).resolve()),
+        '/usr/lib/x86_64-linux-gnu/libze_intel_gpu.so.1.17.39758'}
     listed=set()
     while pending:
         path=pending.pop()
