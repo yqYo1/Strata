@@ -838,83 +838,46 @@ two candidates remain failed at that absolute gate. This qualifies a separate
 model comparison,not inference adoption,a historical cause or a55%model gain.
 The default supervisor and inference implementation remain unchanged.
 
-The sourcec50192c3a matched model control was closed without a native launch:
-native Luna/max review found that the configured196632byte expert-placement
-profile was outside the15-file model-asset inventory and process admission.
-The initial Orca report's contrary admission conclusion is corrected. The
-current profile matches both its original6e40and controller-source Git blobs;
-the omission does not demonstrate that a historical runtime profile changed.
-Past fifteen-asset hashes alone do not establish that extra input's identity.
+The current matched model control uses sourcea6a42e20e and the original6e40
+engine,1256 decode slots,qualified validation/safety settings and8192 chunks.
+Its input gates bind the15 model assets,committed expert profile bytes/file
+identity,effective bench.sh/server Python runtime,complete expected environment
+with shell-only exceptions,and normalized executable/script plus exact remaining
+argument vectors. Nine fresh host controls pass. Request CPU timing starts at
+begin-gate receipt before admission and ends after end-gate validation/artifact
+checks;the frozen plan names its own receipt/progress/continue and final-audit
+exclusions. Prior unlaunched profile/runtime/environment/argv plans remain
+unchanged in [pushed history](https://github.com/yqYo1/Strata/blob/3690a67d2/bench/results/2026-10-15-pr6-recovery-audit/prefill-runtime-comparison-current.json).
 
-Source7a20614b4 adds committed profile-byte and actual file-identity checks
-before every model process and after execution,and requires all arms to share
-configuration except log paths. Five CPU-only controls pass,including rewrites
-with restored mtime,equal-byte path replacement,missing/duplicate arguments and
-actual admission rejection before native qualification. The fresh v2 plan keeps
-the selected original6e40engine,qualified validation/runtime safety,1256decode
-slots and existing placement. Its six-process order is baseline/candidate/
-candidate/baseline/baseline/candidate,with four117489fresh-token requests per
-process and first use separate. It records controller CPU operands before
-enforcing prospective model-specific budgets;the earlier failed5%clock
-diagnostic remains failed. Fresh exact-source review is still required. See
-the [closed v2 plan in Git](https://github.com/yqYo1/Strata/blob/4dc1dea2f/bench/results/2026-10-15-pr6-recovery-audit/prefill-runtime-comparison-current.json)
-for its original execution state. The candidate's byte-oriented foreign
-SID filter does not make matching-session text identity parsing arbitrary-byte
-safe;invalid UTF8 there can fail closed,which remains a limit outside this
-planned ASCII process tree.
+V5failed before its first long request because actual server Python mappings
+were absent from its definition-only runtime inventory. The original failed
+normal-ownership gate stays failed;separate cleanup confirms direct-child
+reaping,empty SID and all four recorded identities absent. No long speed sample
+or fresh GPUfault follows. Its gate omitted unexpected paths,so do not claim
+that a later mock observation proves that old process's exact missing libraries.
 
-Native review closes v2 without a launch as well:the profile correction is
-accepted,but isolated host-Python admission does not pin the actual bench.sh
-Python/venv selection or the server's imported Jinja2/MarkupSafe runtime. The
-launcher prefers workspace`.venv/bin/python`when executable,otherwise PATH
-`python3`;the server inherits that interpreter. The next model plan must bind
-effective resolution and the imported runtime closure,check actual benchmark/
-server interpreters at launch,and pass fresh local controls and exact-source
-review. The v2 plan,its failed admission and zero native launches remain intact;
-no speed evidence follows from either unlaunched plan.
+The replacement host probe imports the lazy tokenizer and exercises loopback
+model discovery/chat through MockEngine,ByteTokenizer and production service/
+telemetry initialization. It constructs no StrataEngine or SYCL/Level Zero runtime;
+normal telemetry can query NVML. Two discovery and two fresh qualified host
+processes pass and close normally. All3593 original identities are unchanged;
+the inventory adds libnvidia-ml,libcuda,libdl and librt,for3597files/270975442bytes.
+Live model admission still rejects any unobserved mapping and now records its
+exact path. The environment controls change/omit expected values;they do not
+explicitly add a new child key,although the live comparator rejects unapproved
+extras. This private Python-startup envelope differs from historical runs.
 
-Source38f8cb5eb checks complete expected Python environments with explicit
-shell-key exceptions,normalized interpreter/script paths and exact remaining
-argument vectors. Nine CPU-only controls pass,including a live child with a
-value containing spaces,wrong/missing arguments and changed/extra environment
-keys. Request CPU timing includes begin admission through end-gate validation
-and artifact checks;its own window receipt,progress print,end-gate continue,
-startup and final audits are explicitly excluded. Earlier v3/v4 plans remain
-closed without a model launch:environment/timing scope and then argument-tail
-verification were narrower than their frozen claims. No mislaunch was observed;
-the [original outcomes remain in Git](https://github.com/yqYo1/Strata/blob/729e0d9bc/bench/results/2026-10-15-pr6-recovery-audit/prefill-runtime-comparison-current.json).
-This source's fresh two discovery and two qualified definition-only probes
-match3593runtime files and close normally. The fresh six-process model plan is
-prepared;independent native Luna/max review accepts its exact five-source and
-plan contract with no remaining correction. This permits only the bounded
-six-process model control,not inference adoption. Its private Python startup
-envelope differs from historical runs,so this is a prospective matched control.
-No model speedup follows from the host checks or source review. Exact original
-source,configuration,environment recipe and replacement-manifest recovery now
-retires the closed v4 model/Python-v2 roots and consumed review transactions;
-original outcomes remain in pushed Git. Current V5/PythonV3/ownerV3 evidence
-and separate legacy provenance holds remain.
-
-The first V5process is now closed as failed before its first long request.
-The actual server Python loads executable mappings absent from the definition-only
-probe inventory. The original gate omits their paths,so the precise library
-remains unproved until a bounded host reproduction. The default ownership gate
-remains failed;separate recorded cleanup confirms direct-child reaping,empty SID
-and all four recorded identities absent. There is no fresh GPUfault or long
-prefill speed sample. Do not retry V5;exercise late server initialization and
-report map differences before a new comparison.
-
-The replacement host probe imports the lazy tokenizer and exercises
-loopback model discovery/chat through MockEngine,ByteTokenizer and the production
-service/telemetry initialization. It does not construct StrataEngine or initialize
-SYCL/Level Zero. Normal telemetry can query NVML. Two discovery and two fresh
-qualified host processes pass and close normally. All3593 original file identities
-are unchanged;the inventory now adds libnvidia-ml,libcuda,libdl and librt,for3597
-files/270975442bytes. The new live rejection includes exact unexpected paths.
-These mock observations do not prove the old process's unrecorded map difference
-or a model speed result;the failed V5remains unchanged. Nine fresh host controls
-also pass,including exact missing-map diagnostic checks. The next model plan
-still needs independent source review before execution.
+Independent Orca and native Luna/max review accept V6's exact five-source/plan
+contract. Its six-process order is baseline/candidate/candidate/baseline/baseline/
+candidate,each with four117489fresh/zero-reuse/thinking/24-output requests.
+The first baseline process now passes all four requests,source/provider/route/
+journal/clock/CPU/closure gates,final15 model hashes and no-fresh-fault checks.
+First use is904.1691tok/s;subsequent rates are975.1856,975.6821 and978.1417,
+median975.6821. Controller request CPU fractions are11.4852..11.6506percent,
+below its frozen20percent baseline cap. Five processes remain unstarted;there
+is no paired mechanism result or inference/default adoption yet. Neither the
+host-cost gain nor this baseline sample proves a historical cause,1000tok/s
+restoration,sustained decode,agent quality or physical262144 correctness.
 
 Exact original source,configuration and pure environment-recipe recovery closes
 the two superseded unlaunched model roots and old Python-probe root. Their

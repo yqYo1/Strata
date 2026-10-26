@@ -804,7 +804,7 @@
   },
   "historical_regression_audit": {
     "supervision_model_control_v6": {
-      "stage": "prepared",
+      "stage": "running",
       "binary": {
         "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/strata",
         "bytes": 22190000,
@@ -917,7 +917,131 @@
         "daabbef4775c3fbdbfd832339d80a5ae2f91025b66df79b92fb8f6905f33b041",
         "8669c9ebe2747b1fc2d7c4806eeb66025c919981d81c51cfdbd64ba3ec3cc2b1"
       ],
-      "processes": [],
+      "processes": [
+        {
+          "complete": true,
+          "host_probe_accepted": true,
+          "request_windows": [
+            {
+              "request": 0,
+              "controller_cpu_ns": 15182609120,
+              "gate_elapsed_ns": 132192705269,
+              "fraction": 0.11485209481948937,
+              "maximum": 0.2
+            },
+            {
+              "request": 1,
+              "controller_cpu_ns": 14134175515,
+              "gate_elapsed_ns": 122677187432,
+              "fraction": 0.11521437531191019,
+              "maximum": 0.2
+            },
+            {
+              "request": 2,
+              "controller_cpu_ns": 14288347131,
+              "gate_elapsed_ns": 122641908432,
+              "fraction": 0.11650460526649675,
+              "maximum": 0.2
+            },
+            {
+              "request": 3,
+              "controller_cpu_ns": 14249400591,
+              "gate_elapsed_ns": 122306219926,
+              "fraction": 0.11650593567213048,
+              "maximum": 0.2
+            }
+          ],
+          "python_children": {
+            "benchmark": {
+              "pid": 2990491,
+              "start_ticks": 140049139,
+              "sid": 2990491
+            },
+            "server": {
+              "pid": 2990498,
+              "start_ticks": 140049167,
+              "sid": 2990491
+            }
+          },
+          "index": 0,
+          "arm": "baseline",
+          "requests": [
+            {
+              "run": 0,
+              "request_sha256": "26f08fd8364b5c4bce718617fe2aed42761d0a794e068b00532694adef78b3be",
+              "actual_prompt_tokens": 117489,
+              "actual_read_tokens": 117489,
+              "actual_reused_tokens": 0,
+              "generated_tokens": 24,
+              "prompt_ms": 129941.4
+            },
+            {
+              "run": 1,
+              "request_sha256": "fd3ad8ad7033776ad749b22e62e910e5f47e3f7664705f48d9f1fe7349b65515",
+              "actual_prompt_tokens": 117489,
+              "actual_read_tokens": 117489,
+              "actual_reused_tokens": 0,
+              "generated_tokens": 24,
+              "prompt_ms": 120478.6
+            },
+            {
+              "run": 2,
+              "request_sha256": "daabbef4775c3fbdbfd832339d80a5ae2f91025b66df79b92fb8f6905f33b041",
+              "actual_prompt_tokens": 117489,
+              "actual_read_tokens": 117489,
+              "actual_reused_tokens": 0,
+              "generated_tokens": 24,
+              "prompt_ms": 120417.3
+            },
+            {
+              "run": 3,
+              "request_sha256": "8669c9ebe2747b1fc2d7c4806eeb66025c919981d81c51cfdbd64ba3ec3cc2b1",
+              "actual_prompt_tokens": 117489,
+              "actual_read_tokens": 117489,
+              "actual_reused_tokens": 0,
+              "generated_tokens": 24,
+              "prompt_ms": 120114.5
+            }
+          ],
+          "tok_s": [
+            904.1691100757727,
+            975.1856346272284,
+            975.6820656168175,
+            978.1416898043117
+          ],
+          "first_use_tok_s": 904.1691100757727,
+          "subsequent_median": 975.6820656168175,
+          "native_identity": {
+            "pid": 2990534,
+            "start_ticks": 140049275,
+            "sid": 2990491
+          },
+          "validation": {
+            "pid": 2990534,
+            "loader": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_loader.so.0.12.0",
+            "threads_before": 1,
+            "preinit": 37,
+            "config_enabled": true,
+            "first_init": true,
+            "dispatch_result": 46,
+            "output_untouched": true,
+            "retained_reference_until_exit": true,
+            "runtime_teardown_qualified": false
+          },
+          "ownership_closed": true,
+          "fresh_faults": [],
+          "boot_unchanged": true,
+          "driver_after": {
+            "pci": "/sys/bus/pci/devices/0000:05:00.0",
+            "driver": "xe",
+            "vendor": "0x8086",
+            "device": "0xe20c",
+            "kernel": "7.0.0-38-generic",
+            "devcoredump": false
+          },
+          "passed": true
+        }
+      ],
       "complete": false,
       "passed": false,
       "active": false,
