@@ -663,9 +663,12 @@ See`public_gu_warmed_attribution`,source/controllere4c8a21c3 and plan3bcbfb7b7.
 Do not retry that frozen cohort unchanged or weaken its original gate. Next
 isolate endpoint/startup latency and obtain complete-wrapper/warmed-service
 evidence in a newly scoped bounded diagnostic. Effective clocks and scheduler
-conditions during the failed window remain unmeasured. Retain both official
-component generations for that imminent comparison until one is selected;
-the original engine and12fixtures remain the selected model reference.
+conditions during the failed window remain unmeasured. The unselected
+short-batch attribution generation is now retired after original-source/recipe
+recovery;the qualified official v4fixtures remain the fallback for a longer
+fixed-batch replacement. The original engine and12fixtures remain the selected
+model reference. Do not interpret a longer-batch method as an original-model
+speedup or compare its cache/spacing envelope directly to the old short batches.
 
 The fresh sourcee33d16fc3 attribution fixture closes ten official-SDK processes
 with240eligible/correct timing samples and120complete CPU/GPU profiles.
