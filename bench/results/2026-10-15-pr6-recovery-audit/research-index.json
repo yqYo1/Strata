@@ -12491,8 +12491,8 @@
   },
   "supervision_model_source_contract_v4_20261027": {
     "classification": "decision_support",
-    "status": "source_audit_ready",
-    "schedulable_now": true,
+    "status": "model_admission_blocked",
+    "schedulable_now": false,
     "model_trial_allowed": false,
     "source_commit": "6ae40304335e0c03327a750d72a852db0fc3a501",
     "sources": {
@@ -12524,6 +12524,38 @@
     "consumer": "Main six-process supervisor-cost model admission after independent native Luna/max report review.",
     "next_review": "Native gpt-6-luna/max report review and exact plan/source verification,then Main commits model_trial_allowed only if eligible.",
     "limits": "Read-only;write named report only. No Git,process inspection,build/test/GPU/profiler,product/index edits,dependency changes or subagents. No steering or XeStrata-derived code.",
-    "main_reads_body_on_arrival": false
+    "main_reads_body_on_arrival": false,
+    "report_bytes": 7328,
+    "report_sha256": "d46f4f55b4adb06bad00ff0e93d56a9853f6473ca55f482ca3993e021744b246",
+    "dispatch": {
+      "run": "run_12fa11537288",
+      "task": "task_932199b1e96b",
+      "context": "ctx_e2c3a3f6a008",
+      "terminal": "term_abb9a1dc-128a-4e5b-b103-dfd761266f72",
+      "incarnation": "d837d03f-b529-43a7-b569-35d4651dcb5d",
+      "model": "gpt-6-luna",
+      "effort": "high",
+      "basis": "Prior collection settled/released/ACK;fresh /new current-worktree GPT6Luna/high prompt observed.",
+      "input_accepted": true,
+      "turn_start_observed": true,
+      "outcome": "succeeded_settled",
+      "done_message": "msg_177309a50388",
+      "delivery": "delivery_ee6c6b3c23f9",
+      "acknowledged": true,
+      "release": "accepted external-terminal retention,no process action;not claimed process exit"
+    },
+    "native_review": {
+      "reviewer": "/root/review_supervision_model_contract_v4_20261027",
+      "model": "gpt-6-luna",
+      "effort": "max",
+      "status": "completed",
+      "bytes": 4729,
+      "sha256": "2f323ad67cf62613007187906ae668e94a6d3b2175e339c49c587cdfdabdabf4",
+      "verdict": "block_model_launch"
+    },
+    "operational_digest": "Native review accepts v3 full-environment and CPU-interval fixes. It confirms a narrow remaining frozen-plan mismatch:Python interpreter/script resolution is checked but remaining argv is not. Frozen bench.sh forwarding,deterministic server launch and other gates constrain inputs;no mislaunch observed. Keep v4 unlaunched;add expected argument-tail checks or prospectively narrow the contract in a new plan. No speed or inference adoption.",
+    "corrections": [
+      "Bind complete expected benchmark/server argument tails after normalized executable/script resolution,with live-child controls;or explicitly narrow the frozen claim."
+    ]
   }
 }
