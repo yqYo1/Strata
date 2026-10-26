@@ -527,6 +527,15 @@ prospectively complete observer clock and balanced order strata. Selected copy
 service and synthetic-reader time do not establish physical bus traffic or the
 cause of the historical model decline.
 
+The V2guard comparison stops at a safe between-process boundary after eight
+normal processes,132correct timing samples and44profiles. No fresh GPUfault
+occurs. Main found missing checked retirement around post-timing validation:
+a copy/enqueue/wait exception could release the local host destination or the
+GPU status owner too early. This diagnostic safety hold is not an observed
+fault or a completed speed comparison. Source now adds a checked lease after
+every DMA owner and two host-exception-after-enqueue controls;the fresh V3plan
+must pass them before resuming. The selected model/decode binary is unchanged.
+
 The native SDK snapshot has a named next consumer:official-runtime original
 fixture ABI/GEMM qualification and the next attributed fixture build. Source
 recovery is complete;58closed component/review files totaling2669603bytes are

@@ -136,9 +136,9 @@ def prepare():
                       ['bench-copy2','--staging-guard-copy-off','2'],
                       ['bench-on2','--staging-guard-device-on','2']],
         plan='V3corrected post-validation lifetime;preserve V2interrupted safety hold,V1failed observer and V5failed performance gates. '
-            'First hostcanary,traced old/staged smoke,8adversarial GPU padding and2host-exception-after-enqueue ' 
-            'retirement cases,then existing bank validation. Both post-check modes retain checked leases before ' 
-            'any transfer/kernel and retire before freeing every DMA source/destination;failed drain fail-stops ' 
+            'First hostcanary,traced old/staged smoke,8adversarial GPU padding and2host-exception-after-enqueue '
+            'retirement cases,then existing bank validation. Both post-check modes retain checked leases before '
+            'any transfer/kernel and retire before freeing every DMA source/destination;failed drain fail-stops '
             'with owners alive. No device/provider error injection. '
             'Three process blocks rotate full-bank D2Hguard/off,device-paddingguard/off and deviceguard/on. '
             'Each mode/payload/bank arm gets first-use and10subsequent samples,exactly5per pair-order stratum. '
