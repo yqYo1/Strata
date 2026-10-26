@@ -21,7 +21,7 @@ import build_native16_control as build
 import generation_engine as gen
 
 r, P, B, RESULT = build.r, build.P, build.B, build.RESULT
-ROOT = B / 'native16-compatibility-smoke-v1'
+ROOT = B / 'native16-compatibility-smoke-v2'
 KEY = 'native16_compatibility_smoke'
 require, digest, write = r.require, r.digest, r.write
 
@@ -118,7 +118,14 @@ def runtime_inputs(native_row, sdk, rt):
 
 
 def prepare():
-    require(not ROOT.exists() and KEY not in build.scope(r.validation.committed(RESULT)), 'single-use compatibility check')
+    require(not ROOT.exists(), 'single-use compatibility check')
+    previous = build.scope(r.validation.committed(RESULT)).get(KEY)
+    if previous is not None:
+        require(previous['stage'] == 'failed' and not previous['GPU_process_launched'] and
+            previous['failure_analysis']['stage'] == 'host_only_observation' and
+            previous['failure_analysis']['physical_closure']['direct_child_reaped'] and
+            previous['failure_analysis']['physical_closure']['session_empty_observed_before_reap'],
+            'only the closed host-observation failure precedes this corrected plan')
     built, sdk, proof = native(); rt = r.validation.committed(r.RESULT); r.current(rt)
     revision = r.validation.git('rev-parse', 'HEAD').decode().strip()
     loader = str((build.OFFICIAL / 'lib/libur_loader.so.0').resolve())
@@ -157,6 +164,11 @@ def prepare():
         retention='Keep source/recipe,compact individual case counts/dispatch/provider/validation/fault decisions. '
             'Retire successful full trace/JIT and process logs after verification. Candidate4fixtures and '
             '1427input manifest remain for imminent public-GU calibration. Original13assets unchanged.')
+    if previous is not None:
+        row['previous_failed_attempt'] = dict(result_commit='99c26a585',
+            source_commit=previous['source_commit'], stage=previous['stage'],
+            original_observation_failed=True, physical_process_closed=True,
+            GPU_process_launched=False, failure_analysis=previous['failure_analysis'])
     ROOT.mkdir(mode=0o700); write(ROOT / 'runtime-inputs.json', files)
     row['runtime_manifest'] = dict(path=str(ROOT / 'runtime-inputs.json'), sha256=digest(ROOT / 'runtime-inputs.json'), files=len(files))
     save(row); print('Prepared;commit the frozen compatibility plan before execution.', flush=True)
@@ -238,6 +250,12 @@ def run(row):
                             set(actual)-{k.encode() for k in env} <= {b'PWD',b'OLDPWD',b'SHLVL',b'_'}, 'actual native environment differs')
                         env_seen = True
                     except (FileNotFoundError, ProcessLookupError): mapped = set()
+                    except PermissionError:
+                        # /proc can deny mm access while a short child exits.
+                        # Require positive pidfd exit evidence; never reap here
+                        # or waive access denial for a still-live GPU process.
+                        require(io.exit_watch.poll(20), 'live native /proc access denied')
+                        mapped = set()
                     require(mapped <= set(allowed), 'unplanned executable map: '+repr(mapped-set(allowed)))
                     case_seen.update(mapped)
                     if time.monotonic() >= next_size:
