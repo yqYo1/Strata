@@ -803,6 +803,32 @@
     }
   },
   "historical_regression_audit": {
+    "supervision_input_admission_v4": {
+      "source_commit": "bd4ce2e4b71a10d840eef48f671addda0de1226a",
+      "sources": {
+        "tools/sycl/supervision_model.py": "5b36c64b360d6ab3e01d6a535e293c4df4685a5579ecd395f843cbcd9913ca75",
+        "tools/test_sycl_supervision_model.py": "95fb2dae4c60ed4887bff20220e5cdb421c0c54b61f81fe6032389bf65757b20",
+        "tools/sycl/benchmark_runtime.py": "32b4019cd91d13c9142655873e0dcb3d501f3679a237b7bfa420a78b18e61b54"
+      },
+      "command": [
+        "flock",
+        "-n",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/owned-v0141-measurement.lock",
+        "timeout",
+        "45s",
+        "/usr/bin/python3.12",
+        "-I",
+        "-S",
+        "-B",
+        "tools/test_sycl_supervision_model.py"
+      ],
+      "passed": true,
+      "exit_code": 0,
+      "cases": 9,
+      "ownership_closed": true,
+      "GPU_executed": false,
+      "scope": "Previous8 profile/runtime mutation and owned-live-child controls plus actual isolated CLI import smoke. Wrong script/interpreter receipt/environment/maps reject;owned child reaches EOF,reaps and leaves an empty session. Private temporary fixtures retired after tests. No model or performance evidence."
+    },
     "benchmark_python_bootstrap_v1": {
       "source_commit": "e045b5b8b01f91566d65f2bc2e18254ec9c8a8f3",
       "command": [
@@ -820,33 +846,13 @@
       "host_root_created": false,
       "definition_probes_launched": 0,
       "GPU_executed": false,
-      "decision": "Preserve startup failure;explicitly add the helper directory for isolated CLI imports and add a fresh isolated entrypoint smoke control before discovery. Existing eight controls remain passed only for their source/scope."
-    },
-    "supervision_input_admission_v3": {
-      "source_commit": "e045b5b8b01f91566d65f2bc2e18254ec9c8a8f3",
-      "sources": {
-        "tools/sycl/supervision_model.py": "15a9c7e1232233a03b9114782c78ab4c7e6e839baae5c8b278634a1082b6fb6d",
-        "tools/test_sycl_supervision_model.py": "a1d0c6842d4f9e7b6395942b7e206fbeab4197b3adf99891afe704d7e4804d29",
-        "tools/sycl/benchmark_runtime.py": "861bcfb8ccbfc1d8bc4f785e08b46cb17c7c8253be50bac8e820135d3e2876b6"
-      },
-      "command": [
-        "flock",
-        "-n",
-        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/owned-v0141-measurement.lock",
-        "timeout",
-        "45s",
-        "/usr/bin/python3.12",
-        "-I",
-        "-S",
-        "-B",
-        "tools/test_sycl_supervision_model.py"
-      ],
-      "passed": true,
-      "exit_code": 0,
-      "cases": 8,
-      "ownership_closed": true,
-      "GPU_executed": false,
-      "scope": "Five profile-admission controls plus runtime-file rewrite,new import-directory and owned live Python child checks. Wrong script/interpreter receipt/environment/maps all reject;child reaches EOF,reaps and leaves an empty owned session. Fixtures are private temporary source-recoverable files,retired after test. No model or performance evidence."
+      "decision": "Preserve startup failure;explicitly add the helper directory for isolated CLI imports and add a fresh isolated entrypoint smoke control before discovery. Existing eight controls remain passed only for their source/scope.",
+      "component_controls_reference": {
+        "commit": "892452249",
+        "path": "bench/results/2026-10-15-pr6-recovery-audit/prefill-runtime-comparison-current.json",
+        "key": "historical_regression_audit.supervision_input_admission_v3",
+        "reason": "Superseded eight-case receipt retired to reachable Git;original pass is preserved and the nine-case suite is the current consumer."
+      }
     },
     "supervision_model_control_v2": {
       "stage": "closed-unlaunched",
