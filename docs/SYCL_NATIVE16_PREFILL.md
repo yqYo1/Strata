@@ -741,25 +741,36 @@ alone explain the1003→975same-binary decline,because both of those cohorts
 already used parameter validation. Official-SDK whole-model qualification
 also remains open.
 
-The frozen matched validation-cost comparison uses six independent original6e40
+The matched validation-cost comparison closes all six independent original6e40
 processes,on/off/off/on/on/off,with four117489-token requests each. Both arms
 preload the same held-reference control and use empty environment layers;only
 config-enabled parameter validation differs. First use stays separate from each
-subsequent-three median. No inference/default adoption follows from this
-observer comparison. Four native-wrapper/parser host tests pass. The first
-on/off pair closes normally with no fresh fault. Initial speeds are906.0413
-and878.4769tok/s;subsequent-three medians are974.2977and973.7050tok/s.
-The off/on ratio is0.9993917:removing validation does not restore old speed in
-this pair. Both sets of15model hashes and four request boundaries match.
-The next independent off process also closes normally,with initial906.4264
-and subsequent median974.9170tok/s. All request/model/source/closure/fault
-checks pass. Three frozen processes remain;this is no completed comparison,
-mechanism-speed qualification or historical-cause result.
+subsequent-three median. The three adjacent pairs give:
+
+| Pair | Validation on,tok/s | Validation off,tok/s | Off/on |
+| --- | ---: | ---: | ---: |
+| 0/1 | 974.2977 | 973.7050 | 0.99939169 |
+| 3/2 | 974.3518 | 974.9170 | 1.00058003 |
+| 4/5 | 971.6122 | 973.7276 | 1.00217721 |
+
+The ratio geometric mean is1.00071566(+0.0716%). It fails the frozen mechanism
+screen(all three ratios>1 and geomean>1.01);removing validation does not restore
+historical1003or fastest1006tok/s in this cohort. All24 request hashes/counts,
+15model assets per process,actual provider/route checks and normal ownership
+closure pass with no fresh fault. Independent replay matches24 native rounded
+millisecond logs to the benchmark clocks within0.5ms and recomputes every rate,
+median and pair ratio. Four native-wrapper/parser host tests also passed before
+launch. This is an observer-cost result,not inference/default adoption,full
+context or sustained decode qualification. Both historical same-binary cohorts
+already used validation,so it cannot alone explain their1003→975decline.
+See `historical_regression_audit.validation_cost_control_v1` in the
+[runtime comparison](../bench/results/2026-10-15-pr6-recovery-audit/prefill-runtime-comparison-current.json).
+
 CPU effective clock remains unknown. Independently authored
-`bench/sycl/amd_clock_access.c` is only a proposed next host capability pilot;
-it has not been built or executed. Its counter ratios need separate access,
-progression,read-skew,affinity and overhead checks;P0/MHz and SMT scope remain
-unqualified. No new clock sampling is added to the active clean model cohort.
+`bench/sycl/amd_clock_access.c` and `tools/sycl/amd_clock_access.py` are the next
+host-only capability pilot;they have not been built or executed. Its counter
+ratios need access,progression,read-skew,affinity and overhead checks;P0/MHz and
+SMT scope remain unqualified. No clock sampling was added to the clean cohort.
 
 The fresh sourcee33d16fc3 attribution fixture closes ten official-SDK processes
 with240eligible/correct timing samples and120complete CPU/GPU profiles.

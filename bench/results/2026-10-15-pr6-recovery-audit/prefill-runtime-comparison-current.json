@@ -804,7 +804,7 @@
   },
   "historical_regression_audit": {
     "validation_cost_control_v1": {
-      "stage": "running",
+      "stage": "closed",
       "source_commit": "75f88a844a6c212811c7457eb9b0202d62c29480",
       "qualification": {
         "helper": {
@@ -1373,6 +1373,94 @@
             "devcoredump": false
           },
           "passed": true
+        },
+        {
+          "complete": true,
+          "host_probe_accepted": true,
+          "verified_request_boundaries": 4,
+          "index": 5,
+          "mode": "off",
+          "requests": [
+            {
+              "run": 0,
+              "request_sha256": "26f08fd8364b5c4bce718617fe2aed42761d0a794e068b00532694adef78b3be",
+              "actual_prompt_tokens": 117489,
+              "actual_read_tokens": 117489,
+              "actual_reused_tokens": 0,
+              "generated_tokens": 24,
+              "prompt_ms": 129633.4,
+              "thinking_requested": true
+            },
+            {
+              "run": 1,
+              "request_sha256": "fd3ad8ad7033776ad749b22e62e910e5f47e3f7664705f48d9f1fe7349b65515",
+              "actual_prompt_tokens": 117489,
+              "actual_read_tokens": 117489,
+              "actual_reused_tokens": 0,
+              "generated_tokens": 24,
+              "prompt_ms": 120659.0,
+              "thinking_requested": true
+            },
+            {
+              "run": 2,
+              "request_sha256": "daabbef4775c3fbdbfd832339d80a5ae2f91025b66df79b92fb8f6905f33b041",
+              "actual_prompt_tokens": 117489,
+              "actual_read_tokens": 117489,
+              "actual_reused_tokens": 0,
+              "generated_tokens": 24,
+              "prompt_ms": 120790.3,
+              "thinking_requested": true
+            },
+            {
+              "run": 3,
+              "request_sha256": "8669c9ebe2747b1fc2d7c4806eeb66025c919981d81c51cfdbd64ba3ec3cc2b1",
+              "actual_prompt_tokens": 117489,
+              "actual_read_tokens": 117489,
+              "actual_reused_tokens": 0,
+              "generated_tokens": 24,
+              "prompt_ms": 120416.7,
+              "thinking_requested": true
+            }
+          ],
+          "tok_s": [
+            906.3173533981212,
+            973.7276125278678,
+            972.6691630039829,
+            975.6869271454873
+          ],
+          "first_use_tok_s": 906.3173533981212,
+          "subsequent_median": 973.7276125278678,
+          "subsequent_range": [
+            972.6691630039829,
+            975.6869271454873
+          ],
+          "native_identity": {
+            "pid": 2276990,
+            "start_ticks": 138243798,
+            "sid": 2276960
+          },
+          "validation": {
+            "pid": 2276990,
+            "mode": "off",
+            "loader": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_loader.so.0.12.0",
+            "preinit": 37,
+            "enable_calls": 0,
+            "postinit_probe": "skipped",
+            "retained_reference_until_exit": true,
+            "ordinary_teardown_qualified": false
+          },
+          "ownership_closed": true,
+          "fresh_faults": [],
+          "boot_unchanged": true,
+          "driver_after": {
+            "pci": "/sys/bus/pci/devices/0000:05:00.0",
+            "driver": "xe",
+            "vendor": "0x8086",
+            "device": "0xe20c",
+            "kernel": "7.0.0-38-generic",
+            "devcoredump": false
+          },
+          "passed": true
         }
       ],
       "plan": {
@@ -1402,13 +1490,24 @@
         "total_cap": 134217728
       },
       "whole_bytes": 805306368,
-      "complete": false,
-      "passed": false,
+      "complete": true,
+      "passed": true,
       "active": false,
       "ownership_closed": true,
       "retention": "Keep individual24 prompt samples,source/helper/runtime/config/environment and decision. Retire normal logs/JIT/process receipts and one-use controllers after closure and verified replay. Original13 assets unchanged;helper retained only through this comparison.",
       "preparation_source_commit": "23eab7f6034c9e1255ce017dd2bce964f1d07385",
       "plan_sealing": "Before first plan commit or native launch:omit repeated per-process configuration/environment from compact Git result. Generated inputs,qualification,workload and all original hashes unchanged.",
+      "analysis": {
+        "off_over_on_pair_ratios": [
+          0.9993916881730588,
+          1.0005800261883069,
+          1.0021772101542363
+        ],
+        "geometric_mean": 1.0007156574877925,
+        "mechanism_speed_screen_passed": false,
+        "inference_adoption": false,
+        "historical_same_policy_cause_established": false
+      },
       "plans": [
         {
           "index": 0,
