@@ -10097,11 +10097,16 @@
       "reviewer": "/root/review_moe_window_capacity_20261027",
       "model": "gpt-6-luna",
       "effort": "max",
-      "state": "reviewing_completed_report",
+      "state": "accepted_short_digest_only",
       "output": ".cache/strata-research/20261026/moe-window-capacity-retrieval-review.json",
       "question": "Identify existing coverage and genuinely missing source/owner/admission constraints for expanding dedicated-prefill MoE windows above81920 while keeping chunk8192,decode1256 and physical262144 correctness. No assumption of fit/speed or implementation adoption.",
       "source_basis": "b641dcd58 current source;three policy headers byte-match selected6e40. Two current .inc files differ from measured6e40;do not relabel original ELF.",
-      "execution": "Report-only review;Main model timing stays frozen. Any new Orca audit needs explicit novelty/prerequisite eligibility;no new general banking survey."
+      "execution": "Report-only review;Main model timing stays frozen. Any new Orca audit needs explicit novelty/prerequisite eligibility;no new general banking survey.",
+      "bytes": 4861,
+      "sha256": "829b607bacc1566e7d4da4d0f96be82adcc1cf674c35c6a86716e1c638ffc397",
+      "operational_digest": "Current source independently caps accumulation at81920 rows. At117488/131072,16MiB host route reserve and11-entry jobs/expert histogram are insufficient;operator chunk8192 can remain fixed. Larger windows may reduce dequant/job setup;current full-cache path uploads full weights once/layer,so old38.67GB requested transfers do not prove window merging reduces H2D. Current .inc differs from measured6e40. Actual owner/admission/benefit unresolved;no implementation adoption.",
+      "next_local_action": "After frozen validation cohort,source-pinned owner/admission trace against full-context-current.json owner_trace_obligations;preserve decode1256/chunk8192/physical262144.",
+      "new_orca_scope_eligible": false
     }
   },
   "explicit_layout_physical_full_entrypoint_audit_20261024": {
@@ -12062,5 +12067,50 @@
       "matched_empty_layers_plan_accepted": true,
       "digest": "Report overstates C flaw:both modes already accept absent/empty UR_ENABLE_LAYERS,so same-helper config-only clean A/B needs no rebuild. Host five cases are not speed evidence. Bound on/off valid submission plus model graph-path checks before model timing. Keep retained loader ref and safety settings in both. No historical-cause claim."
     }
+  },
+  "long_prefill_skewed_expert_job_execution_scheduling_20261027": {
+    "id": "long_prefill_skewed_expert_job_execution_scheduling",
+    "classification": "knowledge_collection",
+    "schedulable_now": true,
+    "availability_condition": "Dispatch after this review closes and Main confirms an available Orca Luna slot; the capacity check remains a launch-time requirement.",
+    "question": "For the supplied long-prefill distribution of already-formed expert row jobs, compare GPU execution mappings that balance work across jobs: independent/static expert tiles, grouped or descriptor-driven tile assignment, and persistent tile queues or equivalent dynamic work assignment. Explain when splitting large jobs or co-scheduling small jobs reduces tail underfill, and when scheduling/descriptor/atomic costs, padding, synchronization, or ownership constraints erase that benefit. Use primary Intel/SYCL and provenance- and license-checked transferable non-LLM GPU/HPC/graphics/ASIC sources. Treat the supplied counts as an applicability anchor only; do not infer the local bottleneck, predict speed, propose code, or claim adoption.",
+    "prior_overlap_and_distinction": [
+      "gpu_moe_routing_collection_scope covers route metadata construction, not execution-tile assignment after jobs exist.",
+      "mtp_s2_expert_gpu_compute_methods_20261022 covers GEMV/tiny-GEMM/grouped/block-sparse choices for at most a few MTP rows, not this long-prefill skew.",
+      "moe_indexed_gemm_a_scope concerns A gathers; Down row-cache audits cover fixed-kernel ownership/reuse; cpu_moe_decode_scheduling_collection_20261022 covers Zen3 CPU decode. Out-of-core scheduling covers external-memory pipelines.",
+      "Host submit/replay, copy overlap, cache, lifetime, native16 traffic, quantization, and generic tile/register surveys are already indexed; exclude them."
+    ],
+    "eligibility_evidence": "The finite question is answerable from external primary methods and the workload-shape anchor supplied by Main; no local runtime measurements, counters, build, or source changes are prerequisites. Job counts alone do not prove scheduling inefficiency.",
+    "future_dispatch_prerequisites": [
+      "Use Orca gpt-6-luna, report-only permissions, a writable report path, and confirm capacity/startup access before launch.",
+      "Pass current AGENTS.md rules, revision 10794f4fb, the index, supplied job-size facts, and overlap list.",
+      "Check provenance and license for primary/transferable sources; exclude XeStrata and derivatives."
+    ],
+    "future_consumer": "A later Main-owned comparison plan if source-pinned production attribution shows expert-job execution or tail imbalance is a material long-prefill cost and Main selects a specific scheduling candidate.",
+    "report_path": ".cache/strata-research/20261027/long-prefill-skewed-expert-job-scheduling.md",
+    "report_budget_bytes": 16384,
+    "retrieval_tags": [
+      "long-prefill expert job scheduling",
+      "skewed routed row counts",
+      "GPU persistent tile queue",
+      "grouped GEMM work assignment",
+      "tail underfill and row splitting",
+      "descriptor and atomic scheduling overhead",
+      "expert-major ownership"
+    ],
+    "stop_conditions": [
+      "Stop at 16 KiB; compare alternatives, applicability, counterevidence, and evidence limits.",
+      "If sources add no distinct execution-scheduling guidance, report no reusable gap and stop; do not broaden the survey.",
+      "No local process inspection, build/test/profiling, product/index edits, or performance/adoption claims.",
+      "Main keeps the body unread until the named attribution and candidate exist; otherwise retain conditionally and reassess then."
+    ],
+    "review_point": "At the first source-pinned production attribution and candidate-selection boundary for the long-prefill GU/Down path; retire the report if it adds no distinct reusable method or no candidate is selected.",
+    "state": "eligible_pending_Orca_launch",
+    "scope_review": {
+      "path": ".cache/strata-research/20261026/collection-scope-gap-review.json",
+      "bytes": 5801,
+      "sha256": "d2f15054105be0a4c4d83e370c76d57798f2a18ddda07a10203e6f24338610cb"
+    },
+    "main_reads_body_on_arrival": false
   }
 }
