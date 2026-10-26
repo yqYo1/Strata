@@ -410,6 +410,39 @@ fixture qualifies a prefill restoration or sustained decode. Compact samples,
 source boundaries and limitations are in `attribution_after_observer_cost` and
 `observer_cost` in the resource result.
 
+The bounded transfer calibration freezes its build/device plans at98482401a/
+bfb62c456. Native source isd7737c53e,controllerd851587bd;679 actual compiled
+inputs are covered. One traced smoke and three parameter-validated processes
+close normally,with bytewise inputs/outputs/guards,provider and fault checks
+passing. Each arm has a separate first-use batch and five subsequent batches
+per process. These are synthetic read-only mapped/host-USM sources,64expert-sized
+segments and one in-order production Runtime queue,not a model comparison.
+
+| Payload bytes | Ordinary host,three process medians GB/s | Host USM | Host staging ring |
+| ---: | --- | --- | --- |
+| 1971200 | 3.4433 / 3.4874 / 3.3220 | 6.1515 / 6.2100 / 6.2175 | 6.3056 / 6.2931 / 6.2931 |
+| 2662400 | 3.7559 / 1.9710 / 3.9206 | 6.2109 / 6.3008 / 6.3040 | 6.3344 / 6.3553 / 6.3383 |
+
+These whole-wall requested-payload rates include staging,enqueue and completion.
+All144transfer batches pass the10ms wall/device-span floors;slow samples remain
+in the compact result. Device-copy service usually approaches6.1–6.4GB/s,but
+ordinary-host handling loses additional wall time and sometimes has slow device
+service too. This identifies a local transfer-path loss,not hardware-wide bus
+saturation or the historical9.1% cause. The ring does not demonstrate a gain
+over directHostUSM;its purpose is bounded staging of a much larger ordinary-host
+model. D2D whole-wall process medians span117.9–160.3GB/s requested payload;
+that is not measured GDDR traffic or an arithmetic ceiling.
+
+All36queued4-byte status batches are ineligible:producer service is about0.241ms,
+below the prospectively required1ms. Idle status eligibility alone has no wall
+floor/timer-overhead gate for fine latency claims. Preserve this limitation;
+there is no qualified status speedup or model advancement. A separately frozen
+longer-producer/timer-qualified plan is needed for quantitative status attribution.
+The next proposed optimization is a small,event-owned host-USM staging ring in
+long-prefill expert upload,with actual production dependency-path/numerical gates
+before model evaluation. Decode implementation,configuration and1256placement
+remain fixed. The clean117K speed reference remains911.7371tok/s.
+
 The earlier[NEO-only comparison](../bench/results/2026-10-15-pr6-recovery-audit/prefill-runtime-comparison-current.json)
 uses exact cached packages in private directories. Both arms explicitly select
 the driver before exec and verify its actual mapping. Other dependencies,the
