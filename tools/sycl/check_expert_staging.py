@@ -22,6 +22,10 @@ import build_fused_profile as n
 r, P, B, RESULT = n.r, n.P, n.B, n.RESULT
 ROOT = B / 'prefill-expert-staging-v3'
 KEY = 'prefill_upload_staging_v3'
+OFFICIAL = Path('/opt/intel/oneapi/compiler/2026.2')
+UMF = Path('/opt/intel/oneapi/umf/1.2')
+PACKAGES = ['intel-oneapi-dpcpp-cpp-2026.2', 'intel-oneapi-compiler-dpcpp-cpp-runtime-2026.2',
+            'intel-oneapi-umf-1.2']
 PREFIXES = ['include', 'src', 'tools/sycl', 'tests/sycl/expert_bank.cpp', 'cmake', 'CMakeLists.txt']
 require, digest, write = n.require, n.digest, n.write
 
@@ -36,6 +40,26 @@ def compact(row):
     return out
 
 
+def official_sdk_snapshot():
+    # A NEW snapshot, never refreshed to admit a changed active build. Includes
+    # vendor executables/config/headers/bitcode/libraries and host headers.
+    roots = [OFFICIAL, UMF, Path('/usr/include')]
+    roots += [p for p in Path('/usr/lib/gcc').glob('*/*/include*') if p.is_dir()]
+    paths = {p.resolve() for root in roots for p in root.rglob('*') if p.is_file()}
+    return {str(p): digest(p) for p in sorted(paths)}
+
+
+def sdk_admit(row):
+    manifest = row['sdk']
+    require(digest(manifest['path']) == manifest['sha256'], 'official SDK snapshot differs')
+    files = json.loads(Path(manifest['path']).read_text())
+    require(len(files) == manifest['files'] and all(digest(p) == h for p, h in files.items()),
+        'pinned official SDK/host input changed')
+    require(subprocess.check_output(['dpkg-query', '-W', '-f=${Package} ${Version}\n', *PACKAGES],
+        text=True, timeout=15).splitlines() == manifest['packages'], 'official package versions changed')
+    return files
+
+
 def prepare():
     c = r.validation.committed(RESULT)
     require(scope(c).get('new_build_toolchain', {}).get('independent_build_admitted') is True,
@@ -43,14 +67,39 @@ def prepare():
     require(not ROOT.exists() and KEY not in scope(c), 'fresh staging gate only; inspect existing handle before retry')
     rt = r.validation.committed(r.RESULT); r.current(rt)
     baseline = r.selected.baseline()[1]
-    compiler = json.loads((n.ROOT / 'record.json').read_text())['tools']['sycl']
-    require(digest(compiler['path']) == compiler['sha256'], 'compiler mismatch')
+    candidate = scope(c)['new_build_toolchain']['official_candidate']
+    compiler = dict(path=str(OFFICIAL / 'bin/icpx'), sha256=candidate['compiler_sha256'])
+    require(digest(compiler['path']) == compiler['sha256'] and candidate['compiler'] == compiler['path'],
+        'independent compiler mismatch')
+    verified = subprocess.run(['dpkg', '--verify', *PACKAGES], capture_output=True, text=True, timeout=120)
+    require(verified.returncode == 0 and not verified.stdout and not verified.stderr,
+        'official package files changed')
+    sdk = official_sdk_snapshot()
     project = n.build.pin(P, PREFIXES)
     ROOT.mkdir(mode=0o700)
     for name in ('cache', 'tmp'):
         (ROOT / name).mkdir()
+    write(ROOT / 'sdk-inputs.json', sdk)
+    sdk_meta = dict(path=str(ROOT / 'sdk-inputs.json'), sha256=digest(ROOT / 'sdk-inputs.json'),
+        files=len(sdk), packages=subprocess.check_output(['dpkg-query', '-W',
+        '-f=${Package} ${Version}\n', *PACKAGES], text=True, timeout=15).splitlines(),
+        origin='Installed Intel apt packages;dpkg verification silent. No XeStrata SDK source/artifact reuse.')
     settings = r.validation.committed(r.SETTINGS)
     env = dict(settings['environment'], TMPDIR=str(ROOT / 'tmp'), XDG_CACHE_HOME=str(ROOT / 'cache'))
+    old_lib = Path(next(p for p in rt['runtime_files'] if '/libsycl.so.' in p)).parent
+    env['LD_LIBRARY_PATH'] = ':'.join([str(OFFICIAL / 'lib'), str(UMF / 'lib'),
+        *(v for v in env['LD_LIBRARY_PATH'].split(':') if v != str(old_lib))])
+    env['UR_ADAPTERS_FORCE_LOAD'] = str(OFFICIAL / 'lib/libur_adapter_level_zero_v2.so.0.12.0')
+    require(b'UR_L0_V2_FORCE_DISABLE_COPY_OFFLOAD' in Path(env['UR_ADAPTERS_FORCE_LOAD']).read_bytes(),
+        'official adapter lacks required copy-offload avoidance key')
+    runtime_files = {p: h for p, h in rt['runtime_files'].items() if not Path(p).is_relative_to(old_lib)}
+    for p, h in sdk.items():
+        path = Path(p)
+        if (path.is_relative_to(OFFICIAL) or path.is_relative_to(UMF)) and '.so' in path.name:
+            with path.open('rb') as f: elf = f.read(4) == b'\x7fELF'
+            if elf: runtime_files[p] = h
+    preload = copy.deepcopy(rt['preload'])
+    preload['loader'] = str(OFFICIAL / 'lib/libur_loader.so.0.12.0')
     sources = ['tests/sycl/expert_bank.cpp', 'src/sycl/runtime.cpp', 'src/sycl/compat.cpp',
                'src/sycl/command_profile.cpp', 'src/core/expert_cache.cpp']
     commands = [[compiler['path'], '-std=c++20', '-O3', '-fsycl', '-fsycl-id-queries-range=size_t',
@@ -59,19 +108,22 @@ def prepare():
         '-o', str(ROOT / (str(i) + '.o'))] for i, source in enumerate(sources)]
     commands.append([compiler['path'], '-fsycl', '-fsycl-id-queries-range=size_t',
         *(str(ROOT / (str(i) + '.o')) for i in range(len(sources))), '-o', str(ROOT / 'sycl_expert_staging')])
-    row = dict(stage='prepared-build', source_commit=project['revision'], project=project, sdk=n.sdk_inputs(),
+    row = dict(stage='prepared-build', source_commit=project['revision'], project=project, sdk=sdk_meta,
         compiler=compiler, sources=sources, build_commands=commands, build_environment=env,
-        runtime_sha256=digest(r.RESULT), runtime_files=rt['runtime_files'], preload=rt['preload'],
+        runtime_sha256=digest(r.RESULT), runtime_files=runtime_files, preload=preload,
+        runtime_scope='Proposed official SDK runtime for this NEW bounded component only;old successful '
+            'runtime/engine reference is immutable. No legacy/model/GEMM/runtime qualification inherited.',
         boot=rt['boot'], driver=rt['driver'], selected_original=baseline,
         active=False, ownership_closed=True, passed=False, complete=False, GPU_executed=False,
         model_executed=False, model_adoption_qualified=False, native_engine_built=False,
         build_limits=dict(wall=600, cpu=1800, rss_cap=8 << 30, text_cap=8 << 20, file_cap=128 << 20, total_cap=512 << 20),
         device_limits=dict(wall=600, cpu=1200, rss_cap=6 << 30, text_cap=8 << 20, file_cap=16 << 20, total_cap=128 << 20),
-        device_cases=[['baseline-smoke', '--packed-custom-smoke'], ['staging-smoke', '--staging-custom-smoke'],
+        device_cases=[['host-canary'], ['baseline-smoke', '--packed-custom-smoke'], ['staging-smoke', '--staging-custom-smoke'],
                       ['staging-validate', '--staging-custom-validate'],
                       ['bench0', '--staging-custom-bench', '0'], ['bench1', '--staging-custom-bench', '1'],
                       ['bench2', '--staging-custom-bench', '2']],
-        plan='V3:dedicated make_queue(true),not Runtime.compute;two traced small smoke cases with custom-queue '
+        plan='V3:official Intel2026.2 compiler/SYCL/UR plus UMF1.2;before-main loader canary precedes any GPU '
+            'case;dedicated make_queue(true),not Runtime.compute;two traced small smoke cases with custom-queue '
             'destructor-tail check,then parameter-validated staged512-expert/mixed-stride/unwind validation;'
             'three independent processes,2payloads1.9712/2.6624MB,384slots,512experts,two scans,'
             'separate cold timing-marker setup and five subsequent empty controls;one bank first-use and nine rotated subsequent pairs. Actual production private-bank entrypoint both arms;'
@@ -104,18 +156,19 @@ def prepare():
 
 def admit(row):
     require(n.build.pin(P, PREFIXES)['source_sha256'] == row['project']['source_sha256'], 'source differs from frozen build')
-    require(n.sdk_inputs() == row['sdk'] and digest(row['compiler']['path']) == row['compiler']['sha256'], 'SDK/compiler differs')
+    sdk_admit(row)
+    require(digest(row['compiler']['path']) == row['compiler']['sha256'], 'official compiler differs')
     require(digest(r.RESULT) == row['runtime_sha256'], 'runtime qualification differs')
     rt = r.validation.committed(r.RESULT); r.current(rt)
     require(r.selected.baseline()[1] == row['selected_original'], 'selected fallback differs')
+    require(all(digest(p) == h for p, h in row['runtime_files'].items()), 'proposed runtime differs')
     require(r.guards.driver_guard() == row['driver'] and
         Path('/proc/sys/kernel/random/boot_id').read_text().strip() == row['boot'], 'boot/driver differs')
 
 
 def dependencies(row):
     expected = {str(P / k): v for k, v in row['project']['source_sha256'].items()}
-    expected.update({str(Path(v['path']).resolve()): n.SYSTEM_HEADER_UPDATES.get(v['path'], (None, v['sha256']))[1]
-                    for v in json.loads(n.lineage.SDK.read_text())})
+    expected.update(sdk_admit(row))
     found = set()
     for i in range(len(row['sources'])):
         text = (ROOT / (str(i) + '.d')).read_text().replace('\\\n', ' ')
@@ -173,7 +226,8 @@ def execute(mode):
                 try: maps = Path('/proc', str(io.proc.pid), 'maps').read_text()
                 except (FileNotFoundError, ProcessLookupError): maps = ''
                 for p in r.executable_mappings(maps):
-                    require(p in row['runtime_files'] or p == row['binary']['path'], 'unplanned executable map: ' + p)
+                    require(p in row['runtime_files'] or p in
+                        (row['binary']['path'], row['preload']['canary']['path']), 'unplanned executable map: ' + p)
                     if p in row['runtime_files']: seen.add(p)
             if select.select([io.proc.stdout], [], [], .01)[0]: io.read(); io.pending.clear()
         io.exit(1); entry['runtime_seen'] = sorted(seen)
@@ -204,15 +258,25 @@ def execute(mode):
                 if label.endswith('smoke'):
                     env.update(UR_ENABLE_LAYERS='UR_LAYER_TRACING,UR_LAYER_PARAMETER_VALIDATION',
                         UR_LOG_TRACING='level:info;flush:info;output:file,' + str(trace))
-                row['GPU_executed'] = True; persist()
-                e, out, err = owner.run(label, [row['binary']['path'], *args], env, P,
+                if label != 'host-canary': row['GPU_executed'] = True
+                persist()
+                executable = row['preload']['canary']['path'] if label == 'host-canary' else row['binary']['path']
+                e, out, err = owner.run(label, [executable, *args], env, P,
                     interaction=monitor, **row['device_limits'])
                 require(r.supervision.closed(e) and e['exit_code'] == 0, 'device case failed: ' + err.read_text(errors='replace')[-2500:])
                 require(r.validation.preload_evidence(err.read_text(), e['pid'])['loader'] == row['preload']['loader'], 'provider mismatch')
                 neo = next(p for p in row['runtime_files'] if 'libze_intel_gpu' in p)
-                require(neo in e['runtime_seen'] and (not warning.exists() or warning.stat().st_size == 0), 'runtime/validation gate failed')
-                text = out.read_text(); require(('expert_bank_staging_benchmark PASS' if label.startswith('bench')
-                    else 'expert_bank_fixture PASS') in text, 'success marker absent')
+                require(not warning.exists() or warning.stat().st_size == 0, 'parameter validation gate failed')
+                text = out.read_text()
+                if label == 'host-canary':
+                    require(json.loads(text) == dict(pid=e['pid'], initialized=0, checked=46, expected=46,
+                        version=(1 << 32) - 1, closed=0), 'official loader host canary failed')
+                else:
+                    require(neo in e['runtime_seen'] and {str(OFFICIAL / 'lib/libsycl.so.9.0.0'),
+                        str(OFFICIAL / 'lib/libur_adapter_level_zero_v2.so.0.12.0')} <= set(e['runtime_seen']),
+                        'actual official SYCL/adapter/NEO provider absent')
+                    require(('expert_bank_staging_benchmark PASS' if label.startswith('bench')
+                        else 'expert_bank_fixture PASS') in text, 'success marker absent')
                 if label.endswith('smoke'): require(trace.exists() and 'urEnqueue' in trace.read_text(), 'smoke trace absent')
                 if label == 'staging-smoke':
                     require('expert_staging_custom_queue destructor_tail_complete=PASS host_copy_owners_live=PASS'

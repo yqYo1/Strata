@@ -508,17 +508,20 @@ of three processes. Bank first-use remains separately recorded. All original
 wall/queue/timer/5%control and5%gain/every-process-ratio gates remain required.
 This changes component instrumentation/repetition,not the matched model
 benchmark contract. V3 is unrun;the component remains defaultoff. A subsequent SDK-origin check
-holds new builds as described below.
+holds reuse of the old SDK as described below.
 
 The previous description of the compiler as an independent Intel LLVM SDK is
 unsupported. Its build cache points to Intel/LLVM source504366f4 with17current
 modified paths;Clang driver and SYCL implementation files explicitly carry
 MistVVK/XeStrata modification notices. Artifact hashes do not recover the exact
 build-time dirty snapshot. Do not infer that these changes caused the historical
-speed loss,or silently discard earlier numerical/fault results. New builds are
-held until an independently sourced compiler/runtime is pinned and qualified.
+speed loss,or silently discard earlier numerical/fault results. Reuse of that SDK for new builds is held. A new,prospective bounded
+qualification uses the independently packaged compiler/runtime below.
 Installed Intel oneAPI2026.2.0-863 compiler/runtime packages verify unchanged
-and are candidates;no new-package GPU/model check has run. Preserve the
+and are candidates;UMF1.2 is its declared loader dependency. A fresh V3
+build pins all vendor files and host headers,and replaces only child library
+paths/forced adapter before exec. Its host loader canary precedes traced tiny
+GPU cases;the safety values stay fixed. No new-package GPU/model check has run. Preserve the
 selected original engine/fixtures and the original successful runtime record
 as references while qualifying the new runtime separately. No fork SDK patch
 is imported into this project.
