@@ -12428,5 +12428,77 @@
         "supervision_model_source_contract_v4_20261027"
       ]
     }
+  },
+  "prefill_split_fp32_bank_decision_20261027": {
+    "schedulable_now": true,
+    "status": "planned",
+    "source_commit": "a7981b8981515a3010e1624a31e52f9d021f10b6",
+    "worker_model": "gpt-6-luna",
+    "review_model": "native Codex gpt-6-luna max",
+    "report_budget_bytes": 18432,
+    "classification": "decision support",
+    "question": "Audit the proposed FP32 split accumulator for 117488 rows: 65536 in the existing region and 51952 in an added buffer, with 128 prefill expert slots and unchanged 1256-slot decode. Trace every planner, route, histogram, scalar and fused consumer; allocation, queue and cancellation lifetimes; and full-context fallback. Distinguish capacity, logical work, critical-path service and hardware limits. Propose finite acceptance/rejection evidence without implementation.",
+    "prerequisite_evidence": [
+      "913c1ca3d closes all 24 model requests; supervisor gain 0.1414% fails its prospective 1% screen.",
+      "Maintained prefill decisions contain current logged capacity and guarded split-bank arithmetic; no implementation or new allocation is qualified."
+    ],
+    "source_pins": {
+      "include/strata/prefill/moe_accum_plan.hpp": "1fa1618eaf96a6ec50bc948f7c6750fc33f463c702cfbf36cd57e928597ca1aa",
+      "include/strata/prefill/expert_bank_plan.hpp": "7b3874a8eabd78fa48dac1902ce287f0954a23c98333de9424cd50ea80c7f156",
+      "include/strata/prefill/moe_window_routes.hpp": "ba707fa42eb2c5518f659faac1a44b0c591f196e2408c272ec27c63840533019",
+      "src/prefill/moe_window.inc": "ea430e09a9ad64d295efd30e8820476e676232688d7e8af7606fe456c69ca6c7",
+      "src/prefill/layer_major.inc": "9c593fd221e9f878e32a7cf5d8be921e85ad631c7004fd3d3bdc831f9f3f3fb4",
+      "src/prefill/prefill.cpp": "2770d5886eb50911c7218b501a42ff0b130d30377e310b11312641daf20e0ebe",
+      "src/prefill/sycl/native16.cpp": "c88f2d7ae06c63dbfb04b0bb777be03284a402f90a7b714eddecd9ede1b72cc4",
+      "src/prefill/sycl/gemm16.cpp": "577ef59beb7ad00b76025bb4d13c0b41663e6cf5c003711e2bf4cb22b6fdc0cc",
+      "src/prefill/sycl/vllm_xe2/native16.cpp": "2a6b9b4532f9be50a2bb697cd120fc31f84d2c200fa5ed81f77d4b5f152af684"
+    },
+    "report": "/home/yayoi/orca/workspaces/Strata/sycl/.cache/strata-research/20261027/fp32-split-bank-decision.md"
+  },
+  "legacy_component_consumers_decision_20261027": {
+    "schedulable_now": true,
+    "status": "planned",
+    "source_commit": "a7981b8981515a3010e1624a31e52f9d021f10b6",
+    "worker_model": "gpt-6-luna",
+    "review_model": "native Codex gpt-6-luna max",
+    "report_budget_bytes": 18432,
+    "classification": "decision support",
+    "question": "Classify the 47 historical component roots other than hardware-ceiling-cpu-v1/gpu-v1 by actual current executable, fixture and receipt consumers, closed ownership records and original source/recipe recovery pointers. Main owns Git retrieval and deletion. Identify minimal required bytes and bounded retirement actions; absence of a literal name alone is insufficient.",
+    "prerequisite_evidence": [
+      "The existing 82-root inventory still finds 147 artifacts across 49 roots; Main found no direct literal-name references in current source.",
+      "Main recovered two hardware-component source/build records at 7ea2650ba3ae1b15807a32a67b62d56131046569 and matched source/current ELF hashes; Main owns those two roots."
+    ],
+    "inventory": "/home/yayoi/.local/state/strata-sycl/artifact-retention-audit-20261018/component-binary-provenance-review-v2.json",
+    "inventory_sha256": "7a2f483f8fb08a2d3aedacfec69a8183e52069ffb83784af5f402ddced389dcc",
+    "report": "/home/yayoi/orca/workspaces/Strata/sycl/.cache/strata-research/20261027/legacy-component-consumers-decision.md"
+  },
+  "qwen4exp_moe_reduction_contract_decision_20261027": {
+    "schedulable_now": true,
+    "status": "planned",
+    "source_commit": "a7981b8981515a3010e1624a31e52f9d021f10b6",
+    "worker_model": "gpt-6-luna",
+    "review_model": "native Codex gpt-6-luna max",
+    "report_budget_bytes": 18432,
+    "classification": "decision support",
+    "question": "At immutable official vLLM/SGLang revisions, trace Qwen4Exp long-prefill MoE dispatch for relevant BF16/FP16 and quantized routes through backend selection, weighted Down storage, top-k sum and shared-expert/residual combination. Determine exact rounding and accumulation locations, including fused paths; compare serial 16-bit partial sums and current Strata FP32 fma. Identify unsupported GGUF/IQ3 cases and quality evidence gaps; generic Triton dtype flags alone are insufficient.",
+    "prerequisite_evidence": [
+      "Main observed generic Triton 16-bit expert outputs followed by FP32 reduction; moving-main inspection is not pinned model-specific dispatch proof.",
+      "The proposed 16-bit accumulator would fit 117488 rows but changes per-expert rounding; the current FP32 reference remains selected."
+    ],
+    "report": "/home/yayoi/orca/workspaces/Strata/sycl/.cache/strata-research/20261027/qwen4exp-moe-reduction-contract-decision.md"
+  },
+  "partial_sum_compression_methods_collection_20261027": {
+    "schedulable_now": true,
+    "status": "planned",
+    "source_commit": "a7981b8981515a3010e1624a31e52f9d021f10b6",
+    "worker_model": "gpt-6-luna",
+    "review_model": "native Codex gpt-6-luna max",
+    "report_budget_bytes": 18432,
+    "classification": "knowledge collection",
+    "question": "Compare GPU/HPC/ASIC reduction methods that save memory for about 10 weighted expert contributions per token: serial FP16/BF16 storage, blocked FP32 reduction, error feedback or compensated representations. Use original papers, official sources and technical blogs; cover cancellation, range, error bounds, storage, traffic, synchronization and counterexamples. Check prior reports first; exclude another generic dtype survey, local benchmarks or adoption claims.",
+    "prerequisite_evidence": [
+      "A concrete MoE accumulation-storage question exists; this is independent methods collection with no local performance prerequisite."
+    ],
+    "report": "/home/yayoi/orca/workspaces/Strata/sycl/.cache/strata-research/20261027/partial-sum-compression-methods-collection.md"
   }
 }
