@@ -331,6 +331,37 @@ but its resource-level cause remains unattributed. This is evidence against
 userspace rollback as a sufficient remedy,not proof that the libraries have
 identical performance or that historical clocks/contention were reproduced.
 Decode implementation,configuration and1256-slot placement remain unchanged.
+
+An independent installed llama.cpp control on20261026 completes the user's
+Qwen3.5-9B Q4_K model with131072prompt tokens,FAon,K/Vq8_0,batch2048,ubatch512
+and six CPU threads. One full-length warmup precedes three timed repetitions:
+1040.4683,1042.3779 and1043.1894tok/s;mean1042.0119,standard deviation1.3970.
+The2048-token traced prerequisite and the long process close normally,with
+pre-main validation,45observed code maps and no fresh fault. Both GPU processes
+use official oneAPI2026.1,oneDNN and the actual B570 LevelZero/OpenCL providers.
+This is three within-process samples,not three independent process repetitions.
+
+The user's earlier966.57±10.59tok/s report has no executable/runtime/environment
+hashes. Current safety settings,diagnostic retained-loader validation and an
+explicit Intel GPU ICD directory are charged;the installed binary's complete
+build-time input receipt is unavailable. Thus the new control is not an exact
+historical comparison or a hardware ceiling. It does show that this dense-model
+path currently exceeds the earlier reported speed;uniform GPU slowdown is an
+insufficient explanation to assume. Different shapes,algorithms,host work and
+resource interactions remain open. It neither explains nor restores Strata's
+911.7371versus1002.6507result.
+
+Reference setup failures retain their original outcomes. Three attempts refuse
+previously unlisted code maps;Main also selected the CPU OpenCL registration instead of
+the GPU one before correcting the private ICD directory. These are not GPU hangs
+or Strata inference failures. The successfully qualified control pins the actual
+GPU registration and providers. Next calibrate the production GU dispatcher at
+small M and the fusion boundary,with GPU service distinct from host submission
+and waits. GU's existing direct component benchmark does not measure that public
+path;Down's public benchmark falls back below2334rows. Static dtype review finds
+that GU's FP16 comparator receives FP16 hidden outputs;BF16 intermediates and
+Down outputs are checked bitwise. The proposed dtype bug is not substantiated.
+
 After replay,the485 private vendor/raw/JIT files retire,142631294bytes in total;
 the installed apt cache is excluded. The one-use controller and controls also
 retire to0697c74e8. The selected original engine and12fixtures remain intact.

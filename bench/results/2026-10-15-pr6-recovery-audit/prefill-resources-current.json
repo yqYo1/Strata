@@ -6782,810 +6782,9 @@
       "retained": "Original6e40+12fixtures and qualified runtime/preload untouched. Reusable hardware/client collectors and20controls retained for imminent instrumented-model observer-cost work."
     }
   },
-  "independent_llama9b_control_v1": {
-    "stage": "failed",
-    "source_commit": "a773c19c2f02ec24a2d1b0dea5c8891ea7e8b602",
-    "external_source": {
-      "revision": "abeada335e2e78bd3fe63febafab7e900ce75810",
-      "tracked_tree_clean": true,
-      "build_metadata_sha256": {
-        "build/common/build-info.cpp": "874c413b42992396aaab29a86707b25e56bdcbdb0607585658e0389da3f194e1",
-        "build/CMakeCache.txt": "e38989e6cb395a0efdac4100954a7914eb221dbcf28569a8dbbe11a0332fee29",
-        "build/CMakeFiles/3.28.3/CMakeCXXCompiler.cmake": "2e264bcc404e2b693bede27e385b1a8f1aaacbdcdec7d269b40c697130bfc730",
-        "build/ggml/src/ggml-sycl/CMakeFiles/ggml-sycl.dir/flags.make": "fa684866ba550833b9734f9a0381b70ec27f525969e9bef52e9cf9b4886c144f"
-      },
-      "limit": "Installed external reference: embedded11455/abeada335 and current clean source/build metadata agree. Complete build-time input receipt and historical binary hash are unavailable;do not claim exact historical binary/source reproducibility."
-    },
-    "binary": {
-      "path": "/home/yayoi/ghq/github.com/ggml-org/llama.cpp/build/bin/llama-bench",
-      "sha256": "4fe327dad8634e70b2f2cb852732265883e7fac84f8ed72510a25ca3d41360bb",
-      "bytes": 94529016
-    },
-    "model": {
-      "path": "/data/llm_models/unsloth/Qwen3.5-9B-GGUF/Qwen3.5-9B-UD-Q4_K_XL.gguf",
-      "bytes": 5966095584,
-      "sha256": "6f5d30666c2d8ae16a306e616d95341dcf3cc46810df84d7e6f5a7d1e4c1b293"
-    },
-    "preload": {
-      "library": {
-        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/ur-validation-preload-v2/libstrata_ur_validation.so",
-        "sha256": "1d4e69d672d55fa0a126ae43b7b4743482cccca7e2f2bc22e0db2bfdad5bdc7c"
-      },
-      "canary": {
-        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/ur-validation-preload-v2/canary",
-        "sha256": "7903f47691309444cce238d6a0a6fe716f7c668d80a6e2ff3d5cfe21c7dcbfd0"
-      },
-      "loader": "/opt/intel/oneapi/compiler/2026.1/lib/libur_loader.so.0.12.0",
-      "original_plan": {
-        "commit": "550c75f5fc954ee38b70230e32d2a48e12100d8a",
-        "path": "bench/results/2026-10-15-pr6-recovery-audit/research-index.json",
-        "sha256": "d12866b93c51e76a83e95638e66b6f6f4e0e33d779516a5fddecc178a6f8e10a"
-      },
-      "source_commit": "f312b6691f508125db6cfc2580ca32a686ff2642",
-      "retained_reference_until_exit": true,
-      "ordinary_runtime_teardown_qualified": false
-    },
-    "packages": [
-      "intel-oneapi-compiler-dpcpp-cpp-runtime-2026.1 2026.1.1-325",
-      "intel-oneapi-dnnl-2026.1 2026.1.0-617",
-      "intel-oneapi-mkl-core-2026.1 2026.1.0-236",
-      "intel-oneapi-tbb-2023.1 2023.1.0-151",
-      "intel-oneapi-umf-1.1 1.1.0-340"
-    ],
-    "selected_original": {
-      "source_commit": "6e40afc1beddd059ee518617f6c1efce1da14aca",
-      "inputs_recovered": 9853,
-      "assets_verified": 13,
-      "receipt": {
-        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/record.json",
-        "sha256": "a38f477670fafcd1a931be2e20d90d6d9718df75b61954b421f361af9f6881b2"
-      },
-      "limits": "Original build remains selected; this source-only diagnostic is not adoption."
-    },
-    "boot": "cfda0b6a-7c13-4fe2-bdf5-8f9202770840",
-    "driver": {
-      "pci": "/sys/bus/pci/devices/0000:05:00.0",
-      "driver": "xe",
-      "vendor": "0x8086",
-      "device": "0xe20c",
-      "kernel": "7.0.0-38-generic",
-      "devcoredump": false
-    },
-    "active": false,
-    "ownership_closed": false,
-    "passed": false,
-    "GPU_executed": false,
-    "model_executed": false,
-    "model_adoption_qualified": false,
-    "criteria": "Ordered host canary,one64-token traced model check,then one independent131072-token process with full131072 warmup+3timed repetitions. All normal/reaped/empty-session,no fresh fault,same boot/driver/inputs/models/providers,pre-main parameter validation active,silent validation log,actual official SYCL/LevelZero/NEO maps. Parse exactly one JSON test with n_prompt,zero n_gen,FAon,K/Vq8_0,all GPU layers,SYCL backend,positive finite times. Stop first failure;no retries. Three within-process samples do not measure between-process variability.",
-    "question": "Does a separately installed dense9B SYCL stack still reach the user-reported966.57\u00b110.59tok/s while Strata same-binary historical1002.6507 now measures911.7371? Descriptive discrimination,not a causal model/source comparison or an architecture ceiling.",
-    "historical": {
-      "user_reported_tok_s": 966.57,
-      "user_reported_stdev": 10.59,
-      "build": "abeada335(11455)",
-      "driver": "1.17.39395+14",
-      "historical_binary_hash_available": false,
-      "limits": "Historical environment/runtime hashes absent. Current NEO differs;diagnostic retained-loader validation and immutable safety settings are charged. Repetition count3 versus user default5. No Strata/llama throughput equivalence or historical regression claim."
-    },
-    "retention": "Keep exact command/environment/source/executable/model/runtime identities,3individual timings,actual provider/fault/closure result and limits. No new build. Retire successful traces,logs,duplicate external receipt after extraction;user installed binary/model are not disposable project builds.",
-    "outcomes": [],
-    "error": "RuntimeError('native child failed: ')",
-    "fresh_faults": [],
-    "boot_unchanged": true,
-    "driver_after": {
-      "pci": "/sys/bus/pci/devices/0000:05:00.0",
-      "driver": "xe",
-      "vendor": "0x8086",
-      "device": "0xe20c",
-      "kernel": "7.0.0-38-generic",
-      "devcoredump": false
-    },
-    "actual_ownership_reconciliation": {
-      "controller_ended": true,
-      "native_direct_child_reaped": true,
-      "anchored_session_empty": true,
-      "survivors": [],
-      "native_exit_code": -15,
-      "observer_complete": false,
-      "original_ownership_closed_field_preserved": false,
-      "limits": "SIGTERM from owned observer refusal before preload/main;no GPU/model execution. Failure/observation status unchanged;positive reap/session evidence permits a fresh corrected plan."
-    },
-    "representative_failure": {
-      "error": "RuntimeError('unplanned executable map: /usr/lib/x86_64-linux-gnu/librt.so.1')",
-      "exit_code": -15,
-      "observation_complete": false,
-      "direct_child_reaped": true,
-      "session_empty": true,
-      "survivors": [],
-      "cleanup": [
-        {
-          "pid": 821631,
-          "start_ticks": 134217591,
-          "signal": "SIGTERM",
-          "result": "sent"
-        }
-      ]
-    },
-    "plan_source_and_inputs_reference": "71d8fd3d7:bench/results/2026-10-15-pr6-recovery-audit/prefill-resources-current.json#independent_llama9b_control_v1",
-    "next_action": "Correct systematic DT_NEEDED closure before a new separately committed v2plan;do not retryv1 or relabel its outcome."
-  },
-  "independent_llama9b_control_v2": {
-    "stage": "failed",
-    "source_commit": "9f48304e9cf13feabfbaf5b426ae68e41a21fc7d",
-    "external_source": {
-      "revision": "abeada335e2e78bd3fe63febafab7e900ce75810",
-      "tracked_tree_clean": true,
-      "build_metadata_sha256": {
-        "build/common/build-info.cpp": "874c413b42992396aaab29a86707b25e56bdcbdb0607585658e0389da3f194e1",
-        "build/CMakeCache.txt": "e38989e6cb395a0efdac4100954a7914eb221dbcf28569a8dbbe11a0332fee29",
-        "build/CMakeFiles/3.28.3/CMakeCXXCompiler.cmake": "2e264bcc404e2b693bede27e385b1a8f1aaacbdcdec7d269b40c697130bfc730",
-        "build/ggml/src/ggml-sycl/CMakeFiles/ggml-sycl.dir/flags.make": "fa684866ba550833b9734f9a0381b70ec27f525969e9bef52e9cf9b4886c144f"
-      },
-      "limit": "Installed external reference: embedded11455/abeada335 and current clean source/build metadata agree. Complete build-time input receipt and historical binary hash are unavailable;do not claim exact historical binary/source reproducibility."
-    },
-    "binary": {
-      "path": "/home/yayoi/ghq/github.com/ggml-org/llama.cpp/build/bin/llama-bench",
-      "sha256": "4fe327dad8634e70b2f2cb852732265883e7fac84f8ed72510a25ca3d41360bb",
-      "bytes": 94529016
-    },
-    "model": {
-      "path": "/data/llm_models/unsloth/Qwen3.5-9B-GGUF/Qwen3.5-9B-UD-Q4_K_XL.gguf",
-      "bytes": 5966095584,
-      "sha256": "6f5d30666c2d8ae16a306e616d95341dcf3cc46810df84d7e6f5a7d1e4c1b293"
-    },
-    "preload": {
-      "library": {
-        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/ur-validation-preload-v2/libstrata_ur_validation.so",
-        "sha256": "1d4e69d672d55fa0a126ae43b7b4743482cccca7e2f2bc22e0db2bfdad5bdc7c"
-      },
-      "canary": {
-        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/ur-validation-preload-v2/canary",
-        "sha256": "7903f47691309444cce238d6a0a6fe716f7c668d80a6e2ff3d5cfe21c7dcbfd0"
-      },
-      "loader": "/opt/intel/oneapi/compiler/2026.1/lib/libur_loader.so.0.12.0",
-      "original_plan": {
-        "commit": "550c75f5fc954ee38b70230e32d2a48e12100d8a",
-        "path": "bench/results/2026-10-15-pr6-recovery-audit/research-index.json",
-        "sha256": "d12866b93c51e76a83e95638e66b6f6f4e0e33d779516a5fddecc178a6f8e10a"
-      },
-      "source_commit": "f312b6691f508125db6cfc2580ca32a686ff2642",
-      "retained_reference_until_exit": true,
-      "ordinary_runtime_teardown_qualified": false
-    },
-    "packages": [
-      "intel-oneapi-compiler-dpcpp-cpp-runtime-2026.1 2026.1.1-325",
-      "intel-oneapi-dnnl-2026.1 2026.1.0-617",
-      "intel-oneapi-mkl-core-2026.1 2026.1.0-236",
-      "intel-oneapi-tbb-2023.1 2023.1.0-151",
-      "intel-oneapi-umf-1.1 1.1.0-340"
-    ],
-    "selected_original": {
-      "source_commit": "6e40afc1beddd059ee518617f6c1efce1da14aca",
-      "inputs_recovered": 9853,
-      "assets_verified": 13,
-      "receipt": {
-        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/record.json",
-        "sha256": "a38f477670fafcd1a931be2e20d90d6d9718df75b61954b421f361af9f6881b2"
-      },
-      "limits": "Original build remains selected; this source-only diagnostic is not adoption."
-    },
-    "boot": "cfda0b6a-7c13-4fe2-bdf5-8f9202770840",
-    "driver": {
-      "pci": "/sys/bus/pci/devices/0000:05:00.0",
-      "driver": "xe",
-      "vendor": "0x8086",
-      "device": "0xe20c",
-      "kernel": "7.0.0-38-generic",
-      "devcoredump": false
-    },
-    "active": false,
-    "ownership_closed": false,
-    "passed": false,
-    "GPU_executed": true,
-    "model_executed": true,
-    "model_adoption_qualified": false,
-    "criteria": "Ordered host canary,one64-token traced model check,then one independent131072-token process with full131072 warmup+3timed repetitions. All normal/reaped/empty-session,no fresh fault,same boot/driver/inputs/models/providers,pre-main parameter validation active,silent validation log,actual official SYCL/LevelZero/NEO maps. Parse exactly one JSON test with n_prompt,zero n_gen,FAon,K/Vq8_0,all GPU layers,SYCL backend,positive finite times. Stop first failure;no retries. Three within-process samples do not measure between-process variability.",
-    "question": "Does a separately installed dense9B SYCL stack still reach the user-reported966.57\u00b110.59tok/s while Strata same-binary historical1002.6507 now measures911.7371? Descriptive discrimination,not a causal model/source comparison or an architecture ceiling.",
-    "historical": {
-      "user_reported_tok_s": 966.57,
-      "user_reported_stdev": 10.59,
-      "build": "abeada335(11455)",
-      "driver": "1.17.39395+14",
-      "historical_binary_hash_available": false,
-      "limits": "Historical environment/runtime hashes absent. Current NEO differs;diagnostic retained-loader validation and immutable safety settings are charged. Repetition count3 versus user default5. No Strata/llama throughput equivalence or historical regression claim."
-    },
-    "retention": "Keep exact command/environment/source/executable/model/runtime identities,3individual timings,actual provider/fault/closure result and limits. No new build. Retire successful traces,logs,duplicate external receipt after extraction;user installed binary/model are not disposable project builds.",
-    "outcomes": [
-      {
-        "label": "canary",
-        "normal_closed": true,
-        "actual_code_maps": [
-          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/ur-validation-preload-v2/canary",
-          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/ur-validation-preload-v2/libstrata_ur_validation.so",
-          "/opt/intel/oneapi/compiler/2026.1/lib/libimf.so",
-          "/opt/intel/oneapi/compiler/2026.1/lib/libintlc.so.5",
-          "/opt/intel/oneapi/compiler/2026.1/lib/libirng.so",
-          "/opt/intel/oneapi/compiler/2026.1/lib/libsvml.so",
-          "/opt/intel/oneapi/compiler/2026.1/lib/libur_adapter_level_zero_v2.so.0.12.0",
-          "/opt/intel/oneapi/compiler/2026.1/lib/libur_loader.so.0.12.0",
-          "/opt/intel/oneapi/umf/1.1/lib/libumf.so.1.1.0",
-          "/usr/lib/x86_64-linux-gnu/ld-linux-x86-64.so.2",
-          "/usr/lib/x86_64-linux-gnu/libc.so.6",
-          "/usr/lib/x86_64-linux-gnu/libcap.so.2.66",
-          "/usr/lib/x86_64-linux-gnu/libdl.so.2",
-          "/usr/lib/x86_64-linux-gnu/libgcc_s.so.1",
-          "/usr/lib/x86_64-linux-gnu/libhwloc.so.15.7.0",
-          "/usr/lib/x86_64-linux-gnu/libm.so.6",
-          "/usr/lib/x86_64-linux-gnu/libpthread.so.0",
-          "/usr/lib/x86_64-linux-gnu/librt.so.1",
-          "/usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.33",
-          "/usr/lib/x86_64-linux-gnu/libudev.so.1.7.8",
-          "/usr/lib/x86_64-linux-gnu/libz.so.1.3"
-        ]
-      },
-      {
-        "label": "probe64",
-        "normal_closed": true,
-        "actual_code_maps": [
-          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/ur-validation-preload-v2/libstrata_ur_validation.so",
-          "/home/yayoi/ghq/github.com/ggml-org/llama.cpp/build/bin/llama-bench",
-          "/opt/intel/oneapi/compiler/2026.1/lib/libarcher.so",
-          "/opt/intel/oneapi/compiler/2026.1/lib/libimf.so",
-          "/opt/intel/oneapi/compiler/2026.1/lib/libintlc.so.5",
-          "/opt/intel/oneapi/compiler/2026.1/lib/libiomp5.so",
-          "/opt/intel/oneapi/compiler/2026.1/lib/libirng.so",
-          "/opt/intel/oneapi/compiler/2026.1/lib/libsvml.so",
-          "/opt/intel/oneapi/compiler/2026.1/lib/libsycl.so.9.0.0",
-          "/opt/intel/oneapi/compiler/2026.1/lib/libur_adapter_level_zero_v2.so.0.12.0",
-          "/opt/intel/oneapi/compiler/2026.1/lib/libur_loader.so.0.12.0",
-          "/opt/intel/oneapi/dnnl/2026.1/lib/libdnnl.so.3.13",
-          "/opt/intel/oneapi/mkl/2026.1/lib/libmkl_core.so.3",
-          "/opt/intel/oneapi/mkl/2026.1/lib/libmkl_intel_ilp64.so.3",
-          "/opt/intel/oneapi/mkl/2026.1/lib/libmkl_sycl_blas.so.6",
-          "/opt/intel/oneapi/mkl/2026.1/lib/libmkl_tbb_thread.so.3",
-          "/opt/intel/oneapi/tbb/2023.1/lib/libtbb.so.12.19",
-          "/opt/intel/oneapi/tbb/2023.1/lib/libtbbmalloc.so.2.19",
-          "/opt/intel/oneapi/umf/1.1/lib/libumf.so.1.1.0",
-          "/usr/lib/x86_64-linux-gnu/ld-linux-x86-64.so.2",
-          "/usr/lib/x86_64-linux-gnu/libc.so.6",
-          "/usr/lib/x86_64-linux-gnu/libcap.so.2.66",
-          "/usr/lib/x86_64-linux-gnu/libdl.so.2",
-          "/usr/lib/x86_64-linux-gnu/libdrm.so.2.134.0",
-          "/usr/lib/x86_64-linux-gnu/libgcc_s.so.1",
-          "/usr/lib/x86_64-linux-gnu/libhwloc.so.15.7.0",
-          "/usr/lib/x86_64-linux-gnu/libigdgmm.so.12.10.0",
-          "/usr/lib/x86_64-linux-gnu/libigdml.so.1.0.240",
-          "/usr/lib/x86_64-linux-gnu/libm.so.6",
-          "/usr/lib/x86_64-linux-gnu/libnl-3.so.200.26.0",
-          "/usr/lib/x86_64-linux-gnu/libnl-genl-3.so.200.26.0",
-          "/usr/lib/x86_64-linux-gnu/libpthread.so.0",
-          "/usr/lib/x86_64-linux-gnu/librt.so.1",
-          "/usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.33",
-          "/usr/lib/x86_64-linux-gnu/libudev.so.1.7.8",
-          "/usr/lib/x86_64-linux-gnu/libz.so.1.3",
-          "/usr/lib/x86_64-linux-gnu/libze_intel_gpu.so.1.17.39758",
-          "/usr/lib/x86_64-linux-gnu/libze_loader.so.1.32.0",
-          "/usr/lib/x86_64-linux-gnu/libze_tracing_layer.so.1.32.0",
-          "/usr/lib/x86_64-linux-gnu/libzstd.so.1.5.5",
-          "/usr/local/lib/libigc.so.2.41.5+1788943183",
-          "/usr/local/lib/libigdfcl.so.2.41.5+1788943183",
-          "/usr/local/lib/libopencl-clang2.so.22.1"
-        ],
-        "benchmark": {
-          "build_commit": "abeada335",
-          "build_number": 11455,
-          "cpu_info": "AMD Ryzen 5 5600X 6-Core Processor",
-          "gpu_info": "Intel(R) Arc(TM) B570 Graphics",
-          "backends": "SYCL",
-          "model_filename": "/data/llm_models/unsloth/Qwen3.5-9B-GGUF/Qwen3.5-9B-UD-Q4_K_XL.gguf",
-          "model_type": "qwen35 9B Q4_K - Medium",
-          "model_size": 5955127296,
-          "model_n_params": 8953803264,
-          "n_batch": 2048,
-          "n_ubatch": 512,
-          "n_threads": 6,
-          "cpu_mask": "0x0",
-          "cpu_strict": false,
-          "poll": 50,
-          "type_k": "q8_0",
-          "type_v": "q8_0",
-          "n_gpu_layers": -1,
-          "n_cpu_moe": 0,
-          "split_mode": "layer",
-          "main_gpu": 0,
-          "no_kv_offload": false,
-          "flash_attn": 1,
-          "devices": "auto",
-          "tensor_split": "0.00",
-          "tensor_buft_overrides": "none",
-          "load_mode": "auto",
-          "lazy_mode": "auto",
-          "embeddings": false,
-          "no_op_offload": 0,
-          "no_host": false,
-          "repack": true,
-          "fit_target": 0,
-          "fit_min_ctx": 0,
-          "n_prompt": 64,
-          "n_gen": 0,
-          "n_depth": 0,
-          "test_time": "2026-10-26T05:47:47Z",
-          "avg_ns": 194667632,
-          "stddev_ns": 0,
-          "avg_ts": 328.765493,
-          "stddev_ts": 0.0,
-          "samples_ns": [
-            194667632
-          ],
-          "samples_ts": [
-            328.765
-          ]
-        }
-      }
-    ],
-    "error": "RuntimeError('native child failed:  validation API: pid=832715 operation=config-create result=0\\nstrata UR validation API: pid=832715 operation=layers-size result=0\\nstrata UR validation API: pid=832715 operation=layers-query result=0\\nstrata UR validation API: pid=832715 operation=enable result=0\\nstrata UR validation API: pid=832715 operation=first-init result=0\\nstrata UR validation API: pid=832715 operation=config-release result=0\\nstrata UR validation API: pid=832715 operation=postinit result=46\\nstrata UR validation: pid=832715 phase=before-main threads_before=1 preinit=37 config_create=0 layers_query=0 enable=0 init=0 config_release=0 checked=46 untouched=1 retained_ref=1\\nBuild with Macros:\\n  GGML_SYCL_DNNL: yes\\n  GGML_SYCL_F16: yes\\n  GGML_SYCL_FORCE_MMQ: no\\n  GGML_SYCL_GRAPH: yes\\n  GGML_SYCL_SUPPORT_LEVEL_ZERO_API: yes\\n  GGML_SYCL_SUPPORT_VMM: yes\\nRunning with Environment Variables:\\n  GGML_SYCL_DEBUG: 0\\n  GGML_SYCL_DEV_DEBUG: 0\\n  GGML_SYCL_DEV2DEV_MEMCPY: 0 (SYCL API)\\n  GGML_SYCL_GET_MEM_API: 0 (Level Zero API)\\n  GGML_SYCL_ENABLE_DNN: 1\\n  GGML_SYCL_FA_ONEDNN: 1\\n  GGML_SYCL_FA_ONEDNN_MAX_KV: 0\\n  GGML_SYCL_ENABLE_MKL_FA: 1\\n  GGML_SYCL_MEMTRACE: 0\\n  GGML_SYCL_MEMTRACE_STEP: 64\\n  GGML_SYCL_ENABLE_FLASH_ATTN: 1\\n  GGML_SYCL_ENABLE_GRAPH: 0\\n  GGML_SYCL_ENABLE_OPT: 1\\n  GGML_SYCL_ENABLE_VMM: 1\\n  GGML_SYCL_ENABLE_FUSION: 1\\n  GGML_SYCL_ENABLE_ESIMD: 1\\n  GGML_SYCL_MMVQ_WIDE: 1\\n  GGML_SYCL_PRIORITIZE_DMMV: 0\\n  GGML_SYCL_USE_ASYNC_MEM_OP: 1\\n  GGML_SYCL_USE_LEVEL_ZERO_API: 1\\n  GGML_SYCL_USM_SYSTEM: 0\\n  GGML_SYCL_ENABLE_HOST_PINNED_MEM: 1\\n  GGML_SYCL_HOST_PINNED_MEM_2G: 0\\n  GGML_SYCL_SPARSE_FA: 0\\n  GGML_SYCL_SPARSE_FA_DEBUG: 0\\n  GGML_SYCL_SPARSE_FA_MARGIN: 256\\nFound 1 SYCL devices:\\n|  |                   |                                       |       |Max    |        |Max  |Global |                     |\\n|  |                   |                                       |       |compute|Max work|sub  |mem    |                     |\\n|ID|        Device Type|                                   Name|Version|units  |group   |group|size   |       Driver version|\\n|--|-------------------|---------------------------------------|-------|-------|--------|-----|-------|---------------------|\\n| 0| [level_zero:gpu:0]|                Intel Arc B570 Graphics|   20.1|    160|    1024|   32| 10666M|        1.17.39758+17|\\nSYCL Optimization Feature:\\n|ID|        Device Type|Reorder|\\n|--|-------------------|-------|\\n| 0| [level_zero:gpu:0]|      Y|\\nllama-bench: benchmark 1/1: starting\\nllama-bench: benchmark 1/1: warmup prompt run\\n')",
-    "fresh_faults": [],
-    "boot_unchanged": true,
-    "driver_after": {
-      "pci": "/sys/bus/pci/devices/0000:05:00.0",
-      "driver": "xe",
-      "vendor": "0x8086",
-      "device": "0xe20c",
-      "kernel": "7.0.0-38-generic",
-      "devcoredump": false
-    },
-    "actual_ownership_reconciliation": {
-      "controller_ended": true,
-      "all3direct_children_reaped": true,
-      "all3anchored_sessions_empty": true,
-      "survivors": [],
-      "original_ownership_closed_field_preserved": false,
-      "limits": "Original observer failure unchanged;third child terminated by owned map refusal during warmup. No valid131Ktiming sample or GPU fault."
-    },
-    "representative_failure": {
-      "error": "RuntimeError('unplanned executable map: /usr/lib/x86_64-linux-gnu/libnvidia-opencl.so.580.178.04')",
-      "exit_code": -15,
-      "observation_complete": false,
-      "direct_child_reaped": true,
-      "session_empty": true,
-      "survivors": [],
-      "cleanup": [
-        {
-          "pid": 832715,
-          "start_ticks": 134249675,
-          "signal": "SIGTERM",
-          "result": "sent"
-        }
-      ]
-    },
-    "plan_source_and_inputs_reference": "7169f12a8:bench/results/2026-10-15-pr6-recovery-audit/prefill-resources-current.json#independent_llama9b_control_v2",
-    "next_action": "New v3plan with process-local documented Intel GPU ICD selection and pinned provider/closure. Preserve V2failure;normal64token result only is not a131Kperformance comparison."
-  },
-  "independent_llama9b_control_v3": {
-    "stage": "failed",
-    "source_commit": "548e1ad6e655f3e1418ea8340ce069a1da858d2e",
-    "external_source": {
-      "revision": "abeada335e2e78bd3fe63febafab7e900ce75810",
-      "tracked_tree_clean": true,
-      "build_metadata_sha256": {
-        "build/common/build-info.cpp": "874c413b42992396aaab29a86707b25e56bdcbdb0607585658e0389da3f194e1",
-        "build/CMakeCache.txt": "e38989e6cb395a0efdac4100954a7914eb221dbcf28569a8dbbe11a0332fee29",
-        "build/CMakeFiles/3.28.3/CMakeCXXCompiler.cmake": "2e264bcc404e2b693bede27e385b1a8f1aaacbdcdec7d269b40c697130bfc730",
-        "build/ggml/src/ggml-sycl/CMakeFiles/ggml-sycl.dir/flags.make": "fa684866ba550833b9734f9a0381b70ec27f525969e9bef52e9cf9b4886c144f"
-      },
-      "limit": "Installed external reference: embedded11455/abeada335 and current clean source/build metadata agree. Complete build-time input receipt and historical binary hash are unavailable;do not claim exact historical binary/source reproducibility."
-    },
-    "binary": {
-      "path": "/home/yayoi/ghq/github.com/ggml-org/llama.cpp/build/bin/llama-bench",
-      "sha256": "4fe327dad8634e70b2f2cb852732265883e7fac84f8ed72510a25ca3d41360bb",
-      "bytes": 94529016
-    },
-    "model": {
-      "path": "/data/llm_models/unsloth/Qwen3.5-9B-GGUF/Qwen3.5-9B-UD-Q4_K_XL.gguf",
-      "bytes": 5966095584,
-      "sha256": "6f5d30666c2d8ae16a306e616d95341dcf3cc46810df84d7e6f5a7d1e4c1b293"
-    },
-    "preload": {
-      "library": {
-        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/ur-validation-preload-v2/libstrata_ur_validation.so",
-        "sha256": "1d4e69d672d55fa0a126ae43b7b4743482cccca7e2f2bc22e0db2bfdad5bdc7c"
-      },
-      "canary": {
-        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/ur-validation-preload-v2/canary",
-        "sha256": "7903f47691309444cce238d6a0a6fe716f7c668d80a6e2ff3d5cfe21c7dcbfd0"
-      },
-      "loader": "/opt/intel/oneapi/compiler/2026.1/lib/libur_loader.so.0.12.0",
-      "original_plan": {
-        "commit": "550c75f5fc954ee38b70230e32d2a48e12100d8a",
-        "path": "bench/results/2026-10-15-pr6-recovery-audit/research-index.json",
-        "sha256": "d12866b93c51e76a83e95638e66b6f6f4e0e33d779516a5fddecc178a6f8e10a"
-      },
-      "source_commit": "f312b6691f508125db6cfc2580ca32a686ff2642",
-      "retained_reference_until_exit": true,
-      "ordinary_runtime_teardown_qualified": false
-    },
-    "packages": [
-      "intel-oneapi-compiler-dpcpp-cpp-runtime-2026.1 2026.1.1-325",
-      "intel-oneapi-dnnl-2026.1 2026.1.0-617",
-      "intel-oneapi-mkl-core-2026.1 2026.1.0-236",
-      "intel-oneapi-tbb-2023.1 2023.1.0-151",
-      "intel-oneapi-umf-1.1 1.1.0-340"
-    ],
-    "external_config_sha256": {
-      "/etc/OpenCL/vendors/intel64.icd": "515152c0776b674470c2de6e457c49c6e0754168ef3aa6723fb68a6ed7c751f6"
-    },
-    "ICD_selection": {
-      "scope": "This child only;no system/user configuration change.",
-      "reference": "https://github.com/OCL-dev/ocl-icd/blob/master/doc/libOpenCL.7.txt.in",
-      "local_document_sha256": "404681bdad95bd375367424c8ae28406f47045078fa92ed552b04fc0d28d0cb3",
-      "reason": "The installed ocl-icd loader documents .icd-file override. Limit incidental oneDNN/OpenCL platform enumeration to Intel GPU;do not load NVIDIA or CPU OpenCL ICDs. This differs from unrecorded historical defaults."
-    },
-    "selected_original": {
-      "source_commit": "6e40afc1beddd059ee518617f6c1efce1da14aca",
-      "inputs_recovered": 9853,
-      "assets_verified": 13,
-      "receipt": {
-        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/record.json",
-        "sha256": "a38f477670fafcd1a931be2e20d90d6d9718df75b61954b421f361af9f6881b2"
-      },
-      "limits": "Original build remains selected; this source-only diagnostic is not adoption."
-    },
-    "boot": "cfda0b6a-7c13-4fe2-bdf5-8f9202770840",
-    "driver": {
-      "pci": "/sys/bus/pci/devices/0000:05:00.0",
-      "driver": "xe",
-      "vendor": "0x8086",
-      "device": "0xe20c",
-      "kernel": "7.0.0-38-generic",
-      "devcoredump": false
-    },
-    "active": false,
-    "ownership_closed": true,
-    "passed": false,
-    "GPU_executed": true,
-    "model_executed": true,
-    "model_adoption_qualified": false,
-    "criteria": "Ordered host canary,one2048-token traced model check exercising512ubatches,then one independent131072-token process with full131072 warmup+3timed repetitions. All normal/reaped/empty-session,no fresh fault,same boot/driver/inputs/models/providers,pre-main parameter validation active,silent validation log,actual official SYCL/LevelZero/NEO maps. Parse exactly one JSON test with n_prompt,zero n_gen,FAon,K/Vq8_0,all GPU layers,SYCL backend,positive finite times. Stop first failure;no retries. Three within-process samples do not measure between-process variability.",
-    "question": "Does a separately installed dense9B SYCL stack still reach the user-reported966.57\u00b110.59tok/s while Strata same-binary historical1002.6507 now measures911.7371? Descriptive discrimination,not a causal model/source comparison or an architecture ceiling.",
-    "historical": {
-      "user_reported_tok_s": 966.57,
-      "user_reported_stdev": 10.59,
-      "build": "abeada335(11455)",
-      "driver": "1.17.39395+14",
-      "historical_binary_hash_available": false,
-      "limits": "Historical environment/runtime hashes absent. Current NEO and explicit Intel-only OpenCL ICD selection differ;diagnostic retained-loader validation and immutable safety settings are charged. Repetition count3 versus user default5. No Strata/llama throughput equivalence or historical regression claim."
-    },
-    "trace_budget_reason": "128MiB finite full-API budget for2048probe covers512ubatch attention and incidental Intel OpenCL enumeration. Long131K has parameter validation without full API trace.",
-    "retention": "Keep original failed status,provider/config mismatch,source/plan reference and one minimal failure excerpt through corrected provider check. No131Ksample produced. Retire redundant full stderr/trace after reconciliation.",
-    "outcomes": [
-      {
-        "label": "canary",
-        "normal_closed": true,
-        "actual_code_maps": []
-      }
-    ],
-    "error": "RuntimeError('native child failed:                          |       |compute|Max work|sub  |mem    |                     |\\n|ID|        Device Type|                                   Name|Version|units  |group   |group|size   |       Driver version|\\n|--|-------------------|---------------------------------------|-------|-------|--------|-----|-------|---------------------|\\n| 0| [level_zero:gpu:0]|                Intel Arc B570 Graphics|   20.1|    160|    1024|   32| 10666M|        1.17.39758+17|\\nSYCL Optimization Feature:\\n|ID|        Device Type|Reorder|\\n|--|-------------------|-------|\\n| 0| [level_zero:gpu:0]|      Y|\\nllama-bench: benchmark 1/1: starting\\nllama-bench: benchmark 1/1: warmup prompt run\\ncould not create a primitive\\nException caught at file:/home/yayoi/ghq/github.com/ggml-org/llama.cpp/ggml/src/ggml-sycl/ggml-sycl.cpp, line:3629, func:operator()\\nSYCL error: CHECK_TRY_ERROR(op(ctx, src0, src1, dst, src0_dd_i, src1_ddf_i, src1_ddq_i, dst_dd_i, dev[i].row_low, dev[i].row_high, src1_ncols, src1_padded_col_size, stream)): Exception caught in this line of code.\\n  in function ggml_sycl_op_mul_mat at /home/yayoi/ghq/github.com/ggml-org/llama.cpp/ggml/src/ggml-sycl/ggml-sycl.cpp:3629\\n/home/yayoi/ghq/github.com/ggml-org/llama.cpp/ggml/src/ggml-sycl/../ggml-sycl/common.hpp:146: SYCL error\\nstrata UR validation: pid=843153 phase=begin loader=/opt/intel/oneapi/compiler/2026.1/lib/libur_loader.so.0.12.0\\nstrata UR validation API: pid=843153 operation=preinit result=37\\nstrata UR validation API: pid=843153 operation=config-create result=0\\nstrata UR validation API: pid=843153 operation=layers-size result=0\\nstrata UR validation API: pid=843153 operation=layers-query result=0\\nstrata UR validation API: pid=843153 operation=enable result=0\\nstrata UR validation API: pid=843153 operation=first-init result=0\\nstrata UR validation API: pid=843153 operation=config-release result=0\\nstrata UR validation API: pid=843153 operation=postinit result=46\\nstrata UR validation: pid=843153 phase=before-main threads_before=1 preinit=37 config_create=0 layers_query=0 enable=0 init=0 config_release=0 checked=46 untouched=1 retained_ref=1\\nwarning: File \"/opt/intel/oneapi/compiler/2026.1/lib/libsycl.so.9.0.0-gdb.py\" auto-loading has been declined by your `auto-load safe-path\\' set to \"$debugdir:$datadir/auto-load\".\\nwarning: 30\\t../sysdeps/unix/sysv/linux/wait4.c: No such file or directory\\nwarning: 58\\t../sysdeps/nptl/libc_start_call_main.h: No such file or directory\\nwarning: 360\\t../csu/libc-start.c: No such file or directory\\n')",
-    "fresh_faults": [],
-    "boot_unchanged": true,
-    "driver_after": {
-      "pci": "/sys/bus/pci/devices/0000:05:00.0",
-      "driver": "xe",
-      "vendor": "0x8086",
-      "device": "0xe20c",
-      "kernel": "7.0.0-38-generic",
-      "devcoredump": false
-    },
-    "plan_source_and_inputs_reference": "d869dbf10:bench/results/2026-10-15-pr6-recovery-audit/prefill-resources-current.json#independent_llama9b_control_v3",
-    "provider_selection_diagnosis": {
-      "actual_OpenCL_loader": "/opt/intel/oneapi/compiler/2026.1/lib/libOpenCL.so.1.0.0",
-      "configured_OCL_ICD_VENDORS": "/etc/OpenCL/vendors/intel64.icd",
-      "configuration_document_used": "system ocl-icd manual supports file",
-      "actual_provider_document": "Khronos loader requires a directory",
-      "hypothesis": "Main used the wrong loader contract for the selected LD_LIBRARY_PATH. Empty Intel GPU platform enumeration can explain oneDNN primitive creation failure;not proof of a hardware/Strata defect. Confirm with a fresh directory-based plan.",
-      "additional_correction": "Directory-contract correction alone did not cureV4. BothV3/V4 selectedCPU intel64.icd;use actual GPU intel.icd. Earlier selection hypothesis was incomplete."
-    },
-    "representative_failure": {
-      "native_exit_code": -6,
-      "stage": "2048warmup",
-      "error": "could not create a primitive;ggml_sycl_op_mul_mat:3629;ggml common.hpp:146 abort",
-      "all_children_reaped_sessions_empty": true,
-      "fresh_faults": [],
-      "automatic_backtrace": "GGML abort spawned owned GDB;all closed;next plan disables automatic backtrace explicitly."
-    }
-  },
-  "independent_llama9b_control_v4": {
-    "stage": "failed",
-    "source_commit": "06620c6ef839a9b9ca067d434e1a3de3791d175b",
-    "external_source": {
-      "revision": "abeada335e2e78bd3fe63febafab7e900ce75810",
-      "tracked_tree_clean": true,
-      "build_metadata_sha256": {
-        "build/common/build-info.cpp": "874c413b42992396aaab29a86707b25e56bdcbdb0607585658e0389da3f194e1",
-        "build/CMakeCache.txt": "e38989e6cb395a0efdac4100954a7914eb221dbcf28569a8dbbe11a0332fee29",
-        "build/CMakeFiles/3.28.3/CMakeCXXCompiler.cmake": "2e264bcc404e2b693bede27e385b1a8f1aaacbdcdec7d269b40c697130bfc730",
-        "build/ggml/src/ggml-sycl/CMakeFiles/ggml-sycl.dir/flags.make": "fa684866ba550833b9734f9a0381b70ec27f525969e9bef52e9cf9b4886c144f"
-      },
-      "limit": "Installed external reference: embedded11455/abeada335 and current clean source/build metadata agree. Complete build-time input receipt and historical binary hash are unavailable;do not claim exact historical binary/source reproducibility."
-    },
-    "binary": {
-      "path": "/home/yayoi/ghq/github.com/ggml-org/llama.cpp/build/bin/llama-bench",
-      "sha256": "4fe327dad8634e70b2f2cb852732265883e7fac84f8ed72510a25ca3d41360bb",
-      "bytes": 94529016
-    },
-    "model": {
-      "path": "/data/llm_models/unsloth/Qwen3.5-9B-GGUF/Qwen3.5-9B-UD-Q4_K_XL.gguf",
-      "bytes": 5966095584,
-      "sha256": "6f5d30666c2d8ae16a306e616d95341dcf3cc46810df84d7e6f5a7d1e4c1b293"
-    },
-    "preload": {
-      "library": {
-        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/ur-validation-preload-v2/libstrata_ur_validation.so",
-        "sha256": "1d4e69d672d55fa0a126ae43b7b4743482cccca7e2f2bc22e0db2bfdad5bdc7c"
-      },
-      "canary": {
-        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/ur-validation-preload-v2/canary",
-        "sha256": "7903f47691309444cce238d6a0a6fe716f7c668d80a6e2ff3d5cfe21c7dcbfd0"
-      },
-      "loader": "/opt/intel/oneapi/compiler/2026.1/lib/libur_loader.so.0.12.0",
-      "original_plan": {
-        "commit": "550c75f5fc954ee38b70230e32d2a48e12100d8a",
-        "path": "bench/results/2026-10-15-pr6-recovery-audit/research-index.json",
-        "sha256": "d12866b93c51e76a83e95638e66b6f6f4e0e33d779516a5fddecc178a6f8e10a"
-      },
-      "source_commit": "f312b6691f508125db6cfc2580ca32a686ff2642",
-      "retained_reference_until_exit": true,
-      "ordinary_runtime_teardown_qualified": false
-    },
-    "packages": [
-      "intel-oneapi-compiler-dpcpp-cpp-runtime-2026.1 2026.1.1-325",
-      "intel-oneapi-dnnl-2026.1 2026.1.0-617",
-      "intel-oneapi-mkl-core-2026.1 2026.1.0-236",
-      "intel-oneapi-tbb-2023.1 2023.1.0-151",
-      "intel-oneapi-umf-1.1 1.1.0-340"
-    ],
-    "external_config_sha256": {
-      "/etc/OpenCL/vendors/intel64.icd": "515152c0776b674470c2de6e457c49c6e0754168ef3aa6723fb68a6ed7c751f6",
-      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/llama9b-independent-control-v4/icd/intel.icd": "515152c0776b674470c2de6e457c49c6e0754168ef3aa6723fb68a6ed7c751f6"
-    },
-    "ICD_selection": {
-      "scope": "This child only;no system/user configuration change.",
-      "reference": "https://github.com/KhronosGroup/OpenCL-ICD-Loader/blob/main/README.md#table-of-debug-environment-variables",
-      "loader": "/opt/intel/oneapi/compiler/2026.1/lib/libOpenCL.so.1.0.0",
-      "loader_sha256": "4d7dc0d09f8623a02ecf5cd06c21790f8ec2f8f971bad1a45c10c158079b1028",
-      "private_icd_text": "/opt/intel//oneapi/compiler/latest/lib/libintelocl.so\n",
-      "reason": "Selected compiler OpenCL loader follows Khronos directory contract,not system ocl-icd file contract. Use a private single-Intel-GPU ICD directory. No NVIDIA/CPU OpenCL enumeration. This differs from unrecorded historical defaults."
-    },
-    "selected_original": {
-      "source_commit": "6e40afc1beddd059ee518617f6c1efce1da14aca",
-      "inputs_recovered": 9853,
-      "assets_verified": 13,
-      "receipt": {
-        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/record.json",
-        "sha256": "a38f477670fafcd1a931be2e20d90d6d9718df75b61954b421f361af9f6881b2"
-      },
-      "limits": "Original build remains selected; this source-only diagnostic is not adoption."
-    },
-    "boot": "cfda0b6a-7c13-4fe2-bdf5-8f9202770840",
-    "driver": {
-      "pci": "/sys/bus/pci/devices/0000:05:00.0",
-      "driver": "xe",
-      "vendor": "0x8086",
-      "device": "0xe20c",
-      "kernel": "7.0.0-38-generic",
-      "devcoredump": false
-    },
-    "active": false,
-    "ownership_closed": true,
-    "passed": false,
-    "GPU_executed": true,
-    "model_executed": true,
-    "model_adoption_qualified": false,
-    "criteria": "Ordered host canary,one2048-token traced model check exercising512ubatches,then one independent131072-token process with full131072 warmup+3timed repetitions. All normal/reaped/empty-session,no fresh fault,same boot/driver/inputs/models/providers,pre-main parameter validation active,silent validation log,actual official SYCL/LevelZero/NEO maps. Parse exactly one JSON test with n_prompt,zero n_gen,FAon,K/Vq8_0,all GPU layers,SYCL backend,positive finite times. Stop first failure;no retries. Three within-process samples do not measure between-process variability.",
-    "question": "Does a separately installed dense9B SYCL stack still reach the user-reported966.57\u00b110.59tok/s while Strata same-binary historical1002.6507 now measures911.7371? Descriptive discrimination,not a causal model/source comparison or an architecture ceiling.",
-    "historical": {
-      "user_reported_tok_s": 966.57,
-      "user_reported_stdev": 10.59,
-      "build": "abeada335(11455)",
-      "driver": "1.17.39395+14",
-      "historical_binary_hash_available": false,
-      "limits": "Historical environment/runtime hashes absent. Current NEO and explicit Intel-only OpenCL ICD selection differ;diagnostic retained-loader validation and immutable safety settings are charged. Repetition count3 versus user default5. No Strata/llama throughput equivalence or historical regression claim."
-    },
-    "trace_budget_reason": "128MiB finite full-API budget for2048probe covers512ubatch attention and incidental Intel OpenCL enumeration. Long131K has parameter validation without full API trace.",
-    "retention": "Preserve original failed status and minimal mismatch/error until corrected GPU ICD preflight. No131Kspeed sample;retire routine full traces/logs after extraction.",
-    "outcomes": [
-      {
-        "label": "canary",
-        "normal_closed": true,
-        "actual_code_maps": []
-      }
-    ],
-    "error": "RuntimeError('native child failed: ase=0 checked=46 untouched=1 retained_ref=1\\nBuild with Macros:\\n  GGML_SYCL_DNNL: yes\\n  GGML_SYCL_F16: yes\\n  GGML_SYCL_FORCE_MMQ: no\\n  GGML_SYCL_GRAPH: yes\\n  GGML_SYCL_SUPPORT_LEVEL_ZERO_API: yes\\n  GGML_SYCL_SUPPORT_VMM: yes\\nRunning with Environment Variables:\\n  GGML_SYCL_DEBUG: 0\\n  GGML_SYCL_DEV_DEBUG: 0\\n  GGML_SYCL_DEV2DEV_MEMCPY: 0 (SYCL API)\\n  GGML_SYCL_GET_MEM_API: 0 (Level Zero API)\\n  GGML_SYCL_ENABLE_DNN: 1\\n  GGML_SYCL_FA_ONEDNN: 1\\n  GGML_SYCL_FA_ONEDNN_MAX_KV: 0\\n  GGML_SYCL_ENABLE_MKL_FA: 1\\n  GGML_SYCL_MEMTRACE: 0\\n  GGML_SYCL_MEMTRACE_STEP: 64\\n  GGML_SYCL_ENABLE_FLASH_ATTN: 1\\n  GGML_SYCL_ENABLE_GRAPH: 0\\n  GGML_SYCL_ENABLE_OPT: 1\\n  GGML_SYCL_ENABLE_VMM: 1\\n  GGML_SYCL_ENABLE_FUSION: 1\\n  GGML_SYCL_ENABLE_ESIMD: 1\\n  GGML_SYCL_MMVQ_WIDE: 1\\n  GGML_SYCL_PRIORITIZE_DMMV: 0\\n  GGML_SYCL_USE_ASYNC_MEM_OP: 1\\n  GGML_SYCL_USE_LEVEL_ZERO_API: 1\\n  GGML_SYCL_USM_SYSTEM: 0\\n  GGML_SYCL_ENABLE_HOST_PINNED_MEM: 1\\n  GGML_SYCL_HOST_PINNED_MEM_2G: 0\\n  GGML_SYCL_SPARSE_FA: 0\\n  GGML_SYCL_SPARSE_FA_DEBUG: 0\\n  GGML_SYCL_SPARSE_FA_MARGIN: 256\\nFound 1 SYCL devices:\\n|  |                   |                                       |       |Max    |        |Max  |Global |                     |\\n|  |                   |                                       |       |compute|Max work|sub  |mem    |                     |\\n|ID|        Device Type|                                   Name|Version|units  |group   |group|size   |       Driver version|\\n|--|-------------------|---------------------------------------|-------|-------|--------|-----|-------|---------------------|\\n| 0| [level_zero:gpu:0]|                Intel Arc B570 Graphics|   20.1|    160|    1024|   32| 10666M|        1.17.39758+17|\\nSYCL Optimization Feature:\\n|ID|        Device Type|Reorder|\\n|--|-------------------|-------|\\n| 0| [level_zero:gpu:0]|      Y|\\nllama-bench: benchmark 1/1: starting\\nllama-bench: benchmark 1/1: warmup prompt run\\ncould not create a primitive\\nException caught at file:/home/yayoi/ghq/github.com/ggml-org/llama.cpp/ggml/src/ggml-sycl/ggml-sycl.cpp, line:3629, func:operator()\\nSYCL error: CHECK_TRY_ERROR(op(ctx, src0, src1, dst, src0_dd_i, src1_ddf_i, src1_ddq_i, dst_dd_i, dev[i].row_low, dev[i].row_high, src1_ncols, src1_padded_col_size, stream)): Exception caught in this line of code.\\n  in function ggml_sycl_op_mul_mat at /home/yayoi/ghq/github.com/ggml-org/llama.cpp/ggml/src/ggml-sycl/ggml-sycl.cpp:3629\\n/home/yayoi/ghq/github.com/ggml-org/llama.cpp/ggml/src/ggml-sycl/../ggml-sycl/common.hpp:146: SYCL error\\n')",
-    "fresh_faults": [],
-    "boot_unchanged": true,
-    "driver_after": {
-      "pci": "/sys/bus/pci/devices/0000:05:00.0",
-      "driver": "xe",
-      "vendor": "0x8086",
-      "device": "0xe20c",
-      "kernel": "7.0.0-38-generic",
-      "devcoredump": false
-    },
-    "plan_source_and_inputs_reference": "2ba7e80d6:bench/results/2026-10-15-pr6-recovery-audit/prefill-resources-current.json#independent_llama9b_control_v4",
-    "representative_failure": {
-      "native_exit_code": -6,
-      "stage": "2048warmup",
-      "oneDNN": "Intel(R) Arc(TM) B570 Graphics OpenCL device not found,src/gpu/intel/sycl/utils.cpp:270",
-      "all_children_reaped_sessions_empty": true,
-      "fresh_faults": []
-    },
-    "provider_selection_diagnosis": {
-      "actual_OpenCL_loader": "/opt/intel/oneapi/compiler/2026.1/lib/libOpenCL.so.1.0.0",
-      "selected_ICD_file": "/etc/OpenCL/vendors/intel64.icd",
-      "selected_provider": "/opt/intel/oneapi/compiler/2026.2/lib/libintelocl.so.2026.22.10.0",
-      "selection": "CPU ICD,not GPU;Main configuration error",
-      "correct_GPU_ICD": "/etc/OpenCL/vendors/intel.icd -> /usr/lib/x86_64-linux-gnu/intel-opencl/libigdrcl.so",
-      "source_check": "https://raw.githubusercontent.com/uxlfoundation/oneDNN/main/src/gpu/intel/sycl/utils.cpp#sycl_dev2ocl_dev:direct OpenCL GPU UUID mapping for LevelZero;not evidence requiring a SYCL OpenCL adapter. Vendor c852source unavailable,mainline interpretation consistent with error;do not attribute Strata decline."
-    }
-  },
-  "independent_llama9b_control_v5": {
-    "stage": "failed",
-    "source_commit": "28410d1711226c91c5076379e190d4a18555d1ef",
-    "external_source": {
-      "revision": "abeada335e2e78bd3fe63febafab7e900ce75810",
-      "tracked_tree_clean": true,
-      "build_metadata_sha256": {
-        "build/common/build-info.cpp": "874c413b42992396aaab29a86707b25e56bdcbdb0607585658e0389da3f194e1",
-        "build/CMakeCache.txt": "e38989e6cb395a0efdac4100954a7914eb221dbcf28569a8dbbe11a0332fee29",
-        "build/CMakeFiles/3.28.3/CMakeCXXCompiler.cmake": "2e264bcc404e2b693bede27e385b1a8f1aaacbdcdec7d269b40c697130bfc730",
-        "build/ggml/src/ggml-sycl/CMakeFiles/ggml-sycl.dir/flags.make": "fa684866ba550833b9734f9a0381b70ec27f525969e9bef52e9cf9b4886c144f"
-      },
-      "limit": "Installed external reference: embedded11455/abeada335 and current clean source/build metadata agree. Complete build-time input receipt and historical binary hash are unavailable;do not claim exact historical binary/source reproducibility."
-    },
-    "binary": {
-      "path": "/home/yayoi/ghq/github.com/ggml-org/llama.cpp/build/bin/llama-bench",
-      "sha256": "4fe327dad8634e70b2f2cb852732265883e7fac84f8ed72510a25ca3d41360bb",
-      "bytes": 94529016
-    },
-    "model": {
-      "path": "/data/llm_models/unsloth/Qwen3.5-9B-GGUF/Qwen3.5-9B-UD-Q4_K_XL.gguf",
-      "bytes": 5966095584,
-      "sha256": "6f5d30666c2d8ae16a306e616d95341dcf3cc46810df84d7e6f5a7d1e4c1b293"
-    },
-    "preload": {
-      "library": {
-        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/ur-validation-preload-v2/libstrata_ur_validation.so",
-        "sha256": "1d4e69d672d55fa0a126ae43b7b4743482cccca7e2f2bc22e0db2bfdad5bdc7c"
-      },
-      "canary": {
-        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/ur-validation-preload-v2/canary",
-        "sha256": "7903f47691309444cce238d6a0a6fe716f7c668d80a6e2ff3d5cfe21c7dcbfd0"
-      },
-      "loader": "/opt/intel/oneapi/compiler/2026.1/lib/libur_loader.so.0.12.0",
-      "original_plan": {
-        "commit": "550c75f5fc954ee38b70230e32d2a48e12100d8a",
-        "path": "bench/results/2026-10-15-pr6-recovery-audit/research-index.json",
-        "sha256": "d12866b93c51e76a83e95638e66b6f6f4e0e33d779516a5fddecc178a6f8e10a"
-      },
-      "source_commit": "f312b6691f508125db6cfc2580ca32a686ff2642",
-      "retained_reference_until_exit": true,
-      "ordinary_runtime_teardown_qualified": false
-    },
-    "packages": [
-      "intel-oneapi-compiler-dpcpp-cpp-runtime-2026.1 2026.1.1-325",
-      "intel-oneapi-dnnl-2026.1 2026.1.0-617",
-      "intel-oneapi-mkl-core-2026.1 2026.1.0-236",
-      "intel-oneapi-tbb-2023.1 2023.1.0-151",
-      "intel-oneapi-umf-1.1 1.1.0-340",
-      "intel-opencl-icd 26.35.39758.17-1~24.04~ppa1"
-    ],
-    "external_config_sha256": {
-      "/etc/OpenCL/vendors/intel.icd": "3e8dcd1a312124079cc8296fafc6900ce83bed6f789f0ed41d4d9f3f201dd0ed",
-      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/llama9b-independent-control-v5/icd/intel.icd": "3e8dcd1a312124079cc8296fafc6900ce83bed6f789f0ed41d4d9f3f201dd0ed"
-    },
-    "ICD_selection": {
-      "scope": "This child only;no system/user configuration change.",
-      "reference": "https://github.com/KhronosGroup/OpenCL-ICD-Loader/blob/main/README.md#table-of-debug-environment-variables",
-      "loader": "/opt/intel/oneapi/compiler/2026.1/lib/libOpenCL.so.1.0.0",
-      "loader_sha256": "4d7dc0d09f8623a02ecf5cd06c21790f8ec2f8f971bad1a45c10c158079b1028",
-      "private_icd_text": "/usr/lib/x86_64-linux-gnu/intel-opencl/libigdrcl.so\n",
-      "GPU_provider": "/usr/lib/x86_64-linux-gnu/intel-opencl/libigdrcl.so",
-      "GPU_provider_sha256": "83551573a0c19c22eeaa56312e6d4b54af3d51643ea78b4d6c6dd10713d11a83",
-      "reason": "Selected compiler OpenCL loader follows Khronos directory contract,not system ocl-icd file contract. Use a private single-Intel-GPU ICD directory. No NVIDIA/CPU OpenCL enumeration. This differs from unrecorded historical defaults."
-    },
-    "selected_original": {
-      "source_commit": "6e40afc1beddd059ee518617f6c1efce1da14aca",
-      "inputs_recovered": 9853,
-      "assets_verified": 13,
-      "receipt": {
-        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/record.json",
-        "sha256": "a38f477670fafcd1a931be2e20d90d6d9718df75b61954b421f361af9f6881b2"
-      },
-      "limits": "Original build remains selected; this source-only diagnostic is not adoption."
-    },
-    "boot": "cfda0b6a-7c13-4fe2-bdf5-8f9202770840",
-    "driver": {
-      "pci": "/sys/bus/pci/devices/0000:05:00.0",
-      "driver": "xe",
-      "vendor": "0x8086",
-      "device": "0xe20c",
-      "kernel": "7.0.0-38-generic",
-      "devcoredump": false
-    },
-    "active": false,
-    "ownership_closed": false,
-    "passed": false,
-    "GPU_executed": true,
-    "model_executed": true,
-    "model_adoption_qualified": false,
-    "criteria": "Ordered host canary,one2048-token traced model check exercising512ubatches,then one independent131072-token process with full131072 warmup+3timed repetitions. All normal/reaped/empty-session,no fresh fault,same boot/driver/inputs/models/providers,pre-main parameter validation active,silent validation log,actual official SYCL/LevelZero/NEO maps. Parse exactly one JSON test with n_prompt,zero n_gen,FAon,K/Vq8_0,all GPU layers,SYCL backend,positive finite times. Stop first failure;no retries. Three within-process samples do not measure between-process variability.",
-    "question": "Does a separately installed dense9B SYCL stack still reach the user-reported966.57\u00b110.59tok/s while Strata same-binary historical1002.6507 now measures911.7371? Descriptive discrimination,not a causal model/source comparison or an architecture ceiling.",
-    "historical": {
-      "user_reported_tok_s": 966.57,
-      "user_reported_stdev": 10.59,
-      "build": "abeada335(11455)",
-      "driver": "1.17.39395+14",
-      "historical_binary_hash_available": false,
-      "limits": "Historical environment/runtime hashes absent. Current NEO and explicit Intel-only OpenCL ICD selection differ;diagnostic retained-loader validation and immutable safety settings are charged. Repetition count3 versus user default5. No Strata/llama throughput equivalence or historical regression claim."
-    },
-    "trace_budget_reason": "128MiB finite full-API budget for2048probe covers512ubatch attention and incidental Intel OpenCL enumeration. Long131K has parameter validation without full API trace.",
-    "retention": "Keep exact command/environment/source/executable/model/runtime identities,3individual timings,actual provider/fault/closure result and limits. No new build. Retire successful traces,logs,duplicate external receipt after extraction;user installed binary/model are not disposable project builds.",
-    "outcomes": [
-      {
-        "label": "canary",
-        "normal_closed": true,
-        "actual_code_maps": []
-      }
-    ],
-    "error": "RuntimeError('native child failed:  validation API: pid=866663 operation=config-create result=0\\nstrata UR validation API: pid=866663 operation=layers-size result=0\\nstrata UR validation API: pid=866663 operation=layers-query result=0\\nstrata UR validation API: pid=866663 operation=enable result=0\\nstrata UR validation API: pid=866663 operation=first-init result=0\\nstrata UR validation API: pid=866663 operation=config-release result=0\\nstrata UR validation API: pid=866663 operation=postinit result=46\\nstrata UR validation: pid=866663 phase=before-main threads_before=1 preinit=37 config_create=0 layers_query=0 enable=0 init=0 config_release=0 checked=46 untouched=1 retained_ref=1\\nBuild with Macros:\\n  GGML_SYCL_DNNL: yes\\n  GGML_SYCL_F16: yes\\n  GGML_SYCL_FORCE_MMQ: no\\n  GGML_SYCL_GRAPH: yes\\n  GGML_SYCL_SUPPORT_LEVEL_ZERO_API: yes\\n  GGML_SYCL_SUPPORT_VMM: yes\\nRunning with Environment Variables:\\n  GGML_SYCL_DEBUG: 0\\n  GGML_SYCL_DEV_DEBUG: 0\\n  GGML_SYCL_DEV2DEV_MEMCPY: 0 (SYCL API)\\n  GGML_SYCL_GET_MEM_API: 0 (Level Zero API)\\n  GGML_SYCL_ENABLE_DNN: 1\\n  GGML_SYCL_FA_ONEDNN: 1\\n  GGML_SYCL_FA_ONEDNN_MAX_KV: 0\\n  GGML_SYCL_ENABLE_MKL_FA: 1\\n  GGML_SYCL_MEMTRACE: 0\\n  GGML_SYCL_MEMTRACE_STEP: 64\\n  GGML_SYCL_ENABLE_FLASH_ATTN: 1\\n  GGML_SYCL_ENABLE_GRAPH: 0\\n  GGML_SYCL_ENABLE_OPT: 1\\n  GGML_SYCL_ENABLE_VMM: 1\\n  GGML_SYCL_ENABLE_FUSION: 1\\n  GGML_SYCL_ENABLE_ESIMD: 1\\n  GGML_SYCL_MMVQ_WIDE: 1\\n  GGML_SYCL_PRIORITIZE_DMMV: 0\\n  GGML_SYCL_USE_ASYNC_MEM_OP: 1\\n  GGML_SYCL_USE_LEVEL_ZERO_API: 1\\n  GGML_SYCL_USM_SYSTEM: 0\\n  GGML_SYCL_ENABLE_HOST_PINNED_MEM: 1\\n  GGML_SYCL_HOST_PINNED_MEM_2G: 0\\n  GGML_SYCL_SPARSE_FA: 0\\n  GGML_SYCL_SPARSE_FA_DEBUG: 0\\n  GGML_SYCL_SPARSE_FA_MARGIN: 256\\nFound 1 SYCL devices:\\n|  |                   |                                       |       |Max    |        |Max  |Global |                     |\\n|  |                   |                                       |       |compute|Max work|sub  |mem    |                     |\\n|ID|        Device Type|                                   Name|Version|units  |group   |group|size   |       Driver version|\\n|--|-------------------|---------------------------------------|-------|-------|--------|-----|-------|---------------------|\\n| 0| [level_zero:gpu:0]|                Intel Arc B570 Graphics|   20.1|    160|    1024|   32| 10666M|        1.17.39758+17|\\nSYCL Optimization Feature:\\n|ID|        Device Type|Reorder|\\n|--|-------------------|-------|\\n| 0| [level_zero:gpu:0]|      Y|\\nllama-bench: benchmark 1/1: starting\\nllama-bench: benchmark 1/1: warmup prompt run\\n')",
-    "fresh_faults": [],
-    "boot_unchanged": true,
-    "driver_after": {
-      "pci": "/sys/bus/pci/devices/0000:05:00.0",
-      "driver": "xe",
-      "vendor": "0x8086",
-      "device": "0xe20c",
-      "kernel": "7.0.0-38-generic",
-      "devcoredump": false
-    },
-    "plan_source_and_inputs_reference": "c9baac811:bench/results/2026-10-15-pr6-recovery-audit/prefill-resources-current.json#independent_llama9b_control_v5",
-    "actual_ownership_reconciliation": {
-      "controller_ended": true,
-      "all_direct_children_reaped": true,
-      "all_anchored_sessions_empty": true,
-      "survivors": [],
-      "original_ownership_closed_field_preserved": false
-    },
-    "representative_failure": {
-      "error": "RuntimeError('unplanned executable map: /usr/lib/x86_64-linux-gnu/libva.so.2.2400.0')",
-      "exit_code": -15,
-      "observation_complete": false,
-      "direct_child_reaped": true,
-      "session_empty": true,
-      "survivors": [],
-      "cleanup": [
-        {
-          "pid": 866663,
-          "start_ticks": 134344236,
-          "signal": "SIGTERM",
-          "result": "sent"
-        }
-      ]
-    },
-    "decision": "Observer refuses lazily loaded NEO media dependency libva.so.2.2400.0 before completing2048warmup;not a GPU hang or a model performance sample. GPU ICD is now correctly selected;new plan must prospectively snapshot installed native linker catalog,not learn/refresh failedv5hashes."
-  },
   "independent_llama9b_control_v6": {
-    "stage": "prepared",
+    "stage": "closed",
     "source_commit": "d1e47b4e5d075814ff5c7e95d881d9fecae306b5",
-    "input_sha256": {
-      "tools/sycl/reference_llama.py": "71627f373a9455afda357984374cdade57ed19b6dc3b76b01b41a9a042f8df7a",
-      "tools/sycl/runtime_probe.py": "750818a521dcdf28901638424e9789c2db22d85876226b6f5141a954bb9d41d6",
-      "tools/sycl/measurement_owner.py": "bddd0c5e5020e882ca3404679420faec11e820dabce2ed4c72ef82b4c9c0874a",
-      "tools/sycl/measurement_guards.py": "794e332c70aca0acadad4f26d0414548e023a02fd27b72ed78fc773674423ec8",
-      "tools/sycl/ur_validation.py": "2e41d84788dc9cc3c7435b18b43601b3ca79280ccb855414d7a36bae6bff83e7",
-      "tools/sycl/build_engine.py": "8444783ab417378207ec89ad2bc3cf648480e20d9e77f06ebb3070c93e10b131",
-      "tools/sycl/check_full_context_source.py": "5e72fa724e890e682382758caf6222042e1ec89770962ce205ab756783332030",
-      "tools/sycl/measurement_environment.json": "d4402591df50e80dc45a5ec9e4839c7a794888850b1473537b6f95179be5b03c"
-    },
     "external_source": {
       "revision": "abeada335e2e78bd3fe63febafab7e900ce75810",
       "tracked_tree_clean": true,
@@ -7625,34 +6824,6 @@
       "source_commit": "f312b6691f508125db6cfc2580ca32a686ff2642",
       "retained_reference_until_exit": true,
       "ordinary_runtime_teardown_qualified": false
-    },
-    "environment": {
-      "PATH": "/usr/bin:/bin",
-      "HOME": "/home/yayoi",
-      "LANG": "C.UTF-8",
-      "LC_ALL": "C.UTF-8",
-      "PYTHONDONTWRITEBYTECODE": "1",
-      "LD_LIBRARY_PATH": "/opt/intel/oneapi/compiler/2026.1/lib:/opt/intel/oneapi/mkl/2026.1/lib:/opt/intel/oneapi/dnnl/2026.1/lib:/opt/intel/oneapi/tbb/2023.1/lib:/opt/intel/oneapi/umf/1.1/lib",
-      "ONEAPI_DEVICE_SELECTOR": "level_zero:gpu",
-      "UR_ADAPTERS_FORCE_LOAD": "/opt/intel/oneapi/compiler/2026.1/lib/libur_adapter_level_zero_v2.so.0.12.0",
-      "UR_L0_V2_FORCE_DISABLE_COPY_OFFLOAD": "1",
-      "NEOReadDebugKeys": "1",
-      "EnableDirectSubmission": "0",
-      "STRATA_SYCL_PREFILL_SAME_QUEUE": "1",
-      "STRATA_SYCL_VERIFY_NATIVE_CAPTURE": "0",
-      "SYCL_CACHE_PERSISTENT": "0",
-      "ZES_ENABLE_SYSMAN": "0",
-      "UR_ENABLE_LAYERS": "UR_LAYER_TRACING,UR_LAYER_PARAMETER_VALIDATION",
-      "UR_LOG_TRACING": "level:info;flush:info;output:stderr",
-      "UR_LOG_VALIDATION": "level:warning;flush:warning;output:stderr",
-      "UR_LOG_LOADER": "level:warning;flush:warning;output:stderr",
-      "UR_LOG_LEVEL_ZERO": "level:warning;flush:warning;output:stderr",
-      "LD_PRELOAD": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/ur-validation-preload-v2/libstrata_ur_validation.so",
-      "STRATA_UR_PROBE_EXPECTED_LOADER": "/opt/intel/oneapi/compiler/2026.1/lib/libur_loader.so.0.12.0",
-      "TMPDIR": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/llama9b-independent-control-v6/tmp",
-      "XDG_CACHE_HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/llama9b-independent-control-v6/cache",
-      "OCL_ICD_VENDORS": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/llama9b-independent-control-v6/icd",
-      "GGML_NO_BACKTRACE": "1"
     },
     "packages": [
       "intel-oneapi-compiler-dpcpp-cpp-runtime-2026.1 2026.1.1-325",
@@ -7680,16 +6851,6 @@
       "GPU_provider_sha256": "83551573a0c19c22eeaa56312e6d4b54af3d51643ea78b4d6c6dd10713d11a83",
       "reason": "Selected compiler OpenCL loader follows Khronos directory contract,not system ocl-icd file contract. Use a private single-Intel-GPU ICD directory. No NVIDIA/CPU OpenCL enumeration. This differs from unrecorded historical defaults."
     },
-    "selected_original": {
-      "source_commit": "6e40afc1beddd059ee518617f6c1efce1da14aca",
-      "inputs_recovered": 9853,
-      "assets_verified": 13,
-      "receipt": {
-        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/record.json",
-        "sha256": "a38f477670fafcd1a931be2e20d90d6d9718df75b61954b421f361af9f6881b2"
-      },
-      "limits": "Original build remains selected; this source-only diagnostic is not adoption."
-    },
     "boot": "cfda0b6a-7c13-4fe2-bdf5-8f9202770840",
     "driver": {
       "pci": "/sys/bus/pci/devices/0000:05:00.0",
@@ -7701,65 +6862,10 @@
     },
     "active": false,
     "ownership_closed": true,
-    "passed": false,
-    "GPU_executed": false,
-    "model_executed": false,
+    "passed": true,
+    "GPU_executed": true,
+    "model_executed": true,
     "model_adoption_qualified": false,
-    "cases": [
-      {
-        "label": "canary",
-        "argv": [
-          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/ur-validation-preload-v2/canary"
-        ]
-      },
-      {
-        "label": "probe2048",
-        "argv": [
-          "/home/yayoi/ghq/github.com/ggml-org/llama.cpp/build/bin/llama-bench",
-          "-fa",
-          "1",
-          "-n",
-          "0",
-          "-ctk",
-          "q8_0",
-          "-ctv",
-          "q8_0",
-          "-m",
-          "/data/llm_models/unsloth/Qwen3.5-9B-GGUF/Qwen3.5-9B-UD-Q4_K_XL.gguf",
-          "-o",
-          "jsonl",
-          "--progress",
-          "-p",
-          "2048",
-          "-r",
-          "1"
-        ]
-      },
-      {
-        "label": "pp131072",
-        "argv": [
-          "/home/yayoi/ghq/github.com/ggml-org/llama.cpp/build/bin/llama-bench",
-          "-fa",
-          "1",
-          "-n",
-          "0",
-          "-ctk",
-          "q8_0",
-          "-ctv",
-          "q8_0",
-          "-m",
-          "/data/llm_models/unsloth/Qwen3.5-9B-GGUF/Qwen3.5-9B-UD-Q4_K_XL.gguf",
-          "-o",
-          "jsonl",
-          "--progress",
-          "-p",
-          "131072",
-          "-r",
-          "3"
-        ]
-      }
-    ],
-    "criteria": "Ordered host canary,one2048-token traced model check exercising512ubatches,then one independent131072-token process with full131072 warmup+3timed repetitions. All normal/reaped/empty-session,no fresh fault,same boot/driver/inputs/models/providers,pre-main parameter validation active,silent validation log,actual official SYCL/LevelZero/NEO maps. Parse exactly one JSON test with n_prompt,zero n_gen,FAon,K/Vq8_0,all GPU layers,SYCL backend,positive finite times. Stop first failure;no retries. Three within-process samples do not measure between-process variability.",
     "question": "Does a separately installed dense9B SYCL stack still reach the user-reported966.57\u00b110.59tok/s while Strata same-binary historical1002.6507 now measures911.7371? Descriptive discrimination,not a causal model/source comparison or an architecture ceiling.",
     "historical": {
       "user_reported_tok_s": 966.57,
@@ -7769,20 +6875,217 @@
       "historical_binary_hash_available": false,
       "limits": "Historical environment/runtime hashes absent. Current NEO and explicit Intel-only OpenCL ICD selection differ;diagnostic retained-loader validation and immutable safety settings are charged. Repetition count3 versus user default5. No Strata/llama throughput equivalence or historical regression claim."
     },
-    "budgets": {
-      "wall": 1800,
-      "cpu": 2400,
-      "rss_cap": 25769803776,
-      "text_cap": 134217728,
-      "file_cap": 134217728,
-      "total_cap": 335544320
-    },
-    "trace_budget_reason": "128MiB finite full-API budget for2048probe covers512ubatch attention and incidental Intel OpenCL enumeration. Long131K has parameter validation without full API trace.",
-    "retention": "Keep exact command/environment/source/executable/model/runtime identities,3individual timings,actual provider/fault/closure result and limits. No new build. Retire successful traces,logs,duplicate external receipt after extraction;user installed binary/model are not disposable project builds.",
+    "retention": "Keep3full-length timing samples,exact command/config/environment history,actual45code identities,provider/fault/closure and provenance limits. Raw traces/cache/duplicate record have no next consumer after native review. No new build;installed user binary/model retained.",
     "runtime_manifest": {
       "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/llama9b-independent-control-v6/runtime-inputs.json",
       "sha256": "d2be801e5c5700331573f04cb6892b79c80aea73f3a7b4ecc15aae98478fc01d",
       "files": 1516
+    },
+    "complete": true,
+    "host_probe_accepted": true,
+    "summary": {
+      "tok_s": [
+        1040.468331419079,
+        1042.3778846132986,
+        1043.189361367292
+      ],
+      "mean_tok_s": 1042.0118591332232,
+      "median_tok_s": 1042.3778846132986,
+      "stdev_tok_s": 1.3969545389224902,
+      "versus_user_mean_ratio": 1.0780511076623764,
+      "historical_Strata_cause": "unattributed",
+      "new_model_route_selected": false
+    },
+    "fresh_faults": [],
+    "boot_unchanged": true,
+    "driver_after": {
+      "pci": "/sys/bus/pci/devices/0000:05:00.0",
+      "driver": "xe",
+      "vendor": "0x8086",
+      "device": "0xe20c",
+      "kernel": "7.0.0-38-generic",
+      "devcoredump": false
+    },
+    "frozen_plan_and_inputs_reference": "e42db16f5:bench/results/2026-10-15-pr6-recovery-audit/prefill-resources-current.json#independent_llama9b_control_v6",
+    "raw_record_sha256": "5f9331f0defbee4772dc3eaf9b36861bc3930d8008d43bb02212b6cd1b6fad7d",
+    "measurement": {
+      "build_commit": "abeada335",
+      "build_number": 11455,
+      "cpu_info": "AMD Ryzen 5 5600X 6-Core Processor",
+      "gpu_info": "Intel(R) Arc(TM) B570 Graphics",
+      "backends": "SYCL",
+      "model_type": "qwen35 9B Q4_K - Medium",
+      "model_size": 5955127296,
+      "model_n_params": 8953803264,
+      "n_batch": 2048,
+      "n_ubatch": 512,
+      "n_threads": 6,
+      "cpu_mask": "0x0",
+      "cpu_strict": false,
+      "poll": 50,
+      "type_k": "q8_0",
+      "type_v": "q8_0",
+      "n_gpu_layers": -1,
+      "n_cpu_moe": 0,
+      "split_mode": "layer",
+      "main_gpu": 0,
+      "no_kv_offload": false,
+      "flash_attn": 1,
+      "devices": "auto",
+      "tensor_split": "0.00",
+      "tensor_buft_overrides": "none",
+      "load_mode": "auto",
+      "lazy_mode": "auto",
+      "embeddings": false,
+      "no_op_offload": 0,
+      "no_host": false,
+      "repack": true,
+      "fit_target": 0,
+      "fit_min_ctx": 0,
+      "n_prompt": 131072,
+      "n_gen": 0,
+      "n_depth": 0,
+      "samples_ns": [
+        125974040768,
+        125743266367,
+        125645453121
+      ]
+    },
+    "observed_runtime_files": {
+      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/ur-validation-preload-v2/libstrata_ur_validation.so": "1d4e69d672d55fa0a126ae43b7b4743482cccca7e2f2bc22e0db2bfdad5bdc7c",
+      "/home/yayoi/ghq/github.com/ggml-org/llama.cpp/build/bin/llama-bench": "4fe327dad8634e70b2f2cb852732265883e7fac84f8ed72510a25ca3d41360bb",
+      "/opt/intel/oneapi/compiler/2026.1/lib/libOpenCL.so.1.0.0": "4d7dc0d09f8623a02ecf5cd06c21790f8ec2f8f971bad1a45c10c158079b1028",
+      "/opt/intel/oneapi/compiler/2026.1/lib/libarcher.so": "41c1429db35e648880a5d474706b6b3cff0c9297d9120ac717b96200b111dad3",
+      "/opt/intel/oneapi/compiler/2026.1/lib/libimf.so": "67a4b6c27002f59f26c411f4ec384300d781365af19d6a2eb9f0dd94d2a0f470",
+      "/opt/intel/oneapi/compiler/2026.1/lib/libintlc.so.5": "612ab119242ccda945de6eb354369b5bee6a158bc9724e4da5e466cb0ad630db",
+      "/opt/intel/oneapi/compiler/2026.1/lib/libiomp5.so": "19cd02fbb18d948db4c4936afc5e07929ef16d676f72d0e76e9e853e665b5146",
+      "/opt/intel/oneapi/compiler/2026.1/lib/libirng.so": "2cd4057ba6bcd9235685597098c3bdc9811e1de0a457f7a0a2aa47ce691995c7",
+      "/opt/intel/oneapi/compiler/2026.1/lib/libsvml.so": "a6dbbc425c8270c3485e40ef0924ef38ed89ced4026056fd3f1f529774c4f86c",
+      "/opt/intel/oneapi/compiler/2026.1/lib/libsycl.so.9.0.0": "d769a71f2c71530e59a5ba22831ec5a82edcde718076d2663772255498c8e053",
+      "/opt/intel/oneapi/compiler/2026.1/lib/libur_adapter_level_zero_v2.so.0.12.0": "bfdc0f26bf88bd0bccd66fc25302a4b22559f8fe30e499be18529be3ed610e60",
+      "/opt/intel/oneapi/compiler/2026.1/lib/libur_loader.so.0.12.0": "5338c03524f6d3fdd7d6067e5a3f84315e36e11fe1f526d5bbd02d0c88f82a32",
+      "/opt/intel/oneapi/dnnl/2026.1/lib/libdnnl.so.3.13": "88342b53c9797091583e5000ec7436f884c9d690998096d52728b7afa0f3f676",
+      "/opt/intel/oneapi/mkl/2026.1/lib/libmkl_core.so.3": "b4f086651ee5a8471140d53fedfdbbaba606287784763b0739f282872c31aa9b",
+      "/opt/intel/oneapi/mkl/2026.1/lib/libmkl_intel_ilp64.so.3": "ffbbeff402fdf09baa53f8226b86f27046592d984ae2916b1bbc2e59132c7c89",
+      "/opt/intel/oneapi/mkl/2026.1/lib/libmkl_sycl_blas.so.6": "51d6c16990701a5aaf9fbbde5d86f5a7197b81357b66b19cbb912206564cf4ee",
+      "/opt/intel/oneapi/mkl/2026.1/lib/libmkl_tbb_thread.so.3": "0df6158dcbe25787a34a50f399593cae0cf713da039bcf7c2024290826814400",
+      "/opt/intel/oneapi/tbb/2023.1/lib/libtbb.so.12.19": "2c1fcbc65a33771a5e02a201734774252528e10f57cef9e2f902fe209c0319e1",
+      "/opt/intel/oneapi/tbb/2023.1/lib/libtbbmalloc.so.2.19": "74410b8566ecedac338f072662272a970bb0230870c0a6ce964042bf9a26fbbb",
+      "/opt/intel/oneapi/umf/1.1/lib/libumf.so.1.1.0": "c74cfea0360d09b5072a8227efbc830db36bd57669ca22d190d0fb31fe8e3425",
+      "/usr/lib/x86_64-linux-gnu/intel-opencl/libigdrcl.so": "83551573a0c19c22eeaa56312e6d4b54af3d51643ea78b4d6c6dd10713d11a83",
+      "/usr/lib/x86_64-linux-gnu/ld-linux-x86-64.so.2": "c20a2dc8917c755f02b94049356320fe1f62ac7d9f8994731f807d9df39302da",
+      "/usr/lib/x86_64-linux-gnu/libc.so.6": "3a15d66867d83762c7f2f1e37359cb8f6c5743edb369c65285cb0b1c4f7498bf",
+      "/usr/lib/x86_64-linux-gnu/libcap.so.2.66": "6ac6abc86ac891c6e13486470e26f1d939f47fda9e6b5d5508a7f5ec881adc84",
+      "/usr/lib/x86_64-linux-gnu/libdl.so.2": "c2994527172cc23b7fb0f7d611b71e00a37da27af12c2e5e9e0dc1a742886c96",
+      "/usr/lib/x86_64-linux-gnu/libdrm.so.2.134.0": "0603c4dcb88bc9e076e34aedeec3513038e608d6d15d21330e49cb0ea38155e1",
+      "/usr/lib/x86_64-linux-gnu/libgcc_s.so.1": "d93224d2b0dab4247598be683adca02f5cf00586f99c187579cd7e92058fb7cb",
+      "/usr/lib/x86_64-linux-gnu/libhwloc.so.15.7.0": "86dff44a023254d997cea910b9a51f35afefe6780f4b5530f974a2009ba47487",
+      "/usr/lib/x86_64-linux-gnu/libigdgmm.so.12.10.0": "427847d14c2c36889efa8b0be6a8af6afac32cc3c744dcfc8e010d4ca210c957",
+      "/usr/lib/x86_64-linux-gnu/libigdml.so.1.0.240": "1806ee390b7693dd61dd5385a25744dd94479295d3a7d15730e578e91b18e782",
+      "/usr/lib/x86_64-linux-gnu/libm.so.6": "fce00b6f25f459cf4ae0b7fae4257909a1a8a86f9149e7c029a5d617baf1ccd0",
+      "/usr/lib/x86_64-linux-gnu/libnl-3.so.200.26.0": "afcb69e2ef0b46c2ce7b7483848332fa9462776d33163f64209acf01f86eddd7",
+      "/usr/lib/x86_64-linux-gnu/libnl-genl-3.so.200.26.0": "0757db7e6c5fbc4d2a8bbedbac7061fbb8ebb6196b4d2954d3a321e9ff76933c",
+      "/usr/lib/x86_64-linux-gnu/libpthread.so.0": "90491a21ce44efcf3bd4b65ec82501c091d7ebe7f8d9b341dd01d721001d9ecd",
+      "/usr/lib/x86_64-linux-gnu/librt.so.1": "6d072187d88e092e81561a44c03a4a41397319022c6d43519757cc051c576d82",
+      "/usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.33": "1fd75fe70354a416d75aef22bcae68c47bd25d20e2d0568c30b1a9838cf62f11",
+      "/usr/lib/x86_64-linux-gnu/libudev.so.1.7.8": "0d6934adafb2ef3c640382440c14d6bd60f391e688c000796ffcea0c72849269",
+      "/usr/lib/x86_64-linux-gnu/libz.so.1.3": "f61677c7bdb7c2aa2a243ea781bfd16afcb361cede7b4ef76127a9d8eb9a5242",
+      "/usr/lib/x86_64-linux-gnu/libze_intel_gpu.so.1.17.39758": "52e29a602f92d3542eac91e20717743e63ca7d4b257d0c79a3c4d6c64c94ea49",
+      "/usr/lib/x86_64-linux-gnu/libze_loader.so.1.32.0": "b764efda507f173560fa6055d433dd5c76140180b4a7c532e1cea813cde67363",
+      "/usr/lib/x86_64-linux-gnu/libze_tracing_layer.so.1.32.0": "db1856f379706d51b6ded84ce028d4aa48740ef63793f60e8a1e027c6db6ffb5",
+      "/usr/lib/x86_64-linux-gnu/libzstd.so.1.5.5": "0a2128bc10841fb29e76d08d945864dfb0b6a66da5df6df5d8299197439e54bb",
+      "/usr/local/lib/libigc.so.2.41.5+1788943183": "40badd8f1ee80ac844a8947f5e91e5654fbcd851caefe343b0e5ec4ce4d1b123",
+      "/usr/local/lib/libigdfcl.so.2.41.5+1788943183": "ece8bcd533a44cc1684c1f24eeeca3302e4d19307a806fad5f1b83171f9fc1c3",
+      "/usr/local/lib/libopencl-clang2.so.22.1": "02ba9fb0f16b7f02c012095c46f8053c4bc20f9b5bde3028eedff6dcfed94bfe"
+    },
+    "verification": {
+      "3owned_processes_exit0_reaped_sessions_empty": true,
+      "pre_main_UR_validation_all3": true,
+      "silent_parameter_validation_all3": true,
+      "traced2048_then131072warmup_plus3timed_repetitions": true,
+      "GPU_process_actual_code_maps": [
+        45,
+        45
+      ],
+      "same_gpu_runtime_maps": true,
+      "same_boot_and_driver": true,
+      "fresh_faults": [],
+      "historical_binary_hash_available": false
+    },
+    "interpretation": "Current installed dense9B control reaches1042.0119tok/s mean(3within-process samples),not below user reported966.57 under unmatched historic runtime/environment. Supports investigating Strata-specific paths rather than assuming uniform GPU slowdown;does not exclude hardware/resource interactions for different shapes/algorithms or establish exact historical comparison,hardware ceiling,Strata regression cause or restoration.",
+    "next_action": "Independent GU production-dispatch calibration for M160/2333/2334 plus disjoint GPU service/host submission and waits,under official SDK. First correct measurement coverage;GU direct --bench is not the production dispatcher. No inference route adopted.",
+    "earlier_preflight_failures": [
+      {
+        "version": 1,
+        "original_stage": "failed",
+        "GPU_executed": false,
+        "model_speed_samples": 0,
+        "failure": "RuntimeError('unplanned executable map: /usr/lib/x86_64-linux-gnu/librt.so.1')",
+        "original_ownership_closed": false,
+        "actual_children_reaped_sessions_empty": true,
+        "fresh_faults": [],
+        "archived_reference": "0e76edea7:bench/results/2026-10-15-pr6-recovery-audit/prefill-resources-current.json#independent_llama9b_control_v1"
+      },
+      {
+        "version": 2,
+        "original_stage": "failed",
+        "GPU_executed": true,
+        "model_speed_samples": 0,
+        "failure": "RuntimeError('unplanned executable map: /usr/lib/x86_64-linux-gnu/libnvidia-opencl.so.580.178.04')",
+        "original_ownership_closed": false,
+        "actual_children_reaped_sessions_empty": true,
+        "fresh_faults": [],
+        "archived_reference": "548e1ad6e:bench/results/2026-10-15-pr6-recovery-audit/prefill-resources-current.json#independent_llama9b_control_v2"
+      },
+      {
+        "version": 3,
+        "original_stage": "failed",
+        "GPU_executed": true,
+        "model_speed_samples": 0,
+        "failure": "Main selected CPU intel64.icd and file-form override for actual Khronos loader;oneDNN primitive failure;no valid131Ksample.",
+        "original_ownership_closed": true,
+        "actual_children_reaped_sessions_empty": true,
+        "fresh_faults": [],
+        "archived_reference": "06620c6ef:bench/results/2026-10-15-pr6-recovery-audit/prefill-resources-current.json#independent_llama9b_control_v3"
+      },
+      {
+        "version": 4,
+        "original_stage": "failed",
+        "GPU_executed": true,
+        "model_speed_samples": 0,
+        "failure": "Directory form corrected but still CPU ICD selected;oneDNN reported B570 OpenCL device not found. V6GPUICD resolves it.",
+        "original_ownership_closed": true,
+        "actual_children_reaped_sessions_empty": true,
+        "fresh_faults": [],
+        "archived_reference": "28410d171:bench/results/2026-10-15-pr6-recovery-audit/prefill-resources-current.json#independent_llama9b_control_v4"
+      },
+      {
+        "version": 5,
+        "original_stage": "failed",
+        "GPU_executed": true,
+        "model_speed_samples": 0,
+        "failure": "RuntimeError('unplanned executable map: /usr/lib/x86_64-linux-gnu/libva.so.2.2400.0')",
+        "original_ownership_closed": false,
+        "actual_children_reaped_sessions_empty": true,
+        "fresh_faults": [],
+        "archived_reference": "d1e47b4e5:bench/results/2026-10-15-pr6-recovery-audit/prefill-resources-current.json#independent_llama9b_control_v5"
+      }
+    ],
+    "independent_review": {
+      "model": "gpt-6-luna max",
+      "bytes": 4787,
+      "sha256": "dad0618ae5576bbab2380b79484f24eeb0fb71e9a3d7b8a0a648f00c34682c84",
+      "digest": "Accepted descriptive independent control;all3normal closures,provider/pre-main validation,source/runtime hash and3long samples verified. One process only;historical binary/environment unpinned,not causal comparison,hardware ceiling,universal GPU health or Strata restoration. Original V1\u2013V5failure statuses preserved."
+    },
+    "next_GU_dispatch_measurement_audit": {
+      "source_revision": "28410d171",
+      "report_sha256": "8b7aec364103790d7fc93cff0f636dfa44de702b25b469587466c7e99af71001",
+      "review_sha256": "c258c84d81fea0fee4162ca8a69e264eb1675ecd82d9f4d83d0e497acf9d4645",
+      "review_model": "gpt-6-luna max",
+      "classification": "decision support/static source only;no new GPU/build/test",
+      "dtype_finding": "Proposed current BF16/FP16 comparator bug is refuted:GU dense intermediates BF16 compared bitwise;hidden outputs FP16 compare_half;Down BF16 compare memcmp. Do not invalidate existing results or change math. Type-tag helper only if reused.",
+      "coverage_finding": "GU --bench directly calls xe::Gemm;profile hook calls production at2333/2334/8192 but not repeated clean timing. Down --bench-public calls production at64/160/2333/2334/2335;both arms fall back below2334.",
+      "next": "Add public GU dispatch measurement M160/2333/2334 with startup arms and timed route counts;pin source/recipe/inputs,prime setup,qualify timing/control/observer cost. Report GPU service separate from host submission/wait. Independent math calibration does not promote failed staging/model."
     }
   }
 }
