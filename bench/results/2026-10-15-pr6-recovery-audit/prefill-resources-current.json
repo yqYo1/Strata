@@ -5915,7 +5915,7 @@
         }
       },
       "prefill_upload_staging": {
-        "stage": "prepared-build",
+        "stage": "built-not-executed",
         "source_commit": "551ec694ebd787099b887eb30473eb8c89e6b5a4",
         "sdk": {
           "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/unitrace-warmed-graph-window-v1/compiler-inputs.json",
@@ -6117,8 +6117,8 @@
         },
         "active": false,
         "ownership_closed": true,
-        "passed": false,
-        "complete": false,
+        "passed": true,
+        "complete": true,
         "GPU_executed": false,
         "model_executed": false,
         "model_adoption_qualified": false,
@@ -6172,6 +6172,16 @@
         "criteria": "Execution:normal owned closure,silent parameter validation,actual pinned provider/runtime,zero fresh fault/same boot,all source/target/host guards,all readers,private-map and counters pass. Each timing batch needs wall>=10ms and queue interval>=10ms,timer p99<=10us and empty-control maximum<=5percent of batch wall;queue intervals are nonexclusive,not GPU service. For EACH payload,GM of3process subsequent-median staged/ordinary wall ratios<=0.95 and every process ratio<1. Preserve first-use and all samples. A failed/ineligible screen forbids gated full-pipeline/model advancement;passing permits the separately planned dequant/GEMM component check only,not a model trial or adoption.",
         "safety_audit": "Main-authored ring;no XeStrata source.4host-USM slots,<=16MiB capacity/slot,256byte guards;same in-order context/device queue and registered device ownership. Reject device sources,overlap,bad extents/queues. Copy-event wait before CPU host-slot reuse;GPU readers and scratch overwrite ordered on same queue. Catch drains before unwinding;failed drain fail-stops with owners live. No new GPU arithmetic in inference;only bounded transfer-preparation memcpy. Default disabled prefill-only route;decode/short-prefill/cache placement unchanged. No physical256K qualification.",
         "retention": "Keep compact individual timing/CPU samples,eligibility/correctness/fault/source results. Review component executable at gate closure or imminent full-pipeline comparison. Original selected engine+12fixtures stay intact;two earlier GU/Down fixtures retain only their named ceiling consumer. Retire routine raw traces/build output once extracted;no full API trace during long validation.",
+        "compiled_inputs": {
+          "files": 693,
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-expert-staging-v1/compiler-inputs.json",
+          "sha256": "5d1ef109a0eba59505f4a947b8034a69938a5c537c783529c2ff5975f347fa9c"
+        },
+        "binary": {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-expert-staging-v1/sycl_expert_staging",
+          "bytes": 339384,
+          "sha256": "4ee081078f2f5f5f5ec6f0419792f02e5eeaec879f51ef5670a29c84a645c63d"
+        },
         "project": {
           "revision": "551ec694ebd787099b887eb30473eb8c89e6b5a4",
           "count": 495,
