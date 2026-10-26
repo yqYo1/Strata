@@ -648,55 +648,48 @@ eligible now. After replay,65raw/review files and the
 one-use controller retire;2,230,941raw bytes are removed. Restore the controller
 from7c52325ed for a concrete later comparison;do not retry its closed root.
 
-The next official build,sourcee40ce7782,adds warmed same-batch sparse GPU events
-and complete-wrapper thread-CPU accounting to the GU fixture. Its1427compiled
-inputs differ only in that fixture source;the other three fixture ELFs match
-the qualified originals exactly. No engine is rebuilt. Five fresh traced
-host/submission/GU checks pass,but the frozen old/off/on comparison stops in
-its first old-binary process. An817211ns initial endpoint control exceeds1%
-of the second77194900ns batch;the earlier82507300ns batch passed that rule.
-Both512-call batches pass dispatch and numerical checks,but the second is
-timing-ineligible and native exit1 is preserved. All six owned processes close;
-no fresh GPU fault appears. Neither new-observer-off nor observer-on timing
-runs,so there is no qualified CPU/GPU attribution or observer-cost result yet.
-See`public_gu_warmed_attribution`,source/controllere4c8a21c3 and plan3bcbfb7b7.
-Do not retry that frozen cohort unchanged or weaken its original gate. Next
-isolate endpoint/startup latency and obtain complete-wrapper/warmed-service
-evidence in a newly scoped bounded diagnostic. Effective clocks and scheduler
-conditions during the failed window remain unmeasured. The unselected
-short-batch attribution generation is now retired after original-source/recipe
-recovery;the qualified official v4fixtures remain the fallback for a longer
-fixed-batch replacement. The original engine and12fixtures remain the selected
-model reference. Do not interpret a longer-batch method as an original-model
-speedup or compare its cache/spacing envelope directly to the old short batches.
+The warmed public-GU attribution remains unqualified. The short-batch plan
+`public_gu_warmed_attribution` stops at an endpoint-control violation before
+new off/on timing. The longer `public_gu_warmed_attribution_v2`,sourcefdec18b9d,
+passes five traced checks and four timing processes,but observer-off off2stalls
+after one eligible M160batch. At300s the owner sends SIGTERM(native exit−15);
+xe records a ccs engine reset at termination,with no earlier xe fault in the
+observed window. All ten actual sessions are empty. Preserve its failed and
+incomplete-observation status;the precise blocked operation remains unknown.
+Neither cohort qualifies observer cost,resource saturation or historical cause.
+Original plans,individual samples and failure evidence remain in the linked
+resource result;closed controllers restore fromfdec18b9d.
 
-The longer-batch replacement,sourcefdec18b9d and plan71fb906b9,builds with1427
-covered compiler inputs. Only the GU fixture source changes;the other three
-executables retain their original hashes. Five traced checks and four complete
-timing processes pass,but the next observer-off process stalls after its first
-eligible M160batch. The300s owner deadline sends SIGTERM;native exit is−15.
-The kernel records a ccs engine reset at termination,with no earlier xe fault
-in the observed window. All ten actual process sessions are subsequently empty.
-The original incomplete-observation/ownership failure remains recorded separately
-from that verified closure. The final observer-on process never launches.
-See`public_gu_warmed_attribution_v2` for the completed and partial samples.
-No observer-cost,resource-saturation,model-speed or historical-cause conclusion
-is qualified. Do not rerun unchanged. Audit reset/warmup/enqueue/wait boundaries
-and outstanding-event retirement before a separately committed bounded diagnostic;
-the exact blocked operation remains unknown. The original engine and decode
-placement remain unchanged,and official v4remains the qualified component fallback.
-After exact-source recovery,234closed output/review/object files retire,
-89116814bytes. The corrected source review follows public`f16_out16` with FP16
-input/BF16output through vllm/TLA,not the own-backend joint-matrix kernel.
-Its transitive TLA helper matches both original Git inputs and both1427-entry
-compile closures. Source review finds no proven defect;generated progress is
-still unqualified. The corrected digest specifies a new64-call stage smoke,
-with16-call checked checkpoints and a30s outer process deadline. This cannot
-qualify the failed2048-call boundary;an API elapsed threshold cannot cancel a
-blocked call. Keep the failed status and one2797-byte stall diagnostic pair.
-At source-audit closure,the eight-file failing component and full report/review
-also retire:10files/30487898bytes. Official v4remains the component fallback.
-The one-use controller and temporary build mode restore fromfdec18b9d.
+The corrected source review follows public`f16_out16` with FP16input/BF16output
+through vllm/TLA,then native SwiGLU. The own-backend joint-matrix kernel is not
+this route. The transitive TLA helper matches original Git inputs and both
+1427-entry compile closures. Source-level bounds/uniform split-barrier checks
+find no proven defect;they do not establish generated-code progress.
+
+A new bounded stage smoke now passes on the official SDK. Native source3af1c47d9,
+frozen planb776d7179,executes one0.62382962s process:four groups of16public
+M160fallback calls,each followed by a checked marker drain/query. All308nested
+stage entries match returns;full UR trace has135kernel launches(including
+setup/reference/markers),38copies and4profiling queries. FP16hidden output
+matches the reference exactly,guards/inputs remain intact,parameter validation
+is silent,the native child exits0normally and no fresh fault appears. At most
+32ordinary kernels plus one checkpoint marker are outstanding per group.
+A pass is only this smaller smoke,not reproduction/avoidance proof for2048calls,
+performance,model,decode or physical262144qualification. Logged stage spans
+include trace/progress output;they are not isolated API/GPU service. A3s stage
+threshold is checked after return;only the30s owner deadline can terminate a
+stuck process. See`public_gu_stage_smoke_v1` for counts/maxima and limits.
+
+After original-source/recipe/1427-input/four-ELF recovery,the closed stage
+outputs and generation retire:179files/116557305bytes. Official v4remains the
+component fallback;original13model assets and one2797-byte unresolved-stall
+diagnostic stay intact. Successful full traces/private checkpoints are gone.
+The current source removes the closed high-depth public timing/attribution modes;
+restore their exact tested code from3af1c47d9 only for a separately justified plan.
+`sycl_gemm_test --matrix-only` now selects18FP16/BF16FP32-output and4Q8strided
+matrix checks while leaving transfer-ring/pipeline/separate-queue cases unrun.
+That new CLI path and its clean official build/30s traced qualification are the
+next gate,not a completed oneMKL/model qualification or a throughput improvement.
 
 The fresh sourcee33d16fc3 attribution fixture closes ten official-SDK processes
 with240eligible/correct timing samples and120complete CPU/GPU profiles.
