@@ -17,7 +17,7 @@ import build_fused_profile as shared
 
 r, P, B = shared.r, shared.P, shared.B
 RESULT = shared.RESULT
-ROOT = B / 'native16-public-control-v1'
+ROOT = B / 'native16-public-control-v2'
 KEY = 'native16_public_calibration_build'
 OFFICIAL = Path('/opt/intel/oneapi/compiler/2026.2')
 UMF = Path('/opt/intel/oneapi/umf/1.2')
@@ -86,9 +86,11 @@ def prepare():
     # Recover original recipe, rather than relying only on the retained receipt hash.
     raw = shared.build.git(P, 'show', previous['source_commit'] + ':tools/sycl/build_fused_profile.py')
     require(hashlib.sha256(raw).hexdigest() ==
-        previous['project']['source_sha256']['tools/sycl/build_fused_profile.py'] and
-        b'-DSTRATA_SYCL_VLLM_XE2_NATIVE16=ON' in raw,
+        previous['project']['source_sha256']['tools/sycl/build_fused_profile.py'],
         'original configure recipe is not recoverable')
+    inherited = list(full['configure_argv'])
+    inherited[inherited.index('-B') + 1] = str(shared.ROOT / 'build')
+    require(inherited == previous['configure_argv'], 'original inherited configure recipe differs')
     compiler = source['new_build_toolchain']['official_candidate']
     require(compiler['compiler'] == str(OFFICIAL / 'bin/icpx') and
         digest(compiler['compiler']) == compiler['compiler_sha256'], 'official compiler changed')
