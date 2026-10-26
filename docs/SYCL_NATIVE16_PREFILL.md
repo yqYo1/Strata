@@ -885,12 +885,15 @@ verification were narrower than their frozen claims. No mislaunch was observed;
 the [original outcomes remain in Git](https://github.com/yqYo1/Strata/blob/729e0d9bc/bench/results/2026-10-15-pr6-recovery-audit/prefill-runtime-comparison-current.json).
 This source's fresh two discovery and two qualified definition-only probes
 match3593runtime files and close normally. The fresh six-process model plan is
-prepared;independent exact-source review remains pending. Its private Python
-startup envelope differs from historical runs,so
-this is a prospective matched control. No model speedup or inference adoption
-follows from these host checks. Closed v4 model/Python-v2 raw roots remain only
-through the next source admission,then require the same bounded recovery and
-retirement check;they are not extra engine-build generations.
+prepared;independent native Luna/max review accepts its exact five-source and
+plan contract with no remaining correction. This permits only the bounded
+six-process model control,not inference adoption. Its private Python startup
+envelope differs from historical runs,so this is a prospective matched control.
+No model speedup follows from the host checks or source review. Exact original
+source,configuration,environment recipe and replacement-manifest recovery now
+retires the closed v4 model/Python-v2 roots and consumed review transactions;
+original outcomes remain in pushed Git. Current V5/PythonV3/ownerV3 evidence
+and separate legacy provenance holds remain.
 
 Exact original source,configuration and pure environment-recipe recovery closes
 the two superseded unlaunched model roots and old Python-probe root. Their
