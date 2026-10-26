@@ -453,8 +453,11 @@ Confirm their exact operand precision and production applicability before
 freezing that plan;component throughput alone cannot establish a whole-model
 arithmetic ceiling. Review this five-file subset at that comparison or abandonment.
 Closed one-use build/cost/calibration controllers retire to their original source
-commits;the new transfer fixture source remains for the immediate staging/status
-work. No routine raw API trace or completed observer cohort remains.
+commits. The old isolated transfer fixture also retires to d7737c53e once the
+whole-bank comparison closes;its4Bstatus samples stay ineligible. No maintained
+script/target consumes that source. Current bank-test source remains maintained;
+closed one-use staging controller restores from e64229a83. No routine raw API
+trace or completed observer cohort remains.
 
 The current defaultoff candidate stages long-prefill private-bank uploads
 through four bounded host-USM slots. Source8f9abeb99 introduced it;de083f00d
