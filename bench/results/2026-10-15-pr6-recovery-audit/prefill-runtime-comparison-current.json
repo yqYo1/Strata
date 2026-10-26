@@ -900,7 +900,8 @@
         "both_within_rejected_model_budget": false,
         "limits": "Host-only supervisor workload;profile changes overhead. No causal inference loss,clock/model qualification or speedup. Main must address measured overhead before a separate model plan.",
         "next_check": "Prospectively compare whole-prefill runs with matched native placement/environment and isolated supervisor scheduling or independently validated cheaper supervision. Host12percent CPU and a profile dominated by /proc scanning do not establish historical causation. No further CPU-clock model repetition without a question requiring it."
-      }
+      },
+      "artifact_retirement_reference": "historical_regression_audit.amd_clock_observer_v2.artifact_retirement"
     },
     "model_cpu_clock_diagnostic_v1": {
       "stage": "failed",
@@ -1218,6 +1219,21 @@
         "raw_sha256": "01af64020b3cbd788f1960c8ff5f41318cd15d352b81305b238c321a177df59f",
         "method": "Adjacent serialized MPERF-before/APERF/MPERF-after sandwiches. Bound deltaAPERF by cross-snapshot MPERF envelope;require progression,<=100us snapshots,relative envelope<=0.001 and0.8..1.2s gaps. No native reexecution.",
         "limits": "Partial134 CPU0 interval aggregates spanning first request and cleanup,not exact native-prefill-contained intervals or thread MHz. Original model diagnostic remains failed/incomplete,with no subsequent sample or model-overhead qualification. Past equivalent counters absent;no historical cause established."
+      },
+      "artifact_retirement_reference": "historical_regression_audit.amd_clock_observer_v2.artifact_retirement",
+      "model_assets_reference": {
+        "commit": "1e676d554",
+        "path": "bench/results/2026-10-15-pr6-recovery-audit/phase-prefill-speed-current.json",
+        "key": "model_assets",
+        "files": 15,
+        "initial_full_hashes_match": true,
+        "post_failure_stat_match": true,
+        "post_failure_full_hash_rechecked": false
+      },
+      "source_contract_review_reference": {
+        "commit": "21e0510b4",
+        "path": "bench/results/2026-10-15-pr6-recovery-audit/research-index.json",
+        "key": "amd_clock_observer_source_contract_20261027"
       }
     },
     "amd_clock_observer_v2": {
@@ -1474,6 +1490,22 @@
           "devcoredump": false
         },
         "passed": true
+      },
+      "artifact_retirement": {
+        "complete": true,
+        "manifest": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/retire-clock-controls-20261027.json",
+        "sha256": "d31dab709e5b5a14a72b09a0a94b44b4c64bd1a39111191470459f258d96c592",
+        "files": 106,
+        "bytes": 12760397,
+        "source_archive": "925ddfe8e",
+        "tracked_one_use_sources_retired": 4,
+        "native_input_recovery": {
+          "inputs": 160,
+          "headers": 129,
+          "link_inputs": 13,
+          "object_and_ELF_match": true
+        },
+        "limits": "Closed controls only;selected engine/13fixtures,officialv4fallback and separate legacy provenance holds unchanged."
       }
     },
     "amd_clock_observer_v1": {

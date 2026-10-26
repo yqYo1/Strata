@@ -824,6 +824,15 @@ scheduling/cost changes prefill. Do not repeat CPU-clock model runs without a
 new question requiring them. No inference implementation or decode placement
 changes follow from these diagnostics.
 
+After replay and exact source/recipe/header/link/object/ELF recovery,these three
+closed observer/model/control roots retire106files/12,760,397bytes. Four
+one-use sources/controllers retire to pushed history at925ddfe8e;the selected
+engine,its13artifacts and officialv4fallback remain unchanged. Fifteen model
+asset identities still match after failure;only the initial full hashes were
+rechecked for this failed model attempt. Keep the original failed outcome and
+the individual CPU-cost values above. Future supervisor work needs a new plan;
+the retired observer is not an accepted model-clock implementation.
+
 A passive check of this kernel7.0.0-38 finds tracefs,its xe event directory and
 DRM debugfs inaccessible(EACCES). The installed xe UAPI documents memory-range
 queries as preferred-location/PAT/atomic-policy queries,not physical-placement
