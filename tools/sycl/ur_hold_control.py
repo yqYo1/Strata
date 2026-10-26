@@ -141,6 +141,39 @@ def current(row):
         r.current(r.validation.committed(r.RESULT))['binary'] == row['selected_binary'], 'selected runtime changed')
 
 
+def native():
+    """Recover this library's original build independently of later controllers."""
+    row = json.loads((ROOT / 'record.json').read_text())
+    require(q.build.scope(r.validation.committed(RESULT))[KEY] == compact(row) and
+        row['stage'] == 'built' and row['passed'] and row['complete'] and
+        row['ownership_closed'] and not row['active'] and not row['GPU_executed'], 'closed exact helper build required')
+    require(controller(row['source_commit'], worktree=False) == row['controller_inputs'],
+        'original helper recipe/controller unrecoverable')
+    original = r.validation.git('show', row['source_commit'] + ':' + str(SOURCE.relative_to(P)))
+    require(hashlib.sha256(original).hexdigest() == row['native_source']['sha256'] ==
+        row['native_inputs'][str(SOURCE)], 'original compiled C source unrecoverable')
+    require(digest(row['native_manifest']['path']) == row['native_manifest']['sha256'] and
+        json.loads(Path(row['native_manifest']['path']).read_text()) == row['native_inputs'] and
+        all(path == str(SOURCE) or digest(path) == sha for path, sha in row['native_inputs'].items()),
+        'original actual native inputs changed')
+    actual = dependencies((ROOT / 'actual-deps.d').read_text())
+    require(actual == set(row['expected_header_paths']) and len(actual) == row['actual_compiled_headers'] and
+        all(path in row['native_inputs'] for path in actual), 'original compile closure changed')
+    require(all(identity(row[name]) == row[name + '_sha256'] for name in
+        ('expected_header_paths', 'expected_link_paths', 'environment')), 'original recipe changed')
+    for name in ('object', 'library'):
+        require(digest(row[name]['path']) == row[name]['sha256'], 'actual helper artifact changed')
+    link = row['actual_link_manifest']
+    require(digest(link['path']) == link['sha256'], 'actual link manifest changed')
+    files = json.loads(Path(link['path']).read_text())
+    require(len(files) == link['files'] and link['uncovered'] == 0 and
+        all(sha == (row['object']['sha256'] if path == row['object']['path'] else row['native_inputs'].get(path))
+            and digest(path) == sha for path, sha in files.items()), 'actual imported link file changed')
+    return row, dict(source_commit=row['source_commit'], native_source=row['native_source'],
+        library=row['library'], record=dict(path=str(ROOT / 'record.json'), sha256=digest(ROOT / 'record.json')),
+        compiler_inputs=row['native_manifest'], actual_headers=row['actual_compiled_headers'], actual_link_inputs=link)
+
+
 def build(row):
     current(row)
     require(row['stage'] == 'prepared' and not (ROOT / 'owned').exists(), 'single-use helper build')

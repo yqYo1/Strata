@@ -2729,7 +2729,7 @@
     },
     "fused_command_profile": {
       "ur_hold_control_build_v1": {
-        "stage": "prepared",
+        "stage": "built",
         "source_commit": "bb46c4de524a564f596144add63efcc5f94239c8",
         "native_source": {
           "path": "/home/yayoi/orca/workspaces/Strata/sycl/bench/sycl/ur_hold_control.c",
@@ -2820,8 +2820,8 @@
           "file_cap": 8388608,
           "total_cap": 67108864
         },
-        "complete": false,
-        "passed": false,
+        "complete": true,
+        "passed": true,
         "active": false,
         "ownership_closed": true,
         "GPU_executed": false,
@@ -2837,7 +2837,34 @@
         },
         "expected_header_paths_sha256": "555ad0a21e5f2bd4b33fcfc87443e033ac4fca198b8693c4d7553f96151d935b",
         "expected_link_paths_sha256": "27c15b5ec9789004fc13532c56828a6fb184d55edb076f24ee7ebae491fc2a05",
-        "environment_sha256": "e7305ce8a9e71cde476366fd479ba47dae9cb8694690f59c1f0ad52ba11cce3e"
+        "environment_sha256": "e7305ce8a9e71cde476366fd479ba47dae9cb8694690f59c1f0ad52ba11cce3e",
+        "object": {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/ur-hold-control-v1/control.o",
+          "sha256": "8070df86886911651acd33531db3b8117159fc7f8cdb9b3af6a872cfbb92e0c8"
+        },
+        "actual_compiled_headers": 108,
+        "actual_link_manifest": {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/ur-hold-control-v1/actual-link-inputs.json",
+          "sha256": "3afb81a26870ae8a91b5ceff2e49b1adf33b356baa49dccec9f1de114893f597",
+          "files": 14,
+          "uncovered": 0
+        },
+        "library": {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/ur-hold-control-v1/libstrata_ur_hold_control.so",
+          "sha256": "c8d080a3260bca53ec34589fffddd0b14dd6a0d02e0e485e945ebffd3176f7c3",
+          "bytes": 16744
+        },
+        "host_probe_accepted": true,
+        "fresh_faults": [],
+        "boot_unchanged": true,
+        "driver_after": {
+          "pci": "/sys/bus/pci/devices/0000:05:00.0",
+          "driver": "xe",
+          "vendor": "0x8086",
+          "device": "0xe20c",
+          "kernel": "7.0.0-38-generic",
+          "devcoredump": false
+        }
       },
       "legacy_gemm_abi_v1": {
         "stage": "failed",
