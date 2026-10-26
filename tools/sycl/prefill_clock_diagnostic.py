@@ -90,7 +90,6 @@ class Observer:
         self.proc = None; self.pidfd = None; self.identity = None
         self.out = self.err = None; self.closed = False; self.killed = False
         self.start = clock_pair(); self.next_check = 0
-        self.cpu_before = resource.getrusage(resource.RUSAGE_CHILDREN)
 
     def start_child(self):
         require(not self.root.exists(), 'one observer launch per request')
@@ -101,6 +100,10 @@ class Observer:
             resource.setrlimit(resource.RLIMIT_CPU, (5, 6))
             resource.setrlimit(resource.RLIMIT_FSIZE, (256 << 10, 256 << 10))
             resource.setrlimit(resource.RLIMIT_CORE, (0, 0))
+        # Admission invokes Git subprocesses. Exclude those already-reaped
+        # children from the observer's RUSAGE_CHILDREN delta.
+        self.cpu_before = resource.getrusage(resource.RUSAGE_CHILDREN)
+        self.start = clock_pair()
         self.proc = subprocess.Popen([self.row['binary']['path'], '--observe'], cwd=P,
             env=dict(PATH='/usr/bin:/bin', HOME='/home/yayoi', LANG='C.UTF-8', LC_ALL='C.UTF-8'),
             stdin=subprocess.PIPE, stdout=self.out, stderr=self.err,
@@ -295,6 +298,26 @@ def run_host(row):
     save(row); print(json.dumps(result), flush=True); return int(not result['passed'])
 
 
+def seal_unlaunched(row):
+    prior = json.loads(gen.git('show', 'HEAD:' + str(RESULT.relative_to(P))))
+    require(KEY not in prior['historical_regression_audit'] and
+        row['stage'] == 'prepared' and row['host'] is None and row['outcome'] is None and
+        not any((ROOT / n).exists() for n in ('host-observer', 'owned', 'execution.json')) and
+        not list(ROOT.glob('clock-*')), 'seal only before first plan commit or native launch')
+    require(gen.benchmark_pins(row['source_commit'], match_worktree=False) == row['controller_inputs'],
+        'original preparation inputs unrecoverable')
+    for name, sha in row['generated_inputs'].items(): require(digest(ROOT / name) == sha, 'unlaunched input changed')
+    full, _, observer, review = qualification()
+    require(full['binary'] == row['binary'] and observer['binary'] == row['observer_binary'] and
+        review == row['review_identity'], 'unlaunched qualification changed')
+    models.model_pins(row['configuration'], row['models'])
+    row['preparation_source_commit'] = row['source_commit']
+    row['source_commit'] = gen.git('rev-parse', 'HEAD').decode().strip()
+    row['controller_inputs'] = gen.benchmark_pins(row['source_commit'])
+    row['unlaunched_seal'] = 'Before first plan commit or native launch:move RUSAGE_CHILDREN baseline after admission Git children;generated/native/runtime/workload bytes unchanged.'
+    save(row); print('Sealed unlaunched plan;commit before host execution.', flush=True)
+
+
 def run_model(row):
     _, rt, native = current(row)
     require(row['stage'] == 'host-passed' and row['host']['passed'] and row['host']['ownership_closed'] and
@@ -404,6 +427,7 @@ def main():
         fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB); host.guards.no_model_owners([])
         if sys.argv[1:] == ['prepare']: prepare(); return 0
         row = json.loads((ROOT / 'record.json').read_text())
+        if sys.argv[1:] == ['seal-unlaunched']: seal_unlaunched(row); return 0
         if sys.argv[1:] == ['host']: return run_host(row)
         if sys.argv[1:] == ['model']: return run_model(row)
         raise RuntimeError('use prepare,host,model;commit each frozen plan/closed gate before next')
