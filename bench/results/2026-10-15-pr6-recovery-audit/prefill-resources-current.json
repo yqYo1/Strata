@@ -8317,7 +8317,7 @@
         }
       },
       "prefill_upload_attribution_v3": {
-        "stage": "prepared-build",
+        "stage": "built-not-executed",
         "source_commit": "00192eff681d926c48005fbe1d4ec34d012005e7",
         "sdk": {
           "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-expert-staging-v3/sdk-inputs.json",
@@ -8512,8 +8512,8 @@
         },
         "active": false,
         "ownership_closed": true,
-        "passed": false,
-        "complete": false,
+        "passed": true,
+        "complete": true,
         "GPU_executed": false,
         "model_executed": false,
         "model_adoption_qualified": false,
@@ -8604,6 +8604,16 @@
         "criteria": "14normal serial owned processes,396eligible/correct samples,132complete on-profiles. Same provider/boot,no fresh faults,all guards/readers/maps/counters,10ms inner wall and queue floors,clockp99<=10us and empty-control max<=5percent inner wall. Whole observer wall finite and>=inner wall. Every CPU wait/host/status footer available/complete,zero open/throw counts,status scopes=completed=0. Exact641upload submission,staged641source memcpy versus ordinary0;GPU eligible641copies/2048readers/1status. Interpret ordinary upload_submit as full compat-copy wrapper and staged as queue.memcpy only;they are not the same API boundary. Source copy/waits and unclassified remain distinct. For each payload/arm/process,use sqrt(median(order0whole)*median(order1whole)),5samples/stratum. Observer:on/off GM across3processes<=1.02 and every ratio<=1.05,all4payload/arm strata required. Primary guard-carryover screen:large2662400payload EACH bank arm deviceguard/full-D2Hguard GM<=.95 and every process ratio<1. Report small payload and order spread descriptively. Passing a component screen does not advance model/staging adoption or attribute historical9.0673percent. No adaptive retries/criterion changes;preserve original failures.",
         "safety_audit": "Main-authored ring;no XeStrata source.4host-USM slots,<=16MiB capacity/slot,256byte guards;same in-order context/device queue and registered device ownership. Reject device sources,overlap,bad extents/queues. Copy-event wait before CPU host-slot reuse;GPU readers and scratch overwrite ordered on same queue. Destructor,guard and catch drains wait the bound queue itself;Runtime.wait alone does not drain custom queues. Finite65536-step unsigned tail checks destructor completion without host-gated spin/barrier. Failed drain fail-stops with owners live. No new GPU arithmetic in inference;only bounded transfer-preparation memcpy. Default disabled prefill-only route;decode/short-prefill/cache placement unchanged. No physical256K qualification.",
         "retention": "Keep396individual inner/whole wall,CPU/queue samples and132on-sample CPU regions/selected GPU services. Review component executable at gate closure or imminent full-pipeline comparison. Original selected engine+12fixtures stay intact;V1/V2closed fixtures are superseded and not timed arms. Two earlier GU/Down fixtures retain only their named ceiling consumer. Retire routine raw traces/build output once extracted;no full API trace during long validation.",
+        "compiled_inputs": {
+          "files": 724,
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-expert-attribution-v3/compiler-inputs.json",
+          "sha256": "51a6aec77b1868eae38896279eb4671ddd54bbe100ae1ff7fd19d3e5c3c047f2"
+        },
+        "binary": {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-expert-attribution-v3/sycl_expert_staging",
+          "bytes": 482000,
+          "sha256": "2f5fb3d31c29eef67a8c897ef1f833ce7d636f93b5800cfb91112511d9d60320"
+        },
         "project": {
           "revision": "00192eff681d926c48005fbe1d4ec34d012005e7",
           "count": 495,
