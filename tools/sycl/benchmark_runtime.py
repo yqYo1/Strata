@@ -11,10 +11,11 @@ import runpy
 import shutil
 import sys
 
-import measurement_owner as ownership
-
 P = Path(__file__).resolve().parents[2]
 SOURCE = Path(__file__).resolve()
+if str(SOURCE.parent) not in sys.path: sys.path.insert(0, str(SOURCE.parent))
+import measurement_owner as ownership
+
 B = Path('/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007')
 HOST = B / 'benchmark-python-admission-v1'
 SCOPE = 'benchmark_python_runtime_v1'
@@ -255,7 +256,8 @@ def admitted(control):
 
 
 if __name__ == '__main__':
-    if len(sys.argv) == 4 and sys.argv[1] == 'probe': probe(sys.argv[2], sys.argv[3])
+    if sys.argv[1:] == ['--help']: print('host-prepare,host-run; probe ENTRY TEMPLATE')
+    elif len(sys.argv) == 4 and sys.argv[1] == 'probe': probe(sys.argv[2], sys.argv[3])
     elif sys.argv[1:] == ['host-prepare']: sys.exit(host_action('prepare'))
     elif sys.argv[1:] == ['host-run']: sys.exit(host_action('run'))
     else: raise RuntimeError('use host-prepare,host-run or probe ENTRY TEMPLATE')

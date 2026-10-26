@@ -91,8 +91,8 @@ def save(row):
 
 
 def qualification():
-    tests = runtime.validation.committed(RESULT, ('historical_regression_audit', 'supervision_input_admission_v3'))
-    require(tests['passed'] and tests['exit_code'] == 0 and tests['cases'] == 8 and
+    tests = runtime.validation.committed(RESULT, ('historical_regression_audit', 'supervision_input_admission_v4'))
+    require(tests['passed'] and tests['exit_code'] == 0 and tests['cases'] == 9 and
         all(digest(P / name) == pin and hashlib.sha256(gen.git('show', tests['source_commit'] + ':' + name)).hexdigest() == pin
             for name, pin in tests['sources'].items()) and
         set(tests['sources']) == {'tools/sycl/supervision_model.py', 'tools/test_sycl_supervision_model.py', 'tools/sycl/benchmark_runtime.py'},

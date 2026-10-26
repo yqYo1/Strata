@@ -8,6 +8,7 @@ import unittest
 from unittest.mock import patch
 import copy
 import json
+import subprocess
 
 sys.dont_write_bytecode = True
 sys.path.insert(0, str(Path(__file__).resolve().parent / 'sycl'))
@@ -68,6 +69,13 @@ class RuntimeInputs(unittest.TestCase):
         self.directory = tempfile.TemporaryDirectory(prefix='runtime-admission-', dir=str(control.B))
         self.addCleanup(self.directory.cleanup); self.root = Path(self.directory.name)
         self.runtime = control.python_runtime
+
+    def test_isolated_runtime_entrypoint_imports(self):
+        result = subprocess.run([sys.executable, '-I', '-S', '-B', str(self.runtime.SOURCE), '--help'],
+            capture_output=True, text=True, timeout=8)
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertIn('host-prepare', result.stdout)
+        self.assertEqual(result.stderr, '')
 
     def test_changed_runtime_file_is_rejected(self):
         source = self.root / 'runtime.py'; source.write_text('original')

@@ -803,6 +803,25 @@
     }
   },
   "historical_regression_audit": {
+    "benchmark_python_bootstrap_v1": {
+      "source_commit": "e045b5b8b01f91566d65f2bc2e18254ec9c8a8f3",
+      "command": [
+        "/usr/bin/python3.12",
+        "-I",
+        "-S",
+        "-B",
+        "tools/sycl/benchmark_runtime.py",
+        "host-prepare"
+      ],
+      "passed": false,
+      "exit_code": 1,
+      "stage": "bootstrap-before-body",
+      "error": "ModuleNotFoundError: No module named 'measurement_owner'",
+      "host_root_created": false,
+      "definition_probes_launched": 0,
+      "GPU_executed": false,
+      "decision": "Preserve startup failure;explicitly add the helper directory for isolated CLI imports and add a fresh isolated entrypoint smoke control before discovery. Existing eight controls remain passed only for their source/scope."
+    },
     "supervision_input_admission_v3": {
       "source_commit": "e045b5b8b01f91566d65f2bc2e18254ec9c8a8f3",
       "sources": {
