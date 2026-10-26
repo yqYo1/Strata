@@ -111,19 +111,57 @@ def prepare():
 
 
 def compact(row):
-    out = {k: v for k, v in row.items() if k not in ('source', 'runtime_files', 'commands')}
+    out = {k: v for k, v in row.items() if k not in ('source', 'device_source', 'runtime_files', 'commands')}
     out['source'] = {k: row['source'][k] for k in ('revision', 'count', 'aggregate_sha256')}
+    if 'device_source' in row:
+        out['device_source'] = {k: row['device_source'][k] for k in ('revision', 'count', 'aggregate_sha256')}
     return out
 
 
 def admit(row):
-    require(n.build.pin(P, PREFIXES)['source_sha256'] == row['source']['source_sha256'], 'frozen source differs')
+    require(n.build.pin(P, PREFIXES)['source_sha256'] == row.get('device_source', row['source'])['source_sha256'], 'frozen source differs')
     require(n.sdk_inputs() == row['sdk'] and digest(row['compiler']['path']) == row['compiler']['sha256'], 'SDK differs')
     require(digest(r.RESULT) == row['runtime_sha256'], 'runtime qualification differs')
     rt = r.validation.committed(r.RESULT); r.current(rt)
     require(retained() == row['retained_proof'], 'retained native proof differs')
     require(r.guards.driver_guard() == row['driver'] and
         Path('/proc/sys/kernel/random/boot_id').read_text().strip() == row['boot'], 'boot/driver differs')
+
+
+def prepare_device():
+    container = r.validation.committed(RESULT)
+    row = json.loads((ROOT / 'record.json').read_text())
+    require(scope(container)[KEY] == compact(row) and row['stage'] == 'built-not-executed' and
+        row['passed'] and row['ownership_closed'] and not row['active'], 'closed committed build required')
+    original = row['source']
+    recovered = {k: hashlib.sha256(v).hexdigest() for k, v in
+        n.build.blobs(P, original['revision'], original['source_sha256'])}
+    require(recovered == original['source_sha256'], 'original fixture source unrecoverable')
+    fresh = n.build.pin(P, PREFIXES)
+    changed = {k for k in set(fresh['source_sha256']) | set(recovered)
+               if fresh['source_sha256'].get(k) != recovered.get(k)}
+    require(changed == {'tools/sycl/transfer_calibration.py'}, 'unexpected device-admission source change')
+    manifest = row['compiled_inputs']
+    require(digest(manifest['path']) == manifest['sha256'], 'original fixture manifest differs')
+    compiled = json.loads(Path(manifest['path']).read_text())
+    require(not {str(P / k) for k in changed} & set(compiled) and
+        all(digest(p) == h for p, h in compiled.items()) and
+        digest(row['binary']['path']) == row['binary']['sha256'], 'actual native fixture changed')
+    row['device_source'] = fresh
+    row['controller_only_admission'] = dict(original_native_source_commit=row['source_commit'],
+        original_build_environment_unchanged=True, new_controller_commit=fresh['revision'],
+        changed={k: dict(before=recovered[k], after=fresh['source_sha256'][k]) for k in changed},
+        compiled_inputs_verified=len(compiled), binary_sha256=row['binary']['sha256'],
+        limits='No recompilation or GPU qualification inherited for new native code. Original source,build '
+            'recipe/environment and successful build stay intact. Only uncompiled owned-controller changes;'
+            'new pre-exec child environment explicitly sets qualified ZES_ENABLE_SYSMAN=0 and warning logs.')
+    settings = r.validation.committed(P / 'tools/sycl/measurement_environment.json')['environment']
+    row['device_environment'] = dict(row['environment'], **{k: v for k, v in settings.items()
+        if k.startswith('UR_LOG_') or k == 'ZES_ENABLE_SYSMAN'})
+    row.update(stage='prepared-device', complete=False, passed=False)
+    admit(row)
+    write(ROOT / 'record.json', row); scope(container)[KEY] = compact(row); write(RESULT, container)
+    print('Prepared device plan;commit before smoke/calibration.', flush=True)
 
 
 def dependencies(row):
@@ -146,7 +184,7 @@ def dependencies(row):
 def execute(mode):
     container = r.validation.committed(RESULT); row = json.loads((ROOT / 'record.json').read_text())
     require(scope(container)[KEY] == compact(row), 'commit exact calibration plan/result')
-    require(row['stage'] == ('prepared-build' if mode == 'build' else 'built-not-executed'), 'fresh expected stage only')
+    require(row['stage'] == ('prepared-build' if mode == 'build' else 'prepared-device'), 'fresh expected stage only')
     initial = copy.deepcopy(row); admit(initial)
     owner = None
     cursor = None
@@ -192,7 +230,7 @@ def execute(mode):
                 admit(initial)
                 label = 'smoke' if index < 0 else 'process' + str(index)
                 trace, warnings = ROOT / (label + '.trace'), ROOT / (label + '.validation')
-                env = dict(row['environment'], LD_PRELOAD=row['preload']['library']['path'],
+                env = dict(row['device_environment'], LD_PRELOAD=row['preload']['library']['path'],
                     STRATA_UR_PROBE_EXPECTED_LOADER=row['preload']['loader'],
                     UR_ENABLE_LAYERS='UR_LAYER_PARAMETER_VALIDATION',
                     UR_LOG_VALIDATION='level:warning;flush:warning;output:file,' + str(warnings))
@@ -237,8 +275,8 @@ def execute(mode):
 
 
 if __name__ == '__main__':
-    require(sys.argv[1:] in (['prepare'], ['build'], ['device']), 'prepare|build|device')
+    require(sys.argv[1:] in (['prepare'], ['build'], ['prepare-device'], ['device']), 'prepare|build|prepare-device|device')
     with (B / 'owned-v0141-measurement.lock').open('a+') as lock:
         fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
         r.guards.no_model_owners([])
-        prepare() if sys.argv[1] == 'prepare' else sys.exit(execute(sys.argv[1]))
+        prepare() if sys.argv[1] == 'prepare' else prepare_device() if sys.argv[1] == 'prepare-device' else sys.exit(execute(sys.argv[1]))
