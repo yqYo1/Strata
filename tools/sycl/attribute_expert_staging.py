@@ -21,8 +21,8 @@ sys.dont_write_bytecode = True
 import build_fused_profile as n
 
 r, P, B, RESULT = n.r, n.P, n.B, n.RESULT
-ROOT = B / 'prefill-expert-attribution-v2'
-KEY = 'prefill_upload_attribution_v2'
+ROOT = B / 'prefill-expert-attribution-v3'
+KEY = 'prefill_upload_attribution_v3'
 OFFICIAL = Path('/opt/intel/oneapi/compiler/2026.2')
 UMF = Path('/opt/intel/oneapi/umf/1.2')
 PACKAGES = ['intel-oneapi-dpcpp-cpp-2026.2', 'intel-oneapi-compiler-dpcpp-cpp-runtime-2026.2',
@@ -66,10 +66,11 @@ def prepare():
     verified = subprocess.run(['dpkg', '--verify', *PACKAGES], capture_output=True, text=True, timeout=60)
     require(verified.returncode == 0 and not verified.stdout and not verified.stderr,
         'official package files changed')
-    prior_attribution = scope(c)['prefill_upload_attribution_v1']
-    require(prior_attribution['stage']=='closed' and prior_attribution['ownership_closed'] and
-        not prior_attribution['active'] and prior_attribution['summary']['attribution_qualified'] is False,
-        'preserve and close failed V1overhead gates before fresh source/protocol')
+    prior_attribution = scope(c)['prefill_upload_attribution_v2']
+    require(prior_attribution['stage']=='failed' and prior_attribution['ownership_closed'] and
+        not prior_attribution['active'] and prior_attribution['error']=='KeyboardInterrupt()' and
+        prior_attribution['operator_safety_hold'] and prior_attribution['fresh_faults']==[],
+        'preserve interrupted V2safety hold and close all owned work before corrected source')
     previous = scope(c)['prefill_upload_staging_v5']
     require(previous['ownership_closed'] and not previous['active'] and previous['complete'] and
         previous['summary']['bank_dependency_gate_passed'] is False, 'close prior failed performance screen')
@@ -134,8 +135,11 @@ def prepare():
                       ['bench-off2','--staging-guard-device-off','2'],
                       ['bench-copy2','--staging-guard-copy-off','2'],
                       ['bench-on2','--staging-guard-device-on','2']],
-        plan='V2fresh official-SDK source/protocol;preserve V1failed observer and V5failed performance gates. '
-            'First hostcanary,traced old/staged smoke and8adversarial GPU padding cases,then existing bank validation. '
+        plan='V3corrected post-validation lifetime;preserve V2interrupted safety hold,V1failed observer and V5failed performance gates. '
+            'First hostcanary,traced old/staged smoke,8adversarial GPU padding and2host-exception-after-enqueue ' 
+            'retirement cases,then existing bank validation. Both post-check modes retain checked leases before ' 
+            'any transfer/kernel and retire before freeing every DMA source/destination;failed drain fail-stops ' 
+            'with owners alive. No device/provider error injection. '
             'Three process blocks rotate full-bank D2Hguard/off,device-paddingguard/off and deviceguard/on. '
             'Each mode/payload/bank arm gets first-use and10subsequent samples,exactly5per pair-order stratum. '
             'Inner loop clock stays;NEW observer_whole_wall_ms covers Trace construction/planning,CPU regions, '
@@ -361,6 +365,8 @@ def execute(mode):
                 if label=='padding-smoke':
                     require('padding_guard_cases=8 first_middle_last_boundaries=PASS payload_exclusion=PASS' in text,
                         'adversarial padding controls incomplete')
+                    require('padding_guard_unwind_cases=2 checked_drain_before_owner_release=PASS' in text,
+                        'post-validation exception retirement controls incomplete')
                 rows = [json.loads(v) for v in text.splitlines() if v.startswith('{')]
                 if label.startswith('bench'):
                     require(len(rows) == 44, 'benchmark sample count')

@@ -376,7 +376,27 @@ void bank_padding_guard_smoke() {
         q.memcpy(&observed,flag.data(),4);drain();
         need(observed==(test<2?0u:2u),"padding guard missed boundary or rejected payload bytes");
     }
-    lease.retire();std::cout<<"padding_guard_cases=8 first_middle_last_boundaries=PASS payload_exclusion=PASS\n";
+    for(int mode=0;mode<2;++mode) {
+        std::vector<uint8_t> observed_bytes(data.size());
+        uint32_t observed=~uint32_t(0);unsigned drains=0;bool unwound=false;
+        try {
+            pd::DraftUploadGuard check_lease([&]{drain();++drains;return true;},
+                []{sb::cleanup_fail_stop("padding exception fixture retirement");});check_lease.arm();
+            q.memset(data.data(),0xa5,data.size());q.memset(flag.data(),0,4);
+            if(mode==0)q.memcpy(observed_bytes.data(),data.data(),data.size());
+            else {
+                bank_padding_guard(q,data.as<uint32_t>(),512,256,flag.as<uint32_t>());
+                q.memcpy(&observed,flag.data(),4);
+            }
+            throw Stop{}; // Only a host exception;never a provider/device fault.
+        } catch(const Stop&) {unwound=true;}
+        need(unwound && drains==1,"padding validation unwind missed checked retirement");
+        if(mode==0)need(std::all_of(observed_bytes.begin(),observed_bytes.end(),
+            [](uint8_t v){return v==0xa5;}),"D2H validation destination released before drain");
+        else need(observed==0,"GPU validation status destination released before drain");
+    }
+    lease.retire();std::cout<<"padding_guard_cases=8 first_middle_last_boundaries=PASS payload_exclusion=PASS\n"
+        <<"padding_guard_unwind_cases=2 checked_drain_before_owner_release=PASS\n";
 }
 void staging_benchmark(int process, bool custom_queue=false, bool attribution=false,
                        bool device_guard=false, int rounds=9) {
@@ -473,16 +493,24 @@ void staging_benchmark(int process, bool custom_queue=false, bool attribution=fa
             const double observer_whole_ms=std::chrono::duration<double,std::milli>(Clock::now()-observer_whole_begin).count();
             staging.check_guards();
             if(device_guard) {
+                pd::DraftUploadGuard check_lease([&]{drain();return true;},
+                    []{sb::cleanup_fail_stop("GPU padding validation retirement");});check_lease.arm();
                 // Same complete padding coverage as the host check,without a
                 // full-bank D2H transfer/allocation between measured batches.
                 // Payload bytes are independently checked by every reader.
                 bank_padding_guard(q,reinterpret_cast<const uint32_t*>(cache.device_slot(0)),
                                    stride,payload,status);
                 q.memcpy(&observed,status,4);drain();
+                check_lease.retire();
                 need(observed==0,"GPU bank padding guard");
             } else {
                 std::vector<uint8_t> check(size_t(cache.bytes()));
+                // The destination is constructed BEFORE its checked lease so
+                // every exceptional exit drains before vector destruction.
+                pd::DraftUploadGuard check_lease([&]{drain();return true;},
+                    []{sb::cleanup_fail_stop("D2H padding validation retirement");});check_lease.arm();
                 q.memcpy(check.data(),cache.device_slot(0),check.size());drain();
+                check_lease.retire();
                 for(size_t slot=0;slot<384;++slot)for(size_t i=payload;i<stride;++i)
                     need(check[slot*stride+i]==0xa5,"timed bank padding guard");
             }
