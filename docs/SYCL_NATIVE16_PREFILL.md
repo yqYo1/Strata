@@ -870,14 +870,21 @@ extras. This private Python-startup envelope differs from historical runs.
 Independent Orca and native Luna/max review accept V6's exact five-source/plan
 contract. Its six-process order is baseline/candidate/candidate/baseline/baseline/
 candidate,each with four117489fresh/zero-reuse/thinking/24-output requests.
-The first baseline process now passes all four requests,source/provider/route/
-journal/clock/CPU/closure gates,final15 model hashes and no-fresh-fault checks.
-First use is904.1691tok/s;subsequent rates are975.1856,975.6821 and978.1417,
-median975.6821. Controller request CPU fractions are11.4852..11.6506percent,
-below its frozen20percent baseline cap. Only the first of six process results
-is qualified;there is no paired mechanism result or inference/default adoption yet. Neither the
-host-cost gain nor this baseline sample proves a historical cause,1000tok/s
-restoration,sustained decode,agent quality or physical262144 correctness.
+The first baseline and candidate processes pass all four requests each,source/
+provider/route/journal/clock/CPU/closure gates,final15 model hashes and
+no-fresh-fault checks. Individual rates and CPU operands remain in the compact
+result;first use is separate:
+
+| Process | First use,tok/s | Subsequent-three median | Controller CPU fraction,all requests |
+| --- | ---: | ---: | ---: |
+| 0/baseline | 904.1691 | 975.6821 | 11.4852..11.6506% |
+| 1/candidate | 905.1339 | 976.8543 | 6.1229..6.2783% |
+
+The first candidate/baseline ratio is1.00120144(+0.1201%). Four process results
+remain pending;do not select the mechanism from one pair or call the host CPU
+reduction a model gain. Neither these samples nor the host gate establishes a
+historical cause,1000tok/s restoration,sustained decode,agent quality or
+physical262144 correctness.
 
 Exact original source,configuration and pure environment-recipe recovery closes
 the two superseded unlaunched model roots and old Python-probe root. Their
@@ -1074,6 +1081,32 @@ After placement diagnosis,consider an opt-in candidate only with those bounds,
 device numerical/guard/drain tests,actual117K admission and clean whole-model
 evidence. Reduced job/dequant counts are a mechanism to measure,not proof of a
 CPU/GPU/PCIe bottleneck or a predicted throughput gain.
+
+A broader capacity question changes only the accumulator's hypothetical storage
+width in the same source formula. These rows ignore the current81920-row
+admission cap solely to calculate capacity,not to claim that larger windows
+execute. Local GEMM accumulation and all other plane sizes stay unchanged:
+
+| Window rows | FP32 accumulator+mixed-tail region | Hypothetical16-bit accumulator+mixed-tail |
+| --- | ---: | ---: |
+| 117488 | 1695745280B | 1094206720B |
+| 131072 | 1906840064B | 1235751424B |
+
+The existing region is1180698624B. Thus16-bit storage would fit117488 rows in
+this calculation,but131072 still exceeds it by55052800B. It introduces extra
+partial-sum rounding and is not the current implementation or a qualified
+SGLang/vLLM contract. Before a scoped experiment,check actual reference reduction
+storage/order and task evidence,then bounds/ownership and262144-context fallback;
+do not treat this capacity saving as accepted numerical behavior or a speedup.
+
+One passive current candidate1/request0 sample records96 windows,33225dequant
+pairs,37353jobs,7485fused GU jobs/49290450rows,and18937 expert uploads requesting
+38673152000H2D bytes. The logged`source_H2D_bytes=225576960` is mislabeled:the
+source increments it by`rows*top_k*4` after router readback,so it accounts requested
+router-ID D2H bytes. The two uploaded route maps request451153920bytes. Neither
+counter measures physical bus traffic;do not add the mislabeled field to expert
+H2D or infer PCIe saturation. This single passive sample is retained for the next
+window/accumulator question,not a matched baseline work comparison.
 
 Earlier progress reports also contain33K/39K and profiler-charged results.
 Those differ from117K subsequent-request speed. The matched comparison above
@@ -1508,15 +1541,12 @@ values are reused. Both actual graph-query results are false. These observations
 do not establish driver-internal lifetimes,host-payload ownership,an independent
 library work plan,complete model coverage,observer cost or clean speed.
 
-For the next long-prefill resource observation,a separate source obstacle is
-now explicit:`gemm16.cpp` rejects command-service profiling whenever selected
-GU or Down fusion is enabled. An unfused profile therefore changes the measured
-processing. Extend sparse event attribution to those actual fused kernels and
-qualify the event/count/drain/numerical/observer-cost contract before using it
-on the selected MoE route. This is Main's next attribution task,not a claimed
-speedup or an explanation for the historical decline. The library-ledger gap
-above remains a separate scope;do not substitute a general graph survey for
-measuring the actual selected fusion route.
+The selected original6e40 rejects command-service profiling with GU/Down fusion.
+The separately qualified observer below extends those actual fused kernels;an
+unfused profile changes processing and cannot substitute for it. Its component,
+small-model and observer-cost checks are already closed. The library-ledger gap
+above remains separate from this scoped event attribution;do not rebuild or
+repeat the completed observer merely because an older paragraph calls it pending.
 Both fused calls already publish their event through`sycl_backend::finish`;
 do not register it twice. The missing contract is correct fused-operation
 classification and sampling. The current last row bin spans the2334-row fusion
@@ -1542,8 +1572,15 @@ exit1. The128KiB bound covers static host records,not total process RSS or
 runtime-owned event storage. The original selected6e40 and12fixtures remain unchanged.
 This is attribution infrastructure,not a throughput gain,model qualification or
 an explanation for the historical decline. The three fixture binaries build with zero uncovered compiler inputs and the
-pinned generated header. A separately pinned engine build,small model gate and
-observer-cost qualification remain necessary before a long-input resource profile.
+pinned generated header. The later source022652cc5 diagnostic engine passes its small-model gate and
+a six-process/twelve-request observer-cost comparison. Time-on/off ratios are
+1.00501452,1.00539514 and1.01639250,geomean1.00892029;the frozen gates pass for
+that binary/workload only. Scoped96-window CPU/status and sampled copy/GEMM
+attribution is already recorded under`attribution_after_observer_cost` in the
+resource result. The diagnostic engine is retired after exact source/recipe
+recovery. This does not qualify complete device coverage,physical traffic,
+hardware saturation or a new observer build. Use those closed results and a
+new concrete hardware/whole-model counterfactual before collecting again.
 The source has two BF16 GEMM sites per executed inner batch,four projection
 sites,and an early no-needed-rows return;do not infer dynamic counts from the
 15 callback markers. The existing runtime manifest already pins the L0 v2

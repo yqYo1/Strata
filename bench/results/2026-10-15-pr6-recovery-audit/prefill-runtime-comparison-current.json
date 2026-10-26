@@ -1066,6 +1066,144 @@
             "independent_replay_passed": true,
             "generated_config_and_plan_retained": true
           }
+        },
+        {
+          "complete": true,
+          "host_probe_accepted": true,
+          "request_windows": [
+            {
+              "request": 0,
+              "controller_cpu_ns": 8085484004,
+              "gate_elapsed_ns": 132052878206,
+              "fraction": 0.06122913876505438,
+              "maximum": 0.08
+            },
+            {
+              "request": 1,
+              "controller_cpu_ns": 7555268632,
+              "gate_elapsed_ns": 122549285297,
+              "fraction": 0.06165085837660901,
+              "maximum": 0.08
+            },
+            {
+              "request": 2,
+              "controller_cpu_ns": 7550056255,
+              "gate_elapsed_ns": 122517720178,
+              "fraction": 0.061624198067274615,
+              "maximum": 0.08
+            },
+            {
+              "request": 3,
+              "controller_cpu_ns": 7687063649,
+              "gate_elapsed_ns": 122438420870,
+              "fraction": 0.0627831002260459,
+              "maximum": 0.08
+            }
+          ],
+          "python_children": {
+            "benchmark": {
+              "pid": 3034579,
+              "start_ticks": 140178913,
+              "sid": 3034579
+            },
+            "server": {
+              "pid": 3034589,
+              "start_ticks": 140178941,
+              "sid": 3034579
+            }
+          },
+          "index": 1,
+          "arm": "candidate",
+          "requests": [
+            {
+              "run": 0,
+              "request_sha256": "26f08fd8364b5c4bce718617fe2aed42761d0a794e068b00532694adef78b3be",
+              "actual_prompt_tokens": 117489,
+              "actual_read_tokens": 117489,
+              "actual_reused_tokens": 0,
+              "generated_tokens": 24,
+              "prompt_ms": 129802.9
+            },
+            {
+              "run": 1,
+              "request_sha256": "fd3ad8ad7033776ad749b22e62e910e5f47e3f7664705f48d9f1fe7349b65515",
+              "actual_prompt_tokens": 117489,
+              "actual_read_tokens": 117489,
+              "actual_reused_tokens": 0,
+              "generated_tokens": 24,
+              "prompt_ms": 120407.3
+            },
+            {
+              "run": 2,
+              "request_sha256": "daabbef4775c3fbdbfd832339d80a5ae2f91025b66df79b92fb8f6905f33b041",
+              "actual_prompt_tokens": 117489,
+              "actual_read_tokens": 117489,
+              "actual_reused_tokens": 0,
+              "generated_tokens": 24,
+              "prompt_ms": 120272.8
+            },
+            {
+              "run": 3,
+              "request_sha256": "8669c9ebe2747b1fc2d7c4806eeb66025c919981d81c51cfdbd64ba3ec3cc2b1",
+              "actual_prompt_tokens": 117489,
+              "actual_read_tokens": 117489,
+              "actual_reused_tokens": 0,
+              "generated_tokens": 24,
+              "prompt_ms": 120261.2
+            }
+          ],
+          "tok_s": [
+            905.1338606456404,
+            975.763097420173,
+            976.8542845930251,
+            976.948508745963
+          ],
+          "first_use_tok_s": 905.1338606456404,
+          "subsequent_median": 976.8542845930251,
+          "native_identity": {
+            "pid": 3034620,
+            "start_ticks": 140179043,
+            "sid": 3034579
+          },
+          "validation": {
+            "pid": 3034620,
+            "loader": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_loader.so.0.12.0",
+            "threads_before": 1,
+            "preinit": 37,
+            "config_enabled": true,
+            "first_init": true,
+            "dispatch_result": 46,
+            "output_untouched": true,
+            "retained_reference_until_exit": true,
+            "runtime_teardown_qualified": false
+          },
+          "ownership_closed": true,
+          "fresh_faults": [],
+          "boot_unchanged": true,
+          "driver_after": {
+            "pci": "/sys/bus/pci/devices/0000:05:00.0",
+            "driver": "xe",
+            "vendor": "0x8086",
+            "device": "0xe20c",
+            "kernel": "7.0.0-38-generic",
+            "devcoredump": false
+          },
+          "passed": true,
+          "production_work_sample": {
+            "request": 0,
+            "windows": 96,
+            "dequant_pairs": 33225,
+            "jobs": 37353,
+            "fused_gu_jobs": 7485,
+            "fused_gu_rows": 49290450,
+            "routed_rows_by_shape": 56394240,
+            "expert_uploads": 18937,
+            "requested_expert_H2D_bytes": 38673152000,
+            "logged_source_H2D_bytes": 225576960,
+            "source_counter_meaning": "The logged source_H2D_bytes increments rows*top_k*4 after router readback;it accounts requested router-ID D2H bytes,not expert H2D or physical bus traffic.",
+            "requested_map_H2D_bytes_by_source_formula": 451153920,
+            "consumer": "Next prefill-only window/accumulator capacity and MoE service question;one passive native-log sample,not a matched baseline work comparison or hardware-traffic measurement."
+          }
         }
       ],
       "complete": false,
