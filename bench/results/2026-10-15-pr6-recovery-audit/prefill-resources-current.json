@@ -2729,7 +2729,7 @@
     },
     "fused_command_profile": {
       "native16_public_calibration_build": {
-        "stage": "prepared",
+        "stage": "built",
         "source_commit": "2369886e91da7d4f570d43ba17aacb242b838c60",
         "sdk": {
           "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-expert-staging-v3/sdk-inputs.json",
@@ -2900,8 +2900,8 @@
         },
         "active": false,
         "ownership_closed": true,
-        "passed": false,
-        "complete": false,
+        "passed": true,
+        "complete": true,
         "GPU_executed": false,
         "engine_built": false,
         "production_selected": false,
@@ -2943,6 +2943,45 @@
             "correction": "Ask the pinned compiler with -print-prog-name=clang-offload-bundler;require an existing absolute path and pinned SDK identity. No kernel arithmetic change."
           },
           "change": "Use the pinned compiler-resolved offload bundler. Preserve the previous deprecation warning exception,all other warnings as errors,and original kernel arithmetic/ABI flags."
+        },
+        "compiled_inputs": {
+          "files": 1427,
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/native16-public-control-v4/compiler-inputs.json",
+          "sha256": "c534c4970837ddc842f6909cf13f6765971c2ba39ee2bc93ba7c15bf129df5ac",
+          "uncovered": 0
+        },
+        "fixtures": {
+          "sycl_submission_test": {
+            "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/native16-public-control-v4/build/sycl_submission_test",
+            "sha256": "451f06d4ba6606b1f58c352c2a2018d68b2f4e5e82b771b81fa73019b61f0f0d",
+            "bytes": 347200
+          },
+          "sycl_vllm_native16_test": {
+            "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/native16-public-control-v4/build/sycl_vllm_native16_test",
+            "sha256": "7979528ed9932658821d8a346284055d14c72687455410a0671682c382e2a6b2",
+            "bytes": 1778456
+          },
+          "sycl_moe_gu_swiglu_bench": {
+            "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/native16-public-control-v4/build/sycl_moe_gu_swiglu_bench",
+            "sha256": "e85080e7342175497a0fc3b9170fad8cb4a8efd2f0cd6a312f2af687f1556477",
+            "bytes": 13082784
+          },
+          "sycl_moe_down_scatter_bench": {
+            "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/native16-public-control-v4/build/sycl_moe_down_scatter_bench",
+            "sha256": "70bbc7dd26970c79a0383e9632ad81ad83f6dd08c81f6b795584a34023e167a9",
+            "bytes": 13103448
+          }
+        },
+        "host_probe_accepted": true,
+        "fresh_faults": [],
+        "boot_unchanged": true,
+        "driver_after": {
+          "pci": "/sys/bus/pci/devices/0000:05:00.0",
+          "driver": "xe",
+          "vendor": "0x8086",
+          "device": "0xe20c",
+          "kernel": "7.0.0-38-generic",
+          "devcoredump": false
         },
         "source_groups": [
           {

@@ -563,8 +563,20 @@ memcpy preparation,submission,time inside waits and sampled GPUcopy/read
 service. Nonexclusive queue intervals and total thread CPU do not identify
 the limiting hardware unit. The official runtime qualification covers only
 this copy/private-bank component;legacy6e40 ABI/GEMM,model/decode and physical
-262144context remain unqualified for it. The clean117K model reference stays
-911.7371tok/s;the historical9.0673% decline remains unattributed.
+262144context remain unqualified for it. That cohort's clean117K reference was
+911.7371tok/s;the fresh unchanged-engine reference above is975.0027tok/s.
+The historical decline remains unattributed.
+
+The official native16 calibration build now completes four executables from
+source2369886e9,with1427actual compiled inputs and zero uncovered inputs.
+It retains the original kernel arithmetic and size_t ID/range ABI option.
+The build permits deprecation warnings while keeping other warnings fatal;
+the compiler resolves its own offload-bundler path. The earlier Werror and
+tool-layout refusals retain their failed status,with partial builds retired
+after9972original source inputs and their recipes were recovered. No GPU or
+model result follows from this successful compilation. Next run bounded
+same-build submission,native16 and GU/Down checks before public-GU calibration;
+full numerical/model,decode and physical-context qualifications remain separate.
 
 The fresh sourcee33d16fc3 attribution fixture closes ten official-SDK processes
 with240eligible/correct timing samples and120complete CPU/GPU profiles.
