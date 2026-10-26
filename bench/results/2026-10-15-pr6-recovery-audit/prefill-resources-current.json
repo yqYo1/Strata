@@ -4498,9 +4498,9 @@
         }
       },
       "transfer_calibration": {
-        "stage": "prepared-build",
-        "passed": false,
-        "complete": false,
+        "stage": "built-not-executed",
+        "passed": true,
+        "complete": true,
         "active": false,
         "ownership_closed": true,
         "native_engine_changed": false,
@@ -4674,6 +4674,16 @@
         "criteria": "Every process exits normally,all bytewise inputs/outputs/guards pass;preload/provider/runtime and fault/boot gates pass. Copy wall and device-span floors10ms;queued status work floor1ms. Below floor is ineligible,not silently repeated. No target speed or adoption gate. Diagnose enqueue/explicit-wait redistribution using total wall/CPU and GPU service separately. Requested payload rates only,not physical bus/GDDR traffic or historical cause.",
         "safety_audit": "Fixed positive extents,maximum allocation170.4MB below device admission;max~700MB live;single profiled in-order production Runtime queue;host mappings read-only;USM/runtime owners retained;four staging slots reused only after their own events complete;all pending work drains before free/unmap including exceptions;no barrier/collective/graph/CPU inference/environment mutation. Status producer bounded262144items*256 unsigned iterations;each unique output in bounds. Bytewise validation outside timing;first-use separate;only device-local timestamps subtracted.",
         "retention": "Component fixture only for immediate transfer/status decision. Original6e40+12fixtures and diagnostic engine+3fixtures remain unchanged. Retire objects,deps,routine logs/JIT after extraction;retire this fixture on calibration/consumer closure,not a third model-engine generation.",
+        "compiled_inputs": {
+          "files": 679,
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/transfer-calibration-v1/compiler-inputs.json",
+          "sha256": "abcd934ca9b5abf79cd16291e8e18f2e012adb2e5aa24fa0a02c63254785f262"
+        },
+        "binary": {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/transfer-calibration-v1/sycl_transfer_api",
+          "sha256": "bf9a0ad46035bd1d7243deb4bee9a7af450f611b5b1eccdbb4bc2e2e79f9dd97",
+          "bytes": 120976
+        },
         "source": {
           "revision": "d7737c53e05ab73e860585d8e68db1699064e032",
           "count": 132,
