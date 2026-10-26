@@ -814,7 +814,7 @@
       "limits": "Original unlaunched-model failure and passed Python result remain unchanged in Git. Current ownerV3/PythonV3/modelV5,selected native package,official fallback and separate legacy holds untouched."
     },
     "supervision_model_control_v5": {
-      "stage": "prepared",
+      "stage": "failed",
       "binary": {
         "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/strata",
         "bytes": 22190000,
@@ -927,11 +927,30 @@
         "daabbef4775c3fbdbfd832339d80a5ae2f91025b66df79b92fb8f6905f33b041",
         "8669c9ebe2747b1fc2d7c4806eeb66025c919981d81c51cfdbd64ba3ec3cc2b1"
       ],
-      "processes": [],
+      "processes": [
+        {
+          "complete": false,
+          "host_probe_accepted": false,
+          "request_windows": [],
+          "error": "RuntimeError(\"model owner failed: RuntimeError('unqualified Python code mapping')\")",
+          "ownership_closed": false,
+          "fresh_faults": [],
+          "boot_unchanged": true,
+          "driver_after": {
+            "pci": "/sys/bus/pci/devices/0000:05:00.0",
+            "driver": "xe",
+            "vendor": "0x8086",
+            "device": "0xe20c",
+            "kernel": "7.0.0-38-generic",
+            "devcoredump": false
+          },
+          "passed": false
+        }
+      ],
       "complete": false,
       "passed": false,
       "active": false,
-      "ownership_closed": true,
+      "ownership_closed": false,
       "plan": {
         "source_commit": "e36673ada25d8ed5f4c3e239c31d9c8a4734a92c",
         "order": [
@@ -1148,6 +1167,41 @@
         "whole_bytes": 805306368,
         "retention": "Keep24individual clock/work/CPU samples,source/native/runtime/config/recipe and decisions. Retire normal logs/JIT/closed controls after replay;no new engine build. Retain qualified host record/provider manifest only through this comparison.",
         "qualified_input_identity": "0141a852dc9658f818f68c0862dd0e81b638b0fc2fef2fbf0237b456d2473517"
+      },
+      "closure_reconciliation": {
+        "checked_utc": "2026-10-26T21:38:56.274337+00:00",
+        "direct_child_reaped": true,
+        "session_empty_at_cleanup": true,
+        "all_four_recorded_identities_absent_now": [
+          {
+            "pid": 2935073,
+            "start_ticks": 139919237
+          },
+          {
+            "pid": 2935084,
+            "start_ticks": 139919263
+          },
+          {
+            "pid": 2935112,
+            "start_ticks": 139919339
+          },
+          {
+            "pid": 2935119,
+            "start_ticks": 139919369
+          }
+        ],
+        "same_uid_model_owner_guard_passed": true,
+        "original_failed_ownership_gate_unchanged": true
+      },
+      "failure_diagnosis": {
+        "stage": "first_long_request_begin_gate",
+        "role": "server_python",
+        "reason": "Executable map outside the prior definition-only Python runtime inventory;missing paths were not persisted by the original gate.",
+        "long_requests_completed": 0,
+        "model_speed_measured": false,
+        "GPU_hang_observed": false,
+        "original_error": "RuntimeError('unqualified Python code mapping')",
+        "consumer": "Identify late server runtime mappings with bounded no-inference host probe,then replace the comparison plan;never retry V5."
       }
     },
     "benchmark_python_runtime_v3": {

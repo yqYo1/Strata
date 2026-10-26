@@ -895,6 +895,15 @@ retires the closed v4 model/Python-v2 roots and consumed review transactions;
 original outcomes remain in pushed Git. Current V5/PythonV3/ownerV3 evidence
 and separate legacy provenance holds remain.
 
+The first V5process is now closed as failed before its first long request.
+The actual server Python loads executable mappings absent from the definition-only
+probe inventory. The original gate omits their paths,so the precise library
+remains unproved until a bounded host reproduction. The default ownership gate
+remains failed;separate recorded cleanup confirms direct-child reaping,empty SID
+and all four recorded identities absent. There is no fresh GPUfault or long
+prefill speed sample. Do not retry V5;exercise late server initialization and
+report map differences before a new comparison.
+
 Exact original source,configuration and pure environment-recipe recovery closes
 the two superseded unlaunched model roots and old Python-probe root. Their
 original outcomes and plans remain in pushed Git;normal raw files and duplicate
