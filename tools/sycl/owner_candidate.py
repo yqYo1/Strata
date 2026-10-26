@@ -60,8 +60,20 @@ def session_identity(pid, sid):
     https://man7.org/linux/man-pages/man5/proc_pid_stat.5.html
     """
     try:
-        with open('/proc/' + str(pid) + '/stat', 'rb') as stream:
-            prefix = stream.read().rsplit(b')', 1)[1].split(None, 4)
+        fd = os.open('/proc/' + str(pid) + '/stat', os.O_RDONLY | os.O_CLOEXEC)
+        try:
+            parts = []; size = 0
+            while True:
+                chunk = os.read(fd, 4096)
+                if not chunk: break
+                size += len(chunk)
+                require(size <= 4096, 'proc stat input size cap')
+                parts.append(chunk)
+            data = b''.join(parts)
+        finally:
+            os.close(fd)
+        if not data: return None
+        prefix = data.rsplit(b')', 1)[1].split(None, 4)
         if int(prefix[3]) != sid: return None
         return identity(pid)
     except (FileNotFoundError, ProcessLookupError):

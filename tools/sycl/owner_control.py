@@ -27,9 +27,9 @@ import owner_candidate as candidate
 import measurement_guards as guards
 
 B = Path('/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007')
-ROOT = B / 'owner-scan-control-v2'
+ROOT = B / 'owner-scan-control-v3'
 RESULT = P / 'bench/results/2026-10-15-pr6-recovery-audit/prefill-runtime-comparison-current.json'
-KEY = 'owner_scan_control_v2'
+KEY = 'owner_scan_control_v3'
 SOURCES = ('tools/sycl/measurement_owner.py', 'tools/sycl/owner_candidate.py',
     'tools/sycl/owner_control.py', 'tools/test_sycl_owner_candidate.py',
     'tools/sycl/measurement_guards.py', 'bench/sycl/owner_fixture.py')
@@ -100,7 +100,7 @@ def current(row):
 def prepare():
     require(not ROOT.exists(), 'single-use supervisor comparison')
     require(KEY not in json.loads(RESULT.read_text())['historical_regression_audit'], 'preserve previous comparison')
-    prior = json.loads(git('show', 'HEAD:' + str(RESULT.relative_to(P))))['historical_regression_audit']['owner_scan_control_v1']
+    prior = json.loads(git('show', 'HEAD:' + str(RESULT.relative_to(P))))['historical_regression_audit']['owner_scan_control_v2']
     require(prior['stage'] == 'closed' and prior['complete'] and prior['passed'] and prior['ownership_closed'] and
         not prior['analysis']['host_gate_passed'], 'preserve closed original failed absolute gate')
     require(all(hashlib.sha256(git('show', prior['plan']['source_commit'] + ':' + name)).hexdigest() == pin
@@ -111,12 +111,12 @@ def prepare():
         providers_sha256=sha(ROOT / 'providers.json'), python=str(Path(sys.executable).resolve()), environment=ENV,
         boot=Path('/proc/sys/kernel/random/boot_id').read_text().strip(), order=list(ORDER),
         question='Does direct text/proc-name I/O reduce observed supervisor CPU while preserving250ms reconciliation and ownership?',
-        mechanism='First direct-I/O cohort reduces CPU about30percent but fails5percent absolute gate. Add byte-prefix SID discovery filtering:unrelated sessions need no full field/text/dict parse. Matches receive fresh full identity and new members retain fresh pidfd/birth/SID registration. Known escaped members always retain complete direct checks. No cache across scans or cadence reduction.',
-        correctness='11source-pinned controls before timing:previous9parser/race/RSS/caps/escape/cleanup controls plus foreign-prefix-only and matching-prefix/fresh-full-identity race. Stop first failure. No GPU or native rebuild.',
+        mechanism='Byte-SID filter cohort reaches6.1percent and fails5percent absolute gate. Replace buffered per-PID file objects with open/read-to-EOF/close under4096byte cap,including short-read accumulation and finally-close. Matching sessions still receive fresh full identity and new members retain fresh pidfd/birth/SID validation;known escaped members retain direct checks. No cache across scans or cadence reduction.',
+        correctness='14source-pinned controls:previous11parser/race/RSS/caps/escape/cleanup/prefix controls plus short-read assembly,read-error close and oversize rejection. Stop first failure. No GPU or native rebuild.',
         timing='Six fresh controller processes in baseline/candidate/candidate/baseline/baseline/candidate order. Each times full Owner.run of same10tick/10s CPU-only fixture,including native startup,250ms scans,EOF,closure/reap and final log hashes. Record controller CPU and BOOTTIME;reject suspend divergence>50ms. No profiler in speed processes.',
         gate='Every normal owner/provider/protocol/closure check passes;all3 candidate/baseline CPU-fraction ratios<=0.8 and geometric mean<=0.75;every candidate controller fraction<=0.05. No speed-based stop/retry. A failed gate forbids model advancement. Passing permits a separate matched model plan only;no historical-cause/inference claim.',
         budgets=dict(wall=18, cpu=3, rss_cap=64 << 20, text_cap=1 << 20, file_cap=1 << 20, total_cap=8 << 20),
-        retention='Keep11control outcome and6individual CPU/wall/fraction samples,source/provider/environment and decision. Retire normal fixture/process logs and candidate duplication after decision;no model or engine generation.'),
+        retention='Keep14control outcome and6individual CPU/wall/fraction samples,source/provider/environment and decision. Retire normal fixture/process logs and candidate duplication after decision;no model or engine generation.'),
         tests=None, processes=[], complete=False, passed=False, active=False, ownership_closed=True, GPU_executed=False)
     save(row); print('Prepared supervisor host tests and6process CPU comparison;commit before execution.', flush=True)
 
@@ -135,8 +135,8 @@ def tests(row):
     receipts = [json.loads(p.read_text()) for p in root.glob('*/execution.json')]
     closed = error is None and all(not r['active'] and all(c['direct_child_reaped'] and c['session_empty'] and
         not c.get('survivors') for c in r['commands']) for r in receipts)
-    accepted = code == 0 and closed and 'Ran 11 tests' in text and text.rstrip().endswith('OK')
-    row['tests'] = dict(passed=accepted, exit_code=code, cases=11 if accepted else None, error=error,
+    accepted = code == 0 and closed and 'Ran 14 tests' in text and text.rstrip().endswith('OK')
+    row['tests'] = dict(passed=accepted, exit_code=code, cases=14 if accepted else None, error=error,
         ownership_closed=closed,
         command=command, output_bytes=(root / 'stdout').stat().st_size + (root / 'stderr').stat().st_size)
     row['stage'] = 'tests-passed' if accepted else 'failed'; row['ownership_closed'] = closed; save(row)

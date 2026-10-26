@@ -58,13 +58,33 @@ class Races(unittest.TestCase):
 
     def test_foreign_session_prefix_only(self):
         data = b'200 (nonUTF8\xff ) name\n) S 101 102 999 0 0 0\n'
-        with patch('builtins.open', return_value=io.BytesIO(data)), patch.object(candidate, 'identity') as full:
-            self.assertIsNone(candidate.session_identity(200, 100)); full.assert_not_called()
+        with patch.object(os, 'open', return_value=99), patch.object(os, 'read', side_effect=[data, b'']), \
+                patch.object(os, 'close') as close, patch.object(candidate, 'identity') as full:
+            self.assertIsNone(candidate.session_identity(200, 100)); full.assert_not_called(); close.assert_called_once_with(99)
 
     def test_matching_session_fresh_identity(self):
         data = b'200 (name) S 101 102 100 0 0 0\n'; fresh = value(200, 21, sid=300)
-        with patch('builtins.open', return_value=io.BytesIO(data)), patch.object(candidate, 'identity', return_value=fresh) as full:
-            self.assertEqual(candidate.session_identity(200, 100), fresh); full.assert_called_once_with(200)
+        with patch.object(os, 'open', return_value=99), patch.object(os, 'read', side_effect=[data, b'']), \
+                patch.object(os, 'close') as close, patch.object(candidate, 'identity', return_value=fresh) as full:
+            self.assertEqual(candidate.session_identity(200, 100), fresh); full.assert_called_once_with(200); close.assert_called_once_with(99)
+
+    def test_short_prefix_reads(self):
+        data = b'200 (name with ) inner) S 101 102 999 0\n'
+        with patch.object(os, 'open', return_value=99), patch.object(os, 'read', side_effect=[data[:16], data[16:], b'']), \
+                patch.object(os, 'close') as close:
+            self.assertIsNone(candidate.session_identity(200, 100)); close.assert_called_once_with(99)
+
+    def test_failed_prefix_read_closes_fd(self):
+        with patch.object(os, 'open', return_value=99), patch.object(os, 'read', side_effect=OSError('injected read error')), \
+                patch.object(os, 'close') as close:
+            with self.assertRaisesRegex(OSError, 'injected read'): candidate.session_identity(200, 100)
+            close.assert_called_once_with(99)
+
+    def test_oversize_prefix_rejected(self):
+        with patch.object(os, 'open', return_value=99), patch.object(os, 'read', side_effect=[b'x' * 4096, b'x']), \
+                patch.object(os, 'close') as close:
+            with self.assertRaisesRegex(RuntimeError, 'size cap'): candidate.session_identity(200, 100)
+            close.assert_called_once_with(99)
 
     def test_reused_disappeared_or_zombie_not_accounted(self):
         for ending in (None, value(200, 21), value(200, 20, state='Z')):
