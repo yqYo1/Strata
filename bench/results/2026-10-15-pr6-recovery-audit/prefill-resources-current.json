@@ -2729,7 +2729,7 @@
     },
     "fused_command_profile": {
       "native16_public_calibration_build": {
-        "stage": "prepared",
+        "stage": "failed",
         "source_commit": "06d9a264ede03e5ae3be275d326fac4d277fa50b",
         "sdk": {
           "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-expert-staging-v3/sdk-inputs.json",
@@ -2906,6 +2906,17 @@
         "criteria": "Source/dependency/SDK/tools pinned before configure;actual ninja compile closure fully covered;normal finite owned configure/build/dependency exits;four exact fixture hashes;no engine/model execution. Compilation alone qualifies neither runtime,GEMM math,performance nor physical256K context.",
         "next_gate": "Official-runtime host canary,traced same-build submission and native16/GU/Down correctness;then public GU fixed batches M160/2333/2334 in startup0/large independent processes. Selected engine and existing two older GU/Down comparison fixtures stay intact until calibration closure.",
         "retention": "One official component candidate only,no model engine build. Keep source/recipe and useful closure/hash proof;retire normal build output/objects after qualification selection. Prior GU/Down fixtures retire after their named same-shape/legacy-ABI comparison;retain original13 selected assets.",
+        "error": "RuntimeError('compile failed')",
+        "fresh_faults": [],
+        "boot_unchanged": true,
+        "driver_after": {
+          "pci": "/sys/bus/pci/devices/0000:05:00.0",
+          "driver": "xe",
+          "vendor": "0x8086",
+          "device": "0xe20c",
+          "kernel": "7.0.0-38-generic",
+          "devcoredump": false
+        },
         "source_groups": [
           {
             "root": "/home/yayoi/orca/workspaces/Strata/sycl",
