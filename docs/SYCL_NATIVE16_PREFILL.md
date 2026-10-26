@@ -526,6 +526,16 @@ selected original engine/fixtures and the original successful runtime record
 as references while qualifying the new runtime separately. No fork SDK patch
 is imported into this project.
 
+The official V3component builds from617e1845a with724actual compiled inputs
+and10945pinned vendor/host files. Its before-main canary stops with exit125
+for a provider-path mismatch before GPU initialization. Intel installs
+`libur_loader.so.0` and `.0.12.0` as separate regular files with identical
+SHA81771b83;the plan expected the latter while `dlopen` selected the former.
+V3 remains failed. V4 selects the actual SONAME-file path in a fresh device
+plan,reusing the exact fixture only after original377ca6194 recipe/binary and
+all724inputs reconcile,including19project inputs recovered from Git. This is
+a controller-only correction,not a new native build or GPU qualification.
+
 Installed native metadata identifies representative actual formats:layer2 has
 IQ2_S(type22) gate/up and IQ4_NL(type20) down,1971200bytes;layer47 has
 IQ4_XS(type23) gate/up and IQ4_NL down,2662400bytes. Next freeze a comparison
