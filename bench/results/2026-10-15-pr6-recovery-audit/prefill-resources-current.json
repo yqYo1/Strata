@@ -3776,6 +3776,387 @@
           "Run committed host-only cost-gate controls before any model process."
         ],
         "retention": "Same retained diagnostic generation;no third build. Preserve6individual process/12request clocks,three ratios and geometric mean,compact service/owner/validation/fault outcomes. Retire routine raw timelines/JIT/logs after replay;retain only selected shape samples needed by a named immediate hardware-ceiling test."
+      },
+      "observer_cost": {
+        "stage": "prepared",
+        "source_commit": "7d685246f98b515268f3cc7800ec51dcc89ca206",
+        "binary": {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-fused-command-profile-v2/build/strata",
+          "sha256": "98d831c7a600972bfb797cbcee9f81862fd3b4d0157e18df89e0c030525cadc1",
+          "bytes": 22198792
+        },
+        "build_source_commit": "022652cc51b3998fc1f82e7fb5697d7a4f1acfc1",
+        "boot": "cfda0b6a-7c13-4fe2-bdf5-8f9202770840",
+        "driver": {
+          "pci": "/sys/bus/pci/devices/0000:05:00.0",
+          "driver": "xe",
+          "vendor": "0x8086",
+          "device": "0xe20c",
+          "kernel": "7.0.0-38-generic",
+          "devcoredump": false
+        },
+        "configuration": {
+          "exe": "/home/yayoi/orca/workspaces/Strata/sycl/tools/sycl/engine_once.py",
+          "args": [
+            "--pack",
+            "/home/yayoi/.local/share/strata-sycl/packs/qwen3.8-flash-next-iq3_s",
+            "--native",
+            "/home/yayoi/.local/share/strata-sycl/models/qwen3.8-flash-next-iq3_s/IQ3_S/Qwen3.8-Flash-Next-GSQ-RCO-IQ3_S-00001-of-00002.gguf",
+            "--max-context",
+            "131072",
+            "--kv",
+            "int8",
+            "--kv-resident",
+            "131072",
+            "--expert-cache",
+            "1256",
+            "--expert-profile",
+            "/home/yayoi/orca/workspaces/Strata/sycl/data/expert-profile.bin",
+            "--expert-cache-per-layer",
+            "--pool-workers",
+            "5",
+            "--pcie-frac",
+            "0",
+            "--adapt-swaps",
+            "0",
+            "--conversation-cache-mib",
+            "0",
+            "--prompt-cache",
+            "0",
+            "--turn-token",
+            "-1",
+            "--suffix-draft",
+            "0",
+            "--greedy",
+            "--no-spec-split",
+            "--short-read",
+            "0",
+            "--spec",
+            "4",
+            "--mtp",
+            "/home/yayoi/.local/share/strata-sycl/mtp/rt",
+            "--prefill",
+            "8192",
+            "--vram-reserve-mib",
+            "700",
+            "--no-coupled-draft",
+            "--no-token-graph"
+          ],
+          "cwd": "/home/yayoi/orca/workspaces/Strata/sycl",
+          "tokenizer": "/home/yayoi/.local/share/strata-sycl/packs/qwen3.8-flash-next-iq3_s/tokenizer",
+          "model_name": "qwen3.8-flash-next-iq3_s-primary",
+          "aliases": [
+            "strata"
+          ],
+          "host": "127.0.0.1",
+          "log": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/restored-phase-bench-v1/0/engine.stderr",
+          "engine_silence_s": 480,
+          "parallel": 1,
+          "open_browser": false,
+          "env": {}
+        },
+        "preload": {
+          "library": {
+            "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/ur-validation-preload-v2/libstrata_ur_validation.so",
+            "sha256": "1d4e69d672d55fa0a126ae43b7b4743482cccca7e2f2bc22e0db2bfdad5bdc7c"
+          },
+          "loader": {
+            "path": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_loader.so.0.12.0",
+            "sha256": "bb6e1311850e4b1a924e42acae80c2b3610934625a4985aaa67967abe31356fc"
+          }
+        },
+        "template_sha256": "9543297abc2ce0b4530ee6984d55366e735881caf42a08239f3494d655f9e10d",
+        "history_sha256": "a06a20eb222ccb2c0fbcf09785ae281bf67a54d89fc4577a842615619d3abd54",
+        "runtime_sha256": "09ad358e12f6ef58bfc0a978519927863f3d09949a033a1e224db95997647d97",
+        "requests_expected": [
+          "26f08fd8364b5c4bce718617fe2aed42761d0a794e068b00532694adef78b3be",
+          "fd3ad8ad7033776ad749b22e62e910e5f47e3f7664705f48d9f1fe7349b65515"
+        ],
+        "generated_inputs": {
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-fused-command-profile-v2/observer-cost-v1/0-off/config.json": "1b53bf5fc18f4284570dc61536fa7dbbe25f1f4ff2b5405d68e7d2dc5e013cdf",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-fused-command-profile-v2/observer-cost-v1/0-off/plan.json": "0c0058fc60dabe9e48d4da26403fb6120de855be48c81fd70e38a1f243eef758",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-fused-command-profile-v2/observer-cost-v1/1-on/config.json": "5b7c2b38fd9e127fd20fdbd69cb8cf86076790c5249b3243f5961d6889497a98",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-fused-command-profile-v2/observer-cost-v1/1-on/plan.json": "de307e7ee1fbf2ea980fceeb67cf9874c2f9c96e349eb7f677a79cd1df6dafad",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-fused-command-profile-v2/observer-cost-v1/2-on/config.json": "28cd276418f7a9f84fb40ad201e3b019d0307ab79a4f835b64cff26b525d2885",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-fused-command-profile-v2/observer-cost-v1/2-on/plan.json": "de307e7ee1fbf2ea980fceeb67cf9874c2f9c96e349eb7f677a79cd1df6dafad",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-fused-command-profile-v2/observer-cost-v1/3-off/config.json": "44fea62d8255457faff1014e0f31eb4698e334a025bc8670941a8375a5f232aa",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-fused-command-profile-v2/observer-cost-v1/3-off/plan.json": "0c0058fc60dabe9e48d4da26403fb6120de855be48c81fd70e38a1f243eef758",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-fused-command-profile-v2/observer-cost-v1/4-off/config.json": "c0b8ca3c64ef50a20eb6a86e07a2d914313ff85715a0d1cf5ba0742ce1471acd",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-fused-command-profile-v2/observer-cost-v1/4-off/plan.json": "0c0058fc60dabe9e48d4da26403fb6120de855be48c81fd70e38a1f243eef758",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-fused-command-profile-v2/observer-cost-v1/5-on/config.json": "0da11f86be71ab9ca48d790039fe68dd351285148bc659c192ad703933ee04d3",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-fused-command-profile-v2/observer-cost-v1/5-on/plan.json": "de307e7ee1fbf2ea980fceeb67cf9874c2f9c96e349eb7f677a79cd1df6dafad"
+        },
+        "processes": [],
+        "active": false,
+        "ownership_closed": true,
+        "passed": false,
+        "complete": false,
+        "observer_cost_qualified": false,
+        "production_selected": false,
+        "historical_regression_attributed": false,
+        "plan": {
+          "stage": "criteria-prepared-not-executable",
+          "question": "Bound total diagnostic observer cost on the same separately built engine before interpreting117K GPU-service/CPU-wait attribution;not speed restoration or production adoption.",
+          "binary": {
+            "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-fused-command-profile-v2/build/strata",
+            "sha256": "98d831c7a600972bfb797cbcee9f81862fd3b4d0157e18df89e0c030525cadc1",
+            "bytes": 22198792
+          },
+          "order": [
+            "off",
+            "on",
+            "on",
+            "off",
+            "off",
+            "on"
+          ],
+          "processes": 6,
+          "requests_per_process": 2,
+          "first_use_separate": true,
+          "comparison_sample": "Second fresh117489-input/0reuse/24output thinking-on request in each owned process. Three disjoint adjacent off/on pairs;no pooling first-use with subsequent requests. Keep all individual clocks and spreads.",
+          "configuration": "Same1256decode slots,8192chunks,131072residentINT8context,BF16/vllm/mode10,384packed expert bank,Q8MTP,5workers,safety queue/driver/pre-main validation settings. Identical two wire request hashes from historical matched cohort.",
+          "on_observers": [
+            "stage trace",
+            "coarse layer-major/QSA/GDN profiles",
+            "disjoint CPU wait/submit profile",
+            "version3 sparse fused command service",
+            "1Hz passive client/hardware collector"
+          ],
+          "off_observers": "Disable the declared observers before native exec;retain qualified queue/copy/direct-submission/parameter-validation safety settings and retained-loader preload. Separate fresh owned processes;no environment mutation.",
+          "prospective_cost_gate": {
+            "time_ratio": "on subsequent prompt_ms / matched off subsequent prompt_ms",
+            "geometric_mean_maximum": 1.02,
+            "each_pair_maximum": 1.05,
+            "pairs_required": 3,
+            "qualifies": "Limited observer cost on this diagnostic binary/workload only. Failure remains failure and blocks long cost-qualified attribution;no restoration/adoption or throughput-target claim."
+          },
+          "service_gates": "Both on requests per process require complete4-window version3 GPU-service profiles with peak<=224,conserved clocks/counts and no invalid records. Host-submit/GPU correspondence already failed at32K;queue delays remain unqualified regardless of service success.",
+          "stopping": "Stop first source/native/provider/stream/model/owner/fault/coverage failure;no unchanged retry. Preserve prior1baa performance failure and pre-device16K CLI rejection.",
+          "execution_prerequisites": [
+            "Review closed32K smoke and retire consumed raw artifacts.",
+            "Author and commit owned controller,exact generated inputs,source/dependency pins,individual case configuration and finite wall/output/RSS budgets before execution.",
+            "Run committed host-only cost-gate controls before any model process."
+          ],
+          "retention": "Same retained diagnostic generation;no third build. Preserve6individual process/12request clocks,three ratios and geometric mean,compact service/owner/validation/fault outcomes. Retire routine raw timelines/JIT/logs after replay;retain only selected shape samples needed by a named immediate hardware-ceiling test."
+        },
+        "host_controls": {
+          "command": [
+            "/usr/bin/python3",
+            "-B",
+            "/home/yayoi/orca/workspaces/Strata/sycl/tools/sycl/test_profile_observer_cost.py"
+          ],
+          "python": {
+            "path": "/usr/bin/python3",
+            "sha256": "e50d468e8b0adfb05733f5b87b3cff34829c4a8c1aea50c865aa8bdfe4bb150f"
+          }
+        },
+        "budgets": {
+          "wall": 1800,
+          "cpu": 72000,
+          "rss_cap": 111669149696,
+          "text_cap": 16777216,
+          "file_cap": 33554432,
+          "total_cap": 67108864
+        },
+        "whole_wall_seconds": 7200,
+        "whole_artifact_bytes": 469762048,
+        "whole_text_bytes": 67108864,
+        "budget_reason": "Six serial fresh cases retain private JIT/1Hz captures only through replay;64MiB each plus bounded common metadata. Total text still64MiB. No fullAPI trace,tensors or extra native build.",
+        "retention": "Same retained diagnostic generation;no third build. Preserve6individual process/12request clocks,three ratios and geometric mean,compact service/owner/validation/fault outcomes. Retire routine raw timelines/JIT/logs after replay;retain only selected shape samples needed by a named immediate hardware-ceiling test.",
+        "cases": [
+          {
+            "index": 0,
+            "arm": "off",
+            "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-fused-command-profile-v2/observer-cost-v1/0-off",
+            "command": [
+              "/bin/sh",
+              "/home/yayoi/orca/workspaces/Strata/sycl/bench.sh",
+              "--config",
+              "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-fused-command-profile-v2/observer-cost-v1/0-off/config.json",
+              "--port",
+              "45773",
+              "--prefill-only",
+              "--prefill-tokens",
+              "98304",
+              "--think",
+              "--runs",
+              "2",
+              "--profile-request-gates",
+              "--workload-id",
+              "native_gdn_20261018",
+              "--fail-fast-engine-error",
+              "--ready-timeout",
+              "600",
+              "--out",
+              "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-fused-command-profile-v2/observer-cost-v1/0-off/bench"
+            ],
+            "input_sha256": {
+              "configuration": "d1b430c9949cc4e9fab0c198746a08b0f831faae74579e2465275bcc4447c2a0",
+              "environment": "fb79a7bbc8d8994e7333ea3196ac9e8400e21391dd101c11e7034bf338dc4d25",
+              "native_plan": "42068ba5589e4669afb05c90b15c64a5020e3873389bae3c6e1bb8f62adb0c1f"
+            }
+          },
+          {
+            "index": 1,
+            "arm": "on",
+            "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-fused-command-profile-v2/observer-cost-v1/1-on",
+            "command": [
+              "/bin/sh",
+              "/home/yayoi/orca/workspaces/Strata/sycl/bench.sh",
+              "--config",
+              "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-fused-command-profile-v2/observer-cost-v1/1-on/config.json",
+              "--port",
+              "35723",
+              "--prefill-only",
+              "--prefill-tokens",
+              "98304",
+              "--think",
+              "--runs",
+              "2",
+              "--profile-request-gates",
+              "--workload-id",
+              "native_gdn_20261018",
+              "--fail-fast-engine-error",
+              "--ready-timeout",
+              "600",
+              "--out",
+              "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-fused-command-profile-v2/observer-cost-v1/1-on/bench"
+            ],
+            "input_sha256": {
+              "configuration": "c647039740f26a3c4a4406ca4ce387b4cf21ce0e6bf4a99552ac87758d2c1688",
+              "environment": "4ee80e15385032cd43649b2d0fcdec0c1706055094e9bf75ba24b8632a2f4396",
+              "native_plan": "1035030310656aada553f1a110a8db87dc640b6bba859aa470495afde8abbae1"
+            }
+          },
+          {
+            "index": 2,
+            "arm": "on",
+            "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-fused-command-profile-v2/observer-cost-v1/2-on",
+            "command": [
+              "/bin/sh",
+              "/home/yayoi/orca/workspaces/Strata/sycl/bench.sh",
+              "--config",
+              "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-fused-command-profile-v2/observer-cost-v1/2-on/config.json",
+              "--port",
+              "51449",
+              "--prefill-only",
+              "--prefill-tokens",
+              "98304",
+              "--think",
+              "--runs",
+              "2",
+              "--profile-request-gates",
+              "--workload-id",
+              "native_gdn_20261018",
+              "--fail-fast-engine-error",
+              "--ready-timeout",
+              "600",
+              "--out",
+              "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-fused-command-profile-v2/observer-cost-v1/2-on/bench"
+            ],
+            "input_sha256": {
+              "configuration": "d967e5966a6fbabe31d90daa2fa7f4eae03700ff4d4c2a887e1fc6660ca31593",
+              "environment": "0ece694766ebf9e7b3fef805df2072ad53b360fe01cbaa3355fddf7261b4b17e",
+              "native_plan": "1035030310656aada553f1a110a8db87dc640b6bba859aa470495afde8abbae1"
+            }
+          },
+          {
+            "index": 3,
+            "arm": "off",
+            "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-fused-command-profile-v2/observer-cost-v1/3-off",
+            "command": [
+              "/bin/sh",
+              "/home/yayoi/orca/workspaces/Strata/sycl/bench.sh",
+              "--config",
+              "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-fused-command-profile-v2/observer-cost-v1/3-off/config.json",
+              "--port",
+              "45495",
+              "--prefill-only",
+              "--prefill-tokens",
+              "98304",
+              "--think",
+              "--runs",
+              "2",
+              "--profile-request-gates",
+              "--workload-id",
+              "native_gdn_20261018",
+              "--fail-fast-engine-error",
+              "--ready-timeout",
+              "600",
+              "--out",
+              "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-fused-command-profile-v2/observer-cost-v1/3-off/bench"
+            ],
+            "input_sha256": {
+              "configuration": "2f8a75ba04c232905516ad46d39ae847e480af375f639e238966d4713767e79b",
+              "environment": "48f4d130188df2e1535d0dd687c8d4f1c5ae2c672ce9b674357369b1187a1fae",
+              "native_plan": "42068ba5589e4669afb05c90b15c64a5020e3873389bae3c6e1bb8f62adb0c1f"
+            }
+          },
+          {
+            "index": 4,
+            "arm": "off",
+            "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-fused-command-profile-v2/observer-cost-v1/4-off",
+            "command": [
+              "/bin/sh",
+              "/home/yayoi/orca/workspaces/Strata/sycl/bench.sh",
+              "--config",
+              "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-fused-command-profile-v2/observer-cost-v1/4-off/config.json",
+              "--port",
+              "39067",
+              "--prefill-only",
+              "--prefill-tokens",
+              "98304",
+              "--think",
+              "--runs",
+              "2",
+              "--profile-request-gates",
+              "--workload-id",
+              "native_gdn_20261018",
+              "--fail-fast-engine-error",
+              "--ready-timeout",
+              "600",
+              "--out",
+              "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-fused-command-profile-v2/observer-cost-v1/4-off/bench"
+            ],
+            "input_sha256": {
+              "configuration": "9bb1efd4f667971cc2e1dde2f9e819a7ee01d31baeb73abe5b00ab70e37827f9",
+              "environment": "cfc3ccc448aa5cc007f975cf25de5d88c2c875065cfe6eb99c73ff705c2fd591",
+              "native_plan": "42068ba5589e4669afb05c90b15c64a5020e3873389bae3c6e1bb8f62adb0c1f"
+            }
+          },
+          {
+            "index": 5,
+            "arm": "on",
+            "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-fused-command-profile-v2/observer-cost-v1/5-on",
+            "command": [
+              "/bin/sh",
+              "/home/yayoi/orca/workspaces/Strata/sycl/bench.sh",
+              "--config",
+              "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-fused-command-profile-v2/observer-cost-v1/5-on/config.json",
+              "--port",
+              "36733",
+              "--prefill-only",
+              "--prefill-tokens",
+              "98304",
+              "--think",
+              "--runs",
+              "2",
+              "--profile-request-gates",
+              "--workload-id",
+              "native_gdn_20261018",
+              "--fail-fast-engine-error",
+              "--ready-timeout",
+              "600",
+              "--out",
+              "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-fused-command-profile-v2/observer-cost-v1/5-on/bench"
+            ],
+            "input_sha256": {
+              "configuration": "eb304f178f4ceaf59abcc0f0651128e1cd0c60d37efa55c207a2e6ca066360f0",
+              "environment": "16eb7119002b3e8209cfb2ad371c54f4d12679a8ee0dede484bb4c9d8fa3f492",
+              "native_plan": "1035030310656aada553f1a110a8db87dc640b6bba859aa470495afde8abbae1"
+            }
+          }
+        ]
       }
     }
   },
