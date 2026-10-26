@@ -18,9 +18,9 @@ sys.dont_write_bytecode = True
 import runtime_probe as runtime
 
 P, B = runtime.P, runtime.B
-ROOT = B / 'llama9b-independent-control-v5'
+ROOT = B / 'llama9b-independent-control-v6'
 RESULT = runtime.RESULT.with_name('prefill-resources-current.json')
-KEY = 'independent_llama9b_control_v5'
+KEY = 'independent_llama9b_control_v6'
 LLAMA = Path('/home/yayoi/ghq/github.com/ggml-org/llama.cpp')
 EXE = LLAMA / 'build/bin/llama-bench'
 MODEL = Path('/data/llm_models/unsloth/Qwen3.5-9B-GGUF/Qwen3.5-9B-UD-Q4_K_XL.gguf')
@@ -57,6 +57,10 @@ def write(path, data):
                 break
     require(json.loads(text)==data,'result rendering lost information')
     path.write_text(text)
+
+
+def compact(row):
+    return {k:v for k,v in row.items() if k!='runtime_files'}
 
 
 def pins(revision):
@@ -104,6 +108,11 @@ def prepare():
     require(previous['stage']=='failed' and previous['ownership_closed'] and not previous['active'] and
         previous['fresh_faults']==[] and previous['provider_selection_diagnosis']['selection']=='CPU ICD,not GPU;Main configuration error',
         'preserve CPU/GPU ICD selection error before corrected GPU plan')
+    previous=c['independent_llama9b_control_v5']
+    require(previous['stage']=='failed' and not previous['active'] and previous['fresh_faults']==[] and
+        previous['actual_ownership_reconciliation']['all_direct_children_reaped'] and
+        previous['actual_ownership_reconciliation']['all_anchored_sessions_empty'],
+        'close and preserve lazy media dependency refusal before fresh catalog plan')
     revision = runtime.build.git(P, 'rev-parse', 'HEAD').decode().strip()
     inputs = pins(revision)
     original = runtime.selected.baseline()[1]
@@ -136,6 +145,15 @@ def prepare():
     opencl_loader=(SDK/'lib/libOpenCL.so.1').resolve()
     for path in [icd_provider,Path('/usr/lib/x86_64-linux-gnu/libOpenCL.so.1').resolve()]:
         files[str(path)]=digest(path)
+    # NEO loads optional media/GL interoperability dependencies through dlopen,
+    # beyond DT_NEEDED. Prospectively snapshot the installed native linker
+    # catalog;do not discover or approve new hashes from a running process.
+    catalog=subprocess.check_output(['/sbin/ldconfig','-p'],text=True,timeout=15)
+    native_paths={str(Path(p).resolve()) for p in re.findall(
+        r'^.*\(libc6,x86-64[^)]*\) => (/\S+)$',catalog,re.M)
+        if not re.search(r'(?i)nvidia|cuda|cudnn|hip|rocm',p)}
+    require(0<len(native_paths)<=4096,'bounded native linker catalog required')
+    for path in native_paths:files[path]=digest(path)
     require(b'UR_L0_V2_FORCE_DISABLE_COPY_OFFLOAD' in
         (SDK / 'lib/libur_adapter_level_zero_v2.so.0.12.0').read_bytes(), 'copy-offload avoidance unavailable')
     env = dict(runtime.validation.committed(runtime.SETTINGS)['environment'])
@@ -170,6 +188,7 @@ def prepare():
     row = dict(stage='prepared', source_commit=revision, input_sha256=inputs,
         external_source=root_source, binary=dict(path=str(EXE),sha256=digest(EXE),bytes=EXE.stat().st_size),
         model=asset, runtime_files=files, preload=preload, environment=env,packages=packages,
+        linker_catalog={'paths':len(native_paths),'purpose':'Prelaunch native OS code candidates including lazy NEO media dependencies. Actual loaded subset separately observed and retained. NVIDIA/CUDA/HIP providers excluded;not permission to use another GPU.'},
         external_config_sha256={str(icd):digest(icd),str(private_icd):hashlib.sha256(icd_text.encode()).hexdigest()},
         ICD_selection={'scope':'This child only;no system/user configuration change.',
             'reference':'https://github.com/KhronosGroup/OpenCL-ICD-Loader/blob/main/README.md#table-of-debug-environment-variables',
@@ -193,7 +212,9 @@ def prepare():
     ROOT.mkdir(mode=0o700)
     for name in ('tmp','cache','icd'):(ROOT/name).mkdir()
     private_icd.write_text(icd_text)
-    write(ROOT/'record.json',row);c[KEY]=row;write(RESULT,c)
+    write(ROOT/'runtime-inputs.json',files)
+    row['runtime_manifest']=dict(path=str(ROOT/'runtime-inputs.json'),sha256=digest(ROOT/'runtime-inputs.json'),files=len(files))
+    write(ROOT/'record.json',compact(row));c[KEY]=compact(row);write(RESULT,c)
     print('Prepared installed-reference diagnostic;commit plan before running.',flush=True)
 
 
@@ -203,6 +224,9 @@ def admit(initial):
     require(digest(EXE)==initial['binary']['sha256'] and digest(MODEL)==initial['model']['sha256'],
         'external binary/model differs')
     require(all(digest(p)==h for p,h in initial['runtime_files'].items()),'runtime input changed')
+    require(digest(initial['runtime_manifest']['path'])==initial['runtime_manifest']['sha256'] and
+        json.loads(Path(initial['runtime_manifest']['path']).read_text())==initial['runtime_files'],
+        'predeclared runtime catalog changed')
     require(all(digest(p)==h for p,h in initial['external_config_sha256'].items()),'ICD selection file changed')
     require(subprocess.check_output(['dpkg-query','-W','-f=${Package} ${Version}\n',*PACKAGES],
         text=True,timeout=15).splitlines()==initial['packages'],'installed package versions changed')
@@ -214,11 +238,13 @@ def admit(initial):
 def run():
     c=runtime.validation.committed(RESULT);row=c[KEY]
     require(row['stage']=='prepared' and not row['active'],'single-use plan only;no retry')
+    require(digest(row['runtime_manifest']['path'])==row['runtime_manifest']['sha256'],'runtime catalog differs')
+    row['runtime_files']=json.loads(Path(row['runtime_manifest']['path']).read_text())
     initial=json.loads(json.dumps(row));admit(initial)
     owner=None;cursor='';row.update(stage='running',passed=False)
     def persist():
         row['active']=bool(owner and owner.active is not None)
-        write(ROOT/'record.json',dict(row,commands=owner.commands if owner else []))
+        write(ROOT/'record.json',dict(compact(row),commands=owner.commands if owner else []))
     def monitor(io,entry):
         seen=set()
         while not io.exit_watch.poll(0) or not io.eof:
@@ -226,6 +252,7 @@ def run():
             try:maps=Path('/proc',str(io.proc.pid),'maps').read_text()
             except (FileNotFoundError,ProcessLookupError):maps=''
             for path in runtime.executable_mappings(maps):
+                require(not re.search(r'(?i)nvidia|cuda|cudnn|hip|rocm',path),'unexpected other-GPU provider')
                 require(path in row['runtime_files'] or path==row['preload']['canary']['path'],
                     'unplanned executable map: '+path)
                 seen.add(path)
@@ -284,7 +311,7 @@ def run():
     finally:
         if owner is not None and cursor:runtime.validation.finish(row,owner,cursor,row['boot'])
         row['passed']=bool(row.get('passed') and row['stage']=='closed')
-        persist();c[KEY]=row;write(RESULT,c)
+        persist();c[KEY]=compact(row);write(RESULT,c)
     print(json.dumps({k:row.get(k) for k in ('stage','passed','error','summary','ownership_closed')}),flush=True)
     return int(not row['passed'])
 
