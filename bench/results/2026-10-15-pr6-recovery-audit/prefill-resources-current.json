@@ -2728,6 +2728,264 @@
       "remaining": "Fourteen older provenance holds and separate pending numerical/model/full-context/upstream gates are unchanged."
     },
     "fused_command_profile": {
+      "public_gu_stage_smoke_build_v1": {
+        "stage": "prepared",
+        "source_commit": "3af1c47d965bbb71b39dd40bda479ed7537fb58c",
+        "sdk": {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-expert-staging-v3/sdk-inputs.json",
+          "sha256": "c8879f0b8d772979bf2096dc64a3bba49853bd15dad221b46427a922030647d8",
+          "files": 10945,
+          "packages": [
+            "intel-oneapi-compiler-dpcpp-cpp-runtime-2026.2 2026.2.0-863",
+            "intel-oneapi-dpcpp-cpp-2026.2 2026.2.0-863",
+            "intel-oneapi-umf-1.2 1.2.0-116"
+          ],
+          "origin": "Installed Intel apt packages;dpkg verification silent. No XeStrata SDK source/artifact reuse.",
+          "live": true
+        },
+        "tools": {
+          "cmake": {
+            "path": "/usr/bin/cmake",
+            "sha256": "1c5227af4edd22d8d689def545e18ee458260c0fd579eba2187967f38817e638"
+          },
+          "ninja": {
+            "path": "/usr/bin/ninja",
+            "sha256": "5965527e09fe2b3787772aa4f711d6a36b393e7f2fcaa744a7a96c5a4ddf59cb"
+          },
+          "cc": {
+            "path": "/usr/bin/x86_64-linux-gnu-gcc-13",
+            "sha256": "1b99826121ae6682a634e5efe09bd3e3df58ce58e0b28f849114ab5b89139c26"
+          },
+          "ar": {
+            "path": "/usr/bin/x86_64-linux-gnu-ar",
+            "sha256": "6452af2eea333b8c65e1adb92964fc8f97863ab003fa13f9d12bff5345cd7dbe"
+          },
+          "ranlib": {
+            "path": "/usr/bin/x86_64-linux-gnu-ranlib",
+            "sha256": "60254978b8ee2c1b21b41d16a18a621dbbcc72e43eb2fa9f916818256c77e9ee"
+          },
+          "as": {
+            "path": "/usr/bin/x86_64-linux-gnu-as",
+            "sha256": "21aff249b692b5c31a44007491f922dcb49f41323e362c57d2ada3f52eddb7f0"
+          },
+          "ld": {
+            "path": "/usr/bin/x86_64-linux-gnu-ld.bfd",
+            "sha256": "e9ceb054c12207970f2726dfc07e9a66b411602748628baf27399f02a9bbb31b"
+          },
+          "cc1": {
+            "path": "/usr/libexec/gcc/x86_64-linux-gnu/13/cc1",
+            "sha256": "5d1679131184e2de4435b426eb264bf13472fe026db8e5c6bc97445814e8e2f4"
+          },
+          "sycl": {
+            "path": "/opt/intel/oneapi/compiler/2026.2/bin/icpx",
+            "sha256": "59eaaf55744c7290fb870cd12049ec11877b5224e333cba33270b433bdb73213"
+          },
+          "offload_bundler": {
+            "path": "/opt/intel/oneapi/compiler/2026.2/bin/compiler/clang-offload-bundler",
+            "sha256": "b6c673a2f3a90f2cd37483820a6330d6d417f6e6179dde2c7c46aacde1e45c0c"
+          }
+        },
+        "runtime_sha256": "09ad358e12f6ef58bfc0a978519927863f3d09949a033a1e224db95997647d97",
+        "selected_binary": {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/strata",
+          "bytes": 22190000,
+          "sha256": "22182f1a5e62e5f4259ce49a75ae44afbd988166ec79324816e499ff37ef60e4"
+        },
+        "boot": "cfda0b6a-7c13-4fe2-bdf5-8f9202770840",
+        "driver": {
+          "pci": "/sys/bus/pci/devices/0000:05:00.0",
+          "driver": "xe",
+          "vendor": "0x8086",
+          "device": "0xe20c",
+          "kernel": "7.0.0-38-generic",
+          "devcoredump": false
+        },
+        "original_recipe": {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-fused-command-profile-v2/record.json",
+          "sha256": "7a9d4f81952571c8d4e06aa579891e11e072b7c2d7fb5395272b232afd45337b",
+          "source_commit": "26fdb5dd56070da7e336b44f91e8c04b7a7acf1b"
+        },
+        "configure_argv": [
+          "/usr/bin/cmake",
+          "-S",
+          "/home/yayoi/orca/workspaces/Strata/sycl",
+          "-B",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/native16-stage-smoke-v1/build",
+          "-G",
+          "Ninja",
+          "-DCMAKE_CXX_COMPILER=/opt/intel/oneapi/compiler/2026.2/bin/icpx",
+          "-DCMAKE_BUILD_TYPE=Release",
+          "-DCMAKE_EXPORT_COMPILE_COMMANDS=ON",
+          "-DMKL_DIR=/opt/intel/oneapi/mkl/2026.1/lib/cmake/mkl",
+          "-DSTRATA_BUILD_CONVERSATION_TESTS:BOOL=OFF",
+          "-DSTRATA_BUILD_PREFILL_HOST_TESTS:BOOL=ON",
+          "-DSTRATA_BUILD_TESTS:BOOL=OFF",
+          "-DSTRATA_CPU_ARCH:STRING=znver3",
+          "-DSTRATA_ENABLE_CUDA:BOOL=OFF",
+          "-DSTRATA_ENABLE_HIP:BOOL=OFF",
+          "-DSTRATA_ENABLE_SYCL:BOOL=ON",
+          "-DSTRATA_GGML_DIR:PATH=/home/yayoi/ghq/github.com/ggml-org/llama.cpp/.worktree/dep-ggml-3cf-xe-e32-20261011",
+          "-DSTRATA_MMQ_KQUANTS:BOOL=OFF",
+          "-DSTRATA_NATIVE_EXPERTS:BOOL=ON",
+          "-DSTRATA_ORCA_Q4KS_MMQ:BOOL=OFF",
+          "-DSTRATA_PORTABLE:BOOL=OFF",
+          "-DSTRATA_PREFILL_MMQ:BOOL=OFF",
+          "-DSTRATA_SYCL_AOT_DOUBLE_GRF:BOOL=OFF",
+          "-DSTRATA_SYCL_TESTS:BOOL=ON",
+          "-DSTRATA_WERROR:BOOL=ON",
+          "-DSTRATA_SYCL_VLLM_XE2_NATIVE16=ON",
+          "-DSTRATA_SYCL_DEVICE_ARCH=",
+          "-DSYCL_TLA_SOURCE_DIR=/home/yayoi/ghq/github.com/intel/sycl-tla/.worktree/strata-native16-87f",
+          "-DCMAKE_CXX_FLAGS=-fsycl-id-queries-range=size_t -Wno-error=deprecated-declarations"
+        ],
+        "environment": {
+          "PATH": "/usr/bin:/bin",
+          "HOME": "/home/yayoi",
+          "LANG": "C.UTF-8",
+          "LC_ALL": "C.UTF-8",
+          "PYTHONDONTWRITEBYTECODE": "1",
+          "LD_LIBRARY_PATH": "/opt/intel/oneapi/compiler/2026.2/lib:/opt/intel/oneapi/umf/1.2/lib:/opt/intel/oneapi/mkl/2026.1/lib",
+          "ONEAPI_DEVICE_SELECTOR": "level_zero:gpu",
+          "UR_ADAPTERS_FORCE_LOAD": "/opt/intel/oneapi/compiler/2026.2/lib/libur_adapter_level_zero_v2.so.0.12.0",
+          "UR_L0_V2_FORCE_DISABLE_COPY_OFFLOAD": "1",
+          "NEOReadDebugKeys": "1",
+          "EnableDirectSubmission": "0",
+          "STRATA_SYCL_PREFILL_SAME_QUEUE": "1",
+          "STRATA_SYCL_VERIFY_NATIVE_CAPTURE": "0",
+          "SYCL_CACHE_PERSISTENT": "0",
+          "ZES_ENABLE_SYSMAN": "0",
+          "UR_ENABLE_LAYERS": "UR_LAYER_TRACING,UR_LAYER_PARAMETER_VALIDATION",
+          "UR_LOG_TRACING": "level:info;flush:info;output:stderr",
+          "UR_LOG_VALIDATION": "level:warning;flush:warning;output:stderr",
+          "UR_LOG_LOADER": "level:warning;flush:warning;output:stderr",
+          "UR_LOG_LEVEL_ZERO": "level:warning;flush:warning;output:stderr",
+          "TMPDIR": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/native16-stage-smoke-v1/tmp",
+          "XDG_CACHE_HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/native16-stage-smoke-v1/cache"
+        },
+        "targets": [
+          "sycl_submission_test",
+          "sycl_vllm_native16_test",
+          "sycl_moe_gu_swiglu_bench",
+          "sycl_moe_down_scatter_bench"
+        ],
+        "build_command": [
+          "/usr/bin/cmake",
+          "--build",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/native16-stage-smoke-v1/build",
+          "--parallel",
+          "2",
+          "--target",
+          "sycl_submission_test",
+          "sycl_vllm_native16_test",
+          "sycl_moe_gu_swiglu_bench",
+          "sycl_moe_down_scatter_bench"
+        ],
+        "dependency_command": [
+          "/usr/bin/ninja",
+          "-C",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/native16-stage-smoke-v1/build",
+          "-t",
+          "deps"
+        ],
+        "generated_expected": {
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/native16-stage-smoke-v1/build/ggml/src/ggml-version.h": "9e45eee8391971371922f51b66925184609125d467c444744599f680b78edc92"
+        },
+        "budgets": {
+          "wall": 1200,
+          "cpu": 3600,
+          "rss_cap": 12884901888,
+          "text_cap": 8388608,
+          "file_cap": 2147483648,
+          "total_cap": 4294967296
+        },
+        "active": false,
+        "ownership_closed": true,
+        "passed": false,
+        "complete": false,
+        "GPU_executed": false,
+        "engine_built": false,
+        "production_selected": false,
+        "model_adoption_qualified": false,
+        "question": "Build bounded64-call actual FP16-to-BF16 public-GU stage diagnostic;no performance trial.",
+        "criteria": "Source/dependency/SDK/tools pinned before configure;actual ninja compile closure fully covered;normal finite owned configure/build/dependency exits;four exact fixture hashes;no engine/model execution. Compilation alone qualifies neither runtime,GEMM math,performance nor physical256K context.",
+        "next_gate": "One traced30s process,four16-call groups with checked marker drains;at most32ordinary kernels plus marker per group.3s elapsed stage refusal is checked after return,not API cancellation. Preserve all prior failures.",
+        "retention": "Qualified official v4fallback plus this only changed component generation;original13engine assets unchanged. Retire after stage gate/source recovery;a smoke cannot qualify2048calls,hardware saturation,model or decode.",
+        "baseline_native_build": {
+          "record": {
+            "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/native16-public-control-v4/record.json",
+            "sha256": "621cf892352e1a80e8f68ff0a2272a5f55e31d89c2595e6b9f97efd414c27c5c"
+          },
+          "source_commit": "2369886e91da7d4f570d43ba17aacb242b838c60",
+          "recovered_inputs": 9972,
+          "compiled_inputs": {
+            "files": 1427,
+            "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/native16-public-control-v4/compiler-inputs.json",
+            "sha256": "c534c4970837ddc842f6909cf13f6765971c2ba39ee2bc93ba7c15bf129df5ac",
+            "uncovered": 0
+          },
+          "fixtures": {
+            "sycl_submission_test": {
+              "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/native16-public-control-v4/build/sycl_submission_test",
+              "sha256": "451f06d4ba6606b1f58c352c2a2018d68b2f4e5e82b771b81fa73019b61f0f0d",
+              "bytes": 347200
+            },
+            "sycl_vllm_native16_test": {
+              "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/native16-public-control-v4/build/sycl_vllm_native16_test",
+              "sha256": "7979528ed9932658821d8a346284055d14c72687455410a0671682c382e2a6b2",
+              "bytes": 1778456
+            },
+            "sycl_moe_gu_swiglu_bench": {
+              "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/native16-public-control-v4/build/sycl_moe_gu_swiglu_bench",
+              "sha256": "e85080e7342175497a0fc3b9170fad8cb4a8efd2f0cd6a312f2af687f1556477",
+              "bytes": 13082784
+            },
+            "sycl_moe_down_scatter_bench": {
+              "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/native16-public-control-v4/build/sycl_moe_down_scatter_bench",
+              "sha256": "70bbc7dd26970c79a0383e9632ad81ad83f6dd08c81f6b795584a34023e167a9",
+              "bytes": 13103448
+            }
+          },
+          "imported_link_files": {
+            "/opt/intel/oneapi/mkl/2026.1/lib/libmkl_sycl_blas.so.6": "51d6c16990701a5aaf9fbbde5d86f5a7197b81357b66b19cbb912206564cf4ee",
+            "/opt/intel/oneapi/mkl/2026.1/lib/libmkl_intel_ilp64.so.3": "ffbbeff402fdf09baa53f8226b86f27046592d984ae2916b1bbc2e59132c7c89",
+            "/opt/intel/oneapi/mkl/2026.1/lib/libmkl_sequential.so.3": "4e7ff529bec90a1b0ce70299258a64a2ebae7a5a6f3ec031306a6ddb39b5a650",
+            "/opt/intel/oneapi/mkl/2026.1/lib/libmkl_core.so.3": "b4f086651ee5a8471140d53fedfdbbaba606287784763b0739f282872c31aa9b"
+          },
+          "generated_link_files": {},
+          "independent_SDK": {
+            "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-expert-staging-v3/sdk-inputs.json",
+            "sha256": "c8879f0b8d772979bf2096dc64a3bba49853bd15dad221b46427a922030647d8",
+            "files": 10945,
+            "packages": [
+              "intel-oneapi-compiler-dpcpp-cpp-runtime-2026.2 2026.2.0-863",
+              "intel-oneapi-dpcpp-cpp-2026.2 2026.2.0-863",
+              "intel-oneapi-umf-1.2 1.2.0-116"
+            ],
+            "origin": "Installed Intel apt packages;dpkg verification silent. No XeStrata SDK source/artifact reuse.",
+            "live": true
+          }
+        },
+        "source_groups": [
+          {
+            "root": "/home/yayoi/orca/workspaces/Strata/sycl",
+            "revision": "3af1c47d965bbb71b39dd40bda479ed7537fb58c",
+            "count": 663,
+            "aggregate_sha256": "94978102190e96577ce2858eab4ab65ddfa99d5077b68c2b97c92665fa94c918"
+          },
+          {
+            "root": "/home/yayoi/ghq/github.com/ggml-org/llama.cpp/.worktree/dep-ggml-3cf-xe-e32-20261011",
+            "revision": "3cf03257f219afbe7334045ff7c6a06ac68c627d",
+            "count": 3608,
+            "aggregate_sha256": "322862d213ed722d6500da0b58a1b7fffff53aa0de77d7f2e8ba685c653a0d9f"
+          },
+          {
+            "root": "/home/yayoi/ghq/github.com/intel/sycl-tla/.worktree/strata-native16-87f",
+            "revision": "87f6850680a580654b9ea2c80dbc01aeb36ad231",
+            "count": 5703,
+            "aggregate_sha256": "5768eaea650c06eb022c9068784590a27400c2a577974c56750519edde859fe5"
+          }
+        ]
+      },
       "public_gu_warmed_attribution_v2": {
         "stage": "failed",
         "source_commit": "705813158f2b19aba289a160eac11e08aa8b0ccc",
