@@ -416,7 +416,8 @@ placement,with1Hz read-only telemetry and stage logging. Twenty synthetic
 observer controls pass before two117489-token thinking-on requests. Both
 requests,collector and native process close normally;all15 final model hashes
 match and no fresh GPU fault appears. These are diagnostic samples,
-847.7127/916.5116tok/s,not replacements for the clean911.7371 reference.
+847.7127/916.5116tok/s,not replacements for the selected-engine speed reference
+above.
 
 On the second request,127 contained samples report GT0 median2750MHz,
 nonzero minimum2733MHz,and no zero readings. Throttle reasons are126 `none`
@@ -513,7 +514,8 @@ longer-producer/timer-qualified plan is needed for quantitative status attributi
 The next proposed optimization is a small,event-owned host-USM staging ring in
 long-prefill expert upload,with actual production dependency-path/numerical gates
 before model evaluation. Decode implementation,configuration and1256placement
-remain fixed. The clean117K speed reference remains911.7371tok/s.
+remain fixed. Use the fresh117K selected-engine reference above for current
+speed;these component results do not replace it.
 
 After extraction and independent review,456closed raw/build/review/draft files
 retire,119638008bytes,with a path/hash/reason manifest. The completed whole
@@ -592,10 +594,19 @@ It retains the original kernel arithmetic and size_t ID/range ABI option.
 The build permits deprecation warnings while keeping other warnings fatal;
 the compiler resolves its own offload-bundler path. The earlier Werror and
 tool-layout refusals retain their failed status,with partial builds retired
-after9972original source inputs and their recipes were recovered. No GPU or
-model result follows from this successful compilation. Next run bounded
-same-build submission,native16 and GU/Down checks before public-GU calibration;
-full numerical/model,decode and physical-context qualifications remain separate.
+after9972original source inputs and their recipes were recovered.
+The subsequent official-runtime compatibility cohort passes ten ordered fresh
+processes:one host canary,nine GPU submission/native16/GU/Down cases. These cover
+32normal dyadic input/output/tile cases,26pre-enqueue guards and the actual public
+GU/Down dispatch boundaries. Source,1427compiled inputs,imported link files and
+the observed providers match;parameter validation is silent,owners close and
+no fresh fault appears. Its first host-only attempt failed on a short-process
+`/proc/environ` exit race before any GPU case;the corrected plan requires positive
+pidfd exit evidence and preserves that original observation failure.
+This permits bounded normal-input public-GU calibration only. Large-range ID
+edges,same-process mixed-image selection,full numerical/model,oneMKL ABI,decode
+and physical-context qualifications remain separate. No new whole-model speed
+or cause for the historical decline is established.
 
 The fresh sourcee33d16fc3 attribution fixture closes ten official-SDK processes
 with240eligible/correct timing samples and120complete CPU/GPU profiles.
