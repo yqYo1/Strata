@@ -803,6 +803,32 @@
     }
   },
   "historical_regression_audit": {
+    "supervision_input_admission_v3": {
+      "source_commit": "e045b5b8b01f91566d65f2bc2e18254ec9c8a8f3",
+      "sources": {
+        "tools/sycl/supervision_model.py": "15a9c7e1232233a03b9114782c78ab4c7e6e839baae5c8b278634a1082b6fb6d",
+        "tools/test_sycl_supervision_model.py": "a1d0c6842d4f9e7b6395942b7e206fbeab4197b3adf99891afe704d7e4804d29",
+        "tools/sycl/benchmark_runtime.py": "861bcfb8ccbfc1d8bc4f785e08b46cb17c7c8253be50bac8e820135d3e2876b6"
+      },
+      "command": [
+        "flock",
+        "-n",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/owned-v0141-measurement.lock",
+        "timeout",
+        "45s",
+        "/usr/bin/python3.12",
+        "-I",
+        "-S",
+        "-B",
+        "tools/test_sycl_supervision_model.py"
+      ],
+      "passed": true,
+      "exit_code": 0,
+      "cases": 8,
+      "ownership_closed": true,
+      "GPU_executed": false,
+      "scope": "Five profile-admission controls plus runtime-file rewrite,new import-directory and owned live Python child checks. Wrong script/interpreter receipt/environment/maps all reject;child reaches EOF,reaps and leaves an empty owned session. Fixtures are private temporary source-recoverable files,retired after test. No model or performance evidence."
+    },
     "supervision_model_control_v2": {
       "stage": "closed-unlaunched",
       "binary": {
