@@ -824,6 +824,30 @@ scheduling/cost changes prefill. Do not repeat CPU-clock model runs without a
 new question requiring them. No inference implementation or decode placement
 changes follow from these diagnostics.
 
+The source1a052a949 supervisor candidate preserves250ms whole-/proc discovery,
+fresh pidfd/start-time/session checks,escaped-member tracking and bounded owned
+cleanup. It filters foreign sessions through a bounded raw-descriptor stat read
+before constructing a complete identity;registration returns only a fresh
+accepted identity for accounting. All14 host controls pass,including short reads,
+read errors,PID races,escaped children and owned-only cleanup. Six fresh CPU-only
+wait processes give baseline fractions0.10447846,0.10473940,0.10481507 and
+candidate fractions0.04662729,0.04683367,0.04631702 of one core. All three paired
+candidate/baseline ratios pass the frozen<=0.8screen;geomean0.44510192 passes
+<=0.75,and every candidate meets the separate<=0.05absolute cap. The preceding
+two candidates remain failed at that absolute gate. This qualifies a separate
+model comparison,not inference adoption,a historical cause or a55%model gain.
+The default supervisor and inference implementation remain unchanged.
+
+The sourcec50192c3a matched model control keeps the selected original6e40engine,
+qualified validation/runtime safety,1256decode slots and existing placement.
+Its frozen six-process order is baseline/candidate/candidate/baseline/baseline/
+candidate,with four117489fresh-token requests per process and first use kept
+separate. It records controller CPU operands before enforcing the prospective
+model-specific budgets;it does not change the earlier failed5%clock diagnostic.
+Execution additionally requires exact-source review. See
+`historical_regression_audit.supervision_model_control_v1` in the runtime
+comparison for the plan and actual execution state.
+
 After replay and exact source/recipe/header/link/object/ELF recovery,these three
 closed observer/model/control roots retire106files/12,760,397bytes. Four
 one-use sources/controllers retire to pushed history at925ddfe8e;the selected
