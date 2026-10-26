@@ -2729,7 +2729,7 @@
     },
     "fused_command_profile": {
       "native16_public_calibration_build": {
-        "stage": "prepared",
+        "stage": "failed",
         "source_commit": "0bf4502bf7b46713e72a850482aced7ea1ba0728",
         "sdk": {
           "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-expert-staging-v3/sdk-inputs.json",
@@ -2931,6 +2931,26 @@
             "selected_original13_assets_unchanged": true
           },
           "change": "Keep original barrier/API code and all other warnings as errors. Only -Wno-error=deprecated-declarations is added prospectively;no inference source change."
+        },
+        "error": "RuntimeError('compile failed')",
+        "fresh_faults": [],
+        "boot_unchanged": true,
+        "driver_after": {
+          "pci": "/sys/bus/pci/devices/0000:05:00.0",
+          "driver": "xe",
+          "vendor": "0x8086",
+          "device": "0xe20c",
+          "kernel": "7.0.0-38-generic",
+          "devcoredump": false
+        },
+        "failure_analysis": {
+          "stage": "host_slice_extraction",
+          "AOT_image_compiler_success_messages": 3,
+          "cause": "cmake/sycl_vllm_xe2_native16.cmake assumes clang-offload-bundler beside icpx;official2026.2 installs it in bin/compiler.",
+          "error": "/opt/intel/oneapi/compiler/2026.2/bin/clang-offload-bundler: not found",
+          "GPU_executed": false,
+          "matrix_or_ABI_qualified": false,
+          "correction": "Ask the pinned compiler with -print-prog-name=clang-offload-bundler;require an existing absolute path and pinned SDK identity. No kernel arithmetic change."
         },
         "source_groups": [
           {
