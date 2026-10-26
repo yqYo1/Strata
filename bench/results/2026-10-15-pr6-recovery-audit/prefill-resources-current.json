@@ -2729,7 +2729,7 @@
     },
     "fused_command_profile": {
       "public_gu_dispatch_calibration": {
-        "stage": "prepared",
+        "stage": "closed",
         "source_commit": "7c52325edf5568e9653c60d843018c29ec408702",
         "compatibility_sha256": "9549727b07f0db756f771e3070460c1d2f83a310e02da5b18a68775f2d420399",
         "native_build_source_commit": "2369886e91da7d4f570d43ba17aacb242b838c60",
@@ -2841,7 +2841,325 @@
             "ordinal": 2
           }
         ],
-        "processes": [],
+        "processes": [
+          {
+            "name": "profile0",
+            "arm": 0,
+            "profile": true,
+            "ordinal": 0,
+            "passed": true,
+            "ownership_closed": true,
+            "parameter_validation_silent": true,
+            "details": {
+              "profiles": [
+                {
+                  "rows": 3,
+                  "selected": false,
+                  "service_ns_by_kind": {
+                    "gu": 23959,
+                    "swiglu": 3958
+                  },
+                  "submit_clock_qualified": true,
+                  "submit_clock_inversions": 0
+                },
+                {
+                  "rows": 160,
+                  "selected": false,
+                  "service_ns_by_kind": {
+                    "gu": 54584,
+                    "swiglu": 5625
+                  },
+                  "submit_clock_qualified": true,
+                  "submit_clock_inversions": 0
+                },
+                {
+                  "rows": 2333,
+                  "selected": false,
+                  "service_ns_by_kind": {
+                    "gu": 326979,
+                    "swiglu": 40000
+                  },
+                  "submit_clock_qualified": true,
+                  "submit_clock_inversions": 0
+                },
+                {
+                  "rows": 2334,
+                  "selected": false,
+                  "service_ns_by_kind": {
+                    "gu": 301146,
+                    "swiglu": 38646
+                  },
+                  "submit_clock_qualified": true,
+                  "submit_clock_inversions": 0
+                }
+              ],
+              "full_event_count_and_service_conservation": true
+            }
+          },
+          {
+            "name": "profile1",
+            "arm": 1,
+            "profile": true,
+            "ordinal": 0,
+            "passed": true,
+            "ownership_closed": true,
+            "parameter_validation_silent": true,
+            "details": {
+              "profiles": [
+                {
+                  "rows": 3,
+                  "selected": false,
+                  "service_ns_by_kind": {
+                    "gu": 27708,
+                    "swiglu": 5313
+                  },
+                  "submit_clock_qualified": true,
+                  "submit_clock_inversions": 0
+                },
+                {
+                  "rows": 160,
+                  "selected": false,
+                  "service_ns_by_kind": {
+                    "gu": 73854,
+                    "swiglu": 7604
+                  },
+                  "submit_clock_qualified": true,
+                  "submit_clock_inversions": 0
+                },
+                {
+                  "rows": 2333,
+                  "selected": false,
+                  "service_ns_by_kind": {
+                    "gu": 480104,
+                    "swiglu": 57917
+                  },
+                  "submit_clock_qualified": true,
+                  "submit_clock_inversions": 0
+                },
+                {
+                  "rows": 2334,
+                  "selected": true,
+                  "service_ns_by_kind": {
+                    "gu_swiglu": 484583
+                  },
+                  "submit_clock_qualified": true,
+                  "submit_clock_inversions": 0
+                }
+              ],
+              "full_event_count_and_service_conservation": true
+            }
+          },
+          {
+            "name": "bench0",
+            "arm": 0,
+            "profile": false,
+            "ordinal": 0,
+            "passed": true,
+            "ownership_closed": true,
+            "parameter_validation_silent": true,
+            "details": {
+              "samples": [
+                [160,-1,512,0,512,40253400.0,40177604,0],
+                [160,0,512,0,512,35609100.0,35555105,0],
+                [160,1,512,0,512,35235900.0,35176458,0],
+                [160,2,512,0,512,35199200.0,35147396,0],
+                [160,3,512,0,512,36944100.0,36893230,0],
+                [160,4,512,0,512,35562700.0,35507917,0],
+                [2333,-1,128,0,128,32711300.0,32651250,0],
+                [2333,0,128,0,128,32731700.0,32673229,0],
+                [2333,1,128,0,128,32658800.0,32600104,0],
+                [2333,2,128,0,128,32737900.0,32679271,0],
+                [2333,3,128,0,128,32681200.0,32621355,0],
+                [2333,4,128,0,128,32671800.0,32613854,0],
+                [2334,-1,128,0,128,32650900.0,32593334,0],
+                [2334,0,128,0,128,32801900.0,32747083,0],
+                [2334,1,128,0,128,32720200.0,32663958,0],
+                [2334,2,128,0,128,32877500.0,32816562,0],
+                [2334,3,128,0,128,32843300.0,32782396,0],
+                [2334,4,128,0,128,32695300.0,32637917,0]
+              ],
+              "control_max_wall_ns": 167395,
+              "controls": 16,
+              "timer_resolution_ns": 52,
+              "dispatch_and_all_guards_passed": true
+            }
+          },
+          {
+            "name": "bench1",
+            "arm": 1,
+            "profile": false,
+            "ordinal": 0,
+            "passed": true,
+            "ownership_closed": true,
+            "parameter_validation_silent": true,
+            "details": {
+              "samples": [
+                [160,-1,512,0,512,36769200.0,36699584,0],
+                [160,0,512,0,512,36589000.0,36539166,0],
+                [160,1,512,0,512,36517200.0,36462187,0],
+                [160,2,512,0,512,35291500.0,35236771,0],
+                [160,3,512,0,512,35085500.0,35031770,0],
+                [160,4,512,0,512,35082700.0,35027500,0],
+                [2333,-1,128,0,128,32575900.0,32517604,0],
+                [2333,0,128,0,128,32696300.0,32639062,0],
+                [2333,1,128,0,128,32589300.0,32534167,0],
+                [2333,2,128,0,128,32755200.0,32697917,0],
+                [2333,3,128,0,128,32689800.0,32631354,0],
+                [2333,4,128,0,128,32633000.0,32569583,0],
+                [2334,-1,128,128,0,31804700.0,31750209,0],
+                [2334,0,128,128,0,31786200.0,31731354,0],
+                [2334,1,128,128,0,31808400.0,31754062,0],
+                [2334,2,128,128,0,31820200.0,31765416,0],
+                [2334,3,128,128,0,31885900.0,31830208,0],
+                [2334,4,128,128,0,31814500.0,31757917,0]
+              ],
+              "control_max_wall_ns": 128011,
+              "controls": 16,
+              "timer_resolution_ns": 52,
+              "dispatch_and_all_guards_passed": true
+            }
+          },
+          {
+            "name": "bench2",
+            "arm": 1,
+            "profile": false,
+            "ordinal": 1,
+            "passed": true,
+            "ownership_closed": true,
+            "parameter_validation_silent": true,
+            "details": {
+              "samples": [
+                [160,-1,512,0,512,85196200.0,85126458,0],
+                [160,0,512,0,512,82892000.0,82839792,0],
+                [160,1,512,0,512,77680900.0,77627813,0],
+                [160,2,512,0,512,35199400.0,35146458,0],
+                [160,3,512,0,512,35319200.0,35266145,0],
+                [160,4,512,0,512,35038600.0,34971145,0],
+                [2333,-1,128,0,128,32631600.0,32573855,0],
+                [2333,0,128,0,128,32563400.0,32509688,0],
+                [2333,1,128,0,128,32587900.0,32530521,0],
+                [2333,2,128,0,128,32644700.0,32583645,0],
+                [2333,3,128,0,128,32676700.0,32623229,0],
+                [2333,4,128,0,128,32619400.0,32564792,0],
+                [2334,-1,128,128,0,31830200.0,31772084,0],
+                [2334,0,128,128,0,31838500.0,31783334,0],
+                [2334,1,128,128,0,31897200.0,31841771,0],
+                [2334,2,128,128,0,31885300.0,31827708,0],
+                [2334,3,128,128,0,31949300.0,31894375,0],
+                [2334,4,128,128,0,31866800.0,31811667,0]
+              ],
+              "control_max_wall_ns": 130897,
+              "controls": 16,
+              "timer_resolution_ns": 52,
+              "dispatch_and_all_guards_passed": true
+            }
+          },
+          {
+            "name": "bench3",
+            "arm": 0,
+            "profile": false,
+            "ordinal": 1,
+            "passed": true,
+            "ownership_closed": true,
+            "parameter_validation_silent": true,
+            "details": {
+              "samples": [
+                [160,-1,512,0,512,36092400.0,36027188,0],
+                [160,0,512,0,512,34853400.0,34801042,0],
+                [160,1,512,0,512,34441900.0,34390000,0],
+                [160,2,512,0,512,34756600.0,34702917,0],
+                [160,3,512,0,512,34716900.0,34663958,0],
+                [160,4,512,0,512,34950400.0,34897188,0],
+                [2333,-1,128,0,128,32798400.0,32742396,0],
+                [2333,0,128,0,128,32557300.0,32491875,0],
+                [2333,1,128,0,128,36403200.0,36331875,0],
+                [2333,2,128,0,128,39809200.0,39209479,0],
+                [2333,3,128,0,128,39930700.0,39133750,0],
+                [2333,4,128,0,128,38343200.0,38031770,0],
+                [2334,-1,128,0,128,33150800.0,33091875,0],
+                [2334,0,128,0,128,36223500.0,36156145,0],
+                [2334,1,128,0,128,33932900.0,33865938,0],
+                [2334,2,128,0,128,32692100.0,32631562,0],
+                [2334,3,128,0,128,32647900.0,32608333,0],
+                [2334,4,128,0,128,32708200.0,32643854,0]
+              ],
+              "control_max_wall_ns": 121900,
+              "controls": 16,
+              "timer_resolution_ns": 52,
+              "dispatch_and_all_guards_passed": true
+            }
+          },
+          {
+            "name": "bench4",
+            "arm": 0,
+            "profile": false,
+            "ordinal": 2,
+            "passed": true,
+            "ownership_closed": true,
+            "parameter_validation_silent": true,
+            "details": {
+              "samples": [
+                [160,-1,512,0,512,38007000.0,37934063,0],
+                [160,0,512,0,512,35374600.0,35325625,0],
+                [160,1,512,0,512,35429600.0,35374583,0],
+                [160,2,512,0,512,35438400.0,35383229,0],
+                [160,3,512,0,512,35306400.0,35252604,0],
+                [160,4,512,0,512,35209100.0,35156458,0],
+                [2333,-1,128,0,128,32661100.0,32603437,0],
+                [2333,0,128,0,128,32579900.0,32539271,0],
+                [2333,1,128,0,128,32555700.0,32498333,0],
+                [2333,2,128,0,128,32653600.0,32595208,0],
+                [2333,3,128,0,128,32715600.0,32654792,0],
+                [2333,4,128,0,128,32763500.0,32705834,0],
+                [2334,-1,128,0,128,32671900.0,32612292,0],
+                [2334,0,128,0,128,32656800.0,32594688,0],
+                [2334,1,128,0,128,32811200.0,32751770,0],
+                [2334,2,128,0,128,32802700.0,32741563,0],
+                [2334,3,128,0,128,32693000.0,32636771,0],
+                [2334,4,128,0,128,32662900.0,32601666,0]
+              ],
+              "control_max_wall_ns": 131888,
+              "controls": 16,
+              "timer_resolution_ns": 52,
+              "dispatch_and_all_guards_passed": true
+            }
+          },
+          {
+            "name": "bench5",
+            "arm": 1,
+            "profile": false,
+            "ordinal": 2,
+            "passed": true,
+            "ownership_closed": true,
+            "parameter_validation_silent": true,
+            "details": {
+              "samples": [
+                [160,-1,512,0,512,38620500.0,38545416,0],
+                [160,0,512,0,512,37773800.0,37716250,0],
+                [160,1,512,0,512,36014400.0,35966979,0],
+                [160,2,512,0,512,35045100.0,34989375,0],
+                [160,3,512,0,512,34948400.0,34890834,0],
+                [160,4,512,0,512,35020300.0,34963750,0],
+                [2333,-1,128,0,128,32771500.0,32727083,0],
+                [2333,0,128,0,128,32668300.0,32613437,0],
+                [2333,1,128,0,128,32800200.0,32741250,0],
+                [2333,2,128,0,128,32699800.0,32642292,0],
+                [2333,3,128,0,128,32678300.0,32617812,0],
+                [2333,4,128,0,128,32632400.0,32574896,0],
+                [2334,-1,128,128,0,31871700.0,31813125,0],
+                [2334,0,128,128,0,31801100.0,31742083,0],
+                [2334,1,128,128,0,31953000.0,31892500,0],
+                [2334,2,128,128,0,31935300.0,31879063,0],
+                [2334,3,128,128,0,31872100.0,31811771,0],
+                [2334,4,128,128,0,31882700.0,31823230,0]
+              ],
+              "control_max_wall_ns": 130566,
+              "controls": 16,
+              "timer_resolution_ns": 52,
+              "dispatch_and_all_guards_passed": true
+            }
+          }
+        ],
         "sample_columns": [
           "rows",
           "round",
@@ -2854,9 +3172,9 @@
         ],
         "active": false,
         "ownership_closed": true,
-        "complete": false,
-        "passed": false,
-        "GPU_executed": false,
+        "complete": true,
+        "passed": true,
+        "GPU_executed": true,
         "model_executed": false,
         "inference_adopted": false,
         "hardware_saturation_qualified": false,
@@ -2871,7 +3189,131 @@
           "file_cap": 33554432,
           "total_cap": 67108864
         },
-        "retention": "Keep compact individual timing samples,profile service/dispatch/count/conservation/clock limits and source/runtime identities. Retire normal API/JIT/process logs after closure. Official4fixtures and SDK proof remain only until the resulting next component/model qualification decision."
+        "retention": "Keep compact individual timing samples,profile service/dispatch/count/conservation/clock limits and source/runtime identities. Retire normal API/JIT/process logs after closure. Official4fixtures and SDK proof remain only until the resulting next component/model qualification decision.",
+        "analysis": {
+          "rows": [
+            {
+              "rows": 160,
+              "projection_n": 1280,
+              "projection_k": 2560,
+              "projection_FLOPs": 1048576000,
+              "whole_public_call_wall_ns_by_process": {
+                "bench0": 69458.3984375,
+                "bench1": 68928.7109375,
+                "bench2": 68982.8125,
+                "bench3": 67883.984375,
+                "bench4": 69091.015625,
+                "bench5": 68447.4609375
+              },
+              "queue_interval_ns_by_process": {
+                "bench0": 69351.400390625,
+                "bench1": 68821.818359375,
+                "bench2": 68879.189453125,
+                "bench3": 67779.134765625,
+                "bench4": 68995.361328125,
+                "bench5": 68338.623046875
+              },
+              "isolated_profile_service_ns_by_arm": {
+                "0": 60209,
+                "1": 81458
+              },
+              "fusion_on_off_paired_wall_ratios": [
+                0.9923740323428761,
+                1.016186853719869,
+                0.9906854070434719
+              ],
+              "paired_ratio_geomean": 0.9996813188903222
+            },
+            {
+              "rows": 2333,
+              "projection_n": 1280,
+              "projection_k": 2560,
+              "projection_FLOPs": 15289548800,
+              "whole_public_call_wall_ns_by_process": {
+                "bench0": 255321.875,
+                "bench1": 255389.0625,
+                "bench2": 254839.0625,
+                "bench3": 299556.25,
+                "bench4": 255106.25,
+                "bench5": 255299.21875
+              },
+              "queue_interval_ns_by_process": {
+                "bench0": 254854.3359375,
+                "bench1": 254932.453125,
+                "bench2": 254412.4375,
+                "bench3": 297123.203125,
+                "bench4": 254650.0625,
+                "bench5": 254826.65625
+              },
+              "isolated_profile_service_ns_by_arm": {
+                "0": 366979,
+                "1": 538021
+              },
+              "fusion_on_off_paired_wall_ratios": [
+                1.000263148232011,
+                0.8507219011454443,
+                1.000756425018987
+              ],
+              "paired_ratio_geomean": 0.9478583125205032
+            },
+            {
+              "rows": 2334,
+              "projection_n": 1280,
+              "projection_k": 2560,
+              "projection_FLOPs": 15296102400,
+              "whole_public_call_wall_ns_by_process": {
+                "bench0": 256264.84375,
+                "bench1": 248550.78125,
+                "bench2": 249103.90625,
+                "bench3": 255532.8125,
+                "bench4": 255414.0625,
+                "bench5": 249083.59375
+              },
+              "queue_interval_ns_by_process": {
+                "bench0": 255836.5859375,
+                "bench1": 248108.7265625,
+                "bench2": 248653.96875,
+                "bench3": 255030.109375,
+                "bench4": 254974.7734375,
+                "bench5": 248618.984375
+              },
+              "isolated_profile_service_ns_by_arm": {
+                "0": 339792,
+                "1": 484583
+              },
+              "fusion_on_off_paired_wall_ratios": [
+                0.9698980851718956,
+                0.9748411713270678,
+                0.9752148778025878
+              ],
+              "paired_ratio_geomean": 0.9733150251355965
+            }
+          ],
+          "decision": "Descriptive current official-SDK component calibration only;no engine adoption,original-binary regression cause or resource saturation established.",
+          "limits": "Projection operation count excludes activation/rounding arithmetic. Isolated one-call service and warmed batches are different envelopes;do not subtract them to invent CPU time or a critical path.",
+          "interpretation": {
+            "M160": "Both arms actually use the same fallback;paired wall ratios change sign and geomean.9996813. No selected fusion at this shape.",
+            "M2333": "Both arms actually use the same fallback. bench3median299556.25ns versus255106..255322ns in its other baseline processes produces one pair ratio.8507219. Retain it;the.9478583geomean is not a fusion gain when neither arm selects fusion.",
+            "M2334": "All three actually selected-fusion pairs reduce whole-call time;time-ratio geomean.9733150(2.6685percent lower). This is current official-SDK component behavior,not an inference adoption or whole-prefill speedup.",
+            "service": "Isolated single-call profiles have different cache/spacing/observer history from warmed batches;some isolated service exceeds warm whole-call time. Do not subtract envelopes or derive CPU submit/wait,occupancy or a hardware ceiling.",
+            "next": "Do not repeat this calibration. Audit source-pinned costs and cross-window weight/dequant reuse before choosing a bounded model candidate;matched warmed event-service/thread-CPU attribution remains a distinct gap. Original6e40 and decode1256placement unchanged."
+          }
+        },
+        "outcome": {
+          "host_probe_accepted": true,
+          "ownership_closed": true,
+          "fresh_faults": [],
+          "boot_unchanged": true,
+          "driver_after": {
+            "pci": "/sys/bus/pci/devices/0000:05:00.0",
+            "driver": "xe",
+            "vendor": "0x8086",
+            "device": "0xe20c",
+            "kernel": "7.0.0-38-generic",
+            "devcoredump": false
+          },
+          "passed": true
+        }
       },
       "native16_compatibility_smoke": {
         "stage": "qualified",

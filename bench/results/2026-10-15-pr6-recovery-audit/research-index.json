@@ -929,6 +929,18 @@
       "checked_source": "src/sycl/compat.cpp:133 release -> wait_all -> all registered streams, then Allocation destruction; cudaStreamDestroy also waits its owned stream.",
       "conclusion": "The suspected extra-queue release gap is not established for compatibility cudaFree. Native Runtime::make_queue callers still require explicit queue ownership; no runtime change selected.",
       "measurement_limit": "No isolated validation cost or host critical-path attribution; do not select a reduced-validation optimization."
+    },
+    "latest_eligibility_review": {
+      "reviewer": "native Codex gpt-6-luna max",
+      "review_sha256": "0c360cc7f2c1326282c2c2151538b090f6939f8d852e24c1ae3381e168db56c9",
+      "bytes": 5533,
+      "decision": "No fresh Orca host-admission/submission or UR-policy-overhead scope. Existing collections cover mechanisms;actual disjoint wrapper attribution and a safe single-factor validation comparison are missing. Calibration cannot infer CPU time by subtracting isolated GPU service.",
+      "related_existing_scopes": [
+        "sycl_command_submission_amortization_collection_scope",
+        "UR_validation_activation_evidence_scope",
+        "UR_silent_validation_native_child_scope"
+      ],
+      "report_consumer_closed": true
     }
   },
   "gdn_columns_implementation_review_scope": {

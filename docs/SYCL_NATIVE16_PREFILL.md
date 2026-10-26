@@ -615,6 +615,33 @@ compatibility runtime catalogue have the named upcoming public-GU consumer.
 Post-reduction admission passes again:original13assets,official4fixtures,
 9972recovered inputs,1427compiled inputs and84runtime entries remain intact.
 
+The public-GU calibration now closes eight official-runtime processes without
+a fresh fault:two traced profile processes and six timing processes in0/1/1/0/0/1
+order. All108fixed-duration batches pass numerical,actual-dispatch,guard,timer
+and endpoint-control checks. Each process median below uses five later batches;
+the initial timing batch follows setup/warmup and is not cold-process latency.
+
+| Rows | Fusion off,three process medians,us/call | Fusion enabled,us/call | Actual fusion |
+| ---: | --- | --- | --- |
+| 160 | 69.458 / 67.884 / 69.091 | 68.929 / 68.983 / 68.447 | Neither arm |
+| 2333 | 255.322 / 299.556 / 255.106 | 255.389 / 254.839 / 255.299 | Neither arm |
+| 2334 | 256.265 / 255.533 / 255.414 | 248.551 / 249.104 / 249.084 | Enabled arm only |
+
+The2334-row paired time ratios are0.969898/0.974841/0.975215,geomean0.973315.
+The2333-row negative control has one slow off process despite identical fallback
+selection;its0.947858geomean is not a fusion benefit. Keep that variability.
+Isolated one-call GPU-service profiles have different cache,spacing and observer
+history;some exceed the warmed whole-call times. They cannot be subtracted to
+invent CPU time or a critical path. Source/controller7c52325ed and the compact
+`public_gu_dispatch_calibration` result preserve all samples and limits.
+This establishes current component behavior,not historical-regression causality,
+hardware saturation,a new model speed or inference adoption. Matched warmed
+GPU service and disjoint host CPU attribution remain open. Before another
+instrumentation build,check actual cross-window expert-weight/dequant reuse as
+a separate data-movement mechanism;the selected engine and decode1256placement
+remain unchanged. The completed host-scope review finds existing ownership and
+submission references sufficient;no duplicate Orca survey is eligible now.
+
 The fresh sourcee33d16fc3 attribution fixture closes ten official-SDK processes
 with240eligible/correct timing samples and120complete CPU/GPU profiles.
 Both large-payload observer screens fail:one ordinary on/off ratio is1.131068
