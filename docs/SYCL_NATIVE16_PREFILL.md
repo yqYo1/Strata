@@ -892,6 +892,13 @@ inputs;all individual clocks,CPU operands and closure/fault outcomes remain in
 Git. Four old source-audit rows and superseded plans/probe rows retire to
 `b97e30d9e`;the current V6review,PythonV4andownerV3qualification stay live.
 
+A bounded recheck of the existing82-root historical component inventory still
+finds147 artifacts/106,163,376bytes across49roots. This is not a current
+consumer/source qualification or a census of newer builds. Main must reconcile
+those live paths against current consumers and exact source/recipe evidence
+after the six-process comparison closes,before another engine build. The prior
+14 named provenance holds are not cleared by the150-file retirement above.
+
 After replay and exact source/recipe/header/link/object/ELF recovery,these three
 closed observer/model/control roots retire106files/12,760,397bytes. Four
 one-use sources/controllers retire to pushed history at925ddfe8e;the selected
