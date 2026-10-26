@@ -25,6 +25,18 @@ def native_environment(plan, parent):
                     raise RuntimeError('validation probe/provider changed')
         environment.update(LD_PRELOAD=probe['library']['path'],
             STRATA_UR_PROBE_EXPECTED_LOADER=str(Path(probe['loader']['path']).resolve()))
+        if 'control' in probe:
+            # The matched control changes only parameter validation. Keep the
+            # held-loader-reference stall avoidance in BOTH native children.
+            if (probe['control'] != 'held-validation' or probe.get('mode') not in ('on', 'off') or
+                    environment.get('UR_ENABLE_LAYERS', '') != '' or
+                    'STRATA_UR_HOLD_VALIDATION' in environment or
+                    any(environment.get(k) != v for k, v in {
+                        'UR_L0_V2_FORCE_DISABLE_COPY_OFFLOAD': '1',
+                        'NEOReadDebugKeys': '1', 'EnableDirectSubmission': '0',
+                        'STRATA_SYCL_PREFILL_SAME_QUEUE': '1'}.items())):
+                raise RuntimeError('matched validation control requires empty layers and fixed safety settings')
+            environment['STRATA_UR_HOLD_VALIDATION'] = probe['mode']
     return environment
 
 

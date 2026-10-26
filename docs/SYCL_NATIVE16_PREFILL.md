@@ -716,10 +716,15 @@ on/off normal exits plus wrong-provider,forbidden-layer and invalid-mode
 refusals. No device/queue/enqueue executes;fast host processes expose no live
 /proc sample,so GPU-provider admission remains open. Both clean comparison
 arms must have the same absent/empty UR_ENABLE_LAYERS and use config-only
-parameter validation selection. The returned contract audit is under native
-Luna/max review before a separately pinned small GPU gate. No GPU,model,
-ordinary teardown or speed qualification follows from this host result.
-See`ur_hold_control_build_v1` and`ur_hold_host_v1` in the resource result.
+parameter validation selection. Native Luna/max review confirms that this
+needs no helper rebuild. Six original6e40fixture processes subsequently pass
+on/off submission,ordinary graph and profiled graph checks,including actual
+native environment/NEO/UR mapping,10submission cases per mode,numerical/guard/
+alias checks and checked fixture cleanup. Parameter warnings and fresh faults
+are zero. The traced layer environments differ deliberately;these are safety
+checks,not performance evidence. Model timing,ordinary UR teardown and physical
+context remain unqualified. See`ur_hold_control_build_v1`,`ur_hold_host_v1`
+and`ur_hold_device_v1` in the resource result.
 This addresses the fastest396d envelope difference;it cannot
 alone explain the1003→975same-binary decline,because both of those cohorts
 already used parameter validation. Official-SDK whole-model qualification
