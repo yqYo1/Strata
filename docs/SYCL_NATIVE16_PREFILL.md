@@ -1101,6 +1101,19 @@ SGLang/vLLM contract. Before a scoped experiment,check actual reference reductio
 storage/order and task evidence,then bounds/ownership and262144-context fallback;
 do not treat this capacity saving as accepted numerical behavior or a speedup.
 
+A20261027 source inspection of the generic
+[vLLM Triton expert path](https://github.com/vllm-project/vllm/blob/main/vllm/model_executor/layers/fused_moe/fused_moe.py)
+finds separate per-expert outputs in the hidden-state dtype;its
+[top-k reduction](https://github.com/vllm-project/vllm/blob/main/csrc/moe/moe_align_sum_kernels.cu)
+converts those values to FP32 and rounds the final sum once. The inspected
+[SGLang Triton kernels](https://github.com/sgl-project/sglang/blob/main/python/sglang/kernels/ops/moe/fused_moe_triton_kernels.py)
+also use FP32 reduction. A16-bit serial partial accumulator would round after
+each expert addition,so it does not inherit that numerical contract. This
+inspection uses moving main references,not pinned model-specific dispatch or
+task evidence;pin the relevant path before implementation. Serial16-bit storage
+remains a separate task-quality experiment,not an accepted equivalent. Keeping
+FP32 partial sums through workspace reuse avoids that new rounding boundary.
+
 One passive current candidate1/request0 sample records96 windows,33225dequant
 pairs,37353jobs,7485fused GU jobs/49290450rows,and18937 expert uploads requesting
 38673152000H2D bytes. The logged`source_H2D_bytes=225576960` is mislabeled:the
