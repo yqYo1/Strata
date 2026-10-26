@@ -14,7 +14,6 @@
 #include <memory>
 #include <stdexcept>
 #include <string>
-#include <type_traits>
 #include <vector>
 
 namespace {
@@ -25,54 +24,19 @@ constexpr size_t Pad = 64;
 constexpr uint16_t Sentinel = 0xa55a;
 std::shared_ptr<sb::Runtime> runtime;
 void need(bool ok, const char *why) { if (!ok) throw std::runtime_error(why); }
-// Diagnostic-only host progress. Set once before runtime initialization, never
-// from the environment or a runtime/driver callback. This is not a speed clock.
-bool progress_active=false;
-int progress_group=-1,progress_call=-1;
-unsigned progress_sequence=0;
-using ProgressClock=std::chrono::steady_clock;
-template<class F> auto step(const char *name,F action) {
-  if (!progress_active) return action();
-  const auto sequence=++progress_sequence;
-  const int group=progress_group,call=progress_call;
-  const auto begin=ProgressClock::now();
-  const auto emit=[&](const char *phase) {
-    const auto now=ProgressClock::now();
-    const auto elapsed=std::chrono::duration_cast<std::chrono::nanoseconds>(now-begin).count();
-    std::cout<<"{\"kind\":\"gu_stage\",\"sequence\":"<<sequence
-      <<",\"stage\":\""<<name<<"\",\"phase\":\""<<phase
-      <<"\",\"group\":"<<group<<",\"call\":"<<call
-      <<",\"monotonic_ns\":"<<std::chrono::duration_cast<std::chrono::nanoseconds>(now.time_since_epoch()).count()
-      <<",\"elapsed_ns\":"<<elapsed<<"}\n";
-    return elapsed;
-  };
-  emit("enter");
-  try {
-    if constexpr (std::is_void_v<decltype(action())>) {
-      action();
-      need(emit("return")<=3000000000LL,"returned stage exceeds diagnostic3s threshold");
-    } else {
-      auto result=action();
-      need(emit("return")<=3000000000LL,"returned stage exceeds diagnostic3s threshold");
-      return result;
-    }
-  } catch (...) { emit("throw");throw; }
-}
 void drain(sycl::queue &q) noexcept {
-  try { step("queue.drain",[&] { q.wait_and_throw(); runtime->check(); }); }
+  try { q.wait_and_throw(); runtime->check(); }
   catch (...) { std::_Exit(86); }
 }
 void wait(sycl::queue &q, sycl::event e) {
   try {
-    step("event.wait",[&] {
-      sb::cpu_wait_profile::blocking(sb::cpu_wait_profile::event,[&] { e.wait_and_throw(); });
-    });
+    sb::cpu_wait_profile::blocking(sb::cpu_wait_profile::event,[&] { e.wait_and_throw(); });
     runtime->check();
   } catch (...) { drain(q); throw; }
 }
-template <class Submit> void submit_wait(sycl::queue &q,const char *name,Submit submit) {
+template <class Submit> void submit_wait(sycl::queue &q,Submit submit) {
   // Keep local host vectors alive through synchronous enqueue failures too.
-  try { wait(q,step(name,submit)); } catch (...) { drain(q); throw; }
+  try { wait(q,submit()); } catch (...) { drain(q); throw; }
 }
 struct Buffer {
   sb::Allocation owner;
@@ -81,17 +45,17 @@ struct Buffer {
   Buffer(size_t count, sycl::queue &queue)
       : owner(runtime, (count + 2 * Pad) * 2, sb::MemoryKind::Device), n(count), q(queue) {
     std::vector<uint16_t> all(n + 2 * Pad, Sentinel);
-    submit_wait(q,"buffer.init.H2D",[&] { return q.memcpy(owner.data(), all.data(), all.size() * 2); });
+    submit_wait(q,[&] { return q.memcpy(owner.data(), all.data(), all.size() * 2); });
   }
   ~Buffer() { drain(q); }
   uint16_t *data() const { return owner.as<uint16_t>() + Pad; }
   void set(const std::vector<uint16_t> &v) {
     need(v.size() == n, "upload extent");
-    submit_wait(q,"buffer.set.H2D",[&] { return q.memcpy(data(), v.data(), n * 2); });
+    submit_wait(q,[&] { return q.memcpy(data(), v.data(), n * 2); });
   }
   std::vector<uint16_t> get() const {
     std::vector<uint16_t> all(n + 2 * Pad);
-    submit_wait(q,"buffer.get.D2H",[&] { return q.memcpy(all.data(), owner.data(), all.size() * 2); });
+    submit_wait(q,[&] { return q.memcpy(all.data(), owner.data(), all.size() * 2); });
     for (size_t i = 0; i < Pad; ++i)
       need(all[i] == Sentinel && all[n + Pad + i] == Sentinel, "buffer guard changed");
     return {all.begin() + Pad, all.begin() + Pad + n};
@@ -277,20 +241,10 @@ struct PublicGU {
   ~PublicGU() { drain(c.q); }
   bool call() {
     try {
-      const auto projection=[&] {
-        const bool selected=step("public.gu.try",[&] {
-          return routed.try_gu_swiglu16(c.x.data(),c.w.data(),c.candidate.data(),c.rows);
-        });
-        if (!selected) step("public.gu.f16_out16",[&] {
-          routed.f16_out16(c.x.data(),c.w.data(),c.gu.data(),c.rows,N,K,true);
-        });
-        return selected;
-      };
-      const bool selected=projection();
+      const bool selected=routed.try_gu_swiglu16(c.x.data(),c.w.data(),c.candidate.data(),c.rows);
       if (!selected) {
-        step("public.gu.swiglu",[&] {
-          strata::prefill::native16::swiglu(c.gu.data(),c.candidate.data(),c.rows,&c.q);
-        });
+        routed.f16_out16(c.x.data(),c.w.data(),c.gu.data(),c.rows,N,K,true);
+        strata::prefill::native16::swiglu(c.gu.data(),c.candidate.data(),c.rows,&c.q);
       }
       return selected;
     } catch (...) { drain(c.q); throw; }
@@ -307,47 +261,6 @@ void public_settings(int arm) {
        matches("STRATA_SYCL_PREFILL_NATIVE16_VLLM_TILE","auto") &&
        matches("STRATA_SYCL_PREFILL_GU_SWIGLU",arm ? "large" : "0"),
        "public mode requires matching immutable bf16/vllm/auto/GU startup settings");
-}
-void progress_public(sycl::queue &q) {
-  need(progress_active && !sb::command_profile::requested(),"stage diagnostic requires observerOFF");
-  need(q.has_property<sycl::property::queue::in_order>() &&
-       q.has_property<sycl::property::queue::enable_profiling>(),"ordered profiling queue required");
-  auto c=step("case.create",[&] { return std::make_unique<Case>(160,false,q); });
-  try {
-    auto path=step("public.init",[&] { return std::make_unique<PublicGU>(*c,true); });
-    need(!path->expected,"M160 must use the production fallback");
-    step("reference.prepare",[&] { c->separate(xe::Tile::wide_128x128);drain(q); });
-    int max_ulp=0;
-    for (int group=0;group<4;++group) {
-      progress_group=group;progress_call=-1;
-      step("candidate.reset",[&] { c->candidate.reset(); });
-      // No warmup or adaptive retry. Exactly64 public calls in four groups;
-      // each group has at most32 ordinary kernels plus its checked marker.
-      for (int call=0;call<16;++call) {
-        progress_call=call;
-        need(!path->call(),"M160 unexpectedly selected fusion");
-      }
-      progress_call=-1;
-      auto marker=step("checkpoint.enqueue",[&] { return mark(q); });
-      wait(q,marker);
-      const auto end=step("checkpoint.query",[&] {
-        return marker.get_profiling_info<sycl::info::event_profiling::command_end>();
-      });
-      need(end>0,"checkpoint timestamp missing");
-      step("guard.compare",[&] {
-        max_ulp=std::max(max_ulp,compare_hidden(c->reference,c->candidate));
-        need(c->x.get()==c->hx && c->w.get()==c->hw,"progress input changed");
-        (void)c->gu.get();for (auto v:c->capture.get()) need(v==Sentinel,"progress wrote capture");
-      });
-    }
-    progress_group=-1;
-    step("public.retire",[&] { path.reset(); });
-    step("case.retire",[&] { c.reset(); });
-    std::cout<<"{\"kind\":\"public_progress_result\",\"rows\":160,\"groups\":4,\"calls_per_group\":16,"
-      "\"calls\":64,\"selected\":0,\"fallback\":64,\"max_pending_ordinary_kernels\":32,"
-      "\"checkpoint_markers_per_group\":1,\"max_half_ulp\":"<<max_ulp
-      <<",\"guards\":true,\"inputs_immutable\":true,\"status\":\"PASS\"}\n";
-  } catch (...) { drain(q);throw; }
 }
 void benchmark(int process,sycl::queue &q) {
   for (int rows:{64,160,2334,5963,8192}) {
@@ -389,25 +302,22 @@ int main(int argc,char **argv) {
     }
     const bool public_profile=mode=="--profile-public";
     const bool public_smoke=mode=="--smoke-public";
-    const bool public_progress=mode=="--progress-public";
     int public_arm=0;
-    if (public_profile || public_smoke || public_progress) {
+    if (public_profile || public_smoke) {
       need(argc==3,"public mode needs ARM");
       public_arm=std::stoi(argv[2]);public_settings(public_arm);
     }
     need(mode=="--smoke" || mode=="--validate" || mode=="--bench" || mode=="--profile-engine-hook" ||
-         public_profile || public_smoke || public_progress,"invalid mode");
-    progress_active=public_progress; // immutable before the runtime starts
+         public_profile || public_smoke,"invalid mode");
     for (auto tile:{xe::Tile::compact_16x64,xe::Tile::wide_128x128}) {
       const auto p=xe::inspect_gu_pair_ownership(8192,tile,xe::GuLayout::matrix);
       need(!p.partner_mismatch && !p.packed_missing && !p.packed_multiple && !p.packed_orientation_mismatch,
            "packed partner ownership gate");
     }
-    runtime=step("runtime.init",[&] { return sb::runtime_for(); });
-    auto q=step("queue.create",[&] { return runtime->make_queue(true); });
-    step("topology",[&] { topology(q); });
-    if (public_progress) progress_public(q);
-    else if (public_profile || public_smoke) {
+    runtime=sb::runtime_for();
+    auto q=runtime->make_queue(true);
+    topology(q);
+    if (public_profile || public_smoke) {
       for (int rows:{3,160,2333,2334}) { Case c(rows,false,q);c.check_profile(public_arm!=0); }
     } else if (mode=="--profile-engine-hook") {
       need(argc==2,"profile hook takes no timing parameters");
@@ -424,7 +334,7 @@ int main(int argc,char **argv) {
       }
     } else { need(argc==3,"bench process required"); const int p=std::stoi(argv[2]);
       need(p>=0 && p<3,"invalid process ordinal"); benchmark(p,q); }
-    step("final.drain",[&] { q.wait_and_throw(); runtime->check(); runtime->wait(); });
+    q.wait_and_throw(); runtime->check(); runtime->wait();
     std::cout << "fixture_status=PASS mode=" << mode.substr(2) << '\n'; return 0;
   } catch (const std::exception &e) {
     if (runtime) { try { runtime->wait(); } catch (...) { std::_Exit(86); } }

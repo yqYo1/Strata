@@ -684,8 +684,8 @@ After original-source/recipe/1427-input/four-ELF recovery,the closed stage
 outputs and generation retire:179files/116557305bytes. Official v4remains the
 component fallback;original13model assets and one2797-byte unresolved-stall
 diagnostic stay intact. Successful full traces/private checkpoints are gone.
-The current source removes the closed high-depth public timing/attribution modes;
-restore their exact tested code from3af1c47d9 only for a separately justified plan.
+The current source removes the closed high-depth timing/attribution modes and
+stage-only logger/mode;restore tested source3af1c47d9 for a concrete later need.
 The clean official legacy-GEMM build,sourcefa765fcb8,has1424covered compiler
 inputs. Its one7.174702625s native process exits0and passes22CPU-parity/stride
 checks:18FP16/BF16-to-FP32 GEMMs plus4Q8strided matrices. Transfer-ring,pipeline
@@ -699,6 +699,10 @@ silent and no fresh fault appears. Replay launches no process and does not
 rewrite the failed run into a success. See`legacy_gemm_abi_v1` for the distinct
 native-matrix and observer-parser outcomes. Neither establishes model,decode,
 physical262144,hardware saturation or a throughput improvement.
+The closed legacy build/run roots now retire after exact9974-input/1424-closure
+and ELF recovery:172files/101717262bytes. The closed one-use controller and
+build mode restore from9241f6d61/fa765fcb8. Compact native/replay/failure evidence
+remains;official v4and original13model assets stay selected and intact.
 
 The next historical-decline comparison should isolate parameter-validation
 cost on the unchanged selected engine and placement. Keep the process-lifetime

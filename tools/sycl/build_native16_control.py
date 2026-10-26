@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Build bounded native16/legacy-GEMM fixtures with the official SDK; Main only.
+"""Build public-GU calibration with the independent official SDK; Main only.
 
 Repository LICENSE. Uses our pinned CMake recipe and SDK admission, without
 the former compiler or any XeStrata source. This never builds/runs the engine.
@@ -177,8 +177,7 @@ def dependencies(row, text):
     expected.update(sdk_admit(row['sdk'])); expected.update(row['external_inputs']); expected.update(row['generated_expected'])
     found = {str((Path(p) if Path(p).is_absolute() else ROOT / 'build' / p).resolve())
         for p in (line.strip() for line in text.splitlines() if line.startswith('    ')) if p}
-    fixture_source='tests/sycl/gemm.cpp' if row['targets']==['sycl_gemm_test'] else 'bench/sycl/moe_gu_swiglu.cpp'
-    require(len(found) >= 100 and {str(P / fixture_source),
+    require(len(found) >= 100 and {str(P / 'bench/sycl/moe_gu_swiglu.cpp'),
         str(P / 'src/prefill/sycl/gemm16.cpp'), str(P / 'src/prefill/sycl/vllm_xe2/native16.cpp')} <= found,
         'actual dependency closure incomplete')
     require(all(p in expected and digest(p) == expected[p] for p in found), 'unplanned or changed compiled input')
@@ -215,38 +214,11 @@ def build(row):
 
 
 def main():
-    global ROOT, KEY, TARGETS
     with (B / 'owned-v0141-measurement.lock').open('a') as lock:
         fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB); r.guards.no_model_owners([])
-        if sys.argv[1:] in (['prepare-legacy'],['build-legacy']):
-            import qualify_native16_control as qualification
-            qualification.current(json.loads((qualification.ROOT/'record.json').read_text()))
-            proof=qualification.native()[2]
-            require(not (B/'native16-stage-smoke-v1').exists() and
-                scope(r.validation.committed(RESULT))['public_gu_stage_smoke_build_v1']['retirement']['complete'],
-                'retire closed stage-smoke generation before legacy GEMM build')
-            ROOT=B/'native16-legacy-gemm-v1';KEY='legacy_gemm_abi_build_v1'
-            TARGETS=['sycl_gemm_test']
-            if sys.argv[1]=='prepare-legacy':
-                prepare();row=json.loads((ROOT/'record.json').read_text())
-                row.update(baseline_native_build=proof,
-                    question='Build official-SDK oneMKL GEMM matrix-only ABI/numerical fixture;no model or performance trial.',
-                    criteria='Pinned clean configure/build with actual compiler-input coverage and exact '
-                        'sycl_gemm_test ELF;normal finite owned exits. Compilation does not qualify '
-                        'matrix execution,pipeline safety,model,decode,performance or262144context.',
-                    next_gate='Commit a single30s traced --matrix-only process plan for18FP16/BF16 '
-                        'FP32-output GEMMs and4Q8strided matrix cases;all pipeline/ring/separate-queue '
-                        'cases remain unrun. No automatic model or GPU-burst advancement.',
-                    retention='Qualified official v4fallback plus this only changed component generation;'
-                        'original13engine assets unchanged. Retire after ABI gate/source recovery;'
-                        'matrix cases cannot qualify runtime performance,whole model or decode.')
-                save(row);return 0
-            row=json.loads((ROOT/'record.json').read_text())
-            require(row['baseline_native_build']==proof,'qualified fallback changed')
-            return build(row)
         if sys.argv[1:] == ['prepare']: prepare(); return 0
         if sys.argv[1:] == ['build']: return build(json.loads((ROOT / 'record.json').read_text()))
-        raise RuntimeError('use prepare/build or prepare-legacy/build-legacy')
+        raise RuntimeError('use prepare or build')
 
 
 if __name__ == '__main__': sys.exit(main())
