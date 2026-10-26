@@ -313,7 +313,9 @@ template<bool Observe=false> void benchmark_public(int process,int arm,sycl::que
     Case c(rows,false,q);PublicGU path(c,arm!=0);
     c.separate(xe::Tile::wide_128x128);drain(q);
     path.prime();need(compare_hidden(c.reference,c.candidate)<=1,"public preflight differs");
-    const int repeat=rows==160 ? 512 : 128;
+    // Longer fixed batches amortize endpoint/startup latency without relaxing
+    // the existing one-percent control rule. This is a new timing envelope.
+    const int repeat=rows==160 ? 2048 : 512;
     for (int round=-1;round<5;++round) {
       c.candidate.reset();path.prime();
       // The outer clock charges trace planning, queries and diagnostic output.
@@ -385,7 +387,7 @@ template<bool Observe=false> void benchmark_public(int process,int arm,sycl::que
       const auto b=end.get_profiling_info<sycl::info::event_profiling::command_start>();
       need(b>a && std::isfinite(wall_ns) && selected==(path.expected ? repeat : 0),
            "timed public dispatch/count/timer differs");
-      const bool eligible=wall_ns>=1e7 && b-a>=10000000 &&
+      const bool eligible=wall_ns>=1e8 && b-a>=100000000 &&
           initial_control<=wall_ns*.01 && double(resolution)<=double(b-a)*.001;
       minimum_batch=std::min(minimum_batch,wall_ns);
       const int ulp=compare_hidden(c.reference,c.candidate);
@@ -441,6 +443,7 @@ void benchmark(int process,sycl::queue &q) {
 } // namespace
 int main(int argc,char **argv) {
   std::cout << std::unitbuf;
+  std::cout.precision(17); // preserve nanosecond CPU partitions in longer batches
   try {
     need(argc>=2,"use --ownership|--smoke|--validate|--bench PROCESS");
     const std::string mode=argv[1];
