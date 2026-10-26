@@ -2,18 +2,25 @@
  * AMD APM24594 revision3.36 (March2024), RDPRU entry; no Linux source copied.
  * Primary AMD manual mirrored at:
  * https://www.scs.stanford.edu/~zyedidia/docs/x86/amd-manual-v3.pdf
- * Consumer: bounded host qualification AFTER the current validation-cost cohort.
- * No GPU/runtime API. This source is unbuilt/unqualified until its pinned plan.
+ * Consumer: CPU-only observer qualification before a separately planned model run.
+ * No GPU/runtime API. The original access pilot is recorded at source303c1b06f.
  * Report APERF/MPERF ratios only: P0 and SMT/counter scope remain unqualified.
  */
 #define _GNU_SOURCE
 #include <cpuid.h>
+#include <errno.h>
+#include <fcntl.h>
 #include <inttypes.h>
+#include <poll.h>
 #include <sched.h>
 #include <stdint.h>
 #include <stdio.h>
 #include <string.h>
+#include <sys/resource.h>
+#include <sys/timerfd.h>
+#include <sys/wait.h>
 #include <time.h>
+#include <unistd.h>
 
 struct snapshot { uint64_t before, actual, after; int cpu; };
 
@@ -48,11 +55,32 @@ static uint64_t nanoseconds(clockid_t clock) {
     return (uint64_t)value.tv_sec * UINT64_C(1000000000) + (uint64_t)value.tv_nsec;
 }
 
-int main(void) {
+static int native_mappings(void) {
+    FILE *maps = fopen("/proc/self/maps", "r");
+    if (!maps) return 1;
+    char line[8192];
+    int failed = 0;
+    while (fgets(line, sizeof(line), maps)) {
+        char permissions[5];
+        if (sscanf(line, "%*s %4s", permissions) != 1) { failed = 1; break; }
+        char *path = strchr(line, '/');
+        if (!path || permissions[2] != 'x') continue;
+        char *end = strchr(path, '\n');
+        if (!end) { failed = 1; break; }
+        *end = '\0';
+        if (printf("native_map_pid=%ld path=%s\n", (long)getpid(), path) < 0) { failed = 1; break; }
+    }
+    if (ferror(maps)) failed = 1;
+    if (fclose(maps)) failed = 1;
+    return failed;
+}
+
+static int initialize(void) {
     /* A fresh owner process must contain any SIGILL/SIGSEGV from inaccessible
      * RDPRU; do not install a handler or fall back to a guessed frequency.
      */
     setvbuf(stdout, NULL, _IOLBF, 0);
+    if (native_mappings()) return 1;
     unsigned a, b, c, d;
     char vendor[13] = {0};
     __cpuid_count(0, 0, a, b, c, d);
@@ -75,6 +103,11 @@ int main(void) {
     CPU_ZERO(&selected); CPU_SET(0, &selected);
     if (sched_setaffinity(0, sizeof(selected), &selected)) return 1;
     printf("phase=before-RDPRU cpu=%d selected=0\n", sched_getcpu());
+    const struct snapshot initial = snapshot();
+    return initial.cpu != 0 || initial.after < initial.before;
+}
+
+static int access_pilot(void) {
     const uint64_t overhead_begin = nanoseconds(CLOCK_MONOTONIC_RAW);
     for (unsigned i = 0; i < 1000; ++i) {
         const struct snapshot s = snapshot();
@@ -107,4 +140,119 @@ int main(void) {
     }
     puts("status=ACCESS_OBSERVED MHz=UNQUALIFIED SMT_scope=UNQUALIFIED model_clock=UNMEASURED");
     return 0;
+}
+
+static int emit_snapshot(unsigned sequence) {
+    const uint64_t begin = nanoseconds(CLOCK_MONOTONIC_RAW);
+    const struct snapshot s = snapshot();
+    const uint64_t end = nanoseconds(CLOCK_MONOTONIC_RAW);
+    if (!begin || end < begin || s.cpu != 0 || s.after < s.before) return 1;
+    return printf("clock_tick=%u cpu=%d raw_before_ns=%" PRIu64 " raw_after_ns=%" PRIu64
+        " mperf_before=%" PRIu64 " aperf=%" PRIu64 " mperf_after=%" PRIu64 "\n",
+        sequence, s.cpu, begin, end, s.before, s.actual, s.after) < 0;
+}
+
+static int observe(void) {
+    /* A private stdin pipe supplies EOF on owner exit. No signals or process
+     * environment changes; poll also bounds an orphan to at most 900 ticks.
+     */
+    const int timer = timerfd_create(CLOCK_MONOTONIC, TFD_CLOEXEC);
+    if (timer < 0) return 1;
+    int failed = 0;
+    unsigned sequence = 0;
+    const struct itimerspec interval = {.it_interval = {.tv_sec = 1}, .it_value = {.tv_sec = 1}};
+    if (timerfd_settime(timer, 0, &interval, NULL) || emit_snapshot(sequence)) failed = 1;
+    if (!failed && printf("observer_ready pid=%ld period_ns=1000000000 max_ticks=900\n", (long)getpid()) < 0) failed = 1;
+    while (!failed) {
+        struct pollfd fds[] = {{.fd = STDIN_FILENO, .events = POLLIN}, {.fd = timer, .events = POLLIN}};
+        int code;
+        do { code = poll(fds, 2, 2000); } while (code < 0 && errno == EINTR);
+        if (code <= 0 || ((fds[0].revents | fds[1].revents) & (POLLERR | POLLNVAL))) { failed = 1; break; }
+        if (fds[0].revents & (POLLIN | POLLHUP)) {
+            char byte;
+            ssize_t count;
+            do { count = read(STDIN_FILENO, &byte, 1); } while (count < 0 && errno == EINTR);
+            if (count != 0) failed = 1; /* Only EOF is a valid stop. */
+            break;
+        }
+        if (!(fds[1].revents & POLLIN)) { failed = 1; break; }
+        uint64_t expirations = 0;
+        ssize_t bytes;
+        do { bytes = read(timer, &expirations, sizeof(expirations)); } while (bytes < 0 && errno == EINTR);
+        if (bytes != (ssize_t)sizeof(expirations) || expirations != 1 || sequence >= 900) { failed = 1; break; }
+        if (emit_snapshot(++sequence)) failed = 1;
+    }
+    if (close(timer)) failed = 1;
+    if (printf("observer_done pid=%ld ticks=%u failed=%d\n", (long)getpid(), sequence, failed) < 0) failed = 1;
+    return failed;
+}
+
+static uint64_t fixed_work(uint64_t blocks) {
+    uint64_t value = 1;
+    for (uint64_t block = 0; block < blocks; ++block) {
+        for (unsigned i = 0; i < 4096; ++i) value = value * UINT64_C(6364136223846793005) + 1;
+        __asm__ volatile("" : "+r"(value) :: "memory");
+    }
+    return value;
+}
+
+static uint64_t usage_ns(struct timeval value) {
+    return (uint64_t)value.tv_sec * UINT64_C(1000000000) + (uint64_t)value.tv_usec * 1000;
+}
+
+static int host_control(const char *self, int enabled) {
+    /* Host-only fixture: fork is never used inside a SYCL/Level Zero process.
+     * Both parent and observer run on CPU0. Charge fork/exec, initialization,
+     * wakeups, snapshots, output, EOF shutdown and wait to the wall interval.
+     */
+    const uint64_t warm = fixed_work(UINT64_C(245760));
+    const uint64_t begin = nanoseconds(CLOCK_MONOTONIC_RAW);
+    const uint64_t cpu_begin = nanoseconds(CLOCK_PROCESS_CPUTIME_ID);
+    int stops[2] = {-1, -1};
+    pid_t child = -1;
+    if (enabled) {
+        if (pipe2(stops, O_CLOEXEC)) return 1;
+        child = fork();
+        if (child < 0) { close(stops[0]); close(stops[1]); return 1; }
+        if (!child) {
+            if (stops[0] != STDIN_FILENO) {
+                if (dup2(stops[0], STDIN_FILENO) < 0) _exit(125);
+                close(stops[0]);
+            }
+            close(stops[1]);
+            execl(self, self, "--observe", (char *)NULL);
+            _exit(125);
+        }
+        if (close(stops[0])) return 1;
+    }
+    const uint64_t checksum = fixed_work(UINT64_C(2457600));
+    uint64_t observer_cpu = 0;
+    if (enabled) {
+        if (close(stops[1])) return 1;
+        int status = 0;
+        struct rusage usage;
+        pid_t waited;
+        do { waited = wait4(child, &status, 0, &usage); } while (waited < 0 && errno == EINTR);
+        if (waited != child || !WIFEXITED(status) || WEXITSTATUS(status)) return 1;
+        observer_cpu = usage_ns(usage.ru_utime) + usage_ns(usage.ru_stime);
+    }
+    const uint64_t cpu_end = nanoseconds(CLOCK_PROCESS_CPUTIME_ID);
+    const uint64_t end = nanoseconds(CLOCK_MONOTONIC_RAW);
+    if (!begin || end <= begin || !cpu_begin || cpu_end <= cpu_begin || sched_getcpu() != 0) return 1;
+    printf("control=%s wall_ns=%" PRIu64 " actor_cpu_ns=%" PRIu64
+        " observer_cpu_ns=%" PRIu64 " iterations=10066329600 warm_iterations=1006632960"
+        " checksum=%" PRIu64 " warm_checksum=%" PRIu64 " observer_pid=%ld\n",
+        enabled ? "on" : "off", end - begin, cpu_end - cpu_begin, observer_cpu, checksum, warm, (long)child);
+    return 0;
+}
+
+int main(int argc, char **argv) {
+    if (!((argc == 1) || (argc == 2 && !strcmp(argv[1], "--observe")) ||
+          (argc == 3 && !strcmp(argv[1], "--host-control") &&
+           (!strcmp(argv[2], "on") || !strcmp(argv[2], "off"))))) return 125;
+    const int ready = initialize();
+    if (ready) return ready;
+    if (argc == 1) return access_pilot();
+    if (argc == 2) return observe();
+    return host_control(argv[0], !strcmp(argv[2], "on"));
 }
