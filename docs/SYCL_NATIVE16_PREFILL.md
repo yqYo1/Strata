@@ -443,6 +443,19 @@ long-prefill expert upload,with actual production dependency-path/numerical gate
 before model evaluation. Decode implementation,configuration and1256placement
 remain fixed. The clean117K speed reference remains911.7371tok/s.
 
+After extraction and independent review,456closed raw/build/review/draft files
+retire,119638008bytes,with a path/hash/reason manifest. The completed whole
+profiling engine and command-profile executable retire too. The selected6e40
+engine and12fixtures remain intact. Only two GU/Down component executables,
+original component record,1385-input manifest and generated header remain for
+the next bounded shape/dtype/dispatch audit and service-ceiling comparison.
+Confirm their exact operand precision and production applicability before
+freezing that plan;component throughput alone cannot establish a whole-model
+arithmetic ceiling. Review this five-file subset at that comparison or abandonment.
+Closed one-use build/cost/calibration controllers retire to their original source
+commits;the new transfer fixture source remains for the immediate staging/status
+work. No routine raw API trace or completed observer cohort remains.
+
 The earlier[NEO-only comparison](../bench/results/2026-10-15-pr6-recovery-audit/prefill-runtime-comparison-current.json)
 uses exact cached packages in private directories. Both arms explicitly select
 the driver before exec and verify its actual mapping. Other dependencies,the
