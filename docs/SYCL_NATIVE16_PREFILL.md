@@ -883,7 +883,7 @@ extras. This private Python-startup envelope differs from historical runs.
 Independent Orca and native Luna/max review accept V6's exact five-source/plan
 contract. Its six-process order is baseline/candidate/candidate/baseline/baseline/
 candidate,each with four117489fresh/zero-reuse/thinking/24-output requests.
-The first five processes pass all four requests each,source/
+All six processes pass all four requests each,source/
 provider/route/journal/clock/CPU/closure gates,final15 model hashes and
 no-fresh-fault checks. Individual rates and CPU operands remain in the compact
 result;first use is separate:
@@ -895,13 +895,15 @@ result;first use is separate:
 | 2/candidate | 907.1333 | 975.4528 | 6.0249..6.1065% |
 | 3/baseline | 904.8292 | 975.2982 | 11.4547..11.5684% |
 | 4/baseline | 901.2637 | 973.7228 | 11.4648..11.8417% |
+| 5/candidate | 906.0511 | 976.5295 | 6.1060..6.1972% |
 
-The first two candidate/baseline ratios are1.00120144(+0.1201%) and
-1.00015858(+0.0159%). The final candidate remains pending. Do not select the
-mechanism before cohort closure or call the host CPU
-reduction a model gain. Neither these samples nor the host gate establishes a
-historical cause,1000tok/s restoration,sustained decode,agent quality or
-physical262144 correctness.
+The three candidate/baseline ratios are1.00120144,1.00015858 and1.00288249;
+their geometric mean is1.00141354(+0.1414%). Each pair is positive,but the
+prospective greater-than1% mechanism screen fails. The supervisor CPU reduction
+does not restore1000tok/s or explain the historical decline;no inference or
+default-supervisor adoption follows. This closes the matched supervisor-cost
+question for this workload. Return to the prefill workspace/resource question,
+keeping sustained decode,agent quality and physical262144 correctness open.
 
 Exact original source,configuration and pure environment-recipe recovery closes
 the two superseded unlaunched model roots and old Python-probe root. Their
@@ -922,6 +924,14 @@ consumer/source qualification or a census of newer builds. Main must reconcile
 those live paths against current consumers and exact source/recipe evidence
 after the six-process comparison closes,before another engine build. The prior
 14 named provenance holds are not cleared by the150-file retirement above.
+For two of those historical component roots,Main now recovers the original
+`hardware-ceiling-cpu-v1`/`hardware-ceiling-gpu-v1` sources and build records from
+`7ea2650ba3ae1b15807a32a67b62d56131046569`,under
+`bench/results/2026-10-10-parallel-round53/hardware`. Both source hashes and the
+current final ELF hashes match their build/measurement receipts. This does not
+retroactively qualify their SDK/header closure. Check current consumers and
+retire these ended artifacts after the active cohort;the other roots still need
+their bounded recovery/consumer decisions.
 
 After replay and exact source/recipe/header/link/object/ELF recovery,these three
 closed observer/model/control roots retire106files/12,760,397bytes. Four

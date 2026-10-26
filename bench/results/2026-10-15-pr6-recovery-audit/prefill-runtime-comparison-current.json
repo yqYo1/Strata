@@ -822,7 +822,7 @@
       "limits": "Original V5failure and passed PythonV3remain in pushed Git. Current V6config/plans/record,PythonV4andownerV3qualification,selected13native artifacts,officialfallback and separate legacy holds untouched. No inference adoption."
     },
     "supervision_model_control_v6": {
-      "stage": "running",
+      "stage": "closed",
       "binary": {
         "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/strata",
         "bytes": 22190000,
@@ -1621,10 +1621,133 @@
             "independent_replay_passed": true,
             "generated_config_and_plan_retained": true
           }
+        },
+        {
+          "complete": true,
+          "host_probe_accepted": true,
+          "request_windows": [
+            {
+              "request": 0,
+              "controller_cpu_ns": 8162488595,
+              "gate_elapsed_ns": 131711581043,
+              "fraction": 0.06197244411131307,
+              "maximum": 0.08
+            },
+            {
+              "request": 1,
+              "controller_cpu_ns": 7579831056,
+              "gate_elapsed_ns": 122656128457,
+              "fraction": 0.06179740997334095,
+              "maximum": 0.08
+            },
+            {
+              "request": 2,
+              "controller_cpu_ns": 7472288095,
+              "gate_elapsed_ns": 122375818504,
+              "fraction": 0.06106016847401727,
+              "maximum": 0.08
+            },
+            {
+              "request": 3,
+              "controller_cpu_ns": 7472336087,
+              "gate_elapsed_ns": 122363826497,
+              "fraction": 0.061066544753593494,
+              "maximum": 0.08
+            }
+          ],
+          "python_children": {
+            "benchmark": {
+              "pid": 3186290,
+              "start_ticks": 140604734,
+              "sid": 3186290
+            },
+            "server": {
+              "pid": 3186297,
+              "start_ticks": 140604759,
+              "sid": 3186290
+            }
+          },
+          "index": 5,
+          "arm": "candidate",
+          "requests": [
+            {
+              "run": 0,
+              "request_sha256": "26f08fd8364b5c4bce718617fe2aed42761d0a794e068b00532694adef78b3be",
+              "actual_prompt_tokens": 117489,
+              "actual_read_tokens": 117489,
+              "actual_reused_tokens": 0,
+              "generated_tokens": 24,
+              "prompt_ms": 129671.5
+            },
+            {
+              "run": 1,
+              "request_sha256": "fd3ad8ad7033776ad749b22e62e910e5f47e3f7664705f48d9f1fe7349b65515",
+              "actual_prompt_tokens": 117489,
+              "actual_read_tokens": 117489,
+              "actual_reused_tokens": 0,
+              "generated_tokens": 24,
+              "prompt_ms": 120517.9
+            },
+            {
+              "run": 2,
+              "request_sha256": "daabbef4775c3fbdbfd832339d80a5ae2f91025b66df79b92fb8f6905f33b041",
+              "actual_prompt_tokens": 117489,
+              "actual_read_tokens": 117489,
+              "actual_reused_tokens": 0,
+              "generated_tokens": 24,
+              "prompt_ms": 120302.8
+            },
+            {
+              "run": 3,
+              "request_sha256": "8669c9ebe2747b1fc2d7c4806eeb66025c919981d81c51cfdbd64ba3ec3cc2b1",
+              "actual_prompt_tokens": 117489,
+              "actual_read_tokens": 117489,
+              "actual_reused_tokens": 0,
+              "generated_tokens": 24,
+              "prompt_ms": 120312.8
+            }
+          ],
+          "tok_s": [
+            906.051059793401,
+            974.8676337705851,
+            976.6106857030759,
+            976.529513069266
+          ],
+          "first_use_tok_s": 906.051059793401,
+          "subsequent_median": 976.529513069266,
+          "native_identity": {
+            "pid": 3186329,
+            "start_ticks": 140604863,
+            "sid": 3186290
+          },
+          "validation": {
+            "pid": 3186329,
+            "loader": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_loader.so.0.12.0",
+            "threads_before": 1,
+            "preinit": 37,
+            "config_enabled": true,
+            "first_init": true,
+            "dispatch_result": 46,
+            "output_untouched": true,
+            "retained_reference_until_exit": true,
+            "runtime_teardown_qualified": false
+          },
+          "ownership_closed": true,
+          "fresh_faults": [],
+          "boot_unchanged": true,
+          "driver_after": {
+            "pci": "/sys/bus/pci/devices/0000:05:00.0",
+            "driver": "xe",
+            "vendor": "0x8086",
+            "device": "0xe20c",
+            "kernel": "7.0.0-38-generic",
+            "devcoredump": false
+          },
+          "passed": true
         }
       ],
-      "complete": false,
-      "passed": false,
+      "complete": true,
+      "passed": true,
       "active": false,
       "ownership_closed": true,
       "plan": {
@@ -1843,6 +1966,17 @@
         "whole_bytes": 805306368,
         "retention": "Keep24individual clock/work/CPU samples,source/native/runtime/config/recipe and decisions. Retire normal logs/JIT/closed controls after replay;no new engine build. Retain qualified host record/provider manifest only through this comparison.",
         "qualified_input_identity": "6389b5b70065f15b5b8b1b3c6ef97a15b07666700ff825bbaea2658247eb7671"
+      },
+      "analysis": {
+        "candidate_over_baseline": [
+          1.001201435403516,
+          1.0001585778143824,
+          1.0028824863189951
+        ],
+        "geometric_mean": 1.0014135379113023,
+        "mechanism_speed_screen_passed": false,
+        "inference_adoption": false,
+        "historical_cause_established": false
       }
     },
     "benchmark_python_runtime_v4": {
