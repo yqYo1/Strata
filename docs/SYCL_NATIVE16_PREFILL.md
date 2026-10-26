@@ -873,6 +873,16 @@ server interpreters at launch,and pass fresh local controls and exact-source
 review. The v2 plan,its failed admission and zero native launches remain intact;
 no speed evidence follows from either unlaunched plan.
 
+Sourcebd4ce2e4b adds that runtime admission and passes nine CPU-only controls,
+including actual isolated CLI startup. The separately committed runtime plan
+then passes two fresh definition-only probes after two discovery probes:actual
+benchmark/server Python selection,3593 runtime files,template and imported
+descriptors match before and after execution,with normal owned closure and no
+GPU launch. The private Python startup envelope differs from historical runs;
+this is a prospective matched control,not an exact historical replay. A fresh
+model plan and exact-source review are still required before the six-process
+supervisor comparison. No model speedup or inference adoption follows yet.
+
 After replay and exact source/recipe/header/link/object/ELF recovery,these three
 closed observer/model/control roots retire106files/12,760,397bytes. Four
 one-use sources/controllers retire to pushed history at925ddfe8e;the selected
