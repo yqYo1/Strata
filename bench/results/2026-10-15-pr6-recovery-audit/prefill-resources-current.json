@@ -2729,7 +2729,7 @@
     },
     "fused_command_profile": {
       "ur_hold_host_v1": {
-        "stage": "prepared",
+        "stage": "closed",
         "source_commit": "2cee12fce3b79bfadd1e1036af32356a7ce1531e",
         "native_reference": {
           "source_commit": "bb46c4de524a564f596144add63efcc5f94239c8",
@@ -2775,7 +2775,68 @@
             "reason": "explicit on/off mode required"
           }
         ],
-        "processes": [],
+        "processes": [
+          {
+            "label": "on",
+            "native_pid": 2059681,
+            "exit_code": 0,
+            "passed": true,
+            "ownership_closed": true,
+            "elapsed_seconds": 0.11437631002627313,
+            "live_environment_observed": false,
+            "observed_executable_maps": 0,
+            "GPU_commands_executed": false,
+            "retained_reference": true
+          },
+          {
+            "label": "off",
+            "native_pid": 2059700,
+            "exit_code": 0,
+            "passed": true,
+            "ownership_closed": true,
+            "elapsed_seconds": 0.1078954259864986,
+            "live_environment_observed": false,
+            "observed_executable_maps": 0,
+            "GPU_commands_executed": false,
+            "retained_reference": true
+          },
+          {
+            "label": "wrong-provider",
+            "native_pid": 2059716,
+            "exit_code": 125,
+            "passed": true,
+            "ownership_closed": true,
+            "elapsed_seconds": 0.10316088702529669,
+            "live_environment_observed": false,
+            "observed_executable_maps": 0,
+            "GPU_commands_executed": false,
+            "retained_reference": false
+          },
+          {
+            "label": "forbidden-layer",
+            "native_pid": 2059719,
+            "exit_code": 125,
+            "passed": true,
+            "ownership_closed": true,
+            "elapsed_seconds": 0.10204016882926226,
+            "live_environment_observed": false,
+            "observed_executable_maps": 0,
+            "GPU_commands_executed": false,
+            "retained_reference": false
+          },
+          {
+            "label": "bad-mode",
+            "native_pid": 2059723,
+            "exit_code": 125,
+            "passed": true,
+            "ownership_closed": true,
+            "elapsed_seconds": 0.11476497212424874,
+            "live_environment_observed": false,
+            "observed_executable_maps": 0,
+            "GPU_commands_executed": false,
+            "retained_reference": false
+          }
+        ],
         "boot": "cfda0b6a-7c13-4fe2-bdf5-8f9202770840",
         "driver": {
           "pci": "/sys/bus/pci/devices/0000:05:00.0",
@@ -2793,8 +2854,8 @@
           "file_cap": 4194304,
           "total_cap": 67108864
         },
-        "complete": false,
-        "passed": false,
+        "complete": true,
+        "passed": true,
         "active": false,
         "ownership_closed": true,
         "GPU_commands_executed": false,
@@ -2806,6 +2867,21 @@
           "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/ur-hold-host-v1/runtime-inputs.json",
           "sha256": "92b4ce60b4dfd154d349110093ee947abaf6819fbd35e5b12906422242053d62",
           "files": 34
+        },
+        "outcome": {
+          "host_probe_accepted": true,
+          "ownership_closed": true,
+          "fresh_faults": [],
+          "boot_unchanged": true,
+          "driver_after": {
+            "pci": "/sys/bus/pci/devices/0000:05:00.0",
+            "driver": "xe",
+            "vendor": "0x8086",
+            "device": "0xe20c",
+            "kernel": "7.0.0-38-generic",
+            "devcoredump": false
+          },
+          "passed": true
         }
       },
       "ur_hold_control_build_v1": {

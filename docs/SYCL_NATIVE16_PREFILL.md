@@ -709,8 +709,18 @@ cost on the unchanged selected engine and placement. Keep the process-lifetime
 loader reference used for stall avoidance in both arms;ordinary teardown is
 not qualified. A separately authored/pinned control must avoid invalid-handle
 probes when validation is absent,and pass bounded host/provider/submission
-checks before any long model comparison. That control is not implemented or
-qualified yet. This addresses the fastest396d envelope difference;it cannot
+checks before any long model comparison. The new99-line independent control
+is built against official2026.2headers with system GCC13,sourcea1899fc4e and
+recipebb46c4de5;ELF SHA prefixc8d080a3. Its five fresh host processes pass:
+on/off normal exits plus wrong-provider,forbidden-layer and invalid-mode
+refusals. No device/queue/enqueue executes;fast host processes expose no live
+/proc sample,so GPU-provider admission remains open. Both clean comparison
+arms must have the same absent/empty UR_ENABLE_LAYERS and use config-only
+parameter validation selection. The returned contract audit is under native
+Luna/max review before a separately pinned small GPU gate. No GPU,model,
+ordinary teardown or speed qualification follows from this host result.
+See`ur_hold_control_build_v1` and`ur_hold_host_v1` in the resource result.
+This addresses the fastest396d envelope difference;it cannot
 alone explain the1003→975same-binary decline,because both of those cohorts
 already used parameter validation. Official-SDK whole-model qualification
 also remains open.
