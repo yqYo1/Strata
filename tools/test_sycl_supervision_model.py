@@ -99,28 +99,33 @@ class RuntimeInputs(unittest.TestCase):
                 commands=owner.commands if owner else [])))
         with patch.object(self.runtime, 'P', self.root):
             chosen = self.runtime.selection(env)
+            tail = ('--probe', 'value with spaces')
             def interact(io, entry):
                 self.assertEqual(io.line(3), 'ready')
                 allowed = self.runtime.code_maps(entry['pid'])
-                checked = self.runtime.check_running(entry['pid'], source, chosen, env, allowed)
+                checked = self.runtime.check_running(entry['pid'], source, chosen, env, allowed, tail)
                 self.assertEqual(checked['sid'], entry['pid'])
                 with self.assertRaises(RuntimeError):
-                    self.runtime.check_running(entry['pid'], self.root / 'other.py', chosen, env, allowed)
+                    self.runtime.check_running(entry['pid'], self.root / 'other.py', chosen, env, allowed, tail)
                 wrong = copy.deepcopy(chosen); wrong['file']['sha256'] = '0' * 64
-                with self.assertRaises(RuntimeError): self.runtime.check_running(entry['pid'], source, wrong, env, allowed)
+                with self.assertRaises(RuntimeError): self.runtime.check_running(entry['pid'], source, wrong, env, allowed, tail)
                 with self.assertRaises(RuntimeError):
-                    self.runtime.check_running(entry['pid'], source, chosen, dict(env, PYTHONNOUSERSITE='0'), allowed)
+                    self.runtime.check_running(entry['pid'], source, chosen, dict(env, PYTHONNOUSERSITE='0'), allowed, tail)
+                with self.assertRaises(RuntimeError):
+                    self.runtime.check_running(entry['pid'], source, chosen, env, allowed, ('--probe', 'wrong value'))
+                with self.assertRaises(RuntimeError):
+                    self.runtime.check_running(entry['pid'], source, chosen, env, allowed)
                 # Locale and unrelated extra keys escaped the old six-key check.
                 # Exercise the actual owned child,not a duplicate env comparator.
                 with self.assertRaises(RuntimeError):
-                    self.runtime.check_running(entry['pid'], source, chosen, dict(env, LANG='C'), allowed)
+                    self.runtime.check_running(entry['pid'], source, chosen, dict(env, LANG='C'), allowed, tail)
                 missing = {k: v for k, v in env.items() if k != 'LANG'}
                 with self.assertRaises(RuntimeError):
-                    self.runtime.check_running(entry['pid'], source, chosen, missing, allowed)
-                with self.assertRaises(RuntimeError): self.runtime.check_running(entry['pid'], source, chosen, env, [])
+                    self.runtime.check_running(entry['pid'], source, chosen, missing, allowed, tail)
+                with self.assertRaises(RuntimeError): self.runtime.check_running(entry['pid'], source, chosen, env, [], tail)
                 io.proc.stdin.close(); io.exit(3)
             owner = control.baseline.Owner(self.root / 'owned', persist)
-            entry, _, _ = owner.run('python', [chosen['path'], str(source)], env, self.root, interaction=interact,
+            entry, _, _ = owner.run('python', [chosen['path'], str(source), *tail], env, self.root, interaction=interact,
                 wall=8, cpu=3, rss_cap=64 << 20, text_cap=1 << 20, file_cap=1 << 20, total_cap=4 << 20)
             self.assertTrue(control.baseline.closed(entry), entry.get('error'))
             self.assertEqual(entry['exit_code'], 0)
