@@ -513,6 +513,20 @@ this copy/private-bank component;legacy6e40 ABI/GEMM,model/decode and physical
 262144context remain unqualified for it. The clean117K model reference stays
 911.7371tok/s;the historical9.0673% decline remains unattributed.
 
+The fresh sourcee33d16fc3 attribution fixture closes ten official-SDK processes
+with240eligible/correct timing samples and120complete CPU/GPU profiles.
+Both large-payload observer screens fail:one ordinary on/off ratio is1.131068
+and one staged ratio is1.111921. Do not qualify its resource attribution or
+advance a model. The frozen overhead clock also excludes owner setup,event
+queries and formatting;the two upload-submit categories have different wrapper
+boundaries. An independent Luna review confirms these interpretation limits.
+Large batches often alternate between fast and slow in both this cohort and
+V5. The between-batch full-bank D2H guard check is one unproved carryover
+candidate. Next compare it with equivalent GPU padding validation using a
+prospectively complete observer clock and balanced order strata. Selected copy
+service and synthetic-reader time do not establish physical bus traffic or the
+cause of the historical model decline.
+
 The native SDK snapshot has a named next consumer:official-runtime original
 fixture ABI/GEMM qualification and the next attributed fixture build. Source
 recovery is complete;58closed component/review files totaling2669603bytes are
