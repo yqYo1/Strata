@@ -5913,6 +5913,270 @@
           "source_and_recipe_recovered": true,
           "retirement_does_not_change_execution_or_eligibility": true
         }
+      },
+      "prefill_upload_staging": {
+        "stage": "prepared-build",
+        "source_commit": "551ec694ebd787099b887eb30473eb8c89e6b5a4",
+        "sdk": {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/unitrace-warmed-graph-window-v1/compiler-inputs.json",
+          "sha256": "436cedc9dbd41810cd882e9040a129e6d8b7dbebb98806b00c4f2950b1dc1705",
+          "original_files": 8697,
+          "admitted_files": 8697,
+          "prospective_system_header_updates": {
+            "/usr/include/metee.h": [
+              "f063edcb00c88f3ddebc10f9b0487fe813cfb7ba71dc4b798729bed8902018a3",
+              "d07e18ce9228c3fc570b186eab13bf8a3e6c04214992f0de9d53b855dc837252"
+            ],
+            "/usr/include/opencl-c-base.h": [
+              "e1683c3db9cf9a95e9d02acbbfa74dcd29d4deaf4a856430f538d76985b04114",
+              "673c4720f879c2f101504979edbd0216c9cb6a982ce2b62bd467b81fd53d8e33"
+            ],
+            "/usr/include/opencl-c.h": [
+              "579b58f482ab0b3dfd396cab32ea3e0537bc5cf4c1067377b83fe417cbcc513b",
+              "aa7e871a8f7d961aa4126a9fadc2196f822c21811946c90147dc7415fe677de9"
+            ]
+          },
+          "updated_header_packages": [
+            "libigdfcl2 2.41.15-1~24.04",
+            "libmetee-dev 6.2.5-1~24.04~ppa2"
+          ],
+          "condition": "New v2 input snapshot only;all8694 other original hashes remain mandatory. Actual dependency closure records which updated headers were compiled. No qualification inherited for the new fixture."
+        },
+        "compiler": {
+          "path": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin/clang++",
+          "sha256": "1290881b4e12a5e002e5b0de0787f85328ee5fe19f253a54be1cdd97dc2f26eb"
+        },
+        "sources": [
+          "tests/sycl/expert_bank.cpp",
+          "src/sycl/runtime.cpp",
+          "src/sycl/compat.cpp",
+          "src/sycl/command_profile.cpp",
+          "src/core/expert_cache.cpp"
+        ],
+        "build_commands": [
+          [
+            "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin/clang++",
+            "-std=c++20",
+            "-O3",
+            "-fsycl",
+            "-fsycl-id-queries-range=size_t",
+            "-DSTRATA_ENABLE_SYCL=1",
+            "-I/home/yayoi/orca/workspaces/Strata/sycl/include",
+            "-I/home/yayoi/orca/workspaces/Strata/sycl/include/strata/sycl/compat",
+            "-MD",
+            "-MF",
+            "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-expert-staging-v1/0.d",
+            "-c",
+            "/home/yayoi/orca/workspaces/Strata/sycl/tests/sycl/expert_bank.cpp",
+            "-o",
+            "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-expert-staging-v1/0.o"
+          ],
+          [
+            "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin/clang++",
+            "-std=c++20",
+            "-O3",
+            "-fsycl",
+            "-fsycl-id-queries-range=size_t",
+            "-DSTRATA_ENABLE_SYCL=1",
+            "-I/home/yayoi/orca/workspaces/Strata/sycl/include",
+            "-I/home/yayoi/orca/workspaces/Strata/sycl/include/strata/sycl/compat",
+            "-MD",
+            "-MF",
+            "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-expert-staging-v1/1.d",
+            "-c",
+            "/home/yayoi/orca/workspaces/Strata/sycl/src/sycl/runtime.cpp",
+            "-o",
+            "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-expert-staging-v1/1.o"
+          ],
+          [
+            "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin/clang++",
+            "-std=c++20",
+            "-O3",
+            "-fsycl",
+            "-fsycl-id-queries-range=size_t",
+            "-DSTRATA_ENABLE_SYCL=1",
+            "-I/home/yayoi/orca/workspaces/Strata/sycl/include",
+            "-I/home/yayoi/orca/workspaces/Strata/sycl/include/strata/sycl/compat",
+            "-MD",
+            "-MF",
+            "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-expert-staging-v1/2.d",
+            "-c",
+            "/home/yayoi/orca/workspaces/Strata/sycl/src/sycl/compat.cpp",
+            "-o",
+            "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-expert-staging-v1/2.o"
+          ],
+          [
+            "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin/clang++",
+            "-std=c++20",
+            "-O3",
+            "-fsycl",
+            "-fsycl-id-queries-range=size_t",
+            "-DSTRATA_ENABLE_SYCL=1",
+            "-I/home/yayoi/orca/workspaces/Strata/sycl/include",
+            "-I/home/yayoi/orca/workspaces/Strata/sycl/include/strata/sycl/compat",
+            "-MD",
+            "-MF",
+            "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-expert-staging-v1/3.d",
+            "-c",
+            "/home/yayoi/orca/workspaces/Strata/sycl/src/sycl/command_profile.cpp",
+            "-o",
+            "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-expert-staging-v1/3.o"
+          ],
+          [
+            "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin/clang++",
+            "-std=c++20",
+            "-O3",
+            "-fsycl",
+            "-fsycl-id-queries-range=size_t",
+            "-DSTRATA_ENABLE_SYCL=1",
+            "-I/home/yayoi/orca/workspaces/Strata/sycl/include",
+            "-I/home/yayoi/orca/workspaces/Strata/sycl/include/strata/sycl/compat",
+            "-MD",
+            "-MF",
+            "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-expert-staging-v1/4.d",
+            "-c",
+            "/home/yayoi/orca/workspaces/Strata/sycl/src/core/expert_cache.cpp",
+            "-o",
+            "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-expert-staging-v1/4.o"
+          ],
+          [
+            "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin/clang++",
+            "-fsycl",
+            "-fsycl-id-queries-range=size_t",
+            "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-expert-staging-v1/0.o",
+            "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-expert-staging-v1/1.o",
+            "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-expert-staging-v1/2.o",
+            "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-expert-staging-v1/3.o",
+            "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-expert-staging-v1/4.o",
+            "-o",
+            "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-expert-staging-v1/sycl_expert_staging"
+          ]
+        ],
+        "build_environment": {
+          "PATH": "/usr/bin:/bin",
+          "HOME": "/home/yayoi",
+          "LANG": "C.UTF-8",
+          "LC_ALL": "C.UTF-8",
+          "PYTHONDONTWRITEBYTECODE": "1",
+          "LD_LIBRARY_PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib:/opt/intel/oneapi/mkl/2026.1/lib",
+          "ONEAPI_DEVICE_SELECTOR": "level_zero:gpu",
+          "UR_ADAPTERS_FORCE_LOAD": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_adapter_level_zero_v2.so.0",
+          "UR_L0_V2_FORCE_DISABLE_COPY_OFFLOAD": "1",
+          "NEOReadDebugKeys": "1",
+          "EnableDirectSubmission": "0",
+          "STRATA_SYCL_PREFILL_SAME_QUEUE": "1",
+          "STRATA_SYCL_VERIFY_NATIVE_CAPTURE": "0",
+          "SYCL_CACHE_PERSISTENT": "0",
+          "ZES_ENABLE_SYSMAN": "0",
+          "UR_ENABLE_LAYERS": "UR_LAYER_TRACING,UR_LAYER_PARAMETER_VALIDATION",
+          "UR_LOG_TRACING": "level:info;flush:info;output:stderr",
+          "UR_LOG_VALIDATION": "level:warning;flush:warning;output:stderr",
+          "UR_LOG_LOADER": "level:warning;flush:warning;output:stderr",
+          "UR_LOG_LEVEL_ZERO": "level:warning;flush:warning;output:stderr",
+          "TMPDIR": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-expert-staging-v1/tmp",
+          "XDG_CACHE_HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-expert-staging-v1/cache"
+        },
+        "runtime_sha256": "09ad358e12f6ef58bfc0a978519927863f3d09949a033a1e224db95997647d97",
+        "preload": {
+          "library": {
+            "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/ur-validation-preload-v2/libstrata_ur_validation.so",
+            "sha256": "1d4e69d672d55fa0a126ae43b7b4743482cccca7e2f2bc22e0db2bfdad5bdc7c"
+          },
+          "canary": {
+            "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/ur-validation-preload-v2/canary",
+            "sha256": "7903f47691309444cce238d6a0a6fe716f7c668d80a6e2ff3d5cfe21c7dcbfd0"
+          },
+          "loader": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_loader.so.0.12.0",
+          "original_plan": {
+            "commit": "550c75f5fc954ee38b70230e32d2a48e12100d8a",
+            "path": "bench/results/2026-10-15-pr6-recovery-audit/research-index.json",
+            "sha256": "d12866b93c51e76a83e95638e66b6f6f4e0e33d779516a5fddecc178a6f8e10a"
+          },
+          "source_commit": "f312b6691f508125db6cfc2580ca32a686ff2642",
+          "retained_reference_until_exit": true,
+          "ordinary_runtime_teardown_qualified": false
+        },
+        "boot": "cfda0b6a-7c13-4fe2-bdf5-8f9202770840",
+        "driver": {
+          "pci": "/sys/bus/pci/devices/0000:05:00.0",
+          "driver": "xe",
+          "vendor": "0x8086",
+          "device": "0xe20c",
+          "kernel": "7.0.0-38-generic",
+          "devcoredump": false
+        },
+        "selected_original": {
+          "source_commit": "6e40afc1beddd059ee518617f6c1efce1da14aca",
+          "inputs_recovered": 9853,
+          "assets_verified": 13,
+          "receipt": {
+            "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/record.json",
+            "sha256": "a38f477670fafcd1a931be2e20d90d6d9718df75b61954b421f361af9f6881b2"
+          },
+          "limits": "Original build remains selected; this source-only diagnostic is not adoption."
+        },
+        "active": false,
+        "ownership_closed": true,
+        "passed": false,
+        "complete": false,
+        "GPU_executed": false,
+        "model_executed": false,
+        "model_adoption_qualified": false,
+        "native_engine_built": false,
+        "build_limits": {
+          "wall": 600,
+          "cpu": 1800,
+          "rss_cap": 8589934592,
+          "text_cap": 8388608,
+          "file_cap": 134217728,
+          "total_cap": 536870912
+        },
+        "device_limits": {
+          "wall": 600,
+          "cpu": 1200,
+          "rss_cap": 6442450944,
+          "text_cap": 8388608,
+          "file_cap": 16777216,
+          "total_cap": 134217728
+        },
+        "device_cases": [
+          [
+            "baseline-smoke",
+            "--packed-smoke"
+          ],
+          [
+            "staging-smoke",
+            "--staging-smoke"
+          ],
+          [
+            "staging-validate",
+            "--staging-validate"
+          ],
+          [
+            "bench0",
+            "--staging-bench",
+            "0"
+          ],
+          [
+            "bench1",
+            "--staging-bench",
+            "1"
+          ],
+          [
+            "bench2",
+            "--staging-bench",
+            "2"
+          ]
+        ],
+        "plan": "Two traced small smoke cases,then parameter-validated staged512-expert/mixed-stride/unwind validation;three independent processes,2payloads1.9712/2.6624MB,384slots,512experts,two scans,one first-use and five rotated subsequent pairs. Actual production private-bank entrypoint both arms;two full-data queued readers per expert,641uploads+383hits+2048readers per timed batch. Not the dequant/GEMM dependency path or a model benchmark. No environment mutation/adaptive retry.",
+        "criteria": "Execution:normal owned closure,silent parameter validation,actual pinned provider/runtime,zero fresh fault/same boot,all source/target/host guards,all readers,private-map and counters pass. Each timing batch needs wall>=10ms and queue interval>=10ms,timer p99<=10us and empty-control maximum<=5percent of batch wall;queue intervals are nonexclusive,not GPU service. For EACH payload,GM of3process subsequent-median staged/ordinary wall ratios<=0.95 and every process ratio<1. Preserve first-use and all samples. A failed/ineligible screen forbids gated full-pipeline/model advancement;passing permits the separately planned dequant/GEMM component check only,not a model trial or adoption.",
+        "safety_audit": "Main-authored ring;no XeStrata source.4host-USM slots,<=16MiB capacity/slot,256byte guards;same in-order context/device queue and registered device ownership. Reject device sources,overlap,bad extents/queues. Copy-event wait before CPU host-slot reuse;GPU readers and scratch overwrite ordered on same queue. Catch drains before unwinding;failed drain fail-stops with owners live. No new GPU arithmetic in inference;only bounded transfer-preparation memcpy. Default disabled prefill-only route;decode/short-prefill/cache placement unchanged. No physical256K qualification.",
+        "retention": "Keep compact individual timing/CPU samples,eligibility/correctness/fault/source results. Review component executable at gate closure or imminent full-pipeline comparison. Original selected engine+12fixtures stay intact;two earlier GU/Down fixtures retain only their named ceiling consumer. Retire routine raw traces/build output once extracted;no full API trace during long validation.",
+        "project": {
+          "revision": "551ec694ebd787099b887eb30473eb8c89e6b5a4",
+          "count": 495,
+          "aggregate_sha256": "df386385bbea7a3ead0dc03bc09d0ba6e3f5d2df8bef7896d9d68308d5493fbb"
+        }
       }
     }
   },
