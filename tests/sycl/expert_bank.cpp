@@ -4,6 +4,7 @@
 #include "strata/prefill/draft_uploads.hpp"
 #include "strata/sycl/checked_cleanup.hpp"
 #include <algorithm>
+#include <array>
 #include <chrono>
 #include <iomanip>
 #include <sys/mman.h>
@@ -372,12 +373,17 @@ void staging_benchmark(int process, bool custom_queue=false) {
         pd::ExpertUploadStaging staging(cache.device_slot(0),size_t(cache.bytes()),payload,&q);
         sb::Allocation status_owner(runtime,4,sb::MemoryKind::Device);
         auto* status=status_owner.as<uint32_t>();
-        double empty_wall_ms=0;
+        // Keep timing-instrument initialization separate from bank first-use.
+        // All five subsequent empty controls and the cold cost are reported.
+        const auto setup_begin=Clock::now();bank_marker(q);bank_marker(q);drain();
+        const double marker_setup_ms=std::chrono::duration<double,std::milli>(Clock::now()-setup_begin).count();
+        std::array<double,5> empty_controls{};double empty_wall_ms=0;
         for (int i=0;i<5;++i) {
             const auto t=Clock::now();bank_marker(q);bank_marker(q);
-            drain();empty_wall_ms=std::max(empty_wall_ms,std::chrono::duration<double,std::milli>(Clock::now()-t).count());
+            drain();empty_controls[size_t(i)]=std::chrono::duration<double,std::milli>(Clock::now()-t).count();
+            empty_wall_ms=std::max(empty_wall_ms,empty_controls[size_t(i)]);
         }
-        for(int round=-1;round<5;++round) for(int order=0;order<2;++order) {
+        for(int round=-1;round<9;++round) for(int order=0;order<2;++order) {
             const int arm=(process+round+2+order)%2;
             drain();pd::ExpertBankSlots slots(384);
             q.memset(cache.device_slot(0),0xa5,size_t(cache.bytes()));q.memset(status,0,4);drain();
@@ -426,7 +432,9 @@ void staging_benchmark(int process, bool custom_queue=false) {
                 <<",\"payload_bytes\":"<<payload<<",\"source_stride\":"<<stride<<",\"bank_slots\":384"
                 <<",\"uploads\":"<<uploads<<",\"hits\":"<<hits<<",\"consumers\":"<<consumers
                 <<",\"wall_ms\":"<<wall<<",\"thread_CPU_ms\":"<<cpu<<",\"queue_interval_ms\":"<<queue_ms
-                <<",\"empty_control_max_wall_ms\":"<<empty_wall_ms<<",\"timer_p99_ns\":"<<clock_ns[989]
+                <<",\"marker_setup_wall_ms\":"<<marker_setup_ms<<",\"empty_control_wall_ms\":[";
+            for(size_t i=0;i<empty_controls.size();++i)std::cout<<(i?",":"")<<empty_controls[i];
+            std::cout<<"],\"empty_control_max_wall_ms\":"<<empty_wall_ms<<",\"timer_p99_ns\":"<<clock_ns[989]
                 <<",\"eligible\":"<<(eligible?"true":"false")
                 <<",\"guards_and_every_consumer\":true,\"private_map_unchanged\":true,\"model_qualified\":false}\n";
         }

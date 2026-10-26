@@ -494,7 +494,20 @@ outer lease drains its dedicated queue,but the helper accepts custom queues and
 the V1 fixture exercised compute only. V1 outcomes above remain compute-only;
 no model ran. V2 changes guard/destructor/error retirement to wait the bound
 queue itself and adds dedicated-queue smoke,unwind,destructor-tail and repeated
-performance cases. V2 qualification is pending;the component remains defaultoff.
+performance cases. V2 closes six native processes without a fresh fault and
+passes content/guard/map/ownership/parameter checks,but its speed gate fails.
+All36small-payload rows exceed the empty-control5% allowance:the maxima are
+34.728/38.134/37.951ms and include timing-marker initialization. This does not
+prove JIT as the cause. The36large-payload rows are timing-eligible,but process0
+is slower with staging:455.898 versus429.624ms subsequent medians. Preserve
+all72samples and the failed outcome;no full-pipeline/model advancement.
+
+V3 prospectively separates and records cold timing-marker setup from five
+subsequent empty controls,and increases five to nine subsequent pairs in each
+of three processes. Bank first-use remains separately recorded. All original
+wall/queue/timer/5%control and5%gain/every-process-ratio gates remain required.
+This changes component instrumentation/repetition,not the matched model
+benchmark contract. V3 is unrun;the component remains defaultoff.
 
 Installed native metadata identifies representative actual formats:layer2 has
 IQ2_S(type22) gate/up and IQ4_NL(type20) down,1971200bytes;layer47 has
@@ -1169,10 +1182,12 @@ stopped. No reset/unbind/recovery action is part of a benchmark.
 ## Upstream and history
 
 Niko1221/Strata is the only upstream. The last actual check was
-2026-10-23T21:29:32.552053Z at`7ddc17a38` (`v0.2.3.1`),131 commits/294 paths
-beyond011c9e60. Required non-inference ports and hardware-tuned unmodified-upstream
-measurements remain pending; observation is not integration. Check again around
-2026-10-25T21:29Z using the project-only sync skill.
+2026-10-25T21:35:21.222628Z at`4b9e05a2a` (`v0.2.6`),446 commits/406 paths
+beyond the prior7ddc17a38 observation. Required non-inference ports and
+hardware-tuned unmodified-upstream measurements remain pending;observation is
+not integration. Check again around2026-10-27T21:35Z using the project-only sync
+skill. These dates reconcile the existing committed upstream-status.json;this
+document edit is not another remote check.
 
 Work is on`feature/sycl`. PR180 is mergeable but blocked by squash-only
 ruleset24638744; original measured commit identities require a merge commit.

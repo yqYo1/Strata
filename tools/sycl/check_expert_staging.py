@@ -20,8 +20,8 @@ sys.dont_write_bytecode = True
 import build_fused_profile as n
 
 r, P, B, RESULT = n.r, n.P, n.B, n.RESULT
-ROOT = B / 'prefill-expert-staging-v2'
-KEY = 'prefill_upload_staging_v2'
+ROOT = B / 'prefill-expert-staging-v3'
+KEY = 'prefill_upload_staging_v3'
 PREFIXES = ['include', 'src', 'tools/sycl', 'tests/sycl/expert_bank.cpp', 'cmake', 'CMakeLists.txt']
 require, digest, write = n.require, n.digest, n.write
 
@@ -69,15 +69,15 @@ def prepare():
                       ['staging-validate', '--staging-custom-validate'],
                       ['bench0', '--staging-custom-bench', '0'], ['bench1', '--staging-custom-bench', '1'],
                       ['bench2', '--staging-custom-bench', '2']],
-        plan='V2:dedicated make_queue(true),not Runtime.compute;two traced small smoke cases with custom-queue '
+        plan='V3:dedicated make_queue(true),not Runtime.compute;two traced small smoke cases with custom-queue '
             'destructor-tail check,then parameter-validated staged512-expert/mixed-stride/unwind validation;'
             'three independent processes,2payloads1.9712/2.6624MB,384slots,512experts,two scans,'
-            'one first-use and five rotated subsequent pairs. Actual production private-bank entrypoint both arms;'
+            'separate cold timing-marker setup and five subsequent empty controls;one bank first-use and nine rotated subsequent pairs. Actual production private-bank entrypoint both arms;'
             'two full-data queued readers per expert,641uploads+383hits+2048readers per timed batch. '
             'Not the dequant/GEMM dependency path or a model benchmark. No environment mutation/adaptive retry.',
         criteria='Execution:normal owned closure,silent parameter validation,actual pinned provider/runtime,'
             'zero fresh fault/same boot,all source/target/host guards,all readers,private-map and counters pass. '
-            'Each timing batch needs wall>=10ms and queue interval>=10ms,timer p99<=10us and '
+            'Cold timing-marker initialization is separately recorded setup,not bank first-use;all five subsequent empty controls remain individually recorded. Each timing batch needs wall>=10ms and queue interval>=10ms,timer p99<=10us and '
             'empty-control maximum<=5percent of batch wall;queue intervals are nonexclusive,not GPU service. '
             'For EACH payload,GM of3process subsequent-median staged/ordinary wall ratios<=0.95 and '
             'every process ratio<1. Preserve first-use and all samples. A failed/ineligible screen forbids '
@@ -93,7 +93,7 @@ def prepare():
             'prefill-only route;decode/short-prefill/cache placement unchanged. No physical256K qualification.',
         retention='Keep compact individual timing/CPU samples,eligibility/correctness/fault/source results. '
             'Review component executable at gate closure or imminent full-pipeline comparison. Original selected '
-            'engine+12fixtures stay intact;V1compute-only fixture is superseded at V2closure and not a timed arm. '
+            'engine+12fixtures stay intact;V1/V2closed fixtures are superseded and not timed arms. '
             'Two earlier GU/Down fixtures retain only their named ceiling consumer. '
             'Retire routine raw traces/build output once extracted;no full API trace during long validation.')
     write(ROOT / 'record.json', row); scope(c)[KEY] = compact(row); write(RESULT, c)
@@ -126,12 +126,15 @@ def dependencies(row):
 
 
 def summarize(samples):
-    require(len(samples) == 72, 'three complete24sample benchmark processes required')
+    require(len(samples) == 120, 'three complete40sample benchmark processes required')
     require({(v['payload_bytes'], v['process'], v['arm'], v['round']) for v in samples} ==
         {(size, process, arm, round) for size in (1971200, 2662400) for process in range(3)
-         for arm in (0, 1) for round in range(-1, 5)}, 'missing/duplicate sample identity')
+         for arm in (0, 1) for round in range(-1, 9)}, 'missing/duplicate sample identity')
     require(all(v['custom_queue'] is True and v['eligible'] and v['guards_and_every_consumer'] and
         v['private_map_unchanged'] for v in samples), 'custom queue/first-use correctness/timing gate failed')
+    require(all(len(v['empty_control_wall_ms']) == 5 and
+        v['empty_control_max_wall_ms'] == max(v['empty_control_wall_ms']) and
+        v['marker_setup_wall_ms'] >= 0 for v in samples), 'instrumentation setup/control evidence missing')
     by_payload = []
     for payload in (1971200, 2662400):
         ratios = []
@@ -140,7 +143,7 @@ def summarize(samples):
             for arm in (0, 1):
                 rows = [v for v in samples if v['payload_bytes'] == payload and v['process'] == process and
                         v['arm'] == arm and v['round'] >= 0]
-                require(len(rows) == 5 and all(v['eligible'] and v['guards_and_every_consumer'] and
+                require(len(rows) == 9 and all(v['eligible'] and v['guards_and_every_consumer'] and
                     v['private_map_unchanged'] and v['uploads'] == 641 and v['hits'] == 383 and
                     v['consumers'] == 2048 for v in rows), 'timing/correctness/dispatch gate failed')
                 pair.append(statistics.median(v['wall_ms'] for v in rows))
@@ -213,7 +216,7 @@ def execute(mode):
                     require('expert_staging_custom_queue destructor_tail_complete=PASS host_copy_owners_live=PASS'
                         in text, 'custom-queue destructor retirement absent')
                 rows = [json.loads(v) for v in text.splitlines() if v.startswith('{')]
-                if label.startswith('bench'): require(len(rows) == 24, 'benchmark sample count'); row['samples'].extend(rows)
+                if label.startswith('bench'): require(len(rows) == 40, 'benchmark sample count'); row['samples'].extend(rows)
                 probe = dict(host_probe_accepted=True); r.validation.finish(probe, owner, cursor, row['boot'])
                 require(probe['passed'] and probe['driver_after'] == row['driver'], 'fault/ownership gate failed')
                 row['case_outcomes'].append(dict(label=label, passed=True, ownership_closed=True, fresh_faults=[], samples=len(rows)))
