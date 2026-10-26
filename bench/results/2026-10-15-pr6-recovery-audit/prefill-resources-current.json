@@ -2728,6 +2728,65 @@
       "remaining": "Fourteen older provenance holds and separate pending numerical/model/full-context/upstream gates are unchanged."
     },
     "fused_command_profile": {
+      "legacy_gemm_abi_v1": {
+        "stage": "prepared",
+        "source_commit": "5314d12d643d19564a6c476f651ec0c45c5700f4",
+        "native_reference": {
+          "source_commit": "fa765fcb8bb21a7a966493bc377e6dba5c4579ba",
+          "executable": {
+            "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/native16-legacy-gemm-v1/build/sycl_gemm_test",
+            "sha256": "7d3e8b8e20192e36649f25952a69c79f35d89f5b6e44bc85572d50116f67501d",
+            "bytes": 13043128
+          },
+          "record": {
+            "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/native16-legacy-gemm-v1/record.json",
+            "sha256": "f084fec88038f0bf403586ed3dac6c29bf931694746d823efce28ed14314f316"
+          },
+          "compiled_inputs": {
+            "files": 1424,
+            "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/native16-legacy-gemm-v1/compiler-inputs.json",
+            "sha256": "96dcf6e94d91ca2510a0249333afc84587b05f2e274fd8a823474048ff848e9c",
+            "uncovered": 0
+          }
+        },
+        "runtime_sha256": "09ad358e12f6ef58bfc0a978519927863f3d09949a033a1e224db95997647d97",
+        "boot": "cfda0b6a-7c13-4fe2-bdf5-8f9202770840",
+        "driver": {
+          "pci": "/sys/bus/pci/devices/0000:05:00.0",
+          "driver": "xe",
+          "vendor": "0x8086",
+          "device": "0xe20c",
+          "kernel": "7.0.0-38-generic",
+          "devcoredump": false
+        },
+        "args": [
+          "--matrix-only"
+        ],
+        "budgets": {
+          "wall": 30,
+          "cpu": 120,
+          "rss_cap": 2147483648,
+          "text_cap": 67108864,
+          "file_cap": 67108864,
+          "total_cap": 67108864
+        },
+        "complete": false,
+        "passed": false,
+        "active": false,
+        "ownership_closed": true,
+        "GPU_executed": false,
+        "model_executed": false,
+        "inference_adopted": false,
+        "performance_qualified": false,
+        "physical262144_qualified": false,
+        "criteria": "One fresh traced native process,22 CPU-parity cases with output-stride guards: 18 FP16/BF16-to-FP32 GEMMs (three shapes and beta0/.5/1) and4 Q8 strided cases. All pipeline/ring/separate-queue cases skipped. Require normal owned exit,exact source/ELF/environment/providers,pre-main validation,no warning or fresh GPU fault. Stop first failure,no retry/reset. Passing qualifies only this ABI/matrix subset,not model or speed.",
+        "retention": "Retain compact22case/provider/fault/owner outcome. After source recovery retire normal full API trace,JIT,private receipts and candidate build. Official v4fallback and original13engine assets remain intact;no automatic model advancement.",
+        "runtime_manifest": {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/legacy-gemm-abi-v1/runtime-inputs.json",
+          "sha256": "43de9b527585addcc6da1f8fdc6f1e8266e2d982ba4c752d909578ed8c7bde21",
+          "files": 84
+        }
+      },
       "legacy_gemm_abi_build_v1": {
         "stage": "built",
         "source_commit": "fa765fcb8bb21a7a966493bc377e6dba5c4579ba",
