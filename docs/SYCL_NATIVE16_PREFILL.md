@@ -904,13 +904,17 @@ and all four recorded identities absent. There is no fresh GPUfault or long
 prefill speed sample. Do not retry V5;exercise late server initialization and
 report map differences before a new comparison.
 
-The prospective replacement host probe imports the lazy tokenizer and exercises
+The replacement host probe imports the lazy tokenizer and exercises
 loopback model discovery/chat through MockEngine,ByteTokenizer and the production
 service/telemetry initialization. It does not construct StrataEngine or initialize
-SYCL/Level Zero. Normal telemetry can query NVML;those external host-library
-mappings must enter the frozen inventory. The new live rejection includes exact
-unexpected paths. This is a prospective probe contract,not proof of the old
-missing library or a new model speed result;the failed V5remains unchanged.
+SYCL/Level Zero. Normal telemetry can query NVML. Two discovery and two fresh
+qualified host processes pass and close normally. All3593 original file identities
+are unchanged;the inventory now adds libnvidia-ml,libcuda,libdl and librt,for3597
+files/270975442bytes. The new live rejection includes exact unexpected paths.
+These mock observations do not prove the old process's unrecorded map difference
+or a model speed result;the failed V5remains unchanged. Nine fresh host controls
+also pass,including exact missing-map diagnostic checks. The next model plan
+still needs independent source review before execution.
 
 Exact original source,configuration and pure environment-recipe recovery closes
 the two superseded unlaunched model roots and old Python-probe root. Their
