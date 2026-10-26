@@ -803,6 +803,41 @@
     }
   },
   "historical_regression_audit": {
+    "owner_cpu_probe_v1": {
+      "stage": "prepared",
+      "source_commit": "439d3e2d4c5ee53d78289226315624a546a2efa0",
+      "controller_fingerprint": "c3460e0544fbbe1939512cdae6521e04d7db7a6cdfa441b64d47f1b750bd8e67",
+      "binary": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/amd-clock-observer-v2/clock-access",
+        "sha256": "4644cbd1df632eaf1a11121301dba7c24294ede245c1aef51da2ee9239b256c5"
+      },
+      "boot": "cfda0b6a-7c13-4fe2-bdf5-8f9202770840",
+      "processes": [],
+      "complete": false,
+      "passed": false,
+      "active": false,
+      "ownership_closed": true,
+      "GPU_executed": false,
+      "plan": {
+        "question": "Which supervision calls consume host CPU while waiting for an otherwise idle child?",
+        "order": [
+          "plain",
+          "CPU-profile",
+          "plain"
+        ],
+        "commands": "Same libc-only qualified clock-access --observe;stop by private stdin EOF after tick10. No model or GPU. Existing Owner and failed-model artifact parent unchanged. Exact source/build/provider checks per launch.",
+        "timing": "Record whole Owner.run wall and controller process CPU for each command. Plain arms report CPU fraction,not model overhead. CPU-profile uses cProfile(timer=process_time);its cost is charged and values are attribution only.",
+        "gate": "Normal EOF/exit/maps/session closure,11ticks and no stderr. Record whether BOTH unprofiled host fractions<=0.05. Do not change the rejected model gate or advance to a new model trial from this control alone.",
+        "budgets": "Per command20s awake wall,2s childCPU,32MiBRSS,1MiBtext/file,128MiBmodel-root artifacts. Reject BOOTTIME/MONOTONIC divergence>50ms;finite owner cleanup. Whole control240BOOTTIME seconds.",
+        "retention": "Keep3CPU/wall samples and a compact CPU profile attribution,source/recipe/identity and limits. Retire normal process/tick logs after verified replay;do not keep a full profile transaction."
+      },
+      "environment": {
+        "PATH": "/usr/bin:/bin",
+        "HOME": "/home/yayoi",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8"
+      }
+    },
     "model_cpu_clock_diagnostic_v1": {
       "stage": "failed",
       "source_commit": "175cd318966da0bfdb885f905ce2b01c12cb3866",
