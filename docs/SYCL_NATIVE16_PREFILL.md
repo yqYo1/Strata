@@ -514,9 +514,10 @@ this copy/private-bank component;legacy6e40 ABI/GEMM,model/decode and physical
 911.7371tok/s;the historical9.0673% decline remains unattributed.
 
 The native SDK snapshot has a named next consumer:official-runtime original
-fixture ABI/GEMM qualification and the next attributed fixture build. Retire
-closed component binaries/objects and routine raw output after source recovery;
-keep the original13assets and the separately named GU/Down ceiling subset.
+fixture ABI/GEMM qualification and the next attributed fixture build. Source
+recovery is complete;58closed component/review files totaling2669603bytes are
+retired with a path/hash/reason manifest. The original13assets and separately
+named GU/Down ceiling subset remain intact.
 Actual-format pipeline work,after a new bank performance pass,uses installed
 layer2 IQ2_S(type22) gate/up plus IQ4_NL(type20) down,1971200bytes,and layer47
 IQ4_XS(type23) gate/up plus IQ4_NL down,2662400bytes. Preserve FP16 matrix
