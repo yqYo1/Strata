@@ -1987,7 +1987,7 @@
     },
     "independent_control_reference": "prefill-resources-current.json#independent_llama9b_control_v6",
     "near_dense_original_reference_v1": {
-      "stage": "prepared",
+      "stage": "qualified",
       "source_commit": "b8c31f1aec195489d71fb0e553e8e412fd8d51f3",
       "qualification_inputs": {
         "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/phase-prefill-speed-current.json": "9543297abc2ce0b4530ee6984d55366e735881caf42a08239f3494d655f9e10d",
@@ -2138,13 +2138,39 @@
       },
       "active": false,
       "ownership_closed": true,
-      "qualification": [],
+      "qualification": [
+        {
+          "case": "canary",
+          "passed": true,
+          "ownership_closed": true
+        },
+        {
+          "case": "submission",
+          "passed": true,
+          "ownership_closed": true
+        }
+      ],
       "complete": false,
       "passed": false,
       "retention": "Keep useful individual samples,source/config/environment references and decision. Retire successful trace/raw/JIT output and this one-use controller after closure;original13 assets remain.",
       "generated_sha256": {
         "config.json": "751e1603c8c5300f457fdda8f13018609667addc3a594ffd8c0d160466c98a9e",
         "plan.json": "08cfd654f8512bb484582b232cb0361de9c228e1eb5f4cec465aba42cf5195ef"
+      },
+      "qualification_outcome": {
+        "host_probe_accepted": true,
+        "ownership_closed": true,
+        "fresh_faults": [],
+        "boot_unchanged": true,
+        "driver_after": {
+          "pci": "/sys/bus/pci/devices/0000:05:00.0",
+          "driver": "xe",
+          "vendor": "0x8086",
+          "device": "0xe20c",
+          "kernel": "7.0.0-38-generic",
+          "devcoredump": false
+        },
+        "passed": true
       }
     }
   }
