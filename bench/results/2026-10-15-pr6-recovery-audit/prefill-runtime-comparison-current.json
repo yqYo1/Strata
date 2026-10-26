@@ -803,6 +803,73 @@
     }
   },
   "historical_regression_audit": {
+    "benchmark_python_runtime_v4": {
+      "stage": "prepared",
+      "source_commit": "e485a0c941bef0093f8262e29b512b7b81e0364b",
+      "selected": {
+        "workspace_venv": false,
+        "path": "/home/yayoi/.local/share/strata-sycl/venv/bin/python3",
+        "file": {
+          "realpath": "/usr/bin/python3.12",
+          "dev": 29,
+          "ino": 774532,
+          "bytes": 8020928,
+          "mtime_ns": 1788171506000000000,
+          "ctime_ns": 1790581701420197973,
+          "sha256": "e50d468e8b0adfb05733f5b87b3cff34829c4a8c1aea50c865aa8bdfe4bb150f"
+        }
+      },
+      "complete": false,
+      "passed": false,
+      "active": false,
+      "GPU_executed": false,
+      "GPU_scope": "No inference/SYCL/Level Zero;normal production telemetry may query NVML.",
+      "discovery_command_count": 2,
+      "plan": {
+        "source_commit": "e485a0c941bef0093f8262e29b512b7b81e0364b",
+        "selected": {
+          "workspace_venv": false,
+          "path": "/home/yayoi/.local/share/strata-sycl/venv/bin/python3",
+          "file": {
+            "realpath": "/usr/bin/python3.12",
+            "dev": 29,
+            "ino": 774532,
+            "bytes": 8020928,
+            "mtime_ns": 1788171506000000000,
+            "ctime_ns": 1790581701420197973,
+            "sha256": "e50d468e8b0adfb05733f5b87b3cff34829c4a8c1aea50c865aa8bdfe4bb150f"
+          }
+        },
+        "manifest": {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/benchmark-python-admission-v4/runtime.json",
+          "sha256": "2b28b86120ea7dd67ba53eb876592f77c76badab54cb9f03ebe4788f9d873e13",
+          "files": 3597,
+          "bytes": 270975442
+        },
+        "environment_identity": "bdd64474495b9d55be522285ee7146253bcb1abbcf50ad9af97b2a00bf12e194",
+        "template": {
+          "path": "/home/yayoi/.local/share/strata-sycl/packs/qwen3.8-flash-next-iq3_s/tokenizer/chat_template.jinja",
+          "sha256": "12827f24b742ea4e80cdc12dbcf9622227056b9f797252a3149263d4f9aaadce"
+        },
+        "work": "Two bounded discovery processes,then commit this manifest/plan before two fresh qualified probes. Benchmark definitions only;server uses loopback models/chat with MockEngine and ByteTokenizer,imports real tokenizer and initializes production telemetry. Never construct StrataEngine or initialize SYCL/Level Zero;NVML telemetry host queries are included.",
+        "gate": "Exact source/interpreter/environment/template,all runtime directory inventories and file hashes checked before and after both qualified host probes;descriptor equality,normal owned closure;no GPU inference or speed claim. Normal telemetry host queries are included.",
+        "budgets": {
+          "wall": 30,
+          "cpu": 20,
+          "rss_cap": 268435456,
+          "text_cap": 262144,
+          "file_cap": 1048576,
+          "total_cap": 4194304
+        }
+      },
+      "versions": {
+        "jinja2": "3.1.6",
+        "MarkupSafe": "3.0.3"
+      },
+      "error": null,
+      "ownership_closed": true,
+      "command_count": 2
+    },
     "closed_supervision_runtime_retirement_v2": {
       "manifest": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/retire-closed-supervision-runtime-v2-20261027.json",
       "sha256": "5b7c32cdcb455f6e37c9c8a2a4c684213b490c965147eb500dd1c9764627f377",
