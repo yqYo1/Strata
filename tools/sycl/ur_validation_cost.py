@@ -28,7 +28,10 @@ ORDER = ('on', 'off', 'off', 'on', 'on', 'off')
 
 
 def compact(row):
-    return {k: v for k, v in row.items() if k not in ('controller_inputs', 'models', 'environment_template')}
+    result = {k: v for k, v in row.items() if k not in ('controller_inputs', 'models', 'environment_template', 'plans')}
+    result['plans'] = [dict(index=p['index'], mode=p['mode'], root=p['root'],
+        generated_sha256=p['generated_sha256'], command_sha256=h.identity(p['command'])) for p in row['plans']]
+    return result
 
 
 def save(row):
@@ -254,10 +257,33 @@ def run(row):
     return int(not outcome['passed'])
 
 
+def seal_unlaunched():
+    # Revise only an uncommitted, unlaunched plan. Preserve every generated
+    # input hash, configuration and qualification; never repair a failed run.
+    row = json.loads((ROOT / 'record.json').read_text())
+    require(KEY not in gen.committed(RESULT)['historical_regression_audit'] and
+        row['stage'] == 'prepared' and not row['processes'] and not row['active'] and
+        not list(ROOT.glob('*/execution.json')) and not list(ROOT.glob('*/owned')),
+        'only an uncommitted plan with no process attempt may be sealed')
+    require(h.controller(row['source_commit'], worktree=False) == row['controller_inputs'] and
+        qualification()[2] == row['qualification'], 'original preparation/qualification differs')
+    for process in row['plans']:
+        require(environment(row, Path(process['root'])) == process['environment'] and
+            all(digest(Path(process['root']) / n) == sha for n, sha in process['generated_sha256'].items()),
+            'unlaunched inputs changed')
+    models.model_pins(row['configuration'], row['models'])
+    row['preparation_source_commit'] = row['source_commit']
+    row['source_commit'] = gen.git('rev-parse', 'HEAD').decode().strip()
+    row['controller_inputs'] = h.controller(row['source_commit'])
+    row['plan_sealing'] = 'Before first plan commit or native launch:omit repeated per-process configuration/environment from compact Git result. Generated inputs,qualification,workload and all original hashes unchanged.'
+    save(row); print('Sealed unlaunched plan;commit before first process.', flush=True)
+
+
 def main():
     with (B / 'owned-v0141-measurement.lock').open('a') as lock:
         fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB); r.guards.no_model_owners([])
         if sys.argv[1:] == ['prepare']: prepare(); return 0
+        if sys.argv[1:] == ['seal-unlaunched']: seal_unlaunched(); return 0
         if sys.argv[1:] == ['run']: return run(json.loads((ROOT / 'record.json').read_text()))
         raise RuntimeError('use prepare or run;commit each closed process before next')
 
