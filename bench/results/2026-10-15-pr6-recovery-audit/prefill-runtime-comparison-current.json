@@ -804,7 +804,7 @@
   },
   "historical_regression_audit": {
     "owner_scan_control_v2": {
-      "stage": "tests-passed",
+      "stage": "closed",
       "plan": {
         "source_commit": "3c0703644b0f5920f677fecd5704fb8362df5b7f",
         "sources": {
@@ -864,12 +864,96 @@
         ],
         "output_bytes": 110
       },
-      "processes": [],
-      "complete": false,
-      "passed": false,
+      "processes": [
+        {
+          "index": 0,
+          "arm": "baseline",
+          "passed": true,
+          "elapsed_ns": 10115844544,
+          "controller_cpu_ns": 1096779052,
+          "cpu_fraction": 0.10842189668192671,
+          "proc_entries_before": 956,
+          "native_pid": 2575933,
+          "module_sha256": "bddd0c5e5020e882ca3404679420faec11e820dabce2ed4c72ef82b4c9c0874a",
+          "ownership_closed": true
+        },
+        {
+          "index": 1,
+          "arm": "candidate",
+          "passed": true,
+          "elapsed_ns": 10074216244,
+          "controller_cpu_ns": 615383287,
+          "cpu_fraction": 0.06108497892990036,
+          "proc_entries_before": 951,
+          "native_pid": 2576375,
+          "module_sha256": "dddeb7c32c4710a613bbb3cb817c03d5452d29c4781300998647f479b1774066",
+          "ownership_closed": true
+        },
+        {
+          "index": 2,
+          "arm": "candidate",
+          "passed": true,
+          "elapsed_ns": 10077348605,
+          "controller_cpu_ns": 616647703,
+          "cpu_fraction": 0.06119146287090264,
+          "proc_entries_before": 943,
+          "native_pid": 2576811,
+          "module_sha256": "dddeb7c32c4710a613bbb3cb817c03d5452d29c4781300998647f479b1774066",
+          "ownership_closed": true
+        },
+        {
+          "index": 3,
+          "arm": "baseline",
+          "passed": true,
+          "elapsed_ns": 10114711142,
+          "controller_cpu_ns": 1102146012,
+          "cpu_fraction": 0.10896465519647758,
+          "proc_entries_before": 950,
+          "native_pid": 2577299,
+          "module_sha256": "bddd0c5e5020e882ca3404679420faec11e820dabce2ed4c72ef82b4c9c0874a",
+          "ownership_closed": true
+        },
+        {
+          "index": 4,
+          "arm": "baseline",
+          "passed": true,
+          "elapsed_ns": 10111621990,
+          "controller_cpu_ns": 1072724074,
+          "cpu_fraction": 0.10608822947108608,
+          "proc_entries_before": 942,
+          "native_pid": 2577734,
+          "module_sha256": "bddd0c5e5020e882ca3404679420faec11e820dabce2ed4c72ef82b4c9c0874a",
+          "ownership_closed": true
+        },
+        {
+          "index": 5,
+          "arm": "candidate",
+          "passed": true,
+          "elapsed_ns": 10082903366,
+          "controller_cpu_ns": 623064232,
+          "cpu_fraction": 0.06179412907010499,
+          "proc_entries_before": 940,
+          "native_pid": 2578179,
+          "module_sha256": "dddeb7c32c4710a613bbb3cb817c03d5452d29c4781300998647f479b1774066",
+          "ownership_closed": true
+        }
+      ],
+      "complete": true,
+      "passed": true,
       "active": false,
       "ownership_closed": true,
-      "GPU_executed": false
+      "GPU_executed": false,
+      "analysis": {
+        "candidate_over_baseline": [
+          0.5634007594342598,
+          0.5615716652392135,
+          0.582478653646932
+        ],
+        "geometric_mean": 0.5690724264520003,
+        "host_gate_passed": false,
+        "inference_adoption": false,
+        "historical_cause_established": false
+      }
     },
     "owner_scan_control_v1": {
       "stage": "closed",
