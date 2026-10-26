@@ -735,8 +735,11 @@ processes,on/off/off/on/on/off,with four117489-token requests each. Both arms
 preload the same held-reference control and use empty environment layers;only
 config-enabled parameter validation differs. First use stays separate from each
 subsequent-three median. No inference/default adoption follows from this
-observer comparison. Four native-wrapper/parser host tests pass;the six-process
-model cohort is in progress and has no completed comparison result yet.
+observer comparison. Four native-wrapper/parser host tests pass. The first
+validation-on model process closes normally with no fresh fault:initial906.0413,
+then974.2977/974.5830/971.0726tok/s,subsequent median974.2977. All15model
+hashes and four request boundaries match. Five processes remain;this is no
+completed on/off comparison or historical-cause result.
 CPU effective clock remains unknown. Independently authored
 `bench/sycl/amd_clock_access.c` is only a proposed next host capability pilot;
 it has not been built or executed. Its counter ratios need separate access,
