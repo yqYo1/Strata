@@ -642,13 +642,30 @@ experts outside the window loop requires current-layer post-attention/PLE input
 availability,extra mixed/FP32-partial storage or recomputation,and a262144-safe
 fallback/budget. The existing future-admission report already covers that input
 availability constraint;no cross-window candidate or saving is selected.
-Next measure warmed same-batch GPU service and complete disjoint host CPU
-accounting,including outer ownership/context checks outside `gemm_submit`,with
-observer-off/on cost qualification. The selected engine and decode1256placement
-remain unchanged. Existing ownership/submission references are sufficient;no
-duplicate Orca survey is eligible now. After replay,65raw/review files and the
+The selected engine and decode1256placement remain unchanged. Existing
+ownership/submission references are sufficient;no duplicate Orca survey is
+eligible now. After replay,65raw/review files and the
 one-use controller retire;2,230,941raw bytes are removed. Restore the controller
 from7c52325ed for a concrete later comparison;do not retry its closed root.
+
+The next official build,sourcee40ce7782,adds warmed same-batch sparse GPU events
+and complete-wrapper thread-CPU accounting to the GU fixture. Its1427compiled
+inputs differ only in that fixture source;the other three fixture ELFs match
+the qualified originals exactly. No engine is rebuilt. Five fresh traced
+host/submission/GU checks pass,but the frozen old/off/on comparison stops in
+its first old-binary process. An817211ns initial endpoint control exceeds1%
+of the second77194900ns batch;the earlier82507300ns batch passed that rule.
+Both512-call batches pass dispatch and numerical checks,but the second is
+timing-ineligible and native exit1 is preserved. All six owned processes close;
+no fresh GPU fault appears. Neither new-observer-off nor observer-on timing
+runs,so there is no qualified CPU/GPU attribution or observer-cost result yet.
+See`public_gu_warmed_attribution`,source/controllere4c8a21c3 and plan3bcbfb7b7.
+Do not retry that frozen cohort unchanged or weaken its original gate. Next
+isolate endpoint/startup latency and obtain complete-wrapper/warmed-service
+evidence in a newly scoped bounded diagnostic. Effective clocks and scheduler
+conditions during the failed window remain unmeasured. Retain both official
+component generations for that imminent comparison until one is selected;
+the original engine and12fixtures remain the selected model reference.
 
 The fresh sourcee33d16fc3 attribution fixture closes ten official-SDK processes
 with240eligible/correct timing samples and120complete CPU/GPU profiles.

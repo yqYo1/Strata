@@ -2729,7 +2729,7 @@
     },
     "fused_command_profile": {
       "public_gu_warmed_attribution": {
-        "stage": "prepared",
+        "stage": "failed",
         "source_commit": "e4c8a21c3332707f62eb857354a2a6172f0b2a29",
         "old_native": {
           "record": {
@@ -3075,7 +3075,169 @@
             "block": 2
           }
         ],
-        "processes": [],
+        "processes": [
+          {
+            "name": "host-canary",
+            "target": null,
+            "args": [],
+            "arm": 1,
+            "down_arm": 1,
+            "mode": "qualification",
+            "passed": true,
+            "ownership_closed": true,
+            "details": {
+              "host_only": true
+            }
+          },
+          {
+            "name": "submission",
+            "target": "sycl_submission_test",
+            "args": [
+              "--submission"
+            ],
+            "arm": 1,
+            "down_arm": 1,
+            "mode": "qualification",
+            "passed": true,
+            "ownership_closed": true,
+            "details": {
+              "submission_ordering_and_guards": true
+            }
+          },
+          {
+            "name": "GU-smoke",
+            "target": "sycl_moe_gu_swiglu_bench",
+            "args": [
+              "--smoke"
+            ],
+            "arm": 1,
+            "down_arm": 1,
+            "mode": "qualification",
+            "passed": true,
+            "ownership_closed": true,
+            "details": {
+              "case_kinds": {
+                "admissions": 1,
+                "correctness": 4,
+                "topology": 1
+              }
+            }
+          },
+          {
+            "name": "GU-public0",
+            "target": "sycl_moe_gu_swiglu_bench",
+            "args": [
+              "--smoke-public",
+              "0"
+            ],
+            "arm": 0,
+            "down_arm": 1,
+            "mode": "qualification",
+            "passed": true,
+            "ownership_closed": true,
+            "details": {
+              "cases": [
+                {
+                  "kind": "profiled_engine_gu",
+                  "rows": 3,
+                  "selected": 0,
+                  "expected_records": 2,
+                  "max_half_ulp": 0,
+                  "guards": true,
+                  "inputs_immutable": true,
+                  "status": "PASS"
+                },
+                {
+                  "kind": "profiled_engine_gu",
+                  "rows": 160,
+                  "selected": 0,
+                  "expected_records": 2,
+                  "max_half_ulp": 0,
+                  "guards": true,
+                  "inputs_immutable": true,
+                  "status": "PASS"
+                },
+                {
+                  "kind": "profiled_engine_gu",
+                  "rows": 2333,
+                  "selected": 0,
+                  "expected_records": 2,
+                  "max_half_ulp": 0,
+                  "guards": true,
+                  "inputs_immutable": true,
+                  "status": "PASS"
+                },
+                {
+                  "kind": "profiled_engine_gu",
+                  "rows": 2334,
+                  "selected": 0,
+                  "expected_records": 2,
+                  "max_half_ulp": 0,
+                  "guards": true,
+                  "inputs_immutable": true,
+                  "status": "PASS"
+                }
+              ]
+            }
+          },
+          {
+            "name": "GU-public1",
+            "target": "sycl_moe_gu_swiglu_bench",
+            "args": [
+              "--smoke-public",
+              "1"
+            ],
+            "arm": 1,
+            "down_arm": 1,
+            "mode": "qualification",
+            "passed": true,
+            "ownership_closed": true,
+            "details": {
+              "cases": [
+                {
+                  "kind": "profiled_engine_gu",
+                  "rows": 3,
+                  "selected": 0,
+                  "expected_records": 2,
+                  "max_half_ulp": 0,
+                  "guards": true,
+                  "inputs_immutable": true,
+                  "status": "PASS"
+                },
+                {
+                  "kind": "profiled_engine_gu",
+                  "rows": 160,
+                  "selected": 0,
+                  "expected_records": 2,
+                  "max_half_ulp": 0,
+                  "guards": true,
+                  "inputs_immutable": true,
+                  "status": "PASS"
+                },
+                {
+                  "kind": "profiled_engine_gu",
+                  "rows": 2333,
+                  "selected": 0,
+                  "expected_records": 2,
+                  "max_half_ulp": 0,
+                  "guards": true,
+                  "inputs_immutable": true,
+                  "status": "PASS"
+                },
+                {
+                  "kind": "profiled_engine_gu",
+                  "rows": 2334,
+                  "selected": 1,
+                  "expected_records": 1,
+                  "max_half_ulp": 0,
+                  "guards": true,
+                  "inputs_immutable": true,
+                  "status": "PASS"
+                }
+              ]
+            }
+          }
+        ],
         "sample_columns": [
           "rows",
           "round",
@@ -3135,7 +3297,79 @@
           "total_cap": 67108864
         },
         "whole_bytes": 268435456,
-        "retention": "Keep useful individual samples,source/runtime identities,CPU/event count conservation and decisions. Retire full successful traces,JIT,process/build logs and disposable objects after verification. Select one official component generation after comparison closure;original13 engine assets remain untouched. No whole-model or decode adoption."
+        "retention": "Keep useful individual samples,source/runtime identities,CPU/event count conservation and decisions. Retire full successful traces,JIT,process/build logs and disposable objects after verification. Select one official component generation after comparison closure;original13 engine assets remain untouched. No whole-model or decode adoption.",
+        "outcome": {
+          "host_probe_accepted": false,
+          "error": "RuntimeError('native process failed: old0')",
+          "last_case": "old0",
+          "ownership_closed": true,
+          "fresh_faults": [],
+          "boot_unchanged": true,
+          "driver_after": {
+            "pci": "/sys/bus/pci/devices/0000:05:00.0",
+            "driver": "xe",
+            "vendor": "0x8086",
+            "device": "0xe20c",
+            "kernel": "7.0.0-38-generic",
+            "devcoredump": false
+          },
+          "passed": false
+        },
+        "GPU_executed": true,
+        "failure_analysis": {
+          "stage": "compiled_baseline_timing_eligibility",
+          "case": "old0",
+          "native_exit_code": 1,
+          "native_intentionally_refused": true,
+          "GPU_fault": false,
+          "ownership_closed": true,
+          "exact_error": "fixture_status=FAIL public batch below frozen duration/control/resolution eligibility",
+          "initial_endpoint_controls_ns": [
+            817211,
+            108725,
+            107723,
+            107212,
+            101732,
+            106220,
+            103455,
+            106210
+          ],
+          "failed_timing_samples": [
+            {
+              "rows": 160,
+              "round": -1,
+              "repeat": 512,
+              "selected": 0,
+              "fallback": 512,
+              "wall_ns": 82507300.0,
+              "queue_interval_ns": 82428437,
+              "max_half_ulp": 0,
+              "eligible": 1,
+              "status": "PASS"
+            },
+            {
+              "rows": 160,
+              "round": 0,
+              "repeat": 512,
+              "selected": 0,
+              "fallback": 512,
+              "wall_ns": 77194900.0,
+              "queue_interval_ns": 77136041,
+              "max_half_ulp": 0,
+              "eligible": 0,
+              "status": "PASS"
+            }
+          ],
+          "first_control_fraction_of_first_batch": 0.009904711461894887,
+          "first_control_fraction_of_failed_batch": 0.010586334071292275,
+          "exact_frozen_limit": 0.01,
+          "compiled_off_executed": false,
+          "observer_on_executed": false,
+          "numerical_checks_before_timing_failure_passed": true,
+          "finding": "The first endpoint control817211ns passes against the82.5073ms initial batch but exceeds1percent of the next77.1949ms batch. Both batches perform unchanged production fallback;all512calls and numerical checks pass. The native eligibility refusal is preserved;no speed or observer-cost conclusion is qualified.",
+          "limits": "No CPU/GPU attribution batch ran. This single initial timing window cannot establish warmed process speed or the cause of the historical whole-model decline. Earlier component base environment did not set Downfusion;this cohort sets itlarge in every arm. No Down operation is invoked by these GU cases;do not treat the earlier/later component windows as an isolated environment comparison.",
+          "next": "Do not retry this frozen cohort unchanged or advance its observer to a model. First use a newly scoped bounded diagnostic of endpoint/startup latency and complete-wrapper/GPU service,with the failed eligibility and all five traced passes kept distinct. Add actual CPU/GPU clock/scheduler evidence before blaming hardware contention."
+        }
       },
       "public_gu_attribution_build": {
         "stage": "built",
