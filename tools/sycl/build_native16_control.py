@@ -214,11 +214,34 @@ def build(row):
 
 
 def main():
+    global ROOT, KEY
     with (B / 'owned-v0141-measurement.lock').open('a') as lock:
         fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB); r.guards.no_model_owners([])
+        if sys.argv[1:] in (['prepare-progress'],['build-progress']):
+            import qualify_native16_control as qualification
+            qualification.current(json.loads((qualification.ROOT/'record.json').read_text()))
+            proof=qualification.native()[2]
+            require(not (B/'native16-warmed-attribution-v2').exists() and
+                scope(r.validation.committed(RESULT))['public_gu_warmed_attribution_build_v2']['retirement']['complete'],
+                'retire failed warmed generation before changed diagnostic build')
+            ROOT=B/'native16-stage-smoke-v1';KEY='public_gu_stage_smoke_build_v1'
+            if sys.argv[1]=='prepare-progress':
+                prepare();row=json.loads((ROOT/'record.json').read_text())
+                row.update(baseline_native_build=proof,
+                    question='Build bounded64-call actual FP16-to-BF16 public-GU stage diagnostic;no performance trial.',
+                    next_gate='One traced30s process,four16-call groups with checked marker drains;'
+                        'at most32ordinary kernels plus marker per group.3s elapsed stage refusal '
+                        'is checked after return,not API cancellation. Preserve all prior failures.',
+                    retention='Qualified official v4fallback plus this only changed component generation;'
+                        'original13engine assets unchanged. Retire after stage gate/source recovery;'
+                        'a smoke cannot qualify2048calls,hardware saturation,model or decode.')
+                save(row);return 0
+            row=json.loads((ROOT/'record.json').read_text())
+            require(row['baseline_native_build']==proof,'qualified fallback changed')
+            return build(row)
         if sys.argv[1:] == ['prepare']: prepare(); return 0
         if sys.argv[1:] == ['build']: return build(json.loads((ROOT / 'record.json').read_text()))
-        raise RuntimeError('use prepare/build')
+        raise RuntimeError('use prepare/build or prepare-progress/build-progress')
 
 
 if __name__ == '__main__': sys.exit(main())
