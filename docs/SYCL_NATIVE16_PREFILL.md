@@ -715,31 +715,16 @@ and ELF recovery:172files/101717262bytes. The closed one-use controller and
 build mode restore from9241f6d61/fa765fcb8. Compact native/replay/failure evidence
 remains;official v4and original13model assets stay selected and intact.
 
-The next historical-decline comparison should isolate parameter-validation
-cost on the unchanged selected engine and placement. Keep the process-lifetime
-loader reference used for stall avoidance in both arms;ordinary teardown is
-not qualified. A separately authored/pinned control must avoid invalid-handle
-probes when validation is absent,and pass bounded host/provider/submission
-checks before any long model comparison. The new99-line independent control
-is built against official2026.2headers with system GCC13,sourcea1899fc4e and
-recipebb46c4de5;ELF SHA prefixc8d080a3. Its five fresh host processes pass:
-on/off normal exits plus wrong-provider,forbidden-layer and invalid-mode
-refusals. No device/queue/enqueue executes;fast host processes expose no live
-/proc sample,so GPU-provider admission remains open. Both clean comparison
-arms must have the same absent/empty UR_ENABLE_LAYERS and use config-only
-parameter validation selection. Native Luna/max review confirms that this
-needs no helper rebuild. Six original6e40fixture processes subsequently pass
-on/off submission,ordinary graph and profiled graph checks,including actual
-native environment/NEO/UR mapping,10submission cases per mode,numerical/guard/
-alias checks and checked fixture cleanup. Parameter warnings and fresh faults
-are zero. The traced layer environments differ deliberately;these are safety
-checks,not performance evidence. Model timing,ordinary UR teardown and physical
-context remain unqualified. See`ur_hold_control_build_v1`,`ur_hold_host_v1`
-and`ur_hold_device_v1` in the resource result.
-This addresses the fastest396d envelope difference;it cannot
-alone explain the1003→975same-binary decline,because both of those cohorts
-already used parameter validation. Official-SDK whole-model qualification
-also remains open.
+To isolate parameter-validation cost,the independently authored control retains
+one process-lifetime UR loader reference in both arms;ordinary teardown remains
+unqualified. Official2026.2headers/systemGCC13 build sourcebb46c4de5 produces
+ELF SHA prefixc8d080a3. Five host cases and six original6e40 submission/graph
+cases pass before the clean model cohort,including native environment/provider,
+numerical/guard/alias and normal-closure checks,without parameter warnings or
+fresh faults. Both timed arms use empty UR_ENABLE_LAYERS;configuration alone
+selects validation. This addresses the fastest396d observer-envelope difference;
+both historical same6e40cohorts already used validation. Official-SDK whole-model
+qualification stays open. The resource result retains the helper/gate evidence.
 
 The matched validation-cost comparison closes all six independent original6e40
 processes,on/off/off/on/on/off,with four117489-token requests each. Both arms
@@ -765,6 +750,16 @@ context or sustained decode qualification. Both historical same-binary cohorts
 already used validation,so it cannot alone explain their1003→975decline.
 See `historical_regression_audit.validation_cost_control_v1` in the
 [runtime comparison](../bench/results/2026-10-15-pr6-recovery-audit/prefill-runtime-comparison-current.json).
+After exact original source/recipe and actual ELF/header/link recovery from the
+pushed feature branch,the five closed helper/model/CPU-pilot roots retire:
+503files,78,058,081bytes. Twelve consumed research/review/launch transactions
+also retire(53,035bytes);the new conditional scheduling collection remains.
+Six one-use source/controller files retire to reachable Git history. The native
+wrapper rejects the retired comparison's extra probe keys while preserving the
+normal library/loader validation path;host regression checks remain required.
+The selected original engine and official component fallback remain outside
+these deleted roots;older provenance holds are not cleared by this cleanup.
+
 
 The source303c1b06f CPU-only counter pilot now passes system-GCC13 compile,
 92-input/13-imported-link closure and one normally closed CPU0process. CPUID

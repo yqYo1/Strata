@@ -942,7 +942,8 @@
           "devcoredump": false
         },
         "passed": true
-      }
+      },
+      "artifact_retirement_ref": "prefill-runtime-comparison-current.json:historical_regression_audit.validation_cost_control_v1.artifact_retirement"
     },
     "validation_cost_control_v1": {
       "stage": "closed",
@@ -1710,7 +1711,60 @@
           },
           "command_sha256": "d60f851120c2fec9c89680ce376f0ac7176626749957206afbab97260240c07d"
         }
-      ]
+      ],
+      "artifact_retirement": {
+        "state": "verified_deleted",
+        "manifest": {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/retire-ur-clock-controls-20261027.json",
+          "sha256": "648117771b5abc2b173d108f29df23f00e78b87347d114205c9871cf01503464"
+        },
+        "closed_job_files": 503,
+        "closed_job_bytes": 78058081,
+        "consumed_research_files": 12,
+        "consumed_research_bytes": 53035,
+        "original_source_recovery": [
+          {
+            "root": "ur-hold-control-v1",
+            "source_commit": "bb46c4de524a564f596144add63efcc5f94239c8",
+            "record_sha256": "835285a77d86e5473a5e473f9f0b5bb8927db30c583fd3c4e70446d706b6fded",
+            "original_controller_inputs_recovered": 196
+          },
+          {
+            "root": "ur-hold-host-v1",
+            "source_commit": "2cee12fce3b79bfadd1e1036af32356a7ce1531e",
+            "record_sha256": "c69cee9215844ba15cc9203e0a304d95e75e755cb1fc386b072b3031d99ed4ef",
+            "original_controller_inputs_recovered": 197
+          },
+          {
+            "root": "ur-hold-device-v1",
+            "source_commit": "b9fd7294ff1d476ee0310642f51c5bdcd2f55bef",
+            "record_sha256": "dd2373531e153ba60d415a1fa3d43b12db964b814a4febd18b92b3d351094d2e",
+            "original_controller_inputs_recovered": 198
+          },
+          {
+            "root": "ur-validation-cost-v1",
+            "source_commit": "75f88a844a6c212811c7457eb9b0202d62c29480",
+            "record_sha256": "c8431677e23817995f0380df3ea2cd66ab10274afa2e1ed941d0a7810fe4e946",
+            "original_controller_inputs_recovered": 199
+          },
+          {
+            "root": "amd-clock-access-v1",
+            "source_commit": "303c1b06fc61b05a39979313ebd73816c6ef75ad",
+            "record_sha256": "f90bcc31aa4c58ca712fc3350b88ab16dc8fbd69193b8f6b27238149986a7f83",
+            "original_controller_inputs_recovered": 200
+          }
+        ],
+        "tracked_source_archive_commit": "c71df9ddd",
+        "retired_tracked_files": [
+          "bench/sycl/ur_hold_control.c",
+          "tools/sycl/ur_hold_control.py",
+          "tools/sycl/check_ur_hold_host.py",
+          "tools/sycl/ur_hold_device.py",
+          "tools/sycl/ur_validation_cost.py",
+          "tools/sycl/amd_clock_access.py"
+        ],
+        "limits": "Scoped closure only;original6e40engine and officialv4fallback retained. Older provenance holds remain separate. Counter C primitive retained for imminent complete-observer gate;closed pilot/controller/ELF retired. No new model,decode,physical-context or ordinary-teardown qualification."
+      }
     },
     "scope": "Closed-data/source replay and read-only host inspection;no new GPU/model execution or inference adoption.",
     "evidence": {

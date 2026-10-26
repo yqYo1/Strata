@@ -32,24 +32,14 @@ class Proof(unittest.TestCase):
 
 
 class EngineEnvironment(unittest.TestCase):
-    def test_matched_control_keeps_safety_and_rejects_environment_layers(self):
+    def test_probe_rejects_unsupported_configuration(self):
         with tempfile.TemporaryDirectory() as directory:
             library=Path(directory)/'control';library.write_bytes(b'pinned')
             artifact=dict(path=str(library),sha256=hashlib.sha256(library.read_bytes()).hexdigest())
-            parent=dict(CUDA_MODULE_LOADING='EAGER',UR_ENABLE_LAYERS='',
-                UR_L0_V2_FORCE_DISABLE_COPY_OFFLOAD='1',NEOReadDebugKeys='1',
-                EnableDirectSubmission='0',STRATA_SYCL_PREFILL_SAME_QUEUE='1')
-            for mode in ('on','off'):
-                probe=dict(library=artifact,loader=artifact,control='held-validation',mode=mode)
-                plan=dict(native_validation_probe=probe)
-                child=wrapper.native_environment(plan,parent)
-                self.assertEqual(child['STRATA_UR_HOLD_VALIDATION'],mode)
-                self.assertNotIn('STRATA_UR_HOLD_VALIDATION',parent)
-                for changed in (dict(UR_ENABLE_LAYERS='UR_LAYER_PARAMETER_VALIDATION'),
-                    dict(EnableDirectSubmission='1'),dict(UR_L0_V2_FORCE_DISABLE_COPY_OFFLOAD='0'),
-                    dict(STRATA_SYCL_PREFILL_SAME_QUEUE='0'),dict(STRATA_UR_HOLD_VALIDATION=mode)):
-                    with self.assertRaises(RuntimeError):wrapper.native_environment(plan,parent|changed)
-            for bad in (dict(mode='invalid'),dict(control='unknown')):
+            parent=dict(CUDA_MODULE_LOADING='EAGER')
+            probe=dict(library=artifact,loader=artifact)
+            for bad in (dict(mode='on'),dict(mode='off'),dict(control='held-validation'),
+                        dict(control='unknown')):
                 with self.assertRaises(RuntimeError):wrapper.native_environment(
                     dict(native_validation_probe=probe|bad),parent)
 
