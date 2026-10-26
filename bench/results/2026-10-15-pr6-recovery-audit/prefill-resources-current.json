@@ -2728,6 +2728,78 @@
       "remaining": "Fourteen older provenance holds and separate pending numerical/model/full-context/upstream gates are unchanged."
     },
     "fused_command_profile": {
+      "public_gu_stage_smoke_v1": {
+        "stage": "prepared",
+        "source_commit": "5a5336f24eb5f487462a63589a3be999df20e219",
+        "native_reference": {
+          "build_key": "public_gu_stage_smoke_build_v1",
+          "source_commit": "3af1c47d965bbb71b39dd40bda479ed7537fb58c",
+          "record_sha256": "c36eb26e355018f0f425b1a0e802893cc2582b504ef0d304f67e5a36354dc970",
+          "compiled_inputs": {
+            "files": 1427,
+            "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/native16-stage-smoke-v1/compiler-inputs.json",
+            "sha256": "83da55140f57f655c8af239ced94c7e2731964305a474178ecd4d9acf13405c6",
+            "uncovered": 0
+          },
+          "executable": {
+            "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/native16-stage-smoke-v1/build/sycl_moe_gu_swiglu_bench",
+            "sha256": "7b09989f26bb23bfbd487f23a1099bb6f6b3e5606eb20a37388509ae64ecdaf7",
+            "bytes": 13145080
+          }
+        },
+        "runtime_manifest": {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/native16-compatibility-smoke-v2/runtime-inputs.json",
+          "sha256": "43de9b527585addcc6da1f8fdc6f1e8266e2d982ba4c752d909578ed8c7bde21",
+          "files": 84
+        },
+        "runtime_sha256": "09ad358e12f6ef58bfc0a978519927863f3d09949a033a1e224db95997647d97",
+        "boot": "cfda0b6a-7c13-4fe2-bdf5-8f9202770840",
+        "driver": {
+          "pci": "/sys/bus/pci/devices/0000:05:00.0",
+          "driver": "xe",
+          "vendor": "0x8086",
+          "device": "0xe20c",
+          "kernel": "7.0.0-38-generic",
+          "devcoredump": false
+        },
+        "environment_overrides": {
+          "STRATA_SYCL_PREFILL_GU_SWIGLU": "large",
+          "STRATA_SYCL_PREFILL_DOWN_SCATTER": "large",
+          "STRATA_SYCL_PREFILL_COMMAND_PROFILE": "0",
+          "STRATA_SYCL_PREFILL_FUSED_COMMAND_PROFILE": "0",
+          "UR_ENABLE_LAYERS": "UR_LAYER_TRACING,UR_LAYER_PARAMETER_VALIDATION",
+          "UR_LOG_TRACING": "level:info;flush:info;output:file,/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/public-gu-stage-smoke-v1/ur.trace",
+          "UR_LOG_VALIDATION": "level:warning;flush:warning;output:file,/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/public-gu-stage-smoke-v1/validation.log",
+          "TMPDIR": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/public-gu-stage-smoke-v1/tmp",
+          "XDG_CACHE_HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/public-gu-stage-smoke-v1/cache"
+        },
+        "environment_basis": "native16_compatibility_smoke closed original environment and84-entry runtime catalogue",
+        "args": [
+          "--progress-public",
+          "1"
+        ],
+        "active": false,
+        "ownership_closed": true,
+        "complete": false,
+        "passed": false,
+        "model_executed": false,
+        "inference_adopted": false,
+        "performance_qualified": false,
+        "hardware_saturation_qualified": false,
+        "failed2048call_boundary_qualified": false,
+        "plan": "One fresh traced process only. M160 public try-gu refusal,f16_out16 FP16input/BF16output through vllm/TLA then native swiglu. No warmup/adaptive repeats. Four groups of16calls (64public calls/128ordinary kernels),checked marker drain/query after each. At most32ordinary kernels plus checkpoint marker per group. Separate topology/reference/setup/readback operations are checked and drained. Emit immediate nested stage entry/return/throw records. A returned stage over3s fails after return;this cannot cancel an API. Only30s owner deadline can terminate the process. Stop first source/provider/environment/guard/validation/budget/owner/fault failure;no retry,reset,model test or speed/adoption claim. Recheck full original source/SDK proof before and after the one native process.",
+        "budgets": {
+          "wall": 30,
+          "cpu": 60,
+          "rss_cap": 2147483648,
+          "text_cap": 16777216,
+          "file_cap": 33554432,
+          "total_cap": 67108864
+        },
+        "stage_return_max_ns": 3000000000,
+        "limits": "Smaller queued depth and added stage/API logging change the envelope. A pass is only a smoke,not reproduction or avoidance proof for the failed2048calls,ordinary runtime teardown without retained-loader preload,full numerics,model/legacy oneMKL ABI,decode or262144context. Stage elapsed time includes diagnostic output and is not isolated API/GPU service.",
+        "retention": "Keep source/recipe/provider identities,stage-count/latency maxima,guard/dispatch results and any last unmatched stage/novel failure diagnostic. Retire normal full API/progress/JIT output and disposable objects after verified closure. Choose official v4fallback;retire extra diagnostic generation after original-source recovery unless a concrete imminent consumer is selected."
+      },
       "public_gu_stage_smoke_build_v1": {
         "stage": "built",
         "source_commit": "3af1c47d965bbb71b39dd40bda479ed7537fb58c",
