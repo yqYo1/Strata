@@ -336,8 +336,8 @@ the installed apt cache is excluded. The one-use controller and controls also
 retire to0697c74e8. The selected original engine and12fixtures remain intact.
 Read-only idle settings after closure match the earlier CPU EPP/GPU power
 policy audit below. Measure loaded clocks,throttle flags,paging and competing
-load separately before assigning a hardware bottleneck. The component-level
-fused-command work still needs its whole-model and observer-cost gates.
+load separately before assigning a hardware bottleneck. The diagnostic fused-command work subsequently passes its bounded model smoke
+and observer-cost gates below;it does not qualify production adoption.
 
 The subsequent loaded-conditions diagnostic uses the same original6e40 and
 placement,with1Hz read-only telemetry and stage logging. Twenty synthetic
@@ -360,9 +360,8 @@ above24GiB and swap counters do not advance in either contained window.
 The associated DRM client's CCS busy fraction is98.80% on the second request. It includes
 execution stalls and copies on the qualified shared queue;it is not arithmetic
 efficiency or a PCIe/GDDR bandwidth measurement. Core clocks,CPU usage and this
-busy fraction do not identify the limiting hardware unit. Continue the
-instrumented whole-model,observer-cost and matched hardware-ceiling work before
-selecting an optimization. The compact evidence is `execution_conditions` in
+busy fraction do not identify the limiting hardware unit. Use the cost-qualified whole-model attribution below and matched hardware-ceiling
+work before selecting an optimization. The compact evidence is `execution_conditions` in
 [the resource result](../bench/results/2026-10-15-pr6-recovery-audit/prefill-resources-current.json).
 
 The retained fused-profile generation now includes a separately built diagnostic
@@ -383,9 +382,33 @@ Host-submit/GPU clock correspondence fails,with22/27 inversions;submit-to-start
 queue delays remain unqualified. GPU service does not imply complete device
 coverage or hardware saturation. The build is diagnostic,not an isolated
 6e40 counterfactual,restoration adoption or sustained decode qualification.
-Next commit a matched observer-on/off cost plan before long service attribution;
-keep CPU wait/submission clocks and GPU service distinct from those invalid
-cross-domain queue-delay values.
+The subsequent frozen observer-cost plan10c7c7498 runs six serial117K processes
+in off/on/on/off/off/on order,two fresh requests each. All12requests and six
+processes close normally,all15 final model hashes match,and no freshGPUfault
+appears. Subsequent-request on/off time ratios are1.00501452,1.00539514 and
+1.01639250;their geometric mean1.00892029 passes the prospective maximum1.02
+and every-pair maximum1.05. Eight host controls pass. This bounds observed total
+observer cost to0.892% for this binary/workload;it does not replace the clean
+original6e40 reference or validate cross-domain submit-to-start queue delays.
+
+All six on-arm requests reconcile96MoE windows and four service-profile windows.
+Subsequent requests use124.30–126.14s main-thread CPU,including78.82–79.03s in
+explicit GPU waits. Source-level partitioning finds another13.21–13.30s inside
+the ordinary-host4-byte D2H `q.memcpy` enqueue;the explicit status drain takes
+about0.02s. That API may wait internally. Do not classify its time as host
+arithmetic or claim a gain by moving it into an explicit wait. CPU expert
+grouping is about0.27s. Sampled expert-copy payload rates usually reach about
+6.2GB/s,with occasional slow events;16samples per request do not measure total
+physical bus traffic or establish a bandwidth ceiling. Requested expert uploads
+are about38.67GB per request. Queue intervals remain nonexclusive.
+
+The next discriminating calibration compares ordinary mapped host memory,
+host-USM and a bounded CPU staging ring,and isolates4-byte D2H after queued GPU
+work. Separate API-call CPU/wall time,explicit waits and GPU service. The
+historical9.1% cause remains unattributed;neither this diagnostic nor a small
+fixture qualifies a prefill restoration or sustained decode. Compact samples,
+source boundaries and limitations are in `attribution_after_observer_cost` and
+`observer_cost` in the resource result.
 
 The earlier[NEO-only comparison](../bench/results/2026-10-15-pr6-recovery-audit/prefill-runtime-comparison-current.json)
 uses exact cached packages in private directories. Both arms explicitly select

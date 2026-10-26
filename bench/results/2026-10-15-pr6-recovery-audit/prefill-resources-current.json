@@ -3732,51 +3732,6 @@
           "retained": "Original6e40+12fixtures unchanged. Diagnostic engine+3fixtures,generated77-byte header,source/build records and both compiler manifests retained;no object/JIT cache or closed smoke output."
         }
       },
-      "observer_cost_plan": {
-        "stage": "criteria-prepared-not-executable",
-        "question": "Bound total diagnostic observer cost on the same separately built engine before interpreting117K GPU-service/CPU-wait attribution;not speed restoration or production adoption.",
-        "binary": {
-          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-fused-command-profile-v2/build/strata",
-          "sha256": "98d831c7a600972bfb797cbcee9f81862fd3b4d0157e18df89e0c030525cadc1",
-          "bytes": 22198792
-        },
-        "order": [
-          "off",
-          "on",
-          "on",
-          "off",
-          "off",
-          "on"
-        ],
-        "processes": 6,
-        "requests_per_process": 2,
-        "first_use_separate": true,
-        "comparison_sample": "Second fresh117489-input/0reuse/24output thinking-on request in each owned process. Three disjoint adjacent off/on pairs;no pooling first-use with subsequent requests. Keep all individual clocks and spreads.",
-        "configuration": "Same1256decode slots,8192chunks,131072residentINT8context,BF16/vllm/mode10,384packed expert bank,Q8MTP,5workers,safety queue/driver/pre-main validation settings. Identical two wire request hashes from historical matched cohort.",
-        "on_observers": [
-          "stage trace",
-          "coarse layer-major/QSA/GDN profiles",
-          "disjoint CPU wait/submit profile",
-          "version3 sparse fused command service",
-          "1Hz passive client/hardware collector"
-        ],
-        "off_observers": "Disable the declared observers before native exec;retain qualified queue/copy/direct-submission/parameter-validation safety settings and retained-loader preload. Separate fresh owned processes;no environment mutation.",
-        "prospective_cost_gate": {
-          "time_ratio": "on subsequent prompt_ms / matched off subsequent prompt_ms",
-          "geometric_mean_maximum": 1.02,
-          "each_pair_maximum": 1.05,
-          "pairs_required": 3,
-          "qualifies": "Limited observer cost on this diagnostic binary/workload only. Failure remains failure and blocks long cost-qualified attribution;no restoration/adoption or throughput-target claim."
-        },
-        "service_gates": "Both on requests per process require complete4-window version3 GPU-service profiles with peak<=224,conserved clocks/counts and no invalid records. Host-submit/GPU correspondence already failed at32K;queue delays remain unqualified regardless of service success.",
-        "stopping": "Stop first source/native/provider/stream/model/owner/fault/coverage failure;no unchanged retry. Preserve prior1baa performance failure and pre-device16K CLI rejection.",
-        "execution_prerequisites": [
-          "Review closed32K smoke and retire consumed raw artifacts.",
-          "Author and commit owned controller,exact generated inputs,source/dependency pins,individual case configuration and finite wall/output/RSS budgets before execution.",
-          "Run committed host-only cost-gate controls before any model process."
-        ],
-        "retention": "Same retained diagnostic generation;no third build. Preserve6individual process/12request clocks,three ratios and geometric mean,compact service/owner/validation/fault outcomes. Retire routine raw timelines/JIT/logs after replay;retain only selected shape samples needed by a named immediate hardware-ceiling test."
-      },
       "observer_cost": {
         "stage": "closed",
         "source_commit": "7d685246f98b515268f3cc7800ec51dcc89ca206",
@@ -4210,7 +4165,337 @@
           "budget_bytes": 469762048,
           "review_point": "Next attribution/hardware-ceiling selection boundary;no indefinite raw retention."
         },
-        "limits": "Observer-cost qualified only for this diagnostic98d831c7 binary/workload. No speed-restoration/adoption,whole-model quality,physical256Kcontext or hardware saturation claim. All cross-domain submit-to-start queue-delay values remain unqualified despite valid GPU service. Original6e40/1256decode placement remains selected."
+        "limits": "Observer-cost qualified only for this diagnostic98d831c7 binary/workload. No speed-restoration/adoption,whole-model quality,physical256Kcontext or hardware saturation claim. All cross-domain submit-to-start queue-delay values remain unqualified despite valid GPU service. Original6e40/1256decode placement remains selected.",
+        "independent_review": {
+          "sha256": "6045b748ec2360e4ce9b5c114cf59dd08e5b6b2fde2b9984d72c33d41425ee1a",
+          "bytes": 3424,
+          "verdict": "Limited cost gate passes;198 source pins and3 ratios/GM replayed. Submit queue-delay interpretation remains unqualified. Raw retention only until Main closes attribution extraction;then retire logs/JIT. Correct stale pending-gate documentation."
+        }
+      },
+      "attribution_after_observer_cost": {
+        "source_commit": "7d685246f98b515268f3cc7800ec51dcc89ca206",
+        "cost_result_commit": "ca18a8a14",
+        "requests": 6,
+        "all96_window_work_and_CPU_status_partitions_verified": true,
+        "CPU_columns": [
+          "process",
+          "run",
+          "ROI_wall_s",
+          "main_CPU_s",
+          "explicit_wait_wall_s",
+          "explicit_wait_CPU_s",
+          "outside_explicit_wait_CPU_s",
+          "unclassified_CPU_s",
+          "host_group_CPU_s",
+          "gemm_API_CPU_s",
+          "upload_API_CPU_s",
+          "status_memcpy_API_CPU_s",
+          "status_memcpy_API_wall_s",
+          "status_explicit_drain_wall_s"
+        ],
+        "CPU_rows": [
+          [
+            1,
+            0,
+            137.079518175,
+            130.816951926,
+            79.295634747,
+            78.848910391,
+            51.968041535,
+            12.092632451,
+            0.273128102,
+            6.916646245,
+            6.402647716,
+            13.906795355,
+            13.980797848,
+            0.014677336
+          ],
+          [
+            1,
+            1,
+            126.096471541,
+            124.580146857,
+            79.311710769,
+            78.817534347,
+            45.76261251,
+            7.182169529,
+            0.271244435,
+            6.593977509,
+            6.31044336,
+            13.221362811,
+            13.266854896,
+            0.0193237
+          ],
+          [
+            2,
+            0,
+            136.810803559,
+            130.680221167,
+            79.341314274,
+            78.966370773,
+            51.713850394,
+            11.921618484,
+            0.281458793,
+            7.096402822,
+            6.661983562,
+            13.072128381,
+            13.112213927,
+            0.014137573
+          ],
+          [
+            2,
+            1,
+            125.77858132,
+            124.303022505,
+            79.309946193,
+            78.865849298,
+            45.437173207,
+            7.158487757,
+            0.272145872,
+            6.720614076,
+            6.198008118,
+            13.210079136,
+            13.25045403,
+            0.019977943
+          ],
+          [
+            5,
+            0,
+            134.789886027,
+            128.799167921,
+            79.282579779,
+            78.958561541,
+            49.84060638,
+            12.013183444,
+            0.273522233,
+            6.736630917,
+            6.140921114,
+            12.702516257,
+            12.720237297,
+            0.014237755
+          ],
+          [
+            5,
+            1,
+            127.554244895,
+            126.137621536,
+            79.397019987,
+            79.031019264,
+            47.106602272,
+            7.138486211,
+            0.276533252,
+            7.146552041,
+            6.480738918,
+            13.302735562,
+            13.382816422,
+            0.020494633
+          ]
+        ],
+        "source_boundaries": {
+          "status_memcpy": "src/prefill/moe_window.inc:278..302;96 copies/request,sizeof(uint32_t),ordinary host owner.status_observed;src/sycl/compat.cpp:263..283 records enqueue specifically around q.memcpy.192 prechecks/queue lookups,96tag/enqueue/observer/drain/postcheck/after_drain/branch per request.",
+          "meaning": "CPU time inside this async-named enqueue is not established CPU arithmetic. Library/driver may wait there;do not add it to explicit waits or relabel it without a discriminating test. Queue intervals include host gaps;no GPU-compute77percent or hardware-saturation claim."
+        },
+        "sampled_expert_uploads": [
+          {
+            "process": 1,
+            "run": 0,
+            "events": 16,
+            "payload_bytes": 35942400,
+            "GPU_service_ns": 14812606,
+            "payload_GB_s_min_median_max": [
+              0.4315118347243125,
+              6.076706931207838,
+              6.2844765342960285
+            ],
+            "below3_GB_s": [
+              {
+                "window": 1,
+                "expert": 299,
+                "n": 1971200,
+                "service_ns": 4568125
+              },
+              {
+                "window": 3,
+                "expert": 446,
+                "n": 2662400,
+                "service_ns": 4664583
+              }
+            ]
+          },
+          {
+            "process": 1,
+            "run": 1,
+            "events": 16,
+            "payload_bytes": 35942400,
+            "GPU_service_ns": 9035000,
+            "payload_GB_s_min_median_max": [
+              0.6190979776606916,
+              6.16718744667415,
+              6.303644294357675
+            ],
+            "below3_GB_s": [
+              {
+                "window": 0,
+                "expert": 105,
+                "n": 2176000,
+                "service_ns": 3514791
+              }
+            ]
+          },
+          {
+            "process": 2,
+            "run": 0,
+            "events": 16,
+            "payload_bytes": 35942400,
+            "GPU_service_ns": 5867084,
+            "payload_GB_s_min_median_max": [
+              5.6443099078908805,
+              6.224550071740947,
+              6.275034532876163
+            ],
+            "below3_GB_s": []
+          },
+          {
+            "process": 2,
+            "run": 1,
+            "events": 16,
+            "payload_bytes": 35942400,
+            "GPU_service_ns": 15936874,
+            "payload_GB_s_min_median_max": [
+              0.2507995965999136,
+              6.212823397075366,
+              6.36297903109183
+            ],
+            "below3_GB_s": [
+              {
+                "window": 0,
+                "expert": 305,
+                "n": 2176000,
+                "service_ns": 8676250
+              },
+              {
+                "window": 1,
+                "expert": 299,
+                "n": 1971200,
+                "service_ns": 2071250
+              }
+            ]
+          },
+          {
+            "process": 5,
+            "run": 0,
+            "events": 16,
+            "payload_bytes": 35942400,
+            "GPU_service_ns": 12736249,
+            "payload_GB_s_min_median_max": [
+              0.5925358817598921,
+              6.202065403604043,
+              6.267515776800399
+            ],
+            "below3_GB_s": [
+              {
+                "window": 1,
+                "expert": 318,
+                "n": 1971200,
+                "service_ns": 3166250
+              },
+              {
+                "window": 3,
+                "expert": 427,
+                "n": 2662400,
+                "service_ns": 4493230
+              }
+            ]
+          },
+          {
+            "process": 5,
+            "run": 1,
+            "events": 16,
+            "payload_bytes": 35942400,
+            "GPU_service_ns": 10178436,
+            "payload_GB_s_min_median_max": [
+              0.5709093957954187,
+              6.0849431214415945,
+              6.3374078098777655
+            ],
+            "below3_GB_s": [
+              {
+                "window": 3,
+                "expert": 427,
+                "n": 2662400,
+                "service_ns": 4663437
+              }
+            ]
+          }
+        ],
+        "requested_expert_transfers": [
+          {
+            "process": 1,
+            "run": 0,
+            "uploads": 18937,
+            "requested_H2D_bytes": 38673152000,
+            "permanent_hits": 14288
+          },
+          {
+            "process": 1,
+            "run": 1,
+            "uploads": 18938,
+            "requested_H2D_bytes": 38668979200,
+            "permanent_hits": 14258
+          },
+          {
+            "process": 2,
+            "run": 0,
+            "uploads": 18937,
+            "requested_H2D_bytes": 38673152000,
+            "permanent_hits": 14288
+          },
+          {
+            "process": 2,
+            "run": 1,
+            "uploads": 18938,
+            "requested_H2D_bytes": 38668979200,
+            "permanent_hits": 14258
+          },
+          {
+            "process": 5,
+            "run": 0,
+            "uploads": 18937,
+            "requested_H2D_bytes": 38673152000,
+            "permanent_hits": 14288
+          },
+          {
+            "process": 5,
+            "run": 1,
+            "uploads": 18938,
+            "requested_H2D_bytes": 38668979200,
+            "permanent_hits": 14258
+          }
+        ],
+        "bank_geometry": {
+          "layers": 48,
+          "full_fit_layers": 24,
+          "slots_counts": {
+            "384": 1,
+            "438": 9,
+            "469": 14,
+            "512": 24
+          },
+          "maximum_extra_contiguous_bytes_for512": 340787200,
+          "sum_missing_capacity_bytes_across_layers": 3202252800,
+          "limits": "Static allocation geometry,not a measured transfer saving. Current first-demand permanent slots avoid wholesale LRU eviction;do not assume every expert is transferred twice."
+        },
+        "decision": "Resource limiting unit and historical9percent cause remain unattributed. Typical sampled H2D payload service reaches~6.2GB/s;rare slow copies lower aggregate rates. CPU grouping is~0.27s while status4byte q.memcpy enqueue consumes~13s CPU per warm request;this may hide GPU waiting,not CPU math. Next discriminate ordinary versus host-USM copies and a queued4byteD2H status read,with CPU enqueue/wait and GPU service separated. No inference optimization chosen from utilization alone.",
+        "limits": "Six charged on-arm requests;service samples cover only four selected first windows,16expert-copy events/request. Requested bytes are not physical PCIe traffic. Copy payload/time ratios are not hardware ceilings. Preserve all samples including slow events;cross-domain queue delays remain unqualified.",
+        "next_fixture_draft": {
+          "path": "/home/yayoi/orca/workspaces/Strata/sycl/.cache/strata-proposals/transfer-ceiling-v1.cpp",
+          "bytes": 11095,
+          "sha256": "ab68a65c35e7b07bed8a1e46eee6860e14dcb5a2d906fb0be5806d887373bf74",
+          "GPU_executed": false,
+          "compiled": false,
+          "consumer": "Complete tiny queued4byte D2H counterfactual and finite calibration build/controller;move into maintained bench source and commit before compile. Draft was authored outside frozen cohort inputs,never executed.",
+          "review_point": "Next bounded transfer-calibration build or abandonment;no duplicate draft retention."
+        }
       }
     }
   },
