@@ -736,10 +736,12 @@ preload the same held-reference control and use empty environment layers;only
 config-enabled parameter validation differs. First use stays separate from each
 subsequent-three median. No inference/default adoption follows from this
 observer comparison. Four native-wrapper/parser host tests pass. The first
-validation-on model process closes normally with no fresh fault:initial906.0413,
-then974.2977/974.5830/971.0726tok/s,subsequent median974.2977. All15model
-hashes and four request boundaries match. Five processes remain;this is no
-completed on/off comparison or historical-cause result.
+on/off pair closes normally with no fresh fault. Initial speeds are906.0413
+and878.4769tok/s;subsequent-three medians are974.2977and973.7050tok/s.
+The off/on ratio is0.9993917:removing validation does not restore old speed in
+this pair. Both sets of15model hashes and four request boundaries match.
+Four frozen processes remain;this is no completed comparison,mechanism-speed
+qualification or historical-cause result.
 CPU effective clock remains unknown. Independently authored
 `bench/sycl/amd_clock_access.c` is only a proposed next host capability pilot;
 it has not been built or executed. Its counter ratios need separate access,
