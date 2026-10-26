@@ -2728,6 +2728,86 @@
       "remaining": "Fourteen older provenance holds and separate pending numerical/model/full-context/upstream gates are unchanged."
     },
     "fused_command_profile": {
+      "ur_hold_host_v1": {
+        "stage": "prepared",
+        "source_commit": "2cee12fce3b79bfadd1e1036af32356a7ce1531e",
+        "native_reference": {
+          "source_commit": "bb46c4de524a564f596144add63efcc5f94239c8",
+          "library": {
+            "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/ur-hold-control-v1/libstrata_ur_hold_control.so",
+            "sha256": "c8d080a3260bca53ec34589fffddd0b14dd6a0d02e0e485e945ebffd3176f7c3",
+            "bytes": 16744
+          }
+        },
+        "runtime_sha256": "09ad358e12f6ef58bfc0a978519927863f3d09949a033a1e224db95997647d97",
+        "environment_sha256": "c2bfebfcfc16e8cf507bacac22d635569b4f4a18b01d077e340a6ceaa730727f",
+        "target": {
+          "path": "/usr/bin/true",
+          "sha256": "8a63c98320173f79e263115e10cefc170155e47d1fd4b5a70e4429d2699cae28"
+        },
+        "cases": [
+          {
+            "label": "on",
+            "mode": "on",
+            "exit_code": 0
+          },
+          {
+            "label": "off",
+            "mode": "off",
+            "exit_code": 0
+          },
+          {
+            "label": "wrong-provider",
+            "mode": "off",
+            "exit_code": 125,
+            "reason": "unexpected loader provider"
+          },
+          {
+            "label": "forbidden-layer",
+            "mode": "off",
+            "exit_code": 125,
+            "reason": "unexpected enabled layers"
+          },
+          {
+            "label": "bad-mode",
+            "mode": "invalid",
+            "exit_code": 125,
+            "reason": "explicit on/off mode required"
+          }
+        ],
+        "processes": [],
+        "boot": "cfda0b6a-7c13-4fe2-bdf5-8f9202770840",
+        "driver": {
+          "pci": "/sys/bus/pci/devices/0000:05:00.0",
+          "driver": "xe",
+          "vendor": "0x8086",
+          "device": "0xe20c",
+          "kernel": "7.0.0-38-generic",
+          "devcoredump": false
+        },
+        "budgets": {
+          "wall": 30,
+          "cpu": 30,
+          "rss_cap": 1073741824,
+          "text_cap": 4194304,
+          "file_cap": 4194304,
+          "total_cap": 67108864
+        },
+        "complete": false,
+        "passed": false,
+        "active": false,
+        "ownership_closed": true,
+        "GPU_commands_executed": false,
+        "model_executed": false,
+        "performance_qualified": false,
+        "criteria": "Five ordered fresh owned host processes;normal on/off exits plus three expected constructor refusals125. Check exact source/library/providers/argv,pre-main mode/first-init/held-reference proof,zero parameter warnings and no queue/enqueue API trace. Stop first unexpected result. Fast host /proc observations are recorded,not required as GPU-provider qualification. No GPU/model or ordinary teardown advancement from this host gate alone.",
+        "retention": "Keep compact per-case outcomes and native identities. Full normal host traces/private receipts retire after verification;helper stays only for named imminent GPU/validation-cost comparison. Original selected13assets and official v4fallback unchanged.",
+        "runtime_manifest": {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/ur-hold-host-v1/runtime-inputs.json",
+          "sha256": "92b4ce60b4dfd154d349110093ee947abaf6819fbd35e5b12906422242053d62",
+          "files": 34
+        }
+      },
       "ur_hold_control_build_v1": {
         "stage": "built",
         "source_commit": "bb46c4de524a564f596144add63efcc5f94239c8",
