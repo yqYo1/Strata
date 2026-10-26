@@ -1985,6 +1985,167 @@
       "limits": "Read-only snapshot after cohort closure,not loaded clocks or a historical control. These policies and endpoint PCI fields already match earlier audits;do not call them newly introduced causes.",
       "next": "Prospectively pin loaded act_freq/requested frequency/throttle and CPU scheduling/clock observations;no configuration changes made."
     },
-    "independent_control_reference": "prefill-resources-current.json#independent_llama9b_control_v6"
+    "independent_control_reference": "prefill-resources-current.json#independent_llama9b_control_v6",
+    "near_dense_original_reference_v1": {
+      "stage": "prepared",
+      "source_commit": "b8c31f1aec195489d71fb0e553e8e412fd8d51f3",
+      "qualification_inputs": {
+        "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/phase-prefill-speed-current.json": "9543297abc2ce0b4530ee6984d55366e735881caf42a08239f3494d655f9e10d",
+        "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/runtime-requalification-current.json": "09ad358e12f6ef58bfc0a978519927863f3d09949a033a1e224db95997647d97",
+        "/home/yayoi/orca/workspaces/Strata/sycl/data/expert-profile.bin": "8f59b4aa8873209dff11c11e37bcda9529a1335b724a1afeea37bf6388975baf"
+      },
+      "configuration": {
+        "exe": "/home/yayoi/orca/workspaces/Strata/sycl/tools/sycl/engine_once.py",
+        "args": [
+          "--pack",
+          "/home/yayoi/.local/share/strata-sycl/packs/qwen3.8-flash-next-iq3_s",
+          "--native",
+          "/home/yayoi/.local/share/strata-sycl/models/qwen3.8-flash-next-iq3_s/IQ3_S/Qwen3.8-Flash-Next-GSQ-RCO-IQ3_S-00001-of-00002.gguf",
+          "--max-context",
+          "131072",
+          "--kv",
+          "int8",
+          "--kv-resident",
+          "131072",
+          "--expert-cache",
+          "1256",
+          "--expert-profile",
+          "/home/yayoi/orca/workspaces/Strata/sycl/data/expert-profile.bin",
+          "--expert-cache-per-layer",
+          "--pool-workers",
+          "5",
+          "--pcie-frac",
+          "0",
+          "--adapt-swaps",
+          "0",
+          "--conversation-cache-mib",
+          "0",
+          "--prompt-cache",
+          "0",
+          "--turn-token",
+          "-1",
+          "--suffix-draft",
+          "0",
+          "--greedy",
+          "--no-spec-split",
+          "--short-read",
+          "0",
+          "--spec",
+          "4",
+          "--mtp",
+          "/home/yayoi/.local/share/strata-sycl/mtp/rt",
+          "--prefill",
+          "8192",
+          "--vram-reserve-mib",
+          "700",
+          "--no-coupled-draft",
+          "--no-token-graph"
+        ],
+        "cwd": "/home/yayoi/orca/workspaces/Strata/sycl",
+        "tokenizer": "/home/yayoi/.local/share/strata-sycl/packs/qwen3.8-flash-next-iq3_s/tokenizer",
+        "model_name": "qwen3.8-flash-next-iq3_s-primary",
+        "aliases": [
+          "strata"
+        ],
+        "host": "127.0.0.1",
+        "log": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-near-dense-reference-v1/engine.stderr",
+        "engine_silence_s": 480,
+        "parallel": 1,
+        "open_browser": false,
+        "env": {}
+      },
+      "binary": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/strata",
+        "bytes": 22190000,
+        "sha256": "22182f1a5e62e5f4259ce49a75ae44afbd988166ec79324816e499ff37ef60e4"
+      },
+      "build_proof": {
+        "source_commit": "6e40afc1beddd059ee518617f6c1efce1da14aca",
+        "inputs_recovered": 9853,
+        "assets_verified": 13,
+        "receipt": {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/record.json",
+          "sha256": "a38f477670fafcd1a931be2e20d90d6d9718df75b61954b421f361af9f6881b2"
+        },
+        "limits": "Original build remains selected; this source-only diagnostic is not adoption."
+      },
+      "preload": {
+        "library": {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/ur-validation-preload-v2/libstrata_ur_validation.so",
+          "sha256": "1d4e69d672d55fa0a126ae43b7b4743482cccca7e2f2bc22e0db2bfdad5bdc7c"
+        },
+        "loader": {
+          "path": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_loader.so.0.12.0",
+          "sha256": "bb6e1311850e4b1a924e42acae80c2b3610934625a4985aaa67967abe31356fc"
+        }
+      },
+      "neo": {
+        "path": "/usr/lib/x86_64-linux-gnu/libze_intel_gpu.so.1.17.39758",
+        "sha256": "52e29a602f92d3542eac91e20717743e63ca7d4b257d0c79a3c4d6c64c94ea49"
+      },
+      "boot": "cfda0b6a-7c13-4fe2-bdf5-8f9202770840",
+      "driver": {
+        "pci": "/sys/bus/pci/devices/0000:05:00.0",
+        "driver": "xe",
+        "vendor": "0x8086",
+        "device": "0xe20c",
+        "kernel": "7.0.0-38-generic",
+        "devcoredump": false
+      },
+      "request_hashes": [
+        "26f08fd8364b5c4bce718617fe2aed42761d0a794e068b00532694adef78b3be",
+        "fd3ad8ad7033776ad749b22e62e910e5f47e3f7664705f48d9f1fe7349b65515",
+        "daabbef4775c3fbdbfd832339d80a5ae2f91025b66df79b92fb8f6905f33b041",
+        "8669c9ebe2747b1fc2d7c4806eeb66025c919981d81c51cfdbd64ba3ec3cc2b1"
+      ],
+      "command": [
+        "/bin/sh",
+        "/home/yayoi/orca/workspaces/Strata/sycl/bench.sh",
+        "--config",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-near-dense-reference-v1/config.json",
+        "--port",
+        "40579",
+        "--prefill-only",
+        "--prefill-tokens",
+        "98304",
+        "--think",
+        "--runs",
+        "4",
+        "--profile-request-gates",
+        "--workload-id",
+        "native_gdn_20261018",
+        "--fail-fast-engine-error",
+        "--ready-timeout",
+        "600",
+        "--out",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-near-dense-reference-v1/bench"
+      ],
+      "plan": {
+        "question": "Does original6e40 remain slower in a fresh process after the independent9B control?",
+        "repetition": "One independent process,one short warmup,four fresh117489-token requests. Keep first use separate;report every sample and subsequent-three median/range. Descriptive current-state check,not matched dense/Strata hardware ceiling or three-process restoration.",
+        "constants": "Original22182f1a ELF;1256-slot decode placement;131072 resident INT8 KV;8192 chunks;BF16/vLLM/mode10;unchanged86-key template plus explicit current NEO in both previous current and this process;native-only retained-loader validation;24 output tokens;thinking on;zero reuse.",
+        "prerequisites": "Fresh host-only canary and bounded traced submission fixture;original13 artifacts and9853 Git inputs;qualified current driver/runtime;actual native environment/maps;no fresh fault.",
+        "decision": "No candidate or runtime adoption. Compare subsequent median descriptively with historical1002.650659 and latest current-arm911.737134. No speed-based stop,retry or replacement. Stop first correctness,ownership,validation,budget,source or fault failure.",
+        "scope": "No profiling,census,resource polling,state readback,rebuild,service change,reset or global settings. Existing prefill API clock includes handoff back to decode. This24-token output is not decode qualification."
+      },
+      "budgets": {
+        "wall": 3000,
+        "cpu": 72000,
+        "rss_cap": 111669149696,
+        "text_cap": 33554432,
+        "file_cap": 67108864,
+        "total_cap": 134217728
+      },
+      "active": false,
+      "ownership_closed": true,
+      "qualification": [],
+      "complete": false,
+      "passed": false,
+      "retention": "Keep useful individual samples,source/config/environment references and decision. Retire successful trace/raw/JIT output and this one-use controller after closure;original13 assets remain.",
+      "generated_sha256": {
+        "config.json": "751e1603c8c5300f457fdda8f13018609667addc3a594ffd8c0d160466c98a9e",
+        "plan.json": "08cfd654f8512bb484582b232cb0361de9c228e1eb5f4cec465aba42cf5195ef"
+      }
+    }
   }
 }
