@@ -685,6 +685,10 @@ is qualified. Do not rerun unchanged. Audit reset/warmup/enqueue/wait boundaries
 and outstanding-event retirement before a separately committed bounded diagnostic;
 the exact blocked operation remains unknown. The original engine and decode
 placement remain unchanged,and official v4remains the qualified component fallback.
+After exact-source recovery,234closed output/review/object files retire,
+89116814bytes. Keep one2797-byte stall diagnostic pair and the eight-file failing
+component witness for this concrete source audit. The closed one-use controller
+and temporary build mode restore fromfdec18b9d;the original failed status remains.
 
 The fresh sourcee33d16fc3 attribution fixture closes ten official-SDK processes
 with240eligible/correct timing samples and120complete CPU/GPU profiles.

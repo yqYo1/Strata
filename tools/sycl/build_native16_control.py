@@ -214,38 +214,11 @@ def build(row):
 
 
 def main():
-    global ROOT, KEY
     with (B / 'owned-v0141-measurement.lock').open('a') as lock:
         fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB); r.guards.no_model_owners([])
-        if sys.argv[1:] in (['prepare-warmed'], ['build-warmed']):
-            import qualify_native16_control as qualification
-            qualification.current(json.loads((qualification.ROOT / 'record.json').read_text()))
-            proof = qualification.native()[2]
-            require(not (B / 'native16-public-attribution-v1').exists() and
-                scope(r.validation.committed(RESULT))['public_gu_attribution_build']['retirement']['complete'],
-                'retire the unselected short-batch generation before replacement')
-            ROOT = B / 'native16-warmed-attribution-v2'
-            KEY = 'public_gu_warmed_attribution_build_v2'
-            if sys.argv[1] == 'prepare-warmed':
-                prepare()
-                row = json.loads((ROOT / 'record.json').read_text())
-                row.update(baseline_native_build=proof,
-                    question='Build fixed2048/512-call GU batches with100ms floors and unchanged1percent '
-                        'endpoint controls;qualify same-binary observerOFF/ON,not an old-batch speedup.',
-                    next_gate='Fresh traced GU qualification plus reused identical other-three-fixture '
-                        'qualification;then six same-binary OFF/ON processes in0/1/1/0/0/1order. '
-                        'Original failed short-batch outcome stays failed;no model or decode adoption.',
-                    retention='Official v4four-fixture correctness fallback plus this only additional '
-                        'component generation;original13model assets remain. Select and retire after '
-                        'new qualification/comparison closure with original-source recovery.')
-                save(row)
-                return 0
-            row = json.loads((ROOT / 'record.json').read_text())
-            require(row['baseline_native_build'] == proof, 'correctness fallback changed')
-            return build(row)
         if sys.argv[1:] == ['prepare']: prepare(); return 0
         if sys.argv[1:] == ['build']: return build(json.loads((ROOT / 'record.json').read_text()))
-        raise RuntimeError('use prepare/build or prepare-warmed/build-warmed')
+        raise RuntimeError('use prepare/build')
 
 
 if __name__ == '__main__': sys.exit(main())
