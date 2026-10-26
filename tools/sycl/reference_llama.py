@@ -18,9 +18,9 @@ sys.dont_write_bytecode = True
 import runtime_probe as runtime
 
 P, B = runtime.P, runtime.B
-ROOT = B / 'llama9b-independent-control-v1'
+ROOT = B / 'llama9b-independent-control-v2'
 RESULT = runtime.RESULT.with_name('prefill-resources-current.json')
-KEY = 'independent_llama9b_control_v1'
+KEY = 'independent_llama9b_control_v2'
 LLAMA = Path('/home/yayoi/ghq/github.com/ggml-org/llama.cpp')
 EXE = LLAMA / 'build/bin/llama-bench'
 MODEL = Path('/data/llm_models/unsloth/Qwen3.5-9B-GGUF/Qwen3.5-9B-UD-Q4_K_XL.gguf')
@@ -64,6 +64,11 @@ def prepare():
     runtime.guards.no_model_owners([str(MODEL)])
     require(c['event_reconciliation']['fused_command_profile']['prefill_upload_attribution_v3']['retirement']['complete'],
         'close and retire prior component first')
+    previous=c['independent_llama9b_control_v1']
+    require(previous['stage']=='failed' and not previous['active'] and not previous['GPU_executed'] and
+        previous['actual_ownership_reconciliation']['anchored_session_empty'] and
+        previous['actual_ownership_reconciliation']['native_direct_child_reaped'],
+        'preserve failed host observer and positively close its owned process first')
     revision = runtime.build.git(P, 'rev-parse', 'HEAD').decode().strip()
     inputs = pins(revision)
     original = runtime.selected.baseline()[1]
@@ -94,6 +99,22 @@ def prepare():
         UR_ADAPTERS_FORCE_LOAD=str(SDK / 'lib/libur_adapter_level_zero_v2.so.0.12.0'),
         LD_PRELOAD=preload['library']['path'], STRATA_UR_PROBE_EXPECTED_LOADER=preload['loader'],
         TMPDIR=str(ROOT / 'tmp'), XDG_CACHE_HOME=str(ROOT / 'cache'))
+    # Resolve the ELF interpreter's DT_NEEDED closure before admitting a child.
+    # --list does not enter the target's constructors/main or initialize a GPU.
+    pending=set(files)
+    listed=set()
+    while pending:
+        path=pending.pop()
+        if path in listed:
+            continue
+        text=subprocess.check_output(['/lib64/ld-linux-x86-64.so.2','--list',path],
+            env={'LD_LIBRARY_PATH':env['LD_LIBRARY_PATH']},text=True,stderr=subprocess.STDOUT,timeout=15)
+        require('not found' not in text,'unresolved ELF dependency: '+path)
+        listed.add(path)
+        for name in re.findall(r'(?:=>\s+|^\s*)(/\S+)\s+\(',text,re.M):
+            dependency=str(Path(name).resolve())
+            if dependency not in files:
+                files[dependency]=digest(dependency);pending.add(dependency)
     root_source = external_source()
     asset = dict(path=str(MODEL), bytes=MODEL.stat().st_size, sha256=digest(MODEL))
     args = ['-fa','1','-n','0','-ctk','q8_0','-ctv','q8_0','-m',str(MODEL),
