@@ -179,6 +179,13 @@ target_link_libraries(strata PRIVATE strata_prefill strata_spec)
 
 option(STRATA_SYCL_TESTS "Build GPU parity and runtime tests for SYCL" ON)
 if(STRATA_SYCL_TESTS)
+  # Explicit component target: exercises private expert-bank upload and its
+  # bounded host-USM staging without loading a model or building an engine.
+  add_executable(sycl_expert_bank_test EXCLUDE_FROM_ALL
+    tests/sycl/expert_bank.cpp src/core/expert_cache.cpp)
+  target_link_libraries(sycl_expert_bank_test PRIVATE strata_sycl_runtime)
+  target_compile_features(sycl_expert_bank_test PRIVATE cxx_std_20)
+
   # Explicit diagnostic entrypoint: the normal strata target keeps its original
   # admission/decode path. Building this does not qualify physical context fill.
   add_executable(strata_full_context_diagnostic EXCLUDE_FROM_ALL src/program/generate.cpp src/program/dense_prefill_nll.cpp)

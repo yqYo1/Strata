@@ -456,6 +456,47 @@ Closed one-use build/cost/calibration controllers retire to their original sourc
 commits;the new transfer fixture source remains for the immediate staging/status
 work. No routine raw API trace or completed observer cohort remains.
 
+The next candidate implements a four-slot host-USM ring only in long-prefill
+private-bank upload. It is opt-in/defaultoff through
+`STRATA_SYCL_PREFILL_EXPERT_UPLOAD_STAGING=1`;decode and short-input routes keep
+their source/configuration/placement. Source8f9abeb99,controller551ec694e and
+frozen plan3b1479c4c build a component fixture with693actual compiled inputs;
+no new whole engine is built. Each host slot retires its own copy event before
+CPU overwrite;GPU destination readers and scratch overwrite remain on the same
+in-order queue. Final counters and host guards are checked after retirement.
+The maintained explicit target is `sycl_expert_bank_test`,with packed/staging
+smoke/validation modes and `--staging-bench PROCESS`.
+
+Two traced smoke cases,staging validation and three independent benchmark
+processes all close normally. The cases cover mixed source/destination strides,
+512experts,full-fit and scratch reuse,exception unwind,ten invalid admissions,
+and destruction with pending transfers. Parameter validation is silent and
+no fresh GPU fault occurs. Each timed batch uses the actual private-bank
+entrypoint,641uploads,383hits,two full-data GPU readers per expert,2048readers
+and checked status/retirement. All72batches pass the10ms wall/queue floor,
+timer-p99<=10us and empty-control<=5% gates. First-use samples stay separate.
+
+| Payload bytes | Three staged/ordinary subsequent-median time ratios | Geometric mean | Whole bank-path reduction |
+| ---: | --- | ---: | ---: |
+| 1971200 | 0.680321 / 0.680662 / 0.687008 | 0.682657 | 31.73% |
+| 2662400 | 0.682515 / 0.682247 / 0.640809 | 0.668233 | 33.18% |
+
+Both pass the prospective5% bank-dependency screen. This is a real whole-wall
+component gain,not relabelling an internal wait. These readers check copy
+contents;they do not perform production dequant/GEMM or qualify model speed.
+The source integration remains unbuilt as an engine,and there is no new
+prefill/decode or physical262144 qualification. The clean117K reference remains
+911.7371tok/s and the historical9.1% cause remains unattributed.
+
+Installed native metadata identifies representative actual formats:layer2 has
+IQ2_S(type22) gate/up and IQ4_NL(type20) down,1971200bytes;layer47 has
+IQ4_XS(type23) gate/up and IQ4_NL down,2662400bytes. Next freeze a comparison
+through actual IQ dequant and the native GU/SwiGLU/Down entrypoints with pinned
+real weight ranges and shape-specific dispatch. FP16 matrix operands and BF16
+GU/Down outputs remain distinct from BF16 residual storage. Only after that
+component gate may a separately planned official long-input/agent/thinking and
+decode-nondecline/state-handoff comparison advance.
+
 The earlier[NEO-only comparison](../bench/results/2026-10-15-pr6-recovery-audit/prefill-runtime-comparison-current.json)
 uses exact cached packages in private directories. Both arms explicitly select
 the driver before exec and verify its actual mapping. Other dependencies,the

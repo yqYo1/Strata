@@ -5915,187 +5915,18 @@
         }
       },
       "prefill_upload_staging": {
-        "stage": "built-not-executed",
+        "stage": "closed",
         "source_commit": "551ec694ebd787099b887eb30473eb8c89e6b5a4",
-        "sdk": {
-          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/unitrace-warmed-graph-window-v1/compiler-inputs.json",
-          "sha256": "436cedc9dbd41810cd882e9040a129e6d8b7dbebb98806b00c4f2950b1dc1705",
-          "original_files": 8697,
-          "admitted_files": 8697,
-          "prospective_system_header_updates": {
-            "/usr/include/metee.h": [
-              "f063edcb00c88f3ddebc10f9b0487fe813cfb7ba71dc4b798729bed8902018a3",
-              "d07e18ce9228c3fc570b186eab13bf8a3e6c04214992f0de9d53b855dc837252"
-            ],
-            "/usr/include/opencl-c-base.h": [
-              "e1683c3db9cf9a95e9d02acbbfa74dcd29d4deaf4a856430f538d76985b04114",
-              "673c4720f879c2f101504979edbd0216c9cb6a982ce2b62bd467b81fd53d8e33"
-            ],
-            "/usr/include/opencl-c.h": [
-              "579b58f482ab0b3dfd396cab32ea3e0537bc5cf4c1067377b83fe417cbcc513b",
-              "aa7e871a8f7d961aa4126a9fadc2196f822c21811946c90147dc7415fe677de9"
-            ]
-          },
-          "updated_header_packages": [
-            "libigdfcl2 2.41.15-1~24.04",
-            "libmetee-dev 6.2.5-1~24.04~ppa2"
-          ],
-          "condition": "New v2 input snapshot only;all8694 other original hashes remain mandatory. Actual dependency closure records which updated headers were compiled. No qualification inherited for the new fixture."
+        "binary": {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-expert-staging-v1/sycl_expert_staging",
+          "bytes": 339384,
+          "sha256": "4ee081078f2f5f5f5ec6f0419792f02e5eeaec879f51ef5670a29c84a645c63d"
         },
         "compiler": {
           "path": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin/clang++",
           "sha256": "1290881b4e12a5e002e5b0de0787f85328ee5fe19f253a54be1cdd97dc2f26eb"
         },
-        "sources": [
-          "tests/sycl/expert_bank.cpp",
-          "src/sycl/runtime.cpp",
-          "src/sycl/compat.cpp",
-          "src/sycl/command_profile.cpp",
-          "src/core/expert_cache.cpp"
-        ],
-        "build_commands": [
-          [
-            "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin/clang++",
-            "-std=c++20",
-            "-O3",
-            "-fsycl",
-            "-fsycl-id-queries-range=size_t",
-            "-DSTRATA_ENABLE_SYCL=1",
-            "-I/home/yayoi/orca/workspaces/Strata/sycl/include",
-            "-I/home/yayoi/orca/workspaces/Strata/sycl/include/strata/sycl/compat",
-            "-MD",
-            "-MF",
-            "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-expert-staging-v1/0.d",
-            "-c",
-            "/home/yayoi/orca/workspaces/Strata/sycl/tests/sycl/expert_bank.cpp",
-            "-o",
-            "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-expert-staging-v1/0.o"
-          ],
-          [
-            "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin/clang++",
-            "-std=c++20",
-            "-O3",
-            "-fsycl",
-            "-fsycl-id-queries-range=size_t",
-            "-DSTRATA_ENABLE_SYCL=1",
-            "-I/home/yayoi/orca/workspaces/Strata/sycl/include",
-            "-I/home/yayoi/orca/workspaces/Strata/sycl/include/strata/sycl/compat",
-            "-MD",
-            "-MF",
-            "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-expert-staging-v1/1.d",
-            "-c",
-            "/home/yayoi/orca/workspaces/Strata/sycl/src/sycl/runtime.cpp",
-            "-o",
-            "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-expert-staging-v1/1.o"
-          ],
-          [
-            "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin/clang++",
-            "-std=c++20",
-            "-O3",
-            "-fsycl",
-            "-fsycl-id-queries-range=size_t",
-            "-DSTRATA_ENABLE_SYCL=1",
-            "-I/home/yayoi/orca/workspaces/Strata/sycl/include",
-            "-I/home/yayoi/orca/workspaces/Strata/sycl/include/strata/sycl/compat",
-            "-MD",
-            "-MF",
-            "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-expert-staging-v1/2.d",
-            "-c",
-            "/home/yayoi/orca/workspaces/Strata/sycl/src/sycl/compat.cpp",
-            "-o",
-            "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-expert-staging-v1/2.o"
-          ],
-          [
-            "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin/clang++",
-            "-std=c++20",
-            "-O3",
-            "-fsycl",
-            "-fsycl-id-queries-range=size_t",
-            "-DSTRATA_ENABLE_SYCL=1",
-            "-I/home/yayoi/orca/workspaces/Strata/sycl/include",
-            "-I/home/yayoi/orca/workspaces/Strata/sycl/include/strata/sycl/compat",
-            "-MD",
-            "-MF",
-            "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-expert-staging-v1/3.d",
-            "-c",
-            "/home/yayoi/orca/workspaces/Strata/sycl/src/sycl/command_profile.cpp",
-            "-o",
-            "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-expert-staging-v1/3.o"
-          ],
-          [
-            "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin/clang++",
-            "-std=c++20",
-            "-O3",
-            "-fsycl",
-            "-fsycl-id-queries-range=size_t",
-            "-DSTRATA_ENABLE_SYCL=1",
-            "-I/home/yayoi/orca/workspaces/Strata/sycl/include",
-            "-I/home/yayoi/orca/workspaces/Strata/sycl/include/strata/sycl/compat",
-            "-MD",
-            "-MF",
-            "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-expert-staging-v1/4.d",
-            "-c",
-            "/home/yayoi/orca/workspaces/Strata/sycl/src/core/expert_cache.cpp",
-            "-o",
-            "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-expert-staging-v1/4.o"
-          ],
-          [
-            "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin/clang++",
-            "-fsycl",
-            "-fsycl-id-queries-range=size_t",
-            "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-expert-staging-v1/0.o",
-            "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-expert-staging-v1/1.o",
-            "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-expert-staging-v1/2.o",
-            "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-expert-staging-v1/3.o",
-            "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-expert-staging-v1/4.o",
-            "-o",
-            "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-expert-staging-v1/sycl_expert_staging"
-          ]
-        ],
-        "build_environment": {
-          "PATH": "/usr/bin:/bin",
-          "HOME": "/home/yayoi",
-          "LANG": "C.UTF-8",
-          "LC_ALL": "C.UTF-8",
-          "PYTHONDONTWRITEBYTECODE": "1",
-          "LD_LIBRARY_PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib:/opt/intel/oneapi/mkl/2026.1/lib",
-          "ONEAPI_DEVICE_SELECTOR": "level_zero:gpu",
-          "UR_ADAPTERS_FORCE_LOAD": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_adapter_level_zero_v2.so.0",
-          "UR_L0_V2_FORCE_DISABLE_COPY_OFFLOAD": "1",
-          "NEOReadDebugKeys": "1",
-          "EnableDirectSubmission": "0",
-          "STRATA_SYCL_PREFILL_SAME_QUEUE": "1",
-          "STRATA_SYCL_VERIFY_NATIVE_CAPTURE": "0",
-          "SYCL_CACHE_PERSISTENT": "0",
-          "ZES_ENABLE_SYSMAN": "0",
-          "UR_ENABLE_LAYERS": "UR_LAYER_TRACING,UR_LAYER_PARAMETER_VALIDATION",
-          "UR_LOG_TRACING": "level:info;flush:info;output:stderr",
-          "UR_LOG_VALIDATION": "level:warning;flush:warning;output:stderr",
-          "UR_LOG_LOADER": "level:warning;flush:warning;output:stderr",
-          "UR_LOG_LEVEL_ZERO": "level:warning;flush:warning;output:stderr",
-          "TMPDIR": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-expert-staging-v1/tmp",
-          "XDG_CACHE_HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-expert-staging-v1/cache"
-        },
         "runtime_sha256": "09ad358e12f6ef58bfc0a978519927863f3d09949a033a1e224db95997647d97",
-        "preload": {
-          "library": {
-            "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/ur-validation-preload-v2/libstrata_ur_validation.so",
-            "sha256": "1d4e69d672d55fa0a126ae43b7b4743482cccca7e2f2bc22e0db2bfdad5bdc7c"
-          },
-          "canary": {
-            "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/ur-validation-preload-v2/canary",
-            "sha256": "7903f47691309444cce238d6a0a6fe716f7c668d80a6e2ff3d5cfe21c7dcbfd0"
-          },
-          "loader": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_loader.so.0.12.0",
-          "original_plan": {
-            "commit": "550c75f5fc954ee38b70230e32d2a48e12100d8a",
-            "path": "bench/results/2026-10-15-pr6-recovery-audit/research-index.json",
-            "sha256": "d12866b93c51e76a83e95638e66b6f6f4e0e33d779516a5fddecc178a6f8e10a"
-          },
-          "source_commit": "f312b6691f508125db6cfc2580ca32a686ff2642",
-          "retained_reference_until_exit": true,
-          "ordinary_runtime_teardown_qualified": false
-        },
         "boot": "cfda0b6a-7c13-4fe2-bdf5-8f9202770840",
         "driver": {
           "pci": "/sys/bus/pci/devices/0000:05:00.0",
@@ -6105,87 +5936,536 @@
           "kernel": "7.0.0-38-generic",
           "devcoredump": false
         },
-        "selected_original": {
-          "source_commit": "6e40afc1beddd059ee518617f6c1efce1da14aca",
-          "inputs_recovered": 9853,
-          "assets_verified": 13,
-          "receipt": {
-            "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/record.json",
-            "sha256": "a38f477670fafcd1a931be2e20d90d6d9718df75b61954b421f361af9f6881b2"
-          },
-          "limits": "Original build remains selected; this source-only diagnostic is not adoption."
-        },
-        "active": false,
-        "ownership_closed": true,
-        "passed": true,
-        "complete": true,
-        "GPU_executed": false,
-        "model_executed": false,
-        "model_adoption_qualified": false,
-        "native_engine_built": false,
-        "build_limits": {
-          "wall": 600,
-          "cpu": 1800,
-          "rss_cap": 8589934592,
-          "text_cap": 8388608,
-          "file_cap": 134217728,
-          "total_cap": 536870912
-        },
-        "device_limits": {
-          "wall": 600,
-          "cpu": 1200,
-          "rss_cap": 6442450944,
-          "text_cap": 8388608,
-          "file_cap": 16777216,
-          "total_cap": 134217728
-        },
-        "device_cases": [
-          [
-            "baseline-smoke",
-            "--packed-smoke"
-          ],
-          [
-            "staging-smoke",
-            "--staging-smoke"
-          ],
-          [
-            "staging-validate",
-            "--staging-validate"
-          ],
-          [
-            "bench0",
-            "--staging-bench",
-            "0"
-          ],
-          [
-            "bench1",
-            "--staging-bench",
-            "1"
-          ],
-          [
-            "bench2",
-            "--staging-bench",
-            "2"
-          ]
-        ],
-        "plan": "Two traced small smoke cases,then parameter-validated staged512-expert/mixed-stride/unwind validation;three independent processes,2payloads1.9712/2.6624MB,384slots,512experts,two scans,one first-use and five rotated subsequent pairs. Actual production private-bank entrypoint both arms;two full-data queued readers per expert,641uploads+383hits+2048readers per timed batch. Not the dequant/GEMM dependency path or a model benchmark. No environment mutation/adaptive retry.",
-        "criteria": "Execution:normal owned closure,silent parameter validation,actual pinned provider/runtime,zero fresh fault/same boot,all source/target/host guards,all readers,private-map and counters pass. Each timing batch needs wall>=10ms and queue interval>=10ms,timer p99<=10us and empty-control maximum<=5percent of batch wall;queue intervals are nonexclusive,not GPU service. For EACH payload,GM of3process subsequent-median staged/ordinary wall ratios<=0.95 and every process ratio<1. Preserve first-use and all samples. A failed/ineligible screen forbids gated full-pipeline/model advancement;passing permits the separately planned dequant/GEMM component check only,not a model trial or adoption.",
-        "safety_audit": "Main-authored ring;no XeStrata source.4host-USM slots,<=16MiB capacity/slot,256byte guards;same in-order context/device queue and registered device ownership. Reject device sources,overlap,bad extents/queues. Copy-event wait before CPU host-slot reuse;GPU readers and scratch overwrite ordered on same queue. Catch drains before unwinding;failed drain fail-stops with owners live. No new GPU arithmetic in inference;only bounded transfer-preparation memcpy. Default disabled prefill-only route;decode/short-prefill/cache placement unchanged. No physical256K qualification.",
-        "retention": "Keep compact individual timing/CPU samples,eligibility/correctness/fault/source results. Review component executable at gate closure or imminent full-pipeline comparison. Original selected engine+12fixtures stay intact;two earlier GU/Down fixtures retain only their named ceiling consumer. Retire routine raw traces/build output once extracted;no full API trace during long validation.",
         "compiled_inputs": {
           "files": 693,
           "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-expert-staging-v1/compiler-inputs.json",
           "sha256": "5d1ef109a0eba59505f4a947b8034a69938a5c537c783529c2ff5975f347fa9c"
         },
-        "binary": {
-          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-expert-staging-v1/sycl_expert_staging",
-          "bytes": 339384,
-          "sha256": "4ee081078f2f5f5f5ec6f0419792f02e5eeaec879f51ef5670a29c84a645c63d"
+        "active": false,
+        "ownership_closed": true,
+        "passed": true,
+        "complete": true,
+        "GPU_executed": true,
+        "native_engine_built": false,
+        "model_executed": false,
+        "model_adoption_qualified": false,
+        "summary": {
+          "payloads": [
+            {
+              "payload_bytes": 1971200,
+              "time_ratios_staged_over_ordinary": [
+                0.6803208221295638,
+                0.6806617278994387,
+                0.6870079392969015
+              ],
+              "geometric_mean": 0.6826565847929021,
+              "component_gain_gate": true
+            },
+            {
+              "payload_bytes": 2662400,
+              "time_ratios_staged_over_ordinary": [
+                0.6825152021269667,
+                0.6822474852804232,
+                0.6408090988835026
+              ],
+              "geometric_mean": 0.6682325821800668,
+              "component_gain_gate": true
+            }
+          ],
+          "bank_dependency_gate_passed": true,
+          "full_dequant_GEMM_gate_passed": false,
+          "model_advancement_allowed": false
         },
-        "project": {
-          "revision": "551ec694ebd787099b887eb30473eb8c89e6b5a4",
-          "count": 495,
-          "aggregate_sha256": "df386385bbea7a3ead0dc03bc09d0ba6e3f5d2df8bef7896d9d68308d5493fbb"
+        "case_outcomes": [
+          {
+            "label": "baseline-smoke",
+            "passed": true,
+            "ownership_closed": true,
+            "fresh_faults": [],
+            "samples": 0
+          },
+          {
+            "label": "staging-smoke",
+            "passed": true,
+            "ownership_closed": true,
+            "fresh_faults": [],
+            "samples": 0
+          },
+          {
+            "label": "staging-validate",
+            "passed": true,
+            "ownership_closed": true,
+            "fresh_faults": [],
+            "samples": 0
+          },
+          {
+            "label": "bench0",
+            "passed": true,
+            "ownership_closed": true,
+            "fresh_faults": [],
+            "samples": 24
+          },
+          {
+            "label": "bench1",
+            "passed": true,
+            "ownership_closed": true,
+            "fresh_faults": [],
+            "samples": 24
+          },
+          {
+            "label": "bench2",
+            "passed": true,
+            "ownership_closed": true,
+            "fresh_faults": [],
+            "samples": 24
+          }
+        ],
+        "fresh_faults": [],
+        "boot_unchanged": true,
+        "source_proposal_commit": "8f9abeb99",
+        "frozen_plan_reference": {
+          "commit": "3b1479c4c",
+          "path": "bench/results/2026-10-15-pr6-recovery-audit/prefill-resources-current.json"
+        },
+        "build_closure_reference": {
+          "commit": "34be659ad",
+          "path": "bench/results/2026-10-15-pr6-recovery-audit/prefill-resources-current.json"
+        },
+        "source_provenance": "Main-authored/repository LICENSE;production bank/runtime APIs only,no XeStrata application code.",
+        "parameter_validation_silent": true,
+        "two_complete_small_API_traces": true,
+        "actual_runtime_provider_verified": true,
+        "selected_original_assets_unchanged": 13,
+        "copies_per_batch": 641,
+        "hits_per_batch": 383,
+        "readers_per_batch": 2048,
+        "bank_slots": 384,
+        "source_experts": 512,
+        "scans": 2,
+        "staging_slots": 4,
+        "placement": "HostUSM ring only;no added device allocation. Decode1256placement/implementation/configuration and short-prefill route unchanged in source;no model/decode execution qualification.",
+        "samples": [
+          {
+            "payload_bytes": 1971200,
+            "source_and_destination_stride": 1971456,
+            "processes": [
+              {
+                "process": 0,
+                "arms": [
+                  {
+                    "arm": 0,
+                    "meaning": "ordinary_host",
+                    "first_use_ms": 569.766127,
+                    "subsequent_wall_ms": [
+                      309.732527,
+                      326.271882,
+                      384.09149,
+                      476.788898,
+                      311.017316
+                    ],
+                    "subsequent_thread_CPU_ms": [
+                      246.21037999999996,
+                      253.9291060000002,
+                      280.4297979999992,
+                      293.50031600000113,
+                      240.4601779999993
+                    ],
+                    "subsequent_nonexclusive_queue_interval_ms": [
+                      286.580208,
+                      295.807396,
+                      319.852604,
+                      447.718854,
+                      287.34
+                    ],
+                    "maximum_empty_control_wall_ms": 2.493909,
+                    "timer_p99_ns": 31
+                  },
+                  {
+                    "arm": 1,
+                    "meaning": "bounded_HostUSM_staging",
+                    "first_use_ms": 223.201137,
+                    "subsequent_wall_ms": [
+                      221.969555,
+                      222.675014,
+                      222.448658,
+                      216.789203,
+                      221.178274
+                    ],
+                    "subsequent_thread_CPU_ms": [
+                      216.97711600000025,
+                      217.44349999999991,
+                      217.34690899999975,
+                      211.87078899999977,
+                      216.15667700000074
+                    ],
+                    "subsequent_nonexclusive_queue_interval_ms": [
+                      221.926145,
+                      222.428958,
+                      222.404584,
+                      216.7475,
+                      221.136146
+                    ],
+                    "maximum_empty_control_wall_ms": 2.493909,
+                    "timer_p99_ns": 31
+                  }
+                ]
+              },
+              {
+                "process": 1,
+                "arms": [
+                  {
+                    "arm": 0,
+                    "meaning": "ordinary_host",
+                    "first_use_ms": 305.366374,
+                    "subsequent_wall_ms": [
+                      308.099473,
+                      608.819653,
+                      415.531364,
+                      319.8369,
+                      317.839556
+                    ],
+                    "subsequent_thread_CPU_ms": [
+                      247.84861099999978,
+                      456.876775,
+                      333.20586700000024,
+                      250.0485000000001,
+                      249.21299300000044
+                    ],
+                    "subsequent_nonexclusive_queue_interval_ms": [
+                      280.102916,
+                      594.65,
+                      396.259584,
+                      302.160312,
+                      299.732916
+                    ],
+                    "maximum_empty_control_wall_ms": 2.126407,
+                    "timer_p99_ns": 31
+                  },
+                  {
+                    "arm": 1,
+                    "meaning": "bounded_HostUSM_staging",
+                    "first_use_ms": 322.408326,
+                    "subsequent_wall_ms": [
+                      216.299458,
+                      216.487732,
+                      217.700737,
+                      221.947449,
+                      222.003505
+                    ],
+                    "subsequent_thread_CPU_ms": [
+                      209.74458699999988,
+                      210.92653200000024,
+                      212.62646799999985,
+                      217.7720340000011,
+                      217.60830400000054
+                    ],
+                    "subsequent_nonexclusive_queue_interval_ms": [
+                      216.257395,
+                      216.444688,
+                      217.658021,
+                      221.905729,
+                      221.9625
+                    ],
+                    "maximum_empty_control_wall_ms": 2.126407,
+                    "timer_p99_ns": 31
+                  }
+                ]
+              },
+              {
+                "process": 2,
+                "arms": [
+                  {
+                    "arm": 0,
+                    "meaning": "ordinary_host",
+                    "first_use_ms": 311.944855,
+                    "subsequent_wall_ms": [
+                      312.088485,
+                      323.132896,
+                      316.349313,
+                      323.466223,
+                      449.53582
+                    ],
+                    "subsequent_thread_CPU_ms": [
+                      248.50047699999988,
+                      266.7939410000004,
+                      246.82292899999948,
+                      259.35993299999893,
+                      362.36504699999904
+                    ],
+                    "subsequent_nonexclusive_queue_interval_ms": [
+                      281.44448,
+                      291.610729,
+                      285.539375,
+                      314.022813,
+                      418.214271
+                    ],
+                    "maximum_empty_control_wall_ms": 1.965112,
+                    "timer_p99_ns": 30
+                  },
+                  {
+                    "arm": 1,
+                    "meaning": "bounded_HostUSM_staging",
+                    "first_use_ms": 217.596909,
+                    "subsequent_wall_ms": [
+                      221.994865,
+                      216.502206,
+                      471.631535,
+                      231.288367,
+                      216.767926
+                    ],
+                    "subsequent_thread_CPU_ms": [
+                      216.50263400000026,
+                      211.6028950000004,
+                      463.3226930000003,
+                      226.15528999999947,
+                      211.5030450000006
+                    ],
+                    "subsequent_nonexclusive_queue_interval_ms": [
+                      221.9525,
+                      216.459791,
+                      471.576458,
+                      231.244271,
+                      216.72375
+                    ],
+                    "maximum_empty_control_wall_ms": 1.965112,
+                    "timer_p99_ns": 30
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "payload_bytes": 2662400,
+            "source_and_destination_stride": 2662656,
+            "processes": [
+              {
+                "process": 0,
+                "arms": [
+                  {
+                    "arm": 0,
+                    "meaning": "ordinary_host",
+                    "first_use_ms": 453.708236,
+                    "subsequent_wall_ms": [
+                      425.598149,
+                      424.142787,
+                      420.315534,
+                      404.29164,
+                      546.734783
+                    ],
+                    "subsequent_thread_CPU_ms": [
+                      336.92028399999964,
+                      345.04618600000117,
+                      330.9319479999999,
+                      322.8503819999986,
+                      448.42575100000204
+                    ],
+                    "subsequent_nonexclusive_queue_interval_ms": [
+                      400.074688,
+                      390.724792,
+                      387.626563,
+                      395.074167,
+                      534.290625
+                    ],
+                    "maximum_empty_control_wall_ms": 0.14311,
+                    "timer_p99_ns": 31
+                  },
+                  {
+                    "arm": 1,
+                    "meaning": "bounded_HostUSM_staging",
+                    "first_use_ms": 294.736418,
+                    "subsequent_wall_ms": [
+                      288.513402,
+                      294.882183,
+                      289.4839,
+                      293.432781,
+                      288.936499
+                    ],
+                    "subsequent_thread_CPU_ms": [
+                      282.9736719999989,
+                      287.5904079999998,
+                      284.2250220000011,
+                      287.935724999997,
+                      283.7594989999985
+                    ],
+                    "subsequent_nonexclusive_queue_interval_ms": [
+                      288.4675,
+                      294.835833,
+                      289.436979,
+                      293.383021,
+                      288.889687
+                    ],
+                    "maximum_empty_control_wall_ms": 0.14311,
+                    "timer_p99_ns": 31
+                  }
+                ]
+              },
+              {
+                "process": 1,
+                "arms": [
+                  {
+                    "arm": 0,
+                    "meaning": "ordinary_host",
+                    "first_use_ms": 426.123172,
+                    "subsequent_wall_ms": [
+                      424.619778,
+                      445.23393,
+                      426.494771,
+                      607.185009,
+                      424.952403
+                    ],
+                    "subsequent_thread_CPU_ms": [
+                      331.9150559999997,
+                      356.91159999999655,
+                      332.0846260000003,
+                      505.6421139999969,
+                      334.06560499999927
+                    ],
+                    "subsequent_nonexclusive_queue_interval_ms": [
+                      391.639271,
+                      437.241354,
+                      397.463021,
+                      587.573333,
+                      405.979688
+                    ],
+                    "maximum_empty_control_wall_ms": 0.149271,
+                    "timer_p99_ns": 31
+                  },
+                  {
+                    "arm": 1,
+                    "meaning": "bounded_HostUSM_staging",
+                    "first_use_ms": 288.835985,
+                    "subsequent_wall_ms": [
+                      290.591403,
+                      290.974985,
+                      418.85256,
+                      288.686722,
+                      508.774436
+                    ],
+                    "subsequent_thread_CPU_ms": [
+                      285.4831250000007,
+                      285.5682200000018,
+                      413.4611130000003,
+                      284.58644499999866,
+                      503.357679999997
+                    ],
+                    "subsequent_nonexclusive_queue_interval_ms": [
+                      290.545937,
+                      290.931979,
+                      418.574896,
+                      288.640938,
+                      508.51677
+                    ],
+                    "maximum_empty_control_wall_ms": 0.149271,
+                    "timer_p99_ns": 31
+                  }
+                ]
+              },
+              {
+                "process": 2,
+                "arms": [
+                  {
+                    "arm": 0,
+                    "meaning": "ordinary_host",
+                    "first_use_ms": 422.142274,
+                    "subsequent_wall_ms": [
+                      451.747206,
+                      417.255375,
+                      604.174025,
+                      418.887059,
+                      610.000774
+                    ],
+                    "subsequent_thread_CPU_ms": [
+                      364.3480760000006,
+                      330.88136200000304,
+                      524.8730560000006,
+                      337.09372500000256,
+                      505.7951509999974
+                    ],
+                    "subsequent_nonexclusive_queue_interval_ms": [
+                      421.330937,
+                      385.568334,
+                      571.054688,
+                      407.561354,
+                      596.349583
+                    ],
+                    "maximum_empty_control_wall_ms": 0.147198,
+                    "timer_p99_ns": 30
+                  },
+                  {
+                    "arm": 1,
+                    "meaning": "bounded_HostUSM_staging",
+                    "first_use_ms": 294.474656,
+                    "subsequent_wall_ms": [
+                      288.655951,
+                      419.516426,
+                      288.490489,
+                      486.126618,
+                      289.48372
+                    ],
+                    "subsequent_thread_CPU_ms": [
+                      282.9723630000007,
+                      412.74279199999955,
+                      282.7560059999996,
+                      480.28553500000015,
+                      284.2174230000012
+                    ],
+                    "subsequent_nonexclusive_queue_interval_ms": [
+                      288.608854,
+                      419.459792,
+                      288.441042,
+                      485.864688,
+                      289.428334
+                    ],
+                    "maximum_empty_control_wall_ms": 0.147198,
+                    "timer_p99_ns": 30
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+        "decision": "Both payloads pass prospectively fixed5percent bank-dependency screen:GM staged/ordinary time ratios0.68265658/0.66823258,31.73/33.18percent shorter. Gate covers actual private-bank admission/upload,2full-data synthetic readers per expert,status/drain and source/guard/map checks;not production dequant/GEMM or model speed. Next separately freeze full dependency-path comparison;no model launch/adoption permitted from this result alone.",
+        "pending": "Production Prefill integration source is opt-in/defaultoff and not yet built as a whole engine. Audit and measure upload+actual IQ dequant+GU/SwiGLU/Down path with matched row distribution;then new117K/agent/thinking generation,decode nondecline/handoff and physical262144 gates. Historical9percent regression cause remains unattributed;clean reference911.7371tok/s unchanged.",
+        "retention": "Current realistic consumer:next production dequant/GEMM dependency-path decision. Retain individual first/subsequent wall/CPU/queue-interval samples and exact identities/gates. Retire consumed routine build/trace/JIT/transaction output and this closed component executable after original source/recipe recovery and review. Test source becomes maintained explicit SYCL target;closed one-use controller restores from551ec694e.",
+        "next_production_path_inputs": {
+          "metadata": {
+            "path": "/home/yayoi/.local/share/strata-sycl/packs/qwen3.8-flash-next-iq3_s/native_experts.txt",
+            "sha256": "d9ac2dfa3ee63c55c9c6a6db26f72da0cec0ee41733f007e5cbbbba71617aa5d"
+          },
+          "representative_formats": [
+            {
+              "layer": 2,
+              "gu_type": 22,
+              "gu_name": "IQ2_S",
+              "down_type": 20,
+              "down_name": "IQ4_NL",
+              "blob_bytes": 1971200
+            },
+            {
+              "layer": 47,
+              "gu_type": 23,
+              "gu_name": "IQ4_XS",
+              "down_type": 20,
+              "down_name": "IQ4_NL",
+              "blob_bytes": 2662400
+            }
+          ],
+          "geometry": {
+            "gu_n": 1280,
+            "gu_k": 2560,
+            "hidden": 640,
+            "down_n": 2560,
+            "down_k": 640
+          },
+          "precision": "Actual production IQ dequant outputs FP16;Gemm.f16_out16 and fused GU accept FP16,GU stored BF16 then SwiGLU hiddenFP16,Down BF16 or FP32 scatter accumulation. Existing retained GU/Down fixtures have matching FP16 operands;their original source remains distinct from this new staging build.",
+          "next_action": "Freeze a full upload+actual dequant+GU/SwiGLU+Down comparison with original-format weight ranges from installed native GGUF,source/range hashes,shape-specific dispatch/fallback and timer eligibility. Current bank result permits that component check only;no model launch yet."
+        },
+        "independent_review": {
+          "stage": "running",
+          "agent": "/root/review_expert_staging_20261026",
+          "report": ".cache/strata-research/20261026/expert-staging-review.txt",
+          "consumer": "Source/lifetime and closed-result review before raw/executable retirement;Main reads short digest only.",
+          "review_point": "Review returns or task terminal;no duplicate/retry or steering."
         }
       }
     }
