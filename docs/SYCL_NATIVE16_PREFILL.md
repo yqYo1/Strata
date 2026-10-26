@@ -879,9 +879,13 @@ then passes two fresh definition-only probes after two discovery probes:actual
 benchmark/server Python selection,3593 runtime files,template and imported
 descriptors match before and after execution,with normal owned closure and no
 GPU launch. The private Python startup envelope differs from historical runs;
-this is a prospective matched control,not an exact historical replay. A fresh
-model plan and exact-source review are still required before the six-process
-supervisor comparison. No model speedup or inference adoption follows yet.
+this is a prospective matched control,not an exact historical replay. Native
+review closes the fresh v3 model plan without a launch:live Python admission
+checks only six environment keys,and request CPU timing excludes admission and
+end-gate work covered by the plan's wording. This is missing verification,not
+an observed misconfiguration. Correct both contracts in fresh committed source
+and plan before the six-process comparison. No model speedup or inference
+adoption follows yet.
 
 After replay and exact source/recipe/header/link/object/ELF recovery,these three
 closed observer/model/control roots retire106files/12,760,397bytes. Four
