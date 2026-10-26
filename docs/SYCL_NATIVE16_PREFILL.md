@@ -766,11 +766,24 @@ already used validation,so it cannot alone explain their1003→975decline.
 See `historical_regression_audit.validation_cost_control_v1` in the
 [runtime comparison](../bench/results/2026-10-15-pr6-recovery-audit/prefill-runtime-comparison-current.json).
 
-CPU effective clock remains unknown. Independently authored
-`bench/sycl/amd_clock_access.c` and `tools/sycl/amd_clock_access.py` are the next
-host-only capability pilot;they have not been built or executed. Its counter
-ratios need access,progression,read-skew,affinity and overhead checks;P0/MHz and
-SMT scope remain unqualified. No clock sampling was added to the clean cohort.
+The source303c1b06f CPU-only counter pilot now passes system-GCC13 compile,
+92-input/13-imported-link closure and one normally closed CPU0process. CPUID
+reports RDPRU support,max index1;1000serialized snapshots take239239ns total.
+Three32ms busy intervals have positive ordered APERF/MPERF deltas and bounded
+read skew,with ratios1.204578..1.204589,1.256753..1.256762 and1.256752..1.256762.
+These are primitive-access samples,not the model's effective clock or MHz.
+P0/SMT semantics and complete sampler wake/scheduling/output overhead remain
+unqualified;no clock observer was added to the clean model cohort. The next
+counter consumer is a bounded,matched whole-observer/affinity qualification
+before any sampled model run. See `amd_clock_access_v1` in the runtime result.
+
+A passive check of this kernel7.0.0-38 finds tracefs,its xe event directory and
+DRM debugfs inaccessible(EACCES). The installed xe UAPI documents memory-range
+queries as preferred-location/PAT/atomic-policy queries,not physical-placement
+history. Its region used counters require CAP_PERFMON or CAP_SYS_ADMIN;no query
+was executed. These observations do not establish migration or rule out every
+userspace observation path. Physical backing/traffic and current owner overlap
+remain unresolved;fdinfo aggregate changes alone cannot establish eviction.
 
 The fresh sourcee33d16fc3 attribution fixture closes ten official-SDK processes
 with240eligible/correct timing samples and120complete CPU/GPU profiles.

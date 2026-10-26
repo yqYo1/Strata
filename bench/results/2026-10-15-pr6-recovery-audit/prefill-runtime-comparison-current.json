@@ -804,7 +804,7 @@
   },
   "historical_regression_audit": {
     "amd_clock_access_v1": {
-      "stage": "prepared",
+      "stage": "access-observed",
       "source_commit": "303c1b06fc61b05a39979313ebd73816c6ef75ad",
       "native_source": {
         "path": "/home/yayoi/orca/workspaces/Strata/sycl/bench/sycl/amd_clock_access.c",
@@ -862,15 +862,87 @@
       },
       "active": false,
       "ownership_closed": true,
-      "passed": false,
-      "complete": false,
+      "passed": true,
+      "complete": true,
       "GPU_executed": false,
-      "counter_access_observed": false,
+      "counter_access_observed": true,
       "model_clock_qualified": false,
       "MHz_qualified": false,
       "criteria": "Fresh system-C compile/link plus one contained CPU0 process after model cohort closure. Exact source/compiler/header/link/ELF identities;normal owner closure. CPU/vendor/CPUID guards,1000 serialized snapshots and three32ms busy intervals with positive ordered counter deltas and finite read-skew bounds. Exit77 or SIGILL records unavailable access,not a usable clock. Other failures remain failures. No retries,signals masked,root,GPU/runtime calls or system frequency changes.",
       "limits": "Primitive access/progression/skew/timer evidence only. CPU0 counters are not per-process clocks. No verified P0/MHz/SMT semantics,model attribution,sampling overhead,physical bus or speed claim. A later model sampler needs a separate matched complete-observer overhead gate.",
-      "retention": "Keep small counter samples and source/recipe/capability decision. Retire host ELF/object,normal build output and private execution records after source recovery and verified replay. No new engine generation."
+      "retention": "Keep small counter samples and source/recipe/capability decision. Retire host ELF/object,normal build output and private execution records after source recovery and verified replay. No new engine generation.",
+      "object": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/amd-clock-access-v1/clock.o",
+        "sha256": "bde9f8201f74f0091b76adf400eaac94b6c9cbad910f642ab69890dd8293e009"
+      },
+      "actual_link_manifest": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/amd-clock-access-v1/actual-link-inputs.json",
+        "sha256": "f5b1b261838c196005efc81c8a0e6f8ffe40a35b63f1ab2073a0e5c51b22ac8c",
+        "files": 13,
+        "uncovered": 0
+      },
+      "binary": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/amd-clock-access-v1/clock-access",
+        "sha256": "e4aa392a764030b5d6d11b3b2f65815e907952a06943353c4878c0a9e027e3f0"
+      },
+      "native_exit_code": 0,
+      "cpu_identity": {
+        "cpu_signature": "00a20f10",
+        "hypervisor": "0",
+        "rdpru": "1",
+        "max_index": "1"
+      },
+      "samples": [
+        {
+          "sample": "0",
+          "wall_ns": "32001272",
+          "thread_cpu_ns": "31996088",
+          "delta_aperf": "142354971",
+          "delta_mperf_lower": "118177260",
+          "delta_mperf_upper": "118178259",
+          "ratio_lower": "1.204578340",
+          "ratio_upper": "1.204588522",
+          "checksum": "14440425592570593281"
+        },
+        {
+          "sample": "1",
+          "wall_ns": "32002293",
+          "thread_cpu_ns": "31946264",
+          "delta_aperf": "148343303",
+          "delta_mperf_lower": "118036142",
+          "delta_mperf_upper": "118036993",
+          "ratio_lower": "1.256752644",
+          "ratio_upper": "1.256761704",
+          "checksum": "2098260368966316033"
+        },
+        {
+          "sample": "2",
+          "wall_ns": "32003476",
+          "thread_cpu_ns": "31434494",
+          "delta_aperf": "145969484",
+          "delta_mperf_lower": "116147329",
+          "delta_mperf_upper": "116148217",
+          "ratio_lower": "1.256751828",
+          "ratio_upper": "1.256761436",
+          "checksum": "17468205872019947521"
+        }
+      ],
+      "snapshot_batch_wall_ns": 239239,
+      "outcome": {
+        "host_probe_accepted": true,
+        "ownership_closed": true,
+        "fresh_faults": [],
+        "boot_unchanged": true,
+        "driver_after": {
+          "pci": "/sys/bus/pci/devices/0000:05:00.0",
+          "driver": "xe",
+          "vendor": "0x8086",
+          "device": "0xe20c",
+          "kernel": "7.0.0-38-generic",
+          "devcoredump": false
+        },
+        "passed": true
+      }
     },
     "validation_cost_control_v1": {
       "stage": "closed",
