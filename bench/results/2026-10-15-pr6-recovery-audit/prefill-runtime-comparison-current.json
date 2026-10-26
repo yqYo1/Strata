@@ -804,7 +804,7 @@
   },
   "historical_regression_audit": {
     "model_cpu_clock_diagnostic_v1": {
-      "stage": "host-passed",
+      "stage": "failed",
       "source_commit": "175cd318966da0bfdb885f905ce2b01c12cb3866",
       "binary": {
         "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/strata",
@@ -1054,15 +1054,55 @@
         "limits": "CPU0 interval aggregate,not model-thread clock. No historical paired counters or causal frequency attribution.",
         "passed": true
       },
-      "outcome": null,
+      "outcome": {
+        "complete": false,
+        "host_probe_accepted": false,
+        "error": "RuntimeError('model benchmark/owner failed')",
+        "ownership_closed": false,
+        "fresh_faults": [],
+        "boot_unchanged": true,
+        "driver_after": {
+          "pci": "/sys/bus/pci/devices/0000:05:00.0",
+          "driver": "xe",
+          "vendor": "0x8086",
+          "device": "0xe20c",
+          "kernel": "7.0.0-38-generic",
+          "devcoredump": false
+        },
+        "passed": false,
+        "failure_detail": {
+          "owner_error": "request controller CPU fraction exceeded",
+          "declared_maximum": 0.05,
+          "actual_fraction": "greater than0.05;exact operands not persisted before rejection",
+          "native_requests_completed": 1,
+          "subsequent_requests_completed": 0,
+          "partial_first_use": {
+            "read_tokens": 117489,
+            "reused_tokens": 0,
+            "generated_tokens": 24,
+            "engine_prompt_ms": 129257,
+            "speed_eligible": false
+          },
+          "limits": "Controller CPU budget failure,not a GPU hang or accepted clock/speed result. Do not relax the failed gate retroactively."
+        }
+      },
       "active": false,
-      "ownership_closed": true,
+      "ownership_closed": false,
       "complete": false,
       "passed": false,
       "speed_eligible": false,
       "inference_adoption": false,
       "preparation_source_commit": "33acf3d182ecb79b3c7cb61346f8cb6d63cd639a",
-      "unlaunched_seal": "Before first plan commit or native launch:move RUSAGE_CHILDREN baseline after admission Git children;generated/native/runtime/workload bytes unchanged."
+      "unlaunched_seal": "Before first plan commit or native launch:move RUSAGE_CHILDREN baseline after admission Git children;generated/native/runtime/workload bytes unchanged.",
+      "closure_reconciliation": {
+        "all_owned_processes_terminated": true,
+        "benchmark_direct_child_reaped": true,
+        "benchmark_session_empty": true,
+        "observer_done_failed": 0,
+        "original_normal_ownership_gate_remains_failed": true,
+        "GPU_faults": []
+      },
+      "remaining_check": "Measure CPU-only supervision cost with unchanged Owner and standalone observer,then attribute its host CPU cost before any new sampled model plan. Retain failed counter output only for offline replay;no retry of this plan."
     },
     "amd_clock_observer_v2": {
       "stage": "closed",
