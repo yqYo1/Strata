@@ -686,9 +686,17 @@ and outstanding-event retirement before a separately committed bounded diagnosti
 the exact blocked operation remains unknown. The original engine and decode
 placement remain unchanged,and official v4remains the qualified component fallback.
 After exact-source recovery,234closed output/review/object files retire,
-89116814bytes. Keep one2797-byte stall diagnostic pair and the eight-file failing
-component witness for this concrete source audit. The closed one-use controller
-and temporary build mode restore fromfdec18b9d;the original failed status remains.
+89116814bytes. The corrected source review follows public`f16_out16` with FP16
+input/BF16output through vllm/TLA,not the own-backend joint-matrix kernel.
+Its transitive TLA helper matches both original Git inputs and both1427-entry
+compile closures. Source review finds no proven defect;generated progress is
+still unqualified. The corrected digest specifies a new64-call stage smoke,
+with16-call checked checkpoints and a30s outer process deadline. This cannot
+qualify the failed2048-call boundary;an API elapsed threshold cannot cancel a
+blocked call. Keep the failed status and one2797-byte stall diagnostic pair.
+At source-audit closure,the eight-file failing component and full report/review
+also retire:10files/30487898bytes. Official v4remains the component fallback.
+The one-use controller and temporary build mode restore fromfdec18b9d.
 
 The fresh sourcee33d16fc3 attribution fixture closes ten official-SDK processes
 with240eligible/correct timing samples and120complete CPU/GPU profiles.
