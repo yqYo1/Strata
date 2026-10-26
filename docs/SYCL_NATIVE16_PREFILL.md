@@ -670,6 +670,22 @@ fixed-batch replacement. The original engine and12fixtures remain the selected
 model reference. Do not interpret a longer-batch method as an original-model
 speedup or compare its cache/spacing envelope directly to the old short batches.
 
+The longer-batch replacement,sourcefdec18b9d and plan71fb906b9,builds with1427
+covered compiler inputs. Only the GU fixture source changes;the other three
+executables retain their original hashes. Five traced checks and four complete
+timing processes pass,but the next observer-off process stalls after its first
+eligible M160batch. The300s owner deadline sends SIGTERM;native exit is−15.
+The kernel records a ccs engine reset at termination,with no earlier xe fault
+in the observed window. All ten actual process sessions are subsequently empty.
+The original incomplete-observation/ownership failure remains recorded separately
+from that verified closure. The final observer-on process never launches.
+See`public_gu_warmed_attribution_v2` for the completed and partial samples.
+No observer-cost,resource-saturation,model-speed or historical-cause conclusion
+is qualified. Do not rerun unchanged. Audit reset/warmup/enqueue/wait boundaries
+and outstanding-event retirement before a separately committed bounded diagnostic;
+the exact blocked operation remains unknown. The original engine and decode
+placement remain unchanged,and official v4remains the qualified component fallback.
+
 The fresh sourcee33d16fc3 attribution fixture closes ten official-SDK processes
 with240eligible/correct timing samples and120complete CPU/GPU profiles.
 Both large-payload observer screens fail:one ordinary on/off ratio is1.131068
