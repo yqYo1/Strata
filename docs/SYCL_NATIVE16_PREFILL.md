@@ -730,6 +730,19 @@ alone explain the1003→975same-binary decline,because both of those cohorts
 already used parameter validation. Official-SDK whole-model qualification
 also remains open.
 
+The frozen matched validation-cost comparison uses six independent original6e40
+processes,on/off/off/on/on/off,with four117489-token requests each. Both arms
+preload the same held-reference control and use empty environment layers;only
+config-enabled parameter validation differs. First use stays separate from each
+subsequent-three median. No inference/default adoption follows from this
+observer comparison. Four native-wrapper/parser host tests pass;the six-process
+model cohort is in progress and has no completed comparison result yet.
+CPU effective clock remains unknown. Independently authored
+`bench/sycl/amd_clock_access.c` is only a proposed next host capability pilot;
+it has not been built or executed. Its counter ratios need separate access,
+progression,read-skew,affinity and overhead checks;P0/MHz and SMT scope remain
+unqualified. No new clock sampling is added to the active clean model cohort.
+
 The fresh sourcee33d16fc3 attribution fixture closes ten official-SDK processes
 with240eligible/correct timing samples and120complete CPU/GPU profiles.
 Both large-payload observer screens fail:one ordinary on/off ratio is1.131068
