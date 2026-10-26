@@ -1343,6 +1343,145 @@
             "independent_replay_passed": true,
             "generated_config_and_plan_retained": true
           }
+        },
+        {
+          "complete": true,
+          "host_probe_accepted": true,
+          "request_windows": [
+            {
+              "request": 0,
+              "controller_cpu_ns": 15284066167,
+              "gate_elapsed_ns": 132119087928,
+              "fraction": 0.11568401210375634,
+              "maximum": 0.2
+            },
+            {
+              "request": 1,
+              "controller_cpu_ns": 14029382329,
+              "gate_elapsed_ns": 122476569882,
+              "fraction": 0.1145474791016486,
+              "maximum": 0.2
+            },
+            {
+              "request": 2,
+              "controller_cpu_ns": 14133693050,
+              "gate_elapsed_ns": 122659367744,
+              "fraction": 0.1152271800348601,
+              "maximum": 0.2
+            },
+            {
+              "request": 3,
+              "controller_cpu_ns": 14106360514,
+              "gate_elapsed_ns": 122931050680,
+              "fraction": 0.11475018261025083,
+              "maximum": 0.2
+            }
+          ],
+          "python_children": {
+            "benchmark": {
+              "pid": 3122996,
+              "start_ticks": 140430315,
+              "sid": 3122996
+            },
+            "server": {
+              "pid": 3123005,
+              "start_ticks": 140430341,
+              "sid": 3122996
+            }
+          },
+          "index": 3,
+          "arm": "baseline",
+          "requests": [
+            {
+              "run": 0,
+              "request_sha256": "26f08fd8364b5c4bce718617fe2aed42761d0a794e068b00532694adef78b3be",
+              "actual_prompt_tokens": 117489,
+              "actual_read_tokens": 117489,
+              "actual_reused_tokens": 0,
+              "generated_tokens": 24,
+              "prompt_ms": 129846.6
+            },
+            {
+              "run": 1,
+              "request_sha256": "fd3ad8ad7033776ad749b22e62e910e5f47e3f7664705f48d9f1fe7349b65515",
+              "actual_prompt_tokens": 117489,
+              "actual_read_tokens": 117489,
+              "actual_reused_tokens": 0,
+              "generated_tokens": 24,
+              "prompt_ms": 120259.1
+            },
+            {
+              "run": 2,
+              "request_sha256": "daabbef4775c3fbdbfd832339d80a5ae2f91025b66df79b92fb8f6905f33b041",
+              "actual_prompt_tokens": 117489,
+              "actual_read_tokens": 117489,
+              "actual_reused_tokens": 0,
+              "generated_tokens": 24,
+              "prompt_ms": 120464.7
+            },
+            {
+              "run": 3,
+              "request_sha256": "8669c9ebe2747b1fc2d7c4806eeb66025c919981d81c51cfdbd64ba3ec3cc2b1",
+              "actual_prompt_tokens": 117489,
+              "actual_read_tokens": 117489,
+              "actual_reused_tokens": 0,
+              "generated_tokens": 24,
+              "prompt_ms": 120867.0
+            }
+          ],
+          "tok_s": [
+            904.8292369611526,
+            976.9655685099922,
+            975.2981578835958,
+            972.0519248430093
+          ],
+          "first_use_tok_s": 904.8292369611526,
+          "subsequent_median": 975.2981578835958,
+          "native_identity": {
+            "pid": 3123057,
+            "start_ticks": 140430459,
+            "sid": 3122996
+          },
+          "validation": {
+            "pid": 3123057,
+            "loader": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_loader.so.0.12.0",
+            "threads_before": 1,
+            "preinit": 37,
+            "config_enabled": true,
+            "first_init": true,
+            "dispatch_result": 46,
+            "output_untouched": true,
+            "retained_reference_until_exit": true,
+            "runtime_teardown_qualified": false
+          },
+          "ownership_closed": true,
+          "fresh_faults": [],
+          "boot_unchanged": true,
+          "driver_after": {
+            "pci": "/sys/bus/pci/devices/0000:05:00.0",
+            "driver": "xe",
+            "vendor": "0x8086",
+            "device": "0xe20c",
+            "kernel": "7.0.0-38-generic",
+            "devcoredump": false
+          },
+          "passed": true,
+          "production_capacity_sample": {
+            "request": 0,
+            "requested_mode": 10,
+            "rows": 81920,
+            "gpu_prefix_rows": 117488,
+            "shared_arena_bytes": 1180698624,
+            "free_gpu_bytes": 4355637248,
+            "fixed_including_headroom_bytes": 4206942336,
+            "mixed_fp16_bytes": 419430400,
+            "headroom_bytes": 536870912,
+            "expert_bank_slots": 384,
+            "expert_bank_bytes": 1022361600,
+            "maximum_expert_stride_bytes": 2662400,
+            "allocation_limit_bytes": 10132807680,
+            "consumer": "Next bounded FP32 split-bank/full-window prefill resource question;logged admission budgets,not physical-residency or new-allocation qualification."
+          }
         }
       ],
       "complete": false,

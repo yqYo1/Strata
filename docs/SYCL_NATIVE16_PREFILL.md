@@ -870,7 +870,7 @@ extras. This private Python-startup envelope differs from historical runs.
 Independent Orca and native Luna/max review accept V6's exact five-source/plan
 contract. Its six-process order is baseline/candidate/candidate/baseline/baseline/
 candidate,each with four117489fresh/zero-reuse/thinking/24-output requests.
-The first baseline and two candidate processes pass all four requests each,source/
+The first four processes pass all four requests each,source/
 provider/route/journal/clock/CPU/closure gates,final15 model hashes and
 no-fresh-fault checks. Individual rates and CPU operands remain in the compact
 result;first use is separate:
@@ -880,10 +880,11 @@ result;first use is separate:
 | 0/baseline | 904.1691 | 975.6821 | 11.4852..11.6506% |
 | 1/candidate | 905.1339 | 976.8543 | 6.1229..6.2783% |
 | 2/candidate | 907.1333 | 975.4528 | 6.0249..6.1065% |
+| 3/baseline | 904.8292 | 975.2982 | 11.4547..11.5684% |
 
-The first candidate/baseline ratio is1.00120144(+0.1201%). Three process results
-remain pending;process2 awaits its paired baseline3. Do not select the mechanism
-from one pair or call the host CPU
+The first two candidate/baseline ratios are1.00120144(+0.1201%) and
+1.00015858(+0.0159%). Two process results remain pending. Do not select the
+mechanism before cohort closure or call the host CPU
 reduction a model gain. Neither these samples nor the host gate establishes a
 historical cause,1000tok/s restoration,sustained decode,agent quality or
 physical262144 correctness.
@@ -1100,6 +1101,23 @@ partial-sum rounding and is not the current implementation or a qualified
 SGLang/vLLM contract. Before a scoped experiment,check actual reference reduction
 storage/order and task evidence,then bounds/ownership and262144-context fallback;
 do not treat this capacity saving as accepted numerical behavior or a speedup.
+
+Another capacity-only option preserves FP32 sums in two accumulator banks.
+For117488rows,put65536rows in the existing region and51952rows in an additional
+allocation. Applying the same alignment/guard formula gives1163756800B for the
+existing planes plus mixed tail,leaving16941824B in the1180698624B region;the
+additional guarded FP32 bank needs531988736B. No temporal plane alias is needed
+for that row count. The current process3/request0 admission log reports
+4355637248B free and4206942336B fixed including512MiB headroom. Reducing the
+prefill-only expert bank from384 to128 maximum-stride slots would release
+681574400B,leaving298280576B after the extra accumulator and the same headroom.
+These are logged budgets and prospective arithmetic,not successful allocation
+or physical-residency evidence. The current planner rejects this row count.
+Before implementation,audit every scalar/fused scatter and finish consumer for
+split-bank bounds,the maximum15 jobs/expert and histogram capacity,queue/owner
+retirement,cancellation,and full-context fallback. Then measure actual job/
+dequant/upload changes and critical-path service;larger windows and a smaller
+expert bank do not establish a throughput gain or the limiting hardware unit.
 
 A20261027 source inspection of the generic
 [vLLM Triton expert path](https://github.com/vllm-project/vllm/blob/main/vllm/model_executor/layers/fused_moe/fused_moe.py)
