@@ -804,7 +804,7 @@
   },
   "historical_regression_audit": {
     "owner_scan_control_v3": {
-      "stage": "prepared",
+      "stage": "tests-passed",
       "plan": {
         "source_commit": "1a052a9491cbadcab96457169503a328136bac7d",
         "sources": {
@@ -847,7 +847,23 @@
         },
         "retention": "Keep14control outcome and6individual CPU/wall/fraction samples,source/provider/environment and decision. Retire normal fixture/process logs and candidate duplication after decision;no model or engine generation."
       },
-      "tests": null,
+      "tests": {
+        "passed": true,
+        "exit_code": 0,
+        "cases": 14,
+        "error": null,
+        "ownership_closed": true,
+        "command": [
+          "/usr/bin/python3.12",
+          "-I",
+          "-S",
+          "-B",
+          "-X",
+          "pycache_prefix=/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/owner-scan-control-v3/no-cache",
+          "/home/yayoi/orca/workspaces/Strata/sycl/tools/test_sycl_owner_candidate.py"
+        ],
+        "output_bytes": 113
+      },
       "processes": [],
       "complete": false,
       "passed": false,
