@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
 """Bounded Python-runtime admission for Main's model controls; repository LICENSE.
 
-The probe imports entrypoint definitions and compiles the chat template only.
-It never calls their main functions, starts a server, or initializes an engine.
+The server probe exercises a loopback mock service and late tokenizer/telemetry
+imports. It never constructs StrataEngine or initializes SYCL/Level Zero. Normal
+telemetry can query NVML; those host-library mappings are part of admission.
 """
 import json
 import os
@@ -17,8 +18,8 @@ if str(SOURCE.parent) not in sys.path: sys.path.insert(0, str(SOURCE.parent))
 import measurement_owner as ownership
 
 B = Path('/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007')
-HOST = B / 'benchmark-python-admission-v3'
-SCOPE = 'benchmark_python_runtime_v3'
+HOST = B / 'benchmark-python-admission-v4'
+SCOPE = 'benchmark_python_runtime_v4'
 require = ownership.require
 
 
@@ -104,10 +105,51 @@ def check_running(pid, script, selected, env, allowed_maps, expected_tail=()):
     require(all(actual.get(k.encode()) == v.encode() for k, v in env.items()) and
         set(actual) - {k.encode() for k in env} <= {b'PWD', b'OLDPWD', b'SHLVL', b'_'},
         'actual Python environment differs;only shell PWD/OLDPWD/SHLVL/_ additions allowed')
-    require(set(code_maps(pid)) <= set(allowed_maps), 'unqualified Python code mapping')
+    unexpected = sorted(set(code_maps(pid)) - set(allowed_maps))
+    require(not unexpected, 'unqualified Python code mappings: ' + json.dumps(unexpected))
     after = ownership.identity(pid)
     require(after and all(after[k] == before[k] for k in ('pid', 'start_ticks', 'sid')), 'Python identity changed during check')
     return {k: before[k] for k in ('pid', 'start_ticks', 'sid')}
+
+
+def mock_server_probe(namespace, template):
+    """Exercise lazy host runtime before any real-model launch; no native engine."""
+    import contextlib
+    import io
+    import threading
+    import urllib.request
+    # main() imports the real tokenizer lazily; include its extension and native
+    # dependencies even though the mock deliberately uses the byte tokenizer.
+    import strata_tokenizer  # noqa: F401
+    output = io.StringIO()
+    with contextlib.redirect_stdout(output):
+        tokenizer = namespace['ByteTokenizer']()
+        engine = namespace['MockEngine'](tokenizer, 'Thinking.</think>Ready.')
+        service = namespace['Service'](engine, tokenizer, namespace['ChatTemplate'](Path(template)),
+            model_name='runtime-probe')
+        # serve() also spawns its own daemon. Use its same initialization calls
+        # with an explicitly owned thread,so shutdown/join is verifiable here.
+        service.host_names = namespace['host_names_for']('127.0.0.1', service.allowed_hosts, service.trusted_origins)
+        service.start_telemetry()
+        server = namespace['Server'](('127.0.0.1', 0), namespace['make_handler'](service))
+        thread = threading.Thread(target=lambda: server.serve_forever(poll_interval=.01), daemon=True)
+        thread.start()
+        try:
+            address = 'http://127.0.0.1:' + str(server.server_address[1])
+            with urllib.request.urlopen(address + '/v1/models', timeout=5) as response:
+                require(response.status == 200 and json.load(response)['data'], 'mock model discovery failed')
+            body = json.dumps(dict(model='runtime-probe', messages=[dict(role='user', content='Runtime admission probe.')],
+                max_tokens=64, stream=False)).encode()
+            request = urllib.request.Request(address + '/v1/chat/completions', data=body,
+                headers={'Content-Type': 'application/json'})
+            with urllib.request.urlopen(request, timeout=5) as response:
+                require(response.status == 200 and json.load(response)['choices'], 'mock chat failed')
+            require(service.engine is engine, 'mock engine unexpectedly replaced')
+        finally:
+            server.shutdown(); server.server_close(); thread.join(3)
+        require(not thread.is_alive() and len(output.getvalue()) <= 16384, 'mock host probe closure/output')
+    return dict(loopback_models=True, loopback_chat=True, native_engine=False,
+        late_tokenizer_import=True, production_telemetry_initialized=True)
 
 
 def probe(entry, template):
@@ -119,7 +161,7 @@ def probe(entry, template):
     sys.path[0] = str(entry.parent)
     sys.argv = [str(entry)]
     namespace = runpy.run_path(str(entry), run_name='_strata_runtime_definition_probe')
-    if entry.name == 'server.py': namespace['ChatTemplate'](Path(template))
+    exercised = mock_server_probe(namespace, template) if entry.name == 'server.py' else dict(definitions_only=True)
     require(sys.flags.dont_write_bytecode == 1 and sys.flags.no_user_site == 1 and
         not sys.flags.no_site and site.ENABLE_USER_SITE is False, 'actual Python startup flags differ')
     versions = {name: importlib.metadata.version(name) for name in ('jinja2', 'MarkupSafe')}
@@ -129,7 +171,7 @@ def probe(entry, template):
         if filename and Path(filename).is_file(): files.add(str(Path(filename).resolve()))
     print(json.dumps(dict(executable=sys.executable, prefix=sys.prefix, base_prefix=sys.base_prefix,
         search_path=[str(Path(v or os.getcwd()).resolve()) for v in sys.path], modules=sorted(files),
-        code_maps=code_maps(os.getpid()), versions=versions)), flush=True)
+        code_maps=code_maps(os.getpid()), versions=versions, exercised=exercised)), flush=True)
 
 
 def host_action(phase):
@@ -139,8 +181,10 @@ def host_action(phase):
         fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB); control.runtime.guards.no_model_owners([])
         control.qualification()
         previous = control.runtime.validation.committed(control.RESULT,
-            ('historical_regression_audit', 'supervision_model_control_v4'))
-        require(previous['stage'] == 'closed-unlaunched' and not previous['native_launched'], 'preserve original runtime refusal')
+            ('historical_regression_audit', 'supervision_model_control_v5'))
+        require(previous['stage'] == 'failed' and len(previous['processes']) == 1 and
+            previous['failure_diagnosis']['long_requests_completed'] == 0 and
+            previous['closure_reconciliation']['same_uid_model_owner_guard_passed'], 'preserve original runtime refusal')
         seed = dict(previous, environment_template=control.gen.committed(control.TEMPLATE)['environment_template'])
         env = control.environment(seed, HOST); require_environment(env); chosen = selection(env)
         if phase == 'prepare':
@@ -148,7 +192,8 @@ def host_action(phase):
             source = control.gen.git('rev-parse', 'HEAD').decode().strip(); pins = control.gen.benchmark_pins(source)
             HOST.mkdir(mode=0o700); (HOST / 'cache').mkdir()
             state = dict(stage='discovering', source_commit=source, benchmark_inputs=pins, selected=chosen,
-                complete=False, passed=False, commands=[], active=False, GPU_executed=False)
+                complete=False, passed=False, commands=[], active=False, GPU_executed=False,
+                GPU_scope='No inference/SYCL/Level Zero;normal production telemetry may query NVML.')
             manifest = None
         else:
             state = json.loads((HOST / 'record.json').read_text())
@@ -206,8 +251,8 @@ def host_action(phase):
                 state.update(stage='prepared', discovery_command_count=len(owner.commands),
                     plan=dict(source_commit=source, selected=chosen, manifest=contract,
                         environment_identity=control.identity(env), template=dict(path=str(template), sha256=ownership.sha(template)),
-                        work='Two bounded definition-only discovery processes,then commit this manifest/plan before two fresh qualified probes. Never call entrypoint main,serve requests or initialize an engine.',
-                        gate='Exact source/interpreter/environment/template,all runtime directory inventories and file hashes checked before and after both qualified CPU probes;descriptor equality,normal owned closure;no GPU/model or speed claim.',
+                        work='Two bounded discovery processes,then commit this manifest/plan before two fresh qualified probes. Benchmark definitions only;server uses loopback models/chat with MockEngine and ByteTokenizer,imports real tokenizer and initializes production telemetry. Never construct StrataEngine or initialize SYCL/Level Zero;NVML telemetry host queries are included.',
+                        gate='Exact source/interpreter/environment/template,all runtime directory inventories and file hashes checked before and after both qualified host probes;descriptor equality,normal owned closure;no GPU inference or speed claim. Normal telemetry host queries are included.',
                         budgets=dict(wall=30, cpu=20, rss_cap=256 << 20, text_cap=256 << 10, file_cap=1 << 20, total_cap=4 << 20)),
                     versions=descriptors['server']['versions'])
             else: state.update(stage='closed', complete=True, passed=True)

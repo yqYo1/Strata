@@ -28,12 +28,12 @@ import owner_candidate as candidate
 import runtime_probe as runtime
 
 B, A = gen.B, gen.A
-ROOT = B / 'prefill-supervision-cost-v5'
+ROOT = B / 'prefill-supervision-cost-v6'
 HOST = B / 'owner-scan-control-v3'
 RESULT = A / 'prefill-runtime-comparison-current.json'
 TEMPLATE = A / 'phase-prefill-speed-current.json'
-KEY = 'supervision_model_control_v5'
-REVIEW = 'supervision_model_source_contract_v5_20261027'
+KEY = 'supervision_model_control_v6'
+REVIEW = 'supervision_model_source_contract_v6_20261027'
 ORDER = ('baseline', 'candidate', 'candidate', 'baseline', 'baseline', 'candidate')
 require, digest = runtime.require, runtime.digest
 
@@ -91,7 +91,7 @@ def save(row):
 
 
 def qualification():
-    tests = runtime.validation.committed(RESULT, ('historical_regression_audit', 'supervision_input_admission_v6'))
+    tests = runtime.validation.committed(RESULT, ('historical_regression_audit', 'supervision_input_admission_v7'))
     require(tests['passed'] and tests['exit_code'] == 0 and tests['cases'] == 9 and
         all(digest(P / name) == pin and hashlib.sha256(gen.git('show', tests['source_commit'] + ':' + name)).hexdigest() == pin
             for name, pin in tests['sources'].items()) and
@@ -167,9 +167,11 @@ def current(row):
 
 def prepare():
     require(not ROOT.exists() and KEY not in gen.committed(RESULT)['historical_regression_audit'], 'single-use model control')
-    previous = runtime.validation.committed(RESULT, ('historical_regression_audit', 'supervision_model_control_v4'))
-    require(previous['stage'] == 'closed-unlaunched' and previous['native_launched'] is False and
-        not previous['processes'], 'preserve original unlaunched runtime-admission failure')
+    previous = runtime.validation.committed(RESULT, ('historical_regression_audit', 'supervision_model_control_v5'))
+    require(previous['stage'] == 'failed' and len(previous['processes']) == 1 and
+        previous['failure_diagnosis']['long_requests_completed'] == 0 and
+        previous['closure_reconciliation']['same_uid_model_owner_guard_passed'],
+        'preserve original late-runtime admission failure')
     full, rt, proof = qualification()
     python_host, _ = python_runtime.admitted(sys.modules[__name__])
     reference = gen.committed(RESULT)['historical_regression_audit']['near_dense_original_reference_v1']
@@ -193,7 +195,7 @@ def prepare():
             CPU_budget='Host-only candidate gate<=5percent has passed. The full model control separately permits<=8percent candidate and<=20percent legacy controller CPU/gate elapsed to cover model-artifact/protocol/provider handling. Persist operands before checking. This does not repair the original failed5percent clock-observer diagnostic;no clock observer is used here.',
             acceptance='All source/provider/request/stream/journal/route/validation/fault/closure gates pass. Mechanism speed screen:all3pair ratios>1 and geometric mean>1.01. Historical1003and1006 comparisons descriptive only. No speed-based early stop/retries;stop first execution/contract/budget failure. No inference/default adoption from this control.',
             limits='24token outputs do not qualify sustained decode/70tok_s,quality/agent/physical262144/handoff or new engine. Parameter validation and existing launch boundaries remain charged;source review and host gate precede execution. BOOTTIME/MONOTONIC divergence>50ms rejects suspend.',
-            Python_runtime='Same bench.sh selects admitted interpreter/venv;all external Python search trees and imported mappings are hashed. Two definition-only discovery processes are excluded;two fresh probes pass the separately committed manifest. Both model arms disable user site and use empty private bytecode-cache prefixes;native safety/placement stay fixed. At every request begin,benchmark/server executable and script/venv invocation are normalized and checked,the remaining argv must exactly match their declared vectors,and complete expected environment plus executable maps are checked;only additional shell PWD/OLDPWD/SHLVL/_ keys are permitted. Benchmark tail is frozen bench.sh argv;server tail is --engine strata --config frozen_config --port frozen_port,no GPU override. This is a new controlled Python-startup envelope,not an exact historical runtime replay.',
+            Python_runtime='Same bench.sh selects admitted interpreter/venv;external Python search trees and observed imported mappings are hashed. Two host discovery processes are excluded;two fresh probes pass the separately committed manifest. The server probe exercises production telemetry,late tokenizer import and loopback models/chat with MockEngine;no native inference/SYCL/Level Zero,NVML host queries included. Live model mapping admission still rejects any unobserved library and records its path. Both model arms disable user site and use empty private bytecode-cache prefixes;native safety/placement stay fixed. At every request begin,benchmark/server executable and script/venv invocation are normalized and checked,the remaining argv must exactly match their declared vectors,and complete expected environment plus executable maps are checked;only additional shell PWD/OLDPWD/SHLVL/_ keys are permitted. Benchmark tail is frozen bench.sh argv;server tail is --engine strata --config frozen_config --port frozen_port,no GPU override. This is a new controlled Python-startup envelope,not an exact historical runtime replay.',
             budgets=dict(wall=3000, cpu=72000, rss_cap=104 << 30, text_cap=32 << 20, file_cap=64 << 20, total_cap=128 << 20),
             whole_bytes=768 << 20,
             retention='Keep24individual clock/work/CPU samples,source/native/runtime/config/recipe and decisions. Retire normal logs/JIT/closed controls after replay;no new engine build. Retain qualified host record/provider manifest only through this comparison.'))

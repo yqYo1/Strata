@@ -122,7 +122,10 @@ class RuntimeInputs(unittest.TestCase):
                 missing = {k: v for k, v in env.items() if k != 'LANG'}
                 with self.assertRaises(RuntimeError):
                     self.runtime.check_running(entry['pid'], source, chosen, missing, allowed, tail)
-                with self.assertRaises(RuntimeError): self.runtime.check_running(entry['pid'], source, chosen, env, [], tail)
+                with self.assertRaises(RuntimeError) as refused:
+                    self.runtime.check_running(entry['pid'], source, chosen, env, [], tail)
+                self.assertIn('unqualified Python code mappings:', str(refused.exception))
+                for path in allowed: self.assertIn(path, str(refused.exception))
                 io.proc.stdin.close(); io.exit(3)
             owner = control.baseline.Owner(self.root / 'owned', persist)
             entry, _, _ = owner.run('python', [chosen['path'], str(source), *tail], env, self.root, interaction=interact,
