@@ -17,7 +17,7 @@ def native_environment(plan, parent):
     environment=dict(parent)
     probe=plan.get('native_validation_probe')
     if probe is not None:
-        if set(probe) != {'library', 'loader'}:
+        if 'control' in probe or 'mode' in probe:
             raise RuntimeError('unsupported native validation probe configuration')
         if environment.get('LD_PRELOAD') or environment.get('CUDA_MODULE_LOADING') != 'EAGER':
             raise RuntimeError('probe requires private native preload and immutable startup environment')

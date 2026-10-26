@@ -47,7 +47,12 @@ class EngineEnvironment(unittest.TestCase):
         with tempfile.TemporaryDirectory() as directory:
             library=Path(directory)/'library';library.write_bytes(b'pinned library bytes')
             artifact=dict(path=str(library),sha256=hashlib.sha256(library.read_bytes()).hexdigest())
-            plan=dict(native_validation_probe=dict(library=artifact,loader=artifact))
+            # Existing preload_qualification() callers carry provenance and
+            # lifetime metadata alongside the two native artifact identities.
+            plan=dict(native_validation_probe=dict(library=artifact,loader=artifact,
+                component_source_commit='a'*40,
+                component_original_plan=dict(commit='b'*40,path='original-plan.json',sha256='c'*64),
+                retained_reference_until_exit=True,runtime_teardown_qualified=False))
             parent=dict(CUDA_MODULE_LOADING='EAGER',STRATA_MEASUREMENT_ROOT=directory)
             child=wrapper.native_environment(plan,parent)
             self.assertNotIn('LD_PRELOAD',parent)
