@@ -1915,6 +1915,10 @@ native/manifest files are retired after source/recipe recovery;no GPU/model
 process used it. The replacement reserves its row under the output lock before
 reading callback data,and adds invalid first-omitted begin/end controls. It still
 requires a fresh committed host qualification and direct UR result/output check.
+The replacement from023c7cc2b now passes all23native CPU controls,including
+invalid argument data on the very first omitted begin and end. A separately
+frozen pair of actual host UR canaries will check the unchanged return/output
+contract with complete capture and cap3. These do not enumerate or use a GPU.
 Keep the qualified v3 observer until separate device and observer-cost gates
 select a replacement;the65536maximum and16MiB parser still do not permit a
 complete whole-model capture. The selected engine and decode are unchanged.

@@ -20,18 +20,20 @@ import ur_call_subscriber as subscriber
 P, B, RESULT = subscriber.P, subscriber.B, subscriber.RESULT
 ROOT = B / 'ur-call-budget-v2'
 KEY = 'ur_subscriber_budget_v2'
+DIRECT_ROOT = B / 'ur-call-budget-direct-v1'
+DIRECT_KEY = 'ur_subscriber_budget_direct'
 require, digest = subscriber.require, subscriber.digest
 BUDGET = dict(wall=120, cpu=120, rss_cap=4 << 30, text_cap=4 << 20,
               file_cap=32 << 20, total_cap=64 << 20)
 
 
-def write(path, value):
+def write(path, value, key=KEY):
     if path == RESULT:
         # Preserve unrelated compact tables byte-for-byte. This controller owns
         # one result row, not the formatting or retention of older experiments.
         base = gen.git('show', 'HEAD:' + str(path.relative_to(P))).decode()
-        tag = json.dumps(KEY) + ':'
-        encoded = json.dumps(value['event_reconciliation'][KEY], indent=2).replace('\n', '\n    ')
+        tag = json.dumps(key) + ':'
+        encoded = json.dumps(value['event_reconciliation'][key], indent=2).replace('\n', '\n    ')
         if tag in base:
             require(base.count(tag) == 1, 'ambiguous control row')
             start = base.index(tag) + len(tag)
@@ -59,8 +61,15 @@ def inputs(revision):
     return pins
 
 
-def admit(row, binary=False):
-    require(inputs(row['source_commit']) == row['inputs'], 'source/controller changed')
+def admit(row, binary=False, recover_original=False):
+    if recover_original:
+        # A later controller does not relabel the already compiled observer.
+        # Recover every original input; the actual native sources/headers/tools
+        # and ELF bytes are independently verified below.
+        for name, raw in gen.blobs(P, row['source_commit'], row['inputs']):
+            require(hashlib.sha256(raw).hexdigest() == row['inputs'][name], 'original source not recoverable')
+    else:
+        require(inputs(row['source_commit']) == row['inputs'], 'source/controller changed')
     _, proof = subscriber.qualified_native()
     require(proof == row['baseline_host_proof'], 'qualified fallback changed')
     for item in row.get('compiler_inputs', []):
@@ -180,16 +189,107 @@ def check(row, owner):
     row.update(stage='host-checked', complete=True, passed=True)
 
 
+def direct_host():
+    host = subscriber.r.validation.committed(RESULT, ('event_reconciliation', KEY))
+    require(host['passed'] and host['complete'] and host['ownership_closed'] and not host['active']
+            and len(host['outcomes']) == 23 and not host.get('native_artifacts_retired'),
+            'closed boundary-safe host qualification required')
+    admit(host, True, recover_original=True)
+    return host
+
+
+def direct_prepare(row, owner):
+    require(not row, 'fresh direct runtime controls only')
+    host = direct_host()
+    assets = subscriber.runtime_assets()
+    component = subscriber.r.validation.committed(subscriber.r.validation.INDEX,
+        ('UR_silent_validation_native_child_scope', 'preload_component'))
+    ref = component['original_plan']
+    raw = gen.git('show', ref['commit'] + ':' + ref['path'])
+    require(hashlib.sha256(raw).hexdigest() == ref['sha256'], 'original canary recipe changed')
+    original = json.loads(raw)['UR_silent_validation_native_child_scope']['canary_plan']
+    row.update(stage='prepared', source_commit=gen.git('rev-parse', 'HEAD').decode().strip(),
+        observer_native_source=host['source_commit'], host_reference_commit=gen.git('rev-parse', 'HEAD').decode().strip(),
+        host_sha256=hashlib.sha256(json.dumps(host, sort_keys=True).encode()).hexdigest(),
+        assets=assets, canary=component['canary'], cases=[], outcomes=[], active=False,
+        ownership_closed=True, complete=False, passed=False, gpu_work=False, model_qualified=False,
+        limits='Actual UR result/output control only. No device enumeration,queue,enqueue,GPU,model,observer cost,ordinary runtime teardown or phase-coverage qualification.',
+        gates='Complete and cap3 fresh host processes:before-main validation,actual46 result and UINT32_MAX sentinel preserved,two rejected API pairs in complete arm,one explicit loss marker and parser refusal in truncated arm. Full UR trace must contain no device/queue/enqueue work. Stop first failure.',
+        retention='Keep compact actual results and source/recipe. Retire successful call/trace logs after extraction. Same tiny boundary-safe observer and existing canary,no new build.')
+    row['inputs'] = inputs(row['source_commit'])
+    for name, cap in (('complete', None), ('loss', '3')):
+        root = DIRECT_ROOT / name
+        root.mkdir(); (root / 'tmp').mkdir(); (root / 'cache').mkdir()
+        env = {k: v.replace(original['root'], str(root)) for k, v in original['native_environment'].items()}
+        env.update(LD_PRELOAD=assets['preload']['library']['path'] + ':' + host['artifacts']['library']['path'],
+            XPTI_FRAMEWORK_DISPATCHER=assets['dispatcher']['path'], XPTI_SUBSCRIBERS=host['artifacts']['library']['path'],
+            XPTI_TRACE_ENABLE='1', SYCL_UR_TRACE='0', STRATA_UR_CALL_LOG=str(root / 'calls.jsonl'),
+            STRATA_UR_PROBE_EXPECTED_LOADER=assets['preload']['loader'], NEOReadDebugKeys='1',
+            EnableDirectSubmission='0', UR_L0_V2_FORCE_DISABLE_COPY_OFFLOAD='1')
+        if cap is not None: env['STRATA_UR_CALL_RECORD_LIMIT'] = cap
+        row['cases'].append(dict(name=name, root=str(root), environment=env, command=[row['canary']['path']]))
+
+
+def direct_check(row, owner):
+    require(row['stage'] == 'prepared' and not row['outcomes'], 'single-use direct runtime controls')
+    host = direct_host()
+    require(hashlib.sha256(json.dumps(host, sort_keys=True).encode()).hexdigest() == row['host_sha256'] and
+            inputs(row['source_commit']) == row['inputs'] and subscriber.runtime_assets() == row['assets'] and
+            digest(row['canary']['path']) == row['canary']['sha256'], 'direct inputs changed')
+    for case in row['cases']:
+        entry, out, err = owner.run(case['name'], case['command'], case['environment'], P,
+            wall=30, cpu=20, rss_cap=2 << 30, text_cap=1 << 20, file_cap=4 << 20, total_cap=8 << 20)
+        require(supervision.closed(entry) and entry['exit_code'] == 0, 'actual UR canary failed')
+        actual = json.loads(out.read_text())
+        require(actual['pid'] == entry['pid'] and actual['initialized'] == actual['closed'] == 0 and
+                actual['checked'] == actual['expected'] == 46 and actual['version'] == 4294967295,
+                'actual UR result/output changed')
+        proof = subscriber.r.validation.preload_evidence(err.read_text(), entry['pid'])
+        require(proof['loader'] == row['assets']['preload']['loader'], 'actual loader changed')
+        root = Path(case['root'])
+        trace = (root / 'trace.log').read_text()
+        import re
+        require('urPlatformGetApiVersion' in trace and 'UR_RESULT_ERROR_INVALID_NULL_HANDLE' in trace and
+                not re.search(r'ur(?:Enqueue|Kernel|Queue|Device|PlatformGet\()', trace),
+                'missing actual UR response or unexpected device work')
+        require(not (root / 'validation.log').exists() or not (root / 'validation.log').stat().st_size,
+                'parameter warning/error')
+        text = (root / 'calls.jsonl').read_text()
+        sample = dict(case=case['name'], exit_code=0, ownership_closed=True,
+            actual=actual, before_main=proof, unexpected_device_work=False)
+        if case['name'] == 'complete':
+            parsed = subscriber.parse_calls(text, entry['pid'])
+            require(parsed['call_pairs'] == 2 and parsed['outcomes'] ==
+                    [dict(name='urPlatformGetApiVersion', status=46, calls=2)], 'actual UR call census differs')
+            sample['calls'] = parsed
+        else:
+            rows = [json.loads(line) for line in text.splitlines()]
+            require(len(rows) == 4 and rows[-1]['kind'] == 'overflow' and
+                    rows[-1]['records'] == rows[-1]['limit'] == 3, 'actual UR loss marker differs')
+            try: subscriber.parse_calls(text, entry['pid'])
+            except RuntimeError as error:
+                require('record budget exhausted' in str(error), 'wrong actual UR loss refusal')
+            else: raise RuntimeError('incomplete actual UR capture accepted')
+            sample.update(loss_markers=1, complete_capture_rejected=True)
+        row['outcomes'].append(sample)
+    direct_host()
+    require(inputs(row['source_commit']) == row['inputs'] and subscriber.runtime_assets() == row['assets'],
+            'post-run direct input mismatch')
+    row.update(stage='direct-host-checked', passed=True, complete=True)
+
+
 def main(action):
     with (B / 'owned-v0141-measurement.lock').open('a+') as lock:
         fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
         gen.guards.no_model_owners([])
         container = gen.committed(RESULT)
-        row = container['event_reconciliation'].get(KEY, {})
-        if action == 'prepare':
-            require(not ROOT.exists(), 'fresh build root; inspect ownership before retry')
-            ROOT.mkdir(mode=0o700)
-        owned = ROOT / (action + '-owned')
+        direct = action.startswith('direct-')
+        key, root = (DIRECT_KEY, DIRECT_ROOT) if direct else (KEY, ROOT)
+        row = container['event_reconciliation'].get(key, {})
+        if action in ('prepare', 'direct-prepare'):
+            require(not root.exists(), 'fresh root; inspect ownership before retry')
+            root.mkdir(mode=0o700)
+        owned = root / (action + '-owned')
         require(not owned.exists(), 'inspect existing owner before retry')
         owner = None
         def persist():
@@ -197,7 +297,8 @@ def main(action):
                                             commands_owned=owner.commands if owner else []))
         owner = supervision.Owner(owned, persist)
         try:
-            {'prepare': prepare, 'build': build, 'check': check}[action](row, owner)
+            {'prepare': prepare, 'build': build, 'check': check,
+             'direct-prepare': direct_prepare, 'direct-check': direct_check}[action](row, owner)
         except BaseException as error:
             row.update(stage='failed', passed=False, complete=False, error=repr(error))
         finally:
@@ -206,12 +307,13 @@ def main(action):
             row['passed'] = row.get('passed', False) and row['ownership_closed']
             row['complete'] = row.get('complete', False) and row['passed']
             write(owned / 'record.json', dict(row, commands_owned=owner.commands))
-            container['event_reconciliation'][KEY] = row
-            write(RESULT, container)
+            container['event_reconciliation'][key] = row
+            write(RESULT, container, key)
         print(json.dumps({k: row.get(k) for k in ('stage', 'passed', 'complete', 'ownership_closed', 'error')}), flush=True)
         return int(row['stage'] == 'failed' or not row['ownership_closed'])
 
 
 if __name__ == '__main__':
-    require(sys.argv[1:] in (['prepare'], ['build'], ['check']), 'prepare|build|check')
+    require(len(sys.argv) == 2 and sys.argv[1] in ('prepare', 'build', 'check', 'direct-prepare', 'direct-check'),
+            'prepare|build|check|direct-prepare|direct-check')
     sys.exit(main(sys.argv[1]))
