@@ -1565,6 +1565,19 @@ indexed knowledge:the configured Xe2 overload/capability and lowering must be
 qualified before use. Neither report supplies a throughput gain or physical
 bandwidth/critical-path attribution. Preserve decode and global JIT flags.
 
+The next capture uses the original engine's existing `STRATA_QSA_DUMP` hook,
+not a new native build. The committed controller and corruption controls first
+validate the74-token warmup at a request gate,then permit one official32K-minimum
+request (39260actual tokens). `LAST=1` selects a whole final chunk,not a single
+query:the expected transient all-layer file is646213056bytes,including warmup.
+The private finite budget is1GiB. Verify all24headers and initialized causal,
+ordered IDs;do not interpret the uninitialized warmup cap suffix. Retain only
+the initialized6491-row layer0 record for the next working-set comparison.
+Page identity is source-derived from qualified full-resident Mode0 admission,
+not a captured device table. No Q/K/V values or physical traffic are captured;
+the later calibration must declare its synthetic tensor values. This plan has
+not yet produced a fixture or a performance result.
+
 Complete prefill phase attribution requires three independent ledgers: route-owner
 planned operations, actual API results and collector device executions.
 [`work_ledger.py`](../tools/sycl/work_ledger.py) implements the host reconciliation
