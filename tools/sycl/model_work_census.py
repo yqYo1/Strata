@@ -238,9 +238,9 @@ def run(mode):
         work = gen.common.extract_planned_moe_work(part, plan['expected_window_pairs'])
         result.update(census=gen.common.compact_window_census(work['planned_moe_windows']),
             request={k:sample[k] for k in ('request_sha256','actual_read_tokens','actual_reused_tokens','generated_tokens','prompt_ms')},
-            native_identity=end['native'], complete=True)
+            native_identity=end['native'])
         admission(row, full_models=(mode == 'long'))
-        result['passed'] = True
+        result.update(passed=True, complete=True)
     except BaseException as error:
         result['error'] = repr(error)
         if (root/'engine.stderr').exists(): result['error_excerpt'] = (root/'engine.stderr').read_text()[-4096:]
@@ -250,7 +250,9 @@ def run(mode):
             c.get('ownership_status') == 'observed' and type(c.get('exit_code')) is int for c in owner.commands)
         result['protocol_qualified'] = bool(owner.commands) and result['passed'] and all(owner_module.closed(c) for c in owner.commands)
         result['passed'] = result['passed'] and result['protocol_qualified']
-        postchecks(result, row['boot'], cursor); persist()
+        postchecks(result, row['boot'], cursor)
+        result['complete'] = bool(result['complete'] and result['passed'])
+        persist()
         row['checks'].append(result); row['active'] = bool(owner and owner.active)
         row['ownership_closed'] = result.get('ownership_closed', False)
         row['stage'] = 'running' if result['passed'] else 'failed'
