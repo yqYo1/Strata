@@ -14134,7 +14134,7 @@
   },
   "qsa_UR_native_binary_contract_20261028": {
     "classification": "decision_support",
-    "status": "report_received_native_curation_pending",
+    "status": "curated_source_contract_bounded_gate_pending",
     "schedulable_now": false,
     "question": "Can a ur.call XPTI callback at successful actual urEnqueueKernelLaunchWithArgsExp/urEnqueueKernelLaunch obtain that UR kernel native handle and extract GEN ISA using zeKernelGetBinaryExp without changing selected fixture or execution path? Compare with module tracing;verify installed-provider semantics,lifetime,reentrancy,and disassembly path.",
     "prerequisites_evidence": {
@@ -14156,7 +14156,7 @@
     "consumer": "Main imminent same-fixture actual dispatched-kernel codegen diagnostic before choosing a new QSA variation.",
     "report": ".cache/strata-research/20261028/qsa-UR-native-binary-contract.md",
     "report_budget_bytes": 24576,
-    "review_point": "Native Luna/max review of exact source/API findings;no launch eligibility implied.",
+    "review_point": "Main revised observer host controls,then one separately frozen same-fixture extraction;retire transactions after minimum contract extraction.",
     "worker_closed": true,
     "retention": "Extract substantive compatibility/lifetime/disassembly facts to current diagnostic decision;retire dispatch and review paperwork after extraction.",
     "run": "run_80ea8ebc9a8c",
@@ -14187,10 +14187,21 @@
       "archive": "captured"
     },
     "review": {
-      "status": "pending",
+      "status": "completed",
       "model": "gpt-6-luna",
       "reasoning_effort": "max",
-      "path": ".cache/strata-research/20261028/qsa-UR-native-binary-contract.review.json"
+      "path": ".cache/strata-research/20261028/qsa-UR-native-binary-contract.review.json",
+      "sha256": "4a3b976e0628de89310ccbc1c64920d93c4a465ce9e9f3e30a4b2a71623fd8c1",
+      "bytes": 8638,
+      "agent": "/root/curate_qsa_ur_binary_contract_20261028"
+    },
+    "findings": {
+      "native_mapping": "v2 getter returns the first device kernel;bind a sole kernel-program device to the actual launch queue device.",
+      "lifetime": "Synchronous successful end callback keeps borrowed kernel usable for this existing fixture.",
+      "reentrancy": "New observer query guard returns before its own lock;co-loaded general subscriber could still deadlock and must be excluded.",
+      "locking": "Keep API extraction and writes outside observer state lock.",
+      "extension": "Require driver extension name/version admission;exports alone do not prove provider support.",
+      "limits": "All3captures,external source/runtime/executable receipts and raw hashes required. ocloc supports Zebin;direct GEN ISA compatibility is unproven. No new execution/adoption."
     }
   }
 }

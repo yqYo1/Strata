@@ -1606,12 +1606,16 @@ imminent diagnostic consumer. The source-contract review confirms that
 `zeKernelGetModule`;neither a SYCL bundle nor the fixture's property-only
 `--admit` proves the dispatched module. The installed loader also exports
 `zeKernelGetBinaryExp`,which could retrieve GEN ISA from an actual kernel
-handle. Before building that observer,check whether the existing UR call
-subscriber can bind a successful launch to its native kernel and query it
-within its valid lifetime,without changing the selected launch path. Classic
-Level Zero launch callbacks alone may miss the adapter's with-arguments path.
-No extraction or new execution is qualified by these API declarations.
-Review retention when this bounded direct-binary contract returns.
+handle. Exact SDK source review confirms that its v2 getter selects the first
+device. The unbuilt observer proposal now binds a sole kernel-program device
+to the successful launch's queue device,checks the binary-extension version
+and avoids holding its state lock across driver calls or writes. Its recursion
+guard requires it to be the sole XPTI subscriber. It proposes copying both
+kernel ISA and the same program's module;matching the module text and raw ISA
+must precede any instruction claim. Classic Level Zero launch callbacks alone
+may miss the adapter's with-arguments path. Host controls and a separately
+committed bounded extraction remain pending;no new GPU execution is qualified.
+Review retention when that immediate extraction attempt closes.
 Production/decode and the selected6e40engine/twelve fixtures remain unchanged.
 The rejected generation and two consumed research/review files retire after
 recovering197original source inputs,exact recipe/generated sources and699actual
