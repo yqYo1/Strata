@@ -1731,8 +1731,13 @@ the corrected inclusive current-token endpoint and the exact configured SDK
 identities. The next bounded source question is whether independently padded
 K,V and probability SLM pitches are legal and useful to test on the original32
 route. It must distinguish documented matrix-layout constraints from hypothetical
-bank-conflict explanations. Selected prefill/decode and the original engine remain
-unchanged. Full physical-context fill,model quality,handoff/RESTORE and decode
+bank-conflict explanations. The own-source
+[`pitch generator`](../tools/sycl/qsa_slm_pitch_sources.py) at`0571dbab3`keeps
+32cells and proposes K/V/probability pitches40/264/40. Host enumeration of27
+layouts proves unique,in-bounds writer/reader addresses and an invariant control;
+six invalid pitches are refused. This is not SDKlegality,compilation or GPU
+numerical/performance evidence. Selected prefill/decode and the original engine
+remain unchanged. Full physical-context fill,model quality,handoff/RESTORE and decode
 preservation remain separate qualification.
 
 Complete prefill phase attribution requires three independent ledgers: route-owner

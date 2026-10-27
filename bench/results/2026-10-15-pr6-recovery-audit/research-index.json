@@ -13345,6 +13345,33 @@
     "task_id": "task_c99d90c62354",
     "dispatch_id": "ctx_3501dc36fe9b",
     "terminal": "term_abb9a1dc-128a-4e5b-b103-dfd761266f72",
-    "model_evidence": "Fresh/new current-worktree TUI GPT-6-Luna high;ready dispatch observes turn_started. Reuse model fields null are not treated as provider proof."
+    "model_evidence": "Fresh/new current-worktree TUI GPT-6-Luna high;ready dispatch observes turn_started. Reuse model fields null are not treated as provider proof.",
+    "main_source_proposal": {
+      "path": "tools/sycl/qsa_slm_pitch_sources.py",
+      "source_commit": "0571dbab3",
+      "sha256": "e4208f4e2aa9d0334593c8fa0d9a8ff87b594cf76665f1eb75ce34c376966f86",
+      "origin": "OwnMIT6e40original with independent pitch-only overlay;no XeStrata source.",
+      "example_BF16_pitches": {
+        "K": 40,
+        "V": 264,
+        "probability": 40
+      },
+      "host_controls": {
+        "passed": true,
+        "layout_cases": 27,
+        "invalid_pitches_rejected": 6,
+        "control_source_invariant": true,
+        "writer_reader_indices_unique_equal_and_in_bounds": true,
+        "active_local_bytes": [
+          20032,
+          24384
+        ]
+      },
+      "compiler_executed": false,
+      "GPU_executed": false,
+      "SDK_legality_qualified": false,
+      "numerical_qualified": false,
+      "review_point": "Use source audit+native curation to decide legal pitches before any prepared compiler/native plan. No production/decode change."
+    }
   }
 }
