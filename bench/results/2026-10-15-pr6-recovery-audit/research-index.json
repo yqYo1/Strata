@@ -14097,7 +14097,7 @@
   },
   "qsa_actual_ISA_comparison_20261028": {
     "classification": "decision_support",
-    "status": "completed_native_Luna_max_review_active",
+    "status": "reviewed_conditional_native_evidence_no_new_trial",
     "schedulable_now": false,
     "prerequisites_evidence": {
       "component_result": "bench/results/2026-10-15-pr6-recovery-audit/qsa-k-staging-current.json",
@@ -14173,16 +14173,20 @@
     "report_bytes": 11304,
     "report_sha256": "08d4f3fbd09268137bd707723272801c142f905953a74223a9a55cf914ac93d3",
     "review": {
-      "status": "active",
+      "status": "completed",
       "agent": "/root/curate_qsa_actual_native_evidence_20261028",
       "model": "gpt-6-luna",
       "reasoning_effort": "max",
-      "path": ".cache/strata-research/20261028/qsa-actual-native-evidence.review.json"
-    }
+      "path": ".cache/strata-research/20261028/qsa-actual-native-evidence.review.json",
+      "sha256": "98c7beafccd72cd8cd51f71188854353a9a5668b0a6adffbfd49651ff7bee12e",
+      "bytes": 11904
+    },
+    "accepted_summary_ref": "qsa-k-staging-current.json::native_image_diagnostic.native_code_review",
+    "material_correction": "Packed4096lane-call invocations =256subgroup instances per WG/32cells/all256Kdims. Earlier subgroup-u16 candidate1024instances,so4x fewer against that earlier candidate. Captured original/private VectorK4controls use direct vector loads/local stores and have zero staging collectives;packed adds exchanges versus these controls. Do not mix count units or imply reduction versus original."
   },
   "qsa_actual_resource_interpretation_20261028": {
     "classification": "decision_support",
-    "status": "completed_native_Luna_max_review_active",
+    "status": "reviewed_conditional_native_evidence_no_new_trial",
     "schedulable_now": false,
     "prerequisites_evidence": {
       "component_result": "bench/results/2026-10-15-pr6-recovery-audit/qsa-k-staging-current.json",
@@ -14258,11 +14262,15 @@
     "report_bytes": 9409,
     "report_sha256": "7de649aafceaed907a442c045e3e293c5852b7d06f7ecfb82207dc395cb86eab",
     "review": {
-      "status": "active",
+      "status": "completed",
       "agent": "/root/curate_qsa_actual_native_evidence_20261028",
       "model": "gpt-6-luna",
       "reasoning_effort": "max",
-      "path": ".cache/strata-research/20261028/qsa-actual-native-evidence.review.json"
-    }
+      "path": ".cache/strata-research/20261028/qsa-actual-native-evidence.review.json",
+      "sha256": "98c7beafccd72cd8cd51f71188854353a9a5668b0a6adffbfd49651ff7bee12e",
+      "bytes": 11904
+    },
+    "accepted_summary_ref": "qsa-k-staging-current.json::native_image_diagnostic.native_code_review",
+    "scope_review": "Mostly overlaps prior spill descriptor findings;new native metadata does not establish traffic or occupancy. Future scope must consume exact new source/lowering evidence,not repeat allocation caveats."
   }
 }

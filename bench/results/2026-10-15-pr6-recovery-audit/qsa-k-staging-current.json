@@ -5888,6 +5888,55 @@
       "manifest": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-native-image-closed-raw-retired-20261028.jsonl",
       "manifest_sha256": "77afb27dc5951d9b7fc019e2dce16a86329dae282eb38b1930e85c9f35b7ccb2",
       "remaining": "Only3GEN/3module/3assembly/3selectedZeInfo for immediate source-bound comparison,plus separately source-pinned observer/fixture generation pending exact recipe retirement. Main selected engine/12fixtures untouched."
+    },
+    "native_code_review": {
+      "status": "completed_conditional_no_hardware_attribution",
+      "review_sha256": "98c7beafccd72cd8cd51f71188854353a9a5668b0a6adffbfd49651ff7bee12e",
+      "review_model": "gpt-6-luna max",
+      "facts": [
+        "Packed candidate has 128 GRF/SIMD16 like original/control; ZeInfo spill_size is 12480 for original/control and 3008 for packed, with scratch descriptors 16384 and 4096. This is allocation metadata, not runtime traffic.",
+        "Static captured body: packed has 41 more UGM sites (87 to 128), 57 more mov, 21 more shr and 6 more sync.nop; send.slm changes 670 to 668, DPAS remains 24 and barriers remain 13. These deltas suggest codegen differences but do not attribute the slowdown.",
+        "The component result preserves 108 samples; all six process/shape groups regress in wall and attention service, about 12-16%. Performance gate failed; no model trial/adoption or speed-based retry is justified."
+      ],
+      "source_count_correction": "Packed4096lane-call invocations =256subgroup instances per WG/32cells/all256Kdims. Earlier subgroup-u16 candidate1024instances,so4x fewer against that earlier candidate. Captured original/private VectorK4controls use direct vector loads/local stores and have zero staging collectives;packed adds exchanges versus these controls. Do not mix count units or imply reduction versus original.",
+      "original_private_match": "Three terminal mov immediates differ;excluding that illegal trailer,the captured bodies match. Observation only,no normative driver normalization/semantic guarantee.",
+      "next_choices": [
+        {
+          "id": "packed_temporary_lifetime",
+          "kind": "source mechanism",
+          "novelty": "Shorten or reuse one exact packed exchange temporary across the XOR4/XOR8 stages; distinct from the rejected API GRF-property spelling test.",
+          "prerequisites": "Main maps the candidate source interval to the relevant native block, pins one source-only variant and commits a new comparison plan with unchanged math/layout and existing correctness/performance gates.",
+          "expected_changed_lowering": "Fewer body-local moves/shifts or spill-like UGM sites in the mapped staging block; unchanged subgroup/launch contract. No lowering change means stop.",
+          "accept_evidence": "Exact source/GEN association shows the predicted local lowering change; correctness passes; only a new committed matched component comparison can pass the speed gate. Model trial remains barred unless the component gate passes.",
+          "reject_evidence": "No mapped lowering change, correctness failure, or any failed predeclared speed gate; retain the original 108-sample failure.",
+          "schedulable_now": false
+        },
+        {
+          "id": "timed_image_dynamic_activity",
+          "kind": "read-only discriminator",
+          "novelty": "Bind a future exact timed module to the captured kernel and obtain per-kernel dynamic send/issue or wait evidence; this addresses the current smoke-versus-timed identity and static-versus-dynamic gap.",
+          "prerequisites": "A retained/recoverable timed image plus a supported B570 metric/trace and explicit permission; index records metric-query EACCES, so do not retry privilege or substitute static counts.",
+          "expected_changed_lowering": "None; read-only binding/measurement only.",
+          "accept_evidence": "Exact timed image/module/kernel identity and valid bounded dynamic activity counts for matched original/packed work; otherwise record the capability limit.",
+          "reject_evidence": "No supported metric/trace, incomplete binding, or counts that cannot distinguish the mechanism; no hardware saturation claim.",
+          "schedulable_now": false
+        }
+      ],
+      "next_main_action": "Stop further packed-shuffle variants without a distinct predicted lowering change. Source-localize the original direct-K loop using retained3ASM/ZeInfo/LLVM and own6e40prefix,then decide whether a loop-lifetime/unroll discriminator has a measurable mechanism. Do not retry unavailable hardware metrics,repeat128/256API spelling,or launch a model trial for the rejected candidate."
     }
+  },
+  "closed_generation_recovery": {
+    "component_source": "b0b863cc9388a454f4b7139f11d634687d1cad8f",
+    "original_recipe_commit": "3a3f22931",
+    "source_pins_recovered": 197,
+    "actual_compiler_inputs_verified": 699,
+    "commands_match_original_prebuild_plan": true,
+    "generated_bytes_regenerated_exactly": true,
+    "observer_source": "6c7a3e05dbe942ad7a582d42b167fa929c85f9b5",
+    "observer_recipe_commit": "21046228afa2e275895f0bac52b842d00a8057e8",
+    "observer_source_pins_recovered": 202,
+    "observer_actual_compiler_inputs_verified": 268,
+    "source_qualified_binaries_and_original13assets_hash_checked": true,
+    "GPU_executed": false
   }
 }

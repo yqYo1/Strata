@@ -1595,8 +1595,11 @@ within0.259%. The packed-u32 candidate is **rejected on speed**:
 
 All numerical,ownership,validation and fresh-fault checks pass,while all six
 predeclared speed groups fail. **No model trial or production adoption follows.**
-Fewer source-derived collective instances and lower reported spill descriptors
-did not predict a faster kernel. This is not a paired eight-u16-versus-packed-u32
+Packed uses256subgroup instances per WG/pass versus1024in the earlier
+subgroup-u16 candidate. Its4096lane calls are the same256instances in another
+unit;the original/private controls instead use direct loads/stores with no
+staging collectives. Lower source counts versus that earlier candidate and lower
+spill descriptors did not predict a faster kernel. This is not a paired eight-u16-versus-packed-u32
 comparison or a physical bandwidth/saturation measurement. Before another
 K-staging variation,obtain a source-grounded way to compare the actual selected
 NEO-JIT kernel images and their lowered scratch/message/shuffle/local operations.
@@ -1636,9 +1639,11 @@ An earlier parser failure remains failed:kernel names also occur in the separate
 All three actual ZeInfo blocks report128GRF/SIMD16. Their scratch allocations
 are16384/16384/4096,despite the packed candidate being slower. These are static
 resource descriptors,not measured scratch traffic or occupancy. Fresh captures
-do not retroactively prove historical timed native images. Instruction-body and
-Xe2 resource interpretation now have separate bounded research consumers before
-another source variation;no timing or model adoption follows. Closed host mocks
+do not retroactively prove historical timed native images. The two bounded reviews now close. Packed adds41static UGM sites and57moves
+versus the captured controls,despite smaller scratch allocation;these are not
+dynamic traffic or stall counts. Next map the original direct-K source loop to
+its native block before selecting a distinct lifetime/unroll change. No timing
+or model adoption follows. Closed host mocks
 and their one-use source recover from`6c7a3e05d` with frozen plan`21046228a`.
 Review retained captures and the rejected fixture at that comparison's closure.
 Production/decode and the selected6e40engine/twelve fixtures remain unchanged.
