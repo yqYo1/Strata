@@ -466,5 +466,161 @@
       "sha256": "6bf92be47fe4e6e50df305bc74e3714deb84b009fffb481125d50b8c01996017",
       "scope": "Only these two closed service roots and five consumed current research files. Selected6e40+12fixtures,profiler assets and independent numerical/provenance holds remain unchanged."
     }
+  },
+  "qsa_exp2_lowering": {
+    "stage": "prepared",
+    "source_commit": "bae3c5e768bd429de1c73648b65125f060f76e72",
+    "inputs": {
+      "bench/sycl/qsa_exp2_lowering.cpp": "c3357772b282a9a34e02c45838550b4064195ad268cd5e58dfd164512b12e64c",
+      "tools/sycl/check_qsa_exp2_lowering.py": "ded2980ba85e420af69e5cbd8b27ff359f39c0e5955c09ab43fb1362233b0168",
+      "tools/sycl/measurement_owner.py": "bddd0c5e5020e882ca3404679420faec11e820dabce2ed4c72ef82b4c9c0874a",
+      "tools/sycl/measurement_guards.py": "794e332c70aca0acadad4f26d0414548e023a02fd27b72ed78fc773674423ec8"
+    },
+    "baseline": {
+      "native_source": "6e40afc1beddd059ee518617f6c1efce1da14aca",
+      "binary": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/strata",
+        "bytes": 22190000,
+        "sha256": "22182f1a5e62e5f4259ce49a75ae44afbd988166ec79324816e499ff37ef60e4"
+      },
+      "compiler": {
+        "path": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin/clang++",
+        "sha256": "1290881b4e12a5e002e5b0de0787f85328ee5fe19f253a54be1cdd97dc2f26eb"
+      },
+      "artifacts_verified": 13
+    },
+    "environment": {
+      "PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin:/usr/bin:/bin",
+      "HOME": "/home/yayoi",
+      "LANG": "C",
+      "LC_ALL": "C",
+      "LD_LIBRARY_PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib:/opt/intel/oneapi/mkl/2026.1/lib",
+      "CPLUS_INCLUDE_PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/include",
+      "PYTHONDONTWRITEBYTECODE": "1",
+      "TMPDIR": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-exp2-lowering-v1/tmp",
+      "SYCL_CACHE_PERSISTENT": "0"
+    },
+    "tools": {
+      "compiler": {
+        "path": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin/clang++",
+        "sha256": "1290881b4e12a5e002e5b0de0787f85328ee5fe19f253a54be1cdd97dc2f26eb"
+      },
+      "translator": {
+        "path": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin/llvm-spirv",
+        "sha256": "b2796ec080f1c9a1aa5f0084c0db771331bdd51809983dce3f9220a8a0ea677b"
+      },
+      "ocloc": {
+        "path": "/usr/bin/ocloc",
+        "sha256": "5ec7d3130e6f99a30064e504cd0ad400038779f2e1d8e1f454446aa59d152009"
+      }
+    },
+    "flags": [
+      "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin/clang++",
+      "-std=c++20",
+      "-O3",
+      "-DNDEBUG",
+      "-fsycl",
+      "-fsycl-device-only",
+      "-fsycl-id-queries-range=size_t",
+      "-fno-fast-math",
+      "-ffp-contract=off"
+    ],
+    "commands": {
+      "preprocess": [
+        "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin/clang++",
+        "-std=c++20",
+        "-O3",
+        "-DNDEBUG",
+        "-fsycl",
+        "-fsycl-device-only",
+        "-fsycl-id-queries-range=size_t",
+        "-fno-fast-math",
+        "-ffp-contract=off",
+        "-M",
+        "-MT",
+        "qsa_exp2",
+        "-MF",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-exp2-lowering-v1/headers.d",
+        "/home/yayoi/orca/workspaces/Strata/sycl/bench/sycl/qsa_exp2_lowering.cpp"
+      ],
+      "llvm_text": [
+        "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin/clang++",
+        "-std=c++20",
+        "-O3",
+        "-DNDEBUG",
+        "-fsycl",
+        "-fsycl-device-only",
+        "-fsycl-id-queries-range=size_t",
+        "-fno-fast-math",
+        "-ffp-contract=off",
+        "-S",
+        "-emit-llvm",
+        "/home/yayoi/orca/workspaces/Strata/sycl/bench/sycl/qsa_exp2_lowering.cpp",
+        "-o",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-exp2-lowering-v1/exp2.ll"
+      ],
+      "llvm_bitcode": [
+        "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin/clang++",
+        "-std=c++20",
+        "-O3",
+        "-DNDEBUG",
+        "-fsycl",
+        "-fsycl-device-only",
+        "-fsycl-id-queries-range=size_t",
+        "-fno-fast-math",
+        "-ffp-contract=off",
+        "-c",
+        "-emit-llvm",
+        "/home/yayoi/orca/workspaces/Strata/sycl/bench/sycl/qsa_exp2_lowering.cpp",
+        "-o",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-exp2-lowering-v1/exp2.bc"
+      ],
+      "spirv": [
+        "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin/llvm-spirv",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-exp2-lowering-v1/exp2.bc",
+        "-o",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-exp2-lowering-v1/exp2.spv"
+      ],
+      "native": [
+        "/usr/bin/ocloc",
+        "compile",
+        "-file",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-exp2-lowering-v1/exp2.spv",
+        "-spirv_input",
+        "-device",
+        "0xe20c",
+        "-output",
+        "exp2",
+        "-out_dir",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-exp2-lowering-v1/native"
+      ]
+    },
+    "original_source_flags": {
+      "CMakeLists.txt": "8bb79229b4159e72e13d9cbeeec7646f21cacd8e9e2b8315cb32479d52928b47",
+      "cmake/sycl_backend.cmake": "fc2e54cc6c4ab5f812dce1eb2f2cc3be6871d3c696e75459376427dae3f9fdf4",
+      "src/kernels/sycl/qsa_bf16_prefix.cpp": "4f9f815c9baae709f919f6d5ad1af04677c10d8c13c7597b3857cf81567ae192"
+    },
+    "criteria": "Compile the same3kernels in one TU:regular exp2,native exp2,and conditional negative-domain seam. Compare actual LLVM/SPIRV and B570 offline ISA,with no fast-math/FTZ global change. If native and regular lower identically,do not select a math rewrite. A difference alone qualifies neither supported error/domain nor speed.",
+    "limits": "CPU-only compiler evidence. No queue/device program/model execution,numerical/range/FTZ/performance/adoption or physical-context qualification. The bounded native seam is hypothetical,not enabled in inference.",
+    "scope": "The independently installed Intel SDK under an old Xe checkout is a toolchain dependency;no Xe application source copied or used.",
+    "budgets": {
+      "wall": 180,
+      "cpu": 180,
+      "rss_cap": 4294967296,
+      "text_cap": 4194304,
+      "file_cap": 33554432,
+      "total_cap": 67108864
+    },
+    "retention": "Current6e40+12fixtures remain untouched. This tiny offline module and ISA serve only this named lowering comparison;retire generated binaries/IR/asm/logs after recording useful source/flags/opcodes/hashes. No runnable project generation is built.",
+    "passed": false,
+    "complete": false,
+    "active": false,
+    "ownership_closed": true,
+    "GPU_executed": false,
+    "dependencies": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-exp2-lowering-v1/compiler-inputs.json",
+      "files": 637,
+      "sha256": "4f90f6a2b35502442d79bbd1a8935fa0ed837ebbd94b009ca78708f73ae8a09b"
+    }
   }
 }
