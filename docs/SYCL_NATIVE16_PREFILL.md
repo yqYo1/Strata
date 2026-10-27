@@ -1708,7 +1708,11 @@ Each supported call is bit-identical across original/control/merged and passes
 the independent scalar contract;all fourteen scalar cases per process have
 zero output error. All processes close normally,validation is
 silent and no fresh fault appears. This is not full-model context fill.
-Actual-ID event clocks,resources and performance remain pending.
+Three traced actual-ID smoke processes also pass on the3-query fixture. The
+control/merged wrappers retain their actual submission events and return valid
+positive intervals;all arms preserve exact original output,packed bytes,guards
+and immutable inputs. All processes close normally with silent validation and
+no fresh fault. Resource descriptors and performance remain pending.
 After compact results are committed,the fourteen successful smoke trace/log/
 transaction files (3997428bytes) are retired. The isolated native generation
 remains for the next component/resource/timing gates;the selected original
