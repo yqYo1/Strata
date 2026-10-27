@@ -12866,5 +12866,27 @@
       "schedulable_now": false,
       "reason": "Direct-event smoke/component gates pass. No generic follow-up;use exact new operands/provider/queue identity if a later gate fails."
     }
+  },
+  "qsa_cell_tile_geometry_contract_20261027": {
+    "classification": "decision_support",
+    "status": "eligible_not_dispatched",
+    "schedulable_now": true,
+    "source_revision": "6e40afc1beddd059ee518617f6c1efce1da14aca",
+    "question": "Compare sparse-attention selected-cell tiles32/64/128 and subgroup/matrix ownership for this fixed24Q/2KV,Dim256,12of16-head BF16 path. Relate loop/barrier/softmax overhead to extra SLM/registers and work;trace production vLLM/SGLang rounding/online-softmax contracts and exact configured Intel matrix shapes. Distinguish algorithm/numerical changes from same-math variants and give falsifiable component/full-model gates. No implementation or local GPU work.",
+    "prerequisite_evidence": [
+      "Selected original6e40 QSA source has32selected cells per loop and five group barriers per tile,with cached Q fragments and a12480-byte compiler spill descriptor. Selected source service8.264100184s identifies a costly path,not hardware saturation.",
+      "Exact6491-query/2051-width actual selected IDs are retained;synthetic Q/K/V remains explicit. Three direct-event smoke and three larger component processes pass,including physical262144 final addresses. Resource observation conserves all21rows and reports equal SIMD16/18args/128GRF/12480spill across original/full/prepacked.",
+      "Earlier GRF-only and partial8-cache candidates are rejected;tree-sum,native-exp2,query-order and prefetch surveys already exist. This scope concerns selected-cell block granularity and its numerical contract,not another version of those changes."
+    ],
+    "prior_scopes": [
+      "qsa_irregular_gqa_matrix_packing_collection_20261027",
+      "intel_sycl_sparse_prefetch_staging_methods_20261027",
+      "qsa_workingset_counterfactual_design_20261027"
+    ],
+    "report": ".cache/strata-research/20261027/qsa-cell-tile-geometry-contract.md",
+    "report_budget_bytes": 16384,
+    "worker_model": "gpt-6-luna",
+    "consumer": "Main next algorithm choice after current fixed-kernel working-set sensitivity comparison. Native Luna/max reviews before Main uses report sections.",
+    "retention": "Keep only substantive nonduplicate contract/source findings. Report-only worker;no code edits,builds,tests,GPU/profiling/process/Git operations or XeStrata source. Review at that candidate decision."
   }
 }

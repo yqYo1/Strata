@@ -1357,7 +1357,7 @@
     }
   },
   "check_plan": {
-    "stage": "prepared",
+    "stage": "closed",
     "mode": "resources",
     "source_commit": "3a6cd6089141a83a988e21d4cc02734006d35b1c",
     "controller_inputs": {
@@ -1815,6 +1815,99 @@
             "local_bytes": 131072
           },
           "session_removed": true
+        }
+      ],
+      "passed": true,
+      "complete": true,
+      "ownership_closed": true,
+      "postchecks_complete": true,
+      "postcheck_errors": [],
+      "fresh_faults": [],
+      "boot_unchanged": true,
+      "driver_after": {
+        "pci": "/sys/bus/pci/devices/0000:05:00.0",
+        "driver": "xe",
+        "vendor": "0x8086",
+        "device": "0xe20c",
+        "kernel": "7.0.0-38-generic",
+        "devcoredump": false
+      }
+    },
+    {
+      "mode": "resources",
+      "source_commit": "3a6cd6089141a83a988e21d4cc02734006d35b1c",
+      "observations": [
+        {
+          "process": 0,
+          "pid": 3945090,
+          "exit_code": 0,
+          "ownership_closed": true,
+          "validation": {
+            "pid": 3945090,
+            "loader": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_loader.so.0.12.0",
+            "threads_before": 1,
+            "preinit": 37,
+            "config_enabled": true,
+            "first_init": true,
+            "dispatch_result": 46,
+            "output_untouched": true,
+            "retained_reference_until_exit": true,
+            "runtime_teardown_qualified": false
+          },
+          "checks": [
+            {
+              "kind": "checked",
+              "queries": 3,
+              "cells": 39259,
+              "copies": 2,
+              "repeated": 0,
+              "guards": true,
+              "inputs_immutable": true,
+              "exact_original": true
+            }
+          ],
+          "properties": {
+            "kind": "properties",
+            "global_cache_bytes": 14155776,
+            "maximum_allocation_bytes": 10132807680,
+            "local_bytes": 131072
+          },
+          "session_removed": true,
+          "resources": {
+            "calls": {
+              "0": 2,
+              "1": 2,
+              "2": 2
+            },
+            "properties": {
+              "0": {
+                "SIMD": 16,
+                "arguments": 18,
+                "raw_SLM": 32,
+                "private_memory_descriptor": 0,
+                "spill_memory_descriptor": 12480,
+                "GRF": 128
+              },
+              "1": {
+                "SIMD": 16,
+                "arguments": 18,
+                "raw_SLM": 32,
+                "private_memory_descriptor": 0,
+                "spill_memory_descriptor": 12480,
+                "GRF": 128
+              },
+              "2": {
+                "SIMD": 16,
+                "arguments": 18,
+                "raw_SLM": 32,
+                "private_memory_descriptor": 0,
+                "spill_memory_descriptor": 12480,
+                "GRF": 128
+              }
+            },
+            "conserved_device_ns": 114782473,
+            "table_rows": 21
+          }
         }
       ],
       "passed": true,

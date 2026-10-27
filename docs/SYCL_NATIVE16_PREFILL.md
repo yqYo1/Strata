@@ -1625,8 +1625,13 @@ outputs,guards,input immutability,replica checks and positive event clocks. The
 larger cases cover real16-query/eight-copy operands and physical262144 final
 addresses;all exit0 with empty owned sessions and no fresh driver fault. These
 component results do not diagnose the earlier clock failure or qualify a speedup,
-ordinary runtime teardown,full-model262144 fill or model adoption. The separate
-resource-descriptor and working-set timing gates remain pending.
+ordinary runtime teardown,full-model262144 fill or model adoption. The resource
+gate also passes:the complete21-row device table conserves114782473ns;original,
+captured-full and prepacked attention each have two calls and equal SIMD16,
+18arguments,128GRF,12480-byte spill and32-byte raw-static-SLM descriptors.
+Source dynamic SLM remains20036bytes;these are not measured physical traffic or
+occupancy. Direct event clocks,output/guards and owner/fault checks pass under
+the collector. The separate working-set timing gate remains pending.
 See[the current diagnostic](../bench/results/2026-10-15-pr6-recovery-audit/qsa-working-set-current.json).
 Compare full6491-query geometry separately from a cache-sized real-query subset.
 If repeating a small subset to fill the GPU,use identical repeated work in every
