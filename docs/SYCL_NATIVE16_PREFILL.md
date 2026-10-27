@@ -1702,12 +1702,20 @@ Pin the actual framework dependency contract and independently audit bounds,
 collective participation,SLM lifetimes and per-kernel admission before GPU work.
 Production,decode and the selected original engine remain unchanged.
 The source audit and native curation conditionally accept the static ownership
-proof;exact-kernel admission and the separate framework audit remain pending.
+proof;exact-kernel admission remains pending. The separate framework audit and
+native Luna/max review have also closed: vLLM's pinned model-specific Triton QSA
+kernel gives a concrete FP32 normalization/BF16 probability contract. SGLang's
+selected attention backend is still unresolved; its indexer is not that kernel.
 Main's fresh Git comparison proves the live prefix is byte-identical to6e40,
 SHA`4f9f815c9baae709f919f6d5ad1af04677c10d8c13c7597b3857cf81567ae192`.
 The review's inference of a changed file from indexed commitc9ad511e4is incorrect;
 preserve the review and this correction rather than weakening source admission.
-The next generation/qualification controller must enforce the immutable file.
+The generator now enforces that immutable file hash. The source-only
+[`qsa_cell64_admission.hpp`](../bench/sycl/qsa_cell64_admission.hpp) queries exact
+compiled kernel identities, WG128/SG16 and Level Zero per-group local-memory
+limits before dispatch. It adds declared dynamic local payload and a reserve to
+the reported kernel local bytes. It has not been compiled or device-qualified;
+actual bound local arguments must also be accounted in the first traced fixture.
 
 The proposed [`qsa_cell64_checks.py`](../tools/sycl/qsa_cell64_checks.py) adapts
 this fork's own independent tensor oracle. Only original32/control32 compare
@@ -1718,6 +1726,8 @@ case grid adds127/128/129boundaries beside the existing final262144-address
 components. Existing BF16-ULP component bounds are proposed diagnostic criteria,
 not an accepted model-quality tolerance;framework and model/task gates remain
 open. Neither this oracle proposal nor the candidate has been compiled/executed.
+Before either runs, pin the reference configuration and finite per-case bounds.
+The framework audit does not imply CUDA reference execution or numerical parity.
 
 Complete prefill phase attribution requires three independent ledgers: route-owner
 planned operations, actual API results and collector device executions.

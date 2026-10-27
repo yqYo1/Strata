@@ -12956,7 +12956,7 @@
     },
     "reviewer": "native Codex invocation gpt-6-luna max",
     "essential_corrections": [
-      "Numerical64-cell recurrence and exact-kernel admission remain unqualified;framework review/device work pending.",
+      "Numerical64-cell recurrence and exact-kernel admission remain unqualified. Companion framework review is complete;finite numerical criteria/device work remain pending.",
       "Review incorrectly infers a changed file from indexed commitc9ad511e4. Fresh Main git-show comparison proves live prefix byte-identical to6e40 at SHA2564f9f815c9baae709f919f6d5ad1af04677c10d8c13c7597b3857cf81567ae192. Enforce that immutable identity in generation/qualification;record original review unchanged."
     ],
     "base_file_identity": {
@@ -12968,7 +12968,7 @@
   },
   "qsa_cell64_framework_contract_20261027": {
     "classification": "decision_support",
-    "status": "running",
+    "status": "reviewed_accept_conditional",
     "schedulable_now": false,
     "run_id": "run_3072480b0529",
     "source_revision": "52947b6b4",
@@ -13003,6 +13003,64 @@
       "task_executed": false,
       "owned_terminal_released": true,
       "replacement_uses_same_task": true
-    }
+    },
+    "worker_closed": true,
+    "worker_outcome": "succeeded",
+    "completed_at": "2026-10-27T07:39:00.226Z",
+    "resource_decision": "Settled; external reused terminal retained, no worker lifecycle action pending.",
+    "report_identity": {
+      "bytes": 12166,
+      "sha256": "077e3b2b348a7144fbe57750c3f24ad5ac17e53b6d9b6de89e1fe4b525db561c"
+    },
+    "review": {
+      "status": "completed",
+      "agent": "/root/review_qsa_cell64_framework_20261027",
+      "model": "gpt-6-luna",
+      "reasoning_effort": "max",
+      "path": ".cache/strata-research/20261027/qsa-cell64-framework-contract.review.json",
+      "bytes": 3742,
+      "sha256": "3b1314d9c8ecd70c3b334b1c8caba8c8a8459b1fc8273fea8e3ab41ab1c42ed9",
+      "outcome": "accept_conditional;finite numerical bounds and reference configuration precede qualification"
+    },
+    "findings": [
+      "Pinned vLLM model owner reaches its custom Triton QSA kernel:FP32 QK/max/normalizer and BF16 probabilities for PV,with optional split merge. Source contract,not executed CUDA parity.",
+      "Cell64 changes online update/BF16 rounding cadence;original32 is a localization control,not an exact-bit adoption gate. Commit finite per-case bounds and reference configuration before execution.",
+      "vLLM scales after QK,whereas this fork scales before BF16 Q conversion;this pre-existing difference is distinct from32-to64 recurrence. Keep component,model/task and physical262144 gates separate.",
+      "SGLang model dispatch is proven,but selected attention kernel remains unresolved;its indexer/Torch helper does not establish attention parity.",
+      "Main verified the pinned primary vLLM kernel and both LICENSE files after review. These provenance pins do not authorize unattributed copying;the current cell64 overlay is independently authored from own MIT source."
+    ],
+    "primary_identity_supplement": {
+      "vllm": {
+        "revision": "3d81a510f9ebc802a7864ced38832182295f4cad",
+        "kernel": {
+          "path": "vllm/models/qwen4_exp/nvidia/ops/qsa.py",
+          "bytes": 40202,
+          "sha256": "cac685c7b31c32064be1251570b963b360f98e323dfae3f39d4f5bb5e67f7be8"
+        },
+        "license": {
+          "path": "LICENSE",
+          "identifier": "Apache-2.0",
+          "bytes": 11357,
+          "sha256": "c71d239df91726fc519c6eb72d318ec65820627232b2f796219e87dcf35d0ab4"
+        }
+      },
+      "sglang": {
+        "revision": "cf04168be1e0d4440a70514c42abc2112d78e229",
+        "license": {
+          "path": "LICENSE",
+          "identifier": "Apache-2.0",
+          "bytes": 11346,
+          "sha256": "1495e1e757ef4d0925a2350563cf5754bb23c51701a8ec4fb3c5cdcbedae6747"
+        }
+      },
+      "method": "Main direct public HTTPS fetch;raw files not retained. Independent of native review,which did not re-fetch framework sources."
+    },
+    "retrieval_sections": [
+      "## vLLM: actual selected QSA kernel",
+      "## SGLang: model link proven; numerical ABI not",
+      "## Numerical implications and falsifiable gates",
+      "## Provenance and bounded conclusion"
+    ],
+    "next_action": "Main commits exact-kernel resource admission and prospective numerical/first-trace plan. No candidate compilation,device execution,performance or model adoption is qualified."
   }
 }

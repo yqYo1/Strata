@@ -5,8 +5,11 @@ Cell64 changes the online update/BF16 rounding boundaries. It is a numerical
 candidate, not an exact-bit rewrite. Source-only; no production/decode change.
 The matrix shape, WG128/SG16, default GRF and source-lifetime contract stay fixed.
 """
+import hashlib
+
 BASE = '6e40afc1beddd059ee518617f6c1efce1da14aca'
 PREFIX = 'src/kernels/sycl/qsa_bf16_prefix.cpp'
+PREFIX_SHA256 = '4f9f815c9baae709f919f6d5ad1af04677c10d8c13c7597b3857cf81567ae192'
 EXPORT = 'qsa_bf16_prefix_ordered_exp_batch'
 
 
@@ -17,7 +20,10 @@ def once(text, before, after):
 
 
 def generated(project):
-    source = (project / PREFIX).read_text()
+    raw = (project / PREFIX).read_bytes()
+    if hashlib.sha256(raw).hexdigest() != PREFIX_SHA256:
+        raise ValueError('generate cell64 only from the immutable6e40 prefix')
+    source = raw.decode()
     body = source[:source.index('bool qsa_bf16_prefix_batch(')]
     wrapper = source[source.index('bool ' + EXPORT + '('):
                      source.index('bool qsa_bf16_prefix_state_probe_batch(')]
