@@ -1955,9 +1955,9 @@
       "retained_reference_until_exit": true,
       "ordinary_runtime_teardown_qualified": false
     },
-    "stage": "closed",
-    "mode": "boundary",
-    "source_commit": "f8c4c858a5bd6c319c157c78d13f5b8207fe20a1",
+    "stage": "prepared",
+    "mode": "perf",
+    "source_commit": "7b68860e15aa610bf653df1cb86c7483d73bef59",
     "controller_inputs": {
       "tools/sycl/check_qsa_slm_pitch.py": "1ddf44219914e835d17f2c5916e52dd111339dac8fdc669fa8da741ae25a6454",
       "tools/sycl/measure_down_scatter.py": "6d92d7212c7cad9bb7fdee6ef6877528b6240f990c7f74d032394933387ed2de",
@@ -2005,14 +2005,15 @@
       "environment": "STRATA_SYCL_PREFILL_COMMAND_PROFILE=0",
       "scope": "Source-bound inactive observer proof;no dynamic observer counter or hardware occupancy claim."
     },
-    "output_root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-slm-pitch-v1/actual-id-boundary",
+    "output_root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-slm-pitch-v1/actual-id-perf",
     "jobs": [
       {
         "process": 0,
         "command": [
           "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-slm-pitch-v1/fixture",
-          "--boundary",
-          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/selected-qsa-capture-v1/layer0-final-ids.bin"
+          "--bench",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/selected-qsa-capture-v1/layer0-final-ids.bin",
+          "0"
         ],
         "environment": {
           "PATH": "/usr/bin:/bin",
@@ -2030,13 +2031,12 @@
           "STRATA_SYCL_VERIFY_NATIVE_CAPTURE": "0",
           "SYCL_CACHE_PERSISTENT": "0",
           "ZES_ENABLE_SYSMAN": "0",
-          "UR_ENABLE_LAYERS": "UR_LAYER_TRACING,UR_LAYER_PARAMETER_VALIDATION",
-          "UR_LOG_TRACING": "level:info;flush:info;output:file,/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-slm-pitch-v1/actual-id-boundary/0/api.trace",
-          "UR_LOG_VALIDATION": "level:warning;flush:warning;output:file,/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-slm-pitch-v1/actual-id-boundary/0/validation.log",
+          "UR_ENABLE_LAYERS": "UR_LAYER_PARAMETER_VALIDATION",
+          "UR_LOG_VALIDATION": "level:warning;flush:warning;output:file,/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-slm-pitch-v1/actual-id-perf/0/validation.log",
           "UR_LOG_LOADER": "level:warning;flush:warning;output:stderr",
           "UR_LOG_LEVEL_ZERO": "level:warning;flush:warning;output:stderr",
-          "TMPDIR": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-slm-pitch-v1/actual-id-boundary/0/tmp",
-          "XDG_CACHE_HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-slm-pitch-v1/actual-id-boundary/0/cache",
+          "TMPDIR": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-slm-pitch-v1/actual-id-perf/0/tmp",
+          "XDG_CACHE_HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-slm-pitch-v1/actual-id-perf/0/cache",
           "LD_PRELOAD": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/ur-validation-preload-v2/libstrata_ur_validation.so",
           "STRATA_UR_PROBE_EXPECTED_LOADER": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_loader.so.0.12.0",
           "ZE_ENABLE_ALT_DRIVERS": "/usr/lib/x86_64-linux-gnu/libze_intel_gpu.so.1.17.39758",
@@ -2047,8 +2047,9 @@
         "process": 1,
         "command": [
           "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-slm-pitch-v1/fixture",
-          "--boundary",
-          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/selected-qsa-capture-v1/layer0-final-ids.bin"
+          "--bench",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/selected-qsa-capture-v1/layer0-final-ids.bin",
+          "1"
         ],
         "environment": {
           "PATH": "/usr/bin:/bin",
@@ -2066,13 +2067,12 @@
           "STRATA_SYCL_VERIFY_NATIVE_CAPTURE": "0",
           "SYCL_CACHE_PERSISTENT": "0",
           "ZES_ENABLE_SYSMAN": "0",
-          "UR_ENABLE_LAYERS": "UR_LAYER_TRACING,UR_LAYER_PARAMETER_VALIDATION",
-          "UR_LOG_TRACING": "level:info;flush:info;output:file,/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-slm-pitch-v1/actual-id-boundary/1/api.trace",
-          "UR_LOG_VALIDATION": "level:warning;flush:warning;output:file,/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-slm-pitch-v1/actual-id-boundary/1/validation.log",
+          "UR_ENABLE_LAYERS": "UR_LAYER_PARAMETER_VALIDATION",
+          "UR_LOG_VALIDATION": "level:warning;flush:warning;output:file,/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-slm-pitch-v1/actual-id-perf/1/validation.log",
           "UR_LOG_LOADER": "level:warning;flush:warning;output:stderr",
           "UR_LOG_LEVEL_ZERO": "level:warning;flush:warning;output:stderr",
-          "TMPDIR": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-slm-pitch-v1/actual-id-boundary/1/tmp",
-          "XDG_CACHE_HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-slm-pitch-v1/actual-id-boundary/1/cache",
+          "TMPDIR": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-slm-pitch-v1/actual-id-perf/1/tmp",
+          "XDG_CACHE_HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-slm-pitch-v1/actual-id-perf/1/cache",
           "LD_PRELOAD": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/ur-validation-preload-v2/libstrata_ur_validation.so",
           "STRATA_UR_PROBE_EXPECTED_LOADER": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_loader.so.0.12.0",
           "ZE_ENABLE_ALT_DRIVERS": "/usr/lib/x86_64-linux-gnu/libze_intel_gpu.so.1.17.39758",
@@ -2083,8 +2083,9 @@
         "process": 2,
         "command": [
           "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-slm-pitch-v1/fixture",
-          "--boundary",
-          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/selected-qsa-capture-v1/layer0-final-ids.bin"
+          "--bench",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/selected-qsa-capture-v1/layer0-final-ids.bin",
+          "2"
         ],
         "environment": {
           "PATH": "/usr/bin:/bin",
@@ -2102,13 +2103,12 @@
           "STRATA_SYCL_VERIFY_NATIVE_CAPTURE": "0",
           "SYCL_CACHE_PERSISTENT": "0",
           "ZES_ENABLE_SYSMAN": "0",
-          "UR_ENABLE_LAYERS": "UR_LAYER_TRACING,UR_LAYER_PARAMETER_VALIDATION",
-          "UR_LOG_TRACING": "level:info;flush:info;output:file,/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-slm-pitch-v1/actual-id-boundary/2/api.trace",
-          "UR_LOG_VALIDATION": "level:warning;flush:warning;output:file,/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-slm-pitch-v1/actual-id-boundary/2/validation.log",
+          "UR_ENABLE_LAYERS": "UR_LAYER_PARAMETER_VALIDATION",
+          "UR_LOG_VALIDATION": "level:warning;flush:warning;output:file,/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-slm-pitch-v1/actual-id-perf/2/validation.log",
           "UR_LOG_LOADER": "level:warning;flush:warning;output:stderr",
           "UR_LOG_LEVEL_ZERO": "level:warning;flush:warning;output:stderr",
-          "TMPDIR": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-slm-pitch-v1/actual-id-boundary/2/tmp",
-          "XDG_CACHE_HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-slm-pitch-v1/actual-id-boundary/2/cache",
+          "TMPDIR": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-slm-pitch-v1/actual-id-perf/2/tmp",
+          "XDG_CACHE_HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-slm-pitch-v1/actual-id-perf/2/cache",
           "LD_PRELOAD": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/ur-validation-preload-v2/libstrata_ur_validation.so",
           "STRATA_UR_PROBE_EXPECTED_LOADER": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_loader.so.0.12.0",
           "ZE_ENABLE_ALT_DRIVERS": "/usr/lib/x86_64-linux-gnu/libze_intel_gpu.so.1.17.39758",
