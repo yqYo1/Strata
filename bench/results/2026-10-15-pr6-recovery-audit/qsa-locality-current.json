@@ -1,0 +1,61 @@
+{
+  "stage": "source_counts_proven_native_unbuilt",
+  "source_commit": "1013c2437",
+  "native_source_commit": "6e40afc1beddd059ee518617f6c1efce1da14aca",
+  "count_proof": {
+    "native_source_commit": "6e40afc1beddd059ee518617f6c1efce1da14aca",
+    "source_sha256": {
+      "src/prefill/prefill.cpp": "777e6d847ab6d83bc0a9103d6baabb7f4204ff23d34ce6c853eb1d7e68a11c37",
+      "src/kernels/sycl/kv.cpp": "4e501f6839c20972b46f58d87c4ee3444f771c64cbcc07528a7f23d25461e07f",
+      "include/strata/kernels/qsa.hpp": "87c02222284f842fcecb46a422b119af769c72c3914edc8da5b2ee782456dc74",
+      "src/kernels/sycl/qsa_bf16_prefix.cpp": "4f9f815c9baae709f919f6d5ad1af04677c10d8c13c7597b3857cf81567ae192"
+    },
+    "count_origin": "Source-derived caller qsa_step_fill(p0+q);not a captured device steps vector.",
+    "header": [
+      0,
+      32768,
+      6491,
+      2051
+    ],
+    "queries": 6491,
+    "minimum": 2051,
+    "maximum": 2051,
+    "counts_int32le_sha256": "c770f33f2318047d1d968eb457c7e5cbc4f37d516277ffa4301c6e073f6fbc82",
+    "selected_entries": 13313041,
+    "ignored_entries": 0,
+    "fixture_sha256": "a0410c7005f64a89d02becd42fcfd8155c92b68cd7b4d175543c172070a6338c",
+    "reasoning": "Caller cap=qsa_selection_width(kTopkMaxCells,s)=2051<kTopkMaxCells fixes idx_top_k+idx_block-1=2051. Every position is32768..39258,so all 6491widths=min(position+1,2051)=2051. The same steps_dev buffer reaches ordered-exp attention;the dump records p0,T,cap and those selected IDs. Every2051entry row is initialized,strictly increasing and causal.",
+    "GPU_executed": false
+  },
+  "host_controls": {
+    "passed": true,
+    "reverse_overlay_exact": true,
+    "bank_boundary_cases": 18,
+    "GPU_executed": false,
+    "compiler_executed": false
+  },
+  "fixture": {
+    "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/selected-qsa-capture-v1/layer0-final-ids.bin",
+    "bytes": 53252180,
+    "sha256": "a0410c7005f64a89d02becd42fcfd8155c92b68cd7b4d175543c172070a6338c"
+  },
+  "provenance": "Main own MIT6e40 prefix;cfabc1ee2 buffers/capture/event/property scaffolds. No XeStrata application source.",
+  "plan": {
+    "question": "Measure logical-ID address-topology sensitivity with exact6491 source-derived2051 counts and repeated-value synthetic K/V.",
+    "arms": [
+      "original production/P IDs,wall calibration",
+      "private event-export/P IDs",
+      "private event-export/hot2047+four final cells",
+      "private event-export/16round-robin2047-cell banks+four final cells"
+    ],
+    "invariant": "Same Q,K/V,page table,live39259cells,queries6491,cap2051,steps,source layout,kernel arithmetic,WG128/SG16 and launch geometry. Only IDvalues differ among private arms. Synthetic topology arms preserve count,sorted distinct causal IDs and final cell;not model-selector ranking or a natural model workload.",
+    "sequence": "Commit source and exact build recipe;compile only. Then independent source/harness review,two-kernel property-only admission,traced small smoke,clean timing with frozen gates. No new model trial or adoption from this diagnostic.",
+    "timing": "Three fresh processes,eight rounds,four balanced Williams-order arms,eight calls/batch and two warmups outside timing. >=100ms and1000timer ticks/batch;64timed full-query invocations per arm/process. All outputs must equal the exact uniform-value oracle. Private/original P wall calibration0.99..1.01. Freeze3percent sensitivity threshold;all3process medians must have consistent direction beyond threshold for a sensitivity finding.",
+    "interpretation": "Attribution only. A response establishes sensitivity to gathered logical addresses,not DRAM traffic,cache misses,saturation or the limiting hardware resource. A flat result does not rule out a memory limit.",
+    "retention": "One extra immediate component generation next to selected6e40engine+12fixtures. Retain individual timings and compact validity decisions;retire successful rawlogs,IR and disposable generation after exact source/recipe recovery. Single existing53.25MBIDfixture remains;review after this comparison. Separate legacy holds remain open."
+  },
+  "active": false,
+  "ownership_closed": true,
+  "GPU_executed": false,
+  "model_adoption_qualified": false
+}
