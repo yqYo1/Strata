@@ -1385,7 +1385,7 @@
     }
   ],
   "check_plan": {
-    "stage": "prepared",
+    "stage": "closed",
     "mode": "component",
     "source_commit": "c535a64bbddb5d6f27e6f8e209e9f36b122084c4",
     "controller_inputs": {
@@ -1716,6 +1716,141 @@
           "physical262144_component_addressed": false,
           "stdout_sha256": "0d3615190f23d0d2a0a7d1d067ce203c4e1638ec7620d73dc21535cc5c528eb4",
           "stderr_sha256": "d087d82d0cfa9a74972c1b60b363e1a1b898c367c23738255ba2e221f0a6a14f"
+        }
+      ],
+      "postchecks_complete": true,
+      "postcheck_errors": [],
+      "fresh_faults": [],
+      "boot_unchanged": true,
+      "driver_after": {
+        "pci": "/sys/bus/pci/devices/0000:05:00.0",
+        "driver": "xe",
+        "vendor": "0x8086",
+        "device": "0xe20c",
+        "kernel": "7.0.0-38-generic",
+        "devcoredump": false
+      }
+    },
+    {
+      "mode": "component",
+      "source_commit": "c535a64bbddb5d6f27e6f8e209e9f36b122084c4",
+      "numerical_binary": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-partial-qcache-v1/numerical",
+        "sha256": "d2f1dfe65de36398621c1da05bb4854192ccedf0fa8c3336a70762442da93d1a",
+        "bytes": 1589816
+      },
+      "passed": true,
+      "complete": true,
+      "active": false,
+      "ownership_closed": true,
+      "observations": [
+        {
+          "arm": "default",
+          "pid": 3633084,
+          "exit_code": 0,
+          "ownership_closed": true,
+          "validation": {
+            "pid": 3633084,
+            "loader": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_loader.so.0.12.0",
+            "threads_before": 1,
+            "preinit": 37,
+            "config_enabled": true,
+            "first_init": true,
+            "dispatch_result": 46,
+            "output_untouched": true,
+            "retained_reference_until_exit": true,
+            "runtime_teardown_qualified": false
+          },
+          "case_count": 11,
+          "cases": [
+            "case cells=97 live_cells=49 active_rows=128 cap=33 queries=1 masked=0 compared=6144 max_abs=0 max_budget_ratio=0 oracle=BF16_operands_FP32_online packed_guard_elements=17 packed_k_mod8=2 packed_logical_prefix=PASS packed_guards=PASS guards=PASS inputs=PASS status=PASS",
+            "case cells=97 live_cells=71 active_rows=160 cap=33 queries=3 masked=1 compared=18432 max_abs=0 max_budget_ratio=0 oracle=BF16_operands_FP32_online packed_guard_elements=17 packed_k_mod8=2 packed_logical_prefix=PASS packed_guards=PASS guards=PASS inputs=PASS status=PASS",
+            "case cells=2113 live_cells=2113 active_rows=4256 cap=1 queries=3 masked=1 compared=18432 max_abs=0 max_budget_ratio=0 oracle=BF16_operands_FP32_online packed_guard_elements=17 packed_k_mod8=2 packed_logical_prefix=PASS packed_guards=PASS guards=PASS inputs=PASS status=PASS",
+            "case cells=2113 live_cells=2113 active_rows=4256 cap=17 queries=3 masked=1 compared=18432 max_abs=0 max_budget_ratio=0 oracle=BF16_operands_FP32_online packed_guard_elements=17 packed_k_mod8=2 packed_logical_prefix=PASS packed_guards=PASS guards=PASS inputs=PASS status=PASS",
+            "case cells=2113 live_cells=2113 active_rows=4256 cap=31 queries=3 masked=1 compared=18432 max_abs=0 max_budget_ratio=0 oracle=BF16_operands_FP32_online packed_guard_elements=17 packed_k_mod8=2 packed_logical_prefix=PASS packed_guards=PASS guards=PASS inputs=PASS status=PASS",
+            "case cells=2113 live_cells=2113 active_rows=4256 cap=32 queries=3 masked=1 compared=18432 max_abs=0 max_budget_ratio=0 oracle=BF16_operands_FP32_online packed_guard_elements=17 packed_k_mod8=2 packed_logical_prefix=PASS packed_guards=PASS guards=PASS inputs=PASS status=PASS",
+            "case cells=2113 live_cells=2113 active_rows=4256 cap=63 queries=3 masked=1 compared=18432 max_abs=0 max_budget_ratio=0 oracle=BF16_operands_FP32_online packed_guard_elements=17 packed_k_mod8=2 packed_logical_prefix=PASS packed_guards=PASS guards=PASS inputs=PASS status=PASS",
+            "case cells=2113 live_cells=2113 active_rows=4256 cap=65 queries=3 masked=1 compared=18432 max_abs=0 max_budget_ratio=0 oracle=BF16_operands_FP32_online packed_guard_elements=17 packed_k_mod8=2 packed_logical_prefix=PASS packed_guards=PASS guards=PASS inputs=PASS status=PASS",
+            "case cells=2113 live_cells=2113 active_rows=4256 cap=2051 queries=3 masked=1 compared=18432 max_abs=0 max_budget_ratio=0 oracle=BF16_operands_FP32_online packed_guard_elements=17 packed_k_mod8=2 packed_logical_prefix=PASS packed_guards=PASS guards=PASS inputs=PASS status=PASS",
+            "case cells=262144 live_cells=262144 active_rows=524288 cap=2051 queries=1 masked=0 compared=6144 max_abs=0 max_budget_ratio=0 oracle=BF16_operands_FP32_online packed_guard_elements=17 packed_k_mod8=2 packed_logical_prefix=PASS packed_guards=PASS guards=PASS inputs=PASS status=PASS",
+            "case cells=262144 live_cells=13 active_rows=32 cap=33 queries=1 masked=0 compared=6144 max_abs=0 max_budget_ratio=0 oracle=BF16_operands_FP32_online packed_guard_elements=17 packed_k_mod8=2 packed_logical_prefix=PASS packed_guards=PASS guards=PASS inputs=PASS status=PASS"
+          ],
+          "exact_prefix33_bits": true,
+          "physical262144_component_addressed": true,
+          "stdout_sha256": "6fef8a777bc6e426a1d683df897ce2f2c2336bb0ea40a97458856e09e8d245f8",
+          "stderr_sha256": "1afeca1226c441e13180db6e59aac8d8318f7152ea04df6b45090f0b77133713"
+        },
+        {
+          "arm": "control",
+          "pid": 3633912,
+          "exit_code": 0,
+          "ownership_closed": true,
+          "validation": {
+            "pid": 3633912,
+            "loader": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_loader.so.0.12.0",
+            "threads_before": 1,
+            "preinit": 37,
+            "config_enabled": true,
+            "first_init": true,
+            "dispatch_result": 46,
+            "output_untouched": true,
+            "retained_reference_until_exit": true,
+            "runtime_teardown_qualified": false
+          },
+          "case_count": 11,
+          "cases": [
+            "case cells=97 live_cells=49 active_rows=128 cap=33 queries=1 masked=0 compared=6144 max_abs=0 max_budget_ratio=0 oracle=BF16_operands_FP32_online packed_guard_elements=17 packed_k_mod8=2 packed_logical_prefix=PASS packed_guards=PASS guards=PASS inputs=PASS status=PASS",
+            "case cells=97 live_cells=71 active_rows=160 cap=33 queries=3 masked=1 compared=18432 max_abs=0 max_budget_ratio=0 oracle=BF16_operands_FP32_online packed_guard_elements=17 packed_k_mod8=2 packed_logical_prefix=PASS packed_guards=PASS guards=PASS inputs=PASS status=PASS",
+            "case cells=2113 live_cells=2113 active_rows=4256 cap=1 queries=3 masked=1 compared=18432 max_abs=0 max_budget_ratio=0 oracle=BF16_operands_FP32_online packed_guard_elements=17 packed_k_mod8=2 packed_logical_prefix=PASS packed_guards=PASS guards=PASS inputs=PASS status=PASS",
+            "case cells=2113 live_cells=2113 active_rows=4256 cap=17 queries=3 masked=1 compared=18432 max_abs=0 max_budget_ratio=0 oracle=BF16_operands_FP32_online packed_guard_elements=17 packed_k_mod8=2 packed_logical_prefix=PASS packed_guards=PASS guards=PASS inputs=PASS status=PASS",
+            "case cells=2113 live_cells=2113 active_rows=4256 cap=31 queries=3 masked=1 compared=18432 max_abs=0 max_budget_ratio=0 oracle=BF16_operands_FP32_online packed_guard_elements=17 packed_k_mod8=2 packed_logical_prefix=PASS packed_guards=PASS guards=PASS inputs=PASS status=PASS",
+            "case cells=2113 live_cells=2113 active_rows=4256 cap=32 queries=3 masked=1 compared=18432 max_abs=0 max_budget_ratio=0 oracle=BF16_operands_FP32_online packed_guard_elements=17 packed_k_mod8=2 packed_logical_prefix=PASS packed_guards=PASS guards=PASS inputs=PASS status=PASS",
+            "case cells=2113 live_cells=2113 active_rows=4256 cap=63 queries=3 masked=1 compared=18432 max_abs=0 max_budget_ratio=0 oracle=BF16_operands_FP32_online packed_guard_elements=17 packed_k_mod8=2 packed_logical_prefix=PASS packed_guards=PASS guards=PASS inputs=PASS status=PASS",
+            "case cells=2113 live_cells=2113 active_rows=4256 cap=65 queries=3 masked=1 compared=18432 max_abs=0 max_budget_ratio=0 oracle=BF16_operands_FP32_online packed_guard_elements=17 packed_k_mod8=2 packed_logical_prefix=PASS packed_guards=PASS guards=PASS inputs=PASS status=PASS",
+            "case cells=2113 live_cells=2113 active_rows=4256 cap=2051 queries=3 masked=1 compared=18432 max_abs=0 max_budget_ratio=0 oracle=BF16_operands_FP32_online packed_guard_elements=17 packed_k_mod8=2 packed_logical_prefix=PASS packed_guards=PASS guards=PASS inputs=PASS status=PASS",
+            "case cells=262144 live_cells=262144 active_rows=524288 cap=2051 queries=1 masked=0 compared=6144 max_abs=0 max_budget_ratio=0 oracle=BF16_operands_FP32_online packed_guard_elements=17 packed_k_mod8=2 packed_logical_prefix=PASS packed_guards=PASS guards=PASS inputs=PASS status=PASS",
+            "case cells=262144 live_cells=13 active_rows=32 cap=33 queries=1 masked=0 compared=6144 max_abs=0 max_budget_ratio=0 oracle=BF16_operands_FP32_online packed_guard_elements=17 packed_k_mod8=2 packed_logical_prefix=PASS packed_guards=PASS guards=PASS inputs=PASS status=PASS"
+          ],
+          "exact_prefix33_bits": true,
+          "physical262144_component_addressed": true,
+          "stdout_sha256": "2cd80b2a614281e7c1528d271b4ad04c586073544085b4a68fecd55c767de880",
+          "stderr_sha256": "6ca1fd007fde404b0ade09f2f48d4015a76bf7c88f4dbcb352d3bd67c6f48d1f"
+        },
+        {
+          "arm": "partialq8",
+          "pid": 3635094,
+          "exit_code": 0,
+          "ownership_closed": true,
+          "validation": {
+            "pid": 3635094,
+            "loader": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_loader.so.0.12.0",
+            "threads_before": 1,
+            "preinit": 37,
+            "config_enabled": true,
+            "first_init": true,
+            "dispatch_result": 46,
+            "output_untouched": true,
+            "retained_reference_until_exit": true,
+            "runtime_teardown_qualified": false
+          },
+          "case_count": 11,
+          "cases": [
+            "case cells=97 live_cells=49 active_rows=128 cap=33 queries=1 masked=0 compared=6144 max_abs=0 max_budget_ratio=0 oracle=BF16_operands_FP32_online packed_guard_elements=17 packed_k_mod8=2 packed_logical_prefix=PASS packed_guards=PASS guards=PASS inputs=PASS status=PASS",
+            "case cells=97 live_cells=71 active_rows=160 cap=33 queries=3 masked=1 compared=18432 max_abs=0 max_budget_ratio=0 oracle=BF16_operands_FP32_online packed_guard_elements=17 packed_k_mod8=2 packed_logical_prefix=PASS packed_guards=PASS guards=PASS inputs=PASS status=PASS",
+            "case cells=2113 live_cells=2113 active_rows=4256 cap=1 queries=3 masked=1 compared=18432 max_abs=0 max_budget_ratio=0 oracle=BF16_operands_FP32_online packed_guard_elements=17 packed_k_mod8=2 packed_logical_prefix=PASS packed_guards=PASS guards=PASS inputs=PASS status=PASS",
+            "case cells=2113 live_cells=2113 active_rows=4256 cap=17 queries=3 masked=1 compared=18432 max_abs=0 max_budget_ratio=0 oracle=BF16_operands_FP32_online packed_guard_elements=17 packed_k_mod8=2 packed_logical_prefix=PASS packed_guards=PASS guards=PASS inputs=PASS status=PASS",
+            "case cells=2113 live_cells=2113 active_rows=4256 cap=31 queries=3 masked=1 compared=18432 max_abs=0 max_budget_ratio=0 oracle=BF16_operands_FP32_online packed_guard_elements=17 packed_k_mod8=2 packed_logical_prefix=PASS packed_guards=PASS guards=PASS inputs=PASS status=PASS",
+            "case cells=2113 live_cells=2113 active_rows=4256 cap=32 queries=3 masked=1 compared=18432 max_abs=0 max_budget_ratio=0 oracle=BF16_operands_FP32_online packed_guard_elements=17 packed_k_mod8=2 packed_logical_prefix=PASS packed_guards=PASS guards=PASS inputs=PASS status=PASS",
+            "case cells=2113 live_cells=2113 active_rows=4256 cap=63 queries=3 masked=1 compared=18432 max_abs=0 max_budget_ratio=0 oracle=BF16_operands_FP32_online packed_guard_elements=17 packed_k_mod8=2 packed_logical_prefix=PASS packed_guards=PASS guards=PASS inputs=PASS status=PASS",
+            "case cells=2113 live_cells=2113 active_rows=4256 cap=65 queries=3 masked=1 compared=18432 max_abs=0 max_budget_ratio=0 oracle=BF16_operands_FP32_online packed_guard_elements=17 packed_k_mod8=2 packed_logical_prefix=PASS packed_guards=PASS guards=PASS inputs=PASS status=PASS",
+            "case cells=2113 live_cells=2113 active_rows=4256 cap=2051 queries=3 masked=1 compared=18432 max_abs=0 max_budget_ratio=0 oracle=BF16_operands_FP32_online packed_guard_elements=17 packed_k_mod8=2 packed_logical_prefix=PASS packed_guards=PASS guards=PASS inputs=PASS status=PASS",
+            "case cells=262144 live_cells=262144 active_rows=524288 cap=2051 queries=1 masked=0 compared=6144 max_abs=0 max_budget_ratio=0 oracle=BF16_operands_FP32_online packed_guard_elements=17 packed_k_mod8=2 packed_logical_prefix=PASS packed_guards=PASS guards=PASS inputs=PASS status=PASS",
+            "case cells=262144 live_cells=13 active_rows=32 cap=33 queries=1 masked=0 compared=6144 max_abs=0 max_budget_ratio=0 oracle=BF16_operands_FP32_online packed_guard_elements=17 packed_k_mod8=2 packed_logical_prefix=PASS packed_guards=PASS guards=PASS inputs=PASS status=PASS"
+          ],
+          "exact_prefix33_bits": true,
+          "physical262144_component_addressed": true,
+          "stdout_sha256": "00d038aee0cabde1bc9cb5ab893c20dac07cc788faf036c57f2549fef59319c7",
+          "stderr_sha256": "9caf126f0f79854018c217a642cb63b91d0b588c300fb8255464b1a8c46aebde"
         }
       ],
       "postchecks_complete": true,
