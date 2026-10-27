@@ -1,6 +1,6 @@
 {
-  "stage": "failed",
-  "source_commit": "770a3639a8a210bf6d3a838a635576eda588843a",
+  "stage": "prepared",
+  "source_commit": "96bd6c9873b91fb090ce9b38b7e30a388bc8f39c",
   "native_source": "6e40afc1beddd059ee518617f6c1efce1da14aca",
   "binary": {
     "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/strata",
@@ -275,7 +275,7 @@
     "tools/sycl/inspect_native_sections.py": "122521c8364a3a6b007dd5f234c21bb0200c0f1ff6e0b4a7ce23413da3092b94",
     "tools/sycl/iq2_pair_model.py": "618c3d8c6680ed2dcc3834c9aa6cbf9a67f97c4fc8c78fcdd5e5c83c583e0769",
     "tools/sycl/measure_down_scatter.py": "6d92d7212c7cad9bb7fdee6ef6877528b6240f990c7f74d032394933387ed2de",
-    "tools/sycl/measure_fused_moe_service.py": "9e22236c1d3e26019befd4e8bf8e31ee608c7c9236aaa45e0d59d30417881394",
+    "tools/sycl/measure_fused_moe_service.py": "2814765a0671c5d471e2d39b45dc1b7e0cdfbfea24d7b0607e8e128724ae216b",
     "tools/sycl/measure_gdn_columns.py": "15ddabec6828348c16aac22f5372ffdc433327726aa8ad9d0fe4c1cfd6065455",
     "tools/sycl/measure_gemm.py": "484f7ffe624f1387309ff241bf7b9a89990b661eac0e1afffb166102abb88dc5",
     "tools/sycl/measure_gu_swiglu.py": "8496595d8122c3f8373edbb267376cb347a1eafe0983d2700fa9a83a0a36a42a",
@@ -539,7 +539,7 @@
   },
   "plans": {
     "smoke-profile": {
-      "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/selected-fused-moe-service-v1/smoke-profile",
+      "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/selected-fused-moe-service-v2/smoke-profile",
       "config": {
         "exe": "/home/yayoi/orca/workspaces/Strata/sycl/tools/sycl/engine_once.py",
         "args": [
@@ -594,7 +594,7 @@
           "strata"
         ],
         "host": "127.0.0.1",
-        "log": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/selected-fused-moe-service-v1/smoke-profile/engine.stderr",
+        "log": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/selected-fused-moe-service-v2/smoke-profile/engine.stderr",
         "engine_silence_s": 480,
         "parallel": 1,
         "open_browser": false,
@@ -612,10 +612,10 @@
           "bytes": 2329704,
           "sha256": "e7626aedf7e5bdb983c74f9d3c2e00c52468756853afb69beb37c12b671a2f5c"
         },
-        "session": "StrataFusedc039c517e22fb91f42427cac",
+        "session": "StrataFused7b3eae6c091e5abe60db2c18",
         "environment": {
           "UNITRACE_SystemTime": "1",
-          "UNITRACE_TraceOutputDir": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/selected-fused-moe-service-v1/smoke-profile/trace",
+          "UNITRACE_TraceOutputDir": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/selected-fused-moe-service-v2/smoke-profile/trace",
           "UNITRACE_FollowChildProcess": "1",
           "LD_DEBUG": "libs"
         }
@@ -678,7 +678,7 @@
         "STRATA_SYCL_SELECT_CYCLIC": "0",
         "STRATA_SYCL_PROMPT_K_CELL_MAJOR": "0",
         "STRATA_SYCL_PROMPT_NATIVE_KV_MIN": "0",
-        "XDG_CACHE_HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/selected-fused-moe-service-v1/smoke-profile/cache",
+        "XDG_CACHE_HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/selected-fused-moe-service-v2/smoke-profile/cache",
         "STRATA_SYCL_PREFILL_NATIVE16": "bf16",
         "STRATA_SYCL_PREFILL_QSA_MATH": "bf16-prefix-ordered-exp",
         "STRATA_SYCL_PREFILL_NATIVE16_BACKEND": "vllm",
@@ -689,8 +689,8 @@
         "STRATA_SYCL_SCORE_QUERY_TILE": "8",
         "STRATA_SYCL_SCORE_HEAD_PARALLEL": "1",
         "STRATA_SYCL_PREFILL_SCORE_GEMM": "1",
-        "TMPDIR": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/selected-fused-moe-service-v1/smoke-profile/tmp",
-        "STRATA_MEASUREMENT_ROOT": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/selected-fused-moe-service-v1/smoke-profile",
+        "TMPDIR": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/selected-fused-moe-service-v2/smoke-profile/tmp",
+        "STRATA_MEASUREMENT_ROOT": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/selected-fused-moe-service-v2/smoke-profile",
         "ZES_ENABLE_SYSMAN": "0",
         "STRATA_SYCL_PREFILL_GDN_COLUMNS": "4",
         "STRATA_SYCL_PREFILL_GDN_CHUNK64": "0",
@@ -712,7 +712,7 @@
         "STRATA_PREFILL_TRANSITION_PROFILE": "0",
         "STRATA_PREFILL_LAYER_MAJOR_PROFILE": "1",
         "UR_ENABLE_LAYERS": "UR_LAYER_PARAMETER_VALIDATION",
-        "UR_LOG_VALIDATION": "level:warning;flush:warning;output:file,/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/selected-fused-moe-service-v1/smoke-profile/validation.log",
+        "UR_LOG_VALIDATION": "level:warning;flush:warning;output:file,/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/selected-fused-moe-service-v2/smoke-profile/validation.log",
         "UR_LOG_LOADER": "level:warning;flush:warning;output:stderr",
         "UR_LOG_LEVEL_ZERO": "level:warning;flush:warning;output:stderr",
         "STRATA_TRACE": "1",
@@ -722,19 +722,19 @@
         "STRATA_PREFILL_LAYER_MAJOR_GDN_PROFILE": "0",
         "ZE_ENABLE_ALT_DRIVERS": "/usr/lib/x86_64-linux-gnu/libze_intel_gpu.so.1.17.39758",
         "PYTHONNOUSERSITE": "1",
-        "PYTHONPYCACHEPREFIX": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/selected-fused-moe-service-v1/smoke-profile/cache/python"
+        "PYTHONPYCACHEPREFIX": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/selected-fused-moe-service-v2/smoke-profile/cache/python"
       },
       "inputs": {
-        "config.json": "feda1a6c1dbe70a59cd196820ea35440ee09d841b72570c446b4b5f4342d6f92",
-        "plan.json": "fdecd307f0f97f007641ba8bf3a91058cc6325843648193dc3ec9e06315feee9"
+        "config.json": "d0ce255d5ee4c4aca91b5ea20a8462aef42c6887717de4474aa062de22c29669",
+        "plan.json": "a5def13d7065b9d9950bc06a27027a9744282fce28df3da6f02b941247d9ac85"
       },
       "command": [
         "/bin/sh",
         "/home/yayoi/orca/workspaces/Strata/sycl/bench.sh",
         "--config",
-        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/selected-fused-moe-service-v1/smoke-profile/config.json",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/selected-fused-moe-service-v2/smoke-profile/config.json",
         "--port",
-        "38319",
+        "58521",
         "--prefill-only",
         "--prefill-tokens",
         "32768",
@@ -748,7 +748,7 @@
         "--ready-timeout",
         "600",
         "--out",
-        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/selected-fused-moe-service-v1/smoke-profile/bench"
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/selected-fused-moe-service-v2/smoke-profile/bench"
       ],
       "budgets": {
         "wall": 1200,
@@ -760,7 +760,7 @@
       }
     },
     "long-base0": {
-      "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/selected-fused-moe-service-v1/long-base0",
+      "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/selected-fused-moe-service-v2/long-base0",
       "config": {
         "exe": "/home/yayoi/orca/workspaces/Strata/sycl/tools/sycl/engine_once.py",
         "args": [
@@ -815,7 +815,7 @@
           "strata"
         ],
         "host": "127.0.0.1",
-        "log": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/selected-fused-moe-service-v1/long-base0/engine.stderr",
+        "log": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/selected-fused-moe-service-v2/long-base0/engine.stderr",
         "engine_silence_s": 480,
         "parallel": 1,
         "open_browser": false,
@@ -884,7 +884,7 @@
         "STRATA_SYCL_SELECT_CYCLIC": "0",
         "STRATA_SYCL_PROMPT_K_CELL_MAJOR": "0",
         "STRATA_SYCL_PROMPT_NATIVE_KV_MIN": "0",
-        "XDG_CACHE_HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/selected-fused-moe-service-v1/long-base0/cache",
+        "XDG_CACHE_HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/selected-fused-moe-service-v2/long-base0/cache",
         "STRATA_SYCL_PREFILL_NATIVE16": "bf16",
         "STRATA_SYCL_PREFILL_QSA_MATH": "bf16-prefix-ordered-exp",
         "STRATA_SYCL_PREFILL_NATIVE16_BACKEND": "vllm",
@@ -895,8 +895,8 @@
         "STRATA_SYCL_SCORE_QUERY_TILE": "8",
         "STRATA_SYCL_SCORE_HEAD_PARALLEL": "1",
         "STRATA_SYCL_PREFILL_SCORE_GEMM": "1",
-        "TMPDIR": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/selected-fused-moe-service-v1/long-base0/tmp",
-        "STRATA_MEASUREMENT_ROOT": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/selected-fused-moe-service-v1/long-base0",
+        "TMPDIR": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/selected-fused-moe-service-v2/long-base0/tmp",
+        "STRATA_MEASUREMENT_ROOT": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/selected-fused-moe-service-v2/long-base0",
         "ZES_ENABLE_SYSMAN": "0",
         "STRATA_SYCL_PREFILL_GDN_COLUMNS": "4",
         "STRATA_SYCL_PREFILL_GDN_CHUNK64": "0",
@@ -918,7 +918,7 @@
         "STRATA_PREFILL_TRANSITION_PROFILE": "0",
         "STRATA_PREFILL_LAYER_MAJOR_PROFILE": "1",
         "UR_ENABLE_LAYERS": "UR_LAYER_PARAMETER_VALIDATION",
-        "UR_LOG_VALIDATION": "level:warning;flush:warning;output:file,/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/selected-fused-moe-service-v1/long-base0/validation.log",
+        "UR_LOG_VALIDATION": "level:warning;flush:warning;output:file,/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/selected-fused-moe-service-v2/long-base0/validation.log",
         "UR_LOG_LOADER": "level:warning;flush:warning;output:stderr",
         "UR_LOG_LEVEL_ZERO": "level:warning;flush:warning;output:stderr",
         "STRATA_TRACE": "1",
@@ -928,19 +928,19 @@
         "STRATA_PREFILL_LAYER_MAJOR_GDN_PROFILE": "0",
         "ZE_ENABLE_ALT_DRIVERS": "/usr/lib/x86_64-linux-gnu/libze_intel_gpu.so.1.17.39758",
         "PYTHONNOUSERSITE": "1",
-        "PYTHONPYCACHEPREFIX": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/selected-fused-moe-service-v1/long-base0/cache/python"
+        "PYTHONPYCACHEPREFIX": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/selected-fused-moe-service-v2/long-base0/cache/python"
       },
       "inputs": {
-        "config.json": "fd20643ecd87a7c4cc14936514303bc3007256f20dedaaa4b08f4b26565fea89",
+        "config.json": "9254fad2b523a98c36de55cd178a9622741f5d1a1eac6161cf9fb14e3f601f16",
         "plan.json": "08cfd654f8512bb484582b232cb0361de9c228e1eb5f4cec465aba42cf5195ef"
       },
       "command": [
         "/bin/sh",
         "/home/yayoi/orca/workspaces/Strata/sycl/bench.sh",
         "--config",
-        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/selected-fused-moe-service-v1/long-base0/config.json",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/selected-fused-moe-service-v2/long-base0/config.json",
         "--port",
-        "48007",
+        "46943",
         "--prefill-only",
         "--prefill-tokens",
         "98304",
@@ -954,7 +954,7 @@
         "--ready-timeout",
         "600",
         "--out",
-        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/selected-fused-moe-service-v1/long-base0/bench"
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/selected-fused-moe-service-v2/long-base0/bench"
       ],
       "budgets": {
         "wall": 1200,
@@ -966,7 +966,7 @@
       }
     },
     "long-profile0": {
-      "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/selected-fused-moe-service-v1/long-profile0",
+      "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/selected-fused-moe-service-v2/long-profile0",
       "config": {
         "exe": "/home/yayoi/orca/workspaces/Strata/sycl/tools/sycl/engine_once.py",
         "args": [
@@ -1021,7 +1021,7 @@
           "strata"
         ],
         "host": "127.0.0.1",
-        "log": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/selected-fused-moe-service-v1/long-profile0/engine.stderr",
+        "log": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/selected-fused-moe-service-v2/long-profile0/engine.stderr",
         "engine_silence_s": 480,
         "parallel": 1,
         "open_browser": false,
@@ -1039,10 +1039,10 @@
           "bytes": 2329704,
           "sha256": "e7626aedf7e5bdb983c74f9d3c2e00c52468756853afb69beb37c12b671a2f5c"
         },
-        "session": "StrataFused473a80fde94fd73907ac5c50",
+        "session": "StrataFusedb6fbc36a4e20f9071d1190a1",
         "environment": {
           "UNITRACE_SystemTime": "1",
-          "UNITRACE_TraceOutputDir": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/selected-fused-moe-service-v1/long-profile0/trace",
+          "UNITRACE_TraceOutputDir": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/selected-fused-moe-service-v2/long-profile0/trace",
           "UNITRACE_FollowChildProcess": "1",
           "LD_DEBUG": "libs"
         }
@@ -1109,7 +1109,7 @@
         "STRATA_SYCL_SELECT_CYCLIC": "0",
         "STRATA_SYCL_PROMPT_K_CELL_MAJOR": "0",
         "STRATA_SYCL_PROMPT_NATIVE_KV_MIN": "0",
-        "XDG_CACHE_HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/selected-fused-moe-service-v1/long-profile0/cache",
+        "XDG_CACHE_HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/selected-fused-moe-service-v2/long-profile0/cache",
         "STRATA_SYCL_PREFILL_NATIVE16": "bf16",
         "STRATA_SYCL_PREFILL_QSA_MATH": "bf16-prefix-ordered-exp",
         "STRATA_SYCL_PREFILL_NATIVE16_BACKEND": "vllm",
@@ -1120,8 +1120,8 @@
         "STRATA_SYCL_SCORE_QUERY_TILE": "8",
         "STRATA_SYCL_SCORE_HEAD_PARALLEL": "1",
         "STRATA_SYCL_PREFILL_SCORE_GEMM": "1",
-        "TMPDIR": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/selected-fused-moe-service-v1/long-profile0/tmp",
-        "STRATA_MEASUREMENT_ROOT": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/selected-fused-moe-service-v1/long-profile0",
+        "TMPDIR": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/selected-fused-moe-service-v2/long-profile0/tmp",
+        "STRATA_MEASUREMENT_ROOT": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/selected-fused-moe-service-v2/long-profile0",
         "ZES_ENABLE_SYSMAN": "0",
         "STRATA_SYCL_PREFILL_GDN_COLUMNS": "4",
         "STRATA_SYCL_PREFILL_GDN_CHUNK64": "0",
@@ -1143,7 +1143,7 @@
         "STRATA_PREFILL_TRANSITION_PROFILE": "0",
         "STRATA_PREFILL_LAYER_MAJOR_PROFILE": "1",
         "UR_ENABLE_LAYERS": "UR_LAYER_PARAMETER_VALIDATION",
-        "UR_LOG_VALIDATION": "level:warning;flush:warning;output:file,/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/selected-fused-moe-service-v1/long-profile0/validation.log",
+        "UR_LOG_VALIDATION": "level:warning;flush:warning;output:file,/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/selected-fused-moe-service-v2/long-profile0/validation.log",
         "UR_LOG_LOADER": "level:warning;flush:warning;output:stderr",
         "UR_LOG_LEVEL_ZERO": "level:warning;flush:warning;output:stderr",
         "STRATA_TRACE": "1",
@@ -1153,19 +1153,19 @@
         "STRATA_PREFILL_LAYER_MAJOR_GDN_PROFILE": "0",
         "ZE_ENABLE_ALT_DRIVERS": "/usr/lib/x86_64-linux-gnu/libze_intel_gpu.so.1.17.39758",
         "PYTHONNOUSERSITE": "1",
-        "PYTHONPYCACHEPREFIX": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/selected-fused-moe-service-v1/long-profile0/cache/python"
+        "PYTHONPYCACHEPREFIX": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/selected-fused-moe-service-v2/long-profile0/cache/python"
       },
       "inputs": {
-        "config.json": "bdc6fecdb8fb1fc724ce22412ffd9a3548c77911cbd247b5388baf82b3c09612",
-        "plan.json": "0930cd1c26c6b287d365aca79aa34a6fbb66c4e2dc5702108b31f92b281cbb1d"
+        "config.json": "2d17a9eda90c2289b843a0c9c1f5c24d71e8797a30b15fedba1781c18d29c0eb",
+        "plan.json": "d9a7518a5f9909ed3007c81a79ebaf6d56f64d17c0720f55e552f052870a42f3"
       },
       "command": [
         "/bin/sh",
         "/home/yayoi/orca/workspaces/Strata/sycl/bench.sh",
         "--config",
-        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/selected-fused-moe-service-v1/long-profile0/config.json",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/selected-fused-moe-service-v2/long-profile0/config.json",
         "--port",
-        "35307",
+        "51613",
         "--prefill-only",
         "--prefill-tokens",
         "98304",
@@ -1179,7 +1179,7 @@
         "--ready-timeout",
         "600",
         "--out",
-        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/selected-fused-moe-service-v1/long-profile0/bench"
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/selected-fused-moe-service-v2/long-profile0/bench"
       ],
       "budgets": {
         "wall": 1200,
@@ -1191,7 +1191,7 @@
       }
     },
     "long-profile1": {
-      "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/selected-fused-moe-service-v1/long-profile1",
+      "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/selected-fused-moe-service-v2/long-profile1",
       "config": {
         "exe": "/home/yayoi/orca/workspaces/Strata/sycl/tools/sycl/engine_once.py",
         "args": [
@@ -1246,7 +1246,7 @@
           "strata"
         ],
         "host": "127.0.0.1",
-        "log": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/selected-fused-moe-service-v1/long-profile1/engine.stderr",
+        "log": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/selected-fused-moe-service-v2/long-profile1/engine.stderr",
         "engine_silence_s": 480,
         "parallel": 1,
         "open_browser": false,
@@ -1264,10 +1264,10 @@
           "bytes": 2329704,
           "sha256": "e7626aedf7e5bdb983c74f9d3c2e00c52468756853afb69beb37c12b671a2f5c"
         },
-        "session": "StrataFused068d5ae5cc98a8f5afb10582",
+        "session": "StrataFusedb1bc468e0ffe0adb55228415",
         "environment": {
           "UNITRACE_SystemTime": "1",
-          "UNITRACE_TraceOutputDir": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/selected-fused-moe-service-v1/long-profile1/trace",
+          "UNITRACE_TraceOutputDir": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/selected-fused-moe-service-v2/long-profile1/trace",
           "UNITRACE_FollowChildProcess": "1",
           "LD_DEBUG": "libs"
         }
@@ -1334,7 +1334,7 @@
         "STRATA_SYCL_SELECT_CYCLIC": "0",
         "STRATA_SYCL_PROMPT_K_CELL_MAJOR": "0",
         "STRATA_SYCL_PROMPT_NATIVE_KV_MIN": "0",
-        "XDG_CACHE_HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/selected-fused-moe-service-v1/long-profile1/cache",
+        "XDG_CACHE_HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/selected-fused-moe-service-v2/long-profile1/cache",
         "STRATA_SYCL_PREFILL_NATIVE16": "bf16",
         "STRATA_SYCL_PREFILL_QSA_MATH": "bf16-prefix-ordered-exp",
         "STRATA_SYCL_PREFILL_NATIVE16_BACKEND": "vllm",
@@ -1345,8 +1345,8 @@
         "STRATA_SYCL_SCORE_QUERY_TILE": "8",
         "STRATA_SYCL_SCORE_HEAD_PARALLEL": "1",
         "STRATA_SYCL_PREFILL_SCORE_GEMM": "1",
-        "TMPDIR": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/selected-fused-moe-service-v1/long-profile1/tmp",
-        "STRATA_MEASUREMENT_ROOT": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/selected-fused-moe-service-v1/long-profile1",
+        "TMPDIR": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/selected-fused-moe-service-v2/long-profile1/tmp",
+        "STRATA_MEASUREMENT_ROOT": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/selected-fused-moe-service-v2/long-profile1",
         "ZES_ENABLE_SYSMAN": "0",
         "STRATA_SYCL_PREFILL_GDN_COLUMNS": "4",
         "STRATA_SYCL_PREFILL_GDN_CHUNK64": "0",
@@ -1368,7 +1368,7 @@
         "STRATA_PREFILL_TRANSITION_PROFILE": "0",
         "STRATA_PREFILL_LAYER_MAJOR_PROFILE": "1",
         "UR_ENABLE_LAYERS": "UR_LAYER_PARAMETER_VALIDATION",
-        "UR_LOG_VALIDATION": "level:warning;flush:warning;output:file,/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/selected-fused-moe-service-v1/long-profile1/validation.log",
+        "UR_LOG_VALIDATION": "level:warning;flush:warning;output:file,/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/selected-fused-moe-service-v2/long-profile1/validation.log",
         "UR_LOG_LOADER": "level:warning;flush:warning;output:stderr",
         "UR_LOG_LEVEL_ZERO": "level:warning;flush:warning;output:stderr",
         "STRATA_TRACE": "1",
@@ -1378,19 +1378,19 @@
         "STRATA_PREFILL_LAYER_MAJOR_GDN_PROFILE": "0",
         "ZE_ENABLE_ALT_DRIVERS": "/usr/lib/x86_64-linux-gnu/libze_intel_gpu.so.1.17.39758",
         "PYTHONNOUSERSITE": "1",
-        "PYTHONPYCACHEPREFIX": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/selected-fused-moe-service-v1/long-profile1/cache/python"
+        "PYTHONPYCACHEPREFIX": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/selected-fused-moe-service-v2/long-profile1/cache/python"
       },
       "inputs": {
-        "config.json": "1a3178567707ed0bea0e231854990f09a9f227855486ead964132ce32ca268eb",
-        "plan.json": "72e69d6c05a07a1015d10ae4ad1c215f41c00ce11fd15e4179d49b2ab9e36248"
+        "config.json": "6a7bca72ee75ca5dfd8f00dbfb0ae18a82e821a5c463bd46d8403ec6d344db36",
+        "plan.json": "14946c7ae2a426140011ad78acd68bd1c027276eb64ade311e30215ee90be690"
       },
       "command": [
         "/bin/sh",
         "/home/yayoi/orca/workspaces/Strata/sycl/bench.sh",
         "--config",
-        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/selected-fused-moe-service-v1/long-profile1/config.json",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/selected-fused-moe-service-v2/long-profile1/config.json",
         "--port",
-        "49023",
+        "50483",
         "--prefill-only",
         "--prefill-tokens",
         "98304",
@@ -1404,7 +1404,7 @@
         "--ready-timeout",
         "600",
         "--out",
-        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/selected-fused-moe-service-v1/long-profile1/bench"
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/selected-fused-moe-service-v2/long-profile1/bench"
       ],
       "budgets": {
         "wall": 1200,
@@ -1416,7 +1416,7 @@
       }
     },
     "long-base1": {
-      "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/selected-fused-moe-service-v1/long-base1",
+      "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/selected-fused-moe-service-v2/long-base1",
       "config": {
         "exe": "/home/yayoi/orca/workspaces/Strata/sycl/tools/sycl/engine_once.py",
         "args": [
@@ -1471,7 +1471,7 @@
           "strata"
         ],
         "host": "127.0.0.1",
-        "log": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/selected-fused-moe-service-v1/long-base1/engine.stderr",
+        "log": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/selected-fused-moe-service-v2/long-base1/engine.stderr",
         "engine_silence_s": 480,
         "parallel": 1,
         "open_browser": false,
@@ -1540,7 +1540,7 @@
         "STRATA_SYCL_SELECT_CYCLIC": "0",
         "STRATA_SYCL_PROMPT_K_CELL_MAJOR": "0",
         "STRATA_SYCL_PROMPT_NATIVE_KV_MIN": "0",
-        "XDG_CACHE_HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/selected-fused-moe-service-v1/long-base1/cache",
+        "XDG_CACHE_HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/selected-fused-moe-service-v2/long-base1/cache",
         "STRATA_SYCL_PREFILL_NATIVE16": "bf16",
         "STRATA_SYCL_PREFILL_QSA_MATH": "bf16-prefix-ordered-exp",
         "STRATA_SYCL_PREFILL_NATIVE16_BACKEND": "vllm",
@@ -1551,8 +1551,8 @@
         "STRATA_SYCL_SCORE_QUERY_TILE": "8",
         "STRATA_SYCL_SCORE_HEAD_PARALLEL": "1",
         "STRATA_SYCL_PREFILL_SCORE_GEMM": "1",
-        "TMPDIR": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/selected-fused-moe-service-v1/long-base1/tmp",
-        "STRATA_MEASUREMENT_ROOT": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/selected-fused-moe-service-v1/long-base1",
+        "TMPDIR": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/selected-fused-moe-service-v2/long-base1/tmp",
+        "STRATA_MEASUREMENT_ROOT": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/selected-fused-moe-service-v2/long-base1",
         "ZES_ENABLE_SYSMAN": "0",
         "STRATA_SYCL_PREFILL_GDN_COLUMNS": "4",
         "STRATA_SYCL_PREFILL_GDN_CHUNK64": "0",
@@ -1574,7 +1574,7 @@
         "STRATA_PREFILL_TRANSITION_PROFILE": "0",
         "STRATA_PREFILL_LAYER_MAJOR_PROFILE": "1",
         "UR_ENABLE_LAYERS": "UR_LAYER_PARAMETER_VALIDATION",
-        "UR_LOG_VALIDATION": "level:warning;flush:warning;output:file,/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/selected-fused-moe-service-v1/long-base1/validation.log",
+        "UR_LOG_VALIDATION": "level:warning;flush:warning;output:file,/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/selected-fused-moe-service-v2/long-base1/validation.log",
         "UR_LOG_LOADER": "level:warning;flush:warning;output:stderr",
         "UR_LOG_LEVEL_ZERO": "level:warning;flush:warning;output:stderr",
         "STRATA_TRACE": "1",
@@ -1584,19 +1584,19 @@
         "STRATA_PREFILL_LAYER_MAJOR_GDN_PROFILE": "0",
         "ZE_ENABLE_ALT_DRIVERS": "/usr/lib/x86_64-linux-gnu/libze_intel_gpu.so.1.17.39758",
         "PYTHONNOUSERSITE": "1",
-        "PYTHONPYCACHEPREFIX": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/selected-fused-moe-service-v1/long-base1/cache/python"
+        "PYTHONPYCACHEPREFIX": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/selected-fused-moe-service-v2/long-base1/cache/python"
       },
       "inputs": {
-        "config.json": "c7744c5aedd9c0db36ebce42ed94b876d67c9fec9c7b961604b1fb601d298962",
+        "config.json": "80468c37d297b14aaf3774f5a1b49d48a384aeca9665c885458429552f6b13b1",
         "plan.json": "08cfd654f8512bb484582b232cb0361de9c228e1eb5f4cec465aba42cf5195ef"
       },
       "command": [
         "/bin/sh",
         "/home/yayoi/orca/workspaces/Strata/sycl/bench.sh",
         "--config",
-        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/selected-fused-moe-service-v1/long-base1/config.json",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/selected-fused-moe-service-v2/long-base1/config.json",
         "--port",
-        "52327",
+        "36417",
         "--prefill-only",
         "--prefill-tokens",
         "98304",
@@ -1610,7 +1610,7 @@
         "--ready-timeout",
         "600",
         "--out",
-        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/selected-fused-moe-service-v1/long-base1/bench"
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/selected-fused-moe-service-v2/long-base1/bench"
       ],
       "budgets": {
         "wall": 1200,
@@ -1622,7 +1622,7 @@
       }
     },
     "long-base2": {
-      "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/selected-fused-moe-service-v1/long-base2",
+      "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/selected-fused-moe-service-v2/long-base2",
       "config": {
         "exe": "/home/yayoi/orca/workspaces/Strata/sycl/tools/sycl/engine_once.py",
         "args": [
@@ -1677,7 +1677,7 @@
           "strata"
         ],
         "host": "127.0.0.1",
-        "log": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/selected-fused-moe-service-v1/long-base2/engine.stderr",
+        "log": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/selected-fused-moe-service-v2/long-base2/engine.stderr",
         "engine_silence_s": 480,
         "parallel": 1,
         "open_browser": false,
@@ -1746,7 +1746,7 @@
         "STRATA_SYCL_SELECT_CYCLIC": "0",
         "STRATA_SYCL_PROMPT_K_CELL_MAJOR": "0",
         "STRATA_SYCL_PROMPT_NATIVE_KV_MIN": "0",
-        "XDG_CACHE_HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/selected-fused-moe-service-v1/long-base2/cache",
+        "XDG_CACHE_HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/selected-fused-moe-service-v2/long-base2/cache",
         "STRATA_SYCL_PREFILL_NATIVE16": "bf16",
         "STRATA_SYCL_PREFILL_QSA_MATH": "bf16-prefix-ordered-exp",
         "STRATA_SYCL_PREFILL_NATIVE16_BACKEND": "vllm",
@@ -1757,8 +1757,8 @@
         "STRATA_SYCL_SCORE_QUERY_TILE": "8",
         "STRATA_SYCL_SCORE_HEAD_PARALLEL": "1",
         "STRATA_SYCL_PREFILL_SCORE_GEMM": "1",
-        "TMPDIR": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/selected-fused-moe-service-v1/long-base2/tmp",
-        "STRATA_MEASUREMENT_ROOT": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/selected-fused-moe-service-v1/long-base2",
+        "TMPDIR": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/selected-fused-moe-service-v2/long-base2/tmp",
+        "STRATA_MEASUREMENT_ROOT": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/selected-fused-moe-service-v2/long-base2",
         "ZES_ENABLE_SYSMAN": "0",
         "STRATA_SYCL_PREFILL_GDN_COLUMNS": "4",
         "STRATA_SYCL_PREFILL_GDN_CHUNK64": "0",
@@ -1780,7 +1780,7 @@
         "STRATA_PREFILL_TRANSITION_PROFILE": "0",
         "STRATA_PREFILL_LAYER_MAJOR_PROFILE": "1",
         "UR_ENABLE_LAYERS": "UR_LAYER_PARAMETER_VALIDATION",
-        "UR_LOG_VALIDATION": "level:warning;flush:warning;output:file,/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/selected-fused-moe-service-v1/long-base2/validation.log",
+        "UR_LOG_VALIDATION": "level:warning;flush:warning;output:file,/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/selected-fused-moe-service-v2/long-base2/validation.log",
         "UR_LOG_LOADER": "level:warning;flush:warning;output:stderr",
         "UR_LOG_LEVEL_ZERO": "level:warning;flush:warning;output:stderr",
         "STRATA_TRACE": "1",
@@ -1790,19 +1790,19 @@
         "STRATA_PREFILL_LAYER_MAJOR_GDN_PROFILE": "0",
         "ZE_ENABLE_ALT_DRIVERS": "/usr/lib/x86_64-linux-gnu/libze_intel_gpu.so.1.17.39758",
         "PYTHONNOUSERSITE": "1",
-        "PYTHONPYCACHEPREFIX": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/selected-fused-moe-service-v1/long-base2/cache/python"
+        "PYTHONPYCACHEPREFIX": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/selected-fused-moe-service-v2/long-base2/cache/python"
       },
       "inputs": {
-        "config.json": "7ce6a30814c52122fb3af2e71d6531e13d58956ec599805b3ecdb636ec323a04",
+        "config.json": "fcbb97eb2864049ea5518fab5e23832101c14ce651ab0902a4732e12eef25498",
         "plan.json": "08cfd654f8512bb484582b232cb0361de9c228e1eb5f4cec465aba42cf5195ef"
       },
       "command": [
         "/bin/sh",
         "/home/yayoi/orca/workspaces/Strata/sycl/bench.sh",
         "--config",
-        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/selected-fused-moe-service-v1/long-base2/config.json",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/selected-fused-moe-service-v2/long-base2/config.json",
         "--port",
-        "33619",
+        "46309",
         "--prefill-only",
         "--prefill-tokens",
         "98304",
@@ -1816,7 +1816,7 @@
         "--ready-timeout",
         "600",
         "--out",
-        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/selected-fused-moe-service-v1/long-base2/bench"
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/selected-fused-moe-service-v2/long-base2/bench"
       ],
       "budgets": {
         "wall": 1200,
@@ -1828,7 +1828,7 @@
       }
     },
     "long-profile2": {
-      "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/selected-fused-moe-service-v1/long-profile2",
+      "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/selected-fused-moe-service-v2/long-profile2",
       "config": {
         "exe": "/home/yayoi/orca/workspaces/Strata/sycl/tools/sycl/engine_once.py",
         "args": [
@@ -1883,7 +1883,7 @@
           "strata"
         ],
         "host": "127.0.0.1",
-        "log": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/selected-fused-moe-service-v1/long-profile2/engine.stderr",
+        "log": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/selected-fused-moe-service-v2/long-profile2/engine.stderr",
         "engine_silence_s": 480,
         "parallel": 1,
         "open_browser": false,
@@ -1901,10 +1901,10 @@
           "bytes": 2329704,
           "sha256": "e7626aedf7e5bdb983c74f9d3c2e00c52468756853afb69beb37c12b671a2f5c"
         },
-        "session": "StrataFused90daccfed3e2285570a1f090",
+        "session": "StrataFusedb94fd2aa9ab41265500b95c7",
         "environment": {
           "UNITRACE_SystemTime": "1",
-          "UNITRACE_TraceOutputDir": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/selected-fused-moe-service-v1/long-profile2/trace",
+          "UNITRACE_TraceOutputDir": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/selected-fused-moe-service-v2/long-profile2/trace",
           "UNITRACE_FollowChildProcess": "1",
           "LD_DEBUG": "libs"
         }
@@ -1971,7 +1971,7 @@
         "STRATA_SYCL_SELECT_CYCLIC": "0",
         "STRATA_SYCL_PROMPT_K_CELL_MAJOR": "0",
         "STRATA_SYCL_PROMPT_NATIVE_KV_MIN": "0",
-        "XDG_CACHE_HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/selected-fused-moe-service-v1/long-profile2/cache",
+        "XDG_CACHE_HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/selected-fused-moe-service-v2/long-profile2/cache",
         "STRATA_SYCL_PREFILL_NATIVE16": "bf16",
         "STRATA_SYCL_PREFILL_QSA_MATH": "bf16-prefix-ordered-exp",
         "STRATA_SYCL_PREFILL_NATIVE16_BACKEND": "vllm",
@@ -1982,8 +1982,8 @@
         "STRATA_SYCL_SCORE_QUERY_TILE": "8",
         "STRATA_SYCL_SCORE_HEAD_PARALLEL": "1",
         "STRATA_SYCL_PREFILL_SCORE_GEMM": "1",
-        "TMPDIR": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/selected-fused-moe-service-v1/long-profile2/tmp",
-        "STRATA_MEASUREMENT_ROOT": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/selected-fused-moe-service-v1/long-profile2",
+        "TMPDIR": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/selected-fused-moe-service-v2/long-profile2/tmp",
+        "STRATA_MEASUREMENT_ROOT": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/selected-fused-moe-service-v2/long-profile2",
         "ZES_ENABLE_SYSMAN": "0",
         "STRATA_SYCL_PREFILL_GDN_COLUMNS": "4",
         "STRATA_SYCL_PREFILL_GDN_CHUNK64": "0",
@@ -2005,7 +2005,7 @@
         "STRATA_PREFILL_TRANSITION_PROFILE": "0",
         "STRATA_PREFILL_LAYER_MAJOR_PROFILE": "1",
         "UR_ENABLE_LAYERS": "UR_LAYER_PARAMETER_VALIDATION",
-        "UR_LOG_VALIDATION": "level:warning;flush:warning;output:file,/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/selected-fused-moe-service-v1/long-profile2/validation.log",
+        "UR_LOG_VALIDATION": "level:warning;flush:warning;output:file,/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/selected-fused-moe-service-v2/long-profile2/validation.log",
         "UR_LOG_LOADER": "level:warning;flush:warning;output:stderr",
         "UR_LOG_LEVEL_ZERO": "level:warning;flush:warning;output:stderr",
         "STRATA_TRACE": "1",
@@ -2015,19 +2015,19 @@
         "STRATA_PREFILL_LAYER_MAJOR_GDN_PROFILE": "0",
         "ZE_ENABLE_ALT_DRIVERS": "/usr/lib/x86_64-linux-gnu/libze_intel_gpu.so.1.17.39758",
         "PYTHONNOUSERSITE": "1",
-        "PYTHONPYCACHEPREFIX": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/selected-fused-moe-service-v1/long-profile2/cache/python"
+        "PYTHONPYCACHEPREFIX": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/selected-fused-moe-service-v2/long-profile2/cache/python"
       },
       "inputs": {
-        "config.json": "0374364af7251b7c60c67cad10e55cfbb10b170d1c5e677df5f095579a1c3566",
-        "plan.json": "db1dc25d023d2ff23b0f82a856f09f4993514ff050e263390511bb380fa1efb4"
+        "config.json": "802f8423128556afe6902a29231eb1766962eed8e27e176e7ec83c5aa34add02",
+        "plan.json": "eea199883bb3c0ad83c321662fce8c772a5835b82bac7c4d117cb41a48c35e6c"
       },
       "command": [
         "/bin/sh",
         "/home/yayoi/orca/workspaces/Strata/sycl/bench.sh",
         "--config",
-        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/selected-fused-moe-service-v1/long-profile2/config.json",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/selected-fused-moe-service-v2/long-profile2/config.json",
         "--port",
-        "59667",
+        "35955",
         "--prefill-only",
         "--prefill-tokens",
         "98304",
@@ -2041,7 +2041,7 @@
         "--ready-timeout",
         "600",
         "--out",
-        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/selected-fused-moe-service-v1/long-profile2/bench"
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/selected-fused-moe-service-v2/long-profile2/bench"
       ],
       "budgets": {
         "wall": 1200,
@@ -2053,33 +2053,9 @@
       }
     }
   },
-  "checks": [
-    {
-      "mode": "smoke-profile",
-      "passed": false,
-      "complete": false,
-      "ownership_closed": false,
-      "native_launched": true,
-      "error": "RuntimeError('benchmark owner/protocol failed')",
-      "error_excerpt": "file fill\nstrata generate: pre-filled 1256 of 1256 slots from the profile; slot 0 verified\nstrata generate: native GPU hit kernels captured at session setup\nstrata trace: 673 MiB free after the R4 hit path\nstrata generate: R4 hit path ON - resident experts are computed on the GPU\nstrata generate: 5 expert-pool workers + the host thread\nstrata trace: 673 MiB free after the expert cache and the graphs\nstrata generate: session is up (engine 0.1.38)\nstrata generate: token graph hit path: 1256 resident experts, decided on the device\nstrata serve: the prompt path borrows 1124 CUDA0 cache slots (2.16 GiB)\n[native16-route] engine=bf16 backend=vllm tile=auto(T<128:compact;else:wide) aot=bmg-g21-a0 isolated=1 experimental\n[native16-gu] fusion=large min_rows=2334\n[native16-down] fusion=large min_rows=2334\nstrata prefill: FP16 MoE compact requested=1 effective=1, chunk=8192, scratch rows=8192, accounted=2311569920, shared region=1180698624 bytes\nstrata trace: 673 MiB free after the head and the prompt path\nstrata verify: window up to 4 tokens, 63.3 MiB of device buffers\nstrata mtp: draft head over 106299 tokens (212.9 MiB)\nstrata trace: 393 MiB free after the verifier and the drafter's binding\nstrata serve: 393 MiB of VRAM free with everything loaded\nstrata trace: request 74 0\nstrata trace: prompt start 73 -1\nstrata prefill: FP16 MoE compact requested=1 effective=1, chunk=256, scratch rows=256, accounted=231915776, shared region=91838208 bytes\nstrata cache loan: phase=masked generation=1 chunk=256 first=1155 lent=101 decode_ready=0\nstrata trace: lent 101 slots for 256 tokens in 0.5 ms\nstrata prefill dense: phase=retired residency=Full activations=0 full_bytes=2116951040 bank_bytes=50918400 snapshot_bytes=2116951040 overlay_rows=0 session_recapture=0 verifier=1 free_bytes=412241920 total_bytes=10666115072\nstrata prefill dense: phase=cache-loan residency=Full activations=0 full_bytes=2116951040 bank_bytes=50918400 snapshot_bytes=2116951040 overlay_rows=0 session_recapture=0 verifier=1 free_bytes=412241920 total_bytes=10666115072\nstrata trace: prompt chunk 0 of 73\nstrata trace: prefill issuer threaded=0 stream_all=0 ring=8 chunk=73 entries=0\nstrata trace: prefill skip releases=0 after-open-group=0\nstrata prefill dense: phase=restored residency=Full activations=0 full_bytes=2116951040 bank_bytes=50918400 snapshot_bytes=2116951040 overlay_rows=0 session_recapture=0 verifier=1 free_bytes=270716928 total_bytes=10666115072\nstrata native dense host profile: v=2 complete=1 outcome=success entry_ms=0.071365 run_ms=26998.7 restore_ms=0.181341 entry_done=1 run_returned=1 restored=1 intervals=NONEXCLUSIVE entry_scope=boundary_entry_through_Bank run_scope=MTP_release_prompt_callbacks_MTP_restore restore_scope=restore_drain_through_owner_PLE_graph_verifier_restore outer_startup_snapshot_unmeasured=1\nstrata trace: read 73 tokens (batched) in 26999.0 ms\nstrata trace: refill start 101 -1\nstrata cache loan: phase=ready generation=1 chunk=256 first=1155 lent=101 decode_ready=1\nstrata trace: refilled 101 slots on 1 stage(s) in 42.8 ms\nstrata trace: prompt done (slots refilled) -1 -1\nstrata trace: window 73 1\nstrata verify: captured the 1-token window in 49 event-completed segments\nstrata verify: capture 1 tokens 4015.858 ms, free VRAM 126.0 MiB\nstrata verify: 48 shared/hit graphs can overlap CPU experts\nstrata trace: window 74 4\nstrata verify: captured the 4-token window in 49 event-completed segments\nstrata verify: capture 4 tokens 244.303 ms, free VRAM 48.2 MiB\nstrata verify: 48 shared/hit graphs can overlap CPU experts\nstrata trace: window 78 4\nstrata trace: window 82 4\nstrata trace: window 86 4\nstrata trace: window 90 4\nstrata trace: window 94 4\nstrata serve: prompt 74 tokens = 0 reused + 74 read in 27050 ms (2.7 tok/s), 24 generated in 7280 ms (3.3 tok/s), drafts accepted 18 of 18, 0 checkpoints\nstrata serve: SYCL_EXPERT_COPY submitted_blobs=0 submitted_bytes=0 completed_blobs=0 completed_bytes=0 host_view_groups=0 gpu_miss_groups=0 cpu_unique_misses=7042 cpu_entries=9855\nstrata serve: decode expert cache hit rate: 17.9% (2145 hits / 12000 lookups)\n",
-      "protocol_qualified": false,
-      "session_removed": true,
-      "postchecks_complete": true,
-      "postcheck_errors": [],
-      "fresh_faults": [],
-      "boot_unchanged": true,
-      "driver_after": {
-        "pci": "/sys/bus/pci/devices/0000:05:00.0",
-        "driver": "xe",
-        "vendor": "0x8086",
-        "device": "0xe20c",
-        "kernel": "7.0.0-38-generic",
-        "devcoredump": false
-      }
-    }
-  ],
+  "checks": [],
   "active": false,
-  "ownership_closed": false,
+  "ownership_closed": true,
   "complete": false,
   "passed": false,
   "model_adopted": false,
@@ -2107,6 +2083,16 @@
     "graph_source": "baa1032ce46e740e5c8d13f86aeee54fd7c83fad",
     "reuse": "Historical native inputs recovered; unchanged generators/generated dependencies/recipe/ELFs. No rebuild or new GPU qualification."
   },
+  "previous_failure": {
+    "commit": "96bd6c9873b91fb090ce9b38b7e30a388bc8f39c",
+    "path": "bench/results/2026-10-15-pr6-recovery-audit/fused-moe-service-current.json",
+    "sha256": "e0e40871370aa04787c5bbba21969736095d54e5d4b671ee554a453d7997de37",
+    "original_passed": false,
+    "original_ownership_closed": false,
+    "physical_closure_reconciled": true,
+    "evidence_sha256": "658c1f1f7418b6a3e990d8832dc2d35552585a2dc2325e6c484ad19a7cd3326a",
+    "reason": "Pre-request environment admission rejected launcher-added keys. Warmup completed;no long request. Owner observed all PIDs reaped/session empty,session removed,no fresh fault. Original failed status unchanged."
+  },
   "host_tests": {
     "source": "aa61e8741",
     "command": "isolated Python unittest: tests/core/test_profile_aggregate.py + tools/sycl/test_generation_engine.py",
@@ -2129,5 +2115,239 @@
     "reference": "Baseline keeps the same validation,trace and coarse source census as profile; the ratio measures added PTI overhead only,not combined observer overhead or clean production timing."
   },
   "limits": "No complete model coverage,critical path,physical bus traffic,hardware saturation,clean speed,decode or physical262144 qualification.",
-  "retention": "Keep individual prompt-wall samples,per-family calls/rows/service/projection volume and <=46 M-geometry bins for the imminent tile/epilogue choice. No full table,census histogram or repeated source/environment copies after closure. Retire raw logs/private caches after replay;no new engine build."
+  "retention": "Keep individual prompt-wall samples,per-family calls/rows/service/projection volume and <=46 M-geometry bins for the imminent tile/epilogue choice. No full table,census histogram or repeated source/environment copies after closure. Retire raw logs/private caches after replay;no new engine build.",
+  "environment_probe_plan": {
+    "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/selected-fused-moe-service-v2/environment-probe",
+    "environment": {
+      "PATH": "/home/yayoi/.local/share/strata-sycl/venv/bin:/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin:/usr/bin:/bin",
+      "HOME": "/home/yayoi",
+      "LANG": "C.UTF-8",
+      "LC_ALL": "C.UTF-8",
+      "PYTHONDONTWRITEBYTECODE": "1",
+      "LD_LIBRARY_PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib:/opt/intel/oneapi/mkl/2026.1/lib",
+      "MKLROOT": "/opt/intel/oneapi/mkl/2026.1",
+      "OMP_NUM_THREADS": "1",
+      "CPLUS_INCLUDE_PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/include",
+      "PYTHONUNBUFFERED": "1",
+      "ONEAPI_DEVICE_SELECTOR": "level_zero:gpu",
+      "UR_ADAPTERS_FORCE_LOAD": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_adapter_level_zero_v2.so.0",
+      "SYCL_CACHE_PERSISTENT": "0",
+      "NEOReadDebugKeys": "1",
+      "EnableDirectSubmission": "0",
+      "UR_L0_V2_FORCE_DISABLE_COPY_OFFLOAD": "1",
+      "STRATA_SYCL_VERIFY_NATIVE_CAPTURE": "0",
+      "STRATA_SYCL_MMQ_XMX": "1",
+      "STRATA_SYCL_MMQ_XMX_TILE": "8",
+      "STRATA_SYCL_MMQ_XMX_EXACT": "1",
+      "STRATA_SYCL_MMQ_XMX_PACK": "0",
+      "STRATA_SYCL_MMQ_XMX_COMPACT": "1",
+      "STRATA_SYCL_PREFILL_SAME_QUEUE": "1",
+      "STRATA_PREFILL_RING": "8",
+      "STRATA_PREFILL_MMQ": "0",
+      "STRATA_PREFILL_MOE_COMPACT_FP16": "1",
+      "STRATA_WATCHDOG_S": "480",
+      "STRATA_SYCL_PROMPT_DIRECT": "1",
+      "STRATA_PREFILL_LAYER_MAJOR": "1",
+      "STRATA_PREFILL_LAYER_MAJOR_R_DTYPE": "bf16",
+      "STRATA_PREFILL_LAYER_MAJOR_R_GPU": "auto",
+      "STRATA_PREFILL_RELEASE_MTP_EXPERTS": "1",
+      "STRATA_SYCL_KV_COPY_GROUPS": "0",
+      "STRATA_IQ_SINGLE_EXACT": "0",
+      "STRATA_SYCL_PARALLEL_IQ_DEQUANT": "1",
+      "STRATA_PREFILL_LAYER_MAJOR_SHAPE_CENSUS": "0",
+      "STRATA_IQ_TIMING_PROGRESS": "0",
+      "STRATA_PREFILL_RELEASE_HEADS": "0",
+      "STRATA_PREFILL_NATIVE_DENSE_BANK": "1",
+      "STRATA_SYCL_PREFILL_SCRATCH_ALIAS": "1",
+      "STRATA_SYCL_QSA_INDEXER_DEVICE_BATCH": "1",
+      "STRATA_GR_UNFUSED": "0",
+      "STRATA_PREFILL_BF16X2": "0",
+      "STRATA_PF_FUSED": "0",
+      "STRATA_PREFILL_CANONICAL_DENSE_BANK": "1",
+      "STRATA_SYCL_SELECT_RADIX4": "1",
+      "STRATA_SYCL_SELECT_CYCLIC": "0",
+      "STRATA_SYCL_PROMPT_K_CELL_MAJOR": "0",
+      "STRATA_SYCL_PROMPT_NATIVE_KV_MIN": "0",
+      "XDG_CACHE_HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/selected-fused-moe-service-v2/environment-probe/cache",
+      "STRATA_SYCL_PREFILL_NATIVE16": "bf16",
+      "STRATA_SYCL_PREFILL_QSA_MATH": "bf16-prefix-ordered-exp",
+      "STRATA_SYCL_PREFILL_NATIVE16_BACKEND": "vllm",
+      "STRATA_SYCL_PREFILL_NATIVE16_QSA": "1",
+      "STRATA_SYCL_PREFILL_NATIVE16_VLLM_TILE": "auto",
+      "STRATA_ROPE_TABLE": "1",
+      "STRATA_SYCL_PREFILL_MOE_WINDOW": "10",
+      "STRATA_SYCL_SCORE_QUERY_TILE": "8",
+      "STRATA_SYCL_SCORE_HEAD_PARALLEL": "1",
+      "STRATA_SYCL_PREFILL_SCORE_GEMM": "1",
+      "TMPDIR": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/selected-fused-moe-service-v2/environment-probe/tmp",
+      "STRATA_MEASUREMENT_ROOT": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/selected-fused-moe-service-v2/environment-probe",
+      "ZES_ENABLE_SYSMAN": "0",
+      "STRATA_SYCL_PREFILL_GDN_COLUMNS": "4",
+      "STRATA_SYCL_PREFILL_GDN_CHUNK64": "0",
+      "STRATA_SYCL_PREFILL_GU_SWIGLU": "large",
+      "STRATA_SYCL_PREFILL_EXPERT_SOURCE_VIEW": "1",
+      "STRATA_SYCL_PREFILL_DOWN_SCATTER": "large",
+      "STRATA_SYCL_PREFILL_MIXED_SCRATCH": "1",
+      "STRATA_SYCL_PREFILL_EXPERT_BANK_SLOTS": "384",
+      "STRATA_SYCL_CACHE_SCRATCH_LEASE": "1",
+      "STRATA_SYCL_VERIFY_ARENA_COPY": "0",
+      "STRATA_SYCL_VERIFY_PCIE_EARLY": "0",
+      "CUDA_MODULE_LOADING": "EAGER",
+      "STRATA_MTP_BATCH_F16": "0",
+      "STRATA_SYCL_PREFILL_EXPERT_BANK_PACKED": "1",
+      "STRATA_IQ2_PAIR": "1",
+      "STRATA_SYCL_MTP_OBSERVER": "0",
+      "STRATA_SYCL_PREFILL_CANONICAL_CHUNK64": "0",
+      "STRATA_SYCL_PREFILL_CANONICAL_RESTORE_AUDIT": "0",
+      "STRATA_PREFILL_TRANSITION_PROFILE": "0",
+      "STRATA_PREFILL_LAYER_MAJOR_PROFILE": "1",
+      "UR_ENABLE_LAYERS": "UR_LAYER_PARAMETER_VALIDATION",
+      "UR_LOG_VALIDATION": "level:warning;flush:warning;output:file,/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/selected-fused-moe-service-v2/environment-probe/validation.log",
+      "UR_LOG_LOADER": "level:warning;flush:warning;output:stderr",
+      "UR_LOG_LEVEL_ZERO": "level:warning;flush:warning;output:stderr",
+      "STRATA_TRACE": "1",
+      "STRATA_SYCL_PREFILL_COMMAND_PROFILE": "0",
+      "STRATA_PREFILL_CPU_WAIT_PROFILE": "0",
+      "STRATA_PREFILL_LAYER_MAJOR_QSA_PROFILE": "0",
+      "STRATA_PREFILL_LAYER_MAJOR_GDN_PROFILE": "0",
+      "ZE_ENABLE_ALT_DRIVERS": "/usr/lib/x86_64-linux-gnu/libze_intel_gpu.so.1.17.39758",
+      "PYTHONNOUSERSITE": "1",
+      "PYTHONPYCACHEPREFIX": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/selected-fused-moe-service-v2/environment-probe/cache/python",
+      "STRATA_UR_PROBE_EXPECTED_LOADER": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_loader.so.0.12.0",
+      "STRATA_UNITRACE_TARGET_PRELOAD": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/ur-validation-preload-v2/libstrata_ur_validation.so",
+      "UNITRACE_SystemTime": "1",
+      "UNITRACE_TraceOutputDir": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/selected-fused-moe-service-v2/environment-probe/trace",
+      "UNITRACE_FollowChildProcess": "1",
+      "LD_DEBUG": "libs"
+    },
+    "parent": {
+      "PATH": "/home/yayoi/.local/share/strata-sycl/venv/bin:/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin:/usr/bin:/bin",
+      "HOME": "/home/yayoi",
+      "LANG": "C.UTF-8",
+      "LC_ALL": "C.UTF-8",
+      "PYTHONDONTWRITEBYTECODE": "1",
+      "LD_LIBRARY_PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib:/opt/intel/oneapi/mkl/2026.1/lib",
+      "MKLROOT": "/opt/intel/oneapi/mkl/2026.1",
+      "OMP_NUM_THREADS": "1",
+      "CPLUS_INCLUDE_PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/include",
+      "PYTHONUNBUFFERED": "1",
+      "ONEAPI_DEVICE_SELECTOR": "level_zero:gpu",
+      "UR_ADAPTERS_FORCE_LOAD": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_adapter_level_zero_v2.so.0",
+      "SYCL_CACHE_PERSISTENT": "0",
+      "NEOReadDebugKeys": "1",
+      "EnableDirectSubmission": "0",
+      "UR_L0_V2_FORCE_DISABLE_COPY_OFFLOAD": "1",
+      "STRATA_SYCL_VERIFY_NATIVE_CAPTURE": "0",
+      "STRATA_SYCL_MMQ_XMX": "1",
+      "STRATA_SYCL_MMQ_XMX_TILE": "8",
+      "STRATA_SYCL_MMQ_XMX_EXACT": "1",
+      "STRATA_SYCL_MMQ_XMX_PACK": "0",
+      "STRATA_SYCL_MMQ_XMX_COMPACT": "1",
+      "STRATA_SYCL_PREFILL_SAME_QUEUE": "1",
+      "STRATA_PREFILL_RING": "8",
+      "STRATA_PREFILL_MMQ": "0",
+      "STRATA_PREFILL_MOE_COMPACT_FP16": "1",
+      "STRATA_WATCHDOG_S": "480",
+      "STRATA_SYCL_PROMPT_DIRECT": "1",
+      "STRATA_PREFILL_LAYER_MAJOR": "1",
+      "STRATA_PREFILL_LAYER_MAJOR_R_DTYPE": "bf16",
+      "STRATA_PREFILL_LAYER_MAJOR_R_GPU": "auto",
+      "STRATA_PREFILL_RELEASE_MTP_EXPERTS": "1",
+      "STRATA_SYCL_KV_COPY_GROUPS": "0",
+      "STRATA_IQ_SINGLE_EXACT": "0",
+      "STRATA_SYCL_PARALLEL_IQ_DEQUANT": "1",
+      "STRATA_PREFILL_LAYER_MAJOR_SHAPE_CENSUS": "0",
+      "STRATA_IQ_TIMING_PROGRESS": "0",
+      "STRATA_PREFILL_RELEASE_HEADS": "0",
+      "STRATA_PREFILL_NATIVE_DENSE_BANK": "1",
+      "STRATA_SYCL_PREFILL_SCRATCH_ALIAS": "1",
+      "STRATA_SYCL_QSA_INDEXER_DEVICE_BATCH": "1",
+      "STRATA_GR_UNFUSED": "0",
+      "STRATA_PREFILL_BF16X2": "0",
+      "STRATA_PF_FUSED": "0",
+      "STRATA_PREFILL_CANONICAL_DENSE_BANK": "1",
+      "STRATA_SYCL_SELECT_RADIX4": "1",
+      "STRATA_SYCL_SELECT_CYCLIC": "0",
+      "STRATA_SYCL_PROMPT_K_CELL_MAJOR": "0",
+      "STRATA_SYCL_PROMPT_NATIVE_KV_MIN": "0",
+      "XDG_CACHE_HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/selected-fused-moe-service-v2/environment-probe/cache",
+      "STRATA_SYCL_PREFILL_NATIVE16": "bf16",
+      "STRATA_SYCL_PREFILL_QSA_MATH": "bf16-prefix-ordered-exp",
+      "STRATA_SYCL_PREFILL_NATIVE16_BACKEND": "vllm",
+      "STRATA_SYCL_PREFILL_NATIVE16_QSA": "1",
+      "STRATA_SYCL_PREFILL_NATIVE16_VLLM_TILE": "auto",
+      "STRATA_ROPE_TABLE": "1",
+      "STRATA_SYCL_PREFILL_MOE_WINDOW": "10",
+      "STRATA_SYCL_SCORE_QUERY_TILE": "8",
+      "STRATA_SYCL_SCORE_HEAD_PARALLEL": "1",
+      "STRATA_SYCL_PREFILL_SCORE_GEMM": "1",
+      "TMPDIR": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/selected-fused-moe-service-v2/environment-probe/tmp",
+      "STRATA_MEASUREMENT_ROOT": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/selected-fused-moe-service-v2/environment-probe",
+      "ZES_ENABLE_SYSMAN": "0",
+      "STRATA_SYCL_PREFILL_GDN_COLUMNS": "4",
+      "STRATA_SYCL_PREFILL_GDN_CHUNK64": "0",
+      "STRATA_SYCL_PREFILL_GU_SWIGLU": "large",
+      "STRATA_SYCL_PREFILL_EXPERT_SOURCE_VIEW": "1",
+      "STRATA_SYCL_PREFILL_DOWN_SCATTER": "large",
+      "STRATA_SYCL_PREFILL_MIXED_SCRATCH": "1",
+      "STRATA_SYCL_PREFILL_EXPERT_BANK_SLOTS": "384",
+      "STRATA_SYCL_CACHE_SCRATCH_LEASE": "1",
+      "STRATA_SYCL_VERIFY_ARENA_COPY": "0",
+      "STRATA_SYCL_VERIFY_PCIE_EARLY": "0",
+      "CUDA_MODULE_LOADING": "EAGER",
+      "STRATA_MTP_BATCH_F16": "0",
+      "STRATA_SYCL_PREFILL_EXPERT_BANK_PACKED": "1",
+      "STRATA_IQ2_PAIR": "1",
+      "STRATA_SYCL_MTP_OBSERVER": "0",
+      "STRATA_SYCL_PREFILL_CANONICAL_CHUNK64": "0",
+      "STRATA_SYCL_PREFILL_CANONICAL_RESTORE_AUDIT": "0",
+      "STRATA_PREFILL_TRANSITION_PROFILE": "0",
+      "STRATA_PREFILL_LAYER_MAJOR_PROFILE": "1",
+      "UR_ENABLE_LAYERS": "UR_LAYER_PARAMETER_VALIDATION",
+      "UR_LOG_VALIDATION": "level:warning;flush:warning;output:file,/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/selected-fused-moe-service-v2/environment-probe/validation.log",
+      "UR_LOG_LOADER": "level:warning;flush:warning;output:stderr",
+      "UR_LOG_LEVEL_ZERO": "level:warning;flush:warning;output:stderr",
+      "STRATA_TRACE": "1",
+      "STRATA_SYCL_PREFILL_COMMAND_PROFILE": "0",
+      "STRATA_PREFILL_CPU_WAIT_PROFILE": "0",
+      "STRATA_PREFILL_LAYER_MAJOR_QSA_PROFILE": "0",
+      "STRATA_PREFILL_LAYER_MAJOR_GDN_PROFILE": "0",
+      "ZE_ENABLE_ALT_DRIVERS": "/usr/lib/x86_64-linux-gnu/libze_intel_gpu.so.1.17.39758",
+      "PYTHONNOUSERSITE": "1",
+      "PYTHONPYCACHEPREFIX": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/selected-fused-moe-service-v2/environment-probe/cache/python"
+    },
+    "native_profile": {
+      "mode": "aggregate",
+      "launcher": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/unitrace-indexed-collector-v1/unitrace",
+        "bytes": 513168,
+        "sha256": "6faac1e74f18ce481581f3ed112611ec3e0a1f81eac7990b57b622f212294244"
+      },
+      "collector": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/unitrace-indexed-collector-v1/libunitrace_tool.so",
+        "bytes": 2329704,
+        "sha256": "e7626aedf7e5bdb983c74f9d3c2e00c52468756853afb69beb37c12b671a2f5c"
+      },
+      "session": "StrataFusedEnv2f14f49bdc37fee0cc013d59",
+      "environment": {
+        "UNITRACE_SystemTime": "1",
+        "UNITRACE_TraceOutputDir": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/selected-fused-moe-service-v2/environment-probe/trace",
+        "UNITRACE_FollowChildProcess": "1",
+        "LD_DEBUG": "libs"
+      }
+    },
+    "command": [
+      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/unitrace-indexed-collector-v1/unitrace",
+      "--session",
+      "StrataFusedEnv2f14f49bdc37fee0cc013d59",
+      "--device-timing",
+      "--verbose",
+      "/usr/bin/env"
+    ],
+    "target": {
+      "path": "/usr/bin/env",
+      "sha256": "886e5fa8be716b03eeda48856e0f04493f2969fc148fb7812594ffac647fa050"
+    },
+    "scope": "CPU-only actual target environment and first-init probe. Collector may enumerate devices;target does not create queues or enqueue GPU work. No new timing/coverage qualification."
+  }
 }
