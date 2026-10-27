@@ -1729,6 +1729,9 @@ retired after committing their useful results. Both closed check roots are
 absent. The fourteen actual-ID smoke output/transaction files (512032bytes)
 also retire after useful evidence is committed. The remaining native consumers
 are resource and timing qualification.
+The seven successful profiler output/transaction files (47020bytes) also retire
+after the resource descriptors and full-table conservation are committed.
+The sole remaining component consumer is the prospective108sample timing gate.
 See[the current build and gates](../bench/results/2026-10-15-pr6-recovery-audit/qsa-barrier-current.json).
 
 Complete prefill phase attribution requires three independent ledgers: route-owner
