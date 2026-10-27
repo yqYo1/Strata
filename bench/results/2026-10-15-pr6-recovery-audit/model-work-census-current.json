@@ -1,5 +1,5 @@
 {
-  "stage": "prepared",
+  "stage": "failed",
   "source_commit": "92d23f9f03323b3e0dd9703a4fa6774fb1919e08",
   "native_source": "6e40afc1beddd059ee518617f6c1efce1da14aca",
   "binary": {
@@ -944,7 +944,57 @@
       }
     }
   },
-  "checks": [],
+  "checks": [
+    {
+      "mode": "smoke",
+      "passed": false,
+      "complete": false,
+      "ownership_closed": true,
+      "native_launched": true,
+      "error": "RuntimeError('benchmark owner/protocol failed')",
+      "protocol_qualified": false,
+      "postchecks_complete": true,
+      "postcheck_errors": [],
+      "fresh_faults": [],
+      "boot_unchanged": true,
+      "driver_after": {
+        "pci": "/sys/bus/pci/devices/0000:05:00.0",
+        "driver": "xe",
+        "vendor": "0x8086",
+        "device": "0xe20c",
+        "kernel": "7.0.0-38-generic",
+        "devcoredump": false
+      },
+      "failure_diagnosis": {
+        "mechanism": "Both real request gates complete,then the official benchmark prints its normal Results/Report summary. The controller called strict io.exit without draining this documented nonprotocol output. Owner marks unexpected trailing protocol;benchmark/native exit0.",
+        "controller_source": "92d23f9f03323b3e0dd9703a4fa6774fb1919e08",
+        "native_exit_code": 0,
+        "benchmark_exit_code": 0,
+        "long_requests_completed": 1,
+        "actual_input_tokens": 39260,
+        "actual_prefill_rows": 39259,
+        "expected_input_tokens": 39261,
+        "expected_prefill_rows": 39260,
+        "additional_predeclared_mismatches": [
+          "The unchanged fixed short request has39260tokens,not the predicted39261.",
+          "Native requested_mode10/effective_mode10 capacity is39259rows for this short request,not81920;long capacity remains81920."
+        ],
+        "source_census_offline_diagnostic_only": {
+          "windows": 48,
+          "jobs": 18796,
+          "dequants": 17580,
+          "row_and_retired_conservation": true,
+          "original_run_passed": false,
+          "scope": "Retrospective diagnostic for correction only;not eligibility or advancement evidence."
+        },
+        "evidence": {
+          "benchmark_stdout_sha256": "4e1cf99b22e25d71405b2f112bac7ceb9997faed71dfa38f263efad89bb1af8a",
+          "engine_log_sha256": "fff53a18e8cee11c9e971cbfd45a96c4c8c8a8527e2579c88a6f75060fcf0b04"
+        },
+        "next": "Commit explicit bounded benchmark-summary drain and host regression including the trailer;declare correct fixed short extent and per-casecapacity in a new cohort. Preserve this failed cohort;do not launch its long arm."
+      }
+    }
+  ],
   "active": false,
   "ownership_closed": true,
   "complete": false,

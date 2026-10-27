@@ -1865,8 +1865,15 @@ acknowledgement and requires a fresh cohort. Two host-only regression tests at
 acknowledgement,and a wrong command is rejected. The first host-test version used
 the wrong artifact root and failed before protocol exercise;that failure remains
 recorded. Neither host tests nor the earlier reviews qualify native execution.
-The completion-receipt repair at`3e00a11b0` remains separate. This is source-planned work on the pinned6e40 schema,not GPU execution
-coverage or clean throughput evidence. The original preflight
+The next smoke completes39260 input tokens and both request gates;benchmark and
+native exit0,but its owner fails because the controller rejects the normal printed
+Results/Report trailer. The frozen short extent was also one token too large,and
+its actual mode10 capacity is39259rows rather than81920. Its offline48-window,
+18796-job conservation check is correction evidence only;this cohort remains
+failed and its long arm is unstarted. Correct the bounded trailer drain and
+prospective per-case extent/capacity before another cohort. The completion-receipt
+repair at`3e00a11b0` remains separate. This is source-planned work on the pinned6e40
+schema,not GPU execution coverage or clean throughput evidence. The original preflight
 refusal at`5575402af` remains in Git;excluding unrelated standalone host tests did
 not qualify native execution. See the [current census plan](../bench/results/2026-10-15-pr6-recovery-audit/model-work-census-current.json).
 
