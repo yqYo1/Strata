@@ -405,21 +405,36 @@
           "upstream": "Niko1221/Strata",
           "revision": "5e8a4cca7d690ac60ca37eb09e7d0e010099ad6d",
           "license": "Root MIT identity matches SHA256949b9b0aada7476006469e58ee4ffb0e0f68c2d9137e90a356757b61a09d37f0",
-          "slice": "serve/structured.py::_only_objects and root-format check;two upstream HTTP-boundary tests in serve/test_structured.py. Existing format handling/server/native paths retained.",
+          "slice": "serve/structured.py::_only_objects and root-format check;two upstream HTTP-boundary tests in serve/test_structured.py. Existing format handling/server/native paths retained. Upstream serve/test_responses.py::OverHttp.test_json_schema_text_format optional-dependency guard;preserve valid/nonstream/stream checks.",
           "upstream_file_sha256": {
             "serve/structured.py": "80b272499fe6264bb818c5bc68cece27cfb495c1279f236558641b67f56a5f5c",
             "serve/test_structured.py": "b7d41653794f21cd806d658384f16e6a05b0bb1888d0ab7fb5d1e46d7e013bf4"
           },
           "local_source_sha256": {
             "serve/structured.py": "31365bfaffe8bcc99c24f57d34c28016852b761331e2188d1d656ea69a696f98",
-            "serve/test_structured.py": "dc145d6b6786d91327bf7d990940670b293f04d9a241a42fe462b5739b88a623"
+            "serve/test_structured.py": "dc145d6b6786d91327bf7d990940670b293f04d9a241a42fe462b5739b88a623",
+            "serve/test_responses.py": "000dca1bfc672b0ee05f532f6306ab5b788850afd5261922634f0d3616da979b"
           }
         },
         "validation_plan": [
           "flock -n /home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/owned-v0141-measurement.lock timeout 120s /home/yayoi/.local/share/strata-sycl/venv/bin/python -B -m unittest serve.test_structured serve.test_responses",
           "flock -n /home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/owned-v0141-measurement.lock timeout 180s /home/yayoi/.local/share/strata-sycl/venv/bin/python -B -m unittest serve.test_server"
         ],
-        "remaining": "Opt-in LaTeX repair,JSON extraction and Responses final-answer-with-tools remain pending;this slice only accepts object-only root unions/local refs and still rejects mixed/nonobject/cyclic schemas before load."
+        "remaining": "Opt-in LaTeX repair,JSON extraction and Responses final-answer-with-tools remain pending;this slice only accepts object-only root unions/local refs and still rejects mixed/nonobject/cyclic schemas before load.",
+        "implementation_source_commit": "421b8b876",
+        "validation_attempts": [
+          {
+            "source_commit": "421b8b876",
+            "command": "flock -n /home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/owned-v0141-measurement.lock timeout 120s /home/yayoi/.local/share/strata-sycl/venv/bin/python -B -m unittest serve.test_structured serve.test_responses",
+            "tests": 29,
+            "seconds": 10.168,
+            "exit_code": 1,
+            "errors": 1,
+            "skipped": 2,
+            "failure": "Existing Responses schema-violation assertion assumes optional jsonschema is installed;without it,documented fallback validates only object shape and returns200,error=None. Root type-object path is unchanged by this port.",
+            "next_action": "Port exact5e8a optional-dependency guard in that existing test;retain this failure and rerun. Schema-specific branches remain explicitly unqualified without the dependency."
+          }
+        ]
       },
       {
         "feature": "download_v027_integrity",
