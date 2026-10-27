@@ -905,6 +905,21 @@ default-supervisor adoption follows. This closes the matched supervisor-cost
 question for this workload. Return to the prefill workspace/resource question,
 keeping sustained decode,agent quality and physical262144 correctness open.
 
+The subsequent65536-minimum official workload completes one process with four
+78451fresh/zero-reuse/thinking/24-output requests and one78450-row MoE window
+per layer. Its original cohort fails because the new controller incorrectly
+requires disabled Down fusion,although the frozen selected environment requests
+`STRATA_SYCL_PREFILL_DOWN_SCATTER=large`. Keep that failure:the remaining two
+processes are unlaunched under stop-first. Closed-data journal/native-clock and
+route replay,owned exit0,no-fresh-fault checks and15 full model hashes preserve
+a diagnostic subsequent-three median960.2831tok/s,without performance adoption
+or three-process qualification. The first subsequent request has18480dequants,
+21513jobs and37,746,227,200requested expert H2D bytes,versus the earlier117K
+passive sample's33225dequants,37353jobs and38,673,152,000bytes. These are different
+input sizes,not a matched mechanism gain or physical traffic/critical-path proof.
+Close this unchanged-engine input-size screen;next resolve the service/resource
+cost of the repeated work before selecting another inference experiment.
+
 Exact original source,configuration and pure environment-recipe recovery closes
 the two superseded unlaunched model roots and old Python-probe root. Their
 original outcomes and plans remain in pushed Git;normal raw files and duplicate

@@ -832,8 +832,53 @@
       }
     },
     "single_window_64k_screen_v2": {
-      "stage": "prepared",
-      "processes": [],
+      "stage": "failed",
+      "processes": [
+        {
+          "index": 0,
+          "complete": false,
+          "host_probe_accepted": false,
+          "request_windows": [
+            {
+              "request": 0,
+              "controller_cpu_ns": 10589109318,
+              "gate_elapsed_ns": 92116016042,
+              "fraction": 0.11495405221576159
+            },
+            {
+              "request": 1,
+              "controller_cpu_ns": 9780444781,
+              "gate_elapsed_ns": 83693151123,
+              "fraction": 0.11686075443169928
+            },
+            {
+              "request": 2,
+              "controller_cpu_ns": 9793814353,
+              "gate_elapsed_ns": 83681970819,
+              "fraction": 0.11703613403397896
+            },
+            {
+              "request": 3,
+              "controller_cpu_ns": 9876726122,
+              "gate_elapsed_ns": 83699091177,
+              "fraction": 0.11800278812004669
+            }
+          ],
+          "error": "RuntimeError('one-window route/work conservation differs')",
+          "ownership_closed": true,
+          "fresh_faults": [],
+          "boot_unchanged": true,
+          "driver_after": {
+            "pci": "/sys/bus/pci/devices/0000:05:00.0",
+            "driver": "xe",
+            "vendor": "0x8086",
+            "device": "0xe20c",
+            "kernel": "7.0.0-38-generic",
+            "devcoredump": false
+          },
+          "passed": false
+        }
+      ],
       "complete": false,
       "passed": false,
       "active": false,
@@ -978,6 +1023,82 @@
         "key": "single_window_64k_screen_v1",
         "outcome": "source-contract-blocked before any GPU launch;original source/report/review/plan retained",
         "original_plan_identity": "1235515d34156ae2834136e8d1c8f8b5835112de6eb15b81b988fd34fffe132a"
+      },
+      "postfailure_closed_data_analysis": {
+        "original_status": "failed",
+        "original_failure_preserved": true,
+        "GPU_rerun": false,
+        "measured_source_commit": "94964393708dfd604ef975005cd81371718d09b7",
+        "model_hashes_after_failure": 15,
+        "source_runtime_admission_unchanged": true,
+        "native_exit_and_ownership_verified": true,
+        "request_journal_verified": true,
+        "native_API_clocks_verified": true,
+        "actual_route": {
+          "GU": "large",
+          "Down": "large",
+          "source": "frozen STRATA_SYCL_PREFILL_DOWN_SCATTER=large and production selection/count markers",
+          "windows_per_layer": 1
+        },
+        "parser_error": "The controller copied a closed older Down-disabled screen assumption. It required Down fused_jobs=0 despite the immutable selected6e40 environment specifying large fusion. This was a parser error,not a GPU or inference-route failure.",
+        "samples": [
+          {
+            "run": 0,
+            "request_sha256": "b592f434eb31230e4aaadcc163951732a26b553480a4411e6eb2bc82bcb9b827",
+            "prompt_ms": 89905.9,
+            "tok_s": 872.5901192246561,
+            "fresh_tokens": 78451,
+            "reused_tokens": 0,
+            "generated_tokens": 24,
+            "jobs": 21514,
+            "dequants": 18484,
+            "expert_uploads": 18484,
+            "requested_expert_H2D_bytes": 37750041600
+          },
+          {
+            "run": 1,
+            "request_sha256": "8530456cd33ae82d7e7aea5341796493f9442cfebbf87eede5e23695a72d47d8",
+            "prompt_ms": 81695.7,
+            "tok_s": 960.2830993552905,
+            "fresh_tokens": 78451,
+            "reused_tokens": 0,
+            "generated_tokens": 24,
+            "jobs": 21513,
+            "dequants": 18480,
+            "expert_uploads": 18480,
+            "requested_expert_H2D_bytes": 37746227200
+          },
+          {
+            "run": 2,
+            "request_sha256": "8ac504de3338c11bab99f2710c4923aeb2edd5879aec93bdcca5ec1b9867dc60",
+            "prompt_ms": 81545.7,
+            "tok_s": 962.0495010773101,
+            "fresh_tokens": 78451,
+            "reused_tokens": 0,
+            "generated_tokens": 24,
+            "jobs": 21491,
+            "dequants": 18463,
+            "expert_uploads": 18463,
+            "requested_expert_H2D_bytes": 37707750400
+          },
+          {
+            "run": 3,
+            "request_sha256": "7fddc7f387d219bf7547dba5443bb66d05dce49bd06b4ad3c05d0c2462897f3b",
+            "prompt_ms": 81730.4,
+            "tok_s": 959.8753952017854,
+            "fresh_tokens": 78451,
+            "reused_tokens": 0,
+            "generated_tokens": 24,
+            "jobs": 21519,
+            "dequants": 18486,
+            "expert_uploads": 18486,
+            "requested_expert_H2D_bytes": 37757363200
+          }
+        ],
+        "subsequent_median": 960.2830993552905,
+        "performance_qualified": false,
+        "inference_adoption": false,
+        "decision": "Stop original cohort after first failure;two planned processes remain unlaunched. Retain these as one-process closed-data diagnostics only. The result does not justify another unchanged-engine throughput screen or establish the hardware bottleneck."
       }
     },
     "single_window_64k_screen_v1": {
