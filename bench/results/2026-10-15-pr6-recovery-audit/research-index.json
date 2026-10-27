@@ -14278,5 +14278,34 @@
       "facts_ref": "qsa-k-staging-current.json::native_image_diagnostic.native_code_review",
       "manifest_sha256": "464d1bef1e0af11437ecb981c75256a75cd3e85bb328c0de0eb78b28b33515a5"
     }
+  },
+  "qsa_direct_K_row_invariant_contract_20261028": {
+    "classification": "decision_support",
+    "status": "eligible_new_source_and_mapping_proof",
+    "schedulable_now": true,
+    "question": "Audit new direct-K row-read/predicate/base-pointer hoisting outside the16dimension iterations. Establish exact address/writer/order/invalid-row equivalence and legal SYCL divergence/typed vector loads/local memory lifetime;identify extra-register/liveness and code-duplication counterarguments. Compare old two-loop full-unroll/Page4/subgroup variants to establish novelty. Main owns implementation/builds/GPU.",
+    "source_revision": "139030e095ccd809bcdd51aa721ae3fee46199f2",
+    "source_files": {
+      "tools/sycl/qsa_k_loop_sources.py": "526f02d967f0f03f7cfc8239a7633b9f9840e0533dee047171b38a7dd061db6c",
+      "tools/sycl/qsa_k_loop_probe.py": "cdf17b5a2d0cb7103050ee103fe482c4db6e6582f30ee739a228b7a269995c20",
+      "src/kernels/sycl/qsa_bf16_prefix.cpp": "4f9f815c9baae709f919f6d5ad1af04677c10d8c13c7597b3857cf81567ae192"
+    },
+    "prerequisites_evidence": {
+      "proposal_exists": true,
+      "frozen_compile_plan": "9602dabf4",
+      "independent_mapping_cases": 204,
+      "destinations_per_case": 8192,
+      "original_source_bound_native_stage": "qsa-k-staging-current.json::native_image_diagnostic.offline_check/arm0;KloopbackedgeL17232toL16480 containsrowread/validity/baseaddress. Stage correspondence inferred from orderedbarriers andpointer/dataflow,notDWARF."
+    },
+    "previous_retrieval": [
+      "qsa_actual_ISA_comparison_20261028",
+      "qsa_actual_resource_interpretation_20261028",
+      "cooperative_matrix_iterative_fragment_lifetime_methods_20261023",
+      "gpu_instruction_cache_unroll_dispatch_tradeoffs_20261023"
+    ],
+    "report": ".cache/strata-research/20261028/qsa-direct-k-row-invariant-contract.md",
+    "report_budget_bytes": 16384,
+    "retention": "Consume compact source/API facts into qsa-codegen-current.json before a native build. Retire consumed report/review transactions after qualification decision;no automatic GPU/model adoption.",
+    "ownership": "Orca gpt-6-luna high report only,Main continues serialized work;native Codex gpt-6-luna max review;no steering."
   }
 }
