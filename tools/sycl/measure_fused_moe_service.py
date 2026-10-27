@@ -34,7 +34,7 @@ import supervision_model as shared
 from measure_down_scatter import postchecks
 
 B, A = gen.B, gen.A
-ROOT = B / 'selected-fused-moe-service-v1'
+ROOT = B / 'selected-fused-moe-service-v2'
 RESULT = A / 'fused-moe-service-current.json'
 REFERENCE = A / 'prefill-runtime-comparison-current.json'
 TEMPLATE = A / 'phase-prefill-speed-current.json'
@@ -96,6 +96,22 @@ def collector_assets():
     return dict(assets=assets, native_source=record['source_commit'], dependencies=record['compiler_inputs'],
         original_launcher_source=launcher['source_commit'], host_source=host['source_commit'], graph_source=graph['source_commit'],
         reuse='Historical native inputs recovered; unchanged generators/generated dependencies/recipe/ELFs. No rebuild or new GPU qualification.')
+
+
+def physically_closed(entry):
+    return entry.get('direct_child_reaped') is True and entry.get('session_empty') is True and \
+        entry.get('survivors') == [] and entry.get('ownership_status') == 'observed' and type(entry.get('exit_code')) is int
+
+
+def target_environment(plan, probe):
+    expected = engine_once.native_environment(dict(native_validation_probe=probe), plan['environment'])
+    profiling = plan['native_profile']
+    if profiling:
+        expected.update(profiling['environment'])
+        expected.update(STRATA_UNITRACE_TARGET_PRELOAD=probe['library']['path'],
+            LD_PRELOAD=profiling['collector']['path'] + ':' + probe['library']['path'],
+            ZE_ENABLE_TRACING_LAYER='1', INTEL_LIBITTNOTIFY64='libunitrace_tool.so')
+    return expected
 
 
 def write(path, value):
@@ -200,7 +216,18 @@ def admission(row, full_models=False):
 
 
 def prepare():
-    require(not ROOT.exists() and not RESULT.exists(), 'fresh diagnostic only; inspect ownership before retry')
+    require(not ROOT.exists(), 'fresh diagnostic only; inspect ownership before retry')
+    prior = gen.committed(RESULT)
+    failed_root = B/'selected-fused-moe-service-v1'/'smoke-profile'
+    failed = json.loads((failed_root/'execution.json').read_text())
+    require(prior['stage'] == 'failed' and len(prior['checks']) == 1 and not prior['checks'][0]['passed'] and
+        not failed['active'] and all(physically_closed(c) for c in failed['commands']) and
+        failed['session_removed'] and failed['fresh_faults'] == [] and
+        all(owner_module.identity(c['pid']) is None for c in failed['commands']), 'closed failed v1 required')
+    previous_failure = dict(commit=gen.git('rev-parse','HEAD').decode().strip(),path=str(RESULT.relative_to(P)),
+        sha256=digest(RESULT), original_passed=False,original_ownership_closed=False,
+        physical_closure_reconciled=True, evidence_sha256=digest(failed_root/'execution.json'),
+        reason='Pre-request environment admission rejected launcher-added keys. Warmup completed;no long request. Owner observed all PIDs reaped/session empty,session removed,no fresh fault. Original failed status unchanged.')
     reusable = collector_assets()
     full, rt = native()
     reference = runtime.validation.committed(REFERENCE, ('historical_regression_audit', 'supervision_model_control_v6'))
@@ -220,7 +247,7 @@ def prepare():
         configuration=cfg, profile=shared.profile_pin(cfg, source), python_contract=contract,
         controller_inputs=gen.benchmark_pins(source), model_assets=model_assets, plans={}, checks=[],
         active=False, ownership_closed=True, complete=False, passed=False, model_adopted=False,
-        collector_reuse=reusable,
+        collector_reuse=reusable, previous_failure=previous_failure,
         host_tests=dict(source='aa61e8741', command='isolated Python unittest: tests/core/test_profile_aggregate.py + tools/sycl/test_generation_engine.py', passed=28),
         question='Measure unique GU/SwiGLU and Down/scatter family summed GPU service by actual M geometry on selected6e40.',
         criteria=dict(sequence=list(CASES), overhead='Three fixed independent long baseline/profile pairs: base0/profile0,base1/profile1,base2/profile2; balanced launch order. Median profiled/baseline prompt wall ratio<=1.05. Every diagnostic must first pass work,clock,source,ownership,provider,drain and fault gates. No retries or replacements.',
@@ -249,6 +276,16 @@ def prepare():
                 '--workload-id', 'native_gdn_20261018', '--fail-fast-engine-error', '--ready-timeout', '600', '--out', str(root / 'bench')],
             budgets=dict(wall=1200, cpu=7200, rss_cap=96 << 30, text_cap=16 << 20, file_cap=32 << 20, total_cap=64 << 20))
     require(row['plans']['long-base0']['request_sha256'] == reference['request_hashes'][0], 'official long request changed')
+    root = ROOT/'environment-probe'; root.mkdir()
+    for name in ('tmp','cache','trace'): (root/name).mkdir()
+    profile = dict(mode='aggregate',**reusable['assets'],session='StrataFusedEnv'+secrets.token_hex(12),
+        environment=dict(UNITRACE_SystemTime='1',UNITRACE_TraceOutputDir=str(root/'trace'),UNITRACE_FollowChildProcess='1',LD_DEBUG='libs'))
+    parent = prepared_environment(root,row['NEO'])
+    env = engine_once.native_environment(dict(native_validation_probe=probe),parent)
+    env['STRATA_UNITRACE_TARGET_PRELOAD'] = env.pop('LD_PRELOAD');env.update(profile['environment'])
+    row['environment_probe_plan'] = dict(root=str(root),environment=env,parent=parent,native_profile=profile,
+        command=engine_once.profile_command(profile,['/usr/bin/env']),target=dict(path='/usr/bin/env',sha256=digest('/usr/bin/env')),
+        scope='CPU-only actual target environment and first-init probe. Collector may enumerate devices;target does not create queues or enqueue GPU work. No new timing/coverage qualification.')
     admission(row)
     write(ROOT / 'record.json', row); write(RESULT, row)
     print('Prepared fused-family service and fixed overhead comparison;commit exact plans before smoke.', flush=True)
@@ -329,9 +366,59 @@ def completed_request(row, plan, entry):
         evidence_sha256={name:digest(root/name) for name in ('engine.stderr','engine-start.json','engine-exit.json')})
 
 
+def probe_environment():
+    row = gen.committed(RESULT); plan = row['environment_probe_plan'];root = Path(plan['root'])
+    require(row == json.loads((ROOT/'record.json').read_text()) and not row['checks'] and
+        'host_profile_environment' not in row and not (root/'record.json').exists(), 'fresh host environment proof only')
+    admission(row)
+    require(digest(plan['target']['path']) == plan['target']['sha256'], 'host target changed')
+    cursor = next(x.split(': ',1)[1] for x in subprocess.check_output(
+        ['journalctl','-k','-b','-n','0','--show-cursor'],text=True).splitlines() if x.startswith('-- cursor: '))
+    result = dict(passed=False,complete=False,active=False,ownership_closed=True,GPU_work=False)
+    owned = None
+    def persist(): write(root/'record.json',dict(result,active=bool(owned and owned.active),commands=owned.commands if owned else []))
+    owned = owner_module.Owner(root/'owned',persist)
+    try:
+        entry,out,err = owned.run('target',plan['command'],plan['environment'],P,
+            wall=60,cpu=60,rss_cap=2<<30,text_cap=4<<20,file_cap=8<<20,total_cap=16<<20)
+        require(owner_module.closed(entry) and entry['exit_code'] == 0,'host target not normally closed')
+        actual = dict(line.split('=',1) for line in out.read_text().splitlines())
+        expected = target_environment(dict(environment=plan['parent'],native_profile=plan['native_profile']),row['probe'])
+        require(all(actual.get(k) == v for k,v in expected.items()),'host launcher expected environment mismatch')
+        overlay = {k:v for k,v in actual.items() if k not in expected}
+        require(overlay and all(k.startswith('UNITRACE_') for k in overlay) and
+            overlay.get('UNITRACE_Session') == plan['native_profile']['session'] and
+            overlay.get('UNITRACE_DeviceTiming') == '1' and overlay.get('UNITRACE_Verbose') == '1' and
+            not any(k in overlay for k in ('UNITRACE_KernelMetrics','UNITRACE_MetricQuery','UNITRACE_ChromeKmdLogging')),
+            'unqualified launcher target overlay')
+        overlay.pop('UNITRACE_Session')
+        proof = runtime.validation.preload_evidence(err.read_text(),entry['pid'])
+        require(proof['loader'] == row['probe']['loader']['path'],'host validation provider differs')
+        result.update(passed=True,complete=True,target_overlay=overlay,validation=proof,
+            environment_keys=len(actual),source_verified_non_unitrace_additions=dict(ZE_ENABLE_TRACING_LAYER='1',INTEL_LIBITTNOTIFY64='libunitrace_tool.so'))
+    except BaseException as error: result.update(error=repr(error))
+    finally:
+        result['ownership_closed'] = owned.active is None and all(physically_closed(c) for c in owned.commands)
+        profile = plan['native_profile'];session = Path('/dev/shm')/('uctrl'+str(os.getuid())+'_'+profile['session'])
+        if result['ownership_closed'] and session.exists():
+            stop,_,_ = owned.run('stop',[profile['launcher']['path'],'--stop',profile['session']],plan['environment'],P,
+                wall=15,cpu=15,rss_cap=2<<30,text_cap=1<<20,file_cap=8<<20,total_cap=16<<20)
+            require(owner_module.closed(stop) and stop['exit_code'] == 0,'host session cleanup failed')
+        result['session_removed'] = not session.exists()
+        postchecks(result,row['boot'],cursor)
+        result['passed'] = bool(result['passed'] and result['ownership_closed'] and result['session_removed'])
+        result['complete'] = result['passed'];persist()
+        row['host_profile_environment'] = result
+        if not result['passed']: row.update(stage='failed',passed=False)
+        write(ROOT/'record.json',row);write(RESULT,row)
+    print(json.dumps(result),flush=True)
+    return int(not result['passed'])
+
+
 def run(mode):
     row = gen.committed(RESULT); plan = row['plans'][mode]; root = Path(plan['root'])
     require(row == json.loads((ROOT / 'record.json').read_text()), 'external diagnostic record differs')
+    require(row.get('host_profile_environment',{}).get('passed') is True, 'host-only actual launcher environment proof required')
     position = list(CASES).index(mode)
     require(len(row['checks']) == position and all(c['passed'] and c['ownership_closed'] for c in row['checks']) and
         not (root / 'execution.json').exists(), 'ordered single-use diagnostic;stop on failure')
@@ -358,16 +445,12 @@ def run(mode):
             current = owner_module.identity(pid)
             require(current and current['start_ticks'] == claim['native']['start_ticks'] and
                 current['sid'] == leader['pid'] and str(Path('/proc', str(pid), 'exe').resolve()) == str(Path(row['binary']['path']).resolve()), 'native ownership differs')
-            expected = engine_once.native_environment(dict(native_validation_probe=row['probe']), plan['environment'])
+            expected = target_environment(plan,row['probe'])
             profiling = plan['native_profile']
-            if profiling:
-                expected.update(profiling['environment'])
-                expected['STRATA_UNITRACE_TARGET_PRELOAD'] = row['probe']['library']['path']
-                expected['LD_PRELOAD'] = profiling['collector']['path'] + ':' + row['probe']['library']['path']
+            if profiling: expected.update(row['host_profile_environment']['target_overlay'],UNITRACE_Session=profiling['session'])
             actual = dict(x.split(b'=', 1) for x in Path('/proc', str(pid), 'environ').read_bytes().split(b'\0') if b'=' in x)
             require(all(actual.get(k.encode()) == v.encode() for k,v in expected.items()) and
-                all(k in {b'PWD',b'OLDPWD',b'SHLVL',b'_'} or (profiling and k.startswith(b'UNITRACE_'))
-                    for k in set(actual)-{k.encode() for k in expected}), 'native environment differs')
+                set(actual)-{k.encode() for k in expected} <= {b'PWD',b'OLDPWD',b'SHLVL',b'_'}, 'native environment differs; mismatched=' + ','.join(k for k,v in expected.items() if actual.get(k.encode()) != v.encode()) + ';extra=' + ','.join(k.decode() for k in set(actual)-{k.encode() for k in expected} if k not in {b'PWD',b'OLDPWD',b'SHLVL',b'_'}))
             maps = runtime.executable_mappings(Path('/proc', str(pid), 'maps').read_text())
             require(maps <= set(rt['runtime_files']) | {row['binary']['path']} |
                 ({profiling['collector']['path']} if profiling else set()) and
@@ -409,7 +492,7 @@ def run(mode):
                 result['session_removed'] = not session_path.exists()
                 require(result['session_removed'], 'profile session remains')
             except Exception as error: result.update(passed=False, session_cleanup_error=repr(error))
-        result['ownership_closed'] = owner.active is None and all(owner_module.closed(c) for c in owner.commands)
+        result['ownership_closed'] = owner.active is None and all(physically_closed(c) for c in owner.commands)
         result['passed'] = bool(result['passed'] and result['ownership_closed'])
         postchecks(result, row['boot'], cursor)
         result['complete'] = bool(result['complete'] and result['passed'])
@@ -433,5 +516,6 @@ if __name__ == '__main__':
     with (B/'owned-v0141-measurement.lock').open('a+') as lock:
         fcntl.flock(lock,fcntl.LOCK_EX|fcntl.LOCK_NB);runtime.guards.no_model_owners([]);runtime.guards.driver_guard()
         if sys.argv[1:] == ['prepare']: prepare()
+        elif sys.argv[1:] == ['probe-environment']: sys.exit(probe_environment())
         elif len(sys.argv) == 3 and sys.argv[1] == 'run' and sys.argv[2] in CASES: sys.exit(run(sys.argv[2]))
         else: raise RuntimeError('prepare|run CASE; fixed sequence: ' + ','.join(CASES))
