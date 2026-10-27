@@ -1840,9 +1840,17 @@ before the job loop, when `STRATA_PREFILL_LAYER_MAJOR_PROFILE=1` is set before
 exec. Shape census alone does not enable this output. The route header pins
 512 experts, top-k 10 and jobs of at most 8192 rows. Actual counts remain dynamic;
 these constants do not establish the selected request's job distribution or
-record budget. Reuse `bench_engine.extract_resource_profile` for ordered window,
+record budget. Reuse `bench_engine.extract_planned_moe_work` for ordered window,
 row/expert conservation and planned-versus-retired totals before extending the
 API/device ledger. This census is planned work, not complete device coverage.
+The reader is now independent of optional CPU/GPU observer frames. Source
+`3115b670a` passes six host-only planned-work tests and nine existing resource
+admission tests, run serially with `/usr/bin/python3.12 -I -S -B` on
+`tests/core/test_planned_moe_work.py` and `tests/core/test_resource_engine.py`
+under the shared lock and a 60-second deadline. Controls include missing,
+duplicated and reordered windows, malformed histograms, ambiguous retired
+counters and configured capacity larger than actual rows. These synthetic
+controls do not supply a selected-model histogram or qualify native execution.
 
 Complete prefill phase attribution requires three independent ledgers: route-owner
 planned operations, actual API results and collector device executions.
