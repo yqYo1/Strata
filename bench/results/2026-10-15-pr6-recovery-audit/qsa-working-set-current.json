@@ -1,8 +1,8 @@
 {
-  "stage": "superseded-before-build",
-  "source_commit": "dc2caa0aada88b0588d69197d656b861c02a7783",
+  "stage": "prepared",
+  "source_commit": "bb347ab57569e376177acf22a5005a0b6141ee4a",
   "input_sha256": {
-    "bench/sycl/qsa_workingset.cpp": "95b1f291eb76b546f4b4ceb384380eec877d9b769b1b7fa533c1456d59b178b7",
+    "bench/sycl/qsa_workingset.cpp": "9fe4a2148fa587e29ff450c93f0b15b62e978504a63bae4ee9817caab3eae843",
     "include/strata/artifact/dequant.hpp": "51fcc756845ddbadb62e4164ec3b88a5cea7d66ceb13d60f12897f41c5ddf255",
     "include/strata/artifact/gguf_reader.hpp": "fc8453a95677e797c8fb1198bfb47d715b73a53446d39a29920c372180ca5ee0",
     "include/strata/artifact/gguf_split.hpp": "6280aabf7e4b77447caa5d046d7b7389c82af08b2d02c004897d0d4826a09760",
@@ -169,7 +169,7 @@
     "tests/sycl/qsa_bf16_prefix.cpp": "422bf01441e3b3e4992f161d2582aa594b8a8082b2c10957709ba0c255440ebf",
     "tools/sycl/bench_engine.py": "14cb13622460fdf9857d65eafb2e449086e6c924e23851e4be9fb6e88a7cbe41",
     "tools/sycl/build_engine.py": "8444783ab417378207ec89ad2bc3cf648480e20d9e77f06ebb3070c93e10b131",
-    "tools/sycl/build_qsa_workingset.py": "9741242dbc8dcdd98628ec500648cd862d2576beba99b534ee62e2198ac3c394",
+    "tools/sycl/build_qsa_workingset.py": "4287f3bfd51c5b2857ff34e3c4458005bf609e3b22f1826186c4ed81014b933d",
     "tools/sycl/cache_borrow.py": "900a2364d19beea0e1fa3e3c657f980455d676363660c013f6ef9058eeb43450",
     "tools/sycl/cache_capacity.py": "9d39d3851bfc634901d6b5fd6f984918c53f8f44337df7fd506b6cb2ab3252f5",
     "tools/sycl/cache_long.py": "1113563f582bd01bfb7535f8b73d70bf92f8e336dbef60301a6de7f2c28c1548",
@@ -204,10 +204,10 @@
     "arms": "Prepacked selected arithmetic with1/2/4/8 rotating KV copies;original production pack+attention reference with1copy. Fixed original kernel body,DPAS/order/FP32 state/rounding/SLM/barriers/WG128/SG16/defaultGRF. Overlay only omits pack in a private diagnostic namespace,after original pack and checked drain initialized every replica.",
     "geometry": "Two separate shapes:all6491actual queries at positions32768..39258,width2051,live39259,identity page4;and real query0 repeated256times to fill512workgroups. Synthetic finite Q,K8,V8 andFP16scales are explicitly not model tensor contents. Repeated-query work is identical across all copy-count arms and is a controlled counterfactual,not a production replay.",
     "qualification": "Before timing:source overlay reversal,exact capture/model/native/runtime/SDK input checks;3small traced/validated smoke processes;3component processes cover real16query masks,8exact prepared replicas,alias/guard/input immutability and physical262144 final-address cases. Check actual selected and prepacked compiler resources before clean timing. No environment mutation or unsupported cache flush.",
-    "performance": "3independent clean processes,6rotated rounds,5arms,2shapes=180individual samples. Order=(process+round+offset)%5;arm0..3rotate1/2/4/8,arm4originalpack. Equal2Rwarmup calls;64calls/batch repeated256,2calls/batch full6491. Every batch>=100ms and>=1000times128pair positive minimum timer floor. No adaptive retries. Record all ratios/spread. Directionally consistent R8/R1>=1.05 in all3processes supports sensitivity for that shape;otherwise effect small or inconclusive. This diagnostic gate never advances a model/inference trial.",
+    "performance": "3independent event-observed processes,6rotated rounds,5arms,2shapes=180individual samples. Order=(process+round+offset)%5;arm0..3rotate1/2/4/8,arm4originalpack. Equal2Rwarmup calls;64calls/batch repeated256,2calls/batch full6491. Every batch>=100ms and>=1000times128pair positive minimum timer floor. Capture exactly one last-attention event/call using the pinned SDK extension;read service after checked drain and wall-clock end. Require positive ordered nonoverlapping event intervals and service<=host envelope+1ms. No adaptive retries. Record wall and device ratios/spread. Directionally consistent R8/R1>=1.05 in all3processes in BOTH metrics supports sensitivity for that shape;otherwise effect small,inconclusive or host/device-confounded. This diagnostic gate never advances a model/inference trial.",
     "provenance": "Main-authored ownMIT6e40 overlay and fixture,using original project buffer/owner/build scaffolds. No XeStrata application source. Original engine13assets/decode1256/production dispatch stay unchanged;installed SDK paths do not imply application-source adoption.",
     "memory": "Each full39260-cell packed KV replica uses80404480bytes plus314080bad-row bytes. Eight replicas~646MB;Q/outputs/IDs/raw pools bring the real6491case below2GiB of device allocations. Every allocation is admitted by Runtime,guarded and below the device single-allocation limit. Physical262144 component uses only2replicas. Host RSS cap8GiB;no model capacity claim.",
-    "limits": "Source-derived Mode0 identity map,not a captured device table. No real Q/K/V. Counter-free latency sensitivity is not measured physical traffic/cache hits/tier/bandwidth/saturation or complete critical-path attribution. Timing includes unchanged host admission and checked drain;preparation/readback/checks excluded. Full-wrapper arm includes prefix refresh;do not subtract unequal wrappers as pure pack time. First use outside steady-state samples. No sustained decode/quality/agent/full-context adoption.",
+    "limits": "Source-derived Mode0 identity map,not a captured device table. No real Q/K/V. Counter-free latency sensitivity is not measured physical traffic/cache hits/tier/bandwidth/saturation or complete critical-path attribution. Wall includes host admission,event retention and checked drain;event service is summed attention only. Preparation/readback/profiling queries/checks excluded. Event observer cost is unqualified;no clean-throughput claim. Full-wrapper arm includes prefix refresh;do not subtract unequal wrappers as pure pack time. First use outside steady-state samples. No sustained decode/quality/agent/full-context adoption.",
     "retention": "Keep selected engine+12fixtures and one imminent component generation. Current capture holds exactly one53MiB initialized fixture for this comparison. Retire component/generated/IR/logs and capture when its named consumer closes,after useful180samples/source/recipe/hashes/outcomes are committed. Separate144artifact/46root/14legacy provenance holds remain explicit,not another comparison allowance."
   },
   "sources": [
@@ -216,7 +216,7 @@
     "/home/yayoi/orca/workspaces/Strata/sycl/src/sycl/command_profile.cpp",
     "/home/yayoi/orca/workspaces/Strata/sycl/src/kernels/sycl/prompt_attention.cpp",
     "/home/yayoi/orca/workspaces/Strata/sycl/src/kernels/sycl/qsa_bf16_prefix.cpp",
-    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-working-set-v1/prepacked.cpp",
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-working-set-v2/prepacked.cpp",
     "/home/yayoi/orca/workspaces/Strata/sycl/bench/sycl/qsa_workingset.cpp"
   ],
   "selected_fixture": {
@@ -231,6 +231,18 @@
     ],
     "consumer": "next selected-QSA working-set attribution fixture",
     "review": "Retire when that comparison closes or is superseded; maximum64MiB."
+  },
+  "superseded_unbuilt_plan": {
+    "commit": "b56cc1d1d",
+    "path": "bench/results/2026-10-15-pr6-recovery-audit/qsa-working-set-current.json",
+    "reason": "Add last-attention-event service alongside host wall time to distinguish dispatch overhead;no source compilation or device execution occurred. Metadata-only compiler-driver queries during preparation are not a build.",
+    "retirement": {
+      "files": 4,
+      "bytes": 1519395,
+      "manifest": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-working-set-unbuilt-plan-retirement-20261027.jsonl",
+      "manifest_sha256": "977c65acac525d06099a3d138e1b758866b9f1ab529312e04745a0d597b39a19",
+      "root_removed": true
+    }
   },
   "preparation_refusals": [
     {
@@ -328,15 +340,15 @@
     }
   },
   "generated": {
-    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-working-set-v1/prepacked.cpp": "0717fb10467d7e1a5885c7179b50392b4fae529abcab63295fb0d21601f1ea29",
-    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-working-set-v1/qsa-workingset.hpp": "75c434dce9e61c6d13a368d592a14cbcaccbc20e09d1c97b0ed7954de96ec5b2"
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-working-set-v2/prepacked.cpp": "0717fb10467d7e1a5885c7179b50392b4fae529abcab63295fb0d21601f1ea29",
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-working-set-v2/qsa-workingset.hpp": "75c434dce9e61c6d13a368d592a14cbcaccbc20e09d1c97b0ed7954de96ec5b2"
   },
   "compiler": {
     "path": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin/clang++",
     "sha256": "1290881b4e12a5e002e5b0de0787f85328ee5fe19f253a54be1cdd97dc2f26eb"
   },
   "compiler_inputs": {
-    "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-working-set-v1/compiler-inputs.json",
+    "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-working-set-v2/compiler-inputs.json",
     "files": 8700,
     "sha256": "57beb2214cc1b75d8061b70a54eda59ef45033975ec880b26aed6446a548cfb2"
   },
@@ -354,14 +366,14 @@
       "-DSTRATA_ENABLE_SYCL=1",
       "-I/home/yayoi/orca/workspaces/Strata/sycl/include",
       "-I/home/yayoi/orca/workspaces/Strata/sycl/include/strata/sycl/compat",
-      "-I/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-working-set-v1",
+      "-I/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-working-set-v2",
       "-MD",
       "-MF",
-      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-working-set-v1/input-0.d",
+      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-working-set-v2/input-0.d",
       "-c",
       "/home/yayoi/orca/workspaces/Strata/sycl/src/sycl/runtime.cpp",
       "-o",
-      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-working-set-v1/input-0.o"
+      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-working-set-v2/input-0.o"
     ],
     [
       "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin/clang++",
@@ -376,14 +388,14 @@
       "-DSTRATA_ENABLE_SYCL=1",
       "-I/home/yayoi/orca/workspaces/Strata/sycl/include",
       "-I/home/yayoi/orca/workspaces/Strata/sycl/include/strata/sycl/compat",
-      "-I/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-working-set-v1",
+      "-I/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-working-set-v2",
       "-MD",
       "-MF",
-      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-working-set-v1/input-1.d",
+      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-working-set-v2/input-1.d",
       "-c",
       "/home/yayoi/orca/workspaces/Strata/sycl/src/sycl/compat.cpp",
       "-o",
-      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-working-set-v1/input-1.o"
+      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-working-set-v2/input-1.o"
     ],
     [
       "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin/clang++",
@@ -398,14 +410,14 @@
       "-DSTRATA_ENABLE_SYCL=1",
       "-I/home/yayoi/orca/workspaces/Strata/sycl/include",
       "-I/home/yayoi/orca/workspaces/Strata/sycl/include/strata/sycl/compat",
-      "-I/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-working-set-v1",
+      "-I/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-working-set-v2",
       "-MD",
       "-MF",
-      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-working-set-v1/input-2.d",
+      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-working-set-v2/input-2.d",
       "-c",
       "/home/yayoi/orca/workspaces/Strata/sycl/src/sycl/command_profile.cpp",
       "-o",
-      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-working-set-v1/input-2.o"
+      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-working-set-v2/input-2.o"
     ],
     [
       "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin/clang++",
@@ -420,14 +432,14 @@
       "-DSTRATA_ENABLE_SYCL=1",
       "-I/home/yayoi/orca/workspaces/Strata/sycl/include",
       "-I/home/yayoi/orca/workspaces/Strata/sycl/include/strata/sycl/compat",
-      "-I/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-working-set-v1",
+      "-I/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-working-set-v2",
       "-MD",
       "-MF",
-      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-working-set-v1/input-3.d",
+      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-working-set-v2/input-3.d",
       "-c",
       "/home/yayoi/orca/workspaces/Strata/sycl/src/kernels/sycl/prompt_attention.cpp",
       "-o",
-      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-working-set-v1/input-3.o"
+      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-working-set-v2/input-3.o"
     ],
     [
       "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin/clang++",
@@ -442,14 +454,14 @@
       "-DSTRATA_ENABLE_SYCL=1",
       "-I/home/yayoi/orca/workspaces/Strata/sycl/include",
       "-I/home/yayoi/orca/workspaces/Strata/sycl/include/strata/sycl/compat",
-      "-I/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-working-set-v1",
+      "-I/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-working-set-v2",
       "-MD",
       "-MF",
-      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-working-set-v1/input-4.d",
+      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-working-set-v2/input-4.d",
       "-c",
       "/home/yayoi/orca/workspaces/Strata/sycl/src/kernels/sycl/qsa_bf16_prefix.cpp",
       "-o",
-      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-working-set-v1/input-4.o"
+      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-working-set-v2/input-4.o"
     ],
     [
       "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin/clang++",
@@ -464,14 +476,14 @@
       "-DSTRATA_ENABLE_SYCL=1",
       "-I/home/yayoi/orca/workspaces/Strata/sycl/include",
       "-I/home/yayoi/orca/workspaces/Strata/sycl/include/strata/sycl/compat",
-      "-I/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-working-set-v1",
+      "-I/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-working-set-v2",
       "-MD",
       "-MF",
-      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-working-set-v1/input-5.d",
+      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-working-set-v2/input-5.d",
       "-c",
-      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-working-set-v1/prepacked.cpp",
+      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-working-set-v2/prepacked.cpp",
       "-o",
-      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-working-set-v1/input-5.o"
+      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-working-set-v2/input-5.o"
     ],
     [
       "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin/clang++",
@@ -486,14 +498,14 @@
       "-DSTRATA_ENABLE_SYCL=1",
       "-I/home/yayoi/orca/workspaces/Strata/sycl/include",
       "-I/home/yayoi/orca/workspaces/Strata/sycl/include/strata/sycl/compat",
-      "-I/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-working-set-v1",
+      "-I/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-working-set-v2",
       "-MD",
       "-MF",
-      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-working-set-v1/input-6.d",
+      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-working-set-v2/input-6.d",
       "-c",
       "/home/yayoi/orca/workspaces/Strata/sycl/bench/sycl/qsa_workingset.cpp",
       "-o",
-      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-working-set-v1/input-6.o"
+      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-working-set-v2/input-6.o"
     ],
     [
       "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin/clang++",
@@ -508,18 +520,18 @@
       "-DSTRATA_ENABLE_SYCL=1",
       "-I/home/yayoi/orca/workspaces/Strata/sycl/include",
       "-I/home/yayoi/orca/workspaces/Strata/sycl/include/strata/sycl/compat",
-      "-I/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-working-set-v1",
-      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-working-set-v1/input-0.o",
-      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-working-set-v1/input-1.o",
-      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-working-set-v1/input-2.o",
-      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-working-set-v1/input-3.o",
-      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-working-set-v1/input-4.o",
-      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-working-set-v1/input-5.o",
-      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-working-set-v1/input-6.o",
+      "-I/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-working-set-v2",
+      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-working-set-v2/input-0.o",
+      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-working-set-v2/input-1.o",
+      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-working-set-v2/input-2.o",
+      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-working-set-v2/input-3.o",
+      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-working-set-v2/input-4.o",
+      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-working-set-v2/input-5.o",
+      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-working-set-v2/input-6.o",
       "-pthread",
       "-ldl",
       "-o",
-      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-working-set-v1/fixture"
+      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-working-set-v2/fixture"
     ],
     [
       "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin/clang++",
@@ -534,13 +546,13 @@
       "-DSTRATA_ENABLE_SYCL=1",
       "-I/home/yayoi/orca/workspaces/Strata/sycl/include",
       "-I/home/yayoi/orca/workspaces/Strata/sycl/include/strata/sycl/compat",
-      "-I/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-working-set-v1",
+      "-I/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-working-set-v2",
       "-fsycl-device-only",
       "-S",
       "-emit-llvm",
       "/home/yayoi/orca/workspaces/Strata/sycl/src/kernels/sycl/qsa_bf16_prefix.cpp",
       "-o",
-      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-working-set-v1/original.ll"
+      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-working-set-v2/original.ll"
     ],
     [
       "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin/clang++",
@@ -555,20 +567,20 @@
       "-DSTRATA_ENABLE_SYCL=1",
       "-I/home/yayoi/orca/workspaces/Strata/sycl/include",
       "-I/home/yayoi/orca/workspaces/Strata/sycl/include/strata/sycl/compat",
-      "-I/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-working-set-v1",
+      "-I/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-working-set-v2",
       "-fsycl-device-only",
       "-S",
       "-emit-llvm",
-      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-working-set-v1/prepacked.cpp",
+      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-working-set-v2/prepacked.cpp",
       "-o",
-      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-working-set-v1/prepacked.ll"
+      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-working-set-v2/prepacked.ll"
     ]
   ],
   "build_environment": {
     "PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin:/usr/bin:/bin",
     "LANG": "C",
     "LC_ALL": "C",
-    "TMPDIR": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-working-set-v1/tmp",
+    "TMPDIR": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-working-set-v2/tmp",
     "LD_LIBRARY_PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib",
     "PYTHONDONTWRITEBYTECODE": "1"
   },
@@ -592,6 +604,5 @@
   "passed": false,
   "complete": false,
   "GPU_executed": false,
-  "model_adoption_qualified": false,
-  "superseded_reason": "Add last-attention-event service alongside host wall time to distinguish dispatch overhead;no source compilation or device execution occurred. Metadata-only compiler-driver queries during preparation are not a build."
+  "model_adoption_qualified": false
 }
