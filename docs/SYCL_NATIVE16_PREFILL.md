@@ -1607,7 +1607,7 @@ imminent diagnostic consumer. The source-contract review confirms that
 `--admit` proves the dispatched module. The installed loader also exports
 `zeKernelGetBinaryExp`,which could retrieve GEN ISA from an actual kernel
 handle. Exact SDK source review confirms that its v2 getter selects the first
-device. The unbuilt observer proposal now binds a sole kernel-program device
+device. The host-tested observer now binds a sole kernel-program device
 to the successful launch's queue device,checks the binary-extension version
 and avoids holding its state lock across driver calls or writes. Its recursion
 guard requires it to be the sole XPTI subscriber. It proposes copying both
