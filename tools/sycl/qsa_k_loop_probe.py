@@ -17,13 +17,18 @@ from measurement_guards import require
 
 P = Path(__file__).resolve().parents[2]
 B = Path('/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007')
-ROOT = B / 'qsa-direct-k-invariant-v1'
+ROOT = B / 'qsa-direct-k-invariant-v2'
 RESULT = P / 'bench/results/2026-10-15-pr6-recovery-audit/qsa-codegen-current.json'
 OLD = RESULT.with_name('qsa-k-staging-current.json')
 KEY = 'direct_K_loop_invariant'
 SELF = str(Path(__file__).resolve().relative_to(P))
 SOURCES = [SELF, 'tools/sycl/qsa_k_loop_sources.py', 'tools/sycl/measurement_owner.py',
            'tools/sycl/measurement_guards.py', source.PREFIX]
+DEVICE_ONLY_HEADERS = {
+    'image_ocl_types.hpp': 'e98f86d24c09c0385f4c37563f9055dda13db74913bf8222b37c637d3fec2cab',
+    'group_sort_impl.hpp': '439f7ade46f4b439bede26d8ca5a749fe6de111f228d994df0ffc247034a5757',
+    'key_value_iterator.hpp': 'f00494103db0e8e7a1cf6159296869ba218372711c52bb738c9d11a853d7a5e8',
+}
 
 
 def git(*args):
@@ -56,6 +61,8 @@ def pins(revision):
 def prepare():
     record = committed(RESULT)
     require(KEY not in record and not ROOT.exists(), 'fresh probe only; inspect previous ownership before retry')
+    require(all(x['original_outcome']['ownership_closed'] and not x['original_outcome']['active']
+                for x in record.get('direct_K_loop_attempts', [])), 'previous compiler ownership must be closed')
     revision = git('rev-parse', 'HEAD').decode().strip()
     inputs = pins(revision)
     prior = committed(OLD)
@@ -73,6 +80,21 @@ def prepare():
             continue
         require(digest(path) == sha, 'changed existing compiler input: ' + path)
         dependencies[path] = sha
+    # The previous full-build closure omits three device-only headers. Admit
+    # them prospectively against the exact official SDK source, not by changing
+    # the closed failed plan or refreshing its hashes.
+    reference = Path('/home/yayoi/ghq/github.com/intel/llvm/.worktree/toolchain-sycl-v711-b570-20261011')
+    extra = {}
+    for name in DEVICE_ONLY_HEADERS:
+        raw = subprocess.check_output(['git', '-C', str(reference), 'show',
+            '504366f4b82ff00bbac7b0c956635eed8bc599d8:sycl/include/sycl/detail/' + name], timeout=30)
+        header = sdk / 'include/sycl/detail' / name
+        require(raw == header.read_bytes() and b'SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception' in raw,
+                'official device-only SDK header differs: ' + name)
+        sha = hashlib.sha256(raw).hexdigest()
+        require(sha == DEVICE_ONLY_HEADERS[name], 'device-only header qualification changed')
+        dependencies[str(header)] = sha
+        extra[name] = sha
     ROOT.mkdir(mode=0o700)
     (ROOT / 'tmp').mkdir()
     generated = source.generated(P)
@@ -100,7 +122,7 @@ def prepare():
             '-o', str(ROOT / (stem + '.ll'))])
     plan = dict(stage='prepared', source_commit=revision, inputs=inputs, compiler=compiler,
         generated={name: hashlib.sha256(body).hexdigest() for name, body in generated.items()},
-        dependencies=dependencies, commands=commands, environment=environment,
+        dependencies=dependencies, device_only_headers=extra, commands=commands, environment=environment,
         mapping_proof=source.mapping_proof(),
         budgets=dict(wall=180, cpu=180, rss_cap=4 << 30, text_cap=2 << 20,
                      file_cap=8 << 20, total_cap=32 << 20),
