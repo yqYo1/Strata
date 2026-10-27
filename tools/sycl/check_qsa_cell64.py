@@ -282,8 +282,10 @@ def local_launches(trace, names, allowed_arms):
             'attention dispatch differs from admitted one-dimensional WG128/18args')
         pairs = [(int(i), int(n)) for i, n in re.findall(
             r'UR_EXP_KERNEL_ARG_TYPE_LOCAL, \.index = (\d+), \.size = (\d+)', line)]
-        expected = {0: cells * 256 * 2, 1: 16 * cells * 2, 3: 16 * (cells + 1) * 4,
-                    4: 64, 5: 64, 13: cells * 8, 15: 64, 16: 64}
+        # Lambda capture ABI is use order,not accessor declaration order.
+        # The compiled/traced score pointer is arg15;args3..5 are16-float arrays.
+        expected = {0: cells * 256 * 2, 1: 16 * cells * 2, 3: 64,
+                    4: 64, 5: 64, 13: cells * 8, 15: 16 * (cells + 1) * 4, 16: 64}
         guards.require(len(pairs) == 8 and dict(pairs) == expected,
                        'actual local argument indices/extents differ from compiled/source manifest')
         # IR requires align4 except rows(arg13) align8. All eight extents are
@@ -332,22 +334,39 @@ def oracle_cases(text, mode, arm):
 
 
 def prepare_oracle(mode):
-    record = build.gen.committed(RESULT); checks = record.get('oracle_checks', [])
+    record = build.gen.committed(RESULT); history = record.get('oracle_checks', [])
+    failed = [c for c in history if not c['passed']]
+    # One explicitly diagnosed observer failure is preserved. This permits a
+    # new prospective controller-only plan,not automatic retries of GPU faults
+    # or a second failed run. Native source/fixtures remain unchanged.
+    guards.require(len(failed) <= 1, 'multiple failures need a new explicit investigation')
+    if failed:
+        guards.require(history[0] == failed[0] and failed[0]['mode'] == 'oracle-smoke' and
+            failed[0]['source_commit'].startswith('f755227f8') and failed[0]['ownership_closed'] and
+            failed[0]['fresh_faults'] == [] and failed[0]['error'] ==
+            "RuntimeError('actual local argument indices/extents differ from compiled/source manifest')",
+            'unrecognized failure;no automatic continuation')
+    checks = history[1:] if failed else history
     position = 0 if mode == 'oracle-smoke' else 1
     guards.require(record['admission_check']['passed'] and record['admission_check']['ownership_closed'] and
         not record['admission_check']['fresh_faults'] and len(checks) == position and
         all(c['passed'] and c['complete'] and c['ownership_closed'] and not c['fresh_faults'] for c in checks),
         'ordered closed property/smoke gates required;no retry')
-    root = ROOT / mode; guards.require(not root.exists(), 'fresh oracle stage only')
+    root = ROOT / (mode + '-v2' if mode == 'oracle-smoke' and failed else mode)
+    guards.require(not root.exists(), 'fresh oracle stage only')
     revision = build.gen.git('rev-parse', 'HEAD').decode().strip()
     # Carry the separately qualified native source/build and exact-kernel IDs.
     plan = {k: record['admission_plan'][k] for k in
             ('kernel_ids', 'contract', 'runtime_qualification', 'runtime_files', 'preload')}
-    plan.update(stage='prepared', mode=mode, source_commit=revision, controller_inputs=inputs(revision),
+    plan.update(stage='prepared', mode=mode, output_root=str(root), source_commit=revision, controller_inputs=inputs(revision),
         numerical=numerical_contract(), budgets=dict(wall=300, cpu=600, rss_cap=8 << 30,
         text_cap=16 << 20, file_cap=32 << 20, total_cap=192 << 20), jobs=[],
         local_contract='Eight active LLVM local pointer arguments align4,rows(arg13)align8. Declared source includes one unused4B Q accessor. Require successful traced WG128/18arg/SG16source kernel with exact active argument indices/extents;raw sum20032/39744+reported32+heuristic4096<=queried131072. Hardware rounding/occupancy unmeasured;successful bounded launch is separate evidence.',
         retirement='Keep useful per-case numerical samples,actual local sizes/launch counts,source/recipe and fault/closure outcome. Retire successful full traces and routine logs after verified extraction. No model speed or quality claim.')
+    if failed:
+        plan['original_observer_failure'] = dict(source_commit=failed[0]['source_commit'],
+            original_plan_commit='659384563', original_status='failed_preserved',
+            correction='Scores arg15,not3;source/compiled lambda capture ABI. Same strict8argument extent/alignment checks and numerical bounds. Native source,binaries and generated inputs unchanged.')
     rt = admission(record, plan)
     root.mkdir(mode=0o700)
     base = build.gen.committed(P / 'tools/sycl/measurement_environment.json')['environment']
@@ -367,7 +386,8 @@ def prepare_oracle(mode):
 
 
 def run_oracle(mode):
-    record = build.gen.committed(RESULT);plan = record['oracle_plan'];root = ROOT / mode
+    record = build.gen.committed(RESULT);plan = record['oracle_plan'];root = Path(plan['output_root'])
+    guards.require(root.parent == ROOT and root.name in (mode, mode+'-v2'), 'unexpected oracle output root')
     guards.require(plan['mode'] == mode and plan['stage'] == 'prepared' and
         plan == json.loads((root / 'plan.json').read_text()) and not (root / 'owned.json').exists(),
         'fresh matching committed oracle plan required')
