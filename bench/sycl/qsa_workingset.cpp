@@ -17,9 +17,6 @@
 #include <stdexcept>
 #include <string>
 #include <vector>
-#ifndef SYCL_EXT_ONEAPI_IN_ORDER_QUEUE_EVENTS
-#error "Diagnostic requires the pinned SDK's in-order last-event extension"
-#endif
 
 using namespace strata;
 using namespace strata::kernels;
@@ -63,13 +60,10 @@ uint16_t half(float x) { return std::bit_cast<uint16_t>(_Float16(x)); }
 void gate(const char* stage) {
   std::cout<<"WS_GATE "<<stage<<'\n';require(std::cin.get()=='X',"Main gate token");
 }
-sycl::event last_attention() {
-  auto event=rt->compute().ext_oneapi_get_last_event();
-  require(event.has_value(),"last attention event missing");return *event;
-}
-uint64_t service(const sycl::event& event) {
+uint64_t service(const sycl::event& event,const char* stage,int replica) {
   const auto begin=event.get_profiling_info<sycl::info::event_profiling::command_start>();
   const auto end=event.get_profiling_info<sycl::info::event_profiling::command_end>();
+  if(end<=begin) std::cerr<<"event_clock_invalid stage="<<stage<<" replica="<<replica<<" start="<<begin<<" end="<<end<<'\n';
   require(end>begin,"attention event clock invalid");return end-begin;
 }
 struct Selected {
@@ -132,17 +126,20 @@ void run(const Selected& source,int queries,bool repeated,int copies,bool timing
   auto shape=qsa_real_shapes();QsaAttnPools pools{};
   pools.page_table=dt.data();pools.k_q=dk.data();pools.v_q=dv.data();pools.k_scale=dks.data();pools.v_scale=dvs.data();
   QsaPromptBf16Bounds bounds{pages,pages};
-  auto call=[&](bool prepare,int replica) {
-    const auto fn=prepare?qsa_bf16_prefix_ordered_exp_batch:working_set::qsa_bf16_prefix_ordered_exp_batch;
-    require(fn(dq.data(),pools,di.data(),ds.data(),cap,shape,out.data(),queries,bounds,cells,packed[replica]->view(),&rt->compute()),"selected QSA entry refused");
+  auto call=[&](bool prepare,int replica,sycl::event* submitted) {
+    const auto fn=prepare?working_set::qsa_bf16_prefix_full_batch:working_set::qsa_bf16_prefix_prepacked_batch;
+    require(fn(dq.data(),pools,di.data(),ds.data(),cap,shape,out.data(),queries,bounds,cells,packed[replica]->view(),&rt->compute(),submitted),"selected QSA entry refused");
   };
   // Original production pack creates every immutable replica outside timing.
   // It also supplies a bit-exact reference for this unchanged arithmetic.
   std::vector<uint16_t> expected;
   for(int r=0;r<copies;++r) {
-    call(true,r);auto original_event=last_attention();rt->wait();require(service(original_event)>0,"original event");auto actual=out.get();
+    require(qsa_bf16_prefix_ordered_exp_batch(dq.data(),pools,di.data(),ds.data(),cap,shape,out.data(),queries,bounds,cells,packed[r]->view(),&rt->compute()),"original QSA entry refused");
+    rt->wait();auto actual=out.get();
     if(!r) expected=actual;else require(actual==expected,"replica production operands differ");
-    call(false,r);auto prepacked_event=last_attention();rt->wait();require(service(prepacked_event)>0,"prepacked event");
+    sycl::event original_event;call(true,r,&original_event);rt->wait();
+    require(service(original_event,"captured-full",r)>0 && out.get()==expected,"captured full differs from original");
+    sycl::event prepacked_event;call(false,r,&prepacked_event);rt->wait();require(service(prepacked_event,"captured-prepacked",r)>0,"prepacked event");
     require(out.get()==expected,"prepacked result differs from original");
   }
   // Source final-page padding is explicitly zeroed by the original pack.
@@ -153,7 +150,7 @@ void run(const Selected& source,int queries,bool repeated,int copies,bool timing
   }
   if(!timing) {
     bool rejected=false;auto alias=packed[0]->view();alias.v=alias.k;
-    try { (void)working_set::qsa_bf16_prefix_ordered_exp_batch(dq.data(),pools,di.data(),ds.data(),cap,shape,out.data(),queries,bounds,cells,alias,&rt->compute()); }
+    try { (void)working_set::qsa_bf16_prefix_prepacked_batch(dq.data(),pools,di.data(),ds.data(),cap,shape,out.data(),queries,bounds,cells,alias,&rt->compute(),nullptr); }
     catch(const std::invalid_argument&) { rejected=true; }
     require(rejected,"prepacked alias not rejected");
   } else {
@@ -169,20 +166,23 @@ void run(const Selected& source,int queries,bool repeated,int copies,bool timing
       const int arm=(process+round+offset)%5;
       const int rotation=arm==4?1:(1<<arm);const bool prepare=arm==4;
       require(rotation<=copies,"rotation exceeds prepared copies");
-      for(int i=0;i<2*rotation;++i) call(prepare,i%rotation);
+      for(int i=0;i<2*rotation;++i) call(prepare,i%rotation,nullptr);
       rt->wait();
-      std::vector<sycl::event> events;events.reserve(repeats);
+      std::vector<sycl::event> events(repeats);
       const auto begin=std::chrono::steady_clock::now();
-      for(int i=0;i<repeats;++i) { call(prepare,i%rotation);events.push_back(last_attention()); }
+      for(int i=0;i<repeats;++i) call(prepare,i%rotation,&events[size_t(i)]);
       rt->wait();
       const auto ns=std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::steady_clock::now()-begin).count();
       require(ns>=100000000 && ns>=1000*floor,"timing batch below prospective floor");
       uint64_t device_ns=0,previous_end=0;
+      int call_index=0;
       for(const auto& event:events) {
         const auto start=event.get_profiling_info<sycl::info::event_profiling::command_start>();
         const auto end=event.get_profiling_info<sycl::info::event_profiling::command_end>();
+        if(start<previous_end || end<=start) std::cerr<<"event_clock_invalid shape="<<(repeated?"real1-repeated256":"real6491")
+          <<" process="<<process<<" round="<<round<<" arm="<<arm<<" call="<<call_index<<" start="<<start<<" end="<<end<<" previous_end="<<previous_end<<'\n';
         require(start>=previous_end && end>start,"duplicate/overlapping attention events on in-order queue");
-        device_ns+=end-start;previous_end=end;
+        device_ns+=end-start;previous_end=end;++call_index;
       }
       require(device_ns>0 && device_ns<=uint64_t(ns)+1000000,"event service exceeds host envelope");
       require(out.get()==expected,"timed output differs");

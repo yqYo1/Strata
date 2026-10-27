@@ -20,24 +20,40 @@ def once(text, before, after):
 def generated(project):
     source = (project/PREFIX).read_text()
     wrapper = source[source.index('bool '+EXPORT+'('):source.index('bool qsa_bf16_prefix_state_probe_batch(')]
-    prototype = wrapper[:wrapper.index(' {')]+';\n'
-    original = source[:source.index('bool qsa_bf16_prefix_batch(')]+wrapper+'} // namespace strata::kernels\n'
+    original = source[:source.index('bool qsa_bf16_prefix_batch(')]
     namespace = 'namespace strata::kernels::working_set {'
     edits = [
         ('namespace strata::kernels {', namespace),
         ('bool OrderedExp = false, bool CaptureState = false>',
          'bool OrderedExp = false, bool CaptureState = false, bool PreparePrefix = true>'),
+        ('QsaPrefixStateProbe probe = {}) {',
+         'QsaPrefixStateProbe probe = {}, sycl::event *submitted = nullptr) {'),
         ('  auto prepared = queue.parallel_for(', '  if constexpr (PreparePrefix) {\n  auto prepared = queue.parallel_for('),
         ('  sycl_backend::finish(stream, prepared);\n  auto event = queue.submit(',
-         '  sycl_backend::finish(stream, prepared);\n  } // Prepared and drained once by this diagnostic caller.\n  auto event = queue.submit('),
-        ('prefix_batch_impl<Cells + 1, false, false, true, true, true, true>(query,',
-         'prefix_batch_impl<Cells + 1, false, false, true, true, true, true, false, false>(query,')]
+         '  sycl_backend::finish(stream, prepared);\n  } // Caller retains prepared operands through checked completion.\n  auto event = queue.submit('),
+        ('  sycl_backend::finish(stream, event);\n  return true;',
+         '  if (submitted) *submitted = event; // Strong copy before the producer releases its event.\n  sycl_backend::finish(stream, event);\n  return true;')]
     body = original
     for before, after in edits: body = once(body,before,after)
     restored = body
     for before, after in reversed(edits): restored = once(restored,after,before)
     if restored != original: raise ValueError('overlay changed another source byte')
     header = '// Main-authored diagnostic declarations; repository LICENSE applies.\n#pragma once\n'
-    header += '#include "strata/kernels/qsa_bf16_prefix.hpp"\n'
-    header += namespace+'\n'+prototype+'}\n'
-    return {'prepacked.cpp':body.encode(),'qsa-workingset.hpp':header.encode()}
+    header += '#include "strata/kernels/qsa_bf16_prefix.hpp"\n#include <sycl/sycl.hpp>\n'+namespace+'\n'
+    for kind, prepare in (('full','true'),('prepacked','false')):
+        modifications = [
+            (EXPORT, 'qsa_bf16_prefix_'+kind+'_batch'),
+            ('void *stream) {','void *stream, sycl::event *submitted) {'),
+            ('prefix_batch_impl<Cells + 1, false, false, true, true, true, true>(query,',
+             'prefix_batch_impl<Cells + 1, false, false, true, true, true, true, false, '+prepare+'>(query,'),
+            ('output, queries, bounds, live_cells, scratch, stream);',
+             'output, queries, bounds, live_cells, scratch, stream, {}, submitted);')]
+        arm = wrapper
+        for before,after in modifications: arm = once(arm,before,after)
+        restored = arm
+        for before,after in reversed(modifications): restored = once(restored,after,before)
+        if restored != wrapper: raise ValueError('captured wrapper changed another byte')
+        body += arm
+        header += arm[:arm.index(' {')]+';\n'
+    body += '} // namespace strata::kernels::working_set\n';header += '}\n'
+    return {'captured.cpp':body.encode(),'qsa-workingset.hpp':header.encode()}

@@ -85,11 +85,11 @@ def prepare(mode):
     revision=build.gen.git('rev-parse','HEAD').decode().strip()
     plan=dict(stage='prepared',mode=mode,source_commit=revision,controller_inputs=inputs(revision),
         runtime_qualification=proof,preload=dict(library=rt['preload']['library'],loader=dict(path=loader,sha256=rt['runtime_files'][loader])),
-        gates='Three fresh owned processes:small actual3-query masks,then real16queries/8replicas plus physical262144 final-address component. Require exact original/prepacked output and byte-identical prepared replicas,alias rejection,guards,input immutability,last-attention event positive clocks,parameter silence,actual providers/environment,normal closure and no fresh fault. Component only;no model/inference adoption.',
+        gates='Three fresh owned processes:small actual3-query masks,then real16queries/8replicas plus physical262144 final-address component. Require exact original/prepacked output and byte-identical prepared replicas,alias rejection,guards,input immutability,direct submission-event positive clocks,parameter silence,actual providers/environment,normal closure and no fresh fault. Component only;no model/inference adoption.',
         budgets=dict(wall=600 if mode=='perf' else 300,cpu=3600,rss_cap=8<<30,text_cap=16<<20,
             file_cap=64<<20,total_cap=192<<20),jobs=[])
     if mode=='resources':
-        plan.update(collector_assets=assets(),gates='One profiled small fixture. Conserve entire device table;require original/prepacked attention2calls each,SIMD16/WG128/JIT18arguments/128GRF/12480spill and equal rawSLM/private descriptors. Independent last-event clocks,bit-exact output/guards/ownership/pre-main/provider checks still apply. No physical traffic/occupancy/saturation claim.')
+        plan.update(collector_assets=assets(),gates='One profiled small fixture. Conserve entire device table;require original/captured-full/prepacked attention2calls each,SIMD16/WG128/JIT18arguments/128GRF/12480spill and equal rawSLM/private descriptors. Independent directly captured event clocks,bit-exact output/guards/ownership/pre-main/provider checks still apply. No physical traffic/occupancy/saturation claim.')
     elif mode=='perf': plan['gates']=record['plan']['performance']
     admission(record,plan);root.mkdir(mode=0o700)
     base=build.gen.committed(P/'tools/sycl/measurement_environment.json')['environment']
@@ -140,7 +140,9 @@ def observe(pid,entry,record,plan,job,rt,stage):
 
 def resources(text):
     table=tables.device_summary(text);counts={};properties={}
-    def arm(name): return 1 if '::working_set::' in name else 0
+    def arm(name):
+        if '::working_set::' not in name: return 0
+        return 2 if 'prefix_batch_impl<33, false, false, true, true, true, true, false, false>' in name else 1
     def selected(name): return 'prefix_batch_impl<33,' in name and '[SIMD16 ' in name and '{128; 1; 1}]' in name
     for row in table['rows']:
         if selected(row['name']):
@@ -153,7 +155,7 @@ def resources(text):
         guards.require(parts[1]=='JIT' and simd==16 and nargs==18 and grf==128 and spill==12480,
             'unqualified attention resource change')
         properties[a]=dict(SIMD=simd,arguments=nargs,raw_SLM=slm,private_memory_descriptor=private,spill_memory_descriptor=spill,GRF=grf)
-    guards.require(counts=={0:2,1:2} and set(properties)=={0,1} and properties[0]==properties[1], 'original/prepacked resource coverage differs')
+    guards.require(counts=={0:2,1:2,2:2} and set(properties)=={0,1,2} and properties[0]==properties[1]==properties[2], 'original/prepacked resource coverage differs')
     return dict(calls=counts,properties=properties,conserved_device_ns=table['total_device_ns'],table_rows=len(table['rows']))
 
 
