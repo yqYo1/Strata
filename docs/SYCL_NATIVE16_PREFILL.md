@@ -1747,7 +1747,11 @@ process and both metrics. The smaller0.37..0.74percent service reductions remain
 recorded;they do not permit a model trial under this plan. The original engine,
 decode and production dispatch remain unchanged. Keep the108individual samples
 once,with source/recipe identities and limits;the native generation now has
-only a retirement consumer. GPU service includes stalls and is not arithmetic
+no further execution consumer. Its69 remaining generated/build/timing files
+(8095768bytes) are now retired after recovering196 original project sources,
+693 actual compiler inputs and the original recipe from pushed Git. The selected
+engine and twelve fixtures remain unchanged;the closed prototype helpers are
+pending removal from the active tree. GPU service includes stalls and is not arithmetic
 saturation. The next question is kernel-local GRF-mode control at unchanged
 math/layout/SLM,against the existing counterevidence that eliminating spills
 alone can slow execution;qualify exact API/lowering and a new plan first.
@@ -1759,7 +1763,9 @@ GRF128/256,plus direct-event retention. It does not change production or decode.
 The installed property,handler and enqueue headers are pinned for a fresh
 read-only source-contract audit. Header presence is not B570 legality,actual
 GRF lowering or workgroup admission;those and independent review precede any
-GPU execution. Preserve the prior automatic256/functor-form slowdown as
+GPU execution. The Orca source-contract audit has completed;native Luna/max
+review is in progress. Exact B570 legality remains unproven,so no candidate GPU
+execution is admitted. Preserve the prior automatic256/functor-form slowdown as
 counterevidence. The existing53.25MB selected-ID fixture has this named next
 comparison consumer and a retirement point at its closure or supersession.
 See[the current build and gates](../bench/results/2026-10-15-pr6-recovery-audit/qsa-barrier-current.json).
