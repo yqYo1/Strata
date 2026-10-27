@@ -1740,6 +1740,19 @@ numerical/performance evidence. Selected prefill/decode and the original engine
 remain unchanged. Full physical-context fill,model quality,handoff/RESTORE and decode
 preservation remain separate qualification.
 
+The completed Luna/max review corrects Qarena to4096BF16elements/8192bytes
+and distinguishes active payload from the retained4-byte unused Qaccessor.
+The actual compiler reports7.1.0pre-release/clang22.1.0 at Intel LLVM
+`504366f4b82ff00bbac7b0c956635eed8bc599d8`;all seven installed matrix headers
+match that revision. Its matrix specification explicitly covers BMG and requires
+8-byte-multiple strides and4-byte-aligned matrix pointers. The source proposal
+satisfies those constraints;native admission and execution remain unqualified.
+Main chooses a first source case K32/V264/P32,changing only V's local row stride
+and adding512bytes:20544active bytes,20548source bytes. The generator's stricter
+8-element pitch rule remains;its27host cases do not qualify36/260pitches.
+This is a layout hypothesis,not a proven bank-conflict or speed explanation.
+Next commit the build/admission and comparison plan before compiler or GPU use.
+
 Complete prefill phase attribution requires three independent ledgers: route-owner
 planned operations, actual API results and collector device executions.
 [`work_ledger.py`](../tools/sycl/work_ledger.py) implements the host reconciliation
