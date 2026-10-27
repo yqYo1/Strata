@@ -1792,6 +1792,17 @@ prospective source/build/plan. Observed GPU bits are never canonicalized. No
 model speed gain or hardware-resource conclusion has been adopted. See the
 [current locality decision](../bench/results/2026-10-15-pr6-recovery-audit/qsa-locality-current.json).
 
+The repaired fixture now passes its own property-only native admission for both
+exact kernels, with zero kernel submissions, silent validation, a closed child and
+no fresh fault. This does not validate the repaired numerical oracle:the
+three-query smoke and subsequent three-process topology comparison remain
+pending. After this serialized diagnostic closes, the next model attribution
+step is one bounded 117489-token selected 6e40 route capture, reconciling planned
+work, actual API outcomes and device executions through phase drain. Existing
+UR/PTI and oneMKL fixtures qualify their direct calls, not complete model coverage.
+The completed fused GU/Down observer-cost gate remains scoped to its original
+diagnostic workload; changed instrumentation needs its own cost qualification.
+
 Complete prefill phase attribution requires three independent ledgers: route-owner
 planned operations, actual API results and collector device executions.
 [`work_ledger.py`](../tools/sycl/work_ledger.py) implements the host reconciliation
