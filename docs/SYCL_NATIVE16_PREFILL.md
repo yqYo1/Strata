@@ -1700,8 +1700,14 @@ supported invocation compares all three arms exactly;both independent scalar
 oracle cases per process have zero output error. Guards,input immutability,
 aliased/missing pages and sticky K/V diagnostics pass. All processes close at
 exit0,parameter validation is silent and no fresh driver fault appears. This
-qualifies the small component only;larger widths,physical262144 component,
-actual-ID event clocks,resources and performance remain pending.
+qualifies the small component only. The subsequent three larger component
+processes also pass all14cases each,including selected widths1..2051,64and2050
+boundaries,mixed per-query widths,three-trip distinct K/V witnesses,combined
+aliased/missing pages,two-byte-only alignment and physical262144 final addresses.
+Each supported call is bit-identical across original/control/merged and passes
+the independent scalar contract. All processes close normally,validation is
+silent and no fresh fault appears. This is not full-model context fill.
+Actual-ID event clocks,resources and performance remain pending.
 After compact results are committed,the fourteen successful smoke trace/log/
 transaction files (3997428bytes) are retired. The isolated native generation
 remains for the next component/resource/timing gates;the selected original
