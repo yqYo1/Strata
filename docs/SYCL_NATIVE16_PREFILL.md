@@ -1474,11 +1474,18 @@ subgroup and transposes registers before writing the existing local layout;
 online32cell order,attention math and production/decode paths stay unchanged.
 The linked SPIR-V contains the intended16bit subgroup exchange. Independent
 source/harness review is conditional;Main corrects target-device binding and
-exact oracle coverage at`1c877b184`,with34host controls passing. Compiled IR
+exact oracle coverage,with35host controls passing at`2f6b2aec0`. Compiled IR
 has eight local pointers;20032bytes is their expected source-modeled payload,
 not an observed launch. Preserve the conservative20036byte declaration and
-4096byte reserve. Property admission,device numerics and performance remain
-unrun;compilation and host controls establish no speed gain or model adoption.
+4096byte reserve. The first property-only plan rejects Main's incomplete
+marketing-name expectation;its failed status remains,with zero kernel enqueues
+and verified child exit. Corrected plan`782d0502f` matches the actual
+`Intel(R) Arc(TM) B570 Graphics` and the sole eligible Intel PCI device.
+All three kernels pass SG16/WG128/18argument and conservative local-budget
+checks:24164bytes against131072per group. Loader-object/symbol checks pass,
+validation is quiet and the owned process closes normally without a fresh fault.
+No kernel is submitted. Device numerics and performance remain unrun;
+these checks establish no speed gain,hardware saturation or model adoption.
 
 The earlier service parser passed33host controls before retirement. Closed
 one-use controllers and consumed raw/research

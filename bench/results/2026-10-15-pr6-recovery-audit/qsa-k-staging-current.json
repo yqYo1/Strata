@@ -1842,7 +1842,7 @@
     }
   },
   "admission_v2_plan": {
-    "stage": "prepared",
+    "stage": "closed",
     "source_commit": "2f6b2aec06003362808fdb4615602e3257ee61ee",
     "controller_inputs": {
       "tools/sycl/check_qsa_k_staging.py": "916fd817f183ce59687cfa60edb30a415faf42ee3a25c3efa99397ff604abd51",
@@ -2092,5 +2092,102 @@
     },
     "criteria": "One property-only child;all3exact kernels pass WG128/SG16/18argument and conservative per-group local budget checks. Observe one mapped qualified loader and namespace-0 dlsym bindings for both property functions. UR pre-main proof,quiet validation,no kernel enqueue in trace,closed owned process and no fresh faults.4096Breserve is heuristic;actual bound local arguments/rounding remain separate. No numerical,occupancy,performance or model qualification.",
     "retention": "Retain compact queried descriptors and outcome;retire successful trace/normal logs after verification. Current generation remains for the bounded independent oracle comparison."
+  },
+  "admission_v2_check": {
+    "passed": true,
+    "complete": true,
+    "active": false,
+    "ownership_closed": true,
+    "device_initialized": true,
+    "kernel_submissions": 0,
+    "model_qualified": false,
+    "device_identity": {
+      "name": "Intel(R) Arc(TM) B570 Graphics",
+      "eligible_Intel_PCI_devices": [
+        {
+          "pci": "0000:05:00.0",
+          "vendor": "0x8086",
+          "device": "0xe20c",
+          "class": "0x030000"
+        }
+      ],
+      "scope": "Single eligible physical Intel GPU/accelerator plus exact native device name;not a general multi-GPU UUID mapping."
+    },
+    "loader_object": {
+      "path": "/usr/lib/x86_64-linux-gnu/libze_loader.so.1.32.0",
+      "sha256": "b764efda507f173560fa6055d433dd5c76140180b4a7c532e1cea813cde67363",
+      "device": "00:1d",
+      "inode": 7539712,
+      "executable_start": "70a1265b7000",
+      "file_offset": "00018000",
+      "namespace": 0,
+      "symbols": [
+        "zeDeviceGetComputeProperties",
+        "zeKernelGetProperties"
+      ],
+      "evidence": "Live executable map plus canonical namespace-0 glibc object/dlsym bindings;helper requires RTLD_NOLOAD. This is this child only,not a general interop guarantee."
+    },
+    "properties": [
+      {
+        "arm": 0,
+        "max_workgroup": 1024,
+        "subgroup": 16,
+        "arguments": 18,
+        "reported_local_bytes": 32,
+        "declared_dynamic_local_bytes": 20036,
+        "reserve_local_bytes": 4096,
+        "conservative_local_budget": 24164,
+        "per_group_local_max": 131072,
+        "spill_descriptor": 12480
+      },
+      {
+        "arm": 1,
+        "max_workgroup": 1024,
+        "subgroup": 16,
+        "arguments": 18,
+        "reported_local_bytes": 32,
+        "declared_dynamic_local_bytes": 20036,
+        "reserve_local_bytes": 4096,
+        "conservative_local_budget": 24164,
+        "per_group_local_max": 131072,
+        "spill_descriptor": 12480
+      },
+      {
+        "arm": 2,
+        "max_workgroup": 1024,
+        "subgroup": 16,
+        "arguments": 18,
+        "reported_local_bytes": 32,
+        "declared_dynamic_local_bytes": 20036,
+        "reserve_local_bytes": 4096,
+        "conservative_local_budget": 24164,
+        "per_group_local_max": 131072,
+        "spill_descriptor": 3008
+      }
+    ],
+    "validation": {
+      "pid": 1698531,
+      "loader": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_loader.so.0.12.0",
+      "threads_before": 1,
+      "preinit": 37,
+      "config_enabled": true,
+      "first_init": true,
+      "dispatch_result": 46,
+      "output_untouched": true,
+      "retained_reference_until_exit": true,
+      "runtime_teardown_qualified": false
+    },
+    "postchecks_complete": true,
+    "postcheck_errors": [],
+    "fresh_faults": [],
+    "boot_unchanged": true,
+    "driver_after": {
+      "pci": "/sys/bus/pci/devices/0000:05:00.0",
+      "driver": "xe",
+      "vendor": "0x8086",
+      "device": "0xe20c",
+      "kernel": "7.0.0-38-generic",
+      "devcoredump": false
+    }
   }
 }
