@@ -918,7 +918,10 @@ or three-process qualification. The first subsequent request has18480dequants,
 passive sample's33225dequants,37353jobs and38,673,152,000bytes. These are different
 input sizes,not a matched mechanism gain or physical traffic/critical-path proof.
 Close this unchanged-engine input-size screen;next resolve the service/resource
-cost of the repeated work before selecting another inference experiment.
+cost of the repeated work before selecting another inference experiment. Its two
+one-use source files retire to949643937,and the full closed plans/results to
+cbedff2f5. After replay,87raw/input/review files totaling12,729,396bytes retire;
+the selected native/runtime/profile/Python admission still passes without them.
 
 Exact original source,configuration and pure environment-recipe recovery closes
 the two superseded unlaunched model roots and old Python-probe root. Their

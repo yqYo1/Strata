@@ -12546,8 +12546,6 @@
     "consumer": "Main prospective split-bank max-allocation/failure contract; this source-only report cannot qualify actual allocation or residency.",
     "review_point": "Before a split-bank engine build or allocation-admission experiment.",
     "recommendation_review_sha256": "c2f7367be572a5a7e2f36ad8f608821a0cec3b9bf2f8ad0330d56d2c9e2d50a1",
-    "report": "/home/yayoi/orca/workspaces/Strata/sycl/.cache/strata-research/20261027/split-bank-allocation-contract-decision.md",
-    "report_bytes": 8253,
     "report_sha256": "4e63deee7e7ea274f4a0b99fe52195fe029b58c0ad3257ed5eca22a4eeb5d374",
     "inference_adoption": false,
     "review_sha256": "091ab1b82f3f2a0bc03a9115daa0f530446b031523f690f900087a9974ba3066",
@@ -12558,50 +12556,8 @@
       "https://oneapi-src.github.io/level-zero-spec/level-zero/1.18.31/core/api/apis/device.html"
     ],
     "main_capacity_correction": "The review misreads298280576B as available before allocating531988736B. It is the remainder AFTER that allocation:4355637248-4206942336+681574400-531988736=298280576. The512MiB reserve is already charged in fixed bytes. This arithmetic remains capacity-only;actual allocation lifetime/admission still pending. Do not schedule another generic capacity survey from that double subtraction.",
-    "retention": "Corrected API contract and next actual-allocation gates are now recorded here;retire full report/review after their source/hash and closure checks. The bounded model screen is independent of this unimplemented candidate."
-  },
-  "prefill_single_window_screen_source_contract_20261027": {
-    "status": "source_contract_blocked",
-    "classification": "decision_support",
-    "schedulable_now": false,
-    "worker_model": "gpt-6-luna",
-    "review_model": "native Codex gpt-6-luna max",
-    "source_commit": "2e810aed8ca7590a46ab1becb373705f152e1bf0",
-    "source_sha256": "82364ba4927df69067bfdc2e51ffcf4c8e36dc46999ec49c6c4135eee6a305ee",
-    "plan_identity": "1235515d34156ae2834136e8d1c8f8b5835112de6eb15b81b988fd34fffe132a",
-    "report": "/home/yayoi/orca/workspaces/Strata/sycl/.cache/strata-research/20261027/64k-screen-source-contract.md",
-    "report_budget_bytes": 12288,
-    "prerequisite_evidence": [
-      "New controller and host corruption controls committed at2e810aed8;three host tests pass with no GPU.",
-      "prepare succeeds through unchanged V6 native/runtime/Python/profile admission;three process configs/native plans generated and hashed.",
-      "Question changes only official benchmark minimum98304->65536,expected actual78451;baseline supervisor and all native settings fixed."
-    ],
-    "consumer": "Main exact source/immutable-plan review before the three-process >=64K unchanged-engine screen.",
-    "retention": "Keep only through independent review and screen admission;retain compact decisions/source pins,retire full transaction report after closure.",
-    "report_bytes": 7148,
-    "report_sha256": "70b1d88787dd36c6b6ba0c172ab7a3af640ff777fd5e871b2ec3df94d21eab65",
-    "model_trial_allowed": false,
-    "review_sha256": "a805273c815959a081971a8af78528dbd8a29b818d42a79c3b1f6be9b30712d9",
-    "blocker": "Journal-cursor acquisition and repeated Python admission can raise before sticky prelaunch-failure persistence;the record can remain prepared and permit retry. No GPU/model launch occurred."
-  },
-  "prefill_single_window_screen_source_contract_v2_20261027": {
-    "status": "closed_parser_failure",
-    "classification": "decision_support",
-    "schedulable_now": false,
-    "review_model": "native Codex gpt-6-luna max",
-    "source_commit": "94964393708dfd604ef975005cd81371718d09b7",
-    "source_sha256": "ae5c8add2fef5dba04f6db2edd24a6ab559ae39793743c174c582c0d28f04164",
-    "test_sha256": "828714f1135cc4dadfb9b686bfc8a67043efb0c4ef75de38d765e3af19e236ee",
-    "plan_identity": "8c9103f8f43934609f28c5214d044a9cb77cceaa56a6d12234cc8c0f580bbf45",
-    "original_Orca_report": "/home/yayoi/orca/workspaces/Strata/sycl/.cache/strata-research/20261027/64k-screen-source-contract.md",
-    "original_Orca_report_sha256": "70b1d88787dd36c6b6ba0c172ab7a3af640ff777fd5e871b2ec3df94d21eab65",
-    "original_review_sha256": "a805273c815959a081971a8af78528dbd8a29b818d42a79c3b1f6be9b30712d9",
-    "scope": "Native re-review of the completed Orca report against Main correction and fresh V2 plan;V1 remains blocked,no original-status replacement. Four host controls pass;no GPU/model launch.",
-    "retention": "No new execution consumer;retire controller/test,normal raw output and review transactions after committed closed-data replay. Original source/plan/failed result remain recoverable from Git.",
-    "model_trial_allowed": false,
-    "review_path": "/home/yayoi/orca/workspaces/Strata/sycl/.cache/strata-research/20261027/64k-screen-source-contract-v2.review.json",
-    "review_sha256": "4e09aaf2221b2599d38226204b5315010811e5007bac4ca0207e7f8843fa4066",
-    "review_bytes": 3932,
-    "verdict": "Four requests completed with no fresh GPU fault and owned exit0,but the parser incorrectly required disabled Down fusion despite the frozen selected environment setting STRATA_SYCL_PREFILL_DOWN_SCATTER=large. Original cohort remains failed;two processes unlaunched under stop-first. Closed-data diagnostic median960.2831tok/s is not performance qualification or adoption."
+    "retention": "Keep the corrected API contract,capacity correction and exact source links for Main allocation admission. Full report/review transaction retired after recording these findings.",
+    "report_and_review_retired": true,
+    "transaction_archive_commit": "cbedff2f5b48422e6c940f3d2b07a196c8c30193"
   }
 }
