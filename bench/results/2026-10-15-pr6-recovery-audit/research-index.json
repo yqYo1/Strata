@@ -12430,8 +12430,8 @@
     }
   },
   "prefill_split_fp32_bank_decision_20261027": {
-    "schedulable_now": true,
-    "status": "planned",
+    "schedulable_now": false,
+    "status": "reviewed",
     "source_commit": "a7981b8981515a3010e1624a31e52f9d021f10b6",
     "worker_model": "gpt-6-luna",
     "review_model": "native Codex gpt-6-luna max",
@@ -12453,11 +12453,18 @@
       "src/prefill/sycl/gemm16.cpp": "577ef59beb7ad00b76025bb4d13c0b41663e6cf5c003711e2bf4cb22b6fdc0cc",
       "src/prefill/sycl/vllm_xe2/native16.cpp": "2a6b9b4532f9be50a2bb697cd120fc31f84d2c200fa5ed81f77d4b5f152af684"
     },
-    "report": "/home/yayoi/orca/workspaces/Strata/sycl/.cache/strata-research/20261027/fp32-split-bank-decision.md"
+    "report": "/home/yayoi/orca/workspaces/Strata/sycl/.cache/strata-research/20261027/fp32-split-bank-decision.md",
+    "report_bytes": 15657,
+    "report_sha256": "cd4a2f4779fdae9f6f98fe4246d13451ccfcb69c8de644c5e5de50ec2add04f7",
+    "review_path": "/home/yayoi/orca/workspaces/Strata/sycl/.cache/strata-research/20261027/prefill-followup-wave.review.json",
+    "retention": "Main split-bank source/owner/bounds and allocation-admission review; retire the full report/review after its concrete contract and pending gates are recorded in the maintained decision.",
+    "review_sha256": "c2f7367be572a5a7e2f36ad8f608821a0cec3b9bf2f8ad0330d56d2c9e2d50a1",
+    "review_verdict": "accept_as_decision_support_capacity_candidate_only",
+    "inference_adoption": false
   },
   "legacy_component_consumers_decision_20261027": {
-    "schedulable_now": true,
-    "status": "planned",
+    "schedulable_now": false,
+    "status": "reviewed",
     "source_commit": "a7981b8981515a3010e1624a31e52f9d021f10b6",
     "worker_model": "gpt-6-luna",
     "review_model": "native Codex gpt-6-luna max",
@@ -12470,11 +12477,18 @@
     ],
     "inventory": "/home/yayoi/.local/state/strata-sycl/artifact-retention-audit-20261018/component-binary-provenance-review-v2.json",
     "inventory_sha256": "7a2f483f8fb08a2d3aedacfec69a8183e52069ffb83784af5f402ddced389dcc",
-    "report": "/home/yayoi/orca/workspaces/Strata/sycl/.cache/strata-research/20261027/legacy-component-consumers-decision.md"
+    "report": "/home/yayoi/orca/workspaces/Strata/sycl/.cache/strata-research/20261027/legacy-component-consumers-decision.md",
+    "report_bytes": 9292,
+    "report_sha256": "bee40dd8ca9bb6636c3c785369bdfc18de073d9be01c40e64abc6768caf81346",
+    "review_path": "/home/yayoi/orca/workspaces/Strata/sycl/.cache/strata-research/20261027/prefill-followup-wave.review.json",
+    "retention": "Main remaining 47-root exact source/recipe and current-consumer reconciliation; retire this action map after those decisions close. It does not authorize blanket deletion.",
+    "review_sha256": "c2f7367be572a5a7e2f36ad8f608821a0cec3b9bf2f8ad0330d56d2c9e2d50a1",
+    "review_verdict": "useful_partial_action_map_insufficient_for_blanket_retirement",
+    "inference_adoption": false
   },
   "qwen4exp_moe_reduction_contract_decision_20261027": {
-    "schedulable_now": true,
-    "status": "planned",
+    "schedulable_now": false,
+    "status": "reviewed",
     "source_commit": "a7981b8981515a3010e1624a31e52f9d021f10b6",
     "worker_model": "gpt-6-luna",
     "review_model": "native Codex gpt-6-luna max",
@@ -12485,11 +12499,18 @@
       "Main observed generic Triton 16-bit expert outputs followed by FP32 reduction; moving-main inspection is not pinned model-specific dispatch proof.",
       "The proposed 16-bit accumulator would fit 117488 rows but changes per-expert rounding; the current FP32 reference remains selected."
     ],
-    "report": "/home/yayoi/orca/workspaces/Strata/sycl/.cache/strata-research/20261027/qwen4exp-moe-reduction-contract-decision.md"
+    "report": "/home/yayoi/orca/workspaces/Strata/sycl/.cache/strata-research/20261027/qwen4exp-moe-reduction-contract-decision.md",
+    "report_bytes": 12862,
+    "report_sha256": "0c9a7877e92de0346ba914147e653543d06f446782f3876ed9d031822ec3349b",
+    "review_path": "/home/yayoi/orca/workspaces/Strata/sycl/.cache/strata-research/20261027/prefill-followup-wave.review.json",
+    "retention": "Retrieve only for a selected Qwen4Exp framework/backend/dtype numerical-contract question; review when that route is identified. This is not a selected kernel contract.",
+    "review_sha256": "c2f7367be572a5a7e2f36ad8f608821a0cec3b9bf2f8ad0330d56d2c9e2d50a1",
+    "review_verdict": "accept_as_conditional_contract_map_not_a_selected_backend_contract",
+    "inference_adoption": false
   },
   "partial_sum_compression_methods_collection_20261027": {
-    "schedulable_now": true,
-    "status": "planned",
+    "schedulable_now": false,
+    "status": "reviewed",
     "source_commit": "a7981b8981515a3010e1624a31e52f9d021f10b6",
     "worker_model": "gpt-6-luna",
     "review_model": "native Codex gpt-6-luna max",
@@ -12499,6 +12520,31 @@
     "prerequisite_evidence": [
       "A concrete MoE accumulation-storage question exists; this is independent methods collection with no local performance prerequisite."
     ],
-    "report": "/home/yayoi/orca/workspaces/Strata/sycl/.cache/strata-research/20261027/partial-sum-compression-methods-collection.md"
+    "report": "/home/yayoi/orca/workspaces/Strata/sycl/.cache/strata-research/20261027/partial-sum-compression-methods-collection.md",
+    "report_bytes": 14607,
+    "report_sha256": "5e069e80778ca9cc1a6a66f089ec9f6be15a68f7b2492909844d78262fcf04ae",
+    "review_path": "/home/yayoi/orca/workspaces/Strata/sycl/.cache/strata-research/20261027/prefill-followup-wave.review.json",
+    "retention": "Indexed partial-sum compression reference for a future concrete numerical/storage question; Main has not loaded its body. Review when the FP32 split-bank decision closes.",
+    "review_sha256": "c2f7367be572a5a7e2f36ad8f608821a0cec3b9bf2f8ad0330d56d2c9e2d50a1",
+    "review_verdict": "retain_only_as_indexed_retrieval_reference_after_review",
+    "inference_adoption": false
+  },
+  "split_bank_allocation_contract_decision_20261027": {
+    "status": "planned",
+    "classification": "decision_support",
+    "worker_model": "gpt-6-luna",
+    "review_model": "native Codex gpt-6-luna max",
+    "schedulable_now": true,
+    "title": "Intel SYCL/Level Zero maximum single-allocation contract for the 531988736-byte split-bank request",
+    "prerequisite_evidence": [
+      "The maintained prefill decision gives an exact prospective 531988736-byte guarded device allocation and 298280576-byte remaining budget under the 128-slot scenario.",
+      "The current report/source audit establishes that the request has no actual max_mem_alloc_size check or successful allocation evidence yet.",
+      "This is a bounded API/driver contract question independent of the still-pending engine build and cleanup; it cannot substitute for a Main-owned live query or allocation attempt."
+    ],
+    "finite_question": "Using only version-pinned official SYCL and Intel oneAPI Level Zero sources, state what device max_mem_alloc_size does and does not guarantee for a USM device/shared allocation of 531988736 bytes, including context/device compatibility, alignment, overcommit/fragmentation, and allocation-failure semantics. Separate queried limits from proof of real allocation/residency. No code, hardware claims, general VRAM budget survey, or adoption recommendation.",
+    "report_budget_bytes": 12288,
+    "consumer": "Main prospective split-bank max-allocation/failure contract; this source-only report cannot qualify actual allocation or residency.",
+    "review_point": "Before a split-bank engine build or allocation-admission experiment.",
+    "recommendation_review_sha256": "c2f7367be572a5a7e2f36ad8f608821a0cec3b9bf2f8ad0330d56d2c9e2d50a1"
   }
 }

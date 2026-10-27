@@ -918,20 +918,23 @@ inputs;all individual clocks,CPU operands and closure/fault outcomes remain in
 Git. Four old source-audit rows and superseded plans/probe rows retire to
 `b97e30d9e`;the current V6review,PythonV4andownerV3qualification stay live.
 
-A bounded recheck of the existing82-root historical component inventory still
-finds147 artifacts/106,163,376bytes across49roots. This is not a current
-consumer/source qualification or a census of newer builds. Main must reconcile
-those live paths against current consumers and exact source/recipe evidence
-after the six-process comparison closes,before another engine build. The prior
+After retirement of two historical hardware components,the existing82-root
+inventory has145 live artifacts/105,698,320bytes across47roots. This is not a
+current consumer/source qualification or a census of newer builds. The six-process
+comparison is closed;Main must reconcile those remaining paths against current
+consumers and exact source/recipe evidence before another engine build. The prior
 14 named provenance holds are not cleared by the150-file retirement above.
 For two of those historical component roots,Main now recovers the original
 `hardware-ceiling-cpu-v1`/`hardware-ceiling-gpu-v1` sources and build records from
 `7ea2650ba3ae1b15807a32a67b62d56131046569`,under
 `bench/results/2026-10-10-parallel-round53/hardware`. Both source hashes and the
 current final ELF hashes match their build/measurement receipts. This does not
-retroactively qualify their SDK/header closure. Check current consumers and
-retire these ended artifacts after the active cohort;the other roots still need
-their bounded recovery/consumer decisions.
+retroactively qualify their SDK/header closure. Main checked current consumers,
+exact source/recipe recovery and process closure,and retired their two executables
+and two source copies:4files/478867bytes. The compact
+`legacy_hardware_component_retirement_20261027` record pins the original inputs,
+measurement reference and deletion manifest. The other47roots still need their
+bounded recovery/consumer decisions.
 
 After replay and exact source/recipe/header/link/object/ELF recovery,these three
 closed observer/model/control roots retire106files/12,760,397bytes. Four
