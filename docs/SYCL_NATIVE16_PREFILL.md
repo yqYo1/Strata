@@ -1851,12 +1851,16 @@ under the shared lock and a 60-second deadline. Controls include missing,
 duplicated and reordered windows, malformed histograms, ambiguous retired
 counters and configured capacity larger than actual rows. These synthetic
 controls do not supply a selected-model histogram or qualify native execution.
-The first census-controller preflight at `5575402af` refused an added standalone
-`tools/test_sycl_qsa_selection_capture.py` in its overly broad child inventory,
-before creating an output directory or launching the model. The revised scope
-excludes standalone `tools/test_*.py`, retains the benchmark/server/wrapper
-sources and unchanged provider manifest, and still rejects changed runtime
-inputs. This scope correction does not qualify GPU execution.
+The selected-model census controller and frozen requests are committed, with
+204 controller inputs,58 unchanged child sources and the selected engine plus
+12 same-build fixtures checked. An independent Orca Luna report and native Luna/max
+review admit the bounded39261-input smoke after Main's frozen source/runtime/owner
+checks. The117489-input case remains gated on that smoke. The current controller
+at`3e00a11b0` records completion only after final admission and successful protocol,
+owner and fault postchecks. This is source-planned work on the pinned6e40 schema,
+not GPU execution coverage or clean throughput evidence. The original preflight
+refusal at`5575402af` remains in Git;excluding unrelated standalone host tests did
+not qualify native execution. See the [current census plan](../bench/results/2026-10-15-pr6-recovery-audit/model-work-census-current.json).
 
 Complete prefill phase attribution requires three independent ledgers: route-owner
 planned operations, actual API results and collector device executions.
