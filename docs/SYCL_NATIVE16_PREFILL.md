@@ -1499,9 +1499,15 @@ also slower in all six groups. **Reject this exact candidate and do not run a
 model trial.** The lower reported spill descriptor12480to3008 is not executed
 scratch traffic or a speedup;the pinned API header does not state its units.
 No hardware-saturation conclusion follows. The next distinct source proof
-will pack two16bit values per exchange,aiming to reduce subgroup collective
+packs two16bit values per exchange,aiming to reduce subgroup collective
 instances from1024to256 per WG/32selected cells over all256Kdimensions.
 It needs a fresh build and qualification;production/decode stays unchanged.
+Source`c3bf8dea1` now passes36symbolic masks and216numeric packing cases,
+with8192unique source/destination elements per case and three broken variants
+rejected. All35host controller controls also pass. The new source model uses
+256subgroup exchange instances per WG/32selected cells across all256Kdimensions;
+this is not observed device instructions or traffic. Independent source/harness
+review and compilation remain pending;no packed-u32 device result exists.
 The rejected generation and two consumed research/review files retire after
 recovering197original source inputs,exact recipe/generated sources and699actual
 compiler dependencies. The98files total11297649bytes;the selected engine,its

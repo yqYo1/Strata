@@ -13786,14 +13786,24 @@
   },
   "qsa_packed_k_staging_source_contract_20261028": {
     "classification": "decision_support",
-    "status": "awaiting_host_proof",
-    "schedulable_now": false,
+    "status": "prepared",
+    "schedulable_now": true,
     "prerequisites_evidence": {
       "source": {
         "path": "tools/sycl/qsa_k_staging_sources.py",
         "sha256": "d1a34925846e03508ed604955d33afbf22a280880dd86bb71ba8c6ed37eca404"
       },
-      "previous_component": "fused-moe-service-current.json::qsa_k_staging_v1_closed;all6speed groups failed despite smaller reported spill descriptor. Extra binary/IR generation retired after197Git/699actual dependency recovery."
+      "previous_component": "fused-moe-service-current.json::qsa_k_staging_v1_closed;all6speed groups failed despite smaller reported spill descriptor. Extra binary/IR generation retired after197Git/699actual dependency recovery.",
+      "host_proof": {
+        "reference": "fused-moe-service-current.json::qsa_packed_k_staging_preflight",
+        "source_commit": "c3bf8dea1aac703bc87fb1afcf21714813ee247e",
+        "mask_cases": 36,
+        "numeric_cases": 216,
+        "rejected_broken_transposes": 3,
+        "controller_controls": 35,
+        "GPU_executed": false,
+        "compiler_executed": false
+      }
     },
     "source_snapshot": {
       "tools/sycl/qsa_k_staging_sources.py": "d1a34925846e03508ed604955d33afbf22a280880dd86bb71ba8c6ed37eca404",
@@ -13815,6 +13825,7 @@
     "report": ".cache/strata-research/20261028/qsa-packed-k-staging-source-contract.md",
     "budget_bytes": 16384,
     "ownership": "Orca gpt-6-luna report only;Main owns implementation/builds/tests/GPU. Native gpt-6-luna max reviews. No steering.",
-    "retention": "Current exact-source build/admission decision;fold substantive facts and retire transaction files after use. No generic subgroup or spill survey."
+    "retention": "Current exact-source build/admission decision;fold substantive facts and retire transaction files after use. No generic subgroup or spill survey.",
+    "source_commit": "c3bf8dea1aac703bc87fb1afcf21714813ee247e"
   }
 }

@@ -962,7 +962,7 @@
     "model_adopted": false
   },
   "qsa_packed_k_staging_preflight": {
-    "status": "source_prepared",
+    "status": "host_proof_passed",
     "source_sha256": "d1a34925846e03508ed604955d33afbf22a280880dd86bb71ba8c6ed37eca404",
     "provenance": "Main-authored packed-u32 replacement in own96aa/e1generator,from own6e40prefix;no XeStrata application code.",
     "question": "Can two uniform packed-u32 exchanges preserve all K transpose bits while reducing source collective calls versus the measured slower eight-u16 variant?",
@@ -974,6 +974,38 @@
       "budgets": "Serialized Main-owned CPU-only proof,90s wall/60s CPU/256MiBvirtual memory. No compiler/native/GPU execution.",
       "controller": "35synthetic host parser/device-identity false-pass controls under60s wall,after source commit.",
       "advance": "Only independent version-matched packed-u32 source/harness review plus native Luna/max curation can authorize build. A host proof alone permits no GPU launch or model adoption."
+    },
+    "source_commit": "c3bf8dea1aac703bc87fb1afcf21714813ee247e",
+    "host_result": {
+      "passed": true,
+      "exit_code": 0,
+      "mask_cases": 36,
+      "numeric_cases": 216,
+      "values_per_case": 8192,
+      "unique_source_and_destination": true,
+      "missing_rows_zero": true,
+      "symbolic_lane_collective_calls_per_WG": 4096,
+      "subgroup_collective_instances_per_WG": 256,
+      "rejected_broken_transposes": 3,
+      "generated_sha256": {
+        "kstaging_control.cpp": "cdcd42c2ae44e00b06893f5f01c156069adcecef6ba1f6665c3abed664173b42",
+        "kstaging_candidate.cpp": "799c051fb7c66d37923417add313170d61b78b5350a967ca13435464ed18067f",
+        "qsa-k-staging.hpp": "74c335a408008acea0270088d3854c854abd5790f00170133e5b4184f3274db7"
+      },
+      "GPU_executed": false,
+      "compiler_executed": false,
+      "limits": "Symbolic dense mapping plus216numeric packed-half cases,not exhaustive32bit patterns,compiler/device numerics or speed. Source operation counts only."
+    },
+    "host_controller_result": {
+      "source_commit": "c3bf8dea1aac703bc87fb1afcf21714813ee247e",
+      "passed": true,
+      "exit_code": 0,
+      "controls": 35,
+      "oracle_positive": 2,
+      "oracle_negative": 10,
+      "device_positive": 2,
+      "device_negative": 6,
+      "GPU_executed": false
     }
   }
 }
