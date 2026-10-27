@@ -1913,12 +1913,16 @@ decoded metadata before checking the cap. The original21passes remain valid for
 their recorded controls,but do not cover that boundary. This candidate's four
 native/manifest files are retired after source/recipe recovery;no GPU/model
 process used it. The replacement reserves its row under the output lock before
-reading callback data,and adds invalid first-omitted begin/end controls. It still
-requires a fresh committed host qualification and direct UR result/output check.
-The replacement from023c7cc2b now passes all23native CPU controls,including
-invalid argument data on the very first omitted begin and end. A separately
-frozen pair of actual host UR canaries will check the unchanged return/output
-contract with complete capture and cap3. These do not enumerate or use a GPU.
+reading callback data,and adds invalid first-omitted begin/end controls.
+The replacement from023c7cc2b passes all23native CPU controls,including invalid
+argument data on the very first omitted begin and end. Controller552a93efa also
+passes two actual host UR canaries with complete capture and cap3. Both preserve
+the expected error46 and UINT32_MAX output sentinel,with before-main validation,
+silent parameter checks and closed exit0 processes. The complete arm records
+two actual rejected API pairs;the truncated arm emits one loss marker and is
+refused by the reader. The independent UR trace contains no device/queue/enqueue
+work. These actual return/output controls still do not qualify a GPU/model
+observer or its cost;ordinary runtime teardown remains unqualified.
 Keep the qualified v3 observer until separate device and observer-cost gates
 select a replacement;the65536maximum and16MiB parser still do not permit a
 complete whole-model capture. The selected engine and decode are unchanged.

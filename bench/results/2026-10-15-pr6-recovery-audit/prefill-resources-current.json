@@ -12965,7 +12965,7 @@
       }
     },
     "ur_subscriber_budget_direct": {
-      "stage": "prepared",
+      "stage": "direct-host-checked",
       "source_commit": "552a93efa4b7bc187213255e9e82488c17ba69fc",
       "observer_native_source": "023c7cc2bc2ccae05c2e73c93086442e9b374876",
       "host_reference_commit": "552a93efa4b7bc187213255e9e82488c17ba69fc",
@@ -13116,11 +13116,79 @@
           ]
         }
       ],
-      "outcomes": [],
+      "outcomes": [
+        {
+          "case": "complete",
+          "exit_code": 0,
+          "ownership_closed": true,
+          "actual": {
+            "pid": 1181372,
+            "initialized": 0,
+            "checked": 46,
+            "expected": 46,
+            "version": 4294967295,
+            "closed": 0
+          },
+          "before_main": {
+            "pid": 1181372,
+            "loader": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_loader.so.0.12.0",
+            "threads_before": 1,
+            "preinit": 37,
+            "config_enabled": true,
+            "first_init": true,
+            "dispatch_result": 46,
+            "output_untouched": true,
+            "retained_reference_until_exit": true,
+            "runtime_teardown_qualified": false
+          },
+          "unexpected_device_work": false,
+          "calls": {
+            "call_pairs": 2,
+            "source_threads": 1,
+            "outcomes": [
+              {
+                "name": "urPlatformGetApiVersion",
+                "status": 46,
+                "calls": 2
+              }
+            ],
+            "ordinary_runtime_teardown_qualified": false,
+            "device_work_qualified": false
+          }
+        },
+        {
+          "case": "loss",
+          "exit_code": 0,
+          "ownership_closed": true,
+          "actual": {
+            "pid": 1181376,
+            "initialized": 0,
+            "checked": 46,
+            "expected": 46,
+            "version": 4294967295,
+            "closed": 0
+          },
+          "before_main": {
+            "pid": 1181376,
+            "loader": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_loader.so.0.12.0",
+            "threads_before": 1,
+            "preinit": 37,
+            "config_enabled": true,
+            "first_init": true,
+            "dispatch_result": 46,
+            "output_untouched": true,
+            "retained_reference_until_exit": true,
+            "runtime_teardown_qualified": false
+          },
+          "unexpected_device_work": false,
+          "loss_markers": 1,
+          "complete_capture_rejected": true
+        }
+      ],
       "active": false,
       "ownership_closed": true,
-      "complete": false,
-      "passed": false,
+      "complete": true,
+      "passed": true,
       "gpu_work": false,
       "model_qualified": false,
       "limits": "Actual UR result/output control only. No device enumeration,queue,enqueue,GPU,model,observer cost,ordinary runtime teardown or phase-coverage qualification.",
