@@ -1,5 +1,5 @@
 {
-  "stage": "built",
+  "stage": "closed_rejected_speed",
   "source_commit": "e1e9f3bdecb0c76ae910ce1e8438a3f5e2baeb91",
   "input_sha256": {
     "bench/sycl/qsa_k_staging.cpp": "34b9cbad64826abef5f128c38680172c0d263ffb4eddae780d8331261280fc1a",
@@ -2126,7 +2126,7 @@
       ],
       "scope": "Single eligible physical Intel GPU/accelerator plus exact native device name;not a general multi-GPU UUID mapping."
     },
-    "stage": "prepared",
+    "stage": "closed",
     "mode": "perf",
     "source_commit": "88e70f20ec298437c1a983c99578a624ca595e65",
     "controller_inputs": {
@@ -2774,9 +2774,1839 @@
         "kernel": "7.0.0-38-generic",
         "devcoredump": false
       }
+    },
+    {
+      "mode": "perf",
+      "controller_commit": "88e70f20ec298437c1a983c99578a624ca595e65",
+      "plan_commit": "52197a50b71bbd5e17476ce94f51ee5b5cfdf1a7",
+      "passed": true,
+      "complete": true,
+      "active": false,
+      "ownership_closed": true,
+      "observations": [
+        {
+          "process": 0,
+          "exit_code": 0,
+          "ownership_closed": true,
+          "physical_device": {
+            "name": "Intel(R) Arc(TM) B570 Graphics",
+            "pci": "0000:05:00.0",
+            "driver": "xe",
+            "matching_DRM_descriptors": 1
+          },
+          "validation": {
+            "pid": 1747938,
+            "loader": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_loader.so.0.12.0",
+            "threads_before": 1,
+            "preinit": 37,
+            "config_enabled": true,
+            "first_init": true,
+            "dispatch_result": 46,
+            "output_untouched": true,
+            "retained_reference_until_exit": true,
+            "runtime_teardown_qualified": false
+          },
+          "output": {
+            "numerical": [
+              {
+                "kind": "numerical",
+                "queries": 512,
+                "arm": 0,
+                "reference_cells": 32,
+                "spot_queries": 6,
+                "compared": 36864,
+                "max_abs": 0,
+                "max_budget_ratio": 0
+              },
+              {
+                "kind": "numerical",
+                "queries": 512,
+                "arm": 1,
+                "reference_cells": 32,
+                "spot_queries": 6,
+                "compared": 36864,
+                "max_abs": 0,
+                "max_budget_ratio": 0
+              },
+              {
+                "kind": "numerical",
+                "queries": 512,
+                "arm": 2,
+                "reference_cells": 32,
+                "spot_queries": 6,
+                "compared": 36864,
+                "max_abs": 0,
+                "max_budget_ratio": 0
+              },
+              {
+                "kind": "numerical",
+                "queries": 6491,
+                "arm": 0,
+                "reference_cells": 32,
+                "spot_queries": 8,
+                "compared": 49152,
+                "max_abs": 0,
+                "max_budget_ratio": 0
+              },
+              {
+                "kind": "numerical",
+                "queries": 6491,
+                "arm": 1,
+                "reference_cells": 32,
+                "spot_queries": 8,
+                "compared": 49152,
+                "max_abs": 0,
+                "max_budget_ratio": 0
+              },
+              {
+                "kind": "numerical",
+                "queries": 6491,
+                "arm": 2,
+                "reference_cells": 32,
+                "spot_queries": 8,
+                "compared": 49152,
+                "max_abs": 0,
+                "max_budget_ratio": 0
+              }
+            ],
+            "deltas": [
+              {
+                "kind": "delta",
+                "queries": 512,
+                "elements": 3145728,
+                "changed_from32": 0,
+                "max_abs": 0,
+                "relative_l2": 0
+              },
+              {
+                "kind": "delta",
+                "queries": 6491,
+                "elements": 39880704,
+                "changed_from32": 0,
+                "max_abs": 0,
+                "relative_l2": 0
+              }
+            ],
+            "samples": [
+              {
+                "kind": "sample",
+                "process": 0,
+                "queries": 512,
+                "round": 0,
+                "arm": 0,
+                "repeats": 64,
+                "batch_ns": 663382055,
+                "attention_device_ns": null,
+                "event_calls": 0,
+                "timer_floor_ns": 10
+              },
+              {
+                "kind": "sample",
+                "process": 0,
+                "queries": 512,
+                "round": 0,
+                "arm": 1,
+                "repeats": 64,
+                "batch_ns": 663326562,
+                "attention_device_ns": 626003647,
+                "event_calls": 64,
+                "timer_floor_ns": 10
+              },
+              {
+                "kind": "sample",
+                "process": 0,
+                "queries": 512,
+                "round": 0,
+                "arm": 2,
+                "repeats": 64,
+                "batch_ns": 757017818,
+                "attention_device_ns": 719706254,
+                "event_calls": 64,
+                "timer_floor_ns": 10
+              },
+              {
+                "kind": "sample",
+                "process": 0,
+                "queries": 512,
+                "round": 1,
+                "arm": 1,
+                "repeats": 64,
+                "batch_ns": 664561798,
+                "attention_device_ns": 627248538,
+                "event_calls": 64,
+                "timer_floor_ns": 10
+              },
+              {
+                "kind": "sample",
+                "process": 0,
+                "queries": 512,
+                "round": 1,
+                "arm": 2,
+                "repeats": 64,
+                "batch_ns": 763848100,
+                "attention_device_ns": 726541352,
+                "event_calls": 64,
+                "timer_floor_ns": 10
+              },
+              {
+                "kind": "sample",
+                "process": 0,
+                "queries": 512,
+                "round": 1,
+                "arm": 0,
+                "repeats": 64,
+                "batch_ns": 663660202,
+                "attention_device_ns": null,
+                "event_calls": 0,
+                "timer_floor_ns": 10
+              },
+              {
+                "kind": "sample",
+                "process": 0,
+                "queries": 512,
+                "round": 2,
+                "arm": 2,
+                "repeats": 64,
+                "batch_ns": 762837719,
+                "attention_device_ns": 725265108,
+                "event_calls": 64,
+                "timer_floor_ns": 10
+              },
+              {
+                "kind": "sample",
+                "process": 0,
+                "queries": 512,
+                "round": 2,
+                "arm": 0,
+                "repeats": 64,
+                "batch_ns": 663588017,
+                "attention_device_ns": null,
+                "event_calls": 0,
+                "timer_floor_ns": 10
+              },
+              {
+                "kind": "sample",
+                "process": 0,
+                "queries": 512,
+                "round": 2,
+                "arm": 1,
+                "repeats": 64,
+                "batch_ns": 665979461,
+                "attention_device_ns": 628659895,
+                "event_calls": 64,
+                "timer_floor_ns": 10
+              },
+              {
+                "kind": "sample",
+                "process": 0,
+                "queries": 512,
+                "round": 3,
+                "arm": 0,
+                "repeats": 64,
+                "batch_ns": 664721102,
+                "attention_device_ns": null,
+                "event_calls": 0,
+                "timer_floor_ns": 10
+              },
+              {
+                "kind": "sample",
+                "process": 0,
+                "queries": 512,
+                "round": 3,
+                "arm": 1,
+                "repeats": 64,
+                "batch_ns": 664450664,
+                "attention_device_ns": 627128649,
+                "event_calls": 64,
+                "timer_floor_ns": 10
+              },
+              {
+                "kind": "sample",
+                "process": 0,
+                "queries": 512,
+                "round": 3,
+                "arm": 2,
+                "repeats": 64,
+                "batch_ns": 763331372,
+                "attention_device_ns": 726020411,
+                "event_calls": 64,
+                "timer_floor_ns": 10
+              },
+              {
+                "kind": "sample",
+                "process": 0,
+                "queries": 512,
+                "round": 4,
+                "arm": 1,
+                "repeats": 64,
+                "batch_ns": 663515484,
+                "attention_device_ns": 626190099,
+                "event_calls": 64,
+                "timer_floor_ns": 10
+              },
+              {
+                "kind": "sample",
+                "process": 0,
+                "queries": 512,
+                "round": 4,
+                "arm": 2,
+                "repeats": 64,
+                "batch_ns": 760909293,
+                "attention_device_ns": 723309378,
+                "event_calls": 64,
+                "timer_floor_ns": 10
+              },
+              {
+                "kind": "sample",
+                "process": 0,
+                "queries": 512,
+                "round": 4,
+                "arm": 0,
+                "repeats": 64,
+                "batch_ns": 663969810,
+                "attention_device_ns": null,
+                "event_calls": 0,
+                "timer_floor_ns": 10
+              },
+              {
+                "kind": "sample",
+                "process": 0,
+                "queries": 512,
+                "round": 5,
+                "arm": 2,
+                "repeats": 64,
+                "batch_ns": 760137591,
+                "attention_device_ns": 722827499,
+                "event_calls": 64,
+                "timer_floor_ns": 10
+              },
+              {
+                "kind": "sample",
+                "process": 0,
+                "queries": 512,
+                "round": 5,
+                "arm": 0,
+                "repeats": 64,
+                "batch_ns": 663686609,
+                "attention_device_ns": null,
+                "event_calls": 0,
+                "timer_floor_ns": 10
+              },
+              {
+                "kind": "sample",
+                "process": 0,
+                "queries": 512,
+                "round": 5,
+                "arm": 1,
+                "repeats": 64,
+                "batch_ns": 663384440,
+                "attention_device_ns": 626063016,
+                "event_calls": 64,
+                "timer_floor_ns": 10
+              },
+              {
+                "kind": "sample",
+                "process": 0,
+                "queries": 6491,
+                "round": 0,
+                "arm": 0,
+                "repeats": 4,
+                "batch_ns": 497466374,
+                "attention_device_ns": null,
+                "event_calls": 0,
+                "timer_floor_ns": 20
+              },
+              {
+                "kind": "sample",
+                "process": 0,
+                "queries": 6491,
+                "round": 0,
+                "arm": 1,
+                "repeats": 4,
+                "batch_ns": 498221386,
+                "attention_device_ns": 495748959,
+                "event_calls": 4,
+                "timer_floor_ns": 20
+              },
+              {
+                "kind": "sample",
+                "process": 0,
+                "queries": 6491,
+                "round": 0,
+                "arm": 2,
+                "repeats": 4,
+                "batch_ns": 557505090,
+                "attention_device_ns": 555044061,
+                "event_calls": 4,
+                "timer_floor_ns": 20
+              },
+              {
+                "kind": "sample",
+                "process": 0,
+                "queries": 6491,
+                "round": 1,
+                "arm": 1,
+                "repeats": 4,
+                "batch_ns": 498032702,
+                "attention_device_ns": 495564688,
+                "event_calls": 4,
+                "timer_floor_ns": 20
+              },
+              {
+                "kind": "sample",
+                "process": 0,
+                "queries": 6491,
+                "round": 1,
+                "arm": 2,
+                "repeats": 4,
+                "batch_ns": 557536339,
+                "attention_device_ns": 555068542,
+                "event_calls": 4,
+                "timer_floor_ns": 20
+              },
+              {
+                "kind": "sample",
+                "process": 0,
+                "queries": 6491,
+                "round": 1,
+                "arm": 0,
+                "repeats": 4,
+                "batch_ns": 497380995,
+                "attention_device_ns": null,
+                "event_calls": 0,
+                "timer_floor_ns": 20
+              },
+              {
+                "kind": "sample",
+                "process": 0,
+                "queries": 6491,
+                "round": 2,
+                "arm": 2,
+                "repeats": 4,
+                "batch_ns": 557148460,
+                "attention_device_ns": 554680938,
+                "event_calls": 4,
+                "timer_floor_ns": 20
+              },
+              {
+                "kind": "sample",
+                "process": 0,
+                "queries": 6491,
+                "round": 2,
+                "arm": 0,
+                "repeats": 4,
+                "batch_ns": 500198762,
+                "attention_device_ns": null,
+                "event_calls": 0,
+                "timer_floor_ns": 20
+              },
+              {
+                "kind": "sample",
+                "process": 0,
+                "queries": 6491,
+                "round": 2,
+                "arm": 1,
+                "repeats": 4,
+                "batch_ns": 498761767,
+                "attention_device_ns": 496298751,
+                "event_calls": 4,
+                "timer_floor_ns": 20
+              },
+              {
+                "kind": "sample",
+                "process": 0,
+                "queries": 6491,
+                "round": 3,
+                "arm": 0,
+                "repeats": 4,
+                "batch_ns": 499831262,
+                "attention_device_ns": null,
+                "event_calls": 0,
+                "timer_floor_ns": 20
+              },
+              {
+                "kind": "sample",
+                "process": 0,
+                "queries": 6491,
+                "round": 3,
+                "arm": 1,
+                "repeats": 4,
+                "batch_ns": 498093730,
+                "attention_device_ns": 495627188,
+                "event_calls": 4,
+                "timer_floor_ns": 20
+              },
+              {
+                "kind": "sample",
+                "process": 0,
+                "queries": 6491,
+                "round": 3,
+                "arm": 2,
+                "repeats": 4,
+                "batch_ns": 558113059,
+                "attention_device_ns": 555645832,
+                "event_calls": 4,
+                "timer_floor_ns": 20
+              },
+              {
+                "kind": "sample",
+                "process": 0,
+                "queries": 6491,
+                "round": 4,
+                "arm": 1,
+                "repeats": 4,
+                "batch_ns": 499610788,
+                "attention_device_ns": 497135729,
+                "event_calls": 4,
+                "timer_floor_ns": 20
+              },
+              {
+                "kind": "sample",
+                "process": 0,
+                "queries": 6491,
+                "round": 4,
+                "arm": 2,
+                "repeats": 4,
+                "batch_ns": 557510757,
+                "attention_device_ns": 555042293,
+                "event_calls": 4,
+                "timer_floor_ns": 20
+              },
+              {
+                "kind": "sample",
+                "process": 0,
+                "queries": 6491,
+                "round": 4,
+                "arm": 0,
+                "repeats": 4,
+                "batch_ns": 497648324,
+                "attention_device_ns": null,
+                "event_calls": 0,
+                "timer_floor_ns": 20
+              },
+              {
+                "kind": "sample",
+                "process": 0,
+                "queries": 6491,
+                "round": 5,
+                "arm": 2,
+                "repeats": 4,
+                "batch_ns": 557504606,
+                "attention_device_ns": 555042292,
+                "event_calls": 4,
+                "timer_floor_ns": 20
+              },
+              {
+                "kind": "sample",
+                "process": 0,
+                "queries": 6491,
+                "round": 5,
+                "arm": 0,
+                "repeats": 4,
+                "batch_ns": 497331789,
+                "attention_device_ns": null,
+                "event_calls": 0,
+                "timer_floor_ns": 20
+              },
+              {
+                "kind": "sample",
+                "process": 0,
+                "queries": 6491,
+                "round": 5,
+                "arm": 1,
+                "repeats": 4,
+                "batch_ns": 498714983,
+                "attention_device_ns": 496249271,
+                "event_calls": 4,
+                "timer_floor_ns": 20
+              }
+            ],
+            "guards": true,
+            "inputs_immutable": true,
+            "cell32_exact": true,
+            "own_reference": true
+          }
+        },
+        {
+          "process": 1,
+          "exit_code": 0,
+          "ownership_closed": true,
+          "physical_device": {
+            "name": "Intel(R) Arc(TM) B570 Graphics",
+            "pci": "0000:05:00.0",
+            "driver": "xe",
+            "matching_DRM_descriptors": 1
+          },
+          "validation": {
+            "pid": 1749468,
+            "loader": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_loader.so.0.12.0",
+            "threads_before": 1,
+            "preinit": 37,
+            "config_enabled": true,
+            "first_init": true,
+            "dispatch_result": 46,
+            "output_untouched": true,
+            "retained_reference_until_exit": true,
+            "runtime_teardown_qualified": false
+          },
+          "output": {
+            "numerical": [
+              {
+                "kind": "numerical",
+                "queries": 512,
+                "arm": 0,
+                "reference_cells": 32,
+                "spot_queries": 6,
+                "compared": 36864,
+                "max_abs": 0,
+                "max_budget_ratio": 0
+              },
+              {
+                "kind": "numerical",
+                "queries": 512,
+                "arm": 1,
+                "reference_cells": 32,
+                "spot_queries": 6,
+                "compared": 36864,
+                "max_abs": 0,
+                "max_budget_ratio": 0
+              },
+              {
+                "kind": "numerical",
+                "queries": 512,
+                "arm": 2,
+                "reference_cells": 32,
+                "spot_queries": 6,
+                "compared": 36864,
+                "max_abs": 0,
+                "max_budget_ratio": 0
+              },
+              {
+                "kind": "numerical",
+                "queries": 6491,
+                "arm": 0,
+                "reference_cells": 32,
+                "spot_queries": 8,
+                "compared": 49152,
+                "max_abs": 0,
+                "max_budget_ratio": 0
+              },
+              {
+                "kind": "numerical",
+                "queries": 6491,
+                "arm": 1,
+                "reference_cells": 32,
+                "spot_queries": 8,
+                "compared": 49152,
+                "max_abs": 0,
+                "max_budget_ratio": 0
+              },
+              {
+                "kind": "numerical",
+                "queries": 6491,
+                "arm": 2,
+                "reference_cells": 32,
+                "spot_queries": 8,
+                "compared": 49152,
+                "max_abs": 0,
+                "max_budget_ratio": 0
+              }
+            ],
+            "deltas": [
+              {
+                "kind": "delta",
+                "queries": 512,
+                "elements": 3145728,
+                "changed_from32": 0,
+                "max_abs": 0,
+                "relative_l2": 0
+              },
+              {
+                "kind": "delta",
+                "queries": 6491,
+                "elements": 39880704,
+                "changed_from32": 0,
+                "max_abs": 0,
+                "relative_l2": 0
+              }
+            ],
+            "samples": [
+              {
+                "kind": "sample",
+                "process": 1,
+                "queries": 512,
+                "round": 0,
+                "arm": 1,
+                "repeats": 64,
+                "batch_ns": 664599102,
+                "attention_device_ns": 627227393,
+                "event_calls": 64,
+                "timer_floor_ns": 10
+              },
+              {
+                "kind": "sample",
+                "process": 1,
+                "queries": 512,
+                "round": 0,
+                "arm": 2,
+                "repeats": 64,
+                "batch_ns": 767649816,
+                "attention_device_ns": 730351766,
+                "event_calls": 64,
+                "timer_floor_ns": 10
+              },
+              {
+                "kind": "sample",
+                "process": 1,
+                "queries": 512,
+                "round": 0,
+                "arm": 0,
+                "repeats": 64,
+                "batch_ns": 663149564,
+                "attention_device_ns": null,
+                "event_calls": 0,
+                "timer_floor_ns": 10
+              },
+              {
+                "kind": "sample",
+                "process": 1,
+                "queries": 512,
+                "round": 1,
+                "arm": 2,
+                "repeats": 64,
+                "batch_ns": 759459786,
+                "attention_device_ns": 722011659,
+                "event_calls": 64,
+                "timer_floor_ns": 10
+              },
+              {
+                "kind": "sample",
+                "process": 1,
+                "queries": 512,
+                "round": 1,
+                "arm": 0,
+                "repeats": 64,
+                "batch_ns": 664312244,
+                "attention_device_ns": null,
+                "event_calls": 0,
+                "timer_floor_ns": 10
+              },
+              {
+                "kind": "sample",
+                "process": 1,
+                "queries": 512,
+                "round": 1,
+                "arm": 1,
+                "repeats": 64,
+                "batch_ns": 665411885,
+                "attention_device_ns": 628098442,
+                "event_calls": 64,
+                "timer_floor_ns": 10
+              },
+              {
+                "kind": "sample",
+                "process": 1,
+                "queries": 512,
+                "round": 2,
+                "arm": 0,
+                "repeats": 64,
+                "batch_ns": 663893527,
+                "attention_device_ns": null,
+                "event_calls": 0,
+                "timer_floor_ns": 10
+              },
+              {
+                "kind": "sample",
+                "process": 1,
+                "queries": 512,
+                "round": 2,
+                "arm": 1,
+                "repeats": 64,
+                "batch_ns": 663547685,
+                "attention_device_ns": 626230727,
+                "event_calls": 64,
+                "timer_floor_ns": 10
+              },
+              {
+                "kind": "sample",
+                "process": 1,
+                "queries": 512,
+                "round": 2,
+                "arm": 2,
+                "repeats": 64,
+                "batch_ns": 759420096,
+                "attention_device_ns": 722115106,
+                "event_calls": 64,
+                "timer_floor_ns": 10
+              },
+              {
+                "kind": "sample",
+                "process": 1,
+                "queries": 512,
+                "round": 3,
+                "arm": 1,
+                "repeats": 64,
+                "batch_ns": 663476072,
+                "attention_device_ns": 626157087,
+                "event_calls": 64,
+                "timer_floor_ns": 10
+              },
+              {
+                "kind": "sample",
+                "process": 1,
+                "queries": 512,
+                "round": 3,
+                "arm": 2,
+                "repeats": 64,
+                "batch_ns": 758828913,
+                "attention_device_ns": 721265838,
+                "event_calls": 64,
+                "timer_floor_ns": 10
+              },
+              {
+                "kind": "sample",
+                "process": 1,
+                "queries": 512,
+                "round": 3,
+                "arm": 0,
+                "repeats": 64,
+                "batch_ns": 664495192,
+                "attention_device_ns": null,
+                "event_calls": 0,
+                "timer_floor_ns": 10
+              },
+              {
+                "kind": "sample",
+                "process": 1,
+                "queries": 512,
+                "round": 4,
+                "arm": 2,
+                "repeats": 64,
+                "batch_ns": 761564807,
+                "attention_device_ns": 724256461,
+                "event_calls": 64,
+                "timer_floor_ns": 10
+              },
+              {
+                "kind": "sample",
+                "process": 1,
+                "queries": 512,
+                "round": 4,
+                "arm": 0,
+                "repeats": 64,
+                "batch_ns": 663482647,
+                "attention_device_ns": null,
+                "event_calls": 0,
+                "timer_floor_ns": 10
+              },
+              {
+                "kind": "sample",
+                "process": 1,
+                "queries": 512,
+                "round": 4,
+                "arm": 1,
+                "repeats": 64,
+                "batch_ns": 663327425,
+                "attention_device_ns": 626017080,
+                "event_calls": 64,
+                "timer_floor_ns": 10
+              },
+              {
+                "kind": "sample",
+                "process": 1,
+                "queries": 512,
+                "round": 5,
+                "arm": 0,
+                "repeats": 64,
+                "batch_ns": 663610709,
+                "attention_device_ns": null,
+                "event_calls": 0,
+                "timer_floor_ns": 10
+              },
+              {
+                "kind": "sample",
+                "process": 1,
+                "queries": 512,
+                "round": 5,
+                "arm": 1,
+                "repeats": 64,
+                "batch_ns": 663384404,
+                "attention_device_ns": 626072815,
+                "event_calls": 64,
+                "timer_floor_ns": 10
+              },
+              {
+                "kind": "sample",
+                "process": 1,
+                "queries": 512,
+                "round": 5,
+                "arm": 2,
+                "repeats": 64,
+                "batch_ns": 758169637,
+                "attention_device_ns": 720325003,
+                "event_calls": 64,
+                "timer_floor_ns": 10
+              },
+              {
+                "kind": "sample",
+                "process": 1,
+                "queries": 6491,
+                "round": 0,
+                "arm": 1,
+                "repeats": 4,
+                "batch_ns": 498525193,
+                "attention_device_ns": 496059583,
+                "event_calls": 4,
+                "timer_floor_ns": 20
+              },
+              {
+                "kind": "sample",
+                "process": 1,
+                "queries": 6491,
+                "round": 0,
+                "arm": 2,
+                "repeats": 4,
+                "batch_ns": 558678817,
+                "attention_device_ns": 556197916,
+                "event_calls": 4,
+                "timer_floor_ns": 20
+              },
+              {
+                "kind": "sample",
+                "process": 1,
+                "queries": 6491,
+                "round": 0,
+                "arm": 0,
+                "repeats": 4,
+                "batch_ns": 500630659,
+                "attention_device_ns": null,
+                "event_calls": 0,
+                "timer_floor_ns": 20
+              },
+              {
+                "kind": "sample",
+                "process": 1,
+                "queries": 6491,
+                "round": 1,
+                "arm": 2,
+                "repeats": 4,
+                "batch_ns": 558054834,
+                "attention_device_ns": 555587083,
+                "event_calls": 4,
+                "timer_floor_ns": 20
+              },
+              {
+                "kind": "sample",
+                "process": 1,
+                "queries": 6491,
+                "round": 1,
+                "arm": 0,
+                "repeats": 4,
+                "batch_ns": 498566252,
+                "attention_device_ns": null,
+                "event_calls": 0,
+                "timer_floor_ns": 20
+              },
+              {
+                "kind": "sample",
+                "process": 1,
+                "queries": 6491,
+                "round": 1,
+                "arm": 1,
+                "repeats": 4,
+                "batch_ns": 498079085,
+                "attention_device_ns": 495611667,
+                "event_calls": 4,
+                "timer_floor_ns": 20
+              },
+              {
+                "kind": "sample",
+                "process": 1,
+                "queries": 6491,
+                "round": 2,
+                "arm": 0,
+                "repeats": 4,
+                "batch_ns": 498926771,
+                "attention_device_ns": null,
+                "event_calls": 0,
+                "timer_floor_ns": 20
+              },
+              {
+                "kind": "sample",
+                "process": 1,
+                "queries": 6491,
+                "round": 2,
+                "arm": 1,
+                "repeats": 4,
+                "batch_ns": 499149181,
+                "attention_device_ns": 496682291,
+                "event_calls": 4,
+                "timer_floor_ns": 20
+              },
+              {
+                "kind": "sample",
+                "process": 1,
+                "queries": 6491,
+                "round": 2,
+                "arm": 2,
+                "repeats": 4,
+                "batch_ns": 559177410,
+                "attention_device_ns": 556704480,
+                "event_calls": 4,
+                "timer_floor_ns": 20
+              },
+              {
+                "kind": "sample",
+                "process": 1,
+                "queries": 6491,
+                "round": 3,
+                "arm": 1,
+                "repeats": 4,
+                "batch_ns": 500323514,
+                "attention_device_ns": 497852917,
+                "event_calls": 4,
+                "timer_floor_ns": 20
+              },
+              {
+                "kind": "sample",
+                "process": 1,
+                "queries": 6491,
+                "round": 3,
+                "arm": 2,
+                "repeats": 4,
+                "batch_ns": 558715131,
+                "attention_device_ns": 556226145,
+                "event_calls": 4,
+                "timer_floor_ns": 20
+              },
+              {
+                "kind": "sample",
+                "process": 1,
+                "queries": 6491,
+                "round": 3,
+                "arm": 0,
+                "repeats": 4,
+                "batch_ns": 499292343,
+                "attention_device_ns": null,
+                "event_calls": 0,
+                "timer_floor_ns": 20
+              },
+              {
+                "kind": "sample",
+                "process": 1,
+                "queries": 6491,
+                "round": 4,
+                "arm": 2,
+                "repeats": 4,
+                "batch_ns": 557291571,
+                "attention_device_ns": 554824271,
+                "event_calls": 4,
+                "timer_floor_ns": 20
+              },
+              {
+                "kind": "sample",
+                "process": 1,
+                "queries": 6491,
+                "round": 4,
+                "arm": 0,
+                "repeats": 4,
+                "batch_ns": 499208416,
+                "attention_device_ns": null,
+                "event_calls": 0,
+                "timer_floor_ns": 20
+              },
+              {
+                "kind": "sample",
+                "process": 1,
+                "queries": 6491,
+                "round": 4,
+                "arm": 1,
+                "repeats": 4,
+                "batch_ns": 499786835,
+                "attention_device_ns": 497323855,
+                "event_calls": 4,
+                "timer_floor_ns": 20
+              },
+              {
+                "kind": "sample",
+                "process": 1,
+                "queries": 6491,
+                "round": 5,
+                "arm": 0,
+                "repeats": 4,
+                "batch_ns": 499089001,
+                "attention_device_ns": null,
+                "event_calls": 0,
+                "timer_floor_ns": 20
+              },
+              {
+                "kind": "sample",
+                "process": 1,
+                "queries": 6491,
+                "round": 5,
+                "arm": 1,
+                "repeats": 4,
+                "batch_ns": 499525954,
+                "attention_device_ns": 497060208,
+                "event_calls": 4,
+                "timer_floor_ns": 20
+              },
+              {
+                "kind": "sample",
+                "process": 1,
+                "queries": 6491,
+                "round": 5,
+                "arm": 2,
+                "repeats": 4,
+                "batch_ns": 558151553,
+                "attention_device_ns": 555683333,
+                "event_calls": 4,
+                "timer_floor_ns": 20
+              }
+            ],
+            "guards": true,
+            "inputs_immutable": true,
+            "cell32_exact": true,
+            "own_reference": true
+          }
+        },
+        {
+          "process": 2,
+          "exit_code": 0,
+          "ownership_closed": true,
+          "physical_device": {
+            "name": "Intel(R) Arc(TM) B570 Graphics",
+            "pci": "0000:05:00.0",
+            "driver": "xe",
+            "matching_DRM_descriptors": 1
+          },
+          "validation": {
+            "pid": 1750946,
+            "loader": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_loader.so.0.12.0",
+            "threads_before": 1,
+            "preinit": 37,
+            "config_enabled": true,
+            "first_init": true,
+            "dispatch_result": 46,
+            "output_untouched": true,
+            "retained_reference_until_exit": true,
+            "runtime_teardown_qualified": false
+          },
+          "output": {
+            "numerical": [
+              {
+                "kind": "numerical",
+                "queries": 512,
+                "arm": 0,
+                "reference_cells": 32,
+                "spot_queries": 6,
+                "compared": 36864,
+                "max_abs": 0,
+                "max_budget_ratio": 0
+              },
+              {
+                "kind": "numerical",
+                "queries": 512,
+                "arm": 1,
+                "reference_cells": 32,
+                "spot_queries": 6,
+                "compared": 36864,
+                "max_abs": 0,
+                "max_budget_ratio": 0
+              },
+              {
+                "kind": "numerical",
+                "queries": 512,
+                "arm": 2,
+                "reference_cells": 32,
+                "spot_queries": 6,
+                "compared": 36864,
+                "max_abs": 0,
+                "max_budget_ratio": 0
+              },
+              {
+                "kind": "numerical",
+                "queries": 6491,
+                "arm": 0,
+                "reference_cells": 32,
+                "spot_queries": 8,
+                "compared": 49152,
+                "max_abs": 0,
+                "max_budget_ratio": 0
+              },
+              {
+                "kind": "numerical",
+                "queries": 6491,
+                "arm": 1,
+                "reference_cells": 32,
+                "spot_queries": 8,
+                "compared": 49152,
+                "max_abs": 0,
+                "max_budget_ratio": 0
+              },
+              {
+                "kind": "numerical",
+                "queries": 6491,
+                "arm": 2,
+                "reference_cells": 32,
+                "spot_queries": 8,
+                "compared": 49152,
+                "max_abs": 0,
+                "max_budget_ratio": 0
+              }
+            ],
+            "deltas": [
+              {
+                "kind": "delta",
+                "queries": 512,
+                "elements": 3145728,
+                "changed_from32": 0,
+                "max_abs": 0,
+                "relative_l2": 0
+              },
+              {
+                "kind": "delta",
+                "queries": 6491,
+                "elements": 39880704,
+                "changed_from32": 0,
+                "max_abs": 0,
+                "relative_l2": 0
+              }
+            ],
+            "samples": [
+              {
+                "kind": "sample",
+                "process": 2,
+                "queries": 512,
+                "round": 0,
+                "arm": 2,
+                "repeats": 64,
+                "batch_ns": 760895474,
+                "attention_device_ns": 723602191,
+                "event_calls": 64,
+                "timer_floor_ns": 10
+              },
+              {
+                "kind": "sample",
+                "process": 2,
+                "queries": 512,
+                "round": 0,
+                "arm": 0,
+                "repeats": 64,
+                "batch_ns": 663834575,
+                "attention_device_ns": null,
+                "event_calls": 0,
+                "timer_floor_ns": 10
+              },
+              {
+                "kind": "sample",
+                "process": 2,
+                "queries": 512,
+                "round": 0,
+                "arm": 1,
+                "repeats": 64,
+                "batch_ns": 663723687,
+                "attention_device_ns": 626405104,
+                "event_calls": 64,
+                "timer_floor_ns": 10
+              },
+              {
+                "kind": "sample",
+                "process": 2,
+                "queries": 512,
+                "round": 1,
+                "arm": 0,
+                "repeats": 64,
+                "batch_ns": 664049481,
+                "attention_device_ns": null,
+                "event_calls": 0,
+                "timer_floor_ns": 10
+              },
+              {
+                "kind": "sample",
+                "process": 2,
+                "queries": 512,
+                "round": 1,
+                "arm": 1,
+                "repeats": 64,
+                "batch_ns": 664236894,
+                "attention_device_ns": 626917288,
+                "event_calls": 64,
+                "timer_floor_ns": 10
+              },
+              {
+                "kind": "sample",
+                "process": 2,
+                "queries": 512,
+                "round": 1,
+                "arm": 2,
+                "repeats": 64,
+                "batch_ns": 762064969,
+                "attention_device_ns": 724760931,
+                "event_calls": 64,
+                "timer_floor_ns": 10
+              },
+              {
+                "kind": "sample",
+                "process": 2,
+                "queries": 512,
+                "round": 2,
+                "arm": 1,
+                "repeats": 64,
+                "batch_ns": 663204080,
+                "attention_device_ns": 625888959,
+                "event_calls": 64,
+                "timer_floor_ns": 10
+              },
+              {
+                "kind": "sample",
+                "process": 2,
+                "queries": 512,
+                "round": 2,
+                "arm": 2,
+                "repeats": 64,
+                "batch_ns": 759172975,
+                "attention_device_ns": 721864371,
+                "event_calls": 64,
+                "timer_floor_ns": 10
+              },
+              {
+                "kind": "sample",
+                "process": 2,
+                "queries": 512,
+                "round": 2,
+                "arm": 0,
+                "repeats": 64,
+                "batch_ns": 663923406,
+                "attention_device_ns": null,
+                "event_calls": 0,
+                "timer_floor_ns": 10
+              },
+              {
+                "kind": "sample",
+                "process": 2,
+                "queries": 512,
+                "round": 3,
+                "arm": 2,
+                "repeats": 64,
+                "batch_ns": 761176008,
+                "attention_device_ns": 723869377,
+                "event_calls": 64,
+                "timer_floor_ns": 10
+              },
+              {
+                "kind": "sample",
+                "process": 2,
+                "queries": 512,
+                "round": 3,
+                "arm": 0,
+                "repeats": 64,
+                "batch_ns": 663765690,
+                "attention_device_ns": null,
+                "event_calls": 0,
+                "timer_floor_ns": 10
+              },
+              {
+                "kind": "sample",
+                "process": 2,
+                "queries": 512,
+                "round": 3,
+                "arm": 1,
+                "repeats": 64,
+                "batch_ns": 663458362,
+                "attention_device_ns": 626092711,
+                "event_calls": 64,
+                "timer_floor_ns": 10
+              },
+              {
+                "kind": "sample",
+                "process": 2,
+                "queries": 512,
+                "round": 4,
+                "arm": 0,
+                "repeats": 64,
+                "batch_ns": 663533323,
+                "attention_device_ns": null,
+                "event_calls": 0,
+                "timer_floor_ns": 10
+              },
+              {
+                "kind": "sample",
+                "process": 2,
+                "queries": 512,
+                "round": 4,
+                "arm": 1,
+                "repeats": 64,
+                "batch_ns": 663202772,
+                "attention_device_ns": 625873758,
+                "event_calls": 64,
+                "timer_floor_ns": 10
+              },
+              {
+                "kind": "sample",
+                "process": 2,
+                "queries": 512,
+                "round": 4,
+                "arm": 2,
+                "repeats": 64,
+                "batch_ns": 761827558,
+                "attention_device_ns": 724508433,
+                "event_calls": 64,
+                "timer_floor_ns": 10
+              },
+              {
+                "kind": "sample",
+                "process": 2,
+                "queries": 512,
+                "round": 5,
+                "arm": 1,
+                "repeats": 64,
+                "batch_ns": 663806599,
+                "attention_device_ns": 625923338,
+                "event_calls": 64,
+                "timer_floor_ns": 10
+              },
+              {
+                "kind": "sample",
+                "process": 2,
+                "queries": 512,
+                "round": 5,
+                "arm": 2,
+                "repeats": 64,
+                "batch_ns": 763246712,
+                "attention_device_ns": 725958437,
+                "event_calls": 64,
+                "timer_floor_ns": 10
+              },
+              {
+                "kind": "sample",
+                "process": 2,
+                "queries": 512,
+                "round": 5,
+                "arm": 0,
+                "repeats": 64,
+                "batch_ns": 663321467,
+                "attention_device_ns": null,
+                "event_calls": 0,
+                "timer_floor_ns": 10
+              },
+              {
+                "kind": "sample",
+                "process": 2,
+                "queries": 6491,
+                "round": 0,
+                "arm": 2,
+                "repeats": 4,
+                "batch_ns": 557961091,
+                "attention_device_ns": 555493334,
+                "event_calls": 4,
+                "timer_floor_ns": 20
+              },
+              {
+                "kind": "sample",
+                "process": 2,
+                "queries": 6491,
+                "round": 0,
+                "arm": 0,
+                "repeats": 4,
+                "batch_ns": 500033326,
+                "attention_device_ns": null,
+                "event_calls": 0,
+                "timer_floor_ns": 20
+              },
+              {
+                "kind": "sample",
+                "process": 2,
+                "queries": 6491,
+                "round": 0,
+                "arm": 1,
+                "repeats": 4,
+                "batch_ns": 498523143,
+                "attention_device_ns": 496026354,
+                "event_calls": 4,
+                "timer_floor_ns": 20
+              },
+              {
+                "kind": "sample",
+                "process": 2,
+                "queries": 6491,
+                "round": 1,
+                "arm": 0,
+                "repeats": 4,
+                "batch_ns": 497693191,
+                "attention_device_ns": null,
+                "event_calls": 0,
+                "timer_floor_ns": 20
+              },
+              {
+                "kind": "sample",
+                "process": 2,
+                "queries": 6491,
+                "round": 1,
+                "arm": 1,
+                "repeats": 4,
+                "batch_ns": 498366670,
+                "attention_device_ns": 495895416,
+                "event_calls": 4,
+                "timer_floor_ns": 20
+              },
+              {
+                "kind": "sample",
+                "process": 2,
+                "queries": 6491,
+                "round": 1,
+                "arm": 2,
+                "repeats": 4,
+                "batch_ns": 558974181,
+                "attention_device_ns": 556504896,
+                "event_calls": 4,
+                "timer_floor_ns": 20
+              },
+              {
+                "kind": "sample",
+                "process": 2,
+                "queries": 6491,
+                "round": 2,
+                "arm": 1,
+                "repeats": 4,
+                "batch_ns": 498642750,
+                "attention_device_ns": 496173853,
+                "event_calls": 4,
+                "timer_floor_ns": 20
+              },
+              {
+                "kind": "sample",
+                "process": 2,
+                "queries": 6491,
+                "round": 2,
+                "arm": 2,
+                "repeats": 4,
+                "batch_ns": 558694606,
+                "attention_device_ns": 556227187,
+                "event_calls": 4,
+                "timer_floor_ns": 20
+              },
+              {
+                "kind": "sample",
+                "process": 2,
+                "queries": 6491,
+                "round": 2,
+                "arm": 0,
+                "repeats": 4,
+                "batch_ns": 499002758,
+                "attention_device_ns": null,
+                "event_calls": 0,
+                "timer_floor_ns": 20
+              },
+              {
+                "kind": "sample",
+                "process": 2,
+                "queries": 6491,
+                "round": 3,
+                "arm": 2,
+                "repeats": 4,
+                "batch_ns": 556718507,
+                "attention_device_ns": 554241562,
+                "event_calls": 4,
+                "timer_floor_ns": 20
+              },
+              {
+                "kind": "sample",
+                "process": 2,
+                "queries": 6491,
+                "round": 3,
+                "arm": 0,
+                "repeats": 4,
+                "batch_ns": 499965753,
+                "attention_device_ns": null,
+                "event_calls": 0,
+                "timer_floor_ns": 20
+              },
+              {
+                "kind": "sample",
+                "process": 2,
+                "queries": 6491,
+                "round": 3,
+                "arm": 1,
+                "repeats": 4,
+                "batch_ns": 497132779,
+                "attention_device_ns": 494435833,
+                "event_calls": 4,
+                "timer_floor_ns": 20
+              },
+              {
+                "kind": "sample",
+                "process": 2,
+                "queries": 6491,
+                "round": 4,
+                "arm": 0,
+                "repeats": 4,
+                "batch_ns": 497351110,
+                "attention_device_ns": null,
+                "event_calls": 0,
+                "timer_floor_ns": 20
+              },
+              {
+                "kind": "sample",
+                "process": 2,
+                "queries": 6491,
+                "round": 4,
+                "arm": 1,
+                "repeats": 4,
+                "batch_ns": 497663749,
+                "attention_device_ns": 495197812,
+                "event_calls": 4,
+                "timer_floor_ns": 20
+              },
+              {
+                "kind": "sample",
+                "process": 2,
+                "queries": 6491,
+                "round": 4,
+                "arm": 2,
+                "repeats": 4,
+                "batch_ns": 557651125,
+                "attention_device_ns": 554939791,
+                "event_calls": 4,
+                "timer_floor_ns": 20
+              },
+              {
+                "kind": "sample",
+                "process": 2,
+                "queries": 6491,
+                "round": 5,
+                "arm": 1,
+                "repeats": 4,
+                "batch_ns": 497515862,
+                "attention_device_ns": 495056250,
+                "event_calls": 4,
+                "timer_floor_ns": 20
+              },
+              {
+                "kind": "sample",
+                "process": 2,
+                "queries": 6491,
+                "round": 5,
+                "arm": 2,
+                "repeats": 4,
+                "batch_ns": 558436054,
+                "attention_device_ns": 555968125,
+                "event_calls": 4,
+                "timer_floor_ns": 20
+              },
+              {
+                "kind": "sample",
+                "process": 2,
+                "queries": 6491,
+                "round": 5,
+                "arm": 0,
+                "repeats": 4,
+                "batch_ns": 498256308,
+                "attention_device_ns": null,
+                "event_calls": 0,
+                "timer_floor_ns": 20
+              }
+            ],
+            "guards": true,
+            "inputs_immutable": true,
+            "cell32_exact": true,
+            "own_reference": true
+          }
+        }
+      ],
+      "model_qualified": false,
+      "decision": {
+        "performance_gate_passed": false,
+        "advance_to_model": false,
+        "groups": [
+          {
+            "process": 0,
+            "queries": 512,
+            "arms": [
+              {
+                "wall_median_ns": 10369896.9609375,
+                "wall_min_ns": 10365344.609375,
+                "wall_max_ns": 10386267.21875,
+                "service_median_ns": null
+              },
+              {
+                "wall_median_ns": 10374735.53125,
+                "wall_min_ns": 10364477.53125,
+                "wall_max_ns": 10405929.078125,
+                "service_median_ns": 9791552.71875
+              },
+              {
+                "wall_median_ns": 11904273.53125,
+                "wall_min_ns": 11828403.40625,
+                "wall_max_ns": 11935126.5625,
+                "service_median_ns": 11316988.171875
+              }
+            ],
+            "control_original_wall_ratio": 1.0004665977232683,
+            "candidate_control_wall_ratio": 1.147429107507641,
+            "candidate_control_service_ratio": 1.1557909656355032,
+            "performance_gate_passed": false
+          },
+          {
+            "process": 0,
+            "queries": 6491,
+            "arms": [
+              {
+                "wall_median_ns": 124389337.25,
+                "wall_min_ns": 124332947.25,
+                "wall_max_ns": 125049690.5,
+                "service_median_ns": null
+              },
+              {
+                "wall_median_ns": 124617046.125,
+                "wall_min_ns": 124508175.5,
+                "wall_max_ns": 124902697.0,
+                "service_median_ns": 123999778.75
+              },
+              {
+                "wall_median_ns": 139376980.875,
+                "wall_min_ns": 139287115.0,
+                "wall_max_ns": 139528264.75,
+                "service_median_ns": 138760794.25
+              }
+            ],
+            "control_original_wall_ratio": 1.0018306141027373,
+            "candidate_control_wall_ratio": 1.1184423416295288,
+            "candidate_control_service_ratio": 1.1190406599818228,
+            "performance_gate_passed": false
+          },
+          {
+            "process": 1,
+            "queries": 512,
+            "arms": [
+              {
+                "wall_median_ns": 10371126.84375,
+                "wall_min_ns": 10361711.9375,
+                "wall_max_ns": 10382737.375,
+                "service_median_ns": null
+              },
+              {
+                "wall_median_ns": 10367373.1015625,
+                "wall_min_ns": 10364491.015625,
+                "wall_max_ns": 10397060.703125,
+                "service_median_ns": 9784279.796875
+              },
+              {
+                "wall_median_ns": 11866249.078125,
+                "wall_min_ns": 11846400.578125,
+                "wall_max_ns": 11994528.375,
+                "service_median_ns": 11282240.3515625
+              }
+            ],
+            "control_original_wall_ratio": 0.9996380584054121,
+            "candidate_control_wall_ratio": 1.1445762549373861,
+            "candidate_control_service_ratio": 1.1530987038173146,
+            "performance_gate_passed": false
+          },
+          {
+            "process": 1,
+            "queries": 6491,
+            "arms": [
+              {
+                "wall_median_ns": 124787177.125,
+                "wall_min_ns": 124641563.0,
+                "wall_max_ns": 125157664.75,
+                "service_median_ns": null
+              },
+              {
+                "wall_median_ns": 124834391.875,
+                "wall_min_ns": 124519771.25,
+                "wall_max_ns": 125080878.5,
+                "service_median_ns": 124217812.375
+              },
+              {
+                "wall_median_ns": 139603796.25,
+                "wall_min_ns": 139322892.75,
+                "wall_max_ns": 139794352.5,
+                "service_median_ns": 138985156.125
+              }
+            ],
+            "control_original_wall_ratio": 1.0003783621930378,
+            "candidate_control_wall_ratio": 1.1183119824045684,
+            "candidate_control_service_ratio": 1.1188826583535298,
+            "performance_gate_passed": false
+          },
+          {
+            "process": 2,
+            "queries": 512,
+            "arms": [
+              {
+                "wall_median_ns": 10371877.0703125,
+                "wall_min_ns": 10364397.921875,
+                "wall_max_ns": 10375773.140625,
+                "service_median_ns": null
+              },
+              {
+                "wall_median_ns": 10368609.7578125,
+                "wall_min_ns": 10362543.3125,
+                "wall_max_ns": 10378701.46875,
+                "service_median_ns": 9781375.3828125
+              },
+              {
+                "wall_median_ns": 11898465.359375,
+                "wall_min_ns": 11862077.734375,
+                "wall_max_ns": 11925729.875,
+                "service_median_ns": 11315451.640625
+              }
+            ],
+            "control_original_wall_ratio": 0.9996849834916235,
+            "candidate_control_wall_ratio": 1.1475468396724826,
+            "candidate_control_service_ratio": 1.1568364568144605,
+            "performance_gate_passed": false
+          },
+          {
+            "process": 2,
+            "queries": 6491,
+            "arms": [
+              {
+                "wall_median_ns": 124657383.25,
+                "wall_min_ns": 124337777.5,
+                "wall_max_ns": 125008331.5,
+                "service_median_ns": null
+              },
+              {
+                "wall_median_ns": 124503802.375,
+                "wall_min_ns": 124283194.75,
+                "wall_max_ns": 124660687.5,
+                "service_median_ns": 123886653.5
+              },
+              {
+                "wall_median_ns": 139549643.125,
+                "wall_min_ns": 139179626.75,
+                "wall_max_ns": 139743545.25,
+                "service_median_ns": 138932682.375
+              }
+            ],
+            "control_original_wall_ratio": 0.9987679761038142,
+            "candidate_control_wall_ratio": 1.1208464357151324,
+            "candidate_control_service_ratio": 1.1214499580860824,
+            "performance_gate_passed": false
+          }
+        ],
+        "model_adopted": false,
+        "hardware_saturation_qualified": false
+      },
+      "GPU_executed": true,
+      "postchecks_complete": true,
+      "postcheck_errors": [],
+      "fresh_faults": [],
+      "boot_unchanged": true,
+      "driver_after": {
+        "pci": "/sys/bus/pci/devices/0000:05:00.0",
+        "driver": "xe",
+        "vendor": "0x8086",
+        "device": "0xe20c",
+        "kernel": "7.0.0-38-generic",
+        "devcoredump": false
+      }
     }
   ],
-  "validation_stage": "actual_id_boundaries_and_all_oracles_passed",
+  "validation_stage": "component_correct_rejected_speed",
   "oracle_plan": {
     "kernel_ids": [
       "_ZTSZZN6strata7kernelsL17prefix_batch_implILi33ELb0ELb0ELb1ELb1ELb1ELb1ELb0EEEbPKtRKNS0_12QsaAttnPoolsEPKiS8_lRKNS0_9QsaShapesEPtlRKNS0_19QsaPromptBf16BoundsElRKNS0_20QsaBf16PackedScratchEPvNS0_19QsaPrefixStateProbeEENKUlRN4sycl3_V17handlerEE_clESO_EUlNSM_7nd_itemILi1EEEE_",
@@ -3235,5 +5065,56 @@
         "devcoredump": false
       }
     }
-  ]
+  ],
+  "closed_decision": {
+    "performance_gate_passed": false,
+    "advance_to_model": false,
+    "model_adopted": false,
+    "eligible_individual_samples": 108,
+    "ratios_by_shape": {
+      "512": {
+        "control_original_wall_ratio": [
+          1.0004665977232683,
+          0.9996380584054121,
+          0.9996849834916235
+        ],
+        "candidate_control_wall_ratio": [
+          1.147429107507641,
+          1.1445762549373861,
+          1.1475468396724826
+        ],
+        "candidate_control_service_ratio": [
+          1.1557909656355032,
+          1.1530987038173146,
+          1.1568364568144605
+        ]
+      },
+      "6491": {
+        "control_original_wall_ratio": [
+          1.0018306141027373,
+          1.0003783621930378,
+          0.9987679761038142
+        ],
+        "candidate_control_wall_ratio": [
+          1.1184423416295288,
+          1.1183119824045684,
+          1.1208464357151324
+        ],
+        "candidate_control_service_ratio": [
+          1.1190406599818228,
+          1.1188826583535298,
+          1.1214499580860824
+        ]
+      }
+    },
+    "scope": "Exact two-stage four-u16-exchange K-staging variant only. All property,actual-ID,independent numerical and bound/guard checks pass;speed gate fails in all6process/shape groups. Private/original calibration passes every group. Preserve all108samples in actual_id_checks[2]. No model trial or decode change.",
+    "resource_inference": "Same nominal global/local payload and online arithmetic;staging changes grouping and adds1024subgroup exchange instances per WG per32selected-cell iteration over all256Kdimensions. Lower reported spill descriptor12480->3008 did not improve service. No unique VRAM/SLM/arithmetic/occupancy/scratch-traffic bottleneck established.",
+    "next": "Author a new independent packed-u32 transpose preserving the same mapping while reducing source subgroup exchange instances from1024to256 per WG per32cell iteration;require fresh proof,source/API review,build and all device/speed gates. No assumption that fewer exchanges is faster. Retire this closed comparison generation after original source/recipe recovery."
+  },
+  "retention_after_comparison": {
+    "selected_engine": "Unchanged6e40 remains validated fallback;component rejected and never adopted.",
+    "component_consumer": "Main original source/recipe recovery and retirement at this closed boundary;all research and review consumers have completed.",
+    "selected_ID_fixture_consumer": "Imminent packed-u32 K-staging source proof and,only if a distinct legal variant survives,its controlled comparison. Review before next build or retire if proof/review rejects it.",
+    "remaining_holds": "Separate selected-engine12fixtures,R285 state and legacy provenance holds remain unchanged;not a global retirement claim."
+  }
 }

@@ -1484,8 +1484,24 @@ and verified child exit. Corrected plan`782d0502f` matches the actual
 All three kernels pass SG16/WG128/18argument and conservative local-budget
 checks:24164bytes against131072per group. Loader-object/symbol checks pass,
 validation is quiet and the owned process closes normally without a fresh fault.
-No kernel is submitted. Device numerics and performance remain unrun;
-these checks establish no speed gain,hardware saturation or model adoption.
+Actual-ID smoke and translated final-slot boundary then pass on the B570,
+including all18432output bits per shape,immutable inputs,guards,repeats and
+the actual20032byte local payload. The independent candidate oracle passes
+both smoke cases and all11component cases,including masking,missing/aliased
+pages,NaN diagnostics,align2scratch and physical262144bounds. This is not
+full-context model fill or state-handoff qualification.
+
+Frozen speed plan`52197a50b` closes all three processes and108eligible samples
+without a fresh fault. Every private/original wall ratio passes0.99..1.01.
+Candidate/private wall ratios for512queries are1.147429,1.144576,1.147547;
+for6491queries they are1.118442,1.118312,1.120846. Attention-only service is
+also slower in all six groups. **Reject this exact candidate and do not run a
+model trial.** The lower reported spill descriptor12480to3008 is not executed
+scratch traffic or a speedup;the pinned API header does not state its units.
+No hardware-saturation conclusion follows. The next distinct source proof
+will pack two16bit values per exchange,aiming to reduce subgroup collective
+instances from1024to256 per WG/32selected cells over all256Kdimensions.
+It needs a fresh build and qualification;production/decode stays unchanged.
 
 The earlier service parser passed33host controls before retirement. Closed
 one-use controllers and consumed raw/research

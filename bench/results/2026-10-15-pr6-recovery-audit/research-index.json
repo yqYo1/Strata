@@ -13731,24 +13731,24 @@
   },
   "qsa_k_staging_compiled_spill_attribution_20261028": {
     "classification": "decision_support",
-    "status": "worker_closed_native_review_pending",
+    "status": "reviewed_source_attribution_no_runtime_traffic_claim",
     "schedulable_now": false,
     "prerequisites_evidence": {
       "compiled_native_source": "e1e9f3bdecb0c76ae910ce1e8438a3f5e2baeb91",
       "actual_compiler_inputs_verified": 699,
       "qualified_property_plan": "782d0502f",
-      "property_descriptor_spill_bytes_original_control_candidate": [
-        12480,
-        12480,
-        3008
-      ],
       "actual_ID_smoke_and_boundary_passed": true,
       "local_arguments_observed_all_arms": 20032,
       "device_IR_sha256": {
         "original": "690bbb4da7c7322f6d6457ecf2503e447432c2e0d497afcc38b999fdd8fc8a83",
         "control": "a9ab30abbc2d21256d60d93f3ceb7b5d44e61048b8f3446869caa6d6581ddeb9",
         "candidate": "3cb4d589680d7b56340ea2b043316f7e417482b326890b403fcfb94e65f72381"
-      }
+      },
+      "reported_spill_descriptors_original_control_candidate": [
+        12480,
+        12480,
+        3008
+      ]
     },
     "question": "Explain and bound the actual compiled K-staging original/control12480 versus candidate3008 spillMemSize descriptors using pinned own source and emitted LLVM plus versioned Intel/LevelZero/compiler primary documentation. Compare liveness,unrolling,load/store schedules and possible compiler lowering causes;identify what these descriptors can/cannot establish about executed scratch traffic and performance. Recommend at most two distinct legal source changes or evidence discriminators tied to this observed contrast. This is not a generic register/occupancy survey and must consume existing xe2_register_spill_collection_scope findings rather than repeat them. No GEN/traffic/speed inference without evidence.",
     "source_commit": "e1e9f3bdecb0c76ae910ce1e8438a3f5e2baeb91",
@@ -13772,6 +13772,24 @@
       "settlement": "Verified matching worker_done succeeded and completed/revoked dispatch;released external terminal retained with processAction none;delivery_e5ef40bfe717 consumed."
     },
     "report_bytes": 9905,
-    "report_sha256": "31363ec9c640098961aad8c77ef1a9b790f32b6fcf568fc1019790ddf109e13a"
+    "report_sha256": "31363ec9c640098961aad8c77ef1a9b790f32b6fcf568fc1019790ddf109e13a",
+    "review": {
+      "status": "completed",
+      "model": "gpt-6-luna",
+      "reasoning_effort": "max",
+      "bytes": 7662,
+      "sha256": "ec70c54a52e050c03dcdb2085bb2492b8dbe0f81df3063f46e8b8c1d54f8385a",
+      "verdict": "accept_with_minor_corrections"
+    },
+    "accepted_facts": {
+      "descriptor": "Reported spillMemSize original/control12480,candidate3008;delta9472units,75.9percent. Actual compiled /usr/include/level_zero/ze_api.h sha095a0eb442ae21946f29147c209f270b93dd0eb5b12a2d0c67e5f4138b533712 says compiler-allocated spill memory but states no units/scope. Do not call it physical bytes or executed traffic.",
+      "source": "Per WG/32selected-cell iteration over all256Kdimensions,original/control use2048four-value loads;candidate128four-cell-by16dim tiles with8u16collectives each. Source1024SGinstances are not observed hardware instructions. Kdestinations,localpayload and existingWGbarriers stay fixed.",
+      "lowering": "LLVM retains a single static subgroup-shuffle instruction in bit/register loops with unroll metadata. Removing bit-loop pragma tests late lowering response;it does not prove current final ISA is unrolled.",
+      "timing": "Current three-process comparison subsequently closes with all6speed groups slower despite lower descriptor. This rejects the exact candidate;it does not establish a limiting hardware resource."
+    },
+    "conditional_followups": {
+      "final_ISA_or_traffic_attribution": "Unselected:only if it affects a named pending decision,with exact module/kernel bridge and a new bounded plan. Do not keep rejected binaries solely for possible future attribution.",
+      "bit_loop_unroll_hint": "Unselected speculative variant:requires a new exact source/recipe,property/numerical gates and changed-lowering check before speed. Current next selection instead reduces exchange calls via packed-u32 transpose."
+    }
   }
 }
