@@ -12847,90 +12847,56 @@
   },
   "qsa_kernel_local_grf_contract_20261027": {
     "classification": "decision_support",
-    "status": "reviewed_conditional_candidate_closed",
+    "status": "closed_API_discriminator_no_GPU_trial",
     "schedulable_now": false,
-    "source_revision": "6e40afc1beddd059ee518617f6c1efce1da14aca",
-    "proposal": {
-      "path": "tools/sycl/qsa_grf_sources.py",
-      "sha256": "ee3f711d856aef920b6655eba1fb26572e5323de12f5754bda4de621f7f15670",
-      "status": "source-only;not compiled or GPU-qualified"
+    "source_revision": "40aa674b75f7cc3a60d22aed36160555a20a4ae8",
+    "archive": {
+      "commit": "52947b6b4",
+      "path": "bench/results/2026-10-15-pr6-recovery-audit/qsa-grf-lowering-current.json",
+      "plan_commit": "243977e2c"
     },
-    "question": "Audit kernel-local fixed128/fixed256 and automatic GRF control on this exact SDK/B570: supported legal modes,maximum per-kernel workgroup admission,handler-property versus launch_config/nd_launch versus functor contracts and actual lowering. Preserve math/layout/SLM/SG16/WG128 and lambda captures;isolate launch-form effects with explicit128 control. No global backend flags or decode changes.",
-    "prerequisite_evidence": {
-      "resource_result": "qsa-barrier-current.json@60c26712c",
-      "actual_attention_resources": "Original/control/merged each SIMD16/WG128/18arguments/GRF128/rawSLM32/private0/spill12480;source dynamicSLM20036. Barrier-only timed gain0.37..0.74percent misses its1percent gate. This does not prove spills or arithmetic are limiting.",
-      "installed_headers": {
-        "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/include/sycl/ext/intel/experimental/grf_size_properties.hpp": "f021e129aff0207e9c326fd8610af8bb6cd2509793e6eb4bf6657e2e9ea85315",
-        "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/include/sycl/handler.hpp": "1f68a762a44ce3a9bcc59b33979b59656cf8fb8d076b31d4f8c6ca067c2d1d1c",
-        "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/include/sycl/ext/oneapi/experimental/enqueue_functions.hpp": "d772f09a9a9f0a0791c4d33e430bf809c7fbe8a86d0b04e3fa0765909ba56612"
-      },
-      "ready_question": "Exact APIs and backend legality are the research question;headers and selected B570 descriptor/source are present. No missing metric is required to perform this source-contract audit."
-    },
-    "prior_scopes": [
-      "xe2_register_spill_collection_scope",
-      "qsa_cell_tile_geometry_contract_20261027",
-      "qsa_iteration_barrier_fusion_contract_20261027"
+    "findings": [
+      "Three compile-only commands and five host controls pass;665actual dependencies pinned. Exactly one SIMD16 attention kernel requests128/256 in each arm;pack has no request.",
+      "128/256 LLVM differs only in namespace/source-path,GRF request and opaque RegisterAllocMode1/2. This is not native backend,exactB570 legality,per-kernel admission or performance evidence.",
+      "Historical b4beb8d53 already tested the current-body explicit128/256 handler-property overload. This SDK nd_launch forwards to that overload;API spelling supplies no new backend mechanism. Preserve earlier slowdown;no duplicate GPU trial."
     ],
-    "prior_counterevidence": "Existing register collection records a prior automatic256/functor-form arm that eliminated scratch but slowed12.65..16.65percent;it does not isolate GRF. Partial Q cache reduced spill but slowed~6percent. Do not repeat a generic GRF/occupancy survey or assume removal is faster.",
-    "novelty": "Main selected a new exact-toolchain launch/API/legality discriminator after the frozen barrier comparison;not a fresh-scope recommendation from the generic curator. Existing broad register report supplies prior evidence.",
-    "report": ".cache/strata-research/20261027/qsa-kernel-local-grf-contract.md",
-    "report_budget": {
-      "target_words": [
-        1000,
-        1600
-      ],
-      "maximum_bytes": 12288
-    },
-    "worker_model": "gpt-6-luna",
-    "consumer": "Closed API discriminator;no native consumer. Compact source/LLVM/limitations remain in qsa-grf-lowering-current.json;report/review transactions retire at closure.",
-    "retention": "Keep substantive source-contract findings only through this candidate decision;report-only task. No product edits,Git,build,test,GPU,profiler,process actions or XeStrata application source.",
-    "task_id": "task_7f5d3115f5d3",
-    "dispatch_id": "ctx_65069f230481",
-    "run_id": "run_ef40727f4983",
-    "terminal": "term_abb9a1dc-128a-4e5b-b103-dfd761266f72",
-    "model_evidence": "Exact reused terminal displayed GPT-6-Luna high after/new/current-worktree;worker-start accepted and turnStart observed. Launch model fields are null for reuse,not model evidence.",
-    "host_overlay_check": {
-      "source_commit": "35e5e1bcbfdaa81b3da7092bcabaf99c1e8d2797",
-      "passed": true,
-      "scope": "In-memory exact6e40/reversal and same-form128/256 source-delta check only;no compiler or GPU execution.",
-      "generated_sha256": {
-        "grf_128.cpp": "b1add24b974fe8939cf4c2ee4b09a8f0ff154e5ee565b598e338e21b41ff34a8",
-        "grf_256.cpp": "73df7c6b1044c26e4060ab2a54e9ce06e470ac1f7608d9ca4353c2f790503a0f",
-        "qsa-grf.hpp": "e61c6a662df9bd1ec9a5856fc584be87a304868478cdb54eae53a497629fc165"
-      }
-    },
-    "worker_closed": true,
-    "worker_outcome": "succeeded",
-    "worker_release": "external_terminal;processAction:none;delivery_99983d0dd5cc acknowledged;no reclaimable worker",
-    "report_identity": {
-      "bytes": 11102,
-      "sha256": "62e4d08dcda7861c5b8dc19528fa74b15574aa53d0ae7e0c7c75cf2e1fe7b432"
-    },
     "review": {
       "status": "completed",
-      "agent": "/root/review_qsa_grf_contract_20261027",
       "model": "gpt-6-luna",
       "reasoning_effort": "max",
-      "path": ".cache/strata-research/20261027/qsa-kernel-local-grf-contract.review.json",
       "bytes": 4123,
       "sha256": "b72e2deec77c6426df7dce571ae56c75078c99a427c277cc9c416e1f52d66070",
       "outcome": "Conditional API forwarding proof only;exactB570 legality/backend/per-kernel limits remain unqualified. Main independently found earlier property-overload comparison and stops duplicate GPU work."
     },
-    "candidate_advance": false,
-    "compile_only_result": {
-      "path": "qsa-grf-lowering-current.json",
-      "result_commit": "52947b6b4",
-      "source_commit": "40aa674b7",
-      "LLVM_request_confirmed": true,
-      "actual_dependencies": 665,
-      "GPU_executed": false
+    "report_sha256": "62e4d08dcda7861c5b8dc19528fa74b15574aa53d0ae7e0c7c75cf2e1fe7b432",
+    "retirement": {
+      "complete": true,
+      "files": 20,
+      "bytes": 2534695,
+      "manifest": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-grf-lowering-v1-retirement-20261027.jsonl",
+        "sha256": "111f72fecf3488a0464de6750479306651eff20941afb4d288f6c93dfa4217d5"
+      },
+      "source_inputs_recovered": 164,
+      "actual_dependencies_recovered": 665,
+      "original_recipe_commit": "243977e2c",
+      "source_commit": "40aa674b75f7cc3a60d22aed36160555a20a4ae8",
+      "remote_verified": "6806116ce95f2ffcb2344ae8c1129b5c2773cf41",
+      "compiler_inventory_reconstructed": true,
+      "selected_engine_and12fixtures_unchanged": true,
+      "selected_ID_fixture_next_consumer": "Committed cell64 source52947b6b4 and scoped contract audits6806116ce;no duplicate capture."
     },
-    "historical_correction": "b4beb8d53 already tested current-body explicit128/256 via the handler property overload,independently of the older functor trial. Installed nd_launch forwards to that overload;API spelling supplies no new backend mechanism. No further GPU trial."
+    "tracked_source_retirement": {
+      "files": 3,
+      "recover_at": "40aa674b7",
+      "reason": "Closed API-only candidate;no native consumer. The compiled result archives at52947b6b4."
+    },
+    "remaining_hold": "Separate legacy source/recipe exceptions remain in native-gdn-engine-build.json;no global cleanup claim."
   },
   "qsa_cell64_source_contract_20261027": {
     "classification": "decision_support",
-    "status": "ready",
-    "schedulable_now": true,
+    "status": "reviewed_accept_conditional",
+    "schedulable_now": false,
     "run_id": "run_3072480b0529",
     "source_revision": "52947b6b4",
     "proposal": {
@@ -12953,12 +12919,57 @@
       "Outer trips65to33;dynamic SLM20036to39748B plus4096Bmargin;SG16/WG128/defaultGRF unchanged."
     ],
     "report": ".cache/strata-research/20261027/qsa-cell64-source-contract.md",
-    "consumer": "Main source corrections and committed first component qualification."
+    "consumer": "Main source corrections and committed first component qualification.",
+    "task_id": "task_1c86211e072f",
+    "dispatch_id": "ctx_49389157ba1c",
+    "terminal": "term_abb9a1dc-128a-4e5b-b103-dfd761266f72",
+    "worker_closed": true,
+    "worker_outcome": "succeeded",
+    "resource_decision": "Same proven terminal reused for framework retry before delivery_31ffbecd1903 acknowledgment.",
+    "report_identity": {
+      "bytes": 10287,
+      "sha256": "0e8e5e7ce332caf697225dbb4ae3831fda154fb3b299b2a39aa1a047a4b8a335"
+    },
+    "review": {
+      "status": "completed",
+      "agent": "/root/review_qsa_cell64_source_20261027",
+      "model": "gpt-6-luna",
+      "reasoning_effort": "max",
+      "path": ".cache/strata-research/20261027/qsa-cell64-source-contract.review.json",
+      "bytes": 2603,
+      "sha256": "4993b6666faa35c11a8f72eb49bf72e798ec7b1a09ad5066f5795b4a8f4c9991",
+      "outcome": "accept_with_source_pin_correction"
+    },
+    "host_overlay_check": {
+      "source_commit": "52947b6b4",
+      "passed": true,
+      "scope": "In-memory original-prefix/reversal/generated-shape only;no compile/GPU.",
+      "dynamic_local_bytes": [
+        20036,
+        39748
+      ],
+      "generated_sha256": {
+        "cell32.cpp": "bcc4c4e909992ae1ab1af72e92d008ebf0a843ecebc85c8e92bab3c6c968fa14",
+        "cell64.cpp": "e9e45054d11537dff455b64cef9ef10d0ef8f826edc4993a71ea58df8ad33832",
+        "qsa-cell64.hpp": "0ab5517302e167c2593bc15b5098ec71972669328f067fae4820983057dea938"
+      }
+    },
+    "reviewer": "native Codex invocation gpt-6-luna max",
+    "essential_corrections": [
+      "Numerical64-cell recurrence and exact-kernel admission remain unqualified;framework review/device work pending.",
+      "Review incorrectly infers a changed file from indexed commitc9ad511e4. Fresh Main git-show comparison proves live prefix byte-identical to6e40 at SHA2564f9f815c9baae709f919f6d5ad1af04677c10d8c13c7597b3857cf81567ae192. Enforce that immutable identity in generation/qualification;record original review unchanged."
+    ],
+    "base_file_identity": {
+      "path": "src/kernels/sycl/qsa_bf16_prefix.cpp",
+      "source_commit": "6e40afc1beddd059ee518617f6c1efce1da14aca",
+      "sha256": "4f9f815c9baae709f919f6d5ad1af04677c10d8c13c7597b3857cf81567ae192",
+      "byte_identical": true
+    }
   },
   "qsa_cell64_framework_contract_20261027": {
     "classification": "decision_support",
-    "status": "ready",
-    "schedulable_now": true,
+    "status": "running",
+    "schedulable_now": false,
     "run_id": "run_3072480b0529",
     "source_revision": "52947b6b4",
     "proposal": {
@@ -12980,6 +12991,18 @@
       "Architecture guard qwen4exp in gguf_reader.hpp;MTP references vLLM0.30.0 qwen4_exp. Wrapper pins alone do not prove dependency ABI."
     ],
     "report": ".cache/strata-research/20261027/qsa-cell64-framework-contract.md",
-    "consumer": "Main numerical reference/criteria before changed-math GPU qualification."
+    "consumer": "Main numerical reference/criteria before changed-math GPU qualification.",
+    "task_id": "task_3dff4b482e03",
+    "dispatch_id": "ctx_ffb2f061e228",
+    "terminal": "term_abb9a1dc-128a-4e5b-b103-dfd761266f72",
+    "model_evidence": "Exact reused fresh-session terminal displays GPT-6-Luna high;retry input accepted and turn_started observed. Reuse launch model fields null,not model evidence.",
+    "initial_start_failure": {
+      "dispatch_id": "ctx_2be6ea139c3e",
+      "stage": "agent_readiness",
+      "reason": "agent-update-prompt",
+      "task_executed": false,
+      "owned_terminal_released": true,
+      "replacement_uses_same_task": true
+    }
   }
 }

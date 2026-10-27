@@ -1663,42 +1663,25 @@ fixtures remain unchanged. GPU service includes stalls;it does not prove
 arithmetic saturation. The next source-only question is isolated kernel-local
 GRF-mode control,with no assumption that removing spills improves speed.
 
-The new source-only[`qsa_grf_sources.py`](../tools/sycl/qsa_grf_sources.py)
-proposal keeps original6e40 math,layout,SLM and all five loop barriers. Its two
-private arms use the same`nd_launch`/`launch_config`form with kernel-local
-GRF128/256,plus direct-event retention. It does not change production or decode.
-The installed property,handler and enqueue headers are pinned for a fresh
-read-only source-contract audit. Header presence is not B570 legality,actual
-GRF lowering or workgroup admission;those and independent review precede any
-GPU execution. The Orca source-contract audit has completed;native Luna/max
-review is in progress. Exact B570 legality remains unproven,so no candidate GPU
-execution is admitted. Preserve the prior automatic256/functor-form slowdown as
-counterevidence. The existing53.25MB selected-ID fixture has this named next
-comparison consumer and a retirement point at its closure or supersession.
-See[the current build and gates](../bench/results/2026-10-15-pr6-recovery-audit/qsa-barrier-current.json).
-The separate [`compile_qsa_grf.py`](../tools/sycl/compile_qsa_grf.py) discriminator
-only emits LLVM for original/explicit128/explicit256. It pins the source,
-toolchain,dependencies and recipe before compilation,checks five metadata
-admission controls,and keeps compiler completion distinct from the expected
-kernel-local request. It links and executes no device program. An LLVM request
-does not prove SPIR-V/native lowering,B570 support or per-kernel workgroup limits.
-The first preparation at`7d3e9a3c0`refused an occupied result name before creating
-any output or running a compiler. The lowering-specific result preserves the
-earlier rejected`qsa-grf-current.json`comparison unchanged.
-The committed`40aa674b7`source and`243977e2c`plan now complete all three
-compilations plus five host controls. All665actual dependencies match their
-frozen inputs. Explicit128/256 requests appear on exactly one SIMD16 kernel
-each;pack kernels have none. The two emitted LLVM modules match byte-for-byte
-after namespace/source-path,GRF request and opaque RegisterAllocMode1/2
-normalization. This is front-end evidence only;no GPU program was executed.
+The closed kernel-local GRF API discriminator completes three compilations and
+five metadata host controls,with665actual dependencies matched. Source`40aa674b7`
+and plan`243977e2c`emit exactly one SIMD16 attention request of128/256per arm,
+with no pack request. Their LLVM is byte-identical after namespace/source-path,
+GRF request and opaque RegisterAllocMode1/2normalization. This is front-end
+request evidence,not native lowering,B570 legality,occupancy or speed.
 
 Historical source`b4beb8d53`already tested the same current-body explicit128/256
-property overload,independently of the older functor trial. The installed
-`nd_launch(handler,launch_config,kernel)`forwards to that same overload. Thus
-changing the API spelling does not supply a new backend allocation mechanism.
-Keep that earlier failed performance decision;do not advance this proposal to
-another GPU comparison merely for the launch spelling. The API audit's native
-review and raw-IR retirement still need closure.
+handler-property overload,independently of the older functor trial. Installed
+`nd_launch(handler,launch_config,kernel)`forwards to that overload. Changing API
+spelling supplies no new backend mechanism;no duplicate GPU trial follows.
+The independent audit's native review is conditional and keeps exact target
+legality/per-kernel admission unqualified. Full source/recipe/LLVM evidence
+archives at`52947b6b4`;the failed occupied-name preparation at`7d3e9a3c0`
+remains a precompiler refusal. All20raw/generated/IR files (2534695B),the three
+one-use source/test files and the checked-out completed result are retired after
+recovering164project and665actual dependency inputs. The selected engine and
+twelve fixtures remain unchanged. The compact closure in the research index
+pins the external deletion manifest;separate legacy holds remain open.
 
 The next source-only proposal is
 [`qsa_cell64_sources.py`](../tools/sycl/qsa_cell64_sources.py):private original32
@@ -1718,6 +1701,23 @@ changed numerical candidate. Exact old bits are not its adoption criterion.
 Pin the actual framework dependency contract and independently audit bounds,
 collective participation,SLM lifetimes and per-kernel admission before GPU work.
 Production,decode and the selected original engine remain unchanged.
+The source audit and native curation conditionally accept the static ownership
+proof;exact-kernel admission and the separate framework audit remain pending.
+Main's fresh Git comparison proves the live prefix is byte-identical to6e40,
+SHA`4f9f815c9baae709f919f6d5ad1af04677c10d8c13c7597b3857cf81567ae192`.
+The review's inference of a changed file from indexed commitc9ad511e4is incorrect;
+preserve the review and this correction rather than weakening source admission.
+The next generation/qualification controller must enforce the immutable file.
+
+The proposed [`qsa_cell64_checks.py`](../tools/sycl/qsa_cell64_checks.py) adapts
+this fork's own independent tensor oracle. Only original32/control32 compare
+exactly across arms;candidate64 has a separate64-cell scalar recurrence.
+Finite aliased/missing pages,distinct three-tile K/V witnesses,mixed widths and
+tails also re-enter that scalar oracle,not merely guard checks. The planned
+case grid adds127/128/129boundaries beside the existing final262144-address
+components. Existing BF16-ULP component bounds are proposed diagnostic criteria,
+not an accepted model-quality tolerance;framework and model/task gates remain
+open. Neither this oracle proposal nor the candidate has been compiled/executed.
 
 Complete prefill phase attribution requires three independent ledgers: route-owner
 planned operations, actual API results and collector device executions.
