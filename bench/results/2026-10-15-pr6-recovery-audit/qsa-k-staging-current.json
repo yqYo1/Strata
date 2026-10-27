@@ -1497,11 +1497,6 @@
     "actual_compiled_inputs_verified": 699,
     "unique_ordered_exp_kernel_identities": 3,
     "required_subgroup_size": 16,
-    "private_control_and_original_IR_body_characters": [
-      44518,
-      44518
-    ],
-    "candidate_IR_body_characters": 47109,
     "candidate_XOR_IR": "One static i16 __spirv_SubgroupShuffleXorINTEL call in the nested uniform bit/register loops;source requires8dynamic subgroup exchanges per SG tile. GEN instruction/width/resource behavior unknown.",
     "host_controller_controls": {
       "source_commit": "e1e9f3bdecb0c76ae910ce1e8438a3f5e2baeb91",
@@ -1512,6 +1507,37 @@
       "oracle_rejections": 4,
       "GPU_executed": false
     },
-    "limits": "Compilation and emitted LLVM/host-parser checks only;no GPU module property query,execution,numerics,resource saturation,speed or inference adoption."
+    "limits": "Compilation and emitted LLVM/host-parser checks only;no GPU module property query,execution,numerics,resource saturation,speed or inference adoption.",
+    "embedded_SPIRV": {
+      "binary_sha256": "394e4679e2fc72b3ec666dbf22497d33db30b48ecfb32045ab47da8cc4065739",
+      "container": ".tgtimg address/byte-size descriptors resolved within ELF64little-endian mapped sections;all10images have SPIRV headers. Only the two selected attention images are retained as compact identities.",
+      "control_attention": {
+        "bytes": 19964,
+        "sha256": "a10f6937a35844c8b8b9e5834bf054a18a22076ddcd7a71b8e84fff3b16c2f4b"
+      },
+      "candidate_attention": {
+        "bytes": 21332,
+        "sha256": "806e717464f7193d7aea53ba071c02b79d0dc8058e350e8e0e8d0876edd0e7e2",
+        "integer_type": "OpTypeInt16unsigned;OpSubgroupShuffleXorINTEL returns that type. One static call in uniform source loops;8dynamic calls perSGtile."
+      },
+      "inspection": "Qualified SDK llvm-spirv --to-text over exact image bytes through inherited memoryfd;both disassembler exits0. No raw files retained.",
+      "limits": "Actual linked SPIRV only,not GEN instructions,driver JIT,execution,register/SLM traffic or speed."
+    },
+    "local_ABI": {
+      "evidence": "Read-only exact emitted LLVM;all3attention headers have18arguments and8addrspace3local pointers. Unused sourceQ4Baccessor absent from parameter list. Pointer alignments4except arg13align8. Actual bound sizes await traced launch.",
+      "expected_local_arguments": {
+        "0": 16384,
+        "1": 1024,
+        "3": 64,
+        "4": 64,
+        "5": 64,
+        "13": 256,
+        "15": 2112,
+        "16": 64
+      },
+      "expected_dynamic_local_bytes": 20032,
+      "conservative_declared_bytes": 20036,
+      "GPU_observed": false
+    }
   }
 }

@@ -13669,8 +13669,8 @@
   },
   "qsa_k_staging_harness_contract_20261028": {
     "classification": "decision_support",
-    "status": "prepared",
-    "schedulable_now": true,
+    "status": "reviewed_accept_conditional",
+    "schedulable_now": false,
     "prerequisites_evidence": {
       "compiled_result": "qsa-k-staging-current.json",
       "source_commit": "e1e9f3bdecb0c76ae910ce1e8438a3f5e2baeb91",
@@ -13685,7 +13685,8 @@
       "bench/sycl/qsa_k_staging_oracle_adapter.cpp": "91d43f1398f09566ee9bbf82d573d4d86afd841b2c5d6a0ac8e09bb9cd8551ac",
       "tools/sycl/build_qsa_k_staging.py": "91de2919c1eabab70067aaaa4454697e95c51eb32016de7aa910e55b0b3933dc",
       "tools/sycl/check_qsa_k_staging.py": "df52205fe8947ce375dc95c2faae833007c8c348690f8fafdbb088f92ee74e30",
-      "tools/sycl/qsa_k_staging_sources.py": "253db19e744ea66c6212bec39a0de49d548fb8dee0bafeb579713c49bd8fb893"
+      "tools/sycl/qsa_k_staging_sources.py": "253db19e744ea66c6212bec39a0de49d548fb8dee0bafeb579713c49bd8fb893",
+      "tests/sycl/qsa_bf16_prefix.cpp": "422bf01441e3b3e4992f161d2582aa594b8a8082b2c10957709ba0c255440ebf"
     },
     "question": "Audit the actual new source-bound property/GPU check controller and candidate adapter against compiled identities and pinned runtime. Is property-only admission,then bounded traced numerical comparison safe and source-closed? Find concrete lifetime,alias,collective,immutable-environment,budget,coverage and false-pass defects. No GPU/model/speed qualification from source audit.",
     "ownership": "Orca gpt-6-luna report only;Main builds/tests/GPU. Native gpt-6-luna max curates report. No steering.",
@@ -13696,6 +13697,35 @@
       "qsa_subgroup_k_staging_source_contract_20261028",
       "selected_fused_moe_service_scope_20261028"
     ],
-    "retention": "Consume substantive fixes/admission facts into this current component;retire research/report/review transactions after the gate closes. No generic lifecycle survey."
+    "retention": "Consume substantive fixes/admission facts into this current component;retire research/report/review transactions after the gate closes. No generic lifecycle survey.",
+    "worker_closed": true,
+    "source_commit": "e1e9f3bdecb0c76ae910ce1e8438a3f5e2baeb91",
+    "report_identity": {
+      "bytes": 9376,
+      "sha256": "090699225769d539107caddd0cf8e2fd3a90f977da40ca97057c80f0fba90685"
+    },
+    "review": {
+      "status": "completed",
+      "model": "gpt-6-luna",
+      "reasoning_effort": "max",
+      "sha256": "2e1ae1ae84c45c3f54bb0e1e6028b68ecef59c4159b0b36aae2f8a89e2f390b3",
+      "verdict": "conditional_accept"
+    },
+    "admission_source_snapshot": {
+      "bench/sycl/qsa_k_staging.cpp": "34b9cbad64826abef5f128c38680172c0d263ffb4eddae780d8331261280fc1a",
+      "bench/sycl/qsa_k_staging_admission.hpp": "62875356f7f7fe14ac08b96da40eeb73aeea942f0fb9129ffe3a38299da5804a",
+      "bench/sycl/qsa_k_staging_oracle_adapter.cpp": "91d43f1398f09566ee9bbf82d573d4d86afd841b2c5d6a0ac8e09bb9cd8551ac",
+      "tools/sycl/build_qsa_k_staging.py": "91de2919c1eabab70067aaaa4454697e95c51eb32016de7aa910e55b0b3933dc",
+      "tools/sycl/check_qsa_k_staging.py": "bc5e9925e46e289f42cf89a73beb7acdae098e7ae3b3c5fe9ddac07a04b99036",
+      "tools/sycl/qsa_k_staging_sources.py": "253db19e744ea66c6212bec39a0de49d548fb8dee0bafeb579713c49bd8fb893",
+      "tests/sycl/qsa_bf16_prefix.cpp": "422bf01441e3b3e4992f161d2582aa594b8a8082b2c10957709ba0c255440ebf"
+    },
+    "main_corrections": {
+      "device_identity": "Fail closed unless the PCI inventory has exactly the qualified Intel GPU/accelerator (8086:e20c,0000:05:00.0),native name is Intel Arc B570 Graphics,and runtime qualification remains unchanged. At paused kernel-fixture runtime-ready gates,also bind owned-child xe DRM fdinfo to that PCI device. This is a workstation-specific single-eligible-device constraint,not a generic UUID mapping.",
+      "oracle_coverage": "Exact2/11case sequence;queries*24*256compared words;finite nonnegative error;matching independent prefix33geometry;exact duplicate-ID/physical-alias/first-laterKV diagnostic;strict footer/guard values;reject duplicate fields. Add six oracle negative controls and seven device controls before any GPU execution. Reviewed oracle source pin supplements the original six-file snapshot;their original hashes stay unchanged.",
+      "local_payload": "Read-only emitted LLVM of all three exact18argument/SG16kernels has eight local pointers at0,1,3,4,5,13,15,16 with align4 except arg13align8. This excludes a ninth unused4B Q-accessor parameter;source-modeled expected bound extents total20032B. Keep declared20036B and4096Breserve conservatively. No actual launch sizes observed until accepted traced smoke.",
+      "native_reuse": "Only check_qsa_k_staging.py changes from independently reviewed source;it is absent from the699actual native compiler inputs. Original sourcee1e9f3bde,recipe,generatedsources,deviceIR andboth executable hashes remain admission-bound. No native or GPU qualification is claimed by the controller correction."
+    },
+    "closure": "Verified matching successful worker_done and completed/revoked dispatch;external terminal released/retained with no process action. Native reviewer completed. No research worker remains assigned."
   }
 }
