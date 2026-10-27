@@ -13593,7 +13593,7 @@
   },
   "qsa_subgroup_k_staging_source_contract_20261028": {
     "classification": "decision_support",
-    "status": "worker_closed_native_review_pending",
+    "status": "reviewed_source_contract_no_device_qualification",
     "schedulable_now": false,
     "prerequisites_evidence": {
       "source_commit": "96aa415cfd20169077cd62da748368c54de50f3f",
@@ -13629,6 +13629,42 @@
       "delivery_ack": "delivery_72473ea1c53f"
     },
     "report_bytes": 12132,
-    "report_sha256": "27cb7752d7769d8e78e4a27fb6b20c60d26c3fc9603eb0e90a535197e54db70c"
+    "report_sha256": "27cb7752d7769d8e78e4a27fb6b20c60d26c3fc9603eb0e90a535197e54db70c",
+    "qualified_source_contract": {
+      "compiler": {
+        "path": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin/clang++",
+        "sha256": "1290881b4e12a5e002e5b0de0787f85328ee5fe19f253a54be1cdd97dc2f26eb",
+        "intel_llvm_revision": "504366f4b82ff00bbac7b0c956635eed8bc599d8"
+      },
+      "headers": {
+        "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/include/sycl/group_algorithm.hpp": "728525a097704c6d61d75b7e588be9e735c2dac724da3bab16dec4b15d7ff416",
+        "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/include/sycl/vector.hpp": "041342ea4c883d19e7cc9212ce56ae7e05cd6e0ec5b68bb365eecf36eeda560d",
+        "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/include/sycl/detail/spirv.hpp": "16df506444dfe6829819a3aa301a7426b745c5d56fada5751fff0f4af82bf2c6",
+        "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/include/sycl/ext/oneapi/bfloat16.hpp": "185bde75c6f1f108099c6372c5e83de9ddfbc6eb0bb290fd7ab1899af48aad05",
+        "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/include/sycl/ext/oneapi/matrix/query-types.hpp": "18da200cd2704bb998f8a2f61fc423f6a5ecfcfe2d5b7a44e067c5074a8aeaa2",
+        "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/include/sycl/ext/oneapi/matrix/matrix-unified-utils.hpp": "c4ec45d987a054e2e5ee7d51f2fbbabf2d4a50bff0b7d4124d5e01a1162f8e8a",
+        "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/include/sycl/ext/oneapi/matrix/matrix.hpp": "c298993bfc66b10f3204723c20afe960e07313b51add9ab28f549653dbde4da7",
+        "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/include/sycl/ext/oneapi/matrix/matrix-unified.hpp": "d76027407a09884b34879f5677b2efe1c634d6d058333d2fd83ecaa2b49a673e",
+        "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/include/sycl/ext/oneapi/matrix/matrix-intel.hpp": "524efda8771175ee9c271fc78fab547a4bf6e845ad471ac9d501375ff5834ccb",
+        "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/include/sycl/ext/oneapi/matrix/utils.hpp": "4f02f0f570cf645f5abf46e3f64330102f4e2ae54b30a6c7f847d3131531934e",
+        "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/include/sycl/ext/oneapi/matrix/static-query-use.hpp": "a48cd577e4938f67dfbee0046f2fd9034432f1528f7f6e685f54433ff980a8f1"
+      },
+      "matrix_spec_reference": "research-index.json:qsa_slm_pitch_contract_20261027.version_matched_contract;unchanged K32/V256/score33 leading dimensions and typed MatrixTile base",
+      "source_API": "SG16 XOR4/8 masks are uniform and stay in range;all lanes call all exchanges after row-load branch. Subgroup value synchronization is not a memory fence. Typed uint16vec loads require2B alignment;BFloat lvalue stores preserve existing objects. Same8192K words and existing post-stage WG barrier.",
+      "corrections": "Source vec load consists of typed dereferences;machine width/coalescing/shuffle conversion and Xe2 bank behavior unknown. Added subgroup collective instances1024perWG/pass;not zero synchronization. No new WG barrier.",
+      "qualification": "Source/API and symbolic mapping only. Compile/actual SPIR-V/GEN inspection justified after frozen recipe;GPU properties/numerics/faults/performance remain unqualified.",
+      "report_sha256": "27cb7752d7769d8e78e4a27fb6b20c60d26c3fc9603eb0e90a535197e54db70c",
+      "review_sha256": "24911566fdde1df5311c4eb12ac630cf00c2fc638caa07467d18915cdfe5eb62"
+    },
+    "review": {
+      "status": "completed",
+      "model": "gpt-6-luna",
+      "reasoning_effort": "max",
+      "sha256": "24911566fdde1df5311c4eb12ac630cf00c2fc638caa07467d18915cdfe5eb62",
+      "bytes": 11839,
+      "build_only_justified": true,
+      "GPU_qualified": false,
+      "unreviewed_scope": "Main harness/controller/adapter;require independent source and compiled-identity admission before GPU. No model/adoption qualification."
+    }
   }
 }

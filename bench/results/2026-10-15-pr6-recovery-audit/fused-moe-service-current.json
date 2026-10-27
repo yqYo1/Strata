@@ -815,7 +815,7 @@
     "retention": "Closed raw output and one-use source retirement;see qsa_exact_lists.retention. Only the explicit53MB K-staging input remains,not the all-layer capture."
   },
   "qsa_k_staging_preflight": {
-    "stage": "host_proved_API_review_pending",
+    "stage": "source_API_checked_build_pending",
     "GPU_executed": false,
     "model_adopted": false,
     "fixture": {
@@ -839,12 +839,12 @@
     "prior_source_comparison": "Main recovered2d4f24484:CoalescedK uses scalar cell=i/Dim,d=i%Dim loads and scalar transposed stores,without subgroup register transpose. This differs in mapping/load width from this proposal;prior latency+12.44/+27.98/+7.75% remains rejected. K36/V260 and V264 failures also remain.",
     "qualification_gaps": [
       "Finite8192value permutation/bounds proof passes36missing-row masks and2negative controls;actual compiler/device remains unqualified.",
-      "Actual pinned SYCL subgroup scalar/vector API and BFloat typed-store/object-lifetime contract.",
+      "Source/API checked against11installed headers and pinned504366f4/Khronos contract. Narrow-shuffle actual lowering and device correctness remain unqualified.",
       "Separate K32/K36 control and allocation/leading-stride changes;no combined V change.",
       "Actual compiler lowering/resource and bounded device correctness/performance gates;Xe2 bank map and physical traffic remain unknown."
     ],
     "research_review_sha256": "51b793f6da044d17ff91a1f2424338929f5b06fbc9c9e89d91ed877300f4a5b1",
-    "limits": "Review/proposal and one initialized actual-ID input only. No build or GPU comparison warranted yet;no hardware saturation or speed claim. Selected6e40/decode/1256slots unchanged.",
+    "limits": "36-mask symbolic proof and version-matched source/API review pass. No compiler/device/numerical/traffic/saturation/speed qualification yet. Isolated K32 build is next;production6e40/decode1256 unchanged.",
     "source_proposal": {
       "path": "tools/sycl/qsa_k_staging_sources.py",
       "sha256": "253db19e744ea66c6212bec39a0de49d548fb8dee0bafeb579713c49bd8fb893",
@@ -881,6 +881,13 @@
       "exit_code": 0,
       "ownership_closed": true,
       "source_and_plan_verified_before_run": true
+    },
+    "source_API_review": {
+      "report_sha256": "27cb7752d7769d8e78e4a27fb6b20c60d26c3fc9603eb0e90a535197e54db70c",
+      "review_sha256": "24911566fdde1df5311c4eb12ac630cf00c2fc638caa07467d18915cdfe5eb62",
+      "compiler_headers_verified": 11,
+      "source_contract_reference": "research-index.json:qsa_subgroup_k_staging_source_contract_20261028.qualified_source_contract",
+      "verdict": "Isolated K32 compile/lowering check justified after exact inputs/generated outputs/recipe committed. Main harness is not independently reviewed yet;no GPU run or inference candidate selected."
     }
   }
 }
