@@ -46,6 +46,43 @@ class CaptureTests(unittest.TestCase):
         self.assertEqual((self.root/'fixture.bin').read_bytes(), original)
         self.assertEqual(kept['sha256'], result['sha256'])
 
+    def test_exact_list_classes_ignore_uninitialized_suffix_and_keep_width(self):
+        self.dense()
+        result = capture.inspect(self.path, [self.header], equivalence_enabled=True)
+        exact = result['records'][0]['exact_lists']
+        self.assertEqual(exact['queries'], 2)
+        self.assertEqual(exact['distinct_lists'], 2)
+        self.assertEqual(exact['same_list_pairs'], 0)
+        # Equal initialized sparse rows really share a list; invalid dense cap
+        # suffixes above were not incorporated in the equivalence key.
+        self.sparse()
+        result = capture.inspect(self.path, [self.header], equivalence_enabled=True)
+        exact = result['records'][0]['exact_lists']
+        self.assertEqual(exact['distinct_lists'], 1)
+        self.assertEqual(exact['queries_in_repeated_classes'], 2)
+        self.assertEqual(exact['same_list_pairs'], 1)
+
+    def test_exact_lists_do_not_confuse_overlap_or_cross_window_pairs(self):
+        exact = capture.ExactLists()
+        for values in ([0,1], [0,2], [0,1], [0,2], [0,1]):
+            exact.add(array('i', values))
+        result = exact.result()
+        self.assertEqual(result['distinct_lists'], 2)
+        self.assertEqual(result['same_list_pairs'], 4)
+        self.assertEqual(result['maximum_class'], 3)
+        self.assertEqual(result['consecutive_windows']['4']['same_list_pairs'], 2)
+        self.assertEqual(result['consecutive_windows']['4']['queries_in_repeated_classes'], 4)
+        self.assertEqual(result['consecutive_windows']['4']['windows'], 2)
+        self.assertEqual(result['consecutive_windows']['16']['same_list_pairs'], 4)
+
+    def test_exact_lists_are_not_merged_across_layer_records(self):
+        self.sparse(); raw = self.path.read_bytes()
+        other = (1, *self.header[1:])
+        self.path.write_bytes(raw+capture.HEADER.pack(*other)+raw[16:])
+        result = capture.inspect(self.path, [self.header, other], equivalence_enabled=True)
+        self.assertEqual([r['exact_lists']['queries'] for r in result['records']], [2,2])
+        self.assertEqual([r['exact_lists']['same_list_pairs'] for r in result['records']], [1,1])
+
     def test_truncated_and_extra_payload(self):
         self.dense(); raw = self.path.read_bytes()
         for altered in (raw[:-1], raw+b'0', raw[:15]):

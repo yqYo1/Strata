@@ -13588,5 +13588,27 @@
       "essential_corrections_retained": true
     },
     "exp2_lowering": "CPU-only probe bae3c5e76/plan513637504:regular/native exp2 lower to the same27instructions through EOT on B570. Simple rewrite rejected without GPU execution. Actual whole-QSA JIT and supported numerical/domain guarantees remain unqualified;no fresh math survey needed for rejected rewrite."
+  },
+  "qsa_exact_selection_equivalence_contract_20261028": {
+    "classification": "decision_support",
+    "status": "eligible_for_Orca_dispatch",
+    "schedulable_now": true,
+    "native_source": "6e40afc1beddd059ee518617f6c1efce1da14aca",
+    "source_hashes": {
+      "src/kernels/sycl/qsa_select.cpp": "463a9ec02ed28125a5cd38b7b5d28784b849a4fbb199cb017042cd99078efee1",
+      "include/strata/kernels/qsa.hpp": "87c02222284f842fcecb46a422b119af769c72c3914edc8da5b2ee782456dc74",
+      "src/kernels/sycl/qsa_bf16_prefix.cpp": "4f9f815c9baae709f919f6d5ad1af04677c10d8c13c7597b3857cf81567ae192"
+    },
+    "prerequisite_evidence": "Selected source/count/shape reconciles180QSA attention launches with26.94..26.96s service;native exp2-only replacement rejected by actual offline ISA. Existing adjacent overlap does not determine exact class compatibility. Current unchanged selector/geometry/prefix source and bounded dump reader are available.",
+    "question": "Audit exact selected-ID equivalence as a precondition for inter-query matrix-head packing. Distinguish complete ordered equality,block/page grouping,partial overlap and union/masking;derive which classes can legally share KV loads and preserve per-query causality/numerics for24Q/2KV,12real heads padded16,cap2051 and variable dense widths. Check census boundary/unused suffix/head/layer isolation and identify what full/tail32K data can reject versus qualify. Compare at least two grouping strategies with overhead/counterevidence;no implementation or local speed claim.",
+    "report": ".cache/strata-research/20261028/qsa-exact-selection-equivalence-contract.md",
+    "report_budget_bytes": 10240,
+    "previous_reports": [
+      "qsa_irregular_gqa_matrix_packing_collection_20261027",
+      "sparse_attention_interquery_kv_locality_scheduling_methods_20261023",
+      "selected_fused_moe_service_scope_20261028"
+    ],
+    "consumer": "Main current exact-list census and conditional QSA packing decision;native Luna/max reviews report before Main reads relevant digest.",
+    "retention": "Keep substantive nonduplicate contract/corrections only;retire dispatch/review transactions and consumed body after current decision. No automatic report commit."
   }
 }
