@@ -12797,20 +12797,26 @@
     "essential_corrections": [
       "Framework wrapper pins do not establish their dependency-kernel or selected-model numerical ABI;live Intel docs do not qualify the configured compiler.",
       "Larger cell blocks change online-state update grouping and BF16 probability rounding unless the original per32segment contract is deliberately preserved;assess changed math separately.",
-      "The completed180samples fail the5%inter-call sensitivity screen in both shapes;this does not establish compute saturation. No model trial follows from that diagnostic."
+      "The completed180samples fail the5%inter-call sensitivity screen in both shapes;this does not establish compute saturation. No model trial follows from that diagnostic.",
+      "Report28160/28224B is uncached Q;selected cached-Q32/33 is20036B. New64/65 proposal39748B plus4096Bmargin. Source budget,not occupancy."
     ],
     "retrieval": {
       "use": "Retrieve geometry/numerical-contract sections only for a concrete32to64cell-tile decision after source/contract/resource plan is fixed.",
-      "review_point": "At that candidate selection or supersession."
+      "review_point": "At that candidate selection or supersession.",
+      "last_use": {
+        "source_commit": "52947b6b4",
+        "sections": "Geometry/numerical lines15..52 only",
+        "question": "Concrete32to64 source budget and changed recurrence;pin dependency instead of wrapper ABI."
+      }
     },
     "next_scope_eligibility": {
       "schedulable_now": false,
-      "reason": "Current next proposal is same-math barrier fusion,not a cell-tile change. No generic follow-up;require a concrete remaining tile question."
+      "reason": "Generic survey complete;new concrete source-safety/framework questions scoped separately."
     }
   },
   "qsa_iteration_barrier_fusion_contract_20261027": {
     "classification": "decision_support",
-    "status": "reviewed_accept_conditional",
+    "status": "closed_rejected_performance",
     "schedulable_now": false,
     "source_revision": "17bc703d94c792a4d23f45f53359e601ad46348c",
     "question": "Independently audit the proposed QSA end-of-iteration barrier hoist:row publication may overlap previous PV reads,but the next existing barrier precedes K overwrite;retain final fence. Trace every shared byte/lifetime,subgroup joint_matrix and group-reduction contract,zero/invalid/tail widths,compiler scratch reuse and exact numerical invariants. Identify concrete races or missing proof and bounded adversarial gates;not a generic barrier survey.",
@@ -12822,8 +12828,8 @@
     "report": ".cache/strata-research/20261027/qsa-iteration-barrier-fusion-contract.md",
     "report_budget_bytes": 12288,
     "worker_model": "gpt-6-luna",
-    "consumer": "Current check_qsa_barrier.contract() source-review admission through this candidate closure;source findings alone do not qualify device safety or speed.",
-    "retention": "Keep only substantive source/contract findings through this candidate decision. Write named report only;no code,Git,build,test,GPU,profiler or process actions;no XeStrata source.",
+    "consumer": "No native consumer;prototype/generation retired.108samples/failed1%gate in qsa-barrier-current.json;full source/recipe at208c591b0.",
+    "retention": "Closed report/review/dispatch transaction has no current consumer;retire after compact closure evidence is committed.",
     "worker_closed": true,
     "report_bytes": 12287,
     "report_sha256": "c64055e675e00a60c85315d4aaee7a432d8854a3869e106d4445ecdc59eb92e9",
@@ -12836,12 +12842,12 @@
     ],
     "next_scope_eligibility": {
       "schedulable_now": false,
-      "reason": "Traced oracle,physical-boundary component and actual-ID smoke now pass;next collect resources and the frozen performance grid. No further generic contract survey without a concrete new compiler/device question."
+      "reason": "All gates closed;performance failed;no model trial."
     }
   },
   "qsa_kernel_local_grf_contract_20261027": {
     "classification": "decision_support",
-    "status": "completed_review_pending",
+    "status": "reviewed_conditional_candidate_closed",
     "schedulable_now": false,
     "source_revision": "6e40afc1beddd059ee518617f6c1efce1da14aca",
     "proposal": {
@@ -12876,7 +12882,7 @@
       "maximum_bytes": 12288
     },
     "worker_model": "gpt-6-luna",
-    "consumer": "Main source-only GRF128/256 proposal;native Luna/max review before any report use and before GPU execution. Main owns implementation/build/testing.",
+    "consumer": "Closed API discriminator;no native consumer. Compact source/LLVM/limitations remain in qsa-grf-lowering-current.json;report/review transactions retire at closure.",
     "retention": "Keep substantive source-contract findings only through this candidate decision;report-only task. No product edits,Git,build,test,GPU,profiler,process actions or XeStrata application source.",
     "task_id": "task_7f5d3115f5d3",
     "dispatch_id": "ctx_65069f230481",
@@ -12901,11 +12907,79 @@
       "sha256": "62e4d08dcda7861c5b8dc19528fa74b15574aa53d0ae7e0c7c75cf2e1fe7b432"
     },
     "review": {
-      "status": "running",
+      "status": "completed",
       "agent": "/root/review_qsa_grf_contract_20261027",
       "model": "gpt-6-luna",
       "reasoning_effort": "max",
-      "path": ".cache/strata-research/20261027/qsa-kernel-local-grf-contract.review.json"
-    }
+      "path": ".cache/strata-research/20261027/qsa-kernel-local-grf-contract.review.json",
+      "bytes": 4123,
+      "sha256": "b72e2deec77c6426df7dce571ae56c75078c99a427c277cc9c416e1f52d66070",
+      "outcome": "Conditional API forwarding proof only;exactB570 legality/backend/per-kernel limits remain unqualified. Main independently found earlier property-overload comparison and stops duplicate GPU work."
+    },
+    "candidate_advance": false,
+    "compile_only_result": {
+      "path": "qsa-grf-lowering-current.json",
+      "result_commit": "52947b6b4",
+      "source_commit": "40aa674b7",
+      "LLVM_request_confirmed": true,
+      "actual_dependencies": 665,
+      "GPU_executed": false
+    },
+    "historical_correction": "b4beb8d53 already tested current-body explicit128/256 via the handler property overload,independently of the older functor trial. Installed nd_launch forwards to that overload;API spelling supplies no new backend mechanism. No further GPU trial."
+  },
+  "qsa_cell64_source_contract_20261027": {
+    "classification": "decision_support",
+    "status": "ready",
+    "schedulable_now": true,
+    "run_id": "run_3072480b0529",
+    "source_revision": "52947b6b4",
+    "proposal": {
+      "path": "tools/sycl/qsa_cell64_sources.py",
+      "sha256": "a4d23c4562f749fc0631801f4871d3f7175df982b6a86b732a4cedaa26b35fdb",
+      "stage": "source-only;not compiled or GPU-executed"
+    },
+    "worker_model": "gpt-6-luna",
+    "report_budget_bytes": 16384,
+    "prior_scopes": [
+      "qsa_cell_tile_geometry_contract_20261027",
+      "qsa_iteration_barrier_fusion_contract_20261027",
+      "qsa_kernel_local_grf_contract_20261027"
+    ],
+    "retention": "Named cell64 decision;native Luna/max review before Main reads report. Retire transactions at closure;no automatic permanent report.",
+    "question": "Audit frozen32/64-cell overlay:shared destinations/readers,QK/PV ownership,masked/empty/tail widths,collective convergence,cached-Q/SLM lifetime,39748B budget and per-kernel WG128 admission. Distinguish changed64-cell recurrence from unchanged8x16 matrix shape. Find defects and first bounded qualification;not a generic survey.",
+    "prerequisite_evidence": [
+      "Frozen source52947b6b4;host reverse-overlay/generated-shape checks pass,not device qualification.",
+      "Actual-ID512/6491,width2051 fixture exists;barrier-only0.37..0.74%gain failed1%gate;costly GPU service,not saturation.",
+      "Outer trips65to33;dynamic SLM20036to39748B plus4096Bmargin;SG16/WG128/defaultGRF unchanged."
+    ],
+    "report": ".cache/strata-research/20261027/qsa-cell64-source-contract.md",
+    "consumer": "Main source corrections and committed first component qualification."
+  },
+  "qsa_cell64_framework_contract_20261027": {
+    "classification": "decision_support",
+    "status": "ready",
+    "schedulable_now": true,
+    "run_id": "run_3072480b0529",
+    "source_revision": "52947b6b4",
+    "proposal": {
+      "path": "tools/sycl/qsa_cell64_sources.py",
+      "sha256": "a4d23c4562f749fc0631801f4871d3f7175df982b6a86b732a4cedaa26b35fdb",
+      "stage": "source-only;not compiled or GPU-executed"
+    },
+    "worker_model": "gpt-6-luna",
+    "report_budget_bytes": 16384,
+    "prior_scopes": [
+      "qsa_cell_tile_geometry_contract_20261027",
+      "qsa_iteration_barrier_fusion_contract_20261027",
+      "qsa_kernel_local_grf_contract_20261027"
+    ],
+    "retention": "Named cell64 decision;native Luna/max review before Main reads report. Retire transactions at closure;no automatic permanent report.",
+    "question": "Trace pinned actual vLLM/SGLang qwen4exp sparse-attention dependency kernels,not wrappers. Compare64-cell update:scale placement,QK accumulation,mask/max/exp/reduction,FP32 norm versus BF16 probability/PV rounding,tails. State known backend mapping,licenses,equivalence limits and numerical/task gates;do not assume exact old bits.",
+    "prerequisite_evidence": [
+      "Frozen source52947b6b4 changes max/norm/BF16 update32to64;matrix8x16 FP32 accumulation unchanged.",
+      "Architecture guard qwen4exp in gguf_reader.hpp;MTP references vLLM0.30.0 qwen4_exp. Wrapper pins alone do not prove dependency ABI."
+    ],
+    "report": ".cache/strata-research/20261027/qsa-cell64-framework-contract.md",
+    "consumer": "Main numerical reference/criteria before changed-math GPU qualification."
   }
 }
