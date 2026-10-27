@@ -1,38 +1,42 @@
 {
   "schema": "strata-upstream-status-v3",
-  "queried_utc": "2026-10-25T21:35:21.222628+00:00",
+  "queried_utc": "2026-10-27T21:28:33.036186+00:00",
   "sole_upstream": "Niko1221/Strata",
   "skill": ".claude/skills/strata-upstream-sync/SKILL.md",
   "previous_observation": {
-    "revision": "1561307c152f1b9dc25f867a81cc725f725f9fc4",
+    "revision": "f2bd7f674f74fa7585050dd6fc67283a1d0e25b4",
     "path": "bench/results/2026-10-15-pr6-recovery-audit/upstream-status.json",
-    "observed_sha": "7ddc17a38fe7f31637e895ecfba58c2cd43d65ec",
-    "queried_utc": "2026-10-23T21:29:32.552053+00:00",
-    "sha256": "6d589a9869b5407707bb30411051483a4cb69f557f50f2a6b4988be977358d44"
+    "observed_sha": "4b9e05a2a806a3fe24f7b2560d98626c37dade35",
+    "queried_utc": "2026-10-25T21:35:21.222628+00:00",
+    "sha256": "ef17910bda6ea057f1b9cdfa7b92d2ffccdd21050b6ead1f9a1ead5296c7bb2b"
   },
-  "observed_sha": "4b9e05a2a806a3fe24f7b2560d98626c37dade35",
+  "observed_sha": "5e8a4cca7d690ac60ca37eb09e7d0e010099ad6d",
   "changed_since_previous_observation": true,
   "source_fetched": true,
   "fetch_command": [
     "git",
     "-C",
-    "/home/yayoi/ghq/github.com/Niko1221/Strata",
+    "/home/yayoi/ghq/github.com/Niko1221/Strata/.worktree/eval-upstream-011c9e60",
     "fetch",
-    "origin"
+    "origin",
+    "main",
+    "tag",
+    "v0.2.7"
   ],
   "remote_check": [
-    "4b9e05a2a806a3fe24f7b2560d98626c37dade35\tHEAD",
-    "4b9e05a2a806a3fe24f7b2560d98626c37dade35\trefs/heads/main"
+    "5e8a4cca7d690ac60ca37eb09e7d0e010099ad6d\trefs/heads/main",
+    "3f6d9c28e56bfce604601f39de53d457fa90dc74\trefs/tags/v0.2.7",
+    "5e8a4cca7d690ac60ca37eb09e7d0e010099ad6d\trefs/tags/v0.2.7^{}"
   ],
   "new_interval": {
-    "start": "7ddc17a38fe7f31637e895ecfba58c2cd43d65ec",
-    "target": "4b9e05a2a806a3fe24f7b2560d98626c37dade35",
-    "commits": 446,
-    "changed_paths": 406,
+    "start": "4b9e05a2a806a3fe24f7b2560d98626c37dade35",
+    "target": "5e8a4cca7d690ac60ca37eb09e7d0e010099ad6d",
+    "commits": 367,
+    "changed_paths": 534,
     "tags_at_target": [
-      "v0.2.6"
+      "v0.2.7"
     ],
-    "inspection": "Fetched Niko source and independently checked remote HEAD/main. No source import,build or model run by this observation. Keep selected6e40 and current prefill regression comparison fixed;new functional ledger and tuned unmodified performance remain pending."
+    "inspection": "Fetched official Niko source using existing clean detached evaluation worktree;remote main and annotated tag independently checked. Whole367commit/534path functional ledger and vanilla tuned performance remain pending. No inference import/build/model run."
   },
   "integrated_upstream_target": "7695859aa13afb248bdb4d36f9b2e95707db079d",
   "unmodified_upstream_performance_evaluation_complete": false,
@@ -42,8 +46,8 @@
   "current_engine_source_commit": "6e40afc1beddd059ee518617f6c1efce1da14aca",
   "current_engine_sha256": "22182f1a5e62e5f4259ce49a75ae44afbd988166ec79324816e499ff37ef60e4",
   "current_engine_changed_by_check": false,
-  "next_check_utc": "2026-10-27T21:35:21.222628+00:00",
-  "pending": "Reconcile all required non-inference functions through4b9e05a2 (v0.2.6),carrying earlier7ddc/011c/e88 native protocol,server/UI/setup obligations. Complete unmodified hardware-tuned Niko official long/agent/thinking measurements. No new inference adoption;first close exact historical/current userspace prefill attribution with original6e40/1256 placement.",
+  "next_check_utc": "2026-10-29T21:28:33.036186+00:00",
+  "pending": "Reconcile all required non-inference functions through5e8a4cca(v0.2.7),carrying earlier4b9e/7ddc/011c/e88 protocol/server/UI/setup obligations. Complete unmodified hardware-tuned official long/agent/thinking measurements. Selected6e40/1256 decode placement remains unchanged;one host-readiness port does not qualify upstream inference or whole-release integration.",
   "legacy_upstream_clone_root": "Divergent checkout left untouched; fetch updates origin/main only. No root checkout, reset, commit or pull performed.",
   "function_review": {
     "fork_revision": "21ad950a4cde54f57ab5f78d9318cca57631df91",
@@ -340,13 +344,26 @@
       },
       {
         "feature": "benchmark_readiness_configured_host",
-        "status": "required_pending",
+        "status": "implemented_validation_pending",
         "meaning": "Add one new shared tooling row, only once despite appearing in both reports. Local readiness polling must use the configured bind host, map wildcard binds to loopback, bracket IPv6 literals, and leave explicit --url to its caller.",
         "target_tests": [
           "tools/test_bench_host.py::ServerBase"
         ],
         "complement_source": "tools/strata_bench.py::server_base and local readiness call, diff around lines 40456-40471",
-        "claim_limit": "Unit coverage validates URL construction, not whether a running server is reachable."
+        "claim_limit": "Unit coverage validates URL construction, not whether a running server is reachable.",
+        "port_source": {
+          "upstream": "Niko1221/Strata",
+          "revision": "5e8a4cca7d690ac60ca37eb09e7d0e010099ad6d",
+          "license": "Root LICENSE identical MIT SHA256949b9b0aada7476006469e58ee4ffb0e0f68c2d9137e90a356757b61a09d37f0",
+          "files": [
+            "tools/strata_bench.py::server_base and local readiness base",
+            "tools/test_bench_host.py"
+          ],
+          "local_complement": "Keep all local scaling/long-generation/eligibility extensions and --url precedence;add main-path mocked probes without HTTP/server/model execution. No native inference or XeStrata source."
+        },
+        "validation_plan": [
+          "flock -n /home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/owned-v0141-measurement.lock timeout 120s /usr/bin/python3.12 -I -S -B -c 'import sys,unittest; sys.path[:0]=[\"/home/yayoi/orca/workspaces/Strata/sycl\",\"/home/yayoi/orca/workspaces/Strata/sycl/tools\"]; unittest.main(module=None,argv=[\"unittest\",\"tools.test_bench_host\",\"tools.test_strata_bench\",\"tools.test_benchmark_evidence\"])'"
+        ]
       }
     ],
     "port_order": [
@@ -415,8 +432,8 @@
   },
   "current_comparison_build_sha256": "c83a1516ea30ce4f03b60dbd5940205cc15442fb17803451c2d8414ebe214139",
   "latest_interval_review": {
-    "target": "4b9e05a2a806a3fe24f7b2560d98626c37dade35",
-    "state": "Fetched;446-commit/406-path functional ledger and unmodified tuned measurement pending. Prior source reviews retain their original targets and are not current-interval coverage.",
+    "target": "5e8a4cca7d690ac60ca37eb09e7d0e010099ad6d",
+    "state": "Fetched;full feature ledger and unmodified hardware-tuned measurement pending. Prior reviews retain their original targets.",
     "code_imported": false,
     "whole_function_ledger_complete": false,
     "performance_evaluation_complete": false
