@@ -803,6 +803,108 @@
     }
   },
   "historical_regression_audit": {
+    "large_state_capture_retirement_20261027": {
+      "stage": "ready_for_retirement",
+      "complete": false,
+      "manifest": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/legacy-large-state-retirement-20261027.jsonl",
+        "sha256": "348ba9b436d3c7b98d37023a83fc9fba9ea62ac994e70dba13f653cf9f18f3b6"
+      },
+      "payload_files": 13,
+      "payload_bytes": 7658645444,
+      "transaction_files": 2,
+      "cohorts": [
+        {
+          "root": "owned-decode-pool-phase-32769-v1-baseline",
+          "original_record_sha256": "0742ea2f84a7a017c400149420154f61920dff72a990cda09b76874f05344478",
+          "original_status": {
+            "active": false,
+            "completed": true,
+            "healthy": true,
+            "math_gate_passed": true,
+            "adopted": false,
+            "performance_eligible": false
+          },
+          "owner_closure": "Recorded boot0a908c16 differs from current boot;old owners cannot survive the reboot. Current model-owner guard also passes.",
+          "consumer": "No current maintained byte reader;current RESTORE checks generate fresh state. Original records/diagnostics remain unchanged."
+        },
+        {
+          "root": "owned-layer-major-streamed-kv-v0141-code32k-streamed-diagnostic-r1",
+          "original_record_sha256": "9f76562cc4ced2a60363e7b01b31cfd6da4bbfde8abc62c45c0abe737027f0a1",
+          "original_status": {
+            "active": false,
+            "completed": false,
+            "healthy": false,
+            "math_gate_passed": false,
+            "adopted": false,
+            "performance_eligible": false
+          },
+          "owner_closure": "Recorded boot0a908c16 differs from current boot;old owners cannot survive the reboot. Current model-owner guard also passes.",
+          "consumer": "No current maintained byte reader;current RESTORE checks generate fresh state. Original records/diagnostics remain unchanged."
+        },
+        {
+          "root": "owned-layer-major-streamed-kv-v0141-code32k-streamed-lease-diagnostic-r1",
+          "original_record_sha256": "f54eb757d9553403b59a3f72eb07b036c5d90068f57466b1c97f629b7003b7b2",
+          "original_status": {
+            "active": false,
+            "completed": true,
+            "healthy": true,
+            "math_gate_passed": true,
+            "adopted": false,
+            "performance_eligible": false
+          },
+          "owner_closure": "Recorded boot0a908c16 differs from current boot;old owners cannot survive the reboot. Current model-owner guard also passes.",
+          "consumer": "No current maintained byte reader;current RESTORE checks generate fresh state. Original records/diagnostics remain unchanged."
+        },
+        {
+          "root": "owned-main-vmm-full-ram-chunk12k-v01402-code32k-diagnostic-r1",
+          "original_record_sha256": "3de5e40d7a9bb390112c8de7bc6ee29604e62f8fed45e516cbf57ffe8cb0dfdb",
+          "original_status": {
+            "active": false,
+            "completed": true,
+            "healthy": false,
+            "math_gate_passed": false
+          },
+          "owner_closure": "Recorded boot0a908c16 differs from current boot;old owners cannot survive the reboot. Current model-owner guard also passes.",
+          "consumer": "No current maintained byte reader;current RESTORE checks generate fresh state. Original records/diagnostics remain unchanged."
+        },
+        {
+          "root": "owned-native-expert-copy-v0141-full256k-diagnostic-r1",
+          "original_record_sha256": "7f206dc65c01d05192d54211e6ba1f52eb34dd029f25e9a7c2235b1a2567d533",
+          "original_status": {
+            "active": false,
+            "completed": true,
+            "healthy": true,
+            "math_gate_passed": true,
+            "adopted": false,
+            "performance_eligible": false
+          },
+          "owner_closure": "Recorded boot0a908c16 differs from current boot;old owners cannot survive the reboot. Current model-owner guard also passes.",
+          "consumer": "No current maintained byte reader;current RESTORE checks generate fresh state. Original records/diagnostics remain unchanged."
+        },
+        {
+          "root": "owned-upstream-v0141-integrated-full256k-diagnostic-r1",
+          "original_record_sha256": "2cabcde178049b9c3479632e299f54f8b2d262c3270c15dd60772babaa9e7be7",
+          "original_status": {
+            "active": false,
+            "completed": true,
+            "healthy": true,
+            "math_gate_passed": false
+          },
+          "owner_closure": "Recorded boot0a908c16 differs from current boot;old owners cannot survive the reboot. Current model-owner guard also passes.",
+          "consumer": "No current maintained byte reader;current RESTORE checks generate fresh state. Original records/diagnostics remain unchanged."
+        }
+      ],
+      "original_outcomes_unchanged": true,
+      "remaining_hold": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/owned-fixed12k-chunk-major-code32k-diagnostic-r1/A-read0.state.bin",
+        "bytes": 583631432,
+        "reason": "Original decision-v1.json names R285 matchedprefix numericaltriage;no current reader found. Bounded reachable Git log --grep and -S search found no R285 reference,so do not silently discard the unique mismatch instance.",
+        "next": "At the next serialized boundary inspect the exact original decision/source-comparison pointer and determine whether this numerical mechanism is superseded;retain only this one pending that decision.",
+        "consumer": "Main R285 source/consumer reconciliation;not an inference baseline or current RESTORE fixture."
+      },
+      "scope": "Only these13large payloads and2consumed review files. Other directories,raw captures and legacy native-source holds are unchanged."
+    },
     "legacy_component_retirement_20261027": {
       "source_commit": "5f464293115493ebe822fcd2401f0aff89f36a53",
       "project_inputs_exact": 483,
