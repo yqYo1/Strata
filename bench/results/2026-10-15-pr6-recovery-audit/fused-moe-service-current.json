@@ -815,7 +815,7 @@
     "retention": "Closed raw output and one-use source retirement;see qsa_exact_lists.retention. Only the explicit53MB K-staging input remains,not the all-layer capture."
   },
   "qsa_k_staging_preflight": {
-    "stage": "host_proof_prepared",
+    "stage": "host_proved_API_review_pending",
     "GPU_executed": false,
     "model_adopted": false,
     "fixture": {
@@ -838,7 +838,7 @@
     "proposed_mapping": "WG128/SG16;tile=SGid+iteration*8,cellbase=(tile%8)*4,dbase=(tile//8)*16. Lane loads cellbase+lane//4 and4dims fromdbase+4*(lane%4). A proposed XOR4/XOR8 register butterfly swaps lane-cell and vector-element bits;output lane owns dimensiondbase+4*(lane%4)+lane//4 and4cells. Prove all8192values and API participation before build.",
     "prior_source_comparison": "Main recovered2d4f24484:CoalescedK uses scalar cell=i/Dim,d=i%Dim loads and scalar transposed stores,without subgroup register transpose. This differs in mapping/load width from this proposal;prior latency+12.44/+27.98/+7.75% remains rejected. K36/V260 and V264 failures also remain.",
     "qualification_gaps": [
-      "Exhaustive value/destination permutation and bounds proof.",
+      "Finite8192value permutation/bounds proof passes36missing-row masks and2negative controls;actual compiler/device remains unqualified.",
       "Actual pinned SYCL subgroup scalar/vector API and BFloat typed-store/object-lifetime contract.",
       "Separate K32/K36 control and allocation/leading-stride changes;no combined V change.",
       "Actual compiler lowering/resource and bounded device correctness/performance gates;Xe2 bank map and physical traffic remain unknown."
@@ -848,7 +848,8 @@
     "source_proposal": {
       "path": "tools/sycl/qsa_k_staging_sources.py",
       "sha256": "253db19e744ea66c6212bec39a0de49d548fb8dee0bafeb579713c49bd8fb893",
-      "provenance": "Main authored; private generation scaffold from ownMIT39044cc68, native exact6e40prefix. No XeStrata application code. Live production and decode sources unchanged."
+      "provenance": "Main authored; private generation scaffold from ownMIT39044cc68, native exact6e40prefix. No XeStrata application code. Live production and decode sources unchanged.",
+      "source_commit": "96aa415cfd20169077cd62da748368c54de50f3f"
     },
     "host_proof_plan": {
       "question": "Do the exact two uniform XOR stages preserve all8192source/destination coordinates and missing-row zero fill?",
@@ -858,6 +859,28 @@
       "scope": "K32 staging only. K-only pitch held separately;no V/pitch/barrier/attention math/production dispatcher change. No compiler or GPU in this host proof.",
       "runtime": "/usr/bin/python3.12 -I -S -B tools/sycl/qsa_k_staging_sources.py",
       "retention": "Keep compact host counts,source/output hashes and decision in this existing result. One-use generator and comparison input retire when this bounded component comparison ends."
+    },
+    "host_proof": {
+      "passed": true,
+      "mask_cases": 36,
+      "values_per_case": 8192,
+      "unique_source_and_destination": true,
+      "missing_rows_zero": true,
+      "symbolic_lane_collective_calls_per_WG": 16384,
+      "subgroup_collective_instances_per_WG": 1024,
+      "rejected_broken_transposes": 2,
+      "generated_sha256": {
+        "kstaging_control.cpp": "cdcd42c2ae44e00b06893f5f01c156069adcecef6ba1f6665c3abed664173b42",
+        "kstaging_candidate.cpp": "62e6583c5d1c0aac30251df2e1813f8c4b84aef184b276c618e0fe95f824757d",
+        "qsa-k-staging.hpp": "74c335a408008acea0270088d3854c854abd5790f00170133e5b4184f3274db7"
+      },
+      "GPU_executed": false,
+      "compiler_executed": false,
+      "limits": "Finite symbolic staging proof only;not compiler/device correctness, numerical, hardware traffic or speed qualification.",
+      "source_commit": "96aa415cfd20169077cd62da748368c54de50f3f",
+      "exit_code": 0,
+      "ownership_closed": true,
+      "source_and_plan_verified_before_run": true
     }
   }
 }
