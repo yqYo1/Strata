@@ -1900,6 +1900,19 @@ estimate under an explicit API-mapping assumption,not a complete API count or
 upper budget. Do not run the existing65536-record subscriber on the whole
 model unchanged. Plan finite loss handling,phase coverage and observer cost
 before collecting the actual API/device ledger.
+The new subscriber loss handling passes39parser tests and21native CPU controls
+from source47567e9ab. Seven caps,including2/3/4/5/8/511and the65536default,
+stop recording with one explicit overflow marker while four callback threads
+and the application continue. A late invalid argument is not read after stop;
+the parser refuses even a paired prefix. Both original metadata fixtures,four
+environment-write guards and eight invalid-cap controls pass. This qualifies
+host callback behavior only. The candidate observer has not been loaded into a
+GPU/model process,and disk/format errors still retain their old fail-fast behavior.
+Keep the qualified v3 observer until separate device and observer-cost gates
+select a replacement;the65536maximum and16MiB parser still do not permit a
+complete whole-model capture. The tiny candidate and manifests serve the next
+bounded device canary through`check_ur_capture_budget.admit`;the selected engine
+and decode are unchanged.
 This reader is specific to the pinned6e40 schema. Neither host replay nor the
 planned census qualifies API/device coverage,physical traffic,clean speed,decode,
 quality,physical262144context or model adoption.

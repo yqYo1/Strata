@@ -11940,7 +11940,7 @@
       }
     },
     "ur_subscriber_budget": {
-      "stage": "built",
+      "stage": "host-checked",
       "source_commit": "47567e9ab0b00d6118c3764ae6fcad92e5022e63",
       "inputs": {
         "bench.sh": "45347f22ce9d1fbb54200d3b984d18aef4a62deb366d6dddb2c2b3b2e3cf6dc1",
@@ -12169,8 +12169,8 @@
       },
       "active": false,
       "ownership_closed": true,
-      "complete": false,
-      "passed": false,
+      "complete": true,
+      "passed": true,
       "GPU_qualified": false,
       "model_qualified": false,
       "retained_generations": "Qualified v3 observer retained;this tiny host candidate serves imminent loss controls and later separately planned device/cost gates. Selected6e40 engine and12fixtures untouched.",
@@ -12228,7 +12228,195 @@
           "files": 245
         }
       ],
-      "outcomes": [],
+      "outcomes": [
+        {
+          "case": "metadata",
+          "exit_code": 0,
+          "ownership_closed": true,
+          "fixture": {
+            "simulated_calls": 26,
+            "rejected_calls": 2,
+            "successful_calls": 24,
+            "recycled_queues": 2,
+            "recycled_allocations": 2,
+            "graph_children": 2,
+            "successful_replays": 2,
+            "failed_output_and_list_not_read": true,
+            "device_work_qualified": false,
+            "limits": "Fabricated CPU XPTI payloads only;no UR/LevelZero device calls or actual lifetime/graph execution qualification."
+          }
+        },
+        {
+          "case": "buffers",
+          "exit_code": 0,
+          "ownership_closed": true,
+          "fixture": {
+            "simulated_calls": 21,
+            "rejected_calls": 5,
+            "typed": {
+              "counts": {
+                "urQueueCreate": 1,
+                "rejected_calls": 5,
+                "urMemBufferCreate": 2,
+                "graph_query_calls": 2,
+                "enqueue_calls": 4,
+                "buffer_copy_bytes": 16
+              },
+              "enqueue_queue_handles": 1,
+              "lifetime_generations_qualified": false,
+              "graph_children_qualified": false,
+              "limits": "Typed callback capture/geometry/requested-byte census only. Handles are raw values;reference generations,retirement,actual launch rounding,graph child mapping and application host-memory lifetime still need independent checks."
+            },
+            "external_lifetimes": {
+              "counts": {
+                "queue_created": 1,
+                "queue_reused_values": 0,
+                "rejected_without_transition": 5,
+                "buffer_created": 2,
+                "buffer_reused_values": 1,
+                "buffer_retained": 1,
+                "graph_query_calls": 2,
+                "buffer_native_queries": 2,
+                "buffer_transfers": 2,
+                "event_created": 1,
+                "event_reused_values": 0,
+                "event_released": 1,
+                "buffer_released": 3,
+                "queue_released": 1
+              },
+              "external_generations_closed": true,
+              "source_threads": 1,
+              "limits": "Complete serial fixture external API reference generations only. Not driver-internal ownership,buffer-reader completion,host-memory lifetime,ordinary runtime teardown or exact graph-child/device identity."
+            },
+            "failed_pointees_not_read": true,
+            "gpu_work": false,
+            "limits": "CPU XPTI simulation only;no UR/L0 device work,actual host-payload ownership,performance or model coverage."
+          }
+        },
+        {
+          "case": "setenv",
+          "exit_code": 87,
+          "ownership_closed": true
+        },
+        {
+          "case": "unsetenv",
+          "exit_code": 87,
+          "ownership_closed": true
+        },
+        {
+          "case": "putenv",
+          "exit_code": 87,
+          "ownership_closed": true
+        },
+        {
+          "case": "clearenv",
+          "exit_code": 87,
+          "ownership_closed": true
+        },
+        {
+          "case": "overflow-None",
+          "exit_code": 0,
+          "ownership_closed": true,
+          "records": 65536,
+          "loss_markers": 1,
+          "complete_capture_rejected": true,
+          "application_continued": true
+        },
+        {
+          "case": "overflow-2",
+          "exit_code": 0,
+          "ownership_closed": true,
+          "records": 2,
+          "loss_markers": 1,
+          "complete_capture_rejected": true,
+          "application_continued": true
+        },
+        {
+          "case": "overflow-3",
+          "exit_code": 0,
+          "ownership_closed": true,
+          "records": 3,
+          "loss_markers": 1,
+          "complete_capture_rejected": true,
+          "application_continued": true
+        },
+        {
+          "case": "overflow-4",
+          "exit_code": 0,
+          "ownership_closed": true,
+          "records": 4,
+          "loss_markers": 1,
+          "complete_capture_rejected": true,
+          "application_continued": true
+        },
+        {
+          "case": "overflow-5",
+          "exit_code": 0,
+          "ownership_closed": true,
+          "records": 5,
+          "loss_markers": 1,
+          "complete_capture_rejected": true,
+          "application_continued": true
+        },
+        {
+          "case": "overflow-8",
+          "exit_code": 0,
+          "ownership_closed": true,
+          "records": 8,
+          "loss_markers": 1,
+          "complete_capture_rejected": true,
+          "application_continued": true
+        },
+        {
+          "case": "overflow-511",
+          "exit_code": 0,
+          "ownership_closed": true,
+          "records": 511,
+          "loss_markers": 1,
+          "complete_capture_rejected": true,
+          "application_continued": true
+        },
+        {
+          "case": "invalid-0",
+          "exit_code": 86,
+          "ownership_closed": true
+        },
+        {
+          "case": "invalid-1",
+          "exit_code": 86,
+          "ownership_closed": true
+        },
+        {
+          "case": "invalid-2",
+          "exit_code": 86,
+          "ownership_closed": true
+        },
+        {
+          "case": "invalid-3",
+          "exit_code": 86,
+          "ownership_closed": true
+        },
+        {
+          "case": "invalid-4",
+          "exit_code": 86,
+          "ownership_closed": true
+        },
+        {
+          "case": "invalid-5",
+          "exit_code": 86,
+          "ownership_closed": true
+        },
+        {
+          "case": "invalid-6",
+          "exit_code": 86,
+          "ownership_closed": true
+        },
+        {
+          "case": "invalid-7",
+          "exit_code": 86,
+          "ownership_closed": true
+        }
+      ],
       "parser_host_controls": {
         "source": "6b7d45227",
         "passed_tests": 39,
