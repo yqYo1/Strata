@@ -1633,6 +1633,10 @@ See[the compact diagnostic and180samples](../bench/results/2026-10-15-pr6-recove
 
 The next proposal fuses each tile-end barrier with the next tile's existing
 barrier after row publication,retaining a final barrier outside the loop.
+The private control/candidate source generator is maintained in
+[`qsa_barrier_sources.py`](../tools/sycl/qsa_barrier_sources.py);it has no build
+or production route yet. Its reversal check confines changes to namespace,
+direct-event retention and that barrier move;this does not establish race freedom.
 The selected compiler IR still has seven static barriers,including five per
 32-cell iteration;2051selected cells require65iterations. This is source/IR
 geometry,not measured barrier cost or final-machine throughput. Audit every
