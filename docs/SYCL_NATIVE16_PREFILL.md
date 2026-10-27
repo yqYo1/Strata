@@ -1705,13 +1705,17 @@ processes also pass all14cases each,including selected widths1..2051,64and2050
 boundaries,mixed per-query widths,three-trip distinct K/V witnesses,combined
 aliased/missing pages,two-byte-only alignment and physical262144 final addresses.
 Each supported call is bit-identical across original/control/merged and passes
-the independent scalar contract. All processes close normally,validation is
+the independent scalar contract;all fourteen scalar cases per process have
+zero output error. All processes close normally,validation is
 silent and no fresh fault appears. This is not full-model context fill.
 Actual-ID event clocks,resources and performance remain pending.
 After compact results are committed,the fourteen successful smoke trace/log/
 transaction files (3997428bytes) are retired. The isolated native generation
 remains for the next component/resource/timing gates;the selected original
 engine and twelve fixtures still pass unchanged shared admission.
+The eleven larger-component output/transaction files (55662bytes) are also
+retired after committing their useful results. Both closed check roots are
+absent;the next native consumer is actual-ID event/resource/timing qualification.
 See[the current build and gates](../bench/results/2026-10-15-pr6-recovery-audit/qsa-barrier-current.json).
 
 Complete prefill phase attribution requires three independent ledgers: route-owner
