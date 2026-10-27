@@ -13958,7 +13958,7 @@
   },
   "prefill_length_scaling_admission_v2_20261028": {
     "classification": "decision_support",
-    "status": "correction_curation_pending",
+    "status": "reviewed_execution_ineligible",
     "schedulable_now": false,
     "source_commit": "69d73085c248b71f475e578ec854719bf71359d8",
     "source_snapshot": {
@@ -13982,6 +13982,57 @@
       "execution_eligible": false
     },
     "correction": "Main69d73085c caps qualification andwholemodelrootat64MiB includingbinary/raw artifacts;positive finite checks forall fourtimings/rate fields;scopev2gate;clarifies firstvisitperlength. No inference/runtime/config/workload change. Fourhost controls pass,including33invalidclock mutations.",
+    "worker_closed": true,
+    "worker_closure_scope": "Original Orca source-audit worker only;no new research dispatch. New bounded native curation reviews the Main correction andboth original source/report snapshots.",
+    "ownership": "Native Codex gpt-6-luna/max correction curation only;Mainownsall execution;no steering.",
+    "retention": "Current exact corrected-source admission;preserve originalineligible verdict inhistory,indexandreview. Fold compactcorrectionfacts aftermodelclosure;retire transactionreports.",
+    "review": {
+      "status": "completed",
+      "model": "gpt-6-luna",
+      "reasoning_effort": "max",
+      "path": ".cache/strata-research/20261028/prefill-length-scaling-admission.review-v2.json",
+      "sha256": "16592aa69f089b0ba3f494be157906e52b7870f5a09f64ba8f9c7847ecd23614",
+      "bytes": 6221,
+      "execution_eligible": false,
+      "blocker": "Finalmodelclockgate rejects infinity,butclient prompt_ms gate muststopatfirstinvalidresponse."
+    }
+  },
+  "prefill_length_scaling_admission_v3_20261028": {
+    "classification": "decision_support",
+    "status": "correction_curation_pending",
+    "schedulable_now": false,
+    "source_commit": "e5f0b825624496e1ea3b88474fec2b8d50770819",
+    "source_snapshot": {
+      "tools/sycl/prefill_scaling_model.py": "a1cc93f931a069a62569239e369de8f2dcc0795da01849685086ef92ca8f8918",
+      "tools/prefill_scaling_bench.py": "9414d71ed5624ed12d15bd175ff9626cd11d1027556f85484157cf3c729b340a",
+      "tools/strata_bench.py": "80ab38c9ecbfe8fe9b7e425341803de10ff24b9c42f55bad7369f9c0938947f1",
+      "tools/sycl/engine_once.py": "ff573558f57533a8385f2cd8de0442d7e7584e8904d07faa00d0759379812a93",
+      "tools/sycl/measurement_owner.py": "bddd0c5e5020e882ca3404679420faec11e820dabce2ed4c72ef82b4c9c0874a",
+      "tools/sycl/runtime_probe.py": "750818a521dcdf28901638424e9789c2db22d85876226b6f5141a954bb9d41d6",
+      "tools/sycl/ur_validation.py": "2e41d84788dc9cc3c7435b18b43601b3ca79280ccb855414d7a36bae6bff83e7",
+      "tools/sycl/measurement_guards.py": "794e332c70aca0acadad4f26d0414548e023a02fd27b72ed78fc773674423ec8",
+      "tests/core/test_prefill_scaling_model.py": "5afa5c312d366ecf55dbdd2c091cea7669dab33744206fdbcc5e8ea3031f97ea",
+      "tools/test_strata_bench.py": "e35e50181c56070b0a150d70422bf43fab85c43154158f788e0b1df1d84299f0"
+    },
+    "original_audit": {
+      "scope": "prefill_length_scaling_admission_20261028",
+      "source_commit": "62062929f",
+      "report": ".cache/strata-research/20261028/prefill-length-scaling-admission.md",
+      "report_sha256": "45dd92142c2c3a5188996c0b7aa0a201baf2ba44f5625d104a57d25fb9d49552"
+    },
+    "previous_ineligible_correction": {
+      "scope": "prefill_length_scaling_admission_v2_20261028",
+      "source_commit": "69d73085c248b71f475e578ec854719bf71359d8",
+      "review_sha256": "16592aa69f089b0ba3f494be157906e52b7870f5a09f64ba8f9c7847ecd23614"
+    },
+    "correction": "Maine5f0b8256 addsfinitepositiveprompt_ms directlytoeachclientresponse eligibility;existingfailfast rejectsfirstbadresponsebeforefurtherHTTP. Originalv2aggregate64MiB/finalclockdefense retained. Newfocusedcontrolrejects8invalidtypes/values afterexactly2HTTPcalls(warmup+firstlong).",
+    "host_tests": {
+      "client": 21,
+      "evidence": 15,
+      "controller": 4,
+      "all_passed": true,
+      "GPU_executed": false
+    },
     "worker_closed": true,
     "worker_closure_scope": "Original Orca source-audit worker only;no new research dispatch. New bounded native curation reviews the Main correction andboth original source/report snapshots.",
     "ownership": "Native Codex gpt-6-luna/max correction curation only;Mainownsall execution;no steering.",
