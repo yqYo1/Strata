@@ -1831,6 +1831,18 @@ diagnostic workload; changed instrumentation needs its own cost qualification.
 The current raw UR subscriber caps output at 65536 records and its parser at
 16MiB. Prove the selected route's planned counts and collection budget before
 launching that capture; a budget-stopped capture cannot qualify complete coverage.
+The initial whole-model collection in the resource result has native source
+`bb71e78db`, rather than selected `6e40`; its histogram is not a qualified
+selected-route distribution. Later nested fixtures retain their separate scopes.
+For the next selected-source census, `6e40:src/prefill/moe_window.inc` already
+prints planned job histograms after the router readback and host route build,
+before the job loop, when `STRATA_PREFILL_LAYER_MAJOR_PROFILE=1` is set before
+exec. Shape census alone does not enable this output. The route header pins
+512 experts, top-k 10 and jobs of at most 8192 rows. Actual counts remain dynamic;
+these constants do not establish the selected request's job distribution or
+record budget. Reuse `bench_engine.extract_resource_profile` for ordered window,
+row/expert conservation and planned-versus-retired totals before extending the
+API/device ledger. This census is planned work, not complete device coverage.
 
 Complete prefill phase attribution requires three independent ledgers: route-owner
 planned operations, actual API results and collector device executions.
