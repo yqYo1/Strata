@@ -815,7 +815,7 @@
     "retention": "Closed raw output and one-use source retirement;see qsa_exact_lists.retention. Only the explicit53MB K-staging input remains,not the all-layer capture."
   },
   "qsa_k_staging_preflight": {
-    "stage": "source_preflight",
+    "stage": "host_proof_prepared",
     "GPU_executed": false,
     "model_adopted": false,
     "fixture": {
@@ -844,6 +844,20 @@
       "Actual compiler lowering/resource and bounded device correctness/performance gates;Xe2 bank map and physical traffic remain unknown."
     ],
     "research_review_sha256": "51b793f6da044d17ff91a1f2424338929f5b06fbc9c9e89d91ed877300f4a5b1",
-    "limits": "Review/proposal and one initialized actual-ID input only. No build or GPU comparison warranted yet;no hardware saturation or speed claim. Selected6e40/decode/1256slots unchanged."
+    "limits": "Review/proposal and one initialized actual-ID input only. No build or GPU comparison warranted yet;no hardware saturation or speed claim. Selected6e40/decode/1256slots unchanged.",
+    "source_proposal": {
+      "path": "tools/sycl/qsa_k_staging_sources.py",
+      "sha256": "253db19e744ea66c6212bec39a0de49d548fb8dee0bafeb579713c49bd8fb893",
+      "provenance": "Main authored; private generation scaffold from ownMIT39044cc68, native exact6e40prefix. No XeStrata application code. Live production and decode sources unchanged."
+    },
+    "host_proof_plan": {
+      "question": "Do the exact two uniform XOR stages preserve all8192source/destination coordinates and missing-row zero fill?",
+      "cases": "36 masks:all-valid,all-missing,two alternating masks and one missing row for each of32cells. Each case enumerates all8SGs,16tiles perSG,16lanes,4words. Independent dense transpose oracle. Both skipped-second-stage and wrong-register negative controls must be rejected.",
+      "source_gate": "Commit generator and this plan before execution;generate only from exact6e40prefix SHA4f9f815c...;reverse every declared native/wrapper substitution byte-for-byte.",
+      "acceptance": "All36 masks pass8192unique source/destination/bounds comparisons;both negative controls reject;all three generated source hashes recorded. This permits further source/API review,not a GPU build/run.",
+      "scope": "K32 staging only. K-only pitch held separately;no V/pitch/barrier/attention math/production dispatcher change. No compiler or GPU in this host proof.",
+      "runtime": "/usr/bin/python3.12 -I -S -B tools/sycl/qsa_k_staging_sources.py",
+      "retention": "Keep compact host counts,source/output hashes and decision in this existing result. One-use generator and comparison input retire when this bounded component comparison ends."
+    }
   }
 }
