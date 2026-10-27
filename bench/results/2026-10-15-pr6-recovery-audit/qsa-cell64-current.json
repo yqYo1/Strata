@@ -3625,7 +3625,7 @@
     }
   },
   "actual_id_build": {
-    "stage": "prepared",
+    "stage": "built",
     "source_commit": "20927a11e224fccf4cc5b654dce50939db6df11f",
     "input_sha256": {
       "tools/sycl/check_qsa_cell64.py": "e991b1bfdb09cf10967f367bf6c5a485439f7e2b6e02d01ec9acc49ce8e8fc9b",
@@ -3779,12 +3779,62 @@
       "total_cap": 536870912
     },
     "output_binary": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-cell64-v1/actual-id-bench",
-    "passed": false,
-    "complete": false,
+    "passed": true,
+    "complete": true,
     "active": false,
     "ownership_closed": true,
     "GPU_executed": false,
     "scope": "Two compile/link commands only. The seven kernel/runtime objects and original oracle/property fixtures remain unchanged. This is an extra fixture of the same live component generation,not an engine replacement. No benchmark execution follows merely from linking.",
-    "retention": "Immediate actual-ID numerical/event smoke and repeated512/6491comparison after independent harness review. Retire this extra fixture/object and success logs when the candidate closes;original13known-good artifacts remain."
+    "retention": "Immediate actual-ID numerical/event smoke and repeated512/6491comparison after independent harness review. Retire this extra fixture/object and success logs when the candidate closes;original13known-good artifacts remain.",
+    "binary": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-cell64-v1/actual-id-bench",
+      "bytes": 1590544,
+      "sha256": "50495869acf82f88d29f81b64abe3508c6b2b3a99fc60bef17d1f58377174f06"
+    },
+    "actual_compiled_inputs": {
+      "files": 664,
+      "canonical_sha256": "af14e80a28d6fc1e0c17d3258988d740baf3b2d4f743ba2f42dbf1f48cb86797",
+      "base": "actual_compiled_inputs.source_sha256",
+      "added_or_changed": {
+        "/home/yayoi/orca/workspaces/Strata/sycl/bench/sycl/qsa_cell64.cpp": "40fd04ac65885501a9efcfc4c7f69ed0aa9e8bc03030c75d90fdb5a8585c1640"
+      },
+      "omitted": [
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-cell64-v1/cell32.cpp",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-cell64-v1/cell64-checks.cpp",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-cell64-v1/cell64.cpp",
+        "/home/yayoi/orca/workspaces/Strata/sycl/bench/sycl/qsa_cell64_admission.hpp",
+        "/home/yayoi/orca/workspaces/Strata/sycl/bench/sycl/qsa_cell64_admit.cpp",
+        "/home/yayoi/orca/workspaces/Strata/sycl/include/strata/kernels/f16_bits.hpp",
+        "/home/yayoi/orca/workspaces/Strata/sycl/include/strata/kernels/kv_q4.hpp",
+        "/home/yayoi/orca/workspaces/Strata/sycl/include/strata/sycl/command_profile.hpp",
+        "/home/yayoi/orca/workspaces/Strata/sycl/include/strata/sycl/command_profile_hook.hpp",
+        "/home/yayoi/orca/workspaces/Strata/sycl/include/strata/sycl/compat/cuda_runtime.h",
+        "/home/yayoi/orca/workspaces/Strata/sycl/include/strata/sycl/cpu_wait_profile.hpp",
+        "/home/yayoi/orca/workspaces/Strata/sycl/include/strata/sycl/launch.hpp",
+        "/home/yayoi/orca/workspaces/Strata/sycl/src/kernels/sycl/prompt_attention.cpp",
+        "/home/yayoi/orca/workspaces/Strata/sycl/src/kernels/sycl/qsa_bf16_prefix.cpp",
+        "/home/yayoi/orca/workspaces/Strata/sycl/src/sycl/command_profile.cpp",
+        "/home/yayoi/orca/workspaces/Strata/sycl/src/sycl/compat.cpp",
+        "/home/yayoi/orca/workspaces/Strata/sycl/src/sycl/runtime.cpp",
+        "/usr/include/c++/13/bits/atomic_timed_wait.h",
+        "/usr/include/c++/13/bits/semaphore_base.h",
+        "/usr/include/c++/13/bits/std_thread.h",
+        "/usr/include/c++/13/bits/stl_map.h",
+        "/usr/include/c++/13/bits/stl_multimap.h",
+        "/usr/include/c++/13/bits/stl_tree.h",
+        "/usr/include/c++/13/bits/this_thread_sleep.h",
+        "/usr/include/c++/13/map",
+        "/usr/include/c++/13/semaphore",
+        "/usr/include/c++/13/stop_token",
+        "/usr/include/c++/13/thread",
+        "/usr/include/dlfcn.h",
+        "/usr/include/level_zero/ze_api.h",
+        "/usr/include/semaphore.h",
+        "/usr/include/x86_64-linux-gnu/bits/dl_find_object.h",
+        "/usr/include/x86_64-linux-gnu/bits/dlfcn.h",
+        "/usr/include/x86_64-linux-gnu/bits/semaphore.h",
+        "/usr/include/x86_64-linux-gnu/sys/time.h"
+      ]
+    }
   }
 }

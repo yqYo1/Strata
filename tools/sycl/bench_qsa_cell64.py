@@ -29,6 +29,30 @@ def inputs(revision):
     return pins
 
 
+def compiled_dependencies(record, plan):
+    """Verify the harness closure; retain only its delta from fixed objects."""
+    root = ROOT/'actual-id-build'
+    target, text = (root/'harness.d').read_text().replace('\\\n', ' ').split(':', 1)
+    b.guards.require(Path(target).resolve() == (root/'harness.o').resolve(), 'unexpected harness dependency target')
+    allowed = {Path(v['path']).resolve():v['sha256'] for v in
+               json.loads(Path(record['compiler_inputs']['path']).read_text())}
+    allowed.update({(P/n).resolve():s for n,s in record['input_sha256'].items()})
+    allowed.update({Path(n).resolve():s for n,s in record['generated'].items()})
+    allowed[(P/CPP).resolve()] = plan['input_sha256'][CPP]
+    actual = {}
+    for name in shlex.split(text):
+        path = Path(name).resolve();sha = b.digest(path)
+        b.guards.require(allowed.get(path) == sha, 'unfrozen harness compiler dependency: ' + str(path))
+        actual[str(path)] = sha
+    b.guards.require(len(actual) > 100, 'incomplete harness dependency closure')
+    original = record['actual_compiled_inputs']['source_sha256']
+    return dict(files=len(actual),
+        canonical_sha256=hashlib.sha256(json.dumps(actual, sort_keys=True, separators=(',', ':')).encode()).hexdigest(),
+        base='actual_compiled_inputs.source_sha256',
+        added_or_changed={p:s for p,s in actual.items() if original.get(p) != s},
+        omitted=sorted(p for p in original if p not in actual))
+
+
 def admit(record, plan, executable=False):
     b.admission(record, True)
     # Recover the original build controller from Git. Later controller-only
@@ -44,6 +68,8 @@ def admit(record, plan, executable=False):
     if executable:
         b.guards.require(plan['stage'] == 'built' and plan['passed'] and plan['ownership_closed'] and
             b.digest(plan['binary']['path']) == plan['binary']['sha256'], 'closed actual-ID executable required')
+        b.guards.require(compiled_dependencies(record, plan) == plan['actual_compiled_inputs'],
+                         'actual-ID harness dependency closure changed')
 
 
 def prepare():
@@ -99,22 +125,11 @@ def build():
             entry, _, _ = owner.run(str(index), command, plan['environment'], P, **plan['budgets'])
             b.guards.require(b.supervision.closed(entry) and entry['exit_code'] == 0, 'actual-ID harness build failed')
         admit(record, plan)
-        allowed = {Path(v['path']).resolve():v['sha256'] for v in json.loads(Path(record['compiler_inputs']['path']).read_text())}
-        allowed.update({(P/n).resolve():s for n,s in record['input_sha256'].items()})
-        allowed.update({Path(n).resolve():s for n,s in record['generated'].items()})
-        allowed[(P/CPP).resolve()] = plan['input_sha256'][CPP]
-        target, deptext = (root/'harness.d').read_text().replace('\\\n',' ').split(':',1)
-        b.guards.require(Path(target).resolve() == (root/'harness.o').resolve(), 'unexpected harness dependency target')
-        actual = {}
-        for name in shlex.split(deptext):
-            path = Path(name).resolve();sha = b.digest(path)
-            b.guards.require(allowed.get(path) == sha, 'unfrozen harness compiler dependency: ' + str(path))
-            actual[str(path)] = sha
-        b.guards.require(len(actual) > 100, 'incomplete harness dependency closure')
+        actual = compiled_dependencies(record, plan)
         binary = Path(plan['output_binary'])
         plan.update(stage='built', passed=True, complete=True,
             binary=dict(path=str(binary), bytes=binary.stat().st_size, sha256=b.digest(binary)),
-            actual_compiled_inputs=dict(files=len(actual), source_sha256=actual))
+            actual_compiled_inputs=actual)
     except BaseException as error:
         plan.update(stage='failed', passed=False, complete=False, error=repr(error))
     finally:

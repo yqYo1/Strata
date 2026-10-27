@@ -1748,6 +1748,38 @@ these are not physical traffic,occupancy or speed measurements. Actual local
 bindings/alignment and a successful128x1x1launch remain pending before broader
 advancement. No numerical or model work is qualified by this query.
 
+The independently planned numerical stages now pass. Corrected controller
+`1815c5d2d`/smoke plan`42fefaa96`closes three fresh native processes;extended
+plan`7821ac05a`closes another three,17main cases each. All51extended case samples
+report zero final-output error against their own scalar32/64recurrence,with
+guards and input immutability intact,silent validation and no fresh fault.
+Coverage includes widths127/128/129/2051,mixed widths,distinct K/V witnesses,
+shared/missing pages and the physical262144final-address component. It is not
+full-model context fill or a model-quality tolerance.
+
+Successful traced attention calls use one-dimensional WG128 and18arguments.
+The eight active local arguments total20032/39744bytes;the declared source
+budget also includes one unused4byte Q accessor. The score pointer is argument15,
+not declaration-order argument3. The first observer at`659384563`therefore
+remains failed;its native process exited0,with no fresh fault,and a separately
+committed closed-data replay verifies the correction. No kernel/math change
+was made to resolve that observer failure. Hardware rounding and occupancy
+remain unmeasured. The new actual-ID harness`0a3e79e98`uses scalar spot checks
+per cadence and full-output deltas;its compile and independent review precede
+execution. No new component speed or model throughput is recorded yet.
+
+The actual-ID harness now links successfully at native source`20927a11e` and
+recipe`d05e23ca3`,reusing the same seven component objects. Its664compiled
+dependencies are checked against the pinned source/toolchain set;the compact
+record stores their difference from the original closure rather than a second
+full map. Independent Orca Luna research and native Luna/max review close.
+The review reverses the report's proposed endpoint change:global live cells are39259
+and the query's current-token cell is valid at`position`,with`n_kv=position+1`.
+The source-bound small-input range excludes the generic maximum-BF16 spacing
+edge. Observer inactivity and asymmetric direct-event capture remain explicit
+pre-execution/timing qualifications. Neither smoke nor speed has run on this
+new harness;the selected engine and decode path remain unchanged.
+
 Complete prefill phase attribution requires three independent ledgers: route-owner
 planned operations, actual API results and collector device executions.
 [`work_ledger.py`](../tools/sycl/work_ledger.py) implements the host reconciliation
