@@ -1430,7 +1430,7 @@
     }
   },
   "check_plan": {
-    "stage": "prepared",
+    "stage": "closed",
     "mode": "resources",
     "source_commit": "ff022a115ce7c1c9105639f7bf09e8fad4acc372",
     "controller_inputs": {
@@ -2288,6 +2288,92 @@
               "exact_original": true
             }
           ]
+        }
+      ],
+      "passed": true,
+      "complete": true,
+      "ownership_closed": true,
+      "postchecks_complete": true,
+      "postcheck_errors": [],
+      "fresh_faults": [],
+      "boot_unchanged": true,
+      "driver_after": {
+        "pci": "/sys/bus/pci/devices/0000:05:00.0",
+        "driver": "xe",
+        "vendor": "0x8086",
+        "device": "0xe20c",
+        "kernel": "7.0.0-38-generic",
+        "devcoredump": false
+      }
+    },
+    {
+      "mode": "resources",
+      "source_commit": "ff022a115ce7c1c9105639f7bf09e8fad4acc372",
+      "observations": [
+        {
+          "process": 0,
+          "pid": 4151643,
+          "exit_code": 0,
+          "ownership_closed": true,
+          "validation": {
+            "pid": 4151643,
+            "loader": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_loader.so.0.12.0",
+            "threads_before": 1,
+            "preinit": 37,
+            "config_enabled": true,
+            "first_init": true,
+            "dispatch_result": 46,
+            "output_untouched": true,
+            "retained_reference_until_exit": true,
+            "runtime_teardown_qualified": false
+          },
+          "session_removed": true,
+          "checks": [
+            {
+              "kind": "checked",
+              "queries": 3,
+              "cells": 39259,
+              "guards": true,
+              "inputs_immutable": true,
+              "exact_original": true
+            }
+          ],
+          "resources": {
+            "calls": {
+              "2": 2,
+              "0": 2,
+              "1": 2
+            },
+            "properties": {
+              "2": {
+                "SIMD": 16,
+                "arguments": 18,
+                "raw_SLM": 32,
+                "private_memory_descriptor": 0,
+                "spill_memory_descriptor": 12480,
+                "GRF": 128
+              },
+              "0": {
+                "SIMD": 16,
+                "arguments": 18,
+                "raw_SLM": 32,
+                "private_memory_descriptor": 0,
+                "spill_memory_descriptor": 12480,
+                "GRF": 128
+              },
+              "1": {
+                "SIMD": 16,
+                "arguments": 18,
+                "raw_SLM": 32,
+                "private_memory_descriptor": 0,
+                "spill_memory_descriptor": 12480,
+                "GRF": 128
+              }
+            },
+            "conserved_device_ns": 177860284,
+            "table_rows": 22,
+            "limits": "Spill/private are compiler descriptors,not measured traffic,occupancy or pure barrier instruction cost."
+          }
         }
       ],
       "passed": true,

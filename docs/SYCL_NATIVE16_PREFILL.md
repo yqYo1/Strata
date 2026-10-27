@@ -1712,7 +1712,14 @@ Three traced actual-ID smoke processes also pass on the3-query fixture. The
 control/merged wrappers retain their actual submission events and return valid
 positive intervals;all arms preserve exact original output,packed bytes,guards
 and immutable inputs. All processes close normally with silent validation and
-no fresh fault. Resource descriptors and performance remain pending.
+no fresh fault. The subsequent profiled3-query resource gate also passes:
+original/control/merged each execute twice with equal SIMD16,18arguments,
+128GRF,raw-static-SLM32,private0 and12480-byte spill descriptors. Source dynamic
+local payload remains20036bytes. The complete22-row device table conserves
+177860284ns;this whole-process sum includes copies and is not attention latency,
+physical traffic,occupancy or hardware saturation. The collector session is
+removed,validation is silent and no fresh fault appears. Performance remains
+pending under the already frozen108sample criteria.
 After compact results are committed,the fourteen successful smoke trace/log/
 transaction files (3997428bytes) are retired. The isolated native generation
 remains for the next component/resource/timing gates;the selected original
