@@ -1385,9 +1385,9 @@
     }
   ],
   "check_plan": {
-    "stage": "closed",
-    "mode": "smoke",
-    "source_commit": "7172fcc007835a1670696e65331872298274428a",
+    "stage": "prepared",
+    "mode": "component",
+    "source_commit": "c535a64bbddb5d6f27e6f8e209e9f36b122084c4",
     "controller_inputs": {
       "tools/sycl/check_qsa_partial.py": "4191d219a2d1ececdfb98903350d2c49be1a489bfe25e4bffbe4ce45fe1f1a24",
       "tools/sycl/measure_down_scatter.py": "6d92d7212c7cad9bb7fdee6ef6877528b6240f990c7f74d032394933387ed2de",
@@ -1536,19 +1536,18 @@
           "STRATA_SYCL_VERIFY_NATIVE_CAPTURE": "0",
           "SYCL_CACHE_PERSISTENT": "0",
           "ZES_ENABLE_SYSMAN": "0",
-          "UR_ENABLE_LAYERS": "UR_LAYER_TRACING,UR_LAYER_PARAMETER_VALIDATION",
-          "UR_LOG_TRACING": "level:info;flush:info;output:stderr",
+          "UR_ENABLE_LAYERS": "UR_LAYER_PARAMETER_VALIDATION",
           "UR_LOG_VALIDATION": "level:warning;flush:warning;output:stderr",
           "UR_LOG_LOADER": "level:warning;flush:warning;output:stderr",
           "UR_LOG_LEVEL_ZERO": "level:warning;flush:warning;output:stderr",
-          "TMPDIR": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-partial-qcache-v1/check-smoke-v2/default/tmp",
-          "XDG_CACHE_HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-partial-qcache-v1/check-smoke-v2/default/cache",
+          "TMPDIR": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-partial-qcache-v1/check-component-v2/default/tmp",
+          "XDG_CACHE_HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-partial-qcache-v1/check-component-v2/default/cache",
           "LD_PRELOAD": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/ur-validation-preload-v2/libstrata_ur_validation.so",
           "STRATA_UR_PROBE_EXPECTED_LOADER": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_loader.so.0.12.0"
         },
         "command": [
           "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-partial-qcache-v1/numerical",
-          "--smoke",
+          "--component",
           "default"
         ],
         "session": null
@@ -1571,19 +1570,18 @@
           "STRATA_SYCL_VERIFY_NATIVE_CAPTURE": "0",
           "SYCL_CACHE_PERSISTENT": "0",
           "ZES_ENABLE_SYSMAN": "0",
-          "UR_ENABLE_LAYERS": "UR_LAYER_TRACING,UR_LAYER_PARAMETER_VALIDATION",
-          "UR_LOG_TRACING": "level:info;flush:info;output:stderr",
+          "UR_ENABLE_LAYERS": "UR_LAYER_PARAMETER_VALIDATION",
           "UR_LOG_VALIDATION": "level:warning;flush:warning;output:stderr",
           "UR_LOG_LOADER": "level:warning;flush:warning;output:stderr",
           "UR_LOG_LEVEL_ZERO": "level:warning;flush:warning;output:stderr",
-          "TMPDIR": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-partial-qcache-v1/check-smoke-v2/control/tmp",
-          "XDG_CACHE_HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-partial-qcache-v1/check-smoke-v2/control/cache",
+          "TMPDIR": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-partial-qcache-v1/check-component-v2/control/tmp",
+          "XDG_CACHE_HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-partial-qcache-v1/check-component-v2/control/cache",
           "LD_PRELOAD": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/ur-validation-preload-v2/libstrata_ur_validation.so",
           "STRATA_UR_PROBE_EXPECTED_LOADER": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_loader.so.0.12.0"
         },
         "command": [
           "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-partial-qcache-v1/numerical",
-          "--smoke",
+          "--component",
           "control"
         ],
         "session": null
@@ -1606,19 +1604,18 @@
           "STRATA_SYCL_VERIFY_NATIVE_CAPTURE": "0",
           "SYCL_CACHE_PERSISTENT": "0",
           "ZES_ENABLE_SYSMAN": "0",
-          "UR_ENABLE_LAYERS": "UR_LAYER_TRACING,UR_LAYER_PARAMETER_VALIDATION",
-          "UR_LOG_TRACING": "level:info;flush:info;output:stderr",
+          "UR_ENABLE_LAYERS": "UR_LAYER_PARAMETER_VALIDATION",
           "UR_LOG_VALIDATION": "level:warning;flush:warning;output:stderr",
           "UR_LOG_LOADER": "level:warning;flush:warning;output:stderr",
           "UR_LOG_LEVEL_ZERO": "level:warning;flush:warning;output:stderr",
-          "TMPDIR": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-partial-qcache-v1/check-smoke-v2/partialq8/tmp",
-          "XDG_CACHE_HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-partial-qcache-v1/check-smoke-v2/partialq8/cache",
+          "TMPDIR": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-partial-qcache-v1/check-component-v2/partialq8/tmp",
+          "XDG_CACHE_HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-partial-qcache-v1/check-component-v2/partialq8/cache",
           "LD_PRELOAD": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/ur-validation-preload-v2/libstrata_ur_validation.so",
           "STRATA_UR_PROBE_EXPECTED_LOADER": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_loader.so.0.12.0"
         },
         "command": [
           "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-partial-qcache-v1/numerical",
-          "--smoke",
+          "--component",
           "partialq8"
         ],
         "session": null
