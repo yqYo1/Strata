@@ -1,6 +1,6 @@
 {
-  "stage": "failed",
-  "source_commit": "92d23f9f03323b3e0dd9703a4fa6774fb1919e08",
+  "stage": "prepared",
+  "source_commit": "d10461edf024ee085c0cbda3ce26c78dedcd9a85",
   "native_source": "6e40afc1beddd059ee518617f6c1efce1da14aca",
   "binary": {
     "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/strata",
@@ -284,7 +284,7 @@
     "tools/sycl/memory_trace_device.py": "9fb86c4f0f025b3267ef93dbb9ac9147ac8fa40dbdc7020e3b0b297bea834d50",
     "tools/sycl/memory_trace_model.py": "6ebe4b97b55f641aacbe094815e2471fd283556421859fc86b398323be94c206",
     "tools/sycl/memory_trace_protocol_test.py": "ab23e280049bebcd32f89baeb272c3c8a55b7aa044f28db8ff8800ce9ca91f95",
-    "tools/sycl/model_work_census.py": "8c70223312d723548d9faf8606861b6fcae47d0612a7e5b5ef4f9ba37b11b20e",
+    "tools/sycl/model_work_census.py": "f103aa5b7d4269be4aa179913e8c46bb4380508655d6572060e7d092c09e0b14",
     "tools/sycl/mtp_model_observer.py": "d08adf85cd4f644ec651ba6b598d7f431930aa6c8dbb6e7a08b941b2bf1ceeff",
     "tools/sycl/mtp_prefill.py": "416b20f35735c2719244b1b8c2bb9dc1d0f06a44d90d1d83306d9c3aa85b0a7d",
     "tools/sycl/mtp_resident_control.py": "fcc35c63d9c4da33e1b9fea8f2ab5fa15b80a909ce9f8b29c713d74f1530c9c4",
@@ -538,7 +538,7 @@
   },
   "plans": {
     "smoke": {
-      "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/selected-model-work-census-v2/smoke",
+      "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/selected-model-work-census-v3/smoke",
       "config": {
         "exe": "/home/yayoi/orca/workspaces/Strata/sycl/tools/sycl/engine_once.py",
         "args": [
@@ -593,17 +593,17 @@
           "strata"
         ],
         "host": "127.0.0.1",
-        "log": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/selected-model-work-census-v2/smoke/engine.stderr",
+        "log": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/selected-model-work-census-v3/smoke/engine.stderr",
         "engine_silence_s": 480,
         "parallel": 1,
         "open_browser": false,
         "env": {}
       },
-      "expected_tokens": 39261,
+      "expected_tokens": 39260,
       "expected_window_pairs": [
         [
           0,
-          39260
+          39259
         ]
       ],
       "request_sha256": "1fd63b8c67a1888e443800b5c6d339ca116df2cb91941e6f332b6adf74275b3a",
@@ -657,7 +657,7 @@
         "STRATA_SYCL_SELECT_CYCLIC": "0",
         "STRATA_SYCL_PROMPT_K_CELL_MAJOR": "0",
         "STRATA_SYCL_PROMPT_NATIVE_KV_MIN": "0",
-        "XDG_CACHE_HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/selected-model-work-census-v2/smoke/cache",
+        "XDG_CACHE_HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/selected-model-work-census-v3/smoke/cache",
         "STRATA_SYCL_PREFILL_NATIVE16": "bf16",
         "STRATA_SYCL_PREFILL_QSA_MATH": "bf16-prefix-ordered-exp",
         "STRATA_SYCL_PREFILL_NATIVE16_BACKEND": "vllm",
@@ -668,8 +668,8 @@
         "STRATA_SYCL_SCORE_QUERY_TILE": "8",
         "STRATA_SYCL_SCORE_HEAD_PARALLEL": "1",
         "STRATA_SYCL_PREFILL_SCORE_GEMM": "1",
-        "TMPDIR": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/selected-model-work-census-v2/smoke/tmp",
-        "STRATA_MEASUREMENT_ROOT": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/selected-model-work-census-v2/smoke",
+        "TMPDIR": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/selected-model-work-census-v3/smoke/tmp",
+        "STRATA_MEASUREMENT_ROOT": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/selected-model-work-census-v3/smoke",
         "ZES_ENABLE_SYSMAN": "0",
         "STRATA_SYCL_PREFILL_GDN_COLUMNS": "4",
         "STRATA_SYCL_PREFILL_GDN_CHUNK64": "0",
@@ -691,7 +691,7 @@
         "STRATA_PREFILL_TRANSITION_PROFILE": "0",
         "STRATA_PREFILL_LAYER_MAJOR_PROFILE": "1",
         "UR_ENABLE_LAYERS": "UR_LAYER_PARAMETER_VALIDATION",
-        "UR_LOG_VALIDATION": "level:warning;flush:warning;output:file,/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/selected-model-work-census-v2/smoke/validation.log",
+        "UR_LOG_VALIDATION": "level:warning;flush:warning;output:file,/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/selected-model-work-census-v3/smoke/validation.log",
         "UR_LOG_LOADER": "level:warning;flush:warning;output:stderr",
         "UR_LOG_LEVEL_ZERO": "level:warning;flush:warning;output:stderr",
         "STRATA_TRACE": "1",
@@ -701,19 +701,19 @@
         "STRATA_PREFILL_LAYER_MAJOR_GDN_PROFILE": "0",
         "ZE_ENABLE_ALT_DRIVERS": "/usr/lib/x86_64-linux-gnu/libze_intel_gpu.so.1.17.39758",
         "PYTHONNOUSERSITE": "1",
-        "PYTHONPYCACHEPREFIX": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/selected-model-work-census-v2/smoke/cache/python"
+        "PYTHONPYCACHEPREFIX": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/selected-model-work-census-v3/smoke/cache/python"
       },
       "inputs": {
-        "config.json": "e76461dca9a5de1d598d3f052d8ceaedfbdee5015fb6ed19f186b3be4539ff81",
+        "config.json": "f5619a240a4ef309a0081fc308b7a822993fc79a7af04fc55e83239e4d38d235",
         "plan.json": "08cfd654f8512bb484582b232cb0361de9c228e1eb5f4cec465aba42cf5195ef"
       },
       "command": [
         "/bin/sh",
         "/home/yayoi/orca/workspaces/Strata/sycl/bench.sh",
         "--config",
-        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/selected-model-work-census-v2/smoke/config.json",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/selected-model-work-census-v3/smoke/config.json",
         "--port",
-        "56301",
+        "57015",
         "--prefill-only",
         "--prefill-tokens",
         "32768",
@@ -727,7 +727,7 @@
         "--ready-timeout",
         "600",
         "--out",
-        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/selected-model-work-census-v2/smoke/bench"
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/selected-model-work-census-v3/smoke/bench"
       ],
       "budgets": {
         "wall": 1200,
@@ -739,7 +739,7 @@
       }
     },
     "long": {
-      "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/selected-model-work-census-v2/long",
+      "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/selected-model-work-census-v3/long",
       "config": {
         "exe": "/home/yayoi/orca/workspaces/Strata/sycl/tools/sycl/engine_once.py",
         "args": [
@@ -794,7 +794,7 @@
           "strata"
         ],
         "host": "127.0.0.1",
-        "log": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/selected-model-work-census-v2/long/engine.stderr",
+        "log": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/selected-model-work-census-v3/long/engine.stderr",
         "engine_silence_s": 480,
         "parallel": 1,
         "open_browser": false,
@@ -862,7 +862,7 @@
         "STRATA_SYCL_SELECT_CYCLIC": "0",
         "STRATA_SYCL_PROMPT_K_CELL_MAJOR": "0",
         "STRATA_SYCL_PROMPT_NATIVE_KV_MIN": "0",
-        "XDG_CACHE_HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/selected-model-work-census-v2/long/cache",
+        "XDG_CACHE_HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/selected-model-work-census-v3/long/cache",
         "STRATA_SYCL_PREFILL_NATIVE16": "bf16",
         "STRATA_SYCL_PREFILL_QSA_MATH": "bf16-prefix-ordered-exp",
         "STRATA_SYCL_PREFILL_NATIVE16_BACKEND": "vllm",
@@ -873,8 +873,8 @@
         "STRATA_SYCL_SCORE_QUERY_TILE": "8",
         "STRATA_SYCL_SCORE_HEAD_PARALLEL": "1",
         "STRATA_SYCL_PREFILL_SCORE_GEMM": "1",
-        "TMPDIR": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/selected-model-work-census-v2/long/tmp",
-        "STRATA_MEASUREMENT_ROOT": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/selected-model-work-census-v2/long",
+        "TMPDIR": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/selected-model-work-census-v3/long/tmp",
+        "STRATA_MEASUREMENT_ROOT": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/selected-model-work-census-v3/long",
         "ZES_ENABLE_SYSMAN": "0",
         "STRATA_SYCL_PREFILL_GDN_COLUMNS": "4",
         "STRATA_SYCL_PREFILL_GDN_CHUNK64": "0",
@@ -896,7 +896,7 @@
         "STRATA_PREFILL_TRANSITION_PROFILE": "0",
         "STRATA_PREFILL_LAYER_MAJOR_PROFILE": "1",
         "UR_ENABLE_LAYERS": "UR_LAYER_PARAMETER_VALIDATION",
-        "UR_LOG_VALIDATION": "level:warning;flush:warning;output:file,/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/selected-model-work-census-v2/long/validation.log",
+        "UR_LOG_VALIDATION": "level:warning;flush:warning;output:file,/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/selected-model-work-census-v3/long/validation.log",
         "UR_LOG_LOADER": "level:warning;flush:warning;output:stderr",
         "UR_LOG_LEVEL_ZERO": "level:warning;flush:warning;output:stderr",
         "STRATA_TRACE": "1",
@@ -906,19 +906,19 @@
         "STRATA_PREFILL_LAYER_MAJOR_GDN_PROFILE": "0",
         "ZE_ENABLE_ALT_DRIVERS": "/usr/lib/x86_64-linux-gnu/libze_intel_gpu.so.1.17.39758",
         "PYTHONNOUSERSITE": "1",
-        "PYTHONPYCACHEPREFIX": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/selected-model-work-census-v2/long/cache/python"
+        "PYTHONPYCACHEPREFIX": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/selected-model-work-census-v3/long/cache/python"
       },
       "inputs": {
-        "config.json": "6b18b250af1fed31bdc43e3de5ea0d9d7431930ae454aa7d5de226abc0b703c1",
+        "config.json": "861276b3d3fc407dcbef90ed449a8c9d73fb50d7c2ead9dd07624e67be971155",
         "plan.json": "08cfd654f8512bb484582b232cb0361de9c228e1eb5f4cec465aba42cf5195ef"
       },
       "command": [
         "/bin/sh",
         "/home/yayoi/orca/workspaces/Strata/sycl/bench.sh",
         "--config",
-        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/selected-model-work-census-v2/long/config.json",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/selected-model-work-census-v3/long/config.json",
         "--port",
-        "41215",
+        "42943",
         "--prefill-only",
         "--prefill-tokens",
         "98304",
@@ -932,7 +932,7 @@
         "--ready-timeout",
         "600",
         "--out",
-        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/selected-model-work-census-v2/long/bench"
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/selected-model-work-census-v3/long/bench"
       ],
       "budgets": {
         "wall": 1200,
@@ -944,69 +944,19 @@
       }
     }
   },
-  "checks": [
-    {
-      "mode": "smoke",
-      "passed": false,
-      "complete": false,
-      "ownership_closed": true,
-      "native_launched": true,
-      "error": "RuntimeError('benchmark owner/protocol failed')",
-      "protocol_qualified": false,
-      "postchecks_complete": true,
-      "postcheck_errors": [],
-      "fresh_faults": [],
-      "boot_unchanged": true,
-      "driver_after": {
-        "pci": "/sys/bus/pci/devices/0000:05:00.0",
-        "driver": "xe",
-        "vendor": "0x8086",
-        "device": "0xe20c",
-        "kernel": "7.0.0-38-generic",
-        "devcoredump": false
-      },
-      "failure_diagnosis": {
-        "mechanism": "Both real request gates complete,then the official benchmark prints its normal Results/Report summary. The controller called strict io.exit without draining this documented nonprotocol output. Owner marks unexpected trailing protocol;benchmark/native exit0.",
-        "controller_source": "92d23f9f03323b3e0dd9703a4fa6774fb1919e08",
-        "native_exit_code": 0,
-        "benchmark_exit_code": 0,
-        "long_requests_completed": 1,
-        "actual_input_tokens": 39260,
-        "actual_prefill_rows": 39259,
-        "expected_input_tokens": 39261,
-        "expected_prefill_rows": 39260,
-        "additional_predeclared_mismatches": [
-          "The unchanged fixed short request has39260tokens,not the predicted39261.",
-          "Native requested_mode10/effective_mode10 capacity is39259rows for this short request,not81920;long capacity remains81920."
-        ],
-        "source_census_offline_diagnostic_only": {
-          "windows": 48,
-          "jobs": 18796,
-          "dequants": 17580,
-          "row_and_retired_conservation": true,
-          "original_run_passed": false,
-          "scope": "Retrospective diagnostic for correction only;not eligibility or advancement evidence."
-        },
-        "evidence": {
-          "benchmark_stdout_sha256": "4e1cf99b22e25d71405b2f112bac7ceb9997faed71dfa38f263efad89bb1af8a",
-          "engine_log_sha256": "fff53a18e8cee11c9e971cbfd45a96c4c8c8a8527e2579c88a6f75060fcf0b04"
-        },
-        "next": "Commit explicit bounded benchmark-summary drain and host regression including the trailer;declare correct fixed short extent and per-casecapacity in a new cohort. Preserve this failed cohort;do not launch its long arm."
-      }
-    }
-  ],
+  "checks": [],
   "active": false,
   "ownership_closed": true,
   "complete": false,
   "passed": false,
   "model_adopted": false,
   "previous_failure": {
-    "commit": "55b0ae1b063e6193fb69629572c4328e2bf716a7",
+    "commit": "2c11c26895459a6417519f04701c51a56581e02a",
     "path": "bench/results/2026-10-15-pr6-recovery-audit/model-work-census-current.json",
-    "sha256": "3f83bcc17d51855c9d8b9025ae4d88f2b6beddeb2420e3b02e61d471de4a8b20",
-    "source_commit": "3e00a11b0d76d20173101d12d8a81afbb415ae43",
+    "sha256": "d1f9287f94b511629344fbca3bbe30f4f52093f5103e5b51ae0213107abb47f8",
+    "source_commit": "92d23f9f03323b3e0dd9703a4fa6774fb1919e08",
     "native_exit_code": 0,
-    "long_requests_completed": 0,
+    "long_requests_completed": 1,
     "passed": false
   },
   "question": "Obtain source-planned MoE jobs on the actual selected route and verify retired totals before a complete API/device ledger.",

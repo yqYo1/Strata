@@ -1870,8 +1870,12 @@ native exit0,but its owner fails because the controller rejects the normal print
 Results/Report trailer. The frozen short extent was also one token too large,and
 its actual mode10 capacity is39259rows rather than81920. Its offline48-window,
 18796-job conservation check is correction evidence only;this cohort remains
-failed and its long arm is unstarted. Correct the bounded trailer drain and
-prospective per-case extent/capacity before another cohort. The completion-receipt
+failed and its long arm is unstarted. Controller`d10461edf` adds an explicit bounded
+human-summary drain,keeps rejection of an extra gate,and prospectively declares
+39260input/39259prefillrows/capacity39259 for the unchanged fixed short request.
+The long request is unchanged. Three host tests pass,including the real begin/end
+protocol,normal report output,wrong command and extra-gate rejection. Native
+execution of a fresh frozen cohort is still required. The completion-receipt
 repair at`3e00a11b0` remains separate. This is source-planned work on the pinned6e40
 schema,not GPU execution coverage or clean throughput evidence. The original preflight
 refusal at`5575402af` remains in Git;excluding unrelated standalone host tests did
