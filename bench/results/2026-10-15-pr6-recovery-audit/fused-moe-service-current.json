@@ -567,5 +567,404 @@
       }
     ],
     "translator_sha256": "b2796ec080f1c9a1aa5f0084c0db771331bdd51809983dce3f9220a8a0ea677b"
+  },
+  "qsa_exact_lists": {
+    "stage": "prepared",
+    "source_commit": "afd7fd025edb8ff391464bece33cae4c3c2adad4",
+    "native_source": "6e40afc1beddd059ee518617f6c1efce1da14aca",
+    "binary": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/strata",
+      "bytes": 22190000,
+      "sha256": "22182f1a5e62e5f4259ce49a75ae44afbd988166ec79324816e499ff37ef60e4"
+    },
+    "runtime_sha256": "09ad358e12f6ef58bfc0a978519927863f3d09949a033a1e224db95997647d97",
+    "template_sha256": "9543297abc2ce0b4530ee6984d55366e735881caf42a08239f3494d655f9e10d",
+    "boot": "cfda0b6a-7c13-4fe2-bdf5-8f9202770840",
+    "NEO": "/usr/lib/x86_64-linux-gnu/libze_intel_gpu.so.1.17.39758",
+    "probe": {
+      "library": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/ur-validation-preload-v2/libstrata_ur_validation.so",
+        "sha256": "1d4e69d672d55fa0a126ae43b7b4743482cccca7e2f2bc22e0db2bfdad5bdc7c"
+      },
+      "loader": {
+        "path": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_loader.so.0.12.0",
+        "sha256": "bb6e1311850e4b1a924e42acae80c2b3610934625a4985aaa67967abe31356fc"
+      }
+    },
+    "configuration": {
+      "exe": "/home/yayoi/orca/workspaces/Strata/sycl/tools/sycl/engine_once.py",
+      "args": [
+        "--pack",
+        "/home/yayoi/.local/share/strata-sycl/packs/qwen3.8-flash-next-iq3_s",
+        "--native",
+        "/home/yayoi/.local/share/strata-sycl/models/qwen3.8-flash-next-iq3_s/IQ3_S/Qwen3.8-Flash-Next-GSQ-RCO-IQ3_S-00001-of-00002.gguf",
+        "--max-context",
+        "131072",
+        "--kv",
+        "int8",
+        "--kv-resident",
+        "131072",
+        "--expert-cache",
+        "1256",
+        "--expert-profile",
+        "/home/yayoi/orca/workspaces/Strata/sycl/data/expert-profile.bin",
+        "--expert-cache-per-layer",
+        "--pool-workers",
+        "5",
+        "--pcie-frac",
+        "0",
+        "--adapt-swaps",
+        "0",
+        "--conversation-cache-mib",
+        "0",
+        "--prompt-cache",
+        "0",
+        "--turn-token",
+        "-1",
+        "--suffix-draft",
+        "0",
+        "--greedy",
+        "--no-spec-split",
+        "--short-read",
+        "0",
+        "--spec",
+        "4",
+        "--mtp",
+        "/home/yayoi/.local/share/strata-sycl/mtp/rt",
+        "--prefill",
+        "8192",
+        "--vram-reserve-mib",
+        "700",
+        "--no-coupled-draft",
+        "--no-token-graph"
+      ],
+      "cwd": "/home/yayoi/orca/workspaces/Strata/sycl",
+      "tokenizer": "/home/yayoi/.local/share/strata-sycl/packs/qwen3.8-flash-next-iq3_s/tokenizer",
+      "model_name": "qwen3.8-flash-next-iq3_s-primary",
+      "aliases": [
+        "strata"
+      ],
+      "host": "127.0.0.1",
+      "log": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-exact-lists-v1/engine.stderr",
+      "engine_silence_s": 480,
+      "parallel": 1,
+      "open_browser": false,
+      "env": {}
+    },
+    "profile": {
+      "path": "/home/yayoi/orca/workspaces/Strata/sycl/data/expert-profile.bin",
+      "source_path": "data/expert-profile.bin",
+      "identity": {
+        "realpath": "/home/yayoi/orca/workspaces/Strata/sycl/data/expert-profile.bin",
+        "dev": 40,
+        "ino": 1160754,
+        "bytes": 196632,
+        "mtime_ns": 1790912310870254601,
+        "ctime_ns": 1790912310870254601
+      },
+      "sha256": "8f59b4aa8873209dff11c11e37bcda9529a1335b724a1afeea37bf6388975baf"
+    },
+    "plan": {
+      "command": [
+        "/bin/sh",
+        "/home/yayoi/orca/workspaces/Strata/sycl/bench.sh",
+        "--config",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-exact-lists-v1/config.json",
+        "--port",
+        "59477",
+        "--prefill-only",
+        "--prefill-tokens",
+        "32768",
+        "--think",
+        "--runs",
+        "1",
+        "--profile-request-gates",
+        "--workload-id",
+        "native_gdn_20261018",
+        "--fail-fast-engine-error",
+        "--ready-timeout",
+        "600",
+        "--out",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-exact-lists-v1/bench"
+      ],
+      "request_sha256": "1fd63b8c67a1888e443800b5c6d339ca116df2cb91941e6f332b6adf74275b3a",
+      "generated_content": {
+        "config.json": {
+          "exe": "/home/yayoi/orca/workspaces/Strata/sycl/tools/sycl/engine_once.py",
+          "args": [
+            "--pack",
+            "/home/yayoi/.local/share/strata-sycl/packs/qwen3.8-flash-next-iq3_s",
+            "--native",
+            "/home/yayoi/.local/share/strata-sycl/models/qwen3.8-flash-next-iq3_s/IQ3_S/Qwen3.8-Flash-Next-GSQ-RCO-IQ3_S-00001-of-00002.gguf",
+            "--max-context",
+            "131072",
+            "--kv",
+            "int8",
+            "--kv-resident",
+            "131072",
+            "--expert-cache",
+            "1256",
+            "--expert-profile",
+            "/home/yayoi/orca/workspaces/Strata/sycl/data/expert-profile.bin",
+            "--expert-cache-per-layer",
+            "--pool-workers",
+            "5",
+            "--pcie-frac",
+            "0",
+            "--adapt-swaps",
+            "0",
+            "--conversation-cache-mib",
+            "0",
+            "--prompt-cache",
+            "0",
+            "--turn-token",
+            "-1",
+            "--suffix-draft",
+            "0",
+            "--greedy",
+            "--no-spec-split",
+            "--short-read",
+            "0",
+            "--spec",
+            "4",
+            "--mtp",
+            "/home/yayoi/.local/share/strata-sycl/mtp/rt",
+            "--prefill",
+            "8192",
+            "--vram-reserve-mib",
+            "700",
+            "--no-coupled-draft",
+            "--no-token-graph"
+          ],
+          "cwd": "/home/yayoi/orca/workspaces/Strata/sycl",
+          "tokenizer": "/home/yayoi/.local/share/strata-sycl/packs/qwen3.8-flash-next-iq3_s/tokenizer",
+          "model_name": "qwen3.8-flash-next-iq3_s-primary",
+          "aliases": [
+            "strata"
+          ],
+          "host": "127.0.0.1",
+          "log": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-exact-lists-v1/engine.stderr",
+          "engine_silence_s": 480,
+          "parallel": 1,
+          "open_browser": false,
+          "env": {}
+        },
+        "plan.json": {
+          "binary": {
+            "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/strata",
+            "bytes": 22190000,
+            "sha256": "22182f1a5e62e5f4259ce49a75ae44afbd988166ec79324816e499ff37ef60e4"
+          },
+          "native_validation_probe": {
+            "library": {
+              "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/ur-validation-preload-v2/libstrata_ur_validation.so",
+              "sha256": "1d4e69d672d55fa0a126ae43b7b4743482cccca7e2f2bc22e0db2bfdad5bdc7c"
+            },
+            "loader": {
+              "path": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_loader.so.0.12.0",
+              "sha256": "bb6e1311850e4b1a924e42acae80c2b3610934625a4985aaa67967abe31356fc"
+            }
+          }
+        }
+      },
+      "generated_sha256": {
+        "config.json": "307eb73c809a65d5270fce01f880eb3036b1b2dde10f739bdbedbf51f8c205fb",
+        "plan.json": "08cfd654f8512bb484582b232cb0361de9c228e1eb5f4cec465aba42cf5195ef"
+      },
+      "expected_headers": [
+        [
+          0,
+          0,
+          73,
+          2051
+        ],
+        [
+          1,
+          0,
+          73,
+          2051
+        ],
+        [
+          2,
+          0,
+          73,
+          2051
+        ],
+        [
+          3,
+          0,
+          73,
+          2051
+        ],
+        [
+          4,
+          0,
+          73,
+          2051
+        ],
+        [
+          5,
+          0,
+          73,
+          2051
+        ],
+        [
+          6,
+          0,
+          73,
+          2051
+        ],
+        [
+          7,
+          0,
+          73,
+          2051
+        ],
+        [
+          8,
+          0,
+          73,
+          2051
+        ],
+        [
+          9,
+          0,
+          73,
+          2051
+        ],
+        [
+          10,
+          0,
+          73,
+          2051
+        ],
+        [
+          11,
+          0,
+          73,
+          2051
+        ],
+        [
+          0,
+          32768,
+          6491,
+          2051
+        ],
+        [
+          1,
+          32768,
+          6491,
+          2051
+        ],
+        [
+          2,
+          32768,
+          6491,
+          2051
+        ],
+        [
+          3,
+          32768,
+          6491,
+          2051
+        ],
+        [
+          4,
+          32768,
+          6491,
+          2051
+        ],
+        [
+          5,
+          32768,
+          6491,
+          2051
+        ],
+        [
+          6,
+          32768,
+          6491,
+          2051
+        ],
+        [
+          7,
+          32768,
+          6491,
+          2051
+        ],
+        [
+          8,
+          32768,
+          6491,
+          2051
+        ],
+        [
+          9,
+          32768,
+          6491,
+          2051
+        ],
+        [
+          10,
+          32768,
+          6491,
+          2051
+        ],
+        [
+          11,
+          32768,
+          6491,
+          2051
+        ]
+      ],
+      "source_input_count": 205,
+      "source_input_sha256": "677518618f7e0f2287f16b9f71043ad71b98677bfef72278930ed218835836ac",
+      "model_assets_sha256": "986be81744907994c44c232523362a2f30e7256b8f23339407d3e2f6e87ef2ff",
+      "benchmark_python_qualification": "e485a0c941bef0093f8262e29b512b7b81e0364b",
+      "native_sources": {
+        "src/prefill/prefill.cpp": "777e6d847ab6d83bc0a9103d6baabb7f4204ff23d34ce6c853eb1d7e68a11c37",
+        "src/prefill/layer_major.inc": "f7db8923dc466239f44c820ac3f8e9edfdd209b239e6b91f0993adc595d7dcf1",
+        "src/sycl/compat.cpp": "214c721c5be036e4410b4eca4051e8df6157effb8e2e0f575a9d6915b2700bad",
+        "src/kernels/sycl/qsa_select.cpp": "463a9ec02ed28125a5cd38b7b5d28784b849a4fbb199cb017042cd99078efee1",
+        "src/kernels/sycl/qsa_bf16_prefix.cpp": "4f9f815c9baae709f919f6d5ad1af04677c10d8c13c7597b3857cf81567ae192",
+        "include/strata/kernels/qsa.hpp": "87c02222284f842fcecb46a422b119af769c72c3914edc8da5b2ee782456dc74"
+      },
+      "environment_delta": {
+        "STRATA_QSA_DUMP": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-exact-lists-v1/selected-ids.bin",
+        "STRATA_QSA_DUMP_LAST": "1"
+      },
+      "work": "Official thinking-on zero-reuse39260input/24output after74-token warmup;selected6e40 unchanged,1256decode slots,131072resident INT8 context,8192chunks,Mode10,BF16 residual,FP16 expert weights/hidden. No profiler or new native build.",
+      "source_audit": "Existing LAST=1 hook copies whole final chunk for all12QSA layers on the same qualified in-order queue,waits before reading the live host vector,and appends a regular private file. Reuse of prior qualified hook;no new native bounds/lifetime/collective/graph behavior. Copy/write errors require exact closed extent,headers,causal ordered initialized IDs,provider/exit/fault gates;exit0 alone insufficient.",
+      "acceptance": "One fresh process,no retry. Validate12warmup records at begin gate before allowing long request. Require24exact headers,complete actual thinking-on zero-reuse official request and journal,selected route,pre-main validation,exact providers,unchanged15model hashes,native/owned normalexit0 and no fresh faults. Compare exact initialized full lists separately per layer/chunk and4/16/64/256query windows. Never infer whole-list equality from overlap or across KV heads/layers.",
+      "interpretation": "Diagnostic prerequisites only. A negative complete-list census rejects only exact-full-list grouping for this captured32K tail,not shared blocks,union/masking,all model workloads or the dominant8192full-chunk geometry. No physical traffic,saturation,speed,precision/adoption or262144/decode qualification.",
+      "budgets": {
+        "wall": 1200,
+        "cpu": 7200,
+        "rss_cap": 103079215104,
+        "text_cap": 8388608,
+        "file_cap": 805306368,
+        "total_cap": 1073741824
+      },
+      "parse_budgets": {
+        "wall": 300,
+        "cpu": 240,
+        "rss_cap": 2147483648,
+        "text_cap": 1048576,
+        "file_cap": 805306368,
+        "total_cap": 1073741824
+      },
+      "retention": "Main owns <=646213056B all-layer IDs outsideGit solely for this exact-list census and current grouping decision. Commit compact counts/decisions/source/config/hashes;no permanent full histograms or all-layer payload. Retire raw/logs/cache/one-use controller after decision. Retain a selected record only for an explicitly named qualified next prototype;otherwise no fixture remains."
+    },
+    "host_tests": {
+      "source": "b34fdbd27",
+      "cases": 12,
+      "passed": true,
+      "command": "/usr/bin/python3.12 -I -S -B tools/test_sycl_qsa_selection_capture.py"
+    },
+    "passed": false,
+    "complete": false,
+    "active": false,
+    "ownership_closed": true,
+    "model_adopted": false
   }
 }
