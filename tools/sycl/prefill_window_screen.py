@@ -22,9 +22,9 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 import supervision_model as prior
 
 P, B, RESULT = prior.P, prior.B, prior.RESULT
-ROOT = B / 'prefill-single-window-64k-v1'
-KEY = 'single_window_64k_screen_v1'
-REVIEW = 'prefill_single_window_screen_source_contract_20261027'
+ROOT = B / 'prefill-single-window-64k-v2'
+KEY = 'single_window_64k_screen_v2'
+REVIEW = 'prefill_single_window_screen_source_contract_v2_20261027'
 require, digest, identity = prior.require, prior.digest, prior.identity
 
 
@@ -152,20 +152,22 @@ def parse_samples(row, samples, text):
 
 
 def run_one(row):
+    index = len(row['processes'])
+    require(row['stage'] in ('prepared','running') and index < 3 and all(p['passed'] for p in row['processes']), 'single-use ordered screen;stop on failure')
     try:
         ref, rt = current(row)
         review = prior.runtime.validation.committed(prior.runtime.validation.INDEX, (REVIEW,))
         require(review['status'] == 'reviewed_model_control_eligible' and review['model_trial_allowed'] is True
             and review['source_sha256'] == digest(__file__) and review['plan_identity'] == identity(row['plan']), 'exact source/plan review required')
+        p = row['inputs'][index]; root = Path(p['root']); require(not (root/'execution.json').exists(), 'never repeat launch')
+        cursor = next(v.split(': ',1)[1] for v in subprocess.check_output(['journalctl','-k','-b','-n','0','--show-cursor','--no-pager'], text=True, timeout=15).splitlines() if v.startswith('-- cursor: '))
+        host, manifest = prior.python_runtime.admitted(prior)
+        allowed = {v['realpath'] for v in manifest['inventory']['files'].values()}
     except BaseException as error:
-        row.update(stage='admission-failed', admission_error=repr(error), native_launched=False)
+        row['processes'].append(dict(index=index, complete=False, passed=False, error=repr(error),
+            native_launched=False, ownership='not_launched', ownership_closed=True))
+        row.update(stage='admission-failed', admission_error=repr(error), native_launched=False, active=False, ownership_closed=True)
         save(row); raise
-    index = len(row['processes'])
-    require(row['stage'] in ('prepared','running') and index < 3 and all(p['passed'] for p in row['processes']), 'single-use ordered screen;stop on failure')
-    p = row['inputs'][index]; root = Path(p['root']); require(not (root/'execution.json').exists(), 'never repeat launch')
-    cursor = next(v.split(': ',1)[1] for v in subprocess.check_output(['journalctl','-k','-b','-n','0','--show-cursor','--no-pager'], text=True, timeout=15).splitlines() if v.startswith('-- cursor: '))
-    host, manifest = prior.python_runtime.admitted(prior)
-    allowed = {v['realpath'] for v in manifest['inventory']['files'].values()}
     owner = None; outcome = dict(index=index, complete=False, host_probe_accepted=False, request_windows=[])
     initial = (time.clock_gettime_ns(time.CLOCK_BOOTTIME),time.monotonic_ns())
     def awake():

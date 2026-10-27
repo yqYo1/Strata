@@ -12530,7 +12530,7 @@
     "inference_adoption": false
   },
   "split_bank_allocation_contract_decision_20261027": {
-    "status": "awaiting_native_review",
+    "status": "reviewed_source_contract_only",
     "classification": "decision_support",
     "worker_model": "gpt-6-luna",
     "review_model": "native Codex gpt-6-luna max",
@@ -12548,12 +12548,22 @@
     "recommendation_review_sha256": "c2f7367be572a5a7e2f36ad8f608821a0cec3b9bf2f8ad0330d56d2c9e2d50a1",
     "report": "/home/yayoi/orca/workspaces/Strata/sycl/.cache/strata-research/20261027/split-bank-allocation-contract-decision.md",
     "report_bytes": 8253,
-    "report_sha256": "4e63deee7e7ea274f4a0b99fe52195fe029b58c0ad3257ed5eca22a4eeb5d374"
+    "report_sha256": "4e63deee7e7ea274f4a0b99fe52195fe029b58c0ad3257ed5eca22a4eeb5d374",
+    "inference_adoption": false,
+    "review_sha256": "091ab1b82f3f2a0bc03a9115daa0f530446b031523f690f900087a9974ba3066",
+    "contract": "Reviewed SYCL rev12/Level Zero1.18.31 sources distinguish property queries,actual allocation and residency. A direct Level Zero size above maxMemAllocSize is outside its documented precondition;do not infer a specified error code. UNSUPPORTED_SIZE is documented for zero size. The SYCL property alone is not an explicit hard USM limit;confirm the actual backend/device mapping. No allocation or speed qualification.",
+    "primary_sources": [
+      "https://registry.khronos.org/SYCL/specs/sycl-2020/html/sycl-2020.html",
+      "https://oneapi-src.github.io/level-zero-spec/level-zero/1.18.31/core/api/apis/mem.html",
+      "https://oneapi-src.github.io/level-zero-spec/level-zero/1.18.31/core/api/apis/device.html"
+    ],
+    "main_capacity_correction": "The review misreads298280576B as available before allocating531988736B. It is the remainder AFTER that allocation:4355637248-4206942336+681574400-531988736=298280576. The512MiB reserve is already charged in fixed bytes. This arithmetic remains capacity-only;actual allocation lifetime/admission still pending. Do not schedule another generic capacity survey from that double subtraction.",
+    "retention": "Corrected API contract and next actual-allocation gates are now recorded here;retire full report/review after their source/hash and closure checks. The bounded model screen is independent of this unimplemented candidate."
   },
   "prefill_single_window_screen_source_contract_20261027": {
-    "status": "planned",
+    "status": "source_contract_blocked",
     "classification": "decision_support",
-    "schedulable_now": true,
+    "schedulable_now": false,
     "worker_model": "gpt-6-luna",
     "review_model": "native Codex gpt-6-luna max",
     "source_commit": "2e810aed8ca7590a46ab1becb373705f152e1bf0",
@@ -12567,6 +12577,11 @@
       "Question changes only official benchmark minimum98304->65536,expected actual78451;baseline supervisor and all native settings fixed."
     ],
     "consumer": "Main exact source/immutable-plan review before the three-process >=64K unchanged-engine screen.",
-    "retention": "Keep only through independent review and screen admission;retain compact decisions/source pins,retire full transaction report after closure."
+    "retention": "Keep only through independent review and screen admission;retain compact decisions/source pins,retire full transaction report after closure.",
+    "report_bytes": 7148,
+    "report_sha256": "70b1d88787dd36c6b6ba0c172ab7a3af640ff777fd5e871b2ec3df94d21eab65",
+    "model_trial_allowed": false,
+    "review_sha256": "a805273c815959a081971a8af78528dbd8a29b818d42a79c3b1f6be9b30712d9",
+    "blocker": "Journal-cursor acquisition and repeated Python admission can raise before sticky prelaunch-failure persistence;the record can remain prepared and permit retry. No GPU/model launch occurred."
   }
 }

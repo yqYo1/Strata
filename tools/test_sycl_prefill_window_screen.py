@@ -3,7 +3,9 @@
 import copy
 from pathlib import Path
 import sys
+import tempfile
 import unittest
+from unittest.mock import patch
 
 sys.dont_write_bytecode=True
 sys.path.insert(0,str(Path(__file__).resolve().parent/'sycl'))
@@ -49,6 +51,31 @@ class ScreenEvidence(unittest.TestCase):
             ('source_H2D_bytes=150624000','source_H2D_bytes=150624001')]:
             with self.subTest(field=old),self.assertRaises(RuntimeError):
                 screen.parse_samples(self.row,self.samples,self.text.replace(old,new,1))
+
+
+class PrelaunchFailure(unittest.TestCase):
+    def test_journal_and_late_runtime_failures_are_terminal_before_owner_creation(self):
+        with tempfile.TemporaryDirectory(prefix='single-window-host-',dir=screen.B) as name:
+            for failure in ('journal','python'):
+                with self.subTest(failure=failure):
+                    row=dict(stage='prepared',processes=[],plan={},inputs=[dict(root=name)])
+                    review=dict(status='reviewed_model_control_eligible',model_trial_allowed=True,
+                        source_sha256=screen.digest(screen.__file__),plan_identity=screen.identity(row['plan']))
+                    with patch.object(screen,'current',return_value=({},{})) as admission, \
+                            patch.object(screen.prior.runtime.validation,'committed',return_value=review), \
+                            patch.object(screen.subprocess,'check_output',return_value='-- cursor: fixture\n') as journal, \
+                            patch.object(screen.prior.python_runtime,'admitted') as python, \
+                            patch.object(screen.prior.baseline,'Owner') as owner, patch.object(screen,'save') as saved:
+                        (journal if failure=='journal' else python).side_effect=RuntimeError('injected '+failure+' failure')
+                        with self.assertRaisesRegex(RuntimeError,'injected'):screen.run_one(row)
+                        saved.assert_called_once_with(row);owner.assert_not_called()
+                        self.assertEqual(row['stage'],'admission-failed')
+                        self.assertEqual(row['processes'][0]['ownership'],'not_launched')
+                        self.assertFalse(row['processes'][0]['native_launched'])
+                        self.assertFalse(row['active']);self.assertTrue(row['ownership_closed'])
+                        admission.reset_mock()
+                        with self.assertRaisesRegex(RuntimeError,'stop on failure'):screen.run_one(row)
+                        admission.assert_not_called();owner.assert_not_called();self.assertEqual(saved.call_count,1)
 
 
 if __name__=='__main__':unittest.main(failfast=True)

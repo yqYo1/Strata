@@ -804,7 +804,7 @@
   },
   "historical_regression_audit": {
     "single_window_64k_screen_v1": {
-      "stage": "prepared",
+      "stage": "source-contract-blocked",
       "processes": [],
       "complete": false,
       "passed": false,
@@ -945,6 +945,13 @@
           "cases": 3,
           "scope": "Host-only production-grammar,workload/cache/thinking/payload,route/counter and native/API-clock corruption rejection;no GPU or live-runtime qualification."
         }
+      },
+      "native_launched": false,
+      "source_review": {
+        "model_trial_allowed": false,
+        "report_sha256": "70b1d88787dd36c6b6ba0c172ab7a3af640ff777fd5e871b2ec3df94d21eab65",
+        "review_sha256": "a805273c815959a081971a8af78528dbd8a29b818d42a79c3b1f6be9b30712d9",
+        "blocker": "Journal-cursor acquisition and repeated Python admission can raise before sticky prelaunch-failure persistence;the record can remain prepared and permit retry. No GPU/model launch occurred."
       }
     },
     "legacy_hardware_component_retirement_20261027": {
