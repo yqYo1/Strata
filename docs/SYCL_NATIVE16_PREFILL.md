@@ -1394,6 +1394,33 @@ inputs,9853 original native inputs and plan`e10d6becc` from reachable Git.
 The one-shot controller recovers from source`21f84a11e`; the selected engine and
 its same-build fixtures remain intact.
 
+## Selected fused MoE service
+
+The [current service comparison](../bench/results/2026-10-15-pr6-recovery-audit/fused-moe-service-current.json)
+uses unchanged selected6e40,1256 decode slots and the indexed PTI aggregate,
+without another engine build. Source/controller96bd6c987 and frozen pland7fd4944d
+recover the cohort. The39260-token smoke and first117489-token baseline/profile
+pair close normally with no fresh fault. Both fused families reconcile all46
+launch geometries against their fresh request-local successful counts and row
+histograms; older census totals are not substituted.
+
+For the first long profile, each family has7485calls and49290450logical rows.
+GU/SwiGLU summed device service is4.390441542s and Down/scatter5.580851356s;
+projection FLOPs divided by the whole fused service are73.5757 and28.9409TFLOP/s.
+These are measured equivalent rates,not arithmetic utilization or hardware peaks.
+The first paired prompt clocks are130171.1ms without PTI and133805.3ms with it,
+a1.02791864ratio. Three fixed pairs are required for the prospective1.05median
+cap; the comparison remains open. Both arms retain validation,trace and coarse
+source counters,so this screens added PTI cost rather than clean production speed.
+
+This is exact-family whole-process service with conditional phase ownership,
+not a full-model critical path or saturation result. Lexical whole-process
+ranking also finds27.088675896s/360calls for `prefix_batch_impl` and
+8.542217373s/540calls for `recurrence_columns`; those broader families still
+need source/phase reconciliation before attribution. Selected Down already
+uses direct FP32 FMA accumulator writes; removing output atomics is not a
+candidate. No inference change or speed gain is adopted from this diagnostic.
+
 ## Attribution limits and outstanding gates
 
 The limiting hardware resource remains incompletely attributed. CPU-pool and
