@@ -1634,8 +1634,8 @@ See[the compact diagnostic and180samples](../bench/results/2026-10-15-pr6-recove
 The next proposal fuses each tile-end barrier with the next tile's existing
 barrier after row publication,retaining a final barrier outside the loop.
 The private control/candidate source generator is maintained in
-[`qsa_barrier_sources.py`](../tools/sycl/qsa_barrier_sources.py);it has no build
-or production route yet. Its reversal check confines changes to namespace,
+[`qsa_barrier_sources.py`](../tools/sycl/qsa_barrier_sources.py);the isolated
+component now builds,but no production route is changed. Its reversal check confines changes to namespace,
 direct-event retention and that barrier move;this does not establish race freedom.
 The selected compiler IR still has seven static barriers,including five per
 32-cell iteration;2051selected cells require65iterations. This is source/IR
@@ -1681,9 +1681,23 @@ curation find no concrete source race,but leave device behavior unqualified.
 Their missing cases are added before the new build:per-query mixed widths,
 64and2050atcap2051,three consecutive tiles with distinct K/V witnesses,and
 shared physical pages mixed with missing pages. The prospective isolated recipe
-is[`build_qsa_barrier.py`](../tools/sycl/build_qsa_barrier.py);the committed
-generated build plan and execution controller remain required before device
-execution. None of these fixtures is compiled or GPU-qualified yet.
+is[`build_qsa_barrier.py`](../tools/sycl/build_qsa_barrier.py). Source`5463e9736`
+and plan`c94b02fda` now complete all14compile/link/IR commands. All693actual
+compiler inputs match their prospective pins;none consumes the three explicitly
+declared SDK header deltas. The oracle and actual-ID fixture are isolated from
+the retained original engine and twelve fixtures. The device IR has seven
+static barriers in each arm,but CFG cycles contain five in original/control
+and four in merged,matching the proposed move. This is compiler IR evidence,
+not final-machine barrier cost or a speed result.
+
+Execution controller`e472e9d71` passes seven host controls covering the complete
+108sample grid and rejection of missing samples,subfloor batches,invented
+original events,changed order,one-process service regression and namespace
+control drift. It checks the committed independent contract reference and
+compiled CFG before each device process. No GPU qualification is established
+by compilation or these host controls;the next gate is three small traced
+oracle processes,with each arm independently selected for negative admission.
+See[the current build and gates](../bench/results/2026-10-15-pr6-recovery-audit/qsa-barrier-current.json).
 
 Complete prefill phase attribution requires three independent ledgers: route-owner
 planned operations, actual API results and collector device executions.
