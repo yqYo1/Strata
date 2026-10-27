@@ -1,5 +1,5 @@
 {
-  "stage": "prepared",
+  "stage": "failed",
   "source_commit": "770a3639a8a210bf6d3a838a635576eda588843a",
   "native_source": "6e40afc1beddd059ee518617f6c1efce1da14aca",
   "binary": {
@@ -2053,9 +2053,33 @@
       }
     }
   },
-  "checks": [],
+  "checks": [
+    {
+      "mode": "smoke-profile",
+      "passed": false,
+      "complete": false,
+      "ownership_closed": false,
+      "native_launched": true,
+      "error": "RuntimeError('benchmark owner/protocol failed')",
+      "error_excerpt": "file fill\nstrata generate: pre-filled 1256 of 1256 slots from the profile; slot 0 verified\nstrata generate: native GPU hit kernels captured at session setup\nstrata trace: 673 MiB free after the R4 hit path\nstrata generate: R4 hit path ON - resident experts are computed on the GPU\nstrata generate: 5 expert-pool workers + the host thread\nstrata trace: 673 MiB free after the expert cache and the graphs\nstrata generate: session is up (engine 0.1.38)\nstrata generate: token graph hit path: 1256 resident experts, decided on the device\nstrata serve: the prompt path borrows 1124 CUDA0 cache slots (2.16 GiB)\n[native16-route] engine=bf16 backend=vllm tile=auto(T<128:compact;else:wide) aot=bmg-g21-a0 isolated=1 experimental\n[native16-gu] fusion=large min_rows=2334\n[native16-down] fusion=large min_rows=2334\nstrata prefill: FP16 MoE compact requested=1 effective=1, chunk=8192, scratch rows=8192, accounted=2311569920, shared region=1180698624 bytes\nstrata trace: 673 MiB free after the head and the prompt path\nstrata verify: window up to 4 tokens, 63.3 MiB of device buffers\nstrata mtp: draft head over 106299 tokens (212.9 MiB)\nstrata trace: 393 MiB free after the verifier and the drafter's binding\nstrata serve: 393 MiB of VRAM free with everything loaded\nstrata trace: request 74 0\nstrata trace: prompt start 73 -1\nstrata prefill: FP16 MoE compact requested=1 effective=1, chunk=256, scratch rows=256, accounted=231915776, shared region=91838208 bytes\nstrata cache loan: phase=masked generation=1 chunk=256 first=1155 lent=101 decode_ready=0\nstrata trace: lent 101 slots for 256 tokens in 0.5 ms\nstrata prefill dense: phase=retired residency=Full activations=0 full_bytes=2116951040 bank_bytes=50918400 snapshot_bytes=2116951040 overlay_rows=0 session_recapture=0 verifier=1 free_bytes=412241920 total_bytes=10666115072\nstrata prefill dense: phase=cache-loan residency=Full activations=0 full_bytes=2116951040 bank_bytes=50918400 snapshot_bytes=2116951040 overlay_rows=0 session_recapture=0 verifier=1 free_bytes=412241920 total_bytes=10666115072\nstrata trace: prompt chunk 0 of 73\nstrata trace: prefill issuer threaded=0 stream_all=0 ring=8 chunk=73 entries=0\nstrata trace: prefill skip releases=0 after-open-group=0\nstrata prefill dense: phase=restored residency=Full activations=0 full_bytes=2116951040 bank_bytes=50918400 snapshot_bytes=2116951040 overlay_rows=0 session_recapture=0 verifier=1 free_bytes=270716928 total_bytes=10666115072\nstrata native dense host profile: v=2 complete=1 outcome=success entry_ms=0.071365 run_ms=26998.7 restore_ms=0.181341 entry_done=1 run_returned=1 restored=1 intervals=NONEXCLUSIVE entry_scope=boundary_entry_through_Bank run_scope=MTP_release_prompt_callbacks_MTP_restore restore_scope=restore_drain_through_owner_PLE_graph_verifier_restore outer_startup_snapshot_unmeasured=1\nstrata trace: read 73 tokens (batched) in 26999.0 ms\nstrata trace: refill start 101 -1\nstrata cache loan: phase=ready generation=1 chunk=256 first=1155 lent=101 decode_ready=1\nstrata trace: refilled 101 slots on 1 stage(s) in 42.8 ms\nstrata trace: prompt done (slots refilled) -1 -1\nstrata trace: window 73 1\nstrata verify: captured the 1-token window in 49 event-completed segments\nstrata verify: capture 1 tokens 4015.858 ms, free VRAM 126.0 MiB\nstrata verify: 48 shared/hit graphs can overlap CPU experts\nstrata trace: window 74 4\nstrata verify: captured the 4-token window in 49 event-completed segments\nstrata verify: capture 4 tokens 244.303 ms, free VRAM 48.2 MiB\nstrata verify: 48 shared/hit graphs can overlap CPU experts\nstrata trace: window 78 4\nstrata trace: window 82 4\nstrata trace: window 86 4\nstrata trace: window 90 4\nstrata trace: window 94 4\nstrata serve: prompt 74 tokens = 0 reused + 74 read in 27050 ms (2.7 tok/s), 24 generated in 7280 ms (3.3 tok/s), drafts accepted 18 of 18, 0 checkpoints\nstrata serve: SYCL_EXPERT_COPY submitted_blobs=0 submitted_bytes=0 completed_blobs=0 completed_bytes=0 host_view_groups=0 gpu_miss_groups=0 cpu_unique_misses=7042 cpu_entries=9855\nstrata serve: decode expert cache hit rate: 17.9% (2145 hits / 12000 lookups)\n",
+      "protocol_qualified": false,
+      "session_removed": true,
+      "postchecks_complete": true,
+      "postcheck_errors": [],
+      "fresh_faults": [],
+      "boot_unchanged": true,
+      "driver_after": {
+        "pci": "/sys/bus/pci/devices/0000:05:00.0",
+        "driver": "xe",
+        "vendor": "0x8086",
+        "device": "0xe20c",
+        "kernel": "7.0.0-38-generic",
+        "devcoredump": false
+      }
+    }
+  ],
   "active": false,
-  "ownership_closed": true,
+  "ownership_closed": false,
   "complete": false,
   "passed": false,
   "model_adopted": false,
