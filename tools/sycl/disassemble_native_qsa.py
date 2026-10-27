@@ -19,7 +19,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 import native_kernel_image as image
 b = image.b
 P, RESULT = b.P, b.RESULT
-ROOT = image.ROOT / 'offline'
+ROOT = image.ROOT / 'offline-v2'
 KEY = image.KEY
 SELF = str(Path(__file__).resolve().relative_to(P))
 require, fingerprint = image.require, image.fingerprint
@@ -79,18 +79,31 @@ def associate(entry):
     ze = [s for s in rows if s['name'] == '.ze_info']
     require(len(ze) == 1, 'one ZeInfo section required')
     metadata = raw[ze[0]['offset']:ze[0]['offset'] + ze[0]['size']].decode('utf-8').rstrip('\0')
-    blocks = list(re.finditer(r'^  - name:\s*(.*?)\s*$', metadata, re.M))
+    root = re.search(r'^kernels:[ \t]*$', metadata, re.M)
+    require(root is not None, 'ZeInfo kernels root required')
+    following = re.search(r'^\S.*$', metadata[root.end():], re.M)
+    stop_root = root.end() + following.start() if following else len(metadata)
+    kernels = metadata[root.end():stop_root]
+    blocks = list(re.finditer(r'^  - name:[ \t]*(.*?)[ \t]*$', kernels, re.M))
     selected = [i for i, match in enumerate(blocks) if match[1].strip('\"\'') == entry['kernel']['name']]
     require(len(selected) == 1, 'one selected ZeInfo kernel block required')
-    index = selected[0];stop = blocks[index + 1].start() if index + 1 < len(blocks) else len(metadata)
-    block = metadata[blocks[index].start():stop]
+    index = selected[0];stop = blocks[index + 1].start() if index + 1 < len(blocks) else len(kernels)
+    block = kernels[blocks[index].start():stop]
+    version = re.search(r'^version:[ \t]*(.*?)[ \t]*$', metadata, re.M)
+    require(version is not None, 'ZeInfo schema version required')
+    cache = re.search(r'^l1_cache_policy:[ \t]*(.*?)[ \t]*$', metadata, re.M)
+    selected_metadata = 'version: ' + version[1] + '\nkernels:\n' + block
+    if cache:selected_metadata += 'l1_cache_policy: ' + cache[1] + '\n'
     return dict(machine=205, type=1, text_section_index=text['index'], offset=text['offset'],
-        bytes=text['size'], sha256=hashlib.sha256(gen).hexdigest(), GEN_equals_module_text=True), block
+        bytes=text['size'], sha256=hashlib.sha256(gen).hexdigest(), GEN_equals_module_text=True,
+        ZeInfo_version=version[1].strip('\"\'')), selected_metadata
 
 
 def prepare():
     record = b.gen.committed(RESULT);data = record[KEY];capture = captured(record)
     require('offline_plan' not in data and not ROOT.exists(), 'fresh offline disassembly only;no retry')
+    require(all(x['closure_reconciliation']['ownership_closed'] for x in data.get('offline_attempts', [])),
+        'earlier offline session must be independently settled')
     revision = b.gen.git('rev-parse', 'HEAD').decode().strip();pins = sources(revision, record)
     qualification_ref = b.gen.git('log', '-1', '--format=%H', '--', str(RESULT.relative_to(P))).decode().strip()
     old = json.loads(b.gen.git('show', qualification_ref + ':' + str(RESULT.relative_to(P))))[KEY]['extraction_check']
@@ -185,7 +198,7 @@ def decode():
     folder = ROOT / str(arm)
     assembly = folder / 'kernel.asm';ze = folder / 'kernel.ze_info.yaml'
     require(not assembly.exists() and not ze.exists(), 'no offline output overwrite')
-    assembly.write_bytes(selected);ze.write_text('kernels:\n' + metadata)
+    assembly.write_bytes(selected);ze.write_text(metadata)
     result = dict(arm=arm, passed=True, association=proof, API_version=version, ocloc_return=status,
         output_release_return=freed, in_memory_outputs=seen, in_memory_bytes=total,
         selected_name_bytes=len(target.encode()), log_excerpt=log[:2048],
@@ -244,7 +257,9 @@ def run():
     except BaseException as error:
         result['error'] = repr(error);raise
     finally:
-        result['ownership_closed'] = owner.active is None and all(b.supervision.closed(x) for x in owner.commands)
+        result['ownership_closed'] = owner.active is None and all(x.get('direct_child_reaped') and
+            x.get('session_empty') and not x.get('survivors') for x in owner.commands)
+        result['protocol_observation_complete'] = all(b.supervision.closed(x) for x in owner.commands)
         persist();data['offline_check'] = result;data['offline_plan']['stage'] = 'closed'
         if result['passed']:data['stage'] = 'exact_GEN_ELF_text_and_selected_assembly_qualified'
         b.write(RESULT, record)
