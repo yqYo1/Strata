@@ -1938,7 +1938,7 @@
       "retained_reference_until_exit": true,
       "ordinary_runtime_teardown_qualified": false
     },
-    "stage": "prepared",
+    "stage": "closed",
     "mode": "oracle-component",
     "output_root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-cell64-v1/oracle-component",
     "source_commit": "082fcc9c1b493ec6ff957c79900f8a7178299524",
@@ -2525,6 +2525,936 @@
             "guards": true,
             "inputs_immutable": true,
             "physical262144_final_address_component": false,
+            "model_quality": false
+          }
+        }
+      ],
+      "active": false,
+      "ownership_closed": true,
+      "model_qualified": false,
+      "GPU_kernel_execution_observed": true,
+      "postchecks_complete": true,
+      "postcheck_errors": [],
+      "fresh_faults": [],
+      "boot_unchanged": true,
+      "driver_after": {
+        "pci": "/sys/bus/pci/devices/0000:05:00.0",
+        "driver": "xe",
+        "vendor": "0x8086",
+        "device": "0xe20c",
+        "kernel": "7.0.0-38-generic",
+        "devcoredump": false
+      }
+    },
+    {
+      "mode": "oracle-component",
+      "source_commit": "082fcc9c1b493ec6ff957c79900f8a7178299524",
+      "passed": true,
+      "complete": true,
+      "observations": [
+        {
+          "arm": 0,
+          "exit_code": 0,
+          "ownership_closed": true,
+          "validation": {
+            "pid": 334420,
+            "loader": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_loader.so.0.12.0",
+            "threads_before": 1,
+            "preinit": 37,
+            "config_enabled": true,
+            "first_init": true,
+            "dispatch_result": 46,
+            "output_untouched": true,
+            "retained_reference_until_exit": true,
+            "runtime_teardown_qualified": false
+          },
+          "local_launches": {
+            "0": {
+              "calls": 105,
+              "local_arguments": [
+                [
+                  0,
+                  16384
+                ],
+                [
+                  1,
+                  1024
+                ],
+                [
+                  3,
+                  64
+                ],
+                [
+                  4,
+                  64
+                ],
+                [
+                  5,
+                  64
+                ],
+                [
+                  13,
+                  256
+                ],
+                [
+                  15,
+                  2112
+                ],
+                [
+                  16,
+                  64
+                ]
+              ],
+              "dynamic_local_bytes": 20032,
+              "work_dim": 1,
+              "local_size": [
+                128
+              ]
+            },
+            "1": {
+              "calls": 105,
+              "local_arguments": [
+                [
+                  0,
+                  16384
+                ],
+                [
+                  1,
+                  1024
+                ],
+                [
+                  3,
+                  64
+                ],
+                [
+                  4,
+                  64
+                ],
+                [
+                  5,
+                  64
+                ],
+                [
+                  13,
+                  256
+                ],
+                [
+                  15,
+                  2112
+                ],
+                [
+                  16,
+                  64
+                ]
+              ],
+              "dynamic_local_bytes": 20032,
+              "work_dim": 1,
+              "local_size": [
+                128
+              ]
+            }
+          },
+          "oracle": {
+            "samples": [
+              {
+                "geometry": [
+                  97,
+                  49,
+                  33,
+                  1,
+                  0
+                ],
+                "compared": 36864,
+                "max_abs": 0.0,
+                "max_budget_ratio": 0.0
+              },
+              {
+                "geometry": [
+                  97,
+                  71,
+                  33,
+                  3,
+                  1
+                ],
+                "compared": 18432,
+                "max_abs": 0.0,
+                "max_budget_ratio": 0.0
+              },
+              {
+                "geometry": [
+                  2113,
+                  2113,
+                  1,
+                  3,
+                  1
+                ],
+                "compared": 18432,
+                "max_abs": 0.0,
+                "max_budget_ratio": 0.0
+              },
+              {
+                "geometry": [
+                  2113,
+                  2113,
+                  17,
+                  3,
+                  1
+                ],
+                "compared": 18432,
+                "max_abs": 0.0,
+                "max_budget_ratio": 0.0
+              },
+              {
+                "geometry": [
+                  2113,
+                  2113,
+                  31,
+                  3,
+                  1
+                ],
+                "compared": 18432,
+                "max_abs": 0.0,
+                "max_budget_ratio": 0.0
+              },
+              {
+                "geometry": [
+                  2113,
+                  2113,
+                  32,
+                  3,
+                  1
+                ],
+                "compared": 18432,
+                "max_abs": 0.0,
+                "max_budget_ratio": 0.0
+              },
+              {
+                "geometry": [
+                  2113,
+                  2113,
+                  63,
+                  3,
+                  1
+                ],
+                "compared": 18432,
+                "max_abs": 0.0,
+                "max_budget_ratio": 0.0
+              },
+              {
+                "geometry": [
+                  2113,
+                  2113,
+                  64,
+                  3,
+                  1
+                ],
+                "compared": 18432,
+                "max_abs": 0.0,
+                "max_budget_ratio": 0.0
+              },
+              {
+                "geometry": [
+                  2113,
+                  2113,
+                  65,
+                  3,
+                  1
+                ],
+                "compared": 18432,
+                "max_abs": 0.0,
+                "max_budget_ratio": 0.0
+              },
+              {
+                "geometry": [
+                  2113,
+                  2113,
+                  127,
+                  3,
+                  1
+                ],
+                "compared": 18432,
+                "max_abs": 0.0,
+                "max_budget_ratio": 0.0
+              },
+              {
+                "geometry": [
+                  2113,
+                  2113,
+                  128,
+                  3,
+                  1
+                ],
+                "compared": 18432,
+                "max_abs": 0.0,
+                "max_budget_ratio": 0.0
+              },
+              {
+                "geometry": [
+                  2113,
+                  2113,
+                  129,
+                  3,
+                  1
+                ],
+                "compared": 18432,
+                "max_abs": 0.0,
+                "max_budget_ratio": 0.0
+              },
+              {
+                "geometry": [
+                  2113,
+                  2113,
+                  2051,
+                  3,
+                  1
+                ],
+                "compared": 18432,
+                "max_abs": 0.0,
+                "max_budget_ratio": 0.0
+              },
+              {
+                "geometry": [
+                  97,
+                  71,
+                  65,
+                  3,
+                  0
+                ],
+                "compared": 129024,
+                "max_abs": 0.0,
+                "max_budget_ratio": 0.0
+              },
+              {
+                "geometry": [
+                  2113,
+                  2113,
+                  2051,
+                  3,
+                  0
+                ],
+                "compared": 129024,
+                "max_abs": 0.0,
+                "max_budget_ratio": 0.0
+              },
+              {
+                "geometry": [
+                  262144,
+                  262144,
+                  2051,
+                  1,
+                  0
+                ],
+                "compared": 6144,
+                "max_abs": 0.0,
+                "max_budget_ratio": 0.0
+              },
+              {
+                "geometry": [
+                  262144,
+                  13,
+                  33,
+                  1,
+                  0
+                ],
+                "compared": 6144,
+                "max_abs": 0.0,
+                "max_budget_ratio": 0.0
+              }
+            ],
+            "extended_cases": 3,
+            "guards": true,
+            "inputs_immutable": true,
+            "physical262144_final_address_component": true,
+            "model_quality": false
+          }
+        },
+        {
+          "arm": 1,
+          "exit_code": 0,
+          "ownership_closed": true,
+          "validation": {
+            "pid": 334983,
+            "loader": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_loader.so.0.12.0",
+            "threads_before": 1,
+            "preinit": 37,
+            "config_enabled": true,
+            "first_init": true,
+            "dispatch_result": 46,
+            "output_untouched": true,
+            "retained_reference_until_exit": true,
+            "runtime_teardown_qualified": false
+          },
+          "local_launches": {
+            "1": {
+              "calls": 105,
+              "local_arguments": [
+                [
+                  0,
+                  16384
+                ],
+                [
+                  1,
+                  1024
+                ],
+                [
+                  3,
+                  64
+                ],
+                [
+                  4,
+                  64
+                ],
+                [
+                  5,
+                  64
+                ],
+                [
+                  13,
+                  256
+                ],
+                [
+                  15,
+                  2112
+                ],
+                [
+                  16,
+                  64
+                ]
+              ],
+              "dynamic_local_bytes": 20032,
+              "work_dim": 1,
+              "local_size": [
+                128
+              ]
+            },
+            "0": {
+              "calls": 105,
+              "local_arguments": [
+                [
+                  0,
+                  16384
+                ],
+                [
+                  1,
+                  1024
+                ],
+                [
+                  3,
+                  64
+                ],
+                [
+                  4,
+                  64
+                ],
+                [
+                  5,
+                  64
+                ],
+                [
+                  13,
+                  256
+                ],
+                [
+                  15,
+                  2112
+                ],
+                [
+                  16,
+                  64
+                ]
+              ],
+              "dynamic_local_bytes": 20032,
+              "work_dim": 1,
+              "local_size": [
+                128
+              ]
+            }
+          },
+          "oracle": {
+            "samples": [
+              {
+                "geometry": [
+                  97,
+                  49,
+                  33,
+                  1,
+                  0
+                ],
+                "compared": 36864,
+                "max_abs": 0.0,
+                "max_budget_ratio": 0.0
+              },
+              {
+                "geometry": [
+                  97,
+                  71,
+                  33,
+                  3,
+                  1
+                ],
+                "compared": 18432,
+                "max_abs": 0.0,
+                "max_budget_ratio": 0.0
+              },
+              {
+                "geometry": [
+                  2113,
+                  2113,
+                  1,
+                  3,
+                  1
+                ],
+                "compared": 18432,
+                "max_abs": 0.0,
+                "max_budget_ratio": 0.0
+              },
+              {
+                "geometry": [
+                  2113,
+                  2113,
+                  17,
+                  3,
+                  1
+                ],
+                "compared": 18432,
+                "max_abs": 0.0,
+                "max_budget_ratio": 0.0
+              },
+              {
+                "geometry": [
+                  2113,
+                  2113,
+                  31,
+                  3,
+                  1
+                ],
+                "compared": 18432,
+                "max_abs": 0.0,
+                "max_budget_ratio": 0.0
+              },
+              {
+                "geometry": [
+                  2113,
+                  2113,
+                  32,
+                  3,
+                  1
+                ],
+                "compared": 18432,
+                "max_abs": 0.0,
+                "max_budget_ratio": 0.0
+              },
+              {
+                "geometry": [
+                  2113,
+                  2113,
+                  63,
+                  3,
+                  1
+                ],
+                "compared": 18432,
+                "max_abs": 0.0,
+                "max_budget_ratio": 0.0
+              },
+              {
+                "geometry": [
+                  2113,
+                  2113,
+                  64,
+                  3,
+                  1
+                ],
+                "compared": 18432,
+                "max_abs": 0.0,
+                "max_budget_ratio": 0.0
+              },
+              {
+                "geometry": [
+                  2113,
+                  2113,
+                  65,
+                  3,
+                  1
+                ],
+                "compared": 18432,
+                "max_abs": 0.0,
+                "max_budget_ratio": 0.0
+              },
+              {
+                "geometry": [
+                  2113,
+                  2113,
+                  127,
+                  3,
+                  1
+                ],
+                "compared": 18432,
+                "max_abs": 0.0,
+                "max_budget_ratio": 0.0
+              },
+              {
+                "geometry": [
+                  2113,
+                  2113,
+                  128,
+                  3,
+                  1
+                ],
+                "compared": 18432,
+                "max_abs": 0.0,
+                "max_budget_ratio": 0.0
+              },
+              {
+                "geometry": [
+                  2113,
+                  2113,
+                  129,
+                  3,
+                  1
+                ],
+                "compared": 18432,
+                "max_abs": 0.0,
+                "max_budget_ratio": 0.0
+              },
+              {
+                "geometry": [
+                  2113,
+                  2113,
+                  2051,
+                  3,
+                  1
+                ],
+                "compared": 18432,
+                "max_abs": 0.0,
+                "max_budget_ratio": 0.0
+              },
+              {
+                "geometry": [
+                  97,
+                  71,
+                  65,
+                  3,
+                  0
+                ],
+                "compared": 129024,
+                "max_abs": 0.0,
+                "max_budget_ratio": 0.0
+              },
+              {
+                "geometry": [
+                  2113,
+                  2113,
+                  2051,
+                  3,
+                  0
+                ],
+                "compared": 129024,
+                "max_abs": 0.0,
+                "max_budget_ratio": 0.0
+              },
+              {
+                "geometry": [
+                  262144,
+                  262144,
+                  2051,
+                  1,
+                  0
+                ],
+                "compared": 6144,
+                "max_abs": 0.0,
+                "max_budget_ratio": 0.0
+              },
+              {
+                "geometry": [
+                  262144,
+                  13,
+                  33,
+                  1,
+                  0
+                ],
+                "compared": 6144,
+                "max_abs": 0.0,
+                "max_budget_ratio": 0.0
+              }
+            ],
+            "extended_cases": 3,
+            "guards": true,
+            "inputs_immutable": true,
+            "physical262144_final_address_component": true,
+            "model_quality": false
+          }
+        },
+        {
+          "arm": 2,
+          "exit_code": 0,
+          "ownership_closed": true,
+          "validation": {
+            "pid": 335627,
+            "loader": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_loader.so.0.12.0",
+            "threads_before": 1,
+            "preinit": 37,
+            "config_enabled": true,
+            "first_init": true,
+            "dispatch_result": 46,
+            "output_untouched": true,
+            "retained_reference_until_exit": true,
+            "runtime_teardown_qualified": false
+          },
+          "local_launches": {
+            "2": {
+              "calls": 105,
+              "local_arguments": [
+                [
+                  0,
+                  32768
+                ],
+                [
+                  1,
+                  2048
+                ],
+                [
+                  3,
+                  64
+                ],
+                [
+                  4,
+                  64
+                ],
+                [
+                  5,
+                  64
+                ],
+                [
+                  13,
+                  512
+                ],
+                [
+                  15,
+                  4160
+                ],
+                [
+                  16,
+                  64
+                ]
+              ],
+              "dynamic_local_bytes": 39744,
+              "work_dim": 1,
+              "local_size": [
+                128
+              ]
+            }
+          },
+          "oracle": {
+            "samples": [
+              {
+                "geometry": [
+                  97,
+                  49,
+                  33,
+                  1,
+                  0
+                ],
+                "compared": 36864,
+                "max_abs": 0.0,
+                "max_budget_ratio": 0.0
+              },
+              {
+                "geometry": [
+                  97,
+                  71,
+                  33,
+                  3,
+                  1
+                ],
+                "compared": 18432,
+                "max_abs": 0.0,
+                "max_budget_ratio": 0.0
+              },
+              {
+                "geometry": [
+                  2113,
+                  2113,
+                  1,
+                  3,
+                  1
+                ],
+                "compared": 18432,
+                "max_abs": 0.0,
+                "max_budget_ratio": 0.0
+              },
+              {
+                "geometry": [
+                  2113,
+                  2113,
+                  17,
+                  3,
+                  1
+                ],
+                "compared": 18432,
+                "max_abs": 0.0,
+                "max_budget_ratio": 0.0
+              },
+              {
+                "geometry": [
+                  2113,
+                  2113,
+                  31,
+                  3,
+                  1
+                ],
+                "compared": 18432,
+                "max_abs": 0.0,
+                "max_budget_ratio": 0.0
+              },
+              {
+                "geometry": [
+                  2113,
+                  2113,
+                  32,
+                  3,
+                  1
+                ],
+                "compared": 18432,
+                "max_abs": 0.0,
+                "max_budget_ratio": 0.0
+              },
+              {
+                "geometry": [
+                  2113,
+                  2113,
+                  63,
+                  3,
+                  1
+                ],
+                "compared": 18432,
+                "max_abs": 0.0,
+                "max_budget_ratio": 0.0
+              },
+              {
+                "geometry": [
+                  2113,
+                  2113,
+                  64,
+                  3,
+                  1
+                ],
+                "compared": 18432,
+                "max_abs": 0.0,
+                "max_budget_ratio": 0.0
+              },
+              {
+                "geometry": [
+                  2113,
+                  2113,
+                  65,
+                  3,
+                  1
+                ],
+                "compared": 18432,
+                "max_abs": 0.0,
+                "max_budget_ratio": 0.0
+              },
+              {
+                "geometry": [
+                  2113,
+                  2113,
+                  127,
+                  3,
+                  1
+                ],
+                "compared": 18432,
+                "max_abs": 0.0,
+                "max_budget_ratio": 0.0
+              },
+              {
+                "geometry": [
+                  2113,
+                  2113,
+                  128,
+                  3,
+                  1
+                ],
+                "compared": 18432,
+                "max_abs": 0.0,
+                "max_budget_ratio": 0.0
+              },
+              {
+                "geometry": [
+                  2113,
+                  2113,
+                  129,
+                  3,
+                  1
+                ],
+                "compared": 18432,
+                "max_abs": 0.0,
+                "max_budget_ratio": 0.0
+              },
+              {
+                "geometry": [
+                  2113,
+                  2113,
+                  2051,
+                  3,
+                  1
+                ],
+                "compared": 18432,
+                "max_abs": 0.0,
+                "max_budget_ratio": 0.0
+              },
+              {
+                "geometry": [
+                  97,
+                  71,
+                  65,
+                  3,
+                  0
+                ],
+                "compared": 129024,
+                "max_abs": 0.0,
+                "max_budget_ratio": 0.0
+              },
+              {
+                "geometry": [
+                  2113,
+                  2113,
+                  2051,
+                  3,
+                  0
+                ],
+                "compared": 129024,
+                "max_abs": 0.0,
+                "max_budget_ratio": 0.0
+              },
+              {
+                "geometry": [
+                  262144,
+                  262144,
+                  2051,
+                  1,
+                  0
+                ],
+                "compared": 6144,
+                "max_abs": 0.0,
+                "max_budget_ratio": 0.0
+              },
+              {
+                "geometry": [
+                  262144,
+                  13,
+                  33,
+                  1,
+                  0
+                ],
+                "compared": 6144,
+                "max_abs": 0.0,
+                "max_budget_ratio": 0.0
+              }
+            ],
+            "extended_cases": 3,
+            "guards": true,
+            "inputs_immutable": true,
+            "physical262144_final_address_component": true,
             "model_quality": false
           }
         }
