@@ -1702,6 +1702,10 @@ aliased/missing pages and sticky K/V diagnostics pass. All processes close at
 exit0,parameter validation is silent and no fresh driver fault appears. This
 qualifies the small component only;larger widths,physical262144 component,
 actual-ID event clocks,resources and performance remain pending.
+After compact results are committed,the fourteen successful smoke trace/log/
+transaction files (3997428bytes) are retired. The isolated native generation
+remains for the next component/resource/timing gates;the selected original
+engine and twelve fixtures still pass unchanged shared admission.
 See[the current build and gates](../bench/results/2026-10-15-pr6-recovery-audit/qsa-barrier-current.json).
 
 Complete prefill phase attribution requires three independent ledgers: route-owner
