@@ -1616,7 +1616,7 @@ must precede any instruction claim. Classic Level Zero launch callbacks alone
 may miss the adapter's with-arguments path. The host-only observer gate now
 passes both builds and21packet cases,including18specific refusals,reentrant
 callback bypass,unlocked native queries and exact copied bytes. All24owned
-commands close;202source pins and269header dependencies are checked. The
+commands close;202source pins and269compiler dependencies are checked. The
 packet binary links no UR/LevelZero/SYCL runtime. Actual subscriber activation
 still needs a no-device canary before the separately committed bounded GPU
 extraction;no new GPU execution is qualified. Closed host mocks,logs and their
