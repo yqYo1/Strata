@@ -6368,7 +6368,7 @@
     }
   },
   "length_characterization": {
-    "stage": "prepared",
+    "stage": "qualified",
     "source_commit": "5a0328c1eccbbfa4086918a35108ba7139868e72",
     "source_contract": {
       "source_commit": "e5f0b825624496e1ea3b88474fec2b8d50770819",
@@ -6536,13 +6536,39 @@
     },
     "active": false,
     "ownership_closed": true,
-    "qualification": [],
+    "qualification": [
+      {
+        "case": "canary",
+        "passed": true,
+        "ownership_closed": true
+      },
+      {
+        "case": "submission",
+        "passed": true,
+        "ownership_closed": true
+      }
+    ],
     "complete": false,
     "passed": false,
     "retention": "One compact curve withindividual counts/timings/TTFT,source/config/runtime identity,route andformula checks. Retire successful logs/journals/JIT and this one-use controller after verified extraction;original13 assets remain.",
     "generated_sha256": {
       "config.json": "46abb246c9ce81a28d86bc63105a95327fa4b958ac5ae4fe8c35546e1a4be4fc",
       "plan.json": "08cfd654f8512bb484582b232cb0361de9c228e1eb5f4cec465aba42cf5195ef"
+    },
+    "qualification_outcome": {
+      "host_probe_accepted": true,
+      "ownership_closed": true,
+      "fresh_faults": [],
+      "boot_unchanged": true,
+      "driver_after": {
+        "pci": "/sys/bus/pci/devices/0000:05:00.0",
+        "driver": "xe",
+        "vendor": "0x8086",
+        "device": "0xe20c",
+        "kernel": "7.0.0-38-generic",
+        "devcoredump": false
+      },
+      "passed": true
     }
   }
 }
