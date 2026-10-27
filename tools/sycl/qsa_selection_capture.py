@@ -87,63 +87,7 @@ class Locality:
                 '/unique cells,not measured cache hits. No physical traffic or saturation claim.')
 
 
-class ExactLists:
-    """Exact initialized ID sequences within one layer/chunk, not overlap.
-
-    The source shares each query's selection between both KV heads. Classes
-    apply independently to each head; their K/V values cannot be interchanged.
-    Bytes are dictionary keys, so equality is checked after any hash collision.
-    """
-    def __init__(self):
-        self.classes = {}
-        self.windows = {n: {} for n in (4, 16, 64, 256)}
-        self.totals = {n: dict(windows=0, queries=0, duplicate_queries=0,
-            queries_in_repeated_classes=0, same_list_pairs=0, maximum_class=0)
-            for n in self.windows}
-        self.rows = 0
-
-    @staticmethod
-    def census(classes):
-        counts = list(classes.values())
-        return dict(queries=sum(counts), distinct_lists=len(counts),
-            duplicate_queries=sum(c-1 for c in counts),
-            queries_in_repeated_classes=sum(c for c in counts if c > 1),
-            same_list_pairs=sum(c*(c-1)//2 for c in counts),
-            maximum_class=max(counts, default=0))
-
-    def flush(self, span):
-        result = self.census(self.windows[span]); total = self.totals[span]
-        total['windows'] += 1
-        for name in ('queries', 'duplicate_queries', 'queries_in_repeated_classes', 'same_list_pairs'):
-            total[name] += result[name]
-        total['maximum_class'] = max(total['maximum_class'], result['maximum_class'])
-        self.windows[span].clear()
-
-    def add(self, initialized):
-        key = initialized.tobytes()
-        self.classes[key] = self.classes.get(key, 0) + 1
-        self.rows += 1
-        for span, classes in self.windows.items():
-            classes[key] = classes.get(key, 0) + 1
-            if self.rows % span == 0:
-                self.flush(span)
-
-    def result(self):
-        for span in self.windows:
-            if self.rows % span:
-                self.flush(span)
-        result = self.census(self.classes)
-        require(result['queries'] == self.rows and
-            all(v['queries'] == self.rows for v in self.totals.values()),
-            'exact-list query conservation failed')
-        result['consecutive_windows'] = {str(k): v for k,v in self.totals.items()}
-        result['scope'] = ('One layer/chunk; exact ordered initialized IDs including width. '
-            'Same classes apply separately to both KV heads. No cross-layer/head K/V reuse, '
-            'physical traffic, candidate eligibility or performance inference.')
-        return result
-
-
-def inspect(path, expected, selected=None, statistics_enabled=False, equivalence_enabled=False):
+def inspect(path, expected, selected=None, statistics_enabled=False):
     """Reject malformed extents before allocation; never interpret unused IDs.
 
     Expected headers bind record count/order/geometry to the source and workload.
@@ -185,7 +129,6 @@ def inspect(path, expected, selected=None, statistics_enabled=False, equivalence
             record_sha = hashlib.sha256(raw + raw_ids).hexdigest()
             del raw_ids
             entries = 0
-            exact = ExactLists() if equivalence_enabled else None
             for row in range(rows):
                 width = min(pos+row+1, cap)
                 values = ids[row*cap:row*cap+width]
@@ -199,13 +142,9 @@ def inspect(path, expected, selected=None, statistics_enabled=False, equivalence
                 entries += width
                 if local is not None and tuple(wanted) == tuple(selected):
                     local.add(values, pos+row)
-                if exact is not None:
-                    exact.add(values)
             row = dict(header=list(wanted), offset=offset, bytes=HEADER.size+count*4,
                 payload_sha256=payload_sha, sha256=record_sha, valid_entries=entries,
                 unused_cap_entries=count-entries)
-            if exact is not None:
-                row['exact_lists'] = exact.result()
             records.append(row)
             if selected is not None and tuple(wanted) == tuple(selected):
                 require(entries == count, 'fixture may not retain uninitialized cap suffix')

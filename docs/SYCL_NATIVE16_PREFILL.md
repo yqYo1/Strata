@@ -1432,11 +1432,9 @@ instructions through EOT, including one `math.exp`. The conditional x<-126 zero
 seam adds a compare and predicated move. Reject the simple native-exp2 rewrite;
 no device program ran and no inference change is adopted. This is not actual
 whole-QSA JIT, numerical/domain/FTZ, hardware saturation or speed qualification.
-Prior failed GRF/partial-cache/cell/SLM/sum outcomes remain. Before a cross-query
-packing prototype, obtain exact per-KV-head ordered selected-ID list classes
-from a new finite committed model capture; adjacent overlap alone does not
-establish compatible groups.
-The next actual-ID census uses the unchanged engine and official thinking-on
+Prior failed GRF/partial-cache/cell/SLM/sum outcomes remain. Adjacent overlap
+alone does not establish compatible cross-query groups.
+The closed actual-ID census uses the unchanged engine and official thinking-on
 39260-token zero-reuse request. Source `afd7fd025`, plan `ba542c888`, host12case
 controls, all15model hashes, normal benchmark/native/parser closure, silent
 post-closure parameter log and no fresh fault qualify the capture. All12layer
@@ -1464,6 +1462,10 @@ Next source preflight considers subgroup-only K staging, with old row-coalesced
 and pitch failures retained;no new inference candidate is selected. One initialized
 53252180-byte layer0 ID record serves this immediate source-preflight/comparison;
 review it before building and retire it if no distinct legal comparison survives.
+The closed full-list/tile census retires83raw/research files (659171689bytes),
+its two one-use controllers and the ended exact-list reader mode after verifying
+source/results recover from reachable Git. The maintained generic reader/extractor
+and the named K-staging fixture remain;this is not a new native qualification.
 
 The earlier service parser passed33host controls before retirement. Closed
 one-use controllers and consumed raw/research
