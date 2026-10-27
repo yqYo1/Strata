@@ -374,7 +374,7 @@
       },
       {
         "feature": "responses_codex_v027_compatibility",
-        "status": "required_delta_pending",
+        "status": "partial_additional_tools_port_validation_pending",
         "meaning": "Accept additional_tools input items and merge their tools; optionally answer Codex thread-title turns without loading the engine; retain the prompt's tool definitions for the same conversation's compaction request; accept 0/-1 as uncapped output; correct tool-call item/final-turn event status handling.",
         "existing_fork_baseline": "The fork already serves stateless POST /v1/responses, maps input/tool items, and assembles stream/nonstream events. Its pinned responses.py lacks the 5e8a additional_tools, thread-title, and prompt-tool compaction helpers; its request validator still rejects zero/negative max_output_tokens.",
         "upstream_revision": "5e8a4cca7d690ac60ca37eb09e7d0e010099ad6d",
@@ -383,9 +383,41 @@
           "serve/server.py:7693-7848 (_responses preparation, opt-in title/compaction handling, tool-aware format call)",
           "serve/test_responses.py::test_additional_tools_input_items_are_accepted and compaction/thread-title coverage"
         ],
-        "next_action": "Compare the response-module diff against the pinned fork, port the Codex compatibility slice only, then use upstream serve/test_responses.py cases plus fork stream/tool regressions. No engine, CUDA/HIP, or GPU work is needed.",
+        "next_action": "Validate additional_tools compatibility in existing project venv,then port remaining Codex title/compaction/output-limit and event-status deltas separately.",
         "dependencies": "Existing server request context and stream assembler only. Thread-title and compaction behavior are configuration-gated upstream; preserve the fork's own prompt-cache and cancellation semantics.",
-        "review_sha256": "b9581a40588dba381c3ab7b778b31c927b7e04feb0593830c2c9b1510ab2e6e2"
+        "review_sha256": "b9581a40588dba381c3ab7b778b31c927b7e04feb0593830c2c9b1510ab2e6e2",
+        "additional_tools_slice": {
+          "source_commit": "61a893cee4f0ae69b2bc0f3b2175b434cf153cd3",
+          "provenance": {
+            "upstream": "Niko1221/Strata",
+            "revision": "5e8a4cca7d690ac60ca37eb09e7d0e010099ad6d",
+            "license": "MIT,root LICENSE identical949b9b0aada7476006469e58ee4ffb0e0f68c2d9137e90a356757b61a09d37f0",
+            "upstream_files_sha256": {
+              "serve/responses.py": "aba98b4aba933fe55cf699985add2e1014a66dacb55ed768ca9aa404c3fcb29b",
+              "serve/test_responses.py": "49e54abcce9fc0521597abf742b579ad3f7eb9a5f20f648e9020d95b2d16fb89"
+            },
+            "scope": "Exact input_messages/request_tools additions and upstream Parsing test only;existing fork functionality retained. No engine/GPU changes."
+          },
+          "attempts": [
+            {
+              "command": "/usr/bin/python3.12 -B -m unittest serve.test_responses",
+              "tests": 20,
+              "errors": 11,
+              "exit_code": 1,
+              "seconds": 0.051,
+              "ownership_closed": true,
+              "error": "System interpreter lacks existing regex dependency;HTTP setup failed. Original failure remains failed;9 parsing tests ran including new additional_tools case."
+            }
+          ],
+          "validation_plan": {
+            "command": "/home/yayoi/.local/share/strata-sycl/venv/bin/python -B -m unittest serve.test_responses",
+            "wall_seconds": 90,
+            "cpu_seconds": 90,
+            "rss_bytes": 2147483648,
+            "text_bytes": 2097152,
+            "scope": "Existing project environment with regex2026.9.29;full Responses parsing/HTTP/stream/tool tests. Mock engine only,no native performance claim."
+          }
+        }
       },
       {
         "feature": "structured_json_v027_compatibility",
