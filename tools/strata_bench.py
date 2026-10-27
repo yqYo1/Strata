@@ -1210,8 +1210,19 @@ def render_readme(res: dict) -> str:
                          f"{r.get('prompt_tps')} | {r.get('ttft_s')} |")
         fit = cohort.get('linear_fit')
         if fit:
-            lines += ['', f"Descriptive T(n): a={fit['intercept_ms']:.3f} ms; b={fit['ms_per_token']:.6f} ms/token; "
+            lines += ['', f"Affine hypothesis only: a={fit['intercept_ms']:.3f} ms; b={fit['ms_per_token']:.6f} ms/token; "
                       f"maximum relative residual={fit['max_relative_residual']:.3%}.", fit['interpretation']]
+        models = cohort.get('approximation_models')
+        if models:
+            lines += ['', 'Approximation candidates: x=actual read tokens/65536; T in milliseconds; no model selected.', '',
+                      '| Formula | a | b | c | Mean held-out error | Max held-out error |',
+                      '| --- | ---: | ---: | ---: | ---: | ---: |']
+            for model in models['candidates'].values():
+                c = model['coefficients_ms']
+                lines.append(f"| {model['formula_ms']} | {c['a']:.3f} | {c['b']:.3f} | "
+                             f"{format(c['c'], '.3f') if 'c' in c else '-'} | "
+                             f"{model['mean_held_out_relative_error']:.3%} | {model['max_held_out_relative_error']:.3%} |")
+            lines += ['', models['interpretation']]
         lines += ['', 'Actual requests, order, fit residuals and failures: `results.json`; verified request journal retained until compact evidence is extracted.',
                   'Failure: '+str(res.get('terminal_failure', out.get('terminal_failure', {})))]
         return '\n'.join(lines)+'\n'

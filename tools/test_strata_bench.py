@@ -80,6 +80,8 @@ class BenchmarkTest(unittest.TestCase):
         rendered = bench.render_readme(dict(machine={}, results=suite.out,
             params=dict(mode='prefill-scaling'), complete=True))
         self.assertIn('TTFT s', rendered)
+        self.assertIn('a+b*x+c*x^2', rendered)
+        self.assertIn('Mean held-out error', rendered)
 
     def test_scaling_refuses_short_context_and_stops_on_reused_prefix(self):
         short = bench.Suite('', '', 123159, 1, True, prefill_only=True, characterize_prefill=True)
