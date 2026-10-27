@@ -1768,13 +1768,9 @@ the rejected generation's96external build/raw/transaction files retire
 (9104951bytes). Its five unused prototype files also retire (88843bytes);
 original source and commands remain reachable in Git. No prototype exports or
 build targets are adopted. The selected engine and twelve fixtures still pass
-shared admission. The single selected-IDfixture remains for Main's imminent
-resource-discriminator preparation,with its consumer reviewed when that plan
-is selected. Separate legacy provenance holds remain open. Existing geometry
-and counter references have now been retrieved,followed by a bounded Orca Luna
-methods report and completed native Luna/max review. A controlled logical-ID
-topology comparison can test address-locality sensitivity,but cannot identify
-physical DRAM traffic,bandwidth saturation or the limiting GPU resource.
+shared admission. Separate legacy provenance holds remain open. Existing geometry
+and counter references support the following bounded address-locality diagnostic;
+it does not measure physical DRAM traffic or bandwidth saturation.
 The source/input audit now proves all6491query counts are2051from the immutable
 producer/caller/helper and validates13313041initialized actual IDs. These counts
 are source-derived,not a device steps capture;32is the tile size. The ten-command
@@ -1792,16 +1788,46 @@ prospective source/build/plan. Observed GPU bits are never canonicalized. No
 model speed gain or hardware-resource conclusion has been adopted. See the
 [current locality decision](../bench/results/2026-10-15-pr6-recovery-audit/qsa-locality-current.json).
 
-The repaired fixture now passes its own property-only native admission for both
-exact kernels, with zero kernel submissions, silent validation, a closed child and
-no fresh fault. This does not validate the repaired numerical oracle:the
-three-query smoke and subsequent three-process topology comparison remain
-pending. After this serialized diagnostic closes, the next model attribution
+The repaired fixture passes its own property-only native admission, three traced
+smoke processes and three timing processes, with silent validation, closed owners
+and no fresh fault. Each of four arms compares 18432 output words in the smoke
+and 39880704 in the full shape, including 288 and 623136 expected zero-sign
+corrections respectively. Observed bits are never canonicalized. Full outputs
+are checked before timing and after every timed batch; guards, inputs and packed
+operands remain intact. The original failed cohort remains failed.
+
+All 96 timing batches pass the 100ms and timer-floor gates. Each batch contains
+eight calls, with eight balanced four-arm rounds per process and two untimed
+warmups. The original uses the captured IDs; the private control differs only in
+namespace and host event export. Hot and spread arms use synthetic, sorted,
+distinct causal IDs with the same 2051 counts and equivalent packed values.
+
+| Process | Private/original wall | Hot/actual attention service | Spread/actual attention service |
+| --- | ---: | ---: | ---: |
+| 0 | 1.00113952 | 0.88872091 | 1.09066100 |
+| 1 | 1.00116830 | 0.88859290 | 1.09053270 |
+| 2 | 0.99976716 | 0.88903499 | 1.09143513 |
+
+All three calibration ratios pass the frozen 0.99..1.01 bounds. Concentrating
+addresses reduces attention service by 11.10..11.14%; spreading increases it by
+9.05..9.14%. This passes the prospective 3% address-sensitivity screen. It does
+not prove cache misses, physical traffic, hardware saturation, the model's
+limiting resource or an achievable 11% model speedup. No inference implementation
+is adopted and no model speed trial follows from this diagnostic alone.
+The compact result retains all 96 samples; the source, generated inputs and ten
+build commands recover from the pinned Git recipe. The diagnostic generation,
+sole ID fixture and consumed reviews have ended their consumers and are queued
+for serialized retirement after the result is committed and pushed.
+
+After this serialized diagnostic closes, the next model attribution
 step is one bounded 117489-token selected 6e40 route capture, reconciling planned
 work, actual API outcomes and device executions through phase drain. Existing
 UR/PTI and oneMKL fixtures qualify their direct calls, not complete model coverage.
 The completed fused GU/Down observer-cost gate remains scoped to its original
 diagnostic workload; changed instrumentation needs its own cost qualification.
+The current raw UR subscriber caps output at 65536 records and its parser at
+16MiB. Prove the selected route's planned counts and collection budget before
+launching that capture; a budget-stopped capture cannot qualify complete coverage.
 
 Complete prefill phase attribution requires three independent ledgers: route-owner
 planned operations, actual API results and collector device executions.
