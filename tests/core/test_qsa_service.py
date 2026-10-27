@@ -2,9 +2,10 @@
 import sys
 from pathlib import Path
 import unittest
+import tempfile
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[2] / 'tools/sycl'))
-from qsa_service import summarize
+from qsa_service import summarize, verify_native_environment
 
 PREFIX = 'strata::kernels::prefix_batch_impl<33, false, false, true, true, true, true, false>'
 
@@ -21,6 +22,21 @@ def table():
 
 
 class QsaServiceTests(unittest.TestCase):
+    def test_preload_alias_is_the_same_qualified_object(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory); collector = root/'collector.so'; probe = root/'probe.so'
+            collector.touch(); probe.touch(); alias = root/'launcher-collector.so'; alias.symlink_to(collector)
+            expected = {'EnableDirectSubmission': '0', 'LD_PRELOAD': str(probe)}
+            actual = {b'EnableDirectSubmission': b'0', b'LD_PRELOAD': f'{alias}:{probe}'.encode()}
+            verify_native_environment(actual, expected, collector, probe)
+            for variant in (actual | {b'EnableDirectSubmission': b'1'},
+                    actual | {b'LD_PRELOAD': f'{probe}:{alias}'.encode()},
+                    actual | {b'LD_PRELOAD': f'{alias}:{probe}:'.encode()},
+                    actual | {b'LD_PRELOAD': f'{alias}:{probe}:/unexpected.so'.encode()},
+                    actual | {b'UNITRACE_KernelMetrics': b'1'}):
+                with self.subTest(variant=variant), self.assertRaises(RuntimeError):
+                    verify_native_environment(variant, expected, collector, probe)
+
     def test_independent_query_and_call_conservation(self):
         result = summarize(table(), 39260)
         self.assertEqual(result['attention']['calls'], 60)

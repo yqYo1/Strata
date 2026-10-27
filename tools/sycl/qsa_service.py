@@ -24,10 +24,9 @@ import supervision_model as reference
 import profile_aggregate
 
 P, B, A = reference.P, reference.B, reference.A
-ROOT = B / 'selected-qsa-service-v1'
+ROOT = B / 'selected-qsa-service-v2'
 RESULT = A / 'prefill-resources-current.json'
-KEY = 'selected_qsa_service'
-HOST = B / 'selected-qsa-environment-host-v1'
+KEY = 'selected_qsa_service_v2'
 HOST_KEY = 'selected_qsa_environment_host_v1'
 require, digest = reference.require, reference.digest
 FILTER = 'prefix_batch_impl'
@@ -76,7 +75,23 @@ def assets():
     for item in result.values(): require(digest(item['path']) == item['sha256'], 'collector artifact changed')
     require(events['ur_metadata_gpu']['passed'] and events['ur_subscriber_gpu']['passed'],
         'preserve existing direct fixture qualification')
+    host = events[HOST_KEY]
+    require(host['passed'] and host['ownership_closed'] and host['session_removed'] and
+        host['observation']['different_keys'] == [] and host['observation']['passed'],
+        'closed CPU-only launcher environment qualification required')
     return result
+
+
+def verify_native_environment(actual, expected, collector, preload):
+    different = [k for k, v in expected.items() if k != 'LD_PRELOAD' and actual.get(k.encode()) != v.encode()]
+    require(not different, 'native preexec values differ: ' + ','.join(different))
+    spellings = actual.get(b'LD_PRELOAD', b'').decode().split(':')
+    require(len(spellings) == 2 and all(Path(v).is_absolute() for v in spellings) and
+        [str(Path(v).resolve()) for v in spellings] == [str(Path(v).resolve()) for v in (collector, preload)],
+        'native preexec preload identity/order differs')
+    for key in ('ZET_ENABLE_METRICS', 'UNITRACE_KernelMetrics', 'UNITRACE_MetricQuery',
+                'UNITRACE_MetricSampling', 'UNITRACE_StallSampling', 'XPTI_TRACE_ENABLE'):
+        require(actual.get(key.encode(), b'0') in (b'', b'0'), 'unplanned collector mode: ' + key)
 
 
 def summarize(text, tokens):
@@ -207,10 +222,7 @@ def run(row):
                 'unexpected native provider: ' + str(sorted(mapped - allowed)))
             actual = dict(v.split(b'=',1) for v in Path('/proc',str(pid),'environ').read_bytes().split(b'\0') if b'=' in v)
             expected = reference.engine_once.native_environment(native_plan, row['environment'])
-            # The qualified pre-exec launcher adds documented collection keys.
-            require(all(actual.get(k.encode()) == v.encode() for k,v in expected.items()
-                if k != 'LD_PRELOAD') and row['assets']['collector']['path'].encode() in actual.get(b'LD_PRELOAD',b'') and
-                base['probe']['library']['path'].encode() in actual.get(b'LD_PRELOAD',b''), 'native preexec environment differs')
+            verify_native_environment(actual, expected, row['assets']['collector']['path'], base['probe']['library']['path'])
             wrapper = reference.baseline.identity(claim['wrapper']['pid']); require(wrapper and wrapper['sid'] == leader['pid'], 'wrapper ownership')
             server = reference.baseline.identity(wrapper['ppid']); require(server and server['sid'] == leader['pid'], 'server ownership')
             allowed_python = {v['realpath'] for v in manifest['inventory']['files'].values()}
@@ -269,85 +281,11 @@ def run(row):
     return int(not row['passed'])
 
 
-ENV_PROGRAM = '''import json,os,pathlib,sys
-r=json.loads(pathlib.Path(sys.argv[1]).read_text())
-p=r['plan']['generated_contents']['plan.json']['native_validation_probe']
-expected=dict(r['environment'],STRATA_UR_PROBE_EXPECTED_LOADER=str(pathlib.Path(p['loader']['path']).resolve()))
-actual=dict(v.split(b'=',1) for v in pathlib.Path('/proc/self/environ').read_bytes().split(b'\\0') if b'=' in v)
-different=[k for k,v in expected.items() if actual.get(k.encode())!=v.encode()]
-spellings=actual.get(b'LD_PRELOAD',b'').decode().split(':')
-resolved=[str(pathlib.Path(v).resolve()) for v in spellings if v]
-required=[str(pathlib.Path(r['assets']['collector']['path']).resolve()),str(pathlib.Path(p['library']['path']).resolve())]
-passed=not different and len(spellings)==2 and resolved==required
-print(json.dumps(dict(pid=os.getpid(),different_keys=different,preload_spellings=spellings,preload_resolved=resolved,required=required,passed=passed)),flush=True)
-raise SystemExit(0 if passed else 1)
-'''
-
-
-def host_prepare():
-    require(not HOST.exists(), 'single-use environment probe')
-    failed = reference.runtime.validation.committed(RESULT, ('event_reconciliation', KEY))
-    require(failed['stage']=='failed' and failed['ownership_closed'] and failed['session_removed'] and
-        failed['diagnosis']['long_requests_completed']==0, 'close original failure before environment probe')
-    original_row=json.loads((ROOT/'record.json').read_text()); native=original_row['plan']['generated_contents']['plan.json']
-    source=reference.gen.git('rev-parse','HEAD').decode().strip(); pinned=assets()
-    HOST.mkdir(mode=0o700)
-    session='StrataQsaEnv'+secrets.token_hex(12)
-    env=dict(original_row['environment'],STRATA_UNITRACE_TARGET_PRELOAD=native['native_validation_probe']['library']['path'],
-        STRATA_UR_PROBE_EXPECTED_LOADER=native['native_validation_probe']['loader']['path'],
-        **native['native_profile']['environment'])
-    row=dict(stage='prepared',source_commit=source,inputs=inputs(source),assets=pinned,environment=env,
-        plan=dict(session=session,reference=dict(path=str(ROOT/'record.json'),sha256=digest(ROOT/'record.json')),
-            command=[pinned['launcher']['path'],'--session',session,'--device-timing','--verbose',
-                '/usr/bin/python3','-I','-S','-B','-c',ENV_PROGRAM,str(ROOT/'record.json')],
-            question='CPU-only child:does the unchanged collector launcher preserve every expected value and preload exactly the collector/probe through verified paths?',
-            safety='Existing parameter-validation preload/collector constructor only;no model,SYCL kernels,copies,graphs,metrics,Sysman,services or reset. Output reports differing key names and preload identities only.',
-            budgets=dict(wall=60,cpu=60,rss_cap=2<<30,text_cap=1<<20,file_cap=4<<20,total_cap=8<<20),
-            retention='Keep the compact environment decision;retire raw host receipt and successful output after correction. Original failed model status remains unchanged.'),
-        complete=False,passed=False,active=False,ownership_closed=True)
-    save(row,HOST_KEY,HOST);print('Prepared CPU-only launcher environment check;commit before run.',flush=True)
-
-
-def host_run():
-    row=json.loads((HOST/'record.json').read_text())
-    require(row['stage']=='prepared' and not (HOST/'owned').exists() and
-        reference.runtime.validation.committed(RESULT,('event_reconciliation',HOST_KEY,'plan'))==row['plan'] and
-        inputs(row['source_commit'])==row['inputs'] and assets()==row['assets'] and
-        digest(row['plan']['reference']['path'])==row['plan']['reference']['sha256'], 'commit exact single-use host inputs')
-    session=row['plan']['session'];sp=Path('/dev/shm/uctrl'+str(os.getuid())+'_'+session)
-    require(not sp.exists(),'preexisting host session');boot=Path('/proc/sys/kernel/random/boot_id').read_text().strip()
-    cursor=next(v.split(': ',1)[1] for v in subprocess.check_output(['journalctl','-k','-b','-n','0','--show-cursor','--no-pager'],text=True,timeout=15).splitlines() if v.startswith('-- cursor: '))
-    owner=None;outcome=dict(complete=False)
-    def persist():
-        write(HOST/'execution.json',dict(outcome,active=bool(owner and owner.active),commands=owner.commands if owner else []))
-    owner=reference.baseline.Owner(HOST/'owned',persist)
-    try:
-        e,out,err=owner.run('environment',row['plan']['command'],row['environment'],P,**row['plan']['budgets'])
-        body=json.loads(out.read_text());outcome['observation']=body
-        require(reference.baseline.closed(e) and e['exit_code']==0 and body['passed'] and body['pid']==e['pid'],'host environment differs')
-        reference.runtime.validation.preload_evidence(err.read_text(),body['pid'])
-        require(inputs(row['source_commit'])==row['inputs'] and assets()==row['assets'],'host inputs changed')
-        outcome.update(complete=True,host_probe_accepted=True)
-    except BaseException as error:outcome['error']=repr(error)
-    finally:
-        reference.runtime.validation.finish(outcome,owner,cursor,boot)
-        if sp.exists() and outcome['ownership_closed']:
-            e,_,_=owner.run('stop',[row['assets']['launcher']['path'],'--stop',session],row['environment'],P,**row['plan']['budgets'])
-            require(reference.baseline.closed(e) and e['exit_code']==0,'host session stop failed')
-        row.update(outcome,active=False,session_removed=not sp.exists())
-        row['passed']=bool(row['passed'] and row['complete'] and row['session_removed'])
-        row['stage']='closed' if row['passed'] else 'failed';row['commands']=owner.commands;persist();save(row,HOST_KEY,HOST)
-    print(json.dumps({k:row.get(k) for k in ('stage','passed','ownership_closed','observation','error')}),flush=True)
-    return int(not row['passed'])
-
-
 def main():
-    require(sys.argv[1:] in (['prepare'],['run'],['host-prepare'],['host-run']), 'use qsa_service.py prepare|run|host-prepare|host-run')
+    require(sys.argv[1:] in (['prepare'],['run']), 'use qsa_service.py prepare|run')
     with (B/'owned-v0141-measurement.lock').open('a+') as lock:
         fcntl.flock(lock,fcntl.LOCK_EX|fcntl.LOCK_NB); reference.runtime.guards.no_model_owners([])
         if sys.argv[1]=='prepare': prepare(); return 0
-        if sys.argv[1]=='host-prepare': host_prepare(); return 0
-        if sys.argv[1]=='host-run': return host_run()
         return run(json.loads((ROOT/'record.json').read_text()))
 
 
