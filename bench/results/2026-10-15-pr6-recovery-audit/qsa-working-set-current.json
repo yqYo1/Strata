@@ -1322,7 +1322,7 @@
     }
   },
   "check_plan": {
-    "stage": "prepared",
+    "stage": "failed",
     "mode": "component",
     "source_commit": "15436844ff4809abf54b5764956a0a44fd662b50",
     "controller_inputs": {
@@ -1685,6 +1685,115 @@
         "kernel": "7.0.0-38-generic",
         "devcoredump": false
       }
+    },
+    {
+      "mode": "component",
+      "source_commit": "15436844ff4809abf54b5764956a0a44fd662b50",
+      "observations": [
+        {
+          "process": 0,
+          "pid": 3852495,
+          "exit_code": 0,
+          "ownership_closed": true,
+          "validation": {
+            "pid": 3852495,
+            "loader": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_loader.so.0.12.0",
+            "threads_before": 1,
+            "preinit": 37,
+            "config_enabled": true,
+            "first_init": true,
+            "dispatch_result": 46,
+            "output_untouched": true,
+            "retained_reference_until_exit": true,
+            "runtime_teardown_qualified": false
+          },
+          "checks": [
+            {
+              "kind": "checked",
+              "queries": 16,
+              "cells": 39259,
+              "copies": 8,
+              "repeated": 0,
+              "guards": true,
+              "inputs_immutable": true,
+              "exact_original": true
+            },
+            {
+              "kind": "checked",
+              "queries": 3,
+              "cells": 262144,
+              "copies": 2,
+              "repeated": 0,
+              "guards": true,
+              "inputs_immutable": true,
+              "exact_original": true
+            }
+          ],
+          "properties": {
+            "kind": "properties",
+            "global_cache_bytes": 14155776,
+            "maximum_allocation_bytes": 10132807680,
+            "local_bytes": 131072
+          },
+          "session_removed": true
+        }
+      ],
+      "passed": false,
+      "complete": false,
+      "error": "RuntimeError(\"fixture/collector did not close: RuntimeError('protocol EOF before expected line')\")",
+      "ownership_closed": false,
+      "postchecks_complete": true,
+      "postcheck_errors": [],
+      "fresh_faults": [],
+      "boot_unchanged": true,
+      "driver_after": {
+        "pci": "/sys/bus/pci/devices/0000:05:00.0",
+        "driver": "xe",
+        "vendor": "0x8086",
+        "device": "0xe20c",
+        "kernel": "7.0.0-38-generic",
+        "devcoredump": false
+      },
+      "closure_reconciliation": {
+        "original_failed_status_preserved": true,
+        "original_protocol_receipt_qualified": false,
+        "physical_owned_processes_closed": true,
+        "commands": [
+          {
+            "pid": 3852495,
+            "exit_code": 0,
+            "direct_child_reaped": true,
+            "session_empty": true
+          },
+          {
+            "pid": 3853906,
+            "exit_code": 1,
+            "direct_child_reaped": true,
+            "session_empty": true
+          }
+        ],
+        "guard": {
+          "same_uid_model_owners": [],
+          "scope": "bounded read-only cmdline scan; cannot prove hidden foreign GPU use absent"
+        },
+        "driver": {
+          "pci": "/sys/bus/pci/devices/0000:05:00.0",
+          "driver": "xe",
+          "vendor": "0x8086",
+          "device": "0xe20c",
+          "kernel": "7.0.0-38-generic",
+          "devcoredump": false
+        }
+      },
+      "failure_diagnosis": {
+        "native_error": "attention event clock invalid",
+        "stage": "Initial original/prepacked event qualification during real16queries/8replicas,which precedes the first checked-case record. Original versus prepacked/replica and raw clock operands were not emitted,so they remain unknown.",
+        "native_exit": 1,
+        "driver_fault": false,
+        "math_failure_established": false,
+        "next": "Replace experimental queue-last-event lookup with strong events captured directly from the actual submission;emit raw clocks on any failure. Keep positive/ordered clock gates unchanged,new source/recipe/qualification before rerun."
+      }
     }
-  ]
+  ],
+  "adoption_status": "Component gate failed;no resource/performance/model advancement. Original engine/decode remains unchanged."
 }

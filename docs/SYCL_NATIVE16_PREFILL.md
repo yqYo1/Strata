@@ -1606,8 +1606,17 @@ guard/input/replica checks and positive last-attention event clocks,with normal
 closure and no fresh fault. Use the pinned SDK's experimental last-event API
 only in this diagnostic. Runtime reports global-cache14155776bytes,local131072
 and maximum-allocation10132807680;these descriptors do not prove usable cache
-capacity,free VRAM,occupancy or bandwidth. Larger component/resource/repeated
-timing gates remain open;see[the current diagnostic](../bench/results/2026-10-15-pr6-recovery-audit/qsa-working-set-current.json).
+capacity,free VRAM,occupancy or bandwidth. The larger component gate **fails**:
+its first process passes real16-query/8-replica and physical262144 final-address
+checks,but the second exits1 before its first case record with
+`attention event clock invalid`. Raw clock operands and original/prepacked/replica
+identity were not emitted;the cause remains unknown. Both owned processes are
+reaped with empty sessions,and no fresh driver fault appears. Preserve the failed
+protocol receipt;do not advance resource/performance/model gates. Next capture
+strong events directly from submission instead of using the experimental
+queue-last-event lookup,and emit operands on a clock failure. Keep clock criteria
+unchanged and qualify new source before any rerun.
+See[the current diagnostic](../bench/results/2026-10-15-pr6-recovery-audit/qsa-working-set-current.json).
 Compare full6491-query geometry separately from a cache-sized real-query subset.
 If repeating a small subset to fill the GPU,use identical repeated work in every
 copy-count arm and label it as a controlled counterfactual,not a production replay.
