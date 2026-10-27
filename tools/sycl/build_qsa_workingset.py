@@ -19,7 +19,7 @@ import measurement_guards as guards
 import measurement_owner as supervision
 
 P,B=gen.P,gen.B
-ROOT=B/'qsa-working-set-v1'
+ROOT=B/'qsa-working-set-v2'
 RESULT=gen.A/'qsa-working-set-current.json'
 FIXTURE='bench/sycl/qsa_workingset.cpp'
 # Explicit new-build header delta; never relabel the original compiler manifest
@@ -74,10 +74,10 @@ def experiment():
         arms='Prepacked selected arithmetic with1/2/4/8 rotating KV copies;original production pack+attention reference with1copy. Fixed original kernel body,DPAS/order/FP32 state/rounding/SLM/barriers/WG128/SG16/defaultGRF. Overlay only omits pack in a private diagnostic namespace,after original pack and checked drain initialized every replica.',
         geometry='Two separate shapes:all6491actual queries at positions32768..39258,width2051,live39259,identity page4;and real query0 repeated256times to fill512workgroups. Synthetic finite Q,K8,V8 andFP16scales are explicitly not model tensor contents. Repeated-query work is identical across all copy-count arms and is a controlled counterfactual,not a production replay.',
         qualification='Before timing:source overlay reversal,exact capture/model/native/runtime/SDK input checks;3small traced/validated smoke processes;3component processes cover real16query masks,8exact prepared replicas,alias/guard/input immutability and physical262144 final-address cases. Check actual selected and prepacked compiler resources before clean timing. No environment mutation or unsupported cache flush.',
-        performance='3independent clean processes,6rotated rounds,5arms,2shapes=180individual samples. Order=(process+round+offset)%5;arm0..3rotate1/2/4/8,arm4originalpack. Equal2Rwarmup calls;64calls/batch repeated256,2calls/batch full6491. Every batch>=100ms and>=1000times128pair positive minimum timer floor. No adaptive retries. Record all ratios/spread. Directionally consistent R8/R1>=1.05 in all3processes supports sensitivity for that shape;otherwise effect small or inconclusive. This diagnostic gate never advances a model/inference trial.',
+        performance='3independent event-observed processes,6rotated rounds,5arms,2shapes=180individual samples. Order=(process+round+offset)%5;arm0..3rotate1/2/4/8,arm4originalpack. Equal2Rwarmup calls;64calls/batch repeated256,2calls/batch full6491. Every batch>=100ms and>=1000times128pair positive minimum timer floor. Capture exactly one last-attention event/call using the pinned SDK extension;read service after checked drain and wall-clock end. Require positive ordered nonoverlapping event intervals and service<=host envelope+1ms. No adaptive retries. Record wall and device ratios/spread. Directionally consistent R8/R1>=1.05 in all3processes in BOTH metrics supports sensitivity for that shape;otherwise effect small,inconclusive or host/device-confounded. This diagnostic gate never advances a model/inference trial.',
         provenance='Main-authored ownMIT6e40 overlay and fixture,using original project buffer/owner/build scaffolds. No XeStrata application source. Original engine13assets/decode1256/production dispatch stay unchanged;installed SDK paths do not imply application-source adoption.',
         memory='Each full39260-cell packed KV replica uses80404480bytes plus314080bad-row bytes. Eight replicas~646MB;Q/outputs/IDs/raw pools bring the real6491case below2GiB of device allocations. Every allocation is admitted by Runtime,guarded and below the device single-allocation limit. Physical262144 component uses only2replicas. Host RSS cap8GiB;no model capacity claim.',
-        limits='Source-derived Mode0 identity map,not a captured device table. No real Q/K/V. Counter-free latency sensitivity is not measured physical traffic/cache hits/tier/bandwidth/saturation or complete critical-path attribution. Timing includes unchanged host admission and checked drain;preparation/readback/checks excluded. Full-wrapper arm includes prefix refresh;do not subtract unequal wrappers as pure pack time. First use outside steady-state samples. No sustained decode/quality/agent/full-context adoption.',
+        limits='Source-derived Mode0 identity map,not a captured device table. No real Q/K/V. Counter-free latency sensitivity is not measured physical traffic/cache hits/tier/bandwidth/saturation or complete critical-path attribution. Wall includes host admission,event retention and checked drain;event service is summed attention only. Preparation/readback/profiling queries/checks excluded. Event observer cost is unqualified;no clean-throughput claim. Full-wrapper arm includes prefix refresh;do not subtract unequal wrappers as pure pack time. First use outside steady-state samples. No sustained decode/quality/agent/full-context adoption.',
         retention='Keep selected engine+12fixtures and one imminent component generation. Current capture holds exactly one53MiB initialized fixture for this comparison. Retire component/generated/IR/logs and capture when its named consumer closes,after useful180samples/source/recipe/hashes/outcomes are committed. Separate144artifact/46root/14legacy provenance holds remain explicit,not another comparison allowance.')
 
 
@@ -131,7 +131,9 @@ def admission(record,binary=False):
 
 
 def prepare():
-    guards.require(not RESULT.exists() and not ROOT.exists(),'fresh single-use QSA working-set build only;inspect existing owner')
+    previous=gen.committed(RESULT)
+    guards.require(previous['stage']=='superseded-before-build' and not previous['GPU_executed'] and
+        not ROOT.exists() and not (B/'qsa-working-set-v1').exists(),'closed unbuilt v1 and fresh single-use v2 required')
     revision=gen.git('rev-parse','HEAD').decode().strip();pins=inputs(revision)
     full,proof=qualified_baseline()
     prof=gen.committed(gen.A/'cpu-profiler-current.json')
@@ -176,6 +178,10 @@ def prepare():
     guards.require(digest(fixture['path'])==fixture['sha256'] and fixture['header']==[0,32768,6491,2051],'selected-ID identity differs')
     legacy=json.loads((gen.A/'native-gdn-engine-build.json').read_text())['legacy_provenance_exception']['additional_old_product_review']
     record=dict(stage='prepared',source_commit=revision,input_sha256=pins,plan=experiment(),sources=list(map(str,sources)),selected_fixture=fixture,
+        superseded_unbuilt_plan=dict(commit='b56cc1d1d',path=str(RESULT.relative_to(P)),
+            reason=previous['superseded_reason'],retirement=dict(files=4,bytes=1519395,
+                manifest=str(B/'qsa-working-set-unbuilt-plan-retirement-20261027.jsonl'),
+                manifest_sha256='977c65acac525d06099a3d138e1b758866b9f1ab529312e04745a0d597b39a19',root_removed=True)),
         preparation_refusals=[dict(source_commit='51aa75c95',error='isolated Python omitted script import directory',
             native_or_compiler_launched=False,output_root_created=False,
             resolution='Explicit project-local module path before imports;retain isolated/no-site/no-bytecode startup.')],

@@ -17,6 +17,9 @@
 #include <stdexcept>
 #include <string>
 #include <vector>
+#ifndef SYCL_EXT_ONEAPI_IN_ORDER_QUEUE_EVENTS
+#error "Diagnostic requires the pinned SDK's in-order last-event extension"
+#endif
 
 using namespace strata;
 using namespace strata::kernels;
@@ -59,6 +62,15 @@ uint16_t bf16(float x) {
 uint16_t half(float x) { return std::bit_cast<uint16_t>(_Float16(x)); }
 void gate(const char* stage) {
   std::cout<<"WS_GATE "<<stage<<'\n';require(std::cin.get()=='X',"Main gate token");
+}
+sycl::event last_attention() {
+  auto event=rt->compute().ext_oneapi_get_last_event();
+  require(event.has_value(),"last attention event missing");return *event;
+}
+uint64_t service(const sycl::event& event) {
+  const auto begin=event.get_profiling_info<sycl::info::event_profiling::command_start>();
+  const auto end=event.get_profiling_info<sycl::info::event_profiling::command_end>();
+  require(end>begin,"attention event clock invalid");return end-begin;
 }
 struct Selected {
   std::array<int32_t,4> header;
@@ -128,9 +140,10 @@ void run(const Selected& source,int queries,bool repeated,int copies,bool timing
   // It also supplies a bit-exact reference for this unchanged arithmetic.
   std::vector<uint16_t> expected;
   for(int r=0;r<copies;++r) {
-    call(true,r);rt->wait();auto actual=out.get();
+    call(true,r);auto original_event=last_attention();rt->wait();require(service(original_event)>0,"original event");auto actual=out.get();
     if(!r) expected=actual;else require(actual==expected,"replica production operands differ");
-    call(false,r);rt->wait();require(out.get()==expected,"prepacked result differs from original");
+    call(false,r);auto prepacked_event=last_attention();rt->wait();require(service(prepacked_event)>0,"prepacked event");
+    require(out.get()==expected,"prepacked result differs from original");
   }
   // Source final-page padding is explicitly zeroed by the original pack.
   // Verify full prepared storage is identical, including bad-row metadata.
@@ -158,15 +171,25 @@ void run(const Selected& source,int queries,bool repeated,int copies,bool timing
       require(rotation<=copies,"rotation exceeds prepared copies");
       for(int i=0;i<2*rotation;++i) call(prepare,i%rotation);
       rt->wait();
+      std::vector<sycl::event> events;events.reserve(repeats);
       const auto begin=std::chrono::steady_clock::now();
-      for(int i=0;i<repeats;++i) call(prepare,i%rotation);
+      for(int i=0;i<repeats;++i) { call(prepare,i%rotation);events.push_back(last_attention()); }
       rt->wait();
       const auto ns=std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::steady_clock::now()-begin).count();
       require(ns>=100000000 && ns>=1000*floor,"timing batch below prospective floor");
+      uint64_t device_ns=0,previous_end=0;
+      for(const auto& event:events) {
+        const auto start=event.get_profiling_info<sycl::info::event_profiling::command_start>();
+        const auto end=event.get_profiling_info<sycl::info::event_profiling::command_end>();
+        require(start>=previous_end && end>start,"duplicate/overlapping attention events on in-order queue");
+        device_ns+=end-start;previous_end=end;
+      }
+      require(device_ns>0 && device_ns<=uint64_t(ns)+1000000,"event service exceeds host envelope");
       require(out.get()==expected,"timed output differs");
       std::cout<<"{\"kind\":\"sample\",\"process\":"<<process<<",\"shape\":\""<<(repeated?"real1-repeated256":"real6491")
         <<"\",\"round\":"<<round<<",\"arm\":"<<arm<<",\"copies\":"<<rotation<<",\"prepare\":"<<int(prepare)
-        <<",\"queries\":"<<queries<<",\"repeats\":"<<repeats<<",\"batch_ns\":"<<ns<<",\"timer_floor_ns\":"<<floor<<"}\n";
+        <<",\"queries\":"<<queries<<",\"repeats\":"<<repeats<<",\"batch_ns\":"<<ns<<",\"attention_device_ns\":"<<device_ns
+        <<",\"event_calls\":"<<events.size()<<",\"timer_floor_ns\":"<<floor<<"}\n";
     }
   }
   require(dk.get()==codes && dv.get()==values && dks.get()==scales && dvs.get()==vscales && dq.get()==query &&
@@ -185,6 +208,8 @@ int main(int argc,char** argv) {
     const int process=argc==4?std::stoi(argv[3]):0;require(process>=0 && process<3,"process ordinal");
     const Selected source(argv[2]);std::cout.setf(std::ios::unitbuf);
     gate("before-runtime");rt=sycl_backend::runtime_for();
+    require(rt->compute().has_property<sycl::property::queue::in_order>() &&
+      rt->compute().has_property<sycl::property::queue::enable_profiling>(),"qualified queue properties");
     std::cout<<"device="<<rt->device().get_info<sycl::info::device::name>()<<'\n';
     std::cout<<"{\"kind\":\"properties\",\"global_cache_bytes\":"<<rt->device().get_info<sycl::info::device::global_mem_cache_size>()
       <<",\"maximum_allocation_bytes\":"<<rt->device().get_info<sycl::info::device::max_mem_alloc_size>()
