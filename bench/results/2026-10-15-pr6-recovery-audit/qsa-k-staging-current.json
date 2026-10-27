@@ -2579,5 +2579,256 @@
         "devcoredump": false
       }
     }
-  ]
+  ],
+  "oracle_plan": {
+    "kernel_ids": [
+      "_ZTSZZN6strata7kernelsL17prefix_batch_implILi33ELb0ELb0ELb1ELb1ELb1ELb1ELb0EEEbPKtRKNS0_12QsaAttnPoolsEPKiS8_lRKNS0_9QsaShapesEPtlRKNS0_19QsaPromptBf16BoundsElRKNS0_20QsaBf16PackedScratchEPvNS0_19QsaPrefixStateProbeEENKUlRN4sycl3_V17handlerEE_clESO_EUlNSM_7nd_itemILi1EEEE_",
+      "_ZTSZZN6strata7kernels16kstaging_controlL17prefix_batch_implILi33ELb0ELb0ELb1ELb1ELb1ELb1ELb0EEEbPKtRKNS0_12QsaAttnPoolsEPKiS9_lRKNS0_9QsaShapesEPtlRKNS0_19QsaPromptBf16BoundsElRKNS0_20QsaBf16PackedScratchEPvNS0_19QsaPrefixStateProbeEPN4sycl3_V15eventEENKUlRNSN_7handlerEE_clESR_EUlNSN_7nd_itemILi1EEEE_",
+      "_ZTSZZN6strata7kernels18kstaging_candidateL17prefix_batch_implILi33ELb0ELb0ELb1ELb1ELb1ELb1ELb0EEEbPKtRKNS0_12QsaAttnPoolsEPKiS9_lRKNS0_9QsaShapesEPtlRKNS0_19QsaPromptBf16BoundsElRKNS0_20QsaBf16PackedScratchEPvNS0_19QsaPrefixStateProbeEPN4sycl3_V15eventEENKUlRNSN_7handlerEE_clESR_EUlNSN_7nd_itemILi1EEEE_"
+    ],
+    "contract": {
+      "source_commit": "c3bf8dea1aac703bc87fb1afcf21714813ee247e",
+      "source_snapshot": {
+        "tools/sycl/qsa_k_staging_sources.py": "d1a34925846e03508ed604955d33afbf22a280880dd86bb71ba8c6ed37eca404",
+        "tools/sycl/build_qsa_k_staging.py": "42d75e8c66a81bc33bd0f6c6f941f17c3265b5e058236b2ae0cd6fc63c1a1193",
+        "tools/sycl/check_qsa_k_staging.py": "1c8ec520d12e9940a02934b11f09c2f29dc34e3902c78b23d3b61d73cd6eb537",
+        "bench/sycl/qsa_k_staging.cpp": "34b9cbad64826abef5f128c38680172c0d263ffb4eddae780d8331261280fc1a",
+        "bench/sycl/qsa_k_staging_admission.hpp": "62875356f7f7fe14ac08b96da40eeb73aeea942f0fb9129ffe3a38299da5804a",
+        "bench/sycl/qsa_k_staging_oracle_adapter.cpp": "91d43f1398f09566ee9bbf82d573d4d86afd841b2c5d6a0ac8e09bb9cd8551ac",
+        "tests/sycl/qsa_bf16_prefix.cpp": "422bf01441e3b3e4992f161d2582aa594b8a8082b2c10957709ba0c255440ebf",
+        "src/kernels/sycl/qsa_bf16_prefix.cpp": "4f9f815c9baae709f919f6d5ad1af04677c10d8c13c7597b3857cf81567ae192",
+        "include/strata/kernels/qsa_bf16_prefix.hpp": "8d180de01ec1afecac278cb9919ddeacc2f7a159ecacd5d593ed5a57b9a2b159"
+      },
+      "report_sha256": "967e18adb220c3ad2dc7916d252df14d822f451daaba39cbd2bc4b1bea5aebcf",
+      "review_sha256": "98e66cd57881449aa02e09e13247daaf7511cf679d5538e7f2886cef8f80fa70",
+      "status": "reviewed_source_contract_no_device_qualification"
+    },
+    "runtime_qualification": {
+      "original_build": {
+        "source_commit": "6e40afc1beddd059ee518617f6c1efce1da14aca",
+        "inputs_recovered": 9853,
+        "assets_verified": 13,
+        "receipt": {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/record.json",
+          "sha256": "a38f477670fafcd1a931be2e20d90d6d9718df75b61954b421f361af9f6881b2"
+        },
+        "limits": "Original build remains selected; this source-only diagnostic is not adoption."
+      },
+      "runtime_record_sha256": "09ad358e12f6ef58bfc0a978519927863f3d09949a033a1e224db95997647d97",
+      "runtime_files": {
+        "/usr/lib/x86_64-linux-gnu/libz.so.1.3": "f61677c7bdb7c2aa2a243ea781bfd16afcb361cede7b4ef76127a9d8eb9a5242",
+        "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_loader.so.0.12.0": "bb6e1311850e4b1a924e42acae80c2b3610934625a4985aaa67967abe31356fc",
+        "/usr/lib/x86_64-linux-gnu/libc.so.6": "3a15d66867d83762c7f2f1e37359cb8f6c5743edb369c65285cb0b1c4f7498bf",
+        "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libsycl.so.9.0.0-0": "74243bafb2766fd1a038cf80fd62632b4aad9ecfdc0d3ce8711e4515a93d7008",
+        "/usr/lib/x86_64-linux-gnu/libgcc_s.so.1": "d93224d2b0dab4247598be683adca02f5cf00586f99c187579cd7e92058fb7cb",
+        "/usr/lib/x86_64-linux-gnu/libm.so.6": "fce00b6f25f459cf4ae0b7fae4257909a1a8a86f9149e7c029a5d617baf1ccd0",
+        "/usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.33": "1fd75fe70354a416d75aef22bcae68c47bd25d20e2d0568c30b1a9838cf62f11",
+        "/usr/lib/x86_64-linux-gnu/ld-linux-x86-64.so.2": "c20a2dc8917c755f02b94049356320fe1f62ac7d9f8994731f807d9df39302da",
+        "/usr/lib/x86_64-linux-gnu/libnl-3.so.200.26.0": "afcb69e2ef0b46c2ce7b7483848332fa9462776d33163f64209acf01f86eddd7",
+        "/usr/lib/x86_64-linux-gnu/libdrm.so.2.134.0": "0603c4dcb88bc9e076e34aedeec3513038e608d6d15d21330e49cb0ea38155e1",
+        "/usr/lib/x86_64-linux-gnu/libigdml.so.1.0.240": "1806ee390b7693dd61dd5385a25744dd94479295d3a7d15730e578e91b18e782",
+        "/usr/local/lib/libigc.so.2.41.5+1788943183": "40badd8f1ee80ac844a8947f5e91e5654fbcd851caefe343b0e5ec4ce4d1b123",
+        "/usr/lib/x86_64-linux-gnu/libzstd.so.1.5.5": "0a2128bc10841fb29e76d08d945864dfb0b6a66da5df6df5d8299197439e54bb",
+        "/usr/local/lib/libopencl-clang2.so.22.1": "02ba9fb0f16b7f02c012095c46f8053c4bc20f9b5bde3028eedff6dcfed94bfe",
+        "/usr/local/lib/libigdfcl.so.2.41.5+1788943183": "ece8bcd533a44cc1684c1f24eeeca3302e4d19307a806fad5f1b83171f9fc1c3",
+        "/usr/lib/x86_64-linux-gnu/libze_tracing_layer.so.1.32.0": "db1856f379706d51b6ded84ce028d4aa48740ef63793f60e8a1e027c6db6ffb5",
+        "/usr/lib/x86_64-linux-gnu/libigdgmm.so.12.10.0": "427847d14c2c36889efa8b0be6a8af6afac32cc3c744dcfc8e010d4ca210c957",
+        "/usr/lib/x86_64-linux-gnu/libze_intel_gpu.so.1.17.39758": "52e29a602f92d3542eac91e20717743e63ca7d4b257d0c79a3c4d6c64c94ea49",
+        "/usr/lib/x86_64-linux-gnu/libze_loader.so.1.32.0": "b764efda507f173560fa6055d433dd5c76140180b4a7c532e1cea813cde67363",
+        "/usr/lib/x86_64-linux-gnu/libcap.so.2.66": "6ac6abc86ac891c6e13486470e26f1d939f47fda9e6b5d5508a7f5ec881adc84",
+        "/usr/lib/x86_64-linux-gnu/libudev.so.1.7.8": "0d6934adafb2ef3c640382440c14d6bd60f391e688c000796ffcea0c72849269",
+        "/usr/lib/x86_64-linux-gnu/libhwloc.so.15.7.0": "86dff44a023254d997cea910b9a51f35afefe6780f4b5530f974a2009ba47487",
+        "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libumf.so.1.1.0": "ebe65269abd5869010ab256375e8663f7a8f8b5453e0be0c78f615eb71581ab9",
+        "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_adapter_level_zero_v2.so.0.12.0": "05bcafc4a0d45d33f957f16ffb4ba4776da675e79ade1121b93b94b8549335d8",
+        "/usr/lib/x86_64-linux-gnu/libnl-genl-3.so.200.26.0": "0757db7e6c5fbc4d2a8bbedbac7061fbb8ebb6196b4d2954d3a321e9ff76933c",
+        "/opt/intel/oneapi/mkl/2026.1/lib/libmkl_sycl_blas.so.6": "51d6c16990701a5aaf9fbbde5d86f5a7197b81357b66b19cbb912206564cf4ee",
+        "/opt/intel/oneapi/mkl/2026.1/lib/libmkl_intel_ilp64.so.3": "ffbbeff402fdf09baa53f8226b86f27046592d984ae2916b1bbc2e59132c7c89",
+        "/opt/intel/oneapi/mkl/2026.1/lib/libmkl_sequential.so.3": "4e7ff529bec90a1b0ce70299258a64a2ebae7a5a6f3ec031306a6ddb39b5a650",
+        "/opt/intel/oneapi/mkl/2026.1/lib/libmkl_core.so.3": "b4f086651ee5a8471140d53fedfdbbaba606287784763b0739f282872c31aa9b",
+        "/usr/lib/x86_64-linux-gnu/libdl.so.2": "c2994527172cc23b7fb0f7d611b71e00a37da27af12c2e5e9e0dc1a742886c96",
+        "/usr/lib/x86_64-linux-gnu/libpthread.so.0": "90491a21ce44efcf3bd4b65ec82501c091d7ebe7f8d9b341dd01d721001d9ecd",
+        "/usr/lib/x86_64-linux-gnu/libmetee.so.6.2.5.0": "b6c51aa06b74e545fada790ccef7eb33256f67087ea8e1dfbea6466b1c20b2bf",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/ur-validation-preload-v2/libstrata_ur_validation.so": "1d4e69d672d55fa0a126ae43b7b4743482cccca7e2f2bc22e0db2bfdad5bdc7c"
+      },
+      "preload": {
+        "library": {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/ur-validation-preload-v2/libstrata_ur_validation.so",
+          "sha256": "1d4e69d672d55fa0a126ae43b7b4743482cccca7e2f2bc22e0db2bfdad5bdc7c"
+        },
+        "canary": {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/ur-validation-preload-v2/canary",
+          "sha256": "7903f47691309444cce238d6a0a6fe716f7c668d80a6e2ff3d5cfe21c7dcbfd0"
+        },
+        "loader": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_loader.so.0.12.0",
+        "original_plan": {
+          "commit": "550c75f5fc954ee38b70230e32d2a48e12100d8a",
+          "path": "bench/results/2026-10-15-pr6-recovery-audit/research-index.json",
+          "sha256": "d12866b93c51e76a83e95638e66b6f6f4e0e33d779516a5fddecc178a6f8e10a"
+        },
+        "source_commit": "f312b6691f508125db6cfc2580ca32a686ff2642",
+        "retained_reference_until_exit": true,
+        "ordinary_runtime_teardown_qualified": false
+      }
+    },
+    "runtime_files": {
+      "/usr/lib/x86_64-linux-gnu/libz.so.1.3": "f61677c7bdb7c2aa2a243ea781bfd16afcb361cede7b4ef76127a9d8eb9a5242",
+      "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_loader.so.0.12.0": "bb6e1311850e4b1a924e42acae80c2b3610934625a4985aaa67967abe31356fc",
+      "/usr/lib/x86_64-linux-gnu/libc.so.6": "3a15d66867d83762c7f2f1e37359cb8f6c5743edb369c65285cb0b1c4f7498bf",
+      "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libsycl.so.9.0.0-0": "74243bafb2766fd1a038cf80fd62632b4aad9ecfdc0d3ce8711e4515a93d7008",
+      "/usr/lib/x86_64-linux-gnu/libgcc_s.so.1": "d93224d2b0dab4247598be683adca02f5cf00586f99c187579cd7e92058fb7cb",
+      "/usr/lib/x86_64-linux-gnu/libm.so.6": "fce00b6f25f459cf4ae0b7fae4257909a1a8a86f9149e7c029a5d617baf1ccd0",
+      "/usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.33": "1fd75fe70354a416d75aef22bcae68c47bd25d20e2d0568c30b1a9838cf62f11",
+      "/usr/lib/x86_64-linux-gnu/ld-linux-x86-64.so.2": "c20a2dc8917c755f02b94049356320fe1f62ac7d9f8994731f807d9df39302da",
+      "/usr/lib/x86_64-linux-gnu/libnl-3.so.200.26.0": "afcb69e2ef0b46c2ce7b7483848332fa9462776d33163f64209acf01f86eddd7",
+      "/usr/lib/x86_64-linux-gnu/libdrm.so.2.134.0": "0603c4dcb88bc9e076e34aedeec3513038e608d6d15d21330e49cb0ea38155e1",
+      "/usr/lib/x86_64-linux-gnu/libigdml.so.1.0.240": "1806ee390b7693dd61dd5385a25744dd94479295d3a7d15730e578e91b18e782",
+      "/usr/local/lib/libigc.so.2.41.5+1788943183": "40badd8f1ee80ac844a8947f5e91e5654fbcd851caefe343b0e5ec4ce4d1b123",
+      "/usr/lib/x86_64-linux-gnu/libzstd.so.1.5.5": "0a2128bc10841fb29e76d08d945864dfb0b6a66da5df6df5d8299197439e54bb",
+      "/usr/local/lib/libopencl-clang2.so.22.1": "02ba9fb0f16b7f02c012095c46f8053c4bc20f9b5bde3028eedff6dcfed94bfe",
+      "/usr/local/lib/libigdfcl.so.2.41.5+1788943183": "ece8bcd533a44cc1684c1f24eeeca3302e4d19307a806fad5f1b83171f9fc1c3",
+      "/usr/lib/x86_64-linux-gnu/libze_tracing_layer.so.1.32.0": "db1856f379706d51b6ded84ce028d4aa48740ef63793f60e8a1e027c6db6ffb5",
+      "/usr/lib/x86_64-linux-gnu/libigdgmm.so.12.10.0": "427847d14c2c36889efa8b0be6a8af6afac32cc3c744dcfc8e010d4ca210c957",
+      "/usr/lib/x86_64-linux-gnu/libze_intel_gpu.so.1.17.39758": "52e29a602f92d3542eac91e20717743e63ca7d4b257d0c79a3c4d6c64c94ea49",
+      "/usr/lib/x86_64-linux-gnu/libze_loader.so.1.32.0": "b764efda507f173560fa6055d433dd5c76140180b4a7c532e1cea813cde67363",
+      "/usr/lib/x86_64-linux-gnu/libcap.so.2.66": "6ac6abc86ac891c6e13486470e26f1d939f47fda9e6b5d5508a7f5ec881adc84",
+      "/usr/lib/x86_64-linux-gnu/libudev.so.1.7.8": "0d6934adafb2ef3c640382440c14d6bd60f391e688c000796ffcea0c72849269",
+      "/usr/lib/x86_64-linux-gnu/libhwloc.so.15.7.0": "86dff44a023254d997cea910b9a51f35afefe6780f4b5530f974a2009ba47487",
+      "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libumf.so.1.1.0": "ebe65269abd5869010ab256375e8663f7a8f8b5453e0be0c78f615eb71581ab9",
+      "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_adapter_level_zero_v2.so.0.12.0": "05bcafc4a0d45d33f957f16ffb4ba4776da675e79ade1121b93b94b8549335d8",
+      "/usr/lib/x86_64-linux-gnu/libnl-genl-3.so.200.26.0": "0757db7e6c5fbc4d2a8bbedbac7061fbb8ebb6196b4d2954d3a321e9ff76933c",
+      "/opt/intel/oneapi/mkl/2026.1/lib/libmkl_sycl_blas.so.6": "51d6c16990701a5aaf9fbbde5d86f5a7197b81357b66b19cbb912206564cf4ee",
+      "/opt/intel/oneapi/mkl/2026.1/lib/libmkl_intel_ilp64.so.3": "ffbbeff402fdf09baa53f8226b86f27046592d984ae2916b1bbc2e59132c7c89",
+      "/opt/intel/oneapi/mkl/2026.1/lib/libmkl_sequential.so.3": "4e7ff529bec90a1b0ce70299258a64a2ebae7a5a6f3ec031306a6ddb39b5a650",
+      "/opt/intel/oneapi/mkl/2026.1/lib/libmkl_core.so.3": "b4f086651ee5a8471140d53fedfdbbaba606287784763b0739f282872c31aa9b",
+      "/usr/lib/x86_64-linux-gnu/libdl.so.2": "c2994527172cc23b7fb0f7d611b71e00a37da27af12c2e5e9e0dc1a742886c96",
+      "/usr/lib/x86_64-linux-gnu/libpthread.so.0": "90491a21ce44efcf3bd4b65ec82501c091d7ebe7f8d9b341dd01d721001d9ecd",
+      "/usr/lib/x86_64-linux-gnu/libmetee.so.6.2.5.0": "b6c51aa06b74e545fada790ccef7eb33256f67087ea8e1dfbea6466b1c20b2bf",
+      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/ur-validation-preload-v2/libstrata_ur_validation.so": "1d4e69d672d55fa0a126ae43b7b4743482cccca7e2f2bc22e0db2bfdad5bdc7c"
+    },
+    "preload": {
+      "library": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/ur-validation-preload-v2/libstrata_ur_validation.so",
+        "sha256": "1d4e69d672d55fa0a126ae43b7b4743482cccca7e2f2bc22e0db2bfdad5bdc7c"
+      },
+      "canary": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/ur-validation-preload-v2/canary",
+        "sha256": "7903f47691309444cce238d6a0a6fe716f7c668d80a6e2ff3d5cfe21c7dcbfd0"
+      },
+      "loader": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_loader.so.0.12.0",
+      "original_plan": {
+        "commit": "550c75f5fc954ee38b70230e32d2a48e12100d8a",
+        "path": "bench/results/2026-10-15-pr6-recovery-audit/research-index.json",
+        "sha256": "d12866b93c51e76a83e95638e66b6f6f4e0e33d779516a5fddecc178a6f8e10a"
+      },
+      "source_commit": "f312b6691f508125db6cfc2580ca32a686ff2642",
+      "retained_reference_until_exit": true,
+      "ordinary_runtime_teardown_qualified": false
+    },
+    "physical_device": {
+      "name": "Intel(R) Arc(TM) B570 Graphics",
+      "eligible_Intel_PCI_devices": [
+        {
+          "pci": "0000:05:00.0",
+          "vendor": "0x8086",
+          "device": "0xe20c",
+          "class": "0x030000"
+        }
+      ],
+      "scope": "Single eligible physical Intel GPU/accelerator plus exact native device name;not a general multi-GPU UUID mapping."
+    },
+    "stage": "prepared",
+    "mode": "smoke",
+    "source_commit": "5af432376ca025acf2c8374f45c5347659bd39d3",
+    "controller_inputs": {
+      "tools/sycl/check_qsa_k_staging.py": "1c8ec520d12e9940a02934b11f09c2f29dc34e3902c78b23d3b61d73cd6eb537",
+      "tools/sycl/measure_down_scatter.py": "6d92d7212c7cad9bb7fdee6ef6877528b6240f990c7f74d032394933387ed2de",
+      "tools/sycl/measurement_owner.py": "bddd0c5e5020e882ca3404679420faec11e820dabce2ed4c72ef82b4c9c0874a",
+      "tools/sycl/measurement_guards.py": "794e332c70aca0acadad4f26d0414548e023a02fd27b72ed78fc773674423ec8",
+      "tools/sycl/ur_validation.py": "2e41d84788dc9cc3c7435b18b43601b3ca79280ccb855414d7a36bae6bff83e7",
+      "tools/sycl/cache_long_compare.py": "e96f1fd77a50e3535e7b0ed545464811e334e2f3bd329cc870675916dd5de4af",
+      "tools/sycl/resource_engine.py": "7ec369dfb1a908db55a5501a02a4e37b50522a6376e348c2ad1917f29b2b0446",
+      "tools/sycl/query_profile.py": "7136a71790d412394fc1ae345af03efb6eaffa09065c49a3b4cffb10a21477d8",
+      "tools/sycl/check_verifier_retirement.py": "1896bf9dd31954bc1fb95c03e3b18679e280f4690a0b46679493b6d6c11c350e",
+      "tools/sycl/build_engine.py": "8444783ab417378207ec89ad2bc3cf648480e20d9e77f06ebb3070c93e10b131",
+      "tools/sycl/generation_engine.py": "eb5bd20c70dbeca6dad253675c76735f9e058507f54668a44074760ae7a5d5d9",
+      "tools/sycl/decode_footer.py": "6e7bf40ed4b08c5dbaeb0ec977715239a177b6aa537bb2d2b048a6599bb0838c",
+      "tools/sycl/bench_engine.py": "aefdadf94c5580db49cd26002658a62b360557a6bf4ccc0a2de831ac02ed8063",
+      "tools/sycl/command_service.py": "c59f4945ba8c15c982f40386155deec65e42d063a3de14d29fb90e0a0dcc4881",
+      "tools/sycl/cpu_capacity.py": "685b981462cdf8e667f67bc844d8e522be84c776df57238327a4dad8dbbefa51",
+      "tools/sycl/generation_compare.py": "89eca5bc23bc7b45bbe441490ff2e7c324edf37cc002673118ce5ea9dd9bc4df",
+      "tools/sycl/packed_bank.py": "eee4e623697a2bf935339fddd51fc437359e0412dbfc1a903a46691aacc0235f",
+      "tools/sycl/cache_long.py": "1113563f582bd01bfb7535f8b73d70bf92f8e336dbef60301a6de7f2c28c1548",
+      "tools/sycl/cache_capacity.py": "9d39d3851bfc634901d6b5fd6f984918c53f8f44337df7fd506b6cb2ab3252f5",
+      "tools/sycl/cache_borrow.py": "900a2364d19beea0e1fa3e3c657f980455d676363660c013f6ef9058eeb43450",
+      "tools/sycl/mtp_model_observer.py": "d08adf85cd4f644ec651ba6b598d7f431930aa6c8dbb6e7a08b941b2bf1ceeff",
+      "tools/sycl/check_expert_bank.py": "31896d82f9f948784720c13044938fd64d5445e5a28168c2ccd569e3cb769eee",
+      "tools/sycl/iq2_pair_model.py": "618c3d8c6680ed2dcc3834c9aa6cbf9a67f97c4fc8c78fcdd5e5c83c583e0769",
+      "tools/sycl/cpu_work_census.py": "37038e04a8192ca3d3e1a8a1790a65db22110737630a30be43db64899ee3d1c6",
+      "tools/sycl/cpu_census_engine.py": "40013d84a4b7a347c46efc6b7f99b7ea8f253b94c3ad217ea62c7b0dd6000d09",
+      "tools/sycl/cpu_iq2.py": "73aa915408be2d1641922fbbeb4047e135313ad257cdb7087a9545ccfe250b79",
+      "tools/sycl/cpu_roofline.py": "7f1ec28fa1537f6a860165e152b53f07fae3a9828cf2c119cb9bfabfcf19e161",
+      "tools/sycl/build_qsa_k_staging.py": "42d75e8c66a81bc33bd0f6c6f941f17c3265b5e058236b2ae0cd6fc63c1a1193",
+      "tools/sycl/runtime_probe.py": "750818a521dcdf28901638424e9789c2db22d85876226b6f5141a954bb9d41d6",
+      "tools/sycl/check_full_context_source.py": "5e72fa724e890e682382758caf6222042e1ec89770962ce205ab756783332030",
+      "tools/sycl/qsa_k_staging_sources.py": "d1a34925846e03508ed604955d33afbf22a280880dd86bb71ba8c6ed37eca404"
+    },
+    "numerical": {
+      "recurrence_cells": 32,
+      "all_candidate_output_bits_match_original32": true,
+      "scalar_spots": "FP64dot/PVterms,FP32online32recurrence,BF16probability/output;error<=oneBF16spacing+2e-6.",
+      "coverage": "All output words finite;guards,immutable inputs,packed operands and repeated outputs exact. Translated boundary IDs include physical262143. Not full-context model fill,model quality or decode qualification."
+    },
+    "observer": {
+      "initial_active": "null",
+      "activation": "Only a constructed Trace::begin sets active;none is called by the fixed native fixture/runtime/kernel entrypoints.",
+      "hook_sha256": "0fda4bbfce1fcb561bb73904bf8216d9d0ed48582c380904809035b3d1481c45",
+      "source_sha256": "dcc7720b153ea2b5ecd3beacfd487ffd546ee67235e51c143e1075bab75b144f",
+      "environment": "STRATA_SYCL_PREFILL_COMMAND_PROFILE=0",
+      "scope": "Source-bound inactive observer proof;no dynamic observer counter or hardware occupancy claim."
+    },
+    "command": [
+      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-k-staging-packed32-v1/numerical",
+      "--smoke"
+    ],
+    "output_root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-k-staging-packed32-v1/oracle-smoke",
+    "budgets": {
+      "wall": 300,
+      "cpu": 600,
+      "rss_cap": 8589934592,
+      "text_cap": 33554432,
+      "file_cap": 67108864,
+      "total_cap": 67108864
+    },
+    "criteria": "Existing independent oracle2/11cases and all prefix33bit comparisons;align2scratch,masked/missing/tail/nonfinite/alias/no-op checks,quiet validation,exact mapped providers,normal owned exit and no fresh fault. No performance/model qualification.",
+    "environment": {
+      "PATH": "/usr/bin:/bin",
+      "HOME": "/home/yayoi",
+      "LANG": "C.UTF-8",
+      "LC_ALL": "C.UTF-8",
+      "PYTHONDONTWRITEBYTECODE": "1",
+      "LD_LIBRARY_PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib:/opt/intel/oneapi/mkl/2026.1/lib",
+      "ONEAPI_DEVICE_SELECTOR": "level_zero:gpu",
+      "UR_ADAPTERS_FORCE_LOAD": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_adapter_level_zero_v2.so.0",
+      "UR_L0_V2_FORCE_DISABLE_COPY_OFFLOAD": "1",
+      "NEOReadDebugKeys": "1",
+      "EnableDirectSubmission": "0",
+      "STRATA_SYCL_PREFILL_SAME_QUEUE": "1",
+      "STRATA_SYCL_VERIFY_NATIVE_CAPTURE": "0",
+      "SYCL_CACHE_PERSISTENT": "0",
+      "ZES_ENABLE_SYSMAN": "0",
+      "UR_ENABLE_LAYERS": "UR_LAYER_TRACING,UR_LAYER_PARAMETER_VALIDATION",
+      "UR_LOG_TRACING": "level:info;flush:info;output:file,/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-k-staging-packed32-v1/oracle-smoke/api.trace",
+      "UR_LOG_VALIDATION": "level:warning;flush:warning;output:file,/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-k-staging-packed32-v1/oracle-smoke/validation.log",
+      "UR_LOG_LOADER": "level:warning;flush:warning;output:stderr",
+      "UR_LOG_LEVEL_ZERO": "level:warning;flush:warning;output:stderr",
+      "TMPDIR": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-k-staging-packed32-v1/oracle-smoke/tmp",
+      "XDG_CACHE_HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-k-staging-packed32-v1/oracle-smoke/cache",
+      "LD_PRELOAD": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/ur-validation-preload-v2/libstrata_ur_validation.so",
+      "STRATA_UR_PROBE_EXPECTED_LOADER": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_loader.so.0.12.0",
+      "ZE_ENABLE_ALT_DRIVERS": "/usr/lib/x86_64-linux-gnu/libze_intel_gpu.so.1.17.39758",
+      "STRATA_SYCL_PREFILL_COMMAND_PROFILE": "0",
+      "STRATA_TEST_MAIN_GATES": "1"
+    },
+    "budget_policy": "Prospectively tighten the default128MiB to64MiB before first oracle execution;unchanged cases,criteria and stopping rules."
+  }
 }
