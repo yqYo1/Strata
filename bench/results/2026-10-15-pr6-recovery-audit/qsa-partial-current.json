@@ -30,12 +30,14 @@
     "numerical": {
       "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-partial-qcache-v1/numerical",
       "sha256": "d2f1dfe65de36398621c1da05bb4854192ccedf0fa8c3336a70762442da93d1a",
-      "bytes": 1589816
+      "bytes": 1589816,
+      "retired": true
     },
     "timing": {
       "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-partial-qcache-v1/timing",
       "sha256": "50db636b9470cd9070f3ad6350eaaccdbb791f885800319c58ec4dc7f019dbe2",
-      "bytes": 1569064
+      "bytes": 1569064,
+      "retired": true
     }
   },
   "selected_engine": {
@@ -675,7 +677,7 @@
   "decision": "Reject partial8Qcache:compiler spill allocation12480to192B with128GRF,but candidate latency geomean vsoriginal1.0639584610 andvsnamespacecontrol1.0642452159. All3shapes regress5.76..6.91percent;the predeclared speed gate fails. Numerical/guard/component262144-address checks pass;no model trial or inference adoption. Selected6e40/decode/configuration/1256slots unchanged.",
   "next_action": "Source-specific matched cache-working-set/reuse controls,then a distinct mechanism if supported;no repeat of GRF-only,partial8,unroll,tree-sum or row-coalesced-K proposals. Keep selected original6e40 and decode configuration/1256slots.",
   "retirement": {
-    "complete": false,
+    "complete": true,
     "roots": [
       "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-partial-qcache-v1",
       "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/selected-qsa-service-v2"
@@ -695,6 +697,14 @@
       "native_reference_inputs": 9853,
       "selected_assets": 13
     },
-    "decision": "Both raw consumers closed;retire after this compact record is committed and pushed. Preserve original failed QSA aggregate-filter status and component speed rejection;legacy144artifact/46root and14distinct holds remain separate."
+    "decision": "Closed comparison and QSA diagnostic roots actually deleted after original source/recipe recovery,committed162samples and remote history checks. Original failed observation and rejected speed outcome remain preserved. Separate legacy144artifact/46root and14holds remain unresolved.",
+    "roots_absent": true,
+    "deleted_files": 159,
+    "deleted_bytes": 23411285,
+    "selected13assets_before_after_unchanged": true,
+    "tracked_source_files_retired": 6,
+    "tracked_source_archive_commit": "14c8df026",
+    "tracked_path_hashes": "Git deletion diff;no duplicate manifest.",
+    "shared_native_runtime_profile_Python_admission_after_source_retirement": true
   }
 }
