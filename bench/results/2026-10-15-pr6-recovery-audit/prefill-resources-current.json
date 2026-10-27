@@ -813,7 +813,140 @@
         "kernel": "7.0.0-38-generic",
         "devcoredump": false
       },
-      "session_removed": true
+      "session_removed": true,
+      "postfailure_closed_data_analysis": {
+        "original_status": "failed",
+        "original_failure_preserved": true,
+        "GPU_rerun": false,
+        "source_commit": "27fa8c6abc6063867402b09a47e4de2642874d5f",
+        "original_inputs_and_native_runtime_admission_passed": true,
+        "native_exit_code": 0,
+        "request_journal_and_API_native_clocks_verified": true,
+        "full_model_hashes_matched": 15,
+        "request": {
+          "request_sha256": "1fd63b8c67a1888e443800b5c6d339ca116df2cb91941e6f332b6adf74275b3a",
+          "actual_read_tokens": 39260,
+          "actual_reused_tokens": 0,
+          "generated_tokens": 24,
+          "prompt_ms": 58674.8
+        },
+        "raw_table_sha256": "3d1be28acce443feb06a453a4e5b8b2e3e50dddd8734a5ff72d8cb8e225ac204",
+        "all_aggregate_rows": 126,
+        "all_aggregate_service_ns": 24192886767,
+        "selected_prefix_rows": 7,
+        "families": {
+          "attention": {
+            "calls": 60,
+            "service_ns": 8264100184,
+            "samples": [
+              {
+                "simd": 16,
+                "workgroups": 16384,
+                "local_size": 128,
+                "calls": 48,
+                "total_ns": 6800284251,
+                "average_ns": 141672588,
+                "min_ns": 122118854,
+                "max_ns": 153206458
+              },
+              {
+                "simd": 16,
+                "workgroups": 12982,
+                "local_size": 128,
+                "calls": 12,
+                "total_ns": 1463815933,
+                "average_ns": 121984661,
+                "min_ns": 120397187,
+                "max_ns": 124767187
+              }
+            ]
+          },
+          "pack": {
+            "calls": 60,
+            "service_ns": 16599873,
+            "samples": [
+              {
+                "simd": 32,
+                "workgroups": 78520,
+                "local_size": 64,
+                "calls": 12,
+                "total_ns": 5336453,
+                "average_ns": 444704,
+                "min_ns": 441979,
+                "max_ns": 447187
+              },
+              {
+                "simd": 32,
+                "workgroups": 65536,
+                "local_size": 64,
+                "calls": 12,
+                "total_ns": 4423120,
+                "average_ns": 368593,
+                "min_ns": 365625,
+                "max_ns": 371041
+              },
+              {
+                "simd": 32,
+                "workgroups": 49152,
+                "local_size": 64,
+                "calls": 12,
+                "total_ns": 3329162,
+                "average_ns": 277430,
+                "min_ns": 275416,
+                "max_ns": 278750
+              },
+              {
+                "simd": 32,
+                "workgroups": 32768,
+                "local_size": 64,
+                "calls": 12,
+                "total_ns": 2245204,
+                "average_ns": 187100,
+                "min_ns": 185937,
+                "max_ns": 187916
+              },
+              {
+                "simd": 32,
+                "workgroups": 16384,
+                "local_size": 64,
+                "calls": 12,
+                "total_ns": 1265934,
+                "average_ns": 105494,
+                "min_ns": 95625,
+                "max_ns": 205937
+              }
+            ]
+          }
+        },
+        "attention_compiler_properties": {
+          "simd": 16,
+          "arguments": 18,
+          "reported_static_SLM_bytes": 32,
+          "private_bytes": 0,
+          "spill_bytes": 12480,
+          "GRF_register_count": 128
+        },
+        "source_dynamic_local_payload_bytes": 20036,
+        "attention_pack_service_ratio": 0.002008672769013469,
+        "diagnosis": "IncludeKernels does not limit the aggregate device table in this collector. V2 incorrectly required every aggregate row to belong to QSA. Full table conserves its total;the seven exact selected-template rows independently conserve60attention+60pack calls and471108query rows. Keep original cohort failed;these are closed-data diagnostics only.",
+        "limits": "Summed selected-kernel service and compiler-reported scratch allocation,not measured physical spill traffic or hardware saturation. Other aggregate work includes startup/warmup/decode and does not form a long-prefill ledger. Independent UR joins,losslessness,observer cost,clean speed,quality,full context and adoption remain unqualified.",
+        "next": "Do not repeat GRF-only removal:the same ordered-exp comparison already reduced12480to0 and regressed2.5..9.5percent across3shapes (research index cooperative_matrix_iterative_fragment_lifetime_methods_20261023). Prototype a distinct8-of16Q-fragment cache with persistent SLM tail,unchanged arithmetic/selection and separate resources/service gates;do not infer spill causality or speed from descriptor size.",
+        "PTI_property_mapping": {
+          "revision": "4b6d74294cdc72766c00a9211fe2e4261ee94244",
+          "path": "tools/unitrace/src/levelzero/ze_collector.h",
+          "fields": "spill_mem_size_=ze_kernel_properties_t.spillMemSize;regsize_=zex_kernel_register_file_size_exp_t.registerFileSize;slmsize_=localMemSize",
+          "definition": "PTI labels spill memory per thread;LevelZero specifies compiler-allocated spill memory. No physical traffic/latency or per-work-item interpretation follows.",
+          "specification": "https://oneapi-src.github.io/level-zero-spec/level-zero/latest/core/api/apis/kernel.html"
+        },
+        "prior_counterevidence": {
+          "index_scope": "cooperative_matrix_iterative_fragment_lifetime_methods_20261023",
+          "GRF_only_prior_slowdown_pct": [
+            2.5,
+            9.5
+          ],
+          "decision": "Rejected;no unchanged repeat or default adoption."
+        }
+      }
     },
     "selected_qsa_environment_host_v1": {
       "stage": "closed",

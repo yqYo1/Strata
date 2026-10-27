@@ -1525,14 +1525,42 @@ a phase critical path. Its Q6K/QSA source-attribution consumer has already close
 Do not repeat that analysis or look for its deleted raw table. See
 [profiler capability and coverage](../bench/results/2026-10-15-pr6-recovery-audit/cpu-profiler-current.json).
 
-The next prefill observation requires three independent ledgers: route-owner
+The current selected-QSA diagnostic uses the unchanged original6e40 and existing
+PTI collector,with official`bench.sh`,thinking enabled and39260fresh input tokens.
+The native process exits0,all15model hashes match,and no fresh fault appears.
+The original cohort remains **failed**:the controller incorrectly assumed that
+`IncludeKernels` also filters the aggregate device table. Closed-data replay
+conserves the full126-row table,then independently checks the seven exact
+ordered-exp rows:60attention calls covering471108query rows take8.264100184s;
+60prefix-pack calls take0.016599873s. These are summed GPU-service diagnostics,
+not clean speed,independent UR joins,a lossless execution ledger,observer-cost
+qualification or complete phase attribution. The full aggregate includes
+startup,warmup and decode. See`selected_qsa_service_v2` in the
+[resource result](../bench/results/2026-10-15-pr6-recovery-audit/prefill-resources-current.json).
+
+The same attention kernels report SIMD16,128GRF registers and12480bytes in
+PTI's spill-memory field. The pinned collector reads this field from
+`ze_kernel_properties_t.spillMemSize`;it is compiler-allocated scratch,not
+measured physical memory traffic or a per-work-item byte count. Its32-byte
+reported static SLM field is separate from the source's20036-byte dynamic
+local payload. Register pressure is now a concrete candidate mechanism;its
+critical-path cost and the cause of the historical1003-to975decline remain open.
+The earlier same-math GRF-only comparison already removed12480-to0scratch
+and slowed2.5..9.5% across three shapes;do not repeat that unchanged candidate.
+The next distinct hypothesis keeps eight of the sixteen Q fragments in registers
+and reloads the remainder from persistent SLM. This trades shorter fragment
+liveness for more local storage/loads;no resource or speed gain is established.
+Check actual generated resources,numerics and device service before matched
+long-input runs. Preserve decode and global JIT flags.
+
+Complete prefill phase attribution requires three independent ledgers: route-owner
 planned operations, actual API results and collector device executions.
 [`work_ledger.py`](../tools/sycl/work_ledger.py) implements the host reconciliation
 gate, including graph-child expansion, lifetime generations, rejected submissions,
 host-task completion, shapes/requested bytes and drained phase bounds. Its
 18 adversarial host controls pass using synthetic records only. Actual UR/PTI
 adapters, model-route coverage and observer cost still require qualification
-before a model observation. On current NEO, the retained6e40 submission fixture
+before complete-ledger claims. On current NEO, the retained6e40 submission fixture
 matches606 kernels,53 copies/55,844 requested bytes,one fill/1,028 bytes and20
 barriers across the source/API/device ledgers. All680 GPU executions now also
 join distinct,successful UR enqueue instances by their actual caller thread and
