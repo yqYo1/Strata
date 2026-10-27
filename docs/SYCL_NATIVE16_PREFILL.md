@@ -1683,7 +1683,7 @@ recovering164project and665actual dependency inputs. The selected engine and
 twelve fixtures remain unchanged. The compact closure in the research index
 pins the external deletion manifest;separate legacy holds remain open.
 
-The next source-only proposal is
+The current isolated component proposal is
 [`qsa_cell64_sources.py`](../tools/sycl/qsa_cell64_sources.py):private original32
 and64-cell arms with the same BF16 8x16 matrix fragments,SG16/WG128,default GRF
 and direct-event retention. At width2051,the outer tile count falls65to33.
@@ -1714,7 +1714,7 @@ The generator now enforces that immutable file hash. The source-only
 [`qsa_cell64_admission.hpp`](../bench/sycl/qsa_cell64_admission.hpp) queries exact
 compiled kernel identities, WG128/SG16 and Level Zero per-group local-memory
 limits before dispatch. It adds declared dynamic local payload and a reserve to
-the reported kernel local bytes. It has not been compiled or device-qualified;
+the reported kernel local bytes. It compiles but remains device-unqualified;
 actual bound local arguments must also be accounted in the first traced fixture.
 
 The proposed [`qsa_cell64_checks.py`](../tools/sycl/qsa_cell64_checks.py) adapts
@@ -1725,9 +1725,15 @@ tails also re-enter that scalar oracle,not merely guard checks. The planned
 case grid adds127/128/129boundaries beside the existing final262144-address
 components. Existing BF16-ULP component bounds are proposed diagnostic criteria,
 not an accepted model-quality tolerance;framework and model/task gates remain
-open. Neither this oracle proposal nor the candidate has been compiled/executed.
-Before either runs, pin the reference configuration and finite per-case bounds.
-The framework audit does not imply CUDA reference execution or numerical parity.
+open. The independent build at source`9b59e9b51` and recipe`d320c1ff7`
+closes all14compile/link/IR commands,with698actual dependencies matched against
+197project and8700toolchain inputs. Both oracle and property fixture link;
+no device work has run. See[the current component record](../bench/results/2026-10-15-pr6-recovery-audit/qsa-cell64-current.json).
+Before numerical execution,pin the reference configuration and finite per-case
+bounds. The framework audit does not imply CUDA execution or numerical parity.
+An independent Orca Luna audit now checks the newly authored admission helper's
+actual SYCL/LevelZero API and local-memory accounting;its review precedes the
+first bounded property-only child. This query cannot qualify model performance.
 
 Complete prefill phase attribution requires three independent ledgers: route-owner
 planned operations, actual API results and collector device executions.
