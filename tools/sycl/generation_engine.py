@@ -51,6 +51,20 @@ def native_end(root, record, plan, boot, leader):
     start=json.loads((root/'engine-start.json').read_text())
     end=json.loads((root/'engine-exit.json').read_text())
     allowed={'binary','args','boot_id','native','wrapper','native_validation_probe'}
+    profiling=record.get('native_profile')
+    if profiling is not None:
+        allowed.add('native_profile')
+        native_plan=json.loads((root/'plan.json').read_text())
+        guards.require(type(profiling) is dict and
+            set(profiling)=={'mode','launcher','collector','session','environment'} and
+            profiling['mode'] in ('aggregate','trace') and
+            type(profiling['environment']) is dict and
+            set(profiling['environment']) <= {'UNITRACE_SystemTime','UNITRACE_TraceOutputDir','UNITRACE_FollowChildProcess','LD_DEBUG'} and
+            profiling['environment'].get('UNITRACE_SystemTime')=='1' and
+            start.get('native_profile')==profiling==native_plan.get('native_profile'),
+            'native profile differs from the frozen plan')
+        # This binds metadata/ownership only. Caller admission still verifies
+        # source, ELF/runtime bytes and provider order; no coverage/cost claim.
     guards.require(set(start)<=allowed and start['boot_id']==boot and
         start['binary']==record['binary'] and start['args']==['--serve',*plan['config']['args']] and
         start.get('native_validation_probe')==record['native_validation_probe'], 'native start identity differs')

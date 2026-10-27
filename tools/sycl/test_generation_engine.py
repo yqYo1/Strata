@@ -4,6 +4,8 @@ import copy
 import json
 from pathlib import Path
 import tempfile
+import sys
+sys.path.insert(0,str(Path(__file__).resolve().parent))
 import generation_engine as g
 import unittest
 from generation_engine import collect_samples, require_complete_generation, sample_eligible
@@ -105,6 +107,30 @@ class NativeClosureEvidence(unittest.TestCase):
                 if variant in ('valid','no_probe'):self.assertEqual(g.native_end(root,record,plan,'boot',42),end)
                 else:
                     with self.assertRaises(RuntimeError):g.native_end(root,record,plan,'boot',42)
+
+    def test_profile_must_bind_the_declared_mode_assets_and_environment(self):
+        for variant in ('valid','missing','claim','plan','end','mode','environment'):
+            with self.subTest(variant=variant),tempfile.TemporaryDirectory() as tmp:
+                root=Path(tmp);claim=self.claim()
+                profile=dict(mode='aggregate',launcher=dict(path='/launcher',sha256='c'*64),
+                    collector=dict(path='/collector',sha256='d'*64),session='StrataFused0001',
+                    environment=dict(UNITRACE_SystemTime='1'))
+                if variant=='mode':profile['mode']='unqualified'
+                if variant=='environment':profile['environment']['LD_PRELOAD']='/other'
+                record=dict(binary=copy.deepcopy(claim['binary']),native_validation_probe=copy.deepcopy(claim['native_validation_probe']),
+                    native_profile=copy.deepcopy(profile))
+                claim['native_profile']=copy.deepcopy(profile)
+                native_plan=dict(native_profile=copy.deepcopy(profile))
+                if variant=='missing':claim.pop('native_profile')
+                if variant=='claim':claim['native_profile']['collector']['sha256']='e'*64
+                if variant=='plan':native_plan['native_profile']['session']='other'
+                end=dict(copy.deepcopy(claim),exit_code=0)
+                if variant=='end':end['native_profile']['session']='other'
+                for name,value in (('engine-start.json',claim),('engine-exit.json',end),('plan.json',native_plan)):
+                    (root/name).write_text(json.dumps(value))
+                if variant=='valid':self.assertEqual(g.native_end(root,record,{'config':{'args':['--spec','4']}},'boot',42),end)
+                else:
+                    with self.assertRaises(RuntimeError):g.native_end(root,record,{'config':{'args':['--spec','4']}},'boot',42)
 
 
 
