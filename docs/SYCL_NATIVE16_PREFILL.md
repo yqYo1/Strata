@@ -918,8 +918,8 @@ inputs;all individual clocks,CPU operands and closure/fault outcomes remain in
 Git. Four old source-audit rows and superseded plans/probe rows retire to
 `b97e30d9e`;the current V6review,PythonV4andownerV3qualification stay live.
 
-After retirement of two historical hardware components,the existing82-root
-inventory has145 live artifacts/105,698,320bytes across47roots. This is not a
+After retirement of two hardware components and one closed softmax component,
+the existing82-root inventory has144 live artifacts/104,598,672bytes across46roots. This is not a
 current consumer/source qualification or a census of newer builds. The six-process
 comparison is closed;Main must reconcile those remaining paths against current
 consumers and exact source/recipe evidence before another engine build. The prior
@@ -933,8 +933,12 @@ retroactively qualify their SDK/header closure. Main checked current consumers,
 exact source/recipe recovery and process closure,and retired their two executables
 and two source copies:4files/478867bytes. The compact
 `legacy_hardware_component_retirement_20261027` record pins the original inputs,
-measurement reference and deletion manifest. The other47roots still need their
-bounded recovery/consumer decisions.
+measurement reference and deletion manifest. The softmax component and its parent
+library recover483and476 exact project inputs from5f4642931and a8aa3345d;its
+closed serial/subgroup controls are preserved,and its1,099,648-byte executable
+retires under`legacy_component_retirement_20261027`. The remaining46roots still
+need their bounded recovery/consumer decisions. Neither retirement qualifies a
+new build or recreates the historical runtime.
 
 After replay and exact source/recipe/header/link/object/ELF recovery,these three
 closed observer/model/control roots retire106files/12,760,397bytes. Four
