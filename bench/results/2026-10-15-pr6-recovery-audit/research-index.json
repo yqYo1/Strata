@@ -14281,8 +14281,8 @@
   },
   "qsa_direct_K_row_invariant_contract_20261028": {
     "classification": "decision_support",
-    "status": "eligible_new_source_and_mapping_proof",
-    "schedulable_now": true,
+    "status": "Orca_research_active",
+    "schedulable_now": false,
     "question": "Audit new direct-K row-read/predicate/base-pointer hoisting outside the16dimension iterations. Establish exact address/writer/order/invalid-row equivalence and legal SYCL divergence/typed vector loads/local memory lifetime;identify extra-register/liveness and code-duplication counterarguments. Compare old two-loop full-unroll/Page4/subgroup variants to establish novelty. Main owns implementation/builds/GPU.",
     "source_revision": "139030e095ccd809bcdd51aa721ae3fee46199f2",
     "source_files": {
@@ -14308,6 +14308,48 @@
     "report_budget_bytes": 16384,
     "retention": "Consume compact source/API facts into qsa-codegen-current.json before a native build. Retire consumed report/review transactions after qualification decision;no automatic GPU/model adoption.",
     "ownership": "Orca gpt-6-luna high report only,Main continues serialized work;native Codex gpt-6-luna max review;no steering.",
-    "controller_revision": "6413ca5a9"
+    "controller_revision": "6413ca5a9",
+    "worker_closed": false,
+    "orca": {
+      "run": "run_80ea8ebc9a8c",
+      "task": "task_d9114408a245",
+      "dispatch": "ctx_7c00fb3c2c13",
+      "terminal": "term_4e7afb92-4f74-490a-ba03-3a0ab4816fcf",
+      "model": "gpt-6-luna",
+      "effort": "high",
+      "model_evidence": "Fresh requested/effective Luna high;pre-task update ESC;exact terminal GPT-6-Luna high/YOLO/workspace verified;official retry ready/turnStart observed."
+    }
+  },
+  "qsa_static_workgroup_geometry_contract_20261028": {
+    "classification": "decision_support",
+    "status": "eligible_exact_control_IR_and_geometry",
+    "schedulable_now": true,
+    "question": "For this exact QSA WG128/SG16 kernel whose IR lacks required-workgroup-size metadata,compare existing runtime nd_range and compile-time exact/max-workgroup attributes or SYCL properties. Pin one supported exact-size spelling and installed Intel LLVM/SPIRV/IGC lowering contract;identify legal launch/property/resource constraints,which builtin ranges/address-hoisting optimizations it may expose,and counterevidence. Do not claim a speedup or repeat full-unroll/GRF API-spelling screens.",
+    "prerequisites_evidence": {
+      "source": "src/kernels/sycl/qsa_bf16_prefix.cpp",
+      "source_sha256": "4f9f815c9baae709f919f6d5ad1af04677c10d8c13c7597b3857cf81567ae192",
+      "control_IR": {
+        "arm": "direct_k_control",
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-direct-k-invariant-v2/direct_k_control.ll",
+        "sha256": "42e724afc3ba12171493dcc1dda15821713f26e1744b26b33a4ab7457e81b529",
+        "bytes": 72204,
+        "actual_dependencies": 662,
+        "actual_dependency_sha256": "cdb420926f92502e93d4a18c95cad47f9624bc982f0078f2e302b024678e2ddf",
+        "attention_kernel": "_ZTSZZN6strata7kernels16direct_k_controlL17prefix_batch_implILi33ELb0ELb0ELb1ELb1ELb1ELb1ELb0EEEbPKtRKNS0_12QsaAttnPoolsEPKiS9_lRKNS0_9QsaShapesEPtlRKNS0_19QsaPromptBf16BoundsElRKNS0_20QsaBf16PackedScratchEPvNS0_19QsaPrefixStateProbeEENKUlRN4sycl3_V17handlerEE_clESP_EUlNSN_7nd_itemILi1EEEE_"
+      },
+      "actual_required_WG_metadata_absent": true,
+      "CPU_IR_qualified_commit": "1f427699a",
+      "observed_original_native_K_backedge": "L17232toL16480;containsrowSLMreadandrowvalidity/baseaddress inside16iterations;this does not establish hardware saturation."
+    },
+    "previous_retrieval": [
+      "gpu_instruction_cache_unroll_dispatch_tradeoffs_20261023",
+      "cooperative_matrix_iterative_fragment_lifetime_methods_20261023",
+      "qsa_kernel_local_grf_contract_20261027",
+      "qsa_actual_ISA_comparison_20261028"
+    ],
+    "report": ".cache/strata-research/20261028/qsa-static-workgroup-geometry-contract.md",
+    "report_budget_bytes": 16384,
+    "retention": "Consume exact source/compiler contract and one bounded next discriminator into current codegen decision;retire consumed transaction text. No build/GPU/adoption from source-only report.",
+    "ownership": "Orca gpt-6-luna high report-only;Main continues implementation/tests exclusively. Native Codex gpt-6-luna max review. No steering."
   }
 }
