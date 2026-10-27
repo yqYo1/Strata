@@ -1547,11 +1547,18 @@ local payload. Register pressure is now a concrete candidate mechanism;its
 critical-path cost and the cause of the historical1003-to975decline remain open.
 The earlier same-math GRF-only comparison already removed12480-to0scratch
 and slowed2.5..9.5% across three shapes;do not repeat that unchanged candidate.
-The next distinct hypothesis keeps eight of the sixteen Q fragments in registers
-and reloads the remainder from persistent SLM. This trades shorter fragment
-liveness for more local storage/loads;no resource or speed gain is established.
-Check actual generated resources,numerics and device service before matched
-long-input runs. Preserve decode and global JIT flags.
+The distinct eight-of-sixteen Q-fragment cache is now **rejected**. It preserves
+arithmetic/order and passes all three arms' oracle,guard,input-immutability and
+physical262144-address component cases. Compiler spill allocation falls12480to192B
+at the same128GRF,while dynamic local storage rises20036to28224B. Nevertheless,
+three clean processes and162individual latencies show5.76..6.91% longer time
+across all three synthetic shapes;the geomean is1.06395846 versus original and
+1.06424522 versus the namespace control. No model trial or adoption follows.
+See[the compact comparison](../bench/results/2026-10-15-pr6-recovery-audit/qsa-partial-current.json).
+This is counterevidence to using spill allocation alone as the optimization
+priority. Source-specific cache-working-set/reuse controls and device-side
+prefetch methods are the next research questions;neither is an implemented gain
+or a physical-bandwidth/critical-path attribution. Preserve decode and global JIT flags.
 
 Complete prefill phase attribution requires three independent ledgers: route-owner
 planned operations, actual API results and collector device executions.
