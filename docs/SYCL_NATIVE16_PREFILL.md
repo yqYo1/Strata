@@ -1613,8 +1613,14 @@ and avoids holding its state lock across driver calls or writes. Its recursion
 guard requires it to be the sole XPTI subscriber. It proposes copying both
 kernel ISA and the same program's module;matching the module text and raw ISA
 must precede any instruction claim. Classic Level Zero launch callbacks alone
-may miss the adapter's with-arguments path. Host controls and a separately
-committed bounded extraction remain pending;no new GPU execution is qualified.
+may miss the adapter's with-arguments path. The host-only observer gate now
+passes both builds and21packet cases,including18specific refusals,reentrant
+callback bypass,unlocked native queries and exact copied bytes. All24owned
+commands close;202source pins and269header dependencies are checked. The
+packet binary links no UR/LevelZero/SYCL runtime. Actual subscriber activation
+still needs a no-device canary before the separately committed bounded GPU
+extraction;no new GPU execution is qualified. Closed host mocks,logs and their
+one-use source recover from`6c7a3e05d` with frozen plan`21046228a`.
 Review retention when that immediate extraction attempt closes.
 Production/decode and the selected6e40engine/twelve fixtures remain unchanged.
 The rejected generation and two consumed research/review files retire after
