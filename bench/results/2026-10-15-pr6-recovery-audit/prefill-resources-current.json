@@ -610,6 +610,58 @@
     "extra_engine_generation_review": "The named attribution is closed. Select and retire the extra validated generation before another build; no third generation is authorized by this record."
   },
   "event_reconciliation": {
+    "selected_qsa_environment_host_v1": {
+      "stage": "prepared",
+      "source_commit": "25b919f3b144ef51416bfb9fa1919a0a7c7e7c67",
+      "assets": {
+        "launcher": {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/unitrace-session-owner-v1/unitrace",
+          "sha256": "6faac1e74f18ce481581f3ed112611ec3e0a1f81eac7990b57b622f212294244",
+          "bytes": 513168
+        },
+        "collector": {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/unitrace-l0-4b6d742-v2/libunitrace_tool.so",
+          "sha256": "5a5123569afec5e1da12e98967955686d753ce28ae8d42b96ec565b52ec4d1e5",
+          "bytes": 2328576
+        }
+      },
+      "plan": {
+        "session": "StrataQsaEnv7a2a002b91d80e9486c3fe03",
+        "reference": {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/selected-qsa-service-v1/record.json",
+          "sha256": "cb4bc6c9cdef13bc9f5b64fd9fefd1545527b202af7154b41a993f9c66796ddb"
+        },
+        "command": [
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/unitrace-session-owner-v1/unitrace",
+          "--session",
+          "StrataQsaEnv7a2a002b91d80e9486c3fe03",
+          "--device-timing",
+          "--verbose",
+          "/usr/bin/python3",
+          "-I",
+          "-S",
+          "-B",
+          "-c",
+          "import json,os,pathlib,sys\nr=json.loads(pathlib.Path(sys.argv[1]).read_text())\np=r['plan']['generated_contents']['plan.json']['native_validation_probe']\nexpected=dict(r['environment'],STRATA_UR_PROBE_EXPECTED_LOADER=str(pathlib.Path(p['loader']['path']).resolve()))\nactual=dict(v.split(b'=',1) for v in pathlib.Path('/proc/self/environ').read_bytes().split(b'\\0') if b'=' in v)\ndifferent=[k for k,v in expected.items() if actual.get(k.encode())!=v.encode()]\nspellings=actual.get(b'LD_PRELOAD',b'').decode().split(':')\nresolved=[str(pathlib.Path(v).resolve()) for v in spellings if v]\nrequired=[str(pathlib.Path(r['assets']['collector']['path']).resolve()),str(pathlib.Path(p['library']['path']).resolve())]\npassed=not different and len(spellings)==2 and resolved==required\nprint(json.dumps(dict(pid=os.getpid(),different_keys=different,preload_spellings=spellings,preload_resolved=resolved,required=required,passed=passed)),flush=True)\nraise SystemExit(0 if passed else 1)\n",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/selected-qsa-service-v1/record.json"
+        ],
+        "question": "CPU-only child:does the unchanged collector launcher preserve every expected value and preload exactly the collector/probe through verified paths?",
+        "safety": "Existing parameter-validation preload/collector constructor only;no model,SYCL kernels,copies,graphs,metrics,Sysman,services or reset. Output reports differing key names and preload identities only.",
+        "budgets": {
+          "wall": 60,
+          "cpu": 60,
+          "rss_cap": 2147483648,
+          "text_cap": 1048576,
+          "file_cap": 4194304,
+          "total_cap": 8388608
+        },
+        "retention": "Keep the compact environment decision;retire raw host receipt and successful output after correction. Original failed model status remains unchanged."
+      },
+      "complete": false,
+      "passed": false,
+      "active": false,
+      "ownership_closed": true
+    },
     "selected_qsa_service": {
       "stage": "failed",
       "binary": {
