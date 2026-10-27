@@ -1385,5 +1385,46 @@
       "sha256": "0f4f7d81c79a89039637ef9a4646b910be57d125d975d12893caf083ffee7ab3",
       "bytes": 72222
     }
+  },
+  "controller_checks": {
+    "source_commit": "638f6dc28",
+    "controller_sha256": "9196f91f91b13ff6cc2c6e14ead975484787c38500f5ae9ea692347da94499bf",
+    "command": [
+      "/usr/bin/python3.12",
+      "-I",
+      "-S",
+      "-B",
+      "tools/sycl/check_qsa_locality.py",
+      "host-controls"
+    ],
+    "passed": true,
+    "host_rejections": [
+      "wrong_output_bits",
+      "incomplete_output_coverage",
+      "input_changed",
+      "missing_footer",
+      "calibration_blocks_interpretation",
+      "duplicate_process",
+      "short_timer_batch"
+    ],
+    "valid_processes": 3,
+    "valid_samples": 96,
+    "native_source_recipe_binary_admission_passed": true,
+    "actual_compiled_dependencies_reverified": 696,
+    "exact_compiled_kernel_ids": [
+      "_ZTSZZN6strata7kernelsL17prefix_batch_implILi33ELb0ELb0ELb1ELb1ELb1ELb1ELb0EEEbPKtRKNS0_12QsaAttnPoolsEPKiS8_lRKNS0_9QsaShapesEPtlRKNS0_19QsaPromptBf16BoundsElRKNS0_20QsaBf16PackedScratchEPvNS0_19QsaPrefixStateProbeEENKUlRN4sycl3_V17handlerEE_clESO_EUlNSM_7nd_itemILi1EEEE_",
+      "_ZTSZZN6strata7kernels16locality_controlL17prefix_batch_implILi33ELb0ELb0ELb1ELb1ELb1ELb1ELb0EEEbPKtRKNS0_12QsaAttnPoolsEPKiS9_lRKNS0_9QsaShapesEPtlRKNS0_19QsaPromptBf16BoundsElRKNS0_20QsaBf16PackedScratchEPvNS0_19QsaPrefixStateProbeEPN4sycl3_V15eventEENKUlRNSN_7handlerEE_clESR_EUlNSN_7nd_itemILi1EEEE_"
+    ],
+    "inactive_observer": {
+      "initial_active": "null",
+      "activation": "Only a constructed Trace::begin sets active;none is called by the fixed native fixture/runtime/kernel entrypoints.",
+      "hook_sha256": "0fda4bbfce1fcb561bb73904bf8216d9d0ed48582c380904809035b3d1481c45",
+      "source_sha256": "dcc7720b153ea2b5ecd3beacfd487ffd546ee67235e51c143e1075bab75b144f",
+      "environment": "STRATA_SYCL_PREFILL_COMMAND_PROFILE=0",
+      "scope": "Source-bound inactive observer proof;no dynamic observer counter or hardware occupancy claim."
+    },
+    "changed_source_identity_negative_control_passed": true,
+    "GPU_executed": false,
+    "model_qualification_inherited": false
   }
 }
