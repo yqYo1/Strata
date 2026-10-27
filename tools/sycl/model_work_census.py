@@ -29,7 +29,7 @@ import supervision_model as shared
 from measure_down_scatter import postchecks
 
 B, A = gen.B, gen.A
-ROOT = B / 'selected-model-work-census-v3'
+ROOT = B / 'selected-model-work-census-v4'
 RESULT = A / 'model-work-census-current.json'
 REFERENCE = A / 'prefill-runtime-comparison-current.json'
 TEMPLATE = A / 'phase-prefill-speed-current.json'
@@ -150,8 +150,9 @@ def prepare():
         failed['failure_diagnosis']['benchmark_exit_code'] == 0 and
         failed['failure_diagnosis']['native_exit_code'] == 0 and
         failed['failure_diagnosis']['long_requests_completed'] == 1 and
-        failed['failure_diagnosis']['actual_input_tokens'] == 39260,
-        'closed benchmark-summary/extent failure required')
+        failed['failure_diagnosis']['actual_input_tokens'] == 39260 and
+        failed['failure_diagnosis']['schema_missing'] == 'controller_eligible',
+        'closed official-schema failure required')
     previous_failure = dict(commit=gen.git('log', '-1', '--format=%H', '--',
         str(RESULT.relative_to(P))).decode().strip(), path=str(RESULT.relative_to(P)),
         sha256=digest(RESULT), source_commit=prior['source_commit'],
@@ -195,6 +196,46 @@ def prepare():
     admission(row)
     write(ROOT / 'record.json', row); write(RESULT, row)
     print('Prepared source census;commit exact plans before the smoke.', flush=True)
+
+
+def completed_request(row, plan, entry):
+    """Validate closed official output; reusable for host-only schema replay.
+
+    This reader alone never marks a run passed or substitutes for launch/admission,
+    owner supervision and postchecks.
+    """
+    require(owner_module.closed(entry) and entry['exit_code'] == 0, 'closed benchmark required')
+    root = Path(plan['root'])
+    end = gen.native_end(root, dict(binary=row['binary'], native_validation_probe=row['probe']), dict(config=plan['config']), row['boot'], entry['pid'])
+    path, = (root/'bench').glob('*/results.json'); data = json.loads(path.read_text())
+    cohort = data['results']['prefill_only']; require(data['complete'] and not data['results']['failures'] and cohort['complete'] and len(cohort['requests']) == 1, 'one complete request required')
+    sample = cohort['requests'][0]
+    require(sample['eligible'] is True and sample['ok'] is True and sample['stream_complete'] is True and
+        sample['thinking_requested'] is True and sample['eligibility_errors'] == [] and
+        sample['request_sha256'] == plan['request_sha256'] and
+        sample['actual_prompt_tokens'] == sample['actual_read_tokens'] == plan['expected_tokens'] and
+        sample['actual_reused_tokens'] == 0 and 1 <= sample['generated_tokens'] <= 24, 'request work differs')
+    sys.path.insert(0, str(P/'tools')); from strata_bench import verify_request_journal
+    journal = verify_request_journal(path.parent)
+    require(journal['valid'] and journal['complete'], 'request journal invalid')
+    events = [json.loads(line) for line in (path.parent/'requests.jsonl').read_text().splitlines()]
+    require([dict(v['sample'], run=v['run']) for v in events if v['kind'] == 'result' and
+        v['phase'] == 'prefill-only'] == cohort['requests'], 'cohort differs from durable request journal')
+    text = (root/'engine.stderr').read_text()
+    validation = runtime.validation.preload_evidence(text, end['native']['pid'])
+    require(validation['loader'] == row['probe']['loader']['path'], 'validation provider differs')
+    require(not re.search(r'UR_RESULT_ERROR_|ZE_RESULT_ERROR_|terminate called|teardown uncertain|retirement failed', text), 'native runtime error')
+    footers = list(re.finditer(r'^strata serve: prompt (\d+) tokens = (\d+) reused \+ (\d+) read[^\n]*, (\d+) generated[^\n]*', text, re.M))
+    require(len(footers) == 2 and 0 < int(footers[0][1]) < 32768 and int(footers[0][2]) == 0 and
+        tuple(map(int,footers[1].groups())) == (plan['expected_tokens'],0,plan['expected_tokens'],sample['generated_tokens']), 'native request interval differs')
+    part = text[footers[0].end():footers[1].start()]
+    maximum_rows = max(rows for _, rows in plan['expected_window_pairs'])
+    require(part.count('strata prefill: layer-major candidate, tokens='+str(plan['expected_tokens']-1)+' chunk=8192 residual_dtype=bf16') == 1 and
+        part.count('strata MoE window configuration: requested_mode=10 effective_mode=10 maximum_rows='+str(maximum_rows)) == 1, 'selected prefill route differs')
+    work = gen.common.extract_planned_moe_work(part, plan['expected_window_pairs'])
+    return dict(census=gen.common.compact_window_census(work['planned_moe_windows']),
+        request={k:sample[k] for k in ('request_sha256','actual_read_tokens','actual_reused_tokens','generated_tokens','prompt_ms')},
+        native_identity=end['native'], validation=validation)
 
 
 def run(mode):
@@ -246,36 +287,7 @@ def run(mode):
     try:
         entry, _, _ = owner.run('bench', plan['command'], plan['environment'], P, interaction=gate, **plan['budgets'])
         require(owner_module.closed(entry) and entry['exit_code'] == 0, 'benchmark owner/protocol failed')
-        end = gen.native_end(root, dict(binary=row['binary'], native_validation_probe=row['probe']), dict(config=plan['config']), row['boot'], entry['pid'])
-        result['native_launched'] = True
-        path, = (root/'bench').glob('*/results.json'); data = json.loads(path.read_text())
-        cohort = data['results']['prefill_only']; require(cohort['complete'] and len(cohort['requests']) == 1, 'one complete request required')
-        sample = cohort['requests'][0]
-        require(sample['eligible'] and sample['ok'] and sample['controller_eligible'] and
-            sample['request_sha256'] == plan['request_sha256'] and
-            sample['actual_prompt_tokens'] == sample['actual_read_tokens'] == plan['expected_tokens'] and
-            sample['actual_reused_tokens'] == 0 and 1 <= sample['generated_tokens'] <= 24, 'request work differs')
-        sys.path.insert(0, str(P/'tools')); from strata_bench import verify_request_journal
-        journal = verify_request_journal(path.parent)
-        require(journal['valid'] and journal['complete'], 'request journal invalid')
-        events = [json.loads(line) for line in (path.parent/'requests.jsonl').read_text().splitlines()]
-        require([dict(v['sample'], run=v['run']) for v in events if v['kind'] == 'result' and
-            v['phase'] == 'prefill-only'] == cohort['requests'], 'cohort differs from durable request journal')
-        text = (root/'engine.stderr').read_text()
-        result['validation'] = runtime.validation.preload_evidence(text, end['native']['pid'])
-        require(result['validation']['loader'] == row['probe']['loader']['path'], 'validation provider differs')
-        require(not re.search(r'UR_RESULT_ERROR_|ZE_RESULT_ERROR_|terminate called|teardown uncertain|retirement failed', text), 'native runtime error')
-        footers = list(re.finditer(r'^strata serve: prompt (\d+) tokens = (\d+) reused \+ (\d+) read[^\n]*, (\d+) generated[^\n]*', text, re.M))
-        require(len(footers) == 2 and 0 < int(footers[0][1]) < 32768 and int(footers[0][2]) == 0 and
-            tuple(map(int,footers[1].groups())) == (plan['expected_tokens'],0,plan['expected_tokens'],sample['generated_tokens']), 'native request interval differs')
-        part = text[footers[0].end():footers[1].start()]
-        maximum_rows = max(rows for _, rows in plan['expected_window_pairs'])
-        require(part.count('strata prefill: layer-major candidate, tokens='+str(plan['expected_tokens']-1)+' chunk=8192 residual_dtype=bf16') == 1 and
-            part.count('strata MoE window configuration: requested_mode=10 effective_mode=10 maximum_rows='+str(maximum_rows)) == 1, 'selected prefill route differs')
-        work = gen.common.extract_planned_moe_work(part, plan['expected_window_pairs'])
-        result.update(census=gen.common.compact_window_census(work['planned_moe_windows']),
-            request={k:sample[k] for k in ('request_sha256','actual_read_tokens','actual_reused_tokens','generated_tokens','prompt_ms')},
-            native_identity=end['native'])
+        result.update(completed_request(row, plan, entry))
         admission(row, full_models=(mode == 'long'))
         result.update(passed=True, complete=True)
     except BaseException as error:

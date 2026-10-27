@@ -1,6 +1,8 @@
 """Host-only regression against the real benchmark gate; repository LICENSE."""
 import json
+import os
 from pathlib import Path
+import shutil
 import sys
 import tempfile
 import unittest
@@ -9,6 +11,7 @@ P = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(P / 'tools/sycl'))
 import measurement_owner as owner
 import model_work_census as census
+REPLAY_ROOT = os.environ.get('STRATA_CENSUS_REPLAY_ROOT')
 
 
 class BenchmarkGateContract(unittest.TestCase):
@@ -71,6 +74,47 @@ class BenchmarkGateContract(unittest.TestCase):
         self.assertEqual(entry['exit_code'], 0)
         self.assertIn('request gate after final boundary', entry['error'])
         self.assertFalse(owner.closed(entry))
+
+
+@unittest.skipUnless(REPLAY_ROOT, 'explicit closed cohort needed for full reader replay')
+class CompletedRequestContract(unittest.TestCase):
+    def setUp(self):
+        self.root = Path(REPLAY_ROOT)
+        self.record = json.loads((self.root/'record.json').read_text())
+        self.plan = self.record['plans']['smoke']
+        self.execution = json.loads((Path(self.plan['root'])/'execution.json').read_text())
+        self.assertFalse(self.execution['passed'])  # Preserve the original failure.
+        self.assertTrue(self.execution['ownership_closed'])
+        self.entry = self.execution['commands'][0]
+
+    def test_complete_reader_on_actual_closed_output(self):
+        parsed = census.completed_request(self.record, self.plan, self.entry)
+        self.assertEqual(parsed['request']['actual_read_tokens'], 39260)
+        self.assertEqual(parsed['request']['actual_reused_tokens'], 0)
+        self.assertEqual(parsed['census']['window_count'], 48)
+        self.assertEqual(parsed['census']['jobs'], 18796)
+        self.assertEqual(parsed['census']['routed_rows'], 39259*48*10)
+        self.assertFalse(json.loads((self.root/'record.json').read_text())['checks'][0]['passed'])
+
+    def test_actual_schema_rejects_changed_eligibility_and_work(self):
+        source = Path(self.plan['root'])
+        for key, value in [('eligible', False), ('stream_complete', False),
+                           ('thinking_requested', False), ('actual_reused_tokens', 1),
+                           ('request_sha256', '0'*64)]:
+            with self.subTest(key=key), tempfile.TemporaryDirectory() as tmp:
+                root = Path(tmp)
+                for name in ('engine-start.json', 'engine-exit.json', 'engine.stderr'):
+                    shutil.copyfile(source/name, root/name)
+                original, = (source/'bench').glob('*/results.json')
+                directory = root/'bench'/original.parent.name
+                directory.mkdir(parents=True)
+                for name in ('results.json', 'requests.jsonl', 'journal-state.json'):
+                    shutil.copyfile(original.parent/name, directory/name)
+                payload = json.loads((directory/'results.json').read_text())
+                payload['results']['prefill_only']['requests'][0][key] = value
+                (directory/'results.json').write_text(json.dumps(payload))
+                with self.assertRaisesRegex(RuntimeError, 'request work differs'):
+                    census.completed_request(self.record, dict(self.plan, root=str(root)), self.entry)
 
 
 if __name__ == '__main__':
