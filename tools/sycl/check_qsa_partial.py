@@ -18,7 +18,6 @@ import build_qsa_partial as build
 import measurement_guards as guards
 import measurement_owner as supervision
 import ur_validation as validation
-import model_aggregate as aggregate
 import profile_aggregate as tables
 from measure_down_scatter import postchecks
 
@@ -48,12 +47,29 @@ def runtime(record):
         'current qualified runtime/provider changed')
 
 
+def collector_assets():
+    path=build.gen.A/'prefill-resources-current.json'
+    events=validation.committed(path,('event_reconciliation',))
+    known=events['native_observation']['assets']
+    result={key:known[key] for key in ('launcher','collector')}
+    for item in result.values():
+        guards.require(build.digest(item['path'])==item['sha256'],'collector artifact changed')
+    guards.require(events['ur_metadata_gpu']['passed'] and events['ur_subscriber_gpu']['passed'],
+        'preserve existing direct fixture qualification')
+    host=events['selected_qsa_environment_host_v1']
+    guards.require(host['passed'] and host['ownership_closed'] and host['session_removed'] and
+        host['observation']['different_keys']==[] and host['observation']['passed'],
+        'closed launcher environment qualification required')
+    result['preload']=validation.committed(build.qualified_runtime.RESULT)['preload']
+    return result
+
+
 def admission(record,plan):
     build.admission(record,True)
     guards.require(inputs(plan['source_commit'])==plan['controller_inputs'],'check controller changed')
     runtime(plan)
     if plan['mode']=='resources':
-        assets=aggregate.profile_assets(build.gen.committed(aggregate.RESULT))
+        assets=collector_assets()
         guards.require(plan['collector_assets']=={k:assets[k] for k in ('collector','launcher','preload')},
             'qualified collector/launcher/preload changed')
     guards.require(record['stage']=='built' and record['passed'] and record['complete'] and
@@ -77,7 +93,7 @@ def prepare(mode):
         budgets=dict(wall_s=180,cpu_s=180,rss_bytes=4<<30,text_bytes=16<<20,file_bytes=32<<20,total_bytes=192<<20),
         jobs=[])
     if mode=='resources':
-        assets=aggregate.profile_assets(build.gen.committed(aggregate.RESULT))
+        assets=collector_assets()
         plan['collector_assets']={k:assets[k] for k in ('collector','launcher','preload')}
         plan['gates']='Same exact timing fixture --smoke,3arms,22wrapper calls(default8,control/partialq8 each7). Require positive conserved whole-process device table and exactly3ordered-exp compute-family properties(SIMD16,WG128). All use unchanged default GRF policy;record actual GRF/private/spill/rawSLM descriptors without inferring occupancy or hot traffic. Same-PID validation,full-output bits/guards,input immutability,normal target/launcher closure,unique session removed,no fresh fault. No clean latency/adoption claim.'
     elif mode=='perf':
