@@ -1,5 +1,5 @@
 {
-  "stage": "prepared",
+  "stage": "failed",
   "source_commit": "d10461edf024ee085c0cbda3ce26c78dedcd9a85",
   "native_source": "6e40afc1beddd059ee518617f6c1efce1da14aca",
   "binary": {
@@ -944,7 +944,45 @@
       }
     }
   },
-  "checks": [],
+  "checks": [
+    {
+      "mode": "smoke",
+      "passed": false,
+      "complete": false,
+      "ownership_closed": true,
+      "native_launched": true,
+      "error": "KeyError('controller_eligible')",
+      "protocol_qualified": false,
+      "postchecks_complete": true,
+      "postcheck_errors": [],
+      "fresh_faults": [],
+      "boot_unchanged": true,
+      "driver_after": {
+        "pci": "/sys/bus/pci/devices/0000:05:00.0",
+        "driver": "xe",
+        "vendor": "0x8086",
+        "device": "0xe20c",
+        "kernel": "7.0.0-38-generic",
+        "devcoredump": false
+      },
+      "failure_diagnosis": {
+        "mechanism": "Controller accesses controller_eligible,which the pinned official prefill-only sample never emits. Actual schema uses eligible,eligibility_errors,stream_complete and thinking_requested. Both request gates and the summary drain close normally;benchmark/native exit0.",
+        "controller_source": "d10461edf024ee085c0cbda3ce26c78dedcd9a85",
+        "schema_missing": "controller_eligible",
+        "native_exit_code": 0,
+        "benchmark_exit_code": 0,
+        "long_requests_completed": 1,
+        "actual_input_tokens": 39260,
+        "actual_prefill_rows": 39259,
+        "owner_protocol_complete": true,
+        "evidence": {
+          "execution_sha256": "15f590df4f308bc12a2d7a2af4a9e69e07de4d286a20a669f2a31db3c0026605",
+          "engine_log_sha256": "92df022a32d1df5482b8e937f57bc2918df1be2aa045c6f980190455ec725077"
+        },
+        "next": "Extract the entire completed-request reader and replay it against this actual closed cohort without GPU. Correct actual benchmark schema before a fresh frozen cohort;do not relabel this failed run or launch its long arm."
+      }
+    }
+  ],
   "active": false,
   "ownership_closed": true,
   "complete": false,
