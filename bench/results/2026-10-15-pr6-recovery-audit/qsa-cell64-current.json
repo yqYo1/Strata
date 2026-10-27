@@ -1458,7 +1458,7 @@
     "limits": "Compiled/linked only;resource admission,numerics,performance and model quality remain unqualified."
   },
   "admission_plan": {
-    "stage": "prepared",
+    "stage": "closed",
     "source_commit": "08d826ec2dbdc0ca633a59aaf0a883600e8a8746",
     "controller_inputs": {
       "tools/sycl/check_qsa_cell64.py": "07beab1342df10be9752a75ab5ac60dba660bdea0f819e948a03818d091a8ed6",
@@ -1681,5 +1681,98 @@
     "wrong_object_rejected": true,
     "missing_symbol_rejected": true,
     "scope": "Synthetic host controls only,no device initialization."
+  },
+  "admission_check": {
+    "passed": true,
+    "complete": true,
+    "active": false,
+    "ownership_closed": true,
+    "device_initialized": true,
+    "kernel_submissions": 0,
+    "model_qualified": false,
+    "loader_object": {
+      "path": "/usr/lib/x86_64-linux-gnu/libze_loader.so.1.32.0",
+      "sha256": "b764efda507f173560fa6055d433dd5c76140180b4a7c532e1cea813cde67363",
+      "device": "00:1d",
+      "inode": 7539712,
+      "executable_start": "764e28666000",
+      "file_offset": "00018000",
+      "namespace": 0,
+      "symbols": [
+        "zeDeviceGetComputeProperties",
+        "zeKernelGetProperties"
+      ],
+      "evidence": "Live executable map plus canonical namespace-0 glibc object/dlsym bindings;helper requires RTLD_NOLOAD. This is this child only,not a general interop guarantee."
+    },
+    "properties": [
+      {
+        "arm": 0,
+        "max_workgroup": 1024,
+        "subgroup": 16,
+        "arguments": 18,
+        "reported_local_bytes": 32,
+        "declared_dynamic_local_bytes": 20036,
+        "reserve_local_bytes": 4096,
+        "conservative_local_budget": 24164,
+        "per_group_local_max": 131072,
+        "spill_descriptor": 12480
+      },
+      {
+        "arm": 1,
+        "max_workgroup": 1024,
+        "subgroup": 16,
+        "arguments": 18,
+        "reported_local_bytes": 32,
+        "declared_dynamic_local_bytes": 20036,
+        "reserve_local_bytes": 4096,
+        "conservative_local_budget": 24164,
+        "per_group_local_max": 131072,
+        "spill_descriptor": 12480
+      },
+      {
+        "arm": 2,
+        "max_workgroup": 1024,
+        "subgroup": 16,
+        "arguments": 18,
+        "reported_local_bytes": 32,
+        "declared_dynamic_local_bytes": 39748,
+        "reserve_local_bytes": 4096,
+        "conservative_local_budget": 43876,
+        "per_group_local_max": 131072,
+        "spill_descriptor": 13952
+      }
+    ],
+    "validation": {
+      "pid": 250872,
+      "loader": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_loader.so.0.12.0",
+      "threads_before": 1,
+      "preinit": 37,
+      "config_enabled": true,
+      "first_init": true,
+      "dispatch_result": 46,
+      "output_untouched": true,
+      "retained_reference_until_exit": true,
+      "runtime_teardown_qualified": false
+    },
+    "postchecks_complete": true,
+    "postcheck_errors": [],
+    "fresh_faults": [],
+    "boot_unchanged": true,
+    "driver_after": {
+      "pci": "/sys/bus/pci/devices/0000:05:00.0",
+      "driver": "xe",
+      "vendor": "0x8086",
+      "device": "0xe20c",
+      "kernel": "7.0.0-38-generic",
+      "devcoredump": false
+    }
+  },
+  "retention": {
+    "selected_engine_preserved": true,
+    "component_generation_consumer": "Current compiled32/64 oracle:next bounded traced numerical/actual-local qualification,then actual-ID512/6491comparison. Retire at candidate closure/supersession.",
+    "compiler_and_IR_consumer": "Exact compiled identity,source/native input and dynamic-local comparison before component advancement.",
+    "selected_ID_fixture_consumer": "Current cell64 actual-ID comparison;one53252180-byte fixture,not duplicated.",
+    "normal_diagnostic_retirement": "Pending serialized retirement after this compact outcome/source/recipe is pushed;keep all required current binaries/generated inputs/dependencies/IR.",
+    "legacy_holds": "Separate original-source/recipe holds remain in native-gdn-engine-build.json;no global cleanup claim."
   }
 }

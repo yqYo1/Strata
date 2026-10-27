@@ -1714,7 +1714,8 @@ The generator now enforces that immutable file hash. The source-only
 [`qsa_cell64_admission.hpp`](../bench/sycl/qsa_cell64_admission.hpp) queries exact
 compiled kernel identities, WG128/SG16 and Level Zero per-group local-memory
 limits before dispatch. It adds declared dynamic local payload and a reserve to
-the reported kernel local bytes. It compiles but remains device-unqualified;
+the reported kernel local bytes. Its query-only child now passes;attention
+execution remains unqualified. The reserve is a heuristic,not a hardware bound;
 actual bound local arguments must also be accounted in the first traced fixture.
 
 The proposed [`qsa_cell64_checks.py`](../tools/sycl/qsa_cell64_checks.py) adapts
@@ -1731,9 +1732,21 @@ closes all14compile/link/IR commands,with698actual dependencies matched against
 no device work has run. See[the current component record](../bench/results/2026-10-15-pr6-recovery-audit/qsa-cell64-current.json).
 Before numerical execution,pin the reference configuration and finite per-case
 bounds. The framework audit does not imply CUDA execution or numerical parity.
-An independent Orca Luna audit now checks the newly authored admission helper's
-actual SYCL/LevelZero API and local-memory accounting;its review precedes the
-first bounded property-only child. This query cannot qualify model performance.
+The independent admission API audit and native Luna/max curation close with
+conditional source proof. Main corrects the curator's use of three different
+official2026.2headers by checking the actual build SDK declarations separately;
+the LevelZero backend header is byte-identical. The original review is preserved.
+
+The property-only plan`27ecbf421` and controller`08d826ec2` close one owned child
+at exit0,with pre-main validation proof,silent validation,no kernel enqueue and
+no fresh fault. Live maps and glibc namespace-0bindings establish this child's
+qualified loader object for both property calls. All3exact kernels report
+maximumWG1024,requiredSG16,18arguments and32reported local bytes. Per-group
+local capacity is131072bytes. Adding declared local payload and4096reserve gives
+24164bytes for both32arms and43876for64. Spill descriptors are12480/12480/13952;
+these are not physical traffic,occupancy or speed measurements. Actual local
+bindings/alignment and a successful128x1x1launch remain pending before broader
+advancement. No numerical or model work is qualified by this query.
 
 Complete prefill phase attribution requires three independent ledgers: route-owner
 planned operations, actual API results and collector device executions.
