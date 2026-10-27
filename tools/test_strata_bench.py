@@ -23,6 +23,97 @@ def response(offered=1600, accepted=1200, generated=1152):
 
 
 class BenchmarkTest(unittest.TestCase):
+    def test_ttft_stops_at_reasoning_and_ignores_empty_stream_events(self):
+        events = [dict(choices=[dict(delta=dict(role='assistant'))]),
+                  dict(choices=[dict(delta={})]),
+                  dict(choices=[dict(delta=dict(reasoning_content='first thought'))]),
+                  dict(choices=[dict(delta=dict(content='later answer'))]),
+                  dict(choices=[dict(delta={}, finish_reason='stop')],
+                       usage=response()['usage'], timings=response()['timings'])]
+        wire = b': keepalive\n\n' + b''.join(
+            b'data: '+json.dumps(e).encode()+b'\n\n' for e in events) + b'data: [DONE]\n\n'
+        with patch.object(bench.urllib.request, 'urlopen', return_value=io.BytesIO(wire)), \
+             patch.object(bench.time, 'perf_counter', side_effect=[100, 100.25, 102]), \
+             patch.object(bench.time, 'monotonic_ns', side_effect=[10, 20, 30]):
+            raw = bench.chat('http://localhost', '', [], 24, True)
+        self.assertEqual(raw['first'], .25)
+        self.assertEqual(raw['total'], 2)
+        self.assertEqual(raw['reasoning_text'], 'first thought')
+
+    def test_scaling_preserves_actual_counts_first_use_and_warmed_order(self):
+        suite = bench.Suite('http://localhost', '', 131072, 3, False, log=lambda _: None,
+                            prefill_only=True, characterize_prefill=True)
+        seen = []
+        def prompt(tokens, run, fixed=False):
+            self.assertTrue(fixed)
+            return [dict(role='user', content=f'{tokens}:{run}')]
+        def reply(_url, _key, messages, cap, think):
+            self.assertEqual(cap, 24)
+            self.assertTrue(think)
+            raw = response(generated=24)
+            text = messages[-1]['content']
+            if ':' not in text:
+                return raw
+            tokens, run = map(int, text.split(':'))
+            actual = tokens+17
+            seen.append((tokens, run))
+            raw['usage']['prompt_tokens'] = raw['timings']['prompt_n'] = actual
+            raw['timings']['prompt_ms'] = 2000+2*actual
+            raw['timings']['prompt_per_second'] = actual/(raw['timings']['prompt_ms']/1000)
+            return raw
+        with patch.object(suite, 'prompt_for', side_effect=prompt), \
+             patch.object(bench, 'chat', side_effect=reply):
+            suite.run()
+        result = suite.out['prefill_scaling']
+        self.assertTrue(result['complete'])
+        self.assertEqual(len(result['requests']), 18)
+        self.assertEqual(result['first_long_request']['run'], -1)
+        self.assertEqual(seen[0], (98304*5//4, -1))
+        expected = [(n*5//4, r) for r in range(3) for n in bench.prefill_scaling.order(r)]
+        self.assertEqual(seen[1:], expected)
+        self.assertEqual(result['requests'][0]['actual_read_tokens'], 1297)
+        self.assertAlmostEqual(result['linear_fit']['intercept_ms'], 2000)
+        self.assertAlmostEqual(result['linear_fit']['ms_per_token'], 2)
+        self.assertLess(result['approximation_models']['candidates']['affine']['max_held_out_relative_error'], 1e-9)
+        self.assertIsNone(result['approximation_models']['selected_model'])
+        self.assertNotIn('requests', suite.out['prompts']['1024-minimum'])
+        rendered = bench.render_readme(dict(machine={}, results=suite.out,
+            params=dict(mode='prefill-scaling'), complete=True))
+        self.assertIn('TTFT s', rendered)
+
+    def test_scaling_refuses_short_context_and_stops_on_reused_prefix(self):
+        short = bench.Suite('', '', 123159, 1, True, prefill_only=True, characterize_prefill=True)
+        with patch.object(bench, 'chat') as chat:
+            with self.assertRaises(bench.EngineRequestError):
+                short.run()
+            chat.assert_not_called()
+        suite = bench.Suite('', '', 131072, 1, True, prefill_only=True,
+                            characterize_prefill=True, log=lambda _: None)
+        def reply(*args):
+            raw = response(generated=24)
+            if len(calls) == 1:
+                raw['usage']['prompt_tokens'] = raw['timings']['prompt_n'] = 120000
+            if len(calls) == 2:
+                raw['usage']['prompt_tokens_details']['cached_tokens'] = 1
+            calls.append(1)
+            return raw
+        calls = []
+        with patch.object(bench, 'chat', side_effect=reply):
+            with self.assertRaises(bench.EngineRequestError):
+                suite.run()
+        self.assertEqual(len(calls), 3)
+        result = suite.out['prefill_scaling']
+        self.assertFalse(result['complete'])
+        self.assertIsNone(result['linear_fit'])
+        self.assertFalse(result['requests'][0]['eligible'])
+
+    def test_approximation_checks_held_out_lengths_and_exposes_curvature(self):
+        samples = [dict(actual_read_tokens=n, prompt_ms=1000+.2*n+1e-6*n*n)
+                   for n in (1024, 4096, 16384, 32768, 65536, 98304)]
+        models = bench.prefill_scaling.approximation_models(samples)['candidates']
+        self.assertGreater(models['affine']['max_held_out_relative_error'], .1)
+        self.assertLess(models['quadratic']['max_held_out_relative_error'], 1e-9)
+
     def test_larger_output_budget_is_explicit_and_keeps_body_and_context_gates(self):
         raw=response(generated=20000)
         self.assertFalse(lg.sample_eligibility(raw,bench.digest(raw))['eligible'])

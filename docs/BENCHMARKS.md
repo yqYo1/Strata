@@ -96,6 +96,50 @@ from decode. About 1K generated tokens is a starting observation window. Increas
 independent repetitions or length when variation still prevents a decision.
 Do not pool the original 24-token decode with this new workload.
 
+One input length does not establish a throughput curve. Record total prefill
+milliseconds against actual newly read tokens, alongside pp and client TTFT,
+at several short and long lengths. Compare simple approximate formulas using
+residuals, held-out lengths and neighboring slopes. `T(n) = a + b*n` is only
+one hypothesis; keep nonlinear or chunk-boundary behavior
+visible. Separate execution routes before assigning a physical meaning to `a`;
+short prefill through decode placement and long layer-major prefill can have
+different fixed costs. First-use, warmed requests and independent processes are
+separate samples. Repeat the sweep after relevant placement, chunking, scheduling
+or kernel changes; local component screens need not repeat the entire curve.
+Decode depends on starting context, actual generation length and MTP acceptance;
+record these and characterize more than one context/length before generalizing.
+
+TTFT is measured from immediately before sending the client HTTP request to the
+first nonempty `reasoning_content` or `content` delta. It includes the first
+thinking output, rather than waiting for thinking to finish. Keepalives, empty
+deltas and role-only events do not stop the clock. This includes request/queue,
+prompt processing and first-output delivery time; model startup is reported
+separately. It is already collected by the benchmark and must accompany speed
+results, rather than being inferred from pp.
+
+For the length characterization, with a qualified server configured for at least
+123160 context slots:
+
+```sh
+./bench.sh --url http://127.0.0.1:18096 --prefill-scaling --runs 3
+```
+
+This new mode requests minima1024,4096,16384,32768,65536,98304; construction
+targets are1.25 times those values and the actual engine token counts are the
+fit inputs. It retains one maximum-length first request separately, then runs
+three warmed sweeps in ascending, descending and rotated order. Thinking is
+enabled and output is capped at24. Each request must finish normally with zero
+reuse, valid engine timings and actual context headroom. A failure stops the
+sweep and remains a failed sample. Each length keeps all individual times and
+TTFTs. Affine, quadratic and linear-plus-`n log n` hypotheses report residuals
+and leave-one-length-out prediction errors; none is selected automatically.
+Prefer a simple adequate approximation, compare its errors with observed spread,
+and split by execution route or boundaries when appropriate. These fits and
+adjacent slopes do not establish a
+physical fixed cost, linearity, independent-process repeatability or hardware
+saturation. A supervised model run still needs a committed plan, runtime and
+binary admission; adding this client mode is not a completed measurement.
+
 The owned128/borrowed1280 capacity admission and comparison are closed. Their
 [compact result](../bench/results/2026-10-15-pr6-recovery-audit/cache-comparison-current.json)
 keeps all six independent samples, common evidence and arm-specific route

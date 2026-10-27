@@ -309,6 +309,19 @@ integration and testing.
   needed. Keep individual samples and spread; do not dismiss a slower result as
   noise without repeated evidence. Check past verified best results and their
   source/configuration when investigating a regression.
+  Characterize input-length scaling before treating one length as representative.
+  Retain actual token counts, total prefill time, pp and client TTFT over several
+  short and long lengths. Separate first-use and warmed samples and execution
+  routes. Compare simple approximate time models using residuals, held-out
+  lengths and adjacent slopes; a fixed-plus-per-token model is only one
+  hypothesis. Do not assume linear scaling or interpret a mixed-route intercept as
+  a physical fixed cost. Revisit the curve after changes to placement, chunking,
+  scheduling or context-dependent kernels; a full sweep is not required for every
+  local experiment. Decode comparisons also state starting context, generated
+  length and MTP acceptance, and characterize context/length dependence rather
+  than generalizing one point. TTFT starts at the client request and ends at the
+  first nonempty reasoning or content output, including thinking; ignore keepalive
+  and empty/role-only stream events. Report it separately from pp and tg.
   Before collecting adoption evidence, commit the comparison order, repetition
   plan, acceptance criteria and stopping rules. Assess the proposed mechanism's
   gain separately from the throughput target and broader correctness gates;
