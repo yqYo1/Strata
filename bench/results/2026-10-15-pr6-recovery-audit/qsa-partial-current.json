@@ -1366,12 +1366,22 @@
       "bytes": 74357
     }
   },
-  "controller_preflight_failure": {
-    "source_commit": "6ba40b7a5",
-    "command": "check_qsa_partial.py prepare smoke",
-    "error": "ModuleNotFoundError: model_aggregate",
-    "native_or_GPU_executed": false,
-    "output_created": false,
-    "resolution": "Use the maintained collector assets and launcher qualification, without restoring the retired controller."
-  }
+  "controller_preflight_failures": [
+    {
+      "source_commit": "6ba40b7a5",
+      "command": "check_qsa_partial.py prepare smoke",
+      "error": "ModuleNotFoundError: model_aggregate",
+      "native_or_GPU_executed": false,
+      "output_created": false,
+      "resolution": "Use the maintained collector assets and launcher qualification, without restoring the retired controller."
+    },
+    {
+      "source_commit": "35b733461",
+      "command": "check_qsa_partial.py prepare smoke",
+      "error": "TypeError: runtime preload loader is a path string, not an asset dictionary",
+      "native_or_GPU_executed": false,
+      "partial_output": "qsa-partial-qcache-v1/check-smoke/default/{tmp,cache} empty directories",
+      "resolution": "Use the actual runtime receipt schema;close the incomplete preparation and use new check directories. No binary changes."
+    }
+  ]
 }

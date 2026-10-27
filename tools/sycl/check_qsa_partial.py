@@ -84,7 +84,7 @@ def prepare(mode):
     guards.require(len(checks)==position and all(c['mode']==sequence[i] and c['passed'] and
         c['complete'] and c['ownership_closed'] and c['fresh_faults']==[] for i,c in enumerate(checks)),
         'require smoke,component,resources,perf in order; no retries')
-    root=ROOT/('check-'+mode);guards.require(not root.exists(),'inspect existing check owner; no replacement')
+    root=ROOT/('check-'+mode+'-v2');guards.require(not root.exists(),'inspect existing check owner; no replacement')
     _,proof=build.qualified_baseline()
     revision=build.gen.git('rev-parse','HEAD').decode().strip()
     plan=dict(stage='prepared',mode=mode,source_commit=revision,controller_inputs=inputs(revision),
@@ -107,7 +107,7 @@ def prepare(mode):
         for name in ('tmp','cache'):(folder/name).mkdir()
         env=dict(base,TMPDIR=str(folder/'tmp'),XDG_CACHE_HOME=str(folder/'cache'),
             LD_PRELOAD=plan['validation_preload']['library']['path'],
-            STRATA_UR_PROBE_EXPECTED_LOADER=plan['validation_preload']['loader']['path'])
+            STRATA_UR_PROBE_EXPECTED_LOADER=plan['validation_preload']['loader'])
         if mode=='component':
             env['UR_ENABLE_LAYERS']='UR_LAYER_PARAMETER_VALIDATION';env.pop('UR_LOG_TRACING',None)
         command=[record['binaries']['numerical']['path'],'--'+mode,arm];session=None
@@ -199,7 +199,7 @@ def performance(checks):
 
 
 def run(mode):
-    record=build.gen.committed(RESULT);plan=record['check_plan'];root=ROOT/('check-'+mode)
+    record=build.gen.committed(RESULT);plan=record['check_plan'];root=ROOT/('check-'+mode+'-v2')
     guards.require(plan['mode']==mode and plan['stage']=='prepared' and
         plan==json.loads((root/'plan.json').read_text()) and not (root/'record.json').exists(),
         'matching fresh committed check required; inspect existing receipt')
@@ -240,7 +240,7 @@ def run(mode):
             proof=None
             if mode!='perf':
                 proof=validation.preload_evidence(stderr,entry['pid'])
-                guards.require(proof['loader']==plan['validation_preload']['loader']['path'],'unexpected loader')
+                guards.require(proof['loader']==plan['validation_preload']['loader'],'unexpected loader')
             # The pinned preload deliberately tests a null UR platform before
             # main (expected46); reject errors after that verified diagnostic.
             body_stderr=stderr.split(f'strata UR validation: pid={entry["pid"]} phase=before-main',1)[1] if proof else stderr
