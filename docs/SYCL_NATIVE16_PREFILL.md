@@ -1751,7 +1751,21 @@ Main chooses a first source case K32/V264/P32,changing only V's local row stride
 and adding512bytes:20544active bytes,20548source bytes. The generator's stricter
 8-element pitch rule remains;its27host cases do not qualify36/260pitches.
 This is a layout hypothesis,not a proven bank-conflict or speed explanation.
-Next commit the build/admission and comparison plan before compiler or GPU use.
+The source-bound build now completes12frozen compile/link/LLVM commands,with
+195project inputs,8700compiler assets and697actual compiled dependencies checked.
+The [current component record](../bench/results/2026-10-15-pr6-recovery-audit/qsa-slm-pitch-current.json)
+pins source`57fb85a80`,recipe`ecbdcc1e1`and the1606112-byte fixture
+SHA256`296966baa258ed5de3c18d6833892b713a2f624eaae747373fa73f56e70f8da1`.
+Its property-only mode shares this executable. A separate translated-ID case
+selects262141..262143in the last physical page;host inspection verifies those
+addresses,not GPU execution. The new controller's12host controls reject changed
+pitch output bits and a boundary result that did not exercise262144capacity,
+alongside the earlier timing/fault coverage checks. Native admission,smoke,
+boundary and speed remain unexecuted pending source-review reconciliation and
+separately committed plans. All five remaining old source-audit text/transaction
+files retire after regeneration of original source and recipe recovery;the
+rejected64generation now has no remaining files. The single selected-IDfixture
+is retained for this immediate comparison.
 
 Complete prefill phase attribution requires three independent ledgers: route-owner
 planned operations, actual API results and collector device executions.

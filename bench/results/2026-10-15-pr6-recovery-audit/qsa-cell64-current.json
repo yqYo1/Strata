@@ -1262,29 +1262,7 @@
   "work_limits": "Source-issued valid BF16K/V value bytes and logical/shape-padded matrix work only;cache hits,transactions,SLMtraffic,exp/reduction work and hardware saturation remain unmeasured. Byte rates are not measured PCIe/GDDRtraffic.",
   "retention": {
     "component_binary_consumer": "None;all component executables,objects,dependency/build/raw outputs retired. Four frozen source/IRassets only remain for the live pitch-contract audit.",
-    "source_IR_consumer": "Immediate K/V/probability SLMstride feasibility audit;retire these four files after source-contract decision.",
-    "source_IR_assets": [
-      {
-        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-cell64-v1/cell32.cpp",
-        "bytes": 25232,
-        "sha256": "bcc4c4e909992ae1ab1af72e92d008ebf0a843ecebc85c8e92bab3c6c968fa14"
-      },
-      {
-        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-cell64-v1/cell64.cpp",
-        "bytes": 26093,
-        "sha256": "e9e45054d11537dff455b64cef9ef10d0ef8f826edc4993a71ea58df8ad33832"
-      },
-      {
-        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-cell64-v1/control.ll",
-        "bytes": 72142,
-        "sha256": "11614acb968d835c19b68159ea947d8798fb6d69a285717478a6de114f22d155"
-      },
-      {
-        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-cell64-v1/candidate.ll",
-        "bytes": 77105,
-        "sha256": "d33bb480a9026e7506e513fc9775c0a86ea64a376c3bf47c8814d983abc53096"
-      }
-    ],
+    "source_IR_consumer": "Ended;all four text assets retired after source/SDK audit closure. Restore original source/recipe from4f2fffe03 only if a new concrete consumer appears.",
     "selected_ID_fixture_consumer": "Prospective original32/padded-SLM comparison if exact configured SDK admits the layout;review at that source audit decision. One fixture only.",
     "legacy_holds": "Separate original-source/recipe exceptions in native-gdn-engine-build.json remain unresolved;not global cleanup.",
     "retirement": {
@@ -1308,9 +1286,21 @@
       },
       "post_retirement_selected_artifacts_verified": 13,
       "selected_fixture_preserved": true,
-      "remaining_component_files": 4,
-      "remaining_component_bytes": 200572,
+      "remaining_component_files": 0,
+      "remaining_component_bytes": 0,
       "GPU_executed": false
+    },
+    "source_audit_retirement": {
+      "files": 5,
+      "bytes": 202797,
+      "manifest": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-cell64-source-audit-retirement-20261027.jsonl",
+        "sha256": "7a314955f802c6769a02409c330c46aeba0bbd60a32f5bc1ee7ab736b269e540"
+      },
+      "generated_sources_recovered_from": "4f2fffe03:tools/sycl/qsa_cell64_sources.py",
+      "original_recipe_recovered": true,
+      "source_IR_bytes": 200572,
+      "remaining_old_generation_files": 0
     }
   }
 }

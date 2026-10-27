@@ -13297,28 +13297,6 @@
       "Ksource layout is Dim-by-Cells,probability16-by-Cells,VCells-by-Dim;current pitches32or64 and256. Pitch-only padding is a distinct question from rejected coalesced transpose,tree sum,GRF-only and cell granularity.",
       "The exact source/kernel/SDK identities below are available read-only. Compiler matrices remain8x16BF16,SG16/WG128;static local32B,dynamic20032/39744B,per-group queried max131072B. These do not establish native bank behavior or occupancy."
     ],
-    "source_IR_assets": [
-      {
-        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-cell64-v1/cell32.cpp",
-        "bytes": 25232,
-        "sha256": "bcc4c4e909992ae1ab1af72e92d008ebf0a843ecebc85c8e92bab3c6c968fa14"
-      },
-      {
-        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-cell64-v1/cell64.cpp",
-        "bytes": 26093,
-        "sha256": "e9e45054d11537dff455b64cef9ef10d0ef8f826edc4993a71ea58df8ad33832"
-      },
-      {
-        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-cell64-v1/control.ll",
-        "bytes": 72142,
-        "sha256": "11614acb968d835c19b68159ea947d8798fb6d69a285717478a6de114f22d155"
-      },
-      {
-        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-cell64-v1/candidate.ll",
-        "bytes": 77105,
-        "sha256": "d33bb480a9026e7506e513fc9775c0a86ea64a376c3bf47c8814d983abc53096"
-      }
-    ],
     "actual_SDK_matrix_headers": {
       "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/include/sycl/ext/oneapi/matrix/query-types.hpp": "18da200cd2704bb998f8a2f61fc423f6a5ecfcfe2d5b7a44e067c5074a8aeaa2",
       "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/include/sycl/ext/oneapi/matrix/matrix-unified-utils.hpp": "c4ec45d987a054e2e5ee7d51f2fbbabf2d4a50bff0b7d4124d5e01a1162f8e8a",
@@ -13343,7 +13321,7 @@
     ],
     "ownership": "Report only;read source/IR/SDK and authoritative primary docs. No code edits,Git commands,tests,builds,GPU/runtime calls,process inspection or delegation. Main owns implementation/testing and will preserve four source/IRassets while audit is live.",
     "consumer": "Main selects or rejects a concrete pitch-only original32kernel proposal;do not promise a speed gain or attribute the64regression without evidence.",
-    "retention": "Keep current report/review for the imminent pitch build contract. Four old32/64source/IRassets await serialized retirement after this pinned contract is committed;the old candidate source/recipe recover from4f2fffe03. Keep the single actual-IDfixture for the imminent pitch comparison.",
+    "retention": "Current pitch report/review support immediate new build/admission. Old32/64source/IRassets and closed research launch transaction are retired;restore rejected code/recipe from4f2fffe03. Single selected-IDfixture remains for the imminent pitch comparison.",
     "run_id": "run_3072480b0529",
     "task_id": "task_c99d90c62354",
     "dispatch_id": "ctx_3501dc36fe9b",
@@ -13453,11 +13431,23 @@
     "next_scope": {
       "schedulable_now": false,
       "reason": "No duplicate general source survey. Reopen only for new concrete compiler/native/eligible timing evidence."
+    },
+    "source_audit_retirement": {
+      "files": 5,
+      "bytes": 202797,
+      "manifest": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-cell64-source-audit-retirement-20261027.jsonl",
+        "sha256": "7a314955f802c6769a02409c330c46aeba0bbd60a32f5bc1ee7ab736b269e540"
+      },
+      "generated_sources_recovered_from": "4f2fffe03:tools/sycl/qsa_cell64_sources.py",
+      "original_recipe_recovered": true,
+      "source_IR_bytes": 200572,
+      "remaining_old_generation_files": 0
     }
   },
   "qsa_slm_pitch_harness_contract_20261027": {
     "classification": "decision_support",
-    "status": "running",
+    "status": "reviewing",
     "schedulable_now": false,
     "source_commit": "39044cc68",
     "worker_model": "gpt-6-luna",
@@ -13488,6 +13478,20 @@
     "task_id": "task_5aacf5c1b150",
     "dispatch_id": "ctx_3269b14d19d1",
     "terminal": "term_abb9a1dc-128a-4e5b-b103-dfd761266f72",
-    "model_evidence": "Fresh/new,current-worktree selected;terminal preview GPT-6-Luna high before dispatch. Prompt turn_started observed;null reuse launch model fields are not provider evidence."
+    "model_evidence": "Fresh/new,current-worktree selected;terminal preview GPT-6-Luna high before dispatch. Prompt turn_started observed;null reuse launch model fields are not provider evidence.",
+    "worker_closed": true,
+    "worker_outcome": "succeeded",
+    "resource_decision": "Orca worker completed/succeeded,released external terminal with processActionnone,and worker_done delivery acknowledged.",
+    "report_identity": {
+      "bytes": 10617,
+      "sha256": "7beb93112cc141a7dceba4c00fa19bed31786ccbf8097b8f6ddc375072855380"
+    },
+    "review": {
+      "status": "running",
+      "agent": "/root/review_qsa_slm_pitch_harness_20261027",
+      "model": "gpt-6-luna",
+      "reasoning_effort": "max",
+      "path": ".cache/strata-research/20261027/qsa-slm-pitch-harness-contract.review.json"
+    }
   }
 }
