@@ -1603,8 +1603,8 @@ spill descriptors did not predict a faster kernel. This is not a paired eight-u1
 comparison or a physical bandwidth/saturation measurement. Before another
 K-staging variation,obtain a source-grounded way to compare the actual selected
 NEO-JIT kernel images and their lowered scratch/message/shuffle/local operations.
-The existing component fixture and required admission inputs have that named
-imminent diagnostic consumer. The source-contract review confirms that
+The component fixture and admission inputs served that bounded diagnostic;
+the closed generation now retires after original source/recipe recovery. The source-contract review confirms that
 `zeModuleGetNativeBinary` needs a live module,but the installed headers have no
 `zeKernelGetModule`;neither a SYCL bundle nor the fixture's property-only
 `--admit` proves the dispatched module. The installed loader also exports
@@ -1645,10 +1645,16 @@ dynamic traffic or stall counts. Next map the original direct-K source loop to
 its native block before selecting a distinct lifetime/unroll change. No timing
 or model adoption follows. Closed host mocks
 and their one-use source recover from`6c7a3e05d` with frozen plan`21046228a`.
-Review retained captures and the rejected fixture at that comparison's closure.
+The27closed generation/capture/report files now retire (6783939bytes),including
+both component executables and the observer. Nine one-use source files restore
+from`77e0d370f`;original component/observer recipes restore from`3a3f22931` and
+`21046228a`. Only nine ASM/ZeInfo/LLVM files (2236696bytes) remain for Main's
+immediate direct-K block/lifetime audit,reviewed at that source-selection decision.
+The single initialized53MBactual-ID fixture remains for that next correctness
+decision;retire it there if no distinct source variant is selected.
 Production/decode and the selected6e40engine/twelve fixtures remain unchanged.
-The rejected generation and two consumed research/review files retire after
-recovering197original source inputs,exact recipe/generated sources and699actual
+The earlier eight-u16 generation and two consumed research/review files retire
+after recovering197original source inputs,exact recipe/generated sources and699actual
 compiler dependencies. The98files total11297649bytes;the selected engine,its
 twelve fixtures and the named53MBIDfixture remain. Full108samples recover from
 the linked Git revision;the compact decision remains in the current service result.
