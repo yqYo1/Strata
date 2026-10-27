@@ -455,6 +455,21 @@ def host_controls():
         '\n'.join(json.dumps(v) for v in rows),'boundary',0))
     boundary = copy.deepcopy(rows);boundary[-2]['cells'] = 262144
     parsed_output('\n'.join(json.dumps(v) for v in boundary),'boundary',0)
+    names=['_ZTSoriginal','_ZTScontrol','_ZTScandidate'];trace=[]
+    for arm,name in enumerate(names):
+        handle=hex(arm+1)
+        trace.append(f'<--- urKernelCreate( ({name}), .phKernel = value ({handle}) UR_RESULT_SUCCESS')
+        sizes={0:16896 if arm==2 else 16384,1:1024,3:64,4:64,5:64,13:256,15:2112,16:64}
+        local=' '.join(f'UR_EXP_KERNEL_ARG_TYPE_LOCAL, .index = {i}, .size = {n}' for i,n in sizes.items())
+        trace.append(f'<--- urEnqueueKernelLaunchWithArgsExp( .hKernel = {handle}, .workDim = 1, '
+            f'.pLocalWorkSize = 0x100 (128), .numArgs = 18, {local} UR_RESULT_SUCCESS')
+    bound=local_launches('\n'.join(trace),names,[0,1,2])
+    guards.require([bound[str(a)]['dynamic_local_bytes'] for a in range(3)]==[20032,20032,20544],
+        'traced local payload accounting differs')
+    reject('old_candidate_local_extent',lambda:local_launches(
+        '\n'.join(trace).replace('.size = 16896','.size = 16384'),names,[0,1,2]))
+    reject('wrong_score_argument_index',lambda:local_launches(
+        '\n'.join(trace).replace('.index = 15, .size = 2112','.index = 3, .size = 2112'),names,[0,1,2]))
     observations = [dict(process=p,output=dict(samples=[dict(queries=q,arm=a,
         batch_ns=(100 if a == 2 else 200)*1000000,repeats=1,attention_device_ns=(90 if a == 2 else 190)*1000000)
         for q in (512,6491) for a in range(3) for r in range(6)])) for p in range(3)]
@@ -471,7 +486,7 @@ def host_controls():
             v['batch_ns'] = 220000000
     b.guards.require(not performance_decision(bad,comparison)['advance_to_model'], 'failed calibration advanced')
     reject('duplicate_process',lambda:performance_decision([observations[0]]*3,comparison))
-    print(json.dumps(dict(passed=True,GPU_executed=False,controls=12,rejected=rejected,
+    print(json.dumps(dict(passed=True,GPU_executed=False,controls=15,rejected=rejected,
         positive='Pitch-only32matches original bits;all-group speed gain passes.',
         performance_failures_stopped=['one_slow_shape_process','control_original_calibration'])),flush=True)
 

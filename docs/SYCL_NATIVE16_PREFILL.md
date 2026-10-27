@@ -1758,9 +1758,9 @@ pins source`57fb85a80`,recipe`ecbdcc1e1`and the1606112-byte fixture
 SHA256`296966baa258ed5de3c18d6833892b713a2f624eaae747373fa73f56e70f8da1`.
 Its property-only mode shares this executable. A separate translated-ID case
 selects262141..262143in the last physical page;host inspection verifies those
-addresses,not GPU execution. The new controller's12host controls reject changed
+addresses,not GPU execution. The new controller's15host controls reject changed
 pitch output bits and a boundary result that did not exercise262144capacity,
-alongside the earlier timing/fault coverage checks. Native admission,smoke,
+and wrong local-argument indices/extents,alongside timing/output coverage checks. Native admission,smoke,
 boundary and speed remain unexecuted pending source-review reconciliation and
 separately committed plans. All five remaining old source-audit text/transaction
 files retire after regeneration of original source and recipe recovery;the
