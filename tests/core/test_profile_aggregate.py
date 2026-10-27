@@ -4,7 +4,7 @@ from pathlib import Path
 import unittest
 
 sys.path.insert(0,str(Path(__file__).resolve().parents[2]/'tools/sycl'))
-from profile_aggregate import device_summary, fused_moe_service
+from profile_aggregate import device_summary
 from engine_once import profile_command
 
 TABLE='''=== Device Timing Summary ===
@@ -67,61 +67,6 @@ class AggregateTests(unittest.TestCase):
                     barrier.replace('2, 20, 20.0, 10, 0, 20','2, 0, 0.0, 0, 0, 0'),
                     barrier.replace('2, 20, 20.0, 10, 0, 20','2, 21, 20.0, 10, 0, 21')):
             with self.subTest(text=bad),self.assertRaises(ValueError):device_summary(bad)
-
-
-class FusedFamilyTests(unittest.TestCase):
-    def fixture(self):
-        ns='strata::experimental::vllm_xe2_native16::'
-        prefix=ns+'(anonymous namespace)::'
-        hist=[[1,50],[2333,5],[2334,2],[8192,3]]
-        rows=[]
-        for cls,cols in [('GuSwiGLUKernel<('+ns+'Tile)1, false>',10),
-                         ('DownScatterKernel<('+ns+'Tile)1, false, ('+ns+'ScatterLayout)2>',20)]:
-            for group,calls in [(19,2),(64,3)]:
-                rows.append(dict(name=prefix+cls+f'[SIMD16 {{1; {cols}; {group}}} {{128; 1; 1}}]',
-                    calls=calls,total_ns=calls*100,average_ns=100,min_ns=90,max_ns=110))
-        return dict(rows=rows,total_device_ns=1000),hist
-
-    def test_full_fresh_shape_counts_and_projection_volume(self):
-        table,hist=self.fixture();out=fused_moe_service(table,hist)
-        for key,n,k in [('gu',1280,2560),('down',2560,640)]:
-            r=out['families'][key]
-            self.assertEqual(r['calls'],5)
-            self.assertEqual(r['logical_rows'],2*2334+3*8192)
-            self.assertEqual(r['projection_FLOPs'],2*(2*2334+3*8192)*n*k)
-            self.assertGreater(sum(x['padded_rows'] for x in r['shapes']),r['logical_rows'])
-        self.assertFalse(out['complete_model_coverage'])
-        self.assertFalse(out['hardware_saturation_qualified'])
-
-    def test_shared_dense_or_copy_rows_are_not_misclassified(self):
-        table,hist=self.fixture();expected=fused_moe_service(table,hist)
-        table['rows'].append(dict(name='DenseKernel<half, bf16>[SIMD16 {1; 10; 19} {128; 1; 1}]',
-            calls=999,total_ns=99900,min_ns=99,max_ns=101))
-        self.assertEqual(fused_moe_service(table,hist),expected)
-
-    def test_wrong_capture_tile_mapping_namespace_or_geometry_fails(self):
-        import copy
-        for old,new in [('false','true'),('Tile)1','Tile)0'),('ScatterLayout)2','ScatterLayout)0'),
-                        ('experimental::','other::'),('SIMD16','SIMD32'),('{128; 1; 1}','{64; 1; 1}'),
-                        ('{1; 10; 19}','{1; 20; 19}')]:
-            table,hist=self.fixture();table=copy.deepcopy(table)
-            table['rows']=[dict(x,name=x['name'].replace(old,new)) for x in table['rows']]
-            with self.subTest(old=old),self.assertRaises(ValueError):fused_moe_service(table,hist)
-
-    def test_loss_duplication_or_count_preserving_shape_swap_fails(self):
-        for variant in ('missing','duplicate','count','shape_swap'):
-            table,hist=self.fixture()
-            if variant=='missing':table['rows'].pop()
-            if variant=='duplicate':table['rows'].append(dict(table['rows'][0]))
-            if variant=='count':table['rows'][0]['calls']+=1
-            if variant=='shape_swap':table['rows'][0]['calls'],table['rows'][1]['calls']=3,2
-            with self.subTest(variant=variant),self.assertRaises(ValueError):fused_moe_service(table,hist)
-
-    def test_unordered_duplicate_boolean_or_out_of_range_source_bins_fail(self):
-        for hist in ([[2334,True]],[[True,2]],[[2334,0]],[[2334,1],[2334,2]],
-                     [[8192,1],[2334,2]],[[8193,1]],[[2333,1]]):
-            table,_=self.fixture()
-            with self.subTest(hist=hist),self.assertRaises(ValueError):fused_moe_service(table,hist)
 
 
 if __name__=='__main__':unittest.main()

@@ -1399,8 +1399,8 @@ its same-build fixtures remain intact.
 The [current service comparison](../bench/results/2026-10-15-pr6-recovery-audit/fused-moe-service-current.json)
 uses unchanged selected6e40,1256 decode slots and the indexed PTI aggregate,
 without another engine build. Source/controller96bd6c987 and frozen pland7fd4944d
-recover the cohort. The39260-token smoke and first117489-token baseline/profile
-pair close normally with no fresh fault. Both fused families reconcile all46
+recover the cohort. The39260-token smoke and all three117489-token baseline/profile
+pairs close normally with no fresh fault. Both fused families reconcile all46
 launch geometries against their fresh request-local successful counts and row
 histograms; older census totals are not substituted.
 
@@ -1408,18 +1408,29 @@ For the first long profile, each family has7485calls and49290450logical rows.
 GU/SwiGLU summed device service is4.390441542s and Down/scatter5.580851356s;
 projection FLOPs divided by the whole fused service are73.5757 and28.9409TFLOP/s.
 These are measured equivalent rates,not arithmetic utilization or hardware peaks.
-The first paired prompt clocks are130171.1ms without PTI and133805.3ms with it,
-a1.02791864ratio. Three fixed pairs are required for the prospective1.05median
-cap; the comparison remains open. Both arms retain validation,trace and coarse
+The three paired prompt-wall ratios are1.02791864,1.04033888 and1.04460423;
+their1.04033888median passes the prospective1.05cap. Individual baseline clocks
+are130171.1,129815.2,129963.0ms and profile clocks133805.3,135051.8,135759.9ms.
+Both arms retain validation,trace and coarse
 source counters,so this screens added PTI cost rather than clean production speed.
 
-This is exact-family whole-process service with conditional phase ownership,
-not a full-model critical path or saturation result. Lexical whole-process
-ranking also finds27.088675896s/360calls for `prefix_batch_impl` and
-8.542217373s/540calls for `recurrence_columns`; those broader families still
-need source/phase reconciliation before attribution. Selected Down already
+QSA closed-data analysis at1073485e1,using parser/source43f50485b,separates
+one pack and one attention launch per typed call. Both KV heads are inside
+each grid. All180calls in each family reconcile against12QSA layers and15
+chunks,with two attention and15pack geometries. Attention service is
+26.957134826,26.941729303,26.943576593s;pack service is0.131541070,
+0.131508993,0.131530757s. Repacking the whole prefix is not a useful priority.
+These are exact-family service and source/shape conservation,not an independent
+per-execution phase join,full-model critical path or hardware saturation result.
+Selected Down already
 uses direct FP32 FMA accumulator writes; removing output atomics is not a
 candidate. No inference change or speed gain is adopted from this diagnostic.
+Resolve the existing regular/native-exp2 compiler-lowering gap before choosing
+another math candidate;prior failed GRF/partial-cache/cell/SLM/sum outcomes remain.
+All33host controls pass. Closed one-use controllers and consumed raw/research
+output retire after compact evidence at82d48e818;the deletion manifest records
+584files/156377451bytes. The selected engine/twelve fixtures and other explicit
+numerical/provenance holds remain untouched.
 
 ## Attribution limits and outstanding gates
 
