@@ -61,6 +61,7 @@ def current(row):
     require(gen.committed(RESULT)[KEY] == compact(row),
         'commit exact reference plan/outcome')
     require(gen.benchmark_pins(row['source_commit']) == row['benchmark_pins'], 'benchmark/controller changed')
+    require(source_review() == row['source_contract'], 'reviewed scaling source contract changed')
     for path, sha in row['qualification_inputs'].items():
         require(digest(path) == sha, 'qualification input changed: ' + path)
     rt = gen.committed(runtime.RESULT); full = runtime.current(rt)
@@ -83,6 +84,7 @@ def prepare():
     prior = previous['historical_regression_audit']['near_dense_original_reference_v1']
     require(prior['stage'] == 'closed' and prior['passed'] and prior['ownership_closed'] and not prior['active'],
         'closed successful selected-engine reference required')
+    reviewed = source_review()
     revision = gen.git('rev-parse', 'HEAD').decode().strip()
     full, proof = runtime.selected.baseline()
     rt = gen.committed(runtime.RESULT); runtime.current(rt)
@@ -96,7 +98,7 @@ def prepare():
         '8f59b4aa8873209dff11c11e37bcda9529a1335b724a1afeea37bf6388975baf', 'expert profile changed')
     with socket.socket() as sock:
         sock.bind(('127.0.0.1', 0)); port = sock.getsockname()[1]
-    row = dict(stage='prepared', source_commit=revision, benchmark_pins=gen.benchmark_pins(revision),
+    row = dict(stage='prepared', source_commit=revision, benchmark_pins=gen.benchmark_pins(revision), source_contract=reviewed,
         qualification_inputs={str(p): digest(p) for p in (TEMPLATE, runtime.RESULT, P / 'data/expert-profile.bin')},
         environment_template=gen.committed(TEMPLATE)['environment_template'], configuration=cfg,
         binary=full['binary'], build_proof=proof, preload=preload,
@@ -302,6 +304,21 @@ def request_order():
     sys.path.insert(0,str(P/'tools'))
     from prefill_scaling_bench import MINIMA,order
     return [(max(MINIMA),-1),*((n,r) for r in range(3) for n in order(r))]
+
+
+def source_review():
+    scope=runtime.validation.committed(gen.A/'research-index.json',
+        ('prefill_length_scaling_admission_20261028',))
+    require(scope['status']=='reviewed_bounded_measurement_only' and scope['worker_closed'] is True and
+        scope['review']['status']=='completed' and scope['review']['model']=='gpt-6-luna' and
+        scope['review']['reasoning_effort']=='max' and scope['review']['execution_eligible'] is True,
+        'closed independent source audit and native curation required')
+    for name,sha in scope['source_snapshot'].items():
+        require(digest(P/name)==sha and
+            hashlib.sha256(gen.git('show',scope['source_commit']+':'+name)).hexdigest()==sha,
+            'reviewed length-characterization input changed: '+name)
+    return dict(source_commit=scope['source_commit'],review_sha256=scope['review']['sha256'],
+                source_snapshot=scope['source_snapshot'])
 
 
 def route_evidence(text, samples):
