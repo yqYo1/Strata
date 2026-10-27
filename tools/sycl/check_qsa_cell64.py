@@ -98,6 +98,24 @@ def admission(record, plan):
     return rt
 
 
+def loader_bindings(text, observed):
+    """Correlate glibc namespace/object evidence with the live mapped loader."""
+    path = observed['path']
+    bindings = re.findall(r"binding file (\S+) \[(\d+)\] to (\S+) \[(\d+)\]:[^\n]*"
+        r"symbol [`'](zeDeviceGetComputeProperties|zeKernelGetProperties)['`]", text)
+    guards.require(bindings and {r[4] for r in bindings} ==
+        {'zeDeviceGetComputeProperties', 'zeKernelGetProperties'}, 'missing loader symbol bindings')
+    for _, source_namespace, target, namespace, _ in bindings:
+        guards.require(source_namespace == namespace == '0' and
+            str(Path(target).resolve()) == path, 'property symbol resolved to another loader object')
+    objects = re.findall(r'file=(\S*libze_loader\.so[^\s]*) \[(\d+)\]', text)
+    guards.require(objects and all(namespace == '0' and
+        (not name.startswith('/') or str(Path(name).resolve()) == path)
+        for name, namespace in objects), 'multiple loader objects/namespaces')
+    return dict(observed, namespace=0, symbols=sorted({r[4] for r in bindings}),
+        evidence='Live executable map plus canonical namespace-0 glibc object/dlsym bindings;helper requires RTLD_NOLOAD. This is this child only,not a general interop guarantee.')
+
+
 def prepare():
     record = build.gen.committed(RESULT)
     guards.require('admission_plan' not in record and 'admission_check' not in record,
@@ -115,15 +133,16 @@ def prepare():
         LD_PRELOAD=rt['preload']['library']['path'],
         STRATA_UR_PROBE_EXPECTED_LOADER=rt['preload']['loader'],
         ZE_ENABLE_ALT_DRIVERS=next(p for p in rt['runtime_files'] if 'libze_intel_gpu' in p),
+        LD_DEBUG='files,bindings',
         UR_LOG_TRACING='level:info;flush:info;output:file,' + str(folder / 'api.trace'),
         UR_LOG_VALIDATION='level:warning;flush:warning;output:file,' + str(folder / 'validation.log'))
     plan = dict(stage='prepared', source_commit=revision, controller_inputs=inputs(revision),
         kernel_ids=names, contract=contract(), runtime_qualification=proof,
         runtime_files=rt['runtime_files'], preload=rt['preload'], environment=env,
         command=[record['binaries']['fixture']['path'], '--admit', *names, loader[0]],
-        budgets=dict(wall=120, cpu=300, rss_cap=4 << 30, text_cap=8 << 20,
+        budgets=dict(wall=120, cpu=300, rss_cap=4 << 30, text_cap=32 << 20,
                      file_cap=32 << 20, total_cap=128 << 20),
-        criteria='One property-only child;all3exact kernels pass WG128/SG16/18argument and per-group local budget checks. UR pre-main proof,quiet validation,no kernel enqueue in trace,closed owned process and no fresh faults. No numerical,occupancy,performance or model qualification.',
+        criteria='One property-only child;all3exact kernels pass WG128/SG16/18argument and conservative per-group local budget checks. Observe one mapped qualified loader and namespace-0 dlsym bindings for both property functions. UR pre-main proof,quiet validation,no kernel enqueue in trace,closed owned process and no fresh faults.4096Breserve is heuristic;actual bound local arguments/rounding remain separate. No numerical,occupancy,performance or model qualification.',
         retention='Retain compact queried descriptors and outcome;retire successful trace/normal logs after verification. Current generation remains for the bounded independent oracle comparison.')
     admission(record, plan)
     folder.mkdir(mode=0o700)
@@ -153,13 +172,44 @@ def run():
         build.write(folder / 'owned.json', dict(result, commands=owner.commands if owner else []))
     owner = supervision.Owner(folder / 'owned', persist)
     try:
+        observed = {}
+        def interact(io, entry):
+            guards.require(io.line(30) == 'admission_stage=before-runtime', 'unexpected property entry')
+            guards.require(io.line(60).startswith('admission_stage=runtime-ready device='),
+                           'property runtime not ready')
+            native = Path('/proc', str(io.proc.pid))
+            actual = dict(v.split(b'=', 1) for v in (native / 'environ').read_bytes().split(b'\0') if b'=' in v)
+            guards.require(all(actual.get(k.encode()) == v.encode() for k, v in plan['environment'].items()),
+                           'property environment changed')
+            mapped_text = (native / 'maps').read_text()
+            mapped = build.qualified_runtime.executable_mappings(mapped_text)
+            allowed = set(rt['runtime_files']) | {str(Path(plan['command'][0]).resolve())}
+            guards.require(mapped <= allowed, 'unknown property code mapping: ' + str(sorted(mapped - allowed)))
+            loader = plan['command'][-1]
+            adapter = plan['environment']['UR_ADAPTERS_FORCE_LOAD']
+            guards.require(loader in mapped and str(Path(adapter).resolve()) in mapped,
+                           'qualified UR adapter/Level Zero loader not mapped')
+            maps = [line.split(maxsplit=5) for line in mapped_text.splitlines()]
+            maps = [r for r in maps if len(r) == 6 and 'x' in r[1] and
+                    r[5].startswith('/') and str(Path(r[5]).resolve()) == loader]
+            guards.require(len(maps) == 1, 'one mapped executable loader object required')
+            row = maps[0]
+            observed.update(path=loader, sha256=rt['runtime_files'][loader], device=row[3],
+                inode=int(row[4]), executable_start=row[0].split('-')[0], file_offset=row[2])
+            while True:
+                line = io.line(60)
+                if line.startswith('admission_status='):
+                    guards.require(line.startswith('admission_status=PASS '), 'native property refusal')
+                    break
+            io.proc.stdin.close();io.exit(20)
         entry, out, err = owner.run('properties', plan['command'], plan['environment'], P,
-                                   **plan['budgets'])
+                                   interaction=interact, **plan['budgets'])
         stdout, stderr = out.read_text(), err.read_text()
         result['device_initialized'] = 'admission_stage=runtime-ready ' in stdout
         guards.require(supervision.closed(entry) and entry['exit_code'] == 0,
                        'property child failed or did not close')
         proof = validation.preload_evidence(stderr, entry['pid'])
+        result['loader_object'] = loader_bindings(stderr, observed)
         guards.require(proof['loader'] == rt['preload']['loader'], 'UR provider mismatch')
         body = stderr.split(f'strata UR validation: pid={entry["pid"]} phase=before-main', 1)[1]
         guards.require(not re.search('UR_RESULT_ERROR_|ZE_RESULT_ERROR_|terminate called|cleanup failed|strata UR validation failure:', body),

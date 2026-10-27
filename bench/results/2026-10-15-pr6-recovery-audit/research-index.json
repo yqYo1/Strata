@@ -13075,7 +13075,7 @@
   },
   "qsa_cell64_admission_contract_20261027": {
     "classification": "decision_support",
-    "status": "running",
+    "status": "reviewed_accept_conditional",
     "schedulable_now": false,
     "source_revision": "9b59e9b511b60941c4d5dd06fb3dae91a83bcac0",
     "proposal_sha256": {
@@ -13102,6 +13102,57 @@
     "task_id": "task_d5a212ccac93",
     "dispatch_id": "ctx_e1231016ee3c",
     "terminal": "term_abb9a1dc-128a-4e5b-b103-dfd761266f72",
-    "model_evidence": "Fresh /new current-worktree session displays GPT-6-Luna high;reuse launch input accepted and turn_started observed. Null reuse launch model fields are not model evidence."
+    "model_evidence": "Fresh /new current-worktree session displays GPT-6-Luna high;reuse launch input accepted and turn_started observed. Null reuse launch model fields are not model evidence.",
+    "worker_closed": true,
+    "worker_outcome": "succeeded",
+    "completed_at": "2026-10-27T08:08:44.310Z",
+    "resource_decision": "Released after accepted worker_done;external terminal retained,no process action. Delivery acknowledged.",
+    "report_identity": {
+      "bytes": 16038,
+      "sha256": "f5e3844454794697ee06c5d577aed464f7dfe65640605912c94d6c6524e4b5d1"
+    },
+    "review": {
+      "status": "completed",
+      "agent": "/root/review_qsa_cell64_admission_20261027",
+      "model": "gpt-6-luna",
+      "reasoning_effort": "max",
+      "path": ".cache/strata-research/20261027/qsa-cell64-admission-contract.review.json",
+      "bytes": 7565,
+      "sha256": "969e707e99c84c3ee8ef3e71aade59716ca0b76c40103800772105dbf96cc60d",
+      "outcome": "accept_conditional;query-only gate,no actual bound-local/numerical/model qualification"
+    },
+    "findings": [
+      "No definite exact-kernel/bundle/borrowed-handle lifetime bug found. Source/module pins match;native compilation is separate completed evidence.",
+      "Capture same qualified LevelZero loader object for helper and UR runtime. Main query controller adds live executable mapping and namespace-0 glibc dlsym/object evidence;this follow-up remains unexecuted.",
+      "Reported localMemSize/dynamic-local overlap and hardware rounding are not resolved by the query.4096Breserve remains heuristic;account actual accessor extents/alignment and successful128x1x1launch in a bounded trace before broader advancement."
+    ],
+    "next_scope": {
+      "schedulable_now": false,
+      "reason": "Wait for actual loader/property/bound-local trace evidence;do not repeat the same source-only audit."
+    },
+    "retrieval_sections": [
+      "### Native Level Zero calls and loader identity",
+      "## Local-memory accounting and the admission gap",
+      "### Minimal closeout before any candidate dispatch"
+    ],
+    "host_IR_controls": {
+      "source_commit": "5f1dac3b8",
+      "controller_inputs": 32,
+      "passed": true,
+      "exact_kernel_ids": 3,
+      "changed_IR_rejected": true,
+      "wrong_cell_template_rejected": true,
+      "GPU_executed": false
+    },
+    "main_sdk_correction": {
+      "issue": "Native curator inspected official2026.2 headers for three files rather than the supplied build SDK. Those three differ;LevelZero backend header is byte-identical. Preserve original review and this limitation.",
+      "actual_build_SDK_sha256": {
+        "sycl/kernel_bundle.hpp": "878180926500b2f25b6547268a3d86ffac3a46db66ee95835ce0aa6a73f662cf",
+        "sycl/kernel.hpp": "bbb3528fcee0e6b2d2538c5591fe6b0c36ab24b33e08bb7ee7cd04604b69a029",
+        "sycl/backend.hpp": "9cd1f90ee9e8847cad017c821a53a7ebf0b28590d0add44141b5e0234ce9b748",
+        "sycl/ext/oneapi/backend/level_zero.hpp": "30f86adea4a4be42714a6bef7b637b5a305afcb272cfcc31ad2547c6dd13de4b"
+      },
+      "verification": "Main inspected actual SDK backend.hpp125..132 and kernel_bundle.hpp645..668 plus LevelZero traits. Executable bundle/context-device-ID filter and get_native backend-checked handle conversion are supported. Successful source9b compilation independently proves the used overload/type compatibility;no runtime claim follows."
+    }
   }
 }
