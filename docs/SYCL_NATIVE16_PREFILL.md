@@ -1577,9 +1577,32 @@ zero kernel submissions,quiet validation and no fresh fault. All three kernels
 pass WG128/SG16/18argument checks and the conservative24164-byte local-memory
 budget against131072bytes per group. Reported spill descriptors are12480 for
 original/control and3008 for the candidate;their units are unestablished,and
-the rejected eight-u16 candidate had the same3008 value. Actual packed-u32
-kernel execution,numerics and speed remain pending;these properties do not
-qualify a model route or a throughput gain.
+the rejected eight-u16 candidate had the same3008 value. Actual-ID smoke and
+translated final262143-slot checks now pass,with every18432-word output exact
+against original32,immutable inputs,guards and observed20032-byte local payload.
+The independent candidate oracle passes its2smoke and11component cases,
+including masked/missing/aliased pages,nonfinite diagnostics,align2scratch and
+physical262144address bounds. These are component checks,not full-context model fill.
+
+Frozen plan`34179e461` then closes all3independent processes and108eligible
+timing samples. Original/private control calibration passes in every group,
+within0.259%. The packed-u32 candidate is **rejected on speed**:
+
+| Actual queries | Candidate/control wall ratios by process | Attention-service ratios by process |
+| --- | --- | --- |
+| 512 | 1.154549,1.157028,1.156964 | 1.163768,1.166450,1.166348 |
+| 6491 | 1.121215,1.123343,1.122226 | 1.121806,1.123962,1.122858 |
+
+All numerical,ownership,validation and fresh-fault checks pass,while all six
+predeclared speed groups fail. **No model trial or production adoption follows.**
+Fewer source-derived collective instances and lower reported spill descriptors
+did not predict a faster kernel. This is not a paired eight-u16-versus-packed-u32
+comparison or a physical bandwidth/saturation measurement. Before another
+K-staging variation,obtain a source-grounded way to compare the actual selected
+NEO-JIT kernel images and their lowered scratch/message/shuffle/local operations.
+The existing component fixture and required admission inputs have that named
+imminent diagnostic consumer;review retention when its readiness audit returns.
+Production/decode and the selected6e40engine/twelve fixtures remain unchanged.
 The rejected generation and two consumed research/review files retire after
 recovering197original source inputs,exact recipe/generated sources and699actual
 compiler dependencies. The98files total11297649bytes;the selected engine,its
@@ -1737,10 +1760,11 @@ qualification or complete phase attribution. The full aggregate includes
 startup,warmup and decode. See`selected_qsa_service_v2` in the
 [resource result](../bench/results/2026-10-15-pr6-recovery-audit/prefill-resources-current.json).
 
-The same attention kernels report SIMD16,128GRF registers and12480bytes in
-PTI's spill-memory field. The pinned collector reads this field from
-`ze_kernel_properties_t.spillMemSize`;it is compiler-allocated scratch,not
-measured physical memory traffic or a per-work-item byte count. Its32-byte
+The same attention kernels report SIMD16,128GRF registers and12480 in
+PTI's spill-memory field. The collector labels it as bytes,but the pinned API
+header does not establish the descriptor's units or per-work-item scope. It reads
+`ze_kernel_properties_t.spillMemSize`;this is not measured physical memory
+traffic. Its32-byte
 reported static SLM field is separate from the source's20036-byte dynamic
 local payload. Register pressure is now a concrete candidate mechanism;its
 critical-path cost and the cause of the historical1003-to975decline remain open.
@@ -1748,7 +1772,7 @@ The earlier same-math GRF-only comparison already removed12480-to0scratch
 and slowed2.5..9.5% across three shapes;do not repeat that unchanged candidate.
 The distinct eight-of-sixteen Q-fragment cache is now **rejected**. It preserves
 arithmetic/order and passes all three arms' oracle,guard,input-immutability and
-physical262144-address component cases. Compiler spill allocation falls12480to192B
+physical262144-address component cases. The reported spill descriptor falls12480to192
 at the same128GRF,while dynamic local storage rises20036to28224B. Nevertheless,
 three clean processes and162individual latencies show5.76..6.91% longer time
 across all three synthetic shapes;the geomean is1.06395846 versus original and
