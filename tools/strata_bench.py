@@ -408,9 +408,10 @@ def prefill_eligibility(raw, row, minimum, context):
         errors.append("actual prompt lacks verified context/output headroom")
     if type(read) is int and type(prompt) is int and read>prompt:
         errors.append("reported read count exceeds reported prompt count")
-    pp=timings.get("prompt_per_second")
-    if type(pp) not in (float,int) or not 0<pp<float("inf"):
-        errors.append("missing finite positive engine prompt_per_second")
+    for field in ('prompt_per_second', 'prompt_ms'):
+        value=timings.get(field)
+        if type(value) not in (float,int) or not 0<value<float('inf'):
+            errors.append('missing finite positive engine '+field)
     return {"eligible":not errors,"eligibility_errors":errors,"requested_min_tokens":minimum,
             "actual_prompt_tokens":prompt,"actual_read_tokens":read,"read_tokens":read,
             "actual_reused_tokens":caches[0] if caches else None,

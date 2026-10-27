@@ -109,6 +109,24 @@ class BenchmarkTest(unittest.TestCase):
         self.assertIsNone(result['linear_fit'])
         self.assertFalse(result['requests'][0]['eligible'])
 
+    def test_bad_prefill_clock_stops_scaling_before_the_next_request(self):
+        for invalid in (float('inf'),float('-inf'),float('nan'),None,True,0,-1,'1'):
+            with self.subTest(prompt_ms=invalid):
+                suite=bench.Suite('', '',131072,3,True,prefill_only=True,
+                    characterize_prefill=True,log=lambda _:None)
+                warmup=response(generated=24)
+                bad=response(generated=24)
+                bad['usage']['prompt_tokens']=bad['timings']['prompt_n']=120000
+                bad['timings']['prompt_ms']=invalid
+                with patch.object(bench,'chat',side_effect=[warmup,bad]) as chat:
+                    with self.assertRaisesRegex(bench.EngineRequestError,'prompt_ms'):
+                        suite.run()
+                self.assertEqual(chat.call_count,2)
+                cohort=suite.out['prefill_scaling']
+                self.assertFalse(cohort['first_long_request']['eligible'])
+                self.assertEqual(cohort['requests'],[])
+                self.assertFalse(cohort['complete'])
+
     def test_approximation_checks_held_out_lengths_and_exposes_curvature(self):
         samples = [dict(actual_read_tokens=n, prompt_ms=1000+.2*n+1e-6*n*n)
                    for n in (1024, 4096, 16384, 32768, 65536, 98304)]

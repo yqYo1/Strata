@@ -308,7 +308,7 @@ def request_order():
 
 def source_review():
     scope=runtime.validation.committed(gen.A/'research-index.json',
-        ('prefill_length_scaling_admission_v2_20261028',))
+        ('prefill_length_scaling_admission_v3_20261028',))
     require(scope['status']=='reviewed_bounded_measurement_only' and scope['worker_closed'] is True and
         scope['review']['status']=='completed' and scope['review']['model']=='gpt-6-luna' and
         scope['review']['reasoning_effort']=='max' and scope['review']['execution_eligible'] is True,
