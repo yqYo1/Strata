@@ -1564,7 +1564,7 @@
     }
   },
   "admission_plan": {
-    "stage": "prepared",
+    "stage": "failed",
     "source_commit": "3858be6b8fc06ab3848ec68c7c37f6333af74110",
     "controller_inputs": {
       "tools/sycl/check_qsa_k_staging.py": "bc5e9925e46e289f42cf89a73beb7acdae098e7ae3b3c5fe9ddac07a04b99036",
@@ -1813,5 +1813,41 @@
     },
     "criteria": "One property-only child;all3exact kernels pass WG128/SG16/18argument and conservative per-group local budget checks. Observe one mapped qualified loader and namespace-0 dlsym bindings for both property functions. UR pre-main proof,quiet validation,no kernel enqueue in trace,closed owned process and no fresh faults.4096Breserve is heuristic;actual bound local arguments/rounding remain separate. No numerical,occupancy,performance or model qualification.",
     "retention": "Retain compact queried descriptors and outcome;retire successful trace/normal logs after verification. Current generation remains for the bounded independent oracle comparison."
+  },
+  "admission_check": {
+    "passed": false,
+    "complete": false,
+    "active": false,
+    "ownership_closed": false,
+    "device_initialized": true,
+    "kernel_submissions": null,
+    "model_qualified": false,
+    "error": "RuntimeError('property child failed or did not close')",
+    "postchecks_complete": true,
+    "postcheck_errors": [],
+    "fresh_faults": [],
+    "boot_unchanged": true,
+    "driver_after": {
+      "pci": "/sys/bus/pci/devices/0000:05:00.0",
+      "driver": "xe",
+      "vendor": "0x8086",
+      "device": "0xe20c",
+      "kernel": "7.0.0-38-generic",
+      "devcoredump": false
+    },
+    "failure_diagnosis": {
+      "mechanism": "Main controller expected marketing name Intel Arc B570 Graphics;qualified runtime reports Intel(R) Arc(TM) B570 Graphics. Exact comparison rejected before property results. Failed/incomplete original status preserved.",
+      "actual_device_line": "admission_stage=runtime-ready device=Intel(R) Arc(TM) B570 Graphics",
+      "owner_error": "RuntimeError('property runtime selected another device')",
+      "elapsed_seconds": 0.33255132380872965,
+      "exit_code": 1,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "survivors": [],
+      "actual_PID_absent": true,
+      "trace_successful_kernel_enqueues": 0,
+      "plan_commit": "ddf769778",
+      "next": "Commit exact reported-name correction with host corruption control and a new property-only plan;no kernel execution until that closes."
+    }
   }
 }
