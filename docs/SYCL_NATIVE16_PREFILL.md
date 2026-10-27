@@ -431,8 +431,8 @@ attributing the bend or extrapolating. Requested expert H2D volumes remain
 about33.8..38.3GB across these lengths;they are software-requested bytes,not
 physical PCIe traffic or a saturation measurement. No inference implementation
 changed for this sweep;it neither restores the historical best nor qualifies
-physical262144 execution. Packed-u32 QSA execution/numerical/component gates
-remain the next separate candidate check.
+physical262144 execution. The later packed-u32 QSA component comparison passes
+numerical checks but rejects the candidate on speed;see the QSA decision below.
 
 This fresh within-process median is6.9390% above the earlier current-userspace
 cohort's911.7371,but remains2.7575% below the same binary's historical1002.6507.
@@ -1601,7 +1601,17 @@ comparison or a physical bandwidth/saturation measurement. Before another
 K-staging variation,obtain a source-grounded way to compare the actual selected
 NEO-JIT kernel images and their lowered scratch/message/shuffle/local operations.
 The existing component fixture and required admission inputs have that named
-imminent diagnostic consumer;review retention when its readiness audit returns.
+imminent diagnostic consumer. The source-contract review confirms that
+`zeModuleGetNativeBinary` needs a live module,but the installed headers have no
+`zeKernelGetModule`;neither a SYCL bundle nor the fixture's property-only
+`--admit` proves the dispatched module. The installed loader also exports
+`zeKernelGetBinaryExp`,which could retrieve GEN ISA from an actual kernel
+handle. Before building that observer,check whether the existing UR call
+subscriber can bind a successful launch to its native kernel and query it
+within its valid lifetime,without changing the selected launch path. Classic
+Level Zero launch callbacks alone may miss the adapter's with-arguments path.
+No extraction or new execution is qualified by these API declarations.
+Review retention when this bounded direct-binary contract returns.
 Production/decode and the selected6e40engine/twelve fixtures remain unchanged.
 The rejected generation and two consumed research/review files retire after
 recovering197original source inputs,exact recipe/generated sources and699actual

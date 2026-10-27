@@ -371,6 +371,50 @@
           "seconds": 0.544,
           "scope": "7 host-helper/caller cases plus21benchmark and15evidence regression tests. Mocked main probes verify configured LAN/IPv6/port override and explicitURL precedence;no HTTP/server/model/GPU execution or reachability qualification. Existing expected negative-test FAILED diagnostic is not a suite failure."
         }
+      },
+      {
+        "feature": "responses_codex_v027_compatibility",
+        "status": "required_delta_pending",
+        "meaning": "Accept additional_tools input items and merge their tools; optionally answer Codex thread-title turns without loading the engine; retain the prompt's tool definitions for the same conversation's compaction request; accept 0/-1 as uncapped output; correct tool-call item/final-turn event status handling.",
+        "existing_fork_baseline": "The fork already serves stateless POST /v1/responses, maps input/tool items, and assembles stream/nonstream events. Its pinned responses.py lacks the 5e8a additional_tools, thread-title, and prompt-tool compaction helpers; its request validator still rejects zero/negative max_output_tokens.",
+        "upstream_revision": "5e8a4cca7d690ac60ca37eb09e7d0e010099ad6d",
+        "source_pointers": [
+          "serve/responses.py::input_messages, request_tools, thread_title_events, prompt_tools, prompt_made, check_request, Assembler",
+          "serve/server.py:7693-7848 (_responses preparation, opt-in title/compaction handling, tool-aware format call)",
+          "serve/test_responses.py::test_additional_tools_input_items_are_accepted and compaction/thread-title coverage"
+        ],
+        "next_action": "Compare the response-module diff against the pinned fork, port the Codex compatibility slice only, then use upstream serve/test_responses.py cases plus fork stream/tool regressions. No engine, CUDA/HIP, or GPU work is needed.",
+        "dependencies": "Existing server request context and stream assembler only. Thread-title and compaction behavior are configuration-gated upstream; preserve the fork's own prompt-cache and cancellation semantics.",
+        "review_sha256": "b9581a40588dba381c3ab7b778b31c927b7e04feb0593830c2c9b1510ab2e6e2"
+      },
+      {
+        "feature": "structured_json_v027_compatibility",
+        "status": "required_delta_pending",
+        "meaning": "Accept root unions that only produce objects; optionally repair invalid LaTeX backslashes after strict parsing fails; extract the first JSON object/fenced JSON before validation; for Responses, allow tool turns and apply the schema to the final answer only. Invalid/incomplete final output remains an error.",
+        "existing_fork_baseline": "Fork already imports serve.structured and validates json_object/json_schema output, but requires type=object at the schema root, rejects structured Responses requests with tools, and has no opt-in LaTeX escape repair or extraction of a JSON object from a fenced/prefaced answer.",
+        "upstream_revision": "5e8a4cca7d690ac60ca37eb09e7d0e010099ad6d",
+        "source_pointers": [
+          "serve/structured.py::_only_objects, prepare_format(with_tools), repair_latex_escapes, extract_json, validated_json",
+          "serve/server.py:7803 (Responses passes with_tools=bool(tools)); serve/structured.py:258 (opt-in repair after strict parse failure)",
+          "serve/test_structured.py::test_root_unions_of_object_shapes_are_accepted, test_latex_escape_repair_is_opt_in_and_only_after_a_strict_failure, test_invalid_generation_is_an_error_and_never_streams_content"
+        ],
+        "next_action": "Port schema union validation, optional escape repair/extraction, and final-answer-after-tools semantics with the named tests; explicitly test that an invalid final answer is never streamed as successful JSON.",
+        "dependencies": "The new with_tools behavior is Responses-specific. Keep chat-route tool restrictions and streaming buffering/errors unchanged unless its own upstream delta requires change.",
+        "review_sha256": "b9581a40588dba381c3ab7b778b31c927b7e04feb0593830c2c9b1510ab2e6e2"
+      },
+      {
+        "feature": "download_v027_integrity",
+        "status": "required_delta_pending",
+        "meaning": "Use repository/ModelScope size and SHA-256 metadata; fall back to a one-byte ranged GET when HEAD omits length; verify resumed Content-Range start/total and reject excess or wrong bytes; verify completed files by hash and preserve resumable partials after bounded failures.",
+        "existing_fork_baseline": "setup.py::download uses HEAD Content-Length, resumes with Range, and rejects a final partial whose size differs from that header. The pinned fork has no file_pin/REPO_PINS, Content-Range validation, or range_total fallback.",
+        "upstream_revision": "5e8a4cca7d690ac60ca37eb09e7d0e010099ad6d",
+        "source_pointers": [
+          "setup.py::download, download_single, range_total, file_pin, verify_sha256",
+          "tools/test_setup_download_length.py::test_pin_size_recovers_clean_early_eof, test_exhausted_transfer_keeps_resumable_partial, test_transport_size_conflict_is_still_refused_before_transfer, test_fallback_size_does_not_bypass_hash_verification"
+        ],
+        "next_action": "Port only the bounded integrity/resume contract against the fork's downloader, adapting its fixture and pin sources; run the focused download-length tests and relevant setup regressions after committing inputs.",
+        "dependencies": "Preserve existing Hugging Face pin fallback, file:// mirror/test path, local model setup, and the fork's download mark behavior. Do not transplant upstream parallel downloader wholesale without separate provenance and scope review.",
+        "review_sha256": "b9581a40588dba381c3ab7b778b31c927b7e04feb0593830c2c9b1510ab2e6e2"
       }
     ],
     "port_order": [
@@ -435,10 +479,28 @@
   "current_comparison_build_sha256": "c83a1516ea30ce4f03b60dbd5940205cc15442fb17803451c2d8414ebe214139",
   "latest_interval_review": {
     "target": "5e8a4cca7d690ac60ca37eb09e7d0e010099ad6d",
-    "state": "Fetched;full feature ledger and unmodified hardware-tuned measurement pending. Prior reviews retain their original targets.",
-    "code_imported": false,
+    "state": "Two bounded non-inference scopes curated;270/534 interval paths named,264 outside these manifests. Host readiness port passed43 tests;other required deltas and vanilla measurement remain pending.",
+    "code_imported": true,
     "whole_function_ledger_complete": false,
-    "performance_evaluation_complete": false
+    "performance_evaluation_complete": false,
+    "review_sha256": "b9581a40588dba381c3ab7b778b31c927b7e04feb0593830c2c9b1510ab2e6e2",
+    "coverage": {
+      "interval_changed_paths": 534,
+      "review_manifest_union": 270,
+      "manifest_overlap": 0,
+      "paths_not_named_in_these_two_manifests": 264,
+      "correction": "The host report's 373-path remainder is relative to its 161-path scope alone; the two review scopes together name 270 unique paths, leaving 264 of the 534 interval paths outside these manifests. Neither report claims full coverage. Preserve the existing upstream-status.json pending ledger, including earlier target obligations and vanilla hardware-tuned measurements."
+    },
+    "accuracy_corrections": [
+      {
+        "topic": "Responses/structured baseline",
+        "finding": "Both already exist in this fork;port only the new compatibility deltas,not replacement modules."
+      },
+      {
+        "topic": "Arc native entrypoint",
+        "finding": "Configured SYCL target compiles root src/program/generate.cpp;BGEN/parallel-slot support remains unproven there."
+      }
+    ]
   },
   "source_worktree_retirement": {
     "stage": "deleted",

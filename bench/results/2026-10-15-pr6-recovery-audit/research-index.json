@@ -13892,8 +13892,8 @@
   },
   "qsa_native_image_contract_20261028": {
     "classification": "decision_support",
-    "status": "report_received_native_curation_running",
-    "schedulable_now": true,
+    "status": "curated_source_findings_no_execution_qualification",
+    "schedulable_now": false,
     "question": "Pin a bounded way to obtain and compare the exact actual NEO-JIT binary for the three source-bound QSA kernels after both K-staging candidates regress. Compare native module extraction,installed NEO/IGC dumps and offline compilation;do not treat offline output as executed ISA.",
     "prerequisites_evidence": {
       "closed_comparison": "19c17f2a5:bench/results/2026-10-15-pr6-recovery-audit/qsa-k-staging-current.json#actual_id_checks",
@@ -13939,7 +13939,7 @@
     "report": ".cache/strata-research/20261028/qsa-native-image-contract.md",
     "report_budget_bytes": 24576,
     "consumer": "Main imminent exact-kernel code-generation diagnostic before selecting another QSA optimization.",
-    "review_point": "Native Luna/max curation of the returned source/API contract,then before any diagnostic build/launch.",
+    "review_point": "Follow-up direct native-kernel binary/UR dispatch source contract before any diagnostic build or launch.",
     "run": "run_80ea8ebc9a8c",
     "coordinator": "term_6fbfd718-e3a2-46d8-ab62-73c36d2851a6",
     "worker_model": "gpt-6-luna",
@@ -13975,17 +13975,25 @@
       "archive": "captured"
     },
     "review": {
-      "status": "running",
+      "status": "completed",
       "model": "gpt-6-luna",
       "reasoning_effort": "max",
       "path": ".cache/strata-research/20261028/qsa-native-image-contract.review.json",
-      "agent": "/root/curate_qsa_native_image_contract_20261028"
+      "agent": "/root/curate_qsa_native_image_contract_20261028",
+      "sha256": "69f6aad589ad305547929c6cebe86569f73ed695d6d5b5d631e799ecf1213659",
+      "bytes": 9835
+    },
+    "findings": {
+      "module_api": "zeModuleGetNativeBinary accepts a live module;installed headers have no zeKernelGetModule. Bundle/property admission does not prove the dispatched module.",
+      "fixture": "Existing --admit submits no kernels;launch lambdas do not expose a live SYCL kernel object.",
+      "proposed_tracer": "Create-module/kernel-to-launch mapping requires actual adapter launch-API coverage and safe lifetime proof before execution.",
+      "limits": "DumpZEBin source/launch identity remains unproven;ocloc disassembly cannot prove historical execution. All108 failed speed samples remain unchanged."
     }
   },
   "upstream_v027_server_cli_20261028": {
     "classification": "decision_support",
-    "status": "report_received_native_curation_running",
-    "schedulable_now": true,
+    "status": "curated_source_findings_no_execution_qualification",
+    "schedulable_now": false,
     "question": "Map new non-inference functions and required fixes in Server/API,Terminal CLI and shared native protocol/flags over Niko4b9e..5e8a;reconcile with fork behavior without importing inference.",
     "source_commit": "9b58c7671f75c4dee391377d7bca5187f69b1f17",
     "upstream_before": "4b9e05a2a806a3fe24f7b2560d98626c37dade35",
@@ -14003,7 +14011,7 @@
     "report": ".cache/strata-research/20261028/upstream_v027_server_cli_20261028.md",
     "report_budget_bytes": 32768,
     "consumer": "Main required functional-port ledger and implementation selection for v0.2.7;does not qualify whole release or performance.",
-    "review_point": "Native Luna/max curation,then one selected Main functional port. Retire generated diff/manifests/spec and review transactions after extraction.",
+    "review_point": "Next selected functional port and coverage of the264 unlisted paths;whole release/performance remain unqualified.",
     "run": "run_80ea8ebc9a8c",
     "worker_model": "gpt-6-luna",
     "worker_closed": true,
@@ -14043,17 +14051,20 @@
       "archive": "captured"
     },
     "review": {
-      "status": "running",
+      "status": "completed",
       "model": "gpt-6-luna",
       "reasoning_effort": "max",
       "path": ".cache/strata-research/20261028/upstream-v027-features.review.json",
-      "agent": "/root/curate_upstream_v027_features_20261028"
-    }
+      "agent": "/root/curate_upstream_v027_features_20261028",
+      "sha256": "b9581a40588dba381c3ab7b778b31c927b7e04feb0593830c2c9b1510ab2e6e2",
+      "bytes": 13639
+    },
+    "findings_location": "bench/results/2026-10-15-pr6-recovery-audit/upstream-status.json:latest_interval_review,function_review.required_features"
   },
   "upstream_v027_host_setup_20261028": {
     "classification": "decision_support",
-    "status": "report_received_native_curation_running",
-    "schedulable_now": true,
+    "status": "curated_source_findings_no_execution_qualification",
+    "schedulable_now": false,
     "question": "Map new non-inference functions and required fixes in Host/desktop UI,Control integration,setup/install and update behavior over Niko4b9e..5e8a;reconcile with fork behavior without importing inference.",
     "source_commit": "9b58c7671f75c4dee391377d7bca5187f69b1f17",
     "upstream_before": "4b9e05a2a806a3fe24f7b2560d98626c37dade35",
@@ -14071,7 +14082,7 @@
     "report": ".cache/strata-research/20261028/upstream_v027_host_setup_20261028.md",
     "report_budget_bytes": 32768,
     "consumer": "Main required functional-port ledger and implementation selection for v0.2.7;does not qualify whole release or performance.",
-    "review_point": "Native Luna/max curation,then one selected Main functional port. Retire generated diff/manifests/spec and review transactions after extraction.",
+    "review_point": "Next selected functional port and coverage of the264 unlisted paths;whole release/performance remain unqualified.",
     "run": "run_80ea8ebc9a8c",
     "worker_model": "gpt-6-luna",
     "worker_closed": true,
@@ -14111,11 +14122,42 @@
       "archive": "captured"
     },
     "review": {
-      "status": "running",
+      "status": "completed",
       "model": "gpt-6-luna",
       "reasoning_effort": "max",
       "path": ".cache/strata-research/20261028/upstream-v027-features.review.json",
-      "agent": "/root/curate_upstream_v027_features_20261028"
-    }
+      "agent": "/root/curate_upstream_v027_features_20261028",
+      "sha256": "b9581a40588dba381c3ab7b778b31c927b7e04feb0593830c2c9b1510ab2e6e2",
+      "bytes": 13639
+    },
+    "findings_location": "bench/results/2026-10-15-pr6-recovery-audit/upstream-status.json:latest_interval_review,function_review.required_features"
+  },
+  "qsa_UR_native_binary_contract_20261028": {
+    "classification": "decision_support",
+    "status": "eligible_source_contract",
+    "schedulable_now": true,
+    "question": "Can a ur.call XPTI callback at successful actual urEnqueueKernelLaunchWithArgsExp/urEnqueueKernelLaunch obtain that UR kernel native handle and extract GEN ISA using zeKernelGetBinaryExp without changing selected fixture or execution path? Compare with module tracing;verify installed-provider semantics,lifetime,reentrancy,and disassembly path.",
+    "prerequisites_evidence": {
+      "prior_contract_review_sha256": "69f6aad589ad305547929c6cebe86569f73ed695d6d5b5d631e799ecf1213659",
+      "installed_headers": {
+        "/usr/include/level_zero/ze_api.h": "095a0eb442ae21946f29147c209f270b93dd0eb5b12a2d0c67e5f4138b533712",
+        "/usr/include/level_zero/ze_ddi.h": "c68e9bb4e725b1c8e75a63bcb6570cdfe3567269a3b2845eb4c9245839f47654"
+      },
+      "loader_exports_observed": [
+        "zeKernelGetBinaryExp",
+        "zeGetKernelExpProcAddrTable",
+        "zeKernelGetName",
+        "zeKernelGetProperties"
+      ],
+      "existing_own_subscriber": "bench/sycl/ur_call_subscriber.cpp",
+      "existing_fixture": "bench/sycl/qsa_k_staging.cpp",
+      "source_contract_only": true
+    },
+    "consumer": "Main imminent same-fixture actual dispatched-kernel codegen diagnostic before choosing a new QSA variation.",
+    "report": ".cache/strata-research/20261028/qsa-UR-native-binary-contract.md",
+    "report_budget_bytes": 24576,
+    "review_point": "Native Luna/max review of exact source/API findings;no launch eligibility implied.",
+    "worker_closed": false,
+    "retention": "Extract substantive compatibility/lifetime/disassembly facts to current diagnostic decision;retire dispatch and review paperwork after extraction."
   }
 }
