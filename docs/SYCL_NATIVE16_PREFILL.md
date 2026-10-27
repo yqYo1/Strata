@@ -1596,8 +1596,18 @@ file. The selected engine/twelve fixtures and shared runtime admission still pas
 
 For the next working-set control,do not pack the entire prefix before every
 timed attention call:that would change its cache starting state and obscure the
-copy-rotation question. A separate prepacked component entry needs its own source,
-operand-identity,guard/lifetime and compiler-resource checks;it is not yet built.
+copy-rotation question. A private prepacked component is now built from source
+`bb347ab57`,fixture SHA prefix`d2edc08c`. Its reversible overlay omits only pack;
+the original attention body,admission,FP32 state,barriers and local payload stay
+fixed. All691actual compiler inputs match;the three prospectively pinned SDK
+header changes are unconsumed. The selected original engine is not rebuilt.
+Three small traced/validated processes pass exact original/prepacked output,
+guard/input/replica checks and positive last-attention event clocks,with normal
+closure and no fresh fault. Use the pinned SDK's experimental last-event API
+only in this diagnostic. Runtime reports global-cache14155776bytes,local131072
+and maximum-allocation10132807680;these descriptors do not prove usable cache
+capacity,free VRAM,occupancy or bandwidth. Larger component/resource/repeated
+timing gates remain open;see[the current diagnostic](../bench/results/2026-10-15-pr6-recovery-audit/qsa-working-set-current.json).
 Compare full6491-query geometry separately from a cache-sized real-query subset.
 If repeating a small subset to fill the GPU,use identical repeated work in every
 copy-count arm and label it as a controlled counterfactual,not a production replay.
