@@ -815,7 +815,7 @@
     "retention": "Closed raw output and one-use source retirement;see qsa_exact_lists.retention. Only the explicit53MB K-staging input remains,not the all-layer capture."
   },
   "qsa_k_staging_preflight": {
-    "stage": "source_API_checked_build_pending",
+    "stage": "isolated_component_build_prepared",
     "GPU_executed": false,
     "model_adopted": false,
     "fixture": {
@@ -888,6 +888,16 @@
       "compiler_headers_verified": 11,
       "source_contract_reference": "research-index.json:qsa_subgroup_k_staging_source_contract_20261028.qualified_source_contract",
       "verdict": "Isolated K32 compile/lowering check justified after exact inputs/generated outputs/recipe committed. Main harness is not independently reviewed yet;no GPU run or inference candidate selected."
+    },
+    "component_reference": "qsa-k-staging-current.json",
+    "build_preflight": {
+      "source_commit": "e1e9f3bdecb0c76ae910ce1e8438a3f5e2baeb91",
+      "project_inputs": 197,
+      "compiler_assets": 8700,
+      "generated_outputs_match_host_proof": true,
+      "retained_original_13_artifacts_verified": true,
+      "compiler_execution": "Only -print-file-name during recipe preparation;no native compilation or GPU execution yet.",
+      "next_gate": "Commit exact prepared commands/environment/input hashes,then isolated build. Compiled identity/harness/numerical gates remain before GPU comparison."
     }
   }
 }
