@@ -1816,8 +1816,11 @@ limiting resource or an achievable 11% model speedup. No inference implementatio
 is adopted and no model speed trial follows from this diagnostic alone.
 The compact result retains all 96 samples; the source, generated inputs and ten
 build commands recover from the pinned Git recipe. The diagnostic generation,
-sole ID fixture and consumed reviews have ended their consumers and are queued
-for serialized retirement after the result is committed and pushed.
+sole ID fixture and consumed reviews have ended their consumers. After source,
+recipe and remote-history verification, 82 external files (61583388 bytes) and
+five unused prototype source files (84069 bytes) retire. Both closed research
+transaction rows also retire. The original engine and twelve fixtures still
+pass shared admission; separate legacy provenance holds remain open.
 
 After this serialized diagnostic closes, the next model attribution
 step is one bounded 117489-token selected 6e40 route capture, reconciling planned
