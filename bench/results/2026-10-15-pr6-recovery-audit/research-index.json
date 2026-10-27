@@ -13285,18 +13285,21 @@
   },
   "qsa_slm_pitch_contract_20261027": {
     "classification": "decision_support",
-    "status": "reviewed_source_contract_pinned_native_unqualified",
+    "status": "closed_V264_rejected",
     "schedulable_now": false,
-    "source_revision": "9b59e9b511b60941c4d5dd06fb3dae91a83bcac0",
-    "report": ".cache/strata-research/20261027/qsa-slm-pitch-contract.md",
-    "report_budget_bytes": 16384,
-    "worker_model": "gpt-6-luna",
-    "question": "Using exact current32/64source+LLVM and configured SDK,compare padded K-plane,V-row and probability SLM pitches with power-of-two layouts. Establish legality,alignment,stride constraints,lifetime/index/size/collective invariants and a small discriminating pitch-only candidate. Treat bank-conflict/residency explanations as hypotheses unless actual Xe2/native evidence proves them;no code or GPU execution.",
-    "prerequisite_evidence": [
-      "Actual-ID64comparison closes108eligible samples with no fault;all six groups are55.9..60.6percent slower in wall and56.1..64.3percent slower in attention service.32control stays within0.26percent of original.64is rejected;no model trial.",
-      "Ksource layout is Dim-by-Cells,probability16-by-Cells,VCells-by-Dim;current pitches32or64 and256. Pitch-only padding is a distinct question from rejected coalesced transpose,tree sum,GRF-only and cell granularity.",
-      "The exact source/kernel/SDK identities below are available read-only. Compiler matrices remain8x16BF16,SG16/WG128;static local32B,dynamic20032/39744B,per-group queried max131072B. These do not establish native bank behavior or occupancy."
-    ],
+    "archive": {
+      "commit": "cfabc1ee2",
+      "path": "bench/results/2026-10-15-pr6-recovery-audit/research-index.json",
+      "key": "qsa_slm_pitch_contract_20261027"
+    },
+    "decision_result": "bench/results/2026-10-15-pr6-recovery-audit/qsa-slm-pitch-current.json",
+    "compiler": {
+      "path": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin/clang++",
+      "sha256": "1290881b4e12a5e002e5b0de0787f85328ee5fe19f253a54be1cdd97dc2f26eb",
+      "reported_version": "DPC++7.1.0pre-release;clang22.1.0",
+      "intel_llvm_revision": "504366f4b82ff00bbac7b0c956635eed8bc599d8",
+      "directory_name_is_version_evidence": false
+    },
     "actual_SDK_matrix_headers": {
       "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/include/sycl/ext/oneapi/matrix/query-types.hpp": "18da200cd2704bb998f8a2f61fc423f6a5ecfcfe2d5b7a44e067c5074a8aeaa2",
       "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/include/sycl/ext/oneapi/matrix/matrix-unified-utils.hpp": "c4ec45d987a054e2e5ee7d51f2fbbabf2d4a50bff0b7d4124d5e01a1162f8e8a",
@@ -13305,109 +13308,6 @@
       "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/include/sycl/ext/oneapi/matrix/matrix-intel.hpp": "524efda8771175ee9c271fc78fab547a4bf6e845ad471ac9d501375ff5834ccb",
       "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/include/sycl/ext/oneapi/matrix/utils.hpp": "4f02f0f570cf645f5abf46e3f64330102f4e2ae54b30a6c7f847d3131531934e",
       "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/include/sycl/ext/oneapi/matrix/static-query-use.hpp": "a48cd577e4938f67dfbee0046f2fd9034432f1528f7f6e685f54433ff980a8f1"
-    },
-    "compiler": {
-      "path": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin/clang++",
-      "sha256": "1290881b4e12a5e002e5b0de0787f85328ee5fe19f253a54be1cdd97dc2f26eb",
-      "reported_version": "DPC++7.1.0pre-release;clang22.1.0",
-      "intel_llvm_revision": "504366f4b82ff00bbac7b0c956635eed8bc599d8",
-      "directory_name_is_version_evidence": false
-    },
-    "prior_scopes": [
-      "qsa_cell64_source_contract_20261027",
-      "qsa_cell64_admission_contract_20261027",
-      "qsa_cell_tile_geometry_contract_20261027",
-      "intel_sycl_sparse_prefetch_staging_methods_20261027"
-    ],
-    "ownership": "Report only;read source/IR/SDK and authoritative primary docs. No code edits,Git commands,tests,builds,GPU/runtime calls,process inspection or delegation. Main owns implementation/testing and will preserve four source/IRassets while audit is live.",
-    "consumer": "Main selects or rejects a concrete pitch-only original32kernel proposal;do not promise a speed gain or attribute the64regression without evidence.",
-    "retention": "Current pitch report/review support immediate new build/admission. Old32/64source/IRassets and closed research launch transaction are retired;restore rejected code/recipe from4f2fffe03. Single selected-IDfixture remains for the imminent pitch comparison.",
-    "run_id": "run_3072480b0529",
-    "task_id": "task_c99d90c62354",
-    "dispatch_id": "ctx_3501dc36fe9b",
-    "terminal": "term_abb9a1dc-128a-4e5b-b103-dfd761266f72",
-    "model_evidence": "Fresh/new current-worktree TUI GPT-6-Luna high;ready dispatch observes turn_started. Reuse model fields null are not treated as provider proof.",
-    "main_source_proposal": {
-      "path": "tools/sycl/qsa_slm_pitch_sources.py",
-      "source_commit": "0571dbab3",
-      "sha256": "e4208f4e2aa9d0334593c8fa0d9a8ff87b594cf76665f1eb75ce34c376966f86",
-      "origin": "OwnMIT6e40original with independent pitch-only overlay;no XeStrata source.",
-      "example_BF16_pitches": {
-        "K": 40,
-        "V": 264,
-        "probability": 40
-      },
-      "host_controls": {
-        "passed": true,
-        "layout_cases": 27,
-        "invalid_pitches_rejected": 6,
-        "control_source_invariant": true,
-        "writer_reader_indices_unique_equal_and_in_bounds": true,
-        "active_local_bytes": [
-          20032,
-          24384
-        ]
-      },
-      "compiler_executed": false,
-      "GPU_executed": false,
-      "SDK_legality_qualified": false,
-      "numerical_qualified": false,
-      "review_point": "Use source audit+native curation to decide legal pitches before any prepared compiler/native plan. No production/decode change.",
-      "selected_first_source_case": {
-        "BF16_pitches": {
-          "K": 32,
-          "V": 264,
-          "probability": 32
-        },
-        "mechanism_hypothesis": "Change only local V row stride at fixed32cells/cachedQ,global reads,arithmetic order and barriers. It tests a layout effect,not a demonstrated bank-conflict or hardware-saturation cause.",
-        "active_local_bytes": 20544,
-        "source_local_bytes": 20548,
-        "source_local_increase_bytes": 512,
-        "generated_inputs": [
-          {
-            "name": "pitch_control.cpp",
-            "bytes": 25616,
-            "sha256": "68ec6f7b100fe95d3f5ed12f88f0985c3548cf81397b3334ad52dd3e9577e879"
-          },
-          {
-            "name": "pitch_candidate.cpp",
-            "bytes": 25618,
-            "sha256": "b9365fc6411c30404c400eb87866d0e7fbc547fde6472f1b6cb4da7b0f80cf8a"
-          },
-          {
-            "name": "qsa-slm-pitch.hpp",
-            "bytes": 928,
-            "sha256": "a24b95e8174ea64434e4b793a81b607b62e1e6df44361aa3167cbed8b0f50228"
-          }
-        ],
-        "compiler_executed": false,
-        "GPU_executed": false,
-        "native_admission_qualified": false,
-        "review_point": "Prepare committed compiler/native admission and comparison plan before any build. Gate a traced smoke and own-recurrence checks before repeated actual-ID timings;only an eligible win permits a model trial."
-      }
-    },
-    "worker_closed": true,
-    "worker_outcome": "succeeded",
-    "resource_decision": "Completed/succeeded worker;release retains external terminal with processActionnone;worker_done delivery acknowledged.",
-    "report_identity": {
-      "bytes": 12344,
-      "sha256": "36cfc73d5536002aebe8b52d621aa6a03b2f3120c13321876eb0f2a859dd3a76"
-    },
-    "review": {
-      "status": "completed",
-      "agent": "/root/review_qsa_slm_pitch_20261027",
-      "model": "gpt-6-luna",
-      "reasoning_effort": "max",
-      "path": ".cache/strata-research/20261027/qsa-slm-pitch-contract.review.json",
-      "bytes": 8996,
-      "sha256": "078a64e5695758af5a1e109e1601ebd1aac697ddc5ffacd0bf20133576142c21",
-      "outcome": "accept_conditional_with_corrections",
-      "main_disposition": [
-        "Qarena is4096 BF16elements/8192B;shared K/V arena is a maximum,not a sum. Generator uses max(Kpitch*256,32*Vpitch,4096).",
-        "Generator conservatively requires multiples of8 BF16elements;27host cases do not cover36/260. Keep this restriction for the selected32/264/32source-only proposal.",
-        "Active payload excludes the retained unused4B Qaccessor. Source allocation includes it;actual optimized ABI and native resource admission remain unqualified.",
-        "Pinned actual compiler revision and all seven installed matrix headers to matching Intel LLVM source. Version-matched specification resolves the prior mutable-spec gap;native execution/model qualification remain open."
-      ]
     },
     "version_matched_contract": {
       "checked_UTC": "2026-10-27T10:23:36Z",
@@ -13428,78 +13328,80 @@
       "source_check": "BF16 strides32/264/32 use64/528/64bytes;MatrixTile alignas(4),values offset0;selected Q/K/P/V matrix-load offsets remain multiples16BF16elements. Logical writers/readers stay within existing27host cases.",
       "limits": "Headers and specification establish the source API contract,not actual selected hardware combinations,compiler lowering,numerical safety,bank behavior,residency,saturation or speed. Native admission/smoke and frozen comparison remain required."
     },
-    "next_scope": {
-      "schedulable_now": false,
-      "reason": "No duplicate general source survey. Reopen only for new concrete compiler/native/eligible timing evidence."
-    },
-    "source_audit_retirement": {
-      "files": 5,
-      "bytes": 202797,
+    "essential_corrections": [
+      "Shared Qarena4096BF16elements/8192B takes max with K/V arenas,not additive allocation.",
+      "SelectedK32/V264/P32active20544/source20548;unusedQaccessor4B is not in active ABI. Default40/264/40active24384is a different example.",
+      "Conservative8elementpitch host controls do not qualify36/260. Native property/trace/numerical/speed gates now close;V264is rejected."
+    ],
+    "report_and_review_payload_retired": true,
+    "audit_retirement": {
+      "files": 4,
+      "bytes": 36820,
       "manifest": {
-        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-cell64-source-audit-retirement-20261027.jsonl",
-        "sha256": "7a314955f802c6769a02409c330c46aeba0bbd60a32f5bc1ee7ab736b269e540"
-      },
-      "generated_sources_recovered_from": "4f2fffe03:tools/sycl/qsa_cell64_sources.py",
-      "original_recipe_recovered": true,
-      "source_IR_bytes": 200572,
-      "remaining_old_generation_files": 0
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-slm-pitch-audit-retirement-20261027.jsonl",
+        "sha256": "245db472c43b11442d0b499a2b1d6ef5fd68c87a3cd914da7ffbc34e570c3a95"
+      }
     }
   },
   "qsa_slm_pitch_harness_contract_20261027": {
     "classification": "decision_support",
-    "status": "reviewed_accept_conditional",
+    "status": "closed_V264_rejected",
     "schedulable_now": false,
-    "source_commit": "39044cc68",
-    "worker_model": "gpt-6-luna",
-    "report": ".cache/strata-research/20261027/qsa-slm-pitch-harness-contract.md",
-    "report_budget_bytes": 16384,
-    "question": "Audit the new pitch-only actual-ID/boundary harness,compiled-property helper and source-bound build/controller contract as a complete path. Compare old audited4f2harness/API contract;check translated final262143ID/page,scalar32/bitwise criteria,guards/USM/waits/cleanup,event capture and property-only no-submit mode. Identify concrete bugs or missing native gates,not another pitch/bank survey.",
-    "prerequisites": [
-      "Previous actual-ID64candidate closed/rejected with108samples;its oldharness/API audits are curated.",
-      "New independently authored source is committed39044cc68,with explicit32/264/32pitch at unchangedcachedQ.",
-      "Exact configured SDK/spec revision504366f4 is pinned in qsa_slm_pitch_contract_20261027. New CLIadmission shares the timed executable;new boundary case translates actualfirst3IDs to final physical slots."
-    ],
-    "source_snapshot": {
-      "tools/sycl/build_qsa_slm_pitch.py": "3981ec22f6425c49c492f2f3661a8302a4f108b3ae9a926a988d7a655cb91e20",
-      "bench/sycl/qsa_slm_pitch.cpp": "cd612d99bfd6a662b6a7553f5bd57e04cce1730ddf47bd19bc3ff0534a717cb8",
-      "bench/sycl/qsa_slm_pitch_admission.hpp": "c901da0a187106ccbea53543f2bdc10f34b6cf658f5b1242a59062569b4ee181",
-      "tools/sycl/qsa_slm_pitch_sources.py": "e4208f4e2aa9d0334593c8fa0d9a8ff87b594cf76665f1eb75ce34c376966f86"
+    "archive": {
+      "commit": "cfabc1ee2",
+      "path": "bench/results/2026-10-15-pr6-recovery-audit/research-index.json",
+      "key": "qsa_slm_pitch_harness_contract_20261027"
     },
-    "prior_scopes": [
-      "qsa_slm_pitch_contract_20261027",
-      "qsa_cell64_actual_id_benchmark_contract_20261027",
-      "qsa_cell64_execution_controller_contract_20261027",
-      "qsa_cell64_admission_contract_20261027"
+    "native_source_commit": "39044cc68",
+    "controller_source_commit": "5a8b09c08",
+    "decision_result": "bench/results/2026-10-15-pr6-recovery-audit/qsa-slm-pitch-current.json",
+    "essential_findings": [
+      "Translated selected IDs actually reach262141..262143;current-token endpoint is inclusive. Component boundary is not full-model context fill.",
+      "Same32cellarithmetic/order makes exact output bits a preservation criterion for this pitch-only case,not a universal LLMcriterion.",
+      "Property pass is query-only;traced argument extents and dispatch plus numerical/timing gates were required separately and now pass. Speed gate fails in every process/shape."
     ],
-    "ownership": "Report only. Read these immutable files,prior compact corrections and exact SDK/spec as needed. No Git commands,edits except named report,tests,builds,GPU/runtime/process inspection,profiling or delegation. Main compiles the frozen snapshot in parallel;Main alone owns tests.",
-    "consumer": "Main closes source/harness gaps before committing any GPU admission/smoke/performance plan. Native Luna/max reviews the report;Main reads only its operational digest.",
-    "retention": "Keep substantive findings through this imminent comparison;retire transaction files and obsolete audit material at closure.",
-    "run_id": "run_3072480b0529",
-    "task_id": "task_5aacf5c1b150",
-    "dispatch_id": "ctx_3269b14d19d1",
-    "terminal": "term_abb9a1dc-128a-4e5b-b103-dfd761266f72",
-    "model_evidence": "Fresh/new,current-worktree selected;terminal preview GPT-6-Luna high before dispatch. Prompt turn_started observed;null reuse launch model fields are not provider evidence.",
-    "worker_closed": true,
-    "worker_outcome": "succeeded",
-    "resource_decision": "Orca worker completed/succeeded,released external terminal with processActionnone,and worker_done delivery acknowledged.",
-    "report_identity": {
-      "bytes": 10617,
-      "sha256": "7beb93112cc141a7dceba4c00fa19bed31786ccbf8097b8f6ddc375072855380"
-    },
-    "review": {
-      "status": "completed",
-      "agent": "/root/review_qsa_slm_pitch_harness_20261027",
+    "curation": {
       "model": "gpt-6-luna",
       "reasoning_effort": "max",
-      "path": ".cache/strata-research/20261027/qsa-slm-pitch-harness-contract.review.json",
-      "bytes": 4863,
-      "sha256": "8ba4241a02a0b0d22ab460dce27067e7c1c4316e6a847fcc5e728e93358fea4c",
       "outcome": "accept_with_nonblocking_clarification",
-      "main_disposition": "Selected32/264/32active20544/source20548are already pinned separately. The helper no-argument host-controls summary20032/24384is control versus default40/264/40,not the selected first case. No new native code correction is required. Property,smoke,boundary and actual-IDtiming remain unqualified."
+      "report_sha256": "7beb93112cc141a7dceba4c00fa19bed31786ccbf8097b8f6ddc375072855380",
+      "review_sha256": "8ba4241a02a0b0d22ab460dce27067e7c1c4316e6a847fcc5e728e93358fea4c"
     },
-    "next_scope": {
-      "schedulable_now": false,
-      "reason": "Do not repeat source audit before concrete property/smoke/boundary/timing gates close."
-    }
+    "report_and_review_payload_retired": true
+  },
+  "qsa_counter_free_resource_discriminator_20261027": {
+    "classification": "decision_support",
+    "status": "eligible_existing_reference_gap",
+    "schedulable_now": true,
+    "report": ".cache/strata-research/20261027/qsa-counter-free-resource-discriminator.md",
+    "report_budget_bytes": 16384,
+    "worker_model": "gpt-6-luna",
+    "source_revision": "6e40afc1beddd059ee518617f6c1efce1da14aca",
+    "source_prefix_sha256": "4f9f815c9baae709f919f6d5ad1af04677c10d8c13c7597b3857cf81567ae192",
+    "question": "For exact selected32cell/cachedQ ordered-exp QSA on B570,find a finite counter-free source/shape-matched experiment that discriminates K/V memory/cache sensitivity from BF16matrix/instruction or ordered-softmax/barrier service when local Xe metric-query creation is denied. Compare verifiable controlled perturbations and confounds;define the smallest defensible Main plan or exact extra capability required. Address deliberate intra-launch address-locality controls,such as physical-page aliasing with repeated-value inputs,only if the real packed-layout/caller contract permits them. No speculative optimization rewrite or repeated generic counter/roofline survey.",
+    "prerequisite_evidence": [
+      "V264pitch closes3smoke+3final-address+3perf processes,no faults/exact outputs,108eligible timings and all6groups slower;rejected atcfabc1ee2.",
+      "180inter-call KVrotation samples were flat;this does not exclude intra-launch effects. GRF-only/partialQ,barrier,sum,cell64 and Vpitch alternatives are already rejected.",
+      "Existing geometry/counter references were retrieved by native Luna/max for this concrete question. They do not supply a defensible counter-free causal discriminator;the bounded missing question is recorded in .cache/strata-research/20261027/qsa-next-resource-discriminator.review.json.",
+      "Metric-query ioctl returnedEACCES;permissions are unchanged. No privileged/capability retry is authorized."
+    ],
+    "prior_scopes": [
+      "current_qsa_prefix_work_geometry_audit_20261023",
+      "b570_qsa_resource_counter_capability_methods_20261023",
+      "qsa_cell_tile_geometry_contract_20261027",
+      "qsa_slm_pitch_contract_20261027",
+      "qsa_slm_pitch_harness_contract_20261027"
+    ],
+    "reference_gap_curation": {
+      "path": ".cache/strata-research/20261027/qsa-next-resource-discriminator.review.json",
+      "bytes": 11341,
+      "sha256": "21cefb1ce99fd17f2063d4d1b592d7590873d2feedd1ec84d45a8e0e0dc24ca6",
+      "model": "gpt-6-luna",
+      "reasoning_effort": "max",
+      "finding": "Existing geometry controls need compatible counters;without them they are relative service references. PTIservice census alone is not hardware attribution."
+    },
+    "ownership": "Report-only own named file. Read current AGENTS/retention,index,exact selected source and relevant primary docs/reports. No product edits,Git commands,tests/builds,GPU/runtime/profiling/process inspection,privileged changes or delegation. Main continues artifact closure/source preparation in parallel.",
+    "consumer": "Main selects one bounded attribution/calibration plan before another kernel optimization. Native Luna/max reviews the report;Main reads short operational digest only.",
+    "retention": "Retain substantive nonduplicated methods and essential corrections if reusable;retire completed transaction/review scaffolds after the decision."
   }
 }

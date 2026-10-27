@@ -1725,47 +1725,54 @@ explain the55.9..64.3percent cost increase by themselves;physical traffic,SLM
 bank behavior,register effects and occupancy remain unmeasured. This is not a
 PCIe/GDDR saturation claim or an explanation of the historical1003-to975decline.
 
-Independent Orca Luna research and native Luna/max curation close the source,
-framework,property API,harness and execution-controller audits. Main preserves
-the corrected inclusive current-token endpoint and the exact configured SDK
-identities. The next bounded source question is whether independently padded
-K,V and probability SLM pitches are legal and useful to test on the original32
-route. It must distinguish documented matrix-layout constraints from hypothetical
-bank-conflict explanations. The own-source
-[`pitch generator`](../tools/sycl/qsa_slm_pitch_sources.py) at`0571dbab3`keeps
-32cells and proposes K/V/probability pitches40/264/40. Host enumeration of27
-layouts proves unique,in-bounds writer/reader addresses and an invariant control;
-six invalid pitches are refused. This is not SDKlegality,compilation or GPU
-numerical/performance evidence. Selected prefill/decode and the original engine
-remain unchanged. Full physical-context fill,model quality,handoff/RESTORE and decode
-preservation remain separate qualification.
+The next pitch-only QSA candidate is also **rejected on speed**. It keeps
+32cells,cachedQ,global loads,FP32 arithmetic/online order and barriers fixed,
+changing only the V local row stride256to264. Source`39044cc68`,build-source
+`57fb85a80`,recipe`ecbdcc1e1`and frozen performance plan`2342c9dcc`recover from
+`cfabc1ee2`. See the [compact108-sample comparison](../bench/results/2026-10-15-pr6-recovery-audit/qsa-slm-pitch-current.json).
 
-The completed Luna/max review corrects Qarena to4096BF16elements/8192bytes
-and distinguishes active payload from the retained4-byte unused Qaccessor.
-The actual compiler reports7.1.0pre-release/clang22.1.0 at Intel LLVM
+One property-only child,three traced actual-IDsmoke,three physical final-address
+components and three timing processes all pass execution,numerical,guard,
+input/provider/clock and fresh-fault checks. Every pitch output matches original32
+bits;all scalar spot errors are zero. The boundary case actually selects
+262141..262143in the last physical page. It does not fill the whole context
+through the model or qualify handoff/RESTORE,model quality or decode preservation.
+
+| Actual queries | Candidate/control wall ratios by process | Attention-service ratios by process |
+| --- | --- | --- |
+| 512 | 1.002227,1.004882,1.003071 | 1.002581,1.005172,1.003292 |
+| 6491 | 1.004809,1.002584,1.003273 | 1.004835,1.002602,1.002874 |
+
+Private32calibration stays within0.138percent of original in all six groups.
+All108batches pass the100ms/timer-floor gates;the minimum is496956766ns,and
+2448direct attention intervals pass ordering/clock checks. The candidate is
+0.223..0.488percent slower in wrapper wall and0.258..0.517percent slower in GPU
+attention service. It fails the prospective1percent-gain gate in every group;
+no model trial or adoption follows. Selected prefill/decode and the original
+engine remain unchanged.
+
+Actual traced dynamic local payload is20032/20032/20544bytes;source allocation
+also retains an unused4-byte Qaccessor. All three queried kernels report32static
+local bytes and12480in the compiler spill field. The extra512local bytes and
+unchanged descriptors do not establish physical traffic,bank conflicts or
+occupancy. The actual compiler reports7.1.0pre-release/clang22.1.0 at Intel LLVM
 `504366f4b82ff00bbac7b0c956635eed8bc599d8`;all seven installed matrix headers
-match that revision. Its matrix specification explicitly covers BMG and requires
-8-byte-multiple strides and4-byte-aligned matrix pointers. The source proposal
-satisfies those constraints;native admission and execution remain unqualified.
-Main chooses a first source case K32/V264/P32,changing only V's local row stride
-and adding512bytes:20544active bytes,20548source bytes. The generator's stricter
-8-element pitch rule remains;its27host cases do not qualify36/260pitches.
-This is a layout hypothesis,not a proven bank-conflict or speed explanation.
-The source-bound build now completes12frozen compile/link/LLVM commands,with
-195project inputs,8700compiler assets and697actual compiled dependencies checked.
-The [current component record](../bench/results/2026-10-15-pr6-recovery-audit/qsa-slm-pitch-current.json)
-pins source`57fb85a80`,recipe`ecbdcc1e1`and the1606112-byte fixture
-SHA256`296966baa258ed5de3c18d6833892b713a2f624eaae747373fa73f56e70f8da1`.
-Its property-only mode shares this executable. A separate translated-ID case
-selects262141..262143in the last physical page;host inspection verifies those
-addresses,not GPU execution. The new controller's15host controls reject changed
-pitch output bits and a boundary result that did not exercise262144capacity,
-and wrong local-argument indices/extents,alongside timing/output coverage checks. Native admission,smoke,
-boundary and speed remain unexecuted pending source-review reconciliation and
-separately committed plans. All five remaining old source-audit text/transaction
-files retire after regeneration of original source and recipe recovery;the
-rejected64generation now has no remaining files. The single selected-IDfixture
-is retained for this immediate comparison.
+match that revision. Its BMG matrix restrictions require8-byte-multiple strides
+and4-byte-aligned matrix pointers. Source/SDK,harness and API reviews are closed,
+including the correct inclusive current-token endpoint and the distinction
+between active payload,source allocation and the generator's default layout.
+
+After recovering195original project inputs,31controller inputs,the697compiled
+dependency closure,8700compiler assets,generated sources and the exact recipe,
+the rejected generation's96external build/raw/transaction files retire
+(9104951bytes). Its five unused prototype files also retire (88843bytes);
+original source and commands remain reachable in Git. No prototype exports or
+build targets are adopted. The selected engine and twelve fixtures still pass
+shared admission. The single selected-IDfixture remains for Main's imminent
+resource-discriminator preparation,with its consumer reviewed when that plan
+is selected. Separate legacy provenance holds remain open. Next use the existing
+geometry/counter references to choose a source/shape-compatible discriminator
+for the remaining GPU resource question.
 
 Complete prefill phase attribution requires three independent ledgers: route-owner
 planned operations, actual API results and collector device executions.
