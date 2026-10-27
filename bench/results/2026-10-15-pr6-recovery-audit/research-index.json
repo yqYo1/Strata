@@ -12647,5 +12647,39 @@
     },
     "novelty": "Adds GPU-offload identifiability when prompt length co-varies with QSA geometry, MoE populations, chunking, cache state and overlap. This complements the existing Zen3 CPU/cache collection and QSA geometry/counter references; it does not repeat their local findings.",
     "source_limit": "Original Hockney citation absent;DOI pages for LogP/LogGP not independently opened in review. Verify these before basing a decision on them."
+  },
+  "qsa_irregular_gqa_matrix_packing_collection_20261027": {
+    "classification": "knowledge_collection",
+    "status": "planned",
+    "schedulable_now": true,
+    "report_budget_bytes": 14336,
+    "source_revision": "95253733d",
+    "question": "Compare GPU attention matrix-tile mappings for a non-power-of-two GQA group (12 real heads padded to16) and sparse query-specific KV lists. Focus on packed/ragged head groups,mixed-query matrix tiles,alternate MMA shapes and split/grouped work;explain extra selection/gather/reduction work,register/SLM/concurrency and numerical constraints. Contrast shared versus different KV lists and include substantive non-LLM ragged/blocked-matrix analogues. Exclude a repeat of query ordering/cache-locality and generic fragment-lifetime surveys. No code proposal or local speed claim.",
+    "prerequisite_evidence": "Selected6e40 source has24Q/2KV heads,Dim256,16 padded rows and8x16 BF16/FP32 joint_matrix fragments;the source geometry is established independently of the pending service diagnostic.",
+    "prior_scopes": [
+      "current_qsa_prefix_work_geometry_audit_20261023",
+      "sparse_attention_interquery_kv_locality_scheduling_methods_20261023",
+      "cooperative_matrix_iterative_fragment_lifetime_methods_20261023"
+    ],
+    "report": ".cache/strata-research/20261027/irregular-gqa-matrix-packing.md",
+    "consumer": "Conditional retrieval when measured selected-QSA service justifies changing matrix mapping;Main must not read collection body on arrival.",
+    "retention": "Native Luna/max reviews novelty/depth. Keep only substantive retrievable reference;no automatic report/spec/transaction commit."
+  },
+  "bounded_selected_kernel_UR_capture_decision_20261027": {
+    "classification": "decision_support",
+    "status": "planned",
+    "schedulable_now": true,
+    "report_budget_bytes": 14336,
+    "source_revision": "95253733d",
+    "question": "Select a bounded source-specific UR/XPTI capture architecture for selected6e40 ordered-exp QSA without logging all runtime polling/library APIs. Existing ur_call_subscriber emits every begin/end with a65536-row process cap. Compare documented existing filtering/gating with minimal callback-side selection by kernel identity or successful-end geometry candidates;preserve matched begin/end instances,failed-call pointer safety,concurrency,recycled handles/events and actual PTI identity join. Identify exact missing API metadata and finite host/device gates. No implementation,build,process inspection or generic whole-model survey.",
+    "prerequisite_evidence": "Main read bench/sycl/ur_call_subscriber.cpp:record_limit65536 and all-call emit;it cannot simply be assumed to support a long whole-process UR trace. The current PTI-only observation explicitly leaves independent UR joins/losslessness unqualified.",
+    "prior_scopes": [
+      "selected_qsa_observation_contract_20261027",
+      "UR_PTI_identity_bridge_20261025",
+      "PTI_graph_expanded_links_20261025"
+    ],
+    "report": ".cache/strata-research/20261027/bounded-selected-kernel-ur-capture.md",
+    "consumer": "Main next observer choice after the current PTI-only diagnostic;not permission to rebuild or run.",
+    "retention": "Native Luna/max review and compact source corrections before Main use;retire consumed decision body at plan closure."
   }
 }
