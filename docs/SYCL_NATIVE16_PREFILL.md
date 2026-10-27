@@ -1425,8 +1425,17 @@ per-execution phase join,full-model critical path or hardware saturation result.
 Selected Down already
 uses direct FP32 FMA accumulator writes; removing output atomics is not a
 candidate. No inference change or speed gain is adopted from this diagnostic.
-Resolve the existing regular/native-exp2 compiler-lowering gap before choosing
-another math candidate;prior failed GRF/partial-cache/cell/SLM/sum outcomes remain.
+A CPU-only B570 offline compiler probe at `bae3c5e76`, with frozen plan
+`513637504`, now closes the simple regular/native-exp2 comparison. With the
+selected compiler and strict math flags, both tiny kernels have the same27
+instructions through EOT, including one `math.exp`. The conditional x<-126 zero
+seam adds a compare and predicated move. Reject the simple native-exp2 rewrite;
+no device program ran and no inference change is adopted. This is not actual
+whole-QSA JIT, numerical/domain/FTZ, hardware saturation or speed qualification.
+Prior failed GRF/partial-cache/cell/SLM/sum outcomes remain. Before a cross-query
+packing prototype, obtain exact per-KV-head ordered selected-ID list classes
+from a new finite committed model capture; adjacent overlap alone does not
+establish compatible groups.
 All33host controls pass. Closed one-use controllers and consumed raw/research
 output retire after compact evidence at82d48e818;the deletion manifest records
 584files/156377451bytes. The selected engine/twelve fixtures and other explicit
