@@ -1623,9 +1623,12 @@ failed at`117ee9b28`;raw operands were absent and its cause is still unknown.
 Direct-event success is a useful avoidance result,not a root-cause diagnosis.
 The closed fixture/IR/log generation has no further native consumer;195project
 and691actual compiler-input identities and the exact original recipe/executable
-are recovered from Git before retirement. The selected original engine and its
-twelve fixtures remain unchanged. Keep only the53252180-byte initialized selected-ID
-fixture for the named next same-math barrier comparison,then review it again.
+are recovered from Git before retirement. Its86component files and seven consumed
+research/diagnostic transactions (93files,6777612bytes total) are removed,along
+with four one-use source files. No v1/v2/v3 QSA component root remains. The
+selected original engine and twelve fixtures still pass shared admission. Keep
+only the53252180-byte initialized selected-ID fixture for the named next
+same-math barrier comparison,then review it again.
 See[the compact diagnostic and180samples](../bench/results/2026-10-15-pr6-recovery-audit/qsa-working-set-current.json).
 
 The next proposal fuses each tile-end barrier with the next tile's existing

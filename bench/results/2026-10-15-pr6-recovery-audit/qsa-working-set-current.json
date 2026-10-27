@@ -11,11 +11,6 @@
     "resources": "93bcfe728",
     "perf": "cfba84b43"
   },
-  "fixture_executable": {
-    "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-working-set-v3/fixture",
-    "sha256": "6d48fddcdc667dbd7bef2d4f80d2714d78f9882052bf2089a423f5fb5f0ca68f",
-    "bytes": 1555568
-  },
   "retained_engine": {
     "native_source": "6e40afc1beddd059ee518617f6c1efce1da14aca",
     "sha256": "22182f1a5e62e5f4259ce49a75ae44afbd988166ec79324816e499ff37ef60e4",
@@ -38,8 +33,8 @@
       6491,
       2051
     ],
-    "consumer": "next selected-QSA working-set attribution fixture",
-    "review": "Retire when that comparison closes or is superseded; maximum64MiB."
+    "consumer": "Named next same-math QSA barrier-fusion comparison",
+    "review": "Retire at that comparison closure or supersession;maximum64MiB."
   },
   "geometry": {
     "cells": 39259,
@@ -650,7 +645,7 @@
     "required": "Main must audit every shared-memory read/write and all zero/tail/invalid cases,commit exact independent source/recipe/order/numerical/resource/timing/stop gates,then traced smoke/component and measured resource/performance checks before any model trial."
   },
   "retirement": {
-    "status": "source-recovered-pending-deletion",
+    "status": "complete",
     "proof": {
       "original_native_source": "2d3e948c430f4da4ef3e427c6434262a1ba64b05",
       "original_recipe": "c30c754fb",
@@ -671,12 +666,28 @@
       },
       "selected_engine_and_12fixtures_unchanged": true
     },
-    "consumer": "Closed working-set comparison;retire this unused component generation after committed results/remote source verification."
+    "consumer": "Closed;no binary/log consumer remains. Keep original source/recipe/results reachable in feature/sycl pending default integration.",
+    "manifest": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-working-set-v3-retirement-20261027.jsonl",
+      "sha256": "be02e8d94af9e27e5effa72cea0c833a9fbc1fd1efcd7879d2b475f208addcbf"
+    },
+    "removed_files": 93,
+    "removed_bytes": 6777612,
+    "component_files": 86,
+    "tracked_one_use_sources_retired": 4,
+    "original_source_remote_verified": true,
+    "selected_engine_and_12fixtures_admission_after_cleanup": true,
+    "current_qsa_component_roots_remaining": 0
   },
   "legacy_provenance_holds": {
     "result": "native-gdn-engine-build.json",
     "review_sha256": "8c53b900fe9fbcf042e51e96bc6a56778c942a97dd3b0f5ac8b863719ca8efa0",
-    "next_action": "Retire the15source-recovered QSA fixtures after bounded consumer/hash checks;carry the remaining distinct source/recipe holds in the maintained native build result. Recheck actual paths before another generation.",
+    "next_action": "Review exact remaining artifacts and missing original inputs through native-gdn-engine-build.json legacy_provenance_exception and the existing component-provenance audit before another generation. Closed QSA v1/v2/v3 products are gone;this does not clear separate legacy source/recipe holds.",
     "full_final_input_proof": false
+  },
+  "retired_fixture_executable": {
+    "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-working-set-v3/fixture",
+    "sha256": "6d48fddcdc667dbd7bef2d4f80d2714d78f9882052bf2089a423f5fb5f0ca68f",
+    "bytes": 1555568
   }
 }
