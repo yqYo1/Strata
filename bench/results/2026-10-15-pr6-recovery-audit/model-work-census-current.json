@@ -1,5 +1,5 @@
 {
-  "stage": "prepared",
+  "stage": "failed",
   "source_commit": "3e00a11b0d76d20173101d12d8a81afbb415ae43",
   "native_source": "6e40afc1beddd059ee518617f6c1efce1da14aca",
   "binary": {
@@ -944,7 +944,45 @@
       }
     }
   },
-  "checks": [],
+  "checks": [
+    {
+      "mode": "smoke",
+      "passed": false,
+      "complete": false,
+      "ownership_closed": true,
+      "native_launched": true,
+      "error": "RuntimeError('benchmark owner/protocol failed')",
+      "protocol_qualified": false,
+      "postchecks_complete": true,
+      "postcheck_errors": [],
+      "fresh_faults": [],
+      "boot_unchanged": true,
+      "driver_after": {
+        "pci": "/sys/bus/pci/devices/0000:05:00.0",
+        "driver": "xe",
+        "vendor": "0x8086",
+        "device": "0xe20c",
+        "kernel": "7.0.0-38-generic",
+        "devcoredump": false
+      },
+      "failure_diagnosis": {
+        "mechanism": "Controller sent b\"X\" without newline;actual benchmark profile_request_gate requires b\"continue\\n\". Benchmark reaches its30s gate deadline after warmup;the39261-input request never starts.",
+        "controller_source": "3e00a11b0d76d20173101d12d8a81afbb415ae43",
+        "wrong_ack_hex": "58",
+        "required_ack_hex": "636f6e74696e75650a",
+        "native_exit_code": 0,
+        "warmup_input_tokens": 74,
+        "long_requests_completed": 0,
+        "benchmark_exit_code": 1,
+        "benchmark_error": "RuntimeError: profile request gate deadline",
+        "evidence": {
+          "benchmark_stderr_sha256": "c8b890e672f900fd89bfd005a018d990819c570da4f9c9e62380f5c409f3d164",
+          "native_exit_sha256": "17362849437a7bebc5a55f924e0a3084527fc23a9e0dffcd273645697bd7395d"
+        },
+        "next": "Commit real benchmark-handshake regression and corrected controller;prepare a fresh frozen cohort. Preserve this failed cohort;do not run its long arm."
+      }
+    }
+  ],
   "active": false,
   "ownership_closed": true,
   "complete": false,

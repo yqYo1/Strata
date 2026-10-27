@@ -1854,11 +1854,15 @@ controls do not supply a selected-model histogram or qualify native execution.
 The selected-model census controller and frozen requests are committed, with
 204 controller inputs,58 unchanged child sources and the selected engine plus
 12 same-build fixtures checked. An independent Orca Luna report and native Luna/max
-review admit the bounded39261-input smoke after Main's frozen source/runtime/owner
-checks. The117489-input case remains gated on that smoke. The current controller
-at`3e00a11b0` records completion only after final admission and successful protocol,
-owner and fault postchecks. This is source-planned work on the pinned6e40 schema,
-not GPU execution coverage or clean throughput evidence. The original preflight
+review admitted the bounded39261-input smoke after Main's frozen source/runtime/owner
+checks. That cohort fails at the benchmark's request gate after the74-token warmup:
+the controller sent `X`,but the actual gate requires `continue` followed by newline.
+The benchmark exits1;the native child exits0,all owners close and no fresh fault
+is recorded. The39261-input request never starts;its117489-input arm remains
+unstarted. Preserve this failure and add a real benchmark-handshake regression
+before a fresh corrected cohort. The completion-receipt repair at`3e00a11b0` remains
+separate. This is source-planned work on the pinned6e40 schema,not GPU execution
+coverage or clean throughput evidence. The original preflight
 refusal at`5575402af` remains in Git;excluding unrelated standalone host tests did
 not qualify native execution. See the [current census plan](../bench/results/2026-10-15-pr6-recovery-audit/model-work-census-current.json).
 
