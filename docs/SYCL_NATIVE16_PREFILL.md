@@ -1719,7 +1719,9 @@ remains for the next component/resource/timing gates;the selected original
 engine and twelve fixtures still pass unchanged shared admission.
 The eleven larger-component output/transaction files (55662bytes) are also
 retired after committing their useful results. Both closed check roots are
-absent;the next native consumer is actual-ID event/resource/timing qualification.
+absent. The fourteen actual-ID smoke output/transaction files (512032bytes)
+also retire after useful evidence is committed. The remaining native consumers
+are resource and timing qualification.
 See[the current build and gates](../bench/results/2026-10-15-pr6-recovery-audit/qsa-barrier-current.json).
 
 Complete prefill phase attribution requires three independent ledgers: route-owner

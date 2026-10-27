@@ -1430,9 +1430,9 @@
     }
   },
   "check_plan": {
-    "stage": "closed",
-    "mode": "smoke",
-    "source_commit": "46be5c2312188b340128267418cf9dec9ab6f89d",
+    "stage": "prepared",
+    "mode": "resources",
+    "source_commit": "ff022a115ce7c1c9105639f7bf09e8fad4acc372",
     "controller_inputs": {
       "tools/sycl/check_qsa_barrier.py": "dd7c688cefd0913d100c4b3f053af528fcd605b2f8cc73bcd4a81ff05eebc27b",
       "tools/sycl/measure_down_scatter.py": "6d92d7212c7cad9bb7fdee6ef6877528b6240f990c7f74d032394933387ed2de",
@@ -1565,7 +1565,7 @@
         "sha256": "bb6e1311850e4b1a924e42acae80c2b3610934625a4985aaa67967abe31356fc"
       }
     },
-    "gates": "Commit native/controller/oracle/generated inputs and recipe first. Three fresh traced smoke processes and three component processes independently select original/control/merged for negative admission while every supported invocation bit-compares all3arms. Independent host oracle,zero/invalid/tail widths,duplicates,aliased/missing pages,first/later K/V diagnostics,NaN,input/guard checks,2-byte alignment and physical262144 final-address component;not full-model fill. Actual3query smoke fixture separately checks strong direct-event clocks before resource/timing work.",
+    "gates": "One small profiled actual3query fixture:conserve full table,require original/control/merged attention2calls each,SIMD16/WG128/18arguments,original-control identical descriptors. Require merged same rawSLM/matrix shape/default128GRF;record its spill/private descriptors separately because barrier placement can change liveness. Source dynamic local payload20036bytes fixed. Different merged spill alone is neither success nor failure;the experiment includes scheduling/liveness effects,not a pure barrier instruction-cost claim.",
     "budgets": {
       "wall": 300,
       "cpu": 3600,
@@ -1594,99 +1594,44 @@
           "STRATA_SYCL_VERIFY_NATIVE_CAPTURE": "0",
           "SYCL_CACHE_PERSISTENT": "0",
           "ZES_ENABLE_SYSMAN": "0",
-          "UR_ENABLE_LAYERS": "UR_LAYER_TRACING,UR_LAYER_PARAMETER_VALIDATION",
-          "UR_LOG_TRACING": "level:info;flush:info;output:file,/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-barrier-v1/check-smoke/0/api.trace",
-          "UR_LOG_VALIDATION": "level:warning;flush:warning;output:file,/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-barrier-v1/check-smoke/0/validation.log",
+          "UR_ENABLE_LAYERS": "UR_LAYER_PARAMETER_VALIDATION",
+          "UR_LOG_VALIDATION": "level:warning;flush:warning;output:file,/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-barrier-v1/check-resources/0/validation.log",
           "UR_LOG_LOADER": "level:warning;flush:warning;output:stderr",
           "UR_LOG_LEVEL_ZERO": "level:warning;flush:warning;output:stderr",
-          "TMPDIR": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-barrier-v1/check-smoke/0/tmp",
-          "XDG_CACHE_HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-barrier-v1/check-smoke/0/cache",
+          "TMPDIR": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-barrier-v1/check-resources/0/tmp",
+          "XDG_CACHE_HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-barrier-v1/check-resources/0/cache",
           "ZE_ENABLE_ALT_DRIVERS": "/usr/lib/x86_64-linux-gnu/libze_intel_gpu.so.1.17.39758",
-          "LD_PRELOAD": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/ur-validation-preload-v2/libstrata_ur_validation.so",
-          "STRATA_UR_PROBE_EXPECTED_LOADER": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_loader.so.0.12.0"
+          "STRATA_UR_PROBE_EXPECTED_LOADER": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_loader.so.0.12.0",
+          "STRATA_UNITRACE_TARGET_PRELOAD": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/ur-validation-preload-v2/libstrata_ur_validation.so",
+          "UNITRACE_FollowChildProcess": "1",
+          "UNITRACE_SystemTime": "1",
+          "UNITRACE_TraceOutputDir": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-barrier-v1/check-resources/0/trace"
         },
         "command": [
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/unitrace-session-owner-v1/unitrace",
+          "--session",
+          "StrataQsaBarrier07090bc8a0e7af4b4c7a6ef7",
+          "--device-timing",
+          "--verbose",
           "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-barrier-v1/fixture",
           "--smoke",
           "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/selected-qsa-capture-v1/layer0-final-ids.bin"
         ],
-        "session": null
-      },
-      {
-        "index": 1,
-        "binary": "fixture",
-        "environment": {
-          "PATH": "/usr/bin:/bin",
-          "HOME": "/home/yayoi",
-          "LANG": "C.UTF-8",
-          "LC_ALL": "C.UTF-8",
-          "PYTHONDONTWRITEBYTECODE": "1",
-          "LD_LIBRARY_PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib:/opt/intel/oneapi/mkl/2026.1/lib",
-          "ONEAPI_DEVICE_SELECTOR": "level_zero:gpu",
-          "UR_ADAPTERS_FORCE_LOAD": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_adapter_level_zero_v2.so.0",
-          "UR_L0_V2_FORCE_DISABLE_COPY_OFFLOAD": "1",
-          "NEOReadDebugKeys": "1",
-          "EnableDirectSubmission": "0",
-          "STRATA_SYCL_PREFILL_SAME_QUEUE": "1",
-          "STRATA_SYCL_VERIFY_NATIVE_CAPTURE": "0",
-          "SYCL_CACHE_PERSISTENT": "0",
-          "ZES_ENABLE_SYSMAN": "0",
-          "UR_ENABLE_LAYERS": "UR_LAYER_TRACING,UR_LAYER_PARAMETER_VALIDATION",
-          "UR_LOG_TRACING": "level:info;flush:info;output:file,/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-barrier-v1/check-smoke/1/api.trace",
-          "UR_LOG_VALIDATION": "level:warning;flush:warning;output:file,/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-barrier-v1/check-smoke/1/validation.log",
-          "UR_LOG_LOADER": "level:warning;flush:warning;output:stderr",
-          "UR_LOG_LEVEL_ZERO": "level:warning;flush:warning;output:stderr",
-          "TMPDIR": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-barrier-v1/check-smoke/1/tmp",
-          "XDG_CACHE_HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-barrier-v1/check-smoke/1/cache",
-          "ZE_ENABLE_ALT_DRIVERS": "/usr/lib/x86_64-linux-gnu/libze_intel_gpu.so.1.17.39758",
-          "LD_PRELOAD": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/ur-validation-preload-v2/libstrata_ur_validation.so",
-          "STRATA_UR_PROBE_EXPECTED_LOADER": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_loader.so.0.12.0"
-        },
-        "command": [
-          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-barrier-v1/fixture",
-          "--smoke",
-          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/selected-qsa-capture-v1/layer0-final-ids.bin"
-        ],
-        "session": null
-      },
-      {
-        "index": 2,
-        "binary": "fixture",
-        "environment": {
-          "PATH": "/usr/bin:/bin",
-          "HOME": "/home/yayoi",
-          "LANG": "C.UTF-8",
-          "LC_ALL": "C.UTF-8",
-          "PYTHONDONTWRITEBYTECODE": "1",
-          "LD_LIBRARY_PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib:/opt/intel/oneapi/mkl/2026.1/lib",
-          "ONEAPI_DEVICE_SELECTOR": "level_zero:gpu",
-          "UR_ADAPTERS_FORCE_LOAD": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_adapter_level_zero_v2.so.0",
-          "UR_L0_V2_FORCE_DISABLE_COPY_OFFLOAD": "1",
-          "NEOReadDebugKeys": "1",
-          "EnableDirectSubmission": "0",
-          "STRATA_SYCL_PREFILL_SAME_QUEUE": "1",
-          "STRATA_SYCL_VERIFY_NATIVE_CAPTURE": "0",
-          "SYCL_CACHE_PERSISTENT": "0",
-          "ZES_ENABLE_SYSMAN": "0",
-          "UR_ENABLE_LAYERS": "UR_LAYER_TRACING,UR_LAYER_PARAMETER_VALIDATION",
-          "UR_LOG_TRACING": "level:info;flush:info;output:file,/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-barrier-v1/check-smoke/2/api.trace",
-          "UR_LOG_VALIDATION": "level:warning;flush:warning;output:file,/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-barrier-v1/check-smoke/2/validation.log",
-          "UR_LOG_LOADER": "level:warning;flush:warning;output:stderr",
-          "UR_LOG_LEVEL_ZERO": "level:warning;flush:warning;output:stderr",
-          "TMPDIR": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-barrier-v1/check-smoke/2/tmp",
-          "XDG_CACHE_HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-barrier-v1/check-smoke/2/cache",
-          "ZE_ENABLE_ALT_DRIVERS": "/usr/lib/x86_64-linux-gnu/libze_intel_gpu.so.1.17.39758",
-          "LD_PRELOAD": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/ur-validation-preload-v2/libstrata_ur_validation.so",
-          "STRATA_UR_PROBE_EXPECTED_LOADER": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_loader.so.0.12.0"
-        },
-        "command": [
-          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-barrier-v1/fixture",
-          "--smoke",
-          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/selected-qsa-capture-v1/layer0-final-ids.bin"
-        ],
-        "session": null
+        "session": "StrataQsaBarrier07090bc8a0e7af4b4c7a6ef7"
       }
-    ]
+    ],
+    "collector_assets": {
+      "launcher": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/unitrace-session-owner-v1/unitrace",
+        "sha256": "6faac1e74f18ce481581f3ed112611ec3e0a1f81eac7990b57b622f212294244",
+        "bytes": 513168
+      },
+      "collector": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/unitrace-l0-4b6d742-v2/libunitrace_tool.so",
+        "sha256": "5a5123569afec5e1da12e98967955686d753ce28ae8d42b96ec565b52ec4d1e5",
+        "bytes": 2328576
+      }
+    }
   },
   "checks": [
     {
@@ -2387,6 +2332,16 @@
     "manifest": {
       "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-barrier-component-retirement-20261027.jsonl",
       "sha256": "aff3cb9f394b20f7440233a424695368bb47d8962b826bf97280e5bca1174658"
+    },
+    "selected_engine_and12fixtures_unchanged": true
+  },
+  "actual_smoke_raw_retirement": {
+    "complete": true,
+    "files": 14,
+    "bytes": 512032,
+    "manifest": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-barrier-actual-smoke-retirement-20261027.jsonl",
+      "sha256": "bd284220f52bcab302af30473686d9671401e6b587fac078aeb4c6ed0901e278"
     },
     "selected_engine_and12fixtures_unchanged": true
   }
