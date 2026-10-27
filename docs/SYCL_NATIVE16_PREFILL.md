@@ -1683,109 +1683,57 @@ recovering164project and665actual dependency inputs. The selected engine and
 twelve fixtures remain unchanged. The compact closure in the research index
 pins the external deletion manifest;separate legacy holds remain open.
 
-The current isolated component proposal is
-[`qsa_cell64_sources.py`](../tools/sycl/qsa_cell64_sources.py):private original32
-and64-cell arms with the same BF16 8x16 matrix fragments,SG16/WG128,default GRF
-and direct-event retention. At width2051,the outer tile count falls65to33.
-The selected cached-Q dynamic payload grows20036to39748bytes,including scores
-with stride65. With the existing4096-byte admission margin,it needs43844bytes.
-The older report's28160/28224byte values describe uncached Q,not the selected
-cached-Q route. Cell128 would need79172bytes before the margin and is excluded
-from this proposal. These are source budgets,not an allocation or occupancy
-measurement. No matrix shape or device limit is inferred from a larger tile.
+The isolated64-cell QSA candidate is **rejected on speed**. The same BF16
+8x16fragments,SG16/WG128 and cached-Q route reduce the width2051outer loop
+from65to33updates,but increase active dynamic local memory20032to39744bytes.
+The changed online32/64recurrences are checked independently;old32output bits
+are not a criterion for64. Full source/build/runtime qualification and the frozen
+plan recover at`4f2fffe03`;native kernels are`9b59e9b51`,harness`20927a11e`,
+recipe`d05e23ca3`and execution controller`e87dd625a`. See the
+[compact comparison](../bench/results/2026-10-15-pr6-recovery-audit/qsa-cell64-current.json).
 
-Cell64 computes four scores/probabilities per lane,two16-cell QK blocks per
-owning subgroup,and four16-cell PV steps per update. It updates the online
-maximum,normalizer and BF16 probabilities once per64rather than32cells;it is a
-changed numerical candidate. Exact old bits are not its adoption criterion.
-Pin the actual framework dependency contract and independently audit bounds,
-collective participation,SLM lifetimes and per-kernel admission before GPU work.
-Production,decode and the selected original engine remain unchanged.
-The source audit and native curation conditionally accept the static ownership
-proof;exact-kernel admission remains pending. The separate framework audit and
-native Luna/max review have also closed: vLLM's pinned model-specific Triton QSA
-kernel gives a concrete FP32 normalization/BF16 probability contract. SGLang's
-selected attention backend is still unresolved; its indexer is not that kernel.
-Main's fresh Git comparison proves the live prefix is byte-identical to6e40,
-SHA`4f9f815c9baae709f919f6d5ad1af04677c10d8c13c7597b3857cf81567ae192`.
-The review's inference of a changed file from indexed commitc9ad511e4is incorrect;
-preserve the review and this correction rather than weakening source admission.
-The generator now enforces that immutable file hash. The source-only
-[`qsa_cell64_admission.hpp`](../bench/sycl/qsa_cell64_admission.hpp) queries exact
-compiled kernel identities, WG128/SG16 and Level Zero per-group local-memory
-limits before dispatch. It adds declared dynamic local payload and a reserve to
-the reported kernel local bytes. Its query-only child now passes;attention
-execution remains unqualified. The reserve is a heuristic,not a hardware bound;
-actual bound local arguments must also be accounted in the first traced fixture.
+Three smoke and three extended native processes pass,the latter with51main
+case samples and zero final-output error against each own scalar recurrence.
+Coverage includes mixed/tail widths,aliases/missing pages,guard/input checks and
+physical262144final-address components. The first local-argument observer remains
+failed in history:it expected the score pointer at3rather than its actual ABI
+index15. A host replay and separately committed corrected plans pass without
+changing native kernel math. Property admission queries exact identities and
+namespace-0loader bindings;actual traced WG128/18argument launches pass.
+The32reported local bytes and4096heuristic reserve are distinct from dynamic
+local storage and hardware residency. Spill descriptors12480/13952are not traffic.
 
-The proposed [`qsa_cell64_checks.py`](../tools/sycl/qsa_cell64_checks.py) adapts
-this fork's own independent tensor oracle. Only original32/control32 compare
-exactly across arms;candidate64 has a separate64-cell scalar recurrence.
-Finite aliased/missing pages,distinct three-tile K/V witnesses,mixed widths and
-tails also re-enter that scalar oracle,not merely guard checks. The planned
-case grid adds127/128/129boundaries beside the existing final262144-address
-components. Existing BF16-ULP component bounds are proposed diagnostic criteria,
-not an accepted model-quality tolerance;framework and model/task gates remain
-open. The independent build at source`9b59e9b51` and recipe`d320c1ff7`
-closes all14compile/link/IR commands,with698actual dependencies matched against
-197project and8700toolchain inputs. Both oracle and property fixture link;
-no device work has run. See[the current component record](../bench/results/2026-10-15-pr6-recovery-audit/qsa-cell64-current.json).
-Before numerical execution,pin the reference configuration and finite per-case
-bounds. The framework audit does not imply CUDA execution or numerical parity.
-The independent admission API audit and native Luna/max curation close with
-conditional source proof. Main corrects the curator's use of three different
-official2026.2headers by checking the actual build SDK declarations separately;
-the LevelZero backend header is byte-identical. The original review is preserved.
+The actual-IDfixture then passes three fresh smoke processes and all108timing
+samples in three further independent processes. Each shape has six rotated rounds
+for original32,private32 and private64,with64/4calls per512/6491-query batch.
+The minimum batch is496686737ns. All scalar spots match their own recurrence;
+full outputs are finite,guards/inputs are intact and no fresh fault appears.
+Across all three processes,the6491shape changes171881of39880704old32output
+words,max1.525878906e-5,relativeL2 0.0001828117462. Sparse spot checks and these
+deltas do not establish whole-model numerical quality.
 
-The property-only plan`27ecbf421` and controller`08d826ec2` close one owned child
-at exit0,with pre-main validation proof,silent validation,no kernel enqueue and
-no fresh fault. Live maps and glibc namespace-0bindings establish this child's
-qualified loader object for both property calls. All3exact kernels report
-maximumWG1024,requiredSG16,18arguments and32reported local bytes. Per-group
-local capacity is131072bytes. Adding declared local payload and4096reserve gives
-24164bytes for both32arms and43876for64. Spill descriptors are12480/12480/13952;
-these are not physical traffic,occupancy or speed measurements. Actual local
-bindings/alignment and a successful128x1x1launch remain pending before broader
-advancement. No numerical or model work is qualified by this query.
+| Actual queries | Candidate/control wall ratios by process | Attention-service ratios by process |
+| --- | --- | --- |
+| 512 | 1.605281,1.604244,1.606402 | 1.641414,1.640282,1.642925 |
+| 6491 | 1.560674,1.558906,1.558670 | 1.563451,1.561659,1.561248 |
 
-The independently planned numerical stages now pass. Corrected controller
-`1815c5d2d`/smoke plan`42fefaa96`closes three fresh native processes;extended
-plan`7821ac05a`closes another three,17main cases each. All51extended case samples
-report zero final-output error against their own scalar32/64recurrence,with
-guards and input immutability intact,silent validation and no fresh fault.
-Coverage includes widths127/128/129/2051,mixed widths,distinct K/V witnesses,
-shared/missing pages and the physical262144final-address component. It is not
-full-model context fill or a model-quality tolerance.
+The private32control stays within0.26percent of original in every group. Both
+metrics decisively fail the predeclared1percent-gain gate;no model trial or
+adoption follows. Service time increases inside the GPU too. The same valid
+K/Vsource-read byte count and only1.54percent more padded matrix work do not
+explain the55.9..64.3percent cost increase by themselves;physical traffic,SLM
+bank behavior,register effects and occupancy remain unmeasured. This is not a
+PCIe/GDDR saturation claim or an explanation of the historical1003-to975decline.
 
-Successful traced attention calls use one-dimensional WG128 and18arguments.
-The eight active local arguments total20032/39744bytes;the declared source
-budget also includes one unused4byte Q accessor. The score pointer is argument15,
-not declaration-order argument3. The first observer at`659384563`therefore
-remains failed;its native process exited0,with no fresh fault,and a separately
-committed closed-data replay verifies the correction. No kernel/math change
-was made to resolve that observer failure. Hardware rounding and occupancy
-remain unmeasured. The new actual-ID harness`0a3e79e98`uses scalar spot checks
-per cadence and full-output deltas;its compile and independent review precede
-execution. No new component speed or model throughput is recorded yet.
-
-The actual-ID harness now links successfully at native source`20927a11e` and
-recipe`d05e23ca3`,reusing the same seven component objects. Its664compiled
-dependencies are checked against the pinned source/toolchain set;the compact
-record stores their difference from the original closure rather than a second
-full map. Independent Orca Luna research and native Luna/max review close.
-The review reverses the report's proposed endpoint change:global live cells are39259
-and the query's current-token cell is valid at`position`,with`n_kv=position+1`.
-The source-bound small-input range excludes the generic maximum-BF16 spacing
-edge. Observer inactivity and asymmetric direct-event capture remain explicit
-pre-execution/timing qualifications. The actual-IDsmoke now passes three fresh
-processes at controller`d9876eb5f`/plan`a901943f6`. All three arms match their
-own scalar recurrence on all three checked queries;original/private32 match
-bits. Candidate64 differs from32 in4of18432outputs,max1.192092896e-7 and
-relativeL2 2.589598691e-6 on each process. Guards/inputs,exact two attention
-launches per arm,and local20032/39744byte bindings pass;validation is silent,
-all owners close and no fresh fault appears. This is fixed synthetic numerical
-evidence,not model-quality acceptance. Speed remains unmeasured;the selected
-engine and decode path remain unchanged.
+Independent Orca Luna research and native Luna/max curation close the source,
+framework,property API,harness and execution-controller audits. Main preserves
+the corrected inclusive current-token endpoint and the exact configured SDK
+identities. The next bounded source question is whether independently padded
+K,V and probability SLM pitches are legal and useful to test on the original32
+route. It must distinguish documented matrix-layout constraints from hypothetical
+bank-conflict explanations. Selected prefill/decode and the original engine remain
+unchanged. Full physical-context fill,model quality,handoff/RESTORE and decode
+preservation remain separate qualification.
 
 Complete prefill phase attribution requires three independent ledgers: route-owner
 planned operations, actual API results and collector device executions.

@@ -13282,5 +13282,64 @@
       "question": "Source-specific interpretation of new actual-IDperformance and a concrete next mechanism only after the frozen108-sample cohort closes. Do not repeat controller or kernel source audits.",
       "prerequisite": "Complete closed eligible108samples,all process/shape ratios,model-quality coverage limits and explicit candidate decision."
     }
+  },
+  "qsa_slm_pitch_contract_20261027": {
+    "classification": "decision_support",
+    "status": "eligible",
+    "schedulable_now": true,
+    "source_revision": "9b59e9b511b60941c4d5dd06fb3dae91a83bcac0",
+    "report": ".cache/strata-research/20261027/qsa-slm-pitch-contract.md",
+    "report_budget_bytes": 16384,
+    "worker_model": "gpt-6-luna",
+    "question": "Using exact current32/64source+LLVM and configured SDK,compare padded K-plane,V-row and probability SLM pitches with power-of-two layouts. Establish legality,alignment,stride constraints,lifetime/index/size/collective invariants and a small discriminating pitch-only candidate. Treat bank-conflict/residency explanations as hypotheses unless actual Xe2/native evidence proves them;no code or GPU execution.",
+    "prerequisite_evidence": [
+      "Actual-ID64comparison closes108eligible samples with no fault;all six groups are55.9..60.6percent slower in wall and56.1..64.3percent slower in attention service.32control stays within0.26percent of original.64is rejected;no model trial.",
+      "Ksource layout is Dim-by-Cells,probability16-by-Cells,VCells-by-Dim;current pitches32or64 and256. Pitch-only padding is a distinct question from rejected coalesced transpose,tree sum,GRF-only and cell granularity.",
+      "The exact source/kernel/SDK identities below are available read-only. Compiler matrices remain8x16BF16,SG16/WG128;static local32B,dynamic20032/39744B,per-group queried max131072B. These do not establish native bank behavior or occupancy."
+    ],
+    "source_IR_assets": [
+      {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-cell64-v1/cell32.cpp",
+        "bytes": 25232,
+        "sha256": "bcc4c4e909992ae1ab1af72e92d008ebf0a843ecebc85c8e92bab3c6c968fa14"
+      },
+      {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-cell64-v1/cell64.cpp",
+        "bytes": 26093,
+        "sha256": "e9e45054d11537dff455b64cef9ef10d0ef8f826edc4993a71ea58df8ad33832"
+      },
+      {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-cell64-v1/control.ll",
+        "bytes": 72142,
+        "sha256": "11614acb968d835c19b68159ea947d8798fb6d69a285717478a6de114f22d155"
+      },
+      {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-cell64-v1/candidate.ll",
+        "bytes": 77105,
+        "sha256": "d33bb480a9026e7506e513fc9775c0a86ea64a376c3bf47c8814d983abc53096"
+      }
+    ],
+    "actual_SDK_matrix_headers": {
+      "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/include/sycl/ext/oneapi/matrix/query-types.hpp": "18da200cd2704bb998f8a2f61fc423f6a5ecfcfe2d5b7a44e067c5074a8aeaa2",
+      "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/include/sycl/ext/oneapi/matrix/matrix-unified-utils.hpp": "c4ec45d987a054e2e5ee7d51f2fbbabf2d4a50bff0b7d4124d5e01a1162f8e8a",
+      "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/include/sycl/ext/oneapi/matrix/matrix.hpp": "c298993bfc66b10f3204723c20afe960e07313b51add9ab28f549653dbde4da7",
+      "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/include/sycl/ext/oneapi/matrix/matrix-unified.hpp": "d76027407a09884b34879f5677b2efe1c634d6d058333d2fd83ecaa2b49a673e",
+      "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/include/sycl/ext/oneapi/matrix/matrix-intel.hpp": "524efda8771175ee9c271fc78fab547a4bf6e845ad471ac9d501375ff5834ccb",
+      "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/include/sycl/ext/oneapi/matrix/utils.hpp": "4f02f0f570cf645f5abf46e3f64330102f4e2ae54b30a6c7f847d3131531934e",
+      "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/include/sycl/ext/oneapi/matrix/static-query-use.hpp": "a48cd577e4938f67dfbee0046f2fd9034432f1528f7f6e685f54433ff980a8f1"
+    },
+    "compiler": {
+      "path": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin/clang++",
+      "sha256": "1290881b4e12a5e002e5b0de0787f85328ee5fe19f253a54be1cdd97dc2f26eb"
+    },
+    "prior_scopes": [
+      "qsa_cell64_source_contract_20261027",
+      "qsa_cell64_admission_contract_20261027",
+      "intel_gpu_qsa_geometry_20261027",
+      "intel_sycl_sparse_prefetch_staging_methods_20261027"
+    ],
+    "ownership": "Report only;read source/IR/SDK and authoritative primary docs. No code edits,Git commands,tests,builds,GPU/runtime calls,process inspection or delegation. Main owns implementation/testing and will preserve four source/IRassets while audit is live.",
+    "consumer": "Main selects or rejects a concrete pitch-only original32kernel proposal;do not promise a speed gain or attribute the64regression without evidence.",
+    "retention": "Native Luna/max curation;retain substantive layout/SDK constraints and corrections. Retire four native text assets when this source question closes unless the new admitted candidate needs them."
   }
 }
