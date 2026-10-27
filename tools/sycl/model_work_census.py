@@ -10,6 +10,7 @@ import hashlib
 import json
 from pathlib import Path
 import re
+import select
 import socket
 import subprocess
 import sys
@@ -28,12 +29,12 @@ import supervision_model as shared
 from measure_down_scatter import postchecks
 
 B, A = gen.B, gen.A
-ROOT = B / 'selected-model-work-census-v2'
+ROOT = B / 'selected-model-work-census-v3'
 RESULT = A / 'model-work-census-current.json'
 REFERENCE = A / 'prefill-runtime-comparison-current.json'
 TEMPLATE = A / 'phase-prefill-speed-current.json'
 SOURCE = '6e40afc1beddd059ee518617f6c1efce1da14aca'
-CASES = dict(smoke=(32768, 39261, ((0, 39260),)),
+CASES = dict(smoke=(32768, 39260, ((0, 39259),)),
              long=(98304, 117489, ((0, 81920), (81920, 35568))))
 require, digest = runtime.require, runtime.digest
 
@@ -45,6 +46,20 @@ def write(path, value):
 def continue_benchmark(io):
     """Match the actual strata_bench.profile_request_gate line protocol."""
     io.send(b'continue\n')
+
+
+def finish_benchmark(io):
+    """Drain the official CLI's human summary after its final request gate."""
+    io.proc.stdin.close()
+    deadline = time.monotonic() + 90
+    while not io.exit_watch.poll(0) or not io.eof:
+        io.poll()
+        require(time.monotonic() < deadline, 'benchmark teardown deadline')
+        if select.select([io.proc.stdout], [], [], .05)[0]:
+            io.read()  # Interactive retains its existing finite pending/output caps.
+    require(b'STRATA_PROFILE_GATE' not in io.pending, 'request gate after final boundary')
+    io.pending.clear()
+    io.exit(1)
 
 
 def python_contract():
@@ -128,18 +143,19 @@ def prepare():
     require(not ROOT.exists(), 'fresh census only; inspect ownership before retry')
     prior = gen.committed(RESULT)
     require(prior['stage'] == 'failed' and not prior['active'] and prior['ownership_closed'] and
-        len(prior['checks']) == 1, 'preserve the closed failed first census')
+        len(prior['checks']) == 1, 'preserve the closed failed prior census')
     failed = prior['checks'][0]
     require(not failed['passed'] and not failed['complete'] and failed['ownership_closed'] and
         failed['postchecks_complete'] and failed['fresh_faults'] == [] and
-        failed['failure_diagnosis']['wrong_ack_hex'] == '58' and
+        failed['failure_diagnosis']['benchmark_exit_code'] == 0 and
         failed['failure_diagnosis']['native_exit_code'] == 0 and
-        failed['failure_diagnosis']['long_requests_completed'] == 0,
-        'closed benchmark-handshake failure required')
+        failed['failure_diagnosis']['long_requests_completed'] == 1 and
+        failed['failure_diagnosis']['actual_input_tokens'] == 39260,
+        'closed benchmark-summary/extent failure required')
     previous_failure = dict(commit=gen.git('log', '-1', '--format=%H', '--',
         str(RESULT.relative_to(P))).decode().strip(), path=str(RESULT.relative_to(P)),
         sha256=digest(RESULT), source_commit=prior['source_commit'],
-        native_exit_code=0, long_requests_completed=0, passed=False)
+        native_exit_code=0, long_requests_completed=1, passed=False)
     full, rt = native()
     reference = runtime.validation.committed(REFERENCE, ('historical_regression_audit', 'supervision_model_control_v6'))
     require(reference['complete'] and reference['passed'] and reference['ownership_closed'] and
@@ -226,7 +242,7 @@ def run(mode):
                 ['--engine','strata','--config',str(root/'config.json'),'--port',port])
             require(not (root/'validation.log').exists() or (root/'validation.log').stat().st_size == 0, 'parameter warning/error')
             continue_benchmark(io)
-        io.proc.stdin.close(); io.exit(90)
+        finish_benchmark(io)
     try:
         entry, _, _ = owner.run('bench', plan['command'], plan['environment'], P, interaction=gate, **plan['budgets'])
         require(owner_module.closed(entry) and entry['exit_code'] == 0, 'benchmark owner/protocol failed')
@@ -253,8 +269,9 @@ def run(mode):
         require(len(footers) == 2 and 0 < int(footers[0][1]) < 32768 and int(footers[0][2]) == 0 and
             tuple(map(int,footers[1].groups())) == (plan['expected_tokens'],0,plan['expected_tokens'],sample['generated_tokens']), 'native request interval differs')
         part = text[footers[0].end():footers[1].start()]
+        maximum_rows = max(rows for _, rows in plan['expected_window_pairs'])
         require(part.count('strata prefill: layer-major candidate, tokens='+str(plan['expected_tokens']-1)+' chunk=8192 residual_dtype=bf16') == 1 and
-            part.count('strata MoE window configuration: requested_mode=10 effective_mode=10 maximum_rows=81920') == 1, 'selected prefill route differs')
+            part.count('strata MoE window configuration: requested_mode=10 effective_mode=10 maximum_rows='+str(maximum_rows)) == 1, 'selected prefill route differs')
         work = gen.common.extract_planned_moe_work(part, plan['expected_window_pairs'])
         result.update(census=gen.common.compact_window_census(work['planned_moe_windows']),
             request={k:sample[k] for k in ('request_sha256','actual_read_tokens','actual_reused_tokens','generated_tokens','prompt_ms')},
