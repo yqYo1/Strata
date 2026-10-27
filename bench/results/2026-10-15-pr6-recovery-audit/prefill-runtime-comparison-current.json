@@ -6368,54 +6368,181 @@
     }
   },
   "length_characterization": {
-    "stage": "client-tested_model-execution-pending",
-    "client_source_commit": "15a0f0783e6719be88d183c27ea50ad89c197b51",
-    "question": "Measure total prefill time and thinking-inclusive client TTFT against actual fresh input length;derive and validate simple approximate formulas rather than assume a+bn.",
-    "selected_native_source_commit": "6e40afc1beddd059ee518617f6c1efce1da14aca",
-    "native_configuration": "Keep current131072context/residentINT8KV/8192chunk/1256expert slots/spec4/greedy and qualified runtime safety. Recover exact retained-native setup and hashes before preparing owned launch.",
-    "prospective_client_command": [
+    "stage": "prepared",
+    "source_commit": "5a0328c1eccbbfa4086918a35108ba7139868e72",
+    "source_contract": {
+      "source_commit": "e5f0b825624496e1ea3b88474fec2b8d50770819",
+      "review_sha256": "810a0203eddfc0a38b038b0b3ae1a3586e7b213dad5079634caaf5d2296dae16",
+      "source_snapshot": {
+        "tools/sycl/prefill_scaling_model.py": "a1cc93f931a069a62569239e369de8f2dcc0795da01849685086ef92ca8f8918",
+        "tools/prefill_scaling_bench.py": "9414d71ed5624ed12d15bd175ff9626cd11d1027556f85484157cf3c729b340a",
+        "tools/strata_bench.py": "80ab38c9ecbfe8fe9b7e425341803de10ff24b9c42f55bad7369f9c0938947f1",
+        "tools/sycl/engine_once.py": "ff573558f57533a8385f2cd8de0442d7e7584e8904d07faa00d0759379812a93",
+        "tools/sycl/measurement_owner.py": "bddd0c5e5020e882ca3404679420faec11e820dabce2ed4c72ef82b4c9c0874a",
+        "tools/sycl/runtime_probe.py": "750818a521dcdf28901638424e9789c2db22d85876226b6f5141a954bb9d41d6",
+        "tools/sycl/ur_validation.py": "2e41d84788dc9cc3c7435b18b43601b3ca79280ccb855414d7a36bae6bff83e7",
+        "tools/sycl/measurement_guards.py": "794e332c70aca0acadad4f26d0414548e023a02fd27b72ed78fc773674423ec8",
+        "tests/core/test_prefill_scaling_model.py": "5afa5c312d366ecf55dbdd2c091cea7669dab33744206fdbcc5e8ea3031f97ea",
+        "tools/test_strata_bench.py": "e35e50181c56070b0a150d70422bf43fab85c43154158f788e0b1df1d84299f0"
+      }
+    },
+    "qualification_inputs": {
+      "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/phase-prefill-speed-current.json": "9543297abc2ce0b4530ee6984d55366e735881caf42a08239f3494d655f9e10d",
+      "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/runtime-requalification-current.json": "09ad358e12f6ef58bfc0a978519927863f3d09949a033a1e224db95997647d97",
+      "/home/yayoi/orca/workspaces/Strata/sycl/data/expert-profile.bin": "8f59b4aa8873209dff11c11e37bcda9529a1335b724a1afeea37bf6388975baf"
+    },
+    "configuration": {
+      "exe": "/home/yayoi/orca/workspaces/Strata/sycl/tools/sycl/engine_once.py",
+      "args": [
+        "--pack",
+        "/home/yayoi/.local/share/strata-sycl/packs/qwen3.8-flash-next-iq3_s",
+        "--native",
+        "/home/yayoi/.local/share/strata-sycl/models/qwen3.8-flash-next-iq3_s/IQ3_S/Qwen3.8-Flash-Next-GSQ-RCO-IQ3_S-00001-of-00002.gguf",
+        "--max-context",
+        "131072",
+        "--kv",
+        "int8",
+        "--kv-resident",
+        "131072",
+        "--expert-cache",
+        "1256",
+        "--expert-profile",
+        "/home/yayoi/orca/workspaces/Strata/sycl/data/expert-profile.bin",
+        "--expert-cache-per-layer",
+        "--pool-workers",
+        "5",
+        "--pcie-frac",
+        "0",
+        "--adapt-swaps",
+        "0",
+        "--conversation-cache-mib",
+        "0",
+        "--prompt-cache",
+        "0",
+        "--turn-token",
+        "-1",
+        "--suffix-draft",
+        "0",
+        "--greedy",
+        "--no-spec-split",
+        "--short-read",
+        "0",
+        "--spec",
+        "4",
+        "--mtp",
+        "/home/yayoi/.local/share/strata-sycl/mtp/rt",
+        "--prefill",
+        "8192",
+        "--vram-reserve-mib",
+        "700",
+        "--no-coupled-draft",
+        "--no-token-graph"
+      ],
+      "cwd": "/home/yayoi/orca/workspaces/Strata/sycl",
+      "tokenizer": "/home/yayoi/.local/share/strata-sycl/packs/qwen3.8-flash-next-iq3_s/tokenizer",
+      "model_name": "qwen3.8-flash-next-iq3_s-primary",
+      "aliases": [
+        "strata"
+      ],
+      "host": "127.0.0.1",
+      "log": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-length-scaling-v1/engine.stderr",
+      "engine_silence_s": 480,
+      "parallel": 1,
+      "open_browser": false,
+      "env": {}
+    },
+    "binary": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/strata",
+      "bytes": 22190000,
+      "sha256": "22182f1a5e62e5f4259ce49a75ae44afbd988166ec79324816e499ff37ef60e4"
+    },
+    "build_proof": {
+      "source_commit": "6e40afc1beddd059ee518617f6c1efce1da14aca",
+      "inputs_recovered": 9853,
+      "assets_verified": 13,
+      "receipt": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/record.json",
+        "sha256": "a38f477670fafcd1a931be2e20d90d6d9718df75b61954b421f361af9f6881b2"
+      },
+      "limits": "Original build remains selected; this source-only diagnostic is not adoption."
+    },
+    "preload": {
+      "library": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/ur-validation-preload-v2/libstrata_ur_validation.so",
+        "sha256": "1d4e69d672d55fa0a126ae43b7b4743482cccca7e2f2bc22e0db2bfdad5bdc7c"
+      },
+      "loader": {
+        "path": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_loader.so.0.12.0",
+        "sha256": "bb6e1311850e4b1a924e42acae80c2b3610934625a4985aaa67967abe31356fc"
+      }
+    },
+    "neo": {
+      "path": "/usr/lib/x86_64-linux-gnu/libze_intel_gpu.so.1.17.39758",
+      "sha256": "52e29a602f92d3542eac91e20717743e63ca7d4b257d0c79a3c4d6c64c94ea49"
+    },
+    "boot": "cfda0b6a-7c13-4fe2-bdf5-8f9202770840",
+    "driver": {
+      "pci": "/sys/bus/pci/devices/0000:05:00.0",
+      "driver": "xe",
+      "vendor": "0x8086",
+      "device": "0xe20c",
+      "kernel": "7.0.0-38-generic",
+      "devcoredump": false
+    },
+    "command": [
       "/bin/sh",
-      "bench.sh",
+      "/home/yayoi/orca/workspaces/Strata/sycl/bench.sh",
       "--config",
-      "<fresh-owned-root>/config.json",
+      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-length-scaling-v1/config.json",
+      "--port",
+      "43639",
       "--prefill-scaling",
       "--think",
       "--runs",
       "3",
+      "--profile-request-gates",
       "--workload-id",
       "prefill_scaling_v1",
       "--fail-fast-engine-error",
+      "--ready-timeout",
+      "600",
       "--out",
-      "<fresh-owned-root>/bench"
+      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-length-scaling-v1/bench"
     ],
-    "requested_min_input_tokens": [
-      1024,
-      4096,
-      16384,
-      32768,
-      65536,
-      98304
-    ],
-    "token_policy": "Construction1.25xminimum is not actual token count. Use actual read tokens/engine prompt_ms;allreuse0;normalstream;1..24generated;thinking on;actualinput+24+256fitscontext.",
-    "repetitions": "Initial characterization:one fresh server,one short warmup,one retained separate firstmaximumlong request,then3rotated six-length warmed sweeps. Not independent-process repetition. Additional independent confirmation after curve/source-route analysis.",
-    "analysis": "Plot individual/median/spread T(n),pp,TTFT;compare affine,quadratic,nlogn candidates by residuals/leave-one-length-out errors. No automatic model selection/extrapolation. Separate actualshort/long routes and inspect chunk boundaries;collectextra boundary points onlyif evidence requires.",
-    "tg_followup": "Separately characterize startingcontext and actualgeneratedlength withthinking>=1Koutput andmeasuredMTPagreement.24-output scaling mode is not tg evidence.",
-    "stopping": "Require committed frozen ownership/runtime/source/model/binary/config/plan admission beforelaunch;finitebudgets;stopfirstfailure,no retries/droppedpoints;keepfailedoutcome.",
-    "host_validation": {
-      "source": "15a0f0783e6719be88d183c27ea50ad89c197b51",
-      "commands": [
-        "tools/test_strata_bench.py",
-        "tools/test_benchmark_evidence.py"
+    "plan": {
+      "question": "How do total prefill time,pp and thinking-inclusive TTFT scale with actual input length on the selected6e40 engine?",
+      "repetition": "One fresh server;one short warmup;one maximum-length first-use request retained separately;three six-length sweeps in frozen ascending,descending,rotated order after process priming. Keep first visit per length visible;maximum-length priming does not prove every shape was warmed. Not three independent processes.",
+      "minima": [
+        1024,
+        4096,
+        16384,
+        32768,
+        65536,
+        98304
       ],
-      "passed_tests": [
-        20,
-        15
-      ],
-      "GPU_executed": false
+      "constants": "Original22182f1a ELF;1256-slot decode placement;131072 resident INT8 KV;8192 chunks;BF16/vLLM/mode10 on long route;unchanged86-key template plus explicit qualified NEO;native-only retained-loader validation;24 output cap;thinking on;zero reuse.",
+      "prerequisites": "Fresh host-only canary and bounded traced submission fixture;original13 artifacts and9853 Git inputs;qualified current driver/runtime;actual native environment/maps at19request boundaries;no fresh fault.",
+      "decision": "No inference/runtime adoption. Keep every individual T,actualread,pp,TTFT,HTTPtotal and output count. Compare simple affine,quadratic,nlogn hypotheses by residuals and held-out-length errors;no automatic selection or measured-range extrapolation. Check actual route before interpreting fixed costs;short/decode-placement versus long/layer-major fits separate. Follow boundary points onlyif evidence requires.",
+      "stopping": "No speed-based stop,retry,replaced or dropped sample. Stop first correctness,ownership,validation,budget,source or fault failure.",
+      "scope": "No profiling,census,resource polling,state readback,rebuild,service/reset/global changes. Existing prefill API clock includes handoff back to decode. First nonempty reasoning/content defines TTFT. Output24 is not tg/agent/quality/physical262144 qualification. Same-process repeatability only."
     },
-    "model_execution_qualified": false,
-    "measurement_completed": false,
-    "retention": "One compact current curve withindividual actualcounts/times/TTFT,source/config/runtime identity,formula validation anddecision. Retire successful rawjournal/logs after verified extraction;no duplicate report/checkpoint/build.",
-    "next_action": "Recover and hash-check the retained6e40 native setup;prepare and commit a fresh owned20request plan/config withfinitebudgets;run the length sweep before interpreting one-length throughput or selecting a route-specific approximation."
+    "budgets": {
+      "wall": 3000,
+      "cpu": 72000,
+      "rss_cap": 111669149696,
+      "text_cap": 33554432,
+      "file_cap": 67108864,
+      "total_cap": 67108864
+    },
+    "active": false,
+    "ownership_closed": true,
+    "qualification": [],
+    "complete": false,
+    "passed": false,
+    "retention": "One compact curve withindividual counts/timings/TTFT,source/config/runtime identity,route andformula checks. Retire successful logs/journals/JIT and this one-use controller after verified extraction;original13 assets remain.",
+    "generated_sha256": {
+      "config.json": "46abb246c9ce81a28d86bc63105a95327fa4b958ac5ae4fe8c35546e1a4be4fc",
+      "plan.json": "08cfd654f8512bb484582b232cb0361de9c228e1eb5f4cec465aba42cf5195ef"
+    }
   }
 }
