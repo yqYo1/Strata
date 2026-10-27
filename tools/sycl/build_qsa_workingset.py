@@ -11,6 +11,7 @@ import sys
 import time
 
 sys.dont_write_bytecode=True
+sys.path.insert(0,str(Path(__file__).resolve().parent))
 import qsa_workingset_sources as proposal
 import runtime_probe as qualified_runtime
 import generation_engine as gen
@@ -175,6 +176,9 @@ def prepare():
     guards.require(digest(fixture['path'])==fixture['sha256'] and fixture['header']==[0,32768,6491,2051],'selected-ID identity differs')
     legacy=json.loads((gen.A/'native-gdn-engine-build.json').read_text())['legacy_provenance_exception']['additional_old_product_review']
     record=dict(stage='prepared',source_commit=revision,input_sha256=pins,plan=experiment(),sources=list(map(str,sources)),selected_fixture=fixture,
+        preparation_refusals=[dict(source_commit='51aa75c95',error='isolated Python omitted script import directory',
+            native_or_compiler_launched=False,output_root_created=False,
+            resolution='Explicit project-local module path before imports;retain isolated/no-site/no-bytecode startup.')],
         declared_compiler_header_delta=changed,
         retained_engine=full['binary'],native_qualification=proof,generated=generated,compiler=compiler,
         compiler_inputs=dict(path=str(manifest),files=len(paths),sha256=digest(manifest)),commands=commands,
