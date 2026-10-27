@@ -3868,5 +3868,25 @@
     "harness_compiler_dependencies": 664,
     "GPU_executed": false,
     "scope": "Host-only re-admission of the unchanged native build after controller-only compact dependency checks;not new native compilation or GPU qualification."
+  },
+  "actual_id_controller_host_controls": {
+    "source_commit": "e87dd625a",
+    "passed": true,
+    "controls": 9,
+    "GPU_executed": false,
+    "positive": [
+      "Changed64output accepted with own recurrence",
+      "All six process/shape speed gates pass on eligible synthetic evidence"
+    ],
+    "rejected": [
+      "wrong_candidate_recurrence",
+      "nonfinite_reference_ratio",
+      "corrupted_guard",
+      "missing_footer",
+      "duplicate_process",
+      "one_slow_shape_process",
+      "control_original_calibration"
+    ],
+    "limits": "Host synthetic parser/decision controls only;no native execution or performance claim."
   }
 }
