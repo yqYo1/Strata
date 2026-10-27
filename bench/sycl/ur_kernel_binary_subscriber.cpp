@@ -254,11 +254,12 @@ void callback(uint16_t type, xpti::trace_event_data_t*, xpti::trace_event_data_t
               uint64_t instance, const void* raw) noexcept {
   if (querying || type != xpti::trace_function_with_args_end) return;
   const auto* d = static_cast<const xpti::function_with_args_t*>(raw);
-  require(d && d->function_name && d->args_data && d->ret_data, "callback packet");
+  require(d && d->function_name && d->ret_data, "callback packet");
   if (*static_cast<const ur_result_t*>(d->ret_data) != UR_RESULT_SUCCESS) return;
   if (d->function_id != UR_FUNCTION_KERNEL_CREATE &&
       d->function_id != UR_FUNCTION_ENQUEUE_KERNEL_LAUNCH &&
       d->function_id != UR_FUNCTION_ENQUEUE_KERNEL_LAUNCH_WITH_ARGS_EXP) return;
+  require(d->args_data != nullptr, "selected callback arguments");
   if (d->function_id == UR_FUNCTION_KERNEL_CREATE) {
     require(!std::strcmp(d->function_name, "urKernelCreate"), "create API identity");
     const auto* p = static_cast<const ur_kernel_create_params_t*>(d->args_data);
