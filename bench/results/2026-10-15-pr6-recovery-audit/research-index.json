@@ -12559,5 +12559,61 @@
     "retention": "Keep the corrected API contract,capacity correction and exact source links for Main allocation admission. Full report/review transaction retired after recording these findings.",
     "report_and_review_retired": true,
     "transaction_archive_commit": "cbedff2f5b48422e6c940f3d2b07a196c8c30193"
+  },
+  "selected_qsa_observation_contract_20261027": {
+    "classification": "decision_support",
+    "report_budget_bytes": 16384,
+    "question": "Can the selected original6e40 ordered-exp/cached-query QSA kernel alone obtain complete GPU service timing using the retained UR/XPTI/unitrace facilities,without changing/rebuilding the engine or depending on a complete oneMKL ledger? Trace actual source selection,queue/graph/direct submission,event availability and lifetimes,unique kernel name/NDRange/count census,loss/error/drain/clock and observer-cost requirements. Identify the smallest bounded qualification and explicit stop conditions,or the concrete missing capability. Do not repeat generic whole-model collection surveys.",
+    "prerequisite_evidence": [
+      "Closed whole-model coarse QSA interval44.429s,attention interval30.764s include host gaps and are not GPU service;selected resource unit remains unknown.",
+      "The kernel/header/prefill callsite bytes match original6e40 exactly;source hashes recorded below. Default compute queue has profiling enabled.",
+      "Current direct UR/PTI fixture joins pass;full graph/library/model coverage and observer cost remain open. Scope only the selected QSA family and preserve all actual matching/lifetime/loss gates.",
+      "PTI checkout is clean at4b6d74294cdc72766c00a9211fe2e4261ee94244,matching retained unitrace source family. Existing collector/launcher/preload identities are recorded in prefill-resources-current.json."
+    ],
+    "sources": {
+      "include/strata/kernels/qsa_bf16_prefix.hpp": "8d180de01ec1afecac278cb9919ddeacc2f7a159ecacd5d593ed5a57b9a2b159",
+      "src/kernels/sycl/qsa_bf16_prefix.cpp": "4f9f815c9baae709f919f6d5ad1af04677c10d8c13c7597b3857cf81567ae192",
+      "src/prefill/sycl/qsa_native16.cpp": "8fbd28c261f1d25959486ee1f15b1f3f388597fb4a9aef3ed4415e035170281f",
+      "src/sycl/runtime.cpp": "e6c20e148bc7ceec250ad9a58ddfc851c1476aaab3d68982d2aee2897e572b83",
+      "bench/sycl/ur_call_subscriber.cpp": "5bb245d1b0aaf19468a75a4adf43c0d26c1d9427df7daddda1b082169741ed8e",
+      "tools/sycl/work_ledger.py": "a1eb1cadb7c0fcd4b12fafd607246de95ba377e243d6c9c611f4af86d37c5b94"
+    },
+    "PTI_source": "/home/yayoi/ghq/github.com/intel/pti-gpu",
+    "PTI_revision": "4b6d74294cdc72766c00a9211fe2e4261ee94244",
+    "report": "/home/yayoi/orca/workspaces/Strata/sycl/.cache/strata-research/20261027/qsa-only-observation-contract.md",
+    "consumer": "Main bounded source/resource-attribution choice for actual selected QSA before another inference optimization.",
+    "prior_scopes": [
+      "current_qsa_prefix_work_geometry_audit_20261023",
+      "prefill_event_reconciliation_design_20261025",
+      "b570_qsa_available_counter_selection_20261023"
+    ],
+    "status": "planned",
+    "schedulable_now": true,
+    "worker_model": "gpt-6-luna",
+    "review_model": "native Codex gpt-6-luna max",
+    "source_revision": "214cb715a",
+    "retention": "Native review decides substantive novelty and concrete retrieval value;do not automatically commit full reports/specs/transactions. Review after the named decision or first retrieval."
+  },
+  "offload_scaling_identifiability_collection_20261027": {
+    "classification": "knowledge_collection",
+    "report_budget_bytes": 12288,
+    "question": "Compare primary-source performance-model and experiment methods for identifying fixed layer/weight setup,per-token GPU work,cache/working-set effects and synchronization in heterogeneous GPU-offload pipelines when counters are unavailable. Focus on identifiability and counterexamples when changing prompt length also changes attention geometry,expert populations and batching;compare affine/Hockney or LogGP style latency models,roofline/ECM or pipeline models,and useful controlled discriminators. Include original HPC/non-LLM papers or author technical blogs. Do not fit local samples,claim a local bottleneck,predict speed,or repeat generic CPU bandwidth/PCIe surveys.",
+    "prerequisite_evidence": [
+      "New completed changed-input screen demonstrates that fewer MoE windows/jobs do not alone establish a throughput or wire-traffic gain;this is source/method collection independent of an engine build.",
+      "Prior Zen3 counter-free methods and QSA geometry/counter reports are indexed for overlap review. The distinct question is GPU-offload pipeline scaling identifiability under changing operator/workload/cache geometry."
+    ],
+    "report": "/home/yayoi/orca/workspaces/Strata/sycl/.cache/strata-research/20261027/offload-scaling-identifiability-methods.md",
+    "consumer": "Indexed retrieval when Main designs a controlled multi-shape or stage-isolation experiment;Main must not load the body on arrival.",
+    "prior_scopes": [
+      "zen3_counter_free_roofline_methods_collection_scope",
+      "current_qsa_prefix_work_geometry_audit_20261023",
+      "b570_xe2_arithmetic_ceiling_collection_20261022"
+    ],
+    "status": "planned",
+    "schedulable_now": true,
+    "worker_model": "gpt-6-luna",
+    "review_model": "native Codex gpt-6-luna max",
+    "source_revision": "214cb715a",
+    "retention": "Native review decides substantive novelty and concrete retrieval value;do not automatically commit full reports/specs/transactions. Review after the named decision or first retrieval."
   }
 }
