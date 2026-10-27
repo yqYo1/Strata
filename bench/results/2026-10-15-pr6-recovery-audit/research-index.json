@@ -13593,8 +13593,8 @@
   },
   "qsa_subgroup_k_staging_source_contract_20261028": {
     "classification": "decision_support",
-    "status": "prepared",
-    "schedulable_now": true,
+    "status": "worker_closed_native_review_pending",
+    "schedulable_now": false,
     "prerequisites_evidence": {
       "source_commit": "96aa415cfd20169077cd62da748368c54de50f3f",
       "source": {
@@ -13615,6 +13615,20 @@
       "qsa_slm_pitch_contract_20261027",
       "selected_fused_moe_service_scope_20261028"
     ],
-    "retention": "Consume review into current K-staging decision;retire task/report/review transaction after that decision unless substantive reusable findings require indexed retention."
+    "retention": "Consume review into current K-staging decision;retire task/report/review transaction after that decision unless substantive reusable findings require indexed retention.",
+    "worker_closed": true,
+    "orca": {
+      "run": "run_3072480b0529",
+      "task": "task_29082ac786c0",
+      "dispatch": "ctx_c90acce65220",
+      "terminal": "term_abb9a1dc-128a-4e5b-b103-dfd761266f72",
+      "model": "gpt-6-luna",
+      "model_evidence": "Fresh/new terminal preview shows GPT-6-Luna high;existing-terminal worker-start accepted and turn_started observed. No override requested or assumed.",
+      "settlement": "accepted matching worker_done succeeded;dispatch completed and capability revoked",
+      "release": "retained external_terminal processAction none;not an owned-process exit claim",
+      "delivery_ack": "delivery_72473ea1c53f"
+    },
+    "report_bytes": 12132,
+    "report_sha256": "27cb7752d7769d8e78e4a27fb6b20c60d26c3fc9603eb0e90a535197e54db70c"
   }
 }
