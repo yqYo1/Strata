@@ -389,10 +389,50 @@ a law automatically. Short/decode-placement and long/layer-major routes must
 be assessed separately before interpreting a fixed term. Twenty-one client,
 fifteen evidence and four controller host tests pass,including first-reasoning
 TTFT and immediate rejection of invalid prefill clocks before the next request.
-The owned model sweep,route-specific approximate formula
-and independent-process confirmation remain pending in the linked runtime
-result's`length_characterization`;no new speed is claimed. Generation24 is
+The owned sweep closes normally on20261027,with19 gated scaling requests plus
+one short warmup,all15 model hashes unchanged,quiet validation and no fresh
+fault. The linked runtime result's`length_characterization` retains every
+individual sample and the frozen source/configuration. These are three visits
+per length in one process,not independent-process repetitions. Generation24 is
 only for prefill/TTFT and does not characterize tg versus context/output length.
+
+| Actual fresh input tokens | Median prefill seconds | PP tok/s from that time | Median TTFT seconds |
+| ---: | ---: | ---: | ---: |
+| 1286 | 9.9825 | 128.8 | 10.095 |
+| 4956 | 17.4755 | 283.6 | 17.570 |
+| 19665 | 31.3533 | 627.2 | 31.518 |
+| 39254 | 49.3806 | 794.9 | 49.505 |
+| 78445 | 81.8309 | 958.6 | 81.969 |
+| 117483 | 120.6398 | 973.8 | 120.901 |
+
+The first maximum-length request is separate:129.6552s and129.819s TTFT.
+The preceding62-token short warmup takes25.9737s with29.719s TTFT;neither
+belongs in the subsequent-request curve. Source/model hashing primes the file
+cache,so these are not cold-disk measurements. First visits remain visible.
+
+For the four long-route median requests,a coarse approximation is
+`T_seconds(n) = 13.21465 + 0.000903860*n`,over19665..117483actual read tokens
+only. Maximum relative residual is2.795%;leaving one entire length out and
+refitting the other three gives maximum prediction error4.309%. The measured
+long-route time ranges are0.407..1.427% of their medians. Thus the formula is
+useful for rough estimates,but does not explain the smaller variations or
+provide a1% predictor. Its intercept is not a measured physical fixed cost.
+The global mixed-route affine,quadratic and`n log n` models have maximum
+held-out errors42.96%,52.30% and51.47%;none is adopted as a global formula.
+Only two short-route lengths are available,insufficient to validate their own
+time model. Higher R-squared alone would hide that problem.
+
+Native logs bind48MoE accumulator windows to19664,39253 and78444 physical
+prefill rows,and96windows to117482rows,with an81920-row cap. The adjacent
+long-route slopes are0.9203,0.8280 and0.9941ms/token;this is not evidence of
+one exact linear law. If a tuning decision needs better prediction,measure
+around window/chunk boundaries and confirm with independent processes before
+attributing the bend or extrapolating. Requested expert H2D volumes remain
+about33.8..38.3GB across these lengths;they are software-requested bytes,not
+physical PCIe traffic or a saturation measurement. No inference implementation
+changed for this sweep;it neither restores the historical best nor qualifies
+physical262144 execution. Packed-u32 QSA execution/numerical/component gates
+remain the next separate candidate check.
 
 This fresh within-process median is6.9390% above the earlier current-userspace
 cohort's911.7371,but remains2.7575% below the same binary's historical1002.6507.

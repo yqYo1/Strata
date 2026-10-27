@@ -6368,28 +6368,31 @@
     }
   },
   "length_characterization": {
-    "stage": "qualified",
+    "stage": "closed",
     "source_commit": "5a0328c1eccbbfa4086918a35108ba7139868e72",
-    "source_contract": {
-      "source_commit": "e5f0b825624496e1ea3b88474fec2b8d50770819",
-      "review_sha256": "810a0203eddfc0a38b038b0b3ae1a3586e7b213dad5079634caaf5d2296dae16",
-      "source_snapshot": {
-        "tools/sycl/prefill_scaling_model.py": "a1cc93f931a069a62569239e369de8f2dcc0795da01849685086ef92ca8f8918",
-        "tools/prefill_scaling_bench.py": "9414d71ed5624ed12d15bd175ff9626cd11d1027556f85484157cf3c729b340a",
-        "tools/strata_bench.py": "80ab38c9ecbfe8fe9b7e425341803de10ff24b9c42f55bad7369f9c0938947f1",
-        "tools/sycl/engine_once.py": "ff573558f57533a8385f2cd8de0442d7e7584e8904d07faa00d0759379812a93",
-        "tools/sycl/measurement_owner.py": "bddd0c5e5020e882ca3404679420faec11e820dabce2ed4c72ef82b4c9c0874a",
-        "tools/sycl/runtime_probe.py": "750818a521dcdf28901638424e9789c2db22d85876226b6f5141a954bb9d41d6",
-        "tools/sycl/ur_validation.py": "2e41d84788dc9cc3c7435b18b43601b3ca79280ccb855414d7a36bae6bff83e7",
-        "tools/sycl/measurement_guards.py": "794e332c70aca0acadad4f26d0414548e023a02fd27b72ed78fc773674423ec8",
-        "tests/core/test_prefill_scaling_model.py": "5afa5c312d366ecf55dbdd2c091cea7669dab33744206fdbcc5e8ea3031f97ea",
-        "tools/test_strata_bench.py": "e35e50181c56070b0a150d70422bf43fab85c43154158f788e0b1df1d84299f0"
-      }
+    "binary": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/strata",
+      "bytes": 22190000,
+      "sha256": "22182f1a5e62e5f4259ce49a75ae44afbd988166ec79324816e499ff37ef60e4"
     },
-    "qualification_inputs": {
-      "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/phase-prefill-speed-current.json": "9543297abc2ce0b4530ee6984d55366e735881caf42a08239f3494d655f9e10d",
-      "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/runtime-requalification-current.json": "09ad358e12f6ef58bfc0a978519927863f3d09949a033a1e224db95997647d97",
-      "/home/yayoi/orca/workspaces/Strata/sycl/data/expert-profile.bin": "8f59b4aa8873209dff11c11e37bcda9529a1335b724a1afeea37bf6388975baf"
+    "build_proof": {
+      "source_commit": "6e40afc1beddd059ee518617f6c1efce1da14aca",
+      "inputs_recovered": 9853,
+      "assets_verified": 13,
+      "receipt": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/record.json",
+        "sha256": "a38f477670fafcd1a931be2e20d90d6d9718df75b61954b421f361af9f6881b2"
+      },
+      "limits": "Original build remains selected; this source-only diagnostic is not adoption."
+    },
+    "boot": "cfda0b6a-7c13-4fe2-bdf5-8f9202770840",
+    "driver": {
+      "pci": "/sys/bus/pci/devices/0000:05:00.0",
+      "driver": "xe",
+      "vendor": "0x8086",
+      "device": "0xe20c",
+      "kernel": "7.0.0-38-generic",
+      "devcoredump": false
     },
     "configuration": {
       "exe": "/home/yayoi/orca/workspaces/Strata/sycl/tools/sycl/engine_once.py",
@@ -6451,44 +6454,6 @@
       "open_browser": false,
       "env": {}
     },
-    "binary": {
-      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/strata",
-      "bytes": 22190000,
-      "sha256": "22182f1a5e62e5f4259ce49a75ae44afbd988166ec79324816e499ff37ef60e4"
-    },
-    "build_proof": {
-      "source_commit": "6e40afc1beddd059ee518617f6c1efce1da14aca",
-      "inputs_recovered": 9853,
-      "assets_verified": 13,
-      "receipt": {
-        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/record.json",
-        "sha256": "a38f477670fafcd1a931be2e20d90d6d9718df75b61954b421f361af9f6881b2"
-      },
-      "limits": "Original build remains selected; this source-only diagnostic is not adoption."
-    },
-    "preload": {
-      "library": {
-        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/ur-validation-preload-v2/libstrata_ur_validation.so",
-        "sha256": "1d4e69d672d55fa0a126ae43b7b4743482cccca7e2f2bc22e0db2bfdad5bdc7c"
-      },
-      "loader": {
-        "path": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_loader.so.0.12.0",
-        "sha256": "bb6e1311850e4b1a924e42acae80c2b3610934625a4985aaa67967abe31356fc"
-      }
-    },
-    "neo": {
-      "path": "/usr/lib/x86_64-linux-gnu/libze_intel_gpu.so.1.17.39758",
-      "sha256": "52e29a602f92d3542eac91e20717743e63ca7d4b257d0c79a3c4d6c64c94ea49"
-    },
-    "boot": "cfda0b6a-7c13-4fe2-bdf5-8f9202770840",
-    "driver": {
-      "pci": "/sys/bus/pci/devices/0000:05:00.0",
-      "driver": "xe",
-      "vendor": "0x8086",
-      "device": "0xe20c",
-      "kernel": "7.0.0-38-generic",
-      "devcoredump": false
-    },
     "command": [
       "/bin/sh",
       "/home/yayoi/orca/workspaces/Strata/sycl/bench.sh",
@@ -6534,41 +6499,826 @@
       "file_cap": 67108864,
       "total_cap": 67108864
     },
-    "active": false,
-    "ownership_closed": true,
-    "qualification": [
-      {
-        "case": "canary",
-        "passed": true,
-        "ownership_closed": true
-      },
-      {
-        "case": "submission",
-        "passed": true,
-        "ownership_closed": true
-      }
-    ],
-    "complete": false,
-    "passed": false,
-    "retention": "One compact curve withindividual counts/timings/TTFT,source/config/runtime identity,route andformula checks. Retire successful logs/journals/JIT and this one-use controller after verified extraction;original13 assets remain.",
     "generated_sha256": {
       "config.json": "46abb246c9ce81a28d86bc63105a95327fa4b958ac5ae4fe8c35546e1a4be4fc",
       "plan.json": "08cfd654f8512bb484582b232cb0361de9c228e1eb5f4cec465aba42cf5195ef"
     },
-    "qualification_outcome": {
-      "host_probe_accepted": true,
+    "active": false,
+    "ownership_closed": true,
+    "complete": true,
+    "passed": true,
+    "source_contract": {
+      "source_commit": "e5f0b825624496e1ea3b88474fec2b8d50770819",
+      "review_sha256": "810a0203eddfc0a38b038b0b3ae1a3586e7b213dad5079634caaf5d2296dae16",
+      "source_snapshot": {
+        "tools/sycl/prefill_scaling_model.py": "a1cc93f931a069a62569239e369de8f2dcc0795da01849685086ef92ca8f8918",
+        "tools/prefill_scaling_bench.py": "9414d71ed5624ed12d15bd175ff9626cd11d1027556f85484157cf3c729b340a",
+        "tools/strata_bench.py": "80ab38c9ecbfe8fe9b7e425341803de10ff24b9c42f55bad7369f9c0938947f1",
+        "tools/sycl/engine_once.py": "ff573558f57533a8385f2cd8de0442d7e7584e8904d07faa00d0759379812a93",
+        "tools/sycl/measurement_owner.py": "bddd0c5e5020e882ca3404679420faec11e820dabce2ed4c72ef82b4c9c0874a",
+        "tools/sycl/runtime_probe.py": "750818a521dcdf28901638424e9789c2db22d85876226b6f5141a954bb9d41d6",
+        "tools/sycl/ur_validation.py": "2e41d84788dc9cc3c7435b18b43601b3ca79280ccb855414d7a36bae6bff83e7",
+        "tools/sycl/measurement_guards.py": "794e332c70aca0acadad4f26d0414548e023a02fd27b72ed78fc773674423ec8",
+        "tests/core/test_prefill_scaling_model.py": "5afa5c312d366ecf55dbdd2c091cea7669dab33744206fdbcc5e8ea3031f97ea",
+        "tools/test_strata_bench.py": "e35e50181c56070b0a150d70422bf43fab85c43154158f788e0b1df1d84299f0"
+      }
+    },
+    "frozen_plan_commit": "4d53fc54f",
+    "qualification_reference": "cdc174727:bench/results/2026-10-15-pr6-recovery-audit/prefill-runtime-comparison-current.json#length_characterization",
+    "shared_environment_reference": "1e676d554:bench/results/2026-10-15-pr6-recovery-audit/phase-prefill-speed-current.json#environment_template; explicit qualified NEO and per-run output paths in frozen plan",
+    "runtime_reference": "bench/results/2026-10-15-pr6-recovery-audit/runtime-requalification-current.json",
+    "qualification_summary": {
+      "cases": [
+        {
+          "case": "canary",
+          "passed": true,
+          "ownership_closed": true
+        },
+        {
+          "case": "submission",
+          "passed": true,
+          "ownership_closed": true
+        }
+      ],
+      "passed": true,
+      "ownership_closed": true,
+      "fresh_faults": [],
+      "benchmarks_verified": 209,
+      "models_before_after_verified": 15
+    },
+    "outcome": {
+      "passed": true,
+      "complete": true,
+      "started_utc": "2026-10-27T20:29:49Z",
+      "closed_utc": "2026-10-27T20:51:16Z",
+      "verified_request_boundaries": 19,
+      "first_long_request": {
+        "run": -1,
+        "requested_min_tokens": 98304,
+        "request_sha256": "ef2c2b8e8d72883a99d79ea329540b7989605254e40b83f86d46f0d77f3981f8",
+        "actual_prompt_tokens": 117483,
+        "actual_read_tokens": 117483,
+        "actual_reused_tokens": 0,
+        "generated_tokens": 24,
+        "prompt_ms": 129655.2,
+        "prompt_tps": 906.1,
+        "thinking_requested": true,
+        "reasoning_observed": true,
+        "ttft_s": 129.819,
+        "total_s": 131.491
+      },
+      "requests": [
+        {
+          "run": 0,
+          "requested_min_tokens": 1024,
+          "request_sha256": "c94d2f39802ad6a36d73270727f04e2515ca0040078e7e95a685cdd6cecac13d",
+          "actual_prompt_tokens": 1286,
+          "actual_read_tokens": 1286,
+          "actual_reused_tokens": 0,
+          "generated_tokens": 24,
+          "prompt_ms": 9948.0,
+          "prompt_tps": 129.3,
+          "thinking_requested": true,
+          "reasoning_observed": true,
+          "ttft_s": 10.095,
+          "total_s": 11.505
+        },
+        {
+          "run": 0,
+          "requested_min_tokens": 4096,
+          "request_sha256": "cf7d78211d3e881097037d4fabf283ba62121e1c1ad7ff4483a986f33250bcac",
+          "actual_prompt_tokens": 4956,
+          "actual_read_tokens": 4956,
+          "actual_reused_tokens": 0,
+          "generated_tokens": 24,
+          "prompt_ms": 17465.1,
+          "prompt_tps": 283.8,
+          "thinking_requested": true,
+          "reasoning_observed": true,
+          "ttft_s": 17.57,
+          "total_s": 19.188
+        },
+        {
+          "run": 0,
+          "requested_min_tokens": 16384,
+          "request_sha256": "5b2dd6887ab03437a7c31b24e802005903f661bd36b106225a1ed93e326eb35a",
+          "actual_prompt_tokens": 19665,
+          "actual_read_tokens": 19665,
+          "actual_reused_tokens": 0,
+          "generated_tokens": 24,
+          "prompt_ms": 31353.3,
+          "prompt_tps": 627.2,
+          "thinking_requested": true,
+          "reasoning_observed": true,
+          "ttft_s": 31.518,
+          "total_s": 33.068
+        },
+        {
+          "run": 0,
+          "requested_min_tokens": 32768,
+          "request_sha256": "cc51598378fc0717ebfbe5711fb03bf7c56aeacf2217e8c4a1d696d4815e7d19",
+          "actual_prompt_tokens": 39254,
+          "actual_read_tokens": 39254,
+          "actual_reused_tokens": 0,
+          "generated_tokens": 24,
+          "prompt_ms": 50006.4,
+          "prompt_tps": 785.0,
+          "thinking_requested": true,
+          "reasoning_observed": true,
+          "ttft_s": 50.117,
+          "total_s": 51.761
+        },
+        {
+          "run": 0,
+          "requested_min_tokens": 65536,
+          "request_sha256": "d0b6ca9c9e08b7d1e9d929d1613ecd12033b630b77f2984cb4a66ee20cf199c2",
+          "actual_prompt_tokens": 78445,
+          "actual_read_tokens": 78445,
+          "actual_reused_tokens": 0,
+          "generated_tokens": 24,
+          "prompt_ms": 80773.7,
+          "prompt_tps": 971.2,
+          "thinking_requested": true,
+          "reasoning_observed": true,
+          "ttft_s": 80.929,
+          "total_s": 82.606
+        },
+        {
+          "run": 0,
+          "requested_min_tokens": 98304,
+          "request_sha256": "4159d9a55a34b1ff8583fc4c9b1a251d1863f17cfcb8fa93edcb9c2ef8797b0b",
+          "actual_prompt_tokens": 117483,
+          "actual_read_tokens": 117483,
+          "actual_reused_tokens": 0,
+          "generated_tokens": 24,
+          "prompt_ms": 120520.7,
+          "prompt_tps": 974.8,
+          "thinking_requested": true,
+          "reasoning_observed": true,
+          "ttft_s": 120.683,
+          "total_s": 122.322
+        },
+        {
+          "run": 1,
+          "requested_min_tokens": 98304,
+          "request_sha256": "6e6f941fa50f832caa4c783d123396fa9a535fce5620b05d77effec93b8a599e",
+          "actual_prompt_tokens": 117483,
+          "actual_read_tokens": 117483,
+          "actual_reused_tokens": 0,
+          "generated_tokens": 24,
+          "prompt_ms": 120639.8,
+          "prompt_tps": 973.8,
+          "thinking_requested": true,
+          "reasoning_observed": true,
+          "ttft_s": 120.901,
+          "total_s": 122.591
+        },
+        {
+          "run": 1,
+          "requested_min_tokens": 65536,
+          "request_sha256": "aa9ebe359c4aa404bb892a91d24e070d59046662ebcd90c1fb5ae2afab913234",
+          "actual_prompt_tokens": 78445,
+          "actual_read_tokens": 78445,
+          "actual_reused_tokens": 0,
+          "generated_tokens": 24,
+          "prompt_ms": 81941.5,
+          "prompt_tps": 957.3,
+          "thinking_requested": true,
+          "reasoning_observed": true,
+          "ttft_s": 82.072,
+          "total_s": 83.53
+        },
+        {
+          "run": 1,
+          "requested_min_tokens": 32768,
+          "request_sha256": "b35bd88f08b87ed350b7f458fa3210f8449f1ed03390382da61bda26bc71c071",
+          "actual_prompt_tokens": 39254,
+          "actual_read_tokens": 39254,
+          "actual_reused_tokens": 0,
+          "generated_tokens": 24,
+          "prompt_ms": 49335.0,
+          "prompt_tps": 795.7,
+          "thinking_requested": true,
+          "reasoning_observed": true,
+          "ttft_s": 49.459,
+          "total_s": 51.132
+        },
+        {
+          "run": 1,
+          "requested_min_tokens": 16384,
+          "request_sha256": "1f5498b3e60df454bc063292cd8cff2f411803b12e5a256518222c9aa3903541",
+          "actual_prompt_tokens": 19665,
+          "actual_read_tokens": 19665,
+          "actual_reused_tokens": 0,
+          "generated_tokens": 24,
+          "prompt_ms": 31210.9,
+          "prompt_tps": 630.1,
+          "thinking_requested": true,
+          "reasoning_observed": true,
+          "ttft_s": 31.32,
+          "total_s": 32.957
+        },
+        {
+          "run": 1,
+          "requested_min_tokens": 4096,
+          "request_sha256": "dad85e6384325978b6c6a7352965524b5a402fc2bc5faab60998919651baeaaa",
+          "actual_prompt_tokens": 4956,
+          "actual_read_tokens": 4956,
+          "actual_reused_tokens": 0,
+          "generated_tokens": 24,
+          "prompt_ms": 17554.1,
+          "prompt_tps": 282.3,
+          "thinking_requested": true,
+          "reasoning_observed": true,
+          "ttft_s": 17.65,
+          "total_s": 19.271
+        },
+        {
+          "run": 1,
+          "requested_min_tokens": 1024,
+          "request_sha256": "e4745d4852847c81b7ed313e1e9012bd0449ffb3ea6b5dd6d85e61b60facf7db",
+          "actual_prompt_tokens": 1286,
+          "actual_read_tokens": 1286,
+          "actual_reused_tokens": 0,
+          "generated_tokens": 24,
+          "prompt_ms": 9982.5,
+          "prompt_tps": 128.8,
+          "thinking_requested": true,
+          "reasoning_observed": true,
+          "ttft_s": 10.074,
+          "total_s": 11.298
+        },
+        {
+          "run": 2,
+          "requested_min_tokens": 16384,
+          "request_sha256": "334fa48e04819400dc9b307d8d6a1ad409aad1b2b1c78a67b090eca414917a56",
+          "actual_prompt_tokens": 19665,
+          "actual_read_tokens": 19665,
+          "actual_reused_tokens": 0,
+          "generated_tokens": 24,
+          "prompt_ms": 31471.3,
+          "prompt_tps": 624.9,
+          "thinking_requested": true,
+          "reasoning_observed": true,
+          "ttft_s": 31.58,
+          "total_s": 33.068
+        },
+        {
+          "run": 2,
+          "requested_min_tokens": 32768,
+          "request_sha256": "c216d09a5fcaa0d83046087118f6fe9428908e5567033cb0cf4c74aea99c14ef",
+          "actual_prompt_tokens": 39254,
+          "actual_read_tokens": 39254,
+          "actual_reused_tokens": 0,
+          "generated_tokens": 24,
+          "prompt_ms": 49380.6,
+          "prompt_tps": 794.9,
+          "thinking_requested": true,
+          "reasoning_observed": true,
+          "ttft_s": 49.505,
+          "total_s": 51.154
+        },
+        {
+          "run": 2,
+          "requested_min_tokens": 65536,
+          "request_sha256": "7e820c656b9779c45aa059ebd58d3c95c91e4aeff9abfba276e15df1caa83fda",
+          "actual_prompt_tokens": 78445,
+          "actual_read_tokens": 78445,
+          "actual_reused_tokens": 0,
+          "generated_tokens": 24,
+          "prompt_ms": 81830.9,
+          "prompt_tps": 958.6,
+          "thinking_requested": true,
+          "reasoning_observed": true,
+          "ttft_s": 81.969,
+          "total_s": 83.415
+        },
+        {
+          "run": 2,
+          "requested_min_tokens": 98304,
+          "request_sha256": "9362a9974ccb115a69e61a40c938ec679a03acdeec623416d4a0d2f660ec33a7",
+          "actual_prompt_tokens": 117483,
+          "actual_read_tokens": 117483,
+          "actual_reused_tokens": 0,
+          "generated_tokens": 24,
+          "prompt_ms": 121011.5,
+          "prompt_tps": 970.8,
+          "thinking_requested": true,
+          "reasoning_observed": true,
+          "ttft_s": 121.169,
+          "total_s": 122.648
+        },
+        {
+          "run": 2,
+          "requested_min_tokens": 1024,
+          "request_sha256": "4186140062bea64d1f5eee06674da852625b551bb50872d96c7dd00c6674c2d0",
+          "actual_prompt_tokens": 1286,
+          "actual_read_tokens": 1286,
+          "actual_reused_tokens": 0,
+          "generated_tokens": 24,
+          "prompt_ms": 10041.0,
+          "prompt_tps": 128.1,
+          "thinking_requested": true,
+          "reasoning_observed": true,
+          "ttft_s": 10.2,
+          "total_s": 11.535
+        },
+        {
+          "run": 2,
+          "requested_min_tokens": 4096,
+          "request_sha256": "4194c82f28873fceef8bfe96f17ca5810770ffe1b9d62cdc7fc8f3d9e4cd1f5c",
+          "actual_prompt_tokens": 4956,
+          "actual_read_tokens": 4956,
+          "actual_reused_tokens": 0,
+          "generated_tokens": 24,
+          "prompt_ms": 17475.5,
+          "prompt_tps": 283.6,
+          "thinking_requested": true,
+          "reasoning_observed": true,
+          "ttft_s": 17.568,
+          "total_s": 19.186
+        }
+      ],
+      "routes": [
+        {
+          "run": -1,
+          "requested_min_tokens": 98304,
+          "actual_read_tokens": 117483,
+          "route": "layer-major BF16 mode10",
+          "prefill_rows": 117482
+        },
+        {
+          "run": 0,
+          "requested_min_tokens": 1024,
+          "actual_read_tokens": 1286,
+          "route": "non-layer-major short",
+          "prefill_rows": 1285
+        },
+        {
+          "run": 0,
+          "requested_min_tokens": 4096,
+          "actual_read_tokens": 4956,
+          "route": "non-layer-major short",
+          "prefill_rows": 4955
+        },
+        {
+          "run": 0,
+          "requested_min_tokens": 16384,
+          "actual_read_tokens": 19665,
+          "route": "layer-major BF16 mode10",
+          "prefill_rows": 19664
+        },
+        {
+          "run": 0,
+          "requested_min_tokens": 32768,
+          "actual_read_tokens": 39254,
+          "route": "layer-major BF16 mode10",
+          "prefill_rows": 39253
+        },
+        {
+          "run": 0,
+          "requested_min_tokens": 65536,
+          "actual_read_tokens": 78445,
+          "route": "layer-major BF16 mode10",
+          "prefill_rows": 78444
+        },
+        {
+          "run": 0,
+          "requested_min_tokens": 98304,
+          "actual_read_tokens": 117483,
+          "route": "layer-major BF16 mode10",
+          "prefill_rows": 117482
+        },
+        {
+          "run": 1,
+          "requested_min_tokens": 98304,
+          "actual_read_tokens": 117483,
+          "route": "layer-major BF16 mode10",
+          "prefill_rows": 117482
+        },
+        {
+          "run": 1,
+          "requested_min_tokens": 65536,
+          "actual_read_tokens": 78445,
+          "route": "layer-major BF16 mode10",
+          "prefill_rows": 78444
+        },
+        {
+          "run": 1,
+          "requested_min_tokens": 32768,
+          "actual_read_tokens": 39254,
+          "route": "layer-major BF16 mode10",
+          "prefill_rows": 39253
+        },
+        {
+          "run": 1,
+          "requested_min_tokens": 16384,
+          "actual_read_tokens": 19665,
+          "route": "layer-major BF16 mode10",
+          "prefill_rows": 19664
+        },
+        {
+          "run": 1,
+          "requested_min_tokens": 4096,
+          "actual_read_tokens": 4956,
+          "route": "non-layer-major short",
+          "prefill_rows": 4955
+        },
+        {
+          "run": 1,
+          "requested_min_tokens": 1024,
+          "actual_read_tokens": 1286,
+          "route": "non-layer-major short",
+          "prefill_rows": 1285
+        },
+        {
+          "run": 2,
+          "requested_min_tokens": 16384,
+          "actual_read_tokens": 19665,
+          "route": "layer-major BF16 mode10",
+          "prefill_rows": 19664
+        },
+        {
+          "run": 2,
+          "requested_min_tokens": 32768,
+          "actual_read_tokens": 39254,
+          "route": "layer-major BF16 mode10",
+          "prefill_rows": 39253
+        },
+        {
+          "run": 2,
+          "requested_min_tokens": 65536,
+          "actual_read_tokens": 78445,
+          "route": "layer-major BF16 mode10",
+          "prefill_rows": 78444
+        },
+        {
+          "run": 2,
+          "requested_min_tokens": 98304,
+          "actual_read_tokens": 117483,
+          "route": "layer-major BF16 mode10",
+          "prefill_rows": 117482
+        },
+        {
+          "run": 2,
+          "requested_min_tokens": 1024,
+          "actual_read_tokens": 1286,
+          "route": "non-layer-major short",
+          "prefill_rows": 1285
+        },
+        {
+          "run": 2,
+          "requested_min_tokens": 4096,
+          "actual_read_tokens": 4956,
+          "route": "non-layer-major short",
+          "prefill_rows": 4955
+        }
+      ],
+      "native_identity": {
+        "pid": 1930075,
+        "start_ticks": 148175613,
+        "sid": 1929994
+      },
+      "validation": {
+        "pid": 1930075,
+        "loader": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_loader.so.0.12.0",
+        "threads_before": 1,
+        "preinit": 37,
+        "config_enabled": true,
+        "first_init": true,
+        "dispatch_result": 46,
+        "output_untouched": true,
+        "retained_reference_until_exit": true,
+        "runtime_teardown_qualified": false
+      },
+      "journal_sha256": "38e82cff1f6eea374a5ad62d36d21a3924d5ee729bb8abea207a7ef73ef58acd",
       "ownership_closed": true,
       "fresh_faults": [],
       "boot_unchanged": true,
-      "driver_after": {
-        "pci": "/sys/bus/pci/devices/0000:05:00.0",
-        "driver": "xe",
-        "vendor": "0x8086",
-        "device": "0xe20c",
-        "kernel": "7.0.0-38-generic",
-        "devcoredump": false
+      "native_exit_code": 0,
+      "short_warmup": {
+        "read_tokens": 62,
+        "reused_tokens": 0,
+        "generated_tokens": 24,
+        "prompt_ms": 25973.7,
+        "prompt_tps": 2.4,
+        "ttft_s": 29.719,
+        "total_s": 32.792
+      }
+    },
+    "analysis": {
+      "implementation": "5a0328c1eccbbfa4086918a35108ba7139868e72:tools/prefill_scaling_bench.py::linear_fit and approximation_models",
+      "method": "Per length select the actual request with middle prompt_ms; fit total engine prefill milliseconds against actual read tokens. Leave one entire length out, refit the other three long-route points with linear_fit, and predict the held-out time. These are same-server requests, not independent-process repetitions.",
+      "by_length": [
+        {
+          "actual_read_tokens": 1286,
+          "median_run": 1,
+          "time_range_fraction": 0.009316303531179564
+        },
+        {
+          "actual_read_tokens": 4956,
+          "median_run": 2,
+          "time_range_fraction": 0.005092844267689051
+        },
+        {
+          "actual_read_tokens": 19665,
+          "median_run": 0,
+          "time_range_fraction": 0.008305345848762262
+        },
+        {
+          "actual_read_tokens": 39254,
+          "median_run": 2,
+          "time_range_fraction": 0.013596432607137245
+        },
+        {
+          "actual_read_tokens": 78445,
+          "median_run": 2,
+          "time_range_fraction": 0.014270892780111217
+        },
+        {
+          "actual_read_tokens": 117483,
+          "median_run": 1,
+          "time_range_fraction": 0.004068309131812245
+        }
+      ],
+      "long_route_affine": {
+        "intercept_ms": 13214.647990457888,
+        "ms_per_token": 0.9038599945777993,
+        "r_squared": 0.9984063032856986,
+        "max_relative_residual": 0.027948431034161517,
+        "points": [
+          {
+            "actual_read_tokens": 19665,
+            "prompt_ms": 31353.3,
+            "residual_ms": 364.24521616968923
+          },
+          {
+            "actual_read_tokens": 39254,
+            "prompt_ms": 49380.6,
+            "residual_ms": 685.8317823851758
+          },
+          {
+            "actual_read_tokens": 78445,
+            "prompt_ms": 81830.9,
+            "residual_ms": -2287.0452651133673
+          },
+          {
+            "actual_read_tokens": 117483,
+            "prompt_ms": 120639.8,
+            "residual_ms": 1236.9682665585133
+          }
+        ],
+        "interpretation": "Descriptive only. Check route, chunk boundaries and residuals before interpreting the intercept as fixed cost; no linearity or saturation qualification."
       },
-      "passed": true
-    }
+      "long_route_held_out": [
+        {
+          "actual_read_tokens": 19665,
+          "predicted_ms": 30457.064284795702,
+          "error_ms": -896.2357152042969,
+          "relative_error": -0.0285850521381895
+        },
+        {
+          "actual_read_tokens": 39254,
+          "predicted_ms": 48315.75219524717,
+          "error_ms": -1064.847804752826,
+          "relative_error": -0.021564092067589826
+        },
+        {
+          "actual_read_tokens": 78445,
+          "predicted_ms": 85045.03566957505,
+          "error_ms": 3214.1356695750583,
+          "relative_error": 0.039277774894019964
+        },
+        {
+          "actual_read_tokens": 117483,
+          "predicted_ms": 115441.56505412306,
+          "error_ms": -5198.234945876946,
+          "relative_error": -0.043088888956024016
+        }
+      ],
+      "max_long_held_out_relative_error": 0.043088888956024016,
+      "global_mixed_route_models": {
+        "candidates": {
+          "affine": {
+            "formula_ms": "a+b*x",
+            "x": "actual_read_tokens/65536",
+            "coefficients_ms": {
+              "a": 11645.456937593837,
+              "b": 60440.70856461628
+            },
+            "residual_ms": [
+              -2848.973038883152,
+              1259.3620375307,
+              1571.7570345256208,
+              1533.0621603760155,
+              -2160.616864219279,
+              645.4086706701055
+            ],
+            "leave_one_length_out_error_ms": [
+              4288.829746213292,
+              -1818.8752692728485,
+              -2016.60042392186,
+              -1843.4819288971412,
+              3010.6191022805288,
+              -2051.191224608192
+            ],
+            "mean_held_out_relative_error": 0.11486005579318395,
+            "max_held_out_relative_error": 0.42963483558360055
+          },
+          "quadratic": {
+            "formula_ms": "a+b*x+c*x^2",
+            "x": "actual_read_tokens/65536",
+            "coefficients_ms": {
+              "a": 11453.8731110955,
+              "b": 61494.21602280156,
+              "c": -597.4164849150745
+            },
+            "residual_ms": [
+              -2677.831943577503,
+              1374.6934228323316,
+              1501.011565569821,
+              1307.959291017687,
+              -2374.10689945973,
+              868.2745636174077
+            ],
+            "leave_one_length_out_error_ms": [
+              5220.732002373166,
+              -2204.2731267202325,
+              -1991.9311601108056,
+              -2295.6157165944314,
+              4924.131542853545,
+              -14975.192493716968
+            ],
+            "mean_held_out_relative_error": 0.15724156661039707,
+            "max_held_out_relative_error": 0.5229884299897988
+          },
+          "n_log_n": {
+            "formula_ms": "a+b*x+c*x*log2(x)",
+            "x": "actual_read_tokens/65536",
+            "coefficients_ms": {
+              "a": 10671.357523308794,
+              "b": 62113.085666623694,
+              "c": -1766.4690977390756
+            },
+            "residual_ms": [
+              -2104.275914877411,
+              1609.382935744552,
+              1123.5140307359507,
+              723.0805412200207,
+              -2639.844465575734,
+              1288.1428727526363
+            ],
+            "leave_one_length_out_error_ms": [
+              5138.429338714373,
+              -2530.0615219902447,
+              -1635.1302854322967,
+              -1363.7196520123616,
+              4312.312281225371,
+              -10315.258034627477
+            ],
+            "mean_held_out_relative_error": 0.14624868329064228,
+            "max_held_out_relative_error": 0.514743735408402
+          }
+        },
+        "selected_model": null,
+        "interpretation": "Hypotheses, not a required law. Compare held-out error against measured spread; inspect route/chunk changes and prefer a simpler adequate model. Piecewise route-specific fits may be required. Do not extrapolate outside measured lengths."
+      },
+      "adjacent_slopes": [
+        {
+          "from_read": 1286,
+          "to_read": 4956,
+          "ms_per_token": 2.0416893732970025
+        },
+        {
+          "from_read": 4956,
+          "to_read": 19665,
+          "ms_per_token": 0.9434903800394316
+        },
+        {
+          "from_read": 19665,
+          "to_read": 39254,
+          "ms_per_token": 0.9202766858951452
+        },
+        {
+          "from_read": 39254,
+          "to_read": 78445,
+          "ms_per_token": 0.8280038784414788
+        },
+        {
+          "from_read": 78445,
+          "to_read": 117483,
+          "ms_per_token": 0.9941313591884833
+        }
+      ],
+      "observed_route_totals": [
+        {
+          "run": -1,
+          "actual_read_tokens": 117483,
+          "windows": 96,
+          "maximum_rows": 81920,
+          "expert_requested_H2D_bytes": 38285363200,
+          "source_requested_H2D_bytes": 225565440
+        },
+        {
+          "run": 0,
+          "actual_read_tokens": 19665,
+          "windows": 48,
+          "maximum_rows": 19664,
+          "expert_requested_H2D_bytes": 33804288000,
+          "source_requested_H2D_bytes": 37754880
+        },
+        {
+          "run": 0,
+          "actual_read_tokens": 39254,
+          "windows": 48,
+          "maximum_rows": 39253,
+          "expert_requested_H2D_bytes": 35623987200,
+          "source_requested_H2D_bytes": 75365760
+        },
+        {
+          "run": 0,
+          "actual_read_tokens": 78445,
+          "windows": 48,
+          "maximum_rows": 78444,
+          "expert_requested_H2D_bytes": 37444172800,
+          "source_requested_H2D_bytes": 150612480
+        },
+        {
+          "run": 0,
+          "actual_read_tokens": 117483,
+          "windows": 96,
+          "maximum_rows": 81920,
+          "expert_requested_H2D_bytes": 38229632000,
+          "source_requested_H2D_bytes": 225565440
+        },
+        {
+          "run": 1,
+          "actual_read_tokens": 117483,
+          "windows": 96,
+          "maximum_rows": 81920,
+          "expert_requested_H2D_bytes": 38387993600,
+          "source_requested_H2D_bytes": 225565440
+        },
+        {
+          "run": 1,
+          "actual_read_tokens": 78445,
+          "windows": 48,
+          "maximum_rows": 78444,
+          "expert_requested_H2D_bytes": 37540121600,
+          "source_requested_H2D_bytes": 150612480
+        },
+        {
+          "run": 1,
+          "actual_read_tokens": 39254,
+          "windows": 48,
+          "maximum_rows": 39253,
+          "expert_requested_H2D_bytes": 35683788800,
+          "source_requested_H2D_bytes": 75365760
+        },
+        {
+          "run": 1,
+          "actual_read_tokens": 19665,
+          "windows": 48,
+          "maximum_rows": 19664,
+          "expert_requested_H2D_bytes": 33909248000,
+          "source_requested_H2D_bytes": 37754880
+        },
+        {
+          "run": 2,
+          "actual_read_tokens": 19665,
+          "windows": 48,
+          "maximum_rows": 19664,
+          "expert_requested_H2D_bytes": 33747609600,
+          "source_requested_H2D_bytes": 37754880
+        },
+        {
+          "run": 2,
+          "actual_read_tokens": 39254,
+          "windows": 48,
+          "maximum_rows": 39253,
+          "expert_requested_H2D_bytes": 35615257600,
+          "source_requested_H2D_bytes": 75365760
+        },
+        {
+          "run": 2,
+          "actual_read_tokens": 78445,
+          "windows": 48,
+          "maximum_rows": 78444,
+          "expert_requested_H2D_bytes": 37518643200,
+          "source_requested_H2D_bytes": 150612480
+        },
+        {
+          "run": 2,
+          "actual_read_tokens": 117483,
+          "windows": 96,
+          "maximum_rows": 81920,
+          "expert_requested_H2D_bytes": 38330240000,
+          "source_requested_H2D_bytes": 225565440
+        }
+      ],
+      "decision": "Descriptive long-route estimate T_seconds=13.2146479904579+0.000903859994577799*n over19665..117483 only. Held-out max4.309%;long-route residual max2.795% exceeds observed spread0.407..1.427%. Not a1% predictor or a physical fixed-cost/linear-scaling proof. Mixed-route affine/quadratic/nlogn max held-out errors42.96/52.30/51.47%;do not use one global formula. Only two short-route points;not enough to validate a short-route formula. Windows48 below81920 versus96 at117482 physical prefill rows are observed;causality needs boundary measurements. No extrapolation to262144,no inference adoption,TG,quality or physical-context qualification.",
+      "next": "Use this coarse curve for tuning estimates;retain source/order/history. If a decision needs finer scaling,measure around81920 MoE window and8192 chunk boundaries with independent-process confirmation. Resume the separately built packed-u32 QSA numerical/component gates;current limiting hardware resource remains incompletely attributed."
+    },
+    "retention": "Keep this compact source/config/runtime/individual-sample and approximate-curve decision. Retire successful raw journal,logs,JIT,one-use model controller/test and consumed source-review transactions after verified extraction;retain selected engine/twelve fixtures and current QSA comparison assets."
   }
 }
