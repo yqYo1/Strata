@@ -126,6 +126,11 @@ def current(row):
     require(reference.runtime.validation.committed(RESULT, ('event_reconciliation', KEY, 'plan')) == row['plan'],
         'commit immutable diagnostic plan')
     require(all(digest(ROOT / name) == pin for name, pin in row['plan']['generated'].items()), 'generated input changed')
+    expected_environment = reference.environment(source, ROOT)
+    expected_environment['UNITRACE_IncludeKernels'] = FILTER
+    require(row['environment'] == expected_environment and
+        row['configuration'] == json.loads((ROOT / 'config.json').read_text()),
+        'effective environment/configuration differs from frozen source and inputs')
     reference.models.model_pins(row['configuration'], source['model_assets'])
     return source
 
