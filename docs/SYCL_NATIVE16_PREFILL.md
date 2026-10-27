@@ -1620,12 +1620,13 @@ The replacement diagnostic,source`2d3e948c4` and fixture SHA prefix`6d48fddc`,
 now retains the actual attention event directly at submission and prints raw
 clock operands on failure. It preserves the attention arithmetic and production
 engine. All691actual compiler inputs match. Three fresh traced/validated small
-processes pass exact original/full/prepacked outputs,guards,input immutability,
-replica checks and positive event clocks;all exit0 with empty owned sessions
-and no fresh driver fault. This is a smoke qualification,not proof of the earlier
-clock failure's cause,a speedup,ordinary runtime teardown or model qualification.
-The larger component,resource-descriptor and working-set timing gates remain
-pending,including the physical262144 final-address component check.
+processes and three larger component processes pass exact original/full/prepacked
+outputs,guards,input immutability,replica checks and positive event clocks. The
+larger cases cover real16-query/eight-copy operands and physical262144 final
+addresses;all exit0 with empty owned sessions and no fresh driver fault. These
+component results do not diagnose the earlier clock failure or qualify a speedup,
+ordinary runtime teardown,full-model262144 fill or model adoption. The separate
+resource-descriptor and working-set timing gates remain pending.
 See[the current diagnostic](../bench/results/2026-10-15-pr6-recovery-audit/qsa-working-set-current.json).
 Compare full6491-query geometry separately from a cache-sized real-query subset.
 If repeating a small subset to fill the GPU,use identical repeated work in every

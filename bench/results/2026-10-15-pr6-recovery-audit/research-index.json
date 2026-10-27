@@ -12824,7 +12824,7 @@
   },
   "qsa_last_event_clock_lifetime_contract_20261027": {
     "classification": "decision_support",
-    "status": "completed_pending_native_review",
+    "status": "reviewed_with_corrections",
     "schedulable_now": false,
     "source_revision": "117ee9b28",
     "question": "Investigate the configured SYCL/URv2 event-lifetime/profiling contracts after an intermittent invalid last-attention clock. Distinguish queue-last lookup from direct submission ownership,discard/reuse semantics,profiling queues,timer widths/wraps and timestamp conversion. Use configured SDK plus pinned primary sources;do not infer a root cause without missing raw operands.",
@@ -12837,22 +12837,34 @@
     "report_budget_bytes": 12288,
     "worker_model": "gpt-6-luna",
     "consumer": "Main direct-submission-event diagnostic contract/failure-prevention review. Native Luna/max reviews before digest consumption.",
-    "retention": "Keep substantive novel findings and essential source/version corrections only. Report-only worker;retire dispatch/review transactions after indexing. Review at replacement qualification closure.",
-    "task_id": "task_4564287e1872",
-    "dispatch_id": "ctx_b3ffaa9cb70c",
-    "terminal": "term_abb9a1dc-128a-4e5b-b103-dfd761266f72",
-    "run_id": "run_12fa11537288",
-    "model_evidence": "Reused terminal was fresh after /new/current-worktree,with GPT-6-Luna high displayed before accepted Dispatch;turnStart observed. No model/effort flags combine with existing-terminal reuse.",
+    "retention": "Keep the substantive contract reference through direct-event qualification closure,then reassess. Worker release and delivery acknowledgement completed;transaction paperwork is not a retained reference.",
     "report_bytes": 12395,
     "report_sha256": "dbd2f4da9ae992a31c39fd285f85b0bbab98319d51f9b12fc0c836bdd983fd52",
-    "lifecycle": {
-      "dispatch": "completed",
-      "worker": "succeeded/settled",
-      "exact_terminal": true,
-      "release": "accepted_external_terminal_processAction_none",
-      "delivery_acknowledged": "delivery_56d3d4ae4a60"
-    },
     "reviewer": "native Codex gpt-6-luna max",
-    "review_task": "/root/review_qsa_event_clock_contract_20261027"
+    "worker_closed": true,
+    "review_outcome": "accepted_with_corrections",
+    "review": {
+      "model": "native Codex gpt-6-luna max",
+      "report_sha256": "dbd2f4da9ae992a31c39fd285f85b0bbab98319d51f9b12fc0c836bdd983fd52",
+      "report_bytes": 12395
+    },
+    "corrections": [
+      "The old end<=start error has no diagnosed cause. Wrong queue-last association alone does not explain invalid clocks of a normally completed profiling event.",
+      "Pinned Runtime requests in_order and enable_profiling,not discard_events. No external-event API use is established;backend event optimizations remain unknown.",
+      "Source2d3e948c4 retains the submitted event directly;all691compiled inputs match. Three fresh smoke and three larger component processes now pass,including physical262144 final addresses. No resource/performance/model qualification follows from these alone.",
+      "SDK directory labels/document snapshots do not establish the loaded implementation version;exact compiler/provider hashes remain authoritative."
+    ],
+    "retrieval": {
+      "tags": [
+        "qsa-event-clock",
+        "sycl-event-lifetime",
+        "ur-profiling"
+      ],
+      "use": "Retrieve only for a new direct-event clock failure or interpretation requiring exact event semantics."
+    },
+    "next_scope_eligibility": {
+      "schedulable_now": false,
+      "reason": "Direct-event smoke/component gates pass. No generic follow-up;use exact new operands/provider/queue identity if a later gate fails."
+    }
   }
 }
