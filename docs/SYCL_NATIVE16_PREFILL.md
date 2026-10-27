@@ -1616,6 +1616,16 @@ protocol receipt;do not advance resource/performance/model gates. Next capture
 strong events directly from submission instead of using the experimental
 queue-last-event lookup,and emit operands on a clock failure. Keep clock criteria
 unchanged and qualify new source before any rerun.
+The replacement diagnostic,source`2d3e948c4` and fixture SHA prefix`6d48fddc`,
+now retains the actual attention event directly at submission and prints raw
+clock operands on failure. It preserves the attention arithmetic and production
+engine. All691actual compiler inputs match. Three fresh traced/validated small
+processes pass exact original/full/prepacked outputs,guards,input immutability,
+replica checks and positive event clocks;all exit0 with empty owned sessions
+and no fresh driver fault. This is a smoke qualification,not proof of the earlier
+clock failure's cause,a speedup,ordinary runtime teardown or model qualification.
+The larger component,resource-descriptor and working-set timing gates remain
+pending,including the physical262144 final-address component check.
 See[the current diagnostic](../bench/results/2026-10-15-pr6-recovery-audit/qsa-working-set-current.json).
 Compare full6491-query geometry separately from a cache-sized real-query subset.
 If repeating a small subset to fill the GPU,use identical repeated work in every
