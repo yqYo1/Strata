@@ -20,7 +20,8 @@
       "bytes": 1590544,
       "sha256": "50495869acf82f88d29f81b64abe3508c6b2b3a99fc60bef17d1f58377174f06"
     },
-    "source_origin": "OwnMIT208c/9b59component;no XeStrata application source."
+    "source_origin": "OwnMIT208c/9b59component;no XeStrata application source.",
+    "binary_retired": true
   },
   "controller": {
     "source_commit": "b8a4b7d6c63b9c2c0fcc5c6f8b537bb72e709194",
@@ -1260,7 +1261,7 @@
   ],
   "work_limits": "Source-issued valid BF16K/V value bytes and logical/shape-padded matrix work only;cache hits,transactions,SLMtraffic,exp/reduction work and hardware saturation remain unmeasured. Byte rates are not measured PCIe/GDDRtraffic.",
   "retention": {
-    "component_binary_consumer": "None after failed speed gate;retire after exact source/recipe recovery and push. Keep only four immutable source/IRassets below for the next bounded layout-contract audit.",
+    "component_binary_consumer": "None;all component executables,objects,dependency/build/raw outputs retired. Four frozen source/IRassets only remain for the live pitch-contract audit.",
     "source_IR_consumer": "Immediate K/V/probability SLMstride feasibility audit;retire these four files after source-contract decision.",
     "source_IR_assets": [
       {
@@ -1285,6 +1286,31 @@
       }
     ],
     "selected_ID_fixture_consumer": "Prospective original32/padded-SLM comparison if exact configured SDK admits the layout;review at that source audit decision. One fixture only.",
-    "legacy_holds": "Separate original-source/recipe exceptions in native-gdn-engine-build.json remain unresolved;not global cleanup."
+    "legacy_holds": "Separate original-source/recipe exceptions in native-gdn-engine-build.json remain unresolved;not global cleanup.",
+    "retirement": {
+      "complete": true,
+      "files": 53,
+      "bytes": 9844598,
+      "manifest": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-cell64-rejected-build-retirement-20261027.jsonl",
+        "sha256": "6b47981c7ec5fa1ddeb32c98aa3ece9f3647494209c5489ef16a8ba2d64c1d80"
+      },
+      "original_inputs_recovered": 197,
+      "compiler_assets_verified": 8700,
+      "actual_original_dependencies_verified": 698,
+      "harness_dependencies_verified": 664,
+      "source_archive_commit": "4f2fffe03002261617a8bc86df4b1c083c8d49c3",
+      "remote_verified": "8fea1695d0fe67d175a1cb72f0eef34b1fba0320",
+      "prototype_sources_retired": {
+        "files": 8,
+        "bytes": 118538,
+        "restoration": "git show 4f2fffe03002261617a8bc86df4b1c083c8d49c3:PATH;Git deletion diff records exact paths/blob hashes."
+      },
+      "post_retirement_selected_artifacts_verified": 13,
+      "selected_fixture_preserved": true,
+      "remaining_component_files": 4,
+      "remaining_component_bytes": 200572,
+      "GPU_executed": false
+    }
   }
 }
