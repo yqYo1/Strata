@@ -1,6 +1,6 @@
 {
   "stage": "prepared",
-  "source_commit": "987512a0eaea69ab6e3c33c38e750d0e3b4f325f",
+  "source_commit": "3e00a11b0d76d20173101d12d8a81afbb415ae43",
   "native_source": "6e40afc1beddd059ee518617f6c1efce1da14aca",
   "binary": {
     "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/strata",
@@ -284,7 +284,7 @@
     "tools/sycl/memory_trace_device.py": "9fb86c4f0f025b3267ef93dbb9ac9147ac8fa40dbdc7020e3b0b297bea834d50",
     "tools/sycl/memory_trace_model.py": "6ebe4b97b55f641aacbe094815e2471fd283556421859fc86b398323be94c206",
     "tools/sycl/memory_trace_protocol_test.py": "ab23e280049bebcd32f89baeb272c3c8a55b7aa044f28db8ff8800ce9ca91f95",
-    "tools/sycl/model_work_census.py": "a80094646b6f678671daba746d8fe91f1a422f9d1a54dfe4455d2238171ef4b2",
+    "tools/sycl/model_work_census.py": "536bc2baec50e27c7a4e3a84a7faeb714c4b30344d88a8f29e4740f3c2456189",
     "tools/sycl/mtp_model_observer.py": "d08adf85cd4f644ec651ba6b598d7f431930aa6c8dbb6e7a08b941b2bf1ceeff",
     "tools/sycl/mtp_prefill.py": "416b20f35735c2719244b1b8c2bb9dc1d0f06a44d90d1d83306d9c3aa85b0a7d",
     "tools/sycl/mtp_resident_control.py": "fcc35c63d9c4da33e1b9fea8f2ab5fa15b80a909ce9f8b29c713d74f1530c9c4",
@@ -952,5 +952,14 @@
   "model_adopted": false,
   "question": "Obtain source-planned MoE jobs on the actual selected route and verify retired totals before a complete API/device ledger.",
   "limits": "Diagnostic census only. No complete device coverage,physical bus traffic,hardware saturation,clean speed,decode or physical262144 qualification.",
-  "retention": "Keep compact counts and one exact job-size histogram for the imminent source/API work planner. Retire successful raw logs and private caches after extraction;no new engine build. Review histogram consumer after route-plan selection."
+  "retention": "Keep compact counts and one exact job-size histogram for the imminent source/API work planner. Retire successful raw logs and private caches after extraction;no new engine build. Review histogram consumer after route-plan selection.",
+  "prior_unexecuted_plans": [
+    {
+      "source_commit": "987512a0eaea69ab6e3c33c38e750d0e3b4f325f",
+      "frozen_plan_commit": "14ff3921b",
+      "native_launched": false,
+      "checks": 0,
+      "reason": "Superseded before native execution:completion now follows final admission/postchecks. Requests,settings and native binary unchanged."
+    }
+  ]
 }
