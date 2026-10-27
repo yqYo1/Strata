@@ -5281,6 +5281,135 @@
         "activation_plan"
       ],
       "canonical_json_sha256": "1dc39c3849bcc46c126894b5eb3df3685b0fe66cfe7b7cdd1da5f2c4ced3a0ff"
+    },
+    "extraction_plan": {
+      "stage": "prepared",
+      "controller": {
+        "source_commit": "2c8b1701a371c926115b29a50ec6ed6c618c73bb",
+        "path": "tools/sycl/native_kernel_image.py",
+        "sha256": "66aca9d23c8fb13354e7cb13b29d2c7450aa1d93bdbac6a7c78f14712d3c0d9c",
+        "shared_source_files": 199,
+        "shared_source_sha256": "195efe2a1068bab72bd1d3a8cf75b1a2a49b70f1b9a1955307202d8cdd815912"
+      },
+      "observer": {
+        "source_commit": "6c7a3e05dbe942ad7a582d42b167fa929c85f9b5",
+        "source_sha256": "30be767dfd7d4379f84ba533c03025286e6bb23875c19a5494aa27b9bf3f1cb6",
+        "library": {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-k-staging-packed32-v1/native-image-v1/libstrata_ur_kernel_binary.so",
+          "sha256": "6dfd0576f43110c289e6a37c6c1ad3fecc99b360a57e74f01b01efbd38a9d172",
+          "bytes": 35944
+        },
+        "framework": {
+          "path": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libxptifw.so.1.0.1",
+          "sha256": "e31626a7a4ce9afb038a3bc185329341bc4771f96262ea07b3e5b5fdb65f6ff8"
+        },
+        "compiler_dependencies": 268,
+        "actual_dependency_sha256": "def38f7d26f88cee6ee94ddf19baa3d1ca6857c36d7ac7b390be64a1dc7599cf",
+        "host_plan": {
+          "commit": "21046228afa2e275895f0bac52b842d00a8057e8",
+          "path": "bench/results/2026-10-15-pr6-recovery-audit/qsa-k-staging-current.json",
+          "key": [
+            "native_image_diagnostic",
+            "host_plan"
+          ],
+          "canonical_json_sha256": "8391d59da50a4142b7faf111e8072fa42e9f82006175116372be2ba525d42d01",
+          "source_inputs": 202,
+          "role": "Recover exact closed host source,build command,compiler tools and dependency pins for the retained observer;do not duplicate full closed plan in current result.",
+          "compiler_dependencies": 269
+        }
+      },
+      "kernel_names": [
+        "_ZTSZZN6strata7kernelsL17prefix_batch_implILi33ELb0ELb0ELb1ELb1ELb1ELb1ELb0EEEbPKtRKNS0_12QsaAttnPoolsEPKiS8_lRKNS0_9QsaShapesEPtlRKNS0_19QsaPromptBf16BoundsElRKNS0_20QsaBf16PackedScratchEPvNS0_19QsaPrefixStateProbeEENKUlRN4sycl3_V17handlerEE_clESO_EUlNSM_7nd_itemILi1EEEE_",
+        "_ZTSZZN6strata7kernels16kstaging_controlL17prefix_batch_implILi33ELb0ELb0ELb1ELb1ELb1ELb1ELb0EEEbPKtRKNS0_12QsaAttnPoolsEPKiS9_lRKNS0_9QsaShapesEPtlRKNS0_19QsaPromptBf16BoundsElRKNS0_20QsaBf16PackedScratchEPvNS0_19QsaPrefixStateProbeEPN4sycl3_V15eventEENKUlRNSN_7handlerEE_clESR_EUlNSN_7nd_itemILi1EEEE_",
+        "_ZTSZZN6strata7kernels18kstaging_candidateL17prefix_batch_implILi33ELb0ELb0ELb1ELb1ELb1ELb1ELb0EEEbPKtRKNS0_12QsaAttnPoolsEPKiS9_lRKNS0_9QsaShapesEPtlRKNS0_19QsaPromptBf16BoundsElRKNS0_20QsaBf16PackedScratchEPvNS0_19QsaPrefixStateProbeEPN4sycl3_V15eventEENKUlRNSN_7handlerEE_clESR_EUlNSN_7nd_itemILi1EEEE_"
+      ],
+      "runtime_qualification_sha256": "09ad358e12f6ef58bfc0a978519927863f3d09949a033a1e224db95997647d97",
+      "physical_device": {
+        "name": "Intel(R) Arc(TM) B570 Graphics",
+        "eligible_Intel_PCI_devices": [
+          {
+            "pci": "0000:05:00.0",
+            "vendor": "0x8086",
+            "device": "0xe20c",
+            "class": "0x030000"
+          }
+        ],
+        "scope": "Single eligible physical Intel GPU/accelerator plus exact native device name;not a general multi-GPU UUID mapping."
+      },
+      "fixture": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-k-staging-packed32-v1/fixture",
+        "sha256": "86b98a1c1e523a842deb45fc45aeca130f18ed9f2280d2b15ec0f75becc03ff8",
+        "bytes": 1606296
+      },
+      "selected_ids": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-k-staging-selected-ids-v1.bin",
+        "bytes": 53252180,
+        "sha256": "a0410c7005f64a89d02becd42fcfd8155c92b68cd7b4d175543c172070a6338c",
+        "header": [
+          0,
+          32768,
+          6491,
+          2051
+        ],
+        "consumer": "Main imminent packed-u32 K-staging source proof and controlled comparison if independently qualified. Retire if no distinct legal candidate survives;review before next build.",
+        "review": "At this current source preflight,then before build. Retire immediately if no distinct legal controlled comparison survives;otherwise retire when that component comparison closes.",
+        "origin_native_source": "6e40afc1beddd059ee518617f6c1efce1da14aca",
+        "origin_capture_controller": "afd7fd025",
+        "origin_capture_plan": "ba542c888",
+        "origin_request_sha256": "1fd63b8c67a1888e443800b5c6d339ca116df2cb91941e6f332b6adf74275b3a"
+      },
+      "command": [
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-k-staging-packed32-v1/fixture",
+        "--smoke",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-k-staging-selected-ids-v1.bin"
+      ],
+      "environment": {
+        "PATH": "/usr/bin:/bin",
+        "HOME": "/home/yayoi",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8",
+        "PYTHONDONTWRITEBYTECODE": "1",
+        "LD_LIBRARY_PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib:/opt/intel/oneapi/mkl/2026.1/lib",
+        "ONEAPI_DEVICE_SELECTOR": "level_zero:gpu",
+        "UR_ADAPTERS_FORCE_LOAD": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_adapter_level_zero_v2.so.0",
+        "UR_L0_V2_FORCE_DISABLE_COPY_OFFLOAD": "1",
+        "NEOReadDebugKeys": "1",
+        "EnableDirectSubmission": "0",
+        "STRATA_SYCL_PREFILL_SAME_QUEUE": "1",
+        "STRATA_SYCL_VERIFY_NATIVE_CAPTURE": "0",
+        "SYCL_CACHE_PERSISTENT": "0",
+        "ZES_ENABLE_SYSMAN": "0",
+        "UR_ENABLE_LAYERS": "UR_LAYER_TRACING,UR_LAYER_PARAMETER_VALIDATION",
+        "UR_LOG_TRACING": "level:info;flush:info;output:file,/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-k-staging-packed32-v1/native-image-v1/extraction/api.trace",
+        "UR_LOG_VALIDATION": "level:warning;flush:warning;output:file,/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-k-staging-packed32-v1/native-image-v1/extraction/validation.log",
+        "UR_LOG_LOADER": "level:warning;flush:warning;output:stderr",
+        "UR_LOG_LEVEL_ZERO": "level:warning;flush:warning;output:stderr",
+        "LD_PRELOAD": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/ur-validation-preload-v2/libstrata_ur_validation.so",
+        "STRATA_UR_PROBE_EXPECTED_LOADER": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_loader.so.0.12.0",
+        "TMPDIR": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-k-staging-packed32-v1/native-image-v1/extraction/tmp",
+        "XDG_CACHE_HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-k-staging-packed32-v1/native-image-v1/extraction/cache",
+        "XPTI_TRACE_ENABLE": "1",
+        "XPTI_FRAMEWORK_DISPATCHER": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libxptifw.so.1.0.1",
+        "XPTI_SUBSCRIBERS": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-k-staging-packed32-v1/native-image-v1/libstrata_ur_kernel_binary.so",
+        "STRATA_NATIVE_CAPTURE_SUBSCRIBER": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-k-staging-packed32-v1/native-image-v1/libstrata_ur_kernel_binary.so",
+        "STRATA_NATIVE_CAPTURE_ROOT": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-k-staging-packed32-v1/native-image-v1/extraction/captures",
+        "STRATA_SYCL_PREFILL_COMMAND_PROFILE": "0",
+        "ZE_ENABLE_ALT_DRIVERS": "/usr/lib/x86_64-linux-gnu/libze_intel_gpu.so.1.17.39758",
+        "STRATA_NATIVE_KERNEL_0": "_ZTSZZN6strata7kernelsL17prefix_batch_implILi33ELb0ELb0ELb1ELb1ELb1ELb1ELb0EEEbPKtRKNS0_12QsaAttnPoolsEPKiS8_lRKNS0_9QsaShapesEPtlRKNS0_19QsaPromptBf16BoundsElRKNS0_20QsaBf16PackedScratchEPvNS0_19QsaPrefixStateProbeEENKUlRN4sycl3_V17handlerEE_clESO_EUlNSM_7nd_itemILi1EEEE_",
+        "STRATA_NATIVE_KERNEL_1": "_ZTSZZN6strata7kernels16kstaging_controlL17prefix_batch_implILi33ELb0ELb0ELb1ELb1ELb1ELb1ELb0EEEbPKtRKNS0_12QsaAttnPoolsEPKiS9_lRKNS0_9QsaShapesEPtlRKNS0_19QsaPromptBf16BoundsElRKNS0_20QsaBf16PackedScratchEPvNS0_19QsaPrefixStateProbeEPN4sycl3_V15eventEENKUlRNSN_7handlerEE_clESR_EUlNSN_7nd_itemILi1EEEE_",
+        "STRATA_NATIVE_KERNEL_2": "_ZTSZZN6strata7kernels18kstaging_candidateL17prefix_batch_implILi33ELb0ELb0ELb1ELb1ELb1ELb1ELb0EEEbPKtRKNS0_12QsaAttnPoolsEPKiS9_lRKNS0_9QsaShapesEPtlRKNS0_19QsaPromptBf16BoundsElRKNS0_20QsaBf16PackedScratchEPvNS0_19QsaPrefixStateProbeEPN4sycl3_V15eventEENKUlRNSN_7handlerEE_clESR_EUlNSN_7nd_itemILi1EEEE_"
+      },
+      "output_root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-k-staging-packed32-v1/native-image-v1/extraction",
+      "budgets": {
+        "wall": 180,
+        "cpu": 180,
+        "rss_cap": 4294967296,
+        "text_cap": 8388608,
+        "file_cap": 16777216,
+        "total_cap": 67108864
+      },
+      "criteria": "One existing owned actual-ID3query smoke,unchanged binary/safety environment,live original/observer/framework/runtime-map admission and B570 DRM BDF proof before kernels. Native exact-output/guard/input checks and all3attention identities with2launches each. Require3same-PID/device/instance-bound GEN ISA and3module captures,finite bounds/hash/census,quiet validation,normal closure,no freshfault/bootchange. This proves fresh extraction only;ELF-text association and offline disassembly remain later gates. No new timing/model trial or historical timed-image claim.",
+      "retirement": "Keep exact raw GEN/module only through imminent ELF/disassembly and source-bound comparison. Retire successful traces/duplicate dumps after compact extraction evidence;review entire rejected component generation at diagnostic closure."
     }
   }
 }
