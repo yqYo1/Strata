@@ -2704,7 +2704,7 @@
       }
     }
   ],
-  "validation_stage": "actual_id_boundaries_and_oracle_smoke_passed",
+  "validation_stage": "actual_id_boundaries_and_all_oracles_passed",
   "oracle_plan": {
     "kernel_ids": [
       "_ZTSZZN6strata7kernelsL17prefix_batch_implILi33ELb0ELb0ELb1ELb1ELb1ELb1ELb0EEEbPKtRKNS0_12QsaAttnPoolsEPKiS8_lRKNS0_9QsaShapesEPtlRKNS0_19QsaPromptBf16BoundsElRKNS0_20QsaBf16PackedScratchEPvNS0_19QsaPrefixStateProbeEENKUlRN4sycl3_V17handlerEE_clESO_EUlNSM_7nd_itemILi1EEEE_",
@@ -2875,7 +2875,7 @@
       ],
       "scope": "Single eligible physical Intel GPU/accelerator plus exact native device name;not a general multi-GPU UUID mapping."
     },
-    "stage": "prepared",
+    "stage": "closed",
     "mode": "component",
     "source_commit": "73c1c890edea5d53d001152e6c9fcbe90d259663",
     "controller_inputs": {
@@ -3007,6 +3007,107 @@
       "local_launches": {
         "2": {
           "calls": 23,
+          "local_arguments": [
+            [
+              0,
+              16384
+            ],
+            [
+              1,
+              1024
+            ],
+            [
+              3,
+              64
+            ],
+            [
+              4,
+              64
+            ],
+            [
+              5,
+              64
+            ],
+            [
+              13,
+              256
+            ],
+            [
+              15,
+              2112
+            ],
+            [
+              16,
+              64
+            ]
+          ],
+          "dynamic_local_bytes": 20032,
+          "work_dim": 1,
+          "local_size": [
+            128
+          ]
+        }
+      },
+      "exit_code": 0,
+      "postchecks_complete": true,
+      "postcheck_errors": [],
+      "fresh_faults": [],
+      "boot_unchanged": true,
+      "driver_after": {
+        "pci": "/sys/bus/pci/devices/0000:05:00.0",
+        "driver": "xe",
+        "vendor": "0x8086",
+        "device": "0xe20c",
+        "kernel": "7.0.0-38-generic",
+        "devcoredump": false
+      }
+    },
+    {
+      "mode": "component",
+      "passed": true,
+      "complete": true,
+      "active": false,
+      "ownership_closed": true,
+      "GPU_executed": true,
+      "physical_device": {
+        "name": "Intel(R) Arc(TM) B570 Graphics",
+        "pci": "0000:05:00.0",
+        "driver": "xe",
+        "matching_DRM_descriptors": 1
+      },
+      "output": {
+        "cases": 11,
+        "exact_prefix33_bits_cases": 11,
+        "case_summaries": [
+          "case cells=97 live_cells=49 active_rows=128 cap=33 queries=1 masked=0 compared=6144 max_abs=0 max_budget_ratio=0 oracle=BF16_operands_FP32_online packed_guard_elements=17 packed_k_mod8=2 packed_logical_prefix=PASS packed_guards=PASS guards=PASS inputs=PASS status=PASS",
+          "case cells=97 live_cells=71 active_rows=160 cap=33 queries=3 masked=1 compared=18432 max_abs=0 max_budget_ratio=0 oracle=BF16_operands_FP32_online packed_guard_elements=17 packed_k_mod8=2 packed_logical_prefix=PASS packed_guards=PASS guards=PASS inputs=PASS status=PASS",
+          "case cells=2113 live_cells=2113 active_rows=4256 cap=1 queries=3 masked=1 compared=18432 max_abs=0 max_budget_ratio=0 oracle=BF16_operands_FP32_online packed_guard_elements=17 packed_k_mod8=2 packed_logical_prefix=PASS packed_guards=PASS guards=PASS inputs=PASS status=PASS",
+          "case cells=2113 live_cells=2113 active_rows=4256 cap=17 queries=3 masked=1 compared=18432 max_abs=0 max_budget_ratio=0 oracle=BF16_operands_FP32_online packed_guard_elements=17 packed_k_mod8=2 packed_logical_prefix=PASS packed_guards=PASS guards=PASS inputs=PASS status=PASS",
+          "case cells=2113 live_cells=2113 active_rows=4256 cap=31 queries=3 masked=1 compared=18432 max_abs=0 max_budget_ratio=0 oracle=BF16_operands_FP32_online packed_guard_elements=17 packed_k_mod8=2 packed_logical_prefix=PASS packed_guards=PASS guards=PASS inputs=PASS status=PASS",
+          "case cells=2113 live_cells=2113 active_rows=4256 cap=32 queries=3 masked=1 compared=18432 max_abs=0 max_budget_ratio=0 oracle=BF16_operands_FP32_online packed_guard_elements=17 packed_k_mod8=2 packed_logical_prefix=PASS packed_guards=PASS guards=PASS inputs=PASS status=PASS",
+          "case cells=2113 live_cells=2113 active_rows=4256 cap=63 queries=3 masked=1 compared=18432 max_abs=0 max_budget_ratio=0 oracle=BF16_operands_FP32_online packed_guard_elements=17 packed_k_mod8=2 packed_logical_prefix=PASS packed_guards=PASS guards=PASS inputs=PASS status=PASS",
+          "case cells=2113 live_cells=2113 active_rows=4256 cap=65 queries=3 masked=1 compared=18432 max_abs=0 max_budget_ratio=0 oracle=BF16_operands_FP32_online packed_guard_elements=17 packed_k_mod8=2 packed_logical_prefix=PASS packed_guards=PASS guards=PASS inputs=PASS status=PASS",
+          "case cells=2113 live_cells=2113 active_rows=4256 cap=2051 queries=3 masked=1 compared=18432 max_abs=0 max_budget_ratio=0 oracle=BF16_operands_FP32_online packed_guard_elements=17 packed_k_mod8=2 packed_logical_prefix=PASS packed_guards=PASS guards=PASS inputs=PASS status=PASS",
+          "case cells=262144 live_cells=262144 active_rows=524288 cap=2051 queries=1 masked=0 compared=6144 max_abs=0 max_budget_ratio=0 oracle=BF16_operands_FP32_online packed_guard_elements=17 packed_k_mod8=2 packed_logical_prefix=PASS packed_guards=PASS guards=PASS inputs=PASS status=PASS",
+          "case cells=262144 live_cells=13 active_rows=32 cap=33 queries=1 masked=0 compared=6144 max_abs=0 max_budget_ratio=0 oracle=BF16_operands_FP32_online packed_guard_elements=17 packed_k_mod8=2 packed_logical_prefix=PASS packed_guards=PASS guards=PASS inputs=PASS status=PASS"
+        ],
+        "scope": "Existing independent BF16/FP32 oracle and guard/mask/nonfinite/tail/admission controls through the candidate adapter;not full model or speed."
+      },
+      "validation": {
+        "pid": 1738889,
+        "loader": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_loader.so.0.12.0",
+        "threads_before": 1,
+        "preinit": 37,
+        "config_enabled": true,
+        "first_init": true,
+        "dispatch_result": 46,
+        "output_untouched": true,
+        "retained_reference_until_exit": true,
+        "runtime_teardown_qualified": false
+      },
+      "local_launches": {
+        "2": {
+          "calls": 41,
           "local_arguments": [
             [
               0,
