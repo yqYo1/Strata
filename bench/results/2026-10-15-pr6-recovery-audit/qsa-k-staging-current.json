@@ -1538,6 +1538,29 @@
       "expected_dynamic_local_bytes": 20032,
       "conservative_declared_bytes": 20036,
       "GPU_observed": false
+    },
+    "corrected_host_controls": {
+      "source_commit": "1c877b184",
+      "source_sha256": "bc5e9925e46e289f42cf89a73beb7acdae098e7ae3b3c5fe9ddac07a04b99036",
+      "command": [
+        "timeout",
+        "60s",
+        "/usr/bin/python3.12",
+        "-I",
+        "-S",
+        "-B",
+        "tools/sycl/check_qsa_k_staging.py",
+        "host-controls"
+      ],
+      "exit_code": 0,
+      "passed": true,
+      "controls": 34,
+      "oracle_positive": 2,
+      "oracle_negative": 10,
+      "device_positive": 2,
+      "device_negative": 5,
+      "GPU_executed": false,
+      "scope": "Synthetic host parser and eligibility controls only. Native build source,actual device execution and model speed unchanged."
     }
   }
 }

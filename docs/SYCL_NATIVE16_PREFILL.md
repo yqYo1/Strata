@@ -1467,6 +1467,19 @@ its two one-use controllers and the ended exact-list reader mode after verifying
 source/results recover from reachable Git. The maintained generic reader/extractor
 and the named K-staging fixture remain;this is not a new native qualification.
 
+The [isolated K-staging comparison](../bench/results/2026-10-15-pr6-recovery-audit/qsa-k-staging-current.json)
+now builds from source`e1e9f3bde`:all15commands close at exit0 and699actual
+compiler inputs match their pins. The candidate groups K loads within each
+subgroup and transposes registers before writing the existing local layout;
+online32cell order,attention math and production/decode paths stay unchanged.
+The linked SPIR-V contains the intended16bit subgroup exchange. Independent
+source/harness review is conditional;Main corrects target-device binding and
+exact oracle coverage at`1c877b184`,with34host controls passing. Compiled IR
+has eight local pointers;20032bytes is their expected source-modeled payload,
+not an observed launch. Preserve the conservative20036byte declaration and
+4096byte reserve. Property admission,device numerics and performance remain
+unrun;compilation and host controls establish no speed gain or model adoption.
+
 The earlier service parser passed33host controls before retirement. Closed
 one-use controllers and consumed raw/research
 output retire after compact evidence at82d48e818;the deletion manifest records
