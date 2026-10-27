@@ -12566,7 +12566,7 @@
     "question": "Can the selected original6e40 ordered-exp/cached-query QSA kernel alone obtain complete GPU service timing using the retained UR/XPTI/unitrace facilities,without changing/rebuilding the engine or depending on a complete oneMKL ledger? Trace actual source selection,queue/graph/direct submission,event availability and lifetimes,unique kernel name/NDRange/count census,loss/error/drain/clock and observer-cost requirements. Identify the smallest bounded qualification and explicit stop conditions,or the concrete missing capability. Do not repeat generic whole-model collection surveys.",
     "prerequisite_evidence": [
       "Closed whole-model coarse QSA interval44.429s,attention interval30.764s include host gaps and are not GPU service;selected resource unit remains unknown.",
-      "The kernel/header/prefill callsite bytes match original6e40 exactly;source hashes recorded below. Default compute queue has profiling enabled.",
+      "Kernel/header/native selector/runtime/launch/compat bytes match6e40. Larger layer_major.inc and prefill.cpp differ overall;their exact QSA selection and ordered-exp dispatch blocks match. Default compute queue has profiling enabled.",
       "Current direct UR/PTI fixture joins pass;full graph/library/model coverage and observer cost remain open. Scope only the selected QSA family and preserve all actual matching/lifetime/loss gates.",
       "PTI checkout is clean at4b6d74294cdc72766c00a9211fe2e4261ee94244,matching retained unitrace source family. Existing collector/launcher/preload identities are recorded in prefill-resources-current.json."
     ],
@@ -12576,7 +12576,9 @@
       "src/prefill/sycl/qsa_native16.cpp": "8fbd28c261f1d25959486ee1f15b1f3f388597fb4a9aef3ed4415e035170281f",
       "src/sycl/runtime.cpp": "e6c20e148bc7ceec250ad9a58ddfc851c1476aaab3d68982d2aee2897e572b83",
       "bench/sycl/ur_call_subscriber.cpp": "5bb245d1b0aaf19468a75a4adf43c0d26c1d9427df7daddda1b082169741ed8e",
-      "tools/sycl/work_ledger.py": "a1eb1cadb7c0fcd4b12fafd607246de95ba377e243d6c9c611f4af86d37c5b94"
+      "tools/sycl/work_ledger.py": "a1eb1cadb7c0fcd4b12fafd607246de95ba377e243d6c9c611f4af86d37c5b94",
+      "src/prefill/layer_major.inc": "9c593fd221e9f878e32a7cf5d8be921e85ad631c7004fd3d3bdc831f9f3f3fb4",
+      "src/prefill/prefill.cpp": "2770d5886eb50911c7218b501a42ff0b130d30377e310b11312641daf20e0ebe"
     },
     "PTI_source": "/home/yayoi/ghq/github.com/intel/pti-gpu",
     "PTI_revision": "4b6d74294cdc72766c00a9211fe2e4261ee94244",
@@ -12587,12 +12589,19 @@
       "prefill_event_reconciliation_design_20261025",
       "b570_qsa_available_counter_selection_20261023"
     ],
-    "status": "planned",
-    "schedulable_now": true,
+    "status": "reviewed_decision_support",
+    "schedulable_now": false,
     "worker_model": "gpt-6-luna",
     "review_model": "native Codex gpt-6-luna max",
     "source_revision": "214cb715a",
-    "retention": "Native review decides substantive novelty and concrete retrieval value;do not automatically commit full reports/specs/transactions. Review after the named decision or first retrieval."
+    "retention": "External decision report retained only for the imminent selected-QSA plan;review at observation closure. Essential source corrections/decision retained here;full report and review transaction are not automatically committed.",
+    "report_bytes": 15745,
+    "report_sha256": "856f0d914f2053db9c73cfec86cbfa08a1e7af2997b9582f313ddee39d4dc3de",
+    "review_revision": "e511794b1",
+    "reviewer": "native Codex gpt-6-luna max",
+    "decision": "Reuse retained unitrace/PTI and UR subscriber for selected6e40 QSA without engine rebuild. Whole-model oneMKL coverage is not required for a selected-kernel ledger;current route,unique direct/graph joins,source-derived count/shape conservation,loss/drain/lifetimes/clocks and combined observer cost are still required. Record transient-KV pack separately;do not call a filtered attention ledger the whole QSA stage.",
+    "correction": "finish calls command_profile::observe;inactive by default through thread-local Trace. Profiling-enabled queue alone does not prove event queries or complete service coverage.",
+    "next_action": "Freeze exact original executable/runtime/collectors/preexec settings/workload,source-counted attention+pack multiset and stop gates;one bounded owned current-path observation. No repeat public-method survey before local evidence."
   },
   "offload_scaling_identifiability_collection_20261027": {
     "classification": "knowledge_collection",
@@ -12609,11 +12618,34 @@
       "current_qsa_prefix_work_geometry_audit_20261023",
       "b570_xe2_arithmetic_ceiling_collection_20261022"
     ],
-    "status": "planned",
-    "schedulable_now": true,
+    "status": "reviewed_conditional_reference",
+    "schedulable_now": false,
     "worker_model": "gpt-6-luna",
     "review_model": "native Codex gpt-6-luna max",
     "source_revision": "214cb715a",
-    "retention": "Native review decides substantive novelty and concrete retrieval value;do not automatically commit full reports/specs/transactions. Review after the named decision or first retrieval."
+    "retention": "External indexed library reference only;review at first controlled multi-shape/stage-isolation use or supersession. Main has not read collection body. Full report and transaction files are not automatically committed.",
+    "report_bytes": 11449,
+    "report_sha256": "a885f303acdda685423ae7e9ca7fa120f7aace55ac3b9cf0b3597d8e74bdc78d",
+    "reviewer": "native Codex gpt-6-luna max",
+    "retrieval": {
+      "report": ".cache/strata-research/20261027/offload-scaling-identifiability-methods.md",
+      "tags": [
+        "counter-free GPU offload",
+        "prompt-length scaling identifiability",
+        "QSA and MoE geometry confounding",
+        "Hockney LogGP Roofline ECM pipeline models",
+        "controlled cache transfer synchronization experiments"
+      ],
+      "sections": [
+        "Finding",
+        "Why prompt-length scaling is underidentified",
+        "Controlled discriminators when counters are unavailable",
+        "Limits and source pins"
+      ],
+      "consumer": "Retrieve only when Main commits a controlled multi-shape or stage-isolation experiment; not needed for the immediate selected-kernel event-conservation run.",
+      "review_point": "At first use for that experiment or when the plan is superseded."
+    },
+    "novelty": "Adds GPU-offload identifiability when prompt length co-varies with QSA geometry, MoE populations, chunking, cache state and overlap. This complements the existing Zen3 CPU/cache collection and QSA geometry/counter references; it does not repeat their local findings.",
+    "source_limit": "Original Hockney citation absent;DOI pages for LogP/LogGP not independently opened in review. Verify these before basing a decision on them."
   }
 }
