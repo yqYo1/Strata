@@ -13672,12 +13672,12 @@
     "status": "reviewed_accept_conditional",
     "schedulable_now": false,
     "prerequisites_evidence": {
-      "compiled_result": "qsa-k-staging-current.json",
       "source_commit": "e1e9f3bdecb0c76ae910ce1e8438a3f5e2baeb91",
       "actual_compiled_inputs_verified": 699,
       "emitted_3_distinct_ordered_kernel_identities": true,
       "host_parser_controls_passed": 21,
-      "source_API_review": "qsa_subgroup_k_staging_source_contract_20261028;the new harness/adapter/controller were explicitly outside that review."
+      "source_API_review": "qsa_subgroup_k_staging_source_contract_20261028;the new harness/adapter/controller were explicitly outside that review.",
+      "compiled_result_ref": "ad17ad64b:bench/results/2026-10-15-pr6-recovery-audit/qsa-k-staging-current.json"
     },
     "source_snapshot": {
       "bench/sycl/qsa_k_staging.cpp": "34b9cbad64826abef5f128c38680172c0d263ffb4eddae780d8331261280fc1a",
@@ -13748,7 +13748,8 @@
         12480,
         12480,
         3008
-      ]
+      ],
+      "component_evidence_ref": "ad17ad64b:bench/results/2026-10-15-pr6-recovery-audit/qsa-k-staging-current.json"
     },
     "question": "Explain and bound the actual compiled K-staging original/control12480 versus candidate3008 spillMemSize descriptors using pinned own source and emitted LLVM plus versioned Intel/LevelZero/compiler primary documentation. Compare liveness,unrolling,load/store schedules and possible compiler lowering causes;identify what these descriptors can/cannot establish about executed scratch traffic and performance. Recommend at most two distinct legal source changes or evidence discriminators tied to this observed contrast. This is not a generic register/occupancy survey and must consume existing xe2_register_spill_collection_scope findings rather than repeat them. No GEN/traffic/speed inference without evidence.",
     "source_commit": "e1e9f3bdecb0c76ae910ce1e8438a3f5e2baeb91",
@@ -13757,20 +13758,10 @@
       "qsa_subgroup_k_staging_source_contract_20261028",
       "qsa_k_staging_harness_contract_20261028"
     ],
-    "report": ".cache/strata-research/20261028/qsa-k-staging-compiled-spill-attribution.md",
     "budget_bytes": 14336,
     "ownership": "Orca gpt-6-luna report only;Main continues exclusive tests/GPU. Native gpt-6-luna max reviews report. No steering.",
     "retention": "Consume current source/lowering decision facts and citations into existing component result;retire report/review transactions after the question closes.",
     "worker_closed": true,
-    "orca": {
-      "run": "run_3072480b0529",
-      "task": "task_450f4af68a15",
-      "dispatch": "ctx_a613c82f62c9",
-      "terminal": "term_abb9a1dc-128a-4e5b-b103-dfd761266f72",
-      "model": "gpt-6-luna",
-      "model_evidence": "Fresh /new current-worktree preview GPT-6-Luna high;worker-start accepted with observed turn_started. Report inside existing workspace writable root.",
-      "settlement": "Verified matching worker_done succeeded and completed/revoked dispatch;released external terminal retained with processAction none;delivery_e5ef40bfe717 consumed."
-    },
     "report_bytes": 9905,
     "report_sha256": "31363ec9c640098961aad8c77ef1a9b790f32b6fcf568fc1019790ddf109e13a",
     "review": {
@@ -13790,6 +13781,7 @@
     "conditional_followups": {
       "final_ISA_or_traffic_attribution": "Unselected:only if it affects a named pending decision,with exact module/kernel bridge and a new bounded plan. Do not keep rejected binaries solely for possible future attribution.",
       "bit_loop_unroll_hint": "Unselected speculative variant:requires a new exact source/recipe,property/numerical gates and changed-lowering check before speed. Current next selection instead reduces exchange calls via packed-u32 transpose."
-    }
+    },
+    "transaction_retirement": "Report/review consumed into accepted_facts;actual closed comparison and retirement in fused-moe-service-current.json::qsa_k_staging_v1_closed. Original data recover at ad17ad64b;no current binary/IR/report path."
   }
 }

@@ -1467,7 +1467,7 @@ its two one-use controllers and the ended exact-list reader mode after verifying
 source/results recover from reachable Git. The maintained generic reader/extractor
 and the named K-staging fixture remain;this is not a new native qualification.
 
-The [isolated K-staging comparison](../bench/results/2026-10-15-pr6-recovery-audit/qsa-k-staging-current.json)
+The [closed K-staging comparison](https://github.com/yqYo1/Strata/blob/ad17ad64b5c4677b5a388caf2526e7e82e9180aa/bench/results/2026-10-15-pr6-recovery-audit/qsa-k-staging-current.json)
 now builds from source`e1e9f3bde`:all15commands close at exit0 and699actual
 compiler inputs match their pins. The candidate groups K loads within each
 subgroup and transposes registers before writing the existing local layout;
@@ -1485,7 +1485,7 @@ All three kernels pass SG16/WG128/18argument and conservative local-budget
 checks:24164bytes against131072per group. Loader-object/symbol checks pass,
 validation is quiet and the owned process closes normally without a fresh fault.
 Actual-ID smoke and translated final-slot boundary then pass on the B570,
-including all18432output bits per shape,immutable inputs,guards,repeats and
+including all18432BF16 output words per shape,immutable inputs,guards,repeats and
 the actual20032byte local payload. The independent candidate oracle passes
 both smoke cases and all11component cases,including masking,missing/aliased
 pages,NaN diagnostics,align2scratch and physical262144bounds. This is not
@@ -1502,6 +1502,11 @@ No hardware-saturation conclusion follows. The next distinct source proof
 will pack two16bit values per exchange,aiming to reduce subgroup collective
 instances from1024to256 per WG/32selected cells over all256Kdimensions.
 It needs a fresh build and qualification;production/decode stays unchanged.
+The rejected generation and two consumed research/review files retire after
+recovering197original source inputs,exact recipe/generated sources and699actual
+compiler dependencies. The98files total11297649bytes;the selected engine,its
+twelve fixtures and the named53MBIDfixture remain. Full108samples recover from
+the linked Git revision;the compact decision remains in the current service result.
 
 The earlier service parser passed33host controls before retirement. Closed
 one-use controllers and consumed raw/research

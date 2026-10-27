@@ -828,7 +828,7 @@
         6491,
         2051
       ],
-      "consumer": "Immediate source-preflight and controlled comparison of subgroup4cell-by16dim K staging versus original VectorK4,with K-only pitch as a separate arm if legal. No GPU candidate selected.",
+      "consumer": "Main imminent packed-u32 K-staging source proof and controlled comparison if independently qualified. Retire if no distinct legal candidate survives;review before next build.",
       "review": "At this current source preflight,then before build. Retire immediately if no distinct legal controlled comparison survives;otherwise retire when that component comparison closes.",
       "origin_native_source": "6e40afc1beddd059ee518617f6c1efce1da14aca",
       "origin_capture_controller": "afd7fd025",
@@ -899,5 +899,66 @@
       "compiler_execution": "Only -print-file-name during recipe preparation;no native compilation or GPU execution yet.",
       "next_gate": "Commit exact prepared commands/environment/input hashes,then isolated build. Compiled identity/harness/numerical gates remain before GPU comparison."
     }
+  },
+  "qsa_k_staging_v1_closed": {
+    "evidence_ref": "ad17ad64b:bench/results/2026-10-15-pr6-recovery-audit/qsa-k-staging-current.json",
+    "native_source": "e1e9f3bdecb0c76ae910ce1e8438a3f5e2baeb91",
+    "controller_source": "2f6b2aec0",
+    "speed_plan": "52197a50b",
+    "decision": "Reject exact8u16exchange variant;no model trial or adoption.",
+    "correctness": "Qualified exact-device property gate;actual-ID smoke/final-slot boundary and independent2/11case oracles all pass,normal owned closure,no fresh fault. Not full-context model fill or decode/handoff qualification.",
+    "eligible_individual_samples": 108,
+    "ratios_by_shape": {
+      "512": {
+        "control_original_wall_ratio": [
+          1.0004665977232683,
+          0.9996380584054121,
+          0.9996849834916235
+        ],
+        "candidate_control_wall_ratio": [
+          1.147429107507641,
+          1.1445762549373861,
+          1.1475468396724826
+        ],
+        "candidate_control_service_ratio": [
+          1.1557909656355032,
+          1.1530987038173146,
+          1.1568364568144605
+        ]
+      },
+      "6491": {
+        "control_original_wall_ratio": [
+          1.0018306141027373,
+          1.0003783621930378,
+          0.9987679761038142
+        ],
+        "candidate_control_wall_ratio": [
+          1.1184423416295288,
+          1.1183119824045684,
+          1.1208464357151324
+        ],
+        "candidate_control_service_ratio": [
+          1.1190406599818228,
+          1.1188826583535298,
+          1.1214499580860824
+        ]
+      }
+    },
+    "resource_limit": "Same nominal global/local payload and online arithmetic;staging changes grouping and adds1024subgroup exchange instances per WG per32selected-cell iteration over all256Kdimensions. Lower reported spill descriptor12480->3008 did not improve service. No unique VRAM/SLM/arithmetic/occupancy/scratch-traffic bottleneck established.",
+    "retirement": {
+      "complete": true,
+      "files": 98,
+      "bytes": 11297649,
+      "manifest": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-k-staging-v1-retired-20261028.jsonl",
+      "manifest_sha256": "9e261a50d090965e9693abfd15b77d59dea5ea129bc35964b9ffedb128e7fb60",
+      "original_source_inputs_recovered": 197,
+      "actual_compiler_inputs_matched": 699,
+      "exact_recipe_and_generated_sources_matched": true,
+      "remote_ref": "ad17ad64b5c4677b5a388caf2526e7e82e9180aa",
+      "scope": "Rejected component generation and2consumed research/review transactions only. Validated6e40engine/12fixtures,selected53MBIDfixture for imminent packed-u32 proof,and separate legacy/R285holds untouched."
+    },
+    "next": "Author a new independent packed-u32 transpose preserving the same mapping while reducing source subgroup exchange instances from1024to256 per WG per32cell iteration;require fresh proof,source/API review,build and all device/speed gates. No assumption that fewer exchanges is faster. Retire this closed comparison generation after original source/recipe recovery.",
+    "advance_to_model": false,
+    "model_adopted": false
   }
 }
