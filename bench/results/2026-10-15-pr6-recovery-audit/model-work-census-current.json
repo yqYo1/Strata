@@ -1,5 +1,5 @@
 {
-  "stage": "prepared",
+  "stage": "running",
   "source_commit": "cc59c96f0f9f84ee4909c9da790c75fc50c15601",
   "native_source": "6e40afc1beddd059ee518617f6c1efce1da14aca",
   "binary": {
@@ -944,7 +944,73 @@
       }
     }
   },
-  "checks": [],
+  "checks": [
+    {
+      "mode": "smoke",
+      "passed": true,
+      "complete": true,
+      "ownership_closed": true,
+      "native_launched": true,
+      "census": {
+        "window_count": 48,
+        "jobs": 18796,
+        "routed_rows": 18844320,
+        "gu_nk": [
+          1280,
+          2560
+        ],
+        "down_nk": [
+          2560,
+          640
+        ],
+        "gu_down_storage": "bf16",
+        "hidden_storage": "fp16",
+        "requested_router_D2H_bytes": 75377280,
+        "requested_map_H2D_bytes": 150754560,
+        "all_job_row_and_expert_conservation_checks_passed": true,
+        "planned_matches_retired": true,
+        "limits": "Requested/logical metadata; not physical PCIe or VRAM traffic, occupancy or additive wall time.",
+        "short_distribution_retention": "Discarded after its validation gate:the next API-capacity planner consumes the full117489-input histogram,not this short distribution."
+      },
+      "request": {
+        "request_sha256": "1fd63b8c67a1888e443800b5c6d339ca116df2cb91941e6f332b6adf74275b3a",
+        "actual_read_tokens": 39260,
+        "actual_reused_tokens": 0,
+        "generated_tokens": 24,
+        "prompt_ms": 58494.0
+      },
+      "native_identity": {
+        "pid": 1019783,
+        "start_ticks": 145807282,
+        "sid": 1019736
+      },
+      "validation": {
+        "pid": 1019783,
+        "loader": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_loader.so.0.12.0",
+        "threads_before": 1,
+        "preinit": 37,
+        "config_enabled": true,
+        "first_init": true,
+        "dispatch_result": 46,
+        "output_untouched": true,
+        "retained_reference_until_exit": true,
+        "runtime_teardown_qualified": false
+      },
+      "protocol_qualified": true,
+      "postchecks_complete": true,
+      "postcheck_errors": [],
+      "fresh_faults": [],
+      "boot_unchanged": true,
+      "driver_after": {
+        "pci": "/sys/bus/pci/devices/0000:05:00.0",
+        "driver": "xe",
+        "vendor": "0x8086",
+        "device": "0xe20c",
+        "kernel": "7.0.0-38-generic",
+        "devcoredump": false
+      }
+    }
+  ],
   "active": false,
   "ownership_closed": true,
   "complete": false,

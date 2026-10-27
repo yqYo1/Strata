@@ -1865,8 +1865,13 @@ schema. Five host tests pass:real begin/end/summary handling and rejection contr
 plus full replay of the actual closed v3 request and five corrupted sample variants.
 The original failed run stays failed. The unchanged short request prospectively
 has39260input/39259prefillrows and capacity39259;the unchanged117489-input case
-has117488rows in81920+35568 windows. A fresh frozen smoke must pass before long
-execution. See the [current census](../bench/results/2026-10-15-pr6-recovery-audit/model-work-census-current.json).
+has117488rows in81920+35568 windows. The fresh v4 smoke now passes all48windows,
+18796jobs and18844320routed rows,with matching retired counters,actual native/Python
+provider checks,closed owners,silent parameter validation and no fresh fault.
+Requested router D2H is75377280bytes and map H2D150754560bytes;these are logical
+extents,not bus measurements. The short histogram ends its validation consumer;
+the next capacity planner needs the long distribution. Long execution is now
+eligible after its frozen admission checks,and is not yet completed. See the [current census](../bench/results/2026-10-15-pr6-recovery-audit/model-work-census-current.json).
 This reader is specific to the pinned6e40 schema. Neither host replay nor the
 planned census qualifies API/device coverage,physical traffic,clean speed,decode,
 quality,physical262144context or model adoption.
