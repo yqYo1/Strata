@@ -24,6 +24,8 @@ import ur_validation as validation
 from measure_down_scatter import postchecks
 P,B,ROOT,RESULT=b.P,b.B,b.ROOT,b.RESULT
 CPP='bench/sycl/qsa_k_staging.cpp'
+ADMISSION_PLAN='admission_v2_plan'
+ADMISSION_CHECK='admission_v2_check'
 
 def inputs(revision):
     pending = [Path(__file__).resolve()]; seen = set(); pins = {}
@@ -96,7 +98,7 @@ def single_device_inventory(rows, expected):
     eligible=[r for r in rows if r['vendor']=='0x8086' and
         int(r['class'],16)>>16 in (0x03,0x12)]
     guards.require(eligible==[expected],'single qualified Intel GPU/accelerator inventory required')
-    return dict(name='Intel Arc B570 Graphics',eligible_Intel_PCI_devices=eligible,
+    return dict(name='Intel(R) Arc(TM) B570 Graphics',eligible_Intel_PCI_devices=eligible,
         scope='Single eligible physical Intel GPU/accelerator plus exact native device name;not a general multi-GPU UUID mapping.')
 
 
@@ -170,9 +172,22 @@ def loader_bindings(text, observed):
 
 def prepare():
     record = b.gen.committed(RESULT)
-    guards.require('admission_plan' not in record and 'admission_check' not in record,
+    guards.require(ADMISSION_PLAN not in record and ADMISSION_CHECK not in record,
                    'fresh admission only; inspect existing ownership before retry')
-    folder = ROOT / 'admission'
+    prior=record['admission_check'];diagnosis=prior['failure_diagnosis']
+    guards.require(record['admission_plan']['stage']=='failed' and not prior['passed'] and
+        not prior['complete'] and not prior['fresh_faults'] and diagnosis['direct_child_reaped'] and
+        diagnosis['session_empty'] and not diagnosis['survivors'] and
+        diagnosis['trace_successful_kernel_enqueues']==0 and
+        diagnosis['owner_error']=="RuntimeError('property runtime selected another device')",
+        'v2 is only the documented device-name correction,not an automatic retry')
+    old=json.loads((ROOT/'admission/owned.json').read_text())['commands']
+    guards.require(len(old)==1 and old[0]['direct_child_reaped'] and old[0]['session_empty'] and
+        not old[0]['survivors'],'previous property owner remains unresolved')
+    live=supervision.identity(old[0]['pid'])
+    guards.require(live is None or live['start_ticks']!=old[0]['direct_identity']['start_ticks'],
+        'previous property process is still alive')
+    folder = ROOT / 'admission-v2'
     guards.require(not folder.exists(), 'admission output already exists')
     revision = b.gen.git('rev-parse', 'HEAD').decode().strip()
     rt = validation.committed(b.qualified_runtime.RESULT)
@@ -201,15 +216,15 @@ def prepare():
     for name in ('tmp', 'cache'):
         (folder / name).mkdir()
     b.write(folder / 'plan.json', plan)
-    record['admission_plan'] = plan
+    record[ADMISSION_PLAN] = plan
     b.write(RESULT, record)
     print('Prepared property-only subgroup-K admission;commit plan before run.', flush=True)
 
 
 def run():
-    record = b.gen.committed(RESULT); plan = record['admission_plan']
-    folder = ROOT / 'admission'
-    guards.require(plan['stage'] == 'prepared' and 'admission_check' not in record and
+    record = b.gen.committed(RESULT); plan = record[ADMISSION_PLAN]
+    folder = ROOT / 'admission-v2'
+    guards.require(plan['stage'] == 'prepared' and ADMISSION_CHECK not in record and
         plan == json.loads((folder / 'plan.json').read_text()), 'fresh committed admission plan required')
     rt = admission(record, plan)
     boot = Path('/proc/sys/kernel/random/boot_id').read_text().strip()
@@ -293,7 +308,7 @@ def run():
         result['ownership_closed'] = owner.active is None and all(supervision.closed(c) for c in owner.commands)
         postchecks(result, boot, cursor[0]);persist()
         plan['stage'] = 'closed' if result['passed'] else 'failed'
-        record['admission_check'] = result
+        record[ADMISSION_CHECK] = result
         b.write(RESULT, record)
     print(json.dumps(result), flush=True)
     return int(not result['passed'])
@@ -382,7 +397,9 @@ def prepare_run(mode):
         b.guards.require([v['mode'] for v in history]==['smoke','boundary'][:position] and record['actual_id_plan']['stage']=='closed','preceding native gate incomplete')
     else:
         b.guards.require('actual_id_plan' not in record, 'inspect existing actual-ID plan before preparing')
-    guards.require(record['admission_check']['passed'] and record['admission_check']['complete'] and record['admission_check']['ownership_closed'] and not record['admission_check']['fresh_faults'],'property-only admission required')
+    property_check=record[ADMISSION_CHECK]
+    guards.require(property_check['passed'] and property_check['complete'] and
+        property_check['ownership_closed'] and not property_check['fresh_faults'],'property-only admission required')
     if mode == 'perf':
         checks=record.get('oracle_checks',[])
         guards.require([v['mode'] for v in checks]==['smoke','component'] and
@@ -391,7 +408,7 @@ def prepare_run(mode):
     root = ROOT/('actual-id-'+mode)
     b.guards.require(not root.exists(), 'fresh actual-ID stage only')
     revision = b.gen.git('rev-parse', 'HEAD').decode().strip()
-    plan = {k:record['admission_plan'][k] for k in
+    plan = {k:record[ADMISSION_PLAN][k] for k in
             ('kernel_ids', 'contract', 'runtime_qualification', 'runtime_files', 'preload','physical_device')}
     plan.update(stage='prepared', mode=mode, source_commit=revision, controller_inputs=inputs(revision),
         numerical=numerical_contract(), observer=observer_contract(record),
@@ -589,10 +606,11 @@ def host_controls():
         [expected,dict(expected,pci='0000:06:00.0')],expected))
     reject('wrong_inventory_device_id',lambda:single_device_inventory([dict(expected,device='0x0000')],expected))
     reject('wrong_native_device_name',lambda:device_fds('Intel Other GPU',[fd],policy))
+    reject('unqualified_marketing_name',lambda:device_fds('Intel Arc B570 Graphics',[fd],policy))
     reject('missing_owned_DRM_binding',lambda:device_fds(policy['name'],['pos:\t0\n'],policy))
     reject('wrong_owned_DRM_PCI',lambda:device_fds(policy['name'],[fd.replace('05:00','06:00')],policy))
-    print(json.dumps(dict(passed=True,GPU_executed=False,controls=34,rejected=rejected,
-        oracle_positive_controls=2,oracle_negative_controls=10,device_positive_controls=2,device_negative_controls=5,
+    print(json.dumps(dict(passed=True,GPU_executed=False,controls=35,rejected=rejected,
+        oracle_positive_controls=2,oracle_negative_controls=10,device_positive_controls=2,device_negative_controls=6,
         positive='K-staging32matches original bits;all-group speed gain passes.',
         performance_failures_stopped=['one_slow_shape_process','control_original_calibration'])),flush=True)
 
@@ -732,7 +750,7 @@ def prepare_oracle(mode):
         checks[0]['complete'] and checks[0]['ownership_closed'] and not checks[0]['fresh_faults'],
         'first traced actual-ID smoke must close before oracle')
     root=ROOT/('oracle-'+mode);guards.require(not root.exists(),'oracle stage already exists')
-    plan={k:record['admission_plan'][k] for k in
+    plan={k:record[ADMISSION_PLAN][k] for k in
         ('kernel_ids','contract','runtime_qualification','runtime_files','preload','physical_device')}
     plan.update(stage='prepared',mode=mode,source_commit=b.gen.git('rev-parse','HEAD').decode().strip(),
         controller_inputs=inputs(b.gen.git('rev-parse','HEAD').decode().strip()),

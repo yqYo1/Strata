@@ -13716,15 +13716,16 @@
       "bench/sycl/qsa_k_staging_admission.hpp": "62875356f7f7fe14ac08b96da40eeb73aeea942f0fb9129ffe3a38299da5804a",
       "bench/sycl/qsa_k_staging_oracle_adapter.cpp": "91d43f1398f09566ee9bbf82d573d4d86afd841b2c5d6a0ac8e09bb9cd8551ac",
       "tools/sycl/build_qsa_k_staging.py": "91de2919c1eabab70067aaaa4454697e95c51eb32016de7aa910e55b0b3933dc",
-      "tools/sycl/check_qsa_k_staging.py": "bc5e9925e46e289f42cf89a73beb7acdae098e7ae3b3c5fe9ddac07a04b99036",
+      "tools/sycl/check_qsa_k_staging.py": "916fd817f183ce59687cfa60edb30a415faf42ee3a25c3efa99397ff604abd51",
       "tools/sycl/qsa_k_staging_sources.py": "253db19e744ea66c6212bec39a0de49d548fb8dee0bafeb579713c49bd8fb893",
       "tests/sycl/qsa_bf16_prefix.cpp": "422bf01441e3b3e4992f161d2582aa594b8a8082b2c10957709ba0c255440ebf"
     },
     "main_corrections": {
-      "device_identity": "Fail closed unless the PCI inventory has exactly the qualified Intel GPU/accelerator (8086:e20c,0000:05:00.0),native name is Intel Arc B570 Graphics,and runtime qualification remains unchanged. At paused kernel-fixture runtime-ready gates,also bind owned-child xe DRM fdinfo to that PCI device. This is a workstation-specific single-eligible-device constraint,not a generic UUID mapping.",
+      "device_identity": "Fail closed unless the PCI inventory has exactly the qualified Intel GPU/accelerator (8086:e20c,0000:05:00.0),native name is Intel(R) Arc(TM) B570 Graphics,and runtime qualification remains unchanged. At paused kernel-fixture runtime-ready gates,also bind owned-child xe DRM fdinfo to that PCI device. This is a workstation-specific single-eligible-device constraint,not a generic UUID mapping.",
       "oracle_coverage": "Exact2/11case sequence;queries*24*256compared words;finite nonnegative error;matching independent prefix33geometry;exact duplicate-ID/physical-alias/first-laterKV diagnostic;strict footer/guard values;reject duplicate fields. Add six oracle negative controls and seven device controls before any GPU execution. Reviewed oracle source pin supplements the original six-file snapshot;their original hashes stay unchanged.",
       "local_payload": "Read-only emitted LLVM of all three exact18argument/SG16kernels has eight local pointers at0,1,3,4,5,13,15,16 with align4 except arg13align8. This excludes a ninth unused4B Q-accessor parameter;source-modeled expected bound extents total20032B. Keep declared20036B and4096Breserve conservatively. No actual launch sizes observed until accepted traced smoke.",
-      "native_reuse": "Only check_qsa_k_staging.py changes from independently reviewed source;it is absent from the699actual native compiler inputs. Original sourcee1e9f3bde,recipe,generatedsources,deviceIR andboth executable hashes remain admission-bound. No native or GPU qualification is claimed by the controller correction."
+      "native_reuse": "Only check_qsa_k_staging.py changes from independently reviewed source;it is absent from the699actual native compiler inputs. Original sourcee1e9f3bde,recipe,generatedsources,deviceIR andboth executable hashes remain admission-bound. No native or GPU qualification is claimed by the controller correction.",
+      "property_name_v2": "First committed property-only gate failed because Main omitted (R)/(TM) from expected name. Preserve its original failure;new v2 plan uses the exact observed native name with an added rejection control for the bare marketing name. Require verified prior process exit and zero kernel enqueues;no automatic retry or native binary change."
     },
     "closure": "Verified matching successful worker_done and completed/revoked dispatch;external terminal released/retained with no process action. Native reviewer completed. No research worker remains assigned."
   }
