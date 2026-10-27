@@ -1594,49 +1594,52 @@ are retired after exact204-input recovery;the full result recovers at`ea556dd31`
 and the controller at`9d94b2293`. The fixture is the capture root's sole remaining
 file. The selected engine/twelve fixtures and shared runtime admission still pass.
 
-For the next working-set control,do not pack the entire prefix before every
-timed attention call:that would change its cache starting state and obscure the
-copy-rotation question. A private prepacked component is now built from source
-`bb347ab57`,fixture SHA prefix`d2edc08c`. Its reversible overlay omits only pack;
-the original attention body,admission,FP32 state,barriers and local payload stay
-fixed. All691actual compiler inputs match;the three prospectively pinned SDK
-header changes are unconsumed. The selected original engine is not rebuilt.
-Three small traced/validated processes pass exact original/prepacked output,
-guard/input/replica checks and positive last-attention event clocks,with normal
-closure and no fresh fault. Use the pinned SDK's experimental last-event API
-only in this diagnostic. Runtime reports global-cache14155776bytes,local131072
-and maximum-allocation10132807680;these descriptors do not prove usable cache
-capacity,free VRAM,occupancy or bandwidth. The larger component gate **fails**:
-its first process passes real16-query/8-replica and physical262144 final-address
-checks,but the second exits1 before its first case record with
-`attention event clock invalid`. Raw clock operands and original/prepacked/replica
-identity were not emitted;the cause remains unknown. Both owned processes are
-reaped with empty sessions,and no fresh driver fault appears. Preserve the failed
-protocol receipt;do not advance resource/performance/model gates. Next capture
-strong events directly from submission instead of using the experimental
-queue-last-event lookup,and emit operands on a clock failure. Keep clock criteria
-unchanged and qualify new source before any rerun.
-The replacement diagnostic,source`2d3e948c4` and fixture SHA prefix`6d48fddc`,
-now retains the actual attention event directly at submission and prints raw
-clock operands on failure. It preserves the attention arithmetic and production
-engine. All691actual compiler inputs match. Three fresh traced/validated small
-processes and three larger component processes pass exact original/full/prepacked
-outputs,guards,input immutability,replica checks and positive event clocks. The
-larger cases cover real16-query/eight-copy operands and physical262144 final
-addresses;all exit0 with empty owned sessions and no fresh driver fault. These
-component results do not diagnose the earlier clock failure or qualify a speedup,
-ordinary runtime teardown,full-model262144 fill or model adoption. The resource
-gate also passes:the complete21-row device table conserves114782473ns;original,
-captured-full and prepacked attention each have two calls and equal SIMD16,
-18arguments,128GRF,12480-byte spill and32-byte raw-static-SLM descriptors.
-Source dynamic SLM remains20036bytes;these are not measured physical traffic or
-occupancy. Direct event clocks,output/guards and owner/fault checks pass under
-the collector. The separate working-set timing gate remains pending.
-See[the current diagnostic](../bench/results/2026-10-15-pr6-recovery-audit/qsa-working-set-current.json).
-Compare full6491-query geometry separately from a cache-sized real-query subset.
-If repeating a small subset to fill the GPU,use identical repeated work in every
-copy-count arm and label it as a controlled counterfactual,not a production replay.
-Small underfilled grids alone do not establish the full model's resource ceiling.
+The fixed-kernel working-set diagnostic is now closed. Source`2d3e948c4`,
+recipe`c30c754fb` and fixture SHA prefix`6d48fddc` retain the actual attention
+submission event directly. Three traced smoke,three larger component,one resource
+and three timing processes all close normally with exact reference outputs,
+guards,input/replica immutability,positive event clocks and no fresh driver fault.
+Component cases include physical262144 final addresses,not full-model fill.
+Original,full-control and prepacked kernels have equal SIMD16,18arguments,
+128GRF,12480-byte compiler spill and32-byte raw-static-SLM descriptors;source
+dynamic SLM remains20036bytes. These are not traffic or occupancy counters.
+
+The180individual timing samples use actual selected IDs but synthetic finite
+Q/K/V,source-derived identity pages and rotating byte-identical packed KV copies.
+The repeated-query256counterfactual and all6491actual-query geometry stay separate.
+For full6491queries,the median one-copy wall/service times are124.1591/123.9911ms.
+Across the three processes,eight-copy/one-copy wall ratios are0.998122,1.000605
+and1.001025;service ratios are0.999161,1.000668 and1.001009. Repeated-query wall
+ratios are1.015429,1.031701 and1.021319. Neither shape passes the prospectively
+required5%increase in all processes and both metrics. Every timing batch passes
+100ms/timer-floor gates;all5940attention intervals pass clock/order
+checks. Event-observer overhead is unqualified;these are component diagnostics,
+not clean model speed. Per-call rotation changes inter-call reuse;flat curves do
+not exclude intra-launch reuse,memory latency,bandwidth or synchronization limits.
+No model trial or inference adoption follows from this diagnostic.
+
+The earlier experimental queue-last lookup's invalid-clock failure remains
+failed at`117ee9b28`;raw operands were absent and its cause is still unknown.
+Direct-event success is a useful avoidance result,not a root-cause diagnosis.
+The closed fixture/IR/log generation has no further native consumer;195project
+and691actual compiler-input identities and the exact original recipe/executable
+are recovered from Git before retirement. The selected original engine and its
+twelve fixtures remain unchanged. Keep only the53252180-byte initialized selected-ID
+fixture for the named next same-math barrier comparison,then review it again.
+See[the compact diagnostic and180samples](../bench/results/2026-10-15-pr6-recovery-audit/qsa-working-set-current.json).
+
+The next proposal fuses each tile-end barrier with the next tile's existing
+barrier after row publication,retaining a final barrier outside the loop.
+The selected compiler IR still has seven static barriers,including five per
+32-cell iteration;2051selected cells require65iterations. This is source/IR
+geometry,not measured barrier cost or final-machine throughput. Audit every
+shared byte range and zero/tail/invalid case against the
+[SYCL synchronization contract](https://github.khronos.org/SYCL_Reference/iface/barriers-and-fences.html),
+then commit a separate same-math numerical/resource/timing plan before any new
+build. Group reductions are not a substitute for the required memory fences.
+The reviewed64-cell research is conditional:larger blocks can change online
+state grouping and BF16 probability rounding;framework wrapper references do
+not establish an exact dependency-kernel numerical contract.
 
 Complete prefill phase attribution requires three independent ledgers: route-owner
 planned operations, actual API results and collector device executions.

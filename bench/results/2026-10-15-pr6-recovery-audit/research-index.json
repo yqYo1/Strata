@@ -12869,7 +12869,7 @@
   },
   "qsa_cell_tile_geometry_contract_20261027": {
     "classification": "decision_support",
-    "status": "running",
+    "status": "reviewed_accept_conditional",
     "schedulable_now": false,
     "source_revision": "6e40afc1beddd059ee518617f6c1efce1da14aca",
     "question": "Compare sparse-attention selected-cell tiles32/64/128 and subgroup/matrix ownership for this fixed24Q/2KV,Dim256,12of16-head BF16 path. Relate loop/barrier/softmax overhead to extra SLM/registers and work;trace production vLLM/SGLang rounding/online-softmax contracts and exact configured Intel matrix shapes. Distinguish algorithm/numerical changes from same-math variants and give falsifiable component/full-model gates. No implementation or local GPU work.",
@@ -12888,10 +12888,22 @@
     "worker_model": "gpt-6-luna",
     "consumer": "Main next algorithm choice after current fixed-kernel working-set sensitivity comparison. Native Luna/max reviews before Main uses report sections.",
     "retention": "Keep only substantive nonduplicate contract/source findings. Report-only worker;no code edits,builds,tests,GPU/profiling/process/Git operations or XeStrata source. Review at that candidate decision.",
-    "task_id": "task_249256f342fa",
-    "dispatch_id": "ctx_68599d2ae234",
-    "terminal": "term_abb9a1dc-128a-4e5b-b103-dfd761266f72",
-    "run_id": "run_12fa11537288",
-    "model_evidence": "Exact reused terminal displayed GPT-6-Luna high after /new/current-worktree;worker-start ready with turnStart observed,no model/effort flags on reuse."
+    "worker_closed": true,
+    "report_bytes": 14635,
+    "report_sha256": "604c38acdfe89935098c45576fafc4f92d3e47dd25b9f28e5553e763c2a6ac8a",
+    "reviewer": "native Codex gpt-6-luna max",
+    "essential_corrections": [
+      "Framework wrapper pins do not establish their dependency-kernel or selected-model numerical ABI;live Intel docs do not qualify the configured compiler.",
+      "Larger cell blocks change online-state update grouping and BF16 probability rounding unless the original per32segment contract is deliberately preserved;assess changed math separately.",
+      "The completed180samples fail the5%inter-call sensitivity screen in both shapes;this does not establish compute saturation. No model trial follows from that diagnostic."
+    ],
+    "retrieval": {
+      "use": "Retrieve geometry/numerical-contract sections only for a concrete32to64cell-tile decision after source/contract/resource plan is fixed.",
+      "review_point": "At that candidate selection or supersession."
+    },
+    "next_scope_eligibility": {
+      "schedulable_now": false,
+      "reason": "Current next proposal is same-math barrier fusion,not a cell-tile change. No generic follow-up;require a concrete remaining tile question."
+    }
   }
 }
