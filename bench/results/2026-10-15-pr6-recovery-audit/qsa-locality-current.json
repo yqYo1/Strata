@@ -1,5 +1,5 @@
 {
-  "stage": "oracle_repair_source_ready",
+  "stage": "source_counts_proven_native_unbuilt",
   "native_source_commit": "6e40afc1beddd059ee518617f6c1efce1da14aca",
   "source_counts_commit": "1013c2437",
   "count_proof": {
@@ -40,7 +40,14 @@
     "consumer": "Current exact6491-query logical-gather diagnostic;reuse only existing initialized IDs. Review at comparison closure;no duplicate capture.",
     "review": "Retire at cell64 closure/supersession;no duplicate capture. API-spelling GRF proposal needs no further GPU trial."
   },
-  "host_controls": null,
+  "host_controls": {
+    "passed": true,
+    "reverse_overlay_exact": true,
+    "bank_boundary_cases": 18,
+    "initial_positive_zero_counterexample_checked": true,
+    "GPU_executed": false,
+    "compiler_executed": false
+  },
   "prior_failures": [
     {
       "stage": "failed_smoke",
@@ -106,5 +113,15 @@
   "active": false,
   "ownership_closed": true,
   "GPU_executed": false,
-  "model_adoption_qualified": false
+  "model_adoption_qualified": false,
+  "source_commit": "dc1df386c",
+  "repaired_controller_checks": {
+    "source_commit": "dc1df386c",
+    "passed": true,
+    "rejected_cases": 8,
+    "physical_closure_controls": 3,
+    "valid_samples": 96,
+    "exact_generated_kernel_bytes_unchanged": true,
+    "GPU_executed": false
+  }
 }
