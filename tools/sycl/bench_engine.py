@@ -382,9 +382,12 @@ def validate_window_work(work, gu, down, read_tokens, window_rows):
     validate_fusion_counts(down, jobs, routed_rows)
 
 
-def extract_resource_profile(log, phase_profile, command_profile, limits, cpu_version=None,
-                             expected_window_pairs=None):
-    """Validate one long-request interval; never aggregate across requests."""
+def extract_planned_moe_work(log, expected_window_pairs=None):
+    """Check source-emitted plans against retired totals, without GPU observers.
+
+    This reads one request interval. It does not reconcile API/device work or
+    establish the number of records a complete API collector will emit.
+    """
     record = {}
     prefix = 'strata MoE planned job census: '
     record['planned_moe_windows'] = [json.loads(x[len(prefix):]) for x in log.splitlines() if x.startswith(prefix)]
@@ -397,15 +400,47 @@ def extract_resource_profile(log, phase_profile, command_profile, limits, cpu_ve
             'missing, reordered or changed multi-window census')
     total_jobs = total_rows = 0
     for window in record['planned_moe_windows']:
+        guards.require(type(window['version']) is int and window['version'] == 1 and
+            type(window['layer']) is int and 0 <= window['layer'] < 48 and
+            type(window['rows']) is int and 1 <= window['rows'] <= 81920 and
+            type(window['first_row']) is int and window['first_row'] >= 0 and
+            type(window['jobs']) is int and window['jobs'] > 0, 'invalid planned window')
+        for name, minimum, maximum in (('job_rows_histogram', 1, min(8192, window['rows'])),
+                                       ('jobs_per_expert_histogram', 0, (window['rows'] + 8191) // 8192)):
+            histogram = window[name]
+            guards.require(type(histogram) is list and histogram and all(
+                type(pair) is list and len(pair) == 2 and
+                type(pair[0]) is int and minimum <= pair[0] <= maximum and
+                type(pair[1]) is int and pair[1] > 0 for pair in histogram),
+                'invalid planned histogram: ' + name)
+            keys = [pair[0] for pair in histogram]
+            guards.require(keys == sorted(set(keys)), 'duplicate or unordered planned histogram: ' + name)
         guards.require(sum(n for m, n in window['job_rows_histogram']) == window['jobs'] and
             sum(m*n for m, n in window['job_rows_histogram']) == window['rows']*10 and
             sum(n for m, n in window['jobs_per_expert_histogram']) == 512 and
             sum(m*n for m, n in window['jobs_per_expert_histogram']) == window['jobs'], 'census conservation')
         total_jobs += window['jobs']; total_rows += window['rows']
     totals = [x for x in log.splitlines() if x.startswith('strata MoE accumulator window: ')]
-    guards.require(len(totals) == 1 and f'jobs={total_jobs} ' in totals[0] and
-                   f'windows={len(record["planned_moe_windows"])} ' in totals[0], 'planned/retired job totals differ')
+    counters = parse_counter_lines(log, 'strata MoE accumulator window:', WINDOW_FIELDS)
+    guards.require(len(counters) == 1, 'missing or duplicate retired MoE totals')
+    retired = {key: int(value) for key, value in counters[0].items()}
+    guards.require(retired['jobs'] == total_jobs and
+        retired['windows'] == len(record['planned_moe_windows']) and
+        retired['source_H2D_bytes'] == total_rows * 10 * 4 and
+        retired['dequants'] <= total_jobs and retired['operator_max'] == 8192 and
+        retired['GPU_resident_windows_only'] == 1 and
+        max(w['rows'] for w in record['planned_moe_windows']) <= retired['maximum_rows'] <= 81920,
+        'planned/retired job totals differ')
     record['retired_moe_totals'] = totals
+    return record
+
+
+def extract_resource_profile(log, phase_profile, command_profile, limits, cpu_version=None,
+                             expected_window_pairs=None):
+    """Validate one long-request interval; never aggregate across requests."""
+    record = extract_planned_moe_work(log, expected_window_pairs)
+    total_jobs = sum(w['jobs'] for w in record['planned_moe_windows'])
+    total_rows = sum(w['rows'] for w in record['planned_moe_windows'])
     record['resource_diagnostics'] = [x for x in log.splitlines() if x.startswith(
         ('strata lm profile:', 'strata lm qsa profile:', 'strata prefill cpu wait:', 'strata prefill cpu host:'))]
     coarse_prefix = 'strata lm profile: v=' + ('3' if phase_profile else '2') + ' complete=1 errors=0'
