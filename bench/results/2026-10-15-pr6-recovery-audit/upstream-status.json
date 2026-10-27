@@ -344,7 +344,7 @@
       },
       {
         "feature": "benchmark_readiness_configured_host",
-        "status": "implemented_validation_pending",
+        "status": "ported_focused_and_caller_tests_passed",
         "meaning": "Add one new shared tooling row, only once despite appearing in both reports. Local readiness polling must use the configured bind host, map wildcard binds to loopback, bracket IPv6 literals, and leave explicit --url to its caller.",
         "target_tests": [
           "tools/test_bench_host.py::ServerBase"
@@ -363,7 +363,14 @@
         },
         "validation_plan": [
           "flock -n /home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/owned-v0141-measurement.lock timeout 120s /usr/bin/python3.12 -I -S -B -c 'import sys,unittest; sys.path[:0]=[\"/home/yayoi/orca/workspaces/Strata/sycl\",\"/home/yayoi/orca/workspaces/Strata/sycl/tools\"]; unittest.main(module=None,argv=[\"unittest\",\"tools.test_bench_host\",\"tools.test_strata_bench\",\"tools.test_benchmark_evidence\"])'"
-        ]
+        ],
+        "implementation_source_commit": "9b58c7671f75c4dee391377d7bca5187f69b1f17",
+        "validation": {
+          "tests": 43,
+          "exit_code": 0,
+          "seconds": 0.544,
+          "scope": "7 host-helper/caller cases plus21benchmark and15evidence regression tests. Mocked main probes verify configured LAN/IPv6/port override and explicitURL precedence;no HTTP/server/model/GPU execution or reachability qualification. Existing expected negative-test FAILED diagnostic is not a suite failure."
+        }
       }
     ],
     "port_order": [
