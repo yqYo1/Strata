@@ -1436,7 +1436,37 @@ Prior failed GRF/partial-cache/cell/SLM/sum outcomes remain. Before a cross-quer
 packing prototype, obtain exact per-KV-head ordered selected-ID list classes
 from a new finite committed model capture; adjacent overlap alone does not
 establish compatible groups.
-All33host controls pass. Closed one-use controllers and consumed raw/research
+The next actual-ID census uses the unchanged engine and official thinking-on
+39260-token zero-reuse request. Source `afd7fd025`, plan `ba542c888`, host12case
+controls, all15model hashes, normal benchmark/native/parser closure, silent
+post-closure parameter log and no fresh fault qualify the capture. All12layer
+final tails contain6491rows from position32768, with no repeated complete ordered
+selection list among77892queries. This rejects exact whole-list packing for those
+tails, not partial overlap or the dominant8192-row full chunks.
+
+A CPU-only same-online-slot32cell census at `bce4b8580`, plan `ac7d68b70`, then
+conserves all159756492selected-ID reads. Its three finite host controls pass.
+Ideal read-once-per-equal-class savings across consecutive4/16/64query windows
+are0.0650/0.1586/0.2506percent in aggregate. The largest layer/window case is
+1.4857percent, so the prospective1..10percent rule **defers** this direction;
+it does not satisfy an all-layer<=1percent rejection. No GPU prototype follows.
+These are logical topology bounds, not physical cache or VRAM-traffic savings.
+
+For the117488prefill rows in the service cohort, the source model sums
+238865613selected IDs per layer. BF16 K+V payload is2048bytes per ID across
+both KV heads; active24-head QK+PV work is24576FLOPs per ID, or12FLOPs per
+nominal byte. Across12layers this gives5.870361305088TB nominal reads and
+70.444335661056TFLOPs. Dividing by26.943576593s service gives217.876GB/s and
+2.61451TFLOP/s equivalents. These exclude cache reuse,physical transactions,
+padded-head/tail work,softmax,SLM and spills;they do not establish saturation.
+An expert/dense GEMM rate is not this sparse topology's hardware ceiling.
+Next source preflight considers subgroup-only K staging, with old row-coalesced
+and pitch failures retained;no new inference candidate is selected. One initialized
+53252180-byte layer0 ID record serves this immediate source-preflight/comparison;
+review it before building and retire it if no distinct legal comparison survives.
+
+The earlier service parser passed33host controls before retirement. Closed
+one-use controllers and consumed raw/research
 output retire after compact evidence at82d48e818;the deletion manifest records
 584files/156377451bytes. The selected engine/twelve fixtures and other explicit
 numerical/provenance holds remain untouched.

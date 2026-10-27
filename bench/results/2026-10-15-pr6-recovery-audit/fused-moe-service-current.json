@@ -436,7 +436,22 @@
     ],
     "phase_ownership": "Source route/count/geometry conservation;no independent per-enqueue phase identity join.",
     "limits": "Selected family service only. No complete-model/critical-path,physical traffic,hardware saturation,clean speed,decode,quality or physical262144-model qualification.",
-    "next_action": "CPU-only exact32-cell aligned-tile census on this already captured data,within consecutive4/16/64query windows. This is a new prospective host-analysis plan,no native rerun or model change. Raw IDs have this immediate named consumer;retire at its closure."
+    "next_action": "Source preflight of subgroup-only4cell-by16dim K staging,compared with rejected scalar-row-coalesced and K36/V260 pitch prototypes. Review existing bank-layout reference without assuming a Xe2 bank map;prove permutation/bounds and safe BF16 stores before any component build. No current inference candidate selected.",
+    "source_work_model": {
+      "prefill_rows": 117488,
+      "selection_width": "min(position+1,2051)",
+      "selected_IDs_per_layer": 238865613,
+      "layers": 12,
+      "nominal_packed_KV_bytes_per_selected_ID": 2048,
+      "nominal_packed_KV_read_bytes": 5870361305088,
+      "active_QK_PV_FLOPs_per_selected_ID": 24576,
+      "active_QK_PV_FLOPs": 70444335661056,
+      "active_FLOPs_per_nominal_KV_byte": 12,
+      "attention_service_median_seconds": 26.943576593,
+      "nominal_payload_divided_by_service_GB_s": 217.87609691777644,
+      "active_projection_equivalent_TFLOP_s": 2.6145131630133167,
+      "interpretation": "Source address/work model with24real query heads,2KV heads,Dim256,BF16K+V and Mode0valid identity prefix;not measured physical transactions. QK/PV count excludes padded heads/cells,softmax,scales,metadata,SLM,spills,cache reuse and CPU time. These ratios are neither peak/utilization nor hardware saturation. Dense/expert GEMM rates cannot substitute for this sparse topology capacity."
+    }
   },
   "original_failure": {
     "commit": "96bd6c9873b91fb090ce9b38b7e30a388bc8f39c",
@@ -452,7 +467,7 @@
     "inference_change_adopted": false,
     "resource_saturation_qualified": false,
     "priority": "Selected attention service26.94..26.96s;prefix pack0.1315s. Repacking the whole prefix is not a useful priority.",
-    "next_action": "CPU-only exact32-cell aligned-tile census on this already captured data,within consecutive4/16/64query windows. This is a new prospective host-analysis plan,no native rerun or model change. Raw IDs have this immediate named consumer;retire at its closure.",
+    "next_action": "Source preflight of subgroup-only4cell-by16dim K staging,compared with rejected scalar-row-coalesced and K36/V260 pitch prototypes. Review existing bank-layout reference without assuming a Xe2 bank map;prove permutation/bounds and safe BF16 stores before any component build. No current inference candidate selected.",
     "limits": "No complete model coverage,critical path,physical bus traffic,hardware saturation,clean speed,decode or physical262144 qualification. QSA source/route/count/geometry conservation is not an independent per-execution phase join."
   },
   "retention": {
@@ -656,84 +671,163 @@
         "Negative whole-list classes do not reject partial overlap/tile reuse or establish a hardware bottleneck."
       ]
     },
-    "retention": "CPU-only exact32-cell aligned-tile census on this already captured data,within consecutive4/16/64query windows. This is a new prospective host-analysis plan,no native rerun or model change. Raw IDs have this immediate named consumer;retire at its closure."
+    "retention": "Full-list and aligned-tile census consumers ended. All-layer capture/log/cache retirement at this boundary;only one initialized layer0 record can serve immediate source-qualified subgroup K-staging comparison,review at curation verdict before building."
   },
   "qsa_aligned_tiles": {
-    "stage": "prepared",
+    "stage": "closed",
+    "passed": true,
+    "complete": true,
+    "ownership_closed": true,
+    "GPU_executed": false,
+    "model_adopted": false,
     "source_commit": "bce4b8580c95ecc1d489d8e31bdb962da70023c3",
-    "inputs": {
-      "tools/sycl/qsa_tile_reuse.py": "0345f700e4b5f5323453e0a815a678b5f93c9f6ef2140f0244bcd133ec77b9ae",
-      "tools/sycl/qsa_selection_capture.py": "f7be49df0cd5a71b7d8246fd01023edfdba992e78224617881fbb94602c723fd",
-      "tools/sycl/measurement_owner.py": "bddd0c5e5020e882ca3404679420faec11e820dabce2ed4c72ef82b4c9c0874a",
-      "tools/sycl/measurement_guards.py": "794e332c70aca0acadad4f26d0414548e023a02fd27b72ed78fc773674423ec8"
-    },
-    "capture_result_sha256": "c20390c8ce8d6011f102872ca621283f264bf0c471b10582f2b985cffbd26bfb",
-    "capture": {
-      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-exact-lists-v1/selected-ids.bin",
-      "bytes": 646213056,
-      "sha256": "cd76cbc1d2997c31e535afa3a8f48dbd1cd3b77febecc1e532552df123d38398",
-      "identity": {
-        "st_dev": 40,
-        "st_ino": 1684628,
-        "st_size": 646213056,
-        "st_mtime_ns": 1793121741431062744,
-        "st_ctime_ns": 1793121741431062744
-      },
-      "records": 24,
-      "warmup_rows_per_layer": 73,
-      "tail_position": 32768,
-      "tail_rows_per_layer": 6491,
-      "layers": 12,
-      "all_initialized_IDs_causal_strictly_ordered": true,
-      "unused_cap_suffix_ignored": true
-    },
-    "file_identity": [
-      40,
-      1684628,
-      646213056,
-      1793121741431062744,
-      1793121741431062744
-    ],
-    "python": {
-      "path": "/usr/bin/python3.12",
-      "sha256": "e50d468e8b0adfb05733f5b87b3cff34829c4a8c1aea50c865aa8bdfe4bb150f"
-    },
-    "command": [
-      "/usr/bin/python3.12",
-      "-I",
-      "-S",
-      "-B",
-      "/home/yayoi/orca/workspaces/Strata/sycl/tools/sycl/qsa_tile_reuse.py",
-      "worker"
-    ],
-    "environment": {
-      "PATH": "/usr/bin:/bin",
-      "LANG": "C",
-      "LC_ALL": "C",
-      "PYTHONDONTWRITEBYTECODE": "1",
-      "TMPDIR": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-aligned-tiles-v1/tmp"
-    },
+    "frozen_plan": "ac7d68b70",
+    "capture_sha256": "cd76cbc1d2997c31e535afa3a8f48dbd1cd3b77febecc1e532552df123d38398",
     "question": "Within each captured layer and consecutive4/16/64query windows, count exact initialized32-cell sequences at the same online-attention tile index. Equality includes partial-tail length. No query/head/layer or iteration reordering is performed.",
-    "acceptance": "Validate all24source/workload headers and causal ordered initialized IDs again,exact raw hash/identity before/after,source/Python pins and owned normalexit0. Count each query/tile once per span;conserve logical selected cells. Byte keys check exact equality despite dictionary hash collisions.",
-    "decision_rule": "If all layers/spans have<=1% ideal selected-ID load elision,drop this exact-aligned32tile-sharing direction for this sample. 1..10% defers it;>=10% only nominates further source/scheduling/resource comparison,not implementation eligibility. Shared instances alone do not count saved reads.",
-    "limits": "CPU-only logical topology and an ideal read-once-per-class bound. It is not physical VRAM traffic,cache hits,saturation,critical-path or speed evidence. Current32-cell online order and existing KV-head/layer isolation remain. No inference/GPU/math or model qualification.",
-    "budgets": {
-      "wall": 180,
-      "cpu": 120,
-      "rss_cap": 1073741824,
-      "text_cap": 1048576,
-      "file_cap": 4194304,
-      "total_cap": 8388608
-    },
-    "retention": "Input646213056B capture held only through this immediate host census. Retain compact per-layer samples,logical bound,source/recipe/hash/decision;retire input capture and generated output/one-use tools after closure. No new native engine generation.",
     "host_controls": {
       "cases": 3,
       "passed": true
     },
-    "passed": false,
-    "complete": false,
-    "ownership_closed": true,
+    "sample_columns": [
+      "layer",
+      "ideal_elided_ID_reads_span4",
+      "ideal_elided_ID_reads_span16",
+      "ideal_elided_ID_reads_span64"
+    ],
+    "samples": [
+      [
+        0,
+        38304,
+        119456,
+        197792
+      ],
+      [
+        1,
+        3200,
+        6720,
+        10272
+      ],
+      [
+        2,
+        4576,
+        11488,
+        18944
+      ],
+      [
+        3,
+        5664,
+        11872,
+        21888
+      ],
+      [
+        4,
+        2272,
+        4000,
+        4736
+      ],
+      [
+        5,
+        2464,
+        4448,
+        6048
+      ],
+      [
+        6,
+        1184,
+        2048,
+        2624
+      ],
+      [
+        7,
+        1376,
+        3136,
+        4640
+      ],
+      [
+        8,
+        3456,
+        5568,
+        6720
+      ],
+      [
+        9,
+        4032,
+        6592,
+        8800
+      ],
+      [
+        10,
+        32960,
+        68867,
+        103625
+      ],
+      [
+        11,
+        4416,
+        9248,
+        14208
+      ]
+    ],
+    "per_layer_denominator": {
+      "queries": 6491,
+      "selected_ID_reads": 13313041,
+      "query_tiles": 421915
+    },
+    "aggregate": {
+      "spans": [
+        4,
+        16,
+        64
+      ],
+      "selected_ID_reads": 159756492,
+      "ideal_elided_ID_reads": [
+        103904,
+        253443,
+        400297
+      ],
+      "ideal_elision_fraction": [
+        0.0006503898445641884,
+        0.001586433182321004,
+        0.002505669691345
+      ],
+      "maximum_individual_layer_span_fraction": 0.014857011256857093
+    },
+    "decision_rule": "If all layers/spans have<=1% ideal selected-ID load elision,drop this exact-aligned32tile-sharing direction for this sample. 1..10% defers it;>=10% only nominates further source/scheduling/resource comparison,not implementation eligibility. Shared instances alone do not count saved reads.",
+    "decision": "Defer exact same-slot32tile sharing on this sample;no GPU prototype. Largest individual case1.4857%falls in declared1..10%deferral band;aggregate ideal logical-ID load elision is0.0650/0.1586/0.2506%. Do not relabel this as all-layer<=1%rejection or physical VRAM savings.",
+    "limits": "CPU-only logical topology and an ideal read-once-per-class bound. It is not physical VRAM traffic,cache hits,saturation,critical-path or speed evidence. Current32-cell online order and existing KV-head/layer isolation remain. No inference/GPU/math or model qualification.",
+    "next_action": "Source preflight of subgroup-only4cell-by16dim K staging,compared with rejected scalar-row-coalesced and K36/V260 pitch prototypes. Review existing bank-layout reference without assuming a Xe2 bank map;prove permutation/bounds and safe BF16 stores before any component build. No current inference candidate selected.",
+    "retention": "Closed;retire generated host output/one-use census sources and all-layer raw after committing compact result. One layer0 record may remain only for immediate independently specified K-staging source-preflight/comparison,reviewed at curation verdict before any build."
+  },
+  "qsa_k_staging_preflight": {
+    "stage": "source_preflight",
     "GPU_executed": false,
-    "model_adopted": false
+    "model_adopted": false,
+    "fixture": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-k-staging-selected-ids-v1.bin",
+      "bytes": 53252180,
+      "sha256": "a0410c7005f64a89d02becd42fcfd8155c92b68cd7b4d175543c172070a6338c",
+      "header": [
+        0,
+        32768,
+        6491,
+        2051
+      ],
+      "consumer": "Immediate source-preflight and controlled comparison of subgroup4cell-by16dim K staging versus original VectorK4,with K-only pitch as a separate arm if legal. No GPU candidate selected.",
+      "review": "At this current source preflight,then before build. Retire immediately if no distinct legal controlled comparison survives;otherwise retire when that component comparison closes.",
+      "origin_native_source": "6e40afc1beddd059ee518617f6c1efce1da14aca",
+      "origin_capture_controller": "afd7fd025",
+      "origin_capture_plan": "ba542c888",
+      "origin_request_sha256": "1fd63b8c67a1888e443800b5c6d339ca116df2cb91941e6f332b6adf74275b3a"
+    },
+    "proposed_mapping": "WG128/SG16;tile=SGid+iteration*8,cellbase=(tile%8)*4,dbase=(tile//8)*16. Lane loads cellbase+lane//4 and4dims fromdbase+4*(lane%4). A proposed XOR4/XOR8 register butterfly swaps lane-cell and vector-element bits;output lane owns dimensiondbase+4*(lane%4)+lane//4 and4cells. Prove all8192values and API participation before build.",
+    "prior_source_comparison": "Main recovered2d4f24484:CoalescedK uses scalar cell=i/Dim,d=i%Dim loads and scalar transposed stores,without subgroup register transpose. This differs in mapping/load width from this proposal;prior latency+12.44/+27.98/+7.75% remains rejected. K36/V260 and V264 failures also remain.",
+    "qualification_gaps": [
+      "Exhaustive value/destination permutation and bounds proof.",
+      "Actual pinned SYCL subgroup scalar/vector API and BFloat typed-store/object-lifetime contract.",
+      "Separate K32/K36 control and allocation/leading-stride changes;no combined V change.",
+      "Actual compiler lowering/resource and bounded device correctness/performance gates;Xe2 bank map and physical traffic remain unknown."
+    ],
+    "research_review_sha256": "51b793f6da044d17ff91a1f2424338929f5b06fbc9c9e89d91ed877300f4a5b1",
+    "limits": "Review/proposal and one initialized actual-ID input only. No build or GPU comparison warranted yet;no hardware saturation or speed claim. Selected6e40/decode/1256slots unchanged."
   }
 }
