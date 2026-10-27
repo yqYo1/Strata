@@ -1,5 +1,5 @@
 {
-  "stage": "prepared",
+  "stage": "compiled",
   "source_commit": "40aa674b75f7cc3a60d22aed36160555a20a4ae8",
   "input_sha256": {
     "include/strata/artifact/dequant.hpp": "51fcc756845ddbadb62e4164ec3b88a5cea7d66ceb13d60f12897f41c5ddf255",
@@ -315,9 +315,100 @@
   "retention": "Only LLVM/dependency outputs for the imminent lowering discriminator;no second executable. Keep compact attributes/dependency conservation and failures. Retire raw IR/compiler output once the source-contract decision closes;selected engine and12fixtures remain unchanged. Separate legacy provenance holds remain in native-gdn-engine-build.json.",
   "active": false,
   "ownership_closed": true,
-  "complete": false,
-  "compilation_passed": false,
-  "llvm_grf_request_confirmed": false,
+  "complete": true,
+  "compilation_passed": true,
+  "llvm_grf_request_confirmed": true,
   "GPU_executed": false,
-  "inference_adopted": false
+  "inference_adopted": false,
+  "host_control": {
+    "command": [
+      "/usr/bin/python3.12",
+      "-I",
+      "-S",
+      "-B",
+      "tests/core/test_qsa_grf.py"
+    ],
+    "passed": true
+  },
+  "actual_dependencies": {
+    "files": 665,
+    "sha256": "374d35d01170aa141b36cc64e1e4ab1bb4b8e2b2819b35dc0d0b7d5d75728fe3"
+  },
+  "metadata": {
+    "original": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-grf-lowering-v1/original.ll",
+      "sha256": "690bbb4da7c7322f6d6457ecf2503e447432c2e0d497afcc38b999fdd8fc8a83",
+      "bytes": 589718,
+      "requested_grf": null,
+      "request_attributes": [],
+      "kernels_with_request": [],
+      "metadata_pattern_confirmed": true
+    },
+    "grf_128": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-grf-lowering-v1/grf_128.ll",
+      "sha256": "33cb87b5144fb6c4424c7b67dbab8ae51d66cec7d8291267f9c96b7672115596",
+      "bytes": 72541,
+      "requested_grf": 128,
+      "request_attributes": [
+        "128"
+      ],
+      "kernels_with_request": [
+        {
+          "symbol": "_ZTSZZN6strata7kernels7grf_128L17prefix_batch_implILi33ELb0ELb0ELb1ELb1ELb1ELb1ELb0EEEbPKtRKNS0_12QsaAttnPoolsEPKiS9_lRKNS0_9QsaShapesEPtlRKNS0_19QsaPromptBf16BoundsElRKNS0_20QsaBf16PackedScratchEPvNS0_19QsaPrefixStateProbeEPN4sycl3_V15eventEENKUlRNSN_7handlerEE_clESR_EUlNSN_7nd_itemILi1EEEE_",
+          "grf_requests": [
+            "128"
+          ],
+          "subgroup_size": 16
+        }
+      ],
+      "metadata_pattern_confirmed": true
+    },
+    "grf_256": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-grf-lowering-v1/grf_256.ll",
+      "sha256": "dfb790082a44364d450b4ad8de057550a016fc0a1fd719577b709c2ba94fa436",
+      "bytes": 72541,
+      "requested_grf": 256,
+      "request_attributes": [
+        "256"
+      ],
+      "kernels_with_request": [
+        {
+          "symbol": "_ZTSZZN6strata7kernels7grf_256L17prefix_batch_implILi33ELb0ELb0ELb1ELb1ELb1ELb1ELb0EEEbPKtRKNS0_12QsaAttnPoolsEPKiS9_lRKNS0_9QsaShapesEPtlRKNS0_19QsaPromptBf16BoundsElRKNS0_20QsaBf16PackedScratchEPvNS0_19QsaPrefixStateProbeEPN4sycl3_V15eventEENKUlRNSN_7handlerEE_clESR_EUlNSN_7nd_itemILi1EEEE_",
+          "grf_requests": [
+            "256"
+          ],
+          "subgroup_size": 16
+        }
+      ],
+      "metadata_pattern_confirmed": true
+    }
+  },
+  "closed_ir_reanalysis": {
+    "normalized_128_256_equal": true,
+    "normalizations": [
+      [
+        "grf_128",
+        "grf_256"
+      ],
+      [
+        "\"sycl-grf-size\"=\"128\"",
+        "\"sycl-grf-size\"=\"256\""
+      ],
+      [
+        "!36 = !{i32 1}",
+        "!36 = !{i32 2}"
+      ]
+    ],
+    "opaque_RegisterAllocMode_metadata": [
+      1,
+      2
+    ],
+    "kernel_arguments": 18,
+    "scope": "Exact emitted LLVM comparison only;no claim about backend GRF,device legality,occupancy or speed.",
+    "historical_counterevidence": {
+      "result": "qsa-grf-current.json",
+      "source_commit": "b4beb8d536f0b0b6b7e582c5171c6821464032ed",
+      "finding": "The prior current-body explicit128/256 experiment already used handler.parallel_for(range,properties,lambda). This SDK nd_launch(handler,launch_config,kernel) forwards to that same overload at enqueue_functions.hpp:372. Launch-form proposal is not a distinct backend allocation mechanism;prior explicit256 slowdown remains rejected. No GPU remeasurement merely for the API spelling."
+    }
+  }
 }

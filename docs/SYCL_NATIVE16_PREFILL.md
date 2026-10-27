@@ -1685,6 +1685,39 @@ does not prove SPIR-V/native lowering,B570 support or per-kernel workgroup limit
 The first preparation at`7d3e9a3c0`refused an occupied result name before creating
 any output or running a compiler. The lowering-specific result preserves the
 earlier rejected`qsa-grf-current.json`comparison unchanged.
+The committed`40aa674b7`source and`243977e2c`plan now complete all three
+compilations plus five host controls. All665actual dependencies match their
+frozen inputs. Explicit128/256 requests appear on exactly one SIMD16 kernel
+each;pack kernels have none. The two emitted LLVM modules match byte-for-byte
+after namespace/source-path,GRF request and opaque RegisterAllocMode1/2
+normalization. This is front-end evidence only;no GPU program was executed.
+
+Historical source`b4beb8d53`already tested the same current-body explicit128/256
+property overload,independently of the older functor trial. The installed
+`nd_launch(handler,launch_config,kernel)`forwards to that same overload. Thus
+changing the API spelling does not supply a new backend allocation mechanism.
+Keep that earlier failed performance decision;do not advance this proposal to
+another GPU comparison merely for the launch spelling. The API audit's native
+review and raw-IR retirement still need closure.
+
+The next source-only proposal is
+[`qsa_cell64_sources.py`](../tools/sycl/qsa_cell64_sources.py):private original32
+and64-cell arms with the same BF16 8x16 matrix fragments,SG16/WG128,default GRF
+and direct-event retention. At width2051,the outer tile count falls65to33.
+The selected cached-Q dynamic payload grows20036to39748bytes,including scores
+with stride65. With the existing4096-byte admission margin,it needs43844bytes.
+The older report's28160/28224byte values describe uncached Q,not the selected
+cached-Q route. Cell128 would need79172bytes before the margin and is excluded
+from this proposal. These are source budgets,not an allocation or occupancy
+measurement. No matrix shape or device limit is inferred from a larger tile.
+
+Cell64 computes four scores/probabilities per lane,two16-cell QK blocks per
+owning subgroup,and four16-cell PV steps per update. It updates the online
+maximum,normalizer and BF16 probabilities once per64rather than32cells;it is a
+changed numerical candidate. Exact old bits are not its adoption criterion.
+Pin the actual framework dependency contract and independently audit bounds,
+collective participation,SLM lifetimes and per-kernel admission before GPU work.
+Production,decode and the selected original engine remain unchanged.
 
 Complete prefill phase attribution requires three independent ledgers: route-owner
 planned operations, actual API results and collector device executions.
