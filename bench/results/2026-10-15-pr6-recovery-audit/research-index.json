@@ -12841,8 +12841,8 @@
   },
   "qsa_kernel_local_grf_contract_20261027": {
     "classification": "decision_support",
-    "status": "eligible_source_contract_audit",
-    "schedulable_now": true,
+    "status": "running",
+    "schedulable_now": false,
     "source_revision": "6e40afc1beddd059ee518617f6c1efce1da14aca",
     "proposal": {
       "path": "tools/sycl/qsa_grf_sources.py",
@@ -12877,6 +12877,21 @@
     },
     "worker_model": "gpt-6-luna",
     "consumer": "Main source-only GRF128/256 proposal;native Luna/max review before any report use and before GPU execution. Main owns implementation/build/testing.",
-    "retention": "Keep substantive source-contract findings only through this candidate decision;report-only task. No product edits,Git,build,test,GPU,profiler,process actions or XeStrata application source."
+    "retention": "Keep substantive source-contract findings only through this candidate decision;report-only task. No product edits,Git,build,test,GPU,profiler,process actions or XeStrata application source.",
+    "task_id": "task_7f5d3115f5d3",
+    "dispatch_id": "ctx_65069f230481",
+    "run_id": "run_ef40727f4983",
+    "terminal": "term_abb9a1dc-128a-4e5b-b103-dfd761266f72",
+    "model_evidence": "Exact reused terminal displayed GPT-6-Luna high after/new/current-worktree;worker-start accepted and turnStart observed. Launch model fields are null for reuse,not model evidence.",
+    "host_overlay_check": {
+      "source_commit": "35e5e1bcbfdaa81b3da7092bcabaf99c1e8d2797",
+      "passed": true,
+      "scope": "In-memory exact6e40/reversal and same-form128/256 source-delta check only;no compiler or GPU execution.",
+      "generated_sha256": {
+        "grf_128.cpp": "b1add24b974fe8939cf4c2ee4b09a8f0ff154e5ee565b598e338e21b41ff34a8",
+        "grf_256.cpp": "73df7c6b1044c26e4060ab2a54e9ce06e470ac1f7608d9ca4353c2f790503a0f",
+        "qsa-grf.hpp": "e61c6a662df9bd1ec9a5856fc584be87a304868478cdb54eae53a497629fc165"
+      }
+    }
   }
 }
