@@ -13371,7 +13371,7 @@
   },
   "qsa_counter_free_resource_discriminator_20261027": {
     "classification": "decision_support",
-    "status": "running",
+    "status": "reviewing",
     "schedulable_now": false,
     "report": ".cache/strata-research/20261027/qsa-counter-free-resource-discriminator.md",
     "report_budget_bytes": 16384,
@@ -13411,6 +13411,20 @@
     "main_source_findings": [
       "The pack kernel writes scratch by logical row;physical page mapping changes source reads but not the attention packed-row formula. Page-table aliasing alone does not collapse attention working set.",
       "prefix publish_rows uses logical*2+KVhead and valid page-table bounds. IDs determine gathered packed addresses;validation checks tensor spans/shape/provider but does not demand unique or sorted IDvalues. Any deliberate duplicate-ID control remains a separately labelled counterfactual,not production geometry."
-    ]
+    ],
+    "worker_closed": true,
+    "worker_outcome": "succeeded",
+    "resource_decision": "Completed/succeeded dispatch,released external terminal with processActionnone,and worker_done delivery acknowledged.",
+    "report_identity": {
+      "bytes": 12063,
+      "sha256": "d609a8268d4a449db61bd93f6c6186db37707679858b082c6451db1993e0c27d"
+    },
+    "review": {
+      "status": "running",
+      "agent": "/root/review_qsa_counter_free_discriminator_20261027",
+      "model": "gpt-6-luna",
+      "reasoning_effort": "max",
+      "path": ".cache/strata-research/20261027/qsa-counter-free-resource-discriminator.review.json"
+    }
   }
 }
