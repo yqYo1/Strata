@@ -136,11 +136,18 @@ void run(const Selected& source,int queries,bool timing,int process) {
     }
   }
   for(size_t i=0;i<query.size();++i)query[i]=bf16(float(int(i*13%17)-8)*.125f);
-  std::vector<uint16_t> oracle(query.size());
+  std::vector<uint16_t> oracle(query.size());size_t negative_zero_sites=0;
   for(int q=0;q<queries;++q)for(int h=0;h<Heads;++h)for(int d=0;d<Dim;++d) {
     const int head=h/(Heads/KV),code=(head*5+d*11+5)%31-15;
     const float scale=float(std::bit_cast<_Float16>(half(std::ldexp(head?-1.f:1.f,-7-d/64))));
-    oracle[(size_t(q)*Heads+h)*Dim+d]=bf16(float(code)*scale);
+    const float value=float(code)*scale;
+    // The FP32 PV accumulator starts at +0. An all-negative-zero V column
+    // accumulates to +0 under round-to-nearest, rather than returning raw -0.
+    // Correct the expected recurrence; never canonicalize observed GPU bits.
+    const uint16_t raw=bf16(value),expected=bf16(0.f+value);
+    require(raw==expected || (raw==0x8000 && expected==0),"nonzero uniform oracle change");
+    negative_zero_sites+=raw!=expected;
+    oracle[(size_t(q)*Heads+h)*Dim+d]=expected;
   }
   std::vector<int32_t> table(pages),steps(size_t(queries)*kStepCount);
   for(int p=0;p<pages;++p)table[p]=p;
@@ -168,17 +175,31 @@ void run(const Selected& source,int queries,bool timing,int process) {
     } else accepted=locality_control::qsa_bf16_prefix_ordered_exp_batch(dq.data(),pools,di.data(),ds.data(),Cap,shape,out.data(),queries,bounds,cells,packed.view(),&rt->compute(),submitted);
     require(accepted,"source-bound locality route refused");
   };
+  auto check_output=[&](int arm) {
+    const auto actual=out.get();
+    if(actual!=oracle) {
+      size_t changed=0,zero_sign=0;
+      for(size_t i=0;i<actual.size();++i)if(actual[i]!=oracle[i]) {
+        if(changed<8)std::cerr<<"uniform_oracle_delta arm="<<arm<<" index="<<i
+          <<" expected_bits="<<oracle[i]<<" actual_bits="<<actual[i]<<'\n';
+        ++changed;zero_sign+=(uint16_t(actual[i]^oracle[i])==0x8000 && (actual[i]&0x7fff)==0);
+      }
+      std::cerr<<"uniform_oracle_summary changed="<<changed<<" zero_sign_only="<<zero_sign<<'\n';
+      throw std::runtime_error("uniform-cell full-output oracle differs");
+    }
+  };
   std::vector<uint16_t> packed_k,packed_v;std::vector<int32_t> packed_bad;
   for(int arm=0;arm<4;++arm) {
     di.put(ids[arm]);
     for(int repeat=0;repeat<2;++repeat) {
       sycl::event event;call(arm,arm?&event:nullptr);rt->wait();
       if(arm)require(service(event,"numerical",repeat)>0,"direct attention event");
-      require(out.get()==oracle,"uniform-cell full-output oracle differs");
+      check_output(arm);
       if(!arm && !repeat){packed_k=packed.k.get();packed_v=packed.v.get();packed_bad=packed.bad.get();}
       else require(packed.k.get()==packed_k && packed.v.get()==packed_v && packed.bad.get()==packed_bad,"packed data changed across topology arms");
     }
-    std::cout<<"{\"kind\":\"numerical\",\"arm\":"<<arm<<",\"queries\":"<<queries<<",\"compared\":"<<oracle.size()<<",\"all_bits_exact\":true}\n";
+    std::cout<<"{\"kind\":\"numerical\",\"arm\":"<<arm<<",\"queries\":"<<queries<<",\"compared\":"<<oracle.size()
+      <<",\"negative_zero_sites_canonicalized\":"<<negative_zero_sites<<",\"all_bits_exact\":true}\n";
   }
   int final_arm=3;
   if(timing) {

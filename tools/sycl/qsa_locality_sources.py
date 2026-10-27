@@ -108,6 +108,10 @@ def host_controls(project):
         raise ValueError('local-layout candidate leaked into diagnostic')
     if body.count('if (submitted) *submitted = event;') != 1:
         raise ValueError('attention event export absent or duplicated')
+    negative_zero = struct.unpack('<I', struct.pack('<f', -0.0))[0]
+    accumulated_zero = struct.unpack('<I', struct.pack('<f', 0.0 + -0.0))[0]
+    if (negative_zero, accumulated_zero) != (0x80000000, 0):
+        raise ValueError('uniform-V oracle must model initial FP32 +0 accumulation')
     # Counterfactual IDs preserve count, distinctness, causality and four final
     # cells. They are not claims about the model selector's block-score ranking.
     for q in (0, 1, 3, 14, 15, 16, 511, 4095, 6490):
@@ -117,4 +121,5 @@ def host_controls(project):
             if len(values) != 2051 or len(set(values)) != 2051 or values != sorted(values) or values[-1] != pos:
                 raise ValueError('invalid finite locality bank')
     return dict(passed=True, reverse_overlay_exact=True, bank_boundary_cases=18,
+                initial_positive_zero_counterexample_checked=True,
                 GPU_executed=False, compiler_executed=False)

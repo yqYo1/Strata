@@ -1775,13 +1775,22 @@ and counter references have now been retrieved,followed by a bounded Orca Luna
 methods report and completed native Luna/max review. A controlled logical-ID
 topology comparison can test address-locality sensitivity,but cannot identify
 physical DRAM traffic,bandwidth saturation or the limiting GPU resource.
-Before freezing that comparison,recover or prove the actual per-query counts
-from the capture producer and selected caller:32is the tile size,and the2051
-capture-header field alone does not prove every query's count. Preserve those
-counts and use feasible shared/spread IDpatterns with identical repeated-value
-K/V,Q,kernel and launch arguments. No new native build or GPU trial is qualified
-by this methods review,and no model speed gain has been adopted. See the
-`qsa_counter_free_resource_discriminator_20261027` research-index decision.
+The source/input audit now proves all6491query counts are2051from the immutable
+producer/caller/helper and validates13313041initialized actual IDs. These counts
+are source-derived,not a device steps capture;32is the tile size. The ten-command
+locality fixture build and both exact-kernel property queries pass,but its first
+traced smoke fails the host's raw uniform-V bitwise oracle. The child exits1and
+the anchored owner scan finds no survivors;no fresh GPU fault occurs. The failed
+cohort remains archived at`16686a2eb`,with retirement proof at`09e3e1c94`.
+
+A source audit finds288negative-zero oracle counterexamples in the three-query
+input:raw negative-zero V need not retain its sign through the FP32 accumulator
+starting at+0. Whether this explains every observed mismatch is still unproven.
+Main corrects the expected recurrence,adds bounded mismatch diagnostics and
+separates failed observation/protocol from physical process closure in a new
+prospective source/build/plan. Observed GPU bits are never canonicalized. No
+model speed gain or hardware-resource conclusion has been adopted. See the
+[current locality decision](../bench/results/2026-10-15-pr6-recovery-audit/qsa-locality-current.json).
 
 Complete prefill phase attribution requires three independent ledgers: route-owner
 planned operations, actual API results and collector device executions.

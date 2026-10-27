@@ -25,6 +25,12 @@ from measure_down_scatter import postchecks
 P,B,ROOT,RESULT=b.P,b.B,b.ROOT,b.RESULT
 CPP='bench/sycl/qsa_locality.cpp'
 
+def physically_closed(entries):
+    """Process closure is distinct from successful observation/protocol."""
+    return all(e.get('direct_child_reaped') is True and e.get('session_empty') is True and
+        e.get('survivors')==[] and e.get('ownership_status')=='observed' and
+        type(e.get('exit_code')) is int for e in entries)
+
 def inputs(revision):
     pending = [Path(__file__).resolve()]; seen = set(); pins = {}
     while pending:
@@ -68,7 +74,7 @@ def kernel_ids(record):
 
 
 def contract():
-    row=validation.committed(b.gen.A/'research-index.json',('qsa_locality_harness_contract_20261027',))
+    row=validation.committed(b.gen.A/'research-index.json',('qsa_locality_oracle_repair_contract_20261027',))
     guards.require(row['worker_closed'] and row['review']['status']=='completed' and
         row['review']['model']=='gpt-6-luna' and row['review']['reasoning_effort']=='max' and
         row['main_acceptance']=='eligible_native_gates','closed independent locality review required')
@@ -232,7 +238,8 @@ def run():
     except BaseException as error:
         result.update(passed=False, complete=False, error=repr(error))
     finally:
-        result['ownership_closed'] = owner.active is None and all(supervision.closed(c) for c in owner.commands)
+        result['ownership_closed'] = owner.active is None and physically_closed(owner.commands)
+        result['protocol_qualified'] = result['passed'] and all(supervision.closed(c) for c in owner.commands)
         postchecks(result, boot, cursor[0]);persist()
         plan['stage'] = 'closed' if result['passed'] else 'failed'
         record['admission_check'] = result
@@ -243,7 +250,7 @@ def run():
 
 def numerical_contract():
     return dict(recurrence_cells=32,source_derived_counts=2051,
-        oracle='Logical-cell-constant K/V perKVhead makes all2051scores equal. BF16output must exactly match the dequantized BF16V for all queries,24heads and256dimensions. Every arm and repetition is checked.',
+        oracle='Logical-cell-constant K/V perKVhead makes all2051scores equal. Model the FP32PV accumulator starting at+0,then divide by2051and roundBF16;raw negative-zero V does not imply negative-zero output. Every observed output bit remains unchanged and must match the corrected oracle. Check96negative-zero input sites perquery;no observed-output canonicalization.',
         coverage='All output bits,guards,immutable inputs and packed rows. Same source count and launch mask. Synthetic Q/K/V and deliberate H/S topology;not model-selector rankings,physical262144model fill,quality or decode qualification.')
 
 
@@ -371,7 +378,8 @@ def parsed_output(text,mode,process):
     queries=3 if mode=='smoke' else 6491
     numerical=[v for v in rows if v.get('kind')=='numerical']
     guards.require([(v['queries'],v['arm']) for v in numerical]==[(queries,a) for a in range(4)] and
-        all(v['compared']==queries*24*256 and v['all_bits_exact'] is True for v in numerical),'complete exact uniform-output oracle required')
+        all(v['compared']==queries*24*256 and v['negative_zero_sites_canonicalized']==queries*96 and
+            v['all_bits_exact'] is True for v in numerical),'complete exact uniform-output oracle required')
     checked=[v for v in rows if v.get('kind')=='checked']
     guards.require(len(checked)==1 and checked[0]==dict(kind='checked',queries=queries,cells=39259,
         guards=True,inputs_immutable=True,all_outputs_exact=True),'guard/input/packed/output coverage differs')
@@ -418,7 +426,14 @@ def performance_decision(observations,comparison):
 
 def host_controls():
     import copy
-    rows=[dict(kind='numerical',arm=a,queries=3,compared=18432,all_bits_exact=True) for a in range(4)]
+    failed_child=dict(direct_child_reaped=True,session_empty=True,survivors=[],
+        ownership_status='observed',exit_code=1,observation_complete=False,error='oracle rejected')
+    guards.require(physically_closed([failed_child]) and not supervision.closed(failed_child),
+        'failed protocol and physical process closure must remain separate')
+    guards.require(not physically_closed([dict(failed_child,direct_child_reaped=False)]) and
+        not physically_closed([dict(failed_child,survivors=[{'pid':123}])]),
+        'live/unknown process cannot be declared closed')
+    rows=[dict(kind='numerical',arm=a,queries=3,compared=18432,negative_zero_sites_canonicalized=288,all_bits_exact=True) for a in range(4)]
     rows += [dict(kind='checked',queries=3,cells=39259,guards=True,inputs_immutable=True,all_outputs_exact=True),dict(kind='PASS')]
     def render(r):return '\n'.join(json.dumps(v) for v in r)
     parsed_output(render(rows),'smoke',0);rejected=[]
@@ -426,7 +441,7 @@ def host_controls():
         try:call()
         except (ValueError,RuntimeError,KeyError,AssertionError):rejected.append(name)
         else:raise RuntimeError('invalid control accepted:'+name)
-    for key in ('all_bits_exact','compared'):
+    for key in ('all_bits_exact','compared','negative_zero_sites_canonicalized'):
         bad=copy.deepcopy(rows);bad[0][key]=False if key=='all_bits_exact' else 1
         reject(key,lambda:parsed_output(render(bad),'smoke',0))
     bad=copy.deepcopy(rows);bad[-2]['inputs_immutable']=False
@@ -438,7 +453,7 @@ def host_controls():
         samples=[dict(kind='sample',process=process,round=r,arm=a,queries=6491,repeats=8,
             batch_ns=1000000000 if a<2 else 900000000,attention_device_ns=None if not a else 800000000 if a==1 else 700000000,
             event_calls=8 if a else 0,timer_floor_ns=20) for r in range(8) for a in order[(r+process)%4]]
-        numer=[dict(v,queries=6491,compared=6491*24*256) for v in rows[:4]]
+        numer=[dict(v,queries=6491,compared=6491*24*256,negative_zero_sites_canonicalized=6491*96) for v in rows[:4]]
         checked=dict(rows[-2],queries=6491)
         parsed=parsed_output(render(numer+[checked]+samples+[rows[-1]]),'perf',process)
         observations.append(dict(process=process,output=parsed))
@@ -454,7 +469,8 @@ def host_controls():
     reject('duplicate_process',lambda:performance_decision([observations[0]]*3,comparison))
     bad=copy.deepcopy(observations[0]['output']['samples']);bad[0]['batch_ns']=99999999
     reject('short_timer_batch',lambda:parsed_output(render(numer+[checked]+bad+[rows[-1]]),'perf',0))
-    print(json.dumps(dict(passed=True,rejected=rejected,valid_processes=3,valid_samples=96,GPU_executed=False)),flush=True)
+    print(json.dumps(dict(passed=True,rejected=rejected,physical_closure_controls=3,
+        valid_processes=3,valid_samples=96,GPU_executed=False)),flush=True)
 
 
 
@@ -503,7 +519,7 @@ def run_stage(mode):
                 io.proc.stdin.close();io.exit(20)
             print('Running actual-ID '+mode+' process'+str(process),flush=True)
             entry,out,err = owner.run(str(process),job['command'],job['environment'],P,interaction=interact,**plan['budgets'])
-            b.guards.require(b.supervision.closed(entry) and entry['exit_code'] == 0, 'actual-ID child failed/ownership open')
+            b.guards.require(b.supervision.closed(entry) and entry['exit_code'] == 0, 'actual-ID child exit/protocol failure')
             stderr = err.read_text();proof = validation.preload_evidence(stderr,entry['pid'])
             b.guards.require(proof['loader'] == rt['preload']['loader'], 'actual-ID UR loader mismatch')
             body = stderr.split(f'strata UR validation: pid={entry["pid"]} phase=before-main',1)[1]
@@ -524,7 +540,8 @@ def run_stage(mode):
     except BaseException as error:
         result.update(passed=False,complete=False,error=repr(error))
     finally:
-        result['ownership_closed'] = owner.active is None and all(b.supervision.closed(v) for v in owner.commands)
+        result['ownership_closed'] = owner.active is None and physically_closed(owner.commands)
+        result['protocol_qualified'] = result['passed'] and all(b.supervision.closed(v) for v in owner.commands)
         if not result['ownership_closed']:
             result.update(passed=False,complete=False,error='actual-ID ownership remains open')
         postchecks(result,boot,cursors[0]);persist()

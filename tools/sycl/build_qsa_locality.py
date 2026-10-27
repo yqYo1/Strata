@@ -22,7 +22,7 @@ import measurement_guards as guards
 import measurement_owner as supervision
 
 P,B=gen.P,gen.B
-ROOT=B/'qsa-locality-v1'
+ROOT=B/'qsa-locality-v2'
 RESULT=gen.A/'qsa-locality-current.json'
 FIXTURE='bench/sycl/qsa_locality.cpp'
 ADMISSION='bench/sycl/qsa_locality_admission.hpp'
@@ -95,7 +95,7 @@ def experiment():
         source_contract='Exact own6e40ordered-exp prefix;only namespace and host event export. Reuse original layout and version-matched compiler matrix contract;no new leading dimension or collective. Counterfactual H/S are sorted distinct causal IDs with current-cell coverage,not model selector block ranking.',
         compile='Seven object compiles,one link,two device LLVM emissions. Freeze exact compiler,all project/generated/compiler inputs and actual dependency closure. Commit prepared commands before build. No native execution here.',
         admission='Before enqueue:closed independent harness review,two-kernel property-only WG128/SG16/18args and conservative local budget check;inspect live loader identity. Then bounded traced3-query smoke before clean6491timing.',
-        numerical='Full output must exactly equal uniform dequantized BF16 V oracle for every query/head/dimension and every arm/repetition. Device guards,immutable inputs,packed rows and route acceptance must pass.',
+        numerical='Full output must exactly equal uniform BF16V oracle after initial FP32+0PV accumulation,including zero sign,for every query/head/dimension and every arm/repetition. Never canonicalize observed bits. Device guards,immutable inputs,packed rows and route acceptance must pass. Preserve the failed raw-Voracle cohort.',
         performance='Three fresh processes,eight balanced Williams rounds,four arms,eight calls/batch,two warmups outside timing. Each batch>=100ms and1000timer ticks. PrivateP/originalPwall0.99..1.01eachprocess. Sensitivity threshold3percent;all3process median ratios must agree beyond threshold. This is diagnostic,not a speed/adoption gate.',
         budgets='One immediate component generation beside selected6e40engine+12fixtures. Build1800s/percommand420s/RSS12GiB/text8MiB/total1GiB. Qualified immutable runtime and decode1256placement preserved.',
         retention='Next consumers:exact-kernel properties,traced smoke,then frozen address-topology screen. Retire successful rawlogs/IR and generation at closure after original source/recipe recovery. Reuse single53.25MBIDfixture;separate legacy provenance holds remain open.')
@@ -155,6 +155,8 @@ def prepare():
     guards.require(RESULT.exists() and not ROOT.exists(),'source-count result and fresh locality generation required;inspect any existing job before retry')
     initial=gen.committed(RESULT)
     guards.require(initial['stage']=='source_counts_proven_native_unbuilt' and not initial['GPU_executed'],'closed source-count proof required')
+    guards.require(initial['prior_failures'][0]['retirement']['complete'] and
+        not (B/'qsa-locality-v1').exists(),'previous failed generation must be retired before rebuilding')
     previous=gen.committed(gen.A/'qsa-slm-pitch-current.json')
     guards.require(previous['stage']=='closed_rejected_speed' and previous['retention']['retirement']['complete']
         and not previous['decision']['advance_to_model'], 'previous comparison must be closed and its build retired')
@@ -204,7 +206,8 @@ def prepare():
     fixture=capture['analysis']['fixture']
     guards.require(digest(fixture['path'])==fixture['sha256'] and fixture['header']==[0,32768,6491,2051],'selected-ID identity differs')
     record=dict(stage='prepared',source_commit=revision,input_sha256=pins,source_contract=contract,
-        count_proof=initial['count_proof'],source_counts_commit=initial['source_commit'],host_controls=initial['host_controls'],plan=experiment(),sources=list(map(str,sources)),selected_fixture=fixture,
+        count_proof=initial['count_proof'],source_counts_commit=initial['source_counts_commit'],host_controls=initial['host_controls'],
+        prior_failures=initial['prior_failures'],plan=experiment(),sources=list(map(str,sources)),selected_fixture=fixture,
         previous_diagnostic=dict(result='qsa-slm-pitch-current.json',closed_result_commit='cfabc1ee2',generation_retired=True),
         declared_compiler_header_delta=changed,
         retained_engine=full['binary'],native_qualification=proof,generated=generated,compiler=compiler,
