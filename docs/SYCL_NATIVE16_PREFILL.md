@@ -1626,13 +1626,21 @@ copies three GEN ISA images plus their modules,each bound to its successful UR
 launch and sole program/queue device. Both launches per arm,live B570
 `0000:05:00.0` binding,quiet validation,normal closure and no fresh fault pass.
 GEN sizes are72000,72000 and74048bytes;spill descriptors remain12480,12480 and3008.
-These fresh copies still need exact module-text matching and offline disassembly;
-neither size nor descriptor establishes instruction count or a limiting resource.
-The273/303/305-byte kernel names exceed normal Linux filename limits,so the
-next bounded offline gate uses ocloc's memory-output API with short selected
-assembly filenames. No timing or model adoption follows. Closed host mocks,logs and their
-one-use source recover from`6c7a3e05d` with frozen plan`21046228a`.
-Review retention when that immediate extraction attempt closes.
+The CPU-only offline gate now matches all three direct GEN copies byte-for-byte
+to their exact named executable ELF sections. Installed ocloc1.0 disassembles
+unchanged modules through its memory-output API,avoiding the273/303/305-byte
+kernel names as filesystem components. All three owned children close0;output
+release succeeds,and only the selected assemblies and kernel ZeInfo are kept.
+An earlier parser failure remains failed:kernel names also occur in the separate
+`kernels_misc_info` root;the corrected parser selects only the `kernels` root.
+All three actual ZeInfo blocks report128GRF/SIMD16. Their scratch allocations
+are16384/16384/4096,despite the packed candidate being slower. These are static
+resource descriptors,not measured scratch traffic or occupancy. Fresh captures
+do not retroactively prove historical timed native images. Instruction-body and
+Xe2 resource interpretation now have separate bounded research consumers before
+another source variation;no timing or model adoption follows. Closed host mocks
+and their one-use source recover from`6c7a3e05d` with frozen plan`21046228a`.
+Review retained captures and the rejected fixture at that comparison's closure.
 Production/decode and the selected6e40engine/twelve fixtures remain unchanged.
 The rejected generation and two consumed research/review files retire after
 recovering197original source inputs,exact recipe/generated sources and699actual
