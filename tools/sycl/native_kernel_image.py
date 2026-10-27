@@ -154,6 +154,12 @@ def run_activation():
         for expected in [info['library']['path'], info['framework']['path']]:
             require(sum(Path(x).resolve() == Path(expected).resolve() for x in initialized) == 1,
                 'expected single observer/framework initialization: ' + expected)
+            family = 'libxptifw.so' if 'libxptifw.so' in expected else Path(expected).name
+            objects = [(name, namespace) for name, namespace in
+                re.findall(r'file=(\S+)\s+\[(\d+)\]', text) if Path(name).name.startswith(family)]
+            require(objects and all(namespace == '0' and
+                (not name.startswith('/') or Path(name).resolve() == Path(expected).resolve())
+                for name, namespace in objects), 'observer/framework loader namespace differs')
         require(not any('libstrata_ur_' in x and str(Path(x).resolve()) not in
             [rt['preload']['library']['path'], info['library']['path']] for x in initialized),
             'unqualified co-loaded subscriber')
@@ -167,6 +173,7 @@ def run_activation():
             'no-device activation unexpectedly captured binary')
         result.update(host_probe_accepted=True, canary=body, preload=preload,
             observer_load_and_subscription=True, sole_subscriber=True,
+            observed_loader_namespace=0,
             actual_observer=info['library'], dispatcher=info['framework'],
             API_trace_bytes=(folder / 'api.trace').stat().st_size)
     except BaseException as error:
