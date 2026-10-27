@@ -1859,9 +1859,13 @@ checks. That cohort fails at the benchmark's request gate after the74-token warm
 the controller sent `X`,but the actual gate requires `continue` followed by newline.
 The benchmark exits1;the native child exits0,all owners close and no fresh fault
 is recorded. The39261-input request never starts;its117489-input arm remains
-unstarted. Preserve this failure and add a real benchmark-handshake regression
-before a fresh corrected cohort. The completion-receipt repair at`3e00a11b0` remains
-separate. This is source-planned work on the pinned6e40 schema,not GPU execution
+unstarted. The correction at`86b59c143` sends the actual newline-terminated
+acknowledgement and requires a fresh cohort. Two host-only regression tests at
+`92d23f9f0` use the real benchmark gate:both request boundaries accept the controller
+acknowledgement,and a wrong command is rejected. The first host-test version used
+the wrong artifact root and failed before protocol exercise;that failure remains
+recorded. Neither host tests nor the earlier reviews qualify native execution.
+The completion-receipt repair at`3e00a11b0` remains separate. This is source-planned work on the pinned6e40 schema,not GPU execution
 coverage or clean throughput evidence. The original preflight
 refusal at`5575402af` remains in Git;excluding unrelated standalone host tests did
 not qualify native execution. See the [current census plan](../bench/results/2026-10-15-pr6-recovery-audit/model-work-census-current.json).
