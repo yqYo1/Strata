@@ -1682,6 +1682,9 @@ toolchain,dependencies and recipe before compilation,checks five metadata
 admission controls,and keeps compiler completion distinct from the expected
 kernel-local request. It links and executes no device program. An LLVM request
 does not prove SPIR-V/native lowering,B570 support or per-kernel workgroup limits.
+The first preparation at`7d3e9a3c0`refused an occupied result name before creating
+any output or running a compiler. The lowering-specific result preserves the
+earlier rejected`qsa-grf-current.json`comparison unchanged.
 
 Complete prefill phase attribution requires three independent ledgers: route-owner
 planned operations, actual API results and collector device executions.

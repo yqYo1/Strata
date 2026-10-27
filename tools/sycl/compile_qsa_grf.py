@@ -24,7 +24,7 @@ import qsa_grf_sources as proposal
 P = Path(__file__).resolve().parents[2]
 B = Path('/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007')
 ROOT = B / 'qsa-grf-lowering-v1'
-RESULT = P / 'bench/results/2026-10-15-pr6-recovery-audit/qsa-grf-current.json'
+RESULT = P / 'bench/results/2026-10-15-pr6-recovery-audit/qsa-grf-lowering-current.json'
 ARCHIVE = '208c591b0'
 OLD_RESULT = 'bench/results/2026-10-15-pr6-recovery-audit/qsa-barrier-current.json'
 require = guards.require
