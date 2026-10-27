@@ -657,5 +657,83 @@
       ]
     },
     "retention": "CPU-only exact32-cell aligned-tile census on this already captured data,within consecutive4/16/64query windows. This is a new prospective host-analysis plan,no native rerun or model change. Raw IDs have this immediate named consumer;retire at its closure."
+  },
+  "qsa_aligned_tiles": {
+    "stage": "prepared",
+    "source_commit": "bce4b8580c95ecc1d489d8e31bdb962da70023c3",
+    "inputs": {
+      "tools/sycl/qsa_tile_reuse.py": "0345f700e4b5f5323453e0a815a678b5f93c9f6ef2140f0244bcd133ec77b9ae",
+      "tools/sycl/qsa_selection_capture.py": "f7be49df0cd5a71b7d8246fd01023edfdba992e78224617881fbb94602c723fd",
+      "tools/sycl/measurement_owner.py": "bddd0c5e5020e882ca3404679420faec11e820dabce2ed4c72ef82b4c9c0874a",
+      "tools/sycl/measurement_guards.py": "794e332c70aca0acadad4f26d0414548e023a02fd27b72ed78fc773674423ec8"
+    },
+    "capture_result_sha256": "c20390c8ce8d6011f102872ca621283f264bf0c471b10582f2b985cffbd26bfb",
+    "capture": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-exact-lists-v1/selected-ids.bin",
+      "bytes": 646213056,
+      "sha256": "cd76cbc1d2997c31e535afa3a8f48dbd1cd3b77febecc1e532552df123d38398",
+      "identity": {
+        "st_dev": 40,
+        "st_ino": 1684628,
+        "st_size": 646213056,
+        "st_mtime_ns": 1793121741431062744,
+        "st_ctime_ns": 1793121741431062744
+      },
+      "records": 24,
+      "warmup_rows_per_layer": 73,
+      "tail_position": 32768,
+      "tail_rows_per_layer": 6491,
+      "layers": 12,
+      "all_initialized_IDs_causal_strictly_ordered": true,
+      "unused_cap_suffix_ignored": true
+    },
+    "file_identity": [
+      40,
+      1684628,
+      646213056,
+      1793121741431062744,
+      1793121741431062744
+    ],
+    "python": {
+      "path": "/usr/bin/python3.12",
+      "sha256": "e50d468e8b0adfb05733f5b87b3cff34829c4a8c1aea50c865aa8bdfe4bb150f"
+    },
+    "command": [
+      "/usr/bin/python3.12",
+      "-I",
+      "-S",
+      "-B",
+      "/home/yayoi/orca/workspaces/Strata/sycl/tools/sycl/qsa_tile_reuse.py",
+      "worker"
+    ],
+    "environment": {
+      "PATH": "/usr/bin:/bin",
+      "LANG": "C",
+      "LC_ALL": "C",
+      "PYTHONDONTWRITEBYTECODE": "1",
+      "TMPDIR": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-aligned-tiles-v1/tmp"
+    },
+    "question": "Within each captured layer and consecutive4/16/64query windows, count exact initialized32-cell sequences at the same online-attention tile index. Equality includes partial-tail length. No query/head/layer or iteration reordering is performed.",
+    "acceptance": "Validate all24source/workload headers and causal ordered initialized IDs again,exact raw hash/identity before/after,source/Python pins and owned normalexit0. Count each query/tile once per span;conserve logical selected cells. Byte keys check exact equality despite dictionary hash collisions.",
+    "decision_rule": "If all layers/spans have<=1% ideal selected-ID load elision,drop this exact-aligned32tile-sharing direction for this sample. 1..10% defers it;>=10% only nominates further source/scheduling/resource comparison,not implementation eligibility. Shared instances alone do not count saved reads.",
+    "limits": "CPU-only logical topology and an ideal read-once-per-class bound. It is not physical VRAM traffic,cache hits,saturation,critical-path or speed evidence. Current32-cell online order and existing KV-head/layer isolation remain. No inference/GPU/math or model qualification.",
+    "budgets": {
+      "wall": 180,
+      "cpu": 120,
+      "rss_cap": 1073741824,
+      "text_cap": 1048576,
+      "file_cap": 4194304,
+      "total_cap": 8388608
+    },
+    "retention": "Input646213056B capture held only through this immediate host census. Retain compact per-layer samples,logical bound,source/recipe/hash/decision;retire input capture and generated output/one-use tools after closure. No new native engine generation.",
+    "host_controls": {
+      "cases": 3,
+      "passed": true
+    },
+    "passed": false,
+    "complete": false,
+    "ownership_closed": true,
+    "GPU_executed": false,
+    "model_adopted": false
   }
 }
