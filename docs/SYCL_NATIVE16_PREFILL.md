@@ -1620,9 +1620,17 @@ commands close;202source pins and269compiler dependencies are checked. The
 packet binary links no UR/LevelZero/SYCL runtime. Actual no-device activation
 now passes:one same-PID load/subscription,exact observer/dispatcher init in
 loader namespace0,expected46with unchanged version,and a normally closed
-owned process with quiet validation and no fresh fault. This qualifies startup
-only;native getters and the separately committed bounded GPU extraction remain
-pending. Closed host mocks,logs and their
+owned process with quiet validation and no fresh fault. The following unchanged
+three-query GPU smoke also passes all native numerical/input/guard checks and
+copies three GEN ISA images plus their modules,each bound to its successful UR
+launch and sole program/queue device. Both launches per arm,live B570
+`0000:05:00.0` binding,quiet validation,normal closure and no fresh fault pass.
+GEN sizes are72000,72000 and74048bytes;spill descriptors remain12480,12480 and3008.
+These fresh copies still need exact module-text matching and offline disassembly;
+neither size nor descriptor establishes instruction count or a limiting resource.
+The273/303/305-byte kernel names exceed normal Linux filename limits,so the
+next bounded offline gate uses ocloc's memory-output API with short selected
+assembly filenames. No timing or model adoption follows. Closed host mocks,logs and their
 one-use source recover from`6c7a3e05d` with frozen plan`21046228a`.
 Review retention when that immediate extraction attempt closes.
 Production/decode and the selected6e40engine/twelve fixtures remain unchanged.
