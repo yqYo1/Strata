@@ -1751,6 +1751,17 @@ only a retirement consumer. GPU service includes stalls and is not arithmetic
 saturation. The next question is kernel-local GRF-mode control at unchanged
 math/layout/SLM,against the existing counterevidence that eliminating spills
 alone can slow execution;qualify exact API/lowering and a new plan first.
+
+The new source-only[`qsa_grf_sources.py`](../tools/sycl/qsa_grf_sources.py)
+proposal keeps original6e40 math,layout,SLM and all five loop barriers. Its two
+private arms use the same`nd_launch`/`launch_config`form with kernel-local
+GRF128/256,plus direct-event retention. It does not change production or decode.
+The installed property,handler and enqueue headers are pinned for a fresh
+read-only source-contract audit. Header presence is not B570 legality,actual
+GRF lowering or workgroup admission;those and independent review precede any
+GPU execution. Preserve the prior automatic256/functor-form slowdown as
+counterevidence. The existing53.25MB selected-ID fixture has this named next
+comparison consumer and a retirement point at its closure or supersession.
 See[the current build and gates](../bench/results/2026-10-15-pr6-recovery-audit/qsa-barrier-current.json).
 
 Complete prefill phase attribution requires three independent ledgers: route-owner
