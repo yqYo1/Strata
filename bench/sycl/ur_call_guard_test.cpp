@@ -3,6 +3,7 @@
 #include <cstdlib>
 #include <cstring>
 #include <cstdint>
+#include <thread>
 #include <xpti/xpti_trace_framework.h>
 #include <unified-runtime/ur_api.h>
 
@@ -165,6 +166,37 @@ int buffer_fixture() {
   std::printf("{\"buffer_fixture\":\"PASS\",\"simulated_calls\":%u}\n", simulated_calls);
   return 0;
 }
+
+int overflow_fixture() {
+  // CPU callbacks only. A two-row prefix plus 80000 callbacks exceeds even
+  // the default cap. Check both concurrent cap contention and late callback
+  // safety; after the cap, a bogus args_data must never be dereferenced.
+  xptiFrameworkInitialize();
+  if (xptiInitialize("ur.call", 0, 1, "overflow-host-fixture") != xpti::result_t::XPTI_RESULT_SUCCESS) return 6;
+  const auto stream = xptiRegisterStream("ur.call");
+  auto work = [stream] {
+    for (unsigned i = 0; i < 10000; ++i) {
+      xpti::function_with_args_t call{};
+      call.function_id = UR_FUNCTION_PLATFORM_GET_API_VERSION;
+      call.function_name = "urPlatformGetApiVersion";
+      const auto instance = xptiGetUniqueId();
+      if (xptiNotifySubscribers(stream, xpti::trace_function_with_args_begin, nullptr, nullptr,
+                                instance, &call) != xpti::result_t::XPTI_RESULT_SUCCESS) std::exit(4);
+      ur_result_t result = UR_RESULT_SUCCESS;
+      call.ret_data = &result;
+      if (xptiNotifySubscribers(stream, xpti::trace_function_with_args_end, nullptr, nullptr,
+                                instance, &call) != xpti::result_t::XPTI_RESULT_SUCCESS) std::exit(5);
+    }
+  };
+  std::thread threads[4];
+  for (auto& thread : threads) thread = std::thread(work);
+  for (auto& thread : threads) thread.join();
+  notify(UR_FUNCTION_QUEUE_CREATE, "urQueueCreate", reinterpret_cast<void*>(uintptr_t(1)));
+  xptiFinalize("ur.call");
+  xptiFrameworkFinalize();
+  std::puts("{\"overflow_fixture\":\"PASS\",\"simulated_calls\":40001,\"application_continued\":true}");
+  return 0;
+}
 }
 
 int main(int argc, char** argv) {
@@ -172,6 +204,7 @@ int main(int argc, char** argv) {
   const char* name = argv[1];
   if (!std::strcmp(name, "metadata")) return metadata_fixture();
   if (!std::strcmp(name, "buffers")) return buffer_fixture();
+  if (!std::strcmp(name, "overflow")) return overflow_fixture();
   if (std::strcmp(name, "setenv") && std::strcmp(name, "unsetenv") &&
       std::strcmp(name, "putenv") && std::strcmp(name, "clearenv")) return 2;
   std::printf("mutation-case-begin:%s\n", name);

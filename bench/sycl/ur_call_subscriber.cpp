@@ -6,6 +6,7 @@
 #include <unified-runtime/ur_api.h>
 
 #include <cerrno>
+#include <atomic>
 #include <cinttypes>
 #include <cstdio>
 #include <cstdlib>
@@ -22,6 +23,8 @@ int log_fd = -1;
 pthread_mutex_t output_lock = PTHREAD_MUTEX_INITIALIZER;
 uint64_t sequence = 0;
 constexpr uint64_t record_limit = 65536;
+uint64_t record_budget = record_limit;
+std::atomic<bool> capture_stopped{false};
 constexpr int row_capacity = 2048;
 
 [[noreturn]] void fail() noexcept {
@@ -36,17 +39,39 @@ uint64_t raw_ns() noexcept {
   return uint64_t(now.tv_sec) * 1000000000ULL + uint64_t(now.tv_nsec);
 }
 
-// No buffered I/O, allocation or exception propagation from a callback.
-void emit(const char* row, int size) noexcept {
-  if (log_fd < 0 || size <= 0 || size >= row_capacity) fail();
-  if (pthread_mutex_lock(&output_lock)) fail();
-  if (sequence++ >= record_limit) fail();
+// Called with the output lock held. No buffered I/O or heap allocation.
+void write_row(const char* row, int size) noexcept {
   int offset = 0;
   while (offset < size) {
     const ssize_t written = write(log_fd, row + offset, size - offset);
     if (written < 0 && errno == EINTR) continue;
     if (written <= 0) fail();
     offset += int(written);
+  }
+}
+
+// Exhausting a diagnostic budget must not terminate a live GPU application.
+// Reserve one small loss marker beyond the finite row budget, then stop all
+// capture. The reader rejects the entire stream, including an otherwise paired
+// prefix. Plain state/FDs intentionally remain alive through late callbacks.
+void emit(const char* row, int size) noexcept {
+  if (capture_stopped.load(std::memory_order_acquire)) return;
+  if (log_fd < 0 || size <= 0 || size >= row_capacity) fail();
+  if (pthread_mutex_lock(&output_lock)) fail();
+  if (!capture_stopped.load(std::memory_order_relaxed)) {
+    if (sequence >= record_budget) {
+      capture_stopped.store(true, std::memory_order_release);
+      char marker[256];
+      const int n = std::snprintf(marker, sizeof(marker),
+          "{\"kind\":\"overflow\",\"pid\":%ld,\"raw_ns\":%" PRIu64
+          ",\"reason\":\"record_budget\",\"records\":%" PRIu64 ",\"limit\":%" PRIu64 "}\n",
+          long(getpid()), raw_ns(), sequence, record_budget);
+      if (n <= 0 || size_t(n) >= sizeof(marker)) fail();
+      write_row(marker, n);
+    } else {
+      ++sequence;
+      write_row(row, size);
+    }
   }
   if (pthread_mutex_unlock(&output_lock)) fail();
 }
@@ -230,6 +255,7 @@ void metadata(Metadata& m, const xpti::function_with_args_t* data, bool success)
 void callback(uint16_t type, xpti::trace_event_data_t*,
               xpti::trace_event_data_t*, uint64_t instance,
               const void* user_data) noexcept {
+  if (capture_stopped.load(std::memory_order_acquire)) return;
   const auto* data = static_cast<const xpti::function_with_args_t*>(user_data);
   const bool begin = type == xpti::trace_function_with_args_begin;
   if (!data || !api_name(data->function_name) ||
@@ -252,6 +278,20 @@ void callback(uint16_t type, xpti::trace_event_data_t*,
 }
 
 __attribute__((constructor)) void load() noexcept {
+  // Optional smaller pre-exec budget supports bounded captures and adversarial
+  // host controls. It cannot raise the qualified maximum or enable full-model
+  // collection. Never reread process environment from a runtime callback.
+  if (const char* value = std::getenv("STRATA_UR_CALL_RECORD_LIMIT")) {
+    uint64_t parsed = 0;
+    if (!*value) fail();
+    for (const char* p = value; *p; ++p) {
+      if (*p < '0' || *p > '9' || parsed > record_limit / 10) fail();
+      parsed = parsed * 10 + uint64_t(*p - '0');
+      if (parsed > record_limit) fail();
+    }
+    if (parsed < 2) fail();
+    record_budget = parsed;
+  }
   const char* name = std::getenv("STRATA_UR_CALL_LOG");
   if (!name || name[0] != '/' || std::strlen(name) >= 4096) fail();
   log_fd = open(name, O_WRONLY | O_CREAT | O_EXCL | O_CLOEXEC | O_NOFOLLOW, 0600);

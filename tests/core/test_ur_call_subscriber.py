@@ -27,6 +27,14 @@ def parse(rows):
 
 
 class SubscriberRecordTests(unittest.TestCase):
+    def test_explicit_loss_rejects_even_a_complete_prefix(self):
+        for index in (3, 4, 5):
+            rows = records()[:index]
+            rows.append(dict(kind='overflow', pid=71, raw_ns=6,
+                             reason='record_budget', records=index, limit=index))
+            with self.subTest(prefix=index), self.assertRaisesRegex(RuntimeError, 'budget exhausted'):
+                parse(rows)
+
     def test_records_rejected_call_and_actual_clock_identity_without_GPU_claim(self):
         value = parse(records())
         self.assertEqual(value['call_pairs'], 1)

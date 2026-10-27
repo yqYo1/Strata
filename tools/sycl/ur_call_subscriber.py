@@ -40,6 +40,8 @@ def parse_calls(text, pid, *, intervals=False):
     """Validate complete begin/end instance pairs without inventing PTI links."""
     require(len(text.encode()) <= 16 << 20, 'subscriber text budget')
     rows = [json.loads(line) for line in text.splitlines()]
+    require(not any(e.get('kind') == 'overflow' for e in rows),
+            'incomplete UR capture: record budget exhausted')
     require(rows and rows[0]['kind'] == 'load', 'missing subscriber load')
     require(all(type(e.get('pid')) is int and e['pid'] == pid and type(e.get('raw_ns')) is int and
                 e['raw_ns'] >= rows[0]['raw_ns'] for e in rows), 'invalid subscriber owner/clock')
