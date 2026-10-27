@@ -755,7 +755,7 @@
   "ownership_closed": true,
   "passed": true,
   "complete": true,
-  "GPU_executed": false,
+  "GPU_executed": true,
   "model_adoption_qualified": false,
   "actual_compiled_inputs": {
     "files": 699,
@@ -1515,7 +1515,7 @@
       "limits": "Actual linked SPIRV only,not GEN instructions,driver JIT,execution,register/SLM traffic or speed."
     },
     "local_ABI": {
-      "evidence": "Read-only exact emitted LLVM;all3attention headers have18arguments and8addrspace3local pointers. Unused sourceQ4Baccessor absent from parameter list. Pointer alignments4except arg13align8. Actual bound sizes await traced launch.",
+      "evidence": "Read-only exact emitted LLVM;all3attention headers have18arguments and8addrspace3local pointers. Unused sourceQ4Baccessor absent from parameter list. Pointer alignments4except arg13align8. Actual bound sizes await traced launch. Traced actual-ID smoke now observes exactly these eight local arguments/extents in all3arms,two launches each;the20032Bpayload is now device-observed.",
       "expected_local_arguments": {
         "0": 16384,
         "1": 1024,
@@ -1528,7 +1528,8 @@
       },
       "expected_dynamic_local_bytes": 20032,
       "conservative_declared_bytes": 20036,
-      "GPU_observed": false
+      "GPU_observed": true,
+      "actual_dynamic_local_bytes_all_3_arms": 20032
     },
     "controller_controls": {
       "source_commit": "2f6b2aec0",
@@ -2125,7 +2126,7 @@
       ],
       "scope": "Single eligible physical Intel GPU/accelerator plus exact native device name;not a general multi-GPU UUID mapping."
     },
-    "stage": "prepared",
+    "stage": "closed",
     "mode": "smoke",
     "source_commit": "300677a902b73f6c55ae3e959f1d2bd39e2e87f1",
     "controller_inputs": {
@@ -2250,5 +2251,233 @@
       "scope": "Actual selected-ID geometry with synthetic finite Q/K/V;pack+attention wrapper wall and private attention-only service. Not PCIe traffic,hardware saturation,production speed,model quality or1000/70qualification."
     },
     "retirement": "Retain individual timing samples,numerical/delta bounds,closure/fault results and decision. Retire successful full traces and normal logs after extraction. Keep one current component generation only for this live comparison."
-  }
+  },
+  "actual_id_checks": [
+    {
+      "mode": "smoke",
+      "controller_commit": "300677a902b73f6c55ae3e959f1d2bd39e2e87f1",
+      "plan_commit": "20ea5d0071e49646dc7e8a5e9879b0254990ea5e",
+      "passed": true,
+      "complete": true,
+      "active": false,
+      "ownership_closed": true,
+      "observations": [
+        {
+          "process": 0,
+          "exit_code": 0,
+          "ownership_closed": true,
+          "physical_device": {
+            "name": "Intel(R) Arc(TM) B570 Graphics",
+            "pci": "0000:05:00.0",
+            "driver": "xe",
+            "matching_DRM_descriptors": 1
+          },
+          "validation": {
+            "pid": 1715480,
+            "loader": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_loader.so.0.12.0",
+            "threads_before": 1,
+            "preinit": 37,
+            "config_enabled": true,
+            "first_init": true,
+            "dispatch_result": 46,
+            "output_untouched": true,
+            "retained_reference_until_exit": true,
+            "runtime_teardown_qualified": false
+          },
+          "output": {
+            "numerical": [
+              {
+                "kind": "numerical",
+                "queries": 3,
+                "arm": 0,
+                "reference_cells": 32,
+                "spot_queries": 3,
+                "compared": 18432,
+                "max_abs": 0,
+                "max_budget_ratio": 0
+              },
+              {
+                "kind": "numerical",
+                "queries": 3,
+                "arm": 1,
+                "reference_cells": 32,
+                "spot_queries": 3,
+                "compared": 18432,
+                "max_abs": 0,
+                "max_budget_ratio": 0
+              },
+              {
+                "kind": "numerical",
+                "queries": 3,
+                "arm": 2,
+                "reference_cells": 32,
+                "spot_queries": 3,
+                "compared": 18432,
+                "max_abs": 0,
+                "max_budget_ratio": 0
+              }
+            ],
+            "deltas": [
+              {
+                "kind": "delta",
+                "queries": 3,
+                "elements": 18432,
+                "changed_from32": 0,
+                "max_abs": 0,
+                "relative_l2": 0
+              }
+            ],
+            "samples": [],
+            "guards": true,
+            "inputs_immutable": true,
+            "cell32_exact": true,
+            "own_reference": true
+          },
+          "local_launches": {
+            "0": {
+              "calls": 2,
+              "local_arguments": [
+                [
+                  0,
+                  16384
+                ],
+                [
+                  1,
+                  1024
+                ],
+                [
+                  3,
+                  64
+                ],
+                [
+                  4,
+                  64
+                ],
+                [
+                  5,
+                  64
+                ],
+                [
+                  13,
+                  256
+                ],
+                [
+                  15,
+                  2112
+                ],
+                [
+                  16,
+                  64
+                ]
+              ],
+              "dynamic_local_bytes": 20032,
+              "work_dim": 1,
+              "local_size": [
+                128
+              ]
+            },
+            "1": {
+              "calls": 2,
+              "local_arguments": [
+                [
+                  0,
+                  16384
+                ],
+                [
+                  1,
+                  1024
+                ],
+                [
+                  3,
+                  64
+                ],
+                [
+                  4,
+                  64
+                ],
+                [
+                  5,
+                  64
+                ],
+                [
+                  13,
+                  256
+                ],
+                [
+                  15,
+                  2112
+                ],
+                [
+                  16,
+                  64
+                ]
+              ],
+              "dynamic_local_bytes": 20032,
+              "work_dim": 1,
+              "local_size": [
+                128
+              ]
+            },
+            "2": {
+              "calls": 2,
+              "local_arguments": [
+                [
+                  0,
+                  16384
+                ],
+                [
+                  1,
+                  1024
+                ],
+                [
+                  3,
+                  64
+                ],
+                [
+                  4,
+                  64
+                ],
+                [
+                  5,
+                  64
+                ],
+                [
+                  13,
+                  256
+                ],
+                [
+                  15,
+                  2112
+                ],
+                [
+                  16,
+                  64
+                ]
+              ],
+              "dynamic_local_bytes": 20032,
+              "work_dim": 1,
+              "local_size": [
+                128
+              ]
+            }
+          }
+        }
+      ],
+      "model_qualified": false,
+      "GPU_executed": true,
+      "postchecks_complete": true,
+      "postcheck_errors": [],
+      "fresh_faults": [],
+      "boot_unchanged": true,
+      "driver_after": {
+        "pci": "/sys/bus/pci/devices/0000:05:00.0",
+        "driver": "xe",
+        "vendor": "0x8086",
+        "device": "0xe20c",
+        "kernel": "7.0.0-38-generic",
+        "devcoredump": false
+      }
+    }
+  ],
+  "validation_stage": "actual_id_smoke_passed"
 }
