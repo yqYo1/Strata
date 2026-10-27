@@ -638,7 +638,7 @@
     "unchanged": true
   },
   "next_candidate": {
-    "status": "source-audit-proposal;not built or performance-qualified",
+    "status": "source audit and committed host overlay checks passed;not built or GPU-qualified",
     "mechanism": "Reduce exposed GPU work-group synchronization without changing arithmetic or memory layout.",
     "change": "Move the end-of-tile barrier outside the loop. Next iteration publish_rows writes only rows/private flags;its existing following barrier precedes K overwriting previous V. Retain one final barrier before group reductions/output.",
     "evidence": "Selected original ordered-exp device IR has7static ControlBarrier calls,including5per cell tile. Width2051 has65iterations;prospective fusion saves64group barriers per workgroup. This is source/IR geometry,not final machine cost or saturation.",
@@ -659,6 +659,17 @@
         "barrier_merged.cpp": "3c21c4c56bdcba3b9bb71e44e14979b2a259fb2853476b5fd2eeb169f21421ff",
         "qsa-barrier.hpp": "1c493cfcab403a8c4a72bd472b7db92a9d9623ff1e3f10aa0701f79dff8a707e"
       }
+    },
+    "fixture_preparation_check": {
+      "source_commit": "aef132b4e12b07361d52e44b439480ad1f23acd9",
+      "passed": true,
+      "scope": "Committed Python syntax, exact original kernel/oracle identity, reversible source overlays and required adversarial-source presence;in-memory only.",
+      "oracle_generated_bytes": 25775,
+      "oracle_generated_sha256": "f3734d6aa56af964ab796254433dfffdab20e4d76ba23644940e9eaf8990cd9c",
+      "kernel_header_hashes_unchanged_from_host_overlay_check": true,
+      "native_compiled": false,
+      "GPU_executed": false,
+      "next": "Reconcile retained build consumers,prepare and commit exact generated build plan,then bounded native build and committed execution controller before traced component checks."
     }
   },
   "retirement": {
