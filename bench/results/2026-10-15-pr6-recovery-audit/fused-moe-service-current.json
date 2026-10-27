@@ -1,5 +1,5 @@
 {
-  "stage": "prepared",
+  "stage": "running",
   "source_commit": "96bd6c9873b91fb090ce9b38b7e30a388bc8f39c",
   "native_source": "6e40afc1beddd059ee518617f6c1efce1da14aca",
   "binary": {
@@ -2053,7 +2053,1020 @@
       }
     }
   },
-  "checks": [],
+  "checks": [
+    {
+      "mode": "smoke-profile",
+      "passed": true,
+      "complete": true,
+      "ownership_closed": true,
+      "native_launched": true,
+      "request": {
+        "request_sha256": "1fd63b8c67a1888e443800b5c6d339ca116df2cb91941e6f332b6adf74275b3a",
+        "actual_read_tokens": 39260,
+        "actual_reused_tokens": 0,
+        "generated_tokens": 24,
+        "prompt_ms": 60460.2
+      },
+      "successful_fusion_counts": {
+        "gu": {
+          "fused_jobs": 2519,
+          "fused_rows": 15829095,
+          "separate_jobs": 16277,
+          "min_rows": 2334
+        },
+        "down": {
+          "fused_jobs": 2519,
+          "fused_rows": 15829095,
+          "separate_jobs": 16277,
+          "min_rows": 2334
+        }
+      },
+      "service": {
+        "families": {
+          "gu": {
+            "calls": 2519,
+            "logical_rows": 15829095,
+            "service_ns": 1417191669,
+            "projection_FLOPs": 103737556992000,
+            "projection_equivalent_TFLOP_s": 73.19938386682685,
+            "shapes": [
+              {
+                "groups_m": 19,
+                "calls": 48,
+                "logical_rows": 114456,
+                "padded_rows": 116736,
+                "projection_FLOPs": 750098841600,
+                "service_ns": 11809146,
+                "min_ns": 239583,
+                "max_ns": 253437
+              },
+              {
+                "groups_m": 20,
+                "calls": 64,
+                "logical_rows": 159883,
+                "padded_rows": 163840,
+                "projection_FLOPs": 1047809228800,
+                "service_ns": 16013410,
+                "min_ns": 243333,
+                "max_ns": 260520
+              },
+              {
+                "groups_m": 21,
+                "calls": 46,
+                "logical_rows": 121079,
+                "padded_rows": 123648,
+                "projection_FLOPs": 793503334400,
+                "service_ns": 11633317,
+                "min_ns": 246562,
+                "max_ns": 272083
+              },
+              {
+                "groups_m": 22,
+                "calls": 55,
+                "logical_rows": 151324,
+                "padded_rows": 154880,
+                "projection_FLOPs": 991716966400,
+                "service_ns": 16671745,
+                "min_ns": 297500,
+                "max_ns": 319791
+              },
+              {
+                "groups_m": 23,
+                "calls": 50,
+                "logical_rows": 143816,
+                "padded_rows": 147200,
+                "projection_FLOPs": 942512537600,
+                "service_ns": 15411543,
+                "min_ns": 301770,
+                "max_ns": 317500
+              },
+              {
+                "groups_m": 24,
+                "calls": 50,
+                "logical_rows": 150584,
+                "padded_rows": 153600,
+                "projection_FLOPs": 986867302400,
+                "service_ns": 15685190,
+                "min_ns": 306250,
+                "max_ns": 358333
+              },
+              {
+                "groups_m": 25,
+                "calls": 54,
+                "logical_rows": 170113,
+                "padded_rows": 172800,
+                "projection_FLOPs": 1114852556800,
+                "service_ns": 17022793,
+                "min_ns": 309270,
+                "max_ns": 323645
+              },
+              {
+                "groups_m": 26,
+                "calls": 41,
+                "logical_rows": 133439,
+                "padded_rows": 136448,
+                "projection_FLOPs": 874505830400,
+                "service_ns": 13103942,
+                "min_ns": 311041,
+                "max_ns": 327708
+              },
+              {
+                "groups_m": 27,
+                "calls": 45,
+                "logical_rows": 152648,
+                "padded_rows": 155520,
+                "projection_FLOPs": 1000393932800,
+                "service_ns": 14537688,
+                "min_ns": 315520,
+                "max_ns": 338958
+              },
+              {
+                "groups_m": 28,
+                "calls": 45,
+                "logical_rows": 158268,
+                "padded_rows": 161280,
+                "projection_FLOPs": 1037225164800,
+                "service_ns": 14710295,
+                "min_ns": 320000,
+                "max_ns": 338333
+              },
+              {
+                "groups_m": 29,
+                "calls": 43,
+                "logical_rows": 156874,
+                "padded_rows": 159616,
+                "projection_FLOPs": 1028089446400,
+                "service_ns": 15679879,
+                "min_ns": 346770,
+                "max_ns": 377604
+              },
+              {
+                "groups_m": 30,
+                "calls": 40,
+                "logical_rows": 151310,
+                "padded_rows": 153600,
+                "projection_FLOPs": 991625216000,
+                "service_ns": 15123631,
+                "min_ns": 373750,
+                "max_ns": 391354
+              },
+              {
+                "groups_m": 31,
+                "calls": 27,
+                "logical_rows": 105305,
+                "padded_rows": 107136,
+                "projection_FLOPs": 690126848000,
+                "service_ns": 10382906,
+                "min_ns": 378854,
+                "max_ns": 404062
+              },
+              {
+                "groups_m": 32,
+                "calls": 25,
+                "logical_rows": 100836,
+                "padded_rows": 102400,
+                "projection_FLOPs": 660838809600,
+                "service_ns": 9693741,
+                "min_ns": 381770,
+                "max_ns": 395208
+              },
+              {
+                "groups_m": 33,
+                "calls": 28,
+                "logical_rows": 116722,
+                "padded_rows": 118272,
+                "projection_FLOPs": 764949299200,
+                "service_ns": 10994467,
+                "min_ns": 385729,
+                "max_ns": 400208
+              },
+              {
+                "groups_m": 34,
+                "calls": 26,
+                "logical_rows": 111617,
+                "padded_rows": 113152,
+                "projection_FLOPs": 731493171200,
+                "service_ns": 10325720,
+                "min_ns": 388750,
+                "max_ns": 413229
+              },
+              {
+                "groups_m": 35,
+                "calls": 35,
+                "logical_rows": 154779,
+                "padded_rows": 156800,
+                "projection_FLOPs": 1014359654400,
+                "service_ns": 14024257,
+                "min_ns": 392604,
+                "max_ns": 411458
+              },
+              {
+                "groups_m": 36,
+                "calls": 34,
+                "logical_rows": 154367,
+                "padded_rows": 156672,
+                "projection_FLOPs": 1011659571200,
+                "service_ns": 13889988,
+                "min_ns": 399270,
+                "max_ns": 420833
+              },
+              {
+                "groups_m": 37,
+                "calls": 34,
+                "logical_rows": 158971,
+                "padded_rows": 161024,
+                "projection_FLOPs": 1041832345600,
+                "service_ns": 15251755,
+                "min_ns": 441250,
+                "max_ns": 459375
+              },
+              {
+                "groups_m": 38,
+                "calls": 26,
+                "logical_rows": 125076,
+                "padded_rows": 126464,
+                "projection_FLOPs": 819698073600,
+                "service_ns": 11807280,
+                "min_ns": 446354,
+                "max_ns": 462187
+              },
+              {
+                "groups_m": 39,
+                "calls": 32,
+                "logical_rows": 157606,
+                "padded_rows": 159744,
+                "projection_FLOPs": 1032886681600,
+                "service_ns": 14697171,
+                "min_ns": 449895,
+                "max_ns": 469270
+              },
+              {
+                "groups_m": 40,
+                "calls": 20,
+                "logical_rows": 101160,
+                "padded_rows": 102400,
+                "projection_FLOPs": 662962176000,
+                "service_ns": 9295616,
+                "min_ns": 458437,
+                "max_ns": 471041
+              },
+              {
+                "groups_m": 41,
+                "calls": 22,
+                "logical_rows": 114257,
+                "padded_rows": 115456,
+                "projection_FLOPs": 748794675200,
+                "service_ns": 10334470,
+                "min_ns": 461354,
+                "max_ns": 478541
+              },
+              {
+                "groups_m": 42,
+                "calls": 22,
+                "logical_rows": 116682,
+                "padded_rows": 118272,
+                "projection_FLOPs": 764687155200,
+                "service_ns": 10472179,
+                "min_ns": 464791,
+                "max_ns": 515625
+              },
+              {
+                "groups_m": 43,
+                "calls": 21,
+                "logical_rows": 114349,
+                "padded_rows": 115584,
+                "projection_FLOPs": 749397606400,
+                "service_ns": 10157803,
+                "min_ns": 470208,
+                "max_ns": 544791
+              },
+              {
+                "groups_m": 44,
+                "calls": 23,
+                "logical_rows": 128209,
+                "padded_rows": 129536,
+                "projection_FLOPs": 840230502400,
+                "service_ns": 11924157,
+                "min_ns": 513541,
+                "max_ns": 524375
+              },
+              {
+                "groups_m": 45,
+                "calls": 21,
+                "logical_rows": 119914,
+                "padded_rows": 120960,
+                "projection_FLOPs": 785868390400,
+                "service_ns": 11030512,
+                "min_ns": 518541,
+                "max_ns": 532812
+              },
+              {
+                "groups_m": 46,
+                "calls": 24,
+                "logical_rows": 139771,
+                "padded_rows": 141312,
+                "projection_FLOPs": 916003225600,
+                "service_ns": 12774886,
+                "min_ns": 524791,
+                "max_ns": 542604
+              },
+              {
+                "groups_m": 47,
+                "calls": 19,
+                "logical_rows": 113149,
+                "padded_rows": 114304,
+                "projection_FLOPs": 741533286400,
+                "service_ns": 10198429,
+                "min_ns": 529583,
+                "max_ns": 565000
+              },
+              {
+                "groups_m": 48,
+                "calls": 22,
+                "logical_rows": 133783,
+                "padded_rows": 135168,
+                "projection_FLOPs": 876760268800,
+                "service_ns": 11922073,
+                "min_ns": 531458,
+                "max_ns": 549166
+              },
+              {
+                "groups_m": 49,
+                "calls": 19,
+                "logical_rows": 118003,
+                "padded_rows": 119168,
+                "projection_FLOPs": 773344460800,
+                "service_ns": 10425930,
+                "min_ns": 540625,
+                "max_ns": 559166
+              },
+              {
+                "groups_m": 50,
+                "calls": 29,
+                "logical_rows": 183528,
+                "padded_rows": 185600,
+                "projection_FLOPs": 1202769100800,
+                "service_ns": 16164467,
+                "min_ns": 542083,
+                "max_ns": 572708
+              },
+              {
+                "groups_m": 51,
+                "calls": 24,
+                "logical_rows": 154926,
+                "padded_rows": 156672,
+                "projection_FLOPs": 1015323033600,
+                "service_ns": 14103947,
+                "min_ns": 582083,
+                "max_ns": 599791
+              },
+              {
+                "groups_m": 52,
+                "calls": 15,
+                "logical_rows": 98399,
+                "padded_rows": 99840,
+                "projection_FLOPs": 644867686400,
+                "service_ns": 8969265,
+                "min_ns": 589166,
+                "max_ns": 605729
+              },
+              {
+                "groups_m": 53,
+                "calls": 18,
+                "logical_rows": 120978,
+                "padded_rows": 122112,
+                "projection_FLOPs": 792841420800,
+                "service_ns": 10890096,
+                "min_ns": 595729,
+                "max_ns": 613437
+              },
+              {
+                "groups_m": 54,
+                "calls": 13,
+                "logical_rows": 89262,
+                "padded_rows": 89856,
+                "projection_FLOPs": 584987443200,
+                "service_ns": 7947910,
+                "min_ns": 603750,
+                "max_ns": 617187
+              },
+              {
+                "groups_m": 55,
+                "calls": 18,
+                "logical_rows": 125740,
+                "padded_rows": 126720,
+                "projection_FLOPs": 824049664000,
+                "service_ns": 11110512,
+                "min_ns": 609687,
+                "max_ns": 624895
+              },
+              {
+                "groups_m": 56,
+                "calls": 18,
+                "logical_rows": 127728,
+                "padded_rows": 129024,
+                "projection_FLOPs": 837078220800,
+                "service_ns": 11207494,
+                "min_ns": 607812,
+                "max_ns": 630729
+              },
+              {
+                "groups_m": 57,
+                "calls": 13,
+                "logical_rows": 94054,
+                "padded_rows": 94848,
+                "projection_FLOPs": 616392294400,
+                "service_ns": 8193953,
+                "min_ns": 621875,
+                "max_ns": 641145
+              },
+              {
+                "groups_m": 58,
+                "calls": 20,
+                "logical_rows": 147227,
+                "padded_rows": 148480,
+                "projection_FLOPs": 964866867200,
+                "service_ns": 13170932,
+                "min_ns": 651770,
+                "max_ns": 695625
+              },
+              {
+                "groups_m": 59,
+                "calls": 12,
+                "logical_rows": 89773,
+                "padded_rows": 90624,
+                "projection_FLOPs": 588336332800,
+                "service_ns": 8021141,
+                "min_ns": 654791,
+                "max_ns": 678125
+              },
+              {
+                "groups_m": 60,
+                "calls": 14,
+                "logical_rows": 106513,
+                "padded_rows": 107520,
+                "projection_FLOPs": 698043596800,
+                "service_ns": 9490097,
+                "min_ns": 666562,
+                "max_ns": 689166
+              },
+              {
+                "groups_m": 61,
+                "calls": 10,
+                "logical_rows": 77395,
+                "padded_rows": 78080,
+                "projection_FLOPs": 507215872000,
+                "service_ns": 6880516,
+                "min_ns": 672187,
+                "max_ns": 734062
+              },
+              {
+                "groups_m": 62,
+                "calls": 15,
+                "logical_rows": 118434,
+                "padded_rows": 119040,
+                "projection_FLOPs": 776169062400,
+                "service_ns": 10365409,
+                "min_ns": 675625,
+                "max_ns": 699895
+              },
+              {
+                "groups_m": 63,
+                "calls": 12,
+                "logical_rows": 96042,
+                "padded_rows": 96768,
+                "projection_FLOPs": 629420851200,
+                "service_ns": 8372495,
+                "min_ns": 686145,
+                "max_ns": 711354
+              },
+              {
+                "groups_m": 64,
+                "calls": 1227,
+                "logical_rows": 10050746,
+                "padded_rows": 10051584,
+                "projection_FLOPs": 65868568985600,
+                "service_ns": 875297516,
+                "min_ns": 687083,
+                "max_ns": 792708
+              }
+            ]
+          },
+          "down": {
+            "calls": 2519,
+            "logical_rows": 15829095,
+            "service_ns": 1788383750,
+            "projection_FLOPs": 51868778496000,
+            "projection_equivalent_TFLOP_s": 29.003159135168836,
+            "shapes": [
+              {
+                "groups_m": 19,
+                "calls": 48,
+                "logical_rows": 114456,
+                "padded_rows": 116736,
+                "projection_FLOPs": 375049420800,
+                "service_ns": 15424356,
+                "min_ns": 278333,
+                "max_ns": 340729
+              },
+              {
+                "groups_m": 20,
+                "calls": 64,
+                "logical_rows": 159883,
+                "padded_rows": 163840,
+                "projection_FLOPs": 523904614400,
+                "service_ns": 21015181,
+                "min_ns": 269583,
+                "max_ns": 344583
+              },
+              {
+                "groups_m": 21,
+                "calls": 46,
+                "logical_rows": 121079,
+                "padded_rows": 123648,
+                "projection_FLOPs": 396751667200,
+                "service_ns": 15437272,
+                "min_ns": 298125,
+                "max_ns": 350104
+              },
+              {
+                "groups_m": 22,
+                "calls": 55,
+                "logical_rows": 151324,
+                "padded_rows": 154880,
+                "projection_FLOPs": 495858483200,
+                "service_ns": 19462786,
+                "min_ns": 302500,
+                "max_ns": 382291
+              },
+              {
+                "groups_m": 23,
+                "calls": 50,
+                "logical_rows": 143816,
+                "padded_rows": 147200,
+                "projection_FLOPs": 471256268800,
+                "service_ns": 18747892,
+                "min_ns": 318750,
+                "max_ns": 395416
+              },
+              {
+                "groups_m": 24,
+                "calls": 50,
+                "logical_rows": 150584,
+                "padded_rows": 153600,
+                "projection_FLOPs": 493433651200,
+                "service_ns": 19176232,
+                "min_ns": 342291,
+                "max_ns": 400937
+              },
+              {
+                "groups_m": 25,
+                "calls": 54,
+                "logical_rows": 170113,
+                "padded_rows": 172800,
+                "projection_FLOPs": 557426278400,
+                "service_ns": 20910187,
+                "min_ns": 329062,
+                "max_ns": 411145
+              },
+              {
+                "groups_m": 26,
+                "calls": 41,
+                "logical_rows": 133439,
+                "padded_rows": 136448,
+                "projection_FLOPs": 437252915200,
+                "service_ns": 16703001,
+                "min_ns": 367291,
+                "max_ns": 441562
+              },
+              {
+                "groups_m": 27,
+                "calls": 45,
+                "logical_rows": 152648,
+                "padded_rows": 155520,
+                "projection_FLOPs": 500196966400,
+                "service_ns": 19281230,
+                "min_ns": 358125,
+                "max_ns": 455520
+              },
+              {
+                "groups_m": 28,
+                "calls": 45,
+                "logical_rows": 158268,
+                "padded_rows": 161280,
+                "projection_FLOPs": 518612582400,
+                "service_ns": 19913108,
+                "min_ns": 375312,
+                "max_ns": 460520
+              },
+              {
+                "groups_m": 29,
+                "calls": 43,
+                "logical_rows": 156874,
+                "padded_rows": 159616,
+                "projection_FLOPs": 514044723200,
+                "service_ns": 19127378,
+                "min_ns": 375625,
+                "max_ns": 472916
+              },
+              {
+                "groups_m": 30,
+                "calls": 40,
+                "logical_rows": 151310,
+                "padded_rows": 153600,
+                "projection_FLOPs": 495812608000,
+                "service_ns": 18725505,
+                "min_ns": 389583,
+                "max_ns": 495208
+              },
+              {
+                "groups_m": 31,
+                "calls": 27,
+                "logical_rows": 105305,
+                "padded_rows": 107136,
+                "projection_FLOPs": 345063424000,
+                "service_ns": 13028946,
+                "min_ns": 413645,
+                "max_ns": 508958
+              },
+              {
+                "groups_m": 32,
+                "calls": 25,
+                "logical_rows": 100836,
+                "padded_rows": 102400,
+                "projection_FLOPs": 330419404800,
+                "service_ns": 12383222,
+                "min_ns": 440104,
+                "max_ns": 517604
+              },
+              {
+                "groups_m": 33,
+                "calls": 28,
+                "logical_rows": 116722,
+                "padded_rows": 118272,
+                "projection_FLOPs": 382474649600,
+                "service_ns": 14079777,
+                "min_ns": 457708,
+                "max_ns": 528229
+              },
+              {
+                "groups_m": 34,
+                "calls": 26,
+                "logical_rows": 111617,
+                "padded_rows": 113152,
+                "projection_FLOPs": 365746585600,
+                "service_ns": 13728324,
+                "min_ns": 502187,
+                "max_ns": 567812
+              },
+              {
+                "groups_m": 35,
+                "calls": 35,
+                "logical_rows": 154779,
+                "padded_rows": 156800,
+                "projection_FLOPs": 507179827200,
+                "service_ns": 18655715,
+                "min_ns": 439166,
+                "max_ns": 565937
+              },
+              {
+                "groups_m": 36,
+                "calls": 34,
+                "logical_rows": 154367,
+                "padded_rows": 156672,
+                "projection_FLOPs": 505829785600,
+                "service_ns": 18500089,
+                "min_ns": 488020,
+                "max_ns": 566145
+              },
+              {
+                "groups_m": 37,
+                "calls": 34,
+                "logical_rows": 158971,
+                "padded_rows": 161024,
+                "projection_FLOPs": 520916172800,
+                "service_ns": 18824985,
+                "min_ns": 484062,
+                "max_ns": 592708
+              },
+              {
+                "groups_m": 38,
+                "calls": 26,
+                "logical_rows": 125076,
+                "padded_rows": 126464,
+                "projection_FLOPs": 409849036800,
+                "service_ns": 15143008,
+                "min_ns": 475000,
+                "max_ns": 612916
+              },
+              {
+                "groups_m": 39,
+                "calls": 32,
+                "logical_rows": 157606,
+                "padded_rows": 159744,
+                "projection_FLOPs": 516443340800,
+                "service_ns": 18818422,
+                "min_ns": 523854,
+                "max_ns": 611458
+              },
+              {
+                "groups_m": 40,
+                "calls": 20,
+                "logical_rows": 101160,
+                "padded_rows": 102400,
+                "projection_FLOPs": 331481088000,
+                "service_ns": 12003325,
+                "min_ns": 575520,
+                "max_ns": 618958
+              },
+              {
+                "groups_m": 41,
+                "calls": 22,
+                "logical_rows": 114257,
+                "padded_rows": 115456,
+                "projection_FLOPs": 374397337600,
+                "service_ns": 13409680,
+                "min_ns": 544791,
+                "max_ns": 633020
+              },
+              {
+                "groups_m": 42,
+                "calls": 22,
+                "logical_rows": 116682,
+                "padded_rows": 118272,
+                "projection_FLOPs": 382343577600,
+                "service_ns": 13985408,
+                "min_ns": 575520,
+                "max_ns": 685000
+              },
+              {
+                "groups_m": 43,
+                "calls": 21,
+                "logical_rows": 114349,
+                "padded_rows": 115584,
+                "projection_FLOPs": 374698803200,
+                "service_ns": 13562909,
+                "min_ns": 547708,
+                "max_ns": 693958
+              },
+              {
+                "groups_m": 44,
+                "calls": 23,
+                "logical_rows": 128209,
+                "padded_rows": 129536,
+                "projection_FLOPs": 420115251200,
+                "service_ns": 15084887,
+                "min_ns": 569375,
+                "max_ns": 688854
+              },
+              {
+                "groups_m": 45,
+                "calls": 21,
+                "logical_rows": 119914,
+                "padded_rows": 120960,
+                "projection_FLOPs": 392934195200,
+                "service_ns": 13990304,
+                "min_ns": 578229,
+                "max_ns": 705833
+              },
+              {
+                "groups_m": 46,
+                "calls": 24,
+                "logical_rows": 139771,
+                "padded_rows": 141312,
+                "projection_FLOPs": 458001612800,
+                "service_ns": 16210615,
+                "min_ns": 600833,
+                "max_ns": 719166
+              },
+              {
+                "groups_m": 47,
+                "calls": 19,
+                "logical_rows": 113149,
+                "padded_rows": 114304,
+                "projection_FLOPs": 370766643200,
+                "service_ns": 13329471,
+                "min_ns": 680312,
+                "max_ns": 722916
+              },
+              {
+                "groups_m": 48,
+                "calls": 22,
+                "logical_rows": 133783,
+                "padded_rows": 135168,
+                "projection_FLOPs": 438380134400,
+                "service_ns": 15199159,
+                "min_ns": 594270,
+                "max_ns": 737395
+              },
+              {
+                "groups_m": 49,
+                "calls": 19,
+                "logical_rows": 118003,
+                "padded_rows": 119168,
+                "projection_FLOPs": 386672230400,
+                "service_ns": 13596866,
+                "min_ns": 664375,
+                "max_ns": 749479
+              },
+              {
+                "groups_m": 50,
+                "calls": 29,
+                "logical_rows": 183528,
+                "padded_rows": 185600,
+                "projection_FLOPs": 601384550400,
+                "service_ns": 21240510,
+                "min_ns": 666041,
+                "max_ns": 771354
+              },
+              {
+                "groups_m": 51,
+                "calls": 24,
+                "logical_rows": 154926,
+                "padded_rows": 156672,
+                "projection_FLOPs": 507661516800,
+                "service_ns": 17812177,
+                "min_ns": 609479,
+                "max_ns": 786354
+              },
+              {
+                "groups_m": 52,
+                "calls": 15,
+                "logical_rows": 98399,
+                "padded_rows": 99840,
+                "projection_FLOPs": 322433843200,
+                "service_ns": 11153434,
+                "min_ns": 679166,
+                "max_ns": 780000
+              },
+              {
+                "groups_m": 53,
+                "calls": 18,
+                "logical_rows": 120978,
+                "padded_rows": 122112,
+                "projection_FLOPs": 396420710400,
+                "service_ns": 13694262,
+                "min_ns": 662708,
+                "max_ns": 809791
+              },
+              {
+                "groups_m": 54,
+                "calls": 13,
+                "logical_rows": 89262,
+                "padded_rows": 89856,
+                "projection_FLOPs": 292493721600,
+                "service_ns": 10106244,
+                "min_ns": 701666,
+                "max_ns": 804791
+              },
+              {
+                "groups_m": 55,
+                "calls": 18,
+                "logical_rows": 125740,
+                "padded_rows": 126720,
+                "projection_FLOPs": 412024832000,
+                "service_ns": 14201245,
+                "min_ns": 694375,
+                "max_ns": 828125
+              },
+              {
+                "groups_m": 56,
+                "calls": 18,
+                "logical_rows": 127728,
+                "padded_rows": 129024,
+                "projection_FLOPs": 418539110400,
+                "service_ns": 14367388,
+                "min_ns": 720208,
+                "max_ns": 834583
+              },
+              {
+                "groups_m": 57,
+                "calls": 13,
+                "logical_rows": 94054,
+                "padded_rows": 94848,
+                "projection_FLOPs": 308196147200,
+                "service_ns": 10518642,
+                "min_ns": 713333,
+                "max_ns": 864062
+              },
+              {
+                "groups_m": 58,
+                "calls": 20,
+                "logical_rows": 147227,
+                "padded_rows": 148480,
+                "projection_FLOPs": 482433433600,
+                "service_ns": 16782907,
+                "min_ns": 759062,
+                "max_ns": 881666
+              },
+              {
+                "groups_m": 59,
+                "calls": 12,
+                "logical_rows": 89773,
+                "padded_rows": 90624,
+                "projection_FLOPs": 294168166400,
+                "service_ns": 10258017,
+                "min_ns": 834791,
+                "max_ns": 878229
+              },
+              {
+                "groups_m": 60,
+                "calls": 14,
+                "logical_rows": 106513,
+                "padded_rows": 107520,
+                "projection_FLOPs": 349021798400,
+                "service_ns": 12009473,
+                "min_ns": 752187,
+                "max_ns": 879583
+              },
+              {
+                "groups_m": 61,
+                "calls": 10,
+                "logical_rows": 77395,
+                "padded_rows": 78080,
+                "projection_FLOPs": 253607936000,
+                "service_ns": 8819267,
+                "min_ns": 813125,
+                "max_ns": 947604
+              },
+              {
+                "groups_m": 62,
+                "calls": 15,
+                "logical_rows": 118434,
+                "padded_rows": 119040,
+                "projection_FLOPs": 388084531200,
+                "service_ns": 13453534,
+                "min_ns": 851145,
+                "max_ns": 922812
+              },
+              {
+                "groups_m": 63,
+                "calls": 12,
+                "logical_rows": 96042,
+                "padded_rows": 96768,
+                "projection_FLOPs": 314710425600,
+                "service_ns": 10757078,
+                "min_ns": 835520,
+                "max_ns": 933541
+              },
+              {
+                "groups_m": 64,
+                "calls": 1227,
+                "logical_rows": 10050746,
+                "padded_rows": 10051584,
+                "projection_FLOPs": 32934284492800,
+                "service_ns": 1095750332,
+                "min_ns": 765729,
+                "max_ns": 994791
+              }
+            ]
+          }
+        },
+        "source_shape_counts_match": true,
+        "complete_model_coverage": false,
+        "hardware_saturation_qualified": false,
+        "limits": "Unique-family aggregate service with fresh source count/shape checks;no per-execution UR join,critical path,physical traffic,observer-cost,quality or clean-speed qualification.",
+        "whole_process_total_device_ns": 57568868669,
+        "whole_process_table_rows": 6980
+      },
+      "native_identity": {
+        "pid": 1297815,
+        "start_ticks": 146520291,
+        "sid": 1297773
+      },
+      "validation": {
+        "pid": 1297815,
+        "loader": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_loader.so.0.12.0",
+        "threads_before": 1,
+        "preinit": 37,
+        "config_enabled": true,
+        "first_init": true,
+        "dispatch_result": 46,
+        "output_untouched": true,
+        "retained_reference_until_exit": true,
+        "runtime_teardown_qualified": false
+      },
+      "evidence_sha256": {
+        "engine.stderr": "e659dc065eaf244cd4da8b00e7241d637565e909b938212e0963f2690a90f3d5",
+        "engine-start.json": "09e2f63675540c22a346a8ab8989aecc04f6f0ddc9e9cb976864f56a14ad0f6e",
+        "engine-exit.json": "454f86ca1bad0c1682e4a88e073e5ff4d433f7001d4c8069dafcf8152fa78bc5"
+      },
+      "protocol_qualified": true,
+      "session_removed": true,
+      "postchecks_complete": true,
+      "postcheck_errors": [],
+      "fresh_faults": [],
+      "boot_unchanged": true,
+      "driver_after": {
+        "pci": "/sys/bus/pci/devices/0000:05:00.0",
+        "driver": "xe",
+        "vendor": "0x8086",
+        "device": "0xe20c",
+        "kernel": "7.0.0-38-generic",
+        "devcoredump": false
+      }
+    }
+  ],
   "active": false,
   "ownership_closed": true,
   "complete": false,
