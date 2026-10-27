@@ -1,6 +1,6 @@
 {
-  "stage": "failed",
-  "source_commit": "d10461edf024ee085c0cbda3ce26c78dedcd9a85",
+  "stage": "prepared",
+  "source_commit": "cc59c96f0f9f84ee4909c9da790c75fc50c15601",
   "native_source": "6e40afc1beddd059ee518617f6c1efce1da14aca",
   "binary": {
     "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/strata",
@@ -284,7 +284,7 @@
     "tools/sycl/memory_trace_device.py": "9fb86c4f0f025b3267ef93dbb9ac9147ac8fa40dbdc7020e3b0b297bea834d50",
     "tools/sycl/memory_trace_model.py": "6ebe4b97b55f641aacbe094815e2471fd283556421859fc86b398323be94c206",
     "tools/sycl/memory_trace_protocol_test.py": "ab23e280049bebcd32f89baeb272c3c8a55b7aa044f28db8ff8800ce9ca91f95",
-    "tools/sycl/model_work_census.py": "f103aa5b7d4269be4aa179913e8c46bb4380508655d6572060e7d092c09e0b14",
+    "tools/sycl/model_work_census.py": "8378e3eeb820fc61bb5fb78279c3b908c0aa4dab9d226c1ce26afd0e9814ae99",
     "tools/sycl/mtp_model_observer.py": "d08adf85cd4f644ec651ba6b598d7f431930aa6c8dbb6e7a08b941b2bf1ceeff",
     "tools/sycl/mtp_prefill.py": "416b20f35735c2719244b1b8c2bb9dc1d0f06a44d90d1d83306d9c3aa85b0a7d",
     "tools/sycl/mtp_resident_control.py": "fcc35c63d9c4da33e1b9fea8f2ab5fa15b80a909ce9f8b29c713d74f1530c9c4",
@@ -538,7 +538,7 @@
   },
   "plans": {
     "smoke": {
-      "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/selected-model-work-census-v3/smoke",
+      "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/selected-model-work-census-v4/smoke",
       "config": {
         "exe": "/home/yayoi/orca/workspaces/Strata/sycl/tools/sycl/engine_once.py",
         "args": [
@@ -593,7 +593,7 @@
           "strata"
         ],
         "host": "127.0.0.1",
-        "log": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/selected-model-work-census-v3/smoke/engine.stderr",
+        "log": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/selected-model-work-census-v4/smoke/engine.stderr",
         "engine_silence_s": 480,
         "parallel": 1,
         "open_browser": false,
@@ -657,7 +657,7 @@
         "STRATA_SYCL_SELECT_CYCLIC": "0",
         "STRATA_SYCL_PROMPT_K_CELL_MAJOR": "0",
         "STRATA_SYCL_PROMPT_NATIVE_KV_MIN": "0",
-        "XDG_CACHE_HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/selected-model-work-census-v3/smoke/cache",
+        "XDG_CACHE_HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/selected-model-work-census-v4/smoke/cache",
         "STRATA_SYCL_PREFILL_NATIVE16": "bf16",
         "STRATA_SYCL_PREFILL_QSA_MATH": "bf16-prefix-ordered-exp",
         "STRATA_SYCL_PREFILL_NATIVE16_BACKEND": "vllm",
@@ -668,8 +668,8 @@
         "STRATA_SYCL_SCORE_QUERY_TILE": "8",
         "STRATA_SYCL_SCORE_HEAD_PARALLEL": "1",
         "STRATA_SYCL_PREFILL_SCORE_GEMM": "1",
-        "TMPDIR": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/selected-model-work-census-v3/smoke/tmp",
-        "STRATA_MEASUREMENT_ROOT": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/selected-model-work-census-v3/smoke",
+        "TMPDIR": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/selected-model-work-census-v4/smoke/tmp",
+        "STRATA_MEASUREMENT_ROOT": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/selected-model-work-census-v4/smoke",
         "ZES_ENABLE_SYSMAN": "0",
         "STRATA_SYCL_PREFILL_GDN_COLUMNS": "4",
         "STRATA_SYCL_PREFILL_GDN_CHUNK64": "0",
@@ -691,7 +691,7 @@
         "STRATA_PREFILL_TRANSITION_PROFILE": "0",
         "STRATA_PREFILL_LAYER_MAJOR_PROFILE": "1",
         "UR_ENABLE_LAYERS": "UR_LAYER_PARAMETER_VALIDATION",
-        "UR_LOG_VALIDATION": "level:warning;flush:warning;output:file,/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/selected-model-work-census-v3/smoke/validation.log",
+        "UR_LOG_VALIDATION": "level:warning;flush:warning;output:file,/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/selected-model-work-census-v4/smoke/validation.log",
         "UR_LOG_LOADER": "level:warning;flush:warning;output:stderr",
         "UR_LOG_LEVEL_ZERO": "level:warning;flush:warning;output:stderr",
         "STRATA_TRACE": "1",
@@ -701,19 +701,19 @@
         "STRATA_PREFILL_LAYER_MAJOR_GDN_PROFILE": "0",
         "ZE_ENABLE_ALT_DRIVERS": "/usr/lib/x86_64-linux-gnu/libze_intel_gpu.so.1.17.39758",
         "PYTHONNOUSERSITE": "1",
-        "PYTHONPYCACHEPREFIX": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/selected-model-work-census-v3/smoke/cache/python"
+        "PYTHONPYCACHEPREFIX": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/selected-model-work-census-v4/smoke/cache/python"
       },
       "inputs": {
-        "config.json": "f5619a240a4ef309a0081fc308b7a822993fc79a7af04fc55e83239e4d38d235",
+        "config.json": "c2d771c59c3f0f4eccdfa12c7711f9ff02b4ab43d8667edf30d6eaf309e105e2",
         "plan.json": "08cfd654f8512bb484582b232cb0361de9c228e1eb5f4cec465aba42cf5195ef"
       },
       "command": [
         "/bin/sh",
         "/home/yayoi/orca/workspaces/Strata/sycl/bench.sh",
         "--config",
-        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/selected-model-work-census-v3/smoke/config.json",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/selected-model-work-census-v4/smoke/config.json",
         "--port",
-        "57015",
+        "44849",
         "--prefill-only",
         "--prefill-tokens",
         "32768",
@@ -727,7 +727,7 @@
         "--ready-timeout",
         "600",
         "--out",
-        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/selected-model-work-census-v3/smoke/bench"
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/selected-model-work-census-v4/smoke/bench"
       ],
       "budgets": {
         "wall": 1200,
@@ -739,7 +739,7 @@
       }
     },
     "long": {
-      "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/selected-model-work-census-v3/long",
+      "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/selected-model-work-census-v4/long",
       "config": {
         "exe": "/home/yayoi/orca/workspaces/Strata/sycl/tools/sycl/engine_once.py",
         "args": [
@@ -794,7 +794,7 @@
           "strata"
         ],
         "host": "127.0.0.1",
-        "log": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/selected-model-work-census-v3/long/engine.stderr",
+        "log": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/selected-model-work-census-v4/long/engine.stderr",
         "engine_silence_s": 480,
         "parallel": 1,
         "open_browser": false,
@@ -862,7 +862,7 @@
         "STRATA_SYCL_SELECT_CYCLIC": "0",
         "STRATA_SYCL_PROMPT_K_CELL_MAJOR": "0",
         "STRATA_SYCL_PROMPT_NATIVE_KV_MIN": "0",
-        "XDG_CACHE_HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/selected-model-work-census-v3/long/cache",
+        "XDG_CACHE_HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/selected-model-work-census-v4/long/cache",
         "STRATA_SYCL_PREFILL_NATIVE16": "bf16",
         "STRATA_SYCL_PREFILL_QSA_MATH": "bf16-prefix-ordered-exp",
         "STRATA_SYCL_PREFILL_NATIVE16_BACKEND": "vllm",
@@ -873,8 +873,8 @@
         "STRATA_SYCL_SCORE_QUERY_TILE": "8",
         "STRATA_SYCL_SCORE_HEAD_PARALLEL": "1",
         "STRATA_SYCL_PREFILL_SCORE_GEMM": "1",
-        "TMPDIR": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/selected-model-work-census-v3/long/tmp",
-        "STRATA_MEASUREMENT_ROOT": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/selected-model-work-census-v3/long",
+        "TMPDIR": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/selected-model-work-census-v4/long/tmp",
+        "STRATA_MEASUREMENT_ROOT": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/selected-model-work-census-v4/long",
         "ZES_ENABLE_SYSMAN": "0",
         "STRATA_SYCL_PREFILL_GDN_COLUMNS": "4",
         "STRATA_SYCL_PREFILL_GDN_CHUNK64": "0",
@@ -896,7 +896,7 @@
         "STRATA_PREFILL_TRANSITION_PROFILE": "0",
         "STRATA_PREFILL_LAYER_MAJOR_PROFILE": "1",
         "UR_ENABLE_LAYERS": "UR_LAYER_PARAMETER_VALIDATION",
-        "UR_LOG_VALIDATION": "level:warning;flush:warning;output:file,/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/selected-model-work-census-v3/long/validation.log",
+        "UR_LOG_VALIDATION": "level:warning;flush:warning;output:file,/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/selected-model-work-census-v4/long/validation.log",
         "UR_LOG_LOADER": "level:warning;flush:warning;output:stderr",
         "UR_LOG_LEVEL_ZERO": "level:warning;flush:warning;output:stderr",
         "STRATA_TRACE": "1",
@@ -906,19 +906,19 @@
         "STRATA_PREFILL_LAYER_MAJOR_GDN_PROFILE": "0",
         "ZE_ENABLE_ALT_DRIVERS": "/usr/lib/x86_64-linux-gnu/libze_intel_gpu.so.1.17.39758",
         "PYTHONNOUSERSITE": "1",
-        "PYTHONPYCACHEPREFIX": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/selected-model-work-census-v3/long/cache/python"
+        "PYTHONPYCACHEPREFIX": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/selected-model-work-census-v4/long/cache/python"
       },
       "inputs": {
-        "config.json": "861276b3d3fc407dcbef90ed449a8c9d73fb50d7c2ead9dd07624e67be971155",
+        "config.json": "612c56e0846758ae8ecddcbd152d51729f2c389f5a40efd853a6977d9871ef78",
         "plan.json": "08cfd654f8512bb484582b232cb0361de9c228e1eb5f4cec465aba42cf5195ef"
       },
       "command": [
         "/bin/sh",
         "/home/yayoi/orca/workspaces/Strata/sycl/bench.sh",
         "--config",
-        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/selected-model-work-census-v3/long/config.json",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/selected-model-work-census-v4/long/config.json",
         "--port",
-        "42943",
+        "38961",
         "--prefill-only",
         "--prefill-tokens",
         "98304",
@@ -932,7 +932,7 @@
         "--ready-timeout",
         "600",
         "--out",
-        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/selected-model-work-census-v3/long/bench"
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/selected-model-work-census-v4/long/bench"
       ],
       "budgets": {
         "wall": 1200,
@@ -944,55 +944,17 @@
       }
     }
   },
-  "checks": [
-    {
-      "mode": "smoke",
-      "passed": false,
-      "complete": false,
-      "ownership_closed": true,
-      "native_launched": true,
-      "error": "KeyError('controller_eligible')",
-      "protocol_qualified": false,
-      "postchecks_complete": true,
-      "postcheck_errors": [],
-      "fresh_faults": [],
-      "boot_unchanged": true,
-      "driver_after": {
-        "pci": "/sys/bus/pci/devices/0000:05:00.0",
-        "driver": "xe",
-        "vendor": "0x8086",
-        "device": "0xe20c",
-        "kernel": "7.0.0-38-generic",
-        "devcoredump": false
-      },
-      "failure_diagnosis": {
-        "mechanism": "Controller accesses controller_eligible,which the pinned official prefill-only sample never emits. Actual schema uses eligible,eligibility_errors,stream_complete and thinking_requested. Both request gates and the summary drain close normally;benchmark/native exit0.",
-        "controller_source": "d10461edf024ee085c0cbda3ce26c78dedcd9a85",
-        "schema_missing": "controller_eligible",
-        "native_exit_code": 0,
-        "benchmark_exit_code": 0,
-        "long_requests_completed": 1,
-        "actual_input_tokens": 39260,
-        "actual_prefill_rows": 39259,
-        "owner_protocol_complete": true,
-        "evidence": {
-          "execution_sha256": "15f590df4f308bc12a2d7a2af4a9e69e07de4d286a20a669f2a31db3c0026605",
-          "engine_log_sha256": "92df022a32d1df5482b8e937f57bc2918df1be2aa045c6f980190455ec725077"
-        },
-        "next": "Extract the entire completed-request reader and replay it against this actual closed cohort without GPU. Correct actual benchmark schema before a fresh frozen cohort;do not relabel this failed run or launch its long arm."
-      }
-    }
-  ],
+  "checks": [],
   "active": false,
   "ownership_closed": true,
   "complete": false,
   "passed": false,
   "model_adopted": false,
   "previous_failure": {
-    "commit": "2c11c26895459a6417519f04701c51a56581e02a",
+    "commit": "5eaab6d99d9db88f235db198382708a9d66cba82",
     "path": "bench/results/2026-10-15-pr6-recovery-audit/model-work-census-current.json",
-    "sha256": "d1f9287f94b511629344fbca3bbe30f4f52093f5103e5b51ae0213107abb47f8",
-    "source_commit": "92d23f9f03323b3e0dd9703a4fa6774fb1919e08",
+    "sha256": "31041cd1406e4cac5b3b4ca934fd2caaab45a5a7757473771f9fdfe5647f31f0",
+    "source_commit": "d10461edf024ee085c0cbda3ce26c78dedcd9a85",
     "native_exit_code": 0,
     "long_requests_completed": 1,
     "passed": false

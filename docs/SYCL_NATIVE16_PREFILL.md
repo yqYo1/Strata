@@ -1851,35 +1851,25 @@ under the shared lock and a 60-second deadline. Controls include missing,
 duplicated and reordered windows, malformed histograms, ambiguous retired
 counters and configured capacity larger than actual rows. These synthetic
 controls do not supply a selected-model histogram or qualify native execution.
-The selected-model census controller and frozen requests are committed, with
-204 controller inputs,58 unchanged child sources and the selected engine plus
-12 same-build fixtures checked. An independent Orca Luna report and native Luna/max
-review admitted the bounded39261-input smoke after Main's frozen source/runtime/owner
-checks. That cohort fails at the benchmark's request gate after the74-token warmup:
-the controller sent `X`,but the actual gate requires `continue` followed by newline.
-The benchmark exits1;the native child exits0,all owners close and no fresh fault
-is recorded. The39261-input request never starts;its117489-input arm remains
-unstarted. The correction at`86b59c143` sends the actual newline-terminated
-acknowledgement and requires a fresh cohort. Two host-only regression tests at
-`92d23f9f0` use the real benchmark gate:both request boundaries accept the controller
-acknowledgement,and a wrong command is rejected. The first host-test version used
-the wrong artifact root and failed before protocol exercise;that failure remains
-recorded. Neither host tests nor the earlier reviews qualify native execution.
-The next smoke completes39260 input tokens and both request gates;benchmark and
-native exit0,but its owner fails because the controller rejects the normal printed
-Results/Report trailer. The frozen short extent was also one token too large,and
-its actual mode10 capacity is39259rows rather than81920. Its offline48-window,
-18796-job conservation check is correction evidence only;this cohort remains
-failed and its long arm is unstarted. Controller`d10461edf` adds an explicit bounded
-human-summary drain,keeps rejection of an extra gate,and prospectively declares
-39260input/39259prefillrows/capacity39259 for the unchanged fixed short request.
-The long request is unchanged. Three host tests pass,including the real begin/end
-protocol,normal report output,wrong command and extra-gate rejection. Native
-execution of a fresh frozen cohort is still required. The completion-receipt
-repair at`3e00a11b0` remains separate. This is source-planned work on the pinned6e40
-schema,not GPU execution coverage or clean throughput evidence. The original preflight
-refusal at`5575402af` remains in Git;excluding unrelated standalone host tests did
-not qualify native execution. See the [current census plan](../bench/results/2026-10-15-pr6-recovery-audit/model-work-census-current.json).
+The selected-model census keeps204 pinned controller inputs,58 unchanged child
+sources and the original engine plus12 same-build fixtures. Three initial cohorts
+remain failed in Git:wrong acknowledgement (`55b0ae1b0`),normal-summary refusal and
+incorrect short extent/capacity (`2c11c2689`),then a nonexistent official sample field
+(`5eaab6d99`). All native children exit0 and no fresh GPU fault is recorded. These
+are controller failures;the completed model requests do not retroactively pass
+their frozen plans. The original report reviews missed these contracts.
+
+Controller`cc59c96f0` now uses the actual newline-terminated gate command,drains the
+bounded human report while rejecting extra gates,and reads the official sample
+schema. Five host tests pass:real begin/end/summary handling and rejection controls,
+plus full replay of the actual closed v3 request and five corrupted sample variants.
+The original failed run stays failed. The unchanged short request prospectively
+has39260input/39259prefillrows and capacity39259;the unchanged117489-input case
+has117488rows in81920+35568 windows. A fresh frozen smoke must pass before long
+execution. See the [current census](../bench/results/2026-10-15-pr6-recovery-audit/model-work-census-current.json).
+This reader is specific to the pinned6e40 schema. Neither host replay nor the
+planned census qualifies API/device coverage,physical traffic,clean speed,decode,
+quality,physical262144context or model adoption.
 
 Complete prefill phase attribution requires three independent ledgers: route-owner
 planned operations, actual API results and collector device executions.
