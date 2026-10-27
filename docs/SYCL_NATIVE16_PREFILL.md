@@ -378,15 +378,18 @@ and frozen plan7bf4a66f4 recover this diagnostic in the linked runtime result.
 No inference source,decode placement or runtime changed for this check.
 
 This117489-token point does not establish input-length scaling or a fixed
-prefill cost. Client`15a0f0783` adds a six-length characterization through
+prefill cost. Client/controller`5a0328c1e` adds a six-length characterization through
 `bench.sh --prefill-scaling`:thinking stays on,actual fresh counts and total
 prefill time/pp/client TTFT are retained,first maximum-length use is separate,
-and three warmed sweeps rotate their order. Affine,quadratic and`n log n`
+and three same-process sweeps rotate their order. Keep each length's first visit
+visible;maximum-length process priming does not prove every shape is warmed.
+Affine,quadratic and`n log n`
 hypotheses expose residuals and leave-one-length-out errors without selecting
 a law automatically. Short/decode-placement and long/layer-major routes must
-be assessed separately before interpreting a fixed term. Twenty client and
-fifteen evidence host tests pass,including first-reasoning TTFT and failed
-sample containment. The owned model sweep,route-specific approximate formula
+be assessed separately before interpreting a fixed term. Twenty-one client,
+fifteen evidence and four controller host tests pass,including first-reasoning
+TTFT and immediate rejection of invalid prefill clocks before the next request.
+The owned model sweep,route-specific approximate formula
 and independent-process confirmation remain pending in the linked runtime
 result's`length_characterization`;no new speed is claimed. Generation24 is
 only for prefill/TTFT and does not characterize tg versus context/output length.
@@ -1526,8 +1529,17 @@ and native Luna-max curation verify all nine frozen source inputs. Main rehashes
 the eleven installed API headers and compiler before recording that contract.
 The property-only sole-device inventory is workstation containment,not native
 BDF proof;the first actual-kernel gate must bind the owned child's DRM fdinfo
-before release. Compilation and every device gate remain pending;no packed-u32
-device result exists.
+before release. All15 compile commands now close normally with699 actual
+compiler dependencies verified. Intermediate LLVM contains two static i32
+subgroup shuffle calls with XOR masks4 and8;this is not final machine-code or
+executed instruction evidence. The property-only child closes normally with
+zero kernel submissions,quiet validation and no fresh fault. All three kernels
+pass WG128/SG16/18argument checks and the conservative24164-byte local-memory
+budget against131072bytes per group. Reported spill descriptors are12480 for
+original/control and3008 for the candidate;their units are unestablished,and
+the rejected eight-u16 candidate had the same3008 value. Actual packed-u32
+kernel execution,numerics and speed remain pending;these properties do not
+qualify a model route or a throughput gain.
 The rejected generation and two consumed research/review files retire after
 recovering197original source inputs,exact recipe/generated sources and699actual
 compiler dependencies. The98files total11297649bytes;the selected engine,its

@@ -127,7 +127,9 @@ For the length characterization, with a qualified server configured for at least
 This new mode requests minima1024,4096,16384,32768,65536,98304; construction
 targets are1.25 times those values and the actual engine token counts are the
 fit inputs. It retains one maximum-length first request separately, then runs
-three warmed sweeps in ascending, descending and rotated order. Thinking is
+three same-process sweeps in ascending, descending and rotated order. Retain
+the first visit to each length separately from its later visits: a maximum-length
+request primes the process but does not prove that every shape is warmed. Thinking is
 enabled and output is capped at24. Each request must finish normally with zero
 reuse, valid engine timings and actual context headroom. A failure stops the
 sweep and remains a failed sample. Each length keeps all individual times and
