@@ -803,6 +803,150 @@
     }
   },
   "historical_regression_audit": {
+    "single_window_64k_screen_v1": {
+      "stage": "prepared",
+      "processes": [],
+      "complete": false,
+      "passed": false,
+      "active": false,
+      "ownership_closed": true,
+      "plan": {
+        "source_commit": "2e810aed8ca7590a46ab1becb373705f152e1bf0",
+        "inputs_sha256": "cb9a0dcf14a0ff7b159d0457f190c8c9a35762e1073047c30cc85939ed718a00",
+        "reference_record_sha256": "de7f1aba97c5929f4bc68350d0f1e8ea221fe02bc3da8317beaa185328606c65",
+        "binary": {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/strata",
+          "bytes": 22190000,
+          "sha256": "22182f1a5e62e5f4259ce49a75ae44afbd988166ec79324816e499ff37ef60e4"
+        },
+        "request_hashes": [
+          "b592f434eb31230e4aaadcc163951732a26b553480a4411e6eb2bc82bcb9b827",
+          "8530456cd33ae82d7e7aea5341796493f9442cfebbf87eede5e23695a72d47d8",
+          "8ac504de3338c11bab99f2710c4923aeb2edd5879aec93bdcca5ec1b9867dc60",
+          "7fddc7f387d219bf7547dba5443bb66d05dce49bd06b4ad3c05d0c2462897f3b"
+        ],
+        "process_inputs": [
+          {
+            "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-single-window-64k-v1/0",
+            "files": {
+              "config.json": "630b16a4968983ad3cc967630a39097f8e1e9caab9b23d799d11acad4094476e",
+              "plan.json": "08cfd654f8512bb484582b232cb0361de9c228e1eb5f4cec465aba42cf5195ef"
+            },
+            "command": [
+              "/bin/sh",
+              "/home/yayoi/orca/workspaces/Strata/sycl/bench.sh",
+              "--config",
+              "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-single-window-64k-v1/0/config.json",
+              "--port",
+              "47037",
+              "--prefill-only",
+              "--prefill-tokens",
+              "65536",
+              "--think",
+              "--runs",
+              "4",
+              "--profile-request-gates",
+              "--workload-id",
+              "native_gdn_20261018",
+              "--fail-fast-engine-error",
+              "--ready-timeout",
+              "600",
+              "--out",
+              "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-single-window-64k-v1/0/bench"
+            ]
+          },
+          {
+            "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-single-window-64k-v1/1",
+            "files": {
+              "config.json": "75f90e93b5992782408e954c3e0adc0a8a0ed03f85ff1e3bc84906f2ac43ec72",
+              "plan.json": "08cfd654f8512bb484582b232cb0361de9c228e1eb5f4cec465aba42cf5195ef"
+            },
+            "command": [
+              "/bin/sh",
+              "/home/yayoi/orca/workspaces/Strata/sycl/bench.sh",
+              "--config",
+              "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-single-window-64k-v1/1/config.json",
+              "--port",
+              "51609",
+              "--prefill-only",
+              "--prefill-tokens",
+              "65536",
+              "--think",
+              "--runs",
+              "4",
+              "--profile-request-gates",
+              "--workload-id",
+              "native_gdn_20261018",
+              "--fail-fast-engine-error",
+              "--ready-timeout",
+              "600",
+              "--out",
+              "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-single-window-64k-v1/1/bench"
+            ]
+          },
+          {
+            "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-single-window-64k-v1/2",
+            "files": {
+              "config.json": "306ef0848b7fea0cb6fc54b175fbc22cf5755af31ec0887cfe9cac49cd9f8f56",
+              "plan.json": "08cfd654f8512bb484582b232cb0361de9c228e1eb5f4cec465aba42cf5195ef"
+            },
+            "command": [
+              "/bin/sh",
+              "/home/yayoi/orca/workspaces/Strata/sycl/bench.sh",
+              "--config",
+              "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-single-window-64k-v1/2/config.json",
+              "--port",
+              "48735",
+              "--prefill-only",
+              "--prefill-tokens",
+              "65536",
+              "--think",
+              "--runs",
+              "4",
+              "--profile-request-gates",
+              "--workload-id",
+              "native_gdn_20261018",
+              "--fail-fast-engine-error",
+              "--ready-timeout",
+              "600",
+              "--out",
+              "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-single-window-64k-v1/2/bench"
+            ]
+          }
+        ],
+        "question": "What clean prefill speed does unchanged6e40 achieve with >=64K input in one MoE window per layer?",
+        "work": "Three fresh serial processes;four78451fresh/zero-reuse/thinking-on/24output requests each. Same131072INT8 context,8192chunks,BF16/vLLM/mode10,384prefill bank,1256decode slots,validation preload and safety settings as V6. Original baseline supervisor,not the rejected candidate.",
+        "acceptance": "All source/provider/request/route/journal/clock/CPU/closure/fault gates pass. First use separate;three subsequent medians and all9samples retained. Throughput screen passes only if every process subsequent median>=1000tok/s. This is not a same-input speedup,mechanism adoption,decode/quality or physical262144 qualification. Stop first failure;no retries or early speed selection.",
+        "cpu_gate_maximum": 0.2,
+        "timing_floor_ms": 10000,
+        "expected_prompt_tokens": 78451,
+        "expected_moe_rows": 78450,
+        "budgets": {
+          "wall": 2400,
+          "cpu": 72000,
+          "rss_cap": 111669149696,
+          "text_cap": 33554432,
+          "file_cap": 67108864,
+          "total_cap": 134217728
+        },
+        "whole_bytes": 402653184,
+        "retention": "Keep individual clocks,source/config/runtime/binary pins and decisions. Normal raw output retires after replay. Existing V6 generated inputs,closed ownerV3/PythonV4 qualification and record have this named reader only through this screen;reassess and retire at closure.",
+        "host_controls": {
+          "source_commit": "2e810aed8",
+          "command": [
+            "/usr/bin/python3.12",
+            "-I",
+            "-S",
+            "-B",
+            "tools/test_sycl_prefill_window_screen.py"
+          ],
+          "passed": true,
+          "exit_code": 0,
+          "cases": 3,
+          "scope": "Host-only production-grammar,workload/cache/thinking/payload,route/counter and native/API-clock corruption rejection;no GPU or live-runtime qualification."
+        }
+      }
+    },
     "legacy_hardware_component_retirement_20261027": {
       "source_commit": "7ea2650ba3ae1b15807a32a67b62d56131046569",
       "source_recovery": {
