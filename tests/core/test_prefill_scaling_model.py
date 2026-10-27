@@ -9,6 +9,15 @@ import prefill_scaling_model as model
 
 
 class ScalingAdmission(unittest.TestCase):
+    def test_nonfinite_missing_negative_and_reversed_clocks_are_rejected(self):
+        good=dict(prompt_ms=1234.5,prompt_tps=900.1,ttft_s=1.5,total_s=2.0)
+        self.assertTrue(model.valid_clocks(good))
+        for field in good:
+            for value in (float('inf'),float('-inf'),float('nan'),None,True,0,-1,'1'):
+                with self.subTest(field=field,value=value):
+                    self.assertFalse(model.valid_clocks(dict(good,**{field:value})))
+        self.assertFalse(model.valid_clocks(dict(good,total_s=1.49)))
+
     def fixture(self):
         samples=[]
         lines=['strata serve: prompt 74 tokens = 0 reused + 74 read, 24 generated']

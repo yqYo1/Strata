@@ -8,10 +8,10 @@ import copy
 import fcntl
 import hashlib
 import json
+import math
 from pathlib import Path
 import select
 import socket
-import statistics
 import subprocess
 import sys
 import time
@@ -110,7 +110,8 @@ def prepare():
             '--ready-timeout', '600', '--out', str(ROOT / 'bench')],
         plan=dict(question='How do total prefill time,pp and thinking-inclusive TTFT scale with actual input length on the selected6e40 engine?',
             repetition='One fresh server;one short warmup;one maximum-length first-use request retained separately;'
-                'three warmed six-length sweeps in frozen ascending,descending,rotated order. Not three independent processes.',
+                'three six-length sweeps in frozen ascending,descending,rotated order after process priming. '
+                'Keep first visit per length visible;maximum-length priming does not prove every shape was warmed. Not three independent processes.',
             minima=[1024,4096,16384,32768,65536,98304],
             constants='Original22182f1a ELF;1256-slot decode placement;131072 resident INT8 KV;8192 chunks;'
                 'BF16/vLLM/mode10 on long route;unchanged86-key template plus explicit qualified NEO;'
@@ -126,7 +127,7 @@ def prepare():
                 'Existing prefill API clock includes handoff back to decode. First nonempty reasoning/content defines TTFT. '
                 'Output24 is not tg/agent/quality/physical262144 qualification. Same-process repeatability only.'),
         budgets=dict(wall=3000, cpu=72000, rss_cap=104 << 30, text_cap=32 << 20,
-            file_cap=64 << 20, total_cap=128 << 20),
+            file_cap=64 << 20, total_cap=64 << 20),
         active=False, ownership_closed=True, qualification=[], complete=False, passed=False,
         retention='One compact curve withindividual counts/timings/TTFT,source/config/runtime identity,route andformula checks. '
             'Retire successful logs/journals/JIT and this one-use controller after verified extraction;original13 assets remain.')
@@ -177,7 +178,7 @@ def qualify(row):
                     if select.select([io.proc.stdout], [], [], .01)[0]: io.read(); io.pending.clear()
                 io.exit(1)
             entry, out, err = owner.run(name, [artifact['path'], *args], env, P, interaction=observe,
-                wall=90, cpu=120, rss_cap=4 << 30, text_cap=16 << 20, file_cap=32 << 20, total_cap=128 << 20)
+                wall=90, cpu=120, rss_cap=4 << 30, text_cap=16 << 20, file_cap=32 << 20, total_cap=64 << 20)
             require(owners.closed(entry) and entry['exit_code'] == 0, 'qualification fixture failed')
             if marker:
                 require(marker in out.read_text() and 'urEnqueue' in (case / 'ur.trace').read_text(),
@@ -258,8 +259,7 @@ def run(row):
                 sample['requested_min_tokens'] == minimum and sample['run'] == round_index and
                 sample['actual_prompt_tokens'] == sample['actual_read_tokens'] >= minimum and
                 sample['actual_reused_tokens'] == 0 and 1 <= sample['generated_tokens'] <= 24 and
-                sample['prompt_tps_source'] == 'engine' and type(sample['prompt_ms']) in (int, float) and
-                sample['prompt_ms'] > 0 and sample['ttft_s'] > 0 and sample['total_s'] >= sample['ttft_s'],
+                sample['prompt_tps_source'] == 'engine' and valid_clocks(sample),
                 'workload/timing eligibility differs')
         sys.path.insert(0, str(P / 'tools')); from strata_bench import verify_request_journal
         journal, = (ROOT / 'bench').glob('*/requests.jsonl'); verified = verify_request_journal(journal.parent)
@@ -308,7 +308,7 @@ def request_order():
 
 def source_review():
     scope=runtime.validation.committed(gen.A/'research-index.json',
-        ('prefill_length_scaling_admission_20261028',))
+        ('prefill_length_scaling_admission_v2_20261028',))
     require(scope['status']=='reviewed_bounded_measurement_only' and scope['worker_closed'] is True and
         scope['review']['status']=='completed' and scope['review']['model']=='gpt-6-luna' and
         scope['review']['reasoning_effort']=='max' and scope['review']['execution_eligible'] is True,
@@ -319,6 +319,12 @@ def source_review():
             'reviewed length-characterization input changed: '+name)
     return dict(source_commit=scope['source_commit'],review_sha256=scope['review']['sha256'],
                 source_snapshot=scope['source_snapshot'])
+
+
+def valid_clocks(sample):
+    values=[sample.get(k) for k in ('prompt_ms','prompt_tps','ttft_s','total_s')]
+    return all(type(v) in (int,float) and math.isfinite(v) and v>0 for v in values) and \
+        sample['total_s']>=sample['ttft_s']
 
 
 def route_evidence(text, samples):
