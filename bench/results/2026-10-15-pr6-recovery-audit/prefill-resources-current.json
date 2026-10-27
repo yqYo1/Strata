@@ -610,6 +610,198 @@
     "extra_engine_generation_review": "The named attribution is closed. Select and retire the extra validated generation before another build; no third generation is authorized by this record."
   },
   "event_reconciliation": {
+    "selected_qsa_service": {
+      "stage": "prepared",
+      "binary": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/strata",
+        "bytes": 22190000,
+        "sha256": "22182f1a5e62e5f4259ce49a75ae44afbd988166ec79324816e499ff37ef60e4"
+      },
+      "reference_sha256": "de7f1aba97c5929f4bc68350d0f1e8ea221fe02bc3da8317beaa185328606c65",
+      "assets": {
+        "launcher": {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/unitrace-session-owner-v1/unitrace",
+          "sha256": "6faac1e74f18ce481581f3ed112611ec3e0a1f81eac7990b57b622f212294244",
+          "bytes": 513168
+        },
+        "collector": {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/unitrace-l0-4b6d742-v2/libunitrace_tool.so",
+          "sha256": "5a5123569afec5e1da12e98967955686d753ce28ae8d42b96ec565b52ec4d1e5",
+          "bytes": 2328576
+        }
+      },
+      "plan": {
+        "source_commit": "69acb8d8b52d99e46d1219d2cecdff843801895f",
+        "command": [
+          "/bin/sh",
+          "/home/yayoi/orca/workspaces/Strata/sycl/bench.sh",
+          "--config",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/selected-qsa-service-v1/config.json",
+          "--port",
+          "42313",
+          "--prefill-only",
+          "--prefill-tokens",
+          "32768",
+          "--think",
+          "--runs",
+          "1",
+          "--profile-request-gates",
+          "--workload-id",
+          "native_gdn_20261018",
+          "--fail-fast-engine-error",
+          "--ready-timeout",
+          "600",
+          "--out",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/selected-qsa-service-v1/bench"
+        ],
+        "generated": {
+          "config.json": "6880c5012fa29d82548d01b89315c50a5f3fd35bc1373368f6db903ccbe0d8ea",
+          "plan.json": "828c098c987c5851e5d2898507452dfd937af1924e671c671eff008e409d6340"
+        },
+        "question": "How much selected6e40 QSA attention and prefix-pack GPU service does one official32K+ request emit?",
+        "expected": {
+          "actual_input": 39260,
+          "body_rows": 39259,
+          "QSA_layers": 12,
+          "chunks": [
+            8192,
+            8192,
+            8192,
+            8192,
+            6491
+          ],
+          "attention_calls": 60,
+          "pack_calls": 60,
+          "filter": "prefix_batch_impl"
+        },
+        "limits": "Diagnostic PTI summed service only. No independent UR joins,complete graph/library ledger,lossless execution ledger,observer-cost qualification,clean speed,hardware saturation,physical bandwidth,decode/task/full-context or adoption claim. Existing UR subscriber logs every API with65536-record cap and is deliberately absent. Exact source-call and query counts,selected template/geometry,positive table clocks,owner/provider/pre-main/fault/journal/model checks remain required. Stop first failure;no retry.",
+        "budgets": {
+          "wall": 1800,
+          "cpu": 43200,
+          "rss_cap": 111669149696,
+          "text_cap": 8388608,
+          "file_cap": 33554432,
+          "total_cap": 67108864
+        },
+        "retention": "One raw diagnostic<=64MiB consumed by service/count replay,then retire normal logs/JIT/generated plans. Keep source/configuration/binary/runtime/collector identities,compact family/shape samples,outcomes and limits in existing resource result. No new engine or collector binary.",
+        "generated_contents": {
+          "config.json": {
+            "exe": "/home/yayoi/orca/workspaces/Strata/sycl/tools/sycl/engine_once.py",
+            "args": [
+              "--pack",
+              "/home/yayoi/.local/share/strata-sycl/packs/qwen3.8-flash-next-iq3_s",
+              "--native",
+              "/home/yayoi/.local/share/strata-sycl/models/qwen3.8-flash-next-iq3_s/IQ3_S/Qwen3.8-Flash-Next-GSQ-RCO-IQ3_S-00001-of-00002.gguf",
+              "--max-context",
+              "131072",
+              "--kv",
+              "int8",
+              "--kv-resident",
+              "131072",
+              "--expert-cache",
+              "1256",
+              "--expert-profile",
+              "/home/yayoi/orca/workspaces/Strata/sycl/data/expert-profile.bin",
+              "--expert-cache-per-layer",
+              "--pool-workers",
+              "5",
+              "--pcie-frac",
+              "0",
+              "--adapt-swaps",
+              "0",
+              "--conversation-cache-mib",
+              "0",
+              "--prompt-cache",
+              "0",
+              "--turn-token",
+              "-1",
+              "--suffix-draft",
+              "0",
+              "--greedy",
+              "--no-spec-split",
+              "--short-read",
+              "0",
+              "--spec",
+              "4",
+              "--mtp",
+              "/home/yayoi/.local/share/strata-sycl/mtp/rt",
+              "--prefill",
+              "8192",
+              "--vram-reserve-mib",
+              "700",
+              "--no-coupled-draft",
+              "--no-token-graph"
+            ],
+            "cwd": "/home/yayoi/orca/workspaces/Strata/sycl",
+            "tokenizer": "/home/yayoi/.local/share/strata-sycl/packs/qwen3.8-flash-next-iq3_s/tokenizer",
+            "model_name": "qwen3.8-flash-next-iq3_s-primary",
+            "aliases": [
+              "strata"
+            ],
+            "host": "127.0.0.1",
+            "log": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/selected-qsa-service-v1/engine.stderr",
+            "engine_silence_s": 480,
+            "parallel": 1,
+            "open_browser": false,
+            "env": {}
+          },
+          "plan.json": {
+            "binary": {
+              "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/strata",
+              "bytes": 22190000,
+              "sha256": "22182f1a5e62e5f4259ce49a75ae44afbd988166ec79324816e499ff37ef60e4"
+            },
+            "native_validation_probe": {
+              "library": {
+                "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/ur-validation-preload-v2/libstrata_ur_validation.so",
+                "sha256": "1d4e69d672d55fa0a126ae43b7b4743482cccca7e2f2bc22e0db2bfdad5bdc7c"
+              },
+              "loader": {
+                "path": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_loader.so.0.12.0",
+                "sha256": "bb6e1311850e4b1a924e42acae80c2b3610934625a4985aaa67967abe31356fc"
+              }
+            },
+            "native_profile": {
+              "mode": "aggregate",
+              "session": "StrataQsa9c18b56eb1b21496ebc184bd",
+              "launcher": {
+                "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/unitrace-session-owner-v1/unitrace",
+                "sha256": "6faac1e74f18ce481581f3ed112611ec3e0a1f81eac7990b57b622f212294244",
+                "bytes": 513168
+              },
+              "collector": {
+                "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/unitrace-l0-4b6d742-v2/libunitrace_tool.so",
+                "sha256": "5a5123569afec5e1da12e98967955686d753ce28ae8d42b96ec565b52ec4d1e5",
+                "bytes": 2328576
+              },
+              "environment": {
+                "UNITRACE_SystemTime": "1",
+                "UNITRACE_FollowChildProcess": "1",
+                "UNITRACE_TraceOutputDir": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/selected-qsa-service-v1/trace"
+              }
+            }
+          }
+        },
+        "host_controls": {
+          "source_commit": "69acb8d8b52d99e46d1219d2cecdff843801895f",
+          "command": [
+            "/usr/bin/python3",
+            "-B",
+            "tests/core/test_qsa_service.py"
+          ],
+          "serialized": true,
+          "timeout_s": 45,
+          "tests": 3,
+          "corrupted_table_variants": 9,
+          "exit_code": 0,
+          "GPU_executed": false
+        }
+      },
+      "passed": false,
+      "complete": false,
+      "active": false,
+      "ownership_closed": true
+    },
     "stage": "host-controls-passed-native-adapter-pending",
     "source_commit": "aa66857d8a305eb52ba5c2ee17180d1b31b996f2",
     "inputs": {
