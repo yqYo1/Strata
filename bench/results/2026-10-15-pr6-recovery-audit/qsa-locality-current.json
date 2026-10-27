@@ -1850,7 +1850,7 @@
       "retained_reference_until_exit": true,
       "ordinary_runtime_teardown_qualified": false
     },
-    "stage": "prepared",
+    "stage": "failed",
     "mode": "smoke",
     "source_commit": "793ce5c5ed7dd077d36182ee8154fcc71311dc66",
     "controller_inputs": {
@@ -2074,5 +2074,53 @@
       "scope": "Exact6491query/source-derived2051counts,synthetic repeated-value Q/K/V. Only gather-address topology changes among private arms. Wall includes pack and wrapper;direct event covers attention. No physical-traffic claim."
     },
     "retirement": "Retain individual timing samples,numerical/delta bounds,closure/fault results and decision. Retire successful full traces and normal logs after extraction. Keep one current component generation only for this live comparison."
-  }
+  },
+  "actual_id_checks": [
+    {
+      "mode": "smoke",
+      "controller_commit": "793ce5c5ed7dd077d36182ee8154fcc71311dc66",
+      "plan_commit": "45fb8b355d7e792e04a36e42666980e7f22a217a",
+      "passed": false,
+      "complete": false,
+      "active": false,
+      "ownership_closed": false,
+      "observations": [],
+      "model_qualified": false,
+      "error": "actual-ID ownership remains open",
+      "postchecks_complete": true,
+      "postcheck_errors": [],
+      "fresh_faults": [],
+      "boot_unchanged": true,
+      "driver_after": {
+        "pci": "/sys/bus/pci/devices/0000:05:00.0",
+        "driver": "xe",
+        "vendor": "0x8086",
+        "device": "0xe20c",
+        "kernel": "7.0.0-38-generic",
+        "devcoredump": false
+      },
+      "native_error": "QSA locality failure: uniform-cell full-output oracle differs",
+      "ownership_reconciliation": {
+        "process_closed": true,
+        "direct_child_reaped": true,
+        "session_empty_before_reap": true,
+        "survivors": [],
+        "pid": 719254,
+        "start_ticks": 145045924,
+        "exit_code": 1,
+        "observation_complete": false,
+        "protocol_qualified": false,
+        "original_failure_preserved": true,
+        "reason": "Child exits1before after-cleanup/footer because the host oracle rejects output. Owner final anchored scan found no survivors and reaped it. Original supervision.closed/ownership_closedfalse is a protocol-qualification result,not evidence of a live process or device hang."
+      },
+      "oracle_audit": {
+        "source_level_counterexample": "ForKVhead1/code0,the old host oracle emitsBF16negativezero0x8000. FP32accumulation beginning at+0can produce+0. Predicted288zero-sign counterexamples in3queries;firstq0/head12/dim23.",
+        "predicted_signed_zero_counterexamples": 288,
+        "actual_output_deltas_captured": false,
+        "confirmed_exclusive_failure_cause": false,
+        "next": "Correct the source-derived oracle to include FP32+0accumulation,add bounded mismatch diagnostics and zero-sign counts;new committed source/build/plan required. Preserve this failed cohort unchanged."
+      }
+    }
+  ],
+  "diagnostic_stage": "smoke_failed_oracle_repair_required"
 }
