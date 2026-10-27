@@ -11,6 +11,7 @@ import re
 import shlex
 import subprocess
 import sys
+import time
 
 sys.dont_write_bytecode = True
 sys.path.insert(0, str(Path(__file__).resolve().parent))
@@ -189,7 +190,174 @@ def run_activation():
     print('PASS actual no-device subscriber startup;native getters/GPU extraction still unqualified.')
 
 
+def prepare_extraction():
+    record = b.gen.committed(RESULT);data = record[KEY]
+    activation = data['activation_check'];folder = ROOT / 'extraction'
+    require(activation['passed'] and activation['complete'] and activation['ownership_closed'] and
+        not activation['active'] and activation['fresh_faults'] == [], 'actual no-device startup must pass')
+    require('extraction_plan' not in data and not folder.exists(), 'fresh extraction only;no retry')
+    rt, info = admission(record)
+    require(activation['actual_observer'] == info['library'] and activation['dispatcher'] == info['framework'],
+        'activation used another observer/framework')
+    revision = b.gen.git('rev-parse', 'HEAD').decode().strip();code = controller(revision, record)
+    folder.mkdir(mode=0o700)
+    for name in ['captures', 'tmp', 'cache']:(folder / name).mkdir(mode=0o700)
+    library = info['library']['path']
+    env = dict(rt['environment'], TMPDIR=str(folder / 'tmp'), XDG_CACHE_HOME=str(folder / 'cache'),
+        XPTI_TRACE_ENABLE='1', XPTI_FRAMEWORK_DISPATCHER=info['framework']['path'],
+        XPTI_SUBSCRIBERS=library, STRATA_NATIVE_CAPTURE_SUBSCRIBER=library,
+        STRATA_NATIVE_CAPTURE_ROOT=str(folder / 'captures'), STRATA_SYCL_PREFILL_COMMAND_PROFILE='0',
+        ZE_ENABLE_ALT_DRIVERS=next(p for p in rt['runtime_files'] if 'libze_intel_gpu' in p),
+        UR_LOG_TRACING='level:info;flush:info;output:file,' + str(folder / 'api.trace'),
+        UR_LOG_VALIDATION='level:warning;flush:warning;output:file,' + str(folder / 'validation.log'))
+    env.pop('LD_DEBUG', None)
+    names = c.kernel_ids(record)
+    env.update({'STRATA_NATIVE_KERNEL_' + str(i): name for i, name in enumerate(names)})
+    plan = dict(stage='prepared', controller=code, observer=info, kernel_names=names,
+        runtime_qualification_sha256=b.digest(b.qualified_runtime.RESULT),
+        physical_device=c.device_inventory(rt), fixture=record['binaries']['fixture'],
+        selected_ids=record['selected_fixture'], command=[record['binaries']['fixture']['path'],
+            '--smoke', record['selected_fixture']['path']], environment=env, output_root=str(folder),
+        budgets=dict(wall=180, cpu=180, rss_cap=4 << 30, text_cap=8 << 20,
+            file_cap=16 << 20, total_cap=64 << 20),
+        criteria='One existing owned actual-ID3query smoke,unchanged binary/safety environment,live original/observer/framework/runtime-map admission and B570 DRM BDF proof before kernels. Native exact-output/guard/input checks and all3attention identities with2launches each. Require3same-PID/device/instance-bound GEN ISA and3module captures,finite bounds/hash/census,quiet validation,normal closure,no freshfault/bootchange. This proves fresh extraction only;ELF-text association and offline disassembly remain later gates. No new timing/model trial or historical timed-image claim.',
+        retirement='Keep exact raw GEN/module only through imminent ELF/disassembly and source-bound comparison. Retire successful traces/duplicate dumps after compact extraction evidence;review entire rejected component generation at diagnostic closure.')
+    data['extraction_plan'] = plan;b.write(folder / 'plan.json', plan);b.write(RESULT, record)
+    print('Prepared one bounded3-query native extraction;commit exact plan before run.')
+
+
+def run_extraction():
+    record = b.gen.committed(RESULT);data = record[KEY];plan = data['extraction_plan']
+    folder = Path(plan['output_root'])
+    require(plan['stage'] == 'prepared' and folder == ROOT / 'extraction' and
+        plan == json.loads((folder / 'plan.json').read_text()) and 'extraction_check' not in data,
+        'fresh committed extraction required')
+    rt, info = admission(record)
+    require(controller(plan['controller']['source_commit'], record) == plan['controller'] and
+        info == plan['observer'] and b.digest(b.qualified_runtime.RESULT) == plan['runtime_qualification_sha256'] and
+        c.device_inventory(rt) == plan['physical_device'], 'native extraction inputs changed')
+    boot = Path('/proc/sys/kernel/random/boot_id').read_text().strip()
+    cursors = re.findall(r'^-- cursor: (.+)$', subprocess.check_output(
+        ['journalctl', '-k', '-b', '-n', '0', '--show-cursor'], text=True, timeout=15), re.M)
+    require(len(cursors) == 1, 'fresh fault cursor required')
+    result = dict(passed=False, complete=False, active=False, ownership_closed=False,
+        controller=plan['controller'], GPU_executed=False, model_qualified=False,
+        historical_timed_image_proven=False, ELF_text_identity_qualified=False)
+    owner = None
+    def persist():
+        result['active'] = bool(owner and owner.active is not None)
+        b.write(folder / 'owned.json', dict(result, commands=owner.commands if owner else []))
+    owner = b.supervision.Owner(folder / 'owned', persist)
+    try:
+        b.guards.no_model_owners([]);b.guards.driver_guard()
+        start = (time.clock_gettime_ns(time.CLOCK_BOOTTIME), time.monotonic_ns())
+        def interact(io, entry):
+            device_name = None
+            for stage in ['before-runtime', 'runtime-ready', 'after-cleanup']:
+                while True:
+                    line = io.line(120)
+                    if line.startswith('device='):
+                        require(device_name is None, 'duplicate device name');device_name = line.removeprefix('device=')
+                    if line.startswith('QSA_K_STAGING_GATE '):break
+                require(line == 'QSA_K_STAGING_GATE ' + stage, 'native capture gate differs')
+                delta = [a - z for a, z in zip(
+                    (time.clock_gettime_ns(time.CLOCK_BOOTTIME), time.monotonic_ns()), start)]
+                require(min(delta) >= 0 and abs(delta[0] - delta[1]) <= 50000000, 'suspend/clock discontinuity')
+                proc = Path('/proc', str(io.proc.pid))
+                require(str((proc / 'exe').resolve()) == str(Path(plan['command'][0]).resolve()), 'wrong native executable')
+                env = dict(x.split(b'=', 1) for x in (proc / 'environ').read_bytes().split(b'\0') if b'=' in x)
+                require(all(env.get(k.encode()) == v.encode() for k, v in plan['environment'].items()), 'native environment changed')
+                mapped = b.qualified_runtime.executable_mappings((proc / 'maps').read_text())
+                additions = {str(Path(x).resolve()) for x in
+                    [plan['command'][0], info['library']['path'], info['framework']['path']]}
+                require(mapped <= set(rt['runtime_files']) | additions,
+                    'unqualified native code map: ' + str(sorted(mapped - set(rt['runtime_files']) - additions)))
+                require({info['library']['path'], info['framework']['path']} <= mapped,
+                    'actual observer/framework not mapped')
+                if stage == 'runtime-ready':
+                    require({rt['preload']['loader'], rt['preload']['library']['path'],
+                        plan['environment']['ZE_ENABLE_ALT_DRIVERS']} <= mapped, 'qualified native provider missing')
+                    entry['physical_device'] = c.live_device(io.proc.pid, device_name, plan['physical_device'], rt)
+                io.send(b'X')
+            require(json.loads(io.line(20)) == {'kind': 'PASS'}, 'native smoke footer missing')
+            io.proc.stdin.close();io.exit(20)
+        entry, out, err = owner.run('capture', plan['command'], plan['environment'], P,
+            interaction=interact, **plan['budgets'])
+        require(b.supervision.closed(entry) and entry['exit_code'] == 0, 'native extraction process failed')
+        proof = c.validation.preload_evidence(err.read_text(), entry['pid'])
+        require(proof['loader'] == rt['preload']['loader'], 'native UR provider changed')
+        require(not (folder / 'validation.log').exists() or not (folder / 'validation.log').stat().st_size,
+            'native capture validation diagnostic')
+        numerical = c.parsed_output(out.read_text(), 'smoke', 0)
+        trace = (folder / 'api.trace').read_text()
+        launches = c.local_launches(trace, plan['kernel_names'], [0, 1, 2])
+        require(all(v['calls'] == 2 for v in launches.values()), 'actual attention dispatch count differs')
+        rows = [json.loads(x) for x in (folder / 'captures/captures.jsonl').read_text().splitlines()]
+        require(all(x['pid'] == entry['pid'] for x in rows), 'capture PID differs')
+        groups = {kind: [x for x in rows if x['kind'] == kind]
+            for kind in ['load', 'subscribe', 'device', 'capture', 'module', 'launch']}
+        require({k: len(v) for k, v in groups.items()} ==
+            {'load': 1, 'subscribe': 1, 'device': 3, 'capture': 3, 'module': 3, 'launch': 6}
+            and sum(map(len, groups.values())) == len(rows), 'capture event census differs')
+        created = {}
+        for line in trace.splitlines():
+            if '<--- urKernelCreate(' in line and 'UR_RESULT_SUCCESS' in line:
+                match = re.search(r'\((_ZTS\S+)\).*?\.phKernel = .*?\((0x[0-9a-f]+)\)', line)
+                if match:created[match[2]] = match[1]
+        captures = []
+        for arm in range(3):
+            selected = {kind: [x for x in groups[kind] if x['arm'] == arm]
+                for kind in ['device', 'capture', 'module', 'launch']}
+            require(all(len(selected[k]) == n for k, n in
+                [('device', 1), ('capture', 1), ('module', 1), ('launch', 2)]), 'per-arm event census differs')
+            cap, module, device = (selected[k][0] for k in ['capture', 'module', 'device'])
+            require(cap['name'] == plan['kernel_names'][arm] == created.get(cap['ur_kernel']) and
+                cap['instance'] == module['instance'] == selected['launch'][0]['instance'] and
+                [x['ordinal'] for x in selected['launch']] == [1, 2] and
+                all(x['api'] == 'urEnqueueKernelLaunchWithArgsExp' for x in selected['launch']) and
+                device['program_devices'] == 1 and device['same_queue_device'] and
+                device['vendor'] == 0x8086 and device['device'] == 0xe20c and
+                device['binary_extension_version'] >= 65536, 'capture launch/device/native identity differs')
+            for row, suffix, maximum in [(cap, '.gen', 4 << 20), (module, '.zebin', 8 << 20)]:
+                require(row['file'] == 'kernel%d%s' % (arm, suffix), 'unexpected captured filename')
+                path = folder / 'captures' / row['file']
+                require(path.is_file() and not path.is_symlink() and path.stat().st_size == row['bytes'] and
+                    0 < row['bytes'] <= maximum, 'captured binary size differs')
+                row['path'] = str(path);row['sha256'] = b.digest(path)
+            captures.append(dict(arm=arm, kernel=cap, module=module, device=device,
+                accepted_launches=selected['launch']))
+        require({x.name for x in (folder / 'captures').iterdir()} == {'captures.jsonl'} |
+            {'kernel%d%s' % (i, suffix) for i in range(3) for suffix in ['.gen', '.zebin']},
+            'unexpected capture payload')
+        admission(record)
+        result.update(host_probe_accepted=True, physical_device=entry['physical_device'], numerical=numerical,
+            local_launches=launches, captures=captures, GPU_executed=True, fresh_native_getters_passed=True)
+    except BaseException as error:
+        result['error'] = repr(error)
+        raise
+    finally:
+        trace_path = folder / 'api.trace'
+        observed_trace = trace_path.read_text(errors='replace') if trace_path.exists() else ''
+        result['GPU_submission_attempted'] = bool(re.search(r'urEnqueue\w*Kernel', observed_trace))
+        result['GPU_executed'] = result['GPU_executed'] or result['GPU_submission_attempted']
+        result['GPU_completion_proven'] = 'numerical' in result
+        stderr_path = folder / 'owned/capture.stderr'
+        if not result.get('host_probe_accepted') and stderr_path.exists():
+            lines = stderr_path.read_text(errors='replace').splitlines()
+            result['native_error_excerpt'] = '\n'.join(x for x in lines if
+                'native kernel capture:' in x or 'UR_RESULT_ERROR_' in x or 'ZE_RESULT_ERROR_' in x)[-4096:]
+        c.validation.finish(result, owner, cursors[0], boot)
+        result['complete'] = result['passed'];persist()
+        data['extraction_check'] = result;data['extraction_plan']['stage'] = 'closed'
+        data['GPU_executed'] = bool(result['GPU_executed'])
+        if result['passed']:data['stage'] = 'fresh_native_capture_passed_ELF_and_disassembly_pending'
+        b.write(RESULT, record)
+    require(result['passed'], 'native extraction failed final gates')
+    print('PASS fresh3-kernel GEN/module capture;ELF-text association/disassembly/performance remain unqualified.')
+
+
 if __name__ == '__main__':
     with (b.B / 'owned-v0141-measurement.lock').open('a+') as lock:
         fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
-        {'prepare-activation': prepare_activation, 'run-activation': run_activation}[sys.argv[1]]()
+        {'prepare-activation': prepare_activation, 'run-activation': run_activation,
+            'prepare-extraction': prepare_extraction, 'run-extraction': run_extraction}[sys.argv[1]]()
