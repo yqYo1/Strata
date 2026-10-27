@@ -642,7 +642,24 @@
     "mechanism": "Reduce exposed GPU work-group synchronization without changing arithmetic or memory layout.",
     "change": "Move the end-of-tile barrier outside the loop. Next iteration publish_rows writes only rows/private flags;its existing following barrier precedes K overwriting previous V. Retain one final barrier before group reductions/output.",
     "evidence": "Selected original ordered-exp device IR has7static ControlBarrier calls,including5per cell tile. Width2051 has65iterations;prospective fusion saves64group barriers per workgroup. This is source/IR geometry,not final machine cost or saturation.",
-    "required": "Main must audit every shared-memory read/write and all zero/tail/invalid cases,commit exact independent source/recipe/order/numerical/resource/timing/stop gates,then traced smoke/component and measured resource/performance checks before any model trial."
+    "required": "Main must audit every shared-memory read/write and all zero/tail/invalid cases,commit exact independent source/recipe/order/numerical/resource/timing/stop gates,then traced smoke/component and measured resource/performance checks before any model trial.",
+    "source_commit": "17bc703d94c792a4d23f45f53359e601ad46348c",
+    "generator": "tools/sycl/qsa_barrier_sources.py",
+    "host_overlay_check": {
+      "passed": true,
+      "base_matches_original6e40": true,
+      "only_namespace_event_and_barrier_move": true,
+      "loop_barriers_before": 5,
+      "loop_barriers_after": 4,
+      "final_barrier_retained": true,
+      "native_compiled": false,
+      "GPU_executed": false,
+      "generated_in_memory_sha256": {
+        "barrier_control.cpp": "f6c2ec0d073ced73abcf4f1076ff0c7dba9b7db528e2bfae299a4af9c6109196",
+        "barrier_merged.cpp": "3c21c4c56bdcba3b9bb71e44e14979b2a259fb2853476b5fd2eeb169f21421ff",
+        "qsa-barrier.hpp": "1c493cfcab403a8c4a72bd472b7db92a9d9623ff1e3f10aa0701f79dff8a707e"
+      }
+    }
   },
   "retirement": {
     "status": "complete",
