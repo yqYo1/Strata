@@ -12,6 +12,7 @@ import subprocess
 import sys
 
 sys.dont_write_bytecode = True
+sys.path.insert(0, str(Path(__file__).resolve().parent))
 import generation_engine as gen
 import measurement_owner as supervision
 import ur_call_subscriber as subscriber
