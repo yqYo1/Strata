@@ -13221,7 +13221,7 @@
   },
   "qsa_cell64_execution_controller_contract_20261027": {
     "classification": "decision_support",
-    "status": "reviewing",
+    "status": "reviewed_accept_conditional",
     "schedulable_now": false,
     "source_revision": "e87dd625a",
     "proposal": {
@@ -13257,11 +13257,30 @@
       "sha256": "499b156a951a8ff3bcb2eaa530bc2d47d511ea7dde20ae7abbaba3602b0dd1e0"
     },
     "review": {
-      "status": "running",
+      "status": "completed",
       "agent": "/root/review_qsa_cell64_controller_20261027",
       "model": "gpt-6-luna",
       "reasoning_effort": "max",
-      "path": ".cache/strata-research/20261027/qsa-cell64-execution-controller-contract.review.json"
+      "path": ".cache/strata-research/20261027/qsa-cell64-execution-controller-contract.review.json",
+      "bytes": 7351,
+      "sha256": "c6679f320b79cc4e824d2977ef40da78343d9e08135d7c363485286f35561813",
+      "outcome": "Conditional acceptance;no immediate source blocker. Finite full-output deltas plus sparse reference spots are not model quality. Performance advancement is not adoption."
+    },
+    "findings": [
+      "Source/native-controller reuse,exact native JSON parser semantics,rotation,batch floors,event envelopes,six-group speed/calibration gates and owner/fresh-fault closeout align.",
+      "The report concern about large finite output deltas outside scalar spots is a numerical coverage limit,not a violation of own64recurrence or a requirement for old32bits. No old32tolerance is imposed retrospectively.",
+      "advance_to_model is only the performance gate;model_qualified and model_adopted remain false. Model quality,full physical262144,handoff/RESTORE and decode isolation remain separate checks.",
+      "Main independently closes actual-IDsmoke at b8a4b7d6c,3processes;own32/64spot errors0,old32/64delta4/18432,max1.192092896e-7. The source curator did not validate those device results."
+    ],
+    "retrieval_sections": [
+      "Assessment of main finding",
+      "Source/helper reuse and closure gates",
+      "Numerical coverage and model-adoption limits"
+    ],
+    "next_scope": {
+      "schedulable_now": false,
+      "question": "Source-specific interpretation of new actual-IDperformance and a concrete next mechanism only after the frozen108-sample cohort closes. Do not repeat controller or kernel source audits.",
+      "prerequisite": "Complete closed eligible108samples,all process/shape ratios,model-quality coverage limits and explicit candidate decision."
     }
   }
 }
