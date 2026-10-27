@@ -13889,5 +13889,62 @@
       "sha256": "967e18adb220c3ad2dc7916d252df14d822f451daaba39cbd2bc4b1bea5aebcf",
       "bytes": 14424
     }
+  },
+  "qsa_native_image_contract_20261028": {
+    "classification": "decision_support",
+    "status": "ready_to_dispatch",
+    "schedulable_now": true,
+    "question": "Pin a bounded way to obtain and compare the exact actual NEO-JIT binary for the three source-bound QSA kernels after both K-staging candidates regress. Compare native module extraction,installed NEO/IGC dumps and offline compilation;do not treat offline output as executed ISA.",
+    "prerequisites_evidence": {
+      "closed_comparison": "19c17f2a5:bench/results/2026-10-15-pr6-recovery-audit/qsa-k-staging-current.json#actual_id_checks",
+      "source_and_admission": "b59f74d77:bench/results/2026-10-15-pr6-recovery-audit/qsa-k-staging-current.json",
+      "build_source": "b0b863cc9388a454f4b7139f11d634687d1cad8f",
+      "project_inputs": 197,
+      "compiler_dependencies": 699,
+      "exact_fixture": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-k-staging-packed32-v1/fixture",
+        "sha256": "86b98a1c1e523a842deb45fc45aeca130f18ed9f2280d2b15ec0f75becc03ff8",
+        "bytes": 1606296
+      },
+      "device_IR": {
+        "original": {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-k-staging-packed32-v1/original.ll",
+          "sha256": "690bbb4da7c7322f6d6457ecf2503e447432c2e0d497afcc38b999fdd8fc8a83",
+          "bytes": 589718
+        },
+        "control": {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-k-staging-packed32-v1/control.ll",
+          "sha256": "808e2db744ad93369210ec7b5327e0d43e86b83a1dcd6918d9a03f7f59c6b978",
+          "bytes": 72252
+        },
+        "candidate": {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-k-staging-packed32-v1/candidate.ll",
+          "sha256": "ef238b335c6d294a35c712f00f5edaf676ef862f61ee1de677e7c3b15d915c6d",
+          "bytes": 75607
+        }
+      },
+      "new_diagnostic_consumer": "Main selected same-fixture post-JIT kernel-image evidence;no new K-staging/model trial before its source contract.",
+      "planned_artifact_root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-k-staging-packed32-v1/native-image-v1",
+      "installed_tools": {
+        "ocloc": "/usr/bin/ocloc",
+        "iga64_on_PATH": false
+      }
+    },
+    "previous_topics": [
+      "qsa_k_staging_compiled_spill_attribution_20261028",
+      "qsa_packed_k_staging_source_contract_20261028",
+      "selected_qsa_observation_contract_20261027",
+      "bounded_selected_kernel_UR_capture_decision_20261027"
+    ],
+    "report": ".cache/strata-research/20261028/qsa-native-image-contract.md",
+    "report_budget_bytes": 24576,
+    "consumer": "Main imminent exact-kernel code-generation diagnostic before selecting another QSA optimization.",
+    "review_point": "Native Luna/max curation of the returned source/API contract,then before any diagnostic build/launch.",
+    "run": "run_80ea8ebc9a8c",
+    "coordinator": "term_6fbfd718-e3a2-46d8-ab62-73c36d2851a6",
+    "worker_model": "gpt-6-luna",
+    "worker_closed": false,
+    "startup_write_scope": "Report lies beneath the existing registered workspace root;normal workspace protections must permit that path. Verify actual launch metadata and do not widen permissions.",
+    "retention": "Keep a substantive extraction/identity contract only if it supports the named imminent diagnostic;retire dispatch/spec/review transactions after verified extraction."
   }
 }
