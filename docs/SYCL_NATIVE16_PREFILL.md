@@ -152,6 +152,7 @@ contract and measured performance.
 | --- | --- |
 | HC residual, projection outputs and interlayer storage | BF16 producer/consumer tensors, without restoring the whole tensor to FP32 before every operation. |
 | Expert hidden activations and dequantized expert weights | FP16 on the selected expert path. |
+| Materialized routed GU/Down outputs | BF16; fused jobs can avoid these intermediate outputs. The census field `gu_down_storage` describes these outputs, not the dequantized weights. |
 | XMX GEMM | FP32 accumulation/epilogue, followed by one16-bit output store. |
 | Normalization, sigmoid, expert summation and routing | Local FP32 arithmetic; HC coefficients and routing decisions/weights remain FP32. |
 | GDN | Persistent recurrent state remains FP32; internal boundaries retain their selected kernels. The chunk64 candidate is independently selectable, not implied by native16. |
@@ -1870,8 +1871,35 @@ has117488rows in81920+35568 windows. The fresh v4 smoke now passes all48windows,
 provider checks,closed owners,silent parameter validation and no fresh fault.
 Requested router D2H is75377280bytes and map H2D150754560bytes;these are logical
 extents,not bus measurements. The short histogram ends its validation consumer;
-the next capacity planner needs the long distribution. Long execution is now
-eligible after its frozen admission checks,and is not yet completed. See the [current census](../bench/results/2026-10-15-pr6-recovery-audit/model-work-census-current.json).
+the next capacity planner needs the long distribution. The117489-input case now
+passes its final source/model/provider/owner/fault checks:96windows,37353jobs
+and56394240routed rows. Both actual native and benchmark children exit0;
+parameter validation is silent and no fresh fault appears. Requested expert
+weight H2D is38673152000bytes;router D2H225576960bytes and map H2D451153920bytes.
+These are requested extents,not measured bus traffic or additive transfer time.
+The source-planned routed GU/Down work is554377936896000FLOPs with two operations
+per FMA;this does not supply an attained or maximum arithmetic rate.
+
+Across second windows,the permanent bank hits14288of14981expert encounters.
+Only693misses can include a repeated upload,and some are new experts. Even a
+loose bound using the largest2662400-byte packed expert is1845043200additional
+bytes. The source uses a permanent prefix plus scratch,not LRU;the counts do
+not support a large LRU-thrashing explanation or establish a cache speedup.
+The exact4550-bin long job-size distribution remains only for the imminent
+API-capacity/matched-operator planner. Per-layer lists and the short histogram
+have ended their consumers. Frozen full inputs recover from303d012e5;
+the closed one-shot controller and consumed historical replay tests recover
+fromcc59c96f0. Keep the generic planned-work parser and its maintained tests.
+See the [current census](../bench/results/2026-10-15-pr6-recovery-audit/model-work-census-current.json).
+
+The job loop requests at least171795GPU producer operations and its expert
+dequants at least66450more. If each producer generated one UR begin/end pair,
+that alone would produce476490records,before initialization,dense/QSA/GDN,
+decode,memory validation and lifecycle calls. This is a source-based planning
+estimate under an explicit API-mapping assumption,not a complete API count or
+upper budget. Do not run the existing65536-record subscriber on the whole
+model unchanged. Plan finite loss handling,phase coverage and observer cost
+before collecting the actual API/device ledger.
 This reader is specific to the pinned6e40 schema. Neither host replay nor the
 planned census qualifies API/device coverage,physical traffic,clean speed,decode,
 quality,physical262144context or model adoption.
