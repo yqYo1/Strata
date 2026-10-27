@@ -5,6 +5,7 @@ import fcntl
 import hashlib
 import json
 from pathlib import Path
+import shlex
 import subprocess
 import sys
 import time
@@ -20,6 +21,15 @@ P,B=gen.P,gen.B
 ROOT=B/'qsa-partial-qcache-v1'
 RESULT=gen.A/'qsa-partial-current.json'
 FIXTURE='bench/sycl/qsa_partial_numerical.cpp'
+# Explicit new-build header delta; never relabel the original compiler manifest
+# or original6e40 generation. Verify actual dependency files after compilation.
+HEADER_DELTAS={
+    '/usr/include/metee.h':('f063edcb00c88f3ddebc10f9b0487fe813cfb7ba71dc4b798729bed8902018a3',
+        'd07e18ce9228c3fc570b186eab13bf8a3e6c04214992f0de9d53b855dc837252'),
+    '/usr/include/opencl-c-base.h':('e1683c3db9cf9a95e9d02acbbfa74dcd29d4deaf4a856430f538d76985b04114',
+        '673c4720f879c2f101504979edbd0216c9cb6a982ce2b62bd467b81fd53d8e33'),
+    '/usr/include/opencl-c.h':('579b58f482ab0b3dfd396cab32ea3e0537bc5cf4c1067377b83fe417cbcc513b',
+        'aa7e871a8f7d961aa4126a9fadc2196f822c21811946c90147dc7415fe677de9')}
 
 
 def digest(path):
@@ -77,6 +87,25 @@ def qualified_baseline():
         runtime_files=row['runtime_files'],preload=row['preload'])
 
 
+def compiled_inputs(record):
+    rows=json.loads(Path(record['compiler_inputs']['path']).read_text())
+    allowed={Path(r['path']).resolve():r['sha256'] for r in rows}
+    allowed.update({(P/name).resolve():sha for name,sha in record['input_sha256'].items()})
+    allowed.update({Path(name).resolve():sha for name,sha in record['generated'].items()})
+    actual={}
+    for index in range(9):
+        text=(ROOT/f'input-{index}.d').read_text().replace('\\\n',' ')
+        target,dependencies=text.split(':',1)
+        guards.require(Path(target).resolve()==(ROOT/f'input-{index}.o').resolve(),'unexpected dependency target')
+        for value in shlex.split(dependencies):
+            path=Path(value).resolve();sha=digest(path)
+            guards.require(allowed.get(path)==sha,'unfrozen actual compiler input: '+str(path))
+            actual[str(path)]=sha
+    guards.require(len(actual)>100,'incomplete compiler dependencies')
+    return dict(files=len(actual),source_sha256=actual,
+        changed_headers_consumed=sorted(set(actual)&set(HEADER_DELTAS)))
+
+
 def admission(record,binary=False):
     guards.require(inputs(record['source_commit'])==record['input_sha256'] and record['plan']==experiment(),
         'partial-Q-cache source or prospective plan changed')
@@ -112,7 +141,14 @@ def prepare():
     for name in ('crtbeginS.o','crtendS.o','libstdc++.so','libgcc_s.so'):
         path=Path(subprocess.check_output([compiler['path'],'-print-file-name='+name],text=True,timeout=15).strip()).resolve()
         guards.require(path.is_file(),'link input absent: '+name);paths.add(path)
-    for row in rows:guards.require(digest(row['path'])==row['sha256'],'original SDK asset changed')
+    changed={}
+    for row in rows:
+        actual=digest(row['path'])
+        if actual!=row['sha256']:
+            guards.require(HEADER_DELTAS.get(row['path'])==(row['sha256'],actual),
+                'additional compiler asset changed: '+row['path'])
+            changed[row['path']]=dict(original_sha256=row['sha256'],new_build_sha256=actual)
+    guards.require(set(changed)==set(HEADER_DELTAS),'declared header delta is not the actual delta')
     ROOT.mkdir(mode=0o700);(ROOT/'tmp').mkdir()
     for name,body in proposal.generated(P).items():(ROOT/name).write_bytes(body)
     manifest=ROOT/'compiler-inputs.json'
@@ -125,7 +161,8 @@ def prepare():
     sources=[P/name for name in proposal.NATIVE]+[ROOT/'control.cpp',ROOT/'partialq8.cpp']
     sources += [P/FIXTURE,ROOT/'timing.cpp']
     objects=[ROOT/f'input-{i}.o' for i in range(len(sources))]
-    commands=[[compiler['path'],*flags,'-c',str(src),'-o',str(obj)] for src,obj in zip(sources,objects)]
+    commands=[[compiler['path'],*flags,'-MD','-MF',str(obj.with_suffix('.d')),
+        '-c',str(src),'-o',str(obj)] for src,obj in zip(sources,objects)]
     for index,name in ((7,'numerical'),(8,'timing')):
         commands.append([compiler['path'],*flags,*map(str,objects[:7]),str(objects[index]),
             '-pthread','-ldl','-o',str(ROOT/name)])
@@ -134,6 +171,9 @@ def prepare():
             str(ROOT/(name+'.cpp')),'-o',str(ROOT/(name+'.ll'))])
     legacy=json.loads((gen.A/'native-gdn-engine-build.json').read_text())['legacy_provenance_exception']['additional_old_product_review']
     record=dict(stage='prepared',source_commit=revision,input_sha256=pins,plan=experiment(),
+        preparation_refusal=dict(source_commit='c3e6e77cc',error='original SDK asset changed',
+            compiler_or_GPU_executed=False,output_root_created=False,changed_headers=changed,
+            resolution='Prospectively pin the exact three header deltas for this new component build;preserve original SDK/engine identities. Actual compiler dependency checks must show whether any was consumed.'),
         retained_engine=full['binary'],native_qualification=proof,generated=generated,compiler=compiler,
         compiler_inputs=dict(path=str(manifest),files=len(paths),sha256=digest(manifest)),commands=commands,
         build_environment=dict(PATH=str(install/'bin')+':/usr/bin:/bin',LANG='C',LC_ALL='C',TMPDIR=str(ROOT/'tmp'),
@@ -167,6 +207,7 @@ def build():
                 text_cap=b['text_bytes'],file_cap=b['file_bytes'],total_cap=b['total_bytes'])
             guards.require(supervision.closed(entry) and entry['exit_code']==0,'partial-Q-cache compile/link failed')
         admission(record)
+        record['actual_compiled_inputs']=compiled_inputs(record)
         record.update(stage='built',passed=True,complete=True,binaries={name:dict(path=str(ROOT/name),
             sha256=digest(ROOT/name),bytes=(ROOT/name).stat().st_size) for name in ('numerical','timing')})
         record['device_IR']={name:dict(path=str(ROOT/(name+'.ll')),sha256=digest(ROOT/(name+'.ll')),
