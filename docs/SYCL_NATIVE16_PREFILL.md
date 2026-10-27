@@ -1851,6 +1851,12 @@ under the shared lock and a 60-second deadline. Controls include missing,
 duplicated and reordered windows, malformed histograms, ambiguous retired
 counters and configured capacity larger than actual rows. These synthetic
 controls do not supply a selected-model histogram or qualify native execution.
+The first census-controller preflight at `5575402af` refused an added standalone
+`tools/test_sycl_qsa_selection_capture.py` in its overly broad child inventory,
+before creating an output directory or launching the model. The revised scope
+excludes standalone `tools/test_*.py`, retains the benchmark/server/wrapper
+sources and unchanged provider manifest, and still rejects changed runtime
+inputs. This scope correction does not qualify GPU execution.
 
 Complete prefill phase attribution requires three independent ledgers: route-owner
 planned operations, actual API results and collector device executions.

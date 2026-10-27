@@ -51,11 +51,13 @@ def python_contract():
         all(owner_module.closed(c) for c in original['commands']), 'closed Python qualification required')
     # Reuse provider qualification only for unchanged child scripts. The new
     # Main-only reader is not imported by bench/server/engine_once children.
-    names = [n for n in original['benchmark_inputs'] if n in ('bench.sh', 'tools/sycl/engine_once.py') or
-        n.startswith('serve/') or (n.startswith('tools/') and n.count('/') == 1)]
-    current_names = [n for n in gen.benchmark_pins(gen.git('rev-parse', 'HEAD').decode().strip()) if
-        n in ('bench.sh', 'tools/sycl/engine_once.py') or n.startswith('serve/') or
-        (n.startswith('tools/') and n.count('/') == 1)]
+    # Standalone tools/test_*.py are not imported by the benchmark/server. A
+    # new unrelated unit test must not silently enlarge the qualified runtime.
+    def child_source(n):
+        return n in ('bench.sh', 'tools/sycl/engine_once.py') or n.startswith('serve/') or (
+            n.startswith('tools/') and n.count('/') == 1 and not n.startswith('tools/test_'))
+    names = [n for n in original['benchmark_inputs'] if child_source(n)]
+    current_names = [n for n in gen.benchmark_pins(gen.git('rev-parse', 'HEAD').decode().strip()) if child_source(n)]
     require(set(names) == set(current_names), 'child script inventory changed')
     for name, raw in gen.blobs(P, public['source_commit'], names):
         require(hashlib.sha256(raw).hexdigest() == original['benchmark_inputs'][name] == digest(P / name),
