@@ -1731,7 +1731,26 @@ also retire after useful evidence is committed. The remaining native consumers
 are resource and timing qualification.
 The seven successful profiler output/transaction files (47020bytes) also retire
 after the resource descriptors and full-table conservation are committed.
-The sole remaining component consumer is the prospective108sample timing gate.
+The frozen108sample timing comparison now completes in three independent
+processes,with exact outputs,guards,immutable inputs,1224valid direct event
+intervals,eligible batches and no fresh fault. Namespace-control wall ratios
+remain within1percent of original in every process and both shapes. The
+candidate/control ratios are:
+
+| Actual queries | Wall ratios by process | Attention-service ratios by process |
+| --- | --- | --- |
+| 512 | 0.993953,0.993144,0.995118 | 0.993709,0.993057,0.994245 |
+| 6491 | 0.994348,0.996337,0.992612 | 0.994041,0.996331,0.992570 |
+
+Both shapes **fail** the prospectively required1percent reduction in every
+process and both metrics. The smaller0.37..0.74percent service reductions remain
+recorded;they do not permit a model trial under this plan. The original engine,
+decode and production dispatch remain unchanged. Keep the108individual samples
+once,with source/recipe identities and limits;the native generation now has
+only a retirement consumer. GPU service includes stalls and is not arithmetic
+saturation. The next question is kernel-local GRF-mode control at unchanged
+math/layout/SLM,against the existing counterevidence that eliminating spills
+alone can slow execution;qualify exact API/lowering and a new plan first.
 See[the current build and gates](../bench/results/2026-10-15-pr6-recovery-audit/qsa-barrier-current.json).
 
 Complete prefill phase attribution requires three independent ledgers: route-owner

@@ -1430,7 +1430,7 @@
     }
   },
   "check_plan": {
-    "stage": "prepared",
+    "stage": "closed",
     "mode": "perf",
     "source_commit": "b3575b53c5eb8c5dd82ccd24a4684b998d69cdec",
     "controller_inputs": {
@@ -2446,6 +2446,419 @@
         "kernel": "7.0.0-38-generic",
         "devcoredump": false
       }
+    },
+    {
+      "mode": "perf",
+      "source_commit": "b3575b53c5eb8c5dd82ccd24a4684b998d69cdec",
+      "observations": [
+        {
+          "process": 0,
+          "pid": 4170064,
+          "exit_code": 0,
+          "ownership_closed": true,
+          "validation": {
+            "pid": 4170064,
+            "loader": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_loader.so.0.12.0",
+            "threads_before": 1,
+            "preinit": 37,
+            "config_enabled": true,
+            "first_init": true,
+            "dispatch_result": 46,
+            "output_untouched": true,
+            "retained_reference_until_exit": true,
+            "runtime_teardown_qualified": false
+          },
+          "session_removed": true,
+          "checks": [
+            {
+              "kind": "checked",
+              "queries": 512,
+              "cells": 39259,
+              "guards": true,
+              "inputs_immutable": true,
+              "exact_original": true
+            },
+            {
+              "kind": "checked",
+              "queries": 6491,
+              "cells": 39259,
+              "guards": true,
+              "inputs_immutable": true,
+              "exact_original": true
+            }
+          ]
+        },
+        {
+          "process": 1,
+          "pid": 4171877,
+          "exit_code": 0,
+          "ownership_closed": true,
+          "validation": {
+            "pid": 4171877,
+            "loader": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_loader.so.0.12.0",
+            "threads_before": 1,
+            "preinit": 37,
+            "config_enabled": true,
+            "first_init": true,
+            "dispatch_result": 46,
+            "output_untouched": true,
+            "retained_reference_until_exit": true,
+            "runtime_teardown_qualified": false
+          },
+          "session_removed": true,
+          "checks": [
+            {
+              "kind": "checked",
+              "queries": 512,
+              "cells": 39259,
+              "guards": true,
+              "inputs_immutable": true,
+              "exact_original": true
+            },
+            {
+              "kind": "checked",
+              "queries": 6491,
+              "cells": 39259,
+              "guards": true,
+              "inputs_immutable": true,
+              "exact_original": true
+            }
+          ]
+        },
+        {
+          "process": 2,
+          "pid": 4173600,
+          "exit_code": 0,
+          "ownership_closed": true,
+          "validation": {
+            "pid": 4173600,
+            "loader": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_loader.so.0.12.0",
+            "threads_before": 1,
+            "preinit": 37,
+            "config_enabled": true,
+            "first_init": true,
+            "dispatch_result": 46,
+            "output_untouched": true,
+            "retained_reference_until_exit": true,
+            "runtime_teardown_qualified": false
+          },
+          "session_removed": true,
+          "checks": [
+            {
+              "kind": "checked",
+              "queries": 512,
+              "cells": 39259,
+              "guards": true,
+              "inputs_immutable": true,
+              "exact_original": true
+            },
+            {
+              "kind": "checked",
+              "queries": 6491,
+              "cells": 39259,
+              "guards": true,
+              "inputs_immutable": true,
+              "exact_original": true
+            }
+          ]
+        }
+      ],
+      "passed": true,
+      "complete": true,
+      "performance": {
+        "shapes": {
+          "512": {
+            "arms": [
+              {
+                "arm": 0,
+                "metrics": {
+                  "wall": {
+                    "median_ms": 10.376749171875,
+                    "sample_sd_ms": 0.018327886354728026,
+                    "process_medians_ms": [
+                      10.385712015625,
+                      10.373414890625,
+                      10.381380468749999
+                    ]
+                  }
+                }
+              },
+              {
+                "arm": 1,
+                "metrics": {
+                  "wall": {
+                    "median_ms": 10.372002203125,
+                    "sample_sd_ms": 0.014339625469737759,
+                    "process_medians_ms": [
+                      10.374864078125,
+                      10.383808515624999,
+                      10.369191874999999
+                    ]
+                  },
+                  "attention_service": {
+                    "median_ms": 9.786673125,
+                    "sample_sd_ms": 0.012624879710050278,
+                    "process_medians_ms": [
+                      9.789768859375,
+                      9.796614671875,
+                      9.78503096875
+                    ]
+                  }
+                }
+              },
+              {
+                "arm": 2,
+                "metrics": {
+                  "wall": {
+                    "median_ms": 10.313318078125,
+                    "sample_sd_ms": 0.013240573893432991,
+                    "process_medians_ms": [
+                      10.312122765625,
+                      10.312620984375,
+                      10.318570874999999
+                    ]
+                  },
+                  "attention_service": {
+                    "median_ms": 9.728596953124999,
+                    "sample_sd_ms": 0.013293879937879397,
+                    "process_medians_ms": [
+                      9.728185140625,
+                      9.728596953124999,
+                      9.728720671875
+                    ]
+                  }
+                }
+              }
+            ],
+            "control_over_original_wall": [
+              0.9989554940976912,
+              1.0010019482600077,
+              0.9988259178259875
+            ],
+            "merged_over_control": {
+              "wall": [
+                0.9939525653514548,
+                0.9931443717261466,
+                0.9951181345074686
+              ],
+              "attention_service": [
+                0.9937093796968428,
+                0.9930570180589757,
+                0.9942452612511052
+              ]
+            },
+            "performance_gate_passed": false
+          },
+          "6491": {
+            "arms": [
+              {
+                "arm": 0,
+                "metrics": {
+                  "wall": {
+                    "median_ms": 124.96066875,
+                    "sample_sd_ms": 0.3868246938716049,
+                    "process_medians_ms": [
+                      124.89555325,
+                      124.84157350000001,
+                      125.08297999999999
+                    ]
+                  }
+                }
+              },
+              {
+                "arm": 1,
+                "metrics": {
+                  "wall": {
+                    "median_ms": 124.61096900000001,
+                    "sample_sd_ms": 0.22524990399106762,
+                    "process_medians_ms": [
+                      124.67011350000001,
+                      124.500879,
+                      124.67699250000001
+                    ]
+                  },
+                  "attention_service": {
+                    "median_ms": 123.96484375,
+                    "sample_sd_ms": 0.23302830192189555,
+                    "process_medians_ms": [
+                      124.02179724999999,
+                      123.85354175,
+                      124.03083325
+                    ]
+                  }
+                }
+              },
+              {
+                "arm": 2,
+                "metrics": {
+                  "wall": {
+                    "median_ms": 123.94160049999999,
+                    "sample_sd_ms": 0.39722700171009506,
+                    "process_medians_ms": [
+                      123.96546574999999,
+                      124.04477725000001,
+                      123.75582975
+                    ]
+                  },
+                  "attention_service": {
+                    "median_ms": 123.2608855,
+                    "sample_sd_ms": 0.3844312525806138,
+                    "process_medians_ms": [
+                      123.282734,
+                      123.39908875,
+                      123.109297
+                    ]
+                  }
+                }
+              }
+            ],
+            "control_over_original_wall": [
+              0.9981949737670105,
+              0.9972709852139119,
+              0.9967542546555895
+            ],
+            "merged_over_control": {
+              "wall": [
+                0.9943479015923089,
+                0.9963365579932975,
+                0.9926116059464619
+              ],
+              "attention_service": [
+                0.9940408600230958,
+                0.9963307226133483,
+                0.9925701035310911
+              ]
+            },
+            "performance_gate_passed": false
+          }
+        },
+        "samples": [
+          {"kind":"sample","process":0,"queries":512,"round":0,"arm":0,"repeats":32,"batch_ns":332776903,"attention_device_ns":null,"event_calls":0,"timer_floor_ns":10},
+          {"kind":"sample","process":0,"queries":512,"round":0,"arm":1,"repeats":32,"batch_ns":332452501,"attention_device_ns":313759475,"event_calls":32,"timer_floor_ns":10},
+          {"kind":"sample","process":0,"queries":512,"round":0,"arm":2,"repeats":32,"batch_ns":330907671,"attention_device_ns":312226043,"event_calls":32,"timer_floor_ns":10},
+          {"kind":"sample","process":0,"queries":512,"round":1,"arm":1,"repeats":32,"batch_ns":331732946,"attention_device_ns":313000102,"event_calls":32,"timer_floor_ns":10},
+          {"kind":"sample","process":0,"queries":512,"round":1,"arm":2,"repeats":32,"batch_ns":330012925,"attention_device_ns":311333332,"event_calls":32,"timer_floor_ns":10},
+          {"kind":"sample","process":0,"queries":512,"round":1,"arm":0,"repeats":32,"batch_ns":331728748,"attention_device_ns":null,"event_calls":0,"timer_floor_ns":10},
+          {"kind":"sample","process":0,"queries":512,"round":2,"arm":2,"repeats":32,"batch_ns":329962932,"attention_device_ns":311270517,"event_calls":32,"timer_floor_ns":10},
+          {"kind":"sample","process":0,"queries":512,"round":2,"arm":0,"repeats":32,"batch_ns":333275813,"attention_device_ns":null,"event_calls":0,"timer_floor_ns":10},
+          {"kind":"sample","process":0,"queries":512,"round":2,"arm":1,"repeats":32,"batch_ns":331831862,"attention_device_ns":313135729,"event_calls":32,"timer_floor_ns":10},
+          {"kind":"sample","process":0,"queries":512,"round":3,"arm":0,"repeats":32,"batch_ns":332147757,"attention_device_ns":null,"event_calls":0,"timer_floor_ns":10},
+          {"kind":"sample","process":0,"queries":512,"round":3,"arm":1,"repeats":32,"batch_ns":332634514,"attention_device_ns":313924371,"event_calls":32,"timer_floor_ns":10},
+          {"kind":"sample","process":0,"queries":512,"round":3,"arm":2,"repeats":32,"batch_ns":330119376,"attention_device_ns":311429897,"event_calls":32,"timer_floor_ns":10},
+          {"kind":"sample","process":0,"queries":512,"round":4,"arm":1,"repeats":32,"batch_ns":331956296,"attention_device_ns":313263749,"event_calls":32,"timer_floor_ns":10},
+          {"kind":"sample","process":0,"queries":512,"round":4,"arm":2,"repeats":32,"batch_ns":329799243,"attention_device_ns":311102294,"event_calls":32,"timer_floor_ns":10},
+          {"kind":"sample","process":0,"queries":512,"round":4,"arm":0,"repeats":32,"batch_ns":332537812,"attention_device_ns":null,"event_calls":0,"timer_floor_ns":10},
+          {"kind":"sample","process":0,"queries":512,"round":5,"arm":2,"repeats":32,"batch_ns":329865958,"attention_device_ns":311174689,"event_calls":32,"timer_floor_ns":10},
+          {"kind":"sample","process":0,"queries":512,"round":5,"arm":0,"repeats":32,"batch_ns":331968660,"attention_device_ns":null,"event_calls":0,"timer_floor_ns":10},
+          {"kind":"sample","process":0,"queries":512,"round":5,"arm":1,"repeats":32,"batch_ns":332035005,"attention_device_ns":313281458,"event_calls":32,"timer_floor_ns":10},
+          {"kind":"sample","process":0,"queries":6491,"round":0,"arm":0,"repeats":2,"batch_ns":250010090,"attention_device_ns":null,"event_calls":0,"timer_floor_ns":20},
+          {"kind":"sample","process":0,"queries":6491,"round":0,"arm":1,"repeats":2,"batch_ns":249631075,"attention_device_ns":248338229,"event_calls":2,"timer_floor_ns":20},
+          {"kind":"sample","process":0,"queries":6491,"round":0,"arm":2,"repeats":2,"batch_ns":247966088,"attention_device_ns":246677604,"event_calls":2,"timer_floor_ns":20},
+          {"kind":"sample","process":0,"queries":6491,"round":1,"arm":1,"repeats":2,"batch_ns":249227345,"attention_device_ns":247932709,"event_calls":2,"timer_floor_ns":20},
+          {"kind":"sample","process":0,"queries":6491,"round":1,"arm":2,"repeats":2,"batch_ns":247895775,"attention_device_ns":246086250,"event_calls":2,"timer_floor_ns":20},
+          {"kind":"sample","process":0,"queries":6491,"round":1,"arm":0,"repeats":2,"batch_ns":249832585,"attention_device_ns":null,"event_calls":0,"timer_floor_ns":20},
+          {"kind":"sample","process":0,"queries":6491,"round":2,"arm":2,"repeats":2,"batch_ns":248525172,"attention_device_ns":247227292,"event_calls":2,"timer_floor_ns":20},
+          {"kind":"sample","process":0,"queries":6491,"round":2,"arm":0,"repeats":2,"batch_ns":249749628,"attention_device_ns":null,"event_calls":0,"timer_floor_ns":20},
+          {"kind":"sample","process":0,"queries":6491,"round":2,"arm":1,"repeats":2,"batch_ns":249182390,"attention_device_ns":247890105,"event_calls":2,"timer_floor_ns":20},
+          {"kind":"sample","process":0,"queries":6491,"round":3,"arm":0,"repeats":2,"batch_ns":250035016,"attention_device_ns":null,"event_calls":0,"timer_floor_ns":20},
+          {"kind":"sample","process":0,"queries":6491,"round":3,"arm":1,"repeats":2,"batch_ns":249453109,"attention_device_ns":248154480,"event_calls":2,"timer_floor_ns":20},
+          {"kind":"sample","process":0,"queries":6491,"round":3,"arm":2,"repeats":2,"batch_ns":247747266,"attention_device_ns":246453332,"event_calls":2,"timer_floor_ns":20},
+          {"kind":"sample","process":0,"queries":6491,"round":4,"arm":1,"repeats":2,"batch_ns":249627679,"attention_device_ns":248332189,"event_calls":2,"timer_floor_ns":20},
+          {"kind":"sample","process":0,"queries":6491,"round":4,"arm":2,"repeats":2,"batch_ns":246906692,"attention_device_ns":245611042,"event_calls":2,"timer_floor_ns":20},
+          {"kind":"sample","process":0,"queries":6491,"round":4,"arm":0,"repeats":2,"batch_ns":249537148,"attention_device_ns":null,"event_calls":0,"timer_floor_ns":20},
+          {"kind":"sample","process":0,"queries":6491,"round":5,"arm":2,"repeats":2,"batch_ns":249749037,"attention_device_ns":248456458,"event_calls":2,"timer_floor_ns":20},
+          {"kind":"sample","process":0,"queries":6491,"round":5,"arm":0,"repeats":2,"batch_ns":248784781,"attention_device_ns":null,"event_calls":0,"timer_floor_ns":20},
+          {"kind":"sample","process":0,"queries":6491,"round":5,"arm":1,"repeats":2,"batch_ns":248540270,"attention_device_ns":247090625,"event_calls":2,"timer_floor_ns":20},
+          {"kind":"sample","process":1,"queries":512,"round":0,"arm":1,"repeats":32,"batch_ns":331919225,"attention_device_ns":313098336,"event_calls":32,"timer_floor_ns":20},
+          {"kind":"sample","process":1,"queries":512,"round":0,"arm":2,"repeats":32,"batch_ns":330017693,"attention_device_ns":311324685,"event_calls":32,"timer_floor_ns":20},
+          {"kind":"sample","process":1,"queries":512,"round":0,"arm":0,"repeats":32,"batch_ns":331952327,"attention_device_ns":null,"event_calls":0,"timer_floor_ns":20},
+          {"kind":"sample","process":1,"queries":512,"round":1,"arm":2,"repeats":32,"batch_ns":329685897,"attention_device_ns":311001878,"event_calls":32,"timer_floor_ns":20},
+          {"kind":"sample","process":1,"queries":512,"round":1,"arm":0,"repeats":32,"batch_ns":331946226,"attention_device_ns":null,"event_calls":0,"timer_floor_ns":20},
+          {"kind":"sample","process":1,"queries":512,"round":1,"arm":1,"repeats":32,"batch_ns":333143140,"attention_device_ns":313885003,"event_calls":32,"timer_floor_ns":20},
+          {"kind":"sample","process":1,"queries":512,"round":2,"arm":0,"repeats":32,"batch_ns":332743397,"attention_device_ns":null,"event_calls":0,"timer_floor_ns":20},
+          {"kind":"sample","process":1,"queries":512,"round":2,"arm":1,"repeats":32,"batch_ns":332644520,"attention_device_ns":313943542,"event_calls":32,"timer_floor_ns":20},
+          {"kind":"sample","process":1,"queries":512,"round":2,"arm":2,"repeats":32,"batch_ns":329990050,"attention_device_ns":311305520,"event_calls":32,"timer_floor_ns":20},
+          {"kind":"sample","process":1,"queries":512,"round":3,"arm":1,"repeats":32,"batch_ns":332742436,"attention_device_ns":314060732,"event_calls":32,"timer_floor_ns":20},
+          {"kind":"sample","process":1,"queries":512,"round":3,"arm":2,"repeats":32,"batch_ns":330520019,"attention_device_ns":311844062,"event_calls":32,"timer_floor_ns":20},
+          {"kind":"sample","process":1,"queries":512,"round":3,"arm":0,"repeats":32,"batch_ns":331728495,"attention_device_ns":null,"event_calls":0,"timer_floor_ns":20},
+          {"kind":"sample","process":1,"queries":512,"round":4,"arm":2,"repeats":32,"batch_ns":329582773,"attention_device_ns":310882610,"event_calls":32,"timer_floor_ns":20},
+          {"kind":"sample","process":1,"queries":512,"round":4,"arm":0,"repeats":32,"batch_ns":332143287,"attention_device_ns":null,"event_calls":0,"timer_floor_ns":20},
+          {"kind":"sample","process":1,"queries":512,"round":4,"arm":1,"repeats":32,"batch_ns":331650458,"attention_device_ns":312957086,"event_calls":32,"timer_floor_ns":20},
+          {"kind":"sample","process":1,"queries":512,"round":5,"arm":0,"repeats":32,"batch_ns":331726772,"attention_device_ns":null,"event_calls":0,"timer_floor_ns":20},
+          {"kind":"sample","process":1,"queries":512,"round":5,"arm":1,"repeats":32,"batch_ns":331501298,"attention_device_ns":312804894,"event_calls":32,"timer_floor_ns":20},
+          {"kind":"sample","process":1,"queries":512,"round":5,"arm":2,"repeats":32,"batch_ns":330034664,"attention_device_ns":311345521,"event_calls":32,"timer_floor_ns":20},
+          {"kind":"sample","process":1,"queries":6491,"round":0,"arm":1,"repeats":2,"batch_ns":249072652,"attention_device_ns":247785625,"event_calls":2,"timer_floor_ns":20},
+          {"kind":"sample","process":1,"queries":6491,"round":0,"arm":2,"repeats":2,"batch_ns":248308482,"attention_device_ns":247017813,"event_calls":2,"timer_floor_ns":20},
+          {"kind":"sample","process":1,"queries":6491,"round":0,"arm":0,"repeats":2,"batch_ns":250706880,"attention_device_ns":null,"event_calls":0,"timer_floor_ns":20},
+          {"kind":"sample","process":1,"queries":6491,"round":1,"arm":2,"repeats":2,"batch_ns":247123460,"attention_device_ns":245830626,"event_calls":2,"timer_floor_ns":20},
+          {"kind":"sample","process":1,"queries":6491,"round":1,"arm":0,"repeats":2,"batch_ns":248960500,"attention_device_ns":null,"event_calls":0,"timer_floor_ns":20},
+          {"kind":"sample","process":1,"queries":6491,"round":1,"arm":1,"repeats":2,"batch_ns":249685837,"attention_device_ns":248394167,"event_calls":2,"timer_floor_ns":20},
+          {"kind":"sample","process":1,"queries":6491,"round":2,"arm":0,"repeats":2,"batch_ns":250017432,"attention_device_ns":null,"event_calls":0,"timer_floor_ns":20},
+          {"kind":"sample","process":1,"queries":6491,"round":2,"arm":1,"repeats":2,"batch_ns":250178345,"attention_device_ns":248890312,"event_calls":2,"timer_floor_ns":20},
+          {"kind":"sample","process":1,"queries":6491,"round":2,"arm":2,"repeats":2,"batch_ns":247538782,"attention_device_ns":246251250,"event_calls":2,"timer_floor_ns":20},
+          {"kind":"sample","process":1,"queries":6491,"round":3,"arm":1,"repeats":2,"batch_ns":248912459,"attention_device_ns":247621354,"event_calls":2,"timer_floor_ns":20},
+          {"kind":"sample","process":1,"queries":6491,"round":3,"arm":2,"repeats":2,"batch_ns":249291905,"attention_device_ns":247498125,"event_calls":2,"timer_floor_ns":20},
+          {"kind":"sample","process":1,"queries":6491,"round":3,"arm":0,"repeats":2,"batch_ns":250705317,"attention_device_ns":null,"event_calls":0,"timer_floor_ns":20},
+          {"kind":"sample","process":1,"queries":6491,"round":4,"arm":2,"repeats":2,"batch_ns":247870627,"attention_device_ns":246578542,"event_calls":2,"timer_floor_ns":20},
+          {"kind":"sample","process":1,"queries":6491,"round":4,"arm":0,"repeats":2,"batch_ns":248633444,"attention_device_ns":null,"event_calls":0,"timer_floor_ns":20},
+          {"kind":"sample","process":1,"queries":6491,"round":4,"arm":1,"repeats":2,"batch_ns":248798556,"attention_device_ns":247515000,"event_calls":2,"timer_floor_ns":20},
+          {"kind":"sample","process":1,"queries":6491,"round":5,"arm":0,"repeats":2,"batch_ns":249348862,"attention_device_ns":null,"event_calls":0,"timer_floor_ns":20},
+          {"kind":"sample","process":1,"queries":6491,"round":5,"arm":1,"repeats":2,"batch_ns":248930864,"attention_device_ns":247628542,"event_calls":2,"timer_floor_ns":20},
+          {"kind":"sample","process":1,"queries":6491,"round":5,"arm":2,"repeats":2,"batch_ns":248623986,"attention_device_ns":247334792,"event_calls":2,"timer_floor_ns":20},
+          {"kind":"sample","process":2,"queries":512,"round":0,"arm":2,"repeats":32,"batch_ns":330077132,"attention_device_ns":311271668,"event_calls":32,"timer_floor_ns":10},
+          {"kind":"sample","process":2,"queries":512,"round":0,"arm":0,"repeats":32,"batch_ns":332719059,"attention_device_ns":null,"event_calls":0,"timer_floor_ns":10},
+          {"kind":"sample","process":2,"queries":512,"round":0,"arm":1,"repeats":32,"batch_ns":331736208,"attention_device_ns":313043227,"event_calls":32,"timer_floor_ns":10},
+          {"kind":"sample","process":2,"queries":512,"round":1,"arm":0,"repeats":32,"batch_ns":331432415,"attention_device_ns":null,"event_calls":0,"timer_floor_ns":10},
+          {"kind":"sample","process":2,"queries":512,"round":1,"arm":1,"repeats":32,"batch_ns":331888916,"attention_device_ns":313211351,"event_calls":32,"timer_floor_ns":10},
+          {"kind":"sample","process":2,"queries":512,"round":1,"arm":2,"repeats":32,"batch_ns":329596848,"attention_device_ns":310918648,"event_calls":32,"timer_floor_ns":10},
+          {"kind":"sample","process":2,"queries":512,"round":2,"arm":1,"repeats":32,"batch_ns":331804067,"attention_device_ns":313116459,"event_calls":32,"timer_floor_ns":10},
+          {"kind":"sample","process":2,"queries":512,"round":2,"arm":2,"repeats":32,"batch_ns":331074381,"attention_device_ns":312381665,"event_calls":32,"timer_floor_ns":10},
+          {"kind":"sample","process":2,"queries":512,"round":2,"arm":0,"repeats":32,"batch_ns":333461057,"attention_device_ns":null,"event_calls":0,"timer_floor_ns":10},
+          {"kind":"sample","process":2,"queries":512,"round":3,"arm":2,"repeats":32,"batch_ns":330311404,"attention_device_ns":311272395,"event_calls":32,"timer_floor_ns":10},
+          {"kind":"sample","process":2,"queries":512,"round":3,"arm":0,"repeats":32,"batch_ns":332659879,"attention_device_ns":null,"event_calls":0,"timer_floor_ns":10},
+          {"kind":"sample","process":2,"queries":512,"round":3,"arm":1,"repeats":32,"batch_ns":332017247,"attention_device_ns":313314273,"event_calls":32,"timer_floor_ns":10},
+          {"kind":"sample","process":2,"queries":512,"round":4,"arm":0,"repeats":32,"batch_ns":331685963,"attention_device_ns":null,"event_calls":0,"timer_floor_ns":10},
+          {"kind":"sample","process":2,"queries":512,"round":4,"arm":1,"repeats":32,"batch_ns":331824213,"attention_device_ns":313125523,"event_calls":32,"timer_floor_ns":10},
+          {"kind":"sample","process":2,"queries":512,"round":4,"arm":2,"repeats":32,"batch_ns":330693824,"attention_device_ns":312004999,"event_calls":32,"timer_floor_ns":10},
+          {"kind":"sample","process":2,"queries":512,"round":5,"arm":1,"repeats":32,"batch_ns":331626512,"attention_device_ns":312867504,"event_calls":32,"timer_floor_ns":10},
+          {"kind":"sample","process":2,"queries":512,"round":5,"arm":2,"repeats":32,"batch_ns":330049320,"attention_device_ns":311365728,"event_calls":32,"timer_floor_ns":10},
+          {"kind":"sample","process":2,"queries":512,"round":5,"arm":0,"repeats":32,"batch_ns":331748471,"attention_device_ns":null,"event_calls":0,"timer_floor_ns":10},
+          {"kind":"sample","process":2,"queries":6491,"round":0,"arm":2,"repeats":2,"batch_ns":247034140,"attention_device_ns":245735625,"event_calls":2,"timer_floor_ns":20},
+          {"kind":"sample","process":2,"queries":6491,"round":0,"arm":0,"repeats":2,"batch_ns":248819954,"attention_device_ns":null,"event_calls":0,"timer_floor_ns":20},
+          {"kind":"sample","process":2,"queries":6491,"round":0,"arm":1,"repeats":2,"batch_ns":249805000,"attention_device_ns":248510417,"event_calls":2,"timer_floor_ns":20},
+          {"kind":"sample","process":2,"queries":6491,"round":1,"arm":0,"repeats":2,"batch_ns":249760997,"attention_device_ns":null,"event_calls":0,"timer_floor_ns":20},
+          {"kind":"sample","process":2,"queries":6491,"round":1,"arm":1,"repeats":2,"batch_ns":248946943,"attention_device_ns":247655000,"event_calls":2,"timer_floor_ns":20},
+          {"kind":"sample","process":2,"queries":6491,"round":1,"arm":2,"repeats":2,"batch_ns":247758385,"attention_device_ns":246465000,"event_calls":2,"timer_floor_ns":20},
+          {"kind":"sample","process":2,"queries":6491,"round":2,"arm":1,"repeats":2,"batch_ns":248489501,"attention_device_ns":247197604,"event_calls":2,"timer_floor_ns":20},
+          {"kind":"sample","process":2,"queries":6491,"round":2,"arm":2,"repeats":2,"batch_ns":248487648,"attention_device_ns":247192604,"event_calls":2,"timer_floor_ns":20},
+          {"kind":"sample","process":2,"queries":6491,"round":2,"arm":0,"repeats":2,"batch_ns":250035885,"attention_device_ns":null,"event_calls":0,"timer_floor_ns":20},
+          {"kind":"sample","process":2,"queries":6491,"round":3,"arm":2,"repeats":2,"batch_ns":247264934,"attention_device_ns":245972188,"event_calls":2,"timer_floor_ns":20},
+          {"kind":"sample","process":2,"queries":6491,"round":3,"arm":0,"repeats":2,"batch_ns":250296035,"attention_device_ns":null,"event_calls":0,"timer_floor_ns":20},
+          {"kind":"sample","process":2,"queries":6491,"round":3,"arm":1,"repeats":2,"batch_ns":249522568,"attention_device_ns":248225312,"event_calls":2,"timer_floor_ns":20},
+          {"kind":"sample","process":2,"queries":6491,"round":4,"arm":0,"repeats":2,"batch_ns":251470808,"attention_device_ns":null,"event_calls":0,"timer_floor_ns":20},
+          {"kind":"sample","process":2,"queries":6491,"round":4,"arm":1,"repeats":2,"batch_ns":249491439,"attention_device_ns":248196667,"event_calls":2,"timer_floor_ns":20},
+          {"kind":"sample","process":2,"queries":6491,"round":4,"arm":2,"repeats":2,"batch_ns":248761765,"attention_device_ns":247467291,"event_calls":2,"timer_floor_ns":20},
+          {"kind":"sample","process":2,"queries":6491,"round":5,"arm":1,"repeats":2,"batch_ns":249216531,"attention_device_ns":247926666,"event_calls":2,"timer_floor_ns":20},
+          {"kind":"sample","process":2,"queries":6491,"round":5,"arm":2,"repeats":2,"batch_ns":247210843,"attention_device_ns":245898125,"event_calls":2,"timer_floor_ns":20},
+          {"kind":"sample","process":2,"queries":6491,"round":5,"arm":0,"repeats":2,"batch_ns":250814001,"attention_device_ns":null,"event_calls":0,"timer_floor_ns":20}
+        ],
+        "advance_to_model": false,
+        "hardware_saturation_qualified": false,
+        "limits": "Direct-event component comparison only;model/decode/quality/full-context and clean model throughput require separate qualification."
+      },
+      "ownership_closed": true,
+      "postchecks_complete": true,
+      "postcheck_errors": [],
+      "fresh_faults": [],
+      "boot_unchanged": true,
+      "driver_after": {
+        "pci": "/sys/bus/pci/devices/0000:05:00.0",
+        "driver": "xe",
+        "vendor": "0x8086",
+        "device": "0xe20c",
+        "kernel": "7.0.0-38-generic",
+        "devcoredump": false
+      }
     }
   ],
   "host_controller_checks": {
@@ -2495,5 +2908,17 @@
       "sha256": "fbc1ee713234bf842766e80e6ac52b60323606e340582f68580c356f187ce246"
     },
     "selected_engine_and12fixtures_unchanged": true
+  },
+  "comparison_decision": {
+    "performance_gate_passed": false,
+    "advance_to_model": false,
+    "inference_adopted": false,
+    "reason": "Both shapes fail the predeclared1percent merged/control wall and service reduction in all3processes. Preserve consistent smaller gains;no model trial or retroactive threshold change.",
+    "timed_event_intervals": 1224,
+    "minimum_batch_ns": 246906692,
+    "full_shape_control_attention_service_over_wall_median": 0.994811691927536,
+    "hardware_saturation_qualified": false,
+    "selected_engine_and_decode_unchanged": true,
+    "next_native_consumer": "Retirement after exact original source/recipe recovery;no further native execution consumer for this proposal."
   }
 }
