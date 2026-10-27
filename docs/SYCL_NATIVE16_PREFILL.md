@@ -1556,9 +1556,14 @@ across all three synthetic shapes;the geomean is1.06395846 versus original and
 1.06424522 versus the namespace control. No model trial or adoption follows.
 See[the compact comparison](../bench/results/2026-10-15-pr6-recovery-audit/qsa-partial-current.json).
 This is counterevidence to using spill allocation alone as the optimization
-priority. Source-specific cache-working-set/reuse controls and device-side
-prefetch methods are the next research questions;neither is an implemented gain
-or a physical-bandwidth/critical-path attribution. Preserve decode and global JIT flags.
+priority. The reviewed cache-working-set/reuse design is conditional on an exact
+source-bound production selected-ID,width and page-map fixture;that fixture is
+not established by the closed service observation. Recover or capture it with a
+bounded committed plan before a production-shaped reuse experiment. Do not repeat
+the completed service/counter capability checks. Device-side prefetch remains
+indexed knowledge:the configured Xe2 overload/capability and lowering must be
+qualified before use. Neither report supplies a throughput gain or physical
+bandwidth/critical-path attribution. Preserve decode and global JIT flags.
 
 Complete prefill phase attribution requires three independent ledgers: route-owner
 planned operations, actual API results and collector device executions.
