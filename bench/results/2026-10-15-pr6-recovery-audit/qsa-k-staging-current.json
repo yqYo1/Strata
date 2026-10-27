@@ -2736,7 +2736,7 @@
       ],
       "scope": "Single eligible physical Intel GPU/accelerator plus exact native device name;not a general multi-GPU UUID mapping."
     },
-    "stage": "prepared",
+    "stage": "closed",
     "mode": "smoke",
     "source_commit": "5af432376ca025acf2c8374f45c5347659bd39d3",
     "controller_inputs": {
@@ -2830,5 +2830,99 @@
       "STRATA_TEST_MAIN_GATES": "1"
     },
     "budget_policy": "Prospectively tighten the default128MiB to64MiB before first oracle execution;unchanged cases,criteria and stopping rules."
-  }
+  },
+  "oracle_checks": [
+    {
+      "mode": "smoke",
+      "passed": true,
+      "complete": true,
+      "active": false,
+      "ownership_closed": true,
+      "GPU_executed": true,
+      "physical_device": {
+        "name": "Intel(R) Arc(TM) B570 Graphics",
+        "pci": "0000:05:00.0",
+        "driver": "xe",
+        "matching_DRM_descriptors": 1
+      },
+      "output": {
+        "cases": 2,
+        "exact_prefix33_bits_cases": 2,
+        "case_summaries": [
+          "case cells=97 live_cells=49 active_rows=128 cap=33 queries=1 masked=0 compared=6144 max_abs=0 max_budget_ratio=0 oracle=BF16_operands_FP32_online packed_guard_elements=17 packed_k_mod8=2 packed_logical_prefix=PASS packed_guards=PASS guards=PASS inputs=PASS status=PASS",
+          "case cells=97 live_cells=71 active_rows=160 cap=33 queries=3 masked=1 compared=18432 max_abs=0 max_budget_ratio=0 oracle=BF16_operands_FP32_online packed_guard_elements=17 packed_k_mod8=2 packed_logical_prefix=PASS packed_guards=PASS guards=PASS inputs=PASS status=PASS"
+        ],
+        "scope": "Existing independent BF16/FP32 oracle and guard/mask/nonfinite/tail/admission controls through the candidate adapter;not full model or speed."
+      },
+      "validation": {
+        "pid": 2013989,
+        "loader": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_loader.so.0.12.0",
+        "threads_before": 1,
+        "preinit": 37,
+        "config_enabled": true,
+        "first_init": true,
+        "dispatch_result": 46,
+        "output_untouched": true,
+        "retained_reference_until_exit": true,
+        "runtime_teardown_qualified": false
+      },
+      "local_launches": {
+        "2": {
+          "calls": 23,
+          "local_arguments": [
+            [
+              0,
+              16384
+            ],
+            [
+              1,
+              1024
+            ],
+            [
+              3,
+              64
+            ],
+            [
+              4,
+              64
+            ],
+            [
+              5,
+              64
+            ],
+            [
+              13,
+              256
+            ],
+            [
+              15,
+              2112
+            ],
+            [
+              16,
+              64
+            ]
+          ],
+          "dynamic_local_bytes": 20032,
+          "work_dim": 1,
+          "local_size": [
+            128
+          ]
+        }
+      },
+      "exit_code": 0,
+      "postchecks_complete": true,
+      "postcheck_errors": [],
+      "fresh_faults": [],
+      "boot_unchanged": true,
+      "driver_after": {
+        "pci": "/sys/bus/pci/devices/0000:05:00.0",
+        "driver": "xe",
+        "vendor": "0x8086",
+        "device": "0xe20c",
+        "kernel": "7.0.0-38-generic",
+        "devcoredump": false
+      }
+    }
+  ]
 }
