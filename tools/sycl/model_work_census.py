@@ -28,7 +28,7 @@ import supervision_model as shared
 from measure_down_scatter import postchecks
 
 B, A = gen.B, gen.A
-ROOT = B / 'selected-model-work-census-v1'
+ROOT = B / 'selected-model-work-census-v2'
 RESULT = A / 'model-work-census-current.json'
 REFERENCE = A / 'prefill-runtime-comparison-current.json'
 TEMPLATE = A / 'phase-prefill-speed-current.json'
@@ -40,6 +40,11 @@ require, digest = runtime.require, runtime.digest
 
 def write(path, value):
     path.write_text(json.dumps(value, indent=2) + '\n')
+
+
+def continue_benchmark(io):
+    """Match the actual strata_bench.profile_request_gate line protocol."""
+    io.send(b'continue\n')
 
 
 def python_contract():
@@ -120,7 +125,21 @@ def admission(row, full_models=False):
 
 
 def prepare():
-    require(not ROOT.exists() and not RESULT.exists(), 'fresh census only; inspect ownership before retry')
+    require(not ROOT.exists(), 'fresh census only; inspect ownership before retry')
+    prior = gen.committed(RESULT)
+    require(prior['stage'] == 'failed' and not prior['active'] and prior['ownership_closed'] and
+        len(prior['checks']) == 1, 'preserve the closed failed first census')
+    failed = prior['checks'][0]
+    require(not failed['passed'] and not failed['complete'] and failed['ownership_closed'] and
+        failed['postchecks_complete'] and failed['fresh_faults'] == [] and
+        failed['failure_diagnosis']['wrong_ack_hex'] == '58' and
+        failed['failure_diagnosis']['native_exit_code'] == 0 and
+        failed['failure_diagnosis']['long_requests_completed'] == 0,
+        'closed benchmark-handshake failure required')
+    previous_failure = dict(commit=gen.git('log', '-1', '--format=%H', '--',
+        str(RESULT.relative_to(P))).decode().strip(), path=str(RESULT.relative_to(P)),
+        sha256=digest(RESULT), source_commit=prior['source_commit'],
+        native_exit_code=0, long_requests_completed=0, passed=False)
     full, rt = native()
     reference = runtime.validation.committed(REFERENCE, ('historical_regression_audit', 'supervision_model_control_v6'))
     require(reference['complete'] and reference['passed'] and reference['ownership_closed'] and
@@ -139,6 +158,7 @@ def prepare():
         configuration=cfg, profile=shared.profile_pin(cfg, source), python_contract=contract,
         controller_inputs=gen.benchmark_pins(source), model_assets=model_assets, plans={}, checks=[],
         active=False, ownership_closed=True, complete=False, passed=False, model_adopted=False,
+        previous_failure=previous_failure,
         question='Obtain source-planned MoE jobs on the actual selected route and verify retired totals before a complete API/device ledger.',
         limits='Diagnostic census only. No complete device coverage,physical bus traffic,hardware saturation,clean speed,decode or physical262144 qualification.',
         retention='Keep compact counts and one exact job-size histogram for the imminent source/API work planner. Retire successful raw logs and private caches after extraction;no new engine build. Review histogram consumer after route-plan selection.')
@@ -205,7 +225,7 @@ def run(mode):
             python_runtime.check_running(server['pid'], P/'serve/server.py', manifest['selected'], plan['environment'], allowed,
                 ['--engine','strata','--config',str(root/'config.json'),'--port',port])
             require(not (root/'validation.log').exists() or (root/'validation.log').stat().st_size == 0, 'parameter warning/error')
-            io.send(b'X')
+            continue_benchmark(io)
         io.proc.stdin.close(); io.exit(90)
     try:
         entry, _, _ = owner.run('bench', plan['command'], plan['environment'], P, interaction=gate, **plan['budgets'])
