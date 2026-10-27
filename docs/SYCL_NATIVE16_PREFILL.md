@@ -377,6 +377,20 @@ validation is silent and no fresh fault is recorded. Source/controller b8c31f1ae
 and frozen plan7bf4a66f4 recover this diagnostic in the linked runtime result.
 No inference source,decode placement or runtime changed for this check.
 
+This117489-token point does not establish input-length scaling or a fixed
+prefill cost. Client`44ec4f1a1` adds a six-length characterization through
+`bench.sh --prefill-scaling`:thinking stays on,actual fresh counts and total
+prefill time/pp/client TTFT are retained,first maximum-length use is separate,
+and three warmed sweeps rotate their order. Affine,quadratic and`n log n`
+hypotheses expose residuals and leave-one-length-out errors without selecting
+a law automatically. Short/decode-placement and long/layer-major routes must
+be assessed separately before interpreting a fixed term. Twenty client and
+fifteen evidence host tests pass,including first-reasoning TTFT and failed
+sample containment. The owned model sweep,route-specific approximate formula
+and independent-process confirmation remain pending in the linked runtime
+result's`length_characterization`;no new speed is claimed. Generation24 is
+only for prefill/TTFT and does not characterize tg versus context/output length.
+
 This fresh within-process median is6.9390% above the earlier current-userspace
 cohort's911.7371,but remains2.7575% below the same binary's historical1002.6507.
 These unpaired measurement windows show that the9.1% loss is not persistent at
@@ -1507,7 +1521,13 @@ with8192unique source/destination elements per case and three broken variants
 rejected. All35host controller controls also pass. The new source model uses
 256subgroup exchange instances per WG/32selected cells across all256Kdimensions;
 this is not observed device instructions or traffic. Independent source/harness
-review and compilation remain pending;no packed-u32 device result exists.
+review now conditionally permits an isolated compile:the new combined audit
+and native Luna-max curation verify all nine frozen source inputs. Main rehashes
+the eleven installed API headers and compiler before recording that contract.
+The property-only sole-device inventory is workstation containment,not native
+BDF proof;the first actual-kernel gate must bind the owned child's DRM fdinfo
+before release. Compilation and every device gate remain pending;no packed-u32
+device result exists.
 The rejected generation and two consumed research/review files retire after
 recovering197original source inputs,exact recipe/generated sources and699actual
 compiler dependencies. The98files total11297649bytes;the selected engine,its

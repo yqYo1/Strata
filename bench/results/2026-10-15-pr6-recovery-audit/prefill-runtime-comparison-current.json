@@ -1051,7 +1051,6 @@
         "postretirement_native_runtime_profile_Python_admission": true
       }
     },
-
     "legacy_hardware_component_retirement_20261027": {
       "source_commit": "7ea2650ba3ae1b15807a32a67b62d56131046569",
       "source_recovery": {
@@ -6367,5 +6366,55 @@
       ],
       "finding": "Prior reports use the same117K engine-clock metric,first/subsequent requests separated.911.74was the then-latest multi-process cohort;975.00is the later single-process recheck. A fixed9.1percent current loss is not established. Neither report demonstrates restoration or identifies a cause."
     }
+  },
+  "length_characterization": {
+    "stage": "client-tested_model-execution-pending",
+    "client_source_commit": "44ec4f1a1",
+    "question": "Measure total prefill time and thinking-inclusive client TTFT against actual fresh input length;derive and validate simple approximate formulas rather than assume a+bn.",
+    "selected_native_source_commit": "6e40afc1beddd059ee518617f6c1efce1da14aca",
+    "native_configuration": "Keep current131072context/residentINT8KV/8192chunk/1256expert slots/spec4/greedy and qualified runtime safety. Recover exact retained-native setup and hashes before preparing owned launch.",
+    "prospective_client_command": [
+      "/bin/sh",
+      "bench.sh",
+      "--config",
+      "<fresh-owned-root>/config.json",
+      "--prefill-scaling",
+      "--think",
+      "--runs",
+      "3",
+      "--workload-id",
+      "prefill_scaling_v1",
+      "--fail-fast-engine-error",
+      "--out",
+      "<fresh-owned-root>/bench"
+    ],
+    "requested_min_input_tokens": [
+      1024,
+      4096,
+      16384,
+      32768,
+      65536,
+      98304
+    ],
+    "token_policy": "Construction1.25xminimum is not actual token count. Use actual read tokens/engine prompt_ms;allreuse0;normalstream;1..24generated;thinking on;actualinput+24+256fitscontext.",
+    "repetitions": "Initial characterization:one fresh server,one short warmup,one retained separate firstmaximumlong request,then3rotated six-length warmed sweeps. Not independent-process repetition. Additional independent confirmation after curve/source-route analysis.",
+    "analysis": "Plot individual/median/spread T(n),pp,TTFT;compare affine,quadratic,nlogn candidates by residuals/leave-one-length-out errors. No automatic model selection/extrapolation. Separate actualshort/long routes and inspect chunk boundaries;collectextra boundary points onlyif evidence requires.",
+    "tg_followup": "Separately characterize startingcontext and actualgeneratedlength withthinking>=1Koutput andmeasuredMTPagreement.24-output scaling mode is not tg evidence.",
+    "stopping": "Require committed frozen ownership/runtime/source/model/binary/config/plan admission beforelaunch;finitebudgets;stopfirstfailure,no retries/droppedpoints;keepfailedoutcome.",
+    "host_validation": {
+      "source": "44ec4f1a1",
+      "commands": [
+        "tools/test_strata_bench.py",
+        "tools/test_benchmark_evidence.py"
+      ],
+      "passed_tests": [
+        20,
+        15
+      ],
+      "GPU_executed": false
+    },
+    "model_execution_qualified": false,
+    "measurement_completed": false,
+    "retention": "One compact current curve withindividual actualcounts/times/TTFT,source/config/runtime identity,formula validation anddecision. Retire successful rawjournal/logs after verified extraction;no duplicate report/checkpoint/build."
   }
 }

@@ -13786,7 +13786,7 @@
   },
   "qsa_packed_k_staging_source_contract_20261028": {
     "classification": "decision_support",
-    "status": "dispatched",
+    "status": "reviewed_source_contract_no_device_qualification",
     "schedulable_now": false,
     "prerequisites_evidence": {
       "source": {
@@ -13827,7 +13827,7 @@
     "ownership": "Orca gpt-6-luna report only;Main owns implementation/builds/tests/GPU. Native gpt-6-luna max reviews. No steering.",
     "retention": "Current exact-source build/admission decision;fold substantive facts and retire transaction files after use. No generic subgroup or spill survey.",
     "source_commit": "c3bf8dea1aac703bc87fb1afcf21714813ee247e",
-    "worker_closed": false,
+    "worker_closed": true,
     "orca": {
       "run": "run_3072480b0529",
       "task": "task_c60bd7a2dcfa",
@@ -13835,6 +13835,54 @@
       "terminal": "term_abb9a1dc-128a-4e5b-b103-dfd761266f72",
       "model": "gpt-6-luna",
       "model_evidence": "Fresh /new current-worktree preview GPT-6-Luna high;worker-start ready/observed turn_started. Report inside writable workspace root."
+    },
+    "report_sha256": "967e18adb220c3ad2dc7916d252df14d822f451daaba39cbd2bc4b1bea5aebcf",
+    "report_bytes": 14424,
+    "review": {
+      "status": "completed",
+      "model": "gpt-6-luna",
+      "reasoning_effort": "max",
+      "path": ".cache/strata-research/20261028/qsa-packed-k-staging-source-contract.review.json",
+      "sha256": "98e66cd57881449aa02e09e13247daaf7511cf679d5538e7f2886cef8f80fa70",
+      "bytes": 14330,
+      "build_only_justified": true,
+      "GPU_qualified": false
+    },
+    "qualified_source_contract": {
+      "compiler": {
+        "path": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin/clang++",
+        "sha256": "1290881b4e12a5e002e5b0de0787f85328ee5fe19f253a54be1cdd97dc2f26eb",
+        "intel_llvm_revision": "504366f4b82ff00bbac7b0c956635eed8bc599d8"
+      },
+      "headers": {
+        "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/include/sycl/group_algorithm.hpp": "728525a097704c6d61d75b7e588be9e735c2dac724da3bab16dec4b15d7ff416",
+        "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/include/sycl/vector.hpp": "041342ea4c883d19e7cc9212ce56ae7e05cd6e0ec5b68bb365eecf36eeda560d",
+        "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/include/sycl/detail/spirv.hpp": "16df506444dfe6829819a3aa301a7426b745c5d56fada5751fff0f4af82bf2c6",
+        "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/include/sycl/ext/oneapi/bfloat16.hpp": "185bde75c6f1f108099c6372c5e83de9ddfbc6eb0bb290fd7ab1899af48aad05",
+        "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/include/sycl/ext/oneapi/matrix/query-types.hpp": "18da200cd2704bb998f8a2f61fc423f6a5ecfcfe2d5b7a44e067c5074a8aeaa2",
+        "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/include/sycl/ext/oneapi/matrix/matrix-unified-utils.hpp": "c4ec45d987a054e2e5ee7d51f2fbbabf2d4a50bff0b7d4124d5e01a1162f8e8a",
+        "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/include/sycl/ext/oneapi/matrix/matrix.hpp": "c298993bfc66b10f3204723c20afe960e07313b51add9ab28f549653dbde4da7",
+        "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/include/sycl/ext/oneapi/matrix/matrix-unified.hpp": "d76027407a09884b34879f5677b2efe1c634d6d058333d2fd83ecaa2b49a673e",
+        "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/include/sycl/ext/oneapi/matrix/matrix-intel.hpp": "524efda8771175ee9c271fc78fab547a4bf6e845ad471ac9d501375ff5834ccb",
+        "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/include/sycl/ext/oneapi/matrix/utils.hpp": "4f02f0f570cf645f5abf46e3f64330102f4e2ae54b30a6c7f847d3131531934e",
+        "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/include/sycl/ext/oneapi/matrix/static-query-use.hpp": "a48cd577e4938f67dfbee0046f2fd9034432f1528f7f6e685f54433ff980a8f1"
+      },
+      "matrix_spec_reference": "research-index.json:qsa_slm_pitch_contract_20261027.version_matched_contract;unchanged K32/V256/score33 leading dimensions and typed MatrixTile base",
+      "source_API": "New packed-u32 combined audit:SG16 uniform arithmetic uint32 XOR4/XOR8 exchange;unsigned 16/32bit packing;typed BF16 local objects;unchanged32cell order/barriers/pitches/math. Host simulation is not machine-verified C++ semantics or device correctness.",
+      "corrections": [
+        "Property-only exact-name/sole-eligible-Intel inventory is workstation containment,not native BDF proof;own-child xe/05:00.0 binding required before first kernel launch.",
+        "Previous header/compiler pins carried by curator;Main now rehashes all11headers/compiler and all9frozen current+Git source paths before normalization. New-code source verdict comes from this new combined review."
+      ],
+      "qualification": "Source-closed isolated compile only;property,actual-kernel numerical/boundary and frozen speed gates remain. No model/decode adoption.",
+      "report_sha256": "967e18adb220c3ad2dc7916d252df14d822f451daaba39cbd2bc4b1bea5aebcf",
+      "review_sha256": "98e66cd57881449aa02e09e13247daaf7511cf679d5538e7f2886cef8f80fa70"
+    },
+    "lifecycle": {
+      "outcome": "succeeded",
+      "completed_at": "2026-10-27T19:30:27.520Z",
+      "capability_revoked": true,
+      "terminal": "external retained;release processAction none;not a process-exit claim",
+      "delivery_acknowledged": "delivery_8eb84e8483ac"
     }
   }
 }
