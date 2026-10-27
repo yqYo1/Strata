@@ -1648,6 +1648,43 @@ The reviewed64-cell research is conditional:larger blocks can change online
 state grouping and BF16 probability rounding;framework wrapper references do
 not establish an exact dependency-kernel numerical contract.
 
+The barrier proposal's source audit is scoped to the selected ordered-exp,
+cached-Q instantiation. All work-items in each group read the same immutable
+width;the tile loop and group barriers remain converged,including zero width.
+The host admission,queue order,matrix shapes,typed accesses and rounding are
+unchanged. The proposed synchronization dependencies are:
+
+| Shared region | Previous tile's last use | Next overwrite and retained ordering |
+| --- | --- | --- |
+| `rows` | K/V gathers,completed before the V-ready barrier | Next row publication may overlap PV,which does not read `rows`. |
+| `kv` | PV matrix loads | Next K writes follow the existing row-publication barrier,which joins previous PV readers. QK-ready and V-ready barriers still separate K reads,V writes and PV reads. |
+| `probability`,`alpha` | PV loads/scaling | Next softmax writes follow row-publication,K-ready and QK-ready barriers. |
+| `scores` | Previous softmax | V-ready already joins those readers;next QK writes follow the next row/K barriers. |
+| FP32 online state and `bad_head` | Current softmax/output | Their original synchronization remains;the final fence still precedes group diagnostics/output. |
+| Cached Q fragments | Subgroup collective loads before K overwrites its initial arena | The original initial barrier remains;cached fragments are not republished in the tile loop. |
+
+`local_bad`/`local_live` and accumulators retain their original private/subgroup
+ownership. No group reduction is used as a substitute for a memory fence.
+Global query,steps,IDs and packed inputs remain immutable during attention;
+full pack and attention stay ordered on the same queue. This source argument
+does not qualify compiler lowering,race freedom or speed on its own.
+
+The prospective fixtures reuse the independent scalar tensor oracle through
+a reversible overlay,bit-compare original/control/candidate on every supported
+invocation,and independently select each arm for negative admission. They retain
+zero/invalid/tail widths,duplicate IDs,aliased/missing pages,first/later-tile bad
+K/V scales,NaN,only-two-byte alignment,guards and physical262144 component cases.
+The separate actual-ID benchmark uses512and6491queries with synthetic tensors.
+The unmodified original arm has wall time only;control/candidate use directly
+retained attention events. Independent Orca Luna research and native Luna/max
+curation find no concrete source race,but leave device behavior unqualified.
+Their missing cases are added before the new build:per-query mixed widths,
+64and2050atcap2051,three consecutive tiles with distinct K/V witnesses,and
+shared physical pages mixed with missing pages. The prospective isolated recipe
+is[`build_qsa_barrier.py`](../tools/sycl/build_qsa_barrier.py);the committed
+generated build plan and execution controller remain required before device
+execution. None of these fixtures is compiled or GPU-qualified yet.
+
 Complete prefill phase attribution requires three independent ledgers: route-owner
 planned operations, actual API results and collector device executions.
 [`work_ledger.py`](../tools/sycl/work_ledger.py) implements the host reconciliation

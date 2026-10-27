@@ -12804,7 +12804,7 @@
   },
   "qsa_iteration_barrier_fusion_contract_20261027": {
     "classification": "decision_support",
-    "status": "running",
+    "status": "reviewed_accept_conditional",
     "schedulable_now": false,
     "source_revision": "17bc703d94c792a4d23f45f53359e601ad46348c",
     "question": "Independently audit the proposed QSA end-of-iteration barrier hoist:row publication may overlap previous PV reads,but the next existing barrier precedes K overwrite;retain final fence. Trace every shared byte/lifetime,subgroup joint_matrix and group-reduction contract,zero/invalid/tail widths,compiler scratch reuse and exact numerical invariants. Identify concrete races or missing proof and bounded adversarial gates;not a generic barrier survey.",
@@ -12818,10 +12818,19 @@
     "worker_model": "gpt-6-luna",
     "consumer": "Main prebuild safety audit and adversarial fixture plan;native Luna/max reviews before Main uses report sections.",
     "retention": "Keep only substantive source/contract findings through this candidate decision. Write named report only;no code,Git,build,test,GPU,profiler or process actions;no XeStrata source.",
-    "task_id": "task_84338bf7b2cf",
-    "dispatch_id": "ctx_6ade11d1aa23",
-    "terminal": "term_abb9a1dc-128a-4e5b-b103-dfd761266f72",
-    "run_id": "run_12fa11537288",
-    "model_evidence": "Exact terminal displayed GPT-6-Luna high after /new/current-worktree;worker-start ready and turnStart observed. Kernel generator remains frozen at17bc703d9 while Main writes separate fixtures."
+    "worker_closed": true,
+    "report_bytes": 12287,
+    "report_sha256": "c64055e675e00a60c85315d4aaee7a432d8854a3869e106d4445ecdc59eb92e9",
+    "reviewer": "native Codex gpt-6-luna max",
+    "review_outcome": "No concrete source race;conditional source-level proof only",
+    "essential_corrections": [
+      "Device-body semantic delta is barrier position;keep namespace/direct-event plumbing in reversal audit. Original timing has wall only,not an invented event interval.",
+      "Core SYCL rev12 barrier rules and experimental generic matrix convergence/Intel coordinate-aware apply contracts are distinct. Installed headers establish identity/exposure,not lowering or hidden scratch behavior.",
+      "Before component build,add mixed per-query widths,64 and2050atcap2051,three-trip alternating IDs with explicit uniqueK/Vsentinels,and combined shared/missing pages. Main added these to the reversible oracle overlay before the new source/recipe commit."
+    ],
+    "next_scope_eligibility": {
+      "schedulable_now": false,
+      "reason": "No further generic survey. Next is committed/frozen bounded traced component smoke,with compiler/device evidence and stop-on-mismatch/fault. No performance/model qualification yet."
+    }
   }
 }
