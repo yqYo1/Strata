@@ -1908,11 +1908,16 @@ the parser refuses even a paired prefix. Both original metadata fixtures,four
 environment-write guards and eight invalid-cap controls pass. This qualifies
 host callback behavior only. The candidate observer has not been loaded into a
 GPU/model process,and disk/format errors still retain their old fail-fast behavior.
+Static review then found a missing boundary:the first omitted callback still
+decoded metadata before checking the cap. The original21passes remain valid for
+their recorded controls,but do not cover that boundary. This candidate's four
+native/manifest files are retired after source/recipe recovery;no GPU/model
+process used it. The replacement reserves its row under the output lock before
+reading callback data,and adds invalid first-omitted begin/end controls. It still
+requires a fresh committed host qualification and direct UR result/output check.
 Keep the qualified v3 observer until separate device and observer-cost gates
 select a replacement;the65536maximum and16MiB parser still do not permit a
-complete whole-model capture. The tiny candidate and manifests serve the next
-bounded device canary through`check_ur_capture_budget.admit`;the selected engine
-and decode are unchanged.
+complete whole-model capture. The selected engine and decode are unchanged.
 This reader is specific to the pinned6e40 schema. Neither host replay nor the
 planned census qualifies API/device coverage,physical traffic,clean speed,decode,
 quality,physical262144context or model adoption.

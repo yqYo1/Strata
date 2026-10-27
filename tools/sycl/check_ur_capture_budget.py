@@ -18,14 +18,35 @@ import measurement_owner as supervision
 import ur_call_subscriber as subscriber
 
 P, B, RESULT = subscriber.P, subscriber.B, subscriber.RESULT
-ROOT = B / 'ur-call-budget-v1'
-KEY = 'ur_subscriber_budget'
+ROOT = B / 'ur-call-budget-v2'
+KEY = 'ur_subscriber_budget_v2'
 require, digest = subscriber.require, subscriber.digest
 BUDGET = dict(wall=120, cpu=120, rss_cap=4 << 30, text_cap=4 << 20,
               file_cap=32 << 20, total_cap=64 << 20)
 
 
 def write(path, value):
+    if path == RESULT:
+        # Preserve unrelated compact tables byte-for-byte. This controller owns
+        # one result row, not the formatting or retention of older experiments.
+        base = gen.git('show', 'HEAD:' + str(path.relative_to(P))).decode()
+        tag = json.dumps(KEY) + ':'
+        encoded = json.dumps(value['event_reconciliation'][KEY], indent=2).replace('\n', '\n    ')
+        if tag in base:
+            require(base.count(tag) == 1, 'ambiguous control row')
+            start = base.index(tag) + len(tag)
+            while base[start].isspace(): start += 1
+            _, end = json.JSONDecoder().raw_decode(base[start:])
+            text = base[:start] + encoded + base[start + end:]
+        else:
+            label = '"event_reconciliation":'
+            start = base.index('{', base.index(label) + len(label))
+            _, end = json.JSONDecoder().raw_decode(base[start:])
+            text = (base[:start] + base[start:start + end - 1].rstrip() +
+                    ',\n    ' + tag + ' ' + encoded + '\n  }' + base[start + end:])
+        require(json.loads(text) == value, 'unexpected change outside the owned result row')
+        path.write_text(text)
+        return
     path.write_text(json.dumps(value, indent=2) + '\n')
 
 
@@ -61,7 +82,7 @@ def prepare(row, owner):
         retained_generations='Qualified v3 observer retained;this tiny host candidate serves imminent loss controls and later separately planned device/cost gates. Selected6e40 engine and12fixtures untouched.',
         consumer='Bounded observer loss handling for upcoming actual-route attribution.',
         retention='Retain source/recipe and compact controls;retire successful raw callbacks/build output after extraction. Select observer only after device/cost qualification.',
-        gates='Two original metadata fixtures,four immutable-environment controls,seven concurrent overflow caps including odd mid-pair cuts and late invalid args,eight invalid pre-exec caps. Stop first failure. Overflow must continue application but fail complete-capture parser. No performance/phase/device/ordinary teardown claim.',
+        gates='Two original metadata fixtures,four immutable-environment controls,seven concurrent overflow caps,two first-omitted invalid begin/end boundary controls,eight invalid pre-exec caps. Stop first failure. Overflow must continue application but fail complete-capture parser. No performance/phase/device/ordinary teardown claim.',
         environment=dict(baseline['environment'], TMPDIR=str(ROOT / 'tmp')),
         commands={}, compiler_inputs=[], outcomes=[])
     (ROOT / 'tmp').mkdir()
@@ -113,6 +134,7 @@ def check(row, owner):
     cases = [('metadata', 'metadata', None), ('buffers', 'buffers', None)]
     cases += [(name, name, None) for name in ('setenv', 'unsetenv', 'putenv', 'clearenv')]
     cases += [('overflow-' + str(cap), 'overflow', cap) for cap in (None, 2, 3, 4, 5, 8, 511)]
+    cases += [(mode, mode, cap) for mode, cap in (('overflow-boundary-begin', 4), ('overflow-boundary-end', 3))]
     cases += [('invalid-' + str(i), 'metadata', cap) for i, cap in enumerate(('', '0', '1', '65537', '-1', '+3', '3x', '99999999999999999999'))]
     for name, mode, cap in cases:
         log = ROOT / (name + '.jsonl')
@@ -133,7 +155,7 @@ def check(row, owner):
         else:
             require(entry['exit_code'] == 0 and not stderr, 'host callback fixture failed')
             text = log.read_text()
-            if mode == 'overflow':
+            if mode.startswith('overflow'):
                 limit = 65536 if cap is None else cap
                 rows = [json.loads(line) for line in text.splitlines()]
                 require(len(rows) == limit + 1 and rows[-1]['kind'] == 'overflow' and
@@ -141,6 +163,9 @@ def check(row, owner):
                         rows[-1]['limit'] == rows[-1]['records'] == limit and
                         '"application_continued":true' in stdout and len(text.encode()) <= limit * 2048 + 256,
                         'loss marker,finite output or application continuation failed')
+                if mode.startswith('overflow-boundary'):
+                    require(rows[-2]['kind'] == ('begin' if mode.endswith('end') else 'end'),
+                            'wrong first-omitted callback boundary')
                 try:
                     subscriber.parse_calls(text, entry['pid'])
                 except RuntimeError as error:

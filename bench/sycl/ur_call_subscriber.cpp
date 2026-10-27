@@ -54,12 +54,13 @@ void write_row(const char* row, int size) noexcept {
 // Reserve one small loss marker beyond the finite row budget, then stop all
 // capture. The reader rejects the entire stream, including an otherwise paired
 // prefix. Plain state/FDs intentionally remain alive through late callbacks.
-void emit(const char* row, int size) noexcept {
-  if (capture_stopped.load(std::memory_order_acquire)) return;
-  if (log_fd < 0 || size <= 0 || size >= row_capacity) fail();
+bool begin_row() noexcept {
+  if (capture_stopped.load(std::memory_order_acquire)) return false;
+  if (log_fd < 0) fail();
   if (pthread_mutex_lock(&output_lock)) fail();
   if (!capture_stopped.load(std::memory_order_relaxed)) {
-    if (sequence >= record_budget) {
+    if (sequence < record_budget) return true; // Reserve with the lock held.
+    else {
       capture_stopped.store(true, std::memory_order_release);
       char marker[256];
       const int n = std::snprintf(marker, sizeof(marker),
@@ -68,12 +69,21 @@ void emit(const char* row, int size) noexcept {
           long(getpid()), raw_ns(), sequence, record_budget);
       if (n <= 0 || size_t(n) >= sizeof(marker)) fail();
       write_row(marker, n);
-    } else {
-      ++sequence;
-      write_row(row, size);
     }
   }
   if (pthread_mutex_unlock(&output_lock)) fail();
+  return false;
+}
+
+void finish_row(const char* row, int size) noexcept {
+  if (size <= 0 || size >= row_capacity) fail();
+  ++sequence;
+  write_row(row, size);
+  if (pthread_mutex_unlock(&output_lock)) fail();
+}
+
+void emit(const char* row, int size) noexcept {
+  if (begin_row()) finish_row(row, size);
 }
 
 bool api_name(const char* name) noexcept {
@@ -255,7 +265,10 @@ void metadata(Metadata& m, const xpti::function_with_args_t* data, bool success)
 void callback(uint16_t type, xpti::trace_event_data_t*,
               xpti::trace_event_data_t*, uint64_t instance,
               const void* user_data) noexcept {
-  if (capture_stopped.load(std::memory_order_acquire)) return;
+  // Reserve a row before touching user_data, not merely before output. A
+  // concurrent callback cannot consume our remaining budget during metadata
+  // extraction. This extra serialization still needs observer-cost testing.
+  if (!begin_row()) return;
   const auto* data = static_cast<const xpti::function_with_args_t*>(user_data);
   const bool begin = type == xpti::trace_function_with_args_begin;
   if (!data || !api_name(data->function_name) ||
@@ -274,7 +287,7 @@ void callback(uint16_t type, xpti::trace_event_data_t*,
       ",\"function_id\":%u,\"name\":\"%s\",\"raw_ns\":%" PRIu64 ",\"status\":%s,\"metadata\":%s}\n",
       begin ? "begin" : "end", long(getpid()), syscall(SYS_gettid), instance,
       data->function_id, data->function_name, raw_ns(), status, details.finish());
-  emit(row, size);
+  finish_row(row, size);
 }
 
 __attribute__((constructor)) void load() noexcept {

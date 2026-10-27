@@ -197,6 +197,36 @@ int overflow_fixture() {
   std::puts("{\"overflow_fixture\":\"PASS\",\"simulated_calls\":40001,\"application_continued\":true}");
   return 0;
 }
+
+int overflow_boundary_fixture(bool end_boundary) {
+  xptiFrameworkInitialize();
+  if (xptiInitialize("ur.call", 0, 1, "boundary-host-fixture") != xpti::result_t::XPTI_RESULT_SUCCESS) return 6;
+  const auto stream = xptiRegisterStream("ur.call");
+  if (end_boundary) {
+    // cap3: load,subscribe,valid begin. The very first omitted end has invalid
+    // argument data and must not be decoded, even before capture_stopped was set.
+    auto context = reinterpret_cast<ur_context_handle_t>(uintptr_t(0x100));
+    ur_queue_handle_t* output = nullptr;
+    ur_queue_create_params_t args{}; args.phContext = &context; args.pphQueue = &output;
+    xpti::function_with_args_t call{};
+    call.function_id = UR_FUNCTION_QUEUE_CREATE; call.function_name = "urQueueCreate"; call.args_data = &args;
+    const auto instance = xptiGetUniqueId();
+    if (xptiNotifySubscribers(stream, xpti::trace_function_with_args_begin, nullptr, nullptr,
+                              instance, &call) != xpti::result_t::XPTI_RESULT_SUCCESS) return 4;
+    ur_result_t result = UR_RESULT_SUCCESS;
+    call.ret_data = &result; call.args_data = reinterpret_cast<void*>(uintptr_t(1));
+    if (xptiNotifySubscribers(stream, xpti::trace_function_with_args_end, nullptr, nullptr,
+                              instance, &call) != xpti::result_t::XPTI_RESULT_SUCCESS) return 5;
+  } else {
+    // cap4: load,subscribe,one complete pair,then an invalid boundary begin.
+    notify(UR_FUNCTION_PLATFORM_GET_API_VERSION, "urPlatformGetApiVersion", nullptr);
+    notify(UR_FUNCTION_QUEUE_CREATE, "urQueueCreate", reinterpret_cast<void*>(uintptr_t(1)));
+  }
+  xptiFinalize("ur.call"); xptiFrameworkFinalize();
+  std::printf("{\"overflow_boundary_fixture\":\"PASS\",\"boundary\":\"%s\",\"application_continued\":true}\n",
+              end_boundary ? "end" : "begin");
+  return 0;
+}
 }
 
 int main(int argc, char** argv) {
@@ -205,6 +235,8 @@ int main(int argc, char** argv) {
   if (!std::strcmp(name, "metadata")) return metadata_fixture();
   if (!std::strcmp(name, "buffers")) return buffer_fixture();
   if (!std::strcmp(name, "overflow")) return overflow_fixture();
+  if (!std::strcmp(name, "overflow-boundary-begin")) return overflow_boundary_fixture(false);
+  if (!std::strcmp(name, "overflow-boundary-end")) return overflow_boundary_fixture(true);
   if (std::strcmp(name, "setenv") && std::strcmp(name, "unsetenv") &&
       std::strcmp(name, "putenv") && std::strcmp(name, "clearenv")) return 2;
   std::printf("mutation-case-begin:%s\n", name);
