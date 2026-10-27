@@ -24,8 +24,8 @@ import ur_validation as validation
 from measure_down_scatter import postchecks
 P,B,ROOT,RESULT=b.P,b.B,b.ROOT,b.RESULT
 CPP='bench/sycl/qsa_k_staging.cpp'
-ADMISSION_PLAN='admission_v2_plan'
-ADMISSION_CHECK='admission_v2_check'
+ADMISSION_PLAN='admission_plan'
+ADMISSION_CHECK='admission_check'
 
 def inputs(revision):
     pending = [Path(__file__).resolve()]; seen = set(); pins = {}
@@ -75,21 +75,15 @@ def kernel_ids(record):
 
 
 def contract():
-    row=validation.committed(b.gen.A/'research-index.json',('qsa_k_staging_harness_contract_20261028',))
-    guards.require(row['status']=='reviewed_accept_conditional' and row['worker_closed']
+    row=validation.committed(b.gen.A/'research-index.json',('qsa_packed_k_staging_source_contract_20261028',))
+    guards.require(row['status']=='reviewed_source_contract_no_device_qualification' and row['worker_closed']
         and row['review']['status']=='completed' and row['review']['model']=='gpt-6-luna'
         and row['review']['reasoning_effort']=='max','closed independent harness review required')
     for name,sha in row['source_snapshot'].items():
         original=b.gen.git('show',row['source_commit']+':'+name)
-        guards.require(hashlib.sha256(original).hexdigest()==sha,'reviewed source identity differs: '+name)
-    corrected=row['admission_source_snapshot']
-    guards.require(set(corrected)==set(row['source_snapshot']) and
-        [name for name in corrected if corrected[name]!=row['source_snapshot'][name]]==
-        ['tools/sycl/check_qsa_k_staging.py'],'only the reviewed controller corrections may differ')
-    for name,sha in corrected.items():
-        guards.require(b.digest(P/name)==sha,'admission fixture changed: '+name)
+        guards.require(hashlib.sha256(original).hexdigest()==sha and b.digest(P/name)==sha,
+            'reviewed packed K source identity differs: '+name)
     return dict(source_commit=row['source_commit'],source_snapshot=row['source_snapshot'],
-        admission_source_snapshot=corrected,main_corrections=row['main_corrections'],
         report_sha256=row['report_identity']['sha256'],review_sha256=row['review']['sha256'],status=row['status'])
 
 
@@ -174,20 +168,7 @@ def prepare():
     record = b.gen.committed(RESULT)
     guards.require(ADMISSION_PLAN not in record and ADMISSION_CHECK not in record,
                    'fresh admission only; inspect existing ownership before retry')
-    prior=record['admission_check'];diagnosis=prior['failure_diagnosis']
-    guards.require(record['admission_plan']['stage']=='failed' and not prior['passed'] and
-        not prior['complete'] and not prior['fresh_faults'] and diagnosis['direct_child_reaped'] and
-        diagnosis['session_empty'] and not diagnosis['survivors'] and
-        diagnosis['trace_successful_kernel_enqueues']==0 and
-        diagnosis['owner_error']=="RuntimeError('property runtime selected another device')",
-        'v2 is only the documented device-name correction,not an automatic retry')
-    old=json.loads((ROOT/'admission/owned.json').read_text())['commands']
-    guards.require(len(old)==1 and old[0]['direct_child_reaped'] and old[0]['session_empty'] and
-        not old[0]['survivors'],'previous property owner remains unresolved')
-    live=supervision.identity(old[0]['pid'])
-    guards.require(live is None or live['start_ticks']!=old[0]['direct_identity']['start_ticks'],
-        'previous property process is still alive')
-    folder = ROOT / 'admission-v2'
+    folder = ROOT / 'admission'
     guards.require(not folder.exists(), 'admission output already exists')
     revision = b.gen.git('rev-parse', 'HEAD').decode().strip()
     rt = validation.committed(b.qualified_runtime.RESULT)
@@ -223,7 +204,7 @@ def prepare():
 
 def run():
     record = b.gen.committed(RESULT); plan = record[ADMISSION_PLAN]
-    folder = ROOT / 'admission-v2'
+    folder = ROOT / 'admission'
     guards.require(plan['stage'] == 'prepared' and ADMISSION_CHECK not in record and
         plan == json.loads((folder / 'plan.json').read_text()), 'fresh committed admission plan required')
     rt = admission(record, plan)

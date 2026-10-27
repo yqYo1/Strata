@@ -49,20 +49,27 @@ SUBGROUP_LOAD = '''          // Each SG16 loads four cells by sixteen dimensions
                   sycl::access::address_space::global_space,
                   sycl::access::decorated::no>(
                       packed.k + row * Dim + dim_base + 4 * (lane % 4)));
-            // Swap lane bits 2/3 with register bits 0/1. Separate next values
-            // keep every stage's input intact. Masks4/8 stay within SG16.
-            #pragma unroll
-            for (int bit = 0; bit < 2; ++bit) {
-              sycl::vec<uint16_t, 4> next;
-              #pragma unroll
-              for (int j = 0; j < 4; ++j) {
-                const uint16_t peer = sycl::permute_group_by_xor(sg,
-                    uint16_t(words[j ^ (1 << bit)]), uint32_t(1u << (bit + 2)));
-                next[j] = ((lane >> (bit + 2)) & 1) != ((j >> bit) & 1)
-                    ? peer : uint16_t(words[j]);
-              }
-              words = next;
-            }
+            // Swap lane bit2/register bit0,then lane bit3/register bit1.
+            // Each sender packs only the two values its peer needs. Both
+            // exchanges are uniform;all casts/shifts are unsigned and exact.
+            const bool odd = (lane & 4) != 0;
+            const uint32_t pair0 =
+                uint32_t(odd ? uint16_t(words[0]) : uint16_t(words[1])) |
+                (uint32_t(odd ? uint16_t(words[2]) : uint16_t(words[3])) << 16);
+            const uint32_t peer0 = sycl::permute_group_by_xor(sg, pair0, uint32_t(4));
+            words[0] = odd ? uint16_t(peer0) : uint16_t(words[0]);
+            words[1] = odd ? uint16_t(words[1]) : uint16_t(peer0);
+            words[2] = odd ? uint16_t(peer0 >> 16) : uint16_t(words[2]);
+            words[3] = odd ? uint16_t(words[3]) : uint16_t(peer0 >> 16);
+            const bool upper = (lane & 8) != 0;
+            const uint32_t pair1 =
+                uint32_t(upper ? uint16_t(words[0]) : uint16_t(words[2])) |
+                (uint32_t(upper ? uint16_t(words[1]) : uint16_t(words[3])) << 16);
+            const uint32_t peer1 = sycl::permute_group_by_xor(sg, pair1, uint32_t(8));
+            words[0] = upper ? uint16_t(peer1) : uint16_t(words[0]);
+            words[1] = upper ? uint16_t(peer1 >> 16) : uint16_t(words[1]);
+            words[2] = upper ? uint16_t(words[2]) : uint16_t(peer1);
+            words[3] = upper ? uint16_t(words[3]) : uint16_t(peer1 >> 16);
             const int d = dim_base + 4 * (lane % 4) + lane / 4;
             // Keep BFloat object lifetime/type and the original matrix stride.
             // Only the staging schedule changes; no new WG barrier is added.
@@ -123,8 +130,32 @@ def generated(project):
     return outputs
 
 
-def staged(mask=0, defect=None):
-    """Symbolic (cell,dimension) tokens; None denotes zero-filled missing rows."""
+def staged(mask=0, defect=None, seed=None):
+    """Independent dense transpose versus two packed exchanges per SG tile.
+
+    Unique symbolic tokens prove the full permutation. Numeric seeds check
+    unsigned half packing/extraction,including zero,all-one and sign-bit words.
+    """
+    def value(cell, dimension):
+        if mask >> cell & 1:
+            return None if seed is None else 0
+        if seed is None:
+            return (cell,dimension)
+        if seed in ('zero','ones','sign'):
+            return {'zero':0,'ones':0xffff,'sign':0x8000}[seed]
+        return ((cell*8192+dimension*40503)^seed)&0xffff
+
+    def pack(pair):
+        if seed is None:
+            return tuple(pair)
+        if not all(0 <= word <= 0xffff for word in pair):
+            raise ValueError('packing outside uint16 domain')
+        return pair[0] | (pair[1] << 16)
+
+    def unpack(pair):
+        words=pair if seed is None else (pair & 0xffff,(pair >> 16) & 0xffff)
+        return words[::-1] if defect == 'reversed_halves' else words
+
     output = {}; loaded = set(); exchanges = 0
     for subgroup in range(8):
         for tile in range(subgroup, 128, 8):
@@ -137,21 +168,21 @@ def staged(mask=0, defect=None):
                     if not 0 <= cell < 32 or not 0 <= d < 256 or (cell,d) in loaded:
                         raise ValueError('duplicate or out-of-bounds source')
                     loaded.add((cell,d))
-                words.append([None if mask >> cell & 1 else (cell,d) for d in dimensions])
+                words.append([value(cell,d) for d in dimensions])
             for bit in range(2):
                 if defect == 'skip_second_stage' and bit == 1:
                     continue
-                next_words = [[None]*4 for _ in range(16)]
+                indices=[((0,2) if lane & 4 else (1,3)) if bit==0 else
+                         ((0,1) if lane & 8 else (2,3)) for lane in range(16)]
+                packed=[pack([words[lane][j] for j in indices[lane]]) for lane in range(16)]
+                next_words = [row[:] for row in words]
                 for lane in range(16):
-                    peer_lane = lane ^ (1 << (bit+2))
+                    peer_lane = lane ^ (8 if defect=='wrong_mask' and bit==0 else 1 << (bit+2))
                     if not 0 <= peer_lane < 16:
                         raise ValueError('out-of-range subgroup peer')
-                    for j in range(4):
-                        peer_j = j if defect == 'wrong_register' else j ^ (1 << bit)
-                        peer = words[peer_lane][peer_j]
-                        use_peer = (lane >> (bit+2) & 1) != (j >> bit & 1)
-                        next_words[lane][j] = peer if use_peer else words[lane][j]
-                        exchanges += 1
+                    for j,word in zip(indices[lane],unpack(packed[peer_lane])):
+                        next_words[lane][j]=word
+                    exchanges += 1
                 words = next_words
             for lane in range(16):
                 d = dim_base + 4*(lane % 4) + lane // 4
@@ -160,7 +191,7 @@ def staged(mask=0, defect=None):
                     if not 0 <= address < 8192 or address in output:
                         raise ValueError('duplicate or out-of-bounds destination')
                     output[address] = words[lane][j]
-    expected = {d*32+cell: None if mask >> cell & 1 else (cell,d)
+    expected = {d*32+cell: value(cell,d)
                 for d in range(256) for cell in range(32)}
     if len(loaded) != 8192 or output != expected:
         raise ValueError('staging differs from independent dense transpose')
@@ -171,20 +202,23 @@ def host_controls(project):
     generated_sources = generated(project)
     masks = [0, (1 << 32)-1, 0x55555555, 0xaaaaaaaa]+[1 << i for i in range(32)]
     counts = [staged(mask) for mask in masks]
-    if set(counts) != {16384}:
+    seeds=('zero','ones','sign',0x5a17,0xc001,0x13579bdf)
+    numeric=[staged(mask,seed=seed) for mask in masks for seed in seeds]
+    if set(counts+numeric) != {4096}:
         raise ValueError('nonuniform symbolic collective count')
     rejected = 0
-    for defect in ('skip_second_stage','wrong_register'):
+    for defect in ('skip_second_stage','wrong_mask','reversed_halves'):
         try:
             staged(defect=defect)
         except ValueError:
             rejected += 1
         else:
             raise ValueError('broken transpose escaped independent oracle')
-    return dict(passed=True, mask_cases=len(masks), values_per_case=8192,
+    return dict(passed=True, mask_cases=len(masks), numeric_cases=len(numeric),values_per_case=8192,
                 unique_source_and_destination=True, missing_rows_zero=True,
-                symbolic_lane_collective_calls_per_WG=16384,
-                subgroup_collective_instances_per_WG=1024,
+                symbolic_lane_collective_calls_per_WG=4096,
+                subgroup_collective_instances_per_WG=256,
+                count_scope='One WG per32selected-cell iteration over all256Kdimensions;source-derived,not executed instruction/traffic counts.',
                 rejected_broken_transposes=rejected,
                 generated_sha256={k:hashlib.sha256(v).hexdigest()
                                   for k,v in generated_sources.items()},

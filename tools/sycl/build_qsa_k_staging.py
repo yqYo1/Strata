@@ -22,7 +22,7 @@ import measurement_guards as guards
 import measurement_owner as supervision
 
 P,B=gen.P,gen.B
-ROOT=B/'qsa-k-staging-v1'
+ROOT=B/'qsa-k-staging-packed32-v1'
 RESULT=gen.A/'qsa-k-staging-current.json'
 FIXTURE='bench/sycl/qsa_k_staging.cpp'
 ADMISSION='bench/sycl/qsa_k_staging_admission.hpp'
@@ -51,10 +51,15 @@ def generated_sources():
 
 def source_contract():
     scope=qualified_runtime.validation.committed(gen.A/'research-index.json',
-        ('qsa_subgroup_k_staging_source_contract_20261028',))
+        ('qsa_packed_k_staging_source_contract_20261028',))
     guards.require(scope['status']=='reviewed_source_contract_no_device_qualification' and
-        scope['worker_closed'] and scope['review']['status']=='completed',
+        scope['worker_closed'] and scope['review']['status']=='completed' and
+        scope['review']['model']=='gpt-6-luna' and scope['review']['reasoning_effort']=='max',
         'closed version-matched source audit and native curation required')
+    for name,sha in scope['source_snapshot'].items():
+        raw=gen.git('show',scope['source_commit']+':'+name)
+        guards.require(hashlib.sha256(raw).hexdigest()==sha and digest(P/name)==sha,
+            'source-reviewed packed K input changed: '+name)
     guards.require(digest(P/scope['prerequisites_evidence']['source']['path'])==
         scope['prerequisites_evidence']['source']['sha256'], 'source-reviewed K generator changed')
     contract=scope['qualified_source_contract']
@@ -98,10 +103,10 @@ def inputs(revision):
 
 def experiment():
     return dict(
-        question='Build a controlled GPU-local resource discriminator:does attention service respond to changed K lane grouping/register transpose at fixed payload,FLOPs and online order? This controller only compiles;no GPU execution.',
-        mechanism='Change K staging from16cells-by4dims to4cells-by16dims perSG16,then uniform XOR4/XOR8 register transpose. Same8192BF16 values,K32/V256,online32cell order and matrix math. More grouped input loads trade against1024subgroup collective instances and changed SLM store schedule;no bank/physical-traffic assumption.',
-        arms='OwnMIT6e40 original;private identical-control with direct attention event;private subgroup K staging. No production or decode source/placement change.',
-        source_contract='Own cfabc1ee2 harness/build/property scaffold and own6e40prefix;new source96aa415cf. Closed36-mask integer proof is not device correctness. Require independent version-matched SYCL/API source audit and native Luna/max curation before build.',
+        question='Does a packed-u32 transpose make four-cell-by16dim K staging useful after the eight-u16 variant lost11.8..14.8percent wall time? This controller only compiles;no GPU execution.',
+        mechanism='Keep the rejected variant\'s mapping/global loads/typed local stores,but pack each pair of needed uint16 values into one uint32 and use uniform XOR4/XOR8 exchanges. Same8192BF16 values,K32/V256,online32cell order and matrix math. Source collective instances drop1024to256 per WG/32selected cells across all256Kdimensions. Packing/select cost and real lowering may erase the benefit;no bank/physical-traffic/occupancy assumption.',
+        arms='OwnMIT6e40 original;private identical-control with direct attention event;private packed-u32 K staging. No production or decode source/placement change.',
+        source_contract='Own cfabc1ee2 harness/build/property scaffold and own6e40prefix;own96aa/e1 staging predecessor,not XeStrata application code. Require36-mask symbolic plus216numeric packing cases and independent version-matched source/harness audit/native Luna-max curation before build. No device qualification from proof.',
         compile='Ten object compiles,two links,three device LLVM emissions. Link the actual-ID comparison and separately the existing independent numerical/guard fixture through a candidate-only adapter. Verify dependency files against frozen project/generated/compiler manifests;commit prepared commands and hashes before building.',
         admission='Separate committed property-only plan queries all three exact compiled kernels,WG128/SG16/18args,qualified loader and declared20036source local bytes before kernel submission. Traced smoke verifies actual local arguments and runtime.',
         numerical='Every K-staging output bit must match unmodified original32 and private32 on finite actual-ID inputs,repeats,guards,immutable inputs and packed buffers. Independent scalar spots remain. The separate existing oracle covers masked/tail/missing/nonfinite inputs,align2scratch,alias/no-op/admission and numerical bounds against prefix33. Three translated queries reach262144final slots but do not qualify full-context model fill.',
@@ -162,9 +167,9 @@ def admission(record,binary=False):
 
 def prepare():
     guards.require(not RESULT.exists() and not ROOT.exists(),'fresh K-staging generation only;inspect any existing result/job before retry')
-    previous=gen.committed(gen.A/'qsa-slm-pitch-current.json')
-    guards.require(previous['stage']=='closed_rejected_speed' and previous['retention']['retirement']['complete']
-        and not previous['decision']['advance_to_model'], 'previous comparison must be closed and its build retired')
+    previous=gen.committed(gen.A/'fused-moe-service-current.json')['qsa_k_staging_v1_closed']
+    guards.require(previous['retirement']['complete'] and not previous['advance_to_model']
+        and not previous['model_adopted'], 'previous K-staging comparison must be closed and retired')
     contract=source_contract()
     revision=gen.git('rev-parse','HEAD').decode().strip();pins=inputs(revision)
     fixture=qualified_runtime.validation.committed(gen.A/'fused-moe-service-current.json',

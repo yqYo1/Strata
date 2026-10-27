@@ -960,5 +960,20 @@
     "next": "Author a new independent packed-u32 transpose preserving the same mapping while reducing source subgroup exchange instances from1024to256 per WG per32cell iteration;require fresh proof,source/API review,build and all device/speed gates. No assumption that fewer exchanges is faster. Retire this closed comparison generation after original source/recipe recovery.",
     "advance_to_model": false,
     "model_adopted": false
+  },
+  "qsa_packed_k_staging_preflight": {
+    "status": "source_prepared",
+    "source_sha256": "d1a34925846e03508ed604955d33afbf22a280880dd86bb71ba8c6ed37eca404",
+    "provenance": "Main-authored packed-u32 replacement in own96aa/e1generator,from own6e40prefix;no XeStrata application code.",
+    "question": "Can two uniform packed-u32 exchanges preserve all K transpose bits while reducing source collective calls versus the measured slower eight-u16 variant?",
+    "plan": {
+      "cases": "36masks:allvalid,allmissing,alternating2,and each missing cell. Independent symbolic tokens cover8192sources/destinations per mask;216numeric cases coverzero/all-one/sign-bit and3mixed uint16patterns. Reject skipped stage,wrong peer mask and reversed half extraction.",
+      "expected_symbolic_lane_calls_per_WG": 4096,
+      "expected_subgroup_collective_instances_per_WG": 256,
+      "count_scope": "One32selected-cell iteration over all256Kdimensions;source counts only.",
+      "budgets": "Serialized Main-owned CPU-only proof,90s wall/60s CPU/256MiBvirtual memory. No compiler/native/GPU execution.",
+      "controller": "35synthetic host parser/device-identity false-pass controls under60s wall,after source commit.",
+      "advance": "Only independent version-matched packed-u32 source/harness review plus native Luna/max curation can authorize build. A host proof alone permits no GPU launch or model adoption."
+    }
   }
 }
