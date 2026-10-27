@@ -611,7 +611,7 @@
   },
   "event_reconciliation": {
     "selected_qsa_capture_v1": {
-      "stage": "prepared",
+      "stage": "captured",
       "binary": {
         "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/strata",
         "bytes": 22190000,
@@ -912,10 +912,121 @@
         "retention": "Transient all-layer capture<=1GiB;regular fresh private file,no FIFO. Retain one validated initialized layer0 fixture<=64MiB outsideGit solely for the next selected-QSA working-set attribution comparison;review at that comparison closure. Commit compact source/commands/env/config/counts/hashes/locality/outcomes. Retire all-layer dump and successful logs/cache/transaction receipts after verification.",
         "limits": "IDs give logical locality,not physical traffic/cache hits/saturation. Source-defined Mode0 map is not a device page-table capture. No Q/K/V tensor contents are captured; later calibration must declare synthetic values and a numerical oracle. This diagnostic does not qualify sustained decode,quality/agent,stateRESTORE or physical262144."
       },
-      "passed": false,
-      "complete": false,
+      "passed": true,
+      "complete": true,
       "active": false,
-      "ownership_closed": true
+      "ownership_closed": true,
+      "host_probe_accepted": true,
+      "host_controls": {
+        "cases": 9,
+        "passed": true
+      },
+      "warmup": {
+        "bytes": 7186896,
+        "sha256": "50fadc93a4dc8555e40a1690fab58ae1992cb983804cb1605cc451725acdacc3",
+        "records": 12,
+        "rows_per_layer": 73,
+        "causal_ordered_identity_passed": true
+      },
+      "analysis": {
+        "raw_bytes": 646213056,
+        "raw_sha256": "cd76cbc1d2997c31e535afa3a8f48dbd1cd3b77febecc1e532552df123d38398",
+        "record_count": 24,
+        "valid_entries": 159788904,
+        "ignored_uninitialized_entries": 1764264,
+        "fixture": {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/selected-qsa-capture-v1/layer0-final-ids.bin",
+          "bytes": 53252180,
+          "sha256": "a0410c7005f64a89d02becd42fcfd8155c92b68cd7b4d175543c172070a6338c",
+          "header": [
+            0,
+            32768,
+            6491,
+            2051
+          ],
+          "consumer": "next selected-QSA working-set attribution fixture",
+          "review": "Retire when that comparison closes or is superseded; maximum64MiB."
+        },
+        "locality": {
+          "query_rows": 6491,
+          "selected_entries": 13313041,
+          "unique_logical_cells": 39127,
+          "unique_logical_pages4": 9782,
+          "adjacent_query_shared_fraction": {
+            "count": 6490,
+            "minimum": 0.16772306192101413,
+            "median": 0.45294978059483176,
+            "p95": 0.6645538761579717,
+            "maximum": 0.8907849829351536
+          },
+          "windows16_unique_cells": {
+            "count": 406,
+            "minimum": 8265,
+            "median": 11651.0,
+            "p95": 12900,
+            "maximum": 13625
+          },
+          "windows16_nominal_packed_KV_bytes": {
+            "count": 406,
+            "minimum": 16926720,
+            "median": 23861248.0,
+            "p95": 26419200,
+            "maximum": 27904000
+          },
+          "windows16_reuse_factor": {
+            "count": 406,
+            "minimum": 2.4085137614678898,
+            "median": 2.8151327248412708,
+            "p95": 3.154777927321669,
+            "maximum": 3.5592190889370934
+          },
+          "age_bin_edges": [
+            0,
+            32,
+            256,
+            2048,
+            8192,
+            32768,
+            131072,
+            262144
+          ],
+          "age_bin_counts": [
+            207374,
+            1249941,
+            3135241,
+            3725680,
+            3370166,
+            1624639,
+            0
+          ],
+          "interpretation": "Logical selected cells; 2048 packed BF16 K+V bytes/cell (2KV heads,256dimensions,2bytes,2tensors). Windows are consecutive 16queries including a final partial window. Reuse is selected entries /unique cells,not measured cache hits. No physical traffic or saturation claim."
+        }
+      },
+      "native": {
+        "pid": 3743632,
+        "start_ticks": 142075720,
+        "sid": 3743583
+      },
+      "model_hashes_matched": 15,
+      "request": {
+        "request_sha256": "1fd63b8c67a1888e443800b5c6d339ca116df2cb91941e6f332b6adf74275b3a",
+        "actual_read_tokens": 39260,
+        "actual_reused_tokens": 0,
+        "generated_tokens": 24,
+        "prompt_ms": 59228.5
+      },
+      "performance_adopted": false,
+      "hardware_saturation_qualified": false,
+      "fresh_faults": [],
+      "boot_unchanged": true,
+      "driver_after": {
+        "pci": "/sys/bus/pci/devices/0000:05:00.0",
+        "driver": "xe",
+        "vendor": "0x8086",
+        "device": "0xe20c",
+        "kernel": "7.0.0-38-generic",
+        "devcoredump": false
+      }
     },
     "selected_qsa_service_v2": {
       "stage": "failed",

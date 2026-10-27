@@ -1565,18 +1565,30 @@ indexed knowledge:the configured Xe2 overload/capability and lowering must be
 qualified before use. Neither report supplies a throughput gain or physical
 bandwidth/critical-path attribution. Preserve decode and global JIT flags.
 
-The next capture uses the original engine's existing `STRATA_QSA_DUMP` hook,
-not a new native build. The committed controller and corruption controls first
-validate the74-token warmup at a request gate,then permit one official32K-minimum
-request (39260actual tokens). `LAST=1` selects a whole final chunk,not a single
-query:the expected transient all-layer file is646213056bytes,including warmup.
-The private finite budget is1GiB. Verify all24headers and initialized causal,
-ordered IDs;do not interpret the uninitialized warmup cap suffix. Retain only
-the initialized6491-row layer0 record for the next working-set comparison.
-Page identity is source-derived from qualified full-resident Mode0 admission,
-not a captured device table. No Q/K/V values or physical traffic are captured;
-the later calibration must declare its synthetic tensor values. This plan has
-not yet produced a fixture or a performance result.
+The source-bound capture now passes using the original engine's existing
+`STRATA_QSA_DUMP` hook,without a native rebuild. Nine host corruption controls
+pass;the74-token warmup's12records validate at a gate before the long request.
+Official`bench.sh` processes39260fresh tokens and24thinking-on outputs. The
+646213056-byte transient file contains exactly24expected headers,159788904valid
+causal/ordered IDs and1764264uninitialized cap entries excluded from parsing.
+Native and benchmark exit normally;all15model hashes match,parameter validation
+is silent,and no fresh fault appears. This observed first-use run is diagnostic,
+not clean speed or a decode qualification.
+
+The retained layer0 final-chunk fixture has6491queries at position32768,width2051,
+and53252180bytes. It selects39127distinct logical cells out of39259live cells.
+Adjacent-query overlap has median45.295%;16-query windows have median11651
+distinct cells and2.8151logical reuse factor. Their nominal packed BF16 K+V
+footprint has median23861248bytes (22.756MiB). These are logical sensitivity
+inputs,not measured cache hits,physical traffic or saturation. Whole-chunk
+compaction could omit only132live cells for this layer/chunk;this does not justify
+another whole-prefix packing optimization. Next compare fixed real-query subsets
+across bounded rotating copies,with pack and attention costs separated.
+Page identity remains source-derived from qualified full-resident Mode0 admission,
+not a captured device table. No Q/K/V values were captured;declare synthetic
+tensor values in that calibration. Retain this one initialized fixture outside
+Git only until the named working-set comparison closes or is superseded.
+See`selected_qsa_capture_v1` in the linked resource result for hashes and limits.
 
 Complete prefill phase attribution requires three independent ledgers: route-owner
 planned operations, actual API results and collector device executions.
