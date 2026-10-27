@@ -2001,7 +2001,7 @@
       ],
       "scope": "Single eligible physical Intel GPU/accelerator plus exact native device name;not a general multi-GPU UUID mapping."
     },
-    "stage": "prepared",
+    "stage": "closed",
     "mode": "boundary",
     "source_commit": "22001c6d961a49e4ebd72528781026957ea7a15b",
     "controller_inputs": {
@@ -2150,6 +2150,231 @@
           },
           "validation": {
             "pid": 2002125,
+            "loader": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_loader.so.0.12.0",
+            "threads_before": 1,
+            "preinit": 37,
+            "config_enabled": true,
+            "first_init": true,
+            "dispatch_result": 46,
+            "output_untouched": true,
+            "retained_reference_until_exit": true,
+            "runtime_teardown_qualified": false
+          },
+          "output": {
+            "numerical": [
+              {
+                "kind": "numerical",
+                "queries": 3,
+                "arm": 0,
+                "reference_cells": 32,
+                "spot_queries": 3,
+                "compared": 18432,
+                "max_abs": 0,
+                "max_budget_ratio": 0
+              },
+              {
+                "kind": "numerical",
+                "queries": 3,
+                "arm": 1,
+                "reference_cells": 32,
+                "spot_queries": 3,
+                "compared": 18432,
+                "max_abs": 0,
+                "max_budget_ratio": 0
+              },
+              {
+                "kind": "numerical",
+                "queries": 3,
+                "arm": 2,
+                "reference_cells": 32,
+                "spot_queries": 3,
+                "compared": 18432,
+                "max_abs": 0,
+                "max_budget_ratio": 0
+              }
+            ],
+            "deltas": [
+              {
+                "kind": "delta",
+                "queries": 3,
+                "elements": 18432,
+                "changed_from32": 0,
+                "max_abs": 0,
+                "relative_l2": 0
+              }
+            ],
+            "samples": [],
+            "guards": true,
+            "inputs_immutable": true,
+            "cell32_exact": true,
+            "own_reference": true
+          },
+          "local_launches": {
+            "0": {
+              "calls": 2,
+              "local_arguments": [
+                [
+                  0,
+                  16384
+                ],
+                [
+                  1,
+                  1024
+                ],
+                [
+                  3,
+                  64
+                ],
+                [
+                  4,
+                  64
+                ],
+                [
+                  5,
+                  64
+                ],
+                [
+                  13,
+                  256
+                ],
+                [
+                  15,
+                  2112
+                ],
+                [
+                  16,
+                  64
+                ]
+              ],
+              "dynamic_local_bytes": 20032,
+              "work_dim": 1,
+              "local_size": [
+                128
+              ]
+            },
+            "1": {
+              "calls": 2,
+              "local_arguments": [
+                [
+                  0,
+                  16384
+                ],
+                [
+                  1,
+                  1024
+                ],
+                [
+                  3,
+                  64
+                ],
+                [
+                  4,
+                  64
+                ],
+                [
+                  5,
+                  64
+                ],
+                [
+                  13,
+                  256
+                ],
+                [
+                  15,
+                  2112
+                ],
+                [
+                  16,
+                  64
+                ]
+              ],
+              "dynamic_local_bytes": 20032,
+              "work_dim": 1,
+              "local_size": [
+                128
+              ]
+            },
+            "2": {
+              "calls": 2,
+              "local_arguments": [
+                [
+                  0,
+                  16384
+                ],
+                [
+                  1,
+                  1024
+                ],
+                [
+                  3,
+                  64
+                ],
+                [
+                  4,
+                  64
+                ],
+                [
+                  5,
+                  64
+                ],
+                [
+                  13,
+                  256
+                ],
+                [
+                  15,
+                  2112
+                ],
+                [
+                  16,
+                  64
+                ]
+              ],
+              "dynamic_local_bytes": 20032,
+              "work_dim": 1,
+              "local_size": [
+                128
+              ]
+            }
+          }
+        }
+      ],
+      "model_qualified": false,
+      "GPU_executed": true,
+      "postchecks_complete": true,
+      "postcheck_errors": [],
+      "fresh_faults": [],
+      "boot_unchanged": true,
+      "driver_after": {
+        "pci": "/sys/bus/pci/devices/0000:05:00.0",
+        "driver": "xe",
+        "vendor": "0x8086",
+        "device": "0xe20c",
+        "kernel": "7.0.0-38-generic",
+        "devcoredump": false
+      }
+    },
+    {
+      "mode": "boundary",
+      "controller_commit": "22001c6d961a49e4ebd72528781026957ea7a15b",
+      "plan_commit": "dee481906544c26988516fef1514d46a65eb55e7",
+      "passed": true,
+      "complete": true,
+      "active": false,
+      "ownership_closed": true,
+      "observations": [
+        {
+          "process": 0,
+          "exit_code": 0,
+          "ownership_closed": true,
+          "physical_device": {
+            "name": "Intel(R) Arc(TM) B570 Graphics",
+            "pci": "0000:05:00.0",
+            "driver": "xe",
+            "matching_DRM_descriptors": 1
+          },
+          "validation": {
+            "pid": 2008193,
             "loader": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_loader.so.0.12.0",
             "threads_before": 1,
             "preinit": 37,
