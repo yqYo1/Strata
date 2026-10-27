@@ -699,7 +699,7 @@
   "ownership_closed": true,
   "passed": true,
   "complete": true,
-  "GPU_executed": false,
+  "GPU_executed": true,
   "model_adoption_qualified": false,
   "actual_compiled_inputs": {
     "files": 693,
@@ -1430,7 +1430,7 @@
     }
   },
   "check_plan": {
-    "stage": "prepared",
+    "stage": "closed",
     "mode": "oracle-smoke",
     "source_commit": "e472e9d71ebd3a84a70fcd9b1b29ef7b73c51235",
     "controller_inputs": {
@@ -1690,5 +1690,171 @@
         "session": null
       }
     ]
+  },
+  "checks": [
+    {
+      "mode": "oracle-smoke",
+      "source_commit": "e472e9d71ebd3a84a70fcd9b1b29ef7b73c51235",
+      "observations": [
+        {
+          "process": 0,
+          "pid": 4089673,
+          "exit_code": 0,
+          "ownership_closed": true,
+          "validation": {
+            "pid": 4089673,
+            "loader": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_loader.so.0.12.0",
+            "threads_before": 1,
+            "preinit": 37,
+            "config_enabled": true,
+            "first_init": true,
+            "dispatch_result": 46,
+            "output_untouched": true,
+            "retained_reference_until_exit": true,
+            "runtime_teardown_qualified": false
+          },
+          "session_removed": true,
+          "oracle": {
+            "cases": [
+              [
+                97,
+                49,
+                33,
+                1,
+                0
+              ],
+              [
+                97,
+                71,
+                33,
+                3,
+                1
+              ]
+            ],
+            "extended_cases": 1,
+            "independent_oracle": true,
+            "all3arms_exact": true,
+            "guards": true,
+            "inputs_immutable": true,
+            "physical262144_component": false,
+            "max_abs": 0.0,
+            "max_budget_ratio": 0.0
+          }
+        },
+        {
+          "process": 1,
+          "pid": 4091339,
+          "exit_code": 0,
+          "ownership_closed": true,
+          "validation": {
+            "pid": 4091339,
+            "loader": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_loader.so.0.12.0",
+            "threads_before": 1,
+            "preinit": 37,
+            "config_enabled": true,
+            "first_init": true,
+            "dispatch_result": 46,
+            "output_untouched": true,
+            "retained_reference_until_exit": true,
+            "runtime_teardown_qualified": false
+          },
+          "session_removed": true,
+          "oracle": {
+            "cases": [
+              [
+                97,
+                49,
+                33,
+                1,
+                0
+              ],
+              [
+                97,
+                71,
+                33,
+                3,
+                1
+              ]
+            ],
+            "extended_cases": 1,
+            "independent_oracle": true,
+            "all3arms_exact": true,
+            "guards": true,
+            "inputs_immutable": true,
+            "physical262144_component": false,
+            "max_abs": 0.0,
+            "max_budget_ratio": 0.0
+          }
+        },
+        {
+          "process": 2,
+          "pid": 4092477,
+          "exit_code": 0,
+          "ownership_closed": true,
+          "validation": {
+            "pid": 4092477,
+            "loader": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_loader.so.0.12.0",
+            "threads_before": 1,
+            "preinit": 37,
+            "config_enabled": true,
+            "first_init": true,
+            "dispatch_result": 46,
+            "output_untouched": true,
+            "retained_reference_until_exit": true,
+            "runtime_teardown_qualified": false
+          },
+          "session_removed": true,
+          "oracle": {
+            "cases": [
+              [
+                97,
+                49,
+                33,
+                1,
+                0
+              ],
+              [
+                97,
+                71,
+                33,
+                3,
+                1
+              ]
+            ],
+            "extended_cases": 1,
+            "independent_oracle": true,
+            "all3arms_exact": true,
+            "guards": true,
+            "inputs_immutable": true,
+            "physical262144_component": false,
+            "max_abs": 0.0,
+            "max_budget_ratio": 0.0
+          }
+        }
+      ],
+      "passed": true,
+      "complete": true,
+      "ownership_closed": true,
+      "postchecks_complete": true,
+      "postcheck_errors": [],
+      "fresh_faults": [],
+      "boot_unchanged": true,
+      "driver_after": {
+        "pci": "/sys/bus/pci/devices/0000:05:00.0",
+        "driver": "xe",
+        "vendor": "0x8086",
+        "device": "0xe20c",
+        "kernel": "7.0.0-38-generic",
+        "devcoredump": false
+      }
+    }
+  ],
+  "host_controller_checks": {
+    "source_commit": "7a9a07de81ae2e8ef69d3e77796bc525803bd481",
+    "command": "timeout 30s flock -n /home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/owned-v0141-measurement.lock /usr/bin/python3.12 -I -S -B tests/core/test_qsa_barrier.py",
+    "passed": true,
+    "tests": 7,
+    "exit_code": 0,
+    "GPU_executed": false
   }
 }

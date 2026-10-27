@@ -1694,9 +1694,14 @@ Execution controller`e472e9d71` passes seven host controls covering the complete
 108sample grid and rejection of missing samples,subfloor batches,invented
 original events,changed order,one-process service regression and namespace
 control drift. It checks the committed independent contract reference and
-compiled CFG before each device process. No GPU qualification is established
-by compilation or these host controls;the next gate is three small traced
-oracle processes,with each arm independently selected for negative admission.
+compiled CFG before each device process. Three small traced oracle processes
+now pass with each arm independently selected for negative admission. Every
+supported invocation compares all three arms exactly;both independent scalar
+oracle cases per process have zero output error. Guards,input immutability,
+aliased/missing pages and sticky K/V diagnostics pass. All processes close at
+exit0,parameter validation is silent and no fresh driver fault appears. This
+qualifies the small component only;larger widths,physical262144 component,
+actual-ID event clocks,resources and performance remain pending.
 See[the current build and gates](../bench/results/2026-10-15-pr6-recovery-audit/qsa-barrier-current.json).
 
 Complete prefill phase attribution requires three independent ledgers: route-owner
