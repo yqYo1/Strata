@@ -610,54 +610,8 @@
     "extra_engine_generation_review": "The named attribution is closed. Select and retire the extra validated generation before another build; no third generation is authorized by this record."
   },
   "event_reconciliation": {
-    "selected_qsa_environment_host_v1": {
-      "stage": "closed",
-      "source_commit": "25b919f3b144ef51416bfb9fa1919a0a7c7e7c67",
-      "assets": {
-        "launcher": {
-          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/unitrace-session-owner-v1/unitrace",
-          "sha256": "6faac1e74f18ce481581f3ed112611ec3e0a1f81eac7990b57b622f212294244",
-          "bytes": 513168
-        },
-        "collector": {
-          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/unitrace-l0-4b6d742-v2/libunitrace_tool.so",
-          "sha256": "5a5123569afec5e1da12e98967955686d753ce28ae8d42b96ec565b52ec4d1e5",
-          "bytes": 2328576
-        }
-      },
-      "complete": true,
-      "passed": true,
-      "active": false,
-      "ownership_closed": true,
-      "observation": {
-        "pid": 3511153,
-        "different_keys": [],
-        "preload_spellings": [
-          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/unitrace-session-owner-v1/libunitrace_tool.so",
-          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/ur-validation-preload-v2/libstrata_ur_validation.so"
-        ],
-        "preload_resolved": [
-          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/unitrace-l0-4b6d742-v2/libunitrace_tool.so",
-          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/ur-validation-preload-v2/libstrata_ur_validation.so"
-        ],
-        "required": [
-          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/unitrace-l0-4b6d742-v2/libunitrace_tool.so",
-          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/ur-validation-preload-v2/libstrata_ur_validation.so"
-        ],
-        "passed": true
-      },
-      "fresh_faults": [],
-      "boot_unchanged": true,
-      "session_removed": true,
-      "original_plan": {
-        "commit": "02477409f",
-        "path": "bench/results/2026-10-15-pr6-recovery-audit/prefill-resources-current.json",
-        "key": "selected_qsa_environment_host_v1"
-      },
-      "retention": "Compact CPU-only environment qualification consumed by v2. Normal host logs/receipt retire after v2 preparation;original source and command recover from the pinned plan."
-    },
-    "selected_qsa_service": {
-      "stage": "failed",
+    "selected_qsa_service_v2": {
+      "stage": "prepared",
       "binary": {
         "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/strata",
         "bytes": 22190000,
@@ -677,14 +631,14 @@
         }
       },
       "plan": {
-        "source_commit": "69acb8d8b52d99e46d1219d2cecdff843801895f",
+        "source_commit": "27fa8c6abc6063867402b09a47e4de2642874d5f",
         "command": [
           "/bin/sh",
           "/home/yayoi/orca/workspaces/Strata/sycl/bench.sh",
           "--config",
-          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/selected-qsa-service-v1/config.json",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/selected-qsa-service-v2/config.json",
           "--port",
-          "42313",
+          "58119",
           "--prefill-only",
           "--prefill-tokens",
           "32768",
@@ -698,11 +652,11 @@
           "--ready-timeout",
           "600",
           "--out",
-          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/selected-qsa-service-v1/bench"
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/selected-qsa-service-v2/bench"
         ],
         "generated": {
-          "config.json": "6880c5012fa29d82548d01b89315c50a5f3fd35bc1373368f6db903ccbe0d8ea",
-          "plan.json": "828c098c987c5851e5d2898507452dfd937af1924e671c671eff008e409d6340"
+          "config.json": "ffc1a13a3a8e175ea8119821ce5f90885e64dc8c3ec6f8330fc3ff7552bdd3f8",
+          "plan.json": "e9120499a482af287859a82101f965342f0c75a54c0ab844c5e512aa3cff6892"
         },
         "question": "How much selected6e40 QSA attention and prefix-pack GPU service does one official32K+ request emit?",
         "expected": {
@@ -785,7 +739,7 @@
               "strata"
             ],
             "host": "127.0.0.1",
-            "log": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/selected-qsa-service-v1/engine.stderr",
+            "log": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/selected-qsa-service-v2/engine.stderr",
             "engine_silence_s": 480,
             "parallel": 1,
             "open_browser": false,
@@ -809,7 +763,7 @@
             },
             "native_profile": {
               "mode": "aggregate",
-              "session": "StrataQsa9c18b56eb1b21496ebc184bd",
+              "session": "StrataQsaedfc0cbae65cbdedb43f120f",
               "launcher": {
                 "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/unitrace-session-owner-v1/unitrace",
                 "sha256": "6faac1e74f18ce481581f3ed112611ec3e0a1f81eac7990b57b622f212294244",
@@ -823,25 +777,84 @@
               "environment": {
                 "UNITRACE_SystemTime": "1",
                 "UNITRACE_FollowChildProcess": "1",
-                "UNITRACE_TraceOutputDir": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/selected-qsa-service-v1/trace"
+                "UNITRACE_TraceOutputDir": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/selected-qsa-service-v2/trace"
               }
             }
           }
         },
         "host_controls": {
-          "source_commit": "69acb8d8b52d99e46d1219d2cecdff843801895f",
+          "source_commit": "27fa8c6abc6063867402b09a47e4de2642874d5f",
           "command": [
             "/usr/bin/python3",
             "-B",
             "tests/core/test_qsa_service.py"
           ],
           "serialized": true,
-          "timeout_s": 45,
-          "tests": 3,
-          "corrupted_table_variants": 9,
+          "tests": 4,
+          "table_corruptions": 9,
+          "environment_corruptions": 5,
           "exit_code": 0,
           "GPU_executed": false
+        },
+        "prior_failure": "V1/25b919f3b is closed failed;CPU environment host gate passed at27fa8c6ab. V2 resolves and compares the ordered collector/probe objects,retains every expected environment value and refuses metric/XPTI activation."
+      },
+      "passed": false,
+      "complete": false,
+      "active": false,
+      "ownership_closed": true
+    },
+    "selected_qsa_environment_host_v1": {
+      "stage": "closed",
+      "source_commit": "25b919f3b144ef51416bfb9fa1919a0a7c7e7c67",
+      "assets": {
+        "launcher": {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/unitrace-session-owner-v1/unitrace",
+          "sha256": "6faac1e74f18ce481581f3ed112611ec3e0a1f81eac7990b57b622f212294244",
+          "bytes": 513168
+        },
+        "collector": {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/unitrace-l0-4b6d742-v2/libunitrace_tool.so",
+          "sha256": "5a5123569afec5e1da12e98967955686d753ce28ae8d42b96ec565b52ec4d1e5",
+          "bytes": 2328576
         }
+      },
+      "complete": true,
+      "passed": true,
+      "active": false,
+      "ownership_closed": true,
+      "observation": {
+        "pid": 3511153,
+        "different_keys": [],
+        "preload_spellings": [
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/unitrace-session-owner-v1/libunitrace_tool.so",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/ur-validation-preload-v2/libstrata_ur_validation.so"
+        ],
+        "preload_resolved": [
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/unitrace-l0-4b6d742-v2/libunitrace_tool.so",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/ur-validation-preload-v2/libstrata_ur_validation.so"
+        ],
+        "required": [
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/unitrace-l0-4b6d742-v2/libunitrace_tool.so",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/ur-validation-preload-v2/libstrata_ur_validation.so"
+        ],
+        "passed": true
+      },
+      "fresh_faults": [],
+      "boot_unchanged": true,
+      "session_removed": true,
+      "original_plan": {
+        "commit": "02477409f",
+        "path": "bench/results/2026-10-15-pr6-recovery-audit/prefill-resources-current.json",
+        "key": "selected_qsa_environment_host_v1"
+      },
+      "retention": "Compact CPU-only environment qualification consumed by v2. Normal host logs/receipt retire after v2 preparation;original source and command recover from the pinned plan."
+    },
+    "selected_qsa_service": {
+      "stage": "failed",
+      "binary": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/strata",
+        "bytes": 22190000,
+        "sha256": "22182f1a5e62e5f4259ce49a75ae44afbd988166ec79324816e499ff37ef60e4"
       },
       "passed": false,
       "complete": false,
@@ -850,37 +863,19 @@
       "error": "RuntimeError(\"model owner failed: RuntimeError('native preexec environment differs')\")",
       "fresh_faults": [],
       "boot_unchanged": true,
-      "driver_after": {
-        "pci": "/sys/bus/pci/devices/0000:05:00.0",
-        "driver": "xe",
-        "vendor": "0x8086",
-        "device": "0xe20c",
-        "kernel": "7.0.0-38-generic",
-        "devcoredump": false
-      },
       "session_removed": true,
-      "closure_reconciliation": {
-        "original_owner_observation_complete": false,
-        "original_failure_preserved": true,
-        "all_observed_original_identities_gone": [
-          3496639,
-          3496650,
-          3496673,
-          3496684
-        ],
-        "fresh_session_members": [],
-        "same_uid_model_owner_guard_passed": true,
-        "exact_session_stopped": true,
-        "native_exit_receipt_missing_after_termination": true,
-        "GPU_faults": []
-      },
-      "diagnosis": {
-        "suspected_check_error": "LD_PRELOAD contains collector through launcher-adjacent symlink;the check required the physical collector path as a raw substring. Map validation already resolved and accepted its actual ELF. This mechanism must be confirmed by a CPU-only preexec environment probe before another model launch.",
-        "long_requests_completed": 0,
-        "original_warmup_only": true,
-        "next": "Commit failed outcome,qualify exact launcher environment without a model,then new scoped plan;do not retry v1.",
-        "confirmed_check_error": "CPU-only launcher check passes every expected environment value;LD_PRELOAD spells the collector through launcher-adjacent symlink. Its resolved path and ELF match the pinned collector. V1 raw-substring check incorrectly refused this alias.",
-        "CPU_environment_probe": "selected_qsa_environment_host_v1"
+      "original_source_commit": "69acb8d8b52d99e46d1219d2cecdff843801895f",
+      "archived_full_result_commit": "25b919f3b144ef51416bfb9fa1919a0a7c7e7c67",
+      "long_requests_completed": 0,
+      "decision": "V1 stopped before long input because raw LD_PRELOAD substring check rejected a qualified collector symlink. CPU-only check confirms all expected values and exact resolved two-object order. Original failure remains failed;use separately committed v2.",
+      "retirement": {
+        "manifest": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/retire-qsa-launcher-checks-20261027.json",
+        "sha256": "32742fee3d84ca31ad47ab460f781ee2df89172bec0d78bb18bf80a6a33df5a6",
+        "files": 68,
+        "bytes": 12183685,
+        "original_project_inputs_recovered": 209,
+        "roots_absent": true,
+        "latest_engine_and_collectors_changed": false
       }
     },
     "stage": "host-controls-passed-native-adapter-pending",
