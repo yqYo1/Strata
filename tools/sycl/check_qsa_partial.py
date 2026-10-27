@@ -84,7 +84,7 @@ def prepare(mode):
     guards.require(len(checks)==position and all(c['mode']==sequence[i] and c['passed'] and
         c['complete'] and c['ownership_closed'] and c['fresh_faults']==[] for i,c in enumerate(checks)),
         'require smoke,component,resources,perf in order; no retries')
-    root=ROOT/('check-'+mode+'-v2');guards.require(not root.exists(),'inspect existing check owner; no replacement')
+    root=ROOT/('check-'+mode+('-v3' if mode=='resources' else '-v2'));guards.require(not root.exists(),'inspect existing check owner; no replacement')
     _,proof=build.qualified_baseline()
     revision=build.gen.git('rev-parse','HEAD').decode().strip()
     plan=dict(stage='prepared',mode=mode,source_commit=revision,controller_inputs=inputs(revision),
@@ -95,7 +95,7 @@ def prepare(mode):
     if mode=='resources':
         assets=collector_assets()
         plan['collector_assets']={k:assets[k] for k in ('collector','launcher','preload')}
-        plan['gates']='Same exact timing fixture --smoke,3arms,22wrapper calls(default8,control/partialq8 each7). Require positive conserved whole-process device table and exactly3ordered-exp compute-family properties(SIMD16,WG128). All use unchanged default GRF policy;record actual GRF/private/spill/rawSLM descriptors without inferring occupancy or hot traffic. Same-PID validation,full-output bits/guards,input immutability,normal target/launcher closure,unique session removed,no fresh fault. No clean latency/adoption claim.'
+        plan['gates']='Same exact timing fixture --smoke,3arms,22wrapper calls(default8,control/partialq8 each7). Require positive conserved whole-process device table and exactly3ordered-exp compute-family properties(SIMD16,WG128;18arguments for default/control,19forpartialq8). All use unchanged default GRF policy;record actual GRF/private/spill/rawSLM descriptors without inferring occupancy or hot traffic. Same-PID validation,full-output bits/guards,input immutability,normal target/launcher closure,unique session removed,no fresh fault. No clean latency/adoption claim.'
     elif mode=='perf':
         plan['gates']=record['plan']['performance']
     admission(record,plan);root.mkdir(mode=0o700)
@@ -167,7 +167,7 @@ def resource_evidence(text):
         if len(parts)!=8 or not selected(parts[0]):continue
         key=arm(parts[0]);guards.require(key not in properties,'duplicate resource descriptor')
         compiled=parts[1];simd,nargs,slm,private,spill,grf=map(int,parts[2:])
-        guards.require(compiled=='JIT' and simd==16 and nargs==18 and grf in (128,256)
+        guards.require(compiled=='JIT' and simd==16 and nargs==(19 if key==2 else 18) and grf in (128,256)
             and min(slm,private,spill)>=0,'unexpected compiled QSA resource properties')
         properties[key]=dict(arm=key,compiled=compiled,SIMD=simd,arguments=nargs,raw_SLM=slm,
             private_memory_descriptor=private,spill_memory_descriptor=spill,GRF=grf)
@@ -199,7 +199,7 @@ def performance(checks):
 
 
 def run(mode):
-    record=build.gen.committed(RESULT);plan=record['check_plan'];root=ROOT/('check-'+mode+'-v2')
+    record=build.gen.committed(RESULT);plan=record['check_plan'];root=ROOT/('check-'+mode+('-v3' if mode=='resources' else '-v2'))
     guards.require(plan['mode']==mode and plan['stage']=='prepared' and
         plan==json.loads((root/'plan.json').read_text()) and not (root/'record.json').exists(),
         'matching fresh committed check required; inspect existing receipt')
