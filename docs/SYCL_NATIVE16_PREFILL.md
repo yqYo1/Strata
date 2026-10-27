@@ -378,7 +378,7 @@ and frozen plan7bf4a66f4 recover this diagnostic in the linked runtime result.
 No inference source,decode placement or runtime changed for this check.
 
 This117489-token point does not establish input-length scaling or a fixed
-prefill cost. Client`44ec4f1a1` adds a six-length characterization through
+prefill cost. Client`15a0f0783` adds a six-length characterization through
 `bench.sh --prefill-scaling`:thinking stays on,actual fresh counts and total
 prefill time/pp/client TTFT are retained,first maximum-length use is separate,
 and three warmed sweeps rotate their order. Affine,quadratic and`n log n`
