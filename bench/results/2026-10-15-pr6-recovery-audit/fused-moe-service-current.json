@@ -2349,5 +2349,49 @@
       "sha256": "886e5fa8be716b03eeda48856e0f04493f2969fc148fb7812594ffac647fa050"
     },
     "scope": "CPU-only actual target environment and first-init probe. Collector may enumerate devices;target does not create queues or enqueue GPU work. No new timing/coverage qualification."
+  },
+  "host_profile_environment": {
+    "passed": true,
+    "complete": true,
+    "active": false,
+    "ownership_closed": true,
+    "GPU_work": false,
+    "target_overlay": {
+      "UNITRACE_VERSION": "2.4.1 (4b6d74294cdc72766c00a9211fe2e4261ee94244)",
+      "UNITRACE_DeviceTiming": "1",
+      "UNITRACE_Verbose": "1",
+      "UNITRACE_ChromeEventBufferSize": "-1",
+      "UNITRACE_LD_PRELOAD_OLD": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/ur-validation-preload-v2/libstrata_ur_validation.so"
+    },
+    "validation": {
+      "pid": 1296808,
+      "loader": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_loader.so.0.12.0",
+      "threads_before": 1,
+      "preinit": 37,
+      "config_enabled": true,
+      "first_init": true,
+      "dispatch_result": 46,
+      "output_untouched": true,
+      "retained_reference_until_exit": true,
+      "runtime_teardown_qualified": false
+    },
+    "environment_keys": 109,
+    "source_verified_non_unitrace_additions": {
+      "ZE_ENABLE_TRACING_LAYER": "1",
+      "INTEL_LIBITTNOTIFY64": "libunitrace_tool.so"
+    },
+    "session_removed": true,
+    "postchecks_complete": true,
+    "postcheck_errors": [],
+    "fresh_faults": [],
+    "boot_unchanged": true,
+    "driver_after": {
+      "pci": "/sys/bus/pci/devices/0000:05:00.0",
+      "driver": "xe",
+      "vendor": "0x8086",
+      "device": "0xe20c",
+      "kernel": "7.0.0-38-generic",
+      "devcoredump": false
+    }
   }
 }
