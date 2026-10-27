@@ -18,7 +18,7 @@ class BenchmarkGateContract(unittest.TestCase):
             'f=runpy.run_path(' + repr(str(P/'tools/strata_bench.py')) +
             ',run_name="_host_gate_contract")["profile_request_gate"];'
             + ';'.join('f(' + repr(stage) + ',"prefill-only",0)' for stage in stages))
-        own = owner.Owner(root)
+        own = owner.Owner(root / 'owned')
         entry, _, err = own.run('gate', [sys.executable, '-I', '-S', '-B', '-c', script],
             dict(PATH='/usr/bin:/bin', LANG='C.UTF-8', LC_ALL='C.UTF-8'), P,
             interaction=interact, wall=10, cpu=10, rss_cap=256 << 20,
