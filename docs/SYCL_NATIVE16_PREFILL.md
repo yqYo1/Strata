@@ -1589,6 +1589,19 @@ not a captured device table. No Q/K/V values were captured;declare synthetic
 tensor values in that calibration. Retain this one initialized fixture outside
 Git only until the named working-set comparison closes or is superseded.
 See`selected_qsa_capture_v1` in the linked resource result for hashes and limits.
+Its77closed raw/log/generated files (658887608bytes) and the one-use controller
+are retired after exact204-input recovery;the full result recovers at`ea556dd31`
+and the controller at`9d94b2293`. The fixture is the capture root's sole remaining
+file. The selected engine/twelve fixtures and shared runtime admission still pass.
+
+For the next working-set control,do not pack the entire prefix before every
+timed attention call:that would change its cache starting state and obscure the
+copy-rotation question. A separate prepacked component entry needs its own source,
+operand-identity,guard/lifetime and compiler-resource checks;it is not yet built.
+Compare full6491-query geometry separately from a cache-sized real-query subset.
+If repeating a small subset to fill the GPU,use identical repeated work in every
+copy-count arm and label it as a controlled counterfactual,not a production replay.
+Small underfilled grids alone do not establish the full model's resource ceiling.
 
 Complete prefill phase attribution requires three independent ledgers: route-owner
 planned operations, actual API results and collector device executions.

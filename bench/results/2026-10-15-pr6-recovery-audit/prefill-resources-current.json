@@ -611,7 +611,18 @@
   },
   "event_reconciliation": {
     "selected_qsa_capture_v1": {
+      "schema": 1,
       "stage": "captured",
+      "source_commit": "9d94b22937f9626cd3e76ca3cfcff09ee2a40c7c",
+      "native_source_commit": "6e40afc1beddd059ee518617f6c1efce1da14aca",
+      "original_full_record": {
+        "commit": "ea556dd31",
+        "path": "bench/results/2026-10-15-pr6-recovery-audit/prefill-resources-current.json",
+        "scope": [
+          "event_reconciliation",
+          "selected_qsa_capture_v1"
+        ]
+      },
       "binary": {
         "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/strata",
         "bytes": 22190000,
@@ -619,8 +630,7 @@
       },
       "reference_sha256": "de7f1aba97c5929f4bc68350d0f1e8ea221fe02bc3da8317beaa185328606c65",
       "plan": {
-        "source_commit": "9d94b22937f9626cd3e76ca3cfcff09ee2a40c7c",
-        "native_source_commit": "6e40afc1beddd059ee518617f6c1efce1da14aca",
+        "question": "Capture actual selected logical KV IDs for a source-bound QSA locality/working-set control.",
         "command": [
           "/bin/sh",
           "/home/yayoi/orca/workspaces/Strata/sycl/bench.sh",
@@ -643,280 +653,16 @@
           "--out",
           "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/selected-qsa-capture-v1/bench"
         ],
-        "benchmark_input_identity": "cfa455147c86a7c06a7a72e410688614342b25bbd8e3bae78458524e47d8f358",
-        "benchmark_input_files": 204,
-        "native_sources": {
-          "src/prefill/prefill.cpp": "777e6d847ab6d83bc0a9103d6baabb7f4204ff23d34ce6c853eb1d7e68a11c37",
-          "src/prefill/layer_major.inc": "f7db8923dc466239f44c820ac3f8e9edfdd209b239e6b91f0993adc595d7dcf1",
-          "src/sycl/compat.cpp": "214c721c5be036e4410b4eca4051e8df6157effb8e2e0f575a9d6915b2700bad",
-          "src/core/layer.cpp": "4273fc8c08bb0c58ad471d963f232a457dbc96ea6bd20fa1b45d27fee3428cfb",
-          "src/program/generate.cpp": "7b313aaf56eb967f7318b253e58184d0a44dae51ad8a756a0a6b36b97319e4f1",
-          "include/strata/kernels/qsa.hpp": "87c02222284f842fcecb46a422b119af769c72c3914edc8da5b2ee782456dc74",
-          "src/kernels/sycl/kv.cpp": "4e501f6839c20972b46f58d87c4ee3444f771c64cbcc07528a7f23d25461e07f"
-        },
-        "generated_content": {
-          "config.json": {
-            "exe": "/home/yayoi/orca/workspaces/Strata/sycl/tools/sycl/engine_once.py",
-            "args": [
-              "--pack",
-              "/home/yayoi/.local/share/strata-sycl/packs/qwen3.8-flash-next-iq3_s",
-              "--native",
-              "/home/yayoi/.local/share/strata-sycl/models/qwen3.8-flash-next-iq3_s/IQ3_S/Qwen3.8-Flash-Next-GSQ-RCO-IQ3_S-00001-of-00002.gguf",
-              "--max-context",
-              "131072",
-              "--kv",
-              "int8",
-              "--kv-resident",
-              "131072",
-              "--expert-cache",
-              "1256",
-              "--expert-profile",
-              "/home/yayoi/orca/workspaces/Strata/sycl/data/expert-profile.bin",
-              "--expert-cache-per-layer",
-              "--pool-workers",
-              "5",
-              "--pcie-frac",
-              "0",
-              "--adapt-swaps",
-              "0",
-              "--conversation-cache-mib",
-              "0",
-              "--prompt-cache",
-              "0",
-              "--turn-token",
-              "-1",
-              "--suffix-draft",
-              "0",
-              "--greedy",
-              "--no-spec-split",
-              "--short-read",
-              "0",
-              "--spec",
-              "4",
-              "--mtp",
-              "/home/yayoi/.local/share/strata-sycl/mtp/rt",
-              "--prefill",
-              "8192",
-              "--vram-reserve-mib",
-              "700",
-              "--no-coupled-draft",
-              "--no-token-graph"
-            ],
-            "cwd": "/home/yayoi/orca/workspaces/Strata/sycl",
-            "tokenizer": "/home/yayoi/.local/share/strata-sycl/packs/qwen3.8-flash-next-iq3_s/tokenizer",
-            "model_name": "qwen3.8-flash-next-iq3_s-primary",
-            "aliases": [
-              "strata"
-            ],
-            "host": "127.0.0.1",
-            "log": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/selected-qsa-capture-v1/engine.stderr",
-            "engine_silence_s": 480,
-            "parallel": 1,
-            "open_browser": false,
-            "env": {}
-          },
-          "plan.json": {
-            "binary": {
-              "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/strata",
-              "bytes": 22190000,
-              "sha256": "22182f1a5e62e5f4259ce49a75ae44afbd988166ec79324816e499ff37ef60e4"
-            },
-            "native_validation_probe": {
-              "library": {
-                "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/ur-validation-preload-v2/libstrata_ur_validation.so",
-                "sha256": "1d4e69d672d55fa0a126ae43b7b4743482cccca7e2f2bc22e0db2bfdad5bdc7c"
-              },
-              "loader": {
-                "path": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_loader.so.0.12.0",
-                "sha256": "bb6e1311850e4b1a924e42acae80c2b3610934625a4985aaa67967abe31356fc"
-              }
-            }
-          }
-        },
-        "generated_sha256": {
-          "config.json": "ea90d1364f0aa573a73c2e6776ac42c3f9e9d3c62d4ef45129677cd72326a663",
-          "plan.json": "08cfd654f8512bb484582b232cb0361de9c228e1eb5f4cec465aba42cf5195ef"
-        },
-        "expected_headers": [
-          [
-            0,
-            0,
-            73,
-            2051
-          ],
-          [
-            1,
-            0,
-            73,
-            2051
-          ],
-          [
-            2,
-            0,
-            73,
-            2051
-          ],
-          [
-            3,
-            0,
-            73,
-            2051
-          ],
-          [
-            4,
-            0,
-            73,
-            2051
-          ],
-          [
-            5,
-            0,
-            73,
-            2051
-          ],
-          [
-            6,
-            0,
-            73,
-            2051
-          ],
-          [
-            7,
-            0,
-            73,
-            2051
-          ],
-          [
-            8,
-            0,
-            73,
-            2051
-          ],
-          [
-            9,
-            0,
-            73,
-            2051
-          ],
-          [
-            10,
-            0,
-            73,
-            2051
-          ],
-          [
-            11,
-            0,
-            73,
-            2051
-          ],
-          [
-            0,
-            32768,
-            6491,
-            2051
-          ],
-          [
-            1,
-            32768,
-            6491,
-            2051
-          ],
-          [
-            2,
-            32768,
-            6491,
-            2051
-          ],
-          [
-            3,
-            32768,
-            6491,
-            2051
-          ],
-          [
-            4,
-            32768,
-            6491,
-            2051
-          ],
-          [
-            5,
-            32768,
-            6491,
-            2051
-          ],
-          [
-            6,
-            32768,
-            6491,
-            2051
-          ],
-          [
-            7,
-            32768,
-            6491,
-            2051
-          ],
-          [
-            8,
-            32768,
-            6491,
-            2051
-          ],
-          [
-            9,
-            32768,
-            6491,
-            2051
-          ],
-          [
-            10,
-            32768,
-            6491,
-            2051
-          ],
-          [
-            11,
-            32768,
-            6491,
-            2051
-          ]
-        ],
         "environment_changes": {
           "UR_ENABLE_LAYERS": "UR_LAYER_PARAMETER_VALIDATION",
           "STRATA_TRACE": "1",
           "STRATA_QSA_DUMP": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/selected-qsa-capture-v1/selected-ids.bin",
           "STRATA_QSA_DUMP_LAST": "1"
         },
-        "question": "Capture actual selected logical KV IDs for a source-bound QSA locality/working-set control.",
-        "work": "Official thinking-on bench.sh:74-token warmup then39260fresh/zero-reuse input and24outputs. Unchanged original engine,1256decode slots,131072residentINT8 context,8192chunks,BF16/vLLM/ordered-exp/mode10,384packed expert bank;no profiler or native rebuild. Existing LAST=1 dumps entire final chunk,all12QSA layers. Before allowing long input,validate warmup 12records at position0/73rows. After closure validate all24headers and initialized IDs, preserve final6491-row layer0 record only. No API-wide tracing;qualified private preload and parameter validation,stage progress and immutable safety settings remain enabled.",
+        "configuration": "Unchanged6e40/1256decode slots/131072full-residentINT8/8192chunk/BF16-vLLM-ordered-exp/mode10/384packed expert bank;exact config/env/generated bytes and provenance in original_full_record.",
         "source_audit": "Original hook follows selection on m.cs; q.memcpy and wait_and_throw use that same qualified in-order queue,host vector lives through drain. It checks neither copy/drain nor fwrite status:source recovery,parameter/runtime/error/driver/exit checks plus exact extent/header/order/causal-ID validation are mandatory;exit0 alone is insufficient. Native step width=min(pos+1,2051);cap suffix is uninitialized and excluded. Position starts0,body39259,final chunk p032768/T6491. Native layer-major admission requires resident Mode0;configured KV resident==context yields identity page map. No native buffer size,graph,queue ownership or lifetime is changed.",
-        "acceptance": "Run committed host corruption controls first;small warmup capture must validate at benchmark begin gate before continue. Stop first failure,no automatic retry. Require complete official stream/journal,actual route/provider/environment,all15model hashes, normal owned/native closure,no validation warnings or fresh fault,exact capture extent and logical IDs. This is attribution only,no clean-speed or inference adoption.",
-        "budgets": {
-          "wall": 1800,
-          "cpu": 43200,
-          "rss_cap": 111669149696,
-          "text_cap": 8388608,
-          "file_cap": 1073741824,
-          "total_cap": 1073741824
-        },
-        "parse_budgets": {
-          "wall": 300,
-          "cpu": 240,
-          "rss_cap": 2147483648,
-          "text_cap": 1048576,
-          "file_cap": 67108864,
-          "total_cap": 1073741824
-        },
-        "retention": "Transient all-layer capture<=1GiB;regular fresh private file,no FIFO. Retain one validated initialized layer0 fixture<=64MiB outsideGit solely for the next selected-QSA working-set attribution comparison;review at that comparison closure. Commit compact source/commands/env/config/counts/hashes/locality/outcomes. Retire all-layer dump and successful logs/cache/transaction receipts after verification.",
         "limits": "IDs give logical locality,not physical traffic/cache hits/saturation. Source-defined Mode0 map is not a device page-table capture. No Q/K/V tensor contents are captured; later calibration must declare synthetic values and a numerical oracle. This diagnostic does not qualify sustained decode,quality/agent,stateRESTORE or physical262144."
       },
-      "passed": true,
-      "complete": true,
-      "active": false,
-      "ownership_closed": true,
-      "host_probe_accepted": true,
       "host_controls": {
         "cases": 9,
         "passed": true
@@ -1002,12 +748,6 @@
           "interpretation": "Logical selected cells; 2048 packed BF16 K+V bytes/cell (2KV heads,256dimensions,2bytes,2tensors). Windows are consecutive 16queries including a final partial window. Reuse is selected entries /unique cells,not measured cache hits. No physical traffic or saturation claim."
         }
       },
-      "native": {
-        "pid": 3743632,
-        "start_ticks": 142075720,
-        "sid": 3743583
-      },
-      "model_hashes_matched": 15,
       "request": {
         "request_sha256": "1fd63b8c67a1888e443800b5c6d339ca116df2cb91941e6f332b6adf74275b3a",
         "actual_read_tokens": 39260,
@@ -1015,17 +755,40 @@
         "generated_tokens": 24,
         "prompt_ms": 59228.5
       },
-      "performance_adopted": false,
-      "hardware_saturation_qualified": false,
+      "native": {
+        "pid": 3743632,
+        "start_ticks": 142075720,
+        "sid": 3743583
+      },
+      "model_hashes_matched": 15,
+      "complete": true,
+      "passed": true,
+      "active": false,
+      "ownership_closed": true,
       "fresh_faults": [],
       "boot_unchanged": true,
-      "driver_after": {
-        "pci": "/sys/bus/pci/devices/0000:05:00.0",
-        "driver": "xe",
-        "vendor": "0x8086",
-        "device": "0xe20c",
-        "kernel": "7.0.0-38-generic",
-        "devcoredump": false
+      "performance_adopted": false,
+      "hardware_saturation_qualified": false,
+      "next": "Use exact initialized6491-row layer0 IDs/widths and source-derived identity map in a bounded fixed-query working-set experiment. Separate pack,prepacked attention,and wrapper;declare synthetic Q/K/V. No generic service/counter rerun. Sparse logical footprint and repetition are sensitivity controls,not production cache hits or a physical-bandwidth ceiling.",
+      "retirement": {
+        "status": "complete",
+        "manifest": {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/selected-qsa-capture-retirement-20261027.jsonl",
+          "sha256": "e7070c03113a1ddf9fb513e288503ce45187ec52572dc3a4d39aad6fc904d327"
+        },
+        "files": 77,
+        "bytes": 658887608,
+        "recovered_benchmark_inputs": 204,
+        "recovered_native_source_contracts": 7,
+        "original_source_and_result_remote_verified": true,
+        "retained_fixture_sha256": "a0410c7005f64a89d02becd42fcfd8155c92b68cd7b4d175543c172070a6338c",
+        "shared_native_after_cleanup": true,
+        "closed_controller_retired": {
+          "path": "tools/sycl/capture_qsa_model.py",
+          "recover_at": "9d94b22937f9626cd3e76ca3cfcff09ee2a40c7c"
+        },
+        "remaining_capture_files": 1,
+        "remaining_capture_bytes": 53252180
       }
     },
     "selected_qsa_service_v2": {
