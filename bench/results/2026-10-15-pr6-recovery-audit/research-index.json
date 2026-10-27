@@ -14134,8 +14134,8 @@
   },
   "qsa_UR_native_binary_contract_20261028": {
     "classification": "decision_support",
-    "status": "eligible_source_contract",
-    "schedulable_now": true,
+    "status": "running_read_only_source_contract",
+    "schedulable_now": false,
     "question": "Can a ur.call XPTI callback at successful actual urEnqueueKernelLaunchWithArgsExp/urEnqueueKernelLaunch obtain that UR kernel native handle and extract GEN ISA using zeKernelGetBinaryExp without changing selected fixture or execution path? Compare with module tracing;verify installed-provider semantics,lifetime,reentrancy,and disassembly path.",
     "prerequisites_evidence": {
       "prior_contract_review_sha256": "69f6aad589ad305547929c6cebe86569f73ed695d6d5b5d631e799ecf1213659",
@@ -14158,6 +14158,26 @@
     "report_budget_bytes": 24576,
     "review_point": "Native Luna/max review of exact source/API findings;no launch eligibility implied.",
     "worker_closed": false,
-    "retention": "Extract substantive compatibility/lifetime/disassembly facts to current diagnostic decision;retire dispatch and review paperwork after extraction."
+    "retention": "Extract substantive compatibility/lifetime/disassembly facts to current diagnostic decision;retire dispatch and review paperwork after extraction.",
+    "run": "run_80ea8ebc9a8c",
+    "task": "task_4e6093759fc2",
+    "dispatch": "ctx_cfbdc44434d7",
+    "terminal": "term_d607347f-d4de-4d3b-888b-55e3e8a8744e",
+    "worker_model": "gpt-6-luna",
+    "startup_attempts": [
+      {
+        "dispatch": "ctx_a1b499cae8e5",
+        "status": "failed",
+        "reason": "agent-update-prompt",
+        "task_started": false
+      },
+      {
+        "dispatch": "ctx_cfbdc44434d7",
+        "status": "ready",
+        "turn_start": "observed",
+        "retry_of": "ctx_a1b499cae8e5"
+      }
+    ],
+    "startup_observation": "One-time Escape skip before Task input;actual initialized TUI GPT-6-Luna high,cwd registered Strata/sycl,existing YOLO permissions. No update/global setting/permission change. Official same-task retry reused that terminal."
   }
 }
