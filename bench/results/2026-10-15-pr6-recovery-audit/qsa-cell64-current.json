@@ -699,7 +699,7 @@
   "ownership_closed": true,
   "passed": true,
   "complete": true,
-  "GPU_executed": false,
+  "GPU_executed": null,
   "model_adoption_qualified": false,
   "actual_compiled_inputs": {
     "files": 698,
@@ -1938,7 +1938,7 @@
       "retained_reference_until_exit": true,
       "ordinary_runtime_teardown_qualified": false
     },
-    "stage": "prepared",
+    "stage": "failed",
     "mode": "oracle-smoke",
     "source_commit": "f755227f809540df7ab3a362ad391980032eda21",
     "controller_inputs": {
@@ -2123,5 +2123,52 @@
     "rejected_numerical_counterexamples": 3,
     "controller_source_inputs": 32,
     "GPU_executed": false
+  },
+  "oracle_checks": [
+    {
+      "mode": "oracle-smoke",
+      "source_commit": "f755227f809540df7ab3a362ad391980032eda21",
+      "passed": false,
+      "complete": false,
+      "observations": [],
+      "active": false,
+      "ownership_closed": true,
+      "model_qualified": false,
+      "GPU_kernel_execution_observed": false,
+      "error": "RuntimeError('actual local argument indices/extents differ from compiled/source manifest')",
+      "postchecks_complete": true,
+      "postcheck_errors": [],
+      "fresh_faults": [],
+      "boot_unchanged": true,
+      "driver_after": {
+        "pci": "/sys/bus/pci/devices/0000:05:00.0",
+        "driver": "xe",
+        "vendor": "0x8086",
+        "device": "0xe20c",
+        "kernel": "7.0.0-38-generic",
+        "devcoredump": false
+      }
+    }
+  ],
+  "oracle_observer_failure": {
+    "original_status": "failed_preserved",
+    "original_plan_commit": "659384563",
+    "source_commit": "f755227f809540df7ab3a362ad391980032eda21",
+    "mechanism": "Controller assumed source declaration order for lambda capture ABI. Actual traced scores use argument15;argument3 is a64B FP32 vector. Raw8local extent sum20032B matches the intended32cell payload;native exit0 and no fresh fault. Preserve failed observer status and use a new committed corrected manifest/plan before more execution.",
+    "raw_evidence": {
+      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-cell64-v1/oracle-smoke/0/api.trace": {
+        "bytes": 1028813,
+        "sha256": "7c677d120797d0208e881e4e9e32c18cae9ac1e8821dcfd4d5cb64f0a493f843"
+      },
+      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-cell64-v1/oracle-smoke/owned/0.stdout": {
+        "bytes": 1100,
+        "sha256": "6703619d1d5c8032c540ee5c65790ffddd82096067ee4706a14cd655986519fa"
+      },
+      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-cell64-v1/oracle-smoke/owned/0.stderr": {
+        "bytes": 923,
+        "sha256": "08312584d898a1d89938648b8d1efdb913729e1e6661afe4336d16b3a7dadc2d"
+      }
+    },
+    "next_action": "Correct only argument-index manifest and adversarial host controls;fresh smoke-v2 processes before larger component stage. Native source/binaries unchanged."
   }
 }
