@@ -1631,130 +1631,37 @@ only the53252180-byte initialized selected-ID fixture for the named next
 same-math barrier comparison,then review it again.
 See[the compact diagnostic and180samples](../bench/results/2026-10-15-pr6-recovery-audit/qsa-working-set-current.json).
 
-The next proposal fuses each tile-end barrier with the next tile's existing
-barrier after row publication,retaining a final barrier outside the loop.
-The private control/candidate source generator is maintained in
-[`qsa_barrier_sources.py`](../tools/sycl/qsa_barrier_sources.py);the isolated
-component now builds,but no production route is changed. Its reversal check confines changes to namespace,
-direct-event retention and that barrier move;this does not establish race freedom.
-The selected compiler IR still has seven static barriers,including five per
-32-cell iteration;2051selected cells require65iterations. This is source/IR
-geometry,not measured barrier cost or final-machine throughput. Audit every
-shared byte range and zero/tail/invalid case against the
-[SYCL synchronization contract](https://github.khronos.org/SYCL_Reference/iface/barriers-and-fences.html),
-then commit a separate same-math numerical/resource/timing plan before any new
-build. Group reductions are not a substitute for the required memory fences.
-The reviewed64-cell research is conditional:larger blocks can change online
-state grouping and BF16 probability rounding;framework wrapper references do
-not establish an exact dependency-kernel numerical contract.
+The same-math tile-barrier fusion is now **rejected**. Source`5463e9736`
+kept ordered-exp arithmetic/layout and moved one loop-end barrier after the loop.
+Compiled CFG cycles contain five barriers in original/control and four in the
+candidate;seven static sites remain in every arm. Independent source-contract
+review and three small plus three extended oracle processes pass,including
+14scalar cases per extended process,physical262144final-address components,
+exact three-arm output,guards and immutable inputs. These are component tests,
+not full-model context fill. Three actual-ID smoke processes and one resource
+process also pass. All arms retain SIMD16/WG128/18arguments/128GRF,
+12480-byte spill and32-byte raw-static-SLM descriptors;source dynamic SLM is20036B.
 
-The barrier proposal's source audit is scoped to the selected ordered-exp,
-cached-Q instantiation. All work-items in each group read the same immutable
-width;the tile loop and group barriers remain converged,including zero width.
-The host admission,queue order,matrix shapes,typed accesses and rounding are
-unchanged. The proposed synchronization dependencies are:
+The frozen comparison uses three independent processes,six rotated rounds and
+three arms on512/6491actual-ID query shapes:108individual samples. All outputs,
+event intervals and timing-batch gates pass,with no fresh fault. Namespace
+control stays within1percent of original in every process and both shapes.
 
-| Shared region | Previous tile's last use | Next overwrite and retained ordering |
-| --- | --- | --- |
-| `rows` | K/V gathers,completed before the V-ready barrier | Next row publication may overlap PV,which does not read `rows`. |
-| `kv` | PV matrix loads | Next K writes follow the existing row-publication barrier,which joins previous PV readers. QK-ready and V-ready barriers still separate K reads,V writes and PV reads. |
-| `probability`,`alpha` | PV loads/scaling | Next softmax writes follow row-publication,K-ready and QK-ready barriers. |
-| `scores` | Previous softmax | V-ready already joins those readers;next QK writes follow the next row/K barriers. |
-| FP32 online state and `bad_head` | Current softmax/output | Their original synchronization remains;the final fence still precedes group diagnostics/output. |
-| Cached Q fragments | Subgroup collective loads before K overwrites its initial arena | The original initial barrier remains;cached fragments are not republished in the tile loop. |
-
-`local_bad`/`local_live` and accumulators retain their original private/subgroup
-ownership. No group reduction is used as a substitute for a memory fence.
-Global query,steps,IDs and packed inputs remain immutable during attention;
-full pack and attention stay ordered on the same queue. This source argument
-does not qualify compiler lowering,race freedom or speed on its own.
-
-The prospective fixtures reuse the independent scalar tensor oracle through
-a reversible overlay,bit-compare original/control/candidate on every supported
-invocation,and independently select each arm for negative admission. They retain
-zero/invalid/tail widths,duplicate IDs,aliased/missing pages,first/later-tile bad
-K/V scales,NaN,only-two-byte alignment,guards and physical262144 component cases.
-The separate actual-ID benchmark uses512and6491queries with synthetic tensors.
-The unmodified original arm has wall time only;control/candidate use directly
-retained attention events. Independent Orca Luna research and native Luna/max
-curation find no concrete source race,but leave device behavior unqualified.
-Their missing cases are added before the new build:per-query mixed widths,
-64and2050atcap2051,three consecutive tiles with distinct K/V witnesses,and
-shared physical pages mixed with missing pages. The prospective isolated recipe
-is[`build_qsa_barrier.py`](../tools/sycl/build_qsa_barrier.py). Source`5463e9736`
-and plan`c94b02fda` now complete all14compile/link/IR commands. All693actual
-compiler inputs match their prospective pins;none consumes the three explicitly
-declared SDK header deltas. The oracle and actual-ID fixture are isolated from
-the retained original engine and twelve fixtures. The device IR has seven
-static barriers in each arm,but CFG cycles contain five in original/control
-and four in merged,matching the proposed move. This is compiler IR evidence,
-not final-machine barrier cost or a speed result.
-
-Execution controller`e472e9d71` passes seven host controls covering the complete
-108sample grid and rejection of missing samples,subfloor batches,invented
-original events,changed order,one-process service regression and namespace
-control drift. It checks the committed independent contract reference and
-compiled CFG before each device process. Three small traced oracle processes
-now pass with each arm independently selected for negative admission. Every
-supported invocation compares all three arms exactly;both independent scalar
-oracle cases per process have zero output error. Guards,input immutability,
-aliased/missing pages and sticky K/V diagnostics pass. All processes close at
-exit0,parameter validation is silent and no fresh driver fault appears. This
-qualifies the small component only. The subsequent three larger component
-processes also pass all14cases each,including selected widths1..2051,64and2050
-boundaries,mixed per-query widths,three-trip distinct K/V witnesses,combined
-aliased/missing pages,two-byte-only alignment and physical262144 final addresses.
-Each supported call is bit-identical across original/control/merged and passes
-the independent scalar contract;all fourteen scalar cases per process have
-zero output error. All processes close normally,validation is
-silent and no fresh fault appears. This is not full-model context fill.
-Three traced actual-ID smoke processes also pass on the3-query fixture. The
-control/merged wrappers retain their actual submission events and return valid
-positive intervals;all arms preserve exact original output,packed bytes,guards
-and immutable inputs. All processes close normally with silent validation and
-no fresh fault. The subsequent profiled3-query resource gate also passes:
-original/control/merged each execute twice with equal SIMD16,18arguments,
-128GRF,raw-static-SLM32,private0 and12480-byte spill descriptors. Source dynamic
-local payload remains20036bytes. The complete22-row device table conserves
-177860284ns;this whole-process sum includes copies and is not attention latency,
-physical traffic,occupancy or hardware saturation. The collector session is
-removed,validation is silent and no fresh fault appears. Performance remains
-pending under the already frozen108sample criteria.
-After compact results are committed,the fourteen successful smoke trace/log/
-transaction files (3997428bytes) are retired. The isolated native generation
-remains for the next component/resource/timing gates;the selected original
-engine and twelve fixtures still pass unchanged shared admission.
-The eleven larger-component output/transaction files (55662bytes) are also
-retired after committing their useful results. Both closed check roots are
-absent. The fourteen actual-ID smoke output/transaction files (512032bytes)
-also retire after useful evidence is committed. The remaining native consumers
-are resource and timing qualification.
-The seven successful profiler output/transaction files (47020bytes) also retire
-after the resource descriptors and full-table conservation are committed.
-The frozen108sample timing comparison now completes in three independent
-processes,with exact outputs,guards,immutable inputs,1224valid direct event
-intervals,eligible batches and no fresh fault. Namespace-control wall ratios
-remain within1percent of original in every process and both shapes. The
-candidate/control ratios are:
-
-| Actual queries | Wall ratios by process | Attention-service ratios by process |
+| Actual queries | Candidate/control wall ratios by process | Attention-service ratios by process |
 | --- | --- | --- |
 | 512 | 0.993953,0.993144,0.995118 | 0.993709,0.993057,0.994245 |
 | 6491 | 0.994348,0.996337,0.992612 | 0.994041,0.996331,0.992570 |
 
-Both shapes **fail** the prospectively required1percent reduction in every
-process and both metrics. The smaller0.37..0.74percent service reductions remain
-recorded;they do not permit a model trial under this plan. The original engine,
-decode and production dispatch remain unchanged. Keep the108individual samples
-once,with source/recipe identities and limits;the native generation now has
-no further execution consumer. Its69 remaining generated/build/timing files
-(8095768bytes) are now retired after recovering196 original project sources,
-693 actual compiler inputs and the original recipe from pushed Git. The selected
-engine and twelve fixtures remain unchanged;the closed prototype helpers are
-pending removal from the active tree. GPU service includes stalls and is not arithmetic
-saturation. The next question is kernel-local GRF-mode control at unchanged
-math/layout/SLM,against the existing counterevidence that eliminating spills
-alone can slow execution;qualify exact API/lowering and a new plan first.
+The0.37..0.74percent reductions miss the prospectively required1percent in
+every process and both metrics. No model trial or adoption follows;selected
+engine,decode and dispatch remain unchanged. Keep the108samples once in
+[the compact result](../bench/results/2026-10-15-pr6-recovery-audit/qsa-barrier-current.json).
+The full source/input/recipe/qualification evidence recovers at`208c591b0`.
+All remaining69generated/build/timing files (8095768B) and six one-use source
+files (66155B) are retired after source recovery. Selected engine and twelve
+fixtures remain unchanged. GPU service includes stalls;it does not prove
+arithmetic saturation. The next source-only question is isolated kernel-local
+GRF-mode control,with no assumption that removing spills improves speed.
 
 The new source-only[`qsa_grf_sources.py`](../tools/sycl/qsa_grf_sources.py)
 proposal keeps original6e40 math,layout,SLM and all five loop barriers. Its two
@@ -1769,6 +1676,12 @@ execution is admitted. Preserve the prior automatic256/functor-form slowdown as
 counterevidence. The existing53.25MB selected-ID fixture has this named next
 comparison consumer and a retirement point at its closure or supersession.
 See[the current build and gates](../bench/results/2026-10-15-pr6-recovery-audit/qsa-barrier-current.json).
+The separate [`compile_qsa_grf.py`](../tools/sycl/compile_qsa_grf.py) discriminator
+only emits LLVM for original/explicit128/explicit256. It pins the source,
+toolchain,dependencies and recipe before compilation,checks five metadata
+admission controls,and keeps compiler completion distinct from the expected
+kernel-local request. It links and executes no device program. An LLVM request
+does not prove SPIR-V/native lowering,B570 support or per-kernel workgroup limits.
 
 Complete prefill phase attribution requires three independent ledgers: route-owner
 planned operations, actual API results and collector device executions.
