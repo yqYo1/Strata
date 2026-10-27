@@ -1777,8 +1777,15 @@ The review reverses the report's proposed endpoint change:global live cells are3
 and the query's current-token cell is valid at`position`,with`n_kv=position+1`.
 The source-bound small-input range excludes the generic maximum-BF16 spacing
 edge. Observer inactivity and asymmetric direct-event capture remain explicit
-pre-execution/timing qualifications. Neither smoke nor speed has run on this
-new harness;the selected engine and decode path remain unchanged.
+pre-execution/timing qualifications. The actual-IDsmoke now passes three fresh
+processes at controller`d9876eb5f`/plan`a901943f6`. All three arms match their
+own scalar recurrence on all three checked queries;original/private32 match
+bits. Candidate64 differs from32 in4of18432outputs,max1.192092896e-7 and
+relativeL2 2.589598691e-6 on each process. Guards/inputs,exact two attention
+launches per arm,and local20032/39744byte bindings pass;validation is silent,
+all owners close and no fresh fault appears. This is fixed synthetic numerical
+evidence,not model-quality acceptance. Speed remains unmeasured;the selected
+engine and decode path remain unchanged.
 
 Complete prefill phase attribution requires three independent ledgers: route-owner
 planned operations, actual API results and collector device executions.
