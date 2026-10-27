@@ -4998,10 +4998,6 @@
       "mode": "host-only existing admission and actual dependency reader replay;zeroGPU enqueues",
       "original_performance_rejection_preserved": true
     },
-    "host_controls_source": [
-      "bench/sycl/ur_kernel_binary_packets.cpp",
-      "tools/sycl/check_native_kernel_capture.py"
-    ],
     "host_controls_scope": "Prospective mocked native functions;noUR/ZE runtime link. Test both launch APIs,recursive callback bypass,state lock released across queries,byte copies,and18specific refusal mechanisms. Actual subscriber activation remains a later no-device canary.",
     "host_check": {
       "passed": true,
@@ -5142,7 +5138,8 @@
         "packets": {
           "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-k-staging-packed32-v1/native-image-v1/packets",
           "sha256": "db9ce314ead9d99c92b779fd4c9a4a1f92b50581cd7f0e68810b32627e042e1d",
-          "bytes": 36392
+          "bytes": 36392,
+          "retired": true
         },
         "libstrata_ur_kernel_binary.so": {
           "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-k-staging-packed32-v1/native-image-v1/libstrata_ur_kernel_binary.so",
@@ -5177,13 +5174,31 @@
       "role": "Recover exact closed host source,build command,compiler tools and dependency pins for the retained observer;do not duplicate full closed plan in current result."
     },
     "host_raw_retirement": {
-      "stage": "planned",
+      "stage": "deleted",
       "files": 89,
       "bytes": 233377,
       "manifest": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/native-image-host-closed-retired-20261028.jsonl",
       "manifest_sha256": "0dfdf7c3cada313064f0ecb6e34cb930aebc4c975bdf8f6485953028437e9f05",
       "source_recovery_required": "Recover202original6c7source inputs and exact210462host plan;compare269actual header closure and both final binaries against original receipts,then verify pushed feature contains those commits.",
-      "remaining_consumer": "Retain only observer.so and its actual dependency file for imminent no-device activation then3-query same-fixture extraction. Current selectedengine/12fixtures,componentfixture/numerical,IR/dependencies/53MBIDs and separate legacyholds untouched."
+      "remaining_consumer": "Retain only observer.so and its actual dependency file for imminent no-device activation then3-query same-fixture extraction. Current selectedengine/12fixtures,componentfixture/numerical,IR/dependencies/53MBIDs and separate legacyholds untouched.",
+      "source_recovery": {
+        "pushed_feature": "46c84c4d2e41498cd09d86533ba92d98f8c55659",
+        "source_commit": "6c7a3e05dbe942ad7a582d42b167fa929c85f9b5",
+        "plan_commit": "21046228afa2e275895f0bac52b842d00a8057e8",
+        "source_inputs": 202,
+        "header_inputs": 269,
+        "compiler_tools": 5,
+        "both_final_binary_hashes_matched": true,
+        "observer_dependency_reader_inputs_preserved": true
+      }
+    },
+    "host_controls_source_archive": {
+      "commit": "6c7a3e05dbe942ad7a582d42b167fa929c85f9b5",
+      "paths": [
+        "bench/sycl/ur_kernel_binary_packets.cpp",
+        "tools/sycl/check_native_kernel_capture.py"
+      ],
+      "reason": "Closed one-use host harness/controller;upcoming activation and GPU extraction will use retained observer.so/source/actualdependency file and original frozen build plan."
     }
   }
 }
