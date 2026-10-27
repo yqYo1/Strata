@@ -4951,7 +4951,7 @@
     "remaining": "Same fixture and numerical binary,three IR files,generated sources,compiler manifest and .d dependency records retained for imminent exact native-code diagnostic/source admission;selected engine/twelve fixtures and separate legacy holds unchanged."
   },
   "native_image_diagnostic": {
-    "stage": "fresh_native_capture_passed_ELF_and_disassembly_pending",
+    "stage": "exact_GEN_ELF_text_and_selected_assembly_qualified",
     "provenance": "Main-authored repository-LICENSE code using installed official UR,XPTI and Level Zero public APIs;no XeStrata application source. Own existing UR subscriber supplied only callback/packet conventions.",
     "source": "bench/sycl/ur_kernel_binary_subscriber.cpp",
     "source_sha256": "30be767dfd7d4379f84ba533c03025286e6bb23875c19a5494aa27b9bf3f1cb6",
@@ -5766,125 +5766,120 @@
         }
       }
     ],
-    "offline_plan": {
-      "stage": "prepared",
+    "offline_check": {
+      "passed": true,
+      "complete": true,
+      "active": false,
+      "ownership_closed": true,
       "source_commit": "3ac8886cdd7dff1efcef8dc54a13b3cdd12f3b4d",
-      "inputs": {
-        "files": {
-          "tools/sycl/disassemble_native_qsa.py": "a0d411a866ac4b4fd5f6f33969a441c8e7b0f1a1b4ebd37b8d495d272a5c3649",
-          "tools/sycl/native_kernel_image.py": "66aca9d23c8fb13354e7cb13b29d2c7450aa1d93bdbac6a7c78f14712d3c0d9c"
-        },
-        "shared_source_files": 199,
-        "shared_source_sha256": "195efe2a1068bab72bd1d3a8cf75b1a2a49b70f1b9a1955307202d8cdd815912"
-      },
-      "capture_ref": {
-        "commit": "cbb00bf004b3a946f9b2dcbfd0112bc56da12bd6",
-        "path": "bench/results/2026-10-15-pr6-recovery-audit/qsa-k-staging-current.json",
-        "key": [
-          "native_image_diagnostic",
-          "extraction_check"
-        ],
-        "canonical_json_sha256": "06326a5e3ec0b4d40cd2d2d99c70eeda782c876c20421a283f42662875eac9ae"
-      },
-      "captures": [
+      "GPU_executed": false,
+      "observations": [
         {
           "arm": 0,
-          "kernel": {
-            "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-k-staging-packed32-v1/native-image-v1/extraction/captures/kernel0.gen",
-            "sha256": "71ec722736da1376db76f5e94d140a646596418df9e0fed821640ec8bdee871a",
+          "passed": true,
+          "association": {
+            "machine": 205,
+            "type": 1,
+            "text_section_index": 6,
+            "offset": 399488,
             "bytes": 72000,
-            "name": "_ZTSZZN6strata7kernelsL17prefix_batch_implILi33ELb0ELb0ELb1ELb1ELb1ELb1ELb0EEEbPKtRKNS0_12QsaAttnPoolsEPKiS8_lRKNS0_9QsaShapesEPtlRKNS0_19QsaPromptBf16BoundsElRKNS0_20QsaBf16PackedScratchEPvNS0_19QsaPrefixStateProbeEENKUlRN4sycl3_V17handlerEE_clESO_EUlNSM_7nd_itemILi1EEEE_"
+            "sha256": "71ec722736da1376db76f5e94d140a646596418df9e0fed821640ec8bdee871a",
+            "GEN_equals_module_text": true,
+            "ZeInfo_version": "1.73"
           },
-          "module": {
-            "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-k-staging-packed32-v1/native-image-v1/extraction/captures/kernel0.zebin",
-            "sha256": "1ca9716ed8faf079ea825adc8467d57ca2bf8510e2414e0214475333123304fe",
-            "bytes": 849216
+          "API_version": 65536,
+          "ocloc_return": 0,
+          "output_release_return": 0,
+          "in_memory_outputs": 27,
+          "in_memory_bytes": 5219396,
+          "selected_name_bytes": 290,
+          "log_excerpt": "",
+          "assembly": {
+            "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-k-staging-packed32-v1/native-image-v1/offline-v2/0/kernel.asm",
+            "sha256": "ac95266b59334ce1861fcd9b6647632c3120f9856ab3c9cf05b76e562636e2d7",
+            "bytes": 488803
+          },
+          "metadata": {
+            "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-k-staging-packed32-v1/native-image-v1/offline-v2/0/kernel.ze_info.yaml",
+            "sha256": "e6b1581498082a2e87ad3de5945818fc1c795ac633a05ef5604e0139fd65a6d5",
+            "bytes": 5531
           }
         },
         {
           "arm": 1,
-          "kernel": {
-            "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-k-staging-packed32-v1/native-image-v1/extraction/captures/kernel1.gen",
-            "sha256": "35a6eed6d9e8cbe12d25a78328735d65f5f69ac2f9f02fdc7718e25c8d6a5bcd",
+          "passed": true,
+          "association": {
+            "machine": 205,
+            "type": 1,
+            "text_section_index": 1,
+            "offset": 64,
             "bytes": 72000,
-            "name": "_ZTSZZN6strata7kernels16kstaging_controlL17prefix_batch_implILi33ELb0ELb0ELb1ELb1ELb1ELb1ELb0EEEbPKtRKNS0_12QsaAttnPoolsEPKiS9_lRKNS0_9QsaShapesEPtlRKNS0_19QsaPromptBf16BoundsElRKNS0_20QsaBf16PackedScratchEPvNS0_19QsaPrefixStateProbeEPN4sycl3_V15eventEENKUlRNSN_7handlerEE_clESR_EUlNSN_7nd_itemILi1EEEE_"
+            "sha256": "35a6eed6d9e8cbe12d25a78328735d65f5f69ac2f9f02fdc7718e25c8d6a5bcd",
+            "GEN_equals_module_text": true,
+            "ZeInfo_version": "1.73"
           },
-          "module": {
-            "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-k-staging-packed32-v1/native-image-v1/extraction/captures/kernel1.zebin",
-            "sha256": "48af479d981bab2fb9e6ee3fa16169c5ff103e2944c24f89a8a9faaae5a78bbc",
-            "bytes": 83096
+          "API_version": 65536,
+          "ocloc_return": 0,
+          "output_release_return": 0,
+          "in_memory_outputs": 9,
+          "in_memory_bytes": 499914,
+          "selected_name_bytes": 320,
+          "log_excerpt": "",
+          "assembly": {
+            "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-k-staging-packed32-v1/native-image-v1/offline-v2/1/kernel.asm",
+            "sha256": "6c44b75444b7ca93a0775887a64b65b2a6b7648473adabc12809a6a819b03424",
+            "bytes": 488803
+          },
+          "metadata": {
+            "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-k-staging-packed32-v1/native-image-v1/offline-v2/1/kernel.ze_info.yaml",
+            "sha256": "eb47fce5977b0cbe548464b85548bacd5b276de854b6fbcbc2577a7ad500e879",
+            "bytes": 5561
           }
         },
         {
           "arm": 2,
-          "kernel": {
-            "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-k-staging-packed32-v1/native-image-v1/extraction/captures/kernel2.gen",
-            "sha256": "888a7022f75bc2fddddd065c4a7b095301b94f27e7c03e4b113b7354eb563d22",
+          "passed": true,
+          "association": {
+            "machine": 205,
+            "type": 1,
+            "text_section_index": 1,
+            "offset": 64,
             "bytes": 74048,
-            "name": "_ZTSZZN6strata7kernels18kstaging_candidateL17prefix_batch_implILi33ELb0ELb0ELb1ELb1ELb1ELb1ELb0EEEbPKtRKNS0_12QsaAttnPoolsEPKiS9_lRKNS0_9QsaShapesEPtlRKNS0_19QsaPromptBf16BoundsElRKNS0_20QsaBf16PackedScratchEPvNS0_19QsaPrefixStateProbeEPN4sycl3_V15eventEENKUlRNSN_7handlerEE_clESR_EUlNSN_7nd_itemILi1EEEE_"
+            "sha256": "888a7022f75bc2fddddd065c4a7b095301b94f27e7c03e4b113b7354eb563d22",
+            "GEN_equals_module_text": true,
+            "ZeInfo_version": "1.73"
           },
-          "module": {
-            "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-k-staging-packed32-v1/native-image-v1/extraction/captures/kernel2.zebin",
-            "sha256": "ca4b34048a415deb038457cc5857af42b1ebd4071d42e044e17f2e7a4774c736",
-            "bytes": 85152
+          "API_version": 65536,
+          "ocloc_return": 0,
+          "output_release_return": 0,
+          "in_memory_outputs": 9,
+          "in_memory_bytes": 515983,
+          "selected_name_bytes": 322,
+          "log_excerpt": "",
+          "assembly": {
+            "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-k-staging-packed32-v1/native-image-v1/offline-v2/2/kernel.asm",
+            "sha256": "cdef97c939c6cc8d7b09b2cf70715fb8ae5868432162a13434424f5a4260046b",
+            "bytes": 504860
+          },
+          "metadata": {
+            "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-k-staging-packed32-v1/native-image-v1/offline-v2/2/kernel.ze_info.yaml",
+            "sha256": "bc8d1884561e22fef1aed071d647b30512c656f184f791d3f554598a39923444",
+            "bytes": 5561
           }
         }
       ],
-      "runtime_files": {
-        "/usr/bin/ldd": "752803b8baa217b821bd4566c4fbdaec50c01cb32d2796ec056d22d190d4290f",
-        "/usr/bin/python3.12": "e50d468e8b0adfb05733f5b87b3cff34829c4a8c1aea50c865aa8bdfe4bb150f",
-        "/usr/lib/python3.12/lib-dynload/_bz2.cpython-312-x86_64-linux-gnu.so": "eff8df23cdc54d38ce9ca600d07c21ccfd7f22bd52a0720e599e6828d3e2eb76",
-        "/usr/lib/python3.12/lib-dynload/_ctypes.cpython-312-x86_64-linux-gnu.so": "aad3e24f186e6c0a1c7efa8f16004f951f527db86f6451d30118657384a456c1",
-        "/usr/lib/python3.12/lib-dynload/_decimal.cpython-312-x86_64-linux-gnu.so": "20326fc4d39abff46814b64bf5304f8898d180ae58a66b5d60c0177ae317887d",
-        "/usr/lib/python3.12/lib-dynload/_hashlib.cpython-312-x86_64-linux-gnu.so": "8dc6cda6dd9495b95a2bfb5b26e8cf06b72f36dc0213d958b9277a958287f0fe",
-        "/usr/lib/python3.12/lib-dynload/_json.cpython-312-x86_64-linux-gnu.so": "ca8e35c58f7bc8e27258c4af43651c941413bc6318903621253485b0395758a3",
-        "/usr/lib/python3.12/lib-dynload/_lzma.cpython-312-x86_64-linux-gnu.so": "cb298120e40f064dc047e638d911f8b3b0abf625bf1d6bd07902b46efd820fd7",
-        "/usr/lib/python3.12/lib-dynload/resource.cpython-312-x86_64-linux-gnu.so": "c8cc35580b497bf128cf8bb0e25efc36573a4f21a1c6877a91737fcd52e24907",
-        "/usr/lib/x86_64-linux-gnu/ld-linux-x86-64.so.2": "c20a2dc8917c755f02b94049356320fe1f62ac7d9f8994731f807d9df39302da",
-        "/usr/lib/x86_64-linux-gnu/libbz2.so.1.0.4": "cc08c9f50a8009ffd6391e0116a100369b11ca9238fa52392c019e6645b122a1",
-        "/usr/lib/x86_64-linux-gnu/libc.so.6": "3a15d66867d83762c7f2f1e37359cb8f6c5743edb369c65285cb0b1c4f7498bf",
-        "/usr/lib/x86_64-linux-gnu/libcrypto.so.3": "6866ed711dab8927e1bf82bf1cd30e828bdfc34f3cc1e83b1c9eb01ce6c37d9a",
-        "/usr/lib/x86_64-linux-gnu/libexpat.so.1.9.1": "286682ecbc5e59a638963b1a4e6351e65eb32fcf4bdcb9cb7569b6a61fe06a8d",
-        "/usr/lib/x86_64-linux-gnu/libffi.so.8.1.4": "00f593fe192f2851b8ce23b25cec2488d769beb5a8f63e8c9e563071e1075153",
-        "/usr/lib/x86_64-linux-gnu/libgcc_s.so.1": "d93224d2b0dab4247598be683adca02f5cf00586f99c187579cd7e92058fb7cb",
-        "/usr/lib/x86_64-linux-gnu/libiga64.so.2.41.15+0": "30a2e107798ad96bc01595bc51a00956ceb15c6ad57aa281116d80955abbf37d",
-        "/usr/lib/x86_64-linux-gnu/liblzma.so.5.4.5": "26b37d25f7ca2a2d348de8ecabacda12e921cd933b21fa069a179760db77219d",
-        "/usr/lib/x86_64-linux-gnu/libm.so.6": "fce00b6f25f459cf4ae0b7fae4257909a1a8a86f9149e7c029a5d617baf1ccd0",
-        "/usr/lib/x86_64-linux-gnu/libocloc.so": "a575b21fe2774845519492741aa8c8ff762de64dcab91b5e4e2cca8cba7a7d48",
-        "/usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.33": "1fd75fe70354a416d75aef22bcae68c47bd25d20e2d0568c30b1a9838cf62f11",
-        "/usr/lib/x86_64-linux-gnu/libz.so.1.3": "f61677c7bdb7c2aa2a243ea781bfd16afcb361cede7b4ef76127a9d8eb9a5242"
-      },
-      "library": "/usr/lib/x86_64-linux-gnu/libocloc.so",
-      "iga": "/usr/lib/x86_64-linux-gnu/libiga64.so.2.41.15+0",
-      "python": "/usr/bin/python3.12",
-      "host_environment": {
-        "PATH": "/usr/bin:/bin",
-        "LANG": "C.UTF-8",
-        "LC_ALL": "C.UTF-8",
-        "PYTHONDONTWRITEBYTECODE": "1"
-      },
-      "API_reference": {
-        "repository": "intel/compute-runtime",
-        "revision": "724697d73af22685918fcad4575c6bc267589ca5",
-        "files": {
-          "shared/offline_compiler/source/ocloc_api.h": "341e64c5c768624366bae45f57dbd95387f4111f299729b74840407b24d83447",
-          "shared/offline_compiler/source/ocloc_arg_helper.cpp": "d9b62a41dbb2bc8d2f0141e5d79f7fc44f8df3d1220ac38574fa1e2315ff50fb"
-        },
-        "license": "MIT",
-        "deployed_source_match_proven": false,
-        "required_runtime_API_version": 65536
-      },
-      "output_root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-k-staging-packed32-v1/native-image-v1/offline-v2",
-      "budgets": {
-        "wall": 60,
-        "cpu": 60,
-        "rss_cap": 2147483648,
-        "text_cap": 2097152,
-        "file_cap": 8388608,
-        "total_cap": 33554432
-      },
-      "criteria": "All3captured unchanged ELF64LE/IntelGT modules contain the exact named executable text equal byte-for-byte to their direct kernel GEN copies. Invoke installed ocloc1.0 in memory,select only exact named assembly despite273+byte output names,free all outputs successfully. Owned CPU-only child gates bind pinned ocLoc/IGA libraries and environment,exclude GPU runtime/DRM descriptors,and close0. Original captures stay unchanged. No compilation,GPU work,speed/counter or model claim.",
-      "retention": "Only selected3assemblies and3kernel ZeInfo blocks through imminent source-bound comparison. Raw module/GEN retire after that consumer ends;drop normal dependency/log/ownership/API outputs after compact evidence. Do not retain the other module kernels or duplicate sections."
+      "protocol_observation_complete": true,
+      "frozen_plan_commit": "accee13aef2e9d886eca7ef68abf1152c4e62679",
+      "limits": "These fresh successful smoke captures associate exact GEN/text and disassembly only;historical timed native images are not retroactively proven. Static code/resource metadata do not measure executed traffic,occupancy or the limiting hardware resource."
+    },
+    "offline_plan_ref": {
+      "commit": "accee13aef2e9d886eca7ef68abf1152c4e62679",
+      "path": "bench/results/2026-10-15-pr6-recovery-audit/qsa-k-staging-current.json",
+      "key": [
+        "native_image_diagnostic",
+        "offline_plan"
+      ],
+      "canonical_json_sha256": "e2a9e2f6b39d07adc839420d018212de4fbf43695b0f29f3570d9df5ceb20262"
     }
   }
 }
