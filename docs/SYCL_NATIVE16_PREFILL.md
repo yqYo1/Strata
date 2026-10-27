@@ -1770,9 +1770,18 @@ original source and commands remain reachable in Git. No prototype exports or
 build targets are adopted. The selected engine and twelve fixtures still pass
 shared admission. The single selected-IDfixture remains for Main's imminent
 resource-discriminator preparation,with its consumer reviewed when that plan
-is selected. Separate legacy provenance holds remain open. Next use the existing
-geometry/counter references to choose a source/shape-compatible discriminator
-for the remaining GPU resource question.
+is selected. Separate legacy provenance holds remain open. Existing geometry
+and counter references have now been retrieved,followed by a bounded Orca Luna
+methods report and completed native Luna/max review. A controlled logical-ID
+topology comparison can test address-locality sensitivity,but cannot identify
+physical DRAM traffic,bandwidth saturation or the limiting GPU resource.
+Before freezing that comparison,recover or prove the actual per-query counts
+from the capture producer and selected caller:32is the tile size,and the2051
+capture-header field alone does not prove every query's count. Preserve those
+counts and use feasible shared/spread IDpatterns with identical repeated-value
+K/V,Q,kernel and launch arguments. No new native build or GPU trial is qualified
+by this methods review,and no model speed gain has been adopted. See the
+`qsa_counter_free_resource_discriminator_20261027` research-index decision.
 
 Complete prefill phase attribution requires three independent ledgers: route-owner
 planned operations, actual API results and collector device executions.
