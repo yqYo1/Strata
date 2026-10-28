@@ -1759,7 +1759,7 @@
     }
   },
   "direct_K_loop_model": {
-    "stage": "first_production_diagnostic_passed_clean_comparison_five_of_six_closed",
+    "stage": "clean_prefill_screen_passed_full_model_qualification_pending",
     "base_native_source": "6e40afc1beddd059ee518617f6c1efce1da14aca",
     "prefix": "src/kernels/sycl/qsa_bf16_prefix.cpp",
     "base_prefix_sha256": "4f9f815c9baae709f919f6d5ad1af04677c10d8c13c7597b3857cf81567ae192",
@@ -1771,7 +1771,7 @@
     "same_build_oracle_adapter_sha256": "a77dc9fcd81e24ca1e7b9a6d2f69b8814080c9901a1f20962bca5055c0907858",
     "scope": "One prefix source block only,under compile-time OrderedExp&&!CaptureState inside VectorK4. The selected ordered prefill uses this branch;all other instantiations keep the exact original block. No decode source/configuration/placement changes.",
     "source_integrity": "Exact full-file reversal recovers6e40prefix. Candidate selected branch reuses the same immutable REPLACEMENT as the qualified component. New full-engine source/recipe/dependency/build and same-build oracle/runtime/model qualification remain mandatory.",
-    "next": "Run final frozen process5(candidate),then full model-asset digest and all-six gate/performance analysis. Five closed processes/twenty117489-token requests passed source/workload/native/fault/owner gates;no speed decision before closure. Keep independent decode1256-slot configuration unchanged;agent/long-thinking generation,decode preservation and physical262144qualification remain open.",
+    "next": "Candidate improves matched117489-token prefill throughput1.5318percent and passes all three pair gates;current selected original/decode1256placement remains unchanged. Prepare and commit matched official long/agent plus >=1Kthinking strong/weak generation/decode-state preservation,then physical262144fill/tail/handoff/RESTORE qualification before selection. No new GRF trial:equivalent128/256was already slower;only a distinct prospective exact-WG IR discriminator remains conditional. Native build/link reader assets still serve imminent qualification.",
     "actual_ID_fixture_consumer": "Initialized53MBactual-ID fixture remains an input of the source-bound build/link/native admission readers used by the imminent matched model comparison. Review and retire when that comparison/qualification reader is retired;the address gates already passed and are not model-context qualification.",
     "GPU_executed": true,
     "model_built": true,
@@ -3577,7 +3577,7 @@
       }
     ],
     "clean_prefill_comparison": {
-      "stage": "running",
+      "stage": "closed",
       "source_commit": "dc6efcd6bf7079d8c5cbc3b05b189207c8385c5b",
       "runtime_sha256": "09ad358e12f6ef58bfc0a978519927863f3d09949a033a1e224db95997647d97",
       "boot": "cfda0b6a-7c13-4fe2-bdf5-8f9202770840",
@@ -4383,6 +4383,116 @@
           "owned_leader": {
             "pid": 3656462
           }
+        },
+        {
+          "index": 5,
+          "arm": "candidate",
+          "complete": true,
+          "host_probe_accepted": true,
+          "passed": true,
+          "native_exit_code": 0,
+          "samples": [
+            {
+              "request_sha256": "26f08fd8364b5c4bce718617fe2aed42761d0a794e068b00532694adef78b3be",
+              "actual_prompt_tokens": 117489,
+              "actual_read_tokens": 117489,
+              "actual_reused_tokens": 0,
+              "generated_tokens": 24,
+              "prompt_ms": 128551.6,
+              "prompt_tps": 913.9,
+              "prompt_tps_source": "engine",
+              "ttft_s": 128.763,
+              "total_s": 131.269,
+              "thinking_requested": true,
+              "reasoning_observed": true,
+              "ok": true,
+              "eligible": true,
+              "stream_complete": true
+            },
+            {
+              "request_sha256": "fd3ad8ad7033776ad749b22e62e910e5f47e3f7664705f48d9f1fe7349b65515",
+              "actual_prompt_tokens": 117489,
+              "actual_read_tokens": 117489,
+              "actual_reused_tokens": 0,
+              "generated_tokens": 24,
+              "prompt_ms": 119448.4,
+              "prompt_tps": 983.6,
+              "prompt_tps_source": "engine",
+              "ttft_s": 119.652,
+              "total_s": 122.175,
+              "thinking_requested": true,
+              "reasoning_observed": true,
+              "ok": true,
+              "eligible": true,
+              "stream_complete": true
+            },
+            {
+              "request_sha256": "daabbef4775c3fbdbfd832339d80a5ae2f91025b66df79b92fb8f6905f33b041",
+              "actual_prompt_tokens": 117489,
+              "actual_read_tokens": 117489,
+              "actual_reused_tokens": 0,
+              "generated_tokens": 24,
+              "prompt_ms": 119530.1,
+              "prompt_tps": 982.9,
+              "prompt_tps_source": "engine",
+              "ttft_s": 119.801,
+              "total_s": 122.513,
+              "thinking_requested": true,
+              "reasoning_observed": true,
+              "ok": true,
+              "eligible": true,
+              "stream_complete": true
+            },
+            {
+              "request_sha256": "8669c9ebe2747b1fc2d7c4806eeb66025c919981d81c51cfdbd64ba3ec3cc2b1",
+              "actual_prompt_tokens": 117489,
+              "actual_read_tokens": 117489,
+              "actual_reused_tokens": 0,
+              "generated_tokens": 24,
+              "prompt_ms": 119432.7,
+              "prompt_tps": 983.7,
+              "prompt_tps_source": "engine",
+              "ttft_s": 119.674,
+              "total_s": 122.14,
+              "thinking_requested": true,
+              "reasoning_observed": true,
+              "ok": true,
+              "eligible": true,
+              "stream_complete": true
+            }
+          ],
+          "subsequent_median_ms": 119448.4,
+          "validation": {
+            "pid": 3680146,
+            "loader": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_loader.so.0.12.0",
+            "threads_before": 1,
+            "preinit": 37,
+            "config_enabled": true,
+            "first_init": true,
+            "dispatch_result": 46,
+            "output_untouched": true,
+            "retained_reference_until_exit": true,
+            "runtime_teardown_qualified": false
+          },
+          "ownership_closed": true,
+          "fresh_faults": [],
+          "boot_unchanged": true,
+          "driver_after": {
+            "pci": "/sys/bus/pci/devices/0000:05:00.0",
+            "driver": "xe",
+            "vendor": "0x8086",
+            "device": "0xe20c",
+            "kernel": "7.0.0-38-generic",
+            "devcoredump": false
+          },
+          "native_identity": {
+            "pid": 3680146,
+            "start_ticks": 152983939,
+            "sid": 3680102
+          },
+          "owned_leader": {
+            "pid": 3680102
+          }
         }
       ],
       "budgets": {
@@ -4412,10 +4522,119 @@
         "limits": "Prefill mechanism screen only. Output24 is not decode70,task quality,agent-session,long generation or physical262144 qualification. API prefill time includes handoff back to unchanged decode layout. Independent decode preservation remains mandatory before selection.",
         "retention": "Keep compact individual request samples,source/recipe/environment/qualification identity and decision. Retire raw logs and duplicate outputs after verification;retain fallback and candidate only until comparison/adoption decision."
       },
-      "complete": false,
-      "passed": false,
+      "complete": true,
+      "passed": true,
       "active": false,
-      "ownership_closed": true
+      "ownership_closed": true,
+      "decision": {
+        "pair_time_ratios": [
+          0.9866219485758567,
+          0.9817896090683893,
+          0.9863364356486332
+        ],
+        "geometric_mean_time_ratio": 0.9849135072576165,
+        "small_gain_screen_passed": true,
+        "inference_adopted": false,
+        "decode_qualified": false,
+        "physical262144_qualified": false
+      },
+      "analysis": {
+        "actual_read_tokens": 117489,
+        "process_summaries": [
+          {
+            "index": 0,
+            "arm": "original",
+            "first_prompt_seconds": 129.1986,
+            "first_pp": 909.3674389660569,
+            "subsequent_median_seconds": 120.39869999999999,
+            "subsequent_median_pp": 975.8327955368289,
+            "subsequent_pp_range": [
+              972.802048126332,
+              977.1995911180459
+            ],
+            "subsequent_median_ttft_seconds": 120.561
+          },
+          {
+            "index": 1,
+            "arm": "candidate",
+            "first_prompt_seconds": 127.9874,
+            "first_pp": 917.9731754844618,
+            "subsequent_median_seconds": 118.788,
+            "subsequent_median_pp": 989.064551974947,
+            "subsequent_pp_range": [
+              980.4427175910395,
+              990.2174215358319
+            ],
+            "subsequent_median_ttft_seconds": 118.943
+          },
+          {
+            "index": 2,
+            "arm": "candidate",
+            "first_prompt_seconds": 130.31210000000002,
+            "first_pp": 901.5970120963441,
+            "subsequent_median_seconds": 118.7018,
+            "subsequent_median_pp": 989.7828002608217,
+            "subsequent_pp_range": [
+              983.2447772260863,
+              990.629871931184
+            ],
+            "subsequent_median_ttft_seconds": 118.919
+          },
+          {
+            "index": 3,
+            "arm": "original",
+            "first_prompt_seconds": 130.494,
+            "first_pp": 900.3402455285301,
+            "subsequent_median_seconds": 120.9035,
+            "subsequent_median_pp": 971.7584685306877,
+            "subsequent_pp_range": [
+              971.2322991840884,
+              973.807512861679
+            ],
+            "subsequent_median_ttft_seconds": 121.078
+          },
+          {
+            "index": 4,
+            "arm": "original",
+            "first_prompt_seconds": 129.56539999999998,
+            "first_pp": 906.7930172715865,
+            "subsequent_median_seconds": 121.10310000000001,
+            "subsequent_median_pp": 970.1568333097996,
+            "subsequent_pp_range": [
+              968.9686569084449,
+              978.4789432437407
+            ],
+            "subsequent_median_ttft_seconds": 121.261
+          },
+          {
+            "index": 5,
+            "arm": "candidate",
+            "first_prompt_seconds": 128.5516,
+            "first_pp": 913.9442838517762,
+            "subsequent_median_seconds": 119.44839999999999,
+            "subsequent_median_pp": 983.5962641609265,
+            "subsequent_pp_range": [
+              982.9239664318861,
+              983.7255625971782
+            ],
+            "subsequent_median_ttft_seconds": 119.674
+          }
+        ],
+        "time_change_percent": -1.5086492742383495,
+        "throughput_change_percent": 1.5317581321826035,
+        "pp1000_achieved": false,
+        "inference_adopted": false,
+        "decision": "All three time ratios below1 and geometric mean0.9849135073 pass the prospective <=0.995 screen. Keep candidate only for imminent decode/state,agent/long-generation and physical262144 qualification;do not change current selected original engine/decode1256placement yet.",
+        "limits": "24output requests characterize long prefill and TTFT only. No decode70,quality,agent or full262144qualification. QSA component service is not critical-path or hardware-saturation evidence."
+      },
+      "post_closure_audit": {
+        "all_six_errors_absent": true,
+        "all_24_workloads_and_engine_clocks_verified": true,
+        "recomputed_pair_ratios_match": true,
+        "model_assets_full_post_digest_verified": true,
+        "model_asset_files": 15,
+        "proof": "Finalindex5 executed full expected-identity/SHA256 model_pins branch and printed all15successful asset digests;exception field absent. Explicit audit is required because the original controller sets host acceptance before that final digest;generic finish alone does not reject an error key. No current digest failure or false pass is observed. Harden before any future controller reuse;do not relabel original source/results."
+      }
     },
     "model_observer_retirement": {
       "files": 35,
