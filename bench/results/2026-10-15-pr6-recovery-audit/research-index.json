@@ -15045,5 +15045,34 @@
         }
       ]
     }
+  },
+  "qsa_batched_radix_histogram_contract_20261028": {
+    "classification": "decision support",
+    "status": "eligible_before_dispatch",
+    "schedulable_now": true,
+    "source_revision": "c722121f9218737492f16debde6d7d0d280e8532",
+    "question": "Audit the isolated Main-authored SG16/WG256 radix4 batched-histogram proposal against selected6e40 qsa_select.cpp. Prove or refute weighted rank/tie/NaN/signed-zero/ascending-ID equivalence,complete writer/read/barrier lifetimes across digit rounds,all-SG collective participation including early returns,integer/extent bounds,device/queue/owner contracts and exact SG16 control isolation. Compare sequential WG reductions,two-level batched subgroup reductions and viable alternatives,including concrete counterexamples and required native codegen/resource/service evidence. Distinguish proposed two explicit WG barriers from unknown lowering of original collectives,and scoring/queue gaps from selector service. Identify at most two actionable source corrections or next gates,not a generic selection survey. No implementation,build,test,GPU/profiler/process or Git operations.",
+    "report": ".cache/research/2026-10-28/qsa_batched_radix_histogram_contract_20261028.md",
+    "report_budget_bytes": 14336,
+    "worker_model": "Orca Codex gpt-6-luna high",
+    "source_files": {
+      "include/strata/kernels/qsa_radix_batched.hpp": "41ff5c8a86828fef247406d6654c19bbf0ec6062747c7b7681be32c01fd1a601",
+      "src/kernels/sycl/qsa_radix_batched.cpp": "4adc3338780c5a2b347f3273f72edce1b403699debef3d0e0ad184d424581bc4"
+    },
+    "actual_prerequisite_evidence": {
+      "base_native_source": "6e40afc1beddd059ee518617f6c1efce1da14aca",
+      "isolated_current_source": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-direct-k-model-v2/source/src/kernels/sycl/qsa_select.cpp",
+      "base_source_sha256": "463a9ec02ed28125a5cd38b7b5d28784b849a4fbb199cb017042cd99078efee1",
+      "actual_plan": "Selected environment sets SELECT_RADIX4=1,CYCLIC=0,PREFILL_SCORE_GEMM=1. Source topk Mapping1 performs8radix rounds/16WG reductions per round;final emit is ascending block/cell order. Producer source traced at prefill.cpp:2852..2889;actual per-execution producer native service remains unqualified.",
+      "timing_limit": "Existing selected6e40 QSA selection queue interval7.68898s includes scoring and host submission gaps,not selector GPU service or hardware saturation. Attention26.9436s service is a separate family. Candidate is source-only and changes no selected engine/decoder."
+    },
+    "prior_scopes": [
+      "qwen_qsa_sparse_index_generation_methods_20261028",
+      "gpu_cross_workgroup_tile_multicast_contracts_20261028",
+      "qsa_direct_K_row_invariant_contract_20261028",
+      "sycl_command_submission_amortization_collection_scope"
+    ],
+    "consumer": "Main next source-local candidate after the frozen direct-K official cohort;native Luna-max review before a fresh source/build/CPU/native/numerical/service gate. Not current model adoption.",
+    "retirement": "Commit only source corrections and useful comparison/gate facts;retire consumed spec/dispatch/review text. Retire proposal exports/source if its mechanism gate closes without a native consumer."
   }
 }
