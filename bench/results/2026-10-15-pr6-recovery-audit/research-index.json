@@ -15231,7 +15231,7 @@
   },
   "qsa_pair_union_contract_20261029": {
     "classification": "decision support",
-    "status": "orca_closed_native_review_pending",
+    "status": "reviewed_conditional_source_proof",
     "schedulable_now": false,
     "source_revision": "a8adbc65f",
     "source_files": {
@@ -15268,6 +15268,18 @@
     },
     "report_bytes": 7702,
     "report_sha256": "036c8c3156aeb7798c5bbf7230c7a885b495671cb01b298157eef61fdc6f4ab1",
-    "main_read_report_body": false
+    "main_read_report_body": false,
+    "native_review": {
+      "model": "gpt-6-luna max",
+      "path": ".cache/research/2026-10-29/qsa_pair_union_contract_20261029.review.json",
+      "sha256": "daac8b2aca830ea7b1a2dfc5e9935e05956c92573020b4518c2e9d3f74c708f8",
+      "verdict": "accepted_conditional_source_proof",
+      "algorithmic_blocker": null,
+      "essential_clarifications": [
+        "Header documents NBid=floor(NKv/4),zero width,queue dependencies and allocation lifetime;new header comments only,the reviewed producer body is unchanged.",
+        "Maximum geometry requires real backing allocations;preflight is not capacity/model qualification."
+      ],
+      "next_gate": "Freeze exact native fixture/inputs/recipe/plan before serial build;bounded traced merge-oracle,guards,invalid-input and queue-dependency checks. No GPU or model qualification."
+    }
   }
 }

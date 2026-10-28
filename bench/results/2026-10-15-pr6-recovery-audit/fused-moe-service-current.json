@@ -1279,5 +1279,35 @@
       "result_commit": "5e581f6e8",
       "scope": "Only successful owned stdout/stderr/private receipt/plan;original selected-ID fixture retained for immediate T2GPU comparison."
     }
+  },
+  "qsa_pair_proposal": {
+    "stage": "source_only",
+    "producer_revision": "a8adbc65f",
+    "files": {
+      "include/strata/kernels/qsa_pair_union.hpp": "2cc8b6421a873dd6ba41a9135dff3d4608ccfd3263d5c33ab7850d36c69c8a2e",
+      "src/kernels/sycl/qsa_pair_union.cpp": "e9f3ca56a445067d8df817ceb554ea5dcff612e544e28b98ee6028daee1aff8c",
+      "include/strata/kernels/qsa_pair_attention.hpp": "88a810b0181992efba235a217bed7c396d5cced5f1ec37eb43a46b9fc4094dd4",
+      "src/kernels/sycl/qsa_pair_attention.cpp": "9b1221600dbd78fddee0052f980f5fdb91fcd42d9420b7a8cc24c6574b320bd2"
+    },
+    "provenance": "Main-authored MIT;attention uses only own selected6e40 qsa_bf16_prefix.cpp design SHA4f9f815c9baae709f919f6d5ad1af04677c10d8c13c7597b3857cf81567ae192;independent pair-mask/matrix mapping;no Xe application code.",
+    "mechanism": "GPU exact sorted two-query union with u8 membership;24heads across pair fill three8-row matrix blocks;K/V load shared,per-query softmax/LSE independent;ordered FP32 tile sum and typed K/V4 staging preserved.",
+    "geometry": {
+      "workgroup": 192,
+      "subgroup": 16,
+      "local_bytes": 21856,
+      "query_heads_per_KV": 12,
+      "KV_heads": 2,
+      "cell_tile": 32,
+      "head_dim": 256
+    },
+    "limitations": [
+      "No build or device run,no production caller or model dispatch.",
+      "Different per-query tile boundaries change BF16 probability rounding;requires prospective framework-contract/numerical/task gates.",
+      "GPU union preparation plus attention must improve complete dependency time;logical byte reduction is not speed or physical traffic.",
+      "Decode source/config/1256-slot placement unchanged;physical262144/final-slot/handoff/RESTORE remains independent."
+    ],
+    "next_gate": "Independent Luna source-contract audit while Main prepares committed fixture and native recipe;then serial build/properties/traced oracle before timing.",
+    "selected": false,
+    "GPU_executed": false
   }
 }
