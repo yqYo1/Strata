@@ -2222,7 +2222,7 @@
       "scope": "These are whole-model build provenance obligations. Same-source bounded native property/numerical fixture qualification may proceed;no model launch/adoption while these remain unresolved."
     },
     "check_plan": {
-      "stage": "prepared",
+      "stage": "closed",
       "mode": "id-smoke",
       "source_commit": "f76fa512eda500596da64074af0d42d8b75e890b",
       "controller_inputs": {
@@ -2468,6 +2468,226 @@
         },
         "validation": {
           "pid": 3299447,
+          "loader": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_loader.so.0.12.0",
+          "threads_before": 1,
+          "preinit": 37,
+          "config_enabled": true,
+          "first_init": true,
+          "dispatch_result": 46,
+          "output_untouched": true,
+          "retained_reference_until_exit": true,
+          "runtime_teardown_qualified": false
+        },
+        "exit_code": 0,
+        "postchecks_complete": true,
+        "postcheck_errors": [],
+        "fresh_faults": [],
+        "boot_unchanged": true,
+        "driver_after": {
+          "pci": "/sys/bus/pci/devices/0000:05:00.0",
+          "driver": "xe",
+          "vendor": "0x8086",
+          "device": "0xe20c",
+          "kernel": "7.0.0-38-generic",
+          "devcoredump": false
+        }
+      },
+      {
+        "mode": "id-smoke",
+        "passed": true,
+        "complete": true,
+        "active": false,
+        "ownership_closed": true,
+        "GPU_kernels_executed": true,
+        "model_qualified": false,
+        "model_executed": false,
+        "controller_commit": "f76fa512eda500596da64074af0d42d8b75e890b",
+        "plan_commit": "0e2a6ebebea18da7eeca8505f347b39ba9376a62",
+        "physical_device": {
+          "name": "Intel(R) Arc(TM) B570 Graphics",
+          "pci": "0000:05:00.0",
+          "driver": "xe",
+          "matching_DRM_descriptors": 1
+        },
+        "output": {
+          "numerical": [
+            {
+              "kind": "numerical",
+              "queries": 3,
+              "arm": 0,
+              "reference_cells": 32,
+              "spot_queries": 3,
+              "compared": 18432,
+              "max_abs": 0,
+              "max_budget_ratio": 0
+            },
+            {
+              "kind": "numerical",
+              "queries": 3,
+              "arm": 1,
+              "reference_cells": 32,
+              "spot_queries": 3,
+              "compared": 18432,
+              "max_abs": 0,
+              "max_budget_ratio": 0
+            },
+            {
+              "kind": "numerical",
+              "queries": 3,
+              "arm": 2,
+              "reference_cells": 32,
+              "spot_queries": 3,
+              "compared": 18432,
+              "max_abs": 0,
+              "max_budget_ratio": 0
+            }
+          ],
+          "deltas": [
+            {
+              "kind": "delta",
+              "queries": 3,
+              "elements": 18432,
+              "changed_from32": 0,
+              "max_abs": 0,
+              "relative_l2": 0
+            }
+          ],
+          "samples": [],
+          "guards": true,
+          "inputs_immutable": true,
+          "cell32_exact": true,
+          "own_reference": true
+        },
+        "local_launches": {
+          "0": {
+            "calls": 2,
+            "local_arguments": [
+              [
+                0,
+                16384
+              ],
+              [
+                1,
+                1024
+              ],
+              [
+                3,
+                64
+              ],
+              [
+                4,
+                64
+              ],
+              [
+                5,
+                64
+              ],
+              [
+                13,
+                256
+              ],
+              [
+                15,
+                2112
+              ],
+              [
+                16,
+                64
+              ]
+            ],
+            "dynamic_local_bytes": 20032,
+            "work_dim": 1,
+            "local_size": [
+              128
+            ]
+          },
+          "1": {
+            "calls": 2,
+            "local_arguments": [
+              [
+                0,
+                16384
+              ],
+              [
+                1,
+                1024
+              ],
+              [
+                3,
+                64
+              ],
+              [
+                4,
+                64
+              ],
+              [
+                5,
+                64
+              ],
+              [
+                13,
+                256
+              ],
+              [
+                15,
+                2112
+              ],
+              [
+                16,
+                64
+              ]
+            ],
+            "dynamic_local_bytes": 20032,
+            "work_dim": 1,
+            "local_size": [
+              128
+            ]
+          },
+          "2": {
+            "calls": 2,
+            "local_arguments": [
+              [
+                0,
+                16384
+              ],
+              [
+                1,
+                1024
+              ],
+              [
+                3,
+                64
+              ],
+              [
+                4,
+                64
+              ],
+              [
+                5,
+                64
+              ],
+              [
+                13,
+                256
+              ],
+              [
+                15,
+                2112
+              ],
+              [
+                16,
+                64
+              ]
+            ],
+            "dynamic_local_bytes": 20032,
+            "work_dim": 1,
+            "local_size": [
+              128
+            ]
+          }
+        },
+        "validation": {
+          "pid": 3307363,
           "loader": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_loader.so.0.12.0",
           "threads_before": 1,
           "preinit": 37,
