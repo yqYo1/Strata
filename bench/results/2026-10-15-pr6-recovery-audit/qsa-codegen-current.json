@@ -1759,7 +1759,7 @@
     }
   },
   "direct_K_loop_model": {
-    "stage": "first_production_diagnostic_passed_clean_comparison_pending",
+    "stage": "first_production_diagnostic_passed_clean_comparison_two_of_six_closed",
     "base_native_source": "6e40afc1beddd059ee518617f6c1efce1da14aca",
     "prefix": "src/kernels/sycl/qsa_bf16_prefix.cpp",
     "base_prefix_sha256": "4f9f815c9baae709f919f6d5ad1af04677c10d8c13c7597b3857cf81567ae192",
@@ -1771,7 +1771,7 @@
     "same_build_oracle_adapter_sha256": "a77dc9fcd81e24ca1e7b9a6d2f69b8814080c9901a1f20962bca5055c0907858",
     "scope": "One prefix source block only,under compile-time OrderedExp&&!CaptureState inside VectorK4. The selected ordered prefill uses this branch;all other instantiations keep the exact original block. No decode source/configuration/placement changes.",
     "source_integrity": "Exact full-file reversal recovers6e40prefix. Candidate selected branch reuses the same immutable REPLACEMENT as the qualified component. New full-engine source/recipe/dependency/build and same-build oracle/runtime/model qualification remain mandatory.",
-    "next": "Run the committed balanced six-process >=98304actual-input prefill comparison (original,candidate,candidate,original,original,candidate),with first long use separate and three subsequent requests per process. First traced production diagnostic passed at39260fresh tokens;not clean speed or selection. Keep original6e40/twelve fixtures and unchanged1256-slot decode layout. Agent/sustained-thinking,decode preservation and physical262144fill/handoff/RESTORE remain open.",
+    "next": "Continue frozen clean comparison with process2(candidate),3(original),4(original),5(candidate). First independent pair/eight117489-token requests passed all source/workload/native/fault/owner checks;no nested performance decision until all six close. Preserve original6e40/twelve fixtures and unchanged1256-slot decode placement. Agent/long-thinking generation,decode preservation and physical262144fill/handoff/RESTORE remain open.",
     "actual_ID_fixture_consumer": "Initialized53MBactual-ID fixture remains an input of the source-bound build/link/native admission readers used by the imminent matched model comparison. Review and retire when that comparison/qualification reader is retired;the address gates already passed and are not model-context qualification.",
     "GPU_executed": true,
     "model_built": true,
@@ -3934,6 +3934,124 @@
             "device": "0xe20c",
             "kernel": "7.0.0-38-generic",
             "devcoredump": false
+          },
+          "native_identity": {
+            "pid": 3524400,
+            "start_ticks": 152562840,
+            "sid": 3524349
+          },
+          "owned_leader": {
+            "pid": 3524349
+          }
+        },
+        {
+          "index": 1,
+          "arm": "candidate",
+          "complete": true,
+          "host_probe_accepted": true,
+          "passed": true,
+          "native_exit_code": 0,
+          "samples": [
+            {
+              "request_sha256": "26f08fd8364b5c4bce718617fe2aed42761d0a794e068b00532694adef78b3be",
+              "actual_prompt_tokens": 117489,
+              "actual_read_tokens": 117489,
+              "actual_reused_tokens": 0,
+              "generated_tokens": 24,
+              "prompt_ms": 127987.4,
+              "prompt_tps": 918.0,
+              "prompt_tps_source": "engine",
+              "ttft_s": 128.154,
+              "total_s": 129.892,
+              "thinking_requested": true,
+              "reasoning_observed": true,
+              "ok": true,
+              "eligible": true,
+              "stream_complete": true
+            },
+            {
+              "request_sha256": "fd3ad8ad7033776ad749b22e62e910e5f47e3f7664705f48d9f1fe7349b65515",
+              "actual_prompt_tokens": 117489,
+              "actual_read_tokens": 117489,
+              "actual_reused_tokens": 0,
+              "generated_tokens": 24,
+              "prompt_ms": 119832.6,
+              "prompt_tps": 980.4,
+              "prompt_tps_source": "engine",
+              "ttft_s": 119.988,
+              "total_s": 121.643,
+              "thinking_requested": true,
+              "reasoning_observed": true,
+              "ok": true,
+              "eligible": true,
+              "stream_complete": true
+            },
+            {
+              "request_sha256": "daabbef4775c3fbdbfd832339d80a5ae2f91025b66df79b92fb8f6905f33b041",
+              "actual_prompt_tokens": 117489,
+              "actual_read_tokens": 117489,
+              "actual_reused_tokens": 0,
+              "generated_tokens": 24,
+              "prompt_ms": 118649.7,
+              "prompt_tps": 990.2,
+              "prompt_tps_source": "engine",
+              "ttft_s": 118.811,
+              "total_s": 120.505,
+              "thinking_requested": true,
+              "reasoning_observed": true,
+              "ok": true,
+              "eligible": true,
+              "stream_complete": true
+            },
+            {
+              "request_sha256": "8669c9ebe2747b1fc2d7c4806eeb66025c919981d81c51cfdbd64ba3ec3cc2b1",
+              "actual_prompt_tokens": 117489,
+              "actual_read_tokens": 117489,
+              "actual_reused_tokens": 0,
+              "generated_tokens": 24,
+              "prompt_ms": 118788.0,
+              "prompt_tps": 989.1,
+              "prompt_tps_source": "engine",
+              "ttft_s": 118.943,
+              "total_s": 120.688,
+              "thinking_requested": true,
+              "reasoning_observed": true,
+              "ok": true,
+              "eligible": true,
+              "stream_complete": true
+            }
+          ],
+          "subsequent_median_ms": 118788.0,
+          "validation": {
+            "pid": 3552566,
+            "loader": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_loader.so.0.12.0",
+            "threads_before": 1,
+            "preinit": 37,
+            "config_enabled": true,
+            "first_init": true,
+            "dispatch_result": 46,
+            "output_untouched": true,
+            "retained_reference_until_exit": true,
+            "runtime_teardown_qualified": false
+          },
+          "ownership_closed": true,
+          "fresh_faults": [],
+          "boot_unchanged": true,
+          "driver_after": {
+            "pci": "/sys/bus/pci/devices/0000:05:00.0",
+            "driver": "xe",
+            "vendor": "0x8086",
+            "device": "0xe20c",
+            "kernel": "7.0.0-38-generic",
+            "devcoredump": false
+          },
+          "native_identity": {
+            "pid": 3552566,
+            "start_ticks": 152635106,
+            "sid": 3552518
+          },
+          "owned_leader": {
+            "pid": 3552518
           }
         }
       ],
