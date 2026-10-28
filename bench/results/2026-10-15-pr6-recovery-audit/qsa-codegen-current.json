@@ -3575,6 +3575,296 @@
         "ownership_closed": true,
         "retirement": "One empty external comparison root removed after confirming no owned process or generated files. No measurement samples,receipt or binary was removed. Retry uses versioned v2 root and committed corrected source."
       }
-    ]
+    ],
+    "clean_prefill_comparison": {
+      "stage": "prepared",
+      "source_commit": "dc6efcd6bf7079d8c5cbc3b05b189207c8385c5b",
+      "runtime_sha256": "09ad358e12f6ef58bfc0a978519927863f3d09949a033a1e224db95997647d97",
+      "boot": "cfda0b6a-7c13-4fe2-bdf5-8f9202770840",
+      "profile": {
+        "path": "/home/yayoi/orca/workspaces/Strata/sycl/data/expert-profile.bin",
+        "identity": {
+          "realpath": "/home/yayoi/orca/workspaces/Strata/sycl/data/expert-profile.bin",
+          "dev": 40,
+          "ino": 1160754,
+          "bytes": 196632,
+          "mtime_ns": 1790912310870254601,
+          "ctime_ns": 1790912310870254601
+        },
+        "sha256": "8f59b4aa8873209dff11c11e37bcda9529a1335b724a1afeea37bf6388975baf"
+      },
+      "native_validation_probe": {
+        "library": {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/ur-validation-preload-v2/libstrata_ur_validation.so",
+          "sha256": "1d4e69d672d55fa0a126ae43b7b4743482cccca7e2f2bc22e0db2bfdad5bdc7c"
+        },
+        "loader": {
+          "path": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_loader.so.0.12.0",
+          "sha256": "bb6e1311850e4b1a924e42acae80c2b3610934625a4985aaa67967abe31356fc"
+        }
+      },
+      "plans": [
+        {
+          "index": 0,
+          "arm": "original",
+          "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-direct-k-model-comparison-v2/0",
+          "binary": {
+            "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/strata",
+            "bytes": 22190000,
+            "sha256": "22182f1a5e62e5f4259ce49a75ae44afbd988166ec79324816e499ff37ef60e4"
+          },
+          "command": [
+            "/bin/sh",
+            "/home/yayoi/orca/workspaces/Strata/sycl/bench.sh",
+            "--config",
+            "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-direct-k-model-comparison-v2/0/config.json",
+            "--port",
+            "59643",
+            "--prefill-only",
+            "--prefill-tokens",
+            "98304",
+            "--think",
+            "--runs",
+            "4",
+            "--profile-request-gates",
+            "--workload-id",
+            "native_gdn_20261018",
+            "--fail-fast-engine-error",
+            "--ready-timeout",
+            "600",
+            "--out",
+            "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-direct-k-model-comparison-v2/0/bench"
+          ],
+          "generated": {
+            "plan.json": "08cfd654f8512bb484582b232cb0361de9c228e1eb5f4cec465aba42cf5195ef",
+            "config.json": "3952784d9d8d296678f9d3de1d8266cdea61843f310a20bfae10902ac1c1b0d2"
+          },
+          "environment_sha256": "57d6feb7691232fed98b3ad59b4dc9a6441b7caa6a2a4304af704c4ffe56ade0"
+        },
+        {
+          "index": 1,
+          "arm": "candidate",
+          "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-direct-k-model-comparison-v2/1",
+          "binary": {
+            "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-direct-k-model-v2/build/strata",
+            "bytes": 22190120,
+            "sha256": "d5b0ef5e14c02f663657da6afcc4ae71ad89f92b3120be6fde33c1362f7f062f"
+          },
+          "command": [
+            "/bin/sh",
+            "/home/yayoi/orca/workspaces/Strata/sycl/bench.sh",
+            "--config",
+            "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-direct-k-model-comparison-v2/1/config.json",
+            "--port",
+            "58781",
+            "--prefill-only",
+            "--prefill-tokens",
+            "98304",
+            "--think",
+            "--runs",
+            "4",
+            "--profile-request-gates",
+            "--workload-id",
+            "native_gdn_20261018",
+            "--fail-fast-engine-error",
+            "--ready-timeout",
+            "600",
+            "--out",
+            "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-direct-k-model-comparison-v2/1/bench"
+          ],
+          "generated": {
+            "plan.json": "06e779359b5b11e9348ab32485f005566acba5fac8f1c2ffba583fc27e870cce",
+            "config.json": "c930701c4c7c278d883788186768a1a112d61ed7ed8fc936ef48a5bf773b37af"
+          },
+          "environment_sha256": "e37cbbe11b2ede0bc537f6e284a384424800c0e9d1652b67cc5bf34c7056871f"
+        },
+        {
+          "index": 2,
+          "arm": "candidate",
+          "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-direct-k-model-comparison-v2/2",
+          "binary": {
+            "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-direct-k-model-v2/build/strata",
+            "bytes": 22190120,
+            "sha256": "d5b0ef5e14c02f663657da6afcc4ae71ad89f92b3120be6fde33c1362f7f062f"
+          },
+          "command": [
+            "/bin/sh",
+            "/home/yayoi/orca/workspaces/Strata/sycl/bench.sh",
+            "--config",
+            "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-direct-k-model-comparison-v2/2/config.json",
+            "--port",
+            "34251",
+            "--prefill-only",
+            "--prefill-tokens",
+            "98304",
+            "--think",
+            "--runs",
+            "4",
+            "--profile-request-gates",
+            "--workload-id",
+            "native_gdn_20261018",
+            "--fail-fast-engine-error",
+            "--ready-timeout",
+            "600",
+            "--out",
+            "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-direct-k-model-comparison-v2/2/bench"
+          ],
+          "generated": {
+            "plan.json": "06e779359b5b11e9348ab32485f005566acba5fac8f1c2ffba583fc27e870cce",
+            "config.json": "3e1fb6ab7e29e95c0892b7e8fd160af1096287212a0e1139099bf6be64eee079"
+          },
+          "environment_sha256": "2a9d3848b8001abeee9eeaa90fb5782fc0b82943171182cbc9ac816d2c58c951"
+        },
+        {
+          "index": 3,
+          "arm": "original",
+          "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-direct-k-model-comparison-v2/3",
+          "binary": {
+            "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/strata",
+            "bytes": 22190000,
+            "sha256": "22182f1a5e62e5f4259ce49a75ae44afbd988166ec79324816e499ff37ef60e4"
+          },
+          "command": [
+            "/bin/sh",
+            "/home/yayoi/orca/workspaces/Strata/sycl/bench.sh",
+            "--config",
+            "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-direct-k-model-comparison-v2/3/config.json",
+            "--port",
+            "44489",
+            "--prefill-only",
+            "--prefill-tokens",
+            "98304",
+            "--think",
+            "--runs",
+            "4",
+            "--profile-request-gates",
+            "--workload-id",
+            "native_gdn_20261018",
+            "--fail-fast-engine-error",
+            "--ready-timeout",
+            "600",
+            "--out",
+            "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-direct-k-model-comparison-v2/3/bench"
+          ],
+          "generated": {
+            "plan.json": "08cfd654f8512bb484582b232cb0361de9c228e1eb5f4cec465aba42cf5195ef",
+            "config.json": "e400660a874b2d3953794a849f23a5376fa24f9b552d023796d18c3ea23b10ad"
+          },
+          "environment_sha256": "810a80af15e281c663296fc91c0a71ae646242623f99ded220aa9352e85ed292"
+        },
+        {
+          "index": 4,
+          "arm": "original",
+          "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-direct-k-model-comparison-v2/4",
+          "binary": {
+            "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/strata",
+            "bytes": 22190000,
+            "sha256": "22182f1a5e62e5f4259ce49a75ae44afbd988166ec79324816e499ff37ef60e4"
+          },
+          "command": [
+            "/bin/sh",
+            "/home/yayoi/orca/workspaces/Strata/sycl/bench.sh",
+            "--config",
+            "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-direct-k-model-comparison-v2/4/config.json",
+            "--port",
+            "50511",
+            "--prefill-only",
+            "--prefill-tokens",
+            "98304",
+            "--think",
+            "--runs",
+            "4",
+            "--profile-request-gates",
+            "--workload-id",
+            "native_gdn_20261018",
+            "--fail-fast-engine-error",
+            "--ready-timeout",
+            "600",
+            "--out",
+            "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-direct-k-model-comparison-v2/4/bench"
+          ],
+          "generated": {
+            "plan.json": "08cfd654f8512bb484582b232cb0361de9c228e1eb5f4cec465aba42cf5195ef",
+            "config.json": "8cde0113d662c3ed143cd18e24614e27e7bec3e335a88e249dff4af4360339b8"
+          },
+          "environment_sha256": "3f02d4a57203c2d6ffc175122da52e50df93afb9740c26411684413272adf13f"
+        },
+        {
+          "index": 5,
+          "arm": "candidate",
+          "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-direct-k-model-comparison-v2/5",
+          "binary": {
+            "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-direct-k-model-v2/build/strata",
+            "bytes": 22190120,
+            "sha256": "d5b0ef5e14c02f663657da6afcc4ae71ad89f92b3120be6fde33c1362f7f062f"
+          },
+          "command": [
+            "/bin/sh",
+            "/home/yayoi/orca/workspaces/Strata/sycl/bench.sh",
+            "--config",
+            "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-direct-k-model-comparison-v2/5/config.json",
+            "--port",
+            "35761",
+            "--prefill-only",
+            "--prefill-tokens",
+            "98304",
+            "--think",
+            "--runs",
+            "4",
+            "--profile-request-gates",
+            "--workload-id",
+            "native_gdn_20261018",
+            "--fail-fast-engine-error",
+            "--ready-timeout",
+            "600",
+            "--out",
+            "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-direct-k-model-comparison-v2/5/bench"
+          ],
+          "generated": {
+            "plan.json": "06e779359b5b11e9348ab32485f005566acba5fac8f1c2ffba583fc27e870cce",
+            "config.json": "035d9a77d82f568383515d55e4d663dd5eb4619801f9368d0d6e091c9cf42017"
+          },
+          "environment_sha256": "068c166cd1f3e503843a40aa669834751a8f6072f9c7432c3455853121e237d3"
+        }
+      ],
+      "request_sha256": [
+        "26f08fd8364b5c4bce718617fe2aed42761d0a794e068b00532694adef78b3be",
+        "fd3ad8ad7033776ad749b22e62e910e5f47e3f7664705f48d9f1fe7349b65515",
+        "daabbef4775c3fbdbfd832339d80a5ae2f91025b66df79b92fb8f6905f33b041",
+        "8669c9ebe2747b1fc2d7c4806eeb66025c919981d81c51cfdbd64ba3ec3cc2b1"
+      ],
+      "processes": [],
+      "budgets": {
+        "wall": 1800,
+        "cpu": 5400,
+        "rss_cap": 111669149696,
+        "text_cap": 67108864,
+        "file_cap": 134217728,
+        "total_cap": 536870912
+      },
+      "plan": {
+        "order": [
+          "original",
+          "candidate",
+          "candidate",
+          "original",
+          "original",
+          "candidate"
+        ],
+        "runs_per_process": 4,
+        "question": "Does the independently qualified direct-K row-address hoist improve whole long prefill with unchanged decode configuration?",
+        "mechanism": "Actual QSA component wall/service improves about4percent at6491queries;QSA service26.94s is not all critical-path wall. Expect only a small whole-model gain,not4percent or a hardware-saturation claim.",
+        "constants": "131072 INT8 resident context,1256 expert slots,8192 chunks,BF16/vLLM/mode10,5workers,spec4,identical models/profile/requests and safety. Native parameter-validation/retained-loader policy stays enabled in both arms;STRATA_TRACE and profiling remain off.",
+        "samples": "Six independent fresh processes in three adjacent opposite-order pairs. Each has one short warmup and four >=98304fresh/zero-reuse requests. Keep first long use separately;compare median of subsequent three within each process. Keep every sample,PP,TTFT and ranges. Not cold disk;source/model hashing primes file cache.",
+        "acceptance": "All six processes and24requests must qualify. Candidate/original subsequent-time ratios in all three adjacent pairs must be below1;geometric mean must be <=0.995 for this small-gain screen. First-use ratios are descriptive. Otherwise inconclusive/rejected,not noise dismissal or adoption. No throughput-target claim from one point.",
+        "stopping": "Stop first correctness,source,runtime,ownership,validation,fault or budget failure. No performance-based stop/retry/replacement/exclusion. Finish all six before decision;no criteria changes after readings.",
+        "limits": "Prefill mechanism screen only. Output24 is not decode70,task quality,agent-session,long generation or physical262144 qualification. API prefill time includes handoff back to unchanged decode layout. Independent decode preservation remains mandatory before selection.",
+        "retention": "Keep compact individual request samples,source/recipe/environment/qualification identity and decision. Retire raw logs and duplicate outputs after verification;retain fallback and candidate only until comparison/adoption decision."
+      },
+      "complete": false,
+      "passed": false,
+      "active": false,
+      "ownership_closed": true
+    }
   }
 }
