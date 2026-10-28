@@ -15241,5 +15241,24 @@
       "tools/sycl/build_qsa_radix.py": "8a810af6add7913f25ce11a255e73beb4bc0c6fb728c2883eb68a91640fa38c7",
       "tools/sycl/check_qsa_radix.py": "5b9bde5ac161e1a918b86aae3272de28add62daae5c6bb35c640cb0487896f7a"
     }
+  },
+  "gpu_integer_histogram_dataflows_20261029": {
+    "classification": "knowledge collection",
+    "status": "eligible_not_dispatched",
+    "schedulable_now": true,
+    "source_revision": "3dc0b2651d7620df344d6d80abf627e512c55541",
+    "question": "Compare low-level multi-bin integer histogram/reduction dataflows on SIMD GPUs:privatized per-lane arrays and group reductions,subgroup ballot/vote/popcount,local/shared atomics,and two-level subgroup-to-local reduction or vector alternatives. Explain register/live-range pressure,barrier count,SLM bank/access layout,contention and cache tradeoffs for weighted four-bit radix counts. Prioritize Intel Xe/SYCL but include transferable non-LLM histogram/image/graph/ASIC papers and technical blogs. Map limitations to WG256/SG16,16bins,256queries and8193..65537FP32score cells/query without proposing code or predicting local speed. Compare at least three substantive approaches and counterexamples;not another top-k survey or a repeat of the existing source-correctness proof.",
+    "report": ".cache/research/2026-10-29/gpu_integer_histogram_dataflows_20261029.md",
+    "report_budget_bytes": 16384,
+    "worker_model": "Orca Codex gpt-6-luna high",
+    "actual_prerequisite_evidence": "Own batched sourcec722121f9/source-contract review and selected6e40radix4producer identified. Native properties in f1eb58832show WG>=256/SG16control+batched,reportedSLM4096,spill descriptor0;service/clean speed remain unmeasured. This collection needs no local experiment.",
+    "prior_scopes": [
+      "qwen_qsa_sparse_index_generation_methods_20261028",
+      "qsa_batched_radix_histogram_contract_20261028",
+      "adaptive_sparse_format_crossover_gpu_asic_20261028"
+    ],
+    "consumer": "Indexed reusable low-level histogram dataflow knowledge for a future source/resource/service-backed selector choice. Main must not read body on arrival;native Luna-max reviews first.",
+    "retirement": "Keep only substantive nonduplicated findings/source corrections with realistic retrieval use. Review body consumer after component decision;retire dispatch/spec/review transactions after compact index evidence.",
+    "worker_closed": false
   }
 }
