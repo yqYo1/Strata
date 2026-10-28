@@ -425,9 +425,16 @@ time model. Higher R-squared alone would hide that problem.
 Native logs bind48MoE accumulator windows to19664,39253 and78444 physical
 prefill rows,and96windows to117482rows,with an81920-row cap. The adjacent
 long-route slopes are0.9203,0.8280 and0.9941ms/token;this is not evidence of
-one exact linear law. If a tuning decision needs better prediction,measure
-around window/chunk boundaries and confirm with independent processes before
-attributing the bend or extrapolating. Requested expert H2D volumes remain
+one exact linear law. A source-only check of selected`6e40afc1b` adds another
+boundary condition:`ExpertBankPlan::make` excludes the staged expert bank when
+`n>81920` and`1<=n%81920<=8192`,because that short final FFN uses the full512-slot
+path. Those`n` values are physical prefill rows,not the complete prompt count.
+The measured lengths do not exercise this band. A boundary sweep must record
+actual bank/residual placement as well as window count;assuming one unchanged
+long-input route across it would mix configurations. This is a source predicate,
+not a measured admission or timing result. If a tuning decision needs better
+prediction,measure around window/chunk boundaries and confirm with independent
+processes before attributing the bend or extrapolating. Requested expert H2D volumes remain
 about33.8..38.3GB across these lengths;they are software-requested bytes,not
 physical PCIe traffic or a saturation measurement. No inference implementation
 changed for this sweep;it neither restores the historical best nor qualifies
