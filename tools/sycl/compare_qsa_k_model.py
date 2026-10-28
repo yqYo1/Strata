@@ -25,7 +25,7 @@ import engine_once
 
 m = diagnostic.m
 P, B, RESULT = diagnostic.P, diagnostic.B, diagnostic.RESULT
-ROOT = B / 'qsa-direct-k-model-comparison-v1'
+ROOT = B / 'qsa-direct-k-model-comparison-v2'
 require, digest, write = diagnostic.require, diagnostic.digest, diagnostic.write
 ORDER = ('original', 'candidate', 'candidate', 'original', 'original', 'candidate')
 KEY = 'clean_prefill_comparison'
@@ -61,10 +61,10 @@ def prepare():
     require(KEY not in record[m.KEY] and not ROOT.exists(), 'fresh comparison only')
     revision = m.component.gen.git('rev-parse','HEAD').decode().strip()
     pins = diagnostic.pins(revision)
+    binaries = {'original':built['selected_binary'], 'candidate':built['binaries']['strata']}
     assets = diagnostic.models.model_pins(model['configuration'], model['model_assets'], full=True)
     ROOT.mkdir(mode=0o700)
     probe = model['native_validation_probe']
-    binaries = {'original':rt['binary'], 'candidate':built['binaries']['strata']}
     plans = []
     for index, arm in enumerate(ORDER):
         root = ROOT / str(index); root.mkdir(mode=0o700)
