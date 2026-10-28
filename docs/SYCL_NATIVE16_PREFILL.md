@@ -1774,79 +1774,46 @@ and118.919..119.674s for the candidate. First-use samples remain separate;
 this is neither cold-disk performance nor a decode measurement. The candidate
 does not reach1000tok/s. No physical hardware saturation follows from this gain.
 
-The source-bound small-gain screen is complete,but model selection remains
-pending. Keep the selected6e40engine and unchanged1256-slot decode layout while
-qualifying matched official long/agent sessions,sustained strong/weak-MTP
-thinking generation,decode state/performance preservation and physical262144
-fill/tail/handoff/RESTORE. The final audit also verifies every process has no
-exception:the original controller sets acceptance before its final asset digest,
-so its generic success field alone would not reject a late digest exception.
-All15 digests actually completed here;harden that guard before future reuse.
-Follow-up controller`fdbc95786`,frozen plan`5128ee8af`,requires completion of
-all postconditions and rejects any exception before accepting a process. It
-predeclares six independent official`bench.sh --long --long-generation --think
---runs 1` processes in the same balanced order. Each runs a complete six-turn
-agent session and both sustained-thinking workloads. Agent follow-up comparisons
-use the median of five engine-reported decode rates,without substituting API
-completion usage for the engine's decoded count. The three requests per arm
-must confirm the strong/weak MTP classes from actual acceptance. Per-workload
-decode preservation is a separate paired screen;this plan is not a completed
-qualification or permission to adopt the candidate.
-Its first original process completes all18official requests and exits normally,
-with quiet validation and no fresh fault,but the frozen qualification **fails**:
-the nominal32K case reads32089tokens,below its required32768. The original
-failure remains unchanged. Its complete six-turn agent session and2933/8169-token
-thinking generations are diagnostic evidence only;draft acceptance is
-2107/2481(84.9percent)and4323/11541(37.5percent),one sample per case.
-The32089-token request takes43.5127s,versus42.2186s predicted by the already
-published long-route approximation:2.974percent underprediction in this
-independent process. This is one supplementary check,not a new fit or an
-expanded domain. The16097-token request is the first long-route use and is
-outside that fitted domain. Controller`8382987d1`prepares a fresh V2plan keeping
-nominal upstream32K coverage separate from strict actual32768-token evidence
-in both added workloads. It freezes the refused diagnostic's12fixed-body/input
-identities,without pooling its speeds or reclassifying its failure. All six new
-processes remain required;generated agent histories may differ. Host guards
-reject changed fixed inputs,late errors,decode regression and an unconfirmed
-MTP class. The old18samples and failed result restore from`848896c6f`or the
-new plan's hash-bound original-result reference;its closed private root retires.
-The first fresh V2original process now passes all18requests and postconditions,
-with unchanged fixed inputs,complete agent session,normal native exit,quiet
-validation and no fresh fault. Its2933/8169-token generations report13.7/8.6tok/s
-and84.9/37.5percent draft acceptance;these are one original-process sample per
-case,not candidate comparisons. Nominal32K remains supplemental at32089actual
-fresh tokens,740.7tok/s and43.474s TTFT. Its individual samples were committed
-before the candidate process. After preserving those samples,78consumed
-raw/JIT/cache/research files retire (12799568bytes);the cohort record and every
-prepared configuration remain,with a path/hash/reason manifest.
-The first V2candidate process also passes all18requests and final source/runtime/
-ownership checks,with quiet validation and no fresh fault. Its long-generation
-rates are13.9/8.7tok/s,with the same2933/8169actual outputs and84.9/37.5percent
-acceptance. Agent-follow-up median decode is10.9versus11.2tok/s originally,
-a first-pair ratio0.973214;do not waive that decrease as noise. Four processes
-and the frozen three-pair decisions remain required;no adoption follows yet.
-The second candidate also closes all18requests and postconditions normally,
-without a fresh fault. It reports13.8/8.7tok/s for the same2933/8169outputs and
-MTP counts;agent-follow-up median is11.3. Three processes remain. In agent turn4,
-both candidates report8.8versus the first original's10.8tok/s,with identical
-request/output hashes,114outputs and70/135drafts. Text/acceptance differences do
-not explain this observed decrease. Inspect that turn across the remaining
-originals/candidate before adoption;an aggregate median cannot resolve it.
-Production/decode and the selected6e40engine/twelve fixtures remain unchanged.
-Between model processes,the CPU-only exact-WG128 discriminator fails its own
-three-kernel assumption:the whole translation unit emits20kernels,ten template
-variants each containing copy and attention entries. All four compile/translation
-commands exit0,but this is not a passed gate or permission for GPU advancement.
-Its source/plan and compact inventory remain recoverable;the one-use controller
-and raw outputs retire after evidence preservation. Continue the unchanged
-official cohort with process3(original).
-Main's one-use `tools/sycl/finish_qsa_cohort.py` waits on the exact live
-qualifier3 parent through its pidfd,then holds the existing measurement lock.
-It verifies and commits/pushes each closed cohort row before running4and5
-through the unchanged controller. Failed evidence is preserved and stops the
-sequence;there is no retry,changed criterion or adoption. No other GPU/build/
-test/cleanup may run while this continuation owns the cohort. Retire the helper
-after the final cohort decision;the selected controller source remains8382987d1.
+The source-bound small-gain screen passes,but the candidate is **not adopted**.
+Controller`8382987d1`,frozen V2plan`a28e950c6`,closes all six independent
+`bench.sh --long --long-generation --think --runs 1` processes in balanced
+original/candidate order. All108requests,final source/runtime/model-asset checks,
+owned native exits and quiet validation pass,with no fresh fault. Thinking stays
+on and1256decode expert slots remain unchanged. The strict long-generation cases
+read33212/33286fresh tokens and produce2933/8169tokens. All three samples per arm
+confirm strong2107/2481(84.9percent)and weak4323/11541(37.5percent)MTP acceptance.
+The nominal upstream32K case reads32089tokens and remains supplemental. The prior
+plan's refusal for that count remains failed and recoverable from`848896c6f`;
+the fresh V2plan does not relabel or pool its diagnostic speeds.
+
+| Process order | Arm | Strong-MTP TG | Weak-MTP TG | Agent-followup median TG | Agent turn4 TG |
+| --- | --- | ---: | ---: | ---: | ---: |
+| 0 | Original | 13.7 | 8.6 | 11.2 | 10.8 |
+| 1 | Candidate | 13.9 | 8.7 | 10.9 | 8.8 |
+| 2 | Candidate | 13.8 | 8.7 | 11.3 | 8.8 |
+| 3 | Original | 13.9 | 8.2 | 10.8 | 10.6 |
+| 4 | Original | 13.9 | 8.7 | 11.2 | 10.5 |
+| 5 | Candidate | 13.9 | 8.7 | 10.8 | 8.7 |
+
+The frozen paired-rate geometric means are1.002427(strong),1.023864(weak)and
+0.993931(agent followups). The agent preservation screen therefore fails;the
+prefill gain does not justify adoption. All six turn4samples have identical
+request/output/reasoning hashes,11722input tokens,114outputs and70/135drafts;
+this records the repeated decrease without establishing its cause. Keep the
+selected6e40engine,twelve fixtures and1256-slot decode layout. Main stops further
+detailed regression forensics and advances the independent selector. Necessary
+further cause work belongs to Luna only when concrete new evidence opens a
+bounded eligible question. Physical262144fill/tail/handoff/RESTORE is still
+pending;successful execution here does not qualify that capacity.
+
+The one-use cohort continuation has closed and has no remaining consumer.
+Closed executable/object/relink and successful observer/cache outputs retire
+after matching the exact final executable's reachable source and recipe.
+The next selector builder needs the original compile/source/SDK receipts and
+selected runtime/selector sources only;that is a source-only hold,not another
+retained engine. All twelve generated cohort configurations/plans reconstruct
+byte-for-byte from the committed configuration,plan identities and constructor.
+
 The next source-only selector candidate is
 `qsa_block_topk_batched_prefill`,with no production caller or build target.
 Selected radix4 currently performs16workgroup histogram reductions per digit;
@@ -1867,8 +1834,8 @@ properties and independent-oracle outputs. A small traced7-launch probe precedes
 128-repeat timing;successful API returns must resolve to the admitted kernel,
 and profiling queries have a separate1s returned-call budget plus the owned
 child deadline. No new compilation,property query,GPU execution
-or speed result exists yet;all native/correctness/service gates wait for the
-frozen cohort to close. Component262144coverage does not qualify a full model.
+or speed result exists yet;the cohort is closed and the next action is the
+isolated selector build and native/correctness/service gates. Component262144coverage does not qualify a full model.
 The existing7.689s selection queue interval includes host submission gaps and
 scoring;it is not this selector's GPU service or a hardware bottleneck proof.
 After the screen and refused diagnostic are committed,three final retirements
@@ -1898,7 +1865,7 @@ numerical/provenance holds remain untouched.
 
 Detailed follow-up on the agent-turn decline is delegated to Luna. Main returns
 to the batched radix selector's implementation and component/model performance
-gates while the frozen comparison runs serially. Keep phase-preservation and
+gates after the closed candidate failed preservation. Keep phase-preservation and
 adoption checks,plus input-length/time approximations and route-boundary
 characterization;further root-cause detail is not Main's next tuning task.
 

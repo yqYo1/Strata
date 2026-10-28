@@ -313,13 +313,13 @@
     "scope": "Matched selected12hashes and static/dynamic limits; no named tensor-to-spill attribution. Main separately resolved native-loop placement and threeflagrestores. Consumedreport/transactionsretired; nextcandidate hasnewaudit."
   },
   "next_candidate": {
-    "status": "source_constructor_prepared_not_built",
-    "generator": "tools/sycl/qsa_fixed_heads_sources.py",
-    "scope": "Standalone generic-page prefill component only; no engine/decode source change.",
-    "mechanism": "WG128/requiredSG16 gives8subgroups; both padded-head loops own exactly subgroup andsubgroup+8. Replace variable-bound head<16/+8 loops with exactly2iterations, retaining BF16rounding,orderedFP32softmax,real/paddedhead checks,64bitpaging,barriersandQKsubgroup<4. This removes redundant bound expressions and tests a codegen/flag-lifetime mechanism,not an established saturation bottleneck.",
-    "reference": "Exact6e40native source plus Main-authored760d variable-page oracle correction and rotated3-arm fixture; noXeStrata implementation.",
-    "future_gates": "Main freezes generatedbytes/native recipe before building, then qualifiedtraced smallcheck,numerical/tensor/guard/bounds/tails Page1/4/7/16 includingphysical262144,actualexecutednames/routecounts and3independent cleanprocesses with162rotatedsamples,eachbatch>=.1ms and>=1000timerfloor. Prospective componentlatencyGM<=.95 vsproduction andnamespacecontrol,andallprocessratios<1 beforemodeltrial. Preserve decodeimplementation/config1256slots/handoff and repeateddecode performance;anyimpactisseparationdefect. No modeladoption fromcomponentpass.",
-    "next_action": "Generate five exact inputs from committed constructor into one fresh external comparison root; commit their hashes and finite build/qualification/speed plan before execution. Retire completedcodegen auxiliarygeneration first."
+    "status": "source_prepared_not_built",
+    "generator": "tools/sycl/build_qsa_radix.py",
+    "scope": "Standalone prefill-only QSA selector;selected production/decode unchanged.",
+    "mechanism": "Replace16workgroup reductions per radix digit with16subgroup partial reductions plus a subgroup reduction of each bin and two workgroup barriers;1088bytes local histogram. Same exact weighted rank,ties and ascending IDs.",
+    "reference": "Selected6e40 own MIT selector and independent CPU full-sort oracle;Main-authored batched implementation sourcec722121f9. No XeStrata code.",
+    "future_gates": "Committed exact recipe/input closure;identical clean/observed deviceIR;actual native resources;independent oracle and traced event smoke;then matched three-process per-shape clean-wall/service/CPU gates against original and SG16control. Model/decode and physical-context qualification remain separate.",
+    "next_action": "Retire closed direct-K products after source recovery;prepare and commit new selector build plan,then build and execute bounded component gates."
   },
   "retirement": {
     "complete": true,
@@ -1759,7 +1759,7 @@
     }
   },
   "direct_K_loop_model": {
-    "stage": "clean_prefill_screen_passed_full_model_qualification_pending",
+    "stage": "closed_not_adopted_agent_decode_preservation_failed",
     "base_native_source": "6e40afc1beddd059ee518617f6c1efce1da14aca",
     "prefix": "src/kernels/sycl/qsa_bf16_prefix.cpp",
     "base_prefix_sha256": "4f9f815c9baae709f919f6d5ad1af04677c10d8c13c7597b3857cf81567ae192",
@@ -1771,12 +1771,12 @@
     "same_build_oracle_adapter_sha256": "a77dc9fcd81e24ca1e7b9a6d2f69b8814080c9901a1f20962bca5055c0907858",
     "scope": "One prefix source block only,under compile-time OrderedExp&&!CaptureState inside VectorK4. The selected ordered prefill uses this branch;all other instantiations keep the exact original block. No decode source/configuration/placement changes.",
     "source_integrity": "Exact full-file reversal recovers6e40prefix. Candidate selected branch reuses the same immutable REPLACEMENT as the qualified component. New full-engine source/recipe/dependency/build and same-build oracle/runtime/model qualification remain mandatory.",
-    "next": "Candidate improves matched117489-token prefill throughput1.5318percent and passes all three pair gates;current selected original/decode1256placement remains unchanged. Prepare and commit matched official long/agent plus >=1Kthinking strong/weak generation/decode-state preservation,then physical262144fill/tail/handoff/RESTORE qualification before selection. No new GRF trial:equivalent128/256was already slower;only a distinct prospective exact-WG IR discriminator remains conditional. Native build/link reader assets still serve imminent qualification.",
-    "actual_ID_fixture_consumer": "Initialized53MBactual-ID fixture remains an input of the source-bound build/link/native admission readers used by the imminent matched model comparison. Review and retire when that comparison/qualification reader is retired;the address gates already passed and are not model-context qualification.",
+    "next": "Retain selected6e40engine and1256-slot decode layout. The six-process official cohort executes correctly but fails the predeclared agent-followup preservation gate;do not adopt direct-K. Main advances independently authored batched-radix selector through build/native/correctness/clean-service gates. Further detailed regression forensics only delegated to Luna when concrete new evidence makes a bounded question eligible.",
+    "actual_ID_fixture_consumer": "Closed direct-K native/model qualification consumed this53MBpayload. No current model or selector consumer;retire after consumer/source checks. Physical262144model qualification remains pending and is not implied by prior final-address checks.",
     "GPU_executed": true,
     "model_built": true,
     "model_selected": false,
-    "retained_source_consumer": "bench/sycl/qsa_k_loop.cpp/admission and tools/sycl/build_qsa_k_loop.py/check_qsa_k_loop.py provide the exact fixture factory and vetted dispatch/device/output parsers for the imminent same-build model source qualification;adapt them with the isolated model builder,retiring closed command modes at that source boundary.",
+    "retained_source_consumer": "tools/sycl/build_qsa_radix.py foundation() consumes the verified original model source/SDK/compiler-input receipt and exact selected6e40 runtime/selector compile recipes only. Closed direct-K executable/object/relink outputs are unnecessary;retire after exact final-source/recipe recovery. Review this source-only hold after selector build closure.",
     "build_attempts": [
       {
         "stage": "failed",
@@ -9570,20 +9570,20 @@
       "controller": "One-use tools/sycl/inspect_qsa_workgroup_ir.py retires to5f63a33c7 after failed gate;original source524cbd287 and frozen plan9988256ed remain reachable. No GPU advance."
     },
     "agent_turn4_anomaly": {
-      "status": "unresolved;diagnostic comparison pending",
-      "samples_reference": "official_model_qualification.processes0..2 agent turn4;source8382987d1 frozen plana28e950c6",
-      "observed": "First original10.8tok/s;both candidates8.8tok/s. All114outputs,70/135drafts and request/output/reasoning hashes match. Three remaining processes must complete;do not waive decline or infer a cause from aggregate medians.",
+      "status": "repeated_decline_recorded_no_adoption_no_further_Main_root_cause",
+      "samples_reference": "official_model_qualification.processes0..5 agent turn4;source8382987d1 frozen plana28e950c6",
+      "observed": "All three original rates10.8/10.6/10.5tok/s and candidate8.8/8.8/8.7tok/s. All six have identical11722-input/114-output/70of135draft counts and request/output/reasoning hashes. Full samples retained in official_model_qualification;this does not identify the cause.",
       "diagnostic": {
         "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-direct-k-agent-turn4-diagnostic-v1.txt",
         "bytes": 4444,
         "sha256": "102653f9eca520af0a13cd7d38a7643316d1374b66f671a1e6839c2ac44f270c",
         "owner": "Main",
         "byte_budget": 262144,
-        "consumer": "Compare process3/4original and5candidate turn4 route/handoff/graph/copy/cache context;retire after mechanism is resolved or evidence superseded."
+        "consumer": "Ended:all six cohort samples are committed and candidate not adopted. Eligible for retirement;no current owner needs raw snippet."
       },
       "candidate2_context": "Prefill11721BF16 rows,384staged expert slots,24034jobs;restore707788800MTPbytes. Verifier1/4capture15.089/15.839ms and reported free VRAM113.4/6.0MiB. These free-memory snapshots do not establish physical residency,traffic or a causal bottleneck. Startup also reported0.6MiB,so low free memory alone is insufficient.",
       "measurement_source": "verify.cpp:1320 calls cudaMemGetInfo;selected SYCL compat.cpp:224 forwards to ext_intel_free_memory and global_mem_size. No new runtime/profiler query or GPU execution.",
-      "decision": "Keep fixed cohort unchanged. Compare individual matched turns as well as the predeclared aggregate screens before adoption;new source or timing changes require a fresh prospective plan."
+      "decision": "Reject adoption under frozen overall agent preservation screenGM0.9939311431. Main stops detailed regression investigation and tunes the next independent selector. Existing diagnostic consumer ends;preserve compact evidence and retire raw snippet. Necessary further cause work belongs to Luna under a new concrete evidence-backed scope."
     },
     "closed_output_retirement_process2": {
       "evidence_commit": "3b696b97f4efac9197cf9ed77fab369f670eaf81",
