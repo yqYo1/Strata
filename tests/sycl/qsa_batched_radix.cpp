@@ -7,6 +7,7 @@
 #include <dlfcn.h>
 #include <iostream>
 #include <iomanip>
+#include <optional>
 #include <stdexcept>
 #include <string>
 #include <time.h>
@@ -200,7 +201,7 @@ int timing_fixture(int argc, char **argv) {
       for (int round = 0; round < (smoke ? 1 : 3); ++round) {
         std::vector<sycl::event> events;
         if (profiling) events.reserve(size_t(repeats));
-        double invoke_wall = 0, invoke_cpu = 0, lookup_wall = 0, lookup_cpu = 0;
+        double invoke_wall = 0, invoke_cpu = 0, retention_wall = 0, retention_cpu = 0;
         const auto begin = clock_now();
         for (int i = 0; i < repeats; ++i) {
           if (profiling) {
@@ -209,15 +210,18 @@ int timing_fixture(int argc, char **argv) {
 #endif
             const auto b = clock_now(); invoke(); const auto e = clock_now();
             invoke_wall += e.wall - b.wall; invoke_cpu += e.cpu - b.cpu;
-            auto event = queue.ext_oneapi_get_last_event();
-            check(event.has_value(), "missing actual selector event");
+            // Use the actual parallel_for event retained by observed_finish.
+            // The V1 last-event proxy failed identity qualification; it is not
+            // a measurement input or a fallback in this generation.
+            std::optional<sycl::event> event;
 #if defined(STRATA_QSA_EVENT_CAPTURE)
-            check(*event == capture.take(), "last event differs from actual selector submission");
+            event.emplace(capture.take());
 #endif
+            check(event.has_value(), "missing actual selector event");
             check(events.empty() || *event != events.back(), "reused selector event");
             events.push_back(*event);
             const auto l = clock_now();
-            lookup_wall += l.wall - e.wall; lookup_cpu += l.cpu - e.cpu;
+            retention_wall += l.wall - e.wall; retention_cpu += l.cpu - e.cpu;
           } else invoke();
         }
         const auto before_drain = clock_now(); runtime->wait(); const auto after = clock_now();
@@ -245,7 +249,7 @@ int timing_fixture(int argc, char **argv) {
                   << " service_ns=" << service << " extent_ns=" << (last_end - first_start)
                   << " timer_resolution_ns=" << resolution
                   << " invoke_ms=" << 1e3 * invoke_wall << " invoke_cpu_ms=" << 1e3 * invoke_cpu
-                  << " lookup_ms=" << 1e3 * lookup_wall << " lookup_cpu_ms=" << 1e3 * lookup_cpu
+                  << " retention_ms=" << 1e3 * retention_wall << " retention_cpu_ms=" << 1e3 * retention_cpu
                   << " drain_ms=" << 1e3 * (after.wall - before_drain.wall)
                   << " drain_cpu_ms=" << 1e3 * (after.cpu - before_drain.cpu)
                   << " query_ms=" << 1e3 * (query_end.wall - after.wall)

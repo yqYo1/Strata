@@ -21,7 +21,7 @@ import build_qsa_k_model as base
 import relink_qsa_k_model as link
 
 P, B, RESULT = base.P, base.B, base.RESULT
-ROOT = B / 'qsa-batched-radix-v1'
+ROOT = B / 'qsa-batched-radix-v2'
 KEY = 'batched_radix_selector'
 HEADER = 'include/strata/kernels/qsa_radix_batched.hpp'
 NATIVE = 'src/kernels/sycl/qsa_radix_batched.cpp'
@@ -120,7 +120,14 @@ def prepare():
     cohort = record[base.KEY]['official_model_qualification']
     require(cohort['complete'] and not cohort['active'] and cohort['ownership_closed'],
             'close the frozen cohort before another build; no simultaneous work')
-    require(KEY not in record and not ROOT.exists(), 'fresh isolated generation only')
+    require(not ROOT.exists(), 'fresh isolated generation only')
+    previous = record.get(KEY)
+    if previous is not None:
+        require(previous.get('generation_closed') and
+                previous.get('closed_generation_retirement', {}).get('complete') and
+                previous['event_method_failure']['status'] == 'failed_not_retried' and
+                not Path(previous['closed_generation_retirement']['root']).exists(),
+                'close and retire the refused event-proxy generation before a new plan')
     review = base.runtime.validation.committed(base.runtime.validation.INDEX,
         ('qsa_batched_radix_histogram_contract_20261028',))
     require(review['worker_closed'] and review['native_review']['decision'].startswith('Source contract'),
@@ -202,12 +209,30 @@ def prepare():
         active=False, ownership_closed=True, GPU_executed=False, model_selected=False,
         provenance='Own MIT Strata radix rank/emission contract and reviewed batched histogram;independent weighted-cell oracle. Selected6e40 native/runtime sources and exact selected flags. Apache LLVM SDK only;no XeStrata application/helpers/tests.',
         criteria='Build only. Complete actual compiler/link closure;record every LLVM kernel definition without assuming whole-TU counts from a native image. Native resources,small traced correctness,matching output IDs and independent-process clean/service/CPU speed are subsequent gates. Decode and selected production unchanged.',
-        retention='One component generation with two necessary fixtures:unmodified-source clean calls and host-only captured-event observation. No third full engine. Require identical device IR after removing only module/source-file labels. Retire normal output/IR/intermediates and rejected source/exports after compact decision and exact source/recipe recovery;do not extend closed direct-K generation retention.')
+        retention='One component generation with two necessary fixtures:unmodified-source clean calls and actual submitted-event capture. No third full engine. Require identical device IR after checking and normalizing only exact recipe-input module/source_filename/sycl-module-id identities. Retire normal output/IR/intermediates and rejected source/exports after compact decision and exact source/recipe recovery;do not extend closed direct-K generation retention.')
     admit(plan)
     write(ROOT / 'plan.json', plan)
     record[KEY] = dict(build=compact(plan), passed=False, model_selected=False)
+    if previous is not None:
+        record[KEY]['previous_generation'] = dict(status='failed event-proxy method;not retried',
+            result_commit=revision, path=str(RESULT.relative_to(P)), keys=[KEY],
+            scope_sha256=hashlib.sha256(json.dumps(previous,sort_keys=True).encode()).hexdigest(),
+            source_commit=previous['build']['source_commit'],
+            retirement=previous['closed_generation_retirement'])
     write(RESULT, record)
     print('Prepared selector recipe;commit this frozen plan before building.', flush=True)
+
+
+def canonical_device_IR(path, expected_source):
+    body = path.read_text()
+    require(re.findall(r"^; ModuleID = '([^']+)'$", body, re.M) == [str(expected_source)] and
+            re.findall(r'^source_filename = "([^"\n]+)"$', body, re.M) == [str(expected_source)],
+            'IR module/source identity differs from exact recipe input')
+    paths = re.findall(r'"sycl-module-id"="([^"\n]+)"',body)
+    require(paths and set(paths) == {str(expected_source)}, 'unexpected SYCL source-identity attribute')
+    body = body.replace('"sycl-module-id"="' + str(expected_source) + '"',
+                        '"sycl-module-id"="<verified-source-identity>"')
+    return re.sub(r'^(?:; ModuleID = .*|source_filename = .*)\n','',body,flags=re.M)
 
 
 def build():
@@ -273,9 +298,12 @@ def build():
                 subgroup_metadata=re.search(r'!intel_reqd_sub_group_size !(\d+)', h)[1]
                     if '!intel_reqd_sub_group_size ' in h else None) for h in headers]
         write(ROOT / 'kernel-inventory.json', inventories)
+        sources = {'original':base.ROOT/'source'/SELECTOR,'proposal':P/NATIVE,
+                   'observed-original':ROOT/'original-observed.cpp',
+                   'observed-proposal':ROOT/'proposal-observed.cpp'}
         for name in ('original','proposal'):
-            canonical = lambda path: re.sub(r'^(?:; ModuleID = .*|source_filename = .*)\n','',path.read_text(),flags=re.M)
-            require(canonical(ROOT/(name+'.ll')) == canonical(ROOT/('observed-'+name+'.ll')),
+            require(canonical_device_IR(ROOT/(name+'.ll'),sources[name]) ==
+                    canonical_device_IR(ROOT/('observed-'+name+'.ll'),sources['observed-'+name]),
                     'host observation seam changed device IR: ' + name)
         outcome.update(passed=True, complete=True, binary=asset(ROOT / 'fixture'),
             observed_binary=asset(ROOT/'fixture-observed'), device_IR_identical_across_observation=True,

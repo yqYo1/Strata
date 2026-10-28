@@ -13,7 +13,6 @@ import time
 
 sys.dont_write_bytecode = True
 import build_qsa_radix as b
-import qualify_qsa_radix_ir as identity
 import check_qsa_k_loop as native
 from measure_down_scatter import postchecks
 
@@ -24,7 +23,7 @@ ARMS = ['original', 'control', 'batched']
 
 
 def inputs(revision):
-    pins = identity.inputs(revision) | native.inputs(revision)
+    pins = b.inputs(revision) | native.inputs(revision)
     name = str(Path(__file__).resolve().relative_to(P))
     raw = b.base.component.gen.git('show', revision + ':' + name)
     require(raw == (P / name).read_bytes(), 'commit exact check controller first')
@@ -33,13 +32,8 @@ def inputs(revision):
 
 
 def build_record(scope):
-    if identity.KEY in scope:
-        # The new method gate already verifies the complete original build
-        # admission. Do not repeat that source/SDK scan within this same call.
-        row = identity.qualified(scope)
-    else:
-        row = scope['build']['outcome']
-        b.admit(json.loads((ROOT / 'plan.json').read_text()))
+    row = scope['build']['outcome']
+    b.admit(json.loads((ROOT / 'plan.json').read_text()))
     require(scope['build']['stage'] == 'closed' and row['passed'] and row['complete'] and
             row['ownership_closed'] and not row.get('active'), 'closed selector build required')
     require(row['device_IR_identical_across_observation'], 'observation changed device code')
@@ -139,7 +133,7 @@ def prepare(mode):
         resource_model=dict(queries=256,score_key_passes=10,id_output_bytes=256*2051*4,
             nominal_score_bytes_per_call={str(n):10*256*(n//4+1)*4 for n in (32768,78453,117489,262144)},
             scope='Logical source score reads only;compiler/cache traffic unknown. No scoring,transfers or CPU math inside selector timing. Not physical VRAM/PCIe traffic or a saturation ceiling.'),
-        criteria='Property-only first with no kernel enqueue for both builds;identical device IR and native resource properties across the host event seam. Full independent weighted-cell oracle,canaries,immutable inputs,invalid/tail/full-component cases for all3arms/both builds. Next a small traced actual-event smoke:3queries/20cells,2retained events equal to actual parallel_for submissions,and7successful kernel-identified launches per arm;correct IDs/timestamps and a finite separate query budget. Only then synthetic selector-only timed batches:3counterbalanced independent processes/arm/mode,3rounds and8length/pattern cases. Clean uses unchanged production-source objects;events uses the host-only finish seam and requires event equality every call. Batched versus BOTH original and SG16-control must improve clean public-entry wall and observed GPU service by>=1percent geometric mean for every case,with every process ratio<1. No scoring/oracle/transfers inside timing. New guard/capability CPU cost stays charged;event/query observation is separate and bounded. Query-cap breaches make attribution ineligible without erasing clean samples. Native/runtime/maps/immutable environment/physical device,pre-main retained validation,normal owned exit and no fresh fault mandatory. Component256K is not physical full-model qualification;no production/decode change or adoption.',
+        criteria='Property-only first with no kernel enqueue for both builds;identical device IR and native resource properties across the host event seam. Full independent weighted-cell oracle,canaries,immutable inputs,invalid/tail/full-component cases for all3arms/both builds. Next a small traced actual-event smoke:3queries/20cells,2retained actual parallel_for events,without a last-event proxy,and7successful kernel-identified launches per arm;correct IDs/timestamps and a finite separate query budget. Only then synthetic selector-only timed batches:3counterbalanced independent processes/arm/mode,3rounds and8length/pattern cases. Clean uses unchanged production-source objects;events uses the host-only finish seam,requires exactly one actual submitted event per call,and retains distinct events. Batched versus BOTH original and SG16-control must improve clean public-entry wall and observed GPU service by>=1percent geometric mean for every case,with every process ratio<1. No scoring/oracle/transfers inside timing. New guard/capability CPU cost stays charged;event/query observation is separate and bounded. Query-cap breaches make attribution ineligible without erasing clean samples. Native/runtime/maps/immutable environment/physical device,pre-main retained validation,normal owned exit and no fresh fault mandatory. Component256K is not physical full-model qualification;no production/decode change or adoption.',
         retention='Keep individual eligible/ineligible timing samples,first-use separately,exact-ID hashes,queried native resource facts and failure/decision limits. Retire successful API/loader output and dumps after verification;two same-generation clean/captured fixtures only through the imminent mechanism/model decision.')
     admit(scope, plan)
     folder.mkdir(mode=0o700)
@@ -175,8 +169,8 @@ def sample_rows(text, job, plan):
                 reasons.append('service_timer_resolution')
             if row['query_ms'] > criteria['maximum_query_ms_per_batch']:
                 reasons.append('query_work_cap')
-            named = row['invoke_ms'] + row['lookup_ms'] + row['drain_ms']
-            named_cpu = row['invoke_cpu_ms'] + row['lookup_cpu_ms'] + row['drain_cpu_ms']
+            named = row['invoke_ms'] + row['retention_ms'] + row['drain_ms']
+            named_cpu = row['invoke_cpu_ms'] + row['retention_cpu_ms'] + row['drain_cpu_ms']
             require(named <= row['total_ms'] + .01 and named_cpu <= row['cpu_ms'] + .01,
                     'overlapping host accounting')
             row.update(unclassified_ms=max(0,row['total_ms']-named),
@@ -236,7 +230,7 @@ def compact_outcome(outcome):
                     for key in ('service_ns','extent_ns'):
                         entry[key] = [s[key] for s in chosen]
                     entry['host_partition_medians_ms'] = {k:statistics.median(s[k] for s in chosen) for k in (
-                        'invoke_ms','invoke_cpu_ms','lookup_ms','lookup_cpu_ms','drain_ms','drain_cpu_ms',
+                        'invoke_ms','invoke_cpu_ms','retention_ms','retention_cpu_ms','drain_ms','drain_cpu_ms',
                         'unclassified_ms','unclassified_cpu_ms','query_ms','query_cpu_ms','query_process_cpu_ms')}
                 if any(s['ineligible_reasons'] for s in chosen):
                     entry['ineligible_reasons'] = [s['ineligible_reasons'] for s in chosen]
