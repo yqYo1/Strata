@@ -399,7 +399,58 @@ def run(mode):
     print(json.dumps({k:outcome.get(k) for k in ('mode','passed','complete','fresh_faults')}),flush=True)
 
 
+def advance():
+    """Main-owned serial gates, with a committed plan/result at each boundary.
+
+    No retries, source edits, branch creation, model launch or adoption. A
+    refusal commits its original result and stops the pipeline.
+    """
+    def git(*args):
+        return subprocess.check_output(['git',*args],cwd=P,text=True,timeout=90).strip()
+    require(git('branch','--show-current') == 'feature/sycl' and
+            not git('diff','--cached','--name-only') and not git('diff','--name-only'),
+            'clean primary worktree required before serial advancement')
+    source = git('rev-parse','HEAD')
+    require(inputs(source), 'committed complete gate source required')
+    def save(label):
+        relative = str(RESULT.relative_to(P))
+        require(git('branch','--show-current') == 'feature/sycl' and
+                git('diff','--name-only').splitlines() == [relative] and
+                not git('diff','--cached','--name-only'),
+                'only the current compact result may change')
+        git('diff','--check')
+        print('Committing selector boundary:',label,flush=True)
+        print(git('diff','--stat','--',relative),flush=True)
+        git('add','--',relative)
+        git('commit','-m','test(sycl): '+label)
+        git('push','origin','feature/sycl')
+        require(git('ls-remote','origin','refs/heads/feature/sycl').split()[0] ==
+                git('rev-parse','HEAD'), 'remote boundary not verified')
+    record = b.base.component.gen.committed(RESULT); scope = record[b.KEY]
+    previous = scope.get('checks',[])
+    require([r['mode'] for r in previous] == ORDER[:len(previous)] and
+            all(r['passed'] and r['complete'] and r['ownership_closed'] and
+                not r['fresh_faults'] for r in previous),
+            'resume only the exact successful prefix;no retry or skip')
+    for mode in ORDER[len(previous):]:
+        prepare(mode)
+        save('freeze '+mode+' selector plan')
+        try:
+            run(mode)
+        except BaseException:
+            if git('diff','--name-only'):
+                save('preserve refused '+mode+' selector gate')
+            raise
+        save('record closed '+mode+' selector gate')
+    final = b.base.component.gen.committed(RESULT)[b.KEY]
+    print(json.dumps(dict(component_advance_eligible=final.get('component_advance_eligible',False),
+                          model_selected=False)),flush=True)
+
+
 if __name__ == '__main__':
     with (B / 'owned-v0141-measurement.lock').open('a+') as lock:
         fcntl.flock(lock,fcntl.LOCK_EX|fcntl.LOCK_NB)
-        {'prepare':prepare,'run':run}[sys.argv[1]](sys.argv[2])
+        if sys.argv[1] == 'advance':
+            advance()
+        else:
+            {'prepare':prepare,'run':run}[sys.argv[1]](sys.argv[2])
