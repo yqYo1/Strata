@@ -1811,6 +1811,13 @@ rates are13.9/8.7tok/s,with the same2933/8169actual outputs and84.9/37.5percent
 acceptance. Agent-follow-up median decode is10.9versus11.2tok/s originally,
 a first-pair ratio0.973214;do not waive that decrease as noise. Four processes
 and the frozen three-pair decisions remain required;no adoption follows yet.
+The second candidate also closes all18requests and postconditions normally,
+without a fresh fault. It reports13.8/8.7tok/s for the same2933/8169outputs and
+MTP counts;agent-follow-up median is11.3. Three processes remain. In agent turn4,
+both candidates report8.8versus the first original's10.8tok/s,with identical
+request/output hashes,114outputs and70/135drafts. Text/acceptance differences do
+not explain this observed decrease. Inspect that turn across the remaining
+originals/candidate before adoption;an aggregate median cannot resolve it.
 Production/decode and the selected6e40engine/twelve fixtures remain unchanged.
 Between model processes,the CPU-only exact-WG128 discriminator fails its own
 three-kernel assumption:the whole translation unit emits20kernels,ten template
@@ -1818,7 +1825,7 @@ variants each containing copy and attention entries. All four compile/translatio
 commands exit0,but this is not a passed gate or permission for GPU advancement.
 Its source/plan and compact inventory remain recoverable;the one-use controller
 and raw outputs retire after evidence preservation. Continue the unchanged
-official cohort with process2(candidate).
+official cohort with process3(original).
 The next source-only selector candidate is
 `qsa_block_topk_batched_prefill`,with no production caller or build target.
 Selected radix4 currently performs16workgroup histogram reductions per digit;
