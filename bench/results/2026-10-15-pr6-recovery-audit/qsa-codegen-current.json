@@ -9611,7 +9611,7 @@
   },
   "batched_radix_selector": {
     "build": {
-      "stage": "prepared",
+      "stage": "closed",
       "source_commit": "216c4db2cb6bc85a2c5788260818513316caedc9",
       "selected_native_source": "6e40afc1beddd059ee518617f6c1efce1da14aca",
       "selected_compile_database_sha256": "5e101b600692b2c23e69889c31447ec229600f0643bc824103dc6f361111ed63",
@@ -10103,6 +10103,378 @@
       "controller_inputs": {
         "files": 41,
         "sha256": "cb835e266d250abf2b7361cf1cbc550577e560a01402b76a617cf7baf78a6e74"
+      },
+      "outcome": {
+        "passed": true,
+        "complete": true,
+        "active": false,
+        "ownership_closed": true,
+        "GPU_executed": false,
+        "link_inputs": {
+          "fixture": {
+            "frozen_inputs": {
+              "/usr/lib/x86_64-linux-gnu/crt1.o": "5cfb30db1d2c92a9a818f6c015ad7fcd6519afaa1b88148e831504fe6e299479",
+              "/usr/lib/x86_64-linux-gnu/crti.o": "077ccb6c68db1794da3ee262c4a16a3c6f8e902845dd0829110ad4b7065e5aa3",
+              "/usr/lib/gcc/x86_64-linux-gnu/13/crtbegin.o": "092c2546e5c1a04340a35db6ba04802f3bba1d82aeea2776b8493578595efdd2",
+              "/usr/lib/x86_64-linux-gnu/libdl.a": "f0a17a43c74d2fe5474fa2fd29c8f14799e777d7d75a2cc4d11c20a6e7b161c5",
+              "/usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.33": "1fd75fe70354a416d75aef22bcae68c47bd25d20e2d0568c30b1a9838cf62f11",
+              "/usr/lib/x86_64-linux-gnu/libm.so": "55de4a3e12e17c3e2b18eb95ee21b3f46a8893ea6cab68c0a1c3a5caaf32e6cf",
+              "/usr/lib/x86_64-linux-gnu/libm.so.6": "fce00b6f25f459cf4ae0b7fae4257909a1a8a86f9149e7c029a5d617baf1ccd0",
+              "/usr/lib/x86_64-linux-gnu/libmvec.so.1": "57329ee0018b8fd8f8e51af5f87c723b6ecdf04679f4493134beab0f45d58ec5",
+              "/usr/lib/gcc/x86_64-linux-gnu/13/libgcc_s.so": "69a56a9993b7729b29b274e65016031c81f2397f176ed5ad44d59bd50425e0bd",
+              "/usr/lib/x86_64-linux-gnu/libgcc_s.so.1": "d93224d2b0dab4247598be683adca02f5cf00586f99c187579cd7e92058fb7cb",
+              "/usr/lib/gcc/x86_64-linux-gnu/13/libgcc.a": "d9376c55f97863a4e5fbb6c6beca2591b319bf786f3a7ca56da8964c5662171f",
+              "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libsycl.so.9.0.0-0": "74243bafb2766fd1a038cf80fd62632b4aad9ecfdc0d3ce8711e4515a93d7008",
+              "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libsycl-devicelib-host.a": "e567a2b935f89898bb5031b13ba39339f923be7ca6140cb05a4e914bd5f91c5b",
+              "/usr/lib/x86_64-linux-gnu/libpthread.a": "f0a17a43c74d2fe5474fa2fd29c8f14799e777d7d75a2cc4d11c20a6e7b161c5",
+              "/usr/lib/x86_64-linux-gnu/libc.so": "fe2a4ce2930fc6b3966aa987fae808375446c8d3823b8c21792e991aad9c75df",
+              "/usr/lib/x86_64-linux-gnu/libc.so.6": "3a15d66867d83762c7f2f1e37359cb8f6c5743edb369c65285cb0b1c4f7498bf",
+              "/usr/lib/x86_64-linux-gnu/libc_nonshared.a": "3341391290ddd596521a61152b4e2612f4625cc85f737d875b918f6cfb2b2786",
+              "/usr/lib/x86_64-linux-gnu/ld-linux-x86-64.so.2": "c20a2dc8917c755f02b94049356320fe1f62ac7d9f8994731f807d9df39302da",
+              "/usr/lib/gcc/x86_64-linux-gnu/13/crtend.o": "9c8b2caad195193301ef072895dc89bea1d23371d4c19accd821debe27773063",
+              "/usr/lib/x86_64-linux-gnu/crtn.o": "a2266079f95b84ccc2162ebbf279bcd78858a748aa1882e0bdb912316c76a58f"
+            },
+            "compiler_generated_inputs": {
+              "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-batched-radix-v3/input-0-host-x86_64-unknown-linux-gnu.o": "9d385526273a99e412603f188acb9c9ae75509135225873d2a2d0201b51567bd",
+              "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-batched-radix-v3/input-1-host-x86_64-unknown-linux-gnu.o": "cedbd95c0502b3068a239465a36ea1fee4d5685bc670562dc5ba0c37f81cb4e7",
+              "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-batched-radix-v3/input-2-host-x86_64-unknown-linux-gnu.o": "57eda88d17fbdbe31a583740ca724fcbffff04637c4a7e1d0cfa2e4fb2490737",
+              "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-batched-radix-v3/input-3-host-x86_64-unknown-linux-gnu.o": "9e5bddc348635b4742c1cfd812f1be3269f0c2cb034442b31d91fd682665714f",
+              "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-batched-radix-v3/input-4-host-x86_64-unknown-linux-gnu.o": "5c145827eb1884a287bb3d4109922d2bb3c5fa1958656fe54f6a9670bc204cb6",
+              "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-batched-radix-v3/input-5-host-x86_64-unknown-linux-gnu.o": "fc3932130892d36a856d8f32fc793b768b875c4e2639bacafc0692fe2525cf91",
+              "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-batched-radix-v3/fixture-wrapper-sycl-spir64-unknown-unknown.o": "0125de6aba9853f54a7733b4be2a8844fdbe4f1ab18fe1e6cfa5472fb559ed9e"
+            },
+            "uncovered_inputs": 0,
+            "owned_compiler_products": {
+              "/home/yayoi/-02ddac.table": {
+                "bytes": 1490,
+                "sha256": "f356cce425e41e856de64e5a2d138f4ff3e8da8993de7ab611251c5af76e624e"
+              },
+              "/home/yayoi/-24d414.txt": {
+                "bytes": 436,
+                "sha256": "afc354853060feccde303ffbbcfb8c08c972e71b1a776d453941785b80e7695c"
+              },
+              "/home/yayoi/-3b69f9.bc": {
+                "bytes": 17280,
+                "sha256": "2f6488fb9ca65f983d85b8c838c8f117300c894797c4e491f2dc492766bf9e5b"
+              },
+              "/home/yayoi/-e7c7be.bc": {
+                "bytes": 17280,
+                "sha256": "2f6488fb9ca65f983d85b8c838c8f117300c894797c4e491f2dc492766bf9e5b"
+              },
+              "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-batched-radix-v3/fixture": {
+                "bytes": 365616,
+                "sha256": "b6d794fa58735dcd63602a33c6bb2364a3bb832a7f955a46e15384936401fbeb"
+              },
+              "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-batched-radix-v3/fixture-wrapper-sycl-spir64-unknown-unknown.o": {
+                "bytes": 57872,
+                "sha256": "0125de6aba9853f54a7733b4be2a8844fdbe4f1ab18fe1e6cfa5472fb559ed9e"
+              },
+              "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-batched-radix-v3/input-0-host-x86_64-unknown-linux-gnu.o": {
+                "bytes": 71248,
+                "sha256": "9d385526273a99e412603f188acb9c9ae75509135225873d2a2d0201b51567bd"
+              },
+              "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-batched-radix-v3/input-0-sycl-spir64-unknown-unknown.bc": {
+                "bytes": 3824,
+                "sha256": "81fb6d3ac129ff6034329e57147b8769da03a3d4a1a1442ce98c81a24b4560a6"
+              },
+              "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-batched-radix-v3/input-0-sycl-spir64-unknown-unknown.o": {
+                "bytes": 3824,
+                "sha256": "81fb6d3ac129ff6034329e57147b8769da03a3d4a1a1442ce98c81a24b4560a6"
+              },
+              "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-batched-radix-v3/input-0-sycl-spir64-unknown-unknown.table": {
+                "bytes": 1562,
+                "sha256": "3d9bee433928f63b910f7ae83a51cc0fab6419266462023d45246af0108e77b5"
+              },
+              "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-batched-radix-v3/input-0-sycl-spir64-unknown-unknown.txt": {
+                "bytes": 508,
+                "sha256": "5b36bf5f5ff0667af6e6afdb590942abd0136ee1b0776e797abf9a85dd0415b2"
+              },
+              "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-batched-radix-v3/input-1-host-x86_64-unknown-linux-gnu.o": {
+                "bytes": 158320,
+                "sha256": "cedbd95c0502b3068a239465a36ea1fee4d5685bc670562dc5ba0c37f81cb4e7"
+              },
+              "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-batched-radix-v3/input-1-sycl-spir64-unknown-unknown.bc": {
+                "bytes": 2596,
+                "sha256": "b5d158c7da14d1bd5471c5c611bf332b01299ea337d697b60be903732866b6a8"
+              },
+              "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-batched-radix-v3/input-1-sycl-spir64-unknown-unknown.o": {
+                "bytes": 2596,
+                "sha256": "b5d158c7da14d1bd5471c5c611bf332b01299ea337d697b60be903732866b6a8"
+              },
+              "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-batched-radix-v3/input-2-host-x86_64-unknown-linux-gnu.o": {
+                "bytes": 25664,
+                "sha256": "57eda88d17fbdbe31a583740ca724fcbffff04637c4a7e1d0cfa2e4fb2490737"
+              },
+              "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-batched-radix-v3/input-2-sycl-spir64-unknown-unknown.bc": {
+                "bytes": 2612,
+                "sha256": "57ea061bb464e46580002bfdb51de2767c1221183a9ab61244128d43503ceeb6"
+              },
+              "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-batched-radix-v3/input-2-sycl-spir64-unknown-unknown.o": {
+                "bytes": 2612,
+                "sha256": "57ea061bb464e46580002bfdb51de2767c1221183a9ab61244128d43503ceeb6"
+              },
+              "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-batched-radix-v3/input-3-host-x86_64-unknown-linux-gnu.o": {
+                "bytes": 61048,
+                "sha256": "9e5bddc348635b4742c1cfd812f1be3269f0c2cb034442b31d91fd682665714f"
+              },
+              "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-batched-radix-v3/input-3-sycl-spir64-unknown-unknown.bc": {
+                "bytes": 12796,
+                "sha256": "bc13aaec904e8a9eaf1d2c99a000e66f549e95ae92581157619816dab022ef91"
+              },
+              "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-batched-radix-v3/input-3-sycl-spir64-unknown-unknown.o": {
+                "bytes": 12796,
+                "sha256": "bc13aaec904e8a9eaf1d2c99a000e66f549e95ae92581157619816dab022ef91"
+              },
+              "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-batched-radix-v3/input-4-host-x86_64-unknown-linux-gnu.o": {
+                "bytes": 35152,
+                "sha256": "5c145827eb1884a287bb3d4109922d2bb3c5fa1958656fe54f6a9670bc204cb6"
+              },
+              "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-batched-radix-v3/input-4-sycl-spir64-unknown-unknown.bc": {
+                "bytes": 8628,
+                "sha256": "e781490ed6cfb537c72e044e94062a87b6ffc5d7ad0e0724ee413df2a576e3f9"
+              },
+              "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-batched-radix-v3/input-4-sycl-spir64-unknown-unknown.o": {
+                "bytes": 8628,
+                "sha256": "e781490ed6cfb537c72e044e94062a87b6ffc5d7ad0e0724ee413df2a576e3f9"
+              },
+              "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-batched-radix-v3/input-5-host-x86_64-unknown-linux-gnu.o": {
+                "bytes": 159544,
+                "sha256": "fc3932130892d36a856d8f32fc793b768b875c4e2639bacafc0692fe2525cf91"
+              },
+              "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-batched-radix-v3/input-5-sycl-spir64-unknown-unknown.bc": {
+                "bytes": 2520,
+                "sha256": "758edd2edfe604c6b5af5d761877aebc0fb61117615c185a62a2bdd362fc8ef2"
+              },
+              "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-batched-radix-v3/input-5-sycl-spir64-unknown-unknown.o": {
+                "bytes": 2520,
+                "sha256": "758edd2edfe604c6b5af5d761877aebc0fb61117615c185a62a2bdd362fc8ef2"
+              },
+              "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-batched-radix-v3/tmp/-24d414-6c18a3.spv": {
+                "bytes": 14064,
+                "sha256": "7d5120e7bf07afd1c7fef54d8eec5429349de6b35461ae014d772b493e26d9c0"
+              },
+              "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-batched-radix-v3/tmp/-24d414-a7a450.spv": {
+                "bytes": 12048,
+                "sha256": "5bd8c3afacf09affe3a7cb4dd4c84f0af628b21fbb34bde5d507dcb46d148450"
+              },
+              "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-batched-radix-v3/tmp/-24d414-f11430.spv": {
+                "bytes": 268,
+                "sha256": "c2a2ba2429a6fd1f1fef230ed43e0bbda680e86f2d5ebc19f12a9f4b194a7e26"
+              },
+              "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-batched-radix-v3/tmp/-24d414-fd0ca6.spv": {
+                "bytes": 16860,
+                "sha256": "c55c3baf01b5fd4e61bf5c3993055dab448bf8c92a34d431a10ea4f43b246eee"
+              }
+            }
+          },
+          "fixture-observed": {
+            "frozen_inputs": {
+              "/usr/lib/x86_64-linux-gnu/crt1.o": "5cfb30db1d2c92a9a818f6c015ad7fcd6519afaa1b88148e831504fe6e299479",
+              "/usr/lib/x86_64-linux-gnu/crti.o": "077ccb6c68db1794da3ee262c4a16a3c6f8e902845dd0829110ad4b7065e5aa3",
+              "/usr/lib/gcc/x86_64-linux-gnu/13/crtbegin.o": "092c2546e5c1a04340a35db6ba04802f3bba1d82aeea2776b8493578595efdd2",
+              "/usr/lib/x86_64-linux-gnu/libdl.a": "f0a17a43c74d2fe5474fa2fd29c8f14799e777d7d75a2cc4d11c20a6e7b161c5",
+              "/usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.33": "1fd75fe70354a416d75aef22bcae68c47bd25d20e2d0568c30b1a9838cf62f11",
+              "/usr/lib/x86_64-linux-gnu/libm.so": "55de4a3e12e17c3e2b18eb95ee21b3f46a8893ea6cab68c0a1c3a5caaf32e6cf",
+              "/usr/lib/x86_64-linux-gnu/libm.so.6": "fce00b6f25f459cf4ae0b7fae4257909a1a8a86f9149e7c029a5d617baf1ccd0",
+              "/usr/lib/x86_64-linux-gnu/libmvec.so.1": "57329ee0018b8fd8f8e51af5f87c723b6ecdf04679f4493134beab0f45d58ec5",
+              "/usr/lib/gcc/x86_64-linux-gnu/13/libgcc_s.so": "69a56a9993b7729b29b274e65016031c81f2397f176ed5ad44d59bd50425e0bd",
+              "/usr/lib/x86_64-linux-gnu/libgcc_s.so.1": "d93224d2b0dab4247598be683adca02f5cf00586f99c187579cd7e92058fb7cb",
+              "/usr/lib/gcc/x86_64-linux-gnu/13/libgcc.a": "d9376c55f97863a4e5fbb6c6beca2591b319bf786f3a7ca56da8964c5662171f",
+              "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libsycl.so.9.0.0-0": "74243bafb2766fd1a038cf80fd62632b4aad9ecfdc0d3ce8711e4515a93d7008",
+              "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libsycl-devicelib-host.a": "e567a2b935f89898bb5031b13ba39339f923be7ca6140cb05a4e914bd5f91c5b",
+              "/usr/lib/x86_64-linux-gnu/libpthread.a": "f0a17a43c74d2fe5474fa2fd29c8f14799e777d7d75a2cc4d11c20a6e7b161c5",
+              "/usr/lib/x86_64-linux-gnu/libc.so": "fe2a4ce2930fc6b3966aa987fae808375446c8d3823b8c21792e991aad9c75df",
+              "/usr/lib/x86_64-linux-gnu/libc.so.6": "3a15d66867d83762c7f2f1e37359cb8f6c5743edb369c65285cb0b1c4f7498bf",
+              "/usr/lib/x86_64-linux-gnu/libc_nonshared.a": "3341391290ddd596521a61152b4e2612f4625cc85f737d875b918f6cfb2b2786",
+              "/usr/lib/x86_64-linux-gnu/ld-linux-x86-64.so.2": "c20a2dc8917c755f02b94049356320fe1f62ac7d9f8994731f807d9df39302da",
+              "/usr/lib/gcc/x86_64-linux-gnu/13/crtend.o": "9c8b2caad195193301ef072895dc89bea1d23371d4c19accd821debe27773063",
+              "/usr/lib/x86_64-linux-gnu/crtn.o": "a2266079f95b84ccc2162ebbf279bcd78858a748aa1882e0bdb912316c76a58f"
+            },
+            "compiler_generated_inputs": {
+              "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-batched-radix-v3/input-0-host-x86_64-unknown-linux-gnu.o": "9d385526273a99e412603f188acb9c9ae75509135225873d2a2d0201b51567bd",
+              "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-batched-radix-v3/input-1-host-x86_64-unknown-linux-gnu.o": "cedbd95c0502b3068a239465a36ea1fee4d5685bc670562dc5ba0c37f81cb4e7",
+              "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-batched-radix-v3/input-2-host-x86_64-unknown-linux-gnu.o": "57eda88d17fbdbe31a583740ca724fcbffff04637c4a7e1d0cfa2e4fb2490737",
+              "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-batched-radix-v3/input-6-host-x86_64-unknown-linux-gnu.o": "ab5e4adb7797b8ba6e2264b9c7e6b281d3b2fa98a6a8b8d3458b07faa8d40d7d",
+              "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-batched-radix-v3/input-7-host-x86_64-unknown-linux-gnu.o": "da9c41b0922657b9a2961e5e1295892698983e2339cbeddb1a86c189da0bc259",
+              "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-batched-radix-v3/input-8-host-x86_64-unknown-linux-gnu.o": "2d6d37c414b12d0a4d578d9e48fd12ceadeb65a7f03c871e2563912dbb971b4d",
+              "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-batched-radix-v3/fixture-observed-wrapper-sycl-spir64-unknown-unknown.o": "5926c0b231ed40c4c8e31d8b99e1ec33fdd8c03552fb2c41355bc07a751cb4b2"
+            },
+            "uncovered_inputs": 0,
+            "owned_compiler_products": {
+              "/home/yayoi/-84ad85.bc": {
+                "bytes": 17296,
+                "sha256": "f174ede159c6e9154ba66cb9fde3094ef017150dad627438aa9a8c4379f6b8e7"
+              },
+              "/home/yayoi/-93b997.bc": {
+                "bytes": 17296,
+                "sha256": "f174ede159c6e9154ba66cb9fde3094ef017150dad627438aa9a8c4379f6b8e7"
+              },
+              "/home/yayoi/-cc4585.table": {
+                "bytes": 1490,
+                "sha256": "0bae7d43e151a5e50e81d0f26cad360ce6a92b2e0f6e8a7d68f1ab1d8a0657f0"
+              },
+              "/home/yayoi/-ee79d8.txt": {
+                "bytes": 436,
+                "sha256": "45c1e11c4dba118aa5ff3d6a313a968d060dea5f328f4044e5172487e894abb7"
+              },
+              "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-batched-radix-v3/fixture-observed": {
+                "bytes": 374136,
+                "sha256": "53c24ddbb576bed4c796c8a90e2085aa28be27fbead16dd81fa0a2290ea10db6"
+              },
+              "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-batched-radix-v3/fixture-observed-wrapper-sycl-spir64-unknown-unknown.o": {
+                "bytes": 57872,
+                "sha256": "5926c0b231ed40c4c8e31d8b99e1ec33fdd8c03552fb2c41355bc07a751cb4b2"
+              },
+              "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-batched-radix-v3/input-0-host-x86_64-unknown-linux-gnu.o": {
+                "bytes": 71248,
+                "sha256": "9d385526273a99e412603f188acb9c9ae75509135225873d2a2d0201b51567bd"
+              },
+              "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-batched-radix-v3/input-0-sycl-spir64-unknown-unknown.bc": {
+                "bytes": 3824,
+                "sha256": "81fb6d3ac129ff6034329e57147b8769da03a3d4a1a1442ce98c81a24b4560a6"
+              },
+              "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-batched-radix-v3/input-0-sycl-spir64-unknown-unknown.o": {
+                "bytes": 3824,
+                "sha256": "81fb6d3ac129ff6034329e57147b8769da03a3d4a1a1442ce98c81a24b4560a6"
+              },
+              "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-batched-radix-v3/input-0-sycl-spir64-unknown-unknown.table": {
+                "bytes": 1562,
+                "sha256": "3d9bee433928f63b910f7ae83a51cc0fab6419266462023d45246af0108e77b5"
+              },
+              "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-batched-radix-v3/input-0-sycl-spir64-unknown-unknown.txt": {
+                "bytes": 508,
+                "sha256": "5b36bf5f5ff0667af6e6afdb590942abd0136ee1b0776e797abf9a85dd0415b2"
+              },
+              "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-batched-radix-v3/input-1-host-x86_64-unknown-linux-gnu.o": {
+                "bytes": 158320,
+                "sha256": "cedbd95c0502b3068a239465a36ea1fee4d5685bc670562dc5ba0c37f81cb4e7"
+              },
+              "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-batched-radix-v3/input-1-sycl-spir64-unknown-unknown.bc": {
+                "bytes": 2596,
+                "sha256": "b5d158c7da14d1bd5471c5c611bf332b01299ea337d697b60be903732866b6a8"
+              },
+              "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-batched-radix-v3/input-1-sycl-spir64-unknown-unknown.o": {
+                "bytes": 2596,
+                "sha256": "b5d158c7da14d1bd5471c5c611bf332b01299ea337d697b60be903732866b6a8"
+              },
+              "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-batched-radix-v3/input-2-host-x86_64-unknown-linux-gnu.o": {
+                "bytes": 25664,
+                "sha256": "57eda88d17fbdbe31a583740ca724fcbffff04637c4a7e1d0cfa2e4fb2490737"
+              },
+              "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-batched-radix-v3/input-2-sycl-spir64-unknown-unknown.bc": {
+                "bytes": 2612,
+                "sha256": "57ea061bb464e46580002bfdb51de2767c1221183a9ab61244128d43503ceeb6"
+              },
+              "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-batched-radix-v3/input-2-sycl-spir64-unknown-unknown.o": {
+                "bytes": 2612,
+                "sha256": "57ea061bb464e46580002bfdb51de2767c1221183a9ab61244128d43503ceeb6"
+              },
+              "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-batched-radix-v3/input-6-host-x86_64-unknown-linux-gnu.o": {
+                "bytes": 62584,
+                "sha256": "ab5e4adb7797b8ba6e2264b9c7e6b281d3b2fa98a6a8b8d3458b07faa8d40d7d"
+              },
+              "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-batched-radix-v3/input-6-sycl-spir64-unknown-unknown.bc": {
+                "bytes": 12732,
+                "sha256": "de7ac3c1a16783975f387d6315f9e6d6c1163e82982dd5a3123b1f6537509e07"
+              },
+              "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-batched-radix-v3/input-6-sycl-spir64-unknown-unknown.o": {
+                "bytes": 12732,
+                "sha256": "de7ac3c1a16783975f387d6315f9e6d6c1163e82982dd5a3123b1f6537509e07"
+              },
+              "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-batched-radix-v3/input-7-host-x86_64-unknown-linux-gnu.o": {
+                "bytes": 36680,
+                "sha256": "da9c41b0922657b9a2961e5e1295892698983e2339cbeddb1a86c189da0bc259"
+              },
+              "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-batched-radix-v3/input-7-sycl-spir64-unknown-unknown.bc": {
+                "bytes": 8728,
+                "sha256": "32281f62f34387b4b166eed40d3512a06195fa88abe22b68c6d0329826276d7f"
+              },
+              "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-batched-radix-v3/input-7-sycl-spir64-unknown-unknown.o": {
+                "bytes": 8728,
+                "sha256": "32281f62f34387b4b166eed40d3512a06195fa88abe22b68c6d0329826276d7f"
+              },
+              "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-batched-radix-v3/input-8-host-x86_64-unknown-linux-gnu.o": {
+                "bytes": 169712,
+                "sha256": "2d6d37c414b12d0a4d578d9e48fd12ceadeb65a7f03c871e2563912dbb971b4d"
+              },
+              "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-batched-radix-v3/input-8-sycl-spir64-unknown-unknown.bc": {
+                "bytes": 2520,
+                "sha256": "758edd2edfe604c6b5af5d761877aebc0fb61117615c185a62a2bdd362fc8ef2"
+              },
+              "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-batched-radix-v3/input-8-sycl-spir64-unknown-unknown.o": {
+                "bytes": 2520,
+                "sha256": "758edd2edfe604c6b5af5d761877aebc0fb61117615c185a62a2bdd362fc8ef2"
+              },
+              "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-batched-radix-v3/tmp/-ee79d8-1e156f.spv": {
+                "bytes": 12048,
+                "sha256": "5bd8c3afacf09affe3a7cb4dd4c84f0af628b21fbb34bde5d507dcb46d148450"
+              },
+              "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-batched-radix-v3/tmp/-ee79d8-c0489d.spv": {
+                "bytes": 14064,
+                "sha256": "7d5120e7bf07afd1c7fef54d8eec5429349de6b35461ae014d772b493e26d9c0"
+              },
+              "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-batched-radix-v3/tmp/-ee79d8-c25cdf.spv": {
+                "bytes": 268,
+                "sha256": "c2a2ba2429a6fd1f1fef230ed43e0bbda680e86f2d5ebc19f12a9f4b194a7e26"
+              },
+              "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-batched-radix-v3/tmp/-ee79d8-d5aa9f.spv": {
+                "bytes": 16860,
+                "sha256": "c55c3baf01b5fd4e61bf5c3993055dab448bf8c92a34d431a10ea4f43b246eee"
+              }
+            }
+          }
+        },
+        "binary": {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-batched-radix-v3/fixture",
+          "bytes": 365616,
+          "sha256": "b6d794fa58735dcd63602a33c6bb2364a3bb832a7f955a46e15384936401fbeb"
+        },
+        "observed_binary": {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-batched-radix-v3/fixture-observed",
+          "bytes": 374136,
+          "sha256": "53c24ddbb576bed4c796c8a90e2085aa28be27fbead16dd81fa0a2290ea10db6"
+        },
+        "device_IR_identical_across_observation": true,
+        "actual_compiler_inputs": {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-batched-radix-v3/compiler-inputs.json",
+          "bytes": 117604,
+          "sha256": "416f0b513cdab4fa194489d2a3ec8c631e2796c83c72ebf512051bbee5fc6038",
+          "files": 695,
+          "uncovered": 0
+        },
+        "LLVM": {
+          "original": {
+            "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-batched-radix-v3/original.ll",
+            "bytes": 61690,
+            "sha256": "50f4efd9eeffaf3423278eda5d6b8fa1585c2dfcd88424f76f3cd22a67c77620"
+          },
+          "proposal": {
+            "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-batched-radix-v3/proposal.ll",
+            "bytes": 32341,
+            "sha256": "959df11b34c0a6e148332798f0d47caeaae3d3e1bf62d64270f0287837f61b35"
+          },
+          "observed-original": {
+            "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-batched-radix-v3/observed-original.ll",
+            "bytes": 61636,
+            "sha256": "1dd4a1679a0c4e22951544e13e6c64df55f4e09046b17acdd9a55b014cc63f45"
+          },
+          "observed-proposal": {
+            "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-batched-radix-v3/observed-proposal.ll",
+            "bytes": 32428,
+            "sha256": "ca9422e3725cfaf3a0fdcd74450c8fc5919c8bfd40b6e7e4589e4113e1d5fada"
+          }
+        },
+        "kernel_inventory": {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-batched-radix-v3/kernel-inventory.json",
+          "bytes": 6591,
+          "sha256": "1bd3e957f262e6dea7b453a5dcc8c33db3dd986c109ad522df718b2111f6dd45",
+          "definitions": {
+            "original": 6,
+            "proposal": 2,
+            "observed-original": 6,
+            "observed-proposal": 2
+          }
+        }
       }
     },
     "passed": false,
