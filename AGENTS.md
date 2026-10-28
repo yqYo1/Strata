@@ -162,6 +162,12 @@ integration and testing.
   milestone; this does not defer long-prefill
   chunk-size, placement or scheduling tuning. Preserve shared state and the
   physical 262144-context correctness requirements.
+  Keep further detailed regression root-cause investigation delegated to the
+  specified Luna researchers; Main prioritizes performance implementation and
+  serialized measurements. Preserve regression/adoption gates without turning
+  each observed decrease into another extended Main investigation. Continue
+  measured input-length/time approximations and route/boundary characterization
+  alongside tuning; do not assume one fixed-plus-linear law.
 - Prefer GPU-local long-prefill data and control when added GPU work costs less
   than the removed CPU work, transfers and synchronization. Measure the whole
   dependency path. FP16 and BF16 storage both use two bytes; select format from

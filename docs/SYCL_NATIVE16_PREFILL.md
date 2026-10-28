@@ -1867,6 +1867,12 @@ numerical/provenance holds remain untouched.
 
 ## Attribution limits and outstanding gates
 
+Detailed follow-up on the agent-turn decline is delegated to Luna. Main returns
+to the batched radix selector's implementation and component/model performance
+gates while the frozen comparison runs serially. Keep phase-preservation and
+adoption checks,plus input-length/time approximations and route-boundary
+characterization;further root-cause detail is not Main's next tuning task.
+
 The limiting hardware resource remains incompletely attributed. CPU-pool and
 GPU-reach wall scopes dominate the current decode route. CPU-pool wall
 includes scheduling/waits; scheduled CPU includes idle polling. GPU-reach wait is
