@@ -1686,7 +1686,15 @@ for other instantiations. The next isolated build starts from selected6e40Git
 inputs plus this single inference-file change;the current tree's17unselected
 native differences are excluded. A committed adapter directs the same-build
 independent oracle through the actual production ordered-prefill entrypoint.
-That model build and its runtime/long-input comparison remain unrun.
+The isolated model build then passes18owned commands from source`06235253b`,
+frozen plan`8f3ae3dbb`:1411actual compiler inputs,zero uncovered files,four
+verified imported link providers and three exact18argument/SIMD16kernels.
+Nine auxiliary6e40source files are also recovered solely for CMake target
+generation;those targets are not built. The original missing-file configuration
+failure remains failed in the linked result and its565closed files retire
+(8839659bytes)after source/recipe recovery. Same-source property,actual-ID and
+production-entrypoint oracle gates are next;no model/GPU execution or long-input
+performance is qualified by compilation.
 Production/decode and the selected6e40engine/twelve fixtures remain unchanged.
 After192source/702actual-dependency recovery and exact recipe/executable checks,
 58closed files retire (7862437bytes). No auxiliary generation
