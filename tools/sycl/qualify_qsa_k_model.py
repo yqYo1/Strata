@@ -102,7 +102,7 @@ def prepare():
         plan=dict(order=list(ORDER), runs_per_process=1,
             question='Does the isolated prefill row-address hoist preserve decode performance and complete official long/agent and both sustained-thinking workloads?',
             constants='Same 131072 INT8 resident context,1256 decode expert slots,8192 chunks,BF16/vLLM/mode10,5workers,spec4,models/profile/client/safety.Only the native executable changes. No observer or environment mutation between phases.',
-            samples='Six independent processes in three opposite-order adjacent pairs. Each official full suite has short warmups/calibration,chat,4K/16K/32K prompts,one complete six-turn agent session,and both >=32K-input/>=1K-output thinking workloads. Preserve every request,actual lengths and engine clocks;do not require identical generated text.',
+            samples='Six independent processes in three opposite-order adjacent pairs. Each official full suite has short warmups/calibration,chat,4K/16K/32K prompts,one complete six-turn agent session,and both >=32K-input/>=1K-output thinking workloads. Agent follow-up rate is the median of its five engine-reported decode rates;do not substitute API usage for the engine token count. Preserve every request,actual lengths and engine clocks;do not require identical generated text.',
             acceptance='All six executions,complete journals,agent sessions and both eligible long-generation cases must pass. Pool exactly three independent requests per workload/arm through the maintained strong>=0.60/weak<=0.40 MTP classifier. For each generation workload and agent follow-up decode,report all three paired candidate/original rate ratios;require geometric mean>=1 to screen preservation. A lower rate or unconfirmed MTP class remains pending/inconclusive;no noise waiver or automatic adoption. Matched 32K prompt rate and TTFT are descriptive in this gate.',
             stopping='First source/runtime/ownership/numerical/validation/fault,budget,incomplete response,missing answer,or workload admission failure stops the cohort. No speed-based early stopping,retries,replacement or post-hoc exclusions. Generic success cannot override an exception or unfinished final hashes.',
             limits='This qualifies observed execution,answer presence,MTP regimes and matched rates,not semantic task quality or physical262144 fill/tail/handoff/RESTORE. Short chat/prompt output is not sustained decode evidence. Input-length approximation remains scoped;no hardware-saturation or1000/70target claim.',
@@ -174,7 +174,7 @@ def evidence(root, row):
             sample.update(by_workload[sample['phase'].split('/', 1)[1]])
     follow = agent['sessions'][0][1:]
     rates = {s['workload']:s['decode_tps'] for s in rows}
-    rates['agent_followup'] = sum(s['generated_tokens'] for s in follow) / sum(s['decode_ms'] for s in follow) * 1000
+    rates['agent_followup'] = statistics.median(s['decode_tps'] for s in follow)
     return dict(samples=samples, decode_rates=rates, journal=journal)
 
 
