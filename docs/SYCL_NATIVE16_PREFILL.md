@@ -1649,9 +1649,10 @@ The27closed generation/capture/report files retire (6783939bytes),including
 both component executables and the observer. Nine one-use source files restore
 from`77e0d370f`;original component/observer recipes restore from`3a3f22931` and
 `21046228a`. The subsequent direct-K source audit selected an independent loop
-change, so the initialized53MBactual-ID fixture now serves its imminent
-correctness/performance comparison. Only the original ASM/ZeInfo pair still
-serves native-block correspondence;closed packed/control/LLVM copies retire.
+change. The initialized53MBactual-ID fixture now serves the imminent same-build
+production/private source qualification for the model candidate. The old
+ASM/ZeInfo/LLVM and all auxiliary component binaries are retired;their useful
+source-bound facts and original outcomes remain in reachable Git.
 
 The [direct-K comparison](../bench/results/2026-10-15-pr6-recovery-audit/qsa-codegen-current.json)
 hoists each lane's stable row read,validity test and row-base calculation out
@@ -1663,11 +1664,34 @@ The native component builds15commands from source`a2f54c3e5`,frozen plan`5c612e3
 with702actual dependencies. All three exact18argument/SIMD16kernels pass a
 separate property-only B570 check,with no kernel enqueue or fresh fault and
 normal owned-process closure. The candidate spill descriptor increases from
-12480to23808;this is allocation metadata,not executed spill traffic or a speed
-result. Native correctness and timing remain unrun. Next use a newly frozen
-traced tiny fixture,boundary and independent oracle before matched timing;
-do not advance to a model trial from compilation or property success.
+12480to23808;this is allocation metadata,not executed spill traffic.
+The traced actual-ID3query and physical262143-address checks pass exact output
+bits,guards and immutable inputs. Independent2/11-case tensor oracles also pass,
+including masked/missing/aliased pages and align2packed storage. These component
+addresses do not qualify full262144-token model processing.
+
+Source/controller`45883c784`,frozen performance plan`a3f64348f`,then closes all108
+eligible samples across three independent processes,six rotated rounds and two
+actual-ID query sizes. Candidate/control wall ratios at512queries are
+0.942146/0.943884/0.942517,and at6491queries0.959880/0.962747/0.960464.
+All six groups pass the declared1percent wall/service improvement gates;
+original/private calibration stays within0.242percent. Validation is quiet,
+ownership closes normally and no fresh fault appears. Thus time falls about
+5.6..5.8percent and3.7..4.0percent respectively despite the larger descriptor.
+This qualifies a model comparison,not whole-model speed or hardware saturation.
+
+The production overlay constructor`d354a9e40` applies the identical source block
+only under compile-time`OrderedExp&&!CaptureState`,retaining the original block
+for other instantiations. The next isolated build starts from selected6e40Git
+inputs plus this single inference-file change;the current tree's17unselected
+native differences are excluded. A committed adapter directs the same-build
+independent oracle through the actual production ordered-prefill entrypoint.
+That model build and its runtime/long-input comparison remain unrun.
 Production/decode and the selected6e40engine/twelve fixtures remain unchanged.
+After192source/702actual-dependency recovery and exact recipe/executable checks,
+57closed component/research files retire (7852554bytes). No auxiliary generation
+remains. Useful individual samples and compact numerical/fault decisions stay
+in the current result;full original receipts restore from`8849d71e5`.
 The earlier eight-u16 generation and two consumed research/review files retire
 after recovering197original source inputs,exact recipe/generated sources and699actual
 compiler dependencies. The98files total11297649bytes;the selected engine,its

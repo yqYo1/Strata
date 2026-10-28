@@ -14105,7 +14105,7 @@
       "frozen_plan": "accee13ae",
       "exact_GEN_text_all3": true,
       "owned_CPU_only_all3_passed": true,
-      "current_capture_retention": "Only original arm0ASM/ZeInfo remains for current direct-K source/native correspondence;control/packed and oldLLVM retired after committed evidence."
+      "current_capture_retention": "All old captures retired;compact accepted facts remain. No historical timed-image identity or saturation qualification."
     },
     "previous_retrieval": [
       "qsa_k_staging_compiled_spill_attribution_20261028",
@@ -14387,7 +14387,7 @@
     "prerequisites_evidence": {
       "current_generator": "tools/sycl/qsa_k_loop_sources.py",
       "generator_sha256": "526f02d967f0f03f7cfc8239a7633b9f9840e0533dee047171b38a7dd061db6c",
-      "current_native_IR": "qsa-codegen-current.json::direct_K_loop_invariant.native_build.outcome.device_IR",
+      "current_native_IR": "Consumed actual IR;source/hash/recipe recover at8849d71e5. Future discriminators must freeze a new control;no current native IR payload retained.",
       "observed_mechanism": "CPU IR moves stable row load outside dimension loop;property-only queried spill descriptor rises12480to23808 with unchanged128GRF request/default,WG128/SG16/18args. Not dynamic traffic or speed.",
       "current_contract": "qsa-codegen-current.json::direct_K_loop_invariant.source_contract"
     },
@@ -14400,7 +14400,6 @@
       "gpu_instruction_cache_unroll_dispatch_tradeoffs_20261023",
       "qsa_kernel_local_grf_contract_20261027"
     ],
-    "report": ".cache/strata-research/20261028/qsa-row-hoist-control-flow-pressure.md",
     "worker_closed": true,
     "orca": {
       "run": "run_80ea8ebc9a8c",
@@ -14450,7 +14449,19 @@
           "Any speed claim requires Main's separately frozen matched performance and correctness gates."
         ]
       }
-    ]
+    ],
+    "references": [
+      "https://www.intel.com/content/www/us/en/docs/oneapi/optimization-guide-gpu/2023-1/registerization-and-avoiding-register-spills.html",
+      "https://www.intel.com/content/www/us/en/docs/oneapi/optimization-guide-gpu/2023-0/sub-groups-and-simd-vectorization.html",
+      "https://www.llvm.org/doxygen/classllvm_1_1SimpleLoopUnswitchPass.html",
+      "https://llvm.org/doxygen/SimpleLoopUnswitch_8cpp_source.html",
+      "https://pp.ipd.kit.edu/publication.php?id=braun09cc"
+    ],
+    "retirement": {
+      "reports_and_review_retired": true,
+      "manifest_sha256": "62a0a8a9cb59c82ab1d34c98ab267d286dd2e7730d5e2900451726c41c7b2b91",
+      "facts_ref": "research-index.json::qsa_row_hoist_control_flow_pressure_20261028"
+    }
   },
   "sycl_local_accessor_alias_contract_20261028": {
     "classification": "decision_support",
@@ -14461,7 +14472,7 @@
     "prerequisites_evidence": {
       "current_generator": "tools/sycl/qsa_k_loop_sources.py",
       "generator_sha256": "526f02d967f0f03f7cfc8239a7633b9f9840e0533dee047171b38a7dd061db6c",
-      "current_native_IR": "qsa-codegen-current.json::direct_K_loop_invariant.native_build.outcome.device_IR",
+      "current_native_IR": "Consumed actual IR;source/hash/recipe recover at8849d71e5. Future discriminators must freeze a new control;no current native IR payload retained.",
       "observed_mechanism": "CPU IR moves stable row load outside dimension loop;property-only queried spill descriptor rises12480to23808 with unchanged128GRF request/default,WG128/SG16/18args. Not dynamic traffic or speed.",
       "current_contract": "qsa-codegen-current.json::direct_K_loop_invariant.source_contract"
     },
@@ -14474,7 +14485,6 @@
       "gpu_shared_memory_bank_layout_methods_20261023",
       "qsa_irregular_gqa_matrix_packing_collection_20261027"
     ],
-    "report": ".cache/strata-research/20261028/sycl-local-accessor-alias-contract.md",
     "worker_closed": true,
     "orca": {
       "run": "run_80ea8ebc9a8c",
@@ -14536,6 +14546,18 @@
         "stop_rule": "Stop if compiler noalias facts are absent or broadened, an alternate access path exists, or optimized IR does not move the row load. Do not apply kernel-wide restrict or claim device/performance qualification."
       }
     ],
-    "ownership_resolution": "Main independently verified succeeded/completed exact ctx_10d7e387e82d,worker-release closed terminal,and ACKed completion. Reviewer read earlier active index snapshot;current ownership is closed."
+    "ownership_resolution": "Main independently verified succeeded/completed exact ctx_10d7e387e82d,worker-release closed terminal,and ACKed completion. Reviewer read earlier active index snapshot;current ownership is closed.",
+    "references": [
+      "https://registry.khronos.org/SYCL/specs/sycl-2020/html/sycl-2020.html",
+      "https://github.com/intel/llvm/blob/504366f4b82ff00bbac7b0c956635eed8bc599d8/sycl/doc/extensions/supported/sycl_ext_intel_kernel_args_restrict.asciidoc",
+      "https://github.com/intel/llvm/blob/504366f4b82ff00bbac7b0c956635eed8bc599d8/llvm/lib/Target/SPIRV/SPIRVEmitIntrinsics.cpp",
+      "https://raw.githubusercontent.com/KhronosGroup/SPIRV-Registry/main/extensions/INTEL/SPV_INTEL_memory_access_aliasing.asciidoc",
+      "https://registry.khronos.org/OpenCL/specs/unified/html/OpenCL_C.html"
+    ],
+    "retirement": {
+      "reports_and_review_retired": true,
+      "manifest_sha256": "62a0a8a9cb59c82ab1d34c98ab267d286dd2e7730d5e2900451726c41c7b2b91",
+      "facts_ref": "research-index.json::sycl_local_accessor_alias_contract_20261028"
+    }
   }
 }
