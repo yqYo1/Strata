@@ -21,8 +21,9 @@ import build_qsa_k_model as base
 import relink_qsa_k_model as link
 
 P, B, RESULT = base.P, base.B, base.RESULT
-ROOT = B / 'qsa-batched-radix-v2'
+ROOT = B / 'qsa-batched-radix-v3'
 KEY = 'batched_radix_selector'
+REVIEW_SCOPE = 'qsa_batched_radix_sg32_contract_20261029'
 HEADER = 'include/strata/kernels/qsa_radix_batched.hpp'
 NATIVE = 'src/kernels/sycl/qsa_radix_batched.cpp'
 FIXTURE = 'tests/sycl/qsa_batched_radix.cpp'
@@ -125,11 +126,13 @@ def prepare():
     if previous is not None:
         require(previous.get('generation_closed') and
                 previous.get('closed_generation_retirement', {}).get('complete') and
-                previous['event_method_failure']['status'] == 'failed_not_retried' and
+                previous.get('component_decision', {}).get('status') ==
+                    'not_adopted_four_shape_pattern_gates_failed' and
+                not previous.get('component_advance_eligible') and
                 not Path(previous['closed_generation_retirement']['root']).exists(),
-                'close and retire the refused event-proxy generation before a new plan')
+                'close and retire the rejected SG16component generation before a new plan')
     review = base.runtime.validation.committed(base.runtime.validation.INDEX,
-        ('qsa_batched_radix_histogram_contract_20261028',))
+        (REVIEW_SCOPE,))
     require(review['worker_closed'] and review['native_review']['decision'].startswith('Source contract'),
             'closed independent selector source review required')
     revision = base.component.gen.git('rev-parse', 'HEAD').decode().strip()
@@ -214,7 +217,7 @@ def prepare():
     write(ROOT / 'plan.json', plan)
     record[KEY] = dict(build=compact(plan), passed=False, model_selected=False)
     if previous is not None:
-        record[KEY]['previous_generation'] = dict(status='failed event-proxy method;not retried',
+        record[KEY]['previous_generation'] = dict(status='closed SG16component gate failed;not retried',
             result_commit=revision, path=str(RESULT.relative_to(P)), keys=[KEY],
             scope_sha256=hashlib.sha256(json.dumps(previous,sort_keys=True).encode()).hexdigest(),
             source_commit=previous['build']['source_commit'],

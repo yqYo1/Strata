@@ -88,10 +88,10 @@ int property_fixture(int argc, char **argv) {
     check(maximum >= 256 && (!props.requiredGroupSizeX || props.requiredGroupSizeX == 256) &&
           (!props.requiredGroupSizeY || props.requiredGroupSizeY == 1) &&
           (!props.requiredGroupSizeZ || props.requiredGroupSizeZ == 1), "native group contract");
-    if (arm) check(subgroup == 16 && props.requiredSubgroupSize == 16, "native SG16 contract");
+    if (arm) check(subgroup == 32 && props.requiredSubgroupSize == 32, "native SG32 contract");
     // Local argument payload is not yet bound. Add the complete source-declared
     // candidate payload plus a conservative collective reserve, not occupancy.
-    const uint64_t budget = uint64_t(props.localMemSize) + (arm == 2 ? 1088 : 0) + 4096;
+    const uint64_t budget = uint64_t(props.localMemSize) + (arm == 2 ? 576 : 0) + 4096;
     check(budget <= limits.maxSharedLocalMemory, "native local-memory budget");
     std::cout << "qsa_property arm=" << arm << " kernel=" << name << " maximum_wg=" << maximum
               << " subgroup=" << subgroup << " arguments=" << props.numKernelArgs
@@ -276,7 +276,7 @@ int main(int argc, char **argv) {
   }
   const std::string arm = argv[2];
   if (arm == "original") qsa_fixture_select = strata::kernels::qsa_block_topk_prefill;
-  else if (arm == "control") qsa_fixture_select = strata::kernels::qsa_block_topk_sg16_control;
+  else if (arm == "control") qsa_fixture_select = strata::kernels::qsa_block_topk_sg32_control;
   else if (arm == "batched") qsa_fixture_select = strata::kernels::qsa_block_topk_batched_prefill;
   else { std::cerr << "unknown fixture arm\n"; return 2; }
   const char *radix = std::getenv("STRATA_SYCL_SELECT_RADIX4");

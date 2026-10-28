@@ -15290,5 +15290,28 @@
       "future_scope_schedulable_now": false,
       "missing": "Actual-event smoke and selector clean/service timing remain unqualified;the proxy-equality refusal does not establish a selector hardware bottleneck."
     }
+  },
+  "qsa_batched_radix_sg32_contract_20261029": {
+    "classification": "decision support",
+    "status": "eligible_source_contract_not_dispatched",
+    "schedulable_now": true,
+    "source_files": {
+      "include/strata/kernels/qsa_radix_batched.hpp": "0b22b70a36cdfd47cdd58b2ac6c2adaa7f0dbeeae46785e3a54ffdefdbf31ecf",
+      "src/kernels/sycl/qsa_radix_batched.cpp": "9e954e3e057ec2db9e1b0f2072dfb9a27a640d2619902576642053b0fc36c179",
+      "tests/sycl/qsa_batched_radix.cpp": "7379f8a4c8b1c32f22188d85af8a4526c29bf9023e4c7ab45fb4b226ce273884"
+    },
+    "worker_model": "Orca Codex gpt-6-luna high",
+    "report": ".cache/research/2026-10-29/qsa_batched_radix_sg32_contract_20261029.md",
+    "report_budget_bytes": 12288,
+    "question": "Audit the new own WG256/SG32 radix4 candidate:8partial groups/bin,2bins/SG,32participating lanes and bounded lane%8loads with upper24masked to zero. Prove/refute exact weighted rank/ties/NaN/signed-zero/tail/ascending-ID semantics,all collective participation and barriers/read-write lifetimes,integer/span/queue/device contracts. Compare the original and forced-SG32control without assuming the unrequired original subgroup. Check576Baccessor arithmetic and updated native property/smoke expectations. Identify concrete counterexamples,at most2essential corrections and gates;no generic survey or implementation.",
+    "actual_prerequisite_evidence": "V2SG16cohort2a530e125closes18processes/432eligible batches with matching IDs/quiet validation/no fresh fault;four original-comparison shape/pattern gates fail,so no adoption. GPU service tracks latency whileCPU completion wait dominates host time. This is a distinct SG32dataflow candidate,not a relaxed SG16gate.",
+    "prior_scopes": [
+      "qsa_batched_radix_histogram_contract_20261028",
+      "gpu_integer_histogram_dataflows_20261029",
+      "qsa_fixture_event_timing_contract_20261029"
+    ],
+    "consumer": "Independent source-contract gate before V3build/native/oracle/service checks. Main continues implementation/provenance/serialized work;native Luna-max reviews report before Main reads a digest.",
+    "retirement": "Retain compact useful source corrections and proof limits;retire report and transactions after selecting/closing the native gate. No model qualification from source review.",
+    "worker_closed": false
   }
 }

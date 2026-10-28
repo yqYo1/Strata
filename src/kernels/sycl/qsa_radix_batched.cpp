@@ -10,8 +10,8 @@
 
 namespace strata::kernels {
 namespace {
-constexpr int WG = 256, SG = 16, Bins = 16, Groups = WG / SG;
-static_assert(Groups == Bins && Groups == SG);
+constexpr int WG = 256, SG = 32, Bins = 16, Groups = WG / SG;
+static_assert(Bins % Groups == 0 && Groups <= SG && Groups == 8);
 
 uint32_t key(float value) {
   uint32_t bits = sycl::bit_cast<uint32_t>(value);
@@ -40,7 +40,7 @@ void radix4(const float *scores, const int32_t *steps,
   if (device.get_info<sycl::info::device::max_work_group_size>() < WG ||
       device.get_info<sycl::info::device::max_work_item_sizes<1>>()[0] < WG ||
       std::find(sizes.begin(), sizes.end(), SG) == sizes.end())
-    throw std::invalid_argument("batched selection requires WG256/SG16");
+    throw std::invalid_argument("batched selection requires WG256/SG32");
   auto event = queue.submit([&](sycl::handler &handler) {
     sycl::local_accessor<int, 1> partial(Bins * Groups, handler);
     sycl::local_accessor<int, 1> totals(Bins, handler);
@@ -83,13 +83,18 @@ void radix4(const float *scores, const int32_t *steps,
             if (!lane) partial[digit * Groups + group] = sum;
           }
           item.barrier(sycl::access::fence_space::local_space);
-          // Each of sixteen SGs owns one digit and reads all sixteen partials.
-          const int sum = sycl::reduce_over_group(subgroup,
-              partial[group * Groups + lane], sycl::plus<int>());
-          if (!lane) totals[group] = sum;
+          // Eight SGs each own two digits. All32 lanes use a bounded address;
+          // only lanes0..7 contribute their distinct subgroup partials. The
+          // other24lanes supply zero and still participate in both reductions.
+          for (int digit = group; digit < Bins; digit += Groups) {
+            const int value = partial[digit * Groups + lane % Groups];
+            const int sum = sycl::reduce_over_group(
+                subgroup, lane < Groups ? value : 0, sycl::plus<int>());
+            if (!lane) totals[digit] = sum;
+          }
           item.barrier(sycl::access::fence_space::local_space);
         } else {
-          // Private control: original radix4 WG reductions, same forced SG16
+          // Private control: original radix4 WG reductions, same forced SG32
           // and guarded public entry. Do not infer baseline subgroup size.
           for (int digit = 0; digit < Bins; ++digit)
             histogram[digit] = sycl::reduce_over_group(
@@ -140,7 +145,7 @@ void qsa_block_topk_batched_prefill(const float *scores, const int32_t *steps,
     int32_t *ids, void *stream, int64_t active) {
   radix4<true>(scores, steps, nq, blocks, cap, shape, ids, stream, active);
 }
-void qsa_block_topk_sg16_control(const float *scores, const int32_t *steps,
+void qsa_block_topk_sg32_control(const float *scores, const int32_t *steps,
     int64_t nq, int64_t blocks, int64_t cap, const QsaShapes &shape,
     int32_t *ids, void *stream, int64_t active) {
   radix4<false>(scores, steps, nq, blocks, cap, shape, ids, stream, active);
