@@ -10502,7 +10502,7 @@
       }
     },
     "check_plan": {
-      "stage": "prepared",
+      "stage": "closed",
       "mode": "event-smoke",
       "source_commit": "c231da83787d4eb186588efa773e24778fd7d334",
       "binaries": {
@@ -11016,7 +11016,198 @@
           "kernel": "7.0.0-38-generic",
           "devcoredump": false
         }
+      },
+      {
+        "mode": "event-smoke",
+        "passed": true,
+        "complete": true,
+        "active": false,
+        "ownership_closed": true,
+        "processes": [
+          {
+            "label": "original",
+            "arm": "original",
+            "binary_kind": "events",
+            "passed": true,
+            "device_bindings": [
+              {
+                "name": "Intel(R) Arc(TM) B570 Graphics",
+                "pci": "0000:05:00.0",
+                "driver": "xe",
+                "matching_DRM_descriptors": 1
+              },
+              {
+                "name": "Intel(R) Arc(TM) B570 Graphics",
+                "pci": "0000:05:00.0",
+                "driver": "xe",
+                "matching_DRM_descriptors": 1
+              }
+            ],
+            "output_sha256": "87b6d3cf068c25ae3677245e4335fe88b17c4b27b9cd5c3acf30a4ba7580e34f",
+            "actual_launches": {
+              "calls": 7,
+              "api": "urEnqueueKernelLaunchWithArgsExp",
+              "kernel": "_ZTSZN6strata7kernels12_GLOBAL__N_111submit_topkILi1EEEN4sycl3_V15eventERNS4_5queueEPKfPKilllPilEUlNS4_7nd_itemILi1EEEE_",
+              "local_arguments": []
+            },
+            "event_probe": {
+              "n": "20",
+              "pattern": "0",
+              "nq": "3",
+              "cap": "7",
+              "repeats": "2",
+              "round": "0",
+              "events": "2",
+              "mode": "events",
+              "total_ms": "0.25079306215",
+              "cpu_ms": "0.244318",
+              "process_cpu_ms": "0.244318",
+              "service_ns": "146354",
+              "extent_ns": "149583",
+              "timer_resolution_ns": "52",
+              "invoke_ms": "0.10858499445",
+              "invoke_cpu_ms": "0.103464",
+              "retention_ms": "0.00337604433298",
+              "retention_cpu_ms": "0.003906",
+              "drain_ms": "0.135916052386",
+              "drain_cpu_ms": "0.133741",
+              "query_ms": "0.343007966876",
+              "query_cpu_ms": "0.191408",
+              "query_process_cpu_ms": "0.191408"
+            },
+            "query_budget_eligible": true
+          },
+          {
+            "label": "control",
+            "arm": "control",
+            "binary_kind": "events",
+            "passed": true,
+            "device_bindings": [
+              {
+                "name": "Intel(R) Arc(TM) B570 Graphics",
+                "pci": "0000:05:00.0",
+                "driver": "xe",
+                "matching_DRM_descriptors": 1
+              },
+              {
+                "name": "Intel(R) Arc(TM) B570 Graphics",
+                "pci": "0000:05:00.0",
+                "driver": "xe",
+                "matching_DRM_descriptors": 1
+              }
+            ],
+            "output_sha256": "87b6d3cf068c25ae3677245e4335fe88b17c4b27b9cd5c3acf30a4ba7580e34f",
+            "actual_launches": {
+              "calls": 7,
+              "api": "urEnqueueKernelLaunchWithArgsExp",
+              "kernel": "_ZTSZZN6strata7kernels12_GLOBAL__N_16radix4ILb0EEEvPKfPKilllRKNS0_9QsaShapesEPiPvlENKUlRN4sycl3_V17handlerEE_clESF_EUlNSD_7nd_itemILi1EEEE_",
+              "local_arguments": []
+            },
+            "event_probe": {
+              "n": "20",
+              "pattern": "0",
+              "nq": "3",
+              "cap": "7",
+              "repeats": "2",
+              "round": "0",
+              "events": "2",
+              "mode": "events",
+              "total_ms": "0.330103095621",
+              "cpu_ms": "0.323358",
+              "process_cpu_ms": "0.323358",
+              "service_ns": "170313",
+              "extent_ns": "174063",
+              "timer_resolution_ns": "52",
+              "invoke_ms": "0.209365040064",
+              "invoke_cpu_ms": "0.204004",
+              "retention_ms": "0.00326614826918",
+              "retention_cpu_ms": "0.00380700000002",
+              "drain_ms": "0.114476075396",
+              "drain_cpu_ms": "0.112282",
+              "query_ms": "0.159561866894",
+              "query_cpu_ms": "0.159659",
+              "query_process_cpu_ms": "0.159659"
+            },
+            "query_budget_eligible": true
+          },
+          {
+            "label": "batched",
+            "arm": "batched",
+            "binary_kind": "events",
+            "passed": true,
+            "device_bindings": [
+              {
+                "name": "Intel(R) Arc(TM) B570 Graphics",
+                "pci": "0000:05:00.0",
+                "driver": "xe",
+                "matching_DRM_descriptors": 1
+              },
+              {
+                "name": "Intel(R) Arc(TM) B570 Graphics",
+                "pci": "0000:05:00.0",
+                "driver": "xe",
+                "matching_DRM_descriptors": 1
+              }
+            ],
+            "output_sha256": "87b6d3cf068c25ae3677245e4335fe88b17c4b27b9cd5c3acf30a4ba7580e34f",
+            "actual_launches": {
+              "calls": 7,
+              "api": "urEnqueueKernelLaunchWithArgsExp",
+              "kernel": "_ZTSZZN6strata7kernels12_GLOBAL__N_16radix4ILb1EEEvPKfPKilllRKNS0_9QsaShapesEPiPvlENKUlRN4sycl3_V17handlerEE_clESF_EUlNSD_7nd_itemILi1EEEE_",
+              "local_arguments": [
+                [
+                  6,
+                  512
+                ],
+                [
+                  7,
+                  64
+                ]
+              ]
+            },
+            "event_probe": {
+              "n": "20",
+              "pattern": "0",
+              "nq": "3",
+              "cap": "7",
+              "repeats": "2",
+              "round": "0",
+              "events": "2",
+              "mode": "events",
+              "total_ms": "0.36708288826",
+              "cpu_ms": "0.358952",
+              "process_cpu_ms": "0.358952",
+              "service_ns": "66980",
+              "extent_ns": "170521",
+              "timer_resolution_ns": "52",
+              "invoke_ms": "0.27648312971",
+              "invoke_cpu_ms": "0.270085",
+              "retention_ms": "0.00433693639934",
+              "retention_cpu_ms": "0.00497",
+              "drain_ms": "0.0824048183858",
+              "drain_cpu_ms": "0.07966",
+              "query_ms": "0.191772123799",
+              "query_cpu_ms": "0.19201",
+              "query_process_cpu_ms": "0.19201"
+            },
+            "query_budget_eligible": true
+          }
+        ],
+        "query_gate_passed": true,
+        "postchecks_complete": true,
+        "postcheck_errors": [],
+        "fresh_faults": [],
+        "boot_unchanged": true,
+        "driver_after": {
+          "pci": "/sys/bus/pci/devices/0000:05:00.0",
+          "driver": "xe",
+          "vendor": "0x8086",
+          "device": "0xe20c",
+          "kernel": "7.0.0-38-generic",
+          "devcoredump": false
+        }
       }
-    ]
+    ],
+    "event_service_eligible": true
   }
 }
