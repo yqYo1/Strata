@@ -2691,7 +2691,25 @@
         "root": "qsa-direct-k-model-v2/link-contract-v1",
         "error": "RuntimeError('unfrozen linker input: /home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-direct-k-model-v2/link-contract-v1/output/generate.cpp-host-x86_64-unknown-linux-gnu.o')",
         "diagnosis": "SYCL clang-offload-bundler emits host extraction outputs using repeated -output= flags;the first parser recognized only -o. Fresh232-entry compile/link recipe proof passed and the completed CPU relink matched the original d5b0engine bytes. No model/GPU run. Preserve failure;new producer parser/versioned prospective plan required.",
-        "original_engine_sha256": "d5b0ef5e14c02f663657da6afcc4ae71ad89f92b3120be6fde33c1362f7f062f"
+        "original_engine_sha256": "d5b0ef5e14c02f663657da6afcc4ae71ad89f92b3120be6fde33c1362f7f062f",
+        "host_parser_regression": {
+          "source": "1d2987984",
+          "positive_frozen_inputs": 33,
+          "positive_owned_link_inputs": 5,
+          "owned_compiler_outputs": 206,
+          "negative_refusals": [
+            "missing_extraction_producer",
+            "foreign_trace_input"
+          ],
+          "GPU_executed": false
+        },
+        "retirement": {
+          "complete": true,
+          "files": 608,
+          "bytes": 159598317,
+          "manifest": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-direct-k-model-link-parser-failure-retired-20261028.jsonl",
+          "manifest_sha256": "0ca19514628ca7816fcec29796c469a7c20406e7f152b3b619c0f1a79e23e217"
+        }
       }
     ]
   }
