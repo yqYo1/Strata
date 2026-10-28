@@ -828,8 +828,8 @@
         6491,
         2051
       ],
-      "consumer": "Main imminent packed-u32 K-staging source proof and controlled comparison if independently qualified. Retire if no distinct legal candidate survives;review before next build.",
-      "review": "At this current source preflight,then before build. Retire immediately if no distinct legal controlled comparison survives;otherwise retire when that component comparison closes.",
+      "consumer": "Main immediate two-query union producer/attention component source and real-ID comparison;previous packed-K staging candidate is closed. Same existing bytes,no new capture.",
+      "review": "At first two-query component decision or source rejection;retire if no legal measured candidate survives. Maximum64MiB.",
       "origin_native_source": "6e40afc1beddd059ee518617f6c1efce1da14aca",
       "origin_capture_controller": "afd7fd025",
       "origin_capture_plan": "ba542c888",
@@ -1009,7 +1009,7 @@
     }
   },
   "qsa_query_union_cost": {
-    "stage": "prepared",
+    "stage": "closed",
     "source_commit": "3b81a6c16a2d1bee04025a9c87fe383f93bd0737",
     "source_sha256": {
       "tools/sycl/qsa_union_cost.py": "53bf7bc462a8da936a0ab6dc0415445d532c8f0933651ac0796ef4b8893fd194",
@@ -1076,11 +1076,199 @@
     "question": "Exact T=2/4 logical union reuse versus dense masked/padded matrix work and metadata cost in the retained layer0 tail;not whole-model coverage or speed.",
     "limits": "Logical IDs only. Preserve per-query incidence and independent softmax. Physical aliases/cache traffic,actual GPU preparation cost,occupancy,other layers/full chunks and a kernel implementation remain unmeasured. Padded8-row/32-cell counts use the original available matrix geometry in a prospective construction;not actual issued instructions.",
     "retention": "Keep source/input identity and conserved aggregate counts/distributions only. No per-query lists,unions,masks or duplicate fixture. Retire successful owned output after verification. Review original fixture at this decision boundary.",
-    "passed": false,
-    "complete": false,
+    "passed": true,
+    "complete": true,
     "active": false,
     "ownership_closed": true,
     "GPU_executed": false,
-    "model_selected": false
+    "model_selected": false,
+    "outcome": {
+      "passed": true,
+      "complete": true,
+      "active": false,
+      "ownership_closed": true,
+      "GPU_executed": false,
+      "analysis": {
+        "header": [
+          0,
+          32768,
+          6491,
+          2051
+        ],
+        "valid_entries": 13313041,
+        "initialized": true,
+        "conservation_passed": true,
+        "groups": [
+          {
+            "group_queries": 2,
+            "full_groups": 3245,
+            "tail": {
+              "first_query": 6490,
+              "queries": 1,
+              "selected": 2051,
+              "union": 2051,
+              "dense_incidences": 2051,
+              "old_padded_matrix_cells_per_KV_head": 33280,
+              "union_padded_matrix_cells_per_KV_head": 33280,
+              "ID_plus_u8_mask_bytes": 10255,
+              "logical_KV_read_reduction": 0.0,
+              "dense_useful_fraction": 1.0,
+              "padded_matrix_work_ratio": 1.0
+            },
+            "totals": {
+              "queries": 6491,
+              "selected": 13313041,
+              "union": 10210544,
+              "dense_incidences": 20419037,
+              "old_padded_matrix_cells_per_KV_head": 216020480,
+              "union_padded_matrix_cells_per_KV_head": 246220288,
+              "ID_plus_u8_mask_bytes": 51052720
+            },
+            "incidence_multiplicity_histogram": {
+              "1": 7108047,
+              "2": 3102497
+            },
+            "full_group_distributions": {
+              "union": {
+                "count": 3245,
+                "minimum": 2275,
+                "median": 3176,
+                "p95": 3463,
+                "maximum": 3735
+              },
+              "logical_KV_read_reduction": {
+                "count": 3245,
+                "minimum": 0.08946855192588976,
+                "median": 0.2257435397367138,
+                "p95": 0.333008288639688,
+                "maximum": 0.44539249146757676
+              },
+              "dense_useful_fraction": {
+                "count": 3245,
+                "minimum": 0.5491298527443106,
+                "median": 0.6457808564231738,
+                "p95": 0.7496345029239766,
+                "maximum": 0.9015384615384615
+              },
+              "padded_matrix_work_ratio": {
+                "count": 3245,
+                "minimum": 0.8307692307692308,
+                "median": 1.1538461538461537,
+                "p95": 1.2576923076923077,
+                "maximum": 1.35
+              },
+              "ID_plus_u8_mask_bytes": {
+                "count": 3245,
+                "minimum": 11375,
+                "median": 15880,
+                "p95": 17315,
+                "maximum": 18675
+              }
+            },
+            "whole_logical_KV_read_reduction": 0.23304194736574457,
+            "whole_dense_useful_fraction": 0.6519916193892983,
+            "whole_padded_matrix_work_ratio": 1.1398006707512176,
+            "original_nominal_KV_read_bytes": 27265107968,
+            "ideal_union_nominal_KV_read_bytes": 20911194112
+          },
+          {
+            "group_queries": 4,
+            "full_groups": 1622,
+            "tail": {
+              "first_query": 6488,
+              "queries": 3,
+              "selected": 6153,
+              "union": 3793,
+              "dense_incidences": 11379,
+              "old_padded_matrix_cells_per_KV_head": 99840,
+              "union_padded_matrix_cells_per_KV_head": 152320,
+              "ID_plus_u8_mask_bytes": 18965,
+              "logical_KV_read_reduction": 0.3835527385015439,
+              "dense_useful_fraction": 0.540732929079884,
+              "padded_matrix_work_ratio": 1.5256410256410255
+            },
+            "totals": {
+              "queries": 6491,
+              "selected": 13313041,
+              "union": 8067902,
+              "dense_incidences": 32267815,
+              "old_padded_matrix_cells_per_KV_head": 216020480,
+              "union_padded_matrix_cells_per_KV_head": 388450048,
+              "ID_plus_u8_mask_bytes": 40339510
+            },
+            "incidence_multiplicity_histogram": {
+              "1": 4846459,
+              "2": 1833866,
+              "3": 751458,
+              "4": 636119
+            },
+            "full_group_distributions": {
+              "union": {
+                "count": 1622,
+                "minimum": 3352,
+                "median": 5005.5,
+                "p95": 5615,
+                "maximum": 6169
+              },
+              "logical_KV_read_reduction": {
+                "count": 1622,
+                "minimum": 0.24804973183812773,
+                "median": 0.38987079473427594,
+                "p95": 0.48439785470502195,
+                "maximum": 0.5914188200877621
+              },
+              "dense_useful_fraction": {
+                "count": 1622,
+                "minimum": 0.3324687955908575,
+                "median": 0.4097492798851169,
+                "p95": 0.48486997635933804,
+                "maximum": 0.611873508353222
+              },
+              "padded_matrix_work_ratio": {
+                "count": 1622,
+                "minimum": 1.2115384615384615,
+                "median": 1.8115384615384615,
+                "p95": 2.0307692307692307,
+                "maximum": 2.226923076923077
+              },
+              "ID_plus_u8_mask_bytes": {
+                "count": 1622,
+                "minimum": 16760,
+                "median": 25027.5,
+                "p95": 28075,
+                "maximum": 30845
+              }
+            },
+            "whole_logical_KV_read_reduction": 0.3939850406830415,
+            "whole_dense_useful_fraction": 0.4125795626384991,
+            "whole_padded_matrix_work_ratio": 1.7982093549648626,
+            "original_nominal_KV_read_bytes": 27265107968,
+            "ideal_union_nominal_KV_read_bytes": 16523063296
+          }
+        ]
+      }
+    },
+    "host_controls": {
+      "source_commit": "347386039",
+      "manual_known_cases": [
+        "identical lists",
+        "disjoint lists",
+        "half-overlap lists",
+        "partial final group",
+        "three invalid geometry/domain controls"
+      ],
+      "existing_reader_test": {
+        "command": "python3 tools/test_sycl_qsa_selection_capture.py",
+        "passed": 9
+      },
+      "limits": "Manual exact-count controls of committed pure function plus existing committed reader suite;not GPU or performance qualification."
+    },
+    "decision": {
+      "status": "advance_T2_source_proposal_only",
+      "chosen_group_queries": 2,
+      "T4": "Not first candidate:79.82percent extra prospective padded matrix work versus13.98percent forT2.",
+      "scope": "Only6491query layer0tail. T2ideal logical K/Vread reduction23.304percent and padded matrix work+13.980percent;not actual physical traffic or speed. Need GPU union preparation,per-query masking/numerics/resource and whole-attention/model comparisons.",
+      "next": "Main authors GPU-resident stable sorted union/membership producer and dedicated two-query BF16 attention;Orca Luna source-contract review,then Main serial tests. Preserve existing per-query and decode routes."
+    }
   }
 }
