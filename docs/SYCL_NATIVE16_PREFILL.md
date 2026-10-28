@@ -2494,11 +2494,13 @@ stopped. No reset/unbind/recovery action is part of a benchmark.
 ## Upstream and history
 
 Niko1221/Strata is the only upstream. The last actual check was
-2026-10-25T21:35:21.222628Z at`4b9e05a2a` (`v0.2.6`),446 commits/406 paths
-beyond the prior7ddc17a38 observation. Required non-inference ports and
-hardware-tuned unmodified-upstream measurements remain pending;observation is
-not integration. Check again around2026-10-27T21:35Z using the project-only sync
-skill. These dates reconcile the existing committed upstream-status.json;this
+2026-10-27T21:28:33.036186Z at`5e8a4cca7` (`v0.2.7`). Two bounded
+non-inference reviews name270of534 interval paths;264 remain outside those
+manifests. Host-readiness and selected schema/Responses compatibility slices
+are ported,but the full required functional ledger and hardware-tuned
+unmodified-upstream measurements remain incomplete. Check again around
+2026-10-29T21:28Z using the project-only sync skill. These dates reconcile the
+existing committed upstream-status.json;this
 document edit is not another remote check.
 
 Work is on`feature/sycl`. PR180 is mergeable but blocked by squash-only
