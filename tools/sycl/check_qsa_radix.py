@@ -18,7 +18,7 @@ from measure_down_scatter import postchecks
 
 P, B, ROOT, RESULT = b.P, b.B, b.ROOT, b.RESULT
 require, digest, write = b.require, b.digest, b.write
-ORDER = ['properties', 'correctness', 'performance']
+ORDER = ['properties', 'correctness', 'event-smoke', 'performance']
 ARMS = ['original', 'control', 'batched']
 
 
@@ -98,6 +98,9 @@ def prepare(mode):
         environment['LD_DEBUG'] = 'files,bindings'
     elif mode == 'correctness':
         jobs = [dict(label=arm, arm=arm, args=['--dump', str(folder / (arm + '.ids'))]) for arm in ARMS]
+    elif mode == 'event-smoke':
+        jobs = [dict(label=arm, arm=arm, args=['--event-smoke','2','events','--dump',
+                                              str(folder / (arm + '.ids'))]) for arm in ARMS]
     else:
         environment.update(UR_ENABLE_LAYERS='UR_LAYER_PARAMETER_VALIDATION',
                            UR_LOG_TRACING='level:warning;flush:warning;output:stderr')
@@ -119,7 +122,7 @@ def prepare(mode):
             maximum_observer_wall_ratio=1.20, minimum_service_timer_ticks_per_event=1000,
             maximum_geomean_time_ratio=.99, every_process_ratio_below_one=True,
             lengths=[32768,78453,117489,262144], patterns=[0,1], rounds=3, processes_per_arm_mode=3),
-        criteria='Property-only first with no kernel enqueue,then full independent weighted-cell oracle,canaries,immutable inputs,invalid/tail/full-component cases for all3arms. Finally synthetic selector-only timed batches:3counterbalanced independent processes/arm/mode,3rounds and8length/pattern cases. Batched versus BOTH original and SG16-control must improve clean public-entry wall and observed GPU service by>=1percent geometric mean for every case,with every process ratio<1. No scoring/oracle/transfers inside timing. New guard/capability CPU cost stays charged;event observation is separate. Native/runtime/maps/immutable environment/physical device,pre-main retained validation,normal owned exit and no fresh fault mandatory. Component256K is not physical full-model qualification;no production/decode change or adoption.',
+        criteria='Property-only first with no kernel enqueue,then full independent weighted-cell oracle,canaries,immutable inputs,invalid/tail/full-component cases for all3arms. Next a small traced actual-event smoke:3queries/20cells,2retained distinct events and7total kernel launches per arm,correct IDs/timestamps. Only then synthetic selector-only timed batches:3counterbalanced independent processes/arm/mode,3rounds and8length/pattern cases. Batched versus BOTH original and SG16-control must improve clean public-entry wall and observed GPU service by>=1percent geometric mean for every case,with every process ratio<1. No scoring/oracle/transfers inside timing. New guard/capability CPU cost stays charged;event observation is separate. Native/runtime/maps/immutable environment/physical device,pre-main retained validation,normal owned exit and no fresh fault mandatory. Component256K is not physical full-model qualification;no production/decode change or adoption.',
         retention='Keep individual eligible/ineligible timing samples,first-use separately,exact-ID hashes,queried native resource facts and failure/decision limits. Retire successful API/loader output and dumps after verification;one fixture only through the imminent mechanism/model decision.')
     admit(scope, plan)
     folder.mkdir(mode=0o700)
@@ -307,8 +310,19 @@ def run(mode):
             else:
                 payload = folder / (label + '.ids'); hashes.add(digest(payload))
                 result['output_sha256'] = digest(payload)
-                require(('PASS cases=17' in stdout) if mode == 'correctness' else ('PASS timing_cases=8' in stdout),
+                markers = {'correctness':'PASS cases=17', 'event-smoke':'PASS event_smoke_cases=1',
+                           'performance':'PASS timing_cases=8'}
+                require(markers[mode] in stdout,
                         'incomplete independent fixture coverage')
+                if mode == 'event-smoke':
+                    rows = [dict(p.split('=',1) for p in line.split()[1:])
+                            for line in stdout.splitlines() if line.startswith('qsa_timing ')]
+                    require(len(rows) == 1 and all(rows[0][k] == v for k,v in
+                        dict(n='20',nq='3',cap='7',repeats='2',events='2',mode='events').items()) and
+                        float(rows[0]['service_ns']) > 0, 'small actual-event probe failed')
+                    require(len(re.findall(r'---> urEnqueueKernelLaunch\(',trace.read_text())) == 7,
+                            'small probe native launch extent differs')
+                    result['event_probe'] = rows[0]
                 if mode == 'performance':
                     result['samples'] = sample_rows(stdout,job,plan)
                     result['first_shape_use'] = [dict(part.split('=',1) for part in line.split()[1:])

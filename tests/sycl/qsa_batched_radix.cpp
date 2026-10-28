@@ -121,6 +121,8 @@ int timing_fixture(int argc, char **argv) {
   const std::string mode = argv[3];
   check(mode == "clean" || mode == "events", "timing mode clean|events");
   const bool profiling = mode == "events";
+  const bool smoke = std::string(argv[1]) == "--event-smoke";
+  check(!smoke || (repeats == 2 && profiling), "event smoke requires2repeats/events");
   double maximum_clock_pair = 0;
   for (int i = 0; i < 128; ++i) {
     const auto b = clock_now(), e = clock_now();
@@ -140,9 +142,12 @@ int timing_fixture(int argc, char **argv) {
   // Synthetic selector-only work. Same score row replicated over256queries;
   // one independent weighted-cell oracle is sufficient for every row. Neither
   // scoring, transfers, sorting the oracle nor checking results is timed.
-  constexpr int64_t nq = 256, cap = 2051;
-  for (int64_t n : {32768, 78453, 117489, 262144}) {
-    for (int pattern : {0, 1}) {
+  const int64_t nq = smoke ? 3 : 256, cap = smoke ? 7 : 2051;
+  const std::vector<int64_t> lengths = smoke ? std::vector<int64_t>{20} :
+      std::vector<int64_t>{32768, 78453, 117489, 262144};
+  const std::vector<int> patterns = smoke ? std::vector<int>{0} : std::vector<int>{0,1};
+  for (int64_t n : lengths) {
+    for (int pattern : patterns) {
       const int64_t blocks = n / 4 + 3, active = n / 4 + 1;
       std::vector<float> scores(size_t(nq * blocks) + 2 * guard,
                                 std::numeric_limits<float>::infinity());
@@ -184,7 +189,7 @@ int timing_fixture(int argc, char **argv) {
       write_dump(validate_output());
       for (int i = 0; i < 4; ++i) invoke();
       runtime->wait();
-      for (int round = 0; round < 3; ++round) {
+      for (int round = 0; round < (smoke ? 1 : 3); ++round) {
         std::vector<sycl::event> events;
         if (profiling) events.reserve(size_t(repeats));
         double invoke_wall = 0, invoke_cpu = 0, lookup_wall = 0, lookup_cpu = 0;
@@ -236,7 +241,7 @@ int timing_fixture(int argc, char **argv) {
   }
   runtime->wait(); dump.flush(); check(bool(dump), "timing dump flush");
   dump.close(); check(!dump.fail(), "timing dump close");
-  std::cout << "PASS timing_cases=8\n";
+  std::cout << (smoke ? "PASS event_smoke_cases=1\n" : "PASS timing_cases=8\n");
   return 0;
 }
 } // namespace
@@ -270,7 +275,7 @@ int main(int argc, char **argv) {
       check(bool(std::getline(std::cin, line)) && line == "GO", "initial ownership admission");
     }
     int result;
-    if (argc > 3 && std::string(argv[3]) == "--timing")
+    if (argc > 3 && (std::string(argv[3]) == "--timing" || std::string(argv[3]) == "--event-smoke"))
       result = timing_fixture(argc - 2, argv + 2);
     else if (argc > 3 && std::string(argv[3]) == "--properties")
       result = property_fixture(argc - 2, argv + 2);
