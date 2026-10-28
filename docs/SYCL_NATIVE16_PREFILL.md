@@ -1740,7 +1740,21 @@ fill/tail/handoff/RESTORE. The final audit also verifies every process has no
 exception:the original controller sets acceptance before its final asset digest,
 so its generic success field alone would not reject a late digest exception.
 All15 digests actually completed here;harden that guard before future reuse.
+Follow-up controller`fdbc95786`,frozen plan`5128ee8af`,requires completion of
+all postconditions and rejects any exception before accepting a process. It
+predeclares six independent official`bench.sh --long --long-generation --think
+--runs 1` processes in the same balanced order. Each runs a complete six-turn
+agent session and both sustained-thinking workloads. Agent follow-up comparisons
+use the median of five engine-reported decode rates,without substituting API
+completion usage for the engine's decoded count. The three requests per arm
+must confirm the strong/weak MTP classes from actual acceptance. Per-workload
+decode preservation is a separate paired screen;this plan is not a completed
+qualification or permission to adopt the candidate.
 Production/decode and the selected6e40engine/twelve fixtures remain unchanged.
+After all24screen samples and their original outcomes are committed,424closed
+successful observer/cache/review files retire (87768091bytes). Post-retirement
+source/link/frontend/model admission passes without a GPU launch;the five
+source-bound executable identities and required fixtures remain intact.
 After192source/702actual-dependency recovery and exact recipe/executable checks,
 58closed files retire (7862437bytes). The original component generation is
 retired;one isolated model/fixture generation remains for the imminent build
