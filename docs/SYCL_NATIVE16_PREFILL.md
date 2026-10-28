@@ -1760,14 +1760,21 @@ The32089-token request takes43.5127s,versus42.2186s predicted by the already
 published long-route approximation:2.974percent underprediction in this
 independent process. This is one supplementary check,not a new fit or an
 expanded domain. The16097-token request is the first long-route use and is
-outside that fitted domain. Before another cohort,freeze a revised plan that
-keeps nominal upstream32K coverage separate from strict actual32768-token
-evidence in the added workloads;do not weaken or retry the failed root.
+outside that fitted domain. Controller`8382987d1`prepares a fresh V2plan keeping
+nominal upstream32K coverage separate from strict actual32768-token evidence
+in both added workloads. It freezes the refused diagnostic's12fixed-body/input
+identities,without pooling its speeds or reclassifying its failure. All six new
+processes remain required;generated agent histories may differ. Host guards
+reject changed fixed inputs,late errors,decode regression and an unconfirmed
+MTP class. The old18samples and failed result restore from`848896c6f`or the
+new plan's hash-bound original-result reference;its closed private root retires.
 Production/decode and the selected6e40engine/twelve fixtures remain unchanged.
-After all24screen samples and their original outcomes are committed,424closed
-successful observer/cache/review files retire (87768091bytes). Post-retirement
-source/link/frontend/model admission passes without a GPU launch;the five
-source-bound executable identities and required fixtures remain intact.
+After the screen and refused diagnostic are committed,three final retirements
+remove1269consumed observer/cache/review/link files (246447095bytes). The12old
+generated configuration/native-plan files reconstruct to their original hashes.
+Source/link/frontend/model admission passes after the main retirement without
+a GPU launch. Only five final executables and four admission metadata files
+remain in the relink directory;required source/objects/fixtures remain intact.
 After192source/702actual-dependency recovery and exact recipe/executable checks,
 58closed files retire (7862437bytes). The original component generation is
 retired;one isolated model/fixture generation remains for the imminent build
