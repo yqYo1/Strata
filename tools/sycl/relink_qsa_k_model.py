@@ -10,6 +10,7 @@ import fcntl
 import hashlib
 import json
 from pathlib import Path
+import re
 import shlex
 import subprocess
 import sys
@@ -18,7 +19,7 @@ sys.dont_write_bytecode = True
 import build_qsa_k_model as m
 
 P, B, ROOT, RESULT = m.P, m.B, m.ROOT, m.RESULT
-OUT = ROOT / 'link-contract-v1'
+OUT = ROOT / 'link-contract-v2'
 require, digest, write = m.require, m.digest, m.write
 
 
@@ -179,10 +180,10 @@ def prepare():
     print('Prepared prospective configure/link closure;commit before execution.',flush=True)
 
 
-def traced_inputs(stdout,stderr,allowed):
+def compiler_products(stderr,allowed):
     # Save-temps keeps the compiler's internal products available for hashing;
     # bind them to explicit producer -o arguments in verbose owned tool commands.
-    produced = set()
+    produced, lists = set(), set()
     for line in stderr.splitlines():
         if not line.startswith(' "'):
             continue
@@ -191,11 +192,38 @@ def traced_inputs(stdout,stderr,allowed):
             continue
         tool = Path(args[0]).resolve()
         require(str(tool) in allowed and digest(tool) == allowed[str(tool)], 'unfrozen executed linker/compiler tool')
-        if '-o' in args:
-            path = Path(args[args.index('-o') + 1])
+        outputs = [args[args.index('-o') + 1]] if '-o' in args else []
+        outputs += [a.split('=',1)[1] for a in args if a.startswith('-output=')]
+        for a in args:
+            if a.startswith('--out-file-list='):
+                outputs.append(a.split('=',1)[1]);lists.add(Path(a.split('=',1)[1]))
+        for output in outputs:
+            path = Path(output)
             path = (path if path.is_absolute() else ROOT / 'build' / path).resolve()
-            if path.is_relative_to(OUT) and path.is_file():
+            if path.is_file():
+                require(path.is_relative_to(OUT) or path.parent == Path('/home/yayoi') and
+                        re.fullmatch(r'-[0-9a-f]{6}(?:_\d+)?\.(?:bc|table|txt|spv)',path.name),
+                        'unexpected external compiler output: ' + str(path))
                 produced.add(path)
+    for listing in lists:
+        if not listing.is_file():
+            continue
+        require(listing in produced and listing.stat().st_size < 1 << 20, 'unowned/oversize compiler file list')
+        for line in listing.read_text().splitlines():
+            path = Path(line.strip())
+            if not path.is_file():
+                continue
+            require(path.is_absolute() and (path.is_relative_to(OUT) or
+                    path.parent == listing.parent and path.stem.startswith(listing.stem + '_')),
+                    'compiler file-list output escapes its owned namespace')
+            produced.add(path.resolve())
+    require(len(produced) < 4096 and sum(p.stat().st_size for p in produced) < 4 << 30,
+            'compiler intermediate output budget')
+    return produced
+
+
+def traced_inputs(stdout,stderr,allowed):
+    produced = compiler_products(stderr,allowed)
     observed, generated = {}, {}
     for line in stdout.splitlines():
         line = line.strip()
@@ -212,7 +240,8 @@ def traced_inputs(stdout,stderr,allowed):
             require(path in produced and path.is_relative_to(OUT), 'unfrozen linker input: ' + str(path))
             generated[str(path)] = sha
     require(len(observed) > 8, 'incomplete actual linker input trace')
-    return dict(frozen_inputs=observed,compiler_generated_inputs=generated,uncovered_inputs=0)
+    return dict(frozen_inputs=observed,compiler_generated_inputs=generated,uncovered_inputs=0,
+                owned_compiler_products={str(p):dict(bytes=p.stat().st_size,sha256=digest(p)) for p in sorted(produced)})
 
 
 def run():
