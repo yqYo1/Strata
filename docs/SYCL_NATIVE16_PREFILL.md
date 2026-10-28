@@ -1706,10 +1706,15 @@ executables are byte-identical to the native-gate artifacts,so those native
 checks need no repetition solely for identity. Two fresh CPU-only frontend
 definition probes also pass from source`b227036ab`,plan`e16ea9df7`,covering the
 changed benchmark/server source and frozen external providers. The older
-Python-source refusal remains a refusal. This permits a separately committed,
-bounded first >=32K thinking-on model diagnostic with parameter validation
-and stage output;it does not qualify model performance,decode preservation or
-physical262144 processing.
+Python-source refusal remains a refusal. The first production diagnostic then
+passes from controller source`ba90ed6bb`,frozen plan`f810dfc29`:39260 fresh
+tokens,thinking on,24 outputs,unchanged1256 decode slots,normal prefill-to-decode
+handoff and owned exit,quiet parameter validation and no fresh fault.
+Observer-charged prefill is57.7638s with57.891s client TTFT;this is not clean
+performance evidence. The next comparison uses six independent processes in
+balanced original/candidate order,first long use separate from three subsequent
+requests. Model performance,decode preservation,agent/long-generation and
+physical262144 gates remain open.
 Production/decode and the selected6e40engine/twelve fixtures remain unchanged.
 After192source/702actual-dependency recovery and exact recipe/executable checks,
 58closed files retire (7862437bytes). The original component generation is
