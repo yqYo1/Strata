@@ -1713,11 +1713,33 @@ handoff and owned exit,quiet parameter validation and no fresh fault.
 Observer-charged prefill is57.7638s with57.891s client TTFT;this is not clean
 performance evidence. The clean comparison uses six independent processes in
 balanced original/candidate order,first long use separate from three subsequent
-requests. Its first original/candidate pair closes with eight117489-token
-requests,quiet validation,normal ownership closure and no fresh fault. Two of
-six processes are complete;the performance decision awaits the remaining four.
-Model performance,decode preservation,agent/long-generation and
-physical262144 gates remain open.
+requests. Controller`e0dafb405`,source snapshot`dc6efcd6b`,frozen plan`8d19a4b0c`
+closes all24fresh117489-token requests with quiet validation,normal ownership
+closure and no fresh fault. All15 model assets pass full post-run hashes.
+Individual samples retain prefill time,PP and first-thinking/content TTFT.
+
+| Independent pair | Original subsequent median PP | Candidate subsequent median PP | Candidate/original time |
+| --- | ---: | ---: | ---: |
+| Original then candidate | 975.83 | 989.06 | 0.986622 |
+| Candidate then original | 971.76 | 989.78 | 0.981790 |
+| Original then candidate | 970.16 | 983.60 | 0.986336 |
+
+Each median uses three requests within its independent process. All three time
+ratios are below1,and their geometric mean0.9849135073 passes the prospectively
+declared0.995 screen. Prefill time falls1.50865percent;the corresponding throughput
+gain is1.53176percent. Subsequent TTFT medians are120.561..121.261s originally
+and118.919..119.674s for the candidate. First-use samples remain separate;
+this is neither cold-disk performance nor a decode measurement. The candidate
+does not reach1000tok/s. No physical hardware saturation follows from this gain.
+
+The source-bound small-gain screen is complete,but model selection remains
+pending. Keep the selected6e40engine and unchanged1256-slot decode layout while
+qualifying matched official long/agent sessions,sustained strong/weak-MTP
+thinking generation,decode state/performance preservation and physical262144
+fill/tail/handoff/RESTORE. The final audit also verifies every process has no
+exception:the original controller sets acceptance before its final asset digest,
+so its generic success field alone would not reject a late digest exception.
+All15 digests actually completed here;harden that guard before future reuse.
 Production/decode and the selected6e40engine/twelve fixtures remain unchanged.
 After192source/702actual-dependency recovery and exact recipe/executable checks,
 58closed files retire (7862437bytes). The original component generation is
