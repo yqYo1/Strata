@@ -24,12 +24,16 @@ import build_qsa_k_loop as component
 import qsa_k_model_sources as model
 
 P, B, A = component.P, component.B, component.A
-ROOT = B / 'qsa-direct-k-model-v1'
+ROOT = B / 'qsa-direct-k-model-v2'
 RESULT, KEY = component.RESULT, 'direct_K_loop_model'
 ORIGIN = B / 'main-native-gdn-engine/record.json'
 ORIGIN_SHA = 'a38f477670fafcd1a931be2e20d90d6d9718df75b61954b421f361af9f6881b2'
 TARGETS = ['strata', 'sycl_submission_test', 'sycl_graph_envelope_test']
 ADAPTER = 'bench/sycl/qsa_k_model_oracle_adapter.cpp'
+CONFIGURATION_SOURCES = ['tools/sycl/' + name + '.cpp' for name in (
+    'host_transfer_probe', 'kv_copy_groups_host', 'kv_copy_groups_bench',
+    'gemm_orientation_bench', 'projection_bench', 'moe_bench', 'gr_bench',
+    'expert_contract', 'gemm_device_probe')]
 require, digest, write = component.require, component.digest, component.write
 
 
@@ -71,8 +75,9 @@ def sources(revision):
 
 
 def native_sources(full):
-    for name, raw in runtime.build.blobs(P, model.BASE, full['project']['source_sha256']):
-        require(hashlib.sha256(raw).hexdigest() == full['project']['source_sha256'][name],
+    expected = full['project']['source_sha256']
+    for name, raw in runtime.build.blobs(P, model.BASE, [*expected, *CONFIGURATION_SOURCES]):
+        require(name not in expected or hashlib.sha256(raw).hexdigest() == expected[name],
                 'original source receipt differs: ' + name)
         require(not Path(name).is_absolute() and '..' not in Path(name).parts, 'source path escape')
         yield name, model.production_prefix(raw) if name == model.component.PREFIX else raw
@@ -125,6 +130,7 @@ def prepare():
     require(not ROOT.exists(), 'fresh model generation only; inspect existing owner before resuming')
     record = component.gen.committed(RESULT)
     scope, qualified = record[KEY], record[component.KEY]
+    require('build' not in scope, 'close and retain the prior build outcome before a new plan')
     require(scope['stage'] == 'source_constructor_prepared_not_built' and
             qualified['component_performance_summary']['all_six_groups_pass'] and
             qualified['component_generation_retirement']['complete'], 'component gate/retirement required')
@@ -136,7 +142,8 @@ def prepare():
     # All original project inputs were ordinary files; preserve this invariant.
     modes = component.gen.git('ls-tree', '-r', model.BASE).decode().splitlines()
     mode = {line.split('\t', 1)[1]: line.split(None, 1)[0] for line in modes}
-    require(all(mode[name] == '100644' for name in full['project']['source_sha256']), 'unexpected source mode')
+    require(all(mode[name] == '100644' for name in [*full['project']['source_sha256'], *CONFIGURATION_SOURCES]),
+            'unexpected source mode')
     external = closure.external_inputs(rt)
     for root in (Path('/usr/share/cmake-3.28/Modules'), Path('/usr/share/cmake-3.28/Templates')):
         external.update({str(p.resolve()): digest(p) for p in root.rglob('*') if p.is_file()})
@@ -190,6 +197,8 @@ def prepare():
                            for g in [full['project'], *full['dependencies']]]),
         source_change=dict(path=model.component.PREFIX, before=model.component.PREFIX_SHA256,
                            after=scope['candidate_prefix_sha256']),
+        configuration_sources={n:hashlib.sha256(raw).hexdigest() for n,raw in
+            runtime.build.blobs(P, model.BASE, CONFIGURATION_SOURCES)},
         selected_binary=full['binary'], compiler=full['compiler'], sdk=sdk,
         external_manifest=dict(path=str(ROOT / 'external-inputs.json'), sha256=digest(ROOT / 'external-inputs.json'), files=len(external)),
         runtime_sha256=digest(runtime.RESULT), boot=rt['boot'], driver=rt['driver'],
@@ -199,7 +208,7 @@ def prepare():
         budgets=dict(wall=1800,cpu=7200,rss_cap=12 << 30,text_cap=32 << 20,file_cap=512 << 20,total_cap=4 << 30),
         total_wall_seconds=3600, active=False, ownership_closed=True, passed=False, GPU_executed=False,
         model_built=False, model_selected=False,
-        criteria='Build only. Exact selected9853Git inputs plus one independently reviewed prefill block;current native differences excluded. Same-production-source numerical/actual-ID fixtures,3unique18argSG16 kernels;zero uncovered actual dependencies/imported link inputs. No GPU/model/performance qualification inherited.',
+        criteria='Build only. Exact selected9853Git inputs plus one independently reviewed prefill block;9additional6e40auxiliary target source files required solely for CMake generation,never requested as build targets. Current native differences excluded. Same-production-source numerical/actual-ID fixtures,3unique18argSG16 kernels;zero uncovered actual dependencies/imported link inputs. No GPU/model/performance qualification inherited.',
         retention='One additional model/fixture generation for imminent same-build property,actual-ID,oracle and bounded long-model comparison. Preserve original6e40/12fixtures. Retire objects,normal logs and rejected generation after source/recipe recovery;legacy holds remain separate.')
     admit(row)
     write(ROOT / 'record.json', row)
