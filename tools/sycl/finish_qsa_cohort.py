@@ -46,6 +46,9 @@ def save(index):
     require(old == new, 'unrelated result edits')
     subprocess.run(['git', 'diff', '--check', '--', REL], cwd=q.P, check=True)
     subprocess.run(['git', 'add', '--', REL], cwd=q.P, check=True)
+    require(git('diff', '--cached', '--name-only').splitlines() == [REL],
+            'only the inspected cohort result may be staged')
+    subprocess.run(['git', 'diff', '--cached', '--stat', '--', REL], cwd=q.P, check=True)
     subprocess.run(['git', 'commit', '-m', f'perf(sycl): retain official cohort process{index}'],
                    cwd=q.P, check=True)
     subprocess.run(['git', 'push', 'origin', 'feature/sycl'], cwd=q.P, check=True)
