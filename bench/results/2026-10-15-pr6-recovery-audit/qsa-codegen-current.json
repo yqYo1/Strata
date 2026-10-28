@@ -468,7 +468,40 @@
       }
     ],
     "analysis_method": "Exact hash-bound attention LLVM CFG,branch successors/predecessors,reachable-block dominators and natural loop from proven dominated backedge;source row-read SSA membership. Actual native Kloop old capture is source/ordered-barrier/dataflow correspondence,notDWARF. IR hoisting does not prove changed final native ISA/resource allocation or speed.",
-    "next": "Independent source/API review,then select a new source-closed native component build/property/numerical/performance plan. Preserve all earlier rejected candidates. No production/decode/model adoption from IR.",
-    "retention": "2newCPP/LLVM/dependency sets through immediate native-preparation decision;first failed raw capture/logs retire after compact evidence. Old9ASM/ZeInfo/LLVM remain only through current researcher reading/source mapping decision;review at closure."
+    "next": "Prepare committed source-closed native component compile/link/IR plan. Compiler-origin concern resolved by exact installation transform plus official source/build metadata;not a pristine-source claim. Property/smoke/boundary/oracle and separately frozen speed gates remain unrun.",
+    "retention": "2newCPP/LLVM/dependency sets through immediate native-preparation decision;first failed raw capture/logs retire after compact evidence. Old9ASM/ZeInfo/LLVM remain only through current researcher reading/source mapping decision;review at closure.",
+    "source_contract": {
+      "source_reviewed": true,
+      "review_model": "gpt-6-luna max",
+      "generator_sha256": "526f02d967f0f03f7cfc8239a7633b9f9840e0533dee047171b38a7dd061db6c",
+      "report_sha256": "5a923e3973f254ec48e154b182ba1bb5e9444867d543e8e4a40c8bcef68f7194",
+      "review_sha256": "1462465839e2e7a0f2b13795f4a4545237e6ef0421a6322ff8664188330fd86e",
+      "accepted_facts": [
+        "For Cells=32, Dim=256, Workgroup=128, old i=tid+128k gives cell=tid%32 and d=4*(tid/32)+16k for k=0..15. The candidate preserves lane, ascending d/j order, source row/element, and all 8192 destinations per tile.",
+        "Invalid rows are the existing -1 sentinel: candidate forms row_k and reads packed.k only in the row>=0 branch; the invalid branch writes zero BF16 bits to every corresponding destination.",
+        "The specialization is statically fixed at Cells=32, Dim=256, Workgroup=128; the production kernel requests subgroup size 16 and emitted IR records 16. Unsigned lane/destination arithmetic stays within these fixed bounds; row remains signed int64 and relies on the caller's checked complete-row allocation contract.",
+        "The publisher writes rows only for tid<Cells, then an unconditional local-space work-group barrier precedes staging. No barrier or collective is inside the divergent row branch; all lanes reach the unchanged post-staging barrier before matrix/subgroup consumers. The row table remains stable through its later validity read and is republished only for the next tile.",
+        "Both CPU-only IR arms compile with 662 actual dependencies. Control row load %258 is inside natural K loop 246..279; candidate row load %251 is in block 249 before natural K loop 256..275. The IR shows per-element i16 loads with align 2, not a guaranteed 64-bit transaction.",
+        "The native observation belongs only to the original captured image: row/validity/address work is located in its K-loop backedge by ordered-barrier/dataflow correspondence, not DWARF. It does not show candidate native lowering, register use, spills, SLM traffic, or speed."
+      ],
+      "compiler_origin": {
+        "installed_build_identity_passed": true,
+        "compiler_sha256": "1290881b4e12a5e002e5b0de0787f85328ee5fe19f253a54be1cdd97dc2f26eb",
+        "build_compiler_sha256": "6f2901c1a73f548f0e6b711e8927f63a8cc58ec7a9b173b602c8a8beb5f9948f",
+        "compiler_bytes": 158664312,
+        "install_transform": "Complete ELF equality after replacing the sole trailing RUNPATH colon at byte8035513 with NUL;readelf confirms $ORIGIN/../lib: -> $ORIGIN/../lib. No other byte differs.",
+        "CMakeCache_sha256": "5275fb208738e3fde22ceb945d246841d2be5b5a9ce5ebce36914421112a9f6c",
+        "CMake_source": "/home/yayoi/ghq/github.com/intel/llvm/.worktree/toolchain-sycl-v711-b570-20261011/llvm",
+        "official_source_remote": "https://github.com/intel/llvm",
+        "source_base": "504366f4b82ff00bbac7b0c956635eed8bc599d8",
+        "source_is_pristine": false,
+        "current_local_diff_sha256": "749489163d93c2f5f8a73d8f5f70e5d1e6c66f163ec3b89d9502ce95d2f48e27",
+        "current_local_diff_files": 17,
+        "license": "Installed LLVM toolchain is Apache-2.0 WITH LLVM-exception. Current source includes explicitly attributed MistVVK/XeStrata-contributor compiler/runtime patches;toolchain asset,not XeStrata application source. No such source is copied into this project.",
+        "patch_scope": "Clang temporary-file cleanup,LLVM build-job pools,libclc AMD support,and CUDA/HIP runtime/adapters. Compiler build root and original official source identity established. Current patch attribution is not proof of the complete historical compiler build input census;exact installed binary and dependencies remain pinned.",
+        "prior_runtime_origin_ref": "research-index.json::UR_PTI_identity_bridge_20261025.exact_SDK_inspection"
+      },
+      "limits": "Source-contract/CPU-IR pass only;no native candidate lowering,numerics,speed or model qualification. Typed align2 vec4 is not guaranteed one machine transaction. Full-backed upper rows and invalid sentinel required in next fixture. Candidate lifetime/code-size/spill effect unmeasured."
+    }
   }
 }
