@@ -14825,5 +14825,142 @@
     "finding": "Substantive representation/conversion reference,distinct from prior head/list packing,locality,prefetch and routing scopes. No unsupported target-support/performance claim found. GraphBLAS stable reference is mutable;pin its version/source when retrieving.",
     "retrieval_condition": "Retrieve only if a source-pinned local attribution motivates a concrete sparse-representation/conversion question;read only the relevant section. No new generic survey or implementation eligibility;review at the next representation-candidate selection.",
     "next_scope_schedulable_now": false
+  },
+  "qwen_qsa_sparse_index_generation_methods_20261028": {
+    "classification": "knowledge collection",
+    "status": "reviewed_note_body_retirement_pending",
+    "schedulable_now": false,
+    "source_revision": "a28e950c69a1d6c1ef7ca9845b494637df67ae51",
+    "worker_model": "Orca Codex gpt-6-luna high",
+    "reviewer": "native Codex gpt-6-luna max",
+    "worker_closed": true,
+    "orca": {
+      "run": "run_80ea8ebc9a8c",
+      "task": "task_1951541cc25b",
+      "dispatch": "ctx_bf0f86289075",
+      "worker_state": "succeeded_released",
+      "closure": "Exact worker_done accepted;official terminal release then delivery_35cb99258b68 ACK."
+    },
+    "report": ".cache/research/2026-10-28/qwen_qsa_sparse_index_generation_methods_20261028.md",
+    "report_sha256": "b2ade2d71980d6844ede46feb8e5a71ea2d58ee94a15105a843e25640b01caeb",
+    "report_bytes": 14266,
+    "main_read_collection_body": false,
+    "review_sha256": "2f55143819c334bf3e6f59ab18dfd433cdb0f31b1cd8b567e6595b46c86f05af",
+    "finding": "Substantive exact sparse-ID selection survey: warp-local top-k, hierarchical merge, radix, threshold/compaction, and indexed/precomputed candidates, with correctness and counterevidence. Novel against indexed work on sparse formats, GQA matrix mapping, interquery locality, and attention scheduling.",
+    "provenance": "Pinned vLLM Qwen4-Exp indexer/selector and SGLang Qwen4-Exp route sources support the framework-route description; their pinned LICENSE files are Apache-2.0. The official Qwen3.8-Flash-Next-FP8 config on mutable main reports Qwen4Exp architecture, indexer budget 2048/compress ratio 4, indexer shape 4/1/128, and attention shape 24/2/256. No code is proposed/copied; no XeStrata source or derivation found.",
+    "corrections": [
+      "Label the report's fork NH=24/NKV=2/HD=256 as attention-reader geometry, not QSA indexer geometry; official config lists indexer_n_heads=4, indexer_kv_heads=1, indexer_head_dim=128.",
+      "The linked staging QSA blog was inaccessible in review. Pinned framework sources and official config corroborate the Qwen4-Exp route and budget/compression parameters; keep blog-only details as secondary context."
+    ],
+    "limits": "The indexed fork metadata identifies QSA row-ID readers but not their producer. Fork scoring, score dtype/precision, variable-ID generation, tie/output contract, candidate counts, limiting resource, and performance are unestablished. No method is selected; upstream CUDA sources do not establish the fork's route.",
+    "primary_sources": [
+      "https://github.com/vllm-project/vllm/blob/fd3469f4533d0517b0c8a6b72459d0fe7fd58d2f/vllm/models/qwen4_exp/nvidia/indexer_qsa.py",
+      "https://github.com/vllm-project/vllm/blob/fd3469f4533d0517b0c8a6b72459d0fe7fd58d2f/vllm/models/qwen4_exp/nvidia/ops/qsa_indexer.py",
+      "https://github.com/sgl-project/sglang/blob/877be2974aa151a984e52822c028276c2b1e9303/python/sglang/srt/models/qwen4_exp.py",
+      "https://huggingface.co/Qwen/Qwen3.8-Flash-Next-FP8/blob/main/config.json"
+    ],
+    "consumer": "Only a future source-pinned fork producer/selector decision that establishes variable sparse-ID generation. No active selector candidate appears in indexed metadata.",
+    "retention": "At that source-pinned decision. Until a producer/candidate exists, preserve this summary and hash in the index and retire the body at the next serialized safe cleanup boundary.",
+    "body_retirement": "Native review recommends retiring the body after this concise note is committed;deferred until current owned GPU suite closes. Preserve original completed outcome."
+  },
+  "gpu_cross_workgroup_tile_multicast_contracts_20261028": {
+    "classification": "knowledge collection",
+    "status": "reviewed_note_body_retirement_pending",
+    "schedulable_now": false,
+    "source_revision": "a28e950c69a1d6c1ef7ca9845b494637df67ae51",
+    "worker_model": "Orca Codex gpt-6-luna high",
+    "reviewer": "native Codex gpt-6-luna max",
+    "worker_closed": true,
+    "orca": {
+      "run": "run_80ea8ebc9a8c",
+      "task": "task_f0d4389bdc6b",
+      "dispatch": "ctx_1ee1ddbd71a4",
+      "worker_state": "succeeded_released",
+      "closure": "Exact worker_done accepted;official terminal release then delivery_35cb99258b68 ACK."
+    },
+    "report": ".cache/research/2026-10-28/gpu_cross_workgroup_tile_multicast_contracts_20261028.md",
+    "report_sha256": "a167d6e737d25f14ffae7bdba188c25d90f466f2781a4106ba2e87219d28a437",
+    "report_bytes": 13648,
+    "main_read_collection_body": false,
+    "review_sha256": "2f55143819c334bf3e6f59ab18dfd433cdb0f31b1cd8b567e6595b46c86f05af",
+    "finding": "Substantive comparison of cache/L2 reuse, workgroup fusion, global phase boundaries, NVIDIA DSM/TMA, AMD multicast, and ASIC operand streaming. Distinct from indexed workgroup-local caching, bank layout, QSA locality, and prefetch.",
+    "provenance": "SYCL 2020 defines local memory at workgroup scope; Intel's B570 product page identifies Xe2, and checked public sources do not establish a B570 cross-workgroup SLM/multicast contract. Hardware capability beyond documented APIs remains unknown. No XeStrata source or derivation found.",
+    "corrections": [
+      "Qualify the Intel conclusion with Intel XeTLA cooperative_reduce_t: pinned v0.3.7 source stores cooperative-workgroup tiles in SLM, synchronizes with xetla_nbarrier_t<num_cooperative_wg,...>, then loads across the cooperative group. This is a programmer-visible Intel Xe mechanism and should be mentioned.",
+      "Do not transfer XeTLA support to B570: its v0.3.7 README lists Data Center GPU Max/Ponte Vecchio, not Arc B570; the repo is archived (2024-12) and Apache-2.0. Exact Xe2/B570 support remains unknown. Scope the report's absence statement to B570-specific documentation.",
+      "The Intel SLM guide describes per-Xe-core VE access as well as workgroup access. Preserve that nuance; it does not prove ordinary SYCL workgroups can address each other's local_accessor storage."
+    ],
+    "limits": "No B570-specific supported cross-workgroup mechanism, source-grounded repeated-tile candidate, physical traffic, bottleneck, or gain is established. Treat XeTLA as a generic Xe counterexample pending target support evidence, not a B570 recommendation.",
+    "primary_sources": [
+      "https://registry.khronos.org/SYCL/specs/sycl-2020/html/sycl-2020.html",
+      "https://www.intel.com/content/www/us/en/docs/oneapi/optimization-guide-gpu/2023-2/shared-local-memory.html",
+      "https://www.intel.com/content/www/us/en/products/sku/241676/intel-arc-b570-graphics/specifications.html",
+      "https://github.com/intel/xetla/blob/v0.3.7/include/group/cooperative_reduction.hpp",
+      "https://github.com/intel/xetla/blob/v0.3.7/README.md",
+      "https://github.com/intel/xetla/blob/v0.3.7/LICENSE"
+    ],
+    "consumer": "Only a future source-grounded B570 tile-sharing candidate or platform decision requiring an explicit mechanism beyond L2/workgroup-local reuse. No such candidate is indexed.",
+    "retention": "At that candidate/platform decision; preserve the corrected concise B570/XeTLA support note and hash now, then retire the body at the next serialized safe cleanup boundary.",
+    "body_retirement": "Native review recommends retiring the body after this concise note is committed;deferred until current owned GPU suite closes. Preserve original completed outcome."
+  },
+  "joint_dense_head_prefill_transaction_audit_20261028": {
+    "classification": "decision support",
+    "status": "researching",
+    "schedulable_now": false,
+    "dispatch_eligibility": {
+      "schedulable_now": true,
+      "actual_prerequisite_evidence": {
+        "selected_source": "6e40afc1beddd059ee518617f6c1efce1da14aca",
+        "immutable_source_root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-direct-k-model-v2/source",
+        "build_source": "cd2e308bc967c4da0831878882447380a7e4cd74",
+        "compiler_input_manifest_sha256": "b3494981d16fa4f716dc853f4a2d4d58541cb03b78e8754af749f1e83c906cdf",
+        "evidence": "Selected generate.cpp run_prompt_with_native_dense_phase explicitly rejects RELEASE_HEADS=1;Verifier head/dense retirement guards reject the other retired state. Existing target-head component releases521472000B but no combined transaction qualifies. Source-only gap,not a request to execute it."
+      }
+    },
+    "question": "Audit the complete reader/owner/graph lifetimes for combining long-prefill native+canonical dense banking with target/draft head release while restoring the exact current decode configuration. Compare a joint transaction and staged independent leases; identify why current guards exist,the complete actors and queues,canonical/PLE/head publications,first-use/lazy recapture,normal/cancel/exception/OOM/uncertain-completion unwind,short-prefill bypass and repeat-request invariants. Distinguish reconstructing head from recoverable RAM input versus D2H snapshot and the measured/unmeasured costs. Propose the smallest prospective safety gates and unresolved blockers,not code or an adoption/performance claim. Do not merely repeat known unsupported guard or old component result.",
+    "report": ".cache/research/2026-10-28/joint_dense_head_prefill_transaction_audit_20261028.md",
+    "report_budget_bytes": 14336,
+    "source_revision": "4b331a01b",
+    "worker_model": "Orca Codex gpt-6-luna high",
+    "orca": {
+      "run": "run_80ea8ebc9a8c",
+      "task": "task_b0af9bc1d8d6",
+      "dispatch": "ctx_1226feff5b6b",
+      "terminal": "term_241f10e8-b638-432d-aeb7-120781b945dc",
+      "input_accepted": true,
+      "worker_closed": false
+    },
+    "consumer": "Main next prefill capacity/ownership candidate decision after current direct-K comparison;review via native Luna-max. No implementation or model gain is qualified.",
+    "retirement": "Extract source-pinned blockers and next gates;retire consumed report/spec/review after deciding the concrete candidate. Do not keep an indefinite background-reference body."
+  },
+  "single_window_fp32_moe_consumer_bounds_audit_20261028": {
+    "classification": "decision support",
+    "status": "researching",
+    "schedulable_now": false,
+    "dispatch_eligibility": {
+      "schedulable_now": true,
+      "actual_prerequisite_evidence": {
+        "selected_source": "6e40afc1beddd059ee518617f6c1efce1da14aca",
+        "immutable_source_root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-direct-k-model-v2/source",
+        "build_source": "cd2e308bc967c4da0831878882447380a7e4cd74",
+        "compiler_input_manifest_sha256": "b3494981d16fa4f716dc853f4a2d4d58541cb03b78e8754af749f1e83c906cdf",
+        "evidence": "Current mode10 caps81920rows and117488-prefill requests use96windows rather than48. Maintained capacity math already names531988736B second FP32 bank for117488rows,or temporal4planealias that reaches90112but not98304. Hardware saturation/local gain not established. The missing evidence is a complete consumer/bounds/rounding map,not another capacity table."
+      }
+    },
+    "question": "Audit every producer/consumer and admission assumption that must change to process roughly117488rows in one MoE expert-major FP32-accumulation window while keeping <=8192-row matrix jobs and current decode intact. Compare split FP32 accumulator banks,temporal scratch reuse,and smaller expert cache implications; identify hidden one-pointer spans,scatter/fused readers,stable routing/reduction order,job histogram limits,max-allocation versus total-capacity,bank residency,short final-window fallback,and physical262144-boundary/RESTORE compatibility. Show the smallest isolated candidate boundary and bounded validation sequence. Do not implement,run tests,repeat the known byte table as the main finding,or predict a speedup from job counts. Distinguish removed work from changes in GPU arithmetic/VRAM/PCIe/RAM/CPU resource demand and identify what measurement would accept/reject the mechanism.",
+    "report": ".cache/research/2026-10-28/single_window_fp32_moe_consumer_bounds_audit_20261028.md",
+    "report_budget_bytes": 14336,
+    "source_revision": "4b331a01b",
+    "worker_model": "Orca Codex gpt-6-luna high",
+    "orca": {
+      "run": "run_80ea8ebc9a8c",
+      "task": "task_556ef052da76",
+      "dispatch": "ctx_07c5011f8652",
+      "terminal": "term_fbbce137-207a-40ae-949b-488ed0bbe871",
+      "input_accepted": true,
+      "worker_closed": false
+    },
+    "consumer": "Main next prefill capacity/ownership candidate decision after current direct-K comparison;review via native Luna-max. No implementation or model gain is qualified.",
+    "retirement": "Extract source-pinned blockers and next gates;retire consumed report/spec/review after deciding the concrete candidate. Do not keep an indefinite background-reference body."
   }
 }

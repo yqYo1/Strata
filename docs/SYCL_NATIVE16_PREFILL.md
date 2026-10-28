@@ -1788,6 +1788,14 @@ processes remain required;generated agent histories may differ. Host guards
 reject changed fixed inputs,late errors,decode regression and an unconfirmed
 MTP class. The old18samples and failed result restore from`848896c6f`or the
 new plan's hash-bound original-result reference;its closed private root retires.
+The first fresh V2original process now passes all18requests and postconditions,
+with unchanged fixed inputs,complete agent session,normal native exit,quiet
+validation and no fresh fault. Its2933/8169-token generations report13.7/8.6tok/s
+and84.9/37.5percent draft acceptance;these are one original-process sample per
+case,not candidate comparisons. Nominal32K remains supplemental at32089actual
+fresh tokens,740.7tok/s and43.474s TTFT. Commit its individual samples before
+running the next candidate process;five of the six independent processes and
+all cohort decisions remain pending.
 Production/decode and the selected6e40engine/twelve fixtures remain unchanged.
 After the screen and refused diagnostic are committed,three final retirements
 remove1269consumed observer/cache/review/link files (246447095bytes). The12old
