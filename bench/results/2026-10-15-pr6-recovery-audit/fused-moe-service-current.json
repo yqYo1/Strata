@@ -1007,5 +1007,80 @@
       "device_negative": 6,
       "GPU_executed": false
     }
+  },
+  "qsa_query_union_cost": {
+    "stage": "prepared",
+    "source_commit": "3b81a6c16a2d1bee04025a9c87fe383f93bd0737",
+    "source_sha256": {
+      "tools/sycl/qsa_union_cost.py": "53bf7bc462a8da936a0ab6dc0415445d532c8f0933651ac0796ef4b8893fd194",
+      "tools/sycl/qsa_selection_capture.py": "3d13b6b8bf01061725e5b28a64062b4e62127eb44c0742f930c42cb40b349767",
+      "tools/sycl/measurement_owner.py": "bddd0c5e5020e882ca3404679420faec11e820dabce2ed4c72ef82b4c9c0874a"
+    },
+    "source_result_commit": "3b81a6c16a2d1bee04025a9c87fe383f93bd0737",
+    "fixture": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-k-staging-selected-ids-v1.bin",
+      "bytes": 53252180,
+      "sha256": "a0410c7005f64a89d02becd42fcfd8155c92b68cd7b4d175543c172070a6338c",
+      "header": [
+        0,
+        32768,
+        6491,
+        2051
+      ],
+      "consumer": "Main imminent packed-u32 K-staging source proof and controlled comparison if independently qualified. Retire if no distinct legal candidate survives;review before next build.",
+      "review": "At this current source preflight,then before build. Retire immediately if no distinct legal controlled comparison survives;otherwise retire when that component comparison closes.",
+      "origin_native_source": "6e40afc1beddd059ee518617f6c1efce1da14aca",
+      "origin_capture_controller": "afd7fd025",
+      "origin_capture_plan": "ba542c888",
+      "origin_request_sha256": "1fd63b8c67a1888e443800b5c6d339ca116df2cb91941e6f332b6adf74275b3a"
+    },
+    "python_version": "3.12.3 (main, Aug 31 2026, 10:18:26) [GCC 13.3.0]",
+    "python": {
+      "path": "/usr/bin/python3.12",
+      "sha256": "e50d468e8b0adfb05733f5b87b3cff34829c4a8c1aea50c865aa8bdfe4bb150f"
+    },
+    "groups": [
+      2,
+      4
+    ],
+    "matrix_source": {
+      "commit": "6e40afc1beddd059ee518617f6c1efce1da14aca",
+      "path": "src/kernels/sycl/qsa_bf16_prefix.cpp",
+      "sha256": "4f9f815c9baae709f919f6d5ad1af04677c10d8c13c7597b3857cf81567ae192",
+      "anchors": [
+        "constexpr int Dim = 256, Heads = 12, Cells = 32, Workgroup = 128;",
+        "mx::joint_matrix<sycl::sub_group, float, mx::use::accumulator, 8, 16>"
+      ]
+    },
+    "prospective_geometry": {
+      "query_heads_per_KV_head": 12,
+      "KV_heads": 2,
+      "matrix_rows": 8,
+      "cell_tile": 32,
+      "nominal_KV_bytes_per_cell": 2048
+    },
+    "budgets": {
+      "wall": 120,
+      "cpu": 100,
+      "rss_cap": 536870912,
+      "text_cap": 65536,
+      "file_cap": 1048576,
+      "total_cap": 2097152
+    },
+    "environment": {
+      "PATH": "/usr/bin:/bin",
+      "LANG": "C.UTF-8",
+      "LC_ALL": "C.UTF-8",
+      "PYTHONDONTWRITEBYTECODE": "1"
+    },
+    "question": "Exact T=2/4 logical union reuse versus dense masked/padded matrix work and metadata cost in the retained layer0 tail;not whole-model coverage or speed.",
+    "limits": "Logical IDs only. Preserve per-query incidence and independent softmax. Physical aliases/cache traffic,actual GPU preparation cost,occupancy,other layers/full chunks and a kernel implementation remain unmeasured. Padded8-row/32-cell counts use the original available matrix geometry in a prospective construction;not actual issued instructions.",
+    "retention": "Keep source/input identity and conserved aggregate counts/distributions only. No per-query lists,unions,masks or duplicate fixture. Retire successful owned output after verification. Review original fixture at this decision boundary.",
+    "passed": false,
+    "complete": false,
+    "active": false,
+    "ownership_closed": true,
+    "GPU_executed": false,
+    "model_selected": false
   }
 }
