@@ -1750,6 +1750,19 @@ completion usage for the engine's decoded count. The three requests per arm
 must confirm the strong/weak MTP classes from actual acceptance. Per-workload
 decode preservation is a separate paired screen;this plan is not a completed
 qualification or permission to adopt the candidate.
+Its first original process completes all18official requests and exits normally,
+with quiet validation and no fresh fault,but the frozen qualification **fails**:
+the nominal32K case reads32089tokens,below its required32768. The original
+failure remains unchanged. Its complete six-turn agent session and2933/8169-token
+thinking generations are diagnostic evidence only;draft acceptance is
+2107/2481(84.9percent)and4323/11541(37.5percent),one sample per case.
+The32089-token request takes43.5127s,versus42.2186s predicted by the already
+published long-route approximation:2.974percent underprediction in this
+independent process. This is one supplementary check,not a new fit or an
+expanded domain. The16097-token request is the first long-route use and is
+outside that fitted domain. Before another cohort,freeze a revised plan that
+keeps nominal upstream32K coverage separate from strict actual32768-token
+evidence in the added workloads;do not weaken or retry the failed root.
 Production/decode and the selected6e40engine/twelve fixtures remain unchanged.
 After all24screen samples and their original outcomes are committed,424closed
 successful observer/cache/review files retire (87768091bytes). Post-retirement
