@@ -1,17 +1,20 @@
 #!/usr/bin/env python3
-"""Main-owned property-only admission for the direct-K component.
+"""Main-owned admission,numerical and matched timing for the direct-K component.
 
 Own b0b863cc9 loader/device/ownership checks;repository LICENSE applies.
-This controller does not enqueue kernels or qualify numerical results/speed.
+Property mode enqueues no work;separate ordered component gates never adopt a model.
 """
 import ast
 import fcntl
 import hashlib
 import json
+import math
 from pathlib import Path
 import re
+import statistics
 import subprocess
 import sys
+import time
 sys.dont_write_bytecode=True
 sys.path.insert(0,str(Path(__file__).resolve().parent))
 import build_qsa_k_loop as b
@@ -250,7 +253,546 @@ def run():
     return int(not result['passed'])
 
 
+def numerical_contract():
+    return dict(recurrence_cells=32,all_candidate_output_bits_match_original32=True,
+        scalar_spots='FP64dot/PVterms,FP32online32recurrence,BF16probability/output;error<=oneBF16spacing+2e-6.',
+        coverage='All output words finite;guards,immutable inputs,packed operands and repeated outputs exact. Translated boundary IDs include physical262143. Not full-context model fill,model quality or decode qualification.')
+
+
+def local_launches(trace, names, allowed_arms):
+    created = {}; result = {}
+    for line in trace.splitlines():
+        if '<--- urKernelCreate(' in line and 'UR_RESULT_SUCCESS' in line:
+            match = re.search(r'\((_ZTS\S+)\).*?\.phKernel = .*?\((0x[0-9a-f]+)\)', line)
+            if match:
+                created[match[2]] = match[1]
+        if '<--- urEnqueueKernelLaunchWithArgsExp(' not in line or 'UR_RESULT_SUCCESS' not in line:
+            continue
+        handle = re.search(r'\.hKernel = (0x[0-9a-f]+)', line)[1]
+        guards.require(handle in created, 'successful kernel launch without creation identity')
+        name = created[handle]
+        if name not in names:
+            continue
+        arm = names.index(name); cells = 32; vpitch = 256
+        guards.require(arm in allowed_arms and '.workDim = 1,' in line and
+            re.search(r'\.pLocalWorkSize = 0x[0-9a-f]+ \(128\)', line) and '.numArgs = 18,' in line,
+            'attention dispatch differs from admitted one-dimensional WG128/18args')
+        pairs = [(int(i), int(n)) for i, n in re.findall(
+            r'UR_EXP_KERNEL_ARG_TYPE_LOCAL, \.index = (\d+), \.size = (\d+)', line)]
+        # Lambda capture ABI is use order,not accessor declaration order.
+        # Emitted IR pins eight local pointers;arg15 is score,3..5 are16-float
+        # arrays. The declared unused four-byte Q accessor has no kernel arg.
+        # This is the expected ABI;only an actual accepted trace observes sizes.
+        expected = {0: cells * vpitch * 2, 1: 16 * cells * 2, 3: 64,
+                    4: 64, 5: 64, 13: cells * 8, 15: 16 * (cells + 1) * 4, 16: 64}
+        guards.require(len(pairs) == 8 and dict(pairs) == expected,
+                       'actual local argument indices/extents differ from compiled/source manifest')
+        # IR requires align4 except rows(arg13) align8. All eight extents are
+        # multiples of64,so no natural-ABI padding is needed in either order.
+        guards.require(all(n % (8 if i == 13 else 4) == 0 for i, n in pairs),
+                       'compiled local alignment contract differs')
+        item = result.setdefault(str(arm), dict(calls=0, local_arguments=sorted(pairs),
+            dynamic_local_bytes=sum(n for _, n in pairs), work_dim=1, local_size=[128]))
+        guards.require(item['local_arguments'] == sorted(pairs), 'local binding changed between launches')
+        item['calls'] += 1
+    guards.require(set(result) == {str(a) for a in allowed_arms}, 'missing selected attention arm')
+    return result
+
+
+def observer_contract(record):
+    hook = P/'include/strata/sycl/command_profile_hook.hpp'
+    source = P/'src/sycl/command_profile.cpp'
+    b.guards.require('thread_local Trace* active = nullptr;' in source.read_text() and
+        'if (active) observe_impl(*active, stream, event);' in hook.read_text(), 'observer activation contract changed')
+    # All these native files are already hash-bound by build admission. The
+    # fixture has no Trace/Frame owner;only observe is called by its wrappers.
+    for path in [P/name for name in b.NATIVE+[b.FIXTURE,b.ADAPTER]]+[ROOT/name for name in ('direct_k_control.cpp','direct_k_invariant.cpp')]:
+        if path == source:
+            continue
+        text = path.read_text()
+        b.guards.require(not any(s in text for s in ('command_profile::Trace', 'command_profile::Frame',
+            'command_profile::active', 'using namespace command_profile')), 'unexpected observer owner')
+    b.guards.require('command_profile' not in (P/b.FIXTURE).read_text(), 'harness observer owner added')
+    return dict(initial_active='null', activation='Only a constructed Trace::begin sets active;none is called by the fixed native fixture/runtime/kernel entrypoints.',
+        hook_sha256=b.digest(hook), source_sha256=b.digest(source), environment='STRATA_SYCL_PREFILL_COMMAND_PROFILE=0',
+        scope='Source-bound inactive observer proof;no dynamic observer counter or hardware occupancy claim.')
+
+
+def run_admission(record,plan):
+    admission({b.KEY:record},plan)
+    artifact=record['native_build']['outcome']['actual_compiler_inputs']
+    guards.require(b.digest(artifact['path'])==artifact['sha256'],'actual dependency manifest changed')
+    actual=json.loads(Path(artifact['path']).read_text())
+    guards.require(len(actual)==artifact['files'] and
+        all(b.digest(path)==sha for path,sha in actual.items()),'actual compiled dependency changed')
+    fixture=record['selected_fixture']
+    guards.require(Path(fixture['path']).stat().st_size==fixture['bytes'] and
+        b.digest(fixture['path'])==fixture['sha256'],'actual-ID fixture changed')
+    guards.require(numerical_contract()==plan['numerical'] and observer_contract(record)==plan['observer'],
+        'numerical/observer qualification changed')
+    return validation.committed(runtime.RESULT)
+
+
+def prepare_run(mode):
+    container = b.gen.committed(RESULT);record = container[b.KEY];history = record.get('actual_id_checks', [])
+    host = record['host_controls']
+    guards.require(host['passed'] and host['ownership_closed'] and not host['GPU_executed'] and
+        b.digest(Path(__file__)) == host['controller_sha256'], 'exact host controller checks required')
+    position = {'smoke':0,'boundary':1,'perf':2}[mode]
+    b.guards.require(len(history) == position and all(v['passed'] and v['complete'] and
+        v['ownership_closed'] and not v['fresh_faults'] for v in history), 'ordered successful actual-ID gates required;no retry')
+    if position:
+        b.guards.require([v['mode'] for v in history]==['smoke','boundary'][:position] and record['actual_id_plan']['stage']=='closed','preceding native gate incomplete')
+    else:
+        b.guards.require('actual_id_plan' not in record, 'inspect existing actual-ID plan before preparing')
+    property_check=record[PROPERTY]['outcome']
+    guards.require(property_check['passed'] and property_check['complete'] and
+        property_check['ownership_closed'] and not property_check['fresh_faults'],'property-only admission required')
+    if mode == 'perf':
+        checks=record.get('oracle_checks',[])
+        guards.require([v['mode'] for v in checks]==['smoke','component'] and
+            all(v['passed'] and v['complete'] and v['ownership_closed'] and not v['fresh_faults']
+                for v in checks),'separate candidate numerical/oracle gates required before timing')
+    root = ROOT/('actual-id-'+mode)
+    b.guards.require(not root.exists(), 'fresh actual-ID stage only')
+    revision = b.gen.git('rev-parse', 'HEAD').decode().strip()
+    plan = {k:record[PROPERTY][k] for k in
+            ('kernel_ids', 'runtime_files', 'preload','physical_device')}
+    plan.update(stage='prepared', mode=mode, source_commit=revision, controller_inputs=inputs(revision),
+        numerical=numerical_contract(), observer=observer_contract(record),
+        output_root=str(root), jobs=[], budgets=dict(wall=300 if mode == 'smoke' else 600,
+            cpu=600 if mode == 'smoke' else 1800, rss_cap=8 << 30, text_cap=16 << 20,
+            file_cap=32 << 20, total_cap=192 << 20),
+        comparison=dict(processes=3, rounds=6, shapes=[512,6491], arms=['original32','private32','rowInvariantK32'],
+            order='(process+round+offset)%3', repeats={'512':64,'6491':4}, minimum_batch_ns=100000000,
+            minimum_clock_multiple=1000, control_original_ratio_bounds=[0.99,1.01], candidate_control_ratio_max=0.99,
+            decision='All six process/shape medians must pass control/original wall calibration and candidate/control wall plus attention-service ratio gates. Preserve every eligible sample. Failed speed gate stops model advancement;no adaptive retry or changed thresholds.',
+            scope='Actual selected-ID geometry with synthetic finite Q/K/V;pack+attention wrapper wall and private attention-only service. Not PCIe traffic,hardware saturation,production speed,model quality or1000/70qualification.'),
+        retirement='Retain individual timing samples,numerical/delta bounds,closure/fault results and decision. Retire successful full traces and normal logs after extraction. Keep one current component generation only for this live comparison.')
+    rt = run_admission(record, plan)
+    base = b.gen.committed(P/'tools/sycl/measurement_environment.json')['environment']
+    root.mkdir(mode=0o700)
+    for process in range(3 if mode == 'perf' else 1):
+        folder = root/str(process);folder.mkdir()
+        for name in ('tmp','cache'):
+            (folder/name).mkdir()
+        env = dict(base, TMPDIR=str(folder/'tmp'), XDG_CACHE_HOME=str(folder/'cache'),
+            LD_PRELOAD=rt['preload']['library']['path'], STRATA_UR_PROBE_EXPECTED_LOADER=rt['preload']['loader'],
+            ZE_ENABLE_ALT_DRIVERS=next(p for p in rt['runtime_files'] if 'libze_intel_gpu' in p),
+            STRATA_SYCL_PREFILL_COMMAND_PROFILE='0',
+            UR_LOG_VALIDATION='level:warning;flush:warning;output:file,'+str(folder/'validation.log'))
+        if mode in ('smoke','boundary'):
+            env['UR_LOG_TRACING'] = 'level:info;flush:info;output:file,'+str(folder/'api.trace')
+        else:
+            env.pop('UR_LOG_TRACING', None);env['UR_ENABLE_LAYERS'] = 'UR_LAYER_PARAMETER_VALIDATION'
+        command = [record['native_build']['outcome']['binaries']['fixture']['path'], '--'+mode if mode in ('smoke','boundary') else '--bench', record['selected_fixture']['path']]
+        if mode == 'perf':
+            command.append(str(process))
+        plan['jobs'].append(dict(process=process, command=command, environment=env))
+    b.write(root/'plan.json', plan);record['actual_id_plan'] = plan;b.write(RESULT, container)
+    print('Prepared actual-ID '+mode+';commit source-bound plan before execution.', flush=True)
+
+
+def parsed_output(text, mode, process):
+    rows = [json.loads(line) for line in text.splitlines() if line.startswith('{')]
+    shapes = [3] if mode in ('smoke','boundary') else [512,6491]
+    b.guards.require(rows and rows[-1] == {'kind':'PASS'} and sum(v['kind'] == 'PASS' for v in rows) == 1 and
+        {v['kind'] for v in rows} <= {'PASS','numerical','delta','checked','sample'}, 'incomplete/unknown actual-ID output')
+    numerical = [v for v in rows if v['kind'] == 'numerical']
+    b.guards.require([(v['queries'],v['arm']) for v in numerical] == [(q,a) for q in shapes for a in range(3)], 'scalar coverage differs')
+    for v in numerical:
+        spots = {3:3,512:6,6491:8}[v['queries']]
+        b.guards.require(v['reference_cells'] == 32 and v['spot_queries'] == spots and
+            v['compared'] == spots*24*256 and math.isfinite(v['max_abs']) and v['max_abs'] >= 0 and
+            math.isfinite(v['max_budget_ratio']) and 0 <= v['max_budget_ratio'] <= 1, 'scalar numerical bound/coverage failed')
+    deltas = [v for v in rows if v['kind'] == 'delta']
+    b.guards.require([v['queries'] for v in deltas] == shapes, 'full-output delta coverage differs')
+    for v in deltas:
+        b.guards.require(v['elements'] == v['queries']*24*256 and v['changed_from32'] == 0 and v['max_abs'] == 0 and v['relative_l2'] == 0 and
+            all(math.isfinite(v[k]) and v[k] >= 0 for k in ('max_abs','relative_l2')), 'nonfinite output/delta')
+    checked = [v for v in rows if v['kind'] == 'checked']
+    b.guards.require([v['queries'] for v in checked] == shapes and all(v['cells'] == (262144 if mode=='boundary' else 39259) and
+        all(v[k] is True for k in ('guards','inputs_immutable','cell32_exact','own_reference')) and
+        v['candidate_old_bits_required'] is True for v in checked), 'guard/input/control qualification failed')
+    samples = [v for v in rows if v['kind'] == 'sample']
+    expected = [] if mode in ('smoke','boundary') else [(q,r,(process+r+o)%3) for q in shapes for r in range(6) for o in range(3)]
+    b.guards.require([(v['queries'],v['round'],v['arm']) for v in samples] == expected, 'timing count/order differs')
+    for v in samples:
+        repeats = 64 if v['queries'] == 512 else 4
+        b.guards.require(v['process'] == process and v['repeats'] == repeats and v['timer_floor_ns'] > 0 and
+            v['batch_ns'] >= max(100000000,1000*v['timer_floor_ns']), 'timing batch ineligible')
+        b.guards.require((v['arm'] == 0 and v['attention_device_ns'] is None and v['event_calls'] == 0) or
+            (v['arm'] != 0 and v['event_calls'] == repeats and 0 < v['attention_device_ns'] <= v['batch_ns']+1000000), 'direct-event coverage/envelope differs')
+    return dict(numerical=numerical, deltas=deltas, samples=samples,
+                guards=True, inputs_immutable=True, cell32_exact=True, own_reference=True)
+
+
+def performance_decision(observations, comparison):
+    groups = []; passed = True
+    b.guards.require([v['process'] for v in observations] == [0,1,2], 'three independent process ordinals required')
+    for observation in observations:
+        for queries in comparison['shapes']:
+            arms = []
+            for arm in range(3):
+                samples = [v for v in observation['output']['samples'] if v['queries'] == queries and v['arm'] == arm]
+                b.guards.require(len(samples) == 6, 'six samples per process/shape/arm required')
+                wall = [v['batch_ns']/v['repeats'] for v in samples]
+                service = [v['attention_device_ns']/v['repeats'] for v in samples] if arm else []
+                arms.append(dict(wall_median_ns=statistics.median(wall), wall_min_ns=min(wall), wall_max_ns=max(wall),
+                                 service_median_ns=statistics.median(service) if service else None))
+            calibration = arms[1]['wall_median_ns']/arms[0]['wall_median_ns']
+            wall = arms[2]['wall_median_ns']/arms[1]['wall_median_ns']
+            service = arms[2]['service_median_ns']/arms[1]['service_median_ns']
+            lo,hi = comparison['control_original_ratio_bounds'];limit = comparison['candidate_control_ratio_max']
+            ok = lo <= calibration <= hi and wall <= limit and service <= limit;passed &= ok
+            groups.append(dict(process=observation['process'], queries=queries, arms=arms,
+                control_original_wall_ratio=calibration, candidate_control_wall_ratio=wall,
+                candidate_control_service_ratio=service, performance_gate_passed=ok))
+    b.guards.require(len(groups) == 6, 'all process/shape groups required')
+    return dict(performance_gate_passed=passed, advance_to_model=passed, groups=groups,
+                model_adopted=False, hardware_saturation_qualified=False)
+
+
+def host_controls():
+    """Exercise false-pass cases before using this controller for GPU evidence."""
+    import copy
+    rejected = []
+    def reject(label, function):
+        try:
+            function()
+        except (RuntimeError,KeyError,ValueError):
+            rejected.append(label)
+        else:
+            raise RuntimeError('negative control accepted: '+label)
+    rows = [dict(kind='numerical',queries=3,arm=a,reference_cells=32,
+        spot_queries=3,compared=18432,max_abs=0,max_budget_ratio=0) for a in range(3)]
+    rows += [dict(kind='delta',queries=3,elements=18432,changed_from32=0,max_abs=0,relative_l2=0),
+        dict(kind='checked',queries=3,cells=39259,guards=True,inputs_immutable=True,cell32_exact=True,
+             own_reference=True,candidate_old_bits_required=True),dict(kind='PASS')]
+    def parse(values):
+        return parsed_output('\n'.join(json.dumps(v) for v in values),'smoke',0)
+    parse(rows)  # direct-K32 preserves arithmetic and original output bits.
+    bad = copy.deepcopy(rows);bad[2]['reference_cells'] = 64
+    reject('wrong_candidate_recurrence',lambda:parse(bad))
+    bad = copy.deepcopy(rows);bad[2]['max_budget_ratio'] = math.inf
+    reject('nonfinite_reference_ratio',lambda:parse(bad))
+    bad = copy.deepcopy(rows);bad[-2]['guards'] = False
+    reject('corrupted_guard',lambda:parse(bad))
+    reject('missing_footer',lambda:parse(rows[:-1]))
+    bad = copy.deepcopy(rows);bad[3]['changed_from32'] = 1
+    reject('direct_K_changed_original_bits',lambda:parse(bad))
+    reject('boundary_extent_not_exercised',lambda:parsed_output(
+        '\n'.join(json.dumps(v) for v in rows),'boundary',0))
+    boundary = copy.deepcopy(rows);boundary[-2]['cells'] = 262144
+    parsed_output('\n'.join(json.dumps(v) for v in boundary),'boundary',0)
+    names=['_ZTSoriginal','_ZTScontrol','_ZTScandidate'];trace=[]
+    for arm,name in enumerate(names):
+        handle=hex(arm+1)
+        trace.append(f'<--- urKernelCreate( ({name}), .phKernel = value ({handle}) UR_RESULT_SUCCESS')
+        sizes={0:16384,1:1024,3:64,4:64,5:64,13:256,15:2112,16:64}
+        local=' '.join(f'UR_EXP_KERNEL_ARG_TYPE_LOCAL, .index = {i}, .size = {n}' for i,n in sizes.items())
+        trace.append(f'<--- urEnqueueKernelLaunchWithArgsExp( .hKernel = {handle}, .workDim = 1, '
+            f'.pLocalWorkSize = 0x100 (128), .numArgs = 18, {local} UR_RESULT_SUCCESS')
+    bound=local_launches('\n'.join(trace),names,[0,1,2])
+    guards.require([bound[str(a)]['dynamic_local_bytes'] for a in range(3)]==[20032,20032,20032],
+        'traced local payload accounting differs')
+    reject('wrong_candidate_local_extent',lambda:local_launches(
+        '\n'.join(trace).replace('.size = 16384','.size = 16896'),names,[0,1,2]))
+    reject('wrong_score_argument_index',lambda:local_launches(
+        '\n'.join(trace).replace('.index = 15, .size = 2112','.index = 3, .size = 2112'),names,[0,1,2]))
+    observations = [dict(process=p,output=dict(samples=[dict(queries=q,arm=a,
+        batch_ns=(100 if a == 2 else 200)*1000000,repeats=1,attention_device_ns=(90 if a == 2 else 190)*1000000)
+        for q in (512,6491) for a in range(3) for r in range(6)])) for p in range(3)]
+    comparison = dict(shapes=[512,6491],control_original_ratio_bounds=[0.99,1.01],candidate_control_ratio_max=0.99)
+    b.guards.require(performance_decision(observations,comparison)['advance_to_model'], 'eligible control refused')
+    bad = copy.deepcopy(observations)
+    for v in bad[2]['output']['samples']:
+        if v['queries'] == 6491 and v['arm'] == 2:
+            v['batch_ns'] = 210000000
+    b.guards.require(not performance_decision(bad,comparison)['advance_to_model'], 'one slow group advanced')
+    bad = copy.deepcopy(observations)
+    for v in bad[0]['output']['samples']:
+        if v['arm'] == 1:
+            v['batch_ns'] = 220000000
+    b.guards.require(not performance_decision(bad,comparison)['advance_to_model'], 'failed calibration advanced')
+    reject('duplicate_process',lambda:performance_decision([observations[0]]*3,comparison))
+    def oracle_text(mode):
+        geometry=[(97,49,33,1),(97,71,33,3)]
+        if mode=='component':
+            geometry += [(2113,2113,w,3) for w in (1,17,31,32,63,65,2051)]
+            geometry += [(262144,262144,2051,1),(262144,13,33,1)]
+        text=[]
+        for cells,live,cap,queries in geometry:
+            text.append(f'case cells={cells} live_cells={live} cap={cap} queries={queries} '
+                f'compared={queries*24*256} max_abs=0 oracle=BF16_operands_FP32_online '
+                'packed_guard_elements=17 packed_k_mod8=2 max_budget_ratio=0 '
+                'packed_logical_prefix=PASS packed_guards=PASS guards=PASS inputs=PASS status=PASS')
+            text.append(f'case exact_prefix33_bits=PASS cells={cells} cap={cap} queries={queries}')
+        return '\n'.join(text+[
+            'case explicit_duplicate_ids=PASS aliased_physical_pages=PASS first_later_KV_diagnostics=PASS status=PASS',
+            'fixture_status=PASS model_quality=UNRUN model_PP=UNRUN physical262144_model=UNRUN faults=EXTERNAL_REQUIRED'])
+    for mode in ('smoke','component'):parsed_oracle(oracle_text(mode),mode)
+    text=oracle_text('smoke')
+    reject('oracle_wrong_alignment',lambda:parsed_oracle(text.replace('packed_k_mod8=2','packed_k_mod8=0'),'smoke'))
+    reject('oracle_missing_exact_comparison',lambda:parsed_oracle(text.replace('case exact_prefix33_bits=PASS','case skipped'),'smoke'))
+    reject('oracle_wrong_geometry',lambda:parsed_oracle(text.replace('live_cells=49','live_cells=71'),'smoke'))
+    reject('oracle_nonfinite_budget',lambda:parsed_oracle(text.replace('max_budget_ratio=0','max_budget_ratio=nan'),'smoke'))
+    reject('oracle_wrong_output_count',lambda:parsed_oracle(text.replace('compared=6144','compared=1'),'smoke'))
+    reject('oracle_wrong_exact_geometry',lambda:parsed_oracle(text.replace(
+        'exact_prefix33_bits=PASS cells=97 cap=33 queries=1',
+        'exact_prefix33_bits=PASS cells=97 cap=32 queries=1'),'smoke'))
+    reject('oracle_missing_alias_diagnostics',lambda:parsed_oracle(text.replace(
+        'case explicit_duplicate_ids=PASS','skipped explicit_duplicate_ids=PASS'),'smoke'))
+    reject('oracle_inexact_footer',lambda:parsed_oracle(text.replace('model_quality=UNRUN','model_quality=PASS'),'smoke'))
+    reject('oracle_duplicate_field',lambda:parsed_oracle(text.replace('compared=6144','compared=1 compared=6144'),'smoke'))
+    reject('oracle_nonfinite_error',lambda:parsed_oracle(text.replace('max_abs=0','max_abs=inf'),'smoke'))
+    expected=dict(pci='0000:05:00.0',vendor='0x8086',device='0xe20c',**{'class':'0x030000'})
+    policy=single_device_inventory([expected],expected)
+    fd='drm-driver:\txe\ndrm-pdev:\t0000:05:00.0\n'
+    device_fds(policy['name'],[fd,fd],policy)
+    reject('second_eligible_Intel_device',lambda:single_device_inventory(
+        [expected,dict(expected,pci='0000:06:00.0')],expected))
+    reject('wrong_inventory_device_id',lambda:single_device_inventory([dict(expected,device='0x0000')],expected))
+    reject('wrong_native_device_name',lambda:device_fds('Intel Other GPU',[fd],policy))
+    reject('unqualified_marketing_name',lambda:device_fds('Intel Arc B570 Graphics',[fd],policy))
+    reject('missing_owned_DRM_binding',lambda:device_fds(policy['name'],['pos:\t0\n'],policy))
+    reject('wrong_owned_DRM_PCI',lambda:device_fds(policy['name'],[fd.replace('05:00','06:00')],policy))
+    print(json.dumps(dict(passed=True,GPU_executed=False,controls=35,rejected=rejected,
+        oracle_positive_controls=2,oracle_negative_controls=10,device_positive_controls=2,device_negative_controls=6,
+        positive='direct-K32matches original bits;all-group speed gain passes.',
+        performance_failures_stopped=['one_slow_shape_process','control_original_calibration'])),flush=True)
+
+
+def run_stage(mode):
+    container = b.gen.committed(RESULT);record = container[b.KEY];plan = record['actual_id_plan'];root = Path(plan['output_root'])
+    b.guards.require(plan['stage'] == 'prepared' and plan['mode'] == mode and root == ROOT/('actual-id-'+mode) and
+        plan == json.loads((root/'plan.json').read_text()) and not (root/'owned.json').exists(), 'fresh committed actual-ID stage required')
+    rt = run_admission(record, plan)
+    boot = Path('/proc/sys/kernel/random/boot_id').read_text().strip()
+    cursors = re.findall(r'^-- cursor: (.+)$', subprocess.check_output(
+        ['journalctl','-k','-b','-n','0','--show-cursor'],text=True,timeout=15), re.M)
+    b.guards.require(len(cursors) == 1, 'fresh fault cursor required')
+    result = dict(mode=mode, controller_commit=plan['source_commit'], plan_commit=b.gen.git('rev-parse','HEAD').decode().strip(),
+        passed=False, complete=False, active=False, ownership_closed=False, observations=[], model_qualified=False)
+    owner = None
+    def persist():
+        result['active'] = bool(owner and owner.active is not None)
+        b.write(root/'owned.json',dict(result,commands=owner.commands if owner else []))
+    owner = b.supervision.Owner(root/'owned',persist)
+    try:
+        for job in plan['jobs']:
+            process = job['process'];folder = root/str(process)
+            b.guards.driver_guard();b.guards.no_model_owners([])
+            b.guards.require(b.digest(job['command'][0]) == record['native_build']['outcome']['binaries']['fixture']['sha256'], 'actual-ID binary changed')
+            initial = (time.clock_gettime_ns(time.CLOCK_BOOTTIME),time.monotonic_ns())
+            def interact(io,entry):
+                device_name=None
+                for stage in ('before-runtime','runtime-ready','after-cleanup'):
+                    while True:
+                        line = io.line(250)
+                        if line.startswith('device='):
+                            b.guards.require(device_name is None,'duplicate native device name')
+                            device_name=line.removeprefix('device=')
+                        if line.startswith('QSA_DIRECT_K_GATE '):
+                            break
+                    b.guards.require(line == 'QSA_DIRECT_K_GATE '+stage, 'actual-ID gate differs')
+                    delta = [a-b for a,b in zip((time.clock_gettime_ns(time.CLOCK_BOOTTIME),time.monotonic_ns()),initial)]
+                    b.guards.require(min(delta) >= 0 and abs(delta[0]-delta[1]) <= 50000000, 'suspend/clock discontinuity')
+                    native = Path('/proc',str(io.proc.pid))
+                    b.guards.require(str((native/'exe').resolve()) == str(Path(job['command'][0]).resolve()), 'wrong actual-ID executable')
+                    env = dict(v.split(b'=',1) for v in (native/'environ').read_bytes().split(b'\0') if b'=' in v)
+                    b.guards.require(all(env.get(k.encode()) == v.encode() for k,v in job['environment'].items()), 'actual-ID environment changed')
+                    mapped = runtime.executable_mappings((native/'maps').read_text())
+                    allowed = set(rt['runtime_files']) | {str(Path(job['command'][0]).resolve())}
+                    b.guards.require(mapped <= allowed, 'unknown actual-ID code mapping: '+str(sorted(mapped-allowed)))
+                    if stage == 'runtime-ready':
+                        b.guards.require({rt['preload']['loader'],rt['preload']['library']['path'],job['environment']['ZE_ENABLE_ALT_DRIVERS']} <= mapped, 'qualified provider missing')
+                        entry['physical_device']=live_device(io.proc.pid,device_name,plan['physical_device'],rt)
+                    io.send(b'X')
+                b.guards.require(json.loads(io.line(20)) == {'kind':'PASS'}, 'actual-ID footer missing')
+                io.proc.stdin.close();io.exit(20)
+            print('Running actual-ID '+mode+' process'+str(process),flush=True)
+            entry,out,err = owner.run(str(process),job['command'],job['environment'],P,interaction=interact,**plan['budgets'])
+            b.guards.require(b.supervision.closed(entry) and entry['exit_code'] == 0, 'actual-ID child failed/ownership open')
+            stderr = err.read_text();proof = validation.preload_evidence(stderr,entry['pid'])
+            b.guards.require(proof['loader'] == rt['preload']['loader'], 'actual-ID UR loader mismatch')
+            body = stderr.split(f'strata UR validation: pid={entry["pid"]} phase=before-main',1)[1]
+            b.guards.require(not re.search('UR_RESULT_ERROR_|ZE_RESULT_ERROR_|terminate called|cleanup failed|strata UR validation failure:',body), 'actual-ID runtime error')
+            log = folder/'validation.log'
+            b.guards.require(not log.exists() or log.stat().st_size == 0, 'actual-ID validation warning/error')
+            observation = dict(process=process, exit_code=0, ownership_closed=True,
+                physical_device=entry['physical_device'],validation=proof, output=parsed_output(out.read_text(),mode,process))
+            if mode in ('smoke','boundary'):
+                launches = local_launches((folder/'api.trace').read_text(),plan['kernel_ids'],[0,1,2])
+                b.guards.require(all(v['calls'] == 2 for v in launches.values()), 'actual-ID smoke dispatch count differs')
+                observation['local_launches'] = launches
+            result['observations'].append(observation);persist()
+        run_admission(record, plan)
+        if mode == 'perf':
+            result['decision'] = performance_decision(result['observations'],plan['comparison'])
+        result.update(passed=True,complete=True,GPU_executed=True)
+    except BaseException as error:
+        result.update(passed=False,complete=False,error=repr(error))
+    finally:
+        result['ownership_closed'] = owner.active is None and all(b.supervision.closed(v) for v in owner.commands)
+        if not result['ownership_closed']:
+            result.update(passed=False,complete=False,error='actual-ID ownership remains open')
+        postchecks(result,boot,cursors[0]);persist()
+        if not result['passed'] and 'decision' in result:
+            result['decision']['advance_to_model'] = False
+        plan['stage'] = 'closed' if result['passed'] else 'failed'
+        record.setdefault('actual_id_checks',[]).append(result);b.write(RESULT,container)
+    print(json.dumps({k:result.get(k) for k in ('mode','passed','complete','ownership_closed','fresh_faults','error')}),flush=True)
+    if 'decision' in result:
+        print(json.dumps(result['decision']),flush=True)
+    return int(not result['passed'])
+
+
+def parsed_oracle(text, mode):
+    guards.require(mode in ('smoke','component'),'unknown oracle mode')
+    cases=[line for line in text.splitlines() if line.startswith('case cells=')]
+    exact=[line for line in text.splitlines() if line.startswith('case exact_prefix33_bits=PASS ')]
+    expected=2 if mode=='smoke' else 11
+    footer='fixture_status=PASS model_quality=UNRUN model_PP=UNRUN physical262144_model=UNRUN faults=EXTERNAL_REQUIRED'
+    diagnostics='case explicit_duplicate_ids=PASS aliased_physical_pages=PASS first_later_KV_diagnostics=PASS status=PASS'
+    guards.require([line for line in text.splitlines() if line.startswith('fixture_status=')]==[footer] and
+        [line for line in text.splitlines() if line.startswith('case explicit_duplicate_ids=')]==[diagnostics] and
+        len([line for line in text.splitlines() if line.startswith('case ')])==expected*2+1 and
+        len(cases)==len(exact)==expected,
+        'oracle case,exact-bit or footer coverage differs')
+    geometry=[(97,49,33,1),(97,71,33,3)]
+    if mode=='component':
+        geometry += [(2113,2113,w,3) for w in (1,17,31,32,63,65,2051)]
+        geometry += [(262144,262144,2051,1),(262144,13,33,1)]
+    def fields_of(line):
+        pairs=[token.split('=',1) for token in line.split()[1:]]
+        fields=dict(pairs)
+        guards.require(len(fields)==len(pairs),'duplicate oracle field')
+        return fields
+    fields=[fields_of(line) for line in cases]
+    guards.require([tuple(int(v[k]) for k in ('cells','live_cells','cap','queries')) for v in fields]==geometry,
+        'oracle geometry differs from prospective coverage')
+    exact_fields=[fields_of(line) for line in exact]
+    guards.require(exact_fields==[dict(exact_prefix33_bits='PASS',cells=str(cells),cap=str(cap),queries=str(queries))
+        for cells,live,cap,queries in geometry],'independent prefix33 comparator geometry differs')
+    guards.require(all(int(v['compared'])==int(v['queries'])*24*256 and
+        math.isfinite(float(v['max_abs'])) and float(v['max_abs'])>=0 and
+        v['oracle']=='BF16_operands_FP32_online' for v in fields),'oracle output-word coverage/error differs')
+    guards.require(all(math.isfinite(float(v['max_budget_ratio'])) and
+        0<=float(v['max_budget_ratio'])<=1 for v in fields),'oracle numerical bound invalid')
+    guards.require(all(v['packed_guard_elements']=='17' and v['packed_k_mod8']=='2' and
+        all(v[k]=='PASS' for k in ('packed_logical_prefix','packed_guards','guards','inputs','status'))
+        for v in fields),'oracle guard/alignment/input gate failed')
+    return dict(cases=expected,exact_prefix33_bits_cases=len(exact),case_summaries=cases,
+        scope='Existing independent BF16/FP32 oracle and guard/mask/nonfinite/tail/admission controls through the candidate adapter;not full model or speed.')
+
+
+def prepare_oracle(mode):
+    container=b.gen.committed(RESULT);record=container[b.KEY];history=record.get('oracle_checks',[])
+    guards.require(mode in ('smoke','component') and
+        [v['mode'] for v in history]==([] if mode=='smoke' else ['smoke']) and
+        all(v['passed'] and v['complete'] and v['ownership_closed'] and not v['fresh_faults'] for v in history),
+        'ordered fresh oracle stages only;inspect prior ownership before retry')
+    checks=record.get('actual_id_checks',[])
+    guards.require(checks and checks[0]['mode']=='smoke' and checks[0]['passed'] and
+        checks[0]['complete'] and checks[0]['ownership_closed'] and not checks[0]['fresh_faults'],
+        'first traced actual-ID smoke must close before oracle')
+    root=ROOT/('oracle-'+mode);guards.require(not root.exists(),'oracle stage already exists')
+    plan={k:record[PROPERTY][k] for k in
+        ('kernel_ids','runtime_files','preload','physical_device')}
+    plan.update(stage='prepared',mode=mode,source_commit=b.gen.git('rev-parse','HEAD').decode().strip(),
+        controller_inputs=inputs(b.gen.git('rev-parse','HEAD').decode().strip()),
+        numerical=numerical_contract(),observer=observer_contract(record),
+        command=[record['native_build']['outcome']['binaries']['numerical']['path'],'--'+mode],output_root=str(root),
+        budgets=dict(wall=300,cpu=600,rss_cap=8<<30,text_cap=32<<20,file_cap=64<<20,total_cap=128<<20),
+        criteria='Existing independent oracle2/11cases and all prefix33bit comparisons;align2scratch,masked/missing/tail/nonfinite/alias/no-op checks,quiet validation,exact mapped providers,normal owned exit and no fresh fault. No performance/model qualification.')
+    rt=run_admission(record,plan)
+    base=b.gen.committed(P/'tools/sycl/measurement_environment.json')['environment']
+    plan['environment']=dict(base,TMPDIR=str(root/'tmp'),XDG_CACHE_HOME=str(root/'cache'),
+        LD_PRELOAD=rt['preload']['library']['path'],STRATA_UR_PROBE_EXPECTED_LOADER=rt['preload']['loader'],
+        ZE_ENABLE_ALT_DRIVERS=next(p for p in rt['runtime_files'] if 'libze_intel_gpu' in p),
+        STRATA_SYCL_PREFILL_COMMAND_PROFILE='0',STRATA_TEST_MAIN_GATES='1',
+        UR_LOG_TRACING='level:info;flush:info;output:file,'+str(root/'api.trace'),
+        UR_LOG_VALIDATION='level:warning;flush:warning;output:file,'+str(root/'validation.log'))
+    root.mkdir(mode=0o700)
+    for name in ('tmp','cache'):(root/name).mkdir()
+    b.write(root/'plan.json',plan);record['oracle_plan']=plan;b.write(RESULT,container)
+    print('Prepared candidate oracle '+mode+';commit exact plan before execution.',flush=True)
+
+
+def run_oracle(mode):
+    container=b.gen.committed(RESULT);record=container[b.KEY];plan=record['oracle_plan'];root=Path(plan['output_root'])
+    guards.require(plan['stage']=='prepared' and plan['mode']==mode and
+        root==ROOT/('oracle-'+mode) and plan==json.loads((root/'plan.json').read_text()) and
+        not (root/'owned.json').exists(),'fresh committed oracle plan only')
+    rt=run_admission(record,plan);boot=Path('/proc/sys/kernel/random/boot_id').read_text().strip()
+    cursor=re.findall(r'^-- cursor: (.+)$',subprocess.check_output(
+        ['journalctl','-k','-b','-n','0','--show-cursor'],text=True,timeout=15),re.M)
+    guards.require(len(cursor)==1,'fresh oracle fault cursor required')
+    result=dict(mode=mode,passed=False,complete=False,active=False,ownership_closed=False,GPU_executed=None)
+    owner=None
+    def persist():
+        result['active']=bool(owner and owner.active is not None)
+        b.write(root/'owned.json',dict(result,commands=owner.commands if owner else []))
+    owner=supervision.Owner(root/'owned',persist)
+    try:
+        guards.require(b.digest(plan['command'][0])==record['native_build']['outcome']['binaries']['numerical']['sha256'],'oracle executable changed')
+        def interact(io,entry):
+            device_name=None
+            for stage in ('before-runtime','runtime-ready','after-cleanup'):
+                while True:
+                    line=io.line(250)
+                    if line.startswith('device='):
+                        guards.require(device_name is None and ' driver=' in line,'unexpected oracle device line')
+                        device_name=line.removeprefix('device=').split(' driver=',1)[0]
+                    if line.startswith('QSA_BF16_READY '):break
+                guards.require(line=='QSA_BF16_READY '+stage,'oracle gate differs')
+                native=Path('/proc',str(io.proc.pid))
+                guards.require(str((native/'exe').resolve())==str(Path(plan['command'][0]).resolve()),'wrong oracle executable')
+                env=dict(v.split(b'=',1) for v in (native/'environ').read_bytes().split(b'\0') if b'=' in v)
+                guards.require(all(env.get(k.encode())==v.encode() for k,v in plan['environment'].items()),'oracle environment changed')
+                mapped=runtime.executable_mappings((native/'maps').read_text())
+                allowed=set(rt['runtime_files'])|{str(Path(plan['command'][0]).resolve())}
+                guards.require(mapped<=allowed,'unexpected oracle code mapping')
+                if stage=='runtime-ready':
+                    guards.require({rt['preload']['loader'],rt['preload']['library']['path'],plan['environment']['ZE_ENABLE_ALT_DRIVERS']}<=mapped,'oracle provider missing')
+                    result['physical_device']=live_device(io.proc.pid,device_name,plan['physical_device'],rt)
+                io.send(b'X')
+            guards.require(io.line(20).startswith('fixture_status=PASS '),'oracle footer missing')
+            io.proc.stdin.close();io.exit(20)
+        entry,out,err=owner.run(mode,plan['command'],plan['environment'],P,interaction=interact,**plan['budgets'])
+        guards.require(supervision.closed(entry) and entry['exit_code']==0,'oracle process failed or ownership open')
+        stderr=err.read_text();proof=validation.preload_evidence(stderr,entry['pid'])
+        guards.require(proof['loader']==rt['preload']['loader'],'oracle UR loader mismatch')
+        body=stderr.split(f'strata UR validation: pid={entry["pid"]} phase=before-main',1)[1]
+        guards.require(not re.search('UR_RESULT_ERROR_|ZE_RESULT_ERROR_|terminate called|cleanup failed|strata UR validation failure:',body),
+            'oracle runtime error')
+        log=root/'validation.log'
+        guards.require(not log.exists() or log.stat().st_size==0,'oracle validation warning/error')
+        result.update(output=parsed_oracle(out.read_text(),mode),validation=proof,
+            local_launches=local_launches((root/'api.trace').read_text(),plan['kernel_ids'],[2]))
+        run_admission(record,plan);result.update(passed=True,complete=True,GPU_executed=True,exit_code=0)
+    except BaseException as error:
+        result.update(error=repr(error),passed=False,complete=False)
+    finally:
+        result['ownership_closed']=owner.active is None and all(supervision.closed(c) for c in owner.commands)
+        if not result['ownership_closed']:result.update(passed=False,complete=False,error='oracle ownership remains open')
+        postchecks(result,boot,cursor[0]);persist();plan['stage']='closed' if result['passed'] else 'failed'
+        record.setdefault('oracle_checks',[]).append(result);b.write(RESULT,container)
+    print(json.dumps({k:result.get(k) for k in ('mode','passed','complete','ownership_closed','fresh_faults','error')}),flush=True)
+    return int(not result['passed'])
+
+
 if __name__ == '__main__':
+    args=sys.argv[1:]
+    guards.require(args in (['prepare'],['run'],['host-controls'],
+        ['prepare-oracle','smoke'],['run-oracle','smoke'],['prepare-oracle','component'],['run-oracle','component'],
+        ['prepare','smoke'],['run','smoke'],['prepare','boundary'],['run','boundary'],['prepare','perf'],['run','perf']),
+        'prepare|run [smoke|boundary|perf],prepare-oracle|run-oracle smoke|component,host-controls')
     with (B/'owned-v0141-measurement.lock').open('a+') as lock:
-        fcntl.flock(lock,fcntl.LOCK_EX|fcntl.LOCK_NB)
-        sys.exit({'prepare':prepare,'run':run}[sys.argv[1]]())
+        fcntl.flock(lock,fcntl.LOCK_EX|fcntl.LOCK_NB);guards.no_model_owners([]);guards.driver_guard()
+        if len(args)==1:
+            raise SystemExit(host_controls() if args[0]=='host-controls' else prepare() if args[0]=='prepare' else run())
+        if args[0] in ('prepare-oracle','run-oracle'):
+            raise SystemExit(prepare_oracle(args[1]) if args[0]=='prepare-oracle' else run_oracle(args[1]))
+        raise SystemExit(prepare_run(args[1]) if args[0]=='prepare' else run_stage(args[1]))

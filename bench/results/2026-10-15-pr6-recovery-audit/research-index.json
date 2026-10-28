@@ -14377,5 +14377,53 @@
       "manifest_sha256": "e18765ce48a191e0f5f5ed2aa3cea64a838549d807c31148210c0d9979c313ae",
       "facts_ref": "research-index.json::qsa_static_workgroup_geometry_contract_20261028.accepted_findings"
     }
+  },
+  "qsa_row_hoist_control_flow_pressure_20261028": {
+    "classification": "decision_support",
+    "status": "eligible_current_source_and_compiled_allocation",
+    "schedulable_now": true,
+    "report_budget_bytes": 18432,
+    "source_revision": "a2f54c3e5ce96cbda94901587373f08510525662",
+    "prerequisites_evidence": {
+      "current_generator": "tools/sycl/qsa_k_loop_sources.py",
+      "generator_sha256": "526f02d967f0f03f7cfc8239a7633b9f9840e0533dee047171b38a7dd061db6c",
+      "current_native_IR": "qsa-codegen-current.json::direct_K_loop_invariant.native_build.outcome.device_IR",
+      "observed_mechanism": "CPU IR moves stable row load outside dimension loop;property-only queried spill descriptor rises12480to23808 with unchanged128GRF request/default,WG128/SG16/18args. Not dynamic traffic or speed.",
+      "current_contract": "qsa-codegen-current.json::direct_K_loop_invariant.source_contract"
+    },
+    "ownership": "Orca gpt-6-luna high report-only;no Git/build/test/GPU/profiler/process/product edits. Main owns implementation and serialized testing;native Codex gpt-6-luna max reviews. No steering.",
+    "retention": "Consume nonduplicated source/API discriminators into current codegen decision;retire report/review transaction text at closure. No adoption from source-only research.",
+    "question": "Using exact new direct-K control/candidate LLVM and own source,compare the hoisted-row valid/invalid split loops against a shared loop with per-iteration validity and other legal source control-flow shapes. Which concrete values/branches/duplication plausibly lengthen GPU live ranges or inhibit allocation? Distinguish IR facts from absent GEN/dynamic evidence,review relevant compiler/GPU primary literature,and select at most2 distinct source-local discriminators. Do not repeat broad matrix-fragment lifetime or GRF-property screens.",
+    "previous_retrieval": [
+      "qsa_direct_K_row_invariant_contract_20261028",
+      "cooperative_matrix_iterative_fragment_lifetime_methods_20261023",
+      "gpu_instruction_cache_unroll_dispatch_tradeoffs_20261023",
+      "qsa_kernel_local_grf_contract_20261027"
+    ],
+    "report": ".cache/strata-research/20261028/qsa-row-hoist-control-flow-pressure.md"
+  },
+  "sycl_local_accessor_alias_contract_20261028": {
+    "classification": "decision_support",
+    "status": "eligible_current_source_and_compiled_allocation",
+    "schedulable_now": true,
+    "report_budget_bytes": 18432,
+    "source_revision": "a2f54c3e5ce96cbda94901587373f08510525662",
+    "prerequisites_evidence": {
+      "current_generator": "tools/sycl/qsa_k_loop_sources.py",
+      "generator_sha256": "526f02d967f0f03f7cfc8239a7633b9f9840e0533dee047171b38a7dd061db6c",
+      "current_native_IR": "qsa-codegen-current.json::direct_K_loop_invariant.native_build.outcome.device_IR",
+      "observed_mechanism": "CPU IR moves stable row load outside dimension loop;property-only queried spill descriptor rises12480to23808 with unchanged128GRF request/default,WG128/SG16/18args. Not dynamic traffic or speed.",
+      "current_contract": "qsa-codegen-current.json::direct_K_loop_invariant.source_contract"
+    },
+    "ownership": "Orca gpt-6-luna high report-only;no Git/build/test/GPU/profiler/process/product edits. Main owns implementation and serialized testing;native Codex gpt-6-luna max reviews. No steering.",
+    "retention": "Consume nonduplicated source/API discriminators into current codegen decision;retire report/review transaction text at closure. No adoption from source-only research.",
+    "question": "Determine exact installed Intel LLVM504/SYCL/SPIR-V contracts for disjoint local accessor objects versus pointer alias metadata: can legal local-storage structure or scoped annotations let the optimizer hoist a stable int64 row load past BF16 local writes without a manually split loop? Compare supported alternatives and counterevidence. Explicitly preserve permitted aliased global QSA pools/physical pages and invalid-row behavior;do not propose blanket kernel_args_restrict without proving all pointer domains. No API-spelling screen or performance claim.",
+    "previous_retrieval": [
+      "qsa_direct_K_row_invariant_contract_20261028",
+      "qsa_static_workgroup_geometry_contract_20261028",
+      "gpu_shared_memory_bank_layout_methods_20261023",
+      "qsa_irregular_gqa_matrix_packing_collection_20261027"
+    ],
+    "report": ".cache/strata-research/20261028/sycl-local-accessor-alias-contract.md"
   }
 }
