@@ -15244,7 +15244,7 @@
   },
   "gpu_integer_histogram_dataflows_20261029": {
     "classification": "knowledge collection",
-    "status": "running_report_only",
+    "status": "worker_closed_native_review_pending",
     "schedulable_now": false,
     "source_revision": "3dc0b2651d7620df344d6d80abf627e512c55541",
     "question": "Compare low-level multi-bin integer histogram/reduction dataflows on SIMD GPUs:privatized per-lane arrays and group reductions,subgroup ballot/vote/popcount,local/shared atomics,and two-level subgroup-to-local reduction or vector alternatives. Explain register/live-range pressure,barrier count,SLM bank/access layout,contention and cache tradeoffs for weighted four-bit radix counts. Prioritize Intel Xe/SYCL but include transferable non-LLM histogram/image/graph/ASIC papers and technical blogs. Map limitations to WG256/SG16,16bins,256queries and8193..65537FP32score cells/query without proposing code or predicting local speed. Compare at least three substantive approaches and counterexamples;not another top-k survey or a repeat of the existing source-correctness proof.",
@@ -15259,14 +15259,21 @@
     ],
     "consumer": "Indexed reusable low-level histogram dataflow knowledge for a future source/resource/service-backed selector choice. Main must not read body on arrival;native Luna-max reviews first.",
     "retirement": "Keep only substantive nonduplicated findings/source corrections with realistic retrieval use. Review body consumer after component decision;retire dispatch/spec/review transactions after compact index evidence.",
-    "worker_closed": false,
+    "worker_closed": true,
     "orca": {
       "run": "run_80ea8ebc9a8c",
       "task": "task_8a0f3e5ef24e",
       "dispatch": "ctx_5ddea5ce26c5",
       "terminal": "term_2a02ce86-37f9-47e2-97eb-5f8ed5e59853",
       "startup": "Initialctx_35cef83354b6failed at update prompt before Task ran;ESC skips update without changing software. Same verifiedGPT-6-Luna high/workspace/permissions terminal retryaccepted andturn_startobserved. No steering during research.",
-      "report_directory_within_workspace": true
-    }
+      "report_directory_within_workspace": true,
+      "worker_done": "msg_21dd21289259",
+      "terminal_closed_by_official_release": true,
+      "completion_delivery_acknowledged": "delivery_7f46c9bda2b7"
+    },
+    "report_bytes": 16144,
+    "report_sha256": "95eefae24bedf5899ddb2e046ffcdacc01fd7b810def8d04e002da2a59f4e105",
+    "main_read_collection_body": false,
+    "native_reviewer": "/root/curate_gpu_histogram_dataflows_20261029"
   }
 }
