@@ -10503,9 +10503,9 @@
       }
     },
     "check_plan": {
-      "stage": "closed",
-      "mode": "properties",
-      "source_commit": "ba7b0fe2ed2948214e0b7aea0fc0677e095dfc0a",
+      "stage": "prepared",
+      "mode": "correctness",
+      "source_commit": "03cd65211c09b207c664b62f55f049f7db37caf3",
       "binaries": {
         "clean": {
           "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-batched-radix-v2/fixture",
@@ -10617,32 +10617,61 @@
         "STRATA_SYCL_SELECT_RADIX4": "1",
         "STRATA_SYCL_SELECT_CYCLIC": "0",
         "STRATA_QSA_FIXTURE_HOLD": "1",
-        "STRATA_SYCL_PREFILL_COMMAND_PROFILE": "0",
-        "LD_DEBUG": "files,bindings"
+        "STRATA_SYCL_PREFILL_COMMAND_PROFILE": "0"
       },
       "jobs": [
         {
-          "label": "clean-properties",
+          "label": "clean-original",
           "arm": "original",
           "binary_kind": "clean",
           "args": [
-            "--properties",
-            "/usr/lib/x86_64-linux-gnu/libze_loader.so.1.32.0",
-            "_ZTSZN6strata7kernels12_GLOBAL__N_111submit_topkILi1EEEN4sycl3_V15eventERNS4_5queueEPKfPKilllPilEUlNS4_7nd_itemILi1EEEE_",
-            "_ZTSZZN6strata7kernels12_GLOBAL__N_16radix4ILb0EEEvPKfPKilllRKNS0_9QsaShapesEPiPvlENKUlRN4sycl3_V17handlerEE_clESF_EUlNSD_7nd_itemILi1EEEE_",
-            "_ZTSZZN6strata7kernels12_GLOBAL__N_16radix4ILb1EEEvPKfPKilllRKNS0_9QsaShapesEPiPvlENKUlRN4sycl3_V17handlerEE_clESF_EUlNSD_7nd_itemILi1EEEE_"
+            "--dump",
+            "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-batched-radix-v2/correctness/clean-original.ids"
           ]
         },
         {
-          "label": "events-properties",
+          "label": "clean-control",
+          "arm": "control",
+          "binary_kind": "clean",
+          "args": [
+            "--dump",
+            "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-batched-radix-v2/correctness/clean-control.ids"
+          ]
+        },
+        {
+          "label": "clean-batched",
+          "arm": "batched",
+          "binary_kind": "clean",
+          "args": [
+            "--dump",
+            "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-batched-radix-v2/correctness/clean-batched.ids"
+          ]
+        },
+        {
+          "label": "events-original",
           "arm": "original",
           "binary_kind": "events",
           "args": [
-            "--properties",
-            "/usr/lib/x86_64-linux-gnu/libze_loader.so.1.32.0",
-            "_ZTSZN6strata7kernels12_GLOBAL__N_111submit_topkILi1EEEN4sycl3_V15eventERNS4_5queueEPKfPKilllPilEUlNS4_7nd_itemILi1EEEE_",
-            "_ZTSZZN6strata7kernels12_GLOBAL__N_16radix4ILb0EEEvPKfPKilllRKNS0_9QsaShapesEPiPvlENKUlRN4sycl3_V17handlerEE_clESF_EUlNSD_7nd_itemILi1EEEE_",
-            "_ZTSZZN6strata7kernels12_GLOBAL__N_16radix4ILb1EEEvPKfPKilllRKNS0_9QsaShapesEPiPvlENKUlRN4sycl3_V17handlerEE_clESF_EUlNSD_7nd_itemILi1EEEE_"
+            "--dump",
+            "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-batched-radix-v2/correctness/events-original.ids"
+          ]
+        },
+        {
+          "label": "events-control",
+          "arm": "control",
+          "binary_kind": "events",
+          "args": [
+            "--dump",
+            "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-batched-radix-v2/correctness/events-control.ids"
+          ]
+        },
+        {
+          "label": "events-batched",
+          "arm": "batched",
+          "binary_kind": "events",
+          "args": [
+            "--dump",
+            "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-batched-radix-v2/correctness/events-batched.ids"
           ]
         }
       ],
