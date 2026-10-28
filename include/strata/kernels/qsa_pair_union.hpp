@@ -1,0 +1,15 @@
+// Main-authored Strata experiment; repository LICENSE (MIT) applies.
+#pragma once
+#include <cstdint>
+
+namespace strata::kernels {
+// Experimental GPU metadata producer; no inference caller/build target.
+// Each input row has cap slots, of which steps[kStepWidth] are initialized.
+// Per pair p, outputs use stride 2*cap. Only counts[p] entries are initialized.
+// IDs are a sorted unique union; membership bits 0/1 identify the two queries.
+// An absent odd final row has width zero. Invalid steps/IDs produce count=-1
+// without publishing a payload. Output storage must not alias any input.
+void qsa_pair_union_prefill(const int32_t *ids, const int32_t *steps,
+    int64_t queries, int64_t cap, int32_t *unions, uint8_t *membership,
+    int32_t *counts, void *stream);
+} // namespace strata::kernels
