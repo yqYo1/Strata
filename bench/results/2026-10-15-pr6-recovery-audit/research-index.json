@@ -15102,8 +15102,8 @@
   },
   "prefill_decode_NEO_scratch_retention_20261029": {
     "classification": "decision support",
-    "status": "eligible_before_dispatch",
-    "schedulable_now": true,
+    "status": "researching",
+    "schedulable_now": false,
     "question": "Trace the installed B570 NEO39758 LevelZero/IGC scratch-property,allocation,CSR/context/queue and graph lifetime contract. Can a prefill-only kernel with larger reported spill/scratch requirements enlarge a retained allocation or residency requirement later used by unchanged decode kernels? Distinguish per-kernel spill metadata,rounded per-thread scratch,HW-thread multiplier,per-CSR/engine/context pools,BO reservation/commit/residency/free-memory reporting and reclamation. Compare ordinary launch and command-graph paths,source-bound counterexamples,and minimal nonprivileged observer/controlled source gates to establish or refute cross-phase resource coupling without runtime safety changes. No implementation or local runtime/GPU/process tests.",
     "source_revision": "5fe01fbe7228a96ed6f7346b90af53f7b2b72e97",
     "report": ".cache/research/2026-10-29/prefill_decode_NEO_scratch_retention_20261029.md",
@@ -15124,6 +15124,17 @@
       "xe2_register_spill_collection_scope"
     ],
     "consumer": "Main determine source-grounded diagnosis and next direct-K isolation/qualification after the fixed cohort;native Luna-max reviews first. No generic GRF/spill-reduction survey or automatic runtime/prefill/decode changes.",
-    "retirement": "Retain only actual applicable contract/source corrections and bounded discriminators;retire report/dispatch/review paperwork after selecting the next gate. No inferred hardware-bottleneck or speed claim."
+    "retirement": "Retain only actual applicable contract/source corrections and bounded discriminators;retire report/dispatch/review paperwork after selecting the next gate. No inferred hardware-bottleneck or speed claim.",
+    "worker_closed": false,
+    "orca": {
+      "run": "run_80ea8ebc9a8c",
+      "task": "task_2e90d57d5db6",
+      "dispatch": "ctx_1dcd57951ef3",
+      "terminal": "term_8b03e0ba-9899-4e59-908d-0ab22b1c2e2b",
+      "initial_failed_dispatch": "ctx_9c95e0b46716",
+      "model": "gpt-6-luna",
+      "effort": "high",
+      "bootstrap": "Task never ran at update prompt;documented ESC skip once. Existing terminal verified GPT-6-Luna high,YOLO,current workspace before official same-task/same-terminal retry;input_accepted and turn_started proven. No research steering."
+    }
   }
 }
