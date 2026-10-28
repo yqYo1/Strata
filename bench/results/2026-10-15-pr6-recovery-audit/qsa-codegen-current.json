@@ -313,13 +313,12 @@
     "scope": "Matched selected12hashes and static/dynamic limits; no named tensor-to-spill attribution. Main separately resolved native-loop placement and threeflagrestores. Consumedreport/transactionsretired; nextcandidate hasnewaudit."
   },
   "next_candidate": {
-    "status": "selector_correctness_passed_event_proxy_rejected_direct_event_method_next",
+    "status": "SG32_batched_histogram_source_next",
     "generator": "tools/sycl/build_qsa_radix.py",
-    "scope": "Standalone prefill-only QSA selector;selected production/decode unchanged.",
-    "mechanism": "Replace16workgroup reductions per radix digit with16subgroup partial reductions plus a subgroup reduction of each bin and two workgroup barriers;1088bytes local histogram. Same exact weighted rank,ties and ascending IDs.",
-    "reference": "Selected6e40 own MIT selector and independent CPU full-sort oracle;Main-authored batched implementation sourcec722121f9. No XeStrata code.",
-    "future_gates": "Committed exact recipe/input closure;identical clean/observed deviceIR;actual native resources;independent oracle and traced event smoke;then matched three-process per-shape clean-wall/service/CPU gates against original and SG16control. Model/decode and physical-context qualification remain separate.",
-    "next_action": "No use of get_last_event proxy for timing. New prospective generation retains each actual parallel_for event from the host-only capture seam directly. No provider root-cause investigation by Main;old execution remains failed. Retire V1products after committing the new consumer/recipe."
+    "scope": "Dedicated prefill selector only;known-good engine/decode unchanged.",
+    "mechanism": "Test WG256/SG32,eight subgroup partials per bin and two bins per subgroup. Reduce declared partial/totals storage to512+64=576bytes;use bounded lane modulo for all subgroup loads. Exact weighted rank/ties/emission unchanged. This is a new candidate,not permission to adopt selective results from SG16.",
+    "future_gates": "New Luna source-contract review,committed recipe/native/resources/oracles/actual-event probe,then the same predeclared all-length/all-pattern clean-wall and GPU-service gates against original and SG32control. No model trial until passed.",
+    "next_action": "Verify closed V2source/recipe/final-artifact recovery and retire products;commit SG32source and obtain independent read-only Luna contract review while Main prepares the next bounded comparison."
   },
   "retirement": {
     "complete": true,
@@ -19027,6 +19026,55 @@
       }
     ],
     "event_service_eligible": true,
-    "component_advance_eligible": false
+    "component_advance_eligible": false,
+    "generation_closed": true,
+    "component_decision": {
+      "status": "not_adopted_four_shape_pattern_gates_failed",
+      "result_commit": "2a530e125",
+      "processes": 18,
+      "batches": 432,
+      "all_batches_eligible": true,
+      "failed_vs_original": [
+        {
+          "n": 78453,
+          "pattern": 0,
+          "wall_ratio": 1.0028939834918233,
+          "service_ratio": 1.001898692353413
+        },
+        {
+          "n": 78453,
+          "pattern": 1,
+          "wall_ratio": 1.070764585091208,
+          "service_ratio": 1.0708724079459584
+        },
+        {
+          "n": 117489,
+          "pattern": 1,
+          "wall_ratio": 1.0517801240511664,
+          "service_ratio": 1.0518169992269897
+        },
+        {
+          "n": 262144,
+          "pattern": 1,
+          "wall_ratio": 1.0841085599672335,
+          "service_ratio": 1.084468104518787
+        }
+      ],
+      "mechanism": "SG16 batched histogram improves every forced-SG16control group,but fails four comparisons against production. No model launch or adoption. New distinct candidate tests SG32 and eight subgroup partials;do not waive or relabel the failed universal gate.",
+      "hardware": "At117489varied-score observed batches,median GPU service179.054/162.248ms of179.438/162.617ms total(original/candidate). Thread CPU spent inside completion wait177.003/160.634ms versus invoke1.299/1.434ms. GPU kernel latency dominates this synthetic selector;no timed PCIe copy,physical VRAM/arithmetic saturation or whole-model limiter claim."
+    },
+    "closed_source_recipe_recovery": {
+      "complete": true,
+      "source_commit": "0309ca95236f027ca58de30e62be6a12a5c7a550",
+      "frozen_plan_commit": "2ddfa5948",
+      "original_source_inputs_from_Git": 41,
+      "actual_compiler_inputs": 695,
+      "final_executable_sha256": {
+        "binary": "c8e93ef415a88c053babdea761ac3f56804ea99b26057af58c349713b0108d24",
+        "observed_binary": "6cbadf60439b3cb70d06a568fa579115b77a568e0acbca1ef6e68d1a994051f6"
+      },
+      "all15_commands_closed": true,
+      "selected_fallback_unchanged": true
+    }
   }
 }

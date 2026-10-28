@@ -1869,6 +1869,43 @@ same native/correctness/small-smoke/clean-service gates before advancement.
 The closed V1generation and consumed research transactions retire after exact
 source/recipe/final-executable recovery. The old one-use IR qualifier retires to
 `f2af86639`;the new builder verifies the three source-identity fields itself.
+
+V2from source`0309ca952`,plan`2ddfa5948`,passes all15build commands and695
+actual compiler inputs. The two observation variants have matching native
+properties and device IR after the strictly checked source identities. All six
+17-case correctness processes pass. The direct-event smoke also passes three
+processes,each with7successful kernel-identified launches and2actual retained
+events,valid timestamps and bounded queries. No fresh fault occurs.
+
+The frozen performance plan`337c1585c`then closes all18independent processes
+and432batches,with every timing/observer eligibility condition satisfied and
+identical selected IDs. **Do not adopt the SG16candidate.** Four comparisons
+against the original fail the prospectively declared all-shape gate:
+
+| Context cells | Score pattern | Candidate/original clean time | Candidate/original GPU service |
+| ---: | --- | ---: | ---: |
+| 32768 | Varied | 0.881145 | 0.880700 |
+| 32768 | Equal | 0.960226 | 0.958374 |
+| 78453 | Varied | 1.002894 | 1.001899 |
+| 78453 | Equal | 1.070765 | 1.070872 |
+| 117489 | Varied | 0.909287 | 0.906140 |
+| 117489 | Equal | 1.051780 | 1.051817 |
+| 262144 | Varied | 0.863354 | 0.863802 |
+| 262144 | Equal | 1.084109 | 1.084468 |
+
+These are geometric means of three paired process ratios,each based on three
+within-process rounds. All eight comparisons against the forced-SG16control
+improve,but that does not establish a production gain. At117489varied cells,
+representative observed batch medians are179.438/162.617ms total and
+179.054/162.248ms GPU service(original/candidate). Thread CPU is177.003/160.634ms
+inside completion wait versus1.299/1.434ms in the public invoke region.
+Thus kernel latency dominates this isolated selector;CPU polling is not host
+inference arithmetic. Timed work contains no PCIe copy. Physical VRAM traffic,
+arithmetic saturation and the whole-model limiter remain unmeasured here.
+Main next tests a distinct WG256/SG32layout,eight subgroup partials per bin and
+two bins per subgroup,with source-safe masked loads and576B declared accessors.
+The same universal performance gate remains required before any model trial.
+
 The existing7.689s selection queue interval includes host submission gaps and
 scoring;it is not this selector's GPU service or a hardware bottleneck proof.
 After the screen and refused diagnostic are committed,three final retirements
