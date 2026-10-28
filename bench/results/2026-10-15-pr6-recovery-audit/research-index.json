@@ -14391,7 +14391,7 @@
         "question": "With the exact installed toolchain provenance established, does adding only [[sycl::reqd_work_group_size(128)]] to this QSA attention lambda produce a relevant optimized-IR difference versus its source-bound unannotated control, beyond any equivalent earlier handler-property arm?",
         "eligibility_prerequisites": [
           "Main completes the installed toolchain build-root, source-revision, compiler/SPIR-V/IGC ELF identity chain; use those verified binaries, not a path or version label.",
-          "Verify the earlier 128/256 handler-property result's required-size metadata and optimized IR. Skip the new compile if it already supplies the same discriminator.",
+          "Main checked exactb4beb8d53 generator:128/256are grf_size counts and no required-WG metadata is requested. Prior GRF experiment is not the same exact-WG attribute discriminator.",
           "Pin the exact source (SHA-256 4f9f815c9baae709f919f6d5ad1af04677c10d8c13c7597b3857cf81567ae192), control IR (SHA-256 42e724afc3ba12171493dcc1dda15821713f26e1744b26b33a4ab7457e81b529), dependency digest cdb420926f92502e93d4a18c95cad47f9624bc982f0078f2e302b024678e2ddf, and complete compile recipe before launching the compile-only comparison."
         ],
         "bounded_method": "One control/annotated compile-only comparison. Check emitted LLVM metadata, SPIR-V LocalSize, and optimized IR only for fixed-local-range simplification or movement/removal of relevant K-loop row-validity/address work. No device execution or GPU measurement in this discriminator.",
@@ -14399,7 +14399,13 @@
       },
       "compiler_origin_ref": "qsa-codegen-current.json::direct_K_loop_invariant.source_contract.compiler_origin",
       "provenance_resolution": "Main verified official LLVM504 build-root and complete compiler ELF install transform,current source17attributed patches. Not pristine. SPIR-V/IGC lowering/runtime identities remain exact frozen manifest assets;CPU IR-only discrimination can precede a new image/runtime qualification.",
-      "limit": "No speed or numerical/device result. Do not repeat earlier 128/256handler-property experiments if they already produce equivalent metadata/optimized IR."
+      "limit": "No speed or numerical/device result. Do not repeat earlier 128/256handler-property experiments if they already produce equivalent metadata/optimized IR.",
+      "prior_discriminator_checked": {
+        "source": "b4beb8d53:tools/sycl/qsa_grf_sources.py",
+        "source_sha256": "95050d4908e9435ea3169fd119f7968c13839d4ef1f091dae3528c7437911ab6",
+        "observation": "Earlier128/256handler properties are GRF register counts,not workgroup sizes. They do not add a required-WG-size attribute. No duplicate exact-WG-metadata discriminator is established by that result.",
+        "limit": "Only the archived source generation was compared;new exact-WG annotation needs its own committed source/CPU-IR plan. The current direct-K native candidate remains independent."
+      }
     }
   }
 }

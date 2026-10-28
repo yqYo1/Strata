@@ -391,7 +391,7 @@
     }
   ],
   "direct_K_loop_invariant": {
-    "stage": "native_component_built_properties_unrun",
+    "stage": "native_properties_passed_numerical_speed_unrun",
     "source_commit": "6413ca5a9007a7d3efec487901b8f8a24bd480ec",
     "proposal_source_commit": "139030e095ccd809bcdd51aa721ae3fee46199f2",
     "frozen_plan_ref": {
@@ -468,8 +468,8 @@
       }
     ],
     "analysis_method": "Exact hash-bound attention LLVM CFG,branch successors/predecessors,reachable-block dominators and natural loop from proven dominated backedge;source row-read SSA membership. Actual native Kloop old capture is source/ordered-barrier/dataflow correspondence,notDWARF. IR hoisting does not prove changed final native ISA/resource allocation or speed.",
-    "next": "Run separately frozen property-only plan for3exact WG128/SG16 attention kernels. Then bounded trace/numerical/upper-row gates and new performance plan;no production/model/decode adoption.",
-    "retention": "2newCPP/LLVM/dependency sets through immediate native-preparation decision;first failed raw capture/logs retire after compact evidence. Old9ASM/ZeInfo/LLVM remain only through current researcher reading/source mapping decision;review at closure.",
+    "next": "Prepare bounded traced3query actual-ID smoke,then boundary/oracle and newly frozen matched speed decision. Descriptor increase is a counterargument,not a speed rejection. Production/decode/model selection unchanged.",
+    "retention": "Current native2executables,3IR and3generated source/header files plus actual dependency manifest serve the imminent bounded smoke/boundary/oracle/performance comparison. Preserve selected6e40engine+12fixtures. Closed CPU IR probe and build/property raw output retire after compact evidence/source recovery;old packed analysis keeps only original ASM/ZeInfo for a direct-K native correspondence comparison.",
     "source_contract": {
       "source_reviewed": true,
       "review_model": "gpt-6-luna max",
@@ -1205,7 +1205,7 @@
       }
     },
     "native_properties": {
-      "stage": "prepared",
+      "stage": "closed",
       "source_commit": "adf41fd82f3064c8db46d56cb1bc2529930f8447",
       "controller_inputs": {
         "tools/sycl/check_qsa_k_loop.py": "46a2a5d42109986898d6b3d77fb04488b24149d6b6d94c8ca7850e0f801270c2",
@@ -1356,7 +1356,110 @@
         "total_cap": 134217728
       },
       "criteria": "One owned property-only child. Three exact attention kernels pass WG128/SG16/18args and conservative local-memory checks. Live B570 DRM descriptors,immutable preexec environment,pinned code maps,namespace0 loader/dlsym and pre-main UR validation. Query trace with zero kernel enqueue,no runtime/validation errors,no fresh GPU faults,complete physical process closure. No numerical,speed,occupancy,actual bound-local-argument or model qualification.",
-      "retention": "Retain compact queried properties and fault/closure outcome;retire successful API/loader logs after verification. Native generation remains only for imminent bounded smoke/boundary/oracle and frozen performance decision."
+      "retention": "Retain compact queried properties and fault/closure outcome;retire successful API/loader logs after verification. Native generation remains only for imminent bounded smoke/boundary/oracle and frozen performance decision.",
+      "outcome": {
+        "passed": true,
+        "complete": true,
+        "active": false,
+        "ownership_closed": true,
+        "device_initialized": true,
+        "kernel_submissions": 0,
+        "model_qualified": false,
+        "device_identity": {
+          "name": "Intel(R) Arc(TM) B570 Graphics",
+          "pci": "0000:05:00.0",
+          "driver": "xe",
+          "matching_DRM_descriptors": 1
+        },
+        "loader_object": {
+          "path": "/usr/lib/x86_64-linux-gnu/libze_loader.so.1.32.0",
+          "sha256": "b764efda507f173560fa6055d433dd5c76140180b4a7c532e1cea813cde67363",
+          "device": "00:1d",
+          "inode": 7539712,
+          "executable_start": "755b9c402000",
+          "file_offset": "00018000",
+          "namespace": 0,
+          "symbols": [
+            "zeDeviceGetComputeProperties",
+            "zeKernelGetProperties"
+          ],
+          "evidence": "Live executable map plus canonical namespace-0 glibc object/dlsym bindings;helper requires RTLD_NOLOAD. This is this child only,not a general interop guarantee."
+        },
+        "properties": [
+          {
+            "arm": 0,
+            "max_workgroup": 1024,
+            "subgroup": 16,
+            "arguments": 18,
+            "reported_local_bytes": 32,
+            "declared_dynamic_local_bytes": 20036,
+            "reserve_local_bytes": 4096,
+            "conservative_local_budget": 24164,
+            "per_group_local_max": 131072,
+            "spill_descriptor": 12480
+          },
+          {
+            "arm": 1,
+            "max_workgroup": 1024,
+            "subgroup": 16,
+            "arguments": 18,
+            "reported_local_bytes": 32,
+            "declared_dynamic_local_bytes": 20036,
+            "reserve_local_bytes": 4096,
+            "conservative_local_budget": 24164,
+            "per_group_local_max": 131072,
+            "spill_descriptor": 12480
+          },
+          {
+            "arm": 2,
+            "max_workgroup": 1024,
+            "subgroup": 16,
+            "arguments": 18,
+            "reported_local_bytes": 32,
+            "declared_dynamic_local_bytes": 20036,
+            "reserve_local_bytes": 4096,
+            "conservative_local_budget": 24164,
+            "per_group_local_max": 131072,
+            "spill_descriptor": 23808
+          }
+        ],
+        "validation": {
+          "pid": 2459036,
+          "loader": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_loader.so.0.12.0",
+          "threads_before": 1,
+          "preinit": 37,
+          "config_enabled": true,
+          "first_init": true,
+          "dispatch_result": 46,
+          "output_untouched": true,
+          "retained_reference_until_exit": true,
+          "runtime_teardown_qualified": false
+        },
+        "postchecks_complete": true,
+        "postcheck_errors": [],
+        "fresh_faults": [],
+        "boot_unchanged": true,
+        "driver_after": {
+          "pci": "/sys/bus/pci/devices/0000:05:00.0",
+          "driver": "xe",
+          "vendor": "0x8086",
+          "device": "0xe20c",
+          "kernel": "7.0.0-38-generic",
+          "devcoredump": false
+        }
+      }
+    },
+    "native_property_interpretation": {
+      "queried_spill_descriptor_bytes": [
+        12480,
+        12480,
+        23808
+      ],
+      "declared_dynamic_local_bytes": 20036,
+      "maximum_conservative_local_budget": 24164,
+      "per_group_local_max": 131072,
+      "limit": "Candidate longer row/pointer lifetime or branch split may worsen allocation;static descriptor does not measure executed spill traffic or establish speed. No property-stage kernel was enqueued.",
+      "next": "New frozen first-use traced3query smoke,translated physical262143address and independent tensor oracle;then matched108sample comparison. No model trial before performance gate. Main owns serialized testing."
     }
   }
 }

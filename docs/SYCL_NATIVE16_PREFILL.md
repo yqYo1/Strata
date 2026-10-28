@@ -1645,13 +1645,28 @@ dynamic traffic or stall counts. Next map the original direct-K source loop to
 its native block before selecting a distinct lifetime/unroll change. No timing
 or model adoption follows. Closed host mocks
 and their one-use source recover from`6c7a3e05d` with frozen plan`21046228a`.
-The27closed generation/capture/report files now retire (6783939bytes),including
+The27closed generation/capture/report files retire (6783939bytes),including
 both component executables and the observer. Nine one-use source files restore
 from`77e0d370f`;original component/observer recipes restore from`3a3f22931` and
-`21046228a`. Only nine ASM/ZeInfo/LLVM files (2236696bytes) remain for Main's
-immediate direct-K block/lifetime audit,reviewed at that source-selection decision.
-The single initialized53MBactual-ID fixture remains for that next correctness
-decision;retire it there if no distinct source variant is selected.
+`21046228a`. The subsequent direct-K source audit selected an independent loop
+change, so the initialized53MBactual-ID fixture now serves its imminent
+correctness/performance comparison. Only the original ASM/ZeInfo pair still
+serves native-block correspondence;closed packed/control/LLVM copies retire.
+
+The [direct-K comparison](../bench/results/2026-10-15-pr6-recovery-audit/qsa-codegen-current.json)
+hoists each lane's stable row read,validity test and row-base calculation out
+of16dimension iterations. The finite204-case address/writer/order proof and
+independent source review pass. Two separately frozen CPU IR compiles confirm
+the row read moves outside the natural loop. The earlier missing-header admission
+remains failed;the later probe pins three exact official LLVM504headers.
+The native component builds15commands from source`a2f54c3e5`,frozen plan`5c612e3bd`,
+with702actual dependencies. All three exact18argument/SIMD16kernels pass a
+separate property-only B570 check,with no kernel enqueue or fresh fault and
+normal owned-process closure. The candidate spill descriptor increases from
+12480to23808;this is allocation metadata,not executed spill traffic or a speed
+result. Native correctness and timing remain unrun. Next use a newly frozen
+traced tiny fixture,boundary and independent oracle before matched timing;
+do not advance to a model trial from compilation or property success.
 Production/decode and the selected6e40engine/twelve fixtures remain unchanged.
 The earlier eight-u16 generation and two consumed research/review files retire
 after recovering197original source inputs,exact recipe/generated sources and699actual
