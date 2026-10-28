@@ -23,6 +23,11 @@ require, digest, write = build.require, build.digest, build.write
 ORDER = ['properties', 'id-smoke', 'id-boundary', 'oracle-smoke', 'oracle-component']
 
 
+def output_folder(mode):
+    # The first property attempt remains a failed, separately recorded run.
+    return ROOT / ('properties-v2' if mode == 'properties' else mode)
+
+
 def inputs(revision):
     # These are the only two local imports of this controller. Each producer
     # recursively pins its own imports; also pin this entrypoint itself.
@@ -43,6 +48,8 @@ def build_record(scope):
             not row['GPU_executed'] and not row['model_selected'] and
             len(commands) == len(row['commands']) and all(build.runtime.supervision.closed(c) for c in commands),
             'closed exact committed model build required')
+    require(digest(ROOT / 'build/compile_commands.json') == row['compile_database_sha256'],
+            'recorded effective compile database changed')
     return row
 
 
@@ -84,7 +91,7 @@ def prepare(mode):
     row = build_record(scope)
     rt = build.runtime.validation.committed(build.runtime.RESULT)
     revision = build.component.gen.git('rev-parse', 'HEAD').decode().strip()
-    folder = ROOT / mode
+    folder = output_folder(mode)
     require(not folder.exists(), 'fresh check directory required')
     loader = [p for p in rt['runtime_files'] if Path(p).name.startswith('libze_loader.so.')]
     require(len(loader) == 1, 'one qualified Level Zero loader required')
@@ -139,7 +146,7 @@ def live(io, plan, rt, stage, device):
 
 def run(mode):
     record = build.component.gen.committed(RESULT)
-    scope, folder = record[build.KEY], ROOT / mode
+    scope, folder = record[build.KEY], output_folder(mode)
     plan = scope['check_plan']
     require(mode in ORDER and plan['mode'] == mode and plan['stage'] == 'prepared' and
             plan == json.loads((folder / 'plan.json').read_text()) and not (folder / 'owned.json').exists(),
@@ -168,11 +175,14 @@ def run(mode):
                 require(io.line(90) == 'admission_stage=runtime-ready device=' + name, 'property device differs')
                 outcome['physical_device'], text = live(io, plan, rt, 'runtime-ready', name)
                 rows = [line.split(maxsplit=5) for line in text.splitlines()]
+                ze_loader = plan['command'][-1]
+                require(Path(ze_loader).name.startswith('libze_loader.so.') and
+                        ze_loader != rt['preload']['loader'], 'ZE and UR loader identities must be distinct')
                 rows = [r for r in rows if len(r) == 6 and 'x' in r[1] and r[5].startswith('/') and
-                        str(Path(r[5]).resolve()) == rt['preload']['loader']]
+                        str(Path(r[5]).resolve()) == ze_loader]
                 require(len(rows) == 1, 'one mapped executable loader object required')
                 r = rows[0]
-                loader_object.update(path=rt['preload']['loader'], sha256=rt['runtime_files'][rt['preload']['loader']],
+                loader_object.update(path=ze_loader, sha256=rt['runtime_files'][ze_loader],
                     device=r[3], inode=int(r[4]), executable_start=r[0].split('-')[0], file_offset=r[2])
                 while True:
                     line = io.line(90)
@@ -224,6 +234,12 @@ def run(mode):
                     rows.append({key:int(value) for key,value in fields.items()})
             require([r['arm'] for r in rows] == [0,1,2] and
                     stdout.count('admission_status=PASS kernel_submissions=0 ') == 1, 'incomplete property coverage')
+            require(all(r['subgroup'] == 16 and r['arguments'] == 18 and r['max_workgroup'] >= 128 and
+                r['reported_local_bytes'] >= 0 and r['declared_dynamic_local_bytes'] == 20036 and
+                r['reserve_local_bytes'] == 4096 and r['conservative_local_budget'] ==
+                r['reported_local_bytes'] + r['declared_dynamic_local_bytes'] + r['reserve_local_bytes'] and
+                r['conservative_local_budget'] <= r['per_group_local_max'] and r['spill_descriptor'] >= 0
+                for r in rows), 'property values disagree with the compiled native contract')
             outcome.update(properties=rows, loader_object=checks.loader_bindings(stderr,loader_object), GPU_kernels_executed=False)
         elif mode.startswith('id-'):
             launches = checks.local_launches(trace, plan['kernel_ids'], [0,1,2])
@@ -231,8 +247,13 @@ def run(mode):
             outcome.update(output=checks.parsed_output(stdout,mode.removeprefix('id-'),0),
                            local_launches=launches, GPU_kernels_executed=True)
         else:
+            launches = checks.local_launches(trace,plan['kernel_ids'],[0])
+            # Two normal calls/case plus19extended diagnostic calls in case1.
+            # Rejected/no-op calls must not enqueue the selected attention kernel.
+            expected = 23 if mode == 'oracle-smoke' else 41
+            require(launches['0']['calls'] == expected, 'production oracle dispatch count differs')
             outcome.update(output=checks.parsed_oracle(stdout,mode.removeprefix('oracle-')),
-                local_launches=checks.local_launches(trace,plan['kernel_ids'],[0]), GPU_kernels_executed=True)
+                local_launches=launches, GPU_kernels_executed=True)
         admit(scope, plan)
         outcome.update(passed=True, complete=True, validation=proof, exit_code=0)
     except BaseException as error:
