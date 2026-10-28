@@ -1838,9 +1838,17 @@ build must show identical device IR,and both fixtures need the same native
 properties and independent-oracle outputs. A small traced7-launch probe precedes
 128-repeat timing;successful API returns must resolve to the admitted kernel,
 and profiling queries have a separate1s returned-call budget plus the owned
-child deadline. No new compilation,property query,GPU execution
-or speed result exists yet;the cohort is closed and the next action is the
-isolated selector build and native/correctness/service gates. Component262144coverage does not qualify a full model.
+child deadline. All15isolated compile/link/IR commands now exit0 from source
+`5b0b420c7`,frozen plan`cb38a4bcf`,with695actual compiler inputs verified.
+The first build gate remains failed:it permits module/source_filename labels,
+but also encounters a different source path in the SYCL module identity
+attribute. New prospective controller`f2af86639`,plan`c401b7d50`,keeps the same
+executable/IR bytes and verifies all original inputs/receipts. It checks each
+identity against its exact recipe input before normalizing only those three
+source-identity fields. Both complete remaining IR texts then match. No
+recompilation or GPU execution occurs in that method gate. Native property,
+correctness,event and speed gates remain unrun;component262144coverage does
+not qualify a full model.
 The existing7.689s selection queue interval includes host submission gaps and
 scoring;it is not this selector's GPU service or a hardware bottleneck proof.
 After the screen and refused diagnostic are committed,three final retirements
@@ -1868,7 +1876,7 @@ numerical/provenance holds remain untouched.
 
 ## Attribution limits and outstanding gates
 
-Detailed follow-up on the agent-turn decline is delegated to Luna. Main returns
+Any necessary detailed follow-up on the agent-turn decline stays with Luna. Main returns
 to the batched radix selector's implementation and component/model performance
 gates after the closed candidate failed preservation. Keep phase-preservation and
 adoption checks,plus input-length/time approximations and route-boundary
