@@ -14380,7 +14380,7 @@
   },
   "qsa_row_hoist_control_flow_pressure_20261028": {
     "classification": "decision_support",
-    "status": "Orca_research_active",
+    "status": "reviewed_conditional_compile_discriminators",
     "schedulable_now": false,
     "report_budget_bytes": 18432,
     "source_revision": "a2f54c3e5ce96cbda94901587373f08510525662",
@@ -14401,7 +14401,7 @@
       "qsa_kernel_local_grf_contract_20261027"
     ],
     "report": ".cache/strata-research/20261028/qsa-row-hoist-control-flow-pressure.md",
-    "worker_closed": false,
+    "worker_closed": true,
     "orca": {
       "run": "run_80ea8ebc9a8c",
       "task": "task_9796567af205",
@@ -14410,12 +14410,51 @@
       "model": "gpt-6-luna",
       "effort": "high",
       "model_evidence": "Initial launch requested/effectiveLuna high;pre-task update prompt skipped with documented ESC;exact same terminal idle GPT-6-Luna high/YOLO/current workspace verified;official retry ready/input_accepted.",
-      "pre_task_readiness_failure": "ctx_1d2993d17451"
-    }
+      "pre_task_readiness_failure": "ctx_1d2993d17451",
+      "released": true
+    },
+    "report_bytes": 12653,
+    "report_sha256": "4d0506968721d73187160cb19a632f7cd1a9271e428efa46c9f9993acaea2c56",
+    "review": {
+      "status": "completed",
+      "agent": "/root/curate_qsa_row_hoist_pressure_20261028",
+      "model": "gpt-6-luna",
+      "reasoning_effort": "max",
+      "bytes": 6726,
+      "sha256": "16e14e9855655d2f08bd4eb74d153b493cf6fd670481bbadd2ddd42b9a48f23c"
+    },
+    "accepted_findings": [
+      "The finite mapping proof covers 204 cases and 8,192 destinations per case; it establishes source-level mapping/order/invalid-row no-read properties only, not SYCL legality, numerical behavior, native allocation, or speed.",
+      "The exact control LLVM has the row load/predicate within its natural dimension loop; the candidate places them before separate valid and invalid loops. Per-element i16 loads are align-2; no 64-bit transaction is guaranteed.",
+      "A longer row/base-pointer live range is a credible pressure hypothesis. The two exclusive loops duplicate static stores/address work, but their temporaries need not overlap in liveness; mixed-validity subgroup frequency and final native lowering are unknown.",
+      "The recorded 12,480-to-23,808-byte spill-descriptor increase is a property value, not executed spill bytes, occupancy, memory traffic, or a speed result. The reported 128 GRFs and WG128 are distinct quantities. Historical 128/256 handler-property variants refer to GRF counts, not work-group size."
+    ],
+    "conditional_discriminators": [
+      {
+        "name": "Shared-store loop versus explicit valid/invalid split",
+        "question": "With the row load still hoisted once, does one common destination-store loop with per-iteration validity produce optimized IR distinct from the current split, and where does the predicate land?",
+        "eligibility": "Future compile-only comparison after Main's active serialized gates close; commit a new plan first, pin exact source/generator/compiler/dependencies/recipe, preserve the current selected fallback, and inspect the exact attention-kernel IR. No GPU run follows from an IR difference alone.",
+        "stop_rules": [
+          "Stop if LLVM unswitches the invariant predicate back into equivalent split loops or otherwise yields materially equivalent IR.",
+          "Stop on invalid-row source-address formation/read or any barrier/collective participation hazard.",
+          "Only if IR differs should Main decide whether native branch/code-size/allocation evidence and a separately frozen correctness/performance comparison justify continuing."
+        ]
+      },
+      {
+        "name": "Recompute valid-row base inside the loop versus carry row_k",
+        "question": "With the same row load, split, order, bounds, vector loads, and stores, does recomputing the source address per iteration shorten the optimized pointer live range or is it hoisted/strength-reduced back?",
+        "eligibility": "Future compile-only comparison under the same new-plan and exact-input prerequisites; not eligible alongside Main's active serialized gates. Inspect optimized IR and descriptor only as source/compiler evidence.",
+        "stop_rules": [
+          "Stop if optimized IR is equivalent, or if added address work does not shorten the live range.",
+          "Stop if the descriptor worsens without an explained native-code change.",
+          "Any speed claim requires Main's separately frozen matched performance and correctness gates."
+        ]
+      }
+    ]
   },
   "sycl_local_accessor_alias_contract_20261028": {
     "classification": "decision_support",
-    "status": "Orca_research_active",
+    "status": "completed_native_review_pending",
     "schedulable_now": false,
     "report_budget_bytes": 18432,
     "source_revision": "a2f54c3e5ce96cbda94901587373f08510525662",
@@ -14436,7 +14475,7 @@
       "qsa_irregular_gqa_matrix_packing_collection_20261027"
     ],
     "report": ".cache/strata-research/20261028/sycl-local-accessor-alias-contract.md",
-    "worker_closed": false,
+    "worker_closed": true,
     "orca": {
       "run": "run_80ea8ebc9a8c",
       "task": "task_11c86f37af45",
@@ -14445,7 +14484,16 @@
       "model": "gpt-6-luna",
       "effort": "high",
       "model_evidence": "Initial launch requested/effectiveLuna high;pre-task update prompt skipped with documented ESC;exact same terminal idle GPT-6-Luna high/YOLO/current workspace verified;official retry ready/input_accepted.",
-      "pre_task_readiness_failure": "ctx_9cec0d358747"
+      "pre_task_readiness_failure": "ctx_9cec0d358747",
+      "released": true
+    },
+    "report_bytes": 12900,
+    "report_sha256": "1ee615a25eba44d72690d0abe885933d00d9d129e574c9a70bc270be84882f95",
+    "review": {
+      "status": "active",
+      "agent": "/root/curate_sycl_local_alias_contract_20261028",
+      "model": "gpt-6-luna",
+      "reasoning_effort": "max"
     }
   }
 }
