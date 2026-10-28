@@ -180,7 +180,7 @@ def prepare():
     print('Prepared prospective configure/link closure;commit before execution.',flush=True)
 
 
-def compiler_products(stderr,allowed):
+def compiler_products(stderr,allowed,output_root=OUT):
     # Save-temps keeps the compiler's internal products available for hashing;
     # bind them to explicit producer -o arguments in verbose owned tool commands.
     produced, lists = set(), set()
@@ -201,7 +201,7 @@ def compiler_products(stderr,allowed):
             path = Path(output)
             path = (path if path.is_absolute() else ROOT / 'build' / path).resolve()
             if path.is_file():
-                require(path.is_relative_to(OUT) or path.parent == Path('/home/yayoi') and
+                require(path.is_relative_to(output_root) or path.parent == Path('/home/yayoi') and
                         re.fullmatch(r'-[0-9a-f]{6}(?:_\d+)?\.(?:bc|table|txt|spv)',path.name),
                         'unexpected external compiler output: ' + str(path))
                 produced.add(path)
@@ -213,7 +213,7 @@ def compiler_products(stderr,allowed):
             path = Path(line.strip())
             if not path.is_file():
                 continue
-            require(path.is_absolute() and (path.is_relative_to(OUT) or
+            require(path.is_absolute() and (path.is_relative_to(output_root) or
                     path.parent == listing.parent and path.stem.startswith(listing.stem + '_')),
                     'compiler file-list output escapes its owned namespace')
             produced.add(path.resolve())
@@ -222,8 +222,8 @@ def compiler_products(stderr,allowed):
     return produced
 
 
-def traced_inputs(stdout,stderr,allowed):
-    produced = compiler_products(stderr,allowed)
+def traced_inputs(stdout,stderr,allowed,output_root=OUT):
+    produced = compiler_products(stderr,allowed,output_root)
     observed, generated = {}, {}
     for line in stdout.splitlines():
         line = line.strip()
@@ -237,7 +237,7 @@ def traced_inputs(stdout,stderr,allowed):
             require(sha == allowed[str(path)], 'resolved provider differs from pre-link inventory')
             observed[str(path)] = sha
         else:
-            require(path in produced and path.is_relative_to(OUT), 'unfrozen linker input: ' + str(path))
+            require(path in produced and path.is_relative_to(output_root), 'unfrozen linker input: ' + str(path))
             generated[str(path)] = sha
     require(len(observed) > 8, 'incomplete actual linker input trace')
     return dict(frozen_inputs=observed,compiler_generated_inputs=generated,uncovered_inputs=0,
