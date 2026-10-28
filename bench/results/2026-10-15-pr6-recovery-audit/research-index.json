@@ -14844,7 +14844,7 @@
       "Label the report's fork NH=24/NKV=2/HD=256 as attention-reader geometry, not QSA indexer geometry; official config lists indexer_n_heads=4, indexer_kv_heads=1, indexer_head_dim=128.",
       "The linked staging QSA blog was inaccessible in review. Pinned framework sources and official config corroborate the Qwen4-Exp route and budget/compression parameters; keep blog-only details as secondary context."
     ],
-    "limits": "The indexed fork metadata identifies QSA row-ID readers but not their producer. Fork scoring, score dtype/precision, variable-ID generation, tie/output contract, candidate counts, limiting resource, and performance are unestablished. No method is selected; upstream CUDA sources do not establish the fork's route.",
+    "limits": "At report time indexed metadata did not identify the fork producer. Main now traces selected6e40 prefill.cpp:2852..2889 to qsa_score_gemm/fallback scoring and qsa_block_topk_prefill Mapping1 in qsa_select.cpp;radix4 emits ascending block/cell IDs with deterministic weighted tie handling. Source is463a9ec02ed28125a5cd38b7b5d28784b849a4fbb199cb017042cd99078efee1,sel_batch256. See qsa_batched_radix_histogram_contract_20261028 for the new source-bound decision. Actual per-execution scoring dispatch,selector service,hardware limitation and performance remain unqualified;upstream CUDA does not establish the fork route.",
     "primary_sources": [
       "https://github.com/vllm-project/vllm/blob/fd3469f4533d0517b0c8a6b72459d0fe7fd58d2f/vllm/models/qwen4_exp/nvidia/indexer_qsa.py",
       "https://github.com/vllm-project/vllm/blob/fd3469f4533d0517b0c8a6b72459d0fe7fd58d2f/vllm/models/qwen4_exp/nvidia/ops/qsa_indexer.py",
@@ -15048,7 +15048,7 @@
   },
   "qsa_batched_radix_histogram_contract_20261028": {
     "classification": "decision support",
-    "status": "completed_pending_native_review",
+    "status": "reviewed_source_only_native_gate_pending",
     "schedulable_now": false,
     "source_revision": "c722121f9218737492f16debde6d7d0d280e8532",
     "question": "Audit the isolated Main-authored SG16/WG256 radix4 batched-histogram proposal against selected6e40 qsa_select.cpp. Prove or refute weighted rank/tie/NaN/signed-zero/ascending-ID equivalence,complete writer/read/barrier lifetimes across digit rounds,all-SG collective participation including early returns,integer/extent bounds,device/queue/owner contracts and exact SG16 control isolation. Compare sequential WG reductions,two-level batched subgroup reductions and viable alternatives,including concrete counterexamples and required native codegen/resource/service evidence. Distinguish proposed two explicit WG barriers from unknown lowering of original collectives,and scoring/queue gaps from selector service. Identify at most two actionable source corrections or next gates,not a generic selection survey. No implementation,build,test,GPU/profiler/process or Git operations.",
@@ -15072,7 +15072,7 @@
       "qsa_direct_K_row_invariant_contract_20261028",
       "sycl_command_submission_amortization_collection_scope"
     ],
-    "consumer": "Main next source-local candidate after the frozen direct-K official cohort;native Luna-max review before a fresh source/build/CPU/native/numerical/service gate. Not current model adoption.",
+    "consumer": "Main next committed selector source/build/native/CPU/service gate after the frozen direct-K official cohort. Keep the reviewed report only through that gate;no production caller/adoption.",
     "retirement": "Commit only source corrections and useful comparison/gate facts;retire consumed spec/dispatch/review text. Retire proposal exports/source if its mechanism gate closes without a native consumer.",
     "worker_closed": true,
     "orca": {
@@ -15088,6 +15088,16 @@
       "closure": "Accepted worker_done msg_0b9f39eef931;official release closed exact agent terminal,then delivery_289b75a5c0c2 ACKed."
     },
     "report_bytes": 11054,
-    "report_sha256": "e80b888d3c1a1ba978d63f67984ebf8f2d45ab5d3cc005435174e3dd1a8b484a"
+    "report_sha256": "e80b888d3c1a1ba978d63f67984ebf8f2d45ab5d3cc005435174e3dd1a8b484a",
+    "native_review": {
+      "model": "native Codex gpt-6-luna max",
+      "sha256": "ce3e5fd513787c8f8793622ea297db6ef4df718a357b8401e70dc8a5bd491033",
+      "bytes": 5583,
+      "decision": "Source contract and wrapper accepted;no source/license correction,build/execution/speed/model adoption. Main has not read the report body.",
+      "source_contract": "Exact weighted rank/stable ties/NaN/signed zero/partial-block/ascending-ID semantics under producer invariants. All WG-uniform returns precede collectives;two barriers protect every partial/totals round. Counts sum disjoint cells<=n<=INT_MAX.",
+      "wrapper": "One arm per fresh process before runtime init;independent weighted-cell oracle/public original/ref/canaries/immutable inputs retained. n262144 is component boundary only,not model full fill/RESTORE. Submit/drain timer is not GPU-only service.",
+      "next_gates": "After frozen cohort:pin recipe/controller/workload,build and native image/resource facts,small traced parameter-validated correctness,then repeated service and clean production-entrypoint wall/CPU comparisons. Separate scoring and host gaps. No additional research scope eligible now.",
+      "main_correction": "Candidate and forced-SG16 control share a new device-capability/preflight lookup absent from the original selector. Wrapper CPU accounting must include this difference as well as submission/waits/queue/observer/unclassified regions;do not describe their host paths as identical to production."
+    }
   }
 }
