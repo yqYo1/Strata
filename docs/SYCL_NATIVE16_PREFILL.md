@@ -1692,13 +1692,21 @@ verified imported link providers and three exact18argument/SIMD16kernels.
 Nine auxiliary6e40source files are also recovered solely for CMake target
 generation;those targets are not built. The original missing-file configuration
 failure remains failed in the linked result and its565closed files retire
-(8839659bytes)after source/recipe recovery. Same-source property,actual-ID and
-production-entrypoint oracle gates are next;no model/GPU execution or long-input
-performance is qualified by compilation.
+(8839659bytes)after source/recipe recovery. The same-source property check and
+actual-ID3query/final262143-address gates pass,as do the production-entrypoint
+independent2/11-case oracles. Their exact selected attention counts are23/41;
+all output bits,guards and immutable inputs match,with normal ownership closure,
+quiet validation and no fresh fault. The first property attempt remains failed:
+the new controller confused its UR loader with the Level Zero property provider;
+source`534a3540a`corrects that and requires a new plan. This does not qualify
+whole-model execution. The1411compiled-input closure is distinct from complete
+link-provider closure:effective compile commands/generated build rules and
+resolved final link inputs still need admission before a model launch.
 Production/decode and the selected6e40engine/twelve fixtures remain unchanged.
 After192source/702actual-dependency recovery and exact recipe/executable checks,
-58closed files retire (7862437bytes). No auxiliary generation
-remains. Useful individual samples and compact numerical/fault decisions stay
+58closed files retire (7862437bytes). The original component generation is
+retired;one isolated model/fixture generation remains for the imminent build
+contract decision and model comparison. Useful individual samples and compact numerical/fault decisions stay
 in the current result;full original receipts restore from`8849d71e5`.
 The earlier eight-u16 generation and two consumed research/review files retire
 after recovering197original source inputs,exact recipe/generated sources and699actual
