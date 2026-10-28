@@ -1806,13 +1806,15 @@ further cause work belongs to Luna only when concrete new evidence opens a
 bounded eligible question. Physical262144fill/tail/handoff/RESTORE is still
 pending;successful execution here does not qualify that capacity.
 
-The one-use cohort continuation has closed and has no remaining consumer.
-Closed executable/object/relink and successful observer/cache outputs retire
-after matching the exact final executable's reachable source and recipe.
-The next selector builder needs the original compile/source/SDK receipts and
-selected runtime/selector sources only;that is a source-only hold,not another
-retained engine. All twelve generated cohort configurations/plans reconstruct
-byte-for-byte from the committed configuration,plan identities and constructor.
+The one-use cohort continuation has closed and retires to source`f27ec72ea`.
+After matching the exact final executable's reachable source and recipe,417
+closed executable/object/relink and successful observer/cache files retire
+(167596328bytes),with a path/hash/reason manifest in the linked result.
+The next selector builder's source-only admission passes again after deletion.
+It needs the original compile/source/SDK receipts and selected runtime/selector
+sources only;that hold is not another retained engine. All twelve generated
+cohort configurations/plans reconstruct byte-for-byte from the committed
+configuration,plan identities and constructor. The selected engine is unchanged.
 
 The next source-only selector candidate is
 `qsa_block_topk_batched_prefill`,with no production caller or build target.
