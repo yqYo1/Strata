@@ -1689,7 +1689,7 @@ independent oracle through the actual production ordered-prefill entrypoint.
 That model build and its runtime/long-input comparison remain unrun.
 Production/decode and the selected6e40engine/twelve fixtures remain unchanged.
 After192source/702actual-dependency recovery and exact recipe/executable checks,
-57closed component/research files retire (7852554bytes). No auxiliary generation
+58closed files retire (7862437bytes). No auxiliary generation
 remains. Useful individual samples and compact numerical/fault decisions stay
 in the current result;full original receipts restore from`8849d71e5`.
 The earlier eight-u16 generation and two consumed research/review files retire
