@@ -1826,6 +1826,13 @@ commands exit0,but this is not a passed gate or permission for GPU advancement.
 Its source/plan and compact inventory remain recoverable;the one-use controller
 and raw outputs retire after evidence preservation. Continue the unchanged
 official cohort with process3(original).
+Main's one-use `tools/sycl/finish_qsa_cohort.py` waits on the exact live
+qualifier3 parent through its pidfd,then holds the existing measurement lock.
+It verifies and commits/pushes each closed cohort row before running4and5
+through the unchanged controller. Failed evidence is preserved and stops the
+sequence;there is no retry,changed criterion or adoption. No other GPU/build/
+test/cleanup may run while this continuation owns the cohort. Retire the helper
+after the final cohort decision;the selected controller source remains8382987d1.
 The next source-only selector candidate is
 `qsa_block_topk_batched_prefill`,with no production caller or build target.
 Selected radix4 currently performs16workgroup histogram reductions per digit;
