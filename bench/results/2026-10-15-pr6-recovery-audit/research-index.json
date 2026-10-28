@@ -14735,5 +14735,57 @@
     "review_sha256": "f756f8c0820d78c3be541461b6c8dad59d6cb68be248844c342b39c69f1671b0",
     "reviewer": "native Codex gpt-6-luna max",
     "finding": "No current source blocker. Valid journal-prefix check alone is weaker than completion,but source-pinned zero-exit official runner must also finish journal.state(complete=true);combined result/hash/count/native gates bind work. Additional journal-start assertions are optional future hardening. Long engine-ms requests with10s floor/0.1ms precision need no component-style timer calibration for the0.5percent screen. After all six closures inspect decision.small_gain_screen_passed,not execution passed. Screen does not adopt inference."
+  },
+  "hierarchical_recurrent_scan_dataflows_20261028": {
+    "classification": "knowledge collection",
+    "status": "eligible_pending_dispatch",
+    "schedulable_now": true,
+    "question": "Across official vLLM/SGLang paths for gated recurrent/state-space layers and non-LLM signal-processing, scientific-computing and accelerator implementations, when can a token recurrence be converted into composable block summaries and evaluated with a hierarchical prefix scan? Compare sequential chunk updates, associative affine/low-rank composition, intra-block scans plus inter-block summaries, and recomputation/storage tradeoffs. Establish from source when the recurrence is actually composable, its exact state/rounding order, work and communication cost, and counterexamples where coefficient generation, numerical drift, state size, synchronization or short sequences make a scan lose. Include GPU/SYCL and DSP/FPGA/ASIC evidence; no Strata speed or implementation claim.",
+    "prerequisite_evidence": {
+      "technical": "None for knowledge collection. The indexed GDN scan/epilogue entries and Qwen engine context provide anchors; no current model-comparison result, local profile or source patch is needed.",
+      "dispatch": "Standard Orca capacity, startup-permission and writable-report-path checks at dispatch."
+    },
+    "report": ".cache/research/2026-10-28/hierarchical_recurrent_scan_dataflows_20261028.md",
+    "report_budget_bytes": 14336,
+    "prior_scopes": [
+      "gdn_subgroup_scan_scope: exact-FP32 column ownership within a workgroup; this scope is inter-chunk recurrence composition and global scan structure.",
+      "gdn_epilogue_separation_scope: fused/split epilogue resource tradeoffs; exclude that question.",
+      "gdn_runtime_contract_review: runtime dtype/config contract; reuse only as context, not a repeated runtime-contract audit.",
+      "mtp_compute_compute_dag_scheduling_methods_20261023: independent product scheduling; exclude general command-queue/DAG amortization."
+    ],
+    "consumer": "Adds an inter-chunk algorithm/dataflow reference for a future recurrent-prefill scaling decision. The index already has one-subgroup GDN scan feasibility and fused-versus-split epilogue scopes, but neither studies composition across chunks or its algorithmic prerequisites. Retrieve only if a measured recurrent stage or an engine comparison makes chunk-level recurrence scheduling concrete; retire the body if that decision never arises.",
+    "limits": "Do not assume this model\u2019s GDN update is affine-composable or numerically equivalent under tree reassociation. Do not propose code or infer a bottleneck.",
+    "source_revision": "29868a5b7",
+    "scope_review_sha256": "17935ef9372ca8fadef70f2a33a1a83c8968b0b5679819368543c737c4f6aa2f",
+    "worker_model": "Orca Codex gpt-6-luna high",
+    "review_model": "native Codex gpt-6-luna max",
+    "worker_closed": false,
+    "retention": "Keep only substantive nonduplicated reference findings with realistic retrieval need;native Luna-max review before Main reads scheduling digest. Main does not read collection body on arrival."
+  },
+  "adaptive_sparse_format_crossover_gpu_asic_20261028": {
+    "classification": "knowledge collection",
+    "status": "eligible_pending_dispatch",
+    "schedulable_now": true,
+    "question": "For dynamic, highly variable sparse rows on SIMT GPUs and matrix-accelerator ASICs, compare CSR/COO, ELL/SELL-C-sigma, blocked CSR/BSR, CSR5 or equivalent segmented formats, and dense/tile fallback. Explain how row-length skew, density, matrix-engine tile shape, metadata/indirection traffic, preprocessing or compaction, update frequency and output order determine the crossover; identify counterexamples and the smallest evidence needed for a later format decision. Ground the survey in non-LLM graph analytics, SpMM/GNN, recommendation or scientific kernels, then check what relevant vLLM/SGLang/Intel paths actually support. No local performance prediction or port proposal.",
+    "prerequisite_evidence": {
+      "technical": "None for collection. The index records query-specific selected KV lists and existing matrix-mapping references, enough to define retrieval relevance; their presence is not evidence for any format or local bottleneck.",
+      "dispatch": "Standard Orca capacity, startup-permission and writable-report-path checks at dispatch."
+    },
+    "report": ".cache/research/2026-10-28/adaptive_sparse_format_crossover_gpu_asic_20261028.md",
+    "report_budget_bytes": 15360,
+    "prior_scopes": [
+      "qsa_irregular_gqa_matrix_packing_collection_20261027: head/list matrix-tile mappings; exclude head packing and MMA-shape selection.",
+      "sparse_attention_interquery_kv_locality_scheduling_methods_20261023 and sparse_cross_query_reuse_scope: query ordering/cache locality and prefix reuse; exclude both.",
+      "intel_sycl_sparse_prefetch_staging_methods_20261027: K/V request staging; do not repeat prefetch/cache-control APIs.",
+      "gpu_moe_routing_collection_scope and long_prefill_skewed_expert_job_execution_scheduling_20261027: route/job construction and execution mapping; exclude routing, queues and job balancing."
+    ],
+    "consumer": "Provides a representation-selection reference if a future measured QSA/attention or expert-data path is limited by sparse-list metadata, conversion or ragged-row work. The existing QSA reports focus on query/KV locality, selected-list matrix mapping, prefix reuse and prefetch; this scope is specifically sparse representation and conversion/update amortization, supported by non-LLM sparse workloads and accelerator design evidence.",
+    "limits": "Do not turn the survey into a general sparse-attention, matrix-layout, scheduling or cache-locality review. No local density histogram is required or implied.",
+    "source_revision": "29868a5b7",
+    "scope_review_sha256": "17935ef9372ca8fadef70f2a33a1a83c8968b0b5679819368543c737c4f6aa2f",
+    "worker_model": "Orca Codex gpt-6-luna high",
+    "review_model": "native Codex gpt-6-luna max",
+    "worker_closed": false,
+    "retention": "Keep only substantive nonduplicated reference findings with realistic retrieval need;native Luna-max review before Main reads scheduling digest. Main does not read collection body on arrival."
   }
 }
