@@ -413,6 +413,12 @@ only for prefill/TTFT and does not characterize tg versus context/output length.
 | 78445 | 81.8309 | 958.6 | 81.969 |
 | 117483 | 120.6398 | 973.8 | 120.901 |
 
+Across the12subsequent long-route samples,client TTFT minus native prefill time
+is0.1087..0.2612s,median0.1343s. The first maximum request adds0.1638s;the initial
+short warmup instead adds3.7453s. These derived differences include first-token,
+phase and frontend work;they are not isolated network latency or a universal
+fixed offset. They support tracking TTFT alongside prefill with first-use apart.
+
 The first maximum-length request is separate:129.6552s and129.819s TTFT.
 The preceding62-token short warmup takes25.9737s with29.719s TTFT;neither
 belongs in the subsequent-request curve. Source/model hashing primes the file
@@ -1819,117 +1825,63 @@ sources only;that hold is not another retained engine. All twelve generated
 cohort configurations/plans reconstruct byte-for-byte from the committed
 configuration,plan identities and constructor. The selected engine is unchanged.
 
-The next source-only selector candidate is
-`qsa_block_topk_batched_prefill`,with no production caller or build target.
-Selected radix4 currently performs16workgroup histogram reductions per digit;
-the proposal groups these into subgroup partials and two explicit workgroup
-barriers,with1088bytes of local histogram storage. Rank,tie breaks and ascending
-ID emission are intended to remain exact. Independent Luna source review accepts
-the weighted-rank and collective/lifetime contract. The isolated build recipe
-in `tools/sycl/build_qsa_radix.py` reuses selected6e40 runtime/selector sources
-and their exact compile flags. The extended fixture provides separate clean
-submit/drain batches and event-observed service/host CPU measurements for
-32768,78453,117489and262144synthetic context cells,with scoring/transfers/oracle
-work outside timing. Capability checks added to the candidate/control remain
-charged to their public calls. The clean fixture compiles unchanged selector
-sources;its separate event fixture substitutes only a host-side finish seam.
-That seam compares each captured submission with the last-event query. The
-build must show identical device IR,and both fixtures need the same native
-properties and independent-oracle outputs. A small traced7-launch probe precedes
-128-repeat timing;successful API returns must resolve to the admitted kernel,
-and profiling queries have a separate1s returned-call budget plus the owned
-child deadline. All15isolated compile/link/IR commands now exit0 from source
-`5b0b420c7`,frozen plan`cb38a4bcf`,with695actual compiler inputs verified.
-The first build gate remains failed:it permits module/source_filename labels,
-but also encounters a different source path in the SYCL module identity
-attribute. New prospective controller`f2af86639`,plan`c401b7d50`,keeps the same
-executable/IR bytes and verifies all original inputs/receipts. It checks each
-identity against its exact recipe input before normalizing only those three
-source-identity fields. Both complete remaining IR texts then match. No
-recompilation or GPU execution occurs in that method gate. Both fixtures then
-pass native property checks:all three kernels admit WG256,the control/candidate
-require SG16,and each reports4096B static local memory and spill descriptor0.
-Declared candidate accessors are a separate1088B(1024partial+64totals);these
-figures do not establish physical allocation or occupancy. All six independent
-correctness processes pass17cases with identical output-ID hash
-`bb4ce7079a6f8c5e1fe7a194f63fde4638e75443f183345b1d074ca10914a180`,
-quiet validation and no fresh fault. Component262144coverage does not qualify
-a full model.
+Two independently authored batched radix selector candidates are rejected;the
+selected6e40engine and decode placement remain unchanged. They replace the
+sixteen per-digit workgroup reductions with subgroup partials and two explicit
+workgroup barriers. Rank,tie/NaN/zero/tail semantics and ascending IDs pass the
+independent weighted-cell oracle. Source-only proof is not performance adoption.
 
-The V1small event probe then fails its host identity check:
-`last event differs from actual selector submission`. It is not a GPU fault or
-a speed result. Native exit1 is reaped,the session is empty,and the original
-incomplete observation/failure stays failed. Main does not investigate the
-provider in detail. Source`aed5f3888` instead removes the last-event proxy and
-retains the actual parallel_for event directly from the host-only seam,with
-exactly one submission per call and distinct retained events. Invoke,event
-retention,drain and unclassified CPU regions remain disjoint;profiling queries
-stay outside those timed regions. V2requires a fresh committed build and the
-same native/correctness/small-smoke/clean-service gates before advancement.
-The closed V1generation and consumed research transactions retire after exact
-source/recipe/final-executable recovery. The old one-use IR qualifier retires to
-`f2af86639`;the new builder verifies the three source-identity fields itself.
+The SG16V2cohort at`2a530e125`passes all native/correctness/event checks and18
+independent processes/432eligible batches,but four shape/pattern comparisons
+against the original fail. Its full source/recipe/decision restores from
+`de8cb3378`;the rejected generation was retired after exact source recovery.
+The earlier last-event proxy failure stays failed in`0309ca952`;the replacement
+captures actual submitted events directly. Main does not investigate the
+provider or historical decode decline further.
 
-V2from source`0309ca952`,plan`2ddfa5948`,passes all15build commands and695
-actual compiler inputs. The two observation variants have matching native
-properties and device IR after the strictly checked source identities. All six
-17-case correctness processes pass. The direct-event smoke also passes three
-processes,each with7successful kernel-identified launches and2actual retained
-events,valid timestamps and bounded queries. No fresh fault occurs.
+SG32V3uses eight partial groups per bin,two bins per subgroup and bounded
+lane%8loads,with576B declared accessors. Source`216c4db2c`,build plan`285b7c98a`
+closes15commands and695actual compiler inputs,with no uncovered input.
+Normal/captured device IR matches after three verified source-identity labels.
+Both property processes report SG32for control/candidate,4096B static local
+memory and spill descriptor0;these are not occupancy or physical traffic.
+All six17-case correctness processes and three small actual-event probes pass.
+The frozen performance plan`ff8c65d1a`then closes18processes/432eligible batches,
+identical selected IDs,normal ownership and no fresh fault. Full individual
+samples and exact recipes restore from`89406c824`.
 
-The frozen performance plan`337c1585c`then closes all18independent processes
-and432batches,with every timing/observer eligibility condition satisfied and
-identical selected IDs. **Do not adopt the SG16candidate.** Four comparisons
-against the original fail the prospectively declared all-shape gate:
-
-| Context cells | Score pattern | Candidate/original clean time | Candidate/original GPU service |
+| Context cells | Scores | SG32candidate/original clean time | GPU service |
 | ---: | --- | ---: | ---: |
-| 32768 | Varied | 0.881145 | 0.880700 |
-| 32768 | Equal | 0.960226 | 0.958374 |
-| 78453 | Varied | 1.002894 | 1.001899 |
-| 78453 | Equal | 1.070765 | 1.070872 |
-| 117489 | Varied | 0.909287 | 0.906140 |
-| 117489 | Equal | 1.051780 | 1.051817 |
-| 262144 | Varied | 0.863354 | 0.863802 |
-| 262144 | Equal | 1.084109 | 1.084468 |
+| 32768 | Varied | 0.975991 | 0.979006 |
+| 32768 | Equal | 0.951697 | 0.950650 |
+| 78453 | Varied | 1.026957 | 1.027052 |
+| 78453 | Equal | 0.988370 | 0.987081 |
+| 117489 | Varied | 1.079761 | 1.077841 |
+| 117489 | Equal | 1.050277 | 1.051529 |
+| 262144 | Varied | 1.074303 | 1.074521 |
+| 262144 | Equal | 1.038658 | 1.039340 |
 
-These are geometric means of three paired process ratios,each based on three
-within-process rounds. All eight comparisons against the forced-SG16control
-improve,but that does not establish a production gain. At117489varied cells,
-representative observed batch medians are179.438/162.617ms total and
-179.054/162.248ms GPU service(original/candidate). Thread CPU is177.003/160.634ms
-inside completion wait versus1.299/1.434ms in the public invoke region.
-Thus kernel latency dominates this isolated selector;CPU polling is not host
-inference arithmetic. Timed work contains no PCIe copy. Physical VRAM traffic,
-arithmetic saturation and the whole-model limiter remain unmeasured here.
-Main next tests a distinct WG256/SG32layout,eight subgroup partials per bin and
-two bins per subgroup,with source-safe masked loads and576B declared accessors.
-The same universal performance gate remains required before any model trial.
+Ratios are geometric means of three paired process medians,each from three
+rounds. Eleven of16original/control-by-shape gates fail,so **no model trial or
+adoption** follows. The prospectively committed >=1percent all-case clean-wall
+and GPU-service rule is unchanged. This is a rejected performance proposal,
+not a regression in the selected engine.
 
-The existing7.689s selection queue interval includes host submission gaps and
-scoring;it is not this selector's GPU service or a hardware bottleneck proof.
-After the screen and refused diagnostic are committed,three final retirements
-remove1269consumed observer/cache/review/link files (246447095bytes). The12old
-generated configuration/native-plan files reconstruct to their original hashes.
-Source/link/frontend/model admission passes after the main retirement without
-a GPU launch. Only five final executables and four admission metadata files
-remain in the relink directory;required source/objects/fixtures remain intact.
-After192source/702actual-dependency recovery and exact recipe/executable checks,
-58closed files retire (7862437bytes). The original component generation is
-retired;one isolated model/fixture generation remains for the imminent build
-contract decision and model comparison. Useful individual samples and compact numerical/fault decisions stay
-in the current result;full original receipts restore from`8849d71e5`.
-The earlier eight-u16 generation and two consumed research/review files retire
-after recovering197original source inputs,exact recipe/generated sources and699actual
-compiler dependencies. The98files total11297649bytes;the selected engine,its
-twelve fixtures and the named53MBIDfixture remain. Full108samples recover from
-the linked Git revision;the compact decision remains in the current service result.
+In the SG16fixture's117489varied case,original total179.438ms includes179.054ms
+GPU service and177.003ms thread CPU inside completion wait,versus1.299ms in the
+public invoke region. CPU polling is not host inference arithmetic. Timed work
+contains no PCIe copy;physical VRAM traffic,arithmetic saturation and the
+whole-model limiter remain unmeasured. The existing7.689s production selection
+queue interval includes scoring and host gaps,so it is not selector GPU service.
 
-The earlier service parser passed33host controls before retirement. Closed
-one-use controllers and consumed raw/research
-output retire after compact evidence at82d48e818;the deletion manifest records
-584files/156377451bytes. The selected engine/twelve fixtures and other explicit
-numerical/provenance holds remain untouched.
+Main next costs exact unions across2/4neighboring queries,with independent
+per-query masks/softmax. Existing reviewed sparse-format/interquery reports
+already cover the mechanism;no duplicate literature survey is needed. The
+committed CPU-only census uses the initialized53MB layer0-tail fixture only,
+conserves every incidence,and records ideal logical read savings,masked/padded
+matrix work and ID/mask bytes. No kernel,all-layer coverage,physical traffic or
+speed claim follows from that one fixture. Separate model/decode/full-context
+qualification remains mandatory for a later implementation.
 
 ## Attribution limits and outstanding gates
 

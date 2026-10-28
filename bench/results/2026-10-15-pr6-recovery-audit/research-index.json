@@ -15293,7 +15293,7 @@
   },
   "qsa_batched_radix_sg32_contract_20261029": {
     "classification": "decision support",
-    "status": "reviewed_source_contract_native_unrun",
+    "status": "closed_native_correct_performance_rejected",
     "schedulable_now": false,
     "source_files": {
       "include/strata/kernels/qsa_radix_batched.hpp": "0b22b70a36cdfd47cdd58b2ac6c2adaa7f0dbeeae46785e3a54ffdefdbf31ecf",
@@ -15338,6 +15338,59 @@
       "essential_correction": "Main adds exactly two distinct local-argument indices alongside the512+64byte payload check before the prospective native smoke.",
       "next_gates": "Committed exact build/native properties,independent17-case checks,actual-event/kernel-identified smoke,then all-shape clean/service/CPU screen including host preflight. Original subgroup not inferred;SG16 failures unchanged.",
       "future_scope_schedulable_now": false
-    }
+    },
+    "component_result": "89406c824",
+    "component_decision": "11of16 all-shape/reference gates fail;no model trial. Source contract and native/correctness/event/ownership/fault checks pass. Original selected engine unchanged."
+  },
+  "qsa_union_tile_retrieval_20261029": {
+    "classification": "decision-support retrieval of existing knowledge",
+    "status": "reviewed_no_fresh_survey_needed",
+    "schedulable_now": false,
+    "review_model": "native Codex gpt-6-luna max",
+    "review_sha256": "5211cabc734db2e475c8e0090d882a5c96b30af64d3a4b2a6cd49177ce495396",
+    "review_bytes": 6225,
+    "decision": {
+      "fresh_orca_research_needed": false,
+      "schedulable_now": false,
+      "reason": "Existing reviewed references already cover exact clustered unions, membership/incidence representations, dense T\u00d7|U| waste, tile/list compatibility, preparation cost and counterexamples. A new literature survey would duplicate them. Whether this wins on Strata is a local workload/cost question; the available aggregates do not decide it. Revisit after the frozen SG32 selector gates and only if Main needs a concrete candidate discriminator."
+    },
+    "essential_constraints": [
+      "Preserve separate query-row and KV-head identity, original selected-ID multiplicity/order, page aliases and causal/live validity. A reused physical K/V value must still contribute once per logical incidence.",
+      "Keep each query's online-softmax max/normalizer/output state independent. Invalid membership entries must be excluded before max/normalization; QK and PV may share a tile only with correctly assembled K/V operands.",
+      "Cost the full path: exact sorted merge/union, incidence or bit-mask construction and conversion, mask/tile padding arithmetic, K/V gather/staging, scratch and synchronization, residency/occupancy/underfill, and output ownership. Logical bytes and literature wins are not local speed evidence."
+    ],
+    "local_prerequisites": [
+      "After the active SG32 gate closes, use committed representative actual-ID windows for T=2 and 4 across 12 layers, per KV head, full chunks and tails/context strata; retain exact sum(k), |U|, incidence/duplicate counts and resolved logical/physical page overlap. Do not substitute the existing 16-row summary or read the retained fixture payload without need.",
+      "Estimate/measure mask density and dense-tile work versus the current row path, plus union/mask preparation, scratch, synchronization and complete attention service. Keep physical traffic unknown unless measured.",
+      "A later implementation candidate still needs pinned source/build, bounds/lifetime/fault checks, per-query BF16/FP32 contract validation and matched production-path/model evidence; this review selects no implementation."
+    ],
+    "consumer": "Main committed qsa_union_cost.py for one bounded existing layer0-tail discriminator before any kernel choice;does not qualify all-layer speed.",
+    "transaction": "Temporary review body can retire once compact constraints and source references are committed.",
+    "retrieval": [
+      {
+        "id": "sparse_cross_query_reuse_scope",
+        "path": "/home/yayoi/.local/state/strata-sycl/artifact-retention-audit-20261018/research-wave-20261018/sparse-attention-cross-query-reuse.md",
+        "sha256": "a46e07e6ff978218cf2161c40ee5c2fcd5b6bb2b95fe4073e9462e67f09e0279",
+        "sections": "Query-cluster unions; minimal locality evidence; source/license notes. Directly defines sum(k)/|U|, membership maps, map/workspace costs, and local prerequisites."
+      },
+      {
+        "id": "sparse_attention_interquery_kv_locality_scheduling_methods_20261023",
+        "path": ".cache/strata-research/20261023/interquery-locality/report.md",
+        "sha256": "7b4d5b0cc78c4845eaf1559a5ffeb368eaf47964921eb81117eedd000dc9d920",
+        "sections": "Current Strata mapping; query clusters and explicit union. Covers sorted neighboring IDs, membership/incidence, dense T\u00d7|U| masked waste, reduced concurrency and QUILT as platform-specific evidence. Pins selected source 6e40afc1beddd059ee518617f6c1efce1da14aca."
+      },
+      {
+        "id": "qsa_irregular_gqa_matrix_packing_collection_20261027",
+        "path": ".cache/strata-research/20261027/irregular-gqa-matrix-packing.md",
+        "sha256": "fc8711079d152d8c594805c1ed5f6e14fa9b3c5df794e874a3f266eb9784ccca",
+        "sections": "Shared versus different sparse lists; resource and correctness constraints. Different per-query lists cannot use one common B operand without list-specific work, routing/gathers or masked waste; QK and PV both require exact key-sequence compatibility."
+      },
+      {
+        "id": "adaptive_sparse_format_crossover_gpu_asic_20261028",
+        "path": ".cache/research/2026-10-28/adaptive_sparse_format_crossover_gpu_asic_20261028.md",
+        "sha256": "83c185c734e6e148078bdc82ee25907df02ce7a8d47f7e563e1a248f190be0b2",
+        "sections": "Decision framing; dense/dense-tile fallback; minimum evidence. Requires charging build/compaction, metadata, kernel, reorder and sync together; dense tile can lose to internal-zero work and dispatch cost."
+      }
+    ]
   }
 }
