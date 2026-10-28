@@ -3577,7 +3577,7 @@
       }
     ],
     "clean_prefill_comparison": {
-      "stage": "prepared",
+      "stage": "running",
       "source_commit": "dc6efcd6bf7079d8c5cbc3b05b189207c8385c5b",
       "runtime_sha256": "09ad358e12f6ef58bfc0a978519927863f3d09949a033a1e224db95997647d97",
       "boot": "cfda0b6a-7c13-4fe2-bdf5-8f9202770840",
@@ -3833,7 +3833,110 @@
         "daabbef4775c3fbdbfd832339d80a5ae2f91025b66df79b92fb8f6905f33b041",
         "8669c9ebe2747b1fc2d7c4806eeb66025c919981d81c51cfdbd64ba3ec3cc2b1"
       ],
-      "processes": [],
+      "processes": [
+        {
+          "index": 0,
+          "arm": "original",
+          "complete": true,
+          "host_probe_accepted": true,
+          "passed": true,
+          "native_exit_code": 0,
+          "samples": [
+            {
+              "request_sha256": "26f08fd8364b5c4bce718617fe2aed42761d0a794e068b00532694adef78b3be",
+              "actual_prompt_tokens": 117489,
+              "actual_read_tokens": 117489,
+              "actual_reused_tokens": 0,
+              "generated_tokens": 24,
+              "prompt_ms": 129198.6,
+              "prompt_tps": 909.4,
+              "prompt_tps_source": "engine",
+              "ttft_s": 129.407,
+              "total_s": 131.134,
+              "thinking_requested": true,
+              "reasoning_observed": true,
+              "ok": true,
+              "eligible": true,
+              "stream_complete": true
+            },
+            {
+              "request_sha256": "fd3ad8ad7033776ad749b22e62e910e5f47e3f7664705f48d9f1fe7349b65515",
+              "actual_prompt_tokens": 117489,
+              "actual_read_tokens": 117489,
+              "actual_reused_tokens": 0,
+              "generated_tokens": 24,
+              "prompt_ms": 120230.3,
+              "prompt_tps": 977.2,
+              "prompt_tps_source": "engine",
+              "ttft_s": 120.397,
+              "total_s": 122.047,
+              "thinking_requested": true,
+              "reasoning_observed": true,
+              "ok": true,
+              "eligible": true,
+              "stream_complete": true
+            },
+            {
+              "request_sha256": "daabbef4775c3fbdbfd832339d80a5ae2f91025b66df79b92fb8f6905f33b041",
+              "actual_prompt_tokens": 117489,
+              "actual_read_tokens": 117489,
+              "actual_reused_tokens": 0,
+              "generated_tokens": 24,
+              "prompt_ms": 120398.7,
+              "prompt_tps": 975.8,
+              "prompt_tps_source": "engine",
+              "ttft_s": 120.561,
+              "total_s": 122.263,
+              "thinking_requested": true,
+              "reasoning_observed": true,
+              "ok": true,
+              "eligible": true,
+              "stream_complete": true
+            },
+            {
+              "request_sha256": "8669c9ebe2747b1fc2d7c4806eeb66025c919981d81c51cfdbd64ba3ec3cc2b1",
+              "actual_prompt_tokens": 117489,
+              "actual_read_tokens": 117489,
+              "actual_reused_tokens": 0,
+              "generated_tokens": 24,
+              "prompt_ms": 120773.8,
+              "prompt_tps": 972.8,
+              "prompt_tps_source": "engine",
+              "ttft_s": 120.94,
+              "total_s": 122.681,
+              "thinking_requested": true,
+              "reasoning_observed": true,
+              "ok": true,
+              "eligible": true,
+              "stream_complete": true
+            }
+          ],
+          "subsequent_median_ms": 120398.7,
+          "validation": {
+            "pid": 3524400,
+            "loader": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_loader.so.0.12.0",
+            "threads_before": 1,
+            "preinit": 37,
+            "config_enabled": true,
+            "first_init": true,
+            "dispatch_result": 46,
+            "output_untouched": true,
+            "retained_reference_until_exit": true,
+            "runtime_teardown_qualified": false
+          },
+          "ownership_closed": true,
+          "fresh_faults": [],
+          "boot_unchanged": true,
+          "driver_after": {
+            "pci": "/sys/bus/pci/devices/0000:05:00.0",
+            "driver": "xe",
+            "vendor": "0x8086",
+            "device": "0xe20c",
+            "kernel": "7.0.0-38-generic",
+            "devcoredump": false
+          }
+        }
+      ],
       "budgets": {
         "wall": 1800,
         "cpu": 5400,
