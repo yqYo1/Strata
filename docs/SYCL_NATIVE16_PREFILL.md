@@ -1226,6 +1226,19 @@ retirement,cancellation,and full-context fallback. Then measure actual job/
 dequant/upload changes and critical-path service;larger windows and a smaller
 expert bank do not establish a throughput gain or the limiting hardware unit.
 
+A20261028 source-only check of selected`6e40afc1b` also rules out treating
+head release as a configuration-only way to fund the additional accumulator.
+`run_prompt_with_native_dense_phase` explicitly rejects
+`STRATA_PREFILL_RELEASE_HEADS=1` before reader retirement;the verifier's
+`can_release_prefill_head` separately rejects an already-retired dense owner.
+The earlier target-head component releases521472000B and restores its weights
+and logits,but does not qualify a combined dense/head/MTP/verifier transaction.
+Such a candidate needs a joint reader-retirement and restore design,including
+canonical/PLE publication,lazy graph recapture and failure unwinding,before
+actual allocation or performance tests. Do not remove either guard merely to
+make the capacity calculation executable. No source or measurement changed
+for this inspection;the existing head-release path remains off.
+
 A20261027 source inspection of the generic
 [vLLM Triton expert path](https://github.com/vllm-project/vllm/blob/main/vllm/model_executor/layers/fused_moe/fused_moe.py)
 finds separate per-expert outputs in the hidden-state dtype;its
