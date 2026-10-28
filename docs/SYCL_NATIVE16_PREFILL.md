@@ -1883,6 +1883,12 @@ matrix work and ID/mask bytes. No kernel,all-layer coverage,physical traffic or
 speed claim follows from that one fixture. Separate model/decode/full-context
 qualification remains mandatory for a later implementation.
 
+After exact source/recipe recovery,the closed SG32generation retires264files
+(346618850B),along with consumed CPU/research output and unused selector
+exports/fixtures/controllers. Compact decisions stay here;full source and
+individual samples restore from`89406c824`. The selected engine/twelve fixtures
+and immediate53MBtwo-query comparison input remain.
+
 ## Attribution limits and outstanding gates
 
 Any necessary detailed follow-up on the agent-turn decline stays with Luna. Main returns

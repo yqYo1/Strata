@@ -15046,60 +15046,6 @@
       ]
     }
   },
-  "qsa_batched_radix_histogram_contract_20261028": {
-    "classification": "decision support",
-    "status": "reviewed_source_only_native_gate_pending",
-    "schedulable_now": false,
-    "source_revision": "c722121f9218737492f16debde6d7d0d280e8532",
-    "question": "Audit the isolated Main-authored SG16/WG256 radix4 batched-histogram proposal against selected6e40 qsa_select.cpp. Prove or refute weighted rank/tie/NaN/signed-zero/ascending-ID equivalence,complete writer/read/barrier lifetimes across digit rounds,all-SG collective participation including early returns,integer/extent bounds,device/queue/owner contracts and exact SG16 control isolation. Compare sequential WG reductions,two-level batched subgroup reductions and viable alternatives,including concrete counterexamples and required native codegen/resource/service evidence. Distinguish proposed two explicit WG barriers from unknown lowering of original collectives,and scoring/queue gaps from selector service. Identify at most two actionable source corrections or next gates,not a generic selection survey. No implementation,build,test,GPU/profiler/process or Git operations.",
-    "report": ".cache/research/2026-10-28/qsa_batched_radix_histogram_contract_20261028.md",
-    "report_budget_bytes": 14336,
-    "worker_model": "Orca Codex gpt-6-luna high",
-    "source_files": {
-      "include/strata/kernels/qsa_radix_batched.hpp": "41ff5c8a86828fef247406d6654c19bbf0ec6062747c7b7681be32c01fd1a601",
-      "src/kernels/sycl/qsa_radix_batched.cpp": "4adc3338780c5a2b347f3273f72edce1b403699debef3d0e0ad184d424581bc4"
-    },
-    "actual_prerequisite_evidence": {
-      "base_native_source": "6e40afc1beddd059ee518617f6c1efce1da14aca",
-      "isolated_current_source": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-direct-k-model-v2/source/src/kernels/sycl/qsa_select.cpp",
-      "base_source_sha256": "463a9ec02ed28125a5cd38b7b5d28784b849a4fbb199cb017042cd99078efee1",
-      "actual_plan": "Selected environment sets SELECT_RADIX4=1,CYCLIC=0,PREFILL_SCORE_GEMM=1. Source topk Mapping1 performs8radix rounds/16WG reductions per round;final emit is ascending block/cell order. Producer source traced at prefill.cpp:2852..2889;actual per-execution producer native service remains unqualified.",
-      "timing_limit": "Existing selected6e40 QSA selection queue interval7.68898s includes scoring and host submission gaps,not selector GPU service or hardware saturation. Attention26.9436s service is a separate family. Candidate is source-only and changes no selected engine/decoder."
-    },
-    "prior_scopes": [
-      "qwen_qsa_sparse_index_generation_methods_20261028",
-      "gpu_cross_workgroup_tile_multicast_contracts_20261028",
-      "qsa_direct_K_row_invariant_contract_20261028",
-      "sycl_command_submission_amortization_collection_scope"
-    ],
-    "consumer": "Main next committed selector source/build/native/CPU/service gate after the frozen direct-K official cohort. Keep the reviewed report only through that gate;no production caller/adoption.",
-    "retirement": "Commit only source corrections and useful comparison/gate facts;retire consumed spec/dispatch/review text. Retire proposal exports/source if its mechanism gate closes without a native consumer.",
-    "worker_closed": true,
-    "orca": {
-      "run": "run_80ea8ebc9a8c",
-      "task": "task_aba3bb285ab8",
-      "dispatch": "ctx_d2f8610fab3f",
-      "terminal": "term_387c4da8-dd16-4796-b7f9-ef362eed7eb3",
-      "initial_failed_dispatch": "ctx_f7de0e3f4102",
-      "bootstrap": "Task never ran at startup update prompt. Documented ESC skip once;existing terminal GPT-6-Luna high/current workspace/YOLO verified. Official same-task/same-terminal retry proves input_accepted and turn_started. No research steering.",
-      "model": "gpt-6-luna",
-      "effort": "high",
-      "worker_state": "succeeded_released",
-      "closure": "Accepted worker_done msg_0b9f39eef931;official release closed exact agent terminal,then delivery_289b75a5c0c2 ACKed."
-    },
-    "report_bytes": 11054,
-    "report_sha256": "e80b888d3c1a1ba978d63f67984ebf8f2d45ab5d3cc005435174e3dd1a8b484a",
-    "native_review": {
-      "model": "native Codex gpt-6-luna max",
-      "sha256": "ce3e5fd513787c8f8793622ea297db6ef4df718a357b8401e70dc8a5bd491033",
-      "bytes": 5583,
-      "decision": "Source contract and wrapper accepted;no source/license correction,build/execution/speed/model adoption. Main has not read the report body.",
-      "source_contract": "Exact weighted rank/stable ties/NaN/signed zero/partial-block/ascending-ID semantics under producer invariants. All WG-uniform returns precede collectives;two barriers protect every partial/totals round. Counts sum disjoint cells<=n<=INT_MAX.",
-      "wrapper": "One arm per fresh process before runtime init;independent weighted-cell oracle/public original/ref/canaries/immutable inputs retained. n262144 is component boundary only,not model full fill/RESTORE. Submit/drain timer is not GPU-only service.",
-      "next_gates": "After frozen cohort:pin recipe/controller/workload,build and native image/resource facts,small traced parameter-validated correctness,then repeated service and clean production-entrypoint wall/CPU comparisons. Separate scoring and host gaps. No additional research scope eligible now.",
-      "main_correction": "Candidate and forced-SG16 control share a new device-capability/preflight lookup absent from the original selector. Wrapper CPU accounting must include this difference as well as submission/waits/queue/observer/unclassified regions;do not describe their host paths as identical to production."
-    }
-  },
   "prefill_decode_NEO_scratch_retention_20261029": {
     "classification": "decision support",
     "status": "compact_source_contract_body_retired_no_followup_eligible",
@@ -15188,65 +15134,6 @@
     },
     "retired_report_path": ".cache/research/2026-10-29/prefill_decode_NEO_scratch_retention_20261029.md"
   },
-  "qsa_fixture_event_timing_contract_20261029": {
-    "classification": "decision support",
-    "status": "reviewed_source_corrections_prepared_not_built",
-    "schedulable_now": false,
-    "source_revision": "40e7b9eb09d093976bf4c4419577ce554c9c04a3",
-    "source_files": {
-      "tests/sycl/qsa_batched_radix.cpp": "12cc0246230cafe2880089be281058e259ded61f75b66ec454c0913253456dae",
-      "tools/sycl/build_qsa_radix.py": "52d61b86f56828a41a4febc8619fb506f99b4504203e166a2b6dc0e708a2295d",
-      "tools/sycl/check_qsa_radix.py": "1808cf8e9548befe9672f7ae70c8a02271bfab8dd27ac7e1c298f817badf22ed"
-    },
-    "report": ".cache/research/2026-10-29/qsa_fixture_event_timing_contract_20261029.md",
-    "report_budget_bytes": 14336,
-    "worker_model": "Orca Codex gpt-6-luna high",
-    "question": "Audit the new selector fixture actual-event identity/lifetime,timestamp and clean/event timing contract against the pinned SYCL/UR/LevelZero implementation. Include finite first-probe safety,host CPU accounting,observer/timer eligibility and independent-process comparison;identify at most2actionable corrections. No detailed decode-regression forensics or local execution.",
-    "actual_prerequisite_evidence": "Committed 40e7b9eb0 introduces a real prospective measurement consumer:in-order profiled queue,ext_oneapi_get_last_event after one actual selector call,retained distinct events,checked drain then timestamps;new small3query/20cell smoke before128repeat batches. Actual SDK queue.hpp:3617 exposes the extension. No build/GPU execution exists;source-only audit prerequisites are present.",
-    "prior_scopes": [
-      "selected_qsa_observation_contract_20261027",
-      "neo_profiled_native_query_source_scope",
-      "sycl_command_submission_amortization_collection_scope",
-      "qsa_batched_radix_histogram_contract_20261028"
-    ],
-    "consumer": "Main next selector build/native/small-smoke/performance gates after the frozen cohort. Native Luna-max reviews first;Main reads only short digest.",
-    "retirement": "At method correction/gate closure keep only actual source corrections and useful constraints;retire consumed dispatch/review/report files at serialized boundary.",
-    "worker_closed": true,
-    "orca": {
-      "run": "run_80ea8ebc9a8c",
-      "task": "task_0837eddac488",
-      "dispatch": "ctx_5dbf98d8efa7",
-      "terminal": "term_42b69faa-4c89-4eb8-ab9e-1b7a42995649",
-      "initial_failed_dispatch": "ctx_45aaa4c9b8f0",
-      "model": "gpt-6-luna",
-      "effort": "high",
-      "bootstrap": "Task never ran at startup update prompt. One documented ESC skip;existing terminal verified GPT-6-Luna high/current workspace/YOLO. Official same-task/same-terminal retry reports input accepted;exact live projection working. No research steering.",
-      "worker_state": "succeeded_released",
-      "closure": "worker_done msg_46d1eccc6ae9;official release closed exact ctx_5dbf98d8efa7 terminal;delivery_581d02bda3b1 ACKed."
-    },
-    "report_bytes": 13058,
-    "report_sha256": "75b26faa23d21a07d6de89cdc46a41cce7cc8e05c7774586a15e43b622c37d71",
-    "native_review": {
-      "model": "native Codex gpt-6-luna max",
-      "bytes": 4058,
-      "sha256": "d6815122a32efdcefe10f24d8dbc3d8a0106d05296ee54b4a40c85c1ef0c725b",
-      "disposition": "Accepted with two bounded corrections;Main reads this short review,not the report body.",
-      "corrections": [
-        "Capture actual submitted selector events in a fixture-only finish seam;compare every last-event result. Count successful actual API returns and resolve kernel creation handles.",
-        "Freeze finite separate profiling query-work caps and retain query wall/thread/process CPU apart from clean calls. A cap breach makes service attribution ineligible,not clean samples nonexistent."
-      ],
-      "provenance": "Existing immutable SDK/build attribution remains applicable;exact historical provider implementation body is not proved. Use bounded API/actual-event qualification rather than broad provider archaeology.",
-      "schedulable_now": false,
-      "future_scope": "Only an actual failed event-equality/kernel-binding/runtime-map smoke with exact source/runtime/trace evidence can open a narrow provider follow-up. No new question eligible before execution."
-    },
-    "prepared_correction": "Separate unchanged-source clean fixture and host-only captured-event fixture;mechanically reversible finish substitutions,identical device IR/native-property gates,full exact-ID oracle on both;small traced real-event equality before timed event batches. Still unbuilt/unrun.",
-    "correction_source_snapshot_sha256": {
-      "tests/sycl/qsa_event_capture.hpp": "a3cc6e7569016d9ca8092871b499022f4dd978538329007e6eb85fde935584de",
-      "tests/sycl/qsa_batched_radix.cpp": "c4290f7bbdfd3fcd83d78727f2fa5e4a107ef34bbb0cc14e4927d926ccc51e86",
-      "tools/sycl/build_qsa_radix.py": "8a810af6add7913f25ce11a255e73beb4bc0c6fb728c2883eb68a91640fa38c7",
-      "tools/sycl/check_qsa_radix.py": "5b9bde5ac161e1a918b86aae3272de28add62daae5c6bb35c640cb0487896f7a"
-    }
-  },
   "gpu_integer_histogram_dataflows_20261029": {
     "classification": "knowledge collection",
     "status": "reviewed_conditional_reference",
@@ -15262,7 +15149,7 @@
       "qsa_batched_radix_histogram_contract_20261028",
       "adaptive_sparse_format_crossover_gpu_asic_20261028"
     ],
-    "consumer": "Indexed reusable low-level histogram dataflow knowledge for a future source/resource/service-backed selector choice. Main must not read body on arrival;native Luna-max reviews first.",
+    "consumer": "Substantive small reusable histogram-dataflow reference for future exact selector or GPU routing choices;SG32consumer ended,reports are not implementation adoption. Retrieve only for a distinct concrete mechanism.",
     "retirement": "Keep only substantive nonduplicated findings/source corrections with realistic retrieval use. Review body consumer after component decision;retire dispatch/spec/review transactions after compact index evidence.",
     "worker_closed": true,
     "orca": {
@@ -15291,57 +15178,6 @@
       "missing": "Actual-event smoke and selector clean/service timing remain unqualified;the proxy-equality refusal does not establish a selector hardware bottleneck."
     }
   },
-  "qsa_batched_radix_sg32_contract_20261029": {
-    "classification": "decision support",
-    "status": "closed_native_correct_performance_rejected",
-    "schedulable_now": false,
-    "source_files": {
-      "include/strata/kernels/qsa_radix_batched.hpp": "0b22b70a36cdfd47cdd58b2ac6c2adaa7f0dbeeae46785e3a54ffdefdbf31ecf",
-      "src/kernels/sycl/qsa_radix_batched.cpp": "9e954e3e057ec2db9e1b0f2072dfb9a27a640d2619902576642053b0fc36c179",
-      "tests/sycl/qsa_batched_radix.cpp": "7379f8a4c8b1c32f22188d85af8a4526c29bf9023e4c7ab45fb4b226ce273884"
-    },
-    "worker_model": "Orca Codex gpt-6-luna high",
-    "report": ".cache/research/2026-10-29/qsa_batched_radix_sg32_contract_20261029.md",
-    "report_budget_bytes": 12288,
-    "question": "Audit the new own WG256/SG32 radix4 candidate:8partial groups/bin,2bins/SG,32participating lanes and bounded lane%8loads with upper24masked to zero. Prove/refute exact weighted rank/ties/NaN/signed-zero/tail/ascending-ID semantics,all collective participation and barriers/read-write lifetimes,integer/span/queue/device contracts. Compare the original and forced-SG32control without assuming the unrequired original subgroup. Check576Baccessor arithmetic and updated native property/smoke expectations. Identify concrete counterexamples,at most2essential corrections and gates;no generic survey or implementation.",
-    "actual_prerequisite_evidence": "V2SG16cohort2a530e125closes18processes/432eligible batches with matching IDs/quiet validation/no fresh fault;four original-comparison shape/pattern gates fail,so no adoption. GPU service tracks latency whileCPU completion wait dominates host time. This is a distinct SG32dataflow candidate,not a relaxed SG16gate.",
-    "prior_scopes": [
-      "qsa_batched_radix_histogram_contract_20261028",
-      "gpu_integer_histogram_dataflows_20261029",
-      "qsa_fixture_event_timing_contract_20261029"
-    ],
-    "consumer": "Independent source-contract gate before V3build/native/oracle/service checks. Main continues implementation/provenance/serialized work;native Luna-max reviews report before Main reads a digest.",
-    "retirement": "Retain compact useful source corrections and proof limits;retire report and transactions after selecting/closing the native gate. No model qualification from source review.",
-    "worker_closed": true,
-    "source_revision": "ce4b20e4d",
-    "orca": {
-      "run": "run_80ea8ebc9a8c",
-      "task": "task_3642a8235c09",
-      "dispatch": "ctx_9e5bb1176551",
-      "terminal": "term_8a93a032-234a-4344-948c-41096ef115cb",
-      "startup": "ctx_35c06270aa4e failed at update prompt before Task ran;ESCskipped update,same configuredLuna-high terminal retry accepted withturnStartobserved. No research steering.",
-      "report_directory_within_workspace": true,
-      "worker_done": "msg_eb3684aab24e",
-      "terminal_closed_by_official_release": true,
-      "completion_delivery_acknowledged": "delivery_54d77b5eaf7d"
-    },
-    "report_bytes": 9273,
-    "report_sha256": "6772fd11bc0b7b42b4ddccdf50c55dcfd4fe00b0afa8303169388668f1677594",
-    "main_read_report_body": false,
-    "native_reviewer": "/root/curate_qsa_sg32_contract_20261029",
-    "native_review": {
-      "model": "native Codex gpt-6-luna max",
-      "bytes": 5377,
-      "sha256": "6912eacee711f69aa8a073ee86955573f2b5087d69f97a63cc0462376088c633",
-      "decision": "Source contract accepted;no correctness blocker or source/license correction. This is not a native/performance/model qualification.",
-      "useful_contract": "WG256/SG32 has8subgroups;each owns2bins. All32lanes use bounded lane%8loads,only8contribute. Both round barriers protect partial/totals lifetimes;integer weighted rank/ties/tails/NaN/zero/ascending IDs match the original contract. Declared source accessors512+64=576B,not measured native allocation.",
-      "essential_correction": "Main adds exactly two distinct local-argument indices alongside the512+64byte payload check before the prospective native smoke.",
-      "next_gates": "Committed exact build/native properties,independent17-case checks,actual-event/kernel-identified smoke,then all-shape clean/service/CPU screen including host preflight. Original subgroup not inferred;SG16 failures unchanged.",
-      "future_scope_schedulable_now": false
-    },
-    "component_result": "89406c824",
-    "component_decision": "11of16 all-shape/reference gates fail;no model trial. Source contract and native/correctness/event/ownership/fault checks pass. Original selected engine unchanged."
-  },
   "qsa_union_tile_retrieval_20261029": {
     "classification": "decision-support retrieval of existing knowledge",
     "status": "reviewed_no_fresh_survey_needed",
@@ -15365,7 +15201,7 @@
       "A later implementation candidate still needs pinned source/build, bounds/lifetime/fault checks, per-query BF16/FP32 contract validation and matched production-path/model evidence; this review selects no implementation."
     ],
     "consumer": "Main committed qsa_union_cost.py for one bounded existing layer0-tail discriminator before any kernel choice;does not qualify all-layer speed.",
-    "transaction": "Temporary review body can retire once compact constraints and source references are committed.",
+    "transaction": "Consumed review retired after exact constraints and4hash-verified section references were recorded;Main never read collection bodies.",
     "retrieval": [
       {
         "id": "sparse_cross_query_reuse_scope",
