@@ -1819,6 +1819,15 @@ commands exit0,but this is not a passed gate or permission for GPU advancement.
 Its source/plan and compact inventory remain recoverable;the one-use controller
 and raw outputs retire after evidence preservation. Continue the unchanged
 official cohort with process2(candidate).
+The next source-only selector candidate is
+`qsa_block_topk_batched_prefill`,with no production caller or build target.
+Selected radix4 currently performs16workgroup histogram reductions per digit;
+the proposal groups these into subgroup partials and two explicit workgroup
+barriers,with1088bytes of local histogram storage. Rank,tie breaks and ascending
+ID emission are intended to remain exact. Source review and fresh component
+correctness/resource/service gates are pending after the frozen cohort.
+The existing7.689s selection queue interval includes host submission gaps and
+scoring;it is not this selector's GPU service or a hardware bottleneck proof.
 After the screen and refused diagnostic are committed,three final retirements
 remove1269consumed observer/cache/review/link files (246447095bytes). The12old
 generated configuration/native-plan files reconstruct to their original hashes.
