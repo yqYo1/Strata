@@ -260,7 +260,8 @@ def smoke_launches(trace, expected_name, arm):
         local = [(int(i),int(n)) for i,n in re.findall(
             r'UR_EXP_KERNEL_ARG_TYPE_LOCAL, \.index = (\d+), \.size = (\d+)',line)]
         if arm == 'batched':
-            require(call[1] == 'urEnqueueKernelLaunchWithArgsExp' and sorted(n for _,n in local) == [64,512],
+            require(call[1] == 'urEnqueueKernelLaunchWithArgsExp' and len(local) == 2 and
+                    len({i for i,_ in local}) == 2 and sorted(n for _,n in local) == [64,512],
                     'batched actual local argument payload differs')
         launches.append(dict(api=call[1],kernel=expected_name,local_arguments=local))
     require(len(launches) == 7, 'missing or extra successful selector launch')

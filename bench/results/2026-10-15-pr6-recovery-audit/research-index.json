@@ -15293,7 +15293,7 @@
   },
   "qsa_batched_radix_sg32_contract_20261029": {
     "classification": "decision support",
-    "status": "worker_closed_native_review_pending",
+    "status": "reviewed_source_contract_native_unrun",
     "schedulable_now": false,
     "source_files": {
       "include/strata/kernels/qsa_radix_batched.hpp": "0b22b70a36cdfd47cdd58b2ac6c2adaa7f0dbeeae46785e3a54ffdefdbf31ecf",
@@ -15328,6 +15328,16 @@
     "report_bytes": 9273,
     "report_sha256": "6772fd11bc0b7b42b4ddccdf50c55dcfd4fe00b0afa8303169388668f1677594",
     "main_read_report_body": false,
-    "native_reviewer": "/root/curate_qsa_sg32_contract_20261029"
+    "native_reviewer": "/root/curate_qsa_sg32_contract_20261029",
+    "native_review": {
+      "model": "native Codex gpt-6-luna max",
+      "bytes": 5377,
+      "sha256": "6912eacee711f69aa8a073ee86955573f2b5087d69f97a63cc0462376088c633",
+      "decision": "Source contract accepted;no correctness blocker or source/license correction. This is not a native/performance/model qualification.",
+      "useful_contract": "WG256/SG32 has8subgroups;each owns2bins. All32lanes use bounded lane%8loads,only8contribute. Both round barriers protect partial/totals lifetimes;integer weighted rank/ties/tails/NaN/zero/ascending IDs match the original contract. Declared source accessors512+64=576B,not measured native allocation.",
+      "essential_correction": "Main adds exactly two distinct local-argument indices alongside the512+64byte payload check before the prospective native smoke.",
+      "next_gates": "Committed exact build/native properties,independent17-case checks,actual-event/kernel-identified smoke,then all-shape clean/service/CPU screen including host preflight. Original subgroup not inferred;SG16 failures unchanged.",
+      "future_scope_schedulable_now": false
+    }
   }
 }
