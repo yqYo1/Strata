@@ -1686,8 +1686,8 @@ for other instantiations. The next isolated build starts from selected6e40Git
 inputs plus this single inference-file change;the current tree's17unselected
 native differences are excluded. A committed adapter directs the same-build
 independent oracle through the actual production ordered-prefill entrypoint.
-The isolated model build then passes18owned commands from source`06235253b`,
-frozen plan`8f3ae3dbb`:1411actual compiler inputs,zero uncovered files,four
+The isolated model build then passes18owned commands from source`cd2e308bc`
+(controller`06235253b`),frozen plan`8f3ae3dbb`:1411actual compiler inputs,zero uncovered files,four
 verified imported link providers and three exact18argument/SIMD16kernels.
 Nine auxiliary6e40source files are also recovered solely for CMake target
 generation;those targets are not built. The original missing-file configuration
