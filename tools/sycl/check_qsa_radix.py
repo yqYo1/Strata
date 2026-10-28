@@ -13,6 +13,7 @@ import time
 
 sys.dont_write_bytecode = True
 import build_qsa_radix as b
+import qualify_qsa_radix_ir as identity
 import check_qsa_k_loop as native
 from measure_down_scatter import postchecks
 
@@ -23,7 +24,7 @@ ARMS = ['original', 'control', 'batched']
 
 
 def inputs(revision):
-    pins = b.inputs(revision) | native.inputs(revision)
+    pins = identity.inputs(revision) | native.inputs(revision)
     name = str(Path(__file__).resolve().relative_to(P))
     raw = b.base.component.gen.git('show', revision + ':' + name)
     require(raw == (P / name).read_bytes(), 'commit exact check controller first')
@@ -32,7 +33,7 @@ def inputs(revision):
 
 
 def build_record(scope):
-    row = scope['build']['outcome']
+    row = identity.qualified(scope) if identity.KEY in scope else scope['build']['outcome']
     require(scope['build']['stage'] == 'closed' and row['passed'] and row['complete'] and
             row['ownership_closed'] and not row.get('active'), 'closed selector build required')
     b.admit(json.loads((ROOT / 'plan.json').read_text()))
