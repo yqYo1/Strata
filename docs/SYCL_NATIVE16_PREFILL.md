@@ -1795,7 +1795,9 @@ and84.9/37.5percent draft acceptance;these are one original-process sample per
 case,not candidate comparisons. Nominal32K remains supplemental at32089actual
 fresh tokens,740.7tok/s and43.474s TTFT. Commit its individual samples before
 running the next candidate process;five of the six independent processes and
-all cohort decisions remain pending.
+all cohort decisions remain pending. After committing those samples,78consumed
+raw/JIT/cache/research files retire (12799568bytes);the cohort record and every
+prepared configuration remain,with a path/hash/reason manifest.
 Production/decode and the selected6e40engine/twelve fixtures remain unchanged.
 After the screen and refused diagnostic are committed,three final retirements
 remove1269consumed observer/cache/review/link files (246447095bytes). The12old
