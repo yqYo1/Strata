@@ -2315,9 +2315,9 @@
         ],
         "scope": "Single eligible physical Intel GPU/accelerator plus exact native device name;not a general multi-GPU UUID mapping."
       },
-      "stage": "closed",
-      "mode": "smoke",
-      "source_commit": "3570536856f154bf0bcd75b647a1a5266ef9ec32",
+      "stage": "prepared",
+      "mode": "component",
+      "source_commit": "da0b5e781c38910cfa2c54b4e30ade50216bf02d",
       "controller_inputs": {
         "tools/sycl/check_qsa_k_loop.py": "c930cfccf24eb0ad89af24844e7a113d3b91578f4c22556e0e9e3184573af44e",
         "tools/sycl/measure_down_scatter.py": "6d92d7212c7cad9bb7fdee6ef6877528b6240f990c7f74d032394933387ed2de",
@@ -2367,9 +2367,9 @@
       },
       "command": [
         "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-direct-k-native-v1/numerical",
-        "--smoke"
+        "--component"
       ],
-      "output_root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-direct-k-native-v1/oracle-smoke",
+      "output_root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-direct-k-native-v1/oracle-component",
       "budgets": {
         "wall": 300,
         "cpu": 600,
@@ -2396,12 +2396,12 @@
         "SYCL_CACHE_PERSISTENT": "0",
         "ZES_ENABLE_SYSMAN": "0",
         "UR_ENABLE_LAYERS": "UR_LAYER_TRACING,UR_LAYER_PARAMETER_VALIDATION",
-        "UR_LOG_TRACING": "level:info;flush:info;output:file,/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-direct-k-native-v1/oracle-smoke/api.trace",
-        "UR_LOG_VALIDATION": "level:warning;flush:warning;output:file,/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-direct-k-native-v1/oracle-smoke/validation.log",
+        "UR_LOG_TRACING": "level:info;flush:info;output:file,/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-direct-k-native-v1/oracle-component/api.trace",
+        "UR_LOG_VALIDATION": "level:warning;flush:warning;output:file,/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-direct-k-native-v1/oracle-component/validation.log",
         "UR_LOG_LOADER": "level:warning;flush:warning;output:stderr",
         "UR_LOG_LEVEL_ZERO": "level:warning;flush:warning;output:stderr",
-        "TMPDIR": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-direct-k-native-v1/oracle-smoke/tmp",
-        "XDG_CACHE_HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-direct-k-native-v1/oracle-smoke/cache",
+        "TMPDIR": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-direct-k-native-v1/oracle-component/tmp",
+        "XDG_CACHE_HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-direct-k-native-v1/oracle-component/cache",
         "LD_PRELOAD": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/ur-validation-preload-v2/libstrata_ur_validation.so",
         "STRATA_UR_PROBE_EXPECTED_LOADER": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_loader.so.0.12.0",
         "ZE_ENABLE_ALT_DRIVERS": "/usr/lib/x86_64-linux-gnu/libze_intel_gpu.so.1.17.39758",
