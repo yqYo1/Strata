@@ -14899,70 +14899,68 @@
   },
   "joint_dense_head_prefill_transaction_audit_20261028": {
     "classification": "decision support",
-    "status": "completed_pending_native_review",
+    "status": "reviewed_current_candidate_design",
     "schedulable_now": false,
-    "dispatch_eligibility": {
-      "schedulable_now": true,
-      "actual_prerequisite_evidence": {
-        "selected_source": "6e40afc1beddd059ee518617f6c1efce1da14aca",
-        "immutable_source_root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-direct-k-model-v2/source",
-        "build_source": "cd2e308bc967c4da0831878882447380a7e4cd74",
-        "compiler_input_manifest_sha256": "b3494981d16fa4f716dc853f4a2d4d58541cb03b78e8754af749f1e83c906cdf",
-        "evidence": "Selected generate.cpp run_prompt_with_native_dense_phase explicitly rejects RELEASE_HEADS=1;Verifier head/dense retirement guards reject the other retired state. Existing target-head component releases521472000B but no combined transaction qualifies. Source-only gap,not a request to execute it."
-      }
-    },
     "question": "Audit the complete reader/owner/graph lifetimes for combining long-prefill native+canonical dense banking with target/draft head release while restoring the exact current decode configuration. Compare a joint transaction and staged independent leases; identify why current guards exist,the complete actors and queues,canonical/PLE/head publications,first-use/lazy recapture,normal/cancel/exception/OOM/uncertain-completion unwind,short-prefill bypass and repeat-request invariants. Distinguish reconstructing head from recoverable RAM input versus D2H snapshot and the measured/unmeasured costs. Propose the smallest prospective safety gates and unresolved blockers,not code or an adoption/performance claim. Do not merely repeat known unsupported guard or old component result.",
     "report": ".cache/research/2026-10-28/joint_dense_head_prefill_transaction_audit_20261028.md",
     "report_budget_bytes": 14336,
     "source_revision": "4b331a01b",
     "worker_model": "Orca Codex gpt-6-luna high",
-    "orca": {
-      "run": "run_80ea8ebc9a8c",
-      "task": "task_b0af9bc1d8d6",
-      "dispatch": "ctx_1226feff5b6b",
-      "terminal": "term_241f10e8-b638-432d-aeb7-120781b945dc",
-      "input_accepted": true,
-      "worker_closed": true,
-      "worker_state": "succeeded_released",
-      "closure": "Exact worker_done accepted;official releases closed owned terminals,then delivery_b161bb7b52be ACK."
-    },
     "consumer": "Main next prefill capacity/ownership candidate decision after current direct-K comparison;review via native Luna-max. No implementation or model gain is qualified.",
     "retirement": "Extract source-pinned blockers and next gates;retire consumed report/spec/review after deciding the concrete candidate. Do not keep an indefinite background-reference body.",
     "report_sha256": "b8e76be1c84c34af87ab40296702506cc1e3e5d2daa83170552ac709c17a76ce",
-    "report_bytes": 13494
+    "report_bytes": 13494,
+    "source_binding": {
+      "selected_source": "6e40afc1beddd059ee518617f6c1efce1da14aca",
+      "immutable_source_root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-direct-k-model-v2/source",
+      "build_source": "cd2e308bc967c4da0831878882447380a7e4cd74",
+      "compiler_input_manifest_sha256": "b3494981d16fa4f716dc853f4a2d4d58541cb03b78e8754af749f1e83c906cdf"
+    },
+    "worker_closed": true,
+    "reviewer": "native Codex gpt-6-luna max",
+    "review_sha256": "1100bc78d4e4c17448573adbaa1a24e3c8f718000debd437d2ad8dd13a23477a",
+    "finding": {
+      "assessment": "Strong source-only ownership audit. It covers dense/native and canonical/PLE owners, target and MTP heads, verifier/session/token graphs, cache lease and the distinct main_cs, MTP cs_, verifier cs_/copy_/commit, and layer-major m.cs domains. It correctly explains why both current guards reject nested composition and why nested/staged independent scopes cannot safely retain both savings.",
+      "safe_boundary": "Keep both guards. If a real capacity decision later requires joint release, first design one coordinator/state machine with a single quiescence proof, union graph retirement, ordered publication/restore, per-owner phases and fail-stop after uncertain work. No allocation or model trial follows from this report alone.",
+      "material_unknowns": "Compatibility stream/event and graph-destroy failure semantics; full joint peak and max-single-allocation admission; recoverable persistent target-head RAM source; lazy recapture graph set; verifier commit/state ownership; and whole-request cost remain unmeasured. Current target-head release snapshots by D2H then restores by H2D; 521472000 B is a component release amount, not a joint capacity or speed result."
+    },
+    "corrections": [
+      "Joint report table labels hash 777e6d847ab6d83bc0a9103d6baabb7f4204ff23d34ce6c853eb1d7e68a11c37 as src/core/prefill.cpp, which does not exist in the pinned tree. Correct path is src/prefill/prefill.cpp; that file and manifest entry have the stated hash. Source identity remains recoverable."
+    ],
+    "body_consumer": "Retain both report bodies/specs only through the named next prefill capacity/ownership candidate decision after the direct-K comparison. Extract the correction, blockers and selected design into the existing compact index/result, then retire the bodies/specs if no chosen candidate needs them. This review JSON is a one-time handoff, not a standing reference.",
+    "scope_limits": "Source-only design/bounds audit;no complete runtime/failure-semantics proof,actual joint peak/allocation,hardware bottleneck,gain,full-context or model adoption qualification. Finish frozen direct-K comparison before selecting a new candidate."
   },
   "single_window_fp32_moe_consumer_bounds_audit_20261028": {
     "classification": "decision support",
-    "status": "completed_pending_native_review",
+    "status": "reviewed_current_candidate_design",
     "schedulable_now": false,
-    "dispatch_eligibility": {
-      "schedulable_now": true,
-      "actual_prerequisite_evidence": {
-        "selected_source": "6e40afc1beddd059ee518617f6c1efce1da14aca",
-        "immutable_source_root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-direct-k-model-v2/source",
-        "build_source": "cd2e308bc967c4da0831878882447380a7e4cd74",
-        "compiler_input_manifest_sha256": "b3494981d16fa4f716dc853f4a2d4d58541cb03b78e8754af749f1e83c906cdf",
-        "evidence": "Current mode10 caps81920rows and117488-prefill requests use96windows rather than48. Maintained capacity math already names531988736B second FP32 bank for117488rows,or temporal4planealias that reaches90112but not98304. Hardware saturation/local gain not established. The missing evidence is a complete consumer/bounds/rounding map,not another capacity table."
-      }
-    },
     "question": "Audit every producer/consumer and admission assumption that must change to process roughly117488rows in one MoE expert-major FP32-accumulation window while keeping <=8192-row matrix jobs and current decode intact. Compare split FP32 accumulator banks,temporal scratch reuse,and smaller expert cache implications; identify hidden one-pointer spans,scatter/fused readers,stable routing/reduction order,job histogram limits,max-allocation versus total-capacity,bank residency,short final-window fallback,and physical262144-boundary/RESTORE compatibility. Show the smallest isolated candidate boundary and bounded validation sequence. Do not implement,run tests,repeat the known byte table as the main finding,or predict a speedup from job counts. Distinguish removed work from changes in GPU arithmetic/VRAM/PCIe/RAM/CPU resource demand and identify what measurement would accept/reject the mechanism.",
     "report": ".cache/research/2026-10-28/single_window_fp32_moe_consumer_bounds_audit_20261028.md",
     "report_budget_bytes": 14336,
     "source_revision": "4b331a01b",
     "worker_model": "Orca Codex gpt-6-luna high",
-    "orca": {
-      "run": "run_80ea8ebc9a8c",
-      "task": "task_556ef052da76",
-      "dispatch": "ctx_07c5011f8652",
-      "terminal": "term_fbbce137-207a-40ae-949b-488ed0bbe871",
-      "input_accepted": true,
-      "worker_closed": true,
-      "worker_state": "succeeded_released",
-      "closure": "Exact worker_done accepted;official releases closed owned terminals,then delivery_b161bb7b52be ACK."
-    },
     "consumer": "Main next prefill capacity/ownership candidate decision after current direct-K comparison;review via native Luna-max. No implementation or model gain is qualified.",
     "retirement": "Extract source-pinned blockers and next gates;retire consumed report/spec/review after deciding the concrete candidate. Do not keep an indefinite background-reference body.",
     "report_sha256": "71b9834982aa3f43765dccf1c80660135d2e6a63a52c44681535e23dd9642167",
-    "report_bytes": 13661
+    "report_bytes": 13661,
+    "source_binding": {
+      "selected_source": "6e40afc1beddd059ee518617f6c1efce1da14aca",
+      "immutable_source_root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-direct-k-model-v2/source",
+      "build_source": "cd2e308bc967c4da0831878882447380a7e4cd74",
+      "compiler_input_manifest_sha256": "b3494981d16fa4f716dc853f4a2d4d58541cb03b78e8754af749f1e83c906cdf"
+    },
+    "worker_closed": true,
+    "reviewer": "native Codex gpt-6-luna max",
+    "review_sha256": "1100bc78d4e4c17448573adbaa1a24e3c8f718000debd437d2ad8dd13a23477a",
+    "finding": {
+      "assessment": "Strong bounds/consumer audit. It traces the 81920 cap through window admission, route-plan builders, accumulator execution and down-scatter; finds both ordinary and fused single-pointer scatter consumers plus contiguous finish; identifies that the 11-slot profiling histogram would overrun if the cap were raised to117488 without resizing (the current planner rejects that extent); and covers the short-tail/cache fallback and 262144-context limit.",
+      "candidate_boundary": "If later evidence selects this mechanism, isolate mode-10 long prefill at 117488 rows with two explicit FP32 accumulator spans, unchanged <=8192-row jobs, bank-aware ordinary/fused scatter and finish, checked spans, and a corrected histogram. Keep router, shared output, FP32 FMA/addition and BF16 output rounding, current expert-major order, decode and cache fixed initially. Compare cache reduction only as a separate arm. This remains a proposal; allocation admission, correctness, numerical behavior and speed are unqualified.",
+      "resource_and_numerical_limits": "Fewer windows/jobs may reduce host route/map work, staging/dequant and launch/sync overhead, but routed GEMM arithmetic stays the same; split storage adds VRAM/scatter traffic and a smaller expert bank can add PCIe uploads. No measured limiter, allocation success, physical traffic or gain is established. Expert-major FP32 summation is deterministic but differs in order from the non-accumulation path; a wider window does not qualify a new numerical contract."
+    },
+    "corrections": [
+      "Narrow the single-window report's blanket 'original Strata source under repository LICENSE' provenance wording. Its table includes src/prefill/sycl/vllm_xe2/native16.cpp; docs/SYCL_VLLM_XE2_NATIVE16.md records this adapter's vllm-project/vllm-xpu-kernels 6b30c9b adaptation and the separate Intel BSD-3 notice in xe_gemm_bsd.hpp. This is documented non-XeStrata provenance; the report proposes no code reuse. Do not apply MIT to the BSD-3 file."
+    ],
+    "body_consumer": "Retain both report bodies/specs only through the named next prefill capacity/ownership candidate decision after the direct-K comparison. Extract the correction, blockers and selected design into the existing compact index/result, then retire the bodies/specs if no chosen candidate needs them. This review JSON is a one-time handoff, not a standing reference.",
+    "scope_limits": "Source-only design/bounds audit;no complete runtime/failure-semantics proof,actual joint peak/allocation,hardware bottleneck,gain,full-context or model adoption qualification. Finish frozen direct-K comparison before selecting a new candidate."
   }
 }
