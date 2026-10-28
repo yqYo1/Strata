@@ -10434,6 +10434,115 @@
       "scope": "First build remains failed;all15CPU-only compile/link/IR commands exit0. Exact IR comparison permits module/source_filename labels only and rejects the source-path sycl-module-id attribute.",
       "observed": "Both original and proposal IR pairs have exactly one differing attribute:sycl-module-id points at original source versus mechanically generated observation source. Instruction/function/other metadata text is identical after this one typed source-identity substitution.",
       "next": "Commit a fresh prospective build plan with exact expected-source checks for this attribute before comparing it canonically;preserve failed V1receipt and retire its products after source/recipe recovery. No GPU run or performance qualification."
+    },
+    "source_identity_IR_qualification": {
+      "plan": {
+        "stage": "prepared",
+        "source_commit": "f2af8663954b752af4eea55d108def849c108367",
+        "input_sha256": {
+          "include/strata/kernels/qsa_radix_batched.hpp": "41ff5c8a86828fef247406d6654c19bbf0ec6062747c7b7681be32c01fd1a601",
+          "src/kernels/sycl/qsa_radix_batched.cpp": "4adc3338780c5a2b347f3273f72edce1b403699debef3d0e0ad184d424581bc4",
+          "tests/sycl/qsa_batched_radix.cpp": "c4290f7bbdfd3fcd83d78727f2fa5e4a107ef34bbb0cc14e4927d926ccc51e86",
+          "tests/sycl/qsa_event_capture.hpp": "a3cc6e7569016d9ca8092871b499022f4dd978538329007e6eb85fde935584de",
+          "tests/sycl/qsa_select_radix.cpp": "1d2167420d5acf6346f5c58b43385d0b5d2d9e24f8506a2d54d55839b454aaf4",
+          "tools/sycl/bench_engine.py": "aefdadf94c5580db49cd26002658a62b360557a6bf4ccc0a2de831ac02ed8063",
+          "tools/sycl/build_engine.py": "8444783ab417378207ec89ad2bc3cf648480e20d9e77f06ebb3070c93e10b131",
+          "tools/sycl/build_full_context.py": "6e2aa8c584e0fd014157cfd08360945ae2d28ad2db660499d9f4eb900e517b72",
+          "tools/sycl/build_fused_profile.py": "0eb0c36c3290716e2589e01a9f613607a131b8525afb5e99f114495b6671caae",
+          "tools/sycl/build_qsa_k_loop.py": "2ec319c4fb1f27390618353e0965d2c7029c86def5673510600b0073d676eda3",
+          "tools/sycl/build_qsa_k_model.py": "9d62d7b69827452921fdb07427a8cb07b72bb8a7713f0f79405bdfac50ccebae",
+          "tools/sycl/build_qsa_radix.py": "8a810af6add7913f25ce11a255e73beb4bc0c6fb728c2883eb68a91640fa38c7",
+          "tools/sycl/cache_borrow.py": "900a2364d19beea0e1fa3e3c657f980455d676363660c013f6ef9058eeb43450",
+          "tools/sycl/cache_capacity.py": "9d39d3851bfc634901d6b5fd6f984918c53f8f44337df7fd506b6cb2ab3252f5",
+          "tools/sycl/cache_long.py": "1113563f582bd01bfb7535f8b73d70bf92f8e336dbef60301a6de7f2c28c1548",
+          "tools/sycl/cache_long_compare.py": "e96f1fd77a50e3535e7b0ed545464811e334e2f3bd329cc870675916dd5de4af",
+          "tools/sycl/check_expert_bank.py": "31896d82f9f948784720c13044938fd64d5445e5a28168c2ccd569e3cb769eee",
+          "tools/sycl/check_full_context_source.py": "5e72fa724e890e682382758caf6222042e1ec89770962ce205ab756783332030",
+          "tools/sycl/check_layout_source.py": "b11db83b899fd8bd09b7b1329843e0a267c79ff9b301d6a3b68936a76eef6b3f",
+          "tools/sycl/check_verifier_retirement.py": "1896bf9dd31954bc1fb95c03e3b18679e280f4690a0b46679493b6d6c11c350e",
+          "tools/sycl/command_service.py": "c59f4945ba8c15c982f40386155deec65e42d063a3de14d29fb90e0a0dcc4881",
+          "tools/sycl/cpu_capacity.py": "685b981462cdf8e667f67bc844d8e522be84c776df57238327a4dad8dbbefa51",
+          "tools/sycl/cpu_census_engine.py": "40013d84a4b7a347c46efc6b7f99b7ea8f253b94c3ad217ea62c7b0dd6000d09",
+          "tools/sycl/cpu_iq2.py": "73aa915408be2d1641922fbbeb4047e135313ad257cdb7087a9545ccfe250b79",
+          "tools/sycl/cpu_roofline.py": "7f1ec28fa1537f6a860165e152b53f07fae3a9828cf2c119cb9bfabfcf19e161",
+          "tools/sycl/cpu_work_census.py": "37038e04a8192ca3d3e1a8a1790a65db22110737630a30be43db64899ee3d1c6",
+          "tools/sycl/decode_footer.py": "6e7bf40ed4b08c5dbaeb0ec977715239a177b6aa537bb2d2b048a6599bb0838c",
+          "tools/sycl/generation_compare.py": "89eca5bc23bc7b45bbe441490ff2e7c324edf37cc002673118ce5ea9dd9bc4df",
+          "tools/sycl/generation_engine.py": "eb5bd20c70dbeca6dad253675c76735f9e058507f54668a44074760ae7a5d5d9",
+          "tools/sycl/iq2_pair_model.py": "618c3d8c6680ed2dcc3834c9aa6cbf9a67f97c4fc8c78fcdd5e5c83c583e0769",
+          "tools/sycl/measurement_guards.py": "794e332c70aca0acadad4f26d0414548e023a02fd27b72ed78fc773674423ec8",
+          "tools/sycl/measurement_owner.py": "bddd0c5e5020e882ca3404679420faec11e820dabce2ed4c72ef82b4c9c0874a",
+          "tools/sycl/mtp_model_observer.py": "d08adf85cd4f644ec651ba6b598d7f431930aa6c8dbb6e7a08b941b2bf1ceeff",
+          "tools/sycl/packed_bank.py": "eee4e623697a2bf935339fddd51fc437359e0412dbfc1a903a46691aacc0235f",
+          "tools/sycl/qsa_k_loop_sources.py": "526f02d967f0f03f7cfc8239a7633b9f9840e0533dee047171b38a7dd061db6c",
+          "tools/sycl/qsa_k_model_sources.py": "bfa93179b63d6231f17864d9935efd72ae5a1fe98288174bbaf2e66927fe558d",
+          "tools/sycl/query_profile.py": "7136a71790d412394fc1ae345af03efb6eaffa09065c49a3b4cffb10a21477d8",
+          "tools/sycl/relink_qsa_k_model.py": "c1b882bc41190c05514fd7ef741ba4e3be641b99cd6750e244ba4b63c817f4c2",
+          "tools/sycl/resource_engine.py": "7ec369dfb1a908db55a5501a02a4e37b50522a6376e348c2ad1917f29b2b0446",
+          "tools/sycl/runtime_probe.py": "750818a521dcdf28901638424e9789c2db22d85876226b6f5141a954bb9d41d6",
+          "tools/sycl/ur_validation.py": "2e41d84788dc9cc3c7435b18b43601b3ca79280ccb855414d7a36bae6bff83e7",
+          "tools/sycl/qualify_qsa_radix_ir.py": "b51c89fbb4f964a5c09f5df5bb3d0aa074c33949dee2d082501213571d4b44bc"
+        },
+        "original_failed_build_sha256": "b7169594114f19a4083cc83a2b606816294c7ecd0bc6555344025f8a013e1ba3",
+        "original_plan_sha256": "203d71888044b789a7cd849bbe3d563a92bc5d45892a31a2f049680c06163ebc",
+        "original_record_sha256": "f8d30c75551777e39e0842d0d3aac54a0681ea6c68862b747fab21ec23105aa6",
+        "compiled_assets": {
+          "binary": {
+            "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-batched-radix-v1/fixture",
+            "bytes": 365616,
+            "sha256": "69d77745658873cc96d048e9f69fbb6147cffb76c4208356eab193810a7e0d07"
+          },
+          "observed_binary": {
+            "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-batched-radix-v1/fixture-observed",
+            "bytes": 374280,
+            "sha256": "23becb8bdb83e754af351354bf3a7a9329f1e839b24a63f147470dbbd1d78ff9"
+          },
+          "actual_compiler_inputs": {
+            "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-batched-radix-v1/compiler-inputs.json",
+            "bytes": 117604,
+            "sha256": "56d0f99b880ac5d4307a66b3bbe287cab1fd9bb467e9311fe4c24019a9ee2b4b",
+            "files": 695,
+            "uncovered": 0
+          },
+          "kernel_inventory": {
+            "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-batched-radix-v1/kernel-inventory.json",
+            "bytes": 6591,
+            "sha256": "1bd3e957f262e6dea7b453a5dcc8c33db3dd986c109ad522df718b2111f6dd45"
+          },
+          "LLVM": {
+            "original": {
+              "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-batched-radix-v1/original.ll",
+              "bytes": 61690,
+              "sha256": "50f4efd9eeffaf3423278eda5d6b8fa1585c2dfcd88424f76f3cd22a67c77620"
+            },
+            "proposal": {
+              "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-batched-radix-v1/proposal.ll",
+              "bytes": 31820,
+              "sha256": "d64c0e2e1dfc44d2e6a54ea413111a976d0cc856ca2fbe5d44cd66e2c0018263"
+            },
+            "observed-original": {
+              "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-batched-radix-v1/observed-original.ll",
+              "bytes": 61636,
+              "sha256": "d66944b22d0fa9e5081ea77848ffdc370fca5de86cde002c97941a6eab34605a"
+            },
+            "observed-proposal": {
+              "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-batched-radix-v1/observed-proposal.ll",
+              "bytes": 31907,
+              "sha256": "c15603bd0495d411ede0e1129e0467c72ba7c456a311e3cc9e9cedca8f6ad2bf"
+            }
+          }
+        },
+        "IR_source_paths": {
+          "original": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-direct-k-model-v2/source/src/kernels/sycl/qsa_select.cpp",
+          "proposal": "/home/yayoi/orca/workspaces/Strata/sycl/src/kernels/sycl/qsa_radix_batched.cpp",
+          "observed-original": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-batched-radix-v1/original-observed.cpp",
+          "observed-proposal": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-batched-radix-v1/proposal-observed.cpp"
+        },
+        "GPU_executed": false,
+        "binary_rebuilt": false,
+        "criteria": "New prospective method gate,not a retry or relabeling of the original build failure. Keep exact original compiled artifact bytes,15successful closed command receipts,all actual compiler inputs and recipe. Require each IR module/source_filename and every sycl-module-id attribute to name its exact recipe input. Normalize only those verified source identities;all remaining IR text must be identical for both original/proposal observation pairs. Native resources/correctness/event/service/model gates remain unrun."
+      },
+      "passed": false
     }
   }
 }
