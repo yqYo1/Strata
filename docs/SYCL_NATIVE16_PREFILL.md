@@ -74,6 +74,14 @@ screen below rejects this package;decode speed,quality and agent-session qualifi
 remain open. Physical262144
 allocation/final-slot execution still needs its own bounded plan and evidence;
 the earlier retired streamed/layout results do not qualify this source.
+The selected-entrypoint audit now identifies a separate serve diagnostic:
+consume the final input through the first T=1 verifier at position262143,then
+suppress output/drafting. Exact-full ordinary cache matching cannot restore
+that prefix;test the real snapshot restore routine directly after reset,with
+actual snapshot RAM admission and explicit `ple_prev` verification. The prior
+unselected `model_capacity_v5` did execute262144 inputs with zero outputs;it
+does not qualify selected6e40/QSA or full-session RESTORE. No new build or
+device execution follows from this source review.
 
 The [current throughput comparison](../bench/results/2026-10-15-pr6-recovery-audit/restored-phase-bench-current.json)
 used the updated NEO and the6e40/restored1baa packages,with six fresh
@@ -1804,6 +1812,13 @@ acceptance. Agent-follow-up median decode is10.9versus11.2tok/s originally,
 a first-pair ratio0.973214;do not waive that decrease as noise. Four processes
 and the frozen three-pair decisions remain required;no adoption follows yet.
 Production/decode and the selected6e40engine/twelve fixtures remain unchanged.
+Between model processes,the CPU-only exact-WG128 discriminator fails its own
+three-kernel assumption:the whole translation unit emits20kernels,ten template
+variants each containing copy and attention entries. All four compile/translation
+commands exit0,but this is not a passed gate or permission for GPU advancement.
+Its source/plan and compact inventory remain recoverable;the one-use controller
+and raw outputs retire after evidence preservation. Continue the unchanged
+official cohort with process2(candidate).
 After the screen and refused diagnostic are committed,three final retirements
 remove1269consumed observer/cache/review/link files (246447095bytes). The12old
 generated configuration/native-plan files reconstruct to their original hashes.

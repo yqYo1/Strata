@@ -6504,7 +6504,7 @@
       }
     ],
     "exact_workgroup_IR": {
-      "stage": "prepared",
+      "stage": "failed",
       "complete": false,
       "passed": false,
       "active": false,
@@ -6626,6 +6626,50 @@
         "stop": "Metadata-only or equivalent instruction bodies closes this candidate without device execution. A changed body remains manual-review-only;no native image,resource,correctness or performance advancement without a new committed gate.",
         "limits": "CPU-only codegen discrimination,not device validation,physical traffic,hardware saturation,model adoption or throughput.",
         "retention": "Keep hashes,counts,metadata and compact relevant differences. Retire successful raw IR/SPIR-V/dependencies/compiler output after review;no third engine generation."
+      },
+      "error": "RuntimeError('expected exact LLVM workgroup metadata missing')",
+      "ownership_closed": true,
+      "failure_diagnostic": {
+        "all_four_compiler_translator_exit_codes": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "cause": "Controller incorrectly required three attention kernels from a whole-TU device compile. Both arms emit20kernels:ten template variants,each copy plus attention. Exact WG applies only to ten attention entries. Native selected-image kernel counts do not equal unsplit whole-TU IR counts.",
+        "observed": [
+          {
+            "arm": "control",
+            "IR_sha256": "76cac3063719346be87864f1d6a1515f19bcc38cfeaffbffd7f6623856b4dbb5",
+            "SPIRV_sha256": "745e5867dae8a9b69828fa631711d7ccb614f8bf449a9c8788f2a1b06c9b2309",
+            "dependencies": 662,
+            "LLVM_functions": 20,
+            "LLVM_kernels": 20,
+            "LLVM_required_workgroup_counts": {
+              "None": 20
+            },
+            "SPIRV_LocalSize_counts": {
+              "None": 20
+            }
+          },
+          {
+            "arm": "exact128",
+            "IR_sha256": "1695196616f5fc9291c73ac03d2d26b36c30326ac5bbf71ff334819a1d3ec376",
+            "SPIRV_sha256": "7ce891c144675a2cbd1fca6144004580cf6f5cc4841a0bbd0f2aa7085360c49c",
+            "dependencies": 662,
+            "LLVM_functions": 20,
+            "LLVM_kernels": 20,
+            "LLVM_required_workgroup_counts": {
+              "None": 10,
+              "!{i32 128, i32 1, i32 1}": 10
+            },
+            "SPIRV_LocalSize_counts": {
+              "None": 10,
+              "[128, 1, 1]": 10
+            }
+          }
+        ],
+        "decision": "Original failed gate remains failed. No native/model advancement or speed claim. Retire one-use controller/raw outputs after preserving these hashes and source/recipe;revisit exact WG only through a fresh prospective plan if relevant attribution justifies it."
       }
     }
   }
