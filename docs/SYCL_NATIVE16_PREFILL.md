@@ -1793,11 +1793,16 @@ with unchanged fixed inputs,complete agent session,normal native exit,quiet
 validation and no fresh fault. Its2933/8169-token generations report13.7/8.6tok/s
 and84.9/37.5percent draft acceptance;these are one original-process sample per
 case,not candidate comparisons. Nominal32K remains supplemental at32089actual
-fresh tokens,740.7tok/s and43.474s TTFT. Commit its individual samples before
-running the next candidate process;five of the six independent processes and
-all cohort decisions remain pending. After committing those samples,78consumed
+fresh tokens,740.7tok/s and43.474s TTFT. Its individual samples were committed
+before the candidate process. After preserving those samples,78consumed
 raw/JIT/cache/research files retire (12799568bytes);the cohort record and every
 prepared configuration remain,with a path/hash/reason manifest.
+The first V2candidate process also passes all18requests and final source/runtime/
+ownership checks,with quiet validation and no fresh fault. Its long-generation
+rates are13.9/8.7tok/s,with the same2933/8169actual outputs and84.9/37.5percent
+acceptance. Agent-follow-up median decode is10.9versus11.2tok/s originally,
+a first-pair ratio0.973214;do not waive that decrease as noise. Four processes
+and the frozen three-pair decisions remain required;no adoption follows yet.
 Production/decode and the selected6e40engine/twelve fixtures remain unchanged.
 After the screen and refused diagnostic are committed,three final retirements
 remove1269consumed observer/cache/review/link files (246447095bytes). The12old
