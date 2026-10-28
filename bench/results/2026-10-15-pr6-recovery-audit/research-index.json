@@ -14738,8 +14738,8 @@
   },
   "hierarchical_recurrent_scan_dataflows_20261028": {
     "classification": "knowledge collection",
-    "status": "eligible_pending_dispatch",
-    "schedulable_now": true,
+    "status": "running",
+    "schedulable_now": false,
     "question": "Across official vLLM/SGLang paths for gated recurrent/state-space layers and non-LLM signal-processing, scientific-computing and accelerator implementations, when can a token recurrence be converted into composable block summaries and evaluated with a hierarchical prefix scan? Compare sequential chunk updates, associative affine/low-rank composition, intra-block scans plus inter-block summaries, and recomputation/storage tradeoffs. Establish from source when the recurrence is actually composable, its exact state/rounding order, work and communication cost, and counterexamples where coefficient generation, numerical drift, state size, synchronization or short sequences make a scan lose. Include GPU/SYCL and DSP/FPGA/ASIC evidence; no Strata speed or implementation claim.",
     "prerequisite_evidence": {
       "technical": "None for knowledge collection. The indexed GDN scan/epilogue entries and Qwen engine context provide anchors; no current model-comparison result, local profile or source patch is needed.",
@@ -14760,12 +14760,21 @@
     "worker_model": "Orca Codex gpt-6-luna high",
     "review_model": "native Codex gpt-6-luna max",
     "worker_closed": false,
-    "retention": "Keep only substantive nonduplicated reference findings with realistic retrieval need;native Luna-max review before Main reads scheduling digest. Main does not read collection body on arrival."
+    "retention": "Keep only substantive nonduplicated reference findings with realistic retrieval need;native Luna-max review before Main reads scheduling digest. Main does not read collection body on arrival.",
+    "orca": {
+      "run": "run_80ea8ebc9a8c",
+      "task": "task_3d504d95d0d3",
+      "initial_failed_dispatch": "ctx_abef43467501",
+      "dispatch": "ctx_71269937cd6f",
+      "terminal": "term_02889ca8-dfa4-4cf6-8052-a8a4657439d3",
+      "initial_failure": "agent-update-prompt before Task input;displayed ESC skip once,verified idle gpt-6-luna high/workspace,official same-task/same-terminal retry accepted and turn observed.",
+      "input_accepted": true
+    }
   },
   "adaptive_sparse_format_crossover_gpu_asic_20261028": {
     "classification": "knowledge collection",
-    "status": "eligible_pending_dispatch",
-    "schedulable_now": true,
+    "status": "running",
+    "schedulable_now": false,
     "question": "For dynamic, highly variable sparse rows on SIMT GPUs and matrix-accelerator ASICs, compare CSR/COO, ELL/SELL-C-sigma, blocked CSR/BSR, CSR5 or equivalent segmented formats, and dense/tile fallback. Explain how row-length skew, density, matrix-engine tile shape, metadata/indirection traffic, preprocessing or compaction, update frequency and output order determine the crossover; identify counterexamples and the smallest evidence needed for a later format decision. Ground the survey in non-LLM graph analytics, SpMM/GNN, recommendation or scientific kernels, then check what relevant vLLM/SGLang/Intel paths actually support. No local performance prediction or port proposal.",
     "prerequisite_evidence": {
       "technical": "None for collection. The index records query-specific selected KV lists and existing matrix-mapping references, enough to define retrieval relevance; their presence is not evidence for any format or local bottleneck.",
@@ -14786,6 +14795,15 @@
     "worker_model": "Orca Codex gpt-6-luna high",
     "review_model": "native Codex gpt-6-luna max",
     "worker_closed": false,
-    "retention": "Keep only substantive nonduplicated reference findings with realistic retrieval need;native Luna-max review before Main reads scheduling digest. Main does not read collection body on arrival."
+    "retention": "Keep only substantive nonduplicated reference findings with realistic retrieval need;native Luna-max review before Main reads scheduling digest. Main does not read collection body on arrival.",
+    "orca": {
+      "run": "run_80ea8ebc9a8c",
+      "task": "task_9db37dab6807",
+      "initial_failed_dispatch": "ctx_67270be9641d",
+      "dispatch": "ctx_9842419e92aa",
+      "terminal": "term_e80028f2-2206-4637-abd5-360bd5e29e6d",
+      "initial_failure": "agent-update-prompt before Task input;displayed ESC skip once,verified idle gpt-6-luna high/workspace,official same-task/same-terminal retry accepted and turn observed.",
+      "input_accepted": true
+    }
   }
 }
