@@ -14738,7 +14738,7 @@
   },
   "hierarchical_recurrent_scan_dataflows_20261028": {
     "classification": "knowledge collection",
-    "status": "running",
+    "status": "completed_native_review_pending",
     "schedulable_now": false,
     "question": "Across official vLLM/SGLang paths for gated recurrent/state-space layers and non-LLM signal-processing, scientific-computing and accelerator implementations, when can a token recurrence be converted into composable block summaries and evaluated with a hierarchical prefix scan? Compare sequential chunk updates, associative affine/low-rank composition, intra-block scans plus inter-block summaries, and recomputation/storage tradeoffs. Establish from source when the recurrence is actually composable, its exact state/rounding order, work and communication cost, and counterexamples where coefficient generation, numerical drift, state size, synchronization or short sequences make a scan lose. Include GPU/SYCL and DSP/FPGA/ASIC evidence; no Strata speed or implementation claim.",
     "prerequisite_evidence": {
@@ -14759,7 +14759,7 @@
     "scope_review_sha256": "17935ef9372ca8fadef70f2a33a1a83c8968b0b5679819368543c737c4f6aa2f",
     "worker_model": "Orca Codex gpt-6-luna high",
     "review_model": "native Codex gpt-6-luna max",
-    "worker_closed": false,
+    "worker_closed": true,
     "retention": "Keep only substantive nonduplicated reference findings with realistic retrieval need;native Luna-max review before Main reads scheduling digest. Main does not read collection body on arrival.",
     "orca": {
       "run": "run_80ea8ebc9a8c",
@@ -14768,12 +14768,17 @@
       "dispatch": "ctx_71269937cd6f",
       "terminal": "term_02889ca8-dfa4-4cf6-8052-a8a4657439d3",
       "initial_failure": "agent-update-prompt before Task input;displayed ESC skip once,verified idle gpt-6-luna high/workspace,official same-task/same-terminal retry accepted and turn observed.",
-      "input_accepted": true
-    }
+      "input_accepted": true,
+      "worker_state": "succeeded_released",
+      "closure": "Accepted exact-task/dispatch worker_done msg_3f43f4b691f4;official release closed terminal,then delivery_5ea65308f27d acknowledged."
+    },
+    "report_bytes": 14127,
+    "report_sha256": "beec52355b79716cb28613cfce7bc24a125b8b273caa9aec948a30520256bd48",
+    "main_read_collection_body": false
   },
   "adaptive_sparse_format_crossover_gpu_asic_20261028": {
     "classification": "knowledge collection",
-    "status": "running",
+    "status": "completed_native_review_pending",
     "schedulable_now": false,
     "question": "For dynamic, highly variable sparse rows on SIMT GPUs and matrix-accelerator ASICs, compare CSR/COO, ELL/SELL-C-sigma, blocked CSR/BSR, CSR5 or equivalent segmented formats, and dense/tile fallback. Explain how row-length skew, density, matrix-engine tile shape, metadata/indirection traffic, preprocessing or compaction, update frequency and output order determine the crossover; identify counterexamples and the smallest evidence needed for a later format decision. Ground the survey in non-LLM graph analytics, SpMM/GNN, recommendation or scientific kernels, then check what relevant vLLM/SGLang/Intel paths actually support. No local performance prediction or port proposal.",
     "prerequisite_evidence": {
@@ -14794,7 +14799,7 @@
     "scope_review_sha256": "17935ef9372ca8fadef70f2a33a1a83c8968b0b5679819368543c737c4f6aa2f",
     "worker_model": "Orca Codex gpt-6-luna high",
     "review_model": "native Codex gpt-6-luna max",
-    "worker_closed": false,
+    "worker_closed": true,
     "retention": "Keep only substantive nonduplicated reference findings with realistic retrieval need;native Luna-max review before Main reads scheduling digest. Main does not read collection body on arrival.",
     "orca": {
       "run": "run_80ea8ebc9a8c",
@@ -14803,7 +14808,12 @@
       "dispatch": "ctx_9842419e92aa",
       "terminal": "term_e80028f2-2206-4637-abd5-360bd5e29e6d",
       "initial_failure": "agent-update-prompt before Task input;displayed ESC skip once,verified idle gpt-6-luna high/workspace,official same-task/same-terminal retry accepted and turn observed.",
-      "input_accepted": true
-    }
+      "input_accepted": true,
+      "worker_state": "succeeded_released",
+      "closure": "Accepted exact-task/dispatch worker_done msg_53234d8dde61;official release closed terminal,then delivery_ba03e13dd6ad acknowledged."
+    },
+    "report_bytes": 15327,
+    "report_sha256": "83c185c734e6e148078bdc82ee25907df02ce7a8d47f7e563e1a248f190be0b2",
+    "main_read_collection_body": false
   }
 }
