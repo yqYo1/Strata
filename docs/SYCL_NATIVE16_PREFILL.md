@@ -1846,9 +1846,29 @@ attribute. New prospective controller`f2af86639`,plan`c401b7d50`,keeps the same
 executable/IR bytes and verifies all original inputs/receipts. It checks each
 identity against its exact recipe input before normalizing only those three
 source-identity fields. Both complete remaining IR texts then match. No
-recompilation or GPU execution occurs in that method gate. Native property,
-correctness,event and speed gates remain unrun;component262144coverage does
-not qualify a full model.
+recompilation or GPU execution occurs in that method gate. Both fixtures then
+pass native property checks:all three kernels admit WG256,the control/candidate
+require SG16,and each reports4096B static local memory and spill descriptor0.
+Declared candidate accessors are a separate1088B(1024partial+64totals);these
+figures do not establish physical allocation or occupancy. All six independent
+correctness processes pass17cases with identical output-ID hash
+`bb4ce7079a6f8c5e1fe7a194f63fde4638e75443f183345b1d074ca10914a180`,
+quiet validation and no fresh fault. Component262144coverage does not qualify
+a full model.
+
+The V1small event probe then fails its host identity check:
+`last event differs from actual selector submission`. It is not a GPU fault or
+a speed result. Native exit1 is reaped,the session is empty,and the original
+incomplete observation/failure stays failed. Main does not investigate the
+provider in detail. Source`aed5f3888` instead removes the last-event proxy and
+retains the actual parallel_for event directly from the host-only seam,with
+exactly one submission per call and distinct retained events. Invoke,event
+retention,drain and unclassified CPU regions remain disjoint;profiling queries
+stay outside those timed regions. V2requires a fresh committed build and the
+same native/correctness/small-smoke/clean-service gates before advancement.
+The closed V1generation and consumed research transactions retire after exact
+source/recipe/final-executable recovery. The old one-use IR qualifier retires to
+`f2af86639`;the new builder verifies the three source-identity fields itself.
 The existing7.689s selection queue interval includes host submission gaps and
 scoring;it is not this selector's GPU service or a hardware bottleneck proof.
 After the screen and refused diagnostic are committed,three final retirements
