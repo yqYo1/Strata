@@ -313,13 +313,13 @@
     "scope": "Matched selected12hashes and static/dynamic limits; no named tensor-to-spill attribution. Main separately resolved native-loop placement and threeflagrestores. Consumedreport/transactionsretired; nextcandidate hasnewaudit."
   },
   "next_candidate": {
-    "status": "compiled_same_generation_source_identity_IR_qualified_native_unrun",
+    "status": "selector_correctness_passed_event_proxy_rejected_direct_event_method_next",
     "generator": "tools/sycl/build_qsa_radix.py",
     "scope": "Standalone prefill-only QSA selector;selected production/decode unchanged.",
     "mechanism": "Replace16workgroup reductions per radix digit with16subgroup partial reductions plus a subgroup reduction of each bin and two workgroup barriers;1088bytes local histogram. Same exact weighted rank,ties and ascending IDs.",
     "reference": "Selected6e40 own MIT selector and independent CPU full-sort oracle;Main-authored batched implementation sourcec722121f9. No XeStrata code.",
     "future_gates": "Committed exact recipe/input closure;identical clean/observed deviceIR;actual native resources;independent oracle and traced event smoke;then matched three-process per-shape clean-wall/service/CPU gates against original and SG16control. Model/decode and physical-context qualification remain separate.",
-    "next_action": "Prepare and commit native property plan for both identical-device-IR fixtures,then independent exact-ID correctness,small actual-event smoke and matched selector clean/service performance. Original build metadata refusal remains failed;new prospective source-identity gate passes without rebuilding or GPU execution."
+    "next_action": "No use of get_last_event proxy for timing. New prospective generation retains each actual parallel_for event from the host-only capture seam directly. No provider root-cause investigation by Main;old execution remains failed. Retire V1products after committing the new consumer/recipe."
   },
   "retirement": {
     "complete": true,
@@ -10563,7 +10563,7 @@
       }
     },
     "check_plan": {
-      "stage": "prepared",
+      "stage": "closed",
       "mode": "event-smoke",
       "source_commit": "3a2edd3e234bf22f24a672084a08442fdc5bc4ef",
       "binaries": {
@@ -11077,7 +11077,64 @@
           "kernel": "7.0.0-38-generic",
           "devcoredump": false
         }
+      },
+      {
+        "mode": "event-smoke",
+        "passed": false,
+        "complete": false,
+        "active": false,
+        "ownership_closed": false,
+        "processes": [],
+        "error": "RuntimeError('selector child failed')",
+        "postchecks_complete": true,
+        "postcheck_errors": [],
+        "fresh_faults": [],
+        "boot_unchanged": true,
+        "driver_after": {
+          "pci": "/sys/bus/pci/devices/0000:05:00.0",
+          "driver": "xe",
+          "vendor": "0x8086",
+          "device": "0xe20c",
+          "kernel": "7.0.0-38-generic",
+          "devcoredump": false
+        }
       }
-    ]
+    ],
+    "event_service_eligible": false,
+    "event_method_failure": {
+      "status": "failed_not_retried",
+      "message": "FAIL last event differs from actual selector submission",
+      "fresh_faults": [],
+      "original_outcome_preserved": true,
+      "original_observation_complete": false,
+      "ownership_audit": {
+        "direct_child_reaped": true,
+        "session_empty": true,
+        "recorded_owner_identities_absent": true,
+        "unresolved_GPU_process": false
+      },
+      "source_recipe_recovery": {
+        "complete": true,
+        "checked_at_commit": "f0007ec1b2b7de9448c3f7e875d8dd70027e93e1",
+        "frozen_plan_commit": "cb38a4bcf",
+        "original_inputs_retrieved_from_Git": 41,
+        "actual_compiler_inputs": 695,
+        "final_executables": {
+          "binary": {
+            "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-batched-radix-v1/fixture",
+            "bytes": 365616,
+            "sha256": "69d77745658873cc96d048e9f69fbb6147cffb76c4208356eab193810a7e0d07"
+          },
+          "observed_binary": {
+            "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-batched-radix-v1/fixture-observed",
+            "bytes": 374280,
+            "sha256": "23becb8bdb83e754af351354bf3a7a9329f1e839b24a63f147470dbbd1d78ff9"
+          }
+        },
+        "unchanged_source_identity_IR_proof": true
+      },
+      "next": "No use of get_last_event proxy for timing. New prospective generation retains each actual parallel_for event from the host-only capture seam directly. No provider root-cause investigation by Main;old execution remains failed. Retire V1products after committing the new consumer/recipe."
+    },
+    "generation_closed": true
   }
 }
