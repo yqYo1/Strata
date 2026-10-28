@@ -2222,7 +2222,7 @@
       "scope": "These are whole-model build provenance obligations. Same-source bounded native property/numerical fixture qualification may proceed;no model launch/adoption while these remain unresolved."
     },
     "check_plan": {
-      "stage": "prepared",
+      "stage": "closed",
       "mode": "oracle-smoke",
       "source_commit": "e40ec0c86e54e312a7d9556a8a4c438d45b0cc51",
       "controller_inputs": {
@@ -2897,6 +2897,102 @@
         },
         "validation": {
           "pid": 3315713,
+          "loader": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_loader.so.0.12.0",
+          "threads_before": 1,
+          "preinit": 37,
+          "config_enabled": true,
+          "first_init": true,
+          "dispatch_result": 46,
+          "output_untouched": true,
+          "retained_reference_until_exit": true,
+          "runtime_teardown_qualified": false
+        },
+        "exit_code": 0,
+        "postchecks_complete": true,
+        "postcheck_errors": [],
+        "fresh_faults": [],
+        "boot_unchanged": true,
+        "driver_after": {
+          "pci": "/sys/bus/pci/devices/0000:05:00.0",
+          "driver": "xe",
+          "vendor": "0x8086",
+          "device": "0xe20c",
+          "kernel": "7.0.0-38-generic",
+          "devcoredump": false
+        }
+      },
+      {
+        "mode": "oracle-smoke",
+        "passed": true,
+        "complete": true,
+        "active": false,
+        "ownership_closed": true,
+        "GPU_kernels_executed": true,
+        "model_qualified": false,
+        "model_executed": false,
+        "controller_commit": "e40ec0c86e54e312a7d9556a8a4c438d45b0cc51",
+        "plan_commit": "e55457477d069ca10791fbecca17d15c25ef2ba0",
+        "physical_device": {
+          "name": "Intel(R) Arc(TM) B570 Graphics",
+          "pci": "0000:05:00.0",
+          "driver": "xe",
+          "matching_DRM_descriptors": 1
+        },
+        "output": {
+          "cases": 2,
+          "exact_prefix33_bits_cases": 2,
+          "case_summaries": [
+            "case cells=97 live_cells=49 active_rows=128 cap=33 queries=1 masked=0 compared=6144 max_abs=0 max_budget_ratio=0 oracle=BF16_operands_FP32_online packed_guard_elements=17 packed_k_mod8=2 packed_logical_prefix=PASS packed_guards=PASS guards=PASS inputs=PASS status=PASS",
+            "case cells=97 live_cells=71 active_rows=160 cap=33 queries=3 masked=1 compared=18432 max_abs=0 max_budget_ratio=0 oracle=BF16_operands_FP32_online packed_guard_elements=17 packed_k_mod8=2 packed_logical_prefix=PASS packed_guards=PASS guards=PASS inputs=PASS status=PASS"
+          ],
+          "scope": "Existing independent BF16/FP32 oracle and guard/mask/nonfinite/tail/admission controls through the candidate adapter;not full model or speed."
+        },
+        "local_launches": {
+          "0": {
+            "calls": 23,
+            "local_arguments": [
+              [
+                0,
+                16384
+              ],
+              [
+                1,
+                1024
+              ],
+              [
+                3,
+                64
+              ],
+              [
+                4,
+                64
+              ],
+              [
+                5,
+                64
+              ],
+              [
+                13,
+                256
+              ],
+              [
+                15,
+                2112
+              ],
+              [
+                16,
+                64
+              ]
+            ],
+            "dynamic_local_bytes": 20032,
+            "work_dim": 1,
+            "local_size": [
+              128
+            ]
+          }
+        },
+        "validation": {
+          "pid": 3322214,
           "loader": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_loader.so.0.12.0",
           "threads_before": 1,
           "preinit": 37,
