@@ -14105,47 +14105,7 @@
       "frozen_plan": "accee13ae",
       "exact_GEN_text_all3": true,
       "owned_CPU_only_all3_passed": true,
-      "captures": [
-        {
-          "arm": 0,
-          "assembly": {
-            "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-k-staging-packed32-v1/native-image-v1/offline-v2/0/kernel.asm",
-            "sha256": "ac95266b59334ce1861fcd9b6647632c3120f9856ab3c9cf05b76e562636e2d7",
-            "bytes": 488803
-          },
-          "metadata": {
-            "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-k-staging-packed32-v1/native-image-v1/offline-v2/0/kernel.ze_info.yaml",
-            "sha256": "e6b1581498082a2e87ad3de5945818fc1c795ac633a05ef5604e0139fd65a6d5",
-            "bytes": 5531
-          }
-        },
-        {
-          "arm": 1,
-          "assembly": {
-            "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-k-staging-packed32-v1/native-image-v1/offline-v2/1/kernel.asm",
-            "sha256": "6c44b75444b7ca93a0775887a64b65b2a6b7648473adabc12809a6a819b03424",
-            "bytes": 488803
-          },
-          "metadata": {
-            "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-k-staging-packed32-v1/native-image-v1/offline-v2/1/kernel.ze_info.yaml",
-            "sha256": "eb47fce5977b0cbe548464b85548bacd5b276de854b6fbcbc2577a7ad500e879",
-            "bytes": 5561
-          }
-        },
-        {
-          "arm": 2,
-          "assembly": {
-            "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-k-staging-packed32-v1/native-image-v1/offline-v2/2/kernel.asm",
-            "sha256": "cdef97c939c6cc8d7b09b2cf70715fb8ae5868432162a13434424f5a4260046b",
-            "bytes": 504860
-          },
-          "metadata": {
-            "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-k-staging-packed32-v1/native-image-v1/offline-v2/2/kernel.ze_info.yaml",
-            "sha256": "bc8d1884561e22fef1aed071d647b30512c656f184f791d3f554598a39923444",
-            "bytes": 5561
-          }
-        }
-      ]
+      "current_capture_retention": "Only original arm0ASM/ZeInfo remains for current direct-K source/native correspondence;control/packed and oldLLVM retired after committed evidence."
     },
     "previous_retrieval": [
       "qsa_k_staging_compiled_spill_attribution_20261028",
@@ -14304,7 +14264,6 @@
       "cooperative_matrix_iterative_fragment_lifetime_methods_20261023",
       "gpu_instruction_cache_unroll_dispatch_tradeoffs_20261023"
     ],
-    "report": ".cache/strata-research/20261028/qsa-direct-k-row-invariant-contract.md",
     "report_budget_bytes": 16384,
     "retention": "Consume compact source/API facts into qsa-codegen-current.json before a native build. Retire consumed report/review transactions after qualification decision;no automatic GPU/model adoption.",
     "ownership": "Orca gpt-6-luna high report only,Main continues serialized work;native Codex gpt-6-luna max review;no steering.",
@@ -14330,7 +14289,12 @@
       "bytes": 9738,
       "sha256": "1462465839e2e7a0f2b13795f4a4545237e6ef0421a6322ff8664188330fd86e"
     },
-    "accepted_summary_ref": "qsa-codegen-current.json::direct_K_loop_invariant.source_contract"
+    "accepted_summary_ref": "qsa-codegen-current.json::direct_K_loop_invariant.source_contract",
+    "retirement": {
+      "reports_and_review_retired": true,
+      "manifest_sha256": "e18765ce48a191e0f5f5ed2aa3cea64a838549d807c31148210c0d9979c313ae",
+      "facts_ref": "qsa-codegen-current.json::direct_K_loop_invariant.source_contract"
+    }
   },
   "qsa_static_workgroup_geometry_contract_20261028": {
     "classification": "decision_support",
@@ -14347,7 +14311,9 @@
         "bytes": 72204,
         "actual_dependencies": 662,
         "actual_dependency_sha256": "cdb420926f92502e93d4a18c95cad47f9624bc982f0078f2e302b024678e2ddf",
-        "attention_kernel": "_ZTSZZN6strata7kernels16direct_k_controlL17prefix_batch_implILi33ELb0ELb0ELb1ELb1ELb1ELb1ELb0EEEbPKtRKNS0_12QsaAttnPoolsEPKiS9_lRKNS0_9QsaShapesEPtlRKNS0_19QsaPromptBf16BoundsElRKNS0_20QsaBf16PackedScratchEPvNS0_19QsaPrefixStateProbeEENKUlRN4sycl3_V17handlerEE_clESP_EUlNSN_7nd_itemILi1EEEE_"
+        "attention_kernel": "_ZTSZZN6strata7kernels16direct_k_controlL17prefix_batch_implILi33ELb0ELb0ELb1ELb1ELb1ELb1ELb0EEEbPKtRKNS0_12QsaAttnPoolsEPKiS9_lRKNS0_9QsaShapesEPtlRKNS0_19QsaPromptBf16BoundsElRKNS0_20QsaBf16PackedScratchEPvNS0_19QsaPrefixStateProbeEENKUlRN4sycl3_V17handlerEE_clESP_EUlNSN_7nd_itemILi1EEEE_",
+        "retired": true,
+        "status": "Consumed CPU-only control IR;hash/CFG proof preserved. A prospective annotation comparison must freeze its own new current control and recipe;native_build.device_IR.control is the current event-wrapper control,not this old digest."
       },
       "actual_required_WG_metadata_absent": true,
       "CPU_IR_qualified_commit": "1f427699a",
@@ -14359,7 +14325,6 @@
       "qsa_kernel_local_grf_contract_20261027",
       "qsa_actual_ISA_comparison_20261028"
     ],
-    "report": ".cache/strata-research/20261028/qsa-static-workgroup-geometry-contract.md",
     "report_budget_bytes": 16384,
     "retention": "Consume exact source/compiler contract and one bounded next discriminator into current codegen decision;retire consumed transaction text. No build/GPU/adoption from source-only report.",
     "ownership": "Orca gpt-6-luna high report-only;Main continues implementation/tests exclusively. Native Codex gpt-6-luna max review. No steering.",
@@ -14406,6 +14371,11 @@
         "observation": "Earlier128/256handler properties are GRF register counts,not workgroup sizes. They do not add a required-WG-size attribute. No duplicate exact-WG-metadata discriminator is established by that result.",
         "limit": "Only the archived source generation was compared;new exact-WG annotation needs its own committed source/CPU-IR plan. The current direct-K native candidate remains independent."
       }
+    },
+    "retirement": {
+      "reports_and_review_retired": true,
+      "manifest_sha256": "e18765ce48a191e0f5f5ed2aa3cea64a838549d807c31148210c0d9979c313ae",
+      "facts_ref": "research-index.json::qsa_static_workgroup_geometry_contract_20261028.accepted_findings"
     }
   }
 }
