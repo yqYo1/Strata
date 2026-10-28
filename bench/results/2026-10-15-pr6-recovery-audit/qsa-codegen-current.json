@@ -1953,6 +1953,160 @@
           "selected_fallback_untouched": true
         }
       }
-    ]
+    ],
+    "build": {
+      "stage": "prepared",
+      "source_commit": "cd2e308bc967c4da0831878882447380a7e4cd74",
+      "original_build": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/record.json",
+        "sha256": "a38f477670fafcd1a931be2e20d90d6d9718df75b61954b421f361af9f6881b2",
+        "source_commit": "6e40afc1beddd059ee518617f6c1efce1da14aca",
+        "source_groups": [
+          {
+            "root": "/home/yayoi/orca/workspaces/Strata/sycl",
+            "revision": "6e40afc1beddd059ee518617f6c1efce1da14aca",
+            "count": 542,
+            "aggregate_sha256": "d2eacd07768333b7893b7781494f735e32b258886097afde924d3b940b6b38a4"
+          },
+          {
+            "root": "/home/yayoi/ghq/github.com/ggml-org/llama.cpp/.worktree/dep-ggml-3cf-xe-e32-20261011",
+            "revision": "3cf03257f219afbe7334045ff7c6a06ac68c627d",
+            "count": 3608,
+            "aggregate_sha256": "322862d213ed722d6500da0b58a1b7fffff53aa0de77d7f2e8ba685c653a0d9f"
+          },
+          {
+            "root": "/home/yayoi/ghq/github.com/intel/sycl-tla/.worktree/strata-native16-87f",
+            "revision": "87f6850680a580654b9ea2c80dbc01aeb36ad231",
+            "count": 5703,
+            "aggregate_sha256": "5768eaea650c06eb022c9068784590a27400c2a577974c56750519edde859fe5"
+          }
+        ]
+      },
+      "source_change": {
+        "path": "src/kernels/sycl/qsa_bf16_prefix.cpp",
+        "before": "4f9f815c9baae709f919f6d5ad1af04677c10d8c13c7597b3857cf81567ae192",
+        "after": "f095959eb6be3df87a189c48ff1bac8c6ba1136444a5e93b68860a6de8b901da"
+      },
+      "configuration_sources": {
+        "tools/sycl/host_transfer_probe.cpp": "b83038291ab5b904feeb86bebd68993e058c1731230f3c0f5570062f31f0de7c",
+        "tools/sycl/kv_copy_groups_host.cpp": "fbe83860393b0104baee95704997541a8cd377dd4ed3e74d1f0954cf3a780a89",
+        "tools/sycl/kv_copy_groups_bench.cpp": "ff153d1c901326f5393bc97cadb46d670c04b9de9b4d198034ca58ca4607a297",
+        "tools/sycl/gemm_orientation_bench.cpp": "2e0cf81c42ddca4e0e15974c362ddf8e379ad15f56cb4965682d7bb7d541e424",
+        "tools/sycl/projection_bench.cpp": "85218dcc909b00b4ae1b31ed7340fdf2669ae1736c9e0337c9ecc0badb05d2d2",
+        "tools/sycl/moe_bench.cpp": "9abb445156023b94f2cad67eae6edfe5bb12e18f12e6a9791d295a95e9352269",
+        "tools/sycl/gr_bench.cpp": "3c9af66e949c34b9b84adf4ed7258e8a2e715487b57fef5af198e07e6d77a2b0",
+        "tools/sycl/expert_contract.cpp": "28e2b3b5cd971e09bd3addc8c996ca9444a57e2ef57d5cedca9743e26161f1fb",
+        "tools/sycl/gemm_device_probe.cpp": "1fccae8f267d679140903002284741b270c37bfcae69f09834f8037f4c3d1c78"
+      },
+      "selected_binary": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/strata",
+        "bytes": 22190000,
+        "sha256": "22182f1a5e62e5f4259ce49a75ae44afbd988166ec79324816e499ff37ef60e4"
+      },
+      "compiler": {
+        "path": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin/clang++",
+        "sha256": "1290881b4e12a5e002e5b0de0787f85328ee5fe19f253a54be1cdd97dc2f26eb"
+      },
+      "sdk": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/unitrace-warmed-graph-window-v1/compiler-inputs.json",
+        "sha256": "436cedc9dbd41810cd882e9040a129e6d8b7dbebb98806b00c4f2950b1dc1705",
+        "original_files": 8697,
+        "admitted_files": 8697,
+        "prospective_system_header_updates": {
+          "/usr/include/metee.h": [
+            "f063edcb00c88f3ddebc10f9b0487fe813cfb7ba71dc4b798729bed8902018a3",
+            "d07e18ce9228c3fc570b186eab13bf8a3e6c04214992f0de9d53b855dc837252"
+          ],
+          "/usr/include/opencl-c-base.h": [
+            "e1683c3db9cf9a95e9d02acbbfa74dcd29d4deaf4a856430f538d76985b04114",
+            "673c4720f879c2f101504979edbd0216c9cb6a982ce2b62bd467b81fd53d8e33"
+          ],
+          "/usr/include/opencl-c.h": [
+            "579b58f482ab0b3dfd396cab32ea3e0537bc5cf4c1067377b83fe417cbcc513b",
+            "aa7e871a8f7d961aa4126a9fadc2196f822c21811946c90147dc7415fe677de9"
+          ]
+        },
+        "updated_header_packages": [
+          "libigdfcl2 2.41.15-1~24.04",
+          "libmetee-dev 6.2.5-1~24.04~ppa2"
+        ],
+        "condition": "New v2 input snapshot only;all8694 other original hashes remain mandatory. Actual dependency closure records which updated headers were compiled. No qualification inherited for the new fixture."
+      },
+      "external_manifest": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-direct-k-model-v2/external-inputs.json",
+        "sha256": "0521316fb7e9e565846c68142b04414056fcd81231968a10e4fae0b31e4ecb87",
+        "files": 1559
+      },
+      "runtime_sha256": "09ad358e12f6ef58bfc0a978519927863f3d09949a033a1e224db95997647d97",
+      "boot": "cfda0b6a-7c13-4fe2-bdf5-8f9202770840",
+      "driver": {
+        "pci": "/sys/bus/pci/devices/0000:05:00.0",
+        "driver": "xe",
+        "vendor": "0x8086",
+        "device": "0xe20c",
+        "kernel": "7.0.0-38-generic",
+        "devcoredump": false
+      },
+      "environment": {
+        "PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin:/usr/bin:/bin",
+        "HOME": "/home/yayoi",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8",
+        "PYTHONDONTWRITEBYTECODE": "1",
+        "LD_LIBRARY_PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib:/opt/intel/oneapi/mkl/2026.1/lib",
+        "MKLROOT": "/opt/intel/oneapi/mkl/2026.1",
+        "OMP_NUM_THREADS": "1",
+        "GIT_TERMINAL_PROMPT": "0",
+        "GIT_SSH_COMMAND": "ssh -oBatchMode=yes",
+        "CPLUS_INCLUDE_PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/include",
+        "PIP_CONFIG_FILE": "/dev/null",
+        "ONEAPI_DEVICE_SELECTOR": "level_zero:gpu",
+        "UR_ADAPTERS_FORCE_LOAD": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_adapter_level_zero_v2.so.0",
+        "SYCL_CACHE_PERSISTENT": "0",
+        "NEOReadDebugKeys": "1",
+        "EnableDirectSubmission": "0",
+        "UR_L0_V2_FORCE_DISABLE_COPY_OFFLOAD": "1",
+        "STRATA_SYCL_VERIFY_NATIVE_CAPTURE": "0",
+        "STRATA_SYCL_PREFILL_SAME_QUEUE": "1",
+        "STRATA_SYCL_PREFILL_NATIVE16": "bf16",
+        "XDG_CACHE_HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-direct-k-model-v2/cache",
+        "TMPDIR": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-direct-k-model-v2/tmp"
+      },
+      "targets": [
+        "strata",
+        "sycl_submission_test",
+        "sycl_graph_envelope_test"
+      ],
+      "generated": {
+        "direct_k_control.cpp": "bb527b30fd293183c68e7ff670e0b5f714101af9778e64b8c01d32b0ecf1c217",
+        "direct_k_invariant.cpp": "cf84a37f2d21774576d659f1d83f81a6a5c4708918c3e5591368bd466d8c79bb",
+        "qsa-direct-k.hpp": "81f5d328ad80d50d05622d3a16dae961b6c9c2f0e72b67d17015e078a0cac436"
+      },
+      "generated_expected": {
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-direct-k-model-v2/build/ggml/src/ggml-version.h": "9e45eee8391971371922f51b66925184609125d467c444744599f680b78edc92"
+      },
+      "budgets": {
+        "wall": 1800,
+        "cpu": 7200,
+        "rss_cap": 12884901888,
+        "text_cap": 33554432,
+        "file_cap": 536870912,
+        "total_cap": 4294967296
+      },
+      "total_wall_seconds": 3600,
+      "active": false,
+      "ownership_closed": true,
+      "passed": false,
+      "GPU_executed": false,
+      "model_built": false,
+      "model_selected": false,
+      "criteria": "Build only. Exact selected9853Git inputs plus one independently reviewed prefill block;9additional6e40auxiliary target source files required solely for CMake generation,never requested as build targets. Current native differences excluded. Same-production-source numerical/actual-ID fixtures,3unique18argSG16 kernels;zero uncovered actual dependencies/imported link inputs. No GPU/model/performance qualification inherited.",
+      "retention": "One additional model/fixture generation for imminent same-build property,actual-ID,oracle and bounded long-model comparison. Preserve original6e40/12fixtures. Retire objects,normal logs and rejected generation after source/recipe recovery;legacy holds remain separate.",
+      "controller_inputs": {
+        "files": 39,
+        "aggregate_sha256": "8aa524fea24fec7a8535f35f20c88fe3821a397628e0ff16c977ea12fe42be55"
+      },
+      "recipe_sha256": "ebf415574ac7d3ccbe81431a3e3c1a1c90dfc32b0a82cde2a37d04fb2d401b84"
+    }
   }
 }
