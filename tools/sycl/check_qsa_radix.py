@@ -33,10 +33,15 @@ def inputs(revision):
 
 
 def build_record(scope):
-    row = identity.qualified(scope) if identity.KEY in scope else scope['build']['outcome']
+    if identity.KEY in scope:
+        # The new method gate already verifies the complete original build
+        # admission. Do not repeat that source/SDK scan within this same call.
+        row = identity.qualified(scope)
+    else:
+        row = scope['build']['outcome']
+        b.admit(json.loads((ROOT / 'plan.json').read_text()))
     require(scope['build']['stage'] == 'closed' and row['passed'] and row['complete'] and
             row['ownership_closed'] and not row.get('active'), 'closed selector build required')
-    b.admit(json.loads((ROOT / 'plan.json').read_text()))
     require(row['device_IR_identical_across_observation'], 'observation changed device code')
     for field in ('binary', 'observed_binary', 'actual_compiler_inputs', 'kernel_inventory'):
         asset = row[field]
