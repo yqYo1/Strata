@@ -10502,9 +10502,9 @@
       }
     },
     "check_plan": {
-      "stage": "closed",
-      "mode": "correctness",
-      "source_commit": "51c2a1fa63315ee38fa8cea4cacd0f2e2f73b9c8",
+      "stage": "prepared",
+      "mode": "event-smoke",
+      "source_commit": "c231da83787d4eb186588efa773e24778fd7d334",
       "binaries": {
         "clean": {
           "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-batched-radix-v3/fixture",
@@ -10620,57 +10620,39 @@
       },
       "jobs": [
         {
-          "label": "clean-original",
-          "arm": "original",
-          "binary_kind": "clean",
-          "args": [
-            "--dump",
-            "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-batched-radix-v3/correctness/clean-original.ids"
-          ]
-        },
-        {
-          "label": "clean-control",
-          "arm": "control",
-          "binary_kind": "clean",
-          "args": [
-            "--dump",
-            "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-batched-radix-v3/correctness/clean-control.ids"
-          ]
-        },
-        {
-          "label": "clean-batched",
-          "arm": "batched",
-          "binary_kind": "clean",
-          "args": [
-            "--dump",
-            "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-batched-radix-v3/correctness/clean-batched.ids"
-          ]
-        },
-        {
-          "label": "events-original",
+          "label": "original",
           "arm": "original",
           "binary_kind": "events",
           "args": [
+            "--event-smoke",
+            "2",
+            "events",
             "--dump",
-            "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-batched-radix-v3/correctness/events-original.ids"
+            "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-batched-radix-v3/event-smoke/original.ids"
           ]
         },
         {
-          "label": "events-control",
+          "label": "control",
           "arm": "control",
           "binary_kind": "events",
           "args": [
+            "--event-smoke",
+            "2",
+            "events",
             "--dump",
-            "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-batched-radix-v3/correctness/events-control.ids"
+            "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-batched-radix-v3/event-smoke/control.ids"
           ]
         },
         {
-          "label": "events-batched",
+          "label": "batched",
           "arm": "batched",
           "binary_kind": "events",
           "args": [
+            "--event-smoke",
+            "2",
+            "events",
             "--dump",
-            "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-batched-radix-v3/correctness/events-batched.ids"
+            "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-batched-radix-v3/event-smoke/batched.ids"
           ]
         }
       ],
