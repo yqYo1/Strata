@@ -10563,7 +10563,7 @@
       }
     },
     "check_plan": {
-      "stage": "prepared",
+      "stage": "closed",
       "mode": "correctness",
       "source_commit": "f1eb588323afb492a39cc00a928349f1dc55e1ca",
       "binaries": {
@@ -10934,6 +10934,153 @@
                 "device_local_max": "131072"
               }
             ]
+          }
+        ],
+        "postchecks_complete": true,
+        "postcheck_errors": [],
+        "fresh_faults": [],
+        "boot_unchanged": true,
+        "driver_after": {
+          "pci": "/sys/bus/pci/devices/0000:05:00.0",
+          "driver": "xe",
+          "vendor": "0x8086",
+          "device": "0xe20c",
+          "kernel": "7.0.0-38-generic",
+          "devcoredump": false
+        }
+      },
+      {
+        "mode": "correctness",
+        "passed": true,
+        "complete": true,
+        "active": false,
+        "ownership_closed": true,
+        "processes": [
+          {
+            "label": "clean-original",
+            "arm": "original",
+            "binary_kind": "clean",
+            "passed": true,
+            "device_bindings": [
+              {
+                "name": "Intel(R) Arc(TM) B570 Graphics",
+                "pci": "0000:05:00.0",
+                "driver": "xe",
+                "matching_DRM_descriptors": 1
+              },
+              {
+                "name": "Intel(R) Arc(TM) B570 Graphics",
+                "pci": "0000:05:00.0",
+                "driver": "xe",
+                "matching_DRM_descriptors": 1
+              }
+            ],
+            "output_sha256": "bb4ce7079a6f8c5e1fe7a194f63fde4638e75443f183345b1d074ca10914a180"
+          },
+          {
+            "label": "clean-control",
+            "arm": "control",
+            "binary_kind": "clean",
+            "passed": true,
+            "device_bindings": [
+              {
+                "name": "Intel(R) Arc(TM) B570 Graphics",
+                "pci": "0000:05:00.0",
+                "driver": "xe",
+                "matching_DRM_descriptors": 1
+              },
+              {
+                "name": "Intel(R) Arc(TM) B570 Graphics",
+                "pci": "0000:05:00.0",
+                "driver": "xe",
+                "matching_DRM_descriptors": 1
+              }
+            ],
+            "output_sha256": "bb4ce7079a6f8c5e1fe7a194f63fde4638e75443f183345b1d074ca10914a180"
+          },
+          {
+            "label": "clean-batched",
+            "arm": "batched",
+            "binary_kind": "clean",
+            "passed": true,
+            "device_bindings": [
+              {
+                "name": "Intel(R) Arc(TM) B570 Graphics",
+                "pci": "0000:05:00.0",
+                "driver": "xe",
+                "matching_DRM_descriptors": 1
+              },
+              {
+                "name": "Intel(R) Arc(TM) B570 Graphics",
+                "pci": "0000:05:00.0",
+                "driver": "xe",
+                "matching_DRM_descriptors": 1
+              }
+            ],
+            "output_sha256": "bb4ce7079a6f8c5e1fe7a194f63fde4638e75443f183345b1d074ca10914a180"
+          },
+          {
+            "label": "events-original",
+            "arm": "original",
+            "binary_kind": "events",
+            "passed": true,
+            "device_bindings": [
+              {
+                "name": "Intel(R) Arc(TM) B570 Graphics",
+                "pci": "0000:05:00.0",
+                "driver": "xe",
+                "matching_DRM_descriptors": 1
+              },
+              {
+                "name": "Intel(R) Arc(TM) B570 Graphics",
+                "pci": "0000:05:00.0",
+                "driver": "xe",
+                "matching_DRM_descriptors": 1
+              }
+            ],
+            "output_sha256": "bb4ce7079a6f8c5e1fe7a194f63fde4638e75443f183345b1d074ca10914a180"
+          },
+          {
+            "label": "events-control",
+            "arm": "control",
+            "binary_kind": "events",
+            "passed": true,
+            "device_bindings": [
+              {
+                "name": "Intel(R) Arc(TM) B570 Graphics",
+                "pci": "0000:05:00.0",
+                "driver": "xe",
+                "matching_DRM_descriptors": 1
+              },
+              {
+                "name": "Intel(R) Arc(TM) B570 Graphics",
+                "pci": "0000:05:00.0",
+                "driver": "xe",
+                "matching_DRM_descriptors": 1
+              }
+            ],
+            "output_sha256": "bb4ce7079a6f8c5e1fe7a194f63fde4638e75443f183345b1d074ca10914a180"
+          },
+          {
+            "label": "events-batched",
+            "arm": "batched",
+            "binary_kind": "events",
+            "passed": true,
+            "device_bindings": [
+              {
+                "name": "Intel(R) Arc(TM) B570 Graphics",
+                "pci": "0000:05:00.0",
+                "driver": "xe",
+                "matching_DRM_descriptors": 1
+              },
+              {
+                "name": "Intel(R) Arc(TM) B570 Graphics",
+                "pci": "0000:05:00.0",
+                "driver": "xe",
+                "matching_DRM_descriptors": 1
+              }
+            ],
+            "output_sha256": "bb4ce7079a6f8c5e1fe7a194f63fde4638e75443f183345b1d074ca10914a180"
           }
         ],
         "postchecks_complete": true,
