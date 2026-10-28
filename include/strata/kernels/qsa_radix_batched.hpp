@@ -9,4 +9,9 @@ namespace strata::kernels {
 void qsa_block_topk_batched_prefill(const float *scores, const int32_t *steps,
     int64_t nq, int64_t blocks, int64_t cap, const QsaShapes &shape,
     int32_t *ids, void *stream, int64_t active = -1);
+// Same guarded SG16 entrypoint with the original sixteen WG reductions. This
+// comparison control separates subgroup selection/prologue from batching.
+void qsa_block_topk_sg16_control(const float *scores, const int32_t *steps,
+    int64_t nq, int64_t blocks, int64_t cap, const QsaShapes &shape,
+    int32_t *ids, void *stream, int64_t active = -1);
 } // namespace strata::kernels

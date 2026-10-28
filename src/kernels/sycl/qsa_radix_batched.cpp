@@ -19,9 +19,8 @@ uint32_t key(float value) {
   if ((bits & 0x7fffffffu) == 0) bits = 0;
   return bits & 0x80000000u ? ~bits : bits | 0x80000000u;
 }
-} // namespace
-
-void qsa_block_topk_batched_prefill(const float *scores, const int32_t *steps,
+template<bool Batched>
+void radix4(const float *scores, const int32_t *steps,
     int64_t nq, int64_t blocks, int64_t cap, const QsaShapes &shape,
     int32_t *ids, void *stream, int64_t active) {
   using namespace sycl_backend;
@@ -76,21 +75,33 @@ void qsa_block_topk_batched_prefill(const float *scores, const int32_t *steps,
           if ((value & mask) == threshold)
             histogram[(value >> shift) & 15u] += weight(block);
         }
-        // All SG lanes execute all sixteen reductions. Integer sums cover
-        // disjoint cells and are <=n<=INT_MAX, so reassociation is exact.
-        for (int digit = 0; digit < Bins; ++digit) {
-          const int sum = sycl::reduce_over_group(subgroup, histogram[digit], sycl::plus<int>());
-          if (!lane) partial[digit * Groups + group] = sum;
+        if constexpr (Batched) {
+          // All SG lanes execute all sixteen reductions. Integer sums cover
+          // disjoint cells and are <=n<=INT_MAX, so reassociation is exact.
+          for (int digit = 0; digit < Bins; ++digit) {
+            const int sum = sycl::reduce_over_group(subgroup, histogram[digit], sycl::plus<int>());
+            if (!lane) partial[digit * Groups + group] = sum;
+          }
+          item.barrier(sycl::access::fence_space::local_space);
+          // Each of sixteen SGs owns one digit and reads all sixteen partials.
+          const int sum = sycl::reduce_over_group(subgroup,
+              partial[group * Groups + lane], sycl::plus<int>());
+          if (!lane) totals[group] = sum;
+          item.barrier(sycl::access::fence_space::local_space);
+        } else {
+          // Private control: original radix4 WG reductions, same forced SG16
+          // and guarded public entry. Do not infer baseline subgroup size.
+          for (int digit = 0; digit < Bins; ++digit)
+            histogram[digit] = sycl::reduce_over_group(
+                item.get_group(), histogram[digit], sycl::plus<int>());
         }
-        item.barrier(sycl::access::fence_space::local_space);
-        // Each of sixteen SGs owns one digit and reads all sixteen partials.
-        const int sum = sycl::reduce_over_group(subgroup,
-            partial[group * Groups + lane], sycl::plus<int>());
-        if (!lane) totals[group] = sum;
-        item.barrier(sycl::access::fence_space::local_space);
         int digit = Bins - 1;
-        while (digit > 0 && rank > totals[digit]) {
-          rank -= totals[digit];
+        const auto count = [&](int d) {
+          if constexpr (Batched) return totals[d];
+          else return histogram[d];
+        };
+        while (digit > 0 && rank > count(digit)) {
+          rank -= count(digit);
           --digit;
         }
         threshold |= uint32_t(digit) << shift;
@@ -121,5 +132,17 @@ void qsa_block_topk_batched_prefill(const float *scores, const int32_t *steps,
     });
   });
   finish(stream, event);
+}
+} // namespace
+
+void qsa_block_topk_batched_prefill(const float *scores, const int32_t *steps,
+    int64_t nq, int64_t blocks, int64_t cap, const QsaShapes &shape,
+    int32_t *ids, void *stream, int64_t active) {
+  radix4<true>(scores, steps, nq, blocks, cap, shape, ids, stream, active);
+}
+void qsa_block_topk_sg16_control(const float *scores, const int32_t *steps,
+    int64_t nq, int64_t blocks, int64_t cap, const QsaShapes &shape,
+    int32_t *ids, void *stream, int64_t active) {
+  radix4<false>(scores, steps, nq, blocks, cap, shape, ids, stream, active);
 }
 } // namespace strata::kernels
