@@ -14738,7 +14738,7 @@
   },
   "hierarchical_recurrent_scan_dataflows_20261028": {
     "classification": "knowledge collection",
-    "status": "completed_native_review_pending",
+    "status": "reviewed_conditional_reference",
     "schedulable_now": false,
     "question": "Across official vLLM/SGLang paths for gated recurrent/state-space layers and non-LLM signal-processing, scientific-computing and accelerator implementations, when can a token recurrence be converted into composable block summaries and evaluated with a hierarchical prefix scan? Compare sequential chunk updates, associative affine/low-rank composition, intra-block scans plus inter-block summaries, and recomputation/storage tradeoffs. Establish from source when the recurrence is actually composable, its exact state/rounding order, work and communication cost, and counterexamples where coefficient generation, numerical drift, state size, synchronization or short sequences make a scan lose. Include GPU/SYCL and DSP/FPGA/ASIC evidence; no Strata speed or implementation claim.",
     "prerequisite_evidence": {
@@ -14753,14 +14753,14 @@
       "gdn_runtime_contract_review: runtime dtype/config contract; reuse only as context, not a repeated runtime-contract audit.",
       "mtp_compute_compute_dag_scheduling_methods_20261023: independent product scheduling; exclude general command-queue/DAG amortization."
     ],
-    "consumer": "Adds an inter-chunk algorithm/dataflow reference for a future recurrent-prefill scaling decision. The index already has one-subgroup GDN scan feasibility and fused-versus-split epilogue scopes, but neither studies composition across chunks or its algorithmic prerequisites. Retrieve only if a measured recurrent stage or an engine comparison makes chunk-level recurrence scheduling concrete; retire the body if that decision never arises.",
+    "consumer": "Retrieve only for a measured recurrent-prefill scheduling decision with source-pinned state/dtype/rounding/chunk/handoff contract. Review at the next recurrent-candidate selection;retire body if no measured consumer emerges.",
     "limits": "Do not assume this model\u2019s GDN update is affine-composable or numerically equivalent under tree reassociation. Do not propose code or infer a bottleneck.",
     "source_revision": "29868a5b7",
     "scope_review_sha256": "17935ef9372ca8fadef70f2a33a1a83c8968b0b5679819368543c737c4f6aa2f",
     "worker_model": "Orca Codex gpt-6-luna high",
     "review_model": "native Codex gpt-6-luna max",
     "worker_closed": true,
-    "retention": "Keep only substantive nonduplicated reference findings with realistic retrieval need;native Luna-max review before Main reads scheduling digest. Main does not read collection body on arrival.",
+    "retention": "Conditional knowledge reference remains as one hash-pinned report outside Git until its named retrieval/review point. Commit only reusable needed findings;do not automatically commit report/review/spec paperwork.",
     "orca": {
       "run": "run_80ea8ebc9a8c",
       "task": "task_3d504d95d0d3",
@@ -14774,11 +14774,16 @@
     },
     "report_bytes": 14127,
     "report_sha256": "beec52355b79716cb28613cfce7bc24a125b8b273caa9aec948a30520256bd48",
-    "main_read_collection_body": false
+    "main_read_collection_body": false,
+    "review_sha256": "07b9a8c2c2f5336544fea7653ed273ba06f07f93585ba9a8f519eee59a0f4d6e",
+    "reviewer": "native Codex gpt-6-luna max",
+    "finding": "Substantive inter-chunk reference,distinct from prior intra-workgroup GDN/epilogue work. Required correction before retrieval/use:Mamba cited carry is inter-chunk within one CTA,not an inter-CTA/global tree.",
+    "retrieval_condition": "Retrieve only for a measured recurrent-prefill scheduling decision with source-pinned state/dtype/rounding/chunk/handoff contract. Review at the next recurrent-candidate selection;retire body if no measured consumer emerges.",
+    "next_scope_schedulable_now": false
   },
   "adaptive_sparse_format_crossover_gpu_asic_20261028": {
     "classification": "knowledge collection",
-    "status": "completed_native_review_pending",
+    "status": "reviewed_conditional_reference",
     "schedulable_now": false,
     "question": "For dynamic, highly variable sparse rows on SIMT GPUs and matrix-accelerator ASICs, compare CSR/COO, ELL/SELL-C-sigma, blocked CSR/BSR, CSR5 or equivalent segmented formats, and dense/tile fallback. Explain how row-length skew, density, matrix-engine tile shape, metadata/indirection traffic, preprocessing or compaction, update frequency and output order determine the crossover; identify counterexamples and the smallest evidence needed for a later format decision. Ground the survey in non-LLM graph analytics, SpMM/GNN, recommendation or scientific kernels, then check what relevant vLLM/SGLang/Intel paths actually support. No local performance prediction or port proposal.",
     "prerequisite_evidence": {
@@ -14793,14 +14798,14 @@
       "intel_sycl_sparse_prefetch_staging_methods_20261027: K/V request staging; do not repeat prefetch/cache-control APIs.",
       "gpu_moe_routing_collection_scope and long_prefill_skewed_expert_job_execution_scheduling_20261027: route/job construction and execution mapping; exclude routing, queues and job balancing."
     ],
-    "consumer": "Provides a representation-selection reference if a future measured QSA/attention or expert-data path is limited by sparse-list metadata, conversion or ragged-row work. The existing QSA reports focus on query/KV locality, selected-list matrix mapping, prefix reuse and prefetch; this scope is specifically sparse representation and conversion/update amortization, supported by non-LLM sparse workloads and accelerator design evidence.",
+    "consumer": "Retrieve only if a source-pinned local attribution motivates a concrete sparse-representation/conversion question;read only the relevant section. No new generic survey or implementation eligibility;review at the next representation-candidate selection.",
     "limits": "Do not turn the survey into a general sparse-attention, matrix-layout, scheduling or cache-locality review. No local density histogram is required or implied.",
     "source_revision": "29868a5b7",
     "scope_review_sha256": "17935ef9372ca8fadef70f2a33a1a83c8968b0b5679819368543c737c4f6aa2f",
     "worker_model": "Orca Codex gpt-6-luna high",
     "review_model": "native Codex gpt-6-luna max",
     "worker_closed": true,
-    "retention": "Keep only substantive nonduplicated reference findings with realistic retrieval need;native Luna-max review before Main reads scheduling digest. Main does not read collection body on arrival.",
+    "retention": "Conditional knowledge reference remains as one hash-pinned report outside Git until its named retrieval/review point. Commit only reusable needed findings;do not automatically commit report/review/spec paperwork.",
     "orca": {
       "run": "run_80ea8ebc9a8c",
       "task": "task_9db37dab6807",
@@ -14814,6 +14819,11 @@
     },
     "report_bytes": 15327,
     "report_sha256": "83c185c734e6e148078bdc82ee25907df02ce7a8d47f7e563e1a248f190be0b2",
-    "main_read_collection_body": false
+    "main_read_collection_body": false,
+    "review_sha256": "abf93179113da4ef35a3240195ee28c9793f4ba2cf7d6f0f95a0bd84e83f8a33",
+    "reviewer": "native Codex gpt-6-luna max",
+    "finding": "Substantive representation/conversion reference,distinct from prior head/list packing,locality,prefetch and routing scopes. No unsupported target-support/performance claim found. GraphBLAS stable reference is mutable;pin its version/source when retrieving.",
+    "retrieval_condition": "Retrieve only if a source-pinned local attribution motivates a concrete sparse-representation/conversion question;read only the relevant section. No new generic survey or implementation eligibility;review at the next representation-candidate selection.",
+    "next_scope_schedulable_now": false
   }
 }
