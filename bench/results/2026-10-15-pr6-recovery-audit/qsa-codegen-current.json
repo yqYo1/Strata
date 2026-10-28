@@ -2226,8 +2226,9 @@
       "mode": "oracle-component",
       "source_commit": "fecd5a481960bef0a0b50fa0e409e846f531e774",
       "original_plan_commit": "e2cf720d6",
-      "recipe_sha256": "ad70908da710522671250587ec8e50134ad8765c924f33ee6e2050f83b363b6b",
-      "closed_no_resume": true
+      "closed_no_resume": true,
+      "prepared_plan_sha256": "66fd8934b1890e34f35ba7da6990435345142b0e33ab15bb739866f5ae020e82",
+      "hash_label_correction": "The previous recipe_sha256 label hashed closed plan+outcome;this field instead hashes the original prepared-plan bytes verified against e2cf720d6. No execution input or outcome changed."
     },
     "same_build_checks": [
       {
@@ -2660,6 +2661,24 @@
       "local_size": [
         128
       ]
+    },
+    "diagnostic_retirement": {
+      "complete": true,
+      "files": 80,
+      "bytes": 12856510,
+      "manifest": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-direct-k-model-native-gates-retired-20261028.jsonl",
+      "manifest_sha256": "7ce8aeffe26405b9d1df17c56bccd29ad78dfe4ce54b8c5a1b0dc36b9513a587",
+      "original_source_and_all_1411_actual_inputs_verified": true,
+      "prepared_plans_verified_from_git": {
+        "properties": "adcaa7b3a",
+        "properties-v2": "9ed3bfa97",
+        "id-smoke": "0e2a6ebeb",
+        "id-boundary": "786133cfb",
+        "oracle-smoke": "e55457477",
+        "oracle-component": "e2cf720d6"
+      },
+      "retained_generation": "Selected6e40+12fixtures;one model/fixture generation pending full build/link contract;legacy14provenance holds and R285state unchanged.",
+      "selected_ID_fixture": "Retained only for imminent production build with complete link-input contract and its same-source ID gates;review at that decision."
     }
   }
 }
