@@ -36,7 +36,8 @@ def build_record(scope):
     require(scope['build']['stage'] == 'closed' and row['passed'] and row['complete'] and
             row['ownership_closed'] and not row.get('active'), 'closed selector build required')
     b.admit(json.loads((ROOT / 'plan.json').read_text()))
-    for field in ('binary', 'actual_compiler_inputs', 'kernel_inventory'):
+    require(row['device_IR_identical_across_observation'], 'observation changed device code')
+    for field in ('binary', 'observed_binary', 'actual_compiler_inputs', 'kernel_inventory'):
         asset = row[field]
         require(Path(asset['path']).stat().st_size == asset['bytes'] and digest(asset['path']) == asset['sha256'],
                 'build asset changed: ' + field)
@@ -46,12 +47,12 @@ def build_record(scope):
     return row
 
 
-def kernel_names(build):
+def kernel_names(build, observed=False):
     inventory = json.loads(Path(build['kernel_inventory']['path']).read_text())
     names = []
     for unit, marker in [('original', 'submit_topkILi1E'),
                          ('proposal', 'radix4ILb0E'), ('proposal', 'radix4ILb1E')]:
-        chosen = [r['name'] for r in inventory[unit] if marker in r['name']]
+        chosen = [r['name'] for r in inventory[('observed-' if observed else '')+unit] if marker in r['name']]
         require(len(chosen) == 1, 'one exact selector definition required for ' + marker)
         names.extend(chosen)
     require(len(set(names)) == 3, 'selector identities overlap')
@@ -61,7 +62,8 @@ def kernel_names(build):
 def admit(scope, plan):
     build = build_record(scope)
     require(inputs(plan['source_commit']) == plan['input_sha256'] and
-            build['binary'] == plan['binary'] and kernel_names(build) == plan['kernel_ids'],
+            {'clean':build['binary'],'events':build['observed_binary']} == plan['binaries'] and
+            kernel_names(build) == kernel_names(build,True) == plan['kernel_ids'],
             'check/native inputs changed')
     rt = b.base.runtime.validation.committed(b.base.runtime.RESULT)
     b.base.runtime.current(rt)
@@ -78,6 +80,8 @@ def prepare(mode):
     require([r['mode'] for r in previous] == ORDER[:ORDER.index(mode)] and all(
         r['passed'] and r['complete'] and r['ownership_closed'] and not r['fresh_faults'] for r in previous),
         'ordered successful gates required; no automatic retry')
+    if mode == 'performance':
+        require(previous[-1]['query_gate_passed'], 'small actual-event query budget required')
     require('check_plan' not in scope or scope['check_plan']['stage'] == 'closed', 'prior plan still open')
     build = build_record(scope)
     rt = b.base.runtime.validation.committed(b.base.runtime.RESULT)
@@ -94,12 +98,15 @@ def prepare(mode):
     names = kernel_names(build)
     jobs = []
     if mode == 'properties':
-        jobs = [dict(label='properties', arm='original', args=['--properties', loaders[0], *names])]
+        jobs = [dict(label=kind+'-properties',arm='original',binary_kind=kind,
+                     args=['--properties',loaders[0],*names]) for kind in ('clean','events')]
         environment['LD_DEBUG'] = 'files,bindings'
     elif mode == 'correctness':
-        jobs = [dict(label=arm, arm=arm, args=['--dump', str(folder / (arm + '.ids'))]) for arm in ARMS]
+        jobs = [dict(label=kind+'-'+arm,arm=arm,binary_kind=kind,
+                     args=['--dump',str(folder/(kind+'-'+arm+'.ids'))])
+                for kind in ('clean','events') for arm in ARMS]
     elif mode == 'event-smoke':
-        jobs = [dict(label=arm, arm=arm, args=['--event-smoke','2','events','--dump',
+        jobs = [dict(label=arm, arm=arm, binary_kind='events', args=['--event-smoke','2','events','--dump',
                                               str(folder / (arm + '.ids'))]) for arm in ARMS]
     else:
         environment.update(UR_ENABLE_LAYERS='UR_LAYER_PARAMETER_VALIDATION',
@@ -109,10 +116,10 @@ def prepare(mode):
             for observer in (['events', 'clean'] if block == 1 else ['clean', 'events']):
                 for arm in order:
                     label = f'{block}-{observer}-{arm}'
-                    jobs.append(dict(label=label, arm=arm, block=block, observer=observer,
+                    jobs.append(dict(label=label, arm=arm, block=block, observer=observer,binary_kind=observer,
                         args=['--timing', '128', observer, '--dump', str(folder / (label + '.ids'))]))
     plan = dict(stage='prepared', mode=mode, source_commit=revision, input_sha256=inputs(revision),
-        binary=build['binary'], kernel_ids=names, property_loader=loaders[0],
+        binaries={'clean':build['binary'],'events':build['observed_binary']}, kernel_ids=names, property_loader=loaders[0],
         runtime_files=rt['runtime_files'], preload=rt['preload'], physical_device=native.device_inventory(rt),
         environment=environment, jobs=jobs,
         budgets=dict(wall=360, cpu=900, rss_cap=4 << 30, text_cap=32 << 20,
@@ -120,10 +127,14 @@ def prepare(mode):
         active=False, ownership_closed=True,
         performance_criteria=dict(batch_floor_ms=20, maximum_clock_fraction=.002,
             maximum_observer_wall_ratio=1.20, minimum_service_timer_ticks_per_event=1000,
+            maximum_query_ms_per_batch=1000, small_probe_query_cap_ms=1000,
             maximum_geomean_time_ratio=.99, every_process_ratio_below_one=True,
             lengths=[32768,78453,117489,262144], patterns=[0,1], rounds=3, processes_per_arm_mode=3),
-        criteria='Property-only first with no kernel enqueue,then full independent weighted-cell oracle,canaries,immutable inputs,invalid/tail/full-component cases for all3arms. Next a small traced actual-event smoke:3queries/20cells,2retained distinct events and7total kernel launches per arm,correct IDs/timestamps. Only then synthetic selector-only timed batches:3counterbalanced independent processes/arm/mode,3rounds and8length/pattern cases. Batched versus BOTH original and SG16-control must improve clean public-entry wall and observed GPU service by>=1percent geometric mean for every case,with every process ratio<1. No scoring/oracle/transfers inside timing. New guard/capability CPU cost stays charged;event observation is separate. Native/runtime/maps/immutable environment/physical device,pre-main retained validation,normal owned exit and no fresh fault mandatory. Component256K is not physical full-model qualification;no production/decode change or adoption.',
-        retention='Keep individual eligible/ineligible timing samples,first-use separately,exact-ID hashes,queried native resource facts and failure/decision limits. Retire successful API/loader output and dumps after verification;one fixture only through the imminent mechanism/model decision.')
+        resource_model=dict(queries=256,score_key_passes=10,id_output_bytes=256*2051*4,
+            nominal_score_bytes_per_call={str(n):10*256*(n//4+1)*4 for n in (32768,78453,117489,262144)},
+            scope='Logical source score reads only;compiler/cache traffic unknown. No scoring,transfers or CPU math inside selector timing. Not physical VRAM/PCIe traffic or a saturation ceiling.'),
+        criteria='Property-only first with no kernel enqueue for both builds;identical device IR and native resource properties across the host event seam. Full independent weighted-cell oracle,canaries,immutable inputs,invalid/tail/full-component cases for all3arms/both builds. Next a small traced actual-event smoke:3queries/20cells,2retained events equal to actual parallel_for submissions,and7successful kernel-identified launches per arm;correct IDs/timestamps and a finite separate query budget. Only then synthetic selector-only timed batches:3counterbalanced independent processes/arm/mode,3rounds and8length/pattern cases. Clean uses unchanged production-source objects;events uses the host-only finish seam and requires event equality every call. Batched versus BOTH original and SG16-control must improve clean public-entry wall and observed GPU service by>=1percent geometric mean for every case,with every process ratio<1. No scoring/oracle/transfers inside timing. New guard/capability CPU cost stays charged;event/query observation is separate and bounded. Query-cap breaches make attribution ineligible without erasing clean samples. Native/runtime/maps/immutable environment/physical device,pre-main retained validation,normal owned exit and no fresh fault mandatory. Component256K is not physical full-model qualification;no production/decode change or adoption.',
+        retention='Keep individual eligible/ineligible timing samples,first-use separately,exact-ID hashes,queried native resource facts and failure/decision limits. Retire successful API/loader output and dumps after verification;two same-generation clean/captured fixtures only through the imminent mechanism/model decision.')
     admit(scope, plan)
     folder.mkdir(mode=0o700)
     for name in ('tmp', 'cache'): (folder / name).mkdir()
@@ -156,6 +167,8 @@ def sample_rows(text, job, plan):
                     'missing or invalid actual event service')
             if row['service_ns'] / row['repeats'] < criteria['minimum_service_timer_ticks_per_event'] * row['timer_resolution_ns']:
                 reasons.append('service_timer_resolution')
+            if row['query_ms'] > criteria['maximum_query_ms_per_batch']:
+                reasons.append('query_work_cap')
             named = row['invoke_ms'] + row['lookup_ms'] + row['drain_ms']
             named_cpu = row['invoke_cpu_ms'] + row['lookup_cpu_ms'] + row['drain_cpu_ms']
             require(named <= row['total_ms'] + .01 and named_cpu <= row['cpu_ms'] + .01,
@@ -218,12 +231,41 @@ def compact_outcome(outcome):
                         entry[key] = [s[key] for s in chosen]
                     entry['host_partition_medians_ms'] = {k:statistics.median(s[k] for s in chosen) for k in (
                         'invoke_ms','invoke_cpu_ms','lookup_ms','lookup_cpu_ms','drain_ms','drain_cpu_ms',
-                        'unclassified_ms','unclassified_cpu_ms','query_ms')}
+                        'unclassified_ms','unclassified_cpu_ms','query_ms','query_cpu_ms','query_process_cpu_ms')}
                 if any(s['ineligible_reasons'] for s in chosen):
                     entry['ineligible_reasons'] = [s['ineligible_reasons'] for s in chosen]
                 row['samples'].append(entry)
         result['processes'].append(row)
     return result
+
+
+def smoke_launches(trace, expected_name, arm):
+    """Resolve successful actual API returns, never count call entry as work."""
+    created, launches = {}, []
+    for line in trace.splitlines():
+        if '<--- urKernelCreate(' in line and 'UR_RESULT_SUCCESS' in line:
+            match = re.search(r'\((_ZTS\S+)\).*?\.phKernel = .*?\((0x[0-9a-f]+)\)',line)
+            if match: created[match[2]] = match[1]
+        call = re.search(r'<--- (urEnqueueKernelLaunch\w*)\(',line)
+        if not call: continue
+        require('UR_RESULT_SUCCESS' in line and call[1] in
+                ('urEnqueueKernelLaunch','urEnqueueKernelLaunchWithArgsExp'),
+                'failed or unsupported native kernel launch')
+        handle = re.search(r'\.hKernel = (0x[0-9a-f]+)',line)
+        require(handle and created.get(handle[1]) == expected_name,
+                'native launch is not the admitted selector')
+        require('.workDim = 1,' in line and re.search(r'\.pLocalWorkSize = 0x[0-9a-f]+ \(256\)',line) and
+                re.search(r'\.pGlobalWorkSize = 0x[0-9a-f]+ \(768\)',line),
+                'small selector launch shape differs')
+        local = [(int(i),int(n)) for i,n in re.findall(
+            r'UR_EXP_KERNEL_ARG_TYPE_LOCAL, \.index = (\d+), \.size = (\d+)',line)]
+        if arm == 'batched':
+            require(call[1] == 'urEnqueueKernelLaunchWithArgsExp' and sorted(n for _,n in local) == [64,1024],
+                    'batched actual local argument payload differs')
+        launches.append(dict(api=call[1],kernel=expected_name,local_arguments=local))
+    require(len(launches) == 7, 'missing or extra successful selector launch')
+    require(all(r == launches[0] for r in launches), 'small launch contract changed')
+    return dict(calls=7,**launches[0])
 
 
 def run(mode):
@@ -251,14 +293,15 @@ def run(mode):
             env = dict(plan['environment'], TMPDIR=str(folder/'tmp'), XDG_CACHE_HOME=str(folder/'cache'),
                        UR_LOG_VALIDATION='level:warning;flush:warning;output:file,' + str(warnings))
             if mode != 'performance': env['UR_LOG_TRACING'] = 'level:info;flush:info;output:file,' + str(trace)
-            args = [plan['binary']['path'], '--arm', job['arm'], *job['args']]
+            binary = plan['binaries'][job['binary_kind']]
+            args = [binary['path'], '--arm', job['arm'], *job['args']]
             devices, observed = [], {}
             def snapshot(io):
                 proc = Path('/proc',str(io.proc.pid))
                 actual = dict(v.split(b'=',1) for v in (proc/'environ').read_bytes().split(b'\0') if b'=' in v)
                 require(all(actual.get(k.encode()) == v.encode() for k,v in env.items()), 'native environment changed')
                 maps = (proc/'maps').read_text(); mapped = b.base.runtime.executable_mappings(maps)
-                require(mapped <= set(rt['runtime_files']) | {str(Path(plan['binary']['path']).resolve())},
+                require(mapped <= set(rt['runtime_files']) | {str(Path(binary['path']).resolve())},
                         'unqualified executable mapping')
                 require({rt['preload']['loader'],rt['preload']['library']['path'],env['ZE_ENABLE_ALT_DRIVERS'],
                          str(Path(env['UR_ADAPTERS_FORCE_LOAD']).resolve())} <= mapped, 'missing qualified providers')
@@ -320,15 +363,23 @@ def run(mode):
                     require(len(rows) == 1 and all(rows[0][k] == v for k,v in
                         dict(n='20',nq='3',cap='7',repeats='2',events='2',mode='events').items()) and
                         float(rows[0]['service_ns']) > 0, 'small actual-event probe failed')
-                    require(len(re.findall(r'---> urEnqueueKernelLaunch\(',trace.read_text())) == 7,
-                            'small probe native launch extent differs')
+                    result['actual_launches'] = smoke_launches(trace.read_text(),
+                        plan['kernel_ids'][ARMS.index(job['arm'])],job['arm'])
                     result['event_probe'] = rows[0]
+                    result['query_budget_eligible'] = float(rows[0]['query_ms']) <= \
+                        plan['performance_criteria']['small_probe_query_cap_ms']
                 if mode == 'performance':
                     result['samples'] = sample_rows(stdout,job,plan)
                     result['first_shape_use'] = [dict(part.split('=',1) for part in line.split()[1:])
                         for line in stdout.splitlines() if line.startswith('qsa_first ')]
             outcome['processes'].append(result); persist()
         require(mode == 'properties' or len(hashes) == 1, 'exact output IDs differ across arms/processes')
+        if mode == 'properties':
+            require(len(outcome['processes']) == 2 and
+                    outcome['processes'][0]['properties'] == outcome['processes'][1]['properties'],
+                    'event observation changed native resource properties')
+        if mode == 'event-smoke':
+            outcome['query_gate_passed'] = all(p['query_budget_eligible'] for p in outcome['processes'])
         admit(scope,plan)
         if mode == 'performance': outcome['decision'] = decision(outcome['processes'],plan)
         outcome.update(passed=True,complete=True)
@@ -342,6 +393,8 @@ def run(mode):
         persist(); scope.setdefault('checks',[]).append(compact_outcome(outcome))
         if mode == 'performance':
             scope['component_advance_eligible'] = bool(outcome['passed'] and outcome.get('decision',{}).get('passed'))
+        if mode == 'event-smoke':
+            scope['event_service_eligible'] = bool(outcome['passed'] and outcome.get('query_gate_passed'))
         scope['check_plan']['stage'] = 'closed'; write(RESULT,record)
     print(json.dumps({k:outcome.get(k) for k in ('mode','passed','complete','fresh_faults')}),flush=True)
 

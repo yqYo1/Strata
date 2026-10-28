@@ -1859,7 +1859,14 @@ and their exact compile flags. The extended fixture provides separate clean
 submit/drain batches and event-observed service/host CPU measurements for
 32768,78453,117489and262144synthetic context cells,with scoring/transfers/oracle
 work outside timing. Capability checks added to the candidate/control remain
-charged to their public calls. No new compilation,property query,GPU execution
+charged to their public calls. The clean fixture compiles unchanged selector
+sources;its separate event fixture substitutes only a host-side finish seam.
+That seam compares each captured submission with the last-event query. The
+build must show identical device IR,and both fixtures need the same native
+properties and independent-oracle outputs. A small traced7-launch probe precedes
+128-repeat timing;successful API returns must resolve to the admitted kernel,
+and profiling queries have a separate1s returned-call budget plus the owned
+child deadline. No new compilation,property query,GPU execution
 or speed result exists yet;all native/correctness/service gates wait for the
 frozen cohort to close. Component262144coverage does not qualify a full model.
 The existing7.689s selection queue interval includes host submission gaps and

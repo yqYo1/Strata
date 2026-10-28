@@ -26,6 +26,7 @@ HEADER = 'include/strata/kernels/qsa_radix_batched.hpp'
 NATIVE = 'src/kernels/sycl/qsa_radix_batched.cpp'
 FIXTURE = 'tests/sycl/qsa_batched_radix.cpp'
 ORACLE = 'tests/sycl/qsa_select_radix.cpp'
+CAPTURE = 'tests/sycl/qsa_event_capture.hpp'
 SELECTOR = 'src/kernels/sycl/qsa_select.cpp'
 SELECTED = ['src/sycl/runtime.cpp', 'src/sycl/compat.cpp',
             'src/sycl/command_profile.cpp', SELECTOR]
@@ -33,7 +34,7 @@ require, digest, write = base.require, base.digest, base.write
 
 
 def inputs(revision):
-    names = {HEADER, NATIVE, FIXTURE, ORACLE}
+    names = {HEADER, NATIVE, FIXTURE, ORACLE, CAPTURE}
     pending, seen = [Path(__file__).resolve()], set()
     while pending:
         path = pending.pop()
@@ -76,6 +77,20 @@ def compact(plan):
             json.dumps(plan['input_sha256'], sort_keys=True).encode()).hexdigest())}
 
 
+def generated():
+    result = {}
+    for name, source, count in [('original-observed.cpp',base.ROOT/'source'/SELECTOR,4),
+                                ('proposal-observed.cpp',P/NATIVE,1)]:
+        raw = source.read_bytes()
+        before = b'finish(stream, event);'
+        after = b'::strata::qsa_fixture::observed_finish(stream, event);'
+        require(raw.count(before) == count and after not in raw, 'nonunique finish observation seam')
+        body = raw.replace(before,after)
+        require(body.replace(after,before) == raw, 'observation changed another source region')
+        result[name] = ('#include "' + str(P / CAPTURE) + '"\n').encode() + body
+    return result
+
+
 def admit(plan):
     origin, allowed = foundation()
     require(origin['compile_database_sha256'] == plan['selected_compile_database_sha256'],
@@ -87,10 +102,15 @@ def admit(plan):
     providers = json.loads(Path(plan['providers']['path']).read_text())
     allowed.update({v['resolved']: v['sha256'] for v in providers.values()})
     allowed.update({str((P / n).resolve()): sha for n, sha in plan['input_sha256'].items()})
-    generated = ROOT / HEADER
-    require(generated.read_bytes() == (P / HEADER).read_bytes() and
-            digest(generated) == plan['generated_header_sha256'], 'private header differs')
-    allowed[str(generated.resolve())] = plan['generated_header_sha256']
+    header = ROOT / HEADER
+    require(header.read_bytes() == (P / HEADER).read_bytes() and
+            digest(header) == plan['generated_header_sha256'], 'private header differs')
+    allowed[str(header.resolve())] = plan['generated_header_sha256']
+    for name, raw in generated().items():
+        path = ROOT / name
+        require(path.read_bytes() == raw and digest(path) == plan['generated_input_sha256'][name],
+                'generated observed source differs')
+        allowed[str(path.resolve())] = plan['generated_input_sha256'][name]
     return allowed
 
 
@@ -113,6 +133,8 @@ def prepare():
     (ROOT / 'tmp').mkdir()
     (ROOT / HEADER).parent.mkdir(parents=True)
     (ROOT / HEADER).write_bytes((P / HEADER).read_bytes())
+    generated_inputs = generated()
+    for name, raw in generated_inputs.items(): (ROOT / name).write_bytes(raw)
     providers = link.provider_inventory()
     write(ROOT / 'providers.json', providers)
     database = json.loads((base.ROOT / 'build/compile_commands.json').read_text())
@@ -143,11 +165,23 @@ def prepare():
         args += ['-MD', '-MF', str(obj.with_suffix('.d'))]
         commands.append(('compile-' + str(len(objects)), args))
         objects.append(obj)
+    for path in [ROOT/'original-observed.cpp',ROOT/'proposal-observed.cpp',P/FIXTURE]:
+        obj = ROOT / ('input-' + str(len(objects)) + '.o')
+        args = list(template)
+        args[args.index('-c') + 1] = str(path)
+        args[args.index('-o') + 1] = str(obj)
+        args.insert(1, '-I' + str(ROOT / 'include'))
+        if path == P / FIXTURE: args.append('-DSTRATA_QSA_EVENT_CAPTURE=1')
+        args += ['-MD','-MF',str(obj.with_suffix('.d'))]
+        commands.append(('compile-' + str(len(objects)),args)); objects.append(obj)
     compiler = origin['compiler']['path']
-    commands.append(('fixture', [compiler, '-std=c++20', '-O3', '-DNDEBUG', '-fsycl',
-        '-fsycl-id-queries-range=size_t', '-ffp-contract=off', *map(str, objects),
-        '-pthread', '-ldl', '-save-temps=obj', '-v', '-Wl,--trace', '-o', str(ROOT / 'fixture')]))
-    for name, path in [('original', base.ROOT / 'source' / SELECTOR), ('proposal', P / NATIVE)]:
+    for name, chosen in [('fixture',objects[:6]),('fixture-observed',objects[:3]+objects[6:])]:
+        commands.append((name, [compiler, '-std=c++20', '-O3', '-DNDEBUG', '-fsycl',
+            '-fsycl-id-queries-range=size_t', '-ffp-contract=off', *map(str, chosen),
+            '-pthread', '-ldl', '-save-temps=obj', '-v', '-Wl,--trace', '-o', str(ROOT / name)]))
+    for name, path in [('original', base.ROOT / 'source' / SELECTOR), ('proposal', P / NATIVE),
+                       ('observed-original',ROOT/'original-observed.cpp'),
+                       ('observed-proposal',ROOT/'proposal-observed.cpp')]:
         args = list(template)
         del args[args.index('-o'):args.index('-o') + 2]
         del args[args.index('-c'):args.index('-c') + 2]
@@ -161,12 +195,13 @@ def prepare():
         compiler=origin['compiler'], sdk=origin['sdk'],
         providers=dict(path=str(ROOT / 'providers.json'), sha256=digest(ROOT / 'providers.json'), files=len(providers)),
         generated_header_sha256=pins[HEADER], environment=environment, commands=commands,
+        generated_input_sha256={n:hashlib.sha256(raw).hexdigest() for n,raw in generated_inputs.items()},
         budgets=dict(wall=420, cpu=1200, rss_cap=12 << 30, text_cap=16 << 20,
                      file_cap=512 << 20, total_cap=2 << 30), total_wall_seconds=2400,
         active=False, ownership_closed=True, GPU_executed=False, model_selected=False,
         provenance='Own MIT Strata radix rank/emission contract and reviewed batched histogram;independent weighted-cell oracle. Selected6e40 native/runtime sources and exact selected flags. Apache LLVM SDK only;no XeStrata application/helpers/tests.',
         criteria='Build only. Complete actual compiler/link closure;record every LLVM kernel definition without assuming whole-TU counts from a native image. Native resources,small traced correctness,matching output IDs and independent-process clean/service/CPU speed are subsequent gates. Decode and selected production unchanged.',
-        retention='One necessary selector component fixture for imminent qualification beside the existing fallback. No third full engine. Retire normal output/IR/intermediates and rejected source/exports after compact decision and exact source/recipe recovery;do not extend closed direct-K generation retention.')
+        retention='One component generation with two necessary fixtures:unmodified-source clean calls and host-only captured-event observation. No third full engine. Require identical device IR after removing only module/source-file labels. Retire normal output/IR/intermediates and rejected source/exports after compact decision and exact source/recipe recovery;do not extend closed direct-K generation retention.')
     admit(plan)
     write(ROOT / 'plan.json', plan)
     record[KEY] = dict(build=compact(plan), passed=False, model_selected=False)
@@ -197,8 +232,8 @@ def build():
                     'compile/link failed: ' + err.read_text(errors='replace')[-2000:])
             if label.startswith('compile-'):
                 obj = Path(args[args.index('-o') + 1]); allowed[str(obj)] = digest(obj)
-            if label == 'fixture':
-                outcome['link_inputs'] = link.traced_inputs(out.read_text(), err.read_text(), allowed, ROOT)
+            if label in ('fixture','fixture-observed'):
+                outcome.setdefault('link_inputs',{})[label] = link.traced_inputs(out.read_text(), err.read_text(), allowed, ROOT)
         admit(plan)
         actual = {}
         for label, args in plan['commands']:
@@ -216,7 +251,7 @@ def build():
         def asset(path):
             return dict(path=str(path), bytes=path.stat().st_size, sha256=digest(path))
         inventories = {}
-        for name in ('original', 'proposal'):
+        for name in ('original', 'proposal','observed-original','observed-proposal'):
             text = (ROOT / (name + '.ll')).read_text()
             headers = re.findall(r'^define[^\n]*spir_kernel[^\n]*', text, re.M)
             require(headers, 'missing compiled kernel definitions')
@@ -225,7 +260,12 @@ def build():
                 subgroup_metadata=re.search(r'!intel_reqd_sub_group_size !(\d+)', h)[1]
                     if '!intel_reqd_sub_group_size ' in h else None) for h in headers]
         write(ROOT / 'kernel-inventory.json', inventories)
+        for name in ('original','proposal'):
+            canonical = lambda path: re.sub(r'^(?:; ModuleID = .*|source_filename = .*)\n','',path.read_text(),flags=re.M)
+            require(canonical(ROOT/(name+'.ll')) == canonical(ROOT/('observed-'+name+'.ll')),
+                    'host observation seam changed device IR: ' + name)
         outcome.update(passed=True, complete=True, binary=asset(ROOT / 'fixture'),
+            observed_binary=asset(ROOT/'fixture-observed'), device_IR_identical_across_observation=True,
             actual_compiler_inputs=asset(ROOT / 'compiler-inputs.json') | {'files': len(actual), 'uncovered': 0},
             LLVM={n:asset(ROOT / (n + '.ll')) for n in inventories},
             kernel_inventory=asset(ROOT / 'kernel-inventory.json') | {

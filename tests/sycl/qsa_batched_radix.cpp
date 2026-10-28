@@ -12,6 +12,9 @@
 #include <time.h>
 #include <level_zero/ze_api.h>
 #include <sycl/ext/oneapi/backend/level_zero.hpp>
+#if defined(STRATA_QSA_EVENT_CAPTURE)
+#include "qsa_event_capture.hpp"
+#endif
 
 namespace {
 using Selector = decltype(&strata::kernels::qsa_block_topk_prefill);
@@ -121,6 +124,11 @@ int timing_fixture(int argc, char **argv) {
   const std::string mode = argv[3];
   check(mode == "clean" || mode == "events", "timing mode clean|events");
   const bool profiling = mode == "events";
+#if !defined(STRATA_QSA_EVENT_CAPTURE)
+  check(!profiling, "event timing needs the separate captured-event fixture");
+#else
+  check(profiling, "use the unchanged production-source fixture for clean timing");
+#endif
   const bool smoke = std::string(argv[1]) == "--event-smoke";
   check(!smoke || (repeats == 2 && profiling), "event smoke requires2repeats/events");
   double maximum_clock_pair = 0;
@@ -196,10 +204,16 @@ int timing_fixture(int argc, char **argv) {
         const auto begin = clock_now();
         for (int i = 0; i < repeats; ++i) {
           if (profiling) {
+#if defined(STRATA_QSA_EVENT_CAPTURE)
+            strata::qsa_fixture::Capture capture;
+#endif
             const auto b = clock_now(); invoke(); const auto e = clock_now();
             invoke_wall += e.wall - b.wall; invoke_cpu += e.cpu - b.cpu;
             auto event = queue.ext_oneapi_get_last_event();
             check(event.has_value(), "missing actual selector event");
+#if defined(STRATA_QSA_EVENT_CAPTURE)
+            check(*event == capture.take(), "last event differs from actual selector submission");
+#endif
             check(events.empty() || *event != events.back(), "reused selector event");
             events.push_back(*event);
             const auto l = clock_now();
@@ -217,6 +231,9 @@ int timing_fixture(int argc, char **argv) {
           check(e > s && s >= previous_end, "invalid in-order selector timestamp");
           if (!first_start) first_start = s;
           last_end = previous_end = e; service += e - s;
+          // Check after returned APIs; a blocked provider call is bounded by
+          // the owned child's wall deadline. All GPU work is already drained.
+          check(clock_now().wall - after.wall <= 1.0, "profiling query-work cap (1second)");
         }
         const auto query_end = clock_now();
         std::cout << "qsa_timing n=" << n << " pattern=" << pattern << " nq=" << nq
@@ -231,7 +248,9 @@ int timing_fixture(int argc, char **argv) {
                   << " lookup_ms=" << 1e3 * lookup_wall << " lookup_cpu_ms=" << 1e3 * lookup_cpu
                   << " drain_ms=" << 1e3 * (after.wall - before_drain.wall)
                   << " drain_cpu_ms=" << 1e3 * (after.cpu - before_drain.cpu)
-                  << " query_ms=" << 1e3 * (query_end.wall - after.wall) << '\n';
+                  << " query_ms=" << 1e3 * (query_end.wall - after.wall)
+                  << " query_cpu_ms=" << 1e3 * (query_end.cpu - after.cpu)
+                  << " query_process_cpu_ms=" << 1e3 * (query_end.process_cpu - after.process_cpu) << '\n';
         validate_output(); // Also checks all rows after every timed batch.
       }
       const auto unchanged = ds.get();
