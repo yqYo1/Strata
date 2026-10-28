@@ -14454,7 +14454,7 @@
   },
   "sycl_local_accessor_alias_contract_20261028": {
     "classification": "decision_support",
-    "status": "completed_native_review_pending",
+    "status": "reviewed_conditional_alias_discriminators",
     "schedulable_now": false,
     "report_budget_bytes": 18432,
     "source_revision": "a2f54c3e5ce96cbda94901587373f08510525662",
@@ -14490,10 +14490,52 @@
     "report_bytes": 12900,
     "report_sha256": "1ee615a25eba44d72690d0abe885933d00d9d129e574c9a70bc270be84882f95",
     "review": {
-      "status": "active",
+      "status": "completed",
       "agent": "/root/curate_sycl_local_alias_contract_20261028",
       "model": "gpt-6-luna",
-      "reasoning_effort": "max"
-    }
+      "reasoning_effort": "max",
+      "model_evidence": "Main explicit native spawn selection;reviewer runtime did not self-report exact variant/effort.",
+      "bytes": 9774,
+      "sha256": "bbe592ae3f0d9bcf28779fdf133219e105b0570f863ff54757f10f9e7884476d"
+    },
+    "accepted_findings": [
+      "SYCL local_accessor allocates a local-memory region shared by one work-group; each separately constructed, simultaneously live accessor here owns a distinct allocation. Copying an accessor preserves the same underlying region, so variable names alone are not an alias argument.",
+      "Local address-space identity describes the storage domain, not individual allocation identity. Same addrspace(3) on the row and BF16 accesses neither disproves source-level disjointness nor proves compiler-visible noalias.",
+      "The broad `[[intel::kernel_args_restrict]]` contract treats every captured pointer and accessor as an argument and asserts their disjointness. It is unsafe for this QSA route while permitted global pool/input overlap and duplicate logical mappings to physical pages remain allowed.",
+      "LLVM alias.scope/noalias and SPV_INTEL_memory_access_aliasing describe scoped memory-access relations; false relations are undefined behavior. A conditional LLVM-to-SPIR-V lowering path does not prove the tags exist on these accesses or survive later IGC/native stages.",
+      "The report correctly preserves the invalid-row `-1` rule and the deliberate qtile=kv alias outside the rows-versus-kv claim. Its two alternatives remain proposals, not compiler or speed evidence."
+    ],
+    "corrections": [
+      "Make the C++ layers explicit: object lifetime, strict-alias/TBAA, and noalias are separate. The current typed accesses carry TBAA tags (`long` and `short`), but these are not allocation identity or a pairwise noalias promise. Do not infer a hoist from distinct C++ types alone.",
+      "For the aggregate discriminator, require valid object lifetimes for Scratch and its members in local storage. SYCL local_accessor implicitly creates DataT elements only for implicit-lifetime types; otherwise the program must construct them. Also require non-overlapping typed fields, adequate alignment/extent, and no union, byte-arena type pun, or overlapping placement.",
+      "Describe `__restrict__` as a scoped compiler-extension promise for the helper's accesses. Fully disjoint row/KV regions are a safe strong precondition; the core restrict rule constrains conflicting accesses to modified objects, not pointer-value inequality by itself. Check that no alternate access path violates the promise and that emitted attributes plus optimized IR confirm the intended scope.",
+      "The checked native module contains `kernel_arg_exclusive_ptr` metadata. Explicitly warn that this is invocation-lifetime metadata, not pairwise alias metadata. Phrase absence narrowly: no relevant alias-scope/noalias tags on the row load and BF16 local stores, rather than no `noalias` token anywhere in the module.",
+      "Prefer immutable commit-pinned URLs or file hashes for the Intel LLVM source links. The indexed source base is pinned, but branch URLs in the bibliography can move."
+    ],
+    "conditional_discriminators": [
+      {
+        "id": "aggregate_field_offsets",
+        "schedulable_now": false,
+        "question": "Does a single typed local Scratch aggregate preserve constant distinct field offsets in LLVM IR and let the optimizer place the stable row load outside the K dimension loop?",
+        "prerequisites": [
+          "Main closes or explicitly separates any active source/build comparison, pins and commits the exact prefix, generator, helpers, generated inputs, compiler recipe and immutable separate-accessor control.",
+          "Define Scratch with real typed non-overlapping members and valid local object lifetimes; preserve barriers, row publication, writes, invalid-row behavior and the intentional qtile/kv alias.",
+          "Use one bounded compile-only comparison and inspect relevant optimized LLVM GEP offsets and row-load location. Current component checks are not a performance or model gate."
+        ],
+        "stop_rule": "Stop if lifetimes/layout are invalid, offsets disappear or become ambiguous, or the row load remains in the loop. Any SPIR-V/native, numerical, resource or speed question requires a separately committed plan."
+      },
+      {
+        "id": "scoped_restrict_helper",
+        "schedulable_now": false,
+        "question": "Can a helper restricted only to the disjoint local rows and kv bases emit scoped noalias facts and hoist the stable row load?",
+        "prerequisites": [
+          "Use the same committed source-bound control and pinned recipe as the aggregate comparison, with a separate source arm.",
+          "The helper receives only the two local bases and scalar indices; it accesses each object only through its corresponding base, passes no global pool pointer, and has no alternate alias path.",
+          "Check emitted parameter noalias attributes and optimized LLVM load placement; treat `kernel_arg_exclusive_ptr` and address-space tags as insufficient."
+        ],
+        "stop_rule": "Stop if compiler noalias facts are absent or broadened, an alternate access path exists, or optimized IR does not move the row load. Do not apply kernel-wide restrict or claim device/performance qualification."
+      }
+    ],
+    "ownership_resolution": "Main independently verified succeeded/completed exact ctx_10d7e387e82d,worker-release closed terminal,and ACKed completion. Reviewer read earlier active index snapshot;current ownership is closed."
   }
 }
