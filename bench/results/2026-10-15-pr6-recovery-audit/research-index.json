@@ -14334,7 +14334,7 @@
   },
   "qsa_static_workgroup_geometry_contract_20261028": {
     "classification": "decision_support",
-    "status": "completed_native_review_pending",
+    "status": "reviewed_conditional_metadata_discriminator",
     "schedulable_now": false,
     "question": "For this exact QSA WG128/SG16 kernel whose IR lacks required-workgroup-size metadata,compare existing runtime nd_range and compile-time exact/max-workgroup attributes or SYCL properties. Pin one supported exact-size spelling and installed Intel LLVM/SPIRV/IGC lowering contract;identify legal launch/property/resource constraints,which builtin ranges/address-hoisting optimizations it may expose,and counterevidence. Do not claim a speedup or repeat full-unroll/GRF API-spelling screens.",
     "prerequisites_evidence": {
@@ -14377,10 +14377,29 @@
       "pre_task_readiness_failure": "ctx_6b793d472713"
     },
     "review": {
-      "status": "active",
+      "status": "completed",
       "agent": "/root/curate_qsa_workgroup_contract_20261028",
       "model": "gpt-6-luna",
-      "reasoning_effort": "max"
+      "reasoning_effort": "max",
+      "bytes": 5588,
+      "sha256": "d650301a48de075fa2966c488184592f889cb71c3f8b7230b03a2c881f9bc218"
+    },
+    "accepted_findings": {
+      "exact_annotation": "[[sycl::reqd_work_group_size(128)]]",
+      "contract": "Official LLVM504 source lowering contract only;max_work_group_size/work_group_size_hint are not an exact launch contract. Existing runtime nd_range128 alone did not emit required WG metadata in qualified control IR.",
+      "next": {
+        "question": "With the exact installed toolchain provenance established, does adding only [[sycl::reqd_work_group_size(128)]] to this QSA attention lambda produce a relevant optimized-IR difference versus its source-bound unannotated control, beyond any equivalent earlier handler-property arm?",
+        "eligibility_prerequisites": [
+          "Main completes the installed toolchain build-root, source-revision, compiler/SPIR-V/IGC ELF identity chain; use those verified binaries, not a path or version label.",
+          "Verify the earlier 128/256 handler-property result's required-size metadata and optimized IR. Skip the new compile if it already supplies the same discriminator.",
+          "Pin the exact source (SHA-256 4f9f815c9baae709f919f6d5ad1af04677c10d8c13c7597b3857cf81567ae192), control IR (SHA-256 42e724afc3ba12171493dcc1dda15821713f26e1744b26b33a4ab7457e81b529), dependency digest cdb420926f92502e93d4a18c95cad47f9624bc982f0078f2e302b024678e2ddf, and complete compile recipe before launching the compile-only comparison."
+        ],
+        "bounded_method": "One control/annotated compile-only comparison. Check emitted LLVM metadata, SPIR-V LocalSize, and optimized IR only for fixed-local-range simplification or movement/removal of relevant K-loop row-validity/address work. No device execution or GPU measurement in this discriminator.",
+        "stop_rule": "If prior property evidence is equivalent, or if this comparison produces no relevant new optimizer-IR delta, reject/close the annotation candidate. Any later native-image, resource, correctness, or performance question requires Main's separate committed plan and gates."
+      },
+      "compiler_origin_ref": "qsa-codegen-current.json::direct_K_loop_invariant.source_contract.compiler_origin",
+      "provenance_resolution": "Main verified official LLVM504 build-root and complete compiler ELF install transform,current source17attributed patches. Not pristine. SPIR-V/IGC lowering/runtime identities remain exact frozen manifest assets;CPU IR-only discrimination can precede a new image/runtime qualification.",
+      "limit": "No speed or numerical/device result. Do not repeat earlier 128/256handler-property experiments if they already produce equivalent metadata/optimized IR."
     }
   }
 }

@@ -391,7 +391,7 @@
     }
   ],
   "direct_K_loop_invariant": {
-    "stage": "CPU_IR_qualified_native_unqualified",
+    "stage": "native_component_built_properties_unrun",
     "source_commit": "6413ca5a9007a7d3efec487901b8f8a24bd480ec",
     "proposal_source_commit": "139030e095ccd809bcdd51aa721ae3fee46199f2",
     "frozen_plan_ref": {
@@ -468,7 +468,7 @@
       }
     ],
     "analysis_method": "Exact hash-bound attention LLVM CFG,branch successors/predecessors,reachable-block dominators and natural loop from proven dominated backedge;source row-read SSA membership. Actual native Kloop old capture is source/ordered-barrier/dataflow correspondence,notDWARF. IR hoisting does not prove changed final native ISA/resource allocation or speed.",
-    "next": "Prepare committed source-closed native component compile/link/IR plan. Compiler-origin concern resolved by exact installation transform plus official source/build metadata;not a pristine-source claim. Property/smoke/boundary/oracle and separately frozen speed gates remain unrun.",
+    "next": "Run separately frozen property-only plan for3exact WG128/SG16 attention kernels. Then bounded trace/numerical/upper-row gates and new performance plan;no production/model/decode adoption.",
     "retention": "2newCPP/LLVM/dependency sets through immediate native-preparation decision;first failed raw capture/logs retire after compact evidence. Old9ASM/ZeInfo/LLVM remain only through current researcher reading/source mapping decision;review at closure.",
     "source_contract": {
       "source_reviewed": true,
@@ -504,7 +504,7 @@
       "limits": "Source-contract/CPU-IR pass only;no native candidate lowering,numerics,speed or model qualification. Typed align2 vec4 is not guaranteed one machine transaction. Full-backed upper rows and invalid sentinel required in next fixture. Candidate lifetime/code-size/spill effect unmeasured."
     },
     "native_build": {
-      "stage": "prepared",
+      "stage": "closed",
       "source_commit": "a2f54c3e5ce96cbda94901587373f08510525662",
       "input_sha256": {
         "bench/sycl/qsa_k_loop.cpp": "11ec451ba5f3ab20b74cae8d8816fd2e6079dd0b7e64dcbb435a12fc96bbafef",
@@ -1155,7 +1155,54 @@
       "GPU_executed": false,
       "provenance": "Own b0b863cc9 fixture/admission/oracle adapter with namespace/include/diagnostic-name substitutions. New direct-K proposal139030e09;host event-return additions reverse exactly to the CPU-IR constructor. No XeStrata application source.",
       "criteria": "Compile/link only. Verify exact native/controller/generated/compiler/link inputs,all actual dependencies and3unique18arg SG16 attention definitions before property/numerical plans. No GPU or performance/model qualification.",
-      "retention": "One additional fixture/numerical component generation beside selected6e40/12fixtures for immediate property/smoke/boundary/oracle and frozen matched speed decision. Retire rejected/closed outputs after original source/recipe recovery;legacy holds separate."
+      "retention": "One additional fixture/numerical component generation beside selected6e40/12fixtures for immediate property/smoke/boundary/oracle and frozen matched speed decision. Retire rejected/closed outputs after original source/recipe recovery;legacy holds separate.",
+      "outcome": {
+        "passed": true,
+        "complete": true,
+        "active": false,
+        "ownership_closed": true,
+        "GPU_executed": false,
+        "actual_compiler_inputs": {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-direct-k-native-v1/actual-compiler-inputs.json",
+          "sha256": "0b0fc16d6f79d72ad1b8ff3d53b4b8edc321cdd75a61dc8388660609d627ccc6",
+          "files": 702,
+          "purpose": "Current component source/dependency admission;all rows constrained by frozen source/generated/shared toolchain/link plan. Retire with this generation."
+        },
+        "binaries": {
+          "fixture": {
+            "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-direct-k-native-v1/fixture",
+            "bytes": 1606288,
+            "sha256": "f32a5fe763760b6b43aac42db2d7a9ebfa097966acd161e710696b3b60df4246"
+          },
+          "numerical": {
+            "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-direct-k-native-v1/numerical",
+            "bytes": 1590920,
+            "sha256": "f85eaf56f2650ea0fa0ed075b78e83009f4ba73ba8099a8f8144d319c556f7a3"
+          }
+        },
+        "device_IR": {
+          "original": {
+            "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-direct-k-native-v1/original.ll",
+            "bytes": 589718,
+            "sha256": "690bbb4da7c7322f6d6457ecf2503e447432c2e0d497afcc38b999fdd8fc8a83"
+          },
+          "control": {
+            "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-direct-k-native-v1/control.ll",
+            "bytes": 72243,
+            "sha256": "9e38618931d8066ee63a1a23ca967398d51ff0b9ff0ee9501fbe59dfe917d98b"
+          },
+          "candidate": {
+            "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-direct-k-native-v1/candidate.ll",
+            "bytes": 73139,
+            "sha256": "697c371701d09fb9d812c3a9ac3c87e0377c53685decaebd7d928777733dcc5d"
+          }
+        },
+        "attention_kernel_ids": [
+          "_ZTSZZN6strata7kernelsL17prefix_batch_implILi33ELb0ELb0ELb1ELb1ELb1ELb1ELb0EEEbPKtRKNS0_12QsaAttnPoolsEPKiS8_lRKNS0_9QsaShapesEPtlRKNS0_19QsaPromptBf16BoundsElRKNS0_20QsaBf16PackedScratchEPvNS0_19QsaPrefixStateProbeEENKUlRN4sycl3_V17handlerEE_clESO_EUlNSM_7nd_itemILi1EEEE_",
+          "_ZTSZZN6strata7kernels16direct_k_controlL17prefix_batch_implILi33ELb0ELb0ELb1ELb1ELb1ELb1ELb0EEEbPKtRKNS0_12QsaAttnPoolsEPKiS9_lRKNS0_9QsaShapesEPtlRKNS0_19QsaPromptBf16BoundsElRKNS0_20QsaBf16PackedScratchEPvNS0_19QsaPrefixStateProbeEPN4sycl3_V15eventEENKUlRNSN_7handlerEE_clESR_EUlNSN_7nd_itemILi1EEEE_",
+          "_ZTSZZN6strata7kernels18direct_k_invariantL17prefix_batch_implILi33ELb0ELb0ELb1ELb1ELb1ELb1ELb0EEEbPKtRKNS0_12QsaAttnPoolsEPKiS9_lRKNS0_9QsaShapesEPtlRKNS0_19QsaPromptBf16BoundsElRKNS0_20QsaBf16PackedScratchEPvNS0_19QsaPrefixStateProbeEPN4sycl3_V15eventEENKUlRNSN_7handlerEE_clESR_EUlNSN_7nd_itemILi1EEEE_"
+        ]
+      }
     }
   }
 }
