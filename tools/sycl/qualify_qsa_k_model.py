@@ -24,9 +24,10 @@ import engine_once
 
 d = previous.diagnostic
 m, P, B, RESULT = previous.m, previous.P, previous.B, previous.RESULT
-ROOT = B / 'qsa-direct-k-model-qualification-v1'
+ROOT = B / 'qsa-direct-k-model-qualification-v2'
 KEY = 'official_model_qualification'
 ORDER = previous.ORDER
+MATCH_FIELDS = ('phase', 'run', 'turn', 'request_sha256', 'prompt_tokens', 'read_tokens', 'reused_tokens')
 require, digest, write = previous.require, previous.digest, previous.write
 DOCS = ('README.md', 'docs/HOW_IT_WORKS.md', 'docs/DETAILS.md', 'docs/INSTALL.md',
         'docs/MODELS.md', 'docs/COMMUNITY_BENCHMARKS.md')
@@ -73,8 +74,24 @@ def accepted(outcome):
 
 def prepare():
     record, built, rt, _, model = qualification()
-    require(KEY not in record[m.KEY] and not ROOT.exists(), 'fresh qualification only')
+    require(not ROOT.exists(), 'fresh qualification only')
     revision = m.component.gen.git('rev-parse', 'HEAD').decode().strip()
+    previous_plan = record[m.KEY].get(KEY)
+    fixed_inputs = None
+    if previous_plan is not None:
+        require(previous_plan['stage'] == 'failed' and not previous_plan['passed'] and
+                previous_plan['ownership_closed'] and not previous_plan['active'] and
+                len(previous_plan['processes']) == 1 and
+                'standard long prompt lacks32K' in previous_plan['processes'][0].get('error', '') and
+                previous_plan['processes'][0]['post_closure_diagnostic']['official_execution_complete'],
+                'only the closed nominal32K refusal may precede this new plan')
+        record[m.KEY].setdefault(KEY + '_attempts', []).append(dict(
+            status='failed_not_retried', source_commit=previous_plan['source_commit'],
+            original_result=dict(commit=revision, path=str(RESULT.relative_to(P)),
+                keys=[m.KEY, KEY], scope_sha256=d.fingerprint(previous_plan)),
+            reason='Nominal upstream32K reads32089<32768. All18requests and native exit complete;original failed result stays recoverable. New measurements separate unchanged nominal coverage from strict actual32K generation evidence.'))
+        fixed_inputs = [{k:s[k] for k in MATCH_FIELDS}
+            for s in previous_plan['processes'][0]['post_closure_diagnostic']['requests'] if s['phase'] != 'agent']
     source = pins(revision)
     assets = d.models.model_pins(model['configuration'], model['model_assets'], full=True)
     binaries = {'original':built['selected_binary'], 'candidate':built['binaries']['strata']}
@@ -97,13 +114,14 @@ def prepare():
     row = dict(stage='prepared', source_commit=revision, sources=source, model_assets=assets,
         runtime_sha256=digest(m.runtime.RESULT), boot=rt['boot'], profile=model['profile'],
         native_validation_probe=model['native_validation_probe'], plans=plans, processes=[],
+        fixed_request_inputs=fixed_inputs,
         budgets=dict(wall=5400, cpu=18000, rss_cap=104 << 30, text_cap=64 << 20,
                      file_cap=128 << 20, total_cap=512 << 20),
         plan=dict(order=list(ORDER), runs_per_process=1,
             question='Does the isolated prefill row-address hoist preserve decode performance and complete official long/agent and both sustained-thinking workloads?',
-            constants='Same 131072 INT8 resident context,1256 decode expert slots,8192 chunks,BF16/vLLM/mode10,5workers,spec4,models/profile/client/safety.Only the native executable changes. No observer or environment mutation between phases.',
+            constants='Same 131072 INT8 resident context,1256 decode expert slots,8192 chunks,BF16/vLLM/mode10,5workers,spec4,models/profile/client/safety.Only the native executable changes. No observer or environment mutation between phases. When present,freeze the earlier refusal diagnostic fixed-body/input identities only;never pool its speeds or relabel its failure.',
             samples='Six independent processes in three opposite-order adjacent pairs. Each official full suite has short warmups/calibration,chat,4K/16K/32K prompts,one complete six-turn agent session,and both >=32K-input/>=1K-output thinking workloads. Agent follow-up rate is the median of its five engine-reported decode rates;do not substitute API usage for the engine token count. Preserve every request,actual lengths and engine clocks;do not require identical generated text.',
-            acceptance='All six executions,complete journals,agent sessions and both eligible long-generation cases must pass. Pool exactly three independent requests per workload/arm through the maintained strong>=0.60/weak<=0.40 MTP classifier. For each generation workload and agent follow-up decode,report all three paired candidate/original rate ratios;require geometric mean>=1 to screen preservation. A lower rate or unconfirmed MTP class remains pending/inconclusive;no noise waiver or automatic adoption. Matched 32K prompt rate and TTFT are descriptive in this gate.',
+            acceptance='All six executions,complete journals,agent sessions and both eligible long-generation cases must pass. Keep the upstream nominal32K case unchanged and report actual counts;it is supplemental and does not establish >=32768actual input. Both added generation cases must independently read>=32768fresh/zero-reuse tokens and produce>=1024tokens with thinking and an answer. Non-agent bodies and actual input/reuse counts must match between processes;agent histories may differ with generated text. Pool exactly three independent requests per workload/arm through the maintained strong>=0.60/weak<=0.40 MTP classifier. For each generation workload and agent follow-up decode,report all three paired candidate/original rate ratios;require geometric mean>=1 to screen preservation. A lower rate or unconfirmed MTP class remains pending/inconclusive;no noise waiver or automatic adoption. Nominal32K rate and TTFT are descriptive.',
             stopping='First source/runtime/ownership/numerical/validation/fault,budget,incomplete response,missing answer,or workload admission failure stops the cohort. No speed-based early stopping,retries,replacement or post-hoc exclusions. Generic success cannot override an exception or unfinished final hashes.',
             limits='This qualifies observed execution,answer presence,MTP regimes and matched rates,not semantic task quality or physical262144 fill/tail/handoff/RESTORE. Short chat/prompt output is not sustained decode evidence. Input-length approximation remains scoped;no hardware-saturation or1000/70target claim.',
             retention='Retain compact individual samples,source/recipe/config/runtime and decisions;retire verified successful raw journals/logs/private caches after closure. Keep fallback and this candidate only for imminent adoption gates.'),
@@ -155,9 +173,10 @@ def evidence(root, row):
             'chat':3, 'prompt/4K':1, 'prompt/16K':1, 'prompt/32K':1, 'agent':6,
             'long-generation/regular-code':1, 'long-generation/varied-prose':1}), 'suite scope differs')
     long_prompt = out['prompts']['32K']['requests']
-    require(len(long_prompt) == 1 and long_prompt[0]['read_tokens'] == long_prompt[0]['prompt_tokens'] >= 32768 and
+    require(out['prompts']['32K']['target_tokens'] == 32768 and len(long_prompt) == 1 and
+            long_prompt[0]['read_tokens'] == long_prompt[0]['prompt_tokens'] > 0 and
             long_prompt[0]['reused_tokens'] == 0 and long_prompt[0]['prompt_tps_source'] == 'engine',
-            'standard long prompt lacks32Kfresh input/engine clock')
+            'nominal upstream32K scope/freshness/engine clock differs')
     agent = out['agent']
     require(agent['complete_sessions'] == 1 and agent['failed_sessions'] == agent['partial_sessions'] == 0 and
             len(agent['sessions']) == 1 and d.client.agent_complete(agent['sessions'][0]), 'agent session incomplete')
@@ -176,6 +195,13 @@ def evidence(root, row):
     rates = {s['workload']:s['decode_tps'] for s in rows}
     rates['agent_followup'] = statistics.median(s['decode_tps'] for s in follow)
     return dict(samples=samples, decode_rates=rates, journal=journal)
+
+
+def matched(current, reference):
+    # Resent agent histories contain the model's own preceding output. Require
+    # matching wire inputs for fixed requests,without imposing text identity.
+    fixed = lambda rows: [{k:s[k] for k in MATCH_FIELDS} for s in rows if s['phase'] != 'agent']
+    require(fixed(current) == fixed(reference), 'fixed request bodies or actual input/reuse counts differ')
 
 
 def decision(processes):
@@ -247,6 +273,10 @@ def run(index):
         entry, _, _ = owner.run('bench', plan['command'], env, P, interaction=interact, **row['budgets'])
         require(m.runtime.supervision.closed(entry) and entry['exit_code'] == 0, 'official process failed')
         outcome['evidence'] = evidence(root, row)
+        if row['fixed_request_inputs'] is not None:
+            matched(outcome['evidence']['samples'], row['fixed_request_inputs'])
+        if row['processes']:
+            matched(outcome['evidence']['samples'], row['processes'][0]['evidence']['samples'])
         require(pins(row['source_commit']) == row['sources'] and digest(m.runtime.RESULT) == row['runtime_sha256'],
                 'source/runtime changed during suite')
         end = m.component.gen.native_end(root, dict(binary=plan['binary'], native_validation_probe=row['native_validation_probe']),
