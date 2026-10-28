@@ -6502,6 +6502,131 @@
         },
         "reason": "Nominal upstream32K reads32089<32768. All18requests and native exit complete;original failed result stays recoverable. New measurements separate unchanged nominal coverage from strict actual32K generation evidence."
       }
-    ]
+    ],
+    "exact_workgroup_IR": {
+      "stage": "prepared",
+      "complete": false,
+      "passed": false,
+      "active": false,
+      "GPU_executed": false,
+      "source_commit": "524cbd2879de3ca43752a0372a037b8cf8ccdc4a",
+      "controller_sha256": "749d41f643b529503dea5bd534e673c3555061995c683aebbed1e6d6b92462e8",
+      "compile_database_sha256": "5e101b600692b2c23e69889c31447ec229600f0643bc824103dc6f361111ed63",
+      "prefix_sha256": "f095959eb6be3df87a189c48ff1bac8c6ba1136444a5e93b68860a6de8b901da",
+      "native_build_source": "cd2e308bc967c4da0831878882447380a7e4cd74",
+      "runtime_sha256": "09ad358e12f6ef58bfc0a978519927863f3d09949a033a1e224db95997647d97",
+      "tools": {
+        "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin/clang++": "1290881b4e12a5e002e5b0de0787f85328ee5fe19f253a54be1cdd97dc2f26eb",
+        "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin/llvm-spirv": "b2796ec080f1c9a1aa5f0084c0db771331bdd51809983dce3f9220a8a0ea677b"
+      },
+      "arms": [
+        {
+          "name": "control",
+          "source_sha256": "f095959eb6be3df87a189c48ff1bac8c6ba1136444a5e93b68860a6de8b901da",
+          "compile": [
+            "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin/clang++",
+            "-DSTRATA_ENABLE_SYCL=1",
+            "-DSTRATA_VERSION=\"0.1.38\"",
+            "-I/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-direct-k-model-v2/source/include",
+            "-I/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-direct-k-model-v2/source/include/strata/sycl/compat",
+            "-O3",
+            "-DNDEBUG",
+            "-std=c++20",
+            "-ffp-contract=off",
+            "-fsycl",
+            "-fsycl-id-queries-range=size_t",
+            "-Wall",
+            "-Wextra",
+            "-Werror",
+            "-fno-fast-math",
+            "-ffp-contract=off",
+            "-fsycl-device-only",
+            "-S",
+            "-emit-llvm",
+            "-MD",
+            "-MF",
+            "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-exact-workgroup-ir-v1/control.d",
+            "-o",
+            "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-exact-workgroup-ir-v1/control.ll",
+            "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-exact-workgroup-ir-v1/source.cpp"
+          ],
+          "spirv": [
+            "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin/llvm-spirv",
+            "--spirv-ext=+all",
+            "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-exact-workgroup-ir-v1/control.ll",
+            "-o",
+            "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-exact-workgroup-ir-v1/control.spv"
+          ]
+        },
+        {
+          "name": "exact128",
+          "source_sha256": "7d938b9578e5a1946c340c987eb57bce45e029189f9579e5b64b75a5bc8c19bc",
+          "compile": [
+            "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin/clang++",
+            "-DSTRATA_ENABLE_SYCL=1",
+            "-DSTRATA_VERSION=\"0.1.38\"",
+            "-I/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-direct-k-model-v2/source/include",
+            "-I/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-direct-k-model-v2/source/include/strata/sycl/compat",
+            "-O3",
+            "-DNDEBUG",
+            "-std=c++20",
+            "-ffp-contract=off",
+            "-fsycl",
+            "-fsycl-id-queries-range=size_t",
+            "-Wall",
+            "-Wextra",
+            "-Werror",
+            "-fno-fast-math",
+            "-ffp-contract=off",
+            "-fsycl-device-only",
+            "-S",
+            "-emit-llvm",
+            "-MD",
+            "-MF",
+            "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-exact-workgroup-ir-v1/exact128.d",
+            "-o",
+            "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-exact-workgroup-ir-v1/exact128.ll",
+            "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-exact-workgroup-ir-v1/source.cpp"
+          ],
+          "spirv": [
+            "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin/llvm-spirv",
+            "--spirv-ext=+all",
+            "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-exact-workgroup-ir-v1/exact128.ll",
+            "-o",
+            "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-exact-workgroup-ir-v1/exact128.spv"
+          ]
+        }
+      ],
+      "environment": {
+        "PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin:/usr/bin:/bin",
+        "HOME": "/home/yayoi",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8",
+        "LD_LIBRARY_PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib",
+        "CPLUS_INCLUDE_PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/include",
+        "TMPDIR": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-exact-workgroup-ir-v1/tmp",
+        "XDG_CACHE_HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-exact-workgroup-ir-v1/cache"
+      },
+      "budgets": {
+        "wall": 120,
+        "cpu": 180,
+        "rss_cap": 4294967296,
+        "text_cap": 2097152,
+        "file_cap": 16777216,
+        "total_cap": 67108864
+      },
+      "plan": {
+        "question": "Does exact WG128 change optimized production attention instructions beyond its required-size metadata?",
+        "order": [
+          "control",
+          "exact128"
+        ],
+        "actual_source": "Isolated current direct-K production prefix;one exact-size attribute only.",
+        "guards": "Recover source/build/toolchain through existing native admission;use the same source.cpp path and immutable compiler environment in separate compiler processes. Check every actual dependency against the native compiler manifest. Require matching kernel names and exact LLVM/SPIR-V workgroup metadata.",
+        "stop": "Metadata-only or equivalent instruction bodies closes this candidate without device execution. A changed body remains manual-review-only;no native image,resource,correctness or performance advancement without a new committed gate.",
+        "limits": "CPU-only codegen discrimination,not device validation,physical traffic,hardware saturation,model adoption or throughput.",
+        "retention": "Keep hashes,counts,metadata and compact relevant differences. Retire successful raw IR/SPIR-V/dependencies/compiler output after review;no third engine generation."
+      }
+    }
   }
 }
