@@ -2222,7 +2222,7 @@
       "scope": "These are whole-model build provenance obligations. Same-source bounded native property/numerical fixture qualification may proceed;no model launch/adoption while these remain unresolved."
     },
     "check_plan": {
-      "stage": "prepared",
+      "stage": "closed",
       "mode": "properties",
       "source_commit": "534a3540a2d686105262561917d9e3866d3a98ff",
       "controller_inputs": {
@@ -2388,6 +2388,103 @@
         "_ZTSZZN6strata7kernels18direct_k_invariantL17prefix_batch_implILi33ELb0ELb0ELb1ELb1ELb1ELb1ELb0EEEbPKtRKNS0_12QsaAttnPoolsEPKiS9_lRKNS0_9QsaShapesEPtlRKNS0_19QsaPromptBf16BoundsElRKNS0_20QsaBf16PackedScratchEPvNS0_19QsaPrefixStateProbeEPN4sycl3_V15eventEENKUlRNSN_7handlerEE_clESR_EUlNSN_7nd_itemILi1EEEE_",
         "/usr/lib/x86_64-linux-gnu/libze_loader.so.1.32.0"
       ]
-    }
+    },
+    "same_build_checks": [
+      {
+        "mode": "properties",
+        "passed": true,
+        "complete": true,
+        "active": false,
+        "ownership_closed": true,
+        "GPU_kernels_executed": false,
+        "model_qualified": false,
+        "model_executed": false,
+        "controller_commit": "534a3540a2d686105262561917d9e3866d3a98ff",
+        "plan_commit": "9ed3bfa9739cc1546159d31744117ee04d9bcb5d",
+        "physical_device": {
+          "name": "Intel(R) Arc(TM) B570 Graphics",
+          "pci": "0000:05:00.0",
+          "driver": "xe",
+          "matching_DRM_descriptors": 1
+        },
+        "properties": [
+          {
+            "arm": 0,
+            "max_workgroup": 1024,
+            "subgroup": 16,
+            "arguments": 18,
+            "reported_local_bytes": 32,
+            "declared_dynamic_local_bytes": 20036,
+            "reserve_local_bytes": 4096,
+            "conservative_local_budget": 24164,
+            "per_group_local_max": 131072,
+            "spill_descriptor": 23808
+          },
+          {
+            "arm": 1,
+            "max_workgroup": 1024,
+            "subgroup": 16,
+            "arguments": 18,
+            "reported_local_bytes": 32,
+            "declared_dynamic_local_bytes": 20036,
+            "reserve_local_bytes": 4096,
+            "conservative_local_budget": 24164,
+            "per_group_local_max": 131072,
+            "spill_descriptor": 12480
+          },
+          {
+            "arm": 2,
+            "max_workgroup": 1024,
+            "subgroup": 16,
+            "arguments": 18,
+            "reported_local_bytes": 32,
+            "declared_dynamic_local_bytes": 20036,
+            "reserve_local_bytes": 4096,
+            "conservative_local_budget": 24164,
+            "per_group_local_max": 131072,
+            "spill_descriptor": 23808
+          }
+        ],
+        "loader_object": {
+          "path": "/usr/lib/x86_64-linux-gnu/libze_loader.so.1.32.0",
+          "sha256": "b764efda507f173560fa6055d433dd5c76140180b4a7c532e1cea813cde67363",
+          "device": "00:1d",
+          "inode": 7539712,
+          "executable_start": "77f78009d000",
+          "file_offset": "00018000",
+          "namespace": 0,
+          "symbols": [
+            "zeDeviceGetComputeProperties",
+            "zeKernelGetProperties"
+          ],
+          "evidence": "Live executable map plus canonical namespace-0 glibc object/dlsym bindings;helper requires RTLD_NOLOAD. This is this child only,not a general interop guarantee."
+        },
+        "validation": {
+          "pid": 3299447,
+          "loader": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_loader.so.0.12.0",
+          "threads_before": 1,
+          "preinit": 37,
+          "config_enabled": true,
+          "first_init": true,
+          "dispatch_result": 46,
+          "output_untouched": true,
+          "retained_reference_until_exit": true,
+          "runtime_teardown_qualified": false
+        },
+        "exit_code": 0,
+        "postchecks_complete": true,
+        "postcheck_errors": [],
+        "fresh_faults": [],
+        "boot_unchanged": true,
+        "driver_after": {
+          "pci": "/sys/bus/pci/devices/0000:05:00.0",
+          "driver": "xe",
+          "vendor": "0x8086",
+          "device": "0xe20c",
+          "kernel": "7.0.0-38-generic",
+          "devcoredump": false
+        }
+      }
+    ]
   }
 }
