@@ -1838,8 +1838,16 @@ The next source-only selector candidate is
 Selected radix4 currently performs16workgroup histogram reductions per digit;
 the proposal groups these into subgroup partials and two explicit workgroup
 barriers,with1088bytes of local histogram storage. Rank,tie breaks and ascending
-ID emission are intended to remain exact. Source review and fresh component
-correctness/resource/service gates are pending after the frozen cohort.
+ID emission are intended to remain exact. Independent Luna source review accepts
+the weighted-rank and collective/lifetime contract. The isolated build recipe
+in `tools/sycl/build_qsa_radix.py` reuses selected6e40 runtime/selector sources
+and their exact compile flags. The extended fixture provides separate clean
+submit/drain batches and event-observed service/host CPU measurements for
+32768,78453,117489and262144synthetic context cells,with scoring/transfers/oracle
+work outside timing. Capability checks added to the candidate/control remain
+charged to their public calls. No new compilation,property query,GPU execution
+or speed result exists yet;all native/correctness/service gates wait for the
+frozen cohort to close. Component262144coverage does not qualify a full model.
 The existing7.689s selection queue interval includes host submission gaps and
 scoring;it is not this selector's GPU service or a hardware bottleneck proof.
 After the screen and refused diagnostic are committed,three final retirements
