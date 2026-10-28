@@ -430,16 +430,19 @@ held-out errors42.96%,52.30% and51.47%;none is adopted as a global formula.
 Only two short-route lengths are available,insufficient to validate their own
 time model. Higher R-squared alone would hide that problem.
 
-An independent check against the frozen official cohort's closed original
-processes0and3 keeps that formula unchanged. At32089tokens it predicts42.2186s,
-versus43.3232/43.1914s measured (2.55/2.25% underprediction). The different
-regular-code/varied-prose prompts at33212/33286tokens take45.4577..45.6972s,
-versus43.2336/43.3005s predicted:4.89..5.39% underprediction. Each sample has
-zero reuse and retains client TTFT in the linked QSA cohort result. The32089
-case remains supplemental,below32768. These different workload bodies and
-request histories are not extra points in the original controlled sweep,and
-the four strict-long samples exceed its internal4.309% held-out error. Token
-count alone is therefore insufficient for that precision across workloads.
+An independent check against the closed official cohort's original
+processes0,3and4 keeps that formula unchanged. At32089tokens it predicts42.2186s,
+versus43.3232/43.1914/43.8492s measured (2.25..3.72% underprediction).
+The regular-code prompt at33212tokens takes45.4577/45.6972/46.0033s,
+versus43.2336s predicted (4.89..6.02% underprediction). The varied-prose
+prompt at33286tokens takes45.6359/45.6852/45.3827s,versus43.3005s predicted
+(4.59..5.22% underprediction). The strict-long within-workload time ranges
+are1.194%and0.663% of their medians. Each sample has zero reuse and retains
+client TTFT in the linked QSA cohort result. The32089case remains supplemental,
+below32768. These different workload bodies and request histories are not
+extra points in the original controlled sweep;all six strict-long samples
+exceed its internal4.309% held-out error. Token count alone is therefore
+insufficient for that precision across workloads.
 Keep workload/route/first-use labels and test unfit lengths instead of changing
 the coefficient to absorb this discrepancy. This is characterization,not a
 new implementation regression investigation or a performance-adoption result.
