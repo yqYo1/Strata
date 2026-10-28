@@ -10502,7 +10502,7 @@
       }
     },
     "check_plan": {
-      "stage": "prepared",
+      "stage": "closed",
       "mode": "properties",
       "source_commit": "87b3efb5f44d267c7bcd5e2fd84fc9ecf8e9b53a",
       "binaries": {
@@ -10696,6 +10696,169 @@
         "files": 44,
         "sha256": "3b69355587cb5f1e37a89543139c943e92e0ed0c7d1488b58455cbe4b4f43f3f"
       }
-    }
+    },
+    "checks": [
+      {
+        "mode": "properties",
+        "passed": true,
+        "complete": true,
+        "active": false,
+        "ownership_closed": true,
+        "processes": [
+          {
+            "label": "clean-properties",
+            "arm": "original",
+            "binary_kind": "clean",
+            "passed": true,
+            "device_bindings": [
+              {
+                "name": "Intel(R) Arc(TM) B570 Graphics",
+                "pci": "0000:05:00.0",
+                "driver": "xe",
+                "matching_DRM_descriptors": 1
+              },
+              {
+                "name": "Intel(R) Arc(TM) B570 Graphics",
+                "pci": "0000:05:00.0",
+                "driver": "xe",
+                "matching_DRM_descriptors": 1
+              }
+            ],
+            "loader_binding": {
+              "path": "/usr/lib/x86_64-linux-gnu/libze_loader.so.1.32.0",
+              "sha256": "b764efda507f173560fa6055d433dd5c76140180b4a7c532e1cea813cde67363",
+              "device": "00:1d",
+              "inode": 7539712,
+              "namespace": 0,
+              "symbols": [
+                "zeDeviceGetComputeProperties",
+                "zeKernelGetProperties"
+              ],
+              "evidence": "Live executable map plus canonical namespace-0 glibc object/dlsym bindings;helper requires RTLD_NOLOAD. This is this child only,not a general interop guarantee."
+            },
+            "properties": [
+              {
+                "arm": "0",
+                "kernel": "_ZTSZN6strata7kernels12_GLOBAL__N_111submit_topkILi1EEEN4sycl3_V15eventERNS4_5queueEPKfPKilllPilEUlNS4_7nd_itemILi1EEEE_",
+                "maximum_wg": "1024",
+                "subgroup": "0",
+                "arguments": "6",
+                "required_subgroup": "0",
+                "reported_local": "4096",
+                "spill_descriptor": "0",
+                "conservative_local_budget": "8192",
+                "device_local_max": "131072"
+              },
+              {
+                "arm": "1",
+                "kernel": "_ZTSZZN6strata7kernels12_GLOBAL__N_16radix4ILb0EEEvPKfPKilllRKNS0_9QsaShapesEPiPvlENKUlRN4sycl3_V17handlerEE_clESF_EUlNSD_7nd_itemILi1EEEE_",
+                "maximum_wg": "1024",
+                "subgroup": "32",
+                "arguments": "6",
+                "required_subgroup": "32",
+                "reported_local": "4096",
+                "spill_descriptor": "0",
+                "conservative_local_budget": "8192",
+                "device_local_max": "131072"
+              },
+              {
+                "arm": "2",
+                "kernel": "_ZTSZZN6strata7kernels12_GLOBAL__N_16radix4ILb1EEEvPKfPKilllRKNS0_9QsaShapesEPiPvlENKUlRN4sycl3_V17handlerEE_clESF_EUlNSD_7nd_itemILi1EEEE_",
+                "maximum_wg": "1024",
+                "subgroup": "32",
+                "arguments": "8",
+                "required_subgroup": "32",
+                "reported_local": "4096",
+                "spill_descriptor": "0",
+                "conservative_local_budget": "8768",
+                "device_local_max": "131072"
+              }
+            ]
+          },
+          {
+            "label": "events-properties",
+            "arm": "original",
+            "binary_kind": "events",
+            "passed": true,
+            "device_bindings": [
+              {
+                "name": "Intel(R) Arc(TM) B570 Graphics",
+                "pci": "0000:05:00.0",
+                "driver": "xe",
+                "matching_DRM_descriptors": 1
+              },
+              {
+                "name": "Intel(R) Arc(TM) B570 Graphics",
+                "pci": "0000:05:00.0",
+                "driver": "xe",
+                "matching_DRM_descriptors": 1
+              }
+            ],
+            "loader_binding": {
+              "path": "/usr/lib/x86_64-linux-gnu/libze_loader.so.1.32.0",
+              "sha256": "b764efda507f173560fa6055d433dd5c76140180b4a7c532e1cea813cde67363",
+              "device": "00:1d",
+              "inode": 7539712,
+              "namespace": 0,
+              "symbols": [
+                "zeDeviceGetComputeProperties",
+                "zeKernelGetProperties"
+              ],
+              "evidence": "Live executable map plus canonical namespace-0 glibc object/dlsym bindings;helper requires RTLD_NOLOAD. This is this child only,not a general interop guarantee."
+            },
+            "properties": [
+              {
+                "arm": "0",
+                "kernel": "_ZTSZN6strata7kernels12_GLOBAL__N_111submit_topkILi1EEEN4sycl3_V15eventERNS4_5queueEPKfPKilllPilEUlNS4_7nd_itemILi1EEEE_",
+                "maximum_wg": "1024",
+                "subgroup": "0",
+                "arguments": "6",
+                "required_subgroup": "0",
+                "reported_local": "4096",
+                "spill_descriptor": "0",
+                "conservative_local_budget": "8192",
+                "device_local_max": "131072"
+              },
+              {
+                "arm": "1",
+                "kernel": "_ZTSZZN6strata7kernels12_GLOBAL__N_16radix4ILb0EEEvPKfPKilllRKNS0_9QsaShapesEPiPvlENKUlRN4sycl3_V17handlerEE_clESF_EUlNSD_7nd_itemILi1EEEE_",
+                "maximum_wg": "1024",
+                "subgroup": "32",
+                "arguments": "6",
+                "required_subgroup": "32",
+                "reported_local": "4096",
+                "spill_descriptor": "0",
+                "conservative_local_budget": "8192",
+                "device_local_max": "131072"
+              },
+              {
+                "arm": "2",
+                "kernel": "_ZTSZZN6strata7kernels12_GLOBAL__N_16radix4ILb1EEEvPKfPKilllRKNS0_9QsaShapesEPiPvlENKUlRN4sycl3_V17handlerEE_clESF_EUlNSD_7nd_itemILi1EEEE_",
+                "maximum_wg": "1024",
+                "subgroup": "32",
+                "arguments": "8",
+                "required_subgroup": "32",
+                "reported_local": "4096",
+                "spill_descriptor": "0",
+                "conservative_local_budget": "8768",
+                "device_local_max": "131072"
+              }
+            ]
+          }
+        ],
+        "postchecks_complete": true,
+        "postcheck_errors": [],
+        "fresh_faults": [],
+        "boot_unchanged": true,
+        "driver_after": {
+          "pci": "/sys/bus/pci/devices/0000:05:00.0",
+          "driver": "xe",
+          "vendor": "0x8086",
+          "device": "0xe20c",
+          "kernel": "7.0.0-38-generic",
+          "devcoredump": false
+        }
+      }
+    ]
   }
 }
