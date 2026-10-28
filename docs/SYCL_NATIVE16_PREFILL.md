@@ -1699,9 +1699,17 @@ all output bits,guards and immutable inputs match,with normal ownership closure,
 quiet validation and no fresh fault. The first property attempt remains failed:
 the new controller confused its UR loader with the Level Zero property provider;
 source`534a3540a`corrects that and requires a new plan. This does not qualify
-whole-model execution. The1411compiled-input closure is distinct from complete
-link-provider closure:effective compile commands/generated build rules and
-resolved final link inputs still need admission before a model launch.
+whole-model execution. A subsequent prospective link check from source
+`2004951af`,frozen plan`de562a846`,matches all232 effective compile commands
+and target recipes,with zero uncovered final link inputs. All five relinked
+executables are byte-identical to the native-gate artifacts,so those native
+checks need no repetition solely for identity. Two fresh CPU-only frontend
+definition probes also pass from source`b227036ab`,plan`e16ea9df7`,covering the
+changed benchmark/server source and frozen external providers. The older
+Python-source refusal remains a refusal. This permits a separately committed,
+bounded first >=32K thinking-on model diagnostic with parameter validation
+and stage output;it does not qualify model performance,decode preservation or
+physical262144 processing.
 Production/decode and the selected6e40engine/twelve fixtures remain unchanged.
 After192source/702actual-dependency recovery and exact recipe/executable checks,
 58closed files retire (7862437bytes). The original component generation is
