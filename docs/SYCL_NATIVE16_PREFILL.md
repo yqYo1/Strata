@@ -430,6 +430,20 @@ held-out errors42.96%,52.30% and51.47%;none is adopted as a global formula.
 Only two short-route lengths are available,insufficient to validate their own
 time model. Higher R-squared alone would hide that problem.
 
+An independent check against the frozen official cohort's closed original
+processes0and3 keeps that formula unchanged. At32089tokens it predicts42.2186s,
+versus43.3232/43.1914s measured (2.55/2.25% underprediction). The different
+regular-code/varied-prose prompts at33212/33286tokens take45.4577..45.6972s,
+versus43.2336/43.3005s predicted:4.89..5.39% underprediction. Each sample has
+zero reuse and retains client TTFT in the linked QSA cohort result. The32089
+case remains supplemental,below32768. These different workload bodies and
+request histories are not extra points in the original controlled sweep,and
+the four strict-long samples exceed its internal4.309% held-out error. Token
+count alone is therefore insufficient for that precision across workloads.
+Keep workload/route/first-use labels and test unfit lengths instead of changing
+the coefficient to absorb this discrepancy. This is characterization,not a
+new implementation regression investigation or a performance-adoption result.
+
 Native logs bind48MoE accumulator windows to19664,39253 and78444 physical
 prefill rows,and96windows to117482rows,with an81920-row cap. The adjacent
 long-route slopes are0.9203,0.8280 and0.9941ms/token;this is not evidence of
