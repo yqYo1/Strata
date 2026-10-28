@@ -11,6 +11,7 @@ import hashlib
 import json
 from pathlib import Path
 import re
+import select
 import shlex
 import sys
 import time
@@ -222,11 +223,23 @@ def build():
                                         commands=owner.commands if owner else []))
     owner = base.runtime.supervision.Owner(ROOT / 'owned', persist)
     deadline = time.monotonic() + plan['total_wall_seconds']
+    def monitor(io, entry):
+        io.proc.stdin.close()
+        next_size = 0
+        while not io.exit_watch.poll(0) or not io.eof:
+            io.poll()
+            if time.monotonic() >= next_size:
+                require(base.runtime.supervision.artifact_bytes(ROOT) <= plan['budgets']['total_cap'],
+                        'whole selector build artifact budget')
+                next_size = time.monotonic() + .5
+            if select.select([io.proc.stdout],[],[],.02)[0]:
+                io.read(); io.pending.clear()
+        io.pending.clear(); io.exit(1)
     try:
         for label, args in plan['commands']:
             require(time.monotonic() < deadline, 'whole build deadline')
             print('CPU-only selector build:', label, flush=True)
-            entry, out, err = owner.run(label, args, plan['environment'], ROOT,
+            entry, out, err = owner.run(label, args, plan['environment'], ROOT,interaction=monitor,
                 **(plan['budgets'] | {'wall': min(plan['budgets']['wall'], deadline - time.monotonic())}))
             require(base.runtime.supervision.closed(entry) and entry['exit_code'] == 0,
                     'compile/link failed: ' + err.read_text(errors='replace')[-2000:])
