@@ -9152,7 +9152,7 @@
     },
     "candidate_next_consumer": {
       "selected": "Original6e40 engine22182f1a5e62 remains selected;pair0442ebfdcb94 is rejected for whole-model speed.",
-      "consumer": "Only the imminent two-process bounded QSA attribution in tools/sycl/qsa_pair_model_profile.py,using existing observers;no new native build or adoption advancement.",
+      "consumer": "Two-process QSA attribution finished;extra pair generation has no next GPU consumer. Retire after exact original source/recipe/ELF dependency recovery and pushed feature proof,before another build.",
       "retirement": "Review at this finite diagnostic closure;retire extra candidate generation after exact pushed source/recipe recovery. Original fallback and12same-build fixtures remain.",
       "scope": "Two qualified comparison generations across worktrees;14older unresolved provenance holds remain distinct,not a cleanup claim."
     },
@@ -9189,7 +9189,7 @@
       }
     },
     "bounded_qsa_attribution_v2": {
-      "stage": "running",
+      "stage": "closed",
       "source_commit": "08d4fd165876deabec7fc9a9ab599032c5aa5201",
       "runtime_sha256": "09ad358e12f6ef58bfc0a978519927863f3d09949a033a1e224db95997647d97",
       "boot": "cfda0b6a-7c13-4fe2-bdf5-8f9202770840",
@@ -9624,6 +9624,219 @@
             "kernel": "7.0.0-38-generic",
             "devcoredump": false
           }
+        },
+        {
+          "index": 1,
+          "arm": "candidate",
+          "complete": true,
+          "host_probe_accepted": true,
+          "passed": true,
+          "sample": {
+            "actual_prompt_tokens": 117489,
+            "actual_read_tokens": 117489,
+            "actual_reused_tokens": 0,
+            "generated_tokens": 24,
+            "prompt_ms": 146577.7,
+            "prompt_tps": 801.5,
+            "ttft_s": 146.763,
+            "total_s": 148.451,
+            "request_sha256": "26f08fd8364b5c4bce718617fe2aed42761d0a794e068b00532694adef78b3be"
+          },
+          "actual_engine_rows": 117488,
+          "request_placement": {
+            "engine_rows": 117488,
+            "position": 0,
+            "prefix": {
+              "KV": "active-logical-prefix",
+              "transient_bytes": 325580672,
+              "source": "resident-Mode0",
+              "score_pitch": 33,
+              "operand_layout": "row-major",
+              "softmax": "parallel-exp-ascending-sum"
+            },
+            "mode": {
+              "requested_mode": 10,
+              "effective_mode": 10,
+              "maximum_rows": 81920,
+              "mixed_fp16_bytes": 0
+            },
+            "bank": {
+              "requested_slots": 384,
+              "effective_slots": 384,
+              "staged": 1,
+              "host_slab_bytes": 1363148800,
+              "device_bytes": 1022361600,
+              "residual_gpu_rows": 117488,
+              "allocation_limit_bytes": 10132807680,
+              "general_map": "private_scratch_never_published"
+            },
+            "placement": {
+              "tokens": 117488,
+              "chunk": 8192,
+              "residual_dtype": "bf16",
+              "residual_element_bytes": 2,
+              "residual_total": 2406154240,
+              "residual_gpu_rows": 117488,
+              "residual_gpu": 2406154240,
+              "residual_host": 0,
+              "residual_staging": 0,
+              "layer_cache": 1022361600
+            }
+          },
+          "observer": {
+            "coarse": {
+              "wrapper_ms": 144892.0,
+              "aggregate": {
+                "layer": -1,
+                "queue_ms": [
+                  715.352,
+                  60223.2,
+                  25178.2,
+                  40741.9,
+                  0.876461,
+                  0.0
+                ],
+                "samples": [
+                  705,
+                  180,
+                  540,
+                  96,
+                  48,
+                  0
+                ],
+                "wall_ms": [
+                  0.948928,
+                  2.15466,
+                  2.58151,
+                  712.359,
+                  0.0,
+                  71.3884,
+                  0.0,
+                  0.0,
+                  0.0,
+                  0.0,
+                  0.0,
+                  25.7718
+                ],
+                "upload_bytes": 0,
+                "input_bytes_host_device": [
+                  0,
+                  113089249280
+                ],
+                "store_bytes_host_device": [
+                  0,
+                  0
+                ],
+                "input_queue_host_device_ms": [
+                  0.0,
+                  715.352
+                ],
+                "store_queue_host_device_ms": [
+                  0.0,
+                  0.0
+                ]
+              }
+            },
+            "qsa": {
+              "wrapper_ms": 144892.0,
+              "active_layers": [
+                3,
+                7,
+                11,
+                15,
+                19,
+                23,
+                27,
+                31,
+                35,
+                39,
+                43,
+                47
+              ],
+              "aggregate": {
+                "layer": -1,
+                "queue_ms": [
+                  3273.4,
+                  0.809681,
+                  789.827,
+                  9.36593,
+                  7722.63,
+                  46544.4,
+                  1876.07
+                ],
+                "samples": [
+                  180,
+                  180,
+                  180,
+                  180,
+                  180,
+                  180,
+                  180
+                ],
+                "host_wall_ms": [
+                  257.344,
+                  4.70489,
+                  22.8017,
+                  13.7094,
+                  973.372,
+                  661.259,
+                  53.5149
+                ],
+                "expected_chunks": 180,
+                "cap": 2051,
+                "expected_queries": 1409856,
+                "dispatch_chunks": 180,
+                "query_total": 1409856,
+                "matrix_chunks": 180,
+                "fallback_chunks": 0,
+                "matrix_queries": 1409856,
+                "fallback_queries": 0,
+                "staged_chunks": 0
+              }
+            }
+          },
+          "validation": {
+            "pid": 2553725,
+            "loader": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_loader.so.0.12.0",
+            "threads_before": 1,
+            "preinit": 37,
+            "config_enabled": true,
+            "first_init": true,
+            "dispatch_result": 46,
+            "output_untouched": true,
+            "retained_reference_until_exit": true,
+            "runtime_teardown_qualified": false
+          },
+          "native_exit_code": 0,
+          "observer_influence": {
+            "clean_first_median_ms": 145518.4,
+            "clean_first_range_ms": [
+              145094.3,
+              145881.9
+            ],
+            "profiled_first_time_ratio": 1.0072794918030985,
+            "prospective_bounds": [
+              0.95,
+              1.05
+            ],
+            "sanity_screen_passed": true,
+            "causal_overhead_measured": false
+          },
+          "clean_speed_qualified": false,
+          "inference_adopted": false,
+          "decode_qualified": false,
+          "physical262144_qualified": false,
+          "ownership_closed": true,
+          "fresh_faults": [],
+          "boot_unchanged": true,
+          "driver_after": {
+            "pci": "/sys/bus/pci/devices/0000:05:00.0",
+            "driver": "xe",
+            "vendor": "0x8086",
+            "device": "0xe20c",
+            "kernel": "7.0.0-38-generic",
+            "devcoredump": false
+          }
         }
       ],
       "request_sha256": "26f08fd8364b5c4bce718617fe2aed42761d0a794e068b00532694adef78b3be",
@@ -9658,10 +9871,21 @@
         "next": "If QSA composite increment cannot account for the clean loss,stop pair-kernel work. If implicated,only a separately admitted representative real-data Page4 probe can select a tile/union/dispatch change.",
         "retention": "Keep aggregates,coverage,individual request sample and exact identity. Retire raw per-layer output after verification. Candidate build retained solely through this imminent diagnostic;review retirement at closure."
       },
-      "complete": false,
-      "passed": false,
+      "complete": true,
+      "passed": true,
       "active": false,
-      "ownership_closed": true
+      "ownership_closed": true,
+      "attribution_influence_screen_passed": true
+    },
+    "bounded_attribution_decision": {
+      "stage": "closed",
+      "source_commit": "08d4fd165876deabec7fc9a9ab599032c5aa5201",
+      "whole_first_long_delta_ms": 16371.400000000009,
+      "QSA_attention_composite_interval_delta_ms": 15843.400000000001,
+      "finding": "QSA composite30.7010s(original)to46.5444s(pair)changes by15.8434s;whole first-long130.2063to146.5777s changes16.3714s. Other QSA sections,GDN25.1741to25.1782s andMoE40.6923to40.7419s remain near each other. This localizes a material cost to the pair composite,not an individual kernel or a historical regression.",
+      "limits": "One observer request/arm,first-use. Both same-arm influence sanity screens pass;not causal observer overhead,exclusive GPU service,physical traffic or hardware saturation. Do not subtract overlapping intervals or infer clean speed from these samples.",
+      "decision": "Keep selected6e40;pair remains rejected by the independent24request clean screen. End this bounded comparison. Delegate any further detailed pair-mechanism investigation to Luna;Main chooses a new measured-path tuning candidate.",
+      "next_candidate": "Review native per-query12head geometry versus16matrix rows and whether a supported4-row tail can remove padded matrix work without changing decode,storage or accumulation. Capability,source/numeric and separate performance gates required;not implemented/adopted."
     }
   }
 }

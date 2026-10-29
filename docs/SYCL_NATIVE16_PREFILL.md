@@ -1988,11 +1988,21 @@ the pair route remains rejected and original6e40 stays selected. The component's
 12.1percent gain did not transfer to actual Page4 model data. No speed sample
 was retried or excluded. Generation24does not qualify decode/task quality,
 agent sessions,handoff/RESTORE or physical full context. The next finite tuning
-discriminator uses the existing coarse+fine QSA observers for one matched
-first-long request per arm,with separately committed controls and plan. Its
-attention section combines pack,union and attention;queue spans include host
-gaps and are not exclusive GPU service. This imminent diagnostic is the sole
-remaining consumer of the extra pair build;review retirement when it closes.
+discriminator has now closed one matched first-long request per arm with the
+existing coarse+fine QSA observers. Source7791d3124corrects a controller-only
+acknowledgement omission;the earlier plan remains failed in Git. All12CPU
+controls and the fresh v2 source/model/provider/owner/fault/coverage gates pass.
+Observer-time ratios to same-arm clean first-use medians are1.004288and1.007279,
+inside the prospective[0.95,1.05]sanity screen;these are not causal overhead.
+The attention composite grows30.7010to46.5444seconds,while whole first-long
+prefill grows130.2063to146.5777seconds. GDN25.1741to25.1782andMoE40.6923to40.7419
+stay near each other. This localizes the material new cost to QSA preparation,
+union and attention together;queue spans include host gaps,not exclusive GPU
+service or hardware saturation. No more Main regression archaeology follows.
+The bounded pair comparison is finished;its extra build has no new GPU consumer
+and must retire after exact source/recipe recovery. The next prospective tuning
+candidate examines the selected per-query12heads versus16matrix rows,subject
+to actual supported matrix shapes and independent correctness/performance gates.
 See`qsa_pair_model.clean_prefill_comparison`and`qsa_pair_proposal`in the
 [current service decision](../bench/results/2026-10-15-pr6-recovery-audit/fused-moe-service-current.json).
 
