@@ -15761,7 +15761,7 @@
       "source": "Pinned installed zet_api.h"
     },
     "next_local_gate": {
-      "stage": "source_contract_reviewed_execution_not_prepared",
+      "stage": "direct_C_known_work_passed_query_pool_refused_before_collection",
       "owner": "Main",
       "group": {
         "name": "ComputeBasic",
@@ -15803,11 +15803,12 @@
         "region": "Host/device initialization and readback outside query. One regular compute queue;BEGIN,optional kernel,END,finite submit/sync,raw read/calculation with preserved metric properties.",
         "cleanup": "After confirmed completion:destroy query before pool,deactivate group when unused,then remaining list/kernel/module/USM/queue/context owners. Retain resources on uncertain drain;no reset or automatic retry.",
         "outcome_limit": "No counter-collection qualification without valid raw/calculated rows. A refusal does not stop independent prefill tuning or authorize system changes."
-      }
+      },
+      "execution_reference": "metric_query"
     }
   },
   "metric_query": {
-    "stage": "built",
+    "stage": "closed",
     "source_commit": "c9a93eb9520a185ab98a94081b10f80761291140",
     "sources": {
       "bench/sycl/metric_query.c": "4311371bea8f22af8f2a7aabc99f2f422a6e6a9f993aaa70a9fa98966099b850",
@@ -15973,6 +15974,94 @@
         "sha256": "95dcdaa088ec3c75d3d611a428ff6242fe5771cfc6281f40b0303eac0ce41608",
         "bytes": 1416
       }
-    }
+    },
+    "samples": [
+      {
+        "mode": "work-off",
+        "passed": true,
+        "exit_code": 0,
+        "errors": [],
+        "refusals": [],
+        "gates": [
+          "before-runtime",
+          "runtime-ready",
+          "before-work",
+          "before-exit"
+        ],
+        "process": {
+          "pid": 11685,
+          "elapsed_seconds": 2.849712162045762,
+          "peak_session_rss_bytes": 77340672,
+          "observation_complete": true,
+          "direct_child_reaped": true,
+          "session_empty": true,
+          "error": null
+        },
+        "values": [],
+        "collection": [],
+        "complete": [
+          {
+            "kind": "complete",
+            "work_checked": true,
+            "query_requested": false,
+            "cleanup_complete": true,
+            "status": 0
+          }
+        ]
+      },
+      {
+        "mode": "work-query",
+        "passed": false,
+        "exit_code": 10,
+        "errors": [
+          {
+            "kind": "api",
+            "name": "zetMetricQueryPoolCreate(context, device, group, &pd, &pool)",
+            "result": 2013265924,
+            "result_name": "ZE_RESULT_ERROR_INVALID_ARGUMENT"
+          }
+        ],
+        "refusals": [],
+        "gates": [
+          "before-runtime",
+          "runtime-ready",
+          "before-work",
+          "before-exit"
+        ],
+        "process": {
+          "pid": 11780,
+          "elapsed_seconds": 2.6292961959261447,
+          "peak_session_rss_bytes": 45490176,
+          "observation_complete": true,
+          "direct_child_reaped": true,
+          "session_empty": true,
+          "error": null
+        },
+        "values": [],
+        "collection": [],
+        "complete": [
+          {
+            "kind": "complete",
+            "work_checked": false,
+            "query_requested": true,
+            "cleanup_complete": true,
+            "status": 10
+          }
+        ]
+      }
+    ],
+    "fresh_faults": [],
+    "driver_after": {
+      "pci": "/sys/bus/pci/devices/0000:05:00.0",
+      "driver": "xe",
+      "vendor": "0x8086",
+      "device": "0xe20c",
+      "kernel": "7.0.0-38-generic",
+      "devcoredump": false
+    },
+    "observation_complete": true,
+    "outcome": "known_integer_work_passed_query_pool_invalid_argument",
+    "decision": "Collection remains unqualified:work-off exact payload/guards and cleanup passed;work-query failed at zetMetricQueryPoolCreate before BEGIN/work/END. Group activation and deactivation succeeded. Empty-query omitted by the frozen stop-on-refusal rule. No fresh GPU fault,all owners closed. This is not evidence of insufficient permissions or a measured utilization/bandwidth ceiling.",
+    "next_action": "Source/API review of the exact pool descriptor and installed provider path;new committed plan for any changed arm. Continue independent tuning;do not retry this immutable v1 arm or change system permissions."
   }
 }
