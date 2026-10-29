@@ -9157,7 +9157,7 @@
       "scope": "Two qualified comparison generations across worktrees;14older unresolved provenance holds remain distinct,not a cleanup claim."
     },
     "bounded_qsa_attribution": {
-      "stage": "prepared",
+      "stage": "failed",
       "source_commit": "7f76f4da1f85c4d5fb6e5259c6d0e28d5947b05d",
       "runtime_sha256": "09ad358e12f6ef58bfc0a978519927863f3d09949a033a1e224db95997647d97",
       "boot": "cfda0b6a-7c13-4fe2-bdf5-8f9202770840",
@@ -9379,7 +9379,220 @@
           "environment_sha256": "ad373f2f01146da7ab7927af91e7d077640c60fb1ac0d76fc934a2b4a4522cfb"
         }
       ],
-      "processes": [],
+      "processes": [
+        {
+          "index": 0,
+          "arm": "original",
+          "complete": true,
+          "passed": false,
+          "sample": {
+            "actual_prompt_tokens": 117489,
+            "actual_read_tokens": 117489,
+            "actual_reused_tokens": 0,
+            "generated_tokens": 24,
+            "prompt_ms": 133745.5,
+            "prompt_tps": 878.5,
+            "ttft_s": 133.968,
+            "total_s": 135.522,
+            "request_sha256": "26f08fd8364b5c4bce718617fe2aed42761d0a794e068b00532694adef78b3be"
+          },
+          "actual_engine_rows": 117488,
+          "request_placement": {
+            "engine_rows": 117488,
+            "position": 0,
+            "prefix": {
+              "KV": "active-logical-prefix",
+              "transient_bytes": 241555328,
+              "source": "resident-Mode0",
+              "score_pitch": 33,
+              "operand_layout": "row-major",
+              "softmax": "parallel-exp-ascending-sum"
+            },
+            "mode": {
+              "requested_mode": 10,
+              "effective_mode": 10,
+              "maximum_rows": 81920,
+              "mixed_fp16_bytes": 0
+            },
+            "bank": {
+              "requested_slots": 384,
+              "effective_slots": 384,
+              "staged": 1,
+              "host_slab_bytes": 1363148800,
+              "device_bytes": 1022361600,
+              "residual_gpu_rows": 117488,
+              "allocation_limit_bytes": 10132807680,
+              "general_map": "private_scratch_never_published"
+            },
+            "placement": {
+              "tokens": 117488,
+              "chunk": 8192,
+              "residual_dtype": "bf16",
+              "residual_element_bytes": 2,
+              "residual_total": 2406154240,
+              "residual_gpu_rows": 117488,
+              "residual_gpu": 2406154240,
+              "residual_host": 0,
+              "residual_staging": 0,
+              "layer_cache": 1022361600
+            }
+          },
+          "observer": {
+            "coarse": {
+              "wrapper_ms": 132117.0,
+              "aggregate": {
+                "layer": -1,
+                "queue_ms": [
+                  716.177,
+                  44408.0,
+                  25176.3,
+                  40552.3,
+                  0.646873,
+                  0.0
+                ],
+                "samples": [
+                  705,
+                  180,
+                  540,
+                  96,
+                  48,
+                  0
+                ],
+                "wall_ms": [
+                  0.758665,
+                  2.18944,
+                  1.91547,
+                  754.312,
+                  0.0,
+                  70.7662,
+                  0.0,
+                  0.0,
+                  0.0,
+                  0.0,
+                  0.0,
+                  26.1195
+                ],
+                "upload_bytes": 0,
+                "input_bytes_host_device": [
+                  0,
+                  113089249280
+                ],
+                "store_bytes_host_device": [
+                  0,
+                  0
+                ],
+                "input_queue_host_device_ms": [
+                  0.0,
+                  716.177
+                ],
+                "store_queue_host_device_ms": [
+                  0.0,
+                  0.0
+                ]
+              }
+            },
+            "qsa": {
+              "wrapper_ms": 132117.0,
+              "active_layers": [
+                3,
+                7,
+                11,
+                15,
+                19,
+                23,
+                27,
+                31,
+                35,
+                39,
+                43,
+                47
+              ],
+              "aggregate": {
+                "layer": -1,
+                "queue_ms": [
+                  3260.47,
+                  0.815516,
+                  789.903,
+                  9.38905,
+                  7702.73,
+                  30758.6,
+                  1879.38
+                ],
+                "samples": [
+                  180,
+                  180,
+                  180,
+                  180,
+                  180,
+                  180,
+                  180
+                ],
+                "host_wall_ms": [
+                  242.197,
+                  4.80346,
+                  19.7443,
+                  14.6641,
+                  1004.69,
+                  3703.88,
+                  58.7469
+                ],
+                "expected_chunks": 180,
+                "cap": 2051,
+                "expected_queries": 1409856,
+                "dispatch_chunks": 180,
+                "query_total": 1409856,
+                "matrix_chunks": 180,
+                "fallback_chunks": 0,
+                "matrix_queries": 1409856,
+                "fallback_queries": 0,
+                "staged_chunks": 0
+              }
+            }
+          },
+          "validation": {
+            "pid": 2493337,
+            "loader": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_loader.so.0.12.0",
+            "threads_before": 1,
+            "preinit": 37,
+            "config_enabled": true,
+            "first_init": true,
+            "dispatch_result": 46,
+            "output_untouched": true,
+            "retained_reference_until_exit": true,
+            "runtime_teardown_qualified": false
+          },
+          "native_exit_code": 0,
+          "observer_influence": {
+            "clean_first_median_ms": 129650.4,
+            "clean_first_range_ms": [
+              129539.9,
+              129690.8
+            ],
+            "profiled_first_time_ratio": 1.0315857104953012,
+            "prospective_bounds": [
+              0.95,
+              1.05
+            ],
+            "sanity_screen_passed": true,
+            "causal_overhead_measured": false
+          },
+          "clean_speed_qualified": false,
+          "inference_adopted": false,
+          "decode_qualified": false,
+          "physical262144_qualified": false,
+          "ownership_closed": true,
+          "fresh_faults": [],
+          "boot_unchanged": true,
+          "driver_after": {
+            "pci": "/sys/bus/pci/devices/0000:05:00.0",
+            "driver": "xe",
+            "vendor": "0x8086",
+            "device": "0xe20c",
+            "kernel": "7.0.0-38-generic",
+            "devcoredump": false
+          }
+        }
+      ],
       "request_sha256": "26f08fd8364b5c4bce718617fe2aed42761d0a794e068b00532694adef78b3be",
       "expected_engine_rows": 117488,
       "clean_comparison_decision": {
@@ -9416,6 +9629,14 @@
       "passed": false,
       "active": false,
       "ownership_closed": true
+    },
+    "observer_controller_failure": {
+      "source_commit": "cc1179fc3",
+      "plan_commit": "bafb1656a",
+      "original_status": "failed;not relabelled",
+      "mechanism": "run() recorded complete=True after all request/profile/source/provider/placement checks,but omitted host_probe_accepted=True. ur_validation.finish() line109 correctly requires that explicit acknowledgement,so final passed=False despite normal closure,quiet validation and no fresh fault.",
+      "scope": "Controller bookkeeping defect;not a GPU failure,numerical failure or speed sample. Failed diagnostic remains unqualified. Stop its original ordered plan;correct the caller and commit a fresh v2 plan before any further device execution.",
+      "retention": "Keep compact failure/proof and original source in Git. Rawv1 needed only until the corrected controller first closes;then retire it. Candidate retained solely for the finite corrected attribution."
     }
   }
 }

@@ -436,6 +436,16 @@ held-out errors42.96%,52.30% and51.47%;none is adopted as a global formula.
 Only two short-route lengths are available,insufficient to validate their own
 time model. Higher R-squared alone would hide that problem.
 
+The later clean comparison supplies a local independent-process check of the
+selected path at117489actual read tokens:subsequent-three medians are120.5382,
+120.4567and120.7068seconds,with corresponding client TTFT medians120.696,
+120.613and120.867seconds. The existing formula predicts119.4083seconds,
+0.870..1.076percent below those observations. This is only a six-token extension
+near the old largest length,not another independent held-out length or a refit.
+At this input size,1000tok/s needs117.489seconds:the current process medians
+need2.968..3.218seconds removed. Keep the original multi-length curve and its
+broader held-out error;do not fit rejected pair samples into the selected path.
+
 The next pair-prefill sweep will also retain source-grounded features. Let`n`
 be actual logged engine rows,`p`the starting position,`c_k`rows consumed before
 chunk`k`,`T_k`its actual length,and`P`the page size. The page-rounded packing
