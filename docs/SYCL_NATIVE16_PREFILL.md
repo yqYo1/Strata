@@ -265,11 +265,23 @@ predeclared1percent gain;some per-process cases also increase slightly. Static
 IR simplification is not a useful throughput gain here. No model trial or
 adoption follows,and Main closes this candidate without more failure forensics.
 
-One independent Orca Luna decision-support task now audits framework-compatible
-parallel normalizer sums against pinned SGLang/vLLM contracts. It differs from
-the prior order-preserving survey:the user accepts validated framework FP32
-reduction arithmetic rather than requiring ascending llama.cpp sums. It is
-source research only;no numerical,performance or model adoption follows.
+The next candidate is only the32-term normalizer fold:use a parallel FP32
+subgroup sum while keeping BF16probabilities,FP32state,PVorder and all other
+math unchanged. Orca Luna source research and native Luna-max curation accept
+this component experiment against pinned SGLang/vLLM reduction contracts;this
+does not require ascending llama.cpp additions or identical free-running text.
+
+The independent prospective host oracle at359a74282passes seven checks. It
+uses exact dyadic operands and outward FP32bounds for each tile sum and fused
+online update,including subnormals and values lost by ordinary binary64 sums.
+The conservative candidate depth is16only after proving16materialized lane
+pairs;depth5requires actual balanced-tree evidence. These are operand-specific
+mathematical component bounds,not an empirical tensor/task degradation margin.
+Next,re-pin the live selected source/cap and capture commonp,alpha,BF16PVbits,
+FP32accumulator and pre-cast outputs. Target arithmetic/denormal modes,lane
+mapping,fullQSA/task/performance and physical-context/handoff gates remain
+unqualified. The rejected extra binaries and CPU IRgeneration are retired;
+selected6e40and its twelve same-build fixtures remain.
 
 ## Measured performance and rejected comparisons
 
