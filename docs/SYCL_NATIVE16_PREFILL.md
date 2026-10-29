@@ -588,6 +588,18 @@ failure;window/chunk and GEMM-shape dependence need characterization before
 using a single line as a tuning predictor. Evaluate the next admitted route at
 an unfit length before generalizing its gain across contexts.
 
+A posthoc check of the five long-length medians gives
+`T_seconds(n)=14.08822+59.30688*(n/65536)`,but its maximum leave-one-length-out
+error is6.127%. Quadratic and`n log n`alternatives worsen that to16.158%and
+9.963%. No new predictor is selected. Adjacent slopes with the new point are
+0.920277,1.058373,0.369183and0.994131ms per added token. Token count and
+8192-row chunk count correlate0.99845in these points;their costs cannot be
+reliably separated by adding another fitted coefficient. Only one old length
+has two MoE windows,so leaving it out also makes a window-step coefficient
+unidentifiable. The new point is from another process;cohort effects and
+data-dependent shape mix remain unresolved. These observations guide the next
+measurements rather than identifying a hardware bottleneck by themselves.
+
 A source-grounded nonlinear hypothesis was also checked against these same four
 long medians. With fresh engine rows`n-1`,Page4and chunk8192,the prospective
 packing feature above takes530880,1454112,5365008and11731728logical rows.

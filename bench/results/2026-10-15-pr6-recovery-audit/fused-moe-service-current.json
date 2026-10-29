@@ -10582,6 +10582,36 @@
       "manifest_sha256": "4935efc90a7cc0fb1caf03cacc8194326fdee84b3858e9d44a1e3e1bcf37a1cf",
       "shared_deletion_summary": "qsa_parallel_normalizer.retirement",
       "selected_and_twelve_fixtures_preserved": true
+    },
+    "posthoc_model_check": {
+      "implementation": "tools/prefill_scaling_bench.py:approximation_models",
+      "implementation_sha256": "9414d71ed5624ed12d15bd175ff9626cd11d1027556f85484157cf3c729b340a",
+      "old_input_reference": "prefill-runtime-comparison-current.json.length_characterization.outcome.requests",
+      "new_input_reference": "selected_length_holdout.measurement.outcome.samples[1:4]",
+      "selection": "Median real request per long length;4oldcohort lengths and1newindependentprocess length. Posthocdescriptivecheck,not an unfittedprediction/adoptiontest.",
+      "actual_read_tokens": [
+        19665,
+        39254,
+        65345,
+        78445,
+        117483
+      ],
+      "long5_affine_seconds": {
+        "a": 14.088219113212151,
+        "b_per65536tokens": 59.30687566267315,
+        "maximum_leave_one_length_out_relative_error": 0.061266902664028546
+      },
+      "quadratic_maximum_leave_one_length_out_relative_error": 0.16157549399475282,
+      "nlogn_maximum_leave_one_length_out_relative_error": 0.0996267180532641,
+      "adjacent_ms_per_added_token": [
+        0.9202766858951452,
+        1.0583726189107359,
+        0.36918320610686933,
+        0.9941313591884833
+      ],
+      "n_vs_ceil_engine_rows_over8192_correlation": 0.9984534755248391,
+      "window_feature_identifiability": "Only117483oldmedianhas2windows;leavingitout makes intercept and one-window term identical,so a third window-step coefficient cannot be independently crossvalidated. New65Kcohort has a different process;cohort effects and unknownshapecomposition remain confounded.",
+      "decision": "No new predictorselected. Affine remains coarse;extra polynomial parameters worsen heldout errors. Need source-linked boundary/shape measurements before treating a single1percent gain at one length as general. No physicalfixedcost,per-tokenconstant,thermalorhardwarebottleneck attribution from this refit."
     }
   }
 }
