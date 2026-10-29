@@ -1874,14 +1874,32 @@ contains no PCIe copy;physical VRAM traffic,arithmetic saturation and the
 whole-model limiter remain unmeasured. The existing7.689s production selection
 queue interval includes scoring and host gaps,so it is not selector GPU service.
 
-Main next costs exact unions across2/4neighboring queries,with independent
-per-query masks/softmax. Existing reviewed sparse-format/interquery reports
-already cover the mechanism;no duplicate literature survey is needed. The
-committed CPU-only census uses the initialized53MB layer0-tail fixture only,
-conserves every incidence,and records ideal logical read savings,masked/padded
-matrix work and ID/mask bytes. No kernel,all-layer coverage,physical traffic or
-speed claim follows from that one fixture. Separate model/decode/full-context
-qualification remains mandatory for a later implementation.
+The CPU-only union census`5e581f6e8`conserves13,313,041selected incidences in
+the initialized53MB layer0-tail fixture. Exact two-query unions reduce ideal
+logical K/V reads23.304percent,with1.139801times the prospective padded matrix
+work. Four queries save39.399percent but require1.798209times that work,so the
+first implementation uses two. These are logical costs,not physical traffic,
+all-layer coverage or speed predictions.
+
+Main-authored source`75aa272bb`adds a GPU sorted union and a separate two-query
+BF16 consumer,with independent query masks and online softmax. WG192/SG16
+packs24heads into three8-row matrix blocks and declares21856local bytes.
+Typed K/V4staging and ascending FP32 tile sums remain;union tile boundaries
+change BF16 probability rounding. Bad packed rows stage zeros while only their
+member queries receive diagnostic NaNs,preventing nonmember0*NaN propagation.
+Independent Orca Luna and native Luna-max source review finds no algorithmic
+blocker under the explicit producer/packed-generation/lifetime contract.
+The clarified preflight explicitly caps live KV at262144;the existing validator
+limits query rows per call to65535. Neither is full-model context qualification.
+
+The frozen recipe`7fba0e539`,native/fixture/controller source`bef01aad1`,closes
+nine CPU compile/link commands and verifies699actual compiler inputs. No GPU
+execution or performance result follows from compilation. Native properties,
+bounded traced set/tensor oracles,guards,malformed metadata and physically backed
+final-address cases precede the actual-ID dependency-path comparison. There is
+no production caller or model dispatch,and selected6e40/decode stay unchanged.
+See`qsa_pair_proposal`in the
+[current service decision](../bench/results/2026-10-15-pr6-recovery-audit/fused-moe-service-current.json).
 
 After exact source/recipe recovery,the closed SG32generation retires264files
 (346618850B),along with consumed CPU/research output and unused selector
@@ -1891,9 +1909,9 @@ and immediate53MBtwo-query comparison input remain.
 
 ## Attribution limits and outstanding gates
 
-Any necessary detailed follow-up on the agent-turn decline stays with Luna. Main returns
-to the batched radix selector's implementation and component/model performance
-gates after the closed candidate failed preservation. Keep phase-preservation and
+Any necessary detailed follow-up on the agent-turn decline stays with Luna. Main
+implements and measures distinct prefill candidates after the rejected selector.
+Keep phase-preservation and
 adoption checks,plus input-length/time approximations and route-boundary
 characterization;further root-cause detail is not Main's next tuning task.
 
