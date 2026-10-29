@@ -15759,6 +15759,51 @@
       "EVENT_BASED": 1,
       "TIME_BASED": 2,
       "source": "Pinned installed zet_api.h"
+    },
+    "next_local_gate": {
+      "stage": "source_contract_reviewed_execution_not_prepared",
+      "owner": "Main",
+      "group": {
+        "name": "ComputeBasic",
+        "sampling_flag": 1,
+        "domain": 3,
+        "observed_metric_count": 83,
+        "select": "unique runtime properties;not index alone"
+      },
+      "scope": "First direct-C query around exact integer work,plus separate empty-query diagnostic;context/activation/pool success alone is insufficient.",
+      "required_evidence": [
+        "Committed exact C/kernel/controller/source inputs,compiler/link/module recipe andimmutable pre-exec environment before build/run.",
+        "Bounded owned execution,API statuses,completed BEGIN/work/END and queue drain,raw read and calculation with metric order/count/types/uncertainty.",
+        "Exact integer result/allocation guards,provider/PCI identity,reverse query/pool/group/context cleanup and no fresh fault.",
+        "No process attribution,physicalPCIe,peakFLOPs or saturation claim without independent semantic/coverage evidence."
+      ],
+      "research_review_sha256": "76c7097db385c6e67641b9356f0c762ed237afd03ba650bfd2dbc9c9bc354cf7",
+      "prepared_SYCL_control": {
+        "path": "bench/sycl/metric_known_work.cpp",
+        "source_commit": "938fb065a",
+        "built": false,
+        "executed": false,
+        "consumer": "Next bounded SYCL/PTI interoperability control if direct-C query succeeds;review and retire if that route is rejected at the direct-C result."
+      },
+      "implementation_design": {
+        "status": "prospective_not_a_frozen_execution_plan",
+        "native_work": "Independently author an OpenCL-C one-pointer integer kernel;compile with pinned clang22 to bitcode,then llvm-spirv to a module for a direct LevelZero C context. No borrowed SYCL queue/context in this first gate.",
+        "tool_presence_verified": "Pinned LLVM SDK contains clang and llvm-spirv;translator help exposes --spirv-max-version. Exact flags/dependencies/module hash still require a committed build plan.",
+        "shape": {
+          "elements": 65536,
+          "guard_elements_each_side": 64,
+          "input": "i%1024",
+          "output": "input*3+7;guard values unchanged"
+        },
+        "arms": [
+          "work without query",
+          "same work with PERFORMANCE query",
+          "empty BEGIN/END query without work"
+        ],
+        "region": "Host/device initialization and readback outside query. One regular compute queue;BEGIN,optional kernel,END,finite submit/sync,raw read/calculation with preserved metric properties.",
+        "cleanup": "After confirmed completion:destroy query before pool,deactivate group when unused,then remaining list/kernel/module/USM/queue/context owners. Retain resources on uncertain drain;no reset or automatic retry.",
+        "outcome_limit": "No counter-collection qualification without valid raw/calculated rows. A refusal does not stop independent prefill tuning or authorize system changes."
+      }
     }
   }
 }

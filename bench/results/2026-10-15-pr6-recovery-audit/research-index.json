@@ -17073,7 +17073,7 @@
   },
   "bmg_metric_collection_contract_20261030": {
     "classification": "decision_support",
-    "status": "awaiting_native_review",
+    "status": "reviewed_actionable_with_scope_corrections",
     "schedulable_now": false,
     "prerequisites": {
       "enumeration_commit": "31c6ce91e",
@@ -17086,10 +17086,6 @@
     "source_manifest": {
       "path": "/home/yayoi/orca/workspaces/Strata/sycl/.cache/research/2026-10-30/bmg_metric_collection_contract_20261030.source.json",
       "sha256": "b7ddc32bdea578531ac3b4a4d39b137f7b406c1e929715fffc6ee47949e4ebf6"
-    },
-    "spec": {
-      "path": "/home/yayoi/orca/workspaces/Strata/sycl/.cache/research/2026-10-30/bmg_metric_collection_contract_20261030.spec.txt",
-      "sha256": "61c1341cfafadd51fbbb7982fb73c4b640d315f0850cd00d05f5df5019262d90"
     },
     "report": ".cache/research/2026-10-30/bmg_metric_collection_contract_20261030.md",
     "report_budget_bytes": 12288,
@@ -17104,7 +17100,7 @@
       "original_manifest_sha256": "6caa9c860a611aba0162a6e159091b0470b92a021d61a8281ab75216a3255b05",
       "reason": "Resolve Task flag2 shorthand against actual installed header:EVENT_BASED=1,TIME_BASED=2;use measured ComputeBasic group3 for event queries. No native measurement/result changed."
     },
-    "next_action": "Native report curation pending;Main reads only its short digest,then commits the concrete local query/known-work gate. No actual counter collection yet.",
+    "next_action": "Main implements a bounded direct-C BEGIN/work/END/raw-read/calculation gate with reverse cleanup before PTI/SYCL query interoperability. No actual counter values collected.",
     "dispatch": "ctx_e529481a0b2a",
     "worker_start_accepted": true,
     "turn_started": true,
@@ -17119,6 +17115,49 @@
     "release_state": "released",
     "delivery_acknowledged": "delivery_dba9548db2b1",
     "native_review_task": "/root/curate_bmg_metric_collection_20261030",
-    "native_review_model": "gpt-6-luna max"
+    "native_review_model": "gpt-6-luna max",
+    "native_review": {
+      "path": ".cache/research/2026-10-30/bmg_metric_collection_contract_20261030.review.json",
+      "sha256": "76c7097db385c6e67641b9356f0c762ed237afd03ba650bfd2dbc9c9bc354cf7",
+      "bytes": 5976,
+      "model": "native Codex gpt-6-luna max"
+    },
+    "digest": [
+      "ComputeBasic event flag1/domain3/83metrics;access-only admission is not BEGIN/work/END,completion,raw-read/calculation qualification.",
+      "Counter denominator/context filtering remain unresolved;no peak-FLOPs,physicalPCIe or saturation claim. PTI-q requires its full transitive collector/recipe/binary qualification.",
+      "First use one bounded direct-C known-work query and an empty-query diagnostic;copy-only is a separate arm,not global idle."
+    ],
+    "prerequisite_reconciliation": {
+      "clean_A_B_closed": true,
+      "evidence_commit": "162006d46",
+      "enumeration_passed_commit": "31c6ce91e",
+      "note": "The review retained an A/B-closure condition from earlier metadata. That condition is already satisfied;the missing items are the new exact query source,build/run recipe and committed criteria."
+    },
+    "next_research_scopes": [
+      {
+        "scope": "PTI-q transitive collector and interoperability",
+        "schedulable_now": false,
+        "prerequisites": [
+          "Successful bounded direct-C query",
+          "Pinned full PTI collector/recipe/binary"
+        ]
+      },
+      {
+        "scope": "Provider semantics for a resource-decision-changing counter",
+        "schedulable_now": false,
+        "prerequisites": [
+          "Qualified counter samples with uncertainty/context evidence",
+          "Finite metric-specific question"
+        ]
+      }
+    ],
+    "transaction_retirement": {
+      "status": "deleted_verified",
+      "files": 3,
+      "bytes": 8707,
+      "manifest": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/metric-collection-task-retired-20261030.jsonl",
+      "manifest_sha256": "90dc1ea821039e00e3bb20222fc988e802e87e6861a31ef484056783d66907f7",
+      "ownership_archive_commit": "0113fd947"
+    }
   }
 }
