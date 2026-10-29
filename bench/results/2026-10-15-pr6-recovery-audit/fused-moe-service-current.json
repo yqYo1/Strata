@@ -17681,7 +17681,7 @@
     "mechanism": "Precompute split accumulator row pointers once per workgroup row; preserve BF16 rounding, FP32 FMA/expert order and all bounds. SLM128x(8+4)bytes versus original128x(4+4); compiler hoisting or added pointer-load cost may erase the gain.",
     "scope": "Independent component API only; no production dispatcher, decode or engine binary change. Compare actual original split kernel against row-address kernel and GEMM-only control before selecting an optimization.",
     "build": {
-      "stage": "prepared",
+      "stage": "built-not-executed",
       "source_commit": "fcca1e850dd0f236d9ac3d3bc88b6de50ac8c368",
       "sdk": {
         "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/unitrace-warmed-graph-window-v1/compiler-inputs.json",
@@ -17859,7 +17859,7 @@
       ],
       "active": false,
       "ownership_closed": true,
-      "passed": false,
+      "passed": true,
       "GPU_executed": false,
       "engine_built": false,
       "production_selected": false,
@@ -17874,6 +17874,25 @@
       "question": "Build only Down fixture with independent row-address epilogue, tiny/full correctness and resident comparison modes. No production hook, model engine or decode execution;original split kernels remain source-identical.",
       "criteria": "Committed source,tools,SDK8697/MKL/dependencies and generated77-byte ggml header;owned configure/build/dependency scan exit0. Zero uncovered compiler inputs;single fixture hash and imported link providers verified;selected13 artifacts preserved.",
       "retention": "One component generation for imminent tiny traced correctness and matched row-address/GEMM controls. Keep original6e40+12fixtures and split candidate3artifacts untouched;retire rejected experimental exports/builds and routine raw output after source recovery.",
+      "compiled_inputs": {
+        "files": 1384,
+        "manifest": {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/moe-down-row-address-v1/compiler-inputs.json",
+          "sha256": "f5231e1c4ffc6ea049d4a0d1c76e8ec22fdac7aec33d629d48db4e40e9679502"
+        },
+        "generated_sha256": {
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/moe-down-row-address-v1/build/ggml/src/ggml-version.h": "9e45eee8391971371922f51b66925184609125d467c444744599f680b78edc92"
+        },
+        "uncovered_files": 0,
+        "used_updated_system_headers": []
+      },
+      "fixtures": {
+        "sycl_moe_down_scatter_bench": {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/moe-down-row-address-v1/build/sycl_moe_down_scatter_bench",
+          "sha256": "5473625caf4c49f322382aea309c510b83faca333b8c953d274a17f5a2ebea88",
+          "bytes": 13713656
+        }
+      },
       "source_groups": [
         {
           "root": "/home/yayoi/orca/workspaces/Strata/sycl",
