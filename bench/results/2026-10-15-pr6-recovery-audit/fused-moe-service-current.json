@@ -15805,5 +15805,156 @@
         "outcome_limit": "No counter-collection qualification without valid raw/calculated rows. A refusal does not stop independent prefill tuning or authorize system changes."
       }
     }
+  },
+  "metric_query": {
+    "stage": "prepared",
+    "source_commit": "c9a93eb9520a185ab98a94081b10f80761291140",
+    "sources": {
+      "bench/sycl/metric_query.c": "4311371bea8f22af8f2a7aabc99f2f422a6e6a9f993aaa70a9fa98966099b850",
+      "bench/sycl/metric_integer.cl": "d4c329bb5e57509eee8bb36954a47f840927a7bfa8b5140983ce75ac7c9d02dd",
+      "tools/sycl/metric_query.py": "2e5ed4aa2d1ec98ec97b541a6c468ec975c4f009a4c5b4b3cfea35f7e7a8843f",
+      "bench/sycl/metric_capability.c": "492281c8d9eb7ab97b920f340bb811acdfe3a9f9ca8490412150af3f319089fc",
+      "tools/sycl/metric_capability.py": "81bfcd92540106d885dfb6b07164df656f195f95d83927ba3439f2fc75d9a878",
+      "tools/sycl/measurement_owner.py": "bddd0c5e5020e882ca3404679420faec11e820dabce2ed4c72ef82b4c9c0874a",
+      "tools/sycl/measurement_guards.py": "794e332c70aca0acadad4f26d0414548e023a02fd27b72ed78fc773674423ec8",
+      "tools/sycl/measurement_environment.json": "d4402591df50e80dc45a5ec9e4839c7a794888850b1473537b6f95179be5b03c"
+    },
+    "commands": [
+      [
+        "/usr/bin/x86_64-linux-gnu-gcc-13",
+        "-std=c11",
+        "-O2",
+        "-Wall",
+        "-Wextra",
+        "-Werror",
+        "-fPIE",
+        "-MD",
+        "-MF",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/metric-query-c-v1/actual-c.d",
+        "-MT",
+        "query",
+        "-c",
+        "/home/yayoi/orca/workspaces/Strata/sycl/bench/sycl/metric_query.c",
+        "-o",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/metric-query-c-v1/query.o"
+      ],
+      [
+        "/usr/bin/x86_64-linux-gnu-gcc-13",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/metric-query-c-v1/query.o",
+        "/usr/lib/x86_64-linux-gnu/libze_loader.so.1.32.0",
+        "-pie",
+        "-Wl,-z,relro,-z,now",
+        "-Wl,-t",
+        "-o",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/metric-query-c-v1/metric_query"
+      ],
+      [
+        "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin/clang-22",
+        "--no-default-config",
+        "-target",
+        "spir64",
+        "-x",
+        "cl",
+        "-cl-std=CL2.0",
+        "-Xclang",
+        "-finclude-default-header",
+        "-O2",
+        "-emit-llvm",
+        "-MD",
+        "-MF",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/metric-query-c-v1/actual-cl.d",
+        "-MT",
+        "module",
+        "-c",
+        "/home/yayoi/orca/workspaces/Strata/sycl/bench/sycl/metric_integer.cl",
+        "-o",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/metric-query-c-v1/work.bc"
+      ],
+      [
+        "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin/llvm-spirv",
+        "--spirv-max-version=1.2",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/metric-query-c-v1/work.bc",
+        "-o",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/metric-query-c-v1/work.spv"
+      ]
+    ],
+    "environments": [
+      {
+        "PATH": "/usr/bin:/bin",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8",
+        "TMPDIR": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/metric-query-c-v1/tmp",
+        "PYTHONDONTWRITEBYTECODE": "1"
+      },
+      {
+        "PATH": "/usr/bin:/bin",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8",
+        "TMPDIR": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/metric-query-c-v1/tmp",
+        "PYTHONDONTWRITEBYTECODE": "1",
+        "HOME": "/home/yayoi",
+        "XDG_CACHE_HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/metric-query-c-v1/cache",
+        "LD_LIBRARY_PATH": "/usr/lib/x86_64-linux-gnu:/usr/local/lib",
+        "LD_DEBUG": "libs,files",
+        "ZE_ENABLE_ALT_DRIVERS": "/usr/lib/x86_64-linux-gnu/libze_intel_gpu.so.1.17.39758",
+        "ZET_ENABLE_METRICS": "1",
+        "ZES_ENABLE_SYSMAN": "0",
+        "NEOReadDebugKeys": "1",
+        "EnableDirectSubmission": "0",
+        "UR_L0_V2_FORCE_DISABLE_COPY_OFFLOAD": "1",
+        "STRATA_SYCL_PREFILL_SAME_QUEUE": "1",
+        "STRATA_METRIC_QUERY_GATES": "1"
+      }
+    ],
+    "limits": {
+      "wall": 90,
+      "cpu": 60,
+      "rss_cap": 2147483648,
+      "text_cap": 8388608,
+      "file_cap": 8388608,
+      "total_cap": 33554432
+    },
+    "modes": [
+      "work-off",
+      "work-query",
+      "empty-query"
+    ],
+    "gates": [
+      "before-runtime",
+      "runtime-ready",
+      "before-work",
+      "before-exit"
+    ],
+    "driver": {
+      "pci": "/sys/bus/pci/devices/0000:05:00.0",
+      "driver": "xe",
+      "vendor": "0x8086",
+      "device": "0xe20c",
+      "kernel": "7.0.0-38-generic",
+      "devcoredump": false
+    },
+    "boot": "cfda0b6a-7c13-4fe2-bdf5-8f9202770840",
+    "dependencies": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/metric-query-c-v1/dependencies.json",
+      "sha256": "b40762f97495d2976e1fb460757e87d838f8a13769e08471eb45b860554a87ca",
+      "files": 130
+    },
+    "selection": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/metric-query-c-v1/selection.json",
+      "sha256": "59b1d44c465c2d4854ce164181a5da5e478fe3288f3e657eac3cbb8c19d6a7f0",
+      "count": 83,
+      "name": "ComputeBasic",
+      "sampling_flag": 1,
+      "domain": 3
+    },
+    "inventory_source_commit": "3dc4f2181ad8a1b600205aa6c622a857fd9bd08f",
+    "criteria": "Fresh work-off must pass before work-query;then empty-query. Exact65536 integer payload and128 guards;four immutable environment/executable/provider gates;completed begin/work/end,sync,raw read,typed calculation;safe query/pool/group/context cleanup;exit0,all owned processes closed,no fresh fault. A refused query stops further counter arms. Null/nonfinite values remain unqualified.",
+    "limitations": "Collection qualification only. One tiny kernel is not an observer-overhead estimate,hardware ceiling,process-attribution proof,physicalPCIe measurement or model speed/quality evidence. Empty query is not globally idle.",
+    "provenance": "Independent Main C/OpenCL code;installed official declarations. SDK supplies independent Intel LLVM compiler/translator only;no XeStrata implementation used.",
+    "retention": "Tiny fixture/tool for imminent collection and SYCL/PTI interoperability decision. Retire successful raw API/loader logs after extracting ordered counter evidence;keep original failures. No new model generation.",
+    "active": false,
+    "ownership_closed": true,
+    "passed": false,
+    "collection_qualified": false
   }
 }
