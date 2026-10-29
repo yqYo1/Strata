@@ -16391,7 +16391,7 @@
   },
   "qsa_exact_compiler_arithmetic_lowering_20261029": {
     "classification": "decision support",
-    "status": "completed_native_curation_running",
+    "status": "curated_direction_deferred",
     "schedulable_now": false,
     "prerequisites_evidence": [
       "Completed nativeLuna-max strictcontract review identifies exact-binary division default and device BF16 rounding/mode gaps;actual native objects and IR are pinned.",
@@ -16427,8 +16427,37 @@
     "curation": {
       "agent": "/root/curate_qsa_exact_lowering_20261029",
       "model": "native Codex gpt-6-luna max",
-      "status": "running",
+      "status": "completed",
       "review_path": ".cache/research/2026-10-29/qsa_exact_compiler_arithmetic_lowering_20261029.review.json"
+    },
+    "native_review": {
+      "path": ".cache/research/2026-10-29/qsa_exact_compiler_arithmetic_lowering_20261029.review.json",
+      "sha256": "98febf012967deb735526e0dc222e4cbd177df22bbb0d1d635122ad6ccfa1628",
+      "target_contract": {
+        "source_qualified": false,
+        "FP32_RNE_gradual": false,
+        "BF16_RNE": false,
+        "division_absolute_ulp_bound": null,
+        "conditional_division_bounds": {
+          "unflagged_documented_SYCL_requirement": "5/2",
+          "explicit_foffload_fp32_prec_div": "0 only if the exact device lowering preserves correctly rounded division"
+        },
+        "required_single_fp_config": [
+          2,
+          32,
+          64
+        ],
+        "required_single_fp_config_names": {
+          "2": "round_to_nearest",
+          "32": "denorm",
+          "64": "fma"
+        },
+        "single_fp_config_is_capability_only": true,
+        "current_device_capabilities_observed": false,
+        "enum_note": "Installed info_desc.hpp explicitly aliases round_to_nearest=2, denorm=32, fma=64. It leaves correctly_rounded_divide_sqrt implicit after fma, making its C++ enum value 65, while ur_api.h names the corresponding UR capability bit as 1. The required list omits that divide capability because the accepted interval can use a finite source-justified bound such as 5/2; use the Level Zero fp32flags capability query separately if a future path requires correctly rounded divide."
+      },
+      "main_correction": "Correctly rounded RNE division has at most1/2ULP error from the exact real quotient,not zero. No current E is qualified.",
+      "decision": "Defer normalizer experiment without native numerical/speed launch;Main proceeds to real-head-only softmax with bit-identity gate. No followup survey is currently eligible."
     }
   }
 }

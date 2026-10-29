@@ -290,11 +290,23 @@ The checker977c54fc9and host oracle now pass15host tests,including a valid
 reassociation crossing a BF16midpoint,invalid operand/accumulator changes,
 online FMA errors,division/cast errors,zero signs and diagnostic branches.
 Those tests exercise the checker,not GPU arithmetic or task accuracy.
-Target arithmetic/denormal modes and division/BF16conversion contracts are
-being reviewed by Luna before a committed bounded numerical launch.
+Two Orca Luna source investigations and native Luna-max reviews leave the
+exact binary's active FP32mode,division bound and BF16conversion rounding
+unresolved. Compiler/library source contracts,capability flags and finite
+probes are distinct evidence. The candidate is **deferred**,with no numerical
+kernel or performance trial;its CPU build is not a failed speed result.
+The division review's proposed zero-ULP bound for correctly rounded division
+also needs correction:when comparing with an exact real quotient,the normal
+RNE bound is one-half ULP,not zero.
+
+Main moves to removing the four unused padded-head softmax rows while retaining
+the original12real-head arithmetic. Initialize the padded probability/alpha
+storage explicitly,keep all16lanes of each active subgroup participating,and
+check real-head FP32state and complete output bits. Different subgroup loop
+counts must not skip a workgroup barrier. This is an unimplemented proposal;
+it needs its own source review,build,component and performance evidence.
 FullQSA/task/performance and physical-context/handoff gates remain unqualified.
-The rejected extra binaries and CPU IRgeneration are retired;selected6e40
-and its twelve same-build fixtures remain.
+Selected6e40and its twelve same-build fixtures remain.
 
 ## Measured performance and rejected comparisons
 
@@ -559,9 +571,22 @@ fit. The measured117489-token local process medians below instead need about
 3seconds removed. The official client now accepts any minimum32768..131072
 (source27de99c74),so intermediate held-out lengths need no prompt calibration
 or new benchmark path. All36host client/evidence checks pass,including
-context refusal and actual-count/thinking/zero-reuse checks at minimum54613;
-this is client validation,not a new GPU sample. Evaluate the next admitted route at an unfit length before
-generalizing its gain across contexts.
+context refusal and actual-count/thinking/zero-reuse checks at minimum54613.
+
+The new held-out-length cohort(source4501a1cd3,plan4d3d1daae)uses that minimum
+with unchanged selected6e40,and actually reads65345fresh tokens per request.
+Official`bench.sh`keeps thinking enabled and emits24tokens;it does not qualify
+sustained decode. The first use takes87.047s;subsequent requests take78.682,
+76.909and76.995s,or830.5,849.6and848.7tok/s. Their median is848.7tok/s.
+The frozen old formula predicts72.277s,6.127%below the median,exceeding its
+old4.309%leave-one-length-out maximum. All four streams,journals,source/model/
+provider/route/owner/fault gates pass;no new GPU fault occurs. One fresh process
+is not independent-process replication. Do not treat this previously unmeasured
+length as a same-workload regression or refit away the prediction error.
+The formula remains a coarse estimate with this additional out-of-sample
+failure;window/chunk and GEMM-shape dependence need characterization before
+using a single line as a tuning predictor. Evaluate the next admitted route at
+an unfit length before generalizing its gain across contexts.
 
 A source-grounded nonlinear hypothesis was also checked against these same four
 long medians. With fresh engine rows`n-1`,Page4and chunk8192,the prospective

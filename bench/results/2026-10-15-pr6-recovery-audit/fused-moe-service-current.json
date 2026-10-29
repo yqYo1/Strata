@@ -10828,6 +10828,15 @@
       "GPU_executed": false,
       "arithmetic_or_task_qualified": false,
       "criterion": "Exact dyadic depth31/control,depth16/candidate contribution intervals and FP32 fused update;common p/BF16PV/A bits;target-justified division ULP and BF16RNE contract required from separate review before native launch. Includes valid BF16midpoint crossing,negative checks,zero sign and diagnostic branches."
+    },
+    "decision": {
+      "status": "deferred_target_arithmetic_contract",
+      "numerical_GPU_kernel_executed": false,
+      "performance_executed": false,
+      "performance_rejected": false,
+      "inference_adopted": false,
+      "reason": "Two reviewed sourceinvestigations do not establish exact-targetFP32mode/FDiv/BF16rounding. Main does not extend this proof investigation;keeps results and moves to real-head-only softmax preserving real math/output bits. No numerical epsilon is guessed and no prior refusal relabelled.",
+      "next_consumer": "No active normalizer build consumer;recover original73414ebc2+2fb5d95d2source from Git if a future explicit arithmetic contract is selected. Retire unused comparison after source/recipe proof and push;selected6e40+12fixtures remain."
     }
   },
   "selected_length_holdout": {
@@ -10985,7 +10994,7 @@
       "criterion": "Existing external Python inventory only;two fresh current-source definition probes and mock loopback server. Check all project imports and external module/mapping identities,normal owned closure. No native engine or GPU inference."
     },
     "measurement": {
-      "stage": "prepared",
+      "stage": "closed",
       "source_commit": "4501a1cd30b87cb6be1dae740b44ea40843472d3",
       "binary": {
         "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/strata",
@@ -11216,10 +11225,113 @@
       },
       "plan": "One fresh selected6e40process;officialbench.sh thinkingon. Shortwarmup then4fresh minimum54613inputs:one firstlong separately,three subsequent samples. Preserveactualreadcounts,PP,engine time,clientTTFT,reuse,request hashes. This minimum was not in the6lengthfit;actualtokens maydifferfrom65536. Same131072residentINT8context,8192chunk,BF16vLLMmode10,GPUresidual,1256decode slots,5workers,spec4,cachesoff. Allproviders/pre-mainvalidation/source/model/owner/fault gates mandatory. Stopfirstfailure/budget,no retry/exclusion. No candidate,degradationattribution,decodequality/70tok/s or full256Kclaim.",
       "retention": "One compact held-out cohort with usefulindividualsamples and fixed-formula residuals;retire successful logs,journals,duplicate result/privateplans after verification. Selectedengine+12fixtures andcurrentnormalizercomparison remain unchanged.",
-      "passed": false,
-      "complete": false,
+      "passed": true,
+      "complete": true,
       "active": false,
-      "ownership_closed": true
+      "ownership_closed": true,
+      "outcome": {
+        "complete": true,
+        "passed": true,
+        "host_probe_accepted": true,
+        "samples": [
+          {
+            "request_sha256": "90adfeb64b43b1b0d6a6736d551a445e8eb5349385d66455a054ce41c874779a",
+            "actual_prompt_tokens": 65345,
+            "actual_read_tokens": 65345,
+            "actual_reused_tokens": 0,
+            "generated_tokens": 24,
+            "prompt_ms": 87047.2,
+            "prompt_tps": 750.7,
+            "ttft_s": 87.204,
+            "thinking_requested": true,
+            "reasoning_observed": true,
+            "ok": true,
+            "eligible": true,
+            "stream_complete": true,
+            "fixed_formula_seconds": 72.2773793361594,
+            "fixed_formula_error_seconds": -14.769820663840605,
+            "fixed_formula_relative_error": -0.1696759995018864
+          },
+          {
+            "request_sha256": "c58d624d53524ae813633b6ed155947e0217f0d14dbb8258421d062ce9478aa7",
+            "actual_prompt_tokens": 65345,
+            "actual_read_tokens": 65345,
+            "actual_reused_tokens": 0,
+            "generated_tokens": 24,
+            "prompt_ms": 78681.6,
+            "prompt_tps": 830.5,
+            "ttft_s": 78.826,
+            "thinking_requested": true,
+            "reasoning_observed": true,
+            "ok": true,
+            "eligible": true,
+            "stream_complete": true,
+            "fixed_formula_seconds": 72.2773793361594,
+            "fixed_formula_error_seconds": -6.404220663840604,
+            "fixed_formula_relative_error": -0.08139413362006624
+          },
+          {
+            "request_sha256": "ce7d7f7e5f72d9fb7175e3eaac940e68f3cc096a90c756989891d1c985b38362",
+            "actual_prompt_tokens": 65345,
+            "actual_read_tokens": 65345,
+            "actual_reused_tokens": 0,
+            "generated_tokens": 24,
+            "prompt_ms": 76909.2,
+            "prompt_tps": 849.6,
+            "ttft_s": 77.063,
+            "thinking_requested": true,
+            "reasoning_observed": true,
+            "ok": true,
+            "eligible": true,
+            "stream_complete": true,
+            "fixed_formula_seconds": 72.2773793361594,
+            "fixed_formula_error_seconds": -4.6318206638406,
+            "fixed_formula_relative_error": -0.06022453313570548
+          },
+          {
+            "request_sha256": "6933431cb188e3ed41118b8916e464d1f1555de7cbbf0ed1ac868c18e195fc0f",
+            "actual_prompt_tokens": 65345,
+            "actual_read_tokens": 65345,
+            "actual_reused_tokens": 0,
+            "generated_tokens": 24,
+            "prompt_ms": 76994.6,
+            "prompt_tps": 848.7,
+            "ttft_s": 77.146,
+            "thinking_requested": true,
+            "reasoning_observed": true,
+            "ok": true,
+            "eligible": true,
+            "stream_complete": true,
+            "fixed_formula_seconds": 72.2773793361594,
+            "fixed_formula_error_seconds": -4.717220663840607,
+            "fixed_formula_relative_error": -0.06126690266383105
+          }
+        ],
+        "first_use_index": 0,
+        "subsequent_indices": [
+          1,
+          2,
+          3
+        ],
+        "subsequent_median_ms": 76994.6,
+        "subsequent_median_pp": 848.7,
+        "fixed_formula_median_relative_error": -0.06126690266383105,
+        "previous_prediction_error_comparator_met": false,
+        "model_refitted": false,
+        "decode_speed_qualified": false,
+        "physical262144_qualified": false,
+        "ownership_closed": true,
+        "fresh_faults": [],
+        "boot_unchanged": true,
+        "driver_after": {
+          "pci": "/sys/bus/pci/devices/0000:05:00.0",
+          "driver": "xe",
+          "vendor": "0x8086",
+          "device": "0xe20c",
+          "kernel": "7.0.0-38-generic",
+          "devcoredump": false
+        }
+      }
     }
   }
 }
