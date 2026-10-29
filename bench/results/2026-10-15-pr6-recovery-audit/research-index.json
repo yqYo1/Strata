@@ -16212,5 +16212,33 @@
       "stop_rule": "Stop on source/option mismatch, metadata-only or unconsumed-assumption changes, no relevant optimized query-derived IR change, narrowed tensor/byte offsets, or a changed signed invalid-row path.",
       "prerequisites": "Fresh size_t control and exact committed frozen source/compiler/plan before CPUcompile;no native or speed result from review."
     }
+  },
+  "qsa_parallel_normalizer_contract_20261029": {
+    "classification": "decision support",
+    "status": "ready_for_first_dispatch",
+    "schedulable_now": true,
+    "prerequisites_evidence": [
+      "Selected QSA service26.943576593s per117488rows;not claimed softmax-only or hardware saturation.",
+      "Current selected code performs32ordered subgroup exchanges/FP32adds per head;SGLang pinned fresh/prefix uses tl.sum. Existing ordered-parallel survey required ascending sums;this scope explicitly evaluates a separate framework-compatible parallel normalizer.",
+      "User permits validated SGLang/vLLM arithmetic instead of extra llama.cpp FP32 precision;retain all safety/state/physical262144 requirements."
+    ],
+    "question": "For selected QSA,can only32probability normalizer additions use subgroup parallel reduction with the same BF16 probability stores,FP32online state and matrix order? Pin actual framework sum/precision dispatch,rounding/error/state counterexamples and minimal prospective numerical/task gates. Review indexed prior sum rejection only to distinguish its contract,not regression forensics;no repeated generic ordered-exp survey.",
+    "source_snapshot": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-compiler-ir-v1/source/original.cpp",
+      "sha256": "f9e1aaa7c1f5d146da1ae097a47cade3630da758809c6f75c5c729e3e305e32c",
+      "original_commit": "6e40afc1beddd059ee518617f6c1efce1da14aca",
+      "controller_commit": "35ebc9b894e28bf91eb7b786d863852e01da6d28"
+    },
+    "worker_model": "Orca Codex gpt-6-luna high",
+    "report": ".cache/research/2026-10-29/qsa_parallel_normalizer_contract_20261029.md",
+    "report_budget_bytes": 16384,
+    "consumer": "Main next distinct math-only normalizer candidate after CPU-ID gate;native Luna-max reviews raw report. No production/decode edits or GPU execution by researcher.",
+    "retention": "Consume current contract,exact prior-rejection distinction and bounded gates;do not retain repetitive survey/transaction history.",
+    "previous_scope_refs": [
+      "qsa_ordered_parallel_softmax_scope",
+      "qsa_native_exp2_scope",
+      "current_attention_decision"
+    ],
+    "ownership_closed": false
   }
 }
