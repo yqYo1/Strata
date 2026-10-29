@@ -10613,5 +10613,432 @@
       "window_feature_identifiability": "Only117483oldmedianhas2windows;leavingitout makes intercept and one-window term identical,so a third window-step coefficient cannot be independently crossvalidated. New65Kcohort has a different process;cohort effects and unknownshapecomposition remain confounded.",
       "decision": "No new predictorselected. Affine remains coarse;extra polynomial parameters worsen heldout errors. Need source-linked boundary/shape measurements before treating a single1percent gain at one length as general. No physicalfixedcost,per-tokenconstant,thermalorhardwarebottleneck attribution from this refit."
     }
+  },
+  "qsa_realhead_softmax": {
+    "build": {
+      "stage": "prepared",
+      "source_commit": "90cfc02decb42c8b810bfb62f15c6189b1623f58",
+      "compiler": {
+        "path": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin/clang++",
+        "sha256": "1290881b4e12a5e002e5b0de0787f85328ee5fe19f253a54be1cdd97dc2f26eb"
+      },
+      "sdk": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/unitrace-warmed-graph-window-v1/compiler-inputs.json",
+        "sha256": "436cedc9dbd41810cd882e9040a129e6d8b7dbebb98806b00c4f2950b1dc1705",
+        "original_files": 8697,
+        "admitted_files": 8697,
+        "prospective_system_header_updates": {
+          "/usr/include/metee.h": [
+            "f063edcb00c88f3ddebc10f9b0487fe813cfb7ba71dc4b798729bed8902018a3",
+            "d07e18ce9228c3fc570b186eab13bf8a3e6c04214992f0de9d53b855dc837252"
+          ],
+          "/usr/include/opencl-c-base.h": [
+            "e1683c3db9cf9a95e9d02acbbfa74dcd29d4deaf4a856430f538d76985b04114",
+            "673c4720f879c2f101504979edbd0216c9cb6a982ce2b62bd467b81fd53d8e33"
+          ],
+          "/usr/include/opencl-c.h": [
+            "579b58f482ab0b3dfd396cab32ea3e0537bc5cf4c1067377b83fe417cbcc513b",
+            "aa7e871a8f7d961aa4126a9fadc2196f822c21811946c90147dc7415fe677de9"
+          ]
+        },
+        "updated_header_packages": [
+          "libigdfcl2 2.41.15-1~24.04",
+          "libmetee-dev 6.2.5-1~24.04~ppa2"
+        ],
+        "condition": "New v2 input snapshot only;all8694 other original hashes remain mandatory. Actual dependency closure records which updated headers were compiled. No qualification inherited for the new fixture."
+      },
+      "geometry_proof": {
+        "original_source_commit": "6e40afc1beddd059ee518617f6c1efce1da14aca",
+        "original_source_sha256": "4f9f815c9baae709f919f6d5ad1af04677c10d8c13c7597b3857cf81567ae192",
+        "generated_sha256": {
+          "original.cpp": "2e7e95753b0a1084416ee19d146f21d7a54eca9b6ce1e6b66b075634b4f62c76",
+          "candidate.cpp": "4991675a71f670675ef0dcdd157ecb3f1603744b9a76e1d59378918bd84849c5",
+          "qsa-head.hpp": "dc15535160bb9a8fd915ff0c46cf84ac33c58d97809e7606bd84bfed7ba0f199"
+        },
+        "geometry": "Same M8,N16,K16,WG128,SG16,16padded/12real matrix rows;bothsize_t IDs.",
+        "reversible_padding_edits": 2,
+        "reversible_real_math_edits": 0,
+        "reversible_common_diagnostic_edits": 4,
+        "declared_local_bytes": 20036,
+        "real_head_contract": "Same ascendingFP32sum,Qscaling,BF16PV,FP32m/alpha/norm,PVmatrix order and output division/cast. Candidate initializes4padded probabilityrows/alpha tozero before existingbarrier,and omits their softmax only. QK/PVgeometry and every workgroup barrier remain.",
+        "subgroup_contract": "Each active SIMD16subgroup participates fully. SG0..3compute2realheads;SG4..7compute1. No workgroup barrier inside divergent-count headloop. Padded state is intentionally unobserved;matched capture admission accepts only12real heads.",
+        "production_or_decode_changed": false
+      },
+      "native_source_files": 163,
+      "native_source_digest": "b82fae5266310d106326a447df9aaf96ec5a338fba9108789955bc7ad5883db3",
+      "original_native_source": "6e40afc1beddd059ee518617f6c1efce1da14aca",
+      "selected_binary": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/strata",
+        "bytes": 22190000,
+        "sha256": "22182f1a5e62e5f4259ce49a75ae44afbd988166ec79324816e499ff37ef60e4"
+      },
+      "runtime_sha256": "09ad358e12f6ef58bfc0a978519927863f3d09949a033a1e224db95997647d97",
+      "boot": "cfda0b6a-7c13-4fe2-bdf5-8f9202770840",
+      "input_inventory": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-realhead-softmax-native-v1/input-inventory.json",
+        "sha256": "19e2f200b3ddab1b58e20e18306301d8640d5f83fa18aabb49dbdf94954b4619",
+        "files": 9269
+      },
+      "commands": [
+        [
+          "IRoriginal",
+          [
+            "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin/clang++",
+            "-std=c++20",
+            "-O3",
+            "-DNDEBUG",
+            "-g0",
+            "-fsycl",
+            "-fsycl-id-queries-range=size_t",
+            "-fno-fast-math",
+            "-ffp-contract=off",
+            "-DSTRATA_ENABLE_SYCL=1",
+            "-I/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-realhead-softmax-native-v1/source/include",
+            "-I/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-realhead-softmax-native-v1/source/include/strata/sycl/compat",
+            "-I/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-realhead-softmax-native-v1/source/bench/sycl",
+            "-fsycl-device-only",
+            "-S",
+            "-emit-llvm",
+            "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-realhead-softmax-native-v1/source/bench/sycl/original.cpp",
+            "-o",
+            "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-realhead-softmax-native-v1/original.ll"
+          ]
+        ],
+        [
+          "IRcandidate",
+          [
+            "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin/clang++",
+            "-std=c++20",
+            "-O3",
+            "-DNDEBUG",
+            "-g0",
+            "-fsycl",
+            "-fsycl-id-queries-range=size_t",
+            "-fno-fast-math",
+            "-ffp-contract=off",
+            "-DSTRATA_ENABLE_SYCL=1",
+            "-I/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-realhead-softmax-native-v1/source/include",
+            "-I/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-realhead-softmax-native-v1/source/include/strata/sycl/compat",
+            "-I/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-realhead-softmax-native-v1/source/bench/sycl",
+            "-fsycl-device-only",
+            "-S",
+            "-emit-llvm",
+            "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-realhead-softmax-native-v1/source/bench/sycl/candidate.cpp",
+            "-o",
+            "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-realhead-softmax-native-v1/candidate.ll"
+          ]
+        ],
+        [
+          "runtime",
+          [
+            "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin/clang++",
+            "-std=c++20",
+            "-O3",
+            "-DNDEBUG",
+            "-g0",
+            "-fsycl",
+            "-fsycl-id-queries-range=size_t",
+            "-fno-fast-math",
+            "-ffp-contract=off",
+            "-DSTRATA_ENABLE_SYCL=1",
+            "-I/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-realhead-softmax-native-v1/source/include",
+            "-I/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-realhead-softmax-native-v1/source/include/strata/sycl/compat",
+            "-I/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-realhead-softmax-native-v1/source/bench/sycl",
+            "-MD",
+            "-MF",
+            "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-realhead-softmax-native-v1/runtime.d",
+            "-c",
+            "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-realhead-softmax-native-v1/source/src/sycl/runtime.cpp",
+            "-o",
+            "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-realhead-softmax-native-v1/runtime.o"
+          ]
+        ],
+        [
+          "compat",
+          [
+            "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin/clang++",
+            "-std=c++20",
+            "-O3",
+            "-DNDEBUG",
+            "-g0",
+            "-fsycl",
+            "-fsycl-id-queries-range=size_t",
+            "-fno-fast-math",
+            "-ffp-contract=off",
+            "-DSTRATA_ENABLE_SYCL=1",
+            "-I/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-realhead-softmax-native-v1/source/include",
+            "-I/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-realhead-softmax-native-v1/source/include/strata/sycl/compat",
+            "-I/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-realhead-softmax-native-v1/source/bench/sycl",
+            "-MD",
+            "-MF",
+            "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-realhead-softmax-native-v1/compat.d",
+            "-c",
+            "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-realhead-softmax-native-v1/source/src/sycl/compat.cpp",
+            "-o",
+            "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-realhead-softmax-native-v1/compat.o"
+          ]
+        ],
+        [
+          "command_profile",
+          [
+            "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin/clang++",
+            "-std=c++20",
+            "-O3",
+            "-DNDEBUG",
+            "-g0",
+            "-fsycl",
+            "-fsycl-id-queries-range=size_t",
+            "-fno-fast-math",
+            "-ffp-contract=off",
+            "-DSTRATA_ENABLE_SYCL=1",
+            "-I/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-realhead-softmax-native-v1/source/include",
+            "-I/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-realhead-softmax-native-v1/source/include/strata/sycl/compat",
+            "-I/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-realhead-softmax-native-v1/source/bench/sycl",
+            "-MD",
+            "-MF",
+            "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-realhead-softmax-native-v1/command_profile.d",
+            "-c",
+            "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-realhead-softmax-native-v1/source/src/sycl/command_profile.cpp",
+            "-o",
+            "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-realhead-softmax-native-v1/command_profile.o"
+          ]
+        ],
+        [
+          "prompt_attention",
+          [
+            "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin/clang++",
+            "-std=c++20",
+            "-O3",
+            "-DNDEBUG",
+            "-g0",
+            "-fsycl",
+            "-fsycl-id-queries-range=size_t",
+            "-fno-fast-math",
+            "-ffp-contract=off",
+            "-DSTRATA_ENABLE_SYCL=1",
+            "-I/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-realhead-softmax-native-v1/source/include",
+            "-I/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-realhead-softmax-native-v1/source/include/strata/sycl/compat",
+            "-I/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-realhead-softmax-native-v1/source/bench/sycl",
+            "-MD",
+            "-MF",
+            "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-realhead-softmax-native-v1/prompt_attention.d",
+            "-c",
+            "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-realhead-softmax-native-v1/source/src/kernels/sycl/prompt_attention.cpp",
+            "-o",
+            "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-realhead-softmax-native-v1/prompt_attention.o"
+          ]
+        ],
+        [
+          "original",
+          [
+            "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin/clang++",
+            "-std=c++20",
+            "-O3",
+            "-DNDEBUG",
+            "-g0",
+            "-fsycl",
+            "-fsycl-id-queries-range=size_t",
+            "-fno-fast-math",
+            "-ffp-contract=off",
+            "-DSTRATA_ENABLE_SYCL=1",
+            "-I/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-realhead-softmax-native-v1/source/include",
+            "-I/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-realhead-softmax-native-v1/source/include/strata/sycl/compat",
+            "-I/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-realhead-softmax-native-v1/source/bench/sycl",
+            "-MD",
+            "-MF",
+            "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-realhead-softmax-native-v1/original.d",
+            "-c",
+            "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-realhead-softmax-native-v1/source/bench/sycl/original.cpp",
+            "-o",
+            "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-realhead-softmax-native-v1/original.o"
+          ]
+        ],
+        [
+          "candidate",
+          [
+            "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin/clang++",
+            "-std=c++20",
+            "-O3",
+            "-DNDEBUG",
+            "-g0",
+            "-fsycl",
+            "-fsycl-id-queries-range=size_t",
+            "-fno-fast-math",
+            "-ffp-contract=off",
+            "-DSTRATA_ENABLE_SYCL=1",
+            "-I/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-realhead-softmax-native-v1/source/include",
+            "-I/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-realhead-softmax-native-v1/source/include/strata/sycl/compat",
+            "-I/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-realhead-softmax-native-v1/source/bench/sycl",
+            "-MD",
+            "-MF",
+            "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-realhead-softmax-native-v1/candidate.d",
+            "-c",
+            "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-realhead-softmax-native-v1/source/bench/sycl/candidate.cpp",
+            "-o",
+            "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-realhead-softmax-native-v1/candidate.o"
+          ]
+        ],
+        [
+          "oracle4",
+          [
+            "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin/clang++",
+            "-std=c++20",
+            "-O3",
+            "-DNDEBUG",
+            "-g0",
+            "-fsycl",
+            "-fsycl-id-queries-range=size_t",
+            "-fno-fast-math",
+            "-ffp-contract=off",
+            "-DSTRATA_ENABLE_SYCL=1",
+            "-I/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-realhead-softmax-native-v1/source/include",
+            "-I/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-realhead-softmax-native-v1/source/include/strata/sycl/compat",
+            "-I/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-realhead-softmax-native-v1/source/bench/sycl",
+            "-DSTRATA_QSA_TEST_PAGE_SIZE=4",
+            "-MD",
+            "-MF",
+            "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-realhead-softmax-native-v1/oracle4.d",
+            "-c",
+            "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-realhead-softmax-native-v1/source/bench/sycl/qsa_head_oracle.cpp",
+            "-o",
+            "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-realhead-softmax-native-v1/oracle4.o"
+          ]
+        ],
+        [
+          "oracle16",
+          [
+            "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin/clang++",
+            "-std=c++20",
+            "-O3",
+            "-DNDEBUG",
+            "-g0",
+            "-fsycl",
+            "-fsycl-id-queries-range=size_t",
+            "-fno-fast-math",
+            "-ffp-contract=off",
+            "-DSTRATA_ENABLE_SYCL=1",
+            "-I/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-realhead-softmax-native-v1/source/include",
+            "-I/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-realhead-softmax-native-v1/source/include/strata/sycl/compat",
+            "-I/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-realhead-softmax-native-v1/source/bench/sycl",
+            "-DSTRATA_QSA_TEST_PAGE_SIZE=16",
+            "-MD",
+            "-MF",
+            "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-realhead-softmax-native-v1/oracle16.d",
+            "-c",
+            "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-realhead-softmax-native-v1/source/bench/sycl/qsa_head_oracle.cpp",
+            "-o",
+            "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-realhead-softmax-native-v1/oracle16.o"
+          ]
+        ],
+        [
+          "link4",
+          [
+            "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin/clang++",
+            "-std=c++20",
+            "-O3",
+            "-DNDEBUG",
+            "-g0",
+            "-fsycl",
+            "-fsycl-id-queries-range=size_t",
+            "-fno-fast-math",
+            "-ffp-contract=off",
+            "-DSTRATA_ENABLE_SYCL=1",
+            "-I/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-realhead-softmax-native-v1/source/include",
+            "-I/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-realhead-softmax-native-v1/source/include/strata/sycl/compat",
+            "-I/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-realhead-softmax-native-v1/source/bench/sycl",
+            "-save-temps=obj",
+            "-v",
+            "-Wl,-t",
+            "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-realhead-softmax-native-v1/runtime.o",
+            "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-realhead-softmax-native-v1/compat.o",
+            "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-realhead-softmax-native-v1/command_profile.o",
+            "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-realhead-softmax-native-v1/prompt_attention.o",
+            "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-realhead-softmax-native-v1/original.o",
+            "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-realhead-softmax-native-v1/candidate.o",
+            "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-realhead-softmax-native-v1/oracle4.o",
+            "-pthread",
+            "-ldl",
+            "-o",
+            "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-realhead-softmax-native-v1/qsa_head_p4"
+          ]
+        ],
+        [
+          "link16",
+          [
+            "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin/clang++",
+            "-std=c++20",
+            "-O3",
+            "-DNDEBUG",
+            "-g0",
+            "-fsycl",
+            "-fsycl-id-queries-range=size_t",
+            "-fno-fast-math",
+            "-ffp-contract=off",
+            "-DSTRATA_ENABLE_SYCL=1",
+            "-I/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-realhead-softmax-native-v1/source/include",
+            "-I/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-realhead-softmax-native-v1/source/include/strata/sycl/compat",
+            "-I/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-realhead-softmax-native-v1/source/bench/sycl",
+            "-save-temps=obj",
+            "-v",
+            "-Wl,-t",
+            "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-realhead-softmax-native-v1/runtime.o",
+            "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-realhead-softmax-native-v1/compat.o",
+            "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-realhead-softmax-native-v1/command_profile.o",
+            "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-realhead-softmax-native-v1/prompt_attention.o",
+            "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-realhead-softmax-native-v1/original.o",
+            "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-realhead-softmax-native-v1/candidate.o",
+            "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-realhead-softmax-native-v1/oracle16.o",
+            "-pthread",
+            "-ldl",
+            "-o",
+            "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-realhead-softmax-native-v1/qsa_head_p16"
+          ]
+        ]
+      ],
+      "environment": {
+        "PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin:/usr/bin:/bin",
+        "HOME": "/home/yayoi",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8",
+        "PYTHONDONTWRITEBYTECODE": "1",
+        "LD_LIBRARY_PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib:/opt/intel/oneapi/mkl/2026.1/lib",
+        "MKLROOT": "/opt/intel/oneapi/mkl/2026.1",
+        "OMP_NUM_THREADS": "1",
+        "GIT_TERMINAL_PROMPT": "0",
+        "GIT_SSH_COMMAND": "ssh -oBatchMode=yes",
+        "CPLUS_INCLUDE_PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/include",
+        "PIP_CONFIG_FILE": "/dev/null",
+        "ONEAPI_DEVICE_SELECTOR": "level_zero:gpu",
+        "UR_ADAPTERS_FORCE_LOAD": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_adapter_level_zero_v2.so.0",
+        "SYCL_CACHE_PERSISTENT": "0",
+        "NEOReadDebugKeys": "1",
+        "EnableDirectSubmission": "0",
+        "UR_L0_V2_FORCE_DISABLE_COPY_OFFLOAD": "1",
+        "STRATA_SYCL_VERIFY_NATIVE_CAPTURE": "0",
+        "STRATA_SYCL_PREFILL_SAME_QUEUE": "1",
+        "STRATA_SYCL_PREFILL_NATIVE16": "bf16",
+        "XDG_CACHE_HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-realhead-softmax-native-v1/cache",
+        "TMPDIR": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-realhead-softmax-native-v1/tmp"
+      },
+      "budgets": {
+        "wall": 600,
+        "cpu": 1800,
+        "rss_cap": 8589934592,
+        "text_cap": 33554432,
+        "file_cap": 268435456,
+        "total_cap": 2147483648
+      },
+      "active": false,
+      "ownership_closed": true,
+      "passed": false,
+      "GPU_executed": false,
+      "production_or_decode_changed": false,
+      "criteria": "Bothsize_t/strictflags,originalM8geometry. Candidateinitializes4paddedprobabilityrows/alpha tozero and computes only12realsoftmaxheads;every realFP32addition/PVoperation/division/cast staysoriginal. Matched diagnostic admission accepts12realheads and events report actual submissions. CPUbuild must close exactcompiler/linkinputs and retain ordered sum in bothIRs. Four compiled normal/state properties before anyenqueue;then bounded tracedtiny and all12realheadstate/Page4/Page16component bitidentity. No model speed/quality/adoption from component.",
+      "retention": "One imminent real-head softmax comparison generation;keep selected6e40+12fixtures. Retire extra ELF/objects/raw output at decision after source recovery. Source review retained only until component contract is consumed.",
+      "source_inputs": {
+        "files": 42,
+        "aggregate_sha256": "8c33124a099632766d3ce882ddd4af44ddf8004e0c5b7c037f9c8ee8ad22c613"
+      }
+    }
   }
 }
