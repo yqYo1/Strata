@@ -20,7 +20,7 @@ import matrix_shapes as q
 import moe_split_sources as model
 
 r, P, B = q.r, q.P, q.B
-ROOT = B / 'moe-split-accumulator-v1/native'
+ROOT = B / 'moe-split-accumulator-v1/native-v2'
 RESULT, KEY = q.RESULT, 'moe_split_accumulator'
 ORIGIN = B / 'main-native-gdn-engine/record.json'
 ORIGIN_SHA = 'a38f477670fafcd1a931be2e20d90d6d9718df75b61954b421f361af9f6881b2'

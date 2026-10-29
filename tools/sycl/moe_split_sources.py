@@ -12,7 +12,7 @@ import tempfile
 P = Path(__file__).resolve().parents[2]
 BASE = '6e40afc1beddd059ee518617f6c1efce1da14aca'
 BEFORE = '190555603'
-AFTER = '8a34a9ed6'
+AFTER = 'cde8162d1'
 DIRECT = [
     'include/strata/prefill/moe_accum_plan.hpp',
     'include/strata/prefill/moe_window_routes.hpp',

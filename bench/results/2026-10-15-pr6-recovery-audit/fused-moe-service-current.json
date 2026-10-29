@@ -12698,7 +12698,7 @@
     }
   },
   "moe_split_accumulator": {
-    "status": "host_controls_passed",
+    "status": "native_build_failed_fixture_compile",
     "host": {
       "stage": "closed",
       "source_commit": "be574247d026a341c6abedf23a37bd6612d51430",
@@ -12885,7 +12885,7 @@
     "mechanism": "Process one117488-row expert-major window rather than81920+35568;preserve FP32 expert summation and16-bit tensor boundaries. Split accumulator makes capacity possible. Fewer expert dequants/submissions are a hypothesis;smaller bank may add PCIe traffic. Aggregate MoE minus GU/Down is NOT measured dequanttime or physical-resource saturation.",
     "inference_adopted": false,
     "decode_changed": false,
-    "next_gate": "Pass host controls,then source-reviewed separate ordinary/fused split consumers, bounded traced device numerics/bounds/actualallocation before model timing. Preserve exact selected-source production baseline and independent decode/handoff/fullcontext gates.",
+    "next_gate": "Record and retire closed partial build/host outputs after exact source/recipe recovery;prepare prospective native-v2 with fixture warning fixed. Original failed plan remains in Git. No GPU run yet.",
     "source_review": {
       "revision": "8a34a9ed6",
       "research_key": "moe_split_native_consumer_contract_20261030",
@@ -12903,7 +12903,7 @@
       }
     ],
     "build": {
-      "stage": "prepared",
+      "stage": "failed",
       "source_commit": "9501549095cb042903c58639cfb057e835036e33",
       "overlay": {
         "base": "6e40afc1beddd059ee518617f6c1efce1da14aca",
@@ -13161,6 +13161,7 @@
       "model_selected": false,
       "criteria": "Build only: exact original9853Git inputs plus12explicit overlay paths and9CMake-only sources. Unselected diagnostics/staging excluded;independent max-allocation guard preserved. Actual compiler/imported linker closure must have zero uncovered inputs. All3 executables from one source/build. No device,numerical,performance or model qualification inherited.",
       "retention": "One additional candidate engine/component generation for imminent bounded device and whole-model comparison. Keep selected6e40/12fixtures untouched. Retire disposable host/build objects/logs and rejected generation after original source/recipe recovery.",
+      "error": "Werror: unused variable 'cells' in split fixture check_split; engine/compiler command exit1, no GPU execution. Fixed by cde8162d1 without arithmetic changes.",
       "controller_inputs": {
         "files": 52,
         "aggregate_sha256": "cf6f62c747daaf29189c4140c1dcb51f7368c105334bcc866047f0a57124fa29"
