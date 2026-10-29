@@ -9139,16 +9139,16 @@
       }
     },
     "observer_cpu_controls": {
-      "source_commit": "cc1179fc3",
+      "source_commit": "7791d3124",
       "command": "flock -n /home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/owned-v0141-measurement.lock python3 -B tests/core/test_qsa_profile_evidence.py",
-      "tests": 10,
+      "tests": 12,
       "passed": true,
       "GPU_executed": false,
       "source_sha256": {
-        "tools/sycl/qsa_pair_model_profile.py": "8c462f67a7937cc8d09849db2ddf3faa2719e637d93b51abba5fc74b218dd782",
-        "tests/core/test_qsa_profile_evidence.py": "aafecdda2a51228209d8ee4d738c0bbd4faafb2707b16176808b76c8b9f3e7de"
+        "tools/sycl/qsa_pair_model_profile.py": "9e3791fc5bc071b9e972de9f448ada9ed6a4dfc7e22be7c78930682a6d72a32c",
+        "tests/core/test_qsa_profile_evidence.py": "3c8eeead40074ef1644f0f51e55c4460b6fc3eb4c9b3066626d48fd9e79f87a1"
       },
-      "coverage": "Reject missing/duplicate layers or keys,failed headers,changed timing semantics,partial query/dispatch/staging,wrong extent/window census,NaN,aggregate/denominator mismatch. Correct Mode10 counts FFN windows rather than8192-token chunks. Log admission only,not native/model qualification. Three direct controls added for whole-window omission,missing required key and coherently wrong cap. Prospective observer influence screen is separate from the closed clean comparison."
+      "coverage": "Ten observer-format/coverage rejection controls plus two shared-finalizer protocol controls:complete does not replace explicit host acceptance,and acceptance cannot override fresh faults. CPU stubs never initialize native/GPU runtime. New caller acknowledgement matches the existing unchanged finalizer contract;v1 remains failed in afee16141. Newv2 requires fresh committed plan and device evidence."
     },
     "candidate_next_consumer": {
       "selected": "Original6e40 engine22182f1a5e62 remains selected;pair0442ebfdcb94 is rejected for whole-model speed.",
@@ -9636,7 +9636,13 @@
       "original_status": "failed;not relabelled",
       "mechanism": "run() recorded complete=True after all request/profile/source/provider/placement checks,but omitted host_probe_accepted=True. ur_validation.finish() line109 correctly requires that explicit acknowledgement,so final passed=False despite normal closure,quiet validation and no fresh fault.",
       "scope": "Controller bookkeeping defect;not a GPU failure,numerical failure or speed sample. Failed diagnostic remains unqualified. Stop its original ordered plan;correct the caller and commit a fresh v2 plan before any further device execution.",
-      "retention": "Keep compact failure/proof and original source in Git. Rawv1 needed only until the corrected controller first closes;then retire it. Candidate retained solely for the finite corrected attribution."
+      "retention": "Keep compact failure/proof and original source in Git. Rawv1 needed only until the corrected controller first closes;then retire it. Candidate retained solely for the finite corrected attribution.",
+      "correction": {
+        "source_commit": "7791d3124",
+        "CPU_controls": 12,
+        "passed": true,
+        "action": "Set host_probe_accepted only after every existing check. Fresh v2 root/key;no rewrite or continuation of failed v1. No native math/build/runtime change."
+      }
     }
   }
 }
