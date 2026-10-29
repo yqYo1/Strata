@@ -5,11 +5,13 @@ Repository LICENSE; own-fork fixtures, with the pinned native log format.
 """
 from pathlib import Path
 import sys
+from types import SimpleNamespace
 import unittest
+from unittest.mock import patch
 
 sys.dont_write_bytecode = True
 sys.path.insert(0, str(Path(__file__).resolve().parents[2] / 'tools/sycl'))
-from qsa_pair_model_profile import profile
+from qsa_pair_model_profile import d, profile
 
 
 def window():
@@ -109,6 +111,27 @@ class ProfileEvidence(unittest.TestCase):
     def test_wrong_active_cap_despite_coherent_aggregate(self):
         with self.assertRaises(Exception):
             profile(window().replace('cap=2051', 'cap=2050'), 117488)
+
+    def test_completion_does_not_replace_host_acceptance_protocol(self):
+        validation = d.m.runtime.validation
+        with patch.object(validation.subprocess, 'check_output', return_value=''), \
+             patch.object(validation.guards, 'driver_guard', return_value={}), \
+             patch.object(validation.Path, 'read_text', return_value='mock-boot'):
+            for accepted in (None, False, True):
+                record = dict(complete=True)
+                if accepted is not None: record['host_probe_accepted'] = accepted
+                validation.finish(record, SimpleNamespace(active=None, commands=[]), 'mock-cursor', 'mock-boot')
+                self.assertEqual(record['passed'], accepted is True)
+
+    def test_host_acceptance_cannot_override_fresh_fault(self):
+        validation = d.m.runtime.validation
+        with patch.object(validation.subprocess, 'check_output', return_value='xe GPU reset'), \
+             patch.object(validation.guards, 'driver_guard', return_value={}), \
+             patch.object(validation.Path, 'read_text', return_value='mock-boot'):
+            record = dict(complete=True, host_probe_accepted=True)
+            validation.finish(record, SimpleNamespace(active=None, commands=[]), 'mock-cursor', 'mock-boot')
+            self.assertFalse(record['passed'])
+            self.assertEqual(record['fresh_faults'], ['xe GPU reset'])
 
 
 if __name__ == '__main__':

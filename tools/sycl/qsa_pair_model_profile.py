@@ -24,8 +24,8 @@ import qsa_pair_model_compare as comparison
 d = comparison.diagnostic
 m, P, B, RESULT = d.m, d.P, d.B, d.RESULT
 require, digest, write = d.require, d.digest, d.write
-ROOT = B / 'qsa-pair-model-profile-v1'
-KEY = 'bounded_qsa_attribution'
+ROOT = B / 'qsa-pair-model-profile-v2'
+KEY = 'bounded_qsa_attribution_v2'
 SECTIONS = ('projections', 'kv_stage', 'kv_append_query', 'indexer_append',
             'selection', 'attention', 'output_projection')
 COARSE = ('input', 'QSA', 'GDN', 'MoE', 'upload', 'store')
@@ -173,7 +173,7 @@ def compact(row):
 def prepare():
     record, _, rt, _, model, old = admitted()
     controls = m.runtime.validation.committed(RESULT, (m.KEY, 'observer_cpu_controls'))
-    require(controls['passed'] and controls['tests'] >= 10 and controls['GPU_executed'] is False and
+    require(controls['passed'] and controls['tests'] >= 12 and controls['GPU_executed'] is False and
             controls['source_sha256'] == {name:digest(P / name) for name in
                 ('tools/sycl/qsa_pair_model_profile.py', 'tests/core/test_qsa_profile_evidence.py')},
             'run committed observer rejection controls for these exact inputs first')
@@ -242,7 +242,7 @@ def run(index):
     cursor = re.findall(r'^-- cursor: (.+)$', subprocess.check_output(
         ['journalctl', '-k', '-b', '-n', '0', '--show-cursor', '--no-pager'], text=True, timeout=15), re.M)
     require(len(cursor) == 1, 'fresh fault cursor required')
-    outcome = dict(index=index, arm=plan['arm'], complete=False, passed=False)
+    outcome = dict(index=index, arm=plan['arm'], complete=False, host_probe_accepted=False, passed=False)
     owner = None
     def persist():
         write(root / 'execution.json', dict(outcome, active=bool(owner and owner.active),
@@ -321,7 +321,8 @@ def run(index):
         require(len(baseline) == 3 and all(math.isfinite(v) and v > 0 for v in baseline),
                 'same-arm clean first-long reference missing')
         ratio = sample['prompt_ms'] / statistics.median(baseline)
-        outcome.update(complete=True, sample={k:sample[k] for k in keep}, actual_engine_rows=n,
+        outcome.update(complete=True, host_probe_accepted=True,
+            sample={k:sample[k] for k in keep}, actual_engine_rows=n,
             request_placement=placement[0], observer=observed, validation=proof, native_exit_code=0,
             observer_influence=dict(clean_first_median_ms=statistics.median(baseline),
                 clean_first_range_ms=[min(baseline), max(baseline)], profiled_first_time_ratio=ratio,
