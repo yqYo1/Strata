@@ -17073,8 +17073,8 @@
   },
   "bmg_metric_collection_contract_20261030": {
     "classification": "decision_support",
-    "status": "eligible",
-    "schedulable_now": true,
+    "status": "startup_blocked_before_task_turn",
+    "schedulable_now": false,
     "prerequisites": {
       "enumeration_commit": "31c6ce91e",
       "enumeration_complete": true,
@@ -17085,7 +17085,7 @@
     },
     "source_manifest": {
       "path": "/home/yayoi/orca/workspaces/Strata/sycl/.cache/research/2026-10-30/bmg_metric_collection_contract_20261030.source.json",
-      "sha256": "6caa9c860a611aba0162a6e159091b0470b92a021d61a8281ab75216a3255b05"
+      "sha256": "b7ddc32bdea578531ac3b4a4d39b137f7b406c1e929715fffc6ee47949e4ebf6"
     },
     "spec": {
       "path": "/home/yayoi/orca/workspaces/Strata/sycl/.cache/research/2026-10-30/bmg_metric_collection_contract_20261030.spec.txt",
@@ -17095,6 +17095,15 @@
     "report_budget_bytes": 12288,
     "worker_model": "Orca Codex gpt-6-luna high",
     "review_point": "After native Luna-max report curation and before committing an actual query/access or known-work collection plan.",
-    "consumer": "Main direct-C event-query access/known-work qualification and resource-counter semantics;not model adoption."
+    "consumer": "Main direct-C event-query access/known-work qualification and resource-counter semantics;not model adoption.",
+    "task": "task_e8fdb4f872d3",
+    "initial_dispatch": "ctx_33581070280b",
+    "terminal": "term_4acc2c28-22e6-4d3e-b965-5f0094336380",
+    "startup_failure": "agent_readiness:agent-update-prompt;actual terminal prompt observed,Task did not run.",
+    "before_turn_source_correction": {
+      "original_manifest_sha256": "6caa9c860a611aba0162a6e159091b0470b92a021d61a8281ab75216a3255b05",
+      "reason": "Resolve Task flag2 shorthand against actual installed header:EVENT_BASED=1,TIME_BASED=2;use measured ComputeBasic group3 for event queries. No native measurement/result changed."
+    },
+    "next_action": "Dismiss observed startup prompt with Escape,then retry the same Task in the same terminal;no new Task or model override."
   }
 }
