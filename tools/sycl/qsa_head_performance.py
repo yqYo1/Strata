@@ -81,9 +81,32 @@ def build():
     print(json.dumps({k:row.get(k) for k in ['stage','passed','ownership_closed','error']}),flush=True);require(row['passed'],'performance fixture build failed')
 
 
+def prepare_edge():
+    record=r.validation.committed(RESULT);built=json.loads((ROOT/'record.json').read_text());require(built['passed'] and built['ownership_closed'],'compiled fixture first');_,_,_,rt=admitted(built);scope=record[n.KEY]['performance'];folder=ROOT/'edge';require('edge' not in scope and not folder.exists(),'fresh edge gate only');folder.mkdir();(folder/'tmp').mkdir();(folder/'cache').mkdir()
+    env=dict(rt['environment'],TMPDIR=str(folder/'tmp'),XDG_CACHE_HOME=str(folder/'cache'),ZE_ENABLE_ALT_DRIVERS=next(p for p in rt['runtime_files'] if 'libze_intel_gpu' in p),UR_LOG_TRACING='level:info;flush:info;output:file,'+str(folder/'api.trace'),UR_LOG_VALIDATION='level:warning;flush:warning;output:file,'+str(folder/'validation.log'))
+    plan=dict(stage='prepared',command=[built['binary']['path'],'--edge-only'],binary=built['binary'],environment=env,boot=rt['boot'],budgets=dict(wall=180,cpu=360,rss_cap=4<<30,text_cap=16<<20,file_cap=32<<20,total_cap=256<<20),criteria='Before any timing:new2SG16M8matrixkernels compiled/query,then exactly2traced WG16submissions;128finiteFP32states including80subnormal and0x8200 must preserve input and scaled/bypass bits exactly. Stop firstfailure,known immutableproviders/pre-mainvalidation,guards/inputimmutability/closedowner/no newfault. No model qualification.')
+    require('UR_LAYER_TRACING' in env['UR_ENABLE_LAYERS'],'firstedge must use qualified tracing');write(folder/'plan.json',plan);scope['edge']=plan;write(RESULT,record);print('Traced FP32edge prepared;commit before run.',flush=True)
+
+
+def run_edge():
+    record=r.validation.committed(RESULT);scope=record[n.KEY]['performance'];plan=scope['edge'];folder=ROOT/'edge';built=json.loads((ROOT/'record.json').read_text());require(plan['stage']=='prepared' and plan==json.loads((folder/'plan.json').read_text()) and not (folder/'owned').exists(),'fresh frozen edge');_,_,_,rt=admitted(built);require(plan['binary']==built['binary'],'edge ELF differs')
+    text=subprocess.check_output(['journalctl','-k','-b','-n','0','--show-cursor','--no-pager'],text=True,timeout=15);cursor=next(v.split(': ',1)[1] for v in text.splitlines() if v.startswith('-- cursor: '));outcome=dict(host_probe_accepted=False,complete=False);owner=None
+    def persist():write(folder/'record.json',dict(outcome,active=bool(owner and owner.active is not None),commands=owner.commands if owner else []))
+    owner=r.supervision.Owner(folder/'owned',persist)
+    try:
+        def interact(io,entry):
+            require(io.line(30)=='HEAD_BENCH_GATE before-runtime','entry gate');io.send(b'X');require(io.line(90)=='HEAD_BENCH_GATE runtime-ready','runtime gate');q.observed_native(io.proc.pid,plan['environment'],rt,plan['binary']);io.send(b'X')
+            require(io.line(90)=='HEAD_EDGE finite=128 subnormal=80 FP32_bit_parity=1 direct_matrix_load_store_exact=1','directFP32edge failed');require(io.line(20)=='HEAD_BENCH_GATE before-exit','exit gate');q.observed_native(io.proc.pid,plan['environment'],rt,plan['binary']);io.send(b'X');io.proc.stdin.close();require(io.line(20)=='HEAD_EDGE_DONE passed=1','edge completion');io.exit(20)
+        entry,out,err=owner.run('edge',plan['command'],plan['environment'],P,interaction=interact,**plan['budgets']);require(r.supervision.closed(entry) and entry['exit_code']==0,'native edge failed:'+err.read_text()[-2000:]);proof=r.validation.preload_evidence(err.read_text(),entry['pid']);require(proof['loader']==rt['preload']['loader'],'pre-main provider differs');warning=folder/'validation.log';require(not warning.exists() or not warning.stat().st_size,'validation warning');require(not re.search('UR_RESULT_ERROR_|ZE_RESULT_ERROR_|HEAD_BENCH_ERROR|terminate called|cleanup failed',err.read_text()),'native runtime error')
+        trace=(folder/'api.trace').read_text();launches=[v for v in trace.splitlines() if '<--- urEnqueueKernelLaunchWithArgsExp(' in v and 'UR_RESULT_SUCCESS' in v];require(len(launches)==2 and all(re.search(r'\.pLocalWorkSize = 0x[0-9a-f]+ \(16\)',v) for v in launches),'exact2WG16edge launches required');require('IdentityScaleEdgeILb0' in trace and 'IdentityScaleEdgeILb1' in trace,'both edgekernel identities required');admitted(built);outcome.update(complete=True,host_probe_accepted=True,FP32_finite_bit_parity=True,subnormal_states=80,finite_states=128,actual_WG16_submissions=2,model_qualified=False)
+    except BaseException as error:outcome['error']=repr(error)
+    finally:r.validation.finish(outcome,owner,cursor,plan['boot']);persist();plan.update(stage='closed' if outcome['passed'] else 'failed',outcome=outcome);write(RESULT,record)
+    print(json.dumps(outcome),flush=True);require(outcome['passed'],'traced FP32edge gate failed')
+
+
 def prepare_run():
     record=r.validation.committed(RESULT);built=json.loads((ROOT/'record.json').read_text());require(built['stage']=='built' and built['passed'] and built['ownership_closed'],'compiled fixture first');_,_,_,rt=admitted(built);scope=record[n.KEY]['performance'];require('comparison' not in scope,'no repeat/overwrite of prior comparison')
-    plans=[]
+    require(scope['edge']['outcome']['passed'] and scope['edge']['binary']==built['binary'],'traced exact FP32edge before timing');plans=[]
     for index in range(3):
         folder=ROOT/str(index);folder.mkdir();(folder/'tmp').mkdir();(folder/'cache').mkdir()
         env=dict(rt['environment'],TMPDIR=str(folder/'tmp'),XDG_CACHE_HOME=str(folder/'cache'),ZE_ENABLE_ALT_DRIVERS=next(p for p in rt['runtime_files'] if 'libze_intel_gpu' in p),UR_ENABLE_LAYERS='UR_LAYER_PARAMETER_VALIDATION',UR_LOG_VALIDATION='level:warning;flush:warning;output:file,'+str(folder/'validation.log'))
@@ -148,4 +171,4 @@ def run():
 if __name__=='__main__':
     with (B/'owned-v0141-measurement.lock').open('a+') as lock:
         fcntl.flock(lock,fcntl.LOCK_EX|fcntl.LOCK_NB)
-        {'prepare':prepare,'build':build,'prepare-run':prepare_run,'run':run}[sys.argv[1]]()
+        {'prepare':prepare,'build':build,'prepare-edge':prepare_edge,'run-edge':run_edge,'prepare-run':prepare_run,'run':run}[sys.argv[1]]()

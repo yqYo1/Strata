@@ -182,11 +182,13 @@ void run_case(int context,int pattern,int process,int scenario) {
 int main(int argc,char **argv) {
   try {
     std::cout.setf(std::ios::unitbuf);std::cout<<std::setprecision(12);
-    check(argc==2 && (std::string(argv[1])=="0" || std::string(argv[1])=="1" || std::string(argv[1])=="2"),"process0..2 required");
-    const int process=argv[1][0]-'0';gate("before-runtime");rt=sycl_backend::runtime_for();Drain pending;
+    check(argc==2,"process0..2 or --edge-only required");const bool edge_only=std::string(argv[1])=="--edge-only";
+    check(edge_only || std::string(argv[1])=="0" || std::string(argv[1])=="1" || std::string(argv[1])=="2","explicit mode");
+    const int process=edge_only?0:argv[1][0]-'0';gate("before-runtime");rt=sycl_backend::runtime_for();Drain pending;
     check(rt->device().get_info<sycl::info::device::name>()=="Intel(R) Arc(TM) B570 Graphics","B570 required");
     check(rt->compute().has_property<sycl::property::queue::in_order>() && rt->compute().has_property<sycl::property::queue::enable_profiling>(),"qualified profiling in-order queue");gate("runtime-ready");
     identity_edge(); // Must pass before any timing sample.
+    if(edge_only) {rt->wait();gate("before-exit");std::cout<<"HEAD_EDGE_DONE passed=1\n";return 0;}
     static_assert(std::chrono::steady_clock::is_steady);
     timespec resolution{};check(clock_getres(CLOCK_MONOTONIC,&resolution)==0 && resolution.tv_sec==0 && resolution.tv_nsec<=1000,"clock resolution");
     std::vector<double> overhead;
