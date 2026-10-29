@@ -15724,7 +15724,7 @@
   },
   "pair_prefill_quality_gate_design_20261029": {
     "classification": "decision support",
-    "status": "worker_closed_native_review_pending",
+    "status": "curated_prospective_design_only",
     "schedulable_now": false,
     "worker_model": "Orca Codex gpt-6-luna high",
     "source_revision": "4b762e77b",
@@ -15753,6 +15753,44 @@
     "report_sha256": "532edb60ef4b070cae2c5afa3968443bc410155e2d7161954cf4723615557973",
     "report_bytes": 12055,
     "native_curator": "curate_pair_prefill_quality_20261029",
-    "next": "Native Luna-max report review;Main does not read original report body. This is prospective quality design,no adoption or measurement. Six-process performance comparison continues unchanged."
+    "next": "Close current six-process comparison first. For a speed-qualified candidate,commit BF16-compatible scoring/task plan with explicit prospective budget and bounded callback cost before quality collection. No further Main regression forensics.",
+    "review_sha256": "3e14b3e75ae0fa6014e14f76214424bb64284973f4fcb89dfcad715bb2eeeabb",
+    "native_review": {
+      "model": "native Codex gpt-6-luna max",
+      "quality_qualified": false,
+      "adoption_qualified": false,
+      "verdict": "Useful prospective design with material cost and acceptance-rule corrections; proposal only.",
+      "essential_findings": [
+        "Existing NLL callback reads back full-vocabulary logits and waits for every prompt position;cost estimate must include this and6–9rather than4–6runs. Do not schedule full long-context scoring unchanged.",
+        "The existing FP32 final-layer bridge can feed the scorer from BF16,but the comparator currently rejects BF16/pair. Commit actual supported scoring/controller contracts first.",
+        "A justified prospective engineering noninferiority budget is permitted without an external published margin;it is probability fidelity,not proof of SGLang/vLLM contract equivalence or task success.",
+        "Task checks,independent repeated decode/handoff and physical262144fill/tails/RESTORE remain separate gates;do not require identical free-running text."
+      ],
+      "retrieval": {
+        "report_sections": [
+          "Existing repository hooks and limits",
+          "Up to three prioritized gates",
+          "Order and nonclaims"
+        ],
+        "local_sources": [
+          "src/program/generate.cpp",
+          "include/strata/program/dense_prefill_nll.hpp",
+          "tools/compare_dense_prefill_nll.py",
+          "src/prefill/layer_major.inc",
+          "src/kernels/sycl/qsa_pair_attention.cpp",
+          "src/core/verify.cpp"
+        ],
+        "primary_reference": "https://docs.vllm.ai/en/stable/api/vllm/"
+      },
+      "next_scope": {
+        "eligible_now": false,
+        "reason": "The assignment row correctly says schedulable_now=false; the six-process clean prefill comparison is still the named consumer and was explicitly frozen by Main.",
+        "prerequisites": [
+          "Close that comparison and preserve its original outcome.",
+          "Commit a new BF16/pair-compatible plan, receipt schema and controller with prospectively justified acceptance rules; prove source/build/executable and consumed evidence admission.",
+          "Resolve or explicitly defer the full-vocabulary callback cost before scheduling quality collection. Schedule only a concrete remaining contract/task gap; do not repeat regression forensics in Main."
+        ]
+      }
+    }
   }
 }
