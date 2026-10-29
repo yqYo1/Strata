@@ -180,7 +180,7 @@ def prepare():
     print('Prepared prospective configure/link closure;commit before execution.',flush=True)
 
 
-def compiler_products(stderr,allowed,output_root=OUT):
+def compiler_products(stderr,allowed,output_root=OUT,working_directory=None):
     # Save-temps keeps the compiler's internal products available for hashing;
     # bind them to explicit producer -o arguments in verbose owned tool commands.
     produced, lists = set(), set()
@@ -199,7 +199,7 @@ def compiler_products(stderr,allowed,output_root=OUT):
                 outputs.append(a.split('=',1)[1]);lists.add(Path(a.split('=',1)[1]))
         for output in outputs:
             path = Path(output)
-            path = (path if path.is_absolute() else ROOT / 'build' / path).resolve()
+            path = (path if path.is_absolute() else (working_directory or ROOT / 'build') / path).resolve()
             if path.is_file():
                 require(path.is_relative_to(output_root) or path.parent == Path('/home/yayoi') and
                         re.fullmatch(r'-[0-9a-f]{6}(?:_\d+)?\.(?:bc|table|txt|spv)',path.name),
@@ -222,15 +222,15 @@ def compiler_products(stderr,allowed,output_root=OUT):
     return produced
 
 
-def traced_inputs(stdout,stderr,allowed,output_root=OUT):
-    produced = compiler_products(stderr,allowed,output_root)
+def traced_inputs(stdout,stderr,allowed,output_root=OUT,working_directory=None):
+    produced = compiler_products(stderr,allowed,output_root,working_directory)
     observed, generated = {}, {}
     for line in stdout.splitlines():
         line = line.strip()
         if not line:
             continue
         path = Path(line)
-        path = (path if path.is_absolute() else ROOT / 'build' / path).resolve()
+        path = (path if path.is_absolute() else (working_directory or ROOT / 'build') / path).resolve()
         require(path.is_file(), 'unrecognized linker trace line: ' + line)
         sha = digest(path)
         if str(path) in allowed:
