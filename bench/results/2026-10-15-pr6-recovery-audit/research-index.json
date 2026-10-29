@@ -16664,7 +16664,7 @@
   },
   "qsa_required_workgroup_native_contract_20261030": {
     "classification": "decision support",
-    "status": "source_review_blocked_ABI_correction_pending_recheck",
+    "status": "reviewed_component_source_eligible",
     "schedulable_now": false,
     "worker_model": "Orca Codex gpt-6-luna high",
     "report": ".cache/research/2026-10-30/qsa_required_workgroup_native_contract_20261030.md",
@@ -16710,29 +16710,33 @@
     "report_bytes": 8443,
     "report_sha256": "4d17046dd0c1043bada2f34197b98f44b217079f50e127d538279e4be8926d08",
     "native_review": {
+      "source_accepted_for_component": true,
+      "status": "prior ABI admission blocker resolved for staged bounded qualification",
+      "evidence": [
+        "The no-enqueue property probe pairs the four SG16 kernels by their mangled original/candidate arm markers, requires exactly two normal/state pairs, rejects duplicate or zero-argument entries, and requires equal nonzero argument counts within each pair. It emits HEAD_ABI; the Python gate requires that marker and independently validates the two property pairs before accepting the properties stage.",
+        "The tiny trace parser pairs property names and successful launches, checks each launch argument count and local work size against its own compiled property, and retains sorted (argument index, size) pairs. It rejects wrong extent sets, duplicate/out-of-range indices, missing pair launches, signature changes across repeated launches, and mismatched original/candidate signatures for both normal and state kernels.",
+        "The host test source covers valid normal/state pairs, trace-record ordering, same-size-multiset rebinding, argument-count mismatch, missing/duplicate properties, changed repeated signatures, duplicate/out-of-range indices, launch count/work-group mismatch, and missing state dispatch. Main reports all 11 tests passed; this reviewer inspected the test source but did not run it."
+      ],
+      "execution_order_limit": "Compiled argument-count equality and exact work-group properties are checked before any enqueue. The indexed local-argument signature comes from the UR trace after the bounded tiny dispatch, so it is a post-tiny observation, not pre-submit proof. The tiny gate is the first dispatch and must fail closed on any signature mismatch before Page4/Page16 or performance work can proceed.",
+      "remaining_blockers": [],
+      "review_path": ".cache/research/2026-10-30/qsa_required_workgroup_native_contract_20261030.abi-recheck.review.json",
+      "review_sha256": "27a719a2e5d9269f0638505d294418480d4c581f5ed0dc91e6f4c1307246e40e",
+      "review_bytes": 4735
+    },
+    "previous_native_review": {
       "source_accepted_for_component": false,
-      "candidate_source_status": "conditionally_coherent",
-      "reason": "The one-attribute source change matches the existing 1-D local-128 launch and leaves arithmetic, local storage declarations, subgroup operations, and barriers unchanged. The current controller does not enforce its declared original-versus-candidate kernel ABI equivalence, so the component gate is incomplete until that check is added and committed.",
-      "blockers": [
-        {
-          "id": "counterpart_kernel_abi_not_checked",
-          "location": "tools/sycl/qsa_head_native.py:151-164",
-          "evidence": "dispatches() checks each launch argument count against that launch kernel's own queried property and checks the local-size multiset. It does not compare original/candidate normal kernels or original/candidate state kernels. Sorting local argument sizes also discards each argument index.",
-          "required_action": "Before the tiny gate, compare queried numKernelArgs for each matching normal/state pair. Preserve and compare ordered (local argument index, size) signatures across both arms in the launch trace; do not sort away the indices. If the acceptance wording requires the local signature to be known before the first tiny submission, prove it from pinned compiled/source metadata before submission, since the current trace is only produced by the submission itself.",
-          "pass_condition": "A committed controller/plan rejects any paired argument-count or indexed local-argument mismatch and records the exact checked signature for all four kernels."
-        }
-      ],
-      "limits": [
-        "No native build, compiled-property result, launch trace, numerical result, or timing result exists in the reviewed evidence.",
-        "CPU LLVM body equality does not establish equal SPIR-V/IGC/GEN code, resource use, correctness, or speed.",
-        "The direct synthetic component benchmark does not exercise production dispatch/fallback, model prefill throughput, decode, or the physical 262144-token model route.",
-        "The candidate is not evidence that a measured hardware bottleneck was relieved; keep the limiting resource and model-level adoption questions open."
-      ],
       "review_path": ".cache/research/2026-10-30/qsa_required_workgroup_native_contract_20261030.review.json",
       "review_sha256": "2563ba85d24416e59a21fa2bd4b043bc68d0d59dc131b5a3c29d828a879a408b",
-      "review_bytes": 8649
+      "blocker": "Missing paired argument counts and indexed local signatures;resolved prospectively at b4563d8ac,no prior outcome relabelled."
     },
-    "pending_source_correction": "Pair normal/state original/candidate argument counts beforeenqueue;preserve and compare indexedlocalargument signatures in tinytrace,with negativehostadmission tests. No nativebuild prepared or GPU enqueued."
+    "host_admission_tests": {
+      "source_commit": "b4563d8ac",
+      "command": "flock -n B/owned-v0141-measurement.lock timeout 60s python3 tools/test_qsa_native_admission.py",
+      "passed": true,
+      "tests": 11,
+      "GPU_executed": false,
+      "coverage": "Pairednormal/stateABI,missing/duplicate pairs,index-sizepermutation retaining same sizes,changed repeatedlaunch,duplicate/out-of-range localindex,actualcount/WG andmissing stateenqueue."
+    }
   },
   "prefill_exact_row_workload_construction_contract_20261030": {
     "classification": "decision support",
@@ -16771,6 +16775,24 @@
       "sha256": "d5f97c3070eea295674205af4ba3082acdc1d51a27cd94ec99e1bdc722b07dab",
       "bytes": 10206
     },
-    "corrected_digest": "Opt-in exact-row mode should keep existingprefillminimum unchanged. Anthropic/v1/messages/count_tokens uses same normalization+encode_prompt(store=False) withoutengine,not context/route/reuse qualification. TimedAnthropicresponse lacksengine timings;need exclusive/statuscorrelation or verifiedofflineOpenAIrenderer. Countprobeswarmtokenizer cache:label TTFTpost-preflight. Freeze finalbody beforetiming;no inferencecalibration/adaptiverepair."
+    "corrected_digest": "Opt-in exact-row mode should keep existingprefillminimum unchanged. Anthropic/v1/messages/count_tokens uses same normalization+encode_prompt(store=False) withoutengine,not context/route/reuse qualification. TimedAnthropicresponse lacksengine timings;need exclusive/statuscorrelation or verifiedofflineOpenAIrenderer. Countprobeswarmtokenizer cache:label TTFTpost-preflight. Freeze finalbody beforetiming;no inferencecalibration/adaptiverepair.",
+    "implementation": {
+      "source_commit": "07f8c3217",
+      "change": "OpenAI count-only endpoint matches completionnormalizer/format+storeFalse;reject dynamicMCP and visionexpansion. ExistingAnthropic endpoint retained. This enables exactprompt planning without newinference calibration or Anthropic/status timingcorrelation.",
+      "host_verification": {
+        "stage": "prepared_qualified_python_retry",
+        "earlier_setup_failure": {
+          "command": "system python3 -m unittest serve.test_server.MaxTokens count tests",
+          "tests_run": 0,
+          "error": "ModuleNotFoundError: regex duringsetUpClass",
+          "passed": false,
+          "GPU_executed": false
+        },
+        "python": "/home/yayoi/.local/share/strata-sycl/venv/bin/python3",
+        "qualified_python_manifest_sha256": "2b28b86120ea7dd67ba53eb876592f77c76badab54cb9f03ebe4788f9d873e13",
+        "command": "flock -n B/owned-v0141-measurement.lock timeout 60s /home/yayoi/.local/share/strata-sycl/venv/bin/python3 -m unittest serve.test_server.MaxTokens.test_count_tokens_is_the_prompt_messages_reads serve.test_server.MaxTokens.test_openai_count_matches_chat_prompt_without_engine_execution serve.test_server.MaxTokens.test_openai_count_rejects_unexpanded_vision_and_dynamic_tools -v",
+        "criteria": "All3hostHTTP tests pass,including4OpenAI formatting/thinking subcases,liveMockEngine count-vs-inference promptcount equality,no engineexecution duringcount,and unsupported vision/MCP400. No realnative/model speed/state qualification."
+      }
+    }
   }
 }
