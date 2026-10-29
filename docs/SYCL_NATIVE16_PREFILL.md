@@ -1591,6 +1591,25 @@ nonempty,so the string0 enables their paths. Query-mode qualification must
 also check query/pool cleanup against context destruction;the available CLI
 option and the non-counter collector's prior success do not qualify that mode.
 
+The independent direct-C
+[`metric_query.c`](../bench/sycl/metric_query.c) and
+[`controller`](../tools/sycl/metric_query.py) now build the exact65536-element
+OpenCL-C integer workload through pinned clang22 and llvm-spirv. The work-off
+process passes every payload/guard check,all four immutable environment/provider
+gates and explicit owner cleanup,then exits0 in2.850s. The separate work-query
+process successfully activates ComputeBasic EVENT/domain3/83,but
+`zetMetricQueryPoolCreate` with PERFORMANCE/count1 returns
+`ZE_RESULT_ERROR_INVALID_ARGUMENT` before BEGIN or kernel submission. It
+deactivates the group,destroys its owners and exits10 in2.629s;the frozen rule
+omits the empty-query arm after this refusal. Both processes are reaped,with
+empty sessions and no fresh GPU fault. Preserve this original refusal;it does
+not prove a permissions problem or qualify collection. The report review also
+finds no positive local child-device/group inventory,so a root-versus-child
+pool comparison is conditional on that evidence,not an immediately runnable
+gate. See `metric_query` in the compact result. Hardware utilization and
+physical bus traffic remain unknown;independent tuning and transfer measurements
+continue while counter qualification is pending.
+
 A20261028 source-only check of selected`6e40afc1b` also rules out treating
 head release as a configuration-only way to fund the additional accumulator.
 `run_prompt_with_native_dense_phase` explicitly rejects
