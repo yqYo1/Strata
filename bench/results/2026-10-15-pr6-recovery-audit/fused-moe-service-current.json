@@ -12696,5 +12696,151 @@
       },
       "scope": "Closedcomponentgeneration,consumedreporttransactions andunusedprototypecode only. Original ABI-negative and latercorrectedpass remain inreachableGit. Otheractiveconsumer/provenanceholds separate."
     }
+  },
+  "moe_split_accumulator": {
+    "status": "host_controls_prepared",
+    "host": {
+      "stage": "prepared",
+      "source_commit": "be574247d026a341c6abedf23a37bd6612d51430",
+      "source_inputs": {
+        "files": 43,
+        "aggregate_sha256": "89acdb4cb2e11960ad2efa4997fd5855599b00aefdbc5942083e191778841015"
+      },
+      "sdk": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/unitrace-warmed-graph-window-v1/compiler-inputs.json",
+        "sha256": "436cedc9dbd41810cd882e9040a129e6d8b7dbebb98806b00c4f2950b1dc1705",
+        "original_files": 8697,
+        "admitted_files": 8697,
+        "prospective_system_header_updates": {
+          "/usr/include/metee.h": [
+            "f063edcb00c88f3ddebc10f9b0487fe813cfb7ba71dc4b798729bed8902018a3",
+            "d07e18ce9228c3fc570b186eab13bf8a3e6c04214992f0de9d53b855dc837252"
+          ],
+          "/usr/include/opencl-c-base.h": [
+            "e1683c3db9cf9a95e9d02acbbfa74dcd29d4deaf4a856430f538d76985b04114",
+            "673c4720f879c2f101504979edbd0216c9cb6a982ce2b62bd467b81fd53d8e33"
+          ],
+          "/usr/include/opencl-c.h": [
+            "579b58f482ab0b3dfd396cab32ea3e0537bc5cf4c1067377b83fe417cbcc513b",
+            "aa7e871a8f7d961aa4126a9fadc2196f822c21811946c90147dc7415fe677de9"
+          ]
+        },
+        "updated_header_packages": [
+          "libigdfcl2 2.41.15-1~24.04",
+          "libmetee-dev 6.2.5-1~24.04~ppa2"
+        ],
+        "condition": "New v2 input snapshot only;all8694 other original hashes remain mandatory. Actual dependency closure records which updated headers were compiled. No qualification inherited for the new fixture."
+      },
+      "compiler": {
+        "path": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin/clang++",
+        "sha256": "1290881b4e12a5e002e5b0de0787f85328ee5fe19f253a54be1cdd97dc2f26eb"
+      },
+      "selected_binary": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/strata",
+        "bytes": 22190000,
+        "sha256": "22182f1a5e62e5f4259ce49a75ae44afbd988166ec79324816e499ff37ef60e4"
+      },
+      "input_inventory": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/moe-split-accumulator-v1/host/input-inventory.json",
+        "sha256": "8e9da19a69327a92b5430304238d8f8a1615c505eb386cad86bb8c0a6a54f443",
+        "files": 9107
+      },
+      "commands": [
+        [
+          "moe_accum_plan",
+          [
+            "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin/clang++",
+            "-std=c++20",
+            "-O1",
+            "-g0",
+            "-DNDEBUG",
+            "-fno-omit-frame-pointer",
+            "-fsanitize=address,undefined",
+            "-fno-fast-math",
+            "-ffp-contract=off",
+            "-I/home/yayoi/orca/workspaces/Strata/sycl/include",
+            "-save-temps=obj",
+            "-v",
+            "-Wl,-t",
+            "-MD",
+            "-MF",
+            "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/moe-split-accumulator-v1/host/moe_accum_plan.d",
+            "/home/yayoi/orca/workspaces/Strata/sycl/tests/moe_accum_plan.cpp",
+            "-o",
+            "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/moe-split-accumulator-v1/host/moe_accum_plan"
+          ]
+        ],
+        [
+          "moe_accum_routes",
+          [
+            "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin/clang++",
+            "-std=c++20",
+            "-O1",
+            "-g0",
+            "-DNDEBUG",
+            "-fno-omit-frame-pointer",
+            "-fsanitize=address,undefined",
+            "-fno-fast-math",
+            "-ffp-contract=off",
+            "-I/home/yayoi/orca/workspaces/Strata/sycl/include",
+            "-save-temps=obj",
+            "-v",
+            "-Wl,-t",
+            "-MD",
+            "-MF",
+            "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/moe-split-accumulator-v1/host/moe_accum_routes.d",
+            "/home/yayoi/orca/workspaces/Strata/sycl/tests/moe_accum_routes.cpp",
+            "-o",
+            "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/moe-split-accumulator-v1/host/moe_accum_routes"
+          ]
+        ]
+      ],
+      "environment": {
+        "PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin:/usr/bin:/bin",
+        "HOME": "/home/yayoi",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8",
+        "PYTHONDONTWRITEBYTECODE": "1",
+        "LD_LIBRARY_PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib:/opt/intel/oneapi/mkl/2026.1/lib",
+        "MKLROOT": "/opt/intel/oneapi/mkl/2026.1",
+        "OMP_NUM_THREADS": "1",
+        "GIT_TERMINAL_PROMPT": "0",
+        "GIT_SSH_COMMAND": "ssh -oBatchMode=yes",
+        "CPLUS_INCLUDE_PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/include",
+        "PIP_CONFIG_FILE": "/dev/null",
+        "ONEAPI_DEVICE_SELECTOR": "level_zero:gpu",
+        "UR_ADAPTERS_FORCE_LOAD": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_adapter_level_zero_v2.so.0",
+        "SYCL_CACHE_PERSISTENT": "0",
+        "NEOReadDebugKeys": "1",
+        "EnableDirectSubmission": "0",
+        "UR_L0_V2_FORCE_DISABLE_COPY_OFFLOAD": "1",
+        "STRATA_SYCL_VERIFY_NATIVE_CAPTURE": "0",
+        "STRATA_SYCL_PREFILL_SAME_QUEUE": "1",
+        "STRATA_SYCL_PREFILL_NATIVE16": "bf16",
+        "XDG_CACHE_HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/moe-split-accumulator-v1/host/cache",
+        "TMPDIR": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/moe-split-accumulator-v1/host/tmp",
+        "ASAN_OPTIONS": "detect_leaks=1:abort_on_error=1",
+        "UBSAN_OPTIONS": "halt_on_error=1:print_stacktrace=1"
+      },
+      "budgets": {
+        "wall": 240,
+        "cpu": 600,
+        "rss_cap": 8589934592,
+        "text_cap": 16777216,
+        "file_cap": 134217728,
+        "total_cap": 536870912
+      },
+      "active": false,
+      "passed": false,
+      "complete": false,
+      "ownership_closed": true,
+      "GPU_executed": false,
+      "criteria": "Two fresh CPU-only ASan/UBSan fixtures. Preserve old planner and route admission checks. Six split capacity cases81921..117488 with complete logical mixed/FP32 bank coverage, one-byte-short/invalid/full262144 refusal and guarded531988736B tail arithmetic. Twelve split route cases2..117488 with ordinary/hot routing,complete route mass, unique source/inverse mappings and <=8192-row jobs,including15jobs/expert. Exact committed source/compiler/actual compiler and linker inputs,closed owners, zero sanitizer diagnostics. No actual GPU allocation,arithmetic,speed or fullcontext qualification.",
+      "retention": "Host controls for the imminent split-FP32 candidate;keep selected6e40+12fixtures. Extract outcomes/source identity and retire disposable test binaries after source recovery."
+    },
+    "mechanism": "Process one117488-row expert-major window rather than81920+35568;preserve FP32 expert summation and16-bit tensor boundaries. Split accumulator makes capacity possible. Fewer expert dequants/submissions are a hypothesis;smaller bank may add PCIe traffic. Aggregate MoE minus GU/Down is NOT measured dequanttime or physical-resource saturation.",
+    "inference_adopted": false,
+    "decode_changed": false,
+    "next_gate": "Pass host controls,then source-reviewed separate ordinary/fused split consumers, bounded traced device numerics/bounds/actualallocation before model timing. Preserve exact selected-source production baseline and independent decode/handoff/fullcontext gates."
   }
 }
