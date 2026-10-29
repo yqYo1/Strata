@@ -1573,9 +1573,11 @@ Actual properties include XVE_ACTIVE,XVE_STALL,GPU_MEMORY_BYTE_READ_RATE and
 XVE_INST_EXECUTED_XMX_BF16. Their presence does not establish permission,coverage,
 physical PCIe traffic or arithmetic saturation. Before using counters for the
 MoE resource hypothesis,qualify one documented metric/method with a tiny known
-workload,an idle control and observer-cost/coverage checks. The full bounded
-inventory remains external only for that imminent selection;enumeration alone
-does not qualify collection or measure utilization.
+workload,an idle control and observer-cost/coverage checks. The selected83event
+properties remain in the query's bound selection receipt. After that selection,
+the full1414-entry inventory and superseded enumeration executable retire;
+only its provider-closure manifest remains required by query admission.
+Enumeration alone does not qualify collection or measure utilization.
 Installed flag definitions are EVENT_BASED=1 and TIME_BASED=2;the ComputeBasic
 event entry is group3,domain3,83metrics. Select by properties and flags rather
 than the index alone. The independently authored
