@@ -1941,7 +1941,7 @@ in-order GPU queue. Its checked maximum8192-query/2051-cap metadata needs an
 additional84025344bytes(80.133MiB),reserved before expert-bank planning.
 Decode and short-prefill selection remain unchanged. The actual production
 objects pass bounded GPU component qualification;the model route remains
-**unmeasured and unselected**. The independent Orca Luna audit found a missing pair-only
+**unselected pending clean model comparisons**. The independent Orca Luna audit found a missing pair-only
 device check at admission. Correction`ddb0df149`adds one reusable no-submit
 predicate at admission and the wrapper;native Luna-max accepts the corrected
 source gate. The selected6e40-plus-pair-only559-file snapshot and its frozen
@@ -1953,8 +1953,17 @@ three eight-case small processes and three19-case extended processes,including
 physically backed262144cell final addresses,independent numerical/set oracles,
 production-wrapper equivalence,guards,actual launch ABI,immutable providers,
 parameter validation and normal owner closure without fresh faults. These
-components do not fill a model context. Model speed,quality,decode preservation,
-handoff/RESTORE and physical full-context gates stay open.
+components do not fill a model context. The first official thinking-on model
+diagnostic also passes39260fresh input tokens/39259engine rows and24outputs.
+It reconciles60pair calls over12layers/five chunks and471108queries through a
+checked drain,with source/model/provider/owner checks and no fresh GPU fault.
+Actual placement keeps all39259residual rows on the GPU and the384-slot prefill
+bank;the prefix reservation is164743904bytes including84025344pair bytes.
+The corrected per-request placement parser passes eight CPU rejection controls
+and replay of that actual closed log. This traced first use is not clean speed.
+Model speed,quality,decode preservation,handoff/RESTORE and physical full-context
+gates stay open. The next comparison freezes six fresh processes and24long
+requests,retaining first use separately from the subsequent-three median.
 See`qsa_pair_proposal`in the
 [current service decision](../bench/results/2026-10-15-pr6-recovery-audit/fused-moe-service-current.json).
 
