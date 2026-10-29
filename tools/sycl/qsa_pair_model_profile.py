@@ -13,6 +13,7 @@ from pathlib import Path
 import re
 import select
 import socket
+import statistics
 import subprocess
 import sys
 import time
@@ -171,6 +172,11 @@ def compact(row):
 
 def prepare():
     record, _, rt, _, model, old = admitted()
+    controls = m.runtime.validation.committed(RESULT, (m.KEY, 'observer_cpu_controls'))
+    require(controls['passed'] and controls['tests'] >= 10 and controls['GPU_executed'] is False and
+            controls['source_sha256'] == {name:digest(P / name) for name in
+                ('tools/sycl/qsa_pair_model_profile.py', 'tests/core/test_qsa_profile_evidence.py')},
+            'run committed observer rejection controls for these exact inputs first')
     require(KEY not in record[m.KEY] and not ROOT.exists(), 'fresh diagnostic only')
     revision = d.gen.git('rev-parse', 'HEAD').decode().strip()
     pins = d.pins(revision)
@@ -192,6 +198,9 @@ def prepare():
             '--fail-fast-engine-error', '--ready-timeout', '600', '--out', str(root / 'bench')]
         plans.append(dict(index=index, arm=arm, root=str(root), binary=binary, command=command,
             expected_placement=old['processes'][index]['request_placement'][0],
+            clean_first_long=[dict(process=p['index'], prompt_ms=p['samples'][0]['prompt_ms'],
+                prompt_tps=p['samples'][0]['prompt_tps'], ttft_s=p['samples'][0]['ttft_s'])
+                for p in old['processes'] if p['arm'] == arm],
             generated={n:digest(root / n) for n in ('plan.json', 'config.json')},
             environment_sha256=d.fingerprint(environment(root, rt, arm))))
     row = dict(stage='prepared', source_commit=revision, sources=pins, model_assets=assets,
@@ -204,6 +213,7 @@ def prepare():
             observers='Both existing coarse v2 and fine QSA v1 flags before exec;fixed2MiB host admission. Exact already qualified binaries,no native rebuild.',
             acceptance='Exact workload/source/binary/runtime/provider/owner/fault/validation/placement and complete,error-free48-layer plus aggregate sample/query/dispatch conservation. Diagnostic closure is not an adoption gate.',
             interpretation='QSA attention interval encloses prefix pack+union+attention. Queue intervals include submission gaps;host wall is not CPU time/GPU service. No exclusive sums,clean speed,physical traffic or hardware saturation claims.',
+            observer_influence='Prospective sanity screen only:profiled first-long prompt_ms divided by the median of3same-arm clean first-long samples must be within[0.95,1.05]. Keep baseline samples and range. Outside flags potentially perturbed attribution;finish both ordered diagnostics unless a structural gate fails,no retry or exclusion. One sample does not measure causal observer overhead or variability;new samples require a new committed plan.',
             next='If QSA composite increment cannot account for the clean loss,stop pair-kernel work. If implicated,only a separately admitted representative real-data Page4 probe can select a tile/union/dispatch change.',
             retention='Keep aggregates,coverage,individual request sample and exact identity. Retire raw per-layer output after verification. Candidate build retained solely through this imminent diagnostic;review retirement at closure.'),
         complete=False, passed=False, active=False, ownership_closed=True)
@@ -307,8 +317,16 @@ def run(index):
         d.models.model_pins(config, row['model_assets'], full=index == 1)
         keep = ('actual_prompt_tokens', 'actual_read_tokens', 'actual_reused_tokens', 'generated_tokens',
                 'prompt_ms', 'prompt_tps', 'ttft_s', 'total_s', 'request_sha256')
+        baseline = [s['prompt_ms'] for s in plan['clean_first_long']]
+        require(len(baseline) == 3 and all(math.isfinite(v) and v > 0 for v in baseline),
+                'same-arm clean first-long reference missing')
+        ratio = sample['prompt_ms'] / statistics.median(baseline)
         outcome.update(complete=True, sample={k:sample[k] for k in keep}, actual_engine_rows=n,
             request_placement=placement[0], observer=observed, validation=proof, native_exit_code=0,
+            observer_influence=dict(clean_first_median_ms=statistics.median(baseline),
+                clean_first_range_ms=[min(baseline), max(baseline)], profiled_first_time_ratio=ratio,
+                prospective_bounds=[.95, 1.05], sanity_screen_passed=.95 <= ratio <= 1.05,
+                causal_overhead_measured=False),
             clean_speed_qualified=False, inference_adopted=False, decode_qualified=False, physical262144_qualified=False)
     except BaseException as error:
         outcome['error'] = repr(error)
@@ -319,7 +337,9 @@ def run(index):
         row.update(stage='running' if outcome['passed'] else 'failed', ownership_closed=outcome.get('ownership_closed', False),
             active=bool(owner and owner.active))
         if outcome['passed'] and len(row['processes']) == 2:
-            row.update(stage='closed', complete=True, passed=True)
+            row.update(stage='closed', complete=True, passed=True,
+                attribution_influence_screen_passed=all(p['observer_influence']['sanity_screen_passed']
+                    for p in row['processes']))
         write(ROOT / 'record.json', row); record[m.KEY][KEY] = compact(row); write(RESULT, record)
     print(json.dumps({k:outcome.get(k) for k in ('arm', 'passed', 'complete', 'fresh_faults', 'error')}), flush=True)
     require(outcome['passed'], 'bounded QSA attribution failed')

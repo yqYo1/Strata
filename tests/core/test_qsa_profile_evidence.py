@@ -97,6 +97,19 @@ class ProfileEvidence(unittest.TestCase):
         with self.assertRaises(Exception):
             profile(window().replace('wrapper_ms=120000', 'wrapper_ms=130000', 1), 117488)
 
+    def test_missing_complete_window(self):
+        for prefix in ('strata lm profile: ', 'strata lm qsa profile: '):
+            text = '\n'.join(line for line in window().splitlines() if not line.startswith(prefix))
+            with self.assertRaises(Exception): profile(text, 117488)
+
+    def test_missing_required_key(self):
+        with self.assertRaises(Exception):
+            profile(window().replace(' matrix_queries=117488', '', 1), 117488)
+
+    def test_wrong_active_cap_despite_coherent_aggregate(self):
+        with self.assertRaises(Exception):
+            profile(window().replace('cap=2051', 'cap=2050'), 117488)
+
 
 if __name__ == '__main__':
     unittest.main()
