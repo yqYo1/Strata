@@ -14,6 +14,7 @@ namespace strata::kernels {
 // Caller establishes input dependencies on this in-order queue and retains
 // all allocations until completion. Other queues need explicit dependencies.
 // The 262144 geometry limit does not prove that backing allocations fit.
+// IDs/steps/unions/counts require4-byte alignment;membership needs only1.
 void qsa_pair_union_prefill(const int32_t *ids, const int32_t *steps,
     int64_t queries, int64_t cap, int32_t *unions, uint8_t *membership,
     int32_t *counts, void *stream);

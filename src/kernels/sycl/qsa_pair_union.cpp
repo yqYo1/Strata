@@ -24,7 +24,13 @@ void qsa_pair_union_prefill(const int32_t *ids, const int32_t *steps,
                   {membership,checked_count(pairs,stride)*sizeof(uint8_t)},
                   {counts,checked_count(pairs,1)*sizeof(int32_t)}},
                  {{ids,checked_count(queries,cap)*sizeof(int32_t)},
-                  {steps,checked_count(queries,kStepCount)*sizeof(int32_t)}});
+                  {steps,checked_count(queries,kStepCount)*sizeof(int32_t)}},1);
+  // A byte membership stream needs only byte alignment. Check the actual
+  // int32_t operands separately instead of imposing their alignment on it.
+  validate_spans({},{{unions,checked_count(pairs,stride)*sizeof(int32_t)},
+                     {counts,checked_count(pairs,1)*sizeof(int32_t)},
+                     {ids,checked_count(queries,cap)*sizeof(int32_t)},
+                     {steps,checked_count(queries,kStepCount)*sizeof(int32_t)}},4);
   auto &queue=queue_for(stream);
   const auto device=queue.get_device();
   const auto sizes=device.get_info<sycl::info::device::sub_group_sizes>();

@@ -1284,10 +1284,10 @@
     "stage": "source_only",
     "producer_revision": "a8adbc65f",
     "files": {
-      "include/strata/kernels/qsa_pair_union.hpp": "2cc8b6421a873dd6ba41a9135dff3d4608ccfd3263d5c33ab7850d36c69c8a2e",
-      "src/kernels/sycl/qsa_pair_union.cpp": "e9f3ca56a445067d8df817ceb554ea5dcff612e544e28b98ee6028daee1aff8c",
+      "include/strata/kernels/qsa_pair_union.hpp": "1b4d1b9be1ade144e34084057e44ddc58acc5b9095b9236373350db82ce84592",
+      "src/kernels/sycl/qsa_pair_union.cpp": "1bf797f67a3184c6ee9dba348d04f08afe1c868447849e9f2c2116a0099aaa8f",
       "include/strata/kernels/qsa_pair_attention.hpp": "88a810b0181992efba235a217bed7c396d5cced5f1ec37eb43a46b9fc4094dd4",
-      "src/kernels/sycl/qsa_pair_attention.cpp": "f60b1f131463bc59bfe865d2c055949fe418438536efb808602679ce7c61500e"
+      "src/kernels/sycl/qsa_pair_attention.cpp": "c0b3089b59ff8002814f2384685e41919192a2e95021ad9ada34b756448e3357"
     },
     "provenance": "Main-authored MIT;attention uses only own selected6e40 qsa_bf16_prefix.cpp design SHA4f9f815c9baae709f919f6d5ad1af04677c10d8c13c7597b3857cf81567ae192;independent pair-mask/matrix mapping;no Xe application code.",
     "mechanism": "GPU exact sorted two-query union with u8 membership;24heads across pair fill three8-row matrix blocks;K/V load shared,per-query softmax/LSE independent;ordered FP32 tile sum and typed K/V4 staging preserved.",
@@ -2118,6 +2118,41 @@
           }
         }
       }
+    },
+    "retirement_preflight": {
+      "scope": "unadopted v1component generation;selected6e40and12fixtures untouched",
+      "project_files": 165,
+      "generated_files": 3,
+      "all_original_Git_bytes_and_generated_mapping_match": true,
+      "actual_compiler_inputs_checked": 699,
+      "binary": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-pair-probe-v1/fixture",
+        "sha256": "864e55521e1802c8a8ff8ff0a91bcac330234cfcb5019a0e373b9b3a3023fc0b",
+        "bytes": 1182128
+      },
+      "source_commit": "bef01aad1851eb43c8907066fbe6a95be791643c",
+      "recipe_plan_commit": "7fba0e539",
+      "physical_closure": {
+        "direct_child_reaped": true,
+        "anchored_session_empty": true,
+        "owned_signals": 0,
+        "old_PID_not_same_process": true
+      },
+      "original_failed_protocol_preserved": true,
+      "next": "Commit compact failure/source proof;retire now-unused v1binary/objects/cache/raw logs before new prospective native build.",
+      "retired": false
+    },
+    "pre_enqueue_refusal": {
+      "native_source": "bef01aad1",
+      "run_plan_commit": "f13c45e3b",
+      "exit_code": 1,
+      "error": "PAIR_ERROR SYCL kernel requires aligned nonnull spans",
+      "kernel_enqueues": 0,
+      "API_trace_bytes": 16728,
+      "fresh_faults": [],
+      "cause": "Generic span validator default alignment4 was applied to byte membership(+17bytes);consumer also unnecessarily applied it to2-byte BF16output/pack.",
+      "correction": "Prospective host-only typed-alignment fix:global spans align1;int32 operands align4;BF16spans align2. Both device bodies remain unchanged;new native fixture requires fresh build/gates.",
+      "original_protocol_outcome": "Failed/observation_complete=false remains unchanged;direct child reaped and anchored session empty verified separately."
     }
   }
 }

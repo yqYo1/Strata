@@ -72,7 +72,7 @@ bool qsa_pair_attention_prefill(const uint16_t *query,const QsaAttnPools &pools,
   validate_spans({{output,query_bytes}},{{packed.k,packed_bytes},{packed.v,packed_bytes},
       {packed.bad_rows,checked_count(active_rows,4)},
       {unions,checked_count(checked_count(pairs,stride),4)},
-      {membership,checked_count(pairs,stride)},{counts,checked_count(pairs,4)}});
+      {membership,checked_count(pairs,stride)},{counts,checked_count(pairs,4)}},1);
   validate_spans({},{{packed.k,packed_bytes},{packed.v,packed_bytes}},2);
   validate_spans({},{{packed.bad_rows,checked_count(active_rows,4)},
                     {unions,checked_count(checked_count(pairs,stride),4)},
