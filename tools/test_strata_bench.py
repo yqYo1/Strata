@@ -31,6 +31,9 @@ class BenchmarkTest(unittest.TestCase):
     def counted_chars(messages, timeout):
         return len(messages[0]['content'])+29
 
+    def count_endpoint(self, base, key, messages, timeout):
+        return self.counted_chars(messages,timeout)
+
     def exact_reply(self, suite, mutate=None):
         def reply(_base,_key,messages,cap,think):
             raw=response(generated=24)
@@ -48,7 +51,7 @@ class BenchmarkTest(unittest.TestCase):
 
     def test_exact_prefill_freezes_all_bodies_before_any_timed_request(self):
         suite=self.exact_suite()
-        with patch.object(bench,'count_chat_tokens',side_effect=self.counted_chars) as counter, \
+        with patch.object(bench,'count_chat_tokens',side_effect=self.count_endpoint) as counter, \
              patch.object(bench,'chat',side_effect=self.exact_reply(suite)) as chat:
             suite.run_prefill_only()
         result=suite.out['prefill_only']
@@ -67,25 +70,25 @@ class BenchmarkTest(unittest.TestCase):
         def changed(raw):
             raw['usage']['prompt_tokens']+=1
             raw['timings']['prompt_n']+=1
-        with patch.object(bench,'count_chat_tokens',side_effect=self.counted_chars), \
+        with patch.object(bench,'count_chat_tokens',side_effect=self.count_endpoint), \
              patch.object(bench,'chat',side_effect=self.exact_reply(suite,changed)) as chat:
-            with self.assertRaises(bench.EngineRequestError):
+            with self.assertRaisesRegex(bench.EngineRequestError,'actual prompt/read count differs'):
                 suite.run_prefill_only()
         self.assertEqual(chat.call_count,2)
         self.assertFalse(suite.out['prefill_only']['complete'])
 
     def test_exact_prefill_rejects_changed_body_after_counting(self):
         suite=self.exact_suite()
-        with patch.object(bench,'count_chat_tokens',side_effect=self.counted_chars), \
+        with patch.object(bench,'count_chat_tokens',side_effect=self.count_endpoint), \
              patch.object(bench,'chat',side_effect=self.exact_reply(suite,lambda raw:raw.update(request_sha256='changed'))):
-            with self.assertRaises(bench.EngineRequestError):
+            with self.assertRaisesRegex(bench.EngineRequestError,'timed body differs'):
                 suite.run_prefill_only()
 
     def test_unreachable_count_is_bounded_and_does_not_calibrate_with_inference(self):
         suite=self.exact_suite(target=32769)
-        with patch.object(bench,'count_chat_tokens',side_effect=lambda messages,timeout:2*len(messages[0]['content'])+100) as count, \
+        with patch.object(bench,'count_chat_tokens',side_effect=lambda base,key,messages,timeout:2*len(messages[0]['content'])+100) as count, \
              patch.object(bench,'chat',return_value=response(generated=24)) as chat:
-            with self.assertRaises(bench.EngineRequestError):
+            with self.assertRaisesRegex(bench.EngineRequestError,'cannot construct the exact count'):
                 suite.run_prefill_only()
         self.assertEqual(chat.call_count,1)
         self.assertLessEqual(count.call_count,32)

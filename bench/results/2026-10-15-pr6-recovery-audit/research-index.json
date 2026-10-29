@@ -16824,7 +16824,15 @@
         "flock -n B/owned-v0141-measurement.lock timeout 60s /home/yayoi/.local/share/strata-sycl/venv/bin/python3 -m unittest discover -s tools -p test_strata_bench.py",
         "flock -n B/owned-v0141-measurement.lock timeout 60s /home/yayoi/.local/share/strata-sycl/venv/bin/python3 -m unittest discover -s tools -p test_benchmark_evidence.py"
       ],
-      "criteria": "Allclient/evidencehosttests pass;newtests admit exactbodies and fail off-by-one,changedbody,unreachablecount and conflictingCLImodes without added inference. No realmodelroute/physicalrows/performancequalifies from mocked tests."
+      "criteria": "Allclient/evidencehosttests pass;newtests admit exactbodies and fail off-by-one,changedbody,unreachablecount and conflictingCLImodes without added inference. No realmodelroute/physicalrows/performancequalifies from mocked tests.",
+      "initial_host_attempt": {
+        "source_commit": "ce8d3ed5e",
+        "tests_run": 26,
+        "passed": false,
+        "errors": 1,
+        "failures": 1,
+        "reason": "Newmock count endpoint provided2-argument builder callback instead of4-argument HTTP helper. Correctsignatureandassert specificnegative errors so failedpreflight cannot falselypass body/count rejection tests."
+      }
     }
   }
 }
