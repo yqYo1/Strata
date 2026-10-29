@@ -9139,16 +9139,16 @@
       }
     },
     "observer_cpu_controls": {
-      "source_commit": "a49a3dc71",
+      "source_commit": "cc1179fc3",
       "command": "flock -n /home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/owned-v0141-measurement.lock python3 -B tests/core/test_qsa_profile_evidence.py",
-      "tests": 7,
+      "tests": 10,
       "passed": true,
       "GPU_executed": false,
       "source_sha256": {
-        "tools/sycl/qsa_pair_model_profile.py": "859ceaa313b3614b25fd344b2945f69c459f304eef3f5f03dd7dd45455f182bf",
-        "tests/core/test_qsa_profile_evidence.py": "2866866bd9bf05b27dba9159dd13c256c2311a622daf8e7857b76e662b219261"
+        "tools/sycl/qsa_pair_model_profile.py": "8c462f67a7937cc8d09849db2ddf3faa2719e637d93b51abba5fc74b218dd782",
+        "tests/core/test_qsa_profile_evidence.py": "aafecdda2a51228209d8ee4d738c0bbd4faafb2707b16176808b76c8b9f3e7de"
       },
-      "coverage": "Reject missing/duplicate layers or keys,failed headers,changed timing semantics,partial query/dispatch/staging,wrong extent/window census,NaN,aggregate/denominator mismatch. Correct Mode10 counts FFN windows rather than8192-token chunks. Log admission only,not native/model qualification."
+      "coverage": "Reject missing/duplicate layers or keys,failed headers,changed timing semantics,partial query/dispatch/staging,wrong extent/window census,NaN,aggregate/denominator mismatch. Correct Mode10 counts FFN windows rather than8192-token chunks. Log admission only,not native/model qualification. Three direct controls added for whole-window omission,missing required key and coherently wrong cap. Prospective observer influence screen is separate from the closed clean comparison."
     },
     "candidate_next_consumer": {
       "selected": "Original6e40 engine22182f1a5e62 remains selected;pair0442ebfdcb94 is rejected for whole-model speed.",
