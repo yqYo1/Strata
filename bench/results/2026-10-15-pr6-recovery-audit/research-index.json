@@ -15705,6 +15705,18 @@
       },
       "limits": "Source eligibility only. No six-process model measurement, speed result, decode qualification, or inference adoption."
     },
-    "next": "The corrected comparison source gate passes: fdfe49828, eight CPU-only acceptance/rejection controls, and Luna-max review. The original six-process/24-request plan is still unrun; this source result makes no throughput or adoption claim. First-model and fresh frontend qualification records must also be committed before the comparison controller can prepare."
+    "next": "The corrected comparison source gate passes: fdfe49828, eight CPU-only acceptance/rejection controls, and Luna-max review. The original six-process/24-request plan is still unrun; this source result makes no throughput or adoption claim. First-model and fresh frontend qualification records must also be committed before the comparison controller can prepare.",
+    "native_replay_plan": {
+      "stage": "prepared",
+      "source_commit": "fdfe49828",
+      "parser_sha256": "bc0557274478e04e45f2671d8286d6ef8ac1f2a8cab9224dbef21831cc86b2e4",
+      "log": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-pair-model-validation-v1/model/engine.stderr",
+        "sha256": "c8c9ea01d4a580cc5fab3f7f3c4f57aed07cb1f76a228ded803ba07073acdf4e"
+      },
+      "code": "from pathlib import Path\nimport hashlib,json,sys\nP=Path('/home/yayoi/orca/workspaces/Strata/sycl')\nsys.path.insert(0,str(P/'tools/sycl'))\nimport pair_model_placement as parser\nA=P/'bench/results/2026-10-15-pr6-recovery-audit'\nindex=json.loads((A/'research-index.json').read_text())['pair_clean_model_comparison_contract_20261029']\nplan=index['native_replay_plan']\nassert hashlib.sha256((P/'tools/sycl/pair_model_placement.py').read_bytes()).hexdigest()==plan['parser_sha256']\nmodel=json.loads((A/'fused-moe-service-current.json').read_text())['qsa_pair_model']['model_validation']['model']\nassert model['passed'] and model['ownership_closed'] and model['outcome']['complete'] and not model['outcome']['fresh_faults']\nlog=Path(plan['log']['path'])\nassert hashlib.sha256(log.read_bytes()).hexdigest()==plan['log']['sha256']\nrows=parser.validate(log.read_text(),[model['outcome']['actual_engine_rows']],'candidate',model['environment'])\nrow=rows[0]\nprint(json.dumps(dict(passed=True,requests=len(rows),engine_rows=row['engine_rows'],prefix_bytes=row['prefix']['transient_bytes'],prefill_slots=row['bank']['effective_slots'],residual_gpu_rows=row['placement']['residual_gpu_rows'],residual_host_bytes=row['placement']['residual_host'],GPU_executed=False)))\n",
+      "budget": "45s,CPU-only under shared measurement lock;the already closed model log is the only data input.",
+      "consumer": "Verify actual native emitter/byte contracts before six expensive comparison processes. Keep compact outcome;retire consumed log after comparison qualification consumers checked."
+    }
   }
 }
