@@ -13238,9 +13238,9 @@
       }
     },
     "device_plan": {
-      "stage": "closed",
-      "mode": "route-off",
-      "source_commit": "2b17f472833b498a96af5f0f3bd4f3dbdda50e30",
+      "stage": "prepared",
+      "mode": "route-on",
+      "source_commit": "c2f7e36410ef39d90ffa1358bac5a415e3c01483",
       "inputs": {
         "tools/sycl/check_moe_split.py": "58c5b52ec116268a987a6d16306503159bf49e11fb9cae4dd1ec09bcc09b8349",
         "tools/sycl/check_qsa_k_loop.py": "c930cfccf24eb0ad89af24844e7a113d3b91578f4c22556e0e9e3184573af44e",
@@ -13372,7 +13372,7 @@
       "command": [
         "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/moe-split-accumulator-v1/native-v2/build/sycl_moe_down_scatter_bench",
         "--split-route-smoke",
-        "0"
+        "1"
       ],
       "environment": {
         "PATH": "/usr/bin:/bin",
@@ -13391,12 +13391,12 @@
         "SYCL_CACHE_PERSISTENT": "0",
         "ZES_ENABLE_SYSMAN": "0",
         "UR_ENABLE_LAYERS": "UR_LAYER_TRACING,UR_LAYER_PARAMETER_VALIDATION",
-        "UR_LOG_TRACING": "level:info;flush:info;output:file,/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/moe-split-accumulator-v1/device/route-off/api.trace",
-        "UR_LOG_VALIDATION": "level:warning;flush:warning;output:file,/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/moe-split-accumulator-v1/device/route-off/validation.log",
+        "UR_LOG_TRACING": "level:info;flush:info;output:file,/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/moe-split-accumulator-v1/device/route-on/api.trace",
+        "UR_LOG_VALIDATION": "level:warning;flush:warning;output:file,/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/moe-split-accumulator-v1/device/route-on/validation.log",
         "UR_LOG_LOADER": "level:warning;flush:warning;output:stderr",
         "UR_LOG_LEVEL_ZERO": "level:warning;flush:warning;output:stderr",
-        "TMPDIR": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/moe-split-accumulator-v1/device/route-off/tmp",
-        "XDG_CACHE_HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/moe-split-accumulator-v1/device/route-off/cache",
+        "TMPDIR": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/moe-split-accumulator-v1/device/route-on/tmp",
+        "XDG_CACHE_HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/moe-split-accumulator-v1/device/route-on/cache",
         "LD_PRELOAD": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/ur-validation-preload-v2/libstrata_ur_validation.so",
         "STRATA_UR_PROBE_EXPECTED_LOADER": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_loader.so.0.12.0",
         "ZE_ENABLE_ALT_DRIVERS": "/usr/lib/x86_64-linux-gnu/libze_intel_gpu.so.1.17.39758",
@@ -13407,7 +13407,7 @@
         "STRATA_SYCL_PREFILL_NATIVE16_VLLM_TILE": "auto",
         "STRATA_SYCL_PREFILL_GU_SWIGLU": "0",
         "STRATA_TEST_MAIN_GATES": "1",
-        "STRATA_SYCL_PREFILL_DOWN_SCATTER": "0"
+        "STRATA_SYCL_PREFILL_DOWN_SCATTER": "large"
       },
       "budgets": {
         "wall": 900,
