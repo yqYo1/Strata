@@ -1610,6 +1610,36 @@ gate. See `metric_query` in the compact result. Hardware utilization and
 physical bus traffic remain unknown;independent tuning and transfer measurements
 continue while counter qualification is pending.
 
+The current-runtime transfer refresh now passes14fresh processes:two traced
+2MiB controls,then three processes per allocation/size with one first copy and
+three subsequent copies in each direction. All104full payload/source/guard
+checks pass,all owners close and no fresh GPU fault occurs. Rates include the
+production-compatible copy API and completion wait,with parameter validation
+and the qualified copy/direct-submission settings retained. The table gives
+the range of the three process medians in decimalGB/s:
+
+| Payload/allocation | H2D | D2H |
+| --- | ---: | ---: |
+| 2MiB/ordinary RAM | 2.681..4.712 | 3.455..3.869 |
+| 2MiB/Host USM | 4.219..4.318 | 4.231..4.380 |
+| 320MiB/ordinary RAM | 5.934..6.011 | 5.537..5.546 |
+| 320MiB/Host USM | 5.091..5.096 | 5.647..5.648 |
+
+The nine ordinary2MiB H2D samples span0.360..4.771GB/s;keep that variation and
+every sample. Do not assume Host USM is a faster H2D placement. Calling-thread
+CPU/wall medians are about0.99even without LLM arithmetic. In the320MiB Host-USM
+cases,about65.75ms H2D and59.32ms D2H CPU time is inside the explicit completion
+wait;ordinary D2H instead spends about60.15ms inside submission. These caller
+clocks do not distinguish internal staging from polling,or prove a model's
+CPU arithmetic bottleneck. They do not measure physicalPCIe bytes or the
+overlapped model critical path. Runtime and compat sources match selected6e40;
+the inactive command-profile helper is current source,and this independently
+built tool usesC++17 rather than the root engine'sC++20. Its exact recipe,
+644compiler inputs,all96comparison copy samples and limits are recorded in
+`transfer_refresh` in the compact result. The selected engine and split-MoE
+candidate remain unchanged;use these rates for resource budgeting and qualify
+the complete split-MoE path before another hardware-saturation claim.
+
 A20261028 source-only check of selected`6e40afc1b` also rules out treating
 head release as a configuration-only way to fund the additional accumulator.
 `run_prompt_with_native_dense_phase` explicitly rejects

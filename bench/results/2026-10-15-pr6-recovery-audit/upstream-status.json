@@ -623,5 +623,25 @@
     "retired_source_paths": 9029,
     "retired_source_bytes": 146838608,
     "branches_created_or_removed": 0
+  },
+  "new_interval_function_slices": {
+    "target": "46c152a1310f77cd2f0ce2c7cd213962df14fe83",
+    "cpu_name_and_no_x86_flags": {
+      "status": "ported_focused_tests_passed",
+      "source_commit": "0fb985ff2bd4dfb0a7216d82df44f7876ae3a748",
+      "origin": "Niko1221/Strata setup.py::cpu_info through46c152a;root LICENSE matches MIT. Includes the missing-flags guard needed by this older fork.",
+      "files": [
+        "setup.py::cpu_info",
+        "tools/test_setup_cpu_info.py"
+      ],
+      "behavior": "Report heterogeneous Linux ARM CPU names without AttributeError or AVX claims. MCP already consumes this setup function;no ARM engine support is implied. Existing x86 complete-AVX512 requirements and safe unavailable-proc fallback preserved.",
+      "validation": {
+        "command": "PYTHONDONTWRITEBYTECODE=1 flock -n /home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/owned-v0141-measurement.lock /usr/bin/python3 -m unittest tools.test_setup_cpu_info -v",
+        "exit_code": 0,
+        "tests": 4,
+        "GPU_or_downloads": false
+      }
+    },
+    "coverage": "One bounded required host-reporting slice only;41-path reviewed scope is not the full132-path interval. Absent signed-feed/control/CLI consumers need an explicit port/interface map,not an irrelevant-feature label. Earlier required functions and unmodified tuned upstream performance remain pending. No inference changes imported."
   }
 }
