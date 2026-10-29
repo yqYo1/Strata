@@ -16619,14 +16619,14 @@
   },
   "recurrent_low_precision_state_stability_collection_20261030": {
     "classification": "knowledge collection",
-    "status": "completed_native_curation_running",
+    "status": "reviewed_conditional_reference",
     "schedulable_now": false,
     "source_commit": "4d49bd8b612c2750b4f17df174572ced3c1d81bc",
     "worker_model": "Orca Codex gpt-6-luna high",
     "report": ".cache/research/2026-10-30/recurrent_low_precision_state_stability_collection_20261030.md",
     "report_budget_bytes": 14336,
     "ownership_closed": true,
-    "retention": "NativeLuna-max reviews novelty/depth/retrieval value;commit only substantive reusable findings. Report-only, no product/test/GPU/process/Git actions;retire transaction paperwork after settlement.",
+    "retention": "Indexed conditional retrieval for a future source-bound recurrent-state precision candidate;review at next recurrent-candidate selection. Raw body is not automatically committed;retire if no realistic consumer remains.",
     "question": "Compare low-precision persistent state, per-block scaling, error compensation and selective FP32 retention for delta-rule/gated recurrent LLM layers, using official vLLM/SGLang/FLA/Mamba/KimiLinear paths and original numerical-analysis/GPU/ASIC papers. Separate storage from multiply/accumulate/reduction precision;establish which recurrences admit each method, inference sequence-length/stability evidence, retraining assumptions and counterexamples. Distinguish composable-scan scheduling and existing native16-bit operand work from state-precision optimization. Produce applicable techniques and required evidence,not local implementation or a degradation tolerance.",
     "prior_refs": [
       "gdn_column_partition_scope",
@@ -16648,23 +16648,34 @@
     "report_sha256": "eaa161000bff1d2c784f0040e016dd9e980148b4caae5baab7cc671a2a7ccb29",
     "report_bytes": 14290,
     "native_review": {
-      "agent": "/root/curate_recurrent_state_precision_20261030",
+      "status": "completed",
       "model": "gpt-6-luna",
       "reasoning_effort": "max",
-      "status": "running",
-      "path": ".cache/research/2026-10-30/recurrent_low_precision_state_stability_collection_20261030.review.json"
+      "path": ".cache/research/2026-10-30/recurrent_low_precision_state_stability_collection_20261030.review.json",
+      "bytes": 10888,
+      "sha256": "4549b01aeae05b0f4bc821fcfc5e59e3a82b4052c47366b614365be6a1bba378"
+    },
+    "corrected_digest": "Novel persistent-state precision/stability collection,distinct from residual16-bit storage and recurrent scan scheduling. DAMP SR means value scaling/reordering,NOT stochasticrounding. No local performance/numerical claim;aggregate GDN service25.17s does not establish state-storage bottleneck.",
+    "next_scope": {
+      "schedulable_now": false,
+      "requires": "A committed source/shape-specific component result establishing recurrent-state storage as a limitingresource and preserving actual state/dtype/update/handoff contract;no additional generic survey now."
     }
   },
   "accelerator_dvfs_steady_state_measurement_collection_20261030": {
     "classification": "knowledge collection",
-    "status": "completed_native_curation_running",
+    "status": "reviewed_conditional_reference",
     "schedulable_now": false,
     "source_commit": "4d49bd8b612c2750b4f17df174572ced3c1d81bc",
     "worker_model": "Orca Codex gpt-6-luna high",
     "report": ".cache/research/2026-10-30/accelerator_dvfs_steady_state_measurement_collection_20261030.md",
     "report_budget_bytes": 14336,
     "ownership_closed": true,
-    "retention": "NativeLuna-max reviews novelty/depth/retrieval value;commit only substantive reusable findings. Report-only, no product/test/GPU/process/Git actions;retire transaction paperwork after settlement.",
+    "retention": {
+      "recommendation": "Retain as an indexed knowledge-collection reference for conditional retrieval; do not commit the full report or review paperwork automatically.",
+      "consumer": "A subsequent matched long-prefill/QSA comparison in which state/time co-variation could change the interpretation or next measurement.",
+      "review_point": "After the first such committed comparison closes. If no decision uses the telemetry semantics, remove the active report/index reference; if it changes the decision, transfer only compact field meanings, permission limits, and results into the existing experiment result.",
+      "reason": "The API/timestamp semantics and non-causal interpretation are distinct from the counter-availability and pipeline-scaling reports, but no current local telemetry result establishes an immediate consumer."
+    },
     "question": "Compare non-invasive methods for distinguishing dynamic-frequency/power/thermal effects from algorithmic resource limits in repeated long-running GPU/ASIC kernels, prioritizing Intel Xe2/SYCL/LevelZero telemetry and original papers or contributor technical blogs. Cover timestamp/frequency/power sampling meaning, duty-cycle versus throttling, phase-order and cool-start confounders, hysteresis, repeated-process comparison designs and counterexamples. Explain when aggregate busy percent and nominal clocks cannot establish arithmetic or bandwidth saturation. No local execution,clock changes,management settings or driver troubleshooting;produce methods and evidence limits beyond the indexed counter-availability report.",
     "prior_refs": [
       "b570_qsa_resource_counter_capability_methods_20261023",
@@ -16686,11 +16697,35 @@
     "report_sha256": "2765ebe3d0a04e0c73d99034a5ebd6e0a305d458767c1bce60dccfbb13d6cc43",
     "report_bytes": 14332,
     "native_review": {
-      "agent": "/root/curate_dvfs_measurement_20261030",
+      "status": "completed",
       "model": "gpt-6-luna",
       "reasoning_effort": "max",
-      "status": "running",
-      "path": ".cache/research/2026-10-30/accelerator_dvfs_steady_state_measurement_collection_20261030.review.json"
+      "path": ".cache/research/2026-10-30/accelerator_dvfs_steady_state_measurement_collection_20261030.review.json",
+      "bytes": 9459,
+      "sha256": "a49ec116ceb5cff7b9014e3fa54c3c4f1ebb436499f3694f506153ccc73ad103"
+    },
+    "corrected_digest": "Novel conditional methods reference on non-invasive frequency/power/temperature/throttle/busy timestamp interpretation. Linux Sysman permissions and initialization matter. No observedlocal B570 availability,cadence,state/timecovariation or causation;no clocksettings changed.",
+    "next_scope": {
+      "schedulable_now": false,
+      "classification": "decision support",
+      "report_budget_bytes": 12288,
+      "candidate_question": "After an actual matched long-prefill result demonstrates repeatable time drift that could change a tuning decision, determine whether the already confirmed read-only Sysman fields and observed cadence can resolve that specific state/time ambiguity at acceptable observer cost. Return the smallest phase-bound plan and explicit stopping rule; no code, clock control, profiler, or local GPU run.",
+      "prerequisite_evidence": [
+        {
+          "state": "missing",
+          "evidence": "The pinned report explicitly states that no local B570 Sysman availability, permissions, cadence, or capability was observed."
+        },
+        {
+          "state": "missing",
+          "evidence": "The pinned report contains no local matched-work timing/telemetry samples showing state/time co-variation; the supplied index excerpts do not establish such a result."
+        }
+      ],
+      "schedule_only_after": [
+        "Main records a committed matched-work result showing repeatable timing drift or order/carry-over effects large enough to change a current measurement decision.",
+        "Main separately records a bounded read-only Sysman capability check with exact API statuses, sensor/domain identity, observed cadence, and applicable user/device permissions.",
+        "The current comparison's executable, workload phases, repetition/order, plateau rule, and no-observer timing control are pinned."
+      ],
+      "nonduplication": "Do not repeat a general Sysman API catalogue, QSA performance-counter inventory, generic DVFS survey, or offload-scaling model review."
     }
   }
 }
