@@ -63,7 +63,11 @@ void gate(bool enabled,const char *phase) {
 }
 
 void run(int cells,int cap,int queries,bool masked,bool extended,int live_cells=0) {
-  constexpr int Heads=24,KV=2,Dim=256,Page=16;
+#ifndef STRATA_QSA_TEST_PAGE_SIZE
+#define STRATA_QSA_TEST_PAGE_SIZE 16
+#endif
+  constexpr int Heads=24,KV=2,Dim=256,Page=STRATA_QSA_TEST_PAGE_SIZE;
+  static_assert(Page==4 || Page==16);
 #ifdef STRATA_QSA_PACKED_GUARD
   constexpr int PackedGuard=STRATA_QSA_PACKED_GUARD;
 #else
@@ -151,7 +155,12 @@ void run(int cells,int cap,int queries,bool masked,bool extended,int live_cells=
     // Capture both real and padded rows. The diagnostic specialization must
     // preserve the corresponding normal output, including NaNs and guards.
     // Compare raw FP32 bits before final BF16 output could hide a difference.
-    for (int kv_head : {0,1}) for (int head : {0,15}) {
+    for (int kv_head : {0,1})
+#if defined(STRATA_QSA_REAL_HEAD_STATE)
+    for (int head : {0,3,4,7,8,11}) {
+#else
+    for (int head : {0,15}) {
+#endif
       std::vector<float> serial;
       for (bool ordered : {false,true}) {
         state.put(state_initial);out.put(sentinel);
@@ -313,7 +322,13 @@ void run(int cells,int cap,int queries,bool masked,bool extended,int live_cells=
     for (int invalid=0;invalid<8;++invalid) {
       QsaPrefixStateProbe probe{0,0,0,state.data()+16};
       if (invalid==0) probe.query=queries;
-      if (invalid==1) probe.head=16;
+      if (invalid==1) {
+#if defined(STRATA_QSA_REAL_HEAD_STATE)
+        probe.head=12;
+#else
+        probe.head=16;
+#endif
+      }
       if (invalid==2) probe.kv_head=2;
       if (invalid==3) probe.states=nullptr;
       if (invalid==4) probe.states=reinterpret_cast<float *>(out.data()+16); // Actual output, after the guard.
