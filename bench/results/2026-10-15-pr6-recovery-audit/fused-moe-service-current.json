@@ -9965,5 +9965,432 @@
       "manifest": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-id-int-and-compiler-retired-20261029.jsonl",
       "manifest_sha256": "bd404697b458d63e2b9faa8764ec1ecd51a32a3287e9825fdc7e0c4aec313386"
     }
+  },
+  "qsa_parallel_normalizer": {
+    "build": {
+      "stage": "prepared",
+      "source_commit": "73414ebc28f2ac83cc494e5dc6f176d1586e197a",
+      "compiler": {
+        "path": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin/clang++",
+        "sha256": "1290881b4e12a5e002e5b0de0787f85328ee5fe19f253a54be1cdd97dc2f26eb"
+      },
+      "sdk": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/unitrace-warmed-graph-window-v1/compiler-inputs.json",
+        "sha256": "436cedc9dbd41810cd882e9040a129e6d8b7dbebb98806b00c4f2950b1dc1705",
+        "original_files": 8697,
+        "admitted_files": 8697,
+        "prospective_system_header_updates": {
+          "/usr/include/metee.h": [
+            "f063edcb00c88f3ddebc10f9b0487fe813cfb7ba71dc4b798729bed8902018a3",
+            "d07e18ce9228c3fc570b186eab13bf8a3e6c04214992f0de9d53b855dc837252"
+          ],
+          "/usr/include/opencl-c-base.h": [
+            "e1683c3db9cf9a95e9d02acbbfa74dcd29d4deaf4a856430f538d76985b04114",
+            "673c4720f879c2f101504979edbd0216c9cb6a982ce2b62bd467b81fd53d8e33"
+          ],
+          "/usr/include/opencl-c.h": [
+            "579b58f482ab0b3dfd396cab32ea3e0537bc5cf4c1067377b83fe417cbcc513b",
+            "aa7e871a8f7d961aa4126a9fadc2196f822c21811946c90147dc7415fe677de9"
+          ]
+        },
+        "updated_header_packages": [
+          "libigdfcl2 2.41.15-1~24.04",
+          "libmetee-dev 6.2.5-1~24.04~ppa2"
+        ],
+        "condition": "New v2 input snapshot only;all8694 other original hashes remain mandatory. Actual dependency closure records which updated headers were compiled. No qualification inherited for the new fixture."
+      },
+      "geometry_proof": {
+        "original_source_commit": "6e40afc1beddd059ee518617f6c1efce1da14aca",
+        "original_source_sha256": "4f9f815c9baae709f919f6d5ad1af04677c10d8c13c7597b3857cf81567ae192",
+        "generated_sha256": {
+          "original.cpp": "9e8e38810887bcab2dfd2ffb6ad77dec5c6bb41e75665ac1dbbabaf77db72a91",
+          "candidate.cpp": "3391809a26f9a58b61b8d28cc99cbf48930e6a06ac1a33c7bb84b3974926f8ce",
+          "qsa-head.hpp": "db97f07d588579c2666fbcba86f521c29f9301ea98e2a93dea379f2f0d559f44"
+        },
+        "geometry": "Same M8,N16,K16,WG128,SG16,16padded/12real heads;bothsize_t IDs.",
+        "reversible_geometry_edits": 0,
+        "reversible_math_edits": 1,
+        "reversible_common_diagnostic_edits": 7,
+        "declared_local_bytes": 20036,
+        "production_or_decode_changed": false,
+        "trace_layout": "Capture only:ceil(cap/32)*64uint32words(per tile32FP32p bits+32BF16PVbits),then256FP32A bits+256pre-BF16normalized bits. Allwrites validated disjoint;normal speed exports have no capture stores.",
+        "preservation": "Only normalizer fold changes;same common p/alpha/max/PV/order/geometry/barriers. Fullinstrumented/uninstrumented correspondence,groupmapping,denormal/mathmode and interval/state/task/performance qualification pending. ClosedID-int source recovers at1a2583fb0."
+      },
+      "native_source_files": 163,
+      "native_source_digest": "56d6e2e086f7c68e8fa5211802b18ee6c0a40d50287a7d551e1dbb2086f40d86",
+      "original_native_source": "6e40afc1beddd059ee518617f6c1efce1da14aca",
+      "selected_binary": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/strata",
+        "bytes": 22190000,
+        "sha256": "22182f1a5e62e5f4259ce49a75ae44afbd988166ec79324816e499ff37ef60e4"
+      },
+      "runtime_sha256": "09ad358e12f6ef58bfc0a978519927863f3d09949a033a1e224db95997647d97",
+      "boot": "cfda0b6a-7c13-4fe2-bdf5-8f9202770840",
+      "input_inventory": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-normalizer-native-v1/input-inventory.json",
+        "sha256": "2dfbe8ce02abe2889a628a37e12e0ff4a801c1af332a91a25705261869e12dc8",
+        "files": 9271
+      },
+      "commands": [
+        [
+          "IRoriginal",
+          [
+            "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin/clang++",
+            "-std=c++20",
+            "-O3",
+            "-DNDEBUG",
+            "-g0",
+            "-fsycl",
+            "-fsycl-id-queries-range=size_t",
+            "-fno-fast-math",
+            "-ffp-contract=off",
+            "-DSTRATA_ENABLE_SYCL=1",
+            "-I/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-normalizer-native-v1/source/include",
+            "-I/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-normalizer-native-v1/source/include/strata/sycl/compat",
+            "-I/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-normalizer-native-v1/source/bench/sycl",
+            "-fsycl-device-only",
+            "-S",
+            "-emit-llvm",
+            "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-normalizer-native-v1/source/bench/sycl/original.cpp",
+            "-o",
+            "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-normalizer-native-v1/original.ll"
+          ]
+        ],
+        [
+          "IRcandidate",
+          [
+            "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin/clang++",
+            "-std=c++20",
+            "-O3",
+            "-DNDEBUG",
+            "-g0",
+            "-fsycl",
+            "-fsycl-id-queries-range=size_t",
+            "-fno-fast-math",
+            "-ffp-contract=off",
+            "-DSTRATA_ENABLE_SYCL=1",
+            "-I/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-normalizer-native-v1/source/include",
+            "-I/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-normalizer-native-v1/source/include/strata/sycl/compat",
+            "-I/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-normalizer-native-v1/source/bench/sycl",
+            "-fsycl-device-only",
+            "-S",
+            "-emit-llvm",
+            "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-normalizer-native-v1/source/bench/sycl/candidate.cpp",
+            "-o",
+            "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-normalizer-native-v1/candidate.ll"
+          ]
+        ],
+        [
+          "runtime",
+          [
+            "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin/clang++",
+            "-std=c++20",
+            "-O3",
+            "-DNDEBUG",
+            "-g0",
+            "-fsycl",
+            "-fsycl-id-queries-range=size_t",
+            "-fno-fast-math",
+            "-ffp-contract=off",
+            "-DSTRATA_ENABLE_SYCL=1",
+            "-I/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-normalizer-native-v1/source/include",
+            "-I/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-normalizer-native-v1/source/include/strata/sycl/compat",
+            "-I/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-normalizer-native-v1/source/bench/sycl",
+            "-MD",
+            "-MF",
+            "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-normalizer-native-v1/runtime.d",
+            "-c",
+            "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-normalizer-native-v1/source/src/sycl/runtime.cpp",
+            "-o",
+            "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-normalizer-native-v1/runtime.o"
+          ]
+        ],
+        [
+          "compat",
+          [
+            "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin/clang++",
+            "-std=c++20",
+            "-O3",
+            "-DNDEBUG",
+            "-g0",
+            "-fsycl",
+            "-fsycl-id-queries-range=size_t",
+            "-fno-fast-math",
+            "-ffp-contract=off",
+            "-DSTRATA_ENABLE_SYCL=1",
+            "-I/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-normalizer-native-v1/source/include",
+            "-I/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-normalizer-native-v1/source/include/strata/sycl/compat",
+            "-I/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-normalizer-native-v1/source/bench/sycl",
+            "-MD",
+            "-MF",
+            "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-normalizer-native-v1/compat.d",
+            "-c",
+            "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-normalizer-native-v1/source/src/sycl/compat.cpp",
+            "-o",
+            "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-normalizer-native-v1/compat.o"
+          ]
+        ],
+        [
+          "command_profile",
+          [
+            "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin/clang++",
+            "-std=c++20",
+            "-O3",
+            "-DNDEBUG",
+            "-g0",
+            "-fsycl",
+            "-fsycl-id-queries-range=size_t",
+            "-fno-fast-math",
+            "-ffp-contract=off",
+            "-DSTRATA_ENABLE_SYCL=1",
+            "-I/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-normalizer-native-v1/source/include",
+            "-I/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-normalizer-native-v1/source/include/strata/sycl/compat",
+            "-I/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-normalizer-native-v1/source/bench/sycl",
+            "-MD",
+            "-MF",
+            "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-normalizer-native-v1/command_profile.d",
+            "-c",
+            "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-normalizer-native-v1/source/src/sycl/command_profile.cpp",
+            "-o",
+            "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-normalizer-native-v1/command_profile.o"
+          ]
+        ],
+        [
+          "prompt_attention",
+          [
+            "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin/clang++",
+            "-std=c++20",
+            "-O3",
+            "-DNDEBUG",
+            "-g0",
+            "-fsycl",
+            "-fsycl-id-queries-range=size_t",
+            "-fno-fast-math",
+            "-ffp-contract=off",
+            "-DSTRATA_ENABLE_SYCL=1",
+            "-I/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-normalizer-native-v1/source/include",
+            "-I/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-normalizer-native-v1/source/include/strata/sycl/compat",
+            "-I/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-normalizer-native-v1/source/bench/sycl",
+            "-MD",
+            "-MF",
+            "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-normalizer-native-v1/prompt_attention.d",
+            "-c",
+            "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-normalizer-native-v1/source/src/kernels/sycl/prompt_attention.cpp",
+            "-o",
+            "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-normalizer-native-v1/prompt_attention.o"
+          ]
+        ],
+        [
+          "original",
+          [
+            "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin/clang++",
+            "-std=c++20",
+            "-O3",
+            "-DNDEBUG",
+            "-g0",
+            "-fsycl",
+            "-fsycl-id-queries-range=size_t",
+            "-fno-fast-math",
+            "-ffp-contract=off",
+            "-DSTRATA_ENABLE_SYCL=1",
+            "-I/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-normalizer-native-v1/source/include",
+            "-I/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-normalizer-native-v1/source/include/strata/sycl/compat",
+            "-I/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-normalizer-native-v1/source/bench/sycl",
+            "-MD",
+            "-MF",
+            "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-normalizer-native-v1/original.d",
+            "-c",
+            "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-normalizer-native-v1/source/bench/sycl/original.cpp",
+            "-o",
+            "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-normalizer-native-v1/original.o"
+          ]
+        ],
+        [
+          "candidate",
+          [
+            "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin/clang++",
+            "-std=c++20",
+            "-O3",
+            "-DNDEBUG",
+            "-g0",
+            "-fsycl",
+            "-fsycl-id-queries-range=size_t",
+            "-fno-fast-math",
+            "-ffp-contract=off",
+            "-DSTRATA_ENABLE_SYCL=1",
+            "-I/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-normalizer-native-v1/source/include",
+            "-I/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-normalizer-native-v1/source/include/strata/sycl/compat",
+            "-I/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-normalizer-native-v1/source/bench/sycl",
+            "-MD",
+            "-MF",
+            "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-normalizer-native-v1/candidate.d",
+            "-c",
+            "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-normalizer-native-v1/source/bench/sycl/candidate.cpp",
+            "-o",
+            "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-normalizer-native-v1/candidate.o"
+          ]
+        ],
+        [
+          "oracle4",
+          [
+            "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin/clang++",
+            "-std=c++20",
+            "-O3",
+            "-DNDEBUG",
+            "-g0",
+            "-fsycl",
+            "-fsycl-id-queries-range=size_t",
+            "-fno-fast-math",
+            "-ffp-contract=off",
+            "-DSTRATA_ENABLE_SYCL=1",
+            "-I/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-normalizer-native-v1/source/include",
+            "-I/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-normalizer-native-v1/source/include/strata/sycl/compat",
+            "-I/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-normalizer-native-v1/source/bench/sycl",
+            "-DSTRATA_QSA_TEST_PAGE_SIZE=4",
+            "-MD",
+            "-MF",
+            "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-normalizer-native-v1/oracle4.d",
+            "-c",
+            "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-normalizer-native-v1/source/bench/sycl/qsa_head_oracle.cpp",
+            "-o",
+            "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-normalizer-native-v1/oracle4.o"
+          ]
+        ],
+        [
+          "oracle16",
+          [
+            "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin/clang++",
+            "-std=c++20",
+            "-O3",
+            "-DNDEBUG",
+            "-g0",
+            "-fsycl",
+            "-fsycl-id-queries-range=size_t",
+            "-fno-fast-math",
+            "-ffp-contract=off",
+            "-DSTRATA_ENABLE_SYCL=1",
+            "-I/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-normalizer-native-v1/source/include",
+            "-I/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-normalizer-native-v1/source/include/strata/sycl/compat",
+            "-I/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-normalizer-native-v1/source/bench/sycl",
+            "-DSTRATA_QSA_TEST_PAGE_SIZE=16",
+            "-MD",
+            "-MF",
+            "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-normalizer-native-v1/oracle16.d",
+            "-c",
+            "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-normalizer-native-v1/source/bench/sycl/qsa_head_oracle.cpp",
+            "-o",
+            "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-normalizer-native-v1/oracle16.o"
+          ]
+        ],
+        [
+          "link4",
+          [
+            "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin/clang++",
+            "-std=c++20",
+            "-O3",
+            "-DNDEBUG",
+            "-g0",
+            "-fsycl",
+            "-fsycl-id-queries-range=size_t",
+            "-fno-fast-math",
+            "-ffp-contract=off",
+            "-DSTRATA_ENABLE_SYCL=1",
+            "-I/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-normalizer-native-v1/source/include",
+            "-I/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-normalizer-native-v1/source/include/strata/sycl/compat",
+            "-I/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-normalizer-native-v1/source/bench/sycl",
+            "-save-temps=obj",
+            "-v",
+            "-Wl,-t",
+            "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-normalizer-native-v1/runtime.o",
+            "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-normalizer-native-v1/compat.o",
+            "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-normalizer-native-v1/command_profile.o",
+            "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-normalizer-native-v1/prompt_attention.o",
+            "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-normalizer-native-v1/original.o",
+            "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-normalizer-native-v1/candidate.o",
+            "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-normalizer-native-v1/oracle4.o",
+            "-pthread",
+            "-ldl",
+            "-o",
+            "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-normalizer-native-v1/qsa_head_p4"
+          ]
+        ],
+        [
+          "link16",
+          [
+            "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin/clang++",
+            "-std=c++20",
+            "-O3",
+            "-DNDEBUG",
+            "-g0",
+            "-fsycl",
+            "-fsycl-id-queries-range=size_t",
+            "-fno-fast-math",
+            "-ffp-contract=off",
+            "-DSTRATA_ENABLE_SYCL=1",
+            "-I/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-normalizer-native-v1/source/include",
+            "-I/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-normalizer-native-v1/source/include/strata/sycl/compat",
+            "-I/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-normalizer-native-v1/source/bench/sycl",
+            "-save-temps=obj",
+            "-v",
+            "-Wl,-t",
+            "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-normalizer-native-v1/runtime.o",
+            "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-normalizer-native-v1/compat.o",
+            "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-normalizer-native-v1/command_profile.o",
+            "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-normalizer-native-v1/prompt_attention.o",
+            "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-normalizer-native-v1/original.o",
+            "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-normalizer-native-v1/candidate.o",
+            "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-normalizer-native-v1/oracle16.o",
+            "-pthread",
+            "-ldl",
+            "-o",
+            "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-normalizer-native-v1/qsa_head_p16"
+          ]
+        ]
+      ],
+      "environment": {
+        "PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin:/usr/bin:/bin",
+        "HOME": "/home/yayoi",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8",
+        "PYTHONDONTWRITEBYTECODE": "1",
+        "LD_LIBRARY_PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib:/opt/intel/oneapi/mkl/2026.1/lib",
+        "MKLROOT": "/opt/intel/oneapi/mkl/2026.1",
+        "OMP_NUM_THREADS": "1",
+        "GIT_TERMINAL_PROMPT": "0",
+        "GIT_SSH_COMMAND": "ssh -oBatchMode=yes",
+        "CPLUS_INCLUDE_PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/include",
+        "PIP_CONFIG_FILE": "/dev/null",
+        "ONEAPI_DEVICE_SELECTOR": "level_zero:gpu",
+        "UR_ADAPTERS_FORCE_LOAD": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_adapter_level_zero_v2.so.0",
+        "SYCL_CACHE_PERSISTENT": "0",
+        "NEOReadDebugKeys": "1",
+        "EnableDirectSubmission": "0",
+        "UR_L0_V2_FORCE_DISABLE_COPY_OFFLOAD": "1",
+        "STRATA_SYCL_VERIFY_NATIVE_CAPTURE": "0",
+        "STRATA_SYCL_PREFILL_SAME_QUEUE": "1",
+        "STRATA_SYCL_PREFILL_NATIVE16": "bf16",
+        "XDG_CACHE_HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-normalizer-native-v1/cache",
+        "TMPDIR": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-normalizer-native-v1/tmp"
+      },
+      "budgets": {
+        "wall": 600,
+        "cpu": 1800,
+        "rss_cap": 8589934592,
+        "text_cap": 33554432,
+        "file_cap": 268435456,
+        "total_cap": 2147483648
+      },
+      "active": false,
+      "ownership_closed": true,
+      "passed": false,
+      "GPU_executed": false,
+      "production_or_decode_changed": false,
+      "criteria": "CPU build/property only;bothsize_t/strictflags. Candidatechangesonly32termnormalizerfold;matched optional lossless p/BF16p/A/precast probes are not speed data. RequiregroupFP32add onlyincandidateIR,exactdependency/linkclosure,and4compilednormal/state properties before any enqueue. Old bit-identical tiny/component modes are disabled:next numerical controller must freeze actual operand/mode/lane evidence and exact prospective intervals first. No GPU numerics/task/model qualification.",
+      "retention": "One imminent normalizer component generation;keep selected6e40+12fixtures. Retire extra ELF/objects/raw output at decision after source recovery. Corrected math review held only until this numerical gate is implemented.",
+      "source_inputs": {
+        "files": 44,
+        "aggregate_sha256": "83658c9663e85f36f0f7d6b9f0840fcbd6c31c61a439471c586823cdafe3145b"
+      }
+    }
   }
 }
