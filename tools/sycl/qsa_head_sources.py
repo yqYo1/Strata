@@ -1,6 +1,7 @@
-"""Own selected-QSA exact-workgroup CPU discriminator;repository LICENSE.
+"""Own bounded-ID selected-QSA comparison;repository LICENSE.
 
-Only an exactWG128annotation changes. No production or decode caller changes.
+The int-compiled private image preserves the size_t fallback before enqueue.
+Math, array offsets and production/decode callers are unchanged.
 """
 import hashlib
 from pathlib import Path
@@ -10,10 +11,7 @@ P=Path(__file__).resolve().parents[2]
 BASE='6e40afc1beddd059ee518617f6c1efce1da14aca'
 PREFIX='src/kernels/sycl/qsa_bf16_prefix.cpp'
 BASE_SHA='4f9f815c9baae709f919f6d5ad1af04677c10d8c13c7597b3857cf81567ae192'
-EDITS=[
-    ('[[sycl::reqd_sub_group_size(16)]] {',
-     '[[sycl::reqd_sub_group_size(16)]] [[sycl::reqd_work_group_size(128)]] {',1),
-]
+EDITS=[]
 
 SIGNATURE = '''const uint16_t *query, const QsaAttnPools &pools,
     const int32_t *ids, const int32_t *steps, int64_t cap, const QsaShapes &shape,
@@ -51,10 +49,24 @@ def generated():
     if recovered != base: raise RuntimeError('undeclared geometry edit')
     for a,b,n in reversed(event_edits): recovered = change(recovered,b,a,n)
     if recovered != body: raise RuntimeError('undeclared diagnostic edit')
+    anchor='  const size_t active_rows = checked_count(checked_count(active_pages, 2), shape.page_size);\n'
+    values='query, pools, ids, steps, cap, shape, output, queries, bounds, live_cells, scratch, stream'
+    fallback=anchor+'''  // Checked counts precede the range promise; never multiply the range first.
+  // This flag is private to this TU. Broad public calls retain the size_t image.
+  if (!id_range_eligible(active_rows, queries)) {
+    if constexpr (CaptureState)
+      return strata::kernels::qsa_head_original::capture('''+values+''', probe, submitted, packed_event);
+    else
+      return strata::kernels::qsa_head_original::batch('''+values+''', submitted, packed_event);
+  }
+'''
+    candidate=change(candidate,anchor,fallback)
+    if change(candidate,fallback,anchor)!=base:raise RuntimeError('undeclared bounded-ID source edit')
     outputs = {}
     for name,text in [('original',base),('candidate',candidate)]:
         namespace = 'qsa_head_' + name
         text = change(text, 'namespace strata::kernels {', 'namespace strata::kernels::' + namespace + ' {')
+        if name=='candidate':text='#include "qsa-head.hpp"\n'+text
         for function,capture in [('batch',False),('capture',True)]:
             probe = ', QsaPrefixStateProbe probe' if capture else ''
             text += '\nbool ' + function + '(' + SIGNATURE + probe + ', sycl::event *submitted, sycl::event *packed_event) {\n'
@@ -63,9 +75,16 @@ def generated():
             text += ('probe' if capture else '{}') + ', submitted, packed_event);\n}\n'
         text += '} // namespace strata::kernels::' + namespace + '\n'
         outputs[name + '.cpp'] = text.encode()
-    header = '// Authored for Strata; repository LICENSE applies.\n#pragma once\n#include "strata/kernels/qsa_bf16_prefix.hpp"\n#include <sycl/sycl.hpp>\n'
+    header = '// Authored for Strata; repository LICENSE applies.\n#pragma once\n#include "strata/kernels/qsa_bf16_prefix.hpp"\n#include <sycl/sycl.hpp>\n#include <limits>\n'
     for name in ['original','candidate']:
         header += 'namespace strata::kernels::qsa_head_' + name + ' {\n'
+        if name=='candidate':
+            header+='''static_assert(std::numeric_limits<int>::max()==2147483647);
+inline bool id_range_eligible(size_t active_rows, int64_t queries) noexcept {
+  return active_rows<=size_t(std::numeric_limits<int>::max()/64) && queries>=0 &&
+      uint64_t(queries)<=uint64_t(std::numeric_limits<int>::max()/(2*128));
+}
+'''
         for function,capture in [('batch',False),('capture',True)]:
             header += 'bool ' + function + '(' + SIGNATURE + (', QsaPrefixStateProbe probe' if capture else '') + ', sycl::event *submitted = nullptr, sycl::event *packed_event = nullptr);\n'
         header += '}\n'
@@ -77,10 +96,11 @@ def proof():
     rows=generated()
     return dict(original_source_commit=BASE,original_source_sha256=BASE_SHA,
         generated_sha256={n:hashlib.sha256(raw).hexdigest() for n,raw in rows.items()},
-        geometry='Same M8,N16,K16,WG128,SG16,16padded/12real heads;only exactWG128metadata added.',
-        reversible_geometry_edits=0,reversible_attribute_edits=len(EDITS),reversible_event_edits=3,
+        geometry='Same M8,N16,K16,WG128,SG16,16padded/12real heads;candidate TU IDrange=int only.',
+        reversible_geometry_edits=0,reversible_math_edits=0,reversible_event_edits=3,
         declared_local_bytes=20036,production_or_decode_changed=False,
-        preservation='All math/storage/control-flow/barriers unchanged. Rejected identity-rescale source recovers at032a3e15f;current candidate changes one exact-workgroup annotation only.')
+        fallback='After checked active_rows,before range multiplication/any enqueue,require active_rows<=INT_MAX/64 and queries<=INT_MAX/256;otherwise original size_t batch/capture. Signed rows,addresses and tensor offsets unchanged.',
+        preservation='All device math/storage/control-flow/barriers unchanged. Exact-WG attribute rejected at9ee50d68d;identity-rescale rejected at032a3e15f.')
 
 
 if __name__=='__main__':
