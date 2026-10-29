@@ -303,8 +303,12 @@ Main moves to removing the four unused padded-head softmax rows while retaining
 the original12real-head arithmetic. Initialize the padded probability/alpha
 storage explicitly,keep all16lanes of each active subgroup participating,and
 check real-head FP32state and complete output bits. Different subgroup loop
-counts must not skip a workgroup barrier. This is an unimplemented proposal;
-it needs its own source review,build,component and performance evidence.
+counts must not skip a workgroup barrier. The isolated source267a0bb23now
+implements this candidate. Orca Luna research and native Luna-max review accept
+its source contract for bounded component gates;Main independently regenerated
+and verified the exact two-edit diff and arm hashes. CPUbuild,properties,all12
+real-head FP32state/output bitidentity and performance evidence remain pending.
+No production or decode change has been adopted.
 FullQSA/task/performance and physical-context/handoff gates remain unqualified.
 Selected6e40and its twelve same-build fixtures remain.
 
