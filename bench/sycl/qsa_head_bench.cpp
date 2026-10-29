@@ -3,6 +3,7 @@
 #include "qsa-head.hpp"
 #include "strata/sycl/runtime.hpp"
 #include "strata/sycl/checked_cleanup.hpp"
+#include <sycl/ext/oneapi/matrix/matrix.hpp>
 #include <algorithm>
 #include <bit>
 #include <chrono>
@@ -49,6 +50,52 @@ template<class T> struct Buffer {
   }
   void immutable() {check(get()==upload,"input bytes changed");}
 };
+// Direct FP32 observation,not final BF16: a following DPAS could hide FTZ.
+// 0x8200 is2^-134+2^-140,the finite online-state edge from the source review.
+template<bool Multiply> class IdentityScaleEdge;
+template<bool Multiply> void edge_submit(const float *input,const float *alpha,float *output) {
+  rt->compute().submit([&](sycl::handler &handler) {
+    handler.parallel_for<IdentityScaleEdge<Multiply>>(sycl::nd_range<1>(16,16),
+        [=](sycl::nd_item<1> item) [[sycl::reqd_sub_group_size(16)]] {
+      namespace mx=sycl::ext::oneapi::experimental::matrix;
+      namespace mi=sycl::ext::intel::experimental::matrix;
+      auto sg=item.get_sub_group();
+      mx::joint_matrix<sycl::sub_group,float,mx::use::accumulator,8,16> value;
+      mx::joint_matrix_load(sg,value,input,16,mx::layout::row_major);
+      if constexpr(Multiply)
+        mi::joint_matrix_apply(sg,value,[=](float &v,size_t row,size_t) {v*=alpha[row];});
+      mx::joint_matrix_store(sg,value,output,16,mx::layout::row_major);
+    });
+  });
+}
+void identity_edge() {
+  const auto ids=std::vector<sycl::kernel_id>{sycl::get_kernel_id<IdentityScaleEdge<false>>(),sycl::get_kernel_id<IdentityScaleEdge<true>>()};
+  auto bundle=sycl::get_kernel_bundle<sycl::bundle_state::executable>(rt->compute().get_context(),{rt->device()},ids);
+  for(const auto &id:ids) {
+    auto k=bundle.get_kernel(id);
+    check(k.get_info<sycl::info::kernel_device_specific::compile_sub_group_size>(rt->device())==16 &&
+          k.get_info<sycl::info::kernel_device_specific::work_group_size>(rt->device())>=16,"edge compiled geometry");
+  }
+  constexpr uint32_t bits[]={0,0x80000000,1,0x80000001,0x10000,0x80010000,0x400000,0x80400000,
+    0x7fffff,0x807fffff,0x800000,0x80800000,0x3f800000,0xbf800000,0x8200,0x80008200};
+  std::vector<float> values(128),scales(8,1.f);int subnormal=0;
+  for(int i=0;i<128;++i) {values[i]=std::bit_cast<float>(bits[i%16]);subnormal+=std::fpclassify(values[i])==FP_SUBNORMAL;}
+  check(subnormal==80,"host finite-subnormal construction");
+  Buffer<float> input(128,42.5f),alpha(8,42.5f),scaled(128,42.5f),skipped(128,42.5f);Drain pending;
+  input.put(values);alpha.put(scales);scaled.put(std::vector<float>(128,17.f));skipped.put(std::vector<float>(128,17.f));
+  edge_submit<true>(input.data(),alpha.data(),scaled.data());rt->wait();
+  edge_submit<false>(input.data(),alpha.data(),skipped.data());rt->wait();
+  const auto original=scaled.get(),candidate=skipped.get(),unchanged=input.get();
+  for(int i=0;i<128;++i) {
+    const auto expected=bits[i%16],a=std::bit_cast<uint32_t>(original[Guard+i]),b=std::bit_cast<uint32_t>(candidate[Guard+i]);
+    check(std::bit_cast<uint32_t>(unchanged[Guard+i])==expected,"edge input bit mutation");
+    check(b==expected,"edge direct matrix load/store loses FP32bits");
+    check(a==b,"FP32subnormal identity-rescale parity failed before timing");
+  }
+  alpha.immutable();
+  std::cout<<"HEAD_EDGE finite=128 subnormal=80 FP32_bit_parity=1 direct_matrix_load_store_exact=1\n";
+}
+
 uint32_t next(uint32_t &s) {s^=s<<13;s^=s>>17;s^=s<<5;return s;}
 uint16_t bf16(float x) {const auto b=std::bit_cast<uint32_t>(x);return uint16_t((b+0x7fff+((b>>16)&1))>>16);}
 uint16_t fp16(float x) {return std::bit_cast<uint16_t>(_Float16(x));}
@@ -139,6 +186,7 @@ int main(int argc,char **argv) {
     const int process=argv[1][0]-'0';gate("before-runtime");rt=sycl_backend::runtime_for();Drain pending;
     check(rt->device().get_info<sycl::info::device::name>()=="Intel(R) Arc(TM) B570 Graphics","B570 required");
     check(rt->compute().has_property<sycl::property::queue::in_order>() && rt->compute().has_property<sycl::property::queue::enable_profiling>(),"qualified profiling in-order queue");gate("runtime-ready");
+    identity_edge(); // Must pass before any timing sample.
     static_assert(std::chrono::steady_clock::is_steady);
     timespec resolution{};check(clock_getres(CLOCK_MONOTONIC,&resolution)==0 && resolution.tv_sec==0 && resolution.tv_nsec<=1000,"clock resolution");
     std::vector<double> overhead;

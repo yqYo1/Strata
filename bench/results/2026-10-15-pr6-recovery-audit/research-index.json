@@ -16076,7 +16076,7 @@
   },
   "qsa_identity_rescale_source_contract_20261029": {
     "classification": "decision support",
-    "status": "completed_native_curation_running",
+    "status": "curated_tiny_source_accepted_FP32_denormal_edge_pending",
     "schedulable_now": false,
     "source_revision": "ad02b99e38bef388faf6d721081c907521370669",
     "source_sha256": {
@@ -16101,6 +16101,15 @@
     "ownership_closed": true,
     "worker_released": true,
     "delivery_acknowledged": true,
-    "report_sha256": "ff715d8801b2e89066f9dee91e39fbefb370bc8a12459e16d892403736710316"
+    "report_sha256": "ff715d8801b2e89066f9dee91e39fbefb370bc8a12459e16d892403736710316",
+    "native_review": {
+      "source_accepted": true,
+      "scope": "bounded tiny and ordinary finite component oracle only;FP32denormal edge before performance/model advancement",
+      "review_path": ".cache/research/2026-10-29/qsa_identity_rescale_source_contract_20261029.review.json",
+      "review_sha256": "ccea6678cd7b4424e3216039aecb29d28e9ee2f3605ebb8bd19519ea5ce842ce",
+      "source_revision": "ad02b99e3",
+      "candidate_sha256": "eebbcc91cadebf2982d6a2032fc9e2fa33513f881bf2a7f689812236dfdffb59",
+      "edge_pending": "M8 matrix accumulator multiply-by-exact1 versus bypass,including FP32subnormal0x8200(2^-134+2^-140). Final BF16 matching alone is inconclusive;observe FP32 operator output directly before any timed comparison."
+    }
   }
 }
