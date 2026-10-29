@@ -16780,7 +16780,7 @@
       "source_commit": "07f8c3217",
       "change": "OpenAI count-only endpoint matches completionnormalizer/format+storeFalse;reject dynamicMCP and visionexpansion. ExistingAnthropic endpoint retained. This enables exactprompt planning without newinference calibration or Anthropic/status timingcorrelation.",
       "host_verification": {
-        "stage": "prepared_qualified_python_retry",
+        "stage": "valid_json_fixture_retry_prepared",
         "earlier_setup_failure": {
           "command": "system python3 -m unittest serve.test_server.MaxTokens count tests",
           "tests_run": 0,
@@ -16791,7 +16791,13 @@
         "python": "/home/yayoi/.local/share/strata-sycl/venv/bin/python3",
         "qualified_python_manifest_sha256": "2b28b86120ea7dd67ba53eb876592f77c76badab54cb9f03ebe4788f9d873e13",
         "command": "flock -n B/owned-v0141-measurement.lock timeout 60s /home/yayoi/.local/share/strata-sycl/venv/bin/python3 -m unittest serve.test_server.MaxTokens.test_count_tokens_is_the_prompt_messages_reads serve.test_server.MaxTokens.test_openai_count_matches_chat_prompt_without_engine_execution serve.test_server.MaxTokens.test_openai_count_rejects_unexpanded_vision_and_dynamic_tools -v",
-        "criteria": "All3hostHTTP tests pass,including4OpenAI formatting/thinking subcases,liveMockEngine count-vs-inference promptcount equality,no engineexecution duringcount,and unsupported vision/MCP400. No realnative/model speed/state qualification."
+        "criteria": "All3hostHTTP tests pass,including4OpenAI formatting/thinking subcases,liveMockEngine count-vs-inference promptcount equality,no engineexecution duringcount,and unsupported vision/MCP400. No realnative/model speed/state qualification.",
+        "qualified_python_first_attempt": {
+          "source_commit": "07f8c3217",
+          "tests_run": 3,
+          "passed": false,
+          "error": "Structured-format subcase timedcompletion returned502for MockEngine prose;count itself200andremainingcasespass. Fixfixture tovalidJSONbeforecomparing counts;no acceptance relaxation."
+        }
       }
     }
   }

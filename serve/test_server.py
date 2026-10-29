@@ -102,11 +102,15 @@ class MaxTokens(unittest.TestCase):
                 body = {"model": "m", "messages": [
                     {"role": "system", "content": "Read literal tags carefully."},
                     {"role": "user", "content": "Count <think>literal</think> and café."}],
-                    "max_tokens": 8, **extra}
+                    "max_tokens": 32, **extra}
                 with mock.patch.object(self.engine, "generate", side_effect=AssertionError("count must not infer")):
                     status, counted = self.post("/v1/chat/completions/count_tokens", body)
                 self.assertEqual(status, 200)
-                status, answer = self.post("/v1/chat/completions", body)
+                # Structured requests need a valid scripted JSON answer; the
+                # long prose script used by budget tests correctly returns502.
+                script = self.engine.tok.encode("</think>\n\n{}", parse_special=True)
+                with mock.patch.object(self.engine, "script", script):
+                    status, answer = self.post("/v1/chat/completions", body)
                 self.assertEqual(status, 200)
                 self.assertEqual(counted["input_tokens"], answer["usage"]["prompt_tokens"])
 
