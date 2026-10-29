@@ -306,8 +306,13 @@ check real-head FP32state and complete output bits. Different subgroup loop
 counts must not skip a workgroup barrier. The isolated source267a0bb23now
 implements this candidate. Orca Luna research and native Luna-max review accept
 its source contract for bounded component gates;Main independently regenerated
-and verified the exact two-edit diff and arm hashes. CPUbuild,properties,all12
-real-head FP32state/output bitidentity and performance evidence remain pending.
+and verified the exact two-edit diff and arm hashes. The native build at
+90cfc02decloses696actual compiler inputs and both links with zero uncovered
+inputs. All four normal/state properties,the traced tiny gate,and11cases at
+each Page4/Page16pass. All12real-head FP32states and complete BF16outputs
+match;guards,immutable inputs,providers,ownership and fault checks pass.
+Physical262144component addresses are covered,not a full-model context fill.
+The separately gated three-process performance comparison remains pending.
 No production or decode change has been adopted.
 FullQSA/task/performance and physical-context/handoff gates remain unqualified.
 Selected6e40and its twelve same-build fixtures remain.
