@@ -1550,8 +1550,12 @@ qualification remain separate pending gates.
 
 The source-only [`metric_capability.c`](../bench/sycl/metric_capability.c) prepares
 the next local counter-capability check;it has not been built or executed and is
-absent from both comparison binaries. After the frozen comparison closes,pin a
-bounded owned recipe,headers,loader and metric providers before execution.
+absent from both comparison binaries. The independently authored
+[`controller`](../tools/sycl/metric_capability.py) has separate prepare,build and
+run actions,with a commit required between them. It pins actual system headers,
+compiler/link inputs and the direct-C loader/provider closure independently of
+the SYCL allowlist. Native execution has60s wall,45s CPU,1GiB RSS and8MiB text
+budgets,three identity/environment/provider gates and no implicit retry.
 The probe selects PCI0000:05:00.0 and enumerates group/metric properties without
 creating application queues or activating metric groups. Preserve API errors,
 permission failures and successful zero-group enumeration as distinct outcomes.
