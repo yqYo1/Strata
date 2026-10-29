@@ -8840,7 +8840,7 @@
       "fresh_faults": []
     },
     "retirement": {
-      "stage": "binaries_retired_source_IR_review_hold",
+      "stage": "retired",
       "archive_commit": "032a3e15f6f043015aa14fc864d2841e2a448fcd",
       "source_recovery": {
         "native_source": "6ceffd7a27b52809374805d5a28dd5dcfe4113d3",
@@ -8862,21 +8862,22 @@
       "bytes": 20770282,
       "manifest": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-identity-rescale-retired-20261029.jsonl",
       "manifest_sha256": "60de8cc7978c6a18c6ebe9167bf35bb553adc541eeffff70e22074c1867ab25d",
-      "verified_absent": false,
+      "verified_absent": true,
       "binaries_retired": true,
-      "source_IR_hold": {
-        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-identity-rescale-v1/original.ll",
-        "sha256": "fcbfeb0c41b522c9b2d34b60849641ec91199e3b1932f438b49f26b646304ed0",
-        "bytes": 135790,
-        "consumer": "Active source-only IDrange researcherctx_66559acd261a may read this original control;keep sourceIRonly,no executable/objects.",
-        "next_review": "Retire after source-report completion and nativecuration. CPU-only nextcompilercomparison uses its own fresh control."
-      },
       "selected_retained": {
         "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/strata",
         "bytes": 22190000,
         "sha256": "22182f1a5e62e5f4259ce49a75ae44afbd988166ec79324816e499ff37ef60e4"
       },
-      "next_action": "Retire closed extra binaries/raw output now,retain only named temporary textualIR;then new CPU-only compiler discriminator."
+      "next_action": "Closed candidate fully retired;selected6e40+12fixtures and separate currentID-int comparison remain.",
+      "source_IR_hold_retired": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-identity-rescale-v1/original.ll",
+        "sha256": "fcbfeb0c41b522c9b2d34b60849641ec91199e3b1932f438b49f26b646304ed0",
+        "bytes": 135790,
+        "reason": "IDrange researcher completed/released;native Luna-max curation ended and compact contract committed35ebc9b89. Fresh CPUcontrol/new native generation use their own sources;no remaining oldIR consumer.",
+        "manifest": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-identity-source-review-hold-retired-20261029.jsonl",
+        "manifest_sha256": "ec4fba4782a4135d7f156d8dd80609922994261512bd2f0975a16564573943c4"
+      }
     }
   },
   "qsa_compiler_ir_v1": {
@@ -9637,7 +9638,7 @@
       }
     },
     "properties4": {
-      "stage": "prepared",
+      "stage": "closed",
       "source_commit": "8e770008a56d73411ebfb8d1a2ac14c8192d645d",
       "source_sha256": {
         "tools/sycl/qsa_head_native.py": "886dd913a53c40aa338c16c08c347de1d204e250714ca89a1e4b359ec966d2b6",
@@ -9732,7 +9733,75 @@
         "file_cap": 67108864,
         "total_cap": 536870912
       },
-      "criteria": "One fresh owned process,stop firstfailure,no retry. Properties only beforekernel;source-review before submissions. Tinytrace actual SG/WG/local/ABI,complete output and FP32state parity,independent host oracle/guards,all input immutable,pre-main validation,correct actualproviders,quiet validation and no newfault. Extended physical finaladdresses do not qualify full-model context."
+      "criteria": "One fresh owned process,stop firstfailure,no retry. Properties only beforekernel;source-review before submissions. Tinytrace actual SG/WG/local/ABI,complete output and FP32state parity,independent host oracle/guards,all input immutable,pre-main validation,correct actualproviders,quiet validation and no newfault. Extended physical finaladdresses do not qualify full-model context.",
+      "outcome": {
+        "complete": true,
+        "passed": true,
+        "host_probe_accepted": true,
+        "properties": [
+          {
+            "arm": "candidate",
+            "name": "_ZTSZZN6strata7kernels18qsa_head_candidateL17prefix_batch_implILi33ELb0ELb0ELb1ELb1ELb1ELb1ELb1EEEbPKtRKNS0_12QsaAttnPoolsEPKiS9_lRKNS0_9QsaShapesEPtlRKNS0_19QsaPromptBf16BoundsElRKNS0_20QsaBf16PackedScratchEPvNS0_19QsaPrefixStateProbeEPN4sycl3_V15eventESP_ENKUlRNSN_7handlerEE_clESR_EUlNSN_7nd_itemILi1EEEE_",
+            "wg": "128",
+            "subgroup": "16",
+            "arguments": "19",
+            "maximum": "1024",
+            "static_local": "32",
+            "declared_local": "20036",
+            "spill_descriptor": "23616"
+          },
+          {
+            "arm": "candidate",
+            "name": "_ZTSZZN6strata7kernels18qsa_head_candidateL17prefix_batch_implILi33ELb0ELb0ELb1ELb1ELb1ELb1ELb0EEEbPKtRKNS0_12QsaAttnPoolsEPKiS9_lRKNS0_9QsaShapesEPtlRKNS0_19QsaPromptBf16BoundsElRKNS0_20QsaBf16PackedScratchEPvNS0_19QsaPrefixStateProbeEPN4sycl3_V15eventESP_ENKUlRNSN_7handlerEE_clESR_EUlNSN_7nd_itemILi1EEEE_",
+            "wg": "128",
+            "subgroup": "16",
+            "arguments": "18",
+            "maximum": "1024",
+            "static_local": "32",
+            "declared_local": "20036",
+            "spill_descriptor": "12480"
+          },
+          {
+            "arm": "original",
+            "name": "_ZTSZZN6strata7kernels17qsa_head_originalL17prefix_batch_implILi33ELb0ELb0ELb1ELb1ELb1ELb1ELb0EEEbPKtRKNS0_12QsaAttnPoolsEPKiS9_lRKNS0_9QsaShapesEPtlRKNS0_19QsaPromptBf16BoundsElRKNS0_20QsaBf16PackedScratchEPvNS0_19QsaPrefixStateProbeEPN4sycl3_V15eventESP_ENKUlRNSN_7handlerEE_clESR_EUlNSN_7nd_itemILi1EEEE_",
+            "wg": "128",
+            "subgroup": "16",
+            "arguments": "18",
+            "maximum": "1024",
+            "static_local": "32",
+            "declared_local": "20036",
+            "spill_descriptor": "12480"
+          },
+          {
+            "arm": "original",
+            "name": "_ZTSZZN6strata7kernels17qsa_head_originalL17prefix_batch_implILi33ELb0ELb0ELb1ELb1ELb1ELb1ELb1EEEbPKtRKNS0_12QsaAttnPoolsEPKiS9_lRKNS0_9QsaShapesEPtlRKNS0_19QsaPromptBf16BoundsElRKNS0_20QsaBf16PackedScratchEPvNS0_19QsaPrefixStateProbeEPN4sycl3_V15eventESP_ENKUlRNSN_7handlerEE_clESR_EUlNSN_7nd_itemILi1EEEE_",
+            "wg": "128",
+            "subgroup": "16",
+            "arguments": "19",
+            "maximum": "1024",
+            "static_local": "32",
+            "declared_local": "20036",
+            "spill_descriptor": "23808"
+          }
+        ],
+        "dispatch": null,
+        "numerical_passed": false,
+        "physical262144_component_addresses": false,
+        "model_context_fill_qualified": false,
+        "model_speed_qualified": false,
+        "parameter_validation": true,
+        "ownership_closed": true,
+        "fresh_faults": [],
+        "boot_unchanged": true,
+        "driver_after": {
+          "pci": "/sys/bus/pci/devices/0000:05:00.0",
+          "driver": "xe",
+          "vendor": "0x8086",
+          "device": "0xe20c",
+          "kernel": "7.0.0-38-generic",
+          "devcoredump": false
+        }
+      }
     }
   }
 }
