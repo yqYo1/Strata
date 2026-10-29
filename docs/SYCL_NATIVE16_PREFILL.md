@@ -1917,9 +1917,12 @@ actual feature tree. Production packing,union and attention share the existing
 in-order GPU queue. Its checked maximum8192-query/2051-cap metadata needs an
 additional84025344bytes(80.133MiB),reserved before expert-bank planning.
 Decode and short-prefill selection remain unchanged. This integration is
-**unbuilt and unrun**. An independent Orca Luna audit checks preflight,allocation,
-lifetime,phase isolation and capacity while Main prepares a selected6e40-plus-
-pair-only build and Page4production-wrapper fixtures. Model speed,quality,
+**unbuilt and unrun**. The independent Orca Luna audit found a missing pair-only
+device check at admission. Correction`ddb0df149`adds one reusable no-submit
+predicate at admission and the wrapper;native Luna-max accepts the corrected
+source gate. The selected6e40-plus-pair-only559-file snapshot and its frozen
+model/production-object fixture recipe are prepared. Page4andPage16wrapper
+qualification follows compilation and actual-link input proof. Model speed,quality,
 decode preservation,handoff/RESTORE and physical full-context gates stay open.
 See`qsa_pair_proposal`in the
 [current service decision](../bench/results/2026-10-15-pr6-recovery-audit/fused-moe-service-current.json).
