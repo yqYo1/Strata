@@ -16818,7 +16818,7 @@
       }
     },
     "client_implementation": {
-      "stage": "source_prepared_host_checks_pending",
+      "stage": "host_checks_closed",
       "feature": "--prefill-exact-tokens keeps minimum/scaling modes unchanged;exactOpenAIcount-only preflight,no calibrationinference,bounded32calls/120seconds,alllongbodiesfrozenbeforetiming,exactprompt/read/bodyhash/zero-reusegates and post-preflightTTFT label.",
       "commands": [
         "flock -n B/owned-v0141-measurement.lock timeout 60s /home/yayoi/.local/share/strata-sycl/venv/bin/python3 -m unittest discover -s tools -p test_strata_bench.py",
@@ -16832,7 +16832,14 @@
         "errors": 1,
         "failures": 1,
         "reason": "Newmock count endpoint provided2-argument builder callback instead of4-argument HTTP helper. Correctsignatureandassert specificnegative errors so failedpreflight cannot falselypass body/count rejection tests."
-      }
+      },
+      "source_commit": "ce8d3ed5e",
+      "test_fixture_source_commit": "245d68a18",
+      "passed": true,
+      "client_tests": 26,
+      "evidence_tests": 15,
+      "native_or_GPU_executed": false,
+      "next": "Qualify current realpack frontend/count-only body construction,then commit actualrow/route-aware boundary model plan;mocked exactcounts do not prove physicalrows."
     }
   }
 }

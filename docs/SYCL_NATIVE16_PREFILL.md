@@ -320,6 +320,12 @@ clock,provider,owner and fault checks pass. A lower compiled spill descriptor
 does not override actual timing. No model trial or adoption follows.
 Main moves to a separately planned exact-WG128native comparison:the earlier
 CPU-IR metadata-only result did not establish downstream IGC code or speed.
+The isolated required-WG128source at29d9d5519now builds with696actual
+compiler inputs and zero uncovered link inputs. Its four compiled properties
+pass:both candidate kernels require128x1x1,while controls have no required
+size. Pairednormal/state argument counts agree before any enqueue;the tiny
+trace must also match indexed local-argument bindings. Eleven host admission
+checks pass. Numerical/native timing gates remain pending.
 Selected6e40and decode remain unchanged.
 FullQSA/task/performance and physical-context/handoff gates remain unqualified.
 Selected6e40and its twelve same-build fixtures remain.
