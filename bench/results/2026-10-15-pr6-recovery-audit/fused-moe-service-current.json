@@ -8880,7 +8880,7 @@
     }
   },
   "qsa_compiler_ir_v1": {
-    "stage": "compiled",
+    "stage": "closed",
     "source_commit": "35ebc9b894e28bf91eb7b786d863852e01da6d28",
     "native_source": "6e40afc1beddd059ee518617f6c1efce1da14aca",
     "native_files": 156,
@@ -9171,6 +9171,14 @@
     "controller_inputs": {
       "files": 40,
       "aggregate": "7a9e4e62f0035b197e7523cd4824c285bff559667b82606614f2b15e3db72ebe"
+    },
+    "decision": {
+      "exact_WG128": "Reject under predeclared CPUgate:required metadata appears,but both normalized attention bodies are identical to fresh control;no native trial.",
+      "ID_int": "Eligible for separately planned native comparison only:normal/state lines730/756to724/750;i64 arithmetic27/28to22/23;FP32opcounts equal. Not model or speed qualification.",
+      "observed_delta": "ID assumptions remove signed extension shifts of tid and permit group /2 to logical shift;tensor GEPs,cap/page math,USMpointers and signed -1 row sentinel remain64bit. Review actual loop/native behavior next;instruction counts are static,not dynamic savings or saturation.",
+      "required_next": "Separate int-compiled TU with checked active_rows<=INT_MAX/64 and queries<=INT_MAX/256 before any int enqueue;source-bound size_t fallback preserves broad API. No decode/global flag change.",
+      "GPU_executed": false,
+      "inference_adopted": false
     }
   }
 }

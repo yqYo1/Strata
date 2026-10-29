@@ -238,12 +238,23 @@ See`qsa_identity_rescale.performance_v2`in the linked resource result.
 Keep6e40selected and do not start a gated model trial. Main moves to bounded
 compiler/source optimizations rather than extending failure forensics.
 
-The next discriminator is CPU-only:compare the exact original against an
-explicit128workgroup-size annotation and,only after its source/range proof,
-an integer ID-query range. GPU math and safety settings stay unchanged.
-Require a relevant optimized-IR difference before native qualification;
-metadata alone is not a speedup. The source review must include the full
-physical262144context and admitted pack/attention ranges,not only8192chunks.
+The CPU-only compiler discriminator at source35ebc9b89now closes all three
+fresh arms with662actual dependencies each and no GPU execution. ExactWG128
+adds metadata only:both normalized normal/state attention bodies match the
+control,so no native trial follows. The separate ID-int flag removes five
+static64bit integer operations in each body (27/28to22/23) and six lines
+(730/756to724/750);floating-point operation counts remain equal. These counts
+are not a speedup or hardware-saturation result. Native comparison is eligible
+only with overflow-safe range checks and a size_t-compiled fallback. Production
+262144context/8192query maxima give pack33554432and attention2097152global
+items. The broad public pack API can exceed INT_MAX;never narrow addresses or
+silently reject those callers. Keep decode and selected6e40unchanged.
+
+One independent Orca Luna decision-support task now audits framework-compatible
+parallel normalizer sums against pinned SGLang/vLLM contracts. It differs from
+the prior order-preserving survey:the user accepts validated framework FP32
+reduction arithmetic rather than requiring ascending llama.cpp sums. It is
+source research only;no numerical,performance or model adoption follows.
 
 ## Measured performance and rejected comparisons
 
