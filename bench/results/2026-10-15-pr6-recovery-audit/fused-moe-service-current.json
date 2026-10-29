@@ -9073,7 +9073,7 @@
         }
       },
       "edge": {
-        "stage": "prepared",
+        "stage": "closed",
         "command": [
           "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-identity-rescale-v1/performance-v2/bench",
           "--edge-only"
@@ -9119,7 +9119,28 @@
           "file_cap": 33554432,
           "total_cap": 268435456
         },
-        "criteria": "Before any timing:new2SG16M8matrixkernels compiled/query,then exactly2traced WG16submissions;128finiteFP32states including80subnormal and0x8200 must preserve input and scaled/bypass bits exactly. Stop firstfailure,known immutableproviders/pre-mainvalidation,guards/inputimmutability/closedowner/no newfault. No model qualification."
+        "criteria": "Before any timing:new2SG16M8matrixkernels compiled/query,then exactly2traced WG16submissions;128finiteFP32states including80subnormal and0x8200 must preserve input and scaled/bypass bits exactly. Stop firstfailure,known immutableproviders/pre-mainvalidation,guards/inputimmutability/closedowner/no newfault. No model qualification.",
+        "outcome": {
+          "host_probe_accepted": true,
+          "complete": true,
+          "FP32_finite_bit_parity": true,
+          "subnormal_states": 80,
+          "finite_states": 128,
+          "actual_WG16_submissions": 2,
+          "model_qualified": false,
+          "ownership_closed": true,
+          "fresh_faults": [],
+          "boot_unchanged": true,
+          "driver_after": {
+            "pci": "/sys/bus/pci/devices/0000:05:00.0",
+            "driver": "xe",
+            "vendor": "0x8086",
+            "device": "0xe20c",
+            "kernel": "7.0.0-38-generic",
+            "devcoredump": false
+          },
+          "passed": true
+        }
       }
     }
   }
