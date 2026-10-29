@@ -8794,6 +8794,136 @@
           "devcoredump": false
         }
       }
+    },
+    "performance": {
+      "build": {
+        "stage": "prepared",
+        "source_commit": "aeb8faefb362af21bf391df60c433178ec21523c",
+        "native_build_source": "6ceffd7a27b52809374805d5a28dd5dcfe4113d3",
+        "native_geometry": {
+          "original_source_commit": "6e40afc1beddd059ee518617f6c1efce1da14aca",
+          "original_source_sha256": "4f9f815c9baae709f919f6d5ad1af04677c10d8c13c7597b3857cf81567ae192",
+          "generated_sha256": {
+            "original.cpp": "f9e1aaa7c1f5d146da1ae097a47cade3630da758809c6f75c5c729e3e305e32c",
+            "candidate.cpp": "eebbcc91cadebf2982d6a2032fc9e2fa33513f881bf2a7f689812236dfdffb59",
+            "qsa-head.hpp": "dc15535160bb9a8fd915ff0c46cf84ac33c58d97809e7606bd84bfed7ba0f199"
+          },
+          "geometry": "Unchanged M8,N16,K16,WG128,SG16,16padded/12real heads;QK4/PV8subgroups.",
+          "change": "Skip only FP32 accumulator-times-alpha when all8head coefficients in that subgroup equal1.f;all lanes execute subgroup all_of_group before a uniform conditional matrix collective.",
+          "reversible_geometry_edits": 0,
+          "reversible_identity_rescale_edits": 2,
+          "reversible_event_edits": 3,
+          "declared_local_bytes": 20036,
+          "coordinate_matrix_apply_used": true,
+          "private_fragment_mapping_assumed": false,
+          "preservation": "Same cachedQ,K/V4staging,ordered FP32softmax/state,BF16stores,all whole-group barriers. Short-circuit alpha reads touch only valid8rows. No approximate equality,no first-tile specialcase. IEEE identity/denormal/nonfinite contract needs source review and actual oracle.",
+          "production_or_decode_changed": false
+        },
+        "runtime_sha256": "09ad358e12f6ef58bfc0a978519927863f3d09949a033a1e224db95997647d97",
+        "boot": "cfda0b6a-7c13-4fe2-bdf5-8f9202770840",
+        "commands": [
+          [
+            "compile",
+            [
+              "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin/clang++",
+              "-std=c++20",
+              "-O3",
+              "-DNDEBUG",
+              "-g0",
+              "-fsycl",
+              "-fsycl-id-queries-range=size_t",
+              "-fno-fast-math",
+              "-ffp-contract=off",
+              "-DSTRATA_ENABLE_SYCL=1",
+              "-I/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-identity-rescale-v1/source/include",
+              "-I/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-identity-rescale-v1/source/include/strata/sycl/compat",
+              "-I/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-identity-rescale-v1/source/bench/sycl",
+              "-MD",
+              "-MF",
+              "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-identity-rescale-v1/performance/bench.d",
+              "-c",
+              "/home/yayoi/orca/workspaces/Strata/sycl/bench/sycl/qsa_head_bench.cpp",
+              "-o",
+              "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-identity-rescale-v1/performance/bench.o"
+            ]
+          ],
+          [
+            "link",
+            [
+              "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin/clang++",
+              "-std=c++20",
+              "-O3",
+              "-DNDEBUG",
+              "-g0",
+              "-fsycl",
+              "-fsycl-id-queries-range=size_t",
+              "-fno-fast-math",
+              "-ffp-contract=off",
+              "-DSTRATA_ENABLE_SYCL=1",
+              "-I/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-identity-rescale-v1/source/include",
+              "-I/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-identity-rescale-v1/source/include/strata/sycl/compat",
+              "-I/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-identity-rescale-v1/source/bench/sycl",
+              "-save-temps=obj",
+              "-v",
+              "-Wl,-t",
+              "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-identity-rescale-v1/runtime.o",
+              "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-identity-rescale-v1/compat.o",
+              "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-identity-rescale-v1/command_profile.o",
+              "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-identity-rescale-v1/prompt_attention.o",
+              "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-identity-rescale-v1/original.o",
+              "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-identity-rescale-v1/candidate.o",
+              "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-identity-rescale-v1/performance/bench.o",
+              "-pthread",
+              "-ldl",
+              "-o",
+              "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-identity-rescale-v1/performance/bench"
+            ]
+          ]
+        ],
+        "environment": {
+          "PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin:/usr/bin:/bin",
+          "HOME": "/home/yayoi",
+          "LANG": "C.UTF-8",
+          "LC_ALL": "C.UTF-8",
+          "PYTHONDONTWRITEBYTECODE": "1",
+          "LD_LIBRARY_PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib:/opt/intel/oneapi/mkl/2026.1/lib",
+          "MKLROOT": "/opt/intel/oneapi/mkl/2026.1",
+          "OMP_NUM_THREADS": "1",
+          "GIT_TERMINAL_PROMPT": "0",
+          "GIT_SSH_COMMAND": "ssh -oBatchMode=yes",
+          "CPLUS_INCLUDE_PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/include",
+          "PIP_CONFIG_FILE": "/dev/null",
+          "ONEAPI_DEVICE_SELECTOR": "level_zero:gpu",
+          "UR_ADAPTERS_FORCE_LOAD": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_adapter_level_zero_v2.so.0",
+          "SYCL_CACHE_PERSISTENT": "0",
+          "NEOReadDebugKeys": "1",
+          "EnableDirectSubmission": "0",
+          "UR_L0_V2_FORCE_DISABLE_COPY_OFFLOAD": "1",
+          "STRATA_SYCL_VERIFY_NATIVE_CAPTURE": "0",
+          "STRATA_SYCL_PREFILL_SAME_QUEUE": "1",
+          "STRATA_SYCL_PREFILL_NATIVE16": "bf16",
+          "XDG_CACHE_HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-identity-rescale-v1/performance/cache",
+          "TMPDIR": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-identity-rescale-v1/performance/tmp"
+        },
+        "input_inventory": {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-identity-rescale-v1/performance/input-inventory.json",
+          "sha256": "4f5bc7ba43586731606f409a4dc682f9623b0a37dfe87e777d632062d2694741",
+          "files": 9277
+        },
+        "budgets": {
+          "wall": 600,
+          "cpu": 1800,
+          "rss_cap": 8589934592,
+          "text_cap": 33554432,
+          "file_cap": 268435456,
+          "total_cap": 2147483648
+        },
+        "passed": false,
+        "active": false,
+        "ownership_closed": true,
+        "criteria": "CPU fixture build only from qualified exact native kernel objects. Actual compiler and linker inputs frozen;no GPU trial before this build closes. Synthetic fourcase Page4query8192/cap2051 performance is separate from model evidence.",
+        "retention": "Same imminent v2comparison generation. Keep only compact source/recipe,samples and decision;retire ELF/objects/normal raw output at comparisonclosure."
+      }
     }
   }
 }
