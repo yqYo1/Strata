@@ -13238,7 +13238,7 @@
       }
     },
     "device_plan": {
-      "stage": "prepared",
+      "stage": "closed",
       "mode": "smoke",
       "source_commit": "bed47870335a440cd3153722a78ce93bfa816470",
       "inputs": {
@@ -13418,6 +13418,88 @@
       },
       "criteria": "Same-build component only;normal owned closure,no fresh fault,immutable safety/provider/code maps and pre-main parameter validation. Smoke:ordinary3-row oracle,split3/17,16admission refusals,3invalid-map masks and exception-unwind drain. Extended:6cases65537/81921/117488 regular/irregular;selectedjobs reach65535/65536/finalrow;allFP32 outputs/post-BF16 CPUFMA oracle,BF16capture,guards,alljobweightmaps and complete mixed output for selectedgathers. Routes:8cases2333/2334/2335/8192 regular/irregular per immutable startup arm;dispatch/false-no-write/fallback. No fullmodel,performance,quality,decode or physical262144qualification.",
       "retention": "Keep compact coverage/counts and fault/ownership outcome;retire successful trace/poll logs after verification. Candidate generation remains only for imminent model comparison."
-    }
+    },
+    "device_checks": [
+      {
+        "mode": "smoke",
+        "passed": true,
+        "complete": true,
+        "active": false,
+        "ownership_closed": true,
+        "GPU_kernels_executed": true,
+        "model_executed": false,
+        "model_qualified": false,
+        "controller_commit": "bed47870335a440cd3153722a78ce93bfa816470",
+        "plan_commit": "545145fe605a0dc2d1c8f8d1d27a6b115160bf27",
+        "physical_device": {
+          "name": "Intel(R) Arc(TM) B570 Graphics",
+          "pci": "0000:05:00.0",
+          "driver": "xe",
+          "matching_DRM_descriptors": 1
+        },
+        "coverage": {
+          "result_counts": {
+            "split_correctness": 9,
+            "split_case": 2,
+            "split_exception_unwind": 1,
+            "split_admissions": 1,
+            "correctness": 1,
+            "split_dataflow": 1
+          },
+          "cases": [
+            {
+              "kind": "split_case",
+              "tokens": 3,
+              "primary_rows": 1,
+              "target_rows": 0,
+              "irregular": 0,
+              "edges": 0,
+              "jobs": 3,
+              "physical_final_row": true,
+              "status": "PASS"
+            },
+            {
+              "kind": "split_case",
+              "tokens": 17,
+              "primary_rows": 8,
+              "target_rows": 3,
+              "irregular": 1,
+              "edges": 1,
+              "jobs": 3,
+              "physical_final_row": true,
+              "status": "PASS"
+            }
+          ],
+          "post_BF16_FP32_oracles": 9,
+          "production_routes": [],
+          "limitation": "Fixture post-BF16 consumer contract only;selected-job gathers,not everyjob. No model/performance qualification."
+        },
+        "validation": {
+          "pid": 3756565,
+          "loader": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_loader.so.0.12.0",
+          "threads_before": 1,
+          "preinit": 37,
+          "config_enabled": true,
+          "first_init": true,
+          "dispatch_result": 46,
+          "output_untouched": true,
+          "retained_reference_until_exit": true,
+          "runtime_teardown_qualified": false
+        },
+        "exit_code": 0,
+        "postchecks_complete": true,
+        "postcheck_errors": [],
+        "fresh_faults": [],
+        "boot_unchanged": true,
+        "driver_after": {
+          "pci": "/sys/bus/pci/devices/0000:05:00.0",
+          "driver": "xe",
+          "vendor": "0x8086",
+          "device": "0xe20c",
+          "kernel": "7.0.0-38-generic",
+          "devcoredump": false
+        }
+      }
+    ]
   }
 }
