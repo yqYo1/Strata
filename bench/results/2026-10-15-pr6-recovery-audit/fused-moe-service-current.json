@@ -15454,7 +15454,7 @@
     }
   },
   "metric_capability": {
-    "stage": "built",
+    "stage": "closed",
     "source_commit": "3dc4f2181ad8a1b600205aa6c622a857fd9bd08f",
     "sources": {
       "bench/sycl/metric_capability.c": "492281c8d9eb7ab97b920f340bb811acdfe3a9f9ca8490412150af3f319089fc",
@@ -15576,7 +15576,7 @@
     "retention": "One small tool build and bounded raw inventory for Main to choose the next source-documented tiny-workload metric. Review/retire after that choice and collection plan/result;no new model generation.",
     "active": false,
     "ownership_closed": true,
-    "passed": false,
+    "passed": true,
     "collection_qualified": false,
     "hardware_utilization_measured": false,
     "physical_pcie_bytes_measured": false,
@@ -15585,6 +15585,156 @@
       "bytes": 17160,
       "sha256": "822c8e53577603c4577ce950d903c1a85755e5d4ca28b2d60146ddf0c3f94354"
     },
-    "build_passed": true
+    "build_passed": true,
+    "native_exit_code": 0,
+    "api_errors": [],
+    "refusals": [],
+    "outcome": "enumerated",
+    "enumeration_complete": true,
+    "groups": [
+      {
+        "group": 2,
+        "name": "ComputeBasic",
+        "sampling_flags": 2,
+        "domain": 3,
+        "metric_count": 69
+      },
+      {
+        "group": 3,
+        "name": "ComputeBasic",
+        "sampling_flags": 1,
+        "domain": 3,
+        "metric_count": 83
+      },
+      {
+        "group": 8,
+        "name": "MemoryProfile",
+        "sampling_flags": 2,
+        "domain": 3,
+        "metric_count": 69
+      },
+      {
+        "group": 9,
+        "name": "MemoryProfile",
+        "sampling_flags": 1,
+        "domain": 3,
+        "metric_count": 83
+      },
+      {
+        "group": 14,
+        "name": "VectorEngineProfile",
+        "sampling_flags": 2,
+        "domain": 3,
+        "metric_count": 68
+      },
+      {
+        "group": 15,
+        "name": "VectorEngineProfile",
+        "sampling_flags": 1,
+        "domain": 3,
+        "metric_count": 82
+      },
+      {
+        "group": 16,
+        "name": "VectorEngineStalls",
+        "sampling_flags": 2,
+        "domain": 3,
+        "metric_count": 40
+      },
+      {
+        "group": 17,
+        "name": "VectorEngineStalls",
+        "sampling_flags": 1,
+        "domain": 3,
+        "metric_count": 54
+      }
+    ],
+    "metrics": 1414,
+    "device": {
+      "kind": "device",
+      "driver_index": 0,
+      "device_index": 0,
+      "pci": "0000:05:00.0",
+      "vendor_id": 32902,
+      "device_id": 57868,
+      "name": "Intel(R) Arc(TM) B570 Graphics",
+      "uuid_hex": "86800ce2000000000500000000000000"
+    },
+    "inventory": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/metric-capability-c-v2/inventory.json",
+      "sha256": "75dbcb568164a2f9daf69704cf7f8805227d921f99a829ef4a760deb844b20e2",
+      "bytes": 435620,
+      "consumer": "Choose one source-documented tiny-workload counter;retire full inventory after plan/result closes."
+    },
+    "provider_gates": [
+      {
+        "stage": "before-runtime",
+        "pid": 4085307,
+        "code_maps": 7,
+        "metrics_discovery": false,
+        "metrics_library": false
+      },
+      {
+        "stage": "runtime-ready",
+        "pid": 4085307,
+        "code_maps": 17,
+        "metrics_discovery": true,
+        "metrics_library": true
+      },
+      {
+        "stage": "before-exit",
+        "pid": 4085307,
+        "code_maps": 17,
+        "metrics_discovery": true,
+        "metrics_library": true
+      }
+    ],
+    "observed_runtime_elfs": [
+      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/metric-capability-c-v2/metric_capability",
+      "/usr/lib/x86_64-linux-gnu/ld-linux-x86-64.so.2",
+      "/usr/lib/x86_64-linux-gnu/libc.so.6",
+      "/usr/lib/x86_64-linux-gnu/libdrm.so.2.134.0",
+      "/usr/lib/x86_64-linux-gnu/libgcc_s.so.1",
+      "/usr/lib/x86_64-linux-gnu/libigc.so.2.41.15+0",
+      "/usr/lib/x86_64-linux-gnu/libigdfcl.so.2.41.15+0",
+      "/usr/lib/x86_64-linux-gnu/libigdgmm.so.12.10.0",
+      "/usr/lib/x86_64-linux-gnu/libigdmd.so.1.16.196",
+      "/usr/lib/x86_64-linux-gnu/libigdml.so.1.0.240",
+      "/usr/lib/x86_64-linux-gnu/libm.so.6",
+      "/usr/lib/x86_64-linux-gnu/libopencl-clang.so.22.1",
+      "/usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.33",
+      "/usr/lib/x86_64-linux-gnu/libz.so.1.3",
+      "/usr/lib/x86_64-linux-gnu/libze_intel_gpu.so.1.17.39758",
+      "/usr/lib/x86_64-linux-gnu/libze_loader.so.1.32.0",
+      "/usr/lib/x86_64-linux-gnu/libze_tracing_layer.so.1.32.0"
+    ],
+    "driver_after": {
+      "pci": "/sys/bus/pci/devices/0000:05:00.0",
+      "driver": "xe",
+      "vendor": "0x8086",
+      "device": "0xe20c",
+      "kernel": "7.0.0-38-generic",
+      "devcoredump": false
+    },
+    "fresh_faults": [],
+    "observation_complete": true,
+    "native_process": {
+      "pid": 4085307,
+      "exit_code": 0,
+      "elapsed_seconds": 1.5787678970955312,
+      "peak_session_rss_bytes": 40910848,
+      "observation_complete": true,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "error": null
+    },
+    "enumerated_group_count": 24,
+    "retained_group_scope": "Eight event/time entries for the imminent compute/memory/stall method decision;unselected properties remain only in the bounded external inventory.",
+    "inventory_conservation": {
+      "all24_group_ids_contiguous": true,
+      "all1414_metric_ids_complete_within_parents": true,
+      "successful_API_calls": 1495,
+      "API_errors": 0
+    }
   }
 }

@@ -1548,13 +1548,16 @@ larger windows and a smaller expert bank do not establish a throughput gain
 or the limiting hardware unit. Decode/handoff,model quality and physical-context
 qualification remain separate pending gates.
 
-The [`metric_capability.c`](../bench/sycl/metric_capability.c) direct-C check
-builds successfully,but its first execution stops at the runtime-ready gate
-before any metric-group enumeration. The plan omitted system IGC2.41.15,
-its OpenCL-Clang dependency and the loader's tracing layer;it had instead pinned
-the local IGC2.41.5. The owned process is terminated and reaped with no survivor
-or fresh GPU fault. Keep this run incomplete and unqualified;pin a new provider
-plan before another execution. Neither comparison engine includes this tool.
+The bounded [`metric_capability.c`](../bench/sycl/metric_capability.c) direct-C
+check now enumerates24groups and1414metric entries on PCI0000:05:00.0.
+All API calls succeed,the three environment/identity gates pass,17observed
+runtime ELFs match their independently pinned system closure,and the process
+exits0 after1.579s with40.9MB peak RSS,no survivor and no fresh GPU fault.
+The first attempt's omitted-system-provider failure remains unqualified at
+`899d5ee6d`;the corrected plan uses system IGC2.41.15,its OpenCL-Clang dependency
+and the loader tracing layer. This direct-C environment differs from the SYCL
+engine environment and does not qualify model or collector interoperability.
+Neither comparison engine includes this tool.
 The independently authored
 [`controller`](../tools/sycl/metric_capability.py) has separate prepare,build and
 run actions,with a commit required between them. It pins actual system headers,
@@ -1564,7 +1567,15 @@ budgets,three identity/environment/provider gates and no implicit retry.
 The probe selects PCI0000:05:00.0 and enumerates group/metric properties without
 creating application queues or activating metric groups. Preserve API errors,
 permission failures and successful zero-group enumeration as distinct outcomes.
-Enumeration alone does not qualify counter collection or measure utilization.
+ComputeBasic,MemoryProfile,VectorEngineProfile and VectorEngineStalls each expose
+event-based and time-based groups in domain3;names alone do not select a group.
+Actual properties include XVE_ACTIVE,XVE_STALL,GPU_MEMORY_BYTE_READ_RATE and
+XVE_INST_EXECUTED_XMX_BF16. Their presence does not establish permission,coverage,
+physical PCIe traffic or arithmetic saturation. Before using counters for the
+MoE resource hypothesis,qualify one documented metric/method with a tiny known
+workload,an idle control and observer-cost/coverage checks. The full bounded
+inventory remains external only for that imminent selection;enumeration alone
+does not qualify collection or measure utilization.
 
 A20261028 source-only check of selected`6e40afc1b` also rules out treating
 head release as a configuration-only way to fund the additional accumulator.
