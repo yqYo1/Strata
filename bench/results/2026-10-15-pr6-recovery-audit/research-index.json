@@ -16036,5 +16036,23 @@
       "candidate_sha256": "4326cc3121d56cc83ae561aebc08ca75854a0aab4386bf54172e7235ecca1cf5",
       "limits": "No source/API blocker for publicmatrixlocalstore/load orsubgroupfences. CPU/IR+compiledproperties pass separately. Tiny/fullnumerical,performance andmodel gates remain pending."
     }
+  },
+  "qsa_uniform_m4_performance_contract_20261029": {
+    "classification": "decision support",
+    "status": "eligible_pre_dispatch",
+    "schedulable_now": true,
+    "source_revision": "4e75b2b8755c6bb462863dd130c4083a6683acea",
+    "source_sha256": {
+      "bench/sycl/qsa_head_bench.cpp": "b968baa9f2bd264543a6d5034e46e942fac48f018da4def8b16930290699ab95",
+      "tools/sycl/qsa_head_performance.py": "5fcdf9ecf79adf482471bf7dd6be001d1148e9f260500d2d99a7d71fb062ee5d"
+    },
+    "question": "Review actual full-path portable M4 timing comparison source for validity, bounds/lifetimes/async completion, immutable operands, output parity, event versus wall clocks, alternating order/repetitions and frozen acceptance. Identify concrete pre-run blockers, not detailed historical regression causes.",
+    "prerequisites": "Exact performance fixture/controller committed at bd2a6bd45 and11789a30b; generated M4 kernel source reviewed, compiled property and traced tiny oracle passed, page4 extended gate currently Main-owned. Review needs only source, not absent performance results.",
+    "worker_model": "Orca Codex gpt-6-luna high",
+    "report": ".cache/research/2026-10-29/qsa_uniform_m4_performance_contract_20261029.md",
+    "report_budget_bytes": 12288,
+    "main_read_report_body": false,
+    "consumer": "Main next serialized M4 component comparison. Native Luna-max curates completed report; Main consumes operational digest only. No model or speed adoption from review.",
+    "retirement": "Record blockers/corrections and tested source identity in compact comparison; retire consumed report/spec/lifecycle at closure."
   }
 }
