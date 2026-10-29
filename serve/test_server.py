@@ -97,7 +97,7 @@ class MaxTokens(unittest.TestCase):
     def test_openai_count_matches_chat_prompt_without_engine_execution(self):
         for extra in [{}, {"reasoning_effort": "xhigh"},
                       {"chat_template_kwargs": {"enable_thinking": False}},
-                      {"response_format": {"type": "json_object"}}]:
+                      {"response_format": {"type": "json_object"}, "reasoning_effort": "none"}]:
             with self.subTest(extra=extra):
                 body = {"model": "m", "messages": [
                     {"role": "system", "content": "Read literal tags carefully."},
@@ -108,10 +108,10 @@ class MaxTokens(unittest.TestCase):
                 self.assertEqual(status, 200)
                 # Structured requests need a valid scripted JSON answer; the
                 # long prose script used by budget tests correctly returns502.
-                script = self.engine.tok.encode("</think>\n\n{}", parse_special=True)
+                script = self.engine.tok.encode("{}" if "response_format" in extra else "</think>\n\n{}", parse_special=True)
                 with mock.patch.object(self.engine, "script", script):
                     status, answer = self.post("/v1/chat/completions", body)
-                self.assertEqual(status, 200)
+                self.assertEqual(status, 200, answer)
                 self.assertEqual(counted["input_tokens"], answer["usage"]["prompt_tokens"])
 
     def test_openai_count_rejects_unexpanded_vision_and_dynamic_tools(self):
