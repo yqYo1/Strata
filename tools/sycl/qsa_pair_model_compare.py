@@ -23,6 +23,7 @@ import time
 sys.dont_write_bytecode = True
 import qsa_pair_model_bench as diagnostic
 import engine_once
+import pair_model_placement
 
 m = diagnostic.m
 P, B, RESULT = diagnostic.P, diagnostic.B, diagnostic.RESULT
@@ -34,6 +35,12 @@ MINIMUM, RUNS = 98304, 4
 
 
 def qualification():
+    reviewed = m.runtime.validation.committed(RESULT.with_name('research-index.json'),
+        ('pair_clean_model_comparison_contract_20261029', 'corrected_source_review'))
+    require(reviewed['accepted_for_clean_comparison_source_gate'] is True and
+        reviewed['source_sha256'] == {name:digest(P / name) for name in
+            ('tools/sycl/qsa_pair_model_compare.py','tools/sycl/pair_model_placement.py')},
+        'corrected comparison source gate missing or changed')
     record, built, rt = diagnostic.native()
     host, manifest = diagnostic.python_contract()
     model = record[m.KEY]['model_validation']['model']
@@ -222,20 +229,7 @@ def run(index):
             calls,queries,layers,chunks,metadata=map(int,counts)
             require(layers==12 and chunks==(n+8191)//8192 and calls==layers*chunks and
                 queries==layers*n and metadata==84025344,'actual pair completion totals differ')
-        def counters(prefix):
-            result=[]
-            for line in log.splitlines():
-                if not line.startswith(prefix):continue
-                result.append({k:int(v) for k,v in re.findall(r'(\w+)=(\d+)',line)})
-            return result
-        placements=counters('strata prefill: layer-major candidate, ')
-        banks=counters('strata MoE expert bank: ')
-        prefixes=counters('strata prefill: QSA BF16 operands, ')
-        require(len(placements)==RUNS and len(prefixes)==RUNS and len(banks) in (0,RUNS),
-                'actual placement coverage differs')
-        require(all({'tokens','chunk','residual_total','residual_gpu_rows','residual_gpu',
-            'residual_host','residual_staging','layer_cache'}<=set(v) for v in placements),
-                'incomplete actual residual/cache placement')
+        placement_evidence=pair_model_placement.validate(log,engine_rows,plan['arm'],env)
         # Keep every useful request sample,without full generated text/provider arrays.
         fields = ('request_sha256','actual_prompt_tokens','actual_read_tokens','actual_reused_tokens',
             'generated_tokens','prompt_ms','prompt_tps','prompt_tps_source','ttft_s','total_s',
@@ -243,7 +237,7 @@ def run(index):
         outcome.update(complete=True,host_probe_accepted=True,native_exit_code=0,
             samples=[{k:s[k] for k in fields if k in s} for s in samples],
             actual_engine_rows=engine_rows,pair_dispatch_checked=True,
-            placement=placements,expert_bank=banks,prefix_reservations=prefixes,
+            request_placement=placement_evidence,
             subsequent_median_ms=statistics.median(s['prompt_ms'] for s in samples[1:]),validation=proof)
         if index == len(ORDER)-1:diagnostic.models.model_pins(config,row['model_assets'],full=True)
     except BaseException as error:outcome['error'] = repr(error)
