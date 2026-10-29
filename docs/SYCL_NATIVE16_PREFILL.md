@@ -1518,14 +1518,27 @@ guard/drain and24thinking-enabled outputs. The observed diagnostic132774.1ms
 sustained decode evidence. The frozen clean A/B compares identical exact-count
 bodies,first-use and3subsequent requests/process,advancing after the first pair
 only with at least1percent warm-median improvement. Then repeat opposite orders.
-The first adjacent pair passes that screen:original subsequent median127.7833s
-(919.4tok/s,range918.1..923.3),candidate123.4984s(951.3tok/s,range948.3..957.0).
-The time ratio is0.96646745,a3.35percent reduction. First use is867.3and880.2tok/s;
-subsequent client TTFT medians are127.972and123.679s. All eight requests read
-117489fresh tokens,with117488engine rows and identical body hashes between arms.
-Both native processes exit normally,validation stays silent and no fresh fault
-occurs. The plan requires four further independent processes before its final
-speed decision;no adoption follows from this first pair. This exact-count factory
+All six processes now close,with24exact117489-read requests,117488engine rows,
+zero reuse and identical body hashes between arms. Every native exit is0,
+validation stays silent,all15final model hashes match and no fresh fault occurs.
+The first-pair screen passes and all three subsequent-three-median comparisons
+favor the candidate:
+
+| Pair/order | Original median,s | Candidate median,s | Time reduction |
+| --- | ---: | ---: | ---: |
+| original,candidate | 127.7833 | 123.4984 | 3.353% |
+| candidate,original | 127.6995 | 123.4156 | 3.355% |
+| original,candidate | 127.5184 | 124.5006 | 2.367% |
+
+The paired geometric-mean time ratio is0.96974056,a3.026percent reduction,
+passing the prospective1percent performance gate. Original process medians
+are919.4,920.0and921.3tok/s;candidate medians are951.3,952.0and943.7tok/s.
+All nine subsequent samples range917.0..923.3and941.4..957.0tok/s respectively.
+Subsequent TTFT medians are127.972,127.875and127.700s for original,and123.679,
+123.605and124.722s for candidate. Keep first-use samples separate(817.3..867.3
+and853.8..880.2tok/s). This is a clean prefill mechanism result;1000tok/s,
+decode,task quality and physical262144qualification are not established.
+The split route remains default-off and unadopted. This exact-count factory
 produces different request bodies from the previous minimum-count factory's
 approximately975tok/s cohort;that is not a matched regression comparison.
 Individual samples and the frozen stopping rule are in
