@@ -324,8 +324,13 @@ The isolated required-WG128source at29d9d5519now builds with696actual
 compiler inputs and zero uncovered link inputs. Its four compiled properties
 pass:both candidate kernels require128x1x1,while controls have no required
 size. Pairednormal/state argument counts agree before any enqueue;the tiny
-trace must also match indexed local-argument bindings. Eleven host admission
-checks pass. Numerical/native timing gates remain pending.
+trace also matches indexed local-argument bindings. Eleven host admission
+checks,the traced tiny gate and all11cases at each Page4/Page16pass. The
+three-process72sample timing screen rejects this candidate:wall-time geometric
+means are1.000150,1.000039,1.000112and0.999295for32Kcontiguous/strided and
+117488contiguous/strided. All three timing metrics miss the prospective gate;
+no model trial or adoption follows. Bit/state,clock,provider,owner and fault
+checks pass. Do not extend Main's investigation of this rejected annotation.
 Selected6e40and decode remain unchanged.
 FullQSA/task/performance and physical-context/handoff gates remain unqualified.
 Selected6e40and its twelve same-build fixtures remain.
@@ -1490,7 +1495,10 @@ prefill-only expert bank from384 to128 maximum-stride slots would release
 681574400B,leaving298280576B after the extra accumulator and the same headroom.
 These are logged budgets and prospective arithmetic,not successful allocation
 or physical-residency evidence. The current planner rejects this row count.
-Before implementation,audit every scalar/fused scatter and finish consumer for
+The next candidate starts with a separate split-capacity planner,keeping the
+ordinary81920-row admission unchanged. Host controls must check complete bank
+coverage,guard reservations and one-byte-short refusal before device work.
+Implement and check every scalar/fused scatter and finish consumer for
 split-bank bounds,the maximum15 jobs/expert and histogram capacity,queue/owner
 retirement,cancellation,and full-context fallback. Then measure actual job/
 dequant/upload changes and critical-path service;larger windows and a smaller
