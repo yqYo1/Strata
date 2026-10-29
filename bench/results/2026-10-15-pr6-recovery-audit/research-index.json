@@ -16780,7 +16780,7 @@
       "source_commit": "07f8c3217",
       "change": "OpenAI count-only endpoint matches completionnormalizer/format+storeFalse;reject dynamicMCP and visionexpansion. ExistingAnthropic endpoint retained. This enables exactprompt planning without newinference calibration or Anthropic/status timingcorrelation.",
       "host_verification": {
-        "stage": "valid_json_fixture_retry_prepared",
+        "stage": "closed",
         "earlier_setup_failure": {
           "command": "system python3 -m unittest serve.test_server.MaxTokens count tests",
           "tests_run": 0,
@@ -16809,7 +16809,12 @@
           "tests_run": 3,
           "passed": false,
           "error": "ExplicitHTTPerror: structured output incomplete(finish_reason=length). Script lackedIM_END evenwith2outputtokens;constructMockEngine(script).script toinclude actualendtoken. Preserve200andcountparity criteria."
-        }
+        },
+        "passed": true,
+        "tests_run": 3,
+        "test_fixture_source_commit": "0db8042ac",
+        "native_or_GPU_executed": false,
+        "limits": "MockengineHTTPonly;realpack/tokenizer/frontendequivalence and exactrow modelrun remainpending. Existingtelemetry ResourceWarningsnotchanged;not an entirelywarningfree suite."
       }
     }
   }
