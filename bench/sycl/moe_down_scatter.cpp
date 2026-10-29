@@ -371,7 +371,6 @@ struct Case {
     separate(index, xe::Tile::wide_128x128);
     wait(q, fused(index, xe::Tile::wide_128x128, true, xe::ScatterLayout::matrix_row_cache));
     const auto dense = down.get(), captured = capture.get();
-    const size_t cells = size_t(job.rows) * N;
     need(same_bytes(dense, captured), "split complete BF16 capture or logical M-tail mismatch");
     host_accumulate(dense); verify();
     // Repeated update also exercises the no-capture specialization and keeps
