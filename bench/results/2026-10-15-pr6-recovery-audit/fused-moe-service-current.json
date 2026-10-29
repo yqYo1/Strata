@@ -8880,7 +8880,7 @@
     }
   },
   "qsa_compiler_ir_v1": {
-    "stage": "prepared",
+    "stage": "compiled",
     "source_commit": "35ebc9b894e28bf91eb7b786d863852e01da6d28",
     "native_source": "6e40afc1beddd059ee518617f6c1efce1da14aca",
     "native_files": 156,
@@ -9115,6 +9115,50 @@
               "fdiv": 1
             },
             "required_WG_metadata": true
+          }
+        },
+        "ownership_closed": true
+      },
+      "id_int": {
+        "passed": true,
+        "GPU_executed": false,
+        "IR": {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-compiler-ir-v1/id_int.ll",
+          "sha256": "f1980f4e624918f6d11c09eea0533c9fe67321280f1ec3252e24f1121d01d89d",
+          "bytes": 136301
+        },
+        "actual_compiler_inputs": {
+          "files": 662,
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-compiler-ir-v1/id_int-inputs.json",
+          "sha256": "dbbed380d908f11095d8c51f5fe962ffd6924e77c57b20353b9445dd2384b0ab",
+          "uncovered": 0
+        },
+        "functions": {
+          "_ZTSZZN6strata7kernels17qsa_head_originalL17prefix_batch_implILi33ELb0ELb0ELb1ELb1ELb1ELb1ELb0EEEbPKtRKNS0_12QsaAttnPoolsEPKiS9_lRKNS0_9QsaShapesEPtlRKNS0_19QsaPromptBf16BoundsElRKNS0_20QsaBf16PackedScratchEPvNS0_19QsaPrefixStateProbeEPN4sycl3_V15eventESP_ENKUlRNSN_7handlerEE_clESR_EUlNSN_7nd_itemILi1EEEE_": {
+            "normalized_body_sha256": "0e701dad5dca2992a5062c4a6517dd5380d07a1930c36c3d5f8fefaf6b1f5da5",
+            "instruction_lines": 724,
+            "i64_arithmetic": 22,
+            "i64_casts": 52,
+            "FP32_ops": {
+              "fadd": 1,
+              "fsub": 3,
+              "fmul": 3,
+              "fdiv": 1
+            },
+            "required_WG_metadata": false
+          },
+          "_ZTSZZN6strata7kernels17qsa_head_originalL17prefix_batch_implILi33ELb0ELb0ELb1ELb1ELb1ELb1ELb1EEEbPKtRKNS0_12QsaAttnPoolsEPKiS9_lRKNS0_9QsaShapesEPtlRKNS0_19QsaPromptBf16BoundsElRKNS0_20QsaBf16PackedScratchEPvNS0_19QsaPrefixStateProbeEPN4sycl3_V15eventESP_ENKUlRNSN_7handlerEE_clESR_EUlNSN_7nd_itemILi1EEEE_": {
+            "normalized_body_sha256": "9bc8453773a09f8d2ccf19c9fae3721d173ae029f54655fdf560cfff512dff30",
+            "instruction_lines": 750,
+            "i64_arithmetic": 23,
+            "i64_casts": 53,
+            "FP32_ops": {
+              "fadd": 1,
+              "fsub": 3,
+              "fmul": 3,
+              "fdiv": 1
+            },
+            "required_WG_metadata": false
           }
         },
         "ownership_closed": true
