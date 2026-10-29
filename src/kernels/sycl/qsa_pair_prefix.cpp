@@ -22,16 +22,10 @@ bool qsa_bf16_pair_prefix_batch(const uint16_t *query,const QsaAttnPools &pools,
   if (cap>2051 || live_cells<=0 || live_cells>262144 || uint64_t(live_cells)>
       uint64_t(bounds.logical_pages)*uint64_t(shape.page_size))
     throw std::invalid_argument("pair prefix exceeds its geometry contract");
-  auto &queue=queue_for(stream);const auto device=queue.get_device();
-  const auto groups=device.get_info<sycl::info::device::sub_group_sizes>();
+  auto &queue=queue_for(stream);
   // The shared validator already verifies the same BF16xBF16/FP32 matrix
   // combination and SG16;add the pair consumer/producer's stronger limits.
-  if (!device.is_gpu() || device.get_info<sycl::info::device::vendor_id>()!=0x8086 ||
-      !device.has(sycl::aspect::ext_intel_matrix) ||
-      device.get_info<sycl::info::device::max_work_group_size>()<192 ||
-      device.get_info<sycl::info::device::max_work_item_sizes<1>>()[0]<192 ||
-      device.get_info<sycl::info::device::local_mem_size>()<21856+4096+4096 ||
-      std::find(groups.begin(),groups.end(),32)==groups.end()) return false;
+  if (!qsa_pair_prefill_device_supported(stream)) return false;
   constexpr int Dim=256;
   const size_t rows_count=checked_count(checked_count(bounds.physical_pages,2),shape.page_size);
   const size_t active_pages=(uint64_t(live_cells)+shape.page_size-1)/shape.page_size;

@@ -50,6 +50,16 @@ bool available(const sycl::device &device) {
 }
 }
 
+bool qsa_pair_prefill_device_supported(void *stream) {
+  const auto device=sycl_backend::queue_for(stream).get_device();
+  const auto groups=device.get_info<sycl::info::device::sub_group_sizes>();
+  try {
+    return available(device) &&
+        device.get_info<sycl::info::device::local_mem_size>()>=LocalBytes+4096+4096 &&
+        std::find(groups.begin(),groups.end(),32)!=groups.end();
+  } catch (const sycl::exception &) {return false;}
+}
+
 bool qsa_pair_attention_prefill(const uint16_t *query,const QsaAttnPools &pools,
     const int32_t *original_ids,const int32_t *steps,int64_t cap,const QsaShapes &shape,
     uint16_t *output,int64_t queries,const QsaPromptBf16Bounds &bounds,int64_t live_cells,

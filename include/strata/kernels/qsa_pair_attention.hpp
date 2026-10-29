@@ -3,7 +3,12 @@
 #include "strata/kernels/qsa_bf16_prefix.hpp"
 #if defined(STRATA_ENABLE_SYCL)
 namespace strata::kernels {
-// Attention-only two-query experiment; no production caller/build target.
+// Additional pair producer/consumer device requirements;no allocation or
+// enqueue. Common BF16 input/device validation remains required separately.
+// Model admission and the composed wrapper use this same predicate.
+bool qsa_pair_prefill_device_supported(void *stream);
+
+// Attention-only two-query kernel;the pair-prefix wrapper refreshes its inputs.
 // packed must already contain the original logical BF16 prefix and bad-row
 // flags, produced after the current KV/page-table writes on this in-order
 // queue. This function does NOT refresh it. All inputs stay immutable/live

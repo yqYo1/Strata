@@ -226,6 +226,10 @@ bool Prefill::run_layer_major(const int64_t* tokens, int64_t n, int64_t pos0, st
     // every unsupported layer/device/domain BEFORE this request submits work.
     if (qsa16_on) {
         native16::qsa::validate_device(m.cs);
+        if (qsa_pair_on && !strata::kernels::qsa_pair_prefill_device_supported(m.cs)) {
+            err = "prefill QSA pair: unsupported producer/consumer device capabilities";
+            return false;
+        }
         // The legacy OLD switch is presence-based, including a value of 0.
         if (std::getenv("STRATA_PROMPT_ATTN_OLD")) {
             err = "prefill QSA16: leave STRATA_PROMPT_ATTN_OLD unset"; return false;
