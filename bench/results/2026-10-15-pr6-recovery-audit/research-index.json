@@ -16841,5 +16841,47 @@
       "native_or_GPU_executed": false,
       "next": "Qualify current realpack frontend/count-only body construction,then commit actualrow/route-aware boundary model plan;mocked exactcounts do not prove physicalrows."
     }
+  },
+  "codebook_weight_tile_dequant_dataflow_collection_20261030": {
+    "classification": "knowledge collection",
+    "status": "eligible_for_dispatch",
+    "schedulable_now": true,
+    "worker_model": "Orca Codex gpt-6-luna high",
+    "report": ".cache/research/2026-10-30/codebook_weight_tile_dequant_dataflow_collection_20261030.md",
+    "report_budget_bytes": 14336,
+    "ownership_closed": true,
+    "retention": "NativeLuna-maxcuration ofnovelty/depth/retrieval;raw report not automatically committed. Review at concretecandidate/workloadselection,retire duplicates and transactionpaperwork.",
+    "question": "Compare GPU dataflows that materialize dequantized low-bit codebook weights once per expert versus fuse codebook/scale decode into joint-matrix GEMM tiles,or cache a bounded dequantized subset. Prioritize original vLLM/SGLang/Marlin and Intel/SYCL/Triton sources plus transferable GPU/ASIC work. Explain codebook vs uniformINT4 differences,K-loop LUT/scale costs,repeateddequant acrossMtiles,coalescing/SLM/register pressure,reuse/tail behavior and numerical roundlocations. Anchor GU N1280/K2560 and DownN2560/K640,M1..8192,16-bit operands and9,830,400Bglobaldecodedweightpair. Do not claim this is the currentbottleneck:40.69sMoE aggregate minus4.39sGU/5.58sDown cannot be labelleddequanttime. Distinguish this weightdecode placement question from activationquantization/general backend surveys and identify counterexamples.",
+    "prior_refs": [
+      "moe_grouped_decision",
+      "moe_indexed_gemm_a_scope",
+      "transient_moe_operand_quant_collection_scope",
+      "selected_fused_moe_service_scope_20261028"
+    ],
+    "prerequisites_evidence": [
+      "Current source stages quantized expert,then globallydequantizes GU/Down into m.dq_gu[0]/m.dq_d[0] before native16 GEMM;one pair9,830,400B per sourcecensus. No localmeasurement needed for bounded knowledgecollection."
+    ],
+    "consumer": "Conditional retrieval for a source-bound MoE weightdecode/dataflow candidate after actual resource attribution;not an immediate implementation or speedclaim."
+  },
+  "moe_prompt_domain_routing_benchmark_collection_20261030": {
+    "classification": "knowledge collection",
+    "status": "eligible_for_dispatch",
+    "schedulable_now": true,
+    "worker_model": "Orca Codex gpt-6-luna high",
+    "report": ".cache/research/2026-10-30/moe_prompt_domain_routing_benchmark_collection_20261030.md",
+    "report_budget_bytes": 14336,
+    "ownership_closed": true,
+    "retention": "NativeLuna-maxcuration ofnovelty/depth/retrieval;raw report not automatically committed. Review at concretecandidate/workloadselection,retire duplicates and transactionpaperwork.",
+    "question": "Investigate how prompt domain/lexicaldiversity and syntheticrepetition change MoE routed-expert load,per-expert GEMM shapes and measured long-prefill throughput. Compare primaryproduction vLLM/SGLang benchmark practices and original MoE/load-skew papers/blogs;derive a finite workloadstratification and compact routing-feature ledger that distinguishes length effects from changing expertmix without expensive readbacks in clean runs. Cover random wordlists,code/prose/agenthistories,within/expert temporal locality,correlated prefixes and misleading means. This is workloadrepresentativeness/mix methodology,not another affine/roofline/scaling-model survey;no invented localbottleneck or modelaccuracyclaim.",
+    "prior_refs": [
+      "prefill_unseen_length_shape_model_20261030",
+      "offload_scaling_identifiability_collection_20261027",
+      "long_prefill_skewed_expert_job_execution_scheduling_20261027",
+      "prefill_exact_row_workload_construction_contract_20261030"
+    ],
+    "prerequisites_evidence": [
+      "Official benchmark uses fixed variedword-list longprompt;current exactcount mode trims that list but retains nonce/question. Independent code/prose workloads differ in observedtiming at similar lengths;this is contextonly,not measured causation. No localprofiling prerequisite for knowledgecollection."
+    ],
+    "consumer": "Conditional retrieval when selecting matched representative long/agent workloads or a routingfeature costmodel;Main does not read body onarrival."
   }
 }
