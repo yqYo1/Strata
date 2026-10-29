@@ -12698,7 +12698,7 @@
     }
   },
   "moe_split_accumulator": {
-    "status": "native_built_not_device_qualified",
+    "status": "device_controls_passed_model_unrun",
     "host": {
       "stage": "closed",
       "source_commit": "be574247d026a341c6abedf23a37bd6612d51430",
@@ -12886,7 +12886,7 @@
     "mechanism": "Process one117488-row expert-major window rather than81920+35568;preserve FP32 expert summation and16-bit tensor boundaries. Split accumulator makes capacity possible. Fewer expert dequants/submissions are a hypothesis;smaller bank may add PCIe traffic. Aggregate MoE minus GU/Down is NOT measured dequanttime or physical-resource saturation.",
     "inference_adopted": false,
     "decode_changed": false,
-    "next_gate": "Ordered traced split-smoke,extended65537/81921/117488,and productionrouteoff/on in separate immutable processes. Then exact117489-read model allocation/route check before clean comparison;selected6e40/12fixtures unchanged.",
+    "next_gate": "Fresh current-source frontend probes,then exact117489-read/117488-engine model allocation/route/24-output handoff check. Exact selected73728/73729/81920/81921 route checks precede boundary clean timing. No speed/model/decode/fullcontext adoption from components.",
     "source_review": {
       "revision": "8a34a9ed6",
       "research_key": "moe_split_native_consumer_contract_20261030",
@@ -13238,7 +13238,7 @@
       }
     },
     "device_plan": {
-      "stage": "prepared",
+      "stage": "closed",
       "mode": "route-on",
       "source_commit": "c2f7e36410ef39d90ffa1358bac5a415e3c01483",
       "inputs": {
@@ -13699,6 +13699,107 @@
         },
         "validation": {
           "pid": 3780731,
+          "loader": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_loader.so.0.12.0",
+          "threads_before": 1,
+          "preinit": 37,
+          "config_enabled": true,
+          "first_init": true,
+          "dispatch_result": 46,
+          "output_untouched": true,
+          "retained_reference_until_exit": true,
+          "runtime_teardown_qualified": false
+        },
+        "exit_code": 0,
+        "postchecks_complete": true,
+        "postcheck_errors": [],
+        "fresh_faults": [],
+        "boot_unchanged": true,
+        "driver_after": {
+          "pci": "/sys/bus/pci/devices/0000:05:00.0",
+          "driver": "xe",
+          "vendor": "0x8086",
+          "device": "0xe20c",
+          "kernel": "7.0.0-38-generic",
+          "devcoredump": false
+        }
+      },
+      {
+        "mode": "route-on",
+        "passed": true,
+        "complete": true,
+        "active": false,
+        "ownership_closed": true,
+        "GPU_kernels_executed": true,
+        "model_executed": false,
+        "model_qualified": false,
+        "controller_commit": "c2f7e36410ef39d90ffa1358bac5a415e3c01483",
+        "plan_commit": "0197b1db0cfb665116d7de56133b78f689cc4feb",
+        "physical_device": {
+          "name": "Intel(R) Arc(TM) B570 Graphics",
+          "pci": "0000:05:00.0",
+          "driver": "xe",
+          "matching_DRM_descriptors": 1
+        },
+        "coverage": {
+          "result_counts": {
+            "selected_route": 8
+          },
+          "cases": [],
+          "post_BF16_FP32_oracles": 0,
+          "production_routes": [
+            {
+              "rows": 2333,
+              "enabled": 1,
+              "selected": 0,
+              "split_rows": 2333
+            },
+            {
+              "rows": 2333,
+              "enabled": 1,
+              "selected": 0,
+              "split_rows": 2333
+            },
+            {
+              "rows": 2334,
+              "enabled": 1,
+              "selected": 1,
+              "split_rows": 2334
+            },
+            {
+              "rows": 2334,
+              "enabled": 1,
+              "selected": 1,
+              "split_rows": 2334
+            },
+            {
+              "rows": 2335,
+              "enabled": 1,
+              "selected": 1,
+              "split_rows": 2335
+            },
+            {
+              "rows": 2335,
+              "enabled": 1,
+              "selected": 1,
+              "split_rows": 2335
+            },
+            {
+              "rows": 8192,
+              "enabled": 1,
+              "selected": 1,
+              "split_rows": 8192
+            },
+            {
+              "rows": 8192,
+              "enabled": 1,
+              "selected": 1,
+              "split_rows": 8192
+            }
+          ],
+          "limitation": "Fixture post-BF16 consumer contract only;selected-job gathers,not everyjob. No model/performance qualification."
+        },
+        "validation": {
+          "pid": 3788526,
           "loader": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_loader.so.0.12.0",
           "threads_before": 1,
           "preinit": 37,
