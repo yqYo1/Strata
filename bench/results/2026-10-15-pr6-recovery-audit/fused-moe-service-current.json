@@ -12647,6 +12647,134 @@
           "devcoredump": false
         }
       }
+    },
+    "performance": {
+      "build": {
+        "stage": "prepared",
+        "source_commit": "5d452349c3fbeaa9218df55f87ba98d704dd4cb6",
+        "native_build_source": "29d9d5519f61050bc3fd65465f3531d927b10ab4",
+        "native_geometry": {
+          "original_source_commit": "6e40afc1beddd059ee518617f6c1efce1da14aca",
+          "original_source_sha256": "4f9f815c9baae709f919f6d5ad1af04677c10d8c13c7597b3857cf81567ae192",
+          "generated_sha256": {
+            "original.cpp": "2e7e95753b0a1084416ee19d146f21d7a54eca9b6ce1e6b66b075634b4f62c76",
+            "candidate.cpp": "67bbc43ca1d79e7d811b996497964a6335c0628ea2fe40ad5fcb6187421a4937",
+            "qsa-head.hpp": "dc15535160bb9a8fd915ff0c46cf84ac33c58d97809e7606bd84bfed7ba0f199"
+          },
+          "geometry": "Same M8,N16,K16,actualWG128,SG16,16padded/12real matrix rows;bothsize_t IDs. Candidate alone declares exactWG128.",
+          "reversible_annotation_edits": 1,
+          "reversible_real_math_edits": 0,
+          "reversible_common_diagnostic_edits": 4,
+          "declared_local_bytes": 20036,
+          "arithmetic_contract": "Every original padded/real-head softmax,QK/PV,ascendingFP32sum,Qscaling,BF16PV,FP32m/alpha/norm,outputdivision/cast and all barriers are textually unchanged.",
+          "workgroup_contract": "Actual selected attention launch is alwaysnd_range1D(local128);sameeight SIMD16subgroups and twoheads each. Attribute may alter downstream native compilation even when optimizedLLVMbodies match. Compiled candidate requiredX128/Y1/Z1 is mandatory beforeenqueue;normal/state actualtraced launches must match.",
+          "production_or_decode_changed": false
+        },
+        "runtime_sha256": "09ad358e12f6ef58bfc0a978519927863f3d09949a033a1e224db95997647d97",
+        "boot": "cfda0b6a-7c13-4fe2-bdf5-8f9202770840",
+        "commands": [
+          [
+            "compile",
+            [
+              "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin/clang++",
+              "-std=c++20",
+              "-O3",
+              "-DNDEBUG",
+              "-g0",
+              "-fsycl",
+              "-fsycl-id-queries-range=size_t",
+              "-fno-fast-math",
+              "-ffp-contract=off",
+              "-DSTRATA_ENABLE_SYCL=1",
+              "-I/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-required-wg-native-v1/source/include",
+              "-I/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-required-wg-native-v1/source/include/strata/sycl/compat",
+              "-I/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-required-wg-native-v1/source/bench/sycl",
+              "-MD",
+              "-MF",
+              "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-required-wg-native-v1/performance-v1/bench.d",
+              "-c",
+              "/home/yayoi/orca/workspaces/Strata/sycl/bench/sycl/qsa_head_bench.cpp",
+              "-o",
+              "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-required-wg-native-v1/performance-v1/bench.o"
+            ]
+          ],
+          [
+            "link",
+            [
+              "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin/clang++",
+              "-std=c++20",
+              "-O3",
+              "-DNDEBUG",
+              "-g0",
+              "-fsycl",
+              "-fsycl-id-queries-range=size_t",
+              "-fno-fast-math",
+              "-ffp-contract=off",
+              "-DSTRATA_ENABLE_SYCL=1",
+              "-I/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-required-wg-native-v1/source/include",
+              "-I/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-required-wg-native-v1/source/include/strata/sycl/compat",
+              "-I/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-required-wg-native-v1/source/bench/sycl",
+              "-save-temps=obj",
+              "-v",
+              "-Wl,-t",
+              "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-required-wg-native-v1/runtime.o",
+              "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-required-wg-native-v1/compat.o",
+              "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-required-wg-native-v1/command_profile.o",
+              "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-required-wg-native-v1/prompt_attention.o",
+              "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-required-wg-native-v1/original.o",
+              "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-required-wg-native-v1/candidate.o",
+              "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-required-wg-native-v1/performance-v1/bench.o",
+              "-pthread",
+              "-ldl",
+              "-o",
+              "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-required-wg-native-v1/performance-v1/bench"
+            ]
+          ]
+        ],
+        "environment": {
+          "PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin:/usr/bin:/bin",
+          "HOME": "/home/yayoi",
+          "LANG": "C.UTF-8",
+          "LC_ALL": "C.UTF-8",
+          "PYTHONDONTWRITEBYTECODE": "1",
+          "LD_LIBRARY_PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib:/opt/intel/oneapi/mkl/2026.1/lib",
+          "MKLROOT": "/opt/intel/oneapi/mkl/2026.1",
+          "OMP_NUM_THREADS": "1",
+          "GIT_TERMINAL_PROMPT": "0",
+          "GIT_SSH_COMMAND": "ssh -oBatchMode=yes",
+          "CPLUS_INCLUDE_PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/include",
+          "PIP_CONFIG_FILE": "/dev/null",
+          "ONEAPI_DEVICE_SELECTOR": "level_zero:gpu",
+          "UR_ADAPTERS_FORCE_LOAD": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_adapter_level_zero_v2.so.0",
+          "SYCL_CACHE_PERSISTENT": "0",
+          "NEOReadDebugKeys": "1",
+          "EnableDirectSubmission": "0",
+          "UR_L0_V2_FORCE_DISABLE_COPY_OFFLOAD": "1",
+          "STRATA_SYCL_VERIFY_NATIVE_CAPTURE": "0",
+          "STRATA_SYCL_PREFILL_SAME_QUEUE": "1",
+          "STRATA_SYCL_PREFILL_NATIVE16": "bf16",
+          "XDG_CACHE_HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-required-wg-native-v1/performance-v1/cache",
+          "TMPDIR": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-required-wg-native-v1/performance-v1/tmp"
+        },
+        "input_inventory": {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-required-wg-native-v1/performance-v1/input-inventory.json",
+          "sha256": "a75c063c2cddb51f1a6c160f93864fac9df9f1902df5584a5ff0326747ec4b3e",
+          "files": 9277
+        },
+        "budgets": {
+          "wall": 600,
+          "cpu": 1800,
+          "rss_cap": 8589934592,
+          "text_cap": 33554432,
+          "file_cap": 268435456,
+          "total_cap": 2147483648
+        },
+        "passed": false,
+        "active": false,
+        "ownership_closed": true,
+        "criteria": "CPU fixture build only from qualified exact native kernel objects. Actual compiler and linker inputs frozen;no GPU trial before this build closes. Synthetic fourcase Page4query8192/cap2051 performance is separate from model evidence.",
+        "retention": "Same imminent exact-WG128 comparison generation. Keep only compact source/recipe,samples and decision;retire ELF/objects/normal raw output at comparisonclosure."
+      }
     }
   }
 }
