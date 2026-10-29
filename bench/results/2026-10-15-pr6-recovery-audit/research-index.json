@@ -17356,8 +17356,8 @@
   },
   "down_low_k_geometry_20261030": {
     "classification": "decision_support",
-    "status": "eligible_inputs_prepared",
-    "schedulable_now": true,
+    "status": "reviewed_with_scope_corrections",
+    "schedulable_now": false,
     "prerequisites": {
       "pinned_current_source": true,
       "prior_reports_indexed": true,
@@ -17378,12 +17378,45 @@
     "report_budget_bytes": 16384,
     "task_spec": ".cache/research/2026-10-30/down_low_k_geometry_20261030.task.txt",
     "task_spec_sha256": "dc828b9258364807192957c290ed1996874f34245fe8b1fe1f5730b47ba7abca",
-    "worker_model": "Orca Codex gpt-6-luna high"
+    "worker_model": "Orca Codex gpt-6-luna high",
+    "task": "task_1fdd1184e5ef",
+    "initial_dispatch": "ctx_44eb9a88c427",
+    "dispatch": "ctx_895b9b75c12d",
+    "terminal": "term_de3a082d-e1cf-4fb8-8925-07033cfb3859",
+    "worker_start_accepted": true,
+    "turn_started": true,
+    "startup_model_evidence": {
+      "requested": {
+        "agent": "codex",
+        "model": "gpt-6-luna",
+        "effort": "high"
+      },
+      "effective": {
+        "agent": "codex",
+        "model": "gpt-6-luna",
+        "effort": "high"
+      }
+    },
+    "startup_failure": "Observed update prompt before Task;Esc without Enter,same Task/terminal accepted retry. No active-worker steering.",
+    "report_bytes": 10715,
+    "report_sha256": "bd886b59c5a811e4d285e528dc87e1f0318772ae1af1abcf6f162b139ff91a69",
+    "worker_dispatch_state": "completed",
+    "worker_outcome": "succeeded",
+    "worker_released": true,
+    "release_state": "released",
+    "delivery_acknowledged": true,
+    "review": ".cache/research/2026-10-30/down_low_k_geometry_20261030.review.json",
+    "review_sha256": "5c7fed0d828677ba1641282873b8078c4d8ae461d6a59c10877b141e318e6732",
+    "review_bytes": 8201,
+    "review_model": "native Codex gpt-6-luna max",
+    "review_decision": "M64xN128 keeps128logical accumulators/workitem and doubles WG count;no established grid underfill. CandidateB duplicates prior work. CandidateC requires evidence of GEMM-mainloop limitation and a Down-only helper. TLA v0.9.3 BMG G21/B580 docs are not B570 measurements.",
+    "next_action": "Main may prototype matched split-bank M64xN128 versus qualified row-address128 control and dense/scatter controls,with geometry/dispatch/ownership/SLM checks. Do not rerun B or unqualified shared GU/Down prefetch. The completed address cohort has5.92percent less device service,not model PP or saturation.",
+    "review_process_limit": "Curator disclosed two read-only Git commands contrary to its no-Git task;no mutation,then file-only review. All pinned hashes matched;this is not native/performance validation."
   },
   "upstream_stream_parser_delta_46c152_20261030": {
     "classification": "decision_support",
-    "status": "eligible_inputs_prepared",
-    "schedulable_now": true,
+    "status": "reviewed_with_scope_corrections",
+    "schedulable_now": false,
     "prerequisites": {
       "pinned_current_source": true,
       "prior_reports_indexed": true,
@@ -17401,6 +17434,54 @@
     "report_budget_bytes": 16384,
     "task_spec": ".cache/research/2026-10-30/upstream_stream_parser_delta_46c152_20261030.task.txt",
     "task_spec_sha256": "49950b1575976d33133e928662ffd0fbe183da5f86c87fad4b6339815f62398e",
-    "worker_model": "Orca Codex gpt-6-luna high"
+    "worker_model": "Orca Codex gpt-6-luna high",
+    "task": "task_7ea8431e35a0",
+    "initial_dispatch": "ctx_075f8a439fc9",
+    "dispatch": "ctx_b5956eeb4f33",
+    "terminal": "term_e760f77b-4291-492e-8b1e-4b49829ccde9",
+    "worker_start_accepted": true,
+    "turn_started": true,
+    "startup_model_evidence": {
+      "requested": {
+        "agent": "codex",
+        "model": "gpt-6-luna",
+        "effort": "high"
+      },
+      "effective": {
+        "agent": "codex",
+        "model": "gpt-6-luna",
+        "effort": "high"
+      }
+    },
+    "startup_failure": "Observed update prompt before Task;Esc without Enter,same Task/terminal accepted retry. No active-worker steering.",
+    "report_bytes": 10592,
+    "report_sha256": "c18f7b968ca5b3c114feea95115e5ff8f085cfe971e944eab398469a537e1c84",
+    "worker_dispatch_state": "completed",
+    "worker_outcome": "succeeded",
+    "worker_released": true,
+    "release_state": "released",
+    "delivery_acknowledged": true,
+    "production_source_gap": {
+      "original_report_qualified_production_parser": false,
+      "reason": "Main manifest omitted actual OutputParser implementation in serve/frontend.py;original report correctly limits its production-source claims.",
+      "supplemental_upstream": {
+        "revision": "46c152a1310f77cd2f0ce2c7cd213962df14fe83",
+        "path": "serve/frontend.py",
+        "bytes": 87826,
+        "sha256": "2c7471e88eea202e42fa407fee759204d1226c260dd45d0077ba2cb760ebafa6",
+        "url": "https://raw.githubusercontent.com/Niko1221/Strata/46c152a1310f77cd2f0ce2c7cd213962df14fe83/serve/frontend.py"
+      },
+      "supplemental_fork": {
+        "path": "serve/frontend.py",
+        "bytes": 32378,
+        "sha256": "1eaedd0f69cb59366060bff7fb782b64bcbc1d3721705be4013249730c1644e9"
+      }
+    },
+    "review": ".cache/research/2026-10-30/upstream_stream_parser_delta_46c152_20261030.review.json",
+    "review_sha256": "e4bed5d9e4c720aa0cceef4981e00cd01722c8eaa59049afbd54e17c5b520329",
+    "review_bytes": 6754,
+    "review_model": "native Codex gpt-6-luna max",
+    "review_decision": "Original report lacks production frontend source qualification. Supplemental exact46c152 frontend hashes match;smallest Main port is _hold and wrapped-call negative precheck/cursor preserving call_end. _track consumers absent;requires broader interface work rather than an irrelevant-feature label.",
+    "next_action": "Main compare exact fork/upstream OutputParser _hold/call-scan symbols and adapt focused tests before the bounded functional import. Keep _track/interface and complete upstream ledger/tuned-unmodified performance pending."
   }
 }

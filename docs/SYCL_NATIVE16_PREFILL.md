@@ -1548,6 +1548,50 @@ larger windows and a smaller expert bank do not establish a throughput gain
 or the limiting hardware unit. Decode/handoff,model quality and physical-context
 qualification remain separate pending gates.
 
+The independent Down row-address component now passes its frozen comparison.
+Source`fcca1e850`caches one64-bit destination and FP32 weight per workgroup row,
+instead of repeating the split-bank address calculation for every output cell.
+It retains BF16 rounding,FP32 expert-order FMA,all bounds and the unconditional
+local-memory barrier;declared row metadata grows from1024to1536bytes.
+Build recipe`72717a037`produces only the Down fixture,not another model engine.
+All1384actual compiler inputs are covered and the three build commands close0.
+The controller`0c6d76613`and plan`bb8d20987`run two correctness processes and
+three fresh timing processes,with44complete post-BF16 FP32 host-oracle checks,
+guards and immutable inputs. All five close normally with no fresh GPU fault.
+The new modes do not add invalid-map device cases or qualify a model route.
+
+Each timing process tests M2334/5963/8192,N2560,K640,regular and distributed
+maps,a117488-row split accumulator and65536primary rows. Three rotating arms
+compare the original split epilogue,the row-address epilogue and GEMM-only.
+All162measured and54separate warmup batches satisfy the prospective5ms floor
+(minimum7.578333ms);13824actual kernel events pass order/interval checks.
+Candidate/original ratios are geometric means of three paired process medians,
+each from three measured rounds:
+
+| M | Mapping | GPU-service ratio | Clean-wall ratio |
+| ---: | --- | ---: | ---: |
+| 2334 | Regular | 0.927659 | 0.928231 |
+| 2334 | Distributed | 0.947969 | 0.951152 |
+| 5963 | Regular | 0.942690 | 0.943322 |
+| 5963 | Distributed | 0.946060 | 0.945998 |
+| 8192 | Regular | 0.939769 | 0.940123 |
+| 8192 | Distributed | 0.940709 | 0.939970 |
+
+Overall GPU service decreases5.921percent and wall time5.856percent,passing the
+prospective component gate. Timed batches contain no PCIe copy;host submission
+and completion CPU time are recorded separately. Regular-map GPU-service
+medians for original/candidate/GEMM-only are0.339346/0.314883/0.118001ms at2334,
+0.730778/0.689357/0.274141ms at5963,and0.957033/0.899906/0.364504ms at8192.
+GEMM-only writes dense BF16 output while fused arms update scattered FP32;
+their difference is not an additive epilogue cost or a hardware ceiling.
+Resets and host oracles are outside timing;repeated resident inputs are not the
+whole-model cache/shape mix. Physical memory traffic,occupancy and integer/tensor
+saturation remain unmeasured. Keep individual samples in
+[`moe_down_row_address`](../bench/results/2026-10-15-pr6-recovery-audit/fused-moe-service-current.json).
+The epilogue has no production hook and remains unadopted. Its named next
+consumer is a matched Down geometry comparison,followed by a separately scoped
+long-prefill model candidate;this result adds no measured PP/TG gain.
+
 The bounded [`metric_capability.c`](../bench/sycl/metric_capability.c) direct-C
 check now enumerates24groups and1414metric entries on PCI0000:05:00.0.
 All API calls succeed,the three environment/identity gates pass,17observed
