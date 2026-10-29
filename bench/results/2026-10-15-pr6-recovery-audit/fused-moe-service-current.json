@@ -11600,7 +11600,7 @@
     },
     "performance": {
       "build": {
-        "stage": "prepared",
+        "stage": "built",
         "source_commit": "5cc09b74b1d52490f176ba6872e60c73cb878ae4",
         "native_build_source": "90cfc02decb42c8b810bfb62f15c6189b1623f58",
         "native_geometry": {
@@ -11719,11 +11719,28 @@
           "file_cap": 268435456,
           "total_cap": 2147483648
         },
-        "passed": false,
+        "passed": true,
         "active": false,
         "ownership_closed": true,
         "criteria": "CPU fixture build only from qualified exact native kernel objects. Actual compiler and linker inputs frozen;no GPU trial before this build closes. Synthetic fourcase Page4query8192/cap2051 performance is separate from model evidence.",
-        "retention": "Same imminent real-head softmax comparison generation. Keep only compact source/recipe,samples and decision;retire ELF/objects/normal raw output at comparisonclosure."
+        "retention": "Same imminent real-head softmax comparison generation. Keep only compact source/recipe,samples and decision;retire ELF/objects/normal raw output at comparisonclosure.",
+        "binary": {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-realhead-softmax-native-v1/performance-v1/bench",
+          "sha256": "58243a919f68146242f1f36fce0066dadd622bc0bc6404b0c10003b0e79ae617",
+          "bytes": 1216904
+        },
+        "actual_compiler_inputs": {
+          "files": 664,
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-realhead-softmax-native-v1/performance-v1/compiler-inputs.json",
+          "sha256": "a6bcdbc16f70ff7f7900b114bab9dbc4637f8c6dca6e5b6e787521052240328a",
+          "uncovered": 0
+        },
+        "actual_link_inputs": {
+          "frozen": 20,
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-realhead-softmax-native-v1/performance-v1/link-inputs.json",
+          "sha256": "2dfc6305f22d961bc31d640236f1a9ba489384f7eae4c16751368c669bd63c42",
+          "uncovered": 0
+        }
       }
     }
   }
