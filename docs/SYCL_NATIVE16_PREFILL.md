@@ -446,15 +446,15 @@ At this input size,1000tok/s needs117.489seconds:the current process medians
 need2.968..3.218seconds removed. Keep the original multi-length curve and its
 broader held-out error;do not fit rejected pair samples into the selected path.
 
-The next pair-prefill sweep will also retain source-grounded features. Let`n`
+A future admitted geometry variant also retains source-grounded scaling features. Let`n`
 be actual logged engine rows,`p`the starting position,`c_k`rows consumed before
 chunk`k`,`T_k`its actual length,and`P`the page size. The page-rounded packing
-feature is`12*sum_k(P*ceil((p+c_k+T_k)/P))`. For attention,use actual pair-union
-size`u`and padded extent`32*ceil(u/32)`when a separate bounded diagnostic supplies
-them;cap2051alone does not determine those values. These are algorithmic counts,
-not measured traffic or coefficients. The80.133MiB pair-metadata reservation is
-fixed at chunk8192/cap2051;the prefix reservation and actual expert/residual
-placement are separate features. Clean timing must not acquire per-layer host
+feature is`12*sum_k(P*ceil((p+c_k+T_k)/P))`. For per-query attention,use the actual selected width`w`
+and tile extent`32*ceil(w/32)`when a separate bounded diagnostic supplies them;
+cap2051alone does not determine those values. Compare16versus12matrix rows
+separately from unchanged K/V staging. These are algorithmic counts,not measured
+traffic or coefficients. Prefix reservation and actual expert/residual placement
+are separate features;the rejected pair reservation is excluded. Clean timing must not acquire per-layer host
 readbacks merely to collect those counts.
 
 Candidate models may add one such feature to a route-specific time approximation,
@@ -2005,9 +2005,17 @@ pushed feature history;all four final ELFs match the traced link proof. Unused
 pair exports,targets,fixtures and controllers retire to`6c5212f56`;the
 pre-pair tree preserves independent safety fixes. Successful raw output and the
 extra generation retire2034files(338393262B),with path/hash/reason manifest
-in the linked result;all four roots are verified absent before the next build. Selected6e40and its twelve fixtures remain unchanged. The next prospective tuning
-candidate examines the selected per-query12heads versus16matrix rows,subject
-to actual supported matrix shapes and independent correctness/performance gates.
+in the linked result;all four roots are verified absent before the next build. Selected6e40and its twelve fixtures remain unchanged. A property-only fresh B570 query now confirms BF16/BF16/FP32/FP32
+M4N16K16(andM8),SG16,maximum WG1024and131072local bytes,without any kernel
+submission or new fault. Its28files(13445974B)retire after exact Git/source/recipe
+recovery. The independent constructor`76366e1c7`implements an isolated uniform
+M4/WG96/SG16variant:three real4-head blocks,32cells,and128dimensions per PV
+subgroup. All12head writers are unique;the two K/V4staging loop bounds stay4.
+Declared local payload falls20036to19188B. This removes25percent of padded
+matrix-row work,not measured GPU service or model time;actual compiler resources,
+numerical correctness and performance remain unqualified. The selected engine
+and decode are untouched. Reused independent tensor/FP32state/guard checks
+coverPage4/16and real-head block edges before any timing gate.
 See`qsa_pair_model.clean_prefill_comparison`and`qsa_pair_proposal`in the
 [current service decision](../bench/results/2026-10-15-pr6-recovery-audit/fused-moe-service-current.json).
 

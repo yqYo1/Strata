@@ -24,8 +24,8 @@ SOURCE = 'bench/sycl/matrix_shapes.cpp'
 require, digest, write = r.require, r.digest, r.write
 
 
-def sources(revision):
-    pending, seen, out = [Path(__file__).resolve()], set(), {}
+def sources(revision, controller=None, extra_sources=()):
+    pending, seen, out = [controller or Path(__file__).resolve()], set(), {}
     while pending:
         path = pending.pop()
         if path in seen: continue
@@ -39,11 +39,27 @@ def sources(revision):
             for module in modules:
                 local = path.parent / ((module or '').split('.')[0] + '.py')
                 if local.is_file(): pending.append(local)
-    for name in [SOURCE, 'tools/sycl/measurement_environment.json']:
+    for name in [SOURCE, 'tools/sycl/measurement_environment.json', *extra_sources]:
         raw = r.build.git(P, 'show', revision + ':' + name)
         require((P / name).read_bytes() == raw, 'commit exact source: ' + name)
         out[name] = hashlib.sha256(raw).hexdigest()
     return out
+
+
+def prospective_inputs(compiler, rt, pins):
+    allowed = {str(Path(v['path']).resolve()): closure.SYSTEM_HEADER_UPDATES.get(v['path'], (None, v['sha256']))[1]
+               for v in json.loads(closure.lineage.SDK.read_text())}
+    for directory in [Path('/usr/lib/x86_64-linux-gnu'), Path('/usr/lib/gcc/x86_64-linux-gnu/13')]:
+        for pattern in ['*.so', '*.a', '*.o']:
+            for path in directory.glob(pattern):
+                if path.is_file(): allowed[str(path.resolve())] = digest(path)
+    for path in (Path(compiler['path']).parents[1] / 'bin').iterdir():
+        if path.is_file(): allowed[str(path.resolve())] = digest(path)
+    for path in ['/usr/bin/ld', '/usr/bin/as', '/usr/bin/ar', '/usr/bin/ranlib', '/lib64/ld-linux-x86-64.so.2']:
+        allowed[str(Path(path).resolve())] = digest(path)
+    allowed.update(rt['runtime_files'])
+    allowed.update({str(P / n): h for n,h in pins.items()})
+    return allowed
 
 
 def compact(row):
@@ -79,18 +95,7 @@ def prepare():
     pins = sources(revision); sdk = closure.sdk_inputs(); compiler = full['compiler']
     ROOT.mkdir(mode=0o700)
     for name in ('tmp', 'cache'): (ROOT / name).mkdir()
-    allowed = {str(Path(v['path']).resolve()): closure.SYSTEM_HEADER_UPDATES.get(v['path'], (None, v['sha256']))[1]
-               for v in json.loads(closure.lineage.SDK.read_text())}
-    for directory in [Path('/usr/lib/x86_64-linux-gnu'), Path('/usr/lib/gcc/x86_64-linux-gnu/13')]:
-        for pattern in ['*.so', '*.a', '*.o']:
-            for path in directory.glob(pattern):
-                if path.is_file(): allowed[str(path.resolve())] = digest(path)
-    for path in (Path(compiler['path']).parents[1] / 'bin').iterdir():
-        if path.is_file(): allowed[str(path.resolve())] = digest(path)
-    for path in ['/usr/bin/ld', '/usr/bin/as', '/usr/bin/ar', '/usr/bin/ranlib', '/lib64/ld-linux-x86-64.so.2']:
-        allowed[str(Path(path).resolve())] = digest(path)
-    allowed.update(rt['runtime_files'])
-    allowed.update({str(P / n): h for n,h in pins.items()})
+    allowed = prospective_inputs(compiler, rt, pins)
     write(ROOT / 'input-inventory.json', allowed)
     env = dict(full['environment'], TMPDIR=str(ROOT / 'tmp'), XDG_CACHE_HOME=str(ROOT / 'cache'))
     native = dict(rt['environment'], TMPDIR=str(ROOT / 'tmp'), XDG_CACHE_HOME=str(ROOT / 'cache'),
