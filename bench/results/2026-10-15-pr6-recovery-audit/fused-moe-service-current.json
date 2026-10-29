@@ -5162,7 +5162,7 @@
         "unselected_staging_excluded": true,
         "selected_fixture_bytes": 25203
       },
-      "model_built": false,
+      "model_built": true,
       "model_selected": false,
       "physical_full_context_qualified": false,
       "preparation_refusal": {
@@ -5173,7 +5173,12 @@
         "private_output_created": false,
         "compiler_executed": false,
         "GPU_executed": false
-      }
+      },
+      "model_native_gate_passed": false,
+      "actual_compiler_inputs": 1410,
+      "actual_link_input_proof": true,
+      "all_four_ELF_identities_match": true,
+      "next": "Property-only native check;then production-object Page4/16 set/tensor/wrapper gates before first real-model diagnostic."
     }
   },
   "qsa_pair_model": {
@@ -5631,7 +5636,7 @@
       }
     },
     "link_contract": {
-      "stage": "prepared",
+      "stage": "closed",
       "source_commit": "53ab20b4497032346dcc7da87ab25b073518be39",
       "inventory": {
         "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-pair-model-v1/link-proof/inventory.json",
@@ -5873,12 +5878,49 @@
         "file_cap": 536870912,
         "total_cap": 4294967296
       },
-      "passed": false,
+      "passed": true,
       "active": false,
       "ownership_closed": true,
       "GPU_executed": false,
       "criteria": "Frozen original effective recipes,all compiled objects/archives,SDKtools and precompile providers. Relink three engine/runtime executables and fixture using ld trace and save-temps. Every consumed file is frozen or a retained actual producer output from pinned owned compiler tools. All four final ELF hashes must match original build exactly. No native/model qualification.",
-      "retention": "Temporary same-generation link proof only;retain compact input/identity result,retire duplicate ELFs/generated products and successful driver traces after source/recipe recovery."
+      "retention": "Temporary same-generation link proof only;retain compact input/identity result,retire duplicate ELFs/generated products and successful driver traces after source/recipe recovery.",
+      "outputs": {
+        "strata": {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-pair-model-v1/link-proof/output/strata",
+          "sha256": "0442ebfdcb948a999c37eb70efa861e555662baf23dde44243b51b1e7685208a",
+          "bytes": 22269840,
+          "matches_original": true
+        },
+        "sycl_submission_test": {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-pair-model-v1/link-proof/output/sycl_submission_test",
+          "sha256": "5a434921664fac6b111ba2a0de5ebe4fd0182d226f1c56d34aeffa73171b9b79",
+          "bytes": 267200,
+          "matches_original": true
+        },
+        "sycl_graph_envelope_test": {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-pair-model-v1/link-proof/output/sycl_graph_envelope_test",
+          "sha256": "e5b0a849430591402f29dc14bd09c5305b216c4f4e0a42692feec6c125416ed8",
+          "bytes": 208536,
+          "matches_original": true
+        },
+        "fixture": {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-pair-model-v1/link-proof/output/fixture",
+          "sha256": "0c036672145ab56d716020111d0d1b9e73b2636f579f6c3ee9877392daa56c11",
+          "bytes": 1191312,
+          "matches_original": true
+        }
+      },
+      "actual_links": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-pair-model-v1/link-proof/resolved-inputs.json",
+        "sha256": "c96cf320473df91fe9bb3d1062713e3a6c6558cac770c3a317a0e3751ffcb59e",
+        "frozen_provider_counts": {
+          "strata": 33,
+          "sycl_submission_test": 19,
+          "sycl_graph_envelope_test": 19,
+          "fixture": 20
+        },
+        "uncovered_inputs": 0
+      }
     }
   }
 }

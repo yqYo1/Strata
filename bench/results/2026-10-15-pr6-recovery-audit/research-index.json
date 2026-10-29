@@ -15485,7 +15485,7 @@
   },
   "pair_prefill_scaling_breakpoints_20261029": {
     "classification": "decision support",
-    "status": "running",
+    "status": "curated_for_next_model_sweep",
     "schedulable_now": false,
     "worker_model": "Orca Codex gpt-6-luna high",
     "report": ".cache/research/2026-10-29/pair_prefill_scaling_breakpoints_20261029.md",
@@ -15498,11 +15498,53 @@
     ],
     "consumer": "Main next production model length sweep and time-model comparison after native safety gates;not detailed historical regression attribution.",
     "retirement": "Keep only new reusable features/breakpoints and concrete sweep design;retire consumed transaction/report after implementation of sweep. No benchmark numbers fabricated.",
-    "worker_closed": false,
+    "worker_closed": true,
     "main_read_report_body": false,
     "task_id": "task_4c6a3ce1ec3e",
     "dispatch_id": "ctx_123b0645c3d2",
     "terminal": "term_21b41519-e984-4f5b-b105-b31d66af8fee",
-    "startup": "Read actual update modal,skip with ESC,same task/terminal official retry accepted with observed turn;original launch proves gpt-6-luna high. No steering."
+    "startup": "Read actual update modal,skip with ESC,same task/terminal official retry accepted with observed turn;original launch proves gpt-6-luna high. No steering.",
+    "worker_outcome": "succeeded",
+    "release_state": "released",
+    "completion_acknowledged": true,
+    "completion_message": "msg_abe65759e768",
+    "completion_delivery": "delivery_47475e68ced7",
+    "native_review": {
+      "report_sha256": "a291fec8ecbf3919e86d24dc5f2e9750918de0e8276aadaeeed740e775ba66c4",
+      "report_bytes": 12090,
+      "verdict": "accept_with_corrections",
+      "essential_corrections": [
+        "Do not call 32768 an engine route/eligibility transition: the inspected source selects pair mode by the explicit QSA attention-math setting and fixes T=8192. 32768 is the minimum actual input size for long-prefill adoption evidence. Remove the unnecessary 32767/32768/32769 route-boundary triplet; retain a >=32768 scaling point.",
+        "Define n as rows passed to the engine, and record client prompt tokens, fresh/read tokens, n, pos0, and final live KV extent pos0+n independently. Existing fresh-request samples often differ by one row, but the source does not define a universal request-to-n subtraction; hit exact boundaries using observed n.",
+        "The exact 80.1328125 MiB pair metadata reservation is based on max chunk T=8192 and cap=2051 and stays fixed across request lengths. The shared packed-prefix reservation is page-rounded by pos0+n and grows with maximum live extent. Both affect planning; estimates do not prove successful allocation or placement.",
+        "12*sum_k A_k, selected widths, union lengths, padded tiles, requested bytes, and counts are algorithmic features only. The selected route's same-prefix pack can be treated as a shared term only after confirming the actual route. None establishes physical traffic, saturation, or a speed gain.",
+        "Keep the two 81920 rules distinct: the accumulation window accepts 8193..81920 rows; the separate reduced expert-bank rule excludes a short final tail through 8192 rows only when a smaller bank is requested. 81920, 81921, 90112, and 90113 describe different edges; effective mode, GPU/host rows, and window grouping must be observed."
+      ],
+      "new_source_grounded_features": [
+        {
+          "name": "chunked logical-prefix extent",
+          "formula": "For n>0, T=8192, c_k=k*T, T_k=min(T,n-c_k), p_k=pos0+c_k, A_k=P*ceil((p_k+T_k)/P). Candidate pack-work count is 12*sum_k A_k for 12 QSA layers; maximum packed allocation extent is A_max=P*ceil((pos0+n)/P).",
+          "interpretation": "Separates per-chunk repeated packing from request-wide reservation; counts logical cells, not bytes moved or service time. Compare with selected only after the same active-prefix route is confirmed."
+        },
+        {
+          "name": "actual pair merge and padded attention work",
+          "formula": "For pair j, w_a/w_b are the recorded selected widths (last odd query has w_b=0); u_j=|I_a union I_b|; merge input length is w_a+w_b; writes are u_j; attention tile extent is u_pad,j=32*ceil(u_j/32).",
+          "interpretation": "Record u and u_pad from actual ordered IDs and counts per QSA layer/chunk. cap bounds scratch and is not an average width. u_pad counts tiled work, not physical memory traffic or GPU cycles."
+        },
+        {
+          "name": "route/admission state as a categorical feature",
+          "formula": "Pair reservation=4E+round_up4(E)+4*ceil(T/2), where E=2*ceil(T/2)*cap; at T=8192, cap=2051 this is 84,025,344 B=80.1328125 MiB. Prefix reservation adds 2056*A_max B when the BF16 prefix path is enabled.",
+          "interpretation": "Log actual allocation result, free/max-allocation readings, effective bank mode, residual GPU/host rows, maximum_rows, window/job counts, and live KV extent. Do not infer a route from requested settings or estimates."
+        }
+      ],
+      "minimal_sweep_recommendation": {
+        "gate": "Only after Main's already-serialized source/native safety and actual-entrypoint gates. Commit the exact paired order, repetitions, clocks, route parser, and stopping rules before model requests.",
+        "matched_scaling": "Use identical zero-reuse prompts and matched selected6e40/pair processes at actual engine n=32768, 65536, and 117483, with 49152 held out. This covers the strict-long floor, >=64K target region, high-length endpoint, and one intermediate prediction check without re-running the prior six-point selected-only fit. Retain first-use separately; compare engine prefill ms/pp and client TTFT per request with independent-process spread.",
+        "boundary_diagnostics": "Keep these separate from adoption evidence: 8191/8192/8193 only if the first >8192 MoE-window transition needs confirmation; 81919/81920/81921 for the window cap; and 90112/90113 only when reduced-bank staging is requested and can be admitted. For every point record actual n, effective route, placement and grouped rows/jobs. If a transition is not active in the measured configuration, skip rather than claim a route result.",
+        "allocation_boundary": "Calculate A_max and the combined reservation from actual pos0/page size and current admission readings. Bracket a neighboring page extent only if that exact allocation is close to free-memory or max-single-allocation limits; avoid an arbitrary memory sweep.",
+        "analysis": "Start with per-route held-out predictions and paired speed ratios. Use the source features to test explanations, not as a many-coefficient regression over co-varying length terms. Preserve the existing rejected mixed-route fits. Keep TTFT distinct from engine prefill time and pp."
+      }
+    },
+    "next": "Use only corrected source-count features and actual logged engine rows/pos0/liveKV,then freeze new matched sweep after production native/model safety.32768is evidence floor,not a source transition. No model timings from source analysis."
   }
 }

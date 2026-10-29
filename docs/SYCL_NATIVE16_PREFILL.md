@@ -436,6 +436,29 @@ held-out errors42.96%,52.30% and51.47%;none is adopted as a global formula.
 Only two short-route lengths are available,insufficient to validate their own
 time model. Higher R-squared alone would hide that problem.
 
+The next pair-prefill sweep will also retain source-grounded features. Let`n`
+be actual logged engine rows,`p`the starting position,`c_k`rows consumed before
+chunk`k`,`T_k`its actual length,and`P`the page size. The page-rounded packing
+feature is`12*sum_k(P*ceil((p+c_k+T_k)/P))`. For attention,use actual pair-union
+size`u`and padded extent`32*ceil(u/32)`when a separate bounded diagnostic supplies
+them;cap2051alone does not determine those values. These are algorithmic counts,
+not measured traffic or coefficients. The80.133MiB pair-metadata reservation is
+fixed at chunk8192/cap2051;the prefix reservation and actual expert/residual
+placement are separate features. Clean timing must not acquire per-layer host
+readbacks merely to collect those counts.
+
+Candidate models may add one such feature to a route-specific time approximation,
+then test residuals and an unfit length. Keep the existing five-length minimum
+for the general model comparison. Prospective long points include engine rows
+32768,49152(held out),65536,81920and117483. Separate boundary diagnostics cover
+81919/81920/81921,and90112/90113only when the reduced-bank route is requested
+and actually admitted. Those are planned engine extents,not promised client
+text-token counts.32768is the long-evidence floor,not a source dispatch boundary.
+Record client prompt/read/reused counts,engine`n`,`p`,liveKV,route and placement
+separately;do not assume`n=prompt_tokens-1`. The current clean sweep did observe
+that relation,but other entrypoints and reuse can differ. New coefficients and
+model gains require new matched measurements after safety gates.
+
 An independent check against the closed official cohort's original
 processes0,3and4 keeps that formula unchanged. At32089tokens it predicts42.2186s,
 versus43.3232/43.1914/43.8492s measured (2.25..3.72% underprediction).
@@ -1917,12 +1940,14 @@ actual feature tree. Production packing,union and attention share the existing
 in-order GPU queue. Its checked maximum8192-query/2051-cap metadata needs an
 additional84025344bytes(80.133MiB),reserved before expert-bank planning.
 Decode and short-prefill selection remain unchanged. This integration is
-**unbuilt and unrun**. The independent Orca Luna audit found a missing pair-only
+**compiled but not GPU-qualified**. The independent Orca Luna audit found a missing pair-only
 device check at admission. Correction`ddb0df149`adds one reusable no-submit
 predicate at admission and the wrapper;native Luna-max accepts the corrected
 source gate. The selected6e40-plus-pair-only559-file snapshot and its frozen
-model/production-object fixture recipe are prepared. Page4andPage16wrapper
-qualification follows compilation and actual-link input proof. Model speed,quality,
+model/production-object fixture recipe compiled successfully and verified1410actual
+compiler inputs. Prospective linker tracing resolves33/19/19/20frozen inputs
+with no uncovered file,and all four final ELFs match the original build exactly.
+Page4andPage16production-wrapper qualification follows the property-only check. Model speed,quality,
 decode preservation,handoff/RESTORE and physical full-context gates stay open.
 See`qsa_pair_proposal`in the
 [current service decision](../bench/results/2026-10-15-pr6-recovery-audit/fused-moe-service-current.json).
