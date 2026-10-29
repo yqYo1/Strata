@@ -10890,6 +10890,45 @@
           "devcoredump": false
         }
       }
+    },
+    "retirement": {
+      "stage": "prepared",
+      "archive_commit": "032a3e15f6f043015aa14fc864d2841e2a448fcd",
+      "source_recovery": {
+        "native_source": "6ceffd7a27b52809374805d5a28dd5dcfe4113d3",
+        "performance_source": "94c9a3731967f5204de73c53aa723f3def5d3b6a",
+        "native_files": 163,
+        "controller_inputs_verified": 86,
+        "failed_build_original_source_recovered": true,
+        "actual_compiler_inputs_verified": {
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-identity-rescale-v1/compiler-inputs.json": 696,
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-identity-rescale-v1/performance-v2/compiler-inputs.json": 664
+        },
+        "exact_recipe_recovered": true,
+        "uncovered": 0,
+        "remote_feature": "032a3e15f6f043015aa14fc864d2841e2a448fcd"
+      },
+      "all_owned_processes_stopped": true,
+      "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-identity-rescale-v1",
+      "files": 417,
+      "bytes": 20770282,
+      "manifest": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-identity-rescale-retired-20261029.jsonl",
+      "manifest_sha256": "60de8cc7978c6a18c6ebe9167bf35bb553adc541eeffff70e22074c1867ab25d",
+      "verified_absent": false,
+      "binaries_retired": false,
+      "source_IR_hold": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-identity-rescale-v1/original.ll",
+        "sha256": "fcbfeb0c41b522c9b2d34b60849641ec91199e3b1932f438b49f26b646304ed0",
+        "bytes": 135790,
+        "consumer": "Active source-only IDrange researcherctx_66559acd261a may read this original control;keep sourceIRonly,no executable/objects.",
+        "next_review": "Retire after source-report completion and nativecuration. CPU-only nextcompilercomparison uses its own fresh control."
+      },
+      "selected_retained": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/strata",
+        "bytes": 22190000,
+        "sha256": "22182f1a5e62e5f4259ce49a75ae44afbd988166ec79324816e499ff37ef60e4"
+      },
+      "next_action": "Retire closed extra binaries/raw output now,retain only named temporary textualIR;then new CPU-only compiler discriminator."
     }
   }
 }
