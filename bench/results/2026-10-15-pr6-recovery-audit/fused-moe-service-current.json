@@ -15452,5 +15452,126 @@
         }
       }
     }
+  },
+  "metric_capability": {
+    "stage": "prepared",
+    "source_commit": "5f18ac05cd3e95b72d5a70a3f31f6f0da84e494e",
+    "sources": {
+      "bench/sycl/metric_capability.c": "492281c8d9eb7ab97b920f340bb811acdfe3a9f9ca8490412150af3f319089fc",
+      "tools/sycl/metric_capability.py": "1a6845a19df5bcbe590f6a52f775a34d804514068a638775860747aeedd26813",
+      "tools/sycl/measurement_owner.py": "bddd0c5e5020e882ca3404679420faec11e820dabce2ed4c72ef82b4c9c0874a",
+      "tools/sycl/measurement_guards.py": "794e332c70aca0acadad4f26d0414548e023a02fd27b72ed78fc773674423ec8",
+      "tools/sycl/measurement_environment.json": "d4402591df50e80dc45a5ec9e4839c7a794888850b1473537b6f95179be5b03c"
+    },
+    "commands": [
+      [
+        "/usr/bin/x86_64-linux-gnu-gcc-13",
+        "-std=c11",
+        "-O2",
+        "-Wall",
+        "-Wextra",
+        "-Werror",
+        "-fPIE",
+        "-MD",
+        "-MF",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/metric-capability-c-v1/actual.d",
+        "-MT",
+        "probe",
+        "-c",
+        "/home/yayoi/orca/workspaces/Strata/sycl/bench/sycl/metric_capability.c",
+        "-o",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/metric-capability-c-v1/probe.o"
+      ],
+      [
+        "/usr/bin/x86_64-linux-gnu-gcc-13",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/metric-capability-c-v1/probe.o",
+        "/usr/lib/x86_64-linux-gnu/libze_loader.so.1.32.0",
+        "-pie",
+        "-Wl,-z,relro,-z,now",
+        "-Wl,-t",
+        "-o",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/metric-capability-c-v1/metric_capability"
+      ]
+    ],
+    "compiler": "x86_64-linux-gnu-gcc-13 (Ubuntu 13.3.0-6ubuntu2~24.04.1) 13.3.0",
+    "environments": [
+      {
+        "PATH": "/usr/bin:/bin",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8",
+        "TMPDIR": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/metric-capability-c-v1/tmp",
+        "PYTHONDONTWRITEBYTECODE": "1"
+      },
+      {
+        "PATH": "/usr/bin:/bin",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8",
+        "TMPDIR": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/metric-capability-c-v1/tmp",
+        "PYTHONDONTWRITEBYTECODE": "1",
+        "HOME": "/home/yayoi",
+        "XDG_CACHE_HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/metric-capability-c-v1/cache",
+        "LD_LIBRARY_PATH": "/usr/lib/x86_64-linux-gnu:/usr/local/lib",
+        "LD_DEBUG": "libs,files",
+        "ZE_ENABLE_ALT_DRIVERS": "/usr/lib/x86_64-linux-gnu/libze_intel_gpu.so.1.17.39758",
+        "STRATA_METRIC_CAPABILITY_GATES": "1",
+        "ZET_ENABLE_METRICS": "1",
+        "ZES_ENABLE_SYSMAN": "0",
+        "NEOReadDebugKeys": "1",
+        "EnableDirectSubmission": "0",
+        "UR_L0_V2_FORCE_DISABLE_COPY_OFFLOAD": "1",
+        "STRATA_SYCL_PREFILL_SAME_QUEUE": "1"
+      }
+    ],
+    "dependencies": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/metric-capability-c-v1/dependencies.json",
+      "sha256": "3168a54e15874e844a9afa6d040d90d89431a2edaf4accab288ce2d7855d7bb5",
+      "files": 117,
+      "runtime_elfs": 25
+    },
+    "driver": {
+      "pci": "/sys/bus/pci/devices/0000:05:00.0",
+      "driver": "xe",
+      "vendor": "0x8086",
+      "device": "0xe20c",
+      "kernel": "7.0.0-38-generic",
+      "devcoredump": false
+    },
+    "boot": "cfda0b6a-7c13-4fe2-bdf5-8f9202770840",
+    "build_limits": {
+      "wall": 60,
+      "cpu": 45,
+      "rss_cap": 1073741824,
+      "text_cap": 2097152,
+      "total_cap": 33554432,
+      "file_cap": 8388608
+    },
+    "run_limits": {
+      "wall": 60,
+      "cpu": 45,
+      "rss_cap": 1073741824,
+      "text_cap": 8388608,
+      "total_cap": 33554432,
+      "file_cap": 8388608
+    },
+    "scope": "Direct-C property enumeration only;no application contexts,queues,group activation,queries or streamers.",
+    "criteria": "Exact unique B570 PCI0000:05:00.0;three owned identity/environment/provider gates;all API success and complete group/member counts;exit0,closed owners,unchanged inputs and no fresh GPU fault. Empty enumeration,API errors,permission errors and unknown providers remain distinct. Enumeration is not counter-collection qualification.",
+    "protocol": {
+      "gates": [
+        "before-runtime",
+        "runtime-ready",
+        "before-exit"
+      ],
+      "line_deadline_s": 15,
+      "exit_deadline_s": 10,
+      "maximum_records": 13000,
+      "strings": "Reconstruct API bytes via latin1;strict UTF8 or explicit raw_hex."
+    },
+    "retention": "One small tool build and bounded raw inventory for Main to choose the next source-documented tiny-workload metric. Review/retire after that choice and collection plan/result;no new model generation.",
+    "active": false,
+    "ownership_closed": true,
+    "passed": false,
+    "collection_qualified": false,
+    "hardware_utilization_measured": false,
+    "physical_pcie_bytes_measured": false
   }
 }
