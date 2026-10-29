@@ -20,7 +20,7 @@ import measurement_owner as supervision
 
 P = Path(__file__).resolve().parents[2]
 B = Path('/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007')
-ROOT = B / 'metric-capability-c-v1'
+ROOT = B / 'metric-capability-c-v2'
 RESULT = P / 'bench/results/2026-10-15-pr6-recovery-audit/fused-moe-service-current.json'
 KEY = 'metric_capability'
 SOURCE = P / 'bench/sycl/metric_capability.c'
@@ -114,6 +114,10 @@ def verify(row):
     external = json.loads(manifest.read_text())
     for name, expected in external['files'].items():
         require(digest(name) == expected, 'changed external input: ' + name)
+    previous = row['previous_attempt']
+    archived = json.loads(git('show', previous['commit'] + ':' + previous['path']))[previous['scope']]
+    require(hashlib.sha256(json.dumps(archived, sort_keys=True).encode()).hexdigest() == previous['scope_sha256'],
+            'original failed attempt no longer recoverable')
     require(guards.driver_guard() == row['driver'] and
             Path('/proc/sys/kernel/random/boot_id').read_text().strip() == row['boot'],
             'driver/boot changed')
@@ -121,7 +125,19 @@ def verify(row):
 
 
 def prepare(record):
-    require(KEY not in record and not ROOT.exists(), 'fresh one-use capability plan only')
+    previous = record.get(KEY, {})
+    require(not ROOT.exists() and previous.get('stage') == 'failed' and not previous.get('passed') and
+            not previous.get('active') and not previous.get('fresh_faults') and
+            previous.get('failure_mechanism', {}).get('kind') == 'unfrozen_system_provider_at_runtime_ready' and
+            previous.get('closure_reconciliation', {}).get('all_owned_processes_terminated') is True,
+            'only the closed v1 provider-mismatch result permits this new v2 plan')
+    old = previous['closure_reconciliation']
+    identity = supervision.identity(old['pid'])
+    require(identity is None or identity['start_ticks'] != old['start_ticks'], 'original v1 process still exists')
+    previous_ref = dict(commit=git('log', '-1', '--format=%H', '--', str(RESULT.relative_to(P))).decode().strip(),
+                        path=str(RESULT.relative_to(P)), scope=KEY,
+                        scope_sha256=hashlib.sha256(json.dumps(previous, sort_keys=True).encode()).hexdigest(),
+                        outcome='Failed v1 remains incomplete;terminated before metric enumeration,not a GPU fault.')
     comparison = record['moe_split_accumulator']['clean_prefill_comparison']
     require(comparison['complete'] and comparison['ownership_closed'] and not comparison['active'],
             'close frozen model comparison first')
@@ -132,7 +148,7 @@ def prepare(record):
     ROOT.mkdir(mode=0o700)
     for part in ('tmp', 'cache', 'preparation'):
         (ROOT / part).mkdir(mode=0o700)
-    write(ROOT / 'preparation.json', dict(source_commit=revision, sources=sources))
+    write(ROOT / 'preparation.json', dict(source_commit=revision, sources=sources, previous_attempt=previous_ref))
     owner = None
     owner = supervision.Owner(ROOT / 'preparation', lambda: write(
         ROOT / 'preparation-execution.json', owner.commands if owner else []))
@@ -147,8 +163,9 @@ def prepare(record):
     utility('headers', [str(CC), *FLAGS, '-M', '-MF', str(ROOT / 'headers.d'),
                         '-MT', 'probe', str(SOURCE)])
     files = dependencies(ROOT / 'headers.d')
-    runtime_roots = [LOADER, NEO, MD, ML, Path('/usr/local/lib/libigc.so.2'),
-                     Path('/usr/local/lib/libigdfcl.so.2'), Path('/usr/local/lib/libigc-clang.so')]
+    runtime_roots = [LOADER, NEO, MD, ML, Path('/usr/lib/x86_64-linux-gnu/libigc.so.2'),
+                     Path('/usr/lib/x86_64-linux-gnu/libigdfcl.so.2'),
+                     Path('/usr/lib/x86_64-linux-gnu/libze_tracing_layer.so.1')]
     # Independently found optional dlopen edges in the installed NEO ELF.
     # Their presence in this closure is not evidence that initialization uses them.
     runtime_roots += [Path('/usr/lib/x86_64-linux-gnu') / name for name in
@@ -186,6 +203,7 @@ def prepare(record):
     write(ROOT / 'dependencies.json', manifest)
     version = utility('compiler-version', [str(CC), '--version']).splitlines()[0]
     row = dict(stage='prepared', source_commit=revision, sources=sources, commands=commands(),
+               previous_attempt=previous_ref,
                compiler=version, environments=[build_env, native_env],
                dependencies=dict(path=str(ROOT / 'dependencies.json'), sha256=digest(ROOT / 'dependencies.json'),
                                  files=len(files), runtime_elfs=len(runtime_files)),
@@ -372,8 +390,12 @@ def run(record):
         except BaseException as error:
             row.update(stage='failed', fault_evidence_error=repr(error), enumeration_complete=False)
         row.update(fresh_faults=faults, active=owner.active is not None,
-                   ownership_closed=owner.active is None and all(supervision.closed(c) for c in owner.commands))
-        row['passed'] = bool(row.get('enumeration_complete') and not faults and row['ownership_closed'])
+                   ownership_closed=owner.active is None and all(c.get('direct_child_reaped') and
+                       c.get('session_empty') and c.get('ownership_status') == 'observed' and not c.get('survivors')
+                       for c in owner.commands),
+                   observation_complete=all(supervision.closed(c) for c in owner.commands))
+        row['passed'] = bool(row.get('enumeration_complete') and not faults and
+                             row['ownership_closed'] and row['observation_complete'])
         row['native_process'] = {k: owner.commands[0].get(k) for k in
                                 ('pid', 'exit_code', 'elapsed_seconds', 'peak_session_rss_bytes',
                                  'observation_complete', 'direct_child_reaped', 'session_empty', 'error')} if owner.commands else {}
