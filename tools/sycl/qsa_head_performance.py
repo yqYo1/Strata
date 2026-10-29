@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Bounded full-path native identity-rescale comparison,after component qualification.
+"""Bounded full-path native bounded-ID comparison,after component qualification.
 
 Own project code,repository LICENSE. Synthetic varied operands and selected-ID
 patterns are not an actual-model throughput or hardware saturation measurement.
@@ -17,8 +17,8 @@ import sys
 sys.dont_write_bytecode=True
 import qsa_head_native as n
 q,r,P,B=n.q,n.r,n.P,n.B
-ROOT=n.ROOT/'performance-v2'
-PERF='performance_v2'
+ROOT=n.ROOT/'performance-v1'
+PERF='performance'
 RESULT=n.RESULT
 CPP='bench/sycl/qsa_head_bench.cpp'
 require,digest,write=n.require,n.digest,n.write
@@ -59,7 +59,7 @@ def prepare():
     for path in [Path(v) for v in link if v.endswith('.o') and Path(v)!=ROOT/'bench.o']:
         require(path.is_file() and path.is_relative_to(n.ROOT),'unexpected kernel/runtime object');allowed[str(path)]=digest(path)
     allowed.update({str(P/name):h for name,h in pins.items()});write(ROOT/'input-inventory.json',allowed)
-    row=dict(stage='prepared',source_commit=revision,source_sha256=pins,native_build_source=native['source_commit'],native_geometry=native['geometry_proof'],runtime_sha256=digest(r.RESULT),boot=rt['boot'],commands=[['compile',compile_command],['link',link]],environment=dict(native['environment'],TMPDIR=str(ROOT/'tmp'),XDG_CACHE_HOME=str(ROOT/'cache')),input_inventory=dict(path=str(ROOT/'input-inventory.json'),sha256=digest(ROOT/'input-inventory.json'),files=len(allowed)),budgets=dict(wall=600,cpu=1800,rss_cap=8<<30,text_cap=32<<20,file_cap=256<<20,total_cap=2<<30),passed=False,active=False,ownership_closed=True,criteria='CPU fixture build only from qualified exact native kernel objects. Actual compiler and linker inputs frozen;no GPU trial before this build closes. Synthetic fourcase Page4query8192/cap2051 performance is separate from model evidence.',retention='Same imminent v2comparison generation. Keep only compact source/recipe,samples and decision;retire ELF/objects/normal raw output at comparisonclosure.')
+    row=dict(stage='prepared',source_commit=revision,source_sha256=pins,native_build_source=native['source_commit'],native_geometry=native['geometry_proof'],runtime_sha256=digest(r.RESULT),boot=rt['boot'],commands=[['compile',compile_command],['link',link]],environment=dict(native['environment'],TMPDIR=str(ROOT/'tmp'),XDG_CACHE_HOME=str(ROOT/'cache')),input_inventory=dict(path=str(ROOT/'input-inventory.json'),sha256=digest(ROOT/'input-inventory.json'),files=len(allowed)),budgets=dict(wall=600,cpu=1800,rss_cap=8<<30,text_cap=32<<20,file_cap=256<<20,total_cap=2<<30),passed=False,active=False,ownership_closed=True,criteria='CPU fixture build only from qualified exact native kernel objects. Actual compiler and linker inputs frozen;no GPU trial before this build closes. Synthetic fourcase Page4query8192/cap2051 performance is separate from model evidence.',retention='Same imminent bounded-ID comparison generation. Keep only compact source/recipe,samples and decision;retire ELF/objects/normal raw output at comparisonclosure.')
     admitted(row);write(ROOT/'record.json',row);record[n.KEY][PERF]=dict(build=compact(row));write(RESULT,record);print('Performance build prepared;commit before compile.',flush=True)
 
 
@@ -82,42 +82,18 @@ def build():
     print(json.dumps({k:row.get(k) for k in ['stage','passed','ownership_closed','error']}),flush=True);require(row['passed'],'performance fixture build failed')
 
 
-def prepare_edge():
-    record=r.validation.committed(RESULT);built=json.loads((ROOT/'record.json').read_text());require(built['passed'] and built['ownership_closed'],'compiled fixture first');_,_,_,rt=admitted(built);scope=record[n.KEY][PERF];folder=ROOT/'edge';require('edge' not in scope and not folder.exists(),'fresh edge gate only');folder.mkdir();(folder/'tmp').mkdir();(folder/'cache').mkdir()
-    env=dict(rt['environment'],TMPDIR=str(folder/'tmp'),XDG_CACHE_HOME=str(folder/'cache'),ZE_ENABLE_ALT_DRIVERS=next(p for p in rt['runtime_files'] if 'libze_intel_gpu' in p),UR_LOG_TRACING='level:info;flush:info;output:file,'+str(folder/'api.trace'),UR_LOG_VALIDATION='level:warning;flush:warning;output:file,'+str(folder/'validation.log'))
-    plan=dict(stage='prepared',command=[built['binary']['path'],'--edge-only'],binary=built['binary'],environment=env,boot=rt['boot'],budgets=dict(wall=180,cpu=360,rss_cap=4<<30,text_cap=16<<20,file_cap=32<<20,total_cap=256<<20),criteria='Before any timing:new2SG16M8matrixkernels compiled/query,then exactly2traced WG16submissions;128finiteFP32states including80subnormal and0x8200 must preserve input and scaled/bypass bits exactly. Stop firstfailure,known immutableproviders/pre-mainvalidation,guards/inputimmutability/closedowner/no newfault. No model qualification.')
-    require('UR_LAYER_TRACING' in env['UR_ENABLE_LAYERS'],'firstedge must use qualified tracing');write(folder/'plan.json',plan);scope['edge']=plan;write(RESULT,record);print('Traced FP32edge prepared;commit before run.',flush=True)
-
-
-def run_edge():
-    record=r.validation.committed(RESULT);scope=record[n.KEY][PERF];plan=scope['edge'];folder=ROOT/'edge';built=json.loads((ROOT/'record.json').read_text());require(plan['stage']=='prepared' and plan==json.loads((folder/'plan.json').read_text()) and not (folder/'owned').exists(),'fresh frozen edge');_,_,_,rt=admitted(built);require(plan['binary']==built['binary'],'edge ELF differs')
-    text=subprocess.check_output(['journalctl','-k','-b','-n','0','--show-cursor','--no-pager'],text=True,timeout=15);cursor=next(v.split(': ',1)[1] for v in text.splitlines() if v.startswith('-- cursor: '));outcome=dict(host_probe_accepted=False,complete=False);owner=None
-    def persist():write(folder/'record.json',dict(outcome,active=bool(owner and owner.active is not None),commands=owner.commands if owner else []))
-    owner=r.supervision.Owner(folder/'owned',persist)
-    try:
-        def interact(io,entry):
-            require(io.line(30)=='HEAD_BENCH_GATE before-runtime','entry gate');io.send(b'X');require(io.line(90)=='HEAD_BENCH_GATE runtime-ready','runtime gate');q.observed_native(io.proc.pid,plan['environment'],rt,plan['binary']);io.send(b'X')
-            require(io.line(90)=='HEAD_EDGE finite=128 subnormal=80 FP32_bit_parity=1 direct_matrix_load_store_exact=1','directFP32edge failed');require(io.line(20)=='HEAD_BENCH_GATE before-exit','exit gate');q.observed_native(io.proc.pid,plan['environment'],rt,plan['binary']);io.send(b'X');io.proc.stdin.close();require(io.line(20)=='HEAD_EDGE_DONE passed=1','edge completion');io.exit(20)
-        entry,out,err=owner.run('edge',plan['command'],plan['environment'],P,interaction=interact,**plan['budgets']);require(r.supervision.closed(entry) and entry['exit_code']==0,'native edge failed:'+err.read_text()[-2000:]);proof=r.validation.preload_evidence(err.read_text(),entry['pid']);require(proof['loader']==rt['preload']['loader'],'pre-main provider differs');warning=folder/'validation.log';require(not warning.exists() or not warning.stat().st_size,'validation warning');require(not re.search('UR_RESULT_ERROR_|ZE_RESULT_ERROR_|HEAD_BENCH_ERROR|terminate called|cleanup failed',err.read_text()),'native runtime error')
-        trace=(folder/'api.trace').read_text();launches=[v for v in trace.splitlines() if '<--- urEnqueueKernelLaunchWithArgsExp(' in v and 'UR_RESULT_SUCCESS' in v];require(len(launches)==2 and all(re.search(r'\.pLocalWorkSize = 0x[0-9a-f]+ \(16\)',v) for v in launches),'exact2WG16edge launches required');require('IdentityScaleEdgeILb0' in trace and 'IdentityScaleEdgeILb1' in trace,'both edgekernel identities required');admitted(built);outcome.update(complete=True,host_probe_accepted=True,FP32_finite_bit_parity=True,subnormal_states=80,finite_states=128,actual_WG16_submissions=2,model_qualified=False)
-    except BaseException as error:outcome['error']=repr(error)
-    finally:r.validation.finish(outcome,owner,cursor,plan['boot']);persist();plan.update(stage='closed' if outcome['passed'] else 'failed',outcome=outcome);write(RESULT,record)
-    print(json.dumps(outcome),flush=True);require(outcome['passed'],'traced FP32edge gate failed')
-
-
 def prepare_run():
     record=r.validation.committed(RESULT);built=json.loads((ROOT/'record.json').read_text());require(built['stage']=='built' and built['passed'] and built['ownership_closed'],'compiled fixture first');_,_,_,rt=admitted(built);scope=record[n.KEY][PERF];require('comparison' not in scope,'no repeat/overwrite of prior comparison')
-    require(scope['edge']['outcome']['passed'] and scope['edge']['binary']==built['binary'],'traced exact FP32edge before timing');plans=[]
+    plans=[]
     for index in range(3):
         folder=ROOT/str(index);folder.mkdir();(folder/'tmp').mkdir();(folder/'cache').mkdir()
         env=dict(rt['environment'],TMPDIR=str(folder/'tmp'),XDG_CACHE_HOME=str(folder/'cache'),ZE_ENABLE_ALT_DRIVERS=next(p for p in rt['runtime_files'] if 'libze_intel_gpu' in p),UR_ENABLE_LAYERS='UR_LAYER_PARAMETER_VALIDATION',UR_LOG_VALIDATION='level:warning;flush:warning;output:file,'+str(folder/'validation.log'))
         plans.append(dict(index=index,root=str(folder),command=[built['binary']['path'],str(index)],environment=env))
-    row=dict(stage='prepared',source_commit=built['source_commit'],source_sha256=built['source_sha256'],binary=built['binary'],plans=plans,budgets=dict(wall=900,cpu=1800,rss_cap=8<<30,text_cap=16<<20,file_cap=128<<20,total_cap=2<<30),boot=rt['boot'],processes=[],passed=False,complete=False,ownership_closed=True,criteria='All3fresh processes must first compile/query two SG16M8matrix edgekernels and pass exact128finiteFP32states(including80subnormals,zero signs and0x8200) using actual coordinate multiplyby1 versus bypass;direct matrix load/store must preserve every inputbit. Stop anyedgefailure beforeclock/timing. Then4cases(context32768/117488 bycontiguous/strided sortedunique causalIDs),Page4,8192queries,cap2051,varied nonzero Q/K/V/scales;syntheticnotmodelcapture.2warmups+3alternating paired rounds percase,batch8,floor100ms. Exact complete outputbits/inputimmutability/guards,knownproviders/immutableenv/pre-mainvalidation,clockmedian<=1000ns/p99<=10000ns/resolution<=1000ns,actualpackandattentioneventdurationenclosure,closedowner/no newfault. Stop first invalid/numerical/fault,incomplete isnotperformancefail. Keep all72samples. Advanceonlyifeachprocessmedian candidate/original<1 forwall+attention+pack/attentionservice,and eachcase3processGM<=0.99 forall3metrics. No retries/exclusions/adoption fromfixture. No PCIe/HW saturation claim.')
+    row=dict(stage='prepared',source_commit=built['source_commit'],source_sha256=built['source_sha256'],binary=built['binary'],plans=plans,budgets=dict(wall=900,cpu=1800,rss_cap=8<<30,text_cap=16<<20,file_cap=128<<20,total_cap=2<<30),boot=rt['boot'],processes=[],passed=False,complete=False,ownership_closed=True,criteria='All3fresh processes use exact native objects already qualified by compiled properties,traced tiny and Page4/Page16 full bit/state oracle.4cases(context32768/117488 bycontiguous/strided sortedunique causalIDs),Page4,8192queries,cap2051,varied nonzero Q/K/V/scales;syntheticnotmodelcapture.2warmups+3alternating paired rounds percase,batch8,floor100ms. Exact complete outputbits/inputimmutability/guards,knownproviders/immutableenv/pre-mainvalidation,clockmedian<=1000ns/p99<=10000ns/resolution<=1000ns,actualpackandattentioneventdurationenclosure,closedowner/no newfault. Stop first invalid/numerical/fault,incomplete isnotperformancefail. Keep all72samples. Advanceonlyifeachprocessmedian candidate/original<1 forwall+attention+pack/attentionservice,and eachcase3processGM<=0.99 forall3metrics. No retries/exclusions/adoption fromfixture. No PCIe/HW saturation claim.')
     write(ROOT/'comparison.json',row);scope['comparison']=compact(row);write(RESULT,record);print('Three-process comparison prepared;commit frozen order/criteria before run.',flush=True)
 
 
 def parse(stdout,index):
-    require(stdout.count('HEAD_EDGE finite=128 subnormal=80 FP32_bit_parity=1 direct_matrix_load_store_exact=1')==1,'FP32matrix identity/subnormal edge before timing required')
     clocks=[dict(v.split('=',1) for v in line.split()[1:]) for line in stdout.splitlines() if line.startswith('HEAD_CLOCK ')]
     require(len(clocks)==1,'clock control absent');clock={k:float(v) for k,v in clocks[0].items()};require(clock['resolution_ns']<=1000 and clock['median_ns']<=1000 and clock['p99_ns']<=10000 and clock['floor_ms']==100,'clock control failed')
     rows=[dict(v.split('=',1) for v in line.split()[1:]) for line in stdout.splitlines() if line.startswith('HEAD_SAMPLE ')];require(len(rows)==24,'sample coverage differs')
@@ -172,4 +148,4 @@ def run():
 if __name__=='__main__':
     with (B/'owned-v0141-measurement.lock').open('a+') as lock:
         fcntl.flock(lock,fcntl.LOCK_EX|fcntl.LOCK_NB)
-        {'prepare':prepare,'build':build,'prepare-edge':prepare_edge,'run-edge':run_edge,'prepare-run':prepare_run,'run':run}[sys.argv[1]]()
+        {'prepare':prepare,'build':build,'prepare-run':prepare_run,'run':run}[sys.argv[1]]()
