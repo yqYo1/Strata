@@ -1892,20 +1892,43 @@ blocker under the explicit producer/packed-generation/lifetime contract.
 The clarified preflight explicitly caps live KV at262144;the existing validator
 limits query rows per call to65535. Neither is full-model context qualification.
 
-The frozen recipe`7fba0e539`,native/fixture/controller source`bef01aad1`,closes
-nine CPU compile/link commands and verifies699actual compiler inputs. No GPU
-execution or performance result follows from compilation. Native properties,
-bounded traced set/tensor oracles,guards,malformed metadata and physically backed
-final-address cases precede the actual-ID dependency-path comparison. There is
-no production caller or model dispatch,and selected6e40/decode stay unchanged.
+The first native attempt refused misaligned byte-mask guards before any kernel
+launch. That failed outcome remains in Git. Typed alignment fix`e4aaa758e`
+preserves the GPU bodies; corrected native source`e135cfbd2` and recipe`2632db271`
+pass nine CPU commands and verify699actual compiler inputs. The subsequent
+native property query,38union cases,three eight-case small processes and three
+19-case extended processes pass independent tensor/set oracles,guards,actual
+launch ABI,provider,validation and fault checks. Extended components reach
+physically backed final addresses at262144cells;they do not fill a model context.
+
+The frozen full-path comparison`6f98ef6ea`,result`b842ddecb`,passes36eligible
+samples across three fresh processes. Both arms include prefix packing;the
+candidate also pays for union generation. Candidate/original wall medians are
+0.879607/0.879491/0.879217;their geometric mean is0.879438. The corresponding
+GPU-service mean is0.879478. All processes pass the prospective1percent-gain
+screen,clock/100ms batch gates,exact constant-V output checks and fresh-fault
+checks. This is about12.1percent less component time,not model PP. Inputs use
+actual6491-query selected IDs but synthetic zeroQ/K,constantV and Page16;
+absolute times must not be substituted for earlier model-profile intervals.
+Physical memory traffic and hardware saturation remain unmeasured.
+
+Source`4e6dbe25a`adds the opt-in long-prefill `bf16-prefix-pair` route to the
+actual feature tree. Production packing,union and attention share the existing
+in-order GPU queue. Its checked maximum8192-query/2051-cap metadata needs an
+additional84025344bytes(80.133MiB),reserved before expert-bank planning.
+Decode and short-prefill selection remain unchanged. This integration is
+**unbuilt and unrun**. An independent Orca Luna audit checks preflight,allocation,
+lifetime,phase isolation and capacity while Main prepares a selected6e40-plus-
+pair-only build and Page4production-wrapper fixtures. Model speed,quality,
+decode preservation,handoff/RESTORE and physical full-context gates stay open.
 See`qsa_pair_proposal`in the
 [current service decision](../bench/results/2026-10-15-pr6-recovery-audit/fused-moe-service-current.json).
 
-After exact source/recipe recovery,the closed SG32generation retires264files
-(346618850B),along with consumed CPU/research output and unused selector
-exports/fixtures/controllers. Compact decisions stay here;full source and
-individual samples restore from`89406c824`. The selected engine/twelve fixtures
-and immediate53MBtwo-query comparison input remain.
+After exact source/recipe recovery,the closed SG32generation retired264files
+(346618850B). Its source and samples restore from`89406c824`. The completed
+pair-component build and53MBinput have also ended their native consumer and
+are being retired before the sole imminent model candidate. The original6e40
+engine and twelve fixtures remain the validated fallback.
 
 ## Attribution limits and outstanding gates
 
