@@ -6430,532 +6430,70 @@
       "performance_gate": "No performance/adoption claim from source. Qualify native property,independent host/state/guard checks atPage4/16 andphysical finaladdresses,thenprospectively frozen matched clean/service comparison with varied operands;do not repeat zero-Qconstant-V-only eligibility."
     },
     "component": {
-      "build": {
-        "stage": "built",
-        "source_commit": "3df096d02b17ef232387fa0025d2c331cf61af15",
-        "compiler": {
-          "path": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin/clang++",
-          "sha256": "1290881b4e12a5e002e5b0de0787f85328ee5fe19f253a54be1cdd97dc2f26eb"
-        },
-        "sdk": {
-          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/unitrace-warmed-graph-window-v1/compiler-inputs.json",
-          "sha256": "436cedc9dbd41810cd882e9040a129e6d8b7dbebb98806b00c4f2950b1dc1705",
-          "original_files": 8697,
-          "admitted_files": 8697,
-          "prospective_system_header_updates": {
-            "/usr/include/metee.h": [
-              "f063edcb00c88f3ddebc10f9b0487fe813cfb7ba71dc4b798729bed8902018a3",
-              "d07e18ce9228c3fc570b186eab13bf8a3e6c04214992f0de9d53b855dc837252"
-            ],
-            "/usr/include/opencl-c-base.h": [
-              "e1683c3db9cf9a95e9d02acbbfa74dcd29d4deaf4a856430f538d76985b04114",
-              "673c4720f879c2f101504979edbd0216c9cb6a982ce2b62bd467b81fd53d8e33"
-            ],
-            "/usr/include/opencl-c.h": [
-              "579b58f482ab0b3dfd396cab32ea3e0537bc5cf4c1067377b83fe417cbcc513b",
-              "aa7e871a8f7d961aa4126a9fadc2196f822c21811946c90147dc7415fe677de9"
-            ]
-          },
-          "updated_header_packages": [
-            "libigdfcl2 2.41.15-1~24.04",
-            "libmetee-dev 6.2.5-1~24.04~ppa2"
-          ],
-          "condition": "New v2 input snapshot only;all8694 other original hashes remain mandatory. Actual dependency closure records which updated headers were compiled. No qualification inherited for the new fixture."
-        },
-        "geometry_proof": {
-          "original_source_commit": "6e40afc1beddd059ee518617f6c1efce1da14aca",
-          "original_source_sha256": "4f9f815c9baae709f919f6d5ad1af04677c10d8c13c7597b3857cf81567ae192",
-          "generated_sha256": {
-            "original.cpp": "f9e1aaa7c1f5d146da1ae097a47cade3630da758809c6f75c5c729e3e305e32c",
-            "candidate.cpp": "8a26962c24f21bcc272f1948ab22fc334ea536cd21acae4d88781b29d68f49bb",
-            "qsa-head.hpp": "dc15535160bb9a8fd915ff0c46cf84ac33c58d97809e7606bd84bfed7ba0f199"
-          },
-          "geometry": "M4,N16,K16,WG96,SG16;QK3headblocks*2cellblocks;PV3headblocks*2dim128blocks*8fragments;12real heads only.",
-          "softmax": "h=subgroup;h<12;h+=6 gives exactly one writer per head,independent of QK head-block ownership.",
-          "declared_local_bytes": 19188,
-          "reversible_geometry_edits": 26,
-          "reversible_event_edits": 3,
-          "preservation": "Same Q scale/BF16 rounding,d ascending16,K/V4loop bounds,FP32 cell sum c0..31,PV c0,16,output conversion;all whole-group barriers unchanged and uniform. No padded score/probability/state rows are consumed. M4matrix arithmetic/registers/speed still require native observation.",
-          "production_or_decode_changed": false
-        },
-        "native_source_files": 163,
-        "native_source_digest": "071b4745ee378d3fb113d0481ef8cde0a3e1847044b016021d7965ee65172553",
-        "original_native_source": "6e40afc1beddd059ee518617f6c1efce1da14aca",
-        "selected_binary": {
-          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/strata",
-          "bytes": 22190000,
-          "sha256": "22182f1a5e62e5f4259ce49a75ae44afbd988166ec79324816e499ff37ef60e4"
-        },
-        "runtime_sha256": "09ad358e12f6ef58bfc0a978519927863f3d09949a033a1e224db95997647d97",
-        "boot": "cfda0b6a-7c13-4fe2-bdf5-8f9202770840",
-        "input_inventory": {
-          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-head-native-v1/input-inventory.json",
-          "sha256": "cafa4fea45a4b9b80c811a371a90cb22def43436bf518e5da0130f472ea5cc4e",
-          "files": 9269
-        },
-        "commands": [
-          [
-            "runtime",
-            [
-              "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin/clang++",
-              "-std=c++20",
-              "-O3",
-              "-DNDEBUG",
-              "-g0",
-              "-fsycl",
-              "-fsycl-id-queries-range=size_t",
-              "-fno-fast-math",
-              "-ffp-contract=off",
-              "-DSTRATA_ENABLE_SYCL=1",
-              "-I/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-head-native-v1/source/include",
-              "-I/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-head-native-v1/source/include/strata/sycl/compat",
-              "-I/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-head-native-v1/source/bench/sycl",
-              "-MD",
-              "-MF",
-              "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-head-native-v1/runtime.d",
-              "-c",
-              "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-head-native-v1/source/src/sycl/runtime.cpp",
-              "-o",
-              "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-head-native-v1/runtime.o"
-            ]
-          ],
-          [
-            "compat",
-            [
-              "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin/clang++",
-              "-std=c++20",
-              "-O3",
-              "-DNDEBUG",
-              "-g0",
-              "-fsycl",
-              "-fsycl-id-queries-range=size_t",
-              "-fno-fast-math",
-              "-ffp-contract=off",
-              "-DSTRATA_ENABLE_SYCL=1",
-              "-I/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-head-native-v1/source/include",
-              "-I/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-head-native-v1/source/include/strata/sycl/compat",
-              "-I/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-head-native-v1/source/bench/sycl",
-              "-MD",
-              "-MF",
-              "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-head-native-v1/compat.d",
-              "-c",
-              "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-head-native-v1/source/src/sycl/compat.cpp",
-              "-o",
-              "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-head-native-v1/compat.o"
-            ]
-          ],
-          [
-            "command_profile",
-            [
-              "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin/clang++",
-              "-std=c++20",
-              "-O3",
-              "-DNDEBUG",
-              "-g0",
-              "-fsycl",
-              "-fsycl-id-queries-range=size_t",
-              "-fno-fast-math",
-              "-ffp-contract=off",
-              "-DSTRATA_ENABLE_SYCL=1",
-              "-I/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-head-native-v1/source/include",
-              "-I/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-head-native-v1/source/include/strata/sycl/compat",
-              "-I/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-head-native-v1/source/bench/sycl",
-              "-MD",
-              "-MF",
-              "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-head-native-v1/command_profile.d",
-              "-c",
-              "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-head-native-v1/source/src/sycl/command_profile.cpp",
-              "-o",
-              "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-head-native-v1/command_profile.o"
-            ]
-          ],
-          [
-            "prompt_attention",
-            [
-              "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin/clang++",
-              "-std=c++20",
-              "-O3",
-              "-DNDEBUG",
-              "-g0",
-              "-fsycl",
-              "-fsycl-id-queries-range=size_t",
-              "-fno-fast-math",
-              "-ffp-contract=off",
-              "-DSTRATA_ENABLE_SYCL=1",
-              "-I/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-head-native-v1/source/include",
-              "-I/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-head-native-v1/source/include/strata/sycl/compat",
-              "-I/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-head-native-v1/source/bench/sycl",
-              "-MD",
-              "-MF",
-              "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-head-native-v1/prompt_attention.d",
-              "-c",
-              "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-head-native-v1/source/src/kernels/sycl/prompt_attention.cpp",
-              "-o",
-              "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-head-native-v1/prompt_attention.o"
-            ]
-          ],
-          [
-            "original",
-            [
-              "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin/clang++",
-              "-std=c++20",
-              "-O3",
-              "-DNDEBUG",
-              "-g0",
-              "-fsycl",
-              "-fsycl-id-queries-range=size_t",
-              "-fno-fast-math",
-              "-ffp-contract=off",
-              "-DSTRATA_ENABLE_SYCL=1",
-              "-I/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-head-native-v1/source/include",
-              "-I/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-head-native-v1/source/include/strata/sycl/compat",
-              "-I/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-head-native-v1/source/bench/sycl",
-              "-MD",
-              "-MF",
-              "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-head-native-v1/original.d",
-              "-c",
-              "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-head-native-v1/source/bench/sycl/original.cpp",
-              "-o",
-              "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-head-native-v1/original.o"
-            ]
-          ],
-          [
-            "candidate",
-            [
-              "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin/clang++",
-              "-std=c++20",
-              "-O3",
-              "-DNDEBUG",
-              "-g0",
-              "-fsycl",
-              "-fsycl-id-queries-range=size_t",
-              "-fno-fast-math",
-              "-ffp-contract=off",
-              "-DSTRATA_ENABLE_SYCL=1",
-              "-I/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-head-native-v1/source/include",
-              "-I/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-head-native-v1/source/include/strata/sycl/compat",
-              "-I/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-head-native-v1/source/bench/sycl",
-              "-MD",
-              "-MF",
-              "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-head-native-v1/candidate.d",
-              "-c",
-              "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-head-native-v1/source/bench/sycl/candidate.cpp",
-              "-o",
-              "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-head-native-v1/candidate.o"
-            ]
-          ],
-          [
-            "oracle4",
-            [
-              "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin/clang++",
-              "-std=c++20",
-              "-O3",
-              "-DNDEBUG",
-              "-g0",
-              "-fsycl",
-              "-fsycl-id-queries-range=size_t",
-              "-fno-fast-math",
-              "-ffp-contract=off",
-              "-DSTRATA_ENABLE_SYCL=1",
-              "-I/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-head-native-v1/source/include",
-              "-I/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-head-native-v1/source/include/strata/sycl/compat",
-              "-I/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-head-native-v1/source/bench/sycl",
-              "-DSTRATA_QSA_TEST_PAGE_SIZE=4",
-              "-MD",
-              "-MF",
-              "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-head-native-v1/oracle4.d",
-              "-c",
-              "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-head-native-v1/source/bench/sycl/qsa_head_oracle.cpp",
-              "-o",
-              "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-head-native-v1/oracle4.o"
-            ]
-          ],
-          [
-            "oracle16",
-            [
-              "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin/clang++",
-              "-std=c++20",
-              "-O3",
-              "-DNDEBUG",
-              "-g0",
-              "-fsycl",
-              "-fsycl-id-queries-range=size_t",
-              "-fno-fast-math",
-              "-ffp-contract=off",
-              "-DSTRATA_ENABLE_SYCL=1",
-              "-I/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-head-native-v1/source/include",
-              "-I/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-head-native-v1/source/include/strata/sycl/compat",
-              "-I/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-head-native-v1/source/bench/sycl",
-              "-DSTRATA_QSA_TEST_PAGE_SIZE=16",
-              "-MD",
-              "-MF",
-              "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-head-native-v1/oracle16.d",
-              "-c",
-              "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-head-native-v1/source/bench/sycl/qsa_head_oracle.cpp",
-              "-o",
-              "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-head-native-v1/oracle16.o"
-            ]
-          ],
-          [
-            "link4",
-            [
-              "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin/clang++",
-              "-std=c++20",
-              "-O3",
-              "-DNDEBUG",
-              "-g0",
-              "-fsycl",
-              "-fsycl-id-queries-range=size_t",
-              "-fno-fast-math",
-              "-ffp-contract=off",
-              "-DSTRATA_ENABLE_SYCL=1",
-              "-I/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-head-native-v1/source/include",
-              "-I/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-head-native-v1/source/include/strata/sycl/compat",
-              "-I/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-head-native-v1/source/bench/sycl",
-              "-save-temps=obj",
-              "-v",
-              "-Wl,-t",
-              "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-head-native-v1/runtime.o",
-              "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-head-native-v1/compat.o",
-              "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-head-native-v1/command_profile.o",
-              "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-head-native-v1/prompt_attention.o",
-              "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-head-native-v1/original.o",
-              "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-head-native-v1/candidate.o",
-              "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-head-native-v1/oracle4.o",
-              "-pthread",
-              "-ldl",
-              "-o",
-              "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-head-native-v1/qsa_head_p4"
-            ]
-          ],
-          [
-            "link16",
-            [
-              "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin/clang++",
-              "-std=c++20",
-              "-O3",
-              "-DNDEBUG",
-              "-g0",
-              "-fsycl",
-              "-fsycl-id-queries-range=size_t",
-              "-fno-fast-math",
-              "-ffp-contract=off",
-              "-DSTRATA_ENABLE_SYCL=1",
-              "-I/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-head-native-v1/source/include",
-              "-I/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-head-native-v1/source/include/strata/sycl/compat",
-              "-I/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-head-native-v1/source/bench/sycl",
-              "-save-temps=obj",
-              "-v",
-              "-Wl,-t",
-              "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-head-native-v1/runtime.o",
-              "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-head-native-v1/compat.o",
-              "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-head-native-v1/command_profile.o",
-              "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-head-native-v1/prompt_attention.o",
-              "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-head-native-v1/original.o",
-              "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-head-native-v1/candidate.o",
-              "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-head-native-v1/oracle16.o",
-              "-pthread",
-              "-ldl",
-              "-o",
-              "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-head-native-v1/qsa_head_p16"
-            ]
-          ]
-        ],
-        "environment": {
-          "PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin:/usr/bin:/bin",
-          "HOME": "/home/yayoi",
-          "LANG": "C.UTF-8",
-          "LC_ALL": "C.UTF-8",
-          "PYTHONDONTWRITEBYTECODE": "1",
-          "LD_LIBRARY_PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib:/opt/intel/oneapi/mkl/2026.1/lib",
-          "MKLROOT": "/opt/intel/oneapi/mkl/2026.1",
-          "OMP_NUM_THREADS": "1",
-          "GIT_TERMINAL_PROMPT": "0",
-          "GIT_SSH_COMMAND": "ssh -oBatchMode=yes",
-          "CPLUS_INCLUDE_PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/include",
-          "PIP_CONFIG_FILE": "/dev/null",
-          "ONEAPI_DEVICE_SELECTOR": "level_zero:gpu",
-          "UR_ADAPTERS_FORCE_LOAD": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_adapter_level_zero_v2.so.0",
-          "SYCL_CACHE_PERSISTENT": "0",
-          "NEOReadDebugKeys": "1",
-          "EnableDirectSubmission": "0",
-          "UR_L0_V2_FORCE_DISABLE_COPY_OFFLOAD": "1",
-          "STRATA_SYCL_VERIFY_NATIVE_CAPTURE": "0",
-          "STRATA_SYCL_PREFILL_SAME_QUEUE": "1",
-          "STRATA_SYCL_PREFILL_NATIVE16": "bf16",
-          "XDG_CACHE_HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-head-native-v1/cache",
-          "TMPDIR": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-head-native-v1/tmp"
-        },
-        "budgets": {
-          "wall": 600,
-          "cpu": 1800,
-          "rss_cap": 8589934592,
-          "text_cap": 33554432,
-          "file_cap": 268435456,
-          "total_cap": 2147483648
-        },
-        "active": false,
-        "ownership_closed": true,
-        "passed": true,
-        "GPU_executed": false,
-        "production_or_decode_changed": false,
-        "criteria": "CPU build only,zero uncovered actual compiler/link inputs;property-only4normal/state kernels before submit. Reviewed convergence/layout before bounded tiny trace. Independent FP32state+full BF16tensor oracle,guards,admission and physical262144component addresses atPage4/16 follow;not full-model context or performance/adoption.",
-        "retention": "One imminent head-geometry native comparison generation;keep original selected6e40+12fixtures. Retire this extra build/raw output after its gate/decision and exact original source/recipe recovery.",
-        "binaries": {
-          "4": {
-            "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-head-native-v1/qsa_head_p4",
-            "sha256": "b9f22d60ad52b7c0ea28a6a5635c85489155584acef0ea4c90940be211f683ac",
-            "bytes": 1247592
-          },
-          "16": {
-            "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-head-native-v1/qsa_head_p16",
-            "sha256": "ff23f001a9f7ba94d12de3d49023315a5a034d6095ae44878dbcdbada74c751f",
-            "bytes": 1247592
-          }
-        },
-        "actual_compiler_inputs": {
-          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-head-native-v1/compiler-inputs.json",
-          "sha256": "1b3a1fc523658d9ddd4f0dd3310a679e790cb95e032f0ec2db9e2b8fd175068f",
-          "files": 696,
-          "uncovered": 0
-        },
-        "actual_link_inputs": {
-          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-head-native-v1/link-inputs.json",
-          "sha256": "87f0bd152604c495878b5fa21f8ec42433c4b18e807dab7caf0d069f37b9ab62",
-          "frozen_counts": {
-            "link4": 20,
-            "link16": 20
-          },
-          "uncovered": 0
-        },
-        "source_inputs": {
-          "files": 42,
-          "aggregate_sha256": "87ab3da0da0021655ddbb42e73268c5129678a5744ff8f70b2bf5473776e6dab"
-        }
+      "status": "closed-JIT-API-refused",
+      "archive_commit": "9d34ec51883357b08d2cd2b76abb2faa1765284c",
+      "source_commit": "3df096d02b17ef232387fa0025d2c331cf61af15",
+      "native_sources": 163,
+      "source_inputs": {
+        "files": 42,
+        "aggregate_sha256": "87ab3da0da0021655ddbb42e73268c5129678a5744ff8f70b2bf5473776e6dab"
       },
-      "properties4": {
-        "stage": "failed",
-        "source_commit": "3a599d077ee46e3b25c7fbc08e5c66e5400fa304",
-        "source_sha256": {
-          "tools/sycl/qsa_head_native.py": "08932307e9d52d1c87f82164cd868616de8e6ff1ff1b8cb86aaed42f3c1bc239",
-          "tools/sycl/qsa_head_sources.py": "08b944d50b23457e9dd4a54e9a7c34e0cddc48176f1e1e0b7861adbfab7af84e",
-          "tools/sycl/matrix_shapes.py": "331347ffa1d12509101cac71b7f95832683cabed63068df50d916bf43c0dca27",
-          "tools/sycl/relink_qsa_k_model.py": "ded5c1a6f7996316eebbb985f60cd476eabd3d9a3e002655f1d65f357b86aa3b",
-          "tools/sycl/build_qsa_k_model.py": "9d62d7b69827452921fdb07427a8cb07b72bb8a7713f0f79405bdfac50ccebae",
-          "tools/sycl/qsa_k_model_sources.py": "bfa93179b63d6231f17864d9935efd72ae5a1fe98288174bbaf2e66927fe558d",
-          "tools/sycl/qsa_k_loop_sources.py": "526f02d967f0f03f7cfc8239a7633b9f9840e0533dee047171b38a7dd061db6c",
-          "tools/sycl/build_qsa_k_loop.py": "2ec319c4fb1f27390618353e0965d2c7029c86def5673510600b0073d676eda3",
-          "tools/sycl/measurement_owner.py": "bddd0c5e5020e882ca3404679420faec11e820dabce2ed4c72ef82b4c9c0874a",
-          "tools/sycl/measurement_guards.py": "794e332c70aca0acadad4f26d0414548e023a02fd27b72ed78fc773674423ec8",
-          "tools/sycl/generation_engine.py": "eb5bd20c70dbeca6dad253675c76735f9e058507f54668a44074760ae7a5d5d9",
-          "tools/sycl/decode_footer.py": "6e7bf40ed4b08c5dbaeb0ec977715239a177b6aa537bb2d2b048a6599bb0838c",
-          "tools/sycl/build_engine.py": "8444783ab417378207ec89ad2bc3cf648480e20d9e77f06ebb3070c93e10b131",
-          "tools/sycl/query_profile.py": "7136a71790d412394fc1ae345af03efb6eaffa09065c49a3b4cffb10a21477d8",
-          "tools/sycl/check_verifier_retirement.py": "1896bf9dd31954bc1fb95c03e3b18679e280f4690a0b46679493b6d6c11c350e",
-          "tools/sycl/cpu_capacity.py": "685b981462cdf8e667f67bc844d8e522be84c776df57238327a4dad8dbbefa51",
-          "tools/sycl/resource_engine.py": "7ec369dfb1a908db55a5501a02a4e37b50522a6376e348c2ad1917f29b2b0446",
-          "tools/sycl/generation_compare.py": "89eca5bc23bc7b45bbe441490ff2e7c324edf37cc002673118ce5ea9dd9bc4df",
-          "tools/sycl/packed_bank.py": "eee4e623697a2bf935339fddd51fc437359e0412dbfc1a903a46691aacc0235f",
-          "tools/sycl/cache_long.py": "1113563f582bd01bfb7535f8b73d70bf92f8e336dbef60301a6de7f2c28c1548",
-          "tools/sycl/cache_capacity.py": "9d39d3851bfc634901d6b5fd6f984918c53f8f44337df7fd506b6cb2ab3252f5",
-          "tools/sycl/cache_borrow.py": "900a2364d19beea0e1fa3e3c657f980455d676363660c013f6ef9058eeb43450",
-          "tools/sycl/mtp_model_observer.py": "d08adf85cd4f644ec651ba6b598d7f431930aa6c8dbb6e7a08b941b2bf1ceeff",
-          "tools/sycl/check_expert_bank.py": "31896d82f9f948784720c13044938fd64d5445e5a28168c2ccd569e3cb769eee",
-          "tools/sycl/iq2_pair_model.py": "618c3d8c6680ed2dcc3834c9aa6cbf9a67f97c4fc8c78fcdd5e5c83c583e0769",
-          "tools/sycl/cpu_work_census.py": "37038e04a8192ca3d3e1a8a1790a65db22110737630a30be43db64899ee3d1c6",
-          "tools/sycl/cpu_census_engine.py": "40013d84a4b7a347c46efc6b7f99b7ea8f253b94c3ad217ea62c7b0dd6000d09",
-          "tools/sycl/cpu_iq2.py": "73aa915408be2d1641922fbbeb4047e135313ad257cdb7087a9545ccfe250b79",
-          "tools/sycl/cpu_roofline.py": "7f1ec28fa1537f6a860165e152b53f07fae3a9828cf2c119cb9bfabfcf19e161",
-          "tools/sycl/bench_engine.py": "aefdadf94c5580db49cd26002658a62b360557a6bf4ccc0a2de831ac02ed8063",
-          "tools/sycl/command_service.py": "c59f4945ba8c15c982f40386155deec65e42d063a3de14d29fb90e0a0dcc4881",
-          "tools/sycl/build_fused_profile.py": "0eb0c36c3290716e2589e01a9f613607a131b8525afb5e99f114495b6671caae",
-          "tools/sycl/build_full_context.py": "6e2aa8c584e0fd014157cfd08360945ae2d28ad2db660499d9f4eb900e517b72",
-          "tools/sycl/check_layout_source.py": "b11db83b899fd8bd09b7b1329843e0a267c79ff9b301d6a3b68936a76eef6b3f",
-          "tools/sycl/check_full_context_source.py": "5e72fa724e890e682382758caf6222042e1ec89770962ce205ab756783332030",
-          "tools/sycl/runtime_probe.py": "750818a521dcdf28901638424e9789c2db22d85876226b6f5141a954bb9d41d6",
-          "tools/sycl/ur_validation.py": "2e41d84788dc9cc3c7435b18b43601b3ca79280ccb855414d7a36bae6bff83e7",
-          "tools/sycl/cache_long_compare.py": "e96f1fd77a50e3535e7b0ed545464811e334e2f3bd329cc870675916dd5de4af",
-          "bench/sycl/matrix_shapes.cpp": "7760f81d378aa1fff3bcac94885745ddc545ca39d855f4a8ca2b8750c5ea1f3e",
-          "tools/sycl/measurement_environment.json": "d4402591df50e80dc45a5ec9e4839c7a794888850b1473537b6f95179be5b03c",
-          "bench/sycl/qsa_head_oracle.cpp": "989c7ec5c68f8f31935e4acd6108f482416c0642c41b925e3b576224e899aec6",
-          "tests/sycl/qsa_bf16_prefix.cpp": "d64e8e5a75f3893274fcc63eb83067c81be26565f36bdac43d49f01579120d58"
-        },
-        "binary": {
+      "binaries": {
+        "4": {
           "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-head-native-v1/qsa_head_p4",
           "sha256": "b9f22d60ad52b7c0ea28a6a5635c85489155584acef0ea4c90940be211f683ac",
           "bytes": 1247592
         },
-        "command": [
-          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-head-native-v1/qsa_head_p4",
-          "--properties",
-          "/usr/lib/x86_64-linux-gnu/libze_loader.so.1.32.0"
-        ],
-        "environment": {
-          "PATH": "/usr/bin:/bin",
-          "HOME": "/home/yayoi",
-          "LANG": "C.UTF-8",
-          "LC_ALL": "C.UTF-8",
-          "PYTHONDONTWRITEBYTECODE": "1",
-          "LD_LIBRARY_PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib:/opt/intel/oneapi/mkl/2026.1/lib",
-          "ONEAPI_DEVICE_SELECTOR": "level_zero:gpu",
-          "UR_ADAPTERS_FORCE_LOAD": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_adapter_level_zero_v2.so.0",
-          "UR_L0_V2_FORCE_DISABLE_COPY_OFFLOAD": "1",
-          "NEOReadDebugKeys": "1",
-          "EnableDirectSubmission": "0",
-          "STRATA_SYCL_PREFILL_SAME_QUEUE": "1",
-          "STRATA_SYCL_VERIFY_NATIVE_CAPTURE": "0",
-          "SYCL_CACHE_PERSISTENT": "0",
-          "ZES_ENABLE_SYSMAN": "0",
-          "UR_ENABLE_LAYERS": "UR_LAYER_TRACING,UR_LAYER_PARAMETER_VALIDATION",
-          "UR_LOG_TRACING": "level:info;flush:info;output:file,/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-head-native-v1/properties4/api.trace",
-          "UR_LOG_VALIDATION": "level:warning;flush:warning;output:file,/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-head-native-v1/properties4/validation.log",
-          "UR_LOG_LOADER": "level:warning;flush:warning;output:stderr",
-          "UR_LOG_LEVEL_ZERO": "level:warning;flush:warning;output:stderr",
-          "LD_PRELOAD": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/ur-validation-preload-v2/libstrata_ur_validation.so",
-          "STRATA_UR_PROBE_EXPECTED_LOADER": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_loader.so.0.12.0",
-          "TMPDIR": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-head-native-v1/properties4/tmp",
-          "XDG_CACHE_HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-head-native-v1/properties4/cache",
-          "ZE_ENABLE_ALT_DRIVERS": "/usr/lib/x86_64-linux-gnu/libze_intel_gpu.so.1.17.39758",
-          "STRATA_TEST_MAIN_GATES": "1"
+        "16": {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-head-native-v1/qsa_head_p16",
+          "sha256": "ff23f001a9f7ba94d12de3d49023315a5a034d6095ae44878dbcdbada74c751f",
+          "bytes": 1247592
+        }
+      },
+      "actual_compiler_inputs": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-head-native-v1/compiler-inputs.json",
+        "sha256": "1b3a1fc523658d9ddd4f0dd3310a679e790cb95e032f0ec2db9e2b8fd175068f",
+        "files": 696,
+        "uncovered": 0
+      },
+      "actual_link_inputs": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-head-native-v1/link-inputs.json",
+        "sha256": "87f0bd152604c495878b5fa21f8ec42433c4b18e807dab7caf0d069f37b9ab62",
+        "frozen_counts": {
+          "link4": 20,
+          "link16": 20
         },
-        "mode": "properties",
-        "page": 4,
-        "boot": "cfda0b6a-7c13-4fe2-bdf5-8f9202770840",
-        "budgets": {
-          "wall": 600,
-          "cpu": 1200,
-          "rss_cap": 8589934592,
-          "text_cap": 33554432,
-          "file_cap": 67108864,
-          "total_cap": 536870912
+        "uncovered": 0
+      },
+      "property_outcome": {
+        "passed": false,
+        "complete": false,
+        "host_probe_accepted": false,
+        "ownership_closed": false,
+        "protocol_error": "Expected after-cleanup gate absent after native compiler exit1;original observation_complete=false retained.",
+        "native_exit_code": 1,
+        "backend_error": "undefined reference __builtin_spirv_OpJointMatrixGetCoordINTEL_Accumulator_SG16_4x16_i32;backend compiler failed build for both normal/state M4attention kernels.",
+        "actual_driver_runtime_pinned": true,
+        "kernels_submitted": 0,
+        "fresh_faults": [],
+        "boot_unchanged": true,
+        "driver_after": {
+          "pci": "/sys/bus/pci/devices/0000:05:00.0",
+          "driver": "xe",
+          "vendor": "0x8086",
+          "device": "0xe20c",
+          "kernel": "7.0.0-38-generic",
+          "devcoredump": false
         },
-        "criteria": "One fresh owned process,stop firstfailure,no retry. Properties only beforekernel;source-review before submissions. Tinytrace actual SG/WG/local/ABI,complete output and FP32state parity,independent host oracle/guards,all input immutable,pre-main validation,correct actualproviders,quiet validation and no newfault. Extended physical finaladdresses do not qualify full-model context.",
-        "outcome": {
-          "complete": false,
-          "passed": false,
-          "host_probe_accepted": false,
-          "error": "RuntimeError(\"native process failed:esult=0\\nstrata UR validation API: pid=2691346 operation=layers-query result=0\\nstrata UR validation API: pid=2691346 operation=enable result=0\\nstrata UR validation API: pid=2691346 operation=first-init result=0\\nstrata UR validation API: pid=2691346 operation=config-release result=0\\nstrata UR validation API: pid=2691346 operation=postinit result=46\\nstrata UR validation: pid=2691346 phase=before-main threads_before=1 preinit=37 config_create=0 layers_query=0 enable=0 init=0 config_release=0 checked=46 untouched=1 retained_ref=1\\nHEAD_ERROR The program was built for 1 devices\\nBuild program log for 'Intel(R) Arc(TM) B570 Graphics':\\n\\nerror: in function '__builtin_spirv_OpJointMatrixGetCoordINTEL_Accumulator_SG16_4x16_i32' called by kernels: 'typeinfo name for bool strata::kernels::qsa_head_candidate::prefix_batch_impl<33, false, false, true, true, true, true, true>(unsigned short const*, strata::kernels::QsaAttnPools const&, int const*, int const*, long, strata::kernels::QsaShapes const&, unsigned short*, long, strata::kernels::QsaPromptBf16Bounds const&, long, strata::kernels::QsaBf16PackedScratch const&, void*, strata::kernels::QsaPrefixStateProbe, sycl::_V1::event*, sycl::_V1::event*)::'lambda'(sycl::_V1::handler&)::operator()(sycl::_V1::handler&) const::'lambda'(sycl::_V1::nd_item<1>)', 'typeinfo name for bool strata::kernels::qsa_head_candidate::prefix_batch_impl<33, false, false, true, true, true, true, false>(unsigned short const*, strata::kernels::QsaAttnPools const&, int const*, int const*, long, strata::kernels::QsaShapes const&, unsigned short*, long, strata::kernels::QsaPromptBf16Bounds const&, long, strata::kernels::QsaBf16PackedScratch const&, void*, strata::kernels::QsaPrefixStateProbe, sycl::_V1::event*, sycl::_V1::event*)::'lambda'(sycl::_V1::handler&)::operator()(sycl::_V1::handler&) const::'lambda'(sycl::_V1::nd_item<1>)': undefined reference to `__builtin_spirv_OpJointMatrixGetCoordINTEL_Accumulator_SG16_4x16_i32'\\nerror: backend compiler failed build.\\n\\n\")",
-          "ownership_closed": false,
-          "fresh_faults": [],
-          "boot_unchanged": true,
-          "driver_after": {
-            "pci": "/sys/bus/pci/devices/0000:05:00.0",
-            "driver": "xe",
-            "vendor": "0x8086",
-            "device": "0xe20c",
-            "kernel": "7.0.0-38-generic",
-            "devcoredump": false
-          },
-          "post_failure_process_check": {
-            "pid": 2691346,
-            "process_absent": true,
-            "direct_child_reaped": true,
-            "session_empty": true,
-            "cleanup_signals": [],
-            "original_protocol_observation_complete": false,
-            "original_ownership_closed": false,
-            "reason": "Native exited1 on JITcompile error;protocol expected after-cleanup gate did not arrive. Preserve original failed status;independent check confirms no owned process remains."
-          }
+        "independent_process_check": {
+          "pid": 2691346,
+          "process_absent": true,
+          "direct_child_reaped": true,
+          "session_empty": true,
+          "cleanup_signals": [],
+          "original_protocol_observation_complete": false,
+          "original_ownership_closed": false,
+          "reason": "Native exited1 on JITcompile error;protocol expected after-cleanup gate did not arrive. Preserve original failed status;independent check confirms no owned process remains."
         }
       },
       "decision": {
@@ -6968,6 +6506,32 @@
         "mechanism": "Exact B570 reports M4N16K16,but deployed backend cannot resolve coordinate-apply helper __builtin_spirv_OpJointMatrixGetCoordINTEL_Accumulator_SG16_4x16_i32. Compiled-property query correctly stops before any kernel. Source-only reviews do not qualify deployed API implementation.",
         "next_candidate": "Independent uniformM4variant using public matrix load/store and explicit FP32SLMrow rescaling/output;no privatefragment mapping or compiler/runtime patch. Additional SLMtraffic may erase gain;new bounded source/native/performance gates required.",
         "next_consumer": "None for v1;recover original source/recipe from pushed feature and retire before v2build."
+      },
+      "retirement": {
+        "status": "prepared",
+        "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-head-native-v1",
+        "source_commit": "3df096d02b17ef232387fa0025d2c331cf61af15",
+        "remote_feature_commit": "9d34ec51883357b08d2cd2b76abb2faa1765284c",
+        "recovered_native_sources": 163,
+        "recovered_controller_sources": 42,
+        "actual_compiler_inputs": 696,
+        "actual_link_provider_counts": {
+          "link4": 20,
+          "link16": 20
+        },
+        "uncovered": 0,
+        "original_recipe_recovered": true,
+        "final_ELFs_verified": 2,
+        "compiler_temporary_name_reuse": [],
+        "all_owned_processes_stopped": true,
+        "kernels_submitted": 0,
+        "manifest": {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-head-native-v1-retired-20261029.jsonl",
+          "sha256": "d3e80f3ee9c58109bed2d9fe2167ec481b6cc19b806ae5697354df481bfb98bd",
+          "files": 281,
+          "bytes": 12366062
+        },
+        "next_consumer": "None. Delete closed v1 before independent public-load/store v2."
       }
     }
   }
