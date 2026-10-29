@@ -1941,7 +1941,7 @@ in-order GPU queue. Its checked maximum8192-query/2051-cap metadata needs an
 additional84025344bytes(80.133MiB),reserved before expert-bank planning.
 Decode and short-prefill selection remain unchanged. The actual production
 objects pass bounded GPU component qualification;the model route remains
-**unselected pending clean model comparisons**. The independent Orca Luna audit found a missing pair-only
+**unselected: the clean model comparison below rejects its speed**. The independent Orca Luna audit found a missing pair-only
 device check at admission. Correction`ddb0df149`adds one reusable no-submit
 predicate at admission and the wrapper;native Luna-max accepts the corrected
 source gate. The selected6e40-plus-pair-only559-file snapshot and its frozen
@@ -1961,10 +1961,29 @@ Actual placement keeps all39259residual rows on the GPU and the384-slot prefill
 bank;the prefix reservation is164743904bytes including84025344pair bytes.
 The corrected per-request placement parser passes eight CPU rejection controls
 and replay of that actual closed log. This traced first use is not clean speed.
-Model speed,quality,decode preservation,handoff/RESTORE and physical full-context
-gates stay open. The next comparison freezes six fresh processes and24long
-requests,retaining first use separately from the subsequent-three median.
-See`qsa_pair_proposal`in the
+The frozen clean comparison now closes all six fresh processes and24thinking-on
+requests,each117489fresh client tokens/117488engine rows and24outputs. All
+source/model/provider/owner/validation/fault gates pass. Both arms keep384prefill
+slots and all residual rows on the GPU;the pair prefix adds84025344bytes.
+First long use remains separate from each process's subsequent-three median:
+
+| Adjacent process pair | Original median PP | Pair median PP | Pair/original time |
+| --- | ---: | ---: | ---: |
+| 0/1 | 974.7 | 839.8 | 1.160577 |
+| 3/2 | 975.4 | 839.8 | 1.161417 |
+| 4/5 | 973.3 | 837.7 | 1.161859 |
+
+The time-ratio geometric mean1.161284fails the predeclared small-gain screen;
+the pair route remains rejected and original6e40 stays selected. The component's
+12.1percent gain did not transfer to actual Page4 model data. No speed sample
+was retried or excluded. Generation24does not qualify decode/task quality,
+agent sessions,handoff/RESTORE or physical full context. The next finite tuning
+discriminator uses the existing coarse+fine QSA observers for one matched
+first-long request per arm,with separately committed controls and plan. Its
+attention section combines pack,union and attention;queue spans include host
+gaps and are not exclusive GPU service. This imminent diagnostic is the sole
+remaining consumer of the extra pair build;review retirement when it closes.
+See`qsa_pair_model.clean_prefill_comparison`and`qsa_pair_proposal`in the
 [current service decision](../bench/results/2026-10-15-pr6-recovery-audit/fused-moe-service-current.json).
 
 After exact source/recipe recovery,the closed SG32generation retired264files

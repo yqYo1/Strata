@@ -7210,7 +7210,7 @@
       }
     },
     "clean_prefill_comparison": {
-      "stage": "running",
+      "stage": "closed",
       "source_commit": "0d9cff0d079ee1ab9d7caff32117bd2ff9423e5b",
       "runtime_sha256": "09ad358e12f6ef58bfc0a978519927863f3d09949a033a1e224db95997647d97",
       "boot": "cfda0b6a-7c13-4fe2-bdf5-8f9202770840",
@@ -8821,6 +8821,277 @@
             "kernel": "7.0.0-38-generic",
             "devcoredump": false
           }
+        },
+        {
+          "index": 5,
+          "arm": "candidate",
+          "complete": true,
+          "host_probe_accepted": true,
+          "passed": true,
+          "native_exit_code": 0,
+          "samples": [
+            {
+              "request_sha256": "26f08fd8364b5c4bce718617fe2aed42761d0a794e068b00532694adef78b3be",
+              "actual_prompt_tokens": 117489,
+              "actual_read_tokens": 117489,
+              "actual_reused_tokens": 0,
+              "generated_tokens": 24,
+              "prompt_ms": 145518.4,
+              "prompt_tps": 807.4,
+              "prompt_tps_source": "engine",
+              "ttft_s": 145.68,
+              "total_s": 147.411,
+              "thinking_requested": true,
+              "reasoning_observed": true,
+              "ok": true,
+              "eligible": true,
+              "stream_complete": true
+            },
+            {
+              "request_sha256": "fd3ad8ad7033776ad749b22e62e910e5f47e3f7664705f48d9f1fe7349b65515",
+              "actual_prompt_tokens": 117489,
+              "actual_read_tokens": 117489,
+              "actual_reused_tokens": 0,
+              "generated_tokens": 24,
+              "prompt_ms": 140458.4,
+              "prompt_tps": 836.5,
+              "prompt_tps_source": "engine",
+              "ttft_s": 140.614,
+              "total_s": 142.279,
+              "thinking_requested": true,
+              "reasoning_observed": true,
+              "ok": true,
+              "eligible": true,
+              "stream_complete": true
+            },
+            {
+              "request_sha256": "daabbef4775c3fbdbfd832339d80a5ae2f91025b66df79b92fb8f6905f33b041",
+              "actual_prompt_tokens": 117489,
+              "actual_read_tokens": 117489,
+              "actual_reused_tokens": 0,
+              "generated_tokens": 24,
+              "prompt_ms": 140244.3,
+              "prompt_tps": 837.7,
+              "prompt_tps_source": "engine",
+              "ttft_s": 140.399,
+              "total_s": 142.141,
+              "thinking_requested": true,
+              "reasoning_observed": true,
+              "ok": true,
+              "eligible": true,
+              "stream_complete": true
+            },
+            {
+              "request_sha256": "8669c9ebe2747b1fc2d7c4806eeb66025c919981d81c51cfdbd64ba3ec3cc2b1",
+              "actual_prompt_tokens": 117489,
+              "actual_read_tokens": 117489,
+              "actual_reused_tokens": 0,
+              "generated_tokens": 24,
+              "prompt_ms": 139847.8,
+              "prompt_tps": 840.1,
+              "prompt_tps_source": "engine",
+              "ttft_s": 140.01,
+              "total_s": 141.927,
+              "thinking_requested": true,
+              "reasoning_observed": true,
+              "ok": true,
+              "eligible": true,
+              "stream_complete": true
+            }
+          ],
+          "actual_engine_rows": [
+            117488,
+            117488,
+            117488,
+            117488
+          ],
+          "pair_dispatch_checked": true,
+          "request_placement": [
+            {
+              "engine_rows": 117488,
+              "position": 0,
+              "prefix": {
+                "KV": "active-logical-prefix",
+                "transient_bytes": 325580672,
+                "source": "resident-Mode0",
+                "score_pitch": 33,
+                "operand_layout": "row-major",
+                "softmax": "parallel-exp-ascending-sum"
+              },
+              "mode": {
+                "requested_mode": 10,
+                "effective_mode": 10,
+                "maximum_rows": 81920,
+                "mixed_fp16_bytes": 0
+              },
+              "bank": {
+                "requested_slots": 384,
+                "effective_slots": 384,
+                "staged": 1,
+                "host_slab_bytes": 1363148800,
+                "device_bytes": 1022361600,
+                "residual_gpu_rows": 117488,
+                "allocation_limit_bytes": 10132807680,
+                "general_map": "private_scratch_never_published"
+              },
+              "placement": {
+                "tokens": 117488,
+                "chunk": 8192,
+                "residual_dtype": "bf16",
+                "residual_element_bytes": 2,
+                "residual_total": 2406154240,
+                "residual_gpu_rows": 117488,
+                "residual_gpu": 2406154240,
+                "residual_host": 0,
+                "residual_staging": 0,
+                "layer_cache": 1022361600
+              }
+            },
+            {
+              "engine_rows": 117488,
+              "position": 0,
+              "prefix": {
+                "KV": "active-logical-prefix",
+                "transient_bytes": 325580672,
+                "source": "resident-Mode0",
+                "score_pitch": 33,
+                "operand_layout": "row-major",
+                "softmax": "parallel-exp-ascending-sum"
+              },
+              "mode": {
+                "requested_mode": 10,
+                "effective_mode": 10,
+                "maximum_rows": 81920,
+                "mixed_fp16_bytes": 0
+              },
+              "bank": {
+                "requested_slots": 384,
+                "effective_slots": 384,
+                "staged": 1,
+                "host_slab_bytes": 1363148800,
+                "device_bytes": 1022361600,
+                "residual_gpu_rows": 117488,
+                "allocation_limit_bytes": 10132807680,
+                "general_map": "private_scratch_never_published"
+              },
+              "placement": {
+                "tokens": 117488,
+                "chunk": 8192,
+                "residual_dtype": "bf16",
+                "residual_element_bytes": 2,
+                "residual_total": 2406154240,
+                "residual_gpu_rows": 117488,
+                "residual_gpu": 2406154240,
+                "residual_host": 0,
+                "residual_staging": 0,
+                "layer_cache": 1022361600
+              }
+            },
+            {
+              "engine_rows": 117488,
+              "position": 0,
+              "prefix": {
+                "KV": "active-logical-prefix",
+                "transient_bytes": 325580672,
+                "source": "resident-Mode0",
+                "score_pitch": 33,
+                "operand_layout": "row-major",
+                "softmax": "parallel-exp-ascending-sum"
+              },
+              "mode": {
+                "requested_mode": 10,
+                "effective_mode": 10,
+                "maximum_rows": 81920,
+                "mixed_fp16_bytes": 0
+              },
+              "bank": {
+                "requested_slots": 384,
+                "effective_slots": 384,
+                "staged": 1,
+                "host_slab_bytes": 1363148800,
+                "device_bytes": 1022361600,
+                "residual_gpu_rows": 117488,
+                "allocation_limit_bytes": 10132807680,
+                "general_map": "private_scratch_never_published"
+              },
+              "placement": {
+                "tokens": 117488,
+                "chunk": 8192,
+                "residual_dtype": "bf16",
+                "residual_element_bytes": 2,
+                "residual_total": 2406154240,
+                "residual_gpu_rows": 117488,
+                "residual_gpu": 2406154240,
+                "residual_host": 0,
+                "residual_staging": 0,
+                "layer_cache": 1022361600
+              }
+            },
+            {
+              "engine_rows": 117488,
+              "position": 0,
+              "prefix": {
+                "KV": "active-logical-prefix",
+                "transient_bytes": 325580672,
+                "source": "resident-Mode0",
+                "score_pitch": 33,
+                "operand_layout": "row-major",
+                "softmax": "parallel-exp-ascending-sum"
+              },
+              "mode": {
+                "requested_mode": 10,
+                "effective_mode": 10,
+                "maximum_rows": 81920,
+                "mixed_fp16_bytes": 0
+              },
+              "bank": {
+                "requested_slots": 384,
+                "effective_slots": 384,
+                "staged": 1,
+                "host_slab_bytes": 1363148800,
+                "device_bytes": 1022361600,
+                "residual_gpu_rows": 117488,
+                "allocation_limit_bytes": 10132807680,
+                "general_map": "private_scratch_never_published"
+              },
+              "placement": {
+                "tokens": 117488,
+                "chunk": 8192,
+                "residual_dtype": "bf16",
+                "residual_element_bytes": 2,
+                "residual_total": 2406154240,
+                "residual_gpu_rows": 117488,
+                "residual_gpu": 2406154240,
+                "residual_host": 0,
+                "residual_staging": 0,
+                "layer_cache": 1022361600
+              }
+            }
+          ],
+          "subsequent_median_ms": 140244.3,
+          "validation": {
+            "pid": 2440142,
+            "loader": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_loader.so.0.12.0",
+            "threads_before": 1,
+            "preinit": 37,
+            "config_enabled": true,
+            "first_init": true,
+            "dispatch_result": 46,
+            "output_untouched": true,
+            "retained_reference_until_exit": true,
+            "runtime_teardown_qualified": false
+          },
+          "ownership_closed": true,
+          "fresh_faults": [],
+          "boot_unchanged": true,
+          "driver_after": {
+            "pci": "/sys/bus/pci/devices/0000:05:00.0",
+            "driver": "xe",
+            "vendor": "0x8086",
+            "device": "0xe20c",
+            "kernel": "7.0.0-38-generic",
+            "devcoredump": false
+          }
         }
       ],
       "budgets": {
@@ -8850,10 +9121,22 @@
         "limits": "Prefill mechanism screen only. Output24 is not decode70,task quality,agent-session,long generation or physical262144 qualification. API prefill time includes handoff back to unchanged decode layout. Independent decode preservation remains mandatory before selection.",
         "retention": "Keep compact individual request samples,source/recipe/environment/qualification identity and decision. Retire raw logs and duplicate outputs after verification;retain fallback and candidate only until comparison/adoption decision."
       },
-      "complete": false,
-      "passed": false,
+      "complete": true,
+      "passed": true,
       "active": false,
-      "ownership_closed": true
+      "ownership_closed": true,
+      "decision": {
+        "pair_time_ratios": [
+          1.1605773107612358,
+          1.1614173391766502,
+          1.161859149608804
+        ],
+        "geometric_mean_time_ratio": 1.161284478133399,
+        "small_gain_screen_passed": false,
+        "inference_adopted": false,
+        "decode_qualified": false,
+        "physical262144_qualified": false
+      }
     },
     "observer_cpu_controls": {
       "source_commit": "a49a3dc71",
@@ -8866,6 +9149,12 @@
         "tests/core/test_qsa_profile_evidence.py": "2866866bd9bf05b27dba9159dd13c256c2311a622daf8e7857b76e662b219261"
       },
       "coverage": "Reject missing/duplicate layers or keys,failed headers,changed timing semantics,partial query/dispatch/staging,wrong extent/window census,NaN,aggregate/denominator mismatch. Correct Mode10 counts FFN windows rather than8192-token chunks. Log admission only,not native/model qualification."
+    },
+    "candidate_next_consumer": {
+      "selected": "Original6e40 engine22182f1a5e62 remains selected;pair0442ebfdcb94 is rejected for whole-model speed.",
+      "consumer": "Only the imminent two-process bounded QSA attribution in tools/sycl/qsa_pair_model_profile.py,using existing observers;no new native build or adoption advancement.",
+      "retirement": "Review at this finite diagnostic closure;retire extra candidate generation after exact pushed source/recipe recovery. Original fallback and12same-build fixtures remain.",
+      "scope": "Two qualified comparison generations across worktrees;14older unresolved provenance holds remain distinct,not a cleanup claim."
     }
   }
 }
