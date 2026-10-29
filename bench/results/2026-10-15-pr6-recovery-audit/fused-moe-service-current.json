@@ -2510,7 +2510,7 @@
         }
       },
       "small": {
-        "stage": "prepared",
+        "stage": "closed",
         "source_commit": "1e751a71d9be265c88ff8875c19779eaf5671bd0",
         "controller_inputs": {
           "tools/sycl/qsa_pair_probe.py": "3eb9044623378c20e5f059e7d5fa873234346b406905239795d866feb7c08b04",
@@ -2729,7 +2729,388 @@
         },
         "criteria": "Ordered owned children;pre-main UR validation;live exact native ELF/provider/environment/B570DRM checks at runtime-ready and before-exit;silent parameter validation;complete expected case/property markers;independent set/BF16tensor oracle and guards/input immutability;no fresh fault,boot/driver change or survivors. Property-only has zero enqueue;other gates require actual kernel submissions. Stop first failure;no speed/model/context qualification.",
         "expected_cases": 8,
-        "retention": "Keep compact property/case oracle samples,source/executable/runtime identity and fault/closure outcomes;retire successful traces and repeated logs after verification. No full trace retention question."
+        "retention": "Keep compact property/case oracle samples,source/executable/runtime identity and fault/closure outcomes;retire successful traces and repeated logs after verification. No full trace retention question.",
+        "outcome": {
+          "passed": true,
+          "complete": true,
+          "active": false,
+          "ownership_closed": true,
+          "processes": [
+            {
+              "label": "process-0",
+              "passed": true,
+              "cases": [
+                {
+                  "kind": "attention",
+                  "cells": "1",
+                  "cap": "1",
+                  "queries": "1",
+                  "variant": "0",
+                  "compared": "6144",
+                  "nans": "0",
+                  "max_budget_ratio": "0",
+                  "passed": "1"
+                },
+                {
+                  "kind": "attention",
+                  "cells": "33",
+                  "cap": "17",
+                  "queries": "3",
+                  "variant": "0",
+                  "compared": "18432",
+                  "nans": "0",
+                  "max_budget_ratio": "0.4936065219",
+                  "passed": "1"
+                },
+                {
+                  "kind": "attention",
+                  "cells": "65",
+                  "cap": "33",
+                  "queries": "3",
+                  "variant": "2",
+                  "compared": "18432",
+                  "nans": "0",
+                  "max_budget_ratio": "0.4914146055",
+                  "passed": "1"
+                },
+                {
+                  "kind": "attention",
+                  "cells": "65",
+                  "cap": "33",
+                  "queries": "3",
+                  "variant": "1",
+                  "compared": "18432",
+                  "nans": "0",
+                  "max_budget_ratio": "0.4890125544",
+                  "passed": "1"
+                },
+                {
+                  "kind": "attention",
+                  "cells": "65",
+                  "cap": "33",
+                  "queries": "3",
+                  "variant": "3",
+                  "compared": "15360",
+                  "nans": "3072",
+                  "max_budget_ratio": "0.4890125544",
+                  "passed": "1"
+                },
+                {
+                  "kind": "attention",
+                  "cells": "65",
+                  "cap": "33",
+                  "queries": "3",
+                  "variant": "4",
+                  "compared": "18176",
+                  "nans": "256",
+                  "max_budget_ratio": "0.4890125544",
+                  "passed": "1"
+                },
+                {
+                  "kind": "attention",
+                  "cells": "65",
+                  "cap": "33",
+                  "queries": "3",
+                  "variant": "5",
+                  "compared": "0",
+                  "nans": "18432",
+                  "max_budget_ratio": "0",
+                  "passed": "1"
+                },
+                {
+                  "kind": "attention",
+                  "cells": "65",
+                  "cap": "33",
+                  "queries": "3",
+                  "variant": "6",
+                  "compared": "0",
+                  "nans": "18432",
+                  "max_budget_ratio": "0",
+                  "passed": "1"
+                }
+              ],
+              "validation": {
+                "pid": 1427884,
+                "loader": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_loader.so.0.12.0",
+                "threads_before": 1,
+                "preinit": 37,
+                "config_enabled": true,
+                "first_init": true,
+                "dispatch_result": 46,
+                "output_untouched": true,
+                "retained_reference_until_exit": true,
+                "runtime_teardown_qualified": false
+              },
+              "observed": {
+                "start": {
+                  "mapped_qualified_runtime": true,
+                  "observed_NEO": "/usr/lib/x86_64-linux-gnu/libze_intel_gpu.so.1.17.39758",
+                  "DRM_descriptors": 1,
+                  "environment_immutable": true
+                },
+                "end": {
+                  "mapped_qualified_runtime": true,
+                  "observed_NEO": "/usr/lib/x86_64-linux-gnu/libze_intel_gpu.so.1.17.39758",
+                  "DRM_descriptors": 1,
+                  "environment_immutable": true
+                }
+              }
+            },
+            {
+              "label": "process-1",
+              "passed": true,
+              "cases": [
+                {
+                  "kind": "attention",
+                  "cells": "1",
+                  "cap": "1",
+                  "queries": "1",
+                  "variant": "0",
+                  "compared": "6144",
+                  "nans": "0",
+                  "max_budget_ratio": "0",
+                  "passed": "1"
+                },
+                {
+                  "kind": "attention",
+                  "cells": "33",
+                  "cap": "17",
+                  "queries": "3",
+                  "variant": "0",
+                  "compared": "18432",
+                  "nans": "0",
+                  "max_budget_ratio": "0.4936065219",
+                  "passed": "1"
+                },
+                {
+                  "kind": "attention",
+                  "cells": "65",
+                  "cap": "33",
+                  "queries": "3",
+                  "variant": "2",
+                  "compared": "18432",
+                  "nans": "0",
+                  "max_budget_ratio": "0.4914146055",
+                  "passed": "1"
+                },
+                {
+                  "kind": "attention",
+                  "cells": "65",
+                  "cap": "33",
+                  "queries": "3",
+                  "variant": "1",
+                  "compared": "18432",
+                  "nans": "0",
+                  "max_budget_ratio": "0.4890125544",
+                  "passed": "1"
+                },
+                {
+                  "kind": "attention",
+                  "cells": "65",
+                  "cap": "33",
+                  "queries": "3",
+                  "variant": "3",
+                  "compared": "15360",
+                  "nans": "3072",
+                  "max_budget_ratio": "0.4890125544",
+                  "passed": "1"
+                },
+                {
+                  "kind": "attention",
+                  "cells": "65",
+                  "cap": "33",
+                  "queries": "3",
+                  "variant": "4",
+                  "compared": "18176",
+                  "nans": "256",
+                  "max_budget_ratio": "0.4890125544",
+                  "passed": "1"
+                },
+                {
+                  "kind": "attention",
+                  "cells": "65",
+                  "cap": "33",
+                  "queries": "3",
+                  "variant": "5",
+                  "compared": "0",
+                  "nans": "18432",
+                  "max_budget_ratio": "0",
+                  "passed": "1"
+                },
+                {
+                  "kind": "attention",
+                  "cells": "65",
+                  "cap": "33",
+                  "queries": "3",
+                  "variant": "6",
+                  "compared": "0",
+                  "nans": "18432",
+                  "max_budget_ratio": "0",
+                  "passed": "1"
+                }
+              ],
+              "validation": {
+                "pid": 1428564,
+                "loader": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_loader.so.0.12.0",
+                "threads_before": 1,
+                "preinit": 37,
+                "config_enabled": true,
+                "first_init": true,
+                "dispatch_result": 46,
+                "output_untouched": true,
+                "retained_reference_until_exit": true,
+                "runtime_teardown_qualified": false
+              },
+              "observed": {
+                "start": {
+                  "mapped_qualified_runtime": true,
+                  "observed_NEO": "/usr/lib/x86_64-linux-gnu/libze_intel_gpu.so.1.17.39758",
+                  "DRM_descriptors": 1,
+                  "environment_immutable": true
+                },
+                "end": {
+                  "mapped_qualified_runtime": true,
+                  "observed_NEO": "/usr/lib/x86_64-linux-gnu/libze_intel_gpu.so.1.17.39758",
+                  "DRM_descriptors": 1,
+                  "environment_immutable": true
+                }
+              }
+            },
+            {
+              "label": "process-2",
+              "passed": true,
+              "cases": [
+                {
+                  "kind": "attention",
+                  "cells": "1",
+                  "cap": "1",
+                  "queries": "1",
+                  "variant": "0",
+                  "compared": "6144",
+                  "nans": "0",
+                  "max_budget_ratio": "0",
+                  "passed": "1"
+                },
+                {
+                  "kind": "attention",
+                  "cells": "33",
+                  "cap": "17",
+                  "queries": "3",
+                  "variant": "0",
+                  "compared": "18432",
+                  "nans": "0",
+                  "max_budget_ratio": "0.4936065219",
+                  "passed": "1"
+                },
+                {
+                  "kind": "attention",
+                  "cells": "65",
+                  "cap": "33",
+                  "queries": "3",
+                  "variant": "2",
+                  "compared": "18432",
+                  "nans": "0",
+                  "max_budget_ratio": "0.4914146055",
+                  "passed": "1"
+                },
+                {
+                  "kind": "attention",
+                  "cells": "65",
+                  "cap": "33",
+                  "queries": "3",
+                  "variant": "1",
+                  "compared": "18432",
+                  "nans": "0",
+                  "max_budget_ratio": "0.4890125544",
+                  "passed": "1"
+                },
+                {
+                  "kind": "attention",
+                  "cells": "65",
+                  "cap": "33",
+                  "queries": "3",
+                  "variant": "3",
+                  "compared": "15360",
+                  "nans": "3072",
+                  "max_budget_ratio": "0.4890125544",
+                  "passed": "1"
+                },
+                {
+                  "kind": "attention",
+                  "cells": "65",
+                  "cap": "33",
+                  "queries": "3",
+                  "variant": "4",
+                  "compared": "18176",
+                  "nans": "256",
+                  "max_budget_ratio": "0.4890125544",
+                  "passed": "1"
+                },
+                {
+                  "kind": "attention",
+                  "cells": "65",
+                  "cap": "33",
+                  "queries": "3",
+                  "variant": "5",
+                  "compared": "0",
+                  "nans": "18432",
+                  "max_budget_ratio": "0",
+                  "passed": "1"
+                },
+                {
+                  "kind": "attention",
+                  "cells": "65",
+                  "cap": "33",
+                  "queries": "3",
+                  "variant": "6",
+                  "compared": "0",
+                  "nans": "18432",
+                  "max_budget_ratio": "0",
+                  "passed": "1"
+                }
+              ],
+              "validation": {
+                "pid": 1429447,
+                "loader": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_loader.so.0.12.0",
+                "threads_before": 1,
+                "preinit": 37,
+                "config_enabled": true,
+                "first_init": true,
+                "dispatch_result": 46,
+                "output_untouched": true,
+                "retained_reference_until_exit": true,
+                "runtime_teardown_qualified": false
+              },
+              "observed": {
+                "start": {
+                  "mapped_qualified_runtime": true,
+                  "observed_NEO": "/usr/lib/x86_64-linux-gnu/libze_intel_gpu.so.1.17.39758",
+                  "DRM_descriptors": 1,
+                  "environment_immutable": true
+                },
+                "end": {
+                  "mapped_qualified_runtime": true,
+                  "observed_NEO": "/usr/lib/x86_64-linux-gnu/libze_intel_gpu.so.1.17.39758",
+                  "DRM_descriptors": 1,
+                  "environment_immutable": true
+                }
+              }
+            }
+          ],
+          "model_qualified": false,
+          "postchecks_complete": true,
+          "postcheck_errors": [],
+          "fresh_faults": [],
+          "boot_unchanged": true,
+          "driver_after": {
+            "pci": "/sys/bus/pci/devices/0000:05:00.0",
+            "driver": "xe",
+            "vendor": "0x8086",
+            "device": "0xe20c",
+            "kernel": "7.0.0-38-generic",
+            "devcoredump": false
+          }
+        }
       }
     }
   }
