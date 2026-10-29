@@ -35,6 +35,33 @@ def sha(raw):
     return hashlib.sha256(raw).hexdigest()
 
 
+def orchestration_input(name, revision):
+    raw = blob(revision, name)
+    if revision != BASE:
+        # Adjacent old additions otherwise form a single merge hunk with the
+        # new split parser/final guard. Exclude only these exact old blocks.
+        if name == 'src/prefill/prefill.cpp':
+            begin = raw.index(b'bool expert_upload_staging_requested() {')
+            end = raw.index(b'\n}\n', begin) + 3
+            raw = raw[:begin] + raw[end:]
+        elif name == 'src/prefill/layer_major.inc':
+            begin = raw.index(b'    if (window_context && window_context->expert_upload_staging) {')
+            end = raw.index(b'\n    }\n', begin) + 7
+            raw = raw[:begin] + raw[end:]
+    elif name == 'src/prefill/layer_major.inc':
+        # Preserve this independent maximum-allocation safety fix explicitly.
+        # It predates split work, but is required for honest capacity admission.
+        guard = (b'    if (prefix_bytes > max_alloc) {\n'
+            b'        err = "prefill BF16 prefix and metadata exceed maximum single allocation"; return false;\n'
+            b'    }\n')
+        anchor = b'    const auto bank_plan = detail::ExpertBankPlan::make('
+        assert raw.count(anchor) == 1 and guard not in raw
+        for version in (BEFORE, AFTER):
+            assert blob(version, name).count(guard) == 1
+        raw = raw.replace(anchor, guard + anchor)
+    return raw
+
+
 def overlays():
     result = {}
     for name in DIRECT:
@@ -81,7 +108,7 @@ def overlays():
             paths = []
             for role, revision in [('selected', BASE), ('before', BEFORE), ('after', AFTER)]:
                 path = root / role
-                path.write_bytes(blob(revision, name))
+                path.write_bytes(orchestration_input(name, revision))
                 paths.append(str(path))
             command = ['/usr/bin/git', 'merge-file', '-p', '-L', BASE, '-L', BEFORE, '-L', AFTER, *paths]
             merged = subprocess.run(command, cwd=P, capture_output=True, timeout=30)
@@ -101,4 +128,5 @@ def proof():
     values = overlays()
     return dict(base=BASE, before=BEFORE, after=AFTER, paths={name: dict(
         before_sha256=sha(blob(BASE, name)), after_sha256=sha(raw)) for name, raw in sorted(values.items())},
+        independent_safety_fix='Retain pre-existing prefix_bytes <= max_mem_alloc_size guard in layer_major.inc.',
         excluded='Unselected fused-command observers,fullcontext diagnostic,upload staging and all other active-tree native edits. Decode/program entrypoint remains exact selected6e40.')

@@ -1495,14 +1495,20 @@ prefill-only expert bank from384 to128 maximum-stride slots would release
 681574400B,leaving298280576B after the extra accumulator and the same headroom.
 These are logged budgets and prospective arithmetic,not successful allocation
 or physical-residency evidence. The current planner rejects this row count.
-The next candidate starts with a separate split-capacity planner,keeping the
-ordinary81920-row admission unchanged. Host controls must check complete bank
-coverage,guard reservations and one-byte-short refusal before device work.
-Implement and check every scalar/fused scatter and finish consumer for
-split-bank bounds,the maximum15 jobs/expert and histogram capacity,queue/owner
-retirement,cancellation,and full-context fallback. Then measure actual job/
-dequant/upload changes and critical-path service;larger windows and a smaller
-expert bank do not establish a throughput gain or the limiting hardware unit.
+The opt-in candidate now has a separate split-capacity planner,ordinary/fused
+scatter and model caller with owned tail allocation and final guard/drain checks.
+The ordinary81920-row path is preserved. Two CPU-only ASan/UBSan controls pass
+complete bank coverage,guard reservations,one-byte-short refusal and split/legacy
+routes with up to15jobs/expert. Luna source review permits bounded component
+validation;it does not qualify actual device allocation,numerics or speed.
+Production selection is limited to90113..117488engine rows and default-off;
+other lengths retain the existing plan,including262144. Build exact selected6e40
+with only the reviewed split changes and the independent prefix maximum-allocation
+guard,then pass traced tiny,extended split and production-route checks before
+model work. Measure actual job/dequant/upload changes and critical-path service;
+larger windows and a smaller expert bank do not establish a throughput gain
+or the limiting hardware unit. Decode/handoff,model quality and physical-context
+qualification remain separate pending gates.
 
 A20261028 source-only check of selected`6e40afc1b` also rules out treating
 head release as a configuration-only way to fund the additional accumulator.

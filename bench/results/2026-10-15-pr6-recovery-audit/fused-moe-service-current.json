@@ -12885,6 +12885,22 @@
     "mechanism": "Process one117488-row expert-major window rather than81920+35568;preserve FP32 expert summation and16-bit tensor boundaries. Split accumulator makes capacity possible. Fewer expert dequants/submissions are a hypothesis;smaller bank may add PCIe traffic. Aggregate MoE minus GU/Down is NOT measured dequanttime or physical-resource saturation.",
     "inference_adopted": false,
     "decode_changed": false,
-    "next_gate": "Pass host controls,then source-reviewed separate ordinary/fused split consumers, bounded traced device numerics/bounds/actualallocation before model timing. Preserve exact selected-source production baseline and independent decode/handoff/fullcontext gates."
+    "next_gate": "Pass host controls,then source-reviewed separate ordinary/fused split consumers, bounded traced device numerics/bounds/actualallocation before model timing. Preserve exact selected-source production baseline and independent decode/handoff/fullcontext gates.",
+    "source_review": {
+      "revision": "8a34a9ed6",
+      "research_key": "moe_split_native_consumer_contract_20261030",
+      "review_sha256": "62a1fedc331eee474fed1e831a4b7b9db189a0972f286fade4ff34a55595300e",
+      "accepted_for_bounded_component_validation_only": true,
+      "blockers": [],
+      "GPU_and_model_qualified": false
+    },
+    "source_preparation_failures": [
+      {
+        "constructor_source": "e5caab1fd",
+        "outcome": "failed_before_build_or_GPU",
+        "reason": "Three-way composition conflicts with adjacent unselected upload staging and independent prefix maximum-allocation guard. No candidate source or executable accepted.",
+        "next_action": "Normalize exact old staging blocks and explicitly preserve independent maximum-allocation guard prospectively;new committed constructor then source-only proof."
+      }
+    ]
   }
 }
