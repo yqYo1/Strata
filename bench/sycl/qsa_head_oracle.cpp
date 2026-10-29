@@ -56,6 +56,8 @@ static void properties(const char *path) {
     ze_kernel_properties_t p{};p.stype=ZE_STRUCTURE_TYPE_KERNEL_PROPERTIES;
     require(query(sycl::get_native<sycl::backend::ext_oneapi_level_zero>(kernel),&p)==ZE_RESULT_SUCCESS,"kernel properties failed");
     require(maximum>=wg && p.requiredSubgroupSize==16 && p.maxNumSubgroups>=wg/16,"compiled group/subgroup limits");
+    if (candidate) require(p.requiredGroupSizeX==128 && p.requiredGroupSizeY==1 && p.requiredGroupSizeZ==1,
+        "candidate must have compiled exact WG128 metadata before any enqueue");
     require((!p.requiredGroupSizeX || p.requiredGroupSizeX==wg) &&
         (!p.requiredGroupSizeY || p.requiredGroupSizeY==1) && (!p.requiredGroupSizeZ || p.requiredGroupSizeZ==1) &&
         (!p.requiredNumSubGroups || p.requiredNumSubGroups==wg/16),"compiled required shape differs");
@@ -63,6 +65,7 @@ static void properties(const char *path) {
     std::cout<<"HEAD_PROPERTY arm="<<(candidate?"candidate":"original")<<" name="<<name
       <<" wg="<<wg<<" subgroup="<<sg<<" arguments="<<p.numKernelArgs
       <<" maximum="<<maximum<<" static_local="<<p.localMemSize<<" declared_local="<<declared
+      <<" required_x="<<p.requiredGroupSizeX<<" required_y="<<p.requiredGroupSizeY<<" required_z="<<p.requiredGroupSizeZ
       <<" spill_descriptor="<<p.spillMemSize<<'\n';++count;
   }
   require(count==4,"exactly four normal/state attention kernels required");

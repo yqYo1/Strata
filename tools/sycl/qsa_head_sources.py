@@ -1,7 +1,7 @@
-"""Real-head-only softmax prototype; authored under repository LICENSE.
+"""Exact-WG128 metadata prototype; authored under repository LICENSE.
 
 Both arms retain selected6e40 M8 geometry and12real-head FP32 arithmetic.
-Only padded-head softmax is removed; padded PV inputs are explicitly zero.
+Only the attention lambda receives its actual fixed work-group size.
 """
 import hashlib
 from pathlib import Path
@@ -12,17 +12,8 @@ BASE = '6e40afc1beddd059ee518617f6c1efce1da14aca'
 PREFIX = 'src/kernels/sycl/qsa_bf16_prefix.cpp'
 BASE_SHA = '4f9f815c9baae709f919f6d5ad1af04677c10d8c13c7597b3857cf81567ae192'
 EDITS = [
-    ('      if (tid < 16) { maximum[tid] = -INFINITY; normalizer[tid] = 0.f; }',
-     """      if (tid < 16) { maximum[tid] = -INFINITY; normalizer[tid] = 0.f; }
-      if constexpr (OrderedExp) {
-        // One padded probability per work-item, before the existing barrier.
-        // Real rows retain their original writers and every arithmetic step.
-        static_assert(Workgroup == (16 - Heads) * Cells);
-        probability[Heads * Cells + tid] = BFloat(0.f);
-        if (tid >= Heads && tid < 16) alpha[tid] = 0.f;
-      }""", 1),
-    ('          for (int h = subgroup; h < 16; h += 8) {',
-     '          for (int h = subgroup; h < (OrderedExp ? Heads : 16); h += 8) {', 1),
+    ('        [=](sycl::nd_item<1> item) [[sycl::reqd_sub_group_size(16)]] {',
+     '        [=](sycl::nd_item<1> item) [[sycl::reqd_sub_group_size(16)]] [[sycl::reqd_work_group_size(128)]] {', 1),
 ]
 SIGNATURE = """const uint16_t *query, const QsaAttnPools &pools,
     const int32_t *ids, const int32_t *steps, int64_t cap, const QsaShapes &shape,
@@ -62,7 +53,7 @@ def generated():
     for a,b,count in reversed(EDITS):
         recovered = change(recovered,b,a,count)
     if recovered != base:
-        raise RuntimeError('undeclared padded-head edit')
+        raise RuntimeError('undeclared work-group annotation edit')
     for a,b,count in reversed(common):
         recovered = change(recovered,b,a,count)
     if recovered != body:
@@ -93,11 +84,11 @@ def proof():
     rows = generated()
     return dict(original_source_commit=BASE, original_source_sha256=BASE_SHA,
         generated_sha256={name:hashlib.sha256(raw).hexdigest() for name,raw in rows.items()},
-        geometry='Same M8,N16,K16,WG128,SG16,16padded/12real matrix rows;bothsize_t IDs.',
-        reversible_padding_edits=2, reversible_real_math_edits=0,
+        geometry='Same M8,N16,K16,actualWG128,SG16,16padded/12real matrix rows;bothsize_t IDs. Candidate alone declares exactWG128.',
+        reversible_annotation_edits=1, reversible_real_math_edits=0,
         reversible_common_diagnostic_edits=4, declared_local_bytes=20036,
-        real_head_contract='Same ascendingFP32sum,Qscaling,BF16PV,FP32m/alpha/norm,PVmatrix order and output division/cast. Candidate initializes4padded probabilityrows/alpha tozero before existingbarrier,and omits their softmax only. QK/PVgeometry and every workgroup barrier remain.',
-        subgroup_contract='Each active SIMD16subgroup participates fully. SG0..3compute2realheads;SG4..7compute1. No workgroup barrier inside divergent-count headloop. Padded state is intentionally unobserved;matched capture admission accepts only12real heads.',
+        arithmetic_contract='Every original padded/real-head softmax,QK/PV,ascendingFP32sum,Qscaling,BF16PV,FP32m/alpha/norm,outputdivision/cast and all barriers are textually unchanged.',
+        workgroup_contract='Actual selected attention launch is alwaysnd_range1D(local128);sameeight SIMD16subgroups and twoheads each. Attribute may alter downstream native compilation even when optimizedLLVMbodies match. Compiled candidate requiredX128/Y1/Z1 is mandatory beforeenqueue;normal/state actualtraced launches must match.',
         production_or_decode_changed=False)
 
 

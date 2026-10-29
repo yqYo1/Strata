@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
-"""Own real-head-only softmax component qualification; repository LICENSE applies.
+"""Own exact-WG128 component qualification; repository LICENSE applies.
 
-Selected 6e40 is untouched. Matched lossless probes have independent entrypoints;
+Selected 6e40 is untouched. Matched state probes have independent entrypoints;
 all native work remains serialized under the shared measurement lock.
 """
 import fcntl
@@ -17,9 +17,9 @@ sys.dont_write_bytecode=True
 import matrix_shapes as q
 import qsa_head_sources as g
 r,P,B=q.r,q.P,q.B
-ROOT=B/'qsa-realhead-softmax-native-v1'
-KEY='qsa_realhead_softmax'
-REVIEW='qsa_realhead_softmax_contract_20261030'
+ROOT=B/'qsa-required-wg-native-v1'
+KEY='qsa_required_workgroup'
+REVIEW='qsa_required_workgroup_native_contract_20261030'
 RESULT=q.RESULT
 NATIVE=['src/sycl/runtime.cpp','src/sycl/compat.cpp','src/sycl/command_profile.cpp','src/kernels/sycl/prompt_attention.cpp']
 FIXTURE='bench/sycl/qsa_head_oracle.cpp'
@@ -62,10 +62,10 @@ def admitted(row):
 
 def prepare():
     require(not ROOT.exists(),'fresh component only;inspect owner first')
-    record=r.validation.committed(RESULT);prior=record['qsa_parallel_normalizer']['retirement']
-    require(prior['verified_absent'] and prior['all_owned_processes_stopped'] and all(not Path(p).exists() for p in prior['roots']),'retire deferred normalizer and closed length captures first')
+    record=r.validation.committed(RESULT);prior=record['qsa_realhead_softmax']['retirement']
+    require(prior['verified_absent'] and prior['all_owned_processes_stopped'] and all(not Path(p).exists() for p in prior['roots']),'retire rejected real-head softmax comparison first')
     review=r.validation.committed(RESULT.with_name('research-index.json'),(REVIEW,'native_review'))
-    require(review['source_accepted_for_component'],'prospective exact-source padding/collective contract first')
+    require(review['source_accepted_for_component'],'prospective exact-source requiredWG/launch contract first')
     require(KEY not in record,'never overwrite prior experiment outcome')
     rt=r.validation.committed(r.RESULT);full=r.current(rt);revision=subprocess.check_output(['git','rev-parse','HEAD'],cwd=P,text=True).strip()
     pins=sources(revision);sdk=q.closure.sdk_inputs();data=native_sources(revision)
@@ -93,8 +93,8 @@ def prepare():
         commands=commands,environment=dict(full['environment'],TMPDIR=str(ROOT/'tmp'),XDG_CACHE_HOME=str(ROOT/'cache')),
         budgets=dict(wall=600,cpu=1800,rss_cap=8<<30,text_cap=32<<20,file_cap=256<<20,total_cap=2<<30),
         active=False,ownership_closed=True,passed=False,GPU_executed=False,production_or_decode_changed=False,
-        criteria='Bothsize_t/strictflags,originalM8geometry. Candidateinitializes4paddedprobabilityrows/alpha tozero and computes only12realsoftmaxheads;every realFP32addition/PVoperation/division/cast staysoriginal. Matched diagnostic admission accepts12realheads and events report actual submissions. CPUbuild must close exactcompiler/linkinputs and retain ordered sum in bothIRs. Four compiled normal/state properties before anyenqueue;then bounded tracedtiny and all12realheadstate/Page4/Page16component bitidentity. No model speed/quality/adoption from component.',
-        retention='One imminent real-head softmax comparison generation;keep selected6e40+12fixtures. Retire extra ELF/objects/raw output at decision after source recovery. Source review retained only until component contract is consumed.')
+        criteria='Bothsize_t/strictflags,originalM8geometry and all16headsoftmax. Solecandidateedit is exactWG128attribute onattentionlambda;all actualgroups already128. Every real/paddedFP32addition/PVoperation/division/cast staysoriginal. Matched diagnostic admission accepts12realheads and events report actual submissions. CPUbuild must close exactcompiler/linkinputs,retain ordered sum in bothIRs,and require candidate-only requiredWG metadata. Compiledcandidate requiredX128/Y1/Z1 beforeenqueue. Four compiled normal/state properties before anyenqueue;then bounded tracedtiny and all12realheadstate/Page4/Page16component bitidentity. No model speed/quality/adoption from component.',
+        retention='One imminent exact-WG128 comparison generation;keep selected6e40+12fixtures. Retire extra ELF/objects/raw output at decision after source recovery. Source review retained only until component contract is consumed.')
     admitted(row);write(ROOT/'record.json',row);record[KEY]=dict(build=compact(row));write(RESULT,record);print('Component prepared;commit frozen plan before compile.',flush=True)
 
 
@@ -113,6 +113,12 @@ def build():
             if label.startswith('link'):links[label]=q.linking.traced_inputs(out.read_text(),err.read_text(),allowed,ROOT,ROOT)
         reduction=r'@[^\s(]*Group[^\s(]*FAdd'
         require(not re.search(reduction,(ROOT/'candidate.ll').read_text()) and not re.search(reduction,(ROOT/'original.ll').read_text()),'ordered real-head sum changed to groupFAdd')
+        original_ir=(ROOT/'original.ll').read_text();candidate_ir=(ROOT/'candidate.ll').read_text()
+        ids=re.findall(r'!reqd_work_group_size !(\d+)',candidate_ir)
+        require(len(ids)==2 and '!reqd_work_group_size' not in original_ir,'candidate-only exactWG metadata on normal/state kernels required')
+        for meta in ids:
+            match=re.search(r'!'+meta+r' = !\{([^}]+)\}',candidate_ir)
+            require(match and sorted(map(int,re.findall(r'i32 (\d+)',match[1])))==[1,1,128],'requiredWG metadata dimensions differ')
         observed={}
         for dep in ROOT.glob('*.d'):
             for name in shlex.split(dep.read_text().replace('\\\n',' ').split(':',1)[1]):
@@ -191,7 +197,7 @@ def run_gate(mode,page):
     except BaseException as error:outcome['error']=repr(error)
     finally:
         r.validation.finish(outcome,owner,cursor,plan['boot']);persist();plan['stage']='closed' if outcome['passed'] else 'failed';plan['outcome']=outcome;write(RESULT,record)
-    print(json.dumps({k:v for k,v in outcome.items() if k!='properties'}),flush=True);require(outcome['passed'],'real-head component gate failed')
+    print(json.dumps({k:v for k,v in outcome.items() if k!='properties'}),flush=True);require(outcome['passed'],'required-WG component gate failed')
 
 
 if __name__=='__main__':
