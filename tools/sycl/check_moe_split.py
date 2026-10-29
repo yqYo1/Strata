@@ -75,6 +75,8 @@ def prepare(mode):
         LD_PRELOAD=rt['preload']['library']['path'], STRATA_UR_PROBE_EXPECTED_LOADER=rt['preload']['loader'],
         ZE_ENABLE_ALT_DRIVERS=next(p for p in rt['runtime_files'] if 'libze_intel_gpu' in p),
         STRATA_SYCL_PREFILL_COMMAND_PROFILE='0', STRATA_SYCL_PREFILL_FUSED_COMMAND_PROFILE='0',
+        STRATA_SYCL_PREFILL_NATIVE16='bf16', STRATA_SYCL_PREFILL_NATIVE16_BACKEND='vllm',
+        STRATA_SYCL_PREFILL_NATIVE16_VLLM_TILE='auto', STRATA_SYCL_PREFILL_GU_SWIGLU='0',
         STRATA_TEST_MAIN_GATES='1', STRATA_SYCL_PREFILL_DOWN_SCATTER='large' if mode == 'route-on' else '0',
         UR_LOG_TRACING='level:info;flush:info;output:file,'+str(folder/'api.trace'),
         UR_LOG_VALIDATION='level:warning;flush:warning;output:file,'+str(folder/'validation.log'))
@@ -123,23 +125,33 @@ def parse(stdout, mode):
     rows = [json.loads(s) for s in stdout.splitlines() if s.startswith('{')]
     require(rows and all(v['status'] == 'PASS' for v in rows), 'incomplete/failed component result')
     kinds = {k:[v for v in rows if v['kind'] == k] for k in {v['kind'] for v in rows}}
+    oracles = kinds.get('split_correctness',[])
+    require(all(v['full_FP32_host_oracle'] and v['full_BF16_capture'] and v['guards'] for v in oracles),
+            'incomplete split arithmetic/guard proof')
     if mode == 'smoke':
         require(len(kinds.get('correctness',[])) == 1 and
                 [v['tokens'] for v in kinds.get('split_case',[])] == [3,17] and
                 kinds.get('split_admissions') == [dict(kind='split_admissions',rejected=16,invalid_map_cases=3,status='PASS')] and
                 kinds.get('split_exception_unwind') == [dict(kind='split_exception_unwind',queue_complete=True,status='PASS')],
                 'smoke coverage missing')
+        require({v['expected_mask'] for v in oracles} == {0,1,2,3}, 'invalid-map mask coverage missing')
     elif mode == 'validate':
         cases = kinds.get('split_case',[])
         require([(v['tokens'],v['irregular']) for v in cases] ==
                 [(n,i) for i in (0,1) for n in (65537,81921,117488)] and
                 all(v['primary_rows'] == 65536 and v['physical_final_row'] for v in cases), 'extended coverage missing')
+        require(oracles and all(v['expected_mask'] == 0 for v in oracles), 'extended oracle status failure')
     else:
         routes = kinds.get('selected_route',[]); enabled = mode == 'route-on'
         require([(v['rows'],v['enabled'],v['selected']) for v in routes] ==
                 [(n,int(enabled),int(enabled and n>=2334)) for n in (2333,2334,2335,8192) for _ in range(2)] and
                 all(v['inputs_immutable'] and v['false_route_no_write'] and v['expected_mask'] == 0 for v in routes),
                 'production route/fallback coverage missing')
+    if mode in ('smoke','validate'):
+        flow = kinds.get('split_dataflow',[])
+        require(len(flow)==1 and flow[0]['tokens'] == (17 if mode=='smoke' else 117488) and
+                all(flow[0][k] for k in ('full_weight_map','full_gather','inputs_immutable','guards')),
+                'production weight/mixed dataflow coverage missing')
     return dict(result_counts={k:len(v) for k,v in kinds.items()},
         cases=kinds.get('split_case',[]),post_BF16_FP32_oracles=len(kinds.get('split_correctness',[])),
         production_routes=[{k:v[k] for k in ('rows','enabled','selected','split_rows')} for v in kinds.get('selected_route',[])],
