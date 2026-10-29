@@ -64,7 +64,7 @@ def prepare():
     require(query['passed'] and query['M4_component_eligible'] and query['retirement']['verified_absent'],'positive capability and ended property generation required')
     prior=record['qsa_head_geometry']['component']['retirement']
     require(prior['verified_absent'] and prior['all_owned_processes_stopped'] and not Path(prior['root']).exists(),'retire closed coordinate prototype first')
-    require('component' not in record['qsa_head_geometry'],'do not overwrite original outcome')
+    require('component_v2' not in record['qsa_head_geometry'],'do not overwrite original outcome')
     rt=r.validation.committed(r.RESULT);full=r.current(rt);revision=subprocess.check_output(['git','rev-parse','HEAD'],cwd=P,text=True).strip()
     pins=sources(revision);sdk=q.closure.sdk_inputs();data=native_sources(revision)
     ROOT.mkdir(mode=0o700)
