@@ -15284,8 +15284,8 @@
   },
   "qsa_pair_attention_contract_20261029": {
     "classification": "decision support",
-    "status": "eligible_not_dispatched",
-    "schedulable_now": true,
+    "status": "reviewed_conditional_source_proof",
+    "schedulable_now": false,
     "source_revision": "75aa272bb",
     "source_files": {
       "include/strata/kernels/qsa_pair_attention.hpp": "88a810b0181992efba235a217bed7c396d5cced5f1ec37eb43a46b9fc4094dd4",
@@ -15305,7 +15305,33 @@
     ],
     "consumer": "Source-contract decision before Main-owned serial native fixture build/run;Main concurrently implements fixture/build controller.",
     "retirement": "Keep essential source proof/corrections and pins;retire consumed transaction/report/review after source gate.",
-    "worker_closed": false,
-    "main_read_report_body": false
+    "worker_closed": true,
+    "main_read_report_body": false,
+    "report_bytes": 12015,
+    "report_sha256": "e329ca442605c0f8d82634a4b9f52a51d79e26318c07ab2faac7482790f41b6a",
+    "orca": {
+      "run": "run_80ea8ebc9a8c",
+      "task": "task_ed992287281d",
+      "dispatch": "ctx_f1fa73db9cc0",
+      "initial_failed_dispatch": "ctx_fc95b6957fda",
+      "terminal": "term_1c152015-7758-45c2-874c-39e3d11a719e",
+      "model": "gpt-6-luna",
+      "effort": "high",
+      "startup": "Readiness failure at observed update prompt before task;ESC only skips update;official same-task/same-terminal retry accepted and observed turn start;actual provider Luna-high. No steering during research.",
+      "worker_done": "msg_69e259d3ad35",
+      "worker_state": "succeeded_released",
+      "terminal_closed_by_official_release": true,
+      "completion_delivery_acknowledged": "delivery_560c795acb77"
+    },
+    "native_review": {
+      "model": "gpt-6-luna max",
+      "path": ".cache/research/2026-10-29/qsa_pair_attention_contract_20261029.review.json",
+      "sha256": "768e0b8468a4d0b1219d6272afaa2c54ed472e73b6d6becb39760a445650a431",
+      "verdict": "accepted_with_essential_clarification",
+      "algorithmic_blocker": null,
+      "clarification": "Existing validator limits query rows to65535. A new explicit host preflight caps live_cells at262144;the redundant query>262144 guard is removed. Device kernel body unchanged from reviewed75aa272bb. Producer separately checks per-query NKv<=262144. Caller supplies matching producer/packed steps.",
+      "next_gate": "Commit exact fixture/controller/inputs/recipe/plan,CPU compile,native properties then bounded traced independent-oracle cases. No speed/physical-model qualification.",
+      "clarification_applied": true
+    }
   }
 }

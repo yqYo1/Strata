@@ -1287,7 +1287,7 @@
       "include/strata/kernels/qsa_pair_union.hpp": "2cc8b6421a873dd6ba41a9135dff3d4608ccfd3263d5c33ab7850d36c69c8a2e",
       "src/kernels/sycl/qsa_pair_union.cpp": "e9f3ca56a445067d8df817ceb554ea5dcff612e544e28b98ee6028daee1aff8c",
       "include/strata/kernels/qsa_pair_attention.hpp": "88a810b0181992efba235a217bed7c396d5cced5f1ec37eb43a46b9fc4094dd4",
-      "src/kernels/sycl/qsa_pair_attention.cpp": "9b1221600dbd78fddee0052f980f5fdb91fcd42d9420b7a8cc24c6574b320bd2"
+      "src/kernels/sycl/qsa_pair_attention.cpp": "f60b1f131463bc59bfe865d2c055949fe418438536efb808602679ce7c61500e"
     },
     "provenance": "Main-authored MIT;attention uses only own selected6e40 qsa_bf16_prefix.cpp design SHA4f9f815c9baae709f919f6d5ad1af04677c10d8c13c7597b3857cf81567ae192;independent pair-mask/matrix mapping;no Xe application code.",
     "mechanism": "GPU exact sorted two-query union with u8 membership;24heads across pair fill three8-row matrix blocks;K/V load shared,per-query softmax/LSE independent;ordered FP32 tile sum and typed K/V4 staging preserved.",
@@ -1308,6 +1308,7 @@
     ],
     "next_gate": "Independent Luna source-contract audit while Main prepares committed fixture and native recipe;then serial build/properties/traced oracle before timing.",
     "selected": false,
-    "GPU_executed": false
+    "GPU_executed": false,
+    "source_contract": "research-index:qsa_pair_attention_contract_20261029.native_review;75aa272bb device body unchanged,host-only explicit live_cells<=262144 clarification"
   }
 }

@@ -58,7 +58,7 @@ bool qsa_pair_attention_prefill(const uint16_t *query,const QsaAttnPools &pools,
   if (!qsa_prompt_attn_bf16_validate(query,pools,original_ids,steps,cap,shape,
                                     output,queries,bounds,stream)) return false;
   if (!queries) return true;
-  if (queries>262144 || cap>2051 || live_cells<=0 || uint64_t(live_cells)>
+  if (cap>2051 || live_cells<=0 || live_cells>262144 || uint64_t(live_cells)>
       uint64_t(bounds.logical_pages)*uint64_t(shape.page_size))
     throw std::invalid_argument("pair attention exceeds its geometry contract");
   using namespace sycl_backend;
