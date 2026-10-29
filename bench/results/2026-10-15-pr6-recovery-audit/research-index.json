@@ -16324,5 +16324,37 @@
     },
     "raw_report_retired": true,
     "consumed_retirement_manifest_sha256": "b2175fba7fbd3da22cf1c91872ef652c789dc525e4eb621981de66b7e206ab02"
+  },
+  "qsa_strict_fp32_target_contract_20261029": {
+    "classification": "decision support",
+    "status": "ready_for_first_dispatch",
+    "schedulable_now": true,
+    "prerequisites_evidence": [
+      "Only-normalizer source73414ebc2and immutable actualCPUemitted original/candidate IR exist. This is a new exact-artifact arithmetic contract,not generic native-exp2/FTZ survey.",
+      "Reviewed positive-sum interval requires qualified RNE/gradual mode and targetdivision/BF16rounding. Existing source pins and installed LLVM504+17patches/NEO39758 identity are known;targetbehavior remains unqualified."
+    ],
+    "question": "For actual new QSA strictO3 size_t IR and pinned installed toolchain/runtime,determine justified FP32add/reduction/FMA denormal/rounding assumptions and allowed scalar FDiv accuracy;trace compiler flags/attributes/device capabilities and BF16constructor. Distinguish support/default/required runtime evidence;give non-arbitrary prospective output interval rule and small mode/capability checks. No GPU execution,globalfastmathchange or numerical/performance claim.",
+    "source_commit": "73414ebc28f2ac83cc494e5dc6f176d1586e197a",
+    "IR": {
+      "original": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-normalizer-native-v1/original.ll",
+        "sha256": "f26a7b1ebe29c305fd8bc0df203bc3f5ace21cadad9d0508b6ea9048bb2fd361"
+      },
+      "candidate": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-normalizer-native-v1/candidate.ll",
+        "sha256": "283879a9cb8aa01a21249d4c0bccb3af6a414b156343cd52253f15b1b010a294"
+      }
+    },
+    "worker_model": "Orca Codex gpt-6-luna high",
+    "report": ".cache/research/2026-10-29/qsa_strict_fp32_target_contract_20261029.md",
+    "report_budget_bytes": 16384,
+    "prior_refs": [
+      "qsa_positive_sum_error_envelope_20261029",
+      "qsa_parallel_normalizer_contract_20261029",
+      "intel_native_exp2_contract_scope"
+    ],
+    "consumer": "Main imminent lossless operand/normalizer interval fixture;nativeLuna-max curates before applying sourcefacts. Main continues build/property/implementation in parallel.",
+    "ownership_closed": false,
+    "retention": "Keep concrete verified modes/accuracy contract and needed checks in prospective gate;retire generic explanations/transaction text after use."
   }
 }
