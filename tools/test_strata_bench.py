@@ -2,6 +2,7 @@
 import io
 import hashlib
 import json
+import os
 from pathlib import Path
 import tempfile
 import unittest
@@ -506,6 +507,57 @@ class BenchmarkTest(unittest.TestCase):
         self.assertIn("regular-code long decode", table)
         self.assertNotIn("+0.0%", table)
         self.assertIn("not comparable", table)
+
+
+@unittest.skipUnless(os.environ.get('STRATA_BENCH_REAL_PACK'), 'optional pinned real tokenizer fixture')
+class RealPackExactCounts(unittest.TestCase):
+    def test_boundary_bodies_with_real_tokenizer_without_inference(self):
+        import threading
+        import strata_tokenizer as ST
+        from serve.frontend import ChatTemplate, openai_to_messages
+        from serve.server import MockEngine, Service, Server, make_handler, host_names_for
+        folder=Path(os.environ['STRATA_BENCH_REAL_PACK'])/'tokenizer'
+        names=['vocab.json','merges.txt','token_type.json','tokenizer.json','chat_template.jinja']
+        def snapshot():
+            return {name:hashlib.sha256((folder/name).read_bytes()).hexdigest() for name in names}
+        before=snapshot()
+        identity=hashlib.sha256(json.dumps(before,sort_keys=True,separators=(',',':')).encode()).hexdigest()
+        self.assertEqual(identity,os.environ['STRATA_BENCH_REAL_PACK_SHA256'])
+        vocab=json.loads((folder/'vocab.json').read_text())
+        tokens=[None]*len(vocab)
+        for text,index in vocab.items():
+            tokens[index]=text
+        tok=ST.Tokenizer(tokens,(folder/'merges.txt').read_text().split('\n'),
+                         json.loads((folder/'token_type.json').read_text()))
+        engine=MockEngine(tok,'ok',max_context=131072)
+        service=Service(engine,tok,ChatTemplate(folder/'chat_template.jinja'))
+        service.host_names=host_names_for('127.0.0.1',service.allowed_hosts,service.trusted_origins)
+        httpd=Server(('127.0.0.1',0),make_handler(service))
+        worker=threading.Thread(target=lambda:httpd.serve_forever(poll_interval=.01),daemon=True)
+        worker.start()
+        base=f'http://127.0.0.1:{httpd.server_address[1]}'
+        try:
+            with patch.object(engine,'generate',side_effect=AssertionError('count-only test must never infer')):
+                for index,target in enumerate([73729,73730,81921,81922]):
+                    suite=bench.Suite(base,'',131072,1,True,log=lambda _:None,prefill_only=True,
+                        prefill_exact_tokens=target,workload_id='real-pack-exact')
+                    messages,proof=bench.prefill_scaling.exact_prompt(suite,index,
+                        lambda messages,timeout:bench.count_chat_tokens(base,'',messages,timeout))
+                    body=bench.chat_body(messages,24,True)
+                    normalized,tools,kwargs=openai_to_messages(service.with_shared(body,'openai'))
+                    ids=service.encode_prompt(normalized,tools,kwargs,store=False)
+                    self.assertEqual(len(ids),target)
+                    self.assertLessEqual(proof['count_requests'],32)
+                    print('EXACT_REAL_PACK '+json.dumps(dict(target_input_tokens=target,
+                        rendered_input_tokens=len(ids),count_requests=proof['count_requests'],
+                        construction_seconds=proof['construction_seconds'],
+                        body_sha256=hashlib.sha256(json.dumps(body).encode()).hexdigest(),
+                        token_ids_sha256=hashlib.sha256(json.dumps(ids,separators=(',',':')).encode()).hexdigest(),
+                        native_engine_executed=False,physical_engine_rows_qualified=False)),flush=True)
+        finally:
+            httpd.shutdown();httpd.server_close();worker.join(3)
+        self.assertFalse(worker.is_alive())
+        self.assertEqual(snapshot(),before)
 
 
 if __name__ == "__main__":

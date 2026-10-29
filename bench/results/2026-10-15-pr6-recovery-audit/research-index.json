@@ -16840,16 +16840,62 @@
       "evidence_tests": 15,
       "native_or_GPU_executed": false,
       "next": "Qualify current realpack frontend/count-only body construction,then commit actualrow/route-aware boundary model plan;mocked exactcounts do not prove physicalrows."
+    },
+    "real_pack_construction": {
+      "stage": "prepared",
+      "pack": "/home/yayoi/.local/share/strata-sycl/packs/qwen3.8-flash-next-iq3_s",
+      "tokenizer_files_sha256": {
+        "vocab.json": "4ba64f0332abcfb0b600b7df1537d1e836e68009d5fb7cdb77339738dc6365c4",
+        "merges.txt": "4ba698529766c7a2f5052083ea10cdf2485577f5237a332ee291054eb11e3332",
+        "token_type.json": "5088c8c298fc06af8382ddb3b76c888703ac2634e82263b97eedcc2ad202738b",
+        "tokenizer.json": "c0bd435efbc6c3b28964b47999afe16c4ad268c7c7c4e8cb3af410796a6f30bf",
+        "chat_template.jinja": "12827f24b742ea4e80cdc12dbcf9622227056b9f797252a3149263d4f9aaadce"
+      },
+      "tokenizer_aggregate_sha256": "d58a004711ec8a9b9d1c73e598dff22a45de4d7561b56e41d6f291573dea5af6",
+      "targets_actual_prompt_tokens": [
+        73729,
+        73730,
+        81921,
+        81922
+      ],
+      "prospective_engine_rows": [
+        73728,
+        73729,
+        81920,
+        81921
+      ],
+      "engine_row_relation_qualified": false,
+      "recipe": {
+        "python": "/home/yayoi/.local/share/strata-sycl/venv/bin/python3",
+        "argv": [
+          "-m",
+          "unittest",
+          "discover",
+          "-s",
+          "tools",
+          "-p",
+          "test_strata_bench.py"
+        ],
+        "environment": {
+          "STRATA_BENCH_REAL_PACK": "/home/yayoi/.local/share/strata-sycl/packs/qwen3.8-flash-next-iq3_s",
+          "STRATA_BENCH_REAL_PACK_SHA256": "d58a004711ec8a9b9d1c73e598dff22a45de4d7561b56e41d6f291573dea5af6",
+          "PYTHONDONTWRITEBYTECODE": "1"
+        },
+        "exclusive_lock": "B/owned-v0141-measurement.lock",
+        "deadline_seconds": 600,
+        "text_budget_bytes": 65536
+      },
+      "criteria": "Fullclient27tests including one optional4point realpackHTTPcounter case. Exactcomplete productionrender counts and finalbody/tokenID hashes;unchangedfivepackfiles;MockEngine.generate forbidden,no nativeinference orphysicalrow/admissionclaim;closeHTTPserverthread."
     }
   },
   "codebook_weight_tile_dequant_dataflow_collection_20261030": {
     "classification": "knowledge collection",
-    "status": "eligible_for_dispatch",
-    "schedulable_now": true,
+    "status": "research_running",
+    "schedulable_now": false,
     "worker_model": "Orca Codex gpt-6-luna high",
     "report": ".cache/research/2026-10-30/codebook_weight_tile_dequant_dataflow_collection_20261030.md",
     "report_budget_bytes": 14336,
-    "ownership_closed": true,
+    "ownership_closed": false,
     "retention": "NativeLuna-maxcuration ofnovelty/depth/retrieval;raw report not automatically committed. Review at concretecandidate/workloadselection,retire duplicates and transactionpaperwork.",
     "question": "Compare GPU dataflows that materialize dequantized low-bit codebook weights once per expert versus fuse codebook/scale decode into joint-matrix GEMM tiles,or cache a bounded dequantized subset. Prioritize original vLLM/SGLang/Marlin and Intel/SYCL/Triton sources plus transferable GPU/ASIC work. Explain codebook vs uniformINT4 differences,K-loop LUT/scale costs,repeateddequant acrossMtiles,coalescing/SLM/register pressure,reuse/tail behavior and numerical roundlocations. Anchor GU N1280/K2560 and DownN2560/K640,M1..8192,16-bit operands and9,830,400Bglobaldecodedweightpair. Do not claim this is the currentbottleneck:40.69sMoE aggregate minus4.39sGU/5.58sDown cannot be labelleddequanttime. Distinguish this weightdecode placement question from activationquantization/general backend surveys and identify counterexamples.",
     "prior_refs": [
@@ -16861,16 +16907,22 @@
     "prerequisites_evidence": [
       "Current source stages quantized expert,then globallydequantizes GU/Down into m.dq_gu[0]/m.dq_d[0] before native16 GEMM;one pair9,830,400B per sourcecensus. No localmeasurement needed for bounded knowledgecollection."
     ],
-    "consumer": "Conditional retrieval for a source-bound MoE weightdecode/dataflow candidate after actual resource attribution;not an immediate implementation or speedclaim."
+    "consumer": "Conditional retrieval for a source-bound MoE weightdecode/dataflow candidate after actual resource attribution;not an immediate implementation or speedclaim.",
+    "source_commit": "3c5e2515a",
+    "task": "task_95e06a324f77",
+    "dispatch": "ctx_319a18b82722",
+    "terminal": "term_96e17e49-440f-40f2-967b-48159784e187",
+    "startup_attempt": "ctx_22d322cf4be2",
+    "startup_recovery": "Actualupdateprompt,Essenosubmit,officialsame-task/same-terminalretryready/input_accepted/turnStartobserved;no steering."
   },
   "moe_prompt_domain_routing_benchmark_collection_20261030": {
     "classification": "knowledge collection",
-    "status": "eligible_for_dispatch",
-    "schedulable_now": true,
+    "status": "research_running",
+    "schedulable_now": false,
     "worker_model": "Orca Codex gpt-6-luna high",
     "report": ".cache/research/2026-10-30/moe_prompt_domain_routing_benchmark_collection_20261030.md",
     "report_budget_bytes": 14336,
-    "ownership_closed": true,
+    "ownership_closed": false,
     "retention": "NativeLuna-maxcuration ofnovelty/depth/retrieval;raw report not automatically committed. Review at concretecandidate/workloadselection,retire duplicates and transactionpaperwork.",
     "question": "Investigate how prompt domain/lexicaldiversity and syntheticrepetition change MoE routed-expert load,per-expert GEMM shapes and measured long-prefill throughput. Compare primaryproduction vLLM/SGLang benchmark practices and original MoE/load-skew papers/blogs;derive a finite workloadstratification and compact routing-feature ledger that distinguishes length effects from changing expertmix without expensive readbacks in clean runs. Cover random wordlists,code/prose/agenthistories,within/expert temporal locality,correlated prefixes and misleading means. This is workloadrepresentativeness/mix methodology,not another affine/roofline/scaling-model survey;no invented localbottleneck or modelaccuracyclaim.",
     "prior_refs": [
@@ -16882,6 +16934,12 @@
     "prerequisites_evidence": [
       "Official benchmark uses fixed variedword-list longprompt;current exactcount mode trims that list but retains nonce/question. Independent code/prose workloads differ in observedtiming at similar lengths;this is contextonly,not measured causation. No localprofiling prerequisite for knowledgecollection."
     ],
-    "consumer": "Conditional retrieval when selecting matched representative long/agent workloads or a routingfeature costmodel;Main does not read body onarrival."
+    "consumer": "Conditional retrieval when selecting matched representative long/agent workloads or a routingfeature costmodel;Main does not read body onarrival.",
+    "source_commit": "3c5e2515a",
+    "task": "task_e22931368ce7",
+    "dispatch": "ctx_e8ea566492e0",
+    "terminal": "term_ca018d72-9b09-4da8-af10-d399bdf1b67b",
+    "startup_attempt": "ctx_6f5e3a464aff",
+    "startup_recovery": "Actualupdateprompt,Essenosubmit,officialsame-task/same-terminalretryready/input_accepted/turnStartobserved;no steering."
   }
 }
