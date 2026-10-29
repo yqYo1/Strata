@@ -38,6 +38,8 @@ def inputs(revision):
 def admitted(record):
     row=record[KEY]['build'];require(row['stage']=='built-not-executed' and row['passed'] and
         row['model_built'] and row['ownership_closed'] and not row['active'],'closed successful model build required')
+    require(record[KEY].get('link_contract',{}).get('passed') is True,
+        'prospective actual linker input and exact final executable proof required before native execution')
     full=json.loads((ROOT/'record.json').read_text())
     require(build.compact(full)==row,'model build receipt differs');build.admit(full)
     for item in [*row['binaries'].values(),row['fixture'],*row['common_production_objects'].values()]:

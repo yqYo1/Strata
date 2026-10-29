@@ -136,8 +136,14 @@ def prepare():
     tool_paths=[str(Path('/usr/bin/'+n).resolve()) for n in ['cmake','ninja','cc','ar','ranlib','as','ld','git']]
     tool_paths+=[subprocess.check_output(['/usr/bin/cc','-print-prog-name=cc1'],text=True,timeout=10).strip(),full['compiler']['path']]
     external.update({str(Path(p).resolve()):digest(p) for p in tool_paths})
-    old=json.loads(model.git('show','8849d71e5:'+str(RESULT.relative_to(P))))
+    old=json.loads(model.git('show','8849d71e5:'+str(RESULT.with_name('qsa-codegen-current.json').relative_to(P))))
     external.update(old['direct_K_loop_invariant']['native_build']['link_inputs'])
+    # Freeze possible linker providers/scripts before compilation. A separate
+    # prospective actual-input trace is still required before native execution.
+    for directory in [Path('/usr/lib/x86_64-linux-gnu'),Path('/usr/lib/gcc/x86_64-linux-gnu/13')]:
+        for pattern in ['*.so','*.a','*.o']:
+            for path in directory.glob(pattern):
+                if path.is_file():external[str(path.resolve())]=digest(path)
     require(all(digest(p)==sha for p,sha in external.items()),'original imported link input changed')
     ROOT.mkdir(mode=0o700)
     for name in ['source','tmp','cache']:(ROOT/name).mkdir()
@@ -170,7 +176,7 @@ def prepare():
         source_contract=review,targets=TARGETS,commands=commands,common_production_objects=common,
         generated_expected={str(ROOT/'build/ggml/src/ggml-version.h'):model.sha(closure.HEADER.encode())},
         budgets=dict(wall=1800,cpu=7200,rss_cap=12<<30,text_cap=32<<20,file_cap=512<<20,total_cap=4<<30),
-        total_wall_seconds=3600,active=False,ownership_closed=True,passed=False,GPU_executed=False,model_built=False,model_selected=False,
+        total_wall_seconds=3600,active=False,ownership_closed=True,passed=False,GPU_executed=False,model_built=False,model_selected=False,actual_link_contract_qualified=False,
         criteria='CPU build only. Recover original542project and9311dependency inputs,project only declared pair-prefill edit spans and six new files. Nine original configuration-only tools and two fixture files. Compare all actual dependencies/imported link providers;zero unfrozen inputs. Fixture reuses seven actual production objects. No numerical/model/performance qualification from compilation.',
         retention='One imminent pair-prefill model/fixture candidate against original6e40+12fixtures. Retire candidate/normal logs/objects after its decision and exact source/recipe recovery. Legacy provenance holds remain separate.')
     admit(row);write(ROOT/'record.json',row);record[KEY]=dict(build=compact(row));write(RESULT,record)
