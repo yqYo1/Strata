@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Own only-normalizer component build/property gate; repository LICENSE applies.
+"""Own real-head-only softmax component qualification; repository LICENSE applies.
 
 Selected 6e40 is untouched. Matched lossless probes have independent entrypoints;
 all native work remains serialized under the shared measurement lock.
@@ -17,9 +17,9 @@ sys.dont_write_bytecode=True
 import matrix_shapes as q
 import qsa_head_sources as g
 r,P,B=q.r,q.P,q.B
-ROOT=B/'qsa-normalizer-native-v1'
-KEY='qsa_parallel_normalizer'
-REVIEW='qsa_positive_sum_error_envelope_20261029'
+ROOT=B/'qsa-realhead-softmax-native-v1'
+KEY='qsa_realhead_softmax'
+REVIEW='qsa_realhead_softmax_contract_20261030'
 RESULT=q.RESULT
 NATIVE=['src/sycl/runtime.cpp','src/sycl/compat.cpp','src/sycl/command_profile.cpp','src/kernels/sycl/prompt_attention.cpp']
 FIXTURE='bench/sycl/qsa_head_oracle.cpp'
@@ -27,7 +27,7 @@ ORACLE='tests/sycl/qsa_bf16_prefix.cpp'
 require,digest,write=q.require,q.digest,q.write
 
 
-def sources(revision):return q.sources(revision,Path(__file__).resolve(),[FIXTURE,ORACLE,'tools/sycl/qsa_sum_interval.py','tools/test_qsa_sum_interval.py'])
+def sources(revision):return q.sources(revision,Path(__file__).resolve(),[FIXTURE,ORACLE])
 
 
 def native_sources(revision):
@@ -62,10 +62,10 @@ def admitted(row):
 
 def prepare():
     require(not ROOT.exists(),'fresh component only;inspect owner first')
-    record=r.validation.committed(RESULT);prior=record['qsa_bounded_id_int']['retirement']
-    require(prior['verified_absent'] and prior['all_owned_processes_stopped'] and not Path(prior['root']).exists(),'retire rejected ID-int comparison first')
+    record=r.validation.committed(RESULT);prior=record['qsa_parallel_normalizer']['retirement']
+    require(prior['verified_absent'] and prior['all_owned_processes_stopped'] and all(not Path(p).exists() for p in prior['roots']),'retire deferred normalizer and closed length captures first')
     review=r.validation.committed(RESULT.with_name('research-index.json'),(REVIEW,'native_review'))
-    require(review['source_math_accepted_for_component'] and review['host_implementation']['passed'],'prospective source/math contract and exact hostoracle first')
+    require(review['source_accepted_for_component'],'prospective exact-source padding/collective contract first')
     require(KEY not in record,'never overwrite prior experiment outcome')
     rt=r.validation.committed(r.RESULT);full=r.current(rt);revision=subprocess.check_output(['git','rev-parse','HEAD'],cwd=P,text=True).strip()
     pins=sources(revision);sdk=q.closure.sdk_inputs();data=native_sources(revision)
@@ -93,8 +93,8 @@ def prepare():
         commands=commands,environment=dict(full['environment'],TMPDIR=str(ROOT/'tmp'),XDG_CACHE_HOME=str(ROOT/'cache')),
         budgets=dict(wall=600,cpu=1800,rss_cap=8<<30,text_cap=32<<20,file_cap=256<<20,total_cap=2<<30),
         active=False,ownership_closed=True,passed=False,GPU_executed=False,production_or_decode_changed=False,
-        criteria='CPU build/property only;bothsize_t/strictflags. Candidatechangesonly32termnormalizerfold;matched optional lossless p/BF16p/A/precast probes are not speed data. RequiregroupFP32add onlyincandidateIR,exactdependency/linkclosure,and4compilednormal/state properties before any enqueue. Old bit-identical tiny/component modes are disabled:next numerical controller must freeze actual operand/mode/lane evidence and exact prospective intervals first. No GPU numerics/task/model qualification.',
-        retention='One imminent normalizer component generation;keep selected6e40+12fixtures. Retire extra ELF/objects/raw output at decision after source recovery. Corrected math review held only until this numerical gate is implemented.')
+        criteria='Bothsize_t/strictflags,originalM8geometry. Candidateinitializes4paddedprobabilityrows/alpha tozero and computes only12realsoftmaxheads;every realFP32addition/PVoperation/division/cast staysoriginal. Matched diagnostic admission accepts12realheads and events report actual submissions. CPUbuild must close exactcompiler/linkinputs and retain ordered sum in bothIRs. Four compiled normal/state properties before anyenqueue;then bounded tracedtiny and all12realheadstate/Page4/Page16component bitidentity. No model speed/quality/adoption from component.',
+        retention='One imminent real-head softmax comparison generation;keep selected6e40+12fixtures. Retire extra ELF/objects/raw output at decision after source recovery. Source review retained only until component contract is consumed.')
     admitted(row);write(ROOT/'record.json',row);record[KEY]=dict(build=compact(row));write(RESULT,record);print('Component prepared;commit frozen plan before compile.',flush=True)
 
 
@@ -112,7 +112,7 @@ def build():
             require(r.supervision.closed(entry) and entry['exit_code']==0,'compile failed:'+label+':'+err.read_text()[-3500:])
             if label.startswith('link'):links[label]=q.linking.traced_inputs(out.read_text(),err.read_text(),allowed,ROOT,ROOT)
         reduction=r'@[^\s(]*Group[^\s(]*FAdd'
-        require(re.search(reduction,(ROOT/'candidate.ll').read_text()) and not re.search(reduction,(ROOT/'original.ll').read_text()),'candidate FP32group sum or serialcontrol differs')
+        require(not re.search(reduction,(ROOT/'candidate.ll').read_text()) and not re.search(reduction,(ROOT/'original.ll').read_text()),'ordered real-head sum changed to groupFAdd')
         observed={}
         for dep in ROOT.glob('*.d'):
             for name in shlex.split(dep.read_text().replace('\\\n',' ').split(':',1)[1]):
@@ -128,17 +128,17 @@ def build():
 
 
 def prepare_gate(mode,page):
-    require(mode=='properties','Only compiled properties are enabled;commit the new operand/interval gate before numerical execution')
+    require((mode,page) in [('properties',4),('tiny',4),('component',4),('component',16)],'bounded source-reviewed native gate')
     record=r.validation.committed(RESULT);component=record[KEY];row=json.loads((ROOT/'record.json').read_text());require(row['passed'] and row['ownership_closed'] and not row['active'] and compact(row)==component['build'],'closed source-bound component required');_,rt=admitted(row)
     name=mode+str(page);require(name not in component,'never overwrite prior gate');folder=ROOT/name;require(not folder.exists(),'fresh native gate only')
     if mode!='properties':require(component['properties4']['outcome']['passed'],'compiled properties before submissions')
-    if mode=='component':require(component['tiny4']['outcome']['passed'],'tiny traced gate before extended components')
+    if mode=='component':require(component['tiny4' if page==4 else 'component4']['outcome']['passed'],'prior traced/component gate before next extended component')
     folder.mkdir(mode=0o700);(folder/'tmp').mkdir();(folder/'cache').mkdir()
     env=dict(rt['environment'],TMPDIR=str(folder/'tmp'),XDG_CACHE_HOME=str(folder/'cache'),ZE_ENABLE_ALT_DRIVERS=next(p for p in rt['runtime_files'] if 'libze_intel_gpu' in p),STRATA_TEST_MAIN_GATES='1',UR_LOG_TRACING='level:info;flush:info;output:file,'+str(folder/'api.trace'),UR_LOG_VALIDATION='level:warning;flush:warning;output:file,'+str(folder/'validation.log'))
     if mode=='component':env['UR_ENABLE_LAYERS']='UR_LAYER_PARAMETER_VALIDATION'
     args=['--'+mode]
     if mode=='properties':args.append(next(p for p in rt['runtime_files'] if Path(p).name.startswith('libze_loader.so.')))
-    plan=dict(stage='prepared',source_commit=subprocess.check_output(['git','rev-parse','HEAD'],cwd=P,text=True).strip(),source_sha256=sources(row['source_commit']),binary=row['binaries'][str(page)],command=[row['binaries'][str(page)]['path'],*args],environment=env,mode=mode,page=page,boot=rt['boot'],budgets=dict(wall=600,cpu=1200,rss_cap=8<<30,text_cap=32<<20,file_cap=64<<20,total_cap=512<<20),criteria='One fresh owned process,stop firstfailure,no retry. Properties only beforekernel;source-review before submissions. Tinytrace actual SG/WG/local/ABI,complete output and FP32state parity,independent host oracle/guards,all input immutable,pre-main validation,correct actualproviders,quiet validation and no newfault. Extended physical finaladdresses do not qualify full-model context.')
+    plan=dict(stage='prepared',source_commit=subprocess.check_output(['git','rev-parse','HEAD'],cwd=P,text=True).strip(),source_sha256=sources(row['source_commit']),binary=row['binaries'][str(page)],command=[row['binaries'][str(page)]['path'],*args],environment=env,mode=mode,page=page,boot=rt['boot'],budgets=dict(wall=600,cpu=1200,rss_cap=8<<30,text_cap=32<<20,file_cap=64<<20,total_cap=512<<20),criteria='One fresh owned process,stop firstfailure,no retry. Properties only beforekernel;source-review before submissions. Tinytrace actual SG/WG/local/ABI,complete real-head output and all12realhead FP32state parity,independent host oracle/guards,all input immutable,pre-main validation,correct actualproviders,quiet validation and no newfault. Extended physical finaladdresses do not qualify full-model context.')
     write(folder/'plan.json',plan);component[name]=plan;write(RESULT,record);print('Native gate prepared;commit before run.',flush=True)
 
 
@@ -159,7 +159,7 @@ def dispatches(trace,properties):
 
 
 def run_gate(mode,page):
-    require(mode=='properties','Old exact-state modes are disabled for the changed reduction order')
+    require((mode,page) in [('properties',4),('tiny',4),('component',4),('component',16)],'bounded native gate only')
     record=r.validation.committed(RESULT);component=record[KEY];name=mode+str(page);plan=component[name];folder=ROOT/name;row=json.loads((ROOT/'record.json').read_text());require(plan['stage']=='prepared' and plan==json.loads((folder/'plan.json').read_text()) and not (folder/'owned').exists(),'fresh committed native plan');_,rt=admitted(row)
     require(sources(row['source_commit'])==plan['source_sha256'],'gate source differs')
     text=subprocess.check_output(['journalctl','-k','-b','-n','0','--show-cursor','--no-pager'],text=True,timeout=15);cursor=next(v.split(': ',1)[1] for v in text.splitlines() if v.startswith('-- cursor: '))
@@ -191,7 +191,7 @@ def run_gate(mode,page):
     except BaseException as error:outcome['error']=repr(error)
     finally:
         r.validation.finish(outcome,owner,cursor,plan['boot']);persist();plan['stage']='closed' if outcome['passed'] else 'failed';plan['outcome']=outcome;write(RESULT,record)
-    print(json.dumps({k:v for k,v in outcome.items() if k!='properties'}),flush=True);require(outcome['passed'],'native normalizer property gate failed')
+    print(json.dumps({k:v for k,v in outcome.items() if k!='properties'}),flush=True);require(outcome['passed'],'real-head component gate failed')
 
 
 if __name__=='__main__':

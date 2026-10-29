@@ -26,6 +26,7 @@ bool head_state(HEAD_ARGUMENTS, bool candidate, QsaPrefixStateProbe probe, void 
 }
 #define STRATA_QSA_COMPARE_PREFIX33 1
 #define STRATA_QSA_COMPARE_PREFIX_STATE 1
+#define STRATA_QSA_REAL_HEAD_STATE 1
 #define qsa_bf16_prefix_batch head_candidate
 #define qsa_bf16_prefix_optimized_batch head_original
 #define qsa_bf16_prefix_state_probe_batch head_state

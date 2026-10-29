@@ -152,12 +152,13 @@ void run(int cells,int cap,int queries,bool masked,bool extended,int live_cells=
         out.data()+16,queries,{pages,pages},live_cells,scratch,&rt->compute()),"prefix33 reference unavailable");
     rt->wait();require(out.get()==candidate,"complete prefix33 bit identity");
 #if defined(STRATA_QSA_COMPARE_PREFIX_STATE)
-    // Capture both real and padded rows. The diagnostic specialization must
+    // Capture real heads (or representative real/padded rows) as selected below.
+    // The diagnostic specialization must
     // preserve the corresponding normal output, including NaNs and guards.
     // Compare raw FP32 bits before final BF16 output could hide a difference.
     for (int kv_head : {0,1})
 #if defined(STRATA_QSA_REAL_HEAD_STATE)
-    for (int head : {0,3,4,7,8,11}) {
+    for (int head=0;head<Heads/KV;++head) {
 #else
     for (int head : {0,15}) {
 #endif
@@ -395,7 +396,11 @@ void run(int cells,int cap,int queries,bool masked,bool extended,int live_cells=
            <<" packed_guard_elements="<<PackedGuard<<" packed_k_mod8="<<reinterpret_cast<uintptr_t>(scratch.k)%8
            <<" packed_logical_prefix=PASS packed_guards=PASS guards=PASS inputs=PASS status=PASS\n";
 #if defined(STRATA_QSA_COMPARE_PREFIX_STATE)
+#if defined(STRATA_QSA_REAL_HEAD_STATE)
+  std::cout<<"case exact_FP32_online_state=PASS all12real_heads=PASS state_guards=PASS cells="<<cells<<" cap="<<cap<<'\n';
+#else
   std::cout<<"case exact_FP32_online_state=PASS real_padded_heads=PASS state_guards=PASS cells="<<cells<<" cap="<<cap<<'\n';
+#endif
 #endif
 #if defined(STRATA_QSA_COMPARE_PREFIX33)
   std::cout<<"case exact_prefix33_bits=PASS cells="<<cells<<" cap="<<cap<<" queries="<<queries<<'\n';
