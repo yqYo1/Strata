@@ -242,7 +242,7 @@ class BenchmarkTest(unittest.TestCase):
         self.assertEqual(events,['begin','end'])
 
     def test_larger_prefill_checks_context_before_sending_and_keeps_actual_counts(self):
-        for minimum in (98304, 131072):
+        for minimum in (54613, 98304, 131072):
             required = minimum * 5 // 4 + 24 + 256
             with self.subTest(minimum=minimum):
                 too_small = bench.Suite("http://localhost", "", required - 1, 1, False,

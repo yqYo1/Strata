@@ -60,7 +60,17 @@ import prefill_scaling_bench as prefill_scaling     # noqa: E402
 SCHEMA = 2
 CHAT_MAX_TOKENS = 100
 LONG_MAX_TOKENS = 24
-PREFILL_TOKEN_CHOICES = (32768, 65536, 98304, 131072)
+PREFILL_TOKEN_BOUNDS = (32768, 131072)
+
+
+def validate_prefill_tokens(value):
+    if type(value) is not int or not PREFILL_TOKEN_BOUNDS[0] <= value <= PREFILL_TOKEN_BOUNDS[1]:
+        raise ValueError('prefill minimum must be an integer from 32768 through 131072')
+    return value
+
+
+def prefill_token_argument(text):
+    return validate_prefill_tokens(int(text))
 AGENT_MAX_TOKENS = 64
 AGENT_THINK_MAX_TOKENS = 8192
 AGENT_TURNS = 5
@@ -452,8 +462,7 @@ class Suite:
         self.request_gate=request_gate
         if prefill_only and (want_clients or want_long or want_long_generation or long_generation_only or quick):
             raise ValueError("prefill-only cannot be combined with other suite scopes")
-        if prefill_tokens not in PREFILL_TOKEN_CHOICES:
-            raise ValueError(f"prefill minimum must be one of {PREFILL_TOKEN_CHOICES}")
+        validate_prefill_tokens(prefill_tokens)
         if prefill_only:
             self.think = True
         self.clients, self.want_long = want_clients, want_long
@@ -1437,7 +1446,7 @@ def main(argv=None) -> int:
     ap.add_argument("--prefill-only", action="store_true", help="only one short warmup and fresh long prefill requests; thinking on, output capped at 24")
     ap.add_argument('--prefill-scaling', action='store_true',
                     help='characterize six short/long input lengths with thinking, total prefill time and TTFT; separate first long request, then ordered warmed rounds')
-    ap.add_argument("--prefill-tokens", type=int, choices=PREFILL_TOKEN_CHOICES, default=None, help="minimum ACTUAL prompt/read tokens for --prefill-only (default 65536)")
+    ap.add_argument("--prefill-tokens", type=prefill_token_argument, default=None, help="minimum ACTUAL prompt/read tokens for --prefill-only, 32768..131072 (default 65536)")
     ap.add_argument('--profile-request-gates',action='store_true',
                     help='diagnostic only: wait for owner acknowledgement around prefill-only or long-generation-only requests')
     ap.add_argument("--think", action="store_true", help="leave thinking on (the default suite turns it off)")

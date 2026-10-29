@@ -211,7 +211,10 @@ adoption. The maintained prefill decisions and `cpu-service-current.json`
 retain its individual samples, original criteria and remaining gates.
 
 For a prefill-only screen, `bench.sh --prefill-only --prefill-tokens N` accepts
-32768,65536,98304 or131072 as the minimum **actual prompt and read tokens**.
+any integer from32768through131072 as the minimum **actual prompt and read
+tokens**. Intermediate lengths allow a held-out check of the time curve without
+refitting it to the new observation. One such check alone does not characterize
+scaling; retain the multi-length measurements and their actual counts.
 Thinking stays on and output is capped at24 tokens; this does not qualify
 decode. Fixed prompt construction targets1.25 times that minimum, independently
 of server responses. The client checks context room before sending, and records
