@@ -16215,7 +16215,7 @@
   },
   "qsa_parallel_normalizer_contract_20261029": {
     "classification": "decision support",
-    "status": "completed_native_curation_running",
+    "status": "reviewed_component_source_eligible_numerical_plan_required",
     "schedulable_now": false,
     "prerequisites_evidence": [
       "Selected QSA service26.943576593s per117488rows;not claimed softmax-only or hardware saturation.",
@@ -16249,6 +16249,25 @@
     "delivery_acknowledged": true,
     "report_bytes": 14250,
     "report_sha256": "35037c9ec6cefd20aa3bf9f3f5bede38074d8d1c1164c7ab4c28fd44841b1fa8",
-    "native_curator": "/root/curate_parallel_normalizer_contract_20261029"
+    "native_curator": "/root/curate_parallel_normalizer_contract_20261029",
+    "native_review": {
+      "model": "native Codex gpt-6-luna max",
+      "sha256": "cbd8d69c945267f9703932866694397048526513637062b6becc287499590827",
+      "source_accepted_for_component": true,
+      "implementation_qualified": false,
+      "performance_qualified": false,
+      "adopted": false,
+      "source_seam": "After Main's active ID-int run closes, pin the live source and plan. In src/kernels/sycl/qsa_bf16_prefix.cpp, map the 32-term FP32 current-tile normalizer fold represented by the verified snapshot, and change only that fold. Preserve FP32 m/l/acc state and the existing l = l * alpha + tile_sum update; keep exp/scale, BF16 probability bits for PV, DPAS/matrix order, K/V gathers, masks, tile order, barriers, padded-head updates, and state handoff intact. Do not patch the archival snapshot or assume its hash is the live build input.",
+      "finite_component_matrix": [
+        "Cover all 32 contribution positions, valid counts 1, 31, and 32, masked-zero lanes, and tail behavior.",
+        "Use fixed finite patterns: all ones; dominant plus 31 small positives; alternating/mixed magnitudes; FP32 representability-boundary neighbors; subnormal and underflow cases.",
+        "Exercise at least two online tiles in both large-to-small and small-to-large score transitions; compare per-tile and final m/l/acc plus normalized outputs against the pinned component reference.",
+        "Record maximum absolute and normalized output error, state error, and finite/nonfinite counts under concrete precommitted limits. Also require unchanged BF16 PV probability bits, masks/guard bytes, and no new NaN/Inf, invalid access, or device fault."
+      ],
+      "threshold_rule": "Commit concrete tensor tolerances and task-level criteria before candidate data. Derive them from the accepted SGLang/vLLM comparator and its repeatability, not observed candidate results; no supported numeric tolerance was present in the reviewed index sections, so this review supplies none.",
+      "prior_outcome_correction": "The indexed qsa_cached_parallel_sum_contract_scope says candidate bba952e33 passed its tested numerical/admission gates but failed its predeclared speed gate: latency geometric mean 0.993646 missed the required <=0.95. It is a different cached-Q/Vvec4 candidate and does not establish a safety or numerical rejection of this source contract, nor does it predict this candidate's speed.",
+      "API_correction": "Cited Intel group-algorithms URL404;use checked standard SYCL2020 reduce_over_group and actual installed lowering. No fixed parenthesization guarantee.",
+      "next_action": "After ID-int closes,re-pin source and commit only-normalizer mathematical/tensor/task criteria before collecting candidate data. No additional generic survey."
+    }
   }
 }

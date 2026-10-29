@@ -516,7 +516,11 @@ For65536actual read tokens,the formula predicts72.4500seconds,or904.6tok/s;
 1000tok/s at that exact extent would require6.9140seconds less than this
 prediction. This is an unmeasured estimate,not a64Kbenchmark result or a new
 fit. The measured117489-token local process medians below instead need about
-3seconds removed. Evaluate the next admitted route at an unfit length before
+3seconds removed. The official client now accepts any minimum32768..131072
+(source27de99c74),so intermediate held-out lengths need no prompt calibration
+or new benchmark path. All36host client/evidence checks pass,including
+context refusal and actual-count/thinking/zero-reuse checks at minimum54613;
+this is client validation,not a new GPU sample. Evaluate the next admitted route at an unfit length before
 generalizing its gain across contexts.
 
 A source-grounded nonlinear hypothesis was also checked against these same four
