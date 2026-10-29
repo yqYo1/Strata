@@ -17353,5 +17353,54 @@
     "review_bytes": 7105,
     "review_model": "native Codex gpt-6-luna max",
     "review_decision": "Current copy mechanisms/offset/source-version limits supported;no physical bus/copy-engine/busy-polling/saturation inference. Proposed2x2 remains conditional on pinned actual staging route,source-buffer lifetime,slot reuse,queue/event dependencies and frozen gates."
+  },
+  "down_low_k_geometry_20261030": {
+    "classification": "decision_support",
+    "status": "eligible_inputs_prepared",
+    "schedulable_now": true,
+    "prerequisites": {
+      "pinned_current_source": true,
+      "prior_reports_indexed": true,
+      "question_independent_of_active_GPU_cohort": true
+    },
+    "question": "Compare viable tile/pipeline/epilogue policies for Intel B570 FP16-input/FP32-accumulation Down GEMM M2334/5963/8192,N2560,K640 and BF16-rounded FP32 scatter. The current wide128x128 SG16/256-GRF implementation and source-committed row-address candidate are the starting point;the current resident timing cohort is still active,do not use its partial data. Identify at most three concrete tile or pipeline alternatives and their source-level applicability,register/SLM/tail/ownership costs,compiler constraints and counterevidence. Distinguish improvements to GEMM-only versus scatter and CPU submission. Compare checked Intel sycl-tla,oneAPI/vLLM-XPU/SGLang implementations and original vendor technical articles/papers,including non-LLM GEMM techniques where applicable. Do not repeat generic pinning/roofline advice or claim a B570 physical ceiling,occupancy,spill traffic or saturation without measured evidence. Keep BF16 rounding locations,FP32 expert-order FMA,invalid-map status,full workgroup barriers,USM lifetimes and independent decode policy unchanged. XeStrata source,helpers,tests,proposals and implementations are excluded;the existing LLVM SDK path is only a toolchain asset. No code patch:write a concise implementation selection matrix with exact current symbols and prospective numerical/resource/performance discriminators.",
+    "consumer": "One next Down geometry/pipeline candidate selected after the running address-control cohort closes;not a reason to change that frozen cohort.",
+    "previous_scope_keys": [
+      "moe_down_scatter_epilogue_scope",
+      "postprototype_down_scatter_layout_scope",
+      "down_scatter_row_metadata_grouping_scope",
+      "current_operation_ceiling_scope"
+    ],
+    "source_revision": "bb8d2098714ccd26674ea898a4e3a2e250644979",
+    "source_manifest": ".cache/research/2026-10-30/down_low_k_geometry_20261030.source.json",
+    "source_manifest_sha256": "fe84fbe4c7b7dc2a0a216a99ce5f4244d4ffcff60c7ce0c22cf66fd2c30a1a8a",
+    "report": ".cache/research/2026-10-30/down_low_k_geometry_20261030.md",
+    "report_budget_bytes": 16384,
+    "task_spec": ".cache/research/2026-10-30/down_low_k_geometry_20261030.task.txt",
+    "task_spec_sha256": "dc828b9258364807192957c290ed1996874f34245fe8b1fe1f5730b47ba7abca",
+    "worker_model": "Orca Codex gpt-6-luna high"
+  },
+  "upstream_stream_parser_delta_46c152_20261030": {
+    "classification": "decision_support",
+    "status": "eligible_inputs_prepared",
+    "schedulable_now": true,
+    "prerequisites": {
+      "pinned_current_source": true,
+      "prior_reports_indexed": true,
+      "question_independent_of_active_GPU_cohort": true
+    },
+    "question": "Map the required stream_parser_scan functional import from unmodified Niko1221/Strata target46c152a into this fork current serve/server.py. This is the existing required_pending obligation,not a new upstream check. Compare parser suffix-hold/call-scan/tracking changes,tool-call/thinking/Unicode/partial-close behavior and actual API caller paths. Give a bounded minimal symbol-level adaptation and regression-test map that preserves all existing fork consumers;do not transplant the whole server or any inference engine. Cover the related parser hold,call-scan and track tests with expected behavioral contracts and remaining dependencies. The upstream root checkout is divergent and not the target:read only the exact immutable raw URLs and validate their manifest SHA256;never use the clone checkout as target source. Only Niko1221/Strata is upstream;no XeStrata source. Do not assert all132changed paths or all non-inference obligations were reviewed. Explain meaningful behavioral changes separately from Python scan-cost optimizations and required follow-up tests. No code patch and no implementation by this worker.",
+    "consumer": "Main ports the bounded streaming-parser functional slice after serialized GPU work closes;the complete upstream function ledger and tuned unmodified benchmark remain pending.",
+    "previous_scope_keys": [
+      "upstream_46c152_function_delta_20261030"
+    ],
+    "source_revision": "bb8d2098714ccd26674ea898a4e3a2e250644979",
+    "source_manifest": ".cache/research/2026-10-30/upstream_stream_parser_delta_46c152_20261030.source.json",
+    "source_manifest_sha256": "f5fefd99eacddffeba669f2b062851aa5cc35e0b7bfff95d9a2f1f4be5bc6c72",
+    "report": ".cache/research/2026-10-30/upstream_stream_parser_delta_46c152_20261030.md",
+    "report_budget_bytes": 16384,
+    "task_spec": ".cache/research/2026-10-30/upstream_stream_parser_delta_46c152_20261030.task.txt",
+    "task_spec_sha256": "49950b1575976d33133e928662ffd0fbe183da5f86c87fad4b6339815f62398e",
+    "worker_model": "Orca Codex gpt-6-luna high"
   }
 }
