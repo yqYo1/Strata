@@ -436,6 +436,19 @@ held-out errors42.96%,52.30% and51.47%;none is adopted as a global formula.
 Only two short-route lengths are available,insufficient to validate their own
 time model. Higher R-squared alone would hide that problem.
 
+A source-grounded nonlinear hypothesis was also checked against these same four
+long medians. With fresh engine rows`n-1`,Page4and chunk8192,the prospective
+packing feature above takes530880,1454112,5365008and11731728logical rows.
+Fitting an intercept,token term and that feature slightly lowers the maximum
+training residual to2.645percent,but leave-one-length-out error grows to14.400
+percent. An intercept+token+quadratic fit gives2.593percent and13.564percent.
+Both predict held-out lengths worse than the simpler existing affine fit
+(2.795percent training,4.309percent held out),so neither replaces it. These
+are algorithmic features applied to medians,not measured transfer bytes or
+isolated costs. Four long lengths do not justify another coefficient. The next
+native/model candidate still needs an unfit length and placement/route evidence;
+keep first-use separate and revisit the curve after any adopted route change.
+
 The later clean comparison supplies a local independent-process check of the
 selected path at117489actual read tokens:subsequent-three medians are120.5382,
 120.4567and120.7068seconds,with corresponding client TTFT medians120.696,
