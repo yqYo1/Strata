@@ -108,7 +108,7 @@ class MaxTokens(unittest.TestCase):
                 self.assertEqual(status, 200)
                 # Structured requests need a valid scripted JSON answer; the
                 # long prose script used by budget tests correctly returns502.
-                script = self.engine.tok.encode("{}" if "response_format" in extra else "</think>\n\n{}", parse_special=True)
+                script = MockEngine(self.engine.tok, "{}" if "response_format" in extra else "</think>\n\n{}").script
                 with mock.patch.object(self.engine, "script", script):
                     status, answer = self.post("/v1/chat/completions", body)
                 self.assertEqual(status, 200, answer)

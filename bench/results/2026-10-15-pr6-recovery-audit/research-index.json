@@ -16796,13 +16796,19 @@
           "source_commit": "07f8c3217",
           "tests_run": 3,
           "passed": false,
-          "error": "Structured-format subcase timedcompletion returned502for MockEngine prose;count itself200andremainingcasespass. Fixfixture tovalidJSONbeforecomparing counts;no acceptance relaxation."
+          "error": "Structured-format timedcompletion returned502beforecountcomparison;countitself200andremainingcasespass. InvalidMockEngine prose fixture,not an endpoint count mismatch."
         },
         "qualified_fixture_retry_failure": {
           "source_commit": "eb7333561",
           "tests_run": 3,
           "passed": false,
-          "error": "Structuredmock stillincludedthinkingdelimiter withdefaultmode,so completion502beforecountcomparison. Useexistingstructured-test convention:reasoningnone and rawJSON forstructuredsubcase;keepthinking-enabled parity separate."
+          "error": "Structured-format completion502beforecountcomparison;testscript was constructed without MockEngine endofturn sentinel. Productcount remained200;no count mismatch observed."
+        },
+        "unterminated_script_failure": {
+          "source_commit": "adc34ddb0",
+          "tests_run": 3,
+          "passed": false,
+          "error": "ExplicitHTTPerror: structured output incomplete(finish_reason=length). Script lackedIM_END evenwith2outputtokens;constructMockEngine(script).script toinclude actualendtoken. Preserve200andcountparity criteria."
         }
       }
     }
