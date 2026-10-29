@@ -8265,7 +8265,7 @@
       }
     },
     "properties4": {
-      "stage": "prepared",
+      "stage": "closed",
       "source_commit": "1bbf1f2cff6663234c0fcd65312022b167ab600c",
       "source_sha256": {
         "tools/sycl/qsa_head_native.py": "8d25f4b5e47b84a9c7e51d147257641a68b20c4b765f89c5f745ac8e542d4cec",
@@ -8360,7 +8360,75 @@
         "file_cap": 67108864,
         "total_cap": 536870912
       },
-      "criteria": "One fresh owned process,stop firstfailure,no retry. Properties only beforekernel;source-review before submissions. Tinytrace actual SG/WG/local/ABI,complete output and FP32state parity,independent host oracle/guards,all input immutable,pre-main validation,correct actualproviders,quiet validation and no newfault. Extended physical finaladdresses do not qualify full-model context."
+      "criteria": "One fresh owned process,stop firstfailure,no retry. Properties only beforekernel;source-review before submissions. Tinytrace actual SG/WG/local/ABI,complete output and FP32state parity,independent host oracle/guards,all input immutable,pre-main validation,correct actualproviders,quiet validation and no newfault. Extended physical finaladdresses do not qualify full-model context.",
+      "outcome": {
+        "complete": true,
+        "passed": true,
+        "host_probe_accepted": true,
+        "properties": [
+          {
+            "arm": "candidate",
+            "name": "_ZTSZZN6strata7kernels18qsa_head_candidateL17prefix_batch_implILi33ELb0ELb0ELb1ELb1ELb1ELb1ELb1EEEbPKtRKNS0_12QsaAttnPoolsEPKiS9_lRKNS0_9QsaShapesEPtlRKNS0_19QsaPromptBf16BoundsElRKNS0_20QsaBf16PackedScratchEPvNS0_19QsaPrefixStateProbeEPN4sycl3_V15eventESP_ENKUlRNSN_7handlerEE_clESR_EUlNSN_7nd_itemILi1EEEE_",
+            "wg": "128",
+            "subgroup": "16",
+            "arguments": "19",
+            "maximum": "1024",
+            "static_local": "32",
+            "declared_local": "20036",
+            "spill_descriptor": "9024"
+          },
+          {
+            "arm": "candidate",
+            "name": "_ZTSZZN6strata7kernels18qsa_head_candidateL17prefix_batch_implILi33ELb0ELb0ELb1ELb1ELb1ELb1ELb0EEEbPKtRKNS0_12QsaAttnPoolsEPKiS9_lRKNS0_9QsaShapesEPtlRKNS0_19QsaPromptBf16BoundsElRKNS0_20QsaBf16PackedScratchEPvNS0_19QsaPrefixStateProbeEPN4sycl3_V15eventESP_ENKUlRNSN_7handlerEE_clESR_EUlNSN_7nd_itemILi1EEEE_",
+            "wg": "128",
+            "subgroup": "16",
+            "arguments": "18",
+            "maximum": "1024",
+            "static_local": "32",
+            "declared_local": "20036",
+            "spill_descriptor": "8704"
+          },
+          {
+            "arm": "original",
+            "name": "_ZTSZZN6strata7kernels17qsa_head_originalL17prefix_batch_implILi33ELb0ELb0ELb1ELb1ELb1ELb1ELb0EEEbPKtRKNS0_12QsaAttnPoolsEPKiS9_lRKNS0_9QsaShapesEPtlRKNS0_19QsaPromptBf16BoundsElRKNS0_20QsaBf16PackedScratchEPvNS0_19QsaPrefixStateProbeEPN4sycl3_V15eventESP_ENKUlRNSN_7handlerEE_clESR_EUlNSN_7nd_itemILi1EEEE_",
+            "wg": "128",
+            "subgroup": "16",
+            "arguments": "18",
+            "maximum": "1024",
+            "static_local": "32",
+            "declared_local": "20036",
+            "spill_descriptor": "12480"
+          },
+          {
+            "arm": "original",
+            "name": "_ZTSZZN6strata7kernels17qsa_head_originalL17prefix_batch_implILi33ELb0ELb0ELb1ELb1ELb1ELb1ELb1EEEbPKtRKNS0_12QsaAttnPoolsEPKiS9_lRKNS0_9QsaShapesEPtlRKNS0_19QsaPromptBf16BoundsElRKNS0_20QsaBf16PackedScratchEPvNS0_19QsaPrefixStateProbeEPN4sycl3_V15eventESP_ENKUlRNSN_7handlerEE_clESR_EUlNSN_7nd_itemILi1EEEE_",
+            "wg": "128",
+            "subgroup": "16",
+            "arguments": "19",
+            "maximum": "1024",
+            "static_local": "32",
+            "declared_local": "20036",
+            "spill_descriptor": "23808"
+          }
+        ],
+        "dispatch": null,
+        "numerical_passed": false,
+        "physical262144_component_addresses": false,
+        "model_context_fill_qualified": false,
+        "model_speed_qualified": false,
+        "parameter_validation": true,
+        "ownership_closed": true,
+        "fresh_faults": [],
+        "boot_unchanged": true,
+        "driver_after": {
+          "pci": "/sys/bus/pci/devices/0000:05:00.0",
+          "driver": "xe",
+          "vendor": "0x8086",
+          "device": "0xe20c",
+          "kernel": "7.0.0-38-generic",
+          "devcoredump": false
+        }
+      }
     }
   }
 }
