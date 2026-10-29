@@ -2,17 +2,16 @@
 // Independent host set/tensor oracles; no external implementation adapted.
 #include "qsa_pair_probe.hpp"
 #include "strata/kernels/qsa_pair_union.hpp"
+#include "strata/kernels/qsa_pair_prefix.hpp"
 #include "strata/sycl/runtime.hpp"
 #include <algorithm>
 #include <bit>
-#include <chrono>
 #include <cmath>
 #include <cstdint>
 #include <cstdlib>
 #include <cstring>
 #include <dlfcn.h>
 #include <iomanip>
-#include <fstream>
 #include <iostream>
 #include <limits>
 #include <map>
@@ -24,10 +23,10 @@
 #include <vector>
 using namespace strata;
 using namespace strata::kernels;
-namespace pair_probe { std::vector<sycl::event> events; }
 namespace {
 std::shared_ptr<sycl_backend::Runtime> rt;
-constexpr int Guard=17,Dim=256,Heads=24,Page=16;
+constexpr int Guard=17,Dim=256,Heads=24;
+int Page=4;
 constexpr int32_t IntGuard=-123456789;
 constexpr uint16_t WordGuard=0x4a9b;
 void check(bool value,const char *what) {if (!value) throw std::runtime_error(what);}
@@ -83,24 +82,26 @@ void properties(const char *loader_path) {
     const bool u=name.find("qsa_pair_union_prefill")!=std::string::npos;
     const bool a=name.find("qsa_pair_attention_prefill")!=std::string::npos;
     const bool b=name.find("prefix_batch_impl")!=std::string::npos;
-    if (!u && !a && !b) continue;
+    const bool pack=name.find("qsa_bf16_pair_prefix_batch")!=std::string::npos;
+    if (!u && !a && !b && !pack) continue;
     const auto bundle=sycl::get_kernel_bundle<sycl::bundle_state::executable>(rt->context(),{rt->device()},{id});
     const auto kernel=bundle.get_kernel(id);
     ze_kernel_properties_t p{};p.stype=ZE_STRUCTURE_TYPE_KERNEL_PROPERTIES;
     check(kp(sycl::get_native<sycl::backend::ext_oneapi_level_zero>(kernel),&p)==ZE_RESULT_SUCCESS,"kernel properties");
     // The selected prefix template also owns an ordinary64-lane pack kernel.
     if (b && p.requiredSubgroupSize!=16) continue;
-    const size_t wg=a?192:128,sg=u?32:16,local=a?21856:u?0:20036;
+    const size_t wg=pack?64:a?192:128,sg=pack?p.requiredSubgroupSize:u?32:16,
+                 local=pack?0:a?21856:u?0:20036;
     const auto maximum=kernel.get_info<sycl::info::kernel_device_specific::work_group_size>(rt->device());
-    check(maximum>=wg && p.requiredSubgroupSize==sg && p.maxNumSubgroups>=wg/sg,"compiled group geometry");
+    check(maximum>=wg && p.requiredSubgroupSize==sg && (!sg || p.maxNumSubgroups>=wg/sg),"compiled group geometry");
     check(!p.requiredGroupSizeX || p.requiredGroupSizeX==wg,"compiled WG requirement");
-    check(!p.requiredNumSubGroups || p.requiredNumSubGroups==wg/sg,"compiled SG requirement");
+    check(!sg || !p.requiredNumSubGroups || p.requiredNumSubGroups==wg/sg,"compiled SG requirement");
     check(uint64_t(p.localMemSize)+local+4096<=device.maxSharedLocalMemory,"conservative SLM budget");
-    std::cout<<"PAIR_PROPERTY kind="<<(u?"union":a?"attention":"selected")<<" wg="<<wg<<" sg="<<sg
+    std::cout<<"PAIR_PROPERTY kind="<<(pack?"pack":u?"union":a?"attention":"selected")<<" wg="<<wg<<" sg="<<sg
         <<" maximum="<<maximum<<" args="<<p.numKernelArgs<<" static_slm="<<p.localMemSize
         <<" declared_slm="<<local<<" spill_descriptor="<<p.spillMemSize<<" name="<<name<<'\n';++found;
   }
-  check(found==3,"three exact component kernels required");dlclose(loader);
+  check(found==4,"four exact production-wrapper fixture kernels required");dlclose(loader);
 }
 
 void union_case(int cap,int nq,int pattern,int invalid=0) {
@@ -201,7 +202,7 @@ void attention_case(int cells,int cap,int nq,int variant) {
   QsaAttnPools pools;pools.k_q=dk.data();pools.v_q=dv.data();pools.k_scale=dks.data();pools.v_scale=dvs.data();pools.page_table=dt.data();
   auto shape=qsa_real_shapes();shape.page_size=Page;const QsaPromptBf16Bounds bounds{pages,pages};
   const QsaBf16PackedScratch scratch{pk.data()+Guard,pv.data()+Guard,pb.data()+Guard};
-  check(pair_probe::selected(dq.data(),pools,di.data(),ds.data(),cap,shape,out.data()+Guard,nq,bounds,live,scratch,false,&rt->compute()),"selected admission");
+  check(pair_probe::selected(dq.data(),pools,di.data(),ds.data(),cap,shape,out.data()+Guard,nq,bounds,live,scratch,&rt->compute()),"selected admission");
   rt->wait();const auto original=out.get(),packedk=pk.get(),packedv=pv.get();const auto packedbad=pb.get();
   out.put(std::vector<uint16_t>(query.size()+2*Guard,WordGuard));
   // No host readback between GPU metadata production and attention consumption.
@@ -267,111 +268,45 @@ void attention_case(int cells,int cap,int nq,int variant) {
   }
   check(dq.get()==query && di.get()==ids && ds.get()==steps && dt.get()==table && dk.get()==k && dv.get()==v && dks.get()==ks && dvs.get()==vs,"attention inputs immutable");
   check(pk.get()==packedk && pv.get()==packedv && pb.get()==packedbad,"attention packed operands immutable");
+  if (variant<=4 || (variant>=10 && variant<=13)) {
+    // Compare the entire production entrypoint against the independent-oracle
+    // checked core. Refresh every scratch byte so stale packed data or metadata
+    // cannot make a missing production stage appear correct.
+    pk.put(std::vector<uint16_t>(size_t(rows)*Dim+2*Guard,WordGuard));
+    pv.put(std::vector<uint16_t>(size_t(rows)*Dim+2*Guard,WordGuard));
+    pb.put(std::vector<int32_t>(rows+2*Guard,IntGuard));
+    du.put(std::vector<int32_t>(size_t(pairs)*stride+2*Guard,IntGuard));
+    dc.put(std::vector<int32_t>(pairs+2*Guard,IntGuard));
+    dm.put(std::vector<uint8_t>(size_t(pairs)*stride+2*Guard,0xa5));
+    out.put(std::vector<uint16_t>(query.size()+2*Guard,WordGuard));
+    const QsaPairScratch pair{du.data()+Guard,dm.data()+Guard,dc.data()+Guard};
+    check(qsa_bf16_pair_prefix_batch(dq.data(),pools,di.data(),ds.data(),cap,shape,
+        out.data()+Guard,nq,bounds,live,scratch,pair,&rt->compute()),"production pair wrapper admission");
+    rt->wait();const auto wrapped=out.get();guards(wrapped,WordGuard);
+    for (size_t i=0;i<wrapped.size();++i)
+      check(wrapped[i]==result[i] || (i>=Guard && i<wrapped.size()-Guard &&
+          std::isnan(from_bf16(wrapped[i])) && std::isnan(from_bf16(result[i]))),
+          "whole production wrapper/core result equality");
+    check(pk.get()==packedk && pv.get()==packedv && pb.get()==packedbad,
+          "whole production pack equals original selected pack");
+    check(dq.get()==query && di.get()==ids && ds.get()==steps && dt.get()==table &&
+        dk.get()==k && dv.get()==v && dks.get()==ks && dvs.get()==vs,
+        "whole production wrapper inputs immutable");
+  }
   guards(packedk,WordGuard);guards(packedv,WordGuard);guards(packedbad,IntGuard);
   guards(du.get(),IntGuard);guards(dm.get(),uint8_t(0xa5));guards(dc.get(),IntGuard);
-  std::cout<<"PAIR_CASE kind=attention cells="<<cells<<" cap="<<cap<<" queries="<<nq<<" variant="<<variant
+  std::cout<<"PAIR_CASE kind=attention page="<<Page<<" cells="<<cells<<" cap="<<cap<<" queries="<<nq<<" variant="<<variant
       <<" compared="<<compared<<" nans="<<nans<<" max_budget_ratio="<<maximum<<" passed=1\n";
 }
 
-void benchmark(const char *fixture,int first_arm) {
-  check(first_arm==0 || first_arm==1,"benchmark first arm");
-  std::ifstream input(fixture,std::ios::binary);check(bool(input),"captured fixture open");
-  int32_t header[4];input.read(reinterpret_cast<char *>(header),sizeof(header));
-  check(bool(input) && header[0]==0 && header[1]==32768 && header[2]==6491 && header[3]==2051,
-        "exact selected layer0tail header");
-  const int nq=header[2],cap=header[3],live=header[1]+nq;
-  const int pages=(live+Page-1)/Page,rows=pages*2*Page,pairs=(nq+1)/2,stride=cap*2;
-  std::vector<int32_t> ids(size_t(nq)*cap),steps(size_t(nq)*kStepCount,0),table(pages);
-  input.read(reinterpret_cast<char *>(ids.data()),std::streamsize(ids.size()*4));
-  check(bool(input) && input.peek()==EOF,"exact initialized captured payload");
-  for (int q=0;q<nq;++q) {
-    const int n=header[1]+q+1;
-    steps[q*kStepCount+kStepNKv]=n;steps[q*kStepCount+kStepNBid]=n/4;
-    steps[q*kStepCount+kStepWidth]=cap;steps[q*kStepCount+kStepPos]=n-1;
-    for (int i=0;i<cap;++i) check(ids[q*cap+i]>=0 && ids[q*cap+i]<n &&
-        (!i || ids[q*cap+i]>ids[q*cap+i-1]),"captured sorted unique causal IDs");
-  }
-  for (int p=0;p<pages;++p) table[p]=pages-1-p;
-  // Constant finite V gives an exact all-output oracle for timing; nonuniform
-  // Q/K/V and per-query membership/rounding are covered by the separate gate.
-  std::vector<int8_t> k(size_t(rows)*Dim,0),v(k.size(),1);
-  std::vector<uint16_t> ks(size_t(rows)*4,half(.0625f)),vs(ks),query(size_t(nq)*Heads*Dim,0);
-  Buffer<int8_t> dk(k.size()),dv(v.size());Buffer<uint16_t> dks(ks.size()),dvs(vs.size()),dq(query.size());
-  Buffer<int32_t> dt(table.size()),di(ids.size()),ds(steps.size()),du(size_t(pairs)*stride+2*Guard),dc(pairs+2*Guard);
-  Buffer<uint8_t> dm(size_t(pairs)*stride+2*Guard);
-  Buffer<uint16_t> pk(size_t(rows)*Dim+2*Guard),pv(size_t(rows)*Dim+2*Guard),out(query.size()+2*Guard);
-  Buffer<int32_t> pb(rows+2*Guard);Drain pending;
-  dk.put(k);dv.put(v);dks.put(ks);dvs.put(vs);dq.put(query);dt.put(table);di.put(ids);ds.put(steps);
-  pk.put(std::vector<uint16_t>(size_t(rows)*Dim+2*Guard,WordGuard));
-  pv.put(std::vector<uint16_t>(size_t(rows)*Dim+2*Guard,WordGuard));pb.put(std::vector<int32_t>(rows+2*Guard,IntGuard));
-  du.put(std::vector<int32_t>(size_t(pairs)*stride+2*Guard,IntGuard));
-  dm.put(std::vector<uint8_t>(size_t(pairs)*stride+2*Guard,0xa5));dc.put(std::vector<int32_t>(pairs+2*Guard,IntGuard));
-  out.put(std::vector<uint16_t>(query.size()+2*Guard,WordGuard));
-  QsaAttnPools pools;pools.k_q=dk.data();pools.v_q=dv.data();pools.k_scale=dks.data();pools.v_scale=dvs.data();pools.page_table=dt.data();
-  auto shape=qsa_real_shapes();shape.page_size=Page;const QsaPromptBf16Bounds bounds{pages,pages};
-  const QsaBf16PackedScratch scratch{pk.data()+Guard,pv.data()+Guard,pb.data()+Guard};
-  auto invoke=[&](int arm) {
-    check(pair_probe::selected(dq.data(),pools,di.data(),ds.data(),cap,shape,out.data()+Guard,nq,bounds,live,scratch,arm!=0,&rt->compute()),"benchmark selected/pack admission");
-    if (arm) {
-      qsa_pair_union_prefill(di.data(),ds.data(),nq,cap,du.data()+Guard,dm.data()+Guard,dc.data()+Guard,&rt->compute());
-      check(qsa_pair_attention_prefill(dq.data(),pools,di.data(),ds.data(),cap,shape,out.data()+Guard,nq,bounds,live,scratch,
-          du.data()+Guard,dm.data()+Guard,dc.data()+Guard,&rt->compute()),"benchmark pair admission");
-    }
-  };
-  auto output_oracle=[&] {
-    const auto y=out.get();guards(y,WordGuard);
-    for (size_t i=Guard;i<y.size()-Guard;++i) check(y[i]==bf16(.0625f),"every timed output exact constant-V oracle");
-  };
-  for (int arm:{first_arm,1-first_arm}) {pair_probe::events.clear();invoke(arm);rt->wait();output_oracle();}
-  auto metadata_oracle=[&] {
-    const auto u=du.get(),counts=dc.get();const auto m=dm.get();
-    guards(u,IntGuard);guards(counts,IntGuard);guards(m,uint8_t(0xa5));
-    for (int p=0;p<pairs;++p) {
-      std::map<int32_t,int> expected;
-      for (int q=0;q<2 && p*2+q<nq;++q) for (int i=0;i<cap;++i)
-        expected[ids[(p*2+q)*cap+i]]|=1<<q;
-      check(counts[Guard+p]==int(expected.size()),"actual captured union counts");int i=0;
-      for (const auto &[cell,mask]:expected) {
-        check(u[Guard+p*stride+i]==cell && m[Guard+p*stride+i]==mask,"actual captured union ID/mask");++i;
-      }
-      for (;i<stride;++i) check(u[Guard+p*stride+i]==IntGuard && m[Guard+p*stride+i]==0xa5,"captured union suffix untouched");
-    }
-  };
-  metadata_oracle();
-  constexpr int Repeat=4,Rounds=6;
-  for (int round=0;round<Rounds;++round) for (int order=0;order<2;++order) {
-    const int arm=(first_arm+round+order)%2;pair_probe::events.clear();
-    const auto begin=std::chrono::steady_clock::now();
-    for (int r=0;r<Repeat;++r) invoke(arm);
-    rt->wait();const double wall=std::chrono::duration<double>(std::chrono::steady_clock::now()-begin).count();
-    check(pair_probe::events.size()==size_t(Repeat*(arm?3:2)),"actual event count per dependency path");
-    double service=0,pack=0,prep=0,attention=0;uint64_t first=0,last=0;
-    for (size_t i=0;i<pair_probe::events.size();++i) {
-      const auto &event=pair_probe::events[i];
-      const auto start=event.get_profiling_info<sycl::info::event_profiling::command_start>();
-      const auto end=event.get_profiling_info<sycl::info::event_profiling::command_end>();
-      check(end>=start && (!i || start>=last),"sequential actual event clock");if (!i) first=start;last=end;
-      const double seconds=double(end-start)*1e-9;service+=seconds;
-      const size_t slot=i%size_t(arm?3:2);
-      if (!slot) pack+=seconds;else if (arm && slot==1) prep+=seconds;else attention+=seconds;
-    }
-    check(wall>=.1 && service>=.1,"timing batch floor100ms;new plan required if short");
-    output_oracle();
-    std::cout<<"PAIR_SAMPLE round="<<round<<" order="<<order<<" arm="<<arm<<" repeat="<<Repeat
-        <<" wall="<<wall<<" service="<<service<<" span="<<double(last-first)*1e-9
-        <<" pack="<<pack<<" prep="<<prep<<" attention="<<attention<<" passed=1\n";
-  }
-  metadata_oracle();
-  check(dq.get()==query && di.get()==ids && ds.get()==steps && dt.get()==table && dk.get()==k && dv.get()==v && dks.get()==ks && dvs.get()==vs,"benchmark inputs immutable");
-  guards(pk.get(),WordGuard);guards(pv.get(),WordGuard);guards(pb.get(),IntGuard);
-}
 }
 int main(int argc,char **argv) {
   try {
     check(argc>=2,"use properties <loader> | union | small | correctness");
     const std::string mode=argv[1];gate("before-runtime");rt=sycl_backend::runtime_for();Drain pending;
     check(rt->device().get_info<sycl::info::device::name>()=="Intel(R) Arc(TM) B570 Graphics","qualified device name");
-    gate("runtime-ready");pair_probe::events.reserve(4096);std::cout<<std::setprecision(10);
+    gate("runtime-ready");std::cout<<std::setprecision(10);
+    if (mode!="properties") {check(argc==3,"explicit page4or16required");Page=std::stoi(argv[2]);check(Page==4 || Page==16,"supported fixture page");}
     if (mode=="properties") {check(argc==3,"pinned loader required");properties(argv[2]);}
     else if (mode=="union") {
       for (int cap:{1,2,33,65,2051}) for (int p=0;p<6;++p) union_case(cap,3,p);
@@ -385,8 +320,6 @@ int main(int argc,char **argv) {
       for (int cells:{15,32,33,257,4097}) attention_case(cells,std::min(2051,cells),3,0);
       for (int variant:{1,2,3,4,7,8,9,11,12,13,14,15,16}) attention_case(257,65,3,variant);
       attention_case(262144,2051,3,10);
-    } else if (mode=="bench") {
-      check(argc==4,"bench requires pinned captured IDs and first arm");benchmark(argv[2],std::stoi(argv[3]));
     } else throw std::runtime_error("unknown pair fixture mode");
     rt->wait();std::cout<<"PAIR_DONE mode="<<mode<<" passed=1\n";gate("before-exit");return 0;
   } catch (const std::exception &e) {std::cerr<<"PAIR_ERROR "<<e.what()<<'\n';return 1;}

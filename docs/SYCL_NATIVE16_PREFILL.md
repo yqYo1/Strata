@@ -1927,7 +1927,7 @@ See`qsa_pair_proposal`in the
 After exact source/recipe recovery,the closed SG32generation retired264files
 (346618850B). Its source and samples restore from`89406c824`. The completed
 pair-component build and53MBinput have also ended their native consumer and
-are being retired before the sole imminent model candidate. The original6e40
+retired292external files(64394955bytes)before the sole imminent model candidate. The original6e40
 engine and twelve fixtures remain the validated fallback.
 
 ## Attribution limits and outstanding gates

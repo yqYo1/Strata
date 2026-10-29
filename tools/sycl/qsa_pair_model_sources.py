@@ -12,7 +12,8 @@ import subprocess
 
 P=Path(__file__).resolve().parents[2]
 BASE='6e40afc1beddd059ee518617f6c1efce1da14aca'
-INTEGRATION='4e6dbe25a'
+INTEGRATION='ddb0df149'
+INTEGRATION_BASE='4e6dbe25a^'
 MODIFIED=['cmake/sycl_backend.cmake','include/strata/prefill/qsa_native16.hpp',
           'src/prefill/sycl/qsa_native16.cpp','src/prefill/prefill.cpp','src/prefill/layer_major.inc']
 ADDED=['include/strata/kernels/qsa_pair_union.hpp','src/kernels/sycl/qsa_pair_union.cpp',
@@ -77,7 +78,7 @@ def overlays():
     """Exact current production additions plus five bounded selected overlays."""
     result={};proof={}
     for name in MODIFIED:
-        base=git('show',BASE+':'+name);parent=git('show',INTEGRATION+'^:'+name)
+        base=git('show',BASE+':'+name);parent=git('show',INTEGRATION_BASE+':'+name)
         integrated=git('show',INTEGRATION+':'+name)
         if (P/name).read_bytes()!=integrated:raise ValueError('commit/review a fresh integration before changing '+name)
         raw,count=project(base,parent,integrated);result[name]=raw
@@ -89,3 +90,25 @@ def overlays():
         if raw!=(P/name).read_bytes():raise ValueError('qualified pair source changed: '+name)
         result[name]=raw;proof[name]=dict(source_commit=INTEGRATION,sha256=sha(raw))
     return result,proof
+
+
+def selected_fixture():
+    """Unchanged selected math in a private namespace,for numerical comparison."""
+    name='src/kernels/sycl/qsa_bf16_prefix.cpp'
+    raw=git('show',BASE+':'+name)
+    if sha(raw)!='4f9f815c9baae709f919f6d5ad1af04677c10d8c13c7597b3857cf81567ae192':
+        raise ValueError('not the exact selected6e40 prefix')
+    source=raw.decode();source=source[:source.index('bool qsa_bf16_prefix_batch(')]
+    old='namespace strata::kernels {'
+    if source.count(old)!=1:raise ValueError('selected namespace anchor changed')
+    source=source.replace(old,'namespace strata::kernels::pair_probe_baseline {')
+    source+='''} // namespace strata::kernels::pair_probe_baseline
+bool pair_probe::selected(const uint16_t *q,const strata::kernels::QsaAttnPools &p,
+    const int32_t *ids,const int32_t *steps,int64_t cap,const strata::kernels::QsaShapes &shape,
+    uint16_t *out,int64_t nq,const strata::kernels::QsaPromptBf16Bounds &bounds,int64_t live,
+    const strata::kernels::QsaBf16PackedScratch &scratch,void *stream) {
+  return strata::kernels::pair_probe_baseline::prefix_batch_impl<33,false,false,true,true,true,true>(
+      q,p,ids,steps,cap,shape,out,nq,bounds,live,scratch,stream);
+}
+'''
+    return source.encode()

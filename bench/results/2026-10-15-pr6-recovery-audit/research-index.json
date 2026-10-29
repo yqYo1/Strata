@@ -15389,7 +15389,7 @@
   },
   "qsa_pair_prefill_lease_contract_20261029": {
     "classification": "decision support",
-    "status": "running",
+    "status": "curated_required_prebuild_fix_committed",
     "schedulable_now": false,
     "source_revision": "4e6dbe25a",
     "source_files": {
@@ -15413,11 +15413,52 @@
     ],
     "consumer": "Independent source gate before Main-owned model build/native production-wrapper and bounded model safety checks;Main prepares isolated selected6e40-plus-prefill-only constructor/recipe and fixtures.",
     "retirement": "Record essential source proof/corrections and pins;retire consumed transaction/report/review at source gate closure. No inferred model speed,decode or physical full-context qualification.",
-    "worker_closed": false,
+    "worker_closed": true,
     "main_read_report_body": false,
     "task_id": "task_66d48c691383",
     "dispatch_id": "ctx_e1b21afa0a58",
     "terminal": "term_29347632-1978-4a56-891e-66af61669887",
-    "startup": "Two agent_readiness refusals before task execution; update modal skipped with ESC, same task/terminal official retry accepted and turn observed. Original receipt and actual terminal confirm gpt-6-luna high. No researcher steering."
+    "startup": "Two agent_readiness refusals before task execution; update modal skipped with ESC, same task/terminal official retry accepted and turn observed. Original receipt and actual terminal confirm gpt-6-luna high. No researcher steering.",
+    "worker_outcome": "succeeded",
+    "release_state": "released",
+    "completion_message": "msg_babc5534cf4a",
+    "completion_delivery": "delivery_d5d2c18558aa",
+    "completion_acknowledged": true,
+    "native_review": {
+      "report_sha256": "78fd0cdbbafab0367940b9cfef7b5c82eba5094fcc60adfc3e185686baab8da5",
+      "report_bytes": 11329,
+      "source_revision": "4e6dbe25a021b93b68119dbaee0990b2404ed70b",
+      "source_sha256": "8c6c094e9c2366fff61626afb5c55a93a677829de68f44f85612259571553940",
+      "verdict": "ACCEPT_WITH_REQUIRED_PREBUILD_FIX",
+      "accepted_for_model_build": false,
+      "concrete_corrections": [
+        {
+          "file": "src/prefill/layer_major.inc",
+          "location": "QSA16 admission block, native16::qsa::validate_device(m.cs) and qsa_prompt_attn_bf16_validate calls",
+          "why": "When qsa_pair_on is selected, add a no-submit pair capability preflight here before model work. The existing checks cover native16 and common BF16 attention requirements, but not all pair-only limits."
+        },
+        {
+          "file": "src/kernels/sycl/qsa_pair_prefix.cpp",
+          "location": "pair device predicate before the first pack enqueue",
+          "why": "Factor the pair-only predicate into a reusable admission check and retain the wrapper check as defense. Cover the Intel matrix aspect, workgroup and work-item limits, local memory, subgroup 32, and the common BF16 matrix contract without duplicating drifting predicates."
+        },
+        {
+          "file": "src/prefill/prefill.cpp",
+          "location": "typed pair callback around qsa_bf16_pair_prefix_batch",
+          "why": "A false return is converted to request failure after earlier layer work may have been submitted and session tensors changed. The outer lease drains before freeing owners, but does not roll back session state. Preflight must prevent an unsupported-device refusal at this point."
+        }
+      ],
+      "qualification_gates": [
+        "Apply and commit the no-submit pair preflight before the integrated model build; keep callback checks.",
+        "The integrated model route is unbuilt and unrun. Require exact input/executable identity, actual allocation admission, successful pair dispatch totals with no fallback, numerical/task checks, and repeated production long-prefill comparisons before adoption.",
+        "Qualify Page4 and Page16, odd query tails, partial and restored prefixes, metadata guards, and queue/lifetime behavior in bounded native checks.",
+        "Repeat decode and state-handoff checks independently; qualify complete physical 262144-token fill, boundary behavior, and RESTORE separately.",
+        "The 36-sample, three-process component result supports only its synthetic fixture and performance gate; it does not qualify the model route or decode."
+      ],
+      "scope_quality": "Focused, technically deep decision support. The late unsupported-device refusal is real for devices that pass current admission but fail pair-only requirements; the component evidence indicates the tested B570 supports the pair path, while its integrated model route remains untested. Reviewed source shows the temporary slab is owned across the checked outer queue drain, so this finding is not an async USM lifetime flaw. All seven assignment-row source hashes match both the worktree and pinned commit. source_sha256 is SHA-256 over sha256sum output for those seven paths in assignment-row order. Provenance is Main-authored Strata under the repository MIT license, using selected local 6e40 pack semantics; no XeStrata derivation is indicated."
+    },
+    "review_sha256": "9443013215d6ab66091ffaa046fac52c2d83e30fe93b76a2a0e047372c10c1a6",
+    "source_correction_revision": "ddb0df149",
+    "next": "Native Luna-max checks the now-committed reusable no-enqueue pair predicate at admission and wrapper;update scoped build acceptance only after that review. Original4e6dbe25a model-build refusal remains recorded."
   }
 }
