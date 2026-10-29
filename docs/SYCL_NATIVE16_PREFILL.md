@@ -218,6 +218,15 @@ and decode unchanged. See`qsa_head_geometry.component_v2` in
 Keep the existing multi-length time approximation until new model observations
 justify a change.
 
+The next bounded candidate changes a distinct operation:skip the matrix
+accumulator rescale only when all eight head coefficients owned by that
+subgroup equal FP32`1.f`exactly. It retains the original M8/WG128geometry,
+ordered softmax,state,storage and barriers. No approximate comparison or
+first-tile shortcut is used. The added subgroup vote may cost more than the
+removed multiplication;source/denormal/convergence review,numerical gates and
+the same full-wrapper timing screen decide advancement. This remains an
+isolated component,with no production/decode caller change.
+
 ## Measured performance and rejected comparisons
 
 Hardware is Arc B57010GiB and Ryzen5600X6c/12t. The historical old-NEO comparison
