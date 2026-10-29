@@ -13812,7 +13812,7 @@
     },
     "models": {
       "split-117488": {
-        "stage": "prepared",
+        "stage": "closed",
         "source_commit": "82b32dffbe29627ffb333702d03ba82c772c5ccc",
         "case": {
           "rows": 117488,
@@ -14036,11 +14036,96 @@
           "file_cap": 134217728,
           "total_cap": 536870912
         },
-        "passed": false,
+        "passed": true,
         "active": false,
         "ownership_closed": true,
         "criterion": "One current-source officialbench thinking-on exact-count24-output model diagnostic. Count-only preflight must match timed body/read with zero reuse;observe actual native engine rows, placement/window/jobs/requested transfers,normal1256-slot decode handoff,guard/drain and exit. Selected boundary81921must retain512-slot short-tail fallback. Split117488must admit128slots and531988736B allocation with65536primary rows and checked guard. Exact sources/model/profile runtime/provider/Python/owners,no fresh fault. Diagnostic only;not clean speed,full model quality, sustained decode or physical262144qualification.",
-        "retention": "Compact exact-count/native-route/individual latency sample and faults only. Retire successful traces,polling,normal request journals after verification. Exact length sweep follows route qualification."
+        "retention": "Compact exact-count/native-route/individual latency sample and faults only. Retire successful traces,polling,normal request journals after verification. Exact length sweep follows route qualification.",
+        "outcome": {
+          "complete": true,
+          "host_probe_accepted": true,
+          "passed": true,
+          "model_executed": true,
+          "native_identity": {
+            "pid": 3809963,
+            "start_ticks": 164749119,
+            "sid": 3809912
+          },
+          "sample": {
+            "actual_read_tokens": 117489,
+            "actual_reused_tokens": 0,
+            "prompt_ms": 132774.1,
+            "prompt_tps": 884.9,
+            "ttft_s": 132.992,
+            "generated_tokens": 24,
+            "request_sha256": "cc93e6f7fa6df4b490e4e46d6b912c1c2e3c357bec2f7b3bb7ef7dfb115284ba",
+            "timing_frontend_state": "post-count-preflight"
+          },
+          "count_preflight": [
+            {
+              "run": 0,
+              "target_input_tokens": 117489,
+              "counted_input_tokens": 117489,
+              "count_requests": 18,
+              "construction_seconds": 0.8117691811639816,
+              "timing_frontend_state": "post-count-preflight",
+              "limits": "Rendered prompt count only;actual read/reuse and physical engine rows/route still require measurement.",
+              "body_sha256": "cc93e6f7fa6df4b490e4e46d6b912c1c2e3c357bec2f7b3bb7ef7dfb115284ba"
+            }
+          ],
+          "route": {
+            "engine_rows": 117488,
+            "chunk": 8192,
+            "residual_dtype": "bf16",
+            "residual_gpu_rows": 117488,
+            "residual_host_bytes": 0,
+            "slots": 128,
+            "staged": 1,
+            "maximum_window_rows": 117488,
+            "work": {
+              "windows": 48,
+              "dequants": 18888,
+              "jobs": 23840,
+              "source_H2D_bytes": 225576960
+            },
+            "requested_expert_upload": {
+              "uploads": "18888",
+              "requested_H2D_bytes": "38561740800",
+              "permanent_hits": "0",
+              "permanent_slots": "127",
+              "total_slots": "128",
+              "final_drain": "checked"
+            },
+            "limitation": "Requested work/bytes,not measured PCIe or VRAM traffic. Diagnostic STRATA_TRACE timings are not clean speed."
+          },
+          "validation": {
+            "pid": 3809963,
+            "loader": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_loader.so.0.12.0",
+            "threads_before": 1,
+            "preinit": 37,
+            "config_enabled": true,
+            "first_init": true,
+            "dispatch_result": 46,
+            "output_untouched": true,
+            "retained_reference_until_exit": true,
+            "runtime_teardown_qualified": false
+          },
+          "native_exit_code": 0,
+          "clean_speed_qualified": false,
+          "sustained_decode_qualified": false,
+          "physical262144_qualified": false,
+          "ownership_closed": true,
+          "fresh_faults": [],
+          "boot_unchanged": true,
+          "driver_after": {
+            "pci": "/sys/bus/pci/devices/0000:05:00.0",
+            "driver": "xe",
+            "vendor": "0x8086",
+            "device": "0xe20c",
+            "kernel": "7.0.0-38-generic",
+            "devcoredump": false
+          }
+        }
       }
     }
   }
