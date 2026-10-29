@@ -2028,7 +2028,15 @@ Declared local payload falls20036to19188B. This removes25percent of padded
 matrix-row work,not measured GPU service or model time;actual compiler resources,
 numerical correctness and performance remain unqualified. The selected engine
 and decode are untouched. Reused independent tensor/FP32state/guard checks
-coverPage4/16and real-head block edges before any timing gate.
+coverPage4/16and real-head block edges before any timing gate. The CPU build
+passes163native sources and696actual compiler inputs with zero uncovered. The
+first compiled-property process then refuses the deployed M4coordinate-apply
+helper before any kernel submission. Native exits1and is reaped with an empty
+session;the incomplete protocol/failed gate remains failed. No fresh GPUfault
+appears. Main closes this source variant and prepares public matrix load/store
+with explicit FP32SLMrow scaling,accepting its added local-memory cost only if
+a fresh full-path comparison wins. No private fragment-layout assumption or
+runtime/compiler patch is introduced.
 See`qsa_pair_model.clean_prefill_comparison`and`qsa_pair_proposal`in the
 [current service decision](../bench/results/2026-10-15-pr6-recovery-audit/fused-moe-service-current.json).
 

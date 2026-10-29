@@ -6834,7 +6834,7 @@
         }
       },
       "properties4": {
-        "stage": "prepared",
+        "stage": "failed",
         "source_commit": "3a599d077ee46e3b25c7fbc08e5c66e5400fa304",
         "source_sha256": {
           "tools/sycl/qsa_head_native.py": "08932307e9d52d1c87f82164cd868616de8e6ff1ff1b8cb86aaed42f3c1bc239",
@@ -6929,7 +6929,45 @@
           "file_cap": 67108864,
           "total_cap": 536870912
         },
-        "criteria": "One fresh owned process,stop firstfailure,no retry. Properties only beforekernel;source-review before submissions. Tinytrace actual SG/WG/local/ABI,complete output and FP32state parity,independent host oracle/guards,all input immutable,pre-main validation,correct actualproviders,quiet validation and no newfault. Extended physical finaladdresses do not qualify full-model context."
+        "criteria": "One fresh owned process,stop firstfailure,no retry. Properties only beforekernel;source-review before submissions. Tinytrace actual SG/WG/local/ABI,complete output and FP32state parity,independent host oracle/guards,all input immutable,pre-main validation,correct actualproviders,quiet validation and no newfault. Extended physical finaladdresses do not qualify full-model context.",
+        "outcome": {
+          "complete": false,
+          "passed": false,
+          "host_probe_accepted": false,
+          "error": "RuntimeError(\"native process failed:esult=0\\nstrata UR validation API: pid=2691346 operation=layers-query result=0\\nstrata UR validation API: pid=2691346 operation=enable result=0\\nstrata UR validation API: pid=2691346 operation=first-init result=0\\nstrata UR validation API: pid=2691346 operation=config-release result=0\\nstrata UR validation API: pid=2691346 operation=postinit result=46\\nstrata UR validation: pid=2691346 phase=before-main threads_before=1 preinit=37 config_create=0 layers_query=0 enable=0 init=0 config_release=0 checked=46 untouched=1 retained_ref=1\\nHEAD_ERROR The program was built for 1 devices\\nBuild program log for 'Intel(R) Arc(TM) B570 Graphics':\\n\\nerror: in function '__builtin_spirv_OpJointMatrixGetCoordINTEL_Accumulator_SG16_4x16_i32' called by kernels: 'typeinfo name for bool strata::kernels::qsa_head_candidate::prefix_batch_impl<33, false, false, true, true, true, true, true>(unsigned short const*, strata::kernels::QsaAttnPools const&, int const*, int const*, long, strata::kernels::QsaShapes const&, unsigned short*, long, strata::kernels::QsaPromptBf16Bounds const&, long, strata::kernels::QsaBf16PackedScratch const&, void*, strata::kernels::QsaPrefixStateProbe, sycl::_V1::event*, sycl::_V1::event*)::'lambda'(sycl::_V1::handler&)::operator()(sycl::_V1::handler&) const::'lambda'(sycl::_V1::nd_item<1>)', 'typeinfo name for bool strata::kernels::qsa_head_candidate::prefix_batch_impl<33, false, false, true, true, true, true, false>(unsigned short const*, strata::kernels::QsaAttnPools const&, int const*, int const*, long, strata::kernels::QsaShapes const&, unsigned short*, long, strata::kernels::QsaPromptBf16Bounds const&, long, strata::kernels::QsaBf16PackedScratch const&, void*, strata::kernels::QsaPrefixStateProbe, sycl::_V1::event*, sycl::_V1::event*)::'lambda'(sycl::_V1::handler&)::operator()(sycl::_V1::handler&) const::'lambda'(sycl::_V1::nd_item<1>)': undefined reference to `__builtin_spirv_OpJointMatrixGetCoordINTEL_Accumulator_SG16_4x16_i32'\\nerror: backend compiler failed build.\\n\\n\")",
+          "ownership_closed": false,
+          "fresh_faults": [],
+          "boot_unchanged": true,
+          "driver_after": {
+            "pci": "/sys/bus/pci/devices/0000:05:00.0",
+            "driver": "xe",
+            "vendor": "0x8086",
+            "device": "0xe20c",
+            "kernel": "7.0.0-38-generic",
+            "devcoredump": false
+          },
+          "post_failure_process_check": {
+            "pid": 2691346,
+            "process_absent": true,
+            "direct_child_reaped": true,
+            "session_empty": true,
+            "cleanup_signals": [],
+            "original_protocol_observation_complete": false,
+            "original_ownership_closed": false,
+            "reason": "Native exited1 on JITcompile error;protocol expected after-cleanup gate did not arrive. Preserve original failed status;independent check confirms no owned process remains."
+          }
+        }
+      },
+      "decision": {
+        "stage": "closed-before-submit",
+        "native_qualified": false,
+        "performance_eligible": false,
+        "inference_adopted": false,
+        "GPU_kernel_submitted": false,
+        "fresh_faults": [],
+        "mechanism": "Exact B570 reports M4N16K16,but deployed backend cannot resolve coordinate-apply helper __builtin_spirv_OpJointMatrixGetCoordINTEL_Accumulator_SG16_4x16_i32. Compiled-property query correctly stops before any kernel. Source-only reviews do not qualify deployed API implementation.",
+        "next_candidate": "Independent uniformM4variant using public matrix load/store and explicit FP32SLMrow rescaling/output;no privatefragment mapping or compiler/runtime patch. Additional SLMtraffic may erase gain;new bounded source/native/performance gates required.",
+        "next_consumer": "None for v1;recover original source/recipe from pushed feature and retire before v2build."
       }
     }
   }
