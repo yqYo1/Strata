@@ -4080,7 +4080,7 @@
       }
     },
     "performance": {
-      "stage": "prepared",
+      "stage": "closed",
       "source_commit": "bb5b497608d675074f4c8f3187fd26b2f7d0460f",
       "controller_inputs": {
         "tools/sycl/qsa_pair_measure.py": "f1011c403f0af171ec584d24918e693620912c8054a1527b0d81af9da3efd612",
@@ -4531,7 +4531,599 @@
       "criteria": "Three independent processes,first arm0/1/0;six alternating paired rounds per process,four calls per batch,two untimed one-call warmups. Arm0is selected ordered-exp pack+attention;arm1is identical pack+GPUunion+pair attention. All36samples eligible only with wall and summed actual-event service>=100ms,exact expected events/order,all-output constant-V oracle after every batch,actual captured union IDs/masks/suffix oracle before/after timing,immutable inputs/guards,clock endpoint/rounding<=0.1percent at100ms,quiet pre-main parameter validation,closed owners and no fresh fault. Advance component only if every process has candidate/base median wall AND full GPU service<=0.99. Stop first safety/coverage/correctness failure;no model trial on failed performance gate.",
       "hardware_scope": "All timed operands resident;commonGPUKVpack and union preparation included,CPU submission/drain in wall. Actual event sums and pack/prep/attention separated;in-order event span includes gaps. No timed PCIe copy,physical VRAM traffic,saturation or full-model ceiling inferred.",
       "numerical_scope": "Synthetic Q/K and uniform finiteV provide exact full-output timing oracle;nonuniform BF16 tensor/online contract and diagnostics qualify separately. Actual layer0tail IDs,6491queries,cap2051,live39259;not all layers/chunks or full-model quality.",
-      "retention": "Retain36individual timing samples,per-process medians/ratios,clock/provider/source/binary and safety outcomes. Retire successful native traces/logs/cache and closed candidate after exact source/recipe recovery. Keep selected6e40 engine+12fixtures untouched."
+      "retention": "Retain36individual timing samples,per-process medians/ratios,clock/provider/source/binary and safety outcomes. Retire successful native traces/logs/cache and closed candidate after exact source/recipe recovery. Keep selected6e40 engine+12fixtures untouched.",
+      "outcome": {
+        "passed": true,
+        "complete": true,
+        "active": false,
+        "ownership_closed": true,
+        "processes": [
+          {
+            "label": "process-0",
+            "samples": [
+              {
+                "round": 0,
+                "order": 0,
+                "arm": 0,
+                "wall": 2.750653619,
+                "service": 2.750226353,
+                "span": 2.750243645,
+                "pack": 0.00193677,
+                "prep": 0.0,
+                "attention": 2.748289583
+              },
+              {
+                "round": 0,
+                "order": 1,
+                "arm": 1,
+                "wall": 2.409458018,
+                "service": 2.409063333,
+                "span": 2.40908875,
+                "pack": 0.001673646,
+                "prep": 0.004716249,
+                "attention": 2.402673438
+              },
+              {
+                "round": 1,
+                "order": 0,
+                "arm": 1,
+                "wall": 2.408378794,
+                "service": 2.407989581,
+                "span": 2.408015104,
+                "pack": 0.00167302,
+                "prep": 0.004735103,
+                "attention": 2.401581458
+              },
+              {
+                "round": 1,
+                "order": 1,
+                "arm": 0,
+                "wall": 2.738606042,
+                "service": 2.738207394,
+                "span": 2.738223438,
+                "pack": 0.001672915,
+                "prep": 0.0,
+                "attention": 2.736534479
+              },
+              {
+                "round": 2,
+                "order": 0,
+                "arm": 0,
+                "wall": 2.738315094,
+                "service": 2.737711562,
+                "span": 2.737727708,
+                "pack": 0.001673542,
+                "prep": 0.0,
+                "attention": 2.73603802
+              },
+              {
+                "round": 2,
+                "order": 1,
+                "arm": 1,
+                "wall": 2.408756897,
+                "service": 2.408155208,
+                "span": 2.40818052,
+                "pack": 0.00167427,
+                "prep": 0.004722084,
+                "attention": 2.401758854
+              },
+              {
+                "round": 3,
+                "order": 0,
+                "arm": 1,
+                "wall": 2.409828013,
+                "service": 2.409220417,
+                "span": 2.409246146,
+                "pack": 0.001698542,
+                "prep": 0.004762708,
+                "attention": 2.402759167
+              },
+              {
+                "round": 3,
+                "order": 1,
+                "arm": 0,
+                "wall": 2.737080293,
+                "service": 2.736628646,
+                "span": 2.736645104,
+                "pack": 0.001672917,
+                "prep": 0.0,
+                "attention": 2.734955729
+              },
+              {
+                "round": 4,
+                "order": 0,
+                "arm": 0,
+                "wall": 2.735515431,
+                "service": 2.734918335,
+                "span": 2.73493448,
+                "pack": 0.001672605,
+                "prep": 0.0,
+                "attention": 2.73324573
+              },
+              {
+                "round": 4,
+                "order": 1,
+                "arm": 1,
+                "wall": 2.40714876,
+                "service": 2.406729063,
+                "span": 2.40675448,
+                "pack": 0.001672917,
+                "prep": 0.004753438,
+                "attention": 2.400302708
+              },
+              {
+                "round": 5,
+                "order": 0,
+                "arm": 1,
+                "wall": 2.406675544,
+                "service": 2.406262084,
+                "span": 2.406287604,
+                "pack": 0.001673646,
+                "prep": 0.004744479,
+                "attention": 2.399843959
+              },
+              {
+                "round": 5,
+                "order": 1,
+                "arm": 0,
+                "wall": 2.738146617,
+                "service": 2.737712708,
+                "span": 2.737729063,
+                "pack": 0.001672186,
+                "prep": 0.0,
+                "attention": 2.736040522
+              }
+            ],
+            "medians": {
+              "0": {
+                "wall": 2.7382308555,
+                "service": 2.7377121349999998,
+                "span": 2.7377283855,
+                "pack": 0.001672916,
+                "prep": 0.0,
+                "attention": 2.736039271
+              },
+              "1": {
+                "wall": 2.4085678455,
+                "service": 2.4080723945,
+                "span": 2.4080978120000003,
+                "pack": 0.001673646,
+                "prep": 0.004739791,
+                "attention": 2.401670156
+              }
+            },
+            "ratios": {
+              "wall": 0.8796072985088748,
+              "service": 0.8795929870471938
+            },
+            "validation": {
+              "pid": 1445191,
+              "loader": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_loader.so.0.12.0",
+              "threads_before": 1,
+              "preinit": 37,
+              "config_enabled": true,
+              "first_init": true,
+              "dispatch_result": 46,
+              "output_untouched": true,
+              "retained_reference_until_exit": true,
+              "runtime_teardown_qualified": false
+            },
+            "observed": {
+              "start": {
+                "mapped_qualified_runtime": true,
+                "observed_NEO": "/usr/lib/x86_64-linux-gnu/libze_intel_gpu.so.1.17.39758",
+                "DRM_descriptors": 1,
+                "environment_immutable": true
+              },
+              "end": {
+                "mapped_qualified_runtime": true,
+                "observed_NEO": "/usr/lib/x86_64-linux-gnu/libze_intel_gpu.so.1.17.39758",
+                "DRM_descriptors": 1,
+                "environment_immutable": true
+              }
+            }
+          },
+          {
+            "label": "process-1",
+            "samples": [
+              {
+                "round": 0,
+                "order": 0,
+                "arm": 1,
+                "wall": 2.41792101,
+                "service": 2.417483018,
+                "span": 2.417509895,
+                "pack": 0.001849269,
+                "prep": 0.005196562,
+                "attention": 2.410437187
+              },
+              {
+                "round": 0,
+                "order": 1,
+                "arm": 0,
+                "wall": 2.739332955,
+                "service": 2.738928956,
+                "span": 2.738945,
+                "pack": 0.001672186,
+                "prep": 0.0,
+                "attention": 2.73725677
+              },
+              {
+                "round": 1,
+                "order": 0,
+                "arm": 0,
+                "wall": 2.739957058,
+                "service": 2.738381455,
+                "span": 2.7383975,
+                "pack": 0.001697185,
+                "prep": 0.0,
+                "attention": 2.73668427
+              },
+              {
+                "round": 1,
+                "order": 1,
+                "arm": 1,
+                "wall": 2.409160538,
+                "service": 2.408760415,
+                "span": 2.408786041,
+                "pack": 0.001673749,
+                "prep": 0.004731354,
+                "attention": 2.402355312
+              },
+              {
+                "round": 2,
+                "order": 0,
+                "arm": 1,
+                "wall": 2.410677838,
+                "service": 2.410285625,
+                "span": 2.410314062,
+                "pack": 0.001674271,
+                "prep": 0.004812084,
+                "attention": 2.40379927
+              },
+              {
+                "round": 2,
+                "order": 1,
+                "arm": 0,
+                "wall": 2.741228549,
+                "service": 2.740812397,
+                "span": 2.740828646,
+                "pack": 0.001672397,
+                "prep": 0.0,
+                "attention": 2.73914
+              },
+              {
+                "round": 3,
+                "order": 0,
+                "arm": 0,
+                "wall": 2.740744414,
+                "service": 2.740348749,
+                "span": 2.740364791,
+                "pack": 0.001672916,
+                "prep": 0.0,
+                "attention": 2.738675833
+              },
+              {
+                "round": 3,
+                "order": 1,
+                "arm": 1,
+                "wall": 2.407905345,
+                "service": 2.407508438,
+                "span": 2.407533646,
+                "pack": 0.001673542,
+                "prep": 0.004688646,
+                "attention": 2.40114625
+              },
+              {
+                "round": 4,
+                "order": 0,
+                "arm": 1,
+                "wall": 2.408723126,
+                "service": 2.408328959,
+                "span": 2.40835427,
+                "pack": 0.001674063,
+                "prep": 0.004810104,
+                "attention": 2.401844792
+              },
+              {
+                "round": 4,
+                "order": 1,
+                "arm": 0,
+                "wall": 2.73777079,
+                "service": 2.737370729,
+                "span": 2.737386875,
+                "pack": 0.001673021,
+                "prep": 0.0,
+                "attention": 2.735697708
+              },
+              {
+                "round": 5,
+                "order": 0,
+                "arm": 0,
+                "wall": 2.738851608,
+                "service": 2.738414274,
+                "span": 2.738430417,
+                "pack": 0.00167271,
+                "prep": 0.0,
+                "attention": 2.736741564
+              },
+              {
+                "round": 5,
+                "order": 1,
+                "arm": 1,
+                "wall": 2.409823041,
+                "service": 2.409424793,
+                "span": 2.409450313,
+                "pack": 0.001673959,
+                "prep": 0.004734376,
+                "attention": 2.403016458
+              }
+            ],
+            "medians": {
+              "0": {
+                "wall": 2.7396450065,
+                "service": 2.7386716150000003,
+                "span": 2.7386877085,
+                "pack": 0.001672813,
+                "prep": 0.0,
+                "attention": 2.736999167
+              },
+              "1": {
+                "wall": 2.4094917895,
+                "service": 2.409092604,
+                "span": 2.409118177,
+                "pack": 0.001674011,
+                "prep": 0.0047722400000000005,
+                "attention": 2.4026858850000004
+              }
+            },
+            "ratios": {
+              "wall": 0.8794905120128016,
+              "service": 0.8796573458479431
+            },
+            "validation": {
+              "pid": 1447074,
+              "loader": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_loader.so.0.12.0",
+              "threads_before": 1,
+              "preinit": 37,
+              "config_enabled": true,
+              "first_init": true,
+              "dispatch_result": 46,
+              "output_untouched": true,
+              "retained_reference_until_exit": true,
+              "runtime_teardown_qualified": false
+            },
+            "observed": {
+              "start": {
+                "mapped_qualified_runtime": true,
+                "observed_NEO": "/usr/lib/x86_64-linux-gnu/libze_intel_gpu.so.1.17.39758",
+                "DRM_descriptors": 1,
+                "environment_immutable": true
+              },
+              "end": {
+                "mapped_qualified_runtime": true,
+                "observed_NEO": "/usr/lib/x86_64-linux-gnu/libze_intel_gpu.so.1.17.39758",
+                "DRM_descriptors": 1,
+                "environment_immutable": true
+              }
+            }
+          },
+          {
+            "label": "process-2",
+            "samples": [
+              {
+                "round": 0,
+                "order": 0,
+                "arm": 0,
+                "wall": 2.753570778,
+                "service": 2.752979166,
+                "span": 2.75299625,
+                "pack": 0.001941353,
+                "prep": 0.0,
+                "attention": 2.751037813
+              },
+              {
+                "round": 0,
+                "order": 1,
+                "arm": 1,
+                "wall": 2.409420827,
+                "service": 2.408822083,
+                "span": 2.408847812,
+                "pack": 0.001673645,
+                "prep": 0.004760209,
+                "attention": 2.402388229
+              },
+              {
+                "round": 1,
+                "order": 0,
+                "arm": 1,
+                "wall": 2.408520012,
+                "service": 2.407936147,
+                "span": 2.407961562,
+                "pack": 0.001674062,
+                "prep": 0.004702292,
+                "attention": 2.401559793
+              },
+              {
+                "round": 1,
+                "order": 1,
+                "arm": 0,
+                "wall": 2.739784031,
+                "service": 2.739347811,
+                "span": 2.739363958,
+                "pack": 0.00171427,
+                "prep": 0.0,
+                "attention": 2.737633541
+              },
+              {
+                "round": 2,
+                "order": 0,
+                "arm": 0,
+                "wall": 2.739730653,
+                "service": 2.739279272,
+                "span": 2.739295417,
+                "pack": 0.001672605,
+                "prep": 0.0,
+                "attention": 2.737606667
+              },
+              {
+                "round": 2,
+                "order": 1,
+                "arm": 1,
+                "wall": 2.409161481,
+                "service": 2.408748228,
+                "span": 2.408773854,
+                "pack": 0.00167375,
+                "prep": 0.004804271,
+                "attention": 2.402270207
+              },
+              {
+                "round": 3,
+                "order": 0,
+                "arm": 1,
+                "wall": 2.412282748,
+                "service": 2.411849688,
+                "span": 2.411875625,
+                "pack": 0.001758438,
+                "prep": 0.004978438,
+                "attention": 2.405112812
+              },
+              {
+                "round": 3,
+                "order": 1,
+                "arm": 0,
+                "wall": 2.742224756,
+                "service": 2.741614165,
+                "span": 2.741630625,
+                "pack": 0.001784999,
+                "prep": 0.0,
+                "attention": 2.739829166
+              },
+              {
+                "round": 4,
+                "order": 0,
+                "arm": 0,
+                "wall": 2.736507988,
+                "service": 2.73610719,
+                "span": 2.736123542,
+                "pack": 0.001672605,
+                "prep": 0.0,
+                "attention": 2.734434585
+              },
+              {
+                "round": 4,
+                "order": 1,
+                "arm": 1,
+                "wall": 2.408155156,
+                "service": 2.407557293,
+                "span": 2.407582605,
+                "pack": 0.001674375,
+                "prep": 0.004770521,
+                "attention": 2.401112397
+              },
+              {
+                "round": 5,
+                "order": 0,
+                "arm": 1,
+                "wall": 2.408363304,
+                "service": 2.407970833,
+                "span": 2.407996458,
+                "pack": 0.001674167,
+                "prep": 0.004726666,
+                "attention": 2.40157
+              },
+              {
+                "round": 5,
+                "order": 1,
+                "arm": 0,
+                "wall": 2.73757363,
+                "service": 2.737179686,
+                "span": 2.737195833,
+                "pack": 0.001672499,
+                "prep": 0.0,
+                "attention": 2.735507187
+              }
+            ],
+            "medians": {
+              "0": {
+                "wall": 2.739757342,
+                "service": 2.7393135415,
+                "span": 2.7393296875,
+                "pack": 0.0016934375,
+                "prep": 0.0,
+                "attention": 2.7376201040000003
+              },
+              "1": {
+                "wall": 2.4088407465,
+                "service": 2.4083595305,
+                "span": 2.408385156,
+                "pack": 0.0016741145000000002,
+                "prep": 0.004765365,
+                "attention": 2.4019201035
+              }
+            },
+            "ratios": {
+              "wall": 0.8792168231736781,
+              "service": 0.8791835961871033
+            },
+            "validation": {
+              "pid": 1449343,
+              "loader": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_loader.so.0.12.0",
+              "threads_before": 1,
+              "preinit": 37,
+              "config_enabled": true,
+              "first_init": true,
+              "dispatch_result": 46,
+              "output_untouched": true,
+              "retained_reference_until_exit": true,
+              "runtime_teardown_qualified": false
+            },
+            "observed": {
+              "start": {
+                "mapped_qualified_runtime": true,
+                "observed_NEO": "/usr/lib/x86_64-linux-gnu/libze_intel_gpu.so.1.17.39758",
+                "DRM_descriptors": 1,
+                "environment_immutable": true
+              },
+              "end": {
+                "mapped_qualified_runtime": true,
+                "observed_NEO": "/usr/lib/x86_64-linux-gnu/libze_intel_gpu.so.1.17.39758",
+                "DRM_descriptors": 1,
+                "environment_immutable": true
+              }
+            }
+          }
+        ],
+        "advance_to_model": true,
+        "clock": {
+          "samples": 65536,
+          "resolution_ns": 1,
+          "min_ns": 10,
+          "p99_ns": 31,
+          "max_ns": 5330,
+          "endpoint_rounding_fraction_at_floor": 6.066000000000001e-06,
+          "provider": {
+            "path": "/usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.33",
+            "sha256": "1fd75fe70354a416d75aef22bcae68c47bd25d20e2d0568c30b1a9838cf62f11"
+          }
+        },
+        "geomean": {
+          "wall": 0.8794381960055863,
+          "service": 0.8794779513318138
+        },
+        "postchecks_complete": true,
+        "postcheck_errors": [],
+        "fresh_faults": [],
+        "boot_unchanged": true,
+        "driver_after": {
+          "pci": "/sys/bus/pci/devices/0000:05:00.0",
+          "driver": "xe",
+          "vendor": "0x8086",
+          "device": "0xe20c",
+          "kernel": "7.0.0-38-generic",
+          "devcoredump": false
+        }
+      }
     }
   }
 }
