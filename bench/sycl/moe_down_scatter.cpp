@@ -470,9 +470,66 @@ void exception_unwind(sycl::queue &q, xe::ScatterLayout mapping) {
   std::cout << "{\"kind\":\"exception_unwind\",\"mapping\":" << int(mapping)
             << ",\"queue_complete\":true,\"status\":\"PASS\"}\n";
 }
+void split_dataflow(Case& c) {
+  namespace pn = strata::prefill::native16;
+  const size_t rows = size_t(c.routes->rows()), first_rows = size_t(c.split_rows);
+  Buffer<uint16_t> primary(first_rows * N, c.q), tail((rows - first_rows) * N, c.q);
+  Buffer<float> original_weights(rows * 10, c.q);
+  std::vector<float> original(original_weights.n);
+  for (size_t i = 0; i < original.size(); ++i) original[i] = float(int(i % 23) - 11) / 64.f;
+  original_weights.set(original);
+  const auto pattern = [](size_t row, size_t col) {
+    return uint16_t((row * 31337 + col * 97 + (row >> 3)) & 65535);
+  };
+  auto* a = primary.data(); auto* b = tail.data();
+  submit_wait(c.q, [&] {
+    return c.q.parallel_for(sycl::range<1>(rows * N), [=](sycl::id<1> item) {
+      const size_t i = item[0], row = i / N, col = i % N;
+      if (row < first_rows) a[row * N + col] = pattern(row, col);
+      else b[(row - first_rows) * N + col] = pattern(row, col);
+    });
+  });
+  c.reference_status.set({0});
+  pn::moe_job_weights(*c.routes, original_weights.data(), c.original.data(), c.weights.data(),
+                      c.reference_status.data(), &c.q);
+  drain(c.q);
+  const auto weights = c.weights.get();
+  for (size_t i = 0; i < weights.size(); ++i)
+    need(weights[i] == original[size_t(c.host_original[i])], "split original-slot weight map oracle");
+  std::vector<size_t> jobs{0, c.routes->jobs().size() - 1};
+  for (size_t i = 0; i < c.routes->jobs().size(); ++i) {
+    const auto& job = c.routes->jobs()[i];
+    if (job.expert == 1 && job.expert_row <= c.split_rows && job.expert_row + job.rows > c.split_rows)
+      jobs.push_back(i);
+  }
+  for (auto index : jobs) {
+    const auto& job = c.routes->jobs()[index];
+    c.down.set(std::vector<uint16_t>(c.down.n, marker<uint16_t>()));
+    pn::moe_gather_mixed(*c.routes, index, primary.data(), tail.data(), c.split_rows,
+                       c.source.data(), c.down.data(), c.reference_status.data(), &c.q);
+    drain(c.q);
+    const auto gathered = c.down.get();
+    for (size_t i = 0; i < gathered.size(); ++i)
+      need(gathered[i] == (i < size_t(job.rows) * N ?
+          pattern(size_t(c.host_source[size_t(job.global_row) + i / N]), i % N) : marker<uint16_t>()),
+          "split complete gather/last-job logical guard oracle");
+  }
+  auto check_mixed = [&](const Buffer<uint16_t>& buffer, size_t offset) {
+    const auto values = buffer.get();
+    for (size_t i = 0; i < values.size(); ++i)
+      need(values[i] == pattern(offset + i / N, i % N), "split mixed input changed");
+  };
+  check_mixed(primary, 0); check_mixed(tail, first_rows);
+  need(same_bytes(original, original_weights.get()) &&
+       same_bytes(c.host_source, c.source.get()) && same_bytes(c.host_original, c.original.get()) &&
+       c.reference_status.get()[0] == 0, "split dataflow input/status guard");
+  std::cout << "{\"kind\":\"split_dataflow\",\"tokens\":" << rows << ",\"primary_rows\":" << first_rows
+            << ",\"full_weight_map\":true,\"full_gather\":true,\"inputs_immutable\":true,\"guards\":true,\"status\":\"PASS\"}\n";
+}
 void split_correctness(int tokens, int primary_rows, int target_rows, bool irregular,
                        bool edges, sycl::queue &q) {
   Case c(tokens, irregular, edges, q, target_rows, primary_rows);
+  if ((tokens == 17 || tokens == 117488) && irregular) split_dataflow(c);
   std::vector<size_t> jobs{0, c.routes->jobs().size() - 1};
   // Expert1 covers every token. Exercise both sides of the split and the
   // physical final row even when expert0 uses a sparse/irregular target job.
