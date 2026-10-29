@@ -5182,7 +5182,7 @@
     }
   },
   "qsa_pair_model": {
-    "status": "closed-rejected-and-retirement-prepared",
+    "status": "closed-rejected-retired",
     "archive_commit": "6c5212f56b706311e1d7fc795342800deabb76b4",
     "original_build_source": "fb8cedb6787609fd588ba9006b9726976d16013b",
     "selected_original_source": "6e40afc1beddd059ee518617f6c1efce1da14aca",
@@ -6170,13 +6170,7 @@
       "independent_safety_preserved": "General prefix_bytes maximum single-allocation preflight stays active after pair-only source removal."
     },
     "retirement": {
-      "stage": "prepared",
-      "roots": [
-        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-pair-model-v1",
-        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-pair-model-comparison-v1",
-        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-pair-model-profile-v2",
-        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-pair-model-validation-v1"
-      ],
+      "stage": "retired",
       "manifest": {
         "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-pair-model-closed-retired-20261029.jsonl",
         "sha256": "63bec72e8083f1459f13fa56110ccea7396e181455ff047028d4fbb525937e38",
@@ -6184,7 +6178,15 @@
         "bytes": 338393262
       },
       "consumer": "None for rejected generation or successful raw logs. Original6e40engine and twelve fixtures remain selected.14legacy provenance holds remain separate.",
-      "next_action": "Commit consumer removal and compact samples,verify manifest,then retire roots under measurement lock before new build."
+      "next_action": "No pair generation or raw-output consumer remains. Preserve original6e40and twelve fixtures;proceed to one new native geometry candidate.",
+      "retired_roots": [
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-pair-model-v1",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-pair-model-comparison-v1",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-pair-model-profile-v2",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-pair-model-validation-v1"
+      ],
+      "verified_absent": true,
+      "selected_fallback_unchanged": true
     },
     "configuration": {
       "exe": "/home/yayoi/orca/workspaces/Strata/sycl/tools/sycl/engine_once.py",

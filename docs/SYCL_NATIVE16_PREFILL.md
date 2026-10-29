@@ -2004,8 +2004,8 @@ The bounded pair comparison is finished. Its original559native,35controller,
 pushed feature history;all four final ELFs match the traced link proof. Unused
 pair exports,targets,fixtures and controllers retire to`6c5212f56`;the
 pre-pair tree preserves independent safety fixes. Successful raw output and the
-extra generation have no further consumer and are scheduled for retirement
-before the next build. Selected6e40and its twelve fixtures remain unchanged. The next prospective tuning
+extra generation retire2034files(338393262B),with path/hash/reason manifest
+in the linked result;all four roots are verified absent before the next build. Selected6e40and its twelve fixtures remain unchanged. The next prospective tuning
 candidate examines the selected per-query12heads versus16matrix rows,subject
 to actual supported matrix shapes and independent correctness/performance gates.
 See`qsa_pair_model.clean_prefill_comparison`and`qsa_pair_proposal`in the
