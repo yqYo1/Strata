@@ -1518,6 +1518,17 @@ guard/drain and24thinking-enabled outputs. The observed diagnostic132774.1ms
 sustained decode evidence. The frozen clean A/B compares identical exact-count
 bodies,first-use and3subsequent requests/process,advancing after the first pair
 only with at least1percent warm-median improvement. Then repeat opposite orders.
+The first adjacent pair passes that screen:original subsequent median127.7833s
+(919.4tok/s,range918.1..923.3),candidate123.4984s(951.3tok/s,range948.3..957.0).
+The time ratio is0.96646745,a3.35percent reduction. First use is867.3and880.2tok/s;
+subsequent client TTFT medians are127.972and123.679s. All eight requests read
+117489fresh tokens,with117488engine rows and identical body hashes between arms.
+Both native processes exit normally,validation stays silent and no fresh fault
+occurs. Four independent processes remain;no adoption follows yet. This exact-count factory
+produces different request bodies from the previous minimum-count factory's
+approximately975tok/s cohort;that is not a matched regression comparison.
+Individual samples and the frozen stopping rule are in
+[`moe_split_accumulator.clean_prefill_comparison`](../bench/results/2026-10-15-pr6-recovery-audit/fused-moe-service-current.json).
 Measure job/dequant/upload changes and critical-path service;
 larger windows and a smaller expert bank do not establish a throughput gain
 or the limiting hardware unit. Decode/handoff,model quality and physical-context
