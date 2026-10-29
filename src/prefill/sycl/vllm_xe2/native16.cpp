@@ -121,6 +121,7 @@ using TileMMA = typename TiledMMAHelper<MMA_Atom<XE_DPAS_TT<8, float, Input>>,
     typename ShapePolicy<Policy>::Subgroups>::TiledMMA;
 template <class Input, class Output, Tile Policy> class DenseKernel;
 template <Tile Policy, bool Capture, ScatterLayout Mapping> class DownScatterKernel;
+template <bool Capture> class SplitDownScatterKernel;
 template <Tile Policy, bool Capture> class GuSwiGLUKernel;
 
 template <bool Capture> struct GuSwiGLUEpilogue {
@@ -351,6 +352,95 @@ sycl::event enqueue_down(sycl::queue &q, DownScatterProblem p, Geometry g,
   });
 }
 
+// Separate candidate keeps the existing contiguous kernels and their captures
+// unchanged. Its math is the same wide128 BF16 rounding and FP32 FMA; only the
+// validated global token row chooses which FP32 allocation receives the store.
+template <bool Capture> struct SplitCachedDownEpilogue {
+  DownScatterProblem p;
+  float *tail;
+  size_t primary_rows;
+  int t, base;
+  sycl::local_accessor<int32_t, 1> tokens;
+  sycl::local_accessor<float, 1> weights;
+
+  template <class Fragment, class Coordinates, class MMA>
+  CUTE_DEVICE void operator()(const Fragment &fragment, const Coordinates &tile,
+                              const MMA &mma, int lane) const {
+    auto rounded = make_fragment_like<cutlass::bfloat16_t>(fragment.tensor());
+    reorder(fragment.tensor(), rounded, fragment.tv_layout(), fragment.tv_layout());
+    auto coordinates = mma.get_slice(lane).partition_C(tile);
+    static_assert(decltype(size(coordinates))::value == decltype(size(rounded))::value);
+    CUTE_UNROLL
+    for (int i = 0; i < size(rounded); ++i) {
+      const auto coordinate = coordinates(i);
+      const int row = get<0>(coordinate), col = get<1>(coordinate);
+      if (row < 0 || row >= t || col < 0 || col >= 2560) continue;
+      if constexpr (Capture)
+        p.rounded_diagnostic[size_t(row) * 2560 + size_t(col)] =
+            sycl::bit_cast<uint16_t>(rounded(i));
+      const int local = row - base;
+      if (local < 0 || size_t(local) >= tokens.size()) continue;
+      const int32_t token = tokens[local];
+      if (token < 0) continue; // complete token/slot bounds checked by producer
+      const bool in_tail = size_t(token) >= primary_rows;
+      float *bank = in_tail ? tail : p.accumulator;
+      const size_t out = (size_t(token) - (in_tail ? primary_rows : 0)) * 2560 + size_t(col);
+      bank[out] = sycl::fma(weights[local], float(rounded(i)), bank[out]);
+    }
+  }
+};
+
+template <bool Capture>
+sycl::event enqueue_down_split(sycl::queue &q, DownScatterProblem p, Geometry g,
+                               int token_rows, size_t routes, size_t offset,
+                               float *tail, size_t primary_rows) {
+  using P = ShapePolicy<Tile::wide_128x128>;
+  using MMA = TileMMA<cutlass::half_t, Tile::wide_128x128>;
+  namespace ex = sycl::ext::oneapi::experimental;
+  namespace ix = sycl::ext::intel::experimental;
+  const ex::properties props{ex::sub_group_size<16>, ix::grf_size<256>};
+  static_assert(P::rows <= P::threads && int(get<0>(MMA{}.tile_mnk())) == P::rows);
+  p.plan = nullptr; // no host-only plan pointer may be dereferenced on device
+  const sycl::nd_range<3> range(sycl::range<3>(g.groups_m, g.groups_n, P::threads),
+                              sycl::range<3>(1, 1, P::threads));
+  return q.submit([&](sycl::handler &h) {
+    sycl::local_accessor<int32_t, 1> tokens(sycl::range<1>(P::rows), h);
+    sycl::local_accessor<float, 1> weights(sycl::range<1>(P::rows), h);
+    h.parallel_for<SplitDownScatterKernel<Capture>>(range, props, [=](sycl::nd_item<3> item) {
+      const int base = int(item.get_group(0)) * P::rows;
+      const int local = int(item.get_local_linear_id());
+      if (local < P::rows) {
+        const int row = base + local;
+        int32_t token = -1;
+        float weight = 0.f;
+        if (row < g.t) {
+          const size_t routed = offset + size_t(row);
+          const int32_t slot = p.original[routed], source = p.source[routed];
+          uint32_t error = 0;
+          if (slot < 0 || size_t(slot) >= routes) error = 1;
+          else if (source < 0 || source >= token_rows || source != slot / 10) error = 2;
+          if (error) {
+            sycl::atomic_ref<uint32_t, sycl::memory_order::relaxed,
+                sycl::memory_scope::device, sycl::access::address_space::global_space>(
+                    *p.status).fetch_or(error);
+          } else { token = source; weight = p.job_weights[routed]; }
+        }
+        tokens[local] = token;
+        weights[local] = weight;
+      }
+      item.barrier(sycl::access::fence_space::local_space);
+      auto a = make_tensor(make_gmem_ptr(reinterpret_cast<const cutlass::half_t *>(p.x)),
+          make_layout(make_shape(g.t, g.k), make_stride(g.k, _1{})));
+      auto b = make_tensor(make_gmem_ptr(reinterpret_cast<const cutlass::half_t *>(p.w)),
+          make_layout(make_shape(g.n, g.k), make_stride(g.k, _1{})));
+      auto c = make_identity_tensor(make_shape(g.t, g.n));
+      const auto coord = make_coord(int(item.get_group(0)), int(item.get_group(1)), _, 0);
+      derived::xe_gemm_epilogue<void, void, void>(a, b, c, coord, MMA{},
+          SplitCachedDownEpilogue<Capture>{p, tail, primary_rows, g.t, base, tokens, weights});
+    });
+  });
+}
+
 template <Tile Policy, ScatterLayout Mapping>
 DownOwnership inspect_ownership(int rows) {
   using P = ShapePolicy<Policy>;
@@ -539,7 +629,8 @@ sycl::event Gemm::down_scatter(const DownScatterProblem &p, Tile tile, ScatterLa
       mapping != ScatterLayout::matrix_row_cache)
     throw std::invalid_argument("Down scatter: invalid layout");
   using Routes = strata::prefill::detail::MoeWindowRoutes;
-  if (!has_fp16_ || !p.plan || p.plan->rows() < 1 || p.plan->rows() > Routes::max_accum_rows)
+  if (!has_fp16_ || !p.plan || p.plan->split_accumulator() ||
+      p.plan->rows() < 1 || p.plan->rows() > Routes::max_accum_rows)
     throw std::invalid_argument("Down scatter: native FP16 and published accumulator plan required");
   const size_t routes = size_t(p.plan->rows()) * Routes::top_k;
   if (p.plan->source_rows().size() != routes || p.plan->original_slots().size() != routes)
@@ -592,6 +683,52 @@ sycl::event Gemm::down_scatter(const DownScatterProblem &p, Tile tile, ScatterLa
   if (mapping == ScatterLayout::matrix_row_cache)
     return select.template operator()<ScatterLayout::matrix_row_cache>();
   return select.template operator()<ScatterLayout::matrix>();
+}
+
+sycl::event Gemm::down_scatter_split(const DownScatterProblem &p,
+                                     float *tail, int64_t primary_rows) {
+  using Routes = strata::prefill::detail::MoeWindowRoutes;
+  if (!has_fp16_ || !p.plan || !p.plan->split_accumulator() || p.plan->rows() < 2 ||
+      p.plan->rows() > Routes::max_split_accum_rows || primary_rows < 1 || primary_rows >= p.plan->rows())
+    throw std::invalid_argument("Split Down scatter: native FP16 and two nonempty banks required");
+  const size_t rows = size_t(p.plan->rows()), routes = rows * Routes::top_k;
+  if (p.plan->source_rows().size() != routes || p.plan->original_slots().size() != routes)
+    throw std::invalid_argument("Split Down scatter: inverse plan required");
+  const auto &job = p.plan->jobs().at(p.job_index);
+  if (job.rows < 1 || job.rows > 8192 || job.global_row < 0 || size_t(job.rows) > routes ||
+      size_t(job.global_row) > routes - size_t(job.rows))
+    throw std::invalid_argument("Split Down scatter: invalid job interval");
+  Problem shape;
+  shape.t = job.rows; shape.n = 2560; shape.k = 640;
+  const auto g = geometry(shape, Tile::wide_128x128);
+  if (local_mem_bytes_ < 128 * (sizeof(int32_t) + sizeof(float)))
+    throw std::invalid_argument("Split Down scatter: insufficient row-cache local memory");
+  const size_t primary_bytes = mul(mul(size_t(primary_rows), 2560), 4);
+  const size_t tail_bytes = mul(mul(rows - size_t(primary_rows), 2560), 4), mb = mul(routes, 4);
+  const std::initializer_list<sycl_backend::Span> inputs{
+      {p.x, g.xb}, {p.w, g.wb}, {p.source, mb}, {p.original, mb}, {p.job_weights, mb}};
+  validate_spans({{p.accumulator, primary_bytes}, {tail, tail_bytes}, {p.status, 4}}, inputs);
+  if (p.rounded_diagnostic)
+    validate_spans({{p.accumulator, primary_bytes}, {tail, tail_bytes}, {p.status, 4},
+                    {p.rounded_diagnostic, g.yb}}, inputs);
+  for (auto span : inputs) validate_device_span(span.pointer, span.bytes, queue_);
+  validate_device_span(p.accumulator, primary_bytes, queue_);
+  validate_device_span(tail, tail_bytes, queue_);
+  validate_device_span(p.status, 4, queue_);
+  if (p.rounded_diagnostic) validate_device_span(p.rounded_diagnostic, g.yb, queue_);
+  if (reinterpret_cast<uintptr_t>(p.x) % 64 || reinterpret_cast<uintptr_t>(p.w) % 64)
+    throw std::invalid_argument("Split Down scatter: block2D inputs require 64B alignment");
+  if ((reinterpret_cast<uintptr_t>(p.source) | reinterpret_cast<uintptr_t>(p.original) |
+       reinterpret_cast<uintptr_t>(p.job_weights) | reinterpret_cast<uintptr_t>(p.accumulator) |
+       reinterpret_cast<uintptr_t>(tail) | reinterpret_cast<uintptr_t>(p.status)) % 4 ||
+      (p.rounded_diagnostic && reinterpret_cast<uintptr_t>(p.rounded_diagnostic) % 2))
+    throw std::invalid_argument("Split Down scatter: typed map/output alignment required");
+  runtime_.check();
+  if (p.rounded_diagnostic)
+    return enqueue_down_split<true>(queue_, p, g, p.plan->rows(), routes, size_t(job.global_row),
+                                    tail, size_t(primary_rows));
+  return enqueue_down_split<false>(queue_, p, g, p.plan->rows(), routes, size_t(job.global_row),
+                                   tail, size_t(primary_rows));
 }
 
 sycl::event Gemm::beta0(const Problem &p, Tile tile) {

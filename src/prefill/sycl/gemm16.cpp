@@ -382,4 +382,29 @@ bool Gemm::try_down_scatter16(const detail::MoeWindowRoutes &plan, size_t index,
   throw std::invalid_argument("Down fusion requires compiled vllm backend");
 #endif
 }
+bool Gemm::try_down_scatter16_split(const detail::MoeWindowRoutes &plan, size_t index,
+                             const uint16_t *x, const uint16_t *w,
+                             const int32_t *source, const int32_t *original,
+                             const float *weights, float *primary, float *tail,
+                             int64_t primary_rows, uint32_t *status) {
+  if (!handle_) throw std::invalid_argument("uninitialized SYCL GEMM16");
+  if (!backend_config().down_fusion) return false;
+#if defined(STRATA_SYCL_VLLM_XE2_NATIVE16)
+  if (plan.jobs().at(index).rows < 2334) return false;
+  namespace vx = experimental::vllm_xe2_native16;
+  auto &bound = vllm_state(out16_backend_, x, stream_);
+  sycl_backend::cpu_wait_profile::Host submission(sycl_backend::cpu_wait_profile::gemm_submit);
+  const auto event = bound.adapter.down_scatter_split(
+      {&plan, index, x, w, source, original, weights, primary, status, nullptr}, tail, primary_rows);
+  submission.finish();
+  auto profile_tag = sycl_backend::command_profile::fused_tag(
+      sycl_backend::command_profile::Kind::down, sycl_backend::command_profile::Kind::down_scatter);
+  sycl_backend::finish(stream_, event);
+  return true;
+#else
+  (void)plan; (void)index; (void)x; (void)w; (void)source; (void)original;
+  (void)weights; (void)primary; (void)tail; (void)primary_rows; (void)status;
+  throw std::invalid_argument("Split Down fusion requires compiled vllm backend");
+#endif
+}
 } // namespace strata::prefill

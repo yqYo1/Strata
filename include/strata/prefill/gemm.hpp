@@ -72,6 +72,11 @@ public:
                             const uint16_t* X, const uint16_t* W,
                             const int32_t* source, const int32_t* original,
                             const float* weights, float* accumulator, uint32_t* status);
+    bool try_down_scatter16_split(const detail::MoeWindowRoutes& plan, size_t job_index,
+                            const uint16_t* X, const uint16_t* W,
+                            const int32_t* source, const int32_t* original,
+                            const float* weights, float* primary, float* tail,
+                            int64_t primary_rows, uint32_t* status);
 #endif
 
     /// W given as native GGUF blocks of `ggml_type`, dequantized to FP16 in the scratch, X in FP16.

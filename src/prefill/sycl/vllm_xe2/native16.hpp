@@ -93,6 +93,11 @@ public:
   sycl::event down_scatter(const DownScatterProblem &problem,
                          Tile tile = Tile::wide_128x128,
                          ScatterLayout layout = ScatterLayout::matrix);
+  // Separate split-accumulator candidate, fixed production wide128 tile and
+  // row-cached metadata. Maps remain global window-row IDs; both disjoint
+  // FP32 banks survive the same checked queue drain. No implicit allocation.
+  sycl::event down_scatter_split(const DownScatterProblem &problem,
+                                float *tail, int64_t primary_rows);
   // Explicit large-job long-prefill hook; default off pending model qualification.
   sycl::event gu_swiglu(const GuSwiGLUProblem &problem,
                        Tile tile = Tile::wide_128x128);
