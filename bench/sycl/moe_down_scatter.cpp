@@ -4,6 +4,7 @@
 #include "strata/prefill/native16.hpp"
 #include "strata/kernels/bf16_bits.hpp"
 #include "strata/sycl/command_profile.hpp"
+#include "strata/sycl/cpu_wait_profile.hpp"
 #include <algorithm>
 #include <array>
 #include <bit>
@@ -123,6 +124,7 @@ struct Case {
   std::vector<float> initial;
   bool edge_inputs;
   int split_rows;
+  bool row_address = false;
   Case(int tokens, bool irregular, bool edges, sycl::queue &queue, int target_rows = 0, int primary_rows = 0)
       : routes(plan(tokens, irregular, target_rows, primary_rows)), q(queue), gemm(*runtime, q),
         x(size_t(std::min(tokens, 8192)) * K, q), w(size_t(N) * K, q),
@@ -182,6 +184,8 @@ struct Case {
     if (split_rows) {
       need(tile == xe::Tile::wide_128x128 && mapping == xe::ScatterLayout::matrix_row_cache,
            "split fixture uses the production wide128 row-cache policy");
+      if (row_address)
+        return gemm.down_scatter_split_row_address(problem(job, observe), candidate_tail->data(), split_rows);
       return gemm.down_scatter_split(problem(job, observe), candidate_tail->data(), split_rows);
     }
     return gemm.down_scatter(problem(job, observe), tile, mapping);
@@ -670,6 +674,73 @@ void benchmark(int process, sycl::queue &q, int public_arm = -1) {
     }
   }
 }
+
+// Explicit component controls, not production dispatch or a hardware ceiling.
+// All arms retain the same X/W, map, reset, queue and ordinary FP32 update order.
+void row_address_benchmark(int process, sycl::queue &q) {
+  namespace clock = sb::cpu_wait_profile;
+  constexpr int repeat = 64;
+  for (int rows : {2334, 5963, 8192}) for (bool irregular : {false, true}) {
+    Case c(117488, irregular, false, q, rows, 65536);
+    need(c.routes->jobs().front().rows == rows, "row-address job shape");
+    c.check_split(0);
+    c.reset(); c.row_address = true; c.check_split(0);
+    const auto before = c.input_snapshot();
+    std::vector<float> ordinary, address;
+    for (int round = -1; round < 3; ++round) for (int order = 0; order < 3; ++order) {
+      const int arm = (process + round + 3 + order) % 3;
+      c.reset(); c.row_address = arm == 1;
+      std::vector<sycl::event> events; events.reserve(repeat);
+      const auto first = mark(q);
+      const auto begin = clock::stamp();
+      for (int i = 0; i < repeat; ++i) {
+        if (arm < 2) events.push_back(c.fused(0, xe::Tile::wide_128x128, false, xe::ScatterLayout::matrix_row_cache));
+        else {
+          xe::Problem p;
+          p.x = c.x.data(); p.w = c.w.data(); p.y = c.down.data();
+          p.t = rows; p.n = N; p.k = K;
+          events.push_back(c.gemm.beta0(p, xe::Tile::wide_128x128));
+        }
+      }
+      const auto submitted = clock::stamp();
+      const auto last = mark(q); wait(q, last);
+      const auto complete = clock::stamp();
+      const auto start_ns = first.get_profiling_info<sycl::info::event_profiling::command_end>();
+      const auto end_ns = last.get_profiling_info<sycl::info::event_profiling::command_start>();
+      need(begin.valid && submitted.valid && complete.valid && end_ns > start_ns,
+           "row-address timing clocks");
+      uint64_t previous = start_ns, service = 0;
+      for (const auto& event : events) {
+        const auto a = event.get_profiling_info<sycl::info::event_profiling::command_start>();
+        const auto b = event.get_profiling_info<sycl::info::event_profiling::command_end>();
+        need(a >= previous && b > a && b <= end_ns, "row-address event order/coverage");
+        service += b - a; previous = b;
+      }
+      need(service <= end_ns - start_ns && events.size() == repeat &&
+           double(end_ns - start_ns) / 1e6 >= 5.0, "row-address batch eligibility");
+      if (round == 2 && arm < 2) {
+        auto output = c.split_output();
+        if (arm == 0) ordinary = std::move(output); else address = std::move(output);
+      }
+      need(c.candidate_status.get()[0] == 0 && c.reference_status.get()[0] == 0,
+           "row-address timed status");
+      std::cout << "{\"kind\":\"row_address_sample\",\"process\":" << process
+        << ",\"rows\":" << rows << ",\"irregular\":" << irregular << ",\"round\":" << round
+        << ",\"order\":" << order << ",\"arm\":" << arm << ",\"repeat\":" << repeat
+        << ",\"kernel_service_ms\":" << double(service) / 1e6 / repeat
+        << ",\"queue_batch_ms\":" << double(end_ns - start_ns) / 1e6
+        << ",\"wall_ms\":" << (complete.wall - begin.wall) * 1000 / repeat
+        << ",\"submit_cpu_ms\":" << (submitted.cpu - begin.cpu) * 1000 / repeat
+        << ",\"complete_cpu_ms\":" << (complete.cpu - submitted.cpu) * 1000 / repeat
+        << ",\"status\":\"PASS\"}\n";
+    }
+    need(same_bytes(ordinary, address), "timed row-address complete FP32 bits differ");
+    c.inputs_unchanged(before);
+    std::cout << "{\"kind\":\"row_address_case\",\"rows\":" << rows
+      << ",\"irregular\":" << irregular << ",\"final_bits_equal\":true,\"guards\":true,"
+         "\"inputs_immutable\":true,\"status\":\"PASS\"}\n";
+  }
+}
 } // namespace
 
 int main(int argc, char **argv) {
@@ -685,7 +756,21 @@ int main(int argc, char **argv) {
       runtime = sb::runtime_for();
       auto q = runtime->make_queue(true);
       if (split_mode) split_gate("runtime-ready");
-      if (mode == "--split-smoke") {
+      if (mode == "--split-row-address-smoke" || mode == "--split-row-address-tiny") {
+        for (bool irregular : {false, true}) {
+          Case small(17, irregular, true, q, 3, 8);
+          small.row_address = true;
+          small.check_split(0);
+          if (mode == "--split-row-address-tiny") continue;
+          Case tail(81921, irregular, false, q, 2334, 65536);
+          tail.row_address = true;
+          tail.check_split(0);
+          tail.check_split(tail.routes->jobs().size() - 1);
+        }
+      } else if (mode == "--split-row-address-bench") {
+        need(argc == 3 && std::stoi(argv[2]) >= 0 && std::stoi(argv[2]) < 3, "row-address process");
+        row_address_benchmark(std::stoi(argv[2]), q);
+      } else if (mode == "--split-smoke") {
         correctness(3, false, false, xe::Tile::wide_128x128, q, xe::ScatterLayout::matrix_row_cache);
         split_correctness(3, 1, 0, false, false, q);
         split_correctness(17, 8, 3, true, true, q);

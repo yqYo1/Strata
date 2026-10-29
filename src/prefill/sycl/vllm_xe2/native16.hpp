@@ -98,6 +98,10 @@ public:
   // FP32 banks survive the same checked queue drain. No implicit allocation.
   sycl::event down_scatter_split(const DownScatterProblem &problem,
                                 float *tail, int64_t primary_rows);
+  // Experimental component only: same FP32 updates with per-row destination
+  // addresses cached in SLM. No production dispatcher calls this method.
+  sycl::event down_scatter_split_row_address(const DownScatterProblem &problem,
+                                            float *tail, int64_t primary_rows);
   // Explicit large-job long-prefill hook; default off pending model qualification.
   sycl::event gu_swiglu(const GuSwiGLUProblem &problem,
                        Tile tile = Tile::wide_128x128);

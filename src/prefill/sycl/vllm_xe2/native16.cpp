@@ -122,6 +122,7 @@ using TileMMA = typename TiledMMAHelper<MMA_Atom<XE_DPAS_TT<8, float, Input>>,
 template <class Input, class Output, Tile Policy> class DenseKernel;
 template <Tile Policy, bool Capture, ScatterLayout Mapping> class DownScatterKernel;
 template <bool Capture> class SplitDownScatterKernel;
+template <bool Capture> class SplitRowAddressDownKernel;
 template <Tile Policy, bool Capture> class GuSwiGLUKernel;
 
 template <bool Capture> struct GuSwiGLUEpilogue {
@@ -441,6 +442,99 @@ sycl::event enqueue_down_split(sycl::queue &q, DownScatterProblem p, Geometry g,
   });
 }
 
+// Independent component candidate: precompute each row destination in SLM.
+// Existing production kernels, precision, update order and dispatch are unchanged.
+template <bool Capture> struct SplitRowAddressDownEpilogue {
+  static_assert(sizeof(uintptr_t) >= sizeof(float *));
+  DownScatterProblem p;
+  int t, base;
+  sycl::local_accessor<uintptr_t, 1> addresses;
+  sycl::local_accessor<float, 1> weights;
+
+  template <class Fragment, class Coordinates, class MMA>
+  CUTE_DEVICE void operator()(const Fragment &fragment, const Coordinates &tile,
+                              const MMA &mma, int lane) const {
+    auto rounded = make_fragment_like<cutlass::bfloat16_t>(fragment.tensor());
+    reorder(fragment.tensor(), rounded, fragment.tv_layout(), fragment.tv_layout());
+    auto coordinates = mma.get_slice(lane).partition_C(tile);
+    static_assert(decltype(size(coordinates))::value == decltype(size(rounded))::value);
+    CUTE_UNROLL
+    for (int i = 0; i < size(rounded); ++i) {
+      const auto coordinate = coordinates(i);
+      const int row = get<0>(coordinate), col = get<1>(coordinate);
+      if (row < 0 || row >= t || col < 0 || col >= 2560) continue;
+      if constexpr (Capture)
+        p.rounded_diagnostic[size_t(row) * 2560 + size_t(col)] =
+            sycl::bit_cast<uint16_t>(rounded(i));
+      const int local = row - base;
+      if (local < 0 || size_t(local) >= addresses.size()) continue;
+      // Producer computed this registered global row once, before publication.
+      // uintptr_t preserves the device pointer; zero marks an invalid/M-tail row.
+      const uintptr_t address = addresses[local];
+      if (!address) continue;
+      float *row_out = reinterpret_cast<float *>(address);
+      row_out[col] = sycl::fma(weights[local], float(rounded(i)), row_out[col]);
+    }
+  }
+};
+
+template <bool Capture>
+sycl::event enqueue_down_split_row_address(sycl::queue &q, DownScatterProblem p, Geometry g,
+                               int token_rows, size_t routes, size_t offset,
+                               float *tail, size_t primary_rows) {
+  using P = ShapePolicy<Tile::wide_128x128>;
+  using MMA = TileMMA<cutlass::half_t, Tile::wide_128x128>;
+  namespace ex = sycl::ext::oneapi::experimental;
+  namespace ix = sycl::ext::intel::experimental;
+  const ex::properties props{ex::sub_group_size<16>, ix::grf_size<256>};
+  static_assert(P::rows <= P::threads && int(get<0>(MMA{}.tile_mnk())) == P::rows);
+  p.plan = nullptr; // no host-only plan pointer may be dereferenced on device
+  const sycl::nd_range<3> range(sycl::range<3>(g.groups_m, g.groups_n, P::threads),
+                              sycl::range<3>(1, 1, P::threads));
+  return q.submit([&](sycl::handler &h) {
+    sycl::local_accessor<uintptr_t, 1> addresses(sycl::range<1>(P::rows), h);
+    sycl::local_accessor<float, 1> weights(sycl::range<1>(P::rows), h);
+    h.parallel_for<SplitRowAddressDownKernel<Capture>>(range, props, [=](sycl::nd_item<3> item) {
+      const int base = int(item.get_group(0)) * P::rows;
+      const int local = int(item.get_local_linear_id());
+      if (local < P::rows) {
+        const int row = base + local;
+        uintptr_t address = 0;
+        float weight = 0.f;
+        if (row < g.t) {
+          const size_t routed = offset + size_t(row);
+          const int32_t slot = p.original[routed], source = p.source[routed];
+          uint32_t error = 0;
+          if (slot < 0 || size_t(slot) >= routes) error = 1;
+          else if (source < 0 || source >= token_rows || source != slot / 10) error = 2;
+          if (error) {
+            sycl::atomic_ref<uint32_t, sycl::memory_order::relaxed,
+                sycl::memory_scope::device, sycl::access::address_space::global_space>(
+                    *p.status).fetch_or(error);
+          } else {
+            const bool in_tail = size_t(source) >= primary_rows;
+            float *bank = in_tail ? tail : p.accumulator;
+            const size_t bank_row = size_t(source) - (in_tail ? primary_rows : 0);
+            address = reinterpret_cast<uintptr_t>(bank + bank_row * 2560);
+            weight = p.job_weights[routed];
+          }
+        }
+        addresses[local] = address;
+        weights[local] = weight;
+      }
+      item.barrier(sycl::access::fence_space::local_space);
+      auto a = make_tensor(make_gmem_ptr(reinterpret_cast<const cutlass::half_t *>(p.x)),
+          make_layout(make_shape(g.t, g.k), make_stride(g.k, _1{})));
+      auto b = make_tensor(make_gmem_ptr(reinterpret_cast<const cutlass::half_t *>(p.w)),
+          make_layout(make_shape(g.n, g.k), make_stride(g.k, _1{})));
+      auto c = make_identity_tensor(make_shape(g.t, g.n));
+      const auto coord = make_coord(int(item.get_group(0)), int(item.get_group(1)), _, 0);
+      derived::xe_gemm_epilogue<void, void, void>(a, b, c, coord, MMA{},
+          SplitRowAddressDownEpilogue<Capture>{p, g.t, base, addresses, weights});
+    });
+  });
+}
+
 template <Tile Policy, ScatterLayout Mapping>
 DownOwnership inspect_ownership(int rows) {
   using P = ShapePolicy<Policy>;
@@ -728,6 +822,52 @@ sycl::event Gemm::down_scatter_split(const DownScatterProblem &p,
     return enqueue_down_split<true>(queue_, p, g, p.plan->rows(), routes, size_t(job.global_row),
                                     tail, size_t(primary_rows));
   return enqueue_down_split<false>(queue_, p, g, p.plan->rows(), routes, size_t(job.global_row),
+                                   tail, size_t(primary_rows));
+}
+
+sycl::event Gemm::down_scatter_split_row_address(const DownScatterProblem &p,
+                                     float *tail, int64_t primary_rows) {
+  using Routes = strata::prefill::detail::MoeWindowRoutes;
+  if (!has_fp16_ || !p.plan || !p.plan->split_accumulator() || p.plan->rows() < 2 ||
+      p.plan->rows() > Routes::max_split_accum_rows || primary_rows < 1 || primary_rows >= p.plan->rows())
+    throw std::invalid_argument("Split Down scatter: native FP16 and two nonempty banks required");
+  const size_t rows = size_t(p.plan->rows()), routes = rows * Routes::top_k;
+  if (p.plan->source_rows().size() != routes || p.plan->original_slots().size() != routes)
+    throw std::invalid_argument("Split Down scatter: inverse plan required");
+  const auto &job = p.plan->jobs().at(p.job_index);
+  if (job.rows < 1 || job.rows > 8192 || job.global_row < 0 || size_t(job.rows) > routes ||
+      size_t(job.global_row) > routes - size_t(job.rows))
+    throw std::invalid_argument("Split Down scatter: invalid job interval");
+  Problem shape;
+  shape.t = job.rows; shape.n = 2560; shape.k = 640;
+  const auto g = geometry(shape, Tile::wide_128x128);
+  if (local_mem_bytes_ < 128 * (sizeof(uintptr_t) + sizeof(float)))
+    throw std::invalid_argument("Split Down scatter: insufficient row-cache local memory");
+  const size_t primary_bytes = mul(mul(size_t(primary_rows), 2560), 4);
+  const size_t tail_bytes = mul(mul(rows - size_t(primary_rows), 2560), 4), mb = mul(routes, 4);
+  const std::initializer_list<sycl_backend::Span> inputs{
+      {p.x, g.xb}, {p.w, g.wb}, {p.source, mb}, {p.original, mb}, {p.job_weights, mb}};
+  validate_spans({{p.accumulator, primary_bytes}, {tail, tail_bytes}, {p.status, 4}}, inputs);
+  if (p.rounded_diagnostic)
+    validate_spans({{p.accumulator, primary_bytes}, {tail, tail_bytes}, {p.status, 4},
+                    {p.rounded_diagnostic, g.yb}}, inputs);
+  for (auto span : inputs) validate_device_span(span.pointer, span.bytes, queue_);
+  validate_device_span(p.accumulator, primary_bytes, queue_);
+  validate_device_span(tail, tail_bytes, queue_);
+  validate_device_span(p.status, 4, queue_);
+  if (p.rounded_diagnostic) validate_device_span(p.rounded_diagnostic, g.yb, queue_);
+  if (reinterpret_cast<uintptr_t>(p.x) % 64 || reinterpret_cast<uintptr_t>(p.w) % 64)
+    throw std::invalid_argument("Split Down scatter: block2D inputs require 64B alignment");
+  if ((reinterpret_cast<uintptr_t>(p.source) | reinterpret_cast<uintptr_t>(p.original) |
+       reinterpret_cast<uintptr_t>(p.job_weights) | reinterpret_cast<uintptr_t>(p.accumulator) |
+       reinterpret_cast<uintptr_t>(tail) | reinterpret_cast<uintptr_t>(p.status)) % 4 ||
+      (p.rounded_diagnostic && reinterpret_cast<uintptr_t>(p.rounded_diagnostic) % 2))
+    throw std::invalid_argument("Split Down scatter: typed map/output alignment required");
+  runtime_.check();
+  if (p.rounded_diagnostic)
+    return enqueue_down_split_row_address<true>(queue_, p, g, p.plan->rows(), routes, size_t(job.global_row),
+                                    tail, size_t(primary_rows));
+  return enqueue_down_split_row_address<false>(queue_, p, g, p.plan->rows(), routes, size_t(job.global_row),
                                    tail, size_t(primary_rows));
 }
 
