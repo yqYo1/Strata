@@ -7404,7 +7404,7 @@
         }
       },
       "component16": {
-        "stage": "prepared",
+        "stage": "closed",
         "source_commit": "324c41d5caeb708a9807b98cc7f965aae0ca9bfe",
         "source_sha256": {
           "tools/sycl/qsa_head_native.py": "4de77050be9f7bd8c2e7a43fd6d1bbdcecf5019da02fbe75bc11c2d36c4778c2",
@@ -7498,7 +7498,30 @@
           "file_cap": 67108864,
           "total_cap": 536870912
         },
-        "criteria": "One fresh owned process,stop firstfailure,no retry. Properties only beforekernel;source-review before submissions. Tinytrace actual SG/WG/local/ABI,complete output and FP32state parity,independent host oracle/guards,all input immutable,pre-main validation,correct actualproviders,quiet validation and no newfault. Extended physical finaladdresses do not qualify full-model context."
+        "criteria": "One fresh owned process,stop firstfailure,no retry. Properties only beforekernel;source-review before submissions. Tinytrace actual SG/WG/local/ABI,complete output and FP32state parity,independent host oracle/guards,all input immutable,pre-main validation,correct actualproviders,quiet validation and no newfault. Extended physical finaladdresses do not qualify full-model context.",
+        "outcome": {
+          "complete": true,
+          "passed": true,
+          "host_probe_accepted": true,
+          "properties": [],
+          "dispatch": null,
+          "numerical_passed": true,
+          "physical262144_component_addresses": true,
+          "model_context_fill_qualified": false,
+          "model_speed_qualified": false,
+          "parameter_validation": true,
+          "ownership_closed": true,
+          "fresh_faults": [],
+          "boot_unchanged": true,
+          "driver_after": {
+            "pci": "/sys/bus/pci/devices/0000:05:00.0",
+            "driver": "xe",
+            "vendor": "0x8086",
+            "device": "0xe20c",
+            "kernel": "7.0.0-38-generic",
+            "devcoredump": false
+          }
+        }
       }
     }
   }

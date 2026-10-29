@@ -183,6 +183,36 @@ separate toolchain asset. Early sparse NLL/top1 checks establish neither broad
 quality nor a permitted numerical degradation. Broader task qualification remains
 open; do not revive an old rejected backend from its isolated correctness pass.
 
+## Current prefill-only head-geometry experiment
+
+The selected QSA kernel computes16matrix rows for12real heads. The isolated
+M4/WG96 candidate computes exactly12,using six complete16-lane subgroups.
+It preserves ordered FP32 online reductions,rounding,K/V packing and full-group
+barriers. Public matrix loads/stores through six disjoint subgroup tiles avoid
+the deployed backend's unavailable M4coordinate helper. Extra local-memory
+accesses and subgroup barriers may offset the removed padded work;their net
+effect requires measurement. The compiler's zero candidate spill descriptor
+versus nonzero original descriptors is evidence about that build,not a measured
+occupancy,bandwidth or throughput gain.
+
+The exact native build is source593d756a6,with the portable constructor at
+ba91f4669. Compiled properties,the traced tiny case and11independent oracle
+cases at each Page4/Page16pass. Complete BF16 outputs and real-head FP32 online
+states match the original;guards,input immutability,pre-main validation and
+fault/ownership checks pass. Physical262144component addresses are covered;
+this does not qualify a full-model fill,handoff or RESTORE. Production callers,
+the selected6e40 engine and decode remain unchanged.
+
+The next gate compares the complete pack+attention wrapper with varied nonzero
+synthetic operands,four context/pattern cases,alternating paired rounds and
+three fresh processes. Wall time and actual pack/attention event service are
+separate. Frozen per-case no-decline/improvement criteria control advancement;
+neither source acceptance nor numerical correctness permits a model trial by
+itself. See`qsa_head_geometry.component_v2` in
+[the current resource result](../bench/results/2026-10-15-pr6-recovery-audit/fused-moe-service-current.json).
+Keep the existing multi-length time approximation until new model observations
+justify a change.
+
 ## Measured performance and rejected comparisons
 
 Hardware is Arc B57010GiB and Ryzen5600X6c/12t. The historical old-NEO comparison
