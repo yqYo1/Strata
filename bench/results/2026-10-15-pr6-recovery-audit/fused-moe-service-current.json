@@ -10632,7 +10632,7 @@
         }
       },
       "model": {
-        "stage": "prepared",
+        "stage": "closed",
         "source_commit": "b391e35694551b0b73daf52719e5be346a2d904d",
         "configuration": {
           "exe": "/home/yayoi/orca/workspaces/Strata/sycl/tools/sycl/engine_once.py",
@@ -10851,10 +10851,105 @@
           "file_cap": 134217728,
           "total_cap": 536870912
         },
-        "passed": false,
+        "passed": true,
         "active": false,
         "ownership_closed": true,
-        "criteria": "First model diagnostic only. Shared131072context/INT8KV,1256decode slots,8192prefill and original placement/safety settings,only new prefilling QSA mode. Officialbench short warmup then one thinking-on >=32768fresh/zero-reuse long request/24output. Private pre-main parameter validation and STRATA_TRACE1 stage output;no full API trace. Require actual pair completion summary:12layers,ceil(logged engine rows/8192)chunks,exact calls/queries,84025344metadata bytes,checked drain. Retain actual engine rows separately from client counts. Exact source/models/profile/native/runtime/Python/provider/ownership,normal closure,no new fault. Not clean performance,decode/agent quality or physical262144qualification."
+        "criteria": "First model diagnostic only. Shared131072context/INT8KV,1256decode slots,8192prefill and original placement/safety settings,only new prefilling QSA mode. Officialbench short warmup then one thinking-on >=32768fresh/zero-reuse long request/24output. Private pre-main parameter validation and STRATA_TRACE1 stage output;no full API trace. Require actual pair completion summary:12layers,ceil(logged engine rows/8192)chunks,exact calls/queries,84025344metadata bytes,checked drain. Retain actual engine rows separately from client counts. Exact source/models/profile/native/runtime/Python/provider/ownership,normal closure,no new fault. Not clean performance,decode/agent quality or physical262144qualification.",
+        "outcome": {
+          "complete": true,
+          "host_probe_accepted": true,
+          "passed": true,
+          "model_executed": true,
+          "native_identity": {
+            "pid": 2265213,
+            "start_ticks": 160735697,
+            "sid": 2265168
+          },
+          "sample": {
+            "ok": true,
+            "err": null,
+            "ttft_s": 60.827,
+            "total_s": 62.54,
+            "prompt_tokens": 39260,
+            "reused_tokens": 0,
+            "read_tokens": 39260,
+            "generated_tokens": 24,
+            "prompt_tps": 646.8,
+            "prompt_tps_source": "engine",
+            "decode_tps": 13.2,
+            "decode_tps_source": "engine",
+            "prompt_ms": 60699.6,
+            "decode_ms": 1815.5,
+            "drafts_offered": 21,
+            "drafts_accepted": 16,
+            "finish_reason": "length",
+            "request_sha256": "1fd63b8c67a1888e443800b5c6d339ca116df2cb91941e6f332b6adf74275b3a",
+            "stream_complete": true,
+            "truncated": true,
+            "generated_tokens_source": "usage",
+            "client_interval": {
+              "request_begin_monotonic_ns": 1607464751052860,
+              "first_output_monotonic_ns": 1607525577790823,
+              "request_end_monotonic_ns": 1607527291054319
+            },
+            "output_chars": 0,
+            "reasoning_chars": 121,
+            "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "reasoning_sha256": "0d786145d04b965534c72ea005fcccb9fb3a7e2552f6dda1bf32578d1916b8b2",
+            "eligible": true,
+            "eligibility_errors": [],
+            "requested_min_tokens": 32768,
+            "actual_prompt_tokens": 39260,
+            "actual_read_tokens": 39260,
+            "actual_reused_tokens": 0,
+            "prompt_count_source": "usage.prompt_tokens",
+            "read_count_source": "timings.prompt_n",
+            "reuse_counts_reported": {
+              "usage": 0,
+              "timings": 0
+            },
+            "thinking_requested": true,
+            "reasoning_observed": true,
+            "reasoning_tokens_reported": null,
+            "run": 0
+          },
+          "validation": {
+            "pid": 2265213,
+            "loader": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_loader.so.0.12.0",
+            "threads_before": 1,
+            "preinit": 37,
+            "config_enabled": true,
+            "first_init": true,
+            "dispatch_result": 46,
+            "output_untouched": true,
+            "retained_reference_until_exit": true,
+            "runtime_teardown_qualified": false
+          },
+          "native_exit_code": 0,
+          "actual_engine_rows": 39259,
+          "pair_dispatch": {
+            "calls": 60,
+            "queries": 471108,
+            "layers": 12,
+            "chunks": 5,
+            "metadata_bytes": 84025344,
+            "final_drain_checked": true
+          },
+          "clean_speed_qualified": false,
+          "decode_qualified": false,
+          "physical262144_qualified": false,
+          "ownership_closed": true,
+          "fresh_faults": [],
+          "boot_unchanged": true,
+          "driver_after": {
+            "pci": "/sys/bus/pci/devices/0000:05:00.0",
+            "driver": "xe",
+            "vendor": "0x8086",
+            "device": "0xe20c",
+            "kernel": "7.0.0-38-generic",
+            "devcoredump": false
+          }
+        }
       }
     }
   }
