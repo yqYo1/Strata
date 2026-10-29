@@ -183,7 +183,7 @@ separate toolchain asset. Early sparse NLL/top1 checks establish neither broad
 quality nor a permitted numerical degradation. Broader task qualification remains
 open; do not revive an old rejected backend from its isolated correctness pass.
 
-## Current prefill-only head-geometry experiment
+## Closed prefill-only head-geometry comparison
 
 The selected QSA kernel computes16matrix rows for12real heads. The isolated
 M4/WG96 candidate computes exactly12,using six complete16-lane subgroups.
@@ -203,12 +203,17 @@ fault/ownership checks pass. Physical262144component addresses are covered;
 this does not qualify a full-model fill,handoff or RESTORE. Production callers,
 the selected6e40 engine and decode remain unchanged.
 
-The next gate compares the complete pack+attention wrapper with varied nonzero
-synthetic operands,four context/pattern cases,alternating paired rounds and
-three fresh processes. Wall time and actual pack/attention event service are
-separate. Frozen per-case no-decline/improvement criteria control advancement;
-neither source acceptance nor numerical correctness permits a model trial by
-itself. See`qsa_head_geometry.component_v2` in
+The complete pack+attention comparison is **rejected on speed**. All72samples
+pass numerical,clock,provider,ownership and fault gates across three fresh
+processes. With8192queries,2051selected cells,Page4and varied nonzero synthetic
+operands,the candidate/original wall-time geometric means are1.089772
+(32Kcontiguous),1.102496(32Kstrided),1.096115(117488contiguous)and1.007882
+(117488strided). Every process is slower in every case;attention-event and
+pack+attention-event service also fail. Parameter validation stays enabled on
+both arms;these are matched component screens,not clean whole-model speed.
+No model trial or adoption follows. Numerical validity and a zero spill
+descriptor do not override the failed performance gate. Keep original6e40
+and decode unchanged. See`qsa_head_geometry.component_v2` in
 [the current resource result](../bench/results/2026-10-15-pr6-recovery-audit/fused-moe-service-current.json).
 Keep the existing multi-length time approximation until new model observations
 justify a change.
