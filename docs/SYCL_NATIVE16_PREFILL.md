@@ -1585,6 +1585,11 @@ matched-copy control,with checked bounds,drain and physical-device selection.
 The copy-only control is not a globally idle GPU measurement. Qualify the
 collector's initialization,permissions,coverage and observer cost separately;
 this fixture does not establish model throughput or hardware saturation.
+For PTI4b6d742 observer-off controls,omit UNITRACE_MetricQuery and
+UNITRACE_KernelMetrics entirely:its tracer tests whether those values are
+nonempty,so the string0 enables their paths. Query-mode qualification must
+also check query/pool cleanup against context destruction;the available CLI
+option and the non-counter collector's prior success do not qualify that mode.
 
 A20261028 source-only check of selected`6e40afc1b` also rules out treating
 head release as a configuration-only way to fund the additional accumulator.
