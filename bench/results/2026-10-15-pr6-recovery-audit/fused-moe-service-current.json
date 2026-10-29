@@ -12698,7 +12698,7 @@
     }
   },
   "moe_split_accumulator": {
-    "status": "corrected_native_plan_pending",
+    "status": "native_built_not_device_qualified",
     "host": {
       "stage": "closed",
       "source_commit": "be574247d026a341c6abedf23a37bd6612d51430",
@@ -12886,7 +12886,7 @@
     "mechanism": "Process one117488-row expert-major window rather than81920+35568;preserve FP32 expert summation and16-bit tensor boundaries. Split accumulator makes capacity possible. Fewer expert dequants/submissions are a hypothesis;smaller bank may add PCIe traffic. Aggregate MoE minus GU/Down is NOT measured dequanttime or physical-resource saturation.",
     "inference_adopted": false,
     "decode_changed": false,
-    "next_gate": "Record and retire closed partial build/host outputs after exact source/recipe recovery;prepare prospective native-v2 with fixture warning fixed. Original failed plan remains in Git. No GPU run yet.",
+    "next_gate": "Ordered traced split-smoke,extended65537/81921/117488,and productionrouteoff/on in separate immutable processes. Then exact117489-read model allocation/route check before clean comparison;selected6e40/12fixtures unchanged.",
     "source_review": {
       "revision": "8a34a9ed6",
       "research_key": "moe_split_native_consumer_contract_20261030",
@@ -12944,7 +12944,7 @@
       "consumer": "Only selected6e40 plus forthcoming native-v2 generation;host controls remain passed without retained binaries."
     },
     "build": {
-      "stage": "prepared",
+      "stage": "built-not-executed",
       "source_commit": "97cfa1f4bbc17b375a7dfb575195eb2545b20db2",
       "overlay": {
         "base": "6e40afc1beddd059ee518617f6c1efce1da14aca",
@@ -13197,11 +13197,41 @@
       "total_wall_seconds": 3600,
       "active": false,
       "ownership_closed": true,
-      "passed": false,
+      "passed": true,
       "GPU_executed": false,
       "model_selected": false,
       "criteria": "Build only: exact original9853Git inputs plus12explicit overlay paths and9CMake-only sources. Unselected diagnostics/staging excluded;independent max-allocation guard preserved. Actual compiler/imported linker closure must have zero uncovered inputs. All3 executables from one source/build. No device,numerical,performance or model qualification inherited.",
       "retention": "One additional candidate engine/component generation for imminent bounded device and whole-model comparison. Keep selected6e40/12fixtures untouched. Retire disposable host/build objects/logs and rejected generation after original source/recipe recovery.",
+      "binaries": {
+        "strata": {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/moe-split-accumulator-v1/native-v2/build/strata",
+          "sha256": "beefb816b488b844ff8d693ae5500b3a966129b8049d1a37fa10a0a7a0f3c8fe",
+          "bytes": 22469080
+        },
+        "sycl_moe_down_scatter_bench": {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/moe-split-accumulator-v1/native-v2/build/sycl_moe_down_scatter_bench",
+          "sha256": "a422970fc7ba1ba65a17c9aaa71bd9e6c8c774ae3754c94b089a986b3cebaca9",
+          "bytes": 13498416
+        },
+        "sycl_moe_accum_test": {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/moe-split-accumulator-v1/native-v2/build/sycl_moe_accum_test",
+          "sha256": "9585cb7e030edbd98bb3c400b6900dca6128f709f68d802f2984b4d43a0debc8",
+          "bytes": 2567904
+        }
+      },
+      "actual_compiler_inputs": {
+        "files": 1400,
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/moe-split-accumulator-v1/native-v2/compiler-inputs.json",
+        "sha256": "974abccbc27ebc4ba0117cc40926276d7252659237729e7e9dd200580fa9e193",
+        "uncovered": 0
+      },
+      "imported_link_inputs": {
+        "/opt/intel/oneapi/mkl/2026.1/lib/libmkl_sycl_blas.so.6": "51d6c16990701a5aaf9fbbde5d86f5a7197b81357b66b19cbb912206564cf4ee",
+        "/opt/intel/oneapi/mkl/2026.1/lib/libmkl_intel_ilp64.so.3": "ffbbeff402fdf09baa53f8226b86f27046592d984ae2916b1bbc2e59132c7c89",
+        "/opt/intel/oneapi/mkl/2026.1/lib/libmkl_sequential.so.3": "4e7ff529bec90a1b0ce70299258a64a2ebae7a5a6f3ec031306a6ddb39b5a650",
+        "/opt/intel/oneapi/mkl/2026.1/lib/libmkl_core.so.3": "b4f086651ee5a8471140d53fedfdbbaba606287784763b0739f282872c31aa9b"
+      },
+      "compile_database_sha256": "a7d1f5185c804e158f3f94628aeb0a14503ce574eae0dad9a08a0f1abaec9486",
       "controller_inputs": {
         "files": 52,
         "aggregate_sha256": "8f455e97311b893854bb12251fc86fbd2edd8aa99da5f80eeb99d6d248f4fa52"
