@@ -15613,7 +15613,7 @@
   },
   "pair_clean_model_comparison_contract_20261029": {
     "classification": "decision support",
-    "status": "source_correction_pending_host_controls_and_review",
+    "status": "corrected_source_gate_passed_comparison_unrun",
     "schedulable_now": false,
     "worker_model": "Orca Codex gpt-6-luna high",
     "source_revision": "cbb2bb95db8ad7df00008a9f624cd9f6a238b41f",
@@ -15647,7 +15647,8 @@
     "native_review": {
       "accepted_for_clean_comparison_source_gate": false,
       "essential_correction": "Bind complete ordered mode/bank/prefix/residual evidence to every actual request;validate route labels,byte conservation and original/candidate prefix reservation including84025344pair bytes. The report conflated1256decode slots with the384prefill bank;source-correct validation uses the frozen prefill environment384 and preserves coherent512fallback for whole-time comparison.",
-      "limits": "Six-process order,24samples,first-use separation and predeclared ratio/geomean screen were already correct. No model trial ran and no speed evidence changed."
+      "limits": "Six-process order,24samples,first-use separation and predeclared ratio/geomean screen were already correct. No model trial ran and no speed evidence changed.",
+      "superseded_by_corrected_source_review": true
     },
     "correction_plan": {
       "source_sha256": {
@@ -15672,6 +15673,38 @@
         "exit_code": 0,
         "limits": "CPU synthetic acceptance/rejection controls only;not real-model placement or speed evidence."
       }
-    }
+    },
+    "corrected_source_review": {
+      "model": "native Codex gpt-6-luna max",
+      "path": ".cache/research/2026-10-29/pair_clean_model_comparison_contract_20261029.corrected-review.json",
+      "sha256": "fd701a9362b0f29a44564e781fbfdb39f4def3f7387b93112a39272a820f8c5c",
+      "source_revision": "fdfe49828",
+      "source_sha256": {
+        "tools/sycl/qsa_pair_model_compare.py": "087f2f8df09905d343573873413d9c97bb81906883b8443224321781d3804517",
+        "tools/sycl/pair_model_placement.py": "bc0557274478e04e45f2671d8286d6ef8ac1f2a8cab9224dbef21831cc86b2e4"
+      },
+      "test_source_sha256": {
+        "tests/core/test_pair_model_placement.py": "2b348a254f75740c1780c81e13a9481f3c1a28a3b946cecd36ab06111c235f10"
+      },
+      "accepted_for_clean_comparison_source_gate": true,
+      "essential_fixes": [],
+      "verified_contract": "Per-request ordered prefix/mode/bank/placement groups, the384-slot prefill bank, coherent512-slot fallback, exact original/candidate prefix reservation including84025344candidate bytes, BF16 residual/cache conservation and allocation limits are checked against actual ordered engine extents.",
+      "host_controls": {
+        "command": [
+          "/usr/bin/python3.12",
+          "-I",
+          "-S",
+          "-B",
+          "tests/core/test_pair_model_placement.py"
+        ],
+        "passed": true,
+        "tests": 8,
+        "source_commit": "fdfe49828",
+        "GPU_executed": false,
+        "exit_code": 0
+      },
+      "limits": "Source eligibility only. No six-process model measurement, speed result, decode qualification, or inference adoption."
+    },
+    "next": "The corrected comparison source gate passes: fdfe49828, eight CPU-only acceptance/rejection controls, and Luna-max review. The original six-process/24-request plan is still unrun; this source result makes no throughput or adoption claim. First-model and fresh frontend qualification records must also be committed before the comparison controller can prepare."
   }
 }
