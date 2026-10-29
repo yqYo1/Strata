@@ -7522,6 +7522,138 @@
             "devcoredump": false
           }
         }
+      },
+      "performance": {
+        "build": {
+          "stage": "prepared",
+          "source_commit": "7541cd03b29322003bcd2b985ee74ed802d6e1c7",
+          "native_build_source": "593d756a63e569f9ed26dd46759debf7e57b61f2",
+          "native_geometry": {
+            "original_source_commit": "6e40afc1beddd059ee518617f6c1efce1da14aca",
+            "original_source_sha256": "4f9f815c9baae709f919f6d5ad1af04677c10d8c13c7597b3857cf81567ae192",
+            "generated_sha256": {
+              "original.cpp": "f9e1aaa7c1f5d146da1ae097a47cade3630da758809c6f75c5c729e3e305e32c",
+              "candidate.cpp": "4326cc3121d56cc83ae561aebc08ca75854a0aab4386bf54172e7235ecca1cf5",
+              "qsa-head.hpp": "dc15535160bb9a8fd915ff0c46cf84ac33c58d97809e7606bd84bfed7ba0f199"
+            },
+            "geometry": "M4,N16,K16,WG96,SG16;QK3headblocks*2cellblocks;PV3headblocks*2dim128blocks*8fragments;12real heads only.",
+            "softmax": "h=subgroup;h<12;h+=6 gives exactly one writer per head,independent of QK head-block ownership.",
+            "declared_local_bytes": 20724,
+            "reversible_geometry_edits": 26,
+            "reversible_event_edits": 3,
+            "reversible_portable_matrix_edits": 9,
+            "subgroup_local_tiles_bytes": 1536,
+            "coordinate_matrix_apply_used": false,
+            "private_fragment_mapping_assumed": false,
+            "local_traffic_note": "Additional logical FP32 scratch accesses versus register alpha/output;physical transactions and speed unknown. Three subgroup barriers retire each PV tile reuse;all original whole-group barriers remain.",
+            "preservation": "Same Q scale/BF16 rounding,d ascending16,K/V4loop bounds,FP32 cell sum c0..31,PV c0,16,output conversion;all whole-group barriers unchanged and uniform. No padded score/probability/state rows are consumed. M4matrix arithmetic/registers/speed still require native observation.",
+            "production_or_decode_changed": false
+          },
+          "runtime_sha256": "09ad358e12f6ef58bfc0a978519927863f3d09949a033a1e224db95997647d97",
+          "boot": "cfda0b6a-7c13-4fe2-bdf5-8f9202770840",
+          "commands": [
+            [
+              "compile",
+              [
+                "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin/clang++",
+                "-std=c++20",
+                "-O3",
+                "-DNDEBUG",
+                "-g0",
+                "-fsycl",
+                "-fsycl-id-queries-range=size_t",
+                "-fno-fast-math",
+                "-ffp-contract=off",
+                "-DSTRATA_ENABLE_SYCL=1",
+                "-I/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-head-native-v2/source/include",
+                "-I/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-head-native-v2/source/include/strata/sycl/compat",
+                "-I/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-head-native-v2/source/bench/sycl",
+                "-MD",
+                "-MF",
+                "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-head-native-v2/performance/bench.d",
+                "-c",
+                "/home/yayoi/orca/workspaces/Strata/sycl/bench/sycl/qsa_head_bench.cpp",
+                "-o",
+                "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-head-native-v2/performance/bench.o"
+              ]
+            ],
+            [
+              "link",
+              [
+                "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin/clang++",
+                "-std=c++20",
+                "-O3",
+                "-DNDEBUG",
+                "-g0",
+                "-fsycl",
+                "-fsycl-id-queries-range=size_t",
+                "-fno-fast-math",
+                "-ffp-contract=off",
+                "-DSTRATA_ENABLE_SYCL=1",
+                "-I/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-head-native-v2/source/include",
+                "-I/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-head-native-v2/source/include/strata/sycl/compat",
+                "-I/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-head-native-v2/source/bench/sycl",
+                "-save-temps=obj",
+                "-v",
+                "-Wl,-t",
+                "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-head-native-v2/runtime.o",
+                "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-head-native-v2/compat.o",
+                "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-head-native-v2/command_profile.o",
+                "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-head-native-v2/prompt_attention.o",
+                "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-head-native-v2/original.o",
+                "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-head-native-v2/candidate.o",
+                "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-head-native-v2/performance/bench.o",
+                "-pthread",
+                "-ldl",
+                "-o",
+                "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-head-native-v2/performance/bench"
+              ]
+            ]
+          ],
+          "environment": {
+            "PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin:/usr/bin:/bin",
+            "HOME": "/home/yayoi",
+            "LANG": "C.UTF-8",
+            "LC_ALL": "C.UTF-8",
+            "PYTHONDONTWRITEBYTECODE": "1",
+            "LD_LIBRARY_PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib:/opt/intel/oneapi/mkl/2026.1/lib",
+            "MKLROOT": "/opt/intel/oneapi/mkl/2026.1",
+            "OMP_NUM_THREADS": "1",
+            "GIT_TERMINAL_PROMPT": "0",
+            "GIT_SSH_COMMAND": "ssh -oBatchMode=yes",
+            "CPLUS_INCLUDE_PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/include",
+            "PIP_CONFIG_FILE": "/dev/null",
+            "ONEAPI_DEVICE_SELECTOR": "level_zero:gpu",
+            "UR_ADAPTERS_FORCE_LOAD": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_adapter_level_zero_v2.so.0",
+            "SYCL_CACHE_PERSISTENT": "0",
+            "NEOReadDebugKeys": "1",
+            "EnableDirectSubmission": "0",
+            "UR_L0_V2_FORCE_DISABLE_COPY_OFFLOAD": "1",
+            "STRATA_SYCL_VERIFY_NATIVE_CAPTURE": "0",
+            "STRATA_SYCL_PREFILL_SAME_QUEUE": "1",
+            "STRATA_SYCL_PREFILL_NATIVE16": "bf16",
+            "XDG_CACHE_HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-head-native-v2/performance/cache",
+            "TMPDIR": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-head-native-v2/performance/tmp"
+          },
+          "input_inventory": {
+            "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-head-native-v2/performance/input-inventory.json",
+            "sha256": "46a599235c376deb705df6aeb77909d3513965ef8f77d1dc54b178cc6181e89b",
+            "files": 9277
+          },
+          "budgets": {
+            "wall": 600,
+            "cpu": 1800,
+            "rss_cap": 8589934592,
+            "text_cap": 33554432,
+            "file_cap": 268435456,
+            "total_cap": 2147483648
+          },
+          "passed": false,
+          "active": false,
+          "ownership_closed": true,
+          "criteria": "CPU fixture build only from qualified exact native kernel objects. Actual compiler and linker inputs frozen;no GPU trial before this build closes. Synthetic fourcase Page4query8192/cap2051 performance is separate from model evidence.",
+          "retention": "Same imminent v2comparison generation. Keep only compact source/recipe,samples and decision;retire ELF/objects/normal raw output at comparisonclosure."
+        }
       }
     }
   }
