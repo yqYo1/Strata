@@ -3,10 +3,13 @@
 // accumulation order and the <=8192-row GEMM job shapes change numerically.
 bool Prefill::run_moe_accum_window(int64_t layer, int64_t first_row, int64_t rows, std::string& err) try {
     Impl& m = *impl_;
+    const bool split_accumulator = m.moe_window && m.moe_window->accumulator_primary_rows != 0;
     if (!m.moe_window || !m.moe_window->accumulation || !m.native16_active ||
         !m.layer_major_active || m.T != 8192 || m.copy != m.cs || !m.scratch_alias ||
         !m.cache || !m.host_res || layer < 0 || layer >= m.g->n_layers ||
-        rows <= m.T || rows > m.moe_window->maximum_rows || rows > detail::MoeAccumPlan::maximum_rows || first_row < 0) {
+        rows <= m.T || rows > m.moe_window->maximum_rows ||
+        rows > (split_accumulator ? detail::MoeAccumPlan::split_maximum_rows :
+                                  detail::MoeAccumPlan::maximum_rows) || first_row < 0) {
         err = "prefill MoE accumulator: unsupported entry"; return false;
     }
     auto& owner = *m.moe_window;
@@ -16,9 +19,11 @@ bool Prefill::run_moe_accum_window(int64_t layer, int64_t first_row, int64_t row
     if (!owner.bank || offset > owner.bank_bytes || bytes > owner.bank_bytes - offset ||
         !owner.mixed || !m.region || !m.emb || reinterpret_cast<uintptr_t>(m.region) % 256)
         throw std::invalid_argument("prefill MoE accumulator: backing bank/arena bounds");
-    const auto plan = owner.scratch_mixed ? detail::MoeAccumPlan::make(rows, owner.mixed_bytes,
-        owner.mixed_tail_bytes, owner.mixed_tail_offset) :
-        detail::MoeAccumPlan::make_contiguous(rows, owner.mixed_bytes, m.region_bytes);
+    const auto plan = split_accumulator ? detail::MoeAccumPlan::make_split_scratch(rows,
+        owner.mixed_bytes, m.region_bytes) :
+        owner.scratch_mixed ? detail::MoeAccumPlan::make(rows, owner.mixed_bytes,
+            owner.mixed_tail_bytes, owner.mixed_tail_offset) :
+            detail::MoeAccumPlan::make_contiguous(rows, owner.mixed_bytes, m.region_bytes);
     auto* residual = reinterpret_cast<uint16_t*>(reinterpret_cast<uint8_t*>(owner.bank) + offset);
     auto* mixed = owner.mixed;
     auto* bo = reinterpret_cast<uint16_t*>(m.emb);
@@ -30,6 +35,18 @@ bool Prefill::run_moe_accum_window(int64_t layer, int64_t first_row, int64_t row
     sycl_backend::validate_spans({{m.region, size_t(plan.region_bytes)}, {mixed, mixed_bytes},
                                  {bo, size_t(m.T * N * 2)}}, {{residual, size_t(bytes)}});
     auto* mixed_tail = plan.tail_bytes ? owner.mixed_tail : nullptr;
+    if (split_accumulator) {
+        if (!owner.scratch_mixed || !owner.accumulator_tail ||
+            owner.accumulator_primary_rows != plan.accumulator_primary_rows ||
+            owner.accumulator_tail_bytes != plan.accumulator_tail_bytes())
+            throw std::invalid_argument("prefill split accumulator: owner/plan mismatch");
+        sycl_backend::validate_device_span(owner.accumulator_tail,
+            size_t(owner.accumulator_tail_bytes), queue);
+        sycl_backend::validate_spans({{owner.accumulator_tail, size_t(owner.accumulator_tail_bytes)}},
+            {{m.region, size_t(m.region_bytes)}, {mixed, mixed_bytes},
+             {bo, size_t(m.T * N * 2)}, {residual, size_t(bytes)}});
+    } else if (owner.accumulator_tail || owner.accumulator_tail_bytes)
+        throw std::invalid_argument("prefill ordinary accumulator: unexpected split owner");
     if (owner.scratch_mixed) {
         if (!m.mixed_scratch_owners_ready() ||
             mixed != reinterpret_cast<uint16_t*>(m.R) ||
@@ -106,9 +123,13 @@ bool Prefill::run_moe_accum_window(int64_t layer, int64_t first_row, int64_t row
         err = "prefill MoE accumulator: shared scalar gate kind"; return false;
     }
     if (m.layer_major_profile) m.layer_major_profile->begin(detail::LayerMajorCoarseProfile::moe, m.cs);
-    if (cudaMemsetAsync(accumulator, 0, size_t(rows * N * 4), m.cs) != cudaSuccess ||
+    if (cudaMemsetAsync(accumulator, 0, size_t(plan.span(Plane::accumulator).bytes), m.cs) != cudaSuccess ||
         cudaMemsetAsync(status, 0, sizeof(uint32_t), m.cs) != cudaSuccess) {
         err = "prefill MoE accumulator: initialization"; return false;
+    }
+    if (split_accumulator && cudaMemsetAsync(owner.accumulator_tail, 0,
+            size_t(owner.accumulator_tail_bytes), m.cs) != cudaSuccess) {
+        err = "prefill split accumulator: tail initialization"; return false;
     }
     // Attention/PLE already advanced each chunk exactly once. This helper is FFN only.
     for (int64_t at = 0; at < rows; at += m.T) {
@@ -134,7 +155,9 @@ bool Prefill::run_moe_accum_window(int64_t layer, int64_t first_row, int64_t row
     }
     {
         sycl_backend::cpu_wait_profile::Host group(sycl_backend::cpu_wait_profile::host_group);
-        owner.routes = detail::MoeWindowRoutes::build_accum(rows, owner.ids.data(), owner.ids.size());
+        owner.routes = split_accumulator ?
+            detail::MoeWindowRoutes::build_split_accum(rows, owner.ids.data(), owner.ids.size()) :
+            detail::MoeWindowRoutes::build_accum(rows, owner.ids.data(), owner.ids.size());
     }
     if (m.layer_major_profile) {
         // Metadata already owned on the host after the existing router drain.
@@ -142,7 +165,7 @@ bool Prefill::run_moe_accum_window(int64_t layer, int64_t first_row, int64_t row
         // This is a planned-job census; only final request/issuer totals prove
         // that all jobs completed. The old chunk census refuses window mode.
         std::array<uint32_t, 8193> job_rows{};
-        std::array<uint32_t, 11> jobs_per_expert{};
+        std::array<uint32_t, (detail::MoeWindowRoutes::max_split_accum_rows + 8191) / 8192 + 1> jobs_per_expert{};
         for (const auto& job : owner.routes->jobs()) ++job_rows[size_t(job.rows)];
         for (int32_t count : owner.routes->counts())
             ++jobs_per_expert[size_t((count + 8191) / 8192)];
@@ -261,14 +284,22 @@ bool Prefill::run_moe_accum_window(int64_t layer, int64_t first_row, int64_t row
         bool fused_down = false;
         {
             auto tag = command_trace.tag(cp::Kind::down, job.expert, job.global_row, job.rows, N, 640, format.d_type);
-            fused_down = m.gemm.try_down_scatter16(*owner.routes, index, hidden, m.dq_d[0],
-                source, inverse, job_weights, accumulator, status);
+            fused_down = split_accumulator ?
+                m.gemm.try_down_scatter16_split(*owner.routes, index, hidden, m.dq_d[0],
+                    source, inverse, job_weights, accumulator, owner.accumulator_tail,
+                    plan.accumulator_primary_rows, status) :
+                m.gemm.try_down_scatter16(*owner.routes, index, hidden, m.dq_d[0],
+                    source, inverse, job_weights, accumulator, status);
             if (!fused_down) m.gemm.f16_out16(hidden, m.dq_d[0], down, job.rows, N, 640, true);
         }
         if (!fused_down) {
             hp::Host host(hp::moe_accumulate);
             auto tag = command_trace.tag(cp::Kind::accumulate, job.expert, job.global_row, job.rows, N);
-            native16::moe_accumulate(*owner.routes, index, down, source, inverse, job_weights, accumulator, status, m.cs);
+            if (split_accumulator)
+                native16::moe_accumulate_split(*owner.routes, index, down, source, inverse, job_weights,
+                    accumulator, owner.accumulator_tail, plan.accumulator_primary_rows, status, m.cs);
+            else
+                native16::moe_accumulate(*owner.routes, index, down, source, inverse, job_weights, accumulator, status, m.cs);
         } else {
             ++owner.down_fused_jobs;
             owner.down_fused_rows += uint64_t(job.rows);
@@ -309,7 +340,15 @@ bool Prefill::run_moe_accum_window(int64_t layer, int64_t first_row, int64_t row
             !native_proj16(m.gemm, wsu, input, sup, count, v.name("ffn_up_shexp.weight"), err)) return false;
         native16::swiglu_pair(sgate, sup, sh, count, m.cs);
         if (!native_proj16(m.gemm, wsd, sh, shared, count, v.name("ffn_down_shexp.weight"), err)) return false;
-        native16::moe_finish(accumulator + at * N, shared, shared_gate + at, bo, count, m.cs);
+        float* accumulator_chunk = nullptr;
+        if (split_accumulator) {
+            // Do not form accumulator+at*N for a tail row: even forming an
+            // out-of-allocation pointer would violate the C++ pointer contract.
+            const auto piece = plan.accumulator_piece(at, count);
+            auto* base = piece.tail ? owner.accumulator_tail : accumulator;
+            accumulator_chunk = reinterpret_cast<float*>(reinterpret_cast<uint8_t*>(base) + size_t(piece.offset));
+        } else accumulator_chunk = accumulator + at * N;
+        native16::moe_finish(accumulator_chunk, shared, shared_gate + at, bo, count, m.cs);
         native16::write(residual + at * D, bo, injection + at * HC, count, m.cs);
     }
     if (m.layer_major_profile) m.layer_major_profile->end(detail::LayerMajorCoarseProfile::moe, m.cs);
