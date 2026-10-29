@@ -6256,8 +6256,25 @@
   },
   "qsa_head_geometry": {
     "shape_query": {
-      "stage": "built",
+      "stage": "closed",
+      "passed": true,
+      "complete": true,
+      "ownership_closed": true,
       "source_commit": "dd629856667180b3201b0354a7453a3dfbe336ee",
+      "source_inputs": {
+        "files": 38,
+        "aggregate_sha256": "c0adc2a945969bc2d52d5090bea0782fda3e0ce214a4f735bfa0f3e30f77df36"
+      },
+      "source": "bench/sycl/matrix_shapes.cpp",
+      "binary": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-matrix-shapes-v1/matrix_shapes",
+        "bytes": 30544,
+        "sha256": "e94a2b0f3f908e9c09bfd92bce0e677bf0c0b9fb9297cbc860e195df4ca06b3b"
+      },
+      "compiler": {
+        "path": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin/clang++",
+        "sha256": "1290881b4e12a5e002e5b0de0787f85328ee5fe19f253a54be1cdd97dc2f26eb"
+      },
       "sdk": {
         "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/unitrace-warmed-graph-window-v1/compiler-inputs.json",
         "sha256": "436cedc9dbd41810cd882e9040a129e6d8b7dbebb98806b00c4f2950b1dc1705",
@@ -6283,17 +6300,65 @@
         ],
         "condition": "New v2 input snapshot only;all8694 other original hashes remain mandatory. Actual dependency closure records which updated headers were compiled. No qualification inherited for the new fixture."
       },
-      "compiler": {
-        "path": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin/clang++",
-        "sha256": "1290881b4e12a5e002e5b0de0787f85328ee5fe19f253a54be1cdd97dc2f26eb"
-      },
       "runtime_sha256": "09ad358e12f6ef58bfc0a978519927863f3d09949a033a1e224db95997647d97",
-      "selected_binary": {
-        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/strata",
-        "bytes": 22190000,
-        "sha256": "22182f1a5e62e5f4259ce49a75ae44afbd988166ec79324816e499ff37ef60e4"
-      },
       "boot": "cfda0b6a-7c13-4fe2-bdf5-8f9202770840",
+      "native_validation": true,
+      "fresh_faults": [],
+      "driver": {
+        "pci": "/sys/bus/pci/devices/0000:05:00.0",
+        "driver": "xe",
+        "vendor": "0x8086",
+        "device": "0xe20c",
+        "kernel": "7.0.0-38-generic",
+        "devcoredump": false
+      },
+      "observed": {
+        "immutable_environment": true,
+        "providers_qualified": true,
+        "B570_DRM": true
+      },
+      "properties": {
+        "workgroup": 1024,
+        "workitem1d": 1024,
+        "local_bytes": 131072,
+        "subgroups": [
+          16,
+          32
+        ],
+        "SG16": 1,
+        "bf16_M4N16K16": 1,
+        "bf16_M8N16K16": 1
+      },
+      "relevant_BF16_FP32_tuple": {
+        "types": [
+          0,
+          0,
+          3,
+          3
+        ],
+        "exact": [
+          0,
+          16,
+          16
+        ],
+        "maximum": [
+          8,
+          0,
+          0
+        ]
+      },
+      "all_matrix_tuples_queried": 53,
+      "actual_compiler_inputs": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-matrix-shapes-v1/compiler-inputs.json",
+        "sha256": "3121b7803f0b3f0d7c6164f8bdf96f5d15f93055b1d2637b229f57af511988cc",
+        "files": 626
+      },
+      "actual_link_inputs": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-matrix-shapes-v1/link-inputs.json",
+        "sha256": "c9a887c7fe69ea451778bf503279049b108cb39e160b11ae96bd01f10a6b3d03",
+        "frozen": 18,
+        "uncovered": 0
+      },
       "input_inventory": {
         "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-matrix-shapes-v1/input-inventory.json",
         "sha256": "2822a8b27214b49cf38f6e32a62784571fa6ee35cdc275f182fe554bd87656db",
@@ -6314,94 +6379,39 @@
         "-o",
         "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-matrix-shapes-v1/matrix_shapes"
       ],
-      "build_environment": {
-        "PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin:/usr/bin:/bin",
-        "HOME": "/home/yayoi",
-        "LANG": "C.UTF-8",
-        "LC_ALL": "C.UTF-8",
-        "PYTHONDONTWRITEBYTECODE": "1",
-        "LD_LIBRARY_PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib:/opt/intel/oneapi/mkl/2026.1/lib",
-        "MKLROOT": "/opt/intel/oneapi/mkl/2026.1",
-        "OMP_NUM_THREADS": "1",
-        "GIT_TERMINAL_PROMPT": "0",
-        "GIT_SSH_COMMAND": "ssh -oBatchMode=yes",
-        "CPLUS_INCLUDE_PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/include",
-        "PIP_CONFIG_FILE": "/dev/null",
-        "ONEAPI_DEVICE_SELECTOR": "level_zero:gpu",
-        "UR_ADAPTERS_FORCE_LOAD": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_adapter_level_zero_v2.so.0",
-        "SYCL_CACHE_PERSISTENT": "0",
-        "NEOReadDebugKeys": "1",
-        "EnableDirectSubmission": "0",
-        "UR_L0_V2_FORCE_DISABLE_COPY_OFFLOAD": "1",
-        "STRATA_SYCL_VERIFY_NATIVE_CAPTURE": "0",
-        "STRATA_SYCL_PREFILL_SAME_QUEUE": "1",
-        "STRATA_SYCL_PREFILL_NATIVE16": "bf16",
-        "XDG_CACHE_HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-matrix-shapes-v1/cache",
-        "TMPDIR": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-matrix-shapes-v1/tmp"
-      },
-      "native_environment": {
-        "PATH": "/usr/bin:/bin",
-        "HOME": "/home/yayoi",
-        "LANG": "C.UTF-8",
-        "LC_ALL": "C.UTF-8",
-        "PYTHONDONTWRITEBYTECODE": "1",
-        "LD_LIBRARY_PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib:/opt/intel/oneapi/mkl/2026.1/lib",
-        "ONEAPI_DEVICE_SELECTOR": "level_zero:gpu",
-        "UR_ADAPTERS_FORCE_LOAD": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_adapter_level_zero_v2.so.0",
-        "UR_L0_V2_FORCE_DISABLE_COPY_OFFLOAD": "1",
-        "NEOReadDebugKeys": "1",
-        "EnableDirectSubmission": "0",
-        "STRATA_SYCL_PREFILL_SAME_QUEUE": "1",
-        "STRATA_SYCL_VERIFY_NATIVE_CAPTURE": "0",
-        "SYCL_CACHE_PERSISTENT": "0",
-        "ZES_ENABLE_SYSMAN": "0",
-        "UR_ENABLE_LAYERS": "UR_LAYER_TRACING,UR_LAYER_PARAMETER_VALIDATION",
-        "UR_LOG_TRACING": "level:info;flush:info;output:file,/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-matrix-shapes-v1/api.trace",
-        "UR_LOG_VALIDATION": "level:warning;flush:warning;output:file,/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-matrix-shapes-v1/validation.log",
-        "UR_LOG_LOADER": "level:warning;flush:warning;output:stderr",
-        "UR_LOG_LEVEL_ZERO": "level:warning;flush:warning;output:stderr",
-        "LD_PRELOAD": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/ur-validation-preload-v2/libstrata_ur_validation.so",
-        "STRATA_UR_PROBE_EXPECTED_LOADER": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_loader.so.0.12.0",
-        "TMPDIR": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-matrix-shapes-v1/tmp",
-        "XDG_CACHE_HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-matrix-shapes-v1/cache",
-        "ZE_ENABLE_ALT_DRIVERS": "/usr/lib/x86_64-linux-gnu/libze_intel_gpu.so.1.17.39758"
-      },
-      "budgets": {
-        "wall": 240,
-        "cpu": 600,
-        "rss_cap": 4294967296,
-        "text_cap": 16777216,
-        "file_cap": 134217728,
-        "total_cap": 536870912
-      },
-      "active": false,
-      "ownership_closed": true,
-      "passed": false,
+      "native_environment_recipe": "Qualified runtime-requalification-current environment,explicit updated NEO,full UR trace and parameter validation. Immutable before exec;actual B570 DRM/providers checked at both gates.",
+      "M4_component_eligible": true,
       "GPU_kernel_executed": false,
       "inference_adopted": false,
-      "criterion": "Property-only exact B570:report all matrix tuples and actual subgroup/workgroup/local limits. Negative M4 support closes proposal normally;no unsupported kernel submits. Frozen source,SDK,compiler+actual dependencies,link inputs,pre-main validation,immutable providers,finite ownership,no new fault required.",
-      "retention": "One imminent property probe only;selected6e40+12fixtures remain unchanged. Retire property ELF/objects/successful trace after compact capability evidence and exact source/recipe recovery,before the next component generation.",
-      "build_passed": true,
-      "binary": {
-        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-matrix-shapes-v1/matrix_shapes",
-        "bytes": 30544,
-        "sha256": "e94a2b0f3f908e9c09bfd92bce0e677bf0c0b9fb9297cbc860e195df4ca06b3b"
-      },
-      "actual_compiler_inputs": {
-        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-matrix-shapes-v1/compiler-inputs.json",
-        "sha256": "3121b7803f0b3f0d7c6164f8bdf96f5d15f93055b1d2637b229f57af511988cc",
-        "files": 626
-      },
-      "actual_link_inputs": {
-        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-matrix-shapes-v1/link-inputs.json",
-        "sha256": "c9a887c7fe69ea451778bf503279049b108cb39e160b11ae96bd01f10a6b3d03",
-        "frozen": 18,
-        "uncovered": 0
-      },
-      "source_inputs": {
-        "files": 38,
-        "aggregate_sha256": "c0adc2a945969bc2d52d5090bea0782fda3e0ce214a4f735bfa0f3e30f77df36"
+      "ordinary_runtime_teardown_qualified": false,
+      "retirement": {
+        "status": "consumer-ended-source-recovery-pending",
+        "consumer": "Main uniformM4/WG96source/fixture plan consumes compact capability only;no further use of property executable.",
+        "next_action": "Push original source;recover exact project/recipe and actual compiler/link inputs,then retire probe before new component build."
       }
+    },
+    "component_source": {
+      "source_commit": "76366e1c7",
+      "constructor": "tools/sycl/qsa_head_sources.py",
+      "proof": {
+        "original_source_commit": "6e40afc1beddd059ee518617f6c1efce1da14aca",
+        "original_source_sha256": "4f9f815c9baae709f919f6d5ad1af04677c10d8c13c7597b3857cf81567ae192",
+        "generated_sha256": {
+          "original.cpp": "f9e1aaa7c1f5d146da1ae097a47cade3630da758809c6f75c5c729e3e305e32c",
+          "candidate.cpp": "8a26962c24f21bcc272f1948ab22fc334ea536cd21acae4d88781b29d68f49bb",
+          "qsa-head.hpp": "dc15535160bb9a8fd915ff0c46cf84ac33c58d97809e7606bd84bfed7ba0f199"
+        },
+        "geometry": "M4,N16,K16,WG96,SG16;QK3headblocks*2cellblocks;PV3headblocks*2dim128blocks*8fragments;12real heads only.",
+        "softmax": "h=subgroup;h<12;h+=6 gives exactly one writer per head,independent of QK head-block ownership.",
+        "declared_local_bytes": 19188,
+        "reversible_geometry_edits": 26,
+        "reversible_event_edits": 3,
+        "preservation": "Same Q scale/BF16 rounding,d ascending16,K/V4loop bounds,FP32 cell sum c0..31,PV c0,16,output conversion;all whole-group barriers unchanged and uniform. No padded score/probability/state rows are consumed. M4matrix arithmetic/registers/speed still require native observation.",
+        "production_or_decode_changed": false
+      },
+      "native_built": false,
+      "source_review_pending": true,
+      "performance_gate": "No performance/adoption claim from source. Qualify native property,independent host/state/guard checks atPage4/16 andphysical finaladdresses,thenprospectively frozen matched clean/service comparison with varied operands;do not repeat zero-Qconstant-V-only eligibility."
     }
   }
 }
