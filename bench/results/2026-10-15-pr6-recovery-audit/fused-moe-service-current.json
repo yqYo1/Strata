@@ -10819,6 +10819,15 @@
         "sha256": "217fd2caf8abcecb48dfae30769a2caca1b80b42269ce04f930c698c0fc77ba2",
         "uncovered": 0
       }
+    },
+    "interval_checker": {
+      "source_commit": "977c54fc9",
+      "command": "flock -n /home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/owned-v0141-measurement.lock python3 -B -m unittest discover -s tools -p 'test_qsa*interval.py' -v",
+      "host_tests": 15,
+      "passed": true,
+      "GPU_executed": false,
+      "arithmetic_or_task_qualified": false,
+      "criterion": "Exact dyadic depth31/control,depth16/candidate contribution intervals and FP32 fused update;common p/BF16PV/A bits;target-justified division ULP and BF16RNE contract required from separate review before native launch. Includes valid BF16midpoint crossing,negative checks,zero sign and diagnostic branches."
     }
   }
 }

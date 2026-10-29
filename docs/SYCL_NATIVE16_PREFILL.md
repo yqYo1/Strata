@@ -277,11 +277,24 @@ online update,including subnormals and values lost by ordinary binary64 sums.
 The conservative candidate depth is16only after proving16materialized lane
 pairs;depth5requires actual balanced-tree evidence. These are operand-specific
 mathematical component bounds,not an empirical tensor/task degradation margin.
-Next,re-pin the live selected source/cap and capture commonp,alpha,BF16PVbits,
-FP32accumulator and pre-cast outputs. Target arithmetic/denormal modes,lane
-mapping,fullQSA/task/performance and physical-context/handoff gates remain
-unqualified. The rejected extra binaries and CPU IRgeneration are retired;
-selected6e40and its twelve same-build fixtures remain.
+The source73414ebc2pins the original6e40kernel and changes only that fold,
+with matched optional capture stores in both arms. Its CPU build and four
+compiled normal/state property queries pass;no new normalizer kernel has been
+enqueued. The Page4/Page16lossless fixture at2fb5d95d2also compiles and links
+with667actual compiler inputs and zero uncovered link inputs. It captures
+commonp,alpha,BF16PVbits,FP32accumulator and pre-cast outputs,and checks seven
+invalid trace spans before any submission. The earlier unused fixture plan
+was closed after a source change and never built;its status remains separate.
+
+The checker977c54fc9and host oracle now pass15host tests,including a valid
+reassociation crossing a BF16midpoint,invalid operand/accumulator changes,
+online FMA errors,division/cast errors,zero signs and diagnostic branches.
+Those tests exercise the checker,not GPU arithmetic or task accuracy.
+Target arithmetic/denormal modes and division/BF16conversion contracts are
+being reviewed by Luna before a committed bounded numerical launch.
+FullQSA/task/performance and physical-context/handoff gates remain unqualified.
+The rejected extra binaries and CPU IRgeneration are retired;selected6e40
+and its twelve same-build fixtures remain.
 
 ## Measured performance and rejected comparisons
 
