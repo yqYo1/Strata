@@ -20,6 +20,49 @@ P,B,ROOT,RESULT=q.P,q.B,q.ROOT,q.RESULT
 FOLDER=ROOT/'performance'
 
 
+def traced_launches(record):
+    """Bind successful submitted shapes/local extents to queried kernel IDs.
+
+    This reads the existing bounded qualification traces,not a later speed
+    observer. Compiler static SLM/spill descriptors stay distinct from bound
+    dynamic local arguments and from occupancy/physical traffic.
+    """
+    qualification=record['qsa_pair_proposal']['qualification']
+    properties=qualification['properties']['outcome']['processes'][0]['cases']
+    hashed={p['kernel_name_sha256']:p['kind'] for p in properties}
+    expected={
+        'union':dict(wg=128,args=8,local=[]),
+        'selected':dict(wg=128,args=18,local=[16384,1024,64,64,64,256,64,2112]),
+        'attention':dict(wg=192,args=22,local=[16384,1536,3168,96,96,96,256,128,96]),
+    }
+    summary={}
+    for mode,counts in [('union',{'union':38,'selected':0,'attention':0}),
+                        ('small',{'union':6,'selected':8,'attention':8}),
+                        ('correctness',{'union':19,'selected':19,'attention':19})]:
+        results=[]
+        for process in qualification[mode]['outcome']['processes']:
+            path=ROOT/mode/process['label']/'api.trace';created={};observed=dict.fromkeys(expected,0)
+            for line in path.read_text().splitlines():
+                if '<--- urKernelCreate(' in line and 'UR_RESULT_SUCCESS' in line:
+                    match=re.search(r'\((_ZTS\S+)\).*?\.phKernel = .*?\((0x[0-9a-f]+)\)',line)
+                    if match:created[match[2]]=match[1]
+                if '<--- urEnqueueKernelLaunchWithArgsExp(' not in line or 'UR_RESULT_SUCCESS' not in line:continue
+                handle=re.search(r'\.hKernel = (0x[0-9a-f]+)',line)
+                q.require(handle and handle[1] in created,'submitted kernel has no recorded creation')
+                sha=hashlib.sha256(created[handle[1]].encode()).hexdigest();kind=hashed.get(sha)
+                if kind is None:continue # Separate pack/guard/dependency kernels.
+                contract=expected[kind];observed[kind]+=1
+                q.require('.workDim = 1,' in line and
+                    re.search(r'\.pLocalWorkSize = 0x[0-9a-f]+ \('+str(contract['wg'])+r'\)',line) and
+                    '.numArgs = '+str(contract['args'])+',' in line,'submitted shape/ABI differs from native admission')
+                local=[int(v) for v in re.findall(r'UR_EXP_KERNEL_ARG_TYPE_LOCAL, \.index = \d+, \.size = (\d+)',line)]
+                q.require(sorted(local)==sorted(contract['local']),'actual dynamic local arguments differ')
+            q.require(observed==counts,'traced qualification launch coverage differs: '+str(observed))
+            results.append(dict(label=process['label'],counts=observed,trace_sha256=q.digest(path)))
+        summary[mode]=results
+    return summary
+
+
 def inputs(revision):
     pending=[Path(__file__).resolve()];seen=set();pins={}
     while pending:
@@ -44,6 +87,7 @@ def admit(record,plan):
         not gate['active'],'complete component oracle gate required')
     q.require(plan['binary']==native['outcome']['binary'] and plan['runtime_files']==rt['runtime_files'] and
         inputs(plan['source_commit'])==plan['controller_inputs'],'comparison inputs changed')
+    q.require(traced_launches(record)==plan['traced_dispatch_contract'],'actual native qualification trace changed')
     fixture=plan['fixture'];q.require(q.digest(fixture['path'])==fixture['sha256'] and
         Path(fixture['path']).stat().st_size==fixture['bytes'],'initialized selected-ID fixture changed')
     clock.check(plan['clock']);return native,rt
@@ -80,6 +124,7 @@ def prepare():
     plan=dict(stage='prepared',source_commit=revision,controller_inputs=inputs(revision),
         binary=native['outcome']['binary'],runtime_files=rt['runtime_files'],fixture=fixture,
         clock=timing,cases=cases,
+        traced_dispatch_contract=traced_launches(record),
         budgets=dict(wall=240,cpu=900,rss_cap=8<<30,text_cap=8<<20,total_cap=256<<20,file_cap=64<<20),
         criteria='Three independent processes,first arm0/1/0;six alternating paired rounds per process,four calls per batch,two untimed one-call warmups. Arm0is selected ordered-exp pack+attention;arm1is identical pack+GPUunion+pair attention. All36samples eligible only with wall and summed actual-event service>=100ms,exact expected events/order,all-output constant-V oracle after every batch,actual captured union IDs/masks/suffix oracle before/after timing,immutable inputs/guards,clock endpoint/rounding<=0.1percent at100ms,quiet pre-main parameter validation,closed owners and no fresh fault. Advance component only if every process has candidate/base median wall AND full GPU service<=0.99. Stop first safety/coverage/correctness failure;no model trial on failed performance gate.',
         hardware_scope='All timed operands resident;commonGPUKVpack and union preparation included,CPU submission/drain in wall. Actual event sums and pack/prep/attention separated;in-order event span includes gaps. No timed PCIe copy,physical VRAM traffic,saturation or full-model ceiling inferred.',

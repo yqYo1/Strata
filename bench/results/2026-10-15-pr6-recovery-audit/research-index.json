@@ -15336,7 +15336,7 @@
   },
   "qsa_pair_fixture_measurement_contract_20261029": {
     "classification": "decision support",
-    "status": "orca_closed_native_review_pending",
+    "status": "reviewed_with_report_corrections",
     "schedulable_now": false,
     "source_revision": "f13c45e3b",
     "source_files": {
@@ -15374,6 +15374,17 @@
       "completion_delivery_acknowledged": "delivery_bb87d903fc2a"
     },
     "report_bytes": 10159,
-    "report_sha256": "d697c3020989e765deaa673c4691e84c618be4d3b3fd16e9f81ab3e2e80932ca"
+    "report_sha256": "d697c3020989e765deaa673c4691e84c618be4d3b3fd16e9f81ab3e2e80932ca",
+    "native_review": {
+      "model": "gpt-6-luna max",
+      "path": ".cache/research/2026-10-29/qsa_pair_fixture_measurement_contract_20261029.review.json",
+      "sha256": "22a6e4f63197849607dc0661c5b3b842e1f516b5a96f5314f5dceacaee67f40e",
+      "verdict": "accepted_with_report_corrections",
+      "code_blocker": false,
+      "boundary_concern": "Unsupported:full reverse-page pack covers original quantized backing end through logical cell15;logical ID262143 reaches final packed row. This is source coverage,not GPU qualification.",
+      "oracle_label": "BF16 operands/probabilities/output with FP64dot/PV reference reductions and FP32online state/accumulator rounding;oneBF16spacing+2e-6 gate,not exact production FP32 reduction parity.",
+      "native_failure": "Original byte-mask host preflight exits1before any enqueue;no fresh fault;failed status unchanged. New typed-alignment native build/gates required.",
+      "next": "Rebuild/run ordered properties,set-oracle,small and extended tensor/diagnostic gates;actual-event dependency-path comparison before model/decode/physicalcontext qualification."
+    }
   }
 }
