@@ -11234,7 +11234,7 @@
       }
     },
     "tiny4": {
-      "stage": "prepared",
+      "stage": "closed",
       "source_commit": "ddd89090af0a1383cdf38ca4344281d6dadd790c",
       "source_sha256": {
         "tools/sycl/qsa_head_native.py": "ff3a729ae8e39fdbcd4b0b3126a982b7b4f984ba2228779fbaada7d1126244c1",
@@ -11328,7 +11328,35 @@
         "file_cap": 67108864,
         "total_cap": 536870912
       },
-      "criteria": "One fresh owned process,stop firstfailure,no retry. Properties only beforekernel;source-review before submissions. Tinytrace actual SG/WG/local/ABI,complete real-head output and all12realhead FP32state parity,independent host oracle/guards,all input immutable,pre-main validation,correct actualproviders,quiet validation and no newfault. Extended physical finaladdresses do not qualify full-model context."
+      "criteria": "One fresh owned process,stop firstfailure,no retry. Properties only beforekernel;source-review before submissions. Tinytrace actual SG/WG/local/ABI,complete real-head output and all12realhead FP32state parity,independent host oracle/guards,all input immutable,pre-main validation,correct actualproviders,quiet validation and no newfault. Extended physical finaladdresses do not qualify full-model context.",
+      "outcome": {
+        "complete": true,
+        "passed": true,
+        "host_probe_accepted": true,
+        "properties": [],
+        "dispatch": {
+          "00875f43b6dada0a58df8661fedfbd1052fce2f726dc9501e1eefddc4002d8a3": 48,
+          "9ae8e7a6055e5a77aa1c3ec6115d0e16bea123c976b03ae3a6dd01bb5f01d4c1": 2,
+          "52ffae04e3a90101a6a90e6f696f21d4c990af094077802a562444e01f6eb6d9": 2,
+          "f01ccea6490ecd8c54c6d4c2636205fd07b030b740c745ee23c5c613170fbbd4": 48
+        },
+        "numerical_passed": true,
+        "physical262144_component_addresses": false,
+        "model_context_fill_qualified": false,
+        "model_speed_qualified": false,
+        "parameter_validation": true,
+        "ownership_closed": true,
+        "fresh_faults": [],
+        "boot_unchanged": true,
+        "driver_after": {
+          "pci": "/sys/bus/pci/devices/0000:05:00.0",
+          "driver": "xe",
+          "vendor": "0x8086",
+          "device": "0xe20c",
+          "kernel": "7.0.0-38-generic",
+          "devcoredump": false
+        }
+      }
     }
   }
 }
