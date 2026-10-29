@@ -78,7 +78,8 @@ int main(void) {
 
     uint32_t driver_count = 0;
     CALL(zeDriverGet(&driver_count, NULL));
-    if (!driver_count || driver_count > MAX_DRIVERS) return refuse("driver count bound");
+    if (!driver_count) return refuse("zero drivers enumerated");
+    if (driver_count > MAX_DRIVERS) return refuse("driver count bound");
     ze_driver_handle_t drivers[MAX_DRIVERS] = {0};
     uint32_t capacity = driver_count;
     CALL(zeDriverGet(&driver_count, drivers));
