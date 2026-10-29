@@ -67,27 +67,14 @@ static void properties(const char *path) {
   require(count==4,"exactly four normal/state attention kernels required");
   dlclose(loader);
 }
-static void id_range_host_contract() {
-  using strata::kernels::qsa_head_candidate::id_range_eligible;
-  constexpr size_t rows=2147483647u/64;
-  constexpr int64_t queries=2147483647u/(2*128);
-  require(id_range_eligible(rows,queries),"last legal ID range");
-  require(!id_range_eligible(rows+1,queries),"pack overflow routes to size_t");
-  require(!id_range_eligible(rows,queries+1),"attention overflow routes to size_t");
-  require(!id_range_eligible(std::numeric_limits<size_t>::max(),1),"range guard before multiplication");
-  require(!id_range_eligible(1,-1),"negative query range");
-  require(id_range_eligible(524288,8192),"physical256K production range");
-}
 int main(int argc,char **argv) {
   try {
-    id_range_host_contract();
     require(argc>=2,"explicit mode required");const std::string mode=argv[1];
     if (mode=="--component" || mode=="--smoke") return qsa_head_existing_oracle(argc,argv);
     require(mode=="--tiny" || mode=="--properties","unknown mode");
     gate(true,"before-runtime");rt=sycl_backend::runtime_for();Drain pending;
     require(rt->device().get_info<sycl::info::device::name>()=="Intel(R) Arc(TM) B570 Graphics","qualified B570 required");
     gate(true,"runtime-ready");
-    std::cout<<"HEAD_ID_RANGE host_bounds=PASS checks=6 fallback=size_t before_enqueue=1\n";
     if (mode=="--properties") {require(argc==3,"pinned Level Zero loader path required");properties(argv[2]);}
     else {require(argc==2,"tiny arguments");run(17,17,1,false,false);}
     rt->wait();gate(true,"after-cleanup");
