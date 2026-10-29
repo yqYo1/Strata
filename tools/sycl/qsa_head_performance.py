@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Bounded full-path native M4 comparison,after component qualification.
+"""Bounded full-path native identity-rescale comparison,after component qualification.
 
 Own project code,repository LICENSE. Synthetic varied operands and selected-ID
 patterns are not an actual-model throughput or hardware saturation measurement.
@@ -27,7 +27,7 @@ def sources(revision):return q.sources(revision,Path(__file__).resolve(),[CPP,n.
 
 
 def qualification():
-    record=r.validation.committed(RESULT);component=record['qsa_head_geometry']['component_v2']
+    record=r.validation.committed(RESULT);component=record[n.KEY]
     for key in ['properties4','tiny4','component4','component16']:
         o=component[key]['outcome'];require(o['passed'] and o['complete'] and o['ownership_closed'] and not o['fresh_faults'],'finish all native safety/numerical gates first:'+key)
     row=json.loads((n.ROOT/'record.json').read_text());require(n.compact(row)==component['build'] and row['passed'] and row['ownership_closed'],'exact native build required')
@@ -48,7 +48,7 @@ def admitted(row):
 
 
 def prepare():
-    record,native,allowed,rt=qualification();require(not ROOT.exists() and 'performance' not in record['qsa_head_geometry']['component_v2'],'fresh performance build only')
+    record,native,allowed,rt=qualification();require(not ROOT.exists() and 'performance' not in record[n.KEY],'fresh performance build only')
     revision=subprocess.check_output(['git','rev-parse','HEAD'],cwd=P,text=True).strip();pins=sources(revision)
     ROOT.mkdir(mode=0o700);(ROOT/'tmp').mkdir();(ROOT/'cache').mkdir()
     compile_base=next(argv for label,argv in native['commands'] if label=='original');flags=compile_base[1:compile_base.index('-MD')]
@@ -59,11 +59,11 @@ def prepare():
         require(path.is_file() and path.is_relative_to(n.ROOT),'unexpected kernel/runtime object');allowed[str(path)]=digest(path)
     allowed.update({str(P/name):h for name,h in pins.items()});write(ROOT/'input-inventory.json',allowed)
     row=dict(stage='prepared',source_commit=revision,source_sha256=pins,native_build_source=native['source_commit'],native_geometry=native['geometry_proof'],runtime_sha256=digest(r.RESULT),boot=rt['boot'],commands=[['compile',compile_command],['link',link]],environment=dict(native['environment'],TMPDIR=str(ROOT/'tmp'),XDG_CACHE_HOME=str(ROOT/'cache')),input_inventory=dict(path=str(ROOT/'input-inventory.json'),sha256=digest(ROOT/'input-inventory.json'),files=len(allowed)),budgets=dict(wall=600,cpu=1800,rss_cap=8<<30,text_cap=32<<20,file_cap=256<<20,total_cap=2<<30),passed=False,active=False,ownership_closed=True,criteria='CPU fixture build only from qualified exact native kernel objects. Actual compiler and linker inputs frozen;no GPU trial before this build closes. Synthetic fourcase Page4query8192/cap2051 performance is separate from model evidence.',retention='Same imminent v2comparison generation. Keep only compact source/recipe,samples and decision;retire ELF/objects/normal raw output at comparisonclosure.')
-    admitted(row);write(ROOT/'record.json',row);record['qsa_head_geometry']['component_v2']['performance']=dict(build=compact(row));write(RESULT,record);print('Performance build prepared;commit before compile.',flush=True)
+    admitted(row);write(ROOT/'record.json',row);record[n.KEY]['performance']=dict(build=compact(row));write(RESULT,record);print('Performance build prepared;commit before compile.',flush=True)
 
 
 def build():
-    record=r.validation.committed(RESULT);row=json.loads((ROOT/'record.json').read_text());require(row['stage']=='prepared' and compact(row)==record['qsa_head_geometry']['component_v2']['performance']['build'],'fresh committed build plan');_,native,allowed,_=admitted(row);owner=None
+    record=r.validation.committed(RESULT);row=json.loads((ROOT/'record.json').read_text());require(row['stage']=='prepared' and compact(row)==record[n.KEY]['performance']['build'],'fresh committed build plan');_,native,allowed,_=admitted(row);owner=None
     def persist():write(ROOT/'record.json',dict(row,active=bool(owner and owner.active is not None),commands_executed=owner.commands if owner else []))
     owner=r.supervision.Owner(ROOT/'build-owned',persist)
     try:
@@ -77,12 +77,12 @@ def build():
         row.update(stage='built',passed=True,binary=dict(path=str(binary),sha256=digest(binary),bytes=binary.stat().st_size),actual_compiler_inputs=dict(files=len(observed),path=str(ROOT/'compiler-inputs.json'),sha256=digest(ROOT/'compiler-inputs.json'),uncovered=0),actual_link_inputs=dict(frozen=len(links['frozen_inputs']),path=str(ROOT/'link-inputs.json'),sha256=digest(ROOT/'link-inputs.json'),uncovered=0));admitted(row)
     except BaseException as error:row.update(stage='failed',passed=False,error=repr(error))
     finally:
-        row.update(active=False,ownership_closed=owner.active is None and all(r.supervision.closed(c) for c in owner.commands),commands_executed=owner.commands);row['passed']=bool(row['passed'] and row['ownership_closed']);write(ROOT/'record.json',row);record['qsa_head_geometry']['component_v2']['performance']['build']=compact(row);write(RESULT,record)
+        row.update(active=False,ownership_closed=owner.active is None and all(r.supervision.closed(c) for c in owner.commands),commands_executed=owner.commands);row['passed']=bool(row['passed'] and row['ownership_closed']);write(ROOT/'record.json',row);record[n.KEY]['performance']['build']=compact(row);write(RESULT,record)
     print(json.dumps({k:row.get(k) for k in ['stage','passed','ownership_closed','error']}),flush=True);require(row['passed'],'performance fixture build failed')
 
 
 def prepare_run():
-    record=r.validation.committed(RESULT);built=json.loads((ROOT/'record.json').read_text());require(built['stage']=='built' and built['passed'] and built['ownership_closed'],'compiled fixture first');_,_,_,rt=admitted(built);scope=record['qsa_head_geometry']['component_v2']['performance'];require('comparison' not in scope,'no repeat/overwrite of prior comparison')
+    record=r.validation.committed(RESULT);built=json.loads((ROOT/'record.json').read_text());require(built['stage']=='built' and built['passed'] and built['ownership_closed'],'compiled fixture first');_,_,_,rt=admitted(built);scope=record[n.KEY]['performance'];require('comparison' not in scope,'no repeat/overwrite of prior comparison')
     plans=[]
     for index in range(3):
         folder=ROOT/str(index);folder.mkdir();(folder/'tmp').mkdir();(folder/'cache').mkdir()
@@ -115,7 +115,7 @@ def parse(stdout,index):
 
 
 def run():
-    record=r.validation.committed(RESULT);scope=record['qsa_head_geometry']['component_v2']['performance'];built=json.loads((ROOT/'record.json').read_text());row=json.loads((ROOT/'comparison.json').read_text());require(compact(row)==scope['comparison'] and row['stage']=='prepared','frozen comparison required');_,_,_,rt=admitted(built)
+    record=r.validation.committed(RESULT);scope=record[n.KEY]['performance'];built=json.loads((ROOT/'record.json').read_text());row=json.loads((ROOT/'comparison.json').read_text());require(compact(row)==scope['comparison'] and row['stage']=='prepared','frozen comparison required');_,_,_,rt=admitted(built)
     text=subprocess.check_output(['journalctl','-k','-b','-n','0','--show-cursor','--no-pager'],text=True,timeout=15);cursor=next(v.split(': ',1)[1] for v in text.splitlines() if v.startswith('-- cursor: '));owner=None
     def persist():write(ROOT/'comparison.json',dict(row,active=bool(owner and owner.active is not None),commands_executed=owner.commands if owner else []))
     owner=r.supervision.Owner(ROOT/'run-owned',persist)

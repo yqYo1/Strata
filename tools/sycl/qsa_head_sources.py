@@ -1,109 +1,29 @@
-"""Independent M4/WG96 prefill-only component from our selected M8 kernel.
+"""Own identity-rescale skipping component from selected QSA; repository LICENSE.
 
-Repository LICENSE applies. These are exact, reversible geometry edits to our
-own source, not a copied external kernel. No engine or decode caller is changed.
+Same M8/WG128 geometry,storage,ordered softmax and matrix operations. Skip only
+an accumulator rescale whose eight per-head FP32 coefficients are exactly1.
+No production or decode caller is changed. Closed M4 code recovers at2148ad393.
 """
 import hashlib
 from pathlib import Path
 import subprocess
 
-P = Path(__file__).resolve().parents[2]
-BASE = '6e40afc1beddd059ee518617f6c1efce1da14aca'
-PREFIX = 'src/kernels/sycl/qsa_bf16_prefix.cpp'
-BASE_SHA = '4f9f815c9baae709f919f6d5ad1af04677c10d8c13c7597b3857cf81567ae192'
-# The exact count rejects a changed parent instead of applying a fuzzy patch.
-EDITS = [
-    ('Cells = 32, Workgroup = 128;', 'Cells = 32, Workgroup = 96;', 1),
-    ('16 * Dim', '12 * Dim', 8),
-    ('16 * Cells', '12 * Cells', 3),
-    ('16 * ScoreStride', '12 * ScoreStride', 2),
-    ('3 * 16', '3 * 12', 1),
-    ('16 * 4', '12 * 4', 1),
-    ('== 28160', '== 25280', 1),
-    ('== 28224', '== 25328', 1),
-    ('== 20036', '== 19188', 1),
-    ('fits(c.msize, c.max_msize, 8)', 'fits(c.msize, c.max_msize, 4)', 1),
-    ('probe.head >= 16', 'probe.head >= Heads', 1),
-    ('maximum(16, handler)', 'maximum(12, handler)', 1),
-    ('normalizer(16, handler), alpha(16, handler)', 'normalizer(12, handler), alpha(12, handler)', 1),
-    ('bad_head(16, handler)', 'bad_head(12, handler)', 1),
-    ('head < 16; head += 8', 'head < Heads; head += 6', 1),
-    ('if (tid < 16)', 'if (tid < Heads)', 2),
-    ('accumulator, 8, 16', 'accumulator, 4, 16', 1),
-    ('use::a, 8, 16', 'use::a, 4, 16', 1),
-    ('Acc accumulated[4]', 'Acc accumulated[8]', 1),
-    ('for (int j = 0; j < 4; ++j) mx::joint_matrix_fill',
-     'for (int j = 0; j < 8; ++j) mx::joint_matrix_fill', 1),
-    ('if (subgroup < 4)', 'if (subgroup < 6)', 2),
-    ('(subgroup / 2) * 8', '(subgroup / 2) * 4', 2),
-    ('h < 16; h += 8', 'h < Heads; h += 6', 1),
-    ('(subgroup / 4) * 8, dim_base = (subgroup % 4) * 64',
-     '(subgroup / 2) * 4, dim_base = (subgroup % 2) * 128', 2),
-    ('        for (int j = 0; j < 4; ++j) {\n          Left a; Right b;',
-     '        for (int j = 0; j < 8; ++j) {\n          Left a; Right b;', 1),
-    ('      for (int j = 0; j < 4; ++j)\n        mi::joint_matrix_apply(sg, accumulated[j]',
-     '      for (int j = 0; j < 8; ++j)\n        mi::joint_matrix_apply(sg, accumulated[j]', 1),
-]
-
-# Avoid the deployed backend's missing M4 coordinate-apply helper. Use only
-# public matrix loads/stores and six disjoint subgroup-local float tiles.
-PORTABLE_EDITS = [
-    ('- (CacheQueries ? 12 * Dim * 2 - 4 : 0);',
-     '- (CacheQueries ? 12 * Dim * 2 - 4 : 0) + 6 * 4 * 16 * 4;', 1),
-    ('== 25280', '== 26816', 1),
-    ('== 25328', '== 26864', 1),
-    ('== 19188', '== 20724', 1),
-    ('    sycl::local_accessor<int, 1> bad_head(12, handler);',
-     '    sycl::local_accessor<int, 1> bad_head(12, handler);\n'
-     '    sycl::local_accessor<float, 1> matrix_storage(6 * 4 * 16, handler);', 1),
-    ('      const int tid = item.get_local_linear_id();',
-     '      auto matrix_memory = matrix_storage.template get_multi_ptr<sycl::access::decorated::no>();\n'
-     '      const int tid = item.get_local_linear_id();', 1),
-    ("""          mi::joint_matrix_apply(sg, product, [=](float &value, size_t r, size_t c) {
-            scores[(head + r) * ScoreStride + cell + c] = value;
-          });""",
-     """          const int tile = subgroup * 64;
-          mx::joint_matrix_store(sg, product, matrix_memory + tile, 16, mx::layout::row_major);
-          sycl::group_barrier(sg);
-          for (int row = 0; row < 4; ++row)
-            scores[(head + row) * ScoreStride + cell + lane] = matrix_memory[tile + row * 16 + lane];
-          // The following full-workgroup barrier retires all tile readers.""", 1),
-    ("""          mi::joint_matrix_apply(sg, accumulated[j], [=](float &v, size_t r, size_t) {
-            v *= alpha[head + r];
-          });""",
-     """          const int tile = subgroup * 64;
-          mx::joint_matrix_store(sg, accumulated[j], matrix_memory + tile, 16, mx::layout::row_major);
-          sycl::group_barrier(sg);
-          for (int row = 0; row < 4; ++row)
-            matrix_memory[tile + row * 16 + lane] *= alpha[head + row];
-          sycl::group_barrier(sg);
-          mx::joint_matrix_load(sg, accumulated[j], matrix_memory + tile, 16, mx::layout::row_major);
-          // Matrix readers finish before this subgroup reuses its small tile.
-          sycl::group_barrier(sg);""", 1),
-    ("""      for (int j = 0; j < 8; ++j)
-        mi::joint_matrix_apply(sg, accumulated[j], [=](float &value, size_t r, size_t c) {
-          const int h = head + int(r);
-          if (h >= Heads) return;
-          uint16_t result = 0;
-          if (any_live && (bad_head[h] || invalid_scales)) result = 0x7fc0;
-          else if (normalizer[h] > 0.f)
-            result = sycl::bit_cast<uint16_t>(BFloat(value / normalizer[h]));
-          output[(batch * 24 + kv_head * Heads + h) * Dim + dim_base + j * 16 + c] = result;
-        });""",
-     """      for (int j = 0; j < 8; ++j) {
-        const int tile = subgroup * 64;
-        mx::joint_matrix_store(sg, accumulated[j], matrix_memory + tile, 16, mx::layout::row_major);
-        sycl::group_barrier(sg);
-        for (int row = 0; row < 4; ++row) {
-          const int h = head + row;
-          uint16_t result = 0;
-          if (any_live && (bad_head[h] || invalid_scales)) result = 0x7fc0;
-          else if (normalizer[h] > 0.f)
-            result = sycl::bit_cast<uint16_t>(BFloat(matrix_memory[tile + row * 16 + lane] / normalizer[h]));
-          output[(batch * 24 + kv_head * Heads + h) * Dim + dim_base + j * 16 + lane] = result;
-        }
-        sycl::group_barrier(sg);
-      }""", 1),
+P=Path(__file__).resolve().parents[2]
+BASE='6e40afc1beddd059ee518617f6c1efce1da14aca'
+PREFIX='src/kernels/sycl/qsa_bf16_prefix.cpp'
+BASE_SHA='4f9f815c9baae709f919f6d5ad1af04677c10d8c13c7597b3857cf81567ae192'
+EDITS=[
+    ('        const int head = (subgroup / 4) * 8, dim_base = (subgroup % 4) * 64;\n',
+     '        const int head = (subgroup / 4) * 8, dim_base = (subgroup % 4) * 64;\n'
+     '        const bool identity_scale = sycl::all_of_group(\n'
+     '            sg, lane >= 8 || alpha[head + lane] == 1.f);\n',1),
+    ('          mi::joint_matrix_apply(sg, accumulated[j], [=](float &v, size_t r, size_t) {\n'
+     '            v *= alpha[head + r];\n'
+     '          });',
+     '          if (!identity_scale)\n'
+     '            mi::joint_matrix_apply(sg, accumulated[j], [=](float &v, size_t r, size_t) {\n'
+     '              v *= alpha[head + r];\n'
+     '            });',1),
 ]
 
 SIGNATURE = '''const uint16_t *query, const QsaAttnPools &pools,
@@ -137,10 +57,7 @@ def generated():
     for a,b,n in event_edits: base = change(base,a,b,n)
     candidate = base
     for a,b,n in EDITS: candidate = change(candidate,a,b,n)
-    for a,b,n in PORTABLE_EDITS: candidate = change(candidate,a,b,n)
-    if "mi::joint_matrix_apply(" in candidate: raise RuntimeError("coordinate helper remains")
     recovered = candidate
-    for a,b,n in reversed(PORTABLE_EDITS): recovered = change(recovered,b,a,n)
     for a,b,n in reversed(EDITS): recovered = change(recovered,b,a,n)
     if recovered != base: raise RuntimeError('undeclared geometry edit')
     for a,b,n in reversed(event_edits): recovered = change(recovered,b,a,n)
@@ -168,19 +85,17 @@ def generated():
 
 
 def proof():
-    rows = generated()
-    return dict(original_source_commit=BASE, original_source_sha256=BASE_SHA,
+    rows=generated()
+    return dict(original_source_commit=BASE,original_source_sha256=BASE_SHA,
         generated_sha256={n:hashlib.sha256(raw).hexdigest() for n,raw in rows.items()},
-        geometry='M4,N16,K16,WG96,SG16;QK3headblocks*2cellblocks;PV3headblocks*2dim128blocks*8fragments;12real heads only.',
-        softmax='h=subgroup;h<12;h+=6 gives exactly one writer per head,independent of QK head-block ownership.',
-        declared_local_bytes=20724, reversible_geometry_edits=len(EDITS), reversible_event_edits=3,
-        reversible_portable_matrix_edits=len(PORTABLE_EDITS), subgroup_local_tiles_bytes=1536,
-        coordinate_matrix_apply_used=False, private_fragment_mapping_assumed=False,
-        local_traffic_note="Additional logical FP32 scratch accesses versus register alpha/output;physical transactions and speed unknown. Three subgroup barriers retire each PV tile reuse;all original whole-group barriers remain.",
-        preservation='Same Q scale/BF16 rounding,d ascending16,K/V4loop bounds,FP32 cell sum c0..31,PV c0,16,output conversion;all whole-group barriers unchanged and uniform. No padded score/probability/state rows are consumed. M4matrix arithmetic/registers/speed still require native observation.',
+        geometry='Unchanged M8,N16,K16,WG128,SG16,16padded/12real heads;QK4/PV8subgroups.',
+        change='Skip only FP32 accumulator-times-alpha when all8head coefficients in that subgroup equal1.f;all lanes execute subgroup all_of_group before a uniform conditional matrix collective.',
+        reversible_geometry_edits=0,reversible_identity_rescale_edits=len(EDITS),reversible_event_edits=3,
+        declared_local_bytes=20036,coordinate_matrix_apply_used=True,private_fragment_mapping_assumed=False,
+        preservation='Same cachedQ,K/V4staging,ordered FP32softmax/state,BF16stores,all whole-group barriers. Short-circuit alpha reads touch only valid8rows. No approximate equality,no first-tile specialcase. IEEE identity/denormal/nonfinite contract needs source review and actual oracle.',
         production_or_decode_changed=False)
 
 
-if __name__ == '__main__':
+if __name__=='__main__':
     import json
     print(json.dumps(proof(),indent=2))

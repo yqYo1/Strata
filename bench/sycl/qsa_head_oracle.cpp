@@ -26,7 +26,6 @@ bool head_state(HEAD_ARGUMENTS, bool candidate, QsaPrefixStateProbe probe, void 
 }
 #define STRATA_QSA_COMPARE_PREFIX33 1
 #define STRATA_QSA_COMPARE_PREFIX_STATE 1
-#define STRATA_QSA_REAL_HEAD_STATE 1
 #define qsa_bf16_prefix_batch head_candidate
 #define qsa_bf16_prefix_optimized_batch head_original
 #define qsa_bf16_prefix_state_probe_batch head_state
@@ -51,7 +50,7 @@ static void properties(const char *path) {
     auto kernel=bundle.get_kernel(id);
     const auto sg=kernel.get_info<sycl::info::kernel_device_specific::compile_sub_group_size>(queue.get_device());
     if (sg!=16) continue; // The separately generated prefix pack has no SG16 requirement.
-    const size_t wg=candidate?96:128,declared=candidate?20724:20036;
+    const size_t wg=128,declared=20036;
     const auto maximum=kernel.get_info<sycl::info::kernel_device_specific::work_group_size>(queue.get_device());
     ze_kernel_properties_t p{};p.stype=ZE_STRUCTURE_TYPE_KERNEL_PROPERTIES;
     require(query(sycl::get_native<sycl::backend::ext_oneapi_level_zero>(kernel),&p)==ZE_RESULT_SUCCESS,"kernel properties failed");
