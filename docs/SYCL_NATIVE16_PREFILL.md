@@ -1999,8 +1999,13 @@ prefill grows130.2063to146.5777seconds. GDN25.1741to25.1782andMoE40.6923to40.741
 stay near each other. This localizes the material new cost to QSA preparation,
 union and attention together;queue spans include host gaps,not exclusive GPU
 service or hardware saturation. No more Main regression archaeology follows.
-The bounded pair comparison is finished;its extra build has no new GPU consumer
-and must retire after exact source/recipe recovery. The next prospective tuning
+The bounded pair comparison is finished. Its original559native,35controller,
+9311dependency and1410actual compiler inputs and effective recipe recover from
+pushed feature history;all four final ELFs match the traced link proof. Unused
+pair exports,targets,fixtures and controllers retire to`6c5212f56`;the
+pre-pair tree preserves independent safety fixes. Successful raw output and the
+extra generation have no further consumer and are scheduled for retirement
+before the next build. Selected6e40and its twelve fixtures remain unchanged. The next prospective tuning
 candidate examines the selected per-query12heads versus16matrix rows,subject
 to actual supported matrix shapes and independent correctness/performance gates.
 See`qsa_pair_model.clean_prefill_comparison`and`qsa_pair_proposal`in the

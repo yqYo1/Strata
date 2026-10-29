@@ -100,7 +100,6 @@ bool Prefill::run_layer_major(const int64_t* tokens, int64_t n, int64_t pos0, st
     }
     const bool qsa16_on = native16::qsa::requested();
     const auto qsa_math = native16::qsa::attention_math();
-    const bool qsa_pair_on = qsa_math == native16::qsa::AttentionMath::bf16_prefix_pair;
     if (qsa_math != native16::qsa::AttentionMath::existing && !qsa16_on) {
         err = "prefill BF16 QSA math requires STRATA_SYCL_PREFILL_NATIVE16_QSA=1"; return false;
     }
@@ -110,7 +109,6 @@ bool Prefill::run_layer_major(const int64_t* tokens, int64_t n, int64_t pos0, st
         qsa_math == native16::qsa::AttentionMath::bf16_prefix_kvec4 ||
         qsa_math == native16::qsa::AttentionMath::bf16_prefix_kvvec4 ||
         qsa_math == native16::qsa::AttentionMath::bf16_prefix_ordered_exp ||
-        qsa_pair_on ||
         qsa_math == native16::qsa::AttentionMath::bf16_prefix_subgroup ||
         qsa_math == native16::qsa::AttentionMath::bf16_prefix_tilepack;
     if (qsa16_on && !native16_on) {
@@ -226,10 +224,6 @@ bool Prefill::run_layer_major(const int64_t* tokens, int64_t n, int64_t pos0, st
     // every unsupported layer/device/domain BEFORE this request submits work.
     if (qsa16_on) {
         native16::qsa::validate_device(m.cs);
-        if (qsa_pair_on && !strata::kernels::qsa_pair_prefill_device_supported(m.cs)) {
-            err = "prefill QSA pair: unsupported producer/consumer device capabilities";
-            return false;
-        }
         // The legacy OLD switch is presence-based, including a value of 0.
         if (std::getenv("STRATA_PROMPT_ATTN_OLD")) {
             err = "prefill QSA16: leave STRATA_PROMPT_ATTN_OLD unset"; return false;
@@ -299,15 +293,8 @@ bool Prefill::run_layer_major(const int64_t* tokens, int64_t n, int64_t pos0, st
     const uint64_t prefix_tensor_bytes = qsa_prefix_on ?
         detail::layer_major_mul(detail::layer_major_mul(prefix_cells, 2 * 256), 2) : 0;
     const uint64_t prefix_flag_bytes = qsa_prefix_on ? detail::layer_major_mul(prefix_cells, 2 * 4) : 0;
-    const uint64_t prefix_base_bytes = detail::layer_major_add(
+    const uint64_t prefix_bytes = detail::layer_major_add(
         detail::layer_major_mul(prefix_tensor_bytes, 2), prefix_flag_bytes);
-    const uint64_t pair_count = qsa_pair_on ? detail::layer_major_add(uint64_t(m.T), 1) / 2 : 0;
-    const uint64_t pair_entries = detail::layer_major_mul(detail::layer_major_mul(pair_count, m.cap), 2);
-    const uint64_t pair_union_bytes = detail::layer_major_mul(pair_entries, 4);
-    const uint64_t pair_mask_bytes = detail::layer_major_mul(detail::layer_major_add(pair_entries, 3) / 4, 4);
-    const uint64_t pair_count_bytes = detail::layer_major_mul(pair_count, 4);
-    const uint64_t pair_bytes = detail::layer_major_add(detail::layer_major_add(pair_union_bytes, pair_mask_bytes), pair_count_bytes);
-    const uint64_t prefix_bytes = detail::layer_major_add(prefix_base_bytes, pair_bytes);
     // Half/head scratch borrows attn_h only BEFORE gate overwrites it. Qf is
     // still a gate INPUT and must not be reused. Only sticky status is additional.
     const uint64_t score_status_bytes = score_gemm_on ? 256 : 0;
@@ -539,13 +526,8 @@ bool Prefill::run_layer_major(const int64_t* tokens, int64_t n, int64_t pos0, st
         window_context->command_trace.reset(new sycl_backend::command_profile::Trace(m.cs));
     struct PrefixBorrow {
         Impl& m; strata::kernels::QsaBf16PackedScratch previous;
-        strata::kernels::QsaPairScratch previous_pair;
-        uint64_t previous_calls, previous_queries;
-        ~PrefixBorrow() noexcept {
-            m.qsa_prefix = previous; m.qsa_pair = previous_pair;
-            m.qsa_pair_calls = previous_calls; m.qsa_pair_queries = previous_queries;
-        }
-    } prefix_borrow{m, m.qsa_prefix, m.qsa_pair, m.qsa_pair_calls, m.qsa_pair_queries};
+        ~PrefixBorrow() noexcept { m.qsa_prefix = previous; }
+    } prefix_borrow{m, m.qsa_prefix};
     struct ScoreBorrow {
         Impl& m; qsa_score_gemm::Scratch previous;
         ~ScoreBorrow() noexcept { m.score_gemm = previous; }
@@ -657,15 +639,6 @@ bool Prefill::run_layer_major(const int64_t* tokens, int64_t n, int64_t pos0, st
         m.qsa_prefix = {reinterpret_cast<uint16_t*>(storage),
                         reinterpret_cast<uint16_t*>(storage + prefix_tensor_bytes),
                         reinterpret_cast<int32_t*>(storage + 2 * prefix_tensor_bytes)};
-        if (qsa_pair_on) {
-            auto* metadata = storage + prefix_base_bytes;
-            m.qsa_pair = {reinterpret_cast<int32_t*>(metadata), metadata + pair_union_bytes,
-                reinterpret_cast<int32_t*>(metadata + pair_union_bytes + pair_mask_bytes)};
-            m.qsa_pair_calls = 0; m.qsa_pair_queries = 0;
-            std::fprintf(stderr, "strata prefill: QSA pair=2 metadata_bytes=%llu maximum_queries=%lld "
-                "union_stride=%lld queue=same decode_changed=0\n",
-                (unsigned long long)pair_bytes, (long long)m.T, (long long)(2 * m.cap));
-        }
     }
     if (qsa_math != native16::qsa::AttentionMath::existing)
         std::fprintf(stderr, "strata prefill: QSA BF16 operands, FP32 online state/accumulation; "
@@ -678,21 +651,21 @@ bool Prefill::run_layer_major(const int64_t* tokens, int64_t n, int64_t pos0, st
                       qsa_math == native16::qsa::AttentionMath::bf16_prefix_kvec4 ||
                       qsa_math == native16::qsa::AttentionMath::bf16_prefix_kvvec4 ||
                       qsa_math == native16::qsa::AttentionMath::bf16_prefix_ordered_exp ||
-                      qsa_math == native16::qsa::AttentionMath::bf16_prefix_tilepack || qsa_pair_on) ? 33 : 32,
+                      qsa_math == native16::qsa::AttentionMath::bf16_prefix_tilepack) ? 33 : 32,
                      qsa_math == native16::qsa::AttentionMath::bf16_prefix_tilepack ? "dense16-vnni" : "row-major",
                      qsa_math == native16::qsa::AttentionMath::bf16_prefix_subgroup ? "subgroup" :
-                     qsa_math == native16::qsa::AttentionMath::bf16_prefix_ordered_exp || qsa_pair_on ? "parallel-exp-ascending-sum" : "serial");
+                     qsa_math == native16::qsa::AttentionMath::bf16_prefix_ordered_exp ? "parallel-exp-ascending-sum" : "serial");
     if (qsa_math == native16::qsa::AttentionMath::bf16_prefix_qcache ||
         qsa_math == native16::qsa::AttentionMath::bf16_prefix_kvec4 ||
         qsa_math == native16::qsa::AttentionMath::bf16_prefix_kvvec4 ||
-        qsa_math == native16::qsa::AttentionMath::bf16_prefix_ordered_exp || qsa_pair_on)
+        qsa_math == native16::qsa::AttentionMath::bf16_prefix_ordered_exp)
         std::fprintf(stderr, "strata prefill: QSA cached_query=1 grf_policy=default source=qualified-component\n");
     if (qsa_math == native16::qsa::AttentionMath::bf16_prefix_kvec4 ||
         qsa_math == native16::qsa::AttentionMath::bf16_prefix_kvvec4 ||
-        qsa_math == native16::qsa::AttentionMath::bf16_prefix_ordered_exp || qsa_pair_on)
+        qsa_math == native16::qsa::AttentionMath::bf16_prefix_ordered_exp)
         std::fprintf(stderr, "strata prefill: QSA k_staging=typed4 parallel_rows=1 source=qualified-component\n");
     if (qsa_math == native16::qsa::AttentionMath::bf16_prefix_kvvec4 ||
-        qsa_math == native16::qsa::AttentionMath::bf16_prefix_ordered_exp || qsa_pair_on)
+        qsa_math == native16::qsa::AttentionMath::bf16_prefix_ordered_exp)
         std::fprintf(stderr, "strata prefill: QSA v_staging=typed4 layout=row-major source=qualified-component\n");
     if (plan.gpu_bytes) {
         uint8_t* p = nullptr;
@@ -1041,17 +1014,6 @@ bool Prefill::run_layer_major(const int64_t* tokens, int64_t n, int64_t pos0, st
         err = "prefill layer-major: incomplete final callback sequence"; return false;
     }
     if (!drain()) { err = "prefill layer-major: final drain failed"; return false; }
-    if (qsa_pair_on) {
-        const uint64_t expected_calls = detail::layer_major_mul(uint64_t(g.n_qsa_layers()), uint64_t(logical_chunks));
-        const uint64_t expected_queries = detail::layer_major_mul(uint64_t(g.n_qsa_layers()), uint64_t(n));
-        if (m.qsa_pair_calls != expected_calls || m.qsa_pair_queries != expected_queries) {
-            err = "prefill QSA pair: incomplete phase dispatch"; return false;
-        }
-        std::fprintf(stderr, "strata QSA pair complete: calls=%llu queries=%llu layers=%lld chunks=%lld "
-            "metadata_bytes=%llu final_drain=checked\n", (unsigned long long)m.qsa_pair_calls,
-            (unsigned long long)m.qsa_pair_queries, (long long)g.n_qsa_layers(), (long long)logical_chunks,
-            (unsigned long long)pair_bytes);
-    }
     if (window_context && window_context->expert_upload_staging) {
         auto& staging = *window_context->expert_upload_staging;
         staging.check_guards();

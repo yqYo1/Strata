@@ -97,13 +97,9 @@ target_sources(strata_kernels PRIVATE src/kernels/sycl/native_mmq_xmx.cpp)
 target_sources(strata_kernels PRIVATE src/kernels/sycl/qsa_bf16_attention.cpp)
 target_sources(strata_kernels PRIVATE src/kernels/sycl/qsa_bf16_attention_late_flags.cpp)
 target_sources(strata_kernels PRIVATE src/kernels/sycl/qsa_bf16_packed.cpp src/kernels/sycl/qsa_bf16_prefix.cpp)
-target_sources(strata_kernels PRIVATE src/kernels/sycl/qsa_pair_union.cpp
-  src/kernels/sycl/qsa_pair_attention.cpp src/kernels/sycl/qsa_pair_prefix.cpp)
 set_source_files_properties(src/kernels/sycl/qsa_bf16_attention.cpp
   src/kernels/sycl/qsa_bf16_attention_late_flags.cpp
-  src/kernels/sycl/qsa_bf16_packed.cpp src/kernels/sycl/qsa_bf16_prefix.cpp
-  src/kernels/sycl/qsa_pair_union.cpp src/kernels/sycl/qsa_pair_attention.cpp
-  src/kernels/sycl/qsa_pair_prefix.cpp PROPERTIES
+  src/kernels/sycl/qsa_bf16_packed.cpp src/kernels/sycl/qsa_bf16_prefix.cpp PROPERTIES
   COMPILE_OPTIONS "-fno-fast-math;-ffp-contract=off")
 set_source_files_properties(src/kernels/sycl/native_mmq_xmx.cpp PROPERTIES COMPILE_OPTIONS "-fno-fast-math")
 set_source_files_properties(src/kernels/sycl/native_iq_esimd.cpp PROPERTIES COMPILE_OPTIONS "-fno-fast-math")
