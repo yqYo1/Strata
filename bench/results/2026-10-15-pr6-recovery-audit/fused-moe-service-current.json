@@ -13238,7 +13238,7 @@
       }
     },
     "device_plan": {
-      "stage": "prepared",
+      "stage": "closed",
       "mode": "validate",
       "source_commit": "0c0de7e0c83642320f973beff32111a7b4df84ca",
       "inputs": {
@@ -13476,6 +13476,127 @@
         },
         "validation": {
           "pid": 3756565,
+          "loader": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_loader.so.0.12.0",
+          "threads_before": 1,
+          "preinit": 37,
+          "config_enabled": true,
+          "first_init": true,
+          "dispatch_result": 46,
+          "output_untouched": true,
+          "retained_reference_until_exit": true,
+          "runtime_teardown_qualified": false
+        },
+        "exit_code": 0,
+        "postchecks_complete": true,
+        "postcheck_errors": [],
+        "fresh_faults": [],
+        "boot_unchanged": true,
+        "driver_after": {
+          "pci": "/sys/bus/pci/devices/0000:05:00.0",
+          "driver": "xe",
+          "vendor": "0x8086",
+          "device": "0xe20c",
+          "kernel": "7.0.0-38-generic",
+          "devcoredump": false
+        }
+      },
+      {
+        "mode": "validate",
+        "passed": true,
+        "complete": true,
+        "active": false,
+        "ownership_closed": true,
+        "GPU_kernels_executed": true,
+        "model_executed": false,
+        "model_qualified": false,
+        "controller_commit": "0c0de7e0c83642320f973beff32111a7b4df84ca",
+        "plan_commit": "46712a6f5802cafba1c849e63e2eb66a27678496",
+        "physical_device": {
+          "name": "Intel(R) Arc(TM) B570 Graphics",
+          "pci": "0000:05:00.0",
+          "driver": "xe",
+          "matching_DRM_descriptors": 1
+        },
+        "coverage": {
+          "result_counts": {
+            "split_case": 6,
+            "split_dataflow": 1,
+            "split_correctness": 28
+          },
+          "cases": [
+            {
+              "kind": "split_case",
+              "tokens": 65537,
+              "primary_rows": 65536,
+              "target_rows": 17,
+              "irregular": 0,
+              "edges": 0,
+              "jobs": 4,
+              "physical_final_row": true,
+              "status": "PASS"
+            },
+            {
+              "kind": "split_case",
+              "tokens": 81921,
+              "primary_rows": 65536,
+              "target_rows": 17,
+              "irregular": 0,
+              "edges": 0,
+              "jobs": 5,
+              "physical_final_row": true,
+              "status": "PASS"
+            },
+            {
+              "kind": "split_case",
+              "tokens": 117488,
+              "primary_rows": 65536,
+              "target_rows": 17,
+              "irregular": 0,
+              "edges": 0,
+              "jobs": 5,
+              "physical_final_row": true,
+              "status": "PASS"
+            },
+            {
+              "kind": "split_case",
+              "tokens": 65537,
+              "primary_rows": 65536,
+              "target_rows": 17,
+              "irregular": 1,
+              "edges": 0,
+              "jobs": 4,
+              "physical_final_row": true,
+              "status": "PASS"
+            },
+            {
+              "kind": "split_case",
+              "tokens": 81921,
+              "primary_rows": 65536,
+              "target_rows": 17,
+              "irregular": 1,
+              "edges": 0,
+              "jobs": 5,
+              "physical_final_row": true,
+              "status": "PASS"
+            },
+            {
+              "kind": "split_case",
+              "tokens": 117488,
+              "primary_rows": 65536,
+              "target_rows": 17,
+              "irregular": 1,
+              "edges": 0,
+              "jobs": 5,
+              "physical_final_row": true,
+              "status": "PASS"
+            }
+          ],
+          "post_BF16_FP32_oracles": 28,
+          "production_routes": [],
+          "limitation": "Fixture post-BF16 consumer contract only;selected-job gathers,not everyjob. No model/performance qualification."
+        },
+        "validation": {
+          "pid": 3765491,
           "loader": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_loader.so.0.12.0",
           "threads_before": 1,
           "preinit": 37,
