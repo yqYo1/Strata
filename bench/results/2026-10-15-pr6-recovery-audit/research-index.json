@@ -16327,7 +16327,7 @@
   },
   "qsa_strict_fp32_target_contract_20261029": {
     "classification": "decision support",
-    "status": "completed_native_curation_running",
+    "status": "curated_exact_target_mode_unresolved",
     "schedulable_now": false,
     "prerequisites_evidence": [
       "Only-normalizer source73414ebc2and immutable actualCPUemitted original/candidate IR exist. This is a new exact-artifact arithmetic contract,not generic native-exp2/FTZ survey.",
@@ -16367,8 +16367,54 @@
       "agent": "/root/curate_qsa_strict_fp32_20261029",
       "model": "native Codex gpt-6-luna max",
       "review_path": ".cache/research/2026-10-29/qsa_strict_fp32_target_contract_20261029.review.json",
-      "status": "running"
+      "status": "completed"
     },
-    "completion": "Authoritative completed/succeeded worker-show;released terminal and acknowledged delivery_08e1f1a0cc86. Main has not read report body."
+    "completion": "Authoritative completed/succeeded worker-show;released terminal and acknowledged delivery_08e1f1a0cc86. Main has not read report body.",
+    "native_review": {
+      "path": ".cache/research/2026-10-29/qsa_strict_fp32_target_contract_20261029.review.json",
+      "sha256": "6b076a780ac739d339d7db5475c12d920ada13061ad146c8aab0f5de463c55ec",
+      "source_math_accepted_for_component": true,
+      "target_contract": {
+        "source_qualified": false,
+        "FP32_RNE_gradual": false,
+        "BF16_RNE": false,
+        "division_absolute_ulp_bound": null,
+        "required_single_fp_config": []
+      },
+      "corrections": [
+        "SYCL2020specifiescorrectlyroundedfma.",
+        "PinnedLLVMmanualandIntel2026guide differ on omittedFP32precision default;resolveactual17patchcompiler.",
+        "BF16devicehelpernumericconversion is not itself an explicit rounding-modecontract."
+      ],
+      "consumer": "Prospective only-normalizer lossless interval gate;no guessed outputepsilon and no adoption from source/capability/finite probes."
+    }
+  },
+  "qsa_exact_compiler_arithmetic_lowering_20261029": {
+    "classification": "decision support",
+    "status": "eligible_not_dispatched",
+    "schedulable_now": true,
+    "prerequisites_evidence": [
+      "Completed nativeLuna-max strictcontract review identifies exact-binary division default and device BF16 rounding/mode gaps;actual native objects and IR are pinned.",
+      "New CPU-only exact-driver -### transcript exists;no compiler module or GPU workload was created. No duplicate genericFP32survey."
+    ],
+    "question": "Resolve actual installed LLVM504+17patch compiler default FDiv/FP32 denormal controls and BF16conversion lowering from actual driver+source;find source/ISAcontract sufficient for existing interval checker,or smallest explicit per-TU mechanism that establishes one without globalfastmath. No all-input proof from finite probes;separate current artifact from proposed rebuilt source.",
+    "worker_model": "Orca Codex gpt-6-luna high",
+    "report": ".cache/research/2026-10-29/qsa_exact_compiler_arithmetic_lowering_20261029.md",
+    "report_budget_bytes": 16384,
+    "prior_refs": [
+      "qsa_strict_fp32_target_contract_20261029",
+      "qsa_positive_sum_error_envelope_20261029",
+      "qsa_parallel_normalizer_contract_20261029"
+    ],
+    "driver_dry_run": {
+      "argv": "Exact candidate compile argv from qsa-normalizer-native-v1/record.json with -### inserted;no compile performed.",
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-normalizer-native-v1/effective-device-driver.txt",
+      "bytes": 11093,
+      "sha256": "deed68446b4823a10a4586dfde3b653341e82e2437649b37f1fcc7be9a8cb7d9",
+      "exit_code": 0,
+      "explicit_precision_option_in_output": false
+    },
+    "ownership_closed": true,
+    "consumer": "Main can continue separate arithmetic/cost/performance preparation;nativeLuna-max curates contract before numericalGPUlaunch. Retire full dryrun/report after exact-source facts are consumed."
   }
 }
