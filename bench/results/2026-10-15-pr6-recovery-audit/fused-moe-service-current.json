@@ -16062,7 +16062,13 @@
     "observation_complete": true,
     "outcome": "known_integer_work_passed_query_pool_invalid_argument",
     "decision": "Collection remains unqualified:work-off exact payload/guards and cleanup passed;work-query failed at zetMetricQueryPoolCreate before BEGIN/work/END. Group activation and deactivation succeeded. Empty-query omitted by the frozen stop-on-refusal rule. No fresh GPU fault,all owners closed. This is not evidence of insufficient permissions or a measured utilization/bandwidth ceiling.",
-    "next_action": "Source/API review of the exact pool descriptor and installed provider path;new committed plan for any changed arm. Continue independent tuning;do not retry this immutable v1 arm or change system permissions."
+    "next_action": "Source/API review of the exact pool descriptor and installed provider path;new committed plan for any changed arm. Continue independent tuning;do not retry this immutable v1 arm or change system permissions.",
+    "representative_failure": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/metric-query-c-v1/failure-diagnostic.json",
+      "sha256": "ba196cf0feb6d4a21f3208b66fec768db3ecd35b5317721f8ee78d046acc10a6",
+      "bytes": 3947,
+      "consumer": "Current unresolved root pool admission;review after bounded topology/group evidence."
+    }
   },
   "transfer_refresh": {
     "stage": "closed",
@@ -16284,7 +16290,13 @@
               ]
             ]
           }
-        }
+        },
+        "host_setup": [
+          1.5328e-05,
+          1.6872e-05,
+          0.001262507,
+          0.001262598
+        ]
       },
       {
         "index": 3,
@@ -16382,7 +16394,13 @@
               ]
             ]
           }
-        }
+        },
+        "host_setup": [
+          0.000304892,
+          0.000306444,
+          0.000609282,
+          0.000609393
+        ]
       },
       {
         "index": 4,
@@ -16480,7 +16498,13 @@
               ]
             ]
           }
-        }
+        },
+        "host_setup": [
+          0.000383319,
+          0.000385062,
+          0.00057587,
+          0.000576
+        ]
       },
       {
         "index": 5,
@@ -16578,7 +16602,13 @@
               ]
             ]
           }
-        }
+        },
+        "host_setup": [
+          2.4446e-05,
+          2.673e-05,
+          0.00127469,
+          0.001274802
+        ]
       },
       {
         "index": 6,
@@ -16676,7 +16706,13 @@
               ]
             ]
           }
-        }
+        },
+        "host_setup": [
+          1.8134e-05,
+          2.0769e-05,
+          0.001196523,
+          0.001196664
+        ]
       },
       {
         "index": 7,
@@ -16774,7 +16810,13 @@
               ]
             ]
           }
-        }
+        },
+        "host_setup": [
+          0.000275767,
+          0.000277491,
+          0.000540854,
+          0.000541015
+        ]
       },
       {
         "index": 8,
@@ -16872,7 +16914,13 @@
               ]
             ]
           }
-        }
+        },
+        "host_setup": [
+          2.2963e-05,
+          2.4966e-05,
+          0.190760962,
+          0.190776964
+        ]
       },
       {
         "index": 9,
@@ -16970,7 +17018,13 @@
               ]
             ]
           }
-        }
+        },
+        "host_setup": [
+          0.023701083,
+          0.023725083,
+          0.098932532,
+          0.099017064
+        ]
       },
       {
         "index": 10,
@@ -17068,7 +17122,13 @@
               ]
             ]
           }
-        }
+        },
+        "host_setup": [
+          0.024123605,
+          0.024133129,
+          0.097574004,
+          0.097573781
+        ]
       },
       {
         "index": 11,
@@ -17166,7 +17226,13 @@
               ]
             ]
           }
-        }
+        },
+        "host_setup": [
+          2.4967e-05,
+          2.7051e-05,
+          0.196450381,
+          0.196558067
+        ]
       },
       {
         "index": 12,
@@ -17264,7 +17330,13 @@
               ]
             ]
           }
-        }
+        },
+        "host_setup": [
+          1.9697e-05,
+          2.1871e-05,
+          0.192665373,
+          0.192694157
+        ]
       },
       {
         "index": 13,
@@ -17362,7 +17434,13 @@
               ]
             ]
           }
-        }
+        },
+        "host_setup": [
+          0.023588022,
+          0.023751587,
+          0.096587184,
+          0.096661804
+        ]
       }
     ],
     "summary": [
@@ -17538,6 +17616,57 @@
     },
     "decision": "Current-runtime normal-RAM bulk H2D process medians5.9338..6.0109GB/s;Host-USM5.0912..5.0955GB/s. Do not assume pinned HostUSM improves H2D in this qualified path. Keep the ordinary2MiB2.6813GB/s process and all individual samples;no variability dismissal or new placement adoption. Calling-thread CPU/wall is near1 in copy/complete alone;it does not prove LLM math runs on CPU or identify the whole-model limiting unit.",
     "next_action": "Use these rates and CPU submission/wait splits to budget requested expert transfers,then measure the split MoE critical path including dequant,shared projections,routing,status/drain and handoff. No new pool trial without actual matching child topology/group evidence.",
-    "retention": "Useful individual transfer samples and CPU/wall phases for current resource budgeting. Retire successful raw API/protocol/build/transaction logs and disposable helper artifacts after source/recipe recovery;keep compact dependency receipts required by current source qualification."
+    "retention": "Useful individual transfer samples and CPU/wall phases for current resource budgeting. Retire successful raw API/protocol/build/transaction logs and disposable helper artifacts after source/recipe recovery;keep compact dependency receipts required by current source qualification.",
+    "diagnostic_UR_paths": [
+      {
+        "host": "ordinary",
+        "trace_sha256": "9e03e9cd555caca9ebe92b17922bb98dc2edbc901d3f164074d3dae36d62c1f4",
+        "all_API_calls": 104,
+        "copies": 9,
+        "blocking_flags": [
+          0
+        ],
+        "requested_byte_sizes": {
+          "2097408": 5,
+          "2097152": 4
+        },
+        "event_wait_calls": 5,
+        "queue_finish_calls": 12,
+        "API_entry_return_counts_match": true,
+        "scope": "2MiB diagnostic only;includes setup,warmup,validation copies;not timed-only or physical bus traffic."
+      },
+      {
+        "host": "usm",
+        "trace_sha256": "68252afa6f3a51f1092160089d94d2812df9e4f8ddec85af8d283b91f63af4c5",
+        "all_API_calls": 108,
+        "copies": 9,
+        "blocking_flags": [
+          0
+        ],
+        "requested_byte_sizes": {
+          "2097408": 5,
+          "2097152": 4
+        },
+        "event_wait_calls": 5,
+        "queue_finish_calls": 14,
+        "API_entry_return_counts_match": true,
+        "scope": "2MiB diagnostic only;includes setup,warmup,validation copies;not timed-only or physical bus traffic."
+      }
+    ],
+    "host_setup_columns": [
+      "allocation_cpu_s",
+      "allocation_wall_s",
+      "pretouch_cpu_s",
+      "pretouch_wall_s"
+    ],
+    "host_setup_scope": "Host-buffer allocation only,then initialization of source/verification payloads;outside copy timing. Device and verification allocations and complete process setup are not included in allocation clock.",
+    "buffer_layout": {
+      "guard_bytes_per_side": 128,
+      "alignment": 4096,
+      "all14_body_alignment_mod4096": 128,
+      "host_allocation_bytes": "payload+256+4096",
+      "device_allocation_bytes": "payload+256",
+      "verification_host_allocation_bytes": "payload+256+4096"
+    }
   }
 }
