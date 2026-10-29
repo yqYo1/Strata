@@ -1939,16 +1939,22 @@ Source`4e6dbe25a`adds the opt-in long-prefill `bf16-prefix-pair` route to the
 actual feature tree. Production packing,union and attention share the existing
 in-order GPU queue. Its checked maximum8192-query/2051-cap metadata needs an
 additional84025344bytes(80.133MiB),reserved before expert-bank planning.
-Decode and short-prefill selection remain unchanged. This integration is
-**compiled but not GPU-qualified**. The independent Orca Luna audit found a missing pair-only
+Decode and short-prefill selection remain unchanged. The actual production
+objects pass bounded GPU component qualification;the model route remains
+**unmeasured and unselected**. The independent Orca Luna audit found a missing pair-only
 device check at admission. Correction`ddb0df149`adds one reusable no-submit
 predicate at admission and the wrapper;native Luna-max accepts the corrected
 source gate. The selected6e40-plus-pair-only559-file snapshot and its frozen
 model/production-object fixture recipe compiled successfully and verified1410actual
 compiler inputs. Prospective linker tracing resolves33/19/19/20frozen inputs
 with no uncovered file,and all four final ELFs match the original build exactly.
-Page4andPage16production-wrapper qualification follows the property-only check. Model speed,quality,
-decode preservation,handoff/RESTORE and physical full-context gates stay open.
+The property-only query and38union cases pass. Page4andPage16each pass
+three eight-case small processes and three19-case extended processes,including
+physically backed262144cell final addresses,independent numerical/set oracles,
+production-wrapper equivalence,guards,actual launch ABI,immutable providers,
+parameter validation and normal owner closure without fresh faults. These
+components do not fill a model context. Model speed,quality,decode preservation,
+handoff/RESTORE and physical full-context gates stay open.
 See`qsa_pair_proposal`in the
 [current service decision](../bench/results/2026-10-15-pr6-recovery-audit/fused-moe-service-current.json).
 
