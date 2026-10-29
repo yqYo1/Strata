@@ -1308,7 +1308,7 @@
     ],
     "next_gate": "Independent Luna source-contract audit while Main prepares committed fixture and native recipe;then serial build/properties/traced oracle before timing.",
     "selected": false,
-    "GPU_executed": false,
+    "GPU_executed": true,
     "source_contract": "research-index:qsa_pair_attention_contract_20261029.native_review;75aa272bb device body unchanged,host-only explicit live_cells<=262144 clarification",
     "preparation_failure": {
       "source_commit": "1a83812f7",
@@ -1944,7 +1944,7 @@
         }
       },
       "union": {
-        "stage": "prepared",
+        "stage": "failed",
         "source_commit": "ce5a37b791ce41306ff09ef2964e78d91f668501",
         "controller_inputs": {
           "tools/sycl/qsa_pair_probe.py": "3eb9044623378c20e5f059e7d5fa873234346b406905239795d866feb7c08b04",
@@ -2095,7 +2095,28 @@
         },
         "criteria": "Ordered owned children;pre-main UR validation;live exact native ELF/provider/environment/B570DRM checks at runtime-ready and before-exit;silent parameter validation;complete expected case/property markers;independent set/BF16tensor oracle and guards/input immutability;no fresh fault,boot/driver change or survivors. Property-only has zero enqueue;other gates require actual kernel submissions. Stop first failure;no speed/model/context qualification.",
         "expected_cases": 38,
-        "retention": "Keep compact property/case oracle samples,source/executable/runtime identity and fault/closure outcomes;retire successful traces and repeated logs after verification. No full trace retention question."
+        "retention": "Keep compact property/case oracle samples,source/executable/runtime identity and fault/closure outcomes;retire successful traces and repeated logs after verification. No full trace retention question.",
+        "outcome": {
+          "passed": false,
+          "complete": false,
+          "active": false,
+          "ownership_closed": false,
+          "processes": [],
+          "model_qualified": false,
+          "error": "RuntimeError('native failed or owner open')",
+          "postchecks_complete": true,
+          "postcheck_errors": [],
+          "fresh_faults": [],
+          "boot_unchanged": true,
+          "driver_after": {
+            "pci": "/sys/bus/pci/devices/0000:05:00.0",
+            "driver": "xe",
+            "vendor": "0x8086",
+            "device": "0xe20c",
+            "kernel": "7.0.0-38-generic",
+            "devcoredump": false
+          }
+        }
       }
     }
   }
