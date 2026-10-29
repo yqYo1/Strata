@@ -94,6 +94,31 @@ class MaxTokens(unittest.TestCase):
         self.assertEqual(s2, 200)
         self.assertEqual(b["input_tokens"], n_in)
 
+    def test_openai_count_matches_chat_prompt_without_engine_execution(self):
+        for extra in [{}, {"reasoning_effort": "xhigh"},
+                      {"chat_template_kwargs": {"enable_thinking": False}},
+                      {"response_format": {"type": "json_object"}}]:
+            with self.subTest(extra=extra):
+                body = {"model": "m", "messages": [
+                    {"role": "system", "content": "Read literal tags carefully."},
+                    {"role": "user", "content": "Count <think>literal</think> and café."}],
+                    "max_tokens": 8, **extra}
+                with mock.patch.object(self.engine, "generate", side_effect=AssertionError("count must not infer")):
+                    status, counted = self.post("/v1/chat/completions/count_tokens", body)
+                self.assertEqual(status, 200)
+                status, answer = self.post("/v1/chat/completions", body)
+                self.assertEqual(status, 200)
+                self.assertEqual(counted["input_tokens"], answer["usage"]["prompt_tokens"])
+
+    def test_openai_count_rejects_unexpanded_vision_and_dynamic_tools(self):
+        for extra in [{"strata_mcp": True}, {"messages": [{"role": "user", "content": [
+                {"type": "image_url", "image_url": {"url": "file:///not-read-by-count"}}]}]}]:
+            with self.subTest(extra=extra):
+                with mock.patch.object(self.engine, "generate", side_effect=AssertionError("count must not infer")):
+                    status, _ = self.post("/v1/chat/completions/count_tokens", {
+                        "model": "m", "messages": [{"role": "user", "content": "hi"}], **extra})
+                self.assertEqual(status, 400)
+
     def test_request_line_parses_the_engine_summary(self):
         line = ("strata serve: prompt 1200 tokens = 1000 reused + 200 read in 50 ms (4000.0 tok/s), 30 generated in "
                 "300 ms (100.0 tok/s), drafts accepted 20 of 28, 2 checkpoints")

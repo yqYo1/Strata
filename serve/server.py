@@ -3203,6 +3203,8 @@ def make_handler(svc: Service):
                     self._anthropic(req)
                 elif path == "/v1/messages/count_tokens":
                     self._count_tokens(req)
+                elif path == "/v1/chat/completions/count_tokens":
+                    self._count_tokens(req, "openai")
                 else:
                     self._json(404, {"error": {"message": "not found"}})
             except ValueError as e:
@@ -3578,11 +3580,25 @@ def make_handler(svc: Service):
             # the request is also the sampling dict, as on the chat path (temperature, top_p, top_k, seed, ...)
             return ids, thinking, tools, max_new, asm, validator, req
 
-        def _count_tokens(self, req):
-            """Anthropic's token count, which Claude Code asks for its context figures: the prompt this server would
-            read for the same request, rendered and tokenized - the model does not run."""
-            req = svc.with_shared(req, "anthropic")
-            messages, tools, kw = anthropic_to_messages(req, svc.anthropic_think_unasked)
+        def _count_tokens(self, req, dialect="anthropic"):
+            """Count the rendered prompt without model execution or prompt-cache insertion.
+
+            The OpenAI extension supports text/tool schemas, with the same
+            normalization and structured-format prompt as chat completions.
+            Tokenizer piece caches may warm; this is not context admission.
+            """
+            req = svc.with_shared(req, dialect)
+            if dialect == "openai":
+                if req.get("strata_mcp"):
+                    raise ValueError("count_tokens does not expand dynamic MCP tools")
+                messages, tools, kw = openai_to_messages(req)
+                messages, validator = prepare_format(req.get("response_format"), messages)
+                if validator is not None and tools:
+                    raise ValueError("structured response_format with tools/MCP is not supported")
+                if images_of(messages):
+                    raise ValueError("count_tokens supports text prompts, not vision token expansion")
+            else:
+                messages, tools, kw = anthropic_to_messages(req, svc.anthropic_think_unasked)
             self._json(200, {"input_tokens": len(svc.encode_prompt(messages, tools, kw, store=False))})
 
         def _anthropic(self, req):
